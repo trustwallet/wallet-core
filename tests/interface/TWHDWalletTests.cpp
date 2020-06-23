@@ -330,9 +330,9 @@ TEST(HDWallet, PublicKeyFromZ) {
 TEST(HDWallet, PublicKeyFromExtended_NIST256p1) {
     const auto xpub = STRING("xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj");
     const auto xpubAddr = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/888'/0'/0/0").get())); // Neo
-    ASSERT_TRUE(xpubAddr.get() != nullptr);
+    ASSERT_NE(xpubAddr.get(), nullptr);
     auto data = WRAPD(TWPublicKeyData(xpubAddr.get()));
-    ASSERT_TRUE(data.get() != nullptr);
+    ASSERT_NE(data.get(), nullptr);
     assertHexEqual(data, "03774c910fcf07fa96886ea794f0d5caed9afe30b44b83f7e213bb92930e7df4bd");
 }
 

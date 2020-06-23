@@ -149,8 +149,7 @@ std::optional<PublicKey> HDWallet::getPublicKeyFromExtended(const std::string& e
     if (!deserialize(extended, curve, hasher, &node)) {
         return {};
     }
-    if (node.curve->params == nullptr)
-    {
+    if (node.curve->params == nullptr) {
         return {};
     }
     hdnode_public_ckd(&node, path.change());
