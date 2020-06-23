@@ -1404,5 +1404,33 @@
             "clientPublic": "https://api-wt2-lb.bandchain.org",
             "clientDocs": "https://docs.bandchain.org/"
         }
+    },
+    {
+        "id": "aryacoin",
+        "name": "Aryacoin",
+        "symbol": "AYA",
+        "decimals": 8,
+        "blockchain": "Bitcoin",
+        "derivationPath": "m/44'/357'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "p2pkhPrefix": 23,
+        "p2shPrefix": 50,
+        "hrp": "aya",
+        "publicKeyHasher": "sha256ripemd",
+        "base58Hasher": "sha256d",
+        "xpub": "xpub",
+        "xprv": "xprv",
+        "explorer": {
+            "url": "https://explorer2.aryacoin.io",
+            "txPath": "/tx/",
+            "accountPath": "/address/"
+        },
+        "info": {
+            "url": "https://aryacoin.io",
+            "client": "https://github.com/Aryacoin/Aryacoin",
+            "clientPublic": "https://explorer2.aryacoin.io",
+            "clientDocs": "https://github.com/sillyghost/blockbook/blob/master/docs/api.md"
+        }
     }
 ]
