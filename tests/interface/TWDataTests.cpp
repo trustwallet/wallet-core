@@ -34,9 +34,22 @@ TEST(TWData, CreateWithHexString) {
     }
 
     {
-        // capitals
+        // uppercase
         const auto data = WRAPD(TWDataCreateWithHexString(STRING("DEADBEEF").get()));
         assertHexEqual(data, "deadbeef");
+    }
+
+    {
+        // odd length is invalid (intended grouping to bytes is not obvious)
+        const auto data = WRAPD(TWDataCreateWithHexString(STRING("012").get()));
+        assertHexEqual(data, "");
+    }
+
+    {
+        // null input
+        TWString* nullstring = nullptr;
+        const auto data = WRAPD(TWDataCreateWithHexString(nullstring));
+        ASSERT_EQ(data.get(), nullptr);
     }
 }
 

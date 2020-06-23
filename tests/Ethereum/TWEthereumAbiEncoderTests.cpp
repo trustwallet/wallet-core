@@ -164,8 +164,8 @@ TEST(TWEthereumAbi, EncodeFuncMonster) {
     TWEthereumAbiFunctionAddParamString(func, TWStringCreateWithUTF8Bytes("Hello, world!"), false);
     TWEthereumAbiFunctionAddParamAddress(func, 
         TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("f784682c82526e245f50975190ef0fff4e4fc077")), false);
-    TWEthereumAbiFunctionAddParamBytes(func, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("31323334353")), false);
-    TWEthereumAbiFunctionAddParamBytesFix(func, 5, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("31323334353")), false);
+    TWEthereumAbiFunctionAddParamBytes(func, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("3132333435")), false);
+    TWEthereumAbiFunctionAddParamBytesFix(func, 5, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("3132333435")), false);
     
     TWEthereumAbiFunctionAddInArrayParamUInt8(func, TWEthereumAbiFunctionAddParamArray(func, false), 1);
     TWEthereumAbiFunctionAddInArrayParamUInt16(func, TWEthereumAbiFunctionAddParamArray(func, false), 2);
@@ -183,8 +183,8 @@ TEST(TWEthereumAbi, EncodeFuncMonster) {
     TWEthereumAbiFunctionAddInArrayParamString(func, TWEthereumAbiFunctionAddParamArray(func, false), TWStringCreateWithUTF8Bytes("Hello, world!"));
     TWEthereumAbiFunctionAddInArrayParamAddress(func, TWEthereumAbiFunctionAddParamArray(func, false), 
         TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("f784682c82526e245f50975190ef0fff4e4fc077")));
-    TWEthereumAbiFunctionAddInArrayParamBytes(func, TWEthereumAbiFunctionAddParamArray(func, false), TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("31323334353")));
-    TWEthereumAbiFunctionAddInArrayParamBytesFix(func, TWEthereumAbiFunctionAddParamArray(func, false), 5, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("31323334353")));
+    TWEthereumAbiFunctionAddInArrayParamBytes(func, TWEthereumAbiFunctionAddParamArray(func, false), TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("3132333435")));
+    TWEthereumAbiFunctionAddInArrayParamBytesFix(func, TWEthereumAbiFunctionAddParamArray(func, false), 5, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("3132333435")));
 
     // check back out params
     EXPECT_EQ(1, TWEthereumAbiFunctionGetParamUInt8(func, 0, false));

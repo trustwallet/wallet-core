@@ -27,7 +27,7 @@ TWData *_Nonnull TWDataCreateWithSize(size_t size);
 /// Creates a block of data by copying another block of data.
 TWData *_Nonnull TWDataCreateWithData(TWData *_Nonnull data);
 
-/// Creates a block of data from a hexadecimal string.
+/// Creates a block of data from a hexadecimal string.  Odd length is invalid (intended grouping to bytes is not obvious).
 TWData *_Nullable TWDataCreateWithHexString(const TWString *_Nonnull hex);
 
 /// Returns the size in bytes.

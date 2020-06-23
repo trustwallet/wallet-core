@@ -5,8 +5,13 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include <TrustWalletCore/TWData.h>
+#include <TrustWalletCore/TWString.h>
+#include "Data.h"
+#include "HexCoding.h"
 #include <algorithm>
 #include <vector>
+
+using namespace TW;
 
 TWData *_Nonnull TWDataCreateWithBytes(const uint8_t *_Nonnull bytes, size_t size) {
     auto data = new std::vector<uint8_t>();
@@ -24,6 +29,14 @@ TWData *_Nonnull TWDataCreateWithData(TWData *_Nonnull data) {
     auto other = reinterpret_cast<const std::vector<uint8_t>*>(data);
     auto copy = new std::vector<uint8_t>(*other);
     return copy;
+}
+
+TWData* TWDataCreateWithHexString(const TWString* hex) {
+    if (hex == nullptr) {
+        return nullptr;
+    }
+    Data data = parse_hex(std::string(TWStringUTF8Bytes(hex)));
+    return TWDataCreateWithBytes(data.data(), data.size());
 }
 
 size_t TWDataSize(TWData *_Nonnull data) {
