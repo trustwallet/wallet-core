@@ -217,10 +217,12 @@ std::string serialize(const HDNode *node, uint32_t fingerprint, uint32_t version
     return Base58::bitcoin.encodeCheck(node_data, hasher);
 }
 
-bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher, HDNode *node) {
+bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher, HDNode* node) {
     memset(node, 0, sizeof(HDNode));
     const char* curveNameStr = curveName(curve);
-    assert(curveNameStr != nullptr);
+    if (curveNameStr == nullptr || ::strlen(curveNameStr) == 0) {
+        return false;
+    }
     node->curve = get_curve_by_name(curveNameStr);
     assert(node->curve != nullptr);
 
@@ -283,7 +285,6 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve) {
 const char* curveName(TWCurve curve) {
     switch (curve) {
     case TWCurveSECP256k1:
-    default:
         return SECP256K1_NAME;
     case TWCurveED25519:
         return ED25519_NAME;
@@ -295,6 +296,9 @@ const char* curveName(TWCurve curve) {
         return NIST256P1_NAME;
     case TWCurveCurve25519:
         return CURVE25519_NAME;
+    case TWCurveNone:
+    default:
+        return "";
     }
 }
 
