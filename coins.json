@@ -1416,7 +1416,6 @@
         "publicKeyType": "secp256k1",
         "p2pkhPrefix": 23,
         "p2shPrefix": 50,
-        "hrp": "aya",
         "publicKeyHasher": "sha256ripemd",
         "base58Hasher": "sha256d",
         "xpub": "xpub",
