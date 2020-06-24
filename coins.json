@@ -1404,5 +1404,26 @@
             "clientPublic": "https://api-wt2-lb.bandchain.org",
             "clientDocs": "https://docs.bandchain.org/"
         }
+    },
+    {
+        "id": "celo",
+        "name": "Celo",
+        "symbol": "CELO",
+        "decimals": 18,
+        "blockchain": "Ethereum",
+        "derivationPath": "m/44'/52752'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1Extended",
+        "explorer": {
+            "url": "https://explorer.celo.org/",
+            "txPath": "/tx/",
+            "accountPath": "/address/"
+        },
+        "info": {
+            "url": "https://celo.org/",
+            "client": "https://github.com/celo-org/celo-blockchain",
+            "clientPublic": "https://rc1-forno.celo-testnet.org",
+            "clientDocs": "https://docs.celo.org/"
+        }
     }
 ]
