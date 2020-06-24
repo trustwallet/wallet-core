@@ -20,7 +20,7 @@ enum TWEthereumChainID {
     TWEthereumChainIDVeChain = 74,
     TWEthereumChainIDThunderToken = 108,
     TWEthereumChainIDTomoChain = 88,
-    TWEthereumChainIDCelo = 88,
+    TWEthereumChainIDCelo = 52752,
 };
 
 TW_EXTERN_C_END
