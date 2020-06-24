@@ -139,6 +139,7 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypePOANetwork:
     case TWCoinTypeThunderToken:
     case TWCoinTypeTomoChain:
+    case TWCoinTypeCelo:
     case TWCoinTypeVeChain:
     case TWCoinTypeTheta:
     case TWCoinTypeWanchain:
