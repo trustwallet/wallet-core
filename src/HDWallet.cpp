@@ -18,6 +18,7 @@
 #include <TrustWalletCore/TWHRP.h>
 
 #include <array>
+#include <iostream>
 
 using namespace TW;
 
@@ -142,7 +143,9 @@ std::string HDWallet::getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, T
 
 std::optional<PublicKey> HDWallet::getPublicKeyFromExtended(const std::string& extended, const DerivationPath& path) {
     const auto coin = path.coin();
+    std::cerr << "coin " << (int)coin << "\n";
     const auto curve = TW::curve(coin);
+    std::cerr << "curve " << (int)curve << "\n";
     const auto hasher = TW::base58Hasher(coin);
 
     auto node = HDNode{};
@@ -220,6 +223,7 @@ std::string serialize(const HDNode *node, uint32_t fingerprint, uint32_t version
 bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher, HDNode* node) {
     memset(node, 0, sizeof(HDNode));
     const char* curveNameStr = curveName(curve);
+    std::cerr << "curveName " << curveNameStr << " " << ::strlen(curveNameStr) << "\n";
     if (curveNameStr == nullptr || ::strlen(curveNameStr) == 0) {
         return false;
     }
