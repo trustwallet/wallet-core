@@ -1428,7 +1428,7 @@
         "info": {
             "url": "https://aryacoin.io",
             "client": "https://github.com/Aryacoin/Aryacoin",
-            "clientPublic": "https://explorer2.aryacoin.io",
+            "clientPublic": "https://explorer2.aryacoin.io/api/v2/",
             "clientDocs": "https://github.com/sillyghost/blockbook/blob/master/docs/api.md"
         }
     }
