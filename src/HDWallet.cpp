@@ -171,7 +171,9 @@ std::optional<PublicKey> HDWallet::getPublicKeyFromExtended(const std::string& e
 
 std::optional<PrivateKey> HDWallet::getPrivateKeyFromExtended(const std::string& extended, const DerivationPath& path) {
     const auto coin = path.coin();
+    std::cerr << "coin " << (int)coin << "\n";
     const auto curve = TW::curve(coin);
+    std::cerr << "curve " << (int)curve << "\n";
     const auto hasher = TW::base58Hasher(coin);
 
     auto node = HDNode{};
