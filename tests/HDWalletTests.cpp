@@ -35,7 +35,7 @@ TEST(HDWallet, privateKeyFromXPRV_Invalid) {
     ASSERT_FALSE(privateKey);
 }
 
-TEST(HDWallet, privateKeyFromXPRV_InvalidVersion) {
+TEST(HDWallet, privateKeyFromExtended_InvalidVersion) {
     {
         // Version bytes (first 4) are invalid, 0x00000000
         const std::string xprv = "11117pE7xwz2GARukXY8Vj2ge4ozfX4HLgy5ztnJXjr5btzJE8EbtPhZwrcPWAodW2aFeYiXkXjSxJYm5QrnhSKFXDgACcFdMqGns9VLqESCq3";
@@ -53,7 +53,9 @@ TEST(HDWallet, privateKeyFromXPRV_InvalidVersion) {
 TEST(HDWallet, privateKeyFromExtended_InvalidCurve) {
     // invalid coin & curve, should fail
     const std::string xprv = "xprv9yqEgpMG2KCjvotCxaiMkzmKJpDXz2xZi3yUe4XsURvo9DUbPySW1qRbdeDLiSxZt88hESHUhm2AAe2EqfWM9ucdQzH3xv1HoKoLDqHMK9n";
-    auto privateKey = HDWallet::getPrivateKeyFromExtended(xprv, DerivationPath(TWPurposeBIP44, (TWCoinType)123456, 0, 0, 0));
+    enum TWCoinType coinType = (enum TWCoinType)123456;
+    std::cerr << "coinType " << coinType << "\n";
+    auto privateKey = HDWallet::getPrivateKeyFromExtended(xprv, DerivationPath(TWPurposeBIP44, coinType, 0, 0, 0));
     ASSERT_FALSE(privateKey);
 }
 
