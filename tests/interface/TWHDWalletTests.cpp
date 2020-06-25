@@ -21,8 +21,10 @@
 #include <gtest/gtest.h>
 #include <thread>
 
-auto words = STRING("ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal");
-auto passphrase = STRING("TREZOR");
+const auto wordsStr = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
+const auto words = STRING(wordsStr);
+const auto seedHex = "7ae6f661157bda6492f6162701e570097fc726b6235011ea5ad09bf04986731ed4d92bc43cbdee047b60ea0dd1b1fa4274377c9bf5bd14ab1982c272d8076f29";
+const auto passphrase = STRING("TREZOR");
 
 auto valid = STRING("credit expect life fade cover suit response wash pear what skull force");
 auto invalidWord = STRING("ripple scissors hisc mammal hire column oak again sun offer wealth tomorrow");
@@ -30,14 +32,26 @@ auto invalidWord1 = STRING("high culture ostrich wrist exist ignore interest hyb
 auto invalidChecksum = STRING("ripple scissors kick mammal hire column oak again sun offer wealth tomorrow");
 auto invalidWordCount = STRING("credit expect life fade cover suit response wash what skull force");
 
-inline void assertSeedEq(std::shared_ptr<TWHDWallet>& wallet, const char* expected) {
-    auto seed = WRAPD(TWHDWalletSeed(wallet.get()));
+inline void assertSeedEq(const std::shared_ptr<TWHDWallet>& wallet, const char* expected) {
+    const auto seed = WRAPD(TWHDWalletSeed(wallet.get()));
     assertHexEqual(seed, expected);
 }
 
+inline void assertMnemonicEq(const std::shared_ptr<TWHDWallet>& wallet, const char* expected) {
+    const auto mnemonic = WRAPS(TWHDWalletMnemonic(wallet.get()));
+    assertStringsEqual(mnemonic, expected);
+}
+
+TEST(HDWallet, Mnemonic) {
+    const auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    assertSeedEq(wallet, seedHex);
+    assertMnemonicEq(wallet, wordsStr);
+}
+
 TEST(HDWallet, Seed) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
-    assertSeedEq(wallet, "7ae6f661157bda6492f6162701e570097fc726b6235011ea5ad09bf04986731ed4d92bc43cbdee047b60ea0dd1b1fa4274377c9bf5bd14ab1982c272d8076f29");
+    const auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithData(DATA("ba5821e8c356c05ba5f025d9532fe0f21f65d594").get(), passphrase.get()));
+    assertSeedEq(wallet, seedHex);
+    assertMnemonicEq(wallet, wordsStr);
 }
 
 TEST(HDWallet, IsValid) {
@@ -279,6 +293,12 @@ TEST(HDWallet, PublicKeyFromX) {
     assertHexEqual(data9, "03786c1d274f2c804ff9a57d8e7289c281d4aef15e17187ad9f9c3722d81a6ae66");
 }
 
+TEST(HDWallet, PublicKeyInvalid) {
+    auto xpub = STRING("xpub0000");
+    auto xpubAddr = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/145'/0'/0/0").get());
+    ASSERT_EQ(xpubAddr, nullptr);
+}
+
 TEST(HDWallet, PublicKeyFromY) {
     auto ypub = STRING("ypub6Ww3ibxVfGzLrAH1PNcjyAWenMTbbAosGNB6VvmSEgytSER9azLDWCxoJwW7Ke7icmizBMXrzBx9979FfaHxHcrArf3zbeJJJUZPf663zsP");
     auto ypubAddr3 = TWHDWalletGetPublicKeyFromExtended(ypub.get(), STRING("m/44'/0'/0'/0/3").get());
@@ -307,6 +327,35 @@ TEST(HDWallet, PublicKeyFromZ) {
     assertStringsEqual(address4, "bc1qm97vqzgj934vnaq9s53ynkyf9dgr05rargr04n");
 }
 
+TEST(HDWallet, PublicKeyFromExtended_NIST256p1) {
+    const auto xpub = STRING("xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj");
+    const auto xpubAddr = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/888'/0'/0/0").get())); // Neo
+    ASSERT_NE(xpubAddr.get(), nullptr);
+    auto data = WRAPD(TWPublicKeyData(xpubAddr.get()));
+    ASSERT_NE(data.get(), nullptr);
+    assertHexEqual(data, "03774c910fcf07fa96886ea794f0d5caed9afe30b44b83f7e213bb92930e7df4bd");
+}
+
+TEST(HDWallet, PublicKeyFromExtended_Negative) {
+    const auto xpub = STRING("xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj");
+    {   // Ed25519
+        const auto xpubAddr = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/501'/0'").get())); // Solana
+        EXPECT_EQ(xpubAddr.get(), nullptr);
+    }
+    {   // Ed25519Extended
+        const auto xpubAddr = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/1852'/1815'/0'/0/0").get())); // Cardano
+        EXPECT_EQ(xpubAddr.get(), nullptr);
+    }
+    {   // Ed25519Blake2bNano
+        const auto xpubAddr = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/165'/0'").get())); // Nano
+        EXPECT_EQ(xpubAddr.get(), nullptr);
+    }
+    {   // Curve25519
+        const auto xpubAddr = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/5741564'/0'/0'/0'").get())); // Waves
+        EXPECT_EQ(xpubAddr.get(), nullptr);
+    }
+}
+
 TEST(HDWallet, MultipleThreads) {
     auto passphrase = STRING("");
 
@@ -325,4 +374,11 @@ TEST(HDWallet, MultipleThreads) {
     th1.join();
     th2.join();
     th3.join();
+}
+
+TEST(HDWallet, GetKeyBIP44) {
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    const auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKeyBIP44(wallet.get(), TWCoinTypeBitcoin, 0, 0, 0));
+    const auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
+    assertHexEqual(privateKeyData, "1901b5994f075af71397f65bd68a9fff8d3025d65f5a2c731cf90f5e259d6aac");
 }

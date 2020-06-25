@@ -21,11 +21,47 @@ namespace TW {
 TEST(HDWallet, privateKeyFromXPRV) {
     const std::string xprv = "xprv9yqEgpMG2KCjvotCxaiMkzmKJpDXz2xZi3yUe4XsURvo9DUbPySW1qRbdeDLiSxZt88hESHUhm2AAe2EqfWM9ucdQzH3xv1HoKoLDqHMK9n";
     auto privateKey = HDWallet::getPrivateKeyFromExtended(xprv, DerivationPath(TWPurposeBIP44, TWCoinTypeBitcoinCash, 0, 0, 3));
+    ASSERT_TRUE(privateKey);
     auto publicKey = privateKey->getPublicKey(TWPublicKeyTypeSECP256k1);
     auto address = Bitcoin::CashAddress(publicKey);
 
     EXPECT_EQ(hex(publicKey.bytes), "025108168f7e5aad52f7381c18d8f880744dbee21dc02c15abe512da0b1cca7e2f");
     EXPECT_EQ(address.string(), "bitcoincash:qp3y0dyg6ya8nt4n3algazn073egswkytqs00z7rz4");
+}
+
+TEST(HDWallet, privateKeyFromXPRV_Invalid) {
+    const std::string xprv = "xprv9y0000";
+    auto privateKey = HDWallet::getPrivateKeyFromExtended(xprv, DerivationPath(TWPurposeBIP44, TWCoinTypeBitcoinCash, 0, 0, 3));
+    ASSERT_FALSE(privateKey);
+}
+
+TEST(HDWallet, privateKeyFromXPRV_InvalidVersion) {
+    {
+        // Version bytes (first 4) are invalid, 0x00000000
+        const std::string xprv = "11117pE7xwz2GARukXY8Vj2ge4ozfX4HLgy5ztnJXjr5btzJE8EbtPhZwrcPWAodW2aFeYiXkXjSxJYm5QrnhSKFXDgACcFdMqGns9VLqESCq3";
+        auto privateKey = HDWallet::getPrivateKeyFromExtended(xprv, DerivationPath(TWPurposeBIP44, TWCoinTypeBitcoinCash, 0, 0, 3));
+        ASSERT_FALSE(privateKey);
+    }
+    {
+        // Version bytes (first 4) are invalid, 0xdeadbeef
+        const std::string xprv = "pGoh3VZXR4mTkT4bfqj4paog12KmHkAWkdLY8HNsZagD1ihVccygLr1ioLBhVQsny47uEh5swP3KScFc4JJrazx1Y7xvzmH2y5AseLgVMwomBTg2";
+        auto privateKey = HDWallet::getPrivateKeyFromExtended(xprv, DerivationPath(TWPurposeBIP44, TWCoinTypeBitcoinCash, 0, 0, 3));
+        ASSERT_FALSE(privateKey);
+    }
+}
+
+TEST(HDWallet, privateKeyFromExtended_InvalidCurve) {
+    // invalid coin & curve, should fail
+    const std::string xprv = "xprv9yqEgpMG2KCjvotCxaiMkzmKJpDXz2xZi3yUe4XsURvo9DUbPySW1qRbdeDLiSxZt88hESHUhm2AAe2EqfWM9ucdQzH3xv1HoKoLDqHMK9n";
+    auto privateKey = HDWallet::getPrivateKeyFromExtended(xprv, DerivationPath(TWPurposeBIP44, (TWCoinType)123456, 0, 0, 0));
+    ASSERT_FALSE(privateKey);
+}
+
+TEST(HDWallet, privateKeyFromXPRV_Invalid45) {
+    // 45th byte is not 0
+    const std::string xprv = "xprv9yqEgpMG2KCjvotCxaiMkzmKJpDXz2xZi3yUe4XsURvo9DUbPySW1qRbhw2dJ8QexahgVSfkjxU4FgmN4GLGN3Ui8oLqC6433CeyPUNVHHh";
+    auto privateKey = HDWallet::getPrivateKeyFromExtended(xprv, DerivationPath(TWPurposeBIP44, TWCoinTypeBitcoinCash, 0, 0, 3));
+    ASSERT_FALSE(privateKey);
 }
 
 TEST(HDWallet, privateKeyFromMptv) {

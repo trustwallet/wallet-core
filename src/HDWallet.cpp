@@ -54,10 +54,11 @@ HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase)
 HDWallet::HDWallet(const Data& data, const std::string& passphrase)
     : seed(), mnemonic(), passphrase(passphrase) {
     std::array<char, HDWallet::maxMnemomincSize> mnemonic_chars;
-    mnemonic_from_data(data.data(), data.size(), mnemonic_chars.data());
-    mnemonic_to_seed(mnemonic_chars.data(), passphrase.c_str(), seed.data(), nullptr);
-    mnemonic = mnemonic_chars.data();
-    updateEntropy();
+    if (mnemonic_from_data(data.data(), data.size(), mnemonic_chars.data())) {
+        mnemonic_to_seed(mnemonic_chars.data(), passphrase.c_str(), seed.data(), nullptr);
+        mnemonic = mnemonic_chars.data();
+        updateEntropy();
+    }
 }
 
 HDWallet::~HDWallet() {
@@ -148,29 +149,21 @@ std::optional<PublicKey> HDWallet::getPublicKeyFromExtended(const std::string& e
     if (!deserialize(extended, curve, hasher, &node)) {
         return {};
     }
+    if (node.curve->params == nullptr) {
+        return {};
+    }
     hdnode_public_ckd(&node, path.change());
     hdnode_public_ckd(&node, path.address());
     hdnode_fill_public_key(&node);
 
-    switch (curve) {
-    case TWCurveSECP256k1:
+    // These public key type are not applicable.  Handled above, as node.curve->params is null
+    assert(curve != TWCurveED25519 && curve != TWCurveED25519Blake2bNano && curve != TWCurveED25519Extended && curve != TWCurveCurve25519);
+    if (curve == TWCurveSECP256k1) {
         return PublicKey(Data(node.public_key, node.public_key + 33), TWPublicKeyTypeSECP256k1);
-    case TWCurveED25519:
-        return PublicKey(Data(node.public_key, node.public_key + 33), TWPublicKeyTypeED25519);
-    case TWCurveED25519Blake2bNano:
-        return PublicKey(Data(node.public_key, node.public_key + 33), TWPublicKeyTypeED25519Blake2b);
-    case TWCurveED25519Extended:
-        {
-            // concatenate public key and chain code (2x32 bytes)
-            Data concat(node.public_key, node.public_key + 32);
-            append(concat, Data(node.chain_code, node.chain_code + 32));
-            return PublicKey(concat, TWPublicKeyTypeED25519Extended);
-        }
-    case TWCurveCurve25519:
-        return PublicKey(Data(node.public_key, node.public_key + 32), TWPublicKeyTypeCURVE25519);
-    case TWCurveNIST256p1:
+    } else if (curve == TWCurveNIST256p1) {
         return PublicKey(Data(node.public_key, node.public_key + 33), TWPublicKeyTypeNIST256p1);
     }
+    return {};
 }
 
 std::optional<PrivateKey> HDWallet::getPrivateKeyFromExtended(const std::string& extended, const DerivationPath& path) {
@@ -224,9 +217,14 @@ std::string serialize(const HDNode *node, uint32_t fingerprint, uint32_t version
     return Base58::bitcoin.encodeCheck(node_data, hasher);
 }
 
-bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher, HDNode *node) {
+bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher, HDNode* node) {
     memset(node, 0, sizeof(HDNode));
-    node->curve = get_curve_by_name(curveName(curve));
+    const char* curveNameStr = curveName(curve);
+    if (curveNameStr == nullptr || ::strlen(curveNameStr) == 0) {
+        return false;
+    }
+    node->curve = get_curve_by_name(curveNameStr);
+    assert(node->curve != nullptr);
 
     const auto node_data = Base58::bitcoin.decodeCheck(extended, hasher);
     if (node_data.size() != 78) {
@@ -292,8 +290,13 @@ const char* curveName(TWCurve curve) {
         return ED25519_NAME;
     case TWCurveED25519Blake2bNano:
         return ED25519_BLAKE2B_NANO_NAME;
+    case TWCurveED25519Extended:
+        return ED25519_CARDANO_NAME;
     case TWCurveNIST256p1:
         return NIST256P1_NAME;
+    case TWCurveCurve25519:
+        return CURVE25519_NAME;
+    case TWCurveNone:
     default:
         return "";
     }
