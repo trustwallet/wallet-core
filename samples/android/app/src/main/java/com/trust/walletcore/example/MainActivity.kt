@@ -77,10 +77,10 @@ class MainActivity : AppCompatActivity() {
         }.build()
         val input = Bitcoin.SigningInput.newBuilder().apply {
             this.amount = 600
-            this.hashType = BitcoinSigHashType.ALL.value().or(BitcoinSigHashType.FORK.value())
+            this.hashType = BitcoinSigHashType.ALL.value()
             this.toAddress = toAddress
             this.changeAddress = changeAddress
-            this.byteFee = 1
+            this.byteFee = 2
             this.coinType = coinBtc.value()
             this.addUtxo(utxo)
             this.addPrivateKey(ByteString.copyFrom(secretPrivateKeyBtc.data()))
