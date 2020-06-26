@@ -87,11 +87,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Calculate fee (plan a tranaction)
-        val plan = AnySigner.plan(input.build(), CoinType.BITCOIN, Bitcoin.TransactionPlan.parser())
+        val plan = AnySigner.plan(input.build(), coinBtc, Bitcoin.TransactionPlan.parser())
+        showLog("Planned fee:  ${plan.fee}  amount: ${plan.amount}  avail_amount: ${plan.availableAmount}  change: ${plan.change}")
 
         // Set the precomputed plan
         input.plan = plan
-        val output = AnySigner.sign(input.build(), CoinType.BITCOIN, Bitcoin.SigningOutput.parser())
+        input.amount = plan.amount
+
+        val output = AnySigner.sign(input.build(), coinBtc, Bitcoin.SigningOutput.parser())
 
         assert(output.error.isEmpty())
         val signedTransaction = output.encoded?.toByteArray()
