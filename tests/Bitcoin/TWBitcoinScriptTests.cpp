@@ -202,3 +202,25 @@ TEST(TWBitcoinScript, LockScriptForCashAddress) {
     auto scriptData2 = WRAPD(TWBitcoinScriptData(script2.get()));
     assertHexEqual(scriptData2, "76a9146cfa0e96c34fce09c0e4e671fcd43338c14812e588ac");
 }
+
+TEST(TWBitcoinSigHashType, HashTypeForCoin) {
+    EXPECT_EQ(TWBitcoinScriptHashTypeForCoin(TWCoinTypeBitcoin), TWBitcoinSigHashTypeAll);
+    EXPECT_EQ(TWBitcoinScriptHashTypeForCoin(TWCoinTypeLitecoin), TWBitcoinSigHashTypeAll);
+    EXPECT_EQ(TWBitcoinScriptHashTypeForCoin(TWCoinTypeZcash), TWBitcoinSigHashTypeAll);
+    EXPECT_EQ(TWBitcoinScriptHashTypeForCoin(TWCoinTypeBitcoinCash), (enum TWBitcoinSigHashType)((int)TWBitcoinSigHashTypeAll | (int)TWBitcoinSigHashTypeFork));
+    EXPECT_EQ(TWBitcoinScriptHashTypeForCoin(TWCoinTypeBitcoinGold), (enum TWBitcoinSigHashType)((int)TWBitcoinSigHashTypeAll | (int)TWBitcoinSigHashTypeForkBTG));
+}
+
+TEST(TWBitcoinSigHashType, IsSingle) {
+    EXPECT_TRUE(TWBitcoinSigHashTypeIsSingle(TWBitcoinSigHashTypeSingle));
+    EXPECT_FALSE(TWBitcoinSigHashTypeIsSingle(TWBitcoinSigHashTypeAll));
+    EXPECT_FALSE(TWBitcoinSigHashTypeIsSingle(TWBitcoinSigHashTypeNone));
+    EXPECT_FALSE(TWBitcoinSigHashTypeIsSingle(TWBitcoinSigHashTypeFork));
+}
+
+TEST(TWBitcoinSigHashType, IsNone) {
+    EXPECT_TRUE(TWBitcoinSigHashTypeIsNone(TWBitcoinSigHashTypeNone));
+    EXPECT_FALSE(TWBitcoinSigHashTypeIsNone(TWBitcoinSigHashTypeSingle));
+    EXPECT_FALSE(TWBitcoinSigHashTypeIsNone(TWBitcoinSigHashTypeAll));
+    EXPECT_FALSE(TWBitcoinSigHashTypeIsNone(TWBitcoinSigHashTypeFork));
+}

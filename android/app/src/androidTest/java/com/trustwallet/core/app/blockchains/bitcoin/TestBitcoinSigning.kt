@@ -6,6 +6,9 @@ import com.trustwallet.core.app.utils.toHexBytes
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
+import wallet.core.jni.BitcoinScript
+import wallet.core.jni.BitcoinSigHashType
+import wallet.core.jni.CoinType
 import wallet.core.jni.CoinType.BITCOIN
 import wallet.core.jni.proto.Bitcoin
 import wallet.core.jni.proto.Bitcoin.SigningOutput
@@ -20,7 +23,7 @@ class TestBitcoinSigning {
     fun testSignP2WPKH() {
         val input = Bitcoin.SigningInput.newBuilder()
             .setAmount(335_790_000)
-            .setHashType(0x01)
+            .setHashType(BitcoinScript.hashTypeForCoin(CoinType.BITCOIN).value())
             .setToAddress("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx")
             .setChangeAddress("1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU")
             .setByteFee(1)
@@ -84,7 +87,7 @@ class TestBitcoinSigning {
     fun testSignP2PKH() {
         val input = Bitcoin.SigningInput.newBuilder()
             .setAmount(55_000)
-            .setHashType(0x01)
+            .setHashType(BitcoinScript.hashTypeForCoin(CoinType.BITCOIN).value())
             .setToAddress("1GDCMHsTLBkawQXP8dqcZtr8zGgb4XpCug")
             .setChangeAddress("1CSR6tXqngr1CfwVF23V4bQotttJmzXqpf")
             .setByteFee(10)

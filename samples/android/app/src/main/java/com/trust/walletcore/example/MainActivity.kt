@@ -77,21 +77,24 @@ class MainActivity : AppCompatActivity() {
         }.build()
         val input = Bitcoin.SigningInput.newBuilder().apply {
             this.amount = 600
-            this.hashType = BitcoinSigHashType.ALL.value().or(BitcoinSigHashType.FORK.value())
+            this.hashType = BitcoinSigHashType.ALL.value()
             this.toAddress = toAddress
             this.changeAddress = changeAddress
-            this.byteFee = 1
+            this.byteFee = 2
             this.coinType = coinBtc.value()
             this.addUtxo(utxo)
             this.addPrivateKey(ByteString.copyFrom(secretPrivateKeyBtc.data()))
         }
 
         // Calculate fee (plan a tranaction)
-        val plan = AnySigner.plan(input.build(), CoinType.BITCOIN, Bitcoin.TransactionPlan.parser())
+        val plan = AnySigner.plan(input.build(), coinBtc, Bitcoin.TransactionPlan.parser())
+        showLog("Planned fee:  ${plan.fee}  amount: ${plan.amount}  avail_amount: ${plan.availableAmount}  change: ${plan.change}")
 
         // Set the precomputed plan
         input.plan = plan
-        val output = AnySigner.sign(input.build(), CoinType.BITCOIN, Bitcoin.SigningOutput.parser())
+        input.amount = plan.amount
+
+        val output = AnySigner.sign(input.build(), coinBtc, Bitcoin.SigningOutput.parser())
 
         assert(output.error.isEmpty())
         val signedTransaction = output.encoded?.toByteArray()

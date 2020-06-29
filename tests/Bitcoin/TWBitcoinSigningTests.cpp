@@ -9,6 +9,7 @@
 #include "Bitcoin/Transaction.h"
 #include "Bitcoin/TransactionBuilder.h"
 #include "Bitcoin/TransactionSigner.h"
+#include "Bitcoin/SigHashType.h"
 #include "Hash.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
@@ -33,7 +34,7 @@ Proto::SigningInput buildInputP2PKH(bool omitKey = false) {
 
     // Setup input
     Proto::SigningInput input;
-    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    input.set_hash_type(hashTypeForCoin(TWCoinTypeBitcoin));
     input.set_amount(335'790'000);
     input.set_byte_fee(1);
     input.set_to_address("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx");
@@ -426,7 +427,7 @@ Proto::SigningInput buildInputP2WSH(enum TWBitcoinSigHashType hashType, bool omi
 
 TEST(BitcoinSigning, SignP2WSH) {
     // Setup input
-    const auto input = buildInputP2WSH(TWBitcoinSigHashTypeAll);
+    const auto input = buildInputP2WSH(hashTypeForCoin(TWCoinTypeBitcoin));
 
     {
         // test plan (but do not reuse plan result)
@@ -638,7 +639,7 @@ TEST(BitcoinSigning, EncodeP2SH_P2WPKH) {
 Proto::SigningInput buildInputP2SH_P2WPKH(bool omitScript = false, bool omitKeys = false) {
     // Setup input
     Proto::SigningInput input;
-    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    input.set_hash_type(hashTypeForCoin(TWCoinTypeBitcoin));
     input.set_amount(200'000'000);
     input.set_byte_fee(1);
     input.set_to_address("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx");
@@ -965,7 +966,7 @@ TEST(BitcoinSigning, Plan_10input_MaxAmount) {
     }
 
     input.set_coin_type(TWCoinTypeBitcoin);
-    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    input.set_hash_type(hashTypeForCoin(TWCoinTypeBitcoin));
     input.set_use_max_amount(true);
     input.set_amount(2'000'000);
     input.set_byte_fee(1);
@@ -1006,7 +1007,7 @@ TEST(BitcoinSigning, Sign_LitecoinReal_a85f) {
     // Setup input
     Proto::SigningInput input;
     input.set_coin_type(coin);
-    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    input.set_hash_type(hashTypeForCoin(coin));
     input.set_amount(3'899'774);
     input.set_use_max_amount(true);
     input.set_byte_fee(1);
@@ -1077,7 +1078,7 @@ TEST(BitcoinSigning, PlanAndSign_LitecoinReal_8435) {
     // Setup input for Plan
     Proto::SigningInput input;
     input.set_coin_type(coin);
-    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    input.set_hash_type(hashTypeForCoin(coin));
     input.set_amount(1'200'000);
     input.set_use_max_amount(false);
     input.set_byte_fee(1);
