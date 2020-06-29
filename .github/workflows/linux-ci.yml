@@ -46,10 +46,6 @@ jobs:
         tools/coverage
     - name: Build sample app
       run: |
-        # lib was built with coverage on, to avoid rebuild and reuse that we also enable coverage here
-        pushd samples/app
-        cmake . -DWALLET_CORE=../../ -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON
-        popd
         tools/samples-build linux
       env:
         CC: /usr/bin/clang
