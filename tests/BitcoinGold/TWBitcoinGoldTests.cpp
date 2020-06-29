@@ -18,6 +18,7 @@
 #include "Bitcoin/Transaction.h"
 #include "Bitcoin/TransactionBuilder.h"
 #include "Bitcoin/TransactionSigner.h"
+#include "Bitcoin/SigHashType.h"
 #include "HexCoding.h"
 #include "../interface/TWTestUtilities.h"
 
@@ -69,7 +70,7 @@ TEST(TWBitcoinGoldTxGeneration, TxGeneration) {
     // Setup input
     Proto::SigningInput input;
     input.set_coin_type(TWCoinTypeBitcoinGold);
-    input.set_hash_type(TWBitcoinSigHashTypeAll | TWBitcoinSigHashTypeForkBTG);
+    input.set_hash_type(hashTypeForCoin(TWCoinTypeBitcoinGold));
     input.set_amount(amount);
     input.set_byte_fee(1);
     input.set_to_address("btg1qmd6x5awe4t5fjhgntv0pngzdwajjg250wxdcs0");

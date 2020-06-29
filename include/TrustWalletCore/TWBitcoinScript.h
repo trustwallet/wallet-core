@@ -10,6 +10,7 @@
 #include "TWData.h"
 #include "TWPublicKey.h"
 #include "TWCoinType.h"
+#include "TWBitcoinSigHashType.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -113,5 +114,9 @@ struct TWBitcoinScript *_Nonnull TWBitcoinScriptBuildPayToWitnessScriptHash(TWDa
 /// Builds a appropriate lock script for the given address.
 TW_EXPORT_STATIC_METHOD
 struct TWBitcoinScript *_Nonnull TWBitcoinScriptLockScriptForAddress(TWString *_Nonnull address, enum TWCoinType coin);
+
+// Return the default HashType for the given coin, such as TWBitcoinSigHashTypeAll.
+TW_EXPORT_STATIC_METHOD
+enum TWBitcoinSigHashType TWBitcoinScriptHashTypeForCoin(enum TWCoinType coinType);
 
 TW_EXTERN_C_END

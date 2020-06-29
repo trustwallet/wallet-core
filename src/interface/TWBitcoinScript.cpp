@@ -7,6 +7,7 @@
 #include <TrustWalletCore/TWBitcoinScript.h>
 
 #include "../Bitcoin/Script.h"
+#include "../Bitcoin/SigHashType.h"
 
 using namespace TW::Bitcoin;
 
@@ -145,4 +146,8 @@ struct TWBitcoinScript *_Nonnull TWBitcoinScriptLockScriptForAddress(TWString *_
     auto s = reinterpret_cast<const std::string*>(address);
     auto script = Script::lockScriptForAddress(*s, coin);
     return new TWBitcoinScript{ .impl = script };
+}
+
+enum TWBitcoinSigHashType TWBitcoinScriptHashTypeForCoin(enum TWCoinType coinType) {
+    return TW::Bitcoin::hashTypeForCoin(coinType);
 }
