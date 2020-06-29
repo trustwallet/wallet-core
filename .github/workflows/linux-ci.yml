@@ -47,3 +47,6 @@ jobs:
     - name: Build sample app
       run: |
         tools/samples-build linux
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
