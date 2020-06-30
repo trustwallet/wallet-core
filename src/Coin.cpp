@@ -52,7 +52,6 @@
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
 #include "Elrond/Entry.h"
-#include "XinFin/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
