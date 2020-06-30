@@ -13,12 +13,12 @@ class XinFinTests: XCTestCase {
     func testAddress() {
         // TODO: Check and finalize implementation
 
-        let key = PrivateKey(data: Data(hexString: "__PRIVATE_KEY_DATA__")!)!
+        let key = PrivateKey(data: Data(hexString: "861932c871f8a5181cfaa54ba6dbbd9f7fb9d41925021246c10c0d28f3b661c0")!)!
         let pubkey = key.getPublicKeyEd25519()
         let address = AnyAddress(publicKey: pubkey, coin: .xinfin)
-        let addressFromString = AnyAddress(string: "__ADDRESS_DATA__", coin: .xinfin)!
+        let addressFromString = AnyAddress(string: "xdccf808d69db8ddc8d5fc90bf2586074f328058082", coin: .xinfin)!
 
-        XCTAssertEqual(pubkey.data.hexString, "__EXPECTED_PUBKEY_DATA__")
+        XCTAssertEqual(pubkey.data.hexString, "xdccf808d69db8ddc8d5fc90bf2586074f328058082")
         XCTAssertEqual(address.description, addressFromString.description)
     }
 

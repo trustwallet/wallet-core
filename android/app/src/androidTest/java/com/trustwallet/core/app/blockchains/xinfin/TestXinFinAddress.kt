@@ -20,14 +20,13 @@ class TestXinFinAddress {
 
     @Test
     fun testAddress() {
-        // TODO: Check and finalize implementation
 
         val key = PrivateKey("861932c871f8a5181cfaa54ba6dbbd9f7fb9d41925021246c10c0d28f3b661c0".toHexByteArray())
         val pubkey = key.publicKeyEd25519
         val address = AnyAddress(pubkey, CoinType.XINFIN)
         val expected = AnyAddress("xdccf808d69db8ddc8d5fc90bf2586074f328058082", CoinType.XINFIN)
 
-        assertEquals(pubkey.data().toHex(), "0x__EXPECTED_PUBKEY_DATA__")
+        assertEquals(pubkey.data().toHex(), "xdc__EXPECTED_PUBKEY_DATA__")
         assertEquals(address.description(), expected.description())
     }
 }
