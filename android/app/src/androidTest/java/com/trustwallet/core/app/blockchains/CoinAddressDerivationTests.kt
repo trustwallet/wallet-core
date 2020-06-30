@@ -86,5 +86,7 @@ class CoinAddressDerivationTests {
         FILECOIN -> assertEquals("f1zzykebxldfcakj5wdb5n3n7priul522fnmjzori", address)
         ELROND -> assertEquals("erd1jfcy8aeru6vlx4fe6h3pc3vlpe2cnnur5zetxdhp879yagq7vqvs8na4f8", address)
         BANDCHAIN -> assertEquals("band1624hqgend0s3d94z68fyka2y5jak6vd7u0l50r", address)
+        XINFIN -> assertEquals("xdccf808d69db8ddc8d5fc90bf2586074f328058082", address)
+
     }
 }
