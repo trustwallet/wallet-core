@@ -23,4 +23,5 @@
 - [ ] Prefix PR title with `[WIP]` if necessary.
 - [ ] Add tests to cover changes as needed.
 - [ ] Update documentation as needed.
+- [ ] I have read the [guidelines](https://developer.trustwallet.com/wallet-core/newblockchain#integration-criteria) for adding a new blockchain
 - [ ] If there is a related Issue, mention it in the description (e.g. Fixes #<issue_number> ).
