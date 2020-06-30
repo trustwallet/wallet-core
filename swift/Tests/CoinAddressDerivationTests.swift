@@ -82,6 +82,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .tomoChain:
                     let expectedResult = "0xC74b6D8897cBa9A4b659d43fEF73C9cA852cE424"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .xinfin:
+                    let expectedResult = "xdccf808d69db8ddc8d5fc90bf2586074f328058082"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .tron:
                     let expectedResult = "TQ5NMqJjhpQGK7YJbESKtNCo86PJ89ujio"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)

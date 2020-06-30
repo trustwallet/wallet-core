@@ -95,6 +95,7 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeTheta));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeThunderToken));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeTomoChain));
+    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeXinFin));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeTron));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeVeChain));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeWanchain));
