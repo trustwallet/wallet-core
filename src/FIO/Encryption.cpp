@@ -16,6 +16,7 @@
 #include <TrezorCrypto/rand.h>
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/secp256k1.h>
+#include <TrustWalletCore/TWAESPaddingMode.h>
 
 #include <cassert>
 
@@ -44,7 +45,7 @@ Data Encryption::checkEncrypt(const Data& secret, const Data& message, Data& iv)
     TW::append(ivOrig, iv);
 
     // Encrypt. Padding is done (PKCS#7)
-    const Data C = Encrypt::AESCBCEncrypt(Ke, message, iv, Encrypt::PadWithPaddingSize);
+    const Data C = Encrypt::AESCBCEncrypt(Ke, message, iv, TWAESPaddingModePKCS7);
 
     // HMAC. Include in the HMAC input everything that impacts the decryption.
     Data hmacIn(0);
@@ -82,7 +83,7 @@ Data Encryption::checkDecrypt(const Data& secret, const Data& message) {
     }
 
     // Decrypt, unpadding is done
-    const Data unencrypted = Encrypt::AESCBCDecrypt(Ke, C, iv, Encrypt::PadWithPaddingSize);
+    const Data unencrypted = Encrypt::AESCBCDecrypt(Ke, C, iv, TWAESPaddingModePKCS7);
     return unencrypted;
 }
 

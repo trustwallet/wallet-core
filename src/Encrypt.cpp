@@ -11,10 +11,10 @@
 
 namespace TW::Encrypt {
 
-size_t paddingSize(size_t origSize, size_t blockSize, PaddingMode paddingMode) {
+size_t paddingSize(size_t origSize, size_t blockSize, TWAESPaddingMode paddingMode) {
     if (origSize % blockSize == 0) {
         // even blocks
-        if (paddingMode == PadWithPaddingSize) {
+        if (paddingMode == TWAESPaddingModePKCS7) {
             return blockSize;
         }
         return 0;
@@ -23,7 +23,7 @@ size_t paddingSize(size_t origSize, size_t blockSize, PaddingMode paddingMode) {
     return blockSize - origSize % blockSize;
 }
 
-Data AESCBCEncrypt(const Data& key, const Data& data, Data& iv, PaddingMode paddingMode) {
+Data AESCBCEncrypt(const Data& key, const Data& data, Data& iv, TWAESPaddingMode paddingMode) {
     aes_encrypt_ctx ctx;
     if (aes_encrypt_key(key.data(), static_cast<int>(key.size()), &ctx) == EXIT_FAILURE) {
         throw std::invalid_argument("Invalid key");
@@ -41,7 +41,7 @@ Data AESCBCEncrypt(const Data& key, const Data& data, Data& iv, PaddingMode padd
     // last block
     if (idx < resultSize) {
         uint8_t padded[blockSize] = {0};
-        if (paddingMode == PadWithPaddingSize) {
+        if (paddingMode == TWAESPaddingModePKCS7) {
             std::memset(padded, static_cast<int>(padding), blockSize);
         }
         std::memcpy(padded, data.data() + idx, data.size() - idx);
@@ -51,7 +51,7 @@ Data AESCBCEncrypt(const Data& key, const Data& data, Data& iv, PaddingMode padd
     return result;
 }
 
-Data AESCBCDecrypt(const Data& key, const Data& data, Data& iv, PaddingMode paddingMode) {
+Data AESCBCDecrypt(const Data& key, const Data& data, Data& iv, TWAESPaddingMode paddingMode) {
     const size_t blockSize = AES_BLOCK_SIZE;
     if (data.size() % blockSize != 0) {
         throw std::invalid_argument("Invalid data size");
@@ -68,7 +68,7 @@ Data AESCBCDecrypt(const Data& key, const Data& data, Data& iv, PaddingMode padd
         aes_cbc_decrypt(data.data() + i, result.data() + i, blockSize, iv.data(), &ctx);
     }
 
-    if (paddingMode == PadWithPaddingSize && result.size() > 0) {
+    if (paddingMode == TWAESPaddingModePKCS7 && result.size() > 0) {
         // need to remove padding
         assert(result.size() > 0);
         const byte paddingSize = result[result.size() - 1];

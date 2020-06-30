@@ -7,7 +7,7 @@
 import XCTest
 import TrustWalletCore
 
-class SlipTests: XCTestCase {
+class CoinTypeTests: XCTestCase {
 
     func testCoinType() {
         XCTAssertEqual(CoinType.bitcoin.rawValue, 0)
