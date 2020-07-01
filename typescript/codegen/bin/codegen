@@ -6,6 +6,9 @@ const prettier = require("prettier");
 
 const main = async () => {
     const coins = require('../../../coins.json')
+    coins.forEach((coin) => {
+        coin.slip44 = coin['derivationPath'].split('/')[2].replace('\'', '');
+    })
     await generateCoinType(coins);
 };
 
