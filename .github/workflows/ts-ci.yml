@@ -1,0 +1,33 @@
+name: Typescript CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: yarn install
+      working-directory: typescript
+    - run: yarn build
+      working-directory: typescript
+    - run: yarn test
+      working-directory: typescript
+    - name: Publish
+      run: |
+        echo "//npm.pkg.github.com/:_authToken=${TOKEN}" >> .npmrc
+        npm publish --verbose
+      working-directory: typescript
+      env:
+        TOKEN: ${{ secrets.GITHUB_TOKEN }}
