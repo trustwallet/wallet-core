@@ -8,6 +8,8 @@
 #include "Data.h"
 #include "HexCoding.h"
 
+#include <TrustWalletCore/TWAESPaddingMode.h>
+
 #include <gtest/gtest.h>
 
 using namespace TW::Encrypt;
@@ -20,24 +22,24 @@ inline void assertHexEqual(const Data& data, const char* expected) {
 }
 
 TEST(Encrypt, paddingSize) {
-    EXPECT_EQ(paddingSize(0, 16, PadWithZeros), 0);
-    EXPECT_EQ(paddingSize(1, 16, PadWithZeros), 15);
-    EXPECT_EQ(paddingSize(8, 16, PadWithZeros), 8);
-    EXPECT_EQ(paddingSize(15, 16, PadWithZeros), 1);
-    EXPECT_EQ(paddingSize(16, 16, PadWithZeros), 0);
-    EXPECT_EQ(paddingSize(17, 16, PadWithZeros), 15);
-    EXPECT_EQ(paddingSize(24, 16, PadWithZeros), 8);
-    EXPECT_EQ(paddingSize(31, 16, PadWithZeros), 1);
-    EXPECT_EQ(paddingSize(32, 16, PadWithZeros), 0);
-    EXPECT_EQ(paddingSize(0, 16, PadWithPaddingSize), 16);
-    EXPECT_EQ(paddingSize(1, 16, PadWithPaddingSize), 15);
-    EXPECT_EQ(paddingSize(8, 16, PadWithPaddingSize), 8);
-    EXPECT_EQ(paddingSize(15, 16, PadWithPaddingSize), 1);
-    EXPECT_EQ(paddingSize(16, 16, PadWithPaddingSize), 16);
-    EXPECT_EQ(paddingSize(17, 16, PadWithPaddingSize), 15);
-    EXPECT_EQ(paddingSize(24, 16, PadWithPaddingSize), 8);
-    EXPECT_EQ(paddingSize(31, 16, PadWithPaddingSize), 1);
-    EXPECT_EQ(paddingSize(32, 16, PadWithPaddingSize), 16);
+    EXPECT_EQ(paddingSize(0, 16, TWAESPaddingModeZero), 0);
+    EXPECT_EQ(paddingSize(1, 16, TWAESPaddingModeZero), 15);
+    EXPECT_EQ(paddingSize(8, 16, TWAESPaddingModeZero), 8);
+    EXPECT_EQ(paddingSize(15, 16, TWAESPaddingModeZero), 1);
+    EXPECT_EQ(paddingSize(16, 16, TWAESPaddingModeZero), 0);
+    EXPECT_EQ(paddingSize(17, 16, TWAESPaddingModeZero), 15);
+    EXPECT_EQ(paddingSize(24, 16, TWAESPaddingModeZero), 8);
+    EXPECT_EQ(paddingSize(31, 16, TWAESPaddingModeZero), 1);
+    EXPECT_EQ(paddingSize(32, 16, TWAESPaddingModeZero), 0);
+    EXPECT_EQ(paddingSize(0, 16, TWAESPaddingModePKCS7), 16);
+    EXPECT_EQ(paddingSize(1, 16, TWAESPaddingModePKCS7), 15);
+    EXPECT_EQ(paddingSize(8, 16, TWAESPaddingModePKCS7), 8);
+    EXPECT_EQ(paddingSize(15, 16, TWAESPaddingModePKCS7), 1);
+    EXPECT_EQ(paddingSize(16, 16, TWAESPaddingModePKCS7), 16);
+    EXPECT_EQ(paddingSize(17, 16, TWAESPaddingModePKCS7), 15);
+    EXPECT_EQ(paddingSize(24, 16, TWAESPaddingModePKCS7), 8);
+    EXPECT_EQ(paddingSize(31, 16, TWAESPaddingModePKCS7), 1);
+    EXPECT_EQ(paddingSize(32, 16, TWAESPaddingModePKCS7), 16);
 }
 
 TEST(Encrypt, AESCBCEncrypt) {
@@ -53,13 +55,13 @@ TEST(Encrypt, AESCBCEncryptWithPadding) {
     const Data message = TW::data("secret message");
     {
         Data iv = parse_hex("f300888ca4f512cebdc0020ff0f7224c");        
-        Data encrypted = AESCBCEncrypt(key, message, iv, PadWithPaddingSize);
+        Data encrypted = AESCBCEncrypt(key, message, iv, TWAESPaddingModePKCS7);
         assertHexEqual(encrypted, "7f896315e90e172bed65d005138f224d");
     }
     {
         // with no padding
         Data iv = parse_hex("f300888ca4f512cebdc0020ff0f7224c");        
-        Data encrypted = AESCBCEncrypt(key, message, iv, PadWithZeros);
+        Data encrypted = AESCBCEncrypt(key, message, iv, TWAESPaddingModeZero);
         assertHexEqual(encrypted, "11bcbfebb2db19fb5a5cbf458e0f699e");
     }
 }
@@ -77,7 +79,7 @@ TEST(Encrypt, AESCBCDecryptWithPadding) {
     {
         const Data encryptedPadded = parse_hex("7f896315e90e172bed65d005138f224d");
         Data iv = parse_hex("f300888ca4f512cebdc0020ff0f7224c");        
-        Data encrypted = AESCBCDecrypt(key, encryptedPadded, iv, PadWithPaddingSize);
+        Data encrypted = AESCBCDecrypt(key, encryptedPadded, iv, TWAESPaddingModePKCS7);
         assertHexEqual(encrypted, hex(TW::data("secret message")).c_str());
     }
     {

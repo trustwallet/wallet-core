@@ -6,17 +6,13 @@
 
 #pragma once
 
+#include <TrustWalletCore/TWAESPaddingMode.h>
 #include "Data.h"
 
 namespace TW::Encrypt {
 
-enum PaddingMode {
-    PadWithZeros = 0, // padding value is zero
-    PadWithPaddingSize // padding value is the number of padding bytes; for even size add an extra block (PKCS#7)
-};
-
 /// Determind needed padding size (used internally)
-size_t paddingSize(size_t origSize, size_t blockSize, PaddingMode paddingMode);
+size_t paddingSize(size_t origSize, size_t blockSize, TWAESPaddingMode paddingMode);
 
 /// Encrypts a block of data using AES in Cipher Block Chaining (CBC) mode.
 ///
@@ -25,7 +21,7 @@ size_t paddingSize(size_t origSize, size_t blockSize, PaddingMode paddingMode);
 /// \param iv initialization vector.
 /// \param paddingMode If PadWithZeroes (default), data is padded with 0's to even block size.
 ///                    If PadWithPaddingSize, pad value is padding size, and even size input is padded with an extra block.
-Data AESCBCEncrypt(const Data& key, const Data& data, Data& iv, PaddingMode paddingMode = PadWithZeros);
+Data AESCBCEncrypt(const Data& key, const Data& data, Data& iv, TWAESPaddingMode paddingMode = TWAESPaddingModeZero);
 
 /// Decrypts a block of data using AES in Cipher Block Chaining (CBC) mode.
 ///
@@ -34,7 +30,7 @@ Data AESCBCEncrypt(const Data& key, const Data& data, Data& iv, PaddingMode padd
 /// \param iv initialization vector.
 /// \param paddingMode If PadWithZeroes (default), padding is not removed.
 ///                    If PadWithPaddingSize, padding is removed.
-Data AESCBCDecrypt(const Data& key, const Data& data, Data& iv, PaddingMode paddingMode = PadWithZeros);
+Data AESCBCDecrypt(const Data& key, const Data& data, Data& iv, TWAESPaddingMode paddingMode = TWAESPaddingModeZero);
 
 /// Encrypts a block of data using AES in Counter (CTR) mode.
 ///
