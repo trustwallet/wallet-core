@@ -35,3 +35,6 @@ jobs:
       run: |
         tools/generate-files
         tools/android-test
+    - name: Build sample app
+      run: |
+        tools/samples-build android

@@ -52,5 +52,5 @@ gen-external-apklibs
 tn/trustnative.aar
 .idea/misc.xml
 
-gradle.properties
+#gradle.properties
 /app/src/main/play/listings/*
