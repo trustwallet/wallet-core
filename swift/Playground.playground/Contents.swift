@@ -19,4 +19,4 @@ func reverseHex(string: String) throws -> String {
     return Data(data.reversed()).hexString
 }
 
-try reverseHex(string: "0xdeadbeaf")
+try reverseHex(string: "0xdeadbeef")
