@@ -18,9 +18,47 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: yarn install
+    - run: npm ci
       working-directory: typescript
-    - run: yarn build
+    - name: Build and test
+      run: npm run build && npm test
       working-directory: typescript
-    - run: yarn test
-      working-directory: typescript
+    - name: Check if needed to publish
+      run: |
+        echo "::set-output name=publish::$(tools/check-version)"
+      env:
+        TOKEN: ${{secrets.GITHUB_TOKEN}}
+  
+  publish-npm:
+    needs: build
+    if: "build.steps.build.outputs.publish == true"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+          registry-url: https://registry.npmjs.org/
+      - name: Publish
+        run: |
+          npm ci && npm run build && npm publish
+        working-directory: typescript
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+
+  publish-gpr:
+    needs: build
+    if: "build.steps.build.outputs.publish == true"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+          registry-url: https://npm.pkg.github.com/
+      - name: Publish
+        run: |
+          npm ci && npm run build && npm publish
+        working-directory: typescript
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
