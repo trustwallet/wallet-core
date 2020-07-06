@@ -22,9 +22,11 @@ TEST(ElrondSerialization, SignableString) {
     message.set_sender("alice");
     message.set_receiver("bob");
     message.set_data("foobar");
+    message.set_chain_id("m1.0");
+    message.set_version(1);
 
     string jsonString = serializeTransaction(message);
-    ASSERT_EQ(R"({"nonce":42,"value":"43","receiver":"bob","sender":"alice","gasPrice":0,"gasLimit":0,"data":"foobar"})", jsonString);
+    ASSERT_EQ(R"({"nonce":42,"value":"43","receiver":"bob","sender":"alice","gasPrice":0,"gasLimit":0,"data":"foobar","chainID":"m1.0","version":1})", jsonString);
 }
 
 TEST(ElrondSerialization, SignableStringWithRealData) {
@@ -36,8 +38,10 @@ TEST(ElrondSerialization, SignableStringWithRealData) {
     message.set_gas_price(200000000000000);
     message.set_gas_limit(500000000);
     message.set_data("for dinner");
+    message.set_chain_id("m1.0");
+    message.set_version(1);
 
-    string expected = (boost::format(R"({"nonce":15,"value":"100","receiver":"%1%","sender":"%2%","gasPrice":200000000000000,"gasLimit":500000000,"data":"for dinner"})") % BOB_BECH32 % ALICE_BECH32).str();
+    string expected = (boost::format(R"({"nonce":15,"value":"100","receiver":"%1%","sender":"%2%","gasPrice":200000000000000,"gasLimit":500000000,"data":"for dinner","chainID":"m1.0","version":1})") % BOB_BECH32 % ALICE_BECH32).str();
     string actual = serializeTransaction(message);
     ASSERT_EQ(expected, actual);
 }
@@ -48,7 +52,9 @@ TEST(ElrondSerialization, SignableStringWithoutData) {
     message.set_value("43");
     message.set_sender("feed");
     message.set_receiver("abba");
+    message.set_chain_id("m1.0");
+    message.set_version(1);
 
     string jsonString = serializeTransaction(message);
-    ASSERT_EQ(R"({"nonce":42,"value":"43","receiver":"abba","sender":"feed","gasPrice":0,"gasLimit":0})", jsonString);
+    ASSERT_EQ(R"({"nonce":42,"value":"43","receiver":"abba","sender":"feed","gasPrice":0,"gasLimit":0,"chainID":"m1.0","version":1})", jsonString);
 }

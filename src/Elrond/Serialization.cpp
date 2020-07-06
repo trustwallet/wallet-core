@@ -21,7 +21,9 @@ std::map<string, int> fields_order {
     {"gasPrice", 5},
     {"gasLimit", 6},
     {"data", 7},
-    {"signature", 8}
+    {"chainID", 8},
+    {"version", 9},
+    {"signature", 10}
 };
 
 struct FieldsSorter {
@@ -47,6 +49,9 @@ sorted_json preparePayload(const Elrond::Proto::TransactionMessage& message) {
     if (!message.data().empty()) {
         payload["data"] = json(message.data());
     }
+
+    payload["chainID"] = json(message.chain_id());
+    payload["version"] = json(message.version());
 
     return payload;
 }
