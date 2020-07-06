@@ -33,6 +33,14 @@ jobs:
       env:
         TOKEN: ${{secrets.GITHUB_TOKEN}}
   
+  check-output:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check output
+        run: |
+          echo ${{ needs.build.outputs.publish }}
+          echo $(${{ needs.build.outputs.publish }} == true)
   publish-npm:
     needs: build
     if: ${{ needs.build.outputs.publish == true }}

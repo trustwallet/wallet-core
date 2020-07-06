@@ -1,8 +1,8 @@
 #!/bin/bash
 
 set -e
-
-VERSION=$(cat ../package.json | jq '.version')
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+VERSION=$(cat "$DIR/../package.json" | jq '.version')
 GHR_KEY_PATH='.data.repository.packages.edges[0].node.latestVersion.version'
 GHR_VERSION=$(curl -X "POST" "https://api.github.com/graphql" \
      -H "Authorization: Bearer $TOKEN" \
