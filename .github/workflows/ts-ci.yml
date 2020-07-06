@@ -32,34 +32,22 @@ jobs:
       working-directory: typescript
       env:
         TOKEN: ${{secrets.GITHUB_TOKEN}}
-  
-  check-output:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check output
-        run: |
-          echo ${{ needs.build.outputs.publish }}
-          if [ ${{ needs.build.outputs.publish }} = 'true' ]; then
-            echo "needs to publish"
-          fi
-  publish-npm:
-    needs: build
-    if: needs.build.outputs.publish == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 14
-          registry-url: https://registry.npmjs.org/
-      - name: Publish
-        run: |
-          yarn install && yarn build && npm publish
-        working-directory: typescript
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-
+  # publish-npm:
+  #   needs: build
+  #   if: needs.build.outputs.publish == 'true'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-node@v1
+  #       with:
+  #         node-version: 14
+  #         registry-url: https://registry.npmjs.org/
+  #     - name: Publish
+  #       run: |
+  #         yarn install && yarn build && npm publish
+  #       working-directory: typescript
+  #       env:
+  #         NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
   publish-gpr:
     needs: build
     if: needs.build.outputs.publish == 'true'
