@@ -40,10 +40,12 @@ jobs:
       - name: Check output
         run: |
           echo ${{ needs.build.outputs.publish }}
-          echo $(${{ needs.build.outputs.publish }} == true)
+          if [ ${{ needs.build.outputs.publish }} = 'true' ]; then
+            echo "needs to publish"
+          fi
   publish-npm:
     needs: build
-    if: ${{ needs.build.outputs.publish == true }}
+    if: needs.build.outputs.publish == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -60,7 +62,7 @@ jobs:
 
   publish-gpr:
     needs: build
-    if: ${{ needs.build.outputs.publish == true }}
+    if: needs.build.outputs.publish == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
