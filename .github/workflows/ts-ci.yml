@@ -28,12 +28,14 @@ jobs:
     - name: Check if needed to publish
       id: version
       run: |
-        echo "::set-output name=publish::$(tools/check-version)"
+        echo "::set-output name=publish_npm::$(tools/check-npm-version)"
+        echo "::set-output name=publish_gpr::$(tools/check-gpr-version)"
       working-directory: typescript
       env:
         TOKEN: ${{secrets.GITHUB_TOKEN}}
   publish-npm:
     needs: build
+    if: needs.build.outputs.publish_npm == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -49,7 +51,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
   publish-gpr:
     needs: build
-    if: needs.build.outputs.publish == 'true'
+    if: needs.build.outputs.publish_gpr == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
