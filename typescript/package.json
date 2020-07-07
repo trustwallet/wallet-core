@@ -1,6 +1,6 @@
 {
   "name": "@trustwallet/wallet-core",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "wallet core types and protobuf messages",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

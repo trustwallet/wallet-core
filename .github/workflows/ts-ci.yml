@@ -3,8 +3,12 @@ name: Typescript CI
 on:
   push:
     branches: [ master ]
+    paths:
+      - typescript/**
   pull_request:
     branches: [ master ]
+    paths:
+      - typescript/**
 
 jobs:
   build:
@@ -61,7 +65,7 @@ jobs:
           registry-url: https://npm.pkg.github.com/
       - name: Publish
         run: |
-          yarn install && yarn build && npm publish
+          yarn install && yarn build && npm publish --access public
         working-directory: typescript
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
