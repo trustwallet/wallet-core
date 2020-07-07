@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+VERSION=$(cat "$DIR/../package.json" | jq '.version')
+NPM_VERSION=\"$(npm view @trustwallet/wallet-core version)\"
+
+if [[ $VERSION != $NPM_VERSION ]]; then
+  echo true
+else
+  echo false
+fi

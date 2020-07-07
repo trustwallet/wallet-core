@@ -906,10 +906,10 @@
         "symbol": "IOTX",
         "decimals": 18,
         "blockchain": "IoTeX",
-        "hrp": "io",
         "derivationPath": "m/44'/304'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
+        "hrp": "io",
         "explorer": {
             "url": "https://iotexscan.io",
             "txPath": "/action/",
@@ -1119,10 +1119,10 @@
         "symbol": "ONE",
         "decimals": 18,
         "blockchain": "Harmony",
-        "hrp": "one",
         "derivationPath": "m/44'/1023'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
+        "hrp": "one",
         "explorer": {
             "url": "https://explorer.harmony.one",
             "txPath": "/#/tx/",

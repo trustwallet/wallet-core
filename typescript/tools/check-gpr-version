@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -e
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+VERSION=$(cat "$DIR/../package.json" | jq '.version')
+GHR_KEY_PATH='.data.repository.packages.edges[0].node.latestVersion.version'
+GHR_VERSION=$(curl -X "POST" "https://api.github.com/graphql" \
+     -H "Authorization: Bearer $TOKEN" \
+     -H 'Content-Type: application/json; charset=utf-8' \
+     -d $'{"query": "query { repository(owner: \\"trustwallet\\", name:\\"wallet-core\\") { name packages(names: \\"wallet-core\\", first: 1) { edges { node { name latestVersion { version summary } } } } } } "}' \
+     | jq $GHR_KEY_PATH)
+
+if [[ $VERSION != $GHR_VERSION ]]; then
+  echo true
+else
+  echo false
+fi
