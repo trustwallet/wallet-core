@@ -34,7 +34,6 @@ jobs:
         TOKEN: ${{secrets.GITHUB_TOKEN}}
   publish-npm:
     needs: build
-    if: needs.build.outputs.publish == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -44,7 +43,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - name: Publish
         run: |
-          yarn install && yarn build && npm publish
+          yarn install && yarn build && npm publish --access public
         working-directory: typescript
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
