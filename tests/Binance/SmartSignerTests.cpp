@@ -4,17 +4,23 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include <TrustWalletCore/TWAnySigner.h>
 #include "Ethereum/Signer.h"
 #include "Ethereum/Transaction.h"
 #include "Ethereum/Address.h"
 #include "Ethereum/RLP.h"
+#include "Ethereum/ABI.h"
+#include "proto/Ethereum.pb.h"
 #include "HexCoding.h"
+#include "uint256.h"
+#include "../interface/TWTestUtilities.h"
 
 #include <gtest/gtest.h>
 
 namespace TW::Binance {
 
 using namespace TW::Ethereum;
+using namespace TW::Ethereum::ABI;
 
 class SignerExposed : public Signer {
 public:
@@ -22,26 +28,66 @@ public:
     using Signer::hash;
 };
 
-TEST(BinanceSmartSigner, TokenTransfer) {
-    auto address = parse_hex("0x31BE00EB1fc8e14A696DBC72f746ec3e95f49683");
+const auto BSC_TestnetChainID = 97;
+
+TEST(BinanceSmartSigner, NativeTransfer) {
+    auto toAddress = parse_hex("0x31BE00EB1fc8e14A696DBC72f746ec3e95f49683");
     auto transaction = Transaction(
-        /* nonce: */ 1,
+        /* nonce: */ 0,
         /* gasPrice: */ 20000000000,
         /* gasLimit: */ 21000,
-        /* to: */ address,
+        /* to: */ toAddress,
         /* amount: */ 10000000000000000, // 0.01
         /* payload: */ {}
     );
 
     // addr: 0xB9F5771C27664bF2282D98E09D7F50cEc7cB01a7  mnemonic: isolate dismiss ... cruel note
-    auto key = PrivateKey(parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904"));
-    auto signer = SignerExposed(96); // BSC TESTNET
-    signer.sign(key, transaction);
+    auto privateKey = PrivateKey(parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904"));
+    auto signer = SignerExposed(BSC_TestnetChainID); // BSC TESTNET
+    signer.sign(privateKey, transaction);
 
     auto encoded = RLP::encode(transaction);
-    ASSERT_EQ(hex(encoded), "f86c018504a817c8008252089431be00eb1fc8e14a696dbc72f746ec3e95f49683872386f26fc100008081e3a0fa0996244e33efd24cf4e9d53c0e9389f9922cdaf8e5f96d83f4e85c09b31e44a0544b3fd834cd354809e96cd8181d454cb9f8ffa927d95cb522ae5c81f57a0ce2");
-    // 0xe1bc72a6a0e6183b889b23080137272e2a1c84affd187324544b2d943237c10c
-    // https://explorer.binance.org/smart-testnet/tx/0xe1bc72a6a0e6183b889b23080137272e2a1c84affd187324544b2d943237c10c
+    ASSERT_EQ(hex(encoded), "f86c808504a817c8008252089431be00eb1fc8e14a696dbc72f746ec3e95f49683872386f26fc100008081e5a057806b486844c5d0b7b5ce34b289f4e8776aa1fe24a3311cef5053995c51050ca07697aa0695de27da817625df0e7e4c64b0ab22d9df30aec92299a7b380be8db7");
+    // 0x6da28164f7b3bc255d749c3ae562e2a742be54c12bf1858b014cc2fe5700684e
+    // https://explorer.binance.org/smart-testnet/tx/0x6da28164f7b3bc255d749c3ae562e2a742be54c12bf1858b014cc2fe5700684e
+}
+
+TEST(BinanceSmartSigner, TokenTransfer) {
+    auto toAddress = parse_hex("0x31BE00EB1fc8e14A696DBC72f746ec3e95f49683");
+    auto func = Function("transfer", std::vector<std::shared_ptr<ParamBase>>{
+        std::make_shared<ParamAddress>(toAddress),
+        std::make_shared<ParamUInt256>(uint256_t(10000000000000000))
+    });
+    Data payloadFunction;
+    func.encode(payloadFunction);
+    EXPECT_EQ(hex(payloadFunction), "a9059cbb00000000000000000000000031be00eb1fc8e14a696dbc72f746ec3e95f49683000000000000000000000000000000000000000000000000002386f26fc10000");
+
+    auto input = Proto::SigningInput();
+    auto chainId = store(uint256_t(BSC_TestnetChainID));
+    auto nonce = store(uint256_t(30));
+    auto gasPrice = store(uint256_t(20000000000));
+    auto gasLimit = store(uint256_t(1000000));
+    auto tokenContractAddress = "0xed24fc36d5ee211ea25a80239fb8c4cfd80f12ee";
+    auto dummyAmount = store(uint256_t(0));
+    // addr: 0xB9F5771C27664bF2282D98E09D7F50cEc7cB01a7  mnemonic: isolate dismiss ... cruel note
+    auto privateKey = PrivateKey(parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904"));
+
+    input.set_chain_id(chainId.data(), chainId.size());
+    input.set_nonce(nonce.data(), nonce.size());
+    input.set_gas_price(gasPrice.data(), gasPrice.size());
+    input.set_gas_limit(gasLimit.data(), gasLimit.size());
+    input.set_to_address(tokenContractAddress);
+    input.set_payload(payloadFunction.data(), payloadFunction.size());
+    input.set_amount(dummyAmount.data(), dummyAmount.size());
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    const std::string expected = "f8ab1e8504a817c800830f424094ed24fc36d5ee211ea25a80239fb8c4cfd80f12ee80b844a9059cbb00000000000000000000000031be00eb1fc8e14a696dbc72f746ec3e95f49683000000000000000000000000000000000000000000000000002386f26fc1000081e6a0aa9d5e9a947e96f728fe5d3e6467000cd31a693c00270c33ec64b4abddc29516a00bf1d5646139b2bcca1ad64e6e79f45b7d1255de603b5a3765cbd9544ae148d0";
+
+    // sign test
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeEthereum);
+
+    EXPECT_EQ(hex(output.encoded()), expected);
 }
 
 } // namespace TW::Binance
