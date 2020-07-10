@@ -63,13 +63,10 @@ Projects using Trust Wallet Core.  Add yours too!
 [<img src="https://trustwallet.com/assets/images/trust_logotype.svg" alt="Trust Wallet"/>](https://trustwallet.com)
 
 [Coinpaprika](https://coinpaprika.com/)
-|
-[IFWallet](https://www.ifwallet.com/)
-|
-[Alice](https://www.alicedapp.com/)
-|
-[FrontierWallet](https://frontierwallet.com/)
-
+| [IFWallet](https://www.ifwallet.com/)
+| [crypto.com](https://crypto.com)
+| [Alice](https://www.alicedapp.com/)
+| [FrontierWallet](https://frontierwallet.com/)
 
 
 # Contributing
