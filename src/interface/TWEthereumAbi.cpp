@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWEthereumAbiEncoder.h>
+#include <TrustWalletCore/TWEthereumAbi.h>
 #include <TrustWalletCore/TWEthereumAbiFunction.h>
 
 #include "Ethereum/ABI.h"
@@ -21,23 +21,11 @@ using namespace TW::Ethereum;
 using namespace TW::Ethereum::ABI;
 
 /// Wrapper for C interface, empty as all methods are static
-struct TWEthereumAbiEncoder {
+struct TWEthereumAbi {
     //TW::Ethereum::ABI::Encoder impl;
 };
 
-struct TWEthereumAbiFunction *_Nullable TWEthereumAbiEncoderBuildFunction(TWString *_Nonnull name) {
-    auto func = Function(TWStringUTF8Bytes(name));
-    return new TWEthereumAbiFunction{ func };
-}
-
-void TWEthereumAbiEncoderDeleteFunction(struct TWEthereumAbiFunction *_Nonnull func_in) {
-    assert(func_in != nullptr);
-    delete func_in;
-}
-
-///// Encode & decode
-
-TWData*_Nonnull TWEthereumAbiEncoderEncode(struct TWEthereumAbiFunction *_Nonnull func_in) {
+TWData*_Nonnull TWEthereumAbiEncode(struct TWEthereumAbiFunction *_Nonnull func_in) {
     assert(func_in != nullptr);
     Function& function = func_in->impl;
 
@@ -46,7 +34,7 @@ TWData*_Nonnull TWEthereumAbiEncoderEncode(struct TWEthereumAbiFunction *_Nonnul
     return TWDataCreateWithData(&encoded);
 }
 
-bool TWEthereumAbiEncoderDecodeOutput(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull encoded) {
+bool TWEthereumAbiDecodeOutput(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull encoded) {
     assert(func_in != nullptr);
     Function& function = func_in->impl;
     assert(encoded != nullptr);
@@ -54,4 +42,14 @@ bool TWEthereumAbiEncoderDecodeOutput(struct TWEthereumAbiFunction *_Nonnull fun
 
     size_t offset = 0;
     return function.decodeOutput(encData, offset);
+}
+
+bool TWEthereumAbiDecodeInput(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull encoded) {
+    assert(func_in != nullptr);
+    Function& function = func_in->impl;
+    assert(encoded != nullptr);
+    Data encData = data(TWDataBytes(encoded), TWDataSize(encoded));
+
+    size_t offset = 0;
+    return function.decodeInput(encData, offset);
 }

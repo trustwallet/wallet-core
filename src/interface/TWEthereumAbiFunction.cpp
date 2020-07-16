@@ -19,7 +19,7 @@ using namespace TW;
 using namespace TW::Ethereum;
 using namespace TW::Ethereum::ABI;
 
-struct TWEthereumAbiFunction *_Nullable TWEthereumAbiFunctionCreateWithString(TWString *_Nonnull name) {
+struct TWEthereumAbiFunction *_Nonnull TWEthereumAbiFunctionCreateWithString(TWString *_Nonnull name) {
     auto func = Function(TWStringUTF8Bytes(name));
     return new TWEthereumAbiFunction{ func };
 }

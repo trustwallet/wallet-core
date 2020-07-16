@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWEthereumAbiEncoder.h>
+#include <TrustWalletCore/TWEthereumAbi.h>
 #include <TrustWalletCore/TWEthereumAbiFunction.h>
 #include <TrustWalletCore/TWString.h>
 
@@ -19,7 +19,7 @@
 namespace TW::Ethereum {
 
 TEST(TWEthereumAbi, FuncCreateEmpty) {
-    TWEthereumAbiFunction* func = TWEthereumAbiEncoderBuildFunction(TWStringCreateWithUTF8Bytes("baz"));
+    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(TWStringCreateWithUTF8Bytes("baz"));
     EXPECT_TRUE(func != nullptr);
 
     TWString* type = TWEthereumAbiFunctionGetType(func);
@@ -27,11 +27,11 @@ TEST(TWEthereumAbi, FuncCreateEmpty) {
     EXPECT_EQ("baz()", type2);
 
     // delete
-    TWEthereumAbiEncoderDeleteFunction(func);
+    TWEthereumAbiFunctionDelete(func);
 }
 
 TEST(TWEthereumAbi, FuncCreate1) {
-    TWEthereumAbiFunction* func = TWEthereumAbiEncoderBuildFunction(TWStringCreateWithUTF8Bytes("baz"));
+    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(TWStringCreateWithUTF8Bytes("baz"));
     EXPECT_TRUE(func != nullptr);
 
     auto p1index = TWEthereumAbiFunctionAddParamUInt64(func, 69, false);
@@ -47,11 +47,11 @@ TEST(TWEthereumAbi, FuncCreate1) {
     EXPECT_EQ("baz(uint64)", type2);
 
     // delete
-    TWEthereumAbiEncoderDeleteFunction(func);
+    TWEthereumAbiFunctionDelete(func);
 }
 
 TEST(TWEthereumAbi, FuncCreate2) {
-    TWEthereumAbiFunction* func = TWEthereumAbiEncoderBuildFunction(TWStringCreateWithUTF8Bytes("baz"));
+    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(TWStringCreateWithUTF8Bytes("baz"));
     EXPECT_TRUE(func != nullptr);
 
     TWString* p1valStr = TWStringCreateWithUTF8Bytes("0045");
@@ -74,11 +74,11 @@ TEST(TWEthereumAbi, FuncCreate2) {
     EXPECT_EQ("baz(uint256)", std::string(TWStringUTF8Bytes(type)));
 
     // delete
-    TWEthereumAbiEncoderDeleteFunction(func);
+    TWEthereumAbiFunctionDelete(func);
 }
 
 TEST(TWEthereumAbi, EncodeFuncCase1) {
-    TWEthereumAbiFunction* func = TWEthereumAbiEncoderBuildFunction(TWStringCreateWithUTF8Bytes("sam"));
+    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(TWStringCreateWithUTF8Bytes("sam"));
     EXPECT_TRUE(func != nullptr);
     
     EXPECT_EQ(0, TWEthereumAbiFunctionAddParamBytes(func, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("64617665")), false));
@@ -92,7 +92,7 @@ TEST(TWEthereumAbi, EncodeFuncCase1) {
     TWString* type = TWEthereumAbiFunctionGetType(func);
     EXPECT_EQ("sam(bytes,bool,uint256[])", std::string(TWStringUTF8Bytes(type)));
 
-    TWData* encoded = TWEthereumAbiEncoderEncode(func);
+    TWData* encoded = TWEthereumAbiEncode(func);
     Data enc2 = data(TWDataBytes(encoded), TWDataSize(encoded));
     EXPECT_EQ("a5643bf2"
         "0000000000000000000000000000000000000000000000000000000000000060"
@@ -107,11 +107,11 @@ TEST(TWEthereumAbi, EncodeFuncCase1) {
         hex(enc2));
 
     // delete
-    TWEthereumAbiEncoderDeleteFunction(func);
+    TWEthereumAbiFunctionDelete(func);
 }
 
 TEST(TWEthereumAbi, EncodeFuncCase2) {
-    TWEthereumAbiFunction* func = TWEthereumAbiEncoderBuildFunction(TWStringCreateWithUTF8Bytes("f"));
+    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(TWStringCreateWithUTF8Bytes("f"));
     EXPECT_TRUE(func != nullptr);
     
     EXPECT_EQ(0, TWEthereumAbiFunctionAddParamUInt256(func, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123")), false));
@@ -125,7 +125,7 @@ TEST(TWEthereumAbi, EncodeFuncCase2) {
     TWString* type = TWEthereumAbiFunctionGetType(func);
     EXPECT_EQ("f(uint256,uint32[],bytes10,string)", std::string(TWStringUTF8Bytes(type)));
 
-    TWData* encoded = TWEthereumAbiEncoderEncode(func);
+    TWData* encoded = TWEthereumAbiEncode(func);
     Data enc2 = data(TWDataBytes(encoded), TWDataSize(encoded));
     EXPECT_EQ("47b941bf"
         "0000000000000000000000000000000000000000000000000000000000000123"
@@ -140,12 +140,12 @@ TEST(TWEthereumAbi, EncodeFuncCase2) {
         hex(enc2));
 
     // delete
-    TWEthereumAbiEncoderDeleteFunction(func);
+    TWEthereumAbiFunctionDelete(func);
 }
 
 TEST(TWEthereumAbi, EncodeFuncMonster) {
     // Monster function with all parameters types
-    TWEthereumAbiFunction* func = TWEthereumAbiEncoderBuildFunction(TWStringCreateWithUTF8Bytes("monster"));
+    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(TWStringCreateWithUTF8Bytes("monster"));
     EXPECT_TRUE(func != nullptr);
     
     TWEthereumAbiFunctionAddParamUInt8(func, 1, false);
@@ -199,16 +199,16 @@ TEST(TWEthereumAbi, EncodeFuncMonster) {
         "uint8[],uint16[],uint32[],uint64[],uint168[],uint256[],int8[],int16[],int32[],int64[],int168[],int256[],bool[],string[],address[],bytes[],bytes5[])",
         std::string(TWStringUTF8Bytes(type)));
 
-    TWData* encoded = TWEthereumAbiEncoderEncode(func);
+    TWData* encoded = TWEthereumAbiEncode(func);
     Data enc2 = data(TWDataBytes(encoded), TWDataSize(encoded));
     EXPECT_EQ(4 + 76 * 32, enc2.size());
 
     // delete
-    TWEthereumAbiEncoderDeleteFunction(func);
+    TWEthereumAbiFunctionDelete(func);
 }
 
 TEST(TWEthereumAbi, DecodeOutputFuncCase1) {
-    TWEthereumAbiFunction* func = TWEthereumAbiEncoderBuildFunction(TWStringCreateWithUTF8Bytes("readout"));
+    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(TWStringCreateWithUTF8Bytes("readout"));
     EXPECT_TRUE(func != nullptr);
 
     TWEthereumAbiFunctionAddParamAddress(func, 
@@ -221,17 +221,17 @@ TEST(TWEthereumAbi, DecodeOutputFuncCase1) {
 
     // decode
     auto encoded = TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0000000000000000000000000000000000000000000000000000000000000045"));
-    EXPECT_EQ(true, TWEthereumAbiEncoderDecodeOutput(func, encoded));
+    EXPECT_EQ(true, TWEthereumAbiDecodeOutput(func, encoded));
 
     // new output value
     EXPECT_EQ(0x45, TWEthereumAbiFunctionGetParamUInt64(func, 0, true));
 
     // delete
-    TWEthereumAbiEncoderDeleteFunction(func);
+    TWEthereumAbiFunctionDelete(func);
 }
 
 TEST(TWEthereumAbi, GetParamWrongType) {
-    TWEthereumAbiFunction* func = TWEthereumAbiEncoderBuildFunction(TWStringCreateWithUTF8Bytes("func"));
+    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(TWStringCreateWithUTF8Bytes("func"));
     ASSERT_TRUE(func != nullptr);
     // add parameters
     EXPECT_EQ(0, TWEthereumAbiFunctionAddParamUInt8(func, 1, true));
@@ -258,7 +258,7 @@ TEST(TWEthereumAbi, GetParamWrongType) {
     EXPECT_EQ("", hex(*(static_cast<const Data*>(TWEthereumAbiFunctionGetParamAddress(func, 99, true)))));
 
     // delete
-    TWEthereumAbiEncoderDeleteFunction(func);
+    TWEthereumAbiFunctionDelete(func);
 }
 
 } // namespace TW::Ethereum
