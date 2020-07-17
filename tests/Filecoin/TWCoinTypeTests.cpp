@@ -27,8 +27,12 @@ TEST(TWFilecoinCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeFilecoin));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeFilecoin));
     assertStringsEqual(symbol, "FIL");
-    assertStringsEqual(txUrl, "https://filscan.io/#/message/detail?cid=bafy2bzacecbm3ofxjjzcl2rg32ninphza34mm3ijr55zjsamwfqmz4ib63mqe");
-    assertStringsEqual(accUrl, "https://filscan.io/#/address/detail?address=t1nbb73vhk5dtmnsgeaetbo76daepqjtrfoccn74i");
+    assertStringsEqual(txUrl,
+                       "https://filscan.io/#/message/"
+                       "detail?cid=bafy2bzacecbm3ofxjjzcl2rg32ninphza34mm3ijr55zjsamwfqmz4ib63mqe");
+    assertStringsEqual(
+        accUrl,
+        "https://filscan.io/#/address/detail?address=t1nbb73vhk5dtmnsgeaetbo76daepqjtrfoccn74i");
     assertStringsEqual(id, "filecoin");
     assertStringsEqual(name, "Filecoin");
 }

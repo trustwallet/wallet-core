@@ -13,6 +13,8 @@
 using namespace TW;
 using namespace TW::Filecoin;
 
+// clang-format off
+
 struct address_test {
     std::string encoded;
     const char* hex;

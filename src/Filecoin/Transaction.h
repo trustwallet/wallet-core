@@ -26,7 +26,7 @@ class Transaction {
     uint256_t value;
     // Miner fee
     uint256_t gasPrice;
-    uint256_t gasLimit;
+    int64_t gasLimit;
     // Transaction type; 0 for simple transfers
     uint64_t method;
     // Transaction data; empty for simple transfers
