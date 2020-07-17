@@ -4,7 +4,7 @@ import com.trustwallet.core.app.utils.toHexByteArray
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import com.trustwallet.core.app.utils.Numeric
-import wallet.core.jni.EthereumAbiValueDecoder
+import wallet.core.jni.EthereumAbiValue
 
 class TestEthereumAbiDecoder {
 
@@ -22,7 +22,7 @@ class TestEthereumAbiDecoder {
         )
         for (input in inputs) {
             val data = Numeric.hexStringToByteArray(input)
-            assertEquals(expected, EthereumAbiValueDecoder.decodeUInt256(data))
+            assertEquals(expected, EthereumAbiValue.decodeUInt256(data))
         }
     }
 }
