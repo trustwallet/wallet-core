@@ -204,11 +204,11 @@ TEST(TWBitcoinScript, LockScriptForCashAddress) {
 }
 
 TEST(TWBitcoinSigHashType, HashTypeForCoin) {
-    EXPECT_EQ(TWBitcoinScriptHashTypeForCoin(TWCoinTypeBitcoin), TWBitcoinSigHashTypeAll);
-    EXPECT_EQ(TWBitcoinScriptHashTypeForCoin(TWCoinTypeLitecoin), TWBitcoinSigHashTypeAll);
-    EXPECT_EQ(TWBitcoinScriptHashTypeForCoin(TWCoinTypeZcash), TWBitcoinSigHashTypeAll);
-    EXPECT_EQ(TWBitcoinScriptHashTypeForCoin(TWCoinTypeBitcoinCash), (enum TWBitcoinSigHashType)((int)TWBitcoinSigHashTypeAll | (int)TWBitcoinSigHashTypeFork));
-    EXPECT_EQ(TWBitcoinScriptHashTypeForCoin(TWCoinTypeBitcoinGold), (enum TWBitcoinSigHashType)((int)TWBitcoinSigHashTypeAll | (int)TWBitcoinSigHashTypeForkBTG));
+    EXPECT_EQ(TWBitcoinScriptHashTypeForCoin(TWCoinTypeBitcoin), (uint32_t)TWBitcoinSigHashTypeAll);
+    EXPECT_EQ(TWBitcoinScriptHashTypeForCoin(TWCoinTypeLitecoin), (uint32_t)TWBitcoinSigHashTypeAll);
+    EXPECT_EQ(TWBitcoinScriptHashTypeForCoin(TWCoinTypeZcash), (uint32_t)TWBitcoinSigHashTypeAll);
+    EXPECT_EQ(TWBitcoinScriptHashTypeForCoin(TWCoinTypeBitcoinCash), (uint32_t)TWBitcoinSigHashTypeAll | (uint32_t)TWBitcoinSigHashTypeFork);
+    EXPECT_EQ(TWBitcoinScriptHashTypeForCoin(TWCoinTypeBitcoinGold), (uint32_t)TWBitcoinSigHashTypeAll | (uint32_t)TWBitcoinSigHashTypeForkBTG);
 }
 
 TEST(TWBitcoinSigHashType, IsSingle) {
