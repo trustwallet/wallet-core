@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "TWBase.h"
-#include "TWString.h"
-#include "TWData.h"
+#include <TrustWalletCore/TWBase.h>
+#include <TrustWalletCore/TWString.h>
+#include <TrustWalletCore/TWData.h>
 
 // Wrapper class for Ethereum ABI encoding & decoding.  Also builder for Function objects.
 // See also TWEthereumAbiFunction.
