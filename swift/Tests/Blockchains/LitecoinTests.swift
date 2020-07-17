@@ -108,7 +108,7 @@ class LitecoinTests: XCTestCase {
         var input = BitcoinSigningInput.with {
             $0.toAddress = "ltc1qt36tu30tgk35tyzsve6jjq3dnhu2rm8l8v5q00"
             $0.changeAddress = address
-            $0.hashType = BitcoinSigHashType.all.rawValue
+            $0.hashType = BitcoinScript.hashTypeForCoin(coinType: .litecoin)
             $0.amount = 1200000
             $0.coinType = CoinType.litecoin.rawValue
             $0.byteFee = 1

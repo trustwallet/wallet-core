@@ -107,7 +107,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         let scriptHash = lockScript.matchPayToScriptHash()!
         let input = BitcoinSigningInput.with {
             $0.toAddress = "3NqULUrjZ7NL36YtBGsSVzqr5q1x9CJWwu"
-            $0.hashType = BitcoinSigHashType.all.rawValue
+            $0.hashType = BitcoinScript.hashTypeForCoin(coinType: .bitcoin)
             $0.coinType = CoinType.bitcoin.rawValue
             $0.scripts = [
                 scriptHash.hexString: BitcoinScript.buildPayToWitnessPubkeyHash(hash: pubkey.bitcoinKeyHash).data
