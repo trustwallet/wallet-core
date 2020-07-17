@@ -8,7 +8,7 @@ import Foundation
 
 /// Represents a hierarchical determinisic derivation path.
 public struct DerivationPath: Codable, Hashable, CustomStringConvertible {
-    let indexCount = 5
+    var indexCount = 5
 
     /// List of indices in the derivation path.
     public private(set) var indices = [Index]()

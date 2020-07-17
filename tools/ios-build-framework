@@ -34,7 +34,7 @@ function buildDevices() {
 
 function buildSimulators() {
     echo -e "\nBuilding for iOS Simulator..."
-    build "platform=iOS Simulator,name=iPhone 11,OS=13.3" "ios-sim"
+    build "platform=iOS Simulator,name=iPhone 11" "ios-sim"
 }
 
 function buildCatalyst() {
@@ -66,8 +66,8 @@ function buildXCFramework() {
 
 function main() {
     init
-    buildDevices
     buildSimulators
+    buildDevices
     buildCatalyst
     buildMac
     buildXCFramework
