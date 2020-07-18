@@ -37,11 +37,19 @@ const Data cidPrefix = {
 };
 
 Cbor::Encode Transaction::message() const {
-    return Cbor::Encode::array(
-        {Cbor::Encode::bytes(to.bytes), Cbor::Encode::bytes(from.bytes), Cbor::Encode::uint(nonce),
-         Cbor::Encode::bytes(encodeVaruint(value)), Cbor::Encode::bytes(encodeVaruint(gasPrice)),
-         Cbor::Encode::bytes(encodeVaruint(gasLimit)), Cbor::Encode::uint(0),
-         Cbor::Encode::bytes(Data())});
+    Cbor::Encode cborGasLimit = gasLimit >= 0 ? Cbor::Encode::uint((uint64_t)gasLimit)
+                                              : Cbor::Encode::negInt((uint64_t)(-gasLimit - 1));
+    return Cbor::Encode::array({
+        Cbor::Encode::uint(0),                        // version
+        Cbor::Encode::bytes(to.bytes),                // to address
+        Cbor::Encode::bytes(from.bytes),              // from address
+        Cbor::Encode::uint(nonce),                    // nonce
+        Cbor::Encode::bytes(encodeVaruint(value)),    // value
+        Cbor::Encode::bytes(encodeVaruint(gasPrice)), // gas price
+        cborGasLimit,                                 // gas limit
+        Cbor::Encode::uint(0),                        // abi.MethodNum (0 => send)
+        Cbor::Encode::bytes(Data())                   // data (empty)
+    });
 }
 
 Data Transaction::cid() const {

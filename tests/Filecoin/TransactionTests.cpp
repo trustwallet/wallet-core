@@ -27,10 +27,10 @@ TEST(FilecoinTransaction, Serialize) {
                    /*gasLimit*/ 50);
 
     ASSERT_EQ(hex(tx.message().encoded()),
-              "8855013d403ac3911e9f806228326fa68619d36a4641d455013d413d4c3fe3d89f99495a48c6046224a7"
-              "1f0cd71b0000001234567890430003e84200014200320040");
+              "890055013d403ac3911e9f806228326fa68619d36a4641d455013d413d4c3fe3"
+              "d89f99495a48c6046224a71f0cd71b0000001234567890430003e842000118320040");
     ASSERT_EQ(hex(tx.cid()),
-              "0171a0e4022020421f7d6207c9575803d5d96387c399acbf4bdac3026196cb4d423bc8966bb1");
+              "0171a0e40220bebd2d8facba996f5e04e7c64e1b0f088c63078263a4587b838ed3573419d743");
 }
 
 } // namespace TW::Filecoin

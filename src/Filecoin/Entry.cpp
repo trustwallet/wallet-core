@@ -14,11 +14,13 @@ using namespace std;
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
-bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
+bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW::byte,
+                            const char*) const {
     return Address::isValid(address);
 }
 
-string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
+string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte,
+                            const char*) const {
     return Address(publicKey).string();
 }
 
@@ -26,6 +28,6 @@ void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) con
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
-string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const { 
+string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const {
     return Signer::signJSON(json, key);
 }
