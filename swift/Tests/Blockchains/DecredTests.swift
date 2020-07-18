@@ -45,7 +45,7 @@ class DecredTests: XCTestCase {
         }
 
         let input = BitcoinSigningInput.with {
-            $0.hashType = BitcoinSigHashType.all.rawValue
+            $0.hashType = BitcoinScript.hashTypeForCoin(coinType: .decred)
             $0.amount = amount
             $0.byteFee = 1
             $0.toAddress = "Dsesp1V6DZDEtcq2behmBVKdYqKMdkh96hL"

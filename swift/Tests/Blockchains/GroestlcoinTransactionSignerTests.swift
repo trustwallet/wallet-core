@@ -14,7 +14,7 @@ class GroestlcoinTransactionSignerTests: XCTestCase {
 
     func testSignP2WPKH() throws {
         var input = BitcoinSigningInput.with {
-            $0.hashType = BitcoinSigHashType.all.rawValue
+            $0.hashType = BitcoinScript.hashTypeForCoin(coinType: .groestlcoin)
             $0.amount = 2500
             $0.byteFee = 1
             $0.toAddress = "31inaRqambLsd9D7Ke4USZmGEVd3PHkh7P"
@@ -67,7 +67,7 @@ class GroestlcoinTransactionSignerTests: XCTestCase {
 
     func testSignP2PKH() throws {
         var input = BitcoinSigningInput.with {
-            $0.hashType = BitcoinSigHashType.all.rawValue
+            $0.hashType = BitcoinScript.hashTypeForCoin(coinType: .groestlcoin)
             $0.amount = 2500
             $0.byteFee = 1
             $0.toAddress = "grs1qw4teyraux2s77nhjdwh9ar8rl9dt7zww8r6lne"
@@ -118,7 +118,7 @@ class GroestlcoinTransactionSignerTests: XCTestCase {
 
     func testSignP2SH_P2WPKH() throws {
         var input = BitcoinSigningInput.with {
-            $0.hashType = BitcoinSigHashType.all.rawValue
+            $0.hashType = BitcoinScript.hashTypeForCoin(coinType: .groestlcoin)
             $0.amount = 5000
             $0.byteFee = 1
             $0.toAddress = "Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM"

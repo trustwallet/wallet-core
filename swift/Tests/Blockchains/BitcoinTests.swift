@@ -15,7 +15,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
     func testSignP2WSH() throws {
         // set up input
         var input = BitcoinSigningInput.with {
-            $0.hashType = BitcoinScript.hashTypeForCoin(coinType: .bitcoin).rawValue
+            $0.hashType = BitcoinScript.hashTypeForCoin(coinType: .bitcoin)
             $0.amount = 1000
             $0.byteFee = 1
             $0.toAddress = "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx"
@@ -107,7 +107,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         let scriptHash = lockScript.matchPayToScriptHash()!
         let input = BitcoinSigningInput.with {
             $0.toAddress = "3NqULUrjZ7NL36YtBGsSVzqr5q1x9CJWwu"
-            $0.hashType = BitcoinSigHashType.all.rawValue
+            $0.hashType = BitcoinScript.hashTypeForCoin(coinType: .bitcoin)
             $0.coinType = CoinType.bitcoin.rawValue
             $0.scripts = [
                 scriptHash.hexString: BitcoinScript.buildPayToWitnessPubkeyHash(hash: pubkey.bitcoinKeyHash).data
@@ -120,5 +120,11 @@ class BitcoinTransactionSignerTests: XCTestCase {
 
         // https://blockchair.com/bitcoin/transaction/da2a9ce5d71ff7490bc9025e2888ca109b68ec0bd0e7d26195e1783305c00117
         XCTAssertEqual(output.encoded.hexString, "01000000000101a3c50b159e3c0e2b1ed0b1a1d95438f76700726d06a41a36eaa4d4c661485f8b00000000171600140a3cca78017f46ac23e463148adb7231aef81956ffffffff01ccab00000000000017a914e7f40472c54fc93078c5129568cf95c27be3b2c287024830450221008dc29a5430facd4078ad93e72517d87b298d7a73b55d2828acab040ccf713ed5022063a13e348655fa7cdcfff084380611629babf165607b529bcc35bf6ddfab1f8101210370386469db8302c3092955724f56bcca9a36f31df82655aa79be46b08744cd1200000000")
+    }
+
+    func testHashTypeForCoin() {
+        XCTAssertEqual(BitcoinScript.hashTypeForCoin(coinType: .bitcoin), TWBitcoinSigHashTypeAll.rawValue)
+        XCTAssertEqual(BitcoinScript.hashTypeForCoin(coinType: .bitcoinCash), 0x41)
+        XCTAssertEqual(BitcoinScript.hashTypeForCoin(coinType: .bitcoinGold), 0x4f41)
     }
 }

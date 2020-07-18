@@ -117,6 +117,6 @@ struct TWBitcoinScript *_Nonnull TWBitcoinScriptLockScriptForAddress(TWString *_
 
 // Return the default HashType for the given coin, such as TWBitcoinSigHashTypeAll.
 TW_EXPORT_STATIC_METHOD
-enum TWBitcoinSigHashType TWBitcoinScriptHashTypeForCoin(enum TWCoinType coinType);
+uint32_t TWBitcoinScriptHashTypeForCoin(enum TWCoinType coinType);
 
 TW_EXTERN_C_END

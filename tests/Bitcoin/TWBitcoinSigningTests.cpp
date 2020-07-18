@@ -391,7 +391,7 @@ TEST(BitcoinSigning, EncodeP2WSH) {
     );
 }
 
-Proto::SigningInput buildInputP2WSH(enum TWBitcoinSigHashType hashType, bool omitScript = false, bool omitKeys = false) {
+Proto::SigningInput buildInputP2WSH(uint32_t hashType, bool omitScript = false, bool omitKeys = false) {
     Proto::SigningInput input;
     input.set_hash_type(hashType);
     input.set_amount(1000);
@@ -462,7 +462,7 @@ TEST(BitcoinSigning, SignP2WSH) {
 
 TEST(BitcoinSigning, SignP2WSH_HashNone) {
     // Setup input
-    const auto input = buildInputP2WSH(TWBitcoinSigHashTypeNone);
+    const auto input = buildInputP2WSH((uint32_t)TWBitcoinSigHashTypeNone);
 
     {
         // test plan (but do not reuse plan result)
@@ -497,7 +497,7 @@ TEST(BitcoinSigning, SignP2WSH_HashNone) {
 
 TEST(BitcoinSigning, SignP2WSH_HashSingle) {
     // Setup input
-    const auto input = buildInputP2WSH(TWBitcoinSigHashTypeSingle);
+    const auto input = buildInputP2WSH((uint32_t)TWBitcoinSigHashTypeSingle);
 
     {
         // test plan (but do not reuse plan result)
@@ -532,7 +532,7 @@ TEST(BitcoinSigning, SignP2WSH_HashSingle) {
 
 TEST(BitcoinSigning, SignP2WSH_HashAnyoneCanPay) {
     // Setup input
-    const auto input = buildInputP2WSH(TWBitcoinSigHashTypeAnyoneCanPay);
+    const auto input = buildInputP2WSH((uint32_t)TWBitcoinSigHashTypeAnyoneCanPay);
 
     {
         // test plan (but do not reuse plan result)
@@ -567,7 +567,7 @@ TEST(BitcoinSigning, SignP2WSH_HashAnyoneCanPay) {
 }
 
 TEST(BitcoinSigning, SignP2WSH_NegativeMissingScript) {
-    const auto input = buildInputP2WSH(TWBitcoinSigHashTypeAll, true);
+    const auto input = buildInputP2WSH((uint32_t)TWBitcoinSigHashTypeAll, true);
 
     {
         // test plan (but do not reuse plan result)
@@ -583,7 +583,7 @@ TEST(BitcoinSigning, SignP2WSH_NegativeMissingScript) {
 }
 
 TEST(BitcoinSigning, SignP2WSH_NegativeMissingKeys) {
-    const auto input = buildInputP2WSH(TWBitcoinSigHashTypeAll, false, true);
+    const auto input = buildInputP2WSH((uint32_t)TWBitcoinSigHashTypeAll, false, true);
 
     {
         // test plan (but do not reuse plan result). Plan works even with missing keys.
@@ -600,7 +600,7 @@ TEST(BitcoinSigning, SignP2WSH_NegativeMissingKeys) {
 
 TEST(BitcoinSigning, SignP2WSH_NegativePlanWithNoUTXOs) {
     // Setup input
-    auto input = buildInputP2WSH(TWBitcoinSigHashTypeAll);
+    auto input = buildInputP2WSH((uint32_t)TWBitcoinSigHashTypeAll);
     auto plan = Bitcoin::TransactionPlan();
     input.mutable_plan()->clear_utxos();
 

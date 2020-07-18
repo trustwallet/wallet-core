@@ -148,6 +148,6 @@ struct TWBitcoinScript *_Nonnull TWBitcoinScriptLockScriptForAddress(TWString *_
     return new TWBitcoinScript{ .impl = script };
 }
 
-enum TWBitcoinSigHashType TWBitcoinScriptHashTypeForCoin(enum TWCoinType coinType) {
+uint32_t TWBitcoinScriptHashTypeForCoin(enum TWCoinType coinType) {
     return TW::Bitcoin::hashTypeForCoin(coinType);
 }

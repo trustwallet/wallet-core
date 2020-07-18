@@ -16,13 +16,13 @@ namespace TW::Bitcoin {
 static const uint8_t SigHashMask = 0x1f;
 
 // Return the default HashType for the given coin, such as TWBitcoinSigHashTypeAll.
-inline enum TWBitcoinSigHashType hashTypeForCoin(enum TWCoinType coinType) {
+inline uint32_t hashTypeForCoin(enum TWCoinType coinType) {
     // set fork hash type for BCH
     switch (coinType) {
         case TWCoinTypeBitcoinCash:
-            return (enum TWBitcoinSigHashType)((int)TWBitcoinSigHashTypeAll | (int)TWBitcoinSigHashTypeFork);
+            return (uint32_t)TWBitcoinSigHashTypeAll | (uint32_t)TWBitcoinSigHashTypeFork;
         case TWCoinTypeBitcoinGold:
-            return (enum TWBitcoinSigHashType)((int)TWBitcoinSigHashTypeAll | (int)TWBitcoinSigHashTypeForkBTG);
+            return (uint32_t)TWBitcoinSigHashTypeAll | (uint32_t)TWBitcoinSigHashTypeForkBTG;
         default:
             return TWBitcoinSigHashTypeAll;
     }
