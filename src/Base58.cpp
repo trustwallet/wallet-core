@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cassert>
 
 using namespace TW;
 

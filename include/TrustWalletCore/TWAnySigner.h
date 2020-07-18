@@ -5,10 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 #pragma once
 
-#include "TWBase.h"
-#include "TWCoinType.h"
-#include "TWData.h"
-#include "TWString.h"
+#include <TrustWalletCore/TWBase.h>
+#include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWData.h>
+#include <TrustWalletCore/TWString.h>
 
 TW_EXTERN_C_BEGIN
 

@@ -6,15 +6,15 @@
 
 #pragma once
 
-#include "TWBase.h"
-#include "TWCoinType.h"
-#include "TWCurve.h"
-#include "TWData.h"
-#include "TWHDVersion.h"
-#include "TWPrivateKey.h"
-#include "TWPublicKey.h"
-#include "TWPurpose.h"
-#include "TWString.h"
+#include <TrustWalletCore/TWBase.h>
+#include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWCurve.h>
+#include <TrustWalletCore/TWData.h>
+#include <TrustWalletCore/TWHDVersion.h>
+#include <TrustWalletCore/TWPrivateKey.h>
+#include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWPurpose.h>
+#include <TrustWalletCore/TWString.h>
 
 TW_EXTERN_C_BEGIN
 

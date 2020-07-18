@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "TWBase.h"
-#include "TWString.h"
-#include "TWCoinType.h"
+#include <TrustWalletCore/TWBase.h>
+#include <TrustWalletCore/TWString.h>
+#include <TrustWalletCore/TWCoinType.h>
 
 TW_EXTERN_C_BEGIN
 

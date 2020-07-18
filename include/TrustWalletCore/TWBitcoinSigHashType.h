@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "TWBase.h"
+#include <TrustWalletCore/TWBase.h>
 
 TW_EXTERN_C_BEGIN
 
