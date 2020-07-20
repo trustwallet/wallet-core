@@ -7,14 +7,15 @@
 #include <TrustWalletCore/TWEthereumAbi.h>
 #include <TrustWalletCore/TWEthereumAbiFunction.h>
 
-#include "Ethereum/ABI.h"
 #include "Data.h"
+#include "Ethereum/ABI.h"
+#include "Ethereum/ContractCall.h"
 #include "HexCoding.h"
-#include "../uint256.h"
+#include "uint256.h"
 
+#include <cassert>
 #include <string>
 #include <vector>
-#include <cassert>
 
 using namespace TW;
 using namespace TW::Ethereum;
@@ -22,10 +23,10 @@ using namespace TW::Ethereum::ABI;
 
 /// Wrapper for C interface, empty as all methods are static
 struct TWEthereumAbi {
-    //TW::Ethereum::ABI::Encoder impl;
+    // TW::Ethereum::ABI::Encoder impl;
 };
 
-TWData*_Nonnull TWEthereumAbiEncode(struct TWEthereumAbiFunction *_Nonnull func_in) {
+TWData* _Nonnull TWEthereumAbiEncode(struct TWEthereumAbiFunction* _Nonnull func_in) {
     assert(func_in != nullptr);
     Function& function = func_in->impl;
 
@@ -34,7 +35,8 @@ TWData*_Nonnull TWEthereumAbiEncode(struct TWEthereumAbiFunction *_Nonnull func_
     return TWDataCreateWithData(&encoded);
 }
 
-bool TWEthereumAbiDecodeOutput(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull encoded) {
+bool TWEthereumAbiDecodeOutput(struct TWEthereumAbiFunction* _Nonnull func_in,
+                               TWData* _Nonnull encoded) {
     assert(func_in != nullptr);
     Function& function = func_in->impl;
     assert(encoded != nullptr);
@@ -44,7 +46,8 @@ bool TWEthereumAbiDecodeOutput(struct TWEthereumAbiFunction *_Nonnull func_in, T
     return function.decodeOutput(encData, offset);
 }
 
-bool TWEthereumAbiDecodeInput(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull encoded) {
+bool TWEthereumAbiDecodeInput(struct TWEthereumAbiFunction* _Nonnull func_in,
+                              TWData* _Nonnull encoded) {
     assert(func_in != nullptr);
     Function& function = func_in->impl;
     assert(encoded != nullptr);
@@ -52,4 +55,20 @@ bool TWEthereumAbiDecodeInput(struct TWEthereumAbiFunction *_Nonnull func_in, TW
 
     size_t offset = 0;
     return function.decodeInput(encData, offset);
+}
+
+TWString* _Nullable TWEthereumAbiDecodeCall(TWData* _Nonnull callData, TWString* _Nonnull abiString) {
+    const Data& call = *(reinterpret_cast<const Data*>(callData));
+    const auto& jsonString = *reinterpret_cast<const std::string*>(abiString);
+    try {     
+        auto abi = nlohmann::json::parse(jsonString);
+        auto string = Ethereum::decodeCall(call, abi);
+        if (!string) {
+            return nullptr;
+        }
+        return TWStringCreateWithUTF8Bytes(string.value().c_str());   
+    }
+    catch(...) {
+        return nullptr;
+    }
 }

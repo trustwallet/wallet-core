@@ -12,8 +12,6 @@
 using namespace TW;
 using namespace TW::Ethereum::ABI;
 
-///// Util
-
 
 ///// Parameter types
 
