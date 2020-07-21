@@ -45,7 +45,7 @@ TEST(ElrondSigner, Sign) {
 
 TEST(ElrondSigner, SignJSON) {
     // Shuffle some fields, assume arbitrary order in the input
-    auto input = (boost::format(R"({"transaction" : {"data":"foo","value":"0","nonce":0,"receiver":"%1%","sender":"%2%","gasPrice":200000000000000,"gasLimit":500000000,"chainID":"m1.0","version":1}})") % BOB_BECH32 % ALICE_BECH32).str();
+    auto input = (boost::format(R"({"transaction" : {"data":"foo","value":"0","nonce":0,"receiver":"%1%","sender":"%2%","gasPrice":200000000000000,"gasLimit":500000000,"chainId":"m1.0","version":1}})") % BOB_BECH32 % ALICE_BECH32).str();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     
     auto encoded = Signer::signJSON(input, privateKey.bytes);
@@ -82,7 +82,7 @@ TEST(ElrondSigner, SignWithoutData) {
 
 TEST(ElrondSigner, SignJSONWithoutData) {
     // Shuffle some fields, assume arbitrary order in the input
-    auto input = (boost::format(R"({"transaction" : {"value":"0","nonce":0,"receiver":"%1%","sender":"%2%","gasPrice":200000000000000,"gasLimit":500000000,"chainID":"m1.0","version":1}})") % BOB_BECH32 % ALICE_BECH32).str();
+    auto input = (boost::format(R"({"transaction" : {"value":"0","nonce":0,"receiver":"%1%","sender":"%2%","gasPrice":200000000000000,"gasLimit":500000000,"chainId":"m1.0","version":1}})") % BOB_BECH32 % ALICE_BECH32).str();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     
     auto encoded = Signer::signJSON(input, privateKey.bytes);

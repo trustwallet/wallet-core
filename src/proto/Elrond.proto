@@ -18,7 +18,7 @@ message TransactionMessage {
     uint64      gas_price = 5;
     uint64      gas_limit = 6;
     string      data = 7;
-    string      chain_id = 8 [json_name = "chainID"];
+    string      chain_id = 8;
     uint32      version = 9;
 }
 

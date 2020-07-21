@@ -46,7 +46,7 @@ TEST(TWAnySignerElrond, Sign) {
 
 TEST(TWAnySignerElrond, SignJSON) {
     // Shuffle some fields, assume arbitrary order in the input
-    auto input = STRING((boost::format(R"({"transaction" : {"data":"foo","value":"0","nonce":0,"receiver":"%1%","sender":"%2%","gasPrice":200000000000000,"gasLimit":500000000,"chainID":"m1.0","version":1}})") % BOB_BECH32 % ALICE_BECH32).str().c_str());
+    auto input = STRING((boost::format(R"({"transaction" : {"data":"foo","value":"0","nonce":0,"receiver":"%1%","sender":"%2%","gasPrice":200000000000000,"gasLimit":500000000,"chainId":"m1.0","version":1}})") % BOB_BECH32 % ALICE_BECH32).str().c_str());
     auto privateKey = DATA(ALICE_SEED_HEX);
     auto encoded = WRAPS(TWAnySignerSignJSON(input.get(), privateKey.get(), TWCoinTypeElrond));
     auto expectedSignature = "fd77f627294c2cad3c4b0c761cad70e886fa1cfd119803caa2bcbc2d5ed3518df3e7531de9daa8ab47b278ac97a0cca5797868bdaba759845ce8c2c91162c30f";
