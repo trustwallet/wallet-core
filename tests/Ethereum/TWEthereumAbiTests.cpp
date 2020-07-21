@@ -272,4 +272,15 @@ TEST(TWEthereumAbi, DecodeCall) {
     assertStringsEqual(decoded, expected);
 }
 
+TEST(TWEthereumAbi, DecodeInvalidCall) {
+    auto callHex = STRING("c47f002700");
+    auto call = WRAPD(TWDataCreateWithHexString(callHex.get()));
+
+    auto decoded1 = TWEthereumAbiDecodeCall(call.get(), STRING(",,").get());
+    auto decoded2 = TWEthereumAbiDecodeCall(call.get(), STRING("{}").get());
+
+    EXPECT_TRUE(decoded1 == nullptr);
+    EXPECT_TRUE(decoded2 == nullptr);
+}
+
 } // namespace TW::Ethereum
