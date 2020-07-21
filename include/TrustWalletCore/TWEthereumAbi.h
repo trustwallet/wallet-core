@@ -27,10 +27,6 @@ TWData* _Nonnull TWEthereumAbiEncode(struct TWEthereumAbiFunction* _Nonnull fn);
 TW_EXPORT_STATIC_METHOD
 bool TWEthereumAbiDecodeOutput(struct TWEthereumAbiFunction* _Nonnull fn, TWData* _Nonnull encoded);
 
-/// Decode function input from Eth ABI binary, fill input parameters
-TW_EXPORT_STATIC_METHOD
-bool TWEthereumAbiDecodeInput(struct TWEthereumAbiFunction* _Nonnull fn, TWData* _Nonnull encoded);
-
 /// Decode function call data to human readable json format, according to input abi json
 TW_EXPORT_STATIC_METHOD
 TWString* _Nullable TWEthereumAbiDecodeCall(TWData* _Nonnull data, TWString* _Nonnull abi);

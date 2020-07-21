@@ -106,6 +106,6 @@ TEST(ContractCall, SetString) {
 }
 
 TEST(ContractCall, Invalid) {
-    EXPECT_FALSE(decodeCall(Data(), "").has_value());
-    EXPECT_FALSE(decodeCall(parse_hex("0xa22cb465"), "").has_value());
+    EXPECT_FALSE(decodeCall(Data(), "{}").has_value());
+    EXPECT_FALSE(decodeCall(parse_hex("0xa22cb46500"), "{}").has_value());
 }

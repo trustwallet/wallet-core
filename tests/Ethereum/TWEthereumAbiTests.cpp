@@ -13,6 +13,7 @@
 #include "HexCoding.h"
 #include "uint256.h"
 
+#include "../interface/TWTestUtilities.h"
 #include <gtest/gtest.h>
 #include <string>
 
@@ -259,6 +260,16 @@ TEST(TWEthereumAbi, GetParamWrongType) {
 
     // delete
     TWEthereumAbiFunctionDelete(func);
+}
+
+TEST(TWEthereumAbi, DecodeCall) {
+    auto callHex = STRING("c47f0027000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000086465616462656566000000000000000000000000000000000000000000000000");
+    auto call = WRAPD(TWDataCreateWithHexString(callHex.get()));
+    auto abi = STRING(R"|({"c47f0027":{"constant":false,"inputs":[{"name":"name","type":"string"}],"name":"setName","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}})|");
+    auto decoded = WRAPS(TWEthereumAbiDecodeCall(call.get(), abi.get()));
+    auto expected = R"|({"function":"setName(string)","inputs":[{"name":"name","type":"string","value":"deadbeef"}]})|";
+
+    assertStringsEqual(decoded, expected);
 }
 
 } // namespace TW::Ethereum

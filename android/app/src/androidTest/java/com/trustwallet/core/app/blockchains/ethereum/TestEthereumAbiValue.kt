@@ -68,4 +68,18 @@ class TestEthereumAbiEncoder {
         val data = EthereumAbiValue.encodeInt32(69)
         assertEquals(Numeric.toHexString(data), "0x0000000000000000000000000000000000000000000000000000000000000045")
     }
+
+    @Test
+    fun testEthereumAbiValueDecodeUInt256() {
+        val expected = "1234567890987654321"
+        val inputs = listOf(
+            "112210f4b16c1cb1",
+            "000000000000000000000000000000000000000000000000112210f4b16c1cb1",
+            "000000000000000000000000000000000000000000000000112210f4b16c1cb10000000000000000000000000000000000000000000000000000000000000000"
+        )
+        for (input in inputs) {
+            val data = Numeric.hexStringToByteArray(input)
+            assertEquals(expected, EthereumAbiValue.decodeUInt256(data))
+        }
+    }
 }

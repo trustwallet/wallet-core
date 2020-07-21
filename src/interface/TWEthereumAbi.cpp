@@ -46,17 +46,6 @@ bool TWEthereumAbiDecodeOutput(struct TWEthereumAbiFunction* _Nonnull func_in,
     return function.decodeOutput(encData, offset);
 }
 
-bool TWEthereumAbiDecodeInput(struct TWEthereumAbiFunction* _Nonnull func_in,
-                              TWData* _Nonnull encoded) {
-    assert(func_in != nullptr);
-    Function& function = func_in->impl;
-    assert(encoded != nullptr);
-    Data encData = data(TWDataBytes(encoded), TWDataSize(encoded));
-
-    size_t offset = 0;
-    return function.decodeInput(encData, offset);
-}
-
 TWString* _Nullable TWEthereumAbiDecodeCall(TWData* _Nonnull callData, TWString* _Nonnull abiString) {
     const Data& call = *(reinterpret_cast<const Data*>(callData));
     const auto& jsonString = *reinterpret_cast<const std::string*>(abiString);
