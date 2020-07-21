@@ -11,7 +11,7 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Ethereum;
+using namespace TW::Ethereum::ABI;
 
 extern std::string TESTS_ROOT;
 

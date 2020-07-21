@@ -11,11 +11,10 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <iostream>
 
-using namespace TW;
-using namespace TW::Ethereum::ABI;
 using namespace std;
-
 using json = nlohmann::json;
+
+namespace TW::Ethereum::ABI {
 
 static void fillArray(Function& func, const string& type) {
     auto param = make_shared<ParamArray>();
@@ -27,7 +26,7 @@ static void fillArray(Function& func, const string& type) {
 
 static void fill(Function& func, const string& type) {
     if (boost::algorithm::ends_with(type, "[]")) {
-        return fillArray(func, type);
+        fillArray(func, type);
     } else {
         auto param = ParamFactory::make(type);
         func.addParam(param, false);
@@ -74,7 +73,7 @@ static json buildInputs(Function& func, const json& registry) {
     return inputs;
 }
 
-optional<string> Ethereum::decodeCall(const Data& call, const json& abi) {
+optional<string> decodeCall(const Data& call, const json& abi) {
     // check bytes length
     if (call.size() <= 4) {
         return {};
@@ -107,3 +106,5 @@ optional<string> Ethereum::decodeCall(const Data& call, const json& abi) {
     };
     return decoded.dump();
 }
+
+} // namespace TW::Ethereum::ABI
