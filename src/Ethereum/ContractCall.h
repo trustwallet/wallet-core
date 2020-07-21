@@ -7,9 +7,9 @@
 #pragma once
 
 #include "Data.h"
-#include <string>
-#include <optional>
 #include <nlohmann/json.hpp>
+#include <optional>
+#include <string>
 
 namespace TW::Ethereum {
     std::optional<std::string> decodeCall(const Data& call, const nlohmann::json& abi);

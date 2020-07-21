@@ -6,85 +6,104 @@
 
 #include "ContractCall.h"
 #include "ABI.h"
-#include "ABI/ParamAddress.h"
 #include "HexCoding.h"
 #include "uint256.h"
+#include <boost/algorithm/string/predicate.hpp>
 #include <iostream>
 
 using namespace TW;
-using namespace TW::Ethereum;
+using namespace TW::Ethereum::ABI;
+using namespace std;
 
-static void fill(ABI::Function& func, const std::string& type) {
-    if (type == "address") {
-        auto param = std::make_shared<ABI::ParamAddress>();
-        func.addParam(param, false);
-    } else if (type == "uint256") {
-        auto param = std::make_shared<ABI::ParamUInt256>();
-        func.addParam(param, false);
-    } else if (type == "bool") {
-        auto param = std::make_shared<ABI::ParamBool>();
-        func.addParam(param, false);
-    } else if (type == "bytes") {
-        auto param = std::make_shared<ABI::ParamByteArray>();
-        func.addParam(param, false);
-    } else if (type == "address[]") {
-        auto param = std::make_shared<ABI::ParamArray>();
-        param->addParam(std::make_shared<ABI::ParamAddress>());
+using json = nlohmann::json;
+
+static void fillArray(Function& func, const string& type) {
+    auto param = make_shared<ParamArray>();
+    auto baseType = string(type.begin(), type.end() - 2);
+    auto value = ParamFactory::make(baseType);
+    param->addParam(value);
+    func.addParam(param, false);
+}
+
+static void fill(Function& func, const string& type) {
+    if (boost::algorithm::ends_with(type, "[]")) {
+        return fillArray(func, type);
+    } else {
+        auto param = ParamFactory::make(type);
         func.addParam(param, false);
     }
 }
 
-static std::string getValue(ABI::Function& func, const std::string& type, int idx) {
-    std::shared_ptr<ABI::ParamBase> param;
+static vector<string> getArrayValue(Function& func, const string& type, int idx) {
+    auto baseType = string(type.begin(), type.end() - 2);
+    shared_ptr<ParamBase> param;
     func.getInParam(idx, param);
-    if (type == "address") {
-        auto value = std::dynamic_pointer_cast<ABI::ParamAddress>(param);
-        if (value == nullptr) {
-            return "";
-        }
-        return hex(value->getData());
-    } else if (type == "uint256") {
-        auto value = std::dynamic_pointer_cast<ABI::ParamUInt256>(param);
-        if (value == nullptr) {
-            return "0";
-        }
-        return (toString(value->getVal()));
-    } else if (type == "bool") {
-        auto value = std::dynamic_pointer_cast<ABI::ParamBool>(param);
-        if (value == nullptr) {
-            return "false";
-        }
-        return value->getVal() ? "true" : "false";
-    } else if (type == "bytes") {
-        // FIXME
-        return "";
-    } else if (type == "address[]") {
-        // FIXME
-        return "";
+    auto array = dynamic_pointer_cast<ParamArray>(param);
+    auto count = array->getCount();
+    auto result = vector<string>();
+    for (int i = 0; i < count; i++) {
+        result.push_back(ParamFactory::getValue(array->getParam(i), baseType));
     }
-    return "";
+    return result;
 }
 
-std::optional<std::string> Ethereum::decodeCall(const Data& call, const nlohmann::json& abi) {
+static string getValue(Function& func, const string& type, int idx) {
+    shared_ptr<ParamBase> param;
+    func.getInParam(idx, param);
+    return ParamFactory::getValue(param, type);
+}
+
+static json buildInputs(Function& func, const json& registry) {
+    auto inputs = json::array();
+    for (int i = 0; i < registry["inputs"].size(); i++) {
+        auto info = registry["inputs"][i];
+        auto type = info["type"];
+        auto input = json{
+            {"name", info["name"]},
+            {"type", type}
+        };
+        if (boost::algorithm::ends_with(type.get<string>(), "[]")) {
+            input["value"] = json(getArrayValue(func, type, i));
+        } else if (type == "bool") {
+            input["value"] = getValue(func, type, i) == "true" ? json(true) : json(false);
+        } else {
+            input["value"] = getValue(func, type, i);
+        }
+        inputs.push_back(input);
+    }
+    return inputs;
+}
+
+optional<string> Ethereum::decodeCall(const Data& call, const json& abi) {
+    // check bytes length
     if (call.size() <= 4) {
         return {};
     }
-    auto prefix = hex(Data(call.begin(), call.begin() + 4));
-    if (abi[prefix] == nullptr) {
+
+    auto methodId = hex(Data(call.begin(), call.begin() + 4));
+
+    if (abi.find(methodId) == abi.end()) {
         return {};
     }
-    auto info = abi[prefix];
-    auto func = ABI::Function(info["name"]);
-    for (auto& input : info["inputs"]) {
+
+    // build Function with types
+    const auto registry = abi[methodId];
+    auto func = Function(registry["name"]);
+    for (auto& input : registry["inputs"]) {
         fill(func, input["type"]);
     }
+
+    // decode inputs
     size_t offset = 0;
-    auto result = func.decodeInput(call, offset);
-    if (!result) {
+    auto success = func.decodeInput(call, offset);
+    if (!success) {
         return {};
     }
-    for (int i = 0; i < info["inputs"].size(); i++) {
-        std::cout<<getValue(func, info["inputs"][i]["type"], i)<<std::endl;
-    }
-    return "";
+
+    // build output json
+    auto decoded = json{
+        {"function", func.getType()},
+        {"inputs", buildInputs(func, registry)},
+    };
+    return decoded.dump();
 }
