@@ -53,4 +53,26 @@ class EthereumAbiTests: XCTestCase {
             XCTAssertEqual(expected, EthereumAbiValue.decodeUInt256(input: data))
         }
     }
+
+    func testDecodeApprove() throws {
+        let data = Data(hexString: "095ea7b30000000000000000000000005aaeb6053f3e94c9b9a09f33669435e7ef1beaed0000000000000000000000000000000000000000000000000000000000000001")!
+        let url = Bundle(for: EthereumAbiTests.self).url(forResource: "erc20", withExtension: "json")!
+        let abi = try String(contentsOf: url)
+        let decoded = EthereumAbi.decodeCall(data: data, abi: abi)!
+        let expected = """
+        {
+            "function": "approve(address,uint256)",
+            "inputs": [{
+                "name": "_spender",
+                "type": "address",
+                "value": "0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed"
+            }, {
+                "name": "_value",
+                "type": "uint256",
+                "value": "1"
+            }]
+        }
+        """
+        XCTAssertJSONEqual(decoded, expected)
+    }
 }

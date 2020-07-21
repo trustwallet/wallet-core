@@ -63,10 +63,10 @@ TWString* _Nullable TWEthereumAbiDecodeCall(TWData* _Nonnull callData, TWString*
     try {     
         auto abi = nlohmann::json::parse(jsonString);
         auto string = Ethereum::decodeCall(call, abi);
-        if (!string) {
+        if (!string.has_value()) {
             return nullptr;
         }
-        return TWStringCreateWithUTF8Bytes(string.value().c_str());   
+        return TWStringCreateWithUTF8Bytes(string->c_str());
     }
     catch(...) {
         return nullptr;

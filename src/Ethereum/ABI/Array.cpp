@@ -71,7 +71,7 @@ bool ParamArray::decode(const Data& encoded, size_t& offset_inout) {
     if (len256 != uint256_t(len)) { return false; }
     // read values
     auto n = _params.getCount();
-    if (n <= 0 || n > len) {
+    if (n == 0 || n > len) {
         // Encoded length is less than params count, unsafe to continue decoding
         return false;
     }
