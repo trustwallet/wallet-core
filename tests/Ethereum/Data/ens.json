@@ -1,0 +1,53 @@
+{
+    "1896f70a": {
+        "constant": false,
+        "inputs": [{
+            "internalType": "bytes32",
+            "name": "node",
+            "type": "bytes32"
+        }, {
+            "internalType": "address",
+            "name": "resolver",
+            "type": "address"
+        }],
+        "name": "setResolver",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    "acf1a841": {
+        "constant": false,
+        "inputs": [{
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+        }, {
+            "internalType": "uint256",
+            "name": "duration",
+            "type": "uint256"
+        }],
+        "name": "renew",
+        "outputs": [],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    "ac9650d8": {
+        "constant": false,
+        "inputs": [{
+            "internalType": "bytes[]",
+            "name": "data",
+            "type": "bytes[]"
+        }],
+        "name": "multicall",
+        "outputs": [{
+            "internalType": "bytes[]",
+            "name": "results",
+            "type": "bytes[]"
+        }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+}
