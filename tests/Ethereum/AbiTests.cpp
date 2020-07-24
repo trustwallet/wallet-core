@@ -527,8 +527,15 @@ TEST(ContractCallEthereumAbi, ParamArrayBytes) {
 
         EXPECT_EQ("bytes[]", param.getType());        
         EXPECT_TRUE(param.isDynamic());
-        // FIXME: should be 928
+
+        // FIXME: 896, should be 928
+        Data encoded;
+        param.encode(encoded);
+        EXPECT_EQ(896, encoded.size());
+
+        // FIXME: 768, should be 928
         EXPECT_EQ(768, param.getSize());
+
         EXPECT_EQ(4, param.getCount());
     }
 }
