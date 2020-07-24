@@ -63,7 +63,6 @@ bool ParamArray::decode(const Data& encoded, size_t& offset_inout) {
         for (size_t i = 0; i < len - n; i++) {
             _params.addParam(ParamFactory::make(first->getType()));
         }
-        n = _params.getCount();
     }
 
     // read values
