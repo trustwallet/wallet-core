@@ -29,7 +29,7 @@ public:
     std::string getFirstType() const;
     std::shared_ptr<ParamBase> getParam(int paramIndex) { return _params.getParamUnsafe(paramIndex); }
     virtual std::string getType() const { return getFirstType() + "[]"; }
-    virtual size_t getSize() const { return _params.getSize(); }
+    virtual size_t getSize() const;
     virtual bool isDynamic() const { return true; }
     virtual size_t getCount() const { return _params.getCount(); }
     virtual void encode(Data& data) const;

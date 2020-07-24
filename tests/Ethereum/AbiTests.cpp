@@ -417,6 +417,8 @@ TEST(EthereumAbi, ParamByteArray) {
         auto param = ParamByteArray(data10);
         Data encoded;
         param.encode(encoded);
+        EXPECT_EQ(2 * 32, encoded.size());
+        EXPECT_EQ(2 * 32, param.getSize());
         EXPECT_EQ(
             "000000000000000000000000000000000000000000000000000000000000000a"
             "3132333435363738393000000000000000000000000000000000000000000000", 
@@ -441,6 +443,8 @@ TEST(EthereumAbi, ParamByteArrayFix) {
         auto param = ParamByteArrayFix(10, data10);
         Data encoded;
         param.encode(encoded);
+        EXPECT_EQ(32, encoded.size());
+        EXPECT_EQ(32, param.getSize());
         EXPECT_EQ(
             "3132333435363738393000000000000000000000000000000000000000000000", 
             hex(encoded));
@@ -472,6 +476,8 @@ TEST(EthereumAbi, ParamArrayByte) {
         param.addParam(std::make_shared<ParamUInt8>(51));
         Data encoded;
         param.encode(encoded);
+        EXPECT_EQ(4 * 32, encoded.size());
+        EXPECT_EQ(4 * 32, param.getSize());
         EXPECT_EQ(
             "0000000000000000000000000000000000000000000000000000000000000003"
             "0000000000000000000000000000000000000000000000000000000000000031"
@@ -504,6 +510,8 @@ TEST(EthereumAbi, ParamArrayAddress) {
         param.addParam(std::make_shared<ParamAddress>(Data(parse_hex("2e00cd222cb42b616d86d037cc494e8ab7f5c9a3"))));
         Data encoded;
         param.encode(encoded);
+        EXPECT_EQ(3 * 32, encoded.size());
+        EXPECT_EQ(3 * 32, param.getSize());
         EXPECT_EQ(
             "0000000000000000000000000000000000000000000000000000000000000002"
             "000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc077"
@@ -658,6 +666,7 @@ TEST(EthereumAbi, EncodeParamsSimple) {
     p.encode(encoded);
 
     EXPECT_EQ(3 * 32, encoded.size());
+    EXPECT_EQ(3 * 32, p.getSize());
     EXPECT_EQ(
         "0000000000000000000000000000000000000000000000000000000000000010"
         "0000000000000000000000000000000000000000000000000000000000000011"
@@ -682,6 +691,7 @@ TEST(EthereumAbi, EncodeParamsMixed) {
     p.encode(encoded);
 
     EXPECT_EQ(13 * 32, encoded.size());
+    EXPECT_EQ(13 * 32, p.getSize());
     EXPECT_EQ(
         "0000000000000000000000000000000000000000000000000000000000000045"
         "00000000000000000000000000000000000000000000000000000000000000a0"

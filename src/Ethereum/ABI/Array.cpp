@@ -27,37 +27,15 @@ std::string ParamArray::getFirstType() const {
     return _params.getParamUnsafe(0)->getType();
 }
 
+size_t ParamArray::getSize() const
+{
+    return 32 + _params.getSize();
+}
+
 void ParamArray::encode(Data& data) const {
     size_t n = _params.getCount();
     ValueEncoder::encodeUInt256(uint256_t(n), data);
-
-    size_t headSize = 0;
-    for (auto i = 0; i < n; ++i) {
-        auto p = _params.getParamUnsafe(i);
-        if (p->isDynamic()) {
-            headSize += 32;
-        } else {
-            headSize += p->getSize();
-        }
-    }
-
-    size_t dynamicOffset = 0;
-    for (auto i = 0; i < n; ++i) {
-        auto p = _params.getParamUnsafe(i);
-        if (p->isDynamic()) {
-            ValueEncoder::encodeUInt256(uint256_t(headSize + dynamicOffset), data);
-            dynamicOffset += p->getSize();
-        } else {
-            p->encode(data);
-        }
-    }
-
-    for (auto i = 0; i < n; ++i) {
-        auto p = _params.getParamUnsafe(i);
-        if (p->isDynamic()) {
-            p->encode(data);
-        }
-    }
+    _params.encode(data);
 }
 
 bool ParamArray::decode(const Data& encoded, size_t& offset_inout) {

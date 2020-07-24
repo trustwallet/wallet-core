@@ -62,11 +62,16 @@ std::string ParamSet::getType() const {
 }
 
 size_t ParamSet::getSize() const {
+    // 2-pass encoding
     size_t s = 0;
-    for(auto p: _params) {
+    for (auto p: _params) {
+        if (p->isDynamic() || p->getSize() > ValueEncoder::encodedIntSize) {
+            // offset used
+            s += 32;
+        }
         s += p->getSize();
     }
-    return 32 + ValueEncoder::paddedTo32(s);
+    return ValueEncoder::paddedTo32(s);
 }
 
 size_t ParamSet::getHeadSize() const {
