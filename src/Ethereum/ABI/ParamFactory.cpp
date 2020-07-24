@@ -25,12 +25,12 @@ static int parseBitSize(const std::string& type) {
     return size;
 }
 
-static std::shared_ptr<ParamBase> makeUInt(const std::string type) {
+static std::shared_ptr<ParamBase> makeUInt(const std::string& type) {
     auto bits = parseBitSize(type);
     return make_shared<ParamUIntN>(bits);
 }
 
-static std::shared_ptr<ParamBase> makeInt(const std::string type) {
+static std::shared_ptr<ParamBase> makeInt(const std::string& type) {
     auto bits = parseBitSize(type);
     return make_shared<ParamIntN>(bits);
 }

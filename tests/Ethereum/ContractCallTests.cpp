@@ -92,15 +92,14 @@ TEST(ContractCall, ApprovalForAll) {
     EXPECT_EQ(decoded.value(), expected);
 }
 
-TEST(ContractCall, SetString) {
-    auto call = parse_hex("c47f00270000000000000000000000000000000000000000000000000000000000000020"
-                          "000000000000000000000000000000000000000000000000000000000000000864656164"
-                          "62656566000000000000000000000000000000000000000000000000");
-    auto abi = nlohmann::json::parse(
-        R"|({"c47f0027":{"constant":false,"inputs":[{"name":"name","type":"string"}],"name":"setName","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}})|");
+TEST(ContractCall, CustomCall) {
+    auto path = TESTS_ROOT + "/Ethereum/Data/custom.json";
+    auto abi = load_json(path);
+
+    auto call = parse_hex("ec37a4a000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000067472757374790000000000000000000000000000000000000000000000000000");
     auto decoded = decodeCall(call, abi);
     auto expected =
-        R"|({"function":"setName(string)","inputs":[{"name":"name","type":"string","value":"deadbeef"}]})|";
+        R"|({"function":"setName(string,uint256,int32)","inputs":[{"name":"name","type":"string","value":"trusty"},{"name":"age","type":"uint","value":"3"},{"name":"height","type":"int32","value":"100"}]})|";
 
     EXPECT_EQ(decoded.value(), expected);
 }
