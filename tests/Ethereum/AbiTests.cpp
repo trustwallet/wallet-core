@@ -361,6 +361,8 @@ TEST(EthereumAbi, ParamString) {
             "48656c6c6f20576f726c64212020202048656c6c6f20576f726c642120202020"
             "48656c6c6f20576f726c64210000000000000000000000000000000000000000",
             hex(encoded));
+        EXPECT_EQ(3 * 32, encoded.size());
+        EXPECT_EQ(3 * 32, param.getSize());
         size_t offset = 0;
         EXPECT_TRUE(param.decode(encoded, offset));
         EXPECT_EQ(helloStr, param.getVal());
@@ -423,6 +425,8 @@ TEST(EthereumAbi, ParamByteArray) {
             "000000000000000000000000000000000000000000000000000000000000000a"
             "3132333435363738393000000000000000000000000000000000000000000000", 
             hex(encoded));
+        EXPECT_EQ(2 * 32, encoded.size());
+        EXPECT_EQ(2 * 32, param.getSize());
         size_t offset = 0;
         EXPECT_TRUE(param.decode(encoded, offset));
         EXPECT_EQ(data10, param.getVal());
@@ -484,6 +488,8 @@ TEST(EthereumAbi, ParamArrayByte) {
             "0000000000000000000000000000000000000000000000000000000000000032"
             "0000000000000000000000000000000000000000000000000000000000000033",
             hex(encoded));
+        EXPECT_EQ(4 * 32, encoded.size());
+        EXPECT_EQ(4 * 32, param.getSize());
         size_t offset = 0;
         EXPECT_TRUE(param.decode(encoded, offset));
         EXPECT_EQ(3, param.getVal().size());
@@ -517,6 +523,8 @@ TEST(EthereumAbi, ParamArrayAddress) {
             "000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc077"
             "0000000000000000000000002e00cd222cb42b616d86d037cc494e8ab7f5c9a3",
             hex(encoded));
+        EXPECT_EQ(3 * 32, encoded.size());
+        EXPECT_EQ(3 * 32, param.getSize());
         size_t offset = 0;
         EXPECT_TRUE(param.decode(encoded, offset));
         EXPECT_EQ(2, param.getVal().size());
@@ -524,6 +532,19 @@ TEST(EthereumAbi, ParamArrayAddress) {
             "2e00cd222cb42b616d86d037cc494e8ab7f5c9a3", 
             hex((std::dynamic_pointer_cast<ParamAddress>(param.getVal()[1]))->getData()));
     }
+}
+
+TEST(EthereumAbi, ParamArrayOfByteArray) {
+    auto param = ParamArray();
+    param.addParam(std::make_shared<ParamByteArray>(parse_hex("1011")));
+    param.addParam(std::make_shared<ParamByteArray>(parse_hex("102222")));
+    param.addParam(std::make_shared<ParamByteArray>(parse_hex("10333333")));
+    EXPECT_EQ(3, param.getVal().size());
+
+    EXPECT_EQ("bytes[]", param.getType());
+    EXPECT_TRUE(param.isDynamic());
+    EXPECT_EQ((1 + 3 + 3 * 2) * 32, param.getSize());
+    EXPECT_EQ(3, param.getCount());
 }
 
 ///// Direct encode & decode
@@ -544,6 +565,28 @@ TEST(EthereumAbi, EncodeVectorByte) {
     EXPECT_EQ(
         "000000000000000000000000000000000000000000000000000000000000000a"
         "3132333435363738393000000000000000000000000000000000000000000000", hex(encoded));
+}
+
+TEST(EthereumAbi, EncodeArrayByte) {
+    auto p = ParamArray(std::vector<std::shared_ptr<ParamBase>>{
+        std::make_shared<ParamByteArray>(parse_hex("1011")),
+        std::make_shared<ParamByteArray>(parse_hex("102222"))
+    });
+    EXPECT_EQ("bytes[]", p.getType());
+    Data encoded;
+    p.encode(encoded);
+    EXPECT_EQ(
+        "0000000000000000000000000000000000000000000000000000000000000002"
+        "0000000000000000000000000000000000000000000000000000000000000040"
+        "0000000000000000000000000000000000000000000000000000000000000080"
+        "0000000000000000000000000000000000000000000000000000000000000002"
+        "1011000000000000000000000000000000000000000000000000000000000000"
+        "0000000000000000000000000000000000000000000000000000000000000003"
+        "1022220000000000000000000000000000000000000000000000000000000000",
+        hex(encoded)
+    );
+    EXPECT_EQ((1 + 2 + 2 * 2) * 32, encoded.size());
+    EXPECT_EQ((1 + 2 + 2 * 2) * 32, p.getSize());
 }
 
 TEST(EthereumAbi, DecodeUInt) {
@@ -652,6 +695,28 @@ TEST(EthereumAbi, DecodeByteArray10) {
     EXPECT_EQ(49u, decoded[0]);
     EXPECT_EQ(50u, decoded[1]);
     EXPECT_EQ(32, offset);
+}
+
+TEST(EthereumAbi, DecodeArrayOfByteArray) {
+    Data encoded = parse_hex(
+        "0000000000000000000000000000000000000000000000000000000000000002"
+        "0000000000000000000000000000000000000000000000000000000000000040"
+        "0000000000000000000000000000000000000000000000000000000000000080"
+        "0000000000000000000000000000000000000000000000000000000000000002"
+        "1011000000000000000000000000000000000000000000000000000000000000"
+        "0000000000000000000000000000000000000000000000000000000000000003"
+        "1022200000000000000000000000000000000000000000000000000000000000"
+    );
+    size_t offset = 0;
+    Data decoded;
+    auto param = ParamArray();
+    param.addParam(std::make_shared<ParamByteArray>(Data()));
+    param.addParam(std::make_shared<ParamByteArray>(Data()));
+    bool res = param.decode(encoded, offset);
+    EXPECT_TRUE(res);
+    EXPECT_EQ(2, param.getCount());
+    EXPECT_EQ(7 * 32, offset);
+    EXPECT_EQ(2, param.getVal().size());
 }
 
 ///// Parameters encode & decode
