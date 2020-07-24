@@ -27,58 +27,41 @@ std::string ParamArray::getFirstType() const {
     return _params.getParamUnsafe(0)->getType();
 }
 
+size_t ParamArray::getSize() const
+{
+    return 32 + _params.getSize();
+}
+
 void ParamArray::encode(Data& data) const {
     size_t n = _params.getCount();
     ValueEncoder::encodeUInt256(uint256_t(n), data);
-
-    size_t headSize = 0;
-    for (auto i = 0; i < n; ++i) {
-        auto p = _params.getParamUnsafe(i);
-        if (p->isDynamic()) {
-            headSize += 32;
-        } else {
-            headSize += p->getSize();
-        }
-    }
-
-    size_t dynamicOffset = 0;
-    for (auto i = 0; i < n; ++i) {
-        auto p = _params.getParamUnsafe(i);
-        if (p->isDynamic()) {
-            ValueEncoder::encodeUInt256(uint256_t(headSize + dynamicOffset), data);
-            dynamicOffset += p->getSize();
-        } else {
-            p->encode(data);
-        }
-    }
-
-    for (auto i = 0; i < n; ++i) {
-        auto p = _params.getParamUnsafe(i);
-        if (p->isDynamic()) {
-            p->encode(data);
-        }
-    }
+    _params.encode(data);
 }
 
 bool ParamArray::decode(const Data& encoded, size_t& offset_inout) {
     size_t origOffset = offset_inout;
     // read length
     uint256_t len256;
-    if (!ABI::decode(encoded, len256, offset_inout)) { return false; }
+    if (!ABI::decode(encoded, len256, offset_inout)) {
+        return false;
+    }
     // check if length is in the size_t range
     size_t len = static_cast<size_t>(len256);
-    if (len256 != static_cast<uint256_t>(len)) { return false; }
-    // read values
+    if (len256 != static_cast<uint256_t>(len)) {
+        return false;
+    }
+    // check number of values
     auto n = _params.getCount();
     if (n != len) {
         // Element number mismatch: the proto has to have exact same number of values as in the encoded form
         // Note: this could be handles in a smarter way, and create more elements as needed
         return false;
     }
-    for (auto i = 0; i < n; ++i) {
-        if (!_params.getParamUnsafe(i)->decode(encoded, offset_inout)) { return false; }
-    }
+
+    // read values
+    auto res = _params.decode(encoded, offset_inout);
+
     // padding
     offset_inout = origOffset + ValueEncoder::paddedTo32(offset_inout - origOffset);
-    return true;
+    return res;
 }
