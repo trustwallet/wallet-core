@@ -53,10 +53,10 @@ bool ParamArray::decode(const Data& encoded, size_t& offset_inout) {
         // Note: this could be handles in a smarter way, and create more elements as needed
         return false;
     }
-    for (auto i = 0; i < n; ++i) {
-        if (!_params.getParamUnsafe(i)->decode(encoded, offset_inout)) { return false; }
-    }
+
+    auto res = _params.decode(encoded, offset_inout);
+
     // padding
     offset_inout = origOffset + ValueEncoder::paddedTo32(offset_inout - origOffset);
-    return true;
+    return res;
 }
