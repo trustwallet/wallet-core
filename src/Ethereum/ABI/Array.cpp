@@ -42,11 +42,15 @@ bool ParamArray::decode(const Data& encoded, size_t& offset_inout) {
     size_t origOffset = offset_inout;
     // read length
     uint256_t len256;
-    if (!ABI::decode(encoded, len256, offset_inout)) { return false; }
+    if (!ABI::decode(encoded, len256, offset_inout)) {
+        return false;
+    }
     // check if length is in the size_t range
     size_t len = static_cast<size_t>(len256);
-    if (len256 != static_cast<uint256_t>(len)) { return false; }
-    // read values
+    if (len256 != static_cast<uint256_t>(len)) {
+        return false;
+    }
+    // check number of values
     auto n = _params.getCount();
     if (n != len) {
         // Element number mismatch: the proto has to have exact same number of values as in the encoded form
@@ -54,6 +58,7 @@ bool ParamArray::decode(const Data& encoded, size_t& offset_inout) {
         return false;
     }
 
+    // read values
     auto res = _params.decode(encoded, offset_inout);
 
     // padding
