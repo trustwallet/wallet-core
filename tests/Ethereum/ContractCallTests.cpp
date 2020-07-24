@@ -153,12 +153,12 @@ TEST(ContractCall, Multicall) {
         "000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000"
         "000000000000000000000000000000000014d30f834b53d8f7e851e87b90ffa65757a35b850500000000000000"
         "000000000000000000000000000000000000000000000000000000000000000000");
+    ASSERT_EQ(4 + 928, call.size());
     auto path = TESTS_ROOT + "/Ethereum/Data/ens.json";
     auto abi = load_json(path);
     auto decoded = decodeCall(call, abi);
 
-    // FIXME: bytes[] is decoded incorrectly
-    EXPECT_FALSE(decoded.has_value());
+    EXPECT_TRUE(decoded.has_value());
 }
 
 TEST(ContractCall, Invalid) {
