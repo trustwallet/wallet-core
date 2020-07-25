@@ -7,25 +7,29 @@
 #include "Parameters.h"
 #include "ValueEncoder.h"
 
-#include <string>
 #include <cassert>
+#include <string>
 
 using namespace TW::Ethereum::ABI;
 
 ParamSet::~ParamSet() {
-   _params.clear();
+    _params.clear();
 }
 
 /// Returns the index of the parameter
 int ParamSet::addParam(const std::shared_ptr<ParamBase>& param) {
     assert(param.get() != nullptr);
-    if (param.get() == nullptr) { return -1; }
+    if (param.get() == nullptr) {
+        return -1;
+    }
     _params.push_back(param);
     return static_cast<int>(_params.size() - 1);
 }
 
 void ParamSet::addParams(const std::vector<std::shared_ptr<ParamBase>>& params) {
-    for (auto p: params) { addParam(p); }
+    for (auto p : params) {
+        addParam(p);
+    }
 }
 
 bool ParamSet::getParam(int paramIndex, std::shared_ptr<ParamBase>& param_out) const {
@@ -52,8 +56,10 @@ std::shared_ptr<ParamBase> ParamSet::getParamUnsafe(int paramIndex) const {
 std::string ParamSet::getType() const {
     std::string t = "(";
     int cnt = 0;
-    for(auto p: _params) {
-        if (cnt > 0) t += ",";
+    for (auto p : _params) {
+        if (cnt > 0) {
+            t += ",";
+        }
         t += p->getType();
         ++cnt;
     }
@@ -76,7 +82,7 @@ size_t ParamSet::getSize() const {
 
 size_t ParamSet::getHeadSize() const {
     size_t s = 0;
-    for(auto p: _params) {
+    for (auto p : _params) {
         if (p->isDynamic()) {
             s += 32;
         } else {
@@ -92,7 +98,7 @@ void ParamSet::encode(Data& data) const {
     size_t dynamicOffset = 0;
 
     // pass 1: small values or indices
-    for(auto p: _params) {
+    for (auto p : _params) {
         if (p->isDynamic() || p->getSize() > ValueEncoder::encodedIntSize) {
             // include only offset
             ValueEncoder::encodeUInt256(uint256_t(headSize + dynamicOffset), data);
@@ -101,32 +107,38 @@ void ParamSet::encode(Data& data) const {
             // encode small data
             p->encode(data);
         }
-    }        
+    }
 
     // pass 2: dynamic values
-    for(auto p: _params) {
+    for (auto p : _params) {
         if (p->isDynamic() || p->getSize() > ValueEncoder::encodedIntSize) {
             // encode large data
             p->encode(data);
         }
-    }        
+    }
 }
 
 bool ParamSet::decode(const Data& encoded, size_t& offset_inout) {
     // pass 1: small values
-    for(auto p: _params) {
+    for (auto p : _params) {
         if (p->isDynamic()) {
             uint256_t index;
-            if (!ABI::decode(encoded, index, offset_inout)) { return false; }
+            if (!ABI::decode(encoded, index, offset_inout)) {
+                return false;
+            }
             // index is read but not used
         } else {
-            if (!p->decode(encoded, offset_inout)) { return false; }
+            if (!p->decode(encoded, offset_inout)) {
+                return false;
+            }
         }
     }
-    // pass2: large values    
-    for(auto p: _params) {
+    // pass2: large values
+    for (auto p : _params) {
         if (p->isDynamic()) {
-            if (!p->decode(encoded, offset_inout)) { return false; }
+            if (!p->decode(encoded, offset_inout)) {
+                return false;
+            }
         }
     }
     return true;

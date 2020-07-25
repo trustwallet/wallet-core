@@ -13,43 +13,47 @@
 TW_EXTERN_C_BEGIN
 
 TW_EXPORT_CLASS
-struct TWEthereumAbiValueEncoder;
+struct TWEthereumAbiValue;
 
 /// Returned data must be deleted (hint: use WRAPD() macro).
-/// Encode a type according to EIP712, into 32 bytes.  Values are padded by 0 on the left, unless specified otherwise.
-/// See: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-712.md
+/// Encode a type according to Ethereum ABI, into 32 bytes. Values are padded by 0 on the left, unless specified otherwise.
 
 TW_EXPORT_STATIC_METHOD
-TWData* _Nonnull TWEthereumAbiValueEncoderEncodeBool(bool value);
+TWData* _Nonnull TWEthereumAbiValueEncodeBool(bool value);
 
 TW_EXPORT_STATIC_METHOD
-TWData* _Nonnull TWEthereumAbiValueEncoderEncodeInt32(int32_t value);
+TWData* _Nonnull TWEthereumAbiValueEncodeInt32(int32_t value);
 
 TW_EXPORT_STATIC_METHOD
-TWData* _Nonnull TWEthereumAbiValueEncoderEncodeUInt32(uint32_t value);
+TWData* _Nonnull TWEthereumAbiValueEncodeUInt32(uint32_t value);
 
 /// Encode an int256.  Input value is represented as a 32-byte value
 TW_EXPORT_STATIC_METHOD
-TWData* _Nonnull TWEthereumAbiValueEncoderEncodeInt256(TWData* _Nonnull value);
+TWData* _Nonnull TWEthereumAbiValueEncodeInt256(TWData* _Nonnull value);
 
 /// Encode an uint256.  Input value is represented as a 32-byte binary value
 TW_EXPORT_STATIC_METHOD
-TWData* _Nonnull TWEthereumAbiValueEncoderEncodeUInt256(TWData* _Nonnull value);
+TWData* _Nonnull TWEthereumAbiValueEncodeUInt256(TWData* _Nonnull value);
 
 /// Encode the 20 bytes of an address
 TW_EXPORT_STATIC_METHOD
-TWData* _Nonnull TWEthereumAbiValueEncoderEncodeAddress(TWData* _Nonnull value);
+TWData* _Nonnull TWEthereumAbiValueEncodeAddress(TWData* _Nonnull value);
 
 /// Encode a string by encoding its hash
 TW_EXPORT_STATIC_METHOD
-TWData* _Nonnull TWEthereumAbiValueEncoderEncodeString(TWString* _Nonnull value);
+TWData* _Nonnull TWEthereumAbiValueEncodeString(TWString* _Nonnull value);
 
 /// Encode a number of bytes, up to 32 bytes, padded on the right.  Longer arrays are truncated.
 TW_EXPORT_STATIC_METHOD
-TWData* _Nonnull TWEthereumAbiValueEncoderEncodeBytes(TWData* _Nonnull value);
+TWData* _Nonnull TWEthereumAbiValueEncodeBytes(TWData* _Nonnull value);
 
 /// Encode a dynamic number of bytes by encoding its hash
 TW_EXPORT_STATIC_METHOD
-TWData* _Nonnull TWEthereumAbiValueEncoderEncodeBytesDyn(TWData* _Nonnull value);
+TWData* _Nonnull TWEthereumAbiValueEncodeBytesDyn(TWData* _Nonnull value);
+
+
+/// Decodes input data (bytes longer than 32 will be truncated) as uint256
+TW_EXPORT_STATIC_METHOD
+TWString* _Nonnull TWEthereumAbiValueDecodeUInt256(TWData* _Nonnull input);
 
 TW_EXTERN_C_END

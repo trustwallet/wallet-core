@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWEthereumAbiValueDecoder.h>
+#include <TrustWalletCore/TWEthereumAbiValue.h>
 
 #include "Data.h"
 #include "HexCoding.h"
@@ -14,7 +14,7 @@
 using namespace TW;
 using namespace std;
 
-TEST(TWEthereumAbiValueDecoder, decodeUInt256) {
+TEST(TWEthereumAbiValue, decodeUInt256) {
     const char * expected = "10020405371567";
     auto inputs = vector<string>{
         "091d0eb3e2af",
@@ -24,7 +24,7 @@ TEST(TWEthereumAbiValueDecoder, decodeUInt256) {
     };
     for (auto &input: inputs) {
         auto data =  WRAPD(TWDataCreateWithHexString(STRING(input.c_str()).get()));
-        auto result = WRAPS(TWEthereumAbiValueDecoderDecodeUInt256(data.get()));
+        auto result = WRAPS(TWEthereumAbiValueDecodeUInt256(data.get()));
         assertStringsEqual(result, expected);
     }
 }

@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include "ABI/ParamBase.h"
-#include "ABI/ParamNumber.h"
-#include "ABI/Parameters.h"
-#include "ABI/Array.h"
-#include "ABI/Bytes.h"
-#include "ABI/ParamAddress.h"
-#include "ABI/Function.h"
-#include "ABI/ParamFactory.h"
+#include "Data.h"
+#include <nlohmann/json.hpp>
+#include <optional>
+#include <string>
+
+namespace TW::Ethereum::ABI {
+    std::optional<std::string> decodeCall(const Data& call, const nlohmann::json& abi);
+} // namespace TW::Ethereum::ABI

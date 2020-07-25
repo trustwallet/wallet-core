@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Array.h"
+#include "ParamFactory.h"
 #include "ValueEncoder.h"
 
 #include <cassert>
@@ -47,15 +48,21 @@ bool ParamArray::decode(const Data& encoded, size_t& offset_inout) {
     }
     // check if length is in the size_t range
     size_t len = static_cast<size_t>(len256);
-    if (len256 != static_cast<uint256_t>(len)) {
+    if (len256 != uint256_t(len)) {
         return false;
     }
     // check number of values
     auto n = _params.getCount();
-    if (n != len) {
-        // Element number mismatch: the proto has to have exact same number of values as in the encoded form
-        // Note: this could be handles in a smarter way, and create more elements as needed
+    if (n == 0 || n > len) {
+        // Encoded length is less than params count, unsafe to continue decoding
         return false;
+    }
+    if (n < len) {
+        // pad with first type
+        auto first = _params.getParamUnsafe(0);
+        for (size_t i = 0; i < len - n; i++) {
+            _params.addParam(ParamFactory::make(first->getType()));
+        }
     }
 
     // read values

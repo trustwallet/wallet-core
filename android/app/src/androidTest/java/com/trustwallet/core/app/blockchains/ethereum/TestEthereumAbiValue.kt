@@ -5,8 +5,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.EthereumAbiFunction
 import com.trustwallet.core.app.utils.Numeric
-import wallet.core.jni.EthereumAbiEncoder
-import wallet.core.jni.EthereumAbiValueEncoder
+import wallet.core.jni.EthereumAbi
+import wallet.core.jni.EthereumAbiValue
 
 class TestEthereumAbiEncoder {
 
@@ -16,12 +16,12 @@ class TestEthereumAbiEncoder {
 
     @Test
     fun testEthereumAbiEncoderFuncSimple1() {
-        val function = EthereumAbiEncoder.buildFunction("sam")
+        val function = EthereumAbiFunction("sam")
         assertEquals(0, function.addParamBool(true, false))
 
         assertEquals("sam(bool)", function.type)
 
-        val encoded = EthereumAbiEncoder.encode(function)
+        val encoded = EthereumAbi.encode(function)
         assertEquals("0xa35856da" +
             "0000000000000000000000000000000000000000000000000000000000000001",
             Numeric.toHexString(encoded));
@@ -29,7 +29,7 @@ class TestEthereumAbiEncoder {
 
     @Test
     fun testEthereumAbiEncoderEncodeFuncCase1() {
-        val function = EthereumAbiEncoder.buildFunction("sam")
+        val function = EthereumAbiFunction("sam")
         // add params
         assertEquals(0, function.addParamBytes("0x64617665".toHexByteArray(), false))
         assertEquals(1, function.addParamBool(true, false))
@@ -41,7 +41,7 @@ class TestEthereumAbiEncoder {
         // check signature
         assertEquals("sam(bytes,bool,uint256[])", function.type)
         // encode
-        val encoded = EthereumAbiEncoder.encode(function)
+        val encoded = EthereumAbi.encode(function)
         assertEquals("0xa5643bf2" +
             "0000000000000000000000000000000000000000000000000000000000000060" +
             "0000000000000000000000000000000000000000000000000000000000000001" +
@@ -57,7 +57,7 @@ class TestEthereumAbiEncoder {
         assertEquals(0, function.getParamUInt64(0, true))
         // decode output
         val encodedOutput = "0000000000000000000000000000000000000000000000000000000000000045".toHexByteArray()
-        val decodeRes = EthereumAbiEncoder.decodeOutput(function, encodedOutput)
+        val decodeRes = EthereumAbi.decodeOutput(function, encodedOutput)
         assertEquals(true, decodeRes)
         // new output value
         assertEquals(0x45, function.getParamUInt64(0, true))
@@ -65,7 +65,21 @@ class TestEthereumAbiEncoder {
 
     @Test
     fun testEthereumAbiValueEncodeInt32() {
-        val data = EthereumAbiValueEncoder.encodeInt32(69)
+        val data = EthereumAbiValue.encodeInt32(69)
         assertEquals(Numeric.toHexString(data), "0x0000000000000000000000000000000000000000000000000000000000000045")
+    }
+
+    @Test
+    fun testEthereumAbiValueDecodeUInt256() {
+        val expected = "1234567890987654321"
+        val inputs = listOf(
+            "112210f4b16c1cb1",
+            "000000000000000000000000000000000000000000000000112210f4b16c1cb1",
+            "000000000000000000000000000000000000000000000000112210f4b16c1cb10000000000000000000000000000000000000000000000000000000000000000"
+        )
+        for (input in inputs) {
+            val data = Numeric.hexStringToByteArray(input)
+            assertEquals(expected, EthereumAbiValue.decodeUInt256(data))
+        }
     }
 }
