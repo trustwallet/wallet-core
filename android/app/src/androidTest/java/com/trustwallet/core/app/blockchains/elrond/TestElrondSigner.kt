@@ -36,10 +36,10 @@ class TestElrondSigner {
             .setValue("0")
             .setSender(aliceBech32)
             .setReceiver(bobBech32)
-            .setGasPrice(200000000000000)
-            .setGasLimit(500000000)
+            .setGasPrice(1000000000)
+            .setGasLimit(50000)
             .setData("foo")
-            .setChainId("m1.0")
+            .setChainId("1")
             .setVersion(1)
             .build()
         
@@ -51,9 +51,9 @@ class TestElrondSigner {
             .build()
 
         val output = AnySigner.sign(signingInput, CoinType.ELROND, Elrond.SigningOutput.parser())
-        val expectedSignature = "fd77f627294c2cad3c4b0c761cad70e886fa1cfd119803caa2bcbc2d5ed3518df3e7531de9daa8ab47b278ac97a0cca5797868bdaba759845ce8c2c91162c30f"
+        val expectedSignature = "b5fddb8c16fa7f6123cb32edc854f1e760a3eb62c6dc420b5a4c0473c58befd45b621b31a448c5b59e21428f2bc128c80d0ee1caa4f2bf05a12be857ad451b00"
 
         assertEquals(expectedSignature, output.signature)
-        assertEquals("""{"nonce":0,"value":"0","receiver":"$bobBech32","sender":"$aliceBech32","gasPrice":200000000000000,"gasLimit":500000000,"data":"foo","chainID":"m1.0","version":1,"signature":"$expectedSignature"}""", output.encoded)
+        assertEquals("""{"nonce":0,"value":"0","receiver":"$bobBech32","sender":"$aliceBech32","gasPrice":1000000000,"gasLimit":50000,"data":"Zm9v","chainID":"1","version":1,"signature":"$expectedSignature"}""", output.encoded)
     }
 }

@@ -47,7 +47,7 @@ sorted_json preparePayload(const Elrond::Proto::TransactionMessage& message) {
     };
 
     if (!message.data().empty()) {
-        payload["data"] = json(message.data());
+        payload["data"] = json(TW::Base64::encode(TW::data(message.data())));
     }
 
     payload["chainID"] = json(message.chain_id());
