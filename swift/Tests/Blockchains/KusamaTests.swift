@@ -77,7 +77,7 @@ class KusamaTests: XCTestCase {
         // https://kusama.subscan.io/extrinsic/0x20cfbba19817e4b7a61e718d269de47e7067a24860fa978c2a8ead4c96a827c4
         // 1p test wallet
         let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: .kusama)
+        let key = wallet.getKey(derivationPath: "m/44'/434'/0'")
 
         let genesisHash = Data(hexString: "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe")!
         let input = PolkadotSigningInput.with {
