@@ -27,15 +27,17 @@ TEST(ElrondSigner, Sign) {
     input.mutable_transaction()->set_value("0");
     input.mutable_transaction()->set_sender(ALICE_BECH32);
     input.mutable_transaction()->set_receiver(BOB_BECH32);
-    input.mutable_transaction()->set_gas_price(200000000000000);
-    input.mutable_transaction()->set_gas_limit(500000000);
+    input.mutable_transaction()->set_gas_price(1000000000);
+    input.mutable_transaction()->set_gas_limit(50000);
     input.mutable_transaction()->set_data("foo");
+    input.mutable_transaction()->set_chain_id("1");
+    input.mutable_transaction()->set_version(1);
 
     auto output = Signer::sign(input);
     auto signature = output.signature();
     auto encoded = output.encoded();
-    auto expectedSignature = "b88ad2fe98a7316ea432a0a76c18cd87200fe75f27a8f053ea6532b40317dbec5136c5463aef132ae951b7e60d45d921caaa5903e70821dcda98f237d4ec4308";
-    auto expectedEncoded = (boost::format(R"({"nonce":0,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":200000000000000,"gasLimit":500000000,"data":"foo","signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
+    auto expectedSignature = "b5fddb8c16fa7f6123cb32edc854f1e760a3eb62c6dc420b5a4c0473c58befd45b621b31a448c5b59e21428f2bc128c80d0ee1caa4f2bf05a12be857ad451b00";
+    auto expectedEncoded = (boost::format(R"({"nonce":0,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"data":"Zm9v","chainID":"1","version":1,"signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
 
     ASSERT_EQ(expectedSignature, signature);
     ASSERT_EQ(expectedEncoded, encoded);
@@ -43,12 +45,12 @@ TEST(ElrondSigner, Sign) {
 
 TEST(ElrondSigner, SignJSON) {
     // Shuffle some fields, assume arbitrary order in the input
-    auto input = (boost::format(R"({"transaction" : {"data":"foo","value":"0","nonce":0,"receiver":"%1%","sender":"%2%","gasPrice":200000000000000,"gasLimit":500000000}})") % BOB_BECH32 % ALICE_BECH32).str();
+    auto input = (boost::format(R"({"transaction" : {"data":"foo","value":"0","nonce":0,"receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"chainId":"1","version":1}})") % BOB_BECH32 % ALICE_BECH32).str();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     
     auto encoded = Signer::signJSON(input, privateKey.bytes);
-    auto expectedSignature = "b88ad2fe98a7316ea432a0a76c18cd87200fe75f27a8f053ea6532b40317dbec5136c5463aef132ae951b7e60d45d921caaa5903e70821dcda98f237d4ec4308";
-    auto expectedEncoded = (boost::format(R"({"nonce":0,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":200000000000000,"gasLimit":500000000,"data":"foo","signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
+    auto expectedSignature = "b5fddb8c16fa7f6123cb32edc854f1e760a3eb62c6dc420b5a4c0473c58befd45b621b31a448c5b59e21428f2bc128c80d0ee1caa4f2bf05a12be857ad451b00";
+    auto expectedEncoded = (boost::format(R"({"nonce":0,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"data":"Zm9v","chainID":"1","version":1,"signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
 
     ASSERT_EQ(expectedEncoded, encoded);
 }
@@ -62,15 +64,17 @@ TEST(ElrondSigner, SignWithoutData) {
     input.mutable_transaction()->set_value("0");
     input.mutable_transaction()->set_sender(ALICE_BECH32);
     input.mutable_transaction()->set_receiver(BOB_BECH32);
-    input.mutable_transaction()->set_gas_price(200000000000000);
-    input.mutable_transaction()->set_gas_limit(500000000);
+    input.mutable_transaction()->set_gas_price(1000000000);
+    input.mutable_transaction()->set_gas_limit(50000);
     input.mutable_transaction()->set_data("");
+    input.mutable_transaction()->set_chain_id("1");
+    input.mutable_transaction()->set_version(1);
     
     auto output = Signer::sign(input);
     auto signature = output.signature();
     auto encoded = output.encoded();
-    auto expectedSignature = "39ab0e18bfce04bf53c9610faa3b9e7cecfca919510a7631e529e9086279b70a4832df32a5d1b8fdceb4e9082f2995da97f9195532c8d611ee749bc312cbf90c";
-    auto expectedEncoded = (boost::format(R"({"nonce":0,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":200000000000000,"gasLimit":500000000,"data":"","signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
+    auto expectedSignature = "3079d37bfbdbe66fbb4c4b186144f9d9ad5b4b08fbcd6083be0688cf1171123109dfdefdbabf91425c757ca109b6db6d674cb9aeebb19a1a51333565abb53109";
+    auto expectedEncoded = (boost::format(R"({"nonce":0,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"chainID":"1","version":1,"signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
 
     ASSERT_EQ(expectedSignature, signature);
     ASSERT_EQ(expectedEncoded, encoded);
@@ -78,12 +82,12 @@ TEST(ElrondSigner, SignWithoutData) {
 
 TEST(ElrondSigner, SignJSONWithoutData) {
     // Shuffle some fields, assume arbitrary order in the input
-    auto input = (boost::format(R"({"transaction" : {"value":"0","nonce":0,"receiver":"%1%","sender":"%2%","gasPrice":200000000000000,"gasLimit":500000000}})") % BOB_BECH32 % ALICE_BECH32).str();
+    auto input = (boost::format(R"({"transaction" : {"value":"0","nonce":0,"receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"chainId":"1","version":1}})") % BOB_BECH32 % ALICE_BECH32).str();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     
     auto encoded = Signer::signJSON(input, privateKey.bytes);
-    auto expectedSignature = "39ab0e18bfce04bf53c9610faa3b9e7cecfca919510a7631e529e9086279b70a4832df32a5d1b8fdceb4e9082f2995da97f9195532c8d611ee749bc312cbf90c";
-    auto expectedEncoded = (boost::format(R"({"nonce":0,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":200000000000000,"gasLimit":500000000,"data":"","signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
+    auto expectedSignature = "3079d37bfbdbe66fbb4c4b186144f9d9ad5b4b08fbcd6083be0688cf1171123109dfdefdbabf91425c757ca109b6db6d674cb9aeebb19a1a51333565abb53109";
+    auto expectedEncoded = (boost::format(R"({"nonce":0,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"chainID":"1","version":1,"signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
 
     ASSERT_EQ(expectedEncoded, encoded);
 }
