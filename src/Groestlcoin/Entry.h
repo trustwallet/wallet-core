@@ -16,7 +16,6 @@ class Entry: public CoinEntry {
 public:
     virtual std::vector<TWCoinType> coinTypes() const { return {TWCoinTypeGroestlcoin}; }
     virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;
-    // normalizeAddress is not used
     virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
     virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const;

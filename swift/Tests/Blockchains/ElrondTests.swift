@@ -33,17 +33,19 @@ class ElrondTests: XCTestCase {
                 $0.value = "0"
                 $0.sender = aliceBech32
                 $0.receiver = bobBech32 
-                $0.gasPrice = 200000000000000
-                $0.gasLimit = 500000000
+                $0.gasPrice = 1000000000
+                $0.gasLimit = 50000
                 $0.data = "foo"
+                $0.chainID = "1"
+                $0.version = 1
             }
 
             $0.privateKey = privateKey.data
         }
 
         let output: ElrondSigningOutput = AnySigner.sign(input: input, coin: .elrond)
-        let expectedSignature = "b88ad2fe98a7316ea432a0a76c18cd87200fe75f27a8f053ea6532b40317dbec5136c5463aef132ae951b7e60d45d921caaa5903e70821dcda98f237d4ec4308"
-        let expectedEncoded = #"{"nonce":0,"value":"0","receiver":"\#(bobBech32)","sender":"\#(aliceBech32)","gasPrice":200000000000000,"gasLimit":500000000,"data":"foo","signature":"\#(expectedSignature)"}"#
+        let expectedSignature = "b5fddb8c16fa7f6123cb32edc854f1e760a3eb62c6dc420b5a4c0473c58befd45b621b31a448c5b59e21428f2bc128c80d0ee1caa4f2bf05a12be857ad451b00"
+        let expectedEncoded = #"{"nonce":0,"value":"0","receiver":"\#(bobBech32)","sender":"\#(aliceBech32)","gasPrice":1000000000,"gasLimit":50000,"data":"Zm9v","chainID":"1","version":1,"signature":"\#(expectedSignature)"}"#
 
         XCTAssertEqual(output.signature, expectedSignature)
         XCTAssertEqual(output.encoded, expectedEncoded)

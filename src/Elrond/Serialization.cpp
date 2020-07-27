@@ -21,7 +21,9 @@ std::map<string, int> fields_order {
     {"gasPrice", 5},
     {"gasLimit", 6},
     {"data", 7},
-    {"signature", 8}
+    {"chainID", 8},
+    {"version", 9},
+    {"signature", 10}
 };
 
 struct FieldsSorter {
@@ -34,7 +36,7 @@ template<class Key, class T, class Compare, class Allocator>
 using sorted_map = std::map<Key, T, FieldsSorter, Allocator>;
 using sorted_json = nlohmann::basic_json<sorted_map>;
 
-string Elrond::serializeTransaction(const Proto::TransactionMessage& message) {
+sorted_json preparePayload(const Elrond::Proto::TransactionMessage& message) {
     sorted_json payload {
         {"nonce", json(message.nonce())},
         {"value", json(message.value())},
@@ -48,20 +50,19 @@ string Elrond::serializeTransaction(const Proto::TransactionMessage& message) {
         payload["data"] = json(TW::Base64::encode(TW::data(message.data())));
     }
 
+    payload["chainID"] = json(message.chain_id());
+    payload["version"] = json(message.version());
+
+    return payload;
+}
+
+string Elrond::serializeTransaction(const Proto::TransactionMessage& message) {
+    sorted_json payload = preparePayload(message);
     return payload.dump();
 }
 
 string Elrond::serializeSignedTransaction(const Proto::TransactionMessage& message, string signature) {
-    sorted_json payload {
-        {"nonce", json(message.nonce())},
-        {"value", json(message.value())},
-        {"receiver", json(message.receiver())},
-        {"sender", json(message.sender())},
-        {"gasPrice", json(message.gas_price())},
-        {"gasLimit", json(message.gas_limit())},
-        {"data", json(message.data())},
-        {"signature", json(signature)},
-    };
-
+    sorted_json payload = preparePayload(message);
+    payload["signature"] = json(signature);
     return payload.dump();
 }
