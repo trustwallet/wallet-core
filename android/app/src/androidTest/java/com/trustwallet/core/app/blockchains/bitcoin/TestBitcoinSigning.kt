@@ -23,7 +23,7 @@ class TestBitcoinSigning {
     fun testSignP2WPKH() {
         val input = Bitcoin.SigningInput.newBuilder()
             .setAmount(335_790_000)
-            .setHashType(BitcoinScript.hashTypeForCoin(CoinType.BITCOIN).value())
+            .setHashType(BitcoinScript.hashTypeForCoin(CoinType.BITCOIN))
             .setToAddress("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx")
             .setChangeAddress("1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU")
             .setByteFee(1)
@@ -87,7 +87,7 @@ class TestBitcoinSigning {
     fun testSignP2PKH() {
         val input = Bitcoin.SigningInput.newBuilder()
             .setAmount(55_000)
-            .setHashType(BitcoinScript.hashTypeForCoin(CoinType.BITCOIN).value())
+            .setHashType(BitcoinScript.hashTypeForCoin(CoinType.BITCOIN))
             .setToAddress("1GDCMHsTLBkawQXP8dqcZtr8zGgb4XpCug")
             .setChangeAddress("1CSR6tXqngr1CfwVF23V4bQotttJmzXqpf")
             .setByteFee(10)

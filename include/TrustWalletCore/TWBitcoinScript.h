@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include "TWBase.h"
-#include "TWData.h"
-#include "TWPublicKey.h"
-#include "TWCoinType.h"
-#include "TWBitcoinSigHashType.h"
+#include <TrustWalletCore/TWBase.h>
+#include <TrustWalletCore/TWData.h>
+#include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWBitcoinSigHashType.h>
 
 TW_EXTERN_C_BEGIN
 
@@ -117,6 +117,6 @@ struct TWBitcoinScript *_Nonnull TWBitcoinScriptLockScriptForAddress(TWString *_
 
 // Return the default HashType for the given coin, such as TWBitcoinSigHashTypeAll.
 TW_EXPORT_STATIC_METHOD
-enum TWBitcoinSigHashType TWBitcoinScriptHashTypeForCoin(enum TWCoinType coinType);
+uint32_t TWBitcoinScriptHashTypeForCoin(enum TWCoinType coinType);
 
 TW_EXTERN_C_END

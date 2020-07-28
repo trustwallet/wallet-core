@@ -1,0 +1,78 @@
+{
+    "095ea7b3": {
+        "constant": false,
+        "inputs": [{
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+        }, {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+        }],
+        "name": "approve",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    "23b872dd": {
+        "constant": false,
+        "inputs": [{
+            "internalType": "address",
+            "name": "from",
+            "type": "address"
+        }, {
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+        }, {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+        }],
+        "name": "transferFrom",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    "42842e0e": {
+        "constant": false,
+        "inputs": [{
+            "internalType": "address",
+            "name": "from",
+            "type": "address"
+        }, {
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+        }, {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+        }],
+        "name": "safeTransferFrom",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    "a22cb465": {
+        "constant": false,
+        "inputs": [{
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+        }, {
+            "internalType": "bool",
+            "name": "approved",
+            "type": "bool"
+        }],
+        "name": "setApprovalForAll",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+}

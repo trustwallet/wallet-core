@@ -51,7 +51,7 @@ class ZcashTests: XCTestCase {
             }
         ]
         let input = BitcoinSigningInput.with {
-            $0.hashType = BitcoinSigHashType.all.rawValue
+            $0.hashType = BitcoinScript.hashTypeForCoin(coinType: .zcash)
             $0.amount = 488000
             $0.toAddress = "t1QahNjDdibyE4EdYkawUSKBBcVTSqv64CS"
             $0.coinType = CoinType.zcash.rawValue

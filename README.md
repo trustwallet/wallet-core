@@ -1,6 +1,10 @@
 <img src="docs/banner.png" align="center" title="Trust logo">
 
-Trust Wallet Core is a cross-platform library that implements low-level cryptographic wallet functionality for all supported blockchains. Most of the code is C++ with a set of strict exported C interfaces. The library provides idiomatic interfaces for all supported languages (currently Swift for iOS and Java for Android).
+Trust Wallet Core is an open source, cross-platform, mobile-focused library
+implementing low-level cryptographic wallet functionality for a high number of blockchains.
+It is a core part of the popular [Trust Wallet](https://trustwallet.com), and some other projects.
+Most of the code is C++ with a set of strict C interfaces, and idiomatic interfaces for supported languages:
+Swift for iOS and Java for Android.
 
 ![iOS CI](https://github.com/trustwallet/wallet-core/workflows/iOS%20CI/badge.svg)
 ![Android CI](https://github.com/trustwallet/wallet-core/workflows/Android%20CI/badge.svg)
@@ -15,29 +19,19 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 ![Cocoapods](https://img.shields.io/cocoapods/v/TrustWalletCore.svg)
 ![Cocoapods platforms](https://img.shields.io/cocoapods/p/TrustWalletCore.svg)
 
-## Documentation
+# Documentation
 
-For more complete documentation, see [developer.trustwallet.com](https://developer.trustwallet.com/wallet-core).
+For comprehensive documentation, see [developer.trustwallet.com](https://developer.trustwallet.com/wallet-core).
 
-## Supported Blockchains
+# Supported Blockchains
 
-We support Bitcoin, Ethereum, Binance Chain and 50+ blockchains, you can see the full list [here](docs/coins.md).
+Wallet Core supports more than **50** blockchains: Bitcoin, Ethereum, Binance Chain, and most major blockchain platforms.
+The full list is [here](docs/coins.md).
 
-## Building
+# Building
 
 For build instructions, see [developer.trustwallet.com/wallet-core/building](https://developer.trustwallet.com/wallet-core/building).
 
-## WalletConsole Utility
-
-Our project comes with an interactive command-line utility called _WalletConsole_, for accessing key and address management functionality of the library.  It can be started using:
-
-```
-$ ./build/walletconsole/walletconsole 
-Type 'help' for list of commands.
-> help
-```
-
-Further details: [developer.trustwallet.com/wallet-core/walletconsole](https://developer.trustwallet.com/wallet-core/walletconsole).
 
 # Using from your project
 
@@ -49,10 +43,10 @@ Add this dependency to build.gradle:
 
 ```groovy
 dependencies {
-    implementation 'com.trustwallet:wallet-core:x.x.x'
+    implementation 'com.trustwallet:wallet-core:x.y.z'
 }
 ```
-[Replace with version](https://github.com/trustwallet/wallet-core/releases)
+Replace x.y.z with a [fresh version](https://github.com/trustwallet/wallet-core/releases)
 
 ## iOS
 
@@ -62,13 +56,18 @@ We currently support only CocoaPods. Add this line to your Podfile and run `pod 
 pod 'TrustWalletCore'
 ```
 
-## Add your project below
+# Projects
 
-- [Trust Wallet](https://trustwallet.com)
-- [coinpaprika](https://coinpaprika.com/)
-- [IFWallet](https://www.ifwallet.com/)
-- [Alice](https://www.alicedapp.com/)
-- [FrontierWallet](https://frontierwallet.com/)
+Projects using Trust Wallet Core.  Add yours too!
+
+[<img src="https://trustwallet.com/assets/images/trust_logotype.svg" alt="Trust Wallet"/>](https://trustwallet.com)
+
+[Coinpaprika](https://coinpaprika.com/)
+| [IFWallet](https://www.ifwallet.com/)
+| [crypto.com](https://crypto.com)
+| [Alice](https://www.alicedapp.com/)
+| [FrontierWallet](https://frontierwallet.com/)
+
 
 # Contributing
 

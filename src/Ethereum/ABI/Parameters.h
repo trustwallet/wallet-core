@@ -36,9 +36,11 @@ public:
     /// Return the function type signature, of the form "baz(int32,uint256)"
     std::string getType() const;
     size_t getSize() const;
-    size_t getHeadSize() const;
     virtual void encode(Data& data) const;
     virtual bool decode(const Data& encoded, size_t& offset_inout);
+
+private:
+    size_t getHeadSize() const;
 };
 
 /// Collection of different parameters, dynamic length, "(<par1>,<par2>,...)".
