@@ -49,7 +49,7 @@ make install
 make clean
 
 # Download Nlohmann JSON
-export JSON_VERSION=3.5.0
+export JSON_VERSION=3.9.0
 JSON_DIR="$ROOT/build/local/json"
 mkdir -p "$JSON_DIR"
 cd "$JSON_DIR"
