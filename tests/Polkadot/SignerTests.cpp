@@ -184,7 +184,7 @@ TEST(PolkadotSigner, SignBond) {
 
     auto value = store(uint256_t(123456));
 
-    bond.set_validator("1zugcabYjgfQdMLC3cAzQ8tJZMo45tMnGpivpAzpxB4CZyK");
+    bond.set_controller("1zugcabYjgfQdMLC3cAzQ8tJZMo45tMnGpivpAzpxB4CZyK");
     bond.set_value(value.data(), value.size());
     bond.set_reward_destination(Proto::RewardDestination::STAKED);
     auto output = Signer::sign(input);

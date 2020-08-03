@@ -31,7 +31,7 @@ message Balance {
 
 message Staking {
     message Bond {
-        string validator = 1;
+        string controller = 1;
         bytes value = 2;
         RewardDestination reward_destination = 3;
     }

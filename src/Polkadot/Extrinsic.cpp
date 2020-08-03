@@ -80,7 +80,7 @@ Data Extrinsic::encodeCall(const Proto::SigningInput& input) {
     } else if (input.has_staking_call()) {
         auto staking = input.staking_call();
         if (staking.has_bond()) {
-            auto address = SS58Address(staking.bond().validator(), byte(input.network()));
+            auto address = SS58Address(staking.bond().controller(), byte(input.network()));
             auto value = load(staking.bond().value());
             auto reward = byte(staking.bond().reward_destination());
             // call index
