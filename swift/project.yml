@@ -47,7 +47,7 @@ targets:
       BUILD_LIBRARY_FOR_DISTRIBUTION: true
       INFOPLIST_FILE: 'Info.plist'
       CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION: YES_ERROR
-      CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER: true
+      CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER: $(inherited) true
       OTHER_CFLAGS: $(inherited) -Wno-comma
     postCompileScripts:
       - script: ${PODS_ROOT}/SwiftLint/swiftlint --config ../.swiftlint.yml

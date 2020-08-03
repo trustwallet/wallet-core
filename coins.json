@@ -1227,7 +1227,7 @@
         "symbol": "KSM",
         "decimals": 12,
         "blockchain": "Polkadot",
-        "derivationPath": "m/44'/434'/0'",
+        "derivationPath": "m/44'/434'/0'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
         "explorer": {
@@ -1248,9 +1248,9 @@
         "id": "polkadot",
         "name": "Polkadot",
         "symbol": "DOT",
-        "decimals": 15,
+        "decimals": 10,
         "blockchain": "Polkadot",
-        "derivationPath": "m/44'/354'/0'",
+        "derivationPath": "m/44'/354'/0'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
         "explorer": {

@@ -14,6 +14,7 @@
 
 namespace TW::Polkadot {
 
+// ExtrinsicV4
 class Extrinsic {
   public:
     Data blockHash;
@@ -21,7 +22,7 @@ class Extrinsic {
     uint64_t nonce;
     // Runtime spec version
     uint32_t specVersion;
-    // Extrinsic version
+    // transaction version
     uint32_t version;
     // balances::TakeFees
     uint256_t tip;
@@ -35,7 +36,7 @@ class Extrinsic {
         , genesisHash(input.genesis_hash().begin(), input.genesis_hash().end())
         , nonce(input.nonce())
         , specVersion(input.spec_version())
-        , version(input.extrinsic_version())
+        , version(input.transaction_version())
         , tip(load(input.tip())) {
         if (input.has_era()) {
             era = encodeEra(input.era().phase(), input.era().period());

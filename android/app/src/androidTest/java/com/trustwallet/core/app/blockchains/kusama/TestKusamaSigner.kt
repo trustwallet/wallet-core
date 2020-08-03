@@ -11,43 +11,43 @@ import com.trustwallet.core.app.utils.toHexBytesInByteString
 import junit.framework.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
-import wallet.core.jni.CoinType.POLKADOT
+import wallet.core.jni.CoinType.KUSAMA
 import wallet.core.jni.proto.Polkadot
 import wallet.core.jni.proto.Polkadot.SigningOutput
 
-class TestPolkadotSigner {
+class TestKusamaSigner {
 
     init {
         System.loadLibrary("TrustWalletCore")
     }
 
     @Test
-    fun PolkadotTransactionSigning() {
-        val key = "0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115".toHexBytesInByteString()
+    fun KusamaTransactionSigning() {
+        val key = "0x8cdc538e96f460da9d639afc5c226f477ce98684d77fb31e88db74c1f1dd86b2".toHexBytesInByteString()
         val hash = "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe".toHexBytesInByteString()
 
         val call = Polkadot.Balance.Transfer.newBuilder().apply {
-            toAddress = "FoQJpPyadYccjavVdTWxpxU7rUEaYhfLCPwXgkfD6Zat9QP"
-            value = "3039".toHexBytesInByteString()
-        }.build()
+            toAddress = "CtwdfrhECFs3FpvCGoiE4hwRC4UsSiM8WL899HjRdQbfYZY"
+            value = "0x02540be400".toHexBytesInByteString()
+        }
 
-        val signingInput = Polkadot.SigningInput.newBuilder().apply {
+        val input = Polkadot.SigningInput.newBuilder().apply {
             genesisHash = hash
             blockHash = hash
-            nonce = 0
-            specVersion = 1031
+            nonce = 1
+            specVersion = 2019
             network = Polkadot.Network.KUSAMA
-            extrinsicVersion = 4
+            transactionVersion = 2
             privateKey = key
             balanceCall = Polkadot.Balance.newBuilder().apply {
-                transfer = call
+                transfer = call.build()
             }.build()
-        }.build()
+        }
 
-        val output = AnySigner.sign(signingInput, POLKADOT, SigningOutput.parser())
+        val output = AnySigner.sign(input.build(), KUSAMA, SigningOutput.parser())
         val encoded = Numeric.toHexString(output.encoded.toByteArray())
 
-        val expected = "0x2d0284ff88dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee0034a113577b56545c45e18969471eebe11ed434f3b2f06e2e3dc8dc137ba804caf60757787ebdeb298327e2f29d68c5520965405ef5582db0445c06e1c11a8a0e0000000400ff8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c0"
+        val expected = "0x350284f41296779fd61a5bed6c2f506cc6c9ea93d6aeb357b9c69717193f434ba24ae700cd78b46eff36c433e642d7e9830805aab4f43eef70067ef32c8b2a294c510673a841c5f8a6e8900c03be40cfa475ae53e6f8aa61961563cb7cc0fa169ef9630d00040004000e33fdfb980e4499e5c3576e742a563b6a4fc0f6f598b1917fd7a6fe393ffc720700e40b5402"
         assertEquals(encoded, expected)
     }
 }

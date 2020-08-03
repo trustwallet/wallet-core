@@ -56,7 +56,7 @@ TEST(PolkadotCodec, EncodeAddress) {
     auto address = Kusama::Address("FoQJpPyadYccjavVdTWxpxU7rUEaYhfLCPwXgkfD6Zat9QP");
     auto encoded = encodeAddress(address);
 
-    ASSERT_EQ(hex(encoded), "ff8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48");
+    ASSERT_EQ(hex(encoded), "8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48");
 }
 
 TEST(PolkadotCodec, EncodeVectorAddresses) {
@@ -65,7 +65,7 @@ TEST(PolkadotCodec, EncodeVectorAddresses) {
         Kusama::Address("CtwdfrhECFs3FpvCGoiE4hwRC4UsSiM8WL899HjRdQbfYZY")
     };
     auto encoded = encodeAddresses(addresses);
-    ASSERT_EQ(hex(encoded), "08ff8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48ff0e33fdfb980e4499e5c3576e742a563b6a4fc0f6f598b1917fd7a6fe393ffc72");
+    ASSERT_EQ(hex(encoded), "088eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a480e33fdfb980e4499e5c3576e742a563b6a4fc0f6f598b1917fd7a6fe393ffc72");
 }
 
 TEST(PolkadotCodec, EncodeEra) {

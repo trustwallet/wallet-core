@@ -99,13 +99,13 @@ inline Data encodeVector(std::vector<Data>& vec) {
 }
 
 inline Data encodeAddress(const PublicKey& key) {
-    auto data = Data{0xff};
+    auto data = Data{};
     append(data, Data(key.bytes.begin(), key.bytes.end()));
     return data;
 }
 
 inline Data encodeAddress(const SS58Address& address) {
-    auto data = Data{0xff};
+    auto data = Data{};
     // first byte is network
     append(data, Data(address.bytes.begin() + 1, address.bytes.end()));
     return data;
@@ -121,8 +121,8 @@ inline Data encodeAddresses(const std::vector<SS58Address>& addresses) {
 
 inline Data encodeEra(const uint64_t block, const uint64_t period) {
     // MortalEra(phase, period)
-    // See decodeMortalObject at https://github.com/polkadot-js/api/blob/master/packages/types/src/primitive/Extrinsic/ExtrinsicEra.ts#L74
-    // See toU8a at https://github.com/polkadot-js/api/blob/master/packages/types/src/primitive/Extrinsic/ExtrinsicEra.ts#L141
+    // See decodeMortalObject at https://github.com/polkadot-js/api/blob/master/packages/types/src/extrinsic/ExtrinsicEra.ts#L87
+    // See toU8a at https://github.com/polkadot-js/api/blob/master/packages/types/src/extrinsic/ExtrinsicEra.ts#L167
     uint64_t calPeriod = uint64_t(pow(2, ceil(log2(double(period)))));
     calPeriod = std::min(std::max(calPeriod, uint64_t(4)), uint64_t(1) << 16);
     uint64_t phase = block % calPeriod;
