@@ -31,7 +31,7 @@ message Balance {
 
 message Staking {
     message Bond {
-        string validator = 1;
+        string controller = 1;
         bytes value = 2;
         RewardDestination reward_destination = 3;
     }
@@ -44,7 +44,9 @@ message Staking {
         bytes value = 1;
     }
 
-    message WithdrawUnbonded {}
+    message WithdrawUnbonded {
+        int32 slashing_spans = 1;
+    }
 
     message Nominate {
         repeated string nominators = 1;
@@ -68,11 +70,11 @@ message SigningInput {
     bytes genesis_hash = 2;
     uint64 nonce = 3;
     uint32 spec_version = 4;
-    bytes tip = 5;  // big integer
-    Era era = 6;    // empty means Immortal
-    bytes private_key = 7;
-    Network network = 8;
-    uint32 extrinsic_version = 9;
+    uint32 transaction_version = 5;
+    bytes tip = 6;  // big integer
+    Era era = 7;    // empty means Immortal
+    bytes private_key = 8;
+    Network network = 9;
 
     oneof message_oneof {
         Balance balance_call = 10;
