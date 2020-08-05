@@ -36,7 +36,7 @@ class KusamaTests: XCTestCase {
         // https://kusama.subscan.io/extrinsic/0x9211b8f6500c78f4771d18289c6187ec59c2b1fb28e8324ee32a1f9a3303be7e
         // real key in 1p test
         let wallet = HDWallet.test
-        let key = wallet.getKey(derivationPath: "m/44'/434'/0'")
+        let key = wallet.getKey(coin: .kusama, derivationPath: "m/44'/434'/0'")
         print(key.data.hexString)
 
         let genesisHash = Data(hexString: "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe")!

@@ -72,7 +72,7 @@ void TWStoredKeyRemoveAccountForCoin(struct TWStoredKey* _Nonnull key, enum TWCo
 
 /// Adds a new account.
 TW_EXPORT_METHOD
-void TWStoredKeyAddAccount(struct TWStoredKey* _Nonnull key, TWString* _Nonnull address, TWString* _Nonnull derivationPath, TWString* _Nonnull extetndedPublicKey);
+void TWStoredKeyAddAccount(struct TWStoredKey* _Nonnull key, TWString* _Nonnull address, enum TWCoinType coin, TWString* _Nonnull derivationPath, TWString* _Nonnull extetndedPublicKey);
 
 /// Saves the key to a file.
 TW_EXPORT_METHOD

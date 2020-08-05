@@ -9,7 +9,7 @@ import XCTest
 
 class DerivationPathTests: XCTestCase {
     func testInitWithIndices() {
-        let path = DerivationPath(purpose: .bip44, coinType: .ethereum, account: 0, change: 0, address: 0)
+        let path = DerivationPath(purpose: .bip44, coin: CoinType.ethereum.slip44Id, account: 0, change: 0, address: 0)
         XCTAssertEqual(path.indices[0], DerivationPath.Index(44, hardened: true))
         XCTAssertEqual(path.indices[1], DerivationPath.Index(60, hardened: true))
         XCTAssertEqual(path.indices[2], DerivationPath.Index(0, hardened: true))

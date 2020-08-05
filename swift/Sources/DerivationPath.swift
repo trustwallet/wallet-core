@@ -69,10 +69,10 @@ public struct DerivationPath: Codable, Hashable, CustomStringConvertible {
     }
 
     /// Creates a `DerivationPath` by components.
-    public init(purpose: Purpose, coinType: CoinType, account: UInt32 = 0, change: UInt32 = 0, address: UInt32 = 0) {
+    public init(purpose: Purpose, coin: UInt32, account: UInt32 = 0, change: UInt32 = 0, address: UInt32 = 0) {
         self.indices = [Index](repeating: Index(0), count: indexCount)
         self.purpose = purpose
-        self.coinType = coinType.slip44Id
+        self.coinType = coin
         self.account = account
         self.change = change
         self.address = address

@@ -87,8 +87,8 @@ PrivateKey HDWallet::getMasterKeyExtension(TWCurve curve) const {
     return PrivateKey(data);
 }
 
-PrivateKey HDWallet::getKey(const DerivationPath& derivationPath) const {
-    const auto curve = TWCoinTypeCurve(derivationPath.coin());
+PrivateKey HDWallet::getKey(TWCoinType coin, const DerivationPath& derivationPath) const {
+    const auto curve = TWCoinTypeCurve(coin);
     const auto privateKeyType = getPrivateKeyType(curve);
     auto node = getNode(*this, curve, derivationPath);
     switch (privateKeyType) {
@@ -110,7 +110,7 @@ PrivateKey HDWallet::getKey(const DerivationPath& derivationPath) const {
 
 std::string HDWallet::deriveAddress(TWCoinType coin) const {
     const auto derivationPath = TW::derivationPath(coin);
-    return TW::deriveAddress(coin, getKey(derivationPath));
+    return TW::deriveAddress(coin, getKey(coin, derivationPath));
 }
 
 std::string HDWallet::getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const {
@@ -140,8 +140,7 @@ std::string HDWallet::getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, T
     return serialize(&node, fingerprintValue, version, true, base58Hasher(coin));
 }
 
-std::optional<PublicKey> HDWallet::getPublicKeyFromExtended(const std::string& extended, const DerivationPath& path) {
-    const auto coin = path.coin();
+std::optional<PublicKey> HDWallet::getPublicKeyFromExtended(const std::string& extended, TWCoinType coin, const DerivationPath& path) {
     const auto curve = TW::curve(coin);
     const auto hasher = TW::base58Hasher(coin);
 
@@ -166,8 +165,7 @@ std::optional<PublicKey> HDWallet::getPublicKeyFromExtended(const std::string& e
     return {};
 }
 
-std::optional<PrivateKey> HDWallet::getPrivateKeyFromExtended(const std::string& extended, const DerivationPath& path) {
-    const auto coin = path.coin();
+std::optional<PrivateKey> HDWallet::getPrivateKeyFromExtended(const std::string& extended, TWCoinType coin, const DerivationPath& path) {
     const auto curve = TW::curve(coin);
     const auto hasher = TW::base58Hasher(coin);
 

@@ -36,7 +36,7 @@ class PolkadotTests: XCTestCase {
         // https://polkadot.subscan.io/extrinsic/0x5ec2ec6633b4b6993d9cf889ef42c457a99676244dc361a9ae17935d331dc39a
         // real key in 1p test
         let wallet = HDWallet.test
-        let key = wallet.getKey(derivationPath: "m/44'/354'/0'")
+        let key = wallet.getKey(coin: .polkadot, derivationPath: "m/44'/354'/0'")
         print(key.data.hexString)
 
         let address = CoinType.polkadot.deriveAddress(privateKey: key)

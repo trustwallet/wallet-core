@@ -19,7 +19,7 @@ TEST(TWAeternityAddress, HDWallet) {
     auto wallet = WRAP(
         TWHDWallet, TWHDWalletCreateWithMnemonic(STRING(mnemonic).get(), STRING(passphrase).get()));
 
-    auto privateKey = TWHDWalletGetKey(wallet.get(), TWCoinTypeDerivationPath(TWCoinTypeAeternity));
+    auto privateKey = TWHDWalletGetKey(wallet.get(), TWCoinTypeAeternity, TWCoinTypeDerivationPath(TWCoinTypeAeternity));
     auto publicKey = TWPrivateKeyGetPublicKeyEd25519(privateKey);
     auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeAeternity));
     auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));

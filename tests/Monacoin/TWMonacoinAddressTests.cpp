@@ -80,8 +80,8 @@ TEST(Monacoin, ExtendedKeys) {
 
 TEST(Monacoin, DeriveFromXpub) {
     auto xpub = STRING("xpub6CYWFE1BgTCW2vtbDm1RRT81i3hBkQrXCfGs5hYp211fpgLZV5xCEwXMWPAL3LgaBA9koXpLZSUo7rTyJ8q1JwqKhvzVpdzBKRGyyGb31KF");
-    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/22'/0'/0/2").get());
-    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/22'/0'/0/9").get());
+    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeMonacoin, STRING("m/44'/22'/0'/0/2").get());
+    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeMonacoin, STRING("m/44'/22'/0'/0/9").get());
 
     auto address2 = TWBitcoinAddressCreateWithPublicKey(pubKey2, TWCoinTypeP2pkhPrefix(TWCoinTypeMonacoin));
     auto address2String = WRAPS(TWBitcoinAddressDescription(address2));

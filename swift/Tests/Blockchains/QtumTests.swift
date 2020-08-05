@@ -55,8 +55,17 @@ class QtumTests: XCTestCase {
     func testDeriveFromXpub() {
         let xpub = "xpub6CAkJZPecMDxRXEXZpDwyxcQ6CGie8GdovuJhsGwc2gFbLxdGr1PyqBXmsL7aYds1wfY2rB3YMVZiEE3CB3Lkj6KGoq1rEJ1wuaGkMDBf1m"
         let qtum = CoinType.qtum
-        let xpubAddr2 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: qtum.purpose, coinType: qtum, account: 0, change: 0, address: 2))!
-        let xpubAddr9 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: qtum.purpose, coinType: qtum, account: 0, change: 0, address: 9))!
+        let xpubAddr2 = HDWallet.getPublicKeyFromExtended(
+            extended: xpub,
+            coin: qtum,
+            derivationPath: DerivationPath(purpose: qtum.purpose, coin: qtum.slip44Id, account: 0, change: 0, address: 2).description
+        )!
+
+        let xpubAddr9 = HDWallet.getPublicKeyFromExtended(
+            extended: xpub,
+            coin: qtum,
+            derivationPath: DerivationPath(purpose: qtum.purpose, coin: qtum.slip44Id, account: 0, change: 0, address: 9).description
+        )!
 
         XCTAssertEqual(BitcoinAddress(publicKey: xpubAddr2, prefix: CoinType.qtum.p2pkhPrefix)!.description, "QStYeAAfiYKxsABzY9yugHDpm5bsynYPqc")
         XCTAssertEqual(BitcoinAddress(publicKey: xpubAddr9, prefix: CoinType.qtum.p2pkhPrefix)!.description, "QfbKFChfhx1s4VXS9BzaVJgyKw5a1hnFg4")
@@ -65,8 +74,16 @@ class QtumTests: XCTestCase {
     func testDeriveFromZPub() {
         let zpub = "zpub6rJJqJZcpaC7DrdsYiprLfUfvtaf11ZZWmrmYeWMkdZTx6tgfQLiBZuisraogskwBRLMGWfXoCyWRrXSypwPdNV2UWJXm5bDVQvBXvrzz9d"
         let qtum = CoinType.qtum
-        let zpubAddr4 = HDWallet.derive(from: zpub, at: DerivationPath(purpose: .bip84, coinType: qtum, account: 0, change: 0, address: 4))!
-        let zpubAddr11 = HDWallet.derive(from: zpub, at: DerivationPath(purpose: .bip84, coinType: qtum, account: 0, change: 0, address: 11))!
+        let zpubAddr4 = HDWallet.getPublicKeyFromExtended(
+            extended: zpub,
+            coin: qtum,
+            derivationPath: DerivationPath(purpose: .bip84, coin: qtum.slip44Id, account: 0, change: 0, address: 4).description
+        )!
+        let zpubAddr11 = HDWallet.getPublicKeyFromExtended(
+            extended: zpub,
+            coin: qtum,
+            derivationPath: DerivationPath(purpose: .bip84, coin: qtum.slip44Id, account: 0, change: 0, address: 11).description
+        )!
 
         XCTAssertEqual(SegwitAddress(hrp: .qtum, publicKey: zpubAddr4).description, "qc1q3cvjmc2cgjkz9y58waj3r9ccchmrmrdzq03783")
         XCTAssertEqual(SegwitAddress(hrp: .qtum, publicKey: zpubAddr11).description, "qc1qrlk0ajg6khu2unsdppggs3pgpxxvdeymky58af")
