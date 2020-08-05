@@ -24,12 +24,12 @@ public struct DerivationPath: Codable, Hashable, CustomStringConvertible {
     }
 
     /// Coin type distinguishes between main net, test net, and forks.
-    public var coinType: CoinType {
+    public var coinType: UInt32 {
         get {
-            return CoinType(rawValue: indices[1].value)!
+            return indices[1].value
         }
         set {
-            indices[1] = Index(newValue.rawValue, hardened: true)
+            indices[1] = Index(newValue, hardened: true)
         }
     }
 
@@ -72,7 +72,7 @@ public struct DerivationPath: Codable, Hashable, CustomStringConvertible {
     public init(purpose: Purpose, coinType: CoinType, account: UInt32 = 0, change: UInt32 = 0, address: UInt32 = 0) {
         self.indices = [Index](repeating: Index(0), count: indexCount)
         self.purpose = purpose
-        self.coinType = coinType
+        self.coinType = coinType.slip44Id
         self.account = account
         self.change = change
         self.address = address

@@ -278,6 +278,14 @@ Hash::Hasher TW::base58Hasher(TWCoinType coin) {
     return getCoinInfo(coin).base58Hasher;
 }
 
+uint32_t TW::slip44Id(TWCoinType coin) {
+    auto id = getCoinInfo(coin).numericId;
+    switch (coin) {
+    case TWCoinTypeBinanceSmartChain: return id / 10000;
+    default: return id;
+    }
+}
+
 TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType coin) {
     return TWStringCreateWithUTF8Bytes(getCoinInfo(coin).symbol);
 }

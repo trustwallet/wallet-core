@@ -28,7 +28,7 @@ class DerivationPathTests: XCTestCase {
         XCTAssertEqual(path?.indices[4], DerivationPath.Index(0, hardened: false))
 
         XCTAssertEqual(path?.purpose, Purpose(rawValue: 44)!)
-        XCTAssertEqual(path?.coinType, CoinType(rawValue: 60)!)
+        XCTAssertEqual(path?.coinType, 60)
         XCTAssertEqual(path?.account, 0)
         XCTAssertEqual(path?.change, 0)
         XCTAssertEqual(path?.address, 0)

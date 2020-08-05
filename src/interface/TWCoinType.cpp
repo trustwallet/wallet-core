@@ -64,3 +64,7 @@ uint8_t TWCoinTypeP2shPrefix(enum TWCoinType coin) {
 uint8_t TWCoinTypeStaticPrefix(enum TWCoinType coin) {
     return TW::staticPrefix(coin);
 }
+
+uint32_t TWCoinTypeSlip44Id(enum TWCoinType coin) {
+    return TW::slip44Id(coin);
+}
