@@ -9,6 +9,9 @@
 
 #include <gtest/gtest.h>
 
+#include <mutex>
+#include <thread>
+
 namespace TW {
 
 TEST(Coin, DeriveAddress) {
@@ -72,6 +75,37 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeNEAR, privateKey), "NEAR2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5HYrdGj");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeSolana, privateKey), "H4JcMPicKkHcxxDjkyyrLoQj7Kcibd9t815ak4UvTr9M");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeElrond, privateKey), "erd1a6f6fan035ttsxdmn04ellxdlnwpgyhg0lhx5vjv92v6rc8xw9yq83344f");
+}
+
+int countThreadReady = 0;
+std::mutex countThreadReadyMutex;
+
+void useCoinFromThread() {
+    const int tryCount = 20;
+    for (int i = 0; i < tryCount; ++i) {
+        // perform some operations
+        const auto coinTypes = TW::getCoinTypes();
+        TW::validateAddress(TWCoinTypeEthereum, "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
+    }
+    countThreadReadyMutex.lock();
+    ++countThreadReady;
+    countThreadReadyMutex.unlock();
+}
+
+TEST(Coin, InitMultithread) {
+    const int numThread = 20;
+    countThreadReady = 0;
+    std::thread thread[numThread];
+    // execute in threads
+    for (int i = 0; i < numThread; ++i) {
+        thread[i] = std::thread(useCoinFromThread);
+    }
+    // wait for completion
+    for (int i = 0; i < numThread; ++i) {
+        thread[i].join();
+    }
+    // check that all completed OK
+    ASSERT_EQ(countThreadReady, numThread);
 }
 
 } // namespace TW
