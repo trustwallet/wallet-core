@@ -24,6 +24,8 @@ const auto passwordString = "password";
 const auto password = TW::data(string(passwordString));
 const auto mnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
 const TWCoinType coinTypeBc = TWCoinTypeBitcoin;
+const TWCoinType coinTypeBnb = TWCoinTypeBinance;
+const TWCoinType coinTypeBsc = TWCoinTypeBinanceSmartChain;
 
 TEST(StoredKey, CreateWithMnemonic) {
     auto key = StoredKey::createWithMnemonic("name", password, mnemonic);
@@ -138,11 +140,21 @@ TEST(StoredKey, AddRemoveAccount) {
     auto key = StoredKey::createWithMnemonic("name", password, mnemonic);
     EXPECT_EQ(key.accounts.size(), 0);
 
-    const auto derivationPath = DerivationPath("m/84'/0'/0'/0/0");
-    key.addAccount("bc1q375sq4kl2nv0mlmup3vm8znn4eqwu7mt6hkwhr", TWCoinTypeBitcoin, derivationPath, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
-    EXPECT_EQ(key.accounts.size(), 1);
+    {
+        const auto derivationPath = DerivationPath("m/84'/0'/0'/0/0");
+        key.addAccount("bc1q375sq4kl2nv0mlmup3vm8znn4eqwu7mt6hkwhr", coinTypeBc, derivationPath, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
+        EXPECT_EQ(key.accounts.size(), 1);
+    }
+    {
+        const auto derivationPath = DerivationPath("m/714'/0'/0'/0/0");
+        key.addAccount("bnb1devga6q804tx9fqrnx0vtu5r36kxgp9tmk4xkm", coinTypeBnb, derivationPath, "");
+        key.addAccount("0xf3d468DBb386aaD46E92FF222adDdf872C8CC064", coinTypeBsc, derivationPath, "");
+        EXPECT_EQ(key.accounts.size(), 3);
+    }
 
     key.removeAccount(coinTypeBc);
+    key.removeAccount(coinTypeBnb);
+    key.removeAccount(coinTypeBsc);
     EXPECT_EQ(key.accounts.size(), 0);
 }
 

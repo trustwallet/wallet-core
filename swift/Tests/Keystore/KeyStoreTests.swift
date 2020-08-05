@@ -71,13 +71,15 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testCreateHDWallet() throws {
-        let coins = [CoinType.ethereum]
+        let coins = [CoinType.ethereum, .binance, .binanceSmartChain]
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let newWallet = try keyStore.createWallet(name: "name", password: "password", coins: coins)
 
-        XCTAssertEqual(newWallet.accounts.count, 1)
+        XCTAssertEqual(newWallet.accounts.count, 3)
         XCTAssertEqual(keyStore.wallets.count, 4)
         XCTAssertNoThrow(try newWallet.getAccount(password: "password", coin: .ethereum))
+        XCTAssertNoThrow(try newWallet.getAccount(password: "password", coin: .binance))
+        XCTAssertNoThrow(try newWallet.getAccount(password: "password", coin: .binanceSmartChain))
     }
 
     func testUpdateKey() throws {
