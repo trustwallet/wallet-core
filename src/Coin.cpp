@@ -12,6 +12,7 @@
 
 #include <map>
 #include <set>
+#include <mutex>
 
 // Includes for entry points for coin implementations
 #include "Aeternity/Entry.h"
@@ -59,6 +60,7 @@ using namespace std;
 
 // Map with coin entry dispatchers, key is coin type
 map<TWCoinType, CoinEntry*> dispatchMap = {}; 
+mutex dispatchMapMutex;
 // List of supported coint types
 set<TWCoinType> coinTypes = {};
 
@@ -104,6 +106,11 @@ void setupDispatchers() {
         new Elrond::Entry(),
     }; // end_of_coin_entries_marker_do_not_modify
 
+    lock_guard<mutex> guard(dispatchMapMutex);
+    if (dispatchMap.size() > 0) {
+        // already set up, skip
+        return;
+    }
     dispatchMap.clear();
     coinTypes.clear();
     for (auto d : dispatchers) {
@@ -117,7 +124,6 @@ void setupDispatchers() {
             };
         }
     }
-    return;
     // Note: dispatchers are created at first use, and never freed
 }
 
@@ -125,6 +131,8 @@ inline void setupDispatchersIfNeeded() {
     if (dispatchMap.size() == 0) {
         setupDispatchers();
     }
+    assert(dispatchMap.size() > 0);
+    // it is set up by this time, and will not get modified
 }
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {

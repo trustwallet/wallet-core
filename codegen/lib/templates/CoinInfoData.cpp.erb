@@ -11,11 +11,14 @@
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 
 #include <map>
+#include <mutex>
+#include <cassert>
 
 using namespace TW;
 
 /// Map with info about known coins
 static std::map<TWCoinType, CoinInfo> coins;
+static std::mutex coinsMutex;
 
 static const CoinInfo defaultsForMissing = {
     "?",
@@ -43,13 +46,22 @@ void fillMap(); // forward
 
 /// Get coin from map, if missing returns defaults (not to have contains-check in each accessor method)
 const CoinInfo& getCoinInfo(TWCoinType coin) {
-    if (coins.size() == 0) { fillMap(); }
-    if (coins.find(coin) == coins.end()) { return defaultsForMissing; }
+    if (coins.size() == 0) {
+        fillMap();
+    }
+    assert(coins.size() > 0);
+    if (coins.find(coin) == coins.end()) {
+        return defaultsForMissing;
+    }
     return coins.at(coin);
 }
 
 /// Fill the map.  Simple static initializer did not work out due to nondeterministic static initialization order
 void fillMap() {
+    std::lock_guard<std::mutex> guard(coinsMutex);
+    if (coins.size() > 0) {
+        return;
+    }
     coins = std::map<TWCoinType, CoinInfo> {
     <% coins.each do |coin| -%>
     {
