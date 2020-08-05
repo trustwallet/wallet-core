@@ -1488,6 +1488,7 @@
       "clientPublic": "https://data-seed-prebsc-1-s1.binance.org:8545",
       "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
     },
-    "numericId": 7140000
+    "numericId": 10000714,
+    "slip44": 714
   }
 ]

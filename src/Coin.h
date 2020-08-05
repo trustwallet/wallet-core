@@ -112,7 +112,7 @@ struct CoinInfo {
     int decimals;
     const char* explorerTransactionUrl;
     const char* explorerAccountUrl;
-    uint32_t numericId;
+    uint32_t slip44;
 };
 
 } // namespace TW
