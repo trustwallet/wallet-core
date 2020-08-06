@@ -25,7 +25,7 @@ def self.explorer_account_url(c)
 end
 
 json_string = File.read('coins.json')
-coins = JSON.parse(json_string).sort_by { |x| x['numericId'] }
+coins = JSON.parse(json_string).sort_by { |x| x['coinId'] }
 
 erbs = [
   {'template' => 'CoinInfoData.cpp.erb', 'folder' => 'src/Generated', 'file' => 'CoinInfoData.cpp'},

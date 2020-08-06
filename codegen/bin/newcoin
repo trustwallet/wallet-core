@@ -44,7 +44,7 @@ end
 
 def self.insert_coin_type(coin)
     target_file = "include/TrustWalletCore/TWCoinType.h"
-    target_line = "    TWCoinType#{format_name(coin)} = #{coin['numericId']},\n"
+    target_line = "    TWCoinType#{format_name(coin)} = #{coin['coinId']},\n"
     if insert_target_line(target_file, target_line, "};\n")
         insert_blockchain_type(coin)
     end

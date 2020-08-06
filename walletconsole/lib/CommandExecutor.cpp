@@ -131,7 +131,7 @@ bool CommandExecutor::executeOne(const string& cmd, const vector<string>& params
     if (cmd == "addrpri") { if (!checkMinParams(params, 1)) { return false; } return _address.addrPri(_activeCoin, params[1], res); }
     if (cmd == "addr") { if (!checkMinParams(params, 1)) { return false; } return _address.addr(_activeCoin, params[1], res); }
     if (cmd == "addrdefault") { return _address.addrDefault(_activeCoin, res); }
-    if (cmd == "addrdp") { if (!checkMinParams(params, 1)) { return false; } return _address.addrDP(_activeCoin, params[1], res); }
+    if (cmd == "addrdp") { if (!checkMinParams(params, 1)) { return false; } return _address.deriveFromPath(_activeCoin, params[1], res); }
 
     if (cmd == "toninitmsg") { if (!checkMinParams(params, 1)) { return false; } setCoin("ton", false); return TonCoin::tonInitMsg(params[1], res); }
 

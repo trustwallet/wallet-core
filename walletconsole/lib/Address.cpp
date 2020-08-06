@@ -79,7 +79,7 @@ bool Address::addrDefault(const string& coinid, string& res) {
     return true;
 }
 
-bool Address::addrDP(const string& coinid, const string& derivPath, string& res) {
+bool Address::deriveFromPath(const string& coinid, const string& derivPath, string& res) {
     Coin coin;
     if (!_coins.findCoin(coinid, coin)) { return false; }
     TWCoinType ctype = (TWCoinType)coin.c;

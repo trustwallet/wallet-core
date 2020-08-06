@@ -2,6 +2,7 @@
   {
     "id": "bitcoin",
     "name": "Bitcoin",
+    "coinId": 0,
     "symbol": "BTC",
     "decimals": 8,
     "blockchain": "Bitcoin",
@@ -27,12 +28,12 @@
       "client": "https://github.com/trezor/blockbook",
       "clientPublic": "",
       "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
-    },
-    "numericId": 0
+    }
   },
   {
     "id": "litecoin",
     "name": "Litecoin",
+    "coinId": 2,
     "symbol": "LTC",
     "decimals": 8,
     "blockchain": "Bitcoin",
@@ -56,12 +57,12 @@
       "client": "https://github.com/trezor/blockbook",
       "clientPublic": "",
       "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
-    },
-    "numericId": 2
+    }
   },
   {
     "id": "doge",
     "name": "Dogecoin",
+    "coinId": 3,
     "symbol": "DOGE",
     "decimals": 8,
     "blockchain": "Bitcoin",
@@ -84,12 +85,12 @@
       "client": "https://github.com/trezor/blockbook",
       "clientPublic": "",
       "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
-    },
-    "numericId": 3
+    }
   },
   {
     "id": "dash",
     "name": "Dash",
+    "coinId": 5,
     "symbol": "DASH",
     "decimals": 8,
     "blockchain": "Bitcoin",
@@ -112,12 +113,12 @@
       "client": "https://github.com/trezor/blockbook",
       "clientPublic": "",
       "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
-    },
-    "numericId": 5
+    }
   },
   {
     "id": "viacoin",
     "name": "Viacoin",
+    "coinId": 14,
     "symbol": "VIA",
     "decimals": 8,
     "blockchain": "Bitcoin",
@@ -141,12 +142,12 @@
       "client": "https://github.com/trezor/blockbook",
       "clientPublic": "",
       "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
-    },
-    "numericId": 14
+    }
   },
   {
     "id": "groestlcoin",
     "name": "Groestlcoin",
+    "coinId": 17,
     "symbol": "GRS",
     "decimals": 8,
     "blockchain": "Bitcoin",
@@ -170,12 +171,12 @@
       "client": "https://github.com/trezor/blockbook",
       "clientPublic": "",
       "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
-    },
-    "numericId": 17
+    }
   },
   {
     "id": "digibyte",
     "name": "DigiByte",
+    "coinId": 20,
     "symbol": "DGB",
     "decimals": 8,
     "blockchain": "Bitcoin",
@@ -199,12 +200,12 @@
       "client": "https://github.com/trezor/blockbook",
       "clientPublic": "",
       "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
-    },
-    "numericId": 20
+    }
   },
   {
     "id": "monacoin",
     "name": "Monacoin",
+    "coinId": 22,
     "symbol": "MONA",
     "decimals": 8,
     "blockchain": "Bitcoin",
@@ -228,12 +229,12 @@
       "client": "https://github.com/trezor/blockbook",
       "clientPublic": "",
       "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
-    },
-    "numericId": 22
+    }
   },
   {
     "id": "decred",
     "name": "Decred",
+    "coinId": 42,
     "symbol": "DCR",
     "decimals": 8,
     "blockchain": "Bitcoin",
@@ -257,12 +258,12 @@
       "client": "https://github.com/trezor/blockbook",
       "clientPublic": "",
       "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
-    },
-    "numericId": 42
+    }
   },
   {
     "id": "ethereum",
     "name": "Ethereum",
+    "coinId": 60,
     "symbol": "ETH",
     "decimals": 18,
     "blockchain": "Ethereum",
@@ -281,12 +282,12 @@
       "client": "https://github.com/ethereum/go-ethereum",
       "clientPublic": "https://mainnet.infura.io",
       "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
-    },
-    "numericId": 60
+    }
   },
   {
     "id": "classic",
     "name": "Ethereum Classic",
+    "coinId": 61,
     "symbol": "ETC",
     "decimals": 18,
     "blockchain": "Ethereum",
@@ -303,12 +304,12 @@
       "client": "https://github.com/ethereumclassic/go-ethereum",
       "clientPublic": "https://www.ethercluster.com/etc",
       "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
-    },
-    "numericId": 61
+    }
   },
   {
     "id": "icon",
     "name": "ICON",
+    "coinId": 74,
     "symbol": "ICX",
     "decimals": 18,
     "blockchain": "Icon",
@@ -325,12 +326,12 @@
       "client": "https://github.com/icon-project/icon-rpc-server",
       "clientPublic": "http://ctz.icxstation.com:9000/api/v3",
       "clientDocs": "https://www.icondev.io/docs/icon-json-rpc-v3"
-    },
-    "numericId": 74
+    }
   },
   {
     "id": "cosmos",
     "name": "Cosmos",
+    "coinId": 118,
     "symbol": "ATOM",
     "decimals": 6,
     "blockchain": "Cosmos",
@@ -348,12 +349,12 @@
       "client": "https://github.com/cosmos/cosmos-sdk",
       "clientPublic": "https://stargate.cosmos.network",
       "clientDocs": "https://cosmos.network/rpc"
-    },
-    "numericId": 118
+    }
   },
   {
     "id": "zcash",
     "name": "Zcash",
+    "coinId": 133,
     "symbol": "ZEC",
     "decimals": 8,
     "blockchain": "Bitcoin",
@@ -377,12 +378,12 @@
       "client": "https://github.com/trezor/blockbook",
       "clientPublic": "",
       "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
-    },
-    "numericId": 133
+    }
   },
   {
     "id": "zcoin",
     "name": "Zcoin",
+    "coinId": 136,
     "symbol": "XZC",
     "decimals": 8,
     "blockchain": "Bitcoin",
@@ -405,12 +406,12 @@
       "client": "https://github.com/trezor/blockbook",
       "clientPublic": "",
       "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
-    },
-    "numericId": 136
+    }
   },
   {
     "id": "ripple",
     "name": "XRP",
+    "coinId": 144,
     "symbol": "XRP",
     "decimals": 6,
     "blockchain": "Ripple",
@@ -429,12 +430,12 @@
       "client": "https://github.com/ripple/rippled",
       "clientPublic": "https://s2.ripple.com:51234",
       "clientDocs": "https://xrpl.org/rippled-api.html"
-    },
-    "numericId": 144
+    }
   },
   {
     "id": "bitcoincash",
     "name": "Bitcoin Cash",
+    "coinId": 145,
     "symbol": "BCH",
     "decimals": 8,
     "blockchain": "Bitcoin",
@@ -458,12 +459,12 @@
       "client": "https://github.com/trezor/blockbook",
       "clientPublic": "",
       "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
-    },
-    "numericId": 145
+    }
   },
   {
     "id": "stellar",
     "name": "Stellar",
+    "coinId": 148,
     "symbol": "XLM",
     "decimals": 7,
     "blockchain": "Stellar",
@@ -480,12 +481,12 @@
       "client": "https://github.com/stellar/go",
       "clientPublic": "https://horizon.stellar.org",
       "clientDocs": "https://www.stellar.org/developers/horizon/reference"
-    },
-    "numericId": 148
+    }
   },
   {
     "id": "bitcoingold",
     "name": "Bitcoin Gold",
+    "coinId": 156,
     "symbol": "BTG",
     "decimals": 8,
     "blockchain": "Bitcoin",
@@ -509,12 +510,12 @@
       "client": "https://github.com/trezor/blockbook",
       "clientPublic": "",
       "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
-    },
-    "numericId": 156
+    }
   },
   {
     "id": "nano",
     "name": "Nano",
+    "coinId": 165,
     "symbol": "NANO",
     "decimals": 30,
     "blockchain": "Nano",
@@ -534,12 +535,12 @@
       "client": "https://github.com/nanocurrency/nano-node",
       "clientPublic": "",
       "clientDocs": "https://docs.nano.org/commands/rpc-protocol/"
-    },
-    "numericId": 165
+    }
   },
   {
     "id": "ravencoin",
     "name": "Ravencoin",
+    "coinId": 175,
     "symbol": "RVN",
     "decimals": 8,
     "blockchain": "Bitcoin",
@@ -562,12 +563,12 @@
       "client": "https://github.com/trezor/blockbook",
       "clientPublic": "",
       "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
-    },
-    "numericId": 175
+    }
   },
   {
     "id": "poa",
     "name": "POA Network",
+    "coinId": 178,
     "symbol": "POA",
     "decimals": 18,
     "blockchain": "Ethereum",
@@ -584,12 +585,12 @@
       "client": "https://github.com/poanetwork/parity-ethereum",
       "clientPublic": "https://core.poa.network",
       "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
-    },
-    "numericId": 178
+    }
   },
   {
     "id": "eos",
     "name": "EOS",
+    "coinId": 194,
     "symbol": "EOS",
     "decimals": 4,
     "blockchain": "EOS",
@@ -606,12 +607,12 @@
       "client": "https://github.com/eosio/eos",
       "clientPublic": "",
       "clientDocs": "https://developers.eos.io/eosio-nodeos/reference"
-    },
-    "numericId": 194
+    }
   },
   {
     "id": "tron",
     "name": "Tron",
+    "coinId": 195,
     "symbol": "TRX",
     "decimals": 6,
     "blockchain": "Tron",
@@ -628,12 +629,12 @@
       "client": "https://github.com/tronprotocol/java-tron",
       "clientPublic": "https://api.trongrid.io",
       "clientDocs": "https://developers.tron.network/docs/tron-wallet-rpc-api"
-    },
-    "numericId": 195
+    }
   },
   {
     "id": "fio",
     "name": "FIO",
+    "coinId": 235,
     "symbol": "FIO",
     "decimals": 9,
     "blockchain": "FIO",
@@ -651,12 +652,12 @@
       "client": "https://github.com/fioprotocol/fio",
       "clientPublic": "https://mainnet.fioprotocol.io",
       "clientDocs": "https://developers.fioprotocol.io"
-    },
-    "numericId": 235
+    }
   },
   {
     "id": "nimiq",
     "name": "Nimiq",
+    "coinId": 242,
     "symbol": "NIM",
     "decimals": 5,
     "blockchain": "Nimiq",
@@ -673,12 +674,12 @@
       "client": "https://github.com/nimiq/core-rs",
       "clientPublic": "",
       "clientDocs": "https://github.com/nimiq/core-js/wiki/JSON-RPC-API"
-    },
-    "numericId": 242
+    }
   },
   {
     "id": "algorand",
     "name": "Algorand",
+    "coinId": 283,
     "symbol": "ALGO",
     "decimals": 6,
     "blockchain": "Algorand",
@@ -697,12 +698,12 @@
       "client": "https://github.com/algorand/go-algorand",
       "clientPublic": "https://indexer.algorand.network",
       "clientDocs": "https://developer.algorand.org/docs/algod-rest-paths"
-    },
-    "numericId": 283
+    }
   },
   {
     "id": "iotex",
     "name": "IoTeX",
+    "coinId": 304,
     "symbol": "IOTX",
     "decimals": 18,
     "blockchain": "IoTeX",
@@ -720,12 +721,12 @@
       "client": "https://github.com/iotexproject/iotex-core",
       "clientPublic": "",
       "clientDocs": "https://docs.iotex.io/#api"
-    },
-    "numericId": 304
+    }
   },
   {
     "id": "zilliqa",
     "name": "Zilliqa",
+    "coinId": 313,
     "symbol": "ZIL",
     "decimals": 12,
     "blockchain": "Zilliqa",
@@ -743,12 +744,12 @@
       "client": "https://github.com/Zilliqa/Zilliqa",
       "clientPublic": "https://api.zilliqa.com",
       "clientDocs": "https://apidocs.zilliqa.com"
-    },
-    "numericId": 313
+    }
   },
   {
     "id": "terra",
     "name": "Terra",
+    "coinId": 330,
     "symbol": "LUNA",
     "decimals": 6,
     "blockchain": "Cosmos",
@@ -766,12 +767,12 @@
       "client": "https://github.com/terra-project/core",
       "clientPublic": "https://rpc.terra.dev",
       "clientDocs": "https://docs.terra.money"
-    },
-    "numericId": 330
+    }
   },
   {
     "id": "polkadot",
     "name": "Polkadot",
+    "coinId": 354,
     "symbol": "DOT",
     "decimals": 10,
     "blockchain": "Polkadot",
@@ -788,12 +789,12 @@
       "client": "https://github.com/paritytech/polkadot",
       "clientPublic": "",
       "clientDocs": "https://polkadot.js.org/api/substrate/rpc.html"
-    },
-    "numericId": 354
+    }
   },
   {
     "id": "ton",
     "name": "TON",
+    "coinId": 396,
     "symbol": "GRAM",
     "decimals": 9,
     "blockchain": "TON",
@@ -810,12 +811,12 @@
       "client": "https://github.com/ton-blockchain/ton",
       "clientPublic": "",
       "clientDocs": "https://test.ton.org/"
-    },
-    "numericId": 396
+    }
   },
   {
     "id": "near",
     "name": "NEAR",
+    "coinId": 397,
     "symbol": "NEAR",
     "decimals": 18,
     "blockchain": "NEAR",
@@ -832,12 +833,12 @@
       "client": "https://github.com/nearprotocol/nearcore",
       "clientPublic": "https://rpc.nearprotocol.com",
       "clientDocs": "https://docs.nearprotocol.com"
-    },
-    "numericId": 397
+    }
   },
   {
     "id": "aion",
     "name": "Aion",
+    "coinId": 425,
     "symbol": "AION",
     "decimals": 18,
     "blockchain": "Aion",
@@ -854,12 +855,12 @@
       "client": "https://github.com/aionnetwork/aion",
       "clientPublic": "",
       "clientDocs": "https://github.com/aionnetwork/aion/wiki/JSON-RPC-API-Docs"
-    },
-    "numericId": 425
+    }
   },
   {
     "id": "kusama",
     "name": "Kusama",
+    "coinId": 434,
     "symbol": "KSM",
     "decimals": 12,
     "blockchain": "Polkadot",
@@ -878,12 +879,12 @@
       "client": "https://github.com/paritytech/polkadot",
       "clientPublic": "wss://kusama-rpc.polkadot.io/",
       "clientDocs": "https://polkadot.js.org/api/substrate/rpc.html"
-    },
-    "numericId": 434
+    }
   },
   {
     "id": "aeternity",
     "name": "Aeternity",
+    "coinId": 457,
     "symbol": "AE",
     "decimals": 18,
     "blockchain": "Aeternity",
@@ -900,12 +901,12 @@
       "client": "https://github.com/aeternity/aeternity",
       "clientPublic": "https://sdk-mainnet.aepps.com",
       "clientDocs": "http://aeternity.com/api-docs/"
-    },
-    "numericId": 457
+    }
   },
   {
     "id": "kava",
     "name": "Kava",
+    "coinId": 459,
     "symbol": "KAVA",
     "decimals": 6,
     "blockchain": "Cosmos",
@@ -925,12 +926,12 @@
       "client": "https://github.com/kava-labs/kava",
       "clientPublic": "https://data.kava.io",
       "clientDocs": "https://rpc.kava.io"
-    },
-    "numericId": 459
+    }
   },
   {
     "id": "filecoin",
     "name": "Filecoin",
+    "coinId": 461,
     "symbol": "FIL",
     "decimals": 18,
     "blockchain": "Filecoin",
@@ -949,13 +950,13 @@
       "client": "https://github.com/filecoin-project/lotus",
       "clientPublic": "",
       "clientDocs": "https://docs.lotu.sh"
-    },
-    "numericId": 461
+    }
   },
   {
     "id": "band",
     "name": "BandChain",
     "symbol": "BAND",
+    "coinId": 494,
     "decimals": 6,
     "blockchain": "Cosmos",
     "derivationPath": "m/44'/494'/0'/0/0",
@@ -974,12 +975,12 @@
       "client": "https://github.com/bandprotocol/bandchain",
       "clientPublic": "https://api-wt2-lb.bandchain.org",
       "clientDocs": "https://docs.bandchain.org/"
-    },
-    "numericId": 494
+    }
   },
   {
     "id": "theta",
     "name": "Theta",
+    "coinId": 500,
     "symbol": "THETA",
     "decimals": 18,
     "blockchain": "Theta",
@@ -996,12 +997,12 @@
       "client": "https://github.com/thetatoken/theta-protocol-ledger",
       "clientPublic": "",
       "clientDocs": "https://github.com/thetatoken/theta-mainnet-integration-guide/blob/master/docs/api.md#api-reference"
-    },
-    "numericId": 500
+    }
   },
   {
     "id": "solana",
     "name": "Solana",
+    "coinId": 501,
     "symbol": "SOL",
     "decimals": 9,
     "blockchain": "Solana",
@@ -1018,12 +1019,12 @@
       "client": "https://github.com/solana-labs/solana",
       "clientPublic": "https://api.mainnet-beta.solana.com",
       "clientDocs": "https://docs.solana.com"
-    },
-    "numericId": 501
+    }
   },
   {
     "id": "elrond",
     "name": "Elrond",
+    "coinId": 508,
     "symbol": "eGLD",
     "decimals": 18,
     "blockchain": "ElrondNetwork",
@@ -1041,13 +1042,13 @@
       "client": "https://github.com/ElrondNetwork/elrond-go",
       "clientPublic": "https://api.elrond.com",
       "clientDocs": "https://docs.elrond.com"
-    },
-    "numericId": 508
+    }
   },
   {
     "id": "binance",
     "name": "Binance",
     "displayName": "BNB",
+    "coinId": 714,
     "symbol": "BNB",
     "decimals": 8,
     "blockchain": "Binance",
@@ -1067,12 +1068,12 @@
       "client": "https://github.com/binance-chain/node-binary",
       "clientPublic": "https://dex.binance.org",
       "clientDocs": "https://docs.binance.org/api-reference/dex-api/paths.html"
-    },
-    "numericId": 714
+    }
   },
   {
     "id": "vechain",
     "name": "VeChain",
+    "coinId": 818,
     "symbol": "VET",
     "decimals": 18,
     "blockchain": "Vechain",
@@ -1089,12 +1090,12 @@
       "client": "https://github.com/vechain/thor",
       "clientPublic": "",
       "clientDocs": "https://doc.vechainworld.io/docs"
-    },
-    "numericId": 818
+    }
   },
   {
     "id": "callisto",
     "name": "Callisto",
+    "coinId": 820,
     "symbol": "CLO",
     "decimals": 18,
     "blockchain": "Ethereum",
@@ -1111,12 +1112,12 @@
       "client": "https://github.com/EthereumCommonwealth/go-callisto",
       "clientPublic": "https://clo-geth.0xinfra.com",
       "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
-    },
-    "numericId": 820
+    }
   },
   {
     "id": "neo",
     "name": "NEO",
+    "coinId": 888,
     "symbol": "NEO",
     "decimals": 8,
     "blockchain": "NEO",
@@ -1135,12 +1136,12 @@
       "client": "https://github.com/neo-project/neo",
       "clientPublic": "http://seed1.ngd.network:10332",
       "clientDocs": "https://neo.org/eco"
-    },
-    "numericId": 888
+    }
   },
   {
     "id": "tomochain",
     "name": "TomoChain",
+    "coinId": 889,
     "symbol": "TOMO",
     "decimals": 18,
     "blockchain": "Ethereum",
@@ -1157,12 +1158,12 @@
       "client": "https://github.com/tomochain/tomochain",
       "clientPublic": "https://rpc.tomochain.com",
       "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
-    },
-    "numericId": 889
+    }
   },
   {
     "id": "thundertoken",
     "name": "Thunder Token",
+    "coinId": 1001,
     "symbol": "TT",
     "decimals": 18,
     "blockchain": "Ethereum",
@@ -1179,12 +1180,12 @@
       "client": "https://github.com/thundercore/pala",
       "clientPublic": "https://mainnet-rpc.thundercore.com",
       "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
-    },
-    "numericId": 1001
+    }
   },
   {
     "id": "harmony",
     "name": "Harmony",
+    "coinId": 1023,
     "symbol": "ONE",
     "decimals": 18,
     "blockchain": "Harmony",
@@ -1202,12 +1203,12 @@
       "client": "https://github.com/harmony-one/go-sdk",
       "clientPublic": "",
       "clientDocs": "https://docs.harmony.one/home/harmony-networks/harmony-network-overview/mainnet"
-    },
-    "numericId": 1023
+    }
   },
   {
     "id": "ontology",
     "name": "Ontology",
+    "coinId": 1024,
     "symbol": "ONT",
     "decimals": 0,
     "blockchain": "Ontology",
@@ -1224,12 +1225,12 @@
       "client": "https://github.com/ontio/ontology",
       "clientPublic": "http://dappnode1.ont.io:20336",
       "clientDocs": "https://github.com/ontio/ontology/blob/master/docs/specifications/rpc_api.md"
-    },
-    "numericId": 1024
+    }
   },
   {
     "id": "tezos",
     "name": "Tezos",
+    "coinId": 1729,
     "symbol": "XTZ",
     "decimals": 6,
     "blockchain": "Tezos",
@@ -1246,12 +1247,12 @@
       "client": "https://gitlab.com/tezos/tezos",
       "clientPublic": "https://rpc.tulip.tools/mainnet",
       "clientDocs": "https://tezos.gitlab.io/tezos/api/rpc.html"
-    },
-    "numericId": 1729
+    }
   },
   {
     "id": "cardano",
     "name": "Cardano",
+    "coinId": 1815,
     "symbol": "ADA",
     "decimals": 6,
     "blockchain": "Cardano",
@@ -1271,12 +1272,12 @@
       "client": "https://github.com/input-output-hk/cardano-sl",
       "clientPublic": "",
       "clientDocs": "https://cardanodocs.com/introduction/"
-    },
-    "numericId": 1815
+    }
   },
   {
     "id": "kin",
     "name": "Kin",
+    "coinId": 2017,
     "symbol": "KIN",
     "decimals": 5,
     "blockchain": "Stellar",
@@ -1293,12 +1294,12 @@
       "client": "https://github.com/kinecosystem/go",
       "clientPublic": "https://horizon.kinfederation.com",
       "clientDocs": "https://www.stellar.org/developers/horizon/reference"
-    },
-    "numericId": 2017
+    }
   },
   {
     "id": "qtum",
     "name": "Qtum",
+    "coinId": 2301,
     "symbol": "QTUM",
     "decimals": 8,
     "blockchain": "Bitcoin",
@@ -1322,12 +1323,12 @@
       "client": "https://github.com/trezor/blockbook",
       "clientPublic": "",
       "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
-    },
-    "numericId": 2301
+    }
   },
   {
     "id": "nebulas",
     "name": "Nebulas",
+    "coinId": 2718,
     "symbol": "NAS",
     "decimals": 18,
     "blockchain": "Nebulas",
@@ -1344,12 +1345,12 @@
       "client": "https://github.com/nebulasio/go-nebulas",
       "clientPublic": "https://mainnet.nebulas.io",
       "clientDocs": "https://wiki.nebulas.io/en/latest/dapp-development/rpc/rpc.html"
-    },
-    "numericId": 2718
+    }
   },
   {
     "id": "gochain",
     "name": "GoChain",
+    "coinId": 6060,
     "symbol": "GO",
     "decimals": 18,
     "blockchain": "Ethereum",
@@ -1366,12 +1367,12 @@
       "client": "https://github.com/gochain-io/gochain",
       "clientPublic": "https://rpc.gochain.io",
       "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
-    },
-    "numericId": 6060
+    }
   },
   {
     "id": "nuls",
     "name": "NULS",
+    "coinId": 8964,
     "symbol": "NULS",
     "decimals": 8,
     "blockchain": "NULS",
@@ -1388,12 +1389,12 @@
       "client": "https://github.com/nuls-io/nuls-v2",
       "clientPublic": "https://public1.nuls.io/",
       "clientDocs": "https://docs.nuls.io/"
-    },
-    "numericId": 8964
+    }
   },
   {
     "id": "zelcash",
     "name": "Zelcash",
+    "coinId": 19167,
     "symbol": "ZEL",
     "decimals": 8,
     "blockchain": "Bitcoin",
@@ -1417,12 +1418,12 @@
       "client": "https://github.com/trezor/blockbook",
       "clientPublic": "https://blockbook.zel.cash",
       "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
-    },
-    "numericId": 19167
+    }
   },
   {
     "id": "wanchain",
     "name": "Wanchain",
+    "coinId": 5718350,
     "symbol": "WAN",
     "decimals": 18,
     "blockchain": "Wanchain",
@@ -1441,12 +1442,12 @@
       "client": "https://github.com/wanchain/go-wanchain",
       "clientPublic": "",
       "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
-    },
-    "numericId": 5718350
+    }
   },
   {
     "id": "waves",
     "name": "Waves",
+    "coinId": 5741564,
     "symbol": "WAVES",
     "decimals": 8,
     "blockchain": "Waves",
@@ -1463,12 +1464,13 @@
       "client": "https://github.com/wavesplatform/Waves",
       "clientPublic": "https://nodes.wavesnodes.com",
       "clientDocs": "https://nodes.wavesnodes.com/api-docs/index.html"
-    },
-    "numericId": 5741564
+    }
   },
   {
     "id": "binance-smart",
     "name": "Binance SmartChain",
+    "coinId": 10000714,
+    "slip44": 714,
     "symbol": "BNB",
     "decimals": 18,
     "blockchain": "Ethereum",
@@ -1487,8 +1489,6 @@
       "client": "https://github.com/binance-chain/bsc",
       "clientPublic": "https://data-seed-prebsc-1-s1.binance.org:8545",
       "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
-    },
-    "numericId": 10000714,
-    "slip44": 714
+    }
   }
 ]

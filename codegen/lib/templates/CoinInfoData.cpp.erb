@@ -86,7 +86,7 @@ void fillMap() {
                 <%= coin['decimals'] %>,
                 "<%= explorer_tx_url(coin) %>",
                 "<%= explorer_account_url(coin) %>",
-                <% if coin['slip44'].nil? -%><%= coin['numericId'] %><% else -%><%= coin['slip44'] %><% end -%>,
+                <% if coin['slip44'].nil? -%><%= coin['coinId'] %><% else -%><%= coin['slip44'] %><% end -%>,
             }
         },
     <% end -%>
