@@ -26,7 +26,7 @@ TEST(TWElrondCoinType, TWCoinType) {
     ASSERT_EQ(TWBlockchainElrondNetwork, TWCoinTypeBlockchain(TWCoinTypeElrond));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeElrond));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeElrond));
-    assertStringsEqual(symbol, "ERD");
+    assertStringsEqual(symbol, "eGLD");
     assertStringsEqual(txUrl, "https://explorer.elrond.com/transactions/1fc9785cb8bea0129a16cf7bddc97630c176a556ea566f0e72923c882b5cb3c8");
     assertStringsEqual(accUrl, "https://explorer.elrond.com/address/erd12yne790km8ezwetkz7m3hmqy9utdc6vdkgsunfzpwguec6v04p2qtk9uqj");
     assertStringsEqual(id, "elrond");
