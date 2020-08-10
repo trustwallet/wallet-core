@@ -1362,7 +1362,7 @@
     {
         "id": "elrond",
         "name": "Elrond",
-        "symbol": "ERD",
+        "symbol": "eGLD",
         "decimals": 18,
         "blockchain": "ElrondNetwork",
         "derivationPath": "m/44'/508'/0'/0'/0'",
