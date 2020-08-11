@@ -35,6 +35,10 @@ static const auto tokenMintOrderPrefix = Data{0x46, 0x7E, 0x08, 0x29};
 static const auto tokenBurnOrderPrefix = Data{0x7E, 0xD2, 0xD2, 0xA0};
 static const auto tokenFreezeOrderPrefix = Data{0xE7, 0x74, 0xB3, 0x2D};
 static const auto tokenUnfreezeOrderPrefix = Data{0x65, 0x15, 0xFF, 0x0D};
+static const auto transferOutOrderPrefix = Data{0x80, 0x08, 0x19, 0xC0};
+static const auto sideDelegateOrderPrefix = Data{0xE3, 0xA0, 0x7F, 0xD2};
+static const auto sideRedelegateOrderPrefix = Data{0xE3, 0xCE, 0xD3, 0x64};
+static const auto sideUndelegateOrderPrefix = Data{0x51, 0x4F, 0x7E, 0x0E};
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto signer = Signer(input);
@@ -120,6 +124,18 @@ Data Signer::encodeOrder() const {
     } else if (input.has_refundhtlt_order()) {
         data = input.refundhtlt_order().SerializeAsString();
         prefix = refundHTLTOrderPrefix;
+    } else if (input.has_transfer_out_order()) {
+        data = input.transfer_out_order().SerializeAsString();
+        prefix = transferOutOrderPrefix;
+    } else if (input.has_side_delegate_order()) {
+        data = input.side_delegate_order().SerializeAsString();
+        prefix = sideDelegateOrderPrefix;
+    } else if (input.has_side_redelegate_order()) {
+        data = input.side_redelegate_order().SerializeAsString();
+        prefix = sideRedelegateOrderPrefix;
+    } else if (input.has_side_undelegate_order()) {
+        data = input.side_undelegate_order().SerializeAsString();
+        prefix = sideUndelegateOrderPrefix;
     } else {
         return {};
     }
