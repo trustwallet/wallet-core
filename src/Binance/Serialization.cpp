@@ -24,7 +24,7 @@ static inline std::string addressString(const std::string& bytes) {
 
 static inline std::string validatorAddress(const std::string& bytes) {
     auto data = Data(bytes.begin(), bytes.end());
-    return Bech32Address("bva", data).string();
+    return Bech32Address(Address::hrpValidator, data).string();
 }
 
 json Binance::signatureJSON(const Proto::SigningInput& input) {

@@ -13,9 +13,10 @@
 using namespace TW::Binance;
 
 const std::string Address::hrp = HRP_BINANCE;
+const std::string Address::hrpValidator = "bva";
 
 bool Address::isValid(const std::string& addr) {
-    std::vector<std::string> hrps = {hrp, "bnbp", "bva", "bvap", "bca", "bcap"};
+    std::vector<std::string> hrps = {hrp, hrpValidator, "bnbp", "bvap", "bca", "bcap"};
     bool result = false;
     for (auto& hrp : hrps) {
         result = Bech32Address::isValid(addr, hrp);
