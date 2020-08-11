@@ -16,8 +16,11 @@ namespace TW::Binance {
 class Address: public Bech32Address {
 public:
     static const std::string hrp; // HRP_BINANCE
+    static const std::string hrpValidator;
 
-    static bool isValid(const std::string& addr) { return Bech32Address::isValid(addr, hrp); }
+    static bool isValid(const std::string& addr) {
+        return Bech32Address::isValid(addr, hrp) || Bech32Address::isValid(addr, hrpValidator);
+    }
 
     Address() : Bech32Address(hrp) {}
 
