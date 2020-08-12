@@ -58,8 +58,16 @@ class GroestlcoinTests: XCTestCase {
     func testDeriveFromZPub() {
         let zpub = "zpub6qXFnWiY6FdT5BQptrzEhHfm1WpaBTFc6MHzR4KwscXGdt6xCqUtrAEjrHdeEsjaYEwVMgjtTvENQ83yo2fmkYYGjTpJoH7vFWKQJp1bg1X"
         let groestlcoin = CoinType.groestlcoin
-        let zpubAddr4 = HDWallet.derive(from: zpub, at: DerivationPath(purpose: groestlcoin.purpose, coinType: groestlcoin, account: 0, change: 0, address: 4))!
-        let zpubAddr11 = HDWallet.derive(from: zpub, at: DerivationPath(purpose: groestlcoin.purpose, coinType: groestlcoin, account: 0, change: 0, address: 11))!
+        let zpubAddr4 = HDWallet.getPublicKeyFromExtended(
+            extended: zpub,
+            coin: groestlcoin,
+            derivationPath: DerivationPath(purpose: groestlcoin.purpose, coin: groestlcoin.slip44Id, account: 0, change: 0, address: 4).description
+        )!
+        let zpubAddr11 = HDWallet.getPublicKeyFromExtended(
+            extended: zpub,
+            coin: groestlcoin,
+            derivationPath: DerivationPath(purpose: groestlcoin.purpose, coin: groestlcoin.slip44Id, account: 0, change: 0, address: 11).description
+        )!
 
         XCTAssertEqual(SegwitAddress(hrp: .groestlcoin, publicKey: zpubAddr4).description, "grs1quwq6ml2r8rc25tue5ltfa6uc4pdzhtzul3c0rk")
         XCTAssertEqual(SegwitAddress(hrp: .groestlcoin, publicKey: zpubAddr11).description, "grs1ql0a7czm8wrj253h78dm2h5j2k89zwpy2qjq0q9")

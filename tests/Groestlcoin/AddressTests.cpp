@@ -40,6 +40,6 @@ TEST(GroestlcoinAddress, Derive) {
     const auto mnemonic = "all all all all all all all all all all all all";
     const auto wallet = HDWallet(mnemonic, "");
     const auto path = TW::derivationPath(TWCoinTypeGroestlcoin);
-    const auto address = TW::deriveAddress(TWCoinTypeGroestlcoin, wallet.getKey(path));
+    const auto address = TW::deriveAddress(TWCoinTypeGroestlcoin, wallet.getKey(TWCoinTypeGroestlcoin, path));
     ASSERT_EQ(address, "grs1qw4teyraux2s77nhjdwh9ar8rl9dt7zww8r6lne");
 }

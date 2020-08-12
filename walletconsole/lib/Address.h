@@ -32,7 +32,7 @@ public:
     /// Derive a default address, using default coin and current mnemonic
     bool addrDefault(const string& coinid, string& res);
     /// Derive a new address with the given derivation path
-    bool addrDP(const string& coinid, const string& derivPath, string& res);
+    bool deriveFromPath(const string& coinid, const string& derivPath, string& res);
 };
 
 } // namespace TW::WalletConsole

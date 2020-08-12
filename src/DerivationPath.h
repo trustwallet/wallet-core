@@ -55,12 +55,12 @@ struct DerivationPath {
         indices[0] = DerivationPathIndex(v, /* hardened: */ true);
     }
 
-    TWCoinType coin() const {
+    uint32_t coin() const {
         if (indices.size() <= 1) { return TWCoinTypeBitcoin; }
-        return static_cast<TWCoinType>(indices[1].value);
+        return indices[1].value;
     }
 
-    void setCoin(TWCoinType v) {
+    void setCoin(uint32_t v) {
         if (indices.size() <= 1) { return; }
         indices[1] = DerivationPathIndex(v, /* hardened: */ true);
     }
@@ -100,7 +100,7 @@ struct DerivationPath {
     explicit DerivationPath(std::vector<DerivationPathIndex> indices) : indices(std::move(indices)) {}
 
     /// Creates a `DerivationPath` by BIP44 components.
-    DerivationPath(TWPurpose purpose, TWCoinType coin, uint32_t account, uint32_t change,
+    DerivationPath(TWPurpose purpose, uint32_t coin, uint32_t account, uint32_t change,
                    uint32_t address) 
     : indices(std::vector<DerivationPathIndex>(5)) {
         setPurpose(purpose);

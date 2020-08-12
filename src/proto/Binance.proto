@@ -132,6 +132,35 @@ message RefundHTLTOrder {
     bytes swap_id = 2;
 }
 
+message TransferOut {
+    bytes from = 1;
+    bytes to = 2;
+	SendOrder.Token amount = 3;
+	int64 expire_time = 4;
+}
+
+message SideChainDelegate {
+    bytes delegator_addr = 1;
+    bytes validator_addr = 2;
+    SendOrder.Token delegation = 3;
+	string chain_id = 4;
+}
+
+message SideChainRedelegate {
+    bytes delegator_addr = 1;
+    bytes validator_src_addr = 2;
+    bytes validator_dst_addr = 3;
+    SendOrder.Token amount = 4;
+    string chain_id = 5;
+}
+
+message SideChainUndelegate {
+    bytes delegator_addr = 1;
+    bytes validator_addr = 2;
+    SendOrder.Token amount = 3;
+	string chain_id = 4;
+}
+
 // Input data necessary to create a signed order.
 message SigningInput {
     string chain_id = 1;
@@ -154,6 +183,10 @@ message SigningInput {
         TokenIssueOrder issue_order = 17;
         TokenMintOrder mint_order = 18;
         TokenBurnOrder burn_order = 19;
+        TransferOut transfer_out_order = 20;
+        SideChainDelegate side_delegate_order = 21;
+        SideChainRedelegate side_redelegate_order = 22;
+        SideChainUndelegate side_undelegate_order = 23;
     }
 }
 

@@ -21,6 +21,10 @@ extension KeyStore {
     var bitcoinWallet: Wallet {
         return wallets.first(where: { $0.identifier == "btc_missing_address.json"})!
     }
+
+    var bnbWallet: Wallet {
+        return wallets.first(where: { $0.identifier == "bnb_wallet.json"})!
+    }
 }
 
 class KeyStoreTests: XCTestCase {
@@ -62,22 +66,30 @@ class KeyStoreTests: XCTestCase {
 
         try? fileManager.removeItem(at: watchesDestination)
         try? fileManager.copyItem(at: watchesURL, to: watchesDestination)
+
+        let bnbWalletURL = Bundle(for: type(of: self)).url(forResource: "bnb_wallet", withExtension: "json")!
+        let bnbWalletDestination = keyDirectory.appendingPathComponent("bnb_wallet.json")
+
+        try? fileManager.removeItem(at: bnbWalletDestination)
+        try? fileManager.copyItem(at: bnbWalletURL, to: bnbWalletDestination)
     }
 
     func testLoadKeyStore() {
         let keyStore = try! KeyStore(keyDirectory: keyDirectory)
-        XCTAssertEqual(keyStore.wallets.count, 3)
+        XCTAssertEqual(keyStore.wallets.count, 4)
         XCTAssertEqual(keyStore.watches.count, 1)
     }
 
     func testCreateHDWallet() throws {
-        let coins = [CoinType.ethereum]
+        let coins = [CoinType.ethereum, .binance, .binanceSmartChain]
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let newWallet = try keyStore.createWallet(name: "name", password: "password", coins: coins)
 
-        XCTAssertEqual(newWallet.accounts.count, 1)
-        XCTAssertEqual(keyStore.wallets.count, 4)
+        XCTAssertEqual(newWallet.accounts.count, 3)
+        XCTAssertEqual(keyStore.wallets.count, 5)
         XCTAssertNoThrow(try newWallet.getAccount(password: "password", coin: .ethereum))
+        XCTAssertNoThrow(try newWallet.getAccount(password: "password", coin: .binance))
+        XCTAssertNoThrow(try newWallet.getAccount(password: "password", coin: .binanceSmartChain))
     }
 
     func testUpdateKey() throws {
@@ -194,6 +206,64 @@ class KeyStoreTests: XCTestCase {
         XCTAssertNotNil(storedData)
         XCTAssertEqual(wallet.accounts.count, 1)
         XCTAssertNotNil(keyStore.hdWallet)
+    }
+
+    func testImportJSON() throws {
+
+        let expected = """
+        {
+            "activeAccounts": [{
+                "address": "bc1q4zehq85jqx9zzgzvzn9t64yjy66nunn3vehuv6",
+                "coin": 0,
+                "derivationPath": "m/84'/0'/0'/0/0",
+                "extendedPublicKey": "zpub6qMRMrwcEYaqjf8wSpNqtBfUee6MqpQjrZNKfj5a48EUFUx2yUmfkDJMdHwWvkg8SjdS3ua6dy9ofMrzrytTfdyy2pXg344yFwm2Ta9cm6Q"
+            }, {
+                "address": "0x33F44330cc4253cCd4ce4224186DB9baCe2190ea",
+                "coin": 60,
+                "derivationPath": "m/44'/60'/0'/0/0"
+            }, {
+                "address": "bnb1njuczq3hgvupu2vnczrjz7rc8x4uxlmhjyq95z",
+                "coin": 714,
+                "derivationPath": "m/44'/714'/0'/0/0"
+            }, {
+                "address": "0x5dEc7A9299360aEb44c83B8F730F2BF5Dd1688bC",
+                "coin": 10000714,
+                "derivationPath": "m/44'/714'/0'/0/0"
+            }],
+            "crypto": {
+                "cipher": "aes-128-ctr",
+                "cipherparams": {
+                    "iv": "cfeacebdf0d0c57cbbe6260094cdf3a9"
+                },
+                "ciphertext": "60358be4204c0d9c723775159bcadd63a51f0c06fce4024294d8ed4c19acb85cba3ca769dc3521fb572a06f8986d8bbc5736d6900e3e215f9bc112acffa470b178a621922041300bd7",
+                "kdf": "scrypt",
+                "kdfparams": {
+                    "dklen": 32,
+                    "n": 4096,
+                    "p": 6,
+                    "r": 8,
+                    "salt": "14198d7e5f2afbfde2b00539d0c9abaec99e708dd4a2242448c57248e3e07c77"
+                },
+                "mac": "90b65f299a9ac59f50d24c6f80f4cdcffe6500c86687df716a15d79461992085"
+            },
+            "id": "3c937d42-443d-4acf-9311-2d9dfa857e1c",
+            "name": "",
+            "type": "mnemonic",
+            "version": 3
+        }
+        """
+
+        let password = "e28ddf66cec05c1fc09939a00628b230459202b2493fccac288038ef37815723"
+        let keyStore = try KeyStore(keyDirectory: keyDirectory)
+        _ = try keyStore.addAccounts(wallet: keyStore.bnbWallet, coins: [.binanceSmartChain], password: password)
+
+        let account = keyStore.bnbWallet.accounts[3]
+        XCTAssertEqual(keyStore.bnbWallet.accounts.count, 4)
+        XCTAssertEqual(account.coin, CoinType.binanceSmartChain)
+        XCTAssertEqual(account.address, "0x5dEc7A9299360aEb44c83B8F730F2BF5Dd1688bC")
+
+        let saved = try String(contentsOf: keyStore.bnbWallet.keyURL)
+        XCTAssertJSONEqual(saved, expected)
     }
 
     func testExportMnemonic() throws {

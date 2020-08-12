@@ -77,8 +77,8 @@ TEST(Groestlcoin, ExtendedKeys) {
 
 TEST(Groestlcoin, DeriveFromZpub) {
     auto zpub = STRING("zpub6qXFnWiY6FdT5BQptrzEhHfm1WpaBTFc6MHzR4KwscXGdt6xCqUtrAEjrHdeEsjaYEwVMgjtTvENQ83yo2fmkYYGjTpJoH7vFWKQJp1bg1X");
-    auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/84'/17'/0'/0/4").get());
-    auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/84'/17'/0'/0/11").get());
+    auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeGroestlcoin, STRING("m/84'/17'/0'/0/4").get());
+    auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeGroestlcoin, STRING("m/84'/17'/0'/0/11").get());
 
     auto address4 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey4, TWCoinTypeGroestlcoin));
     auto address4String = WRAPS(TWAnyAddressDescription(address4.get()));

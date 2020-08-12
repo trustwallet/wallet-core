@@ -14,12 +14,13 @@ using namespace TW;
 using namespace TW::Keystore;
 
 namespace CodingKeys {
-static const auto address = "address";
-static const auto derivationPath = "derivationPath";
-static const auto extendedPublicKey = "extendedPublicKey";
-static const auto indices = "indices";
-static const auto value = "value";
-static const auto hardened = "hardened";
+    static const auto address = "address";
+    static const auto derivationPath = "derivationPath";
+    static const auto extendedPublicKey = "extendedPublicKey";
+    static const auto indices = "indices";
+    static const auto value = "value";
+    static const auto hardened = "hardened";
+    static const auto coin = "coin";
 } // namespace CodingKeys
 
 Account::Account(const nlohmann::json& json) {
@@ -31,6 +32,13 @@ Account::Account(const nlohmann::json& json) {
         }
     } else if (json[CodingKeys::derivationPath].is_string()) {
         derivationPath = DerivationPath(json[CodingKeys::derivationPath].get<std::string>());
+    }
+
+    if (json.find(CodingKeys::coin) == json.end()) {
+        // legacy format, get coin from derivation path
+        coin = TWCoinType(uint32_t(derivationPath.indices[1].value));
+    } else {
+        coin = TWCoinType(json[CodingKeys::coin].get<uint32_t>());
     }
 
     if (json.count(CodingKeys::address) != 0 && json[CodingKeys::address].is_string()) {
@@ -49,6 +57,7 @@ nlohmann::json Account::json() const {
     nlohmann::json j;
     j[CodingKeys::address] = address;
     j[CodingKeys::derivationPath] = derivationPath.string();
+    j[CodingKeys::coin] = coin;
     if (!extendedPublicKey.empty()) {
         j[CodingKeys::extendedPublicKey] = extendedPublicKey;
     }

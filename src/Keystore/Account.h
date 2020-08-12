@@ -26,13 +26,14 @@ class Account {
     std::string extendedPublicKey;
 
     /// Coin this account is for.
-    TWCoinType coin() const { return derivationPath.coin(); }
+    TWCoinType coin;
 
     Account() = default;
-    Account(std::string address, DerivationPath derivationPath, std::string extendedPublicKey = "")
+    Account(std::string address, TWCoinType coin, DerivationPath derivationPath, std::string extendedPublicKey = "")
         : address(std::move(address))
         , derivationPath(std::move(derivationPath))
-        , extendedPublicKey(std::move(extendedPublicKey)) {}
+        , extendedPublicKey(std::move(extendedPublicKey))
+        , coin(coin) {}
 
     /// Initializes `Account` with a JSON object.
     Account(const nlohmann::json& json);

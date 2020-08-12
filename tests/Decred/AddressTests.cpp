@@ -42,6 +42,6 @@ TEST(DecredAddress, Derive) {
     const auto mnemonic = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
     const auto wallet = HDWallet(mnemonic, "");
     const auto path = TW::derivationPath(TWCoinTypeDecred);
-    const auto address = TW::deriveAddress(TWCoinTypeDecred, wallet.getKey(path));
+    const auto address = TW::deriveAddress(TWCoinTypeDecred, wallet.getKey(TWCoinTypeDecred, path));
     ASSERT_EQ(address, "DsVMHD5D86dpRnt2GPZvv4bYUJZg6B9Pzqa");
 }

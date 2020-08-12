@@ -45,7 +45,7 @@ bool Keys::newKey(const string& coinid, string& res) {
     HDWallet newWallet(256, "");
 
     DerivationPath derivationPath = DerivationPath(coin.derivPath);
-    PrivateKey key = newWallet.getKey(derivationPath);
+    PrivateKey key = newWallet.getKey(TWCoinType(coin.c), derivationPath);
     privateKeyToResult(key, res);
     return true;
 }
@@ -152,7 +152,7 @@ bool Keys::priDP(const string& coinid, const string& dp, string& res) {
     _out << "Using derivation path \"" << dp2 << "\" for coin " << coin.name << endl;
 
     HDWallet wallet(_currentMnemonic, "");
-    PrivateKey priKey = wallet.getKey(dp3);
+    PrivateKey priKey = wallet.getKey(TWCoinType(coin.c), dp3);
 
     privateKeyToResult(priKey, res);
     return true;

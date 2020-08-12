@@ -12,18 +12,17 @@
 #include <gtest/gtest.h>
 
 TEST(TWAeternityAddress, HDWallet) {
-    auto mnemonic = "shoot island position soft burden budget tooth cruel issue economy destroy above";
+    auto mnemonic =
+        "shoot island position soft burden budget tooth cruel issue economy destroy above";
     auto passphrase = "";
 
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(
-            STRING(mnemonic).get(),
-            STRING(passphrase).get()
-    ));
+    auto wallet = WRAP(
+        TWHDWallet, TWHDWalletCreateWithMnemonic(STRING(mnemonic).get(), STRING(passphrase).get()));
 
-    auto privateKey = TWHDWalletGetKey(wallet.get(), TWCoinTypeDerivationPath(TWCoinTypeAeternity));
+    auto privateKey = TWHDWalletGetKey(wallet.get(), TWCoinTypeAeternity, TWCoinTypeDerivationPath(TWCoinTypeAeternity));
     auto publicKey = TWPrivateKeyGetPublicKeyEd25519(privateKey);
-    auto address = TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeAeternity);
-    auto addressStr = WRAPS(TWAnyAddressDescription(address));
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeAeternity));
+    auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
 
     assertStringsEqual(addressStr, "ak_QDHJSfvHG9sDHBobaWt2TAGhuhipYjEqZEH34bWugpJfJc3GN");
 }

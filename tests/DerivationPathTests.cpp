@@ -11,7 +11,7 @@
 namespace TW {
 
 TEST(DerivationPath, InitWithIndices) {
-    const auto path = DerivationPath(TWPurposeBIP44, TWCoinTypeEthereum, 0, 0, 0);
+    const auto path = DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeEthereum), 0, 0, 0);
     ASSERT_EQ(path.indices[0], DerivationPathIndex(44, /* hardened: */true));
     ASSERT_EQ(path.indices[1], DerivationPathIndex(60, /* hardened: */true));
     ASSERT_EQ(path.indices[2], DerivationPathIndex(0, /* hardened: */true));

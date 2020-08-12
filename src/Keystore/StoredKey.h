@@ -77,7 +77,7 @@ public:
     const Account* account(TWCoinType coin) const;
     
     /// Add an account
-    void addAccount(const std::string& address, const DerivationPath& derivationPath, const std::string& extetndedPublicKey);
+    void addAccount(const std::string& address, TWCoinType coin, const DerivationPath& derivationPath, const std::string& extetndedPublicKey);
 
     /// Remove the account for a specific coin
     void removeAccount(TWCoinType coin);

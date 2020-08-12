@@ -22,7 +22,11 @@ class DecredTests: XCTestCase {
 
     func testDeriveFromDpub() {
         let dpub = "dpubZFUmm9oh5zmQkR2Tr2AXS4tCkTWg4B27SpCPFkapZrrAqgU1EwgEFgrmi6EnLGXhak86yDHhXPxFAnGU58W5S4e8NCKG1ASUVaxwRqqNdfP"
-        let pubkey0 = HDWallet.derive(from: dpub, at: DerivationPath(purpose: .bip44, coinType: .decred, account: 0, change: 0, address: 0))!
+        let pubkey0 = HDWallet.getPublicKeyFromExtended(
+            extended: dpub,
+            coin: .decred,
+            derivationPath: DerivationPath(purpose: .bip44, coin: CoinType.decred.slip44Id, account: 0, change: 0, address: 0).description
+        )!
 
         XCTAssertEqual(AnyAddress(publicKey: pubkey0, coin: .decred).description, "DsksmLD2wDoA8g8QfFvm99ASg8KsZL8eJFd")
     }

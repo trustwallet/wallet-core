@@ -23,9 +23,17 @@ class BitcoinCashTests: XCTestCase {
         let xpub = "xpub6CEHLxCHR9sNtpcxtaTPLNxvnY9SQtbcFdov22riJ7jmhxmLFvXAoLbjHSzwXwNNuxC1jUP6tsHzFV9rhW9YKELfmR9pJaKFaM8C3zMPgjw"
 
         let coin = CoinType.bitcoinCash
-        let xpubAddr2 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: coin.purpose, coinType: coin, account: 0, change: 0, address: 2))!
+        let xpubAddr2 = HDWallet.getPublicKeyFromExtended(
+            extended: xpub,
+            coin: coin,
+            derivationPath: DerivationPath(purpose: .bip44, coin: coin.slip44Id, account: 0, change: 0, address: 2).description
+        )!
 
-        let xpubAddr9 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: coin.purpose, coinType: coin, account: 0, change: 0, address: 9))!
+        let xpubAddr9 = HDWallet.getPublicKeyFromExtended(
+            extended: xpub,
+            coin: coin,
+            derivationPath: DerivationPath(purpose: .bip44, coin: coin.slip44Id, account: 0, change: 0, address: 9).description
+        )!
 
         XCTAssertEqual(coin.deriveAddressFromPublicKey(publicKey: xpubAddr2), "bitcoincash:qq4cm0hcc4trsj98v425f4ackdq7h92rsy6zzstrgy")
         XCTAssertEqual(coin.deriveAddressFromPublicKey(publicKey: xpubAddr9), "bitcoincash:qqyqupaugd7mycyr87j899u02exc6t2tcg9frrqnve")

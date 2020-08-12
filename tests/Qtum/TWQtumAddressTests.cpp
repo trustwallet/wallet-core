@@ -76,8 +76,8 @@ TEST(Qtum, ExtendedKeys) {
 
 TEST(Qtum, DeriveFromXpub) {
     auto xpub = STRING("xpub6CAkJZPecMDxRXEXZpDwyxcQ6CGie8GdovuJhsGwc2gFbLxdGr1PyqBXmsL7aYds1wfY2rB3YMVZiEE3CB3Lkj6KGoq1rEJ1wuaGkMDBf1m");
-    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/2301'/0'/0/2").get());
-    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/2301'/0'/0/9").get());
+    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeQtum, STRING("m/44'/2301'/0'/0/2").get());
+    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeQtum, STRING("m/44'/2301'/0'/0/9").get());
 
     auto address2 = TWBitcoinAddressCreateWithPublicKey(pubKey2, TWCoinTypeP2pkhPrefix(TWCoinTypeQtum));
     auto address2String = WRAPS(TWBitcoinAddressDescription(address2));
@@ -91,8 +91,8 @@ TEST(Qtum, DeriveFromXpub) {
 
 TEST(Qtum, DeriveFromZpub) {
     auto zpub = STRING("zpub6rJJqJZcpaC7DrdsYiprLfUfvtaf11ZZWmrmYeWMkdZTx6tgfQLiBZuisraogskwBRLMGWfXoCyWRrXSypwPdNV2UWJXm5bDVQvBXvrzz9d");
-    auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/44'/2301'/0'/0/4").get());
-    auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/44'/2301'/0'/0/11").get());
+    auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeQtum, STRING("m/44'/2301'/0'/0/4").get());
+    auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeQtum, STRING("m/44'/2301'/0'/0/11").get());
 
     auto address4 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPQtum, pubKey4));
     auto address4String = WRAPS(TWSegwitAddressDescription(address4.get()));

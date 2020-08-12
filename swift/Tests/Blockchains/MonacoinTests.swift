@@ -62,8 +62,16 @@ class MonacoinTests: XCTestCase {
     func testDeriveFromXpub() {
         let xpub = "xpub6CYWFE1BgTCW2vtbDm1RRT81i3hBkQrXCfGs5hYp211fpgLZV5xCEwXMWPAL3LgaBA9koXpLZSUo7rTyJ8q1JwqKhvzVpdzBKRGyyGb31KF"
         let monacoin = CoinType.monacoin
-        let xpubAddr2 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: .bip44, coinType: monacoin, account: 0, change: 0, address: 2))!
-        let xpubAddr9 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: .bip44, coinType: monacoin, account: 0, change: 0, address: 9))!
+        let xpubAddr2 = HDWallet.getPublicKeyFromExtended(
+            extended: xpub,
+            coin: monacoin,
+            derivationPath: DerivationPath(purpose: .bip44, coin: monacoin.slip44Id, account: 0, change: 0, address: 2).description
+        )!
+        let xpubAddr9 = HDWallet.getPublicKeyFromExtended(
+            extended: xpub,
+            coin: monacoin,
+            derivationPath: DerivationPath(purpose: .bip44, coin: monacoin.slip44Id, account: 0, change: 0, address: 9).description
+        )!
 
         XCTAssertEqual(BitcoinAddress(publicKey: xpubAddr2, prefix: CoinType.monacoin.p2pkhPrefix)!.description, "MCoYzbqdsMYTBbjr7rd2zJsSF32QMgZCSj")
         XCTAssertEqual(BitcoinAddress(publicKey: xpubAddr9, prefix: CoinType.monacoin.p2pkhPrefix)!.description, "MAtduu1Fvtv1Frx6vbg5tZDZwirCA3y8qq")
@@ -73,8 +81,16 @@ class MonacoinTests: XCTestCase {
         let ypub = "ypub6YKchgn8hmHJ9a1c2wy1ydge6ez5AcWBVSwURTnC93yj6MT1tCUN3qvuZZPsA1CwZVh5qEGhMWhDZEK43jQqWtHBzME91ws9KD6WU9n8Nau"
 
         let monacoin = CoinType.monacoin
-        let ypubAddr3 = HDWallet.derive(from: ypub, at: DerivationPath(purpose: .bip49, coinType: monacoin, account: 0, change: 0, address: 3))!
-        let ypubAddr10 = HDWallet.derive(from: ypub, at: DerivationPath(purpose: .bip49, coinType: monacoin, account: 0, change: 0, address: 10))!
+        let ypubAddr3 = HDWallet.getPublicKeyFromExtended(
+            extended: ypub,
+            coin: monacoin,
+            derivationPath: DerivationPath(purpose: .bip49, coin: monacoin.slip44Id, account: 0, change: 0, address: 3).description
+        )!
+        let ypubAddr10 = HDWallet.getPublicKeyFromExtended(
+            extended: ypub,
+            coin: monacoin,
+            derivationPath: DerivationPath(purpose: .bip49, coin: monacoin.slip44Id, account: 0, change: 0, address: 10).description
+        )!
 
         XCTAssertEqual(BitcoinAddress.compatibleAddress(publicKey: ypubAddr3, prefix: CoinType.monacoin.p2shPrefix).description, "PRAnwctxh9UWFdjCcrQy2Ym1SxMgcjTpRx")
         XCTAssertEqual(BitcoinAddress.compatibleAddress(publicKey: ypubAddr10, prefix: CoinType.monacoin.p2shPrefix).description, "PNA4qYzxsVfFXQ3bBSfMhVqumZHAJVZAaQ")
@@ -83,8 +99,16 @@ class MonacoinTests: XCTestCase {
     func testDeriveFromZPub() {
         let zpub = "zpub6rPmNCEpXnLtvBTZyCWnJDr6QVyBaELfVX6kQeAXtZEAFLRCzWEBc2V35UHUQKJh1SpSNCtAtCx8KhRg5AWFnKrMCsxX4J2Zee21FQ5YS4n"
         let monacoin = CoinType.monacoin
-        let zpubAddr4 = HDWallet.derive(from: zpub, at: DerivationPath(purpose: monacoin.purpose, coinType: monacoin, account: 0, change: 0, address: 4))!
-        let zpubAddr11 = HDWallet.derive(from: zpub, at: DerivationPath(purpose: monacoin.purpose, coinType: monacoin, account: 0, change: 0, address: 11))!
+        let zpubAddr4 = HDWallet.getPublicKeyFromExtended(
+            extended: zpub,
+            coin: monacoin,
+            derivationPath: DerivationPath(purpose: .bip84, coin: monacoin.slip44Id, account: 0, change: 0, address: 4).description
+        )!
+        let zpubAddr11 = HDWallet.getPublicKeyFromExtended(
+            extended: zpub,
+            coin: monacoin,
+            derivationPath: DerivationPath(purpose: .bip84, coin: monacoin.slip44Id, account: 0, change: 0, address: 11).description
+        )!
 
         XCTAssertEqual(SegwitAddress(hrp: .monacoin, publicKey: zpubAddr4).description, "mona1qkrylcw85ulyrar9wt35huvpu6hlqwfg2gxf523")
         XCTAssertEqual(SegwitAddress(hrp: .monacoin, publicKey: zpubAddr11).description, "mona1qulanqvye6gmsf03m0cahr8dwtmj8gy53y8rc6n")

@@ -34,10 +34,6 @@ class CoinTestGen
     name
   end
 
-  def self.coin_type(path)
-    path.split('/')[2].chomp("'")
-  end
-
   # Explorer urls
   def explorer_tx_url(c)
     path = c['explorer']['url'].to_s + c['explorer']['txPath'].to_s

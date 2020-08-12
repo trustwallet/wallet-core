@@ -51,8 +51,8 @@ TEST(BitcoinGoldKey, ExtendedKeys) {
 
 TEST(BitcoinGoldKey, DeriveFromZPub) {
     auto zpub = STRING("zpub6rAU34KLySeCp1KDjD3hayCBXg49uH3G8iDzPovtGWD3eabbfAWSRMsjVyfuRfCCquiKTD6YV42nHUBtwh2TbVPvWqxrGuyEvHN17c3XUXw");
-    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/84'/156'/0'/0/2").get());
-    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/84'/156'/0'/0/9").get());
+    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeBitcoinGold, STRING("m/84'/156'/0'/0/2").get());
+    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeBitcoinGold, STRING("m/84'/156'/0'/0/9").get());
 
     auto address2 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey2, TWCoinTypeBitcoinGold));
     auto address2String = WRAPS(TWAnyAddressDescription(address2.get()));
