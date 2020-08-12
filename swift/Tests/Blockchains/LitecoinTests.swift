@@ -62,8 +62,16 @@ class LitecoinTests: XCTestCase {
     func testDeriveFromLtub() {
         let xpub = "Ltub2Ye6FtTv7U4zzHDL6iMfcE3cj5BHJjkBXQj1deZEAgSBrHB5oM191hYTF8BC34r7vRDGng59yfP6FH4m3nttc3TLDg944G8QK7d5NnygCRu"
         let litecoin = CoinType.litecoin
-        let xpubAddr2 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: .bip44, coinType: litecoin, account: 0, change: 0, address: 2))!
-        let xpubAddr9 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: .bip44, coinType: litecoin, account: 0, change: 0, address: 9))!
+        let xpubAddr2 = HDWallet.getPublicKeyFromExtended(
+            extended: xpub,
+            coin: litecoin,
+            derivationPath: DerivationPath(purpose: .bip44, coin: litecoin.slip44Id, account: 0, change: 0, address: 2).description
+        )!
+        let xpubAddr9 = HDWallet.getPublicKeyFromExtended(
+            extended: xpub,
+            coin: litecoin,
+            derivationPath: DerivationPath(purpose: .bip44, coin: litecoin.slip44Id, account: 0, change: 0, address: 9).description
+        )!
 
         XCTAssertEqual(BitcoinAddress(publicKey: xpubAddr2, prefix: CoinType.litecoin.p2pkhPrefix)!.description, "LdJvSS8gcRSN1WbSEj6srV8dKzGcybHGKt")
         XCTAssertEqual(BitcoinAddress(publicKey: xpubAddr9, prefix: CoinType.litecoin.p2pkhPrefix)!.description, "Laj4byUKgW3wuou4G3XCAPWqzVc3SdEpQk")
@@ -73,8 +81,16 @@ class LitecoinTests: XCTestCase {
         let ypub = "Mtub2sZjeBCxVccvybLHSD1i3Aw38QvCTDadaPyXbSkRRX1RQm3mxtfsbQU5M3PdCSP4xAFHCceEQ3FmQF69Du2wbcmebt3CaWAGALBSe8c4Gvw"
 
         let litecoin = CoinType.litecoin
-        let ypubAddr3 = HDWallet.derive(from: ypub, at: DerivationPath(purpose: .bip49, coinType: litecoin, account: 0, change: 0, address: 3))!
-        let ypubAddr10 = HDWallet.derive(from: ypub, at: DerivationPath(purpose: .bip49, coinType: litecoin, account: 0, change: 0, address: 10))!
+        let ypubAddr3 = HDWallet.getPublicKeyFromExtended(
+            extended: ypub,
+            coin: litecoin,
+            derivationPath: DerivationPath(purpose: .bip49, coin: litecoin.slip44Id, account: 0, change: 0, address: 3).description
+        )!
+        let ypubAddr10 = HDWallet.getPublicKeyFromExtended(
+            extended: ypub,
+            coin: litecoin,
+            derivationPath: DerivationPath(purpose: .bip49, coin: litecoin.slip44Id, account: 0, change: 0, address: 10).description
+        )!
 
         XCTAssertEqual(BitcoinAddress.compatibleAddress(publicKey: ypubAddr3, prefix: CoinType.litecoin.p2shPrefix).description, "MVr2vvjyaTzmfX3LFZcg5KZ7Cc36pgAWcy")
         XCTAssertEqual(BitcoinAddress.compatibleAddress(publicKey: ypubAddr10, prefix: CoinType.litecoin.p2shPrefix).description, "MTgkF6T5h92QDmpFsBk4fJeYt3dx5ERQtD")
@@ -83,8 +99,16 @@ class LitecoinTests: XCTestCase {
     func testDeriveFromZPub() {
         let zpub = "zpub6sCFp8chadVDXVt7GRmQFpq8B7W8wMLdFDto1hXu2jLZtvkFhRnwScXARNfrGSeyhR8DBLJnaUUkBbkmB2GwUYkecEAMUcbUpFQV4v7PXcs"
         let litecoin = CoinType.litecoin
-        let zpubAddr4 = HDWallet.derive(from: zpub, at: DerivationPath(purpose: litecoin.purpose, coinType: litecoin, account: 0, change: 0, address: 4))!
-        let zpubAddr11 = HDWallet.derive(from: zpub, at: DerivationPath(purpose: litecoin.purpose, coinType: litecoin, account: 0, change: 0, address: 11))!
+        let zpubAddr4 = HDWallet.getPublicKeyFromExtended(
+            extended: zpub,
+            coin: litecoin,
+            derivationPath: DerivationPath(purpose: .bip49, coin: litecoin.slip44Id, account: 0, change: 0, address: 4).description
+        )!
+        let zpubAddr11 = HDWallet.getPublicKeyFromExtended(
+            extended: zpub,
+            coin: litecoin,
+            derivationPath: DerivationPath(purpose: .bip49, coin: litecoin.slip44Id, account: 0, change: 0, address: 11).description
+        )!
 
         XCTAssertEqual(SegwitAddress(hrp: .litecoin, publicKey: zpubAddr4).description, "ltc1qcgnevr9rp7aazy62m4gen0tfzlssa52axwytt6")
         XCTAssertEqual(SegwitAddress(hrp: .litecoin, publicKey: zpubAddr11).description, "ltc1qy072y8968nzp6mz3j292h8lp72d678fcmms6vl")

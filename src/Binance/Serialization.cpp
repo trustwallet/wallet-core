@@ -7,20 +7,27 @@
 #include "Serialization.h"
 
 #include "Address.h"
+#include "Bech32Address.h"
+#include "Ethereum/Address.h"
 #include "../HexCoding.h"
 
 using namespace TW;
 using namespace TW::Binance;
+using namespace google::protobuf;
 
 using json = nlohmann::json;
 
 static inline std::string addressString(const std::string& bytes) {
-    auto data = std::vector<uint8_t>(bytes.begin(), bytes.end());
-    auto address = Address(data);
-    return address.string();
+    auto data = Data(bytes.begin(), bytes.end());
+    return Address(data).string();
 }
 
-json Binance::signatureJSON(const Binance::Proto::SigningInput& input) {
+static inline std::string validatorAddress(const std::string& bytes) {
+    auto data = Data(bytes.begin(), bytes.end());
+    return Bech32Address(Address::hrpValidator, data).string();
+}
+
+json Binance::signatureJSON(const Proto::SigningInput& input) {
     json j;
     j["account_number"] = std::to_string(input.account_number());
     j["chain_id"] = input.chain_id();
@@ -32,7 +39,7 @@ json Binance::signatureJSON(const Binance::Proto::SigningInput& input) {
     return j;
 }
 
-json Binance::orderJSON(const Binance::Proto::SigningInput& input) {
+json Binance::orderJSON(const Proto::SigningInput& input) {
     json j;
     if (input.has_trade_order()) {
         j["id"] = input.trade_order().id();
@@ -80,40 +87,78 @@ json Binance::orderJSON(const Binance::Proto::SigningInput& input) {
     } else if (input.has_refundhtlt_order()) {
         j["from"] = addressString(input.refundhtlt_order().from());
         j["swap_id"] = hex(input.refundhtlt_order().swap_id());
+    } else if (input.has_transfer_out_order()) {
+        auto to = input.transfer_out_order().to();
+        auto addr = Ethereum::Address(Data(to.begin(), to.end()));
+        j["from"] = addressString(input.transfer_out_order().from());
+        j["to"] = addr.string();
+        j["amount"] = tokenJSON(input.transfer_out_order().amount());
+        j["expire_time"] = input.transfer_out_order().expire_time();
+    } else if (input.has_side_delegate_order()) {
+        j["type"] = "cosmos-sdk/MsgSideChainDelegate";
+        j["value"] = {
+            {"delegator_addr", addressString(input.side_delegate_order().delegator_addr())},
+            {"validator_addr",validatorAddress(input.side_delegate_order().validator_addr())},
+            {"delegation", tokenJSON(input.side_delegate_order().delegation(), true)},
+            {"side_chain_id", input.side_delegate_order().chain_id()},
+        };
+    } else if (input.has_side_redelegate_order()) {
+        j["type"] = "cosmos-sdk/MsgSideChainRedelegate";
+        j["value"] = {
+            {"delegator_addr", addressString(input.side_redelegate_order().delegator_addr())},
+            {"validator_src_addr", validatorAddress(input.side_redelegate_order().validator_src_addr())},
+            {"validator_dst_addr", validatorAddress(input.side_redelegate_order().validator_dst_addr())},
+            {"amount", tokenJSON(input.side_redelegate_order().amount(), true)},
+            {"side_chain_id", input.side_redelegate_order().chain_id()},
+        };
+    } else if (input.has_side_undelegate_order()) {
+        j["type"] = "cosmos-sdk/MsgSideChainUndelegate";
+        j["value"] = {
+            {"delegator_addr", addressString(input.side_undelegate_order().delegator_addr())},
+            {"validator_addr", validatorAddress(input.side_undelegate_order().validator_addr())},
+            {"amount", tokenJSON(input.side_undelegate_order().amount(), true)},
+            {"side_chain_id", input.side_undelegate_order().chain_id()},
+        };
     }
     return j;
 }
 
-json Binance::inputsJSON(const Binance::Proto::SendOrder& order) {
+json Binance::inputsJSON(const Proto::SendOrder& order) {
     json j = json::array();
     for (auto& input : order.inputs()) {
-        json sj;
-        sj["address"] = addressString(input.address());
-        sj["coins"] = tokensJSON(input.coins());
-        j.push_back(sj);
+        j.push_back({
+            {"address", addressString(input.address())},
+            {"coins", tokensJSON(input.coins())}
+        });
     }
     return j;
 }
 
-json Binance::outputsJSON(const Binance::Proto::SendOrder& order) {
+json Binance::outputsJSON(const Proto::SendOrder& order) {
     json j = json::array();
     for (auto& output : order.outputs()) {
-        json sj;
-        sj["address"] = addressString(output.address());
-        sj["coins"] = tokensJSON(output.coins());
-        j.push_back(sj);
+        j.push_back({
+            {"address", addressString(output.address())},
+            {"coins", tokensJSON(output.coins())}
+        });
     }
     return j;
 }
 
-json Binance::tokensJSON(
-    const ::google::protobuf::RepeatedPtrField<Binance::Proto::SendOrder_Token>& tokens) {
+json Binance::tokenJSON(const Proto::SendOrder_Token& token, bool stringAmount) {
+    json j = { {"denom", token.denom()} };
+    if (stringAmount) {
+        j["amount"] = std::to_string(token.amount());
+    } else {
+        j["amount"] = token.amount();
+    }
+    return j;
+}
+
+json Binance::tokensJSON(const RepeatedPtrField<Proto::SendOrder_Token>& tokens) {
     json j = json::array();
     for (auto& token : tokens) {
-        json sj;
-        sj["denom"] = token.denom();
-        sj["amount"] = token.amount();
-        j.push_back(sj);
+        j.push_back(tokenJSON(token));
     }
     return j;
 }

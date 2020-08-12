@@ -19,7 +19,7 @@ TEST(TWSolanaAddress, HDWallet) {
     auto wallet = WRAP(
         TWHDWallet, TWHDWalletCreateWithMnemonic(STRING(mnemonic).get(), STRING(passphrase).get()));
 
-    auto privateKey = TWHDWalletGetKey(wallet.get(), TWCoinTypeDerivationPath(TWCoinTypeSolana));
+    auto privateKey = TWHDWalletGetKey(wallet.get(), TWCoinTypeSolana, TWCoinTypeDerivationPath(TWCoinTypeSolana));
     auto publicKey = TWPrivateKeyGetPublicKeyEd25519(privateKey);
     auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeSolana));
     auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));

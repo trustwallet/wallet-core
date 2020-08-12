@@ -80,6 +80,8 @@ enum TWHRP hrp(TWCoinType coin);
 // Note: use output parameter to avoid unneeded copies
 void anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 
+uint32_t slip44Id(TWCoinType coin);
+
 std::string anySignJSON(TWCoinType coinType, const std::string& json, const Data& key);
 
 bool supportsJSONSigning(TWCoinType coinType);
@@ -110,6 +112,7 @@ struct CoinInfo {
     int decimals;
     const char* explorerTransactionUrl;
     const char* explorerAccountUrl;
+    uint32_t slip44;
 };
 
 } // namespace TW

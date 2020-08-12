@@ -126,6 +126,7 @@ TEST(TWStoredKey, addressAddRemove) {
 
     TWStoredKeyAddAccount(key,
         WRAPS(TWStringCreateWithUTF8Bytes(addressAdd)).get(),
+        TWCoinTypeBitcoin,
         WRAPS(TWStringCreateWithUTF8Bytes(derivationPath)).get(),
         WRAPS(TWStringCreateWithUTF8Bytes(extPubKeyAdd)).get());
     EXPECT_EQ(TWStoredKeyAccountCount(key), 1);

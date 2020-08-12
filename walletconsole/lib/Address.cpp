@@ -79,17 +79,17 @@ bool Address::addrDefault(const string& coinid, string& res) {
     return true;
 }
 
-bool Address::addrDP(const string& coinid, const string& derivPath, string& res) {
+bool Address::deriveFromPath(const string& coinid, const string& derivPath, string& res) {
+    Coin coin;
+    if (!_coins.findCoin(coinid, coin)) { return false; }
+    TWCoinType ctype = (TWCoinType)coin.c;
+
     DerivationPath dp(derivPath);
     // get the private key
     string mnemo = _keys.getMnemo();
     assert(mnemo.length() > 0); // a mnemonic is always set
     HDWallet wallet(mnemo, "");
-    PrivateKey priKey = wallet.getKey(dp);
-
-    Coin coin;
-    if (!_coins.findCoin(coinid, coin)) { return false; }
-    TWCoinType ctype = (TWCoinType)coin.c;
+    PrivateKey priKey = wallet.getKey(ctype, dp);
 
     // derive address
     res = TW::deriveAddress(ctype, priKey);

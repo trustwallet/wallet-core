@@ -14,15 +14,10 @@ require 'entity_decl'
 require 'code_generator'
 require 'coin_test_gen'
 
-def self.coin_type(path)
-    path.split('/')[2].chomp("'")
-end
-
 # Transforms a coin name to a C++ name
 def self.format_name(coin)
     formatted = coin['name']
-    #formatted = formatted.sub(/^([a-z]+)/, &:upcase)
-    formatted = formatted.sub(/\s/, '')
+    formatted = formatted.gsub(/\s/, '')
     formatted
 end
 
@@ -49,7 +44,7 @@ end
 
 def self.insert_coin_type(coin)
     target_file = "include/TrustWalletCore/TWCoinType.h"
-    target_line = "    TWCoinType#{coin['name']} = #{coin_type(coin['derivationPath'])},\n"
+    target_line = "    TWCoinType#{format_name(coin)} = #{coin['coinId']},\n"
     if insert_target_line(target_file, target_line, "};\n")
         insert_blockchain_type(coin)
     end
@@ -64,9 +59,9 @@ end
 
 def insert_coin_entry(coin)
     target_file = "src/Coin.cpp"
-    target_line = "#include \"#{coin['name']}/Entry.h\"\n"
+    target_line = "#include \"#{format_name(coin)}/Entry.h\"\n"
     insert_target_line(target_file, target_line, "// end_of_coin_includes_marker_do_not_modify\n")
-    target_line = "        new #{coin['name']}::Entry(),\n"
+    target_line = "        new #{format_name(coin)}::Entry(),\n"
     insert_target_line(target_file, target_line, "    }; // end_of_coin_entries_marker_do_not_modify\n")
 end
 

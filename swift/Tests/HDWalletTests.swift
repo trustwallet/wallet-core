@@ -290,8 +290,16 @@ class HDWalletTests: XCTestCase {
         let xpub = "xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj"
 
         let bitcoin = CoinType.bitcoinCash
-        let xpub2 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: .bip44, coinType: bitcoin, account: 0, change: 0, address: 2))!
-        let xpub9 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: .bip44, coinType: bitcoin, account: 0, change: 0, address: 9))!
+        let xpub2 = HDWallet.getPublicKeyFromExtended(
+            extended: xpub,
+            coin: bitcoin,
+            derivationPath: DerivationPath(purpose: .bip44, coin: bitcoin.slip44Id, account: 0, change: 0, address: 2).description
+        )!
+        let xpub9 = HDWallet.getPublicKeyFromExtended(
+            extended: xpub,
+            coin: bitcoin,
+            derivationPath: DerivationPath(purpose: .bip44, coin: bitcoin.slip44Id, account: 0, change: 0, address: 9).description
+        )!
 
         let xpubAddr2 = BitcoinAddress(publicKey: xpub2, prefix: CoinType.bitcoin.p2pkhPrefix)!
         let xpubAddr9 = BitcoinAddress(publicKey: xpub9, prefix: CoinType.bitcoin.p2pkhPrefix)!
@@ -304,8 +312,16 @@ class HDWalletTests: XCTestCase {
         let ypub = "ypub6Ww3ibxVfGzLrAH1PNcjyAWenMTbbAosGNB6VvmSEgytSER9azLDWCxoJwW7Ke7icmizBMXrzBx9979FfaHxHcrArf3zbeJJJUZPf663zsP"
 
         let bitcoin = CoinType.bitcoin
-        let ypub3 = HDWallet.derive(from: ypub, at: DerivationPath(purpose: .bip49, coinType: bitcoin, account: 0, change: 0, address: 3))!
-        let ypub10 = HDWallet.derive(from: ypub, at: DerivationPath(purpose: .bip49, coinType: bitcoin, account: 0, change: 0, address: 10))!
+        let ypub3 = HDWallet.getPublicKeyFromExtended(
+            extended: ypub,
+            coin: bitcoin,
+            derivationPath: DerivationPath(purpose: .bip49, coin: bitcoin.slip44Id, account: 0, change: 0, address: 3).description
+        )!
+        let ypub10 = HDWallet.getPublicKeyFromExtended(
+            extended: ypub,
+            coin: bitcoin,
+            derivationPath: DerivationPath(purpose: .bip49, coin: bitcoin.slip44Id, account: 0, change: 0, address: 10).description
+        )!
 
         let ypubAddr3 = BitcoinAddress.compatibleAddress(publicKey: ypub3, prefix: CoinType.bitcoin.p2shPrefix)
         let ypubAddr10 = BitcoinAddress.compatibleAddress(publicKey: ypub10, prefix: CoinType.bitcoin.p2shPrefix)
@@ -316,8 +332,16 @@ class HDWalletTests: XCTestCase {
     func testDeriveFromZPub() {
         let zpub = "zpub6rFR7y4Q2AijBEqTUquhVz398htDFrtymD9xYYfG1m4wAcvPhXNfE3EfH1r1ADqtfSdVCToUG868RvUUkgDKf31mGDtKsAYz2oz2AGutZYs"
         let bitcoin = CoinType.bitcoin
-        let zpubAddr4 = HDWallet.derive(from: zpub, at: DerivationPath(purpose: bitcoin.purpose, coinType: bitcoin, account: 0, change: 0, address: 4))!
-        let zpubAddr11 = HDWallet.derive(from: zpub, at: DerivationPath(purpose: bitcoin.purpose, coinType: bitcoin, account: 0, change: 0, address: 11))!
+        let zpubAddr4 = HDWallet.getPublicKeyFromExtended(
+            extended: zpub,
+            coin: bitcoin,
+            derivationPath: DerivationPath(purpose: .bip84, coin: bitcoin.slip44Id, account: 0, change: 0, address: 4).description
+        )!
+        let zpubAddr11 = HDWallet.getPublicKeyFromExtended(
+            extended: zpub,
+            coin: bitcoin,
+            derivationPath: DerivationPath(purpose: .bip84, coin: bitcoin.slip44Id, account: 0, change: 0, address: 11).description
+        )!
 
         XCTAssertEqual(bitcoin.deriveAddressFromPublicKey(publicKey: zpubAddr4).description, "bc1qm97vqzgj934vnaq9s53ynkyf9dgr05rargr04n")
         XCTAssertEqual(bitcoin.deriveAddressFromPublicKey(publicKey: zpubAddr11).description, "bc1qxr4fjkvnxjqphuyaw5a08za9g6qqh65t8qwgum")
@@ -327,8 +351,8 @@ class HDWalletTests: XCTestCase {
         let zpub = "zpub6qeA5j9oSq8tZaYEBTp1X61ZSjeen6HbiUBSG4KLPD8d65Pi7eSMPNuxCqgbLdtnim2hgnJEzmE6jhFoJXtJdRxRKRdNFQBJ6iidx9BHGyk"
 
         let bitcoin = CoinType.bitcoin
-        let path = DerivationPath(purpose: bitcoin.purpose, coinType: bitcoin, account: 0, change: 0, address: 0)
-        let pubkey = HDWallet.derive(from: zpub, at: path)!
+        let path = DerivationPath(purpose: bitcoin.purpose, coin: bitcoin.slip44Id, account: 0, change: 0, address: 0)
+        let pubkey = HDWallet.getPublicKeyFromExtended(extended: zpub, coin: bitcoin, derivationPath: path.description)!
         let address = bitcoin.deriveAddressFromPublicKey(publicKey: pubkey)
 
         XCTAssertEqual(pubkey.data.hexString, "039fdd3652495d01b6a363f8db8b3adce09f83ea5c43ff872ad0a39192340256b0")
