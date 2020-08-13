@@ -63,21 +63,15 @@ func main() {
 		Script: types.TWDataGoBytes(scriptData),
 	}
 
-	plan := bitcoin.TransactionPlan{
-		Amount: 625000000,
-		Utxos:  []*bitcoin.UnspentTransaction{&utxo},
-	}
-
 	input := bitcoin.SigningInput{
 		HashType:      1, // TWBitcoinSigHashTypeAll
-		Amount:        625000000,
+		Amount:        1000000,
 		ByteFee:       1,
 		ToAddress:     "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx",
 		ChangeAddress: "1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU",
 		PrivateKey:    [][]byte{types.TWDataGoBytes(keyData)},
 		Utxo:          []*bitcoin.UnspentTransaction{&utxo},
 		CoinType:      0, // TWCoinTypeBitcoin
-		Plan:          &plan,
 	}
 
 	inputBytes, _ := proto.Marshal(&input)
