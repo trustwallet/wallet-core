@@ -37,7 +37,6 @@ class KusamaTests: XCTestCase {
         // real key in 1p test
         let wallet = HDWallet.test
         let key = wallet.getKey(coin: .kusama, derivationPath: "m/44'/434'/0'")
-        print(key.data.hexString)
 
         let genesisHash = Data(hexString: "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe")!
         let input = PolkadotSigningInput.with {

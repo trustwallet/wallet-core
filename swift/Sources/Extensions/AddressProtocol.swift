@@ -7,3 +7,5 @@
 import Foundation
 
 public protocol Address: CustomStringConvertible {}
+
+extension AnyAddress: Equatable {}

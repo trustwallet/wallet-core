@@ -55,8 +55,6 @@ class EOSTests: XCTestCase {
 
     func testSigning() throws {
         let ouptut: EOSSigningOutput = AnySigner.sign(input: signingInput, coin: .eos)
-        print(signingInput.privateKey.hexString)
-        print(try! signingInput.jsonString())
 
         let expectedJSON = """
         {
