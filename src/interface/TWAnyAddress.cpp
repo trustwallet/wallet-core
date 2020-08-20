@@ -21,6 +21,7 @@
 #include "../NEO/Address.h"
 #include "../Nano/Address.h"
 #include "../Elrond/Address.h"
+#include "../NEAR/Address.h"
 
 #include "../Coin.h"
 #include "../HexCoding.h"
@@ -194,6 +195,13 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
             data = addr.getKeyHash();
         }
         
+        break;
+    }
+
+    case TWCoinTypeNEAR: {
+        auto addr = NEAR::Address(string);
+        // remove last 4 bytes checksum
+        data = Data(addr.bytes.begin(), addr.bytes.end() - 4);
         break;
     }
 

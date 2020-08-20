@@ -7,7 +7,20 @@
 import XCTest
 import TrustWalletCore
 
-class NEARAddressTests: XCTestCase {
+class NEARTests: XCTestCase {
+
+    func testAddress() {
+        let hex = "3b83b07cab54824a59c3d3f2e203a7cd913b7fcdc4439595983e2402c2cf791d"
+        let string = "NEARTDDWrUMdoC2rA1eU6gNrSU2zyGKdR71TNucTvsQHyfAXjKcJb"
+        let pubKey = PublicKey(data: Data(hexString: hex)!, type: .ed25519)!
+        let address = AnyAddress(publicKey: pubKey, coin: .near)
+        let expected = AnyAddress(string: string, coin: .near)!
+
+        XCTAssertEqual(address, expected)
+        XCTAssertEqual(address.description, string)
+        XCTAssertEqual(expected.data.hexString, hex)
+    }
+
     func testAddressValidation() {
         let near = CoinType.near
         for address in [
@@ -18,9 +31,6 @@ class NEARAddressTests: XCTestCase {
             XCTAssertEqual(near.address(string: address)?.description, address)
         }
     }
-}
-
-class NEARSignerTests: XCTestCase {
 
     func testSigningTransaction() {
         // swiftlint:disable:next line_length
