@@ -38,7 +38,7 @@ class DecredTests: XCTestCase {
         let txHash = Data(Data(hexString: "5015d14dcfd78998cfa13e0325798a74d95bbe75f167a49467303f70dde9bffd")!.reversed())
         let utxoAddress = CoinType.decred.deriveAddress(privateKey: key)
         let script = BitcoinScript.lockScriptForAddress(address: utxoAddress, coin: .decred)
-        print(txHash.hexString)
+
         let amount = Int64(10_000_000)
 
         let utxo = BitcoinUnspentTransaction.with {
