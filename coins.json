@@ -818,13 +818,13 @@
     "name": "NEAR",
     "coinId": 397,
     "symbol": "NEAR",
-    "decimals": 18,
+    "decimals": 24,
     "blockchain": "NEAR",
     "derivationPath": "m/44'/397'/0'",
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
-      "url": "https://explorer.nearprotocol.com",
+      "url": "https://explorer.near.org",
       "txPath": "/transactions/",
       "accountPath": "/accounts/"
     },
