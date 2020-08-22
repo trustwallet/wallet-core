@@ -15,20 +15,20 @@
 
 TEST(TWNEARCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNEAR));
-    auto txId = TWStringCreateWithUTF8Bytes("t123");
+    auto txId = TWStringCreateWithUTF8Bytes("FPQAMaVnvFHNwNBJWnTttXfdJhp5FvMGGDJEesB8gvbL");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNEAR, txId));
-    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accId = TWStringCreateWithUTF8Bytes("test-trust.vlad.near");
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeNEAR, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNEAR));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNEAR));
 
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNEAR), 18);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNEAR), 24);
     ASSERT_EQ(TWBlockchainNEAR, TWCoinTypeBlockchain(TWCoinTypeNEAR));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeNEAR));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeNEAR));
     assertStringsEqual(symbol, "NEAR");
-    assertStringsEqual(txUrl, "https://explorer.nearprotocol.com/transactions/t123");
-    assertStringsEqual(accUrl, "https://explorer.nearprotocol.com/accounts/a12");
+    assertStringsEqual(txUrl, "https://explorer.near.org/transactions/FPQAMaVnvFHNwNBJWnTttXfdJhp5FvMGGDJEesB8gvbL");
+    assertStringsEqual(accUrl, "https://explorer.near.org/accounts/test-trust.vlad.near");
     assertStringsEqual(id, "near");
     assertStringsEqual(name, "NEAR");
 }
