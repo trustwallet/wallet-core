@@ -51,6 +51,7 @@
 #include "Waves/Entry.h"
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
+#include "OasisProtocol/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
@@ -148,6 +149,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeNEO: entry = &neoDP; break;
         case TWCoinTypeNimiq: entry = &nimiqDP; break;
         case TWCoinTypeNULS: entry = &nulsDP; break;
+        case TWCoinTypeOasis: entry = &oasisDP; break;
         case TWCoinTypeOntology: entry = &ontologyDP; break;
         case TWCoinTypePolkadot: entry = &polkadotDP; break;
         case TWCoinTypeXRP: entry = &rippleDP; break;

@@ -84,6 +84,7 @@ enum TWCoinType {
     TWCoinTypeBandChain = 494,
     TWCoinTypeSmartChainLegacy = 10000714,
     TWCoinTypeSmartChain = 20000714,
+    TWCoinTypeOasisProtocol = 5786211,
 };
 
 /// Returns the blockchain for a coin type.
