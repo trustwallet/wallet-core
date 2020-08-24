@@ -25,6 +25,9 @@ message SigningInput {
 
     // Private key.
     bytes private_key = 7;
+
+    // Timestamp
+    uint64 timestamp = 8;
 }
 
 // Transaction signing output.

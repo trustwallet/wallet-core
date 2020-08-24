@@ -15,7 +15,7 @@ using namespace TW::Aion;
 
 TEST(AionSigner, Sign) {
     auto address = Aion::Address("0xa082c3de528b7807dc27ad66debb16d4cfe4054209398cee619dd95955063d1e");
-    auto transaction = Transaction(9, 20000000000, 21000, address, 10000, {});
+    auto transaction = Transaction(9, 20000000000, 21000, address, 10000, 155157377101, {});
 
     auto privateKey = PrivateKey(parse_hex("db33ffdf82c7ba903daf68d961d3c23c20471a8ce6b408e52d579fd8add80cc9"));
     Signer::sign(privateKey, transaction);
@@ -28,7 +28,7 @@ TEST(AionSigner, Sign) {
 
 TEST(AionSigner, SignWithData) {
     auto address = Aion::Address("0xa082c3de528b7807dc27ad66debb16d4cfe4054209398cee619dd95955063d1e");
-    auto transaction = Transaction(9, 20000000000, 21000, address, 10000, parse_hex("41494f4e0000"));
+    auto transaction = Transaction(9, 20000000000, 21000, address, 10000, 155157377101, parse_hex("41494f4e0000"));
 
     auto privateKey = PrivateKey(parse_hex("db33ffdf82c7ba903daf68d961d3c23c20471a8ce6b408e52d579fd8add80cc9"));
     Signer::sign(privateKey, transaction);

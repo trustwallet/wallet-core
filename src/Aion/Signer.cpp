@@ -23,6 +23,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         /* gasLimit: */ static_cast<uint128_t>(load(input.gas_limit())),
         /* to: */ Address(input.to_address()),
         /* amount: */ static_cast<uint128_t>(load(input.amount())),
+        /* timestamp */ static_cast<uint128_t>(input.timestamp()),
         /* payload: */ Data(input.payload().begin(), input.payload().end()));
     Signer::sign(key, transaction);
 
