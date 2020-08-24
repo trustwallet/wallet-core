@@ -20,14 +20,12 @@ class TestOasisProtocolAddress {
 
     @Test
     fun testAddress() {
-        // TODO: Check and finalize implementation
-
-        val key = PrivateKey("__PRIVATE_KEY_DATA__".toHexByteArray())
+        val key = PrivateKey("4f8b5676990b00e23d9904a92deb8d8f428ff289c8939926358f1d20537c21a0".toHexByteArray())
         val pubkey = key.publicKeyEd25519
         val address = AnyAddress(pubkey, CoinType.OASISPROTOCOL)
-        val expected = AnyAddress("__EXPECTED_RESULT_ADDRESS__", CoinType.OASISPROTOCOL)
+        val expected = AnyAddress("oasis1qzawzy5kaa2xgphenf3r0f5enpr3mx5dps559yxm", CoinType.OASISPROTOCOL)
 
-        assertEquals(pubkey.data().toHex(), "0x__EXPECTED_PUBKEY_DATA__")
-        assertEquals(address.description(), expected.description())
+        assertEquals("0x93d8f8a455f50527976a8aa87ebde38d5606efa86cb985d3fb466aff37000e3b", pubkey.data().toHex())
+        assertEquals(expected.description(), address.description())
     }
 }

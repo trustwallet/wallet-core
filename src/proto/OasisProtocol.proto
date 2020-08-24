@@ -13,8 +13,12 @@ message TransferMessage {
     string to = 1;
     string method = 2;
     uint64 gas_price = 3;
+
+    // Amount values strings prefixed by zero. e.g. "\u000010000000"
     bytes gas_amount = 4;
+    // Amount values strings prefixed by zero
     bytes amount = 5;
+
     uint64 nonce = 6;
     string context = 7;
 }
@@ -22,7 +26,7 @@ message TransferMessage {
 message SigningInput {
     bytes private_key = 1;
 
-    oneof message_oneof {
+    oneof message {
         TransferMessage transfer = 2;
     }
 }

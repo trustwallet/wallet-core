@@ -28,6 +28,7 @@ Address::Address(const TW::PublicKey& publicKey) : Bech32Address(hrp){
 
     std::string context = COIN_ADDRESS_CONTEXT;
     Data toHash(context.begin(), context.end());
+    toHash.insert(toHash.end(), COIN_ADDRESS_VERSION);
     toHash.insert(toHash.end(), publicKey.bytes.begin(), publicKey.bytes.end());
 
     const auto hash = Hash::sha512_256(toHash);

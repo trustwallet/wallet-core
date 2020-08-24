@@ -26,19 +26,19 @@ TEST(OasisProtocolAddress, Invalid) {
 TEST(OasisProtocolAddress, FromPrivateKey) {
     auto privateKey = PrivateKey(parse_hex("4f8b5676990b00e23d9904a92deb8d8f428ff289c8939926358f1d20537c21a0"));
     auto address = Address(privateKey.getPublicKey(TWPublicKeyTypeED25519));
-    ASSERT_EQ(address.string(), "oasis1qql6ra3pawzkhra4ejh98t0dsg7z8ysghgw8mw6m");
+    ASSERT_EQ(address.string(), "oasis1qzawzy5kaa2xgphenf3r0f5enpr3mx5dps559yxm");
 }
 
 TEST(OasisProtocolAddress, FromPublicKey) {
     auto publicKey = PublicKey(parse_hex("aba52c0dcb80c2fe96ed4c3741af40c573a0500c0d73acda22795c37cb0f1739"), TWPublicKeyTypeED25519);
     auto address = Address(publicKey);
-    ASSERT_EQ(address.string(), "oasis1qp0cnmkjl22gky6p6qeghjytt4v7dkxsrsmueweh");
+    ASSERT_EQ(address.string(), "oasis1qphdkldpttpsj2j3l9sde9h26cwpfwqwwuhvruyu");
 }
 
 TEST(OasisProtocolAddress, FromString) {
     Address address;
-    ASSERT_TRUE(Address::decode("oasis1qp0cnmkjl22gky6p6qeghjytt4v7dkxsrsmueweh", address));
-    ASSERT_EQ(address.string(), "oasis1qp0cnmkjl22gky6p6qeghjytt4v7dkxsrsmueweh");
+    ASSERT_TRUE(Address::decode("oasis1hts399h023jqd7v6vgm6dxvcguwe4rgvqqgvq38n", address));
+    ASSERT_EQ(address.string(), "oasis1hts399h023jqd7v6vgm6dxvcguwe4rgvqqgvq38n");
 
-    ASSERT_FALSE(Address::decode("oasis1qp0cnmkjl22gky6p6qeghjytt4v7dkxsrsmuewehj", address));
+    ASSERT_FALSE(Address::decode("oasis1hts399h023jqd7v6vgm6dxvcguwe4rgvqqgvq38ng", address));
 }

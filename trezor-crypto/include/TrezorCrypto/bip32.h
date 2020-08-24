@@ -62,6 +62,8 @@ int hdnode_from_xprv(uint32_t depth, uint32_t child_num, const uint8_t *chain_co
 
 int hdnode_from_seed(const uint8_t *seed, int seed_len, const char *curve, HDNode *out);
 
+int hdnode_from_seed_hd(const uint8_t* seed, int seed_len, const char* curve, HDNode* out);
+
 #define hdnode_private_ckd_prime(X, I) hdnode_private_ckd((X), ((I) | 0x80000000))
 
 int hdnode_private_ckd(HDNode *inout, uint32_t i);
