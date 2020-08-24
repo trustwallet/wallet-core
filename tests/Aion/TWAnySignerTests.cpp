@@ -28,6 +28,8 @@ TEST(TWAnySignerAion, Sign) {
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     auto nonce = store(uint256_t(9));
     input.set_nonce(nonce.data(), nonce.size());
+    auto timestamp = store(uint256_t(155157377101));
+    input.set_timestamp(timestamp.data(), timestamp.size());
     input.set_private_key(privateKey.data(), privateKey.size());
 
     Proto::SigningOutput output;
