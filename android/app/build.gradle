@@ -18,6 +18,13 @@ android {
         release {
             minifyEnabled false
         }
+        debug {
+            minifyEnabled false
+            // limit platforms built for testing
+            ndk {
+                abiFilters 'x86'
+            }
+        }
     }
 }
 
