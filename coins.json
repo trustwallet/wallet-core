@@ -1467,8 +1467,9 @@
     }
   },
   {
-    "id": "binance-smart",
+    "id": "bsc",
     "name": "Binance SmartChain",
+    "displayName": "BSC",
     "coinId": 10000714,
     "slip44": 714,
     "symbol": "BNB",
@@ -1478,7 +1479,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
-      "url": "https://explorer.binance.org/smart-testnet",
+      "url": "https://bscscan.com",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0xb9ae2e808fe8e57171f303ad8f6e3fd17d949b0bfc7b4db6e8e30a71cc517d7e",
