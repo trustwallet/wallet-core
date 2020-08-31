@@ -44,7 +44,7 @@ TEST(BinanceSmartChain, SignNativeTransfer) {
 
     // addr: 0xB9F5771C27664bF2282D98E09D7F50cEc7cB01a7  mnemonic: isolate dismiss ... cruel note
     auto privateKey = PrivateKey(parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904"));
-    auto signer = SignerExposed(TWEthereumChainIDBinanceSmartChain);
+    auto signer = SignerExposed(97);
     signer.sign(privateKey, transaction);
 
     auto encoded = RLP::encode(transaction);
@@ -62,7 +62,7 @@ TEST(BinanceSmartChain, SignTokenTransfer) {
     EXPECT_EQ(hex(payloadFunction), "a9059cbb00000000000000000000000031be00eb1fc8e14a696dbc72f746ec3e95f49683000000000000000000000000000000000000000000000000002386f26fc10000");
 
     auto input = Proto::SigningInput();
-    auto chainId = store(uint256_t(TWEthereumChainIDBinanceSmartChain));
+    auto chainId = store(uint256_t(97));
     auto nonce = store(uint256_t(30));
     auto gasPrice = store(uint256_t(20000000000));
     auto gasLimit = store(uint256_t(1000000));
