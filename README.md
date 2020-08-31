@@ -66,7 +66,7 @@ Projects using Trust Wallet Core.  Add yours too!
 | [IFWallet](https://www.ifwallet.com/)
 | [crypto.com](https://crypto.com)
 | [Alice](https://www.alicedapp.com/)
-| [FrontierWallet](https://frontierwallet.com/)
+| [Frontier](https://frontier.xyz/)
 
 
 # Contributing
