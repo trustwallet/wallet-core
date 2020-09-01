@@ -1469,7 +1469,7 @@
   {
     "id": "bsc",
     "name": "Binance SmartChain",
-    "displayName": "BSC",
+    "displayName": "Smart Chain",
     "coinId": 10000714,
     "slip44": 714,
     "symbol": "BNB",
