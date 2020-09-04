@@ -89,6 +89,6 @@ class CoinAddressDerivationTests {
         FILECOIN -> assertEquals("f1zzykebxldfcakj5wdb5n3n7priul522fnmjzori", address)
         ELROND -> assertEquals("erd1jfcy8aeru6vlx4fe6h3pc3vlpe2cnnur5zetxdhp879yagq7vqvs8na4f8", address)
         BANDCHAIN -> assertEquals("band1624hqgend0s3d94z68fyka2y5jak6vd7u0l50r", address)
-        BINANCESMARTCHAIN -> assertEquals("0x49784f90176D8D9d4A3feCDE7C1373dAAb5b13b8", address)
+        SMARTCHAIN -> assertEquals("0x49784f90176D8D9d4A3feCDE7C1373dAAb5b13b8", address)
     }
 }
