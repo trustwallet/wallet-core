@@ -26,7 +26,7 @@ describe('Wallet Core types tests', () => {
         const coin = CoinType.bsc;
         expect(coin).to.equal(10000714)
         expect(CoinType.id(coin)).to.equal('bsc')
-        expect(CoinType.name(coin)).to.equal('Binance Smart Chain')
+        expect(CoinType.name(coin)).to.equal('Smart Chain')
         expect(CoinType.slip44(coin)).to.equal(714)
         expect(CoinType.symbol(coin)).to.equal('BNB')
         expect(CoinType.decimals(coin)).to.equal(18)
