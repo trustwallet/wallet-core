@@ -6,7 +6,7 @@
 
 export enum CoinType {
     <% coins.forEach((coin) => { -%>
-        <%-coin.id%> = <%-coin.slip44%>,
+        <%-coin.id%> = <%-coin.coinId%>,
     <% }) %>
 }
 

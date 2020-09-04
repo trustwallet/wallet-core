@@ -199,7 +199,7 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .elrond:
                     let expectedResult = "erd1jfcy8aeru6vlx4fe6h3pc3vlpe2cnnur5zetxdhp879yagq7vqvs8na4f8"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .binanceSmartChain:
+                case .smartChain:
                     let expectedResult = "0x49784f90176D8D9d4A3feCDE7C1373dAAb5b13b8"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:

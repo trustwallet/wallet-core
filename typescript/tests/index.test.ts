@@ -16,9 +16,21 @@ describe('Wallet Core types tests', () => {
         expect(coin).to.equal(60)
         expect(CoinType.id(coin)).to.equal('ethereum')
         expect(CoinType.name(coin)).to.equal('Ethereum')
+        expect(CoinType.slip44(coin)).to.equal(60)
         expect(CoinType.symbol(coin)).to.equal('ETH')
         expect(CoinType.decimals(coin)).to.equal(18)
         expect(CoinType.derivationPath(coin)).to.equal(`m/44'/60'/0'/0/0`)
+    })
+
+    it('test CoinType.bsc', () => {
+        const coin = CoinType.bsc;
+        expect(coin).to.equal(10000714)
+        expect(CoinType.id(coin)).to.equal('bsc')
+        expect(CoinType.name(coin)).to.equal('Smart Chain')
+        expect(CoinType.slip44(coin)).to.equal(714)
+        expect(CoinType.symbol(coin)).to.equal('BNB')
+        expect(CoinType.decimals(coin)).to.equal(18)
+        expect(CoinType.derivationPath(coin)).to.equal(`m/44'/714'/0'/0/0`)
     })
 
     it('test Ethereum encoding SigningInput', () => {
@@ -34,5 +46,10 @@ describe('Wallet Core types tests', () => {
 
         const encoded = TW.Ethereum.Proto.SigningInput.encode(input).finish()
         expect(Buffer.from(encoded).toString('hex')).to.equal("0a01011201091a0504a817c800220252082a2a30783335333533353335333533353335333533353335333533353335333533353335333533353335333532080de0b6b3a764000042204646464646464646464646464646464646464646464646464646464646464646")
+    })
+
+    it('test Bitcoin / Bitcoin SigningInput', () => {
+        expect(TW.Bitcoin.Proto.SigningInput).not.null;
+        expect(TW.Binance.Proto.SigningInput).not.null;
     })
 })

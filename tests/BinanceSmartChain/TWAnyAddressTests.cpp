@@ -18,8 +18,8 @@ TEST(TWBinanceSmartChain, Address) {
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), false);
     auto string = "0xf3d468DBb386aaD46E92FF222adDdf872C8CC064";
     
-    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeBinanceSmartChain));
-    auto expected = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(STRING(string).get(), TWCoinTypeBinanceSmartChain));
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeSmartChain));
+    auto expected = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(STRING(string).get(), TWCoinTypeSmartChain));
 
     auto addressString = WRAPS(TWAnyAddressDescription(address.get()));
     auto expectedString = WRAPS(TWAnyAddressDescription(expected.get()));
