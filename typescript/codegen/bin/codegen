@@ -7,7 +7,9 @@ const prettier = require("prettier");
 const main = async () => {
     const coins = require('../../../coins.json')
     coins.forEach((coin) => {
-        coin.slip44 = coin['derivationPath'].split('/')[2].replace('\'', '');
+        if (!coin['slip44']) {
+            coin.slip44 = Number(coin['derivationPath'].split('/')[2].replace('\'', ''));
+        }
     })
     await generateCoinType(coins);
 };
@@ -38,6 +40,11 @@ const generateCoinType = async (coins) => {
             name: 'symbol',
             returnType: 'string',
             body: (coin) => `return '${coin.symbol}'`
+        },
+        {
+            name: 'slip44',
+            returnType: 'number',
+            body: (coin) => `return ${coin.slip44}`
         }
     ];
 

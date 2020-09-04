@@ -14,18 +14,18 @@
 
 
 TEST(TWBinanceSmartChainCoinType, TWCoinType) {
-    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBinanceSmartChain));
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeSmartChain));
     auto txId = TWStringCreateWithUTF8Bytes("0xb9ae2e808fe8e57171f303ad8f6e3fd17d949b0bfc7b4db6e8e30a71cc517d7e");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBinanceSmartChain, txId));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeSmartChain, txId));
     auto accId = TWStringCreateWithUTF8Bytes("0x35552c16704d214347f29Fa77f77DA6d75d7C752");
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeBinanceSmartChain, accId));
-    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBinanceSmartChain));
-    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBinanceSmartChain));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeSmartChain, accId));
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSmartChain));
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSmartChain));
 
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBinanceSmartChain), 18);
-    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeBinanceSmartChain));
-    ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeBinanceSmartChain));
-    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeBinanceSmartChain));
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSmartChain), 18);
+    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeSmartChain));
+    ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeSmartChain));
+    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeSmartChain));
     assertStringsEqual(symbol, "BNB");
     assertStringsEqual(txUrl, "https://bscscan.com/tx/0xb9ae2e808fe8e57171f303ad8f6e3fd17d949b0bfc7b4db6e8e30a71cc517d7e");
     assertStringsEqual(accUrl, "https://bscscan.com/address/0x35552c16704d214347f29Fa77f77DA6d75d7C752");

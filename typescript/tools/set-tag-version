@@ -1,0 +1,9 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PACKAGE_JSON=$DIR/../package.json
+LATEST_TAG=`git describe --long --tags | cut -f 1 -d "-"`
+if [[ -n $LATEST_TAG ]]; then
+    NEW_PACKAGE=$(jq --arg tag "$LATEST_TAG" '.version = $tag' $PACKAGE_JSON)
+    echo $NEW_PACKAGE | jq . > $PACKAGE_JSON
+fi

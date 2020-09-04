@@ -1,6 +1,6 @@
 {
   "name": "@trustwallet/wallet-core",
-  "version": "0.0.6",
+  "version": "2.2.9",
   "description": "wallet core types and protobuf messages",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -8,10 +8,10 @@
     "test": "mocha -r ts-node/register tests/**/*.test.ts",
     "generate": "yarn codegen:coin && yarn codegen:js && yarn codegen:ts",
     "codegen:coin": "codegen/bin/codegen",
-    "codegen:js": "pbjs -t static-module ../src/proto/Ethereum.proto --no-delimited --force-long -o src/generated/core_proto.js",
+    "codegen:js": "pbjs -t static-module '../src/proto/*.proto' --no-delimited --force-long -o src/generated/core_proto.js",
     "codegen:ts": "pbts -o src/generated/core_proto.d.ts src/generated/core_proto.js",
     "clean": "rm -rf dist src/generated && mkdir -p dist/generated src/generated",
-    "build": "yarn clean && yarn generate && cp src/generated/core_proto.* dist/generated && tsc --skipLibCheck"
+    "build": "yarn clean && yarn generate && cp src/generated/core_proto.d.ts src/generated/core_proto.js dist/generated && tsc --skipLibCheck"
   },
   "repository": {
     "type": "git",

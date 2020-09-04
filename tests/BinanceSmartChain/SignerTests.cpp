@@ -83,7 +83,7 @@ TEST(BinanceSmartChain, SignTokenTransfer) {
     const std::string expected = "f8ab1e8504a817c800830f424094ed24fc36d5ee211ea25a80239fb8c4cfd80f12ee80b844a9059cbb00000000000000000000000031be00eb1fc8e14a696dbc72f746ec3e95f49683000000000000000000000000000000000000000000000000002386f26fc1000081e6a0aa9d5e9a947e96f728fe5d3e6467000cd31a693c00270c33ec64b4abddc29516a00bf1d5646139b2bcca1ad64e6e79f45b7d1255de603b5a3765cbd9544ae148d0";
 
     Proto::SigningOutput output;
-    ANY_SIGN(input, TWCoinTypeBinanceSmartChain);
+    ANY_SIGN(input, TWCoinTypeSmartChain);
 
     EXPECT_EQ(hex(output.encoded()), expected);
 }

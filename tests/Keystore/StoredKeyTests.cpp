@@ -25,7 +25,7 @@ const auto password = TW::data(string(passwordString));
 const auto mnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
 const TWCoinType coinTypeBc = TWCoinTypeBitcoin;
 const TWCoinType coinTypeBnb = TWCoinTypeBinance;
-const TWCoinType coinTypeBsc = TWCoinTypeBinanceSmartChain;
+const TWCoinType coinTypeBsc = TWCoinTypeSmartChain;
 
 TEST(StoredKey, CreateWithMnemonic) {
     auto key = StoredKey::createWithMnemonic("name", password, mnemonic);

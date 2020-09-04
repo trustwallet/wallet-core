@@ -258,7 +258,7 @@ TEST(HDWallet, DeriveElrond) {
 TEST(HDWallet, DeriveBinance) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeBinance));
-    auto key2 = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeBinanceSmartChain));
+    auto key2 = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeSmartChain));
     auto keyData = WRAPD(TWPrivateKeyData(key.get()));
     auto keyData2 = WRAPD(TWPrivateKeyData(key2.get()));
 
