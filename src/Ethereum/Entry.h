@@ -23,6 +23,7 @@ public:
             TWCoinTypePOANetwork,
             TWCoinTypeThunderToken,
             TWCoinTypeTomoChain,
+            TWCoinTypeSmartChainLegacy,
             TWCoinTypeSmartChain,
         };
     }
