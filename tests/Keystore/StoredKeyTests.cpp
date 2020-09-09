@@ -26,6 +26,8 @@ const auto mnemonic = "team engine square letter hero song dizzy scrub tornado f
 const TWCoinType coinTypeBc = TWCoinTypeBitcoin;
 const TWCoinType coinTypeBnb = TWCoinTypeBinance;
 const TWCoinType coinTypeBsc = TWCoinTypeSmartChain;
+const TWCoinType coinTypeEth = TWCoinTypeEthereum;
+const TWCoinType coinTypeBscLegacy = TWCoinTypeSmartChainLegacy;
 
 TEST(StoredKey, CreateWithMnemonic) {
     auto key = StoredKey::createWithMnemonic("name", password, mnemonic);
@@ -142,19 +144,27 @@ TEST(StoredKey, AddRemoveAccount) {
 
     {
         const auto derivationPath = DerivationPath("m/84'/0'/0'/0/0");
-        key.addAccount("bc1q375sq4kl2nv0mlmup3vm8znn4eqwu7mt6hkwhr", coinTypeBc, derivationPath, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
+        key.addAccount("bc1qaucw06s3agez8tyyk4zj9kt0q2934e3mcewdpf", coinTypeBc, derivationPath, "zpub6rxtad3SPT1C5GUDjPiKQ5oJN5DBeMbdUR7LrdYt12VbU7TBSpGUkdLvfVYGuj1N5edkDoZ3bu1fdN1HprQYfCBdsSH5CaAAygHGsanwtTe");
         EXPECT_EQ(key.accounts.size(), 1);
     }
     {
         const auto derivationPath = DerivationPath("m/714'/0'/0'/0/0");
-        key.addAccount("bnb1devga6q804tx9fqrnx0vtu5r36kxgp9tmk4xkm", coinTypeBnb, derivationPath, "");
-        key.addAccount("0xf3d468DBb386aaD46E92FF222adDdf872C8CC064", coinTypeBsc, derivationPath, "");
+        key.addAccount("bnb1utrnnjym7ustgw7pgyvtmnxay4qmt3ahh276nu", coinTypeBnb, derivationPath, "");
+        key.addAccount("0x23b02dC8f67eD6cF8DCa47935791954286ffe7c9", coinTypeBsc, derivationPath, "");
         EXPECT_EQ(key.accounts.size(), 3);
+    }
+    {
+        const auto derivationPath = DerivationPath("m/60'/0'/0'/0/0");
+        key.addAccount("0xC0d97f61A84A0708225F15d54978D628Fe2C5E62", coinTypeEth, derivationPath, "");
+        key.addAccount("0xC0d97f61A84A0708225F15d54978D628Fe2C5E62", coinTypeBscLegacy, derivationPath, "");
+        EXPECT_EQ(key.accounts.size(), 5);
     }
 
     key.removeAccount(coinTypeBc);
     key.removeAccount(coinTypeBnb);
     key.removeAccount(coinTypeBsc);
+    key.removeAccount(coinTypeEth);
+    key.removeAccount(coinTypeBscLegacy);
     EXPECT_EQ(key.accounts.size(), 0);
 }
 

@@ -1468,7 +1468,7 @@
   },
   {
     "id": "bsc",
-    "name": "Smart Chain",
+    "name": "Smart Chain Legacy",
     "coinId": 10000714,
     "slip44": 714,
     "symbol": "BNB",
@@ -1489,6 +1489,31 @@
       "client": "https://github.com/binance-chain/bsc",
       "clientPublic": "https://data-seed-prebsc-1-s1.binance.org:8545",
       "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+    }
+  },
+  {
+    "id": "smartchain",
+    "name": "Smart Chain",
+    "coinId": 20000714,
+    "slip44": 714,
+    "symbol": "BNB",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://bscscan.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xb9ae2e808fe8e57171f303ad8f6e3fd17d949b0bfc7b4db6e8e30a71cc517d7e",
+      "sampleAccount": "0x35552c16704d214347f29Fa77f77DA6d75d7C752"
+    },
+    "info": {
+      "url": "https://www.binance.org/en/smartChain",
+      "client": "https://github.com/binance-chain/bsc",
+      "clientPublic": "https://bsc-dataseed1.binance.org",
+      "clientDocs": "https://eth.wiki/json-rpc/API"
     }
   }
 ]
