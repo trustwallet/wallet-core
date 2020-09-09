@@ -50,13 +50,29 @@ message TransactionOutput {
     bytes script = 2;
 }
 
+// An unspent transaction output, that can serve as input to a transaction
 message UnspentTransaction {
+    // The unspent output
     OutPoint out_point = 1;
+
+    // Script for claiming this UTXO
     bytes script = 2;
+
+    // Amount of the UTXO
     int64 amount = 3;
 }
 
+// Pair of destination address and amount, used for extra outputs
+message OutputAddress {
+    // Destination address
+    string to_address = 1;
+
+    // Amount to be paid to this output
+    int64 amount = 2;
+}
+
 // Input data necessary to create a signed transaction.
+// Outputs will be: one for to_address, optionally one for each extra_outputs, nad optionally one for change_address if there is leftover amount
 message SigningInput {
     // Hash type to use when signing.
     uint32 hash_type = 1;
@@ -90,6 +106,9 @@ message SigningInput {
 
     // Optional transaction plan
     TransactionPlan plan = 11;
+
+    // Optional additional destination addresses, additional to first to_address output
+    repeated OutputAddress extra_outputs = 12;
 }
 
 // Describes a preliminary transaction plan.

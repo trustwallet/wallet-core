@@ -23,15 +23,19 @@ public:
 
     /// Builds a transaction by selecting UTXOs and calculating fees.
     template <typename Transaction>
-    static Transaction build(const TransactionPlan& plan, const std::string& toAddress,
-                             const std::string& changeAddress, enum TWCoinType coin) {
-        auto lockingScriptTo = Script::lockScriptForAddress(toAddress, coin);
-        if (lockingScriptTo.empty()) {
-            return {};
-        }
-
+    static Transaction build(const TransactionPlan& plan,
+        const std::vector<std::pair<std::string, int64_t>>& outputs,
+        const std::string& changeAddress, enum TWCoinType coin)
+    {
         Transaction tx;
-        tx.outputs.push_back(TransactionOutput(plan.amount, lockingScriptTo));
+        for (auto i = 0; i < outputs.size(); ++i) {
+            auto lockingScriptTo = Script::lockScriptForAddress(std::get<0>(outputs[i]), coin);
+            if (lockingScriptTo.empty()) {
+                return {};
+            }
+
+            tx.outputs.push_back(TransactionOutput(std::get<1>(outputs[i]), lockingScriptTo));
+        }
 
         if (plan.change > 0) {
             auto lockingScriptChange = Script::lockScriptForAddress(changeAddress, coin);
@@ -45,6 +49,9 @@ public:
 
         return tx;
     }
+
+private:
+    static int64_t getTotalAmountFromInput(const Bitcoin::Proto::SigningInput& input);
 };
 
 } // namespace TW::Bitcoin

@@ -61,21 +61,37 @@ int64_t estimateSegwitFee(FeeCalculator& feeCalculator, const TransactionPlan& p
     return fee;
 }
 
+int64_t TransactionBuilder::getTotalAmountFromInput(const Bitcoin::Proto::SigningInput& input) {
+    int64_t sum = input.amount();
+    for (auto i = 0; i < input.extra_outputs_size(); ++i) {
+        sum += input.extra_outputs(i).amount();
+    }
+    return sum;
+}
+
 TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& input) {
     auto plan = TransactionPlan();
-    plan.amount = input.amount();
+    plan.amount = getTotalAmountFromInput(input);
 
     auto& feeCalculator = getFeeCalculator(static_cast<TWCoinType>(input.coin_type()));
     auto unspentSelector = UnspentSelector(feeCalculator);
-    const bool maxAmount = input.use_max_amount();
+
+    auto dest_output_count = 1 + input.extra_outputs_size();
+
+    bool maxAmount = input.use_max_amount();
+    if (maxAmount && dest_output_count > 1) {
+        // MaxAmount is not compatible with multiple outputs (not possible to know how to distribute max available amount)
+        maxAmount = false;
+    }
 
     // select UTXOs
-    auto output_size = 2;
+    auto output_size = dest_output_count + 1;
     if (!maxAmount) {
-        output_size = 2; // output + change
+        output_size = dest_output_count + 1; // output(s) + change
         plan.utxos = unspentSelector.select(input.utxo(), plan.amount, input.byte_fee(), output_size);
     } else {
-        output_size = 1; // no change
+        assert(dest_output_count == 1);
+        output_size = 1; // no change, one output
         plan.utxos = unspentSelector.selectMaxAmount(input.utxo(), input.byte_fee());
     }
     // Note: if utxos.size() == 0, all fields will be computed to 0
@@ -84,7 +100,7 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
     // Compute fee.
     // must preliminary set change so that there is a second output
     if (!maxAmount) {
-        plan.amount = input.amount();
+        plan.amount = getTotalAmountFromInput(input);
         plan.fee = 0;
         plan.change = plan.availableAmount - plan.amount;
     } else {

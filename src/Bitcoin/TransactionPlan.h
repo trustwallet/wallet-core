@@ -13,7 +13,7 @@ namespace TW::Bitcoin {
 
 /// Describes a preliminary transaction plan.
 struct TransactionPlan {
-    /// Amount to be received at the other end.
+    /// Amount to be received at the other end (or ends)
     Amount amount = 0;
 
     /// Maximum available amount.
