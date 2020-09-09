@@ -49,7 +49,7 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .digiByte:
                     let expectedResult = "dgb1qtjgmerfqwdffyf8ghcrkgy52cghsqptynmyswu"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .ethereum:
+                case .ethereum, .smartChain:
                     let expectedResult = "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ethereumClassic:
@@ -199,7 +199,7 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .elrond:
                     let expectedResult = "erd1jfcy8aeru6vlx4fe6h3pc3vlpe2cnnur5zetxdhp879yagq7vqvs8na4f8"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .smartChain:
+                case .smartChainLegacy:
                     let expectedResult = "0x49784f90176D8D9d4A3feCDE7C1373dAAb5b13b8"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:

@@ -26,9 +26,19 @@ TEST(TWBinanceSmartChainCoinType, TWCoinType) {
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeSmartChain));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeSmartChain));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeSmartChain));
+    ASSERT_EQ(20000714, TWCoinTypeSmartChain);
     assertStringsEqual(symbol, "BNB");
     assertStringsEqual(txUrl, "https://bscscan.com/tx/0xb9ae2e808fe8e57171f303ad8f6e3fd17d949b0bfc7b4db6e8e30a71cc517d7e");
     assertStringsEqual(accUrl, "https://bscscan.com/address/0x35552c16704d214347f29Fa77f77DA6d75d7C752");
-    assertStringsEqual(id, "bsc");
+    assertStringsEqual(id, "smartchain");
     assertStringsEqual(name, "Smart Chain");
+}
+
+TEST(TWBinanceSmartChainLegacyCoinType, TWCoinType) {
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSmartChainLegacy));
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSmartChainLegacy));
+
+    ASSERT_EQ(10000714, TWCoinTypeSmartChainLegacy);
+    assertStringsEqual(id, "bsc");
+    assertStringsEqual(name, "Smart Chain Legacy");
 }

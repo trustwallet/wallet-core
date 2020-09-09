@@ -26,11 +26,22 @@ describe('Wallet Core types tests', () => {
         const coin = CoinType.bsc;
         expect(coin).to.equal(10000714)
         expect(CoinType.id(coin)).to.equal('bsc')
-        expect(CoinType.name(coin)).to.equal('Smart Chain')
+        expect(CoinType.name(coin)).to.equal('Smart Chain Legacy')
         expect(CoinType.slip44(coin)).to.equal(714)
         expect(CoinType.symbol(coin)).to.equal('BNB')
         expect(CoinType.decimals(coin)).to.equal(18)
         expect(CoinType.derivationPath(coin)).to.equal(`m/44'/714'/0'/0/0`)
+    })
+
+    it('test CoinType.smartchain', () => {
+        const coin = CoinType.smartchain;
+        expect(coin).to.equal(20000714)
+        expect(CoinType.id(coin)).to.equal('smartchain')
+        expect(CoinType.name(coin)).to.equal('Smart Chain')
+        expect(CoinType.slip44(coin)).to.equal(714)
+        expect(CoinType.symbol(coin)).to.equal('BNB')
+        expect(CoinType.decimals(coin)).to.equal(18)
+        expect(CoinType.derivationPath(coin)).to.equal(`m/44'/60'/0'/0/0`)
     })
 
     it('test Ethereum encoding SigningInput', () => {

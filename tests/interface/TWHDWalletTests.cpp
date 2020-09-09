@@ -140,13 +140,18 @@ TEST(HDWallet, DeriveAddressBitcoin) {
 TEST(HDWallet, DeriveEthereum) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeEthereum));
+    auto key2 = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeSmartChain));
+
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), false);
+    auto publicKey2 = TWPrivateKeyGetPublicKeySecp256k1(key2.get(), false);
     auto publicKeyData = WRAPD(TWPublicKeyData(publicKey));
 
     auto address = WRAPS(TWCoinTypeDeriveAddressFromPublicKey(TWCoinTypeEthereum, publicKey));
+    auto address2 = WRAPS(TWCoinTypeDeriveAddressFromPublicKey(TWCoinTypeSmartChain, publicKey2));
 
     assertHexEqual(publicKeyData, "0414acbe5a06c68210fcbb77763f9612e45a526990aeb69d692d705f276f558a5ae68268e9389bb099ed5ac84d8d6861110f63644f6e5b447e3f86b4bab5dee011");
     assertStringsEqual(address, "0x27Ef5cDBe01777D62438AfFeb695e33fC2335979");
+    assertStringsEqual(address2, "0x27Ef5cDBe01777D62438AfFeb695e33fC2335979");
 }
 
 TEST(HDWallet, DeriveAddressEthereum) {
@@ -258,7 +263,7 @@ TEST(HDWallet, DeriveElrond) {
 TEST(HDWallet, DeriveBinance) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeBinance));
-    auto key2 = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeSmartChain));
+    auto key2 = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeSmartChainLegacy));
     auto keyData = WRAPD(TWPrivateKeyData(key.get()));
     auto keyData2 = WRAPD(TWPrivateKeyData(key2.get()));
 
