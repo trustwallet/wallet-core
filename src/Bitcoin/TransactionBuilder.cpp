@@ -15,12 +15,12 @@
 namespace TW::Bitcoin {
 
 /// Estimate encoded size by simple formula
-int64_t estimateSimpleFee(FeeCalculator& feeCalculator, const TransactionPlan& plan, int outputSize, int64_t byteFee) {
+int64_t estimateSimpleFee(const FeeCalculator& feeCalculator, const TransactionPlan& plan, int outputSize, int64_t byteFee) {
     return feeCalculator.calculate(plan.utxos.size(), outputSize, byteFee);
 }
 
 /// Estimate encoded size by invoking sign(sizeOnly), get actual size
-int64_t estimateSegwitFee(FeeCalculator& feeCalculator, const TransactionPlan& plan, int outputSize, const Bitcoin::Proto::SigningInput& input) {
+int64_t estimateSegwitFee(const FeeCalculator& feeCalculator, const TransactionPlan& plan, int outputSize, const Bitcoin::Proto::SigningInput& input) {
     TWPurpose coinPurpose = TW::purpose(static_cast<TWCoinType>(input.coin_type()));
     if (coinPurpose != TWPurposeBIP84) {
         // not segwit, return default simple estimate
@@ -73,7 +73,7 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
     auto plan = TransactionPlan();
     plan.amount = getTotalAmountFromInput(input);
 
-    auto& feeCalculator = getFeeCalculator(static_cast<TWCoinType>(input.coin_type()));
+    const auto& feeCalculator = getFeeCalculator(static_cast<TWCoinType>(input.coin_type()));
     auto unspentSelector = UnspentSelector(feeCalculator);
 
     auto dest_output_count = 1 + input.extra_outputs_size();
