@@ -72,7 +72,7 @@ int main() {
 
         // Alternative: Derive address using custom derivation path.  Done in 2 steps: derive private key, then address.
         auto customDerivationPath = TWStringCreateWithUTF8Bytes("m/44'/60'/1'/0/0");
-        TWPrivateKey* secretPrivateKeyCustom = TWHDWalletGetKey(walletImp, customDerivationPath);
+        TWPrivateKey* secretPrivateKeyCustom = TWHDWalletGetKey(walletImp, coinType, customDerivationPath);
         TWStringDelete(customDerivationPath);
         string addressCustom = TWStringUTF8Bytes(TWCoinTypeDeriveAddress(coinType, secretPrivateKeyCustom));
         cout << "Custom-derived address:   '" << addressCustom << "'" << endl;
