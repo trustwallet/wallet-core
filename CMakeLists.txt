@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
 project(TrustWalletCore)
 
+include(GNUInstallDirs)
+
 # Configure warnings
 set(TW_CXX_WARNINGS "-Wshorten-64-to-32")
 set(CMAKE_CXX_STANDARD 17)
@@ -97,3 +99,14 @@ if(NOT ANDROID AND NOT IOS_PLATFORM)
 endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig.in ${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig @ONLY)
+
+install(TARGETS TrustWalletCore
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        )
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/WalletCore
+        FILES_MATCHING PATTERN "*.h")
+
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
