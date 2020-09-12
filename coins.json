@@ -1515,5 +1515,36 @@
       "clientPublic": "https://bsc-dataseed1.binance.org",
       "clientDocs": "https://eth.wiki/json-rpc/API"
     }
+  },
+  {
+    "id": "bitcoinrand",
+    "name": "bitcoinrand",
+    "coinId": 23190923,
+    "symbol": "BZAR",
+    "decimals": 8,
+    "blockchain": "bitcoinrand",
+    "derivationPath": "m/84'/0'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "p2pkhPrefix": 0,
+    "p2shPrefix": 5,
+    "hrp": "bc",
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "xpub": "zpub",
+    "xprv": "zprv",
+    "explorer": {
+      "url": "https://explorer.bitcoinrand.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "1af63c2180fb7afe87509caa1c10ae95219caffeac13d72242984c0acc3a627d",
+      "sampleAccount": "RRGKdzVXb1b6UPyEnABTA8CBhYSjcniFgP"
+    },
+    "info": {
+      "url": "https://bitcoinrand.com",
+      "client": "https://github.com/trezor/blockbook",
+      "clientPublic": "",
+      "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+    }
   }
 ]
