@@ -50,9 +50,15 @@ message TransactionOutput {
     bytes script = 2;
 }
 
+// An unspent transaction output, that can serve as input to a transaction
 message UnspentTransaction {
+    // The unspent output
     OutPoint out_point = 1;
+
+    // Script for claiming this UTXO
     bytes script = 2;
+
+    // Amount of the UTXO
     int64 amount = 3;
 }
 
@@ -74,22 +80,22 @@ message SigningInput {
     string change_address = 5;
 
     // Available private keys.
-    repeated bytes private_key = 10;
+    repeated bytes private_key = 6;
 
     // Available redeem scripts indexed by script hash.
-    map<string, bytes> scripts = 11;
+    map<string, bytes> scripts = 7;
 
     // Available unspent transaction outputs.
-    repeated UnspentTransaction utxo = 12;
+    repeated UnspentTransaction utxo = 8;
 
     // If sending max amount.
-    bool use_max_amount = 13;
+    bool use_max_amount = 9;
 
     // Coin type (forks).
-    uint32 coin_type = 14;
+    uint32 coin_type = 10;
 
     // Optional transaction plan
-    TransactionPlan plan = 15;
+    TransactionPlan plan = 11;
 }
 
 // Describes a preliminary transaction plan.
