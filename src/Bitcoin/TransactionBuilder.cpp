@@ -15,16 +15,16 @@
 namespace TW::Bitcoin {
 
 /// Estimate encoded size by simple formula
-int64_t estimateSimpleFee(FeeCalculator& feeCalculator, const TransactionPlan& plan, int outputSize, const Bitcoin::Proto::SigningInput& input) {
-    return feeCalculator.calculate(plan.utxos.size(), outputSize, input.byte_fee());
+int64_t estimateSimpleFee(const FeeCalculator& feeCalculator, const TransactionPlan& plan, int outputSize, int64_t byteFee) {
+    return feeCalculator.calculate(plan.utxos.size(), outputSize, byteFee);
 }
 
 /// Estimate encoded size by invoking sign(sizeOnly), get actual size
-int64_t estimateSegwitFee(FeeCalculator& feeCalculator, const TransactionPlan& plan, int outputSize, const Bitcoin::Proto::SigningInput& input) {
+int64_t estimateSegwitFee(const FeeCalculator& feeCalculator, const TransactionPlan& plan, int outputSize, const Bitcoin::Proto::SigningInput& input) {
     TWPurpose coinPurpose = TW::purpose(static_cast<TWCoinType>(input.coin_type()));
     if (coinPurpose != TWPurposeBIP84) {
         // not segwit, return default simple estimate
-        return estimateSimpleFee(feeCalculator, plan, outputSize, input);
+        return estimateSimpleFee(feeCalculator, plan, outputSize, input.byte_fee());
     }
 
     // duplicate input, with the current plan
@@ -35,7 +35,7 @@ int64_t estimateSegwitFee(FeeCalculator& feeCalculator, const TransactionPlan& p
     auto result = signer.sign();
     if (!result) {
         // signing failed; return default simple estimate
-        return estimateSimpleFee(feeCalculator, plan, outputSize, input);
+        return estimateSimpleFee(feeCalculator, plan, outputSize, input.byte_fee());
     }
 
     // Obtain the encoded size
@@ -65,12 +65,13 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
     auto plan = TransactionPlan();
     plan.amount = input.amount();
 
-    auto output_size = 2;
-    auto& feeCalculator = getFeeCalculator(static_cast<TWCoinType>(input.coin_type()));
+    const auto& feeCalculator = getFeeCalculator(static_cast<TWCoinType>(input.coin_type()));
     auto unspentSelector = UnspentSelector(feeCalculator);
+    bool maxAmount = input.use_max_amount();
 
     // select UTXOs
-    if (!input.use_max_amount()) {
+    auto output_size = 2;
+    if (!maxAmount) {
         output_size = 2; // output + change
         plan.utxos = unspentSelector.select(input.utxo(), plan.amount, input.byte_fee(), output_size);
     } else {
@@ -82,7 +83,7 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
 
     // Compute fee.
     // must preliminary set change so that there is a second output
-    if (!input.use_max_amount()) {
+    if (!maxAmount) {
         plan.amount = input.amount();
         plan.fee = 0;
         plan.change = plan.availableAmount - plan.amount;
@@ -97,7 +98,7 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
     assert(plan.fee >= 0 && plan.fee <= plan.availableAmount);
     
     // adjust/compute amount
-    if (!input.use_max_amount()) {
+    if (!maxAmount) {
         // reduce amount if needed
         plan.amount = std::max(Amount(0), std::min(plan.amount, plan.availableAmount - plan.fee));
     } else {
@@ -109,7 +110,7 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
     // compute change
     plan.change = plan.availableAmount - plan.amount - plan.fee;
     assert(plan.change >= 0 && plan.change <= plan.availableAmount);
-    assert(!input.use_max_amount() || plan.change == 0); // change is 0 in max amount case
+    assert(!maxAmount || plan.change == 0); // change is 0 in max amount case
 
     assert(plan.amount + plan.change + plan.fee == plan.availableAmount);
 
