@@ -34,7 +34,7 @@ class UnspentSelector {
     std::vector<Proto::UnspentTransaction> selectMaxAmount(const T& utxos, int64_t byteFee);
 
     /// Construct, using provided feeCalculator (see getFeeCalculator()).
-    explicit UnspentSelector(FeeCalculator& feeCalculator) : feeCalculator(feeCalculator) {}
+    explicit UnspentSelector(const FeeCalculator& feeCalculator) : feeCalculator(feeCalculator) {}
     UnspentSelector() : UnspentSelector(getFeeCalculator(TWCoinTypeBitcoin)) {}
 
     template <typename T>
@@ -47,7 +47,7 @@ class UnspentSelector {
     }
 
   private:
-    FeeCalculator& feeCalculator;
+    const FeeCalculator& feeCalculator;
     template <typename T> std::vector<Proto::UnspentTransaction> filterDustInput(const T& selectedUtxos, int64_t byteFee);
 };
 
