@@ -978,6 +978,31 @@
     }
   },
   {
+    "id": "iov",
+    "name": "IOV",
+    "symbol": "IOV",
+    "coinId": 234,
+    "decimals": 6,
+    "blockchain": "Cosmos",
+    "derivationPath": "m/44'/234'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "star",
+    "explorer": {
+      "url": "https://big-dipper.iov-mainnet-2.iov.one",
+      "txPath": "/transactions/",
+      "accountPath": "/account/",
+      "sampleTx": "050090909C3C2037A0C219D64CC9B249ABE61A6C9651855D75F8924A4D053E4A",
+      "sampleAccount": "star15u8thlfrsw6v9c650h298z23tvdw4pk3sx38nz"
+    },
+    "info": {
+      "url": "https://starname.me",
+      "client": "https://github.com/iov-one/iovns",
+      "clientPublic": "https://rpc-private-iov-mainnet-2.iov.one",
+      "clientDocs": "https://docs.starname.me"
+    }
+  },
+  {
     "id": "theta",
     "name": "Theta",
     "coinId": 500,

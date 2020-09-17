@@ -330,6 +330,14 @@ TEST(Coin, ValidateAddresBand) {
     EXPECT_FALSE(validateAddress(TWCoinTypeBandChain, "band1pnndgfwsrff86263xzpc5cd3t6yfvgjyqc8000"));
 }
 
+TEST(Coin, ValidateAddresIOV) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeIOV, "star1mj92w3zhd89znd26qq6yarpr86yc573khrm0hv"));
+    // wrong prefix
+    EXPECT_FALSE(validateAddress(TWCoinTypeIOV, "cosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp"));
+    // wrong checksum
+    EXPECT_FALSE(validateAddress(TWCoinTypeIOV, "star1mj92w3zhd89znd26qq6yarpr86yc573khrm000"));
+}
+
 TEST(Coin, ValidateAddresCardano) {
     // valid V3 address
     EXPECT_TRUE(validateAddress(TWCoinTypeCardano, "addr1s3hdtrqgs47l7ue5srga8wmk9dzw279x9e7lxadalt6z0fk64nnn2mgtn87mrny9r77gm09h6ecslh3gmarrvrp9n4yzmdnecfxyu59j5lempe"));
