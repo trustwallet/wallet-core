@@ -1,0 +1,9 @@
+include(default)
+
+[settings]
+compiler=clang
+compiler.libcxx=libc++
+
+[env]
+CC=/usr/bin/clang
+CXX=/usr/bin/clang++

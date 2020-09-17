@@ -14,23 +14,6 @@ export DYLD_LIBRARY_PATH="$PREFIX/lib"
 export LD_LIBRARY_PATH="$PREFIX/lib"
 export LD_RUN_PATH="$PREFIX/lib"
 
-# Download Google Test
-export GTEST_VERSION=1.8.1
-GTEST_DIR="$ROOT/build/local/src/gtest"
-mkdir -p "$GTEST_DIR"
-cd "$GTEST_DIR"
-if [ ! -f release-$GTEST_VERSION.tar.gz ]; then
-    curl -fSsOL https://github.com/google/googletest/archive/release-$GTEST_VERSION.tar.gz
-fi
-tar xzf release-$GTEST_VERSION.tar.gz
-
-# Build gtest
-cd googletest-release-$GTEST_VERSION
-cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -H.
-make -j4
-make install
-make clean
-
 # Download Check
 export CHECK_VERSION=0.12.0
 CHECK_DIR="$ROOT/build/local/src/check"
@@ -47,35 +30,6 @@ cd check-$CHECK_VERSION
 make -j4
 make install
 make clean
-
-# Download Nlohmann JSON
-export JSON_VERSION=3.5.0
-JSON_DIR="$ROOT/build/local/json"
-mkdir -p "$JSON_DIR"
-cd "$JSON_DIR"
-if [ ! -f include.zip ]; then
-    curl -fSsOL https://github.com/nlohmann/json/releases/download/v$JSON_VERSION/include.zip
-fi
-unzip -d "$PREFIX" -o include.zip
-
-# Download Protobuf sources
-export PROTOBUF_VERSION=3.9.0
-PROTOBUF_DIR="$ROOT/build/local/src/protobuf"
-mkdir -p "$PROTOBUF_DIR"
-cd "$PROTOBUF_DIR"
-if [ ! -f protobuf-java-$PROTOBUF_VERSION.tar.gz ]; then
-    curl -fSsOL https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protobuf-java-$PROTOBUF_VERSION.tar.gz
-fi
-tar xzf protobuf-java-$PROTOBUF_VERSION.tar.gz
-
-# Build Protobuf
-cd protobuf-$PROTOBUF_VERSION
-./configure --prefix="$PREFIX"
-make -j4
-make install
-# after install, cleanup to save space (docker)
-make clean
-"$PREFIX/bin/protoc" --version
 
 if [[ -x "$(command -v swift)" && `uname` == "Darwin" ]]; then
     # Download Swift Protobuf sources

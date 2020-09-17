@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 project(TrustWalletCore)
 
 include(GNUInstallDirs)
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup(TARGETS)
 
 # Configure warnings
 set(TW_CXX_WARNINGS "-Wshorten-64-to-32")
@@ -64,13 +66,13 @@ if(${ANDROID})
     add_library(TrustWalletCore SHARED ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
 
     find_library(log-lib log)
-    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf ${log-lib} Boost::boost)
+    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto CONAN_PKG::protobuf ${log-lib} CONAN_PKG::boost)
 else()
     message("Configuring standalone")
     file(GLOB_RECURSE sources src/*.c src/*.cc src/*.cpp src/*.h)
     add_library(TrustWalletCore ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
 
-    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf Boost::boost)
+    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto CONAN_PKG::protobuf CONAN_PKG::boost)
 endif()
 target_compile_options(TrustWalletCore PRIVATE "-Wall")
 

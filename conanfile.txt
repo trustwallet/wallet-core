@@ -1,0 +1,11 @@
+[requires]
+gtest/1.8.1
+nlohmann_json/3.7.0
+protobuf/3.9.1
+boost/1.74.0
+
+[generators]
+cmake
+
+[options]
+boost:header_only=True

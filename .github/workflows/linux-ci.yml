@@ -14,7 +14,8 @@ jobs:
     - name: Install system dependencies
       run: |
         # build-essential libboost-all-dev clang-9 ruby-full cmake
-        sudo apt-get install libc++-dev libc++abi-dev ninja-build lcov llvm
+        sudo apt-get install libc++-dev libc++abi-dev ninja-build lcov llvm python3-pip
+        pip3 install conan
     - name: Cache internal dependencies
       id: internal_cache
       uses: actions/cache@v1.1.2
@@ -31,7 +32,8 @@ jobs:
     - name: Build and test
       run: |
         tools/generate-files
-        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON -DBOOST_ROOT=${BOOST_ROOT_1_72_0}
+        conan install -if build --profile=conan/profile .
+        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON
         make -Cbuild -j12 tests TrezorCryptoTests
 
         build/trezor-crypto/tests/TrezorCryptoTests
