@@ -15,7 +15,11 @@ jobs:
       run: |
         # build-essential libboost-all-dev clang-9 ruby-full cmake
         sudo apt-get install libc++-dev libc++abi-dev ninja-build lcov llvm python3-pip python3-setuptools
-        pip3 install wheel setuptools conan
+        python3 --version
+        pip3 --version
+        pip3 install wheel
+        pip3 install setuptools
+        pip3 install conan
         conan --version
     - name: Cache internal dependencies
       id: internal_cache
