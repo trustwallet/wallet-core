@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install system dependencies
-      run: brew install boost ninja
+      run: brew install boost ninja conan
     - name: Install Android Dependencies
       run: |
         $ANDROID_HOME/tools/bin/sdkmanager --verbose "cmake;3.10.2.4988404" "ndk;21.2.6472646"

@@ -28,9 +28,14 @@ RUN apt-get update \
         clang-9 \
         llvm-9 \
         libc++-dev libc++abi-dev \
-        cmake \        
-        libboost1.70-dev \
+        cmake \
+        python3-pip \
+        python3-setuptools \
+
+        #libboost1.70-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install wheel setuptools conan
 
 ENV CC=/usr/bin/clang-9
 ENV CXX=/usr/bin/clang++-9
@@ -43,6 +48,8 @@ WORKDIR /wallet-core
 
 # Install dependencies
 RUN tools/install-dependencies
+
+RUN conan install -if build/ --profile=conan/profile .
 
 # Build: generate, cmake, and make
 RUN tools/generate-files \

@@ -68,11 +68,4 @@ if [[ -x "$(command -v swift)" && `uname` == "Darwin" ]]; then
     $PREFIX/bin/protoc-gen-swift --version
 fi
 
-# Protobuf plugins
-cd "$ROOT/protobuf-plugin"
-cmake -H. -Bbuild -DCMAKE_INSTALL_PREFIX=$PREFIX
-make -Cbuild -j12
-make -Cbuild install
-rm -rf build
-
 cd "$ROOT"

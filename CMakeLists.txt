@@ -36,22 +36,17 @@ link_directories(${PREFIX}/lib)
 
 add_subdirectory(trezor-crypto)
 
-macro(find_host_package)
-  set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-  set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY NEVER)
-  set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE NEVER)
-  find_package(${ARGN})
-  set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY)
-  set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-  set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-endmacro(find_host_package)
-
-find_host_package(Boost REQUIRED)
+#macro(find_host_package)
+#  set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+#  set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY NEVER)
+#  set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE NEVER)
+#  find_package(${ARGN})
+#  set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY)
+#  set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+#  set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+#endmacro(find_host_package)
 
 include(ExternalProject)
-
-# Dependencies
-include(cmake/Protobuf.cmake)
 
 option(CODE_COVERAGE "Enable coverage reporting" OFF)
 if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
