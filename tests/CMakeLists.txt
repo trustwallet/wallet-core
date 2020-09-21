@@ -17,7 +17,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 # Test executable
 file(GLOB_RECURSE test_sources *.cpp **/*.cpp)
 add_executable(tests ${test_sources})
-target_link_libraries(tests CONAN_PKG::gtest TrezorCrypto TrustWalletCore walletconsolelib CONAN_PKG::protobuf CONAN_PKG::boost)
+target_link_libraries(tests CONAN_PKG::gtest TrezorCrypto TrustWalletCore walletconsolelib CONAN_PKG::protobuf CONAN_PKG::boost CONAN_PKG::nlohmann_json)
 target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_compile_options(tests PRIVATE "-Wall")
 
