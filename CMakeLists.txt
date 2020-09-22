@@ -61,7 +61,7 @@ if(${ANDROID})
     add_library(TrustWalletCore SHARED ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
 
     find_library(log-lib log)
-    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto CONAN_PKG::protobuf ${log-lib} CONAN_PKG::boost)
+    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto CONAN_PKG::protobuf ${log-lib} CONAN_PKG::boost CONAN_PKG::nlohmann_json)
 else()
     message("Configuring standalone")
     file(GLOB_RECURSE sources src/*.c src/*.cc src/*.cpp src/*.h)
