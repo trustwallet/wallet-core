@@ -35,7 +35,7 @@ RUN apt-get update \
         #libboost1.70-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install wheel setuptools conan
+RUN pip3 install wheel==0.35.1 setuptools==46.1.3 conan==1.29.2
 
 ENV CC=/usr/bin/clang-9
 ENV CXX=/usr/bin/clang++-9
