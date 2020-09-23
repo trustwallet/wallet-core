@@ -1,13 +1,14 @@
 version = '0.13.0'
 
 Pod::Spec.new do |s|
-  s.name         = 'TrustWalletCore'
+  s.name         = 'WalletCore'
   s.version      = version
   s.summary      = 'Trust Wallet core data structures and algorithms.'
   s.homepage     = 'https://github.com/TrustWallet/wallet-core'
   s.license      = 'MIT'
   s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
-
+  s.module_name  = 'WalletCore'
+  
   s.ios.deployment_target = '11.0'
   s.osx.deployment_target = '10.12'
   s.swift_version = '5.1'
@@ -145,7 +146,7 @@ Pod::Spec.new do |s|
     ss.pod_target_xcconfig = {
       'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) /usr/local/include'
     }
-    ss.dependency 'TrustWalletCore/Types'
+    ss.dependency 'WalletCore/Types'
   end
   s.prepare_command = 'tools/install-dependencies && tools/generate-files'
 end

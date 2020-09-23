@@ -51,13 +51,13 @@ puts "final download url: #{download_url}"
 puts 'Publishing...'
 podspec = <<-PODSPEC
 Pod::Spec.new do |s|
-  s.name         = 'TrustWalletCore'
+  s.name         = 'WalletCore'
   s.version      = '#{version}'
   s.summary      = 'Trust Wallet core data structures and algorithms.'
   s.homepage     = 'https://github.com/trustwallet/wallet-core'
   s.license      = 'MIT'
   s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
-
+  s.module_name  = 'WalletCore'
   s.ios.deployment_target = '11.0'
   s.osx.deployment_target = '10.12'
   s.swift_version = '5.1'
@@ -90,13 +90,12 @@ Pod::Spec.new do |s|
       'swift/Sources/*.h'
     ss.libraries = 'c++'
     ss.xcconfig = {
-        'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) ${PODS_ROOT}/TrustWalletCore/include',
         'OTHER_LDFLAGS' => '$(inherited) -fprofile-instr-generate'
     }
     ss.pod_target_xcconfig = {
         'ARCHS[sdk=iphonesimulator*]' => '$(ARCHS_STANDARD_64_BIT)'
     }
-    ss.dependency 'TrustWalletCore/Types'
+    ss.dependency 'WalletCore/Types'
   end
 end
 PODSPEC

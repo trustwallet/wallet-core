@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <TrustWalletCore/TWData.h>
+#include "TWData.h"
 
 /// Converts a NSData object to TWData, caller must delete it after use.
 TWData *_Nonnull TWDataCreateWithNSData(NSData *_Nonnull data);

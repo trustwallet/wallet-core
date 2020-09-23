@@ -1,13 +1,14 @@
 platform :ios, '11.0'
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 inhibit_all_warnings!
-target 'TrustWalletCore' do
+
+target 'WalletCore' do
   use_frameworks!
 
   pod 'SwiftProtobuf'
   pod 'SwiftLint'
 
-  target 'TrustWalletCoreTests'
+  target 'WalletCoreTests'
 end
 
 post_install do |installer|
