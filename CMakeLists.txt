@@ -95,6 +95,10 @@ if(NOT ANDROID AND NOT IOS_PLATFORM)
     add_subdirectory(walletconsole)
 endif()
 
+if(IOS_PLATFORM)
+    add_subdirectory(swift)
+endif()
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig.in ${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig @ONLY)
 
 install(TARGETS TrustWalletCore

@@ -26,6 +26,15 @@ jobs:
       if: steps.internal_cache.outputs.cache-hit != 'true'
     - name: Run codegen tests
       run: tools/codegen-test
+    - name: Run CMake build
+      run: |
+        conan install -if build --profile=conan/profile .
+        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON \
+              -DCMAKE_TOOLCHAIN_FILE=cmake/ios.toolchain.cmake \
+              -DPLATFORM=SIMULATOR64 \
+              -DDEPLOYMENT_TARGET=11.0 \
+        make -Cbuild -j12 framework framework_test
+        build/bin/framework_test
     - name: Run iOS tests
       run: |
         tools/generate-files
