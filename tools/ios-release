@@ -30,6 +30,8 @@ end
 puts 'Archiving...'
 includes = Dir.glob('include/**/*.h') + Dir.glob('lib/**/*.{h,hpp}')
 sources = Dir.glob('swift/Sources/**/*.{swift,h,m}')
+# Rename libTrustWalletCore.a to avoid conflicts with cocoapods static lib
+File.rename('build/ios/libTrustWalletCore.a', 'build/ios/libCore.a')
 libs = Dir.glob('build/ios/*.a')
 files = includes + sources + libs + ['LICENSE']
 file_name = "TrustWalletCore-iOS-#{version}.zip"
@@ -51,7 +53,7 @@ puts "final download url: #{download_url}"
 puts 'Publishing...'
 podspec = <<-PODSPEC
 Pod::Spec.new do |s|
-  s.name         = 'TWalletCore'
+  s.name         = 'TrustWalletCore'
   s.version      = '#{version}'
   s.summary      = 'Trust Wallet core data structures and algorithms.'
   s.homepage     = 'https://github.com/trustwallet/wallet-core'
@@ -76,11 +78,9 @@ Pod::Spec.new do |s|
 
   s.subspec 'Core' do |ss|
     ss.preserve_paths = 'build/ios/*.a'
-    ss.vendored_libraries =
-      'build/ios/libprotobuf.a',
-      'build/ios/libTrezorCrypto.a',
-      'build/ios/libTrustWalletCore.a'
-    s.source_files =
+    ss.vendored_libraries = 'build/ios/*.a'
+    ss.exclude_files = 'swift/Sources/Generated/WalletCore.h'
+    ss.source_files =
       'include/**/*.h',
       'swift/Sources/*.{swift,h,m,cpp}',
       'swift/Sources/Extensions/*.swift',
@@ -95,7 +95,7 @@ Pod::Spec.new do |s|
     ss.pod_target_xcconfig = {
         'ARCHS[sdk=iphonesimulator*]' => '$(ARCHS_STANDARD_64_BIT)'
     }
-    ss.dependency 'TWalletCore/Types'
+    ss.dependency 'TrustWalletCore/Types'
   end
 end
 PODSPEC
