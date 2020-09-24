@@ -51,7 +51,7 @@ puts "final download url: #{download_url}"
 puts 'Publishing...'
 podspec = <<-PODSPEC
 Pod::Spec.new do |s|
-  s.name         = 'WalletCore'
+  s.name         = 'TWalletCore'
   s.version      = '#{version}'
   s.summary      = 'Trust Wallet core data structures and algorithms.'
   s.homepage     = 'https://github.com/trustwallet/wallet-core'
@@ -95,7 +95,7 @@ Pod::Spec.new do |s|
     ss.pod_target_xcconfig = {
         'ARCHS[sdk=iphonesimulator*]' => '$(ARCHS_STANDARD_64_BIT)'
     }
-    ss.dependency 'WalletCore/Types'
+    ss.dependency 'TWalletCore/Types'
   end
 end
 PODSPEC

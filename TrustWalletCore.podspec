@@ -1,10 +1,10 @@
 version = '0.13.0'
 
 Pod::Spec.new do |s|
-  s.name         = 'WalletCore'
+  s.name         = 'TWalletCore'
   s.version      = version
   s.summary      = 'Trust Wallet core data structures and algorithms.'
-  s.homepage     = 'https://github.com/TrustWallet/wallet-core'
+  s.homepage     = 'https://github.com/trustwallet/wallet-core'
   s.license      = 'MIT'
   s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
   s.module_name  = 'WalletCore'
@@ -14,9 +14,7 @@ Pod::Spec.new do |s|
   s.swift_version = '5.1'
 
   s.source = {
-    git: 'git@github.com:TrustWallet/wallet-core.git',
-    tag: version,
-    submodules: true
+    git: 'git@github.com:trustwallet/wallet-core.git'
   }
 
   s.default_subspec = 'Core'
@@ -146,7 +144,7 @@ Pod::Spec.new do |s|
     ss.pod_target_xcconfig = {
       'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) /usr/local/include'
     }
-    ss.dependency 'WalletCore/Types'
+    ss.dependency 'TWalletCore/Types'
   end
   s.prepare_command = 'tools/install-dependencies && tools/generate-files'
 end
