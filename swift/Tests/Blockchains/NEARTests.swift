@@ -57,6 +57,7 @@ class NEARTests: XCTestCase {
             $0.actions = [
                 NEARAction.with({
                     $0.transfer = NEARTransfer.with {
+                        // uint128_t / little endian byte order
                         $0.deposit = Data(hexString: "01000000000000000000000000000000")!
                     }
                 }),
