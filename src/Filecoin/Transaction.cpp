@@ -9,19 +9,15 @@
 using namespace TW;
 using namespace TW::Filecoin;
 
-// encodeVaruint encodes a 256-bit number into a big endian encoding, omitting leading zeros.
-static Data encodeVaruint(const uint256_t& value) {
-    Data data;
-    encode256BE(data, value, 256);
-    size_t i = 0;
-    for (i = 0; i < data.size(); ++i) {
-        if (data[i] != 0) {
-            break;
-        }
+// encodeBigInt encodes a Filecoin BigInt to CBOR.
+Data TW::Filecoin::encodeBigInt(const uint256_t& value) {
+    if (value.is_zero()) {
+        return {};
     }
-    Data small;
-    small.assign(data.begin() + i - 1, data.end());
-    return small;
+    Data buf;
+    buf.push_back(0); // positive sign
+    export_bits(value, std::back_inserter(buf), 8);
+    return buf;
 }
 
 // cidPrefix is the CID + Multihash prefix of transaction CIDs.
@@ -40,15 +36,16 @@ Cbor::Encode Transaction::message() const {
     Cbor::Encode cborGasLimit = gasLimit >= 0 ? Cbor::Encode::uint((uint64_t)gasLimit)
                                               : Cbor::Encode::negInt((uint64_t)(-gasLimit - 1));
     return Cbor::Encode::array({
-        Cbor::Encode::uint(0),                        // version
-        Cbor::Encode::bytes(to.bytes),                // to address
-        Cbor::Encode::bytes(from.bytes),              // from address
-        Cbor::Encode::uint(nonce),                    // nonce
-        Cbor::Encode::bytes(encodeVaruint(value)),    // value
-        Cbor::Encode::bytes(encodeVaruint(gasPrice)), // gas price
-        cborGasLimit,                                 // gas limit
-        Cbor::Encode::uint(0),                        // abi.MethodNum (0 => send)
-        Cbor::Encode::bytes(Data())                   // data (empty)
+        Cbor::Encode::uint(0),                         // version
+        Cbor::Encode::bytes(to.bytes),                 // to address
+        Cbor::Encode::bytes(from.bytes),               // from address
+        Cbor::Encode::uint(nonce),                     // nonce
+        Cbor::Encode::bytes(encodeBigInt(value)),      // value
+        cborGasLimit,                                  // gas limit
+        Cbor::Encode::bytes(encodeBigInt(gasFeeCap)),  // gas fee cap
+        Cbor::Encode::bytes(encodeBigInt(gasPremium)), // gas premium
+        Cbor::Encode::uint(0),                         // abi.MethodNum (0 => send)
+        Cbor::Encode::bytes(Data())                    // data (empty)
     });
 }
 
