@@ -22,8 +22,9 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         /* from */ from_address,
         /* nonce */ input.nonce(),
         /* value */ load(input.value()),
-        /* gasPrice */ load(input.gas_price()),
-        /* gasLimit */ input.gas_limit());
+        /* gasLimit */ input.gas_limit(),
+        /* gasFeeCap */ load(input.gas_fee_cap()),
+        /* gasPremium */ load(input.gas_premium()));
 
     // Sign transaction.
     auto signature = sign(key, transaction);
