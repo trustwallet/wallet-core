@@ -14,8 +14,12 @@
 
 namespace TW::Filecoin {
 
+Data encodeBigInt(const uint256_t& value);
+
 class Transaction {
   public:
+    // Transaction version
+    uint64_t version;
     // Recipient address
     Address to;
     // Sender address
@@ -24,22 +28,25 @@ class Transaction {
     uint64_t nonce;
     // Transaction value
     uint256_t value;
-    // Miner fee
-    uint256_t gasPrice;
+    // Fee settings
     int64_t gasLimit;
+    uint256_t gasFeeCap;
+    uint256_t gasPremium;
     // Transaction type; 0 for simple transfers
     uint64_t method;
     // Transaction data; empty for simple transfers
     Data params;
 
-    Transaction(Address to, Address from, uint64_t nonce, uint256_t value, uint256_t gprice,
-                uint256_t glimit)
-        : to(std::move(to))
+    Transaction(Address to, Address from, uint64_t nonce, uint256_t value, int64_t gasLimit,
+                uint256_t gasFeeCap, uint256_t gasPremium)
+        : version(0)
+        , to(std::move(to))
         , from(std::move(from))
         , nonce(nonce)
         , value(std::move(value))
-        , gasPrice(std::move(gprice))
-        , gasLimit(std::move(glimit))
+        , gasLimit(gasLimit)
+        , gasFeeCap(std::move(gasFeeCap))
+        , gasPremium(std::move(gasPremium))
         , method(0) {}
 
   public:

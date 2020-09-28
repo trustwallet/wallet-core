@@ -17,11 +17,14 @@ message SigningInput {
     // Transfer value.
     bytes value = 4;
 
-    // Gas price.
-    bytes gas_price = 5;
-
     // Gas limit.
-    uint64 gas_limit = 6;
+    int64 gas_limit = 5;
+
+    // Gas fee cap.
+    bytes gas_fee_cap = 6;
+
+    // Gas premium.
+    bytes gas_premium = 7;
 }
 
 // Transaction signing output.
