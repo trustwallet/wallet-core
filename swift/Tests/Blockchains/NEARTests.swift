@@ -21,6 +21,18 @@ class NEARTests: XCTestCase {
         XCTAssertEqual(expected.data.hexString, hex)
     }
 
+    func testAccount() {
+        let string = "NEARTDDWrUMdoC2rA1eU6gNrSU2zyGKdR71TNucTvsQHyfAXjKcJb"
+        let account = NEARAccount(string: string)!
+
+        XCTAssertEqual(account.description, "NEARTDDWrUMdoC2rA1eU6gNrSU2zyGKdR71TNucTvsQHyfAXjKcJb")
+        XCTAssertEqual(account.id, "3b83b07cab54824a59c3d3f2e203a7cd913b7fcdc4439595983e2402c2cf791d")
+
+        let account2 = NEARAccount(string: "test.near")!
+        XCTAssertEqual(account2.description, "test.near")
+        XCTAssertEqual(account2.description, account2.id)
+    }
+
     func testAddressValidation() {
         let near = CoinType.near
         for address in [
