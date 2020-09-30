@@ -60,6 +60,7 @@ using namespace std;
 
 // Map with coin entry dispatchers, key is coin type
 map<TWCoinType, CoinEntry*> dispatchMap = {}; 
+uint8_t dispatchMapInitialized = 0; // 0 not, 1 initialized, 2 in progress
 mutex dispatchMapMutex;
 // List of supported coint types
 set<TWCoinType> coinTypes = {};
@@ -107,10 +108,11 @@ void setupDispatchers() {
     }; // end_of_coin_entries_marker_do_not_modify
 
     lock_guard<mutex> guard(dispatchMapMutex);
-    if (dispatchMap.size() > 0) {
-        // already set up, skip
+    if (dispatchMapInitialized != 0) {
+        // already initialized or in progress, skip
         return;
     }
+    dispatchMapInitialized = 2; // in progress
     dispatchMap.clear();
     coinTypes.clear();
     for (auto d : dispatchers) {
@@ -124,13 +126,19 @@ void setupDispatchers() {
             };
         }
     }
+    dispatchMapInitialized = 1;
     // Note: dispatchers are created at first use, and never freed
 }
 
 inline void setupDispatchersIfNeeded() {
     if (dispatchMap.size() == 0) {
+        // for some hard to understand reasons, sometimes it happens that dispatchMapInitialized=1 yet dispatchMap.size()=0
+        dispatchMapInitialized = 0;
+    }
+    if (dispatchMapInitialized != 1) {
         setupDispatchers();
     }
+    assert(dispatchMapInitialized == 1);
     assert(dispatchMap.size() > 0);
     // it is set up by this time, and will not get modified
 }

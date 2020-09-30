@@ -85,6 +85,7 @@ void useCoinFromThread() {
     for (int i = 0; i < tryCount; ++i) {
         // perform some operations
         const auto coinTypes = TW::getCoinTypes();
+        TW::validateAddress(TWCoinTypeZilliqa, "zil1j2cvtd7j9n7fnxfv2r3neucjw8tp4xz9sp07v4");
         TW::validateAddress(TWCoinTypeEthereum, "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
     }
     countThreadReadyMutex.lock();
