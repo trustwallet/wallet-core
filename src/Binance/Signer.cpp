@@ -39,6 +39,9 @@ static const auto transferOutOrderPrefix = Data{0x80, 0x08, 0x19, 0xC0};
 static const auto sideDelegateOrderPrefix = Data{0xE3, 0xA0, 0x7F, 0xD2};
 static const auto sideRedelegateOrderPrefix = Data{0xE3, 0xCE, 0xD3, 0x64};
 static const auto sideUndelegateOrderPrefix = Data{0x51, 0x4F, 0x7E, 0x0E};
+static const auto timeLockOrderPrefix = Data{0x07, 0x92, 0x15, 0x31};
+static const auto timeRelockOrderPrefix = Data{0x50, 0x47, 0x11, 0xDA};
+static const auto timeUnlockOrderPrefix = Data{0xC4, 0x05, 0x0C, 0x6C};
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto signer = Signer(input);
@@ -136,6 +139,15 @@ Data Signer::encodeOrder() const {
     } else if (input.has_side_undelegate_order()) {
         data = input.side_undelegate_order().SerializeAsString();
         prefix = sideUndelegateOrderPrefix;
+    } else if (input.has_time_lock_order()) {
+        data = input.time_lock_order().SerializeAsString();
+        prefix = timeLockOrderPrefix;
+    } else if (input.has_time_relock_order()) {
+        data = input.time_relock_order().SerializeAsString();
+        prefix = timeRelockOrderPrefix;
+    } else if (input.has_time_unlock_order()) {
+        data = input.time_unlock_order().SerializeAsString();
+        prefix = timeUnlockOrderPrefix;
     } else {
         return {};
     }
