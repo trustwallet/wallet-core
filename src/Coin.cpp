@@ -145,10 +145,9 @@ inline void setupDispatchersIfNeeded() {
     }
     if (!dispatchMapInitialized) {
         setupDispatchers();
+        assert(dispatchMapInitialized);
+        assert(dispatchMap.size() > 0);
     }
-    assert(dispatchMapInitialized);
-    assert(dispatchMap.size() > 0);
-    assert(coinTypes.size() > 0);
     // it is set up by this time, and will not get modified
 }
 
