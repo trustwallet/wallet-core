@@ -165,7 +165,7 @@ message SideChainUndelegate {
 message TimeLockOrder {
     bytes from_address = 1; // owner address
     string description = 2;
-    // Array of symbol/amount pairs.  Naming is a bit misleading, but we follow SDK https://github.com/binance-chain/javascript-sdk/blob/master/docs/api-docs/classes/tokenmanagement.md#timelock
+    // Array of symbol/amount pairs. see SDK https://github.com/binance-chain/javascript-sdk/blob/master/docs/api-docs/classes/tokenmanagement.md#timelock
     repeated SendOrder.Token amount = 3;
     int64 lock_time = 4;
 }
@@ -174,7 +174,7 @@ message TimeRelockOrder {
     bytes from_address = 1; // owner address
     int64 id = 2; // order ID
     string description = 3;
-    // Array of symbol/amount pairs.  Naming is a bit misleading, but we follow SDK.
+    // Array of symbol/amount pairs.
     repeated SendOrder.Token amount = 4;
     int64 lock_time = 5;
 }
