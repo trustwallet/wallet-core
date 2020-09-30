@@ -62,7 +62,8 @@ using namespace std;
 map<TWCoinType, CoinEntry*> dispatchMap = {}; 
 // List of supported coint types
 set<TWCoinType> coinTypes = {};
-uint8_t dispatchMapInitialized = 0; // 0 not, 1 initialized, 2 in progress
+bool dispatchMapInitInProgress = false;
+bool dispatchMapInitialized = false;
 mutex dispatchMapMutex;
 
 void setupDispatchers() {
@@ -108,11 +109,12 @@ void setupDispatchers() {
     }; // end_of_coin_entries_marker_do_not_modify
 
     lock_guard<mutex> guard(dispatchMapMutex);
-    if (dispatchMapInitialized != 0) {
+    if (dispatchMapInitialized || dispatchMapInitInProgress) {
         // already initialized or in progress, skip
         return;
     }
-    dispatchMapInitialized = 2; // in progress
+    dispatchMapInitInProgress = true;
+    dispatchMapInitialized = false;
     map<TWCoinType, CoinEntry*> localDispatchMap;
     set<TWCoinType> localCoinTypes;
     for (auto d : dispatchers) {
@@ -131,19 +133,20 @@ void setupDispatchers() {
     dispatchMap = localDispatchMap;
     coinTypes.clear();
     coinTypes = localCoinTypes;
-    dispatchMapInitialized = 1;
+    dispatchMapInitInProgress = false;
+    dispatchMapInitialized = true;
     // Note: dispatchers are created at first use, and never freed
 }
 
 inline void setupDispatchersIfNeeded() {
     if (dispatchMap.size() == 0 || coinTypes.size() == 0) {
-        // for some hard to understand reasons, sometimes it happens that dispatchMapInitialized=1 yet dispatchMap.size()=0
-        dispatchMapInitialized = 0;
+        // for some hard to understand reasons, sometimes it happens that dispatchMapInitialized=true yet dispatchMap.size()=0
+        dispatchMapInitialized = false;
     }
-    if (dispatchMapInitialized != 1) {
+    if (!dispatchMapInitialized) {
         setupDispatchers();
     }
-    assert(dispatchMapInitialized == 1);
+    assert(dispatchMapInitialized);
     assert(dispatchMap.size() > 0);
     assert(coinTypes.size() > 0);
     // it is set up by this time, and will not get modified
