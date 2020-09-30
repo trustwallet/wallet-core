@@ -161,6 +161,26 @@ message SideChainUndelegate {
 	string chain_id = 4;
 }
 
+message TimeLockOrder {
+    bytes from_address = 1; // owner address
+    string description = 2;
+    int64 amount = 3;
+    int64 lock_time = 4;
+}
+
+message TimeRelockOrder {
+    bytes from_address = 1; // owner address
+    int64 id = 2; // order ID
+    string description = 3;
+    int64 amount = 4;
+    int64 lock_time = 5;
+}
+
+message TimeUnlockOrder {
+    bytes from_address = 1; // owner address
+    int64 id = 2; // order ID
+}
+
 // Input data necessary to create a signed order.
 message SigningInput {
     string chain_id = 1;
@@ -187,6 +207,9 @@ message SigningInput {
         SideChainDelegate side_delegate_order = 21;
         SideChainRedelegate side_redelegate_order = 22;
         SideChainUndelegate side_undelegate_order = 23;
+        TimeLockOrder time_lock_order = 24;
+        TimeRelockOrder time_relock_order = 25;
+        TimeUnlockOrder time_unlock_order = 26;
     }
 }
 
