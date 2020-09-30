@@ -43,6 +43,12 @@ enum StakeInstruction {
     Deactivate = 5,
 };
 
+// Token instruction types
+enum TokenIntruction {
+    Token_InitializeAccount = 0,
+    Token_Transfer
+};
+
 // An instruction to execute a program
 struct CompiledInstruction {
     // Index into the transaction keys array indicating the program account that
@@ -125,6 +131,17 @@ struct CompiledInstruction {
         } else if (type == Deactivate) {
             accounts = {1, 2, 0};
         }
+        this->accounts = accounts;
+        this->data = data;
+    }
+
+    // This constructor creates a Token instruction
+    CompiledInstruction(uint8_t programIdIndex, TokenIntruction type)
+        : programIdIndex(programIdIndex) {
+        std::vector<uint8_t> accounts;
+        auto data = Data();
+        encode32LE(static_cast<uint32_t>(type), data);
+        // accounts = ? TODO
         this->accounts = accounts;
         this->data = data;
     }
@@ -281,6 +298,36 @@ class Message {
         std::vector<CompiledInstruction> instructions;
         auto instruction = CompiledInstruction(4, Withdraw, value);
         instructions.push_back(instruction);
+        this->instructions = instructions;
+    }
+
+    // This constructor creates a create_account message
+    Message(Address signer, Address token, Address account, StakeInstruction type, Hash recentBlockHash)
+        : recentBlockhash(recentBlockhash) {
+        MessageHeader header = {1, 0, 99}; // TODO
+        this->header = header;
+
+        //auto sysvarRentId = Address("SysvarRent111111111111111111111111111111111");
+        //auto sysvarClockId = Address("SysvarC1ock11111111111111111111111111111111");
+        //auto stakeConfigId = Address("StakeConfig11111111111111111111111111111111");
+        auto systemProgramId = Address("11111111111111111111111111111111");
+        auto stakeProgramId = Address(STAKE_ADDRESS);
+        //std::vector<Address> accountKeys = {signer,          stakeAddress,  sysvarRentId,
+        //                                    voteAddress,     sysvarClockId, stakeConfigId,
+        //                                    systemProgramId, stakeProgramId};
+        std::vector<Address> accountKeys = {signer,          token,         account,
+                                            systemProgramId, stakeProgramId};
+        this->accountKeys = accountKeys;
+
+        std::vector<CompiledInstruction> instructions;
+        // create_account instruction
+        //auto createAccountInstruction =
+        //    CompiledInstruction(99, Token_InitializeAccount);
+        //instructions.push_back(createAccountInstruction);
+        // initialize instruction
+        auto initializeInstruction = CompiledInstruction(99, Token_InitializeAccount);
+        instructions.push_back(initializeInstruction);
+
         this->instructions = instructions;
     }
 };
