@@ -620,4 +620,81 @@ TEST(BinanceSigner, BuildSideChainUndelegate) {
     );
 }
 
+TEST(BinanceSigner, BuildTimeLockOrder) {
+    const auto fromPrivateKey =
+        PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+    const Data fromAddr = Binance::Address(fromPublicKey).getKeyHash();
+
+    auto signingInput = Proto::SigningInput();
+    signingInput.set_chain_id("test-chain");
+    signingInput.set_account_number(15);
+    signingInput.set_sequence(1);
+    signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
+
+    auto& lockOrder = *signingInput.mutable_time_lock_order();
+    lockOrder.set_from_address(fromAddr.data(), fromAddr.size());
+    lockOrder.set_description("Description locked for offer");
+    lockOrder.set_amount(1000000);
+    lockOrder.set_lock_time(1600001371);
+
+    const auto data = Binance::Signer(std::move(signingInput)).build();
+    EXPECT_EQ(hex(data.begin(), data.end()),
+        "b801f0625dee0a42"
+        "07921531"
+        "0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1121c4465736372697074696f6e206c6f636b656420666f72206f6666657218c0843d20dbaaf8fa05126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240607494bce1029c7b13c20609e0cd8e45d5031a2abd2f1906ef26d344ae96b85522dc50350dcdbd4dec3545ad645d06d84ea18d1c999c7a2be056fb369353b143180f2001"
+    );
+}
+
+TEST(BinanceSigner, BuildTimeRelockOrder) {
+    const auto fromPrivateKey =
+        PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+    const Data fromAddr = Binance::Address(fromPublicKey).getKeyHash();
+
+    auto signingInput = Proto::SigningInput();
+    signingInput.set_chain_id("test-chain");
+    signingInput.set_account_number(15);
+    signingInput.set_sequence(1);
+    signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
+
+    auto& relockOrder = *signingInput.mutable_time_relock_order();
+    relockOrder.set_from_address(fromAddr.data(), fromAddr.size());
+    relockOrder.set_id(333);
+    relockOrder.set_description("Description locked for offer");
+    relockOrder.set_amount(1000000);
+    relockOrder.set_lock_time(1600001371);
+
+    const auto data = Binance::Signer(std::move(signingInput)).build();
+    EXPECT_EQ(hex(data.begin(), data.end()),
+        "bb01f0625dee0a45"
+        "504711da"
+        "0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e110cd021a1c4465736372697074696f6e206c6f636b656420666f72206f6666657220c0843d28dbaaf8fa05126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240f16c759d21a28b35f37624090961c302410dde3586e8d9868ded65a0ba156b9b02b875d7c5793d22ef8a68269c21fa09fea9e3a9dbdc33cb8d98a5fd9284cb9c180f2001"
+    );
+}
+
+TEST(BinanceSigner, BuildTimeUnlockOrder) {
+    const auto fromPrivateKey =
+        PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+    const Data fromAddr = Binance::Address(fromPublicKey).getKeyHash();
+
+    auto signingInput = Proto::SigningInput();
+    signingInput.set_chain_id("test-chain");
+    signingInput.set_account_number(15);
+    signingInput.set_sequence(1);
+    signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
+
+    auto& unlockOrder = *signingInput.mutable_time_unlock_order();
+    unlockOrder.set_from_address(fromAddr.data(), fromAddr.size());
+    unlockOrder.set_id(333);
+
+    const auto data = Binance::Signer(std::move(signingInput)).build();
+    EXPECT_EQ(hex(data.begin(), data.end()),
+        "9301f0625dee0a1d"
+        "c4050c6c"
+        "0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e110cd02126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240006ed2f3f655ad2f3dc570d5409105a6acf28f5ea96162f40db7f5762b7feefc2bd5c8907beaae606cb4092680f69d784edc914d26907d52d35e64468ce5fc91180f2001"
+    );
+}
+
 } // namespace TW::Binance
