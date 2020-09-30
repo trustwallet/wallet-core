@@ -420,4 +420,11 @@ class HDWalletTests: XCTestCase {
 
         XCTAssertEqual(address, "band1pe8xm2r46rmctsukuqu7gl900vzprfsp4sguc3")
     }
+    func testDeriveIOV() {
+        let coin = CoinType.iov
+        let key = HDWallet.test.getKeyForCoin(coin: coin)
+        let address = coin.deriveAddress(privateKey: key)
+
+        XCTAssertEqual(address, "star1lkc0te63v2epfgwlm0u0vejcqsshm83w7h7ch6")
+    }
 }

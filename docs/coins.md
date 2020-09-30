@@ -28,6 +28,7 @@ This list is generated from [./coins.json](../coins.json)
 | 178     | POA Network      | POA    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/poa/info/logo.png" width="32" />          | <https://poa.network>         |
 | 194     | EOS              | EOS    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/eos/info/logo.png" width="32" />          | <http://eos.io>               |
 | 195     | Tron             | TRX    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/tron/info/logo.png" width="32" />         | <https://tron.network>        |
+| 234     | IOV              | IOV    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/iov/info/logo.png" width="32" />          | <https://starname.me>         |
 | 235     | FIO              | FIO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/fio/info/logo.png" width="32" />          | <https://fioprotocol.io>      |
 | 242     | Nimiq            | NIM    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nimiq/info/logo.png" width="32" />        | <https://nimiq.com>           |
 | 283     | Algorand         | ALGO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/algorand/info/logo.png" width="32" />     | <https://www.algorand.com/>   |
@@ -64,4 +65,5 @@ This list is generated from [./coins.json](../coins.json)
 | 19167   | Zelcash          | ZEL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zelcash/info/logo.png" width="32" />      | <https://zel.cash>            |
 | 5718350 | Wanchain         | WAN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/wanchain/info/logo.png" width="32" />     | <https://wanchain.org>        |
 | 5741564 | Waves            | WAVES  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/waves/info/logo.png" width="32" />        | <https://wavesplatform.com>   |
-| 20000714 | Smart Chain      | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bsc/info/logo.png" width="32" />          | <https://www.binance.org/en/smartChain> |
+| 10000714 | Smart Chain Legacy | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bsc/info/logo.png" width="32" />          | <https://www.binance.org/en/smartChain> |
+| 20000714 | Smart Chain      | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/info/logo.png" width="32" />   | <https://www.binance.org/en/smartChain> |
