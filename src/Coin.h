@@ -24,7 +24,7 @@
 namespace TW {
 
 // Return the set of supported coin types.
-std::set<TWCoinType> getCoinTypes();
+const std::set<TWCoinType>& getCoinTypes();
 
 /// Validates an address for a particular coin.
 bool validateAddress(TWCoinType coin, const std::string& address);

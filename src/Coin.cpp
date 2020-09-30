@@ -6,13 +6,13 @@
 
 #include "Coin.h"
 
+#include "CoinDispatchMap.h"
 #include "CoinEntry.h"
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <TrustWalletCore/TWHRP.h>
 
-#include <map>
-#include <set>
 #include <mutex>
+#include <atomic>
 
 // Includes for entry points for coin implementations
 #include "Aeternity/Entry.h"
@@ -58,15 +58,18 @@
 using namespace TW;
 using namespace std;
 
-// Map with coin entry dispatchers, key is coin type
-map<TWCoinType, CoinEntry*> dispatchMap = {}; 
-// List of supported coint types
-set<TWCoinType> coinTypes = {};
-bool dispatchMapInitInProgress = false;
-bool dispatchMapInitialized = false;
+// Pointer to static instance; should be thread-safe but wrapped in atomic to ensure
+atomic<CoinDispatchMap*> dispatchMapInstance = nullptr;
 mutex dispatchMapMutex;
 
-void setupDispatchers() {
+void setupDispatchMap() {
+    lock_guard<mutex> guard(dispatchMapMutex);
+
+    if (dispatchMapInstance.load() != nullptr) {
+        // already initialized or in progress, skip
+        return;
+    }
+
     std::vector<CoinEntry*> dispatchers = {
         new Aeternity::Entry(),
         new Aion::Entry(),
@@ -108,60 +111,31 @@ void setupDispatchers() {
         new Elrond::Entry(),
     }; // end_of_coin_entries_marker_do_not_modify
 
-    lock_guard<mutex> guard(dispatchMapMutex);
-    if (dispatchMapInitialized || dispatchMapInitInProgress) {
-        // already initialized or in progress, skip
-        return;
-    }
-    dispatchMapInitInProgress = true;
-    dispatchMapInitialized = false;
-    map<TWCoinType, CoinEntry*> localDispatchMap;
-    set<TWCoinType> localCoinTypes;
-    for (auto d : dispatchers) {
-        auto dispCoins = d->coinTypes();
-        for (auto c : dispCoins) {
-            assert(localDispatchMap.find(c) == localDispatchMap.end()); // each coin must appear only once
-            localDispatchMap[c] = d;
-            if (localCoinTypes.emplace(c).second != true) {
-                // each coin must appear only once
-                abort();
-            };
-        }
-    }
-    // Set to global variables.  The clear() seems unnecessary, but without it the test segfaults
-    dispatchMap.clear();
-    dispatchMap = localDispatchMap;
-    coinTypes.clear();
-    coinTypes = localCoinTypes;
-    dispatchMapInitInProgress = false;
-    dispatchMapInitialized = true;
+    auto newInstance = new CoinDispatchMap(dispatchers);
+    dispatchMapInstance.store(newInstance);
+    assert(dispatchMapInstance.load() != nullptr);
+
     // Note: dispatchers are created at first use, and never freed
 }
 
 inline void setupDispatchersIfNeeded() {
-    if (dispatchMap.size() == 0 || coinTypes.size() == 0) {
-        // for some hard to understand reasons, sometimes it happens that dispatchMapInitialized=true yet dispatchMap.size()=0
-        dispatchMapInitialized = false;
-    }
-    if (!dispatchMapInitialized) {
-        setupDispatchers();
-        assert(dispatchMapInitialized);
-        assert(dispatchMap.size() > 0);
+    if (dispatchMapInstance.load() == nullptr) {
+        setupDispatchMap();
+        assert(dispatchMapInstance.load() != nullptr);
     }
     // it is set up by this time, and will not get modified
 }
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
     setupDispatchersIfNeeded();
-    // Coin must be present, and not null.  Otherwise that is a fatal code configuration error.
-    assert(dispatchMap.find(coinType) != dispatchMap.end()); // coin must be present
-    assert(dispatchMap[coinType] != nullptr);
-    return dispatchMap[coinType];
+    assert(dispatchMapInstance.load() != nullptr);
+    return dispatchMapInstance.load()->coinDispatcher(coinType);
 }
 
-set<TWCoinType> TW::getCoinTypes() {
+const set<TWCoinType>& TW::getCoinTypes() {
     setupDispatchersIfNeeded();
-    return coinTypes;
+    assert(dispatchMapInstance.load() != nullptr);
+    return dispatchMapInstance.load()->getCoinTypes();
 }
 
 bool TW::validateAddress(TWCoinType coin, const std::string& string) {
