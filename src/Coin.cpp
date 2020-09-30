@@ -60,10 +60,10 @@ using namespace std;
 
 // Map with coin entry dispatchers, key is coin type
 map<TWCoinType, CoinEntry*> dispatchMap = {}; 
-uint8_t dispatchMapInitialized = 0; // 0 not, 1 initialized, 2 in progress
-mutex dispatchMapMutex;
 // List of supported coint types
 set<TWCoinType> coinTypes = {};
+uint8_t dispatchMapInitialized = 0; // 0 not, 1 initialized, 2 in progress
+mutex dispatchMapMutex;
 
 void setupDispatchers() {
     std::vector<CoinEntry*> dispatchers = {
@@ -113,25 +113,30 @@ void setupDispatchers() {
         return;
     }
     dispatchMapInitialized = 2; // in progress
-    dispatchMap.clear();
-    coinTypes.clear();
+    map<TWCoinType, CoinEntry*> localDispatchMap;
+    set<TWCoinType> localCoinTypes;
     for (auto d : dispatchers) {
         auto dispCoins = d->coinTypes();
         for (auto c : dispCoins) {
-            assert(dispatchMap.find(c) == dispatchMap.end()); // each coin must appear only once
-            dispatchMap[c] = d;
-            if (coinTypes.emplace(c).second != true) {
+            assert(localDispatchMap.find(c) == localDispatchMap.end()); // each coin must appear only once
+            localDispatchMap[c] = d;
+            if (localCoinTypes.emplace(c).second != true) {
                 // each coin must appear only once
                 abort();
             };
         }
     }
+    // Set to global variables.  The clear() seems unnecessary, but without it the test segfaults
+    dispatchMap.clear();
+    dispatchMap = localDispatchMap;
+    coinTypes.clear();
+    coinTypes = localCoinTypes;
     dispatchMapInitialized = 1;
     // Note: dispatchers are created at first use, and never freed
 }
 
 inline void setupDispatchersIfNeeded() {
-    if (dispatchMap.size() == 0) {
+    if (dispatchMap.size() == 0 || coinTypes.size() == 0) {
         // for some hard to understand reasons, sometimes it happens that dispatchMapInitialized=1 yet dispatchMap.size()=0
         dispatchMapInitialized = 0;
     }
@@ -140,6 +145,7 @@ inline void setupDispatchersIfNeeded() {
     }
     assert(dispatchMapInitialized == 1);
     assert(dispatchMap.size() > 0);
+    assert(coinTypes.size() > 0);
     // it is set up by this time, and will not get modified
 }
 
