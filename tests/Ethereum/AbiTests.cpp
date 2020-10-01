@@ -525,6 +525,7 @@ TEST(EthereumAbi, ParamArrayAddress) {
         EXPECT_EQ(3 * 32, param.getSize());
         size_t offset = 0;
         EXPECT_TRUE(param.decode(encoded, offset));
+        EXPECT_EQ(2, param.getCount());
         EXPECT_EQ(2, param.getVal().size());
         EXPECT_EQ(
             "2e00cd222cb42b616d86d037cc494e8ab7f5c9a3", 
@@ -962,6 +963,37 @@ TEST(EthereumAbi, DecodeFunctionOutputCase1) {
     EXPECT_EQ(0x45, (std::dynamic_pointer_cast<ParamUInt64>(param))->getVal());
 }
 
+TEST(EthereumAbi, DecodeFunctionOutputCase2) {
+    auto func = Function("getAmountsOut", std::vector<std::shared_ptr<ParamBase>>{
+        std::make_shared<ParamUInt256>(100),
+        std::make_shared<ParamArray>(std::make_shared<ParamAddress>(parse_hex("000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc077")))
+    });
+    func.addOutParam(std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
+        std::make_shared<ParamUInt256>(66),
+        std::make_shared<ParamUInt256>(67)
+    }));
+    EXPECT_EQ("getAmountsOut(uint256,address[])", func.getType());
+
+    Data encoded;
+    append(encoded, parse_hex(
+        "0000000000000000000000000000000000000000000000000000000000000020"
+        "0000000000000000000000000000000000000000000000000000000000000002"
+        "0000000000000000000000000000000000000000000000000000000000000004"
+        "0000000000000000000000000000000000000000000000000000000000000005"
+    ));
+    size_t offset = 0;
+    bool res = func.decodeOutput(encoded, offset);
+    EXPECT_TRUE(res);
+    EXPECT_EQ(128, offset);
+
+    // new output values
+    std::shared_ptr<ParamBase> param;
+    EXPECT_TRUE(func.getOutParam(0, param));
+    EXPECT_EQ(2, (std::dynamic_pointer_cast<ParamArray>(param))->getCount());
+    EXPECT_EQ(4, (std::dynamic_pointer_cast<ParamUInt256>((std::dynamic_pointer_cast<ParamArray>(param))->getParam(0)))->getVal());
+    EXPECT_EQ(5, (std::dynamic_pointer_cast<ParamUInt256>((std::dynamic_pointer_cast<ParamArray>(param))->getParam(1)))->getVal());
+}
+
 TEST(EthereumAbi, DecodeInputSignature) {
     Data encoded;
     append(encoded, parse_hex("72ed38b6"));
@@ -1104,4 +1136,59 @@ TEST(EthereumAbi, DecodeFunctionContractMulticall) {
     bool res = func.decodeInput(encoded, offset);
     EXPECT_TRUE(res);
     EXPECT_EQ(4 + 29 * 32, offset);
+}
+
+TEST(EthereumAbi, ParamFactory) {
+    const std::vector<std::string> types = {
+        "uint8", "uint16", "uint32", "uint64", "uint128", "uint168", "uint256",
+        "int8", "int16", "int32", "int64", "int128", "int168", "int256",
+        "bool", "string", "bytes", "bytes168", "address"
+    };
+    for (auto t: types) {
+        std::shared_ptr<ParamBase> p = ParamFactory::make(t);
+        EXPECT_EQ(t, p->getType());
+        // for numerical values, value is "0"
+        if (t.substr(0, 3) == "int" || t.substr(0, 4) == "uint") {
+            EXPECT_EQ("0", ParamFactory::getValue(p, t));
+        }
+    }
+
+    {
+        // test for UInt256: ParamUInt256 and ParamUIntN(256), both have type "uint256", factory produces the more specific ParamUInt256
+        // there was confusion about this
+        std::shared_ptr<ParamBase> p = ParamFactory::make("uint256");
+        EXPECT_EQ("uint256", p->getType());
+        EXPECT_TRUE(nullptr != std::dynamic_pointer_cast<ParamUInt256>(p).get());
+        EXPECT_EQ(nullptr, std::dynamic_pointer_cast<ParamUIntN>(p).get());
+    }
+    {
+        // int32 is ParamInt32, not ParamIntN
+        std::shared_ptr<ParamBase> p = ParamFactory::make("int32");
+        EXPECT_EQ("int32", p->getType());
+        EXPECT_TRUE(nullptr != std::dynamic_pointer_cast<ParamInt32>(p).get());
+        EXPECT_EQ(nullptr, std::dynamic_pointer_cast<ParamIntN>(p).get());
+    }
+    {
+        // int168 is ParamIntN
+        std::shared_ptr<ParamBase> p = ParamFactory::make("int168");
+        EXPECT_EQ("int168", p->getType());
+        EXPECT_TRUE(nullptr != std::dynamic_pointer_cast<ParamIntN>(p).get());
+    }
+    {
+        // uint is uint256
+        std::shared_ptr<ParamBase> p = ParamFactory::make("uint");
+        EXPECT_EQ("uint256", p->getType());
+        EXPECT_TRUE(nullptr != std::dynamic_pointer_cast<ParamUInt256>(p).get());
+    }
+    {
+        // int is int256
+        std::shared_ptr<ParamBase> p = ParamFactory::make("int");
+        EXPECT_EQ("int256", p->getType());
+        EXPECT_TRUE(nullptr != std::dynamic_pointer_cast<ParamInt256>(p).get());
+    }
+}
+
+TEST(EthereumAbi, MaskForBits) {
+    EXPECT_EQ(0x000000ffffff, ParamUIntN::maskForBits(24));
+    EXPECT_EQ(0x00ffffffffff, ParamUIntN::maskForBits(40));
 }
