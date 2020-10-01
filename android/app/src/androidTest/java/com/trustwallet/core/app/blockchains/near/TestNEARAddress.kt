@@ -10,7 +10,7 @@ class TestNEARAddress {
         System.loadLibrary("TrustWalletCore")
     }
 
-    private val expectedAddressString = "NEAR2758Nk7CMUcxTwXdjVdSxNEidiZQWMZN3USJzj76q5ia3v2v2v"
+    private val expectedAddressString = "917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d"
 
     @Test
     fun testAddressFromPrivateKey() {

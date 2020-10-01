@@ -16,7 +16,6 @@ using namespace TW;
 using namespace TW::NEAR;
 
 struct TWNEARAccount {
-    std::string publicKey;
     std::string description;
 };
 
@@ -24,10 +23,10 @@ struct TWNEARAccount *_Nullable TWNEARAccountCreateWithString(TWString *_Nonnull
     const auto& account = *reinterpret_cast<const std::string*>(string);
     if (Address::isValid(account)) {
         const auto addr = Address(account);
-        return new TWNEARAccount{hex(Data(addr.bytes.begin(), addr.bytes.end() - 4)), account};
+        return new TWNEARAccount{addr.string()};
     }
     if (Account::isValid(account)) {
-        return new TWNEARAccount{"", account};
+        return new TWNEARAccount{account};
     }
     return nullptr;
 }
@@ -37,12 +36,5 @@ void TWNEARAccountDelete(struct TWNEARAccount *_Nonnull account) {
 }
 
 TWString *_Nonnull TWNEARAccountDescription(struct TWNEARAccount *_Nonnull account) {
-    return TWStringCreateWithUTF8Bytes(account->description.c_str());
-}
-
-TWString *_Nonnull TWNEARAccountId(struct TWNEARAccount *_Nonnull account) {
-    if (!account->publicKey.empty()) {
-        return TWStringCreateWithUTF8Bytes(account->publicKey.c_str());
-    }
     return TWStringCreateWithUTF8Bytes(account->description.c_str());
 }

@@ -18,19 +18,15 @@ TEST(TWNEARAccount, description) {
         auto string = STRING("NEARTDDWrUMdoC2rA1eU6gNrSU2zyGKdR71TNucTvsQHyfAXjKcJb");
         auto account = TWNEARAccountCreateWithString(string.get());
         auto description = WRAPS(TWNEARAccountDescription(account));
-        auto id = WRAPS(TWNEARAccountId(account));
-        assertStringsEqual(description, "NEARTDDWrUMdoC2rA1eU6gNrSU2zyGKdR71TNucTvsQHyfAXjKcJb");
-        assertStringsEqual(id, "3b83b07cab54824a59c3d3f2e203a7cd913b7fcdc4439595983e2402c2cf791d");
+        assertStringsEqual(description, "3b83b07cab54824a59c3d3f2e203a7cd913b7fcdc4439595983e2402c2cf791d");
         TWNEARAccountDelete(account);
     }
 
     {
         auto account = TWNEARAccountCreateWithString(STRING("test.near").get());
         auto description = WRAPS(TWNEARAccountDescription(account));
-        auto id = WRAPS(TWNEARAccountId(account));
 
         assertStringsEqual(description, "test.near");
-        assertStringsEqual(id, "test.near");
 
         TWNEARAccountDelete(account);
     }

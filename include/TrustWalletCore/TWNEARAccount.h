@@ -25,8 +25,4 @@ void TWNEARAccountDelete(struct TWNEARAccount *_Nonnull account);
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWNEARAccountDescription(struct TWNEARAccount *_Nonnull account);
 
-/// Returns the id representation.
-TW_EXPORT_PROPERTY
-TWString *_Nonnull TWNEARAccountId(struct TWNEARAccount *_Nonnull account);
-
 TW_EXTERN_C_END
