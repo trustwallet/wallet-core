@@ -17,18 +17,31 @@ class NEARTests: XCTestCase {
         let expected = AnyAddress(string: string, coin: .near)!
 
         XCTAssertEqual(address, expected)
-        XCTAssertEqual(address.description, string)
+        XCTAssertEqual(address.description, hex)
         XCTAssertEqual(expected.data.hexString, hex)
+    }
+
+    func testAccount() {
+        let string = "NEARTDDWrUMdoC2rA1eU6gNrSU2zyGKdR71TNucTvsQHyfAXjKcJb"
+        let account = NEARAccount(string: string)!
+        XCTAssertEqual(account.description, "3b83b07cab54824a59c3d3f2e203a7cd913b7fcdc4439595983e2402c2cf791d")
+
+        let account2 = NEARAccount(string: "test.near")!
+        XCTAssertEqual(account2.description, "test.near")
+
+        let account3 = NEARAccount(string: "3b83b07cab54824a59c3d3f2e203a7cd913b7fcdc4439595983e2402c2cf791d")!
+        XCTAssertEqual(account3.description, "3b83b07cab54824a59c3d3f2e203a7cd913b7fcdc4439595983e2402c2cf791d")
     }
 
     func testAddressValidation() {
         let near = CoinType.near
         for address in [
-            "NEAR2758Nk7CMUcxTwXdjVdSxNEidiZQWMZN3USJzj76q5ia3v2v2v",
-            "NEAR6Y66fCzeKqWiwxoPox5oGeDN9VhNCu7CEQ9M86iniqoN9vg2X",
+            ("NEAR2758Nk7CMUcxTwXdjVdSxNEidiZQWMZN3USJzj76q5ia3v2v2v", "917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d"),
+            ("NEARTDDWrUMdoC2rA1eU6gNrSU2zyGKdR71TNucTvsQHyfAXjKcJb",
+            "3b83b07cab54824a59c3d3f2e203a7cd913b7fcdc4439595983e2402c2cf791d")
         ] {
-            XCTAssertTrue(near.validate(address: address))
-            XCTAssertEqual(near.address(string: address)?.description, address)
+            XCTAssertTrue(near.validate(address: address.0))
+            XCTAssertEqual(near.address(string: address.0)?.description, address.1)
         }
     }
 
