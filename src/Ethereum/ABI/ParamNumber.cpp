@@ -28,8 +28,14 @@ bool ParamUIntN::decode(const Data& encoded, size_t& offset_inout) {
 }
 
 void ParamUIntN::init() {
+    _mask = maskForBits(bits);
+}
+
+uint256_t ParamUIntN::maskForBits(size_t bits) {
     assert(bits >= 8 && bits <= 256 && (bits % 8) == 0);
-    _mask = (uint256_t(1) << bits) - 1;
+    // exclude predefined sizes
+    assert(bits != 8 && bits != 16 && bits != 32 && bits != 64 && bits != 256);
+    return (uint256_t(1) << bits) - 1;
 }
 
 void ParamIntN::setVal(int256_t val) {
@@ -57,6 +63,5 @@ bool ParamIntN::decode(const Data& encoded, size_t& offset_inout) {
 
 void ParamIntN::init()
 {
-    assert(bits >= 8 && bits <= 256 && (bits % 8) == 0);
-    _mask = (uint256_t(1) << bits) - 1;
+    _mask = ParamUIntN::maskForBits(bits);
 }

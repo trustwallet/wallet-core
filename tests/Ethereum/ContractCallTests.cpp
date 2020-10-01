@@ -167,3 +167,21 @@ TEST(ContractCall, Invalid) {
     EXPECT_FALSE(decodeCall(Data(), "{}").has_value());
     EXPECT_FALSE(decodeCall(parse_hex("0xa22cb46500"), "{}").has_value());
 }
+
+TEST(ContractCall, GetAmountsOut) {
+    auto call = parse_hex(
+        "d06ca61f"
+        "0000000000000000000000000000000000000000000000000000000000000064"
+        "0000000000000000000000000000000000000000000000000000000000000040"
+        "0000000000000000000000000000000000000000000000000000000000000001"
+        "000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc077"
+    );
+    auto path = TESTS_ROOT + "/Ethereum/Data/getAmountsOut.json";
+    auto abi = load_json(path);
+
+    auto decoded = decodeCall(call, abi);
+    auto expected =
+        R"|({"function":"getAmountsOut(uint256,address[])","inputs":[{"name":"amountIn","type":"uint256","value":"100"},{"name":"path","type":"address[]","value":["0xf784682c82526e245f50975190ef0fff4e4fc077"]}]})|";
+
+    EXPECT_EQ(decoded.value(), expected);
+}
