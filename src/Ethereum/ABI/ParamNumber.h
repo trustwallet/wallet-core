@@ -149,7 +149,8 @@ public:
     virtual std::string getType() const { return "int64"; }
 };
 
-/// Generic parameter class for Uint8, 16, 24, 32, 40, ... 256.  For smaller sizes use the sepcial name like UInt32.
+/// Generic parameter class for all other bit sizes, like UInt24, 40, 48, ... 248.
+/// For predefined sizes (8, 16, 32, 64, 256) use the sepcial types like UInt32.
 /// Stored on 256 bits.
 class ParamUIntN : public ParamBase
 {
@@ -167,6 +168,7 @@ public:
         return ABI::decode(encoded, decoded, offset_inout);
     }
     virtual bool decode(const Data& encoded, size_t& offset_inout);
+    static uint256_t maskForBits(size_t bits);
 
 private:
     void init();
@@ -174,7 +176,8 @@ private:
     uint256_t _mask;
 };
 
-/// Generic parameter class for Int8, 16, 24, 32, 40, ... 256.  For smaller sizes use the sepcial name like Int32.
+/// Generic parameter class for all other bit sizes, like Int24, 40, 48, ... 248.
+/// For predefined sizes (8, 16, 32, 64, 256) use the sepcial types like Int32.
 /// Stored on 256 bits.
 class ParamIntN : public ParamBase
 {
