@@ -107,7 +107,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     let expectedResult = "nano_39gsbcishxn3n7wd17ono4otq5wazwzusqgqigztx73wbrh5jwbdbshfnumc"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .near:
-                    let expectedResult = "NEAR6Y66fCzeKqWiwxoPox5oGeDN9VhNCu7CEQ9M86iniqoN9vg2X"
+                    let expectedResult = "0c91f6106ff835c0195d5388565a2d69e25038a7e23d26198f85caf6594117ec"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .nebulas:
                     let expectedResult = "n1ZVgEidtdseYv9ogmGz69Cz4mbqmHYSNqJ"

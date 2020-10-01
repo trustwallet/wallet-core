@@ -201,8 +201,7 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
 
     case TWCoinTypeNEAR: {
         auto addr = NEAR::Address(string);
-        // remove last 4 bytes checksum
-        data = Data(addr.bytes.begin(), addr.bytes.end() - 4);
+        data = Data(addr.bytes.begin(), addr.bytes.end());
         break;
     }
 

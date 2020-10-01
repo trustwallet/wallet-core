@@ -16,8 +16,8 @@ namespace TW::NEAR {
 
 class Address {
 public:
-    /// Number of bytes in an address, public key size + checksum
-    static const size_t size = PublicKey::ed25519Size + 4;
+    /// Number of bytes in an address, public key size
+    static const size_t size = PublicKey::ed25519Size;
 
     /// Address data consisting of a prefix byte followed by the public key
     /// hash.
@@ -25,9 +25,6 @@ public:
 
     /// Determines whether a string makes a valid NEAR address.
     static bool isValid(const std::string& string);
-
-    /// Determines whether a string makes a valid NEAR address.
-    static bool isValid(const Data& bytes);
 
     /// Initializes a NEAR address from a string representation.
     Address(const std::string& string);
@@ -40,14 +37,8 @@ public:
 
     friend bool operator==(const Address& lhs, const Address& rhs);
 
-    static std::string prefix() { return "NEAR"; }
-
-private:
-    static uint32_t createChecksum(const Data& bytes);
-
-    static std::optional<Data> decodeKeyData(const std::string& string);
+    static std::optional<Data> decodeLegacyAddress(const std::string& string);
 };
-
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
