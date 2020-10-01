@@ -11,9 +11,8 @@
 namespace TW::NEAR {
 
 class Account {
-public:
+  public:
     /// Determines whether a string makes a valid NEAR account id.
     static bool isValid(const std::string& string);
 };
-
 } // namespace TW::NEAR
