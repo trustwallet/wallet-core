@@ -360,6 +360,7 @@ TEST(Coin, ValidateAddressHarmony) {
 
 TEST(Coin, ValidateAddressNEAR) {
     EXPECT_TRUE(validateAddress(TWCoinTypeNEAR, "NEAR2758Nk7CMUcxTwXdjVdSxNEidiZQWMZN3USJzj76q5ia3v2v2v"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeNEAR, "917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d"));
     EXPECT_FALSE(validateAddress(TWCoinTypeNEAR, "EOS65QzSGJ579GPNKtZoZkChTzsxR4B48RCfiS82m2ymJR6VZCjT"));
 }
 

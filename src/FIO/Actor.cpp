@@ -11,6 +11,7 @@
 using namespace TW::FIO;
 using namespace std;
 
+static const auto pattern = regex(R"(\b([a-z1-5]{3,})[.@]?\b)");
 string Actor::actor(const Address& addr)
 {
     uint64_t shortenedKey = shortenKey(addr.bytes);
@@ -20,7 +21,6 @@ string Actor::actor(const Address& addr)
 }
 
 bool Actor::validate(const std::string& addr) {
-    regex pattern(R"(\b([a-z1-5]{3,})[.@]?\b)");
     smatch match;
     return regex_search(addr, match, pattern);
 }

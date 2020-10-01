@@ -233,6 +233,10 @@ class KeyStoreTests: XCTestCase {
                 "address": "0x33F44330cc4253cCd4ce4224186DB9baCe2190ea",
                 "coin": 20000714,
                 "derivationPath": "m/44'/60'/0'/0/0"
+            }, {
+                "address": "838f8aeba6bb083b5b6e22030fb051eaf1a8b6cd692d4ad533cba60c77e6b8f2",
+                "coin": 397,
+                "derivationPath": "m/44'/397'/0'"
             }],
             "crypto": {
                 "cipher": "aes-128-ctr",
@@ -261,17 +265,24 @@ class KeyStoreTests: XCTestCase {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         _ = try keyStore.addAccounts(wallet: keyStore.bnbWallet, coins: [.smartChainLegacy, .smartChain], password: password)
 
-        XCTAssertEqual(keyStore.bnbWallet.accounts.count, 5)
+        // simulate migration code
+        _ = try keyStore.removeAccounts(wallet: keyStore.bnbWallet, coins: [.near], password: password)
+        _ = try keyStore.addAccounts(wallet: keyStore.bnbWallet, coins: [.near], password: password)
+
+        XCTAssertEqual(keyStore.bnbWallet.accounts.count, 6)
 
         let accountLegacy = keyStore.bnbWallet.accounts[3]
+        let account = keyStore.bnbWallet.accounts[4]
+        let accountNear = keyStore.bnbWallet.accounts[5]
 
         XCTAssertEqual(accountLegacy.coin, CoinType.smartChainLegacy)
         XCTAssertEqual(accountLegacy.address, "0x5dEc7A9299360aEb44c83B8F730F2BF5Dd1688bC")
 
-        let account = keyStore.bnbWallet.accounts[4]
-
         XCTAssertEqual(account.coin, CoinType.smartChain)
         XCTAssertEqual(account.address, "0x33F44330cc4253cCd4ce4224186DB9baCe2190ea")
+
+        XCTAssertEqual(accountNear.coin, CoinType.near)
+        XCTAssertEqual(accountNear.address, "838f8aeba6bb083b5b6e22030fb051eaf1a8b6cd692d4ad533cba60c77e6b8f2")
 
         let saved = try String(contentsOf: keyStore.bnbWallet.keyURL)
         XCTAssertJSONEqual(saved, expected)
