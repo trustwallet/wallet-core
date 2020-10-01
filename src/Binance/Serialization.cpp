@@ -122,13 +122,13 @@ json Binance::orderJSON(const Proto::SigningInput& input) {
     } else if (input.has_time_lock_order()) {
         j["from"] = addressString(input.time_lock_order().from_address());
         j["description"] = input.time_lock_order().description();
-        j["amount"] = input.time_lock_order().amount();
+        j["amount"] = tokensJSON(input.time_lock_order().amount());
         j["lock_time"] = input.time_lock_order().lock_time();
     } else if (input.has_time_relock_order()) {
         j["from"] = addressString(input.time_relock_order().from_address());
         j["id"] = input.time_relock_order().id();
         j["description"] = input.time_relock_order().description();
-        j["amount"] = input.time_relock_order().amount();
+        j["amount"] = tokensJSON(input.time_relock_order().amount());
         j["lock_time"] = input.time_relock_order().lock_time();
     } else if (input.has_time_unlock_order()) {
         j["from"] = addressString(input.time_unlock_order().from_address());
