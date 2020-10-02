@@ -169,8 +169,6 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         default: entry = nullptr; break;
     }
     assert(entry != nullptr);
-    // Debug sanity-check: Entry should handle the coin
-    assert(std::find(entry->coinTypes().begin(), entry->coinTypes().end(), coinType) != entry->coinTypes().end());
     return entry;
 }
 
@@ -335,3 +333,10 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType coin) {
 TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType coin) {
     return TWStringCreateWithUTF8Bytes(getCoinInfo(coin).name);
 }
+
+std::vector<TWCoinType> TW::getSimilarCoinTypes(TWCoinType coinType) {
+    const auto dispatcher = coinDispatcher(coinType);
+    assert(dispatcher != nullptr);
+    return dispatcher->coinTypes();
+}
+
