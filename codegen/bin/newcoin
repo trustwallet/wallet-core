@@ -63,8 +63,8 @@ def insert_coin_entry(coin)
     insert_target_line(target_file, target_line, "// end_of_coin_includes_marker_do_not_modify\n")
     target_line = "#{format_name(coin)}::Entry #{format_name(coin)}DP;\n"
     insert_target_line(target_file, target_line, "// end_of_coin_dipatcher_declarations_marker_do_not_modify\n")
-    target_line = "        case TWCoinType#{format_name(coin)}: return &#{format_name(coin)}DP;\n"
-    insert_target_line(target_file, target_line, "// end_of_coin_dipatcher_switch_marker_do_not_modify\n")
+    target_line = "        case TWCoinType#{format_name(coin)}: entry = &#{format_name(coin)}DP; break;\n"
+    insert_target_line(target_file, target_line, "        // end_of_coin_dipatcher_switch_marker_do_not_modify\n")
 end
 
 def self.insert_target_line(target_file, target_line, original_line)
