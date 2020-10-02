@@ -244,7 +244,7 @@ void TW::anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
 
 // Coin info accessors
 
-extern const CoinInfo& getCoinInfo(TWCoinType coin); // in generated CoinInfoData.cpp file
+extern const CoinInfo getCoinInfo(TWCoinType coin); // in generated CoinInfoData.cpp file
 
 TWBlockchain TW::blockchain(TWCoinType coin) {
     return getCoinInfo(coin).blockchain;
