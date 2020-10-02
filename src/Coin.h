@@ -19,12 +19,12 @@
 #include <TrustWalletCore/TWPurpose.h>
 
 #include <string>
-#include <set>
+#include <vector>
 
 namespace TW {
 
 // Return the set of supported coin types.
-std::set<TWCoinType> getCoinTypes();
+std::vector<TWCoinType> getCoinTypes();
 
 /// Validates an address for a particular coin.
 bool validateAddress(TWCoinType coin, const std::string& address);
@@ -92,6 +92,10 @@ void anyCoinDecode(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 
 void anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 
+// Return coins handled by the same dispatcher as the given coin (mostly for testing)
+const std::vector<TWCoinType> getSimilarCoinTypes(TWCoinType coinType);
+
+// Contains only simple types.
 struct CoinInfo {
     const char* id;
     const char* name;
@@ -100,7 +104,7 @@ struct CoinInfo {
     TWCurve curve;
     TWHDVersion xpubVersion;
     TWHDVersion xprvVersion;
-    DerivationPath derivationPath;
+    const char* derivationPath;
     TWPublicKeyType publicKeyType;
     byte staticPrefix;
     byte p2pkhPrefix;

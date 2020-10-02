@@ -11,10 +11,8 @@
 #include <TrustWalletCore/TWHRP.h>
 
 #include <map>
-#include <set>
-#include <mutex>
 
-// Includes for entry points for coin implementations
+// #coin-list# Includes for entry points for coin implementations
 #include "Aeternity/Entry.h"
 #include "Aion/Entry.h"
 #include "Algorand/Entry.h"
@@ -23,6 +21,7 @@
 #include "Cardano/Entry.h"
 #include "Cosmos/Entry.h"
 #include "Decred/Entry.h"
+#include "Elrond/Entry.h"
 #include "EOS/Entry.h"
 #include "Ethereum/Entry.h"
 #include "Filecoin/Entry.h"
@@ -52,100 +51,125 @@
 #include "Waves/Entry.h"
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
-#include "Elrond/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
 using namespace std;
 
-// Map with coin entry dispatchers, key is coin type
-map<TWCoinType, CoinEntry*> dispatchMap = {}; 
-mutex dispatchMapMutex;
-// List of supported coint types
-set<TWCoinType> coinTypes = {};
-
-void setupDispatchers() {
-    std::vector<CoinEntry*> dispatchers = {
-        new Aeternity::Entry(),
-        new Aion::Entry(),
-        new Algorand::Entry(),
-        new Binance::Entry(),
-        new Bitcoin::Entry(),
-        new Cardano::Entry(),
-        new Cosmos::Entry(),
-        new EOS::Entry(),
-        new Ethereum::Entry(),
-        new Decred::Entry(),
-        new Filecoin::Entry(),
-        new FIO::Entry(),
-        new Groestlcoin::Entry(),
-        new Harmony::Entry(),
-        new Icon::Entry(),
-        new IoTeX::Entry(),
-        new Kusama::Entry(),
-        new Nano::Entry(),
-        new NEAR::Entry(),
-        new Nebulas::Entry(),
-        new NEO::Entry(),
-        new Nimiq::Entry(),
-        new NULS::Entry(),
-        new Ontology::Entry(),
-        new Polkadot::Entry(),
-        new Ripple::Entry(),
-        new Solana::Entry(),
-        new Stellar::Entry(),
-        new Tezos::Entry(),
-        new Theta::Entry(),
-        new TON::Entry(),
-        new Tron::Entry(),
-        new VeChain::Entry(),
-        new Wanchain::Entry(),
-        new Waves::Entry(),
-        new Zcash::Entry(),
-        new Zilliqa::Entry(),
-        new Elrond::Entry(),
-    }; // end_of_coin_entries_marker_do_not_modify
-
-    lock_guard<mutex> guard(dispatchMapMutex);
-    if (dispatchMap.size() > 0) {
-        // already set up, skip
-        return;
-    }
-    dispatchMap.clear();
-    coinTypes.clear();
-    for (auto d : dispatchers) {
-        auto dispCoins = d->coinTypes();
-        for (auto c : dispCoins) {
-            assert(dispatchMap.find(c) == dispatchMap.end()); // each coin must appear only once
-            dispatchMap[c] = d;
-            if (coinTypes.emplace(c).second != true) {
-                // each coin must appear only once
-                abort();
-            };
-        }
-    }
-    // Note: dispatchers are created at first use, and never freed
-}
-
-inline void setupDispatchersIfNeeded() {
-    if (dispatchMap.size() == 0) {
-        setupDispatchers();
-    }
-    assert(dispatchMap.size() > 0);
-    // it is set up by this time, and will not get modified
-}
+// #coin-list# Global coin entry dispatcher entries
+Aeternity::Entry aeternityDP;
+Aion::Entry aionDP;
+Algorand::Entry algorandDP;
+Binance::Entry binanceDP;
+Bitcoin::Entry bitcoinDP;
+Cardano::Entry cardanoDP;
+Cosmos::Entry cosmosDP;
+Elrond::Entry elrondDP;
+EOS::Entry eosDP;
+Ethereum::Entry ethereumDP;
+Decred::Entry decredDP;
+Filecoin::Entry filecoinDP;
+FIO::Entry fioDP;
+Groestlcoin::Entry groestlcoinDP;
+Harmony::Entry harmonyDP;
+Icon::Entry iconDP;
+IoTeX::Entry iotexDP;
+Kusama::Entry kusamaDP;
+Nano::Entry nanoDP;
+NEAR::Entry nearDP;
+Nebulas::Entry nebulasDP;
+NEO::Entry neoDP;
+Nimiq::Entry nimiqDP;
+NULS::Entry nulsDP;
+Ontology::Entry ontologyDP;
+Polkadot::Entry polkadotDP;
+Ripple::Entry rippleDP;
+Solana::Entry solanaDP;
+Stellar::Entry stellarDP;
+Tezos::Entry tezosDP;
+Theta::Entry thetaDP;
+TON::Entry tonDP;
+Tron::Entry tronDP;
+VeChain::Entry vechainDP;
+Wanchain::Entry wanchainDP;
+Waves::Entry wavesDP;
+Zcash::Entry zcashDP;
+Zilliqa::Entry zilliqaDP;
+// end_of_coin_dipatcher_declarations_marker_do_not_modify
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
-    setupDispatchersIfNeeded();
-    // Coin must be present, and not null.  Otherwise that is a fatal code configuration error.
-    assert(dispatchMap.find(coinType) != dispatchMap.end()); // coin must be present
-    assert(dispatchMap[coinType] != nullptr);
-    return dispatchMap[coinType];
-}
+    // switch is preferred instead of a data structure, due to initialization issues
+    CoinEntry* entry = nullptr;
+    switch (coinType) {
+        // #coin-list#
+        case TWCoinTypeAeternity: entry = &aeternityDP; break;
+        case TWCoinTypeAion: entry = &aionDP; break;
+        case TWCoinTypeAlgorand: entry = &algorandDP; break;
+        case TWCoinTypeBinance: entry = &binanceDP; break;
+        case TWCoinTypeBitcoin: entry = &bitcoinDP; break;
+        case TWCoinTypeBitcoinCash: entry = &bitcoinDP; break;
+        case TWCoinTypeBitcoinGold: entry = &bitcoinDP; break;
+        case TWCoinTypeDash: entry = &bitcoinDP; break;
+        case TWCoinTypeDigiByte: entry = &bitcoinDP; break;
+        case TWCoinTypeDogecoin: entry = &bitcoinDP; break;
+        case TWCoinTypeLitecoin: entry = &bitcoinDP; break;
+        case TWCoinTypeMonacoin: entry = &bitcoinDP; break;
+        case TWCoinTypeQtum: entry = &bitcoinDP; break;
+        case TWCoinTypeRavencoin: entry = &bitcoinDP; break;
+        case TWCoinTypeViacoin: entry = &bitcoinDP; break;
+        case TWCoinTypeZcoin: entry = &bitcoinDP; break;
+        case TWCoinTypeCardano: entry = &cardanoDP; break;
+        case TWCoinTypeCosmos: entry = &cosmosDP; break;
+        case TWCoinTypeKava: entry = &cosmosDP; break;
+        case TWCoinTypeTerra: entry = &cosmosDP; break;
+        case TWCoinTypeBandChain: entry = &cosmosDP; break;
+        case TWCoinTypeElrond: entry = &elrondDP; break;
+        case TWCoinTypeEOS: entry = &eosDP; break;
+        case TWCoinTypeCallisto: entry = &ethereumDP; break;
+        case TWCoinTypeEthereum: entry = &ethereumDP; break;
+        case TWCoinTypeEthereumClassic: entry = &ethereumDP; break;
+        case TWCoinTypeGoChain: entry = &ethereumDP; break;
+        case TWCoinTypePOANetwork: entry = &ethereumDP; break;
+        case TWCoinTypeThunderToken: entry = &ethereumDP; break;
+        case TWCoinTypeTomoChain: entry = &ethereumDP; break;
+        case TWCoinTypeSmartChainLegacy: entry = &ethereumDP; break;
+        case TWCoinTypeSmartChain: entry = &ethereumDP; break;
+        case TWCoinTypeDecred: entry = &decredDP; break;
+        case TWCoinTypeFilecoin: entry = &filecoinDP; break;
+        case TWCoinTypeFIO: entry = &fioDP; break;
+        case TWCoinTypeGroestlcoin: entry = &groestlcoinDP; break;
+        case TWCoinTypeHarmony: entry = &harmonyDP; break;
+        case TWCoinTypeICON: entry = &iconDP; break;
+        case TWCoinTypeIoTeX: entry = &iotexDP; break;
+        case TWCoinTypeKusama: entry = &kusamaDP; break;
+        case TWCoinTypeNano: entry = &nanoDP; break;
+        case TWCoinTypeNEAR: entry = &nearDP; break;
+        case TWCoinTypeNebulas: entry = &nebulasDP; break;
+        case TWCoinTypeNEO: entry = &neoDP; break;
+        case TWCoinTypeNimiq: entry = &nimiqDP; break;
+        case TWCoinTypeNULS: entry = &nulsDP; break;
+        case TWCoinTypeOntology: entry = &ontologyDP; break;
+        case TWCoinTypePolkadot: entry = &polkadotDP; break;
+        case TWCoinTypeXRP: entry = &rippleDP; break;
+        case TWCoinTypeSolana: entry = &solanaDP; break;
+        case TWCoinTypeStellar: entry = &stellarDP; break;
+        case TWCoinTypeKin: entry = &stellarDP; break;
+        case TWCoinTypeTezos: entry = &tezosDP; break;
+        case TWCoinTypeTheta: entry = &thetaDP; break;
+        case TWCoinTypeTON: entry = &tonDP; break;
+        case TWCoinTypeTron: entry = &tronDP; break;
+        case TWCoinTypeVeChain: entry = &vechainDP; break;
+        case TWCoinTypeWanchain: entry = &wanchainDP; break;
+        case TWCoinTypeWaves: entry = &wavesDP; break;
+        case TWCoinTypeZcash: entry = &zcashDP; break;
+        case TWCoinTypeZelcash: entry = &zcashDP; break;
+        case TWCoinTypeZilliqa: entry = &zilliqaDP; break;
+        // end_of_coin_dipatcher_switch_marker_do_not_modify
 
-set<TWCoinType> TW::getCoinTypes() {
-    setupDispatchersIfNeeded();
-    return coinTypes;
+        default: entry = nullptr; break;
+    }
+    assert(entry != nullptr);
+    return entry;
 }
 
 bool TW::validateAddress(TWCoinType coin, const std::string& string) {
@@ -224,7 +248,7 @@ void TW::anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
 
 // Coin info accessors
 
-extern const CoinInfo& getCoinInfo(TWCoinType coin); // in generated CoinInfoData.cpp file
+extern const CoinInfo getCoinInfo(TWCoinType coin); // in generated CoinInfoData.cpp file
 
 TWBlockchain TW::blockchain(TWCoinType coin) {
     return getCoinInfo(coin).blockchain;
@@ -247,7 +271,7 @@ TWHDVersion TW::xprvVersion(TWCoinType coin) {
 }
 
 DerivationPath TW::derivationPath(TWCoinType coin) {
-    return getCoinInfo(coin).derivationPath;
+    return DerivationPath(getCoinInfo(coin).derivationPath);
 }
 
 enum TWPublicKeyType TW::publicKeyType(TWCoinType coin) {
@@ -309,3 +333,10 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType coin) {
 TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType coin) {
     return TWStringCreateWithUTF8Bytes(getCoinInfo(coin).name);
 }
+
+const std::vector<TWCoinType> TW::getSimilarCoinTypes(TWCoinType coinType) {
+    const auto dispatcher = coinDispatcher(coinType);
+    assert(dispatcher != nullptr);
+    return dispatcher->coinTypes();
+}
+
