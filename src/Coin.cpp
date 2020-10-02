@@ -21,6 +21,7 @@
 #include "Cardano/Entry.h"
 #include "Cosmos/Entry.h"
 #include "Decred/Entry.h"
+#include "Elrond/Entry.h"
 #include "EOS/Entry.h"
 #include "Ethereum/Entry.h"
 #include "Filecoin/Entry.h"
@@ -50,7 +51,6 @@
 #include "Waves/Entry.h"
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
-#include "Elrond/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
@@ -64,6 +64,7 @@ Binance::Entry binanceDP;
 Bitcoin::Entry bitcoinDP;
 Cardano::Entry cardanoDP;
 Cosmos::Entry cosmosDP;
+Elrond::Entry elrondDP;
 EOS::Entry eosDP;
 Ethereum::Entry ethereumDP;
 Decred::Entry decredDP;
@@ -94,7 +95,7 @@ Wanchain::Entry wanchainDP;
 Waves::Entry wavesDP;
 Zcash::Entry zcashDP;
 Zilliqa::Entry zilliqaDP;
-Elrond::Entry elrondDP;
+// end_of_coin_dipatcher_declarations_marker_do_not_modify
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
     // switch is preferred instead of a data structure, due to initialization issues
@@ -162,6 +163,8 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeZcash: return &zcashDP;
         case TWCoinTypeZelcash: return &zcashDP;
         case TWCoinTypeZilliqa: return &zilliqaDP;
+// end_of_coin_dipatcher_switch_marker_do_not_modify
+
         default:
             assert(false);
             return nullptr;
