@@ -84,8 +84,9 @@ void useCoinFromThread() {
     const int tryCount = 20;
     for (int i = 0; i < tryCount; ++i) {
         // perform some operations
-        const auto coinTypes = TW::getCoinTypes();
+        TW::validateAddress(TWCoinTypeZilliqa, "zil1j8xae6lggm8y63m3y2r7aefu797ze7mhzulnqg");
         TW::validateAddress(TWCoinTypeEthereum, "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
+        const auto coinTypes = TW::getCoinTypes();
     }
     countThreadReadyMutex.lock();
     ++countThreadReady;
@@ -106,6 +107,15 @@ TEST(Coin, InitMultithread) {
     }
     // check that all completed OK
     ASSERT_EQ(countThreadReady, numThread);
+}
+
+TEST(Coin, SupportedCoins) {
+    const auto coinTypes = TW::getCoinTypes();
+    for (auto c: coinTypes) {
+        const auto similarTypes = TW::getSimilarCoinTypes(c);
+        // For all coins, supported coins should include this coin as well
+        EXPECT_TRUE(std::find(similarTypes.begin(), similarTypes.end(), c) != similarTypes.end());
+    }
 }
 
 } // namespace TW
