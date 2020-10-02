@@ -112,7 +112,7 @@ TEST(Coin, InitMultithread) {
 TEST(Coin, SupportedCoins) {
     const auto coinTypes = TW::getCoinTypes();
     for (auto c: coinTypes) {
-        auto similarTypes = TW::getSimilarCoinTypes(c);
+        const auto similarTypes = TW::getSimilarCoinTypes(c);
         // For all coins, supported coins should include this coin as well
         EXPECT_TRUE(std::find(similarTypes.begin(), similarTypes.end(), c) != similarTypes.end());
     }

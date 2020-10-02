@@ -93,7 +93,7 @@ void anyCoinDecode(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 void anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 
 // Return coins handled by the same dispatcher as the given coin (mostly for testing)
-std::vector<TWCoinType> getSimilarCoinTypes(TWCoinType coinType);
+const std::vector<TWCoinType> getSimilarCoinTypes(TWCoinType coinType);
 
 // Contains only simple types.
 struct CoinInfo {

@@ -334,7 +334,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType coin) {
     return TWStringCreateWithUTF8Bytes(getCoinInfo(coin).name);
 }
 
-std::vector<TWCoinType> TW::getSimilarCoinTypes(TWCoinType coinType) {
+const std::vector<TWCoinType> TW::getSimilarCoinTypes(TWCoinType coinType) {
     const auto dispatcher = coinDispatcher(coinType);
     assert(dispatcher != nullptr);
     return dispatcher->coinTypes();
