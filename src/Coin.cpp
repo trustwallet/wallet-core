@@ -11,7 +11,6 @@
 #include <TrustWalletCore/TWHRP.h>
 
 #include <map>
-#include <set>
 
 // #coin-list# Includes for entry points for coin implementations
 #include "Aeternity/Entry.h"
@@ -98,6 +97,7 @@ Zilliqa::Entry zilliqaDP;
 Elrond::Entry elrondDP;
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
+    // switch is preferred instead of a data structure, due to initialization issues
     switch (coinType) {
         // #coin-list#
         case TWCoinTypeAeternity: return &aeternityDP;
@@ -166,74 +166,6 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
             assert(false);
             return nullptr;
     }
-}
-
-set<TWCoinType> TW::getCoinTypes() {
-    return set<TWCoinType>({
-        // #coin-list#
-        TWCoinTypeAeternity,
-        TWCoinTypeAion,
-        TWCoinTypeAlgorand,
-        TWCoinTypeBinance,
-        TWCoinTypeBitcoin,
-        TWCoinTypeBitcoinCash,
-        TWCoinTypeBitcoinGold,
-        TWCoinTypeDash,
-        TWCoinTypeDigiByte,
-        TWCoinTypeDogecoin,
-        TWCoinTypeLitecoin,
-        TWCoinTypeMonacoin,
-        TWCoinTypeQtum,
-        TWCoinTypeRavencoin,
-        TWCoinTypeViacoin,
-        TWCoinTypeZcoin,
-        TWCoinTypeCardano,
-        TWCoinTypeCosmos,
-        TWCoinTypeKava,
-        TWCoinTypeTerra,
-        TWCoinTypeBandChain,
-        TWCoinTypeElrond,
-        TWCoinTypeEOS,
-        TWCoinTypeCallisto,
-        TWCoinTypeEthereum,
-        TWCoinTypeEthereumClassic,
-        TWCoinTypeGoChain,
-        TWCoinTypePOANetwork,
-        TWCoinTypeThunderToken,
-        TWCoinTypeTomoChain,
-        TWCoinTypeSmartChainLegacy,
-        TWCoinTypeSmartChain,
-        TWCoinTypeDecred,
-        TWCoinTypeFilecoin,
-        TWCoinTypeFIO,
-        TWCoinTypeGroestlcoin,
-        TWCoinTypeHarmony,
-        TWCoinTypeICON,
-        TWCoinTypeIoTeX,
-        TWCoinTypeKusama,
-        TWCoinTypeNano,
-        TWCoinTypeNEAR,
-        TWCoinTypeNebulas,
-        TWCoinTypeNEO,
-        TWCoinTypeNimiq,
-        TWCoinTypeNULS,
-        TWCoinTypeOntology,
-        TWCoinTypePolkadot,
-        TWCoinTypeXRP,
-        TWCoinTypeSolana,
-        TWCoinTypeStellar,
-        TWCoinTypeKin,
-        TWCoinTypeTezos,
-        TWCoinTypeTheta,
-        TWCoinTypeTON,
-        TWCoinTypeTron,
-        TWCoinTypeVeChain,
-        TWCoinTypeWanchain,
-        TWCoinTypeWaves,
-        TWCoinTypeZcash,
-        TWCoinTypeZelcash,
-        TWCoinTypeZilliqa
-    });
 }
 
 bool TW::validateAddress(TWCoinType coin, const std::string& string) {

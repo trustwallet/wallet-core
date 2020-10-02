@@ -11,6 +11,7 @@
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 
 #include <map>
+#include <vector>
 #include <mutex>
 #include <cassert>
 
@@ -91,4 +92,12 @@ void fillMap() {
         },
     <% end -%>
     };
+}
+
+std::vector<TWCoinType> TW::getCoinTypes() {
+    return std::vector<TWCoinType>({
+    <% coins.each do |coin| -%>
+        TWCoinType<%= format_name(coin['name']) %>,
+    <% end -%>
+    });
 }
