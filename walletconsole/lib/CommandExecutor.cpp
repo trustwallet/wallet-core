@@ -63,6 +63,7 @@ void CommandExecutor::help() const {
     _out << "  dumpSeed                Dump the seed of the current mnemonic (secret!)" << endl;
     _out << "  dumpMnemonic            Dump the current mnemonic (secret!)" << endl;
     _out << "  dumpDP                  Dump the default derivation path of the current coin (ex.: m/84'/0'/0'/0/0)" << endl;
+    _out << "  dumpXpub                Dump the XPUB of the current mnemonic" << endl;
     _out << "  priDP [<derivPath>]     Derive a new private key for the coin, from the current mnemonic and given derivation path." << endl;
     _out << "                          If derivation path is missing, the default one is used (see dumpDP)." << endl;
     _out << "Addresses:" << endl;
@@ -125,6 +126,7 @@ bool CommandExecutor::executeOne(const string& cmd, const vector<string>& params
     if (cmd == "dumpseed") { return _keys.dumpSeed(res); }
     if (cmd == "dumpmnemonic" || cmd == "dumpmenmonic") { return _keys.dumpMnemonic(res); }
     if (cmd == "dumpdp") { return _keys.dumpDP(_activeCoin, res); }
+    if (cmd == "dumpxpub") { return _keys.dumpXpub(_activeCoin, res); }
     if (cmd == "pridp") { string dp; if (params.size() >= 2) dp = params[1]; return _keys.priDP(_activeCoin, dp, res); }
 
     if (cmd == "addrpub") { if (!checkMinParams(params, 1)) { return false; } return _address.addrPub(_activeCoin, params[1], res); }

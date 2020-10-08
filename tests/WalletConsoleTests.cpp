@@ -286,6 +286,19 @@ TEST(WalletConsole, dumpdp) {
     }
 }
 
+
+TEST(WalletConsole, dumpXpub) {
+    auto pos1 = outputss.str().length();
+    cmd.executeLine("setMnemonic " + mnemonic1);
+    string res1 = outputss.str().substr(pos1);
+    EXPECT_TRUE(res1.find("Mnemonic set (24 words)") != string::npos);
+    auto pos2 = outputss.str().length();
+    cmd.executeLine("dumpXpub");
+    string res2 = outputss.str().substr(pos2);
+    EXPECT_TRUE(res2.length() > 1);
+    EXPECT_TRUE(res2.find("xpub6DMtfWWaKd8PZtN15WoBfQZdJJJH7QxFdih12musFUYbJwAQ1UvxCYXX7AuWEGXeNhywpAAs1FEUqEdzUetrTKzd8jJ6nMgZYjPf1k5NiaV") != string::npos);
+}
+
 TEST(WalletConsole, derive) {
     // Step-by-step derivation, mnemo -> pri -> pub -> addr
     cmd.executeLine("setMnemonic " + mnemonic1);

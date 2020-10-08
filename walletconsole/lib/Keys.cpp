@@ -134,6 +134,16 @@ bool Keys::dumpDP(const string& coinid, string& res) {
     return true;
 }
 
+bool Keys::dumpXpub(const string& coinid, string& res) {
+    assert(_currentMnemonic.length() > 0); // a mnemonic is always set
+    Coin coin;
+    if (!_coins.findCoin(coinid, coin)) { return false; }
+    HDWallet wallet(_currentMnemonic, "");
+    string xpub = wallet.getExtendedPublicKey(TWPurposeBIP44, (TWCoinType)coin.c, TWHDVersionXPUB);
+    res = xpub;
+    return true;
+}
+
 bool Keys::priDP(const string& coinid, const string& dp, string& res) {
     // coin
     Coin coin;
