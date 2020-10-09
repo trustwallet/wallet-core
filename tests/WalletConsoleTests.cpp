@@ -288,6 +288,7 @@ TEST(WalletConsole, dumpdp) {
 
 
 TEST(WalletConsole, dumpXpub) {
+    cmd.executeLine("coin btc");
     auto pos1 = outputss.str().length();
     cmd.executeLine("setMnemonic " + mnemonic1);
     string res1 = outputss.str().substr(pos1);
@@ -295,8 +296,9 @@ TEST(WalletConsole, dumpXpub) {
     auto pos2 = outputss.str().length();
     cmd.executeLine("dumpXpub");
     string res2 = outputss.str().substr(pos2);
+    std::cerr << res2 << "\n";
     EXPECT_TRUE(res2.length() > 1);
-    EXPECT_TRUE(res2.find("xpub6DMtfWWaKd8PZtN15WoBfQZdJJJH7QxFdih12musFUYbJwAQ1UvxCYXX7AuWEGXeNhywpAAs1FEUqEdzUetrTKzd8jJ6nMgZYjPf1k5NiaV") != string::npos);
+    EXPECT_TRUE(res2.find("zpub6qvN3x2m4Q96SJJ8Q3ZRbCTm4mGdTny6u2hY8tTiyWznnjwc3rRYpHDb1gN9AAypB5m2x1WR954CLNqpLcAxkxt9x7LX9hKDGp9sGtZca7o") != string::npos);
 }
 
 TEST(WalletConsole, derive) {
