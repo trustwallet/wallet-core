@@ -219,7 +219,6 @@ TEST(WalletConsole, setMnemonic) {
     auto pos1 = outputss.str().length();
     cmd.executeLine("setMnemonic " + mnemonic1);
     string res1 = outputss.str().substr(pos1);
-    //cerr << res1 << endl;
     EXPECT_TRUE(res1.find("Mnemonic set (24 words)") != string::npos);
     auto pos2 = outputss.str().length();
     cmd.executeLine("dumpSeed");
@@ -286,6 +285,20 @@ TEST(WalletConsole, dumpdp) {
     }
 }
 
+
+TEST(WalletConsole, dumpXpub) {
+    cmd.executeLine("coin btc");
+    auto pos1 = outputss.str().length();
+    cmd.executeLine("setMnemonic " + mnemonic1);
+    string res1 = outputss.str().substr(pos1);
+    EXPECT_TRUE(res1.find("Mnemonic set (24 words)") != string::npos);
+    auto pos2 = outputss.str().length();
+    cmd.executeLine("dumpXpub");
+    string res2 = outputss.str().substr(pos2);
+    EXPECT_TRUE(res2.length() > 1);
+    EXPECT_TRUE(res2.find("zpub6qvN3x2m4Q96SJJ8Q3ZRbCTm4mGdTny6u2hY8tTiyWznnjwc3rRYpHDb1gN9AAypB5m2x1WR954CLNqpLcAxkxt9x7LX9hKDGp9sGtZca7o") != string::npos);
+}
+
 TEST(WalletConsole, derive) {
     // Step-by-step derivation, mnemo -> pri -> pub -> addr
     cmd.executeLine("setMnemonic " + mnemonic1);
@@ -313,7 +326,6 @@ TEST(WalletConsole, derive) {
         auto pos1 = outputss.str().length();
         cmd.executeLine("addr #");
         string res1 = outputss.str().substr(pos1);
-        //cerr << res1 << endl;
         EXPECT_TRUE(res1.find("bc1qejkm69ert6jqrp2u4n0m6g9ds4ravas2dw3af0") != string::npos);
         EXPECT_TRUE(res1.find("not") == string::npos);
         EXPECT_TRUE(res1.find("NOT") == string::npos);
@@ -343,6 +355,22 @@ TEST(WalletConsole, addrDefault) {
         string res1 = outputss.str().substr(pos1);
         EXPECT_TRUE(res1.find("nano_3yyipbgtnd7183k61nkh5mxnt9wpsfhto95mksdqj6s7p45mwj9osai7asad") != string::npos);
     }
+}
+
+TEST(WalletConsole, addrXpub) {
+    cmd.executeLine("coin btc");
+    // no need to set mnemonic here
+    auto pos1 = outputss.str().length();
+    cmd.executeLine("addrXpub zpub6qvN3x2m4Q96SJJ8Q3ZRbCTm4mGdTny6u2hY8tTiyWznnjwc3rRYpHDb1gN9AAypB5m2x1WR954CLNqpLcAxkxt9x7LX9hKDGp9sGtZca7o 0");
+    string res1 = outputss.str().substr(pos1);
+    EXPECT_TRUE(res1.length() > 1);
+    // Note that XPUB-derived address with index 0 is NOT the same as addrDefault (mnemonic1).  No explanation.
+    EXPECT_TRUE(res1.find("bc1q5mv7jf4uzyf0524sxzrpucdf6tnrd0maq9k8zv") != string::npos);
+    auto pos2 = outputss.str().length();
+    cmd.executeLine("addrXpub zpub6qvN3x2m4Q96SJJ8Q3ZRbCTm4mGdTny6u2hY8tTiyWznnjwc3rRYpHDb1gN9AAypB5m2x1WR954CLNqpLcAxkxt9x7LX9hKDGp9sGtZca7o 1");
+    string res2 = outputss.str().substr(pos2);
+    EXPECT_TRUE(res2.length() > 1);
+    EXPECT_TRUE(res2.find("bc1qejkm69ert6jqrp2u4n0m6g9ds4ravas2dw3af0") != string::npos);
 }
 
 TEST(WalletConsole, hex1) {

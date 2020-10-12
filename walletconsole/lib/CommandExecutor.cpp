@@ -63,6 +63,7 @@ void CommandExecutor::help() const {
     _out << "  dumpSeed                Dump the seed of the current mnemonic (secret!)" << endl;
     _out << "  dumpMnemonic            Dump the current mnemonic (secret!)" << endl;
     _out << "  dumpDP                  Dump the default derivation path of the current coin (ex.: m/84'/0'/0'/0/0)" << endl;
+    _out << "  dumpXpub                Dump the XPUB of the current mnemonic" << endl;
     _out << "  priDP [<derivPath>]     Derive a new private key for the coin, from the current mnemonic and given derivation path." << endl;
     _out << "                          If derivation path is missing, the default one is used (see dumpDP)." << endl;
     _out << "Addresses:" << endl;
@@ -71,6 +72,7 @@ void CommandExecutor::help() const {
     _out << "  addr <addr>             Check string <coin> address" << endl;
     _out << "  addrDefault             Derive default address, for current coin, fom current mnemonic; see dumpDP" << endl;
     _out << "  addrDP <derivPath>      Derive a new address with the given derivation path (using current coin and mnemonic)" << endl;
+    _out << "  addrXpub <xpub> <index> Derive a new address from the given XPUB and address index (using current coin)" << endl;
     _out << "Coin-specific methods:" << endl;
     _out << "  tonInitMsg <priKey>     Build TON account initialization message." << endl;
     _out << "Transformations:" << endl;
@@ -125,6 +127,7 @@ bool CommandExecutor::executeOne(const string& cmd, const vector<string>& params
     if (cmd == "dumpseed") { return _keys.dumpSeed(res); }
     if (cmd == "dumpmnemonic" || cmd == "dumpmenmonic") { return _keys.dumpMnemonic(res); }
     if (cmd == "dumpdp") { return _keys.dumpDP(_activeCoin, res); }
+    if (cmd == "dumpxpub") { return _keys.dumpXpub(_activeCoin, res); }
     if (cmd == "pridp") { string dp; if (params.size() >= 2) dp = params[1]; return _keys.priDP(_activeCoin, dp, res); }
 
     if (cmd == "addrpub") { if (!checkMinParams(params, 1)) { return false; } return _address.addrPub(_activeCoin, params[1], res); }
@@ -132,6 +135,7 @@ bool CommandExecutor::executeOne(const string& cmd, const vector<string>& params
     if (cmd == "addr") { if (!checkMinParams(params, 1)) { return false; } return _address.addr(_activeCoin, params[1], res); }
     if (cmd == "addrdefault") { return _address.addrDefault(_activeCoin, res); }
     if (cmd == "addrdp") { if (!checkMinParams(params, 1)) { return false; } return _address.deriveFromPath(_activeCoin, params[1], res); }
+    if (cmd == "addrxpub") { if (!checkMinParams(params, 2)) { return false; } return _address.deriveFromXpubIndex(_activeCoin, params[1], params[2], res); }
 
     if (cmd == "toninitmsg") { if (!checkMinParams(params, 1)) { return false; } setCoin("ton", false); return TonCoin::tonInitMsg(params[1], res); }
 
