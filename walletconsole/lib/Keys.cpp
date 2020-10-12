@@ -11,6 +11,7 @@
 #include "PrivateKey.h"
 #include "HexCoding.h"
 #include "HDWallet.h"
+#include "Coin.h"
 
 #include <iostream>
 #include <vector>
@@ -131,6 +132,19 @@ bool Keys::dumpDP(const string& coinid, string& res) {
     Coin coin;
     if (!_coins.findCoin(coinid, coin)) { return false; }
     res = coin.derivPath;
+    return true;
+}
+
+bool Keys::dumpXpub(const string& coinid, string& res) {
+    assert(_currentMnemonic.length() > 0); // a mnemonic is always set
+    Coin coin;
+    if (!_coins.findCoin(coinid, coin)) { return false; }
+    TWCoinType ctype = (TWCoinType)coin.c;
+    TWPurpose purpose = TW::purpose(ctype);
+    TWHDVersion xpubVersion = TW::xpubVersion(ctype);
+    HDWallet wallet(_currentMnemonic, "");
+    string xpub = wallet.getExtendedPublicKey(purpose, ctype, xpubVersion);
+    res = xpub;
     return true;
 }
 

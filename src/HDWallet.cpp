@@ -157,9 +157,10 @@ std::optional<PublicKey> HDWallet::getPublicKeyFromExtended(const std::string& e
 
     // These public key type are not applicable.  Handled above, as node.curve->params is null
     assert(curve != TWCurveED25519 && curve != TWCurveED25519Blake2bNano && curve != TWCurveED25519Extended && curve != TWCurveCurve25519);
-    if (curve == TWCurveSECP256k1) {
+    TWPublicKeyType keyType = TW::publicKeyType(coin);
+    if (curve == TWCurveSECP256k1 && keyType == TWPublicKeyTypeSECP256k1) {
         return PublicKey(Data(node.public_key, node.public_key + 33), TWPublicKeyTypeSECP256k1);
-    } else if (curve == TWCurveNIST256p1) {
+    } else if (curve == TWCurveNIST256p1 && keyType == TWPublicKeyTypeNIST256p1) {
         return PublicKey(Data(node.public_key, node.public_key + 33), TWPublicKeyTypeNIST256p1);
     }
     return {};
