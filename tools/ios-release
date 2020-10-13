@@ -30,6 +30,8 @@ end
 puts 'Archiving...'
 includes = Dir.glob('include/**/*.h') + Dir.glob('lib/**/*.{h,hpp}')
 sources = Dir.glob('swift/Sources/**/*.{swift,h,m}')
+# Rename libTrustWalletCore.a to avoid conflicts with cocoapods static lib
+File.rename('build/ios/libTrustWalletCore.a', 'build/ios/libCore.a')
 libs = Dir.glob('build/ios/*.a')
 files = includes + sources + libs + ['LICENSE']
 file_name = "TrustWalletCore-iOS-#{version}.zip"
@@ -57,7 +59,7 @@ Pod::Spec.new do |s|
   s.homepage     = 'https://github.com/trustwallet/wallet-core'
   s.license      = 'MIT'
   s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
-
+  s.module_name  = 'WalletCore'
   s.ios.deployment_target = '11.0'
   s.osx.deployment_target = '10.12'
   s.swift_version = '5.1'
@@ -76,11 +78,9 @@ Pod::Spec.new do |s|
 
   s.subspec 'Core' do |ss|
     ss.preserve_paths = 'build/ios/*.a'
-    ss.vendored_libraries =
-      'build/ios/libprotobuf.a',
-      'build/ios/libTrezorCrypto.a',
-      'build/ios/libTrustWalletCore.a'
-    s.source_files =
+    ss.vendored_libraries = 'build/ios/*.a'
+    ss.exclude_files = 'swift/Sources/Generated/WalletCore.h'
+    ss.source_files =
       'include/**/*.h',
       'swift/Sources/*.{swift,h,m,cpp}',
       'swift/Sources/Extensions/*.swift',
@@ -90,7 +90,6 @@ Pod::Spec.new do |s|
       'swift/Sources/*.h'
     ss.libraries = 'c++'
     ss.xcconfig = {
-        'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) ${PODS_ROOT}/TrustWalletCore/include',
         'OTHER_LDFLAGS' => '$(inherited) -fprofile-instr-generate'
     }
     ss.pod_target_xcconfig = {

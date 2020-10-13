@@ -16,6 +16,7 @@ TEST(TWAnySignerNEAR, Sign) {
 
     auto privateKey = parse_hex("8737b99bf16fba78e1e753e23ba00c4b5423ac9c45d9b9caae9a519434786568");
     auto blockHash = parse_hex("0fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef6");
+    // uint128_t / little endian byte order
     auto deposit = parse_hex("01000000000000000000000000000000");
 
     Proto::SigningInput input;
