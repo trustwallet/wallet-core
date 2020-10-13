@@ -4,18 +4,17 @@ Pod::Spec.new do |s|
   s.name         = 'TrustWalletCore'
   s.version      = version
   s.summary      = 'Trust Wallet core data structures and algorithms.'
-  s.homepage     = 'https://github.com/TrustWallet/wallet-core'
+  s.homepage     = 'https://github.com/trustwallet/wallet-core'
   s.license      = 'MIT'
   s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
-
+  s.module_name  = 'WalletCore'
+  
   s.ios.deployment_target = '11.0'
   s.osx.deployment_target = '10.12'
   s.swift_version = '5.1'
 
   s.source = {
-    git: 'git@github.com:TrustWallet/wallet-core.git',
-    tag: version,
-    submodules: true
+    git: 'git@github.com:trustwallet/wallet-core.git'
   }
 
   s.default_subspec = 'Core'
@@ -116,7 +115,10 @@ Pod::Spec.new do |s|
       "#{protobuf_source_dir}/src/google/protobuf/wire_format.cc",
       "#{protobuf_source_dir}/src/google/protobuf/wire_format_lite.cc",
       "#{protobuf_source_dir}/src/google/protobuf/wrappers.pb.cc"
-    ss.exclude_files = 'trezor-crypto/src/rand.c'
+    ss.exclude_files = 
+      'trezor-crypto/src/rand.c',
+      'swift/Sources/Generated/WalletCore.h'
+
     ss.public_header_files =
       'include/**/*.h',
       'swift/Sources/*.h'
@@ -126,12 +128,13 @@ Pod::Spec.new do |s|
       "#{protobuf_source_dir}/src/**/*.{h,inc}",
       "#{include_dir}/nlohmann/**/*.hpp",
       'src/proto/*.proto'
+
     ss.xcconfig = {
       'HEADER_SEARCH_PATHS' => '$(inherited) ' \
         '${PODS_ROOT}/TrustWalletCore/src ' \
         '${PODS_ROOT}/TrustWalletCore/trezor-crypto/src',
       'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) ' \
-        '/usr/local/include' \
+        '/usr/local/include ' \
         '${PODS_ROOT}/TrustWalletCore/include ' \
         '${PODS_ROOT}/TrustWalletCore/trezor-crypto/include ' \
         "${PODS_ROOT}/TrustWalletCore/#{protobuf_source_dir}/src " \

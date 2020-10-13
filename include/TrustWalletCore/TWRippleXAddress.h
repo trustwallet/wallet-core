@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TrustWalletCore/TWBase.h>
-#include <TrustWalletCore/TWString.h>
-#include <TrustWalletCore/TWData.h>
-#include <TrustWalletCore/TWHRP.h>
+#include "TWBase.h"
+#include "TWString.h"
+#include "TWData.h"
+#include "TWHRP.h"
 
 TW_EXTERN_C_BEGIN
 

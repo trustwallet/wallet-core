@@ -13,7 +13,7 @@ settings:
       SWIFT_OPTIMIZATION_LEVEL: -Owholemodule
       SWIFT_COMPILATION_MODE: wholemodule
 targets:
-  TrustWalletCore:
+  WalletCore:
     type: framework
     platform: iOS
     deploymentTarget: 11.0
@@ -39,7 +39,7 @@ targets:
       - sdk: libc++.tbd
     scheme:
       testTargets:
-        - TrustWalletCoreTests
+        - WalletCoreTests
       gatherCoverageData: true
     settings:
       SKIP_INSTALL: false
@@ -47,18 +47,18 @@ targets:
       BUILD_LIBRARY_FOR_DISTRIBUTION: true
       INFOPLIST_FILE: 'Info.plist'
       CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION: YES_ERROR
-      CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER: $(inherited) true
+      CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER: $(inherited) false
       OTHER_CFLAGS: $(inherited) -Wno-comma
     postCompileScripts:
       - script: ${PODS_ROOT}/SwiftLint/swiftlint --config ../.swiftlint.yml
         name: SwiftLint
 
-  TrustWalletCoreTests:
+  WalletCoreTests:
     type: bundle.unit-test
     platform: iOS
     sources: [Tests]
     dependencies:
-      - target: TrustWalletCore
+      - target: WalletCore
       - sdk: libc++.tbd
 
   trezor-crypto:

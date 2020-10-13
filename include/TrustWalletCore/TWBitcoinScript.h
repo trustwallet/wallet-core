@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <TrustWalletCore/TWBase.h>
-#include <TrustWalletCore/TWData.h>
-#include <TrustWalletCore/TWPublicKey.h>
-#include <TrustWalletCore/TWCoinType.h>
-#include <TrustWalletCore/TWBitcoinSigHashType.h>
+#include "TWBase.h"
+#include "TWData.h"
+#include "TWPublicKey.h"
+#include "TWCoinType.h"
+#include "TWBitcoinSigHashType.h"
 
 TW_EXTERN_C_BEGIN
 

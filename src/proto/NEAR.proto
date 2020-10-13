@@ -9,7 +9,7 @@ message PublicKey {
 }
 
 message FunctionCallPermission {
-    bytes allowance = 1; // uint128
+    bytes allowance = 1; // uint128 / little endian byte order
     string receiver_id = 2;
 }
 
@@ -35,15 +35,15 @@ message FunctionCall {
     bytes method_name = 1;
     bytes args = 2;
     uint64 gas = 3;
-    bytes deposit = 4; // uint128
+    bytes deposit = 4; // uint128 / little endian byte order
 }
 
 message Transfer {
-    bytes deposit = 1; // uint128
+    bytes deposit = 1; // uint128 / little endian byte order
 }
 
 message Stake {
-    bytes stake = 1; // uint128
+    bytes stake = 1; // uint128 / little endian byte order
     string public_key = 2;
 }
 
