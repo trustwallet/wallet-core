@@ -4,6 +4,6 @@ This list is generated from [./coins.json](../coins.json)
 
 | Index   | Name             | Symbol | Logo                                                                                                                        | URL                           |
 | ------- | ---------------- | ------ | --------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
-<% coins.each do |coin| -%>
+<% coins.select{ |c| c['deprecated'].nil? }.each do |coin| -%>
 | <%= coin['coinId'].to_s.ljust(7, " ") %> | <%= coin['name'].ljust(16, " ") %> | <%= coin['symbol'].ljust(6, " ") %> | <%= coin_img(coin['id']).ljust(123) %> | <%= "<#{coin['info']['url']}>".ljust(29, " ") %> |
 <% end -%>
