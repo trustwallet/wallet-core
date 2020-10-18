@@ -671,10 +671,11 @@ TEST(BinanceSigner, BuildTimeRelockOrder) {
 
     const auto data = Binance::Signer(std::move(signingInput)).build();
     EXPECT_EQ(hex(data.begin(), data.end()),
-        "c201f0625dee0a4c"
-        "504711da"
-        "0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e110cd021a1c4465736372697074696f6e206c6f636b656420666f72206f6666657222090a03424e4210c0843d28dbaaf8fa05126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc712401a217ece28c8a5e3d9dd44a8228a308e0c7d74d3f4ad8c539f785fd007fb90c714d971b84dbe2eadc65672d880410aab93681211fd44a1f9ee643b0565d1664a180f2001"
-    );
+              "c201f0625dee0a4c504711da0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e110cd021a1c446573"
+              "6372697074696f6e206c6f636b656420666f72206f6666657222090a03424e4210c0843d28dbaaf8fa05"
+              "126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc7"
+              "124086ddaa077c8ae551d402fa409cf7e91663982b0542200967c03c0b5876b181353250f689d342f221"
+              "7624a077b671ce7d09649187e29879f40abbbee9de7ab27c180f2001");
 }
 
 TEST(BinanceSigner, BuildTimeUnlockOrder) {
@@ -695,10 +696,10 @@ TEST(BinanceSigner, BuildTimeUnlockOrder) {
 
     const auto data = Binance::Signer(std::move(signingInput)).build();
     EXPECT_EQ(hex(data.begin(), data.end()),
-        "9301f0625dee0a1d"
-        "c4050c6c"
-        "0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e110cd02126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240006ed2f3f655ad2f3dc570d5409105a6acf28f5ea96162f40db7f5762b7feefc2bd5c8907beaae606cb4092680f69d784edc914d26907d52d35e64468ce5fc91180f2001"
-    );
+              "9301f0625dee0a1dc4050c6c0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e110cd02126e0a26eb"
+              "5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240da777b"
+              "fd2032834f59ec9fe69fd6eaa4aca24242dfbc5ec4ef8c435cb9da7eb05ab78e1b8ca9f109657cb77996"
+              "898f1b59137b3d8f1e00f842e409e18033b347180f2001");
 }
 
 } // namespace TW::Binance
