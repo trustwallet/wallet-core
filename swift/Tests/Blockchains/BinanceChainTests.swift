@@ -160,6 +160,26 @@ class BinanceChainTests: XCTestCase {
         XCTAssertEqual(output.encoded.hexString, "9401f0625dee0a1dc4050c6c0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e110a00a126f0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc7124036ae67e8301f7b229ead7f299429308e70c5b44a28d173ecf951c5fe94507a767dcbda27c11610845210d0b9a8fec82e111a6c18c933a32d702d001900b02601181d20a20a")
     }
 
+    func testSignRelock() throws {
+        // https://explorer.binance.org/tx/1DAE8A0871A15D06907FF8DAD29D657309DA8A9004CAF5B94FF9B61F8B52B5E5
+        let key = testKey
+        let from = AnyAddress(publicKey: key.getPublicKeySecp256k1(compressed: true), coin: .binance)
+        let input = BinanceSigningInput.with {
+            $0.chainID = "Binance-Chain-Tigris"
+            $0.accountNumber = 29
+            $0.sequence = 1315
+            $0.privateKey = key.data
+            $0.timeRelockOrder = BinanceTimeRelockOrder.with {
+                $0.fromAddress = from.data
+                $0.id = 1314
+                $0.description_p = "test_relock"
+                $0.lockTime = 1603022621
+            }
+        }
+        let output: BinanceSigningOutput = AnySigner.sign(input: input, coin: .binance)
+        XCTAssertEqual(output.encoded.hexString, "a701f0625dee0a30504711da0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e110a20a1a0b746573745f72656c6f636b289ddeb0fc05126f0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240b8df4f80b8f7714d13280134ee16dc04c826cbc50a0fb20532e91879320b24f812698f736b3fccb3060b3bdc0ffcdbd2ddf2026aeda32c6d159205f183c712cf181d20a30a")
+    }
+
     func testSignJSON() {
         let json = """
         {
