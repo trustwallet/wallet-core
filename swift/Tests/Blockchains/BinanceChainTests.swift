@@ -120,8 +120,7 @@ class BinanceChainTests: XCTestCase {
         // real key 1p
         let key = testKey
         let from = AnyAddress(publicKey: key.getPublicKeySecp256k1(compressed: true), coin: .binance)
-        let timestamp = Date().timeIntervalSince1970 + 600
-        print(timestamp)
+
         let input = BinanceSigningInput.with {
             $0.chainID = "Binance-Chain-Tigris"
             $0.accountNumber = 29
