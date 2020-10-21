@@ -58,6 +58,9 @@ class Transaction {
 
     // serialize returns the CBOR encoding of the Filecoin SignedMessage.
     Data serialize(Data& signature) const;
+
+    // serialize returns json ready for MpoolPush rpc
+    std::string serializeJSON(Data& signature) const;
 };
 
 } // namespace TW::Filecoin

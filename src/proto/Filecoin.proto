@@ -9,7 +9,7 @@ message SigningInput {
     bytes private_key = 1;
 
     // Recipient's address.
-    string to_address = 2;
+    string to = 2;
 
     // Transaction nonce.
     uint64 nonce = 3;
@@ -30,4 +30,5 @@ message SigningInput {
 // Transaction signing output.
 message SigningOutput {
     bytes encoded = 1;
+    string json = 2;
 }

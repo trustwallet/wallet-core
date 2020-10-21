@@ -5,7 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Transaction.h"
+#include <nlohmann/json.hpp>
+#include "Base64.h"
 
+using json = nlohmann::json;
 using namespace TW;
 using namespace TW::Filecoin;
 
@@ -66,4 +69,25 @@ Data Transaction::serialize(Data& signature) const {
     // Create Filecoin SignedMessage
     auto signedMessage = Cbor::Encode::array({message(), Cbor::Encode::bytes(sigObject)});
     return signedMessage.encoded();
+}
+
+std::string Transaction::serializeJSON(Data& signature) const {
+    json tx = {
+        {"Message", json{
+                {"To", to.string()},
+                {"From", from.string()},
+                {"Nonce", nonce},
+                {"Value", toString(value)},
+                {"GasPremium", toString(gasPremium)},
+                {"GasFeeCap", toString(gasFeeCap)},
+                {"GasLimit", gasLimit},
+            }
+        },
+        {"Signature", json{
+                {"Type", 1},
+                {"Data", Base64::encode(signature)},
+            }
+        },
+    };
+    return tx.dump();
 }
