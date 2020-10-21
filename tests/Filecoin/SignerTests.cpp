@@ -37,11 +37,7 @@ TEST(FilecoinSigner, Sign) {
 
     Data signature = Signer::sign(privateKey, tx);
 
-    ASSERT_EQ(hex(tx.serialize(signature)),
-              "828a0055018ac93840e869c06b79b748a3c504b696bb339a7f5501cf01bf485f61435e6770b52615bf45"
-              "5e043a236101430017701b0000154db0d523bf49000655a8ba8e851ecd48001429fef64aad8900405842"
-              "01dc6394a67d968b07b6d105cb0bc8b1c76dd688a0f0ad591fc588b70a0cd9e630552994f859439936e6"
-              "61a54164cb43ea19a33bbc4ac43a2fffcaa0464884105000");
+    ASSERT_EQ(tx.serialize(signature), R"({"Message":{"From":"f1z4a36sc7mfbv4z3qwutblp2flycdui3baffytbq","GasFeeCap":"456456456456445645","GasLimit":23423423423423,"GasPremium":"5675674564734345","Nonce":1,"To":"f1rletqqhinhagw6nxjcr4kbfws25thgt7owzuruy","Value":"6000"},"Signature":{"Data":"3GOUpn2Wiwe20QXLC8ixx23WiKDwrVkfxYi3CgzZ5jBVKZT4WUOZNuZhpUFky0PqGaM7vErEOi//yqBGSIQQUAA=","Type":1}})");
 }
 
 } // namespace TW::Filecoin
