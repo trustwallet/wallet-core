@@ -57,6 +57,27 @@ if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
 endif()
 
+option(CPP_CHECK "Enable cppcheck static code analysis" OFF)
+if(CPP_CHECK)
+    find_program(CMAKE_CXX_CPPCHECK NAMES cppcheck)
+    if(CMAKE_CXX_CPPCHECK)
+        list(
+            APPEND CMAKE_CXX_CPPCHECK 
+                "--enable=warning"
+                "--enable=portability"
+                "--std=c++17"
+                "--error-exitcode=1"
+                "--inconclusive"
+                #"--force" 
+                "--inline-suppr"
+                "--suppressions-list=${CMAKE_SOURCE_DIR}/tools/CppCheckSuppressions.txt"
+                #"--verbose"
+        )
+    else()
+        message(FATAL_ERROR "Could not find cppcheck")
+    endif()
+endif()
+
 # Source files
 if(${ANDROID})
     message("Configuring for JNI")
