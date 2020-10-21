@@ -29,12 +29,10 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
     // Sign transaction.
     auto signature = sign(key, transaction);
-    const auto encoded = transaction.serialize(signature);
-    const auto json = transaction.serializeJSON(signature);
+    const auto json = transaction.serialize(signature);
 
     // Return Protobuf output.
     Proto::SigningOutput output;
-    output.set_encoded(encoded.data(), encoded.size());
     output.set_json(json.data(), json.size());
     return output;
 }
@@ -50,5 +48,5 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     google::protobuf::util::JsonStringToMessage(json, &input);
     input.set_private_key(key.data(), key.size());
     auto output = Signer::sign(input);
-    return hex(output.encoded());
+    return output.json();
 }

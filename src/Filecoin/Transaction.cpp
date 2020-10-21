@@ -60,18 +60,7 @@ Data Transaction::cid() const {
     cid.insert(cid.end(), hash.begin(), hash.end());
     return cid;
 }
-
-Data Transaction::serialize(Data& signature) const {
-    // Wrap signature in object.
-    Data sigObject;
-    TW::append(sigObject, 0x01); // Prepend IKTSecp256k1 type
-    TW::append(sigObject, signature);
-    // Create Filecoin SignedMessage
-    auto signedMessage = Cbor::Encode::array({message(), Cbor::Encode::bytes(sigObject)});
-    return signedMessage.encoded();
-}
-
-std::string Transaction::serializeJSON(Data& signature) const {
+std::string Transaction::serialize(Data& signature) const {
     json tx = {
         {"Message", json{
                 {"To", to.string()},
