@@ -65,7 +65,7 @@ if(CPP_CHECK)
             APPEND CMAKE_CXX_CPPCHECK 
                 "--enable=warning"
                 "--enable=portability"
-                "--std=c++17"
+                #"--std=c++17"
                 "--error-exitcode=1"
                 "--inconclusive"
                 #"--force" 
