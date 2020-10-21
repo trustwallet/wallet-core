@@ -15,6 +15,7 @@ jobs:
       run: |
         # build-essential libboost-all-dev clang-9 ruby-full cmake
         sudo apt-get install libc++-dev libc++abi-dev ninja-build lcov llvm cppcheck
+        cppcheck --version
     - name: Cache internal dependencies
       id: internal_cache
       uses: actions/cache@v1.1.2
@@ -32,7 +33,7 @@ jobs:
       run: |
         tools/generate-files
         cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DBOOST_ROOT=${BOOST_ROOT_1_72_0} -DCPP_CHECK=ON 
-        make -Cbuild -j12 tests
+        make -Cbuild tests
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
