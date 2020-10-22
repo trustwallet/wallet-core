@@ -66,7 +66,7 @@ if(CPP_CHECK)
                 "--enable=warning"
                 "--enable=portability"
                 #"--std=c++17"
-                "--error-exitcode=1"
+                #"--error-exitcode=1"
                 "--inconclusive"
                 #"--max-configs=20"
                 "--force"
