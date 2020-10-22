@@ -1,2 +1,4 @@
 *:*protobuf*
 *:*nlohmann*
+*:*gtest*
+*:*tests*
