@@ -72,7 +72,7 @@ if(CPP_CHECK)
                 "--force"
                 "--inline-suppr"
                 "--suppressions-list=${CMAKE_SOURCE_DIR}/tools/CppCheckSuppressions.txt"
-                #"--verbose"
+                "--verbose"
         )
     else()
         message(FATAL_ERROR "Could not find cppcheck")
