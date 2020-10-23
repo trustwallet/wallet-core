@@ -1517,5 +1517,29 @@
       "clientPublic": "https://bsc-dataseed1.binance.org",
       "clientDocs": "https://eth.wiki/json-rpc/API"
     }
+  },
+  {
+    "id": "permission",
+    "name": "Permission",
+    "coinId": 777,
+    "symbol": "ASK",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://explorer.permission.io/",
+      "txPath": "/transactions/",
+      "accountPath": "/wallets/",
+      "sampleTx": "0x42f7a92223c2772686ed688ac26a16ab5ba3b4a187463d4f56f11bf3ea9967e4",
+      "sampleAccount": "0x4faF226eA0437A14ae882Fc05Df2439029312E3E"
+    },
+    "info": {
+      "url": "https://permission.io",
+      "client": "https://github.com/ethereum/go-ethereum",
+      "clientPublic": "https://blockchain-api-mainnet.permission.io/rpc",
+      "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+    }
   }
 ]

@@ -387,5 +387,12 @@ TEST(Coin, ValidateAddressElrond) {
     EXPECT_FALSE(validateAddress(TWCoinTypeElrond, "xerd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz"));
 }
 
+TEST(Coin, ValidateAddressPermission) {
+    EXPECT_TRUE(validateAddress(TWCoinTypePermission, "0xeDe8F58dADa22c3A49dB60D4f82BAD428ab65F89"));
+    EXPECT_FALSE(validateAddress(TWCoinTypePermission, "ede8f58dada22a49db60d4f82bad428ab65f89"));
+
+    ASSERT_EQ(normalizeAddress(TWCoinTypePermission, "0x7d8bf18c7ce84b3e175b339c4ca93aed1dd166f1"), "0x7d8bf18C7cE84b3E175b339c4Ca93aEd1dD166F1");
+}
+
 
 } // namespace TW
