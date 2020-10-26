@@ -22,7 +22,7 @@ class TransactionOutput : public Serializable {
     static const size_t scriptHashSize = 20;
 
     uint256_t assetId;
-    int64_t value;
+    int64_t value = 0;
     uint256_t scriptHash;
 
     virtual ~TransactionOutput() {}
