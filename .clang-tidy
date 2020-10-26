@@ -1,7 +1,7 @@
----
-Checks:          'clang-diagnostic-*,clang-analyzer-*,modernize-*,portability-*,llvm-*,-llvm-include-order,-modernize-use-nodiscard,-llvm-header-guard'
+#Checks:          'clang-diagnostic-*,clang-analyzer-*,modernize-*,portability-*,llvm-*,-llvm-include-order,-modernize-use-nodiscard,-llvm-header-guard'
+Checks:          'portability-*'
 WarningsAsErrors: ''
-HeaderFilterRegex: ''
+HeaderFilterRegex: 'TrustWallet|^src'
 AnalyzeTemporaryDtors: false
-FormatStyle:     file
-...
+FormatStyle:     none
+InheritParentConfig: false

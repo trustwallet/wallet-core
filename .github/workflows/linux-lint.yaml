@@ -1,0 +1,40 @@
+name: Linux Lint
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install system dependencies
+      run: |
+        # build-essential libboost-all-dev clang-9 ruby-full cmake
+        sudo apt-get install libc++-dev libc++abi-dev ninja-build lcov llvm
+        clang-tidy --version
+    - name: Cache internal dependencies
+      id: internal_cache
+      uses: actions/cache@v1.1.2
+      with:
+        path: build/local
+        key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
+    - name: Install internal dependencies
+      run: |
+        tools/install-dependencies
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+      if: steps.internal_cache.outputs.cache-hit != 'true'
+    - name: Build and test
+      run: |
+        tools/generate-files
+        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DBOOST_ROOT=${BOOST_ROOT_1_72_0} -DCLANG_TIDY=ON
+        make -Cbuild tests
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+        CK_TIMEOUT_MULTIPLIER: 4
