@@ -248,8 +248,9 @@ Cell::SerializationInfo Cell::getSerializationInfo(SerializationMode mode) const
         rawDataSize += c->serializedOwnSize();
     }
     int intRefs = (int)cellCount();
-    int refSize = 1;
-    while (cellCount() >= (1 << (refSize * 8))) { ++refSize; }
+    uint8_t refSize = 1;
+    while (cellCount() >= ((size_t)1 << (refSize * 8))) { ++refSize; }
+    assert(refSize >= 1 && refSize <= 8);
     size_t hashes = 0;
     size_t dataBytesAdj = rawDataSize + (size_t)intRefs * refSize + hashes;
     size_t maxOffset = (mode & SerializationMode::WithCacheBits) ? dataBytesAdj * 2 : dataBytesAdj;
