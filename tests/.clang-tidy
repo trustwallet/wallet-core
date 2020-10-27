@@ -1,2 +1,2 @@
 Checks:          'NONE'
-InheritParentConfig: true
+InheritParentConfig: false
