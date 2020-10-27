@@ -1,5 +1,5 @@
 Checks:          'clang-diagnostic-*,clang-analyzer-*,modernize-*,portability-*,llvm-*,-llvm-include-order,-modernize-use-nodiscard,-llvm-header-guard'
-WarningsAsErrors: ''
+WarningsAsErrors: 'clang-diagnostic-*,clang-analyzer-*,portability-*,llvm-*'
 HeaderFilterRegex: 'TrustWallet|^src|^./src'
 AnalyzeTemporaryDtors: false
 FormatStyle:     none
