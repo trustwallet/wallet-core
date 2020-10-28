@@ -57,7 +57,7 @@ if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
 endif()
 
-option(CLANG_TIDY "Enable cppcheck static code analysis" OFF)
+option(CLANG_TIDY "Enable static code analysis with (clang-tidy)" OFF)
 if(CLANG_TIDY)
     find_program(CLANG_TIDY_BIN NAMES clang-tidy)
     if(CLANG_TIDY_BIN)
