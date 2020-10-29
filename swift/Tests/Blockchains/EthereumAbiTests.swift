@@ -41,7 +41,7 @@ class EthereumAbiTests: XCTestCase {
         XCTAssertEqual(data2.hexString, "0000000000000000000000000000000000000000000000000000000000000045")
     }
 
-    func testValueDecoder() {
+    func testValueDecoderUInt256() {
         let expected = "1234567890987654321"
         let inputs = [
             "112210f4b16c1cb1",
@@ -52,6 +52,16 @@ class EthereumAbiTests: XCTestCase {
             let data = Data(hexString: input)!
             XCTAssertEqual(expected, EthereumAbiValue.decodeUInt256(input: data))
         }
+    }
+
+    func testValueDecoderValue_uint() {
+        XCTAssertEqual("42", EthereumAbiValue.decodeValue(input: Data(hexString: "000000000000000000000000000000000000000000000000000000000000002a")!, type: "uint"))
+        XCTAssertEqual("24", EthereumAbiValue.decodeValue(input: Data(hexString: "0000000000000000000000000000000000000000000000000000000000000018")!, type: "uint8"))
+        XCTAssertEqual("0xf784682c82526e245f50975190ef0fff4e4fc077", EthereumAbiValue.decodeValue(input: Data(hexString: "000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc077")!, type: "address"))
+        XCTAssertEqual("Hello World!    Hello World!    Hello World!", EthereumAbiValue.decodeValue(input: Data(hexString:
+            "000000000000000000000000000000000000000000000000000000000000002c48656c6c6f20576f726c64212020202048656c6c6f20576f726c64212020202048656c6c6f20576f726c64210000000000000000000000000000000000000000"
+            )!, type: "string"))
+        XCTAssertEqual("0x31323334353637383930", EthereumAbiValue.decodeValue(input: Data(hexString: "3132333435363738393000000000000000000000000000000000000000000000")!, type: "bytes10"))
     }
 
     func testDecodeApprove() throws {
