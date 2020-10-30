@@ -27,7 +27,7 @@ TEST(PolkadotAddress, Validation) {
     ASSERT_FALSE(Address::isValid("EJ5UJ12GShfh7EWrcNZFLiYU79oogdtXFUuDDZzk7Wb2vCe"));
 
     // Polkadot ed25519
-    ASSERT_TRUE(Address::isValid("15AeCjMpcSt3Fwa47jJBd7JzQ395Kr2cuyF5Zp4UBf1g9ony"));
+    ASSERT_TRUE(Address::isValid("15KRsCq9LLNmCxNFhGk55s5bEyazKefunDxUH24GFZwsTxyu"));
     // Polkadot sr25519
     ASSERT_TRUE(Address::isValid("15AeCjMpcSt3Fwa47jJBd7JzQ395Kr2cuyF5Zp4UBf1g9ony"));
 }

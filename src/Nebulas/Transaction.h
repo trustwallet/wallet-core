@@ -31,7 +31,7 @@ class Transaction {
     uint256_t chainID;
     Data hash;
     Data signature;
-    uint32_t algorithm;
+    uint32_t algorithm = 0;
 
     // serialize data
     Data raw;

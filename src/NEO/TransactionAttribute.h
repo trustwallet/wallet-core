@@ -15,7 +15,7 @@ namespace TW::NEO {
 
 class TransactionAttribute : public Serializable {
   public:
-    TransactionAttributeUsage usage;
+    TransactionAttributeUsage usage = TAU_ContractHash;
     Data data;
 
     virtual ~TransactionAttribute() {}

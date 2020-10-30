@@ -66,6 +66,8 @@ class AddressV3 {
     /// Copy constructor
     AddressV3(const AddressV3& other);
 
+    void operator=(const AddressV3& other);
+
     ~AddressV3() {
         if (legacyAddressV2 != nullptr) {
             delete legacyAddressV2;

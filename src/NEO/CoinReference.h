@@ -21,7 +21,7 @@ class CoinReference : public Serializable {
     static const size_t prevIndexSize = 2;
 
     uint256_t prevHash;
-    uint16_t prevIndex;
+    uint16_t prevIndex = 0;
 
     virtual ~CoinReference() {}
 

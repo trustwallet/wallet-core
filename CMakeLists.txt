@@ -57,6 +57,17 @@ if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
 endif()
 
+option(CLANG_TIDY "Enable static code analysis with (clang-tidy)" OFF)
+if(CLANG_TIDY)
+    find_program(CLANG_TIDY_BIN NAMES clang-tidy)
+    if(CLANG_TIDY_BIN)
+        set(CMAKE_CXX_CLANG_TIDY clang-tidy;)
+        message("clang-tidy ${CMAKE_CXX_CLANG_TIDY} ${CLANG_TIDY_BIN}")
+    else()
+        message(FATAL_ERROR "Could not find clang-tidy")
+    endif()
+endif()
+
 # Source files
 if(${ANDROID})
     message("Configuring for JNI")
