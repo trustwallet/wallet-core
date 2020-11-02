@@ -29,24 +29,17 @@ std::string ValueDecoder::decodeValue(const Data& data, const std::string& type)
     return ParamFactory::getValue(param, param->getType());
 }
 
-std::vector<std::string> ValueDecoder::decodeArray(const Data& data, const std::string& elementType) {
-    auto elemParam = ParamFactory::make(elementType);
-    if (!elemParam) {
+std::vector<std::string> ValueDecoder::decodeArray(const Data& data, const std::string& type) {
+    auto param = ParamFactory::make(type);
+    if (!param) {
         return std::vector<std::string>{};
     }
-    ParamArray paramArray(elemParam);
     size_t offset = 0;
-    auto res = paramArray.decode(data, offset);
-    if (!res) {
+    if (!param->decode(data, offset)) {
         return std::vector<std::string>{};
     }
-    auto values = paramArray.getVal();
-    auto size = values.size();
-    auto result = std::vector<std::string>(size);
-    for(auto i = 0; i < size; ++i) {
-        result[i] = ParamFactory::getValue(values[i], values[i]->getType());
-    }
-    return result;
+    auto values = ParamFactory::getArrayValue(param, type);
+    return values;
 }
 
 } // namespace TW::Ethereum::ABI

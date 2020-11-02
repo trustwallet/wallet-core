@@ -107,13 +107,7 @@ std::string joinStrings(const std::vector<std::string>& strings) {
 std::string ParamFactory::getValue(const std::shared_ptr<ParamBase>& param, const std::string& type) {
     std::string result = "";
     if (isArrayType(type)) {
-        auto value = dynamic_pointer_cast<ParamArray>(param);
-        auto elemType = getArrayElemType(type);
-        auto elems = value->getVal();
-        std::vector<std::string> values(elems.size());
-        for (auto i = 0; i < elems.size(); ++i) {
-            values[i] = getValue(elems[i], elemType);
-        }
+        auto values = getArrayValue(param, type);
         result = joinStrings(values);
     } else if (type == "address") {
         auto value = dynamic_pointer_cast<ParamAddress>(param);
@@ -158,6 +152,23 @@ std::string ParamFactory::getValue(const std::shared_ptr<ParamBase>& param, cons
         result = value->getVal();
     }
     return result;
+}
+
+std::vector<std::string> ParamFactory::getArrayValue(const std::shared_ptr<ParamBase>& param, const std::string& type) {
+    if (!isArrayType(type)) {
+        return std::vector<std::string>();
+    }
+    auto array = dynamic_pointer_cast<ParamArray>(param);
+    if (!array) {
+        return std::vector<std::string>();
+    }
+    auto elemType = getArrayElemType(type);
+    auto elems = array->getVal();
+    std::vector<std::string> values(elems.size());
+    for (auto i = 0; i < elems.size(); ++i) {
+        values[i] = getValue(elems[i], elemType);
+    }
+    return values;
 }
 
 } // namespace TW::Ethereum::ABI
