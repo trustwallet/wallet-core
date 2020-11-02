@@ -84,21 +84,8 @@ TWString* _Nonnull TWEthereumAbiValueDecodeValue(TWData* _Nonnull input, TWStrin
     return TWStringCreateWithUTF8Bytes(value.c_str());
 }
 
-std::string joinStrings(const std::vector<std::string>& strings) {
-    std::ostringstream ss;
-    int count = 0;
-    for(auto& val: strings) {
-        if (count++) {
-            ss << "\n";
-        }
-        ss << val;
-    }
-    return ss.str();
-}
-
-TWString* _Nonnull TWEthereumAbiValueDecodeArray(TWData* _Nonnull input, TWString* _Nonnull elementType) {
+TWString* _Nonnull TWEthereumAbiValueDecodeArray(TWData* _Nonnull input, TWString* _Nonnull type) {
     auto data = TW::data(TWDataBytes(input), TWDataSize(input));
-    auto valueVector = Ethereum::ABI::ValueDecoder::decodeArray(data, TWStringUTF8Bytes(elementType));
-    std::string valueString = joinStrings(valueVector);
+    auto valueString = Ethereum::ABI::ValueDecoder::decodeValue(data, TWStringUTF8Bytes(type));
     return TWStringCreateWithUTF8Bytes(valueString.c_str());
 }

@@ -1205,9 +1205,15 @@ TEST(EthereumAbi, ParamFactoryGetValue) {
     for (auto t: types) {
         std::shared_ptr<ParamBase> p = ParamFactory::make(t);
         EXPECT_EQ(t, p->getType());
+        std::string expected = "";
         // for numerical values, value is "0"
-        if (t.substr(0, 3) == "int" || t.substr(0, 4) == "uint") {
-            EXPECT_EQ("0", ParamFactory::getValue(p, t));
+        if (t == "uint8[]") {
+            expected = "[0]";
+        } else if (t.substr(0, 3) == "int" || t.substr(0, 4) == "uint") {
+            expected = "0";
+        }
+        if (expected.length() > 0) {
+            EXPECT_EQ(expected, ParamFactory::getValue(p, t));
         }
     }
 }

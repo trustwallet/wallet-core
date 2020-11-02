@@ -44,6 +44,26 @@ static std::string getArrayElemType(const std::string& arrayType) {
     return "";
 }
 
+static bool isSimpleNumericalType(const std::string& type) {
+    if (isArrayType(type)) {
+        return false;
+    }
+    if (starts_with(type, "int") || starts_with(type, "uint")) {
+        return true;
+    }
+    return false;
+}
+
+static bool isSimpleType(const std::string& type) {
+    if (isArrayType(type)) {
+        return false;
+    }
+    if (isSimpleNumericalType(type) || type == "bool") {
+        return true;
+    }
+    return false;
+}
+
 std::shared_ptr<ParamBase> ParamFactory::make(const std::string& type) {
     shared_ptr<ParamBase> param;
     if (isArrayType(type)) {
@@ -92,15 +112,21 @@ std::shared_ptr<ParamBase> ParamFactory::make(const std::string& type) {
     return param;
 }
 
-std::string joinStrings(const std::vector<std::string>& strings) {
+std::string joinArrayElems(const std::vector<std::string>& strings, bool quoteValues) {
     std::ostringstream ss;
+    ss << "[";
     int count = 0;
     for(auto& val: strings) {
         if (count++) {
-            ss << ", ";
+            ss << ",";
         }
-        ss << val;
+        if (quoteValues) {
+            ss << "\"" << val << "\"";
+        } else {
+            ss << val;
+        }
     }
+    ss << "]";
     return ss.str();
 }
 
@@ -108,7 +134,8 @@ std::string ParamFactory::getValue(const std::shared_ptr<ParamBase>& param, cons
     std::string result = "";
     if (isArrayType(type)) {
         auto values = getArrayValue(param, type);
-        result = joinStrings(values);
+        auto elemType = getArrayElemType(type);
+        result = joinArrayElems(values, !isSimpleType(elemType) && !isArrayType(elemType));
     } else if (type == "address") {
         auto value = dynamic_pointer_cast<ParamAddress>(param);
         result = hexEncoded(value->getData());

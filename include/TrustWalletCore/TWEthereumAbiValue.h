@@ -62,6 +62,6 @@ TWString* _Nonnull TWEthereumAbiValueDecodeValue(TWData* _Nonnull input, TWStrin
 
 /// Decode an array of given simple types.  Return a '\n'-separated string of elements
 TW_EXPORT_STATIC_METHOD
-TWString* _Nonnull TWEthereumAbiValueDecodeArray(TWData* _Nonnull input, TWString* _Nonnull elementType);
+TWString* _Nonnull TWEthereumAbiValueDecodeArray(TWData* _Nonnull input, TWString* _Nonnull type);
 
 TW_EXTERN_C_END
