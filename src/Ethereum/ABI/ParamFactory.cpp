@@ -33,9 +33,27 @@ static std::shared_ptr<ParamBase> makeInt(const std::string& type) {
     return make_shared<ParamIntN>(bits);
 }
 
+static bool isArrayType(const std::string& type) {
+    return ends_with(type, "[]") && type.length() >= 3;
+}
+
+static std::string getArrayElemType(const std::string& arrayType) {
+    if (ends_with(arrayType, "[]") && arrayType.length() >= 3) {
+        return arrayType.substr(0, arrayType.length() - 2);
+    }
+    return "";
+}
+
 std::shared_ptr<ParamBase> ParamFactory::make(const std::string& type) {
     shared_ptr<ParamBase> param;
-    if (type == "address") {
+    if (isArrayType(type)) {
+        auto elemType = getArrayElemType(type);
+        auto elemParam = make(elemType);
+        if (!elemParam) {
+            return param;
+        }
+        param = make_shared<ParamArray>(elemParam);
+    } else if (type == "address") {
         param = make_shared<ParamAddress>();
     } else if (type == "uint8") {
         param = make_shared<ParamUInt8>();
@@ -74,9 +92,30 @@ std::shared_ptr<ParamBase> ParamFactory::make(const std::string& type) {
     return param;
 }
 
+std::string joinStrings(const std::vector<std::string>& strings) {
+    std::ostringstream ss;
+    int count = 0;
+    for(auto& val: strings) {
+        if (count++) {
+            ss << ", ";
+        }
+        ss << val;
+    }
+    return ss.str();
+}
+
 std::string ParamFactory::getValue(const std::shared_ptr<ParamBase>& param, const std::string& type) {
     std::string result = "";
-    if (type == "address") {
+    if (isArrayType(type)) {
+        auto value = dynamic_pointer_cast<ParamArray>(param);
+        auto elemType = getArrayElemType(type);
+        auto elems = value->getVal();
+        std::vector<std::string> values(elems.size());
+        for (auto i = 0; i < elems.size(); ++i) {
+            values[i] = getValue(elems[i], elemType);
+        }
+        result = joinStrings(values);
+    } else if (type == "address") {
         auto value = dynamic_pointer_cast<ParamAddress>(param);
         result = hexEncoded(value->getData());
     } else if (type == "uint8") {
