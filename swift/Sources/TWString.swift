@@ -13,5 +13,8 @@ public func TWStringCreateWithNSString(_ string: String) -> UnsafeRawPointer {
 
 /// Converts a TWString/UnsafeRawPointer (will be deleted within this call) to a String struct.
 public func TWStringNSString(_ string: UnsafeRawPointer) -> String {
+    defer {
+        TWStringDelete(string)
+    }
     return String(utf8String: TWStringUTF8Bytes(string))!
 }
