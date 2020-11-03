@@ -34,16 +34,9 @@ static void fill(Function& func, const string& type) {
 }
 
 static vector<string> getArrayValue(Function& func, const string& type, int idx) {
-    auto baseType = string(type.begin(), type.end() - 2);
     shared_ptr<ParamBase> param;
     func.getInParam(idx, param);
-    auto array = dynamic_pointer_cast<ParamArray>(param);
-    auto count = array->getCount();
-    auto result = vector<string>();
-    for (int i = 0; i < count; i++) {
-        result.push_back(ParamFactory::getValue(array->getParam(i), baseType));
-    }
-    return result;
+    return ParamFactory::getArrayValue(param, type);
 }
 
 static string getValue(Function& func, const string& type, int idx) {
