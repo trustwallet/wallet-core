@@ -95,16 +95,17 @@ std::shared_ptr<ParamBase> ParamFactory::make(const std::string& type) {
 }
 
 std::string joinArrayElems(const std::vector<std::string>& strings) {
-    auto jvalues = std::vector<json>(strings.size());
+    auto array = json::array();
     for (auto i = 0; i < strings.size(); ++i) {
         // parse to prevent quotes on simple values
-        jvalues[i] = json::parse(strings[i], nullptr, false);
-        if (jvalues[i].is_discarded()) {
+        auto value = json::parse(strings[i], nullptr, false);
+        if (value.is_discarded()) {
             // fallback
-            jvalues[i] = json(strings[i]);
+            value = json(strings[i]);
         }
+        array.push_back(value);
     }
-    return json(jvalues).dump();
+    return array.dump();
 }
 
 std::string ParamFactory::getValue(const std::shared_ptr<ParamBase>& param, const std::string& type) {
