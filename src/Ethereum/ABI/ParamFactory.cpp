@@ -7,10 +7,12 @@
 #include "ParamFactory.h"
 #include "HexCoding.h"
 
+#include <nlohmann/json.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 
 using namespace std;
 using namespace boost::algorithm;
+using json = nlohmann::json;
 
 namespace TW::Ethereum::ABI {
 
@@ -42,26 +44,6 @@ static std::string getArrayElemType(const std::string& arrayType) {
         return arrayType.substr(0, arrayType.length() - 2);
     }
     return "";
-}
-
-static bool isSimpleNumericalType(const std::string& type) {
-    if (isArrayType(type)) {
-        return false;
-    }
-    if (starts_with(type, "int") || starts_with(type, "uint")) {
-        return true;
-    }
-    return false;
-}
-
-static bool isSimpleType(const std::string& type) {
-    if (isArrayType(type)) {
-        return false;
-    }
-    if (isSimpleNumericalType(type) || type == "bool") {
-        return true;
-    }
-    return false;
 }
 
 std::shared_ptr<ParamBase> ParamFactory::make(const std::string& type) {
@@ -112,30 +94,23 @@ std::shared_ptr<ParamBase> ParamFactory::make(const std::string& type) {
     return param;
 }
 
-std::string joinArrayElems(const std::vector<std::string>& strings, bool quoteValues) {
-    std::ostringstream ss;
-    ss << "[";
-    int count = 0;
-    for(auto& val: strings) {
-        if (count++) {
-            ss << ",";
-        }
-        if (quoteValues) {
-            ss << "\"" << val << "\"";
-        } else {
-            ss << val;
+std::string joinArrayElems(const std::vector<std::string>& strings) {
+    auto jvalues = std::vector<json>(strings.size());
+    for (auto i = 0; i < strings.size(); ++i) {
+        try {
+            jvalues[i] = json::parse(strings[i]);
+        } catch (...) {
+            jvalues[i] = json(strings[i]);
         }
     }
-    ss << "]";
-    return ss.str();
+    return json(jvalues).dump();
 }
 
 std::string ParamFactory::getValue(const std::shared_ptr<ParamBase>& param, const std::string& type) {
     std::string result = "";
     if (isArrayType(type)) {
         auto values = getArrayValue(param, type);
-        auto elemType = getArrayElemType(type);
-        result = joinArrayElems(values, !isSimpleType(elemType) && !isArrayType(elemType));
+        result = joinArrayElems(values);
     } else if (type == "address") {
         auto value = dynamic_pointer_cast<ParamAddress>(param);
         result = hexEncoded(value->getData());
