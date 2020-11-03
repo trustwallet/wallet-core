@@ -1138,21 +1138,7 @@ TEST(EthereumAbi, DecodeFunctionContractMulticall) {
     EXPECT_EQ(4 + 29 * 32, offset);
 }
 
-TEST(EthereumAbi, ParamFactory) {
-    const std::vector<std::string> types = {
-        "uint8", "uint16", "uint32", "uint64", "uint128", "uint168", "uint256",
-        "int8", "int16", "int32", "int64", "int128", "int168", "int256",
-        "bool", "string", "bytes", "bytes168", "address"
-    };
-    for (auto t: types) {
-        std::shared_ptr<ParamBase> p = ParamFactory::make(t);
-        EXPECT_EQ(t, p->getType());
-        // for numerical values, value is "0"
-        if (t.substr(0, 3) == "int" || t.substr(0, 4) == "uint") {
-            EXPECT_EQ("0", ParamFactory::getValue(p, t));
-        }
-    }
-
+TEST(EthereumAbi, ParamFactoryMake) {
     {
         // test for UInt256: ParamUInt256 and ParamUIntN(256), both have type "uint256", factory produces the more specific ParamUInt256
         // there was confusion about this
@@ -1185,6 +1171,50 @@ TEST(EthereumAbi, ParamFactory) {
         std::shared_ptr<ParamBase> p = ParamFactory::make("int");
         EXPECT_EQ("int256", p->getType());
         EXPECT_TRUE(nullptr != std::dynamic_pointer_cast<ParamInt256>(p).get());
+    }
+    {
+        std::shared_ptr<ParamBase> p = ParamFactory::make("uint8[]");
+        EXPECT_EQ("uint8[]", p->getType());
+        EXPECT_TRUE(nullptr != std::dynamic_pointer_cast<ParamArray>(p).get());
+        auto elemParam = std::dynamic_pointer_cast<ParamArray>(p)->getParam(0);
+        EXPECT_TRUE(nullptr != elemParam.get());
+    }
+    {
+        std::shared_ptr<ParamBase> p = ParamFactory::make("address[]");
+        EXPECT_EQ("address[]", p->getType());
+        EXPECT_TRUE(nullptr != std::dynamic_pointer_cast<ParamArray>(p).get());
+        auto elemParam = std::dynamic_pointer_cast<ParamArray>(p)->getParam(0);
+        EXPECT_TRUE(nullptr != elemParam.get());
+    }
+    {
+        std::shared_ptr<ParamBase> p = ParamFactory::make("bytes[]");
+        EXPECT_EQ("bytes[]", p->getType());
+        EXPECT_TRUE(nullptr != std::dynamic_pointer_cast<ParamArray>(p).get());
+        auto elemParam = std::dynamic_pointer_cast<ParamArray>(p)->getParam(0);
+        EXPECT_TRUE(nullptr != elemParam.get());
+    }
+}
+
+TEST(EthereumAbi, ParamFactoryGetValue) {
+    const std::vector<std::string> types = {
+        "uint8", "uint16", "uint32", "uint64", "uint128", "uint168", "uint256",
+        "int8", "int16", "int32", "int64", "int128", "int168", "int256",
+        "bool", "string", "bytes", "bytes168", "address",
+        "uint8[]", "address[]", "bool[]", "bytes[]",
+    };
+    for (auto t: types) {
+        std::shared_ptr<ParamBase> p = ParamFactory::make(t);
+        EXPECT_EQ(t, p->getType());
+        std::string expected = "";
+        // for numerical values, value is "0"
+        if (t == "uint8[]") {
+            expected = "[0]";
+        } else if (t.substr(0, 3) == "int" || t.substr(0, 4) == "uint") {
+            expected = "0";
+        }
+        if (expected.length() > 0) {
+            EXPECT_EQ(expected, ParamFactory::getValue(p, t));
+        }
     }
 }
 

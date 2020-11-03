@@ -56,4 +56,12 @@ TWData* _Nonnull TWEthereumAbiValueEncodeBytesDyn(TWData* _Nonnull value);
 TW_EXPORT_STATIC_METHOD
 TWString* _Nonnull TWEthereumAbiValueDecodeUInt256(TWData* _Nonnull input);
 
+/// Decode an arbitrary type, return value as string
+TW_EXPORT_STATIC_METHOD
+TWString* _Nonnull TWEthereumAbiValueDecodeValue(TWData* _Nonnull input, TWString* _Nonnull type);
+
+/// Decode an array of given simple types.  Return a '\n'-separated string of elements
+TW_EXPORT_STATIC_METHOD
+TWString* _Nonnull TWEthereumAbiValueDecodeArray(TWData* _Nonnull input, TWString* _Nonnull type);
+
 TW_EXTERN_C_END
