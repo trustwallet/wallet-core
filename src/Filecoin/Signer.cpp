@@ -16,7 +16,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto pubkey = key.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
     Address from_address(pubkey);
-    Address to_address(input.to_address());
+    Address to_address(input.to());
     Transaction transaction(
         /* to */ to_address,
         /* from */ from_address,
@@ -24,16 +24,17 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         /* value */ load(input.value()),
         /* gasLimit */ input.gas_limit(),
         /* gasFeeCap */ load(input.gas_fee_cap()),
-        /* gasPremium */ load(input.gas_premium()));
+        /* gasPremium */ load(input.gas_premium())
+    );
 
     // Sign transaction.
     auto signature = sign(key, transaction);
-    auto encoded = transaction.serialize(signature);
+    const auto json = transaction.serialize(signature);
 
     // Return Protobuf output.
-    Proto::SigningOutput protoOutput;
-    protoOutput.set_encoded(encoded.data(), encoded.size());
-    return protoOutput;
+    Proto::SigningOutput output;
+    output.set_json(json.data(), json.size());
+    return output;
 }
 
 Data Signer::sign(const PrivateKey& privateKey, Transaction& transaction) noexcept {
@@ -47,5 +48,5 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     google::protobuf::util::JsonStringToMessage(json, &input);
     input.set_private_key(key.data(), key.size());
     auto output = Signer::sign(input);
-    return hex(output.encoded());
+    return output.json();
 }

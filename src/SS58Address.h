@@ -48,10 +48,10 @@ class SS58Address {
 
     template <typename T>
     static Data computeChecksum(const T& data) {
-        auto checksum = Data(checksumSize);
         auto prefix = Data(SS58Prefix.begin(), SS58Prefix.end());
         append(prefix, Data(data.begin(), data.end()));
         auto hash = Hash::blake2b(prefix, 64);
+        auto checksum = Data(checksumSize);
         std::copy(hash.begin(), hash.begin() + checksumSize, checksum.data());
         return checksum;
     }
@@ -79,7 +79,7 @@ class SS58Address {
     /// Returns a string representation of the address.
     std::string string() const {
         auto result = Data(bytes.begin(), bytes.end());
-        auto checksum = computeChecksum(bytes);    
+        auto checksum = computeChecksum(bytes);
         append(result, checksum);
         return Base58::bitcoin.encode(result);
     }

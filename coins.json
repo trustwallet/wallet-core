@@ -1294,7 +1294,8 @@
       "client": "https://github.com/kinecosystem/go",
       "clientPublic": "https://horizon.kinfederation.com",
       "clientDocs": "https://www.stellar.org/developers/horizon/reference"
-    }
+    },
+    "deprecated": true
   },
   {
     "id": "qtum",
@@ -1489,7 +1490,8 @@
       "client": "https://github.com/binance-chain/bsc",
       "clientPublic": "https://data-seed-prebsc-1-s1.binance.org:8545",
       "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
-    }
+    },
+    "deprecated": true
   },
   {
     "id": "smartchain",

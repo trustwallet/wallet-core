@@ -7,19 +7,19 @@
 #import <Foundation/Foundation.h>
 
 //! Project version number for TrustWalletCore.
-FOUNDATION_EXPORT double TrustWalletCoreVersionNumber;
+FOUNDATION_EXPORT double WalletCoreVersionNumber;
 
 //! Project version string for TrustWalletCore.
-FOUNDATION_EXPORT const unsigned char TrustWalletCoreVersionString[];
+FOUNDATION_EXPORT const unsigned char WalletCoreVersionString[];
 
-#include <TrustWalletCore/TWBase.h>
-#include <TrustWalletCore/TWData.h>
-#include <TrustWalletCore/TWString.h>
-#include <TrustWalletCore/TWFoundationData.h>
-#include <TrustWalletCore/TWFoundationString.h>
+#include "TWBase.h"
+#include "TWData.h"
+#include "TWString.h"
+#include "TWFoundationData.h"
+#include "TWFoundationString.h"
 
-#include <TrustWalletCore/TWAnySigner.h>
+#include "TWAnySigner.h"
 
 <% entities.sort { |x,y| x.name <=> y.name }.select { |entity| !entity.name.end_with?("Proto") }.each do |entity| -%>
-#include <TrustWalletCore/TW<%= entity.name %>.h>
+#include "TW<%= entity.name %>.h"
 <% end -%>

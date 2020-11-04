@@ -26,6 +26,7 @@ TEST(NEARSigner, SignTx) {
     auto &transfer = *input.mutable_actions(0)->mutable_transfer();
     Data deposit(16, 0);
     deposit[0] = 1;
+    // uint128_t / little endian byte order
     transfer.set_deposit(deposit.data(), deposit.size());
 
     auto blockHash = Base58::bitcoin.decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");

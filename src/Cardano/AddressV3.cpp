@@ -173,6 +173,18 @@ AddressV3::AddressV3(const AddressV3& other) :
     legacyAddressV2(other.legacyAddressV2 == nullptr ? nullptr : new AddressV2(*other.legacyAddressV2))
 {}
 
+void AddressV3::operator=(const AddressV3& other)
+{
+    discrimination = other.discrimination;
+    kind = other.kind;
+    key1 = other.key1;
+    groupKey = other.groupKey;
+    if (!legacyAddressV2) {
+        delete legacyAddressV2;
+    }
+    legacyAddressV2 = other.legacyAddressV2 == nullptr ? nullptr : new AddressV2(*other.legacyAddressV2);
+}
+
 string AddressV3::string() const {
     std::string hrp;
     switch (kind) {

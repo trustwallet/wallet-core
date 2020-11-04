@@ -40,6 +40,8 @@ public:
     bool dumpMnemonic(string& res);
     /// Dump default derivation path of coin
     bool dumpDP(const string& coinid, string& res);
+    /// Dump XPUB of current mnemonic
+    bool dumpXpub(const string& coinid, string& res);
     /// Derive a private key from the mnemonic with derivation path
     bool priDP(const string& coinid, const string& dp, string& res);
 };

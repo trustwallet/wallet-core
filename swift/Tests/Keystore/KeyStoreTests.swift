@@ -4,9 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-@testable import TrustWalletCore
+@testable import WalletCore
 
-import TrustWalletCore
+import WalletCore
 import XCTest
 
 extension KeyStore {
