@@ -1,11 +1,8 @@
 package com.trustwallet.core.app.blockchains.binance
 
-import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.toHexBytes
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import wallet.core.jni.proto.Binance
-import wallet.core.jni.proto.Binance.SigningOutput
 import wallet.core.jni.*
 import com.trustwallet.core.app.utils.toHex
 import wallet.core.jni.CoinType.BINANCE
