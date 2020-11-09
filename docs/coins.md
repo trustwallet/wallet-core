@@ -64,3 +64,4 @@ This list is generated from [./coins.json](../coins.json)
 | 5718350 | Wanchain         | WAN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/wanchain/info/logo.png" width="32" />     | <https://wanchain.org>        |
 | 5741564 | Waves            | WAVES  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/waves/info/logo.png" width="32" />        | <https://wavesplatform.com>   |
 | 20000714 | Smart Chain      | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/info/logo.png" width="32" />   | <https://www.binance.org/en/smartChain> |
+| 200910919 | Bitcoinrand      | BZAR    | <img src="https://bscscan.com/token/images/bitcoinrand_32.png" width="32" />   | <https://www.bitcoinrand.com> |
