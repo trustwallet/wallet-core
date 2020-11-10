@@ -8,7 +8,7 @@ import Foundation
 
 /// Converts a String struct to TWString/UnsafeRawPointer, caller must delete it after use.
 public func TWStringCreateWithNSString(_ string: String) -> UnsafeRawPointer {
-    return TWStringCreateWithUTF8Bytes((string as NSString).utf8String!)
+    return TWStringCreateWithUTF8Bytes([CChar](string.utf8CString))
 }
 
 /// Converts a TWString/UnsafeRawPointer (will be deleted within this call) to a String struct.
