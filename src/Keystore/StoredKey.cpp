@@ -93,16 +93,16 @@ const HDWallet StoredKey::wallet(const Data& password) const {
     return HDWallet(mnemonic, "");
 }
 
-const Account* StoredKey::account(TWCoinType coin) const {
+std::optional<const Account> StoredKey::account(TWCoinType coin) const {
     for (auto& account : accounts) {
         if (account.coin == coin) {
-            return &account;
+            return account;
         }
     }
-    return nullptr;
+    return std::nullopt;
 }
 
-const Account* StoredKey::account(TWCoinType coin, const HDWallet* wallet) {
+std::optional<const Account> StoredKey::account(TWCoinType coin, const HDWallet* wallet) {
     if (wallet == nullptr) {
         return account(coin);
     }
@@ -113,7 +113,7 @@ const Account* StoredKey::account(TWCoinType coin, const HDWallet* wallet) {
             if (account.address.empty()) {
                 account.address = wallet->deriveAddress(coin);
             }
-            return &account;
+            return account;
         }
     }
 
@@ -124,7 +124,7 @@ const Account* StoredKey::account(TWCoinType coin, const HDWallet* wallet) {
     const auto extendedPublicKey = wallet->getExtendedPublicKey(derivationPath.purpose(), coin, version);
 
     accounts.emplace_back(address, coin, derivationPath, extendedPublicKey);
-    return &accounts.back();
+    return accounts.back();
 }
 
 void StoredKey::addAccount(const std::string& address, TWCoinType coin, const DerivationPath& derivationPath, const std::string& extetndedPublicKey) {
@@ -141,8 +141,8 @@ const PrivateKey StoredKey::privateKey(TWCoinType coin, const Data& password) {
     switch (type) {
     case StoredKeyType::mnemonicPhrase: {
         const auto wallet = this->wallet(password);
-        const auto account = *this->account(coin, &wallet);
-        return wallet.getKey(coin, account.derivationPath);
+        const auto account = this->account(coin, &wallet);
+        return wallet.getKey(coin, account->derivationPath);
     }
     case StoredKeyType::privateKey:
         return PrivateKey(payload.decrypt(password));

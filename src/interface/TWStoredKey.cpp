@@ -97,7 +97,7 @@ struct TWAccount* _Nullable TWStoredKeyAccount(struct TWStoredKey* _Nonnull key,
 struct TWAccount* _Nullable TWStoredKeyAccountForCoin(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, struct TWHDWallet* _Nullable wallet) {
     try {
         const auto account = key->impl.account(coin, (wallet ? &wallet->impl : nullptr));
-        return (account == nullptr) ? nullptr : new TWAccount{ *account };
+        return (!account.has_value()) ? nullptr : new TWAccount{ account.value() };
     } catch (...) {
         return nullptr;
     }
