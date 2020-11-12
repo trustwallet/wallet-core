@@ -148,7 +148,7 @@ TEST(StoredKey, AccountGetDoesntChange) {
     vector<Account> accounts;
     for (auto coin: coins) {
         std::optional<Account> account = key.account(coin, &wallet);
-        accounts.push_back(account.value());
+        accounts.push_back(*account);
 
         // check
         ASSERT_TRUE(account.has_value());
