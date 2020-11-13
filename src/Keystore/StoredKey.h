@@ -71,10 +71,10 @@ public:
 
     /// Returns the account for a specific coin, creating it if necessary and
     /// the provided wallet is not `nullptr`.
-    const Account* account(TWCoinType coin, const HDWallet* wallet);
+    std::optional<const Account> account(TWCoinType coin, const HDWallet* wallet);
 
     /// Returns the account for a specific coin if it exists.
-    const Account* account(TWCoinType coin) const;
+    std::optional<const Account> account(TWCoinType coin) const;
     
     /// Add an account
     void addAccount(const std::string& address, TWCoinType coin, const DerivationPath& derivationPath, const std::string& extetndedPublicKey);
