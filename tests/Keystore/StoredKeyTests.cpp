@@ -105,37 +105,61 @@ TEST(StoredKey, AccountGetCreate) {
     EXPECT_EQ(key.accounts.size(), 0);
 
     // not exists
-    EXPECT_EQ(key.account(coinTypeBc), nullptr);
+    EXPECT_FALSE(key.account(coinTypeBc).has_value());
     EXPECT_EQ(key.accounts.size(), 0);
 
     auto wallet = key.wallet(password);
     // not exists, wallet null, not create
-    EXPECT_EQ(key.account(coinTypeBc, nullptr), nullptr);
+    EXPECT_FALSE(key.account(coinTypeBc, nullptr).has_value());
     EXPECT_EQ(key.accounts.size(), 0);
 
     // not exists, wallet nonnull, create
-    const Account* acc3 = key.account(coinTypeBc, &wallet);
-    EXPECT_TRUE(acc3 != nullptr);
+    std::optional<Account> acc3 = key.account(coinTypeBc, &wallet);
+    EXPECT_TRUE(acc3.has_value());
     EXPECT_EQ(acc3->coin, coinTypeBc); 
     EXPECT_EQ(key.accounts.size(), 1);
 
     // exists
-    const Account* acc4 = key.account(coinTypeBc);
-    EXPECT_TRUE(acc4 != nullptr);
+    std::optional<Account> acc4 = key.account(coinTypeBc);
+    EXPECT_TRUE(acc4.has_value());
     EXPECT_EQ(acc4->coin, coinTypeBc); 
     EXPECT_EQ(key.accounts.size(), 1);
 
     // exists, wallet nonnull, not create
-    const Account* acc5 = key.account(coinTypeBc, &wallet);
-    EXPECT_TRUE(acc5 != nullptr);
+    std::optional<Account> acc5 = key.account(coinTypeBc, &wallet);
+    EXPECT_TRUE(acc5.has_value());
     EXPECT_EQ(acc5->coin, coinTypeBc); 
     EXPECT_EQ(key.accounts.size(), 1);
 
     // exists, wallet null, not create
-    const Account* acc6 = key.account(coinTypeBc, nullptr);
-    EXPECT_TRUE(acc6 != nullptr);
+    std::optional<Account> acc6 = key.account(coinTypeBc, nullptr);
+    EXPECT_TRUE(acc6.has_value());
     EXPECT_EQ(acc6->coin, coinTypeBc); 
     EXPECT_EQ(key.accounts.size(), 1);
+}
+
+TEST(StoredKey, AccountGetDoesntChange) {
+    auto key = StoredKey::createWithMnemonic("name", password, mnemonic);
+    auto wallet = key.wallet(password);
+    EXPECT_EQ(key.accounts.size(), 0);
+
+    vector<TWCoinType> coins = {coinTypeBc, coinTypeEth, coinTypeBnb};
+    // retrieve multiple accounts, which will be created
+    vector<Account> accounts;
+    for (auto coin: coins) {
+        std::optional<Account> account = key.account(coin, &wallet);
+        accounts.push_back(*account);
+
+        // check
+        ASSERT_TRUE(account.has_value());
+        EXPECT_EQ(account->coin, coin);
+    }
+
+    // Check again; make sure returned references don't change
+    for (auto i = 0; i < accounts.size(); ++i) {
+        // check
+        EXPECT_EQ(accounts[i].coin, coins[i]);
+    }
 }
 
 TEST(StoredKey, AddRemoveAccount) {
