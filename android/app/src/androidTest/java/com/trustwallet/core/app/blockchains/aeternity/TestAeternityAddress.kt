@@ -25,6 +25,5 @@ class TestAeternityAddress {
         val address = AnyAddress(addressString, CoinType.AETERNITY)
         assertEquals(address.description(), addressString)
     }
-
 }
 
