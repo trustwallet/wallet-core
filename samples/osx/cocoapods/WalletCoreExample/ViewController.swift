@@ -12,6 +12,17 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        do {
+            let datadir = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+            print("datadir", datadir)
+            let keyStore = try KeyStore(keyDirectory: URL(string: datadir + "/keystore")!)
+            try keyStore.createWallet(name: "wallet1", password: "123",
+                                      coins: [.bitcoin, .ethereum, .binance])
+        } catch let error {
+            print(error.localizedDescription)
+            fatalError(error.localizedDescription)
+        }
+
         // 'Import' a wallet
         let wallet = HDWallet(mnemonic: "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal", passphrase: "")
         print("Mnemonic: ", wallet.mnemonic)
