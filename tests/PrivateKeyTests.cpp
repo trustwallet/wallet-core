@@ -131,22 +131,22 @@ TEST(PrivateKey, PublicKey) {
     }
 }
 
-TEST(PrivateKey, ClearMemory) {
+TEST(PrivateKey, Cleanup) {
     Data privKeyData = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
     auto privateKey = new PrivateKey(privKeyData);
     auto ptr = privateKey->bytes.data();
+    std::cerr << privateKey->bytes.size() << "\n";
     ASSERT_EQ(hex(privKeyData), hex(data(ptr, 32)));
 
-    delete privateKey;
+    privateKey->cleanup();
     privateKey = nullptr;
 
     // Memory cleaned (filled with 0s).  They may be overwritten by something else; we check that it is not equal to original, most of it has changed.
-    ASSERT_NE(hex(privKeyData), hex(data(ptr, 32)));
-    int countDifferent = 0;
-    for (auto i = 0; i < privKeyData.size(); ++i) {
-        countDifferent += (int)(ptr[i] != privKeyData[i]);
-    }
-    ASSERT_GE(countDifferent, 32*2/3);
+    ASSERT_EQ(hex(data(ptr, 32)), "0000000000000000000000000000000000000000000000000000000000000000");
+
+    delete privateKey;
+
+    // Note: it would be good to check the memory area after deletion of the object, but this is not possible
 }
 
 TEST(PrivateKey, PrivateKeyExtended) {
