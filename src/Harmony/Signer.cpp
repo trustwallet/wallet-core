@@ -189,14 +189,13 @@ Proto::SigningOutput Signer::signEditValidator(const Proto::SigningInput &input)
         input.staking_message().edit_validator_message().description().security_contact(),
         /* details */ input.staking_message().edit_validator_message().description().details());
 
-    Decimal *commissionRate = nullptr;
+    std::optional<Decimal> commissionRate;
 
     if (input.staking_message().edit_validator_message().has_commission_rate()) {
-        Decimal decimal = Decimal(
+        commissionRate = Decimal(
             /* value */ load(
                 input.staking_message().edit_validator_message().commission_rate().value()),
             load(input.staking_message().edit_validator_message().commission_rate().precision()));
-        commissionRate = &decimal;
     }
 
     Address validatorAddr;
@@ -441,8 +440,9 @@ Data Signer::rlpNoHashDirective(const Staking<EditValidator> &transaction) const
     append(encoded, RLP::encodeList(descriptionEncoded));
 
     auto decEncoded = Data();
-    if (transaction.stakeMsg.commissionRate != nullptr) {
-        append(decEncoded, RLP::encode(transaction.stakeMsg.commissionRate->value));
+    if (transaction.stakeMsg.commissionRate.has_value()) {
+        // Note: std::optional.value() is not available in XCode with target < iOS 12; using '*'
+        append(decEncoded, RLP::encode((*transaction.stakeMsg.commissionRate).value));
     }
     append(encoded, RLP::encodeList(decEncoded));
 
