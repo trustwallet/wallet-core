@@ -68,6 +68,24 @@ if(CLANG_TIDY)
     endif()
 endif()
 
+option(CLANG_ASAN "Enable ASAN dynamic address sanitizer" OFF)
+if(CLANG_ASAN)
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
+    set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
+    #target_compile_options(TrustWalletCore PRIVATE "-fsanitize=address")
+    #target_compile_options(TrustWalletCore PRIVATE "-fno-omit-frame-pointer")
+    #target_link_options(TrustWalletCore PRIVATE "-fsanitize=address")
+
+    #set(CMAKE_XCODE_GENERATE_SCHEME ON)
+    #set(CMAKE_XCODE_SCHEME_ADDRESS_SANITIZER ON)
+    #set(CMAKE_XCODE_SCHEME_ADDRESS_SANITIZER_USE_AFTER_RETURN ON)
+    #xcodebuild -enableAddressSanitizer YES
+
+    #cmake -DCMAKE_BUILD_TYPE=ASAN .
+
+    #set(CMAKE_EXE_LINKER_FLAGS_INIT "-fsanitize=address -fno-omit-frame-pointer")
+endif()
+
 # Source files
 if(${ANDROID})
     message("Configuring for JNI")
