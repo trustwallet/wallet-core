@@ -441,7 +441,8 @@ Data Signer::rlpNoHashDirective(const Staking<EditValidator> &transaction) const
 
     auto decEncoded = Data();
     if (transaction.stakeMsg.commissionRate.has_value()) {
-        append(decEncoded, RLP::encode(transaction.stakeMsg.commissionRate.value().value));
+        // Note: std::optional.value() is not available in XCode with target < iOS 12; using '*'
+        append(decEncoded, RLP::encode((*transaction.stakeMsg.commissionRate).value));
     }
     append(encoded, RLP::encodeList(decEncoded));
 
