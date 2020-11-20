@@ -6,9 +6,8 @@
 
 import Foundation
 
-/// https://developer.trustwallet.com/add_new_asset/universal_asset_id
+// https://developer.trustwallet.com/add_new_asset/universal_asset_id
 public struct UniversalAssetID: CustomStringConvertible, Equatable, Hashable {
-
     public enum Prefix: String {
         case coin = "c"
         case token = "t"
@@ -24,7 +23,7 @@ public struct UniversalAssetID: CustomStringConvertible, Equatable, Hashable {
         return [prefix, suffix].joined(separator: "_")
     }
 
-    public init(coin: CoinType, token: String = "") {
+    public init(coin: CoinType, token: String) {
         self.coin = coin
         self.token = token
     }

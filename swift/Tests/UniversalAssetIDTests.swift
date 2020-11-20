@@ -7,6 +7,12 @@
 import XCTest
 import WalletCore
 
+public extension UniversalAssetID {
+    init(coin: CoinType) {
+        self.init(coin: coin, token: "")
+    }
+}
+
 class UniversalAssetIDTests: XCTestCase {
 
     func testDescription() {
