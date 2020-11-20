@@ -56,7 +56,7 @@ enum TWPublicKeyType publicKeyType(TWCoinType coin);
 /// Derives the address for a particular coin from the private key.
 std::string deriveAddress(TWCoinType coin, const PrivateKey& privateKey);
 
-/// Derives the address for a particular coin from the private key.
+/// Derives the address for a particular coin from the public key.
 std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey);
 
 /// Hasher for deriving the public key hash.
