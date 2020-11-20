@@ -23,7 +23,7 @@ struct TWStoredKey;
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nullable TWStoredKeyLoad(TWString* _Nonnull path);
 
-/// Imports a private key.
+/// Imports a private key.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKey(TWData* _Nonnull privateKey, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin);
 

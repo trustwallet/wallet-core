@@ -75,7 +75,7 @@ struct TWPrivateKey *_Nonnull TWHDWalletGetKeyBIP44(struct TWHDWallet *_Nonnull 
 TW_EXPORT_METHOD
 TWString *_Nonnull TWHDWalletGetExtendedPrivateKey(struct TWHDWallet *_Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, enum TWHDVersion version);
 
-/// Returns the exteded public key.
+/// Returns the exteded public key.  Returned object needs to be deleted.
 TW_EXPORT_METHOD
 TWString *_Nonnull TWHDWalletGetExtendedPublicKey(struct TWHDWallet *_Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, enum TWHDVersion version);
 

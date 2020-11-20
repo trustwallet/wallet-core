@@ -193,9 +193,9 @@ TEST(TWStoredKey, importInvalidKey) {
     auto name = WRAPS(TWStringCreateWithUTF8Bytes("test"));
     auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(name.get())), TWStringSize(name.get())));
 
-    auto eth = TWStoredKeyImportPrivateKey(data.get(), name.get(), password.get(), TWCoinTypeEthereum);
-    auto ont = TWStoredKeyImportPrivateKey(data.get(), name.get(), password.get(), TWCoinTypeOntology);
-    auto tezos = TWStoredKeyImportPrivateKey(data.get(), name.get(), password.get(), TWCoinTypeTezos);
+    auto eth = WRAP(TWStoredKey, TWStoredKeyImportPrivateKey(data.get(), name.get(), password.get(), TWCoinTypeEthereum));
+    auto ont = WRAP(TWStoredKey, TWStoredKeyImportPrivateKey(data.get(), name.get(), password.get(), TWCoinTypeOntology));
+    auto tezos = WRAP(TWStoredKey, TWStoredKeyImportPrivateKey(data.get(), name.get(), password.get(), TWCoinTypeTezos));
 
     ASSERT_EQ(eth, nullptr);
     ASSERT_EQ(ont, nullptr);

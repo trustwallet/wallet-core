@@ -378,9 +378,15 @@ TEST(HDWallet, MultipleThreads) {
     auto passphrase = STRING("");
 
     auto f = [&passphrase](int n) {
+        std::vector<TWString*> keys;
         for (int i = 0; i < n; i++) {
             auto wallet = WRAP(TWHDWallet, TWHDWalletCreate(128, passphrase.get()));
-            TWHDWalletGetExtendedPublicKey(wallet.get(), TWPurposeBIP44, TWCoinTypeEthereum, TWHDVersionNone);
+            TWString* key = TWHDWalletGetExtendedPublicKey(wallet.get(), TWPurposeBIP44, TWCoinTypeEthereum, TWHDVersionNone);
+            keys.push_back(key);
+        }
+        // delete returned strings
+        for (int i = n-1; i >= 0; i--) {
+            TWStringDelete(keys[i]);
         }
     };
 
