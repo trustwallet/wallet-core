@@ -10,8 +10,8 @@ import XCTest
 class DataTests: XCTestCase {
     func testCreateWithBytes() {
         let bytes = [0x1, 0x2, 0x3, 0x4] as [UInt8]
-        let twdata = bytes.withUnsafeBufferPointer({ ptr in TWDataCreateWithBytes(ptr.baseAddress!, 4) })
-        let data = Data.fromTWData(twdata)
+        let twdata = bytes.withUnsafeBufferPointer { TWDataCreateWithBytes($0.baseAddress!, 4) }
+        let data = TWDataNSData(twdata)
 
         XCTAssertEqual(Array(data), bytes)
     }
