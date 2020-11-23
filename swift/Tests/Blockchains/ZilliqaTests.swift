@@ -33,15 +33,21 @@ class ZilliqaTests: XCTestCase {
 
     func testSigner() {
         let privateKey = PrivateKey(data: Data(hexString: "0x68ffa8ec149ce50da647166036555f73d57f662eb420e154621e5f24f6cf9748")!)!
-        // 1 ZIL
+
         let input = ZilliqaSigningInput.with {
             $0.version = 65537 // mainnet tx version
             $0.nonce = 2
-            $0.toAddress = "zil10lx2eurx5hexaca0lshdr75czr025cevqu83uz"
-            $0.amount = Data(hexString: "e8d4a51000")!
+            $0.to = "zil10lx2eurx5hexaca0lshdr75czr025cevqu83uz"
+
             $0.gasPrice = Data(hexString: "3b9aca00")!
             $0.gasLimit = 1
             $0.privateKey = privateKey.data
+            $0.transaction = ZilliqaTransaction.with {
+                $0.transfer = ZilliqaTransaction.Transfer.with {
+                    // 1 ZIL
+                    $0.amount = Data(hexString: "e8d4a51000")!
+                }
+            }
         }
 
         let output: ZilliqaSigningOutput = AnySigner.sign(input: input, coin: .zilliqa)
