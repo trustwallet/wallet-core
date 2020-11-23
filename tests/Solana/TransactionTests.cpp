@@ -68,7 +68,7 @@ TEST(SolanaTransaction, TransferTransactionPayToSelf) {
 TEST(SolanaTransaction, StakeSerializeTransaction) {
     auto signer = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
     auto voteAddress = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
-    auto programId = Address(STAKE_ADDRESS);
+    auto programId = Address("Stake11111111111111111111111111111111111111");
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
     auto stakeAddress = addressFromValidatorSeed(signer, voteAddress, programId);
     auto message = Message(signer, stakeAddress, voteAddress, 42, recentBlockhash);

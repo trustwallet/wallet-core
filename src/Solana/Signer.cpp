@@ -42,7 +42,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto protoMessage = input.stake_transaction();
         auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
         auto validatorAddress = Address(protoMessage.validator_pubkey());
-        auto stakeProgramId = Address(STAKE_ADDRESS);
+        auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
         auto stakeAddress = addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
         message = Message(
             /* signer */ userAddress,
@@ -55,7 +55,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto protoMessage = input.deactivate_stake_transaction();
         auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
         auto validatorAddress = Address(protoMessage.validator_pubkey());
-        auto stakeProgramId = Address(STAKE_ADDRESS);
+        auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
         auto stakeAddress = addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
         message = Message(
             /* signer */ userAddress,
@@ -67,7 +67,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto protoMessage = input.withdraw_transaction();
         auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
         auto validatorAddress = Address(protoMessage.validator_pubkey());
-        auto stakeProgramId = Address(STAKE_ADDRESS);
+        auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
         auto stakeAddress = addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
         message = Message(
             /* signer */ userAddress,

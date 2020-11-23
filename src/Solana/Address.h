@@ -15,9 +15,6 @@
 
 namespace TW::Solana {
 
-const std::string SYSTEM_ADDRESS = "11111111111111111111111111111111";
-const std::string STAKE_ADDRESS = "Stake11111111111111111111111111111111111111";
-
 class Address : public Base58Address<32> {
   public:
     /// Determines whether a collection of bytes makes a valid Solana address.
