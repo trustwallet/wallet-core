@@ -52,6 +52,17 @@ enum TokenIntruction {
     Token_Transfer
 };
 
+struct AccountMeta {
+    /// An account's public key
+    Address pubkey;
+    /// True if an Instruction requires a Transaction signature matching `pubkey`.
+    bool isSigner;
+    /// True if the `pubkey` can be loaded as a read-write account.
+    bool isWritable;
+
+    AccountMeta(const Address& pubkey, bool isSigner, bool isWritable) : pubkey(pubkey), isSigner(isSigner), isWritable(isWritable) {}
+};
+
 // An instruction to execute a program
 struct Instruction {
     // Index into the transaction keys array indicating the program account that
@@ -67,8 +78,8 @@ struct Instruction {
         : programId(programId), accounts(accounts), data(data) {}
 
     // This constructor creates a default System Transfer instruction
-    Instruction(const Address& programId, Data accountIndexes, uint64_t value)
-        : programId(programId) {
+    Instruction(Data accountIndexes, uint64_t value)
+        : programId(Address(SYSTEM_ADDRESS)) {
         this->accounts = accountIndexes;
         SystemInstruction type = Transfer;
         auto data = Data();
@@ -78,9 +89,9 @@ struct Instruction {
     }
 
     // This constructor creates a System CreateAccountWithSeed instruction
-    Instruction(const Address& programId, uint64_t value, uint64_t space, Address otherProgramId,
+    Instruction(uint64_t value, uint64_t space, Address programId,
                         Address voteAddress, uint64_t seedLength, Address signer)
-        : programId(programId) {
+        : programId(Address(SYSTEM_ADDRESS)) {
         std::vector<uint8_t> accounts = {0, 1};
         this->accounts = accounts;
         SystemInstruction type = CreateAccountWithSeed;
@@ -94,13 +105,13 @@ struct Instruction {
         append(data, vecSeed);
         encode64LE(static_cast<uint64_t>(value), data);
         encode64LE(static_cast<uint64_t>(space), data);
-        append(data, otherProgramId.vector());
+        append(data, programId.vector());
         this->data = data;
     }
 
     // This constructor creates an Initialize Stake instruction
-    Instruction(const Address programId, StakeInstruction type, Address signer)
-        : programId(programId) {
+    Instruction(StakeInstruction type, Address signer)
+        : programId(Address(STAKE_ADDRESS)) {
         std::vector<uint8_t> accounts = {1, 2};
         this->accounts = accounts;
         auto data = Data();
@@ -113,8 +124,8 @@ struct Instruction {
     }
 
     // This constructor creates a Withdraw Stake instruction
-    Instruction(const Address programId, StakeInstruction type, uint64_t value)
-        : programId(programId) {
+    Instruction(StakeInstruction type, uint64_t value)
+        : programId(Address(STAKE_ADDRESS)) {
         std::vector<uint8_t> accounts = {1, 0, 2, 3};
         this->accounts = accounts;
         auto data = Data();
@@ -124,8 +135,8 @@ struct Instruction {
     }
 
     // This constructor creates a Stake instruction
-    Instruction(const Address& programId, StakeInstruction type)
-        : programId(programId) {
+    Instruction(StakeInstruction type)
+        : programId(Address(STAKE_ADDRESS)) {
         std::vector<uint8_t> accounts;
         auto data = Data();
         encode32LE(static_cast<uint32_t>(type), data);
@@ -139,8 +150,8 @@ struct Instruction {
     }
 
     // This constructor creates a Token instruction
-    Instruction(const Address& programId, TokenIntruction type)
-        : programId(programId) {
+    Instruction(TokenIntruction type)
+        : programId(Address(STAKE_ADDRESS)) {
         std::vector<uint8_t> accounts;
         auto data = Data();
         encode32LE(static_cast<uint32_t>(type), data);
@@ -248,7 +259,7 @@ class Message {
         : recentBlockhash(recentBlockhash) {
         MessageHeader header = {1, 0, 1};
         this->header = header;
-        auto programId = Address("11111111111111111111111111111111");
+        auto programId = Address(SYSTEM_ADDRESS);
         std::vector<Address> accountKeys;
         Data accountIndexes;
         uint8_t programIdIndex;
@@ -263,7 +274,7 @@ class Message {
         }
         this->accountKeys = accountKeys;
         std::vector<Instruction> instructions;
-        auto instruction = Instruction(programId, accountIndexes, value);
+        auto instruction = Instruction(accountIndexes, value);
         instructions.push_back(instruction);
         this->instructions = instructions;
     }
@@ -278,7 +289,7 @@ class Message {
         auto sysvarRentId = Address("SysvarRent111111111111111111111111111111111");
         auto sysvarClockId = Address("SysvarC1ock11111111111111111111111111111111");
         auto stakeConfigId = Address("StakeConfig11111111111111111111111111111111");
-        auto systemProgramId = Address("11111111111111111111111111111111");
+        auto systemProgramId = Address(SYSTEM_ADDRESS);
         auto stakeProgramId = Address(STAKE_ADDRESS);
         std::vector<Address> accountKeys = {signer,          stakeAddress,  sysvarRentId,
                                             voteAddress,     sysvarClockId, stakeConfigId,
@@ -288,13 +299,13 @@ class Message {
         std::vector<Instruction> instructions;
         // create_account_with_seed instruction
         auto createAccountInstruction =
-            Instruction(systemProgramId, value, 2008, stakeProgramId, voteAddress, 32, signer);
+            Instruction(value, 2008, stakeProgramId, voteAddress, 32, signer);
         instructions.push_back(createAccountInstruction);
         // initialize instruction
-        auto initializeInstruction = Instruction(stakeProgramId, Initialize, signer);
+        auto initializeInstruction = Instruction(Initialize, signer);
         instructions.push_back(initializeInstruction);
         // delegate_stake instruction
-        auto delegateInstruction = Instruction(stakeProgramId, DelegateStake);
+        auto delegateInstruction = Instruction(DelegateStake);
         instructions.push_back(delegateInstruction);
 
         this->instructions = instructions;
@@ -307,11 +318,11 @@ class Message {
         this->header = header;
 
         auto sysvarClockId = Address("SysvarC1ock11111111111111111111111111111111");
-        auto programId = Address("Stake11111111111111111111111111111111111111");
+        auto programId = Address(STAKE_ADDRESS);
         std::vector<Address> accountKeys = {signer, stakeAddress, sysvarClockId, programId};
         this->accountKeys = accountKeys;
         std::vector<Instruction> instructions;
-        auto instruction = Instruction(programId, Deactivate);
+        auto instruction = Instruction(Deactivate);
         instructions.push_back(instruction);
         this->instructions = instructions;
     }
@@ -325,12 +336,12 @@ class Message {
 
         auto sysvarClockId = Address("SysvarC1ock11111111111111111111111111111111");
         auto sysvarStakeHistoryId = Address("SysvarStakeHistory1111111111111111111111111");
-        auto programId = Address("Stake11111111111111111111111111111111111111");
+        auto programId = Address(STAKE_ADDRESS);
         std::vector<Address> accountKeys = {signer, stakeAddress, sysvarClockId,
                                             sysvarStakeHistoryId, programId};
         this->accountKeys = accountKeys;
         std::vector<Instruction> instructions;
-        auto instruction = Instruction(programId, Withdraw, value);
+        auto instruction = Instruction(Withdraw, value);
         instructions.push_back(instruction);
         this->instructions = instructions;
     }
@@ -344,7 +355,7 @@ class Message {
         //auto sysvarRentId = Address("SysvarRent111111111111111111111111111111111");
         //auto sysvarClockId = Address("SysvarC1ock11111111111111111111111111111111");
         //auto stakeConfigId = Address("StakeConfig11111111111111111111111111111111");
-        auto systemProgramId = Address("11111111111111111111111111111111");
+        auto systemProgramId = Address(SYSTEM_ADDRESS);
         auto stakeProgramId = Address(STAKE_ADDRESS);
         //std::vector<Address> accountKeys = {signer,          stakeAddress,  sysvarRentId,
         //                                    voteAddress,     sysvarClockId, stakeConfigId,
@@ -359,7 +370,7 @@ class Message {
         //    Instruction(99, Token_InitializeAccount);
         //instructions.push_back(createAccountInstruction);
         // initialize instruction
-        auto initializeInstruction = Instruction(stakeProgramId, Token_InitializeAccount);
+        auto initializeInstruction = Instruction(Token_InitializeAccount);
         instructions.push_back(initializeInstruction);
 
         this->instructions = instructions;
