@@ -11,6 +11,7 @@
 #include "ParamAddress.h"
 
 #include <string>
+#include <vector>
 
 namespace TW::Ethereum::ABI {
 
@@ -20,6 +21,7 @@ class ParamFactory
 public:
     static std::shared_ptr<ParamBase> make(const std::string& type);
     static std::string getValue(const std::shared_ptr<ParamBase>& param, const std::string& type);
+    static std::vector<std::string> getArrayValue(const std::shared_ptr<ParamBase>& param, const std::string& type);
 };
 
 } // namespace TW::Ethereum::ABI

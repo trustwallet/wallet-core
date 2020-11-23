@@ -21,7 +21,7 @@ std::string Ethereum::checksumed(const Address& address, enum ChecksumType type)
     for (auto i = 0; i < std::min(addressString.size(), hash.size()); i += 1) {
         const auto a = addressString[i];
         const auto h = hash[i];
-        if (a >= '0' && a <= 9) {
+        if (a >= '0' && a <= '9') {
             string.push_back(a);
         } else if ((h >= '8' && h <= '9') || (h >= 'a' && h <= 'f')) {
             switch (type) {

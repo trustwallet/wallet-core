@@ -52,7 +52,7 @@ struct Result {
     /// Initializes a failure result.
     Result(Types::Failure<E> error) : success_(false) { new (&storage_) E(error.val); }
 
-    Result(const Result& other) : success_(success_) {
+    Result(const Result& other) : success_(other.success_) {
         if (success_) {
             new (&storage_) T(other.get<T>());
         } else {

@@ -99,12 +99,6 @@ PrivateKey::PrivateKey(const Data& data, const Data& ext, const Data& chainCode)
     chainCodeBytes = chainCode;
 }
 
-PrivateKey::~PrivateKey() {
-    std::fill(bytes.begin(), bytes.end(), 0);
-    std::fill(extensionBytes.begin(), extensionBytes.end(), 0);
-    std::fill(chainCodeBytes.begin(), chainCodeBytes.end(), 0);
-}
-
 PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
     Data result;
     switch (type) {
@@ -277,4 +271,10 @@ Data PrivateKey::signSchnorr(const Data& message, TWCurve curve) const {
         return {};
     }
     return sig;
+}
+
+void PrivateKey::cleanup() {
+    std::fill(bytes.begin(), bytes.end(), 0);
+    std::fill(extensionBytes.begin(), extensionBytes.end(), 0);
+    std::fill(chainCodeBytes.begin(), chainCodeBytes.end(), 0);
 }

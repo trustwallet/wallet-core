@@ -7,10 +7,12 @@
 #include "ParamFactory.h"
 #include "HexCoding.h"
 
+#include <nlohmann/json.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 
 using namespace std;
 using namespace boost::algorithm;
+using json = nlohmann::json;
 
 namespace TW::Ethereum::ABI {
 
@@ -33,9 +35,27 @@ static std::shared_ptr<ParamBase> makeInt(const std::string& type) {
     return make_shared<ParamIntN>(bits);
 }
 
+static bool isArrayType(const std::string& type) {
+    return ends_with(type, "[]") && type.length() >= 3;
+}
+
+static std::string getArrayElemType(const std::string& arrayType) {
+    if (ends_with(arrayType, "[]") && arrayType.length() >= 3) {
+        return arrayType.substr(0, arrayType.length() - 2);
+    }
+    return "";
+}
+
 std::shared_ptr<ParamBase> ParamFactory::make(const std::string& type) {
     shared_ptr<ParamBase> param;
-    if (type == "address") {
+    if (isArrayType(type)) {
+        auto elemType = getArrayElemType(type);
+        auto elemParam = make(elemType);
+        if (!elemParam) {
+            return param;
+        }
+        param = make_shared<ParamArray>(elemParam);
+    } else if (type == "address") {
         param = make_shared<ParamAddress>();
     } else if (type == "uint8") {
         param = make_shared<ParamUInt8>();
@@ -74,9 +94,26 @@ std::shared_ptr<ParamBase> ParamFactory::make(const std::string& type) {
     return param;
 }
 
+std::string joinArrayElems(const std::vector<std::string>& strings) {
+    auto array = json::array();
+    for (auto i = 0; i < strings.size(); ++i) {
+        // parse to prevent quotes on simple values
+        auto value = json::parse(strings[i], nullptr, false);
+        if (value.is_discarded()) {
+            // fallback
+            value = json(strings[i]);
+        }
+        array.push_back(value);
+    }
+    return array.dump();
+}
+
 std::string ParamFactory::getValue(const std::shared_ptr<ParamBase>& param, const std::string& type) {
     std::string result = "";
-    if (type == "address") {
+    if (isArrayType(type)) {
+        auto values = getArrayValue(param, type);
+        result = joinArrayElems(values);
+    } else if (type == "address") {
         auto value = dynamic_pointer_cast<ParamAddress>(param);
         result = hexEncoded(value->getData());
     } else if (type == "uint8") {
@@ -119,6 +156,23 @@ std::string ParamFactory::getValue(const std::shared_ptr<ParamBase>& param, cons
         result = value->getVal();
     }
     return result;
+}
+
+std::vector<std::string> ParamFactory::getArrayValue(const std::shared_ptr<ParamBase>& param, const std::string& type) {
+    if (!isArrayType(type)) {
+        return std::vector<std::string>();
+    }
+    auto array = dynamic_pointer_cast<ParamArray>(param);
+    if (!array) {
+        return std::vector<std::string>();
+    }
+    auto elemType = getArrayElemType(type);
+    auto elems = array->getVal();
+    std::vector<std::string> values(elems.size());
+    for (auto i = 0; i < elems.size(); ++i) {
+        values[i] = getValue(elems[i], elemType);
+    }
+    return values;
 }
 
 } // namespace TW::Ethereum::ABI

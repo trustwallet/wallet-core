@@ -15,9 +15,9 @@
 
 TEST(TWTezosCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTezos));
-    auto txId = TWStringCreateWithUTF8Bytes("t123");
+    auto txId = TWStringCreateWithUTF8Bytes("onk3Z6V4StyfiXTPSHwZFvTKVAaws37cHmZacmULPr3VbVHpKrg");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTezos, txId));
-    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accId = TWStringCreateWithUTF8Bytes("tz1SiPXX4MYGNJNDsRc7n8hkvUqFzg8xqF9m");
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeTezos, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTezos));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTezos));
@@ -27,8 +27,8 @@ TEST(TWTezosCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeTezos));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeTezos));
     assertStringsEqual(symbol, "XTZ");
-    assertStringsEqual(txUrl, "https://tezos.id/t123");
-    assertStringsEqual(accUrl, "https://tezos.id/a12");
+    assertStringsEqual(txUrl, "https://tzstats.com/onk3Z6V4StyfiXTPSHwZFvTKVAaws37cHmZacmULPr3VbVHpKrg");
+    assertStringsEqual(accUrl, "https://tzstats.com/tz1SiPXX4MYGNJNDsRc7n8hkvUqFzg8xqF9m");
     assertStringsEqual(id, "tezos");
     assertStringsEqual(name, "Tezos");
 }

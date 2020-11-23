@@ -10,15 +10,10 @@
 #include "Coin.h"
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 
-#include <map>
-#include <mutex>
+#include <vector>
 #include <cassert>
 
 using namespace TW;
-
-/// Map with info about known coins
-static std::map<TWCoinType, CoinInfo> coins;
-static std::mutex coinsMutex;
 
 static const CoinInfo defaultsForMissing = {
     "?",
@@ -28,7 +23,7 @@ static const CoinInfo defaultsForMissing = {
     TWCurveNone,
     TWHDVersionNone,
     TWHDVersionNone,
-    DerivationPath(),
+    "",
     TWPublicKeyTypeSECP256k1,
     0,
     0,
@@ -43,30 +38,13 @@ static const CoinInfo defaultsForMissing = {
     0,
 };
 
-void fillMap(); // forward
-
 /// Get coin from map, if missing returns defaults (not to have contains-check in each accessor method)
-const CoinInfo& getCoinInfo(TWCoinType coin) {
-    if (coins.size() == 0) {
-        fillMap();
-    }
-    assert(coins.size() > 0);
-    if (coins.find(coin) == coins.end()) {
-        return defaultsForMissing;
-    }
-    return coins.at(coin);
-}
-
-/// Fill the map.  Simple static initializer did not work out due to nondeterministic static initialization order
-void fillMap() {
-    std::lock_guard<std::mutex> guard(coinsMutex);
-    if (coins.size() > 0) {
-        return;
-    }
-    coins = std::map<TWCoinType, CoinInfo> {
-    <% coins.each do |coin| -%>
-    {
-            TWCoinType<%= format_name(coin['name']) %>, {
+const CoinInfo getCoinInfo(TWCoinType coin) {
+    // switch is preferred instead of a data structure, due to initialization issues
+    switch (coin) {
+<% coins.each do |coin| -%>
+        case TWCoinType<%= format_name(coin['name']) %>:
+            return CoinInfo {
                 "<%= coin['id'] %>",
                 <% if coin['displayName'].nil? -%>"<%= coin['name'] %>"<% else -%>"<%= coin['displayName'] %>"<% end -%>,
                 TWBlockchain<%= format_name(coin['blockchain']) %>,
@@ -74,7 +52,7 @@ void fillMap() {
                 TWCurve<%= format_name(coin['curve']) %>,
                 TWHDVersion<% if coin['xpub'].nil? -%>None<% else -%><%= format_name(coin['xpub']) %><% end -%>,
                 TWHDVersion<% if coin['xprv'].nil? -%>None<% else -%><%= format_name(coin['xprv']) %><% end -%>,
-                DerivationPath("<%= coin['derivationPath'] %>"),
+                "<%= coin['derivationPath'] %>",
                 TWPublicKeyType<%= format_name(coin['publicKeyType']) %>,
                 <% if coin['staticPrefix'].nil? -%>0<% else -%><%= coin['staticPrefix'] %><% end -%>,
                 <% if coin['p2pkhPrefix'].nil? -%>0<% else -%><%= coin['p2pkhPrefix'] %><% end -%>,
@@ -87,8 +65,17 @@ void fillMap() {
                 "<%= explorer_tx_url(coin) %>",
                 "<%= explorer_account_url(coin) %>",
                 <% if coin['slip44'].nil? -%><%= coin['coinId'] %><% else -%><%= coin['slip44'] %><% end -%>,
-            }
-        },
+            };
+<% end -%>
+        default:
+            return defaultsForMissing;
+    }
+}
+
+std::vector<TWCoinType> TW::getCoinTypes() {
+    return std::vector<TWCoinType>({
+    <% coins.each do |coin| -%>
+        TWCoinType<%= format_name(coin['name']) %>,
     <% end -%>
-    };
+    });
 }

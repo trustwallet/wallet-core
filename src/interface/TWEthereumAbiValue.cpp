@@ -77,3 +77,15 @@ TWString* _Nonnull TWEthereumAbiValueDecodeUInt256(TWData* _Nonnull input) {
     auto decoded = Ethereum::ABI::ValueDecoder::decodeUInt256(data);
     return TWStringCreateWithUTF8Bytes(TW::toString(decoded).c_str());
 }
+
+TWString* _Nonnull TWEthereumAbiValueDecodeValue(TWData* _Nonnull input, TWString* _Nonnull type) {
+    auto data = TW::data(TWDataBytes(input), TWDataSize(input));
+    auto value = Ethereum::ABI::ValueDecoder::decodeValue(data, TWStringUTF8Bytes(type));
+    return TWStringCreateWithUTF8Bytes(value.c_str());
+}
+
+TWString* _Nonnull TWEthereumAbiValueDecodeArray(TWData* _Nonnull input, TWString* _Nonnull type) {
+    auto data = TW::data(TWDataBytes(input), TWDataSize(input));
+    auto valueString = Ethereum::ABI::ValueDecoder::decodeValue(data, TWStringUTF8Bytes(type));
+    return TWStringCreateWithUTF8Bytes(valueString.c_str());
+}

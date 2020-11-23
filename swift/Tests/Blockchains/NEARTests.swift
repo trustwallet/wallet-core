@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 import XCTest
-import TrustWalletCore
+import WalletCore
 
 class NEARTests: XCTestCase {
 
@@ -57,6 +57,7 @@ class NEARTests: XCTestCase {
             $0.actions = [
                 NEARAction.with({
                     $0.transfer = NEARTransfer.with {
+                        // uint128_t / little endian byte order
                         $0.deposit = Data(hexString: "01000000000000000000000000000000")!
                     }
                 }),

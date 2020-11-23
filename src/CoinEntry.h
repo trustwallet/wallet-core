@@ -22,7 +22,7 @@ namespace TW {
 class CoinEntry {
 public:
     // Report the coin types this implementation is responsible of
-    virtual std::vector<TWCoinType> coinTypes() const = 0;
+    virtual const std::vector<TWCoinType> coinTypes() const = 0;
     virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const = 0;
     // normalizeAddress is optional, it may leave this default, no-change implementation
     virtual std::string normalizeAddress(TWCoinType coin, const std::string& address) const { return address; }

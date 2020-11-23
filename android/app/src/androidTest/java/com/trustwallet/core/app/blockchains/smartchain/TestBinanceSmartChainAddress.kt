@@ -20,7 +20,6 @@ class TestBinanceSmartChainAddress {
 
     @Test
     fun testAddress() {
-
         val key = PrivateKey("727f677b390c151caf9c206fd77f77918f56904b5504243db9b21e51182c4c06".toHexByteArray())
         val pubkey = key.getPublicKeySecp256k1(false)
         val address = AnyAddress(pubkey, CoinType.SMARTCHAIN)
