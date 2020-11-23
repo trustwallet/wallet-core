@@ -159,7 +159,10 @@ struct CompiledInstruction {
     // The program input data
     Data data;
 
-    CompiledInstruction(const Instruction& instruction) {
+    // Reference to the address vector
+    const std::vector<Address>& addresses;
+
+    CompiledInstruction(const Instruction& instruction, const std::vector<Address>& addresses): addresses(addresses) {
         programIdIndex = instruction.programIdIndex;
         accounts = instruction.accounts;
         data = instruction.data;

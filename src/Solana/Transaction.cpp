@@ -11,8 +11,11 @@
 #include "../BinaryCoding.h"
 #include "../PublicKey.h"
 
+#include <vector>
+
 using namespace TW;
 using namespace TW::Solana;
+using namespace std;
 
 std::string Transaction::serialize() const {
     Data buffer;
@@ -41,8 +44,15 @@ Data Transaction::messageData() const {
     Data recentBlockhash(this->message.recentBlockhash.bytes.begin(),
                          this->message.recentBlockhash.bytes.end());
     append(buffer, recentBlockhash);
-    append(buffer, shortVecLength<Instruction>(this->message.instructions));
+    // compile instructions
+    vector<CompiledInstruction> compiledInstructions;
+    compiledInstructions.reserve(this->message.instructions.size());
     for (auto instruction : this->message.instructions) {
+        compiledInstructions.push_back(CompiledInstruction(instruction, this->message.accountKeys));
+    }
+    // apppend instructions
+    append(buffer, shortVecLength<CompiledInstruction>(compiledInstructions));
+    for (auto instruction : compiledInstructions) {
         buffer.push_back(instruction.programIdIndex);
         append(buffer, shortVecLength<uint8_t>(instruction.accounts));
         append(buffer, instruction.accounts);
