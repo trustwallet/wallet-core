@@ -31,16 +31,19 @@ TEST(SolanaSigner, CompiledInstruction) {
 
     std::vector<Address> addresses = {address0, address1, programId};
 
-    Data accountIndexes = {0, 1};
-    Data data = {0, 0, 0, 0};
-    Instruction instruction(programId, accountIndexes, data);
+    std::vector<Address> instrAddresses = {address1, address0, programId, address1, address0};
+    Data data = {0, 1, 2, 4};
+    Instruction instruction(programId, instrAddresses, data);
 
     auto compiledInstruction = CompiledInstruction(instruction, addresses);
 
     EXPECT_EQ(compiledInstruction.programIdIndex, 2);
-    ASSERT_EQ(compiledInstruction.accounts.size(), 2);
-    EXPECT_EQ(compiledInstruction.accounts[0], 0);
-    EXPECT_EQ(compiledInstruction.accounts[1], 1);
+    ASSERT_EQ(compiledInstruction.accounts.size(), 5);
+    EXPECT_EQ(compiledInstruction.accounts[0], 1);
+    EXPECT_EQ(compiledInstruction.accounts[1], 0);
+    EXPECT_EQ(compiledInstruction.accounts[2], 2);
+    EXPECT_EQ(compiledInstruction.accounts[3], 1);
+    EXPECT_EQ(compiledInstruction.accounts[4], 0);
     ASSERT_EQ(compiledInstruction.data.size(), 4);
 }
 
@@ -127,10 +130,10 @@ TEST(SolanaSigner, MultipleSignTransaction) {
     ASSERT_EQ(Data(publicKey1.bytes.begin(), publicKey1.bytes.end()),
               Base58::bitcoin.decode("2oKoYSAHgveX91917v4DUEuN8BNKXDg8KJWpaGyEay9V"));
 
-    Data accountIndexes = {0, 1};
     Data data = {0, 0, 0, 0};
     Address programId("11111111111111111111111111111111");
-    Instruction instruction(programId, accountIndexes, data);
+    std::vector<Address> instrAddresses = {address0, address1};
+    Instruction instruction(programId, instrAddresses, data);
     std::vector<Instruction> instructions = {instruction};
 
     MessageHeader header = {2, 0, 1};
