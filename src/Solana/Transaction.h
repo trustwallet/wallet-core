@@ -52,17 +52,6 @@ enum TokenIntruction {
     Token_Transfer
 };
 
-struct AccountMeta {
-    /// An account's public key
-    Address pubkey;
-    /// True if an Instruction requires a Transaction signature matching `pubkey`.
-    bool isSigner;
-    /// True if the `pubkey` can be loaded as a read-write account.
-    bool isWritable;
-
-    AccountMeta(const Address& pubkey, bool isSigner, bool isWritable) : pubkey(pubkey), isSigner(isSigner), isWritable(isWritable) {}
-};
-
 // An instruction to execute a program
 struct Instruction {
     // Index into the transaction keys array indicating the program account that
@@ -151,7 +140,7 @@ struct Instruction {
 
     // This constructor creates a Token instruction
     Instruction(TokenIntruction type)
-        : programId(Address(STAKE_ADDRESS)) {
+        : programId(Address(STAKE_ADDRESS)) { // TODO TOKEN_ADDRESS
         std::vector<uint8_t> accounts;
         auto data = Data();
         encode32LE(static_cast<uint32_t>(type), data);
