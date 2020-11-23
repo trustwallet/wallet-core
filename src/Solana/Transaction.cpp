@@ -41,7 +41,7 @@ Data Transaction::messageData() const {
     Data recentBlockhash(this->message.recentBlockhash.bytes.begin(),
                          this->message.recentBlockhash.bytes.end());
     append(buffer, recentBlockhash);
-    append(buffer, shortVecLength<CompiledInstruction>(this->message.instructions));
+    append(buffer, shortVecLength<Instruction>(this->message.instructions));
     for (auto instruction : this->message.instructions) {
         buffer.push_back(instruction.programIdIndex);
         append(buffer, shortVecLength<uint8_t>(instruction.accounts));

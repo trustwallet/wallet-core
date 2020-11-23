@@ -99,8 +99,8 @@ TEST(SolanaSigner, MultipleSignTransaction) {
 
     Data accountIndexes = {0, 1};
     Data data = {0, 0, 0, 0};
-    CompiledInstruction instruction(2, accountIndexes, data);
-    std::vector<CompiledInstruction> instructions = {instruction};
+    Instruction instruction(2, accountIndexes, data);
+    std::vector<Instruction> instructions = {instruction};
 
     MessageHeader header = {2, 0, 1};
     Address programId("11111111111111111111111111111111");
