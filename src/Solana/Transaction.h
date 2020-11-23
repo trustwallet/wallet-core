@@ -343,32 +343,39 @@ class Message {
     }
 
     // This constructor creates a create_account message
-    Message(Address signer, Address token, Address account, StakeInstruction type, Hash recentBlockhash)
+    Message(Address signer, Address token, Address tokenAddress, Address mainAccount, Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
-        MessageHeader header = {1, 0, 99}; // TODO
+        MessageHeader header = {1, 0, 4}; // TODO
         this->header = header;
 
-        //auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
+        auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
         //auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
         //auto stakeConfigId = Address(STAKE_CONFIG_ID_ADDRESS);
         auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
         auto tokenProgramId = Address(TOKEN_PROGRAM_ID_ADDRESS);
-        //std::vector<Address> accountKeys = {signer,          stakeAddress,  sysvarRentId,
-        //                                    voteAddress,     sysvarClockId, stakeConfigId,
-        //                                    systemProgramId, stakeProgramId};
-        std::vector<Address> accountKeys = {signer,          token,         account,
-                                            systemProgramId, tokenProgramId};
+        std::vector<Address> accountKeys = {
+            signer,
+            tokenAddress,
+            mainAccount,
+            token,
+            sysvarRentId,
+            systemProgramId,
+            tokenProgramId
+        };
         this->accountKeys = accountKeys;
 
         std::vector<Instruction> instructions;
-        // create_account instruction
-        //auto createAccountInstruction =
-        //    Instruction(99, Token_InitializeAccount);
-        //instructions.push_back(createAccountInstruction);
         // initialize instruction
-        auto initializeInstruction = Instruction(Token_InitializeAccount, std::vector<Address>{});  // TODO
+        auto initializeInstruction = Instruction(Token_InitializeAccount, std::vector<Address>{
+            signer, // fundingAddress,
+            tokenAddress,
+            mainAccount,
+            token,
+            systemProgramId,
+            tokenProgramId,
+            sysvarRentId
+        });
         instructions.push_back(initializeInstruction);
-
         this->instructions = instructions;
     }
 };
