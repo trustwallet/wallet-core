@@ -1,0 +1,8 @@
+platform :ios, '13.0'
+install! 'cocoapods', :deterministic_uuids => false, :share_schemes_for_development_pods => true
+
+target 'ExampleApp' do
+  use_frameworks! :linkage => :static
+
+  pod 'WalletCore', :path => '../../'
+end
