@@ -14,6 +14,36 @@
 using namespace TW;
 using namespace TW::Solana;
 
+TEST(SolanaSigner, CompiledInstruction) {
+    const auto privateKey0 =
+        PrivateKey(Base58::bitcoin.decode("96PKHuMPtniu1T74RvUNkbDPXPPRZ8Mg1zXwciCAyaDq"));
+    const auto publicKey0 = privateKey0.getPublicKey(TWPublicKeyTypeED25519);
+    const auto address0 = Address(publicKey0);
+    ASSERT_EQ(Data(publicKey0.bytes.begin(), publicKey0.bytes.end()),
+              Base58::bitcoin.decode("GymAh18wHuFTytfSJWi8eYTA9x5S3sNb9CJSGBWoPRE3"));
+    const auto privateKey1 =
+        PrivateKey(Base58::bitcoin.decode("GvGmNPMQLZE2VNx3KG2GdiC4ndS8uCqd7PjioPgm9Qhi"));
+    const auto publicKey1 = privateKey1.getPublicKey(TWPublicKeyTypeED25519);
+    const auto address1 = Address(publicKey1);
+    ASSERT_EQ(Data(publicKey1.bytes.begin(), publicKey1.bytes.end()),
+              Base58::bitcoin.decode("2oKoYSAHgveX91917v4DUEuN8BNKXDg8KJWpaGyEay9V"));
+    Address programId("11111111111111111111111111111111");
+
+    std::vector<Address> addresses = {address0, address1, programId};
+
+    Data accountIndexes = {0, 1};
+    Data data = {0, 0, 0, 0};
+    Instruction instruction(programId, accountIndexes, data);
+
+    auto compiledInstruction = CompiledInstruction(instruction, addresses);
+
+    EXPECT_EQ(compiledInstruction.programIdIndex, 2);
+    ASSERT_EQ(compiledInstruction.accounts.size(), 2);
+    EXPECT_EQ(compiledInstruction.accounts[0], 0);
+    EXPECT_EQ(compiledInstruction.accounts[1], 1);
+    ASSERT_EQ(compiledInstruction.data.size(), 4);
+}
+
 TEST(SolanaSigner, SingleSignTransaction) {
     const auto privateKey =
         PrivateKey(Base58::bitcoin.decode("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr"));
@@ -99,11 +129,11 @@ TEST(SolanaSigner, MultipleSignTransaction) {
 
     Data accountIndexes = {0, 1};
     Data data = {0, 0, 0, 0};
-    Instruction instruction(2, accountIndexes, data);
+    Address programId("11111111111111111111111111111111");
+    Instruction instruction(programId, accountIndexes, data);
     std::vector<Instruction> instructions = {instruction};
 
     MessageHeader header = {2, 0, 1};
-    Address programId("11111111111111111111111111111111");
     std::vector<Address> accountKeys = {address0, address1, programId};
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
     Message message(header, accountKeys, recentBlockhash, instructions);
