@@ -85,24 +85,6 @@ TEST(TWPrivateKeyTests, PublicKey) {
     }
 }
 
-TEST(TWPrivateKeyTests, ClearMemory) {
-    auto privKey = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
-    auto privKeyData = TW::parse_hex(privKey);
-    auto data = WRAPD(TWDataCreateWithBytes(privKeyData.data(), privKeyData.size()));
-    auto privateKey = TWPrivateKeyCreateWithData(data.get());
-    auto ptr = privateKey->impl.bytes.data();
-    ASSERT_EQ(privKey, TW::hex(TW::data(ptr, 32)));
-
-    TWPrivateKeyDelete(privateKey);
-
-    // Memory cleaned (filled with 0s).  They may be overwritten by something else; we check that it is not equal to original, most of it has changed.
-    ASSERT_NE(privKey, TW::hex(TW::data(ptr, 32)));
-    int countDifferent = 0;
-    for (auto i = 0; i < privKeyData.size(); ++i) {
-        countDifferent += (int)(ptr[i] != privKeyData[i]);
-    }
-    ASSERT_GE(countDifferent, 32*2/3);
-}
 
 TEST(TWPrivateKeyTests, Sign) {
     const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5").get()));
