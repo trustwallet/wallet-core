@@ -109,8 +109,12 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     } else if (transaction.has_raw_transaction()) {
         const auto raw = transaction.raw_transaction();
         json["amount"] = toString(load(raw.amount()));
-        json["code"] = raw.code();
-        json["data"] = raw.data();
+        if (!raw.code().empty()) {
+            json["code"] = hex(Data(raw.code().begin(), raw.code().end()));
+        }
+        if (!raw.data().empty()) {
+            json["data"] = std::string(raw.data().begin(), raw.data().end());
+        }
     }
 
     output.set_json(json.dump());

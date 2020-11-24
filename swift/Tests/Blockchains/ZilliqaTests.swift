@@ -8,7 +8,9 @@ import XCTest
 import WalletCore
 
 class ZilliqaTests: XCTestCase {
+
     let coin = CoinType.zilliqa
+    let privateKey = PrivateKey(data: Data(hexString: "0x68ffa8ec149ce50da647166036555f73d57f662eb420e154621e5f24f6cf9748")!)!
 
     func testConfig() {
         XCTAssertEqual(coin.hrp, .zilliqa)
@@ -31,9 +33,7 @@ class ZilliqaTests: XCTestCase {
         XCTAssertEqual(address.description, address2.description)
     }
 
-    func testSigner() {
-        let privateKey = PrivateKey(data: Data(hexString: "0x68ffa8ec149ce50da647166036555f73d57f662eb420e154621e5f24f6cf9748")!)!
-
+    func testSignTransfer() {
         let input = ZilliqaSigningInput.with {
             $0.version = 65537 // mainnet tx version
             $0.nonce = 2
@@ -52,20 +52,68 @@ class ZilliqaTests: XCTestCase {
 
         let output: ZilliqaSigningOutput = AnySigner.sign(input: input, coin: .zilliqa)
         let expectedJSON = """
-{
-    "amount": "1000000000000",
-    "toAddr": "7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C",
-    "pubKey": "03fb30b196ce3e976593ecc2da220dca9cdea8c84d2373770042a930b892ac0f5c",
-    "data": "",
-    "code": "",
-    "signature": "001fa4df08c11a4a79e96e69399ee48eeecc78231a78b0355a8ca783c77c139436e37934fecc2252ed8dac00e235e22d18410461fb896685c4270642738ed268",
-    "gasLimit": "1",
-    "version": 65537,
-    "gasPrice": "1000000000",
-    "nonce": 2
-}
-"""
+        {
+            "amount": "1000000000000",
+            "toAddr": "7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C",
+            "pubKey": "03fb30b196ce3e976593ecc2da220dca9cdea8c84d2373770042a930b892ac0f5c",
+            "data": "",
+            "code": "",
+            "signature": "001fa4df08c11a4a79e96e69399ee48eeecc78231a78b0355a8ca783c77c139436e37934fecc2252ed8dac00e235e22d18410461fb896685c4270642738ed268",
+            "gasLimit": "1",
+            "version": 65537,
+            "gasPrice": "1000000000",
+            "nonce": 2
+        }
+        """
         XCTAssertEqual(output.signature.hexString, "001fa4df08c11a4a79e96e69399ee48eeecc78231a78b0355a8ca783c77c139436e37934fecc2252ed8dac00e235e22d18410461fb896685c4270642738ed268")
         XCTAssertJSONEqual(output.json, expectedJSON)
+    }
+
+    func testSignData() throws {
+
+        // https://viewblock.io/zilliqa/tx/0x6228b3d7e69fc3481b84fd00e892cec359a41654f58948ff7b1b932396b00ad9
+        // real key 1p
+        let key = privateKey
+
+        let delegator = AnyAddress(string: "zil1zg3pnn82ksgfq85kcwsw2hjxyv2gqdqmnr6jwc", coin: .zilliqa)!
+        let delegatorHex = "0x" + String(data: delegator.data, encoding: .utf8)!
+
+        let json: [String: Any] = [
+            "_tag": "DelegateStake",
+            "params": [
+                [
+                    "type": "ByStr20",
+                    "value": delegatorHex,
+                    "vname": "ssnaddr"
+                ],
+            ]
+        ]
+        let jsonData = try JSONSerialization.data(withJSONObject: json, options: [.sortedKeys])
+        print(String(data: jsonData, encoding: .utf8)!)
+
+        let input = ZilliqaSigningInput.with {
+            $0.version = 65537 // mainnet tx version
+            $0.nonce = 56
+            $0.to = "zil1g029nmzsf36r99vupp4s43lhs40fsscx3jjpuy"
+
+            $0.gasPrice = Data(hexString: "77359400")!
+            $0.gasLimit = 5000
+            $0.privateKey = key.data
+            $0.transaction = ZilliqaTransaction.with {
+                $0.rawTransaction = ZilliqaTransaction.Raw.with {
+                    // 10 ZIL
+                    $0.amount = Data(hexString: "09184e72a000")!
+                    $0.data = jsonData
+                }
+            }
+        }
+
+        let output: ZilliqaSigningOutput = AnySigner.sign(input: input, coin: .zilliqa)
+
+        let url = Bundle(for: ZilliqaTests.self).url(forResource: "zilliqa_data_tx", withExtension: "json")!
+        let expected = try String(contentsOf: url)
+
+        XCTAssertJSONEqual(expected, output.json)
+        print(output.json)
     }
 }
