@@ -22,7 +22,7 @@ message Transaction {
 
     oneof message_oneof {
         Transfer transfer = 1;
-        Raw raw_transaction = 6;
+        Raw raw_transaction = 2;
     }
 }
 
