@@ -9,6 +9,7 @@
 #include "Address.h"
 #include "../Base58.h"
 #include "../BinaryCoding.h"
+#include "../Data.h"
 
 #include <vector>
 #include <cassert>
@@ -20,6 +21,7 @@ namespace TW::Solana {
 const std::string SYSTEM_PROGRAM_ID_ADDRESS = "11111111111111111111111111111111";
 const std::string STAKE_PROGRAM_ID_ADDRESS = "Stake11111111111111111111111111111111111111";
 const std::string TOKEN_PROGRAM_ID_ADDRESS = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+const std::string ASSOCIATED_TOKEN_PROGRAM_ID_ADDRESS = "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL";
 const std::string SYSVAR_RENT_ID_ADDRESS = "SysvarRent111111111111111111111111111111111";
 const std::string SYSVAR_CLOCK_ID_ADDRESS = "SysvarC1ock11111111111111111111111111111111";
 const std::string STAKE_CONFIG_ID_ADDRESS = "StakeConfig11111111111111111111111111111111";
@@ -145,11 +147,11 @@ struct Instruction {
 
     // This constructor creates a Token instruction
     Instruction(TokenIntruction type, const std::vector<Address>& accounts) :
-        programId(Address(TOKEN_PROGRAM_ID_ADDRESS)),
+        programId(Address(ASSOCIATED_TOKEN_PROGRAM_ID_ADDRESS)),
         accounts(accounts)
     {
         auto data = Data();
-        encode32LE(static_cast<uint32_t>(type), data);
+        //encode32LE(static_cast<uint32_t>(type), data);
         this->data = data;
     }
 };
@@ -343,25 +345,26 @@ class Message {
         this->instructions = instructions;
     }
 
-    // This constructor creates a create_account message
-    Message(Address signer, Address token, Address tokenAddress, Address mainAccount, Hash recentBlockhash)
+    // This constructor creates a create_account message.
+    // Assume that the mainAccount is the same as the signer
+    Message(Address signer, Address token, Address tokenAddress, Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
-        MessageHeader header = {1, 0, 4}; // TODO
+        MessageHeader header = {1, 0, 5};
         this->header = header;
 
         auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
-        //auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
-        //auto stakeConfigId = Address(STAKE_CONFIG_ID_ADDRESS);
         auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
         auto tokenProgramId = Address(TOKEN_PROGRAM_ID_ADDRESS);
+        auto associatedTokenProgramId = Address(ASSOCIATED_TOKEN_PROGRAM_ID_ADDRESS);
+
         std::vector<Address> accountKeys = {
             signer,
             tokenAddress,
-            mainAccount,
             token,
-            sysvarRentId,
             systemProgramId,
-            tokenProgramId
+            tokenProgramId,
+            sysvarRentId,
+            associatedTokenProgramId
         };
         this->accountKeys = accountKeys;
 
@@ -370,7 +373,7 @@ class Message {
         auto initializeInstruction = Instruction(Token_InitializeAccount, std::vector<Address>{
             signer, // fundingAddress,
             tokenAddress,
-            mainAccount,
+            signer,
             token,
             systemProgramId,
             tokenProgramId,
@@ -404,7 +407,7 @@ class Transaction {
     uint8_t getAccountIndex(Address publicKey);
 
   private:
-    std::array<uint8_t, 64> defaultSignature;
+    TW::Data defaultSignature = TW::Data(64);
 };
 
 } // namespace TW::Solana
