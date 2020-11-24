@@ -91,3 +91,22 @@ TEST(SolanaTransaction, StakeSerializeTransaction) {
         "BLpKfuB5XL3JfQZ3Nn3B916gaK8owz9Rk2e3";
     ASSERT_EQ(transaction.serialize(), expectedString);
 }
+
+TEST(SolanaTransaction, CreateTokenAccountTransaction) {
+    auto signer = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
+    auto token = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
+    auto tokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+    Solana::Hash recentBlockhash("11111111111111111111111111111111");
+    auto message = Message(signer, token, tokenAddress, signer, recentBlockhash);
+    auto transaction = Transaction(message);
+    Signature signature("3WrhhhU1fvt2c61YHwWDTBMw1YQQ7m1qHE6CigHzbPAdn5ezo3sRYLFaqABY74rGryeDDeYh4YAtATdLBDKkSCRs");
+    transaction.signatures.clear();
+    transaction.signatures.push_back(signature);
+
+    auto expectedString =
+        "2FyhwkgHMk8MuZmtgamNF7ZUPf8jG1TYCmczLqKDYfSSCDDViGPe4AshsVuMeb3vPLkU5Ny9gUNWfUjkqRQFLWiXmCLDuW8mP4MnNWftFmu5zRvUC1AcQ8HA1SXHtQN5"
+        "kkKEyWzDS9fksch34fDMhNq6bL4FhxjU9igmBLgH9RdnK2mPtMp3bVrowFpdGzMfYFv6zN6BB8eNpdykXgZBE5d5nk5WyRFc3bMvUrcUi6gPYMihstZTV4Fq3B6Ub1fT"
+        "dFVNgAC2hkLKAivQAiXMEZPt3nCbnWY5Dmi2PuznnMZNDdYaQn87aBVrQP2ddA2WeaAaximmqCYZgPign3XSFAzDpQ3baUYeQjRrN1VduBQpjqYnA9jVx6DYZhYstzXq"
+        "j2jJmZdMSEyxAtsWvVWNozLoWpVgecQ2UiZUDy6WohE7mUxmibpR5rsazvSYnrr9WBXruQxTorGrBvwH";
+    ASSERT_EQ(transaction.serialize(), expectedString);
+}

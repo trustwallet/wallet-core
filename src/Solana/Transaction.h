@@ -167,6 +167,7 @@ struct CompiledInstruction {
     // Reference to the address vector
     const std::vector<Address>& addresses;
 
+    /// Supplied address vector is expected to contain all addresses and programId from the instruction; they are replaced by index into the address vector.
     CompiledInstruction(const Instruction& instruction, const std::vector<Address>& addresses): addresses(addresses) {
         programIdIndex = findAccount(instruction.programId);
         for (auto& account: instruction.accounts) {

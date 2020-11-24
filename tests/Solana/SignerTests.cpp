@@ -265,3 +265,36 @@ TEST(SolanaSigner, SignDelegateStake) {
         "BLpKfuB5XL3JfQZ3Nn3B916gaK8owz9Rk2e3";
     ASSERT_EQ(transaction.serialize(), expectedString);
 }
+
+TEST(SolanaSigner, SignCreateTokenAccount) {
+    const auto privateKeySigner =
+        PrivateKey(Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746"));
+    const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
+    auto signer = Address(publicKeySigner);
+    ASSERT_EQ(Data(publicKeySigner.bytes.begin(), publicKeySigner.bytes.end()),
+              Base58::bitcoin.decode("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu"));
+
+    auto token = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
+    auto tokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+    Solana::Hash recentBlockhash("11111111111111111111111111111111");
+
+    auto message = Message(signer, token, tokenAddress, signer, recentBlockhash);
+    auto transaction = Transaction(message);
+
+    std::vector<PrivateKey> signerKeys;
+    signerKeys.push_back(privateKeySigner);
+    Signer::sign(signerKeys, transaction);
+
+    std::vector<Signature> expectedSignatures;
+    Signature expectedSignature("3WrhhhU1fvt2c61YHwWDTBMw1YQQ7m1qHE6CigHzbPAdn5ezo3sRYLFaqABY74rGryeDDeYh4YAtATdLBDKkSCRs");
+    expectedSignatures.push_back(expectedSignature);
+    //std::cerr << transaction.signatures.size() << " " << Base58::bitcoin.encode(transaction.signatures[0].bytes) << "\n";
+    ASSERT_EQ(transaction.signatures, expectedSignatures);
+
+    auto expectedString =
+        "2FyhwkgHMk8MuZmtgamNF7ZUPf8jG1TYCmczLqKDYfSSCDDViGPe4AshsVuMeb3vPLkU5Ny9gUNWfUjkqRQFLWiXmCLDuW8mP4MnNWftFmu5zRvUC1AcQ8HA1SXHtQN5"
+        "kkKEyWzDS9fksch34fDMhNq6bL4FhxjU9igmBLgH9RdnK2mPtMp3bVrowFpdGzMfYFv6zN6BB8eNpdykXgZBE5d5nk5WyRFc3bMvUrcUi6gPYMihstZTV4Fq3B6Ub1fT"
+        "dFVNgAC2hkLKAivQAiXMEZPt3nCbnWY5Dmi2PuznnMZNDdYaQn87aBVrQP2ddA2WeaAaximmqCYZgPign3XSFAzDpQ3baUYeQjRrN1VduBQpjqYnA9jVx6DYZhYstzXq"
+        "j2jJmZdMSEyxAtsWvVWNozLoWpVgecQ2UiZUDy6WohE7mUxmibpR5rsazvSYnrr9WBXruQxTorGrBvwH";
+    ASSERT_EQ(transaction.serialize(), expectedString);
+}
