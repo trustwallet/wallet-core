@@ -139,7 +139,6 @@ TEST(PrivateKey, Cleanup) {
     ASSERT_EQ(hex(privKeyData), hex(data(ptr, 32)));
 
     privateKey->cleanup();
-    privateKey = nullptr;
 
     // Memory cleaned (filled with 0s).  They may be overwritten by something else; we check that it is not equal to original, most of it has changed.
     ASSERT_EQ(hex(data(ptr, 32)), "0000000000000000000000000000000000000000000000000000000000000000");

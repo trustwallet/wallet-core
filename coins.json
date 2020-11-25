@@ -1238,7 +1238,7 @@
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
-      "url": "https://tezos.id",
+      "url": "https://tzstats.com",
       "txPath": "/",
       "accountPath": "/"
     },
