@@ -8,9 +8,10 @@
 #include "Address.h"
 #include "Protobuf/ZilliqaMessage.pb.h"
 
-#include "../Hash.h"
-#include "../HexCoding.h"
-#include "../uint256.h"
+#include "Data.h"
+#include "Hash.h"
+#include "HexCoding.h"
+#include "uint256.h"
 
 #include <cassert>
 
@@ -18,6 +19,7 @@
 
 using namespace TW;
 using namespace TW::Zilliqa;
+using ByteArray = ZilliqaMessage::ByteArray;
 
 static inline Data prependZero(Data& data) {
     if (data.size() < 16) {
@@ -28,37 +30,58 @@ static inline Data prependZero(Data& data) {
     return Data(data);
 }
 
+static inline ByteArray* byteArray(Data& amount) {
+    auto array = new ByteArray();
+    amount = prependZero(amount);
+    array->set_data(amount.data(), amount.size());
+    return array;
+}
+
+static inline ByteArray* byteArray(const void* data, size_t size) {
+    auto array = new ByteArray();
+    array->set_data(data, size);
+    return array;
+}
 
 Data Signer::getPreImage(const Proto::SigningInput& input, Address& address) noexcept {
     auto internal = ZilliqaMessage::ProtoTransactionCoreInfo();
     const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    if (!Address::decode(input.to_address(), address)) {
+    if (!Address::decode(input.to(), address)) {
         // invalid input address
         return Data(0);
     }
     const auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
+    auto gasPrice = Data(input.gas_price().begin(), input.gas_price().end());
 
     internal.set_version(input.version());
     internal.set_nonce(input.nonce());
     internal.set_toaddr(address.getKeyHash().data(), address.getKeyHash().size());
-
-    auto sender = new ZilliqaMessage::ByteArray();
-    sender->set_data(pubKey.bytes.data(), pubKey.bytes.size());
-    internal.set_allocated_senderpubkey(sender);
-
-    auto amountArray = new ZilliqaMessage::ByteArray();
-    auto amount = Data(input.amount().begin(), input.amount().end());
-    amount = prependZero(amount);
-    amountArray->set_data(amount.data(), amount.size());
-    internal.set_allocated_amount(amountArray);
-
-    auto gasPriceArray = new ZilliqaMessage::ByteArray();
-    auto gasPrice = Data(input.gas_price().begin(), input.gas_price().end());
-    gasPrice = prependZero(gasPrice);
-    gasPriceArray->set_data(gasPrice.data(), gasPrice.size());
-    internal.set_allocated_gasprice(gasPriceArray);
-
     internal.set_gaslimit(input.gas_limit());
+    internal.set_allocated_senderpubkey(byteArray(pubKey.bytes.data(), pubKey.bytes.size()));
+    internal.set_allocated_gasprice(byteArray(gasPrice));
+
+    Data amount;
+    switch (input.transaction().message_oneof_case()) {
+    case Proto::Transaction::kTransfer: {
+        const auto transfer = input.transaction().transfer();
+        amount = Data(transfer.amount().begin(), transfer.amount().end());
+        break;
+    }
+    case Proto::Transaction::kRawTransaction: {
+        const auto raw = input.transaction().raw_transaction();
+        amount = Data(raw.amount().begin(), raw.amount().end());
+        if (!raw.code().empty()) {
+            internal.set_code(raw.code());
+        }
+        if (!raw.data().empty()) {
+            internal.set_data(raw.data());
+        }
+        break;
+    }
+    default: break;
+    }
+
+    internal.set_allocated_amount(byteArray(amount));
 
     const auto serialized = internal.SerializeAsString();
     return Data(serialized.begin(), serialized.end());
@@ -71,20 +94,35 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     const auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
     const auto signature = key.signSchnorr(preImage, TWCurveSECP256k1);
+    const auto transaction = input.transaction();
 
     // build json
     nlohmann::json json = {
         {"version", input.version()},
         {"toAddr", address.checksumed()},
-        {"amount", toString(load(input.amount()))},
         {"nonce", input.nonce()},
         {"gasPrice", toString(load(input.gas_price()))},
         {"gasLimit", toString(input.gas_limit())},
-        {"code", input.code()},
-        {"data", input.data()},
+        {"code", ""},
+        {"data", ""},
         {"pubKey", hex(pubKey.bytes)},
         {"signature", hex(signature)},
     };
+
+    if (transaction.has_transfer()) {
+        const auto transfer = transaction.transfer();
+        json["amount"] = toString(load(transfer.amount()));
+    } else if (transaction.has_raw_transaction()) {
+        const auto raw = transaction.raw_transaction();
+        json["amount"] = toString(load(raw.amount()));
+        if (!raw.code().empty()) {
+            json["code"] = hex(Data(raw.code().begin(), raw.code().end()));
+        }
+        if (!raw.data().empty()) {
+            json["data"] = std::string(raw.data().begin(), raw.data().end());
+        }
+    }
+
     output.set_json(json.dump());
     output.set_signature(signature.data(), signature.size());
 

@@ -16,17 +16,19 @@ using namespace TW::Zilliqa;
 
 TEST(TWAnySignerZilliqa, Sign) {
     auto input = Proto::SigningInput();
+    auto &tx = *input.mutable_transaction();
+    auto &transfer = *tx.mutable_transfer();
     auto key = parse_hex("0x68ffa8ec149ce50da647166036555f73d57f662eb420e154621e5f24f6cf9748");
     auto amount = store(uint256_t(1000000000000));
     auto gasPrice = store(uint256_t(1000000000));
 
     input.set_version(65537);
     input.set_nonce(2);
-    input.set_to_address("zil10lx2eurx5hexaca0lshdr75czr025cevqu83uz");
-    input.set_amount(amount.data(), amount.size());
+    input.set_to("zil10lx2eurx5hexaca0lshdr75czr025cevqu83uz");
     input.set_gas_price(gasPrice.data(), gasPrice.size());
     input.set_gas_limit(1);
     input.set_private_key(key.data(), key.size());
+    transfer.set_amount(amount.data(), amount.size());
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeZilliqa);
