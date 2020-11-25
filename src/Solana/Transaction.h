@@ -58,9 +58,9 @@ enum StakeInstruction {
 };
 
 // Token instruction types
-enum TokenIntruction {
-    Token_InitializeAccount = 0,
-    Token_Transfer
+enum TokenInstruction {
+    Token_CreateAccount = 1,
+    Token_Transfer = 12,
 };
 
 // An instruction to execute a program
@@ -145,13 +145,25 @@ struct Instruction {
         this->data = data;
     }
 
-    // This constructor creates a Token instruction
-    Instruction(TokenIntruction type, const std::vector<Address>& accounts) :
+    // This constructor creates a create_account token instruction.
+    Instruction(TokenInstruction type, const std::vector<Address>& accounts) :
         programId(Address(ASSOCIATED_TOKEN_PROGRAM_ID_ADDRESS)),
         accounts(accounts)
     {
         auto data = Data();
         //encode32LE(static_cast<uint32_t>(type), data);
+        this->data = data;
+    }
+
+    // This constructor creates a transfer token instruction.
+    Instruction(TokenInstruction type, const std::vector<Address>& accounts, uint64_t value, uint8_t decimals) :
+        programId(Address(TOKEN_PROGRAM_ID_ADDRESS)),
+        accounts(accounts)
+    {
+        auto data = Data();
+        data.push_back(static_cast<uint8_t>(type));
+        encode64LE(value, data);
+        data.push_back(static_cast<uint8_t>(decimals));
         this->data = data;
     }
 };
@@ -345,10 +357,11 @@ class Message {
         this->instructions = instructions;
     }
 
-    // This constructor creates a create_account message.
+    // This constructor creates a create_account token message.
     // Assume that the mainAccount is the same as the signer
-    Message(const Address& signer, const Address& tokenMintAddress, const Address& tokenAddress, Hash recentBlockhash)
+    Message(const Address& signer, TokenInstruction type, const Address& tokenMintAddress, const Address& tokenAddress, Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
+        assert(type == TokenInstruction::Token_CreateAccount);
         MessageHeader header = {1, 0, 5};
         this->header = header;
 
@@ -370,7 +383,7 @@ class Message {
 
         std::vector<Instruction> instructions;
         // initialize instruction
-        auto initializeInstruction = Instruction(Token_InitializeAccount, std::vector<Address>{
+        auto initializeInstruction = Instruction(type, std::vector<Address>{
             signer, // fundingAddress,
             tokenAddress,
             signer,
@@ -379,6 +392,37 @@ class Message {
             tokenProgramId,
             sysvarRentId
         });
+        instructions.push_back(initializeInstruction);
+        this->instructions = instructions;
+    }
+
+    // This constructor creates a transfer token message.
+    Message(const Address& signer, TokenInstruction type, const Address& tokenMintAddress, 
+        const Address& senderTokenAddress, const Address& recipientTokenAddress, uint64_t amount, uint8_t decimals, Hash recentBlockhash)
+        : recentBlockhash(recentBlockhash) {
+        assert(type == TokenInstruction::Token_Transfer);
+        MessageHeader header = {1, 0, 2};
+        this->header = header;
+
+        auto tokenProgramId = Address(TOKEN_PROGRAM_ID_ADDRESS);
+
+        std::vector<Address> accountKeys = {
+            signer,
+            senderTokenAddress,
+            recipientTokenAddress,
+            tokenMintAddress,
+            tokenProgramId,
+        };
+        this->accountKeys = accountKeys;
+
+        std::vector<Instruction> instructions;
+        // initialize instruction
+        auto initializeInstruction = Instruction(type, std::vector<Address>{
+            senderTokenAddress,
+            tokenMintAddress,
+            recipientTokenAddress,
+            signer
+        }, amount, decimals);
         instructions.push_back(initializeInstruction);
         this->instructions = instructions;
     }

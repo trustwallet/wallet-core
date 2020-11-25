@@ -97,7 +97,7 @@ TEST(SolanaTransaction, CreateTokenAccountTransaction) {
     auto token = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
     auto tokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
     Solana::Hash recentBlockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
-    auto message = Message(signer, token, tokenAddress, recentBlockhash);
+    auto message = Message(signer, TokenInstruction::Token_CreateAccount, token, tokenAddress, recentBlockhash);
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
     EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 5);

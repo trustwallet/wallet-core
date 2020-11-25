@@ -278,7 +278,7 @@ TEST(SolanaSigner, SignCreateTokenAccount) {
     auto tokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
     Solana::Hash recentBlockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
 
-    auto message = Message(signer, token, tokenAddress, recentBlockhash);
+    auto message = Message(signer, TokenInstruction::Token_CreateAccount, token, tokenAddress, recentBlockhash);
     auto transaction = Transaction(message);
 
     std::vector<PrivateKey> signerKeys;
