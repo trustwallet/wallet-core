@@ -1,0 +1,12 @@
+{
+  "amount": "10000000000000",
+  "code": "",
+  "data": "{\"_tag\":\"DelegateStake\",\"params\":[{\"type\":\"ByStr20\",\"value\":\"0x122219cCeAb410901e96c3A0e55E46231480341b\",\"vname\":\"ssnaddr\"}]}",
+  "gasLimit": "5000",
+  "gasPrice": "2000000000",
+  "nonce": 56,
+  "pubKey": "03fb30b196ce3e976593ecc2da220dca9cdea8c84d2373770042a930b892ac0f5c",
+  "signature": "437fb5c3ce2c6b01f9d490f670539fae4533c82a21fa7edfe6b23df70d732937e8c578c8d6ed24be9150f5126f7b7c977a467af8947ef92a720908a761a6eb0d",
+  "toAddr": "43D459eC504C7432959c086B0ac7F7855E984306",
+  "version": 65537
+}
