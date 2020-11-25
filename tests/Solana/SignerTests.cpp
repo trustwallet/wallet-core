@@ -295,3 +295,37 @@ TEST(SolanaSigner, SignCreateTokenAccount) {
         "CKzRLx3AQeVeLQ7T4hss2rdbUpuAHdbwXDazxtRnSKBuncCk3WnYgy7XTrEiya19MJviYHYdTxi9gmWJY8qnR2vHVnH2DbPiKA8g72rD3VvMnjosGUBBvCwbBLge6FeQdgczMyRo9n5PcHvg9yJBTJaEEvuewyBVHwCGyGQci7eYd26xtZtCjAjwcTq4gGr3NZbeRW6jZp6j6APuew7jys4MKYRV4xPodua1TZFCkyWZr1XKzmPh7KTavtN5VzPDA8rbsvoEjHnKzjB2Bszs6pDjcBFSHyQqGsHoF8XPD35BLfjDghNtBmf9cFqo5axa6oSjANAuYg6cMSP4Hy28waSj8isr6gQjE315hWi3W1swwwPcn322gYZx6aMAcmjczaxX9aktpHYgZxixF7cYWEHxJs5QUK9mJePu9Xc6yW75UB4Ynx6dUgaSTEUzoQthF2TN3xXwu1";
     EXPECT_EQ(transaction.serialize(), expectedString);
 }
+
+TEST(SolanaSigner, SignTransferToken) {
+    const auto privateKeySigner =
+        PrivateKey(Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"));
+    const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
+    auto signer = Address(publicKeySigner);
+    EXPECT_EQ(Data(publicKeySigner.bytes.begin(), publicKeySigner.bytes.end()),
+              Base58::bitcoin.decode("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V"));
+
+    auto token = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
+    auto senderTokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+    auto recipientTokenAddress = Address("3WUX9wASxyScbA7brDipioKfXS1XEYkQ4vo3Kej9bKei");
+    uint64_t amount = 10000;
+    uint8_t decimals = 6;
+    Solana::Hash recentBlockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
+
+    auto message = Message(signer, TokenInstruction::Token_Transfer, token, 
+        senderTokenAddress, recipientTokenAddress, amount, decimals, recentBlockhash);
+    auto transaction = Transaction(message);
+
+    std::vector<PrivateKey> signerKeys;
+    signerKeys.push_back(privateKeySigner);
+    Signer::sign(signerKeys, transaction);
+
+    std::vector<Signature> expectedSignatures;
+    Signature expectedSignature("4zsTa4Y6fG7qWRw8zyZW6qQyAE2t4eBR8LyWUpxYfouTTMNughmvYsfoNsihQLURhkcxYByFZNne25SeLuxgJ5Zz");
+    expectedSignatures.push_back(expectedSignature);
+    EXPECT_EQ(transaction.signatures, expectedSignatures);
+
+    auto expectedString =
+        // test data obtained from spl-token create-account
+        "SFEo5WZa5b84MmhmyTXuKEoVr9MkiqKKjQXcrVjv8irfs8UppgbmkeJNnPSbRSrVAXUVJ5xox3xxXWhtdqob62sHMQYe3BkodWYhzinUmqf7PUaDow88kaH1NKVcw9jxa7Z3MToYPcvvRJ58ewE4ax7h8pQnoj4nnWeJW4fEaiiAQBNQxQwuQvv4Yd4J7txTUUfniuhQSdPg3NhjTEvrELcSedNjSLrQtMY3obvVqtG9wZmXJLd8T46Ar1LqzbNWZ9ELsyP9E2zSePr8jtXCKy3cMAvfcfjf7Dr575PLG1uwYEYUfPtXwRGvkjpTageTz76em2PPEANtvqKDxHbEcLeoPqha7PuTwtxrPGEbcXUAgqVfnKodfVs2rL2h";
+    EXPECT_EQ(transaction.serialize(), expectedString);
+}
