@@ -90,8 +90,8 @@ struct Instruction {
     }
 
     // This constructor creates a System CreateAccountWithSeed instruction
-    Instruction(const std::vector<Address>& accounts, uint64_t value, uint64_t space, Address programId,
-                        Address voteAddress, uint64_t seedLength, Address signer) :
+    Instruction(const std::vector<Address>& accounts, uint64_t value, uint64_t space, const Address& programId,
+        const Address& voteAddress, uint64_t seedLength, const Address& signer) :
         programId(Address(SYSTEM_PROGRAM_ID_ADDRESS)),
         accounts(accounts)
     {
@@ -111,7 +111,7 @@ struct Instruction {
     }
 
     // This constructor creates an Initialize Stake instruction
-    Instruction(StakeInstruction type, const std::vector<Address>& accounts, Address signer) :
+    Instruction(StakeInstruction type, const std::vector<Address>& accounts, const Address& signer) :
         programId(Address(STAKE_PROGRAM_ID_ADDRESS)),
         accounts(accounts)
     {
@@ -253,7 +253,7 @@ class Message {
         , instructions(instructions) {}
 
     // This constructor creates a default single-signer Transfer message
-    Message(Address from, Address to, uint64_t value, Hash recentBlockhash)
+    Message(const Address& from, const Address& to, uint64_t value, Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
         MessageHeader header = {1, 0, 1};
         this->header = header;
@@ -272,7 +272,7 @@ class Message {
     }
 
     // This constructor creates a create_account_with_seed_and_delegate_stake message
-    Message(Address signer, Address stakeAddress, Address voteAddress, uint64_t value,
+    Message(const Address& signer, const Address& stakeAddress, const Address& voteAddress, uint64_t value,
             Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
         MessageHeader header = {1, 0, 6};
@@ -311,7 +311,7 @@ class Message {
     }
 
     // This constructor creates a deactivate_stake message
-    Message(Address signer, Address stakeAddress, StakeInstruction type, Hash recentBlockhash)
+    Message(const Address& signer, const Address& stakeAddress, StakeInstruction type, Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
         MessageHeader header = {1, 0, 2};
         this->header = header;
@@ -327,7 +327,7 @@ class Message {
     }
 
     // This constructor creates a withdraw message, with the signer as the default recipient
-    Message(Address signer, Address stakeAddress, uint64_t value, StakeInstruction type,
+    Message(const Address& signer, const Address& stakeAddress, uint64_t value, StakeInstruction type,
             Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
         MessageHeader header = {1, 0, 3};
@@ -347,7 +347,7 @@ class Message {
 
     // This constructor creates a create_account message.
     // Assume that the mainAccount is the same as the signer
-    Message(Address signer, Address token, Address tokenAddress, Hash recentBlockhash)
+    Message(const Address& signer, const Address& token, const Address& tokenAddress, Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
         MessageHeader header = {1, 0, 5};
         this->header = header;
@@ -396,7 +396,7 @@ class Transaction {
     }
 
     // Default basic transfer transaction
-    Transaction(Address from, Address to, uint64_t value, Hash recentBlockhash)
+    Transaction(const Address& from, const Address& to, uint64_t value, Hash recentBlockhash)
         : message(Message(from, to, value, recentBlockhash)) {
         this->signatures.resize(1, Signature(defaultSignature));
     }

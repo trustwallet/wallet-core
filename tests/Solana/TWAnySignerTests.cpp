@@ -124,3 +124,21 @@ TEST(TWAnySignerSolana, SignWithdrawStakeTransaction) {
         "NHhpQQrSU56adk4dAQFjEYP";
     ASSERT_EQ(output.encoded(), expectedString);
 }
+
+TEST(TWAnySignerSolana, SignCreateTokenAccount) {
+    auto privateKey = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+    auto input = Solana::Proto::SigningInput();
+
+    auto& message = *input.mutable_create_token_account_transaction();
+    message.set_token_mint_address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
+    message.set_token_address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+    input.set_private_key(privateKey.data(), privateKey.size());
+    input.set_recent_blockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    auto expectedString =
+        "CKzRLx3AQeVeLQ7T4hss2rdbUpuAHdbwXDazxtRnSKBuncCk3WnYgy7XTrEiya19MJviYHYdTxi9gmWJY8qnR2vHVnH2DbPiKA8g72rD3VvMnjosGUBBvCwbBLge6FeQdgczMyRo9n5PcHvg9yJBTJaEEvuewyBVHwCGyGQci7eYd26xtZtCjAjwcTq4gGr3NZbeRW6jZp6j6APuew7jys4MKYRV4xPodua1TZFCkyWZr1XKzmPh7KTavtN5VzPDA8rbsvoEjHnKzjB2Bszs6pDjcBFSHyQqGsHoF8XPD35BLfjDghNtBmf9cFqo5axa6oSjANAuYg6cMSP4Hy28waSj8isr6gQjE315hWi3W1swwwPcn322gYZx6aMAcmjczaxX9aktpHYgZxixF7cYWEHxJs5QUK9mJePu9Xc6yW75UB4Ynx6dUgaSTEUzoQthF2TN3xXwu1";
+    ASSERT_EQ(output.encoded(), expectedString);
+}

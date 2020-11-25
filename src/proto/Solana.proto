@@ -22,6 +22,11 @@ message WithdrawStake {
     uint64 value = 2;
 }
 
+message CreateTokenAccount {
+    string token_mint_address = 1;
+    string token_address = 2;
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     oneof transaction_type {
@@ -29,9 +34,10 @@ message SigningInput {
         Stake stake_transaction = 2;
         DeactivateStake deactivate_stake_transaction = 3;
         WithdrawStake withdraw_transaction = 4;
+        CreateTokenAccount create_token_account_transaction = 5;
     }
-    bytes private_key = 5;
-    string recent_blockhash = 6;
+    bytes private_key = 6;
+    string recent_blockhash = 7;
 }
 
 // Transaction signing output.

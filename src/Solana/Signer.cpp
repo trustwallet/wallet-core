@@ -76,6 +76,13 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
             /* type */ Withdraw,
             /* recent_blockhash */ blockhash);
         signerKeys.push_back(key);
+    } else if (input.has_create_token_account_transaction()) {
+        auto protoMessage = input.create_token_account_transaction();
+        auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+        auto tokenMintAddress = Address(protoMessage.token_mint_address());
+        auto tokenAddress = Address(protoMessage.token_address());
+        message = Message(userAddress, tokenMintAddress, tokenAddress, blockhash);
+        signerKeys.push_back(key);
     }
     auto transaction = Transaction(message);
 
