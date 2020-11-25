@@ -47,7 +47,12 @@ Data shortVecLength(std::vector<T> vec) {
 }
 
 // System instruction types
-enum SystemInstruction { CreateAccount, Assign, Transfer, CreateAccountWithSeed };
+enum SystemInstruction {
+    CreateAccount,
+    Assign,
+    Transfer,
+    CreateAccountWithSeed
+};
 
 // Stake instruction types
 enum StakeInstruction {
@@ -59,8 +64,8 @@ enum StakeInstruction {
 
 // Token instruction types
 enum TokenInstruction {
-    Token_CreateAccount = 1,
-    Token_Transfer = 12,
+    CreateTokenAccount = 1,
+    TokenTransfer = 12,
 };
 
 // An instruction to execute a program
@@ -361,7 +366,7 @@ class Message {
     // Assume that the mainAccount is the same as the signer
     Message(const Address& signer, TokenInstruction type, const Address& tokenMintAddress, const Address& tokenAddress, Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
-        assert(type == TokenInstruction::Token_CreateAccount);
+        assert(type == TokenInstruction::CreateTokenAccount);
         MessageHeader header = {1, 0, 5};
         this->header = header;
 
@@ -400,7 +405,7 @@ class Message {
     Message(const Address& signer, TokenInstruction type, const Address& tokenMintAddress, 
         const Address& senderTokenAddress, const Address& recipientTokenAddress, uint64_t amount, uint8_t decimals, Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
-        assert(type == TokenInstruction::Token_Transfer);
+        assert(type == TokenInstruction::TokenTransfer);
         MessageHeader header = {1, 0, 2};
         this->header = header;
 

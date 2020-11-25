@@ -278,7 +278,7 @@ TEST(SolanaSigner, SignCreateTokenAccount) {
     auto tokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
     Solana::Hash recentBlockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
 
-    auto message = Message(signer, TokenInstruction::Token_CreateAccount, token, tokenAddress, recentBlockhash);
+    auto message = Message(signer, TokenInstruction::CreateTokenAccount, token, tokenAddress, recentBlockhash);
     auto transaction = Transaction(message);
 
     std::vector<PrivateKey> signerKeys;
@@ -311,7 +311,7 @@ TEST(SolanaSigner, SignTransferToken) {
     uint8_t decimals = 6;
     Solana::Hash recentBlockhash("CNaHfvqePgGYMvtYi9RuUdVxDYttr1zs4TWrTXYabxZi");
 
-    auto message = Message(signer, TokenInstruction::Token_Transfer, token, 
+    auto message = Message(signer, TokenInstruction::TokenTransfer, token, 
         senderTokenAddress, recipientTokenAddress, amount, decimals, recentBlockhash);
     auto transaction = Transaction(message);
 
