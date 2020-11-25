@@ -83,6 +83,16 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto tokenAddress = Address(protoMessage.token_address());
         message = Message(userAddress, TokenInstruction::Token_CreateAccount, tokenMintAddress, tokenAddress, blockhash);
         signerKeys.push_back(key);
+    } else if (input.has_token_transfer_transaction()) {
+        auto protoMessage = input.token_transfer_transaction();
+        auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+        auto tokenMintAddress = Address(protoMessage.token_mint_address());
+        auto senderTokenAddress = Address(protoMessage.sender_token_address());
+        auto recipientTokenAddress = Address(protoMessage.recipient_token_address());
+        auto amount = protoMessage.amount();
+        auto decimals = protoMessage.decimals();
+        message = Message(userAddress, TokenInstruction::Token_Transfer, tokenMintAddress, senderTokenAddress, recipientTokenAddress, amount, decimals, blockhash);
+        signerKeys.push_back(key);
     }
     auto transaction = Transaction(message);
 

@@ -27,6 +27,14 @@ message CreateTokenAccount {
     string token_address = 2;
 }
 
+message TokenTransfer {
+    string token_mint_address = 1;
+    string sender_token_address = 2;
+    string recipient_token_address = 3;
+    uint64 amount = 4;
+    uint32 decimals = 5; // Note: 8-bit value
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     oneof transaction_type {
@@ -35,9 +43,10 @@ message SigningInput {
         DeactivateStake deactivate_stake_transaction = 3;
         WithdrawStake withdraw_transaction = 4;
         CreateTokenAccount create_token_account_transaction = 5;
+        TokenTransfer token_transfer_transaction = 6;
     }
-    bytes private_key = 6;
-    string recent_blockhash = 7;
+    bytes private_key = 7;
+    string recent_blockhash = 8;
 }
 
 // Transaction signing output.
