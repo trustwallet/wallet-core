@@ -268,15 +268,16 @@ TEST(SolanaSigner, SignDelegateStake) {
 
 TEST(SolanaSigner, SignCreateTokenAccount) {
     const auto privateKeySigner =
-        PrivateKey(Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746"));
+        PrivateKey(Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"));
     const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
     auto signer = Address(publicKeySigner);
+    std::cerr << Base58::bitcoin.encode(Data(publicKeySigner.bytes.begin(), publicKeySigner.bytes.end())) << "\n";
     EXPECT_EQ(Data(publicKeySigner.bytes.begin(), publicKeySigner.bytes.end()),
-              Base58::bitcoin.decode("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu"));
+              Base58::bitcoin.decode("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V"));
 
     auto token = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
     auto tokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
-    Solana::Hash recentBlockhash("11111111111111111111111111111111");
+    Solana::Hash recentBlockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
 
     auto message = Message(signer, token, tokenAddress, recentBlockhash);
     auto transaction = Transaction(message);
@@ -286,12 +287,13 @@ TEST(SolanaSigner, SignCreateTokenAccount) {
     Signer::sign(signerKeys, transaction);
 
     std::vector<Signature> expectedSignatures;
-    Signature expectedSignature("452nDpzKcYXLd1QCYSV6fuMB7Ck6buSpz2Vh5tLp47aLcztCE6j8y693hKqrDiXtkMVLudePhH6j4TBLLQ4VdMfR");
+    Signature expectedSignature("3doYbPs5rES3TeDSrntqUvMgXCDE2ViJX2SFhLtiptVNkqPuixXs1SwU5LUZ3KwHnCzDUth6BRr3vU3gqnuUgRvQ");
     expectedSignatures.push_back(expectedSignature);
     //std::cerr << transaction.signatures.size() << " " << Base58::bitcoin.encode(transaction.signatures[0].bytes) << "\n";
     EXPECT_EQ(transaction.signatures, expectedSignatures);
 
     auto expectedString =
-        "CxrKT1LHwePh8TxPRQdY4y9PDzkAXECicWSrQWV47xHWSmnGZNCxSd6B68iT999jE5nJ23VvA6Ew6yvniEHkhqbWHJ6CNhaHzmyZhXLuhT1TFtkJWyKUNz3bAtdL6QK2SRAmHqx36oyW1pP4BACXFrA8Yfgpd5LudpmASrQFSis7LRwP6kPMsTCojqwqGVoBdGN45ZxhLsjgaoGZgAZs6KB9Wxz11sNoXZarPs8eHJLwycbWK8NBipXnYofNUikAz58jc5YR1VBqz3Jk9JvzhLuL5vCAkQrTvuMyqPonYuGf7ZYiQfGB5gM9gTuEZfCJyq9af2Vmirs1cYcQsWgLW5Tgicy1qqdFyHncuztsMxDyae5gBZZYhgHML6Lnihk2nJVF2qXPwKEd1JXFcYyvc4iXjADHZqGX53SGBD3hydyA18F7B6sj7tALLag8r6FsiaVe1b66KH";
+        // test data obtained from spl-token create-account
+        "CKzRLx3AQeVeLQ7T4hss2rdbUpuAHdbwXDazxtRnSKBuncCk3WnYgy7XTrEiya19MJviYHYdTxi9gmWJY8qnR2vHVnH2DbPiKA8g72rD3VvMnjosGUBBvCwbBLge6FeQdgczMyRo9n5PcHvg9yJBTJaEEvuewyBVHwCGyGQci7eYd26xtZtCjAjwcTq4gGr3NZbeRW6jZp6j6APuew7jys4MKYRV4xPodua1TZFCkyWZr1XKzmPh7KTavtN5VzPDA8rbsvoEjHnKzjB2Bszs6pDjcBFSHyQqGsHoF8XPD35BLfjDghNtBmf9cFqo5axa6oSjANAuYg6cMSP4Hy28waSj8isr6gQjE315hWi3W1swwwPcn322gYZx6aMAcmjczaxX9aktpHYgZxixF7cYWEHxJs5QUK9mJePu9Xc6yW75UB4Ynx6dUgaSTEUzoQthF2TN3xXwu1";
     EXPECT_EQ(transaction.serialize(), expectedString);
 }

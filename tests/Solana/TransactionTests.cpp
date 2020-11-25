@@ -96,7 +96,7 @@ TEST(SolanaTransaction, CreateTokenAccountTransaction) {
     auto signer = Address("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
     auto token = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
     auto tokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
-    Solana::Hash recentBlockhash("11111111111111111111111111111111");
+    Solana::Hash recentBlockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
     auto message = Message(signer, token, tokenAddress, recentBlockhash);
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
@@ -109,7 +109,7 @@ TEST(SolanaTransaction, CreateTokenAccountTransaction) {
     EXPECT_EQ(message.accountKeys[4].string(), "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
     EXPECT_EQ(message.accountKeys[5].string(), "SysvarRent111111111111111111111111111111111");
     EXPECT_EQ(message.accountKeys[6].string(), "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
-    EXPECT_EQ(Base58::bitcoin.encode(message.recentBlockhash.bytes), "11111111111111111111111111111111");
+    EXPECT_EQ(Base58::bitcoin.encode(message.recentBlockhash.bytes), "9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
     ASSERT_EQ(message.instructions.size(), 1);
     EXPECT_EQ(message.instructions[0].programId.string(), "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
     ASSERT_EQ(message.instructions[0].accounts.size(), 7);
@@ -122,11 +122,11 @@ TEST(SolanaTransaction, CreateTokenAccountTransaction) {
     EXPECT_EQ(message.instructions[0].accounts[6].string(), "SysvarRent111111111111111111111111111111111");
     auto transaction = Transaction(message);
     transaction.signatures.clear();
-    Signature signature("4Bwd58iuz3C1p6YMY49aja1iaohnnvMZqemfjoV1wa6yax27Zd2kq47ynmTd7s9MYT6TuD64YfJpe1GPfAYxbxXa");
+    Signature signature("3doYbPs5rES3TeDSrntqUvMgXCDE2ViJX2SFhLtiptVNkqPuixXs1SwU5LUZ3KwHnCzDUth6BRr3vU3gqnuUgRvQ");
     transaction.signatures.push_back(signature);
 
     auto expectedString =
         // test data obtained from spl-token create-account
-        "D8wyoLY6Tjxe1A6RXmaN7h4a6oEWZCESAiVHhUQHw8zyaCmjqYSWtqteb1BFQYUWr2RoVAJpXB1ZEiVwB4KXAHMfxCYRbeqffqtrf7PZ5f9TaBuAc7ze6LFXEB7gVZtn1FsjMJFoq8ka8bYeA6HVpX9jJiEkkKEoSVCF8tTYZy8vz7MiUBirpfueuR5my5Pu8kxJVMzmtnQrEYXMWdpcLwLZuasR3QJ9WTpM4tAcHJahBDgUU9bLSRYB9bxSvdmFR2aVMey9QtJL9G4eHuB2vpcU37rAv2otfvLHstNGTGSWcNu5S2cXhsghRkqS5h7sdSC7v5AhTfJ65eufyGHwAwojyTBZmUZRrfqD5J8GSUyyuxg3EWkoYLJMBRGdTjbPsrqHr3Y25VrkwFGHY2sqh3u7ZCau7KMy43k5BA91soBDsdRdVC9dQTAonyJND58gQPkXiMmp8F";
+        "CKzRLx3AQeVeLQ7T4hss2rdbUpuAHdbwXDazxtRnSKBuncCk3WnYgy7XTrEiya19MJviYHYdTxi9gmWJY8qnR2vHVnH2DbPiKA8g72rD3VvMnjosGUBBvCwbBLge6FeQdgczMyRo9n5PcHvg9yJBTJaEEvuewyBVHwCGyGQci7eYd26xtZtCjAjwcTq4gGr3NZbeRW6jZp6j6APuew7jys4MKYRV4xPodua1TZFCkyWZr1XKzmPh7KTavtN5VzPDA8rbsvoEjHnKzjB2Bszs6pDjcBFSHyQqGsHoF8XPD35BLfjDghNtBmf9cFqo5axa6oSjANAuYg6cMSP4Hy28waSj8isr6gQjE315hWi3W1swwwPcn322gYZx6aMAcmjczaxX9aktpHYgZxixF7cYWEHxJs5QUK9mJePu9Xc6yW75UB4Ynx6dUgaSTEUzoQthF2TN3xXwu1";
     EXPECT_EQ(transaction.serialize(), expectedString);
 }
