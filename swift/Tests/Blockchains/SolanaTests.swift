@@ -128,4 +128,28 @@ class SolanaTests: XCTestCase {
         XCTAssertEqual(output.encoded, expectedString)
     }
 
+    func testCreateTokenAccountSigner() throws {
+        let createAccountMessage = SolanaCreateTokenAccount.with {
+            $0.tokenMintAddress = "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"
+            $0.tokenAddress = "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP"
+        }
+        let input = SolanaSigningInput.with {
+            $0.createTokenAccountTransaction = createAccountMessage
+            $0.recentBlockhash = "9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K"
+            $0.privateKey = Data(Base58.decodeNoCheck( string: "9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5")!)
+        }
+
+        let output: SolanaSigningOutput = AnySigner.sign(input: input, coin: .solana)
+
+        let expectedString = """
+        CKzRLx3AQeVeLQ7T4hss2rdbUpuAHdbwXDazxtRnSKBuncCk3WnYgy7XTrEiya19MJviYHYdTxi9gmWJY8qnR2vHVn\
+        H2DbPiKA8g72rD3VvMnjosGUBBvCwbBLge6FeQdgczMyRo9n5PcHvg9yJBTJaEEvuewyBVHwCGyGQci7eYd26xtZtC\
+        jAjwcTq4gGr3NZbeRW6jZp6j6APuew7jys4MKYRV4xPodua1TZFCkyWZr1XKzmPh7KTavtN5VzPDA8rbsvoEjHnKzj\
+        B2Bszs6pDjcBFSHyQqGsHoF8XPD35BLfjDghNtBmf9cFqo5axa6oSjANAuYg6cMSP4Hy28waSj8isr6gQjE315hWi3\
+        W1swwwPcn322gYZx6aMAcmjczaxX9aktpHYgZxixF7cYWEHxJs5QUK9mJePu9Xc6yW75UB4Ynx6dUgaSTEUzoQthF2\
+        TN3xXwu1
+        """
+
+        XCTAssertEqual(output.encoded, expectedString)
+    }
 }

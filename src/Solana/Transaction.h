@@ -347,7 +347,7 @@ class Message {
 
     // This constructor creates a create_account message.
     // Assume that the mainAccount is the same as the signer
-    Message(const Address& signer, const Address& token, const Address& tokenAddress, Hash recentBlockhash)
+    Message(const Address& signer, const Address& tokenMintAddress, const Address& tokenAddress, Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
         MessageHeader header = {1, 0, 5};
         this->header = header;
@@ -360,7 +360,7 @@ class Message {
         std::vector<Address> accountKeys = {
             signer,
             tokenAddress,
-            token,
+            tokenMintAddress,
             systemProgramId,
             tokenProgramId,
             sysvarRentId,
@@ -374,7 +374,7 @@ class Message {
             signer, // fundingAddress,
             tokenAddress,
             signer,
-            token,
+            tokenMintAddress,
             systemProgramId,
             tokenProgramId,
             sysvarRentId
