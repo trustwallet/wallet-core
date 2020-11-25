@@ -30,7 +30,7 @@ static inline Data prependZero(Data& data) {
     return Data(data);
 }
 
-static inline ByteArray* byteArray(Data &amount) {
+static inline ByteArray* byteArray(Data& amount) {
     auto array = new ByteArray();
     amount = prependZero(amount);
     array->set_data(amount.data(), amount.size());
@@ -61,10 +61,13 @@ Data Signer::getPreImage(const Proto::SigningInput& input, Address& address) noe
     internal.set_allocated_gasprice(byteArray(gasPrice));
 
     Data amount;
-    if (input.transaction().has_transfer()) {
+    switch (input.transaction().message_oneof_case()) {
+    case Proto::Transaction::kTransfer: {
         const auto transfer = input.transaction().transfer();
         amount = Data(transfer.amount().begin(), transfer.amount().end());
-    } else if (input.transaction().has_raw_transaction()) {
+        break;
+    }
+    case Proto::Transaction::kRawTransaction: {
         const auto raw = input.transaction().raw_transaction();
         amount = Data(raw.amount().begin(), raw.amount().end());
         if (!raw.code().empty()) {
@@ -73,6 +76,9 @@ Data Signer::getPreImage(const Proto::SigningInput& input, Address& address) noe
         if (!raw.data().empty()) {
             internal.set_data(raw.data());
         }
+        break;
+    }
+    default: break;
     }
 
     internal.set_allocated_amount(byteArray(amount));

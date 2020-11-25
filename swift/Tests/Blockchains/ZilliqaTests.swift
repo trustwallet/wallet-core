@@ -85,7 +85,7 @@ class ZilliqaTests: XCTestCase {
                     "type": "ByStr20",
                     "value": delegatorHex,
                     "vname": "ssnaddr"
-                ],
+                ]
             ]
         ]
         let jsonData = try JSONSerialization.data(withJSONObject: json, options: [.sortedKeys])
