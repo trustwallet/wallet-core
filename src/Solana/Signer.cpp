@@ -90,7 +90,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto senderTokenAddress = Address(protoMessage.sender_token_address());
         auto recipientTokenAddress = Address(protoMessage.recipient_token_address());
         auto amount = protoMessage.amount();
-        auto decimals = protoMessage.decimals();
+        auto decimals = static_cast<uint8_t>(protoMessage.decimals());
         message = Message(userAddress, TokenInstruction::Token_Transfer, tokenMintAddress, senderTokenAddress, recipientTokenAddress, amount, decimals, blockhash);
         signerKeys.push_back(key);
     }

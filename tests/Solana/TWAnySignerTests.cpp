@@ -151,7 +151,7 @@ TEST(TWAnySignerSolana, SignTokenTransfer) {
     message.set_token_mint_address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
     message.set_sender_token_address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
     message.set_recipient_token_address("3WUX9wASxyScbA7brDipioKfXS1XEYkQ4vo3Kej9bKei");
-    message.set_amount(4000);
+    message.set_amount(4000); // 0.004
     message.set_decimals(6);
     input.set_private_key(privateKey.data(), privateKey.size());
     input.set_recent_blockhash("CNaHfvqePgGYMvtYi9RuUdVxDYttr1zs4TWrTXYabxZi");
