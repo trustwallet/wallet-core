@@ -288,7 +288,6 @@ TEST(SolanaSigner, SignCreateTokenAccount) {
     std::vector<Signature> expectedSignatures;
     Signature expectedSignature("3doYbPs5rES3TeDSrntqUvMgXCDE2ViJX2SFhLtiptVNkqPuixXs1SwU5LUZ3KwHnCzDUth6BRr3vU3gqnuUgRvQ");
     expectedSignatures.push_back(expectedSignature);
-    //std::cerr << transaction.signatures.size() << " " << Base58::bitcoin.encode(transaction.signatures[0].bytes) << "\n";
     EXPECT_EQ(transaction.signatures, expectedSignatures);
 
     auto expectedString =
