@@ -136,9 +136,9 @@ TEST(SolanaTransaction, TransferTokenTransaction) {
     auto token = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
     auto senderTokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
     auto recipientTokenAddress = Address("3WUX9wASxyScbA7brDipioKfXS1XEYkQ4vo3Kej9bKei");
-    uint64_t amount = 10000;
+    uint64_t amount = 4000;
     uint8_t decimals = 6;
-    Solana::Hash recentBlockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
+    Solana::Hash recentBlockhash("CNaHfvqePgGYMvtYi9RuUdVxDYttr1zs4TWrTXYabxZi");
     auto message = Message(signer, TokenInstruction::Token_Transfer, token, senderTokenAddress, recipientTokenAddress, amount, decimals, recentBlockhash);
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
@@ -149,11 +149,12 @@ TEST(SolanaTransaction, TransferTokenTransaction) {
     ASSERT_EQ(message.instructions[0].accounts.size(), 4);
     auto transaction = Transaction(message);
     transaction.signatures.clear();
-    Signature signature("4zsTa4Y6fG7qWRw8zyZW6qQyAE2t4eBR8LyWUpxYfouTTMNughmvYsfoNsihQLURhkcxYByFZNne25SeLuxgJ5Zz");
+    Signature signature("3vZ67CGoRYkuT76TtpP2VrtTPBfnvG2xj6mUTvvux46qbnpThgQDgm27nC3yQVUZrABFjT9Qo7vA74tCjtV5P9Xg");
     transaction.signatures.push_back(signature);
 
     auto expectedString =
-        // test data obtained from spl-token create-account
-        "SFEo5WZa5b84MmhmyTXuKEoVr9MkiqKKjQXcrVjv8irfs8UppgbmkeJNnPSbRSrVAXUVJ5xox3xxXWhtdqob62sHMQYe3BkodWYhzinUmqf7PUaDow88kaH1NKVcw9jxa7Z3MToYPcvvRJ58ewE4ax7h8pQnoj4nnWeJW4fEaiiAQBNQxQwuQvv4Yd4J7txTUUfniuhQSdPg3NhjTEvrELcSedNjSLrQtMY3obvVqtG9wZmXJLd8T46Ar1LqzbNWZ9ELsyP9E2zSePr8jtXCKy3cMAvfcfjf7Dr575PLG1uwYEYUfPtXwRGvkjpTageTz76em2PPEANtvqKDxHbEcLeoPqha7PuTwtxrPGEbcXUAgqVfnKodfVs2rL2h";
+        // https://explorer.solana.com/tx/3vZ67CGoRYkuT76TtpP2VrtTPBfnvG2xj6mUTvvux46qbnpThgQDgm27nC3yQVUZrABFjT9Qo7vA74tCjtV5P9Xg
+        // test data obtained from spl-token transfer
+        "PGfKqEaH2zZXDMZLcU6LUKdBSzU1GJWJ1CJXtRYCxaCH7k8uok38WSadZfrZw3TGejiau7nSpan2GvbK26hQim24jRe2AupmcYJFrgsdaCt1Aqs5kpGjPqzgj9krgxTZwwob3xgC1NdHK5BcNwhxwRtrCphGEH7zUFpGFrFrHzgpf2KY8FvPiPELQyxzTBuyNtjLjMMreehSKShEjD9Xzp1QeC1pEF8JL6vUKzxMXuveoEYem8q8JiWszYzmTMfDk13JPgv7pXFGMqDV3yNGCLsWccBeSFKN4UKECre6x2QbUEiKGkHkMc4zQwwyD8tGmEMBAGm339qdANssEMNpDeJp2LxLDStSoWShHnotcrH7pUa94xCVvCPPaomF";
     EXPECT_EQ(transaction.serialize(), expectedString);
 }
