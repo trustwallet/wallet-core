@@ -53,13 +53,13 @@ TEST(TWZelcash, ExtendedKeys) {
 
 TEST(TWZelcash, DerivePubkeyFromXpub) {
     auto xpub = STRING("xpub6DATuScKPEk6YvULrHPff1NKC49nyz5mCZQyxSDEQihq3kfoKDYCznLrsdW4KmXw9TryNfEZ9JSD8tJL9UTC3LnBA54YZL7nqMtJm7Ffnoz");
-    auto pubKey3 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeZelcash, STRING("m/44'/19167'/0'/0/3").get());
-    auto pubKey5 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeZelcash, STRING("m/44'/19167'/0'/0/5").get());
+    auto pubKey3 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeZelcash, STRING("m/44'/19167'/0'/0/3").get()));
+    auto pubKey5 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeZelcash, STRING("m/44'/19167'/0'/0/5").get()));
 
-    auto address3 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey3, TWCoinTypeZelcash));
+    auto address3 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey3.get(), TWCoinTypeZelcash));
     auto address3String = WRAPS(TWAnyAddressDescription(address3.get()));
 
-    auto address5 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey5, TWCoinTypeZelcash));
+    auto address5 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey5.get(), TWCoinTypeZelcash));
     auto address5String = WRAPS(TWAnyAddressDescription(address5.get()));
 
     assertStringsEqual(address3String, "t1NdSKKkBXV3GBDMcPvpWu12qcNwAZwB4hD");
@@ -68,7 +68,7 @@ TEST(TWZelcash, DerivePubkeyFromXpub) {
 
 TEST(TWZelcash, DerivePubkeyFromXpub2) {
     auto xpub = STRING("xpub6C7HhMqpir3KBA6ammv5B58RT3XFTJqoZFoj3J56dz9XwehZ2puSH38ERtnz7HaXGxaZP8AHT4M2bSRHpBXUZrbsJ2xg3xs53DGKYCqj8mr");
-    auto pubKey = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeZelcash, STRING("m/44'/19167'/0'/0/0").get());
-    auto address = WRAPS(TWCoinTypeDeriveAddressFromPublicKey(TWCoinTypeZelcash, pubKey));
+    auto pubKey = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeZelcash, STRING("m/44'/19167'/0'/0/0").get()));
+    auto address = WRAPS(TWCoinTypeDeriveAddressFromPublicKey(TWCoinTypeZelcash, pubKey.get()));
     assertStringsEqual(address, "t1TKCtCETHPrAdA6eY1fdhhnTkTmb371oPt");
 }

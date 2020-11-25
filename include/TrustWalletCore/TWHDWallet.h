@@ -25,15 +25,15 @@ struct TWHDWallet;
 TW_EXPORT_STATIC_METHOD
 bool TWHDWalletIsValid(TWString *_Nonnull mnemonic);
 
-/// Creates a new random HDWallet with the provided strength in bits.
+/// Creates a new random HDWallet with the provided strength in bits.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWHDWallet *_Nonnull TWHDWalletCreate(int strength, TWString *_Nonnull passphrase);
 
-/// Creates an HDWallet from a mnemonic seed.
+/// Creates an HDWallet from a mnemonic seed.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWHDWallet *_Nonnull TWHDWalletCreateWithMnemonic(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase);
 
-/// Creates an HDWallet from a seed.
+/// Creates an HDWallet from a seed.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWHDWallet *_Nonnull TWHDWalletCreateWithData(TWData *_Nonnull data, TWString *_Nonnull passphrase);
 
@@ -49,11 +49,11 @@ TWData *_Nonnull TWHDWalletSeed(struct TWHDWallet *_Nonnull wallet);
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWHDWalletMnemonic(struct TWHDWallet *_Nonnull wallet);
 
-/// Returns master key.
+/// Returns master key.  Returned object needs to be deleted.
 TW_EXPORT_METHOD
 struct TWPrivateKey *_Nonnull TWHDWalletGetMasterKey(struct TWHDWallet *_Nonnull wallet, enum TWCurve curve);
 
-/// Generates the default private key for the specified coin.
+/// Generates the default private key for the specified coin.  Returned object needs to be deleted.
 TW_EXPORT_METHOD
 struct TWPrivateKey *_Nonnull TWHDWalletGetKeyForCoin(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin);
 
@@ -61,11 +61,11 @@ struct TWPrivateKey *_Nonnull TWHDWalletGetKeyForCoin(struct TWHDWallet *_Nonnul
 TW_EXPORT_METHOD
 TWString *_Nonnull TWHDWalletGetAddressForCoin(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin);
 
-/// Generates the private key for the specified derivation path.
+/// Generates the private key for the specified derivation path.  Returned object needs to be deleted.
 TW_EXPORT_METHOD
 struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, TWString *_Nonnull derivationPath);
 
-/// Generates the private key for the specified BIP44 path.
+/// Generates the private key for the specified BIP44 path.  Returned object needs to be deleted.
 ///
 /// @see https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
 TW_EXPORT_METHOD
@@ -75,11 +75,11 @@ struct TWPrivateKey *_Nonnull TWHDWalletGetKeyBIP44(struct TWHDWallet *_Nonnull 
 TW_EXPORT_METHOD
 TWString *_Nonnull TWHDWalletGetExtendedPrivateKey(struct TWHDWallet *_Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, enum TWHDVersion version);
 
-/// Returns the exteded public key.
+/// Returns the exteded public key.  Returned object needs to be deleted.
 TW_EXPORT_METHOD
 TWString *_Nonnull TWHDWalletGetExtendedPublicKey(struct TWHDWallet *_Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, enum TWHDVersion version);
 
-/// Computes the public key from an exteded public key representation.
+/// Computes the public key from an exteded public key representation.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWPublicKey *_Nullable TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, enum TWCoinType coin, TWString *_Nonnull derivationPath);
 
