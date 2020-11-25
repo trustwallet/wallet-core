@@ -55,8 +55,8 @@ TEST(TWTONAddress, HDWallet) {
 
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(STRING(mnemonic).get(), STRING(passphrase).get()));
 
-    auto privateKey = TWHDWalletGetKey(wallet.get(), TWCoinTypeTON, TWCoinTypeDerivationPath(TWCoinTypeTON));
-    auto publicKey = TWPrivateKeyGetPublicKeyEd25519(privateKey);
+    auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeTON, TWCoinTypeDerivationPath(TWCoinTypeTON)));
+    auto publicKey = TWPrivateKeyGetPublicKeyEd25519(privateKey.get());
     auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeTON));
     auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
 

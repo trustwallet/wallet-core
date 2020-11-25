@@ -76,13 +76,13 @@ TEST(Qtum, ExtendedKeys) {
 
 TEST(Qtum, DeriveFromXpub) {
     auto xpub = STRING("xpub6CAkJZPecMDxRXEXZpDwyxcQ6CGie8GdovuJhsGwc2gFbLxdGr1PyqBXmsL7aYds1wfY2rB3YMVZiEE3CB3Lkj6KGoq1rEJ1wuaGkMDBf1m");
-    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeQtum, STRING("m/44'/2301'/0'/0/2").get());
-    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeQtum, STRING("m/44'/2301'/0'/0/9").get());
+    auto pubKey2 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeQtum, STRING("m/44'/2301'/0'/0/2").get()));
+    auto pubKey9 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeQtum, STRING("m/44'/2301'/0'/0/9").get()));
 
-    auto address2 = TWBitcoinAddressCreateWithPublicKey(pubKey2, TWCoinTypeP2pkhPrefix(TWCoinTypeQtum));
+    auto address2 = TWBitcoinAddressCreateWithPublicKey(pubKey2.get(), TWCoinTypeP2pkhPrefix(TWCoinTypeQtum));
     auto address2String = WRAPS(TWBitcoinAddressDescription(address2));
 
-    auto address9 = TWBitcoinAddressCreateWithPublicKey(pubKey9, TWCoinTypeP2pkhPrefix(TWCoinTypeQtum));
+    auto address9 = TWBitcoinAddressCreateWithPublicKey(pubKey9.get(), TWCoinTypeP2pkhPrefix(TWCoinTypeQtum));
     auto address9String = WRAPS(TWBitcoinAddressDescription(address9));
 
     assertStringsEqual(address2String, "QStYeAAfiYKxsABzY9yugHDpm5bsynYPqc");
@@ -91,13 +91,13 @@ TEST(Qtum, DeriveFromXpub) {
 
 TEST(Qtum, DeriveFromZpub) {
     auto zpub = STRING("zpub6rJJqJZcpaC7DrdsYiprLfUfvtaf11ZZWmrmYeWMkdZTx6tgfQLiBZuisraogskwBRLMGWfXoCyWRrXSypwPdNV2UWJXm5bDVQvBXvrzz9d");
-    auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeQtum, STRING("m/44'/2301'/0'/0/4").get());
-    auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeQtum, STRING("m/44'/2301'/0'/0/11").get());
+    auto pubKey4 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeQtum, STRING("m/44'/2301'/0'/0/4").get()));
+    auto pubKey11 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeQtum, STRING("m/44'/2301'/0'/0/11").get()));
 
-    auto address4 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPQtum, pubKey4));
+    auto address4 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPQtum, pubKey4.get()));
     auto address4String = WRAPS(TWSegwitAddressDescription(address4.get()));
 
-    auto address11 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPQtum, pubKey11));
+    auto address11 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPQtum, pubKey11.get()));
     auto address11String = WRAPS(TWSegwitAddressDescription(address11.get()));
 
     assertStringsEqual(address4String, "qc1q3cvjmc2cgjkz9y58waj3r9ccchmrmrdzq03783");
