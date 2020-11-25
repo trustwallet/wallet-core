@@ -271,7 +271,6 @@ TEST(SolanaSigner, SignCreateTokenAccount) {
         PrivateKey(Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"));
     const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
     auto signer = Address(publicKeySigner);
-    std::cerr << Base58::bitcoin.encode(Data(publicKeySigner.bytes.begin(), publicKeySigner.bytes.end())) << "\n";
     EXPECT_EQ(Data(publicKeySigner.bytes.begin(), publicKeySigner.bytes.end()),
               Base58::bitcoin.decode("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V"));
 
