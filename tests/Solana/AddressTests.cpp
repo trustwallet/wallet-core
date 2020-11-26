@@ -67,12 +67,30 @@ TEST(SolanaTokenProgram, findProgramAddress) {
 }
 
 TEST(SolanaTokenProgram, createProgramAddress) {
-    std::vector<Data> seeds = {
-        Base58::bitcoin.decode("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V"),
-        Base58::bitcoin.decode("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
-        Base58::bitcoin.decode("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"),
-        Data{255}
-    };
-    Address address = TokenProgram::createProgramAddress(seeds, Address("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"));
-    EXPECT_EQ(address.string(), "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+    {
+        std::vector<Data> seeds = {
+            Base58::bitcoin.decode("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V"),
+            Base58::bitcoin.decode("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
+            Base58::bitcoin.decode("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"),
+            Data{255}
+        };
+        Address address = TokenProgram::createProgramAddress(seeds, Address("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"));
+        EXPECT_EQ(address.string(), "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+    }
+    // https://github.com/solana-labs/solana/blob/f25c969ad87e64e6d1fd07d2d37096ac71cf8d06/sdk/program/src/pubkey.rs#L353-L435
+    {
+        std::vector<Data> seeds = {TW::data(""), {1}};
+        Address address = TokenProgram::createProgramAddress(seeds, Address("BPFLoader1111111111111111111111111111111111"));
+        EXPECT_EQ(address.string(), "3gF2KMe9KiC6FNVBmfg9i267aMPvK37FewCip4eGBFcT");
+    }
+    {
+        std::vector<Data> seeds = {TW::data("Talking"), TW::data("Squirrels")};
+        Address address = TokenProgram::createProgramAddress(seeds, Address("BPFLoader1111111111111111111111111111111111"));
+        EXPECT_EQ(address.string(), "HwRVBufQ4haG5XSgpspwKtNd3PC9GM9m1196uJW36vds");
+    }
+    {
+        std::vector<Data> seeds = {Base58::bitcoin.decode("SeedPubey1111111111111111111111111111111111")};
+        Address address = TokenProgram::createProgramAddress(seeds, Address("BPFLoader1111111111111111111111111111111111"));
+        EXPECT_EQ(address.string(), "GUs5qLUfsEHkcMB9T38vjr18ypEhRuNWiePW2LoK4E3K");
+    }
 }

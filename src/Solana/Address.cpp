@@ -119,7 +119,7 @@ Address TokenProgram::createProgramAddress(const std::vector<TW::Data>& seeds, c
         append(hashInput, seed);
     }
     // append programId
-    append(hashInput, Base58::bitcoin.decode("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"));
+    append(hashInput, TW::data(programId.bytes.data(), programId.bytes.size()));
     append(hashInput, TW::data("ProgramDerivedAddress"));
     // compute hash
     Data hash = TW::Hash::sha256(hashInput.data(), hashInput.size());
