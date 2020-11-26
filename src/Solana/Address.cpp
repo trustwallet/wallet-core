@@ -53,3 +53,8 @@ Address addressFromValidatorSeed(const Address& fromAddress, const Address& vali
     Data hash = TW::Hash::sha256(extended);
     return Address(PublicKey(hash, TWPublicKeyTypeED25519));
 }
+
+std::string TokenAddress::defaultTokenAddress(const std::string& mainAddress) {
+    // TODO implement, based on Rust code from spl-token
+    return std::string("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+}

@@ -8,6 +8,7 @@
 
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWHDWallet.h>
+#include <TrustWalletCore/TWSolanaAddress.h>
 
 #include <gtest/gtest.h>
 
@@ -25,4 +26,9 @@ TEST(TWSolanaAddress, HDWallet) {
     auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
 
     assertStringsEqual(addressStr, "2bUBiBNZyD29gP1oV6de7nxowMLoDBtopMMTGgMvjG5m");
+}
+
+TEST(TWSolanaAddress, defaultTokenAddress) {
+    auto default1 = WRAPS(TWSolanaAddressDefaultTokenAddress(TWStringCreateWithUTF8Bytes("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V")));
+    EXPECT_EQ(std::string(TWStringUTF8Bytes(default1.get())), "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
 }

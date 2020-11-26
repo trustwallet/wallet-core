@@ -12,6 +12,7 @@
 #include <array>
 #include <cstdint>
 #include <vector>
+#include <string>
 
 namespace TW::Solana {
 
@@ -34,6 +35,11 @@ class Address : public Base58Address<32> {
 
     /// Returns a vector of the address.
     Data vector() const;
+};
+
+class TokenAddress {
+public:
+    static std::string defaultTokenAddress(const std::string& mainAddress);
 };
 
 } // namespace TW::Solana

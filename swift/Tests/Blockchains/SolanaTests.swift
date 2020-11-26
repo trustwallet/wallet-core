@@ -179,4 +179,9 @@ class SolanaTests: XCTestCase {
 
         XCTAssertEqual(output.encoded, expectedString)
     }
+
+    func testDefaultTokenAddress() throws {
+        let defaultAddress = SolanaToken.defaultTokenAddress(mainAddress: "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V")
+        XCTAssertEqual(defaultAddress, "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP")
+    }
 }

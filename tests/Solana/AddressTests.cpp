@@ -42,3 +42,8 @@ TEST(SolanaAddress, isValid) {
     ASSERT_FALSE(
         Address::isValid("2gVkYWexTHR5Hb2aLeQN3tnngvWzisFKXDUPrgMHpd")); // Is invalid length
 }
+
+TEST(SolanaAddress, defaultTokenAddress) {
+    auto default1 = TokenAddress::defaultTokenAddress("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+    EXPECT_EQ(default1, "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+}
