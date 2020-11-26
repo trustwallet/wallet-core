@@ -30,6 +30,6 @@ TEST(TWSolanaAddress, HDWallet) {
 
 TEST(TWSolanaToken, defaultTokenAddress) {
     const char* serumToken = "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt";
-    auto address1 = WRAPS(TWSolanaTokenDefaultTokenAddress(TWStringCreateWithUTF8Bytes("Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ"), TWStringCreateWithUTF8Bytes(serumToken)));
-    EXPECT_EQ(std::string(TWStringUTF8Bytes(address1.get())), "HzqnaMjWFbK2io6WgV2Z5uBguCBU21RMUS16wsDUHkon");
+    auto address1 = WRAPS(TWSolanaTokenDefaultTokenAddress(TWStringCreateWithUTF8Bytes("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V"), TWStringCreateWithUTF8Bytes(serumToken)));
+    EXPECT_EQ(std::string(TWStringUTF8Bytes(address1.get())), "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
 }
