@@ -6,7 +6,9 @@
 
 #include "Base58.h"
 #include "HexCoding.h"
+#include "PrivateKey.h"
 #include "proto/Solana.pb.h"
+#include "Solana/Address.h"
 #include "../interface/TWTestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 
@@ -126,35 +128,42 @@ TEST(TWAnySignerSolana, SignWithdrawStakeTransaction) {
 }
 
 TEST(TWAnySignerSolana, SignCreateTokenAccount) {
-    auto privateKey = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+    auto privateKey = parse_hex("4b9d6f57d28b06cbfa1d4cc710953e62d653caf853415c56ffd9d150acdeb7f7");
+    auto privko = PrivateKey(privateKey);
+    auto pubko = privko.getPublicKey(TWPublicKeyTypeED25519);
+    ASSERT_EQ(Address(pubko).string(), "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
+    //Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_create_token_account_transaction();
     message.set_token_mint_address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
-    message.set_token_address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+    message.set_token_address("ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf");
     input.set_private_key(privateKey.data(), privateKey.size());
-    input.set_recent_blockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
+    input.set_recent_blockhash("HxaCmxrXgzkzXYvDFTToENtf9rVKk7cbiuSUqnqNheHq");
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeSolana);
 
     auto expectedString =
-        "CKzRLx3AQeVeLQ7T4hss2rdbUpuAHdbwXDazxtRnSKBuncCk3WnYgy7XTrEiya19MJviYHYdTxi9gmWJY8qnR2vHVnH2DbPiKA8g72rD3VvMnjosGUBBvCwbBLge6FeQdgczMyRo9n5PcHvg9yJBTJaEEvuewyBVHwCGyGQci7eYd26xtZtCjAjwcTq4gGr3NZbeRW6jZp6j6APuew7jys4MKYRV4xPodua1TZFCkyWZr1XKzmPh7KTavtN5VzPDA8rbsvoEjHnKzjB2Bszs6pDjcBFSHyQqGsHoF8XPD35BLfjDghNtBmf9cFqo5axa6oSjANAuYg6cMSP4Hy28waSj8isr6gQjE315hWi3W1swwwPcn322gYZx6aMAcmjczaxX9aktpHYgZxixF7cYWEHxJs5QUK9mJePu9Xc6yW75UB4Ynx6dUgaSTEUzoQthF2TN3xXwu1";
+        "EejFELsKdM35LPY2nodM2r2WWEWx9NYzvetoHsqmJMBuZ8EENRdQkD1Vry2SXtG6HbnmLo7tdjwjed3EbvwZyMY7e2gM5cChCKFBZ6RC9pDMBNyP3uCdtJvG8VgbbiwXxc9PJw6vP6JtWvhRGnXzbWpSaiNY48BGZK64M2VMRJowxMGAHyU8Ju6Q1Nm5eShuZjnk4PjVtdUN2SYC2aoihMdHr3dAcRSvnFq5PzrLDUyNT1QvHGu2zRDmhY4fLLHCdS6vyAAJou7dfxEerqKWkmn9mvKMKUw6MnciDsuJdNZLeJ262rHe6ExMa7dZznKtHshGYhANwqbCcttPUU67TYLCzBMRtVSr1iX3dFENWpjcjCYzhdND8TmqdaMYBDHuq8A1YnLnatx6qoivfpZvWvCG39a6PHewtLbyDSghZj4Z8vHpAVz5D83MqT65wkP1WNY7b9BG3Z";
     ASSERT_EQ(output.encoded(), expectedString);
 }
 
 TEST(TWAnySignerSolana, SignTokenTransfer) {
     auto privateKey = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+    auto privko = PrivateKey(privateKey);
+    auto pubko = privko.getPublicKey(TWPublicKeyTypeED25519);
+    ASSERT_EQ(Address(pubko).string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_token_transfer_transaction();
     message.set_token_mint_address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
     message.set_sender_token_address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
-    message.set_recipient_token_address("3WUX9wASxyScbA7brDipioKfXS1XEYkQ4vo3Kej9bKei");
-    message.set_amount(4000); // 0.004
+    message.set_recipient_token_address("ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf");
+    message.set_amount(6100); // 0.0061
     message.set_decimals(6);
     input.set_private_key(privateKey.data(), privateKey.size());
-    input.set_recent_blockhash("CNaHfvqePgGYMvtYi9RuUdVxDYttr1zs4TWrTXYabxZi");
+    input.set_recent_blockhash("zMEbroNLJ4vfDTdQyA72rk35c7nPo4K38efHLujbSuz");
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeSolana);
