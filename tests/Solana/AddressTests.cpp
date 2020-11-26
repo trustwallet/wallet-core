@@ -43,7 +43,36 @@ TEST(SolanaAddress, isValid) {
         Address::isValid("2gVkYWexTHR5Hb2aLeQN3tnngvWzisFKXDUPrgMHpd")); // Is invalid length
 }
 
-TEST(SolanaAddress, defaultTokenAddress) {
-    auto default1 = TokenAddress::defaultTokenAddress("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
-    EXPECT_EQ(default1, "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+TEST(SolanaAddress, isValidOnCurve) {
+    EXPECT_TRUE(Address::isValidOnCurve(Base58::bitcoin.decode("68io7dTfyeWua1wD1YcCMka4y5iiChceaFRCBjqCM5PK")));
+    EXPECT_TRUE(Address::isValidOnCurve(Base58::bitcoin.decode("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP")));
+}
+
+TEST(SolanaTokenProgram, defaultTokenAddress) {
+    const std::string serumToken = "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt";
+    EXPECT_EQ(TokenProgram::defaultTokenAddress("HBYC51YrGFAZ8rM7Sj8e9uqKggpSrDYrinQDZzvMtqQp", serumToken),
+        "68io7dTfyeWua1wD1YcCMka4y5iiChceaFRCBjqCM5PK");
+    EXPECT_EQ(TokenProgram::defaultTokenAddress("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V", serumToken),
+        "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+}
+
+TEST(SolanaTokenProgram, findProgramAddress) {
+    std::vector<Data> seeds = {
+        Base58::bitcoin.decode("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V"),
+        Base58::bitcoin.decode("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
+        Base58::bitcoin.decode("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"),
+    };
+    std::string address = TokenProgram::findProgramAddress(seeds, Address("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"));
+    EXPECT_EQ(address, "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+}
+
+TEST(SolanaTokenProgram, createProgramAddress) {
+    std::vector<Data> seeds = {
+        Base58::bitcoin.decode("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V"),
+        Base58::bitcoin.decode("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
+        Base58::bitcoin.decode("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"),
+        Data{255}
+    };
+    Address address = TokenProgram::createProgramAddress(seeds, Address("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"));
+    EXPECT_EQ(address.string(), "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
 }

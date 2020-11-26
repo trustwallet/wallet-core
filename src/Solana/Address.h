@@ -35,11 +35,21 @@ class Address : public Base58Address<32> {
 
     /// Returns a vector of the address.
     Data vector() const;
+
+    /// Check if given address is on ed25519 curve
+    static bool isValidOnCurve(const Data& data);
 };
 
-class TokenAddress {
+class TokenProgram {
 public:
-    static std::string defaultTokenAddress(const std::string& mainAddress);
+    /// Derive default token address for main address and token
+    static std::string defaultTokenAddress(const std::string& mainAddress, const std::string& tokenMintAddress);
+
+    /// Create a new valid address, if neeed, trying several
+    static std::string findProgramAddress(const std::vector<TW::Data>& seeds, const Address& programId);
+
+    /// Create a new address for program, with given seeds
+    static Address createProgramAddress(const std::vector<TW::Data>& seeds, const Address& programId);
 };
 
 } // namespace TW::Solana

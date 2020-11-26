@@ -15,6 +15,6 @@ TW_EXPORT_CLASS
 struct TWSolanaToken;
 
 TW_EXPORT_STATIC_METHOD
-TWString* _Nullable TWSolanaTokenDefaultTokenAddress(TWString* _Nonnull mainAddress);
+TWString* _Nullable TWSolanaTokenDefaultTokenAddress(TWString* _Nonnull mainAddress, TWString* _Nonnull tokenMintAddress);
 
 TW_EXTERN_C_END

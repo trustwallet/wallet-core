@@ -14,7 +14,7 @@ using namespace TW;
 struct TWSolanaToken {
 };
 
-TWString *_Nonnull TWSolanaTokenDefaultTokenAddress(TWString *_Nonnull mainAddress) {
-    std::string defaultAddress = TokenAddress::defaultTokenAddress(TWStringUTF8Bytes(mainAddress));
+TWString *_Nonnull TWSolanaTokenDefaultTokenAddress(TWString *_Nonnull mainAddress, TWString* _Nonnull tokenMintAddress) {
+    std::string defaultAddress = TokenProgram::defaultTokenAddress(TWStringUTF8Bytes(mainAddress), TWStringUTF8Bytes(tokenMintAddress));
     return TWStringCreateWithUTF8Bytes(defaultAddress.c_str());
 }
