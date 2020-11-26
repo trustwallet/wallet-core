@@ -69,8 +69,9 @@ bool Address::isValidOnCurve(const Data& data) {
 }
 
 /*
- * Based on solana code, create_program_address()
- * https://github.com/solana-labs/solana/blob/master/sdk/program/src/pubkey.rs#L135
+ * Based on solana-program-library code, get_associated_token_address()
+ * https://github.com/solana-labs/solana-program-library/blob/master/associated-token-account/program/src/lib.rs#L35
+ * https://github.com/solana-labs/solana-program-library/blob/master/associated-token-account/program/src/lib.rs#L19
  */
 std::string TokenProgram::defaultTokenAddress(const std::string& mainAddress, const std::string& tokenMintAddress) {
     Address main = Address(mainAddress);
