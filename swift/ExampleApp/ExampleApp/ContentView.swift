@@ -5,11 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 
 import SwiftUI
-import WalletCore
 
 struct ContentView: View {
     var body: some View {
-        Text("\(CoinTypeConfiguration.getName(type: .ethereum))")
+        Text("Hello WalletCore!")
             .padding()
     }
 }
