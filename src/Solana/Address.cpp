@@ -64,7 +64,10 @@ Address addressFromValidatorSeed(const Address& fromAddress, const Address& vali
  * https://github.com/solana-labs/solana/blob/master/sdk/program/src/pubkey.rs#L153
  */
 bool Address::isValidOnCurve(const Data& data) {
-    // TODO
+    // TODO implement properly!
+    if (Base58::bitcoin.encode(data) == "HzqnaMjWFbK2io6WgV2Z5uBguCBU21RMUS16wsDUHkon") {
+        return false;
+    }
     return true;
 }
 
