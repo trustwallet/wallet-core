@@ -10,6 +10,10 @@
 #include "../Base58Address.h"
 #include "../Hash.h"
 
+#include "TrezorCrypto/ed25519-donna.h"
+
+#include <cassert>
+
 using namespace TW;
 using namespace TW::Solana;
 
@@ -64,11 +68,13 @@ Address addressFromValidatorSeed(const Address& fromAddress, const Address& vali
  * https://github.com/solana-labs/solana/blob/master/sdk/program/src/pubkey.rs#L153
  */
 bool Address::isValidOnCurve(const Data& data) {
-    // TODO implement properly!
-    if (Base58::bitcoin.encode(data) == "HzqnaMjWFbK2io6WgV2Z5uBguCBU21RMUS16wsDUHkon") {
+    if (data.size() != 32) {
         return false;
     }
-    return true;
+    assert(data.size() == 32);
+    ge25519 r;
+    int res = ge25519_unpack_negative_vartime(&r, data.data());
+    return res == 0;
 }
 
 /*
@@ -107,6 +113,7 @@ std::string TokenProgram::findProgramAddress(const std::vector<TW::Data>& seeds,
             result = address.string();
             break;
         }
+        // try next seed
     }
     return result;
 }

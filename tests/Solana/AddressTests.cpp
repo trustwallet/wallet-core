@@ -44,17 +44,18 @@ TEST(SolanaAddress, isValid) {
 }
 
 TEST(SolanaAddress, isValidOnCurve) {
-    EXPECT_TRUE(Address::isValidOnCurve(Base58::bitcoin.decode("68io7dTfyeWua1wD1YcCMka4y5iiChceaFRCBjqCM5PK")));
+    EXPECT_TRUE(Address::isValidOnCurve(Base58::bitcoin.decode("6X4X1Ae24mkoWeCEpktevySVG9jzeCufut5vtUW3wFrD")));
     EXPECT_TRUE(Address::isValidOnCurve(Base58::bitcoin.decode("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP")));
     EXPECT_TRUE(Address::isValidOnCurve(Base58::bitcoin.decode("ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf")));
     // invalid
     EXPECT_FALSE(Address::isValidOnCurve(Base58::bitcoin.decode("HzqnaMjWFbK2io6WgV2Z5uBguCBU21RMUS16wsDUHkon")));
+    EXPECT_FALSE(Address::isValidOnCurve(Base58::bitcoin.decode("68io7dTfyeWua1wD1YcCMka4y5iiChceaFRCBjqCM5PK")));
 }
 
 TEST(SolanaTokenProgram, defaultTokenAddress) {
     const std::string serumToken = "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt";
     EXPECT_EQ(TokenProgram::defaultTokenAddress("HBYC51YrGFAZ8rM7Sj8e9uqKggpSrDYrinQDZzvMtqQp", serumToken),
-        "68io7dTfyeWua1wD1YcCMka4y5iiChceaFRCBjqCM5PK");
+        "6X4X1Ae24mkoWeCEpktevySVG9jzeCufut5vtUW3wFrD");
     EXPECT_EQ(TokenProgram::defaultTokenAddress("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V", serumToken),
         "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
     EXPECT_EQ(TokenProgram::defaultTokenAddress("Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ", serumToken),
