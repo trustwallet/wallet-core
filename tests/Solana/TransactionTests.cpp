@@ -4,10 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "HexCoding.h"
-#include "PublicKey.h"
 #include "Solana/Address.h"
 #include "Solana/Transaction.h"
+#include "Solana/Program.h"
+#include "HexCoding.h"
+#include "PublicKey.h"
 
 #include "BinaryCoding.h"
 
@@ -70,7 +71,7 @@ TEST(SolanaTransaction, StakeSerializeTransaction) {
     auto voteAddress = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
     auto programId = Address("Stake11111111111111111111111111111111111111");
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
-    auto stakeAddress = addressFromValidatorSeed(signer, voteAddress, programId);
+    auto stakeAddress = StakeProgram::addressFromValidatorSeed(signer, voteAddress, programId);
     auto message = Message(signer, stakeAddress, voteAddress, 42, recentBlockhash);
     auto transaction = Transaction(message);
     Signature signature(

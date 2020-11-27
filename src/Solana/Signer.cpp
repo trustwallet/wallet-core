@@ -5,6 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
+#include "Address.h"
+#include "Program.h"
 #include "../Base58.h"
 #include <TrezorCrypto/ed25519.h>
 
@@ -49,7 +51,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
                 auto validatorAddress = Address(protoMessage.validator_pubkey());
                 auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
-                auto stakeAddress = addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
+                auto stakeAddress = StakeProgram::addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
                 message = Message(
                     /* signer */ userAddress,
                     /* stakeAddress */ stakeAddress,
@@ -66,7 +68,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
                 auto validatorAddress = Address(protoMessage.validator_pubkey());
                 auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
-                auto stakeAddress = addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
+                auto stakeAddress = StakeProgram::addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
                 message = Message(
                     /* signer */ userAddress,
                     /* stakeAddress */ stakeAddress,
@@ -82,7 +84,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
                 auto validatorAddress = Address(protoMessage.validator_pubkey());
                 auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
-                auto stakeAddress = addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
+                auto stakeAddress = StakeProgram::addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
                 message = Message(
                     /* signer */ userAddress,
                     /* stakeAddress */ stakeAddress,

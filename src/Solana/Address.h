@@ -9,8 +9,6 @@
 #include "../Base58Address.h"
 #include "../PublicKey.h"
 
-#include <array>
-#include <cstdint>
 #include <vector>
 #include <string>
 
@@ -40,20 +38,4 @@ class Address : public Base58Address<32> {
     static bool isValidOnCurve(const Data& data);
 };
 
-class TokenProgram {
-public:
-    /// Derive default token address for main address and token
-    static std::string defaultTokenAddress(const std::string& mainAddress, const std::string& tokenMintAddress);
-
-    /// Create a new valid address, if neeed, trying several
-    static std::string findProgramAddress(const std::vector<TW::Data>& seeds, const Address& programId);
-
-    /// Create a new address for program, with given seeds
-    static Address createProgramAddress(const std::vector<TW::Data>& seeds, const Address& programId);
-};
-
 } // namespace TW::Solana
-
-TW::Solana::Address addressFromValidatorSeed(const TW::Solana::Address& fromAddress,
-                                             const TW::Solana::Address& validatorAddress,
-                                             const TW::Solana::Address& programId);
