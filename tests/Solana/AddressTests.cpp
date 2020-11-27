@@ -8,6 +8,7 @@
 #include "Solana/Program.h"
 #include "Base58.h"
 #include "PrivateKey.h"
+#include "HexCoding.h"
 
 #include <gtest/gtest.h>
 
@@ -40,7 +41,9 @@ TEST(SolanaAddress, isValidOnCurve) {
     EXPECT_TRUE(Address::isValidOnCurve(Base58::bitcoin.decode("6X4X1Ae24mkoWeCEpktevySVG9jzeCufut5vtUW3wFrD")));
     EXPECT_TRUE(Address::isValidOnCurve(Base58::bitcoin.decode("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP")));
     EXPECT_TRUE(Address::isValidOnCurve(Base58::bitcoin.decode("ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf")));
-    // invalid
+    // negative case
     EXPECT_FALSE(Address::isValidOnCurve(Base58::bitcoin.decode("HzqnaMjWFbK2io6WgV2Z5uBguCBU21RMUS16wsDUHkon")));
     EXPECT_FALSE(Address::isValidOnCurve(Base58::bitcoin.decode("68io7dTfyeWua1wD1YcCMka4y5iiChceaFRCBjqCM5PK")));
+    // invalid input
+    EXPECT_FALSE(Address::isValidOnCurve(parse_hex("1234")));
 }
