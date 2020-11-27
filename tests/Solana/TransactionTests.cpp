@@ -158,3 +158,26 @@ TEST(SolanaTransaction, TransferTokenTransaction) {
         "PGfKqEaH2zZXDMZLcU6LUKdBSzU1GJWJ1CJXtRYCxaCH7k8uok38WSadZfrZw3TGejiau7nSpan2GvbK26hQim24jRe2AupmcYJFrgsdaCt1Aqs5kpGjPqzgj9krgxTZwwob3xgC1NdHK5BcNwhxwRtrCphGEH7zUFpGFrFrHzgpf2KY8FvPiPELQyxzTBuyNtjLjMMreehSKShEjD9Xzp1QeC1pEF8JL6vUKzxMXuveoEYem8q8JiWszYzmTMfDk13JPgv7pXFGMqDV3yNGCLsWccBeSFKN4UKECre6x2QbUEiKGkHkMc4zQwwyD8tGmEMBAGm339qdANssEMNpDeJp2LxLDStSoWShHnotcrH7pUa94xCVvCPPaomF";
     EXPECT_EQ(transaction.serialize(), expectedString);
 }
+
+TEST(SolanaTransaction, TokenSetAuthorityTransaction) {
+    auto signer = Address("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+    auto tokenAddress = Address("3WUX9wASxyScbA7brDipioKfXS1XEYkQ4vo3Kej9bKei");
+    auto newOwnerAddress = Address("Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
+    Solana::Hash recentBlockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
+    auto message = Message(signer, TokenInstruction::SetAuthority, tokenAddress, newOwnerAddress, recentBlockhash);
+    EXPECT_EQ(message.header.numRequiredSignatures, 1);
+    EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
+    EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 1);
+    ASSERT_EQ(message.accountKeys.size(), 3);
+    ASSERT_EQ(message.instructions.size(), 1);
+    EXPECT_EQ(message.instructions[0].programId.string(), "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+    ASSERT_EQ(message.instructions[0].accounts.size(), 2);
+    auto transaction = Transaction(message);
+    transaction.signatures.clear();
+    Signature signature("T3JhmNaBkE8cWAp7JBU7dRmm347WGjeSByveKFtXH8abZWHeQEAmiLrAjGmqRTRUmaJ4dK7VtBNDFfPz4idTVTA");
+    transaction.signatures.push_back(signature);
+
+    auto expectedString =
+        "GvnujXbcMquj23yi2EPjLW1Ha7HSvCzcMM99USYLqCxbbmud6Vg5aT5Zd7C7kqLaqbKL1yTEKsoTWAgrYFE3qyraMZvnTXXBKAPA9YFu521FU4cUgJ3vhwUTg8FSisp214QCUF8Lek4CVdxxRvMMtKN714EaMYBk2QYQGVF7ctLUWxo27K9iSBZuk1wLzHd28TqqMK72wtqDSczgophdc1KkUxqnCosrBDgsUBf6djcsnQu1ur4hcov343KAb8hBvjvuSYn4a2KeqQiE4t9144rcYLuG1i1WV8QTs5RaYLZRYqffV1x2HNAZqDefAwAvYKPC";
+    EXPECT_EQ(transaction.serialize(), expectedString);
+}

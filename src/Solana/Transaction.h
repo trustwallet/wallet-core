@@ -12,6 +12,7 @@
 #include "../Data.h"
 
 #include <vector>
+#include <string>
 #include <cassert>
 
 namespace TW::Solana {
@@ -65,7 +66,15 @@ enum StakeInstruction {
 // Token instruction types
 enum TokenInstruction {
     CreateTokenAccount = 1,
+    SetAuthority = 6,
     TokenTransfer = 12,
+};
+
+enum TokenAuthorityType {
+    MintTokens = 0,
+    FreezeAccount = 1,
+    AccountOwner = 2,
+    CloseAccount = 3,
 };
 
 // An instruction to execute a program
@@ -150,7 +159,7 @@ struct Instruction {
         this->data = data;
     }
 
-    // This constructor creates a create_account token instruction.
+    // This constructor creates a createAccount token instruction.
     Instruction(TokenInstruction type, const std::vector<Address>& accounts) :
         programId(Address(ASSOCIATED_TOKEN_PROGRAM_ID_ADDRESS)),
         accounts(accounts)
@@ -169,6 +178,19 @@ struct Instruction {
         data.push_back(static_cast<uint8_t>(type));
         encode64LE(value, data);
         data.push_back(static_cast<uint8_t>(decimals));
+        this->data = data;
+    }
+
+    // This constructor creates a setAuthority token instruction.
+    Instruction(TokenInstruction type, const std::vector<Address>& accounts, const Address& newAuthorityAddress) :
+        programId(Address(TOKEN_PROGRAM_ID_ADDRESS)),
+        accounts(accounts)
+    {
+        auto data = Data();
+        data.push_back(static_cast<uint8_t>(type));
+        data.push_back(static_cast<uint8_t>(TokenAuthorityType::AccountOwner));
+        data.push_back(1);
+        append(data, TW::data(newAuthorityAddress.bytes.data(), newAuthorityAddress.bytes.size()));
         this->data = data;
     }
 };
@@ -362,43 +384,78 @@ class Message {
         this->instructions = instructions;
     }
 
-    // This constructor creates a create_account token message.
+    // This constructor creates a token message:
+    // * createAccount: parameters: tokenMintAddress, tokenAddress
+    // * setAuthority: parameters: tokenAddress, newOwnerAddress
     // Assume that the mainAccount is the same as the signer
-    Message(const Address& signer, TokenInstruction type, const Address& tokenMintAddress, const Address& tokenAddress, Hash recentBlockhash)
+    Message(const Address& signer, TokenInstruction type, const Address& address1, const Address& address2, Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
-        assert(type == TokenInstruction::CreateTokenAccount);
-        MessageHeader header = {1, 0, 5};
-        this->header = header;
+        assert(type == TokenInstruction::CreateTokenAccount || TokenInstruction::SetAuthority);
+        switch (type) {
+            case TokenInstruction::CreateTokenAccount:
+                {
+                    MessageHeader header = {1, 0, 5};
+                    this->header = header;
 
-        auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
-        auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
-        auto tokenProgramId = Address(TOKEN_PROGRAM_ID_ADDRESS);
-        auto associatedTokenProgramId = Address(ASSOCIATED_TOKEN_PROGRAM_ID_ADDRESS);
+                    auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
+                    auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
+                    auto tokenProgramId = Address(TOKEN_PROGRAM_ID_ADDRESS);
+                    auto associatedTokenProgramId = Address(ASSOCIATED_TOKEN_PROGRAM_ID_ADDRESS);
 
-        std::vector<Address> accountKeys = {
-            signer,
-            tokenAddress,
-            tokenMintAddress,
-            systemProgramId,
-            tokenProgramId,
-            sysvarRentId,
-            associatedTokenProgramId
-        };
-        this->accountKeys = accountKeys;
+                    std::vector<Address> accountKeys = {
+                        signer,
+                        address2,
+                        address1,
+                        systemProgramId,
+                        tokenProgramId,
+                        sysvarRentId,
+                        associatedTokenProgramId
+                    };
+                    this->accountKeys = accountKeys;
 
-        std::vector<Instruction> instructions;
-        // initialize instruction
-        auto initializeInstruction = Instruction(type, std::vector<Address>{
-            signer, // fundingAddress,
-            tokenAddress,
-            signer,
-            tokenMintAddress,
-            systemProgramId,
-            tokenProgramId,
-            sysvarRentId
-        });
-        instructions.push_back(initializeInstruction);
-        this->instructions = instructions;
+                    std::vector<Instruction> instructions;
+                    // initialize instruction
+                    auto initializeInstruction = Instruction(type, std::vector<Address>{
+                        signer, // fundingAddress,
+                        address2,
+                        signer,
+                        address1,
+                        systemProgramId,
+                        tokenProgramId,
+                        sysvarRentId
+                    });
+                    instructions.push_back(initializeInstruction);
+                    this->instructions = instructions;
+                }
+                break;
+
+            case TokenInstruction::SetAuthority:
+            default:
+                {
+                    assert(TokenInstruction::SetAuthority);
+                    MessageHeader header = {1, 0, 1};
+                    this->header = header;
+
+                    auto tokenProgramId = Address(TOKEN_PROGRAM_ID_ADDRESS);
+
+                    std::vector<Address> accountKeys = {
+                        signer,
+                        address1,
+                        tokenProgramId
+                    };
+                    this->accountKeys = accountKeys;
+
+                    std::vector<Instruction> instructions;
+                    // initialize instruction
+                    auto initializeInstruction = Instruction(type, std::vector<Address>{
+                        address1,
+                        signer,
+                    }, address2);
+                    instructions.push_back(initializeInstruction);
+                    this->instructions = instructions;
+                }
+                break;
+        }
     }
 
     // This constructor creates a transfer token message.
