@@ -12,6 +12,7 @@
 #include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sodium/keypair.h>
+#include "TrezorCrypto/ed25519-donna.h"
 
 namespace TW {
 
@@ -24,7 +25,20 @@ bool PublicKey::isValid(const Data& data, enum TWPublicKeyType type) {
     }
     switch (type) {
     case TWPublicKeyTypeED25519:
-        return size == ed25519Size || (size == ed25519Size + 1 && data[0] == 0x01);
+        {
+            ge25519 r;
+            if (size == ed25519Size) {
+                return ge25519_unpack_negative_vartime(&r, data.data()) != 0;
+            }
+            if (size == ed25519Size + 1) {
+                if (data[0] != 0x01) {
+                    return false;
+                }
+                return ge25519_unpack_negative_vartime(&r, data.data()+1) != 0;                
+            }
+            return false; // invalid size
+        }
+
     case TWPublicKeyTypeCURVE25519:
     case TWPublicKeyTypeED25519Blake2b:
         return size == ed25519Size;

@@ -38,12 +38,15 @@ TEST(SolanaAddress, isValid) {
 }
 
 TEST(SolanaAddress, isValidOnCurve) {
-    EXPECT_TRUE(Address::isValidOnCurve(Base58::bitcoin.decode("6X4X1Ae24mkoWeCEpktevySVG9jzeCufut5vtUW3wFrD")));
-    EXPECT_TRUE(Address::isValidOnCurve(Base58::bitcoin.decode("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP")));
-    EXPECT_TRUE(Address::isValidOnCurve(Base58::bitcoin.decode("ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf")));
+    EXPECT_TRUE(PublicKey::isValid(Base58::bitcoin.decode("HzqnaMjWFbK2io6WgV2Z5uBguCBU21RMUS16wsDUHkon"), TWPublicKeyTypeED25519));
+    EXPECT_TRUE(PublicKey::isValid(Base58::bitcoin.decode("68io7dTfyeWua1wD1YcCMka4y5iiChceaFRCBjqCM5PK"), TWPublicKeyTypeED25519));
+    EXPECT_TRUE(PublicKey::isValid(Base58::bitcoin.decode("Dra34QLFCjxnk8tUNcBwxs6pgb5spF4oseQYF2xn7ABZ"), TWPublicKeyTypeED25519));
     // negative case
-    EXPECT_FALSE(Address::isValidOnCurve(Base58::bitcoin.decode("HzqnaMjWFbK2io6WgV2Z5uBguCBU21RMUS16wsDUHkon")));
-    EXPECT_FALSE(Address::isValidOnCurve(Base58::bitcoin.decode("68io7dTfyeWua1wD1YcCMka4y5iiChceaFRCBjqCM5PK")));
+    EXPECT_FALSE(PublicKey::isValid(Base58::bitcoin.decode("6X4X1Ae24mkoWeCEpktevySVG9jzeCufut5vtUW3wFrD"), TWPublicKeyTypeED25519));
+    EXPECT_FALSE(PublicKey::isValid(Base58::bitcoin.decode("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP"), TWPublicKeyTypeED25519));
+    EXPECT_FALSE(PublicKey::isValid(Base58::bitcoin.decode("ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf"), TWPublicKeyTypeED25519));
+    EXPECT_FALSE(PublicKey::isValid(Base58::bitcoin.decode("AbygL37RheNZv327cMvZPqKYLLkZ6wqWYexRxgNiZyeP"), TWPublicKeyTypeED25519));
     // invalid input
-    EXPECT_FALSE(Address::isValidOnCurve(parse_hex("1234")));
+    EXPECT_FALSE(PublicKey::isValid(parse_hex("1234"), TWPublicKeyTypeED25519));
+    EXPECT_FALSE(PublicKey::isValid(parse_hex("eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"), TWPublicKeyTypeED25519));
 }

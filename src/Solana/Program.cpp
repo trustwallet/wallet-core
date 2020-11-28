@@ -27,7 +27,7 @@ Address StakeProgram::addressFromValidatorSeed(const Address& fromAddress, const
     extended.insert(extended.end(), vecSeed.begin(), vecSeed.end());
     extended.insert(extended.end(), additional.begin(), additional.end());
     Data hash = TW::Hash::sha256(extended);
-    return Address(PublicKey(hash, TWPublicKeyTypeED25519));
+    return Address(hash);
 }
 
 /*
@@ -62,7 +62,7 @@ std::string TokenProgram::findProgramAddress(const std::vector<TW::Data>& seeds,
         // add extra seed
         seedsCopy.push_back({seed});
         Address address = createProgramAddress(seedsCopy, Address(ASSOCIATED_TOKEN_PROGRAM_ID_ADDRESS));
-        if (Address::isValidOnCurve(TW::data(address.bytes.data(), address.bytes.size()))) {
+        if (!PublicKey::isValid(TW::data(address.bytes.data(), address.bytes.size()), TWPublicKeyTypeED25519)) {
             result = address.string();
             break;
         }
@@ -86,5 +86,5 @@ Address TokenProgram::createProgramAddress(const std::vector<TW::Data>& seeds, c
     append(hashInput, TW::data("ProgramDerivedAddress"));
     // compute hash
     Data hash = TW::Hash::sha256(hashInput.data(), hashInput.size());
-    return Address(PublicKey(hash, TWPublicKeyTypeED25519));
+    return Address(hash);
 }

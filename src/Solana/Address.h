@@ -28,14 +28,14 @@ class Address : public Base58Address<32> {
     /// Initializes an address with a public key.
     explicit Address(const PublicKey& publicKey);
 
+    /// Initializes an address with public key data.
+    explicit Address(const Data& publicKeyData);
+
     /// Returns a string representation of the address.
     std::string string() const;
 
     /// Returns a vector of the address.
     Data vector() const;
-
-    /// Check if given address is on ed25519 curve
-    static bool isValidOnCurve(const Data& data);
 };
 
 } // namespace TW::Solana

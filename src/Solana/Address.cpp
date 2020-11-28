@@ -38,6 +38,13 @@ Address::Address(const PublicKey& publicKey) {
     std::copy(publicKey.bytes.begin(), publicKey.bytes.end(), bytes.data());
 }
 
+Address::Address(const Data& publicKeyData) {
+    if (publicKeyData.size() != PublicKey::ed25519Size) {
+        throw std::invalid_argument("Invalid public key data size");
+    }
+    std::copy(publicKeyData.begin(), publicKeyData.end(), bytes.data());
+}
+
 std::string Address::string() const {
     return Base58::bitcoin.encode(bytes);
 }
@@ -45,21 +52,4 @@ std::string Address::string() const {
 Data Address::vector() const {
     Data vec(std::begin(bytes), std::end(bytes));
     return vec;
-}
-
-/*
- * Check if given address is on ed25519 curve,
- * Based on solana code, create_program_address()
- * if curve25519_dalek::edwards::CompressedEdwardsY::from_slice(hash.as_ref())
- * https://github.com/solana-labs/solana/blob/master/sdk/program/src/pubkey.rs#L135
- * https://github.com/solana-labs/solana/blob/master/sdk/program/src/pubkey.rs#L153
- */
-bool Address::isValidOnCurve(const Data& data) {
-    if (data.size() != 32) {
-        return false;
-    }
-    assert(data.size() == 32);
-    ge25519 r;
-    int res = ge25519_unpack_negative_vartime(&r, data.data());
-    return res == 0;
 }
