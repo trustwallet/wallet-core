@@ -19,7 +19,7 @@
 
 namespace TW::Polkadot {
     auto privateKey = PrivateKey(parse_hex("0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115"));
-    auto toPublicKey = PublicKey(parse_hex("0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"), TWPublicKeyTypeED25519);
+    auto toPublicKey = PublicKey(parse_hex("0xbeff0e5d6f6e6e6d573d3044f3e2bfb353400375dc281da3337468d4aa527908"), TWPublicKeyTypeED25519);
     auto genesisHash = parse_hex("91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3");
 
 TEST(PolkadotSigner, SignTransferDOT) {
@@ -51,8 +51,8 @@ TEST(PolkadotSigner, SignTransferDOT) {
     auto preimage = extrinsic.encodePayload();
     auto output = Signer::sign(input);
 
-    ASSERT_EQ(hex(preimage), "05008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c032000000110000000300000091b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3343a3f4258fd92f5ca6ca5abdf473d86a78b0bcd0dc09c568ca594245cc8c642");
-    ASSERT_EQ(hex(output.encoded()), "29028488dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee003d91a06263956d8ce3ce5c55455baefff299d9cb2bb3f76866b6828ee4083770b6c03b05d7b6eb510ac78d047002c1fe5c6ee4b37c9c5a8b09ea07677f12e50d3200000005008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c0");
+    ASSERT_EQ(hex(preimage), "0500beff0e5d6f6e6e6d573d3044f3e2bfb353400375dc281da3337468d4aa527908e5c032000000110000000300000091b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3343a3f4258fd92f5ca6ca5abdf473d86a78b0bcd0dc09c568ca594245cc8c642");
+    ASSERT_EQ(hex(output.encoded()), "29028488dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee002b8c90a46d040dd5783403e943e53de30dcf70c5c054f43d3f449ed461bdc73e27f77ffdf1cd86d60bc7fe258b77435b7c2c7779e9b8724873d37c1e1fc77c0e320000000500beff0e5d6f6e6e6d573d3044f3e2bfb353400375dc281da3337468d4aa527908e5c0");
 }
 
 TEST(PolkadotSigner, SignNominate) {
