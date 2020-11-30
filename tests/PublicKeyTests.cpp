@@ -240,9 +240,20 @@ TEST(PublicKeyTests, Recover) {
 }
 
 TEST(PublicKeyTests, isValidED25519) {
+    EXPECT_TRUE(PublicKey::isValid(parse_hex("beff0e5d6f6e6e6d573d3044f3e2bfb353400375dc281da3337468d4aa527908"), TWPublicKeyTypeED25519));
     EXPECT_TRUE(PublicKey(parse_hex("beff0e5d6f6e6e6d573d3044f3e2bfb353400375dc281da3337468d4aa527908"), TWPublicKeyTypeED25519).isValidED25519());
+    EXPECT_TRUE(PublicKey::isValid(parse_hex("fc8c425a8a94a55ce42f2c24b2fb2ef5ab4a69142d2d97f6c11e0106c84136d5"), TWPublicKeyTypeED25519));
     EXPECT_TRUE(PublicKey(parse_hex("fc8c425a8a94a55ce42f2c24b2fb2ef5ab4a69142d2d97f6c11e0106c84136d5"), TWPublicKeyTypeED25519).isValidED25519());
-    // Following 32 bytes are not a valid public key (not a point on the curve)
+    EXPECT_TRUE(PublicKey::isValid(parse_hex("01beff0e5d6f6e6e6d573d3044f3e2bfb353400375dc281da3337468d4aa527908"), TWPublicKeyTypeED25519));
+    EXPECT_TRUE(PublicKey(parse_hex("01beff0e5d6f6e6e6d573d3044f3e2bfb353400375dc281da3337468d4aa527908"), TWPublicKeyTypeED25519).isValidED25519());
+    // Following 32 bytes are not valid public keys (not on the curve)
+    EXPECT_TRUE(PublicKey::isValid(parse_hex("8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"), TWPublicKeyTypeED25519));
     EXPECT_FALSE(PublicKey(parse_hex("8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"), TWPublicKeyTypeED25519).isValidED25519());
+    EXPECT_TRUE(PublicKey::isValid(parse_hex("51fdd5feae59d7dcbf5ebea99c05593ebee302577a5486ceac706ed568aa1e0e"), TWPublicKeyTypeED25519));
     EXPECT_FALSE(PublicKey(parse_hex("51fdd5feae59d7dcbf5ebea99c05593ebee302577a5486ceac706ed568aa1e0e"), TWPublicKeyTypeED25519).isValidED25519());
+    // invalid input size/format
+    EXPECT_FALSE(PublicKey::isValid(parse_hex("1234"), TWPublicKeyTypeED25519));
+    EXPECT_FALSE(PublicKey::isValid(parse_hex("beff0e5d6f6e6e6d573d3044f3e2bfb353400375dc281da3337468d4aa5279"), TWPublicKeyTypeED25519));
+    EXPECT_FALSE(PublicKey::isValid(parse_hex("02beff0e5d6f6e6e6d573d3044f3e2bfb353400375dc281da3337468d4aa527908"), TWPublicKeyTypeED25519));
+    EXPECT_FALSE(PublicKey::isValid(parse_hex("0101beff0e5d6f6e6e6d573d3044f3e2bfb353400375dc281da3337468d4aa527908"), TWPublicKeyTypeED25519));
 }

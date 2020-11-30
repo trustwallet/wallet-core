@@ -25,7 +25,7 @@ bool PublicKey::isValid(const Data& data, enum TWPublicKeyType type) {
     }
     switch (type) {
     case TWPublicKeyTypeED25519:
-        return (size == ed25519Size || size == ed25519Size + 1);
+        return size == ed25519Size || (size == ed25519Size + 1 && data[0] == 0x01);
     case TWPublicKeyTypeCURVE25519:
     case TWPublicKeyTypeED25519Blake2b:
         return size == ed25519Size;
