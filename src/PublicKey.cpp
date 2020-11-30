@@ -199,17 +199,9 @@ bool PublicKey::isValidED25519() const {
     if (type != TWPublicKeyTypeED25519) {
         return false;
     }
+    assert(bytes.size() == ed25519Size);
     ge25519 r;
-    if (bytes.size() == ed25519Size) {
-        return ge25519_unpack_negative_vartime(&r, bytes.data()) != 0;
-    }
-    if (bytes.size() == ed25519Size + 1) {
-        if (bytes[0] != 0x01) {
-            return false;
-        }
-        return ge25519_unpack_negative_vartime(&r, bytes.data()+1) != 0;                
-    }
-    return false; // invalid size
+    return ge25519_unpack_negative_vartime(&r, bytes.data()) != 0;
 }
 
 } // namespace TW

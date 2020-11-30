@@ -205,6 +205,8 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve, int(*canonicalChecker)(
     switch (curve) {
     case TWCurveSECP256k1: {
         result.resize(65);
+        assert(bytes.size() >= 32);
+        assert(digest.size() >= 32);
         success = ecdsa_sign_digest(&secp256k1, bytes.data(), digest.data(), result.data() + 1,
                                     result.data(), canonicalChecker) == 0;
     } break;
