@@ -25,20 +25,7 @@ bool PublicKey::isValid(const Data& data, enum TWPublicKeyType type) {
     }
     switch (type) {
     case TWPublicKeyTypeED25519:
-        {
-            ge25519 r;
-            if (size == ed25519Size) {
-                return ge25519_unpack_negative_vartime(&r, data.data()) != 0;
-            }
-            if (size == ed25519Size + 1) {
-                if (data[0] != 0x01) {
-                    return false;
-                }
-                return ge25519_unpack_negative_vartime(&r, data.data()+1) != 0;                
-            }
-            return false; // invalid size
-        }
-
+        return (size == ed25519Size || size == ed25519Size + 1);
     case TWPublicKeyTypeCURVE25519:
     case TWPublicKeyTypeED25519Blake2b:
         return size == ed25519Size;
@@ -206,6 +193,23 @@ PublicKey PublicKey::recover(const Data& signature, const Data& message) {
         throw std::invalid_argument("recover failed");
     }
     return PublicKey(result, TWPublicKeyTypeSECP256k1Extended);
+}
+
+bool PublicKey::isValidED25519() const {
+    if (type != TWPublicKeyTypeED25519) {
+        return false;
+    }
+    ge25519 r;
+    if (bytes.size() == ed25519Size) {
+        return ge25519_unpack_negative_vartime(&r, bytes.data()) != 0;
+    }
+    if (bytes.size() == ed25519Size + 1) {
+        if (bytes[0] != 0x01) {
+            return false;
+        }
+        return ge25519_unpack_negative_vartime(&r, bytes.data()+1) != 0;                
+    }
+    return false; // invalid size
 }
 
 } // namespace TW

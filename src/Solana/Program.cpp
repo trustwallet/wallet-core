@@ -60,7 +60,8 @@ Address TokenProgram::findProgramAddress(const std::vector<TW::Data>& seeds, con
         // add extra seed
         seedsCopy.push_back({seed});
         Address address = createProgramAddress(seedsCopy, Address(ASSOCIATED_TOKEN_PROGRAM_ID_ADDRESS));
-        if (!PublicKey::isValid(TW::data(address.bytes.data(), address.bytes.size()), TWPublicKeyTypeED25519)) {
+        PublicKey publicKey = PublicKey(TW::data(address.bytes.data(), address.bytes.size()), TWPublicKeyTypeED25519);
+        if (!publicKey.isValidED25519()) {
             result = address;
             break;
         }
