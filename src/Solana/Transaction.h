@@ -417,6 +417,7 @@ class Message {
         this->instructions = instructions;
     }
 
+    // TODO: remove setAuthority, not needed
     // This constructor creates a setAuthority token message:
     // * setAuthority: parameters: tokenAddress, newOwnerAddress
     Message(const Address& signer, TokenInstruction type, const Address& address1, const Address& address2, Hash recentBlockhash)

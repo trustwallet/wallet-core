@@ -37,6 +37,7 @@ message TokenTransfer {
     uint32 decimals = 5; // Note: 8-bit value
 }
 
+// TODO: remove setAuthority, not needed
 message TokenSetAuthority {
     string token_address = 1;
     string new_owner_address = 2;
