@@ -297,7 +297,7 @@ TEST(SolanaSigner, SignCreateTokenAccount) {
     auto tokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
     Solana::Hash recentBlockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
 
-    auto message = Message(signer, TokenInstruction::CreateTokenAccount, token, tokenAddress, recentBlockhash);
+    auto message = Message(signer, TokenInstruction::CreateTokenAccount, signer, token, tokenAddress, recentBlockhash);
     auto transaction = Transaction(message);
 
     std::vector<PrivateKey> signerKeys;
@@ -312,6 +312,31 @@ TEST(SolanaSigner, SignCreateTokenAccount) {
     auto expectedString =
         // test data obtained from spl-token create-account
         "CKzRLx3AQeVeLQ7T4hss2rdbUpuAHdbwXDazxtRnSKBuncCk3WnYgy7XTrEiya19MJviYHYdTxi9gmWJY8qnR2vHVnH2DbPiKA8g72rD3VvMnjosGUBBvCwbBLge6FeQdgczMyRo9n5PcHvg9yJBTJaEEvuewyBVHwCGyGQci7eYd26xtZtCjAjwcTq4gGr3NZbeRW6jZp6j6APuew7jys4MKYRV4xPodua1TZFCkyWZr1XKzmPh7KTavtN5VzPDA8rbsvoEjHnKzjB2Bszs6pDjcBFSHyQqGsHoF8XPD35BLfjDghNtBmf9cFqo5axa6oSjANAuYg6cMSP4Hy28waSj8isr6gQjE315hWi3W1swwwPcn322gYZx6aMAcmjczaxX9aktpHYgZxixF7cYWEHxJs5QUK9mJePu9Xc6yW75UB4Ynx6dUgaSTEUzoQthF2TN3xXwu1";
+    EXPECT_EQ(transaction.serialize(), expectedString);
+}
+
+TEST(SolanaSigner, SignCreateTokenAccountForOther) {
+    const auto privateKeySigner =
+        PrivateKey(parse_hex("4b9d6f57d28b06cbfa1d4cc710953e62d653caf853415c56ffd9d150acdeb7f7"));
+    const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
+    auto signer = Address(publicKeySigner);
+    EXPECT_EQ(signer.string(), "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
+
+    auto otherMainAddress = Address("3xJ3MoUVFPNFEHfWdtNFa8ajXUHsJPzXcBSWMKLd76ft");
+    auto token = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
+    auto tokenAddress = Address("67BrwFYt7qUnbAcYBVx7sQ4jeD2KWN1ohP6bMikmmQV3");
+    Solana::Hash recentBlockhash("HmWyvrif3QfZJnDiRyrojmH9iLr7eMxxqiC9RJWFeunr");
+
+    auto message = Message(signer, TokenInstruction::CreateTokenAccount, otherMainAddress, token, tokenAddress, recentBlockhash);
+    auto transaction = Transaction(message);
+
+    std::vector<PrivateKey> signerKeys;
+    signerKeys.push_back(privateKeySigner);
+    Signer::sign(signerKeys, transaction);
+
+    auto expectedString =
+        // https://explorer.solana.com/tx/3E6UFVamHCm6Bgk8gXdZex7R7tJAVxqJm6t9ephAKu1PjcfZrD7CJqMwKu6RrvWSUESbZFqzdUyLXuxAFaawPHvJ
+        "4BsrHedHuForcKDhLdnLYDXgtQgQEj3EQVDtEhqa7o6ukFjW3shpTWv6PeKQdMp6af4ASjD4xQeZvXxLK5WUjguVMUf3xdJn7RnFeM7hdDJ56RDBM5PRJbRJVHjz6FJ7SVNTvr9y3gVYQtWx7NfKRxiyEAfq9JG7nqxSWaW6raMr9t35aVcdAVuXE9iXj3rzhVfCS69vVzy5KcFEK3mvDYG6L12V2CfviCydmeCvPw5r3zBUrZSQv7Ti4XFNBrPbk28gcqQwsBknBqasHxHqD9VUyPmBTuUyXq75QN8rhqN55NjxKBUw37tEUS1jKVpWnTeLFq1eRAMdXvjftNuQ5Bmm8Zc12PGWj9vdorBaYyvZXexJST5xNjR4SCkXvXZoRScETck95chv3VBn54jP8DpB4GGUmATFKSxpdtnNV64i1SQXW13KJwswthJvAaDiqevQLKLkvrTEAdb4BxEfPkFjDVti6P58rTZCMg5CTVLqdmWwpTSW5V";
     EXPECT_EQ(transaction.serialize(), expectedString);
 }
 
