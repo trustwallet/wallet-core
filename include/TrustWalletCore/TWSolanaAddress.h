@@ -21,7 +21,12 @@ struct TWSolanaAddress* _Nullable TWSolanaAddressCreateWithString(TWString* _Non
 TW_EXPORT_METHOD
 void TWSolanaAddressDelete(struct TWSolanaAddress* _Nonnull address);
 
+/// Derive default token address for token
 TW_EXPORT_METHOD
 TWString* _Nullable TWSolanaAddressDefaultTokenAddress(struct TWSolanaAddress* _Nonnull address, TWString* _Nonnull tokenMintAddress);
+
+/// Returns the address string representation.
+TW_EXPORT_PROPERTY
+TWString *_Nonnull TWSolanaAddressDescription(struct TWSolanaAddress *_Nonnull address);
 
 TW_EXTERN_C_END

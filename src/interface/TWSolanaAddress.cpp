@@ -30,3 +30,7 @@ TWString *_Nullable TWSolanaAddressDefaultTokenAddress(struct TWSolanaAddress* _
         return nullptr;
     }
 }
+
+TWString* _Nonnull TWSolanaAddressDescription(struct TWSolanaAddress* _Nonnull address) {
+    return TWStringCreateWithUTF8Bytes(address->impl.string().c_str());
+}

@@ -38,7 +38,9 @@ class TestSolanaAddress {
 
     @Test
     fun testDefaultTokenAddress() {
-        val defaultAddress = SolanaProgram.defaultTokenAddress("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V", "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt")
+        val mainAddress = SolanaAddress("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V")
+        val tokenMintAddress = "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"
+        val defaultAddress = mainAddress.defaultTokenAddress(tokenMintAddress)
         assertEquals(defaultAddress, "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP")
     }
 }
