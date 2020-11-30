@@ -94,6 +94,7 @@ class TestSolanaSigner {
     @Test
     fun testCreateTokenAccountSign() {
         val createAccountMessage = Solana.CreateTokenAccount.newBuilder().apply {
+            mainAddress = "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V"
             tokenMintAddress = "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"
             tokenAddress = "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP"
         }.build()

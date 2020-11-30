@@ -23,8 +23,10 @@ message WithdrawStake {
 }
 
 message CreateTokenAccount {
-    string token_mint_address = 1;
-    string token_address = 2;
+    // main account -- can be same as signer, or other main account (if done on some other account's behalf)
+    string main_address = 1;
+    string token_mint_address = 2;
+    string token_address = 3;
 }
 
 message TokenTransfer {

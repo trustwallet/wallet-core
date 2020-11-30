@@ -99,9 +99,10 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
             {
                 auto protoMessage = input.create_token_account_transaction();
                 auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+                auto mainAddress = Address(protoMessage.main_address());
                 auto tokenMintAddress = Address(protoMessage.token_mint_address());
                 auto tokenAddress = Address(protoMessage.token_address());
-                message = Message(userAddress, TokenInstruction::CreateTokenAccount, userAddress, tokenMintAddress, tokenAddress, blockhash);
+                message = Message(userAddress, TokenInstruction::CreateTokenAccount, mainAddress, tokenMintAddress, tokenAddress, blockhash);
                 signerKeys.push_back(key);
             }
             break;

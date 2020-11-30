@@ -130,6 +130,7 @@ class SolanaTests: XCTestCase {
 
     func testCreateTokenAccountSigner() throws {
         let createAccountMessage = SolanaCreateTokenAccount.with {
+            $0.mainAddress = "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V"
             $0.tokenMintAddress = "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"
             $0.tokenAddress = "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP"
         }
