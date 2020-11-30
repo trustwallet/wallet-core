@@ -217,16 +217,7 @@ struct CompiledInstruction {
         data = instruction.data;
     }
 
-    uint8_t findAccount(const Address& address) {
-        auto it = std::find(addresses.begin(), addresses.end(), address);
-        assert(it != addresses.end());
-        if (it == addresses.end()) {
-            throw new std::invalid_argument("address not found");
-        }
-        auto dist = std::distance(addresses.begin(), it);
-        assert(dist < 256);
-        return (uint8_t)dist;
-    }
+    uint8_t findAccount(const Address& address);
 };
 
 class Hash {

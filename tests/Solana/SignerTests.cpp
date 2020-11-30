@@ -48,6 +48,26 @@ TEST(SolanaSigner, CompiledInstruction) {
     ASSERT_EQ(compiledInstruction.data.size(), 4);
 }
 
+TEST(SolanaSigner, CompiledInstructionFindAccount) {
+    Address address1 = Address(parse_hex("0102030405060708090a0102030405060708090a0102030405060708090a0101"));
+    Address address2 = Address(parse_hex("0102030405060708090a0102030405060708090a0102030405060708090a0102"));
+    Address address3 = Address(parse_hex("0102030405060708090a0102030405060708090a0102030405060708090a0103"));
+    Address programId("11111111111111111111111111111111");
+    std::vector<Address> addresses = {address1, address2, programId};
+    Instruction instruction(programId, addresses, Data{1, 2, 3, 4});
+    CompiledInstruction compiledInstruction = CompiledInstruction(instruction, addresses);
+    ASSERT_EQ(compiledInstruction.findAccount(address1), 0);
+    ASSERT_EQ(compiledInstruction.findAccount(address2), 1);
+    ASSERT_EQ(compiledInstruction.findAccount(programId), 2);
+    // negative case
+    try {
+        compiledInstruction.findAccount(address3);
+        FAIL() << "Missing expected exception";
+    } catch (...) {
+        // ok
+    }
+}
+
 TEST(SolanaSigner, SingleSignTransaction) {
     const auto privateKey =
         PrivateKey(Base58::bitcoin.decode("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr"));

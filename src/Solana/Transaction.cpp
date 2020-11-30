@@ -17,6 +17,17 @@ using namespace TW;
 using namespace TW::Solana;
 using namespace std;
 
+uint8_t CompiledInstruction::findAccount(const Address& address) {
+    auto it = std::find(addresses.begin(), addresses.end(), address);
+    if (it == addresses.end()) {
+        throw new std::invalid_argument("address not found");
+    }
+    assert(it != addresses.end());
+    auto dist = std::distance(addresses.begin(), it);
+    assert(dist < 256);
+    return (uint8_t)dist;
+}
+
 std::string Transaction::serialize() const {
     Data buffer;
 
