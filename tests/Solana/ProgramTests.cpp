@@ -24,13 +24,9 @@ TEST(SolanaStakeProgram, addressFromValidatorSeed) {
 }
 
 TEST(SolanaTokenProgram, defaultTokenAddress) {
-    const std::string serumToken = "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt";
-    EXPECT_EQ(TokenProgram::defaultTokenAddress("HBYC51YrGFAZ8rM7Sj8e9uqKggpSrDYrinQDZzvMtqQp", serumToken),
+    const Address serumToken = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
+    EXPECT_EQ(TokenProgram::defaultTokenAddress(Address("HBYC51YrGFAZ8rM7Sj8e9uqKggpSrDYrinQDZzvMtqQp"), serumToken).string(),
         "6X4X1Ae24mkoWeCEpktevySVG9jzeCufut5vtUW3wFrD");
-    EXPECT_EQ(TokenProgram::defaultTokenAddress("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V", serumToken),
-        "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
-    EXPECT_EQ(TokenProgram::defaultTokenAddress("Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ", serumToken),
-        "ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf");
 }
 
 TEST(SolanaTokenProgram, findProgramAddress) {
@@ -39,8 +35,8 @@ TEST(SolanaTokenProgram, findProgramAddress) {
         Base58::bitcoin.decode("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
         Base58::bitcoin.decode("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"),
     };
-    std::string address = TokenProgram::findProgramAddress(seeds, Address("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"));
-    EXPECT_EQ(address, "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+    Address address = TokenProgram::findProgramAddress(seeds, Address("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"));
+    EXPECT_EQ(address.string(), "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
 }
 
 TEST(SolanaTokenProgram, createProgramAddress) {

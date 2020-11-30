@@ -6,6 +6,7 @@
 
 #include "Address.h"
 #include "Transaction.h"
+#include "Program.h"
 #include "../Base58.h"
 #include "../Base58Address.h"
 #include "../Hash.h"
@@ -52,4 +53,8 @@ std::string Address::string() const {
 Data Address::vector() const {
     Data vec(std::begin(bytes), std::end(bytes));
     return vec;
+}
+
+Address Address::defaultTokenAddress(const Address& tokenMintAddress) {
+    return TokenProgram::defaultTokenAddress(*this, tokenMintAddress);
 }

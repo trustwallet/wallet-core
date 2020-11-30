@@ -35,14 +35,12 @@ Address StakeProgram::addressFromValidatorSeed(const Address& fromAddress, const
  * https://github.com/solana-labs/solana-program-library/blob/master/associated-token-account/program/src/lib.rs#L35
  * https://github.com/solana-labs/solana-program-library/blob/master/associated-token-account/program/src/lib.rs#L19
  */
-std::string TokenProgram::defaultTokenAddress(const std::string& mainAddress, const std::string& tokenMintAddress) {
-    Address main = Address(mainAddress);
-    Address tokneMint = Address(tokenMintAddress);
+Address TokenProgram::defaultTokenAddress(const Address& mainAddress, const Address& tokenMintAddress) {
     Address programId = Address(TOKEN_PROGRAM_ID_ADDRESS);
     std::vector<Data> seeds = {
-        TW::data(main.bytes.data(), main.bytes.size()),
+        TW::data(mainAddress.bytes.data(), mainAddress.bytes.size()),
         TW::data(programId.bytes.data(), programId.bytes.size()),
-        TW::data(tokneMint.bytes.data(), tokneMint.bytes.size())
+        TW::data(tokenMintAddress.bytes.data(), tokenMintAddress.bytes.size())
     };
     return findProgramAddress(seeds, Address(ASSOCIATED_TOKEN_PROGRAM_ID_ADDRESS));
 }
@@ -51,8 +49,8 @@ std::string TokenProgram::defaultTokenAddress(const std::string& mainAddress, co
  * Based on solana code, find_program_address()
  * https://github.com/solana-labs/solana/blob/master/sdk/program/src/pubkey.rs#L193
  */
-std::string TokenProgram::findProgramAddress(const std::vector<TW::Data>& seeds, const Address& programId) {
-    std::string result;
+Address TokenProgram::findProgramAddress(const std::vector<TW::Data>& seeds, const Address& programId) {
+    Address result(Data(32));
     // cycle through seeds for the rare case when result is not valid
     for (uint8_t seed = 255; seed >= 0; --seed) {
         std::vector<Data> seedsCopy;
@@ -63,7 +61,7 @@ std::string TokenProgram::findProgramAddress(const std::vector<TW::Data>& seeds,
         seedsCopy.push_back({seed});
         Address address = createProgramAddress(seedsCopy, Address(ASSOCIATED_TOKEN_PROGRAM_ID_ADDRESS));
         if (!PublicKey::isValid(TW::data(address.bytes.data(), address.bytes.size()), TWPublicKeyTypeED25519)) {
-            result = address.string();
+            result = address;
             break;
         }
         // try next seed

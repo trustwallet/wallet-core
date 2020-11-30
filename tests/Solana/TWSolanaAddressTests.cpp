@@ -8,7 +8,7 @@
 
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWHDWallet.h>
-#include <TrustWalletCore/TWSolanaProgram.h>
+#include <TrustWalletCore/TWSolanaAddress.h>
 
 #include <gtest/gtest.h>
 
@@ -30,6 +30,7 @@ TEST(TWSolanaAddress, HDWallet) {
 
 TEST(TWSolanaProgram, defaultTokenAddress) {
     const char* serumToken = "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt";
-    auto address1 = WRAPS(TWSolanaProgramDefaultTokenAddress(TWStringCreateWithUTF8Bytes("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V"), TWStringCreateWithUTF8Bytes(serumToken)));
+    auto solanaAddress = WRAP(TWSolanaAddress, TWSolanaAddressCreateWithString(WRAPS(TWStringCreateWithUTF8Bytes("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V")).get()));
+    auto address1 = WRAPS(TWSolanaAddressDefaultTokenAddress(solanaAddress.get(), WRAPS(TWStringCreateWithUTF8Bytes(serumToken)).get()));
     EXPECT_EQ(std::string(TWStringUTF8Bytes(address1.get())), "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
 }

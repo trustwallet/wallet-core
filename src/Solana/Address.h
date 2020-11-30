@@ -36,6 +36,14 @@ class Address : public Base58Address<32> {
 
     /// Returns a vector of the address.
     Data vector() const;
+
+    /// Derive default token address for token
+    Address defaultTokenAddress(const Address& tokenMintAddress);
 };
 
 } // namespace TW::Solana
+
+/// Wrapper for C interface, empty as all methods are static
+struct TWSolanaAddress {
+    TW::Solana::Address impl;
+};

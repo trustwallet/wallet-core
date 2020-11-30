@@ -9,7 +9,6 @@
 #include "Address.h"
 
 #include <vector>
-#include <string>
 
 namespace TW::Solana {
 
@@ -24,10 +23,10 @@ public:
 class TokenProgram {
 public:
     /// Derive default token address for main address and token
-    static std::string defaultTokenAddress(const std::string& mainAddress, const std::string& tokenMintAddress);
+    static Address defaultTokenAddress(const Address& mainAddress, const Address& tokenMintAddress);
 
     /// Create a new valid address, if neeed, trying several
-    static std::string findProgramAddress(const std::vector<TW::Data>& seeds, const Address& programId);
+    static Address findProgramAddress(const std::vector<TW::Data>& seeds, const Address& programId);
 
     /// Create a new address for program, with given seeds
     static Address createProgramAddress(const std::vector<TW::Data>& seeds, const Address& programId);

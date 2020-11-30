@@ -50,3 +50,13 @@ TEST(SolanaAddress, isValidOnCurve) {
     EXPECT_FALSE(PublicKey::isValid(parse_hex("1234"), TWPublicKeyTypeED25519));
     EXPECT_FALSE(PublicKey::isValid(parse_hex("eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"), TWPublicKeyTypeED25519));
 }
+
+TEST(SolanaAddress, defaultTokenAddress) {
+    const Address serumToken = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
+    EXPECT_EQ(Address("HBYC51YrGFAZ8rM7Sj8e9uqKggpSrDYrinQDZzvMtqQp").defaultTokenAddress(serumToken).string(),
+        "6X4X1Ae24mkoWeCEpktevySVG9jzeCufut5vtUW3wFrD");
+    EXPECT_EQ(Address("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V").defaultTokenAddress(serumToken).string(),
+        "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+    EXPECT_EQ(Address("Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ").defaultTokenAddress(serumToken).string(),
+        "ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf");
+}
