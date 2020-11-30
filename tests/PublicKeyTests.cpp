@@ -256,4 +256,5 @@ TEST(PublicKeyTests, isValidED25519) {
     EXPECT_FALSE(PublicKey::isValid(parse_hex("beff0e5d6f6e6e6d573d3044f3e2bfb353400375dc281da3337468d4aa5279"), TWPublicKeyTypeED25519));
     EXPECT_FALSE(PublicKey::isValid(parse_hex("02beff0e5d6f6e6e6d573d3044f3e2bfb353400375dc281da3337468d4aa527908"), TWPublicKeyTypeED25519));
     EXPECT_FALSE(PublicKey::isValid(parse_hex("0101beff0e5d6f6e6e6d573d3044f3e2bfb353400375dc281da3337468d4aa527908"), TWPublicKeyTypeED25519));
+    EXPECT_FALSE(PublicKey(parse_hex("0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1"), TWPublicKeyTypeSECP256k1).isValidED25519());
 }
