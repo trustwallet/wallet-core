@@ -14,9 +14,9 @@ namespace TW::Solana {
 
 class StakeProgram {
 public:
-    static Address addressFromValidatorSeed(const TW::Solana::Address& fromAddress,
-                                            const TW::Solana::Address& validatorAddress,
-                                            const TW::Solana::Address& programId);
+    static Address addressFromValidatorSeed(const Address& fromAddress,
+                                            const Address& validatorAddress,
+                                            const Address& programId);
 };
 
 

@@ -164,9 +164,7 @@ struct Instruction {
         programId(Address(ASSOCIATED_TOKEN_PROGRAM_ID_ADDRESS)),
         accounts(accounts)
     {
-        auto data = Data();
-        //encode32LE(static_cast<uint32_t>(type), data);
-        this->data = data;
+        this->data = Data();
     }
 
     // This constructor creates a transfer token instruction.

@@ -11,7 +11,8 @@ using namespace TW::Solana;
 using namespace TW;
 
 struct TWSolanaAddress* _Nullable TWSolanaAddressCreateWithString(TWString* _Nonnull string) {
-    return new TWSolanaAddress{Address(TWStringUTF8Bytes(string))};
+    auto& str = *reinterpret_cast<const std::string*>(string);
+    return new TWSolanaAddress{Address(str)};
 }
 
 void TWSolanaAddressDelete(struct TWSolanaAddress* _Nonnull address) {

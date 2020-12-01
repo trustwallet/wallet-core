@@ -43,7 +43,7 @@ class Address : public Base58Address<32> {
 
 } // namespace TW::Solana
 
-/// Wrapper for C interface, empty as all methods are static
+/// Wrapper for C interface
 struct TWSolanaAddress {
     TW::Solana::Address impl;
 };
