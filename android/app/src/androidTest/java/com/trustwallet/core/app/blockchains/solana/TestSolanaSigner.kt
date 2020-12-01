@@ -130,22 +130,4 @@ class TestSolanaSigner {
         val expectedString = "PGfKqEaH2zZXDMZLcU6LUKdBSzU1GJWJ1CJXtRYCxaCH7k8uok38WSadZfrZw3TGejiau7nSpan2GvbK26hQim24jRe2AupmcYJFrgsdaCt1Aqs5kpGjPqzgj9krgxTZwwob3xgC1NdHK5BcNwhxwRtrCphGEH7zUFpGFrFrHzgpf2KY8FvPiPELQyxzTBuyNtjLjMMreehSKShEjD9Xzp1QeC1pEF8JL6vUKzxMXuveoEYem8q8JiWszYzmTMfDk13JPgv7pXFGMqDV3yNGCLsWccBeSFKN4UKECre6x2QbUEiKGkHkMc4zQwwyD8tGmEMBAGm339qdANssEMNpDeJp2LxLDStSoWShHnotcrH7pUa94xCVvCPPaomF"
         assertEquals(output.encoded, expectedString)
     }
-
-    @Test
-    fun testTokenSetAuthoritySign() {
-        val setAuthorityMessage = Solana.TokenSetAuthority.newBuilder().apply {
-            tokenAddress = "3WUX9wASxyScbA7brDipioKfXS1XEYkQ4vo3Kej9bKei"
-            newOwnerAddress = "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ"
-        }.build()
-        val signingInput = Solana.SigningInput.newBuilder().apply {
-            tokenSetAuthorityTransaction = setAuthorityMessage
-            recentBlockhash = "9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K"
-            privateKey = ByteString.copyFrom(Base58.decodeNoCheck("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"))
-        }.build()
-
-        val output = AnySigner.sign(signingInput, SOLANA, SigningOutput.parser())
-
-        val expectedString = "GvnujXbcMquj23yi2EPjLW1Ha7HSvCzcMM99USYLqCxbbmud6Vg5aT5Zd7C7kqLaqbKL1yTEKsoTWAgrYFE3qyraMZvnTXXBKAPA9YFu521FU4cUgJ3vhwUTg8FSisp214QCUF8Lek4CVdxxRvMMtKN714EaMYBk2QYQGVF7ctLUWxo27K9iSBZuk1wLzHd28TqqMK72wtqDSczgophdc1KkUxqnCosrBDgsUBf6djcsnQu1ur4hcov343KAb8hBvjvuSYn4a2KeqQiE4t9144rcYLuG1i1WV8QTs5RaYLZRYqffV1x2HNAZqDefAwAvYKPC"
-        assertEquals(output.encoded, expectedString)
-    }
 }
