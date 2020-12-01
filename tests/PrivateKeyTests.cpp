@@ -190,7 +190,7 @@ TEST(PrivateKey, PrivateKeyExtendedError) {
     FAIL() << "Should throw Invalid empty key extension";
 }
 
-TEST(PrivateKey, Sign) {
+TEST(PrivateKey, SignSECP256k1) {
     Data privKeyData = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
     auto privateKey = PrivateKey(privKeyData);
     Data messageData = TW::data("hello");
@@ -233,4 +233,52 @@ TEST(PrivateKey, SignSchnorrWrongType) {
     const Data digest = Hash::sha256(messageData);
     const auto signature = privateKey.signSchnorr(digest, TWCurveNIST256p1);
     EXPECT_EQ(signature.size(), 0);
+}
+
+TEST(PrivateKey, SignNIST256p1) {
+    Data privKeyData = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
+    auto privateKey = PrivateKey(privKeyData);
+    Data messageData = TW::data("hello");
+    Data hash = Hash::keccak256(messageData);
+    Data actual = privateKey.sign(hash, TWCurveNIST256p1);
+
+    EXPECT_EQ(
+        "8859e63a0c0cc2fc7f788d7e78406157b288faa6f76f76d37c4cd1534e8d83c468f9fd6ca7dde378df594625dcde98559389569e039282275e3d87c26e36447401",
+        hex(actual)
+    );
+}
+
+int isCanonical(uint8_t by, uint8_t sig[64]) {
+    return 1;
+}
+
+TEST(PrivateKey, SignCanonicalSECP256k1) {
+    Data privKeyData = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
+    auto privateKey = PrivateKey(privKeyData);
+    Data messageData = TW::data("hello");
+    Data hash = Hash::keccak256(messageData);
+    Data actual = privateKey.sign(hash, TWCurveSECP256k1, isCanonical);
+
+    EXPECT_EQ(
+        "208720a46b5b3963790d94bcc61ad57ca02fd153584315bfa161ed3455e336ba624d68df010ed934b8792c5b6a57ba86c3da31d039f9612b44d1bf054132254de9",
+        hex(actual)
+    );
+}
+
+TEST(PrivateKey, SignShortDigest) {
+    Data privKeyData = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
+    auto privateKey = PrivateKey(privKeyData);
+    Data shortDigest = TW::data("12345");
+    {
+        Data actual = privateKey.sign(shortDigest, TWCurveSECP256k1);
+        EXPECT_EQ(actual.size(), 0);
+    }
+    {
+        Data actual = privateKey.sign(shortDigest, TWCurveNIST256p1);
+        EXPECT_EQ(actual.size(), 0);
+    }
+    {
+        Data actual = privateKey.sign(shortDigest, TWCurveSECP256k1, isCanonical);
+        EXPECT_EQ(actual.size(), 0);
+    }
 }
