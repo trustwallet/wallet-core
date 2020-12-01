@@ -32,7 +32,13 @@ TEST(SolanaSigner, CompiledInstruction) {
 
     std::vector<Address> addresses = {address0, address1, programId};
 
-    std::vector<Address> instrAddresses = {address1, address0, programId, address1, address0};
+    std::vector<AccountMeta> instrAddresses = {
+        AccountMeta(address1, false, false),
+        AccountMeta(address0, false, false),
+        AccountMeta(programId, false, false),
+        AccountMeta(address1, false, false),
+        AccountMeta(address0, false, false),
+    };
     Data data = {0, 1, 2, 4};
     Instruction instruction(programId, instrAddresses, data);
 
@@ -53,8 +59,15 @@ TEST(SolanaSigner, CompiledInstructionFindAccount) {
     Address address2 = Address(parse_hex("0102030405060708090a0102030405060708090a0102030405060708090a0102"));
     Address address3 = Address(parse_hex("0102030405060708090a0102030405060708090a0102030405060708090a0103"));
     Address programId("11111111111111111111111111111111");
-    std::vector<Address> addresses = {address1, address2, programId};
-    Instruction instruction(programId, addresses, Data{1, 2, 3, 4});
+    Instruction instruction(programId, std::vector<AccountMeta>{
+        AccountMeta(address1, true, false),
+        AccountMeta(address2, false, false),
+    }, Data{1, 2, 3, 4});
+    std::vector<Address> addresses = {
+        address1,
+        address2,
+        programId,
+    };
     CompiledInstruction compiledInstruction = CompiledInstruction(instruction, addresses);
     ASSERT_EQ(compiledInstruction.findAccount(address1), 0);
     ASSERT_EQ(compiledInstruction.findAccount(address2), 1);
@@ -153,7 +166,10 @@ TEST(SolanaSigner, MultipleSignTransaction) {
 
     Data data = {0, 0, 0, 0};
     Address programId("11111111111111111111111111111111");
-    std::vector<Address> instrAddresses = {address0, address1};
+    std::vector<AccountMeta> instrAddresses = {
+        AccountMeta(address0, true, false),
+        AccountMeta(address1, false, false),
+    };
     Instruction instruction(programId, instrAddresses, data);
     std::vector<Instruction> instructions = {instruction};
 

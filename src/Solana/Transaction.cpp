@@ -28,6 +28,64 @@ uint8_t CompiledInstruction::findAccount(const Address& address) {
     return (uint8_t)dist;
 }
 
+void Message::addAccount(const AccountMeta& account) {
+    if (account.isSigner) {
+        if (std::find(signedAccounts.begin(), signedAccounts.end(), account.account) == signedAccounts.end()) {
+            signedAccounts.push_back(account.account);
+        }
+    } else if (!account.isReadOnly) {
+        if (std::find(signedAccounts.begin(), signedAccounts.end(), account.account) == signedAccounts.end() &&
+            std::find(unsignedAccounts.begin(), unsignedAccounts.end(), account.account) == unsignedAccounts.end()) {
+            unsignedAccounts.push_back(account.account);
+        }
+    } else {
+        if (std::find(signedAccounts.begin(), signedAccounts.end(), account.account) == signedAccounts.end() &&
+            std::find(unsignedAccounts.begin(), unsignedAccounts.end(), account.account) == unsignedAccounts.end() &&
+            std::find(readOnlyAccounts.begin(), readOnlyAccounts.end(), account.account) == readOnlyAccounts.end()) {
+            readOnlyAccounts.push_back(account.account);
+        }
+    }
+}
+
+void Message::compileAccounts() {
+    for (auto& instr: instructions) {
+        for (auto& address: instr.accounts) {
+            addAccount(address);
+        }
+    }
+    // add programIds (read-only)
+    for (auto& instr: instructions) {
+        addAccount(AccountMeta{instr.programId, false, true});
+    }
+
+    header = MessageHeader{
+        (uint8_t)signedAccounts.size(),
+        0,
+        (uint8_t)readOnlyAccounts.size()
+    };
+
+    // merge the three buckets
+    accountKeys.clear();
+    for(auto& a: signedAccounts) {
+        accountKeys.push_back(a);
+    }
+    for(auto& a: unsignedAccounts) {
+        accountKeys.push_back(a);
+    }
+    for(auto& a: readOnlyAccounts) {
+        accountKeys.push_back(a);
+    }
+
+    compileInstructions();
+}
+
+void Message::compileInstructions() {
+    compiledInstructions.clear();
+    for (auto instruction: instructions) {
+        compiledInstructions.push_back(CompiledInstruction(instruction, accountKeys));
+    }
+}
+
 std::string Transaction::serialize() const {
     Data buffer;
 
@@ -55,15 +113,10 @@ Data Transaction::messageData() const {
     Data recentBlockhash(this->message.recentBlockhash.bytes.begin(),
                          this->message.recentBlockhash.bytes.end());
     append(buffer, recentBlockhash);
-    // compile instructions
-    vector<CompiledInstruction> compiledInstructions;
-    compiledInstructions.reserve(this->message.instructions.size());
-    for (auto instruction : this->message.instructions) {
-        compiledInstructions.push_back(CompiledInstruction(instruction, this->message.accountKeys));
-    }
-    // apppend instructions
-    append(buffer, shortVecLength<CompiledInstruction>(compiledInstructions));
-    for (auto instruction : compiledInstructions) {
+
+    // apppend compiled instructions
+    append(buffer, shortVecLength<CompiledInstruction>(message.compiledInstructions));
+    for (auto instruction : message.compiledInstructions) {
         buffer.push_back(instruction.programIdIndex);
         append(buffer, shortVecLength<uint8_t>(instruction.accounts));
         append(buffer, instruction.accounts);
