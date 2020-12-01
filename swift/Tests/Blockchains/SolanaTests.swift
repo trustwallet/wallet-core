@@ -181,29 +181,6 @@ class SolanaTests: XCTestCase {
         XCTAssertEqual(output.encoded, expectedString)
     }
 
-    func testTokenSetAuthoritySigner() throws {
-        let setAuthorityMessage = SolanaTokenSetAuthority.with {
-            $0.tokenAddress = "3WUX9wASxyScbA7brDipioKfXS1XEYkQ4vo3Kej9bKei"
-            $0.newOwnerAddress = "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ"
-        }
-        let input = SolanaSigningInput.with {
-            $0.tokenSetAuthorityTransaction = setAuthorityMessage
-            $0.recentBlockhash = "9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K"
-            $0.privateKey = Data(Base58.decodeNoCheck( string: "9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5")!)
-        }
-
-        let output: SolanaSigningOutput = AnySigner.sign(input: input, coin: .solana)
-
-        let expectedString = """
-        GvnujXbcMquj23yi2EPjLW1Ha7HSvCzcMM99USYLqCxbbmud6Vg5aT5Zd7C7kqLaqbKL1yTEKsoTWAgrYFE3qyraMZ\
-        vnTXXBKAPA9YFu521FU4cUgJ3vhwUTg8FSisp214QCUF8Lek4CVdxxRvMMtKN714EaMYBk2QYQGVF7ctLUWxo27K9i\
-        SBZuk1wLzHd28TqqMK72wtqDSczgophdc1KkUxqnCosrBDgsUBf6djcsnQu1ur4hcov343KAb8hBvjvuSYn4a2KeqQ\
-        iE4t9144rcYLuG1i1WV8QTs5RaYLZRYqffV1x2HNAZqDefAwAvYKPC
-        """
-
-        XCTAssertEqual(output.encoded, expectedString)
-    }
-
     func testDefaultTokenAddress() throws {
         let mainAddress = SolanaAddress(string: "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V")!
         let defaultAddress = mainAddress.defaultTokenAddress(tokenMintAddress: "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt")

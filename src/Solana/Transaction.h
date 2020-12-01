@@ -66,7 +66,7 @@ enum StakeInstruction {
 // Token instruction types
 enum TokenInstruction {
     CreateTokenAccount = 1,
-    SetAuthority = 6,
+    //SetAuthority = 6,
     TokenTransfer = 12,
 };
 
@@ -178,19 +178,6 @@ struct Instruction {
         data.push_back(static_cast<uint8_t>(type));
         encode64LE(value, data);
         data.push_back(static_cast<uint8_t>(decimals));
-        this->data = data;
-    }
-
-    // This constructor creates a setAuthority token instruction.
-    Instruction(TokenInstruction type, const std::vector<Address>& accounts, const Address& newAuthorityAddress) :
-        programId(Address(TOKEN_PROGRAM_ID_ADDRESS)),
-        accounts(accounts)
-    {
-        auto data = Data();
-        data.push_back(static_cast<uint8_t>(type));
-        data.push_back(static_cast<uint8_t>(TokenAuthorityType::AccountOwner));
-        data.push_back(1);
-        append(data, TW::data(newAuthorityAddress.bytes.data(), newAuthorityAddress.bytes.size()));
         this->data = data;
     }
 };
@@ -413,34 +400,6 @@ class Message {
             tokenProgramId,
             sysvarRentId
         });
-        instructions.push_back(initializeInstruction);
-        this->instructions = instructions;
-    }
-
-    // TODO: remove setAuthority, not needed
-    // This constructor creates a setAuthority token message:
-    // * setAuthority: parameters: tokenAddress, newOwnerAddress
-    Message(const Address& signer, TokenInstruction type, const Address& address1, const Address& address2, Hash recentBlockhash)
-        : recentBlockhash(recentBlockhash) {
-        assert(type == TokenInstruction::SetAuthority);
-        MessageHeader header = {1, 0, 1};
-        this->header = header;
-
-        auto tokenProgramId = Address(TOKEN_PROGRAM_ID_ADDRESS);
-
-        std::vector<Address> accountKeys = {
-            signer,
-            address1,
-            tokenProgramId
-        };
-        this->accountKeys = accountKeys;
-
-        std::vector<Instruction> instructions;
-        // initialize instruction
-        auto initializeInstruction = Instruction(type, std::vector<Address>{
-            address1,
-            signer,
-        }, address2);
         instructions.push_back(initializeInstruction);
         this->instructions = instructions;
     }

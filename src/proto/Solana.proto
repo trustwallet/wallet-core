@@ -52,7 +52,6 @@ message SigningInput {
         WithdrawStake withdraw_transaction = 4;
         CreateTokenAccount create_token_account_transaction = 5;
         TokenTransfer token_transfer_transaction = 6;
-        TokenSetAuthority token_set_authority_transaction = 7;
     }
     bytes private_key = 8;
     string recent_blockhash = 9;

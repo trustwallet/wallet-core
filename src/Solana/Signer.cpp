@@ -121,17 +121,6 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
             }
             break;
 
-        case Proto::SigningInput::TransactionTypeCase::kTokenSetAuthorityTransaction:
-            {
-                auto protoMessage = input.token_set_authority_transaction();
-                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
-                auto tokenAddress = Address(protoMessage.token_address());
-                auto newOwnerAddress = Address(protoMessage.new_owner_address());
-                message = Message(userAddress, TokenInstruction::SetAuthority, tokenAddress, newOwnerAddress, blockhash);
-                signerKeys.push_back(key);
-            }
-            break;
-
         default:
             assert(input.transaction_type_case() != Proto::SigningInput::TransactionTypeCase::TRANSACTION_TYPE_NOT_SET);
     }
