@@ -48,19 +48,19 @@ TEST(TWEthereumAbiValue, encodeInt) {
 }
 
 TEST(TWEthereumAbiValue, encodeAddress) {
-    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeAddress(WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"))).get())).get())),
+    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeAddress(WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed")).get())).get())).get())),
         "0000000000000000000000005aaeb6053f3e94c9b9a09f33669435e7ef1beaed");
 }
 
 TEST(TWEthereumAbiValue, encodeString) {
-    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeString(TWStringCreateWithUTF8Bytes("trustwallet"))).get())),
+    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeString(WRAPS(TWStringCreateWithUTF8Bytes("trustwallet")).get())).get())),
         "31924c4e2bb082322d1efa718bf67c73ca297b481dac9f76ad35670cff0056a3");
 }
 
 TEST(TWEthereumAbiValue, encodeBytes) {
-    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeBytes(WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("45"))).get())).get())),
+    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeBytes(WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("45")).get())).get())).get())),
         "4500000000000000000000000000000000000000000000000000000000000000");
-    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeBytes(WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"))).get())).get())),
+    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeBytes(WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed")).get())).get())).get())),
         "5aaeb6053f3e94c9b9a09f33669435e7ef1beaed000000000000000000000000");
 }
 

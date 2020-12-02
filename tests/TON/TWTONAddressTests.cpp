@@ -31,7 +31,7 @@ TEST(TWTONAddress, CreateWithString) {
 
     {
         // create a second one, also invoke compare
-        auto address2 = TWAnyAddressCreateWithString(TWStringCreateWithUTF8Bytes(expect), TWCoinTypeTON);
+        auto address2 = TWAnyAddressCreateWithString(WRAPS(TWStringCreateWithUTF8Bytes(expect)).get(), TWCoinTypeTON);
         ASSERT_TRUE(TWAnyAddressEqual(address, address2));
 
         TWAnyAddressDelete(address2);
