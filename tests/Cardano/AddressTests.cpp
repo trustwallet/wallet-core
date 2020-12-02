@@ -351,27 +351,27 @@ TEST(CardanoAddress, FromDataV3) {
 
 TEST(CardanoAddress, CopyConstructorLegacy) {
     AddressV3 address1 = AddressV3("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvx");
-    EXPECT_TRUE(address1.legacyAddressV2 != nullptr);
+    EXPECT_TRUE(address1.legacyAddressV2.has_value());
     AddressV3 address2 = AddressV3(address1);
-    EXPECT_TRUE(address2.legacyAddressV2 != nullptr);
-    EXPECT_TRUE(address2.legacyAddressV2 != address1.legacyAddressV2);
+    EXPECT_TRUE(address2.legacyAddressV2.has_value());
+    EXPECT_TRUE(*(address2.legacyAddressV2) == *(address1.legacyAddressV2));
     // if it was not a deep copy, double freeing would occur
 }
 
 TEST(CardanoAddress, AssignmentOperatorLegacy) {
     AddressV3 addr1leg = AddressV3("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvx");
-    EXPECT_TRUE(addr1leg.legacyAddressV2 != nullptr);
+    EXPECT_TRUE(addr1leg.legacyAddressV2.has_value());
     AddressV3 addr2nonleg = AddressV3("addr1s3hdtrqgs47l7ue5srga8wmk9dzw279x9e7lxadalt6z0fk64nnn2mgtn87mrny9r77gm09h6ecslh3gmarrvrp9n4yzmdnecfxyu59j5lempe");
-    EXPECT_TRUE(addr2nonleg.legacyAddressV2 == nullptr);
+    EXPECT_FALSE(addr2nonleg.legacyAddressV2.has_value());
     AddressV3 addr3leg = AddressV3("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvx");
-    EXPECT_TRUE(addr3leg.legacyAddressV2 != nullptr);
+    EXPECT_TRUE(addr3leg.legacyAddressV2.has_value());
 
     AddressV3 address = addr1leg;
-    EXPECT_TRUE(address.legacyAddressV2 != nullptr);
-    EXPECT_TRUE(address.legacyAddressV2 != addr1leg.legacyAddressV2);
+    EXPECT_TRUE(address.legacyAddressV2.has_value());
+    EXPECT_TRUE(*address.legacyAddressV2 == *addr1leg.legacyAddressV2);
     address = addr2nonleg;
-    EXPECT_TRUE(address.legacyAddressV2 == nullptr);
+    EXPECT_FALSE(address.legacyAddressV2.has_value());
     address = addr3leg;
-    EXPECT_TRUE(address.legacyAddressV2 != nullptr);
-    EXPECT_TRUE(address.legacyAddressV2 != addr3leg.legacyAddressV2);
+    EXPECT_TRUE(address.legacyAddressV2.has_value());
+    EXPECT_TRUE(*address.legacyAddressV2 == *addr3leg.legacyAddressV2);
 }
