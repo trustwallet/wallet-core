@@ -80,13 +80,13 @@ TEST(TWEthereumAbi, EncodeFuncCase1) {
     TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(TWStringCreateWithUTF8Bytes("sam"));
     EXPECT_TRUE(func != nullptr);
     
-    EXPECT_EQ(0, TWEthereumAbiFunctionAddParamBytes(func, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("64617665")), false));
+    EXPECT_EQ(0, TWEthereumAbiFunctionAddParamBytes(func, WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("64617665"))).get(), false));
     EXPECT_EQ(1, TWEthereumAbiFunctionAddParamBool(func, true, false));
     auto paramArrIdx = TWEthereumAbiFunctionAddParamArray(func, false);
     EXPECT_EQ(2, paramArrIdx);
-    EXPECT_EQ(0, TWEthereumAbiFunctionAddInArrayParamUInt256(func, paramArrIdx, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("01"))));
-    EXPECT_EQ(1, TWEthereumAbiFunctionAddInArrayParamUInt256(func, paramArrIdx, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("02"))));
-    EXPECT_EQ(2, TWEthereumAbiFunctionAddInArrayParamUInt256(func, paramArrIdx, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("03"))));
+    EXPECT_EQ(0, TWEthereumAbiFunctionAddInArrayParamUInt256(func, paramArrIdx, WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("01"))).get()));
+    EXPECT_EQ(1, TWEthereumAbiFunctionAddInArrayParamUInt256(func, paramArrIdx, WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("02"))).get()));
+    EXPECT_EQ(2, TWEthereumAbiFunctionAddInArrayParamUInt256(func, paramArrIdx, WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("03"))).get()));
 
     TWString* type = TWEthereumAbiFunctionGetType(func);
     EXPECT_EQ("sam(bytes,bool,uint256[])", std::string(TWStringUTF8Bytes(type)));
@@ -113,12 +113,12 @@ TEST(TWEthereumAbi, EncodeFuncCase2) {
     TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(TWStringCreateWithUTF8Bytes("f"));
     EXPECT_TRUE(func != nullptr);
     
-    EXPECT_EQ(0, TWEthereumAbiFunctionAddParamUInt256(func, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123")), false));
+    EXPECT_EQ(0, TWEthereumAbiFunctionAddParamUInt256(func, WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123"))).get(), false));
     auto paramArrIdx = TWEthereumAbiFunctionAddParamArray(func, false);
     EXPECT_EQ(1, paramArrIdx);
     EXPECT_EQ(0, TWEthereumAbiFunctionAddInArrayParamUInt32(func, paramArrIdx, 0x456));
     EXPECT_EQ(1, TWEthereumAbiFunctionAddInArrayParamUInt32(func, paramArrIdx, 0x789));
-    EXPECT_EQ(2, TWEthereumAbiFunctionAddParamBytesFix(func, 10, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("31323334353637383930")), false));
+    EXPECT_EQ(2, TWEthereumAbiFunctionAddParamBytesFix(func, 10, WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("31323334353637383930"))).get(), false));
     EXPECT_EQ(3, TWEthereumAbiFunctionAddParamString(func, TWStringCreateWithUTF8Bytes("Hello, world!"), false));
 
     TWString* type = TWEthereumAbiFunctionGetType(func);
@@ -151,39 +151,39 @@ TEST(TWEthereumAbi, EncodeFuncMonster) {
     TWEthereumAbiFunctionAddParamUInt16(func, 2, false);
     TWEthereumAbiFunctionAddParamUInt32(func, 3, false);
     TWEthereumAbiFunctionAddParamUInt64(func, 4, false);
-    TWEthereumAbiFunctionAddParamUIntN(func, 168, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123")), false);
-    TWEthereumAbiFunctionAddParamUInt256(func, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123")), false);
+    TWEthereumAbiFunctionAddParamUIntN(func, 168, WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123"))).get(), false);
+    TWEthereumAbiFunctionAddParamUInt256(func, WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123"))).get(), false);
     TWEthereumAbiFunctionAddParamInt8(func, 1, false);
     TWEthereumAbiFunctionAddParamInt16(func, 2, false);
     TWEthereumAbiFunctionAddParamInt32(func, 3, false);
     TWEthereumAbiFunctionAddParamInt64(func, 4, false);
-    TWEthereumAbiFunctionAddParamIntN(func, 168, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123")), false);
-    TWEthereumAbiFunctionAddParamInt256(func, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123")), false);
+    TWEthereumAbiFunctionAddParamIntN(func, 168, WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123"))).get(), false);
+    TWEthereumAbiFunctionAddParamInt256(func, WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123"))).get(), false);
     TWEthereumAbiFunctionAddParamBool(func, true, false);
     TWEthereumAbiFunctionAddParamString(func, TWStringCreateWithUTF8Bytes("Hello, world!"), false);
-    TWEthereumAbiFunctionAddParamAddress(func, 
-        TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("f784682c82526e245f50975190ef0fff4e4fc077")), false);
-    TWEthereumAbiFunctionAddParamBytes(func, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("3132333435")), false);
-    TWEthereumAbiFunctionAddParamBytesFix(func, 5, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("3132333435")), false);
+    TWEthereumAbiFunctionAddParamAddress(func,
+        WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("f784682c82526e245f50975190ef0fff4e4fc077"))).get(), false);
+    TWEthereumAbiFunctionAddParamBytes(func, WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("3132333435"))).get(), false);
+    TWEthereumAbiFunctionAddParamBytesFix(func, 5, WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("3132333435"))).get(), false);
     
     TWEthereumAbiFunctionAddInArrayParamUInt8(func, TWEthereumAbiFunctionAddParamArray(func, false), 1);
     TWEthereumAbiFunctionAddInArrayParamUInt16(func, TWEthereumAbiFunctionAddParamArray(func, false), 2);
     TWEthereumAbiFunctionAddInArrayParamUInt32(func, TWEthereumAbiFunctionAddParamArray(func, false), 3);
     TWEthereumAbiFunctionAddInArrayParamUInt64(func, TWEthereumAbiFunctionAddParamArray(func, false), 4);
-    TWEthereumAbiFunctionAddInArrayParamUIntN(func, TWEthereumAbiFunctionAddParamArray(func, false), 168, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123")));
-    TWEthereumAbiFunctionAddInArrayParamUInt256(func, TWEthereumAbiFunctionAddParamArray(func, false), TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123")));
+    TWEthereumAbiFunctionAddInArrayParamUIntN(func, TWEthereumAbiFunctionAddParamArray(func, false), 168, WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123"))).get());
+    TWEthereumAbiFunctionAddInArrayParamUInt256(func, TWEthereumAbiFunctionAddParamArray(func, false), WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123"))).get());
     TWEthereumAbiFunctionAddInArrayParamInt8(func, TWEthereumAbiFunctionAddParamArray(func, false), 1);
     TWEthereumAbiFunctionAddInArrayParamInt16(func, TWEthereumAbiFunctionAddParamArray(func, false), 2);
     TWEthereumAbiFunctionAddInArrayParamInt32(func, TWEthereumAbiFunctionAddParamArray(func, false), 3);
     TWEthereumAbiFunctionAddInArrayParamInt64(func, TWEthereumAbiFunctionAddParamArray(func, false), 4);
-    TWEthereumAbiFunctionAddInArrayParamIntN(func, TWEthereumAbiFunctionAddParamArray(func, false), 168, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123")));
-    TWEthereumAbiFunctionAddInArrayParamInt256(func, TWEthereumAbiFunctionAddParamArray(func, false), TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123")));
+    TWEthereumAbiFunctionAddInArrayParamIntN(func, TWEthereumAbiFunctionAddParamArray(func, false), 168, WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123"))).get());
+    TWEthereumAbiFunctionAddInArrayParamInt256(func, TWEthereumAbiFunctionAddParamArray(func, false), WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123"))).get());
     TWEthereumAbiFunctionAddInArrayParamBool(func, TWEthereumAbiFunctionAddParamArray(func, false), true);
     TWEthereumAbiFunctionAddInArrayParamString(func, TWEthereumAbiFunctionAddParamArray(func, false), TWStringCreateWithUTF8Bytes("Hello, world!"));
     TWEthereumAbiFunctionAddInArrayParamAddress(func, TWEthereumAbiFunctionAddParamArray(func, false), 
-        TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("f784682c82526e245f50975190ef0fff4e4fc077")));
-    TWEthereumAbiFunctionAddInArrayParamBytes(func, TWEthereumAbiFunctionAddParamArray(func, false), TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("3132333435")));
-    TWEthereumAbiFunctionAddInArrayParamBytesFix(func, TWEthereumAbiFunctionAddParamArray(func, false), 5, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("3132333435")));
+        WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("f784682c82526e245f50975190ef0fff4e4fc077"))).get());
+    TWEthereumAbiFunctionAddInArrayParamBytes(func, TWEthereumAbiFunctionAddParamArray(func, false), WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("3132333435"))).get());
+    TWEthereumAbiFunctionAddInArrayParamBytesFix(func, TWEthereumAbiFunctionAddParamArray(func, false), 5, WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("3132333435"))).get());
 
     // check back out params
     EXPECT_EQ(1, TWEthereumAbiFunctionGetParamUInt8(func, 0, false));
