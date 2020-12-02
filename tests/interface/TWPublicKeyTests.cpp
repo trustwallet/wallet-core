@@ -90,13 +90,13 @@ TEST(TWPublicKeyTests, VerifyEd25519) {
     auto digest = WRAPD(TWHashSHA256(messageData.get()));
 
     auto signature = WRAPD(TWPrivateKeySign(privateKey.get(), digest.get(), TWCurveED25519));
-    auto publicKey = TWPrivateKeyGetPublicKeyEd25519(privateKey.get());
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519(privateKey.get()));
 
     auto signature2 = WRAPD(TWPrivateKeySign(privateKey.get(), digest.get(), TWCurveED25519Blake2bNano));
-    auto publicKey2 = TWPrivateKeyGetPublicKeyEd25519Blake2b(privateKey.get());
+    auto publicKey2 = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519Blake2b(privateKey.get()));
 
-    ASSERT_TRUE(TWPublicKeyVerify(publicKey, signature.get(), digest.get()));
-    ASSERT_TRUE(TWPublicKeyVerify(publicKey2, signature2.get(), digest.get()));
+    ASSERT_TRUE(TWPublicKeyVerify(publicKey.get(), signature.get(), digest.get()));
+    ASSERT_TRUE(TWPublicKeyVerify(publicKey2.get(), signature2.get(), digest.get()));
 }
 
 TEST(TWPublicKeyTests, Recover) {
