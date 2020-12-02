@@ -55,12 +55,12 @@ TEST(TWEthereumAbi, FuncCreate2) {
     TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(TWStringCreateWithUTF8Bytes("baz"));
     EXPECT_TRUE(func != nullptr);
 
-    TWString* p1valStr = TWStringCreateWithUTF8Bytes("0045");
-    TWData* p1val = TWDataCreateWithHexString(p1valStr);
+    auto p1valStr = WRAPS(TWStringCreateWithUTF8Bytes("0045"));
+    TWData* p1val = TWDataCreateWithHexString(p1valStr.get());
     auto p1index = TWEthereumAbiFunctionAddParamUInt256(func, p1val, false);
     EXPECT_EQ(0, p1index);
     //TWDataDelete(p1val);
-    TWStringDelete(p1valStr);
+    TWStringDelete(p1valStr.get());
 
     Data dummy(0);
     auto p2index = TWEthereumAbiFunctionAddParamUInt256(func, &dummy, true);
