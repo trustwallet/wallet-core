@@ -59,12 +59,12 @@ TEST(TWPublicKeyTests, CompressedExtended) {
     EXPECT_EQ(TWPublicKeyIsCompressed(extended), false);
     EXPECT_TRUE(TWPublicKeyIsValid(extended, TWPublicKeyTypeSECP256k1Extended));
 
-    auto compressed = TWPublicKeyCompressed(extended);
+    auto compressed = WRAP(TWPublicKey, TWPublicKeyCompressed(extended));
     //EXPECT_TRUE(compressed == publicKey.get());
-    EXPECT_EQ(TWPublicKeyKeyType(compressed), TWPublicKeyTypeSECP256k1);
-    EXPECT_EQ(compressed->impl.bytes.size(), 33);
-    EXPECT_EQ(TWPublicKeyIsCompressed(compressed), true);
-    EXPECT_TRUE(TWPublicKeyIsValid(compressed, TWPublicKeyTypeSECP256k1));
+    EXPECT_EQ(TWPublicKeyKeyType(compressed.get()), TWPublicKeyTypeSECP256k1);
+    EXPECT_EQ(compressed.get()->impl.bytes.size(), 33);
+    EXPECT_EQ(TWPublicKeyIsCompressed(compressed.get()), true);
+    EXPECT_TRUE(TWPublicKeyIsValid(compressed.get(), TWPublicKeyTypeSECP256k1));
 }
 
 TEST(TWPublicKeyTests, Verify) {
