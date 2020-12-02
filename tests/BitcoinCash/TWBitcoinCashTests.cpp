@@ -52,16 +52,14 @@ TEST(BitcoinCash, LegacyToCashAddr) {
 
 TEST(BitcoinCash, LockScript) {
     auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(STRING("bitcoincash:qpk05r5kcd8uuzwqunn8rlx5xvuvzjqju5rch3tc0u").get(), TWCoinTypeBitcoinCash));
-    auto data = TWAnyAddressData(address.get());
-    auto rawData = TWDataCreateWithSize(0);
-    TWDataAppendByte(rawData, 0x00);
-    TWDataAppendData(rawData, data);
+    auto data = WRAPD(TWAnyAddressData(address.get()));
+    auto rawData = WRAPD(TWDataCreateWithSize(0));
+    TWDataAppendByte(rawData.get(), 0x00);
+    TWDataAppendData(rawData.get(), data.get());
 
-    auto legacyAddress = TWBitcoinAddressCreateWithData(rawData);
+    auto legacyAddress = TWBitcoinAddressCreateWithData(rawData.get());
     auto legacyString = WRAPS(TWBitcoinAddressDescription(legacyAddress));
     assertStringsEqual(legacyString, "1AwDXywmyhASpCCFWkqhySgZf8KiswFoGh");
-    TWDataDelete(data);
-    TWDataDelete(rawData);
 
     auto keyHash = WRAPD(TWDataCreateWithBytes(legacyAddress->impl.bytes.data() + 1, 20));
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildPayToPublicKeyHash(keyHash.get()));

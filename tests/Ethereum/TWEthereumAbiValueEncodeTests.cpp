@@ -38,12 +38,12 @@ TEST(TWEthereumAbiValue, encodeInt) {
         "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
     EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeUInt32(69)).get())),
         "0000000000000000000000000000000000000000000000000000000000000045");
-    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeUInt256(buildUInt256(uint256_t(69)))).get())),
+    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeUInt256(WRAPD(buildUInt256(uint256_t(69))).get())).get())),
         "0000000000000000000000000000000000000000000000000000000000000045");
-    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeInt256(buildUInt256(uint256_t(69)))).get())),
+    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeInt256(WRAPD(buildUInt256(uint256_t(69))).get())).get())),
         "0000000000000000000000000000000000000000000000000000000000000045");
     // int256(-1)
-    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeInt256(buildUInt256(~uint256_t(0)))).get())),
+    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeInt256(WRAPD(buildUInt256(~uint256_t(0))).get())).get())),
         "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 }
 
