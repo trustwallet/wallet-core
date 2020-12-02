@@ -53,18 +53,18 @@ TEST(TWPublicKeyTests, CompressedExtended) {
     EXPECT_EQ(TWPublicKeyIsCompressed(publicKey.get()), true);
     EXPECT_TRUE(TWPublicKeyIsValid(publicKey.get(), TWPublicKeyTypeSECP256k1));
 
-    auto extended = TWPublicKeyUncompressed(publicKey.get());
-    EXPECT_EQ(TWPublicKeyKeyType(extended), TWPublicKeyTypeSECP256k1Extended);
-    EXPECT_EQ(extended->impl.bytes.size(), 65);
-    EXPECT_EQ(TWPublicKeyIsCompressed(extended), false);
-    EXPECT_TRUE(TWPublicKeyIsValid(extended, TWPublicKeyTypeSECP256k1Extended));
+    auto extended = WRAP(TWPublicKey, TWPublicKeyUncompressed(publicKey.get()));
+    EXPECT_EQ(TWPublicKeyKeyType(extended.get()), TWPublicKeyTypeSECP256k1Extended);
+    EXPECT_EQ(extended.get()->impl.bytes.size(), 65);
+    EXPECT_EQ(TWPublicKeyIsCompressed(extended.get()), false);
+    EXPECT_TRUE(TWPublicKeyIsValid(extended.get(), TWPublicKeyTypeSECP256k1Extended));
 
-    auto compressed = TWPublicKeyCompressed(extended);
+    auto compressed = WRAP(TWPublicKey, TWPublicKeyCompressed(extended.get()));
     //EXPECT_TRUE(compressed == publicKey.get());
-    EXPECT_EQ(TWPublicKeyKeyType(compressed), TWPublicKeyTypeSECP256k1);
-    EXPECT_EQ(compressed->impl.bytes.size(), 33);
-    EXPECT_EQ(TWPublicKeyIsCompressed(compressed), true);
-    EXPECT_TRUE(TWPublicKeyIsValid(compressed, TWPublicKeyTypeSECP256k1));
+    EXPECT_EQ(TWPublicKeyKeyType(compressed.get()), TWPublicKeyTypeSECP256k1);
+    EXPECT_EQ(compressed.get()->impl.bytes.size(), 33);
+    EXPECT_EQ(TWPublicKeyIsCompressed(compressed.get()), true);
+    EXPECT_TRUE(TWPublicKeyIsValid(compressed.get(), TWPublicKeyTypeSECP256k1));
 }
 
 TEST(TWPublicKeyTests, Verify) {
@@ -90,13 +90,13 @@ TEST(TWPublicKeyTests, VerifyEd25519) {
     auto digest = WRAPD(TWHashSHA256(messageData.get()));
 
     auto signature = WRAPD(TWPrivateKeySign(privateKey.get(), digest.get(), TWCurveED25519));
-    auto publicKey = TWPrivateKeyGetPublicKeyEd25519(privateKey.get());
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519(privateKey.get()));
 
     auto signature2 = WRAPD(TWPrivateKeySign(privateKey.get(), digest.get(), TWCurveED25519Blake2bNano));
-    auto publicKey2 = TWPrivateKeyGetPublicKeyEd25519Blake2b(privateKey.get());
+    auto publicKey2 = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519Blake2b(privateKey.get()));
 
-    ASSERT_TRUE(TWPublicKeyVerify(publicKey, signature.get(), digest.get()));
-    ASSERT_TRUE(TWPublicKeyVerify(publicKey2, signature2.get(), digest.get()));
+    ASSERT_TRUE(TWPublicKeyVerify(publicKey.get(), signature.get(), digest.get()));
+    ASSERT_TRUE(TWPublicKeyVerify(publicKey2.get(), signature2.get(), digest.get()));
 }
 
 TEST(TWPublicKeyTests, Recover) {

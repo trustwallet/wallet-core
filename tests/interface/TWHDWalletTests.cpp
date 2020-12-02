@@ -179,8 +179,8 @@ TEST(HDWallet, DeriveCosmos) {
 TEST(HDWallet, DeriveNimiq) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeNimiq));
-    auto publicKey = TWPrivateKeyGetPublicKeyEd25519(key.get());
-    auto publicKeyData = WRAPD(TWPublicKeyData(publicKey));
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519(key.get()));
+    auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
 
     assertHexEqual(publicKeyData, "1937063865fe3294ccf3017837207bb3fea71a53720ae631b77bf9d5ca4f7f4c");
 }
@@ -188,8 +188,8 @@ TEST(HDWallet, DeriveNimiq) {
 TEST(HDWallet, DeriveTezos) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeTezos));
-    auto publicKey = TWPrivateKeyGetPublicKeyEd25519(key.get());
-    auto publicKeyData = WRAPD(TWPublicKeyData(publicKey));
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519(key.get()));
+    auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
 
     assertHexEqual(publicKeyData, "c834147f97bcf95bf01f234455646a197f70b25e93089591ffde8122370ad371");
 }

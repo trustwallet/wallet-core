@@ -36,7 +36,7 @@ TEST(TWBase58, Decode) {
 
 TEST(TWBase58, DecodeNoCheck) {
     const auto input = STRING("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx");
-    auto result = WRAPS(TWBase58DecodeNoCheck(input.get()));
+    auto result = WRAPD(TWBase58DecodeNoCheck(input.get()));
     assertHexEqual(result, "00769bdff96a02f9135a1d19b749db6a78fe07dc90c3507da5");
 }
 
@@ -48,7 +48,7 @@ TEST(TWBase58, Decode_WrongChecksum) {
 
 TEST(TWBase58, DecodeNoCheck_WrongChecksum) {
     const auto input = STRING("1Bp9U1ogV3A14FMvKbRJms7ctyso5FdSz2");
-    auto result = WRAPS(TWBase58DecodeNoCheck(input.get()));
+    auto result = WRAPD(TWBase58DecodeNoCheck(input.get()));
     // decodes despite wrong checksum
     assertHexEqual(result, "00769bdff96a02f9135a1d19b749db6a78fe07dc90deadbeef");
 }
@@ -63,6 +63,6 @@ TEST(TWBase58, Decode_InvalidChar) {
 TEST(TWBase58, DecodeNoCheck_InvalidChar) {
     // 0 is invalid
     const auto input = STRING("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tc0");
-    auto result = WRAPS(TWBase58DecodeNoCheck(input.get()));
+    auto result = WRAPD(TWBase58DecodeNoCheck(input.get()));
     ASSERT_EQ(result.get(), nullptr);
 }
