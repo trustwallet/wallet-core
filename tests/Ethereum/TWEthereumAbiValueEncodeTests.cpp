@@ -48,7 +48,7 @@ TEST(TWEthereumAbiValue, encodeInt) {
 }
 
 TEST(TWEthereumAbiValue, encodeAddress) {
-    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeAddress(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed")))).get())),
+    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeAddress(WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"))).get())).get())),
         "0000000000000000000000005aaeb6053f3e94c9b9a09f33669435e7ef1beaed");
 }
 
@@ -58,9 +58,9 @@ TEST(TWEthereumAbiValue, encodeString) {
 }
 
 TEST(TWEthereumAbiValue, encodeBytes) {
-    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeBytes(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("45")))).get())),
+    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeBytes(WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("45"))).get())).get())),
         "4500000000000000000000000000000000000000000000000000000000000000");
-    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeBytes(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed")))).get())),
+    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeBytes(WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"))).get())).get())),
         "5aaeb6053f3e94c9b9a09f33669435e7ef1beaed000000000000000000000000");
 }
 
