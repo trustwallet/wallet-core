@@ -162,9 +162,9 @@ TEST(TWIoTeXStaking, SignAll) {
         // signed action's hash
         ASSERT_EQ(hex(output.hash()),
                   "f1785e47b4200c752bb6518bd18097a41e075438b8c18c9cb00e1ae2f38ce767");
-        input.release_stakecreate();
-        output.release_encoded();
-        output.release_hash();
+        //input.release_stakecreate();
+        //output.release_encoded();
+        //output.release_hash();
     }
     { // sign stakeadddeposit
         auto input = Proto::SigningInput();
@@ -188,9 +188,9 @@ TEST(TWIoTeXStaking, SignAll) {
         // signed action's hash
         ASSERT_EQ(hex(output.hash()),
                   "ca8937d6f224a4e4bf93cb5605581de2d26fb0481e1dfc1eef384ee7ccf94b73");
-        input.release_stakeadddeposit();
-        output.release_encoded();
-        output.release_hash();
+        //input.release_stakeadddeposit();
+        //output.release_encoded();
+        //output.release_hash();
     }
     { // sign stakeunstake
         auto input = Proto::SigningInput();
@@ -213,9 +213,9 @@ TEST(TWIoTeXStaking, SignAll) {
         // signed action's hash
         ASSERT_EQ(hex(output.hash()),
                   "bed58b64a6c4e959eca60a86f0b2149ce0e1dd527ac5fd26aef725ebf7c22a7d");
-        input.release_stakeunstake();
-        output.release_encoded();
-        output.release_hash();
+        //input.release_stakeadddeposit();
+        //output.release_encoded();
+        //output.release_hash();
     }
     { // sign stakewithdraw
         auto input = Proto::SigningInput();
@@ -238,9 +238,9 @@ TEST(TWIoTeXStaking, SignAll) {
         // signed action's hash
         ASSERT_EQ(hex(output.hash()),
                   "28049348cf34f1aa927caa250e7a1b08778c44efaf73b565b6fa9abe843871b4");
-        input.release_stakewithdraw();
-        output.release_encoded();
-        output.release_hash();
+        //input.release_stakeadddeposit();
+        //output.release_encoded();
+        //output.release_hash();
     }
     { // sign stakerestake
         auto input = Proto::SigningInput();
@@ -265,9 +265,9 @@ TEST(TWIoTeXStaking, SignAll) {
         // signed action's hash
         ASSERT_EQ(hex(output.hash()),
                   "8816e8f784a1fce40b54d1cd172bb6976fd9552f1570c73d1d9fcdc5635424a9");
-        input.release_stakerestake();
-        output.release_encoded();
-        output.release_hash();
+        //input.release_stakeadddeposit();
+        //output.release_encoded();
+        //output.release_hash();
     }
     { // sign stakechangecandidate
         auto input = Proto::SigningInput();
@@ -292,9 +292,9 @@ TEST(TWIoTeXStaking, SignAll) {
         // signed action's hash
         ASSERT_EQ(hex(output.hash()),
                   "186526b5b9fe74e25beb52c83c41780a69108160bef2ddaf3bffb9f1f1e5e73a");
-        input.release_stakechangecandidate();
-        output.release_encoded();
-        output.release_hash();
+        //input.release_stakeadddeposit();
+        //output.release_encoded();
+        //output.release_hash();
     }
     { // sign staketransfer
         auto input = Proto::SigningInput();
@@ -319,9 +319,9 @@ TEST(TWIoTeXStaking, SignAll) {
         // signed action's hash
         ASSERT_EQ(hex(output.hash()),
                   "74b2e1d6a09ba5d1298fa422d5850991ae516865077282196295a38f93c78b85");
-        input.release_staketransferownership();
-        output.release_encoded();
-        output.release_hash();
+        //input.release_stakeadddeposit();
+        //output.release_encoded();
+        //output.release_hash();
     }
     { // sign candidateupdate
         auto input = Proto::SigningInput();
@@ -347,9 +347,9 @@ TEST(TWIoTeXStaking, SignAll) {
         // signed action's hash
         ASSERT_EQ(hex(output.hash()),
                   "ca1a28f0e9a58ffc67037cc75066dbdd8e024aa2b2e416e4d6ce16c3d86282e5");
-        input.release_candidateupdate();
-        output.release_encoded();
-        output.release_hash();
+        //input.release_stakeadddeposit();
+        //output.release_encoded();
+        //output.release_hash();
     }
     { // sign candidateregister
         auto input = Proto::SigningInput();
