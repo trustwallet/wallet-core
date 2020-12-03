@@ -9,11 +9,8 @@ message Transfer {
 }
 
 message ContractGeneric {
-    // Amount to send in wei (256-bit number)
-    bytes amount = 1;
-
     // Optional payload
-    bytes payload = 2;
+    bytes payload = 1;
 }
 
 // Input data necessary to create a signed transaction.

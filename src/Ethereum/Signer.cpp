@@ -89,7 +89,7 @@ Transaction Signer::build(const Proto::SigningInput &input) {
             /* gasPrice: */ load(input.gas_price()),
             /* gasLimit: */ load(input.gas_limit()),
             /* to: */ toAddress,
-            /* amount: */ load(input.contract_generic().amount()),
+            /* amount: */ 0,
             /* payload: */ Data(input.contract_generic().payload().begin(), input.contract_generic().payload().end()));
         return transaction;
     }
