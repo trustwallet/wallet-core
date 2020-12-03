@@ -74,14 +74,25 @@ Transaction Signer::build(const Proto::SigningInput &input) {
         auto address = Address(input.to_address());
         std::copy(address.bytes.begin(), address.bytes.end(), toAddress.data());
     }
-    auto transaction = Transaction(
-        /* nonce: */ load(input.nonce()),
-        /* gasPrice: */ load(input.gas_price()),
-        /* gasLimit: */ load(input.gas_limit()),
-        /* to: */ toAddress,
-        /* amount: */ load(input.transaction_transfer().amount()),
-        /* payload: */ Data(input.transaction_transfer().payload().begin(), input.transaction_transfer().payload().end()));
-    return transaction;
+    if (input.has_transaction_transfer()) {
+        auto transaction = Transaction(
+            /* nonce: */ load(input.nonce()),
+            /* gasPrice: */ load(input.gas_price()),
+            /* gasLimit: */ load(input.gas_limit()),
+            /* to: */ toAddress,
+            /* amount: */ load(input.transaction_transfer().amount()),
+            /* payload: */ {});
+        return transaction;
+    } else {
+        auto transaction = Transaction(
+            /* nonce: */ load(input.nonce()),
+            /* gasPrice: */ load(input.gas_price()),
+            /* gasLimit: */ load(input.gas_limit()),
+            /* to: */ toAddress,
+            /* amount: */ load(input.contract_generic_transfer().amount()),
+            /* payload: */ Data(input.contract_generic_transfer().payload().begin(), input.contract_generic_transfer().payload().end()));
+        return transaction;
+    }
 }
 
 void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept {

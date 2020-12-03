@@ -6,6 +6,11 @@ option java_package = "wallet.core.jni.proto";
 message Transfer {
     // Amount to send in wei (256-bit number)
     bytes amount = 1;
+}
+
+message ContractGeneric {
+    // Amount to send in wei (256-bit number)
+    bytes amount = 1;
 
     // Optional payload
     bytes payload = 2;
@@ -31,10 +36,9 @@ message SigningInput {
     // Private key.
     bytes private_key = 6;
 
-    //Transfer transfer = 7;
-
     oneof transaction_oneof {
         Transfer transaction_transfer = 11;
+        ContractGeneric contract_generic_transfer = 12;
     }
 }
 
