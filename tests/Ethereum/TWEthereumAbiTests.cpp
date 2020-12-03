@@ -65,8 +65,8 @@ TEST(TWEthereumAbi, FuncCreate2) {
     EXPECT_EQ(0, p2index);
 
     // check back get value
-    TWData* p2val2 = TWEthereumAbiFunctionGetParamUInt256(func, p2index, true);
-    Data p2val3 = data(TWDataBytes(p2val2), TWDataSize(p2val2));
+    auto p2val2 = WRAPD(TWEthereumAbiFunctionGetParamUInt256(func, p2index, true));
+    Data p2val3 = data(TWDataBytes(p2val2.get()), TWDataSize(p2val2.get()));
     EXPECT_EQ("00", hex(p2val3));
 
     auto type = WRAPS(TWEthereumAbiFunctionGetType(func));
@@ -189,7 +189,7 @@ TEST(TWEthereumAbi, EncodeFuncMonster) {
     EXPECT_EQ(1, TWEthereumAbiFunctionGetParamUInt8(func, 0, false));
     EXPECT_EQ(4, TWEthereumAbiFunctionGetParamUInt64(func, 3, false));
     EXPECT_EQ(true, TWEthereumAbiFunctionGetParamBool(func, 12, false));
-    EXPECT_EQ(std::string("Hello, world!"), std::string(TWStringUTF8Bytes(TWEthereumAbiFunctionGetParamString(func, 13, false))));
+    EXPECT_EQ(std::string("Hello, world!"), std::string(TWStringUTF8Bytes(WRAPS(TWEthereumAbiFunctionGetParamString(func, 13, false)).get())));
     WRAPD(TWEthereumAbiFunctionGetParamAddress(func, 14, false));
 
     auto type = WRAPS(TWEthereumAbiFunctionGetType(func));
@@ -243,17 +243,17 @@ TEST(TWEthereumAbi, GetParamWrongType) {
     // GetParameter with wrong type, default value (0) is returned
     EXPECT_EQ(0, TWEthereumAbiFunctionGetParamUInt8(func, 1, true));
     EXPECT_EQ(0, TWEthereumAbiFunctionGetParamUInt64(func, 0, true));
-    EXPECT_EQ("00", hex(*(static_cast<const Data*>(TWEthereumAbiFunctionGetParamUInt256(func, 0, true)))));
+    EXPECT_EQ("00", hex(*(static_cast<const Data*>(WRAPD(TWEthereumAbiFunctionGetParamUInt256(func, 0, true)).get()))));
     EXPECT_EQ(false, TWEthereumAbiFunctionGetParamBool(func, 0, true));
-    EXPECT_EQ("", std::string(TWStringUTF8Bytes(TWEthereumAbiFunctionGetParamString(func, 0, true))));
+    EXPECT_EQ("", std::string(TWStringUTF8Bytes(WRAPS(TWEthereumAbiFunctionGetParamString(func, 0, true)).get())));
     EXPECT_EQ("", hex(*(static_cast<const Data*>(WRAPD(TWEthereumAbiFunctionGetParamAddress(func, 0, true)).get()))));
 
     // GetParameter with wrong index, default value (0) is returned
     EXPECT_EQ(0, TWEthereumAbiFunctionGetParamUInt8(func, 99, true));
     EXPECT_EQ(0, TWEthereumAbiFunctionGetParamUInt64(func, 99, true));
-    EXPECT_EQ("00", hex(*(static_cast<const Data*>(TWEthereumAbiFunctionGetParamUInt256(func, 99, true)))));
+    EXPECT_EQ("00", hex(*(static_cast<const Data*>(WRAPD(TWEthereumAbiFunctionGetParamUInt256(func, 99, true)).get()))));
     EXPECT_EQ(false, TWEthereumAbiFunctionGetParamBool(func, 99, true));
-    EXPECT_EQ("", std::string(TWStringUTF8Bytes(TWEthereumAbiFunctionGetParamString(func, 99, true))));
+    EXPECT_EQ("", std::string(TWStringUTF8Bytes(WRAPS(TWEthereumAbiFunctionGetParamString(func, 99, true)).get())));
     EXPECT_EQ("", hex(*(static_cast<const Data*>(WRAPD(TWEthereumAbiFunctionGetParamAddress(func, 99, true)).get()))));
 
     // delete

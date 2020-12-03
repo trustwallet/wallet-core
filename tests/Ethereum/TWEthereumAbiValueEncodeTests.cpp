@@ -66,6 +66,10 @@ TEST(TWEthereumAbiValue, encodeBytes) {
 
 TEST(TWEthereumAbiValue, encodeBytesDyn) {
     std::string valueStr = "trustwallet";
-    EXPECT_EQ(hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeBytesDyn(TWDataCreateWithBytes(reinterpret_cast<const unsigned char*>(valueStr.c_str()), valueStr.length()))).get())),
-        "31924c4e2bb082322d1efa718bf67c73ca297b481dac9f76ad35670cff0056a3");
+    EXPECT_EQ(
+        hex(*reinterpret_cast<const Data*>(WRAPD(TWEthereumAbiValueEncodeBytesDyn(WRAPD(
+            TWDataCreateWithBytes(reinterpret_cast<const unsigned char*>(valueStr.c_str()), valueStr.length())
+        ).get())).get())),
+        "31924c4e2bb082322d1efa718bf67c73ca297b481dac9f76ad35670cff0056a3"
+    );
 }
