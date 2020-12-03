@@ -132,16 +132,16 @@ TEST(TWIoTeXStaking, CandidateUpdate) {
 }
 
 TEST(TWIoTeXStaking, SignAll) {
-    auto input = Proto::SigningInput();
-    input.set_version(1);
-    input.set_nonce(0);
-    input.set_gaslimit(1000000);
-    input.set_gasprice("10");
     auto keyhex = parse_hex("cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1");
-    input.set_privatekey(keyhex.data(), keyhex.size());
-    Proto::SigningOutput output;
 
     { // sign stakecreate
+        auto input = Proto::SigningInput();
+        input.set_version(1);
+        input.set_nonce(0);
+        input.set_gaslimit(1000000);
+        input.set_gasprice("10");
+        input.set_privatekey(keyhex.data(), keyhex.size());
+        Proto::SigningOutput output;
         auto& action = *input.mutable_stakecreate();
         action.set_candidatename("io19d0p3ah4g8ww9d7kcxfq87yxe7fnr8rpth5shj");
         action.set_stakedamount("100");
@@ -167,6 +167,13 @@ TEST(TWIoTeXStaking, SignAll) {
         output.release_hash();
     }
     { // sign stakeadddeposit
+        auto input = Proto::SigningInput();
+        input.set_version(1);
+        input.set_nonce(0);
+        input.set_gaslimit(1000000);
+        input.set_gasprice("10");
+        input.set_privatekey(keyhex.data(), keyhex.size());
+        Proto::SigningOutput output;
         auto& action = *input.mutable_stakeadddeposit();
         action.set_bucketindex(10);
         action.set_amount("10");
@@ -186,6 +193,13 @@ TEST(TWIoTeXStaking, SignAll) {
         output.release_hash();
     }
     { // sign stakeunstake
+        auto input = Proto::SigningInput();
+        input.set_version(1);
+        input.set_nonce(0);
+        input.set_gaslimit(1000000);
+        input.set_gasprice("10");
+        input.set_privatekey(keyhex.data(), keyhex.size());
+        Proto::SigningOutput output;
         auto& action = *input.mutable_stakeunstake();
         action.set_bucketindex(10);
         action.set_payload("payload");
@@ -204,6 +218,13 @@ TEST(TWIoTeXStaking, SignAll) {
         output.release_hash();
     }
     { // sign stakewithdraw
+        auto input = Proto::SigningInput();
+        input.set_version(1);
+        input.set_nonce(0);
+        input.set_gaslimit(1000000);
+        input.set_gasprice("10");
+        input.set_privatekey(keyhex.data(), keyhex.size());
+        Proto::SigningOutput output;
         auto& action = *input.mutable_stakewithdraw();
         action.set_bucketindex(10);
         action.set_payload("payload");
@@ -222,6 +243,13 @@ TEST(TWIoTeXStaking, SignAll) {
         output.release_hash();
     }
     { // sign stakerestake
+        auto input = Proto::SigningInput();
+        input.set_version(1);
+        input.set_nonce(0);
+        input.set_gaslimit(1000000);
+        input.set_gasprice("10");
+        input.set_privatekey(keyhex.data(), keyhex.size());
+        Proto::SigningOutput output;
         auto& action = *input.mutable_stakerestake();
         action.set_bucketindex(10);
         action.set_stakedduration(1000);
@@ -242,6 +270,13 @@ TEST(TWIoTeXStaking, SignAll) {
         output.release_hash();
     }
     { // sign stakechangecandidate
+        auto input = Proto::SigningInput();
+        input.set_version(1);
+        input.set_nonce(0);
+        input.set_gaslimit(1000000);
+        input.set_gasprice("10");
+        input.set_privatekey(keyhex.data(), keyhex.size());
+        Proto::SigningOutput output;
         auto& action = *input.mutable_stakechangecandidate();
         action.set_bucketindex(10);
         action.set_candidatename("io1xpq62aw85uqzrccg9y5hnryv8ld2nkpycc3gza");
@@ -262,6 +297,13 @@ TEST(TWIoTeXStaking, SignAll) {
         output.release_hash();
     }
     { // sign staketransfer
+        auto input = Proto::SigningInput();
+        input.set_version(1);
+        input.set_nonce(0);
+        input.set_gaslimit(1000000);
+        input.set_gasprice("10");
+        input.set_privatekey(keyhex.data(), keyhex.size());
+        Proto::SigningOutput output;
         auto& action = *input.mutable_staketransferownership();
         action.set_bucketindex(10);
         action.set_voteraddress("io1xpq62aw85uqzrccg9y5hnryv8ld2nkpycc3gza");
@@ -282,6 +324,13 @@ TEST(TWIoTeXStaking, SignAll) {
         output.release_hash();
     }
     { // sign candidateupdate
+        auto input = Proto::SigningInput();
+        input.set_version(1);
+        input.set_nonce(0);
+        input.set_gaslimit(1000000);
+        input.set_gasprice("10");
+        input.set_privatekey(keyhex.data(), keyhex.size());
+        Proto::SigningOutput output;
         auto& action = *input.mutable_candidateupdate();
         action.set_name("test");
         action.set_operatoraddress("io1cl6rl2ev5dfa988qmgzg2x4hfazmp9vn2g66ng");
@@ -303,6 +352,13 @@ TEST(TWIoTeXStaking, SignAll) {
         output.release_hash();
     }
     { // sign candidateregister
+        auto input = Proto::SigningInput();
+        input.set_version(1);
+        input.set_nonce(0);
+        input.set_gaslimit(1000000);
+        input.set_gasprice("10");
+        input.set_privatekey(keyhex.data(), keyhex.size());
+        Proto::SigningOutput output;
         input.set_gasprice("1000");
         auto& cbi = *input.mutable_candidateregister()->mutable_candidate();
         cbi.set_name("test");
