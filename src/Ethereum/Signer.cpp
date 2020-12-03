@@ -74,13 +74,13 @@ Transaction Signer::build(const Proto::SigningInput &input) {
         auto address = Address(input.to_address());
         std::copy(address.bytes.begin(), address.bytes.end(), toAddress.data());
     }
-    if (input.has_transaction_transfer()) {
+    if (input.has_contract_transfer()) {
         auto transaction = Transaction(
             /* nonce: */ load(input.nonce()),
             /* gasPrice: */ load(input.gas_price()),
             /* gasLimit: */ load(input.gas_limit()),
             /* to: */ toAddress,
-            /* amount: */ load(input.transaction_transfer().amount()),
+            /* amount: */ load(input.contract_transfer().amount()),
             /* payload: */ {});
         return transaction;
     } else {
@@ -89,8 +89,8 @@ Transaction Signer::build(const Proto::SigningInput &input) {
             /* gasPrice: */ load(input.gas_price()),
             /* gasLimit: */ load(input.gas_limit()),
             /* to: */ toAddress,
-            /* amount: */ load(input.contract_generic_transfer().amount()),
-            /* payload: */ Data(input.contract_generic_transfer().payload().begin(), input.contract_generic_transfer().payload().end()));
+            /* amount: */ load(input.contract_generic().amount()),
+            /* payload: */ Data(input.contract_generic().payload().begin(), input.contract_generic().payload().end()));
         return transaction;
     }
 }

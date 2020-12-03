@@ -77,7 +77,7 @@ TEST(BinanceSmartChain, SignTokenTransfer) {
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_to_address(tokenContractAddress);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-    auto& transfer = *input.mutable_contract_generic_transfer();
+    auto& transfer = *input.mutable_contract_generic();
     transfer.set_payload(payloadFunction.data(), payloadFunction.size());
     transfer.set_amount(dummyAmount.data(), dummyAmount.size());
 

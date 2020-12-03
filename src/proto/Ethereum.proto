@@ -36,9 +36,9 @@ message SigningInput {
     // Private key.
     bytes private_key = 6;
 
-    oneof transaction_oneof {
-        Transfer transaction_transfer = 11;
-        ContractGeneric contract_generic_transfer = 12;
+    oneof contract_oneof {
+        Transfer contract_transfer = 11;
+        ContractGeneric contract_generic = 12;
     }
 }
 
