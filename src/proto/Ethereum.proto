@@ -3,12 +3,19 @@ syntax = "proto3";
 package TW.Ethereum.Proto;
 option java_package = "wallet.core.jni.proto";
 
-message Transfer {
+message TransferContract {
     // Amount to send in wei (256-bit number)
     bytes amount = 1;
 }
 
-message ContractGeneric {
+message ERC20TransferContract {
+    string token_contract = 1;
+
+    // Amount to send (256-bit number)
+    bytes amount = 2;
+}
+
+message GenericContract {
     // Optional payload
     bytes payload = 1;
 }
@@ -34,8 +41,9 @@ message SigningInput {
     bytes private_key = 6;
 
     oneof contract_oneof {
-        Transfer contract_transfer = 11;
-        ContractGeneric contract_generic = 12;
+        TransferContract contract_transfer = 11;
+        ERC20TransferContract contract_erc20 = 12;
+        GenericContract contract_generic = 13;
     }
 }
 

@@ -74,24 +74,34 @@ Transaction Signer::build(const Proto::SigningInput &input) {
         auto address = Address(input.to_address());
         std::copy(address.bytes.begin(), address.bytes.end(), toAddress.data());
     }
-    if (input.has_contract_transfer()) {
-        auto transaction = Transaction(
-            /* nonce: */ load(input.nonce()),
-            /* gasPrice: */ load(input.gas_price()),
-            /* gasLimit: */ load(input.gas_limit()),
-            /* to: */ toAddress,
-            /* amount: */ load(input.contract_transfer().amount()),
-            /* payload: */ {});
-        return transaction;
-    } else {
-        auto transaction = Transaction(
-            /* nonce: */ load(input.nonce()),
-            /* gasPrice: */ load(input.gas_price()),
-            /* gasLimit: */ load(input.gas_limit()),
-            /* to: */ toAddress,
-            /* amount: */ 0,
-            /* payload: */ Data(input.contract_generic().payload().begin(), input.contract_generic().payload().end()));
-        return transaction;
+    switch (input.contract_oneof_case()) {
+        case TW::Ethereum::Proto::SigningInput::kContractTransfer:
+            {
+                auto transaction = Transaction(
+                    /* nonce: */ load(input.nonce()),
+                    /* gasPrice: */ load(input.gas_price()),
+                    /* gasLimit: */ load(input.gas_limit()),
+                    /* to: */ toAddress,
+                    /* amount: */ load(input.contract_transfer().amount()),
+                    /* payload: */ {});
+                return transaction;
+            }
+
+        case TW::Ethereum::Proto::SigningInput::ContractOneofCase::kContractErc20:
+            // TODO
+            break;
+
+        case TW::Ethereum::Proto::SigningInput::ContractOneofCase::kContractGeneric:
+            {
+                auto transaction = Transaction(
+                    /* nonce: */ load(input.nonce()),
+                    /* gasPrice: */ load(input.gas_price()),
+                    /* gasLimit: */ load(input.gas_limit()),
+                    /* to: */ toAddress,
+                    /* amount: */ 0,
+                    /* payload: */ Data(input.contract_generic().payload().begin(), input.contract_generic().payload().end()));
+                return transaction;
+            }
     }
 }
 
