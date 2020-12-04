@@ -131,16 +131,21 @@ TEST(TWIoTeXStaking, CandidateUpdate) {
                           "326e756b7034766763776b32676e6335637539617964");
 }
 
-TEST(TWIoTeXStaking, SignAll) {
+Proto::SigningInput createSigningInput()
+{
     auto keyhex = parse_hex("cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1");
+    auto input = Proto::SigningInput();
+    input.set_version(1);
+    input.set_nonce(0);
+    input.set_gaslimit(1000000);
+    input.set_gasprice("10");
+    input.set_privatekey(keyhex.data(), keyhex.size());
+    return input;
+}
 
+TEST(TWIoTeXStaking, SignAll) {
     { // sign stakecreate
-        auto input = Proto::SigningInput();
-        input.set_version(1);
-        input.set_nonce(0);
-        input.set_gaslimit(1000000);
-        input.set_gasprice("10");
-        input.set_privatekey(keyhex.data(), keyhex.size());
+        auto input = createSigningInput();
         Proto::SigningOutput output;
         auto& action = *input.mutable_stakecreate();
         action.set_candidatename("io19d0p3ah4g8ww9d7kcxfq87yxe7fnr8rpth5shj");
@@ -164,12 +169,7 @@ TEST(TWIoTeXStaking, SignAll) {
                   "f1785e47b4200c752bb6518bd18097a41e075438b8c18c9cb00e1ae2f38ce767");
     }
     { // sign stakeadddeposit
-        auto input = Proto::SigningInput();
-        input.set_version(1);
-        input.set_nonce(0);
-        input.set_gaslimit(1000000);
-        input.set_gasprice("10");
-        input.set_privatekey(keyhex.data(), keyhex.size());
+        auto input = createSigningInput();
         Proto::SigningOutput output;
         auto& action = *input.mutable_stakeadddeposit();
         action.set_bucketindex(10);
@@ -187,12 +187,7 @@ TEST(TWIoTeXStaking, SignAll) {
                   "ca8937d6f224a4e4bf93cb5605581de2d26fb0481e1dfc1eef384ee7ccf94b73");
     }
     { // sign stakeunstake
-        auto input = Proto::SigningInput();
-        input.set_version(1);
-        input.set_nonce(0);
-        input.set_gaslimit(1000000);
-        input.set_gasprice("10");
-        input.set_privatekey(keyhex.data(), keyhex.size());
+        auto input = createSigningInput();
         Proto::SigningOutput output;
         auto& action = *input.mutable_stakeunstake();
         action.set_bucketindex(10);
@@ -209,12 +204,7 @@ TEST(TWIoTeXStaking, SignAll) {
                   "bed58b64a6c4e959eca60a86f0b2149ce0e1dd527ac5fd26aef725ebf7c22a7d");
     }
     { // sign stakewithdraw
-        auto input = Proto::SigningInput();
-        input.set_version(1);
-        input.set_nonce(0);
-        input.set_gaslimit(1000000);
-        input.set_gasprice("10");
-        input.set_privatekey(keyhex.data(), keyhex.size());
+        auto input = createSigningInput();
         Proto::SigningOutput output;
         auto& action = *input.mutable_stakewithdraw();
         action.set_bucketindex(10);
@@ -231,12 +221,7 @@ TEST(TWIoTeXStaking, SignAll) {
                   "28049348cf34f1aa927caa250e7a1b08778c44efaf73b565b6fa9abe843871b4");
     }
     { // sign stakerestake
-        auto input = Proto::SigningInput();
-        input.set_version(1);
-        input.set_nonce(0);
-        input.set_gaslimit(1000000);
-        input.set_gasprice("10");
-        input.set_privatekey(keyhex.data(), keyhex.size());
+        auto input = createSigningInput();
         Proto::SigningOutput output;
         auto& action = *input.mutable_stakerestake();
         action.set_bucketindex(10);
@@ -255,12 +240,7 @@ TEST(TWIoTeXStaking, SignAll) {
                   "8816e8f784a1fce40b54d1cd172bb6976fd9552f1570c73d1d9fcdc5635424a9");
     }
     { // sign stakechangecandidate
-        auto input = Proto::SigningInput();
-        input.set_version(1);
-        input.set_nonce(0);
-        input.set_gaslimit(1000000);
-        input.set_gasprice("10");
-        input.set_privatekey(keyhex.data(), keyhex.size());
+        auto input = createSigningInput();
         Proto::SigningOutput output;
         auto& action = *input.mutable_stakechangecandidate();
         action.set_bucketindex(10);
@@ -279,12 +259,7 @@ TEST(TWIoTeXStaking, SignAll) {
                   "186526b5b9fe74e25beb52c83c41780a69108160bef2ddaf3bffb9f1f1e5e73a");
     }
     { // sign staketransfer
-        auto input = Proto::SigningInput();
-        input.set_version(1);
-        input.set_nonce(0);
-        input.set_gaslimit(1000000);
-        input.set_gasprice("10");
-        input.set_privatekey(keyhex.data(), keyhex.size());
+        auto input = createSigningInput();
         Proto::SigningOutput output;
         auto& action = *input.mutable_staketransferownership();
         action.set_bucketindex(10);
@@ -303,12 +278,7 @@ TEST(TWIoTeXStaking, SignAll) {
                   "74b2e1d6a09ba5d1298fa422d5850991ae516865077282196295a38f93c78b85");
     }
     { // sign candidateupdate
-        auto input = Proto::SigningInput();
-        input.set_version(1);
-        input.set_nonce(0);
-        input.set_gaslimit(1000000);
-        input.set_gasprice("10");
-        input.set_privatekey(keyhex.data(), keyhex.size());
+        auto input = createSigningInput();
         Proto::SigningOutput output;
         auto& action = *input.mutable_candidateupdate();
         action.set_name("test");
@@ -328,12 +298,7 @@ TEST(TWIoTeXStaking, SignAll) {
                   "ca1a28f0e9a58ffc67037cc75066dbdd8e024aa2b2e416e4d6ce16c3d86282e5");
     }
     { // sign candidateregister
-        auto input = Proto::SigningInput();
-        input.set_version(1);
-        input.set_nonce(0);
-        input.set_gaslimit(1000000);
-        input.set_gasprice("10");
-        input.set_privatekey(keyhex.data(), keyhex.size());
+        auto input = createSigningInput();
         Proto::SigningOutput output;
         input.set_gasprice("1000");
         auto& cbi = *input.mutable_candidateregister()->mutable_candidate();
