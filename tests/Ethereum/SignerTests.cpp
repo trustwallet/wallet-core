@@ -23,13 +23,12 @@ public:
 
 TEST(Signer, Hash) {
     auto address = parse_hex("0x3535353535353535353535353535353535353535");
-    auto transaction = Transaction(
+    auto transaction = Transaction::buildTransfer(
         /* nonce: */ 9,
         /* gasPrice: */ 20000000000,
         /* gasLimit: */ 21000,
         /* to: */ address,
-        /* amount: */ 1000000000000000000,
-        /* payload: */ {}
+        /* amount: */ 1000000000000000000
     );
     auto signer = SignerExposed(1);
     auto hash = signer.hash(transaction);
@@ -39,13 +38,12 @@ TEST(Signer, Hash) {
 
 TEST(Signer, Sign) {
     auto address = parse_hex("0x3535353535353535353535353535353535353535");
-    auto transaction = Transaction(
+    auto transaction = Transaction::buildTransfer(
         /* nonce: */ 9,
         /* gasPrice: */ 20000000000,
         /* gasLimit: */ 21000,
         /* to: */ address,
-        /* amount: */ 1000000000000000000,
-        /* payload: */ {}
+        /* amount: */ 1000000000000000000
     );
 
     auto key = PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"));

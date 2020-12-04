@@ -77,13 +77,12 @@ Transaction Signer::build(const Proto::SigningInput &input) {
     switch (input.contract_oneof_case()) {
         case TW::Ethereum::Proto::SigningInput::kContractTransfer:
             {
-                auto transaction = Transaction(
+                auto transaction = Transaction::buildTransfer(
                     /* nonce: */ load(input.nonce()),
                     /* gasPrice: */ load(input.gas_price()),
                     /* gasLimit: */ load(input.gas_limit()),
                     /* to: */ toAddress,
-                    /* amount: */ load(input.contract_transfer().amount()),
-                    /* payload: */ {});
+                    /* amount: */ load(input.contract_transfer().amount()));
                 return transaction;
             }
 
@@ -92,13 +91,13 @@ Transaction Signer::build(const Proto::SigningInput &input) {
             break;
 
         case TW::Ethereum::Proto::SigningInput::ContractOneofCase::kContractGeneric:
+        default:
             {
-                auto transaction = Transaction(
+                auto transaction = Transaction::buildSmartContract(
                     /* nonce: */ load(input.nonce()),
                     /* gasPrice: */ load(input.gas_price()),
                     /* gasLimit: */ load(input.gas_limit()),
                     /* to: */ toAddress,
-                    /* amount: */ 0,
                     /* payload: */ Data(input.contract_generic().payload().begin(), input.contract_generic().payload().end()));
                 return transaction;
             }

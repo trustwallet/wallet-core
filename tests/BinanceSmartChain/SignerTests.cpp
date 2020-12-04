@@ -33,13 +33,12 @@ TEST(BinanceSmartChain, SignNativeTransfer) {
     // https://explorer.binance.org/smart-testnet/tx/0x6da28164f7b3bc255d749c3ae562e2a742be54c12bf1858b014cc2fe5700684e
 
     auto toAddress = parse_hex("0x31BE00EB1fc8e14A696DBC72f746ec3e95f49683");
-    auto transaction = Transaction(
+    auto transaction = Transaction::buildTransfer(
         /* nonce: */ 0,
         /* gasPrice: */ 20000000000,
         /* gasLimit: */ 21000,
         /* to: */ toAddress,
-        /* amount: */ 10000000000000000, // 0.01
-        /* payload: */ {}
+        /* amount: */ 10000000000000000 // 0.01
     );
 
     // addr: 0xB9F5771C27664bF2282D98E09D7F50cEc7cB01a7  mnemonic: isolate dismiss ... cruel note

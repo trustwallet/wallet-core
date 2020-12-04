@@ -12,7 +12,7 @@
 namespace TW::Ethereum {
 
 class Transaction {
-  public:
+public:
     uint256_t nonce;
     uint256_t gasPrice;
     uint256_t gasLimit;
@@ -26,8 +26,18 @@ class Transaction {
     uint256_t r = uint256_t();
     uint256_t s = uint256_t();
 
-    Transaction(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, const Data& to, uint256_t amount,
-                Data payload)
+    // factory methods
+    // Create a native coin transfer transaction
+    static Transaction buildTransfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, const Data& to, uint256_t amount) {
+        return Transaction(nonce, gasPrice, gasLimit, to, amount, {});
+    }
+    // Create a generic smart contract transaction
+    static Transaction buildSmartContract(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, const Data& to, const TW::Data& payload) {
+        return Transaction(nonce, gasPrice, gasLimit, to, 0, payload);
+    }
+
+private:
+    Transaction(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, const Data& to, uint256_t amount, const Data& payload)
         : nonce(std::move(nonce))
         , gasPrice(std::move(gasPrice))
         , gasLimit(std::move(gasLimit))
