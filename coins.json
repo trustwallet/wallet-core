@@ -383,8 +383,9 @@
   {
     "id": "zcoin",
     "name": "Zcoin",
+    "displayName": "Firo",
     "coinId": 136,
-    "symbol": "XZC",
+    "symbol": "FIRO",
     "decimals": 8,
     "blockchain": "Bitcoin",
     "derivationPath": "m/44'/136'/0'/0/0",
@@ -397,13 +398,13 @@
     "xpub": "xpub",
     "xprv": "xprv",
     "explorer": {
-      "url": "https://explorer.zcoin.io",
+      "url": "https://explorer.firo.org",
       "txPath": "/tx/",
       "accountPath": "/address/"
     },
     "info": {
-      "url": "https://zcoin.io",
-      "client": "https://github.com/trezor/blockbook",
+      "url": "https://firo.org/",
+      "client": "https://github.com/firoorg/firo",
       "clientPublic": "",
       "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
