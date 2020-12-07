@@ -5,8 +5,15 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
+#include "Transaction.h"
+#include "Program.h"
 #include "../Base58.h"
 #include "../Base58Address.h"
+#include "../Hash.h"
+
+#include "TrezorCrypto/ed25519-donna.h"
+
+#include <cassert>
 
 using namespace TW;
 using namespace TW::Solana;
@@ -32,6 +39,13 @@ Address::Address(const PublicKey& publicKey) {
     std::copy(publicKey.bytes.begin(), publicKey.bytes.end(), bytes.data());
 }
 
+Address::Address(const Data& publicKeyData) {
+    if (publicKeyData.size() != PublicKey::ed25519Size) {
+        throw std::invalid_argument("Invalid public key data size");
+    }
+    std::copy(publicKeyData.begin(), publicKeyData.end(), bytes.data());
+}
+
 std::string Address::string() const {
     return Base58::bitcoin.encode(bytes);
 }
@@ -41,15 +55,6 @@ Data Address::vector() const {
     return vec;
 }
 
-Address addressFromValidatorSeed(const Address& fromAddress, const Address& validatorAddress,
-                                 const Address& programId) {
-    Data extended = fromAddress.vector();
-    std::string seed = validatorAddress.string();
-    Data vecSeed(seed.begin(), seed.end());
-    vecSeed.resize(32);
-    Data additional = programId.vector();
-    extended.insert(extended.end(), vecSeed.begin(), vecSeed.end());
-    extended.insert(extended.end(), additional.begin(), additional.end());
-    Data hash = TW::Hash::sha256(extended);
-    return Address(PublicKey(hash, TWPublicKeyTypeED25519));
+Address Address::defaultTokenAddress(const Address& tokenMintAddress) {
+    return TokenProgram::defaultTokenAddress(*this, tokenMintAddress);
 }

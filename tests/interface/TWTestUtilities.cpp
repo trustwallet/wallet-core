@@ -10,7 +10,7 @@
 
 using namespace std;
 
-/// Return a writeable temp dir which can be used to create files during testing
+/// Return a writable temp dir which can be used to create files during testing
 string getTestTempDir(void) {
     // In general, tests should not use hardcoded "/tmp", but TEST_TMPDIR env var.
     const char* fromEnvironment = getenv("TEST_TMPDIR");

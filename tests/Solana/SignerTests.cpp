@@ -4,15 +4,82 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "HexCoding.h"
-#include "PublicKey.h"
 #include "Solana/Signer.h"
 #include "Solana/Transaction.h"
+#include "Solana/Program.h"
+#include "HexCoding.h"
+#include "PublicKey.h"
 
 #include <gtest/gtest.h>
 
 using namespace TW;
 using namespace TW::Solana;
+
+TEST(SolanaSigner, CompiledInstruction) {
+    const auto privateKey0 =
+        PrivateKey(Base58::bitcoin.decode("96PKHuMPtniu1T74RvUNkbDPXPPRZ8Mg1zXwciCAyaDq"));
+    const auto publicKey0 = privateKey0.getPublicKey(TWPublicKeyTypeED25519);
+    const auto address0 = Address(publicKey0);
+    ASSERT_EQ(Data(publicKey0.bytes.begin(), publicKey0.bytes.end()),
+              Base58::bitcoin.decode("GymAh18wHuFTytfSJWi8eYTA9x5S3sNb9CJSGBWoPRE3"));
+    const auto privateKey1 =
+        PrivateKey(Base58::bitcoin.decode("GvGmNPMQLZE2VNx3KG2GdiC4ndS8uCqd7PjioPgm9Qhi"));
+    const auto publicKey1 = privateKey1.getPublicKey(TWPublicKeyTypeED25519);
+    const auto address1 = Address(publicKey1);
+    ASSERT_EQ(Data(publicKey1.bytes.begin(), publicKey1.bytes.end()),
+              Base58::bitcoin.decode("2oKoYSAHgveX91917v4DUEuN8BNKXDg8KJWpaGyEay9V"));
+    Address programId("11111111111111111111111111111111");
+
+    std::vector<Address> addresses = {address0, address1, programId};
+
+    std::vector<AccountMeta> instrAddresses = {
+        AccountMeta(address1, false, false),
+        AccountMeta(address0, false, false),
+        AccountMeta(programId, false, false),
+        AccountMeta(address1, false, false),
+        AccountMeta(address0, false, false),
+    };
+    Data data = {0, 1, 2, 4};
+    Instruction instruction(programId, instrAddresses, data);
+
+    auto compiledInstruction = CompiledInstruction(instruction, addresses);
+
+    EXPECT_EQ(compiledInstruction.programIdIndex, 2);
+    ASSERT_EQ(compiledInstruction.accounts.size(), 5);
+    EXPECT_EQ(compiledInstruction.accounts[0], 1);
+    EXPECT_EQ(compiledInstruction.accounts[1], 0);
+    EXPECT_EQ(compiledInstruction.accounts[2], 2);
+    EXPECT_EQ(compiledInstruction.accounts[3], 1);
+    EXPECT_EQ(compiledInstruction.accounts[4], 0);
+    ASSERT_EQ(compiledInstruction.data.size(), 4);
+}
+
+TEST(SolanaSigner, CompiledInstructionFindAccount) {
+    Address address1 = Address(parse_hex("0102030405060708090a0102030405060708090a0102030405060708090a0101"));
+    Address address2 = Address(parse_hex("0102030405060708090a0102030405060708090a0102030405060708090a0102"));
+    Address address3 = Address(parse_hex("0102030405060708090a0102030405060708090a0102030405060708090a0103"));
+    Address programId("11111111111111111111111111111111");
+    Instruction instruction(programId, std::vector<AccountMeta>{
+        AccountMeta(address1, true, false),
+        AccountMeta(address2, false, false),
+    }, Data{1, 2, 3, 4});
+    std::vector<Address> addresses = {
+        address1,
+        address2,
+        programId,
+    };
+    CompiledInstruction compiledInstruction = CompiledInstruction(instruction, addresses);
+    ASSERT_EQ(compiledInstruction.findAccount(address1), 0);
+    ASSERT_EQ(compiledInstruction.findAccount(address2), 1);
+    ASSERT_EQ(compiledInstruction.findAccount(programId), 2);
+    // negative case
+    try {
+        compiledInstruction.findAccount(address3);
+        FAIL() << "Missing expected exception";
+    } catch (...) {
+        // ok
+    }
+}
 
 TEST(SolanaSigner, SingleSignTransaction) {
     const auto privateKey =
@@ -97,13 +164,16 @@ TEST(SolanaSigner, MultipleSignTransaction) {
     ASSERT_EQ(Data(publicKey1.bytes.begin(), publicKey1.bytes.end()),
               Base58::bitcoin.decode("2oKoYSAHgveX91917v4DUEuN8BNKXDg8KJWpaGyEay9V"));
 
-    Data accountIndexes = {0, 1};
     Data data = {0, 0, 0, 0};
-    CompiledInstruction instruction(2, accountIndexes, data);
-    std::vector<CompiledInstruction> instructions = {instruction};
+    Address programId("11111111111111111111111111111111");
+    std::vector<AccountMeta> instrAddresses = {
+        AccountMeta(address0, true, false),
+        AccountMeta(address1, false, false),
+    };
+    Instruction instruction(programId, instrAddresses, data);
+    std::vector<Instruction> instructions = {instruction};
 
     MessageHeader header = {2, 0, 1};
-    Address programId("11111111111111111111111111111111");
     std::vector<Address> accountKeys = {address0, address1, programId};
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
     Message message(header, accountKeys, recentBlockhash, instructions);
@@ -198,13 +268,12 @@ TEST(SolanaSigner, SignDelegateStake) {
         PrivateKey(Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746"));
     const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
     auto signer = Address(publicKeySigner);
-    ASSERT_EQ(Data(publicKeySigner.bytes.begin(), publicKeySigner.bytes.end()),
-              Base58::bitcoin.decode("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu"));
+    ASSERT_EQ(signer.string(), "zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
 
     auto voteAddress = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
-    auto programId = Address(STAKE_ADDRESS);
+    auto programId = Address("Stake11111111111111111111111111111111111111");
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
-    auto stakeAddress = addressFromValidatorSeed(signer, voteAddress, programId);
+    auto stakeAddress = StakeProgram::addressFromValidatorSeed(signer, voteAddress, programId);
 
     auto message = Message(signer, stakeAddress, voteAddress, 42, recentBlockhash);
     auto transaction = Transaction(message);
@@ -231,4 +300,92 @@ TEST(SolanaSigner, SignDelegateStake) {
         "vt1ECp4CqBSnvPc8vRD8EMhHe5jRFSDkQriUenEPFc51dTDTJWL26xuiTivktEm6ahHq5d6MPr4NRDvcRG2cZvEgxH"
         "BLpKfuB5XL3JfQZ3Nn3B916gaK8owz9Rk2e3";
     ASSERT_EQ(transaction.serialize(), expectedString);
+}
+
+TEST(SolanaSigner, SignCreateTokenAccount) {
+    const auto privateKeySigner =
+        PrivateKey(Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"));
+    const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
+    auto signer = Address(publicKeySigner);
+    EXPECT_EQ(signer.string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+
+    auto token = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
+    auto tokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+    Solana::Hash recentBlockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
+
+    auto message = Message(signer, TokenInstruction::CreateTokenAccount, signer, token, tokenAddress, recentBlockhash);
+    auto transaction = Transaction(message);
+
+    std::vector<PrivateKey> signerKeys;
+    signerKeys.push_back(privateKeySigner);
+    Signer::sign(signerKeys, transaction);
+
+    std::vector<Signature> expectedSignatures;
+    Signature expectedSignature("3doYbPs5rES3TeDSrntqUvMgXCDE2ViJX2SFhLtiptVNkqPuixXs1SwU5LUZ3KwHnCzDUth6BRr3vU3gqnuUgRvQ");
+    expectedSignatures.push_back(expectedSignature);
+    EXPECT_EQ(transaction.signatures, expectedSignatures);
+
+    auto expectedString =
+        // test data obtained from spl-token create-account
+        "CKzRLx3AQeVeLQ7T4hss2rdbUpuAHdbwXDazxtRnSKBuncCk3WnYgy7XTrEiya19MJviYHYdTxi9gmWJY8qnR2vHVnH2DbPiKA8g72rD3VvMnjosGUBBvCwbBLge6FeQdgczMyRo9n5PcHvg9yJBTJaEEvuewyBVHwCGyGQci7eYd26xtZtCjAjwcTq4gGr3NZbeRW6jZp6j6APuew7jys4MKYRV4xPodua1TZFCkyWZr1XKzmPh7KTavtN5VzPDA8rbsvoEjHnKzjB2Bszs6pDjcBFSHyQqGsHoF8XPD35BLfjDghNtBmf9cFqo5axa6oSjANAuYg6cMSP4Hy28waSj8isr6gQjE315hWi3W1swwwPcn322gYZx6aMAcmjczaxX9aktpHYgZxixF7cYWEHxJs5QUK9mJePu9Xc6yW75UB4Ynx6dUgaSTEUzoQthF2TN3xXwu1";
+    EXPECT_EQ(transaction.serialize(), expectedString);
+}
+
+TEST(SolanaSigner, SignCreateTokenAccountForOther) {
+    const auto privateKeySigner =
+        PrivateKey(parse_hex("4b9d6f57d28b06cbfa1d4cc710953e62d653caf853415c56ffd9d150acdeb7f7"));
+    const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
+    auto signer = Address(publicKeySigner);
+    EXPECT_EQ(signer.string(), "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
+
+    auto otherMainAddress = Address("3xJ3MoUVFPNFEHfWdtNFa8ajXUHsJPzXcBSWMKLd76ft");
+    auto token = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
+    auto tokenAddress = Address("67BrwFYt7qUnbAcYBVx7sQ4jeD2KWN1ohP6bMikmmQV3");
+    Solana::Hash recentBlockhash("HmWyvrif3QfZJnDiRyrojmH9iLr7eMxxqiC9RJWFeunr");
+
+    auto message = Message(signer, TokenInstruction::CreateTokenAccount, otherMainAddress, token, tokenAddress, recentBlockhash);
+    auto transaction = Transaction(message);
+
+    std::vector<PrivateKey> signerKeys;
+    signerKeys.push_back(privateKeySigner);
+    Signer::sign(signerKeys, transaction);
+
+    auto expectedString =
+        // https://explorer.solana.com/tx/3E6UFVamHCm6Bgk8gXdZex7R7tJAVxqJm6t9ephAKu1PjcfZrD7CJqMwKu6RrvWSUESbZFqzdUyLXuxAFaawPHvJ
+        "4BsrHedHuForcKDhLdnLYDXgtQgQEj3EQVDtEhqa7o6ukFjW3shpTWv6PeKQdMp6af4ASjD4xQeZvXxLK5WUjguVMUf3xdJn7RnFeM7hdDJ56RDBM5PRJbRJVHjz6FJ7SVNTvr9y3gVYQtWx7NfKRxiyEAfq9JG7nqxSWaW6raMr9t35aVcdAVuXE9iXj3rzhVfCS69vVzy5KcFEK3mvDYG6L12V2CfviCydmeCvPw5r3zBUrZSQv7Ti4XFNBrPbk28gcqQwsBknBqasHxHqD9VUyPmBTuUyXq75QN8rhqN55NjxKBUw37tEUS1jKVpWnTeLFq1eRAMdXvjftNuQ5Bmm8Zc12PGWj9vdorBaYyvZXexJST5xNjR4SCkXvXZoRScETck95chv3VBn54jP8DpB4GGUmATFKSxpdtnNV64i1SQXW13KJwswthJvAaDiqevQLKLkvrTEAdb4BxEfPkFjDVti6P58rTZCMg5CTVLqdmWwpTSW5V";
+    EXPECT_EQ(transaction.serialize(), expectedString);
+}
+
+TEST(SolanaSigner, SignTransferToken) {
+    const auto privateKeySigner =
+        PrivateKey(Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"));
+    const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
+    auto signer = Address(publicKeySigner);
+    EXPECT_EQ(signer.string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+
+    auto token = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
+    auto senderTokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+    auto recipientTokenAddress = Address("3WUX9wASxyScbA7brDipioKfXS1XEYkQ4vo3Kej9bKei");
+    uint64_t amount = 4000;
+    uint8_t decimals = 6;
+    Solana::Hash recentBlockhash("CNaHfvqePgGYMvtYi9RuUdVxDYttr1zs4TWrTXYabxZi");
+
+    auto message = Message(signer, TokenInstruction::TokenTransfer, token, 
+        senderTokenAddress, recipientTokenAddress, amount, decimals, recentBlockhash);
+    auto transaction = Transaction(message);
+
+    std::vector<PrivateKey> signerKeys;
+    signerKeys.push_back(privateKeySigner);
+    Signer::sign(signerKeys, transaction);
+
+    std::vector<Signature> expectedSignatures;
+    Signature expectedSignature("3vZ67CGoRYkuT76TtpP2VrtTPBfnvG2xj6mUTvvux46qbnpThgQDgm27nC3yQVUZrABFjT9Qo7vA74tCjtV5P9Xg");
+    expectedSignatures.push_back(expectedSignature);
+    EXPECT_EQ(transaction.signatures, expectedSignatures);
+
+    auto expectedString =
+        // https://explorer.solana.com/tx/3vZ67CGoRYkuT76TtpP2VrtTPBfnvG2xj6mUTvvux46qbnpThgQDgm27nC3yQVUZrABFjT9Qo7vA74tCjtV5P9Xg
+        // test data obtained from spl-token transfer
+        "PGfKqEaH2zZXDMZLcU6LUKdBSzU1GJWJ1CJXtRYCxaCH7k8uok38WSadZfrZw3TGejiau7nSpan2GvbK26hQim24jRe2AupmcYJFrgsdaCt1Aqs5kpGjPqzgj9krgxTZwwob3xgC1NdHK5BcNwhxwRtrCphGEH7zUFpGFrFrHzgpf2KY8FvPiPELQyxzTBuyNtjLjMMreehSKShEjD9Xzp1QeC1pEF8JL6vUKzxMXuveoEYem8q8JiWszYzmTMfDk13JPgv7pXFGMqDV3yNGCLsWccBeSFKN4UKECre6x2QbUEiKGkHkMc4zQwwyD8tGmEMBAGm339qdANssEMNpDeJp2LxLDStSoWShHnotcrH7pUa94xCVvCPPaomF";
+    EXPECT_EQ(transaction.serialize(), expectedString);
 }

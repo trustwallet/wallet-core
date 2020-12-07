@@ -11,8 +11,80 @@
 #include "../BinaryCoding.h"
 #include "../PublicKey.h"
 
+#include <vector>
+
 using namespace TW;
 using namespace TW::Solana;
+using namespace std;
+
+uint8_t CompiledInstruction::findAccount(const Address& address) {
+    auto it = std::find(addresses.begin(), addresses.end(), address);
+    if (it == addresses.end()) {
+        throw new std::invalid_argument("address not found");
+    }
+    assert(it != addresses.end());
+    auto dist = std::distance(addresses.begin(), it);
+    assert(dist < 256);
+    return (uint8_t)dist;
+}
+
+void Message::addAccount(const AccountMeta& account) {
+    bool inSigned = (std::find(signedAccounts.begin(), signedAccounts.end(), account.account) != signedAccounts.end());
+    bool inUnsigned = (std::find(unsignedAccounts.begin(), unsignedAccounts.end(), account.account) != unsignedAccounts.end());
+    bool inReadOnly = (std::find(readOnlyAccounts.begin(), readOnlyAccounts.end(), account.account) != readOnlyAccounts.end());
+    if (account.isSigner) {
+        if (!inSigned) {
+            signedAccounts.push_back(account.account);
+        }
+    } else if (!account.isReadOnly) {
+        if (!inSigned && !inUnsigned) {
+            unsignedAccounts.push_back(account.account);
+        }
+    } else {
+        if (!inSigned && !inUnsigned && !inReadOnly) {
+            readOnlyAccounts.push_back(account.account);
+        }
+    }
+}
+
+void Message::compileAccounts() {
+    for (auto& instr: instructions) {
+        for (auto& address: instr.accounts) {
+            addAccount(address);
+        }
+    }
+    // add programIds (read-only, at end)
+    for (auto& instr: instructions) {
+        addAccount(AccountMeta{instr.programId, false, true});
+    }
+
+    header = MessageHeader{
+        (uint8_t)signedAccounts.size(),
+        0,
+        (uint8_t)readOnlyAccounts.size()
+    };
+
+    // merge the three buckets
+    accountKeys.clear();
+    for(auto& a: signedAccounts) {
+        accountKeys.push_back(a);
+    }
+    for(auto& a: unsignedAccounts) {
+        accountKeys.push_back(a);
+    }
+    for(auto& a: readOnlyAccounts) {
+        accountKeys.push_back(a);
+    }
+
+    compileInstructions();
+}
+
+void Message::compileInstructions() {
+    compiledInstructions.clear();
+    for (auto instruction: instructions) {
+        compiledInstructions.push_back(CompiledInstruction(instruction, accountKeys));
+    }
+}
 
 std::string Transaction::serialize() const {
     Data buffer;
@@ -41,8 +113,10 @@ Data Transaction::messageData() const {
     Data recentBlockhash(this->message.recentBlockhash.bytes.begin(),
                          this->message.recentBlockhash.bytes.end());
     append(buffer, recentBlockhash);
-    append(buffer, shortVecLength<CompiledInstruction>(this->message.instructions));
-    for (auto instruction : this->message.instructions) {
+
+    // apppend compiled instructions
+    append(buffer, shortVecLength<CompiledInstruction>(message.compiledInstructions));
+    for (auto instruction : message.compiledInstructions) {
         buffer.push_back(instruction.programIdIndex);
         append(buffer, shortVecLength<uint8_t>(instruction.accounts));
         append(buffer, instruction.accounts);

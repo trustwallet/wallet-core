@@ -22,16 +22,33 @@ message WithdrawStake {
     uint64 value = 2;
 }
 
+message CreateTokenAccount {
+    // main account -- can be same as signer, or other main account (if done on some other account's behalf)
+    string main_address = 1;
+    string token_mint_address = 2;
+    string token_address = 3;
+}
+
+message TokenTransfer {
+    string token_mint_address = 1;
+    string sender_token_address = 2;
+    string recipient_token_address = 3;
+    uint64 amount = 4;
+    uint32 decimals = 5; // Note: 8-bit value
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
+    bytes private_key = 1;
+    string recent_blockhash = 2;
     oneof transaction_type {
-        Transfer transfer_transaction = 1;
-        Stake stake_transaction = 2;
-        DeactivateStake deactivate_stake_transaction = 3;
-        WithdrawStake withdraw_transaction = 4;
+        Transfer transfer_transaction = 3;
+        Stake stake_transaction = 4;
+        DeactivateStake deactivate_stake_transaction = 5;
+        WithdrawStake withdraw_transaction = 6;
+        CreateTokenAccount create_token_account_transaction = 7;
+        TokenTransfer token_transfer_transaction = 8;
     }
-    bytes private_key = 5;
-    string recent_blockhash = 6;
 }
 
 // Transaction signing output.

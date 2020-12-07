@@ -5,6 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
+#include "Address.h"
+#include "Program.h"
 #include "../Base58.h"
 #include <TrezorCrypto/ed25519.h>
 
@@ -30,52 +32,97 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     std::string stakePubkey;
     std::vector<PrivateKey> signerKeys;
 
-    if (input.has_transfer_transaction()) {
-        auto protoMessage = input.transfer_transaction();
-        message = Message(
-            /* from */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
-            /* to */ Address(protoMessage.recipient()),
-            /* value */ protoMessage.value(),
-            /* recent_blockhash */ blockhash);
-        signerKeys.push_back(key);
-    } else if (input.has_stake_transaction()) {
-        auto protoMessage = input.stake_transaction();
-        auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
-        auto validatorAddress = Address(protoMessage.validator_pubkey());
-        auto stakeProgramId = Address(STAKE_ADDRESS);
-        auto stakeAddress = addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
-        message = Message(
-            /* signer */ userAddress,
-            /* stakeAddress */ stakeAddress,
-            /* voteAddress */ validatorAddress,
-            /* value */ protoMessage.value(),
-            /* recent_blockhash */ blockhash);
-        signerKeys.push_back(key);
-    } else if (input.has_deactivate_stake_transaction()) {
-        auto protoMessage = input.deactivate_stake_transaction();
-        auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
-        auto validatorAddress = Address(protoMessage.validator_pubkey());
-        auto stakeProgramId = Address(STAKE_ADDRESS);
-        auto stakeAddress = addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
-        message = Message(
-            /* signer */ userAddress,
-            /* stakeAddress */ stakeAddress,
-            /* type */ Deactivate,
-            /* recent_blockhash */ blockhash);
-        signerKeys.push_back(key);
-    } else if (input.has_withdraw_transaction()) {
-        auto protoMessage = input.withdraw_transaction();
-        auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
-        auto validatorAddress = Address(protoMessage.validator_pubkey());
-        auto stakeProgramId = Address(STAKE_ADDRESS);
-        auto stakeAddress = addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
-        message = Message(
-            /* signer */ userAddress,
-            /* stakeAddress */ stakeAddress,
-            /* value */ protoMessage.value(),
-            /* type */ Withdraw,
-            /* recent_blockhash */ blockhash);
-        signerKeys.push_back(key);
+    switch (input.transaction_type_case()) {
+        case Proto::SigningInput::TransactionTypeCase::kTransferTransaction:
+            {
+                auto protoMessage = input.transfer_transaction();
+                message = Message(
+                    /* from */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
+                    /* to */ Address(protoMessage.recipient()),
+                    /* value */ protoMessage.value(),
+                    /* recent_blockhash */ blockhash);
+                signerKeys.push_back(key);
+            }
+            break;
+
+        case Proto::SigningInput::TransactionTypeCase::kStakeTransaction:
+            {
+                auto protoMessage = input.stake_transaction();
+                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+                auto validatorAddress = Address(protoMessage.validator_pubkey());
+                auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
+                auto stakeAddress = StakeProgram::addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
+                message = Message(
+                    /* signer */ userAddress,
+                    /* stakeAddress */ stakeAddress,
+                    /* voteAddress */ validatorAddress,
+                    /* value */ protoMessage.value(),
+                    /* recent_blockhash */ blockhash);
+                signerKeys.push_back(key);
+            }
+            break;
+
+        case Proto::SigningInput::TransactionTypeCase::kDeactivateStakeTransaction:
+            {
+                auto protoMessage = input.deactivate_stake_transaction();
+                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+                auto validatorAddress = Address(protoMessage.validator_pubkey());
+                auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
+                auto stakeAddress = StakeProgram::addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
+                message = Message(
+                    /* signer */ userAddress,
+                    /* stakeAddress */ stakeAddress,
+                    /* type */ Deactivate,
+                    /* recent_blockhash */ blockhash);
+                signerKeys.push_back(key);
+            }
+            break;
+
+        case Proto::SigningInput::TransactionTypeCase::kWithdrawTransaction:
+            {
+                auto protoMessage = input.withdraw_transaction();
+                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+                auto validatorAddress = Address(protoMessage.validator_pubkey());
+                auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
+                auto stakeAddress = StakeProgram::addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
+                message = Message(
+                    /* signer */ userAddress,
+                    /* stakeAddress */ stakeAddress,
+                    /* value */ protoMessage.value(),
+                    /* type */ Withdraw,
+                    /* recent_blockhash */ blockhash);
+                signerKeys.push_back(key);
+            }
+            break;
+
+        case Proto::SigningInput::TransactionTypeCase::kCreateTokenAccountTransaction:
+            {
+                auto protoMessage = input.create_token_account_transaction();
+                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+                auto mainAddress = Address(protoMessage.main_address());
+                auto tokenMintAddress = Address(protoMessage.token_mint_address());
+                auto tokenAddress = Address(protoMessage.token_address());
+                message = Message(userAddress, TokenInstruction::CreateTokenAccount, mainAddress, tokenMintAddress, tokenAddress, blockhash);
+                signerKeys.push_back(key);
+            }
+            break;
+
+        case Proto::SigningInput::TransactionTypeCase::kTokenTransferTransaction:
+            {
+                auto protoMessage = input.token_transfer_transaction();
+                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+                auto tokenMintAddress = Address(protoMessage.token_mint_address());
+                auto senderTokenAddress = Address(protoMessage.sender_token_address());
+                auto recipientTokenAddress = Address(protoMessage.recipient_token_address());
+                auto amount = protoMessage.amount();
+                auto decimals = static_cast<uint8_t>(protoMessage.decimals());
+                message = Message(userAddress, TokenInstruction::TokenTransfer, tokenMintAddress, senderTokenAddress, recipientTokenAddress, amount, decimals, blockhash);
+                signerKeys.push_back(key);
+            }
+            break;
+
+        default:
+            assert(input.transaction_type_case() != Proto::SigningInput::TransactionTypeCase::TRANSACTION_TYPE_NOT_SET);
     }
     auto transaction = Transaction(message);
 

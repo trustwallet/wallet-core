@@ -7,6 +7,8 @@
 #include "Base58.h"
 #include "HexCoding.h"
 #include "proto/Solana.pb.h"
+#include "Solana/Address.h"
+#include "PrivateKey.h"
 #include "../interface/TWTestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 
@@ -122,5 +124,113 @@ TEST(TWAnySignerSolana, SignWithdrawStakeTransaction) {
         "oeggeNyzmT34hs9utyehTFg48MAfrKEFKxaby7YZD6JbXFS1SyG1kxKWnCpoPgX3efwDwukmyDwxrKdABt9eTwmaiX"
         "KbTnK1hzBTatNfnJ9ePuWkhWFrjyDrGdx5S5KpybxET2vV9CSpExcD51BA6NPemTpjbhLYnJEzHWBGfYqfxu7p3257"
         "NHhpQQrSU56adk4dAQFjEYP";
+    ASSERT_EQ(output.encoded(), expectedString);
+}
+
+TEST(TWAnySignerSolana, SignCreateTokenAccount1) {
+    auto privateKeyData = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+    ASSERT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+    
+    auto input = Solana::Proto::SigningInput();
+    auto& message = *input.mutable_create_token_account_transaction();
+    message.set_main_address("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+    message.set_token_mint_address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
+    message.set_token_address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+    input.set_private_key(privateKeyData.data(), privateKeyData.size());
+    input.set_recent_blockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    auto expectedString =
+        "CKzRLx3AQeVeLQ7T4hss2rdbUpuAHdbwXDazxtRnSKBuncCk3WnYgy7XTrEiya19MJviYHYdTxi9gmWJY8qnR2vHVnH2DbPiKA8g72rD3VvMnjosGUBBvCwbBLge6FeQdgczMyRo9n5PcHvg9yJBTJaEEvuewyBVHwCGyGQci7eYd26xtZtCjAjwcTq4gGr3NZbeRW6jZp6j6APuew7jys4MKYRV4xPodua1TZFCkyWZr1XKzmPh7KTavtN5VzPDA8rbsvoEjHnKzjB2Bszs6pDjcBFSHyQqGsHoF8XPD35BLfjDghNtBmf9cFqo5axa6oSjANAuYg6cMSP4Hy28waSj8isr6gQjE315hWi3W1swwwPcn322gYZx6aMAcmjczaxX9aktpHYgZxixF7cYWEHxJs5QUK9mJePu9Xc6yW75UB4Ynx6dUgaSTEUzoQthF2TN3xXwu1";
+    ASSERT_EQ(output.encoded(), expectedString);
+}
+
+TEST(TWAnySignerSolana, SignCreateTokenAccount2) {
+    auto privateKeyData = parse_hex("4b9d6f57d28b06cbfa1d4cc710953e62d653caf853415c56ffd9d150acdeb7f7");
+    ASSERT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
+    
+    auto input = Solana::Proto::SigningInput();
+    auto& message = *input.mutable_create_token_account_transaction();
+    message.set_main_address("Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
+    message.set_token_mint_address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
+    message.set_token_address("ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf");
+    input.set_private_key(privateKeyData.data(), privateKeyData.size());
+    input.set_recent_blockhash("HxaCmxrXgzkzXYvDFTToENtf9rVKk7cbiuSUqnqNheHq");
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    auto expectedString =
+        // https://explorer.solana.com/tx/5KtPn1LGuxhFiwjxErkxTb7XxtLVYUBe6Cn33ej7ATNVyorrkk3UAFJWDBUmzP8CZjmkocCxiMAdYnvrKoGpMsJx
+        "EoJGDRFZdnjmx7rgwYSuDGTMTUdxCBeh8RggrQDzGht9bwzLPpCWkCrN4iQJqg3R6JxP7z2QZuf7dGCZcjMVBmmisYE8waRsohcvygRwmGr6nefbaujR5avm2x3EUvoTGyy8cMZJxX7URx45qQJyCgqFLNFCQzD1Kej3xCEPAJqCdGZgmqkryw2E2nkpGKXgRmbyEg2rFgd5kpvjG6jSLLYzGomxVnaKK2XyMQbcedkTMYJ8Ara71iWPRFUziWfgivZcA1qsQp92Fpao3FSsRprhoQz9u1VyAnh8zEM9jCKiE5s4dwCknqCJYeYsbMLn1be2vNP9bMQfu1jjGSHmbb9WR3E2vakTUEUByASXqSAJZuXYE5scopEzB28rC8nrC31ArLMZng5wWym3QbqEv2Syd6RHoEeoXR6vA5LPqvJKyvtH82p4hc4XbD18128aNrFG3GTD2P";
+    ASSERT_EQ(output.encoded(), expectedString);
+}
+
+TEST(TWAnySignerSolana, SignCreateTokenAccountForOther) {
+    auto privateKeyData = parse_hex("4b9d6f57d28b06cbfa1d4cc710953e62d653caf853415c56ffd9d150acdeb7f7");
+    ASSERT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
+    
+    auto input = Solana::Proto::SigningInput();
+    auto& message = *input.mutable_create_token_account_transaction();
+    message.set_main_address("3xJ3MoUVFPNFEHfWdtNFa8ajXUHsJPzXcBSWMKLd76ft");
+    message.set_token_mint_address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
+    message.set_token_address("67BrwFYt7qUnbAcYBVx7sQ4jeD2KWN1ohP6bMikmmQV3");
+    input.set_private_key(privateKeyData.data(), privateKeyData.size());
+    input.set_recent_blockhash("HmWyvrif3QfZJnDiRyrojmH9iLr7eMxxqiC9RJWFeunr");
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    auto expectedString =
+        // https://explorer.solana.com/tx/3E6UFVamHCm6Bgk8gXdZex7R7tJAVxqJm6t9ephAKu1PjcfZrD7CJqMwKu6RrvWSUESbZFqzdUyLXuxAFaawPHvJ
+        "4BsrHedHuForcKDhLdnLYDXgtQgQEj3EQVDtEhqa7o6ukFjW3shpTWv6PeKQdMp6af4ASjD4xQeZvXxLK5WUjguVMUf3xdJn7RnFeM7hdDJ56RDBM5PRJbRJVHjz6FJ7SVNTvr9y3gVYQtWx7NfKRxiyEAfq9JG7nqxSWaW6raMr9t35aVcdAVuXE9iXj3rzhVfCS69vVzy5KcFEK3mvDYG6L12V2CfviCydmeCvPw5r3zBUrZSQv7Ti4XFNBrPbk28gcqQwsBknBqasHxHqD9VUyPmBTuUyXq75QN8rhqN55NjxKBUw37tEUS1jKVpWnTeLFq1eRAMdXvjftNuQ5Bmm8Zc12PGWj9vdorBaYyvZXexJST5xNjR4SCkXvXZoRScETck95chv3VBn54jP8DpB4GGUmATFKSxpdtnNV64i1SQXW13KJwswthJvAaDiqevQLKLkvrTEAdb4BxEfPkFjDVti6P58rTZCMg5CTVLqdmWwpTSW5V";
+    ASSERT_EQ(output.encoded(), expectedString);
+}
+
+TEST(TWAnySignerSolana, SignTokenTransfer1) {
+    auto privateKeyData = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+    ASSERT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+
+    auto input = Solana::Proto::SigningInput();
+    auto& message = *input.mutable_token_transfer_transaction();
+    message.set_token_mint_address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
+    message.set_sender_token_address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+    message.set_recipient_token_address("3WUX9wASxyScbA7brDipioKfXS1XEYkQ4vo3Kej9bKei");
+    message.set_amount(4000); // 0.004
+    message.set_decimals(6);
+    input.set_private_key(privateKeyData.data(), privateKeyData.size());
+    input.set_recent_blockhash("CNaHfvqePgGYMvtYi9RuUdVxDYttr1zs4TWrTXYabxZi");
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    auto expectedString =
+        // https://explorer.solana.com/tx/3vZ67CGoRYkuT76TtpP2VrtTPBfnvG2xj6mUTvvux46qbnpThgQDgm27nC3yQVUZrABFjT9Qo7vA74tCjtV5P9Xg
+        "PGfKqEaH2zZXDMZLcU6LUKdBSzU1GJWJ1CJXtRYCxaCH7k8uok38WSadZfrZw3TGejiau7nSpan2GvbK26hQim24jRe2AupmcYJFrgsdaCt1Aqs5kpGjPqzgj9krgxTZwwob3xgC1NdHK5BcNwhxwRtrCphGEH7zUFpGFrFrHzgpf2KY8FvPiPELQyxzTBuyNtjLjMMreehSKShEjD9Xzp1QeC1pEF8JL6vUKzxMXuveoEYem8q8JiWszYzmTMfDk13JPgv7pXFGMqDV3yNGCLsWccBeSFKN4UKECre6x2QbUEiKGkHkMc4zQwwyD8tGmEMBAGm339qdANssEMNpDeJp2LxLDStSoWShHnotcrH7pUa94xCVvCPPaomF";
+    ASSERT_EQ(output.encoded(), expectedString);
+}
+
+TEST(TWAnySignerSolana, SignTokenTransfer2) {
+    auto privateKeyData = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+    ASSERT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+
+    auto input = Solana::Proto::SigningInput();
+    auto& message = *input.mutable_token_transfer_transaction();
+    message.set_token_mint_address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
+    message.set_sender_token_address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+    message.set_recipient_token_address("ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf");
+    message.set_amount(6100); // 0.0061
+    message.set_decimals(6);
+    input.set_private_key(privateKeyData.data(), privateKeyData.size());
+    input.set_recent_blockhash("zMEbroNLJ4vfDTdQyA72rk35c7nPo4K38efHLujbSuz");
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    auto expectedString =
+        // https://explorer.solana.com/tx/2pMvzparE16evNgNhiexBfj15eurQgqFJXemYkuGasWV8RfT5tQseadqXA2VXbgGZPM1MpLcGwfkKKqvYvrKTmnR
+        "LCtawaKHmvh9WEjYPFFMDQXsdKMQbVyK4Q3aRRfLCouqw6GE4p31PRPFoQqtazTziEj3ex3iLgnCspz1MN4SUE9d33g3HiiA6oCS6wGMvB2i3ojtmJzndCiLoDmuZgiuGouVSeS2MAEUoS3CRjdnbNKbRwgKn8YsDe1bZ57ueipfBLJfiE7xr8ji678uAv8FcMgo8Mq88SBGxVCUhjMS2VGQZhRUHHzDmvnzxhbbUzsLDfApzjHExkUm7ws3cQ2i1cSpQNCQWJd6rcDv1sYwDAavPS571Ny3CUq4cZxABh45Gj88LkRpzBMRdoebrh9hPy8ZRnu7PocBVjZytCgdF4CuhzdYNsmdcuU2WN5CEmv5zQ7pBrFdLZ8bBifP";
     ASSERT_EQ(output.encoded(), expectedString);
 }
