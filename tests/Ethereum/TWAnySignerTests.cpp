@@ -84,6 +84,35 @@ TEST(TWAnySignerEthereum, Sign) {
     }
 }
 
+TEST(TWAnySignerEthereum, SignERC20Transfer) {
+    Proto::SigningInput input;
+    auto chainId = store(uint256_t(1));
+    auto nonce = store(uint256_t(0));
+    auto gasPrice = store(uint256_t(42000000000)); // 0x09c7652400
+    auto gasLimit = store(uint256_t(78009)); // 130B9
+    auto toAddress = "0x6b175474e89094c44da98b954eedeac495271d0f"; // DAI
+    auto data = parse_hex("0xa9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000");
+    auto key = parse_hex("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151");
+
+    input.set_chain_id(chainId.data(), chainId.size());
+    input.set_nonce(nonce.data(), nonce.size());
+    input.set_gas_price(gasPrice.data(), gasPrice.size());
+    input.set_gas_limit(gasLimit.data(), gasLimit.size());
+    input.set_to_address(toAddress);
+    input.set_private_key(key.data(), key.size());
+    auto& transfer = *input.mutable_contract_generic();
+    transfer.set_payload(data.data(), data.size());
+
+    // https://etherscan.io/tx/0x199a7829fc5149e49b452c2cab76d8fa5a9682fee6e4891b8acb697ac142513e
+    std::string expected = "f8aa808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec8000025a0724c62ad4fbf47346b02de06e603e013f26f26b56fdc0be7ba3d6273401d98cea0032131cae15da7ddcda66963e8bef51ca0d9962bfef0547d3f02597a4a58c931";
+
+    // sign test
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeEthereum);
+
+    ASSERT_EQ(hex(output.encoded()), expected);
+}
+
 TEST(TWAnySignerEthereum, SignJSON) {
     auto json = STRING(R"({"chainId":"AQ==","gasPrice":"1pOkAA==","gasLimit":"Ugg=","toAddress":"0x7d8bf18C7cE84b3E175b339c4Ca93aEd1dD166F1","contract_transfer":{"amount":"A0i8paFgAA=="}})");
     auto key = DATA("17209af590a86462395d5881e60d11c7fa7d482cfb02b5a01b93c2eeef243543");
