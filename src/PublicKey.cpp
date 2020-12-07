@@ -12,6 +12,7 @@
 #include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sodium/keypair.h>
+#include "TrezorCrypto/ed25519-donna.h"
 
 namespace TW {
 
@@ -192,6 +193,15 @@ PublicKey PublicKey::recover(const Data& signature, const Data& message) {
         throw std::invalid_argument("recover failed");
     }
     return PublicKey(result, TWPublicKeyTypeSECP256k1Extended);
+}
+
+bool PublicKey::isValidED25519() const {
+    if (type != TWPublicKeyTypeED25519) {
+        return false;
+    }
+    assert(bytes.size() == ed25519Size);
+    ge25519 r;
+    return ge25519_unpack_negative_vartime(&r, bytes.data()) != 0;
 }
 
 } // namespace TW
