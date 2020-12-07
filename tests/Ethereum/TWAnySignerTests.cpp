@@ -122,6 +122,7 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsGenericContract) {
     auto gasPrice = store(uint256_t(42000000000)); // 0x09c7652400
     auto gasLimit = store(uint256_t(78009)); // 130B9
     auto toAddress = "0x6b175474e89094c44da98b954eedeac495271d0f"; // DAI
+    // payload: transfer(0x5322b34c88ed0691971bf52a7047448f0f4efc84, 2000000000000000000)
     auto data = parse_hex("0xa9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000");
     auto key = parse_hex("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151");
 
