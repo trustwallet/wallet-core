@@ -31,7 +31,7 @@ TEST(TWTONAddress, CreateWithString) {
 
     {
         // create a second one, also invoke compare
-        auto address2 = TWAnyAddressCreateWithString(TWStringCreateWithUTF8Bytes(expect), TWCoinTypeTON);
+        auto address2 = TWAnyAddressCreateWithString(WRAPS(TWStringCreateWithUTF8Bytes(expect)).get(), TWCoinTypeTON);
         ASSERT_TRUE(TWAnyAddressEqual(address, address2));
 
         TWAnyAddressDelete(address2);
@@ -44,9 +44,9 @@ TEST(TWTONAddress, CreateWithPublicKey) {
     auto pkData = DATA("F61CF0BC8E891AD7636E0CD35229D579323AA2DA827EB85D8071407464DC2FA3");
     auto publicKey = WRAP(TWPublicKey, TWPublicKeyCreateWithData(pkData.get(), TWPublicKeyTypeED25519));
     auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeTON));
-    auto addressStr = TWAnyAddressDescription(address.get());
+    auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
 
-    EXPECT_EQ(std::string("EQAkAJCrZkWb9uYePf1D97nB8efUvYHTsqSscyPMGpcHUx3Y"), TWStringUTF8Bytes(addressStr));
+    EXPECT_EQ(std::string("EQAkAJCrZkWb9uYePf1D97nB8efUvYHTsqSscyPMGpcHUx3Y"), TWStringUTF8Bytes(addressStr.get()));
 }
 
 TEST(TWTONAddress, HDWallet) {
@@ -55,9 +55,9 @@ TEST(TWTONAddress, HDWallet) {
 
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(STRING(mnemonic).get(), STRING(passphrase).get()));
 
-    auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeTON, TWCoinTypeDerivationPath(TWCoinTypeTON)));
-    auto publicKey = TWPrivateKeyGetPublicKeyEd25519(privateKey.get());
-    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeTON));
+    auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeTON, WRAPS(TWCoinTypeDerivationPath(TWCoinTypeTON)).get()));
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519(privateKey.get()));
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeTON));
     auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
 
     ASSERT_EQ(std::string("EQAmXWk7P7avw96EViZULpA85Lz6Si3MeWG-vFXmbEjpL-fo"), TWStringUTF8Bytes(addressStr.get()));

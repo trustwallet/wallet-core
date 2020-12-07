@@ -15,10 +15,10 @@
 
 TEST(TWNEARCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNEAR));
-    auto txId = TWStringCreateWithUTF8Bytes("FPQAMaVnvFHNwNBJWnTttXfdJhp5FvMGGDJEesB8gvbL");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNEAR, txId));
-    auto accId = TWStringCreateWithUTF8Bytes("test-trust.vlad.near");
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeNEAR, accId));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("FPQAMaVnvFHNwNBJWnTttXfdJhp5FvMGGDJEesB8gvbL"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNEAR, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("test-trust.vlad.near"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeNEAR, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNEAR));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNEAR));
 
