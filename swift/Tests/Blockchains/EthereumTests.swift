@@ -44,6 +44,29 @@ class EthereumTests: XCTestCase {
         XCTAssertEqual(output.encoded.hexString, "f86c098504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a028ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276a067cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d83")
     }
 
+    func testSignERC20Transfer() {
+        let input = EthereumSigningInput.with {
+            $0.chainID = Data(hexString: "01")!
+            $0.nonce = Data(hexString: "00")!
+            $0.gasPrice = Data(hexString: "09c7652400")! // 42000000000
+            $0.gasLimit = Data(hexString: "0130B9")! // 78009
+            $0.toAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // DAI
+            $0.privateKey = Data(hexString: "0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151")!
+            $0.contractErc20 = EthereumERC20TransferContract.with {
+                $0.toAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
+                $0.amount = Data(hexString: "1bc16d674ec80000")! // 2000000000000000000
+            }
+        }
+        let output: EthereumSigningOutput = AnySigner.sign(input: input, coin: .ethereum)
+        let encoded = AnySigner.encode(input: input, coin: .ethereum)
+
+        XCTAssertEqual(encoded, output.encoded)
+        XCTAssertEqual(output.v.hexString, "25")
+        XCTAssertEqual(output.r.hexString, "724c62ad4fbf47346b02de06e603e013f26f26b56fdc0be7ba3d6273401d98ce")
+        XCTAssertEqual(output.s.hexString, "032131cae15da7ddcda66963e8bef51ca0d9962bfef0547d3f02597a4a58c931")
+        XCTAssertEqual(output.encoded.hexString, "f8aa808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec8000025a0724c62ad4fbf47346b02de06e603e013f26f26b56fdc0be7ba3d6273401d98cea0032131cae15da7ddcda66963e8bef51ca0d9962bfef0547d3f02597a4a58c931")
+    }
+
     func testSignJSON() {
         let json = """
         {
