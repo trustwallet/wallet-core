@@ -28,8 +28,10 @@ class EthereumTests: XCTestCase {
             $0.gasPrice = Data(hexString: "04a817c800")!
             $0.gasLimit = Data(hexString: "5208")!
             $0.toAddress = "0x3535353535353535353535353535353535353535"
-            $0.amount = Data(hexString: "0de0b6b3a7640000")!
             $0.privateKey = Data(hexString: "0x4646464646464646464646464646464646464646464646464646464646464646")!
+            $0.contractTransfer = EthereumTransferContract.with {
+                $0.amount = Data(hexString: "0de0b6b3a7640000")!
+            }
         }
 
         let output: EthereumSigningOutput = AnySigner.sign(input: input, coin: .ethereum)
@@ -49,7 +51,9 @@ class EthereumTests: XCTestCase {
             "gasPrice": "1pOkAA==",
             "gasLimit": "Ugg=",
             "toAddress": "0x7d8bf18C7cE84b3E175b339c4Ca93aEd1dD166F1",
-            "amount": "A0i8paFgAA=="
+            "contract_transfer": {
+                "amount":"A0i8paFgAA=="
+            }
         }
         """
         let key = Data(hexString: "17209af590a86462395d5881e60d11c7fa7d482cfb02b5a01b93c2eeef243543")!
