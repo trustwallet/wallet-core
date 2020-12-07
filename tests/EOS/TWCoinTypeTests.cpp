@@ -15,10 +15,10 @@
 
 TEST(TWEOSCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEOS));
-    auto txId = TWStringCreateWithUTF8Bytes("t123");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEOS, txId));
-    auto accId = TWStringCreateWithUTF8Bytes("a12");
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeEOS, accId));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("t123"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEOS, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("a12"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeEOS, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEOS));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEOS));
 

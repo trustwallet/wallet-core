@@ -15,10 +15,10 @@
 
 TEST(TWElrondCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeElrond));
-    auto txId = TWStringCreateWithUTF8Bytes("1fc9785cb8bea0129a16cf7bddc97630c176a556ea566f0e72923c882b5cb3c8");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeElrond, txId));
-    auto accId = TWStringCreateWithUTF8Bytes("erd12yne790km8ezwetkz7m3hmqy9utdc6vdkgsunfzpwguec6v04p2qtk9uqj");
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeElrond, accId));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("1fc9785cb8bea0129a16cf7bddc97630c176a556ea566f0e72923c882b5cb3c8"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeElrond, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("erd12yne790km8ezwetkz7m3hmqy9utdc6vdkgsunfzpwguec6v04p2qtk9uqj"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeElrond, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeElrond));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeElrond));
 
