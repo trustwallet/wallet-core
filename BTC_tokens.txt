@@ -1,0 +1,55 @@
+Bitcoin
+  Supports Segwit address
+
+BitcoinCash
+  Does NOT use Segwit address
+  Same code
+
+BitcoinGold
+  Uses SegWit address
+  Same code
+
+Dash
+  Does NOT support Segwit address
+  Same code
+
+Decred
+  encode(full), own Tranaction, segwit
+
+DigiByte
+  Uses Segwit address
+  Same code
+
+Doge
+  Does NOT support Segwit address
+  Same code
+
+GroestlCoin
+  encode hasWitness
+
+Litecoin
+  Uses Segwit address
+  Same code
+
+Monacoin
+  Supports Segwit address, but does NOT use Segwit address by default
+  Same code
+
+Qtum
+  Supports Segwit address, but does NOT use Segwit address by default
+  Same code
+
+Ravencoin
+  Does NOT support Segwit address
+  Same code
+
+Viacoin
+  Uses Segwit address
+  Same code
+
+ZCash
+  encode(), own Tranaction, no segwit
+
+ZCoin
+  Does NOT support Segwit address
+  Same code

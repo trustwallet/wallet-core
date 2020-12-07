@@ -1,0 +1,77 @@
+diff --git a/docs/coins.md b/docs/coins.md
+index e7c64f18..ce283326 100644
+--- a/docs/coins.md
++++ b/docs/coins.md
+@@ -64,4 +64,5 @@ This list is generated from [./coins.json](../coins.json)
+ | 19167   | Zelcash          | ZEL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zelcash/info/logo.png" width="32" />      | <https://zel.cash>            |
+ | 5718350 | Wanchain         | WAN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/wanchain/info/logo.png" width="32" />     | <https://wanchain.org>        |
+ | 5741564 | Waves            | WAVES  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/waves/info/logo.png" width="32" />        | <https://wavesplatform.com>   |
++| 10000714 | Smart Chain Legacy | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bsc/info/logo.png" width="32" />          | <https://www.binance.org/en/smartChain> |
+ | 20000714 | Smart Chain      | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/info/logo.png" width="32" />   | <https://www.binance.org/en/smartChain> |
+diff --git a/src/NEO/CoinReference.h b/src/NEO/CoinReference.h
+index d21b8865..7e898329 100644
+--- a/src/NEO/CoinReference.h
++++ b/src/NEO/CoinReference.h
+@@ -20,8 +20,8 @@ class CoinReference : public Serializable {
+     /// Number of bytes for prevIndex.
+     static const size_t prevIndexSize = 2;
+ 
+-    uint256_t prevHash;
+-    uint16_t prevIndex;
++    uint256_t prevHash = 0;
++    uint16_t prevIndex = 0;
+ 
+     virtual ~CoinReference() {}
+ 
+diff --git a/src/NEO/TransactionAttribute.h b/src/NEO/TransactionAttribute.h
+index 7a5187e6..8d8c5976 100644
+--- a/src/NEO/TransactionAttribute.h
++++ b/src/NEO/TransactionAttribute.h
+@@ -15,7 +15,7 @@ namespace TW::NEO {
+ 
+ class TransactionAttribute : public Serializable {
+   public:
+-    TransactionAttributeUsage usage;
++    TransactionAttributeUsage usage = TAU_ContractHash;
+     Data data;
+ 
+     virtual ~TransactionAttribute() {}
+diff --git a/src/NEO/TransactionOutput.h b/src/NEO/TransactionOutput.h
+index 1c27d3f3..d2808eb0 100644
+--- a/src/NEO/TransactionOutput.h
++++ b/src/NEO/TransactionOutput.h
+@@ -21,9 +21,9 @@ class TransactionOutput : public Serializable {
+     static const size_t valueSize = 8;
+     static const size_t scriptHashSize = 20;
+ 
+-    uint256_t assetId;
+-    int64_t value;
+-    uint256_t scriptHash;
++    uint256_t assetId = 0;
++    int64_t value = 0;
++    uint256_t scriptHash = 0;
+ 
+     virtual ~TransactionOutput() {}
+ 
+diff --git a/src/Nebulas/Transaction.h b/src/Nebulas/Transaction.h
+index 7ca3a15a..dfeb5585 100644
+--- a/src/Nebulas/Transaction.h
++++ b/src/Nebulas/Transaction.h
+@@ -31,7 +31,7 @@ class Transaction {
+     uint256_t chainID;
+     Data hash;
+     Data signature;
+-    uint32_t algorithm;
++    uint32_t algorithm = 0;
+ 
+     // serialize data
+     Data raw;
+diff --git a/tools/CppCheckSuppressions.txt b/tools/CppCheckSuppressions.txt
+index b5ccf0b6..6bb27ed0 100644
+--- a/tools/CppCheckSuppressions.txt
++++ b/tools/CppCheckSuppressions.txt
+@@ -2,3 +2,4 @@
+ *:*nlohmann*
+ *:*gtest*
+ *:*tests*
++internalAstError:*Nano/Signer.cpp

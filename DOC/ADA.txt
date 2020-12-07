@@ -1,0 +1,19 @@
+ADA Cardano resources
+
+
+https://www.cardano.org
+
+https://daedaluswallet.io/  Daedalus Wallet -- the ADA Wallet, with full node, desktop only
+
+https://cardanoexplorer.com/  Explorer
+
+https://adalite.io/  Web-based light client, developed by Vacuumlabs
+
+
+https://github.com/input-output-hk/cardano-sl
+https://github.com/input-output-hk/daedalus
+
+
+
+
+liberty crop slow warm daughter color carpet bread margin honey strike popular debate any climb
