@@ -43,7 +43,7 @@ android {
 }
 
 dependencies {
-    implementation 'io.grpc:grpc-protobuf:1.24.2'
+    implementation 'io.grpc:grpc-protobuf:1.34.0'
 }
 
 apply from: 'maven-push.gradle'
