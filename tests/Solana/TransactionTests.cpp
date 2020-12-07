@@ -80,16 +80,16 @@ TEST(SolanaTransaction, StakeSerializeTransaction) {
     transaction.signatures.push_back(signature);
 
     auto expectedString =
-        "7gcsGMV8fPkuSDegrBk5KF4eZtmGqdixEr5Kxx7m74nErH5EWxkKcvy5LKg3kqKHLMtzqGXrM8EdVskLu5k6cQUVmz"
-        "nfd6iGpuDkn4BWi8HaqSoaeL7DCx6QHLUwcyvorfqPkgSaYopY9MeB6MGKS4bKCQi1paP7eEKZj9JgAZTHnpzAuFzq"
-        "E5dC98MrbThoBmHqfybw1jHssp4NZjrxsuMz4oYcHe837WmnpinE68QEVf9FzuoXKrMDwYZQYogJHUZgxghvMmJu3X"
-        "VZk7hL1h7SgE9ow2SvvNfAUYfUTuz8N9m6JcXgwmNL51ZweW9F1fekmSKE3vLEAaVvvYFsDxn1gt4bXuTdAMuUDKdH"
-        "33YMLQr8eEsdUDZUm33KtuE7Ddy84NEg3KbpWAy8T4vkwiLyvoyjmMdzCkMuobyXWQV1rfRk5vTJ4x6dMgznfAeKEq"
-        "md6xZ2hN8JBmTenP5dsvZCCSCf4G7cUkdndKu552KALqiNHd5msgLJvJKSHmZjFhS43fDCvkG7njF8yaZzWjmAknWU"
-        "BbV6YaGmD3XmcWfJgvB1zivZJhiMbzopP8Nm5wL5iDbCrSZTGq2tzEsTvje75wv2RtuAcgiicEPTuPAin9fKyMbCpf"
-        "67pGgWPwH5DwYumMwd8zwoJyuakyqFsFLnBKTvp8pFCijdj7fEhyC31xuMV7crwyrN5X3y7QKCE7PZcBP637YHEPtT"
-        "vt1ECp4CqBSnvPc8vRD8EMhHe5jRFSDkQriUenEPFc51dTDTJWL26xuiTivktEm6ahHq5d6MPr4NRDvcRG2cZvEgxH"
-        "BLpKfuB5XL3JfQZ3Nn3B916gaK8owz9Rk2e3";
+        "5Wwh6XZkH7KuykAbAk9tGthyRXEaTYYWA2p2y46b4TBCh1X2Pea5cb9KTA1FnvDvkMeTZmeKkCGNbH6xFkNKfKymuC"
+        "rKRKiYbLTEmjt2bq5ff6Ex8G2ZJc9AYQ87nhozqsJxUWAy1oayp62xvtJc51YbPZYact54JUyEAMNEH6VN9hyDXtLH"
+        "CvHwUTeE46ZzU2K6Qsj9eUxaUtETacGjJdkLFHXioMyTq1npjkUf7CCTQ65eeByVfFYzedJGoy2sh9cRSuegwkgz6S"
+        "HtHtYpo4f8BcpePEPg2McJw9rpfSdu8jGmRZkfW95FJr3umBHRL5YrZEgHNG13D1wsQdprV4wY3DuoTsnX6MFfpoqt"
+        "eBEb7fvCw4PVXvNdUzUqwwR5wd9dyWp6r9jagTVTvJWNbWHo2N7ikpJhdRubfUiHA5M9PBFJxHvGszviSJRPuArMi8"
+        "bAWom4xFUfvigp5Mhz6swCgVU2Fo68kD6RxmFJ2Pdqa1yr3GWD1caYRu1peNUbkE5a7c769s7pdeatDGADR6Pe8BUj"
+        "1gZaFkckwRGtrmRrvfoJpGcGvpLtXycsUvzD5QxEZLJmWnEYtLhnoKqycdFStS3va5xBmiKzrHsqWca4RBBB2Hu58R"
+        "ZyUk88erRuGC8KY64gJZRK5kB2oSDeqimBtfrGhpbddX3hqJKgLQ3htSUxsM9BV4hmdFNgzh2dUb2msrAeGUsJ496M"
+        "mjLgufPtkv8SQrNJbDYLjCmzJN1h1nDwoc5UDnL2e6TMgRWHKAR8BCSGM1V32QnyW5WKdJMAnhLQx7qoQ22AocvPbr"
+        "fTdbM4kWAaQy1ujyvLJuYkaRx5tTteMbsmWF";
     ASSERT_EQ(transaction.serialize(), expectedString);
 }
 

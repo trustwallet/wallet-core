@@ -314,7 +314,7 @@ class Message {
         auto createAccountInstruction = Instruction(std::vector<AccountMeta>{
                 AccountMeta(signer, true, true),
                 AccountMeta(stakeAddress, false, false)
-            }, value, 2008, stakeProgramId, voteAddress, 32, signer);
+            }, value, 200, stakeProgramId, voteAddress, 32, signer);
         instructions.push_back(createAccountInstruction);
         // initialize instruction
         auto initializeInstruction = Instruction(Initialize, std::vector<AccountMeta>{
