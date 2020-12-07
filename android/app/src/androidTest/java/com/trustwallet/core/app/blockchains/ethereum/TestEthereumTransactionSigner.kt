@@ -29,8 +29,10 @@ class TestEthereumTransactionSigner {
             nonce = ByteString.copyFrom("0x9".toHexByteArray())
             gasPrice = ByteString.copyFrom("0x04a817c800".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x5208".toHexByteArray())
-            amount = ByteString.copyFrom("0x0de0b6b3a7640000".toHexByteArray())
         }
+        val contract = Ethereum.ERC20TransferContract.newBuilder()
+        contract.amount = ByteString.copyFrom("0x0de0b6b3a7640000".toHexByteArray())
+        signingInput.contractErc20 = contract.build()
 
         val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
         val encoded = AnySigner.encode(signingInput.build(), ETHEREUM)
@@ -50,7 +52,9 @@ class TestEthereumTransactionSigner {
                 "gasPrice": "1pOkAA==",
                 "gasLimit": "Ugg=",
                 "toAddress": "0x7d8bf18C7cE84b3E175b339c4Ca93aEd1dD166F1",
-                "amount": "A0i8paFgAA=="
+                "contract_transfer": {
+                    "amount":"A0i8paFgAA=="
+                }                
             }
         """
         val key = "17209af590a86462395d5881e60d11c7fa7d482cfb02b5a01b93c2eeef243543".toHexByteArray()
