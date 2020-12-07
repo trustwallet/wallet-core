@@ -940,11 +940,11 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
-      "url": "https://filscan.io",
-      "txPath": "/#/message/detail?cid=",
-      "accountPath": "/#/address/detail?address=",
-      "sampleTx": "bafy2bzacecbm3ofxjjzcl2rg32ninphza34mm3ijr55zjsamwfqmz4ib63mqe",
-      "sampleAccount": "t1nbb73vhk5dtmnsgeaetbo76daepqjtrfoccn74i"
+      "url": "https://filfox.info/en",
+      "txPath": "/message/",
+      "accountPath": "/address/",
+      "sampleTx": "bafy2bzacedsgjcd6xfhrrymmfrqubb44otlyhvgqkgsh533d5j5hwniiqespm",
+      "sampleAccount": "f1abjxfbp274xpdqcpuaykwkfb43omjotacm2p3za"
     },
     "info": {
       "url": "https://filecoin.io/",
