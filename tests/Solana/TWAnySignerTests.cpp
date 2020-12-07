@@ -72,16 +72,16 @@ TEST(TWAnySignerSolana, SignDelegateStakeTransaction) {
     ANY_SIGN(input, TWCoinTypeSolana);
 
     auto expectedString =
-        "5Wwh6XZkH7KuykAbAk9tGthyRXEaTYYWA2p2y46b4TBCh1X2Pea5cb9KTA1FnvDvkMeTZmeKkCGNbH6xFkNKfKymuC"
-        "rKRKiYbLTEmjt2bq5ff6Ex8G2ZJc9AYQ87nhozqsJxUWAy1oayp62xvtJc51YbPZYact54JUyEAMNEH6VN9hyDXtLH"
-        "CvHwUTeE46ZzU2K6Qsj9eUxaUtETacGjJdkLFHXioMyTq1npjkUf7CCTQ65eeByVfFYzedJGoy2sh9cRSuegwkgz6S"
-        "HtHtYpo4f8BcpePEPg2McJw9rpfSdu8jGmRZkfW95FJr3umBHRL5YrZEgHNG13D1wsQdprV4wY3DuoTsnX6MFfpoqt"
-        "eBEb7fvCw4PVXvNdUzUqwwR5wd9dyWp6r9jagTVTvJWNbWHo2N7ikpJhdRubfUiHA5M9PBFJxHvGszviSJRPuArMi8"
-        "bAWom4xFUfvigp5Mhz6swCgVU2Fo68kD6RxmFJ2Pdqa1yr3GWD1caYRu1peNUbkE5a7c769s7pdeatDGADR6Pe8BUj"
-        "1gZaFkckwRGtrmRrvfoJpGcGvpLtXycsUvzD5QxEZLJmWnEYtLhnoKqycdFStS3va5xBmiKzrHsqWca4RBBB2Hu58R"
-        "ZyUk88erRuGC8KY64gJZRK5kB2oSDeqimBtfrGhpbddX3hqJKgLQ3htSUxsM9BV4hmdFNgzh2dUb2msrAeGUsJ496M"
-        "mjLgufPtkv8SQrNJbDYLjCmzJN1h1nDwoc5UDnL2e6TMgRWHKAR8BCSGM1V32QnyW5WKdJMAnhLQx7qoQ22AocvPbr"
-        "fTdbM4kWAaQy1ujyvLJuYkaRx5tTteMbsmWF";
+        "W1EAswaWK7mF4r9eZ2hHBZnfPnqLuNPiYkEMzFbwQsgSQu6XbSTL9AN92iyMbAMxPoRpt9ipUyztrmszAnm688N3k7"
+        "uhiKn2osm9nxi6YkGLfu31jHTSu7mn3RtmenV3qopfPDAM7jtGoYQFb7eFVbujUb6tbeQ9UqLJq1sJ7uMZ4wqecmQP"
+        "ouDmJnpmJk4CHMzLnPNTwyGmGio6sYAS3xKZ7DFXvjwGPuD8PyYHSfdPro1p3jy9igPZNAbQ6fgK7LL3sERKCUdvPy"
+        "7k14xgHbtsVy2mu54LY5c8F9sFst2uzQiTsXRTdjPFAyCVwB5pccNVotCrJ6Q2aKSC2D2knVH7LgWzSBMSreJG75xy"
+        "ATneu922wSzz7QJDieqhDtdePtSbPtoCdtPNmDfdaeDbHxVAxMios9F7RSRmH2dq86NfWDvF8TuEbYY7gPnygz6jGv"
+        "wfqSSoSnY8TnUhhceC7wJSMc8Hcf1kyfi8dqKm7rF57YjnrQoMmL5bWqJLKoJtdfFu24ceQN21k38U2tUMWJaBASWu"
+        "kgTJUbNSCemNPZt4P3cNbeB3L1wBj4GEYXVTbTFYKME5JscU5RsnkMJZZ1PgzU285SkncqNSgxkpZVhmenTXpuZv74"
+        "rXzariX8P4sprRgKUoj4b7Nu72Pya1zr7k45isMwgxtLnnnTK5k7mrZRDw3jBSBuukJBja93zaidm8HCQdwQsBt5CN"
+        "SgSXug1R2t6Sdm5tjJrsd1gyRv7udFbHCdbVEeatzULNSSGdwjwwJDy1DTC12ddBNHd8k5ic5TDwrWdfCxbDRoFYw8"
+        "49YNNUuyNAPz1jDCkLG9af6KFFLxfuR9pnF8jSyTcQAq95YiiD9sC3mAUoe8AkYfy929XzTEatP1vasMvo";
     ASSERT_EQ(output.encoded(), expectedString);
 }
 
