@@ -15,10 +15,10 @@
 
 TEST(TW<%= format_name(coin['name']) %>CoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinType<%= format_name(coin['name']) %>));
-    auto txId = TWStringCreateWithUTF8Bytes("<%= explorer_sample_tx(coin) %>");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinType<%= format_name(coin['name']) %>, txId));
-    auto accId = TWStringCreateWithUTF8Bytes("<%= explorer_sample_account(coin) %>");
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinType<%= format_name(coin['name']) %>, accId));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("<%= explorer_sample_tx(coin) %>"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinType<%= format_name(coin['name']) %>, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("<%= explorer_sample_account(coin) %>"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinType<%= format_name(coin['name']) %>, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinType<%= format_name(coin['name']) %>));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinType<%= format_name(coin['name']) %>));
 
