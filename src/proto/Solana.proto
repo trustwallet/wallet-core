@@ -39,16 +39,16 @@ message TokenTransfer {
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
+    bytes private_key = 1;
+    string recent_blockhash = 2;
     oneof transaction_type {
-        Transfer transfer_transaction = 1;
-        Stake stake_transaction = 2;
-        DeactivateStake deactivate_stake_transaction = 3;
-        WithdrawStake withdraw_transaction = 4;
-        CreateTokenAccount create_token_account_transaction = 5;
-        TokenTransfer token_transfer_transaction = 6;
+        Transfer transfer_transaction = 3;
+        Stake stake_transaction = 4;
+        DeactivateStake deactivate_stake_transaction = 5;
+        WithdrawStake withdraw_transaction = 6;
+        CreateTokenAccount create_token_account_transaction = 7;
+        TokenTransfer token_transfer_transaction = 8;
     }
-    bytes private_key = 8;
-    string recent_blockhash = 9;
 }
 
 // Transaction signing output.

@@ -29,19 +29,19 @@ uint8_t CompiledInstruction::findAccount(const Address& address) {
 }
 
 void Message::addAccount(const AccountMeta& account) {
+    bool inSigned = (std::find(signedAccounts.begin(), signedAccounts.end(), account.account) != signedAccounts.end());
+    bool inUnsigned = (std::find(unsignedAccounts.begin(), unsignedAccounts.end(), account.account) != unsignedAccounts.end());
+    bool inReadOnly = (std::find(readOnlyAccounts.begin(), readOnlyAccounts.end(), account.account) != readOnlyAccounts.end());
     if (account.isSigner) {
-        if (std::find(signedAccounts.begin(), signedAccounts.end(), account.account) == signedAccounts.end()) {
+        if (!inSigned) {
             signedAccounts.push_back(account.account);
         }
     } else if (!account.isReadOnly) {
-        if (std::find(signedAccounts.begin(), signedAccounts.end(), account.account) == signedAccounts.end() &&
-            std::find(unsignedAccounts.begin(), unsignedAccounts.end(), account.account) == unsignedAccounts.end()) {
+        if (!inSigned && !inUnsigned) {
             unsignedAccounts.push_back(account.account);
         }
     } else {
-        if (std::find(signedAccounts.begin(), signedAccounts.end(), account.account) == signedAccounts.end() &&
-            std::find(unsignedAccounts.begin(), unsignedAccounts.end(), account.account) == unsignedAccounts.end() &&
-            std::find(readOnlyAccounts.begin(), readOnlyAccounts.end(), account.account) == readOnlyAccounts.end()) {
+        if (!inSigned && !inUnsigned && !inReadOnly) {
             readOnlyAccounts.push_back(account.account);
         }
     }
@@ -53,7 +53,7 @@ void Message::compileAccounts() {
             addAccount(address);
         }
     }
-    // add programIds (read-only)
+    // add programIds (read-only, at end)
     for (auto& instr: instructions) {
         addAccount(AccountMeta{instr.programId, false, true});
     }
