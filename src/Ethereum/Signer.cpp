@@ -87,8 +87,16 @@ Transaction Signer::build(const Proto::SigningInput &input) {
             }
 
         case TW::Ethereum::Proto::SigningInput::ContractOneofCase::kContractErc20:
-            // TODO
-            break;
+            {
+                auto transaction = Transaction::buildERC20Transfer(
+                    /* nonce: */ load(input.nonce()),
+                    /* gasPrice: */ load(input.gas_price()),
+                    /* gasLimit: */ load(input.gas_limit()),
+                    /* to: */ toAddress,
+                    /* tokenContract */ Address(input.contract_erc20().token_contract()),
+                    /* amount: */ load(input.contract_erc20().amount()));
+                return transaction;
+            }
 
         case TW::Ethereum::Proto::SigningInput::ContractOneofCase::kContractGeneric:
         default:
