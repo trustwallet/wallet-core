@@ -44,7 +44,7 @@ TEST(TWBitcoinAddress, CreateWithPublicKey) {
 TEST(TWBitcoinAddress, Description) {
     const auto addr = WRAP(TWBitcoinAddress, TWBitcoinAddressCreateWithString(STRING(addr1Valid).get()));
     EXPECT_TRUE(addr.get() != nullptr);
-    EXPECT_EQ(std::string(TWStringUTF8Bytes(TWBitcoinAddressDescription(addr.get()))), addr1Valid);
+    EXPECT_EQ(std::string(TWStringUTF8Bytes(WRAPS(TWBitcoinAddressDescription(addr.get())).get())), addr1Valid);
 }
 
 TEST(TWBitcoinAddress, PrefixAndHash) {

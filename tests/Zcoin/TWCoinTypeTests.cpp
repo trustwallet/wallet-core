@@ -15,10 +15,10 @@
 
 TEST(TWZcoinCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeZcoin));
-    auto txId = TWStringCreateWithUTF8Bytes("09a60d58b3d17519a42a8eca60750c33b710ca8f3ca71994192e05c248a2a111");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZcoin, txId));
-    auto accId = TWStringCreateWithUTF8Bytes("a8ULhhDgfdSiXJhSZVdhb8EuDc6R3ogsaM");
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeZcoin, accId));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("09a60d58b3d17519a42a8eca60750c33b710ca8f3ca71994192e05c248a2a111"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZcoin, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("a8ULhhDgfdSiXJhSZVdhb8EuDc6R3ogsaM"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeZcoin, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZcoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZcoin));
 

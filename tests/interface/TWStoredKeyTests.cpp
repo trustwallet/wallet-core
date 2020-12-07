@@ -66,7 +66,7 @@ TEST(TWStoredKey, createWallet) {
 
 TEST(TWStoredKey, importPrivateKey) {
     const auto privateKeyHex = "3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266";
-    const auto privateKey = WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes(privateKeyHex)));
+    const auto privateKey = WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes(privateKeyHex)).get()));
     const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
     const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
     const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
@@ -157,7 +157,7 @@ TEST(TWStoredKey, storeAndImportJSON) {
     // read the slow way, ifs.read gave some false warnings with codacy 
     while (!ifs.eof() && idx < length) { char c = ifs.get(); json[idx++] = (uint8_t)c; }
 
-    const auto key2 = WRAP(TWStoredKey, TWStoredKeyImportJSON(TWDataCreateWithData(&json)));
+    const auto key2 = WRAP(TWStoredKey, TWStoredKeyImportJSON(WRAPD(TWDataCreateWithData(&json)).get()));
     const auto name2 = WRAPS(TWStoredKeyName(key2.get()));
     EXPECT_EQ(string(TWStringUTF8Bytes(name2.get())), "name");
 }

@@ -15,10 +15,10 @@
 
 TEST(TWXRPCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeXRP));
-    auto txId = TWStringCreateWithUTF8Bytes("E26AB8F3372D2FC02DEC1FD5674ADAB762D684BFFDBBDF5D674E9D7CF4A47054");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeXRP, txId));
-    auto accId = TWStringCreateWithUTF8Bytes("rfkH7EuS1XcSkB9pocy1R6T8F4CsNYixYU");
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeXRP, accId));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("E26AB8F3372D2FC02DEC1FD5674ADAB762D684BFFDBBDF5D674E9D7CF4A47054"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeXRP, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("rfkH7EuS1XcSkB9pocy1R6T8F4CsNYixYU"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeXRP, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeXRP));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeXRP));
 

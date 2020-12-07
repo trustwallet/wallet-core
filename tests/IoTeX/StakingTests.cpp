@@ -131,23 +131,28 @@ TEST(TWIoTeXStaking, CandidateUpdate) {
                           "326e756b7034766763776b32676e6335637539617964");
 }
 
-TEST(TWIoTeXStaking, SignAll) {
+Proto::SigningInput createSigningInput()
+{
+    auto keyhex = parse_hex("cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1");
     auto input = Proto::SigningInput();
     input.set_version(1);
     input.set_nonce(0);
     input.set_gaslimit(1000000);
     input.set_gasprice("10");
-    auto keyhex = parse_hex("cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1");
     input.set_privatekey(keyhex.data(), keyhex.size());
-    Proto::SigningOutput output;
+    return input;
+}
 
+TEST(TWIoTeXStaking, SignAll) {
     { // sign stakecreate
-        auto action = input.mutable_stakecreate();
-        action->set_candidatename("io19d0p3ah4g8ww9d7kcxfq87yxe7fnr8rpth5shj");
-        action->set_stakedamount("100");
-        action->set_stakedduration(10000);
-        action->set_autostake(true);
-        action->set_payload("payload");
+        auto input = createSigningInput();
+        Proto::SigningOutput output;
+        auto& action = *input.mutable_stakecreate();
+        action.set_candidatename("io19d0p3ah4g8ww9d7kcxfq87yxe7fnr8rpth5shj");
+        action.set_stakedamount("100");
+        action.set_stakedduration(10000);
+        action.set_autostake(true);
+        action.set_payload("payload");
         ANY_SIGN(input, TWCoinTypeIoTeX);
         ASSERT_EQ(hex(output.encoded()),
                   "0a4b080118c0843d22023130c2023e0a29696f313964307033616834673877773964376b63786671"
@@ -162,15 +167,14 @@ TEST(TWIoTeXStaking, SignAll) {
         // signed action's hash
         ASSERT_EQ(hex(output.hash()),
                   "f1785e47b4200c752bb6518bd18097a41e075438b8c18c9cb00e1ae2f38ce767");
-        input.release_stakecreate();
-        output.release_encoded();
-        output.release_hash();
     }
     { // sign stakeadddeposit
-        auto action = input.mutable_stakeadddeposit();
-        action->set_bucketindex(10);
-        action->set_amount("10");
-        action->set_payload("payload");
+        auto input = createSigningInput();
+        Proto::SigningOutput output;
+        auto& action = *input.mutable_stakeadddeposit();
+        action.set_bucketindex(10);
+        action.set_amount("10");
+        action.set_payload("payload");
         ANY_SIGN(input, TWCoinTypeIoTeX);
         ASSERT_EQ(
             hex(output.encoded()),
@@ -181,14 +185,13 @@ TEST(TWIoTeXStaking, SignAll) {
         // signed action's hash
         ASSERT_EQ(hex(output.hash()),
                   "ca8937d6f224a4e4bf93cb5605581de2d26fb0481e1dfc1eef384ee7ccf94b73");
-        input.release_stakeadddeposit();
-        output.release_encoded();
-        output.release_hash();
     }
     { // sign stakeunstake
-        auto action = input.mutable_stakeunstake();
-        action->set_bucketindex(10);
-        action->set_payload("payload");
+        auto input = createSigningInput();
+        Proto::SigningOutput output;
+        auto& action = *input.mutable_stakeunstake();
+        action.set_bucketindex(10);
+        action.set_payload("payload");
         ANY_SIGN(input, TWCoinTypeIoTeX);
         ASSERT_EQ(
             hex(output.encoded()),
@@ -199,14 +202,13 @@ TEST(TWIoTeXStaking, SignAll) {
         // signed action's hash
         ASSERT_EQ(hex(output.hash()),
                   "bed58b64a6c4e959eca60a86f0b2149ce0e1dd527ac5fd26aef725ebf7c22a7d");
-        input.release_stakeunstake();
-        output.release_encoded();
-        output.release_hash();
     }
     { // sign stakewithdraw
-        auto action = input.mutable_stakewithdraw();
-        action->set_bucketindex(10);
-        action->set_payload("payload");
+        auto input = createSigningInput();
+        Proto::SigningOutput output;
+        auto& action = *input.mutable_stakewithdraw();
+        action.set_bucketindex(10);
+        action.set_payload("payload");
         ANY_SIGN(input, TWCoinTypeIoTeX);
         ASSERT_EQ(
             hex(output.encoded()),
@@ -217,16 +219,15 @@ TEST(TWIoTeXStaking, SignAll) {
         // signed action's hash
         ASSERT_EQ(hex(output.hash()),
                   "28049348cf34f1aa927caa250e7a1b08778c44efaf73b565b6fa9abe843871b4");
-        input.release_stakewithdraw();
-        output.release_encoded();
-        output.release_hash();
     }
     { // sign stakerestake
-        auto action = input.mutable_stakerestake();
-        action->set_bucketindex(10);
-        action->set_stakedduration(1000);
-        action->set_autostake(true);
-        action->set_payload("payload");
+        auto input = createSigningInput();
+        Proto::SigningOutput output;
+        auto& action = *input.mutable_stakerestake();
+        action.set_bucketindex(10);
+        action.set_stakedduration(1000);
+        action.set_autostake(true);
+        action.set_payload("payload");
         ANY_SIGN(input, TWCoinTypeIoTeX);
         ASSERT_EQ(
             hex(output.encoded()),
@@ -237,15 +238,14 @@ TEST(TWIoTeXStaking, SignAll) {
         // signed action's hash
         ASSERT_EQ(hex(output.hash()),
                   "8816e8f784a1fce40b54d1cd172bb6976fd9552f1570c73d1d9fcdc5635424a9");
-        input.release_stakerestake();
-        output.release_encoded();
-        output.release_hash();
     }
     { // sign stakechangecandidate
-        auto action = input.mutable_stakechangecandidate();
-        action->set_bucketindex(10);
-        action->set_candidatename("io1xpq62aw85uqzrccg9y5hnryv8ld2nkpycc3gza");
-        action->set_payload("payload");
+        auto input = createSigningInput();
+        Proto::SigningOutput output;
+        auto& action = *input.mutable_stakechangecandidate();
+        action.set_bucketindex(10);
+        action.set_candidatename("io1xpq62aw85uqzrccg9y5hnryv8ld2nkpycc3gza");
+        action.set_payload("payload");
         ANY_SIGN(input, TWCoinTypeIoTeX);
         ASSERT_EQ(
             hex(output.encoded()),
@@ -257,15 +257,14 @@ TEST(TWIoTeXStaking, SignAll) {
         // signed action's hash
         ASSERT_EQ(hex(output.hash()),
                   "186526b5b9fe74e25beb52c83c41780a69108160bef2ddaf3bffb9f1f1e5e73a");
-        input.release_stakechangecandidate();
-        output.release_encoded();
-        output.release_hash();
     }
     { // sign staketransfer
-        auto action = input.mutable_staketransferownership();
-        action->set_bucketindex(10);
-        action->set_voteraddress("io1xpq62aw85uqzrccg9y5hnryv8ld2nkpycc3gza");
-        action->set_payload("payload");
+        auto input = createSigningInput();
+        Proto::SigningOutput output;
+        auto& action = *input.mutable_staketransferownership();
+        action.set_bucketindex(10);
+        action.set_voteraddress("io1xpq62aw85uqzrccg9y5hnryv8ld2nkpycc3gza");
+        action.set_payload("payload");
         ANY_SIGN(input, TWCoinTypeIoTeX);
         ASSERT_EQ(
             hex(output.encoded()),
@@ -277,15 +276,14 @@ TEST(TWIoTeXStaking, SignAll) {
         // signed action's hash
         ASSERT_EQ(hex(output.hash()),
                   "74b2e1d6a09ba5d1298fa422d5850991ae516865077282196295a38f93c78b85");
-        input.release_staketransferownership();
-        output.release_encoded();
-        output.release_hash();
     }
     { // sign candidateupdate
-        auto action = input.mutable_candidateupdate();
-        action->set_name("test");
-        action->set_operatoraddress("io1cl6rl2ev5dfa988qmgzg2x4hfazmp9vn2g66ng");
-        action->set_rewardaddress("io1juvx5g063eu4ts832nukp4vgcwk2gnc5cu9ayd");
+        auto input = createSigningInput();
+        Proto::SigningOutput output;
+        auto& action = *input.mutable_candidateupdate();
+        action.set_name("test");
+        action.set_operatoraddress("io1cl6rl2ev5dfa988qmgzg2x4hfazmp9vn2g66ng");
+        action.set_rewardaddress("io1juvx5g063eu4ts832nukp4vgcwk2gnc5cu9ayd");
         ANY_SIGN(input, TWCoinTypeIoTeX);
         ASSERT_EQ(
             hex(output.encoded()),
@@ -298,23 +296,22 @@ TEST(TWIoTeXStaking, SignAll) {
         // signed action's hash
         ASSERT_EQ(hex(output.hash()),
                   "ca1a28f0e9a58ffc67037cc75066dbdd8e024aa2b2e416e4d6ce16c3d86282e5");
-        input.release_candidateupdate();
-        output.release_encoded();
-        output.release_hash();
     }
     { // sign candidateregister
+        auto input = createSigningInput();
+        Proto::SigningOutput output;
         input.set_gasprice("1000");
-        auto cbi = input.mutable_candidateregister()->mutable_candidate();
-        cbi->set_name("test");
-        cbi->set_operatoraddress("io10a298zmzvrt4guq79a9f4x7qedj59y7ery84he");
-        cbi->set_rewardaddress("io13sj9mzpewn25ymheukte4v39hvjdtrfp00mlyv");
+        auto& cbi = *input.mutable_candidateregister()->mutable_candidate();
+        cbi.set_name("test");
+        cbi.set_operatoraddress("io10a298zmzvrt4guq79a9f4x7qedj59y7ery84he");
+        cbi.set_rewardaddress("io13sj9mzpewn25ymheukte4v39hvjdtrfp00mlyv");
 
-        auto action = input.mutable_candidateregister();
-        action->set_stakedamount("100");
-        action->set_stakedduration(10000);
-        action->set_autostake(false);
-        action->set_owneraddress("io19d0p3ah4g8ww9d7kcxfq87yxe7fnr8rpth5shj");
-        action->set_payload("payload");
+        auto& action = *input.mutable_candidateregister();
+        action.set_stakedamount("100");
+        action.set_stakedduration(10000);
+        action.set_autostake(false);
+        action.set_owneraddress("io19d0p3ah4g8ww9d7kcxfq87yxe7fnr8rpth5shj");
+        action.set_payload("payload");
         ANY_SIGN(input, TWCoinTypeIoTeX);
         ASSERT_EQ(hex(output.encoded()),
                   "0aaa01080118c0843d220431303030fa029a010a5c0a04746573741229696f3130613239387a6d7a"

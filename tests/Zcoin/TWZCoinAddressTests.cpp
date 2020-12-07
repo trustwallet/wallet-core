@@ -18,9 +18,9 @@
 
 TEST(TWZCoin, Address) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730").get()));
-    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = TWBitcoinAddressCreateWithPublicKey(publicKey, TWCoinTypeP2pkhPrefix(TWCoinTypeZcoin));
-    auto addressString = WRAPS(TWBitcoinAddressDescription(address));
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true));
+    auto address = WRAP(TWBitcoinAddress, TWBitcoinAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeP2pkhPrefix(TWCoinTypeZcoin)));
+    auto addressString = WRAPS(TWBitcoinAddressDescription(address.get()));
     assertStringsEqual(addressString, "aAbqxogrjdy2YHVcnQxFHMzqpt2fhjCTVT");
 }
 
@@ -42,11 +42,11 @@ TEST(TWZcoin, DeriveFromXpub) {
     auto pubKey3 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeZcoin, STRING("m/44'/136'/0'/0/3").get()));
     auto pubKey5 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeZcoin, STRING("m/44'/136'/0'/0/5").get()));
 
-    auto address3 = TWBitcoinAddressCreateWithPublicKey(pubKey3.get(), TWCoinTypeP2pkhPrefix(TWCoinTypeZcoin));
-    auto address3String = WRAPS(TWBitcoinAddressDescription(address3));
+    auto address3 = WRAP(TWBitcoinAddress, TWBitcoinAddressCreateWithPublicKey(pubKey3.get(), TWCoinTypeP2pkhPrefix(TWCoinTypeZcoin)));
+    auto address3String = WRAPS(TWBitcoinAddressDescription(address3.get()));
 
-    auto address5 = TWBitcoinAddressCreateWithPublicKey(pubKey5.get(), TWCoinTypeP2pkhPrefix(TWCoinTypeZcoin));
-    auto address5String = WRAPS(TWBitcoinAddressDescription(address5));
+    auto address5 = WRAP(TWBitcoinAddress, TWBitcoinAddressCreateWithPublicKey(pubKey5.get(), TWCoinTypeP2pkhPrefix(TWCoinTypeZcoin)));
+    auto address5String = WRAPS(TWBitcoinAddressDescription(address5.get()));
 
     assertStringsEqual(address3String, "aLnztJEbyACnxF9H7SFC8YjUxedwyQsgVm");
     assertStringsEqual(address5String, "aJj2jdMzHyKFJLEFTxhpn379avEqRKFUyw");
