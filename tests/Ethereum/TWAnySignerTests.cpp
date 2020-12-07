@@ -102,7 +102,7 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsERC20) {
     input.set_to_address(token);
     input.set_private_key(key.data(), key.size());
     auto& erc20 = *input.mutable_contract_erc20();
-    erc20.set_token_contract(toAddress);
+    erc20.set_to_address(toAddress);
     erc20.set_amount(amount.data(), amount.size());
 
     // https://etherscan.io/tx/0x199a7829fc5149e49b452c2cab76d8fa5a9682fee6e4891b8acb697ac142513e

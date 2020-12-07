@@ -92,8 +92,8 @@ Transaction Signer::build(const Proto::SigningInput &input) {
                     /* nonce: */ load(input.nonce()),
                     /* gasPrice: */ load(input.gas_price()),
                     /* gasLimit: */ load(input.gas_limit()),
-                    /* to: */ toAddress,
-                    /* tokenContract */ Address(input.contract_erc20().token_contract()),
+                    /* tokenContract: */ toAddress,
+                    /* toAddress */ Address(input.contract_erc20().to_address()),
                     /* amount: */ load(input.contract_erc20().amount()));
                 return transaction;
             }

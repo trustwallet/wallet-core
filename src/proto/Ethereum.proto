@@ -9,7 +9,7 @@ message TransferContract {
 }
 
 message ERC20TransferContract {
-    string token_contract = 1;
+    string to_address = 1;
 
     // Amount to send (256-bit number)
     bytes amount = 2;

@@ -32,7 +32,7 @@ public:
         return Transaction(nonce, gasPrice, gasLimit, to, amount, {});
     }
     // Create an ERC20 coin transfer transaction
-    static Transaction buildERC20Transfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, const Data& to, const Address& tokenContract, uint256_t amount);
+    static Transaction buildERC20Transfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, const Data& tokenContract, const Address& toAddress, uint256_t amount);
     // Create a generic smart contract transaction
     static Transaction buildSmartContract(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, const Data& to, const TW::Data& payload) {
         return Transaction(nonce, gasPrice, gasLimit, to, 0, payload);
