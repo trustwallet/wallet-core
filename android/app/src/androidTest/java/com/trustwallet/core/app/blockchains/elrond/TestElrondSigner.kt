@@ -8,7 +8,7 @@ package com.trustwallet.core.app.blockchains.elrond
 
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.toHexByteArray
-import junit.framework.Assert.assertEquals
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType
