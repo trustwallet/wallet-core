@@ -71,13 +71,19 @@ Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data&
     return values(chainID, signature);
 }
 
-Transaction Signer::build(const Proto::SigningInput &input) {
-    Data toAddress;
-    if (!input.to_address().empty()) {
-        toAddress.resize(20);
-        auto address = Address(input.to_address());
-        std::copy(address.bytes.begin(), address.bytes.end(), toAddress.data());
+// May throw
+Data addressStringToData(const std::string& asString) {
+    Data asData;
+    if (!asString.empty()) {
+        asData.resize(20);
+        auto address = Address(asString);
+        std::copy(address.bytes.begin(), address.bytes.end(), asData.data());
     }
+    return asData;
+}
+
+Transaction Signer::build(const Proto::SigningInput &input) {
+    Data toAddress = addressStringToData(input.to_address());
     switch (input.contract_oneof_case()) {
         case TW::Ethereum::Proto::SigningInput::kContractTransfer:
             {
@@ -92,12 +98,13 @@ Transaction Signer::build(const Proto::SigningInput &input) {
 
         case TW::Ethereum::Proto::SigningInput::ContractOneofCase::kContractErc20:
             {
+                Data tokenToAddress = addressStringToData(input.contract_erc20().to_address());
                 auto transaction = Transaction::buildERC20Transfer(
                     /* nonce: */ load(input.nonce()),
                     /* gasPrice: */ load(input.gas_price()),
                     /* gasLimit: */ load(input.gas_limit()),
                     /* tokenContract: */ toAddress,
-                    /* toAddress */ Address(input.contract_erc20().to_address()),
+                    /* toAddress */ tokenToAddress,
                     /* amount: */ load(input.contract_erc20().amount()));
                 return transaction;
             }
