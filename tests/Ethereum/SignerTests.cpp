@@ -55,4 +55,23 @@ TEST(Signer, Sign) {
     ASSERT_EQ(transaction.s, uint256_t("46948507304638947509940763649030358759909902576025900602547168820602576006531"));
 }
 
+TEST(Signer, SignERC20Transfer) {
+    auto transaction = Transaction::buildERC20Transfer(
+        /* nonce: */ 0,
+        /* gasPrice: */ 42000000000, // 0x09c7652400
+        /* gasLimit: */ 78009, // 130B9
+        /* tokenContract: */ parse_hex("0x6b175474e89094c44da98b954eedeac495271d0f"), // DAI
+        /* toAddress: */ Address("0x5322b34c88ed0691971bf52a7047448f0f4efc84"),
+        /* amount: */ 2000000000000000000
+    );
+
+    auto key = PrivateKey(parse_hex("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151"));
+    auto signer = SignerExposed(1);
+    signer.sign(key, transaction);
+
+    ASSERT_EQ(transaction.v, 25);
+    ASSERT_EQ(transaction.r, uint256_t("724c62ad4fbf47346b02de06e603e013f26f26b56fdc0be7ba3d6273401d98ce"));
+    ASSERT_EQ(transaction.s, uint256_t("032131cae15da7ddcda66963e8bef51ca0d9962bfef0547d3f02597a4a58c931"));
+}
+
 } // namespace TW::Ethereum
