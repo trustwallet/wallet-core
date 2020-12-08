@@ -21,7 +21,7 @@ public:
     using Signer::hash;
 };
 
-TEST(Signer, Hash) {
+TEST(EthereumSigner, Hash) {
     auto address = parse_hex("0x3535353535353535353535353535353535353535");
     auto transaction = Transaction::buildTransfer(
         /* nonce: */ 9,
@@ -36,7 +36,7 @@ TEST(Signer, Hash) {
     ASSERT_EQ(hex(hash), "daf5a779ae972f972197303d7b574746c7ef83eadac0f2791ad23db92e4c8e53");
 }
 
-TEST(Signer, Sign) {
+TEST(EthereumSigner, Sign) {
     auto address = parse_hex("0x3535353535353535353535353535353535353535");
     auto transaction = Transaction::buildTransfer(
         /* nonce: */ 9,
@@ -55,7 +55,7 @@ TEST(Signer, Sign) {
     ASSERT_EQ(transaction.s, uint256_t("46948507304638947509940763649030358759909902576025900602547168820602576006531"));
 }
 
-TEST(Signer, SignERC20Transfer) {
+TEST(EthereumSigner, SignERC20Transfer) {
     auto transaction = Transaction::buildERC20Transfer(
         /* nonce: */ 0,
         /* gasPrice: */ 42000000000, // 0x09c7652400
