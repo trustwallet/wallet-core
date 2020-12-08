@@ -73,12 +73,13 @@ Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data&
 
 // May throw
 Data addressStringToData(const std::string& asString) {
-    Data asData;
-    if (!asString.empty()) {
-        asData.resize(20);
-        auto address = Address(asString);
-        std::copy(address.bytes.begin(), address.bytes.end(), asData.data());
+    if (asString.empty()) {
+        return {};
     }
+    auto address = Address(asString);
+    Data asData;
+    asData.resize(20);
+    std::copy(address.bytes.begin(), address.bytes.end(), asData.data());
     return asData;
 }
 
@@ -106,6 +107,21 @@ Transaction Signer::build(const Proto::SigningInput &input) {
                     /* tokenContract: */ toAddress,
                     /* toAddress */ tokenToAddress,
                     /* amount: */ load(input.contract_erc20().amount()));
+                return transaction;
+            }
+
+        case TW::Ethereum::Proto::SigningInput::ContractOneofCase::kContractErc721:
+            {
+                Data tokenToAddress = addressStringToData(input.contract_erc721().to_address());
+                Data tokenFromAddress = addressStringToData(input.contract_erc721().from_address());
+                auto transaction = Transaction::buildERC721Transfer(
+                    /* nonce: */ load(input.nonce()),
+                    /* gasPrice: */ load(input.gas_price()),
+                    /* gasLimit: */ load(input.gas_limit()),
+                    /* tokenContract: */ toAddress,
+                    /* fromAddress: */ tokenFromAddress,
+                    /* toAddress */ tokenToAddress,
+                    /* tokenId: */ load(input.contract_erc721().token_id()));
                 return transaction;
             }
 

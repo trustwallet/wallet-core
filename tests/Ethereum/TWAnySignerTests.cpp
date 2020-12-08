@@ -172,6 +172,38 @@ TEST(TWAnySignerEthereum, SignERC20TransferInvalidAddress) {
     ASSERT_EQ(hex(output.encoded()), "");
 }
 
+TEST(TWAnySignerEthereum, SignERC711Transfer) {
+    auto chainId = store(uint256_t(1));
+    auto nonce = store(uint256_t(0));
+    auto gasPrice = store(uint256_t(42000000000));
+    auto gasLimit = store(uint256_t(78009));
+    auto tokenContract = "0x4e45e92ed38f885d39a733c14f1817217a89d425";
+    auto fromAddress = "0x718046867b5b1782379a14eA4fc0c9b724DA94Fc";
+    auto toAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84";
+    auto tokenId = parse_hex("23c47ee5");
+    auto key = parse_hex("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151");
+
+    Proto::SigningInput input;
+    input.set_chain_id(chainId.data(), chainId.size());
+    input.set_nonce(nonce.data(), nonce.size());
+    input.set_gas_price(gasPrice.data(), gasPrice.size());
+    input.set_gas_limit(gasLimit.data(), gasLimit.size());
+    input.set_to_address(tokenContract);
+    input.set_private_key(key.data(), key.size());
+    auto& erc721 = *input.mutable_contract_erc721();
+    erc721.set_from_address(fromAddress);
+    erc721.set_to_address(toAddress);
+    erc721.set_token_id(tokenId.data(), tokenId.size());
+
+    std::string expected = "f8b6808509c7652400830130b98080b86423b872dd000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee526a04f35575c8dc6d0c12fd1ae0007a1395f2baa992d5d498f5ee381cdb7d46ed43ca00935b9ceb724ab73806e7f43da6a3079e7404e2dc28fe030fef96cd13779ac04";
+
+    // sign test
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeEthereum);
+
+    ASSERT_EQ(hex(output.encoded()), expected);
+}
+
 TEST(TWAnySignerEthereum, SignJSON) {
     auto json = STRING(R"({"chainId":"AQ==","gasPrice":"1pOkAA==","gasLimit":"Ugg=","toAddress":"0x7d8bf18C7cE84b3E175b339c4Ca93aEd1dD166F1","contract_transfer":{"amount":"A0i8paFgAA=="}})");
     auto key = DATA("17209af590a86462395d5881e60d11c7fa7d482cfb02b5a01b93c2eeef243543");

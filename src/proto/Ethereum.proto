@@ -15,6 +15,15 @@ message ERC20TransferContract {
     bytes amount = 2;
 }
 
+message ERC721TransferContract {
+    string from_address = 1;
+
+    string to_address = 2;
+
+    // ID of the token (256-bit number)
+    bytes token_id = 3;
+}
+
 message GenericContract {
     // Optional payload
     bytes payload = 1;
@@ -43,7 +52,8 @@ message SigningInput {
     oneof contract_oneof {
         TransferContract contract_transfer = 11;
         ERC20TransferContract contract_erc20 = 12;
-        GenericContract contract_generic = 13;
+        ERC721TransferContract contract_erc721 = 13;
+        GenericContract contract_generic = 14;
     }
 }
 
