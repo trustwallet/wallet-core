@@ -12,27 +12,31 @@ using namespace TW;
 using namespace TW::Ethereum;
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    auto signer = Signer(load(input.chain_id()));
-    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    auto transaction = Signer::build(input);
+    try {
+        auto signer = Signer(load(input.chain_id()));
+        auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+        auto transaction = Signer::build(input);
 
-    signer.sign(key, transaction);
+        signer.sign(key, transaction);
 
-    auto output = Proto::SigningOutput();
+        auto output = Proto::SigningOutput();
 
-    auto encoded = RLP::encode(transaction);
-    output.set_encoded(encoded.data(), encoded.size());
+        auto encoded = RLP::encode(transaction);
+        output.set_encoded(encoded.data(), encoded.size());
 
-    auto v = store(transaction.v);
-    output.set_v(v.data(), v.size());
+        auto v = store(transaction.v);
+        output.set_v(v.data(), v.size());
 
-    auto r = store(transaction.r);
-    output.set_r(r.data(), r.size());
+        auto r = store(transaction.r);
+        output.set_r(r.data(), r.size());
 
-    auto s = store(transaction.s);
-    output.set_s(s.data(), s.size());
+        auto s = store(transaction.s);
+        output.set_s(s.data(), s.size());
 
-    return output;
+        return output;
+    } catch (std::exception&) {
+        return Proto::SigningOutput();
+    }
 }
 
 std::string Signer::signJSON(const std::string& json, const Data& key) {

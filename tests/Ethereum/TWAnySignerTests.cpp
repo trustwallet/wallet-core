@@ -85,7 +85,6 @@ TEST(TWAnySignerEthereum, Sign) {
 }
 
 TEST(TWAnySignerEthereum, SignERC20TransferAsERC20) {
-    Proto::SigningInput input;
     auto chainId = store(uint256_t(1));
     auto nonce = store(uint256_t(0));
     auto gasPrice = store(uint256_t(42000000000)); // 0x09c7652400
@@ -95,6 +94,7 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsERC20) {
     auto amount = store(uint256_t(2000000000000000000));
     auto key = parse_hex("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151");
 
+    Proto::SigningInput input;
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_nonce(nonce.data(), nonce.size());
     input.set_gas_price(gasPrice.data(), gasPrice.size());
@@ -116,7 +116,6 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsERC20) {
 }
 
 TEST(TWAnySignerEthereum, SignERC20TransferAsGenericContract) {
-    Proto::SigningInput input;
     auto chainId = store(uint256_t(1));
     auto nonce = store(uint256_t(0));
     auto gasPrice = store(uint256_t(42000000000)); // 0x09c7652400
@@ -126,6 +125,7 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsGenericContract) {
     auto data = parse_hex("0xa9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000");
     auto key = parse_hex("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151");
 
+    Proto::SigningInput input;
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_nonce(nonce.data(), nonce.size());
     input.set_gas_price(gasPrice.data(), gasPrice.size());
@@ -143,6 +143,33 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsGenericContract) {
     ANY_SIGN(input, TWCoinTypeEthereum);
 
     ASSERT_EQ(hex(output.encoded()), expected);
+}
+
+TEST(TWAnySignerEthereum, SignERC20TransferInvalidAddress) {
+    auto chainId = store(uint256_t(1));
+    auto nonce = store(uint256_t(0));
+    auto gasPrice = store(uint256_t(42000000000)); // 0x09c7652400
+    auto gasLimit = store(uint256_t(78009)); // 130B9
+    auto invalidAddress = "0xdeadbeef";
+    auto amount = store(uint256_t(2000000000000000000));
+    auto key = parse_hex("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151");
+
+    Proto::SigningInput input;
+    input.set_chain_id(chainId.data(), chainId.size());
+    input.set_nonce(nonce.data(), nonce.size());
+    input.set_gas_price(gasPrice.data(), gasPrice.size());
+    input.set_gas_limit(gasLimit.data(), gasLimit.size());
+    input.set_to_address(invalidAddress);
+    input.set_private_key(key.data(), key.size());
+    auto& erc20 = *input.mutable_contract_erc20();
+    erc20.set_to_address(invalidAddress);
+    erc20.set_amount(amount.data(), amount.size());
+
+    // sign test
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeEthereum);
+
+    ASSERT_EQ(hex(output.encoded()), "");
 }
 
 TEST(TWAnySignerEthereum, SignJSON) {
