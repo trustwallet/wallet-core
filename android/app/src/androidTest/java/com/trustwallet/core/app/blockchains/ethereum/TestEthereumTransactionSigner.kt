@@ -45,6 +45,32 @@ class TestEthereumTransactionSigner {
     }
 
     @Test
+    fun testEthereumERC20Signing() {
+        val signingInput = Ethereum.SigningInput.newBuilder()
+        signingInput.apply {
+            privateKey = ByteString.copyFrom(PrivateKey("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151".toHexByteArray()).data())
+            toAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // DAI
+            chainId = ByteString.copyFrom("0x1".toHexByteArray())
+            nonce = ByteString.copyFrom("0x0".toHexByteArray())
+            gasPrice = ByteString.copyFrom("0x09c7652400".toHexByteArray())
+            gasLimit = ByteString.copyFrom("0x0130B9".toHexByteArray())
+        }
+        val contract = Ethereum.ERC20TransferContract.newBuilder()
+        contract.toAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
+        contract.amount = ByteString.copyFrom("0x1bc16d674ec80000".toHexByteArray())
+        signingInput.contractErc20 = contract.build()
+
+        val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
+        val encoded = AnySigner.encode(signingInput.build(), ETHEREUM)
+
+        assertArrayEquals(output.encoded.toByteArray(), encoded)
+        assertEquals(Numeric.toHexString(output.v.toByteArray()), "0x25")
+        assertEquals(Numeric.toHexString(output.r.toByteArray()), "0x724c62ad4fbf47346b02de06e603e013f26f26b56fdc0be7ba3d6273401d98ce")
+        assertEquals(Numeric.toHexString(output.s.toByteArray()), "0x032131cae15da7ddcda66963e8bef51ca0d9962bfef0547d3f02597a4a58c931")
+        assertEquals(Numeric.toHexString(encoded), "0xf8aa808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec8000025a0724c62ad4fbf47346b02de06e603e013f26f26b56fdc0be7ba3d6273401d98cea0032131cae15da7ddcda66963e8bef51ca0d9962bfef0547d3f02597a4a58c931")
+    }
+
+    @Test
     fun testSignJSON() {
         val json = """
             {
