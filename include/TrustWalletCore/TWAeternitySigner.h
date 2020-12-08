@@ -17,4 +17,11 @@ struct TWAeternitySigner;
 TW_EXPORT_STATIC_METHOD
 TW_Aeternity_Proto_SigningOutput TWAeternitySignerSign(TW_Aeternity_Proto_SigningInput input);
 
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWAeternitySignerMessage(TW_Aeternity_Proto_SigningInput data);
+
+/// Builds a transaction to be broadcasted
+TW_EXPORT_STATIC_METHOD
+TWString *_Nonnull TWAeternitySignerTransaction(TW_Aeternity_Proto_SigningInput data, TWData *_Nonnull signature);
+
 TW_EXTERN_C_END
