@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
     ndkVersion '21.2.6472646'
     defaultConfig {
         applicationId "com.trustwallet.core.app"
         minSdkVersion 23
-        targetSdkVersion 28
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -35,7 +35,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
 
     // Tests
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.1.0-beta02", {
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.3.0', {
     testImplementation 'junit:junit:4.13.1'
         exclude group: "com.android.support", module: "support-annotations"
     })

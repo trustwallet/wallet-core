@@ -3,7 +3,7 @@ package com.trustwallet.core.app.blockchains.nuls
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.Numeric
 import com.trustwallet.core.app.utils.toHexByteArray
-import junit.framework.Assert.assertEquals
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.CoinType
 import wallet.core.java.AnySigner

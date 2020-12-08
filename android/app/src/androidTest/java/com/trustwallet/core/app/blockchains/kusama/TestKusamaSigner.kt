@@ -8,7 +8,7 @@ package com.trustwallet.core.app.blockchains.polkadot
 
 import com.trustwallet.core.app.utils.Numeric
 import com.trustwallet.core.app.utils.toHexBytesInByteString
-import junit.framework.Assert.assertEquals
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType.KUSAMA
