@@ -51,8 +51,10 @@ describe('Wallet Core types tests', () => {
             nonce: Buffer.from('09', 'hex'),
             gasPrice: Buffer.from('04a817c800', 'hex'),
             gasLimit: Buffer.from('5208', 'hex'),
-            amount: Buffer.from('0de0b6b3a7640000', 'hex'),
-            privateKey: Buffer.from('4646464646464646464646464646464646464646464646464646464646464646', 'hex')
+            privateKey: Buffer.from('4646464646464646464646464646464646464646464646464646464646464646', 'hex'),
+            contractTransfer: TW.Ethereum.Proto.SigningInput.TransferContract.create({
+                amount: Buffer.from('0de0b6b3a7640000', 'hex')
+            })
         });
 
         const encoded = TW.Ethereum.Proto.SigningInput.encode(input).finish()
