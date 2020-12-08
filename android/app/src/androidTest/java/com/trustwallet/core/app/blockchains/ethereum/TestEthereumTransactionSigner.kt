@@ -30,9 +30,9 @@ class TestEthereumTransactionSigner {
             gasPrice = ByteString.copyFrom("0x04a817c800".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x5208".toHexByteArray())
         }
-        val contract = Ethereum.ERC20TransferContract.newBuilder()
+        val contract = Ethereum.TransferContract.newBuilder()
         contract.amount = ByteString.copyFrom("0x0de0b6b3a7640000".toHexByteArray())
-        signingInput.contractErc20 = contract.build()
+        signingInput.contractTransfer = contract.build()
 
         val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
         val encoded = AnySigner.encode(signingInput.build(), ETHEREUM)
