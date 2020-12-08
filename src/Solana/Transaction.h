@@ -308,13 +308,15 @@ class Message {
         auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
         auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
         auto stakeConfigId = Address(STAKE_CONFIG_ID_ADDRESS);
+        auto sysvarStakeHistoryId = Address(SYSVAR_STAKE_HISTORY_ID_ADDRESS);
         auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
         std::vector<Instruction> instructions;
         // create_account_with_seed instruction
         auto createAccountInstruction = Instruction(std::vector<AccountMeta>{
                 AccountMeta(signer, true, true),
-                AccountMeta(stakeAddress, false, false)
-            }, value, 2008, stakeProgramId, voteAddress, 32, signer);
+                AccountMeta(stakeAddress, false, false),
+                AccountMeta(signer, true, true),
+            }, value, 200, stakeProgramId, voteAddress, 32, signer);
         instructions.push_back(createAccountInstruction);
         // initialize instruction
         auto initializeInstruction = Instruction(Initialize, std::vector<AccountMeta>{
@@ -328,6 +330,7 @@ class Message {
                 AccountMeta(stakeAddress, false, false),
                 AccountMeta(voteAddress, false, true),
                 AccountMeta(sysvarClockId, false, true),
+                AccountMeta(sysvarStakeHistoryId, false, true),
                 AccountMeta(stakeConfigId, false, true),
                 AccountMeta(signer, true, true),
             });
@@ -388,7 +391,7 @@ class Message {
 
     // This constructor creates a transfer token message.
     // see transfer_checked() solana-program-library/token/program/src/instruction.rs
-    Message(const Address& signer, TokenInstruction type, const Address& tokenMintAddress, 
+    Message(const Address& signer, TokenInstruction type, const Address& tokenMintAddress,
         const Address& senderTokenAddress, const Address& recipientTokenAddress, uint64_t amount, uint8_t decimals, Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
         assert(type == TokenInstruction::TokenTransfer);
