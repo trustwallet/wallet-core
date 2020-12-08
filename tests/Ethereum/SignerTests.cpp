@@ -69,9 +69,9 @@ TEST(EthereumSigner, SignERC20Transfer) {
     auto signer = SignerExposed(1);
     signer.sign(key, transaction);
 
-    ASSERT_EQ(transaction.v, 25);
-    ASSERT_EQ(transaction.r, uint256_t("724c62ad4fbf47346b02de06e603e013f26f26b56fdc0be7ba3d6273401d98ce"));
-    ASSERT_EQ(transaction.s, uint256_t("032131cae15da7ddcda66963e8bef51ca0d9962bfef0547d3f02597a4a58c931"));
+    ASSERT_EQ(transaction.v, 37);
+    ASSERT_EQ(hex(TW::store(transaction.r)), "724c62ad4fbf47346b02de06e603e013f26f26b56fdc0be7ba3d6273401d98ce");
+    ASSERT_EQ(hex(TW::store(transaction.s)), "032131cae15da7ddcda66963e8bef51ca0d9962bfef0547d3f02597a4a58c931");
 }
 
 } // namespace TW::Ethereum
