@@ -75,7 +75,7 @@ class EthereumTests: XCTestCase {
             $0.gasLimit = Data(hexString: "0130B9")! // 78009
             $0.toAddress = "0x4e45e92ed38f885d39a733c14f1817217a89d425" // contract
             $0.privateKey = Data(hexString: "0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151")!
-            $0.contractErc711 = EthereumERC711TransferContract.with {
+            $0.contractErc721 = EthereumERC721TransferContract.with {
                 $0.fromAddress = "0x718046867b5b1782379a14eA4fc0c9b724DA94Fc"
                 $0.toAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
                 $0.tokenId = Data(hexString: "23c47ee5")!
