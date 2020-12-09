@@ -68,6 +68,15 @@ if(CLANG_TIDY)
     endif()
 endif()
 
+option(CLANG_ASAN "Enable ASAN dynamic address sanitizer" OFF)
+if(CLANG_ASAN)
+    # https://clang.llvm.org/docs/AddressSanitizer.html
+    # https://github.com/trustwallet/wallet-core/issues/1170
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
+    set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
+    message("CLANG_ASAN on, ${CMAKE_CXX_FLAGS_DEBUG}")
+endif()
+
 # Source files
 if(${ANDROID})
     message("Configuring for JNI")

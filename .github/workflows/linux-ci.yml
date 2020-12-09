@@ -37,7 +37,7 @@ jobs:
     - name: Prepare build with lint
       if: github.ref == 'refs/heads/master'
       run: |
-        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DBOOST_ROOT=${BOOST_ROOT_1_72_0} -DCLANG_TIDY=ON -DCODE_COVERAGE=ON
+        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DBOOST_ROOT=${BOOST_ROOT_1_72_0} -DCLANG_TIDY=ON -DCODE_COVERAGE=ON -DCLANG_ASAN=ON
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
