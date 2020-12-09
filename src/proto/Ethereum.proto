@@ -3,30 +3,43 @@ syntax = "proto3";
 package TW.Ethereum.Proto;
 option java_package = "wallet.core.jni.proto";
 
-message TransferContract {
-    // Amount to send in wei (256-bit number)
-    bytes amount = 1;
-}
+message Contract {
+    // Native coin transfer transaction
+    message Transfer {
+        // Amount to send in wei (256-bit number)
+        bytes amount = 1;
+    }
 
-message ERC20TransferContract {
-    string to_address = 1;
+    // ERC20 token transfer transaction
+    message ERC20Transfer {
+        string to_address = 1;
 
-    // Amount to send (256-bit number)
-    bytes amount = 2;
-}
+        // Amount to send (256-bit number)
+        bytes amount = 2;
+    }
 
-message ERC721TransferContract {
-    string from_address = 1;
+    // ERC721 NFT transfer transaction
+    message ERC721Transfer {
+        string from_address = 1;
 
-    string to_address = 2;
+        string to_address = 2;
 
-    // ID of the token (256-bit number)
-    bytes token_id = 3;
-}
+        // ID of the token (256-bit number)
+        bytes token_id = 3;
+    }
 
-message GenericContract {
-    // Optional payload
-    bytes payload = 1;
+    // Generic smart contract transaction
+    message Generic {
+        // Optional payload
+        bytes payload = 1;
+    }
+
+    oneof contract_oneof {
+        Transfer contract_transfer = 1;
+        ERC20Transfer contract_erc20 = 2;
+        ERC721Transfer contract_erc721 = 3;
+        Generic contract_generic = 4;
+    }
 }
 
 // Input data necessary to create a signed transaction.
@@ -49,12 +62,7 @@ message SigningInput {
     // Private key.
     bytes private_key = 6;
 
-    oneof contract_oneof {
-        TransferContract contract_transfer = 11;
-        ERC20TransferContract contract_erc20 = 12;
-        ERC721TransferContract contract_erc721 = 13;
-        GenericContract contract_generic = 14;
-    }
+    Contract contract = 7;
 }
 
 // Transaction signing output.

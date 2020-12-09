@@ -32,7 +32,7 @@ public:
         return Transaction(nonce, gasPrice, gasLimit, to, amount, {});
     }
 
-    // Create an ERC20 coin transfer transaction
+    // Create an ERC20 token transfer transaction
     static Transaction buildERC20Transfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit,
         const Data& tokenContract, const Data& toAddress, uint256_t amount);
 

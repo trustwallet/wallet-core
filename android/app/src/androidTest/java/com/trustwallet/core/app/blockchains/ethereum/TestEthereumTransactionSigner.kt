@@ -29,10 +29,12 @@ class TestEthereumTransactionSigner {
             nonce = ByteString.copyFrom("0x9".toHexByteArray())
             gasPrice = ByteString.copyFrom("0x04a817c800".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x5208".toHexByteArray())
+            contract = Ethereum.Contract.newBuilder().apply {
+                contractTransfer = Ethereum.Contract.Transfer.newBuilder().apply {
+                    amount = ByteString.copyFrom("0x0de0b6b3a7640000".toHexByteArray())
+                }.build()
+            }.build()
         }
-        val contract = Ethereum.TransferContract.newBuilder()
-        contract.amount = ByteString.copyFrom("0x0de0b6b3a7640000".toHexByteArray())
-        signingInput.contractTransfer = contract.build()
 
         val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
         val encoded = AnySigner.encode(signingInput.build(), ETHEREUM)
@@ -54,11 +56,13 @@ class TestEthereumTransactionSigner {
             nonce = ByteString.copyFrom("0x0".toHexByteArray())
             gasPrice = ByteString.copyFrom("0x09c7652400".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x0130B9".toHexByteArray())
+            contract = Ethereum.Contract.newBuilder().apply {
+                contractErc20 = Ethereum.Contract.ERC20Transfer.newBuilder().apply {
+                    toAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
+                    amount = ByteString.copyFrom("0x1bc16d674ec80000".toHexByteArray())       
+                }.build()
+            }.build()
         }
-        val contract = Ethereum.ERC20TransferContract.newBuilder()
-        contract.toAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
-        contract.amount = ByteString.copyFrom("0x1bc16d674ec80000".toHexByteArray())
-        signingInput.contractErc20 = contract.build()
 
         val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
         val encoded = AnySigner.encode(signingInput.build(), ETHEREUM)
@@ -80,12 +84,14 @@ class TestEthereumTransactionSigner {
             nonce = ByteString.copyFrom("0x0".toHexByteArray())
             gasPrice = ByteString.copyFrom("0x09c7652400".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x0130B9".toHexByteArray())
+            contract = Ethereum.Contract.newBuilder().apply {
+                contractErc721 = Ethereum.Contract.ERC721Transfer.newBuilder().apply {
+                    fromAddress = "0x718046867b5b1782379a14eA4fc0c9b724DA94Fc"
+                    toAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
+                    tokenId = ByteString.copyFrom("0x23c47ee5".toHexByteArray())
+                }.build()
+            }.build()
         }
-        val contract = Ethereum.ERC721TransferContract.newBuilder()
-        contract.fromAddress = "0x718046867b5b1782379a14eA4fc0c9b724DA94Fc"
-        contract.toAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
-        contract.tokenId = ByteString.copyFrom("0x23c47ee5".toHexByteArray())
-        signingInput.contractErc721 = contract.build()
 
         val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
         val encoded = AnySigner.encode(signingInput.build(), ETHEREUM)
@@ -105,8 +111,10 @@ class TestEthereumTransactionSigner {
                 "gasPrice": "1pOkAA==",
                 "gasLimit": "Ugg=",
                 "toAddress": "0x7d8bf18C7cE84b3E175b339c4Ca93aEd1dD166F1",
-                "contract_transfer": {
-                    "amount":"A0i8paFgAA=="
+                "contract": {
+                    "contract_transfer": {
+                        "amount":"A0i8paFgAA=="
+                    }
                 }                
             }
         """
