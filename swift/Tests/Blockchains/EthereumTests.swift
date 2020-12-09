@@ -78,7 +78,7 @@ class EthereumTests: XCTestCase {
             $0.contractErc721 = EthereumERC721TransferContract.with {
                 $0.fromAddress = "0x718046867b5b1782379a14eA4fc0c9b724DA94Fc"
                 $0.toAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
-                $0.tokenId = Data(hexString: "23c47ee5")!
+                $0.tokenID = Data(hexString: "23c47ee5")!
             }
         }
         let output: EthereumSigningOutput = AnySigner.sign(input: input, coin: .ethereum)
