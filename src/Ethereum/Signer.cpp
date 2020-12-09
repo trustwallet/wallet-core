@@ -85,47 +85,47 @@ Data addressStringToData(const std::string& asString) {
 
 Transaction Signer::build(const Proto::SigningInput &input) {
     Data toAddress = addressStringToData(input.to_address());
-    switch (input.contract().contract_oneof_case()) {
-        case Proto::Contract::kContractTransfer:
+    switch (input.payload().payload_oneof_case()) {
+        case Proto::Payload::kPayloadTransfer:
             {
                 auto transaction = Transaction::buildTransfer(
                     /* nonce: */ load(input.nonce()),
                     /* gasPrice: */ load(input.gas_price()),
                     /* gasLimit: */ load(input.gas_limit()),
                     /* to: */ toAddress,
-                    /* amount: */ load(input.contract().contract_transfer().amount()));
+                    /* amount: */ load(input.payload().payload_transfer().amount()));
                 return transaction;
             }
 
-        case Proto::Contract::kContractErc20:
+        case Proto::Payload::kPayloadErc20:
             {
-                Data tokenToAddress = addressStringToData(input.contract().contract_erc20().to());
+                Data tokenToAddress = addressStringToData(input.payload().payload_erc20().to());
                 auto transaction = Transaction::buildERC20Transfer(
                     /* nonce: */ load(input.nonce()),
                     /* gasPrice: */ load(input.gas_price()),
                     /* gasLimit: */ load(input.gas_limit()),
-                    /* tokenContract: */ toAddress,
+                    /* tokenPayload: */ toAddress,
                     /* toAddress */ tokenToAddress,
-                    /* amount: */ load(input.contract().contract_erc20().amount()));
+                    /* amount: */ load(input.payload().payload_erc20().amount()));
                 return transaction;
             }
 
-        case Proto::Contract::kContractErc721:
+        case Proto::Payload::kPayloadErc721:
             {
-                Data tokenToAddress = addressStringToData(input.contract().contract_erc721().to());
-                Data tokenFromAddress = addressStringToData(input.contract().contract_erc721().from());
+                Data tokenToAddress = addressStringToData(input.payload().payload_erc721().to());
+                Data tokenFromAddress = addressStringToData(input.payload().payload_erc721().from());
                 auto transaction = Transaction::buildERC721Transfer(
                     /* nonce: */ load(input.nonce()),
                     /* gasPrice: */ load(input.gas_price()),
                     /* gasLimit: */ load(input.gas_limit()),
-                    /* tokenContract: */ toAddress,
+                    /* tokenPayload: */ toAddress,
                     /* fromAddress: */ tokenFromAddress,
                     /* toAddress */ tokenToAddress,
-                    /* tokenId: */ load(input.contract().contract_erc721().token_id()));
+                    /* tokenId: */ load(input.payload().payload_erc721().token_id()));
                 return transaction;
             }
 
-        case Proto::Contract::kContractGeneric:
+        case Proto::Payload::kPayloadContractGeneric:
         default:
             {
                 auto transaction = Transaction::buildSmartContract(
@@ -133,7 +133,7 @@ Transaction Signer::build(const Proto::SigningInput &input) {
                     /* gasPrice: */ load(input.gas_price()),
                     /* gasLimit: */ load(input.gas_limit()),
                     /* to: */ toAddress,
-                    /* payload: */ Data(input.contract().contract_generic().payload().begin(), input.contract().contract_generic().payload().end()));
+                    /* payload: */ Data(input.payload().payload_contract_generic().payload().begin(), input.payload().payload_contract_generic().payload().end()));
                 return transaction;
             }
     }

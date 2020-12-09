@@ -3,7 +3,7 @@ syntax = "proto3";
 package TW.Ethereum.Proto;
 option java_package = "wallet.core.jni.proto";
 
-message Contract {
+message Payload {
     // Native coin transfer transaction
     message Transfer {
         // Amount to send in wei (256-bit number)
@@ -34,11 +34,11 @@ message Contract {
         bytes payload = 1;
     }
 
-    oneof contract_oneof {
-        Transfer contract_transfer = 1;
-        ERC20Transfer contract_erc20 = 2;
-        ERC721Transfer contract_erc721 = 3;
-        Generic contract_generic = 4;
+    oneof payload_oneof {
+        Transfer payload_transfer = 1;
+        ERC20Transfer payload_erc20 = 2;
+        ERC721Transfer payload_erc721 = 3;
+        Generic payload_contract_generic = 4;
     }
 }
 
@@ -62,7 +62,7 @@ message SigningInput {
     // Private key.
     bytes private_key = 6;
 
-    Contract contract = 7;
+    Payload payload = 7;
 }
 
 // Transaction signing output.

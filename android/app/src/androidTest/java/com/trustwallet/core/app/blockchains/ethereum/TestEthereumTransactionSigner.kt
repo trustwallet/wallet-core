@@ -29,8 +29,8 @@ class TestEthereumTransactionSigner {
             nonce = ByteString.copyFrom("0x9".toHexByteArray())
             gasPrice = ByteString.copyFrom("0x04a817c800".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x5208".toHexByteArray())
-            contract = Ethereum.Contract.newBuilder().apply {
-                contractTransfer = Ethereum.Contract.Transfer.newBuilder().apply {
+            payload = Ethereum.Payload.newBuilder().apply {
+                payloadTransfer = Ethereum.Payload.Transfer.newBuilder().apply {
                     amount = ByteString.copyFrom("0x0de0b6b3a7640000".toHexByteArray())
                 }.build()
             }.build()
@@ -56,8 +56,8 @@ class TestEthereumTransactionSigner {
             nonce = ByteString.copyFrom("0x0".toHexByteArray())
             gasPrice = ByteString.copyFrom("0x09c7652400".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x0130B9".toHexByteArray())
-            contract = Ethereum.Contract.newBuilder().apply {
-                contractErc20 = Ethereum.Contract.ERC20Transfer.newBuilder().apply {
+            payload = Ethereum.Payload.newBuilder().apply {
+                payloadErc20 = Ethereum.Payload.ERC20Transfer.newBuilder().apply {
                     to = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
                     amount = ByteString.copyFrom("0x1bc16d674ec80000".toHexByteArray())       
                 }.build()
@@ -84,8 +84,8 @@ class TestEthereumTransactionSigner {
             nonce = ByteString.copyFrom("0x0".toHexByteArray())
             gasPrice = ByteString.copyFrom("0x09c7652400".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x0130B9".toHexByteArray())
-            contract = Ethereum.Contract.newBuilder().apply {
-                contractErc721 = Ethereum.Contract.ERC721Transfer.newBuilder().apply {
+            payload = Ethereum.Payload.newBuilder().apply {
+                payloadErc721 = Ethereum.Payload.ERC721Transfer.newBuilder().apply {
                     from = "0x718046867b5b1782379a14eA4fc0c9b724DA94Fc"
                     to = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
                     tokenId = ByteString.copyFrom("0x23c47ee5".toHexByteArray())
@@ -111,8 +111,8 @@ class TestEthereumTransactionSigner {
                 "gasPrice": "1pOkAA==",
                 "gasLimit": "Ugg=",
                 "toAddress": "0x7d8bf18C7cE84b3E175b339c4Ca93aEd1dD166F1",
-                "contract": {
-                    "contract_transfer": {
+                "payload": {
+                    "payload_transfer": {
                         "amount":"A0i8paFgAA=="
                     }
                 }                
