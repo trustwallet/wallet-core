@@ -12,7 +12,7 @@ message Contract {
 
     // ERC20 token transfer transaction
     message ERC20Transfer {
-        string to_address = 1;
+        string to = 1;
 
         // Amount to send (256-bit number)
         bytes amount = 2;
@@ -20,9 +20,9 @@ message Contract {
 
     // ERC721 NFT transfer transaction
     message ERC721Transfer {
-        string from_address = 1;
+        string from = 1;
 
-        string to_address = 2;
+        string to = 2;
 
         // ID of the token (256-bit number)
         bytes token_id = 3;

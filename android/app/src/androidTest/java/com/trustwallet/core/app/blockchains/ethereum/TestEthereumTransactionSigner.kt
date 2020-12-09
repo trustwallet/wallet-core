@@ -58,7 +58,7 @@ class TestEthereumTransactionSigner {
             gasLimit = ByteString.copyFrom("0x0130B9".toHexByteArray())
             contract = Ethereum.Contract.newBuilder().apply {
                 contractErc20 = Ethereum.Contract.ERC20Transfer.newBuilder().apply {
-                    toAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
+                    to = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
                     amount = ByteString.copyFrom("0x1bc16d674ec80000".toHexByteArray())       
                 }.build()
             }.build()
@@ -86,8 +86,8 @@ class TestEthereumTransactionSigner {
             gasLimit = ByteString.copyFrom("0x0130B9".toHexByteArray())
             contract = Ethereum.Contract.newBuilder().apply {
                 contractErc721 = Ethereum.Contract.ERC721Transfer.newBuilder().apply {
-                    fromAddress = "0x718046867b5b1782379a14eA4fc0c9b724DA94Fc"
-                    toAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
+                    from = "0x718046867b5b1782379a14eA4fc0c9b724DA94Fc"
+                    to = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
                     tokenId = ByteString.copyFrom("0x23c47ee5".toHexByteArray())
                 }.build()
             }.build()

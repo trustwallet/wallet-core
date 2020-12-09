@@ -86,7 +86,7 @@ Data addressStringToData(const std::string& asString) {
 Transaction Signer::build(const Proto::SigningInput &input) {
     Data toAddress = addressStringToData(input.to_address());
     switch (input.contract().contract_oneof_case()) {
-        case TW::Ethereum::Proto::Contract::kContractTransfer:
+        case Proto::Contract::kContractTransfer:
             {
                 auto transaction = Transaction::buildTransfer(
                     /* nonce: */ load(input.nonce()),
@@ -97,9 +97,9 @@ Transaction Signer::build(const Proto::SigningInput &input) {
                 return transaction;
             }
 
-        case TW::Ethereum::Proto::Contract::kContractErc20:
+        case Proto::Contract::kContractErc20:
             {
-                Data tokenToAddress = addressStringToData(input.contract().contract_erc20().to_address());
+                Data tokenToAddress = addressStringToData(input.contract().contract_erc20().to());
                 auto transaction = Transaction::buildERC20Transfer(
                     /* nonce: */ load(input.nonce()),
                     /* gasPrice: */ load(input.gas_price()),
@@ -110,10 +110,10 @@ Transaction Signer::build(const Proto::SigningInput &input) {
                 return transaction;
             }
 
-        case TW::Ethereum::Proto::Contract::kContractErc721:
+        case Proto::Contract::kContractErc721:
             {
-                Data tokenToAddress = addressStringToData(input.contract().contract_erc721().to_address());
-                Data tokenFromAddress = addressStringToData(input.contract().contract_erc721().from_address());
+                Data tokenToAddress = addressStringToData(input.contract().contract_erc721().to());
+                Data tokenFromAddress = addressStringToData(input.contract().contract_erc721().from());
                 auto transaction = Transaction::buildERC721Transfer(
                     /* nonce: */ load(input.nonce()),
                     /* gasPrice: */ load(input.gas_price()),
@@ -125,7 +125,7 @@ Transaction Signer::build(const Proto::SigningInput &input) {
                 return transaction;
             }
 
-        case TW::Ethereum::Proto::Contract::kContractGeneric:
+        case Proto::Contract::kContractGeneric:
         default:
             {
                 auto transaction = Transaction::buildSmartContract(

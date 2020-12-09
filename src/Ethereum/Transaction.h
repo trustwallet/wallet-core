@@ -41,7 +41,7 @@ public:
         const Data& tokenContract, const Data& from, const Data& to, uint256_t tokenId);
 
     // Create a generic smart contract transaction
-    static Transaction buildSmartContract(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, const Data& to, const TW::Data& payload) {
+    static Transaction buildSmartContract(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, const Data& to, const Data& payload) {
         return Transaction(nonce, gasPrice, gasLimit, to, 0, payload);
     }
 
