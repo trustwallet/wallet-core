@@ -67,6 +67,30 @@ class EthereumTests: XCTestCase {
         XCTAssertEqual(output.encoded.hexString, "f8aa808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec8000025a0724c62ad4fbf47346b02de06e603e013f26f26b56fdc0be7ba3d6273401d98cea0032131cae15da7ddcda66963e8bef51ca0d9962bfef0547d3f02597a4a58c931")
     }
 
+    func testSignERC721Transfer() {
+        let input = EthereumSigningInput.with {
+            $0.chainID = Data(hexString: "01")!
+            $0.nonce = Data(hexString: "00")!
+            $0.gasPrice = Data(hexString: "09c7652400")! // 42000000000
+            $0.gasLimit = Data(hexString: "0130B9")! // 78009
+            $0.toAddress = "0x4e45e92ed38f885d39a733c14f1817217a89d425" // contract
+            $0.privateKey = Data(hexString: "0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151")!
+            $0.contractErc711 = EthereumERC711TransferContract.with {
+                $0.fromAddress = "0x718046867b5b1782379a14eA4fc0c9b724DA94Fc"
+                $0.toAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
+                $0.tokenId = Data(hexString: "23c47ee5")!
+            }
+        }
+        let output: EthereumSigningOutput = AnySigner.sign(input: input, coin: .ethereum)
+        let encoded = AnySigner.encode(input: input, coin: .ethereum)
+
+        XCTAssertEqual(encoded, output.encoded)
+        XCTAssertEqual(output.v.hexString, "26")
+        XCTAssertEqual(output.r.hexString, "4f35575c8dc6d0c12fd1ae0007a1395f2baa992d5d498f5ee381cdb7d46ed43c")
+        XCTAssertEqual(output.s.hexString, "0935b9ceb724ab73806e7f43da6a3079e7404e2dc28fe030fef96cd13779ac04")
+        XCTAssertEqual(output.encoded.hexString, "f8b6808509c7652400830130b98080b86423b872dd000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee526a04f35575c8dc6d0c12fd1ae0007a1395f2baa992d5d498f5ee381cdb7d46ed43ca00935b9ceb724ab73806e7f43da6a3079e7404e2dc28fe030fef96cd13779ac04")
+    }
+
     func testSignJSON() {
         let json = """
         {

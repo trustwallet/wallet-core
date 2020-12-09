@@ -172,7 +172,7 @@ TEST(TWAnySignerEthereum, SignERC20TransferInvalidAddress) {
     ASSERT_EQ(hex(output.encoded()), "");
 }
 
-TEST(TWAnySignerEthereum, SignERC711Transfer) {
+TEST(TWAnySignerEthereum, SignERC721Transfer) {
     auto chainId = store(uint256_t(1));
     auto nonce = store(uint256_t(0));
     auto gasPrice = store(uint256_t(42000000000));

@@ -71,6 +71,33 @@ class TestEthereumTransactionSigner {
     }
 
     @Test
+    fun testEthereumERC721Signing() {
+        val signingInput = Ethereum.SigningInput.newBuilder()
+        signingInput.apply {
+            privateKey = ByteString.copyFrom(PrivateKey("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151".toHexByteArray()).data())
+            toAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // DAI
+            chainId = ByteString.copyFrom("0x1".toHexByteArray())
+            nonce = ByteString.copyFrom("0x0".toHexByteArray())
+            gasPrice = ByteString.copyFrom("0x09c7652400".toHexByteArray())
+            gasLimit = ByteString.copyFrom("0x0130B9".toHexByteArray())
+        }
+        val contract = Ethereum.ERC721TransferContract.newBuilder()
+        contract.fromAddress = "0x718046867b5b1782379a14eA4fc0c9b724DA94Fc"
+        contract.toAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
+        contract.tokenId = ByteString.copyFrom("0x23c47ee5".toHexByteArray())
+        signingInput.contractErc721 = contract.build()
+
+        val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
+        val encoded = AnySigner.encode(signingInput.build(), ETHEREUM)
+
+        assertArrayEquals(output.encoded.toByteArray(), encoded)
+        assertEquals(Numeric.toHexString(output.v.toByteArray()), "0x26")
+        assertEquals(Numeric.toHexString(output.r.toByteArray()), "0x4f35575c8dc6d0c12fd1ae0007a1395f2baa992d5d498f5ee381cdb7d46ed43c")
+        assertEquals(Numeric.toHexString(output.s.toByteArray()), "0x0935b9ceb724ab73806e7f43da6a3079e7404e2dc28fe030fef96cd13779ac04")
+        assertEquals(Numeric.toHexString(encoded), "0xf8b6808509c7652400830130b98080b86423b872dd000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee526a04f35575c8dc6d0c12fd1ae0007a1395f2baa992d5d498f5ee381cdb7d46ed43ca00935b9ceb724ab73806e7f43da6a3079e7404e2dc28fe030fef96cd13779ac04")
+    }
+
+    @Test
     fun testSignJSON() {
         val json = """
             {
