@@ -33,7 +33,7 @@ message Payload {
     }
 
     // Generic smart contract transaction
-    message Generic {
+    message ContractGeneric {
         // Contract call payload
         bytes payload = 1;
     }
@@ -42,7 +42,7 @@ message Payload {
         Transfer payload_transfer = 1;
         ERC20Transfer payload_erc20 = 2;
         ERC721Transfer payload_erc721 = 3;
-        Generic payload_contract_generic = 4;
+        ContractGeneric payload_contract_generic = 4;
     }
 }
 
