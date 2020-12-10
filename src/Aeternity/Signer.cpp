@@ -17,14 +17,41 @@ using namespace TW;
 using namespace TW::Aeternity;
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
-    auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    try {
+        auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+
+        auto tx = build(input);
+
+        return Signer::sign(privateKey, tx);
+    } catch (std::exception&) {
+        return Proto::SigningOutput();
+    }
+}
+
+Transaction Signer::build(const Proto::SigningInput& input) {
+    uint256_t amount;
+    std::string payload;
+
+    switch (input.payload().payload_oneof_case()) {
+        case Proto::Payload::kPayloadTransfer:
+            amount = load(input.payload().payload_transfer().amount());
+            payload = input.payload().payload_transfer().payload();
+            break;
+
+        case Proto::Payload::kPayloadContractGeneric:
+        default:
+            amount = 0;
+            payload = input.payload().payload_contract_generic().payload();
+            break;
+    }
+
     std::string sender_id = input.from_address();
     std::string recipient_id = input.to_address();
-    std::string payload = input.payload();
 
-    auto tx = Transaction(sender_id, recipient_id, load(input.amount()), load(input.fee()), payload, input.ttl(), input.nonce());
-
-    return Signer::sign(privateKey, tx);
+    auto tx = Transaction(sender_id, recipient_id,
+        amount, load(input.fee()),
+        payload, input.ttl(), input.nonce());
+    return tx;
 }
 
 /// implementation copied from

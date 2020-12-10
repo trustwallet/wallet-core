@@ -3,6 +3,29 @@ syntax = "proto3";
 package TW.Aion.Proto;
 option java_package = "wallet.core.jni.proto";
 
+// Transaction payload (transfer, smart contract call, ...)
+message Payload {
+    // Native coin transfer transaction
+    message Transfer {
+        // Amount to send in wei (256-bit number)
+        bytes amount = 1;
+
+        // Optional payload
+        bytes payload = 2;
+    }
+
+    // Generic smart contract transaction
+    message ContractGeneric {
+        // Optional payload
+        bytes payload = 1;
+    }
+
+    oneof payload_oneof {
+        Transfer payload_transfer = 1;
+        ContractGeneric payload_contract_generic = 4;
+    }
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     // Nonce (256-bit number)
@@ -17,17 +40,13 @@ message SigningInput {
     // Recipient's address.
     string to_address = 4;
 
-    // Amount to send in wei (256-bit number)
-    bytes amount = 5;
-
-    // Optional payload
-    bytes payload = 6;
-
     // Private key.
-    bytes private_key = 7;
+    bytes private_key = 5;
 
     // Timestamp
-    uint64 timestamp = 8;
+    uint64 timestamp = 6;
+
+    Payload payload = 7;
 }
 
 // Transaction signing output.

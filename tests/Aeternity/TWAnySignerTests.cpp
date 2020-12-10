@@ -15,17 +15,16 @@
 using namespace TW;
 using namespace TW::Aeternity;
 
-TEST(TWAnySignerAeternity, Sign) {
+TEST(TWAnySignerAeternity, SignTransfer) {
     auto privateKey = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
     
     Proto::SigningInput input;
     input.set_from_address("ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw");
     input.set_to_address("ak_Egp9yVdpxmvAfQ7vsXGvpnyfNq71msbdUpkMNYGTeTe8kPL3v");
     auto amount = store(uint256_t(10));
-    input.set_amount(amount.data(), amount.size());
+    input.mutable_payload()->mutable_payload_transfer()->set_amount(amount.data(), amount.size());
     auto fee = store(uint256_t(20000000000000));
     input.set_fee(fee.data(), fee.size());
-    input.set_payload("Hello World");
     input.set_ttl(82757);
     input.set_nonce(49);
     input.set_private_key(privateKey.data(), privateKey.size());
@@ -33,5 +32,25 @@ TEST(TWAnySignerAeternity, Sign) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeAeternity);
 
-    ASSERT_EQ(output.encoded(), "tx_+KkLAfhCuEDZ2XDV5OuHv1iuLn66sFLBUwnzp1K8JW1Zz+fEgmuEh6HEvNu0R112M3IYkVzvTSnT0pJ3TWhVOumgJ+IWwW8HuGH4XwwBoQHuk6T2b40WuBm7m+uf/M383BQS6H/uajJMKpmh4OZxSKEBHxOjsIvwAUAGYqaLadh194A87EwIZH9u1dhMeJe9UKMKhhIwnOVAAIMBQ0Uxi0hlbGxvIFdvcmxkDZqNSg==");
+    ASSERT_EQ(output.encoded(), "tx_+J4LAfhCuEC1SpnmpRoEbMF9BABAePYkH7yNuar+WN8CTrmw0xwhqhsj9a/DxLcEM+gvWsgkr/SEJkbV0aoxR/ecLCsiV1UPuFb4VAwBoQHuk6T2b40WuBm7m+uf/M383BQS6H/uajJMKpmh4OZxSKEBHxOjsIvwAUAGYqaLadh194A87EwIZH9u1dhMeJe9UKMKhhIwnOVAAIMBQ0UxgFv6iPQ=");
+}
+
+TEST(TWAnySignerAeternity, SignContractCall) {
+    auto privateKey = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
+    
+    Proto::SigningInput input;
+    input.set_from_address("ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw");
+    input.set_to_address("ak_Egp9yVdpxmvAfQ7vsXGvpnyfNq71msbdUpkMNYGTeTe8kPL3v");
+    auto amount = store(uint256_t(10));
+    input.mutable_payload()->mutable_payload_contract_generic()->set_payload("Hello World");
+    auto fee = store(uint256_t(20000000000000));
+    input.set_fee(fee.data(), fee.size());
+    input.set_ttl(82757);
+    input.set_nonce(49);
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeAeternity);
+
+    ASSERT_EQ(output.encoded(), "tx_+KkLAfhCuEBAxVYM3tXXtZNrpF5oTQ7JCjviPN9k0sLuE24QlLXW+xp5BUhYTBNcVE5AQPBHxEEqtzQh+K+7i1vzhTylwtQBuGH4XwwBoQHuk6T2b40WuBm7m+uf/M383BQS6H/uajJMKpmh4OZxSKEBHxOjsIvwAUAGYqaLadh194A87EwIZH9u1dhMeJe9UKMAhhIwnOVAAIMBQ0Uxi0hlbGxvIFdvcmxkooC1hg==");
 }
