@@ -45,6 +45,10 @@ public:
         return Transaction(nonce, gasPrice, gasLimit, to, 0, payload);
     }
 
+    // Helpers for building contract calls
+    static Data buildERC20Call(const Data& to, uint256_t amount);
+    static Data buildERC721TransferFromCall(const Data& from, const Data& to, uint256_t tokenId);
+
 private:
     Transaction(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, const Data& to, uint256_t amount, const Data& payload)
         : nonce(std::move(nonce))

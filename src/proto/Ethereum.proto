@@ -3,6 +3,7 @@ syntax = "proto3";
 package TW.Ethereum.Proto;
 option java_package = "wallet.core.jni.proto";
 
+// Transaction payload (transfer, smart contract call, ...)
 message Payload {
     // Native coin transfer transaction
     message Transfer {
