@@ -93,7 +93,8 @@ Transaction Signer::build(const Proto::SigningInput &input) {
                     /* gasPrice: */ load(input.gas_price()),
                     /* gasLimit: */ load(input.gas_limit()),
                     /* to: */ toAddress,
-                    /* amount: */ load(input.payload().payload_transfer().amount()));
+                    /* amount: */ load(input.payload().payload_transfer().amount()),
+                    /* optionalPayload: */ Data(input.payload().payload_contract_generic().payload().begin(), input.payload().payload_contract_generic().payload().end()));
                 return transaction;
             }
 
@@ -104,7 +105,7 @@ Transaction Signer::build(const Proto::SigningInput &input) {
                     /* nonce: */ load(input.nonce()),
                     /* gasPrice: */ load(input.gas_price()),
                     /* gasLimit: */ load(input.gas_limit()),
-                    /* tokenPayload: */ toAddress,
+                    /* tokenContract: */ toAddress,
                     /* toAddress */ tokenToAddress,
                     /* amount: */ load(input.payload().payload_erc20().amount()));
                 return transaction;
@@ -118,7 +119,7 @@ Transaction Signer::build(const Proto::SigningInput &input) {
                     /* nonce: */ load(input.nonce()),
                     /* gasPrice: */ load(input.gas_price()),
                     /* gasLimit: */ load(input.gas_limit()),
-                    /* tokenPayload: */ toAddress,
+                    /* tokenContract: */ toAddress,
                     /* fromAddress: */ tokenFromAddress,
                     /* toAddress */ tokenToAddress,
                     /* tokenId: */ load(input.payload().payload_erc721().token_id()));

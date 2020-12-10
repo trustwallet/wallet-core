@@ -28,8 +28,8 @@ public:
 
     // Factory methods
     // Create a native coin transfer transaction
-    static Transaction buildTransfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, const Data& to, uint256_t amount) {
-        return Transaction(nonce, gasPrice, gasLimit, to, amount, {});
+    static Transaction buildTransfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, const Data& to, uint256_t amount, const Data& optionalPayload = {}) {
+        return Transaction(nonce, gasPrice, gasLimit, to, amount, optionalPayload);
     }
 
     // Create an ERC20 token transfer transaction

@@ -9,6 +9,9 @@ message Payload {
     message Transfer {
         // Amount to send in wei (256-bit number)
         bytes amount = 1;
+
+        // Optional payload
+        bytes payload = 2;
     }
 
     // ERC20 token transfer transaction
@@ -31,7 +34,7 @@ message Payload {
 
     // Generic smart contract transaction
     message Generic {
-        // Optional payload
+        // Contract call payload
         bytes payload = 1;
     }
 
