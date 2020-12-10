@@ -15,10 +15,10 @@
 
 TEST(TWWanchainCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeWanchain));
-    auto txId = TWStringCreateWithUTF8Bytes("0x180ea96a3218b82b9b35d796823266d8a425c182507adfe5eeffc96e6a14d856");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeWanchain, txId));
-    auto accId = TWStringCreateWithUTF8Bytes("0x69b492d57BB777E97AA7044d0575228434E2e8b1");
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeWanchain, accId));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x180ea96a3218b82b9b35d796823266d8a425c182507adfe5eeffc96e6a14d856"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeWanchain, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0x69b492d57BB777E97AA7044d0575228434E2e8b1"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeWanchain, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeWanchain));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeWanchain));
 

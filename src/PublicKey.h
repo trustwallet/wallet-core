@@ -72,6 +72,9 @@ class PublicKey {
 
     /// Recover public key from signature (SECP256k1Extended)
     static PublicKey recover(const Data& signature, const Data& message);
+
+    /// Check if this key makes a valid ED25519 key (it is on the curve)
+    bool isValidED25519() const;
 };
 
 inline bool operator==(const PublicKey& lhs, const PublicKey& rhs) {

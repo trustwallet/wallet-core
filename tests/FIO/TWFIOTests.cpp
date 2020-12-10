@@ -24,10 +24,10 @@ using namespace std;
 TEST(TWFIO, Address) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035").get()));
     ASSERT_NE(nullptr, privateKey.get());
-    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), false);
-    ASSERT_NE(nullptr, publicKey);
-    ASSERT_EQ(65, publicKey->impl.bytes.size());
-    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeFIO));
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), false));
+    ASSERT_NE(nullptr, publicKey.get());
+    ASSERT_EQ(65, publicKey.get()->impl.bytes.size());
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeFIO));
     auto addressString = WRAPS(TWAnyAddressDescription(address.get()));
     assertStringsEqual(addressString, "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf");
 

@@ -11,102 +11,102 @@
 
 #include <gtest/gtest.h>
 
-const auto PayToScriptHash = TWBitcoinScriptCreateWithData(DATA("a914" "4733f37cf4db86fbc2efed2500b4f4e49f312023" "87").get());
-const auto PayToWitnessScriptHash = TWBitcoinScriptCreateWithData(DATA("0020" "ff25429251b5a84f452230a3c75fd886b7fc5a7865ce4a7bb7a9d7c5be6da3db").get());
-const auto PayToWitnessPublicKeyHash = TWBitcoinScriptCreateWithData(DATA("0014" "79091972186c449eb1ded22b78e40d009bdf0089").get());
-const auto PayToPublicKeySecp256k1 = TWBitcoinScriptCreateWithData(DATA("21" "03c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432" "ac").get());
-const auto PayToPublicKeyHash = TWBitcoinScriptCreateWithData(DATA("76a914" "79091972186c449eb1ded22b78e40d009bdf0089" "88ac").get());
+const auto PayToScriptHash = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithData(DATA("a914" "4733f37cf4db86fbc2efed2500b4f4e49f312023" "87").get()));
+const auto PayToWitnessScriptHash = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithData(DATA("0020" "ff25429251b5a84f452230a3c75fd886b7fc5a7865ce4a7bb7a9d7c5be6da3db").get()));
+const auto PayToWitnessPublicKeyHash = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithData(DATA("0014" "79091972186c449eb1ded22b78e40d009bdf0089").get()));
+const auto PayToPublicKeySecp256k1 = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithData(DATA("21" "03c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432" "ac").get()));
+const auto PayToPublicKeyHash = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithData(DATA("76a914" "79091972186c449eb1ded22b78e40d009bdf0089" "88ac").get()));
 
 TEST(TWBitcoinScript, Create) {
     auto data = DATA("a9144733f37cf4db86fbc2efed2500b4f4e49f31202387");
     {
-        auto script = TWBitcoinScriptCreateWithData(data.get());
-        ASSERT_TRUE(script != nullptr);
-        ASSERT_EQ(TWBitcoinScriptSize(script), 23);
+        auto script = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithData(data.get()));
+        ASSERT_TRUE(script.get() != nullptr);
+        ASSERT_EQ(TWBitcoinScriptSize(script.get()), 23);
     }
     {
-        auto script = TWBitcoinScriptCreateWithBytes(TWDataBytes(data.get()), TWDataSize(data.get()));
-        ASSERT_TRUE(script != nullptr);
-        ASSERT_EQ(TWBitcoinScriptSize(script), 23);
+        auto script = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithBytes(TWDataBytes(data.get()), TWDataSize(data.get())));
+        ASSERT_TRUE(script.get() != nullptr);
+        ASSERT_EQ(TWBitcoinScriptSize(script.get()), 23);
 
-        auto scriptCopy = TWBitcoinScriptCreateCopy(script);
-        ASSERT_TRUE(scriptCopy != nullptr);
-        ASSERT_EQ(TWBitcoinScriptSize(scriptCopy), 23);
+        auto scriptCopy = WRAP(TWBitcoinScript, TWBitcoinScriptCreateCopy(script.get()));
+        ASSERT_TRUE(scriptCopy.get() != nullptr);
+        ASSERT_EQ(TWBitcoinScriptSize(scriptCopy.get()), 23);
     }
 }
 
 TEST(TWBitcoinScript, Equals) {
     auto data = DATA("a9144733f37cf4db86fbc2efed2500b4f4e49f31202387");
-    auto script = TWBitcoinScriptCreateWithBytes(TWDataBytes(data.get()), TWDataSize(data.get()));
-    auto scriptCopy = TWBitcoinScriptCreateCopy(script);
-    ASSERT_TRUE(TWBitcoinScriptEqual(script, scriptCopy));
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithBytes(TWDataBytes(data.get()), TWDataSize(data.get())));
+    auto scriptCopy = WRAP(TWBitcoinScript, TWBitcoinScriptCreateCopy(script.get()));
+    ASSERT_TRUE(TWBitcoinScriptEqual(script.get(), scriptCopy.get()));
 }
 
 TEST(TWBitcoinScript, IsPayToScriptHash) {
-    ASSERT_TRUE(TWBitcoinScriptIsPayToScriptHash(PayToScriptHash));
+    ASSERT_TRUE(TWBitcoinScriptIsPayToScriptHash(PayToScriptHash.get()));
 }
 
 TEST(TWBitcoinScript, IsPayToWitnessScriptHash) {
-    ASSERT_TRUE(TWBitcoinScriptIsPayToWitnessScriptHash(PayToWitnessScriptHash));
+    ASSERT_TRUE(TWBitcoinScriptIsPayToWitnessScriptHash(PayToWitnessScriptHash.get()));
 }
 
 TEST(TWBitcoinScript, IsPayToWitnessPublicKeyHash) {
-    ASSERT_TRUE(TWBitcoinScriptIsPayToWitnessPublicKeyHash(PayToWitnessPublicKeyHash));
+    ASSERT_TRUE(TWBitcoinScriptIsPayToWitnessPublicKeyHash(PayToWitnessPublicKeyHash.get()));
 }
 
 TEST(TWBitcoinScript, IsWitnessProgram) {
-    ASSERT_TRUE(TWBitcoinScriptIsWitnessProgram(PayToWitnessScriptHash));
-    ASSERT_TRUE(TWBitcoinScriptIsWitnessProgram(PayToWitnessPublicKeyHash));
-    ASSERT_FALSE(TWBitcoinScriptIsWitnessProgram(PayToScriptHash));
+    ASSERT_TRUE(TWBitcoinScriptIsWitnessProgram(PayToWitnessScriptHash.get()));
+    ASSERT_TRUE(TWBitcoinScriptIsWitnessProgram(PayToWitnessPublicKeyHash.get()));
+    ASSERT_FALSE(TWBitcoinScriptIsWitnessProgram(PayToScriptHash.get()));
 }
 
 TEST(TWBitcoinScript, MatchPayToPubkey) {
-    const auto res = WRAPD(TWBitcoinScriptMatchPayToPubkey(PayToPublicKeySecp256k1));
+    const auto res = WRAPD(TWBitcoinScriptMatchPayToPubkey(PayToPublicKeySecp256k1.get()));
     ASSERT_TRUE(res.get() != nullptr);
     const auto hexRes = WRAPS(TWStringCreateWithHexData(res.get()));
     ASSERT_STREQ(TWStringUTF8Bytes(hexRes.get()), "03c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432");
 
-    ASSERT_EQ(TWBitcoinScriptMatchPayToPubkey(PayToScriptHash), nullptr);
+    ASSERT_EQ(TWBitcoinScriptMatchPayToPubkey(PayToScriptHash.get()), nullptr);
 }
 
 TEST(TWBitcoinScript, TWBitcoinScriptMatchPayToPubkeyHash) {
-    const auto res = WRAPD(TWBitcoinScriptMatchPayToPubkeyHash(PayToPublicKeyHash));
+    const auto res = WRAPD(TWBitcoinScriptMatchPayToPubkeyHash(PayToPublicKeyHash.get()));
     ASSERT_TRUE(res.get() != nullptr);
     const auto hexRes = WRAPS(TWStringCreateWithHexData(res.get()));
     ASSERT_STREQ(TWStringUTF8Bytes(hexRes.get()), "79091972186c449eb1ded22b78e40d009bdf0089");
 
-    ASSERT_EQ(TWBitcoinScriptMatchPayToPubkeyHash(PayToScriptHash), nullptr);
+    ASSERT_EQ(TWBitcoinScriptMatchPayToPubkeyHash(PayToScriptHash.get()), nullptr);
 }
 
 TEST(TWBitcoinScript, MatchPayToScriptHash) {
-    const auto res = WRAPD(TWBitcoinScriptMatchPayToScriptHash(PayToScriptHash));
+    const auto res = WRAPD(TWBitcoinScriptMatchPayToScriptHash(PayToScriptHash.get()));
     ASSERT_TRUE(res.get() != nullptr);
     const auto hexRes = WRAPS(TWStringCreateWithHexData(res.get()));
     ASSERT_STREQ(TWStringUTF8Bytes(hexRes.get()), "4733f37cf4db86fbc2efed2500b4f4e49f312023");
 
-    ASSERT_EQ(TWBitcoinScriptMatchPayToScriptHash(PayToPublicKeySecp256k1), nullptr);
+    ASSERT_EQ(TWBitcoinScriptMatchPayToScriptHash(PayToPublicKeySecp256k1.get()), nullptr);
 }
 
 TEST(TWBitcoinScript, MatchPayToWitnessPublicKeyHash) {
-    const auto res = WRAPD(TWBitcoinScriptMatchPayToWitnessPublicKeyHash(PayToWitnessPublicKeyHash));
+    const auto res = WRAPD(TWBitcoinScriptMatchPayToWitnessPublicKeyHash(PayToWitnessPublicKeyHash.get()));
     ASSERT_TRUE(res.get() != nullptr);
     const auto hexRes = WRAPS(TWStringCreateWithHexData(res.get()));
     ASSERT_STREQ(TWStringUTF8Bytes(hexRes.get()), "79091972186c449eb1ded22b78e40d009bdf0089");
 
-    ASSERT_EQ(TWBitcoinScriptMatchPayToWitnessPublicKeyHash(PayToPublicKeySecp256k1), nullptr);
+    ASSERT_EQ(TWBitcoinScriptMatchPayToWitnessPublicKeyHash(PayToPublicKeySecp256k1.get()), nullptr);
 }
 
 TEST(TWBitcoinScript, MatchPayToWitnessScriptHash) {
-    const auto res = WRAPD(TWBitcoinScriptMatchPayToWitnessScriptHash(PayToWitnessScriptHash));
+    const auto res = WRAPD(TWBitcoinScriptMatchPayToWitnessScriptHash(PayToWitnessScriptHash.get()));
     ASSERT_TRUE(res.get() != nullptr);
     const auto hexRes = WRAPS(TWStringCreateWithHexData(res.get()));
     ASSERT_STREQ(TWStringUTF8Bytes(hexRes.get()), "ff25429251b5a84f452230a3c75fd886b7fc5a7865ce4a7bb7a9d7c5be6da3db");
 
-    ASSERT_EQ(TWBitcoinScriptMatchPayToWitnessScriptHash(PayToPublicKeySecp256k1), nullptr);
+    ASSERT_EQ(TWBitcoinScriptMatchPayToWitnessScriptHash(PayToPublicKeySecp256k1.get()), nullptr);
 }
 
 TEST(TWBitcoinScript, Encode) {
-    const auto res = WRAPD(TWBitcoinScriptEncode(PayToScriptHash));
+    const auto res = WRAPD(TWBitcoinScriptEncode(PayToScriptHash.get()));
     ASSERT_TRUE(res.get() != nullptr);
     const auto hexRes = WRAPS(TWStringCreateWithHexData(res.get()));
     ASSERT_STREQ(TWStringUTF8Bytes(hexRes.get()), "17a9144733f37cf4db86fbc2efed2500b4f4e49f31202387");
@@ -114,17 +114,17 @@ TEST(TWBitcoinScript, Encode) {
 
 TEST(TWBitcoinScript, BuildPayToWitnessPubkeyHash) {
     const auto hash = DATA("79091972186c449eb1ded22b78e40d009bdf0089");
-    const auto script = TWBitcoinScriptBuildPayToWitnessPubkeyHash(hash.get());
-    ASSERT_TRUE(script != nullptr);
-    const auto hex = WRAPS(TWStringCreateWithHexData(WRAPD(TWBitcoinScriptData(script)).get()));
+    const auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildPayToWitnessPubkeyHash(hash.get()));
+    ASSERT_TRUE(script.get() != nullptr);
+    const auto hex = WRAPS(TWStringCreateWithHexData(WRAPD(TWBitcoinScriptData(script.get())).get()));
     ASSERT_STREQ(TWStringUTF8Bytes(hex.get()), "0014" "79091972186c449eb1ded22b78e40d009bdf0089");
 }
 
 TEST(TWBitcoinScript, BuildPayToWitnessScriptHash) {
     const auto hash = DATA("ff25429251b5a84f452230a3c75fd886b7fc5a7865ce4a7bb7a9d7c5be6da3db");
-    const auto script = TWBitcoinScriptBuildPayToWitnessScriptHash(hash.get());
-    ASSERT_TRUE(script != nullptr);
-    const auto hex = WRAPS(TWStringCreateWithHexData(WRAPD(TWBitcoinScriptData(script)).get()));
+    const auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildPayToWitnessScriptHash(hash.get()));
+    ASSERT_TRUE(script.get() != nullptr);
+    const auto hex = WRAPS(TWStringCreateWithHexData(WRAPD(TWBitcoinScriptData(script.get())).get()));
     ASSERT_STREQ(TWStringUTF8Bytes(hex.get()), "0020" "ff25429251b5a84f452230a3c75fd886b7fc5a7865ce4a7bb7a9d7c5be6da3db");
 }
 

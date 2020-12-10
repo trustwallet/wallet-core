@@ -18,9 +18,9 @@ TEST(TWAeternityAddress, HDWallet) {
 
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(STRING(mnemonic).get(), STRING(passphrase).get()));
 
-    auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeAeternity, TWCoinTypeDerivationPath(TWCoinTypeAeternity)));
-    auto publicKey = TWPrivateKeyGetPublicKeyEd25519(privateKey.get());
-    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeAeternity));
+    auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeAeternity, WRAPS(TWCoinTypeDerivationPath(TWCoinTypeAeternity)).get()));
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519(privateKey.get()));
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeAeternity));
     auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
 
     assertStringsEqual(addressStr, "ak_QDHJSfvHG9sDHBobaWt2TAGhuhipYjEqZEH34bWugpJfJc3GN");

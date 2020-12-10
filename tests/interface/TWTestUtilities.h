@@ -32,7 +32,7 @@ inline std::vector<uint8_t>* dataFromTWData(TWData* data) {
     return const_cast<std::vector<uint8_t>*>(reinterpret_cast<const std::vector<uint8_t>*>(data));
 }
 
-/// Return a writeable temp dir which can be used to create files during testing
+/// Return a writable temp dir which can be used to create files during testing
 std::string getTestTempDir(void);
 
 #define ANY_SIGN(input, coin) \

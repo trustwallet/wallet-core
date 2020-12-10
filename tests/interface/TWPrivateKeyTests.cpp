@@ -72,16 +72,16 @@ TEST(TWPrivateKeyTests, IsValid) {
 TEST(TWPrivateKeyTests, PublicKey) {
     const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5").get()));
     {
-        const auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), false);
-        ASSERT_EQ(TW::hex(publicKey->impl.bytes), "0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c166b489a4b7c491e7688e6ebea3a71fc3a1a48d60f98d5ce84c93b65e423fde91");
+        const auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), false));
+        ASSERT_EQ(TW::hex(publicKey.get()->impl.bytes), "0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c166b489a4b7c491e7688e6ebea3a71fc3a1a48d60f98d5ce84c93b65e423fde91");
     }
     {
-        const auto publicKey = TWPrivateKeyGetPublicKeyNist256p1(privateKey.get());
-        ASSERT_EQ(TW::hex(publicKey->impl.bytes), "026d786ab8fda678cf50f71d13641049a393b325063b8c0d4e5070de48a2caf9ab");
+        const auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyNist256p1(privateKey.get()));
+        ASSERT_EQ(TW::hex(publicKey.get()->impl.bytes), "026d786ab8fda678cf50f71d13641049a393b325063b8c0d4e5070de48a2caf9ab");
     }
     {
-        const auto publicKey = TWPrivateKeyGetPublicKeyCurve25519(privateKey.get());
-        ASSERT_EQ(TW::hex(publicKey->impl.bytes), "686cfce9108566dd43fc6aa75e31f9a9f319c9e9c04d6ad0a52505b86bc17c3a");
+        const auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyCurve25519(privateKey.get()));
+        ASSERT_EQ(TW::hex(publicKey.get()->impl.bytes), "686cfce9108566dd43fc6aa75e31f9a9f319c9e9c04d6ad0a52505b86bc17c3a");
     }
 }
 

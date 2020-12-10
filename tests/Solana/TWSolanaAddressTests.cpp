@@ -8,6 +8,7 @@
 
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWHDWallet.h>
+#include <TrustWalletCore/TWSolanaAddress.h>
 
 #include <gtest/gtest.h>
 
@@ -18,10 +19,17 @@ TEST(TWSolanaAddress, HDWallet) {
 
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(STRING(mnemonic).get(), STRING(passphrase).get()));
 
-    auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeSolana, TWCoinTypeDerivationPath(TWCoinTypeSolana)));
-    auto publicKey = TWPrivateKeyGetPublicKeyEd25519(privateKey.get());
-    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeSolana));
+    auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeSolana, WRAPS(TWCoinTypeDerivationPath(TWCoinTypeSolana)).get()));
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519(privateKey.get()));
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeSolana));
     auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
 
     assertStringsEqual(addressStr, "2bUBiBNZyD29gP1oV6de7nxowMLoDBtopMMTGgMvjG5m");
+}
+
+TEST(TWSolanaProgram, defaultTokenAddress) {
+    const char* serumToken = "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt";
+    auto solanaAddress = WRAP(TWSolanaAddress, TWSolanaAddressCreateWithString(WRAPS(TWStringCreateWithUTF8Bytes("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V")).get()));
+    auto address1 = WRAPS(TWSolanaAddressDefaultTokenAddress(solanaAddress.get(), WRAPS(TWStringCreateWithUTF8Bytes(serumToken)).get()));
+    EXPECT_EQ(std::string(TWStringUTF8Bytes(address1.get())), "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
 }
