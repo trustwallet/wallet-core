@@ -3,29 +3,6 @@ syntax = "proto3";
 package TW.Aeternity.Proto;
 option java_package = "wallet.core.jni.proto";
 
-// Transaction payload (transfer, smart contract call, ...)
-message Payload {
-    // Native coin transfer transaction
-    message Transfer {
-        // Amount to send in wei (256-bit number)
-        bytes amount = 1;
-
-        // Optional payload
-        string payload = 2;
-    }
-
-    // Generic smart contract transaction
-    message ContractGeneric {
-        // Optional payload
-        string payload = 1;
-    }
-
-    oneof payload_oneof {
-        Transfer payload_transfer = 1;
-        ContractGeneric payload_contract_generic = 4;
-    }
-}
-
 // Input data necessary to create a signed transaction.
 message SigningInput {
     // Address of the sender with "ak_" prefix
@@ -34,16 +11,19 @@ message SigningInput {
     // Address of the recipient with "ak_" prefix
     string to_address = 2;
 
-    bytes fee = 3;
+    bytes amount = 3;
+
+    bytes fee = 4;
+
+    // Message, optional
+    string payload = 5;
 
     // Time to live until block height
-    uint64 ttl = 4;
+    uint64 ttl = 6;
 
-    uint64 nonce = 5;
+    uint64 nonce = 7;
 
-    bytes private_key = 6;
-
-    Payload payload = 7;
+    bytes private_key = 8;
 }
 
 // Transaction signing output.
