@@ -47,11 +47,11 @@ message Transaction {
     }
 
     oneof transaction_oneof {
-        Transfer transaction_transfer = 1;
-        ERC20Transfer transaction_erc20_transfer = 2;
-        ERC20Approve transaction_erc20_approve = 3;
-        ERC721Transfer transaction_erc721_transfer = 4;
-        ContractGeneric transaction_contract_generic = 5;
+        Transfer transfer = 1;
+        ERC20Transfer erc20_transfer = 2;
+        ERC20Approve erc20_approve = 3;
+        ERC721Transfer erc721_transfer = 4;
+        ContractGeneric contract_generic = 5;
     }
 }
 

@@ -30,7 +30,7 @@ class TestEthereumTransactionSigner {
             gasPrice = ByteString.copyFrom("0x04a817c800".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x5208".toHexByteArray())
             transaction = Ethereum.Transaction.newBuilder().apply {
-                transactionTransfer = Ethereum.Transaction.Transfer.newBuilder().apply {
+                transfer = Ethereum.Transaction.Transfer.newBuilder().apply {
                     amount = ByteString.copyFrom("0x0de0b6b3a7640000".toHexByteArray())
                 }.build()
             }.build()
@@ -57,7 +57,7 @@ class TestEthereumTransactionSigner {
             gasPrice = ByteString.copyFrom("0x09c7652400".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x0130B9".toHexByteArray())
             transaction = Ethereum.Transaction.newBuilder().apply {
-                transactionErc20Transfer = Ethereum.Transaction.ERC20Transfer.newBuilder().apply {
+                erc20Transfer = Ethereum.Transaction.ERC20Transfer.newBuilder().apply {
                     to = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
                     amount = ByteString.copyFrom("0x1bc16d674ec80000".toHexByteArray())       
                 }.build()
@@ -85,7 +85,7 @@ class TestEthereumTransactionSigner {
             gasPrice = ByteString.copyFrom("0x09c7652400".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x0130B9".toHexByteArray())
             transaction = Ethereum.Transaction.newBuilder().apply {
-                transactionErc721Transfer = Ethereum.Transaction.ERC721Transfer.newBuilder().apply {
+                erc721Transfer = Ethereum.Transaction.ERC721Transfer.newBuilder().apply {
                     from = "0x718046867b5b1782379a14eA4fc0c9b724DA94Fc"
                     to = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
                     tokenId = ByteString.copyFrom("0x23c47ee5".toHexByteArray())
@@ -112,7 +112,7 @@ class TestEthereumTransactionSigner {
                 "gasLimit": "Ugg=",
                 "toAddress": "0x7d8bf18C7cE84b3E175b339c4Ca93aEd1dD166F1",
                 "transaction": {
-                    "transaction_transfer": {
+                    "transfer": {
                         "amount":"A0i8paFgAA=="
                     }
                 }                

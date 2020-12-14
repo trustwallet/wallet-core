@@ -30,7 +30,7 @@ class EthereumTests: XCTestCase {
             $0.toAddress = "0x3535353535353535353535353535353535353535"
             $0.privateKey = Data(hexString: "0x4646464646464646464646464646464646464646464646464646464646464646")!
             $0.transaction = EthereumTransaction.with {
-                $0.transactionTransfer = TW_Ethereum_Proto_Transaction.Transfer.with {
+                $0.transfer = TW_Ethereum_Proto_Transaction.Transfer.with {
                     $0.amount = Data(hexString: "0de0b6b3a7640000")!
                 }
             }
@@ -55,7 +55,7 @@ class EthereumTests: XCTestCase {
             $0.toAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // DAI
             $0.privateKey = Data(hexString: "0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151")!
             $0.transaction = EthereumTransaction.with {
-                $0.transactionErc20Transfer = TW_Ethereum_Proto_Transaction.ERC20Transfer.with {
+                $0.erc20Transfer = TW_Ethereum_Proto_Transaction.ERC20Transfer.with {
                     $0.to = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
                     $0.amount = Data(hexString: "1bc16d674ec80000")! // 2000000000000000000
                 }
@@ -80,7 +80,7 @@ class EthereumTests: XCTestCase {
             $0.toAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // DAI
             $0.privateKey = Data(hexString: "0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151")!
             $0.transaction = EthereumTransaction.with {
-                $0.transactionErc20Approve = TW_Ethereum_Proto_Transaction.ERC20Approve.with {
+                $0.erc20Approve = TW_Ethereum_Proto_Transaction.ERC20Approve.with {
                     $0.spender = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
                     $0.amount = Data(hexString: "1bc16d674ec80000")! // 2000000000000000000
                 }
@@ -102,7 +102,7 @@ class EthereumTests: XCTestCase {
             $0.toAddress = "0x4e45e92ed38f885d39a733c14f1817217a89d425" // payload
             $0.privateKey = Data(hexString: "0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151")!
             $0.transaction = EthereumTransaction.with {
-                $0.transactionErc721Transfer = TW_Ethereum_Proto_Transaction.ERC721Transfer.with {
+                $0.erc721Transfer = TW_Ethereum_Proto_Transaction.ERC721Transfer.with {
                     $0.from = "0x718046867b5b1782379a14eA4fc0c9b724DA94Fc"
                     $0.to = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
                     $0.tokenID = Data(hexString: "23c47ee5")!
@@ -127,7 +127,7 @@ class EthereumTests: XCTestCase {
             "gasLimit": "Ugg=",
             "toAddress": "0x7d8bf18C7cE84b3E175b339c4Ca93aEd1dD166F1",
             "transaction": {
-                "transaction_transfer": {
+                "transfer": {
                     "amount":"A0i8paFgAA=="
                 }
             }
