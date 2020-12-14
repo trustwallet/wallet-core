@@ -98,23 +98,23 @@ Transaction Signer::build(const Proto::SigningInput &input) {
                 return transaction;
             }
 
-        case Proto::Transaction::kTransactionErc20:
+        case Proto::Transaction::kTransactionErc20Transfer:
             {
-                Data tokenToAddress = addressStringToData(input.transaction().transaction_erc20().to());
+                Data tokenToAddress = addressStringToData(input.transaction().transaction_erc20_transfer().to());
                 auto transaction = Transaction::buildERC20Transfer(
                     /* nonce: */ load(input.nonce()),
                     /* gasPrice: */ load(input.gas_price()),
                     /* gasLimit: */ load(input.gas_limit()),
                     /* tokenContract: */ toAddress,
                     /* toAddress */ tokenToAddress,
-                    /* amount: */ load(input.transaction().transaction_erc20().amount()));
+                    /* amount: */ load(input.transaction().transaction_erc20_transfer().amount()));
                 return transaction;
             }
 
-        case Proto::Transaction::kTransactionErc721:
+        case Proto::Transaction::kTransactionErc721Transfer:
             {
-                Data tokenToAddress = addressStringToData(input.transaction().transaction_erc721().to());
-                Data tokenFromAddress = addressStringToData(input.transaction().transaction_erc721().from());
+                Data tokenToAddress = addressStringToData(input.transaction().transaction_erc721_transfer().to());
+                Data tokenFromAddress = addressStringToData(input.transaction().transaction_erc721_transfer().from());
                 auto transaction = Transaction::buildERC721Transfer(
                     /* nonce: */ load(input.nonce()),
                     /* gasPrice: */ load(input.gas_price()),
@@ -122,7 +122,7 @@ Transaction Signer::build(const Proto::SigningInput &input) {
                     /* tokenContract: */ toAddress,
                     /* fromAddress: */ tokenFromAddress,
                     /* toAddress */ tokenToAddress,
-                    /* tokenId: */ load(input.transaction().transaction_erc721().token_id()));
+                    /* tokenId: */ load(input.transaction().transaction_erc721_transfer().token_id()));
                 return transaction;
             }
 

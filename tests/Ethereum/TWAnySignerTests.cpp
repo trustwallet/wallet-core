@@ -101,7 +101,7 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsERC20) {
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_to_address(token);
     input.set_private_key(key.data(), key.size());
-    auto& erc20 = *input.mutable_transaction()->mutable_transaction_erc20();
+    auto& erc20 = *input.mutable_transaction()->mutable_transaction_erc20_transfer();
     erc20.set_to(toAddress);
     erc20.set_amount(amount.data(), amount.size());
 
@@ -161,7 +161,7 @@ TEST(TWAnySignerEthereum, SignERC20TransferInvalidAddress) {
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_to_address(invalidAddress);
     input.set_private_key(key.data(), key.size());
-    auto& erc20 = *input.mutable_transaction()->mutable_transaction_erc20();
+    auto& erc20 = *input.mutable_transaction()->mutable_transaction_erc20_transfer();
     erc20.set_to(invalidAddress);
     erc20.set_amount(amount.data(), amount.size());
 
@@ -190,7 +190,7 @@ TEST(TWAnySignerEthereum, SignERC721Transfer) {
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_to_address(tokenContract);
     input.set_private_key(key.data(), key.size());
-    auto& erc721 = *input.mutable_transaction()->mutable_transaction_erc721();
+    auto& erc721 = *input.mutable_transaction()->mutable_transaction_erc721_transfer();
     erc721.set_from(fromAddress);
     erc721.set_to(toAddress);
     erc721.set_token_id(tokenId.data(), tokenId.size());

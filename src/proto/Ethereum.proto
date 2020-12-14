@@ -40,8 +40,8 @@ message Transaction {
 
     oneof transaction_oneof {
         Transfer transaction_transfer = 1;
-        ERC20Transfer transaction_erc20 = 2;
-        ERC721Transfer transaction_erc721 = 3;
+        ERC20Transfer transaction_erc20_transfer = 2;
+        ERC721Transfer transaction_erc721_transfer = 3;
         ContractGeneric transaction_contract_generic = 4;
     }
 }
