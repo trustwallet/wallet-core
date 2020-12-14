@@ -94,7 +94,7 @@ Transaction Signer::build(const Proto::SigningInput &input) {
                     /* gasLimit: */ load(input.gas_limit()),
                     /* to: */ toAddress,
                     /* amount: */ load(input.transaction().transaction_transfer().amount()),
-                    /* optionalTransaction: */ Data(input.transaction().transaction_contract_generic().payload().begin(), input.transaction().transaction_contract_generic().payload().end()));
+                    /* optionalTransaction: */ Data(input.transaction().transaction_contract_generic().data().begin(), input.transaction().transaction_contract_generic().data().end()));
                 return transaction;
             }
 
@@ -134,7 +134,7 @@ Transaction Signer::build(const Proto::SigningInput &input) {
                     /* gasPrice: */ load(input.gas_price()),
                     /* gasLimit: */ load(input.gas_limit()),
                     /* to: */ toAddress,
-                    /* transaction: */ Data(input.transaction().transaction_contract_generic().payload().begin(), input.transaction().transaction_contract_generic().payload().end()));
+                    /* transaction: */ Data(input.transaction().transaction_contract_generic().data().begin(), input.transaction().transaction_contract_generic().data().end()));
                 return transaction;
             }
     }

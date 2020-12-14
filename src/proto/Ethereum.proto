@@ -3,15 +3,15 @@ syntax = "proto3";
 package TW.Ethereum.Proto;
 option java_package = "wallet.core.jni.proto";
 
-// Transaction payload (transfer, smart contract call, ...)
+// Transaction (transfer, smart contract call, ...)
 message Transaction {
     // Native coin transfer transaction
     message Transfer {
         // Amount to send in wei (256-bit number)
         bytes amount = 1;
 
-        // Optional payload
-        bytes payload = 2;
+        // Optional payload data
+        bytes data = 2;
     }
 
     // ERC20 token transfer transaction
@@ -34,8 +34,8 @@ message Transaction {
 
     // Generic smart contract transaction
     message ContractGeneric {
-        // Contract call payload
-        bytes payload = 1;
+        // Contract call payload data
+        bytes data = 1;
     }
 
     oneof transaction_oneof {
