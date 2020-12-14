@@ -71,6 +71,28 @@ class EthereumTests: XCTestCase {
         XCTAssertEqual(output.encoded.hexString, "f8aa808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec8000025a0724c62ad4fbf47346b02de06e603e013f26f26b56fdc0be7ba3d6273401d98cea0032131cae15da7ddcda66963e8bef51ca0d9962bfef0547d3f02597a4a58c931")
     }
 
+    func testSignERC20Approve() {
+        let input = EthereumSigningInput.with {
+            $0.chainID = Data(hexString: "01")!
+            $0.nonce = Data(hexString: "00")!
+            $0.gasPrice = Data(hexString: "09c7652400")! // 42000000000
+            $0.gasLimit = Data(hexString: "0130B9")! // 78009
+            $0.toAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // DAI
+            $0.privateKey = Data(hexString: "0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151")!
+            $0.transaction = EthereumTransaction.with {
+                $0.transactionErc20Approve = TW_Ethereum_Proto_Transaction.ERC20Approve.with {
+                    $0.spender = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
+                    $0.amount = Data(hexString: "1bc16d674ec80000")! // 2000000000000000000
+                }
+            }
+        }
+        let output: EthereumSigningOutput = AnySigner.sign(input: input, coin: .ethereum)
+        let encoded = AnySigner.encode(input: input, coin: .ethereum)
+
+        XCTAssertEqual(encoded, output.encoded)
+        XCTAssertEqual(output.encoded.hexString, "f8aa808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844095ea7b30000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc84000000000000000000000000000000000000000000000000000000000000000026a0406bfe337306699d01f447c23a3bd927c7174ace5c1d9a39b545b49fc6fce005a049f837dd141b8fdf45dc10b415eaf974c66384c87056d8f58882896ee6fd55cb")
+    }
+
     func testSignERC721Transfer() {
         let input = EthereumSigningInput.with {
             $0.chainID = Data(hexString: "01")!
