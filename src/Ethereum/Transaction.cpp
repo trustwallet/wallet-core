@@ -15,7 +15,12 @@ using namespace TW;
 
 Transaction Transaction::buildERC20Transfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit,
                 const Data& tokenContract, const Data& toAddress, uint256_t amount) {
-    return Transaction(nonce, gasPrice, gasLimit, tokenContract, 0, buildERC20Call(toAddress, amount));
+    return Transaction(nonce, gasPrice, gasLimit, tokenContract, 0, buildERC20TransferCall(toAddress, amount));
+}
+
+Transaction Transaction::buildERC20Approve(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit,
+                const Data& tokenContract, const Data& spenderAddress, uint256_t amount) {
+    return Transaction(nonce, gasPrice, gasLimit, tokenContract, 0, buildERC20ApproveCall(spenderAddress, amount));
 }
 
 Transaction Transaction::buildERC721Transfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit,
@@ -23,9 +28,19 @@ Transaction Transaction::buildERC721Transfer(uint256_t nonce, uint256_t gasPrice
     return Transaction(nonce, gasPrice, gasLimit, {}, 0, buildERC721TransferFromCall(from, to, tokenId));
 }
 
-Data Transaction::buildERC20Call(const Data& to, uint256_t amount) {
+Data Transaction::buildERC20TransferCall(const Data& to, uint256_t amount) {
     auto func = Function("transfer", std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamAddress>(to),
+        std::make_shared<ParamUInt256>(amount)
+    });
+    Data payload;
+    func.encode(payload);
+    return payload;
+}
+
+Data Transaction::buildERC20ApproveCall(const Data& spender, uint256_t amount) {
+    auto func = Function("approve", std::vector<std::shared_ptr<ParamBase>>{
+        std::make_shared<ParamAddress>(spender),
         std::make_shared<ParamUInt256>(amount)
     });
     Data payload;

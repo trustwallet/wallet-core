@@ -22,6 +22,14 @@ message Transaction {
         bytes amount = 2;
     }
 
+    // ERC20 approve transaction
+    message ERC20Approve {
+        string spender = 1;
+
+        // Amount to send (256-bit number)
+        bytes amount = 2;
+    }
+
     // ERC721 NFT transfer transaction
     message ERC721Transfer {
         string from = 1;
@@ -41,8 +49,9 @@ message Transaction {
     oneof transaction_oneof {
         Transfer transaction_transfer = 1;
         ERC20Transfer transaction_erc20_transfer = 2;
-        ERC721Transfer transaction_erc721_transfer = 3;
-        ContractGeneric transaction_contract_generic = 4;
+        ERC20Approve transaction_erc20_approve = 3;
+        ERC721Transfer transaction_erc721_transfer = 4;
+        ContractGeneric transaction_contract_generic = 5;
     }
 }
 

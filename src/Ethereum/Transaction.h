@@ -36,6 +36,10 @@ public:
     static Transaction buildERC20Transfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit,
         const Data& tokenContract, const Data& toAddress, uint256_t amount);
 
+    // Create an ERC20 approve transaction
+    static Transaction buildERC20Approve(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit,
+        const Data& tokenContract, const Data& spenderAddress, uint256_t amount);
+
     // Create an ERC721 NFT transfer transaction
     static Transaction buildERC721Transfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit,
         const Data& tokenContract, const Data& from, const Data& to, uint256_t tokenId);
@@ -46,7 +50,8 @@ public:
     }
 
     // Helpers for building contract calls
-    static Data buildERC20Call(const Data& to, uint256_t amount);
+    static Data buildERC20TransferCall(const Data& to, uint256_t amount);
+    static Data buildERC20ApproveCall(const Data& spender, uint256_t amount);
     static Data buildERC721TransferFromCall(const Data& from, const Data& to, uint256_t tokenId);
 
 private:

@@ -111,6 +111,19 @@ Transaction Signer::build(const Proto::SigningInput &input) {
                 return transaction;
             }
 
+        case Proto::Transaction::kTransactionErc20Approve:
+            {
+                Data spenderAddress = addressStringToData(input.transaction().transaction_erc20_approve().spender());
+                auto transaction = Transaction::buildERC20Approve(
+                    /* nonce: */ load(input.nonce()),
+                    /* gasPrice: */ load(input.gas_price()),
+                    /* gasLimit: */ load(input.gas_limit()),
+                    /* tokenContract: */ toAddress,
+                    /* toAddress */ spenderAddress,
+                    /* amount: */ load(input.transaction().transaction_erc20_transfer().amount()));
+                return transaction;
+            }
+
         case Proto::Transaction::kTransactionErc721Transfer:
             {
                 Data tokenToAddress = addressStringToData(input.transaction().transaction_erc721_transfer().to());
