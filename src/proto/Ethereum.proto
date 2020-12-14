@@ -4,7 +4,7 @@ package TW.Ethereum.Proto;
 option java_package = "wallet.core.jni.proto";
 
 // Transaction payload (transfer, smart contract call, ...)
-message Payload {
+message Transaction {
     // Native coin transfer transaction
     message Transfer {
         // Amount to send in wei (256-bit number)
@@ -38,11 +38,11 @@ message Payload {
         bytes payload = 1;
     }
 
-    oneof payload_oneof {
-        Transfer payload_transfer = 1;
-        ERC20Transfer payload_erc20 = 2;
-        ERC721Transfer payload_erc721 = 3;
-        ContractGeneric payload_contract_generic = 4;
+    oneof transaction_oneof {
+        Transfer transaction_transfer = 1;
+        ERC20Transfer transaction_erc20 = 2;
+        ERC721Transfer transaction_erc721 = 3;
+        ContractGeneric transaction_contract_generic = 4;
     }
 }
 
@@ -66,7 +66,7 @@ message SigningInput {
     // Private key.
     bytes private_key = 6;
 
-    Payload payload = 7;
+    Transaction transaction = 7;
 }
 
 // Transaction signing output.
