@@ -181,6 +181,36 @@ class SolanaTests: XCTestCase {
         XCTAssertEqual(output.encoded, expectedString)
     }
 
+    func testCreateAndTransferTokenSigner() throws {
+        let createAndTransferTokenMessage = SolanaCreateAndTransferToken.with {
+            $0.recipientMainAddress = "3xJ3MoUVFPNFEHfWdtNFa8ajXUHsJPzXcBSWMKLd76ft"
+            $0.tokenMintAddress = "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"
+            $0.recipientTokenAddress = "67BrwFYt7qUnbAcYBVx7sQ4jeD2KWN1ohP6bMikmmQV3"
+            $0.senderTokenAddress = "ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf"
+            $0.amount = 6100  // 0.004
+            $0.decimals = 6
+        }
+        let input = SolanaSigningInput.with {
+            $0.createAndTransferTokenTransaction = createAndTransferTokenMessage
+            $0.recentBlockhash = "11111111111111111111111111111111"
+            $0.privateKey = Data(Base58.decodeNoCheck( string: "9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5")!)
+        }
+
+        let output: SolanaSigningOutput = AnySigner.sign(input: input, coin: .solana)
+
+        let expectedString = """
+        3tfkCabr1GxxXTBoGaLryVW1Bzfm4LUTrVpqNdKCCJd2v61UUpNtim3iPzp4JtMB6ir6LLvmgUDbjQAseX9sZTPVz7\
+        vqbQaBNBBh5ogDTppwccNrMSwTDaN32Lyf5aA8R1gABCpc1L4jeCBRvsg9MT4jmQnS8FzWo7GXqc1V9jNCEYgcz68J\
+        mSGkaXQVvjpRfkY4ZnGtqNWEK8Ntj45F9Zrq8dQ8jiNUPjQYiN1JujnmecekGU3GZNdqEBv5785UQBd5DEWFDxY2hQ\
+        vCZAi8YF1KFYwPL1xUw2Vcanc6bRjfhPVAcuH5oty16dY9KpTgBowmHuGCbBazbR9Ym2kAR3EPvFuZuEi32Z4rzK98\
+        SDYpUBBKEHg7HTSh4NfZ34W6xPzLcw9DRZyAJHVCWiw6TY2xYVfMp3zTyPxnX4Cgdv73P7mAvZdJWBCvPbfmZ3amD8\
+        KPTogDQxhawb8bzihTSGbMCdufd6EA16i6pMhX8Qofx9f9RNmhFsrfJH98SHfNPR9oiuTJGarCuYf5kiVzMEhf3iMD\
+        ZD9WX3VnpjnWG6rkiZKfZTwh7Qb8q
+        """
+
+        XCTAssertEqual(output.encoded, expectedString)
+    }
+
     func testDefaultTokenAddress() throws {
         let mainAddress = SolanaAddress(string: "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V")!
         let defaultAddress = mainAddress.defaultTokenAddress(tokenMintAddress: "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt")

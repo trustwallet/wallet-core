@@ -130,4 +130,26 @@ class TestSolanaSigner {
         val expectedString = "PGfKqEaH2zZXDMZLcU6LUKdBSzU1GJWJ1CJXtRYCxaCH7k8uok38WSadZfrZw3TGejiau7nSpan2GvbK26hQim24jRe2AupmcYJFrgsdaCt1Aqs5kpGjPqzgj9krgxTZwwob3xgC1NdHK5BcNwhxwRtrCphGEH7zUFpGFrFrHzgpf2KY8FvPiPELQyxzTBuyNtjLjMMreehSKShEjD9Xzp1QeC1pEF8JL6vUKzxMXuveoEYem8q8JiWszYzmTMfDk13JPgv7pXFGMqDV3yNGCLsWccBeSFKN4UKECre6x2QbUEiKGkHkMc4zQwwyD8tGmEMBAGm339qdANssEMNpDeJp2LxLDStSoWShHnotcrH7pUa94xCVvCPPaomF"
         assertEquals(output.encoded, expectedString)
     }
+
+    @Test
+    fun testCreateAndTransferTokenSign() {
+        val createAndTransferTokenMessage = Solana.CreateAndTransferToken.newBuilder().apply {
+            recipientMainAddress = "3xJ3MoUVFPNFEHfWdtNFa8ajXUHsJPzXcBSWMKLd76ft"
+            tokenMintAddress = "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"
+            recipientTokenAddress = "67BrwFYt7qUnbAcYBVx7sQ4jeD2KWN1ohP6bMikmmQV3"
+            senderTokenAddress = "ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf"
+            amount = 6100  // 0.0061
+            decimals = 6
+        }.build()
+        val signingInput = Solana.SigningInput.newBuilder().apply {
+            createAndTransferTokenTransaction = createAndTransferTokenMessage
+            recentBlockhash = "11111111111111111111111111111111"
+            privateKey = ByteString.copyFrom(Base58.decodeNoCheck("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"))
+        }.build()
+
+        val output = AnySigner.sign(signingInput, SOLANA, SigningOutput.parser())
+
+        val expectedString = "3tfkCabr1GxxXTBoGaLryVW1Bzfm4LUTrVpqNdKCCJd2v61UUpNtim3iPzp4JtMB6ir6LLvmgUDbjQAseX9sZTPVz7vqbQaBNBBh5ogDTppwccNrMSwTDaN32Lyf5aA8R1gABCpc1L4jeCBRvsg9MT4jmQnS8FzWo7GXqc1V9jNCEYgcz68JmSGkaXQVvjpRfkY4ZnGtqNWEK8Ntj45F9Zrq8dQ8jiNUPjQYiN1JujnmecekGU3GZNdqEBv5785UQBd5DEWFDxY2hQvCZAi8YF1KFYwPL1xUw2Vcanc6bRjfhPVAcuH5oty16dY9KpTgBowmHuGCbBazbR9Ym2kAR3EPvFuZuEi32Z4rzK98SDYpUBBKEHg7HTSh4NfZ34W6xPzLcw9DRZyAJHVCWiw6TY2xYVfMp3zTyPxnX4Cgdv73P7mAvZdJWBCvPbfmZ3amD8KPTogDQxhawb8bzihTSGbMCdufd6EA16i6pMhX8Qofx9f9RNmhFsrfJH98SHfNPR9oiuTJGarCuYf5kiVzMEhf3iMDZD9WX3VnpjnWG6rkiZKfZTwh7Qb8q"
+        assertEquals(output.encoded, expectedString)
+    }
 }

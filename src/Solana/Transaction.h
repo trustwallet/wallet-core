@@ -404,6 +404,33 @@ class Message {
         this->instructions.push_back(instruction);
         compileAccounts();
     }
+
+    // This constructor creates a createAndTransferToken message, combining createAccount and transfer.
+    Message(const Address& signer, const Address& recipientMainAddress, const Address& tokenMintAddress,
+        const Address& recipientTokenAddress, const Address& senderTokenAddress, uint64_t amount, uint8_t decimals, Hash recentBlockhash)
+        : recentBlockhash(recentBlockhash) {
+        auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
+        auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
+        auto tokenProgramId = Address(TOKEN_PROGRAM_ID_ADDRESS);
+        auto createInstruction = Instruction(TokenInstruction::CreateTokenAccount, std::vector<AccountMeta>{
+            AccountMeta(signer, true, false), // fundingAddress,
+            AccountMeta(recipientTokenAddress, false, false),
+            AccountMeta(recipientMainAddress, false, true),
+            AccountMeta(tokenMintAddress, false, true),
+            AccountMeta(systemProgramId, false, true),
+            AccountMeta(tokenProgramId, false, true),
+            AccountMeta(sysvarRentId, false, true),
+        });
+        auto transferInstruction = Instruction(TokenInstruction::TokenTransfer, std::vector<AccountMeta>{
+            AccountMeta(senderTokenAddress, false, false),
+            AccountMeta(tokenMintAddress, false, true),
+            AccountMeta(recipientTokenAddress, false, false),
+            AccountMeta(signer, true, false),
+        }, amount, decimals);
+        this->instructions.push_back(createInstruction);
+        this->instructions.push_back(transferInstruction);
+        compileAccounts();
+    }
 };
 
 class Transaction {
