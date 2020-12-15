@@ -20,7 +20,7 @@ using namespace std;
 uint8_t CompiledInstruction::findAccount(const Address& address) {
     auto it = std::find(addresses.begin(), addresses.end(), address);
     if (it == addresses.end()) {
-        throw new std::invalid_argument("address not found");
+        throw std::invalid_argument("address not found");
     }
     assert(it != addresses.end());
     auto dist = std::distance(addresses.begin(), it);
