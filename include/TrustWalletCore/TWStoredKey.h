@@ -19,34 +19,34 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_CLASS
 struct TWStoredKey;
 
-/// Loads a key from a file.
+/// Loads a key from a file.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nullable TWStoredKeyLoad(TWString* _Nonnull path);
 
-/// Imports a private key.
+/// Imports a private key.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKey(TWData* _Nonnull privateKey, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin);
 
-/// Imports an HD wallet.
+/// Imports an HD wallet.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nullable TWStoredKeyImportHDWallet(TWString* _Nonnull mnemonic, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin);
 
-/// Imports a key from JSON.
+/// Imports a key from JSON.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nullable TWStoredKeyImportJSON(TWData* _Nonnull json);
 
-/// Creates a new key.
+/// Creates a new key.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nonnull TWStoredKeyCreate(TWString* _Nonnull name, TWData* _Nonnull password);
 
 TW_EXPORT_METHOD
 void TWStoredKeyDelete(struct TWStoredKey* _Nonnull key);
 
-/// Stored key uniqie identifier.
+/// Stored key uniqie identifier.  Returned object needs to be deleted.
 TW_EXPORT_PROPERTY
 TWString* _Nullable TWStoredKeyIdentifier(struct TWStoredKey* _Nonnull key);
 
-/// Stored key namer.
+/// Stored key namer.  Returned object needs to be deleted.
 TW_EXPORT_PROPERTY
 TWString* _Nonnull TWStoredKeyName(struct TWStoredKey* _Nonnull key);
 
@@ -58,11 +58,11 @@ bool TWStoredKeyIsMnemonic(struct TWStoredKey* _Nonnull key);
 TW_EXPORT_PROPERTY
 size_t TWStoredKeyAccountCount(struct TWStoredKey* _Nonnull key);
 
-/// Returns the account at a given index.
+/// Returns the account at a given index.  Returned object needs to be deleted.
 TW_EXPORT_METHOD
 struct TWAccount* _Nullable TWStoredKeyAccount(struct TWStoredKey* _Nonnull key, size_t index);
 
-/// Returns the account for a specific coin, creating it if necessary.
+/// Returns the account for a specific coin, creating it if necessary.  Returned object needs to be deleted.
 TW_EXPORT_METHOD
 struct TWAccount* _Nullable TWStoredKeyAccountForCoin(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, struct TWHDWallet* _Nullable wallet);
 
@@ -86,11 +86,11 @@ TWData* _Nullable TWStoredKeyDecryptPrivateKey(struct TWStoredKey* _Nonnull key,
 TW_EXPORT_METHOD
 TWString* _Nullable TWStoredKeyDecryptMnemonic(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password);
 
-/// Returns the private key for a specific coin.
+/// Returns the private key for a specific coin.  Returned object needs to be deleted.
 TW_EXPORT_METHOD
 struct TWPrivateKey* _Nullable TWStoredKeyPrivateKey(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWData* _Nonnull password);
 
-/// Dercrypts and returns the HD Wallet for mnemonic phrase keys.
+/// Dercrypts and returns the HD Wallet for mnemonic phrase keys.  Returned object needs to be deleted.
 TW_EXPORT_METHOD
 struct TWHDWallet* _Nullable TWStoredKeyWallet(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password);
 

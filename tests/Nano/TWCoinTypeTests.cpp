@@ -15,10 +15,10 @@
 
 TEST(TWNanoCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNano));
-    auto txId = TWStringCreateWithUTF8Bytes("C264DB7BF40738F0CEFF19B606746CB925B713E4B8699A055699E0DC8ABBC70F");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNano, txId));
-    auto accId = TWStringCreateWithUTF8Bytes("nano_1wpj616kwhe1y38y1mspd8aub8i334cwybqco511iyuxm55zx8d67ptf1tsf");
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeNano, accId));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("C264DB7BF40738F0CEFF19B606746CB925B713E4B8699A055699E0DC8ABBC70F"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNano, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("nano_1wpj616kwhe1y38y1mspd8aub8i334cwybqco511iyuxm55zx8d67ptf1tsf"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeNano, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNano));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNano));
 

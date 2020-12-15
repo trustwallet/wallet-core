@@ -20,11 +20,11 @@
 namespace TW::Ethereum {
 
 TEST(TWEthereumAbi, FuncCreateEmpty) {
-    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(TWStringCreateWithUTF8Bytes("baz"));
+    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(WRAPS(TWStringCreateWithUTF8Bytes("baz")).get());
     EXPECT_TRUE(func != nullptr);
 
-    TWString* type = TWEthereumAbiFunctionGetType(func);
-    std::string type2 = TWStringUTF8Bytes(type);
+    auto type = WRAPS(TWEthereumAbiFunctionGetType(func));
+    std::string type2 = TWStringUTF8Bytes(type.get());
     EXPECT_EQ("baz()", type2);
 
     // delete
@@ -32,7 +32,7 @@ TEST(TWEthereumAbi, FuncCreateEmpty) {
 }
 
 TEST(TWEthereumAbi, FuncCreate1) {
-    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(TWStringCreateWithUTF8Bytes("baz"));
+    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(WRAPS(TWStringCreateWithUTF8Bytes("baz")).get());
     EXPECT_TRUE(func != nullptr);
 
     auto p1index = TWEthereumAbiFunctionAddParamUInt64(func, 69, false);
@@ -43,8 +43,8 @@ TEST(TWEthereumAbi, FuncCreate1) {
     auto p2val2 = TWEthereumAbiFunctionGetParamUInt64(func, p2index, true);
     EXPECT_EQ(9, p2val2);
 
-    TWString* type = TWEthereumAbiFunctionGetType(func);
-    std::string type2 = TWStringUTF8Bytes(type);
+    auto type = WRAPS(TWEthereumAbiFunctionGetType(func));
+    std::string type2 = TWStringUTF8Bytes(type.get());
     EXPECT_EQ("baz(uint64)", type2);
 
     // delete
@@ -52,49 +52,47 @@ TEST(TWEthereumAbi, FuncCreate1) {
 }
 
 TEST(TWEthereumAbi, FuncCreate2) {
-    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(TWStringCreateWithUTF8Bytes("baz"));
+    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(WRAPS(TWStringCreateWithUTF8Bytes("baz")).get());
     EXPECT_TRUE(func != nullptr);
 
-    TWString* p1valStr = TWStringCreateWithUTF8Bytes("0045");
-    TWData* p1val = TWDataCreateWithHexString(p1valStr);
-    auto p1index = TWEthereumAbiFunctionAddParamUInt256(func, p1val, false);
+    auto p1valStr = WRAPS(TWStringCreateWithUTF8Bytes("0045"));
+    auto p1val = WRAPD(TWDataCreateWithHexString(p1valStr.get()));
+    auto p1index = TWEthereumAbiFunctionAddParamUInt256(func, p1val.get(), false);
     EXPECT_EQ(0, p1index);
-    //TWDataDelete(p1val);
-    TWStringDelete(p1valStr);
 
     Data dummy(0);
     auto p2index = TWEthereumAbiFunctionAddParamUInt256(func, &dummy, true);
     EXPECT_EQ(0, p2index);
 
     // check back get value
-    TWData* p2val2 = TWEthereumAbiFunctionGetParamUInt256(func, p2index, true);
-    Data p2val3 = data(TWDataBytes(p2val2), TWDataSize(p2val2));
+    auto p2val2 = WRAPD(TWEthereumAbiFunctionGetParamUInt256(func, p2index, true));
+    Data p2val3 = data(TWDataBytes(p2val2.get()), TWDataSize(p2val2.get()));
     EXPECT_EQ("00", hex(p2val3));
 
-    TWString* type = TWEthereumAbiFunctionGetType(func);
-    EXPECT_EQ("baz(uint256)", std::string(TWStringUTF8Bytes(type)));
+    auto type = WRAPS(TWEthereumAbiFunctionGetType(func));
+    EXPECT_EQ("baz(uint256)", std::string(TWStringUTF8Bytes(type.get())));
 
     // delete
     TWEthereumAbiFunctionDelete(func);
 }
 
 TEST(TWEthereumAbi, EncodeFuncCase1) {
-    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(TWStringCreateWithUTF8Bytes("sam"));
+    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(WRAPS(TWStringCreateWithUTF8Bytes("sam")).get());
     EXPECT_TRUE(func != nullptr);
     
-    EXPECT_EQ(0, TWEthereumAbiFunctionAddParamBytes(func, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("64617665")), false));
+    EXPECT_EQ(0, TWEthereumAbiFunctionAddParamBytes(func, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("64617665")).get())).get(), false));
     EXPECT_EQ(1, TWEthereumAbiFunctionAddParamBool(func, true, false));
     auto paramArrIdx = TWEthereumAbiFunctionAddParamArray(func, false);
     EXPECT_EQ(2, paramArrIdx);
-    EXPECT_EQ(0, TWEthereumAbiFunctionAddInArrayParamUInt256(func, paramArrIdx, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("01"))));
-    EXPECT_EQ(1, TWEthereumAbiFunctionAddInArrayParamUInt256(func, paramArrIdx, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("02"))));
-    EXPECT_EQ(2, TWEthereumAbiFunctionAddInArrayParamUInt256(func, paramArrIdx, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("03"))));
+    EXPECT_EQ(0, TWEthereumAbiFunctionAddInArrayParamUInt256(func, paramArrIdx, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("01")).get())).get()));
+    EXPECT_EQ(1, TWEthereumAbiFunctionAddInArrayParamUInt256(func, paramArrIdx, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("02")).get())).get()));
+    EXPECT_EQ(2, TWEthereumAbiFunctionAddInArrayParamUInt256(func, paramArrIdx, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("03")).get())).get()));
 
-    TWString* type = TWEthereumAbiFunctionGetType(func);
-    EXPECT_EQ("sam(bytes,bool,uint256[])", std::string(TWStringUTF8Bytes(type)));
+    auto type = WRAPS(TWEthereumAbiFunctionGetType(func));
+    EXPECT_EQ("sam(bytes,bool,uint256[])", std::string(TWStringUTF8Bytes(type.get())));
 
-    TWData* encoded = TWEthereumAbiEncode(func);
-    Data enc2 = data(TWDataBytes(encoded), TWDataSize(encoded));
+    auto encoded = WRAPD(TWEthereumAbiEncode(func));
+    Data enc2 = data(TWDataBytes(encoded.get()), TWDataSize(encoded.get()));
     EXPECT_EQ("a5643bf2"
         "0000000000000000000000000000000000000000000000000000000000000060"
         "0000000000000000000000000000000000000000000000000000000000000001"
@@ -112,22 +110,22 @@ TEST(TWEthereumAbi, EncodeFuncCase1) {
 }
 
 TEST(TWEthereumAbi, EncodeFuncCase2) {
-    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(TWStringCreateWithUTF8Bytes("f"));
+    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(WRAPS(TWStringCreateWithUTF8Bytes("f")).get());
     EXPECT_TRUE(func != nullptr);
     
-    EXPECT_EQ(0, TWEthereumAbiFunctionAddParamUInt256(func, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123")), false));
+    EXPECT_EQ(0, TWEthereumAbiFunctionAddParamUInt256(func, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("0123")).get())).get(), false));
     auto paramArrIdx = TWEthereumAbiFunctionAddParamArray(func, false);
     EXPECT_EQ(1, paramArrIdx);
     EXPECT_EQ(0, TWEthereumAbiFunctionAddInArrayParamUInt32(func, paramArrIdx, 0x456));
     EXPECT_EQ(1, TWEthereumAbiFunctionAddInArrayParamUInt32(func, paramArrIdx, 0x789));
-    EXPECT_EQ(2, TWEthereumAbiFunctionAddParamBytesFix(func, 10, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("31323334353637383930")), false));
-    EXPECT_EQ(3, TWEthereumAbiFunctionAddParamString(func, TWStringCreateWithUTF8Bytes("Hello, world!"), false));
+    EXPECT_EQ(2, TWEthereumAbiFunctionAddParamBytesFix(func, 10, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("31323334353637383930")).get())).get(), false));
+    EXPECT_EQ(3, TWEthereumAbiFunctionAddParamString(func, WRAPS(TWStringCreateWithUTF8Bytes("Hello, world!")).get(), false));
 
-    TWString* type = TWEthereumAbiFunctionGetType(func);
-    EXPECT_EQ("f(uint256,uint32[],bytes10,string)", std::string(TWStringUTF8Bytes(type)));
+    auto type = WRAPS(TWEthereumAbiFunctionGetType(func));
+    EXPECT_EQ("f(uint256,uint32[],bytes10,string)", std::string(TWStringUTF8Bytes(type.get())));
 
-    TWData* encoded = TWEthereumAbiEncode(func);
-    Data enc2 = data(TWDataBytes(encoded), TWDataSize(encoded));
+    auto encoded = WRAPD(TWEthereumAbiEncode(func));
+    Data enc2 = data(TWDataBytes(encoded.get()), TWDataSize(encoded.get()));
     EXPECT_EQ("47b941bf"
         "0000000000000000000000000000000000000000000000000000000000000123"
         "0000000000000000000000000000000000000000000000000000000000000080"
@@ -146,62 +144,62 @@ TEST(TWEthereumAbi, EncodeFuncCase2) {
 
 TEST(TWEthereumAbi, EncodeFuncMonster) {
     // Monster function with all parameters types
-    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(TWStringCreateWithUTF8Bytes("monster"));
+    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(WRAPS(TWStringCreateWithUTF8Bytes("monster")).get());
     EXPECT_TRUE(func != nullptr);
     
     TWEthereumAbiFunctionAddParamUInt8(func, 1, false);
     TWEthereumAbiFunctionAddParamUInt16(func, 2, false);
     TWEthereumAbiFunctionAddParamUInt32(func, 3, false);
     TWEthereumAbiFunctionAddParamUInt64(func, 4, false);
-    TWEthereumAbiFunctionAddParamUIntN(func, 168, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123")), false);
-    TWEthereumAbiFunctionAddParamUInt256(func, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123")), false);
+    TWEthereumAbiFunctionAddParamUIntN(func, 168, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("0123")).get())).get(), false);
+    TWEthereumAbiFunctionAddParamUInt256(func, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("0123")).get())).get(), false);
     TWEthereumAbiFunctionAddParamInt8(func, 1, false);
     TWEthereumAbiFunctionAddParamInt16(func, 2, false);
     TWEthereumAbiFunctionAddParamInt32(func, 3, false);
     TWEthereumAbiFunctionAddParamInt64(func, 4, false);
-    TWEthereumAbiFunctionAddParamIntN(func, 168, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123")), false);
-    TWEthereumAbiFunctionAddParamInt256(func, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123")), false);
+    TWEthereumAbiFunctionAddParamIntN(func, 168, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("0123")).get())).get(), false);
+    TWEthereumAbiFunctionAddParamInt256(func, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("0123")).get())).get(), false);
     TWEthereumAbiFunctionAddParamBool(func, true, false);
-    TWEthereumAbiFunctionAddParamString(func, TWStringCreateWithUTF8Bytes("Hello, world!"), false);
-    TWEthereumAbiFunctionAddParamAddress(func, 
-        TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("f784682c82526e245f50975190ef0fff4e4fc077")), false);
-    TWEthereumAbiFunctionAddParamBytes(func, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("3132333435")), false);
-    TWEthereumAbiFunctionAddParamBytesFix(func, 5, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("3132333435")), false);
+    TWEthereumAbiFunctionAddParamString(func, WRAPS(TWStringCreateWithUTF8Bytes("Hello, world!")).get(), false);
+    TWEthereumAbiFunctionAddParamAddress(func,
+        WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("f784682c82526e245f50975190ef0fff4e4fc077")).get())).get(), false);
+    TWEthereumAbiFunctionAddParamBytes(func, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("3132333435")).get())).get(), false);
+    TWEthereumAbiFunctionAddParamBytesFix(func, 5, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("3132333435")).get())).get(), false);
     
     TWEthereumAbiFunctionAddInArrayParamUInt8(func, TWEthereumAbiFunctionAddParamArray(func, false), 1);
     TWEthereumAbiFunctionAddInArrayParamUInt16(func, TWEthereumAbiFunctionAddParamArray(func, false), 2);
     TWEthereumAbiFunctionAddInArrayParamUInt32(func, TWEthereumAbiFunctionAddParamArray(func, false), 3);
     TWEthereumAbiFunctionAddInArrayParamUInt64(func, TWEthereumAbiFunctionAddParamArray(func, false), 4);
-    TWEthereumAbiFunctionAddInArrayParamUIntN(func, TWEthereumAbiFunctionAddParamArray(func, false), 168, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123")));
-    TWEthereumAbiFunctionAddInArrayParamUInt256(func, TWEthereumAbiFunctionAddParamArray(func, false), TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123")));
+    TWEthereumAbiFunctionAddInArrayParamUIntN(func, TWEthereumAbiFunctionAddParamArray(func, false), 168, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("0123")).get())).get());
+    TWEthereumAbiFunctionAddInArrayParamUInt256(func, TWEthereumAbiFunctionAddParamArray(func, false), WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("0123")).get())).get());
     TWEthereumAbiFunctionAddInArrayParamInt8(func, TWEthereumAbiFunctionAddParamArray(func, false), 1);
     TWEthereumAbiFunctionAddInArrayParamInt16(func, TWEthereumAbiFunctionAddParamArray(func, false), 2);
     TWEthereumAbiFunctionAddInArrayParamInt32(func, TWEthereumAbiFunctionAddParamArray(func, false), 3);
     TWEthereumAbiFunctionAddInArrayParamInt64(func, TWEthereumAbiFunctionAddParamArray(func, false), 4);
-    TWEthereumAbiFunctionAddInArrayParamIntN(func, TWEthereumAbiFunctionAddParamArray(func, false), 168, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123")));
-    TWEthereumAbiFunctionAddInArrayParamInt256(func, TWEthereumAbiFunctionAddParamArray(func, false), TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123")));
+    TWEthereumAbiFunctionAddInArrayParamIntN(func, TWEthereumAbiFunctionAddParamArray(func, false), 168, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("0123")).get())).get());
+    TWEthereumAbiFunctionAddInArrayParamInt256(func, TWEthereumAbiFunctionAddParamArray(func, false), WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("0123")).get())).get());
     TWEthereumAbiFunctionAddInArrayParamBool(func, TWEthereumAbiFunctionAddParamArray(func, false), true);
-    TWEthereumAbiFunctionAddInArrayParamString(func, TWEthereumAbiFunctionAddParamArray(func, false), TWStringCreateWithUTF8Bytes("Hello, world!"));
+    TWEthereumAbiFunctionAddInArrayParamString(func, TWEthereumAbiFunctionAddParamArray(func, false), WRAPS(TWStringCreateWithUTF8Bytes("Hello, world!")).get());
     TWEthereumAbiFunctionAddInArrayParamAddress(func, TWEthereumAbiFunctionAddParamArray(func, false), 
-        TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("f784682c82526e245f50975190ef0fff4e4fc077")));
-    TWEthereumAbiFunctionAddInArrayParamBytes(func, TWEthereumAbiFunctionAddParamArray(func, false), TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("3132333435")));
-    TWEthereumAbiFunctionAddInArrayParamBytesFix(func, TWEthereumAbiFunctionAddParamArray(func, false), 5, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("3132333435")));
+        WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("f784682c82526e245f50975190ef0fff4e4fc077")).get())).get());
+    TWEthereumAbiFunctionAddInArrayParamBytes(func, TWEthereumAbiFunctionAddParamArray(func, false), WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("3132333435")).get())).get());
+    TWEthereumAbiFunctionAddInArrayParamBytesFix(func, TWEthereumAbiFunctionAddParamArray(func, false), 5, WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("3132333435")).get())).get());
 
     // check back out params
     EXPECT_EQ(1, TWEthereumAbiFunctionGetParamUInt8(func, 0, false));
     EXPECT_EQ(4, TWEthereumAbiFunctionGetParamUInt64(func, 3, false));
     EXPECT_EQ(true, TWEthereumAbiFunctionGetParamBool(func, 12, false));
-    EXPECT_EQ(std::string("Hello, world!"), std::string(TWStringUTF8Bytes(TWEthereumAbiFunctionGetParamString(func, 13, false))));
-    TWEthereumAbiFunctionGetParamAddress(func, 14, false);
+    EXPECT_EQ(std::string("Hello, world!"), std::string(TWStringUTF8Bytes(WRAPS(TWEthereumAbiFunctionGetParamString(func, 13, false)).get())));
+    WRAPD(TWEthereumAbiFunctionGetParamAddress(func, 14, false));
 
-    TWString* type = TWEthereumAbiFunctionGetType(func);
+    auto type = WRAPS(TWEthereumAbiFunctionGetType(func));
     EXPECT_EQ(
         "monster(uint8,uint16,uint32,uint64,uint168,uint256,int8,int16,int32,int64,int168,int256,bool,string,address,bytes,bytes5,"
         "uint8[],uint16[],uint32[],uint64[],uint168[],uint256[],int8[],int16[],int32[],int64[],int168[],int256[],bool[],string[],address[],bytes[],bytes5[])",
-        std::string(TWStringUTF8Bytes(type)));
+        std::string(TWStringUTF8Bytes(type.get())));
 
-    TWData* encoded = TWEthereumAbiEncode(func);
-    Data enc2 = data(TWDataBytes(encoded), TWDataSize(encoded));
+    auto encoded = WRAPD(TWEthereumAbiEncode(func));
+    Data enc2 = data(TWDataBytes(encoded.get()), TWDataSize(encoded.get()));
     EXPECT_EQ(4 + 76 * 32, enc2.size());
 
     // delete
@@ -209,11 +207,11 @@ TEST(TWEthereumAbi, EncodeFuncMonster) {
 }
 
 TEST(TWEthereumAbi, DecodeOutputFuncCase1) {
-    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(TWStringCreateWithUTF8Bytes("readout"));
+    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(WRAPS(TWStringCreateWithUTF8Bytes("readout")).get());
     EXPECT_TRUE(func != nullptr);
 
     TWEthereumAbiFunctionAddParamAddress(func, 
-        TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("f784682c82526e245f50975190ef0fff4e4fc077")), false);
+        WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("f784682c82526e245f50975190ef0fff4e4fc077")).get())).get(), false);
     TWEthereumAbiFunctionAddParamUInt64(func, 1000, false);
     EXPECT_EQ(0, TWEthereumAbiFunctionAddParamUInt64(func, 0, true));
 
@@ -221,8 +219,8 @@ TEST(TWEthereumAbi, DecodeOutputFuncCase1) {
     EXPECT_EQ(0, TWEthereumAbiFunctionGetParamUInt64(func, 0, true));
 
     // decode
-    auto encoded = TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0000000000000000000000000000000000000000000000000000000000000045"));
-    EXPECT_EQ(true, TWEthereumAbiDecodeOutput(func, encoded));
+    auto encoded = WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes("0000000000000000000000000000000000000000000000000000000000000045")).get()));
+    EXPECT_EQ(true, TWEthereumAbiDecodeOutput(func, encoded.get()));
 
     // new output value
     EXPECT_EQ(0x45, TWEthereumAbiFunctionGetParamUInt64(func, 0, true));
@@ -232,7 +230,7 @@ TEST(TWEthereumAbi, DecodeOutputFuncCase1) {
 }
 
 TEST(TWEthereumAbi, GetParamWrongType) {
-    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(TWStringCreateWithUTF8Bytes("func"));
+    TWEthereumAbiFunction* func = TWEthereumAbiFunctionCreateWithString(WRAPS(TWStringCreateWithUTF8Bytes("func")).get());
     ASSERT_TRUE(func != nullptr);
     // add parameters
     EXPECT_EQ(0, TWEthereumAbiFunctionAddParamUInt8(func, 1, true));
@@ -245,18 +243,18 @@ TEST(TWEthereumAbi, GetParamWrongType) {
     // GetParameter with wrong type, default value (0) is returned
     EXPECT_EQ(0, TWEthereumAbiFunctionGetParamUInt8(func, 1, true));
     EXPECT_EQ(0, TWEthereumAbiFunctionGetParamUInt64(func, 0, true));
-    EXPECT_EQ("00", hex(*(static_cast<const Data*>(TWEthereumAbiFunctionGetParamUInt256(func, 0, true)))));
+    EXPECT_EQ("00", hex(*(static_cast<const Data*>(WRAPD(TWEthereumAbiFunctionGetParamUInt256(func, 0, true)).get()))));
     EXPECT_EQ(false, TWEthereumAbiFunctionGetParamBool(func, 0, true));
-    EXPECT_EQ("", std::string(TWStringUTF8Bytes(TWEthereumAbiFunctionGetParamString(func, 0, true))));
-    EXPECT_EQ("", hex(*(static_cast<const Data*>(TWEthereumAbiFunctionGetParamAddress(func, 0, true)))));
+    EXPECT_EQ("", std::string(TWStringUTF8Bytes(WRAPS(TWEthereumAbiFunctionGetParamString(func, 0, true)).get())));
+    EXPECT_EQ("", hex(*(static_cast<const Data*>(WRAPD(TWEthereumAbiFunctionGetParamAddress(func, 0, true)).get()))));
 
     // GetParameter with wrong index, default value (0) is returned
     EXPECT_EQ(0, TWEthereumAbiFunctionGetParamUInt8(func, 99, true));
     EXPECT_EQ(0, TWEthereumAbiFunctionGetParamUInt64(func, 99, true));
-    EXPECT_EQ("00", hex(*(static_cast<const Data*>(TWEthereumAbiFunctionGetParamUInt256(func, 99, true)))));
+    EXPECT_EQ("00", hex(*(static_cast<const Data*>(WRAPD(TWEthereumAbiFunctionGetParamUInt256(func, 99, true)).get()))));
     EXPECT_EQ(false, TWEthereumAbiFunctionGetParamBool(func, 99, true));
-    EXPECT_EQ("", std::string(TWStringUTF8Bytes(TWEthereumAbiFunctionGetParamString(func, 99, true))));
-    EXPECT_EQ("", hex(*(static_cast<const Data*>(TWEthereumAbiFunctionGetParamAddress(func, 99, true)))));
+    EXPECT_EQ("", std::string(TWStringUTF8Bytes(WRAPS(TWEthereumAbiFunctionGetParamString(func, 99, true)).get())));
+    EXPECT_EQ("", hex(*(static_cast<const Data*>(WRAPD(TWEthereumAbiFunctionGetParamAddress(func, 99, true)).get()))));
 
     // delete
     TWEthereumAbiFunctionDelete(func);

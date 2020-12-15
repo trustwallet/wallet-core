@@ -18,8 +18,8 @@
 
 TEST(Groestlcoin, Address) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("3c3385ddc6fd95ba7282051aeb440bc75820b8c10db5c83c052d7586e3e98e84").get()));
-    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = WRAP(TWGroestlcoinAddress, TWGroestlcoinAddressCreateWithPublicKey(publicKey, TWCoinTypeP2pkhPrefix(TWCoinTypeGroestlcoin)));
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true));
+    auto address = WRAP(TWGroestlcoinAddress, TWGroestlcoinAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeP2pkhPrefix(TWCoinTypeGroestlcoin)));
     auto addressString = WRAPS(TWGroestlcoinAddressDescription(address.get()));
     assertStringsEqual(addressString, "Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM");
 
@@ -77,13 +77,13 @@ TEST(Groestlcoin, ExtendedKeys) {
 
 TEST(Groestlcoin, DeriveFromZpub) {
     auto zpub = STRING("zpub6qXFnWiY6FdT5BQptrzEhHfm1WpaBTFc6MHzR4KwscXGdt6xCqUtrAEjrHdeEsjaYEwVMgjtTvENQ83yo2fmkYYGjTpJoH7vFWKQJp1bg1X");
-    auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeGroestlcoin, STRING("m/84'/17'/0'/0/4").get());
-    auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeGroestlcoin, STRING("m/84'/17'/0'/0/11").get());
+    auto pubKey4 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeGroestlcoin, STRING("m/84'/17'/0'/0/4").get()));
+    auto pubKey11 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeGroestlcoin, STRING("m/84'/17'/0'/0/11").get()));
 
-    auto address4 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey4, TWCoinTypeGroestlcoin));
+    auto address4 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey4.get(), TWCoinTypeGroestlcoin));
     auto address4String = WRAPS(TWAnyAddressDescription(address4.get()));
 
-    auto address11 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey11, TWCoinTypeGroestlcoin));
+    auto address11 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey11.get(), TWCoinTypeGroestlcoin));
     auto address11String = WRAPS(TWAnyAddressDescription(address11.get()));
 
     assertStringsEqual(address4String, "grs1quwq6ml2r8rc25tue5ltfa6uc4pdzhtzul3c0rk");

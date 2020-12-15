@@ -40,30 +40,28 @@ TEST(BitcoinCash, ValidAddress) {
 
 TEST(BitcoinCash, LegacyToCashAddr) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("28071bf4e2b0340db41b807ed8a5514139e5d6427ff9d58dbd22b7ed187103a4").get()));
-    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = TWBitcoinAddressCreateWithPublicKey(publicKey, 0);
-    auto addressString = WRAPS(TWBitcoinAddressDescription(address));
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true));
+    auto address = WRAP(TWBitcoinAddress, TWBitcoinAddressCreateWithPublicKey(publicKey.get(), 0));
+    auto addressString = WRAPS(TWBitcoinAddressDescription(address.get()));
     assertStringsEqual(addressString, "1PeUvjuxyf31aJKX6kCXuaqxhmG78ZUdL1");
 
-    auto cashAddress = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeBitcoinCash));
+    auto cashAddress = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeBitcoinCash));
     auto cashAddressString = WRAPS(TWAnyAddressDescription(cashAddress.get()));
     assertStringsEqual(cashAddressString, "bitcoincash:qruxj7zq6yzpdx8dld0e9hfvt7u47zrw9gfr5hy0vh");
 }
 
 TEST(BitcoinCash, LockScript) {
     auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(STRING("bitcoincash:qpk05r5kcd8uuzwqunn8rlx5xvuvzjqju5rch3tc0u").get(), TWCoinTypeBitcoinCash));
-    auto data = TWAnyAddressData(address.get());
-    auto rawData = TWDataCreateWithSize(0);
-    TWDataAppendByte(rawData, 0x00);
-    TWDataAppendData(rawData, data);
+    auto data = WRAPD(TWAnyAddressData(address.get()));
+    auto rawData = WRAPD(TWDataCreateWithSize(0));
+    TWDataAppendByte(rawData.get(), 0x00);
+    TWDataAppendData(rawData.get(), data.get());
 
-    auto legacyAddress = TWBitcoinAddressCreateWithData(rawData);
-    auto legacyString = WRAPS(TWBitcoinAddressDescription(legacyAddress));
+    auto legacyAddress = WRAP(TWBitcoinAddress, TWBitcoinAddressCreateWithData(rawData.get()));
+    auto legacyString = WRAPS(TWBitcoinAddressDescription(legacyAddress.get()));
     assertStringsEqual(legacyString, "1AwDXywmyhASpCCFWkqhySgZf8KiswFoGh");
-    TWDataDelete(data);
-    TWDataDelete(rawData);
 
-    auto keyHash = WRAPD(TWDataCreateWithBytes(legacyAddress->impl.bytes.data() + 1, 20));
+    auto keyHash = WRAPD(TWDataCreateWithBytes(legacyAddress.get()->impl.bytes.data() + 1, 20));
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildPayToPublicKeyHash(keyHash.get()));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "76a9146cfa0e96c34fce09c0e4e671fcd43338c14812e588ac");
@@ -88,13 +86,13 @@ TEST(BitcoinCash, ExtendedKeys) {
 
 TEST(BitcoinCash, DeriveFromXPub) {
     auto xpub = STRING("xpub6CEHLxCHR9sNtpcxtaTPLNxvnY9SQtbcFdov22riJ7jmhxmLFvXAoLbjHSzwXwNNuxC1jUP6tsHzFV9rhW9YKELfmR9pJaKFaM8C3zMPgjw");
-    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeBitcoinCash, STRING("m/44'/145'/0'/0/2").get());
-    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeBitcoinCash, STRING("m/44'/145'/0'/0/9").get());
+    auto pubKey2 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeBitcoinCash, STRING("m/44'/145'/0'/0/2").get()));
+    auto pubKey9 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeBitcoinCash, STRING("m/44'/145'/0'/0/9").get()));
 
-    auto address2 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey2, TWCoinTypeBitcoinCash));
+    auto address2 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey2.get(), TWCoinTypeBitcoinCash));
     auto address2String = WRAPS(TWAnyAddressDescription(address2.get()));
 
-    auto address9 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey9, TWCoinTypeBitcoinCash));
+    auto address9 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey9.get(), TWCoinTypeBitcoinCash));
     auto address9String = WRAPS(TWAnyAddressDescription(address9.get()));
 
     assertStringsEqual(address2String, "bitcoincash:qq4cm0hcc4trsj98v425f4ackdq7h92rsy6zzstrgy");

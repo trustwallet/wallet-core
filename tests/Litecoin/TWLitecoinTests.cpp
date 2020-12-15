@@ -17,16 +17,16 @@
 
 TEST(Litecoin, LegacyAddress) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730").get()));
-    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = TWBitcoinAddressCreateWithPublicKey(publicKey, TWCoinTypeP2pkhPrefix(TWCoinTypeLitecoin));
-    auto addressString = WRAPS(TWBitcoinAddressDescription(address));
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true));
+    auto address = WRAP(TWBitcoinAddress, TWBitcoinAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeP2pkhPrefix(TWCoinTypeLitecoin)));
+    auto addressString = WRAPS(TWBitcoinAddressDescription(address.get()));
     assertStringsEqual(addressString, "LV7LV7Z4bWDEjYkfx9dQo6k6RjGbXsg6hS");
 }
 
 TEST(Litecoin, Address) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("55f9cbb0376c422946fa28397c1219933ac60b312ede41bfacaf701ecd546625").get()));
-    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeLitecoin));
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true));
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeLitecoin));
     auto string = WRAPS(TWAnyAddressDescription(address.get()));
 
     assertStringsEqual(string, "ltc1qytnqzjknvv03jwfgrsmzt0ycmwqgl0asjnaxwu");
@@ -73,13 +73,13 @@ TEST(Litecoin, ExtendedKeys) {
 
 TEST(Litecoin, DeriveFromZpub) {
     auto zpub = STRING("zpub6sCFp8chadVDXVt7GRmQFpq8B7W8wMLdFDto1hXu2jLZtvkFhRnwScXARNfrGSeyhR8DBLJnaUUkBbkmB2GwUYkecEAMUcbUpFQV4v7PXcs");
-    auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeLitecoin, STRING("m/44'/2'/0'/0/4").get());
-    auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeLitecoin, STRING("m/44'/2'/0'/0/11").get());
+    auto pubKey4 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeLitecoin, STRING("m/44'/2'/0'/0/4").get()));
+    auto pubKey11 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeLitecoin, STRING("m/44'/2'/0'/0/11").get()));
 
-    auto address4 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey4, TWCoinTypeLitecoin));
+    auto address4 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey4.get(), TWCoinTypeLitecoin));
     auto address4String = WRAPS(TWAnyAddressDescription(address4.get()));
 
-    auto address11 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey11, TWCoinTypeLitecoin));
+    auto address11 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey11.get(), TWCoinTypeLitecoin));
     auto address11String = WRAPS(TWAnyAddressDescription(address11.get()));
 
     assertStringsEqual(address4String, "ltc1qcgnevr9rp7aazy62m4gen0tfzlssa52axwytt6");

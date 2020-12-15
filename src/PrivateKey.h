@@ -48,7 +48,7 @@ class PrivateKey {
     PrivateKey(PrivateKey&& other) = default;
     PrivateKey& operator=(PrivateKey&& other) = default;
 
-    virtual ~PrivateKey();
+    virtual ~PrivateKey() { cleanup(); }
 
     /// Returns the public key for this private key.
     PublicKey getPublicKey(enum TWPublicKeyType type) const;
@@ -66,6 +66,9 @@ class PrivateKey {
 
     /// Signs a digest using given ECDSA curve, returns schnorr signature
     Data signSchnorr(const Data& message, TWCurve curve) const;
+
+    /// Cleanup contents (fill with 0s), called before destruction
+    void cleanup();
 };
 
 inline bool operator==(const PrivateKey& lhs, const PrivateKey& rhs) {

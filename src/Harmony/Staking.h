@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <optional>
 
 #include "Address.h"
 #include "../uint256.h"
@@ -126,7 +127,7 @@ class EditValidator {
   public:
     Address validatorAddress;
     Description description;
-    Decimal *commissionRate;
+    std::optional<Decimal> commissionRate;
     uint256_t minSelfDelegation;
     uint256_t maxTotalDelegation;
     vector<uint8_t> slotKeyToRemove;
@@ -134,7 +135,7 @@ class EditValidator {
     vector<uint8_t> slotKeyToAddSig;
     uint256_t        active;
 
-    EditValidator(Address validatorAddress, Description description, Decimal *commissionRate,
+    EditValidator(Address validatorAddress, Description description, std::optional<Decimal>& commissionRate,
                   uint256_t minSelfDelegation, uint256_t maxTotalDelegation,
                   vector<uint8_t> slotKeyToRemove, vector<uint8_t> slotKeyToAdd,
                   vector<uint8_t> slotKeyToAddSig, uint256_t  active)

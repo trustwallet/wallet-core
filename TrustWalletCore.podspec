@@ -1,4 +1,4 @@
-version = '0.13.0'
+version = '2.3.4'
 
 Pod::Spec.new do |s|
   s.name         = 'TrustWalletCore'
@@ -21,6 +21,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'Types' do |ss|
     ss.source_files = 
+      'swift/Sources/Types/*.swift',
       'swift/Sources/Generated/Enums/*.swift',
       'swift/Sources/Generated/Protobuf/*.swift'
     ss.dependency 'SwiftProtobuf'

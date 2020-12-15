@@ -9,13 +9,10 @@
 #include "../Base58Address.h"
 #include "../PublicKey.h"
 
-#include <array>
-#include <cstdint>
 #include <vector>
+#include <string>
 
 namespace TW::Solana {
-
-const std::string STAKE_ADDRESS = "Stake11111111111111111111111111111111111111";
 
 class Address : public Base58Address<32> {
   public:
@@ -31,15 +28,22 @@ class Address : public Base58Address<32> {
     /// Initializes an address with a public key.
     explicit Address(const PublicKey& publicKey);
 
+    /// Initializes an address with public key data.
+    explicit Address(const Data& publicKeyData);
+
     /// Returns a string representation of the address.
     std::string string() const;
 
     /// Returns a vector of the address.
     Data vector() const;
+
+    /// Derive default token address for token
+    Address defaultTokenAddress(const Address& tokenMintAddress);
 };
 
 } // namespace TW::Solana
 
-TW::Solana::Address addressFromValidatorSeed(const TW::Solana::Address& fromAddress,
-                                             const TW::Solana::Address& validatorAddress,
-                                             const TW::Solana::Address& programId);
+/// Wrapper for C interface
+struct TWSolanaAddress {
+    TW::Solana::Address impl;
+};

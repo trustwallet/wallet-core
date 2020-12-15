@@ -18,16 +18,16 @@
 
 TEST(Viacoin, LegacyAddress) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730").get()));
-    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = TWBitcoinAddressCreateWithPublicKey(publicKey, TWCoinTypeP2pkhPrefix(TWCoinTypeViacoin));
-    auto addressString = WRAPS(TWBitcoinAddressDescription(address));
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true));
+    auto address = WRAP(TWBitcoinAddress, TWBitcoinAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeP2pkhPrefix(TWCoinTypeViacoin)));
+    auto addressString = WRAPS(TWBitcoinAddressDescription(address.get()));
     assertStringsEqual(addressString, "VjtD8cQgvesPYWxfWoHjwz1BuLCHwDn7PA");
 }
 
 TEST(Viacoin, Address) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("55f9cbb0376c422946fa28397c1219933ac60b312ede41bfacaf701ecd546625").get()));
-    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPViacoin, publicKey));
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true));
+    auto address = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPViacoin, publicKey.get()));
     auto string = WRAPS(TWSegwitAddressDescription(address.get()));
 
     assertStringsEqual(string, "via1qytnqzjknvv03jwfgrsmzt0ycmwqgl0asu2r3d2");
@@ -74,14 +74,14 @@ TEST(Viacoin, ExtendedKeys) {
 
 TEST(Viacoin, DeriveFromXpub) {
     auto xpub = STRING("xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj");
-    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeViacoin, STRING("m/44'/14'/0'/0/2").get());
-    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeViacoin, STRING("m/44'/14'/0'/0/9").get());
+    auto pubKey2 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeViacoin, STRING("m/44'/14'/0'/0/2").get()));
+    auto pubKey9 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeViacoin, STRING("m/44'/14'/0'/0/9").get()));
 
-    auto address2 = TWBitcoinAddressCreateWithPublicKey(pubKey2, TWCoinTypeP2pkhPrefix(TWCoinTypeViacoin));
-    auto address2String = WRAPS(TWBitcoinAddressDescription(address2));
+    auto address2 = WRAP(TWBitcoinAddress, TWBitcoinAddressCreateWithPublicKey(pubKey2.get(), TWCoinTypeP2pkhPrefix(TWCoinTypeViacoin)));
+    auto address2String = WRAPS(TWBitcoinAddressDescription(address2.get()));
 
-    auto address9 = TWBitcoinAddressCreateWithPublicKey(pubKey9, TWCoinTypeP2pkhPrefix(TWCoinTypeViacoin));
-    auto address9String = WRAPS(TWBitcoinAddressDescription(address9));
+    auto address9 = WRAP(TWBitcoinAddress, TWBitcoinAddressCreateWithPublicKey(pubKey9.get(), TWCoinTypeP2pkhPrefix(TWCoinTypeViacoin)));
+    auto address9String = WRAPS(TWBitcoinAddressDescription(address9.get()));
 
     assertStringsEqual(address2String, "VvN4z8c2zQA9gNnTTdxZkgYqagpVjkdb8z");
     assertStringsEqual(address9String, "VnUgk2EA8upaSFMfFwsT2kJbBKmWher7pC");
@@ -89,13 +89,13 @@ TEST(Viacoin, DeriveFromXpub) {
 
 TEST(Viacoin, DeriveFromZpub) {
     auto zpub = STRING("zpub6sCFp8chadVDXVt7GRmQFpq8B7W8wMLdFDto1hXu2jLZtvkFhRnwScXARNfrGSeyhR8DBLJnaUUkBbkmB2GwUYkecEAMUcbUpFQV4v7PXcs");
-    auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeViacoin, STRING("m/44'/14'/0'/0/4").get());
-    auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeViacoin, STRING("m/44'/14'/0'/0/11").get());
+    auto pubKey4 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeViacoin, STRING("m/44'/14'/0'/0/4").get()));
+    auto pubKey11 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeViacoin, STRING("m/44'/14'/0'/0/11").get()));
 
-    auto address4 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPViacoin, pubKey4));
+    auto address4 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPViacoin, pubKey4.get()));
     auto address4String = WRAPS(TWSegwitAddressDescription(address4.get()));
 
-    auto address11 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPViacoin, pubKey11));
+    auto address11 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPViacoin, pubKey11.get()));
     auto address11String = WRAPS(TWSegwitAddressDescription(address11.get()));
 
     assertStringsEqual(address4String, "via1qcgnevr9rp7aazy62m4gen0tfzlssa52agh6ugv");

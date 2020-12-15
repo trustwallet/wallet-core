@@ -63,12 +63,14 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    std::array<char, 5 + 60 + 1> out = {0};
+    std::array<char, 5 + 60 + 1 + 1> out = {0};
 
     size_t count = nano_get_address(
             bytes.data(),
             kPrefixNano.c_str(), kPrefixNano.length(),
             out.data(), out.size());
+    // closing \0
+    assert(count < out.size());
     out[count] = 0;
     return std::string(out.data());
 }

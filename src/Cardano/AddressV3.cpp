@@ -120,17 +120,17 @@ AddressV3 AddressV3::createAccount(Discrimination discrimination_in, const Data&
     return addr;
 }
 
-AddressV3::AddressV3(const std::string& addr) : legacyAddressV2(nullptr) {
+AddressV3::AddressV3(const std::string& addr) {
     if (parseAndCheckV3(addr, discrimination, kind, key1, groupKey)) {
         // values stored
         return;
     }
     // try legacy
     // throw on error
-    legacyAddressV2 = new AddressV2(addr);
+    legacyAddressV2 = AddressV2(addr);
 }
 
-AddressV3::AddressV3(const PublicKey& publicKey) : legacyAddressV2(nullptr) {
+AddressV3::AddressV3(const PublicKey& publicKey) {
     // input is extended pubkey, 64-byte
     if (publicKey.type != TWPublicKeyTypeED25519Extended) {
         throw std::invalid_argument("Invalid public key type");
@@ -143,7 +143,7 @@ AddressV3::AddressV3(const PublicKey& publicKey) : legacyAddressV2(nullptr) {
     std::copy(publicKey.bytes.begin() + 32, publicKey.bytes.begin() + 64, groupKey.begin());
 }
 
-AddressV3::AddressV3(const Data& data) : legacyAddressV2(nullptr) {
+AddressV3::AddressV3(const Data& data) {
     // min 4 bytes, 2 prefix + 2 len
     if (data.size() < 4) { throw std::invalid_argument("Address data too short"); }
     assert(data.size() >= 4);
@@ -170,7 +170,7 @@ AddressV3::AddressV3(const AddressV3& other) :
     kind(other.kind),
     key1(other.key1),
     groupKey(other.groupKey),
-    legacyAddressV2(other.legacyAddressV2 == nullptr ? nullptr : new AddressV2(*other.legacyAddressV2))
+    legacyAddressV2(other.legacyAddressV2)
 {}
 
 void AddressV3::operator=(const AddressV3& other)
@@ -179,10 +179,7 @@ void AddressV3::operator=(const AddressV3& other)
     kind = other.kind;
     key1 = other.key1;
     groupKey = other.groupKey;
-    if (!legacyAddressV2) {
-        delete legacyAddressV2;
-    }
-    legacyAddressV2 = other.legacyAddressV2 == nullptr ? nullptr : new AddressV2(*other.legacyAddressV2);
+    legacyAddressV2 = other.legacyAddressV2;
 }
 
 string AddressV3::string() const {
@@ -199,7 +196,7 @@ string AddressV3::string() const {
 }
 
 string AddressV3::string(const std::string& hrp) const {
-    if (legacyAddressV2 != nullptr) {
+    if (legacyAddressV2.has_value()) {
         return legacyAddressV2->string();
     }
 
@@ -220,7 +217,7 @@ string AddressV3::string(const std::string& hrp) const {
 }
 
 string AddressV3::stringBase32() const {
-    if (legacyAddressV2 != nullptr) {
+    if (legacyAddressV2.has_value()) {
         return legacyAddressV2->string();
     }
 
