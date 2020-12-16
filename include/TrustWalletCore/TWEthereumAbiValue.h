@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TrustWalletCore/TWBase.h>
-#include <TrustWalletCore/TWString.h>
-#include <TrustWalletCore/TWData.h>
+#include "TWBase.h"
+#include "TWString.h"
+#include "TWData.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -55,5 +55,13 @@ TWData* _Nonnull TWEthereumAbiValueEncodeBytesDyn(TWData* _Nonnull value);
 /// Decodes input data (bytes longer than 32 will be truncated) as uint256
 TW_EXPORT_STATIC_METHOD
 TWString* _Nonnull TWEthereumAbiValueDecodeUInt256(TWData* _Nonnull input);
+
+/// Decode an arbitrary type, return value as string
+TW_EXPORT_STATIC_METHOD
+TWString* _Nonnull TWEthereumAbiValueDecodeValue(TWData* _Nonnull input, TWString* _Nonnull type);
+
+/// Decode an array of given simple types.  Return a '\n'-separated string of elements
+TW_EXPORT_STATIC_METHOD
+TWString* _Nonnull TWEthereumAbiValueDecodeArray(TWData* _Nonnull input, TWString* _Nonnull type);
 
 TW_EXTERN_C_END

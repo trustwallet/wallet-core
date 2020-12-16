@@ -72,7 +72,7 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeCardano, privateKeyExt), "addr1sn0sqpku8yfj2dazh7czyspcd5flzkzu6x9wqt0lsn4wfvds9sg3s3jxgeryv3jxgeryv3jxgeryv3jxgeryv3jxgeryv3jxgeryv3jxdnpy03");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeNEO, privateKeyExt), "AeicEjZyiXKgUeSBbYQHxsU1X3V5Buori5");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeFilecoin, privateKey), "f1qsx7qwiojh5duxbxhbqgnlyx5hmpcf7mcz5oxsy");
-    EXPECT_EQ(TW::deriveAddress(TWCoinTypeNEAR, privateKey), "NEAR2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5HYrdGj");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeNEAR, privateKey), "ee93a4f66f8d16b819bb9beb9ffccdfcdc1412e87fee6a324c2a99a1e0e67148");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeSolana, privateKey), "H4JcMPicKkHcxxDjkyyrLoQj7Kcibd9t815ak4UvTr9M");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeElrond, privateKey), "erd1a6f6fan035ttsxdmn04ellxdlnwpgyhg0lhx5vjv92v6rc8xw9yq83344f");
 }
@@ -84,8 +84,9 @@ void useCoinFromThread() {
     const int tryCount = 20;
     for (int i = 0; i < tryCount; ++i) {
         // perform some operations
-        const auto coinTypes = TW::getCoinTypes();
+        TW::validateAddress(TWCoinTypeZilliqa, "zil1j8xae6lggm8y63m3y2r7aefu797ze7mhzulnqg");
         TW::validateAddress(TWCoinTypeEthereum, "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
+        const auto coinTypes = TW::getCoinTypes();
     }
     countThreadReadyMutex.lock();
     ++countThreadReady;
@@ -106,6 +107,15 @@ TEST(Coin, InitMultithread) {
     }
     // check that all completed OK
     ASSERT_EQ(countThreadReady, numThread);
+}
+
+TEST(Coin, SupportedCoins) {
+    const auto coinTypes = TW::getCoinTypes();
+    for (auto c: coinTypes) {
+        const auto similarTypes = TW::getSimilarCoinTypes(c);
+        // For all coins, supported coins should include this coin as well
+        EXPECT_TRUE(std::find(similarTypes.begin(), similarTypes.end(), c) != similarTypes.end());
+    }
 }
 
 } // namespace TW

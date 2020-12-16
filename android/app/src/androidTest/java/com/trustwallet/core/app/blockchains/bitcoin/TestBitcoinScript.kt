@@ -2,6 +2,9 @@ package com.trustwallet.core.app.blockchains.bitcoin
 
 import com.trustwallet.core.app.utils.Numeric
 import wallet.core.jni.BitcoinScript
+import wallet.core.jni.BitcoinSigHashType
+import wallet.core.jni.CoinType
+import wallet.core.jni.CoinType.BITCOIN
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -30,5 +33,12 @@ class TestBitcoinScript {
         val scriptHash = script.scriptHash()
         val scriptScript = BitcoinScript.buildPayToScriptHash(scriptHash)
         assertEquals(Numeric.toHexString(scriptScript.data()), "0xa914c470d22e69a2a967f2cec0cd5a5aebb955cdd39587")
+    }
+
+    @Test
+    fun testHashTypeForCoin() {
+        assertEquals(BitcoinScript.hashTypeForCoin(CoinType.BITCOIN), BitcoinSigHashType.ALL.value())
+        assertEquals(BitcoinScript.hashTypeForCoin(CoinType.BITCOINCASH), 0x41)
+        assertEquals(BitcoinScript.hashTypeForCoin(CoinType.BITCOINGOLD), 0x4f41)
     }
 }

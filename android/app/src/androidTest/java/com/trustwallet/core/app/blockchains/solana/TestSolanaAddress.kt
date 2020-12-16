@@ -35,4 +35,12 @@ class TestSolanaAddress {
         val address = AnyAddress(addressString, CoinType.SOLANA)
         assertEquals(address.description(), addressString)
     }
+
+    @Test
+    fun testDefaultTokenAddress() {
+        val mainAddress = SolanaAddress("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V")
+        val tokenMintAddress = "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"
+        val defaultAddress = mainAddress.defaultTokenAddress(tokenMintAddress)
+        assertEquals(defaultAddress, "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP")
+    }
 }

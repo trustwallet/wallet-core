@@ -9,6 +9,9 @@
     }, {
         "address": "bnb1njuczq3hgvupu2vnczrjz7rc8x4uxlmhjyq95z",
         "derivationPath": "m/44'/714'/0'/0/0"
+    }, {
+        "address": "NEARzwYRo7ArKyLBdmAU7XiMzz4kgYgrfM3VxCn6H9PXnPaAoZuSB",
+        "derivationPath": "m/44'/397'/0'"
     }],
     "crypto": {
         "cipher": "aes-128-ctr",

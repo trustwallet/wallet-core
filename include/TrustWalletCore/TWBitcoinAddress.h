@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TrustWalletCore/TWBase.h>
-#include <TrustWalletCore/TWData.h>
-#include <TrustWalletCore/TWString.h>
+#include "TWBase.h"
+#include "TWData.h"
+#include "TWString.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -20,7 +20,7 @@ struct TWBitcoinAddress;
 
 /// Compares two addresses for equality.
 TW_EXPORT_STATIC_METHOD
-    bool TWBitcoinAddressEqual(struct TWBitcoinAddress *_Nonnull lhs, struct TWBitcoinAddress *_Nonnull rhs);
+bool TWBitcoinAddressEqual(struct TWBitcoinAddress *_Nonnull lhs, struct TWBitcoinAddress *_Nonnull rhs);
 
 /// Determines if the data is a valid Bitcoin address.
 TW_EXPORT_STATIC_METHOD

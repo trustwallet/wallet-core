@@ -24,7 +24,7 @@ public:
     ParamSet() = default;
     ParamSet(const std::shared_ptr<ParamBase>& param1) { addParam(param1); }
     ParamSet(const std::vector<std::shared_ptr<ParamBase>>& params) { addParams(params); }
-    ~ParamSet();
+    virtual ~ParamSet();
 
     /// Returns the index of the parameter
     int addParam(const std::shared_ptr<ParamBase>& param);

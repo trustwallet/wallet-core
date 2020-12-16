@@ -15,10 +15,10 @@
 
 TEST(TWNimiqCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNimiq));
-    auto txId = TWStringCreateWithUTF8Bytes("t123");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNimiq, txId));
-    auto accId = TWStringCreateWithUTF8Bytes("a12");
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeNimiq, accId));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("t123"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNimiq, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("a12"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeNimiq, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNimiq));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNimiq));
 

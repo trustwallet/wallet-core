@@ -20,12 +20,17 @@ TEST(NEARAddress, Validation) {
     ASSERT_FALSE(Address::isValid("EOS65QzSGJ579GPNKtZoZkChTzsxR4B48RCfiS82m2ymJR6VZCjT"));
 
     ASSERT_TRUE(Address::isValid("NEAR2758Nk7CMUcxTwXdjVdSxNEidiZQWMZN3USJzj76q5ia3v2v2v"));
+    ASSERT_TRUE(Address::isValid("917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d"));
 }
 
 TEST(NEARAddress, FromString) {
     ASSERT_EQ(
         Address("NEAR2758Nk7CMUcxTwXdjVdSxNEidiZQWMZN3USJzj76q5ia3v2v2v").string(),
-        "NEAR2758Nk7CMUcxTwXdjVdSxNEidiZQWMZN3USJzj76q5ia3v2v2v"
+        "917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d"
+    );
+    ASSERT_EQ(
+        Address("9685af3fe2dc231e5069ccff8ec6950eb961d42ebb9116a8ab9c0d38f9e45249").string(),
+        "9685af3fe2dc231e5069ccff8ec6950eb961d42ebb9116a8ab9c0d38f9e45249"
     );
 }
 
@@ -35,5 +40,5 @@ TEST(NEARAddress, FromPrivateKey) {
     auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
     auto address = Address(publicKey);
 
-    ASSERT_EQ(address.string(), "NEAR2758Nk7CMUcxTwXdjVdSxNEidiZQWMZN3USJzj76q5ia3v2v2v");
+    ASSERT_EQ(address.string(), "917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d");
 }

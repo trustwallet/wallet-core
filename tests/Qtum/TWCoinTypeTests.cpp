@@ -15,10 +15,10 @@
 
 TEST(TWQtumCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeQtum));
-    auto txId = TWStringCreateWithUTF8Bytes("t123");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeQtum, txId));
-    auto accId = TWStringCreateWithUTF8Bytes("a12");
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeQtum, accId));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("t123"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeQtum, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("a12"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeQtum, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeQtum));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeQtum));
 

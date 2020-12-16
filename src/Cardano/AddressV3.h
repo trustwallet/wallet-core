@@ -11,6 +11,7 @@
 #include "../PublicKey.h"
 
 #include <string>
+#include <optional>
 
 namespace TW::Cardano {
 
@@ -42,7 +43,7 @@ class AddressV3 {
     Data groupKey;
 
     /// Used in case of legacy address (V2)
-    AddressV2* legacyAddressV2;
+    std::optional<AddressV2> legacyAddressV2;
 
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& addr);
@@ -66,11 +67,7 @@ class AddressV3 {
     /// Copy constructor
     AddressV3(const AddressV3& other);
 
-    ~AddressV3() {
-        if (legacyAddressV2 != nullptr) {
-            delete legacyAddressV2;
-        }
-    }
+    void operator=(const AddressV3& other);
 
     /// Returns the Bech string representation of the address, with default HRP.
     std::string string() const;
@@ -86,7 +83,7 @@ class AddressV3 {
     Data data() const;
 
 private:
-    AddressV3() : discrimination(Discrim_Production), kind(Kind_Single), legacyAddressV2(nullptr) {}
+    AddressV3() : discrimination(Discrim_Production), kind(Kind_Single) {}
 };
 
 inline bool operator==(const AddressV3& lhs, const AddressV3& rhs) {

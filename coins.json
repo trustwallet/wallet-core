@@ -383,8 +383,9 @@
   {
     "id": "zcoin",
     "name": "Zcoin",
+    "displayName": "Firo",
     "coinId": 136,
-    "symbol": "XZC",
+    "symbol": "FIRO",
     "decimals": 8,
     "blockchain": "Bitcoin",
     "derivationPath": "m/44'/136'/0'/0/0",
@@ -397,13 +398,13 @@
     "xpub": "xpub",
     "xprv": "xprv",
     "explorer": {
-      "url": "https://explorer.zcoin.io",
+      "url": "https://explorer.firo.org",
       "txPath": "/tx/",
       "accountPath": "/address/"
     },
     "info": {
-      "url": "https://zcoin.io",
-      "client": "https://github.com/trezor/blockbook",
+      "url": "https://firo.org/",
+      "client": "https://github.com/firoorg/firo",
       "clientPublic": "",
       "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
@@ -939,11 +940,11 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
-      "url": "https://filscan.io",
-      "txPath": "/#/message/detail?cid=",
-      "accountPath": "/#/address/detail?address=",
-      "sampleTx": "bafy2bzacecbm3ofxjjzcl2rg32ninphza34mm3ijr55zjsamwfqmz4ib63mqe",
-      "sampleAccount": "t1nbb73vhk5dtmnsgeaetbo76daepqjtrfoccn74i"
+      "url": "https://filfox.info/en",
+      "txPath": "/message/",
+      "accountPath": "/address/",
+      "sampleTx": "bafy2bzacedsgjcd6xfhrrymmfrqubb44otlyhvgqkgsh533d5j5hwniiqespm",
+      "sampleAccount": "f1abjxfbp274xpdqcpuaykwkfb43omjotacm2p3za"
     },
     "info": {
       "url": "https://filecoin.io/",
@@ -1263,7 +1264,7 @@
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
-      "url": "https://tezos.id",
+      "url": "https://tzstats.com",
       "txPath": "/",
       "accountPath": "/"
     },
@@ -1319,7 +1320,8 @@
       "client": "https://github.com/kinecosystem/go",
       "clientPublic": "https://horizon.kinfederation.com",
       "clientDocs": "https://www.stellar.org/developers/horizon/reference"
-    }
+    },
+    "deprecated": true
   },
   {
     "id": "qtum",
@@ -1514,7 +1516,8 @@
       "client": "https://github.com/binance-chain/bsc",
       "clientPublic": "https://data-seed-prebsc-1-s1.binance.org:8545",
       "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
-    }
+    },
+    "deprecated": true
   },
   {
     "id": "smartchain",

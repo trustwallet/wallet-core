@@ -15,10 +15,10 @@
 
 TEST(TWZilliqaCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeZilliqa));
-    auto txId = TWStringCreateWithUTF8Bytes("t123");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZilliqa, txId));
-    auto accId = TWStringCreateWithUTF8Bytes("a12");
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeZilliqa, accId));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("t123"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZilliqa, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("a12"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeZilliqa, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZilliqa));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZilliqa));
 

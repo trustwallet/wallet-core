@@ -15,10 +15,10 @@
 
 TEST(TWBitcoinGoldCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBitcoinGold));
-    auto txId = TWStringCreateWithUTF8Bytes("2f807d7734de35d2236a1b3d8704eb12954f5f82ea66987949b10e94d9999b23");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBitcoinGold, txId));
-    auto accId = TWStringCreateWithUTF8Bytes("GJjz2Du9BoJQ3CPcoyVTHUJZSj62i1693U");
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeBitcoinGold, accId));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("2f807d7734de35d2236a1b3d8704eb12954f5f82ea66987949b10e94d9999b23"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBitcoinGold, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("GJjz2Du9BoJQ3CPcoyVTHUJZSj62i1693U"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeBitcoinGold, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBitcoinGold));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBitcoinGold));
 

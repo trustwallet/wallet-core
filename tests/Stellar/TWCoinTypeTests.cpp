@@ -15,10 +15,10 @@
 
 TEST(TWStellarCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeStellar));
-    auto txId = TWStringCreateWithUTF8Bytes("d9aeabfa9d24df8c5755125f8af243b74cd3ff878656cfa72c566a8824bf6e84");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeStellar, txId));
-    auto accId = TWStringCreateWithUTF8Bytes("GCILJZQ3CKBKBUJWW4TAM6Q37LJA5MQX6GMSFSQN75BPLWIZ33OPRG52");
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeStellar, accId));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("d9aeabfa9d24df8c5755125f8af243b74cd3ff878656cfa72c566a8824bf6e84"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeStellar, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("GCILJZQ3CKBKBUJWW4TAM6Q37LJA5MQX6GMSFSQN75BPLWIZ33OPRG52"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeStellar, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeStellar));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeStellar));
 

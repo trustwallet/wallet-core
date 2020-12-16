@@ -14,10 +14,10 @@
 
 TEST(TWSolanaCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeSolana));
-    auto txId = TWStringCreateWithUTF8Bytes("t123");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeSolana, txId));
-    auto accId = TWStringCreateWithUTF8Bytes("a12");
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeSolana, accId));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("t123"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeSolana, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("a12"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeSolana, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSolana));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSolana));
 

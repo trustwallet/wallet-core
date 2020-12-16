@@ -51,13 +51,13 @@ TEST(BitcoinGoldKey, ExtendedKeys) {
 
 TEST(BitcoinGoldKey, DeriveFromZPub) {
     auto zpub = STRING("zpub6rAU34KLySeCp1KDjD3hayCBXg49uH3G8iDzPovtGWD3eabbfAWSRMsjVyfuRfCCquiKTD6YV42nHUBtwh2TbVPvWqxrGuyEvHN17c3XUXw");
-    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeBitcoinGold, STRING("m/84'/156'/0'/0/2").get());
-    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeBitcoinGold, STRING("m/84'/156'/0'/0/9").get());
+    auto pubKey2 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeBitcoinGold, STRING("m/84'/156'/0'/0/2").get()));
+    auto pubKey9 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeBitcoinGold, STRING("m/84'/156'/0'/0/9").get()));
 
-    auto address2 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey2, TWCoinTypeBitcoinGold));
+    auto address2 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey2.get(), TWCoinTypeBitcoinGold));
     auto address2String = WRAPS(TWAnyAddressDescription(address2.get()));
 
-    auto address9 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey9, TWCoinTypeBitcoinGold));
+    auto address9 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey9.get(), TWCoinTypeBitcoinGold));
     auto address9String = WRAPS(TWAnyAddressDescription(address9.get()));
 
     assertStringsEqual(address2String, "btg1qkdgxykht6nww9l9rn0xhslf78nl605gwka9zak");

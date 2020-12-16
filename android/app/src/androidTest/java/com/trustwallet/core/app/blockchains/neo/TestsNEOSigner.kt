@@ -11,7 +11,7 @@ import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.proto.NEO
 import com.trustwallet.core.app.utils.toHexBytesInByteString
-import junit.framework.Assert.assertEquals
+import org.junit.Assert.assertEquals
 import wallet.core.jni.CoinType
 
 class TestNEOSigner {
