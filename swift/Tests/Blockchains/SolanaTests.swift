@@ -183,29 +183,30 @@ class SolanaTests: XCTestCase {
 
     func testCreateAndTransferTokenSigner() throws {
         let createAndTransferTokenMessage = SolanaCreateAndTransferToken.with {
-            $0.recipientMainAddress = "3xJ3MoUVFPNFEHfWdtNFa8ajXUHsJPzXcBSWMKLd76ft"
+            $0.recipientMainAddress = "71e8mDsh3PR6gN64zL1HjwuxyKpgRXrPDUJT7XXojsVd"
             $0.tokenMintAddress = "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"
-            $0.recipientTokenAddress = "67BrwFYt7qUnbAcYBVx7sQ4jeD2KWN1ohP6bMikmmQV3"
+            $0.recipientTokenAddress = "EF6L8yJT1SoRoDCkAZfSVmaweqMzfhxZiptKi7Tgj5XY"
             $0.senderTokenAddress = "ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf"
-            $0.amount = 6100  // 0.004
+            $0.amount = 2900
             $0.decimals = 6
         }
         let input = SolanaSigningInput.with {
             $0.createAndTransferTokenTransaction = createAndTransferTokenMessage
-            $0.recentBlockhash = "11111111111111111111111111111111"
-            $0.privateKey = Data(Base58.decodeNoCheck( string: "9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5")!)
+            $0.recentBlockhash = "DMmDdJP41M9mw8Z4586VSvxqGCrqPy5uciF6HsKUVDja"
+            $0.privateKey = Data(Base58.decodeNoCheck( string: "66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c")!)
         }
 
         let output: SolanaSigningOutput = AnySigner.sign(input: input, coin: .solana)
 
+        //https://explorer.solana.com/tx/449VaYo48LrkMJF6XVKt9sJwVQN6Seqrmh9erDCLtiuj6BgFG3wpF5TwjNkxgJ7qzNa6NTj3TFsU3h9hKszfkA7w
         let expectedString = """
-        3tfkCabr1GxxXTBoGaLryVW1Bzfm4LUTrVpqNdKCCJd2v61UUpNtim3iPzp4JtMB6ir6LLvmgUDbjQAseX9sZTPVz7\
-        vqbQaBNBBh5ogDTppwccNrMSwTDaN32Lyf5aA8R1gABCpc1L4jeCBRvsg9MT4jmQnS8FzWo7GXqc1V9jNCEYgcz68J\
-        mSGkaXQVvjpRfkY4ZnGtqNWEK8Ntj45F9Zrq8dQ8jiNUPjQYiN1JujnmecekGU3GZNdqEBv5785UQBd5DEWFDxY2hQ\
-        vCZAi8YF1KFYwPL1xUw2Vcanc6bRjfhPVAcuH5oty16dY9KpTgBowmHuGCbBazbR9Ym2kAR3EPvFuZuEi32Z4rzK98\
-        SDYpUBBKEHg7HTSh4NfZ34W6xPzLcw9DRZyAJHVCWiw6TY2xYVfMp3zTyPxnX4Cgdv73P7mAvZdJWBCvPbfmZ3amD8\
-        KPTogDQxhawb8bzihTSGbMCdufd6EA16i6pMhX8Qofx9f9RNmhFsrfJH98SHfNPR9oiuTJGarCuYf5kiVzMEhf3iMD\
-        ZD9WX3VnpjnWG6rkiZKfZTwh7Qb8q
+        3Y2MVz2VVi7aEyC9q1awwdk1ModDBPHRSacKmTYnSgkmbbJeZ62Fub1bVPSHaTy4LUcQpzCQYhHAKtTKXUDYijEeLs\
+        MAUqPBEMAq1w8zCdqDpdXy6M4PuwNtYVV1WgqeiEsiMWpPp4BGWKfcziwFbmYueUGituacJq4wTnt92fho8mFi49XW\
+        64gEG4iNGScDtJkY7Geq8PKiLh1E9JMJoceiHxKbmxzCmmLTxEHdhySYHcDUSXnXWogZskeZNBMtR9dNjEMkCzEjrx\
+        RpBtJPtUNshciY45mDPNmw4j3xyLCBTRikyfFLc5g11r3UgyVD4YokoPRvrEXsgt6W3yjBshropBm6mY2eJYvfY2eZ\
+        z4Yq8kLcUatCHVKtjcb1mP9Ww57KisJ9bRhipC8sodFaMYhZARMEa4a1u9eH4MyNUATRGNXarwQSBY46PWS3nKP6QB\
+        K7Dw7Ppp9MmYkdPcXKaLScbyLF3jKu6dHWMkHw3WdXSsM1wwXjXnWF9LxdwaEVcDmySWybj6aKD9QCWTU5kdncqJU5\
+        6f7SYNRTN289WdUFGNDmSh56tj2v1
         """
 
         XCTAssertEqual(output.encoded, expectedString)
