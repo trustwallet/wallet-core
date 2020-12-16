@@ -31,6 +31,13 @@ struct TWStoredKey* _Nonnull TWStoredKeyCreate(TWString* _Nonnull name, TWData* 
     return new TWStoredKey{ StoredKey::createWithMnemonicRandom(nameString, passwordData) };
 }
 
+struct TWStoredKey* _Nonnull TWStoredKeyCreateWithMnemonic(TWString* _Nonnull name, TWData* _Nonnull password, TWString* _Nonnull mnemonic) {
+    const auto& nameString = *reinterpret_cast<const std::string*>(name);
+    const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+    const auto& mnemonicString = *reinterpret_cast<const std::string*>(mnemonic);
+    return new TWStoredKey{ StoredKey::createWithMnemonic(nameString, passwordData, mnemonicString) };
+}
+
 struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKey(TWData* _Nonnull privateKey, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin) {
     try {
         const auto& privateKeyData = *reinterpret_cast<const TW::Data*>(privateKey);

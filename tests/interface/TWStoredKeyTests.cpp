@@ -64,6 +64,18 @@ TEST(TWStoredKey, createWallet) {
     EXPECT_TRUE(TWStringSize(mnemonic.get()) > 36);
 }
 
+TEST(TWStoredKey, createWalletWithMnemonic) {
+    const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
+    const auto mnemonic = WRAPS(TWStringCreateWithUTF8Bytes("team engine square letter hero song dizzy scrub tornado fabric divert saddle"));
+    const auto key = WRAP(TWStoredKey, TWStoredKeyCreateWithMnemonic(name.get(), password.get(), mnemonic.get()));
+    const auto name2 = WRAPS(TWStoredKeyName(key.get()));
+    EXPECT_EQ(string(TWStringUTF8Bytes(name2.get())), "name");
+    const auto mnemonic2 = WRAPS(TWStoredKeyDecryptMnemonic(key.get(), password.get()));
+    EXPECT_EQ(string(TWStringUTF8Bytes(mnemonic2.get())), "team engine square letter hero song dizzy scrub tornado fabric divert saddle");
+}
+
 TEST(TWStoredKey, importPrivateKey) {
     const auto privateKeyHex = "3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266";
     const auto privateKey = WRAPD(TWDataCreateWithHexString(WRAPS(TWStringCreateWithUTF8Bytes(privateKeyHex)).get()));

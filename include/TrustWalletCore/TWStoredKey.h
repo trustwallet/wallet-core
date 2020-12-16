@@ -39,6 +39,9 @@ struct TWStoredKey* _Nullable TWStoredKeyImportJSON(TWData* _Nonnull json);
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nonnull TWStoredKeyCreate(TWString* _Nonnull name, TWData* _Nonnull password);
 
+TW_EXPORT_STATIC_METHOD
+struct TWStoredKey* _Nonnull TWStoredKeyCreateWithMnemonic(TWString* _Nonnull name, TWData* _Nonnull password, TWString* _Nonnull mnemonic);
+
 TW_EXPORT_METHOD
 void TWStoredKeyDelete(struct TWStoredKey* _Nonnull key);
 
