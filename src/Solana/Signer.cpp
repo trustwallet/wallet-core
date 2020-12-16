@@ -121,6 +121,21 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
             }
             break;
 
+        case Proto::SigningInput::TransactionTypeCase::kCreateAndTransferTokenTransaction:
+            {
+                auto protoMessage = input.create_and_transfer_token_transaction();
+                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+                auto recipientMainAddress = Address(protoMessage.recipient_main_address());
+                auto tokenMintAddress = Address(protoMessage.token_mint_address());
+                auto recipientTokenAddress = Address(protoMessage.recipient_token_address());
+                auto senderTokenAddress = Address(protoMessage.sender_token_address());
+                auto amount = protoMessage.amount();
+                auto decimals = static_cast<uint8_t>(protoMessage.decimals());
+                message = Message(userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress, senderTokenAddress, amount, decimals, blockhash);
+                signerKeys.push_back(key);                
+            }
+            break;
+
         default:
             assert(input.transaction_type_case() != Proto::SigningInput::TransactionTypeCase::TRANSACTION_TYPE_NOT_SET);
     }

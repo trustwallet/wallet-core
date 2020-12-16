@@ -22,6 +22,7 @@ message WithdrawStake {
     uint64 value = 2;
 }
 
+// Create a token account under a main account for a token type
 message CreateTokenAccount {
     // main account -- can be same as signer, or other main account (if done on some other account's behalf)
     string main_address = 1;
@@ -29,12 +30,25 @@ message CreateTokenAccount {
     string token_address = 3;
 }
 
+// Transfer tokens
 message TokenTransfer {
     string token_mint_address = 1;
     string sender_token_address = 2;
     string recipient_token_address = 3;
     uint64 amount = 4;
     uint32 decimals = 5; // Note: 8-bit value
+}
+
+// CreateTokenAccount and TokenTransfer combined
+message CreateAndTransferToken {
+    // main account -- can be same as signer, or other main account (if done on some other account's behalf)
+    string recipient_main_address = 1;
+    string token_mint_address = 2;
+    // Token address for the recipient, will be created first
+    string recipient_token_address = 3;
+    string sender_token_address = 4;
+    uint64 amount = 5;
+    uint32 decimals = 6; // Note: 8-bit value
 }
 
 // Input data necessary to create a signed transaction.
@@ -48,6 +62,7 @@ message SigningInput {
         WithdrawStake withdraw_transaction = 6;
         CreateTokenAccount create_token_account_transaction = 7;
         TokenTransfer token_transfer_transaction = 8;
+        CreateAndTransferToken create_and_transfer_token_transaction = 9;
     }
 }
 
