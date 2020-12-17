@@ -6,6 +6,7 @@
 
 #include "Coin.h"
 
+
 #include "CoinEntry.h"
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <TrustWalletCore/TWHRP.h>
@@ -123,6 +124,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeKava: entry = &cosmosDP; break;
         case TWCoinTypeTerra: entry = &cosmosDP; break;
         case TWCoinTypeBandChain: entry = &cosmosDP; break;
+        case TWCoinTypeIOV: entry = &cosmosDP; break;
         case TWCoinTypeElrond: entry = &elrondDP; break;
         case TWCoinTypeEOS: entry = &eosDP; break;
         case TWCoinTypeCallisto: entry = &ethereumDP; break;
