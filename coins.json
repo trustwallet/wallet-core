@@ -1520,8 +1520,8 @@
     }
   },
    {
-    "id": "avalanchex",
-    "name": "Avalanche X-Chain",
+    "id": "avalanche",
+    "name": "Avalanche",
     "coinId": 31337,
     "symbol": "AVAX", 
     "decimals": 9,
