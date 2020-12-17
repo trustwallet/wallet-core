@@ -1494,7 +1494,7 @@
     },
     "deprecated": true
   },
-  {
+   {
     "id": "smartchain",
     "name": "Smart Chain",
     "coinId": 20000714,
@@ -1518,5 +1518,29 @@
       "clientPublic": "https://bsc-dataseed1.binance.org",
       "clientDocs": "https://eth.wiki/json-rpc/API"
     }
+  },
+   {
+    "id": "avalanchex",
+    "name": "Avalanche X-Chain",
+    "coinId": 31337,
+    "symbol": "AVAX", 
+    "decimals": 9,
+    "blockchain": "Avalanche",
+    "derivationPath": "m/44'/9000'/0'/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "explorer": {
+      "url": "https://explorer.avax.network/",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "2eLNtbK8bomFKJ6qCGBTuxJvD6LAs6eAXNVK48hGS8MGxGW6B9",
+      "sampleAccount": "X-avax19cp7nwkex3kynxug5s3lskdxhdns2vk7yw4m8h"
+   },
+   "info": {
+      "url": "https://www.avalabs.org/",
+      "client": "https://github.com/ava-labs/avalanchego",
+      "clientPublic": "",
+      "clientDocs": "https://docs.avax.network/"
+   }
   }
-]
+ ]
