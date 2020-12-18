@@ -66,6 +66,6 @@ public:
 } // namespace TW::Keystore
 
 /// Wrapper for C interface.
-struct TWWallet {
+struct TWStoreWallet {
     TW::Keystore::Wallet impl;
 };

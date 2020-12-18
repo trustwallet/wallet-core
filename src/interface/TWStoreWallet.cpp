@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWWallet.h>
+#include <TrustWalletCore/TWStoreWallet.h>
 
 #include <TrustWalletCore/TWString.h>
 #include <TrustWalletCore/TWPrivateKey.h>
@@ -18,27 +18,27 @@ using namespace TW::Keystore;
 using namespace TW;
 
 
-struct TWWallet* _Nonnull TWWalletCreate(TWString* _Nonnull path, const struct TWStoredKey* _Nonnull key) {
+struct TWStoreWallet* _Nonnull TWStoreWalletCreate(TWString* _Nonnull path, const struct TWStoredKey* _Nonnull key) {
     auto& pathString = *reinterpret_cast<const std::string*>(path);
     Wallet wallet = Wallet(pathString, key->impl);
-    return new TWWallet{ wallet };
+    return new TWStoreWallet{ wallet };
 }
 
-void TWWalletDelete(struct TWWallet* _Nonnull wallet) {
+void TWStoreWalletDelete(struct TWStoreWallet* _Nonnull wallet) {
     delete wallet;
 }
 
-TWString* _Nonnull TWWalletIndentifier(struct TWWallet* _Nonnull wallet) {
+TWString* _Nonnull TWStoreWalletIndentifier(struct TWStoreWallet* _Nonnull wallet) {
     return TWStringCreateWithUTF8Bytes(wallet->impl.getIdentifier().c_str());
 }
 
-struct TWAnyAddress* _Nonnull TWWalletGetAccount(struct TWWallet* _Nonnull wallet, TWString* _Nonnull password, enum TWCoinType coin) {
+struct TWAnyAddress* _Nonnull TWStoreWalletGetAccount(struct TWStoreWallet* _Nonnull wallet, TWString* _Nonnull password, enum TWCoinType coin) {
     auto& passwordString = *reinterpret_cast<const std::string*>(password);
     Account account = wallet->impl.getAccount(passwordString, coin);
     return TWAnyAddressCreateWithString(TWStringCreateWithUTF8Bytes(account.address.c_str()), coin);
 }
 
-struct TWPrivateKey* _Nonnull TWWalletPrivateKey(struct TWWallet* _Nonnull wallet, const TWString* _Nonnull password, enum TWCoinType coin) {
+struct TWPrivateKey* _Nonnull TWStoreWalletPrivateKey(struct TWStoreWallet* _Nonnull wallet, const TWString* _Nonnull password, enum TWCoinType coin) {
     auto& passwordString = *reinterpret_cast<const std::string*>(password);
     auto privateKey = wallet->impl.privateKey(passwordString, coin);
     return new TWPrivateKey{ privateKey };
