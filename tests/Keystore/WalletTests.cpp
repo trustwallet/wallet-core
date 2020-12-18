@@ -32,6 +32,16 @@ Wallet createWallet() {
     return wallet;
 }
 
+TEST(Wallet, fileFromPath) {
+    EXPECT_EQ(Wallet::fileFromPath("/d1/d2/file.3"), "file.3");
+    EXPECT_EQ(Wallet::fileFromPath("file4"), "file4");
+    EXPECT_EQ(Wallet::fileFromPath(""), "");
+    EXPECT_EQ(Wallet::fileFromPath("/"), "");
+    EXPECT_EQ(Wallet::fileFromPath("d/"), "");
+    EXPECT_EQ(Wallet::fileFromPath("/file5"), "file5");
+    EXPECT_EQ(Wallet::fileFromPath("d1///d2//file3"), "file3");
+}
+
 TEST(Wallet, create) {
     Wallet wallet = createWallet();
     EXPECT_EQ(wallet.getIdentifier(), walletPath);

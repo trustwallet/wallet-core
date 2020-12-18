@@ -9,8 +9,21 @@
 using namespace TW::Keystore;
 using namespace TW;
 
+std::string Wallet::fileFromPath(const std::string& path) {
+    std::size_t lastSeparator = path.find_last_of("/");
+    if (lastSeparator == std::string::npos) {
+        return path;
+    }
+    return path.substr(lastSeparator + 1, path.length());
+    /*
+        Alternatives:
+        return std::filesystem::path(path).filename();  <-- std::filesystem has issues on iOS < 13.0
+        return boost::filesystem::path(path).filename().string();  <-- uses Boost::filesystem
+    */
+}
+
 Wallet::Wallet(std::string path, const StoredKey& key): path(path), key(key) {
-    identifier = std::filesystem::path(path).filename();
+    identifier = fileFromPath(path);
 }
 
 const Account Wallet::getAccount(const std::string& password, TWCoinType coin) {
@@ -19,7 +32,7 @@ const Account Wallet::getAccount(const std::string& password, TWCoinType coin) {
     if (!account) {
         throw std::invalid_argument("Invalid password");
     }
-    return account.value();
+    return *account; // account.value();
 }
 
 const std::vector<Account> Wallet::getAccounts(const std::string& password, const std::vector<TWCoinType>& coins) {
@@ -30,7 +43,7 @@ const std::vector<Account> Wallet::getAccounts(const std::string& password, cons
         if (!account) {
             throw std::invalid_argument("Invalid password");
         }
-        accounts.push_back(account.value());
+        accounts.push_back(*account); // account.value()
     }
     return accounts;
 }

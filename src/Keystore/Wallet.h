@@ -14,7 +14,6 @@
 
 #include <string>
 #include <vector>
-#include <filesystem>
 
 namespace TW::Keystore {
 
@@ -60,6 +59,8 @@ public:
     PrivateKey privateKey(const std::string& password, TWCoinType coin);
 
     bool operator==(const Wallet& w2);
+
+    static std::string fileFromPath(const std::string& path);
 };
 
 } // namespace TW::Keystore
