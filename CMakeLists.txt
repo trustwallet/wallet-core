@@ -44,7 +44,7 @@ macro(find_host_package)
   set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 endmacro(find_host_package)
 
-find_host_package(Boost REQUIRED)
+find_host_package(Boost COMPONENTS system REQUIRED)
 
 include(ExternalProject)
 
