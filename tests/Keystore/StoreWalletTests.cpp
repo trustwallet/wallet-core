@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Keystore/Wallet.h"
+#include "Keystore/StoreWallet.h"
 
 #include "Coin.h"
 #include "HexCoding.h"
@@ -26,37 +26,37 @@ const auto passwordData = TW::data(string(passwordString));
 const auto mnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
 const auto walletPath = "testwallet";
 
-Wallet createWallet() {
+StoreWallet createWallet() {
     auto keyStore = StoredKey::createWithMnemonic("name", passwordData, mnemonic);
-    Wallet wallet(string("./") + walletPath, keyStore);
+    StoreWallet wallet(string("./") + walletPath, keyStore);
     return wallet;
 }
 
-TEST(Wallet, fileFromPath) {
-    EXPECT_EQ(Wallet::fileFromPath("/d1/d2/file.3"), "file.3");
-    EXPECT_EQ(Wallet::fileFromPath("file4"), "file4");
-    EXPECT_EQ(Wallet::fileFromPath(""), "");
-    EXPECT_EQ(Wallet::fileFromPath("/"), "");
-    EXPECT_EQ(Wallet::fileFromPath("d/"), "");
-    EXPECT_EQ(Wallet::fileFromPath("/file5"), "file5");
-    EXPECT_EQ(Wallet::fileFromPath("d1///d2//file3"), "file3");
+TEST(StoreWallet, fileFromPath) {
+    EXPECT_EQ(StoreWallet::fileFromPath("/d1/d2/file.3"), "file.3");
+    EXPECT_EQ(StoreWallet::fileFromPath("file4"), "file4");
+    EXPECT_EQ(StoreWallet::fileFromPath(""), "");
+    EXPECT_EQ(StoreWallet::fileFromPath("/"), "");
+    EXPECT_EQ(StoreWallet::fileFromPath("d/"), "");
+    EXPECT_EQ(StoreWallet::fileFromPath("/file5"), "file5");
+    EXPECT_EQ(StoreWallet::fileFromPath("d1///d2//file3"), "file3");
 }
 
-TEST(Wallet, create) {
-    Wallet wallet = createWallet();
+TEST(StoreWallet, create) {
+    StoreWallet wallet = createWallet();
     EXPECT_EQ(wallet.getIdentifier(), walletPath);
 }
 
-TEST(Wallet, getAccount) {
-    Wallet wallet = createWallet();
+TEST(StoreWallet, getAccount) {
+    StoreWallet wallet = createWallet();
     TWCoinType coin = TWCoinTypeBitcoin;
     Account account = wallet.getAccount(passwordString, coin);
     EXPECT_EQ(account.coin, coin);
     EXPECT_EQ(account.address, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
 }
 
-TEST(Wallet, getAccounts) {
-    Wallet wallet = createWallet();
+TEST(StoreWallet, getAccounts) {
+    StoreWallet wallet = createWallet();
     vector<TWCoinType> coins = {TWCoinTypeBitcoin, TWCoinTypeEthereum, TWCoinTypeBinance};
     vector<string> expectedAddresses = {
         "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny",
@@ -71,20 +71,20 @@ TEST(Wallet, getAccounts) {
     }
 }
 
-TEST(Wallet, privateKey) {
-    Wallet wallet = createWallet();
+TEST(StoreWallet, privateKey) {
+    StoreWallet wallet = createWallet();
     TWCoinType coin = TWCoinTypeBitcoin;
     PrivateKey privateKey = wallet.privateKey(password, coin);
     EXPECT_EQ(hex(privateKey.bytes), "d2568511baea8dc347f14c4e0479eb8ebe29eb5f664ed796e755896250ffd11f");
 }
 
-TEST(Wallet, equals) {
+TEST(StoreWallet, equals) {
     auto keyStore1 = StoredKey::createWithMnemonic("name1", passwordData, mnemonic);
-    Wallet wallet1(string("./") + walletPath + "1", keyStore1);
+    StoreWallet wallet1(string("./") + walletPath + "1", keyStore1);
     auto keyStore2 = StoredKey::createWithMnemonic("name2", passwordData, mnemonic);
-    Wallet wallet2(string("./") + walletPath + "1", keyStore2);
+    StoreWallet wallet2(string("./") + walletPath + "1", keyStore2);
     auto keyStore3 = StoredKey::createWithMnemonic("name3", passwordData, mnemonic);
-    Wallet wallet3(string("./") + walletPath + "3", keyStore3);
+    StoreWallet wallet3(string("./") + walletPath + "3", keyStore3);
     
     EXPECT_TRUE(wallet1 == wallet1);
     EXPECT_TRUE(wallet1 == wallet2);

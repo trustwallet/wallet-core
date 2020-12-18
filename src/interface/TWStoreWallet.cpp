@@ -8,7 +8,7 @@
 
 #include <TrustWalletCore/TWString.h>
 #include <TrustWalletCore/TWPrivateKey.h>
-#include "../Keystore/Wallet.h"
+#include "../Keystore/StoreWallet.h"
 #include "../Keystore/Account.h"
 #include "../Keystore/StoredKey.h"
 
@@ -20,7 +20,7 @@ using namespace TW;
 
 struct TWStoreWallet* _Nonnull TWStoreWalletCreate(TWString* _Nonnull path, const struct TWStoredKey* _Nonnull key) {
     auto& pathString = *reinterpret_cast<const std::string*>(path);
-    Wallet wallet = Wallet(pathString, key->impl);
+    StoreWallet wallet = StoreWallet(pathString, key->impl);
     return new TWStoreWallet{ wallet };
 }
 

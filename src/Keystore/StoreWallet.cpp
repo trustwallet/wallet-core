@@ -4,12 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Wallet.h"
+#include "StoreWallet.h"
 
 using namespace TW::Keystore;
 using namespace TW;
 
-std::string Wallet::fileFromPath(const std::string& path) {
+std::string StoreWallet::fileFromPath(const std::string& path) {
     std::size_t lastSeparator = path.find_last_of("/");
     if (lastSeparator == std::string::npos) {
         return path;
@@ -22,11 +22,11 @@ std::string Wallet::fileFromPath(const std::string& path) {
     */
 }
 
-Wallet::Wallet(std::string path, const StoredKey& key): path(path), key(key) {
+StoreWallet::StoreWallet(std::string path, const StoredKey& key): path(path), key(key) {
     identifier = fileFromPath(path);
 }
 
-const Account Wallet::getAccount(const std::string& password, TWCoinType coin) {
+const Account StoreWallet::getAccount(const std::string& password, TWCoinType coin) {
     auto wallet = key.wallet(data(password));
     auto account = key.account(coin, &wallet);
     if (!account) {
@@ -35,7 +35,7 @@ const Account Wallet::getAccount(const std::string& password, TWCoinType coin) {
     return *account; // account.value();
 }
 
-const std::vector<Account> Wallet::getAccounts(const std::string& password, const std::vector<TWCoinType>& coins) {
+const std::vector<Account> StoreWallet::getAccounts(const std::string& password, const std::vector<TWCoinType>& coins) {
     auto wallet = key.wallet(data(password));
     std::vector<Account> accounts;
     for(auto coin: coins) {
@@ -48,11 +48,11 @@ const std::vector<Account> Wallet::getAccounts(const std::string& password, cons
     return accounts;
 }
 
-PrivateKey Wallet::privateKey(const std::string& password, TWCoinType coin) {
+PrivateKey StoreWallet::privateKey(const std::string& password, TWCoinType coin) {
     auto privateKey = key.privateKey(coin, data(password));
     return privateKey;
 }
 
-bool Wallet::operator==(const Wallet& w2) {
+bool StoreWallet::operator==(const StoreWallet& w2) {
     return identifier == w2.identifier;
 }

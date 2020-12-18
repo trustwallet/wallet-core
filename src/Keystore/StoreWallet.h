@@ -18,7 +18,7 @@
 namespace TW::Keystore {
 
 /// Coin wallet.
-class Wallet {
+class StoreWallet {
 private:
     /// Unique wallet identifier.
     std::string identifier;
@@ -30,8 +30,8 @@ private:
     StoredKey key;
 
 public:
-    /// Creates a Wallet from an encrypted key.
-    Wallet(std::string path, const StoredKey& key);
+    /// Creates a StoreWallet from an encrypted key.
+    StoreWallet(std::string path, const StoredKey& key);
 
     std::string getIdentifier() const { return identifier; }
 
@@ -58,7 +58,7 @@ public:
     /// - Returns: the private key
     PrivateKey privateKey(const std::string& password, TWCoinType coin);
 
-    bool operator==(const Wallet& w2);
+    bool operator==(const StoreWallet& w2);
 
     static std::string fileFromPath(const std::string& path);
 };
@@ -67,5 +67,5 @@ public:
 
 /// Wrapper for C interface.
 struct TWStoreWallet {
-    TW::Keystore::Wallet impl;
+    TW::Keystore::StoreWallet impl;
 };
