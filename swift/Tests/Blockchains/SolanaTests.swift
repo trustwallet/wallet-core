@@ -181,6 +181,37 @@ class SolanaTests: XCTestCase {
         XCTAssertEqual(output.encoded, expectedString)
     }
 
+    func testCreateAndTransferTokenSigner() throws {
+        let createAndTransferTokenMessage = SolanaCreateAndTransferToken.with {
+            $0.recipientMainAddress = "71e8mDsh3PR6gN64zL1HjwuxyKpgRXrPDUJT7XXojsVd"
+            $0.tokenMintAddress = "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"
+            $0.recipientTokenAddress = "EF6L8yJT1SoRoDCkAZfSVmaweqMzfhxZiptKi7Tgj5XY"
+            $0.senderTokenAddress = "ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf"
+            $0.amount = 2900
+            $0.decimals = 6
+        }
+        let input = SolanaSigningInput.with {
+            $0.createAndTransferTokenTransaction = createAndTransferTokenMessage
+            $0.recentBlockhash = "DMmDdJP41M9mw8Z4586VSvxqGCrqPy5uciF6HsKUVDja"
+            $0.privateKey = Data(Base58.decodeNoCheck( string: "66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c")!)
+        }
+
+        let output: SolanaSigningOutput = AnySigner.sign(input: input, coin: .solana)
+
+        //https://explorer.solana.com/tx/449VaYo48LrkMJF6XVKt9sJwVQN6Seqrmh9erDCLtiuj6BgFG3wpF5TwjNkxgJ7qzNa6NTj3TFsU3h9hKszfkA7w
+        let expectedString = """
+        3Y2MVz2VVi7aEyC9q1awwdk1ModDBPHRSacKmTYnSgkmbbJeZ62Fub1bVPSHaTy4LUcQpzCQYhHAKtTKXUDYijEeLs\
+        MAUqPBEMAq1w8zCdqDpdXy6M4PuwNtYVV1WgqeiEsiMWpPp4BGWKfcziwFbmYueUGituacJq4wTnt92fho8mFi49XW\
+        64gEG4iNGScDtJkY7Geq8PKiLh1E9JMJoceiHxKbmxzCmmLTxEHdhySYHcDUSXnXWogZskeZNBMtR9dNjEMkCzEjrx\
+        RpBtJPtUNshciY45mDPNmw4j3xyLCBTRikyfFLc5g11r3UgyVD4YokoPRvrEXsgt6W3yjBshropBm6mY2eJYvfY2eZ\
+        z4Yq8kLcUatCHVKtjcb1mP9Ww57KisJ9bRhipC8sodFaMYhZARMEa4a1u9eH4MyNUATRGNXarwQSBY46PWS3nKP6QB\
+        K7Dw7Ppp9MmYkdPcXKaLScbyLF3jKu6dHWMkHw3WdXSsM1wwXjXnWF9LxdwaEVcDmySWybj6aKD9QCWTU5kdncqJU5\
+        6f7SYNRTN289WdUFGNDmSh56tj2v1
+        """
+
+        XCTAssertEqual(output.encoded, expectedString)
+    }
+
     func testDefaultTokenAddress() throws {
         let mainAddress = SolanaAddress(string: "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V")!
         let defaultAddress = mainAddress.defaultTokenAddress(tokenMintAddress: "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt")

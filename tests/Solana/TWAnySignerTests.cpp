@@ -234,3 +234,27 @@ TEST(TWAnySignerSolana, SignTokenTransfer2) {
         "LCtawaKHmvh9WEjYPFFMDQXsdKMQbVyK4Q3aRRfLCouqw6GE4p31PRPFoQqtazTziEj3ex3iLgnCspz1MN4SUE9d33g3HiiA6oCS6wGMvB2i3ojtmJzndCiLoDmuZgiuGouVSeS2MAEUoS3CRjdnbNKbRwgKn8YsDe1bZ57ueipfBLJfiE7xr8ji678uAv8FcMgo8Mq88SBGxVCUhjMS2VGQZhRUHHzDmvnzxhbbUzsLDfApzjHExkUm7ws3cQ2i1cSpQNCQWJd6rcDv1sYwDAavPS571Ny3CUq4cZxABh45Gj88LkRpzBMRdoebrh9hPy8ZRnu7PocBVjZytCgdF4CuhzdYNsmdcuU2WN5CEmv5zQ7pBrFdLZ8bBifP";
     ASSERT_EQ(output.encoded(), expectedString);
 }
+
+TEST(TWAnySignerSolana, SignCreateAndTransferToken) {
+    auto privateKeyData = Base58::bitcoin.decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
+    ASSERT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
+
+    auto input = Solana::Proto::SigningInput();
+    auto& message = *input.mutable_create_and_transfer_token_transaction();
+    message.set_recipient_main_address("71e8mDsh3PR6gN64zL1HjwuxyKpgRXrPDUJT7XXojsVd");
+    message.set_token_mint_address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
+    message.set_recipient_token_address("EF6L8yJT1SoRoDCkAZfSVmaweqMzfhxZiptKi7Tgj5XY");
+    message.set_sender_token_address("ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf");
+    message.set_amount(2900);
+    message.set_decimals(6);
+    input.set_private_key(privateKeyData.data(), privateKeyData.size());
+    input.set_recent_blockhash("DMmDdJP41M9mw8Z4586VSvxqGCrqPy5uciF6HsKUVDja");
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    auto expectedString =
+        //https://explorer.solana.com/tx/449VaYo48LrkMJF6XVKt9sJwVQN6Seqrmh9erDCLtiuj6BgFG3wpF5TwjNkxgJ7qzNa6NTj3TFsU3h9hKszfkA7w
+        "3Y2MVz2VVi7aEyC9q1awwdk1ModDBPHRSacKmTYnSgkmbbJeZ62Fub1bVPSHaTy4LUcQpzCQYhHAKtTKXUDYijEeLsMAUqPBEMAq1w8zCdqDpdXy6M4PuwNtYVV1WgqeiEsiMWpPp4BGWKfcziwFbmYueUGituacJq4wTnt92fho8mFi49XW64gEG4iNGScDtJkY7Geq8PKiLh1E9JMJoceiHxKbmxzCmmLTxEHdhySYHcDUSXnXWogZskeZNBMtR9dNjEMkCzEjrxRpBtJPtUNshciY45mDPNmw4j3xyLCBTRikyfFLc5g11r3UgyVD4YokoPRvrEXsgt6W3yjBshropBm6mY2eJYvfY2eZz4Yq8kLcUatCHVKtjcb1mP9Ww57KisJ9bRhipC8sodFaMYhZARMEa4a1u9eH4MyNUATRGNXarwQSBY46PWS3nKP6QBK7Dw7Ppp9MmYkdPcXKaLScbyLF3jKu6dHWMkHw3WdXSsM1wwXjXnWF9LxdwaEVcDmySWybj6aKD9QCWTU5kdncqJU56f7SYNRTN289WdUFGNDmSh56tj2v1";
+    ASSERT_EQ(output.encoded(), expectedString);
+}
