@@ -12,27 +12,31 @@ using namespace TW;
 using namespace TW::Ethereum;
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    auto signer = Signer(load(input.chain_id()));
-    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    auto transaction = Signer::build(input);
+    try {
+        auto signer = Signer(load(input.chain_id()));
+        auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+        auto transaction = Signer::build(input);
 
-    signer.sign(key, transaction);
+        signer.sign(key, transaction);
 
-    auto output = Proto::SigningOutput();
+        auto output = Proto::SigningOutput();
 
-    auto encoded = RLP::encode(transaction);
-    output.set_encoded(encoded.data(), encoded.size());
+        auto encoded = RLP::encode(transaction);
+        output.set_encoded(encoded.data(), encoded.size());
 
-    auto v = store(transaction.v);
-    output.set_v(v.data(), v.size());
+        auto v = store(transaction.v);
+        output.set_v(v.data(), v.size());
 
-    auto r = store(transaction.r);
-    output.set_r(r.data(), r.size());
+        auto r = store(transaction.r);
+        output.set_r(r.data(), r.size());
 
-    auto s = store(transaction.s);
-    output.set_s(s.data(), s.size());
+        auto s = store(transaction.s);
+        output.set_s(s.data(), s.size());
 
-    return output;
+        return output;
+    } catch (std::exception&) {
+        return Proto::SigningOutput();
+    }
 }
 
 std::string Signer::signJSON(const std::string& json, const Data& key) {
@@ -67,21 +71,86 @@ Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data&
     return values(chainID, signature);
 }
 
-Transaction Signer::build(const Proto::SigningInput &input) {
-    Data toAddress;
-    if (!input.to_address().empty()) {
-        toAddress.resize(20);
-        auto address = Address(input.to_address());
-        std::copy(address.bytes.begin(), address.bytes.end(), toAddress.data());
+// May throw
+Data addressStringToData(const std::string& asString) {
+    if (asString.empty()) {
+        return {};
     }
-    auto transaction = Transaction(
-        /* nonce: */ load(input.nonce()),
-        /* gasPrice: */ load(input.gas_price()),
-        /* gasLimit: */ load(input.gas_limit()),
-        /* to: */ toAddress,
-        /* amount: */ load(input.amount()),
-        /* payload: */ Data(input.payload().begin(), input.payload().end()));
-    return transaction;
+    auto address = Address(asString);
+    Data asData;
+    asData.resize(20);
+    std::copy(address.bytes.begin(), address.bytes.end(), asData.data());
+    return asData;
+}
+
+Transaction Signer::build(const Proto::SigningInput &input) {
+    Data toAddress = addressStringToData(input.to_address());
+    switch (input.transaction().transaction_oneof_case()) {
+        case Proto::Transaction::kTransfer:
+            {
+                auto transaction = Transaction::buildTransfer(
+                    /* nonce: */ load(input.nonce()),
+                    /* gasPrice: */ load(input.gas_price()),
+                    /* gasLimit: */ load(input.gas_limit()),
+                    /* to: */ toAddress,
+                    /* amount: */ load(input.transaction().transfer().amount()),
+                    /* optionalTransaction: */ Data(input.transaction().contract_generic().data().begin(), input.transaction().contract_generic().data().end()));
+                return transaction;
+            }
+
+        case Proto::Transaction::kErc20Transfer:
+            {
+                Data tokenToAddress = addressStringToData(input.transaction().erc20_transfer().to());
+                auto transaction = Transaction::buildERC20Transfer(
+                    /* nonce: */ load(input.nonce()),
+                    /* gasPrice: */ load(input.gas_price()),
+                    /* gasLimit: */ load(input.gas_limit()),
+                    /* tokenContract: */ toAddress,
+                    /* toAddress */ tokenToAddress,
+                    /* amount: */ load(input.transaction().erc20_transfer().amount()));
+                return transaction;
+            }
+
+        case Proto::Transaction::kErc20Approve:
+            {
+                Data spenderAddress = addressStringToData(input.transaction().erc20_approve().spender());
+                auto transaction = Transaction::buildERC20Approve(
+                    /* nonce: */ load(input.nonce()),
+                    /* gasPrice: */ load(input.gas_price()),
+                    /* gasLimit: */ load(input.gas_limit()),
+                    /* tokenContract: */ toAddress,
+                    /* toAddress */ spenderAddress,
+                    /* amount: */ load(input.transaction().erc20_transfer().amount()));
+                return transaction;
+            }
+
+        case Proto::Transaction::kErc721Transfer:
+            {
+                Data tokenToAddress = addressStringToData(input.transaction().erc721_transfer().to());
+                Data tokenFromAddress = addressStringToData(input.transaction().erc721_transfer().from());
+                auto transaction = Transaction::buildERC721Transfer(
+                    /* nonce: */ load(input.nonce()),
+                    /* gasPrice: */ load(input.gas_price()),
+                    /* gasLimit: */ load(input.gas_limit()),
+                    /* tokenContract: */ toAddress,
+                    /* fromAddress: */ tokenFromAddress,
+                    /* toAddress */ tokenToAddress,
+                    /* tokenId: */ load(input.transaction().erc721_transfer().token_id()));
+                return transaction;
+            }
+
+        case Proto::Transaction::kContractGeneric:
+        default:
+            {
+                auto transaction = Transaction::buildSmartContract(
+                    /* nonce: */ load(input.nonce()),
+                    /* gasPrice: */ load(input.gas_price()),
+                    /* gasLimit: */ load(input.gas_limit()),
+                    /* to: */ toAddress,
+                    /* transaction: */ Data(input.transaction().contract_generic().data().begin(), input.transaction().contract_generic().data().end()));
+                return transaction;
+            }
+    }
 }
 
 void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept {

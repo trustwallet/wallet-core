@@ -33,13 +33,12 @@ TEST(BinanceSmartChain, SignNativeTransfer) {
     // https://explorer.binance.org/smart-testnet/tx/0x6da28164f7b3bc255d749c3ae562e2a742be54c12bf1858b014cc2fe5700684e
 
     auto toAddress = parse_hex("0x31BE00EB1fc8e14A696DBC72f746ec3e95f49683");
-    auto transaction = Transaction(
+    auto transaction = Transaction::buildTransfer(
         /* nonce: */ 0,
         /* gasPrice: */ 20000000000,
         /* gasLimit: */ 21000,
         /* to: */ toAddress,
-        /* amount: */ 10000000000000000, // 0.01
-        /* payload: */ {}
+        /* amount: */ 10000000000000000 // 0.01
     );
 
     // addr: 0xB9F5771C27664bF2282D98E09D7F50cEc7cB01a7  mnemonic: isolate dismiss ... cruel note
@@ -76,9 +75,9 @@ TEST(BinanceSmartChain, SignTokenTransfer) {
     input.set_gas_price(gasPrice.data(), gasPrice.size());
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_to_address(tokenContractAddress);
-    input.set_payload(payloadFunction.data(), payloadFunction.size());
-    input.set_amount(dummyAmount.data(), dummyAmount.size());
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    auto& transfer = *input.mutable_transaction()->mutable_contract_generic();
+    transfer.set_data(payloadFunction.data(), payloadFunction.size());
 
     const std::string expected = "f8ab1e8504a817c800830f424094ed24fc36d5ee211ea25a80239fb8c4cfd80f12ee80b844a9059cbb00000000000000000000000031be00eb1fc8e14a696dbc72f746ec3e95f49683000000000000000000000000000000000000000000000000002386f26fc1000081e6a0aa9d5e9a947e96f728fe5d3e6467000cd31a693c00270c33ec64b4abddc29516a00bf1d5646139b2bcca1ad64e6e79f45b7d1255de603b5a3765cbd9544ae148d0";
 

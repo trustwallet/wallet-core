@@ -31,7 +31,8 @@ TEST(TWAnySignerWanchain, Sign) {
     input.set_to_address("0x3535353535353535353535353535353535353535");
 
     auto amount = store(uint256_t(1000000000000000000));
-    input.set_amount(amount.data(), amount.size());
+    auto& transfer = *input.mutable_transaction()->mutable_transfer();
+    transfer.set_amount(amount.data(), amount.size());
 
     auto key = parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646");
     input.set_private_key(key.data(), key.size());
