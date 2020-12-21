@@ -28,13 +28,14 @@ TW_EXPORT_PROPERTY
 TWString* _Nonnull TWStoreWalletIndentifier(struct TWStoreWallet* _Nonnull wallet);
 
 /// Returns the account for a specific coin.
-TW_EXPORT_STATIC_METHOD
+TW_EXPORT_METHOD
 struct TWAnyAddress* _Nonnull TWStoreWalletGetAccount(struct TWStoreWallet* _Nonnull wallet, TWString* _Nonnull password, enum TWCoinType coin);
 
 /// Returns the accounts for a specific coins.
 //const std::vector<Account> getAccounts(const std::string& password, const std::vector<TWCoinType>& coins);
 
 /// Returns the private key for a specific coin.
-struct TWPrivateKey* _Nonnull TWStoreWalletPrivateKey(struct TWStoreWallet* _Nonnull wallet, const TWString* _Nonnull password, enum TWCoinType coin);
+TW_EXPORT_METHOD
+struct TWPrivateKey* _Nonnull TWStoreWalletPrivateKey(struct TWStoreWallet* _Nonnull wallet, TWString* _Nonnull password, enum TWCoinType coin);
 
 TW_EXTERN_C_END
