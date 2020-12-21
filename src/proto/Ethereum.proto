@@ -3,6 +3,58 @@ syntax = "proto3";
 package TW.Ethereum.Proto;
 option java_package = "wallet.core.jni.proto";
 
+// Transaction (transfer, smart contract call, ...)
+message Transaction {
+    // Native coin transfer transaction
+    message Transfer {
+        // Amount to send in wei (256-bit number)
+        bytes amount = 1;
+
+        // Optional payload data
+        bytes data = 2;
+    }
+
+    // ERC20 token transfer transaction
+    message ERC20Transfer {
+        string to = 1;
+
+        // Amount to send (256-bit number)
+        bytes amount = 2;
+    }
+
+    // ERC20 approve transaction
+    message ERC20Approve {
+        string spender = 1;
+
+        // Amount to send (256-bit number)
+        bytes amount = 2;
+    }
+
+    // ERC721 NFT transfer transaction
+    message ERC721Transfer {
+        string from = 1;
+
+        string to = 2;
+
+        // ID of the token (256-bit number)
+        bytes token_id = 3;
+    }
+
+    // Generic smart contract transaction
+    message ContractGeneric {
+        // Contract call payload data
+        bytes data = 1;
+    }
+
+    oneof transaction_oneof {
+        Transfer transfer = 1;
+        ERC20Transfer erc20_transfer = 2;
+        ERC20Approve erc20_approve = 3;
+        ERC721Transfer erc721_transfer = 4;
+        ContractGeneric contract_generic = 5;
+    }
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     // Chain identifier (256-bit number)
@@ -20,14 +72,10 @@ message SigningInput {
     // Recipient's address.
     string to_address = 5;
 
-    // Amount to send in wei (256-bit number)
-    bytes amount = 6;
-
-    // Optional payload
-    bytes payload = 7;
-
     // Private key.
-    bytes private_key = 8;
+    bytes private_key = 6;
+
+    Transaction transaction = 7;
 }
 
 // Transaction signing output.
