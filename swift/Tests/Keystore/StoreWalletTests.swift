@@ -27,6 +27,7 @@ class StoreWalletTests: XCTestCase {
         let coin = CoinType.bitcoin
         let account = wallet.getAccount(password: password, coin: coin)
         XCTAssertEqual(coin, account.coin)
+        XCTAssertEqual("bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny", account.address)
     }
     
     func testGetPrivateKey() {

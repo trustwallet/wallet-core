@@ -43,6 +43,7 @@ class TestStoreWallet {
         val coin = CoinType.BITCOIN
         val account = wallet.getAccount(password, coin)
         assertEquals(account.coin(), coin)
+        assertEquals(account.address(), "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny")
     }
 
     @Test
