@@ -27,11 +27,6 @@ public:
     uint256_t s = uint256_t();
 
     // Factory methods
-    // Create a native coin transfer transaction
-    static Transaction buildTransfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, const Data& to, uint256_t amount, const Data& optionalData = {}) {
-        return Transaction(nonce, gasPrice, gasLimit, to, amount, optionalData);
-    }
-
     // Create an ERC20 token transfer transaction
     static Transaction buildERC20Transfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit,
         const Data& tokenContract, const Data& toAddress, uint256_t amount);
@@ -44,18 +39,13 @@ public:
     static Transaction buildERC721Transfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit,
         const Data& tokenContract, const Data& from, const Data& to, uint256_t tokenId);
 
-    // Create a generic smart contract transaction
-    static Transaction buildSmartContract(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, const Data& to, const Data& data) {
-        return Transaction(nonce, gasPrice, gasLimit, to, 0, data);
-    }
-
     // Helpers for building contract calls
     static Data buildERC20TransferCall(const Data& to, uint256_t amount);
     static Data buildERC20ApproveCall(const Data& spender, uint256_t amount);
     static Data buildERC721TransferFromCall(const Data& from, const Data& to, uint256_t tokenId);
 
-private:
-    Transaction(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, const Data& to, uint256_t amount, const Data& payload)
+public:
+    Transaction(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, const Data& to, uint256_t amount, const Data& payload = {})
         : nonce(std::move(nonce))
         , gasPrice(std::move(gasPrice))
         , gasLimit(std::move(gasLimit))

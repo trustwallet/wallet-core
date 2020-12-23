@@ -23,7 +23,7 @@ public:
 
 TEST(EthereumSigner, Hash) {
     auto address = parse_hex("0x3535353535353535353535353535353535353535");
-    auto transaction = Transaction::buildTransfer(
+    auto transaction = Transaction(
         /* nonce: */ 9,
         /* gasPrice: */ 20000000000,
         /* gasLimit: */ 21000,
@@ -38,7 +38,7 @@ TEST(EthereumSigner, Hash) {
 
 TEST(EthereumSigner, Sign) {
     auto address = parse_hex("0x3535353535353535353535353535353535353535");
-    auto transaction = Transaction::buildTransfer(
+    auto transaction = Transaction(
         /* nonce: */ 9,
         /* gasPrice: */ 20000000000,
         /* gasLimit: */ 21000,
