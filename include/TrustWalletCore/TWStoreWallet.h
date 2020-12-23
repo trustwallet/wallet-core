@@ -38,4 +38,8 @@ struct TWAnyAddress* _Nonnull TWStoreWalletGetAccount(struct TWStoreWallet* _Non
 TW_EXPORT_METHOD
 struct TWPrivateKey* _Nonnull TWStoreWalletPrivateKey(struct TWStoreWallet* _Nonnull wallet, TWString* _Nonnull password, enum TWCoinType coin);
 
+/// Compares for equality.
+TW_EXPORT_STATIC_METHOD
+bool TWStoreWalletEqual(struct TWStoreWallet* _Nonnull lhs, struct TWStoreWallet* _Nonnull rhs);
+
 TW_EXTERN_C_END

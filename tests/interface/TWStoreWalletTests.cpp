@@ -27,10 +27,10 @@ const auto passwordData = WRAPD(TWDataCreateWithBytes((const unsigned char*)pass
 const auto mnemonic = WRAPS(TWStringCreateWithUTF8Bytes("team engine square letter hero song dizzy scrub tornado fabric divert saddle"));
 const auto walletPath = "testwallet";
 
-std::shared_ptr<TWStoreWallet> createWallet() {
+std::shared_ptr<TWStoreWallet> createWallet(const char* path = walletPath) {
     auto keyStore = WRAP(TWStoredKey, TWStoredKeyCreateWithMnemonic(WRAPS(TWStringCreateWithUTF8Bytes("name")).get(), passwordData.get(), mnemonic.get()));
-    auto path = WRAPS(TWStringCreateWithUTF8Bytes((string("./") + walletPath).c_str()));
-    return std::shared_ptr<TWStoreWallet>(TWStoreWalletCreate(path.get(), keyStore.get()), TWStoreWalletDelete);
+    auto fullPath = WRAPS(TWStringCreateWithUTF8Bytes((string("./") + path).c_str()));
+    return std::shared_ptr<TWStoreWallet>(TWStoreWalletCreate(fullPath.get(), keyStore.get()), TWStoreWalletDelete);
 }
 
 TEST(TWStoreWallet, create) {
@@ -53,4 +53,12 @@ TEST(TWStoreWallet, privateKey) {
     auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
     EXPECT_EQ(hex(TW::data(TWDataBytes(privateKeyData.get()), TWDataSize(privateKeyData.get()))), 
         "d2568511baea8dc347f14c4e0479eb8ebe29eb5f664ed796e755896250ffd11f");
+}
+
+TEST(TWStoreWallet, equal) {
+    auto wallet1 = createWallet();
+    auto wallet2 = createWallet();
+    auto wallet3 = createWallet("testWallet3Other");
+    EXPECT_TRUE(TWStoreWalletEqual(wallet1.get(), wallet2.get()));
+    EXPECT_FALSE(TWStoreWalletEqual(wallet1.get(), wallet3.get()));
 }

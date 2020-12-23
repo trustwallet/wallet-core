@@ -43,3 +43,7 @@ struct TWPrivateKey* _Nonnull TWStoreWalletPrivateKey(struct TWStoreWallet* _Non
     auto privateKey = wallet->impl.privateKey(passwordString, coin);
     return new TWPrivateKey{ privateKey };
 }
+
+bool TWStoreWalletEqual(struct TWStoreWallet* _Nonnull lhs, struct TWStoreWallet* _Nonnull rhs) {
+    return lhs->impl == rhs->impl;
+}
