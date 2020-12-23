@@ -33,7 +33,7 @@ TEST(BinanceSmartChain, SignNativeTransfer) {
     // https://explorer.binance.org/smart-testnet/tx/0x6da28164f7b3bc255d749c3ae562e2a742be54c12bf1858b014cc2fe5700684e
 
     auto toAddress = parse_hex("0x31BE00EB1fc8e14A696DBC72f746ec3e95f49683");
-    auto transaction = Transaction::buildTransfer(
+    auto transaction = Transaction(
         /* nonce: */ 0,
         /* gasPrice: */ 20000000000,
         /* gasLimit: */ 21000,

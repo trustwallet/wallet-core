@@ -42,8 +42,11 @@ message Transaction {
 
     // Generic smart contract transaction
     message ContractGeneric {
+        // Amount to send in wei (256-bit number)
+        bytes amount = 1;
+
         // Contract call payload data
-        bytes data = 1;
+        bytes data = 2;
     }
 
     oneof transaction_oneof {

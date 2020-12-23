@@ -23,7 +23,7 @@ public:
 
 TEST(Signer, Sign) {
     auto address = parse_hex("0x3535353535353535353535353535353535353535");
-    auto transaction = Ethereum::Transaction::buildTransfer(
+    auto transaction = Ethereum::Transaction(
         /* nonce: */ 9,
         /* gasPrice: */ 20000000000,
         /* gasLimit: */ 21000,
