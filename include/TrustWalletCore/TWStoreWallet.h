@@ -9,7 +9,7 @@
 #include "TWString.h"
 #include "TWCoinType.h"
 #include "TWStoredKey.h"
-#include "TWAnyAddress.h"
+#include "TWAccount.h"
 #include "TWPrivateKey.h"
 
 TW_EXTERN_C_BEGIN
@@ -29,7 +29,7 @@ TWString* _Nonnull TWStoreWalletIndentifier(struct TWStoreWallet* _Nonnull walle
 
 /// Returns the account for a specific coin.
 TW_EXPORT_METHOD
-struct TWAnyAddress* _Nonnull TWStoreWalletGetAccount(struct TWStoreWallet* _Nonnull wallet, TWString* _Nonnull password, enum TWCoinType coin);
+struct TWAccount* _Nonnull TWStoreWalletGetAccount(struct TWStoreWallet* _Nonnull wallet, TWString* _Nonnull password, enum TWCoinType coin);
 
 /// Returns the accounts for a specific coins.
 //const std::vector<Account> getAccounts(const std::string& password, const std::vector<TWCoinType>& coins);

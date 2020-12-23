@@ -32,10 +32,10 @@ TWString* _Nonnull TWStoreWalletIndentifier(struct TWStoreWallet* _Nonnull walle
     return TWStringCreateWithUTF8Bytes(wallet->impl.getIdentifier().c_str());
 }
 
-struct TWAnyAddress* _Nonnull TWStoreWalletGetAccount(struct TWStoreWallet* _Nonnull wallet, TWString* _Nonnull password, enum TWCoinType coin) {
+struct TWAccount* _Nonnull TWStoreWalletGetAccount(struct TWStoreWallet* _Nonnull wallet, TWString* _Nonnull password, enum TWCoinType coin) {
     auto& passwordString = *reinterpret_cast<const std::string*>(password);
     Account account = wallet->impl.getAccount(passwordString, coin);
-    return TWAnyAddressCreateWithString(TWStringCreateWithUTF8Bytes(account.address.c_str()), coin);
+    return new TWAccount{account};
 }
 
 struct TWPrivateKey* _Nonnull TWStoreWalletPrivateKey(struct TWStoreWallet* _Nonnull wallet, const TWString* _Nonnull password, enum TWCoinType coin) {

@@ -41,9 +41,9 @@ TEST(TWStoreWallet, create) {
 TEST(TWStoreWallet, getAccount) {
     auto wallet = createWallet();
     TWCoinType coin = TWCoinTypeBitcoin;
-    auto account = WRAP(TWAnyAddress, TWStoreWalletGetAccount(wallet.get(), passwordString.get(), coin));
-    EXPECT_EQ(TWAnyAddressCoin(account.get()), coin);
-    EXPECT_EQ(*reinterpret_cast<const std::string*>(WRAPS(TWAnyAddressDescription(account.get())).get()), "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
+    auto account = WRAP(TWAccount, TWStoreWalletGetAccount(wallet.get(), passwordString.get(), coin));
+    EXPECT_EQ(TWAccountCoin(account.get()), coin);
+    EXPECT_EQ(*reinterpret_cast<const std::string*>(WRAPS(TWAccountAddress(account.get())).get()), "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
 }
 
 TEST(TWStoreWallet, privateKey) {
