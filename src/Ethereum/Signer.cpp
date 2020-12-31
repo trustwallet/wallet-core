@@ -123,7 +123,7 @@ Transaction Signer::build(const Proto::SigningInput &input) {
                     /* gasLimit: */ gasLimit,
                     /* tokenContract: */ toAddress,
                     /* toAddress */ spenderAddress,
-                    /* amount: */ load(input.transaction().erc20_transfer().amount()));
+                    /* amount: */ load(input.transaction().erc20_approve().amount()));
                 return transaction;
             }
 
