@@ -25,7 +25,7 @@ Transaction Transaction::buildERC20Approve(uint256_t nonce, uint256_t gasPrice, 
 
 Transaction Transaction::buildERC721Transfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit,
                 const Data& tokenContract, const Data& from, const Data& to, uint256_t tokenId) {
-    return Transaction(nonce, gasPrice, gasLimit, {}, 0, buildERC721TransferFromCall(from, to, tokenId));
+    return Transaction(nonce, gasPrice, gasLimit, tokenContract, 0, buildERC721TransferFromCall(from, to, tokenId));
 }
 
 Data Transaction::buildERC20TransferCall(const Data& to, uint256_t amount) {
