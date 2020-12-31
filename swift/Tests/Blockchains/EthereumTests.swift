@@ -30,7 +30,7 @@ class EthereumTests: XCTestCase {
             $0.toAddress = "0x3535353535353535353535353535353535353535"
             $0.privateKey = Data(hexString: "0x4646464646464646464646464646464646464646464646464646464646464646")!
             $0.transaction = EthereumTransaction.with {
-                $0.transfer = TW_Ethereum_Proto_Transaction.Transfer.with {
+                $0.transfer = EthereumTransaction.Transfer.with {
                     $0.amount = Data(hexString: "0de0b6b3a7640000")!
                 }
             }
@@ -40,9 +40,6 @@ class EthereumTests: XCTestCase {
         let encoded = AnySigner.encode(input: input, coin: .ethereum)
 
         XCTAssertEqual(encoded, output.encoded)
-        XCTAssertEqual(output.v.hexString, "25")
-        XCTAssertEqual(output.r.hexString, "28ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276")
-        XCTAssertEqual(output.s.hexString, "67cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d83")
         XCTAssertEqual(output.encoded.hexString, "f86c098504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a028ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276a067cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d83")
     }
 
@@ -55,7 +52,7 @@ class EthereumTests: XCTestCase {
             $0.toAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // DAI
             $0.privateKey = Data(hexString: "0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151")!
             $0.transaction = EthereumTransaction.with {
-                $0.erc20Transfer = TW_Ethereum_Proto_Transaction.ERC20Transfer.with {
+                $0.erc20Transfer = EthereumTransaction.ERC20Transfer.with {
                     $0.to = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
                     $0.amount = Data(hexString: "1bc16d674ec80000")! // 2000000000000000000
                 }
@@ -65,9 +62,6 @@ class EthereumTests: XCTestCase {
         let encoded = AnySigner.encode(input: input, coin: .ethereum)
 
         XCTAssertEqual(encoded, output.encoded)
-        XCTAssertEqual(output.v.hexString, "25")
-        XCTAssertEqual(output.r.hexString, "724c62ad4fbf47346b02de06e603e013f26f26b56fdc0be7ba3d6273401d98ce")
-        XCTAssertEqual(output.s.hexString, "032131cae15da7ddcda66963e8bef51ca0d9962bfef0547d3f02597a4a58c931")
         XCTAssertEqual(output.encoded.hexString, "f8aa808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec8000025a0724c62ad4fbf47346b02de06e603e013f26f26b56fdc0be7ba3d6273401d98cea0032131cae15da7ddcda66963e8bef51ca0d9962bfef0547d3f02597a4a58c931")
     }
 
@@ -80,7 +74,7 @@ class EthereumTests: XCTestCase {
             $0.toAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // DAI
             $0.privateKey = Data(hexString: "0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151")!
             $0.transaction = EthereumTransaction.with {
-                $0.erc20Approve = TW_Ethereum_Proto_Transaction.ERC20Approve.with {
+                $0.erc20Approve = EthereumTransaction.ERC20Approve.with {
                     $0.spender = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
                     $0.amount = Data(hexString: "1bc16d674ec80000")! // 2000000000000000000
                 }
@@ -94,18 +88,20 @@ class EthereumTests: XCTestCase {
     }
 
     func testSignERC721Transfer() {
+        // https://etherscan.io/tx/0x3cde660762810d951d5cc57f8d907fbf229054908f1a770c3fb0b7b375cf4f82
+        // real key 1p
         let input = EthereumSigningInput.with {
             $0.chainID = Data(hexString: "01")!
-            $0.nonce = Data(hexString: "00")!
-            $0.gasPrice = Data(hexString: "09c7652400")! // 42000000000
-            $0.gasLimit = Data(hexString: "0130B9")! // 78009
-            $0.toAddress = "0x4e45e92ed38f885d39a733c14f1817217a89d425" // payload
+            $0.nonce = Data(hexString: "02de")! // 734
+            $0.gasPrice = Data(hexString: "22ecb25c00")! // 150000000000
+            $0.gasLimit = Data(hexString: "0130b9")! // 78009
+            $0.toAddress = "0x0d8c864DA1985525e0af0acBEEF6562881827bd5" // contract
             $0.privateKey = Data(hexString: "0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151")!
             $0.transaction = EthereumTransaction.with {
-                $0.erc721Transfer = TW_Ethereum_Proto_Transaction.ERC721Transfer.with {
-                    $0.from = "0x718046867b5b1782379a14eA4fc0c9b724DA94Fc"
-                    $0.to = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
-                    $0.tokenID = Data(hexString: "23c47ee5")!
+                $0.erc721Transfer = EthereumTransaction.ERC721Transfer.with {
+                    $0.from = "0x7d8bf18C7cE84b3E175b339c4Ca93aEd1dD166F1"
+                    $0.to = "0x47331175b23C2f067204B506CA1501c26731C990"
+                    $0.tokenID = Data(hexString: "0fd8")! // 4056
                 }
             }
         }
@@ -113,10 +109,7 @@ class EthereumTests: XCTestCase {
         let encoded = AnySigner.encode(input: input, coin: .ethereum)
 
         XCTAssertEqual(encoded, output.encoded)
-        XCTAssertEqual(output.v.hexString, "26")
-        XCTAssertEqual(output.r.hexString, "4f35575c8dc6d0c12fd1ae0007a1395f2baa992d5d498f5ee381cdb7d46ed43c")
-        XCTAssertEqual(output.s.hexString, "0935b9ceb724ab73806e7f43da6a3079e7404e2dc28fe030fef96cd13779ac04")
-        XCTAssertEqual(output.encoded.hexString, "f8b6808509c7652400830130b98080b86423b872dd000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee526a04f35575c8dc6d0c12fd1ae0007a1395f2baa992d5d498f5ee381cdb7d46ed43ca00935b9ceb724ab73806e7f43da6a3079e7404e2dc28fe030fef96cd13779ac04")
+        XCTAssertEqual(output.encoded.hexString, "f8cc8202de8522ecb25c00830130b9940d8c864da1985525e0af0acbeef6562881827bd580b86423b872dd0000000000000000000000007d8bf18c7ce84b3e175b339c4ca93aed1dd166f100000000000000000000000047331175b23c2f067204b506ca1501c26731c9900000000000000000000000000000000000000000000000000000000000000fd825a04c5d8242a8c2db1cfa352a3486dd85c82824e01b9bcf0ce4170fcd2329fb7bcaa02d85ab09e750a73fd4dd26b142830ada1e991f8474795b43d96d93e65caaefe7")
     }
 
     func testSignJSON() {

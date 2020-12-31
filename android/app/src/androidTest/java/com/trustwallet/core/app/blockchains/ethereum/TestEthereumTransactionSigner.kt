@@ -40,9 +40,6 @@ class TestEthereumTransactionSigner {
         val encoded = AnySigner.encode(signingInput.build(), ETHEREUM)
 
         assertArrayEquals(output.encoded.toByteArray(), encoded)
-        assertEquals(Numeric.toHexString(output.v.toByteArray()), "0x25")
-        assertEquals(Numeric.toHexString(output.r.toByteArray()), "0x28ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276")
-        assertEquals(Numeric.toHexString(output.s.toByteArray()), "0x67cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d83")
         assertEquals(Numeric.toHexString(encoded), "0xf86c098504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a028ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276a067cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d83")
     }
 
@@ -68,9 +65,6 @@ class TestEthereumTransactionSigner {
         val encoded = AnySigner.encode(signingInput.build(), ETHEREUM)
 
         assertArrayEquals(output.encoded.toByteArray(), encoded)
-        assertEquals(Numeric.toHexString(output.v.toByteArray()), "0x25")
-        assertEquals(Numeric.toHexString(output.r.toByteArray()), "0x724c62ad4fbf47346b02de06e603e013f26f26b56fdc0be7ba3d6273401d98ce")
-        assertEquals(Numeric.toHexString(output.s.toByteArray()), "0x032131cae15da7ddcda66963e8bef51ca0d9962bfef0547d3f02597a4a58c931")
         assertEquals(Numeric.toHexString(encoded), "0xf8aa808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec8000025a0724c62ad4fbf47346b02de06e603e013f26f26b56fdc0be7ba3d6273401d98cea0032131cae15da7ddcda66963e8bef51ca0d9962bfef0547d3f02597a4a58c931")
     }
 
@@ -79,16 +73,16 @@ class TestEthereumTransactionSigner {
         val signingInput = Ethereum.SigningInput.newBuilder()
         signingInput.apply {
             privateKey = ByteString.copyFrom(PrivateKey("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151".toHexByteArray()).data())
-            toAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // DAI
+            toAddress = "0x0d8c864DA1985525e0af0acBEEF6562881827bd5"
             chainId = ByteString.copyFrom("0x1".toHexByteArray())
-            nonce = ByteString.copyFrom("0x0".toHexByteArray())
-            gasPrice = ByteString.copyFrom("0x09c7652400".toHexByteArray())
-            gasLimit = ByteString.copyFrom("0x0130B9".toHexByteArray())
+            nonce = ByteString.copyFrom("0x02de".toHexByteArray())
+            gasPrice = ByteString.copyFrom("0x22ecb25c00".toHexByteArray()) // 150 Gwei
+            gasLimit = ByteString.copyFrom("0x0130b9".toHexByteArray())
             transaction = Ethereum.Transaction.newBuilder().apply {
                 erc721Transfer = Ethereum.Transaction.ERC721Transfer.newBuilder().apply {
-                    from = "0x718046867b5b1782379a14eA4fc0c9b724DA94Fc"
-                    to = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
-                    tokenId = ByteString.copyFrom("0x23c47ee5".toHexByteArray())
+                    from = "0x7d8bf18C7cE84b3E175b339c4Ca93aEd1dD166F1"
+                    to = "0x47331175b23C2f067204B506CA1501c26731C990"
+                    tokenId = ByteString.copyFrom("0x0fd8".toHexByteArray())
                 }.build()
             }.build()
         }
@@ -97,10 +91,7 @@ class TestEthereumTransactionSigner {
         val encoded = AnySigner.encode(signingInput.build(), ETHEREUM)
 
         assertArrayEquals(output.encoded.toByteArray(), encoded)
-        assertEquals(Numeric.toHexString(output.v.toByteArray()), "0x26")
-        assertEquals(Numeric.toHexString(output.r.toByteArray()), "0x4f35575c8dc6d0c12fd1ae0007a1395f2baa992d5d498f5ee381cdb7d46ed43c")
-        assertEquals(Numeric.toHexString(output.s.toByteArray()), "0x0935b9ceb724ab73806e7f43da6a3079e7404e2dc28fe030fef96cd13779ac04")
-        assertEquals(Numeric.toHexString(encoded), "0xf8b6808509c7652400830130b98080b86423b872dd000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee526a04f35575c8dc6d0c12fd1ae0007a1395f2baa992d5d498f5ee381cdb7d46ed43ca00935b9ceb724ab73806e7f43da6a3079e7404e2dc28fe030fef96cd13779ac04")
+        assertEquals(Numeric.toHexString(encoded), "0xf8cc8202de8522ecb25c00830130b9940d8c864da1985525e0af0acbeef6562881827bd580b86423b872dd0000000000000000000000007d8bf18c7ce84b3e175b339c4ca93aed1dd166f100000000000000000000000047331175b23c2f067204b506ca1501c26731c9900000000000000000000000000000000000000000000000000000000000000fd825a04c5d8242a8c2db1cfa352a3486dd85c82824e01b9bcf0ce4170fcd2329fb7bcaa02d85ab09e750a73fd4dd26b142830ada1e991f8474795b43d96d93e65caaefe7")
     }
 
     @Test
