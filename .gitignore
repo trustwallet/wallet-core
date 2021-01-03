@@ -8,6 +8,7 @@ xcode/
 cmake-build-debug/
 .cquery_cache/
 .cxx/
+.cache/
 
 # Dependencies
 node_modules

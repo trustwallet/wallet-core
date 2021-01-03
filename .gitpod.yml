@@ -1,0 +1,14 @@
+image:
+  file: gitpod.Dockerfile
+
+tasks:
+  - name: Welcome message
+    init: echo "Please run ./bootstrap.sh"
+
+vscode:
+  extensions:
+    - llvm-vs-code-extensions.vscode-clangd
+    - ms-vscode.cmake-tools
+    - coenraads.bracket-pair-colorizer-2
+    - notskm.clang-tidy
+    - zxh404.vscode-proto3
