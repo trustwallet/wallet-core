@@ -28,6 +28,10 @@ void TWStoreWalletDelete(struct TWStoreWallet* _Nonnull wallet) {
     delete wallet;
 }
 
+TWStoredKey* _Nonnull TWStoreWalletStoredKey(struct TWStoreWallet* _Nonnull wallet) {
+    return new TWStoredKey{ wallet->impl.storedKey() };
+}
+
 TWString* _Nonnull TWStoreWalletIndentifier(struct TWStoreWallet* _Nonnull wallet) {
     return TWStringCreateWithUTF8Bytes(wallet->impl.getIdentifier().c_str());
 }

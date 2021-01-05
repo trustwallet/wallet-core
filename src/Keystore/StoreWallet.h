@@ -35,6 +35,8 @@ public:
 
     std::string getIdentifier() const { return identifier; }
 
+    const StoredKey& storedKey() const { return key; }
+
     /// Returns the account for a specific coin.
     /// - Parameters:
     ///   - password: wallet encryption password

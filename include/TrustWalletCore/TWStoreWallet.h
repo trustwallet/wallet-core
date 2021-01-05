@@ -25,6 +25,9 @@ TW_EXPORT_METHOD
 void TWStoreWalletDelete(struct TWStoreWallet* _Nonnull wallet);
 
 TW_EXPORT_PROPERTY
+TWStoredKey* _Nonnull TWStoreWalletStoredKey(struct TWStoreWallet* _Nonnull wallet);
+
+TW_EXPORT_PROPERTY
 TWString* _Nonnull TWStoreWalletIndentifier(struct TWStoreWallet* _Nonnull wallet);
 
 /// Returns the account for a specific coin.

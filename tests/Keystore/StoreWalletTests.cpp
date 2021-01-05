@@ -45,6 +45,7 @@ TEST(StoreWallet, fileFromPath) {
 TEST(StoreWallet, create) {
     StoreWallet wallet = createWallet();
     EXPECT_EQ(wallet.getIdentifier(), walletPath);
+    EXPECT_EQ(wallet.storedKey().name, "name");
 }
 
 TEST(StoreWallet, getAccount) {
