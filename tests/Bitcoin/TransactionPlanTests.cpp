@@ -164,7 +164,7 @@ TEST(TransactionPlan, NonMaxAmount) {
     EXPECT_TRUE(verifyPlan(txPlan, {50000}, 10000, 147));
 }
 
-TEST(TransactionPlan, UnpsentsInsufficient) {
+TEST(TransactionPlan, UnspentsInsufficient) {
     auto utxos = buildTestUTXOs({4000, 4000, 4000});
     auto sigingInput = buildSigningInput(15000, 1, utxos);
 
