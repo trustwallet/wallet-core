@@ -193,6 +193,77 @@ TEST(TransactionPlan, UnspentsInsufficient) {
     EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0));
 }
 
+TEST(TransactionPlan, Inputs5_33Req19NoDustFee2) {
+    auto utxos = buildTestUTXOs({600, 1'200, 6'000, 8'000, 10'000});
+    auto byteFee = 2;
+    auto sigingInput = buildSigningInput(19'000, byteFee, utxos);
+
+    // UTXOs smaller than singleInputFee are not included
+    auto txPlan = TransactionBuilder::plan(sigingInput);
+
+    auto expectedFee = 283*byteFee;
+    EXPECT_TRUE(verifyPlan(txPlan, {6'000, 8'000, 10'000}, 19'000, expectedFee));
+
+    auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
+    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 296);
+}
+
+TEST(TransactionPlan, Inputs5_33Req19Dust1Fee5) {
+    auto utxos = buildTestUTXOs({600, 1'200, 6'000, 8'000, 10'000});
+    auto byteFee = 5;
+    auto sigingInput = buildSigningInput(19'000, byteFee, utxos);
+
+    // UTXOs smaller than singleInputFee are not included
+    auto txPlan = TransactionBuilder::plan(sigingInput);
+
+    auto expectedFee = 283*byteFee;
+    EXPECT_TRUE(verifyPlan(txPlan, {6'000, 8'000, 10'000}, 19'000, expectedFee));
+
+    auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
+    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 740);
+}
+
+TEST(TransactionPlan, Inputs5_33Req19Dust1Fee9) {
+    auto utxos = buildTestUTXOs({600, 1'200, 6'000, 8'000, 10'000});
+    auto byteFee = 9;
+    auto sigingInput = buildSigningInput(19'000, byteFee, utxos);
+
+    // UTXOs smaller than singleInputFee are not included
+    auto txPlan = TransactionBuilder::plan(sigingInput);
+
+    auto expectedFee = 283*byteFee;
+    EXPECT_TRUE(verifyPlan(txPlan, {6'000, 8'000, 10'000}, 19'000, expectedFee));
+
+    auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
+    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 1332);
+}
+
+TEST(TransactionPlan, Inputs5_33Req19Fee20) {
+    auto utxos = buildTestUTXOs({600, 1'200, 6'000, 8'000, 10'000});
+    auto byteFee = 20;
+    auto sigingInput = buildSigningInput(19'000, byteFee, utxos);
+
+    // UTXOs smaller than singleInputFee are not included
+    auto txPlan = TransactionBuilder::plan(sigingInput);
+
+    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0));
+}
+
+TEST(TransactionPlan, Inputs5_33Req13Fee20) {
+    auto utxos = buildTestUTXOs({600, 1'200, 6'000, 8'000, 10'000});
+    auto byteFee = 20;
+    auto sigingInput = buildSigningInput(13'000, byteFee, utxos);
+
+    // UTXOs smaller than singleInputFee are not included
+    auto txPlan = TransactionBuilder::plan(sigingInput);
+
+    auto expectedFee = 283*byteFee;
+    EXPECT_TRUE(verifyPlan(txPlan, {6'000, 8'000, 10'000}, 13'000, expectedFee));
+
+    auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
+    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 2960);
+}
+
 TEST(TransactionPlan, NoUTXOs) {
     auto utxos = buildTestUTXOs({});
     auto sigingInput = buildSigningInput(15000, 1, utxos);
