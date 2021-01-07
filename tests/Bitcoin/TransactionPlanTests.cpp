@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -236,7 +236,8 @@ TEST(TransactionPlan, MaxAmount) {
     // UTXOs smaller than singleInputFee are not included
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {15000, 15000}, 30000 - 5792, 5792));
+    auto expectedFee = 5792;
+    EXPECT_TRUE(verifyPlan(txPlan, {15000, 15000}, 30000 - expectedFee, expectedFee));
 }
 
 TEST(TransactionPlan, MaxAmountOne) {
@@ -275,7 +276,23 @@ TEST(TransactionPlan, MaxAmountLowerRequested) {
     EXPECT_TRUE(verifyPlan(txPlan, {15000, 15000}, 30000 - expectedFee, expectedFee));
 }
 
-TEST(TransactionPlan, MaxAmount4of5) {
+TEST(TransactionPlan, MaxAmountNoDustFee2) {
+    auto utxos = buildTestUTXOs({400, 500, 600, 800, 1000});
+    auto byteFee = 2;
+    auto sigingInput = buildSigningInput(100, byteFee, utxos, true);
+
+    // UTXOs smaller than singleInputFee are not included
+    auto txPlan = TransactionBuilder::plan(sigingInput);
+
+    auto expectedFee = 770;
+    EXPECT_TRUE(verifyPlan(txPlan, {400, 500, 600, 800, 1000}, 3'300 - expectedFee, expectedFee));
+
+    auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
+    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 296);
+    EXPECT_EQ(feeCalculator.calculate(5, 1, byteFee), 1568);
+}
+
+TEST(TransactionPlan, MaxAmountDust1Fee3) {
     auto utxos = buildTestUTXOs({400, 500, 600, 800, 1000});
     auto byteFee = 3;
     auto sigingInput = buildSigningInput(100, byteFee, utxos, true);
@@ -289,6 +306,36 @@ TEST(TransactionPlan, MaxAmount4of5) {
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 444);
     EXPECT_EQ(feeCalculator.calculate(4, 1, byteFee), 1908);
+}
+
+TEST(TransactionPlan, MaxAmountDust2Fee4) {
+    auto utxos = buildTestUTXOs({400, 500, 600, 800, 1000});
+    auto byteFee = 4;
+    auto sigingInput = buildSigningInput(100, byteFee, utxos, true);
+
+    // UTXOs smaller than singleInputFee are not included
+    auto txPlan = TransactionBuilder::plan(sigingInput);
+
+    auto expectedFee = 996;
+    EXPECT_TRUE(verifyPlan(txPlan, {600, 800, 1000}, 2'400 - expectedFee, expectedFee));
+
+    auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
+    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 592);
+    EXPECT_EQ(feeCalculator.calculate(3, 1, byteFee), 1952);
+}
+
+TEST(TransactionPlan, MaxAmountDustAllFee7) {
+    auto utxos = buildTestUTXOs({400, 500, 600, 800, 1000});
+    auto byteFee = 7;
+    auto sigingInput = buildSigningInput(100, byteFee, utxos, true);
+
+    // UTXOs smaller than singleInputFee are not included
+    auto txPlan = TransactionBuilder::plan(sigingInput);
+
+    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0));
+
+    auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
+    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 1036);
 }
 
 TEST(TransactionPlan, One_MaxAmount_FeeMoreThanAvailable) {
