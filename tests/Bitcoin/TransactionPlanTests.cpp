@@ -49,13 +49,33 @@ TEST(TransactionPlan, OneInsufficientEqual) {
     EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0));
 }
 
-TEST(TransactionPlan, OneInsufficientHigher) {
+TEST(TransactionPlan, OneInsufficientLower100) {
+    // requested is only slightly lower than avail, not enough for fee, cannot be satisfied
     auto utxos = buildTestUTXOs({100'000});
-    auto sigingInput = buildSigningInput(99'900, 1, utxos);
+    auto sigingInput = buildSigningInput(100'000 - 100, 1, utxos);
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
     EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0));
+}
+
+TEST(TransactionPlan, OneInsufficientLower200) {
+    // requested is only slightly lower than avail, enough for fee but too small change, cannot be satisfied
+    auto utxos = buildTestUTXOs({100'000});
+    auto sigingInput = buildSigningInput(100'000 - 200, 1, utxos);
+
+    auto txPlan = TransactionBuilder::plan(sigingInput);
+
+    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0));
+}
+
+TEST(TransactionPlan, OneInsufficientLower300) {
+    auto utxos = buildTestUTXOs({100'000});
+    auto sigingInput = buildSigningInput(100'000 - 300, 1, utxos);
+
+    auto txPlan = TransactionBuilder::plan(sigingInput);
+
+    EXPECT_TRUE(verifyPlan(txPlan, {100'000}, 100'000 - 300, 147));
 }
 
 TEST(TransactionPlan, OneFitsExactly) {
