@@ -229,6 +229,16 @@ TEST(TransactionPlan, MaxAmountOne) {
     EXPECT_TRUE(verifyPlan(txPlan, {10189534}, 10189534 - expectedFee, expectedFee));
 }
 
+TEST(TransactionPlan, AmountEqualsMaxButNotUseMax) {
+    // amount is set to max, but UseMax is not set --> cannot be satisfied
+    auto utxos = buildTestUTXOs({10189534});
+    auto sigingInput = buildSigningInput(10189534, 1, utxos, false);
+
+    auto txPlan = TransactionBuilder::plan(sigingInput);
+
+    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0));
+}
+
 TEST(TransactionPlan, MaxAmountLowerRequested) {
     auto utxos = buildTestUTXOs({4000, 2000, 15000, 15000, 3000, 200});
     ASSERT_EQ(sumUTXOs(utxos), 39200);
@@ -241,7 +251,8 @@ TEST(TransactionPlan, MaxAmountLowerRequested) {
     // UTXOs smaller than singleInputFee are not included
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {15000, 15000}, 30000 - 5792, 5792));
+    auto expectedFee = 113;
+    EXPECT_TRUE(verifyPlan(txPlan, {15000, 15000}, 30000 - expectedFee, expectedFee));
 }
 
 TEST(TransactionPlan, MaxAmount4of5) {
