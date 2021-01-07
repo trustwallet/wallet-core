@@ -251,7 +251,7 @@ TEST(TransactionPlan, MaxAmountLowerRequested) {
     // UTXOs smaller than singleInputFee are not included
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    auto expectedFee = 113;
+    auto expectedFee = 5792;
     EXPECT_TRUE(verifyPlan(txPlan, {15000, 15000}, 30000 - expectedFee, expectedFee));
 }
 
