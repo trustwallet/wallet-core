@@ -206,7 +206,6 @@ TEST(TransactionPlan, SelectionSuboptimal_ExtraSmallUtxo) {
 
     auto expectedFee = 838;
     EXPECT_TRUE(verifyPlan(txPlan, {400, 500, 600, 800, 1'000}, 1'570, expectedFee));
-    //EXPECT_TRUE(verifyPlan(txPlan, {600, 800, 1'000}, 1'570, 566));
     auto change = 3'300 - 1'570 - expectedFee;
     auto firstUtxo = txPlan.utxos[0].amount();
     EXPECT_TRUE(change / 2 > txPlan.utxos[0].amount());
@@ -227,8 +226,6 @@ TEST(TransactionPlan, SelectionFail_CouldBeSatisfied5) {
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
     EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0));
-    //EXPECT_TRUE(verifyPlan(txPlan, {500, 600, 800, 1'000}, 1'775, 702));
-    //EXPECT_TRUE(verifyPlan(txPlan, {600, 800, 1'000}, 1'775, 566));
 }
 
 TEST(TransactionPlan, Inputs5_33Req19NoDustFee2) {
