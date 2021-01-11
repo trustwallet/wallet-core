@@ -36,18 +36,7 @@ RUN apt-get update \
 ENV CC=/usr/bin/clang-10
 ENV CXX=/usr/bin/clang++-10
 
-# ↑ Setup build environment
-# ↓ Build and compile wallet core
-
 RUN git clone https://github.com/trustwallet/wallet-core.git
 WORKDIR /wallet-core
-
-# Install dependencies
-RUN tools/install-dependencies
-
-# Build: generate, cmake, and make
-RUN tools/generate-files \
-    && cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug \
-    && make -Cbuild -j12
 
 CMD ["/bin/bash"]
