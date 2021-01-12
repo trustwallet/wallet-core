@@ -117,6 +117,9 @@ message TransactionPlan {
 
     // Zcash branch id
     bytes branch_id = 6;
+
+    // Optional error message
+    string error = 7;
 };
 
 // Transaction signing output.

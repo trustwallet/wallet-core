@@ -871,7 +871,7 @@ TEST(BitcoinSigning, Sign_NegativeNoUtxos) {
     {
         // plan returns empty, as there are 0 utxos
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_TRUE(verifyPlan(plan, {}, 0, 0));
+        EXPECT_TRUE(verifyPlan(plan, {}, 0, 0, "Missing input UTXOs"));
     }
 
     // Sign

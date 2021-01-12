@@ -68,7 +68,11 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
     auto unspentSelector = UnspentSelector(feeCalculator);
     bool maxAmount = input.use_max_amount();
 
-    if (input.amount() > 0 && !input.utxo().empty()) {
+    if (input.amount() == 0) {
+        plan.error = "Zero amount requested";
+    } else if (input.utxo().empty()) {
+        plan.error = "Missing input UTXOs";
+    } else {
         // select UTXOs
         plan.amount = input.amount();
         auto output_size = 2;
@@ -79,10 +83,11 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
             output_size = 1; // no change
             plan.utxos = unspentSelector.selectMaxAmount(input.utxo(), input.byte_fee());
         }
+
         if (plan.utxos.size() == 0) {
             plan.amount = 0;
+            plan.error = "Not enough non-dust input UTXOs";
         } else {
-            plan.amount = input.amount();
             plan.availableAmount = UnspentSelector::sum(plan.utxos);
 
             // Compute fee.
