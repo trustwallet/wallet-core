@@ -7,32 +7,93 @@
 #pragma once
 
 #include "../Data.h"
-
+#include "Address.h"
 #include <vector>
 
 namespace TW::Avalanche {
 
-class Output;
+class TransactionOutput;
 
 /// Avalanche transaction output.
 class TransferableOutput {
   public:
     Data AssetID;
-    Output Output;
+    TransactionOutput Output;
 
-    /// Encodes the input into the provided buffer.
+    /// Encodes the output into the provided buffer.
     void encode(Data& data) const;
 
-    // TransferableOutput(Data &txid, uint32_t utxoIndex, Data &assetID, SECP256k1TransferInput &input)
-    //     : TxID(txid) , UTXOIndex(utxoIndex)
-    //     , AssetID(assetID), Input(input) {}
+    TransferableOutput(Data &assetID, TransactionOutput &output)
+      : AssetID(assetID), Output(output) {}
 };
 
-class Output {
-    /// Encodes the input into the provided buffer.
-    void encode(Data& data) const;
+class TransactionOutput {
+    /// Encodes the output into the provided buffer.
+    virtual void encode(Data& data) const;
+};
+
+class SECP256k1TransferOutput : public TransactionOutput {
+  const uint32_t typeID = 7;
+  
+  public:
+    uint64_t Amount;
+    uint64_t Locktime;
+    uint32_t Threshold;
+    std::vector<Address> Addresses;
+
+    SECP256k1TransferOutput(uint64_t amount, uint64_t locktime, uint32_t threshold, std::vector<Address> &addresses)
+      : Amount(amount), 
+      Locktime(locktime), Threshold(threshold), Addresses(addresses) {}
+  
+    void encode (Data& data) const;
 };
 
 
+class SECP256k1MintOutput : public TransactionOutput {
+  const uint32_t typeID = 6;
+  
+  public:
+    uint64_t Locktime;
+    uint32_t Threshold;
+    std::vector<Address> Addresses;
+
+    SECP256k1MintOutput(uint64_t locktime, uint32_t threshold, std::vector<Address> &addresses)
+      : Locktime(locktime), Threshold(threshold), Addresses(addresses) {}
+  
+    void encode (Data& data) const;
+};
+
+class NFTTransferOutput : public TransactionOutput {
+  const uint32_t typeID = 11;
+  
+  public:
+    uint32_t GroupID;
+    Data Payload;
+    uint64_t Locktime;
+    uint32_t Threshold;
+    std::vector<Address> Addresses;
+
+    NFTTransferOutput(uint32_t groupID, Data &payload, uint64_t locktime, uint32_t threshold, std::vector<Address> &addresses)
+      : GroupID(groupID), Payload(payload),
+      Locktime(locktime), Threshold(threshold), Addresses(addresses) {}
+  
+    void encode (Data& data) const;
+};
+
+class NFTMintOutput : public TransactionOutput {
+  const uint32_t typeID = 10;
+  
+  public:
+    uint32_t GroupID;
+    uint64_t Locktime;
+    uint32_t Threshold;
+    std::vector<Address> Addresses;
+
+    NFTMintOutput(uint32_t groupID,uint64_t locktime, uint32_t threshold, std::vector<Address> &addresses)
+      : GroupID(groupID),
+      Locktime(locktime), Threshold(threshold), Addresses(addresses) {}
+  
+    void encode (Data& data) const;
+};
 
 } // namespace TW::Avalanche

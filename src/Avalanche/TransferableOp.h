@@ -12,15 +12,19 @@
 
 namespace TW::Avalanche {
 
-class Output;
+class TransferOp;
 
-/// Avalanche transaction output.
-class TransferableOutput {
+/// Avalanche transaction operation.
+class TransferableOp {
   public:
     Data AssetID;
-    Output Output;
+    using TxID = Data;
+    using OutputIndex = uint32_t;
+    using UTXOID = std::pair<TxID, OutputIndex>;
+    std::vector<UTXOID> UTXOIDs;
+    TransferOp TransferOp;
 
-    /// Encodes the input into the provided buffer.
+    /// Encodes the op into the provided buffer.
     void encode(Data& data) const;
 
     // TransferableOutput(Data &txid, uint32_t utxoIndex, Data &assetID, SECP256k1TransferInput &input)
@@ -28,8 +32,8 @@ class TransferableOutput {
     //     , AssetID(assetID), Input(input) {}
 };
 
-class Output {
-    /// Encodes the input into the provided buffer.
+class TransferOp {
+    /// Encodes the op into the provided buffer.
     void encode(Data& data) const;
 };
 

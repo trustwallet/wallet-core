@@ -12,24 +12,33 @@
 
 namespace TW::Avalanche {
 
+class TransactionInput;
+
 /// Avalanche transaction input.
 class TransferableInput {
   public:
     Data TxID;
     uint32_t UTXOIndex;
     Data AssetID;
-    SECP256k1TransferInput Input;
+    TransactionInput Input;
 
     /// Encodes the input into the provided buffer.
     void encode(Data& data) const;
 
     TransferableInput
-  (Data &txid, uint32_t utxoIndex, Data &assetID, SECP256k1TransferInput &input)
+  (Data &txid, uint32_t utxoIndex, Data &assetID, TransactionInput &input)
         : TxID(txid) , UTXOIndex(utxoIndex)
         , AssetID(assetID), Input(input) {}
 };
 
-class SECP256k1TransferInput {
+class TransactionInput{
+  public: 
+    virtual void encode (Data& data) const;
+  protected:
+    TransactionInput(){}  
+};
+
+class SECP256k1TransferInput : public TransactionInput {
   const uint32_t typeID = 5;
   
   public:
