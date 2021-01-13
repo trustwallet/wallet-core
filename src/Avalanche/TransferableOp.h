@@ -7,12 +7,12 @@
 #pragma once
 
 #include "../Data.h"
-
+#include "TransferableOutput.h"
 #include <vector>
 
 namespace TW::Avalanche {
 
-class TransferOp;
+class TransactionOp;
 
 /// Avalanche transaction operation.
 class TransferableOp {
@@ -22,21 +22,68 @@ class TransferableOp {
     using OutputIndex = uint32_t;
     using UTXOID = std::pair<TxID, OutputIndex>;
     std::vector<UTXOID> UTXOIDs;
-    TransferOp TransferOp;
+    TransactionOp TransferOp;
 
     /// Encodes the op into the provided buffer.
     void encode(Data& data) const;
 
-    // TransferableOutput(Data &txid, uint32_t utxoIndex, Data &assetID, SECP256k1TransferInput &input)
-    //     : TxID(txid) , UTXOIndex(utxoIndex)
-    //     , AssetID(assetID), Input(input) {}
+    TransferableOp(Data &assetID, std::vector<UTXOID> &utxoIDs, TransactionOp &transferOp)
+      : AssetID(assetID), UTXOIDs(utxoIDs), TransferOp(transferOp) {}
 };
 
-class TransferOp {
+class TransactionOp {
+  public:
     /// Encodes the op into the provided buffer.
-    void encode(Data& data) const;
+    virtual void encode(Data& data) const;
+  protected:
+    TransactionOp(){}
 };
 
+class SECP256k1MintOperation : TransactionOp {
+  private:
+    uint32_t typeID = 8;
+  public: 
+    std::vector<uint32_t> AddressIndices;
+    SECP256k1MintOutput MintOutput;
+    SECP256k1TransferOutput TransferOutput;
 
+    SECP256k1MintOperation(std::vector<uint32_t> &addressIndices, SECP256k1MintOutput &mintOutput, SECP256k1TransferOutput &transferOutput)
+      : AddressIndices(addressIndices), MintOutput(mintOutput), TransferOutput(transferOutput) {}
+
+    void encode (Data& data) const;
+};
+
+class NFTMintOperation : TransactionOp {
+  private:
+    uint32_t typeID = 12;
+  public: 
+    std::vector<uint32_t> AddressIndices;
+    uint32_t GroupID;
+    Data Payload;
+    using Locktime = uint64_t;
+    using Threshold = uint32_t;
+    using Output = std::tuple<Locktime, Threshold, std::vector<Address>>;
+    std::vector<Output> Outputs; 
+
+    NFTMintOperation(std::vector<uint32_t> &addressIndices, uint32_t groupID, Data &payload, std::vector<Output> &outputs)
+    : AddressIndices(addressIndices), GroupID(groupID), Payload(payload), Outputs(outputs) {}
+
+    void encode (Data& data) const;
+  private:
+    bool compareOutputForSort(Output lhs, Output rhs);
+};
+
+class NFTTransferOperation : TransactionOp {
+  private:
+    uint32_t typeID = 13;
+  public: 
+    std::vector<uint32_t> AddressIndices;
+    NFTTransferOutput TransferOutput;
+
+    NFTTransferOperation(std::vector<uint32_t> &addressIndices, NFTTransferOutput &transferOutput)
+      : AddressIndices(addressIndices), TransferOutput(transferOutput) {}
+
+    void encode (Data& data) const;
+};
 
 } // namespace TW::Avalanche

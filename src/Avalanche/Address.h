@@ -34,11 +34,17 @@ class Address {
     std::string hrp;
 };
 
-bool CompareAddressForSort (Address lhs, Address rhs) {return lhs.string() < rhs.string();}
-
 inline bool operator==(const Address& lhs, const Address& rhs) {
     // prefer string over byte comparison because string encodes chain and net
     return lhs.string() == rhs.string();
+}
+
+inline bool operator!=(const Address& lhs, const Address& rhs) {
+    return lhs.string() != rhs.string();
+}
+
+inline bool operator<(const Address& lhs, const Address& rhs) {
+    return lhs.string() < rhs.string();
 }
 
 } // namespace TW::Avalanche

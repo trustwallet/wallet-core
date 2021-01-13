@@ -23,7 +23,7 @@ void SECP256k1TransferOutput::encode(Data& data) const {
     encode64LE(Locktime, data);
     encode32LE(Threshold, data);
     encode32LE(Addresses.size());
-    std::sort(Addresses.begin(), Addresses.end(), CompareAddressForSort)
+    std::sort(Addresses.begin(), Addresses.end());
     for (auto Address : Addresses) {
         for (auto byte : Address.bytes) {
             data.push_back(byte);
@@ -36,7 +36,7 @@ void SECP256k1MintOutput::encode(Data& data) const {
     encode64LE(Locktime, data);
     encode32LE(Threshold, data);
     encode32LE(Addresses.size());
-    std::sort(Addresses.begin(), Addresses.end(), CompareAddressForSort)
+    std::sort(Addresses.begin(), Addresses.end());
     for (auto Address : Addresses) {
         for (auto byte : Address.bytes) {
             data.push_back(byte);
@@ -53,8 +53,8 @@ void NFTTransferOutput::encode(Data& data) const {
     }
     encode64LE(Locktime, data);
     encode32LE(Threshold, data);
-    encode32LE(Addresses.size());
-    std::sort(Addresses.begin(), Addresses.end(), CompareAddressForSort)
+    encode32LE(Addresses.size(), data);
+    std::sort(Addresses.begin(), Addresses.end());
     for (auto Address : Addresses) {
         for (auto byte : Address.bytes) {
             data.push_back(byte);
@@ -68,7 +68,7 @@ void NFTMintOutput::encode(Data& data) const {
     encode64LE(Locktime, data);
     encode32LE(Threshold, data);
     encode32LE(Addresses.size());
-    std::sort(Addresses.begin(), Addresses.end(), CompareAddressForSort)
+    std::sort(Addresses.begin(), Addresses.end());
     for (auto Address : Addresses) {
         for (auto byte : Address.bytes) {
             data.push_back(byte);

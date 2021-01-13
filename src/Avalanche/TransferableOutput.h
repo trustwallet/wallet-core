@@ -28,8 +28,11 @@ class TransferableOutput {
 };
 
 class TransactionOutput {
+  public:
     /// Encodes the output into the provided buffer.
     virtual void encode(Data& data) const;
+  protected:
+    TransactionOutput(){}
 };
 
 class SECP256k1TransferOutput : public TransactionOutput {
