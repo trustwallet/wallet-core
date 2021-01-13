@@ -123,6 +123,7 @@ TEST(BitcoinSigning, SignP2PKH_NegativeMissingKey) {
     auto result = signer.sign();
 
     ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), "Missing private key.");
 }
 
 TEST(BitcoinSigning, EncodeP2WPKH) {
@@ -580,6 +581,7 @@ TEST(BitcoinSigning, SignP2WSH_NegativeMissingScript) {
     auto result = signer.sign();
 
     ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), "Missing redeem script.");
 }
 
 TEST(BitcoinSigning, SignP2WSH_NegativeMissingKeys) {
@@ -596,6 +598,7 @@ TEST(BitcoinSigning, SignP2WSH_NegativeMissingKeys) {
     auto result = signer.sign();
 
     ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), "Missing private key.");
 }
 
 TEST(BitcoinSigning, SignP2WSH_NegativePlanWithError) {
@@ -734,6 +737,7 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH_NegativeOmitScript) {
     auto result = signer.sign();
 
     ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), "Missing redeem script.");
 }
 
 TEST(BitcoinSigning, SignP2SH_P2WPKH_NegativeOmitKeys) {
@@ -749,6 +753,7 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH_NegativeOmitKeys) {
     auto result = signer.sign();
 
     ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), "Missing private key.");
 }
 
 TEST(BitcoinSigning, EncodeP2SH_P2WSH) {
@@ -954,6 +959,7 @@ TEST(BitcoinSigning, Sign_NegativeInvalidAddress) {
     auto result = signer.sign();
 
     ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), "Missing inputs or UTXOs");
 }
 
 TEST(BitcoinSigning, Plan_10input_MaxAmount) {
