@@ -28,11 +28,15 @@ class Address {
 
     /// Returns a string representation of the address.
     std::string string() const;
+
+    std::array<byte, PublicKey::secp256k1Size> bytes;
+
+    std::string hrp;
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
-    // TODO: Complete equality operator
-    return true;
+    // prefer string over byte comparison because string encodes chain and net
+    return lhs.string() == rhs.string();
 }
 
 } // namespace TW::Avalanche

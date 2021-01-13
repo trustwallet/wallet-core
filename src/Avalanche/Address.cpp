@@ -6,26 +6,60 @@
 
 #include "Address.h"
 
+#include "../Bech32.h"
+
 using namespace TW::Avalanche;
 
 bool Address::isValid(const std::string& string) {
     // TODO: Finalize implementation
-    return false;
+    // split into before and after - 
+    std::string delimiter = "-";
+    auto chainID = string.substr(string.find("-"));
+    // compare before-hyphen with 'X' stringcompare (make it smarter later)
+    if (chainID != "X") {
+        // implementation is currently X-chain only
+        return false;
+    }
+    // decode after-hyphen with bech32
+    auto afterHyphen = string.substr(string.find("-") + 1);
+    auto decoded = Bech32::decode(afterHyphen);
+    if (decoded.second.size() == 0) {
+        // decode failure
+        return false;
+    }
+    // check hrp against 'fuji' (make it smarter later)
+    if (decoded.first != "fuji") {
+        // implementation is currently fuji only
+        return false;
+    }
+    if (!PublicKey::isValid(decoded.second, TWPublicKeyTypeSECP256k1)) {
+        return false;
+    }
+    return true;
 }
 
 Address::Address(const std::string& string) {
-    // TODO: Finalize implementation
-
     if (!isValid(string)) {
         throw std::invalid_argument("Invalid address string");
     }
+    auto afterHyphen = string.substr(string.find("-") + 1);
+    auto decoded = Bech32::decode(afterHyphen);
+    hrp = decoded.first;
+    std::copy(decoded.second.begin(), decoded.second.begin() + PublicKey::secp256k1Size, bytes.begin());
 }
 
 Address::Address(const PublicKey& publicKey) {
-    // TODO: Finalize implementation
+    if (publicKey.type != TWPublicKeyTypeSECP256k1) {
+        throw std::invalid_argument("Invalid public key type");
+    }
+    std::copy(publicKey.bytes.begin(), publicKey.bytes.end(), bytes.data());
 }
 
 std::string Address::string() const {
-    // TODO: Finalize implementation
-    return "TODO";
+    Data data;
+    data.resize(PublicKey::secp256k1Size);
+    std::copy(bytes.begin(), bytes.end(), data.data());
+    std::string encoded = Bech32::encode(hrp, data);
+    // TODO make X- smarter later
+    return "X-" + encoded;
 }

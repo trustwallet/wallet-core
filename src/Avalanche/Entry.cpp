@@ -13,6 +13,7 @@ using namespace TW::Avalanche;
 using namespace std;
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
+// TODO EJR This may be where we want to distinguish between X- and P- chain later. C-Chain can be an ethereum-type.
 
 bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
     return Address::isValid(address);
@@ -24,4 +25,8 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byt
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+}
+
+void Entry::plan(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+    planTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
