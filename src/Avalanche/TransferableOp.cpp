@@ -48,23 +48,6 @@ void SECP256k1MintOperation::encode(Data& data) const {
     TransferOutput.encode(data);
 }
 
-bool NFTMintOperation::compareOutputForSort(NFTMintOperation::Output lhs, NFTMintOperation::Output rhs) {
-    if (std::get<0>(lhs) != std::get<0>(rhs)) {
-        return std::get<0>(lhs) < std::get<0>(rhs);
-    }
-    if (std::get<1>(lhs) != std::get<1>(rhs)) {
-        return std::get<1>(lhs) < std::get<1>(rhs);
-    }
-    if (std::get<2>(lhs) != std::get<2>(rhs)) {
-        for (auto i = 0; i < std::get<2>(lhs).size(); ++i) {
-            if (std::get<2>(lhs)[i] != std::get<2>(rhs)[i]) {
-                return std::get<2>(lhs)[i] < std::get<2>(rhs)[i];
-            }
-        }
-    }
-    return false;
-}
-
 void NFTMintOperation::encode(Data& data) const {
     encode32LE(typeID, data);
     encode32LE(AddressIndices.size(), data);
@@ -77,25 +60,7 @@ void NFTMintOperation::encode(Data& data) const {
     for (auto byte : Payload) {
         data.push_back(byte);
     }
-    // go through each output and sort its list of addresses 
-    // then, sort the list of outputs 
-    for (auto &output : Outputs) {
-        std::sort(std::get<2>(output).begin(), std::get<2>(output).begin());
-    }
-    std::sort(Outputs.begin(), Outputs.end(), compareOutputForSort);
-    // end sort 
-    encode32LE(Outputs.size(), data);
-    for (auto output : Outputs) {
-        encode64LE(std::get<0>(output), data);
-        encode32LE(std::get<1>(output), data);
-        std::vector<Address> addrs = std::get<2>(output);
-        encode32LE(addrs.size(), data);
-        for (auto addr : addrs) {
-            for (auto byte : addr.bytes) {
-                data.push_back(byte);
-            }
-        }
-    }
+    EncodeOutputs(Outputs, data);
 }
 
 
@@ -114,7 +79,7 @@ void NFTTransferOperation::encode(Data& data) const {
     encode64LE(TransferOutput.Locktime, data);
     encode32LE(TransferOutput.Threshold, data);
     encode32LE(TransferOutput.Addresses.size(), data);
-    std::sort(TransferOutput.Addresses.begin(), TransferOutput.Addresses.end(), CompareAddressForSort);
+    std::sort(TransferOutput.Addresses.begin(), TransferOutput.Addresses.end());
     for (auto Address : TransferOutput.Addresses) {
         for (auto byte : Address.bytes) {
             data.push_back(byte);

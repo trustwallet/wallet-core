@@ -8,6 +8,7 @@
 
 #include "../Data.h"
 #include "TransferableOutput.h"
+#include "Output.h"
 #include <vector>
 
 namespace TW::Avalanche {
@@ -60,17 +61,13 @@ class NFTMintOperation : TransactionOp {
     std::vector<uint32_t> AddressIndices;
     uint32_t GroupID;
     Data Payload;
-    using Locktime = uint64_t;
-    using Threshold = uint32_t;
-    using Output = std::tuple<Locktime, Threshold, std::vector<Address>>;
+
     std::vector<Output> Outputs; 
 
     NFTMintOperation(std::vector<uint32_t> &addressIndices, uint32_t groupID, Data &payload, std::vector<Output> &outputs)
     : AddressIndices(addressIndices), GroupID(groupID), Payload(payload), Outputs(outputs) {}
 
     void encode (Data& data) const;
-  private:
-    bool compareOutputForSort(Output lhs, Output rhs);
 };
 
 class NFTTransferOperation : TransactionOp {
