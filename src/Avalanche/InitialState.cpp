@@ -17,3 +17,11 @@ void InitialState::encode(Data& data) const {
         output.encode(data);
     }
 }
+
+bool InitialState::operator<(const InitialState& other) {
+    Data thisData;
+    Data otherData;
+    encode(thisData);
+    other.encode(otherData);
+    return std::lexicographical_compare(thisData.begin(), thisData.end(), otherData.begin(), otherData.end());
+}

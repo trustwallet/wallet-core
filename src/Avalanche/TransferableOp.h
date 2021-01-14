@@ -30,6 +30,8 @@ class TransferableOp {
 
     TransferableOp(Data &assetID, std::vector<UTXOID> &utxoIDs, TransactionOp &transferOp)
       : AssetID(assetID), UTXOIDs(utxoIDs), TransferOp(transferOp) {}
+
+    bool operator<(const TransferableOp& other);
 };
 
 class TransactionOp {

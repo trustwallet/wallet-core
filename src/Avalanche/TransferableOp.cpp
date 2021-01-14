@@ -11,16 +11,11 @@
 using namespace TW::Avalanche;
 
 bool sortUTXOIDs(TransferableOp::UTXOID lhs, TransferableOp::UTXOID rhs) {
-    // prefer to sort by value of .first
-    for (auto i = 0; i < lhs.first.size(); ++i) {
-        if (lhs.first[i] != rhs.first[i]) {
-            return lhs.first[i] < rhs.first[i];
-        }
+    if (lhs.first == rhs.first) {
+        return lhs.second < rhs.second;
     }
-    // using value of .second to break ties
-    return lhs.second < rhs.second;
+    return std::lexicographical_compare(lhs.first.begin(), lhs.first.end(), rhs.first.begin(), rhs.first.end());
 }
-
 
 void TransferableOp::encode(Data& data) const {
     for (auto byte : AssetID) {
@@ -35,6 +30,14 @@ void TransferableOp::encode(Data& data) const {
         encode32LE(utxoID.second, data);
     }
     TransferOp.encode(data);
+}
+
+bool TransferableOp::operator<(const TransferableOp& other) {
+    Data thisData;
+    Data otherData;
+    encode(thisData);
+    other.encode(otherData);
+    return std::lexicographical_compare(thisData.begin(), thisData.end(), otherData.begin(), otherData.end());
 }
 
 void SECP256k1MintOperation::encode(Data& data) const {
