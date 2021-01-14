@@ -17,6 +17,15 @@ void TransferableOutput::encode(Data& data) const {
     Output.encode(data);
 }
 
+bool TransferableOutput::operator<(const TransferableOutput& other) {
+    Data thisData;
+    Data otherData;
+    encode(thisData);
+    other.encode(otherData);
+    return std::lexicographical_compare(thisData.begin(), thisData.end(), otherData.begin(), otherData.end());
+}
+      
+
 void SECP256k1TransferOutput::encode(Data& data) const {
     encode32LE(typeID, data);
     encode64LE(Amount, data);

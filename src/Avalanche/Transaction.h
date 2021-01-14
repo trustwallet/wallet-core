@@ -7,10 +7,26 @@
 #pragma once
 
 #include "../CoinEntry.h"
+#include "TransferableInput.h"
+#include "TransferableOutput.h"
 
 namespace TW::Avalanche {
 
-class Transaction {
+class BaseTransaction {
+  public:
+    uint32_t TypeID;
+    uint32_t NetworkID;
+    Data BlockchainID;
+    std::vector<TransferableInput> Inputs;
+    std::vector<TransferableOutput> Outputs;
+    Data Memo;
+
+    /// Encodes the BaseTransaction into the provided buffer.
+    void encode(Data& data) const;
+
+  protected:
+    BaseTransaction(uint32_t typeID, uint32_t networkID, Data &blockchainID, std::vector<TransferableInput> &inputs, std::vector<TransferableOutput> &outputs, Data &memo)
+    : TypeID(typeID), NetworkID(networkID), BlockchainID(blockchainID), Inputs(inputs), Outputs(outputs), Memo(memo) {}
 
 };
 

@@ -25,7 +25,11 @@ class TransferableOutput {
 
     TransferableOutput(Data &assetID, TransactionOutput &output)
       : AssetID(assetID), Output(output) {}
+    
+    bool operator<(const TransferableOutput& other);
+      
 };
+
 
 class TransactionOutput {
   public:

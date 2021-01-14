@@ -21,6 +21,21 @@ void TransferableInput::encode(Data& data) const {
     Input.encode(data);
 }
 
+bool TransferableInput::operator<(const TransferableInput& other) {
+    if (TxID == other.TxID) {
+        return UTXOIndex < other.UTXOIndex;
+    } 
+    Data thisTxIDData;
+    Data otherTxIDData;
+    for (auto byte : TxID) {
+        thisTxIDData.push_back(byte);
+    }
+    for (auto byte : other.TxID) {
+        otherTxIDData.push_back(byte);
+    }
+    return std::lexicographical_compare(thisTxIDData.begin(), thisTxIDData.end(), otherTxIDData.begin(), otherTxIDData.end());
+}
+
 void SECP256k1TransferInput::encode(Data& data) const {
     encode32LE(typeID, data);
     encode64LE(Amount, data);

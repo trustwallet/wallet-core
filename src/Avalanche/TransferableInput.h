@@ -28,6 +28,9 @@ class TransferableInput {
     TransferableInput(Data &txid, uint32_t utxoIndex, Data &assetID, TransactionInput &input)
         : TxID(txid) , UTXOIndex(utxoIndex)
         , AssetID(assetID), Input(input) {}
+
+    
+    bool operator<(const TransferableInput& other);
 };
 
 class TransactionInput{
