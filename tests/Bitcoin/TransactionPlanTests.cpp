@@ -71,26 +71,6 @@ TEST(TransactionPlan, OneInsufficientLower200) {
     EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorTextNotEnoughUtxos));
 }
 
-TEST(TransactionPlan, OneInsufficientLower100) {
-    // requested is only slightly lower than avail, not enough for fee, cannot be satisfied
-    auto utxos = buildTestUTXOs({100'000});
-    auto sigingInput = buildSigningInput(100'000 - 100, 1, utxos);
-
-    auto txPlan = TransactionBuilder::plan(sigingInput);
-
-    EXPECT_TRUE(verifyPlan(txPlan, {100'000}, 100'000 - 300, 147));
-}
-
-TEST(TransactionPlan, OneInsufficientLower200) {
-    // requested is only slightly lower than avail, enough for fee but too small change, cannot be satisfied
-    auto utxos = buildTestUTXOs({100'000});
-    auto sigingInput = buildSigningInput(100'000 - 200, 1, utxos);
-
-    auto txPlan = TransactionBuilder::plan(sigingInput);
-
-    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0));
-}
-
 TEST(TransactionPlan, OneInsufficientLower300) {
     auto utxos = buildTestUTXOs({100'000});
     auto sigingInput = buildSigningInput(100'000 - 300, 1, utxos);
@@ -304,112 +284,6 @@ TEST(TransactionPlan, Inputs5_33Req19Fee20) {
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
     EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorTextNotEnoughUtxos));
-}
-
-TEST(TransactionPlan, Inputs5_33Req13Fee20) {
-    auto utxos = buildTestUTXOs({600, 1'200, 6'000, 8'000, 10'000});
-    auto byteFee = 20;
-    auto sigingInput = buildSigningInput(13'000, byteFee, utxos);
-
-    // UTXOs smaller than singleInputFee are not included
-    auto txPlan = TransactionBuilder::plan(sigingInput);
-
-    auto expectedFee = 283*byteFee;
-    EXPECT_TRUE(verifyPlan(txPlan, {6'000, 8'000, 10'000}, 13'000, expectedFee));
-
-    auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
-    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 2960);
-}
-
-TEST(TransactionPlan, SelectionSuboptimal_ExtraSmallUtxo) {
-    // Solution found 5-in-2-out {400, 500, 600, 800, 1000} avail 3300 txamount 1570 fee 838 change 892
-    // The 400 UTXO is smaller than the change, smaller than half the change -- could be omitted
-    // Better solution: 3-in-2-out {600, 800, 1000} avail 2400 txamount 1570 fee 566 change 264
-    auto utxos = buildTestUTXOs({400, 500, 600, 800, 1'000});
-    auto byteFee = 2;
-    auto sigingInput = buildSigningInput(1'570, byteFee, utxos);
-
-    // UTXOs smaller than singleInputFee are not included
-    auto txPlan = TransactionBuilder::plan(sigingInput);
-
-    auto expectedFee = 838;
-    EXPECT_TRUE(verifyPlan(txPlan, {400, 500, 600, 800, 1'000}, 1'570, expectedFee));
-    auto change = 3'300 - 1'570 - expectedFee;
-    auto firstUtxo = txPlan.utxos[0].amount();
-    EXPECT_TRUE(change / 2 > txPlan.utxos[0].amount());
-    EXPECT_EQ(change, 892);
-    EXPECT_EQ(firstUtxo, 400);
-}
-
-TEST(TransactionPlan, SelectionFail_CouldBeSatisfied5) {
-    // 5-input case, where no 1,2,3,4,or 5 UTXO input is found.
-    // A solution exists though, actual fee is lower than estimate used in selection.
-    // Solutions not found are:
-    //  4-in-2-out {500, 600, 800, 1000} avail 2900 txamount 1775 fee 702 change 423
-    //  3-in-2-out {600, 800, 1'000}     avail 2400 txamount 1775 fee 566 change 59
-    auto utxos = buildTestUTXOs({400, 500, 600, 800, 1'000});
-    auto byteFee = 2;
-    auto sigingInput = buildSigningInput(1'775, byteFee, utxos);
-
-    auto txPlan = TransactionBuilder::plan(sigingInput);
-
-    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0));
-}
-
-TEST(TransactionPlan, Inputs5_33Req19NoDustFee2) {
-    auto utxos = buildTestUTXOs({600, 1'200, 6'000, 8'000, 10'000});
-    auto byteFee = 2;
-    auto sigingInput = buildSigningInput(19'000, byteFee, utxos);
-
-    // UTXOs smaller than singleInputFee are not included
-    auto txPlan = TransactionBuilder::plan(sigingInput);
-
-    auto expectedFee = 283*byteFee;
-    EXPECT_TRUE(verifyPlan(txPlan, {6'000, 8'000, 10'000}, 19'000, expectedFee));
-
-    auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
-    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 296);
-}
-
-TEST(TransactionPlan, Inputs5_33Req19Dust1Fee5) {
-    auto utxos = buildTestUTXOs({600, 1'200, 6'000, 8'000, 10'000});
-    auto byteFee = 5;
-    auto sigingInput = buildSigningInput(19'000, byteFee, utxos);
-
-    // UTXOs smaller than singleInputFee are not included
-    auto txPlan = TransactionBuilder::plan(sigingInput);
-
-    auto expectedFee = 283*byteFee;
-    EXPECT_TRUE(verifyPlan(txPlan, {6'000, 8'000, 10'000}, 19'000, expectedFee));
-
-    auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
-    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 740);
-}
-
-TEST(TransactionPlan, Inputs5_33Req19Dust1Fee9) {
-    auto utxos = buildTestUTXOs({600, 1'200, 6'000, 8'000, 10'000});
-    auto byteFee = 9;
-    auto sigingInput = buildSigningInput(19'000, byteFee, utxos);
-
-    // UTXOs smaller than singleInputFee are not included
-    auto txPlan = TransactionBuilder::plan(sigingInput);
-
-    auto expectedFee = 283*byteFee;
-    EXPECT_TRUE(verifyPlan(txPlan, {6'000, 8'000, 10'000}, 19'000, expectedFee));
-
-    auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
-    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 1332);
-}
-
-TEST(TransactionPlan, Inputs5_33Req19Fee20) {
-    auto utxos = buildTestUTXOs({600, 1'200, 6'000, 8'000, 10'000});
-    auto byteFee = 20;
-    auto sigingInput = buildSigningInput(19'000, byteFee, utxos);
-
-    // UTXOs smaller than singleInputFee are not included
-    auto txPlan = TransactionBuilder::plan(sigingInput);
-
-    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0));
 }
 
 TEST(TransactionPlan, Inputs5_33Req13Fee20) {
