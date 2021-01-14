@@ -44,7 +44,8 @@ inline bool operator!=(const Address& lhs, const Address& rhs) {
 }
 
 inline bool operator<(const Address& lhs, const Address& rhs) {
-    return lhs.string() < rhs.string();
+    // prefer lexicographical comparison of bytes for encoding
+    return std::lexicographical_compare(lhs.bytes.begin(), lhs.bytes.end(), rhs.bytes.begin(), rhs.bytes.end());
 }
 
 } // namespace TW::Avalanche

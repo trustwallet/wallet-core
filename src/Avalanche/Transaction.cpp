@@ -64,7 +64,6 @@ void UnsignedImportTransaction::encode(Data& data) const {
     }
 }
 
-
 void UnsignedExportTransaction::encode(Data& data) const {
     baseEncode(data);
     for (auto byte : DestinationChain) {
@@ -74,5 +73,15 @@ void UnsignedExportTransaction::encode(Data& data) const {
     encode32LE(ExportOutputs.size(), data);
     for (auto out : ExportOutputs) {
         out.encode(data);
+    }
+}
+
+void SignedTransaction::encode(Data& data) const {
+    encode16LE(CodecID, data);
+    UnsignedTransaction.encode(data);
+    // do not sort Credentials, they will be paired with inputs by index
+    encode32LE(Credentials.size(), data);
+    for (auto cred : Credentials) {
+        cred.encode(data);
     }
 }

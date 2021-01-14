@@ -17,14 +17,7 @@ bool compareOutputForSort(Output lhs, Output rhs) {
     if (std::get<1>(lhs) != std::get<1>(rhs)) {
         return std::get<1>(lhs) < std::get<1>(rhs);
     }
-    if (std::get<2>(lhs) != std::get<2>(rhs)) {
-        for (auto i = 0; i < std::get<2>(lhs).size(); ++i) {
-            if (std::get<2>(lhs)[i] != std::get<2>(rhs)[i]) {
-                return std::get<2>(lhs)[i] < std::get<2>(rhs)[i];
-            }
-        }
-    }
-    return false;
+    return std::lexicographical_compare(std::get<2>(lhs).begin(), std::get<2>(lhs).end(), std::get<2>(rhs).begin(), std::get<2>(rhs).end());
 }
 
 void EncodeOutputs(std::vector<Output> outputs, TW::Data &data) {

@@ -11,6 +11,7 @@
 #include "TransferableOutput.h"
 #include "TransferableOp.h"
 #include "InitialState.h"
+#include "Credential.h"
 
 namespace TW::Avalanche {
 
@@ -84,6 +85,18 @@ class UnsignedExportTransaction : public BaseTransaction {
       Data &dest, std::vector<TransferableOutput> &exportOutputs)
       : BaseTransaction(3, networkID, blockchainID, inputs, outputs, memo), 
       DestinationChain(dest), ExportOutputs(exportOutputs) {}
+};
+
+class SignedTransaction {
+  public: 
+    const uint16_t CodecID = 0; // TODO EJR we are on codecID 1 now but docs are on 0
+    BaseTransaction UnsignedTransaction;
+    std::vector<Credential> Credentials;
+
+    void encode(Data& data) const;
+
+    SignedTransaction(BaseTransaction &txn, std::vector<Credential> &credentials)
+    : UnsignedTransaction(txn), Credentials(credentials) {}    
 };
 
 } // namespace TW::Avalanche

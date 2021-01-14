@@ -12,10 +12,19 @@ using namespace TW::Avalanche;
 
 void Credential::encode(Data& data) const {
     encode32LE(TypeID, data);
+    // do not sort signatures, they must match input signature indices
     encode32LE(Signatures.size(), data);
     for (auto sig : Signatures) {
         for (auto byte : sig) {
             data.push_back(byte);
         }
     }
+}
+
+bool Credential::operator<(const Credential& other) {
+    Data thisData;
+    Data otherData;
+    encode(thisData);
+    other.encode(otherData);
+    return std::lexicographical_compare(thisData.begin(), thisData.end(), otherData.begin(), otherData.end());
 }
