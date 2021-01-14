@@ -13,14 +13,14 @@ namespace TW::Avalanche {
     class InitialState {
       public: 
         uint32_t FxID;
-        std::vector<TransferableOutput> Outputs;
+        std::vector<TransactionOutput> Outputs;
 
         enum FeatureExtension {SECP256k1 = 0, NFT = 1};
         
-        InitialState(FeatureExtension fxid, std::vector<TransferableOutput> &outputs)
+        InitialState(FeatureExtension fxid, std::vector<TransactionOutput> &outputs)
          : FxID(fxid), Outputs(outputs) {}
 
-        /// Encodes the input into the provided buffer.
+        /// Encodes the InitialState into the provided buffer.
         void encode(Data& data) const;
     };
 

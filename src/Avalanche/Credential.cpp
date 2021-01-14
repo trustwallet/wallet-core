@@ -4,15 +4,18 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "InitialState.h"
+#include "Credential.h"
 
 #include "../BinaryCoding.h"
 
 using namespace TW::Avalanche;
 
-void InitialState::encode(Data& data) const {
-    encode32LE(FxID, data);
-    for (auto output : Outputs) {
-        output.encode(data);
+void Credential::encode(Data& data) const {
+    encode32LE(TypeID, data);
+    encode32LE(Signatures.size(), data);
+    for (auto sig : Signatures) {
+        for (auto byte : sig) {
+            data.push_back(byte);
+        }
     }
 }
