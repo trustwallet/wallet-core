@@ -11,6 +11,8 @@
 #include "../PrivateKey.h"
 #include "../proto/Stellar.pb.h"
 
+#include <string>
+
 namespace TW::Stellar {
 /// Helper class that performs Ripple transaction signing.
 class Signer {
@@ -29,6 +31,7 @@ class Signer {
 
   private:
     void encodeAddress(const Address& address, Data& data) const;
+    void encodeAsset(const std::string& issuer, const std::string& alphamum4, const std::string& alphamum12, Data& data) const;
 
     void pad(Data& data) const;
 };

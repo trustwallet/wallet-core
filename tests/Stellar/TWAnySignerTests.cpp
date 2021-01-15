@@ -7,6 +7,8 @@
 #include "../interface/TWTestUtilities.h"
 
 #include "HexCoding.h"
+#include "PrivateKey.h"
+#include "Stellar/Address.h"
 #include "proto/Stellar.pb.h"
 #include <TrustWalletCore/TWAnySigner.h>
 #include <TrustWalletCore/TWStellarPassphrase.h>
@@ -15,7 +17,7 @@
 using namespace TW;
 using namespace TW::Stellar;
 
-TEST(TWAnySingerStellar, Sign) {
+TEST(TWAnySingerStellar, Sign_Payment) {
     auto key = parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722");
     Proto::SigningInput input;
     input.set_passphrase(TWStellarPassphrase_Stellar);
@@ -34,3 +36,132 @@ TEST(TWAnySingerStellar, Sign) {
 
     EXPECT_EQ(output.signature(), "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAEAAAANSGVsbG8sIHdvcmxkIQAAAAAAAAEAAAAAAAAAAQAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAAAAAAJiWgAAAAAAAAAABGd9cogAAAEBQQldEkYJ6rMvOHilkwFCYyroGGUvrNeWVqr/sn3iFFqgz91XxgUT0ou7bMSPRgPROfBYDfQCFfFxbcDPrrCwB");
 }
+
+TEST(TWAnySingerStellar, Sign_Payment_66b5) {
+    auto key = parse_hex("3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9");
+    PrivateKey privKey = PrivateKey(key);
+    PublicKey pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519);
+    Address addr = Address(pubKey);
+    EXPECT_EQ(addr.string(), "GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
+
+    Proto::SigningInput input;
+    input.set_passphrase(TWStellarPassphrase_Stellar);
+    input.set_account("GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
+    input.set_amount(1000000);
+    input.set_fee(1000);
+    input.set_sequence(144098454883270657);
+    input.set_destination("GA3ISGYIE2ZTH3UAKEKBVHBPKUSL3LT4UQ6C5CUGP2IM5F467O267KI7");
+    input.set_private_key(key.data(), key.size());
+    input.set_operation_type(Proto::SigningInput_OperationType_PAYMENT);   
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeStellar);
+
+    // curl "https://horizon.stellar.org/transactions/66b5bca4b4293bdd85a6a559b08918482774b76bcc170b4533411f1d6422ce24"
+    EXPECT_EQ(output.signature(), "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAD6AH/8MgAAAABAAAAAAAAAAAAAAABAAAAAAAAAAEAAAAANokbCCazM+6AURQanC9VJL2ufKQ8LoqGfpDOl577te8AAAAAAAAAAAAPQkAAAAAAAAAAAXfTkXUAAABAM9Nhzr8iWKzqnHknrxSVoa4b2qzbTzgyE2+WWxg6XHH50xiFfmvtRKVhzp0Jg8PfhatOb6KNheKRWEw4OvqEDw==");
+}
+
+TEST(TWAnySingerStellar, Sign_Payment_Asset_ea50) {
+    auto key = parse_hex("3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9");
+    PrivateKey privKey = PrivateKey(key);
+    PublicKey pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519);
+    Address addr = Address(pubKey);
+    EXPECT_EQ(addr.string(), "GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
+
+    Proto::SigningInput input;
+    input.set_passphrase(TWStellarPassphrase_Stellar);
+    input.set_account("GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
+    input.set_amount(12000000);
+    input.set_fee(1000);
+    input.set_sequence(144098454883270661);
+    input.set_destination("GA3ISGYIE2ZTH3UAKEKBVHBPKUSL3LT4UQ6C5CUGP2IM5F467O267KI7");
+    input.set_asset_issuer("GA6HCMBLTZS5VYYBCATRBRZ3BZJMAFUDKYYF6AH6MVCMGWMRDNSWJPIH");
+    input.set_asset_alphanum4("MOBI");
+    input.set_private_key(key.data(), key.size());
+    input.set_operation_type(Proto::SigningInput_OperationType_PAYMENT);   
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeStellar);
+
+    // curl "https://horizon.stellar.org/transactions/ea50884cd1288d2d5420065995d13d750d812258e0e79280c4033a434e625c99
+    EXPECT_EQ(output.signature(), "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAD6AH/8MgAAAAFAAAAAAAAAAAAAAABAAAAAAAAAAEAAAAANokbCCazM+6AURQanC9VJL2ufKQ8LoqGfpDOl577te8AAAABTU9CSQAAAAA8cTArnmXa4wEQJxDHOw5SwBaDVjBfAP5lRMNZkRtlZAAAAAAAtxsAAAAAAAAAAAF305F1AAAAQEuWZZvKZuF6SMuSGIyfLqx5sn5O55+Kd489uP4g9jZH4UE7zZ4ME0+74I0BU8YDsYOmmxcfp/vdwTd+n3oGCQw=");
+}
+
+TEST(TWAnySingerStellar, Sign_Change_Trust_ad9c) {
+    auto key = parse_hex("3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9");
+    PrivateKey privKey = PrivateKey(key);
+    PublicKey pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519);
+    Address addr = Address(pubKey);
+    EXPECT_EQ(addr.string(), "GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
+
+    Proto::SigningInput input;
+    input.set_passphrase(TWStellarPassphrase_Stellar);
+    input.set_account("GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
+    input.set_fee(10000);
+    input.set_sequence(144098454883270659);
+    input.set_valid_after(0);
+    input.set_valid_before(0x060299000);
+    input.set_asset_issuer("GA6HCMBLTZS5VYYBCATRBRZ3BZJMAFUDKYYF6AH6MVCMGWMRDNSWJPIH");
+    input.set_asset_alphanum4("MOBI");
+    input.set_private_key(key.data(), key.size());
+    input.set_operation_type(Proto::SigningInput_OperationType_CHANGE_TRUST);   
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeStellar);
+
+    // curl "https://horizon.stellar.org/transactions/ad9cd0f3d636096b6502ccae07adbcf2cd3c0da5393fc2b07813dbe90ecc0d7b"
+    EXPECT_EQ(output.signature(), "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAnEAH/8MgAAAADAAAAAQAAAAAAAAAAAAAAAGApkAAAAAAAAAAAAQAAAAAAAAAGAAAAAU1PQkkAAAAAPHEwK55l2uMBECcQxzsOUsAWg1YwXwD+ZUTDWZEbZWR//////////wAAAAAAAAABd9ORdQAAAEAnfyXyaNQX5Bq3AEQVBIaYd+cLib+y2sNY7DF/NYVSE51dZ6swGGElz094ObsPefmVmeRrkGsSc/fF5pmth+wJ");
+}
+
+TEST(TWAnySingerStellar, Sign_Change_Trust_2) {
+    auto key = parse_hex("3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9");
+    PrivateKey privKey = PrivateKey(key);
+    PublicKey pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519);
+    Address addr = Address(pubKey);
+    EXPECT_EQ(addr.string(), "GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
+
+    Proto::SigningInput input;
+    input.set_passphrase(TWStellarPassphrase_Stellar);
+    input.set_account("GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
+    input.set_fee(10000);
+    input.set_sequence(144098454883270659);
+    input.set_valid_after(0);
+    input.set_valid_before(0x060299000);
+    input.set_asset_issuer("GDUKMGUGDZQK6YHYA5Z6AY2G4XDSZPSZ3SW5UN3ARVMO6QSRDWP5YLEX");
+    input.set_asset_alphanum4("USD");
+    input.set_private_key(key.data(), key.size());
+    input.set_operation_type(Proto::SigningInput_OperationType_CHANGE_TRUST);   
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeStellar);
+
+    EXPECT_EQ(output.signature(), "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAnEAH/8MgAAAADAAAAAQAAAAAAAAAAAAAAAGApkAAAAAAAAAAAAQAAAAAAAAAGAAAAAVVTRAAAAAAA6KYahh5gr2D4B3PgY0blxyy+Wdyt2jdgjVjvQlEdn9x//////////wAAAAAAAAABd9ORdQAAAEDMZtN05ZsZB4OKOZSFkQvuRqDIvMME3PYMTAGJPQlO6Ee0nOtaRn2q0uf0IhETSSfqcsK5asAZzNj07tG0SPwM");
+}
+
+/*
+AAAAAgAAAAA2iRsIJrMz7oBRFBqcL1Ukva58pDwuioZ+kM6Xnvu17wAAJxAB/99/AAAACQAAAAEAAAAAAAAAAAAAAABgKabmAAAAAAAAAAEAAAAAAAAABgAAAAFVU0QAAAAAAOimGoYeYK9g+Adz4GNG5ccsvlncrdo3YI1Y70JRHZ/cf/////////8AAAAAAAAAAZ77te8AAABAaZEIfI95elPRSG+ONnHOSj8DSg5tyWkRB/d8oWKOh5kz8BnCtX2Laoc58km6umzRqkYBo500Uy6hh/EIMeZVCQ==
+
+000000020000000036891b0826b333ee8051141a9c2f5524bdae7ca43c2e8a867e90ce979efbb5ef0000271001ffdf7f00000009000000010000000000000000000000006029a6e600000000000000010000000000000006000000015553440000000000e8a61a861e60af60f80773e06346e5c72cbe59dcadda37608d58ef42511d9fdc7fffffffffffffff00000000000000019efbb5ef000000406991087c8f797a53d1486f8e3671ce4a3f034a0e6dc9691107f77ca1628e879933f019c2b57d8b6a8739f249baba6cd1aa4601a39d34532ea187f10831e65509
+
+00000002
+00000000 36891b0826b333ee8051141a9c2f5524bdae7ca43c2e8a867e90ce979efbb5ef
+00002710
+01ffdf7f00000009
+00000001
+0000000000000000
+000000006029a6e6
+00000000
+00000001
+00000000
+00000006
+00000001
+55534400
+00000000 e8a61a861e60af60f80773e06346e5c72cbe59dcadda37608d58ef42511d9fdc
+7fffffffffffffff
+00000000
+00000001
+9efbb5ef
+00000040
+6991087c8f797a53d1486f8e3671ce4a3f034a0e6dc9691107f77ca1628e879933f019c2b57d8b6a8739f249baba6cd1aa4601a39d34532ea187f10831e65509
+
+*/
