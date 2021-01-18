@@ -96,6 +96,7 @@ Data Signer::encode(const Proto::SigningInput& input) const {
 
     switch (input.operation_type()) {
         case Proto::SigningInput_OperationType_CREATE_ACCOUNT:
+        default:
             encodeAddress(Address(input.destination()), data);
             encode64BE(input.amount(), data);
             break;
@@ -109,9 +110,6 @@ Data Signer::encode(const Proto::SigningInput& input) const {
         case Proto::SigningInput_OperationType_CHANGE_TRUST:
             encodeAsset(input.asset_issuer(), input.asset_alphanum4(), input.asset_alphanum12(), data);
             encode64BE(0x7fffffffffffffff, data); // limit MAX
-            break;
-
-        default:
             break;
     }
 
