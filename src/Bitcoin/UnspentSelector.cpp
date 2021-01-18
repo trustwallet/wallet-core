@@ -12,8 +12,6 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
-const int64_t UnspentSelector::dustThreshold = 3 * 182;
-
 /// A selection of unspent transactions.
 struct Selection {
     std::vector<Proto::UnspentTransaction> utxos;
@@ -84,6 +82,8 @@ UnspentSelector::select(const T& utxos, int64_t targetValue, int64_t byteFee, in
         else
             return doubleTargetValue - val;
     };
+
+    const int64_t dustThreshold = feeCalculator.calculateSingleInput(byteFee);
 
     // 1. Find a combination of the fewest inputs that is
     //    (1) bigger than what we need
