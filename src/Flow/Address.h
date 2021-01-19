@@ -14,6 +14,7 @@
 
 namespace TW::Flow {
 
+/*
 enum HashAlgo {
     HashAlgo_Sha2 = 1,
     HashAlgo_Sha3 = 3
@@ -36,12 +37,13 @@ public:
     KeyStruct(const std::string& key) :
         key(key), hashAlgo(HashAlgo_Sha2), signAlgo(SignAlgo_Ecdsa_secp256k1), weight(1000), revoked(false) {}
 };
+*/
 
 class Address {
 public:
-    std::vector<KeyStruct> keys; // TODO do we need the keys here?
+    //std::vector<KeyStruct> keys; // TODO do we need the keys here?
 
-    std::string accountName;
+    std::string accountId;
 
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
@@ -50,7 +52,7 @@ public:
     explicit Address(const std::string& string);
 
     /// Initializes a Flow address with a public key.
-    explicit Address(const std::string& accountName, const PublicKey& publicKey);
+    //explicit Address(const PublicKey& publicKey);
 
     /// Returns a string representation of the address.
     std::string string() const;

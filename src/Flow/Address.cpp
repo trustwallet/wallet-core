@@ -13,24 +13,31 @@
 using namespace TW::Flow;
 
 bool Address::isValid(const std::string& string) {
-    // TODO: Finalize implementation
-    return false;
+    if (string.length() != 18 || string[0] != '0' || string[1] != 'x') {
+        return false;
+    }
+    // try to parse
+    Data accountId = parse_hex(string);
+    if (accountId.size() != 8) {
+        return false;
+    }
+    return true;
 }
 
 Address::Address(const std::string& string) {
-    // TODO: Finalize implementation
-
     if (!isValid(string)) {
         throw std::invalid_argument("Invalid address string");
     }
+    accountId = string;
 }
 
-Address::Address(const std::string& accountName, const PublicKey& publicKey) : accountName(accountName) {
+/*
+Address::Address(const PublicKey& publicKey) : accountId(accountId) {
     assert(publicKey.type == TWPublicKeyTypeSECP256k1);
-    std::string key = hex(publicKey.bytes); // TODO conversion
-    keys.push_back(KeyStruct(key));
+    // TODO
 }
+*/
 
 std::string Address::string() const {
-    return accountName;
+    return accountId;
 }

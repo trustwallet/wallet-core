@@ -19,7 +19,8 @@ bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW
 }
 
 string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
-    return Address("(unset)", publicKey).string();
+    // TODO cannot do
+    return Address("0x0000000000000000").string();
 }
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
