@@ -1518,5 +1518,30 @@
       "clientPublic": "https://bsc-dataseed1.binance.org",
       "clientDocs": "https://eth.wiki/json-rpc/API"
     }
+  },
+  {
+    "id": "flow",
+    "name": "Flow",
+    "coinId": 539,
+    "slip44": 539,
+    "symbol": "FLOW",
+    "decimals": 18,
+    "blockchain": "Flow",
+    "derivationPath": "m/44'/539'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://flow.bigdipper.live/",
+      "txPath": "/tx/",
+      "accountPath": "/account/",
+      "sampleTx": "0xd6cd9245032fbc4ec8e4d44ead67a3e2d3f5e7cd4cfb895d2ff1c167d3bc58a7",
+      "sampleAccount": "0x6a7457b796dee457"
+    },
+    "info": {
+      "url": "https://onflow.org",
+      "client": "https://github.com/onflow/flow-go",
+      "clientPublic": "https://bsc-dataseed1.binance.org???",
+      "clientDocs": "https://eth.wiki/json-rpc/API???"
+    }
   }
 ]
