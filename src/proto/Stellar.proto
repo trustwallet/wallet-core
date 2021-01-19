@@ -3,6 +3,38 @@ syntax = "proto3";
 package TW.Stellar.Proto;
 option java_package = "wallet.core.jni.proto";
 
+message Asset {
+    // Optional in case of non-native asset; the asset issuer address
+    string issuer = 1;
+
+    // Optional in case of non-native asset; the asset alphanum4 code.  Alphanum4 or alphanum12 has to be set.
+    string alphanum4 = 2;
+
+    // Optional in case of non-native asset; the asset alphanum12 code.  Alphanum4 or alphanum12 has to be set.
+    string alphanum12 = 3;
+}
+
+message OperationCreateAccount {
+    string destination = 1;
+
+    // Amount (*10^7)
+    int64 amount = 2;
+}
+
+message OperationPayment {
+    string destination = 1;
+
+    // Optional, can be left empty for native asset
+    Asset asset = 2;
+
+    // Amount (*10^7)
+    int64 amount = 3;
+}
+
+message OperationChangeTrust {
+    Asset asset = 1;
+}
+
 message MemoVoid {
 }
 
@@ -20,50 +52,36 @@ message MemoHash {
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
-    int64 amount = 1;
+    int32 fee = 1;
 
-    int32 fee = 2;
-
-    int64 sequence = 3;
+    int64 sequence = 2;
 
     // Optional time bound from
-    int64 valid_after = 4;
+    int64 valid_after = 3;
 
     // Optional time bound to
-    int64 valid_before = 5;
+    int64 valid_before = 4;
 
-    string account = 6;
-
-    string destination = 7;
-
-    // Optional in case of non-native asset; the asset issuer address
-    string asset_issuer = 8;
-
-    // Optional in case of non-native asset; the asset alphanum4 code.  Alphanum4 or alphanum12 has to be set.
-    string asset_alphanum4 = 9;
-
-    // Optional in case of non-native asset; the asset alphanum12 code.  Alphanum4 or alphanum12 has to be set.
-    string asset_alphanum12 = 10;
+    string account = 5;
 
     // Private key.
-    bytes private_key = 11;
+    bytes private_key = 6;
+
+    string passphrase = 7;
+
+    oneof operation_oneof {
+        OperationCreateAccount op_create_account = 8;
+        OperationPayment op_payment = 9;
+        OperationChangeTrust op_change_trust = 10;
+    }
 
     oneof memo_type_oneof {
-        MemoVoid memo_void = 12;
-        MemoText memo_text = 13;
-        MemoId memo_id = 14;
-        MemoHash memo_hash = 15;
-        MemoHash memo_return_hash = 16;
+        MemoVoid memo_void = 11;
+        MemoText memo_text = 12;
+        MemoId memo_id = 13;
+        MemoHash memo_hash = 14;
+        MemoHash memo_return_hash = 15;
     }
-
-    enum OperationType {
-        CREATE_ACCOUNT = 0;
-        PAYMENT = 1;
-        CHANGE_TRUST = 6;
-    }
-    OperationType operation_type = 17;
-
-    string passphrase = 18;
 }
 
 // Transaction signing output.

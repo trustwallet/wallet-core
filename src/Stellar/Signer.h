@@ -30,9 +30,9 @@ class Signer {
     Data encode(const Proto::SigningInput& input) const;
 
   private:
-    void encodeAddress(const Address& address, Data& data) const;
-    void encodeAsset(const std::string& issuer, const std::string& alphamum4, const std::string& alphamum12, Data& data) const;
-
+    static uint32_t operationType(const Proto::SigningInput& input);
+    static void encodeAddress(const Address& address, Data& data);
+    static void encodeAsset(const Proto::Asset& asset, Data& data);
     void pad(Data& data) const;
 };
 
