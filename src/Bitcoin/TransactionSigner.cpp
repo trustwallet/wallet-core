@@ -24,7 +24,7 @@ template <typename Transaction, typename TransactionBuilder>
 Result<Transaction> TransactionSigner<Transaction, TransactionBuilder>::sign() {
     if (!plan.error.empty()) {
         // plan with error, fail
-        return Result<Transaction>::failure(plan.error.c_str());
+        return Result<Transaction>::failure((plan.error + " (plan)").c_str());
     }
     if (transaction.inputs.size() == 0 || plan.utxos.size() == 0) {
         return Result<Transaction>::failure("Missing inputs or UTXOs");

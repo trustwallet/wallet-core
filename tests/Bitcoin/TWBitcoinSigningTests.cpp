@@ -612,13 +612,26 @@ TEST(BitcoinSigning, SignP2WSH_NegativePlanWithError) {
     auto result = signer.sign();
 
     ASSERT_FALSE(result);
-    EXPECT_EQ(result.error(), "Plan has error");
+    EXPECT_EQ(result.error(), "Plan has error (plan)");
+}
+
+TEST(BitcoinSigning, SignP2WSH_NegativeNoUTXOs) {
+    // Setup input
+    auto input = buildInputP2WSH((uint32_t)TWBitcoinSigHashTypeAll);
+    input.clear_utxo();
+    input.mutable_plan()->clear_utxos();
+
+    // Sign
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
+    auto result = signer.sign();
+
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), "Missing inputs or UTXOs");
 }
 
 TEST(BitcoinSigning, SignP2WSH_NegativePlanWithNoUTXOs) {
     // Setup input
     auto input = buildInputP2WSH((uint32_t)TWBitcoinSigHashTypeAll);
-    auto plan = Bitcoin::TransactionPlan();
     input.mutable_plan()->clear_utxos();
 
     // Sign
@@ -901,7 +914,7 @@ TEST(BitcoinSigning, Sign_NegativeNoUtxos) {
 
     // Fails as there are 0 utxos
     ASSERT_FALSE(result);
-    EXPECT_EQ(result.error(), "Missing input UTXOs");
+    EXPECT_EQ(result.error(), "Missing input UTXOs (plan)");
 }
 
 TEST(BitcoinSigning, Sign_NegativeInvalidAddress) {
