@@ -7,11 +7,10 @@ message Asset {
     // Optional in case of non-native asset; the asset issuer address
     string issuer = 1;
 
-    // Optional in case of non-native asset; the asset alphanum4 code.  Alphanum4 or alphanum12 has to be set.
+    // Optional in case of non-native asset; the asset alphanum4 code.
     string alphanum4 = 2;
 
-    // Optional in case of non-native asset; the asset alphanum12 code.  Alphanum4 or alphanum12 has to be set.
-    string alphanum12 = 3;
+    // Note: alphanum12 currently not supported
 }
 
 message OperationCreateAccount {

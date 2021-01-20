@@ -84,30 +84,6 @@ TEST(TWAnySingerStellar, Sign_Payment_Asset_ea50) {
     EXPECT_EQ(output.signature(), "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAD6AH/8MgAAAAFAAAAAAAAAAAAAAABAAAAAAAAAAEAAAAANokbCCazM+6AURQanC9VJL2ufKQ8LoqGfpDOl577te8AAAABTU9CSQAAAAA8cTArnmXa4wEQJxDHOw5SwBaDVjBfAP5lRMNZkRtlZAAAAAAAtxsAAAAAAAAAAAF305F1AAAAQEuWZZvKZuF6SMuSGIyfLqx5sn5O55+Kd489uP4g9jZH4UE7zZ4ME0+74I0BU8YDsYOmmxcfp/vdwTd+n3oGCQw=");
 }
 
-TEST(TWAnySingerStellar, Sign_Payment_Asset12) {
-    auto key = parse_hex("3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9");
-    PrivateKey privKey = PrivateKey(key);
-    PublicKey pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519);
-    Address addr = Address(pubKey);
-    EXPECT_EQ(addr.string(), "GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
-
-    Proto::SigningInput input;
-    input.set_passphrase(TWStellarPassphrase_Stellar);
-    input.set_account("GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
-    input.set_fee(1000);
-    input.set_sequence(144098454883270661);
-    input.mutable_op_payment()->set_destination("GA3ISGYIE2ZTH3UAKEKBVHBPKUSL3LT4UQ6C5CUGP2IM5F467O267KI7");
-    input.mutable_op_payment()->mutable_asset()->set_issuer("GA6HCMBLTZS5VYYBCATRBRZ3BZJMAFUDKYYF6AH6MVCMGWMRDNSWJPIH");
-    input.mutable_op_payment()->mutable_asset()->set_alphanum12("TWELVER");
-    input.mutable_op_payment()->set_amount(12000000);
-    input.set_private_key(key.data(), key.size());
-
-    Proto::SigningOutput output;
-    ANY_SIGN(input, TWCoinTypeStellar);
-
-    EXPECT_EQ(output.signature(), "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAD6AH/8MgAAAAFAAAAAAAAAAAAAAABAAAAAAAAAAEAAAAANokbCCazM+6AURQanC9VJL2ufKQ8LoqGfpDOl577te8AAAACVFdFTFZFUgAAAAAAAAAAADxxMCueZdrjARAnEMc7DlLAFoNWMF8A/mVEw1mRG2VkAAAAAAC3GwAAAAAAAAAAAXfTkXUAAABApsgvigIUjL5pbcGANN9LG2h15Z+HhRJe6n1nPXciVBVqL5V771HJ43pyfP9XbEnR1VyQxEVNDN4A3Ce5fXHfDQ==");
-}
-
 TEST(TWAnySingerStellar, Sign_Change_Trust_ad9c) {
     auto key = parse_hex("3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9");
     PrivateKey privKey = PrivateKey(key);

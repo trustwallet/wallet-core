@@ -138,21 +138,13 @@ void Signer::encodeAddress(const Address& address, Data& data) {
 void Signer::encodeAsset(const Proto::Asset& asset, Data& data) {
     uint32_t assetType = 0; // native
     std::string alphaUse;
-    int alphaLen = 4;
-    if (asset.issuer().length() > 0 && Address::isValid(asset.issuer())) {
-        if (asset.alphanum4().length() > 0) {
-            assetType = 1; // alphanum4
-            alphaUse = asset.alphanum4();
-            alphaLen = 4;
-        } else if (asset.alphanum12().length() > 0) {
-            assetType = 2; // alphanum12
-            alphaUse = asset.alphanum12();
-            alphaLen = 12;
-        }
+    if (asset.issuer().length() > 0 && Address::isValid(asset.issuer()) && asset.alphanum4().length() > 0) {
+        assetType = 1; // alphanum4
+        alphaUse = asset.alphanum4();
     }
     encode32BE(assetType, data);
     if (assetType > 0) {
-        for (auto i = 0; i < alphaLen; ++i) {
+        for (auto i = 0; i < 4; ++i) {
             if (alphaUse.length() > i) {
                 data.push_back(alphaUse[i]);
             } else {
