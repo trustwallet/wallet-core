@@ -40,7 +40,7 @@ class StellarTests: XCTestCase {
             $0.sequence = 2 // from account info api
             $0.account = account
             $0.privateKey = privateKeyData
-            $0.operation = operation
+            $0.opPayment = operation
         }
 
         let output: StellarSigningOutput = AnySigner.sign(input: input, coin: .stellar)
@@ -61,7 +61,7 @@ class StellarTests: XCTestCase {
             $0.memoHash = StellarMemoHash.with {
                 $0.hash = Data(hexString: "315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3")!
             }
-            $0.operation = operation
+            $0.opPayment = operation
         }
 
         let output: StellarSigningOutput = AnySigner.sign(input: input, coin: .stellar)
@@ -82,7 +82,7 @@ class StellarTests: XCTestCase {
             $0.memoReturnHash = StellarMemoHash.with {
                 $0.hash = Data(hexString: "315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3")!
             }
-            $0.operation = operation
+            $0.opPayment = operation
         }
 
         let output: StellarSigningOutput = AnySigner.sign(input: input, coin: .stellar)
@@ -103,7 +103,7 @@ class StellarTests: XCTestCase {
             $0.memoID = StellarMemoId.with {
                 $0.id = 1234567890
             }
-            $0.operation = operation
+            $0.opPayment = operation
         }
 
         let output: StellarSigningOutput = AnySigner.sign(input: input, coin: .stellar)
@@ -124,7 +124,7 @@ class StellarTests: XCTestCase {
             $0.memoID = StellarMemoId.with {
                 $0.id = 1234567890
             }
-            $0.operation = operation
+            $0.opCreateAccount = operation
         }
 
         let output: StellarSigningOutput = AnySigner.sign(input: input, coin: .stellar)
@@ -132,9 +132,12 @@ class StellarTests: XCTestCase {
     }
 
     func testSignChangeTrust() {
-        let operation = StellarOperationChangeTrust.with {
+        let assetMobi = StellarAsset.with {
             $0.issuer = "GA6HCMBLTZS5VYYBCATRBRZ3BZJMAFUDKYYF6AH6MVCMGWMRDNSWJPIH"
             $0.alphanum4 = "MOBI"
+        }
+        let operation = StellarOperationChangeTrust.with {
+            $0.asset = assetMobi
             $0.valid_before = 1613336576
         }
         let input = StellarSigningInput.with {
@@ -143,7 +146,7 @@ class StellarTests: XCTestCase {
             $0.sequence = 144098454883270659
             $0.account = "GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL"
             $0.privateKey = Data(hexString: "3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9")!
-            $0.operation = operation
+            $0.opChangeTrust = operation
         }
 
         let output: StellarSigningOutput = AnySigner.sign(input: input, coin: .stellar)
