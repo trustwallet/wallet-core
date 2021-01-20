@@ -62,12 +62,12 @@ Data Signer::encode(const Proto::SigningInput& input) const {
     encode64BE(input.sequence(), data);
 
     // Time bounds
-    if (input.valid_after() == 0 && input.valid_before() == 0) {
-        encode32BE(0, data);
-    } else {
+    if (input.has_op_change_trust() && input.op_change_trust().valid_before() != 0) {
         encode32BE(1, data);
-        encode64BE(input.valid_after(), data);
-        encode64BE(input.valid_before(), data);
+        encode64BE(0, data); // from
+        encode64BE(input.op_change_trust().valid_before(), data); // to
+    } else {
+        encode32BE(0, data); // missing
     }
 
     // Memo

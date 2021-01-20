@@ -96,10 +96,9 @@ TEST(TWAnySingerStellar, Sign_Change_Trust_ad9c) {
     input.set_account("GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
     input.set_fee(10000);
     input.set_sequence(144098454883270659);
-    input.set_valid_after(0);
-    input.set_valid_before(0x060299000);
     input.mutable_op_change_trust()->mutable_asset()->set_issuer("GA6HCMBLTZS5VYYBCATRBRZ3BZJMAFUDKYYF6AH6MVCMGWMRDNSWJPIH");
     input.mutable_op_change_trust()->mutable_asset()->set_alphanum4("MOBI");
+    input.mutable_op_change_trust()->set_valid_before(0x060299000);
     input.set_private_key(key.data(), key.size());
 
     Proto::SigningOutput output;
@@ -121,10 +120,9 @@ TEST(TWAnySingerStellar, Sign_Change_Trust_2) {
     input.set_account("GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
     input.set_fee(10000);
     input.set_sequence(144098454883270659);
-    input.set_valid_after(0);
-    input.set_valid_before(0x060299000);
     input.mutable_op_change_trust()->mutable_asset()->set_issuer("GDUKMGUGDZQK6YHYA5Z6AY2G4XDSZPSZ3SW5UN3ARVMO6QSRDWP5YLEX");
     input.mutable_op_change_trust()->mutable_asset()->set_alphanum4("USD");
+    input.mutable_op_change_trust()->set_valid_before(0x060299000);
     input.set_private_key(key.data(), key.size());
 
     Proto::SigningOutput output;
