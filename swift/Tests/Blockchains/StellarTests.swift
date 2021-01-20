@@ -138,7 +138,7 @@ class StellarTests: XCTestCase {
         }
         let operation = StellarOperationChangeTrust.with {
             $0.asset = assetMobi
-            $0.valid_before = 1613336576
+            $0.validBefore = 1613336576
         }
         let input = StellarSigningInput.with {
             $0.passphrase = StellarPassphrase.stellar.description
