@@ -157,15 +157,16 @@ TEST(TransactionPlan, ThreeNoDust) {
     EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 226);
     EXPECT_EQ(feeCalculator.calculate(2, 2, 1), 374);
 
-    // Now 100'000 fits with no dust; 546 is the dust limit
-    sigingInput = buildSigningInput(100'000 - 226 - 546, 1, utxos);
+    const auto dustLimit = 148;
+    // Now 100'000 fits with no dust
+    sigingInput = buildSigningInput(100'000 - 226 - dustLimit, 1, utxos);
     txPlan = TransactionBuilder::plan(sigingInput);
-    EXPECT_TRUE(verifyPlan(txPlan, {100'000}, 100'000 - 226 - 546, 147));
+    EXPECT_TRUE(verifyPlan(txPlan, {100'000}, 100'000 - 226 - dustLimit, 147));
 
     // One more and we are over dust limit
-    sigingInput = buildSigningInput(100'000 - 226 - 546 + 1, 1, utxos);
+    sigingInput = buildSigningInput(100'000 - 226 - dustLimit + 1, 1, utxos);
     txPlan = TransactionBuilder::plan(sigingInput);
-    EXPECT_TRUE(verifyPlan(txPlan, {75'000, 100'000}, 100'000 - 226 - 546 + 1, 215));
+    EXPECT_TRUE(verifyPlan(txPlan, {75'000, 100'000}, 100'000 - 226 - dustLimit + 1, 215));
 }
 
 TEST(TransactionPlan, TenThree) {
