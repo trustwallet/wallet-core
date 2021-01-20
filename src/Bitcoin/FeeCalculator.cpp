@@ -27,7 +27,7 @@ int64_t SegwitFeeCalculator::calculate(int64_t inputs, int64_t outputs, int64_t 
 }
 
 int64_t SegwitFeeCalculator::calculateSingleInput(int64_t byteFee) const {
-    return int64_t(std::ceil(101.25 * byteFee));
+    return int64_t(std::ceil(101.25)) * byteFee;
 }
 
 class ZCashFeeCalculator : public FeeCalculator {

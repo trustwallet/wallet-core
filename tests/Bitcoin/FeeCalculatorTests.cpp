@@ -11,17 +11,27 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
-TEST(BitcoinFeeCalculator, calculate) {
+TEST(BitcoinFeeCalculator, BitcoinCalculate) {
     FeeCalculator& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
-    EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 226);
-    EXPECT_EQ(feeCalculator.calculate(1, 1, 1), 192);
-    EXPECT_EQ(feeCalculator.calculate(0, 2, 1), 78);
-    EXPECT_EQ(feeCalculator.calculate(1, 0, 1), 158);
+    EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 174);
+    EXPECT_EQ(feeCalculator.calculate(1, 1, 1), 143);
+    EXPECT_EQ(feeCalculator.calculate(0, 2, 1), 72);
+    EXPECT_EQ(feeCalculator.calculate(1, 0, 1), 112);
     EXPECT_EQ(feeCalculator.calculate(0, 0, 1), 10);
-    EXPECT_EQ(feeCalculator.calculate(1, 2, 10), 2260);
+    EXPECT_EQ(feeCalculator.calculate(1, 2, 10), 1740);
 }
 
-TEST(BitcoinDefaultFeeCalculator, calculate) {
+TEST(BitcoinFeeCalculator, SegwitCalculate) {
+    FeeCalculator& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
+    EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 174);
+    EXPECT_EQ(feeCalculator.calculate(1, 1, 1), 143);
+    EXPECT_EQ(feeCalculator.calculate(0, 2, 1), 72);
+    EXPECT_EQ(feeCalculator.calculate(1, 0, 1), 112);
+    EXPECT_EQ(feeCalculator.calculate(0, 0, 1), 10);
+    EXPECT_EQ(feeCalculator.calculate(1, 2, 10), 1740);
+}
+
+TEST(BitcoinFeeCalculator, DefaultCalculate) {
     DefaultFeeCalculator defaultFeeCalculator;
     EXPECT_EQ(defaultFeeCalculator.calculate(1, 2, 1), 226);
     EXPECT_EQ(defaultFeeCalculator.calculate(1, 1, 1), 192);
@@ -31,14 +41,14 @@ TEST(BitcoinDefaultFeeCalculator, calculate) {
     EXPECT_EQ(defaultFeeCalculator.calculate(1, 2, 10), 2260);
 }
 
-TEST(BitcoinDefaultFeeCalculator, calculateSingleInput) {
+TEST(BitcoinFeeCalculator, DefaultCalculateSingleInput) {
     DefaultFeeCalculator defaultFeeCalculator;
     EXPECT_EQ(defaultFeeCalculator.calculateSingleInput(1), 148);
     EXPECT_EQ(defaultFeeCalculator.calculateSingleInput(2), 296);
     EXPECT_EQ(defaultFeeCalculator.calculateSingleInput(10), 1480);
 }
 
-TEST(ZCashFeeCalculator, calculate) {
+TEST(BitcoinFeeCalculator, ZCashCalculate) {
     FeeCalculator& feeCalculator = getFeeCalculator(TWCoinTypeZcash);
     EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 10000);
     EXPECT_EQ(feeCalculator.calculate(0, 0, 1), 10000);
@@ -46,7 +56,7 @@ TEST(ZCashFeeCalculator, calculate) {
     EXPECT_EQ(feeCalculator.calculateSingleInput(1), 0);
 }
 
-TEST(GroestlcoinFeeCalculator, calculate) {
+TEST(BitcoinFeeCalculator, GroestlcoinCalculate) {
     FeeCalculator& feeCalculator = getFeeCalculator(TWCoinTypeGroestlcoin);
     EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 20000);
     EXPECT_EQ(feeCalculator.calculate(0, 0, 1), 20000);
@@ -54,7 +64,7 @@ TEST(GroestlcoinFeeCalculator, calculate) {
     EXPECT_EQ(feeCalculator.calculateSingleInput(1), 0);
 }
 
-TEST(DecredFeeCalculator, calculate) {
+TEST(BitcoinFeeCalculator, DecredCalculate) {
     FeeCalculator& feeCalculator = getFeeCalculator(TWCoinTypeDecred);
     EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 254);
     EXPECT_EQ(feeCalculator.calculate(0, 0, 1), 12);
