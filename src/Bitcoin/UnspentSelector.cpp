@@ -12,8 +12,6 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
-const int64_t UnspentSelector::dustThreshold = 3 * 182;
-
 /// A selection of unspent transactions.
 struct Selection {
     std::vector<Proto::UnspentTransaction> utxos;
@@ -85,40 +83,42 @@ UnspentSelector::select(const T& utxos, int64_t targetValue, int64_t byteFee, in
             return doubleTargetValue - val;
     };
 
+    const int64_t dustThreshold = feeCalculator.calculateSingleInput(byteFee);
+
     // 1. Find a combination of the fewest inputs that is
     //    (1) bigger than what we need
     //    (2) closer to 2x the amount,
     //    (3) and does not produce dust change.
-    for (int64_t numInputs = 1; numInputs <= sortedUtxos.size(); numInputs += 1) {
+    for (int64_t numInputs = 1; numInputs <= sortedUtxos.size(); ++numInputs) {
         const auto fee = feeCalculator.calculate(numInputs, numOutputs, byteFee);
         const auto targetWithFeeAndDust = targetValue + fee + dustThreshold;
         auto slices = slice(sortedUtxos, static_cast<size_t>(numInputs));
-        slices.erase(std::remove_if(slices.begin(), slices.end(),
-                                    [targetWithFeeAndDust](
-                                        const std::vector<Proto::UnspentTransaction>& slice) {
-                                        return sum(slice) < targetWithFeeAndDust;
-                                    }),
-                     slices.end());
+        slices.erase(
+            std::remove_if(slices.begin(), slices.end(),
+                [targetWithFeeAndDust](const std::vector<Proto::UnspentTransaction>& slice) {
+                    return sum(slice) < targetWithFeeAndDust;
+                }),
+            slices.end());
         if (!slices.empty()) {
             std::sort(slices.begin(), slices.end(),
-                      [distFrom2x](const std::vector<Proto::UnspentTransaction>& lhs,
-                                   const std::vector<Proto::UnspentTransaction>& rhs) {
-                          return distFrom2x(sum(lhs)) < distFrom2x(sum(rhs));
-                      });
+                [distFrom2x](const std::vector<Proto::UnspentTransaction>& lhs,
+                            const std::vector<Proto::UnspentTransaction>& rhs) {
+                    return distFrom2x(sum(lhs)) < distFrom2x(sum(rhs));
+                });
             return filterDustInput(slices.front(), byteFee);
         }
     }
 
     // 2. If not, find a valid combination of outputs even if they produce dust change.
-    for (int64_t numInputs = 1; numInputs <= sortedUtxos.size(); numInputs += 1) {
+    for (int64_t numInputs = 1; numInputs <= sortedUtxos.size(); ++numInputs) {
         const auto fee = feeCalculator.calculate(numInputs, numOutputs, byteFee);
         const auto targetWithFee = targetValue + fee;
         auto slices = slice(sortedUtxos, static_cast<size_t>(numInputs));
         slices.erase(
             std::remove_if(slices.begin(), slices.end(),
-                           [targetWithFee](const std::vector<Proto::UnspentTransaction>& slice) {
-                               return sum(slice) < targetWithFee;
-                           }),
+                [targetWithFee](const std::vector<Proto::UnspentTransaction>& slice) {
+                    return sum(slice) < targetWithFee;
+                }),
             slices.end());
         if (!slices.empty()) {
             return filterDustInput(slices.front(), byteFee);
