@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -29,13 +29,11 @@ message KeyInfo {
     int64 weight = 4;
 }
 
-// TODO: typical balance transfer, add more fields needed to sign
 message TransferMessage {
     int64 amount = 1;
     string destination = 2;
 }
 
-// TODO: Input data necessary to create a signed transaction.
 message SigningInput {
     repeated KeyInfo keys = 1;
 

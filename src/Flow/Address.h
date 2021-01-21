@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -14,35 +14,8 @@
 
 namespace TW::Flow {
 
-/*
-enum HashAlgo {
-    HashAlgo_Sha2 = 1,
-    HashAlgo_Sha3 = 3
-};
-
-enum SignAlgo {
-    SignAlgo_Ecdsa_P256 = 2,
-    SignAlgo_Ecdsa_secp256k1 = 3,
-};
-
-class KeyStruct {
-public:
-    std::string key;
-    enum HashAlgo hashAlgo;
-    enum SignAlgo signAlgo;
-    int weight;
-    bool revoked;
-
-    // create a default secp256k1 key, with SHA-2, and weight 1000
-    KeyStruct(const std::string& key) :
-        key(key), hashAlgo(HashAlgo_Sha2), signAlgo(SignAlgo_Ecdsa_secp256k1), weight(1000), revoked(false) {}
-};
-*/
-
 class Address {
 public:
-    //std::vector<KeyStruct> keys; // TODO do we need the keys here?
-
     std::string accountId;
 
     /// Determines whether a string makes a valid address.

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -30,5 +30,5 @@ TEST(FlowSigner, SignTransfer1) {
 
     auto output = Signer::sign(input);
 
-    //ASSERT_EQ(hex(output.encoded()), "encoded");
+    //ASSERT_EQ(hex(output.encoded()), "encoded...");
 }

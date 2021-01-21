@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Polkadot/Signer.h"
-#include "Polkadot/Address.h"
 #include "Polkadot/Extrinsic.h"
 #include "SS58Address.h"
 #include "HexCoding.h"
@@ -20,42 +19,8 @@
 
 namespace TW::Polkadot {
     auto privateKey = PrivateKey(parse_hex("0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115"));
-    auto privateKey0 = PrivateKey(parse_hex("cf802285e86b93708a7cc05fe4930f4b70047c1e2edcb0ef165f4b4b1d3e0356"));
     auto toPublicKey = PublicKey(parse_hex("0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"), TWPublicKeyTypeED25519);
     auto genesisHash = parse_hex("91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3");
-
-TEST(PolkadotSigner, SignTransferDOT0) {
-
-    auto blockHash = parse_hex("0x89bb770a7dd309e00ee82e822a123fbd1de6795f8826b7b16f9ea790dc684422");
-    auto toAddress = Address("13M79SsQnBvAGEJPdDrUVStwMYChH2YatmGG2EZ2i6628N6Q");
-
-    auto input = Proto::SigningInput();
-    input.set_genesis_hash(genesisHash.data(), genesisHash.size());
-    input.set_block_hash(blockHash.data(), blockHash.size());
-
-    input.set_nonce(10);
-    input.set_spec_version(26);
-    input.set_private_key(privateKey0.bytes.data(), privateKey0.bytes.size());
-    input.set_network(Proto::Network::POLKADOT);
-    input.set_transaction_version(3);
-
-    //auto &era = *input.mutable_era();
-    //era.set_phase(927699);
-    //era.set_period(8);
-
-    auto balanceCall = input.mutable_balance_call();
-    auto &transfer = *balanceCall->mutable_transfer();
-    auto value = store(uint256_t(100000000));
-    transfer.set_to_address(toAddress.string());
-    transfer.set_value(value.data(), value.size());
-
-    auto extrinsic = Extrinsic(input);
-    auto preimage = extrinsic.encodePayload();
-    auto output = Signer::sign(input);
-
-    //EXPECT_EQ(hex(preimage), "3102847120f76076bcb0efdf94c7219e116899d0163ea61cb428183d71324eb33b2bce00282c5ecf92d7b145a7e497b896586f2dcb0b439365251b8e84d21eef3a6a7f7fd993ee4f1c8e04dd7c84732bb97c4a47e52dac90c64a3d1b7a3f7efdbe67100232000000050067ce10209e619e32639dd74a71d9865807839f3a4f09b4fd1cd52fab9496dd480284d717");
-    ASSERT_EQ(hex(output.encoded()), "2d02847120f76076bcb0efdf94c7219e116899d0163ea61cb428183d71324eb33b2bce005b2972719795ae13d789ac3a322a7a2289ceaab0e643b3468e00f4e5ae6f65672a50e944cd683ca940c46a598dcfe000ea1db2e6884d6c36695055860a30b60c002800050067ce10209e619e32639dd74a71d9865807839f3a4f09b4fd1cd52fab9496dd480284d717");
-}
 
 TEST(PolkadotSigner, SignTransferDOT) {
 
