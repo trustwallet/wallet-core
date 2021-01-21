@@ -10,6 +10,14 @@
 
 using namespace TW::Avalanche;
 
+bool TransactionOutput::operator<(const TransactionOutput& other) {
+    Data thisData;
+    Data otherData;
+    encode(thisData);
+    other.encode(otherData);
+    return std::lexicographical_compare(thisData.begin(), thisData.end(), otherData.begin(), otherData.end());
+}
+
 void TransferableOutput::encode(Data& data) const {
     for (auto byte : AssetID) {
         data.push_back(byte);
@@ -32,7 +40,6 @@ void SECP256k1TransferOutput::encode(Data& data) const {
     encode64LE(Locktime, data);
     encode32LE(Threshold, data);
     encode32LE(Addresses.size(), data);
-    std::sort(Addresses.begin(), Addresses.end());
     for (auto Address : Addresses) {
         for (auto byte : Address.bytes) {
             data.push_back(byte);
@@ -45,7 +52,6 @@ void SECP256k1MintOutput::encode(Data& data) const {
     encode64LE(Locktime, data);
     encode32LE(Threshold, data);
     encode32LE(Addresses.size(), data);
-    std::sort(Addresses.begin(), Addresses.end());
     for (auto Address : Addresses) {
         for (auto byte : Address.bytes) {
             data.push_back(byte);
@@ -63,7 +69,6 @@ void NFTTransferOutput::encode(Data& data) const {
     encode64LE(Locktime, data);
     encode32LE(Threshold, data);
     encode32LE(Addresses.size(), data);
-    std::sort(Addresses.begin(), Addresses.end());
     for (auto Address : Addresses) {
         for (auto byte : Address.bytes) {
             data.push_back(byte);
@@ -77,7 +82,6 @@ void NFTMintOutput::encode(Data& data) const {
     encode64LE(Locktime, data);
     encode32LE(Threshold, data);
     encode32LE(Addresses.size(), data);
-    std::sort(Addresses.begin(), Addresses.end());
     for (auto Address : Addresses) {
         for (auto byte : Address.bytes) {
             data.push_back(byte);

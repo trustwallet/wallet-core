@@ -12,7 +12,16 @@
 
 namespace TW::Avalanche {
 
-class TransactionOutput;
+class TransactionOutput {
+  public:
+    /// Encodes the output into the provided buffer.
+    virtual void encode(Data& data) const;
+
+    bool operator<(const TransactionOutput& other);
+
+  protected:
+    TransactionOutput(){}
+};
 
 /// Avalanche transaction output.
 class TransferableOutput {
@@ -31,14 +40,6 @@ class TransferableOutput {
 };
 
 
-class TransactionOutput {
-  public:
-    /// Encodes the output into the provided buffer.
-    virtual void encode(Data& data) const;
-  protected:
-    TransactionOutput(){}
-};
-
 class SECP256k1TransferOutput : public TransactionOutput {
   const uint32_t typeID = 7;
   
@@ -50,7 +51,9 @@ class SECP256k1TransferOutput : public TransactionOutput {
 
     SECP256k1TransferOutput(uint64_t amount, uint64_t locktime, uint32_t threshold, std::vector<Address> &addresses)
       : Amount(amount), 
-      Locktime(locktime), Threshold(threshold), Addresses(addresses) {}
+      Locktime(locktime), Threshold(threshold), Addresses(addresses) {
+        std::sort(Addresses.begin(), Addresses.end());
+      }
   
     void encode (Data& data) const;
 };
@@ -65,7 +68,9 @@ class SECP256k1MintOutput : public TransactionOutput {
     std::vector<Address> Addresses;
 
     SECP256k1MintOutput(uint64_t locktime, uint32_t threshold, std::vector<Address> &addresses)
-      : Locktime(locktime), Threshold(threshold), Addresses(addresses) {}
+      : Locktime(locktime), Threshold(threshold), Addresses(addresses) {
+        std::sort(Addresses.begin(), Addresses.end());
+      }
   
     void encode (Data& data) const;
 };
@@ -82,7 +87,9 @@ class NFTTransferOutput : public TransactionOutput {
 
     NFTTransferOutput(uint32_t groupID, Data &payload, uint64_t locktime, uint32_t threshold, std::vector<Address> &addresses)
       : GroupID(groupID), Payload(payload),
-      Locktime(locktime), Threshold(threshold), Addresses(addresses) {}
+      Locktime(locktime), Threshold(threshold), Addresses(addresses) {
+        std::sort(Addresses.begin(), Addresses.end());
+      }
   
     void encode (Data& data) const;
 };
@@ -98,7 +105,9 @@ class NFTMintOutput : public TransactionOutput {
 
     NFTMintOutput(uint32_t groupID,uint64_t locktime, uint32_t threshold, std::vector<Address> &addresses)
       : GroupID(groupID),
-      Locktime(locktime), Threshold(threshold), Addresses(addresses) {}
+      Locktime(locktime), Threshold(threshold), Addresses(addresses) {
+        std::sort(Addresses.begin(), Addresses.end());
+      }
   
     void encode (Data& data) const;
 };

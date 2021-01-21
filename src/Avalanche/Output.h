@@ -14,6 +14,7 @@ namespace TW::Avalanche {
     using Threshold = uint32_t;
     using Output = std::tuple<Locktime, Threshold, std::vector<Address>>;
 
+    void SortOutputs(std::vector<Output> &outputs);
     void EncodeOutputs(std::vector<Output> outputs, Data &data);
 }
 

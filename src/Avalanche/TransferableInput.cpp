@@ -39,7 +39,6 @@ bool TransferableInput::operator<(const TransferableInput& other) {
 void SECP256k1TransferInput::encode(Data& data) const {
     encode32LE(typeID, data);
     encode64LE(Amount, data);
-    sort(AddressIndices.begin(), AddressIndices.end());
     for (auto index: AddressIndices) {
         encode32LE(index, data);
     }

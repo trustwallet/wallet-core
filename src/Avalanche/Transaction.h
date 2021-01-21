@@ -28,7 +28,10 @@ class BaseTransaction {
 
   protected:
     BaseTransaction(uint32_t typeID, uint32_t networkID, Data &blockchainID, std::vector<TransferableInput> &inputs, std::vector<TransferableOutput> &outputs, Data &memo)
-    : TypeID(typeID), NetworkID(networkID), BlockchainID(blockchainID), Inputs(inputs), Outputs(outputs), Memo(memo) {}
+    : TypeID(typeID), NetworkID(networkID), BlockchainID(blockchainID), Inputs(inputs), Outputs(outputs), Memo(memo) {
+      std::sort(Inputs.begin(), Inputs.end());
+      std::sort(Outputs.begin(), Outputs.end());
+    }
 
     /// Encodes the BaseTransaction into the provided buffer.
     void baseEncode(Data& data) const;
@@ -46,7 +49,9 @@ class UnsignedCreateAssetTransaction : public BaseTransaction {
     UnsignedCreateAssetTransaction(uint32_t networkID, Data &blockchainID, std::vector<TransferableInput> &inputs, std::vector<TransferableOutput> &outputs, Data &memo, 
       std::string &name, std::string &symbol, uint8_t denomination, std::vector<InitialState> &states)
       : BaseTransaction(1, networkID, blockchainID, inputs, outputs, memo), 
-      Name(name), Symbol(symbol), Denomination(denomination), InitialStates(states) {}
+      Name(name), Symbol(symbol), Denomination(denomination), InitialStates(states) {
+        std::sort(InitialStates.begin(), InitialStates.end());
+      }
 };
 
 class UnsignedOperationTransaction : public BaseTransaction {
@@ -58,7 +63,9 @@ class UnsignedOperationTransaction : public BaseTransaction {
     UnsignedOperationTransaction(uint32_t networkID, Data &blockchainID, std::vector<TransferableInput> &inputs, std::vector<TransferableOutput> &outputs, Data &memo, 
       std::vector<TransferableOp> &ops)
       : BaseTransaction(2, networkID, blockchainID, inputs, outputs, memo), 
-      Operations(ops) {}
+      Operations(ops) {
+        std::sort(Operations.begin(), Operations.end());
+      }
 };
 
 class UnsignedImportTransaction : public BaseTransaction {
@@ -71,7 +78,9 @@ class UnsignedImportTransaction : public BaseTransaction {
     UnsignedImportTransaction(uint32_t networkID, Data &blockchainID, std::vector<TransferableInput> &inputs, std::vector<TransferableOutput> &outputs, Data &memo, 
       Data &source, std::vector<TransferableInput> &importInputs)
       : BaseTransaction(3, networkID, blockchainID, inputs, outputs, memo), 
-      SourceChain(source), ImportInputs(inputs) {}
+      SourceChain(source), ImportInputs(inputs) {
+        std::sort(ImportInputs.begin(), ImportInputs.end());
+      }
 };
 
 class UnsignedExportTransaction : public BaseTransaction {
@@ -84,12 +93,14 @@ class UnsignedExportTransaction : public BaseTransaction {
     UnsignedExportTransaction(uint32_t networkID, Data &blockchainID, std::vector<TransferableInput> &inputs, std::vector<TransferableOutput> &outputs, Data &memo, 
       Data &dest, std::vector<TransferableOutput> &exportOutputs)
       : BaseTransaction(3, networkID, blockchainID, inputs, outputs, memo), 
-      DestinationChain(dest), ExportOutputs(exportOutputs) {}
+      DestinationChain(dest), ExportOutputs(exportOutputs) {
+        std::sort(ExportOutputs.begin(), ExportOutputs.end());
+      }
 };
 
 class SignedTransaction {
   public: 
-    const uint16_t CodecID = 0; // TODO EJR we are on codecID 1 now but docs are on 0
+    const uint16_t CodecID = 0; // TODO EJR x-chain is on codecID 1 now but docs are on 0
     BaseTransaction UnsignedTransaction;
     std::vector<Credential> Credentials;
 

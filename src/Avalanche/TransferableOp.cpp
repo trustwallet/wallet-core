@@ -10,7 +10,7 @@
 
 using namespace TW::Avalanche;
 
-bool sortUTXOIDs(TransferableOp::UTXOID lhs, TransferableOp::UTXOID rhs) {
+bool TransferableOp::sortUTXOIDs(TransferableOp::UTXOID lhs, TransferableOp::UTXOID rhs) {
     if (lhs.first == rhs.first) {
         return lhs.second < rhs.second;
     }
@@ -22,7 +22,6 @@ void TransferableOp::encode(Data& data) const {
         data.push_back(byte);
     }
     encode32LE(UTXOIDs.size(), data);
-    std::sort(UTXOIDs.begin(), UTXOIDs.end(), sortUTXOIDs);
     for (auto utxoID : UTXOIDs) {
         for (auto byte : utxoID.first) {
             data.push_back(byte);
@@ -43,7 +42,6 @@ bool TransferableOp::operator<(const TransferableOp& other) {
 void SECP256k1MintOperation::encode(Data& data) const {
     encode32LE(typeID, data);
     encode32LE(AddressIndices.size(), data);
-    std::sort(AddressIndices.begin(), AddressIndices.end());
     for (auto index : AddressIndices) {
         encode32LE(index, data);
     }
@@ -54,7 +52,6 @@ void SECP256k1MintOperation::encode(Data& data) const {
 void NFTMintOperation::encode(Data& data) const {
     encode32LE(typeID, data);
     encode32LE(AddressIndices.size(), data);
-    std::sort(AddressIndices.begin(), AddressIndices.end());
     for (auto index : AddressIndices) {
         encode32LE(index, data);
     }
@@ -70,7 +67,6 @@ void NFTMintOperation::encode(Data& data) const {
 void NFTTransferOperation::encode(Data& data) const {
     encode32LE(typeID, data);
     encode32LE(AddressIndices.size(), data);
-    std::sort(AddressIndices.begin(), AddressIndices.end());
     for (auto index : AddressIndices) {
         encode32LE(index, data);
     }
@@ -82,7 +78,6 @@ void NFTTransferOperation::encode(Data& data) const {
     encode64LE(TransferOutput.Locktime, data);
     encode32LE(TransferOutput.Threshold, data);
     encode32LE(TransferOutput.Addresses.size(), data);
-    std::sort(TransferOutput.Addresses.begin(), TransferOutput.Addresses.end());
     for (auto Address : TransferOutput.Addresses) {
         for (auto byte : Address.bytes) {
             data.push_back(byte);

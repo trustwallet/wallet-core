@@ -18,7 +18,9 @@ namespace TW::Avalanche {
         enum FeatureExtension {SECP256k1 = 0, NFT = 1};
         
         InitialState(FeatureExtension fxid, std::vector<TransactionOutput> &outputs)
-         : FxID(fxid), Outputs(outputs) {}
+         : FxID(fxid), Outputs(outputs) {
+           std::sort(Outputs.begin(), Outputs.end());
+         }
 
         /// Encodes the InitialState into the provided buffer.
         void encode(Data& data) const;

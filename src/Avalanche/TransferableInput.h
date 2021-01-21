@@ -12,7 +12,12 @@
 
 namespace TW::Avalanche {
 
-class TransactionInput;
+class TransactionInput{
+  public: 
+    virtual void encode (Data& data) const;
+  protected:
+    TransactionInput(){}  
+};
 
 /// Avalanche transaction input.
 class TransferableInput {
@@ -33,12 +38,6 @@ class TransferableInput {
     bool operator<(const TransferableInput& other);
 };
 
-class TransactionInput{
-  public: 
-    virtual void encode (Data& data) const;
-  protected:
-    TransactionInput(){}  
-};
 
 class SECP256k1TransferInput : public TransactionInput {
   const uint32_t typeID = 5;
@@ -48,7 +47,9 @@ class SECP256k1TransferInput : public TransactionInput {
     std::vector<uint32_t> AddressIndices;
 
     SECP256k1TransferInput(uint64_t amount, std::vector<uint32_t> addressIndices)
-      : Amount(amount), AddressIndices(addressIndices) {}
+      : Amount(amount), AddressIndices(addressIndices) {
+        std::sort(AddressIndices.begin(), AddressIndices.end());
+      }
   
     void encode (Data& data) const;
 };

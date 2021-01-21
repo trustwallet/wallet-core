@@ -26,3 +26,19 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     protoOutput.set_encoded(encoded.data(), encoded.size());
     return protoOutput;
 }
+
+
+Proto::SigningOutput Signer::plan(const Proto::SigningInput &input) noexcept {
+    // TODO: Check and finalize implementation
+
+    auto protoOutput = Proto::SigningOutput();
+    Data encoded;
+    // auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    // auto signature = privateKey.sign(payload, TWCurveED25519);
+    // encoded = encodeSignature(signature);
+    // EJR Note: Basically, `encoded` needs to be filled with whatever bytes get sent to the network, so the full SignedTransaction
+
+
+    protoOutput.set_encoded(encoded.data(), encoded.size());
+    return protoOutput;
+}

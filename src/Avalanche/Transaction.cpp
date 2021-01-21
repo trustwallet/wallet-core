@@ -16,12 +16,10 @@ void BaseTransaction::baseEncode(Data& data) const {
     for (auto byte : BlockchainID) {
         data.push_back(byte);
     }
-    std::sort(Outputs.begin(), Outputs.end());
     encode32LE(Outputs.size(), data);
     for (auto output : Outputs) {
         output.encode(data);
     }
-    std::sort(Inputs.begin(), Inputs.end());
     encode32LE(Inputs.size(), data);
     for (auto input : Inputs) {
         input.encode(data);
@@ -36,7 +34,6 @@ void UnsignedCreateAssetTransaction::encode(Data& data) const {
     encodeString(Name, data);
     encodeString(Symbol, data);
     data.push_back(Denomination);
-    std::sort(InitialStates.begin(), InitialStates.end());
     encode32LE(InitialStates.size(), data);
     for (auto state : InitialStates) {
         state.encode(data);
@@ -45,7 +42,6 @@ void UnsignedCreateAssetTransaction::encode(Data& data) const {
 
 void UnsignedOperationTransaction::encode(Data& data) const {
     baseEncode(data);
-    std::sort(Operations.begin(), Operations.end());
     encode32LE(Operations.size(), data);
     for (auto op : Operations) {
         op.encode(data);
@@ -57,7 +53,6 @@ void UnsignedImportTransaction::encode(Data& data) const {
     for (auto byte : SourceChain) {
         data.push_back(byte);
     }
-    std::sort(ImportInputs.begin(), ImportInputs.end());
     encode32LE(ImportInputs.size(), data);
     for (auto in : ImportInputs) {
         in.encode(data);
@@ -69,7 +64,6 @@ void UnsignedExportTransaction::encode(Data& data) const {
     for (auto byte : DestinationChain) {
         data.push_back(byte);
     }
-    std::sort(ExportOutputs.begin(), ExportOutputs.end());
     encode32LE(ExportOutputs.size(), data);
     for (auto out : ExportOutputs) {
         out.encode(data);

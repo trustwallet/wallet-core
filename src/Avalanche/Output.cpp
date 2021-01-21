@@ -9,7 +9,6 @@
 
 using namespace TW::Avalanche;
 
-
 bool compareOutputForSort(Output lhs, Output rhs) {
     if (std::get<0>(lhs) != std::get<0>(rhs)) {
         return std::get<0>(lhs) < std::get<0>(rhs);
@@ -20,14 +19,16 @@ bool compareOutputForSort(Output lhs, Output rhs) {
     return std::lexicographical_compare(std::get<2>(lhs).begin(), std::get<2>(lhs).end(), std::get<2>(rhs).begin(), std::get<2>(rhs).end());
 }
 
-void EncodeOutputs(std::vector<Output> outputs, TW::Data &data) {
-    // go through each output and sort its list of addresses 
-    // then, sort the list of outputs 
+void SortOutputs(std::vector<Output> &outputs){
+    // sort the addresses in the outputs, then sort the outputs themselves
     for (auto &output : outputs) {
         std::sort(std::get<2>(output).begin(), std::get<2>(output).begin());
     }
     std::sort(outputs.begin(), outputs.end(), compareOutputForSort);
-    // end sort 
+}
+
+// must first call SortOutputs
+void EncodeOutputs(std::vector<Output> &outputs, TW::Data &data) {
     TW::encode32LE(outputs.size(), data);
     for (auto output : outputs) {
         TW::encode64LE(std::get<0>(output), data);
