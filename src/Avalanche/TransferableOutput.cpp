@@ -10,7 +10,7 @@
 
 using namespace TW::Avalanche;
 
-bool TransactionOutput::operator<(const TransactionOutput& other) {
+bool TransactionOutput::operator<(const TransactionOutput& other) const {
     Data thisData;
     Data otherData;
     encode(thisData);
@@ -25,7 +25,7 @@ void TransferableOutput::encode(Data& data) const {
     Output.encode(data);
 }
 
-bool TransferableOutput::operator<(const TransferableOutput& other) {
+bool TransferableOutput::operator<(const TransferableOutput& other) const {
     Data thisData;
     Data otherData;
     encode(thisData);

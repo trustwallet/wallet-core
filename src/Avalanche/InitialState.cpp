@@ -18,7 +18,7 @@ void InitialState::encode(Data& data) const {
     }
 }
 
-bool InitialState::operator<(const InitialState& other) {
+bool InitialState::operator<(const InitialState& other) const {
     Data thisData;
     Data otherData;
     encode(thisData);

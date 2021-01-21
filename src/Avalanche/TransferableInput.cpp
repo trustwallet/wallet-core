@@ -21,7 +21,7 @@ void TransferableInput::encode(Data& data) const {
     Input.encode(data);
 }
 
-bool TransferableInput::operator<(const TransferableInput& other) {
+bool TransferableInput::operator<(const TransferableInput& other) const {
     if (TxID == other.TxID) {
         return UTXOIndex < other.UTXOIndex;
     } 

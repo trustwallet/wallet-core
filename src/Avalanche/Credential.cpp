@@ -21,7 +21,7 @@ void Credential::encode(Data& data) const {
     }
 }
 
-bool Credential::operator<(const Credential& other) {
+bool Credential::operator<(const Credential& other) const {
     Data thisData;
     Data otherData;
     encode(thisData);

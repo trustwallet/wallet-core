@@ -25,7 +25,7 @@ namespace TW::Avalanche {
         /// Encodes the InitialState into the provided buffer.
         void encode(Data& data) const;
 
-        bool operator<(const InitialState& other);
+        bool operator<(const InitialState& other) const;
     };
 
 } // namespace TW::Avalanche

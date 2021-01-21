@@ -35,7 +35,7 @@ class TransferableInput {
         , AssetID(assetID), Input(input) {}
 
     
-    bool operator<(const TransferableInput& other);
+    bool operator<(const TransferableInput& other) const;
 };
 
 

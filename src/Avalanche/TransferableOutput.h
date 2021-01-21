@@ -17,7 +17,7 @@ class TransactionOutput {
     /// Encodes the output into the provided buffer.
     virtual void encode(Data& data) const;
 
-    bool operator<(const TransactionOutput& other);
+    bool operator<(const TransactionOutput& other) const;
 
   protected:
     TransactionOutput(){}
@@ -35,7 +35,7 @@ class TransferableOutput {
     TransferableOutput(Data &assetID, TransactionOutput &output)
       : AssetID(assetID), Output(output) {}
     
-    bool operator<(const TransferableOutput& other);
+    bool operator<(const TransferableOutput& other) const;
       
 };
 

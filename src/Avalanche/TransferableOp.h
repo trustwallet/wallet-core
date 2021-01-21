@@ -29,7 +29,7 @@ class TransferableOp {
     using UTXOID = std::pair<TxID, OutputIndex>;
     std::vector<UTXOID> UTXOIDs;
   private:
-    bool sortUTXOIDs(UTXOID lhs, UTXOID rhs);
+    static bool sortUTXOIDs(UTXOID lhs, UTXOID rhs);
   public:
     Data AssetID;
     TransactionOp TransferOp;
@@ -42,7 +42,7 @@ class TransferableOp {
         std::sort(UTXOIDs.begin(), UTXOIDs.end(), sortUTXOIDs);
       }
 
-    bool operator<(const TransferableOp& other);
+    bool operator<(const TransferableOp& other) const;
 };
 
 

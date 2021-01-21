@@ -21,10 +21,8 @@ namespace TW::Avalanche {
         UTXO(Data &txID, uint32_t UTXOIndex, Data &assetID, TransferableOutput &output)
         : TxID(txID), UTXOIndex(UTXOIndex), AssetID(assetID), Output(output) {}
 
-        /// Encodes the InitialState into the provided buffer.
+        /// Encodes the UTXO into the provided buffer.
         void encode(Data& data) const;
-
-        bool operator<(const UTXO& other);
     };
 
 } // namespace TW::Avalanche

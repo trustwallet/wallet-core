@@ -31,7 +31,7 @@ void TransferableOp::encode(Data& data) const {
     TransferOp.encode(data);
 }
 
-bool TransferableOp::operator<(const TransferableOp& other) {
+bool TransferableOp::operator<(const TransferableOp& other) const {
     Data thisData;
     Data otherData;
     encode(thisData);

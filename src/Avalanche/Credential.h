@@ -17,7 +17,7 @@ namespace TW::Avalanche {
         /// Encodes the Credential into the provided buffer.
         void encode(Data& data) const;
 
-        bool operator<(const Credential& other);
+        bool operator<(const Credential& other) const;
 
       protected:
         Credential(uint32_t typeID, std::vector<Data> &sigs)
