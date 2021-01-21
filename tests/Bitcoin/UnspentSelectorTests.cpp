@@ -183,12 +183,13 @@ TEST(BitcoinUnspentSelector, SelectThreeNoDust) {
     // 100'000 would fit with dust; instead two UTXOs are selected not to leave dust
     EXPECT_TRUE(verifySelectedUTXOs(selected, {75'000, 100'000}));
     
-    // Now 100'000 fits with no dust; 546 is the dust limit
-    selected = selector.select(utxos, 100'000 - 226 - 546, 1);
+    const auto dustLimit = 148;
+    // Now 100'000 fits with no dust
+    selected = selector.select(utxos, 100'000 - 226 - dustLimit, 1);
     EXPECT_TRUE(verifySelectedUTXOs(selected, {100'000}));
 
     // One more and we are over dust limit
-    selected = selector.select(utxos, 100'000 - 226 - 546 + 1, 1);
+    selected = selector.select(utxos, 100'000 - 226 - dustLimit + 1, 1);
     EXPECT_TRUE(verifySelectedUTXOs(selected, {75'000, 100'000}));
 }
 
@@ -242,14 +243,15 @@ TEST(BitcoinUnspentSelector, SelectTenThreeExact) {
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     auto selector = UnspentSelector(feeCalculator);
-    auto selected = selector.select(utxos, 375'000 - 522 - 546, 1);
+    const auto dustLimit = 148;
+    auto selected = selector.select(utxos, 375'000 - 522 - dustLimit, 1);
 
     EXPECT_TRUE(verifySelectedUTXOs(selected, {100'000, 125'000, 150'000}));
 
     ASSERT_EQ(feeCalculator.calculate(3, 2, 1), 522);
 
     // one more, and it's too much
-    selected = selector.select(utxos, 375'000 - 522 - 546 + 1, 1);
+    selected = selector.select(utxos, 375'000 - 522 - dustLimit + 1, 1);
 
     EXPECT_TRUE(verifySelectedUTXOs(selected, {7'000, 100'000, 125'000, 150'000}));
 }

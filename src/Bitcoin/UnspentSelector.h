@@ -17,9 +17,6 @@ namespace TW::Bitcoin {
 
 class UnspentSelector {
   public:
-    /// Maximum allowable transaction dust.
-    static const int64_t dustThreshold;
-
     /// Selects unspent transactions to use given a target transaction value.
     ///
     /// \returns the list of selected utxos or an empty list if there are
