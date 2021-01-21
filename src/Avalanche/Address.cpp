@@ -11,7 +11,6 @@
 using namespace TW::Avalanche;
 
 bool Address::isValid(const std::string& string) {
-    // TODO: Finalize implementation
     // split into before and after - 
     std::string delimiter = "-";
     auto chainID = string.substr(string.find("-"));

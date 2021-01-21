@@ -31,7 +31,7 @@ void SECP256k1TransferOutput::encode(Data& data) const {
     encode64LE(Amount, data);
     encode64LE(Locktime, data);
     encode32LE(Threshold, data);
-    encode32LE(Addresses.size());
+    encode32LE(Addresses.size(), data);
     std::sort(Addresses.begin(), Addresses.end());
     for (auto Address : Addresses) {
         for (auto byte : Address.bytes) {
@@ -44,7 +44,7 @@ void SECP256k1MintOutput::encode(Data& data) const {
     encode32LE(typeID, data);
     encode64LE(Locktime, data);
     encode32LE(Threshold, data);
-    encode32LE(Addresses.size());
+    encode32LE(Addresses.size(), data);
     std::sort(Addresses.begin(), Addresses.end());
     for (auto Address : Addresses) {
         for (auto byte : Address.bytes) {
@@ -76,7 +76,7 @@ void NFTMintOutput::encode(Data& data) const {
     encode32LE(GroupID, data);
     encode64LE(Locktime, data);
     encode32LE(Threshold, data);
-    encode32LE(Addresses.size());
+    encode32LE(Addresses.size(), data);
     std::sort(Addresses.begin(), Addresses.end());
     for (auto Address : Addresses) {
         for (auto byte : Address.bytes) {
