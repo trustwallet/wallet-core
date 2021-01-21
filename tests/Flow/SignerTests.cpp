@@ -6,6 +6,7 @@
 
 #include "Flow/Signer.h"
 #include "Flow/Address.h"
+#include "proto/Flow.pb.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
@@ -17,18 +18,17 @@ using namespace TW::Flow;
 
 // TODO: Add tests
 
-TEST(FlowSigner, Sign) {
-    // TODO: Finalize test implementation
+TEST(FlowSigner, SignTransfer1) {
+    auto input = Proto::SigningInput();
+    auto key1 = input.add_keys();
+    key1->set_key("rV/OVMsGBQUf6+zmmJkI+/cVpWlNuO3NBkfqaE8R1/1T4ERzy2OKOpM//qWrh6wkSOUCbKNvrEKxVonPKdh0pg==");
+    key1->set_sign_algo(Proto::SIGNALGO_ECDSA_SECP256K1);
+    key1->set_hash_algo(Proto::HASHALGO_SHA2_256);
+    key1->set_weight(1000);
+    input.mutable_transfer()->set_amount(10000000);
+    input.mutable_transfer()->set_destination("0x3bf5d7407caaeb32");
 
-    //auto key = PrivateKey(parse_hex("__PRIVKEY_DATA__"));
-    //auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
-    //auto from = Address(publicKey);
-    //auto to = Address("__TO_ADDRESS__");
-    //...
-    //auto transaction = Transaction(...)
-    //auto signature = Signer::sign(key, transaction);
-    //auto result = transaction.serialize(signature);
+    auto output = Signer::sign(input);
 
-    //ASSERT_EQ(hex(serialized), "__RESULT__");
-    //ASSERT_EQ(...)
+    //ASSERT_EQ(hex(output.encoded()), "encoded");
 }

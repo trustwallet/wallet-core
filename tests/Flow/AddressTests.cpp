@@ -16,6 +16,7 @@ using namespace TW::Flow;
 
 TEST(FlowAddress, Valid) {
     ASSERT_TRUE(Address::isValid("0x3bf5d7407caaeb32"));
+    ASSERT_TRUE(Address::isValid("0xcafc8dd1eba0f9d6"));
 }
 
 TEST(FlowAddress, Invalid) {
@@ -25,7 +26,7 @@ TEST(FlowAddress, Invalid) {
     ASSERT_FALSE(Address::isValid("0x0012"));
 }
 
-/* TODO
+/* Not possible
 TEST(FlowAddress, FromPrivateKey) {
     auto privateKey = PrivateKey(parse_hex("ccf430b9cb836779fe1cbe5c7bd278b136c717b635743f38b91fc02f56157894"));
     auto address = Address("0x3bf5d7407caaeb32", privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));

@@ -9,16 +9,35 @@ syntax = "proto3";
 package TW.Flow.Proto;
 option java_package = "wallet.core.jni.proto";
 
+enum SignaureAlgorithm {
+    SIGNALGO_INVALID = 0;
+    SIGNALGO_ECDSA_P256 = 2;
+    SIGNALGO_ECDSA_SECP256K1 = 3;
+}
+
+enum HashAlgorithm {
+    HASHALGO_INVALID = 0;
+    HASHALGO_SHA2_256 = 1;
+    HASHALGO_SHA3_256 = 3;
+}
+
+message KeyInfo {
+    // Public key, encoded as?
+    string key = 1;
+    SignaureAlgorithm sign_algo = 2;
+    HashAlgorithm hash_algo = 3;
+    int64 weight = 4;
+}
+
 // TODO: typical balance transfer, add more fields needed to sign
 message TransferMessage {
     int64 amount = 1;
-    int64 fee = 2;
-    string to = 3;
+    string destination = 2;
 }
 
 // TODO: Input data necessary to create a signed transaction.
 message SigningInput {
-    bytes private_key = 1;
+    repeated KeyInfo keys = 1;
 
     oneof message_oneof {
         TransferMessage transfer = 2;
