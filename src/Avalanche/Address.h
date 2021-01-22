@@ -14,6 +14,7 @@
 namespace TW::Avalanche {
 
 class Address {
+    static const size_t addressSize = 20;
   public:
 
     /// Determines whether a string makes a valid address.
@@ -28,9 +29,7 @@ class Address {
     /// Returns a string representation of the address.
     std::string string() const;
 
-    std::array<byte, PublicKey::secp256k1Size> bytes;
-
-    std::string hrp;
+    Data bytes; // just the core 20 bytes, no correction code
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
