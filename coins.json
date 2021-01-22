@@ -1525,6 +1525,7 @@
     "coinId": 31337,
     "symbol": "AVAX", 
     "decimals": 9,
+    "hrp": "avax",
     "blockchain": "Avalanche",
     "derivationPath": "m/44'/9000'/0'/0",
     "curve": "secp256k1",
