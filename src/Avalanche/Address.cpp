@@ -69,5 +69,9 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    return "X-" + Bech32::encode("avax", bytes);
+    Data enc;
+    if (!Bech32::convertBits<8, 5, true>(enc, bytes)) {
+        return "";
+    }
+    return "X-" + Bech32::encode("avax", enc);
 }
