@@ -11,12 +11,12 @@
 
 #include "../Data.h"
 #include "../PrivateKey.h"
-#include "../proto/OasisProtocol.pb.h"
+#include "../proto/Oasis.pb.h"
 #include "Transaction.h"
 
-namespace TW::OasisProtocol {
+namespace TW::Oasis {
 
-/// Helper class that performs OasisProtocol transaction signing.
+/// Helper class that performs Oasis transaction signing.
 class Signer {
 public:
     Proto::SigningInput input;
@@ -43,9 +43,9 @@ public:
     TW::Data build() const;
 };
 
-} // namespace TW::OasisProtocol
+} // namespace TW::Oasis
 
 /// Wrapper for C interface.
-struct TWOasisProtocolSigner {
-    TW::OasisProtocol::Signer impl;
+struct TWOasisSigner {
+    TW::Oasis::Signer impl;
 };

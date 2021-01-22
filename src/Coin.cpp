@@ -51,7 +51,7 @@
 #include "Waves/Entry.h"
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
-#include "OasisProtocol/Entry.h"
+#include "Oasis/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
@@ -83,6 +83,7 @@ NEO::Entry neoDP;
 Nimiq::Entry nimiqDP;
 NULS::Entry nulsDP;
 Ontology::Entry ontologyDP;
+Oasis::Entry oasisDP;
 Polkadot::Entry polkadotDP;
 Ripple::Entry rippleDP;
 Solana::Entry solanaDP;

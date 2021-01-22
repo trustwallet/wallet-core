@@ -12,7 +12,7 @@
 #include "../Cbor.h"
 #include "../uint256.h"
 
-namespace TW::OasisProtocol {
+namespace TW::Oasis {
 
 class Transaction {
   public:
@@ -49,4 +49,4 @@ class Transaction {
     Data serialize(Data& signature) const;
 };
 
-} // namespace TW::OasisProtocol
+} // namespace TW::Oasis

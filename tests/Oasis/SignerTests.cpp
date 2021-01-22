@@ -4,8 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "OasisProtocol/Signer.h"
-#include "OasisProtocol/Address.h"
+#include "Oasis/Signer.h"
+#include "Oasis/Address.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
@@ -13,11 +13,11 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::OasisProtocol;
+using namespace TW::Oasis;
 
 // TODO: Add tests
 
-TEST(OasisProtocolSigner, Sign) {
+TEST(OasisSigner, Sign) {
     auto input = Proto::SigningInput();
     auto &transfer = *input.mutable_transfer();
     transfer.set_gas_price(0);

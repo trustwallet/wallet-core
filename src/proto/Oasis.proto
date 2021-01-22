@@ -6,7 +6,7 @@
 
 syntax = "proto3";
 
-package TW.OasisProtocol.Proto;
+package TW.Oasis.Proto;
 option java_package = "wallet.core.jni.proto";
 
 message TransferMessage {

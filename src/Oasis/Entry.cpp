@@ -9,7 +9,7 @@
 #include "Address.h"
 #include "Signer.h"
 
-using namespace TW::OasisProtocol;
+using namespace TW::Oasis;
 using namespace std;
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.

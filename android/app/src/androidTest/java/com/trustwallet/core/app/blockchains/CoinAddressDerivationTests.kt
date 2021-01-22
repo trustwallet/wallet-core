@@ -90,6 +90,6 @@ class CoinAddressDerivationTests {
         ELROND -> assertEquals("erd1jfcy8aeru6vlx4fe6h3pc3vlpe2cnnur5zetxdhp879yagq7vqvs8na4f8", address)
         BANDCHAIN -> assertEquals("band1624hqgend0s3d94z68fyka2y5jak6vd7u0l50r", address)
         SMARTCHAINLEGACY -> assertEquals("0x49784f90176D8D9d4A3feCDE7C1373dAAb5b13b8", address)
-        OASISPROTOCOL -> assertEquals("oasis1qrp0xcndcerd6gllr3rysxzdp7r4kf8s3urgwzhl", address)
+        OASIS -> assertEquals("oasis1qrp0xcndcerd6gllr3rysxzdp7r4kf8s3urgwzhl", address)
     }
 }

@@ -63,5 +63,5 @@ This list is generated from [./coins.json](../coins.json)
 | 19167   | Zelcash          | ZEL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zelcash/info/logo.png" width="32" />      | <https://zel.cash>            |
 | 5718350 | Wanchain         | WAN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/wanchain/info/logo.png" width="32" />     | <https://wanchain.org>        |
 | 5741564 | Waves            | WAVES  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/waves/info/logo.png" width="32" />        | <https://wavesplatform.com>   |
+| 5786211 | Oasis            | ROSE   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/Oasis/info/logo.png" width="32" />        | <https://www.oasislabs.com/>  |
 | 20000714 | Smart Chain      | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/info/logo.png" width="32" />   | <https://www.binance.org/en/smartChain> |
-| 5786211 | Oasis Protocol   | ROSE   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/Oasis/info/logo.png" width="32" />        | <https://www.oasislabs.com/>  |

@@ -6,17 +6,17 @@
 
 #include <TrustWalletCore/TWAnySigner.h>
 #include "HexCoding.h"
-#include "proto/OasisProtocol.pb.h"
+#include "proto/Oasis.pb.h"
 
 #include "../interface/TWTestUtilities.h"
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::OasisProtocol;
+using namespace TW::Oasis;
 
 // TODO: Finalize tests
 
-TEST(TWAnySignerOasisProtocol, Sign) {
+TEST(TWAnySignerOasis, Sign) {
     auto input = Proto::SigningInput();
     auto output = Proto::SigningOutput();
     auto &transfer = *input.mutable_transfer();
@@ -32,7 +32,7 @@ TEST(TWAnySignerOasisProtocol, Sign) {
     auto key = parse_hex("4f8b5676990b00e23d9904a92deb8d8f428ff289c8939926358f1d20537c21a0");
     input.set_private_key(key.data(), key.size());
 
-    ANY_SIGN(input, TWCoinTypeOasisProtocol);
+    ANY_SIGN(input, TWCoinTypeOasis);
 
     EXPECT_EQ("82880000420030404900313030303030303000707374616b696e672e5472616e7366657278636f617369732d636f72652f636f6e73656e7375733a20747820666f7220636861696e20626331633731353331393133323330353739356661383662643332653933323931616161636266623562353935356633626137386264626134313361663965315840cfe091da8d2d148a053591f435d711adf6f79105a73343bdfe32a30520c5a421d32429a52eb2d5d70ef3d161712abf3696d4072d4289c9771a6e78f5c0299d0b",
               hex(output.encoded()));

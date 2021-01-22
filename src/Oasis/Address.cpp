@@ -11,7 +11,7 @@
 #define COIN_ADDRESS_CONTEXT "oasis-core/address: staking"
 #define COIN_ADDRESS_VERSION  0
 
-using namespace TW::OasisProtocol;
+using namespace TW::Oasis;
 
 const std::string Address::hrp = HRP_OASIS;
 

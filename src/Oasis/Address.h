@@ -12,7 +12,7 @@
 
 #include <string>
 
-namespace TW::OasisProtocol {
+namespace TW::Oasis {
 
 /// Oasis address is a Bech32Address, with "oasis" prefix.
 class Address: public Bech32Address {
@@ -26,10 +26,10 @@ class Address: public Bech32Address {
     /// Initializes an address with a key hash.
     explicit Address(const Data& keyHash);
 
-    /// Initializes a OasisProtocol address with a public key.
+    /// Initializes a Oasis address with a public key.
     explicit Address(const PublicKey& publicKey);
 
-    /// Initializes a OasisProtocol address with a string representation.
+    /// Initializes a Oasis address with a string representation.
     explicit Address(const std::string& addr);
 
     /// Determines whether a string makes a valid address.
@@ -44,9 +44,9 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.string() == rhs.string();
 }
 
-} // namespace TW::OasisProtocol
+} // namespace TW::Oasis
 
 /// Wrapper for C interface.
-struct TWOasisProtocolAddress {
-    TW::OasisProtocol::Address impl;
+struct TWOasisAddress {
+    TW::Oasis::Address impl;
 };

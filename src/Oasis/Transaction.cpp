@@ -7,7 +7,7 @@
 #include "Transaction.h"
 
 using namespace TW;
-using namespace TW::OasisProtocol;
+using namespace TW::Oasis;
 
 // encodeVaruint encodes a 256-bit number into a big endian encoding, omitting leading zeros.
 static Data encodeVaruint(const uint256_t& value) {

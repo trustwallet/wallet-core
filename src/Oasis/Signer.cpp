@@ -4,13 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <OasisProtocol/Signer.h>
+#include <Oasis/Signer.h>
 
 #include "Signer.h"
 #include "Address.h"
 
 using namespace TW;
-using namespace TW::OasisProtocol;
+using namespace TW::Oasis;
 
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
