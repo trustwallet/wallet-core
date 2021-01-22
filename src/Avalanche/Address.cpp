@@ -7,27 +7,21 @@
 #include "Address.h"
 
 #include "../Bech32.h"
-#include "../Hash.h"
-#include "../HexCoding.h"
-
-#include <iostream>
 
 using namespace TW::Avalanche;
 
 const std::string Address::hrp =  "avax"; //HRP_AVALANCHE;
+const size_t Address::hashLen = 20;
 
 bool Address::isValid(const std::string& string) {
-    std::cout << "testing " << string << std::endl;
     // split into before and after - 
     auto hyphenPos = string.find("-");
     if (hyphenPos == std::string::npos) {
-        std::cout << "hyphenpos" << std::endl;
         return false;
     }
     auto chainID = string.substr(hyphenPos - 1, 1);
     // compare before-hyphen with 'X' stringcompare (make it smarter later)
     if (chainID != "X") {
-        std::cout << "chainID was " << chainID << std::endl;
         // implementation is currently X-chain only
         return false;
     }
@@ -40,8 +34,12 @@ void Address::extractKeyHashFromString (const std::string& string) {
         throw std::invalid_argument("Invalid address string");
     }
     auto hyphenPos = string.find("-");
-    auto decoded = Bech32::decode(string.substr(hyphenPos + 1));
-    setKey(decoded.second);
+    auto dec = Bech32::decode(string.substr(hyphenPos + 1));
+    Data conv;
+    if (!Bech32::convertBits<5, 8, true>(conv, dec.second)) {
+        throw std::invalid_argument("address string caused bech32 converstion failure");
+    }
+    setKey(conv);
 }
 
 std::string Address::string() const {
