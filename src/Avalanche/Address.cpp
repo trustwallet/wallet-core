@@ -14,6 +14,8 @@
 
 using namespace TW::Avalanche;
 
+const std::string Address::hrp =  "avax"; //HRP_AVALANCHE;
+
 bool Address::isValid(const std::string& string) {
     std::cout << "testing " << string << std::endl;
     // split into before and after - 
@@ -22,7 +24,6 @@ bool Address::isValid(const std::string& string) {
         std::cout << "hyphenpos" << std::endl;
         return false;
     }
-
     auto chainID = string.substr(hyphenPos - 1, 1);
     // compare before-hyphen with 'X' stringcompare (make it smarter later)
     if (chainID != "X") {
@@ -30,48 +31,19 @@ bool Address::isValid(const std::string& string) {
         // implementation is currently X-chain only
         return false;
     }
-    // decode after-hyphen with bech32
     auto afterHyphen = string.substr(hyphenPos + 1);
-    auto decoded = Bech32::decode(afterHyphen);
-    if (decoded.second.size() != 32) {
-        // decode failure
-        return false;
-    }
-    // check hrp against 'avax' (make it smarter later)
-    if (decoded.first != "avax") {
-        // implementation is currently avax only
-        std::cout << "decoded.first wasn't avax somehow" << std::endl;
-        return false;
-    }
-    // an address is a hash of the public key, so we cannot derive the public key from string for PubKey::isValid
-    return true;
+    return Bech32Address::isValid(afterHyphen, hrp);
 }
 
-Address::Address(const std::string& string) {
+void Address::extractKeyHashFromString (const std::string& string) {
     if (!isValid(string)) {
         throw std::invalid_argument("Invalid address string");
     }
     auto hyphenPos = string.find("-");
     auto decoded = Bech32::decode(string.substr(hyphenPos + 1));
-    bytes.resize(addressSize);
-    std::copy_n(decoded.second.begin(), addressSize, bytes.begin());
-}
-
-Address::Address(const PublicKey& publicKey) {
-    if (publicKey.type != TWPublicKeyTypeSECP256k1) {
-        throw std::invalid_argument("Invalid public key type");
-    }
-    std::cout << "no segfault yet, just validated type" << std::endl;
-    auto result = Hash::ripemd(Hash::sha256(publicKey.bytes));
-    std::cout << "no segfault yet, just double hasehd. result was" << hexEncoded(result) << " with len " << result.size() << std::endl;
-    bytes.resize(addressSize);
-    std::copy_n(result.begin(), addressSize, bytes.begin());
+    setKey(decoded.second);
 }
 
 std::string Address::string() const {
-    Data enc;
-    if (!Bech32::convertBits<8, 5, true>(enc, bytes)) {
-        return "";
-    }
-    return "X-" + Bech32::encode("avax", enc);
+    return "X-" + Bech32Address::string();
 }

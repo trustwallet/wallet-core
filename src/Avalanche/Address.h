@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "../Bech32Address.h"
 #include "../Data.h"
 #include "../PublicKey.h"
 
@@ -13,23 +14,33 @@
 
 namespace TW::Avalanche {
 
-class Address {
-    static const size_t addressSize = 20;
-  public:
+/// Avalanche address is a Bech32Address, with "avax" prefix and Sha2 hash; and then the chain prefixed to that.
+class Address : public Bech32Address {
+private:
+    void extractKeyHashFromString (const std::string& string);
+public:
+    static const std::string hrp;
 
-    /// Determines whether a string makes a valid address.
-    static bool isValid(const std::string& string);
+    static bool isValid(const std::string& addr);
 
-    /// Initializes a Avalanche address with a string representation.
-    explicit Address(const std::string& string);
+    Address() : Bech32Address(hrp) {}
 
-    /// Initializes a Avalanche address with a public key.
-    explicit Address(const PublicKey& publicKey);
+    /// Initializes an address with a key hash.
+    Address(const Data& keyHash) : Bech32Address(hrp, keyHash) {}
 
-    /// Returns a string representation of the address.
+    /// Initializes an address with a public key.
+    Address(const PublicKey& publicKey) : Bech32Address(hrp, HASHER_SHA2_RIPEMD, publicKey) {}
+
+    /// Initializes an address from a string.
+    Address(const std::string& string) : Bech32Address(hrp) {
+        extractKeyHashFromString(string);
+    }
+
+    static bool decode(const std::string& addr, Address& obj_out) {
+        return Bech32Address::decode(addr, obj_out, hrp);
+    }
+
     std::string string() const;
-
-    Data bytes; // just the core 20 bytes, no correction code
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
@@ -43,7 +54,7 @@ inline bool operator!=(const Address& lhs, const Address& rhs) {
 
 inline bool operator<(const Address& lhs, const Address& rhs) {
     // prefer lexicographical comparison of bytes for encoding
-    return std::lexicographical_compare(lhs.bytes.begin(), lhs.bytes.end(), rhs.bytes.begin(), rhs.bytes.end());
+    return std::lexicographical_compare(lhs.getKeyHash().begin(), lhs.getKeyHash().end(), rhs.getKeyHash().begin(), rhs.getKeyHash().end());
 }
 
 } // namespace TW::Avalanche

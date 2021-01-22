@@ -36,7 +36,7 @@ void EncodeOutputs(std::vector<Output> &outputs, TW::Data &data) {
         std::vector<Address> addrs = std::get<2>(output);
         TW::encode32LE(addrs.size(), data);
         for (auto addr : addrs) {
-            for (auto byte : addr.bytes) {
+            for (auto byte : addr.getKeyHash()) {
                 data.push_back(byte);
             }
         }

@@ -41,7 +41,7 @@ void SECP256k1TransferOutput::encode(Data& data) const {
     encode32LE(Threshold, data);
     encode32LE(Addresses.size(), data);
     for (auto Address : Addresses) {
-        for (auto byte : Address.bytes) {
+        for (auto byte : Address.getKeyHash()) {
             data.push_back(byte);
         }
     }
@@ -53,7 +53,7 @@ void SECP256k1MintOutput::encode(Data& data) const {
     encode32LE(Threshold, data);
     encode32LE(Addresses.size(), data);
     for (auto Address : Addresses) {
-        for (auto byte : Address.bytes) {
+        for (auto byte : Address.getKeyHash()) {
             data.push_back(byte);
         }
     }
@@ -70,7 +70,7 @@ void NFTTransferOutput::encode(Data& data) const {
     encode32LE(Threshold, data);
     encode32LE(Addresses.size(), data);
     for (auto Address : Addresses) {
-        for (auto byte : Address.bytes) {
+        for (auto byte : Address.getKeyHash()) {
             data.push_back(byte);
         }
     }
@@ -83,7 +83,7 @@ void NFTMintOutput::encode(Data& data) const {
     encode32LE(Threshold, data);
     encode32LE(Addresses.size(), data);
     for (auto Address : Addresses) {
-        for (auto byte : Address.bytes) {
+        for (auto byte : Address.getKeyHash()) {
             data.push_back(byte);
         }
     }

@@ -79,7 +79,7 @@ void NFTTransferOperation::encode(Data& data) const {
     encode32LE(TransferOutput.Threshold, data);
     encode32LE(TransferOutput.Addresses.size(), data);
     for (auto Address : TransferOutput.Addresses) {
-        for (auto byte : Address.bytes) {
+        for (auto byte : Address.getKeyHash()) {
             data.push_back(byte);
         }
     }
