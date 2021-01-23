@@ -10,7 +10,7 @@
 
 using namespace TW::Avalanche;
 
-const std::string Address::hrp =  "avax"; //HRP_AVALANCHE;
+const std::string Address::hrp = HRP_AVALANCHE;
 const size_t Address::hashLen = 20;
 
 bool Address::isValid(const std::string& string) {
