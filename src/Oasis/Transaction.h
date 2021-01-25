@@ -43,7 +43,7 @@ class Transaction {
 
   public:
     // message returns the CBOR encoding of the Message to be signed.
-    Cbor::Encode getCBORmessage() const;
+    Cbor::Encode encodeMessage() const;
 
     // serialize returns the CBOR encoding of the SignedMessage.
     Data serialize(Data& signature) const;

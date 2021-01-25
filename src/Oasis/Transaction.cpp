@@ -24,7 +24,7 @@ static Data encodeVaruint(const uint256_t& value) {
     return small;
 }
 
-Cbor::Encode Transaction::getCBORmessage() const {
+Cbor::Encode Transaction::encodeMessage() const {
     return Cbor::Encode::array({
         Cbor::Encode::uint(0),
         Cbor::Encode::uint(gasPrice),
@@ -38,6 +38,6 @@ Cbor::Encode Transaction::getCBORmessage() const {
 }
 
 Data Transaction::serialize(Data& signature) const {
-    auto signedMessage = Cbor::Encode::array({getCBORmessage(), Cbor::Encode::bytes(signature)});
+    auto signedMessage = Cbor::Encode::array({encodeMessage(), Cbor::Encode::bytes(signature)});
     return signedMessage.encoded();
 }

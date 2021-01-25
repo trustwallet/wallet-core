@@ -39,7 +39,7 @@ Data Signer::build() const {
 
 TW::Data Signer::sign(Transaction& tx) const {
     auto key = PrivateKey(input.private_key());
-    auto hash = Hash::sha512_256(tx.getCBORmessage().encoded());
+    auto hash = Hash::sha512_256(tx.encodeMessage().encoded());
     auto signature = key.sign(hash, TWCurveED25519);
     return Data(signature.begin(), signature.end());
 }
