@@ -256,11 +256,8 @@ HDNode getNode(const HDWallet& wallet, TWCurve curve, const DerivationPath& deri
     auto node = getMasterNode(wallet, curve);
     for (auto& index : derivationPath.indices) {
         switch (privateKeyType) {
-            case HDWallet::PrivateKeyTypeExtended96:
-                // special handling for extended
-                hdnode_private_ckd_cardano(&node, index.derivationIndex());
-                break;
             case HDWallet::PrivateKeyTypeHD:
+            case HDWallet::PrivateKeyTypeExtended96:
                 // special handling for extended
                 hdnode_private_ckd_cardano(&node, index.derivationIndex());
                 break;
