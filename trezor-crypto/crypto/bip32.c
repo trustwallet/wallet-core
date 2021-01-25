@@ -803,9 +803,9 @@ const curve_info *get_curve_by_name(const char *curve_name) {
 	if (strcmp(curve_name, ED25519_NAME) == 0) {
 		return &ed25519_info;
 	}
-    if (strcmp(curve_name, ED25519_HD_NAME) == 0) {
-        return &ed25519_hd_info;
-    }
+      if (strcmp(curve_name, ED25519_HD_NAME) == 0) {
+          return &ed25519_hd_info;
+      }
 	if (strcmp(curve_name, ED25519_CARDANO_NAME) == 0) {
 		return &ed25519_cardano_info;
 	}
