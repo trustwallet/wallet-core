@@ -1209,8 +1209,7 @@
   {
     "id": "Oasis",
     "name": "Oasis",
-    "coinId": 5786211,
-    "slip44": 474,
+    "coinId": 474,
     "symbol": "ROSE",
     "decimals": 9,
     "blockchain": "OasisNetwork",
