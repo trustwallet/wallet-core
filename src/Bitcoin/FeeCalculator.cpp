@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,11 +6,11 @@
 
 #include "FeeCalculator.h"
 
+#include <cmath>
+
 using namespace TW;
 
 namespace TW::Bitcoin {
-
-DefaultFeeCalculator DefaultFeeCalculator::instance;
 
 int64_t DefaultFeeCalculator::calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const {
     const auto txsize = ((148 * inputs) + (34 * outputs) + 10);
@@ -19,6 +19,15 @@ int64_t DefaultFeeCalculator::calculate(int64_t inputs, int64_t outputs, int64_t
 
 int64_t DefaultFeeCalculator::calculateSingleInput(int64_t byteFee) const {
     return int64_t(148) * byteFee;
+}
+
+int64_t SegwitFeeCalculator::calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const {
+    const auto txsize = int64_t(std::ceil(101.25 * inputs + 31.0 * outputs + 10.0));
+    return txsize * byteFee;
+}
+
+int64_t SegwitFeeCalculator::calculateSingleInput(int64_t byteFee) const {
+    return int64_t(102) * byteFee; // std::ceil(101.25) = 102
 }
 
 class ZCashFeeCalculator : public FeeCalculator {
@@ -49,6 +58,7 @@ DefaultFeeCalculator defaultFeeCalculator;
 ZCashFeeCalculator zcashFeeCalculator;
 GroestlcoinFeeCalculator groestlcoinFeeCalculator;
 DecredFeeCalculator decredFeeCalculator;
+SegwitFeeCalculator segwitFeeCalculator;
 
 FeeCalculator& getFeeCalculator(TWCoinType coinType) {
     switch (coinType) {
@@ -61,6 +71,13 @@ FeeCalculator& getFeeCalculator(TWCoinType coinType) {
 
     case TWCoinTypeDecred:
         return decredFeeCalculator;
+
+    case TWCoinTypeBitcoin:
+    case TWCoinTypeBitcoinGold:
+    case TWCoinTypeDigiByte:
+    case TWCoinTypeLitecoin:
+    case TWCoinTypeViacoin:
+        return segwitFeeCalculator;
 
     default:
         return defaultFeeCalculator;

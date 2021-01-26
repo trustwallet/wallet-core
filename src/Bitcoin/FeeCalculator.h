@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -22,8 +22,13 @@ class DefaultFeeCalculator : public FeeCalculator {
 public:
     int64_t calculate(int64_t inputs, int64_t outputs = 2, int64_t byteFee = 1) const override;
     int64_t calculateSingleInput(int64_t byteFee) const override;
-  
-    static DefaultFeeCalculator instance;
+};
+
+/// Bitcoin Segwit transaction fee calculator
+class SegwitFeeCalculator : public FeeCalculator {
+public:
+    int64_t calculate(int64_t inputs, int64_t outputs = 2, int64_t byteFee = 1) const override;
+    int64_t calculateSingleInput(int64_t byteFee) const override;
 };
 
 /// Return the fee calculator for the given coin.
