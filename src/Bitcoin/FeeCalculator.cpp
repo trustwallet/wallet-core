@@ -30,18 +30,6 @@ int64_t SegwitFeeCalculator::calculateSingleInput(int64_t byteFee) const {
     return int64_t(102) * byteFee; // std::ceil(101.25) = 102
 }
 
-class ZCashFeeCalculator : public FeeCalculator {
-public:
-    int64_t calculate(int64_t inputs, int64_t outputs = 2, int64_t byteFee = 1) const override { return 10000; }
-    int64_t calculateSingleInput(int64_t byteFee) const override { return 0; }
-};
-
-class GroestlcoinFeeCalculator : public FeeCalculator {
-public:
-    int64_t calculate(int64_t inputs, int64_t outputs = 2, int64_t byteFee = 1) const override { return 20000; }
-    int64_t calculateSingleInput(int64_t byteFee) const override { return 0; }
-};
-
 class DecredFeeCalculator : public FeeCalculator {
 public:
     int64_t calculate(int64_t inputs, int64_t outputs = 2, int64_t byteFee = 1) const override {
@@ -55,20 +43,11 @@ public:
 };
 
 DefaultFeeCalculator defaultFeeCalculator;
-ZCashFeeCalculator zcashFeeCalculator;
-GroestlcoinFeeCalculator groestlcoinFeeCalculator;
 DecredFeeCalculator decredFeeCalculator;
 SegwitFeeCalculator segwitFeeCalculator;
 
 FeeCalculator& getFeeCalculator(TWCoinType coinType) {
     switch (coinType) {
-    case TWCoinTypeZelcash:
-    case TWCoinTypeZcash:
-        return zcashFeeCalculator;
-
-    case TWCoinTypeGroestlcoin:
-        return groestlcoinFeeCalculator;
-
     case TWCoinTypeDecred:
         return decredFeeCalculator;
 
