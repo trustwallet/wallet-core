@@ -573,7 +573,7 @@ TEST(BitcoinSigning, SignP2WSH_NegativeMissingScript) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_TRUE(verifyPlan(plan, {1'226}, 1'000, 226));
+        EXPECT_TRUE(verifyPlan(plan, {1'226}, 1'000, 174));
     }
 
     // Sign
@@ -742,7 +742,7 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH_NegativeOmitScript) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_TRUE(verifyPlan(plan, {1'000'000'000}, 200'000'000, 226));
+        EXPECT_TRUE(verifyPlan(plan, {1'000'000'000}, 200'000'000, 174));
     }
 
     // Sign
@@ -964,7 +964,7 @@ TEST(BitcoinSigning, Sign_NegativeInvalidAddress) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_TRUE(verifyPlan(plan, {625'000'000}, 335'790'000, 226));
+        EXPECT_TRUE(verifyPlan(plan, {625'000'000}, 335'790'000, 174));
     }
 
     // Sign
