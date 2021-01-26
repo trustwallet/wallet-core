@@ -1,72 +1,55 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
-ARG CLANG_VERSION=7.0.1
-ARG CMAKE_VERSION=3.13.4
-ARG PROTOBUF_VERSION=3.9.0
+# Install some basics
+RUN apt-get update \
+    && apt-get install -y \
+        wget \
+        curl \
+        git \
+        vim \
+        unzip \
+        xz-utils \
+        software-properties-common \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install the basics
-RUN apt-get update && apt-get install -y curl python-software-properties build-essential xz-utils libreadline-dev
+# Add latest cmake/boost
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc | apt-key add - \
+    && apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main' \
+    && apt-add-repository -y ppa:mhier/libboost-latest
 
-# Make latest NodeJS available
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+# Install required packages for dev
+RUN apt-get update \
+    && apt-get install -y \
+        build-essential \
+        libtool autoconf pkg-config \
+        ninja-build \
+        ruby-full \
+        clang-10 \
+        llvm-10 \
+        libc++-dev libc++abi-dev \
+        cmake \        
+        libboost1.74-dev \
+        ccache \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install all required packages
-RUN apt-get install -y \
-    autoconf \
-    git \
-    libcurl4-openssl-dev \
-    libicu-dev \
-    libssl-dev \
-    libtool \
-    ninja-build \
-    nodejs \
-    pkg-config \
-    unzip
+ENV CC=/usr/bin/clang-10
+ENV CXX=/usr/bin/clang++-10
 
-# Install ruby 2.6
-RUN git clone https://github.com/rbenv/rbenv.git ~/.rbenv \
-    && cd ~/.rbenv && src/configure && make -C src \
-    && mkdir -p ~/.rbenv/plugins && git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build \
-    && echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc && echo 'eval "$(rbenv init -)"' >> ~/.bashrc && . ~/.bashrc \
-    && rbenv install 2.6.3 && rbenv global 2.6.3 \
-    && ruby -v
+# ↑ Setup build environment
+# ↓ Build and compile wallet core
 
-# Install clang
-ENV CLANG_VERSION=$CLANG_VERSION
-RUN curl -fSsL http://releases.llvm.org/$CLANG_VERSION/clang+llvm-$CLANG_VERSION-x86_64-linux-gnu-ubuntu-16.04.tar.xz -o clang.tar.xz \
-    && tar -xJf clang.tar.xz --directory /usr --strip-components=1 \
-    && rm -rf clang.tar.xz
-
-# Install Boost
-RUN curl -fSsL https://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_0.tar.gz -o boost.tar.gz \
-    && tar xzf boost.tar.gz \
-    && mv boost_1_66_0/boost /usr/include \
-    && rm -rf boost*
-
-# Install CMake
-ENV CMAKE_VERSION=$CMAKE_VERSION
-RUN cd /usr/local/src \
-    && curl -fSsOL https://github.com/Kitware/CMake/releases/download/v$CMAKE_VERSION/cmake-$CMAKE_VERSION.tar.gz \
-    && tar xvf cmake-$CMAKE_VERSION.tar.gz \
-    && cd cmake-$CMAKE_VERSION \
-    && ./bootstrap --system-curl \
-    && make \
-    && make install \
-    && cd .. \
-    && rm -rf cmake*
-RUN cmake --version
-
-# Clean Up
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# Clone repo
-ENV CC=/usr/bin/clang
-ENV CXX=/usr/bin/clang++
 COPY ./.git-credentials /root/.git-credentials
 COPY ./.gitconfig /root/.gitconfig
-RUN git clone https://github.com/binance-chain/wallet-core.git \
-    && cd wallet-core \
-    && export PREFIX=/usr/local \
-    && tools/install-dependencies
+RUN git clone https://github.com/binance-chain/wallet-core.git
+WORKDIR /wallet-core
+
+# Install dependencies
+RUN tools/install-dependencies
+
+# Build: generate, cmake, and make
+RUN tools/generate-files \
+    && cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug \
+    && make -Cbuild -j12
 
 CMD ["/bin/bash"]
