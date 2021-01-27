@@ -45,8 +45,3 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::Oasis
-
-/// Wrapper for C interface.
-struct TWOasisAddress {
-    TW::Oasis::Address impl;
-};

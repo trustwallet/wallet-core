@@ -37,7 +37,7 @@ Data Signer::build() const {
     return encoded;
 }
 
-TW::Data Signer::sign(Transaction& tx) const {
+Data Signer::sign(Transaction& tx) const {
     auto key = PrivateKey(input.private_key());
     auto hash = Hash::sha512_256(tx.encodeMessage().encoded());
     auto signature = key.sign(hash, TWCurveED25519);

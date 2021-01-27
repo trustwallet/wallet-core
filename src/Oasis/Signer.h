@@ -34,18 +34,19 @@ public:
     ///
     /// \returns the transaction signature or an empty vector if there is an
     /// error.
-    TW::Data sign(Transaction& tx) const;
+    Data sign(Transaction& tx) const;
 
     /// Builds a signed transaction.
     ///
     /// \returns the signed transaction data or an empty vector if there is an
     /// error.
-    TW::Data build() const;
+    Data build() const;
 };
 
 } // namespace TW::Oasis
 
 /// Wrapper for C interface.
+
 struct TWOasisSigner {
     TW::Oasis::Signer impl;
 };
