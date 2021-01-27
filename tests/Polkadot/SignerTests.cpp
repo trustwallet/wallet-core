@@ -212,26 +212,30 @@ TEST(PolkadotSigner, SignWithdraw) {
     ASSERT_EQ(hex(output.encoded()), "ad018488dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee002e49bf0dec9bef01dd3bd25419e2147dc983613d0860108f889f9ff2d062c5e3267e309e2dbc35dd2fc2b877b57d86a5f12cbeb8217485be32be3c34d2507d0e00000007030a000000");
 }
 
-TEST(PolkadotSigner, SignUnbond) {
-    auto blockHash = parse_hex("84c9509904b5b2b3ff0a35fc7f033db9306e6bf0700c32d44e049578bfd33ba1");
+TEST(PolkadotSigner, SignUnbond_dde4) {
     auto input = Proto::SigningInput();
 
     input.set_genesis_hash(genesisHash.data(), genesisHash.size());
+    auto blockHash = parse_hex("0x83fb746423fb018f7b40cbc146d0c34d2d882822eb121ea857da8ea4bb36680d");
     input.set_block_hash(blockHash.data(), blockHash.size());
-    input.set_nonce(0);
-    input.set_spec_version(17);
-    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_nonce(15);
+    input.set_spec_version(26);
+    input.set_private_key(privateKeyThrow1.bytes.data(), privateKeyThrow1.bytes.size());
     input.set_network(Proto::Network::POLKADOT);
-    input.set_transaction_version(3);
+    input.set_transaction_version(5);
+
+    auto era = input.mutable_era();
+    era->set_phase(3526326);
+    era->set_period(64);
 
     auto stakingCall = input.mutable_staking_call();
-    auto &unbond = *stakingCall->mutable_unbond();
+    auto unbond = stakingCall->mutable_unbond();
+    auto value = store(uint256_t(20000000000));
+    unbond->set_value(value.data(), value.size());
 
-    auto value = store(uint256_t(123456));
-    unbond.set_value(value.data(), value.size());
     auto output = Signer::sign(input);
-
-    ASSERT_EQ(hex(output.encoded()), "ad018488dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee00cababd023dd35e6639b5a55fb35e5863142e15637d2942c7de58ab966a6d81c5794e9a2fa53b1da7c5f9ed272e52f865fb9ccf1ccf5881bbee7af357101bf90c000000070202890700");
+    // https://polkadot.subscan.io/extrinsic/0xdde496045c304cc18a610c1b677571547c4e4355a4a927cd2fb1343e4e36ea37
+    ASSERT_EQ(hex(output.encoded()), "b9018467ce10209e619e32639dd74a71d9865807839f3a4f09b4fd1cd52fab9496dd4800fbe412c54b85f51b29c37a0c063ceeef484412cd22901714c048597d6658065d37092fbf5977c16202b0bd0f0ad5ce19f6123208adbc3a47ac491f773234990f65033c0007020700c817a804");
 }
 
 } // namespace
