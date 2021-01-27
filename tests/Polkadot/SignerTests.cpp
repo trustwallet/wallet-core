@@ -31,7 +31,7 @@ TEST(PolkadotSigner, SignTransfer_1621) {
 
     auto input = Proto::SigningInput();
     input.set_genesis_hash(genesisHash.data(), genesisHash.size());
-    input.set_block_hash(genesisHash.data(), genesisHash.size());
+    input.set_block_hash(genesisHash.data(), genesisHash.size()); // no era
 
     input.set_nonce(0);
     input.set_spec_version(26);
@@ -130,6 +130,7 @@ TEST(PolkadotSigner, SignNominate_7f93) {
     input.set_network(Proto::Network::POLKADOT);
     input.set_transaction_version(5);
 
+    // era: for blockhash and block number, use curl -H "Content-Type: application/json" -H "Accept: text/plain" https://<polkadot-rpc-url>/transaction/material?noMeta=true
     auto era = input.mutable_era();
     era->set_phase(3526285);
     era->set_period(64);
