@@ -31,10 +31,10 @@ class TestOasisSigner {
         transferMsg.apply {
             to = "oasis1qrrnesqpgc6rfy2m50eew5d7klqfqk69avhv4ak5"
             gasPrice = 0
-            gasAmount = ByteString.copyFrom("\u00000".toByteArray())
+            gasAmount = ByteString.copyFrom(Numeric.hexStringToByteArray("\u00000"))
             nonce = 0
             method = "staking.Transfer"
-            amount = ByteString.copyFrom("\u000010000000".toByteArray()) // decimal 10000000
+            amount = ByteString.copyFrom(Numeric.hexStringToByteArray("\u000010000000")) // decimal 10000000
             context = "oasis-core/consensus: tx for chain bc1c715319132305795fa86bd32e93291aaacbfb5b5955f3ba78bdba413af9e1"
         }
 
