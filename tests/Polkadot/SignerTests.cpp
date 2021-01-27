@@ -20,6 +20,7 @@
 
 namespace TW::Polkadot {
     auto privateKey = PrivateKey(parse_hex("0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115"));
+    auto privateKeyThrow1 = PrivateKey(parse_hex("8da3da12e488d5fab0c28aab8b881e2cb515eba113a5f4017a9192ad491a1b44"));
     auto toPublicKey = PublicKey(parse_hex("0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"), TWPublicKeyTypeED25519);
     auto genesisHash = parse_hex("91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3");
 
@@ -32,13 +33,12 @@ TEST(PolkadotSigner, SignTransfer_1621) {
 
     input.set_nonce(0);
     input.set_spec_version(26);
-    auto privateKey = PrivateKey(parse_hex("8da3da12e488d5fab0c28aab8b881e2cb515eba113a5f4017a9192ad491a1b44"));
     {
-        PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+        PublicKey publicKey = privateKeyThrow1.getPublicKey(TWPublicKeyTypeED25519);
         Address address = Address(publicKey);
         EXPECT_EQ(address.string(), "13M79SsQnBvAGEJPdDrUVStwMYChH2YatmGG2EZ2i6628N6Q");
     }
-    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_private_key(privateKeyThrow1.bytes.data(), privateKeyThrow1.bytes.size());
     input.set_network(Proto::Network::POLKADOT);
     input.set_transaction_version(5);
 
