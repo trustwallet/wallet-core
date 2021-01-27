@@ -21,9 +21,10 @@
 namespace TW::Polkadot {
     auto privateKey = PrivateKey(parse_hex("0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115"));
     auto privateKeyThrow1 = PrivateKey(parse_hex("8da3da12e488d5fab0c28aab8b881e2cb515eba113a5f4017a9192ad491a1b44"));
+    auto addressThrow1 = "13M79SsQnBvAGEJPdDrUVStwMYChH2YatmGG2EZ2i6628N6Q";
     auto toPublicKey = PublicKey(parse_hex("0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"), TWPublicKeyTypeED25519);
     auto genesisHash = parse_hex("91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3");
-    auto controller = "14xKzzU1ZYDnzFj7FgdtDAYSMJNARjDc2gNw4XAFDgr4uXgp";
+    auto controller1 = "14xKzzU1ZYDnzFj7FgdtDAYSMJNARjDc2gNw4XAFDgr4uXgp";
 
 TEST(PolkadotSigner, SignTransfer_1621) {
     auto toAddress = Address("13ZLCqJNPsRZYEbwjtZZFpWt9GyFzg5WahXCVWKpWdUJqrQ5");
@@ -37,7 +38,7 @@ TEST(PolkadotSigner, SignTransfer_1621) {
     {
         PublicKey publicKey = privateKeyThrow1.getPublicKey(TWPublicKeyTypeED25519);
         Address address = Address(publicKey);
-        EXPECT_EQ(address.string(), "13M79SsQnBvAGEJPdDrUVStwMYChH2YatmGG2EZ2i6628N6Q");
+        EXPECT_EQ(address.string(), addressThrow1);
     }
     input.set_private_key(privateKeyThrow1.bytes.data(), privateKeyThrow1.bytes.size());
     input.set_network(Proto::Network::POLKADOT);
@@ -91,27 +92,57 @@ TEST(PolkadotSigner, SignTransferDOT) {
     ASSERT_EQ(hex(output.encoded()), "29028488dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee003d91a06263956d8ce3ce5c55455baefff299d9cb2bb3f76866b6828ee4083770b6c03b05d7b6eb510ac78d047002c1fe5c6ee4b37c9c5a8b09ea07677f12e50d3200000005008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c0");
 }
 
-TEST(PolkadotSigner, SignNominate) {
-    auto blockHash = parse_hex("52bc855411f95698cb987dc9af93f719f2e06e87bfa7b75a83d58baafd08bca7");
-
+TEST(PolkadotSigner, SignBond_cd61) {
     auto input = Proto::SigningInput();
     input.set_genesis_hash(genesisHash.data(), genesisHash.size());
-    input.set_block_hash(blockHash.data(), blockHash.size());
-    input.set_nonce(0);
-    input.set_spec_version(17);
-    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_block_hash(genesisHash.data(), genesisHash.size());
+    input.set_nonce(5);
+    input.set_spec_version(26);
+    {
+        PublicKey publicKey = privateKeyThrow1.getPublicKey(TWPublicKeyTypeED25519);
+        Address address = Address(publicKey);
+        EXPECT_EQ(address.string(), addressThrow1);
+    }
+    input.set_private_key(privateKeyThrow1.bytes.data(), privateKeyThrow1.bytes.size());
     input.set_network(Proto::Network::POLKADOT);
-    input.set_transaction_version(3);
+    input.set_transaction_version(5);
 
     auto stakingCall = input.mutable_staking_call();
-    auto &nominate = *stakingCall->mutable_nominate();
-
-    nominate.add_nominators("1zugcabYjgfQdMLC3cAzQ8tJZMo45tMnGpivpAzpxB4CZyK");
-    nominate.add_nominators("1REAJ1k691g5Eqqg9gL7vvZCBG7FCCZ8zgQkZWd4va5ESih");
+    auto bond = stakingCall->mutable_bond();
+    auto value = store(uint256_t(20000000000));
+    bond->set_controller(controller1);
+    bond->set_value(value.data(), value.size());
+    bond->set_reward_destination(Proto::RewardDestination::STAKED);
 
     auto output = Signer::sign(input);
+    // https://polkadot.subscan.io/extrinsic/0xcd616e4dd52ce13e9864cfe9d2dd044119ace37e8858a0ff922f19f7fb61f9fc
+    ASSERT_EQ(hex(output.encoded()), "39028467ce10209e619e32639dd74a71d9865807839f3a4f09b4fd1cd52fab9496dd48008999e4976d5881781442c74514a3246f0ade6f06af625711a8de49d3aaf41fe8edd09ade79b592e774f28c30cfbeba9c1d84595375264ab7764a9e84777d58040014000700aee72821ca00e62304e4f0d858122a65b87c8df4f0eae224ae064b951d39f6100700c817a80400");
+}
 
-    ASSERT_EQ(hex(output.encoded()), "a1028488dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee0038c999e3878beb7a927ff63483390f6e237120612678d5cc9c40c27028250d94c9a894cf8befe8444ff4b69a0b64c2220aa7c30f886f54e0589f73257f59ed0f0000000705082c2a55b5a116a4c88aff57e8f2b70ba72dda72dda4b78630e16ad0ca69006f18127a30e486492921e58f2564b36ab1ca21ff630672f0e76920edd601f8f2b89a");
+TEST(PolkadotSigner, SignNominate_7f93) {
+    auto input = Proto::SigningInput();
+    input.set_genesis_hash(genesisHash.data(), genesisHash.size());
+    auto blockHash = parse_hex("0x42cf54409c348ca2a27cafefa208823a473ab2c3c41651281698fe039ffd5d22");
+    input.set_block_hash(blockHash.data(), blockHash.size());
+    input.set_nonce(14);
+    input.set_spec_version(26);
+    input.set_private_key(privateKeyThrow1.bytes.data(), privateKeyThrow1.bytes.size());
+    input.set_network(Proto::Network::POLKADOT);
+    input.set_transaction_version(5);
+
+    auto era = input.mutable_era();
+    era->set_phase(3526285);
+    era->set_period(64);
+
+    auto stakingCall = input.mutable_staking_call();
+    auto nominate = stakingCall->mutable_nominate();
+
+    nominate->add_nominators(controller1);
+    nominate->add_nominators("1REAJ1k691g5Eqqg9gL7vvZCBG7FCCZ8zgQkZWd4va5ESih");
+
+    auto output = Signer::sign(input);
+    // https://polkadot.subscan.io/extrinsic/0x7f9eb3c48f65710d71bb5f2efdd171346bcfb90c060591e67828468eb3d87c80
+    ASSERT_EQ(hex(output.encoded()), "a5028467ce10209e619e32639dd74a71d9865807839f3a4f09b4fd1cd52fab9496dd4800cf2416af2e86aaf61f9c7f58bdd6de109c3aec6c544853c4a49fc03bd05a58ea7d63fd138aa632b058daacf34c11f629d396b5f3e01bb54753e495b63dca1a06d5003800070508aee72821ca00e62304e4f0d858122a65b87c8df4f0eae224ae064b951d39f610127a30e486492921e58f2564b36ab1ca21ff630672f0e76920edd601f8f2b89a");
 }
 
 TEST(PolkadotSigner, SignNominate2) {
@@ -201,34 +232,6 @@ TEST(PolkadotSigner, SignUnbond) {
     auto output = Signer::sign(input);
 
     ASSERT_EQ(hex(output.encoded()), "ad018488dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee00cababd023dd35e6639b5a55fb35e5863142e15637d2942c7de58ab966a6d81c5794e9a2fa53b1da7c5f9ed272e52f865fb9ccf1ccf5881bbee7af357101bf90c000000070202890700");
-}
-
-TEST(PolkadotSigner, SignBond_cd61) {
-    auto input = Proto::SigningInput();
-
-    input.set_genesis_hash(genesisHash.data(), genesisHash.size());
-    input.set_block_hash(genesisHash.data(), genesisHash.size());
-    input.set_nonce(5);
-    input.set_spec_version(26);
-    {
-        PublicKey publicKey = privateKeyThrow1.getPublicKey(TWPublicKeyTypeED25519);
-        Address address = Address(publicKey);
-        EXPECT_EQ(address.string(), "13M79SsQnBvAGEJPdDrUVStwMYChH2YatmGG2EZ2i6628N6Q");
-    }
-    input.set_private_key(privateKeyThrow1.bytes.data(), privateKeyThrow1.bytes.size());
-    input.set_network(Proto::Network::POLKADOT);
-    input.set_transaction_version(5);
-
-    auto stakingCall = input.mutable_staking_call();
-    auto bond = stakingCall->mutable_bond();
-    auto value = store(uint256_t(20000000000));
-    bond->set_controller(controller);
-    bond->set_value(value.data(), value.size());
-    bond->set_reward_destination(Proto::RewardDestination::STAKED);
-
-    auto output = Signer::sign(input);
-    // https://polkadot.subscan.io/extrinsic/0xcd616e4dd52ce13e9864cfe9d2dd044119ace37e8858a0ff922f19f7fb61f9fc
-    ASSERT_EQ(hex(output.encoded()), "39028467ce10209e619e32639dd74a71d9865807839f3a4f09b4fd1cd52fab9496dd48008999e4976d5881781442c74514a3246f0ade6f06af625711a8de49d3aaf41fe8edd09ade79b592e774f28c30cfbeba9c1d84595375264ab7764a9e84777d58040014000700aee72821ca00e62304e4f0d858122a65b87c8df4f0eae224ae064b951d39f6100700c817a80400");
 }
 
 } // namespace
