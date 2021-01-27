@@ -28,12 +28,20 @@ class TestOasisSigner {
     @Test
     fun OasisTransactionSigning() {
         val transferMsg = Oasis.TransferMessage.newBuilder()
+
         transferMsg.apply {
             to = "oasis1qrrnesqpgc6rfy2m50eew5d7klqfqk69avhv4ak5"
             gasPrice = 0
+
+            // This is the way Oasis indicates sign of the amount
+            // https://github.com/oasisprotocol/oasis-core/blob/483bd3a897454e4bc1a8795675e7f29cd4d8e72d/go/common/quantity/quantity.go#L39-L55
             gasAmount = ByteString.copyFrom("\u00000".toByteArray())
+            
             nonce = 0
             method = "staking.Transfer"
+
+            // This is the way Oasis indicates sign of the amount
+            // https://github.com/oasisprotocol/oasis-core/blob/483bd3a897454e4bc1a8795675e7f29cd4d8e72d/go/common/quantity/quantity.go#L39-L55
             amount = ByteString.copyFrom("\u000010000000".toByteArray()) // decimal 10000000
             context = "oasis-core/consensus: tx for chain bc1c715319132305795fa86bd32e93291aaacbfb5b5955f3ba78bdba413af9e1"
         }
