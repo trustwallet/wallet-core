@@ -75,7 +75,7 @@ TEST(PolkadotSigner, SignTransferDOT) {
     input.set_transaction_version(3);
 
     auto &era = *input.mutable_era();
-    era.set_phase(927699);
+    era.set_block_number(927699);
     era.set_period(8);
 
     auto balanceCall = input.mutable_balance_call();
@@ -132,7 +132,7 @@ TEST(PolkadotSigner, SignNominate_7f93) {
 
     // era: for blockhash and block number, use curl -H "Content-Type: application/json" -H "Accept: text/plain" https://<polkadot-rpc-url>/transaction/material?noMeta=true
     auto era = input.mutable_era();
-    era->set_phase(3526285);
+    era->set_block_number(3526285);
     era->set_period(64);
 
     auto stakingCall = input.mutable_staking_call();
@@ -226,7 +226,7 @@ TEST(PolkadotSigner, SignUnbond_dde4) {
     input.set_transaction_version(5);
 
     auto era = input.mutable_era();
-    era->set_phase(3526326);
+    era->set_block_number(3526326);
     era->set_period(64);
 
     auto stakingCall = input.mutable_staking_call();

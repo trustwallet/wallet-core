@@ -39,7 +39,7 @@ class Extrinsic {
         , version(input.transaction_version())
         , tip(load(input.tip())) {
         if (input.has_era()) {
-            era = encodeEra(input.era().phase(), input.era().period());
+            era = encodeEra(input.era().block_number(), input.era().period());
         } else {
             era = encodeCompact(0);
         }
