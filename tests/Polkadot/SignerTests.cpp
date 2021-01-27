@@ -6,6 +6,7 @@
 
 #include "Polkadot/Signer.h"
 #include "Polkadot/Extrinsic.h"
+#include "Polkadot/Address.h"
 #include "SS58Address.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
@@ -21,6 +22,40 @@ namespace TW::Polkadot {
     auto privateKey = PrivateKey(parse_hex("0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115"));
     auto toPublicKey = PublicKey(parse_hex("0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"), TWPublicKeyTypeED25519);
     auto genesisHash = parse_hex("91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3");
+
+TEST(PolkadotSigner, SignTransfer_1621) {
+    auto toAddress = Address("13ZLCqJNPsRZYEbwjtZZFpWt9GyFzg5WahXCVWKpWdUJqrQ5");
+
+    auto input = Proto::SigningInput();
+    input.set_genesis_hash(genesisHash.data(), genesisHash.size());
+    input.set_block_hash(genesisHash.data(), genesisHash.size());
+
+    input.set_nonce(0);
+    input.set_spec_version(26);
+    auto privateKey = PrivateKey(parse_hex("8da3da12e488d5fab0c28aab8b881e2cb515eba113a5f4017a9192ad491a1b44"));
+    {
+        PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+        Address address = Address(publicKey);
+        EXPECT_EQ(address.string(), "13M79SsQnBvAGEJPdDrUVStwMYChH2YatmGG2EZ2i6628N6Q");
+    }
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_network(Proto::Network::POLKADOT);
+    input.set_transaction_version(5);
+
+    auto balanceCall = input.mutable_balance_call();
+    auto transfer = balanceCall->mutable_transfer();
+    auto value = store(uint256_t(10000000000));
+    transfer->set_to_address(toAddress.string());
+    transfer->set_value(value.data(), value.size());
+
+    auto extrinsic = Extrinsic(input);
+    auto preimage = extrinsic.encodePayload();
+    EXPECT_EQ(hex(preimage), "05007120f76076bcb0efdf94c7219e116899d0163ea61cb428183d71324eb33b2bce0700e40b54020000001a0000000500000091b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c391b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3");
+
+    auto output = Signer::sign(input);
+    // https://polkascan.io/polkadot/transaction/0x1621362639a2af1dfbf70f622df9e5e8079fd4f8fcf3ba01b757096f1338d41c
+    EXPECT_EQ(hex(output.encoded()), "35028467ce10209e619e32639dd74a71d9865807839f3a4f09b4fd1cd52fab9496dd4800d25b7278fc621758e8d8588b032ef60127d628e1fbd9a07a9f194b0f33fe62212352fc47237ec54ae4a06458632df1f2ded6c31c22fb37750dd6674f3aecc20300000005007120f76076bcb0efdf94c7219e116899d0163ea61cb428183d71324eb33b2bce0700e40b5402");
+}
 
 TEST(PolkadotSigner, SignTransferDOT) {
 
