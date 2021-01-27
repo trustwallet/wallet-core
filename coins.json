@@ -1082,9 +1082,9 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
-      "url": "https://insight.vecha.in",
-      "txPath": "/#/main/txs/",
-      "accountPath": "/#/main/accounts/"
+      "url": "https://explore.vechain.org",
+      "txPath": "/transactions/",
+      "accountPath": "/accounts/"
     },
     "info": {
       "url": "https://vechain.org",
