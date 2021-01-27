@@ -15,9 +15,9 @@
 
 TEST(TWVeChainCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeVeChain));
-    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("t123"));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0xa424053be0063555aee73a595ca69968c2e4d90d36f280753e503b92b11a655d"));
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeVeChain, txId.get()));
-    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("a12"));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0x8a0a035a33173601bfbec8b6ae7c4a6557a55103"));
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeVeChain, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeVeChain));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeVeChain));
@@ -27,8 +27,8 @@ TEST(TWVeChainCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeVeChain));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeVeChain));
     assertStringsEqual(symbol, "VET");
-    assertStringsEqual(txUrl, "https://insight.vecha.in/#/main/txs/t123");
-    assertStringsEqual(accUrl, "https://insight.vecha.in/#/main/accounts/a12");
+    assertStringsEqual(txUrl, "https://explore.vechain.org/transactions/0xa424053be0063555aee73a595ca69968c2e4d90d36f280753e503b92b11a655d");
+    assertStringsEqual(accUrl, "https://explore.vechain.org/accounts/0x8a0a035a33173601bfbec8b6ae7c4a6557a55103");
     assertStringsEqual(id, "vechain");
     assertStringsEqual(name, "VeChain");
 }
