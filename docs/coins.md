@@ -42,6 +42,7 @@ This list is generated from [./coins.json](../coins.json)
 | 457     | Aeternity        | AE     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aeternity/info/logo.png" width="32" />    | <https://aeternity.com>       |
 | 459     | Kava             | KAVA   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/kava/info/logo.png" width="32" />         | <https://kava.io>             |
 | 461     | Filecoin         | FIL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/filecoin/info/logo.png" width="32" />     | <https://filecoin.io/>        |
+| 474     | Oasis            | ROSE   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/oasis/info/logo.png" width="32" />        | <https://www.oasislabs.com/>  |
 | 494     | BandChain        | BAND   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/band/info/logo.png" width="32" />         | <https://bandprotocol.com/>   |
 | 500     | Theta            | THETA  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/theta/info/logo.png" width="32" />        | <https://www.thetatoken.org>  |
 | 501     | Solana           | SOL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png" width="32" />       | <https://solana.com>          |
@@ -63,5 +64,4 @@ This list is generated from [./coins.json](../coins.json)
 | 19167   | Zelcash          | ZEL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zelcash/info/logo.png" width="32" />      | <https://zel.cash>            |
 | 5718350 | Wanchain         | WAN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/wanchain/info/logo.png" width="32" />     | <https://wanchain.org>        |
 | 5741564 | Waves            | WAVES  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/waves/info/logo.png" width="32" />        | <https://wavesplatform.com>   |
-| 5786211 | Oasis            | ROSE   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/Oasis/info/logo.png" width="32" />        | <https://www.oasislabs.com/>  |
 | 20000714 | Smart Chain      | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/info/logo.png" width="32" />   | <https://www.binance.org/en/smartChain> |
