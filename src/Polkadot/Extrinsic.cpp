@@ -85,7 +85,7 @@ Data Extrinsic::encodeCall(const Proto::SigningInput& input) {
             auto reward = byte(staking.bond().reward_destination());
             // call index
             append(data, getCallIndex(network, stakingBond));
-            // validator
+            // controller
             append(data, encodeAddress(address));
             // value
             append(data, encodeCompact(value));
