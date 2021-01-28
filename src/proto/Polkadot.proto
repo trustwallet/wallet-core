@@ -15,7 +15,7 @@ enum RewardDestination {
 }
 
 message Era {
-    // recent block number, should match block hash
+    // recent block number (called phase in polkadot code), should match block hash
     uint64 block_number = 1;
 
     // length of period, calculated from block number, e.g. 64
