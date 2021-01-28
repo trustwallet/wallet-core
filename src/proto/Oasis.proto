@@ -9,6 +9,16 @@ syntax = "proto3";
 package TW.Oasis.Proto;
 option java_package = "wallet.core.jni.proto";
 
+message Message{
+    enum MethodType {
+        staking = 0;
+    }
+
+    enum OperationType {
+        Transfer = 0;
+    }
+}
+
 message TransferMessage {
     string to = 1;
     string method = 2;

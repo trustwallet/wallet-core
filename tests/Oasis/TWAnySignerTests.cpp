@@ -20,11 +20,16 @@ TEST(TWAnySignerOasis, Sign) {
     auto input = Proto::SigningInput();
     auto output = Proto::SigningOutput();
     auto &transfer = *input.mutable_transfer();
+
+    Proto::Message::MethodType methodType = Proto::Message_MethodType_staking;
+    Proto::Message::OperationType operationType = Proto::Message_OperationType_Transfer;
+    std::string requestMethodString = Message_MethodType_Name(methodType) + "." + Message_OperationType_Name(operationType); // "stacking.Transfer"
+
     transfer.set_gas_price(0);
     transfer.set_gas_amount("0");
     transfer.set_nonce(0);
     transfer.set_to("oasis1qrrnesqpgc6rfy2m50eew5d7klqfqk69avhv4ak5");
-    transfer.set_method("staking.Transfer");
+    transfer.set_method(requestMethodString);
     transfer.set_amount("10000000");
     transfer.set_context("oasis-core/consensus: tx for chain bc1c715319132305795fa86bd32e93291aaacbfb5b5955f3ba78bdba413af9e1");
 
