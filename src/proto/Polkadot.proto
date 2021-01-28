@@ -15,8 +15,11 @@ enum RewardDestination {
 }
 
 message Era {
-    uint64 period = 1; // calculated from block number
-    uint64 phase = 2;
+    // recent block number (called phase in polkadot code), should match block hash
+    uint64 block_number = 1;
+
+    // length of period, calculated from block number, e.g. 64
+    uint64 period = 2;
 }
 
 message Balance {
@@ -66,13 +69,21 @@ message Staking {
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
+    // Recent block hash, or genesis hash if era is not set
     bytes block_hash = 1;
+
     bytes genesis_hash = 2;
+
+    // Current account nonce
     uint64 nonce = 3;
+
     uint32 spec_version = 4;
     uint32 transaction_version = 5;
     bytes tip = 6;  // big integer
-    Era era = 7;    // empty means Immortal
+
+    // Optional time validity limit, recommended, for replay-protection.  Empty means Immortal.
+    Era era = 7;
+
     bytes private_key = 8;
     Network network = 9;
 
