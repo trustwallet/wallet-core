@@ -29,6 +29,6 @@ TEST(TWOasisCoinType, TWCoinType) {
     assertStringsEqual(symbol, "ROSE");
     assertStringsEqual(txUrl, "https://oasisscan.com/transactions/0b9bd4983f1c88a1c71bf33562b6ba02b3064e01697d15a0de4bfe1922ec74b8");
     assertStringsEqual(accUrl, "https://oasisscan.com/accounts/detail/oasis1qrx376dmwuckmruzn9vq64n49clw72lywctvxdf4");
-    assertStringsEqual(id, "Oasis");
+    assertStringsEqual(id, "oasis");
     assertStringsEqual(name, "Oasis");
 }
