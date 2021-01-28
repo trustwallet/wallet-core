@@ -44,9 +44,3 @@ public:
 };
 
 } // namespace TW::Oasis
-
-/// Wrapper for C interface.
-
-struct TWOasisSigner {
-    TW::Oasis::Signer impl;
-};
