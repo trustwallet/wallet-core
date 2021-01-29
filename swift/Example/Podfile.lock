@@ -1,0 +1,27 @@
+PODS:
+  - SwiftProtobuf (1.15.0)
+  - WalletCoreDev (2.5.6):
+    - WalletCoreDev/Core (= 2.5.6)
+  - WalletCoreDev/Core (2.5.6):
+    - WalletCoreDev/Types
+  - WalletCoreDev/Types (2.5.6):
+    - SwiftProtobuf
+
+DEPENDENCIES:
+  - WalletCoreDev (from `../../`)
+
+SPEC REPOS:
+  trunk:
+    - SwiftProtobuf
+
+EXTERNAL SOURCES:
+  WalletCoreDev:
+    :path: "../../"
+
+SPEC CHECKSUMS:
+  SwiftProtobuf: 3320217e9d8fb75f36b40282e78c482640fd75dd
+  WalletCoreDev: 7a2245118494fc8eb77ed274a8254f47da443100
+
+PODFILE CHECKSUM: 326472bd28152c03cd531998ec90dd42228ac356
+
+COCOAPODS: 1.10.1
