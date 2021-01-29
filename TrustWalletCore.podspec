@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
   s.module_name  = 'WalletCore'
   
-  s.ios.deployment_target = '11.0'
+  s.ios.deployment_target = '12.0'
   s.osx.deployment_target = '10.12'
   s.swift_version = '5.1'
 
@@ -43,6 +43,7 @@ Pod::Spec.new do |s|
       "#{protobuf_source_dir}/src/google/protobuf/any_lite.cc",
       "#{protobuf_source_dir}/src/google/protobuf/api.pb.cc",
       "#{protobuf_source_dir}/src/google/protobuf/arena.cc",
+      "#{protobuf_source_dir}/src/google/protobuf/arenastring.cc",
       "#{protobuf_source_dir}/src/google/protobuf/compiler/importer.cc",
       "#{protobuf_source_dir}/src/google/protobuf/compiler/parser.cc",
       "#{protobuf_source_dir}/src/google/protobuf/descriptor.cc",
@@ -69,6 +70,7 @@ Pod::Spec.new do |s|
       "#{protobuf_source_dir}/src/google/protobuf/io/zero_copy_stream.cc",
       "#{protobuf_source_dir}/src/google/protobuf/io/zero_copy_stream_impl.cc",
       "#{protobuf_source_dir}/src/google/protobuf/io/zero_copy_stream_impl_lite.cc",
+      "#{protobuf_source_dir}/src/google/protobuf/map.cc",
       "#{protobuf_source_dir}/src/google/protobuf/map_field.cc",
       "#{protobuf_source_dir}/src/google/protobuf/message.cc",
       "#{protobuf_source_dir}/src/google/protobuf/message_lite.cc",
@@ -108,6 +110,7 @@ Pod::Spec.new do |s|
       "#{protobuf_source_dir}/src/google/protobuf/util/internal/protostream_objectsource.cc",
       "#{protobuf_source_dir}/src/google/protobuf/util/internal/protostream_objectwriter.cc",
       "#{protobuf_source_dir}/src/google/protobuf/util/internal/type_info.cc",
+      "#{protobuf_source_dir}/src/google/protobuf/util/internal/type_info_test_helper.cc",
       "#{protobuf_source_dir}/src/google/protobuf/util/internal/utility.cc",
       "#{protobuf_source_dir}/src/google/protobuf/util/json_util.cc",
       "#{protobuf_source_dir}/src/google/protobuf/util/message_differencer.cc",

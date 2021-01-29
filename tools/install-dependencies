@@ -27,9 +27,10 @@ tar xzf release-$GTEST_VERSION.tar.gz
 # Build gtest
 cd googletest-release-$GTEST_VERSION
 echo "patching cmake minimum version"
-sed -i '' 's/cmake_minimum_required(VERSION 2.8.8)/cmake_minimum_required(VERSION 2.8.12)/g' CMakeLists.txt
-sed -i '' 's/cmake_minimum_required(VERSION 2.6.4)/cmake_minimum_required(VERSION 2.8.12)/g' googletest/CMakeLists.txt
-sed -i '' 's/cmake_minimum_required(VERSION 2.6.4)/cmake_minimum_required(VERSION 2.8.12)/g' googlemock/CMakeLists.txt
+cp $ROOT/tools/*.patch .
+patch CMakeLists.txt gtest.patch
+patch googletest/CMakeLists.txt gtest_test.patch
+patch googlemock/CMakeLists.txt gtest_mock.patch
 
 cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -H.
 make -j4
