@@ -46,7 +46,7 @@ Data Signer::hash(const Transaction &transaction) const noexcept {
     auto encoded = Data();
     auto payload = Data();
     auto data = Transaction::newPayloadData(transaction.payload);
-    payload.resize(data->ByteSize());
+    payload.resize(data->ByteSizeLong());
     data->SerializePartialToArray(payload.data(),(int)payload.size());
     delete data;
 

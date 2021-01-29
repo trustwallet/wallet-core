@@ -91,6 +91,6 @@ void Transaction::serializeToRaw(){
     tx.set_alg((uint32_t)algorithm);
     tx.set_sign(reinterpret_cast<const char *>(signature.data()),signature.size());
 
-    raw.resize(tx.ByteSize());
+    raw.resize(tx.ByteSizeLong());
     tx.SerializeToArray(raw.data(),(int)raw.size());
 }

@@ -16,7 +16,7 @@ targets:
   WalletCore:
     type: framework
     platform: iOS
-    deploymentTarget: 11.0
+    deploymentTarget: 12.0
     sources:
       - path: include
         headerVisibility: public
@@ -134,6 +134,9 @@ targets:
       - protobuf/google/protobuf/any_lite.cc
       - protobuf/google/protobuf/api.pb.cc
       - protobuf/google/protobuf/arena.cc
+      - protobuf/google/protobuf/arenastring.cc
+      - protobuf/google/protobuf/compiler/importer.cc
+      - protobuf/google/protobuf/compiler/parser.cc
       - protobuf/google/protobuf/descriptor.cc
       - protobuf/google/protobuf/descriptor.pb.cc
       - protobuf/google/protobuf/descriptor_database.cc
@@ -158,6 +161,7 @@ targets:
       - protobuf/google/protobuf/io/zero_copy_stream.cc
       - protobuf/google/protobuf/io/zero_copy_stream_impl.cc
       - protobuf/google/protobuf/io/zero_copy_stream_impl_lite.cc
+      - protobuf/google/protobuf/map.cc
       - protobuf/google/protobuf/map_field.cc
       - protobuf/google/protobuf/message.cc
       - protobuf/google/protobuf/message_lite.cc
@@ -197,6 +201,7 @@ targets:
       - protobuf/google/protobuf/util/internal/protostream_objectsource.cc
       - protobuf/google/protobuf/util/internal/protostream_objectwriter.cc
       - protobuf/google/protobuf/util/internal/type_info.cc
+      - protobuf/google/protobuf/util/internal/type_info_test_helper.cc
       - protobuf/google/protobuf/util/internal/utility.cc
       - protobuf/google/protobuf/util/json_util.cc
       - protobuf/google/protobuf/util/message_differencer.cc
