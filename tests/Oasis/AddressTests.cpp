@@ -27,20 +27,20 @@ TEST(OasisAddress, ForceInvalid) {
     try {
         auto addressString = "oasis1qp0cnmkjl22gky6p6qeghjytt4v7dkxsrsmuewehj";
         auto address = Address( addressString );
-        ASSERT_EQ("This test should generate an exception as it an invalid address", "-");
     } catch( std::invalid_argument& e1 ) {
-        ASSERT_TRUE(true);
-    } 
+        return;
+    }
+    FAIL() << "This test should generate an exception as it an invalid address";
 }
 
 TEST(OasisAddress, FromWrongData) {
     try {
         auto dataString = "asdadfasdfsdfwrwrsadasdasdsad";
         auto address = Address( data( dataString ) );
-        ASSERT_EQ("This test should generate an exception as it an invalid data", "-");
     } catch( std::invalid_argument& e1 ) {
-        ASSERT_TRUE(true);
-    } 
+        return;
+    }
+    FAIL() << "This test should generate an exception as it an invalid data";
 }
 
 TEST(OasisAddress, FromPrivateKey) {
@@ -59,11 +59,10 @@ TEST(OasisAddress, WrongPublicKeyType) {
     try {
         auto publicKey = PublicKey(parse_hex("aba52c0dcb80c2fe96ed4c3741af40c573a0500c0d73acda22795c37cb0f1739"), TWPublicKeyTypeED25519Extended);
         auto address = Address(publicKey);
-
-        ASSERT_EQ("TWPublicKeyTypeED25519Extended should generate an exception as it an invalid publicKey type", "-");
     } catch( std::invalid_argument& e1 ) {
-        ASSERT_TRUE(true);
-    } 
+        return;
+    }
+    FAIL() << "TWPublicKeyTypeED25519Extended should generate an exception as it an invalid publicKey type";
 }
 
 TEST(OasisAddress, FromString) {

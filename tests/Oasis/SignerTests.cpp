@@ -15,8 +15,6 @@
 using namespace TW;
 using namespace TW::Oasis;
 
-// TODO: Add tests
-
 TEST(OasisSigner, Sign) {
     auto input = Proto::SigningInput();
     auto &transfer = *input.mutable_transfer();
