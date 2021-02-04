@@ -75,7 +75,9 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
     } else {
         // select UTXOs
         plan.amount = input.amount();
-        // if amount requested is the same or more than available, treat it as MaxAmount
+
+        // if amount requested is the same or more than available amount, it cannot be satisifed, but
+        // treat this case as MaxAmount, and send maximum available (which will be less)
         if (!maxAmount && input.amount() >= UnspentSelector::sum(input.utxo())) {
             maxAmount = true;
         }
