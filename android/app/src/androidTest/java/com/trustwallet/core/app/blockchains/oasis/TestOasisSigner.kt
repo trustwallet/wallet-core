@@ -35,14 +35,14 @@ class TestOasisSigner {
 
             // This is the way Oasis indicates sign of the amountd
             // https://github.com/oasisprotocol/oasis-core/blob/483bd3a897454e4bc1a8795675e7f29cd4d8e72d/go/common/quantity/quantity.go#L39-L55
-            gasAmount = ByteString.copyFrom("0".toByteArray())
+            gasAmount = "0"
             
             nonce = 0
             method = "staking.Transfer"
 
             // This is the way Oasis indicates sign of the amount
             // https://github.com/oasisprotocol/oasis-core/blob/483bd3a897454e4bc1a8795675e7f29cd4d8e72d/go/common/quantity/quantity.go#L39-L55
-            amount = ByteString.copyFrom("10000000".toByteArray()) // decimal 10000000
+            amount = "10000000" // decimal 10000000
             context = "oasis-core/consensus: tx for chain bc1c715319132305795fa86bd32e93291aaacbfb5b5955f3ba78bdba413af9e1"
         }
 

@@ -28,8 +28,8 @@ class OasisTests: XCTestCase {
                 $0.to = "oasis1qrrnesqpgc6rfy2m50eew5d7klqfqk69avhv4ak5"
                 $0.method = "staking.Transfer"
                 $0.gasPrice = 0
-                $0.gasAmount = Data("0".utf8)
-                $0.amount = Data("10000000".utf8)
+                $0.gasAmount = "0"
+                $0.amount = "10000000"
                 $0.nonce = 0
                 $0.context = "oasis-core/consensus: tx for chain bc1c715319132305795fa86bd32e93291aaacbfb5b5955f3ba78bdba413af9e1"
             }

@@ -25,9 +25,9 @@ message TransferMessage {
     uint64 gas_price = 3;
 
     // Amount values strings prefixed by zero. e.g. "\u000010000000"
-    bytes gas_amount = 4;
+    string gas_amount = 4;
     // Amount values strings prefixed by zero
-    bytes amount = 5;
+    string amount = 5;
 
     uint64 nonce = 6;
     string context = 7;
