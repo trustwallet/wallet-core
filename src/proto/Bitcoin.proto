@@ -67,7 +67,9 @@ message SigningInput {
     // Hash type to use when signing.
     uint32 hash_type = 1;
 
-    // Amount to send.
+    // Amount to send.  Transaction created will have this amount in its output, 
+    // except when use_max_amount is set, in that case this amount is not relevant, maximum possible amount will be used (max avail less fee).
+    // If amount is equal or more than the available amount, also max amount will be used.
     int64 amount = 2;
 
     // Transaction fee per byte.

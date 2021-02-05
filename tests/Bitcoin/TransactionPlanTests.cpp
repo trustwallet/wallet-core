@@ -39,7 +39,8 @@ TEST(TransactionPlan, OneInsufficient) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorTextNotEnoughUtxos));
+    // Max is returned
+    EXPECT_TRUE(verifyPlan(txPlan, {100'000}, 99'887, 113));
 }
 
 TEST(TransactionPlan, OneInsufficientEqual) {
@@ -48,7 +49,8 @@ TEST(TransactionPlan, OneInsufficientEqual) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorTextNotEnoughUtxos));
+    // Max is returned
+    EXPECT_TRUE(verifyPlan(txPlan, {100'000}, 99'887, 113));
 }
 
 TEST(TransactionPlan, OneInsufficientLower100) {
@@ -78,6 +80,17 @@ TEST(TransactionPlan, OneInsufficientLower300) {
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
     EXPECT_TRUE(verifyPlan(txPlan, {100'000}, 100'000 - 300, 147));
+}
+
+TEST(TransactionPlan, OneMoreRequested) {
+    auto utxos = buildTestUTXOs({100'000});
+    auto byteFee = 1;
+    auto sigingInput = buildSigningInput(150'000, byteFee, utxos);
+
+    auto txPlan = TransactionBuilder::plan(sigingInput);
+
+    // Max is returned
+    EXPECT_TRUE(verifyPlan(txPlan, {100'000}, 99'887, 113));
 }
 
 TEST(TransactionPlan, OneFitsExactly) {
@@ -193,7 +206,8 @@ TEST(TransactionPlan, UnspentsInsufficient) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorTextNotEnoughUtxos));
+    // Max is returned
+    EXPECT_TRUE(verifyPlan(txPlan, {4000, 4000, 4000}, 11751, 249));
 }
 
 TEST(TransactionPlan, SelectionSuboptimal_ExtraSmallUtxo) {
@@ -357,13 +371,13 @@ TEST(TransactionPlan, MaxAmountOne) {
 }
 
 TEST(TransactionPlan, AmountEqualsMaxButNotUseMax) {
-    // amount is set to max, but UseMax is not set --> cannot be satisfied
+    // amount is set to max, but UseMax is not set --> Max is returned
     auto utxos = buildTestUTXOs({10189534});
     auto sigingInput = buildSigningInput(10189534, 1, utxos, false);
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorTextNotEnoughUtxos));
+    EXPECT_TRUE(verifyPlan(txPlan, {10189534}, 10189421, 113));
 }
 
 TEST(TransactionPlan, MaxAmountLowerRequested) {
