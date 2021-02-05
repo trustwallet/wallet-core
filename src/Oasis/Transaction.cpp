@@ -25,15 +25,19 @@ static Data encodeVaruint(const uint256_t& value) {
 }
 
 Cbor::Encode Transaction::encodeMessage() const {
-    return Cbor::Encode::array({
-        Cbor::Encode::uint(0),
-        Cbor::Encode::uint(gasPrice),
-        Cbor::Encode::bytes(encodeVaruint(gasAmount)),
-        Cbor::Encode::bytes(to.getKeyHash()),
-        Cbor::Encode::bytes(encodeVaruint(amount)),
-        Cbor::Encode::uint(nonce),
-        Cbor::Encode::string(method),
-        Cbor::Encode::string(context)
+    return Cbor::Encode::map({
+        { Cbor::Encode::string("nonce"), Cbor::Encode::uint(nonce) },
+        { Cbor::Encode::string("method"), Cbor::Encode::string(method) },
+        { Cbor::Encode::string("fee"), Cbor::Encode::map({
+                 { Cbor::Encode::string("gas"), Cbor::Encode::uint(gasPrice) },
+                 { Cbor::Encode::string("amount"), Cbor::Encode::bytes(encodeVaruint(gasAmount)) }
+             })
+        },
+        { Cbor::Encode::string("body"), Cbor::Encode::map({
+               { Cbor::Encode::string("to"), Cbor::Encode::bytes(to.getKeyHash()) },
+               { Cbor::Encode::string("amount"), Cbor::Encode::bytes(encodeVaruint(amount)) }
+            })
+        }
     });
 }
 
