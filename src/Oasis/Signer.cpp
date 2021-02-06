@@ -31,15 +31,19 @@ Data Signer::build() const {
         /* nonce */ input.transfer().nonce(),
         /* context */ input.transfer().context());
 
+
+    auto privateKey = PrivateKey(input.private_key());
+    auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+
     auto signature = sign(transaction);
-    auto encoded = transaction.serialize(signature);
+    auto encoded = transaction.serialize(signature, publicKey);
 
     return encoded;
 }
 
 Data Signer::sign(Transaction& tx) const {
-    auto key = PrivateKey(input.private_key());
+    auto privateKey = PrivateKey(input.private_key());
     auto hash = Hash::sha512_256(tx.encodeMessage().encoded());
-    auto signature = key.sign(hash, TWCurveED25519);
+    auto signature = privateKey.sign(hash, TWCurveED25519);
     return Data(signature.begin(), signature.end());
 }
