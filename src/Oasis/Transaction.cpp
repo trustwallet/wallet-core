@@ -25,6 +25,7 @@ static Data encodeVaruint(const uint256_t& value) {
 }
 
 Cbor::Encode Transaction::encodeMessage() const {
+
     return Cbor::Encode::map({
         { Cbor::Encode::string("nonce"), Cbor::Encode::uint(nonce) },
         { Cbor::Encode::string("method"), Cbor::Encode::string(method) },
@@ -34,16 +35,16 @@ Cbor::Encode Transaction::encodeMessage() const {
              })
         },
         { Cbor::Encode::string("body"), Cbor::Encode::map({
-               { Cbor::Encode::string("to"), Cbor::Encode::bytes(to.getKeyHash()) },
-               { Cbor::Encode::string("amount"), Cbor::Encode::bytes(encodeVaruint(amount)) }
-            })
+                  { Cbor::Encode::string("to"), Cbor::Encode::bytes(to.getKeyHash()) },
+                  { Cbor::Encode::string("amount"), Cbor::Encode::bytes(encodeVaruint(amount)) }
+              })
         }
     });
 }
 
 Data Transaction::serialize(Data& signature, PublicKey& publicKey) const {
     auto signedMessage = Cbor::Encode::map({
-            { Cbor::Encode::string("untrusted_raw_value"), encodeMessage() },
+            { Cbor::Encode::string("untrusted_raw_value"), Cbor::Encode::bytes(encodeMessage().encoded()) },
             { Cbor::Encode::string("signature"), Cbor::Encode::map({
                    { Cbor::Encode::string("public_key"), Cbor::Encode::bytes(publicKey.bytes) },
                    { Cbor::Encode::string("signature"), Cbor::Encode::bytes(signature) }
