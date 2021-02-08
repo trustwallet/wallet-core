@@ -30,7 +30,7 @@ TEST(OasisSigner, Sign) {
     transfer.set_method(requestMethodString);
     transfer.set_amount("10000000");
 
-    // https://docs.oasis.dev/oasis-core/common-functionality/crypto#domain-separation
+    // The use of this context thing is explained here --> https://docs.oasis.dev/oasis-core/common-functionality/crypto#domain-separation
     transfer.set_context("oasis-core/consensus: tx for chain a245619497e580dd3bc1aa3256c07f68b8dcc13f92da115eadc3b231b083d3c4");
 
     auto key = parse_hex("4f8b5676990b00e23d9904a92deb8d8f428ff289c8939926358f1d20537c21a0");

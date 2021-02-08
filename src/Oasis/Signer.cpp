@@ -54,7 +54,7 @@ Data Signer::build() const {
 Data Signer::sign(Transaction& tx) const {
     auto privateKey = PrivateKey(input.private_key());
 
-    // https://docs.oasis.dev/oasis-core/common-functionality/crypto#domain-separation
+    // The use of this context thing is explained here --> https://docs.oasis.dev/oasis-core/common-functionality/crypto#domain-separation
     auto encodedMessage = tx.encodeMessage().encoded();
     Data dataToHash(tx.context.begin(), tx.context.end());
     dataToHash.insert(dataToHash.end(), encodedMessage.begin(), encodedMessage.end());
