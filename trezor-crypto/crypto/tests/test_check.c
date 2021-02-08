@@ -4970,6 +4970,23 @@ START_TEST(test_ed25519_pk_to_curve25519) {
 }
 END_TEST
 
+START_TEST(test_bip32_hd_hdnode_vector_1)
+    {
+        HDNode node;
+
+        uint8_t seed[66];
+        int seed_len = mnemonic_to_entropy("ring crime symptom enough erupt lady behave ramp apart settle citizen junk", seed);
+        ck_assert_int_eq(seed_len, 132);
+        hdnode_from_seed_hd(seed, seed_len / 8, ED25519_HD_NAME, &node);
+
+        ck_assert_mem_eq(node.chain_code,  fromhex("8c0aff567b4bfbdbb501cf5ede8742929d935dfc1c99e8aea3f2b259e67a7550"), 32);
+        ck_assert_mem_eq(node.private_key, fromhex("08c667f2c50117a506450dcdb43c4108969c317a671e7fcfc34c60a97ae25b59"), 32);
+        ck_assert_mem_eq(node.private_key_extension, fromhex("c6658be4d0cf546c137bde2f19d375464f56fca6dae1b868d8d692b536a1b66b"), 32);
+        hdnode_fill_public_key(&node);
+        ck_assert_mem_eq(node.public_key + 1,  fromhex("dd2f7c3e0d7f31e5cc983904e5638b82b4a077d153380c0fb09b4508a651eac2"), 32);
+    }
+END_TEST
+
 // define test suite and cases
 Suite *test_suite(void)
 {
@@ -5212,10 +5229,15 @@ Suite *test_suite(void)
 	tcase_add_test(tc, test_cashaddr);
 	suite_add_tcase(s, tc);
 
-  tc = tcase_create("schnorr");
-  tcase_add_test(tc, test_schnorr_sign_verify);
-  tcase_add_test(tc, test_schnorr_fail_verify);
-  suite_add_tcase(s, tc);
+        tc = tcase_create("schnorr");
+        tcase_add_test(tc, test_schnorr_sign_verify);
+        tcase_add_test(tc, test_schnorr_fail_verify);
+        suite_add_tcase(s, tc);
+
+
+        tc = tcase_create("bip32-hd");
+        tcase_add_test(tc, test_bip32_hd_hdnode_vector_1);
+        suite_add_tcase(s, tc);
 
 #if USE_CARDANO
 	tc = tcase_create("bip32-cardano");
