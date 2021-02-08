@@ -28,12 +28,15 @@ Data Signer::build() const {
     // Load value on that address var we create before
     Address::decode(input.transfer().to(), address);
 
+    auto amount = strtoul(input.transfer().amount().c_str(), nullptr,10);
+    auto gasAmount = strtoul(input.transfer().gas_amount().c_str(), nullptr,10);
+
     Transaction transaction(
         /* to */     address,
         /* method */ input.transfer().method(),
         /* gasPrice */ input.transfer().gas_price(),
-        /* gasAmount */ load(input.transfer().gas_amount()),
-        /* amount */ load(input.transfer().amount()),
+        /* gasAmount */ gasAmount,
+        /* amount */ amount,
         /* nonce */ input.transfer().nonce(),
         /* context */ input.transfer().context());
 
