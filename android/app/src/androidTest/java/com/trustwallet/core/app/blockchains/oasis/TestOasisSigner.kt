@@ -33,15 +33,11 @@ class TestOasisSigner {
             to = "oasis1qrrnesqpgc6rfy2m50eew5d7klqfqk69avhv4ak5"
             gasPrice = 0
 
-            // This is the way Oasis indicates sign of the amountd
-            // https://github.com/oasisprotocol/oasis-core/blob/483bd3a897454e4bc1a8795675e7f29cd4d8e72d/go/common/quantity/quantity.go#L39-L55
             gasAmount = "0"
             
             nonce = 0
             method = "staking.Transfer"
 
-            // This is the way Oasis indicates sign of the amount
-            // https://github.com/oasisprotocol/oasis-core/blob/483bd3a897454e4bc1a8795675e7f29cd4d8e72d/go/common/quantity/quantity.go#L39-L55
             amount = "10000000"
             context = "oasis-core/consensus: tx for chain a245619497e580dd3bc1aa3256c07f68b8dcc13f92da115eadc3b231b083d3c4"
         }
