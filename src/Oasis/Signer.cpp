@@ -22,12 +22,13 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 }
 
 Data Signer::build() const {
-    // Create address var and check if value is valid
+    // Create empty address var and check if value we want to load is valid
     Address address(input.transfer().to());
 
     // Load value on that address var we create before
     Address::decode(input.transfer().to(), address);
 
+    // Convert values from string to unsigned long
     auto amount = strtoul(input.transfer().amount().c_str(), nullptr,10);
     auto gasAmount = strtoul(input.transfer().gas_amount().c_str(), nullptr,10);
 
@@ -52,7 +53,13 @@ Data Signer::build() const {
 
 Data Signer::sign(Transaction& tx) const {
     auto privateKey = PrivateKey(input.private_key());
-    auto hash = Hash::sha512_256(tx.encodeMessage().encoded());
+
+    // https://docs.oasis.dev/oasis-core/common-functionality/crypto#domain-separation
+    auto encodedMessage = tx.encodeMessage().encoded();
+    Data dataToHash(tx.context.begin(), tx.context.end());
+    dataToHash.insert(dataToHash.end(), encodedMessage.begin(), encodedMessage.end());
+    auto hash = Hash::sha512_256(dataToHash);
+
     auto signature = privateKey.sign(hash, TWCurveED25519);
     return Data(signature.begin(), signature.end());
 }
