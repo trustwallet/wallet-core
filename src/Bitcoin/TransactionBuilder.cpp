@@ -68,7 +68,7 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
     auto unspentSelector = UnspentSelector(feeCalculator);
     bool maxAmount = input.use_max_amount();
 
-    if (input.amount() == 0) {
+    if (input.amount() == 0 && !maxAmount) {
         plan.error = "Zero amount requested";
     } else if (input.utxo().empty()) {
         plan.error = "Missing input UTXOs";
