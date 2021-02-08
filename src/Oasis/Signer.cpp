@@ -22,8 +22,14 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 }
 
 Data Signer::build() const {
+    // Create address var and check if value is valid
+    Address address(input.transfer().to());
+
+    // Load value on that address var we create before
+    Address::decode(input.transfer().to(), address);
+
     Transaction transaction(
-        /* to */     Address(input.transfer().to()),
+        /* to */     address,
         /* method */ input.transfer().method(),
         /* gasPrice */ input.transfer().gas_price(),
         /* gasAmount */ load(input.transfer().gas_amount()),
