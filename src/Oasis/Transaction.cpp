@@ -19,6 +19,9 @@ static Data encodeVaruint(const uint256_t& value) {
             break;
         }
     }
+
+    // This is the way Oasis indicates sign of the amount
+    // https://github.com/oasisprotocol/oasis-core/blob/483bd3a897454e4bc1a8795675e7f29cd4d8e72d/go/common/quantity/quantity.go#L39-L55
     Data small;
     small.assign(data.begin() + i - 1, data.end());
     return small;
