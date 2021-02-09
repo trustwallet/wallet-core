@@ -30,9 +30,14 @@ Data Signer::build() const {
     // Load value on that address var we create before
     Address::decode(input.transfer().to(), address);
 
-    // Convert values from string to unsigned long
-    auto amount = strtoull(input.transfer().amount().c_str(), nullptr,10);
-    auto gasAmount = strtoull(input.transfer().gas_amount().c_str(), nullptr,10);
+    // Convert values from string to uint256
+    std::istringstream amountStream(input.transfer().amount());
+    uint256_t amount;
+    amountStream >> amount;
+
+    std::istringstream gasAmountStream(input.transfer().gas_amount());
+    uint256_t gasAmount;
+    gasAmountStream >> gasAmount;
 
     Transaction transaction(
         /* to */     address,
