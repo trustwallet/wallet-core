@@ -4975,15 +4975,14 @@ START_TEST(test_bip32_hd_hdnode_vector_1)
         HDNode node;
 
         uint8_t seed[66];
-        int seed_len = mnemonic_to_entropy("ring crime symptom enough erupt lady behave ramp apart settle citizen junk", seed);
-        ck_assert_int_eq(seed_len, 132);
-        hdnode_from_seed_hd(seed, seed_len / 8, ED25519_HD_NAME, &node);
+        mnemonic_to_seed("ring crime symptom enough erupt lady behave ramp apart settle citizen junk", "", seed, 0);
+        hdnode_from_seed_hd(seed, 64, ED25519_HD_NAME, &node);
 
-        ck_assert_mem_eq(node.chain_code,  fromhex("8c0aff567b4bfbdbb501cf5ede8742929d935dfc1c99e8aea3f2b259e67a7550"), 32);
-        ck_assert_mem_eq(node.private_key, fromhex("08c667f2c50117a506450dcdb43c4108969c317a671e7fcfc34c60a97ae25b59"), 32);
-        ck_assert_mem_eq(node.private_key_extension, fromhex("c6658be4d0cf546c137bde2f19d375464f56fca6dae1b868d8d692b536a1b66b"), 32);
+        ck_assert_mem_eq(node.chain_code,  fromhex("683eabed80a3fa7a0255f6aa411577340c8a5bfeac3b763cf410f397fb1e8082"), 32);
+        ck_assert_mem_eq(node.private_key, fromhex("d05fbe16dc827df7401690268928789886d8c401f5715a1664f3c48197707659"), 32);
+        ck_assert_mem_eq(node.private_key_extension, fromhex("598b50eb5883cab909add281bb89186c5c5a5c3a953f8d92382590777597a1aa"), 32);
         hdnode_fill_public_key(&node);
-        ck_assert_mem_eq(node.public_key + 1,  fromhex("dd2f7c3e0d7f31e5cc983904e5638b82b4a077d153380c0fb09b4508a651eac2"), 32);
+        ck_assert_mem_eq(node.public_key + 1,  fromhex("ace6781a4165fdc8c582cf2dcd037faae746bc6ac3d071a263df7dbd0a528251"), 32);
     }
 END_TEST
 
