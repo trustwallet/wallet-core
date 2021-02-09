@@ -39,6 +39,13 @@ message Staking {
         RewardDestination reward_destination = 3;
     }
 
+    message BondAndNominate {
+        string controller = 1;
+        bytes value = 2;
+        RewardDestination reward_destination = 3;
+        repeated string nominators = 4;
+    }
+
     message BondExtra {
         bytes value = 1;
     }
@@ -59,11 +66,12 @@ message Staking {
 
     oneof message_oneof {
         Bond bond = 1;
-        BondExtra bond_extra = 2;
-        Unbond unbond = 3;
-        WithdrawUnbonded withdraw_unbonded = 4;
-        Nominate nominate = 5;
-        Chill chill = 6;
+        BondAndNominate bond_and_nominate = 2;
+        BondExtra bond_extra = 3;
+        Unbond unbond = 4;
+        WithdrawUnbonded withdraw_unbonded = 5;
+        Nominate nominate = 6;
+        Chill chill = 7;
     }
 }
 
