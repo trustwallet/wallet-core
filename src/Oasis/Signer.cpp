@@ -9,6 +9,8 @@
 #include "Signer.h"
 #include "Address.h"
 
+#define TRANSFER_METHOD "staking.Transfer"
+
 using namespace TW;
 using namespace TW::Oasis;
 
@@ -34,7 +36,7 @@ Data Signer::build() const {
 
     Transaction transaction(
         /* to */     address,
-        /* method */ input.transfer().method(),
+        /* method */ TRANSFER_METHOD,
         /* gasPrice */ input.transfer().gas_price(),
         /* gasAmount */ gasAmount,
         /* amount */ amount,

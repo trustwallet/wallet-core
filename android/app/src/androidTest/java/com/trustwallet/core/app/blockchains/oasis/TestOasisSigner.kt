@@ -36,7 +36,6 @@ class TestOasisSigner {
             gasAmount = "0"
             
             nonce = 0
-            method = "staking.Transfer"
 
             amount = "10000000"
             context = "oasis-core/consensus: tx for chain a245619497e580dd3bc1aa3256c07f68b8dcc13f92da115eadc3b231b083d3c4"

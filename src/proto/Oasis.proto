@@ -11,16 +11,15 @@ option java_package = "wallet.core.jni.proto";
 
 message TransferMessage {
     string to = 1;
-    string method = 2;
-    uint64 gas_price = 3;
+    uint64 gas_price = 2;
 
     // Amount values strings prefixed by zero. e.g. "\u000010000000"
-    string gas_amount = 4;
+    string gas_amount = 3;
     // Amount values strings prefixed by zero
-    string amount = 5;
+    string amount = 4;
 
-    uint64 nonce = 6;
-    string context = 7;
+    uint64 nonce = 5;
+    string context = 6;
 }
 
 message SigningInput {
