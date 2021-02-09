@@ -1227,7 +1227,7 @@
     "info": {
       "url": "https://www.oasislabs.com/",
       "client": "https://github.com/oasisprotocol/oasis-core",
-      "clientPublic": "https://rosetta.oasis.dev/api/v1/",
+      "clientPublic": "https://rosetta.oasis.dev/api/",
       "clientDocs": "https://github.com/oasisprotocol/oasis-core/blob/master/docs/oasis-node/rpc.md"
     }
   },
