@@ -4986,6 +4986,26 @@ START_TEST(test_bip32_hd_hdnode_vector_1)
     }
 END_TEST
 
+START_TEST(test_bip32_hd_hdnode_vector_2)
+    {
+        HDNode node;
+
+        uint8_t seed[66];
+        mnemonic_to_seed("ring crime symptom enough erupt lady behave ramp apart settle citizen junk", "", seed, 0);
+        hdnode_from_seed_hd(seed, 64, ED25519_HD_NAME, &node);
+
+        uint32_t index = 44 | 0x80000000;
+        hdnode_private_ckd_cardano(&node, index);
+
+        ck_assert_mem_eq(node.chain_code,  fromhex("cd46ff18d03a37e28352ba0bd01b91327734aabebf658ae8a87dd216d99c0fef"), 32);
+        ck_assert_mem_eq(node.private_key, fromhex("a04d196954e1a544f31c5aed15a2ecc7c7905cfb9021f0e979771d3799707659"), 32);
+        ck_assert_mem_eq(node.private_key_extension, fromhex("ff2545c22345d40034af9b6dc1cada9b9d843cd6f9a6d8d7b05a45ba15ad2d59"), 32);
+        hdnode_fill_public_key(&node);
+        ck_assert_mem_eq(node.public_key + 1,  fromhex("5155f089bdb44b6c8df78a3bab2ca53897bc5ad3d349e4f1c7e1c1c4e74458ce"), 32);
+    }
+END_TEST
+
+
 // define test suite and cases
 Suite *test_suite(void)
 {
@@ -5236,6 +5256,7 @@ Suite *test_suite(void)
 
         tc = tcase_create("bip32-hd");
         tcase_add_test(tc, test_bip32_hd_hdnode_vector_1);
+        tcase_add_test(tc, test_bip32_hd_hdnode_vector_2);
         suite_add_tcase(s, tc);
 
 #if USE_CARDANO
