@@ -14,22 +14,16 @@
 using namespace TW;
 using namespace TW::Oasis;
 
-// TODO: Finalize tests
-
 TEST(TWAnySignerOasis, Sign) {
     auto input = Proto::SigningInput();
     auto output = Proto::SigningOutput();
     auto &transfer = *input.mutable_transfer();
 
-    Proto::Message::MethodType methodType = Proto::Message_MethodType_staking;
-    Proto::Message::OperationType operationType = Proto::Message_OperationType_Transfer;
-    std::string requestMethodString = Message_MethodType_Name(methodType) + "." + Message_OperationType_Name(operationType); // "stacking.Transfer"
-
     transfer.set_gas_price(0);
     transfer.set_gas_amount("0");
     transfer.set_nonce(0);
     transfer.set_to("oasis1qrrnesqpgc6rfy2m50eew5d7klqfqk69avhv4ak5");
-    transfer.set_method(requestMethodString);
+    transfer.set_method("stacking.Transfer");
     transfer.set_amount("10000000");
     transfer.set_context("oasis-core/consensus: tx for chain a245619497e580dd3bc1aa3256c07f68b8dcc13f92da115eadc3b231b083d3c4");
 
