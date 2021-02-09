@@ -29,8 +29,8 @@ Data Signer::build() const {
     Address::decode(input.transfer().to(), address);
 
     // Convert values from string to unsigned long
-    auto amount = strtoul(input.transfer().amount().c_str(), nullptr,10);
-    auto gasAmount = strtoul(input.transfer().gas_amount().c_str(), nullptr,10);
+    auto amount = strtoull(input.transfer().amount().c_str(), nullptr,10);
+    auto gasAmount = strtoull(input.transfer().gas_amount().c_str(), nullptr,10);
 
     Transaction transaction(
         /* to */     address,
