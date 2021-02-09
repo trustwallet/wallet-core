@@ -23,7 +23,7 @@ TEST(TWAnySignerOasis, Sign) {
     transfer.set_gas_amount("0");
     transfer.set_nonce(0);
     transfer.set_to("oasis1qrrnesqpgc6rfy2m50eew5d7klqfqk69avhv4ak5");
-    transfer.set_method("stacking.Transfer");
+    transfer.set_method("staking.Transfer");
     transfer.set_amount("10000000");
     transfer.set_context("oasis-core/consensus: tx for chain a245619497e580dd3bc1aa3256c07f68b8dcc13f92da115eadc3b231b083d3c4");
 
