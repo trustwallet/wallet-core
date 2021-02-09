@@ -91,6 +91,19 @@ Data Extrinsic::encodeCall(const Proto::SigningInput& input) {
             append(data, encodeCompact(value));
             // reward destination
             append(data, reward);
+        } else if (staking.has_bond_and_nominate()) {
+            // TODO
+            auto address = SS58Address(staking.bond_and_nominate().controller(), byte(input.network()));
+            auto value = load(staking.bond_and_nominate().value());
+            auto reward = byte(staking.bond_and_nominate().reward_destination());
+            // call index
+            append(data, getCallIndex(network, stakingBond));
+            // controller
+            append(data, encodeAddress(address));
+            // value
+            append(data, encodeCompact(value));
+            // reward destination
+            append(data, reward);
         } else if (staking.has_bond_extra()) {
             auto value = load(staking.unbond().value());
             // call index

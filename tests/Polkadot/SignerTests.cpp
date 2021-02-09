@@ -130,6 +130,35 @@ TEST(PolkadotSigner, SignBond_8da66d) {
     ASSERT_EQ(hex(output.encoded()), "3d02849dca538b7a925b8ea979cc546464a3c5f81d2398a3a272f6f93bdf4803f2f783009025843bc49c1c4fbc99dbbd290c92f9879665d55b02f110abfb4800f0e7630877d2cffd853deae7466c22fbc8616a609e1b92615bb365ea8adccba5ef7624050503000007009dca538b7a925b8ea979cc546464a3c5f81d2398a3a272f6f93bdf4803f2f7830700aea68f0201");
 }
 
+TEST(PolkadotSigner, SignBondAndNominate) {
+    auto input = Proto::SigningInput();
+    input.set_genesis_hash(genesisHash.data(), genesisHash.size());
+    auto blockHash = parse_hex("0xf1eee612825f29abd3299b486e401299df2faa55b7ce1e34bf2243bd591905fc");
+    input.set_block_hash(blockHash.data(), blockHash.size());
+    input.set_nonce(0);
+    input.set_spec_version(26);
+    input.set_private_key(privateKeyThrow2.bytes.data(), privateKeyThrow2.bytes.size());
+    input.set_network(Proto::Network::POLKADOT);
+    input.set_transaction_version(5);
+
+    // era: for blockhash and block number, use curl -H "Content-Type: application/json" -H "Accept: text/plain" https://<polkadot-rpc-url>/transaction/material?noMeta=true
+    auto era = input.mutable_era();
+    era->set_block_number(3540912);
+    era->set_period(64);
+
+    auto stakingCall = input.mutable_staking_call();
+    auto bondnom = stakingCall->mutable_bond_and_nominate();
+    auto value = store(uint256_t(11000000000)); // 1.1
+    bondnom->set_controller(addressThrow2); // myself
+    bondnom->set_value(value.data(), value.size());
+    bondnom->set_reward_destination(Proto::RewardDestination::STASH);
+    bondnom->add_nominators(controller1);
+    bondnom->add_nominators("1REAJ1k691g5Eqqg9gL7vvZCBG7FCCZ8zgQkZWd4va5ESih");
+
+    auto output = Signer::sign(input);
+    ASSERT_EQ(hex(output.encoded()), "3d02849dca538b7a925b8ea979cc546464a3c5f81d2398a3a272f6f93bdf4803f2f783009025843bc49c1c4fbc99dbbd290c92f9879665d55b02f110abfb4800f0e7630877d2cffd853deae7466c22fbc8616a609e1b92615bb365ea8adccba5ef7624050503000007009dca538b7a925b8ea979cc546464a3c5f81d2398a3a272f6f93bdf4803f2f7830700aea68f0201");
+}
+
 TEST(PolkadotSigner, SignNominate_452522) {
     auto input = Proto::SigningInput();
     input.set_genesis_hash(genesisHash.data(), genesisHash.size());
