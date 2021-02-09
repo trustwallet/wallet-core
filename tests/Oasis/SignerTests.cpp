@@ -19,15 +19,11 @@ TEST(OasisSigner, Sign) {
     auto input = Proto::SigningInput();
     auto &transfer = *input.mutable_transfer();
 
-    Proto::Message::MethodType methodType = Proto::Message_MethodType_staking;
-    Proto::Message::OperationType operationType = Proto::Message_OperationType_Transfer;
-    std::string requestMethodString = Message_MethodType_Name(methodType) + "." + Message_OperationType_Name(operationType); // "stacking.Transfer"
-
     transfer.set_gas_price(0);
     transfer.set_gas_amount("0");
     transfer.set_nonce(0);
     transfer.set_to("oasis1qrrnesqpgc6rfy2m50eew5d7klqfqk69avhv4ak5");
-    transfer.set_method(requestMethodString);
+    transfer.set_method("staking.Transfer");
     transfer.set_amount("10000000");
 
     // The use of this context thing is explained here --> https://docs.oasis.dev/oasis-core/common-functionality/crypto#domain-separation
