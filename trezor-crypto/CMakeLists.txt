@@ -27,11 +27,14 @@ add_library(TrezorCrypto
     crypto/ripple/base58.c
     crypto/nist256p1.c
     crypto/groestl.c
+    crypto/hmac_drbg.c
+    crypto/rfc6979.c
     crypto/schnorr.c
 )
 
 target_compile_options(TrezorCrypto
     PRIVATE
+        -DUSE_MONERO=1 -DUSE_CARDANO=1 -DAES_128=1 -DAES_VAR=1
         -W
         -Wall
         -Wextra

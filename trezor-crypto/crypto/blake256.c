@@ -10,7 +10,7 @@
    You should have received a copy of the CC0 Public Domain Dedication along with
    this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
  */
-#include <TrezorCrypto/blake256.h>
+#include "blake256.h"
 
 #include <string.h>
 
@@ -52,19 +52,19 @@ static const uint32_t u256[16] =
 
 static const uint8_t padding[129] =
 {
-  0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+  0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
 static void blake256_compress( BLAKE256_CTX *S, const uint8_t *block )
 {
-  uint32_t v[16], m[16], i;
+  uint32_t v[16] = {0}, m[16] = {0}, i = 0;
 #define ROT(x,n) (((x)<<(32-n))|( (x)>>(n)))
 #define G(a,b,c,d,e)          \
   v[a] += (m[sigma[i][e]] ^ u256[sigma[i][e+1]]) + v[b]; \
@@ -177,7 +177,7 @@ void blake256_Update( BLAKE256_CTX *S, const uint8_t *in, size_t inlen )
 
 void blake256_Final( BLAKE256_CTX *S, uint8_t *out )
 {
-  uint8_t msglen[8], zo = 0x01, oo = 0x81;
+  uint8_t msglen[8] = {0}, zo = 0x01, oo = 0x81;
   uint32_t lo = S->t[0] + ( S->buflen << 3 ), hi = S->t[1];
 
   /* support for hashing more than 2^32 bits */
@@ -228,7 +228,7 @@ void blake256_Final( BLAKE256_CTX *S, uint8_t *out )
 
 void blake256( const uint8_t *in, size_t inlen, uint8_t *out )
 {
-  BLAKE256_CTX S;
+  BLAKE256_CTX S = {0};
   blake256_Init( &S );
   blake256_Update( &S, in, inlen );
   blake256_Final( &S, out );

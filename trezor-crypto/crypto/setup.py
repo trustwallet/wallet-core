@@ -6,6 +6,7 @@ from Cython.Build import cythonize
 from Cython.Distutils import build_ext
 
 srcs = [
+    "nist256p1",
     "base58",
     "bignum",
     "bip32",

@@ -96,7 +96,7 @@ extern "C"
 
 AES_RETURN aes_xi(encrypt)(const unsigned char *in, unsigned char *out, const aes_encrypt_ctx cx[1])
 {   uint32_t         locals(b0, b1);
-    const uint32_t   *kp;
+    const uint32_t *kp = NULL;
 #if defined( dec_fmvars )
     dec_fmvars; /* declare variables for fwd_mcol() if needed */
 #endif
@@ -234,7 +234,7 @@ AES_RETURN aes_xi(decrypt)(const unsigned char *in, unsigned char *out, const ae
 #if defined( dec_imvars )
     dec_imvars; /* declare variables for inv_mcol() if needed */
 #endif
-    const uint32_t *kp;
+    const uint32_t *kp = NULL;
 
 	if(cx->inf.b[0] != 10 * AES_BLOCK_SIZE && cx->inf.b[0] != 12 * AES_BLOCK_SIZE && cx->inf.b[0] != 14 * AES_BLOCK_SIZE)
 		return EXIT_FAILURE;

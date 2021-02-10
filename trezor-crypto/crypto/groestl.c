@@ -35,9 +35,9 @@
 #include <string.h>
 
 #include "groestl_internal.h"
+#include "groestl.h"
+#include "memzero.h"
 
-#include <TrezorCrypto/memzero.h>
-#include <TrezorCrypto/groestl.h>
 
 #define C32e(x)     ((SPH_C32(x) >> 24) \
                     | ((SPH_C32(x) >>  8) & SPH_C32(0x0000FF00)) \
@@ -350,7 +350,7 @@ static const sph_u32 T1dn[] = {
 };
 
 #define DECL_STATE_SMALL \
-	sph_u32 H[16];
+	sph_u32 H[16] = {0};
 
 #define READ_STATE_SMALL(sc)   do { \
 		memcpy(H, (sc)->state.narrow, sizeof H); \
@@ -476,7 +476,7 @@ static const sph_u32 T1dn[] = {
 	} while (0)
 
 #define DECL_STATE_BIG \
-	sph_u32 H[32];
+	sph_u32 H[32] = {0};
 
 #define READ_STATE_BIG(sc)   do { \
 		memcpy(H, (sc)->state.narrow, sizeof H); \
@@ -675,7 +675,7 @@ static const sph_u32 T1dn[] = {
 static void
 groestl_big_init(sph_groestl_big_context *sc, unsigned out_size)
 {
-	size_t u;
+	size_t u = 0;
 
 	sc->ptr = 0;
 	for (u = 0; u < 31; u ++)
@@ -688,8 +688,8 @@ groestl_big_init(sph_groestl_big_context *sc, unsigned out_size)
 static void
 groestl_big_core(sph_groestl_big_context *sc, const void *data, size_t len)
 {
-	unsigned char *buf;
-	size_t ptr;
+	unsigned char *buf = NULL;
+	size_t ptr = 0;
 	DECL_STATE_BIG
 
 	buf = sc->buf;
@@ -703,7 +703,7 @@ groestl_big_core(sph_groestl_big_context *sc, const void *data, size_t len)
 
 	READ_STATE_BIG(sc);
 	while (len > 0) {
-		size_t clen;
+		size_t clen = 0;
 
 		clen = (sizeof sc->buf) - ptr;
 		if (clen > len)
@@ -726,10 +726,10 @@ static void
 groestl_big_close(sph_groestl_big_context *sc,
 	unsigned ub, unsigned n, void *dst, size_t out_len)
 {
-	unsigned char pad[136];
-	size_t ptr, pad_len, u2;
-	sph_u64 count;
-	unsigned z;
+	unsigned char pad[136] = {0};
+	size_t ptr = 0, pad_len = 0, u2 = 0;
+	sph_u64 count = 0;
+	unsigned z = 0;
 	DECL_STATE_BIG
 
 	ptr = sc->ptr;
@@ -774,7 +774,7 @@ groestl512_Final(void *cc, void *dst)
 void
 groestl512_DoubleTrunc(void *cc, void *dst)
 {
-	char buf[64];
+	char buf[64] = {0};
 
 	groestl512_Final(cc, buf);
 	groestl512_Update(cc, buf, sizeof(buf));
