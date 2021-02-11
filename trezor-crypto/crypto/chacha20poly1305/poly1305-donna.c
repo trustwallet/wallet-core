@@ -1,5 +1,5 @@
-#include "poly1305-donna.h"
-#include "poly1305-donna-32.h"
+#include <TrezorCrypto/chacha20poly1305/poly1305-donna.h>
+#include <TrezorCrypto/chacha20poly1305/poly1305-donna-32.h>
 
 void
 poly1305_update(poly1305_context *ctx, const unsigned char *m, size_t bytes) {

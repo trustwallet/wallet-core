@@ -4,8 +4,8 @@ D. J. Bernstein
 Public domain.
 */
 
-#include "ecrypt-sync.h"
-#include "ecrypt-portable.h"
+#include <TrezorCrypto/chacha20poly1305/ecrypt-sync.h>
+#include <TrezorCrypto/chacha20poly1305/ecrypt-portable.h>
 
 #define ROTATE(v,c) (ROTL32(v,c))
 #define XOR(v,w) ((v) ^ (w))

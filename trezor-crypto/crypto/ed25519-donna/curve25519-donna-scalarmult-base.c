@@ -1,5 +1,5 @@
-#include <TrezorCrypto/ed25519-donna.h>
-#include "ed25519.h"
+#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
+#include <TrezorCrypto/ed25519.h>
 
 /* Calculates nQ where Q is the x-coordinate of a point on the curve
  *

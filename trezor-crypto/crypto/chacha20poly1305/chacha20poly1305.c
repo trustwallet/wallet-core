@@ -2,8 +2,8 @@
 // AEAD constructions with a goal of simplicity and correctness rather
 // than performance.
 
-#include "chacha20poly1305.h"
-#include "ecrypt-portable.h"
+#include <TrezorCrypto/chacha20poly1305/chacha20poly1305.h>
+#include <TrezorCrypto/chacha20poly1305/ecrypt-portable.h>
 
 void hchacha20(ECRYPT_ctx *x,u8 *c);
 

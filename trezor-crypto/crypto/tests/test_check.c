@@ -51,8 +51,8 @@
 #include <TrezorCrypto/chacha_drbg.h>
 #include <TrezorCrypto/curves.h>
 #include <TrezorCrypto/ecdsa.h>
-#include <TrezorCrypto/ed25519-donna.h>
-#include <TrezorCrypto/ed25519-keccak.h>
+#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
+#include <TrezorCrypto/ed25519-donna/ed25519-keccak.h>
 #include <TrezorCrypto/ed25519.h>
 #include <TrezorCrypto/hmac_drbg.h>
 #include <TrezorCrypto/memzero.h>

@@ -2,10 +2,10 @@
 #define ECRYPT_API
 /* ecrypt-sync.h */
 
-/* 
+/*
  * Header file for synchronous stream ciphers without authentication
  * mechanism.
- * 
+ *
  * *** Please only edit parts marked with "[edit]". ***
  */
 
@@ -14,15 +14,11 @@
 
 #include "ecrypt-types.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* ------------------------------------------------------------------------- */
 
 /* Cipher parameters */
 
-/* 
+/*
  * The name of your cipher.
  */
 #define ECRYPT_NAME "ChaCha20"
@@ -53,15 +49,15 @@ extern "C" {
 
 /* Data structures */
 
-/* 
+/*
  * ECRYPT_ctx is the structure containing the representation of the
- * internal state of your cipher. 
+ * internal state of your cipher.
  */
 
 typedef struct
 {
   u32 input[16]; /* could be compressed */
-  /* 
+  /*
    * [edit]
    *
    * Put here all state variable needed during the encryption process.
@@ -85,10 +81,10 @@ void ECRYPT_init(void);
  * above.
  */
 void ECRYPT_keysetup(
-  ECRYPT_ctx* ctx, 
-  const u8* key, 
-  u32 keysize,                /* Key size in bits. */ 
-  u32 ivsize);                /* IV size in bits. */ 
+  ECRYPT_ctx* ctx,
+  const u8* key,
+  u32 keysize,                /* Key size in bits. */
+  u32 ivsize);                /* IV size in bits. */
 
 /*
  * IV setup. After having called ECRYPT_keysetup(), the user is
@@ -97,7 +93,7 @@ void ECRYPT_keysetup(
  * IV's.
  */
 void ECRYPT_ivsetup(
-  ECRYPT_ctx* ctx, 
+  ECRYPT_ctx* ctx,
   const u8* iv);
 
 /*
@@ -108,7 +104,7 @@ void ECRYPT_ivsetup(
  * (declared here) encrypts byte strings of arbitrary length, while
  * the ECRYPT_encrypt_blocks() function (defined later) only accepts
  * lengths which are multiples of ECRYPT_BLOCKLENGTH.
- * 
+ *
  * The user is allowed to make multiple calls to
  * ECRYPT_encrypt_blocks() to incrementally encrypt a long message,
  * but he is NOT allowed to make additional encryption calls once he
@@ -128,7 +124,7 @@ void ECRYPT_ivsetup(
  *
  * ECRYPT_ivsetup();
  * ECRYPT_encrypt_bytes();
- * 
+ *
  * The following sequence is not:
  *
  * ECRYPT_keysetup();
@@ -139,22 +135,22 @@ void ECRYPT_ivsetup(
  */
 
 void ECRYPT_encrypt_bytes(
-  ECRYPT_ctx* ctx, 
-  const u8* plaintext, 
-  u8* ciphertext, 
-  u32 msglen);                /* Message length in bytes. */ 
+  ECRYPT_ctx* ctx,
+  const u8* plaintext,
+  u8* ciphertext,
+  u32 msglen);                /* Message length in bytes. */
 
 void ECRYPT_decrypt_bytes(
-  ECRYPT_ctx* ctx, 
-  const u8* ciphertext, 
-  u8* plaintext, 
-  u32 msglen);                /* Message length in bytes. */ 
+  ECRYPT_ctx* ctx,
+  const u8* ciphertext,
+  u8* plaintext,
+  u32 msglen);                /* Message length in bytes. */
 
 /* ------------------------------------------------------------------------- */
 
 /* Optional features */
 
-/* 
+/*
  * For testing purposes it can sometimes be useful to have a function
  * which immediately generates keystream without having to provide it
  * with a zero plaintext. If your cipher cannot provide this function
@@ -176,7 +172,7 @@ void ECRYPT_keystream_bytes(
 
 /* Optional optimizations */
 
-/* 
+/*
  * By default, the functions in this section are implemented using
  * calls to functions declared above. However, you might want to
  * implement them differently for performance reasons.
@@ -192,22 +188,22 @@ void ECRYPT_keystream_bytes(
 #define ECRYPT_USES_DEFAULT_ALL_IN_ONE        /* [edit] */
 
 void ECRYPT_encrypt_packet(
-  ECRYPT_ctx* ctx, 
+  ECRYPT_ctx* ctx,
   const u8* iv,
-  const u8* plaintext, 
-  u8* ciphertext, 
+  const u8* plaintext,
+  u8* ciphertext,
   u32 msglen);
 
 void ECRYPT_decrypt_packet(
-  ECRYPT_ctx* ctx, 
+  ECRYPT_ctx* ctx,
   const u8* iv,
-  const u8* ciphertext, 
-  u8* plaintext, 
+  const u8* ciphertext,
+  u8* plaintext,
   u32 msglen);
 
 /*
  * Encryption/decryption of blocks.
- * 
+ *
  * By default, these functions are defined as macros. If you want to
  * provide a different implementation, please undef the
  * ECRYPT_USES_DEFAULT_BLOCK_MACROS flag and implement the functions
@@ -238,23 +234,23 @@ void ECRYPT_decrypt_packet(
 #else
 
 void ECRYPT_encrypt_blocks(
-  ECRYPT_ctx* ctx, 
-  const u8* plaintext, 
-  u8* ciphertext, 
-  u32 blocks);                /* Message length in blocks. */ 
+  ECRYPT_ctx* ctx,
+  const u8* plaintext,
+  u8* ciphertext,
+  u32 blocks);                /* Message length in blocks. */
 
 void ECRYPT_decrypt_blocks(
-  ECRYPT_ctx* ctx, 
-  const u8* ciphertext, 
-  u8* plaintext, 
-  u32 blocks);                /* Message length in blocks. */ 
+  ECRYPT_ctx* ctx,
+  const u8* ciphertext,
+  u8* plaintext,
+  u32 blocks);                /* Message length in blocks. */
 
 #ifdef ECRYPT_GENERATES_KEYSTREAM
 
 void ECRYPT_keystream_blocks(
   ECRYPT_ctx* ctx,
   const u8* keystream,
-  u32 blocks);                /* Keystream length in blocks. */ 
+  u32 blocks);                /* Keystream length in blocks. */
 
 #endif
 
@@ -268,7 +264,7 @@ void ECRYPT_keystream_blocks(
  * significant difference and keep the number of variants
  * (ECRYPT_MAXVARIANT) as small as possible (definitely not more than
  * 10). Note also that all variants should have exactly the same
- * external interface (i.e., the same ECRYPT_BLOCKLENGTH, etc.). 
+ * external interface (i.e., the same ECRYPT_BLOCKLENGTH, etc.).
  */
 #define ECRYPT_MAXVARIANT 1                   /* [edit] */
 
@@ -281,9 +277,5 @@ void ECRYPT_keystream_blocks(
 #endif
 
 /* ------------------------------------------------------------------------- */
-
-#ifdef __cplusplus
-} /* extern "C" */
-#endif
 
 #endif

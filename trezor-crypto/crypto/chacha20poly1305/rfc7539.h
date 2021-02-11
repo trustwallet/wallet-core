@@ -1,7 +1,7 @@
 #ifndef RFC7539_H
 #define RFC7539_H
 
-#include "chacha20poly1305.h"
+#include <TrezorCrypto/chacha20poly1305/chacha20poly1305.h>
 
 void rfc7539_init(chacha20poly1305_ctx *ctx, const uint8_t key[32], const uint8_t nonce[12]);
 void rfc7539_auth(chacha20poly1305_ctx *ctx, const uint8_t *in, size_t n);

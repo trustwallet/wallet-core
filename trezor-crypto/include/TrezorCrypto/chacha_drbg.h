@@ -20,7 +20,7 @@
 #ifndef __CHACHA_DRBG__
 #define __CHACHA_DRBG__
 
-#include <TrezorCrypto/chacha20poly1305.h>
+#include <TrezorCrypto/chacha20poly1305/chacha20poly1305.h>
 
 // Very fast deterministic random bit generator inspired by CTR_DRBG in NIST SP
 // 800-90A

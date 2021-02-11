@@ -10,6 +10,9 @@
 
 TARGET=include/TrezorCrypto
 
-cp crypto/*.h $TARGET
-cp crypto/aes/aes.h cpcrypto/ed25519-donna/*.h crypto/chacha20poly1305/chacha20poly1305.h $TARGET
-rm crypto/*.h
+mv crypto/*.h $TARGET
+mv crypto/aes/aes.h $TARGET
+mv crypto/aes/*.h $TARGET/aes
+mv crypto/ed25519-donna/ed25519.h $TARGET
+mv crypto/ed25519-donna/ed25519-*.h $TARGET/ed25519-donna
+mv crypto/chacha20poly1305/*.h $TARGET/chacha20poly1305

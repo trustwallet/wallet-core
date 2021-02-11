@@ -3,7 +3,7 @@
 
 #include <string.h>
 #include "rfc7539.h"
-#include "ecrypt-portable.h"
+#include <TrezorCrypto/chacha20poly1305/ecrypt-portable.h>
 
 // Initialize the ChaCha20 + Poly1305 context for encryption or decryption
 // using a 32 byte key and 12 byte nonce as in the RFC 7539 style.

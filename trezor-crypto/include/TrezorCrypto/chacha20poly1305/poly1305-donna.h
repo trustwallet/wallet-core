@@ -3,10 +3,6 @@
 
 #include <stddef.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef struct poly1305_context {
 	size_t aligner;
 	unsigned char opaque[136];
@@ -19,10 +15,6 @@ void poly1305_auth(unsigned char mac[16], const unsigned char *m, size_t bytes, 
 
 int poly1305_verify(const unsigned char mac1[16], const unsigned char mac2[16]);
 int poly1305_power_on_self_test(void);
-
-#ifdef __cplusplus
-} /* extern "C" */
-#endif
 
 #endif /* POLY1305_DONNA_H */
 

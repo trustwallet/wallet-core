@@ -29,7 +29,7 @@ Issue Date: 20/12/2007
 #include <assert.h>
 #include <stdint.h>
 
-#include "aesopt.h"
+#include <TrezorCrypto/aes/aesopt.h>
 
 #if defined( AES_MODES )
 #if defined(__cplusplus)

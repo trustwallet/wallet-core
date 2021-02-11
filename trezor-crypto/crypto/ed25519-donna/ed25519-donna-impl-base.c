@@ -1,5 +1,5 @@
 #include <assert.h>
-#include <TrezorCrypto/ed25519-donna.h>
+#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 #include <TrezorCrypto/memzero.h>
 
 /* sqrt(x) is such an integer y that 0 <= y <= p - 1, y % 2 = 0, and y^2 = x (mod p). */

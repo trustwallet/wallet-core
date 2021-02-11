@@ -2,8 +2,8 @@
 #define CHACHA20POLY1305_H
 
 #include <stdint.h>
-#include "ecrypt-sync.h"
-#include "poly1305-donna.h"
+#include <TrezorCrypto/chacha20poly1305/ecrypt-sync.h>
+#include <TrezorCrypto/chacha20poly1305/poly1305-donna.h>
 
 typedef struct {
     ECRYPT_ctx       chacha20;

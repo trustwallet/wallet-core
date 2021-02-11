@@ -14,10 +14,10 @@
 #define ED25519_FN(fn) fn
 #endif
 
-#include <TrezorCrypto/ed25519-donna.h>
-#include "ed25519.h"
+#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
+#include <TrezorCrypto/ed25519.h>
 
-#include "ed25519-hash-custom.h"
+#include <TrezorCrypto/ed25519-donna/ed25519-hash-custom.h>
 
 /*
 	Generates a (extsk[0..31]) and aExt (extsk[32..63])
@@ -223,7 +223,7 @@ ED25519_FN(ed25519_scalarmult) (ed25519_public_key res, const ed25519_secret_key
 
 #ifndef ED25519_SUFFIX
 
-#include "curve25519-donna-scalarmult-base.h"
+#include <TrezorCrypto/ed25519-donna/curve25519-donna-scalarmult-base.h>
 
 int
 ed25519_cosi_combine_publickeys(ed25519_public_key res, CONST ed25519_public_key *pks, size_t n) {
