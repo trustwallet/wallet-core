@@ -15,9 +15,9 @@
 
 #include <string.h>
 
-#include "blake2b.h"
-#include "blake2_common.h"
-#include "memzero.h"
+#include <TrezorCrypto/blake2b.h>
+#include <TrezorCrypto/blake2_common.h>
+#include <TrezorCrypto/memzero.h>
 
 typedef struct blake2b_param__
 {

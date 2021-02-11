@@ -21,7 +21,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "nist256p1.h"
+#include <TrezorCrypto/nist256p1.h>
 
 const ecdsa_curve nist256p1 = {
     /* .prime */ {/*.val =*/{0x1fffffff, 0x1fffffff, 0x1fffffff, 0x000001ff,

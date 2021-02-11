@@ -23,8 +23,8 @@
 
 #include <string.h>
 
-#include "hmac.h"
-#include "memzero.h"
+#include <TrezorCrypto/hmac.h>
+#include <TrezorCrypto/memzero.h>
 #include <TrezorCrypto/options.h>
 
 void hmac_sha256_Init(HMAC_SHA256_CTX *hctx, const uint8_t *key,

@@ -27,6 +27,8 @@
 extern "C" {
 #endif
 
+#include <TrezorCrypto/options.h>
+
 extern const char SECP256K1_NAME[];
 extern const char SECP256K1_DECRED_NAME[];
 extern const char SECP256K1_GROESTL_NAME[];

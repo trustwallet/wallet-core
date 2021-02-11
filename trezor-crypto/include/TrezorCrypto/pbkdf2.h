@@ -25,7 +25,7 @@
 #define __PBKDF2_H__
 
 #include <stdint.h>
-#include "sha2.h"
+#include <TrezorCrypto/sha2.h>
 
 #ifdef __cplusplus
 extern "C" {

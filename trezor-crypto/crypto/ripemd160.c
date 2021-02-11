@@ -27,8 +27,8 @@
 
 #include <string.h>
 
-#include "ripemd160.h"
-#include "memzero.h"
+#include <TrezorCrypto/ripemd160.h>
+#include <TrezorCrypto/memzero.h>
 
 /*
  * 32-bit integer manipulation macros (little endian)

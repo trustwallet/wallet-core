@@ -5,7 +5,7 @@
 #include "bip39.h"
 #include "curves.h"
 #include "ecdsa.h"
-#include "secp256k1.h"
+#include <TrezorCrypto/secp256k1.h>
 
 char iter[256];
 uint8_t seed[512 / 8];

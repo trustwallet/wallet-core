@@ -20,7 +20,7 @@ Issue Date: 20/12/2007
 
 #define DO_TABLES
 
-#include "aes.h"
+#include <TrezorCrypto/aes.h>
 #include "aesopt.h"
 
 #if defined(STATIC_TABLES)

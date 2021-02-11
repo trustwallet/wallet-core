@@ -20,7 +20,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "script.h"
+#include <TrezorCrypto/script.h>
 #include <string.h>
 #include <TrezorCrypto/base58.h>
 

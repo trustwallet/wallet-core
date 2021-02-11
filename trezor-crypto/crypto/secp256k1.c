@@ -21,7 +21,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "secp256k1.h"
+#include <TrezorCrypto/secp256k1.h>
 
 const ecdsa_curve secp256k1 = {
     /* .prime */ {/*.val =*/{0x1ffffc2f, 0x1ffffff7, 0x1fffffff, 0x1fffffff,

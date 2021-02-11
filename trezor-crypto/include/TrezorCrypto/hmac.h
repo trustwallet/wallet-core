@@ -25,7 +25,7 @@
 #define __HMAC_H__
 
 #include <stdint.h>
-#include "sha2.h"
+#include <TrezorCrypto/sha2.h>
 
 #ifdef __cplusplus
 extern "C" {

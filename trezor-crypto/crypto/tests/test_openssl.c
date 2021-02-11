@@ -41,9 +41,9 @@
 #include "rand.h"
 
 #include "nist256p1.h"
-#include "secp256k1.h"
+#include <TrezorCrypto/secp256k1.h>
 
-#include "memzero.h"
+#include <TrezorCrypto/memzero.h>
 
 void openssl_check(unsigned int iterations, int nid, const ecdsa_curve *curve) {
   uint8_t sig[64], pub_key33[33], pub_key65[65], priv_key[32], msg[256],

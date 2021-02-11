@@ -20,7 +20,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "curves.h"
+#include <TrezorCrypto/curves.h>
 
 const char SECP256K1_NAME[] = "secp256k1";
 const char SECP256K1_DECRED_NAME[] = "secp256k1-decred";

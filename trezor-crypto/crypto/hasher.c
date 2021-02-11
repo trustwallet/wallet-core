@@ -20,8 +20,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "hasher.h"
-#include "ripemd160.h"
+#include <TrezorCrypto/hasher.h>
+#include <TrezorCrypto/ripemd160.h>
 
 void hasher_InitParam(Hasher *hasher, HasherType type, const void *param,
                       uint32_t param_size) {

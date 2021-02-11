@@ -29,7 +29,7 @@
 #include <string.h>
 #include <time.h>
 
-#include "check_mem.h"
+#include <TrezorCrypto/check_mem.h>
 
 #if VALGRIND
 #include <valgrind/memcheck.h>
@@ -38,38 +38,40 @@
 
 #include <TrezorCrypto/options.h>
 
-#include "address.h"
-#include "aes/aes.h"
-#include "base32.h"
-#include "base58.h"
-#include "bignum.h"
-#include "bip32.h"
-#include "bip39.h"
-#include "blake256.h"
-#include "blake2b.h"
-#include "blake2s.h"
-#include "chacha_drbg.h"
-#include "curves.h"
-#include "ecdsa.h"
-#include "ed25519-donna/ed25519-donna.h"
-#include "ed25519-donna/ed25519-keccak.h"
-#include "ed25519-donna/ed25519.h"
-#include "hmac_drbg.h"
-#include "memzero.h"
-#include "monero/monero.h"
-#include "nem.h"
-#include "nist256p1.h"
-#include "pbkdf2.h"
-#include "rand.h"
-#include "rc4.h"
-#include "rfc6979.h"
-#include "script.h"
-#include "secp256k1.h"
-#include "sha2.h"
-#include "../sha3.h"
-#include "shamir.h"
-#include "slip39.h"
-#include "slip39_wordlist.h"
+#include <TrezorCrypto/address.h>
+#include <TrezorCrypto/aes.h>
+#include <TrezorCrypto/base32.h>
+#include <TrezorCrypto/base58.h>
+#include <TrezorCrypto/bignum.h>
+#include <TrezorCrypto/bip32.h>
+#include <TrezorCrypto/bip39.h>
+#include <TrezorCrypto/blake256.h>
+#include <TrezorCrypto/blake2b.h>
+#include <TrezorCrypto/blake2s.h>
+#include <TrezorCrypto/chacha_drbg.h>
+#include <TrezorCrypto/curves.h>
+#include <TrezorCrypto/ecdsa.h>
+#include <TrezorCrypto/ed25519-donna.h>
+#include <TrezorCrypto/ed25519-keccak.h>
+#include <TrezorCrypto/ed25519.h>
+#include <TrezorCrypto/hmac_drbg.h>
+#include <TrezorCrypto/memzero.h>
+#include "../monero/monero.h"
+#include <TrezorCrypto/nem.h>
+#include <TrezorCrypto/nist256p1.h>
+#include <TrezorCrypto/pbkdf2.h>
+#include <TrezorCrypto/rand.h>
+#include <TrezorCrypto/rc4.h>
+#include <TrezorCrypto/rfc6979.h>
+#include <TrezorCrypto/script.h>
+#include <TrezorCrypto/secp256k1.h>
+#include <TrezorCrypto/sha2.h>
+#include <TrezorCrypto/sha3.h>
+#include <TrezorCrypto/shamir.h>
+#include <TrezorCrypto/slip39.h>
+#include <TrezorCrypto/slip39_wordlist.h>
+
+#if 0 // TODO
 
 #if VALGRIND
 /*
@@ -9028,4 +9030,10 @@ int main(void) {
     printf("PASSED ALL TESTS\n");
   }
   return number_failed;
+}
+
+#endif
+
+int main(void) {
+    return -1;
 }

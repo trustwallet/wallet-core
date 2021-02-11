@@ -1,7 +1,5 @@
 /**
- * Copyright (c) 2013-2014 Tomas Dzetkulic
- * Copyright (c) 2013-2014 Pavol Rusnak
- * Copyright (c) 2015-2017 Jochen Hoenicke
+ * Copyright (c) 2019 Andrew R. Kozlik
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the "Software"),
@@ -22,27 +20,24 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __RFC6979_H__
-#define __RFC6979_H__
+#ifndef __HMAC_DRBG_H__
+#define __HMAC_DRBG_H__
 
+#include <TrezorCrypto/sha2.h>
 #include <stdint.h>
-#include "bignum.h"
-#include "hmac_drbg.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// HMAC based Deterministic Random Bit Generator with SHA-256
 
-// rfc6979 pseudo random number generator state
-typedef HMAC_DRBG_CTX rfc6979_state;
+typedef struct _HMAC_DRBG_CTX {
+  uint32_t odig[SHA256_DIGEST_LENGTH / sizeof(uint32_t)];
+  uint32_t idig[SHA256_DIGEST_LENGTH / sizeof(uint32_t)];
+  uint32_t v[SHA256_BLOCK_LENGTH / sizeof(uint32_t)];
+} HMAC_DRBG_CTX;
 
-void init_rfc6979(const uint8_t *priv_key, const uint8_t *hash,
-                  rfc6979_state *rng);
-void generate_rfc6979(uint8_t rnd[32], rfc6979_state *rng);
-void generate_k_rfc6979(bignum256 *k, rfc6979_state *rng);
-
-#ifdef __cplusplus
-} /* extern "C" */
-#endif
+void hmac_drbg_init(HMAC_DRBG_CTX *ctx, const uint8_t *buf, size_t len,
+                    const uint8_t *nonce, size_t nonce_len);
+void hmac_drbg_reseed(HMAC_DRBG_CTX *ctx, const uint8_t *buf, size_t len,
+                      const uint8_t *addin, size_t addin_len);
+void hmac_drbg_generate(HMAC_DRBG_CTX *ctx, uint8_t *buf, size_t len);
 
 #endif

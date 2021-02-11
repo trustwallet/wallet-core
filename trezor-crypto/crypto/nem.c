@@ -20,15 +20,15 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "nem.h"
+#include <TrezorCrypto/nem.h>
 
 #include <string.h>
 
-#include "base32.h"
+#include <TrezorCrypto/base32.h>
 #include "ed25519-donna/ed25519-keccak.h"
-#include "memzero.h"
-#include "ripemd160.h"
-#include "sha3.h"
+#include <TrezorCrypto/memzero.h>
+#include <TrezorCrypto/ripemd160.h>
+#include <TrezorCrypto/sha3.h>
 
 #define CAN_WRITE(NEEDED) ((ctx->offset + (NEEDED)) <= ctx->size)
 

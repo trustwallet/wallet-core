@@ -21,11 +21,11 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "pbkdf2.h"
+#include <TrezorCrypto/pbkdf2.h>
 #include <string.h>
-#include "hmac.h"
-#include "memzero.h"
-#include "sha2.h"
+#include <TrezorCrypto/hmac.h>
+#include <TrezorCrypto/memzero.h>
+#include <TrezorCrypto/sha2.h>
 
 void pbkdf2_hmac_sha256_Init(PBKDF2_HMAC_SHA256_CTX *pctx, const uint8_t *pass,
                              int passlen, const uint8_t *salt, int saltlen,

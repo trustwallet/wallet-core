@@ -23,15 +23,15 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "bignum.h"
+#include <TrezorCrypto/bignum.h>
 
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "memzero.h"
-#include "script.h"
+#include <TrezorCrypto/memzero.h>
+#include <TrezorCrypto/script.h>
 
 /*
  This library implements 256-bit numbers arithmetic.

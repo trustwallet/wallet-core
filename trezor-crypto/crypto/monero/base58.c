@@ -34,7 +34,7 @@
 #include <sys/types.h>
 #include <TrezorCrypto/base58.h>
 #include "int-util.h"
-#include "../sha2.h"
+#include <TrezorCrypto/sha2.h>
 
 const size_t alphabet_size = 58; // sizeof(b58digits_ordered) - 1;
 const size_t encoded_block_sizes[] = {0, 2, 3, 5, 6, 7, 9, 10, 11};

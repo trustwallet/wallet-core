@@ -1,6 +1,6 @@
 #include <assert.h>
 #include <stdio.h>
-#include "bignum.h"
+#include <TrezorCrypto/bignum.h>
 #include "bip32.h"
 #include "ecdsa.h"
 #include "rand.h"

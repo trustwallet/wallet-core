@@ -20,8 +20,8 @@
 #include <assert.h>
 #include <string.h>
 
-#include "sha3.h"
-#include "memzero.h"
+#include <TrezorCrypto/sha3.h>
+#include <TrezorCrypto/memzero.h>
 
 #define I64(x) x##LL
 #define ROTL64(qword, n) ((qword) << (n) ^ ((qword) >> (64 - (n))))

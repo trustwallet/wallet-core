@@ -55,7 +55,7 @@ bool address_check_prefix(const uint8_t *addr, uint32_t address_type) {
 }
 
 #if USE_ETHEREUM
-#include "sha3.h"
+#include <TrezorCrypto/sha3.h>
 
 void ethereum_address_checksum(const uint8_t *addr, char *address, bool rskip60,
                                uint32_t chain_id) {

@@ -34,9 +34,9 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "groestl_internal.h"
-#include "groestl.h"
-#include "memzero.h"
+#include <TrezorCrypto/groestl_internal.h>
+#include <TrezorCrypto/groestl.h>
+#include <TrezorCrypto/memzero.h>
 
 
 #define C32e(x)     ((SPH_C32(x) >> 24) \

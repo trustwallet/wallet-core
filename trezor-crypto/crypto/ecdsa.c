@@ -27,15 +27,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "address.h"
+#include <TrezorCrypto/address.h>
 #include <TrezorCrypto/base58.h>
-#include "bignum.h"
-#include "ecdsa.h"
-#include "hmac.h"
-#include "memzero.h"
-#include "rand.h"
-#include "rfc6979.h"
-#include "secp256k1.h"
+#include <TrezorCrypto/bignum.h>
+#include <TrezorCrypto/ecdsa.h>
+#include <TrezorCrypto/hmac.h>
+#include <TrezorCrypto/memzero.h>
+#include <TrezorCrypto/rand.h>
+#include <TrezorCrypto/rfc6979.h>
+#include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/schnorr.h>
 
 // Set cp2 = cp1

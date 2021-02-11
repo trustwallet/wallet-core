@@ -90,7 +90,7 @@ Issue Date: 20/12/2007
 #if defined( __cplusplus )
 #include "aescpp.h"
 #else
-#include "aes.h"
+#include <TrezorCrypto/aes.h>
 #endif
 
 /*  PLATFORM SPECIFIC INCLUDES */

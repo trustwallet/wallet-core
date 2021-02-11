@@ -30,8 +30,8 @@
 #include <TrezorCrypto/rand.h>
 #include <TrezorCrypto/sha2.h>
 #include <TrezorCrypto/pbkdf2.h>
-#include "bip39_english.h"
-#include "options.h"
+#include <TrezorCrypto/bip39_english.h>
+#include <TrezorCrypto/options.h>
 #include <TrezorCrypto/memzero.h>
 
 bool mnemonic_generate(int strength, char* mnemonic) {

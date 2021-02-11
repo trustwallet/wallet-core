@@ -22,9 +22,9 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "rfc6979.h"
-#include "hmac_drbg.h"
-#include "memzero.h"
+#include <TrezorCrypto/rfc6979.h>
+#include <TrezorCrypto/hmac_drbg.h>
+#include <TrezorCrypto/memzero.h>
 
 void init_rfc6979(const uint8_t *priv_key, const uint8_t *hash,
                   rfc6979_state *state) {
