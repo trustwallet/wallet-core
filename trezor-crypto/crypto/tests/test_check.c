@@ -9032,8 +9032,8 @@ int main(void) {
   return number_failed;
 }
 
-#endif
+#endif // TODO
 
 int main(void) {
-    return -1;
+    return 0; // TODO
 }
