@@ -10,9 +10,13 @@
 
 TARGET=include/TrezorCrypto
 
+mkdir -p $TARGET
 mv crypto/*.h $TARGET
 mv crypto/aes/aes.h $TARGET
+mkdir -p $TARGET/aes
 mv crypto/aes/*.h $TARGET/aes
 mv crypto/ed25519-donna/ed25519.h $TARGET
-mv crypto/ed25519-donna/ed25519-*.h $TARGET/ed25519-donna
+mkdir -p $TARGET/ed25519-donna
+mv crypto/ed25519-donna/*.h $TARGET/ed25519-donna
+mkdir -p $TARGET/chacha20poly1305
 mv crypto/chacha20poly1305/*.h $TARGET/chacha20poly1305

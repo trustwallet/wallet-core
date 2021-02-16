@@ -28,7 +28,7 @@
 #include <stdint.h>
 
 #include "bip32.h"
-#include <TrezorCrypto/ed25519-donna/ed25519.h>
+#include <TrezorCrypto/ed25519.h>
 
 #ifdef __cplusplus
 extern "C" {
