@@ -48,7 +48,7 @@ targets:
       INFOPLIST_FILE: 'Info.plist'
       CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION: YES_ERROR
       CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER: $(inherited) false
-      OTHER_CFLAGS: $(inherited) -Wno-comma
+      OTHER_CFLAGS: $(inherited) -Wno-comma -DUSE_MONERO=1 -DUSE_CARDANO=1 -DAES_128=1 -DAES_VAR=1
     postCompileScripts:
       - script: ${PODS_ROOT}/SwiftLint/swiftlint --config ../.swiftlint.yml
         name: SwiftLint
@@ -117,6 +117,8 @@ targets:
       - trezor-crypto/crypto/ripple/base58.c
       - trezor-crypto/crypto/nist256p1.c
       - trezor-crypto/crypto/groestl.c
+      - trezor-crypto/crypto/hmac_drbg.c
+      - trezor-crypto/crypto/rfc6979.c
       - trezor-crypto/crypto/schnorr.c
       - trezor-crypto/crypto/sodium/private/fe_25_5/fe.c
       - trezor-crypto/crypto/sodium/private/ed25519_ref10.c
@@ -124,6 +126,7 @@ targets:
       - trezor-crypto/crypto/sodium/keypair.c
     settings:
       GCC_WARN_64_TO_32_BIT_CONVERSION: NO
+      OTHER_CFLAGS: $(inherited) -DUSE_MONERO=1 -DUSE_CARDANO=1 -DAES_128=1 -DAES_VAR=1
 
   protobuf:
     type: library.static
