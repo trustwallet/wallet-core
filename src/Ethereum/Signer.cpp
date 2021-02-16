@@ -142,6 +142,24 @@ Transaction Signer::build(const Proto::SigningInput &input) {
                 return transaction;
             }
 
+        case Proto::Transaction::kErc1155Transfer:
+            {
+                Data tokenToAddress = addressStringToData(input.transaction().erc1155_transfer().to());
+                Data tokenFromAddress = addressStringToData(input.transaction().erc1155_transfer().from());
+                auto transaction = Transaction::buildERC1155Transfer(
+                    /* nonce: */ nonce,
+                    /* gasPrice: */ gasPrice,
+                    /* gasLimit: */ gasLimit,
+                    /* tokenContract: */ toAddress,
+                    /* fromAddress: */ tokenFromAddress,
+                    /* toAddress */ tokenToAddress,
+                    /* tokenId: */ load(input.transaction().erc1155_transfer().token_id()),
+                    /* value */ load(input.transaction().erc1155_transfer().value()),
+                    /* calldata */ Data(input.transaction().erc1155_transfer().calldata().begin(), input.transaction().erc1155_transfer().calldata().end())
+                );
+                return transaction;
+            }
+
         case Proto::Transaction::kContractGeneric:
         default:
             {
