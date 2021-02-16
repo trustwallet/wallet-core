@@ -2,7 +2,7 @@
 // as described in RFC 7539.
 
 #include <string.h>
-#include "rfc7539.h"
+#include <TrezorCrypto/chacha20poly1305/rfc7539.h>
 #include <TrezorCrypto/chacha20poly1305/ecrypt-portable.h>
 
 // Initialize the ChaCha20 + Poly1305 context for encryption or decryption

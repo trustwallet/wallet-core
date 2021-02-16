@@ -7,8 +7,8 @@
 extern "C" {
 #endif
 
-#define RIPEMD160_BLOCK_LENGTH   64
-#define RIPEMD160_DIGEST_LENGTH  20
+#define RIPEMD160_BLOCK_LENGTH 64
+#define RIPEMD160_DIGEST_LENGTH 20
 
 typedef struct _RIPEMD160_CTX {
   uint32_t total[2];                      /*!< number of bytes processed  */
