@@ -4,7 +4,7 @@ options:
   createIntermediateGroups: true
 settings:
   base:
-    HEADER_SEARCH_PATHS: $(SRCROOT)/wallet-core ${SRCROOT}/trezor-crypto/src
+    HEADER_SEARCH_PATHS: $(SRCROOT)/wallet-core ${SRCROOT}/trezor-crypto/crypto
     SYSTEM_HEADER_SEARCH_PATHS: ${SRCROOT}/include ${SRCROOT}/../build/local/include ${SRCROOT}/trezor-crypto/include $(SRCROOT)/protobuf /usr/local/include
     CLANG_CXX_LANGUAGE_STANDARD: c++17
     SWIFT_VERSION: 5.1
@@ -65,63 +65,63 @@ targets:
     type: library.static
     platform: iOS
     sources:
-      - trezor-crypto/src/bignum.c
-      - trezor-crypto/src/ecdsa.c
-      - trezor-crypto/src/curves.c
-      - trezor-crypto/src/secp256k1.c
-      - trezor-crypto/src/rand.c
-      - trezor-crypto/src/hmac.c
-      - trezor-crypto/src/bip32.c
-      - trezor-crypto/src/bip39.c
-      - trezor-crypto/src/pbkdf2.c
-      - trezor-crypto/src/base58.c
-      - trezor-crypto/src/base32.c
-      - trezor-crypto/src/address.c
-      - trezor-crypto/src/script.c
-      - trezor-crypto/src/ripemd160.c
-      - trezor-crypto/src/sha2.c
-      - trezor-crypto/src/sha3.c
-      - trezor-crypto/src/hasher.c
-      - trezor-crypto/src/aes/aescrypt.c
-      - trezor-crypto/src/aes/aeskey.c
-      - trezor-crypto/src/aes/aestab.c
-      - trezor-crypto/src/aes/aes_modes.c
-      - trezor-crypto/src/ed25519-donna/curve25519-donna-32bit.c
-      - trezor-crypto/src/ed25519-donna/curve25519-donna-helpers.c
-      - trezor-crypto/src/ed25519-donna/modm-donna-32bit.c
-      - trezor-crypto/src/ed25519-donna/ed25519-donna-basepoint-table.c
-      - trezor-crypto/src/ed25519-donna/ed25519-donna-32bit-tables.c
-      - trezor-crypto/src/ed25519-donna/ed25519-donna-impl-base.c
-      - trezor-crypto/src/ed25519-donna/ed25519.c
-      - trezor-crypto/src/ed25519-donna/curve25519-donna-scalarmult-base.c
-      - trezor-crypto/src/ed25519-donna/ed25519-blake2b.c
-      - trezor-crypto/src/ed25519-donna/ed25519-sha3.c
-      - trezor-crypto/src/ed25519-donna/ed25519-keccak.c
-      - trezor-crypto/src/monero/base58.c
-      - trezor-crypto/src/monero/serialize.c
-      - trezor-crypto/src/monero/xmr.c
-      - trezor-crypto/src/monero/range_proof.c
-      - trezor-crypto/src/blake256.c
-      - trezor-crypto/src/blake2b.c
-      - trezor-crypto/src/blake2s.c
-      - trezor-crypto/src/chacha20poly1305/chacha20poly1305.c
-      - trezor-crypto/src/chacha20poly1305/chacha_merged.c
-      - trezor-crypto/src/chacha20poly1305/poly1305-donna.c
-      - trezor-crypto/src/chacha20poly1305/rfc7539.c
-      - trezor-crypto/src/rc4.c
-      - trezor-crypto/src/nano.c
-      - trezor-crypto/src/nem.c
-      - trezor-crypto/src/cash_addr.c
-      - trezor-crypto/src/memzero.c
-      - trezor-crypto/src/scrypt.c
-      - trezor-crypto/src/ripple/base58.c
-      - trezor-crypto/src/nist256p1.c
-      - trezor-crypto/src/groestl.c
-      - trezor-crypto/src/schnorr.c
-      - trezor-crypto/src/sodium/private/fe_25_5/fe.c
-      - trezor-crypto/src/sodium/private/ed25519_ref10.c
-      - trezor-crypto/src/sodium/private/ed25519_ref10_fe_25_5.c
-      - trezor-crypto/src/sodium/keypair.c
+      - trezor-crypto/crypto/bignum.c
+      - trezor-crypto/crypto/ecdsa.c
+      - trezor-crypto/crypto/curves.c
+      - trezor-crypto/crypto/secp256k1.c
+      - trezor-crypto/crypto/rand.c
+      - trezor-crypto/crypto/hmac.c
+      - trezor-crypto/crypto/bip32.c
+      - trezor-crypto/crypto/bip39.c
+      - trezor-crypto/crypto/pbkdf2.c
+      - trezor-crypto/crypto/base58.c
+      - trezor-crypto/crypto/base32.c
+      - trezor-crypto/crypto/address.c
+      - trezor-crypto/crypto/script.c
+      - trezor-crypto/crypto/ripemd160.c
+      - trezor-crypto/crypto/sha2.c
+      - trezor-crypto/crypto/sha3.c
+      - trezor-crypto/crypto/hasher.c
+      - trezor-crypto/crypto/aes/aescrypt.c
+      - trezor-crypto/crypto/aes/aeskey.c
+      - trezor-crypto/crypto/aes/aestab.c
+      - trezor-crypto/crypto/aes/aes_modes.c
+      - trezor-crypto/crypto/ed25519-donna/curve25519-donna-32bit.c
+      - trezor-crypto/crypto/ed25519-donna/curve25519-donna-helpers.c
+      - trezor-crypto/crypto/ed25519-donna/modm-donna-32bit.c
+      - trezor-crypto/crypto/ed25519-donna/ed25519-donna-basepoint-table.c
+      - trezor-crypto/crypto/ed25519-donna/ed25519-donna-32bit-tables.c
+      - trezor-crypto/crypto/ed25519-donna/ed25519-donna-impl-base.c
+      - trezor-crypto/crypto/ed25519-donna/ed25519.c
+      - trezor-crypto/crypto/ed25519-donna/curve25519-donna-scalarmult-base.c
+      - trezor-crypto/crypto/ed25519-donna/ed25519-blake2b.c
+      - trezor-crypto/crypto/ed25519-donna/ed25519-sha3.c
+      - trezor-crypto/crypto/ed25519-donna/ed25519-keccak.c
+      - trezor-crypto/crypto/monero/base58.c
+      - trezor-crypto/crypto/monero/serialize.c
+      - trezor-crypto/crypto/monero/xmr.c
+      - trezor-crypto/crypto/monero/range_proof.c
+      - trezor-crypto/crypto/blake256.c
+      - trezor-crypto/crypto/blake2b.c
+      - trezor-crypto/crypto/blake2s.c
+      - trezor-crypto/crypto/chacha20poly1305/chacha20poly1305.c
+      - trezor-crypto/crypto/chacha20poly1305/chacha_merged.c
+      - trezor-crypto/crypto/chacha20poly1305/poly1305-donna.c
+      - trezor-crypto/crypto/chacha20poly1305/rfc7539.c
+      - trezor-crypto/crypto/rc4.c
+      - trezor-crypto/crypto/nano.c
+      - trezor-crypto/crypto/nem.c
+      - trezor-crypto/crypto/cash_addr.c
+      - trezor-crypto/crypto/memzero.c
+      - trezor-crypto/crypto/scrypt.c
+      - trezor-crypto/crypto/ripple/base58.c
+      - trezor-crypto/crypto/nist256p1.c
+      - trezor-crypto/crypto/groestl.c
+      - trezor-crypto/crypto/schnorr.c
+      - trezor-crypto/crypto/sodium/private/fe_25_5/fe.c
+      - trezor-crypto/crypto/sodium/private/ed25519_ref10.c
+      - trezor-crypto/crypto/sodium/private/ed25519_ref10_fe_25_5.c
+      - trezor-crypto/crypto/sodium/keypair.c
     settings:
       GCC_WARN_64_TO_32_BIT_CONVERSION: NO
 
