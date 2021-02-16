@@ -184,15 +184,17 @@ int cash_addr_decode(uint8_t* witdata, size_t* witdata_len, const char* hrp,
   return cash_data_to_addr(witdata, witdata_len, data, data_len);
 }
 
+// [wallet-core]
 int cash_addr_to_data(uint8_t *output, size_t *output_len, const uint8_t *data, size_t data_len) {
     if (data_len < 2 || data_len > MAX_DATA_SIZE) return 0;
     return convert_bits(output, output_len, 5, data, data_len, 8, 1);
 }
 
+// [wallet-core]
 int cash_data_to_addr(uint8_t* witdata, size_t* witdata_len, const uint8_t* data, size_t data_len) {
-    if (data_len == 0 || data_len > MAX_BASE32_SIZE) return 0;
-    *witdata_len = 0;
-    if (!convert_bits(witdata, witdata_len, 8, data, data_len, 5, 0)) return 0;
-    if (*witdata_len < 2 || *witdata_len > MAX_DATA_SIZE) return 0;
-    return 1;
+  if (data_len == 0 || data_len > MAX_BASE32_SIZE) return 0;
+  *witdata_len = 0;
+  if (!convert_bits(witdata, witdata_len, 8, data, data_len, 5, 0)) return 0;
+  if (*witdata_len < 2 || *witdata_len > MAX_DATA_SIZE) return 0;
+  return 1;
 }

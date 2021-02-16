@@ -272,6 +272,7 @@ const sha2_word64 sha512_initial_hash_value[8] = {
 	0x5be0cd19137e2179ULL
 };
 
+// [wallet-core]
 const sha2_word64 sha512_256_initial_hash_value[8] = {
 	0x22312194fc2bf72cULL,
 	0x9f555fa3c84c64c2ULL,
@@ -995,6 +996,7 @@ void sha512_Init(SHA512_CTX* context) {
 	context->bitcount[0] = context->bitcount[1] =  0;
 }
 
+// [wallet-core]
 void sha512_256_Init(SHA512_CTX* context) {
 	if (context == (SHA512_CTX*)0) {
 		return;
@@ -1294,6 +1296,7 @@ void sha512_Raw(const sha2_byte* data, size_t len, uint8_t digest[SHA512_DIGEST_
 	sha512_Final(&context, digest);
 }
 
+// [wallet-core]
 void sha512_256_Raw(const sha2_byte* data, size_t len, uint8_t digest[SHA256_DIGEST_LENGTH]) {
 	SHA512_CTX	context = {0};
 	uint8_t result[SHA512_DIGEST_LENGTH];

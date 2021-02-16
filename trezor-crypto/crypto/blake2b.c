@@ -314,6 +314,7 @@ int blake2b(const uint8_t *msg, uint32_t msg_len, void *out, size_t outlen)
     return 0;
 }
 
+// [wallet-core]
 int blake2b_Personal(const uint8_t *msg, uint32_t msg_len, const void *personal, size_t personal_len, void *out, size_t outlen)
 {
     BLAKE2B_CTX ctx;

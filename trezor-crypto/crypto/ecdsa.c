@@ -1198,6 +1198,7 @@ int ecdsa_sig_from_der(const uint8_t *der, size_t der_len, uint8_t sig[64]) {
   return 0;
 }
 
+// [wallet-core]
 int zil_schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key, const uint8_t *msg, const uint32_t msg_len, uint8_t *sig)
 {
 	int i;
@@ -1239,6 +1240,7 @@ int zil_schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key, const ui
 	return -1;
 }
 
+// [wallet-core]
 int zil_schnorr_verify(const ecdsa_curve *curve, const uint8_t *pub_key, const uint8_t *sig, const uint8_t *msg, const uint32_t msg_len)
 {
 	schnorr_sign_pair sign;
