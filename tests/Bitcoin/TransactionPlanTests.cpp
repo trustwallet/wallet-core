@@ -507,3 +507,66 @@ TEST(TransactionPlan, AmountDecred) {
 
     EXPECT_TRUE(verifyPlan(txPlan, {39900000}, 10000000, 2540));
 }
+
+TEST(TransactionPlan, LotsofUtxosNonmax) {
+    const auto n = 1000;
+    const auto byteFee = 10;
+    std::vector<int64_t> values;
+    uint64_t valueSum = 0;
+    for (int i = 0; i < n; ++i) {
+        const auto val = (i + 1) * 100;
+        values.push_back(val);
+        valueSum += val;
+    }
+    const auto requestedAmount = valueSum / 2 + 123;
+
+    auto utxos = buildTestUTXOs(values);
+    auto sigingInput = buildSigningInput(requestedAmount, byteFee, utxos, false, TWCoinTypeBitcoin);
+
+    auto txPlan = TransactionBuilder::plan(sigingInput);
+
+    // expected result: 298 utxos, with amounts 70300,70400,70500,...,100000. 
+    std::vector<int64_t> subset;
+    uint64_t subsetSum = 0;
+    for (int i = n - 298; i < n; ++i) {
+        const auto val = (i + 1) * 100;
+        subset.push_back(val);
+        subsetSum += val;
+    }
+    EXPECT_TRUE(verifyPlan(txPlan, subset, requestedAmount, 203'450));
+}
+
+TEST(TransactionPlan, LotsofUtxosMax) {
+    const auto n = 1000;
+    const auto byteFee = 10;
+    std::vector<int64_t> values;
+    uint64_t valueSum = 0;
+    for (int i = 0; i < n; ++i) {
+        const auto val = (i + 1) * 100;
+        values.push_back(val);
+        valueSum += val;
+    }
+
+    // Use Ravencoin, because of faster non-segwit estimation, and one original issues was with this coin.
+    auto utxos = buildTestUTXOs(values);
+    auto sigingInput = buildSigningInput(valueSum, byteFee, utxos, true, TWCoinTypeRavencoin);
+
+    auto txPlan = TransactionBuilder::plan(sigingInput);
+
+    // a few smallest UTXOs are filtered out
+    const auto dustLimit = byteFee * 148;
+    std::vector<int64_t> filteredValues;
+    uint64_t filteredValueSum = 0;
+    for (int i = 0; i < n; ++i) {
+        const auto val = (i + 1) * 100;
+        if (val > dustLimit) {
+            filteredValues.push_back(val);
+            filteredValueSum += val;
+        }
+    }
+    EXPECT_EQ(valueSum, 50'050'000);
+    EXPECT_EQ(dustLimit, 1480);
+    EXPECT_EQ(filteredValues.size(), 986);
+    EXPECT_EQ(filteredValueSum, 50'039'500);
+    EXPECT_TRUE(verifyPlan(txPlan, filteredValues, 48'579'780, 1'459'720));
+}
