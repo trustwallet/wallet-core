@@ -114,7 +114,6 @@ targets:
       - trezor-crypto/crypto/cash_addr.c
       - trezor-crypto/crypto/memzero.c
       - trezor-crypto/crypto/scrypt.c
-      - trezor-crypto/crypto/ripple/base58.c
       - trezor-crypto/crypto/nist256p1.c
       - trezor-crypto/crypto/groestl.c
       - trezor-crypto/crypto/hmac_drbg.c
