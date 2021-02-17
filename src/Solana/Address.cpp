@@ -11,7 +11,7 @@
 #include "../Base58Address.h"
 #include "../Hash.h"
 
-#include "TrezorCrypto/ed25519-donna.h"
+#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 
 #include <cassert>
 
