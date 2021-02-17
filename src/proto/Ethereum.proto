@@ -51,7 +51,7 @@ message Transaction {
 
         bytes value = 4;
 
-        bytes calldata = 5;
+        bytes data = 5;
     }
 
     // Generic smart contract transaction

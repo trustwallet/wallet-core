@@ -110,7 +110,7 @@ class TestEthereumTransactionSigner {
                     to = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
                     tokenId = ByteString.copyFrom("0x23c47ee5".toHexByteArray())
                     value = ByteString.copyFrom("0x1BC16D674EC80000".toHexByteArray()) // 2000000000000000000
-                    calldata = ByteString.copyFrom("0x01020304".toHexByteArray())
+                    data = ByteString.copyFrom("0x01020304".toHexByteArray())
                 }.build()
             }.build()
         }

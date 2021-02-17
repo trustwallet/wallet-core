@@ -155,7 +155,7 @@ Transaction Signer::build(const Proto::SigningInput &input) {
                     /* toAddress */ tokenToAddress,
                     /* tokenId: */ load(input.transaction().erc1155_transfer().token_id()),
                     /* value */ load(input.transaction().erc1155_transfer().value()),
-                    /* calldata */ Data(input.transaction().erc1155_transfer().calldata().begin(), input.transaction().erc1155_transfer().calldata().end())
+                    /* data */ Data(input.transaction().erc1155_transfer().data().begin(), input.transaction().erc1155_transfer().data().end())
                 );
                 return transaction;
             }
