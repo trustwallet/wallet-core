@@ -358,7 +358,7 @@ int hdnode_private_ckd_cardano(HDNode *inout, uint32_t index)
 	return 1;
 }
 
-int hdnode_from_seed_cardano(const uint8_t *pass, int pass_len, const uint8_t *seed, int seed_len, HDNode *out) {
+int hdnode_from_entropy_cardano_icarus(const uint8_t *pass, int pass_len, const uint8_t *seed, int seed_len, HDNode *out) {
 	CONFIDENTIAL uint8_t secret[96];
 	pbkdf2_hmac_sha512(pass, pass_len, seed, seed_len, 4096, secret, 96);
 	

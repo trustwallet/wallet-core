@@ -78,9 +78,9 @@ START_TEST(test_bip32_cardano_hdnode_vector_1)
 	HDNode node;
 
 	uint8_t seed[66];
-	int seed_len = mnemonic_to_entropy("ring crime symptom enough erupt lady behave ramp apart settle citizen junk", seed);
+	int seed_len = mnemonic_to_bits("ring crime symptom enough erupt lady behave ramp apart settle citizen junk", seed);
 	ck_assert_int_eq(seed_len, 132);
-	hdnode_from_seed_cardano((const uint8_t *)"", 0, seed, seed_len / 8, &node);
+	hdnode_from_entropy_cardano_icarus((const uint8_t *)"", 0, seed, seed_len / 8, &node);
 
 	ck_assert_mem_eq(node.chain_code,  fromhex("affbc325d9027c0f2d9f925b1dcf6c12bf5c1dd08904474066a4f2c00db56173"), 32);
 	ck_assert_mem_eq(node.private_key, fromhex("08a14df748e477a69d21c97c56db151fc19e2521f31dd0ac5360f269e5b6ea46"), 32);
@@ -95,9 +95,9 @@ START_TEST(test_bip32_cardano_hdnode_vector_2)
 	HDNode node;
 
 	uint8_t seed[66];
-	int seed_len = mnemonic_to_entropy("ring crime symptom enough erupt lady behave ramp apart settle citizen junk", seed);
+	int seed_len = mnemonic_to_bits("ring crime symptom enough erupt lady behave ramp apart settle citizen junk", seed);
 	ck_assert_int_eq(seed_len, 132);
-	hdnode_from_seed_cardano((const uint8_t *)"", 0, seed, seed_len / 8, &node);
+	hdnode_from_entropy_cardano_icarus((const uint8_t *)"", 0, seed, seed_len / 8, &node);
 
 	hdnode_private_ckd_cardano(&node, 0x80000000);
 
@@ -114,9 +114,9 @@ START_TEST(test_bip32_cardano_hdnode_vector_3)
 	HDNode node;
 
 	uint8_t seed[66];
-	int seed_len = mnemonic_to_entropy("ring crime symptom enough erupt lady behave ramp apart settle citizen junk", seed);
+	int seed_len = mnemonic_to_bits("ring crime symptom enough erupt lady behave ramp apart settle citizen junk", seed);
 	ck_assert_int_eq(seed_len, 132);
-	hdnode_from_seed_cardano((const uint8_t *)"", 0, seed, seed_len / 8, &node);
+	hdnode_from_entropy_cardano_icarus((const uint8_t *)"", 0, seed, seed_len / 8, &node);
 
 	hdnode_private_ckd_cardano(&node, 0x80000001);
 
@@ -133,9 +133,9 @@ START_TEST(test_bip32_cardano_hdnode_vector_4)
 	HDNode node;
 
 	uint8_t seed[66];
-	int seed_len = mnemonic_to_entropy("ring crime symptom enough erupt lady behave ramp apart settle citizen junk", seed);
+	int seed_len = mnemonic_to_bits("ring crime symptom enough erupt lady behave ramp apart settle citizen junk", seed);
 	ck_assert_int_eq(seed_len, 132);
-	hdnode_from_seed_cardano((const uint8_t *)"", 0, seed, seed_len / 8, &node);
+	hdnode_from_entropy_cardano_icarus((const uint8_t *)"", 0, seed, seed_len / 8, &node);
 
 	hdnode_private_ckd_cardano(&node, 0x80000000);
 	hdnode_private_ckd_cardano(&node, 0x80000001);
@@ -153,9 +153,9 @@ START_TEST(test_bip32_cardano_hdnode_vector_5)
 	HDNode node;
 
 	uint8_t seed[66];
-	int seed_len = mnemonic_to_entropy("ring crime symptom enough erupt lady behave ramp apart settle citizen junk", seed);
+	int seed_len = mnemonic_to_bits("ring crime symptom enough erupt lady behave ramp apart settle citizen junk", seed);
 	ck_assert_int_eq(seed_len, 132);
-	hdnode_from_seed_cardano((const uint8_t *)"", 0, seed, seed_len / 8, &node);
+	hdnode_from_entropy_cardano_icarus((const uint8_t *)"", 0, seed, seed_len / 8, &node);
 
 	hdnode_private_ckd_cardano(&node, 0x80000000);
 	hdnode_private_ckd_cardano(&node, 0x80000001);
@@ -174,9 +174,9 @@ START_TEST(test_bip32_cardano_hdnode_vector_6)
 	HDNode node;
 
 	uint8_t seed[66];
-	int seed_len = mnemonic_to_entropy("ring crime symptom enough erupt lady behave ramp apart settle citizen junk", seed);
+	int seed_len = mnemonic_to_bits("ring crime symptom enough erupt lady behave ramp apart settle citizen junk", seed);
 	ck_assert_int_eq(seed_len, 132);
-	hdnode_from_seed_cardano((const uint8_t *)"", 0, seed, seed_len / 8, &node);
+	hdnode_from_entropy_cardano_icarus((const uint8_t *)"", 0, seed, seed_len / 8, &node);
 
 	hdnode_private_ckd_cardano(&node, 0x80000000);
 	hdnode_private_ckd_cardano(&node, 0x80000001);
@@ -196,9 +196,9 @@ START_TEST(test_bip32_cardano_hdnode_vector_7)
 	HDNode node;
 
 	uint8_t seed[66];
-	int seed_len = mnemonic_to_entropy("ring crime symptom enough erupt lady behave ramp apart settle citizen junk", seed);
+	int seed_len = mnemonic_to_bits("ring crime symptom enough erupt lady behave ramp apart settle citizen junk", seed);
 	ck_assert_int_eq(seed_len, 132);
-	hdnode_from_seed_cardano((const uint8_t *)"", 0, seed, seed_len / 8, &node);
+	hdnode_from_entropy_cardano_icarus((const uint8_t *)"", 0, seed, seed_len / 8, &node);
 
 	hdnode_private_ckd_cardano(&node, 0x80000000);
 	hdnode_private_ckd_cardano(&node, 0x80000001);

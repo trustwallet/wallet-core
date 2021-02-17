@@ -49,7 +49,7 @@ bool mnemonic_from_data(const uint8_t *data, size_t len, char* mnemonic);
 
 int mnemonic_check(const char *mnemonic);
 
-int mnemonic_to_entropy(const char *mnemonic, uint8_t *entropy);
+int mnemonic_to_bits(const char *mnemonic, uint8_t *entropy);
 
 // passphrase must be at most 256 characters otherwise it would be truncated
 void mnemonic_to_seed(const char *mnemonic, const char *passphrase, uint8_t seed[512 / 8], void (*progress_callback)(uint32_t current, uint32_t total));
