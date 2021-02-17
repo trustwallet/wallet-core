@@ -67,6 +67,7 @@ TEST(TWAnySignerEthereum, Sign) {
         ANY_SIGN(input, TWCoinTypeEthereum);
 
         ASSERT_EQ(hex(output.encoded()), expected);
+        ASSERT_EQ(hex(output.payload()), hex(data));
     }
     
     {
@@ -113,6 +114,7 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsERC20) {
     ANY_SIGN(input, TWCoinTypeEthereum);
 
     ASSERT_EQ(hex(output.encoded()), expected);
+    ASSERT_EQ(hex(output.payload()), "a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000");
 }
 
 TEST(TWAnySignerEthereum, SignERC20TransferAsGenericContract) {
@@ -143,6 +145,7 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsGenericContract) {
     ANY_SIGN(input, TWCoinTypeEthereum);
 
     ASSERT_EQ(hex(output.encoded()), expected);
+    ASSERT_EQ(hex(output.payload()), hex(data));
 }
 
 TEST(TWAnySignerEthereum, SignERC20TransferInvalidAddress) {
@@ -232,6 +235,7 @@ TEST(TWAnySignerEthereum, SignERC721Transfer) {
     ANY_SIGN(input, TWCoinTypeEthereum);
 
     ASSERT_EQ(hex(output.encoded()), expected);
+    ASSERT_EQ(hex(output.payload()), "23b872dd000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee5");
 }
 
 TEST(TWAnySignerEthereum, SignJSON) {
