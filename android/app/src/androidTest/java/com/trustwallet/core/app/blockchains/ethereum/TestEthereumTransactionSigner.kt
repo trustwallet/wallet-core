@@ -99,7 +99,7 @@ class TestEthereumTransactionSigner {
         val signingInput = Ethereum.SigningInput.newBuilder()
         signingInput.apply {
             privateKey = ByteString.copyFrom(PrivateKey("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151".toHexByteArray()).data())
-            toAddress = "0x4e45e92ed38f885d39a733c14f1817217a89d425"
+            toAddress = "0x4e45e92ed38f885d39a733c14f1817217a89d425" // contract
             chainId = ByteString.copyFrom("0x01".toHexByteArray())
             nonce = ByteString.copyFrom("0x00".toHexByteArray())
             gasPrice = ByteString.copyFrom("0x09C7652400".toHexByteArray()) // 42000000000
