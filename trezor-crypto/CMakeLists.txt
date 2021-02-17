@@ -17,6 +17,7 @@ add_library(TrezorCrypto
     crypto/monero/range_proof.c
     crypto/blake256.c
     crypto/blake2b.c crypto/blake2s.c
+    crypto/chacha_drbg.c
     crypto/chacha20poly1305/chacha20poly1305.c crypto/chacha20poly1305/chacha_merged.c crypto/chacha20poly1305/poly1305-donna.c crypto/chacha20poly1305/rfc7539.c
     crypto/rc4.c
     crypto/nano.c
@@ -29,6 +30,8 @@ add_library(TrezorCrypto
     crypto/hmac_drbg.c
     crypto/rfc6979.c
     crypto/schnorr.c
+    crypto/shamir.c
+    crypto/slip39.c
 )
 
 target_compile_options(TrezorCrypto

@@ -104,6 +104,7 @@ targets:
       - trezor-crypto/crypto/blake256.c
       - trezor-crypto/crypto/blake2b.c
       - trezor-crypto/crypto/blake2s.c
+      - trezor-crypto/crypto/chacha_drbg.c
       - trezor-crypto/crypto/chacha20poly1305/chacha20poly1305.c
       - trezor-crypto/crypto/chacha20poly1305/chacha_merged.c
       - trezor-crypto/crypto/chacha20poly1305/poly1305-donna.c
@@ -119,6 +120,8 @@ targets:
       - trezor-crypto/crypto/hmac_drbg.c
       - trezor-crypto/crypto/rfc6979.c
       - trezor-crypto/crypto/schnorr.c
+      - trezor-crypto/crypto/shamir.c
+      - trezor-crypto/crypto/slip39.c
       - trezor-crypto/crypto/sodium/private/fe_25_5/fe.c
       - trezor-crypto/crypto/sodium/private/ed25519_ref10.c
       - trezor-crypto/crypto/sodium/private/ed25519_ref10_fe_25_5.c
