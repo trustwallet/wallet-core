@@ -1,4 +1,6 @@
 #if USE_MONERO
+#include "../monero/base58.h"
+
 START_TEST(test_xmr_base58) {
   static const struct {
     uint64_t tag;

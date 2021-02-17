@@ -1,4 +1,4 @@
-#include "cash_addr.h"
+#include <TrezorCrypto/cash_addr.h>
 
 static const char* valid_cashchecksum[] = {
     "prefix:x64nx6hz",

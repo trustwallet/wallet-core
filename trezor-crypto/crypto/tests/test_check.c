@@ -71,8 +71,6 @@
 #include <TrezorCrypto/slip39.h>
 #include <TrezorCrypto/slip39_wordlist.h>
 
-#if 0 // TODO
-
 #if VALGRIND
 /*
  * This is a clever trick to make Valgrind's Memcheck verify code
@@ -6879,6 +6877,7 @@ START_TEST(test_output_script) {
 }
 END_TEST
 
+#if USE_ETHEREUM
 START_TEST(test_ethereum_pubkeyhash) {
   uint8_t pubkeyhash[20];
   int res;
@@ -7039,7 +7038,9 @@ START_TEST(test_rsk_address) {
   }
 }
 END_TEST
+#endif
 
+#if USE_NEM
 // test vectors from
 // https://raw.githubusercontent.com/NemProject/nem-test-vectors/master/1.test-keys.dat
 START_TEST(test_nem_address) {
@@ -8211,6 +8212,7 @@ START_TEST(test_nem_transaction_aggregate_modification) {
       sizeof(hash));
 }
 END_TEST
+#endif
 
 START_TEST(test_multibyte_address) {
   uint8_t priv_key[32];
@@ -8674,7 +8676,9 @@ static int my_strncasecmp(const char *s1, const char *s2, size_t n) {
 }
 
 #include "test_check_cashaddr.h"
+#if USE_SEGWIT
 #include "test_check_segwit.h"
+#endif
 
 #if USE_CARDANO
 #include "test_check_cardano.h"
@@ -8781,6 +8785,7 @@ Suite *test_suite(void) {
   tcase_add_test(tc, test_address_decode);
   suite_add_tcase(s, tc);
 
+#if USE_ETHEREUM
   tc = tcase_create("ethereum_address");
   tcase_add_test(tc, test_ethereum_address);
   suite_add_tcase(s, tc);
@@ -8788,6 +8793,7 @@ Suite *test_suite(void) {
   tc = tcase_create("rsk_address");
   tcase_add_test(tc, test_rsk_address);
   suite_add_tcase(s, tc);
+#endif
 
   tc = tcase_create("wif");
   tcase_add_test(tc, test_wif);
@@ -8915,10 +8921,13 @@ Suite *test_suite(void) {
   tcase_add_test(tc, test_output_script);
   suite_add_tcase(s, tc);
 
+#if USE_ETHEREUM
   tc = tcase_create("ethereum_pubkeyhash");
   tcase_add_test(tc, test_ethereum_pubkeyhash);
   suite_add_tcase(s, tc);
+#endif
 
+#if USE_NEM
   tc = tcase_create("nem_address");
   tcase_add_test(tc, test_nem_address);
   suite_add_tcase(s, tc);
@@ -8936,6 +8945,7 @@ Suite *test_suite(void) {
   tcase_add_test(tc, test_nem_transaction_mosaic_supply_change);
   tcase_add_test(tc, test_nem_transaction_aggregate_modification);
   suite_add_tcase(s, tc);
+#endif
 
   tc = tcase_create("multibyte_address");
   tcase_add_test(tc, test_multibyte_address);
@@ -8945,9 +8955,11 @@ Suite *test_suite(void) {
   tcase_add_test(tc, test_rc4_rfc6229);
   suite_add_tcase(s, tc);
 
+#if USE_SEGWIT
   tc = tcase_create("segwit");
   tcase_add_test(tc, test_segwit);
   suite_add_tcase(s, tc);
+#endif
 
   tc = tcase_create("cashaddr");
   tcase_add_test(tc, test_cashaddr);
@@ -9030,10 +9042,4 @@ int main(void) {
     printf("PASSED ALL TESTS\n");
   }
   return number_failed;
-}
-
-#endif // TODO
-
-int main(void) {
-    return 0; // TODO
 }
