@@ -90,6 +90,6 @@ message SigningOutput {
     bytes r = 3;
     bytes s = 4;
 
-    // The payload part, returned separately
-    bytes payload = 5;
+    // The payload part, supplied in the input or assembled from input parameters
+    bytes data = 5;
 }

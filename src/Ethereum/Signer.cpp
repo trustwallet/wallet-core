@@ -33,7 +33,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto s = store(transaction.s);
         output.set_s(s.data(), s.size());
 
-        output.set_payload(transaction.payload.data(), transaction.payload.size());
+        output.set_data(transaction.payload.data(), transaction.payload.size());
 
         return output;
     } catch (std::exception&) {
