@@ -14,7 +14,7 @@
 #define ED25519_FN(fn) fn
 #endif
 
-#include <TrezorCrypto/ed25519-donna.h>
+#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 #include <TrezorCrypto/ed25519.h>
 
 #include "ed25519-hash-custom.h"

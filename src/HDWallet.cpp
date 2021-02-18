@@ -70,7 +70,7 @@ HDWallet::~HDWallet() {
 void HDWallet::updateEntropy() {
     // generate entropy (from mnemonic)
     Data entropyRaw(32 + 1);
-    auto entropyBits = mnemonic_to_entropy(mnemonic.c_str(), entropyRaw.data());
+    auto entropyBits = mnemonic_to_bits(mnemonic.c_str(), entropyRaw.data());
     // copy to truncate
     entropy = data(entropyRaw.data(), entropyBits / 8);
 }
@@ -271,7 +271,7 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve) {
     switch (privateKeyType) {
         case HDWallet::PrivateKeyTypeExtended96:
             // special handling for extended, use entropy (not seed)
-            hdnode_from_seed_cardano((const uint8_t*)"", 0, wallet.entropy.data(), (int)wallet.entropy.size(), &node);
+            hdnode_from_entropy_cardano_icarus((const uint8_t*)"", 0, wallet.entropy.data(), (int)wallet.entropy.size(), &node);
             break;
         case HDWallet::PrivateKeyTypeDefault32:
         default:

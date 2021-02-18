@@ -5,7 +5,7 @@
 #ifndef TREZOR_CRYPTO_XMR_H
 #define TREZOR_CRYPTO_XMR_H
 
-#include <TrezorCrypto/ed25519-donna.h>
+#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 #include <TrezorCrypto/hasher.h>
 
 extern const ge25519 ALIGN(16) xmr_h;
