@@ -13,11 +13,15 @@
 
 #include <TrezorCrypto/ed25519-donna/ed25519-donna-portable.h>
 
-#include "curve25519-donna-32bit.h"
+#include <TrezorCrypto/ed25519-donna/curve25519-donna-32bit.h>
 
-#include "curve25519-donna-helpers.h"
+#include <TrezorCrypto/ed25519-donna/curve25519-donna-helpers.h>
 
-#include "modm-donna-32bit.h"
+#include <TrezorCrypto/ed25519-donna/modm-donna-32bit.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef unsigned char hash_512bits[64];
 
@@ -48,5 +52,9 @@ typedef struct ge25519_pniels_t {
 #include <TrezorCrypto/ed25519-donna/ed25519-donna-32bit-tables.h>
 
 #include <TrezorCrypto/ed25519-donna/ed25519-donna-impl-base.h>
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
 #endif
