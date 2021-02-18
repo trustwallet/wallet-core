@@ -5,7 +5,7 @@
 	32 bit integer curve25519 implementation
 */
 
-#include <TrezorCrypto/ed25519-donna.h>
+#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 
 static const uint32_t reduce_mask_25 = (1 << 25) - 1;
 static const uint32_t reduce_mask_26 = (1 << 26) - 1;

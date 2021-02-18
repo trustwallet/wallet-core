@@ -78,7 +78,7 @@ bool mnemonic_from_data(const uint8_t *data, size_t len, char* mnemonic) {
 	return true;
 }
 
-int mnemonic_to_entropy(const char *mnemonic, uint8_t *entropy)
+int mnemonic_to_bits(const char *mnemonic, uint8_t *entropy)
 {
 	if (!mnemonic) {
 		return 0;
@@ -145,7 +145,7 @@ int mnemonic_to_entropy(const char *mnemonic, uint8_t *entropy)
 int mnemonic_check(const char *mnemonic)
 {
 	uint8_t bits[32 + 1];
-	int seed_len = mnemonic_to_entropy(mnemonic, bits);
+	int seed_len = mnemonic_to_bits(mnemonic, bits);
 	if (seed_len != (12 * 11) && seed_len != (15 * 11) && seed_len != (18 * 11) && seed_len != (21 * 11) && seed_len != (24 * 11)) {
 		return 0;
 	}

@@ -47,7 +47,7 @@
 #include <TrezorCrypto/blake2s.h>
 #include <TrezorCrypto/curves.h>
 #include <TrezorCrypto/ecdsa.h>
-#include <TrezorCrypto/ed25519-donna.h>
+#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 #include <TrezorCrypto/ed25519-donna/ed25519-keccak.h>
 #include <TrezorCrypto/ed25519.h>
 #include <TrezorCrypto/memzero.h>
@@ -2753,7 +2753,7 @@ START_TEST(test_mnemonic_check)
 }
 END_TEST
 
-START_TEST(test_mnemonic_to_entropy)
+START_TEST(test_mnemonic_to_bits)
 {
 	static const char *vectors[] = {
 		"00000000000000000000000000000000",
@@ -2814,7 +2814,7 @@ START_TEST(test_mnemonic_to_entropy)
 	a = vectors;
 	b = vectors + 1;
 	while (*a && *b) {
-		int seed_len = mnemonic_to_entropy(*b, entropy);
+		int seed_len = mnemonic_to_bits(*b, entropy);
 		ck_assert_int_eq(seed_len % 33, 0);
 		seed_len = seed_len * 4 / 33;
 		ck_assert_int_eq(seed_len, strlen(*a) / 2);
@@ -5114,7 +5114,7 @@ Suite *test_suite(void)
 	tc = tcase_create("bip39");
 	tcase_add_test(tc, test_mnemonic);
 	tcase_add_test(tc, test_mnemonic_check);
-	tcase_add_test(tc, test_mnemonic_to_entropy);
+	tcase_add_test(tc, test_mnemonic_to_bits);
 	suite_add_tcase(s, tc);
 
 	tc = tcase_create("pubkey_validity");
