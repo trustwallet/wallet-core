@@ -16,6 +16,7 @@ static constexpr uint8_t sigTypeEd25519 = 0x00;
 static constexpr uint8_t extrinsicFormat = 4;
 
 static const std::string balanceTransfer = "Balances.transfer";
+static const std::string utilityBatch = "Utility.batch";
 static const std::string stakingBond = "Staking.bond";
 static const std::string stakingBondExtra = "Staking.bond_extra";
 static const std::string stakingUnbond = "Staking.unbond";
@@ -25,6 +26,7 @@ static const std::string stakingChill = "Staking.chill";
 
 static std::map<const std::string, Data> polkadotCallIndices = {
     {balanceTransfer,       Data{0x05, 0x00}},
+    {utilityBatch,          Data{0x1a, 0x00}}, // https://polkascan.io/polkadot/runtime-call/27-utility-batch
     {stakingBond,           Data{0x07, 0x00}},
     {stakingBondExtra,      Data{0x07, 0x01}},
     {stakingUnbond,         Data{0x07, 0x02}},
@@ -105,17 +107,36 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressTy
         append(data, reward);
     } else if (staking.has_bond_and_nominate()) {
         // TODO
-        auto address = SS58Address(staking.bond_and_nominate().controller(), byte(network));
-        auto value = load(staking.bond_and_nominate().value());
-        auto reward = byte(staking.bond_and_nominate().reward_destination());
-        // call index
-        append(data, getCallIndex(network, stakingBond));
-        // controller
-        append(data, encodeAddress(address));
-        // value
-        append(data, encodeCompact(value));
-        // reward destination
-        append(data, reward);
+        
+        // encode call1
+        Data call1;
+        {
+            auto staking1 = Proto::Staking();
+            auto bond = staking1.mutable_bond();
+            bond->set_controller(staking.bond_and_nominate().controller());
+            bond->set_value(staking.bond_and_nominate().value());
+            bond->set_reward_destination(staking.bond_and_nominate().reward_destination());
+            // recursive call
+            call1 = encodeStakingCall(staking1, network);
+        }
+
+        // encode call2
+        Data call2;
+        {
+            auto staking2 = Proto::Staking();
+            auto nominate = staking2.mutable_nominate();
+            for (auto i = 0; i < staking.bond_and_nominate().nominators_size(); ++i) {
+                nominate->add_nominators(staking.bond_and_nominate().nominators(i));
+            }
+            // recursive call
+            call2 = encodeStakingCall(staking2, network);
+        }
+
+        // build Utility.batch call
+        append(data, getCallIndex(network, utilityBatch));
+        auto vector = std::vector<Data>{call1, call2};
+        auto vectorData = encodeVector(vector);
+        append(data, vectorData);
     } else if (staking.has_bond_extra()) {
         auto value = load(staking.unbond().value());
         // call index
