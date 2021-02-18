@@ -49,6 +49,7 @@ message Transaction {
         // ID of the token (256-bit number)
         bytes token_id = 3;
 
+        // The amount of tokens being transferred
         bytes value = 4;
 
         bytes data = 5;
