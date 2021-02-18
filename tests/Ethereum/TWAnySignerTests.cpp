@@ -9,11 +9,15 @@
 #include "HexCoding.h"
 #include "uint256.h"
 #include "proto/Ethereum.pb.h"
+#include "Ethereum/ABI/Function.h"
+#include "Ethereum/ABI/ParamBase.h"
+#include "Ethereum/ABI/ParamAddress.h"
 
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace Ethereum;
+using namespace TW::Ethereum;
+using namespace TW::Ethereum::ABI;
 
 TEST(TWEthereumSigner, EmptyValue) {
     auto str = std::string("");
@@ -67,6 +71,7 @@ TEST(TWAnySignerEthereum, Sign) {
         ANY_SIGN(input, TWCoinTypeEthereum);
 
         ASSERT_EQ(hex(output.encoded()), expected);
+        ASSERT_EQ(hex(output.data()), hex(data));
     }
     
     {
@@ -91,7 +96,8 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsERC20) {
     auto gasLimit = store(uint256_t(78009)); // 130B9
     auto toAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84";
     auto token = "0x6b175474e89094c44da98b954eedeac495271d0f"; // DAI
-    auto amount = store(uint256_t(2000000000000000000));
+    auto amount = uint256_t(2000000000000000000);
+    auto amountData = store(amount);
     auto key = parse_hex("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151");
 
     Proto::SigningInput input;
@@ -103,7 +109,7 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsERC20) {
     input.set_private_key(key.data(), key.size());
     auto& erc20 = *input.mutable_transaction()->mutable_erc20_transfer();
     erc20.set_to(toAddress);
-    erc20.set_amount(amount.data(), amount.size());
+    erc20.set_amount(amountData.data(), amountData.size());
 
     // https://etherscan.io/tx/0x199a7829fc5149e49b452c2cab76d8fa5a9682fee6e4891b8acb697ac142513e
     std::string expected = "f8aa808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec8000025a0724c62ad4fbf47346b02de06e603e013f26f26b56fdc0be7ba3d6273401d98cea0032131cae15da7ddcda66963e8bef51ca0d9962bfef0547d3f02597a4a58c931";
@@ -113,6 +119,18 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsERC20) {
     ANY_SIGN(input, TWCoinTypeEthereum);
 
     ASSERT_EQ(hex(output.encoded()), expected);
+
+    // expected payload
+    Data payload;
+    {
+        auto func = Function("transfer", std::vector<std::shared_ptr<ParamBase>>{
+            std::make_shared<ParamAddress>(parse_hex(toAddress)),
+            std::make_shared<ParamUInt256>(amount)
+        });
+        func.encode(payload);
+    }
+    ASSERT_EQ(hex(output.data()), hex(payload));
+    ASSERT_EQ(hex(output.data()), "a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000");
 }
 
 TEST(TWAnySignerEthereum, SignERC20TransferAsGenericContract) {
@@ -143,6 +161,7 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsGenericContract) {
     ANY_SIGN(input, TWCoinTypeEthereum);
 
     ASSERT_EQ(hex(output.encoded()), expected);
+    ASSERT_EQ(hex(output.data()), hex(data));
 }
 
 TEST(TWAnySignerEthereum, SignERC20TransferInvalidAddress) {
@@ -232,6 +251,7 @@ TEST(TWAnySignerEthereum, SignERC721Transfer) {
     ANY_SIGN(input, TWCoinTypeEthereum);
 
     ASSERT_EQ(hex(output.encoded()), expected);
+    ASSERT_EQ(hex(output.data()), "23b872dd000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee5");
 }
 
 TEST(TWAnySignerEthereum, SignJSON) {
