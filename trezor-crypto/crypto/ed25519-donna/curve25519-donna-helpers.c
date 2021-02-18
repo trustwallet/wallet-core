@@ -5,7 +5,7 @@
 	Curve25519 implementation agnostic helpers
 */
 
-#include <TrezorCrypto/ed25519-donna.h>
+#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 
 /*
  * In:  b =   2^5 - 2^0

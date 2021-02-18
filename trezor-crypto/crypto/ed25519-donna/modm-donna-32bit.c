@@ -2,7 +2,7 @@
 	Public domain by Andrew M. <liquidsun@gmail.com>
 */
 
-#include <TrezorCrypto/ed25519-donna.h>
+#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 
 /*
 	Arithmetic modulo the group order n = 2^252 +  27742317777372353535851937790883648493 = 7237005577332262213973186563042994240857116359379907606001950938285454250989

@@ -1,4 +1,4 @@
-#include <TrezorCrypto/ed25519-donna.h>
+#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 
 const ge25519 ALIGN(16) ge25519_basepoint = {
 	{0x0325d51a,0x018b5823,0x00f6592a,0x0104a92d,0x01a4b31d,0x01d6dc5c,0x027118fe,0x007fd814,0x013cd6e5,0x0085a4db},
