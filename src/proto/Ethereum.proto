@@ -89,4 +89,7 @@ message SigningOutput {
     bytes v = 2;
     bytes r = 3;
     bytes s = 4;
+
+    // The payload part, supplied in the input or assembled from input parameters
+    bytes data = 5;
 }
