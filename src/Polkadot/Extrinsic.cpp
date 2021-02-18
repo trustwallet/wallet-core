@@ -68,73 +68,84 @@ Data Extrinsic::encodeCall(const Proto::SigningInput& input) {
     Data data;
     auto network = TWSS58AddressType(input.network());
     if (input.has_balance_call()) {
-        auto transfer = input.balance_call().transfer();
-        auto address = SS58Address(transfer.to_address(), network);
-        auto value = load(transfer.value());
+        data = encodeBalanceCall(input.balance_call(), network);
+    } else if (input.has_staking_call()) {
+        data = encodeStakingCall(input.staking_call(), network);
+    }
+    return data;
+}
+
+Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance, TWSS58AddressType network) {
+    Data data;
+    auto transfer = balance.transfer();
+    auto address = SS58Address(transfer.to_address(), network);
+    auto value = load(transfer.value());
+    // call index
+    append(data, getCallIndex(network, balanceTransfer));
+    // destination
+    append(data, encodeAddress(address));
+    // value
+    append(data, encodeCompact(value));
+    return data;
+}
+
+Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressType network) {
+    Data data;
+    if (staking.has_bond()) {
+        auto address = SS58Address(staking.bond().controller(), byte(network));
+        auto value = load(staking.bond().value());
+        auto reward = byte(staking.bond().reward_destination());
         // call index
-        append(data, getCallIndex(network, balanceTransfer));
-        // destination
+        append(data, getCallIndex(network, stakingBond));
+        // controller
         append(data, encodeAddress(address));
         // value
         append(data, encodeCompact(value));
-    } else if (input.has_staking_call()) {
-        auto staking = input.staking_call();
-        if (staking.has_bond()) {
-            auto address = SS58Address(staking.bond().controller(), byte(input.network()));
-            auto value = load(staking.bond().value());
-            auto reward = byte(staking.bond().reward_destination());
-            // call index
-            append(data, getCallIndex(network, stakingBond));
-            // controller
-            append(data, encodeAddress(address));
-            // value
-            append(data, encodeCompact(value));
-            // reward destination
-            append(data, reward);
-        } else if (staking.has_bond_and_nominate()) {
-            // TODO
-            auto address = SS58Address(staking.bond_and_nominate().controller(), byte(input.network()));
-            auto value = load(staking.bond_and_nominate().value());
-            auto reward = byte(staking.bond_and_nominate().reward_destination());
-            // call index
-            append(data, getCallIndex(network, stakingBond));
-            // controller
-            append(data, encodeAddress(address));
-            // value
-            append(data, encodeCompact(value));
-            // reward destination
-            append(data, reward);
-        } else if (staking.has_bond_extra()) {
-            auto value = load(staking.unbond().value());
-            // call index
-            append(data, getCallIndex(network, stakingBondExtra));
-            // value
-            append(data, encodeCompact(value));
-        } else if (staking.has_unbond()) {
-            auto value = load(staking.unbond().value());
-            // call index
-            append(data, getCallIndex(network, stakingUnbond));
-            // value
-            append(data, encodeCompact(value));
-        } else if (staking.has_withdraw_unbonded()) {
-            auto spans = staking.withdraw_unbonded().slashing_spans();
-            // call index
-            append(data, getCallIndex(network, stakingWithdrawUnbond));
-            // num_slashing_spans
-            encode32LE(spans, data);
-        } else if (staking.has_nominate()) {
-            std::vector<SS58Address> addresses;
-            for (auto& n : staking.nominate().nominators()) {
-                addresses.push_back(SS58Address(n, network));
-            }
-            // call index
-            append(data, getCallIndex(network, stakingNominate));
-            // nominators
-            append(data, encodeAddresses(addresses));
-        } else if (staking.has_chill()) {
-            // call index
-            append(data, getCallIndex(network, stakingChill));
+        // reward destination
+        append(data, reward);
+    } else if (staking.has_bond_and_nominate()) {
+        // TODO
+        auto address = SS58Address(staking.bond_and_nominate().controller(), byte(network));
+        auto value = load(staking.bond_and_nominate().value());
+        auto reward = byte(staking.bond_and_nominate().reward_destination());
+        // call index
+        append(data, getCallIndex(network, stakingBond));
+        // controller
+        append(data, encodeAddress(address));
+        // value
+        append(data, encodeCompact(value));
+        // reward destination
+        append(data, reward);
+    } else if (staking.has_bond_extra()) {
+        auto value = load(staking.unbond().value());
+        // call index
+        append(data, getCallIndex(network, stakingBondExtra));
+        // value
+        append(data, encodeCompact(value));
+    } else if (staking.has_unbond()) {
+        auto value = load(staking.unbond().value());
+        // call index
+        append(data, getCallIndex(network, stakingUnbond));
+        // value
+        append(data, encodeCompact(value));
+    } else if (staking.has_withdraw_unbonded()) {
+        auto spans = staking.withdraw_unbonded().slashing_spans();
+        // call index
+        append(data, getCallIndex(network, stakingWithdrawUnbond));
+        // num_slashing_spans
+        encode32LE(spans, data);
+    } else if (staking.has_nominate()) {
+        std::vector<SS58Address> addresses;
+        for (auto& n : staking.nominate().nominators()) {
+            addresses.push_back(SS58Address(n, network));
         }
+        // call index
+        append(data, getCallIndex(network, stakingNominate));
+        // nominators
+        append(data, encodeAddresses(addresses));
+    } else if (staking.has_chill()) {
+        // call index
+        append(data, getCallIndex(network, stakingChill));
     }
     return data;
 }

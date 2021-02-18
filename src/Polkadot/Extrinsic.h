@@ -53,6 +53,8 @@ class Extrinsic {
     Data encodeSignature(const PublicKey& signer, const Data& signature) const;
 
   protected:
+    static Data encodeBalanceCall(const Proto::Balance& balance, TWSS58AddressType network);
+    static Data encodeStakingCall(const Proto::Staking& staking, TWSS58AddressType network);
     Data encodeEraNonceTip() const;
 };
 
