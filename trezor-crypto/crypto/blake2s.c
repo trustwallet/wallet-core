@@ -107,7 +107,7 @@ int blake2s_init_param( blake2s_state *S, const blake2s_param *P )
 /* Sequential blake2s initialization */
 int blake2s_Init( blake2s_state *S, size_t outlen )
 {
-  blake2s_param P[1] = {0};
+  blake2s_param P[1] = {};
 
   if ( ( !outlen ) || ( outlen > BLAKE2S_OUTBYTES ) ) return -1;
 
@@ -128,7 +128,7 @@ int blake2s_Init( blake2s_state *S, size_t outlen )
 
 int blake2s_InitPersonal( blake2s_state *S, size_t outlen, const void *personal, size_t personal_len)
 {
-  blake2s_param P[1] = {0};
+  blake2s_param P[1] = {};
 
   if ( ( !outlen ) || ( outlen > BLAKE2S_OUTBYTES ) ) return -1;
   if ( ( !personal ) || ( personal_len != BLAKE2S_PERSONALBYTES ) ) return -1;
@@ -151,7 +151,7 @@ int blake2s_InitPersonal( blake2s_state *S, size_t outlen, const void *personal,
 
 int blake2s_InitKey( blake2s_state *S, size_t outlen, const void *key, size_t keylen )
 {
-  blake2s_param P[1] = {0};
+  blake2s_param P[1] = {};
 
   if ( ( !outlen ) || ( outlen > BLAKE2S_OUTBYTES ) ) return -1;
 

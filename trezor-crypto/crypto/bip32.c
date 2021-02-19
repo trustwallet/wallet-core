@@ -471,7 +471,7 @@ int hdnode_public_ckd_cp(const ecdsa_curve *curve, const curve_point *parent,
 }
 
 int hdnode_public_ckd(HDNode *inout, uint32_t i) {
-  curve_point parent = {0}, child = {0};
+  curve_point parent = {}, child = {};
 
   if (!ecdsa_read_pubkey(inout->curve->params, inout->public_key, &parent)) {
     return 0;
@@ -500,7 +500,7 @@ void hdnode_public_ckd_address_optimized(const curve_point *pub,
                                          HasherType hasher_base58, char *addr,
                                          int addrsize, int addrformat) {
   uint8_t child_pubkey[33] = {0};
-  curve_point b = {0};
+  curve_point b = {};
 
   hdnode_public_ckd_cp(&secp256k1, pub, chain_code, i, &b, NULL);
   child_pubkey[0] = 0x02 | (b.y.val[0] & 0x01);

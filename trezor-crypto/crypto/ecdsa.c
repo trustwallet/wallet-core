@@ -420,7 +420,7 @@ void point_multiply(const ecdsa_curve *curve, const bignum256 *k,
   uint32_t is_even = (k->val[0] & 1) - 1;
   uint32_t bits = {0}, sign = {0}, nsign = {0};
   static CONFIDENTIAL jacobian_curve_point jres;
-  curve_point pmult[8] = {0};
+  curve_point pmult[8] = {};
   const bignum256 *prime = &curve->prime;
 
   // is_even = 0xffffffff if k is even, 0 otherwise.
@@ -625,7 +625,7 @@ void scalar_multiply(const ecdsa_curve *curve, const bignum256 *k,
 
 int ecdh_multiply(const ecdsa_curve *curve, const uint8_t *priv_key,
                   const uint8_t *pub_key, uint8_t *session_key) {
-  curve_point point = {0};
+  curve_point point = {};
   if (!ecdsa_read_pubkey(curve, pub_key, &point)) {
     return 1;
   }
@@ -666,13 +666,13 @@ int ecdsa_sign_digest(const ecdsa_curve *curve, const uint8_t *priv_key,
                       const uint8_t *digest, uint8_t *sig, uint8_t *pby,
                       int (*is_canonical)(uint8_t by, uint8_t sig[64])) {
   int i = 0;
-  curve_point R = {0};
+  curve_point R = {};
   bignum256 k = {0}, z = {0}, randk = {0};
   bignum256 *s = &R.y;
   uint8_t by;  // signature recovery byte
 
 #if USE_RFC6979
-  rfc6979_state rng = {0};
+  rfc6979_state rng = {};
   init_rfc6979(priv_key, digest, &rng);
 #endif
 
@@ -757,7 +757,7 @@ int ecdsa_sign_digest(const ecdsa_curve *curve, const uint8_t *priv_key,
 
 void ecdsa_get_public_key33(const ecdsa_curve *curve, const uint8_t *priv_key,
                             uint8_t *pub_key) {
-  curve_point R = {0};
+  curve_point R = {};
   bignum256 k = {0};
 
   bn_read_be(priv_key, &k);
@@ -771,7 +771,7 @@ void ecdsa_get_public_key33(const ecdsa_curve *curve, const uint8_t *priv_key,
 
 void ecdsa_get_public_key65(const ecdsa_curve *curve, const uint8_t *priv_key,
                             uint8_t *pub_key) {
-  curve_point R = {0};
+  curve_point R = {};
   bignum256 k = {0};
 
   bn_read_be(priv_key, &k);
@@ -786,7 +786,7 @@ void ecdsa_get_public_key65(const ecdsa_curve *curve, const uint8_t *priv_key,
 
 int ecdsa_uncompress_pubkey(const ecdsa_curve *curve, const uint8_t *pub_key,
                             uint8_t *uncompressed) {
-  curve_point pub = {0};
+  curve_point pub = {};
 
   if (!ecdsa_read_pubkey(curve, pub_key, &pub)) {
     return 0;
@@ -975,7 +975,7 @@ int ecdsa_recover_pub_from_sig(const ecdsa_curve *curve, uint8_t *pub_key,
                                const uint8_t *sig, const uint8_t *digest,
                                int recid) {
   bignum256 r = {0}, s = {0}, e = {0};
-  curve_point cp = {0}, cp2 = {0};
+  curve_point cp = {}, cp2 = {};
 
   // read r and s
   bn_read_be(sig, &r);
@@ -1026,7 +1026,7 @@ int ecdsa_recover_pub_from_sig(const ecdsa_curve *curve, uint8_t *pub_key,
 // returns 0 if verification succeeded
 int ecdsa_verify_digest(const ecdsa_curve *curve, const uint8_t *pub_key,
                         const uint8_t *sig, const uint8_t *digest) {
-  curve_point pub = {0}, res = {0};
+  curve_point pub = {}, res = {};
   bignum256 r = {0}, s = {0}, z = {0};
   int result = 0;
 

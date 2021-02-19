@@ -664,14 +664,14 @@ char *sha1_End(SHA1_CTX* context, char buffer[]) {
 }
 
 void sha1_Raw(const sha2_byte* data, size_t len, uint8_t digest[SHA1_DIGEST_LENGTH]) {
-	SHA1_CTX	context = {0};
+	SHA1_CTX	context = {};
 	sha1_Init(&context);
 	sha1_Update(&context, data, len);
 	sha1_Final(&context, digest);
 }
 
 char* sha1_Data(const sha2_byte* data, size_t len, char digest[SHA1_DIGEST_STRING_LENGTH]) {
-	SHA1_CTX	context = {0};
+	SHA1_CTX	context = {};
 
 	sha1_Init(&context);
 	sha1_Update(&context, data, len);
@@ -971,14 +971,14 @@ char *sha256_End(SHA256_CTX* context, char buffer[]) {
 }
 
 void sha256_Raw(const sha2_byte* data, size_t len, uint8_t digest[SHA256_DIGEST_LENGTH]) {
-	SHA256_CTX	context = {0};
+	SHA256_CTX	context = {};
 	sha256_Init(&context);
 	sha256_Update(&context, data, len);
 	sha256_Final(&context, digest);
 }
 
 char* sha256_Data(const sha2_byte* data, size_t len, char digest[SHA256_DIGEST_STRING_LENGTH]) {
-	SHA256_CTX	context = {0};
+	SHA256_CTX	context = {};
 
 	sha256_Init(&context);
 	sha256_Update(&context, data, len);
@@ -1290,7 +1290,7 @@ char *sha512_End(SHA512_CTX* context, char buffer[]) {
 }
 
 void sha512_Raw(const sha2_byte* data, size_t len, uint8_t digest[SHA512_DIGEST_LENGTH]) {
-	SHA512_CTX	context = {0};
+	SHA512_CTX	context = {};
 	sha512_Init(&context);
 	sha512_Update(&context, data, len);
 	sha512_Final(&context, digest);
@@ -1298,7 +1298,7 @@ void sha512_Raw(const sha2_byte* data, size_t len, uint8_t digest[SHA512_DIGEST_
 
 // [wallet-core]
 void sha512_256_Raw(const sha2_byte* data, size_t len, uint8_t digest[SHA256_DIGEST_LENGTH]) {
-	SHA512_CTX	context = {0};
+	SHA512_CTX	context = {};
 	uint8_t result[SHA512_DIGEST_LENGTH];
 	sha512_256_Init(&context);
 	sha512_Update(&context, data, len);
@@ -1309,7 +1309,7 @@ void sha512_256_Raw(const sha2_byte* data, size_t len, uint8_t digest[SHA256_DIG
 }
 
 char* sha512_Data(const sha2_byte* data, size_t len, char digest[SHA512_DIGEST_STRING_LENGTH]) {
-	SHA512_CTX	context = {0};
+	SHA512_CTX	context = {};
 
 	sha512_Init(&context);
 	sha512_Update(&context, data, len);

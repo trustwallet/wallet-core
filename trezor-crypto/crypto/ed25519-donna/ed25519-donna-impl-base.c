@@ -121,13 +121,13 @@ void ge25519_pnielsadd_p1p1(ge25519_p1p1 *r, const ge25519 *p, const ge25519_pni
 }
 
 void ge25519_double_partial(ge25519 *r, const ge25519 *p) {
-	ge25519_p1p1 t = {0};
+	ge25519_p1p1 t = {};
 	ge25519_double_p1p1(&t, p);
 	ge25519_p1p1_to_partial(r, &t);
 }
 
 void ge25519_double(ge25519 *r, const ge25519 *p) {
-	ge25519_p1p1 t = {0};
+	ge25519_p1p1 t = {};
 	ge25519_double_p1p1(&t, p);
 	ge25519_p1p1_to_full(r, &t);
 }
@@ -263,12 +263,12 @@ void ge25519_set_neutral(ge25519 *r)
 /* computes [s1]p1 + [s2]base */
 void ge25519_double_scalarmult_vartime(ge25519 *r, const ge25519 *p1, const bignum256modm s1, const bignum256modm s2) {
 	signed char slide1[256] = {0}, slide2[256] = {0};
-	ge25519_pniels pre1[S1_TABLE_SIZE] = {0};
+	ge25519_pniels pre1[S1_TABLE_SIZE] = {};
 #ifdef ED25519_NO_PRECOMP
-	ge25519_pniels pre2[S2_TABLE_SIZE] = {0};
+	ge25519_pniels pre2[S2_TABLE_SIZE] = {};
 #endif
-	ge25519 dp = {0};
-	ge25519_p1p1 t = {0};
+	ge25519 dp = {};
+	ge25519_p1p1 t = {};
 	int32_t i = 0;
 
 	memzero(&t, sizeof(ge25519_p1p1));
@@ -321,10 +321,10 @@ void ge25519_double_scalarmult_vartime(ge25519 *r, const ge25519 *p1, const bign
 #if USE_MONERO
 void ge25519_double_scalarmult_vartime2(ge25519 *r, const ge25519 *p1, const bignum256modm s1, const ge25519 *p2, const bignum256modm s2) {
 	signed char slide1[256] = {0}, slide2[256] = {0};
-	ge25519_pniels pre1[S1_TABLE_SIZE] = {0};
-	ge25519_pniels pre2[S1_TABLE_SIZE] = {0};
-	ge25519 dp = {0};
-	ge25519_p1p1 t = {0};
+	ge25519_pniels pre1[S1_TABLE_SIZE] = {};
+	ge25519_pniels pre2[S1_TABLE_SIZE] = {};
+	ge25519 dp = {};
+	ge25519_p1p1 t = {};
 	int32_t i = 0;
 
 	memzero(&t, sizeof(ge25519_p1p1));
@@ -449,10 +449,10 @@ void ge25519_move_conditional_niels_array(ge25519_niels * r, const uint8_t p[8][
 /* computes [s1]p1, constant time */
 void ge25519_scalarmult(ge25519 *r, const ge25519 *p1, const bignum256modm s1) {
 	signed char slide1[64] = {0};
-	ge25519_pniels pre1[9] = {0};
-	ge25519_pniels pre = {0};
-	ge25519 d1 = {0};
-	ge25519_p1p1 t = {0};
+	ge25519_pniels pre1[9] = {};
+	ge25519_pniels pre = {};
+	ge25519 d1 = {};
+	ge25519_p1p1 t = {};
 	int32_t i = 0;
 
 	contract256_window4_modm(slide1, s1);
@@ -511,7 +511,7 @@ void ge25519_scalarmult_base_choose_niels(ge25519_niels *t, const uint8_t table[
 void ge25519_scalarmult_base_niels(ge25519 *r, const uint8_t basepoint_table[256][96], const bignum256modm s) {
 	signed char b[64] = {0};
 	uint32_t i = 0;
-	ge25519_niels t = {0};
+	ge25519_niels t = {};
 
 	contract256_window4_modm(b, s);
 
@@ -629,8 +629,8 @@ void ge25519_norm(ge25519 *r, const ge25519 * t){
 }
 
 void ge25519_add(ge25519 *r, const ge25519 *p, const ge25519 *q, unsigned char signbit) {
-	ge25519_pniels P_ni = {0};
-	ge25519_p1p1 P_11 = {0};
+	ge25519_pniels P_ni = {};
+	ge25519_p1p1 P_11 = {};
 
 	ge25519_full_to_pniels(&P_ni, q);
 	ge25519_pnielsadd_p1p1(&P_11, p, &P_ni, signbit);

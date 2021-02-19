@@ -336,7 +336,7 @@ void ripemd160_Final( RIPEMD160_CTX *ctx, uint8_t output[RIPEMD160_DIGEST_LENGTH
  */
 void ripemd160(const uint8_t *msg, uint32_t msg_len, uint8_t hash[RIPEMD160_DIGEST_LENGTH])
 {
-    RIPEMD160_CTX ctx = {0};
+    RIPEMD160_CTX ctx = {};
     ripemd160_Init( &ctx );
     ripemd160_Update( &ctx, msg, msg_len );
     ripemd160_Final( &ctx, hash );

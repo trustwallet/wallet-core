@@ -12,8 +12,8 @@ static void xmr_hash_ge25519_to_scalar(bignum256modm r, const ge25519 *p) {
 
 void xmr_gen_range_sig(xmr_range_sig_t *sig, ge25519 *C, bignum256modm mask,
                        xmr_amount amount, bignum256modm *last_mask) {
-  bignum256modm ai[64] = {0};
-  bignum256modm alpha[64] = {0};
+  bignum256modm ai[64] = {};
+  bignum256modm alpha[64] = {};
   xmr_gen_range_sig_ex(sig, C, mask, amount, last_mask, ai, alpha);
 }
 
@@ -21,20 +21,20 @@ void xmr_gen_range_sig_ex(xmr_range_sig_t *sig, ge25519 *C, bignum256modm mask,
                           xmr_amount amount, bignum256modm *last_mask,
                           bignum256modm ai[64], bignum256modm alpha[64]) {
   const unsigned n = XMR_ATOMS;
-  bignum256modm a = {0};
-  bignum256modm si = {0};
-  bignum256modm c = {0};
-  bignum256modm ee = {0};
+  bignum256modm a = {};
+  bignum256modm si = {};
+  bignum256modm c = {};
+  bignum256modm ee = {};
   unsigned char buff[32] = {0};
 
   Hasher kck = {0};
   xmr_hasher_init(&kck);
 
-  ge25519 C_acc = {0};
-  ge25519 C_h = {0};
-  ge25519 C_tmp = {0};
-  ge25519 L = {0};
-  ge25519 Zero = {0};
+  ge25519 C_acc = {};
+  ge25519 C_h = {};
+  ge25519 C_tmp = {};
+  ge25519 L = {};
+  ge25519 Zero = {};
 
   ge25519_set_neutral(&Zero);
   ge25519_set_neutral(&C_acc);

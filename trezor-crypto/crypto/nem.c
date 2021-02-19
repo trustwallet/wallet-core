@@ -379,7 +379,7 @@ bool nem_transaction_create_mosaic_creation(
       sizeof(uint32_t) + namespace_length + sizeof(uint32_t) + mosaic_length;
 
   // This length will be rewritten later on
-  nem_transaction_ctx state = {0};
+  nem_transaction_ctx state = {};
   memcpy(&state, ctx, sizeof(state));
 
   SERIALIZE_U32(0);
