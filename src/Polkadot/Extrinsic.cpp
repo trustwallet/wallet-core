@@ -100,75 +100,104 @@ Data Extrinsic::encodeBatchCall(const std::vector<Data>& calls, TWSS58AddressTyp
 
 Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressType network) {
     Data data;
-    if (staking.has_bond()) {
-        auto address = SS58Address(staking.bond().controller(), byte(network));
-        auto value = load(staking.bond().value());
-        auto reward = byte(staking.bond().reward_destination());
-        // call index
-        append(data, getCallIndex(network, stakingBond));
-        // controller
-        append(data, encodeAddress(address));
-        // value
-        append(data, encodeCompact(value));
-        // reward destination
-        append(data, reward);
-    } else if (staking.has_bond_and_nominate()) {
-        // encode call1
-        Data call1;
-        {
-            auto staking1 = Proto::Staking();
-            auto bond = staking1.mutable_bond();
-            bond->set_controller(staking.bond_and_nominate().controller());
-            bond->set_value(staking.bond_and_nominate().value());
-            bond->set_reward_destination(staking.bond_and_nominate().reward_destination());
-            // recursive call
-            call1 = encodeStakingCall(staking1, network);
-        }
-
-        // encode call2
-        Data call2;
-        {
-            auto staking2 = Proto::Staking();
-            auto nominate = staking2.mutable_nominate();
-            for (auto i = 0; i < staking.bond_and_nominate().nominators_size(); ++i) {
-                nominate->add_nominators(staking.bond_and_nominate().nominators(i));
+    switch (staking.message_oneof_case()) {
+        case Proto::Staking::kBond:
+            {
+                auto address = SS58Address(staking.bond().controller(), byte(network));
+                auto value = load(staking.bond().value());
+                auto reward = byte(staking.bond().reward_destination());
+                // call index
+                append(data, getCallIndex(network, stakingBond));
+                // controller
+                append(data, encodeAddress(address));
+                // value
+                append(data, encodeCompact(value));
+                // reward destination
+                append(data, reward);
             }
-            // recursive call
-            call2 = encodeStakingCall(staking2, network);
-        }
+            break;
 
-        auto calls = std::vector<Data>{call1, call2};
-        data = encodeBatchCall(calls, network);
-    } else if (staking.has_bond_extra()) {
-        auto value = load(staking.unbond().value());
-        // call index
-        append(data, getCallIndex(network, stakingBondExtra));
-        // value
-        append(data, encodeCompact(value));
-    } else if (staking.has_unbond()) {
-        auto value = load(staking.unbond().value());
-        // call index
-        append(data, getCallIndex(network, stakingUnbond));
-        // value
-        append(data, encodeCompact(value));
-    } else if (staking.has_withdraw_unbonded()) {
-        auto spans = staking.withdraw_unbonded().slashing_spans();
-        // call index
-        append(data, getCallIndex(network, stakingWithdrawUnbond));
-        // num_slashing_spans
-        encode32LE(spans, data);
-    } else if (staking.has_nominate()) {
-        std::vector<SS58Address> addresses;
-        for (auto& n : staking.nominate().nominators()) {
-            addresses.push_back(SS58Address(n, network));
-        }
-        // call index
-        append(data, getCallIndex(network, stakingNominate));
-        // nominators
-        append(data, encodeAddresses(addresses));
-    } else if (staking.has_chill()) {
-        // call index
-        append(data, getCallIndex(network, stakingChill));
+        case Proto::Staking::kBondAndNominate:
+            {
+                // encode call1
+                Data call1;
+                {
+                    auto staking1 = Proto::Staking();
+                    auto bond = staking1.mutable_bond();
+                    bond->set_controller(staking.bond_and_nominate().controller());
+                    bond->set_value(staking.bond_and_nominate().value());
+                    bond->set_reward_destination(staking.bond_and_nominate().reward_destination());
+                    // recursive call
+                    call1 = encodeStakingCall(staking1, network);
+                }
+
+                // encode call2
+                Data call2;
+                {
+                    auto staking2 = Proto::Staking();
+                    auto nominate = staking2.mutable_nominate();
+                    for (auto i = 0; i < staking.bond_and_nominate().nominators_size(); ++i) {
+                        nominate->add_nominators(staking.bond_and_nominate().nominators(i));
+                    }
+                    // recursive call
+                    call2 = encodeStakingCall(staking2, network);
+                }
+
+                auto calls = std::vector<Data>{call1, call2};
+                data = encodeBatchCall(calls, network);
+            }
+            break;
+
+        case Proto::Staking::kBondExtra:
+            {
+                auto value = load(staking.unbond().value());
+                // call index
+                append(data, getCallIndex(network, stakingBondExtra));
+                // value
+                append(data, encodeCompact(value));
+            }
+            break;
+
+        case Proto::Staking::kUnbond:
+            {
+                auto value = load(staking.unbond().value());
+                // call index
+                append(data, getCallIndex(network, stakingUnbond));
+                // value
+                append(data, encodeCompact(value));
+            }
+            break;
+
+        case Proto::Staking::kWithdrawUnbonded:
+            {
+                auto spans = staking.withdraw_unbonded().slashing_spans();
+                // call index
+                append(data, getCallIndex(network, stakingWithdrawUnbond));
+                // num_slashing_spans
+                encode32LE(spans, data);
+            }
+            break;
+
+        case Proto::Staking::kNominate:
+            {
+                std::vector<SS58Address> addresses;
+                for (auto& n : staking.nominate().nominators()) {
+                    addresses.push_back(SS58Address(n, network));
+                }
+                // call index
+                append(data, getCallIndex(network, stakingNominate));
+                // nominators
+                append(data, encodeAddresses(addresses));
+            }
+            break;
+
+        case Proto::Staking::kChill:
+            // call index
+            append(data, getCallIndex(network, stakingChill));
+            break;
+
+        default:
+            break;
     }
     return data;
 }
