@@ -9,6 +9,7 @@ import XCTest
 
 class PolkadotTests: XCTestCase {
 
+    let genesisHash = Data(hexString: "0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3")!
     let privateKeyThrow2 = Data(hexString: "0x70a794d4f1019c3ce002f33062f45029c4f930a56b3d20ec477f7668c6bbc37f")!
 
     func testAddressValidation() {
@@ -41,7 +42,6 @@ class PolkadotTests: XCTestCase {
         let key = wallet.getKey(coin: .polkadot, derivationPath: "m/44'/354'/0'")
         let address = CoinType.polkadot.deriveAddress(privateKey: key)
 
-        let genesisHash = Data(hexString: "0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3")!
         let input = PolkadotSigningInput.with {
             $0.genesisHash = genesisHash
             $0.blockHash = genesisHash
@@ -63,9 +63,6 @@ class PolkadotTests: XCTestCase {
     }
 
     func testSigningBondAndNominate() {
-        let genesisHash = Data(hexString: "0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3")!
-        let addressString = "14Ztd3KJDaB9xyJtRkREtSZDdhLSbm7UUKt8Z7AwSv7q85G2"
-        let address = AnyAddress(string: addressString, coin: .polkadot)!
         let input = PolkadotSigningInput.with {
             $0.genesisHash = genesisHash
             $0.blockHash = Data(hexString: "0x3a886617f4bbd4fe2bbe7369acae4163ed0b19ffbf061083abc5e0836ad58f77")!
@@ -79,7 +76,7 @@ class PolkadotTests: XCTestCase {
                 $0.period = 64
             }
             $0.stakingCall.bondAndNominate = PolkadotStaking.BondAndNominate.with {
-                $0.controller = addressString
+                $0.controller = "14Ztd3KJDaB9xyJtRkREtSZDdhLSbm7UUKt8Z7AwSv7q85G2"
                 $0.value = Data(hexString: "0x77359400")! // 0.2
                 $0.rewardDestination = .stash
                 $0.nominators = ["14xKzzU1ZYDnzFj7FgdtDAYSMJNARjDc2gNw4XAFDgr4uXgp", "1REAJ1k691g5Eqqg9gL7vvZCBG7FCCZ8zgQkZWd4va5ESih"]
