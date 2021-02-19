@@ -228,7 +228,7 @@ void blake256_Final( BLAKE256_CTX *S, uint8_t *out )
 
 void blake256( const uint8_t *in, size_t inlen, uint8_t *out )
 {
-  BLAKE256_CTX S = {};
+  BLAKE256_CTX S = {0};
   blake256_Init( &S );
   blake256_Update( &S, in, inlen );
   blake256_Final( &S, out );

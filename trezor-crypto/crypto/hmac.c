@@ -135,7 +135,7 @@ void hmac_sha512_Final(HMAC_SHA512_CTX *hctx, uint8_t *hmac) {
 
 void hmac_sha512(const uint8_t *key, const uint32_t keylen, const uint8_t *msg,
                  const uint32_t msglen, uint8_t *hmac) {
-  HMAC_SHA512_CTX hctx = {};
+  HMAC_SHA512_CTX hctx = {0};
   hmac_sha512_Init(&hctx, key, keylen);
   hmac_sha512_Update(&hctx, msg, msglen);
   hmac_sha512_Final(&hctx, hmac);

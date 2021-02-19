@@ -50,7 +50,7 @@ void xmr_hash_to_scalar(bignum256modm r, const void *data, size_t length) {
 }
 
 void xmr_hash_to_ec(ge25519 *P, const void *data, size_t length) {
-  ge25519 point2 = {};
+  ge25519 point2 = {0};
   uint8_t hash[HASHER_DIGEST_LENGTH] = {0};
   hasher_Raw(HASHER_SHA3K, data, length, hash);
 
@@ -68,7 +68,7 @@ void xmr_derivation_to_scalar(bignum256modm s, const ge25519 *p,
 
 void xmr_generate_key_derivation(ge25519 *r, const ge25519 *A,
                                  const bignum256modm b) {
-  ge25519 bA = {};
+  ge25519 bA = {0};
   ge25519_scalarmult(&bA, A, b);
   ge25519_mul8(r, &bA);
 }
@@ -82,7 +82,7 @@ void xmr_derive_private_key(bignum256modm s, const ge25519 *deriv, uint32_t idx,
 void xmr_derive_public_key(ge25519 *r, const ge25519 *deriv, uint32_t idx,
                            const ge25519 *base) {
   bignum256modm s = {0};
-  ge25519 p2 = {};
+  ge25519 p2 = {0};
 
   xmr_derivation_to_scalar(s, deriv, idx);
   ge25519_scalarmult_base_niels(&p2, ge25519_niels_base_multiples, s);
@@ -92,7 +92,7 @@ void xmr_derive_public_key(ge25519 *r, const ge25519 *deriv, uint32_t idx,
 void xmr_add_keys2(ge25519 *r, const bignum256modm a, const bignum256modm b,
                    const ge25519 *B) {
   // aG + bB, G is basepoint
-  ge25519 aG = {}, bB = {};
+  ge25519 aG = {0}, bB = {0};
   ge25519_scalarmult_base_niels(&aG, ge25519_niels_base_multiples, a);
   ge25519_scalarmult(&bB, B, b);
   ge25519_add(r, &aG, &bB, 0);
@@ -107,7 +107,7 @@ void xmr_add_keys2_vartime(ge25519 *r, const bignum256modm a,
 void xmr_add_keys3(ge25519 *r, const bignum256modm a, const ge25519 *A,
                    const bignum256modm b, const ge25519 *B) {
   // aA + bB
-  ge25519 aA = {}, bB = {};
+  ge25519 aA = {0}, bB = {0};
   ge25519_scalarmult(&aA, A, a);
   ge25519_scalarmult(&bB, B, b);
   ge25519_add(r, &aA, &bB, 0);

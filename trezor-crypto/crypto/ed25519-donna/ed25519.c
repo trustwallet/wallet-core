@@ -101,7 +101,7 @@ void
 ED25519_FN(ed25519_sign) (const unsigned char *m, size_t mlen, const ed25519_secret_key sk, const ed25519_public_key pk, ed25519_signature RS) {
 	ed25519_hash_context ctx;
 	bignum256modm r = {0}, S = {0}, a = {0};
-	ge25519 ALIGN(16) R = {};
+	ge25519 ALIGN(16) R = {0};
 	hash_512bits extsk = {0}, hashr = {0}, hram = {0};
 
 	ed25519_extsk(extsk, sk);
@@ -138,7 +138,7 @@ void
 ED25519_FN(ed25519_sign_ext) (const unsigned char *m, size_t mlen, const ed25519_secret_key sk, const ed25519_secret_key skext, const ed25519_public_key pk, ed25519_signature RS) {
 	ed25519_hash_context ctx;
 	bignum256modm r = {0}, S = {0}, a = {0};
-	ge25519 ALIGN(16) R = {};
+	ge25519 ALIGN(16) R = {0};
 	hash_512bits extsk = {0}, hashr = {0}, hram = {0};
 
 	/* we don't stretch the key through hashing first since its already 64 bytes */
@@ -228,9 +228,9 @@ ED25519_FN(ed25519_scalarmult) (ed25519_public_key res, const ed25519_secret_key
 int
 ed25519_cosi_combine_publickeys(ed25519_public_key res, CONST ed25519_public_key *pks, size_t n) {
 	size_t i = 0;
-	ge25519 P = {};
-	ge25519_pniels sump = {};
-	ge25519_p1p1 sump1 = {};
+	ge25519 P = {0};
+	ge25519_pniels sump = {0};
+	ge25519_p1p1 sump1 = {0};
 
 	if (n == 1) {
 		memcpy(res, pks, sizeof(ed25519_public_key));
