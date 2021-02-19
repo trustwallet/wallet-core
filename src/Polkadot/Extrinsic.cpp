@@ -91,6 +91,13 @@ Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance, TWSS58AddressTy
     return data;
 }
 
+Data Extrinsic::encodeBatchCall(const std::vector<Data>& calls, TWSS58AddressType network) {
+    Data data;
+    append(data, getCallIndex(network, utilityBatch));
+    append(data, encodeVector(calls));
+    return data;
+}
+
 Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressType network) {
     Data data;
     if (staking.has_bond()) {
@@ -106,8 +113,6 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressTy
         // reward destination
         append(data, reward);
     } else if (staking.has_bond_and_nominate()) {
-        // TODO
-        
         // encode call1
         Data call1;
         {
@@ -132,11 +137,8 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressTy
             call2 = encodeStakingCall(staking2, network);
         }
 
-        // build Utility.batch call
-        append(data, getCallIndex(network, utilityBatch));
-        auto vector = std::vector<Data>{call1, call2};
-        auto vectorData = encodeVector(vector);
-        append(data, vectorData);
+        auto calls = std::vector<Data>{call1, call2};
+        data = encodeBatchCall(calls, network);
     } else if (staking.has_bond_extra()) {
         auto value = load(staking.unbond().value());
         // call index
