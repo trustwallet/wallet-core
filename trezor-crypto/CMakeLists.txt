@@ -54,6 +54,7 @@ target_compile_options(TrezorCrypto
         -Winit-self
         -Wuninitialized
         -Wformat-security
+        -Wno-missing-braces
         -Werror
 )
 
