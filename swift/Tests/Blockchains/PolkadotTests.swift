@@ -9,6 +9,9 @@ import XCTest
 
 class PolkadotTests: XCTestCase {
 
+    let genesisHash = Data(hexString: "0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3")!
+    let privateKeyThrow2 = Data(hexString: "0x70a794d4f1019c3ce002f33062f45029c4f930a56b3d20ec477f7668c6bbc37f")!
+
     func testAddressValidation() {
         let polkadot = CoinType.polkadot
         // cosmos
@@ -39,7 +42,6 @@ class PolkadotTests: XCTestCase {
         let key = wallet.getKey(coin: .polkadot, derivationPath: "m/44'/354'/0'")
         let address = CoinType.polkadot.deriveAddress(privateKey: key)
 
-        let genesisHash = Data(hexString: "0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3")!
         let input = PolkadotSigningInput.with {
             $0.genesisHash = genesisHash
             $0.blockHash = genesisHash
@@ -58,5 +60,31 @@ class PolkadotTests: XCTestCase {
         let output: PolkadotSigningOutput = AnySigner.sign(input: input, coin: .polkadot)
 
         XCTAssertEqual(output.encoded.hexString, "3902848d96660f14babe708b5e61853c9f5929bc90dd9874485bf4d6dc32d3e6f22eaa00a559867d1304cc95bac7cfe5d1b2fd49aed9f43c25c7d29b9b01c1238fa1f6ffef34b9650e42325de41e20fd502af7b074c67a9ec858bd9a1ba6d4212e3e0d0f00000007008d96660f14babe708b5e61853c9f5929bc90dd9874485bf4d6dc32d3e6f22eaa0700e40b540200")
+    }
+
+    func testSigningBondAndNominate() {
+        let input = PolkadotSigningInput.with {
+            $0.genesisHash = genesisHash
+            $0.blockHash = Data(hexString: "0x3a886617f4bbd4fe2bbe7369acae4163ed0b19ffbf061083abc5e0836ad58f77")!
+            $0.nonce = 6
+            $0.specVersion = 27
+            $0.network = .polkadot
+            $0.transactionVersion = 5
+            $0.privateKey = privateKeyThrow2
+            $0.era = PolkadotEra.with {
+                $0.blockNumber = 3856651
+                $0.period = 64
+            }
+            $0.stakingCall.bondAndNominate = PolkadotStaking.BondAndNominate.with {
+                $0.controller = "14Ztd3KJDaB9xyJtRkREtSZDdhLSbm7UUKt8Z7AwSv7q85G2"
+                $0.value = Data(hexString: "0x77359400")! // 0.2
+                $0.rewardDestination = .stash
+                $0.nominators = ["14xKzzU1ZYDnzFj7FgdtDAYSMJNARjDc2gNw4XAFDgr4uXgp", "1REAJ1k691g5Eqqg9gL7vvZCBG7FCCZ8zgQkZWd4va5ESih"]
+            }
+        }
+        let output: PolkadotSigningOutput = AnySigner.sign(input: input, coin: .polkadot)
+
+        // https://polkadot.subscan.io/extrinsic/0xc7a016f961dbf35d58feea22694e7d79ac77175a8cc40cb017bb5e87d56142ce
+        XCTAssertEqual(output.encoded.hexString, "5103849dca538b7a925b8ea979cc546464a3c5f81d2398a3a272f6f93bdf4803f2f783007d549324f270eb5932b898ce5fc166c3f30942c96668f52d6cc86c7b61a8d65680cd0a979f1e0a43ef9418e6571edab6d9c391a1696abdf56db2af348862d50eb50018001a000807009dca538b7a925b8ea979cc546464a3c5f81d2398a3a272f6f93bdf4803f2f783030094357701070508aee72821ca00e62304e4f0d858122a65b87c8df4f0eae224ae064b951d39f610127a30e486492921e58f2564b36ab1ca21ff630672f0e76920edd601f8f2b89a")
     }
 }
