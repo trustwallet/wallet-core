@@ -90,7 +90,7 @@ inline Data encodeBool(bool value) {
     return Data{uint8_t(value ? 0x01 : 0x00)};
 }
 
-inline Data encodeVector(std::vector<Data>& vec) {
+inline Data encodeVector(const std::vector<Data>& vec) {
     auto data = encodeCompact(vec.size());
     for (auto v : vec) {
         append(data, v);
