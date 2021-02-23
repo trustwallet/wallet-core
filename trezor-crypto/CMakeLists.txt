@@ -31,7 +31,7 @@ add_library(TrezorCrypto
     #crypto/rfc6979.c
     crypto/schnorr.c
     #crypto/shamir.c
-    crypto/slip39.c
+    #crypto/slip39.c
 )
 
 target_compile_options(TrezorCrypto
