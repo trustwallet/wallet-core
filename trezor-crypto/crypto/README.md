@@ -27,6 +27,7 @@ These include:
 - unit tests (using Check - check.sf.net; in test_check.c)
 - tests against OpenSSL (in test_openssl.c)
 - integrated Wycheproof tests
+- public key convertion between Curve25519 to Ed25519 and vice versa
 
 Distibuted under MIT License.
 
@@ -42,3 +43,4 @@ Distibuted under MIT License.
 - Ed25519: https://github.com/floodyberry/ed25519-donna
 - Chacha20: https://github.com/wg/c20p1305
 - Poly1305: https://github.com/floodyberry/poly1305-donna
+- Libsodium: https://github.com/jedisct1/libsodium

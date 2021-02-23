@@ -18,7 +18,6 @@ and fitness for purpose.
 Issue Date: 20/12/2007
 */
 
-#include <TrezorCrypto/aes.h>
 #include <TrezorCrypto/aes/aesopt.h>
 #include <TrezorCrypto/aes/aestab.h>
 
