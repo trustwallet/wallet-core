@@ -6,11 +6,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-void memzero(void* const pnt, const size_t len);
+
+void memzero(void *s, size_t n);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
-
 
 #endif
