@@ -1,7 +1,7 @@
 #ifndef ED25519_H
 #define ED25519_H
 
-#include <TrezorCrypto/options.h>
+#include "options.h"
 
 #if defined(__cplusplus)
 extern "C" {

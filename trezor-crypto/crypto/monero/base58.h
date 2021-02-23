@@ -33,7 +33,7 @@
 
 #include <stdbool.h>
 #include <TrezorCrypto/hasher.h>
-#include <TrezorCrypto/options.h>
+//#include "options.h"
 
 int xmr_base58_addr_encode_check(uint64_t tag, const uint8_t *data, size_t binsz, char *b58, size_t b58sz);
 int xmr_base58_addr_decode_check(const char *addr, size_t sz, uint64_t *tag, void *data, size_t datalen);

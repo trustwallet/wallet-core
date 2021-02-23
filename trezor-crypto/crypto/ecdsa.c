@@ -27,7 +27,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include <TrezorCrypto/options.h>
+#include "options.h"
 
 #include <TrezorCrypto/address.h>
 #include <TrezorCrypto/base58.h>

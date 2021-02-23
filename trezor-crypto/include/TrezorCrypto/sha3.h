@@ -21,7 +21,7 @@
 #define __SHA3_H__
 
 #include <stdint.h>
-#include <TrezorCrypto/options.h>
+#include "options.h"
 
 #ifdef __cplusplus
 extern "C" {

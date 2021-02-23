@@ -23,7 +23,7 @@
 
 #include <string.h>
 
-#include <TrezorCrypto/options.h>
+#include "options.h"
 
 #include <TrezorCrypto/hmac.h>
 #include <TrezorCrypto/memzero.h>

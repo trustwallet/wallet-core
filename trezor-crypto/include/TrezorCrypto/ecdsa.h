@@ -27,7 +27,7 @@
 #include <stdint.h>
 #include "bignum.h"
 #include "hasher.h"
-#include <TrezorCrypto/options.h>
+#include "options.h"
 
 #if defined(__cplusplus)
 extern "C"

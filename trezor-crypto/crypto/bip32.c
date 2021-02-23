@@ -25,7 +25,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include <TrezorCrypto/options.h>
+#include "options.h"
 
 #include <TrezorCrypto/address.h>
 #include <TrezorCrypto/aes.h>

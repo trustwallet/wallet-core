@@ -27,7 +27,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <TrezorCrypto/options.h>
+#include "options.h"
 
 #ifdef __cplusplus
 extern "C" {
