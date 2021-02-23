@@ -55,7 +55,7 @@ TEST(PolkadotCodec, EncodeLengthPrefix) {
 TEST(PolkadotCodec, encodeAccountId) {
     auto address = Kusama::Address("FoQJpPyadYccjavVdTWxpxU7rUEaYhfLCPwXgkfD6Zat9QP");
     auto encoded = encodeAccountId(address.keyBytes(), true);
-    auto encoded2 = encodeAccountId(address.keyBytes(), true);
+    auto encoded2 = encodeAccountId(address.keyBytes(), false);
 
     ASSERT_EQ(hex(encoded), "8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48");
     ASSERT_EQ(hex(encoded2), "008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48");

@@ -39,7 +39,7 @@ class PolkadotTests: XCTestCase {
         // real key in 1p test
         let wallet = HDWallet.test
         let key = wallet.getKey(coin: .polkadot, derivationPath: "m/44'/354'/0'")
-        
+
         let input = PolkadotSigningInput.with {
             $0.genesisHash = genesisHash
             $0.blockHash = Data(hexString: "0x7d5fa17b70251d0806f26156b1b698dfd09e040642fa092595ce0a78e9e84fcd")!
