@@ -1,0 +1,37 @@
+// Copyright © 2017-2020 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+syntax = "proto3";
+
+package TW.Oasis.Proto;
+option java_package = "wallet.core.jni.proto";
+
+message TransferMessage {
+    string to = 1;
+    uint64 gas_price = 2;
+
+    // Amount values strings prefixed by zero. e.g. "\u000010000000"
+    string gas_amount = 3;
+    // Amount values strings prefixed by zero
+    string amount = 4;
+
+    uint64 nonce = 5;
+    string context = 6;
+}
+
+message SigningInput {
+    bytes private_key = 1;
+
+    oneof message {
+        TransferMessage transfer = 2;
+    }
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+}
