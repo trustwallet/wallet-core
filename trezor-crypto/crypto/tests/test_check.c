@@ -48,7 +48,7 @@
 #include <TrezorCrypto/blake256.h>
 #include <TrezorCrypto/blake2b.h>
 #include <TrezorCrypto/blake2s.h>
-#include <TrezorCrypto/chacha_drbg.h>
+//#include <TrezorCrypto/chacha_drbg.h>
 #include <TrezorCrypto/curves.h>
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/ed25519-donna/ed25519-donna.h>

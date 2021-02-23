@@ -8,7 +8,7 @@ target_link_libraries(TrezorCryptoTests TrezorCrypto check)
 target_include_directories(TrezorCryptoTests PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_compile_options(TrezorCryptoTests
     PRIVATE
-        -DUSE_MONERO=1 -DUSE_CARDANO=1 -DAES_128=1 -DAES_VAR=1
+        -DUSE_MONERO=1 -DUSE_CARDANO=1
 )
 
 add_test(NAME test_check COMMAND TrezorCryptoTests)
