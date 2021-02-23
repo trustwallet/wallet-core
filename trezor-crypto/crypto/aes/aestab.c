@@ -21,7 +21,7 @@ Issue Date: 20/12/2007
 #define DO_TABLES
 
 #include <TrezorCrypto/aes.h>
-#include <TrezorCrypto/aes/aesopt.h>
+#include "aesopt.h"
 
 #if defined(STATIC_TABLES)
 
@@ -173,7 +173,7 @@ Issue Date: 20/12/2007
 
 #endif
 
-#include <TrezorCrypto/aes/aestab.h>
+#include "aestab.h"
 
 #if defined(__cplusplus)
 extern "C"
