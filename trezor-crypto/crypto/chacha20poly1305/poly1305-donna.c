@@ -1,10 +1,10 @@
 #include <TrezorCrypto/chacha20poly1305/poly1305-donna.h>
-#include <TrezorCrypto/chacha20poly1305/poly1305-donna-32.h>
+#include "poly1305-donna-32.h"
 
 void
 poly1305_update(poly1305_context *ctx, const unsigned char *m, size_t bytes) {
 	poly1305_state_internal_t *st = (poly1305_state_internal_t *)ctx;
-	size_t i = 0;
+	size_t i;
 
 	/* handle leftover */
 	if (st->leftover) {
@@ -40,7 +40,7 @@ poly1305_update(poly1305_context *ctx, const unsigned char *m, size_t bytes) {
 
 void
 poly1305_auth(unsigned char mac[16], const unsigned char *m, size_t bytes, const unsigned char key[32]) {
-	poly1305_context ctx = {0};
+	poly1305_context ctx;
 	poly1305_init(&ctx, key);
 	poly1305_update(&ctx, m, bytes);
 	poly1305_finish(&ctx, mac);
@@ -48,7 +48,7 @@ poly1305_auth(unsigned char mac[16], const unsigned char *m, size_t bytes, const
 
 int
 poly1305_verify(const unsigned char mac1[16], const unsigned char mac2[16]) {
-	size_t i = 0;
+	size_t i;
 	unsigned int dif = 0;
 	for (i = 0; i < 16; i++)
 		dif |= (mac1[i] ^ mac2[i]);
@@ -127,12 +127,12 @@ poly1305_power_on_self_test(void) {
 		0xd2,0x87,0xf9,0x7c,0x44,0x62,0x3d,0x39
 	};
 
-	poly1305_context ctx = {0};
-	poly1305_context total_ctx = {0};
-	unsigned char all_key[32] = {0};
-	unsigned char all_msg[256] = {0};
-	unsigned char mac[16] = {0};
-	size_t i = 0, j = 0;
+	poly1305_context ctx;
+	poly1305_context total_ctx;
+	unsigned char all_key[32];
+	unsigned char all_msg[256];
+	unsigned char mac[16];
+	size_t i, j;
 	int result = 1;
 
 	for (i = 0; i < sizeof(mac); i++)
