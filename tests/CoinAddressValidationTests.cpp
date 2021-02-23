@@ -387,5 +387,10 @@ TEST(Coin, ValidateAddressElrond) {
     EXPECT_FALSE(validateAddress(TWCoinTypeElrond, "xerd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz"));
 }
 
+TEST(Coin, ValidateAddressOasis) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeOasis, "oasis1qp0cnmkjl22gky6p6qeghjytt4v7dkxsrsmueweh"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeOasis, "oasi1qp0cnmkjl22gky6p6qeghjytt4v7dkxsrsmueweh"));
+}
+
 
 } // namespace TW

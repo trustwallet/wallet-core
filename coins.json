@@ -1207,6 +1207,31 @@
     }
   },
   {
+    "id": "oasis",
+    "name": "Oasis",
+    "coinId": 474,
+    "symbol": "ROSE",
+    "decimals": 9,
+    "blockchain": "OasisNetwork",
+    "derivationPath": "m/44'/474'/0'/0'/0'",
+    "curve": "ed25519HD",
+    "publicKeyType": "ed25519",
+    "hrp": "oasis",
+    "explorer": {
+      "url": "https://oasisscan.com",
+      "txPath": "/transactions/",
+      "accountPath": "/accounts/detail/",
+      "sampleTx": "0b9bd4983f1c88a1c71bf33562b6ba02b3064e01697d15a0de4bfe1922ec74b8",
+      "sampleAccount": "oasis1qrx376dmwuckmruzn9vq64n49clw72lywctvxdf4"
+    },
+    "info": {
+      "url": "https://www.oasislabs.com/",
+      "client": "https://github.com/oasisprotocol/oasis-core",
+      "clientPublic": "https://rosetta.oasis.dev/api/",
+      "clientDocs": "https://github.com/oasisprotocol/oasis-core/blob/master/docs/oasis-node/rpc.md"
+    }
+  },
+  {
     "id": "ontology",
     "name": "Ontology",
     "coinId": 1024,
