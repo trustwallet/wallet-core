@@ -17,7 +17,7 @@
 #include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 #include <TrezorCrypto/ed25519.h>
 
-#include <TrezorCrypto/ed25519-donna/ed25519-hash-custom.h>
+#include "ed25519-hash-custom.h"
 
 /*
 	Generates a (extsk[0..31]) and aExt (extsk[32..63])
@@ -42,9 +42,9 @@ ed25519_hram(hash_512bits hram, const ed25519_signature RS, const ed25519_public
 
 void
 ED25519_FN(ed25519_publickey) (const ed25519_secret_key sk, ed25519_public_key pk) {
-	bignum256modm a = {0};
+	bignum256modm a;
 	ge25519 ALIGN(16) A;
-	hash_512bits extsk = {0};
+	hash_512bits extsk;
 
 	/* A = aB */
 	ed25519_extsk(extsk, sk);
@@ -54,12 +54,11 @@ ED25519_FN(ed25519_publickey) (const ed25519_secret_key sk, ed25519_public_key p
 	ge25519_pack(pk, &A);
 }
 
-#if USE_CARDANO
 void
 ED25519_FN(ed25519_publickey_ext) (const ed25519_secret_key sk, const ed25519_secret_key skext, ed25519_public_key pk) {
-	bignum256modm a = {0};
+	bignum256modm a;
 	ge25519 ALIGN(16) A;
-	hash_512bits extsk = {0};
+	hash_512bits extsk;
 
 	/* we don't stretch the key through hashing first since its already 64 bytes */
 
@@ -69,12 +68,11 @@ ED25519_FN(ed25519_publickey_ext) (const ed25519_secret_key sk, const ed25519_se
 	ge25519_scalarmult_base_niels(&A, ge25519_niels_base_multiples, a);
 	ge25519_pack(pk, &A);
 }
-#endif
 
 void
 ED25519_FN(ed25519_cosi_sign) (const unsigned char *m, size_t mlen, const ed25519_secret_key sk, const ed25519_secret_key nonce, const ed25519_public_key R, const ed25519_public_key pk, ed25519_cosi_signature sig) {
-	bignum256modm r = {0}, S = {0}, a = {0};
-	hash_512bits extsk = {0}, extnonce = {0}, hram = {0};
+	bignum256modm r, S, a;
+	hash_512bits extsk, extnonce, hram;
 
 	ed25519_extsk(extsk, sk);
 	ed25519_extsk(extnonce, nonce);
@@ -100,9 +98,9 @@ ED25519_FN(ed25519_cosi_sign) (const unsigned char *m, size_t mlen, const ed2551
 void
 ED25519_FN(ed25519_sign) (const unsigned char *m, size_t mlen, const ed25519_secret_key sk, const ed25519_public_key pk, ed25519_signature RS) {
 	ed25519_hash_context ctx;
-	bignum256modm r = {0}, S = {0}, a = {0};
-	ge25519 ALIGN(16) R = {0};
-	hash_512bits extsk = {0}, hashr = {0}, hram = {0};
+	bignum256modm r, S, a;
+	ge25519 ALIGN(16) R;
+	hash_512bits extsk, hashr, hram;
 
 	ed25519_extsk(extsk, sk);
 
@@ -133,16 +131,15 @@ ED25519_FN(ed25519_sign) (const unsigned char *m, size_t mlen, const ed25519_sec
 	contract256_modm(RS + 32, S);
 }
 
-#if USE_CARDANO
 void
 ED25519_FN(ed25519_sign_ext) (const unsigned char *m, size_t mlen, const ed25519_secret_key sk, const ed25519_secret_key skext, const ed25519_public_key pk, ed25519_signature RS) {
 	ed25519_hash_context ctx;
-	bignum256modm r = {0}, S = {0}, a = {0};
-	ge25519 ALIGN(16) R = {0};
-	hash_512bits extsk = {0}, hashr = {0}, hram = {0};
+	bignum256modm r, S, a;
+	ge25519 ALIGN(16) R;
+	hash_512bits extsk, hashr, hram;
 
 	/* we don't stretch the key through hashing first since its already 64 bytes */
-
+	
 	memcpy(extsk, sk, 32);
 	memcpy(extsk+32, skext, 32);
 
@@ -172,14 +169,13 @@ ED25519_FN(ed25519_sign_ext) (const unsigned char *m, size_t mlen, const ed25519
 	/* S = (r + H(R,A,m)a) mod L */
 	contract256_modm(RS + 32, S);
 }
-#endif
 
 int
 ED25519_FN(ed25519_sign_open) (const unsigned char *m, size_t mlen, const ed25519_public_key pk, const ed25519_signature RS) {
 	ge25519 ALIGN(16) R, A;
-	hash_512bits hash = {0};
-	bignum256modm hram = {0}, S = {0};
-	unsigned char checkR[32] = {0};
+	hash_512bits hash;
+	bignum256modm hram, S;
+	unsigned char checkR[32];
 
 	if ((RS[63] & 224) || !ge25519_unpack_negative_vartime(&A, pk))
 		return -1;
@@ -203,9 +199,9 @@ ED25519_FN(ed25519_sign_open) (const unsigned char *m, size_t mlen, const ed2551
 
 int
 ED25519_FN(ed25519_scalarmult) (ed25519_public_key res, const ed25519_secret_key sk, const ed25519_public_key pk) {
-	bignum256modm a = {0};
+	bignum256modm a;
 	ge25519 ALIGN(16) A, P;
-	hash_512bits extsk = {0};
+	hash_512bits extsk;
 
 	ed25519_extsk(extsk, sk);
 	expand256_modm(a, extsk, 32);
@@ -223,14 +219,14 @@ ED25519_FN(ed25519_scalarmult) (ed25519_public_key res, const ed25519_secret_key
 
 #ifndef ED25519_SUFFIX
 
-#include <TrezorCrypto/ed25519-donna/curve25519-donna-scalarmult-base.h>
+#include "curve25519-donna-scalarmult-base.h"
 
 int
 ed25519_cosi_combine_publickeys(ed25519_public_key res, CONST ed25519_public_key *pks, size_t n) {
 	size_t i = 0;
-	ge25519 P = {0};
-	ge25519_pniels sump = {0};
-	ge25519_p1p1 sump1 = {0};
+	ge25519 P;
+	ge25519_pniels sump;
+	ge25519_p1p1 sump1;
 
 	if (n == 1) {
 		memcpy(res, pks, sizeof(ed25519_public_key));
@@ -258,7 +254,7 @@ ed25519_cosi_combine_publickeys(ed25519_public_key res, CONST ed25519_public_key
 
 void
 ed25519_cosi_combine_signatures(ed25519_signature res, const ed25519_public_key R, CONST ed25519_cosi_signature *sigs, size_t n) {
-	bignum256modm s = {0}, t = {0};
+	bignum256modm s, t;
 	size_t i = 0;
 
 	expand256_modm(s, sigs[i++], 32);
@@ -275,11 +271,11 @@ ed25519_cosi_combine_signatures(ed25519_signature res, const ed25519_public_key 
 */
 void
 curve25519_scalarmult_basepoint(curve25519_key pk, const curve25519_key e) {
-	curve25519_key ec = {0};
-	bignum256modm s = {0};
+	curve25519_key ec;
+	bignum256modm s;
 	bignum25519 ALIGN(16) yplusz, zminusy;
 	ge25519 ALIGN(16) p;
-	size_t i = 0;
+	size_t i;
 
 	/* clamp */
 	for (i = 0; i < 32; i++) ec[i] = e[i];
@@ -302,8 +298,8 @@ curve25519_scalarmult_basepoint(curve25519_key pk, const curve25519_key e) {
 
 void
 curve25519_scalarmult(curve25519_key mypublic, const curve25519_key secret, const curve25519_key basepoint) {
-	curve25519_key e = {0};
-	size_t i = 0;
+	curve25519_key e;
+	size_t i;
 
 	for (i = 0;i < 32;++i) e[i] = secret[i];
 	e[0] &= 0xf8;
