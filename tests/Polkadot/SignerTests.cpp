@@ -20,6 +20,7 @@
 
 namespace TW::Polkadot {
     auto privateKey = PrivateKey(parse_hex("0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115"));
+    auto privateKeyIOS = PrivateKey(parse_hex("37932b086586a6675e66e562fe68bd3eeea4177d066619c602fe3efc290ada62"));
     auto privateKeyThrow2 = PrivateKey(parse_hex("70a794d4f1019c3ce002f33062f45029c4f930a56b3d20ec477f7668c6bbc37f"));
     auto addressThrow2 = "14Ztd3KJDaB9xyJtRkREtSZDdhLSbm7UUKt8Z7AwSv7q85G2";
     auto toPublicKey = PublicKey(parse_hex("0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"), TWPublicKeyTypeED25519);
@@ -95,6 +96,38 @@ TEST(PolkadotSigner, SignTransferDOT) {
 
     ASSERT_EQ(hex(preimage), "05008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c032000000110000000300000091b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3343a3f4258fd92f5ca6ca5abdf473d86a78b0bcd0dc09c568ca594245cc8c642");
     ASSERT_EQ(hex(output.encoded()), "29028488dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee003d91a06263956d8ce3ce5c55455baefff299d9cb2bb3f76866b6828ee4083770b6c03b05d7b6eb510ac78d047002c1fe5c6ee4b37c9c5a8b09ea07677f12e50d3200000005008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c0");
+}
+
+TEST(PolkadotSigner, SignTransfer_72dd5b) {
+
+    auto blockHash = parse_hex("7d5fa17b70251d0806f26156b1b698dfd09e040642fa092595ce0a78e9e84fcd");
+
+    auto input = Proto::SigningInput();
+    input.set_genesis_hash(genesisHash.data(), genesisHash.size());
+    input.set_block_hash(blockHash.data(), blockHash.size());
+
+    input.set_nonce(1);
+    input.set_spec_version(28);
+    input.set_private_key(privateKeyIOS.bytes.data(), privateKeyIOS.bytes.size());
+    input.set_network(Proto::Network::POLKADOT);
+    input.set_transaction_version(6);
+
+    auto &era = *input.mutable_era();
+    era.set_block_number(3910736);
+    era.set_period(64);
+
+    auto balanceCall = input.mutable_balance_call();
+    auto &transfer = *balanceCall->mutable_transfer();
+    auto value = store(uint256_t(10000000000));
+    transfer.set_to_address("13ZLCqJNPsRZYEbwjtZZFpWt9GyFzg5WahXCVWKpWdUJqrQ5");
+    transfer.set_value(value.data(), value.size());
+
+    auto extrinsic = Extrinsic(input);
+    auto preimage = extrinsic.encodePayload();
+    auto output = Signer::sign(input);
+
+    ASSERT_EQ(hex(preimage), "0500007120f76076bcb0efdf94c7219e116899d0163ea61cb428183d71324eb33b2bce0700e40b5402050104001c0000000600000091b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c37d5fa17b70251d0806f26156b1b698dfd09e040642fa092595ce0a78e9e84fcd");
+    ASSERT_EQ(hex(output.encoded()), "410284008d96660f14babe708b5e61853c9f5929bc90dd9874485bf4d6dc32d3e6f22eaa0038ec4973ab9773dfcbf170b8d27d36d89b85c3145e038d68914de83cf1f7aca24af64c55ec51ba9f45c5a4d74a9917dee380e9171108921c3e5546e05be15206050104000500007120f76076bcb0efdf94c7219e116899d0163ea61cb428183d71324eb33b2bce0700e40b5402");
 }
 
 TEST(PolkadotSigner, SignBond_8da66d) {

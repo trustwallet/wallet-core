@@ -35,8 +35,35 @@ class PolkadotTests: XCTestCase {
         XCTAssertEqual(address.data, pubkey.data)
     }
 
+    func testSignTransfer() {
+        // real key in 1p test
+        let wallet = HDWallet.test
+        let key = wallet.getKey(coin: .polkadot, derivationPath: "m/44'/354'/0'")
+
+        let input = PolkadotSigningInput.with {
+            $0.genesisHash = genesisHash
+            $0.blockHash = Data(hexString: "0x7d5fa17b70251d0806f26156b1b698dfd09e040642fa092595ce0a78e9e84fcd")!
+            $0.nonce = 1
+            $0.specVersion = 28
+            $0.network = .polkadot
+            $0.transactionVersion = 6
+            $0.privateKey = key.data
+            $0.era = PolkadotEra.with {
+                $0.blockNumber = 3910736
+                $0.period = 64
+            }
+            $0.balanceCall.transfer = PolkadotBalance.Transfer.with {
+                $0.toAddress = "13ZLCqJNPsRZYEbwjtZZFpWt9GyFzg5WahXCVWKpWdUJqrQ5"
+                $0.value = Data(hexString: "0x02540be400")! // 1 DOT
+            }
+        }
+        let output: PolkadotSigningOutput = AnySigner.sign(input: input, coin: .polkadot)
+
+        // https://polkadot.subscan.io/extrinsic/0x72dd5b5a3e01e0f3e779c5fa39e53de05ee381b9138d24e2791a775a6d1ff679
+        XCTAssertEqual(output.encoded.hexString, "410284008d96660f14babe708b5e61853c9f5929bc90dd9874485bf4d6dc32d3e6f22eaa0038ec4973ab9773dfcbf170b8d27d36d89b85c3145e038d68914de83cf1f7aca24af64c55ec51ba9f45c5a4d74a9917dee380e9171108921c3e5546e05be15206050104000500007120f76076bcb0efdf94c7219e116899d0163ea61cb428183d71324eb33b2bce0700e40b5402")
+    }
+
     func testSigningBond() {
-        // https://polkadot.subscan.io/extrinsic/0x5ec2ec6633b4b6993d9cf889ef42c457a99676244dc361a9ae17935d331dc39a
         // real key in 1p test
         let wallet = HDWallet.test
         let key = wallet.getKey(coin: .polkadot, derivationPath: "m/44'/354'/0'")
@@ -53,12 +80,12 @@ class PolkadotTests: XCTestCase {
             $0.stakingCall.bond = PolkadotStaking.Bond.with {
                 $0.controller = address
                 $0.rewardDestination = .staked
-                // 0.01
-                $0.value = Data(hexString: "0x02540be400")!
+                $0.value = Data(hexString: "0x02540be400")! // 0.01 old DOT
             }
         }
         let output: PolkadotSigningOutput = AnySigner.sign(input: input, coin: .polkadot)
 
+        // https://polkadot.subscan.io/extrinsic/0x5ec2ec6633b4b6993d9cf889ef42c457a99676244dc361a9ae17935d331dc39a
         XCTAssertEqual(output.encoded.hexString, "3902848d96660f14babe708b5e61853c9f5929bc90dd9874485bf4d6dc32d3e6f22eaa00a559867d1304cc95bac7cfe5d1b2fd49aed9f43c25c7d29b9b01c1238fa1f6ffef34b9650e42325de41e20fd502af7b074c67a9ec858bd9a1ba6d4212e3e0d0f00000007008d96660f14babe708b5e61853c9f5929bc90dd9874485bf4d6dc32d3e6f22eaa0700e40b540200")
     }
 

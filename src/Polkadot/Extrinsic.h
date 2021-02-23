@@ -30,6 +30,8 @@ class Extrinsic {
     Data era;
     // encoded Call data
     Data call;
+    // network
+    TWSS58AddressType network;
 
     Extrinsic(const Proto::SigningInput& input)
         : blockHash(input.block_hash().begin(), input.block_hash().end())
@@ -41,8 +43,10 @@ class Extrinsic {
         if (input.has_era()) {
             era = encodeEra(input.era().block_number(), input.era().period());
         } else {
-            era = encodeCompact(0);
+          // immortal era
+          era = encodeCompact(0);
         }
+        network = TWSS58AddressType(input.network());
         call = encodeCall(input);
     }
 
@@ -53,8 +57,9 @@ class Extrinsic {
     Data encodeSignature(const PublicKey& signer, const Data& signature) const;
 
   protected:
-    static Data encodeBalanceCall(const Proto::Balance& balance, TWSS58AddressType network);
-    static Data encodeStakingCall(const Proto::Staking& staking, TWSS58AddressType network);
+    static bool encodeRawAccount(TWSS58AddressType network, uint32_t specVersion);
+    static Data encodeBalanceCall(const Proto::Balance& balance, TWSS58AddressType network, uint32_t specVersion);
+    static Data encodeStakingCall(const Proto::Staking& staking, TWSS58AddressType network, uint32_t specVersion);
     static Data encodeBatchCall(const std::vector<Data>& calls, TWSS58AddressType network);
     Data encodeEraNonceTip() const;
 };
