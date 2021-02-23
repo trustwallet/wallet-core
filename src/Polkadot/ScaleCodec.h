@@ -98,23 +98,21 @@ inline Data encodeVector(const std::vector<Data>& vec) {
     return data;
 }
 
-inline Data encodeAddress(const PublicKey& key) {
+inline Data encodeAccountId(const Data& bytes, bool raw) {
     auto data = Data{};
-    append(data, Data(key.bytes.begin(), key.bytes.end()));
+    if (!raw) {
+        // MultiAddress::AccountId
+        // https://github.com/paritytech/substrate/blob/master/primitives/runtime/src/multiaddress.rs#L28
+        append(data, 0x00);
+    }
+    append(data, bytes);
     return data;
 }
 
-inline Data encodeAddress(const SS58Address& address) {
-    auto data = Data{};
-    // first byte is network
-    append(data, Data(address.bytes.begin() + 1, address.bytes.end()));
-    return data;
-}
-
-inline Data encodeAddresses(const std::vector<SS58Address>& addresses) {
+inline Data encodeAccountIds(const std::vector<SS58Address>& addresses, bool raw) {
     std::vector<Data> vec;
     for (auto addr : addresses) {
-        vec.push_back(encodeAddress(addr));
+        vec.push_back(encodeAccountId(addr.keyBytes(), raw));
     }
     return encodeVector(vec);
 }
