@@ -27,8 +27,8 @@ add_library(TrezorCrypto
     crypto/scrypt.c
     crypto/nist256p1.c
     crypto/groestl.c
-    crypto/hmac_drbg.c
-    crypto/rfc6979.c
+    #crypto/hmac_drbg.c
+    #crypto/rfc6979.c
     crypto/schnorr.c
     crypto/shamir.c
     crypto/slip39.c
