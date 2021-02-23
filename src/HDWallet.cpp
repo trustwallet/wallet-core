@@ -38,9 +38,10 @@ bool HDWallet::isValid(const std::string& mnemonic) {
 
 HDWallet::HDWallet(int strength, const std::string& passphrase)
     : seed(), mnemonic(), passphrase(passphrase) {
-    const char* mnemonic_chars = mnemonic_generate(strength);
-    mnemonic_to_seed(mnemonic_chars, passphrase.c_str(), seed.data(), nullptr);
-    mnemonic = mnemonic_chars;
+    std::array<char, HDWallet::maxMnemomincSize> mnemonic_chars;
+    mnemonic_generate(strength, mnemonic_chars.data());
+    mnemonic_to_seed(mnemonic_chars.data(), passphrase.c_str(), seed.data(), nullptr);
+    mnemonic = mnemonic_chars.data();
     updateEntropy();
 }
 
@@ -52,10 +53,10 @@ HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase)
 
 HDWallet::HDWallet(const Data& data, const std::string& passphrase)
     : seed(), mnemonic(), passphrase(passphrase) {
-    const char* mnemonic_chars = mnemonic_from_data(data.data(), static_cast<int>(data.size()));
-    if (mnemonic_chars) {
-        mnemonic_to_seed(mnemonic_chars, passphrase.c_str(), seed.data(), nullptr);
-        mnemonic = mnemonic_chars;
+    std::array<char, HDWallet::maxMnemomincSize> mnemonic_chars;
+    if (mnemonic_from_data(data.data(), data.size(), mnemonic_chars.data())) {
+        mnemonic_to_seed(mnemonic_chars.data(), passphrase.c_str(), seed.data(), nullptr);
+        mnemonic = mnemonic_chars.data();
         updateEntropy();
     }
 }
