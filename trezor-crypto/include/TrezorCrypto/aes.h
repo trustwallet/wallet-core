@@ -38,13 +38,11 @@ extern "C"
 {
 #endif
 
-// #define AES_128     /* if a fast 128 bit key scheduler is needed     */
+#define AES_128     /* if a fast 128 bit key scheduler is needed     */
 // #define AES_192     /* if a fast 192 bit key scheduler is needed     */
 #define AES_256     /* if a fast 256 bit key scheduler is needed     */
-// #define AES_VAR     /* if variable key size scheduler is needed      */
-#if 1
-#  define AES_MODES /* if support is needed for modes in the C code  */
-#endif              /* (these will use AES_NI if it is present)      */
+#define AES_VAR     /* if variable key size scheduler is needed      */
+#define AES_MODES   /* if support is needed for modes in the C code  */
 #if 0               /* add this to make direct calls to the AES_NI   */
 #                   /* implemented CBC and CTR modes available       */
 #   define ADD_AESNI_MODE_CALLS
@@ -219,8 +217,8 @@ void aes_ctr_cbuf_inc(unsigned char *cbuf);
 
 #endif
 
-#if defined(__cplusplus)
-}
+#ifdef __cplusplus
+} /* extern "C" */
 #endif
 
 #endif

@@ -30,13 +30,13 @@ add_library(TrezorCrypto
     #crypto/hmac_drbg.c
     #crypto/rfc6979.c
     crypto/schnorr.c
-    crypto/shamir.c
+    #crypto/shamir.c
     crypto/slip39.c
 )
 
 target_compile_options(TrezorCrypto
     PRIVATE
-        -DUSE_MONERO=1 -DUSE_CARDANO=1 -DAES_128=1 -DAES_VAR=1
+        -DUSE_MONERO=1 -DUSE_CARDANO=1
         -W
         -Wall
         -Wextra
