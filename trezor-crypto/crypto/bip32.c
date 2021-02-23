@@ -530,6 +530,8 @@ void hdnode_fill_public_key(HDNode *node)
 		node->public_key[0] = 1;
 		if (node->curve == &ed25519_info) {
 			ed25519_publickey(node->private_key, node->public_key + 1);
+		} else if (node->curve == &ed25519_hd_info) {
+            ed25519_publickey_ext(node->private_key, node->private_key_extension, node->public_key + 1);
         } else if (node->curve == &ed25519_blake2b_nano_info) {
 			ed25519_publickey_blake2b(node->private_key, node->public_key + 1);
 		} else if (node->curve == &ed25519_sha3_info) {
@@ -668,6 +670,8 @@ int hdnode_sign(HDNode *node, const uint8_t *msg, uint32_t msg_len, HasherType h
 	} else {
 		hdnode_fill_public_key(node);
 		if (node->curve == &ed25519_info) {
+			ed25519_sign(msg, msg_len, node->private_key, node->public_key + 1, sig);
+		} else if (node->curve == &ed25519_hd_info) {
 			ed25519_sign(msg, msg_len, node->private_key, node->public_key + 1, sig);
 		} else if (node->curve == &ed25519_blake2b_nano_info) {
 			ed25519_sign_blake2b(msg, msg_len, node->private_key, node->public_key + 1, sig);

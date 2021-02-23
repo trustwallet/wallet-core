@@ -67,7 +67,7 @@
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sha2.h>
 #include <TrezorCrypto/sha3.h>
-#include <TrezorCrypto/shamir.h>
+//#include <TrezorCrypto/shamir.h>
 //#include <TrezorCrypto/slip39.h>
 //#include <TrezorCrypto/slip39_wordlist.h>
 
