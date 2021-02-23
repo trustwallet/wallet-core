@@ -43,7 +43,7 @@ class Extrinsic {
         if (input.has_era()) {
             era = encodeEra(input.era().block_number(), input.era().period());
         } else {
-          // immoral era
+          // immortal era
           era = encodeCompact(0);
         }
         network = TWSS58AddressType(input.network());
