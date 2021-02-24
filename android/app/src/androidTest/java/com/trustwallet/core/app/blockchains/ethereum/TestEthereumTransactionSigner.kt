@@ -97,6 +97,35 @@ class TestEthereumTransactionSigner {
     }
 
     @Test
+    fun testEthereumERC1155Signing() {
+        val signingInput = Ethereum.SigningInput.newBuilder()
+        signingInput.apply {
+            privateKey = ByteString.copyFrom(PrivateKey("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151".toHexByteArray()).data())
+            toAddress = "0x4e45e92ed38f885d39a733c14f1817217a89d425" // contract
+            chainId = ByteString.copyFrom("0x01".toHexByteArray())
+            nonce = ByteString.copyFrom("0x00".toHexByteArray())
+            gasPrice = ByteString.copyFrom("0x09C7652400".toHexByteArray()) // 42000000000
+            gasLimit = ByteString.copyFrom("0x0130b9".toHexByteArray()) // 78009
+            transaction = Ethereum.Transaction.newBuilder().apply {
+                erc1155Transfer = Ethereum.Transaction.ERC1155Transfer.newBuilder().apply {
+                    from = "0x718046867b5b1782379a14eA4fc0c9b724DA94Fc"
+                    to = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
+                    tokenId = ByteString.copyFrom("0x23c47ee5".toHexByteArray())
+                    value = ByteString.copyFrom("0x1BC16D674EC80000".toHexByteArray()) // 2000000000000000000
+                    data = ByteString.copyFrom("0x01020304".toHexByteArray())
+                }.build()
+            }.build()
+        }
+
+        val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
+        val encoded = AnySigner.encode(signingInput.build(), ETHEREUM)
+
+        assertArrayEquals(output.encoded.toByteArray(), encoded)
+        assertEquals(Numeric.toHexString(encoded), "0xf9014a808509c7652400830130b9944e45e92ed38f885d39a733c14f1817217a89d42580b8e4f242432a000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee50000000000000000000000000000000000000000000000001bc16d674ec8000000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000004010203040000000000000000000000000000000000000000000000000000000026a010315488201ac801ce346bffd1570de147615462d7e7db3cf08cf558465c6b79a06643943b24593bc3904a9fda63bb169881730994c973ab80f07d66a698064573")
+        assertEquals(Numeric.toHexString(output.data.toByteArray()), "0xf242432a000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee50000000000000000000000000000000000000000000000001bc16d674ec8000000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000040102030400000000000000000000000000000000000000000000000000000000")
+    }
+
+    @Test
     fun testSignJSON() {
         val json = """
             {

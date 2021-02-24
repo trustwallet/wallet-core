@@ -40,6 +40,21 @@ message Transaction {
         bytes token_id = 3;
     }
 
+    // ERC1155 NFT transfer transaction
+    message ERC1155Transfer {
+        string from = 1;
+
+        string to = 2;
+
+        // ID of the token (256-bit number)
+        bytes token_id = 3;
+
+        // The amount of tokens being transferred
+        bytes value = 4;
+
+        bytes data = 5;
+    }
+
     // Generic smart contract transaction
     message ContractGeneric {
         // Amount to send in wei (256-bit number)
@@ -54,7 +69,8 @@ message Transaction {
         ERC20Transfer erc20_transfer = 2;
         ERC20Approve erc20_approve = 3;
         ERC721Transfer erc721_transfer = 4;
-        ContractGeneric contract_generic = 5;
+        ERC1155Transfer erc1155_transfer = 5;
+        ContractGeneric contract_generic = 6;
     }
 }
 
