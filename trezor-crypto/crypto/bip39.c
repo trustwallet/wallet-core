@@ -35,9 +35,9 @@
 
 #if USE_BIP39_CACHE
 
-static int bip39_cache_index = 0;
+int bip39_cache_index = 0;
 
-static CONFIDENTIAL struct {
+CONFIDENTIAL struct {
   bool set;
   char mnemonic[256];
   char passphrase[64];
@@ -57,7 +57,7 @@ const char *mnemonic_generate(int strength) {
   return r;
 }
 
-static CONFIDENTIAL char mnemo[24 * 10];
+CONFIDENTIAL char mnemo[24 * 10];
 
 const char *mnemonic_from_data(const uint8_t *data, int len) {
   if (len % 4 || len < 16 || len > 32) {
@@ -212,7 +212,7 @@ void mnemonic_to_seed(const char *mnemonic, const char *passphrase,
   uint8_t salt[8 + 256] = {0};
   memcpy(salt, "mnemonic", 8);
   memcpy(salt + 8, passphrase, passphraselen);
-  static CONFIDENTIAL PBKDF2_HMAC_SHA512_CTX pctx;
+  CONFIDENTIAL PBKDF2_HMAC_SHA512_CTX pctx;
   pbkdf2_hmac_sha512_Init(&pctx, (const uint8_t *)mnemonic, mnemoniclen, salt,
                           passphraselen + 8, 1);
   if (progress_callback) {

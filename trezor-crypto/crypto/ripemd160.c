@@ -292,7 +292,7 @@ void ripemd160_Update( RIPEMD160_CTX *ctx, const uint8_t *input, uint32_t ilen )
     }
 }
 
-static const uint8_t ripemd160_padding[RIPEMD160_BLOCK_LENGTH] =
+const uint8_t ripemd160_padding[RIPEMD160_BLOCK_LENGTH] =
 {
  0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

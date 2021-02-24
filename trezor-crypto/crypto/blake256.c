@@ -22,7 +22,7 @@
   (p)[0] = (uint8_t)((v) >> 24); (p)[1] = (uint8_t)((v) >> 16); \
   (p)[2] = (uint8_t)((v) >>  8); (p)[3] = (uint8_t)((v)      );
 
-static const uint8_t sigma[][16] =
+const uint8_t sigma[][16] =
 {
   { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
   {14, 10, 4, 8, 9, 15, 13, 6, 1, 12, 0, 2, 11, 7, 5, 3 },
@@ -42,7 +42,7 @@ static const uint8_t sigma[][16] =
   { 2, 12, 6, 10, 0, 11, 8, 3, 4, 13, 7, 5, 15, 14, 1, 9 }
 };
 
-static const uint32_t u256[16] =
+const uint32_t u256[16] =
 {
   0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344,
   0xa4093822, 0x299f31d0, 0x082efa98, 0xec4e6c89,
@@ -50,7 +50,7 @@ static const uint32_t u256[16] =
   0xc0ac29b7, 0xc97c50dd, 0x3f84d5b5, 0xb5470917
 };
 
-static const uint8_t padding[129] =
+const uint8_t padding[129] =
 {
   0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

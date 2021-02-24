@@ -29,7 +29,7 @@
 
 void hmac_sha256_Init(HMAC_SHA256_CTX *hctx, const uint8_t *key,
                       const uint32_t keylen) {
-  static CONFIDENTIAL uint8_t i_key_pad[SHA256_BLOCK_LENGTH];
+  CONFIDENTIAL uint8_t i_key_pad[SHA256_BLOCK_LENGTH];
   memzero(i_key_pad, SHA256_BLOCK_LENGTH);
   if (keylen > SHA256_BLOCK_LENGTH) {
     sha256_Raw(key, keylen, i_key_pad);
@@ -61,7 +61,7 @@ void hmac_sha256_Final(HMAC_SHA256_CTX *hctx, uint8_t *hmac) {
 
 void hmac_sha256(const uint8_t *key, const uint32_t keylen, const uint8_t *msg,
                  const uint32_t msglen, uint8_t *hmac) {
-  static CONFIDENTIAL HMAC_SHA256_CTX hctx;
+  CONFIDENTIAL HMAC_SHA256_CTX hctx;
   hmac_sha256_Init(&hctx, key, keylen);
   hmac_sha256_Update(&hctx, msg, msglen);
   hmac_sha256_Final(&hctx, hmac);
@@ -69,11 +69,11 @@ void hmac_sha256(const uint8_t *key, const uint32_t keylen, const uint8_t *msg,
 
 void hmac_sha256_prepare(const uint8_t *key, const uint32_t keylen,
                          uint32_t *opad_digest, uint32_t *ipad_digest) {
-  static CONFIDENTIAL uint32_t key_pad[SHA256_BLOCK_LENGTH / sizeof(uint32_t)];
+  CONFIDENTIAL uint32_t key_pad[SHA256_BLOCK_LENGTH / sizeof(uint32_t)];
 
   memzero(key_pad, sizeof(key_pad));
   if (keylen > SHA256_BLOCK_LENGTH) {
-    static CONFIDENTIAL SHA256_CTX context;
+    CONFIDENTIAL SHA256_CTX context;
     sha256_Init(&context);
     sha256_Update(&context, key, keylen);
     sha256_Final(&context, (uint8_t *)key_pad);
@@ -103,7 +103,7 @@ void hmac_sha256_prepare(const uint8_t *key, const uint32_t keylen,
 
 void hmac_sha512_Init(HMAC_SHA512_CTX *hctx, const uint8_t *key,
                       const uint32_t keylen) {
-  static CONFIDENTIAL uint8_t i_key_pad[SHA512_BLOCK_LENGTH];
+  CONFIDENTIAL uint8_t i_key_pad[SHA512_BLOCK_LENGTH];
   memzero(i_key_pad, SHA512_BLOCK_LENGTH);
   if (keylen > SHA512_BLOCK_LENGTH) {
     sha512_Raw(key, keylen, i_key_pad);
@@ -143,11 +143,11 @@ void hmac_sha512(const uint8_t *key, const uint32_t keylen, const uint8_t *msg,
 
 void hmac_sha512_prepare(const uint8_t *key, const uint32_t keylen,
                          uint64_t *opad_digest, uint64_t *ipad_digest) {
-  static CONFIDENTIAL uint64_t key_pad[SHA512_BLOCK_LENGTH / sizeof(uint64_t)];
+  CONFIDENTIAL uint64_t key_pad[SHA512_BLOCK_LENGTH / sizeof(uint64_t)];
 
   memzero(key_pad, sizeof(key_pad));
   if (keylen > SHA512_BLOCK_LENGTH) {
-    static CONFIDENTIAL SHA512_CTX context;
+    CONFIDENTIAL SHA512_CTX context;
     sha512_Init(&context);
     sha512_Update(&context, key, keylen);
     sha512_Final(&context, (uint8_t *)key_pad);

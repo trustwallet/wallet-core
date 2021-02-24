@@ -1,6 +1,6 @@
 #include <TrezorCrypto/cash_addr.h>
 
-static const char* valid_cashchecksum[] = {
+const char* valid_cashchecksum[] = {
     "prefix:x64nx6hz",
     "p:gpf8m4h7",
     "bitcoincash:qpzry9x8gf2tvdw0s3jn54khce6mua7lcw20ayyn",
@@ -13,7 +13,7 @@ struct valid_cashaddr_data {
   const char* cashaddress;
 };
 
-static struct valid_cashaddr_data valid_cashaddr[] = {
+struct valid_cashaddr_data valid_cashaddr[] = {
     {"1BpEi6DfDAUFd7GtittLSdBeYJvcoaVggu",
      "bitcoincash:qpm2qsznhks23z7629mms6s4cwef74vcwvy22gdx6a"},
     {"1KXrWXciRDZUpQwQmuM1DbwsKDLYAYsVLR",

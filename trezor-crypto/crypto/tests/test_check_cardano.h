@@ -5,7 +5,7 @@ START_TEST(test_ed25519_cardano_sign_vectors) {
   ed25519_secret_key secret_key_extension;
   ed25519_signature signature;
 
-  static const char *vectors[] = {
+  const char *vectors[] = {
       "6065a956b1b34145c4416fdc3ba3276801850e91a77a31a7be782463288aea5"
       "3",  // private key
       "60ba6e25b1a02157fb69c5d1d7b96c4619736e545447069a6a6f0ba90844bc8"

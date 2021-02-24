@@ -40,9 +40,9 @@ uint64_t cashaddr_polymod_step(uint64_t pre) {
          (-((b >> 4) & 1) & 0x1e4f43e470ULL);
 }
 
-static const char* charset = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
+const char* charset = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
 
-static const int8_t charset_rev[128] = {
+const int8_t charset_rev[128] = {
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 15, -1, 10, 17, 21, 20, 26, 30, 7,

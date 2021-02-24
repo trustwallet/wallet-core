@@ -23,8 +23,8 @@ void ECRYPT_init(void)
   return;
 }
 
-static const char sigma[16] = "expand 32-byte k";
-static const char tau[16] = "expand 16-byte k";
+const char chacha_sigma[16] = "expand 32-byte k";
+const char tau[16] = "expand 16-byte k";
 
 void ECRYPT_keysetup(ECRYPT_ctx *x,const u8 *k,u32 kbits,u32 ivbits)
 {
@@ -37,7 +37,7 @@ void ECRYPT_keysetup(ECRYPT_ctx *x,const u8 *k,u32 kbits,u32 ivbits)
   x->input[7] = U8TO32_LITTLE(k + 12);
   if (kbits == 256) { /* recommended */
     k += 16;
-    constants = sigma;
+    constants = chacha_sigma;
   } else { /* kbits == 128 */
     constants = tau;
   }

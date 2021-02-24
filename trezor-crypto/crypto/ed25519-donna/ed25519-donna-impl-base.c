@@ -5,26 +5,26 @@
 /* sqrt(x) is such an integer y that 0 <= y <= p - 1, y % 2 = 0, and y^2 = x (mod p). */
 /* d = -121665 / 121666 */
 #if !defined(NDEBUG)
-static const bignum25519 ALIGN(16) fe_d = {
+const bignum25519 ALIGN(16) fe_d = {
 		0x35978a3, 0x0d37284, 0x3156ebd, 0x06a0a0e, 0x001c029, 0x179e898, 0x3a03cbb, 0x1ce7198, 0x2e2b6ff, 0x1480db3}; /* d */
 #endif
-static const bignum25519 ALIGN(16) fe_sqrtm1 = {
+const bignum25519 ALIGN(16) fe_sqrtm1 = {
 		0x20ea0b0, 0x186c9d2, 0x08f189d, 0x035697f, 0x0bd0c60, 0x1fbd7a7, 0x2804c9e, 0x1e16569, 0x004fc1d, 0x0ae0c92}; /* sqrt(-1) */
-//static const bignum25519 ALIGN(16) fe_d2 = {
+//const bignum25519 ALIGN(16) fe_d2 = {
 //		0x2b2f159, 0x1a6e509, 0x22add7a, 0x0d4141d, 0x0038052, 0x0f3d130, 0x3407977, 0x19ce331, 0x1c56dff, 0x0901b67}; /* 2 * d */
 
 /* A = 2 * (1 - d) / (1 + d) = 486662 */
-static const bignum25519 ALIGN(16) fe_ma2 = {
+const bignum25519 ALIGN(16) fe_ma2 = {
 		0x33de3c9, 0x1fff236, 0x3ffffff, 0x1ffffff, 0x3ffffff, 0x1ffffff, 0x3ffffff, 0x1ffffff, 0x3ffffff, 0x1ffffff}; /* -A^2 */
-static const bignum25519 ALIGN(16) fe_ma = {
+const bignum25519 ALIGN(16) fe_ma = {
 		0x3f892e7, 0x1ffffff, 0x3ffffff, 0x1ffffff, 0x3ffffff, 0x1ffffff, 0x3ffffff, 0x1ffffff, 0x3ffffff, 0x1ffffff}; /* -A */
-static const bignum25519 ALIGN(16) fe_fffb1 = {
+const bignum25519 ALIGN(16) fe_fffb1 = {
 		0x1e3bdff, 0x025a2b3, 0x18e5bab, 0x0ba36ac, 0x0b9afed, 0x004e61c, 0x31d645f, 0x09d1bea, 0x102529e, 0x0063810}; /* sqrt(-2 * A * (A + 2)) */
-static const bignum25519 ALIGN(16) fe_fffb2 = {
+const bignum25519 ALIGN(16) fe_fffb2 = {
 		0x383650d, 0x066df27, 0x10405a4, 0x1cfdd48, 0x2b887f2, 0x1e9a041, 0x1d7241f, 0x0612dc5, 0x35fba5d, 0x0cbe787}; /* sqrt(2 * A * (A + 2)) */
-static const bignum25519 ALIGN(16) fe_fffb3 = {
+const bignum25519 ALIGN(16) fe_fffb3 = {
 		0x0cfd387, 0x1209e3a, 0x3bad4fc, 0x18ad34d, 0x2ff6c02, 0x0f25d12, 0x15cdfe0, 0x0e208ed, 0x32eb3df, 0x062d7bb}; /* sqrt(-sqrt(-1) * A * (A + 2)) */
-static const bignum25519 ALIGN(16) fe_fffb4 = {
+const bignum25519 ALIGN(16) fe_fffb4 = {
 		0x2b39186, 0x14640ed, 0x14930a7, 0x04509fa, 0x3b91bf0, 0x0f7432e, 0x07a443f, 0x17f24d8, 0x031067d, 0x0690fcc}; /* sqrt(sqrt(-1) * A * (A + 2)) */
 
 

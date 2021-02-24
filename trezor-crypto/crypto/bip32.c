@@ -177,7 +177,7 @@ int hdnode_from_xprv(uint32_t depth, uint32_t child_num,
 
 int hdnode_from_seed(const uint8_t *seed, int seed_len, const char *curve,
                      HDNode *out) {
-  static CONFIDENTIAL uint8_t I[32 + 32];
+  CONFIDENTIAL uint8_t I[32 + 32];
   memzero(out, sizeof(HDNode));
   out->depth = 0;
   out->child_num = 0;
@@ -185,7 +185,7 @@ int hdnode_from_seed(const uint8_t *seed, int seed_len, const char *curve,
   if (out->curve == 0) {
     return 0;
   }
-  static CONFIDENTIAL HMAC_SHA512_CTX ctx;
+  CONFIDENTIAL HMAC_SHA512_CTX ctx;
   hmac_sha512_Init(&ctx, (const uint8_t *)out->curve->bip32_name,
                    strlen(out->curve->bip32_name));
   hmac_sha512_Update(&ctx, seed, seed_len);
@@ -216,7 +216,7 @@ int hdnode_from_seed(const uint8_t *seed, int seed_len, const char *curve,
 // [wallet-core]
 int hdnode_from_seed_hd(const uint8_t *seed, int seed_len, const char* curve, HDNode *out)
 {
-  static CONFIDENTIAL uint8_t I[32 + 32];
+  CONFIDENTIAL uint8_t I[32 + 32];
   uint8_t tmp = 0x01;
   memzero(out, sizeof(HDNode));
   out->depth = 0;
@@ -225,12 +225,12 @@ int hdnode_from_seed_hd(const uint8_t *seed, int seed_len, const char* curve, HD
   if (out->curve == 0) {
     return 0;
   }
-  static CONFIDENTIAL HMAC_SHA256_CTX ctxs256;
+  CONFIDENTIAL HMAC_SHA256_CTX ctxs256;
   hmac_sha256_Init(&ctxs256, (const uint8_t*) out->curve->bip32_name, strlen(out->curve->bip32_name));
   hmac_sha256_Update(&ctxs256, &tmp, 1);
   hmac_sha256_Update(&ctxs256, seed, seed_len);
   hmac_sha256_Final(&ctxs256, out->chain_code);
-  static CONFIDENTIAL HMAC_SHA512_CTX ctx;
+  CONFIDENTIAL HMAC_SHA512_CTX ctx;
   hmac_sha512_Init(&ctx, (const uint8_t*) out->curve->bip32_name, strlen(out->curve->bip32_name));
   hmac_sha512_Update(&ctx, seed, seed_len);
   hmac_sha512_Final(&ctx, I);
@@ -262,9 +262,9 @@ uint32_t hdnode_fingerprint(HDNode *node) {
 }
 
 int hdnode_private_ckd(HDNode *inout, uint32_t i) {
-  static CONFIDENTIAL uint8_t data[1 + 32 + 4];
-  static CONFIDENTIAL uint8_t I[32 + 32];
-  static CONFIDENTIAL bignum256 a, b;
+  CONFIDENTIAL uint8_t data[1 + 32 + 4];
+  CONFIDENTIAL uint8_t I[32 + 32];
+  CONFIDENTIAL bignum256 a, b;
 
   if (i & 0x80000000) {  // private derivation
     data[0] = 0;
@@ -280,7 +280,7 @@ int hdnode_private_ckd(HDNode *inout, uint32_t i) {
 
   bn_read_be(inout->private_key, &a);
 
-  static CONFIDENTIAL HMAC_SHA512_CTX ctx;
+  CONFIDENTIAL HMAC_SHA512_CTX ctx;
   hmac_sha512_Init(&ctx, inout->chain_code, 32);
   hmac_sha512_Update(&ctx, data, sizeof(data));
   hmac_sha512_Final(&ctx, I);
@@ -359,10 +359,10 @@ int hdnode_private_ckd_cardano(HDNode *inout, uint32_t index) {
     keysize = 64;
   }
 
-  static CONFIDENTIAL uint8_t data[1 + 64 + 4];
-  static CONFIDENTIAL uint8_t z[32 + 32];
-  static CONFIDENTIAL uint8_t priv_key[64];
-  static CONFIDENTIAL uint8_t res_key[64];
+  CONFIDENTIAL uint8_t data[1 + 64 + 4];
+  CONFIDENTIAL uint8_t z[32 + 32];
+  CONFIDENTIAL uint8_t priv_key[64];
+  CONFIDENTIAL uint8_t res_key[64];
 
   write_le(data + keysize + 1, index);
 
@@ -379,12 +379,12 @@ int hdnode_private_ckd_cardano(HDNode *inout, uint32_t index) {
     memcpy(data + 1, inout->public_key + 1, 32);
   }
 
-  static CONFIDENTIAL HMAC_SHA512_CTX ctx;
+  CONFIDENTIAL HMAC_SHA512_CTX ctx;
   hmac_sha512_Init(&ctx, inout->chain_code, 32);
   hmac_sha512_Update(&ctx, data, 1 + keysize + 4);
   hmac_sha512_Final(&ctx, z);
 
-  static CONFIDENTIAL uint8_t zl8[32];
+  CONFIDENTIAL uint8_t zl8[32];
   memzero(zl8, 32);
 
   /* get 8 * Zl */
@@ -443,9 +443,9 @@ static int hdnode_from_secret_cardano(const uint8_t *k,
 // Derives the root Cardano HDNode from a master secret, aka seed, as defined in
 // SLIP-0023.
 int hdnode_from_seed_cardano(const uint8_t *seed, int seed_len, HDNode *out) {
-  static CONFIDENTIAL uint8_t I[SHA512_DIGEST_LENGTH];
-  static CONFIDENTIAL uint8_t k[SHA512_DIGEST_LENGTH];
-  static CONFIDENTIAL HMAC_SHA512_CTX ctx;
+  CONFIDENTIAL uint8_t I[SHA512_DIGEST_LENGTH];
+  CONFIDENTIAL uint8_t k[SHA512_DIGEST_LENGTH];
+  CONFIDENTIAL HMAC_SHA512_CTX ctx;
 
   hmac_sha512_Init(&ctx, (const uint8_t *)ED25519_CARDANO_NAME,
                    strlen(ED25519_CARDANO_NAME));
@@ -468,7 +468,7 @@ int hdnode_from_seed_cardano(const uint8_t *seed, int seed_len, HDNode *out) {
 int hdnode_from_entropy_cardano_icarus(const uint8_t *pass, int pass_len,
                                        const uint8_t *entropy, int entropy_len,
                                        HDNode *out) {
-  static CONFIDENTIAL uint8_t secret[96];
+  CONFIDENTIAL uint8_t secret[96];
   pbkdf2_hmac_sha512(pass, pass_len, entropy, entropy_len, 4096, secret, 96);
 
   int ret = hdnode_from_secret_cardano(secret, secret + 64, out);
@@ -565,11 +565,11 @@ void hdnode_public_ckd_address_optimized(const curve_point *pub,
 }
 
 #if USE_BIP32_CACHE
-static bool private_ckd_cache_root_set = false;
-static CONFIDENTIAL HDNode private_ckd_cache_root;
-static int private_ckd_cache_index = 0;
+bool private_ckd_cache_root_set = false;
+CONFIDENTIAL HDNode private_ckd_cache_root;
+int private_ckd_cache_index = 0;
 
-static CONFIDENTIAL struct {
+CONFIDENTIAL struct {
   bool set;
   size_t depth;
   uint32_t i[BIP32_CACHE_MAXDEPTH];

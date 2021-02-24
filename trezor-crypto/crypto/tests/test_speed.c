@@ -11,7 +11,7 @@
 #include "nist256p1.h"
 #include <TrezorCrypto/secp256k1.h>
 
-static uint8_t msg[256];
+uint8_t msg[256];
 
 void prepare_msg(void) {
   for (size_t i = 0; i < sizeof(msg); i++) {
@@ -169,7 +169,7 @@ void bench_multiply_curve25519(int iterations) {
   }
 }
 
-static HDNode root;
+HDNode root;
 
 void prepare_node(void) {
   hdnode_from_seed((uint8_t *)"NothingToSeeHere", 16, SECP256K1_NAME, &root);

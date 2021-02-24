@@ -43,7 +43,7 @@ const int8_t b58digits_map[] = {
 typedef uint64_t b58_maxint_t;
 typedef uint32_t b58_almostmaxint_t;
 #define b58_almostmaxint_bits (sizeof(b58_almostmaxint_t) * 8)
-static const b58_almostmaxint_t b58_almostmaxint_mask =
+const b58_almostmaxint_t b58_almostmaxint_mask =
     ((((b58_maxint_t)1) << b58_almostmaxint_bits) - 1);
 
 // Decodes a null-terminated Base58 string `b58` to binary and writes the result

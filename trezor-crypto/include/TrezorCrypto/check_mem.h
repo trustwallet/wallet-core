@@ -9,7 +9,7 @@
   size_t _ck_l = (L); \
   char _ck_x_str[129]; \
   char _ck_y_str[129]; \
-  static char _ck_hexdigits[] = "0123456789abcdef"; \
+  char _ck_hexdigits[] = "0123456789abcdef"; \
   size_t _ck_i; \
   for (_ck_i = 0; _ck_i < ((_ck_l > 64) ? 64 : _ck_l); _ck_i++) { \
     _ck_x_str[_ck_i * 2  ]   = _ck_hexdigits[(_ck_x[_ck_i] >> 4) & 0xF]; \

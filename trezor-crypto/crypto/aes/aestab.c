@@ -265,7 +265,7 @@ uint8_t inv_affine(const uint8_t x)
     return 0x05 ^ ((w ^ (w >> 8)) & 0xff);
 }
 
-static int init = 0;
+int init = 0;
 
 AES_RETURN aes_init(void)
 {   uint32_t  i, w;
