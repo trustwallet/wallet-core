@@ -30,6 +30,7 @@ TEST(TWHRP, StringForHRP) {
     ASSERT_STREQ(stringForHRP(TWHRPBandChain), "band");
     ASSERT_STREQ(stringForHRP(TWHRPCardano), "addr");
     ASSERT_STREQ(stringForHRP(TWHRPElrond), "erd");
+    ASSERT_STREQ(stringForHRP(TWHRPOasis), "oasis");
 }
 
 TEST(TWHRP, HRPForString) {
@@ -51,6 +52,7 @@ TEST(TWHRP, HRPForString) {
     ASSERT_EQ(hrpForString("band"), TWHRPBandChain);
     ASSERT_EQ(hrpForString("addr"), TWHRPCardano);
     ASSERT_EQ(hrpForString("erd"), TWHRPElrond);
+    ASSERT_EQ(hrpForString("oasis"), TWHRPOasis);
 }
 
 TEST(TWHPR, HPRByCoinType) {
@@ -71,6 +73,7 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPBandChain, TWCoinTypeHRP(TWCoinTypeBandChain));
     ASSERT_EQ(TWHRPCardano, TWCoinTypeHRP(TWCoinTypeCardano));
     ASSERT_EQ(TWHRPElrond, TWCoinTypeHRP(TWCoinTypeElrond));
+    ASSERT_EQ(TWHRPOasis, TWCoinTypeHRP(TWCoinTypeOasis));
 
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeAion));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeCallisto));
