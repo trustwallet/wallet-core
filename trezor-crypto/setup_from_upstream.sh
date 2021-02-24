@@ -6,7 +6,11 @@
 # - Try compiling TrezorCrypto lib, wallet-core lib, TrezorCrypto tests, wallet-core tests
 # - Execute tests
 # - Do fixes as needed
-# - Review changes
+# - Review changes (changed files, new files, removed files)
+# - Things to watch out for:
+#  -- changes in #include's due to different location of header files
+#  -- wallet-core-specific changes, marked [wallet-core]
+#  -- static variables
 
 TARGET=include/TrezorCrypto
 
