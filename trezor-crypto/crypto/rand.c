@@ -28,6 +28,7 @@
 #include <sys/uio.h>
 #include <unistd.h>
 
+// [wallet-core]
 uint32_t __attribute__((weak)) random32() {
     int randomData = open("/dev/urandom", O_RDONLY);
     if (randomData < 0) {
