@@ -15,10 +15,10 @@
 
 TEST(TWOasisCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeOasis));
-    auto txId = TWStringCreateWithUTF8Bytes("0b9bd4983f1c88a1c71bf33562b6ba02b3064e01697d15a0de4bfe1922ec74b8");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeOasis, txId));
-    auto accId = TWStringCreateWithUTF8Bytes("oasis1qrx376dmwuckmruzn9vq64n49clw72lywctvxdf4");
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeOasis, accId));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0b9bd4983f1c88a1c71bf33562b6ba02b3064e01697d15a0de4bfe1922ec74b8"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeOasis, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("oasis1qrx376dmwuckmruzn9vq64n49clw72lywctvxdf4"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeOasis, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeOasis));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeOasis));
 
