@@ -28,6 +28,11 @@ Transaction Transaction::buildERC721Transfer(uint256_t nonce, uint256_t gasPrice
     return Transaction(nonce, gasPrice, gasLimit, tokenContract, 0, buildERC721TransferFromCall(from, to, tokenId));
 }
 
+Transaction Transaction::buildERC1155Transfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit,
+        const Data& tokenContract, const Data& from, const Data& to, uint256_t tokenId, uint256_t value, const Data& data) {
+    return Transaction(nonce, gasPrice, gasLimit, tokenContract, 0, buildERC1155TransferFromCall(from, to, tokenId, value, data));
+}
+
 Data Transaction::buildERC20TransferCall(const Data& to, uint256_t amount) {
     auto func = Function("transfer", std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamAddress>(to),
@@ -53,6 +58,19 @@ Data Transaction::buildERC721TransferFromCall(const Data& from, const Data& to, 
         std::make_shared<ParamAddress>(from),
         std::make_shared<ParamAddress>(to),
         std::make_shared<ParamUInt256>(tokenId)
+    });
+    Data payload;
+    func.encode(payload);
+    return payload;
+}
+
+Data Transaction::buildERC1155TransferFromCall(const Data& from, const Data& to, uint256_t tokenId, uint256_t value, const Data& data) {
+    auto func = Function("safeTransferFrom", std::vector<std::shared_ptr<ParamBase>>{
+        std::make_shared<ParamAddress>(from),
+        std::make_shared<ParamAddress>(to),
+        std::make_shared<ParamUInt256>(tokenId),
+        std::make_shared<ParamUInt256>(value),
+        std::make_shared<ParamByteArray>(data)
     });
     Data payload;
     func.encode(payload);

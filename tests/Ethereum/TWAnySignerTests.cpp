@@ -254,6 +254,58 @@ TEST(TWAnySignerEthereum, SignERC721Transfer) {
     ASSERT_EQ(hex(output.data()), "23b872dd000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee5");
 }
 
+TEST(TWAnySignerEthereum, SignERC1155Transfer) {
+    auto chainId = store(uint256_t(1));
+    auto nonce = store(uint256_t(0));
+    auto gasPrice = store(uint256_t(42000000000));
+    auto gasLimit = store(uint256_t(78009));
+    auto tokenContract = "0x4e45e92ed38f885d39a733c14f1817217a89d425";
+    auto fromAddress = "0x718046867b5b1782379a14eA4fc0c9b724DA94Fc";
+    auto toAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84";
+    auto tokenId = parse_hex("23c47ee5");
+    auto value = uint256_t(2000000000000000000);
+    auto valueData = store(value);
+    auto data = parse_hex("01020304");
+    auto key = parse_hex("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151");
+
+    Proto::SigningInput input;
+    input.set_chain_id(chainId.data(), chainId.size());
+    input.set_nonce(nonce.data(), nonce.size());
+    input.set_gas_price(gasPrice.data(), gasPrice.size());
+    input.set_gas_limit(gasLimit.data(), gasLimit.size());
+    input.set_to_address(tokenContract);
+    input.set_private_key(key.data(), key.size());
+    auto& erc1155 = *input.mutable_transaction()->mutable_erc1155_transfer();
+    erc1155.set_from(fromAddress);
+    erc1155.set_to(toAddress);
+    erc1155.set_token_id(tokenId.data(), tokenId.size());
+    erc1155.set_value(valueData.data(), valueData.size());
+    erc1155.set_data(data.data(), data.size());
+
+    std::string expected = "f9014a808509c7652400830130b9944e45e92ed38f885d39a733c14f1817217a89d42580b8e4f242432a000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee50000000000000000000000000000000000000000000000001bc16d674ec8000000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000004010203040000000000000000000000000000000000000000000000000000000026a010315488201ac801ce346bffd1570de147615462d7e7db3cf08cf558465c6b79a06643943b24593bc3904a9fda63bb169881730994c973ab80f07d66a698064573";
+
+    // sign test
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeEthereum);
+
+    ASSERT_EQ(hex(output.encoded()), expected);
+
+    // expected payload
+    Data payload;
+    {
+        auto func = Function("safeTransferFrom", std::vector<std::shared_ptr<ParamBase>>{
+            std::make_shared<ParamAddress>(parse_hex(fromAddress)),
+            std::make_shared<ParamAddress>(parse_hex(toAddress)),
+            std::make_shared<ParamUInt256>(uint256_t(0x23c47ee5)),
+            std::make_shared<ParamUInt256>(value),
+            std::make_shared<ParamByteArray>(data)
+        });
+        func.encode(payload);
+    }
+    ASSERT_EQ(hex(output.data()), hex(payload));
+    ASSERT_EQ(hex(output.data()), "f242432a000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee50000000000000000000000000000000000000000000000001bc16d674ec8000000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000040102030400000000000000000000000000000000000000000000000000000000");
+}
+
 TEST(TWAnySignerEthereum, SignJSON) {
     auto json = STRING(R"({"chainId":"AQ==","gasPrice":"1pOkAA==","gasLimit":"Ugg=","toAddress":"0x7d8bf18C7cE84b3E175b339c4Ca93aEd1dD166F1","transaction":{"transfer":{"amount":"A0i8paFgAA=="}}})");
     auto key = DATA("17209af590a86462395d5881e60d11c7fa7d482cfb02b5a01b93c2eeef243543");
