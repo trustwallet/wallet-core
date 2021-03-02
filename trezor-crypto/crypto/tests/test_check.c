@@ -70,8 +70,8 @@
 #include <TrezorCrypto/sha2.h>
 #include <TrezorCrypto/sha3.h>
 #include <TrezorCrypto/shamir.h>
-#include <TrezorCrypto/slip39.h>
-#include <TrezorCrypto/slip39_wordlist.h>
+//#include <TrezorCrypto/slip39.h> // [word-list]
+//#include <TrezorCrypto/slip39_wordlist.h>
 
 #if VALGRIND
 /*
@@ -5229,6 +5229,7 @@ START_TEST(test_mnemonic_find_word) {
 }
 END_TEST
 
+/* // [wallet-core]
 START_TEST(test_slip39_get_word) {
   const struct {
     const int index;
@@ -5329,6 +5330,7 @@ START_TEST(test_slip39_word_completion) {
   }
 }
 END_TEST
+*/
 
 START_TEST(test_shamir) {
 #define SHAMIR_MAX_COUNT 16
@@ -8893,6 +8895,7 @@ Suite *test_suite(void) {
   tcase_add_test(tc, test_mnemonic_find_word);
   suite_add_tcase(s, tc);
 
+/*
   tc = tcase_create("slip39");
   tcase_add_test(tc, test_slip39_get_word);
   tcase_add_test(tc, test_slip39_word_index);
@@ -8900,6 +8903,7 @@ Suite *test_suite(void) {
   tcase_add_test(tc, test_slip39_sequence_to_word);
   tcase_add_test(tc, test_slip39_word_completion);
   suite_add_tcase(s, tc);
+*/
 
   tc = tcase_create("shamir");
   tcase_add_test(tc, test_shamir);
