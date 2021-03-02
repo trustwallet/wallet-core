@@ -99,7 +99,6 @@ targets:
       - trezor-crypto/crypto/ed25519-donna/ed25519-keccak.c
       - trezor-crypto/crypto/monero/base58.c
       - trezor-crypto/crypto/monero/serialize.c
-      - trezor-crypto/crypto/monero/xmr.c
       - trezor-crypto/crypto/monero/range_proof.c
       - trezor-crypto/crypto/blake256.c
       - trezor-crypto/crypto/blake2b.c
