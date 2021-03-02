@@ -23,10 +23,6 @@
 #ifndef __OPTIONS_H__
 #define __OPTIONS_H__
 
-#ifndef USE_MONERO
-#define USE_MONERO 1 // [wallet-core]
-#endif
-
 #ifndef AES_128
 #define AES_128 1 // [wallet-core]
 #endif

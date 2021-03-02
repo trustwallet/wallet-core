@@ -56,7 +56,9 @@
 #include <TrezorCrypto/ed25519.h>
 #include <TrezorCrypto/hmac_drbg.h>
 #include <TrezorCrypto/memzero.h>
+#if USE_MONERO // [wallet-core]
 #include "../monero/monero.h"
+#endif
 #include <TrezorCrypto/nem.h>
 #include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/pbkdf2.h>
@@ -6656,6 +6658,7 @@ START_TEST(test_ed25519_modl_sub) {
 }
 END_TEST
 
+#if USE_MONERO // [wallet-core]
 START_TEST(test_ge25519_double_scalarmult_vartime2) {
   char tests[][5][65] = {
       {"c537208ed4985e66e9f7a35c9a69448a732ba93960bbbd2823604f7ae9e3ed08",
@@ -6779,6 +6782,7 @@ START_TEST(test_ge25519_double_scalarmult_vartime2) {
   }
 }
 END_TEST
+#endif
 
 static void test_bip32_ecdh_init_node(HDNode *node, const char *seed_str,
                                       const char *curve_name) {
