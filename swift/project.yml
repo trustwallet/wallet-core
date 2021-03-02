@@ -128,7 +128,6 @@ targets:
       - trezor-crypto/crypto/sodium/keypair.c
     settings:
       GCC_WARN_64_TO_32_BIT_CONVERSION: NO
-      OTHER_CFLAGS: $(inherited) -DUSE_MONERO=1 -DUSE_CARDANO=1 -DAES_128=1 -DAES_VAR=1
 
   protobuf:
     type: library.static
