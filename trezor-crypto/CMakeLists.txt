@@ -30,6 +30,7 @@ add_library(TrezorCrypto
     crypto/hmac_drbg.c
     crypto/rfc6979.c
     crypto/schnorr.c
+    crypto/shamir.c
 )
 
 target_compile_options(TrezorCrypto
