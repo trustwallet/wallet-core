@@ -36,7 +36,6 @@ add_library(TrezorCrypto
 
 target_compile_options(TrezorCrypto
     PRIVATE
-        -DUSE_MONERO=1 -DUSE_CARDANO=1 -DAES_128=1 -DAES_VAR=1
         -W
         -Wall
         -Wextra

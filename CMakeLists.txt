@@ -95,9 +95,6 @@ else()
 endif()
 target_compile_options(TrustWalletCore PRIVATE "-Wall")
 
-# TrezorCrypto options
-target_compile_options(TrustWalletCore PRIVATE -DUSE_MONERO=1 -DUSE_CARDANO=1 -DAES_128=1 -DAES_VAR=1)
-
 set_target_properties(TrustWalletCore
     PROPERTIES
         CXX_STANDARD 17

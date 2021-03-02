@@ -2,6 +2,8 @@
 extern "C" {
 #endif
 
+#include <TrezorCrypto/options.h>
+
 /*
 	Timing safe memory compare
 */

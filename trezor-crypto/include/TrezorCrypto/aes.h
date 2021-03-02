@@ -24,6 +24,8 @@ Issue Date: 02/08/2018
 #ifndef _AES_H
 #define _AES_H
 
+#include <TrezorCrypto/options.h>
+
 #include <stdlib.h>
 #include <stdint.h>
 

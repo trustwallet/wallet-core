@@ -23,6 +23,18 @@
 #ifndef __OPTIONS_H__
 #define __OPTIONS_H__
 
+#ifndef USE_MONERO
+#define USE_MONERO 1 // [wallet-core]
+#endif
+
+#ifndef AES_128
+#define AES_128 1 // [wallet-core]
+#endif
+
+#ifndef AES_VAR
+#define AES_VAR 1 // [wallet-core]
+#endif
+
 // use precomputed Curve Points (some scalar multiples of curve base point G)
 #ifndef USE_PRECOMPUTED_CP
 #define USE_PRECOMPUTED_CP 1
@@ -45,7 +57,7 @@
 
 // implement BIP32 caching
 #ifndef USE_BIP32_CACHE
-#define USE_BIP32_CACHE 1
+#define USE_BIP32_CACHE 0 // [wallet-core]
 #define BIP32_CACHE_SIZE 10
 #define BIP32_CACHE_MAXDEPTH 8
 #endif
@@ -83,7 +95,7 @@
 
 // support CARDANO operations
 #ifndef USE_CARDANO
-#define USE_CARDANO 0
+#define USE_CARDANO 1 // [wallet-core]
 #endif
 
 // support Keccak hashing

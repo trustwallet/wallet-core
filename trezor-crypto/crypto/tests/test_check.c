@@ -1908,6 +1908,7 @@ START_TEST(test_bip32_optimized) {
 }
 END_TEST
 
+#if USE_BIP32_CACHE // [wallet-core]
 START_TEST(test_bip32_cache_1) {
   HDNode node1, node2;
   int i, r;
@@ -2019,6 +2020,7 @@ START_TEST(test_bip32_cache_2) {
   ck_assert_mem_eq(&(nodea[8]), &(nodeb[8]), sizeof(HDNode));
 }
 END_TEST
+#endif
 
 START_TEST(test_bip32_nist_seed) {
   HDNode node;
@@ -8778,9 +8780,11 @@ Suite *test_suite(void) {
   tcase_add_test(tc, test_bip32_vector_3);
   tcase_add_test(tc, test_bip32_compare);
   tcase_add_test(tc, test_bip32_optimized);
+#if USE_BIP32_CACHE
   tcase_add_test(tc, test_bip32_cache_1);
   tcase_add_test(tc, test_bip32_cache_2);
   suite_add_tcase(s, tc);
+#endif
 
   tc = tcase_create("bip32-nist");
   tcase_add_test(tc, test_bip32_nist_seed);
