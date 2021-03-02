@@ -70,7 +70,7 @@
 #include <TrezorCrypto/sha2.h>
 #include <TrezorCrypto/sha3.h>
 #include <TrezorCrypto/shamir.h>
-//#include <TrezorCrypto/slip39.h> // [word-list]
+//#include <TrezorCrypto/slip39.h> // [wallet-core]
 //#include <TrezorCrypto/slip39_wordlist.h>
 
 #if VALGRIND
