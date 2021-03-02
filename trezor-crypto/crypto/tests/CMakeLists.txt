@@ -7,5 +7,4 @@ add_executable(TrezorCryptoTests test_check.c)
 target_link_libraries(TrezorCryptoTests TrezorCrypto check)
 target_include_directories(TrezorCryptoTests PRIVATE ${CMAKE_SOURCE_DIR}/src)
 
-
 add_test(NAME test_check COMMAND TrezorCryptoTests)
