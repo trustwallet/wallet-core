@@ -69,8 +69,8 @@
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sha2.h>
 #include <TrezorCrypto/sha3.h>
-#include <TrezorCrypto/shamir.h>
-//#include <TrezorCrypto/slip39.h> // [word-list]
+//#include <TrezorCrypto/shamir.h> // [wallet-core]
+//#include <TrezorCrypto/slip39.h>
 //#include <TrezorCrypto/slip39_wordlist.h>
 
 #if VALGRIND
@@ -5332,6 +5332,7 @@ START_TEST(test_slip39_word_completion) {
 END_TEST
 */
 
+/* // [wallet-core]
 START_TEST(test_shamir) {
 #define SHAMIR_MAX_COUNT 16
   const struct {
@@ -5443,6 +5444,7 @@ START_TEST(test_shamir) {
   }
 }
 END_TEST
+*/
 
 START_TEST(test_address) {
   char address[36];
@@ -8903,11 +8905,11 @@ Suite *test_suite(void) {
   tcase_add_test(tc, test_slip39_sequence_to_word);
   tcase_add_test(tc, test_slip39_word_completion);
   suite_add_tcase(s, tc);
-*/
 
   tc = tcase_create("shamir");
   tcase_add_test(tc, test_shamir);
   suite_add_tcase(s, tc);
+*/
 
   tc = tcase_create("pubkey_validity");
   tcase_add_test(tc, test_pubkey_validity);
