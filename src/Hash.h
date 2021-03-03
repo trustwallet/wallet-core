@@ -170,7 +170,7 @@ Data groestl512(const T& data) {
     return groestl512(reinterpret_cast<const byte*>(data.data()), data.size());
 }
 
-/// Computes the SHA256 hash of the SHA256 hash.
+/// Computes the SHA256 hash.
 inline Data sha256s(const byte* data, size_t size) {
     return sha256(data, size);
 }

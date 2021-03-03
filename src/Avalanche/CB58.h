@@ -12,7 +12,12 @@
 #include <array>
 #include <string>
 
-namespace TW {
+// The implementation of only hashing once instead of twice and using the last
+// 4 bytes instead of the first four bytes as a checksum was sufficently different 
+// from the Base58 class. This resulted in us not wanting to expand the Base58 
+// class, instead choosing to create a new class.
+
+namespace TW::Avalanche {
 
 class CB58 {
   public:

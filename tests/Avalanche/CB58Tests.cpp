@@ -10,8 +10,7 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-
-int i = 1;
+using namespace TW::Avalanche;
 
 TEST(CB58, decode) {
     Data decoded = CB58::avalanche.decodeCheck("32UWxgjUJd9s6Kyvxjj1u");

@@ -14,6 +14,7 @@
 #include <cassert>
 
 using namespace TW;
+using namespace TW::Avalanche;
 
 // clang-format off
 
