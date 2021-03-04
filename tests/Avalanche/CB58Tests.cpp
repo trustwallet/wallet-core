@@ -19,6 +19,9 @@ TEST(CB58, decode) {
     EXPECT_EQ(data("Ava Labs"), decoded);
     decoded = CB58::avalanche.decodeCheck("3agr4zJdC7C8GVmkgfkGLbcX7thwy5z3kqrq");
     EXPECT_EQ(data("THIS is a T3st addre55"), decoded);
+    decoded = CB58::avalanche.decodeCheck("148vjpuxYXixb8DcbaWyeDE2fEG");
+    Data original{0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff};
+    EXPECT_EQ(original, decoded);
 }
 
 TEST(CB58, encode) {
@@ -28,4 +31,7 @@ TEST(CB58, encode) {
     EXPECT_EQ("2Eef9JnJ3Lz2c5op9", encoded);
     encoded = CB58::avalanche.encodeCheck(data("THIS is a T3st addre55"));
     EXPECT_EQ("3agr4zJdC7C8GVmkgfkGLbcX7thwy5z3kqrq", encoded);
+    Data decoded{0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff};
+    encoded = CB58::avalanche.encodeCheck(decoded);
+    EXPECT_EQ("148vjpuxYXixb8DcbaWyeDE2fEG", encoded);
 }
