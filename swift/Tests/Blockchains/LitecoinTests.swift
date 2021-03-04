@@ -156,7 +156,8 @@ class LitecoinTests: XCTestCase {
 
         // Sign
         let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .litecoin)
-        XCTAssertTrue(output.error.isEmpty)
+        XCTAssertEqual(output.error.code, TW_Bitcoin_Proto_ErrorCode.noError)
+        XCTAssertTrue(output.error.text.isEmpty)
 
         // https://blockchair.com/litecoin/transaction/8435d205614ee70066060734adf03af4194d0c3bc66dd01bb124ab7fd25e2ef8
         let txId = output.transactionID
