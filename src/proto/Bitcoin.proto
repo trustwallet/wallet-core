@@ -100,6 +100,21 @@ message SigningInput {
     TransactionPlan plan = 11;
 }
 
+enum ErrorCode {
+    NO_ERROR = 0; // OK
+    ZERO_AMOUNT_REQUESTED = 1; // Requested amount is zero
+    MISSING_INPUT_UTXOS = 2; // No UTXOs provided
+    NOT_ENOUGH_UTXOS = 3; // Not enough non-dust input UTXOs to cover requested amount (dust UTXOs are filtered out)
+}
+
+message Error {
+    // Numerical error code, values defined in enum
+    ErrorCode code = 1;
+
+    // Error text, free text, in English, may be displayed as debug info, but decisions should not be based on this field
+    string text = 2;
+}
+
 // Describes a preliminary transaction plan.
 message TransactionPlan {
     // Amount to be received at the other end.
@@ -120,8 +135,8 @@ message TransactionPlan {
     // Zcash branch id
     bytes branch_id = 6;
 
-    // Optional error message
-    string error = 7;
+    // Optional error
+    Error error = 7;
 };
 
 // Transaction signing output.

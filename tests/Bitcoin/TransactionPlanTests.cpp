@@ -10,6 +10,7 @@
 #include "Bitcoin/TransactionPlan.h"
 #include "Bitcoin/TransactionBuilder.h"
 #include "Bitcoin/FeeCalculator.h"
+#include "Bitcoin/Error.h"
 #include "proto/Bitcoin.pb.h"
 #include <TrustWalletCore/TWCoinType.h>
 
@@ -18,7 +19,9 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
-const char* ErrorTextNotEnoughUtxos = "Not enough non-dust input UTXOs";
+Error ErrorNotEnoughUtxos = Error(Proto::NOT_ENOUGH_UTXOS, "Not enough non-dust input UTXOs");
+Error ErrorMissingInputUtxos = Error(Proto::MISSING_INPUT_UTXOS, "Missing input UTXOs");
+Error ErrorZeroAmountRequested = Error(Proto::ZERO_AMOUNT_REQUESTED, "Zero amount requested");
 
 TEST(TransactionPlan, OneTypical) {
     auto utxos = buildTestUTXOs({100'000});
@@ -60,7 +63,7 @@ TEST(TransactionPlan, OneInsufficientLower100) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorTextNotEnoughUtxos));
+    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorNotEnoughUtxos));
 }
 
 TEST(TransactionPlan, OneInsufficientLower170) {
@@ -70,7 +73,7 @@ TEST(TransactionPlan, OneInsufficientLower170) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorTextNotEnoughUtxos));
+    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorNotEnoughUtxos));
 }
 
 TEST(TransactionPlan, OneInsufficientLower300) {
@@ -295,7 +298,7 @@ TEST(TransactionPlan, Inputs5_33Req19Fee20) {
     // UTXOs smaller than singleInputFee are not included
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorTextNotEnoughUtxos));
+    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorNotEnoughUtxos));
 }
 
 TEST(TransactionPlan, Inputs5_33Req13Fee20) {
@@ -319,7 +322,7 @@ TEST(TransactionPlan, NoUTXOs) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, "Missing input UTXOs"));
+    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorMissingInputUtxos));
 }
 
 TEST(TransactionPlan, CustomCase) {
@@ -341,7 +344,7 @@ TEST(TransactionPlan, Target0) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, "Zero amount requested"));
+    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorZeroAmountRequested));
 }
 
 TEST(TransactionPlan, MaxAmount) {
@@ -468,7 +471,7 @@ TEST(TransactionPlan, MaxAmountDustAllFee10) {
     // UTXOs smaller than singleInputFee are not included
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorTextNotEnoughUtxos));
+    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorNotEnoughUtxos));
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 1020);
