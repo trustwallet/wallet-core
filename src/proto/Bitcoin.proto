@@ -105,6 +105,9 @@ enum ErrorCode {
     ZERO_AMOUNT_REQUESTED = 1; // Requested amount is zero
     MISSING_INPUT_UTXOS = 2; // No UTXOs provided
     NOT_ENOUGH_UTXOS = 3; // Not enough non-dust input UTXOs to cover requested amount (dust UTXOs are filtered out)
+    MISSING_PRIVATE_KEY = 4;
+    SCRIPT_ERROR = 5; // Redeem/output script related error
+    SIGNING_ERROR = 6;
 }
 
 message Error {
@@ -150,6 +153,6 @@ message SigningOutput {
     // Transaction id
     string transaction_id = 3;
 
-    // Optional error message
-    string error = 4;
+    // Optional error
+    Error error = 4;
 }

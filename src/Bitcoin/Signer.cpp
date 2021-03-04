@@ -24,7 +24,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
     auto result = signer.sign();
     if (!result) {
-        output.set_error(result.error());
+        output.mutable_error()->set_code(result.error().code);
+        output.mutable_error()->set_text(result.error().text.c_str());
         return output;
     }
 

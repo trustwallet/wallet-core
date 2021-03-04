@@ -121,7 +121,7 @@ TEST(DigiByteTransaction, SignP2WPKH) {
 
     auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
     auto result = signer.sign();
-    ASSERT_TRUE(result) << result.error();
+    ASSERT_TRUE(result) << result.error().text;
     auto signedTx = result.payload();
 
     Data serialized;

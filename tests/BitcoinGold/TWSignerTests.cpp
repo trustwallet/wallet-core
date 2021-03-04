@@ -77,7 +77,7 @@ TEST(TWBitcoinGoldSigner, SignTransaction) {
     txSigner.transaction.lockTime = 0x00098971;
     auto result = txSigner.sign();
 
-    ASSERT_TRUE(result) << result.error();
+    ASSERT_TRUE(result) << result.error().text;
     auto signedTx = result.payload();
 
     Data serialized;

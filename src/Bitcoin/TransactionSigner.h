@@ -63,7 +63,7 @@ class TransactionSigner {
     /// Signs the transaction.
     ///
     /// \returns the signed transaction or an error.
-    Result<Transaction> sign();
+    Result<Transaction, Error> sign();
 
     // helper, return binary encoded transaction (used right after sign())
     static void encodeTx(const Transaction& tx, Data& outData) { tx.encode(outData); }
@@ -72,8 +72,8 @@ class TransactionSigner {
     static Data pushAll(const std::vector<Data>& results);
 
   private:
-    Result<void> sign(Script script, size_t index, const Proto::UnspentTransaction& utxo);
-    Result<std::vector<Data>> signStep(Script script, size_t index,
+    Result<void, Error> sign(Script script, size_t index, const Proto::UnspentTransaction& utxo);
+    Result<std::vector<Data>, Error> signStep(Script script, size_t index,
                                        const Proto::UnspentTransaction& utxo, uint32_t version) const;
     Data createSignature(const Transaction& transaction, const Script& script, const Data& key,
                          size_t index, Amount amount, uint32_t version) const;
