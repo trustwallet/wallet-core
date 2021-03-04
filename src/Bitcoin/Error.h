@@ -18,6 +18,10 @@ struct Error {
     bool hasError() const { return code != Proto::NO_ERROR || text.length() > 0; }
     bool operator==(const Error& error2) const { return code == error2.code && text == error2.text; }
     bool operator!=(const Error& error2) const { return !(*this == error2); }
+    void setToSigningOutput(Proto::SigningOutput& signerOutput) {
+        signerOutput.mutable_error()->set_code(code);
+        signerOutput.mutable_error()->set_text(text.c_str());
+    }
     std::string toString() const { return std::to_string(code) + ": " + text; }
 };
 
