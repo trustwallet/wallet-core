@@ -64,6 +64,6 @@ message SigningOutput {
     // Transaction id
     string transaction_id = 3;
 
-    // Optional error message
-    string error = 4;
+    // Optional error
+    Bitcoin.Proto.Error error = 4;
 }

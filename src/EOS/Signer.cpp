@@ -62,7 +62,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         output.set_json_encoded(ptx.serialize().dump());
         return output;
     } catch (const std::exception& e) {
-        output.set_error(e.what());
+        output.mutable_error()->set_code(Proto::GENERAL_ERROR);
+        output.mutable_error()->set_text(e.what());
     }
     return output;
 }

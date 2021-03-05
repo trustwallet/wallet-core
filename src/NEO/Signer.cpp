@@ -10,10 +10,17 @@
 #include "../HexCoding.h"
 #include "../PrivateKey.h"
 #include "../PublicKey.h"
+#include "../proto/NEO.pb.h"
 
 using namespace TW;
 using namespace TW::NEO;
 using namespace std;
+
+
+struct Error {
+    Proto::ErrorCode code;
+    std::string text;
+};
 
 Signer::Signer(const PrivateKey& priKey) : privateKey(std::move(priKey)) {
     auto pub = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1);
@@ -81,7 +88,7 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) {
 
             if (available.find(input.inputs(i).asset_id()) == available.end() ||
                 available[input.outputs(i).asset_id()] < input.outputs(i).amount()) {
-                throw "Input balance for asset too low";
+                throw Error{Proto::LOW_BALANCE, "Input balance for asset too low"};
             }
 
             if (input.outputs(i).asset_id() == input.gas_asset_id()) {
@@ -116,7 +123,7 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) {
 
             if (available.find(input.gas_asset_id()) == available.end() ||
                 available[input.gas_asset_id()] < 1024) {
-                throw "Transaction too big, fee in GAS needed or try send by parts";
+                throw Error{Proto::TX_TOO_BIG, "Transaction too big, fee in GAS needed or try send by parts"};
             }
 
             int64_t availableAmount = available[input.gas_asset_id()];
@@ -142,8 +149,9 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) {
             plan.mutable_outputs(existGASTransfer)->set_change(change);
             plan.set_fee(fee);
         }
-    } catch (char const* error) {
-        plan.set_error(error);
+    } catch (const Error& error) {
+        plan.mutable_error()->set_code(error.code);
+        plan.mutable_error()->set_text(error.text.c_str());
     }
 
     return plan;
@@ -170,7 +178,7 @@ Transaction Signer::prepareUnsignedTransaction(const Proto::SigningInput& input,
             if (plan.outputs(i).asset_id() == input.gas_asset_id()) {
                 if (validate && plan.outputs(i).amount() + plan.outputs(i).change() + plan.fee() !=
                                     plan.outputs(i).available_amount()) {
-                    throw "Wrong fee";
+                    throw Error{Proto::WRONG_FEE, "Wrong fee"};
                 }
             }
 
@@ -215,8 +223,9 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto signedTx = transaction.serialize();
 
         output.set_encoded(signedTx.data(), signedTx.size());
-    } catch (char const* error) {
-        output.set_error(error);
+    } catch (const Error& error) {
+        output.mutable_error()->set_code(error.code);
+        output.mutable_error()->set_text(error.text.c_str());
     }
 
     return output;

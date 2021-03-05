@@ -31,13 +31,29 @@ message SigningInput {
     TransactionPlan plan = 7;
 }
 
+enum ErrorCode {
+    NO_ERROR = 0; // OK
+    LOW_BALANCE = 1;
+    TX_TOO_BIG = 2;
+    WRONG_FEE = 3;
+}
+
+// Pair of numerical + freetext error
+message Error {
+    // Numerical error code, values defined in enum
+    ErrorCode code = 1;
+
+    // Error text, free text, in English, may be displayed as debug info, but decisions should not be based on this field
+    string text = 2;
+}
+
 // Transaction signing output.
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
 
-    // Error message in case of error
-    string error = 2;
+    // Optional error
+    Error error = 2;
 }
 
 // Describes a preliminary transaction output plan.
@@ -65,6 +81,6 @@ message TransactionPlan {
     // GAS used
     int64 fee = 3;
 
-    // Error message in case of error
-    string error = 4;
+    // Optional error
+    Error error = 4;
 };

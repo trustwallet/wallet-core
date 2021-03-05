@@ -150,11 +150,25 @@ message SigningInput {
     Action action = 5;
 }
 
+enum ErrorCode {
+    NO_ERROR = 0; // OK
+    INTERNAL_ERROR = 1;
+}
+
+// Pair of numerical + freetext error
+message Error {
+    // Numerical error code, values defined in enum
+    ErrorCode code = 1;
+
+    // Error text, free text, in English, may be displayed as debug info, but decisions should not be based on this field
+    string text = 2;
+}
+
 // Transaction signing output
 message SigningOutput {
     // Signed transaction in JSON
     string json = 1;
 
-    // Filled with message upon error
-    string error = 2;
+    // Optional error
+    Error error = 2;
 }

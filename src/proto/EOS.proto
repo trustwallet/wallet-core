@@ -49,10 +49,25 @@ message SigningInput {
     KeyType private_key_type = 10;
 }
 
+enum ErrorCode {
+    NO_ERROR = 0; // OK
+    GENERAL_ERROR = 1;
+}
+
+// Pair of numerical + freetext error
+message Error {
+    // Numerical error code, values defined in enum
+    ErrorCode code = 1;
+
+    // Error text, free text, in English, may be displayed as debug info, but decisions should not be based on this field
+    string text = 2;
+}
+
 // Transaction signing output.
 message SigningOutput {
     // JSON of the packed transaction.
     string json_encoded = 1;
 
-    string error = 2;
+    // Optional error
+    Error error = 2;
 }

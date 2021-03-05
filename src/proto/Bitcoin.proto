@@ -110,6 +110,7 @@ enum ErrorCode {
     SIGNING_ERROR = 6;
 }
 
+// Pair of numerical + freetext error
 message Error {
     // Numerical error code, values defined in enum
     ErrorCode code = 1;
