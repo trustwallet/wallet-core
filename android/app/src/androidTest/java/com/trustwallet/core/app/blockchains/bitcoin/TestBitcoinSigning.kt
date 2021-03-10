@@ -12,7 +12,7 @@ import wallet.core.jni.CoinType
 import wallet.core.jni.CoinType.BITCOIN
 import wallet.core.jni.proto.Bitcoin
 import wallet.core.jni.proto.Bitcoin.SigningOutput
-import wallet.core.jni.proto.Bitcoin.ErrorCode
+import wallet.core.jni.proto.Common.SigningError
 
 class TestBitcoinSigning {
 
@@ -71,7 +71,7 @@ class TestBitcoinSigning {
         input.addUtxo(utxo1)
 
         val output = AnySigner.sign(input.build(), BITCOIN, SigningOutput.parser())
-        assertEquals(output.error.code, ErrorCode.NO_ERROR)
+        assertEquals(output.error.code, SigningError.No_error)
         assert(output.error.text.isEmpty())
         val signedTransaction = output.transaction
         assert(signedTransaction.isInitialized)
@@ -145,7 +145,7 @@ class TestBitcoinSigning {
         input.plan = plan
         val output = AnySigner.sign(input.build(), BITCOIN, SigningOutput.parser())
 
-        assertEquals(output.error.code, ErrorCode.NO_ERROR)
+        assertEquals(output.error.code, SigningError.No_error)
         assert(output.error.text.isEmpty())
         val signedTransaction = output.transaction
         assert(signedTransaction.isInitialized)
