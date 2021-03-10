@@ -72,21 +72,21 @@ class EOSTests: XCTestCase {
         var badInput = signingInput
         badInput.asset.decimals = 19
         var signingOutput: EOSSigningOutput = AnySigner.sign(input: badInput, coin: .eos)
-        XCTAssertEqual(signingOutput.error, TW_Common_Proto_SigningError.errorGeneral)
+        XCTAssertEqual(signingOutput.error, TW_Common_Proto_SigningError.errorInternal)
 
         badInput = signingInput
         badInput.asset.symbol = "xyz"
         signingOutput = AnySigner.sign(input: badInput, coin: .eos)
-        XCTAssertEqual(signingOutput.error, TW_Common_Proto_SigningError.errorGeneral)
+        XCTAssertEqual(signingOutput.error, TW_Common_Proto_SigningError.errorInternal)
 
         badInput = signingInput
         badInput.recipient = String(repeating: "A", count: 15)
         signingOutput = AnySigner.sign(input: badInput, coin: .eos)
-        XCTAssertEqual(signingOutput.error, TW_Common_Proto_SigningError.errorGeneral)
+        XCTAssertEqual(signingOutput.error, TW_Common_Proto_SigningError.errorInternal)
 
         badInput = signingInput
         badInput.referenceBlockID = Data(hexString: "0000086bf9e7704509aa41311a66fa0a1b479c")!
         signingOutput = AnySigner.sign(input: badInput, coin: .eos)
-        XCTAssertEqual(signingOutput.error, TW_Common_Proto_SigningError.errorGeneral)
+        XCTAssertEqual(signingOutput.error, TW_Common_Proto_SigningError.errorInternal)
     }
 }
