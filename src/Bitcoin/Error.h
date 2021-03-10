@@ -6,16 +6,17 @@
 
 #pragma once
 
-#include "../proto/Bitcoin.pb.h"
+#include "proto/Common.pb.h"
+#include "proto/Bitcoin.pb.h"
 
 namespace TW::Bitcoin {
 
 struct Error {
-    Proto::ErrorCode code;
+    Common::Proto::SigningError code;
     std::string text;
-    Error() : code(Proto::NO_ERROR), text("") {}
-    Error(Proto::ErrorCode code, std::string text) : code(code), text(text) {}
-    bool hasError() const { return code != Proto::NO_ERROR || text.length() > 0; }
+    Error() : code(Common::Proto::No_error), text("") {}
+    Error(Common::Proto::SigningError code, std::string text) : code(code), text(text) {}
+    bool hasError() const { return code != Common::Proto::No_error || text.length() > 0; }
     bool operator==(const Error& error2) const { return code == error2.code && text == error2.text; }
     bool operator!=(const Error& error2) const { return !(*this == error2); }
     void setToSigningOutput(Proto::SigningOutput& signerOutput) {

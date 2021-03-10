@@ -118,7 +118,7 @@ TEST(TWZelcashTransaction, Signing) {
     Bitcoin::Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeZelcash);
 
-    ASSERT_EQ(output.error().code(), Bitcoin::Proto::NO_ERROR);
+    ASSERT_EQ(output.error().code(), Common::Proto::No_error);
     ASSERT_EQ(hex(output.encoded()),
         "04000080"
         "85202f89"

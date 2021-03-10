@@ -47,9 +47,9 @@ Proto::SigningOutput Signer::sign(const Bitcoin::Proto::SigningInput& input) noe
     return output;
 }
 
-Result<Transaction, TW::Bitcoin::Error> Signer::sign() {
+Result<Transaction, Bitcoin::Error> Signer::sign() {
     if (txPlan.utxos.size() == 0 || transaction.inputs.size() == 0) {
-        return Result<Transaction, TW::Bitcoin::Error>::failure(TW::Bitcoin::Error(TW::Bitcoin::Proto::MISSING_INPUT_UTXOS, "Missing inputs or UTXOs"));
+        return Result<Transaction, Bitcoin::Error>::failure(Bitcoin::Error(Common::Proto::Error_missing_input_utxos, "Missing inputs or UTXOs"));
     }
 
     signedInputs.clear();
@@ -67,7 +67,7 @@ Result<Transaction, TW::Bitcoin::Error> Signer::sign() {
         auto script = Bitcoin::Script(utxo.script().begin(), utxo.script().end());
         auto result = sign(script, i);
         if (!result) {
-            return Result<Transaction, TW::Bitcoin::Error>::failure(result.error());
+            return Result<Transaction, Bitcoin::Error>::failure(result.error());
         }
         signedInputs[i].script = result.payload();
     }
@@ -75,10 +75,10 @@ Result<Transaction, TW::Bitcoin::Error> Signer::sign() {
     Transaction tx(transaction);
     tx.inputs = move(signedInputs);
     tx.outputs = transaction.outputs;
-    return Result<Transaction, TW::Bitcoin::Error>::success(std::move(tx));
+    return Result<Transaction, Bitcoin::Error>::success(std::move(tx));
 }
 
-Result<Bitcoin::Script, TW::Bitcoin::Error> Signer::sign(Bitcoin::Script script, size_t index) {
+Result<Bitcoin::Script, Bitcoin::Error> Signer::sign(Bitcoin::Script script, size_t index) {
     assert(index < transaction.inputs.size());
 
     Bitcoin::Script redeemScript;
@@ -88,7 +88,7 @@ Result<Bitcoin::Script, TW::Bitcoin::Error> Signer::sign(Bitcoin::Script script,
     if (result) {
         results = result.payload();
     } else {
-        return Result<Bitcoin::Script, TW::Bitcoin::Error>::failure(result.error());
+        return Result<Bitcoin::Script, Bitcoin::Error>::failure(result.error());
     }
     auto txin = transaction.inputs[index];
 
@@ -96,7 +96,7 @@ Result<Bitcoin::Script, TW::Bitcoin::Error> Signer::sign(Bitcoin::Script script,
         script = Bitcoin::Script(results.front().begin(), results.front().end());
         auto result = signStep(script, index);
         if (!result) {
-            return Result<Bitcoin::Script, TW::Bitcoin::Error>::failure(result.error());
+            return Result<Bitcoin::Script, Bitcoin::Error>::failure(result.error());
         }
         results = result.payload();
         results.push_back(script.bytes);
@@ -104,10 +104,10 @@ Result<Bitcoin::Script, TW::Bitcoin::Error> Signer::sign(Bitcoin::Script script,
         results.push_back(redeemScript.bytes);
     }
 
-    return Result<Bitcoin::Script, TW::Bitcoin::Error>::success(Bitcoin::Script(Bitcoin::TransactionSigner<Bitcoin::Transaction, Bitcoin::TransactionBuilder>::pushAll(results)));
+    return Result<Bitcoin::Script, Bitcoin::Error>::success(Bitcoin::Script(Bitcoin::TransactionSigner<Bitcoin::Transaction, Bitcoin::TransactionBuilder>::pushAll(results)));
 }
 
-Result<std::vector<Data>, TW::Bitcoin::Error> Signer::signStep(Bitcoin::Script script, size_t index) {
+Result<std::vector<Data>, Bitcoin::Error> Signer::signStep(Bitcoin::Script script, size_t index) {
     Transaction transactionToSign(transaction);
     transactionToSign.inputs = signedInputs;
     transactionToSign.outputs = transaction.outputs;
@@ -121,35 +121,35 @@ Result<std::vector<Data>, TW::Bitcoin::Error> Signer::signStep(Bitcoin::Script s
         auto key = keyForPublicKeyHash(keyHash);
         if (key.empty()) {
             // Error: Missing key
-            return Result<std::vector<Data>, TW::Bitcoin::Error>::failure(TW::Bitcoin::Error(TW::Bitcoin::Proto::MISSING_PRIVATE_KEY, "Missing private key."));
+            return Result<std::vector<Data>, Bitcoin::Error>::failure(Bitcoin::Error(Common::Proto::Error_missing_private_key, "Missing private key."));
         }
         auto signature = createSignature(transactionToSign, script, key, index);
         if (signature.empty()) {
             // Error: Failed to sign
-            return Result<std::vector<Data>, TW::Bitcoin::Error>::failure(TW::Bitcoin::Error(TW::Bitcoin::Proto::SIGNING_ERROR, "Failed to sign."));
+            return Result<std::vector<Data>, Bitcoin::Error>::failure(Bitcoin::Error(Common::Proto::Error_signing, "Failed to sign."));
         }
-        return Result<std::vector<Data>, TW::Bitcoin::Error>::success({signature});
+        return Result<std::vector<Data>, Bitcoin::Error>::success({signature});
     } else if (script.matchPayToPublicKeyHash(data)) {
         auto key = keyForPublicKeyHash(data);
         if (key.empty()) {
             // Error: Missing keyxs
-            return Result<std::vector<Data>, TW::Bitcoin::Error>::failure(TW::Bitcoin::Error(TW::Bitcoin::Proto::MISSING_PRIVATE_KEY, "Missing private key."));
+            return Result<std::vector<Data>, Bitcoin::Error>::failure(Bitcoin::Error(Common::Proto::Error_missing_private_key, "Missing private key."));
         }
 
         auto pubkey = PrivateKey(key).getPublicKey(TWPublicKeyTypeSECP256k1);
         auto signature = createSignature(transactionToSign, script, key, index);
         if (signature.empty()) {
             // Error: Failed to sign
-            return Result<std::vector<Data>, TW::Bitcoin::Error>::failure(TW::Bitcoin::Error(TW::Bitcoin::Proto::SIGNING_ERROR, "Failed to sign."));
+            return Result<std::vector<Data>, Bitcoin::Error>::failure(Bitcoin::Error(Common::Proto::Error_signing, "Failed to sign."));
         }
-        return Result<std::vector<Data>, TW::Bitcoin::Error>::success({signature, pubkey.bytes});
+        return Result<std::vector<Data>, Bitcoin::Error>::success({signature, pubkey.bytes});
     } else if (script.matchPayToScriptHash(data)) {
         auto redeemScript = scriptForScriptHash(data);
         if (redeemScript.empty()) {
             // Error: Missing redeem script
-            return Result<std::vector<Data>, TW::Bitcoin::Error>::failure(TW::Bitcoin::Error(TW::Bitcoin::Proto::SCRIPT_ERROR, "Missing redeem script."));
+            return Result<std::vector<Data>, Bitcoin::Error>::failure(Bitcoin::Error(Common::Proto::Error_script, "Missing redeem script."));
         }
-        return Result<std::vector<Data>, TW::Bitcoin::Error>::success({redeemScript});
+        return Result<std::vector<Data>, Bitcoin::Error>::success({redeemScript});
     } else if (script.matchMultisig(keys, required)) {
         auto results = std::vector<Data>{{}};
         for (auto& pubKey : keys) {
@@ -160,20 +160,20 @@ Result<std::vector<Data>, TW::Bitcoin::Error> Signer::signStep(Bitcoin::Script s
             auto key = keyForPublicKeyHash(keyHash);
             if (key.empty()) {
                 // Error: missing key
-                return Result<std::vector<Data>, TW::Bitcoin::Error>::failure(TW::Bitcoin::Error(TW::Bitcoin::Proto::MISSING_PRIVATE_KEY, "Missing private key."));
+                return Result<std::vector<Data>, Bitcoin::Error>::failure(Bitcoin::Error(Common::Proto::Error_missing_private_key, "Missing private key."));
             }
             auto signature = createSignature(transactionToSign, script, key, index);
             if (signature.empty()) {
                 // Error: Failed to sign
-                return Result<std::vector<Data>, TW::Bitcoin::Error>::failure(TW::Bitcoin::Error(TW::Bitcoin::Proto::SIGNING_ERROR, "Failed to sign."));
+                return Result<std::vector<Data>, Bitcoin::Error>::failure(Bitcoin::Error(Common::Proto::Error_signing, "Failed to sign."));
             }
             results.push_back(signature);
         }
         results.resize(required + 1);
-        return Result<std::vector<Data>, TW::Bitcoin::Error>::success(std::move(results));
+        return Result<std::vector<Data>, Bitcoin::Error>::success(std::move(results));
     } else {
         // Error: Invalid output script
-        return Result<std::vector<Data>, TW::Bitcoin::Error>::failure(TW::Bitcoin::Error(TW::Bitcoin::Proto::SCRIPT_ERROR, "Invalid output script."));
+        return Result<std::vector<Data>, Bitcoin::Error>::failure(Bitcoin::Error(Common::Proto::Error_script, "Invalid output script."));
     }
 }
 

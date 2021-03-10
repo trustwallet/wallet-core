@@ -27,7 +27,7 @@ Result<Transaction, Error> TransactionSigner<Transaction, TransactionBuilder>::s
         return Result<Transaction, Error>::failure(Error(plan.error.code, (plan.error.text + " (plan)").c_str()));
     }
     if (transaction.inputs.size() == 0 || plan.utxos.size() == 0) {
-        return Result<Transaction, Error>::failure(Error(Proto::MISSING_INPUT_UTXOS, "Missing inputs or UTXOs"));
+        return Result<Transaction, Error>::failure(Error(Common::Proto::Error_missing_input_utxos, "Missing inputs or UTXOs"));
     }
 
     signedInputs.clear();
@@ -116,7 +116,7 @@ Result<void, Error> TransactionSigner<Transaction, TransactionBuilder>::sign(Scr
         results.clear();
     } else if (script.isWitnessProgram()) {
         // Error: Unrecognized witness program.
-        return Result<void, Error>::failure(Error(Proto::SCRIPT_ERROR, "Unrecognized witness program"));
+        return Result<void, Error>::failure(Error(Common::Proto::Error_script, "Unrecognized witness program"));
     }
 
     if (!redeemScript.bytes.empty()) {
@@ -144,7 +144,7 @@ Result<std::vector<Data>, Error> TransactionSigner<Transaction, TransactionBuild
         auto redeemScript = scriptForScriptHash(data);
         if (redeemScript.empty()) {
             // Error: Missing redeem script
-            return Result<std::vector<Data>, Error>::failure(Error(Proto::SCRIPT_ERROR, "Missing redeem script."));
+            return Result<std::vector<Data>, Error>::failure(Error(Common::Proto::Error_script, "Missing redeem script."));
         }
         return Result<std::vector<Data>, Error>::success({redeemScript});
     }
@@ -153,7 +153,7 @@ Result<std::vector<Data>, Error> TransactionSigner<Transaction, TransactionBuild
         auto redeemScript = scriptForScriptHash(scripthash);
         if (redeemScript.empty()) {
             // Error: Missing redeem script
-            return Result<std::vector<Data>, Error>::failure(Error(Proto::SCRIPT_ERROR, "Missing redeem script."));
+            return Result<std::vector<Data>, Error>::failure(Error(Common::Proto::Error_script, "Missing redeem script."));
         }
         return Result<std::vector<Data>, Error>::success({redeemScript});
     }
@@ -162,7 +162,7 @@ Result<std::vector<Data>, Error> TransactionSigner<Transaction, TransactionBuild
     }
     if (script.isWitnessProgram()) {
         // Error: Invalid sutput script
-        return Result<std::vector<Data>, Error>::failure(Error(Proto::SCRIPT_ERROR, "Invalid output script."));
+        return Result<std::vector<Data>, Error>::failure(Error(Common::Proto::Error_script, "Invalid output script."));
     }
     if (script.matchMultisig(keys, required)) {
         auto results = std::vector<Data>{{}}; // workaround CHECKMULTISIG bug
@@ -174,13 +174,13 @@ Result<std::vector<Data>, Error> TransactionSigner<Transaction, TransactionBuild
             auto key = keyForPublicKeyHash(keyHash);
             if (key.empty() && !estimationMode) {
                 // Error: missing key
-                return Result<std::vector<Data>, Error>::failure(Error(Proto::MISSING_PRIVATE_KEY, "Missing private key."));
+                return Result<std::vector<Data>, Error>::failure(Error(Common::Proto::Error_missing_private_key, "Missing private key."));
             }
             auto signature =
                 createSignature(transactionToSign, script, key, index, utxo.amount(), version);
             if (signature.empty()) {
                 // Error: Failed to sign
-                return Result<std::vector<Data>, Error>::failure(Error(Proto::SIGNING_ERROR, "Failed to sign."));
+                return Result<std::vector<Data>, Error>::failure(Error(Common::Proto::Error_signing, "Failed to sign."));
             }
             results.push_back(signature);
         }
@@ -192,13 +192,13 @@ Result<std::vector<Data>, Error> TransactionSigner<Transaction, TransactionBuild
         auto key = keyForPublicKeyHash(keyHash);
         if (key.empty() && !estimationMode) {
             // Error: Missing key
-            return Result<std::vector<Data>, Error>::failure(Error(Proto::MISSING_PRIVATE_KEY, "Missing private key."));
+            return Result<std::vector<Data>, Error>::failure(Error(Common::Proto::Error_missing_private_key, "Missing private key."));
         }
         auto signature =
             createSignature(transactionToSign, script, key, index, utxo.amount(), version);
         if (signature.empty()) {
             // Error: Failed to sign
-            return Result<std::vector<Data>, Error>::failure(Error(Proto::SIGNING_ERROR, "Failed to sign."));
+            return Result<std::vector<Data>, Error>::failure(Error(Common::Proto::Error_signing, "Failed to sign."));
         }
         return Result<std::vector<Data>, Error>::success({signature});
     }
@@ -206,14 +206,14 @@ Result<std::vector<Data>, Error> TransactionSigner<Transaction, TransactionBuild
         auto key = keyForPublicKeyHash(data);
         if (key.empty() && !estimationMode) {
             // Error: Missing keys
-            return Result<std::vector<Data>, Error>::failure(Error(Proto::MISSING_PRIVATE_KEY, "Missing private key."));
+            return Result<std::vector<Data>, Error>::failure(Error(Common::Proto::Error_missing_private_key, "Missing private key."));
         }
 
         auto signature =
             createSignature(transactionToSign, script, key, index, utxo.amount(), version);
         if (signature.empty()) {
             // Error: Failed to sign
-            return Result<std::vector<Data>, Error>::failure(Error(Proto::SIGNING_ERROR, "Failed to sign."));
+            return Result<std::vector<Data>, Error>::failure(Error(Common::Proto::Error_signing, "Failed to sign."));
         }
         if (key.empty() && estimationMode) {
             // estimation mode, key is missing: use placeholder for public key
@@ -223,7 +223,7 @@ Result<std::vector<Data>, Error> TransactionSigner<Transaction, TransactionBuild
         return Result<std::vector<Data>, Error>::success({signature, pubkey.bytes});
     }
     // Error: Invalid output script
-    return Result<std::vector<Data>, Error>::failure(Error(Proto::SCRIPT_ERROR, "Invalid output script."));
+    return Result<std::vector<Data>, Error>::failure(Error(Common::Proto::Error_script, "Invalid output script."));
 }
 
 template <typename Transaction, typename TransactionBuilder>

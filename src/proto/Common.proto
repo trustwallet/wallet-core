@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package TW.Common.Proto;
+option java_package = "wallet.core.jni.proto";
+
+enum SigningError {
+    No_error = 0; // OK
+    // generic, input
+    Error_zero_amount_requested = 1; // Requested amount is zero
+    Error_missing_private_key = 2;
+    // generic, signing
+    Error_signing = 3;
+    // UTXO-chain specific, inputs
+    Error_missing_input_utxos = 4; // No UTXOs provided [BTC]
+    Error_not_enough_utxos = 5; // Not enough non-dust input UTXOs to cover requested amount (dust UTXOs are filtered out) [BTC]
+    // UTXO-chain specific, script
+    Error_script = 6; // Redeem/output script related error
+}

@@ -28,9 +28,9 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
-Error ErrorMissingPrivateKey = Error(Proto::MISSING_PRIVATE_KEY, "Missing private key.");
-Error ErrorMissingInputsOrUtxos = Error(Proto::MISSING_INPUT_UTXOS, "Missing inputs or UTXOs");
-Error ErrorMissingInputUtxosPlan = Error(Proto::MISSING_INPUT_UTXOS, "Missing input UTXOs (plan)");
+Error ErrorMissingPrivateKey = Error(Common::Proto::Error_missing_private_key, "Missing private key.");
+Error ErrorMissingInputsOrUtxos = Error(Common::Proto::Error_missing_input_utxos, "Missing inputs or UTXOs");
+Error ErrorMissingInputUtxosPlan = Error(Common::Proto::Error_missing_input_utxos, "Missing input UTXOs (plan)");
 
 Proto::SigningInput buildInputP2PKH(bool omitKey = false) {
     auto hash0 = parse_hex("fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f");
@@ -585,7 +585,7 @@ TEST(BitcoinSigning, SignP2WSH_NegativeMissingScript) {
     auto result = signer.sign();
 
     ASSERT_FALSE(result);
-    EXPECT_EQ(result.error(), Error(Proto::SCRIPT_ERROR, "Missing redeem script."));
+    EXPECT_EQ(result.error(), Error(Common::Proto::Error_script, "Missing redeem script."));
 }
 
 TEST(BitcoinSigning, SignP2WSH_NegativeMissingKeys) {
@@ -609,7 +609,7 @@ TEST(BitcoinSigning, SignP2WSH_NegativePlanWithError) {
     // Setup input
     auto input = buildInputP2WSH((uint32_t)TWBitcoinSigHashTypeAll);
     auto plan = Bitcoin::TransactionPlan();
-    input.mutable_plan()->mutable_error()->set_code(Proto::MISSING_INPUT_UTXOS);
+    input.mutable_plan()->mutable_error()->set_code(Common::Proto::Error_missing_input_utxos);
     input.mutable_plan()->mutable_error()->set_text("Plan has error");
 
     // Sign
@@ -617,7 +617,7 @@ TEST(BitcoinSigning, SignP2WSH_NegativePlanWithError) {
     auto result = signer.sign();
 
     ASSERT_FALSE(result);
-    EXPECT_EQ(result.error(), Error(Proto::MISSING_INPUT_UTXOS, "Plan has error (plan)"));
+    EXPECT_EQ(result.error(), Error(Common::Proto::Error_missing_input_utxos, "Plan has error (plan)"));
 }
 
 TEST(BitcoinSigning, SignP2WSH_NegativeNoUTXOs) {
@@ -755,7 +755,7 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH_NegativeOmitScript) {
     auto result = signer.sign();
 
     ASSERT_FALSE(result);
-    EXPECT_EQ(result.error(), Error(Proto::SCRIPT_ERROR, "Missing redeem script."));
+    EXPECT_EQ(result.error(), Error(Common::Proto::Error_script, "Missing redeem script."));
 }
 
 TEST(BitcoinSigning, SignP2SH_P2WPKH_NegativeOmitKeys) {
@@ -910,7 +910,7 @@ TEST(BitcoinSigning, Sign_NegativeNoUtxos) {
     {
         // plan returns empty, as there are 0 utxos
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_TRUE(verifyPlan(plan, {}, 0, 0, Error(Proto::MISSING_INPUT_UTXOS, "Missing input UTXOs")));
+        EXPECT_TRUE(verifyPlan(plan, {}, 0, 0, Error(Common::Proto::Error_missing_input_utxos, "Missing input UTXOs")));
     }
 
     // Invoke Sign nonetheless

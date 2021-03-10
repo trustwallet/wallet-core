@@ -19,9 +19,9 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
-Error ErrorNotEnoughUtxos = Error(Proto::NOT_ENOUGH_UTXOS, "Not enough non-dust input UTXOs");
-Error ErrorMissingInputUtxos = Error(Proto::MISSING_INPUT_UTXOS, "Missing input UTXOs");
-Error ErrorZeroAmountRequested = Error(Proto::ZERO_AMOUNT_REQUESTED, "Zero amount requested");
+Error ErrorNotEnoughUtxos = Error(Common::Proto::Error_not_enough_utxos, "Not enough non-dust input UTXOs");
+Error ErrorMissingInputUtxos = Error(Common::Proto::Error_missing_input_utxos, "Missing input UTXOs");
+Error ErrorZeroAmountRequested = Error(Common::Proto::Error_zero_amount_requested, "Zero amount requested");
 
 TEST(TransactionPlan, OneTypical) {
     auto utxos = buildTestUTXOs({100'000});

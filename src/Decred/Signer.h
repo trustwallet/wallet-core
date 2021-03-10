@@ -66,15 +66,15 @@ class Signer {
     /// Signs the transaction.
     ///
     /// \returns the signed transaction or an error.
-    Result<Transaction, TW::Bitcoin::Error> sign();
+    Result<Transaction, Bitcoin::Error> sign();
 
     /// Signs a particular input.
     ///
     /// \returns the signed transaction script.
-    Result<Bitcoin::Script, TW::Bitcoin::Error> sign(Bitcoin::Script script, size_t index);
+    Result<Bitcoin::Script, Bitcoin::Error> sign(Bitcoin::Script script, size_t index);
 
   private:
-    Result<std::vector<Data>, TW::Bitcoin::Error> signStep(Bitcoin::Script script, size_t index);
+    Result<std::vector<Data>, Bitcoin::Error> signStep(Bitcoin::Script script, size_t index);
     Data createSignature(const Transaction& transaction, const Bitcoin::Script& script,
                          const Data& key, size_t index);
 
