@@ -87,7 +87,7 @@ bool verifySelectedUTXOs(const std::vector<Proto::UnspentTransaction>& selected,
     return ret;
 }
 
-bool verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmounts, int64_t outputAmount, int64_t fee, Error error) {
+bool verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmounts, int64_t outputAmount, int64_t fee, Common::SigningError error) {
     bool ret = true;
     if (!verifySelectedUTXOs(plan.utxos, utxoAmounts)) {
         ret = false;

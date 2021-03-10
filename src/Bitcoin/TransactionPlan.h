@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "Error.h"
+#include "../SigningError.h"
 #include "Amount.h"
 #include "../proto/Bitcoin.pb.h"
 
@@ -32,7 +32,7 @@ struct TransactionPlan {
     /// Zcash branch id
     std::vector<uint8_t> branchId;
 
-    Error error;
+    Common::SigningError error;
 
     TransactionPlan() = default;
 
@@ -43,7 +43,7 @@ struct TransactionPlan {
         , change(plan.change())
         , utxos(plan.utxos().begin(), plan.utxos().end())
         , branchId(plan.branch_id().begin(), plan.branch_id().end())
-        , error(Error(plan.error().code(), plan.error().text()))
+        , error(Common::SigningError(plan.error().code(), plan.error().text()))
     {}
 
     Proto::TransactionPlan proto() const {

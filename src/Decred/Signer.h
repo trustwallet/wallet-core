@@ -12,7 +12,7 @@
 #include "../Bitcoin/Amount.h"
 #include "../Bitcoin/Script.h"
 #include "../Bitcoin/TransactionPlan.h"
-#include "../Bitcoin/Error.h"
+#include "../SigningError.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
 #include "../Result.h"
@@ -66,15 +66,15 @@ class Signer {
     /// Signs the transaction.
     ///
     /// \returns the signed transaction or an error.
-    Result<Transaction, Bitcoin::Error> sign();
+    Result<Transaction, Common::SigningError> sign();
 
     /// Signs a particular input.
     ///
     /// \returns the signed transaction script.
-    Result<Bitcoin::Script, Bitcoin::Error> sign(Bitcoin::Script script, size_t index);
+    Result<Bitcoin::Script, Common::SigningError> sign(Bitcoin::Script script, size_t index);
 
   private:
-    Result<std::vector<Data>, Bitcoin::Error> signStep(Bitcoin::Script script, size_t index);
+    Result<std::vector<Data>, Common::SigningError> signStep(Bitcoin::Script script, size_t index);
     Data createSignature(const Transaction& transaction, const Bitcoin::Script& script,
                          const Data& key, size_t index);
 

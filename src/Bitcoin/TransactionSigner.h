@@ -11,6 +11,7 @@
 #include "Transaction.h"
 #include "TransactionBuilder.h"
 #include "TransactionInput.h"
+#include "../SigningError.h"
 #include "../Groestlcoin/Transaction.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
@@ -63,7 +64,7 @@ class TransactionSigner {
     /// Signs the transaction.
     ///
     /// \returns the signed transaction or an error.
-    Result<Transaction, Error> sign();
+    Result<Transaction, Common::SigningError> sign();
 
     // helper, return binary encoded transaction (used right after sign())
     static void encodeTx(const Transaction& tx, Data& outData) { tx.encode(outData); }
@@ -72,8 +73,8 @@ class TransactionSigner {
     static Data pushAll(const std::vector<Data>& results);
 
   private:
-    Result<void, Error> sign(Script script, size_t index, const Proto::UnspentTransaction& utxo);
-    Result<std::vector<Data>, Error> signStep(Script script, size_t index,
+    Result<void, Common::SigningError> sign(Script script, size_t index, const Proto::UnspentTransaction& utxo);
+    Result<std::vector<Data>, Common::SigningError> signStep(Script script, size_t index,
                                        const Proto::UnspentTransaction& utxo, uint32_t version) const;
     Data createSignature(const Transaction& transaction, const Script& script, const Data& key,
                          size_t index, Amount amount, uint32_t version) const;
@@ -84,5 +85,7 @@ class TransactionSigner {
     /// Returns the redeem script for the given script hash.
     Data scriptForScriptHash(const Data& hash) const;
 };
+
+void setErrorToSigningOutput(const Common::SigningError& error, Proto::SigningOutput& signerOutput);
 
 } // namespace TW::Bitcoin

@@ -10,7 +10,7 @@
 #include "Bitcoin/TransactionPlan.h"
 #include "Bitcoin/TransactionBuilder.h"
 #include "Bitcoin/FeeCalculator.h"
-#include "Bitcoin/Error.h"
+#include "SigningError.h"
 #include "proto/Bitcoin.pb.h"
 #include <TrustWalletCore/TWCoinType.h>
 
@@ -19,9 +19,9 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
-Error ErrorNotEnoughUtxos = Error(Common::Proto::Error_not_enough_utxos, "Not enough non-dust input UTXOs");
-Error ErrorMissingInputUtxos = Error(Common::Proto::Error_missing_input_utxos, "Missing input UTXOs");
-Error ErrorZeroAmountRequested = Error(Common::Proto::Error_zero_amount_requested, "Zero amount requested");
+Common::SigningError ErrorNotEnoughUtxos = Common::SigningError(Common::Proto::Error_not_enough_utxos, "Not enough non-dust input UTXOs");
+Common::SigningError ErrorMissingInputUtxos = Common::SigningError(Common::Proto::Error_missing_input_utxos, "Missing input UTXOs");
+Common::SigningError ErrorZeroAmountRequested = Common::SigningError(Common::Proto::Error_zero_amount_requested, "Zero amount requested");
 
 TEST(TransactionPlan, OneTypical) {
     auto utxos = buildTestUTXOs({100'000});
