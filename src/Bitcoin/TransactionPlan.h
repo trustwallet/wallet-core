@@ -43,7 +43,7 @@ struct TransactionPlan {
         , change(plan.change())
         , utxos(plan.utxos().begin(), plan.utxos().end())
         , branchId(plan.branch_id().begin(), plan.branch_id().end())
-        , error(Common::SigningError(plan.error().code(), plan.error().text()))
+        , error(Common::SigningError(plan.error(), ""))
     {}
 
     Proto::TransactionPlan proto() const {
@@ -54,8 +54,7 @@ struct TransactionPlan {
         plan.set_change(change);
         *plan.mutable_utxos() = {utxos.begin(), utxos.end()};
         plan.set_branch_id(branchId.data(), branchId.size());
-        plan.mutable_error()->set_code(error.code);
-        plan.mutable_error()->set_text(error.text.c_str());
+        plan.set_error(error.code);
         return plan;
     }
 };

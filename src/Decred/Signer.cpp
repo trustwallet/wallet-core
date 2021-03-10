@@ -30,8 +30,7 @@ Proto::SigningOutput Signer::sign(const Bitcoin::Proto::SigningInput& input) noe
     auto result = signer.sign();
     auto output = Proto::SigningOutput();
     if (!result) {
-        output.mutable_error()->set_code(result.error().code);
-        output.mutable_error()->set_text(result.error().text.c_str());
+        output.set_error(result.error().code);
         return output;
     }
 

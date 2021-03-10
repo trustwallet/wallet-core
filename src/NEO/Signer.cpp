@@ -147,8 +147,7 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) {
             plan.set_fee(fee);
         }
     } catch (const Common::SigningError& error) {
-        plan.mutable_error()->set_code(error.code);
-        plan.mutable_error()->set_text(error.text.c_str());
+        plan.set_error(error.code);
     }
 
     return plan;
@@ -221,8 +220,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
         output.set_encoded(signedTx.data(), signedTx.size());
     } catch (const Common::SigningError& error) {
-        output.mutable_error()->set_code(error.code);
-        output.mutable_error()->set_text(error.text.c_str());
+        output.set_error(error.code);
     }
 
     return output;

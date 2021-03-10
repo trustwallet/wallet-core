@@ -297,8 +297,3 @@ Data TransactionSigner<Transaction, TransactionBuilder>::scriptForScriptHash(con
 template class TW::Bitcoin::TransactionSigner<Bitcoin::Transaction, Bitcoin::TransactionBuilder>;
 template class TW::Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>;
 template class TW::Bitcoin::TransactionSigner<Groestlcoin::Transaction, Bitcoin::TransactionBuilder>;
-
-void Bitcoin::setErrorToSigningOutput(const Common::SigningError& error, Proto::SigningOutput& signerOutput) {
-    signerOutput.mutable_error()->set_code(error.code);
-    signerOutput.mutable_error()->set_text(error.text.c_str());
-}

@@ -102,15 +102,6 @@ message SigningInput {
     TransactionPlan plan = 11;
 }
 
-// Pair of numerical + freetext error
-message Error {
-    // Numerical error code, values defined in enum
-    Common.Proto.SigningError code = 1;
-
-    // Error text, free text, in English, may be displayed as debug info, but decisions should not be based on this field
-    string text = 2;
-}
-
 // Describes a preliminary transaction plan.
 message TransactionPlan {
     // Amount to be received at the other end.
@@ -132,7 +123,7 @@ message TransactionPlan {
     bytes branch_id = 6;
 
     // Optional error
-    Error error = 7;
+    Common.Proto.SigningError error = 7;
 };
 
 // Transaction signing output.
@@ -147,5 +138,5 @@ message SigningOutput {
     string transaction_id = 3;
 
     // Optional error
-    Error error = 4;
+    Common.Proto.SigningError error = 4;
 }

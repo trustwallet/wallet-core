@@ -86,6 +86,4 @@ class TransactionSigner {
     Data scriptForScriptHash(const Data& hash) const;
 };
 
-void setErrorToSigningOutput(const Common::SigningError& error, Proto::SigningOutput& signerOutput);
-
 } // namespace TW::Bitcoin

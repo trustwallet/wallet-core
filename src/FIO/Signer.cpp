@@ -29,8 +29,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         const string json = TransactionBuilder::sign(input);
         output.set_json(json);
     } catch(const std::exception& e) {
-        output.mutable_error()->set_code(Common::Proto::Error_internal);
-        output.mutable_error()->set_text("Internal error");
+        output.set_error(Common::Proto::Error_internal);
     }
     return output;
 }
