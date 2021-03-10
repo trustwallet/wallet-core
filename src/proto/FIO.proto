@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.FIO.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // A public blockchain address, such as {"BTC", "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"}
 message PublicAddress {
     // Coin symbol for the address (a.k.a. tokenCode)
@@ -150,15 +152,10 @@ message SigningInput {
     Action action = 5;
 }
 
-enum ErrorCode {
-    NO_ERROR = 0; // OK
-    INTERNAL_ERROR = 1;
-}
-
 // Pair of numerical + freetext error
 message Error {
     // Numerical error code, values defined in enum
-    ErrorCode code = 1;
+    Common.Proto.SigningError code = 1;
 
     // Error text, free text, in English, may be displayed as debug info, but decisions should not be based on this field
     string text = 2;
