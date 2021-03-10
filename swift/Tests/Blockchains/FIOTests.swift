@@ -57,7 +57,7 @@ class FIOTests: XCTestCase {
         }
 
         let out: FIOSigningOutput = AnySigner.sign(input: input, coin: .fio)
-        XCTAssertEqual(out.error.code, TW_Common_Proto_SigningError.noError)
+        XCTAssertEqual(out.error.code, TW_Common_Proto_SigningError.ok)
         XCTAssertEqual(out.error.text, "")
         let expectedJson: String =
 """
@@ -97,7 +97,7 @@ class FIOTests: XCTestCase {
         }
 
         let out: FIOSigningOutput = AnySigner.sign(input: input, coin: .fio)
-        XCTAssertEqual(out.error.code, TW_Common_Proto_SigningError.noError)
+        XCTAssertEqual(out.error.code, TW_Common_Proto_SigningError.ok)
         XCTAssertEqual(out.error.text, "")
         let expectedJson: String =
 """
@@ -133,7 +133,7 @@ class FIOTests: XCTestCase {
         }
 
         let out: FIOSigningOutput = AnySigner.sign(input: input, coin: .fio)
-        XCTAssertEqual(out.error.code, TW_Common_Proto_SigningError.noError)
+        XCTAssertEqual(out.error.code, TW_Common_Proto_SigningError.ok)
         XCTAssertEqual(out.error.text, "")
         let expectedJson: String =
 """
