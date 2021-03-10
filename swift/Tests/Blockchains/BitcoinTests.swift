@@ -47,8 +47,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
 
         // Sign
         let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .bitcoin)
-        XCTAssertEqual(output.error.code, TW_Common_Proto_SigningError.ok)
-        XCTAssertTrue(output.error.text.isEmpty)
+        XCTAssertEqual(output.error, TW_Common_Proto_SigningError.ok)
 
         let signedTx = output.transaction
         XCTAssertEqual(signedTx.version, 1)
