@@ -4,7 +4,7 @@ package TW.Common.Proto;
 option java_package = "wallet.core.jni.proto";
 
 enum SigningError {
-    No_error = 0; // OK
+    OK = 0; // OK
     // chain-generic, generic
     Error_general = 1;
     Error_internal = 2;

@@ -71,7 +71,7 @@ class TestEOSSigning {
         }
 
         val output = AnySigner.sign(signingInput.build(), CoinType.EOS, SigningOutput.parser())
-        assertEquals(SigningError.No_error, output.error.code)
+        assertEquals(SigningError.OK, output.error.code)
         assertTrue(output.error.text.isEmpty())
 
         val jsonObj = JSONObject(output.jsonEncoded)

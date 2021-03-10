@@ -99,6 +99,6 @@ TEST(TWAnySignerNEO, Plan) {
     EXPECT_EQ(plan.inputs_size(), 30);
     EXPECT_EQ(plan.outputs_size(), 2);
     EXPECT_EQ(plan.fee(), 1408000);
-    EXPECT_EQ(plan.error().code(), Common::Proto::No_error);
+    EXPECT_EQ(plan.error().code(), Common::Proto::OK);
     EXPECT_EQ(plan.error().text(), "");
 }
