@@ -64,7 +64,7 @@ class EOSTests: XCTestCase {
             "signatures": ["SIG_K1_KfCdjsrTnx5cBpbA5cUdHZAsRYsnC9uKzuS1shFeqfMCfdZwX4PBm9pfHwGRT6ffz3eavhtkyNci5GoFozQAx8P8PBnDmj"]
         }
         """
-        XCTAssertEqual(output.error.code, TW_EOS_Proto_SigningError.ok)
+        XCTAssertEqual(output.error.code, TW_Common_Proto_SigningError.ok)
         XCTAssertTrue(output.error.text.isEmpty)
         XCTAssertJSONEqual(output.jsonEncoded, expectedJSON)
     }
