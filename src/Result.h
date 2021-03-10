@@ -125,6 +125,8 @@ struct Result {
     /// Returns a new failure result with the given error.
     static Result<T, E> failure(E&& val) { return Result(Types::Failure<E>(std::forward<E>(val))); }
 
+    static Result<T, E> failure(E& val) { return Result(Types::Failure<E>(val)); }
+
     operator bool() const { return success_; }
 
   private:

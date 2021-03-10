@@ -24,7 +24,7 @@ SigningOutput Signer::sign(const SigningInput& input) noexcept {
     auto signer = Bitcoin::TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
     auto result = signer.sign();
     if (!result) {
-        output.set_error(result.error().code);
+        output.set_error(result.error());
     } else {
         const auto& tx = result.payload();
         *output.mutable_transaction() = tx.proto();

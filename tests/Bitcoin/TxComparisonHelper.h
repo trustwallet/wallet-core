@@ -34,7 +34,7 @@ bool verifySelectedUTXOs(const std::vector<Proto::UnspentTransaction>& selected,
 
 /// Compare a transaction plan against expected values (UTXO amounts, amount, fee, change is implicit).
 /// Returns false on mismatch, and error is printed (stderr).
-bool verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmounts, int64_t outputAmount, int64_t fee, Common::SigningError error = Common::SigningError());
+bool verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmounts, int64_t outputAmount, int64_t fee, Common::Proto::SigningError error = Common::Proto::OK);
 
 int64_t sumUTXOs(const std::vector<Proto::UnspentTransaction>& utxos);
 
