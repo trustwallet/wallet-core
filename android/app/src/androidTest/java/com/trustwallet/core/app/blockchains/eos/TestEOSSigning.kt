@@ -110,28 +110,28 @@ class TestEOSSigning {
         var badinput = goodInput;
         badinput.asset = getAssetBuilder(300000, 19, "TKN").build();
         var result = AnySigner.sign(badinput.build(), CoinType.EOS, SigningOutput.parser())
-        assertEquals("Expected error but signing suceeded!", SigningError.Error_general, result.error.code)
-        assertFalse("Expected error but signing suceeded!", result.error.text.isEmpty())
+        assertEquals("Expected error but signing succeeded!", SigningError.Error_general, result.error.code)
+        assertFalse("Expected error but signing succeeded!", result.error.text.isEmpty())
 
 
         badinput = goodInput;
         badinput.asset = getAssetBuilder(300000, 4, "xyz").build()
         result = AnySigner.sign(badinput.build(), CoinType.EOS, SigningOutput.parser())
-        assertEquals("Expected error but signing suceeded!", SigningError.Error_general, result.error.code)
-        assertFalse("Expected error but signing suceeded!", result.error.text.isEmpty())
+        assertEquals("Expected error but signing succeeded!", SigningError.Error_general, result.error.code)
+        assertFalse("Expected error but signing succeeded!", result.error.text.isEmpty())
 
 
         badinput = goodInput;
         badinput.recipient = "A".repeat(15)
         result = AnySigner.sign(badinput.build(), CoinType.EOS, SigningOutput.parser())
-        assertEquals("Expected error but signing suceeded!", SigningError.Error_general, result.error.code)
-        assertFalse("Expected error but signing suceeded!", result.error.text.isEmpty())
+        assertEquals("Expected error but signing succeeded!", SigningError.Error_general, result.error.code)
+        assertFalse("Expected error but signing succeeded!", result.error.text.isEmpty())
 
 
         badinput = goodInput;
         badinput.referenceBlockId = ByteString.copyFrom("0000086bf9e7704509aa41311a66fa0a1b479c".toHexByteArray())
         result = AnySigner.sign(badinput.build(), CoinType.EOS, SigningOutput.parser())
-        assertEquals("Expected error but signing suceeded!", SigningError.Error_general, result.error.code)
-        assertFalse("Expected error but signing suceeded!", result.error.text.isEmpty())
+        assertEquals("Expected error but signing succeeded!", SigningError.Error_general, result.error.code)
+        assertFalse("Expected error but signing succeeded!", result.error.text.isEmpty())
     }
 }
