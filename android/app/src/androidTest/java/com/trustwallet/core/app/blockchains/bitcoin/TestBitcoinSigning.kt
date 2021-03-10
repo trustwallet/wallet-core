@@ -71,8 +71,7 @@ class TestBitcoinSigning {
         input.addUtxo(utxo1)
 
         val output = AnySigner.sign(input.build(), BITCOIN, SigningOutput.parser())
-        assertEquals(output.error.code, SigningError.OK)
-        assert(output.error.text.isEmpty())
+        assertEquals(output.error, SigningError.OK)
         val signedTransaction = output.transaction
         assert(signedTransaction.isInitialized)
         assertEquals(1, signedTransaction.version)
@@ -145,8 +144,7 @@ class TestBitcoinSigning {
         input.plan = plan
         val output = AnySigner.sign(input.build(), BITCOIN, SigningOutput.parser())
 
-        assertEquals(output.error.code, SigningError.OK)
-        assert(output.error.text.isEmpty())
+        assertEquals(output.error, SigningError.OK)
         val signedTransaction = output.transaction
         assert(signedTransaction.isInitialized)
         assertEquals(1, signedTransaction.version)
