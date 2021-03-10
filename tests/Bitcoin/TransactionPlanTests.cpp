@@ -18,9 +18,6 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
-auto ErrorNotEnoughUtxos = Common::Proto::Error_not_enough_utxos;
-auto ErrorMissingInputUtxos = Common::Proto::Error_missing_input_utxos;
-auto ErrorZeroAmountRequested = Common::Proto::Error_zero_amount_requested;
 
 TEST(TransactionPlan, OneTypical) {
     auto utxos = buildTestUTXOs({100'000});
@@ -62,7 +59,7 @@ TEST(TransactionPlan, OneInsufficientLower100) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorNotEnoughUtxos));
+    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, Common::Proto::Error_not_enough_utxos));
 }
 
 TEST(TransactionPlan, OneInsufficientLower170) {
@@ -72,7 +69,7 @@ TEST(TransactionPlan, OneInsufficientLower170) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorNotEnoughUtxos));
+    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, Common::Proto::Error_not_enough_utxos));
 }
 
 TEST(TransactionPlan, OneInsufficientLower300) {
@@ -297,7 +294,7 @@ TEST(TransactionPlan, Inputs5_33Req19Fee20) {
     // UTXOs smaller than singleInputFee are not included
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorNotEnoughUtxos));
+    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, Common::Proto::Error_not_enough_utxos));
 }
 
 TEST(TransactionPlan, Inputs5_33Req13Fee20) {
@@ -321,7 +318,7 @@ TEST(TransactionPlan, NoUTXOs) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorMissingInputUtxos));
+    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, Common::Proto::Error_missing_input_utxos));
 }
 
 TEST(TransactionPlan, CustomCase) {
@@ -343,7 +340,7 @@ TEST(TransactionPlan, Target0) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorZeroAmountRequested));
+    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, Common::Proto::Error_zero_amount_requested));
 }
 
 TEST(TransactionPlan, MaxAmount) {
@@ -470,7 +467,7 @@ TEST(TransactionPlan, MaxAmountDustAllFee10) {
     // UTXOs smaller than singleInputFee are not included
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, ErrorNotEnoughUtxos));
+    EXPECT_TRUE(verifyPlan(txPlan, {}, 0, 0, Common::Proto::Error_not_enough_utxos));
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 1020);

@@ -47,7 +47,7 @@ TEST(TWAnySignerEOS, Sign) {
     {
         Proto::SigningOutput output;
         ANY_SIGN(input, TWCoinTypeEOS);
-        EXPECT_EQ(output.error(), Common::Proto::Error_general);
+        EXPECT_EQ(output.error(), Common::Proto::Error_internal);
         EXPECT_TRUE(output.json_encoded().empty());
     }
 }

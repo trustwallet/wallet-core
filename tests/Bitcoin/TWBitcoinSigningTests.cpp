@@ -28,9 +28,6 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
-auto ErrorMissingPrivateKey = Common::Proto::Error_missing_private_key;
-auto ErrorMissingInputsOrUtxos = Common::Proto::Error_missing_input_utxos;
-auto ErrorMissingInputUtxosPlan = Common::Proto::Error_missing_input_utxos;
 
 Proto::SigningInput buildInputP2PKH(bool omitKey = false) {
     auto hash0 = parse_hex("fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f");
@@ -127,7 +124,7 @@ TEST(BitcoinSigning, SignP2PKH_NegativeMissingKey) {
     auto result = signer.sign();
 
     ASSERT_FALSE(result);
-    EXPECT_EQ(result.error(), ErrorMissingPrivateKey);
+    EXPECT_EQ(result.error(), Common::Proto::Error_missing_private_key);
 }
 
 TEST(BitcoinSigning, EncodeP2WPKH) {
@@ -602,7 +599,7 @@ TEST(BitcoinSigning, SignP2WSH_NegativeMissingKeys) {
     auto result = signer.sign();
 
     ASSERT_FALSE(result);
-    EXPECT_EQ(result.error(), ErrorMissingPrivateKey);
+    EXPECT_EQ(result.error(), Common::Proto::Error_missing_private_key);
 }
 
 TEST(BitcoinSigning, SignP2WSH_NegativePlanWithError) {
@@ -630,7 +627,7 @@ TEST(BitcoinSigning, SignP2WSH_NegativeNoUTXOs) {
     auto result = signer.sign();
 
     ASSERT_FALSE(result);
-    EXPECT_EQ(result.error(), ErrorMissingInputsOrUtxos);
+    EXPECT_EQ(result.error(), Common::Proto::Error_missing_input_utxos);
 }
 
 TEST(BitcoinSigning, SignP2WSH_NegativePlanWithNoUTXOs) {
@@ -643,7 +640,7 @@ TEST(BitcoinSigning, SignP2WSH_NegativePlanWithNoUTXOs) {
     auto result = signer.sign();
 
     ASSERT_FALSE(result);
-    EXPECT_EQ(result.error(), ErrorMissingInputsOrUtxos);
+    EXPECT_EQ(result.error(), Common::Proto::Error_missing_input_utxos);
 }
 
 TEST(BitcoinSigning, EncodeP2SH_P2WPKH) {
@@ -770,7 +767,7 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH_NegativeOmitKeys) {
     auto result = signer.sign();
 
     ASSERT_FALSE(result);
-    EXPECT_EQ(result.error(), ErrorMissingPrivateKey);
+    EXPECT_EQ(result.error(), Common::Proto::Error_missing_private_key);
 }
 
 TEST(BitcoinSigning, EncodeP2SH_P2WSH) {
@@ -918,7 +915,7 @@ TEST(BitcoinSigning, Sign_NegativeNoUtxos) {
 
     // Fails as there are 0 utxos
     ASSERT_FALSE(result);
-    EXPECT_EQ(result.error(), ErrorMissingInputUtxosPlan);
+    EXPECT_EQ(result.error(), Common::Proto::Error_missing_input_utxos);
 }
 
 TEST(BitcoinSigning, Sign_NegativeInvalidAddress) {
@@ -976,7 +973,7 @@ TEST(BitcoinSigning, Sign_NegativeInvalidAddress) {
     auto result = signer.sign();
 
     ASSERT_FALSE(result);
-    EXPECT_EQ(result.error(), ErrorMissingInputsOrUtxos);
+    EXPECT_EQ(result.error(), Common::Proto::Error_missing_input_utxos);
 }
 
 TEST(BitcoinSigning, Plan_10input_MaxAmount) {

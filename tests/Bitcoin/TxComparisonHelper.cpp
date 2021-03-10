@@ -114,15 +114,14 @@ bool verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmo
         std::cerr << "Mismatch in change, act " << plan.change << ", exp " << expectedChange << std::endl;
     }
     if (plan.error != Common::Proto::OK) {
-        std::string planErrorString = std::to_string(plan.error); // out here for coverage
         if (error != Common::Proto::OK) {
             if (plan.error != error) {
                 ret = false;
-                std::cerr << "Unexpected error, act " << planErrorString << ", exp " << std::to_string(plan.error) << std::endl;
+                std::cerr << "Unexpected error, act " << std::to_string(plan.error) << ", exp " << std::to_string(plan.error) << std::endl;
             }
         } else {
             ret = false;
-            std::cerr << "Unexpected error " << planErrorString << std::endl;
+            std::cerr << "Unexpected error " << std::to_string(plan.error) << std::endl;
         }
     } else {
         if (error != Common::Proto::OK) {
