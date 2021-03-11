@@ -30,15 +30,17 @@ class StellarTests: XCTestCase {
     let privateKeyData = Data(hexString: "59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722")!
 
     func testSigner() {
+        let operation = StellarOperationPayment.with {
+            $0.destination = destination
+            $0.amount = 10_000_000
+        }
         let input = StellarSigningInput.with {
             $0.passphrase = StellarPassphrase.stellar.description
-            $0.amount = 10_000_000
             $0.fee = 1000
             $0.sequence = 2 // from account info api
             $0.account = account
-            $0.destination = destination
             $0.privateKey = privateKeyData
-            $0.operationType = .payment
+            $0.opPayment = operation
         }
 
         let output: StellarSigningOutput = AnySigner.sign(input: input, coin: .stellar)
@@ -46,18 +48,20 @@ class StellarTests: XCTestCase {
     }
 
     func testSignWithMemoHash() {
+        let operation = StellarOperationPayment.with {
+            $0.destination = destination
+            $0.amount = 10_000_000
+        }
         let input = StellarSigningInput.with {
             $0.passphrase = StellarPassphrase.stellar.description
-            $0.amount = 10_000_000
             $0.fee = 1000
             $0.sequence = 2 // from account info api
             $0.account = account
-            $0.destination = destination
             $0.privateKey = privateKeyData
             $0.memoHash = StellarMemoHash.with {
                 $0.hash = Data(hexString: "315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3")!
             }
-            $0.operationType = .payment
+            $0.opPayment = operation
         }
 
         let output: StellarSigningOutput = AnySigner.sign(input: input, coin: .stellar)
@@ -65,18 +69,20 @@ class StellarTests: XCTestCase {
     }
 
     func testSignWithMemoReturn() {
+        let operation = StellarOperationPayment.with {
+            $0.destination = destination
+            $0.amount = 10_000_000
+        }
         let input = StellarSigningInput.with {
             $0.passphrase = StellarPassphrase.stellar.description
-            $0.amount = 10_000_000
             $0.fee = 1000
             $0.sequence = 2 // from account info api
             $0.account = account
-            $0.destination = destination
             $0.privateKey = privateKeyData
             $0.memoReturnHash = StellarMemoHash.with {
                 $0.hash = Data(hexString: "315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3")!
             }
-            $0.operationType = .payment
+            $0.opPayment = operation
         }
 
         let output: StellarSigningOutput = AnySigner.sign(input: input, coin: .stellar)
@@ -84,18 +90,20 @@ class StellarTests: XCTestCase {
     }
 
     func testSignWithMemoId() {
+        let operation = StellarOperationPayment.with {
+            $0.destination = destination
+            $0.amount = 10_000_000
+        }
         let input = StellarSigningInput.with {
             $0.passphrase = StellarPassphrase.stellar.description
-            $0.amount = 10_000_000
             $0.fee = 1000
             $0.sequence = 2 // from account info api
             $0.account = account
-            $0.destination = destination
             $0.privateKey = privateKeyData
             $0.memoID = StellarMemoId.with {
                 $0.id = 1234567890
             }
-            $0.operationType = .payment
+            $0.opPayment = operation
         }
 
         let output: StellarSigningOutput = AnySigner.sign(input: input, coin: .stellar)
@@ -103,21 +111,45 @@ class StellarTests: XCTestCase {
     }
 
     func testSignCreateAccount() {
+        let operation = StellarOperationCreateAccount.with {
+            $0.destination = destination
+            $0.amount = 10_000_000
+        }
         let input = StellarSigningInput.with {
             $0.passphrase = StellarPassphrase.stellar.description
-            $0.amount = 10_000_000
             $0.fee = 1000
             $0.sequence = 2 // from account info api
             $0.account = account
-            $0.destination = destination
             $0.privateKey = privateKeyData
             $0.memoID = StellarMemoId.with {
                 $0.id = 1234567890
             }
-            $0.operationType = .createAccount
+            $0.opCreateAccount = operation
         }
 
         let output: StellarSigningOutput = AnySigner.sign(input: input, coin: .stellar)
         XCTAssertEqual(output.signature, "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAIAAAAASZYC0gAAAAEAAAAAAAAAAAAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAmJaAAAAAAAAAAAEZ31yiAAAAQNgqNDqbe0X60gyH+1xf2Tv2RndFiJmyfbrvVjsTfjZAVRrS2zE9hHlqPQKpZkGKEFka7+1ElOS+/m/1JDnauQg=")
+    }
+
+    func testSignChangeTrust() {
+        let assetMobi = StellarAsset.with {
+            $0.issuer = "GA6HCMBLTZS5VYYBCATRBRZ3BZJMAFUDKYYF6AH6MVCMGWMRDNSWJPIH"
+            $0.alphanum4 = "MOBI"
+        }
+        let operation = StellarOperationChangeTrust.with {
+            $0.asset = assetMobi
+            $0.validBefore = 1613336576
+        }
+        let input = StellarSigningInput.with {
+            $0.passphrase = StellarPassphrase.stellar.description
+            $0.fee = 10000
+            $0.sequence = 144098454883270659
+            $0.account = "GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL"
+            $0.privateKey = Data(hexString: "3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9")!
+            $0.opChangeTrust = operation
+        }
+
+        let output: StellarSigningOutput = AnySigner.sign(input: input, coin: .stellar)
+        XCTAssertEqual(output.signature, "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAnEAH/8MgAAAADAAAAAQAAAAAAAAAAAAAAAGApkAAAAAAAAAAAAQAAAAAAAAAGAAAAAU1PQkkAAAAAPHEwK55l2uMBECcQxzsOUsAWg1YwXwD+ZUTDWZEbZWR//////////wAAAAAAAAABd9ORdQAAAEAnfyXyaNQX5Bq3AEQVBIaYd+cLib+y2sNY7DF/NYVSE51dZ6swGGElz094ObsPefmVmeRrkGsSc/fF5pmth+wJ")
     }
 }

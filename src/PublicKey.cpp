@@ -12,7 +12,7 @@
 #include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sodium/keypair.h>
-#include "TrezorCrypto/ed25519-donna.h"
+#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 
 namespace TW {
 

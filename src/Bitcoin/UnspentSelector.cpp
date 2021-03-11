@@ -12,8 +12,6 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
-const int64_t UnspentSelector::dustThreshold = 3 * 182;
-
 /// A selection of unspent transactions.
 struct Selection {
     std::vector<Proto::UnspentTransaction> utxos;
@@ -69,13 +67,21 @@ UnspentSelector::select(const T& utxos, int64_t targetValue, int64_t byteFee, in
     // definitions for the following caluculation
     const auto doubleTargetValue = targetValue * 2;
 
-    // Get all possible utxo selections up to a maximum size, sort by total
-    // amount
+    // Get all possible utxo selections up to a maximum size, sort by total amount, increasing
     auto sortedUtxos = utxos;
     std::sort(sortedUtxos.begin(), sortedUtxos.end(),
               [](const Proto::UnspentTransaction& lhs, const Proto::UnspentTransaction& rhs) {
                   return lhs.amount() < rhs.amount();
               });
+    // Precompute maximum amount possible to obtain with given number of UTXOs
+    const auto n = sortedUtxos.size();
+    std::vector<uint64_t> maxWithXInputs = std::vector<uint64_t>();
+    maxWithXInputs.push_back(0);
+    int64_t maxSum = 0;
+    for (auto i = 0; i < n; ++i) {
+        maxSum += sortedUtxos[n - 1 - i].amount();
+        maxWithXInputs.push_back(maxSum);
+    }
 
     // difference from 2x targetValue
     auto distFrom2x = [doubleTargetValue](int64_t val) -> int64_t {
@@ -85,40 +91,50 @@ UnspentSelector::select(const T& utxos, int64_t targetValue, int64_t byteFee, in
             return doubleTargetValue - val;
     };
 
+    const int64_t dustThreshold = feeCalculator.calculateSingleInput(byteFee);
+
     // 1. Find a combination of the fewest inputs that is
     //    (1) bigger than what we need
     //    (2) closer to 2x the amount,
     //    (3) and does not produce dust change.
-    for (int64_t numInputs = 1; numInputs <= sortedUtxos.size(); numInputs += 1) {
+    for (int64_t numInputs = 1; numInputs <= n; ++numInputs) {
         const auto fee = feeCalculator.calculate(numInputs, numOutputs, byteFee);
         const auto targetWithFeeAndDust = targetValue + fee + dustThreshold;
+        if (maxWithXInputs[numInputs] < targetWithFeeAndDust) {
+            // no way to satisfy with only numInputs inputs, skip
+            continue;
+        }
         auto slices = slice(sortedUtxos, static_cast<size_t>(numInputs));
-        slices.erase(std::remove_if(slices.begin(), slices.end(),
-                                    [targetWithFeeAndDust](
-                                        const std::vector<Proto::UnspentTransaction>& slice) {
-                                        return sum(slice) < targetWithFeeAndDust;
-                                    }),
-                     slices.end());
+        slices.erase(
+            std::remove_if(slices.begin(), slices.end(),
+                [targetWithFeeAndDust](const std::vector<Proto::UnspentTransaction>& slice) {
+                    return sum(slice) < targetWithFeeAndDust;
+                }),
+            slices.end());
         if (!slices.empty()) {
             std::sort(slices.begin(), slices.end(),
-                      [distFrom2x](const std::vector<Proto::UnspentTransaction>& lhs,
-                                   const std::vector<Proto::UnspentTransaction>& rhs) {
-                          return distFrom2x(sum(lhs)) < distFrom2x(sum(rhs));
-                      });
+                [distFrom2x](const std::vector<Proto::UnspentTransaction>& lhs,
+                            const std::vector<Proto::UnspentTransaction>& rhs) {
+                    return distFrom2x(sum(lhs)) < distFrom2x(sum(rhs));
+                });
             return filterDustInput(slices.front(), byteFee);
         }
     }
 
     // 2. If not, find a valid combination of outputs even if they produce dust change.
-    for (int64_t numInputs = 1; numInputs <= sortedUtxos.size(); numInputs += 1) {
+    for (int64_t numInputs = 1; numInputs <= n; ++numInputs) {
         const auto fee = feeCalculator.calculate(numInputs, numOutputs, byteFee);
         const auto targetWithFee = targetValue + fee;
+        if (maxWithXInputs[numInputs] < targetWithFee) {
+            // no way to satisfy with only numInputs inputs, skip
+            continue;
+        }
         auto slices = slice(sortedUtxos, static_cast<size_t>(numInputs));
         slices.erase(
             std::remove_if(slices.begin(), slices.end(),
-                           [targetWithFee](const std::vector<Proto::UnspentTransaction>& slice) {
-                               return sum(slice) < targetWithFee;
-                           }),
+                [targetWithFee](const std::vector<Proto::UnspentTransaction>& slice) {
+                    return sum(slice) < targetWithFee;
+                }),
             slices.end());
         if (!slices.empty()) {
             return filterDustInput(slices.front(), byteFee);

@@ -3,6 +3,40 @@ syntax = "proto3";
 package TW.Stellar.Proto;
 option java_package = "wallet.core.jni.proto";
 
+message Asset {
+    // Optional in case of non-native asset; the asset issuer address
+    string issuer = 1;
+
+    // Optional in case of non-native asset; the asset alphanum4 code.
+    string alphanum4 = 2;
+
+    // Note: alphanum12 currently not supported
+}
+
+message OperationCreateAccount {
+    string destination = 1;
+
+    // Amount (*10^7)
+    int64 amount = 2;
+}
+
+message OperationPayment {
+    string destination = 1;
+
+    // Optional, can be left empty for native asset
+    Asset asset = 2;
+
+    // Amount (*10^7)
+    int64 amount = 3;
+}
+
+message OperationChangeTrust {
+    Asset asset = 1;
+
+    // Validity (time bound to), unix time.  Set to (now() + 2 * 365 * 86400) for 2 years; set to 0 for missing.
+    int64 valid_before = 2;
+}
+
 message MemoVoid {
 }
 
@@ -20,34 +54,30 @@ message MemoHash {
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
-    int64 amount = 1;
+    int32 fee = 1;
 
-    int32 fee = 2;
+    int64 sequence = 2;
 
-    int64 sequence = 3;
-
-    string account = 4;
-
-    string destination = 5;
+    string account = 3;
 
     // Private key.
-    bytes private_key = 6;
+    bytes private_key = 4;
+
+    string passphrase = 5;
+
+    oneof operation_oneof {
+        OperationCreateAccount op_create_account = 6;
+        OperationPayment op_payment = 7;
+        OperationChangeTrust op_change_trust = 8;
+    }
 
     oneof memo_type_oneof {
-        MemoVoid memo_void = 7;
-        MemoText memo_text = 8;
-        MemoId memo_id = 9;
-        MemoHash memo_hash = 10;
-        MemoHash memo_return_hash = 11;
+        MemoVoid memo_void = 9;
+        MemoText memo_text = 10;
+        MemoId memo_id = 11;
+        MemoHash memo_hash = 12;
+        MemoHash memo_return_hash = 13;
     }
-
-    enum OperationType {
-        CREATE_ACCOUNT = 0;
-        PAYMENT = 1;
-    }
-    OperationType operation_type = 12;
-
-    string passphrase = 13;
 }
 
 // Transaction signing output.

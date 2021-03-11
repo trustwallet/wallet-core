@@ -51,7 +51,7 @@ jobs:
     - name: Build and test
       run: |
         make -Cbuild -j12 tests TrezorCryptoTests
-        build/trezor-crypto/tests/TrezorCryptoTests
+        build/trezor-crypto/crypto/tests/TrezorCryptoTests
         build/tests/tests tests --gtest_output=xml
       env:
         CC: /usr/bin/clang

@@ -135,7 +135,6 @@ TEST(PrivateKey, Cleanup) {
     Data privKeyData = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
     auto privateKey = new PrivateKey(privKeyData);
     auto ptr = privateKey->bytes.data();
-    std::cerr << privateKey->bytes.size() << "\n";
     ASSERT_EQ(hex(privKeyData), hex(data(ptr, 32)));
 
     privateKey->cleanup();

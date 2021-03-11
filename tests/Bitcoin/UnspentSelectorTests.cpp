@@ -18,7 +18,7 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
-TEST(BitcoinUnspentSelector, SelectUnpsents1) {
+TEST(BitcoinUnspentSelector, SelectUnspents1) {
     auto utxos = buildTestUTXOs({4000, 2000, 6000, 1000, 11000, 12000});
 
     auto selector = UnspentSelector();
@@ -27,7 +27,7 @@ TEST(BitcoinUnspentSelector, SelectUnpsents1) {
     EXPECT_TRUE(verifySelectedUTXOs(selected, {11000}));
 }
 
-TEST(BitcoinUnspentSelector, SelectUnpsents2) {
+TEST(BitcoinUnspentSelector, SelectUnspents2) {
     auto utxos = buildTestUTXOs({4000, 2000, 6000, 1000, 50000, 120000});
 
     auto selector = UnspentSelector();
@@ -36,7 +36,7 @@ TEST(BitcoinUnspentSelector, SelectUnpsents2) {
     EXPECT_TRUE(verifySelectedUTXOs(selected, {50000}));
 }
 
-TEST(BitcoinUnspentSelector, SelectUnpsents3) {
+TEST(BitcoinUnspentSelector, SelectUnspents3) {
     auto utxos = buildTestUTXOs({4000, 2000, 5000});
 
     auto selector = UnspentSelector();
@@ -45,7 +45,7 @@ TEST(BitcoinUnspentSelector, SelectUnpsents3) {
     EXPECT_TRUE(verifySelectedUTXOs(selected, {4000, 5000}));
 }
 
-TEST(BitcoinUnspentSelector, SelectUnpsents4) {
+TEST(BitcoinUnspentSelector, SelectUnspents4) {
     auto utxos = buildTestUTXOs({40000, 30000, 30000});
 
     auto selector = UnspentSelector();
@@ -54,7 +54,7 @@ TEST(BitcoinUnspentSelector, SelectUnpsents4) {
     EXPECT_TRUE(verifySelectedUTXOs(selected, {30000, 40000}));
 }
 
-TEST(BitcoinUnspentSelector, SelectUnpsents5) {
+TEST(BitcoinUnspentSelector, SelectUnspents5) {
     auto utxos = buildTestUTXOs({1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000});
 
     auto selector = UnspentSelector();
@@ -63,7 +63,7 @@ TEST(BitcoinUnspentSelector, SelectUnpsents5) {
     EXPECT_TRUE(verifySelectedUTXOs(selected, {6000, 7000, 8000, 9000}));
 }
 
-TEST(BitcoinUnspentSelector, SelectUnpsentsInsufficient) {
+TEST(BitcoinUnspentSelector, SelectUnspentsInsufficient) {
     auto utxos = buildTestUTXOs({4000, 4000, 4000});
 
     auto selector = UnspentSelector();
@@ -140,13 +140,13 @@ TEST(BitcoinUnspentSelector, SelectOneFitsExactly) {
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     auto selector = UnspentSelector(feeCalculator);
-    auto expectedFee = 226;
+    auto expectedFee = 174;
     auto selected = selector.select(utxos, 100'000 - expectedFee, 1);
 
     EXPECT_TRUE(verifySelectedUTXOs(selected, {100'000}));
 
-    ASSERT_EQ(feeCalculator.calculate(1, 2, 1), expectedFee);
-    ASSERT_EQ(feeCalculator.calculate(1, 1, 1), 192);
+    EXPECT_EQ(feeCalculator.calculate(1, 2, 1), expectedFee);
+    EXPECT_EQ(feeCalculator.calculate(1, 1, 1), 143);
 
     // 1 sat more and does not fit any more
     selected = selector.select(utxos, 100'000 - expectedFee + 1, 1);
@@ -160,13 +160,13 @@ TEST(BitcoinUnspentSelector, SelectOneFitsExactlyHighfee) {
     const auto byteFee = 10;
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     auto selector = UnspentSelector(feeCalculator);
-    auto expectedFee = 2260;
+    auto expectedFee = 1740;
     auto selected = selector.select(utxos, 100'000 - expectedFee, byteFee);
 
     EXPECT_TRUE(verifySelectedUTXOs(selected, {100'000}));
 
-    ASSERT_EQ(feeCalculator.calculate(1, 2, byteFee), expectedFee);
-    ASSERT_EQ(feeCalculator.calculate(1, 1, byteFee), 1920);
+    EXPECT_EQ(feeCalculator.calculate(1, 2, byteFee), expectedFee);
+    EXPECT_EQ(feeCalculator.calculate(1, 1, byteFee), 1430);
 
     // 1 sat more and does not fit any more
     selected = selector.select(utxos, 100'000 - expectedFee + 1, byteFee);
@@ -177,18 +177,22 @@ TEST(BitcoinUnspentSelector, SelectOneFitsExactlyHighfee) {
 TEST(BitcoinUnspentSelector, SelectThreeNoDust) {
     auto utxos = buildTestUTXOs({100'000, 70'000, 75'000});
 
-    auto selector = UnspentSelector();
-    auto selected = selector.select(utxos, 100'000 - 226 - 10, 1);
+    auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
+    auto selector = UnspentSelector(feeCalculator);
+    auto selected = selector.select(utxos, 100'000 - 174 - 10, 1);
 
     // 100'000 would fit with dust; instead two UTXOs are selected not to leave dust
     EXPECT_TRUE(verifySelectedUTXOs(selected, {75'000, 100'000}));
     
-    // Now 100'000 fits with no dust; 546 is the dust limit
-    selected = selector.select(utxos, 100'000 - 226 - 546, 1);
+    EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 174);
+
+    const auto dustLimit = 102;
+    // Now 100'000 fits with no dust
+    selected = selector.select(utxos, 100'000 - 174 - dustLimit, 1);
     EXPECT_TRUE(verifySelectedUTXOs(selected, {100'000}));
 
     // One more and we are over dust limit
-    selected = selector.select(utxos, 100'000 - 226 - 546 + 1, 1);
+    selected = selector.select(utxos, 100'000 - 174 - dustLimit + 1, 1);
     EXPECT_TRUE(verifySelectedUTXOs(selected, {75'000, 100'000}));
 }
 
@@ -242,14 +246,15 @@ TEST(BitcoinUnspentSelector, SelectTenThreeExact) {
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     auto selector = UnspentSelector(feeCalculator);
-    auto selected = selector.select(utxos, 375'000 - 522 - 546, 1);
+    const auto dustLimit = 102;
+    auto selected = selector.select(utxos, 375'000 - 376 - dustLimit, 1);
 
     EXPECT_TRUE(verifySelectedUTXOs(selected, {100'000, 125'000, 150'000}));
 
-    ASSERT_EQ(feeCalculator.calculate(3, 2, 1), 522);
+    ASSERT_EQ(feeCalculator.calculate(3, 2, 1), 376);
 
     // one more, and it's too much
-    selected = selector.select(utxos, 375'000 - 522 - 546 + 1, 1);
+    selected = selector.select(utxos, 375'000 - 376 - dustLimit + 1, 1);
 
     EXPECT_TRUE(verifySelectedUTXOs(selected, {7'000, 100'000, 125'000, 150'000}));
 }
@@ -263,7 +268,7 @@ TEST(BitcoinUnspentSelector, SelectMaxAmountOne) {
 
     EXPECT_TRUE(verifySelectedUTXOs(selected, {10189534}));
 
-    EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 226);
+    EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 174);
 }
 
 TEST(BitcoinUnspentSelector, SelectAllAvail) {
@@ -275,7 +280,7 @@ TEST(BitcoinUnspentSelector, SelectAllAvail) {
 
     EXPECT_TRUE(verifySelectedUTXOs(selected, {10189534}));
 
-    EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 226);
+    EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 174);
 }
 
 TEST(BitcoinUnspentSelector, SelectMaxAmount5of5) {
@@ -288,8 +293,8 @@ TEST(BitcoinUnspentSelector, SelectMaxAmount5of5) {
 
     EXPECT_TRUE(verifySelectedUTXOs(selected, {400, 500, 600, 800, 1000}));
 
-    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 148);
-    EXPECT_EQ(feeCalculator.calculate(5, 1, byteFee), 784);
+    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 102);
+    EXPECT_EQ(feeCalculator.calculate(5, 1, byteFee), 548);
 }
 
 TEST(BitcoinUnspentSelector, SelectMaxAmount4of5) {
@@ -297,13 +302,13 @@ TEST(BitcoinUnspentSelector, SelectMaxAmount4of5) {
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     auto selector = UnspentSelector(feeCalculator);
-    auto byteFee = 3;
+    auto byteFee = 4;
     auto selected = selector.selectMaxAmount(utxos, byteFee);
 
     EXPECT_TRUE(verifySelectedUTXOs(selected, {500, 600, 800, 1000}));
 
-    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 444);
-    EXPECT_EQ(feeCalculator.calculate(4, 1, byteFee), 1908);
+    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 408);
+    EXPECT_EQ(feeCalculator.calculate(4, 1, byteFee), 1784);
 }
 
 TEST(BitcoinUnspentSelector, SelectMaxAmount1of5) {
@@ -311,13 +316,13 @@ TEST(BitcoinUnspentSelector, SelectMaxAmount1of5) {
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     auto selector = UnspentSelector(feeCalculator);
-    auto byteFee = 6;
+    auto byteFee = 8;
     auto selected = selector.selectMaxAmount(utxos, byteFee);
 
     EXPECT_TRUE(verifySelectedUTXOs(selected, {1000}));
 
-    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 888);
-    EXPECT_EQ(feeCalculator.calculate(1, 1, byteFee), 1152);
+    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 816);
+    EXPECT_EQ(feeCalculator.calculate(1, 1, byteFee), 1144);
 }
 
 TEST(BitcoinUnspentSelector, SelectMaxAmountNone) {
@@ -330,7 +335,7 @@ TEST(BitcoinUnspentSelector, SelectMaxAmountNone) {
 
     EXPECT_TRUE(verifySelectedUTXOs(selected, {}));
 
-    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 1480);
+    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 1020);
 }
 
 TEST(BitcoinUnspentSelector, SelectMaxAmountNoUTXOs) {
@@ -343,7 +348,7 @@ TEST(BitcoinUnspentSelector, SelectMaxAmountNoUTXOs) {
     EXPECT_TRUE(verifySelectedUTXOs(selected, {}));
 }
 
-TEST(BitcoinUnspentSelector, SelectZcashUnpsents) {
+TEST(BitcoinUnspentSelector, SelectZcashUnspents) {
     auto utxos = buildTestUTXOs({100000, 2592, 73774});
 
     auto selector = UnspentSelector(getFeeCalculator(TWCoinTypeZcash));
@@ -352,7 +357,7 @@ TEST(BitcoinUnspentSelector, SelectZcashUnpsents) {
     EXPECT_TRUE(verifySelectedUTXOs(selected, {73774}));
 }
 
-TEST(BitcoinUnspentSelector, SelectGroestlUnpsents) {
+TEST(BitcoinUnspentSelector, SelectGroestlUnspents) {
     auto utxos = buildTestUTXOs({499971976});
 
     auto selector = UnspentSelector(getFeeCalculator(TWCoinTypeZcash));
@@ -370,7 +375,7 @@ TEST(BitcoinUnspentSelector, SelectZcashMaxAmount) {
     EXPECT_TRUE(verifySelectedUTXOs(selected, {100000, 2592, 73774}));
 }
 
-TEST(BitcoinUnspentSelector, SelectZcashMaxUnpsents2) {
+TEST(BitcoinUnspentSelector, SelectZcashMaxUnspents2) {
     auto utxos = buildTestUTXOs({100000, 2592, 73774});
 
     auto selector = UnspentSelector(getFeeCalculator(TWCoinTypeZcash));

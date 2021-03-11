@@ -28,8 +28,7 @@ TEST(Signer, Sign) {
         /* gasPrice: */ 20000000000,
         /* gasLimit: */ 21000,
         /* to: */ address,
-        /* amount: */ 1000000000000000000,
-        /* payload: */ {}
+        /* amount: */ 1000000000000000000
     );
 
     auto key = PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"));

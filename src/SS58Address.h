@@ -83,6 +83,11 @@ class SS58Address {
         append(result, checksum);
         return Base58::bitcoin.encode(result);
     }
+
+    /// Returns public key bytes
+    Data keyBytes() const { 
+        return Data(bytes.begin() + 1, bytes.end());
+    }
 };
 
 inline bool operator==(const SS58Address& lhs, const SS58Address& rhs) {

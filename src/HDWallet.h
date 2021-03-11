@@ -93,6 +93,7 @@ class HDWallet {
     enum PrivateKeyType {
       PrivateKeyTypeDefault32 = 0, // 32-byte private key
       PrivateKeyTypeExtended96 = 1, // 3*32-byte extended private key
+      PrivateKeyTypeHD = 2,         // 32-byte private key
     };
     
     // obtain privateKeyType used by the coin/curve

@@ -15,7 +15,7 @@ export LD_LIBRARY_PATH="$PREFIX/lib"
 export LD_RUN_PATH="$PREFIX/lib"
 
 # Download Google Test
-export GTEST_VERSION=1.8.1
+export GTEST_VERSION=1.10.0
 GTEST_DIR="$ROOT/build/local/src/gtest"
 mkdir -p "$GTEST_DIR"
 cd "$GTEST_DIR"
@@ -26,18 +26,24 @@ tar xzf release-$GTEST_VERSION.tar.gz
 
 # Build gtest
 cd googletest-release-$GTEST_VERSION
+echo "patching cmake minimum version"
+cp $ROOT/tools/*.patch .
+patch CMakeLists.txt gtest.patch
+patch googletest/CMakeLists.txt gtest_test.patch
+patch googlemock/CMakeLists.txt gtest_mock.patch
+
 cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -H.
 make -j4
 make install
 make clean
 
 # Download Check
-export CHECK_VERSION=0.12.0
+export CHECK_VERSION=0.15.2
 CHECK_DIR="$ROOT/build/local/src/check"
 mkdir -p "$CHECK_DIR"
 cd "$CHECK_DIR"
 if [ ! -f check-$CHECK_VERSION.tar.gz ]; then
-    curl -fSsOL https://github.com/libcheck/check/releases/download/0.12.0/check-$CHECK_VERSION.tar.gz
+    curl -fSsOL https://github.com/libcheck/check/releases/download/$CHECK_VERSION/check-$CHECK_VERSION.tar.gz
 fi
 tar xzf check-$CHECK_VERSION.tar.gz
 
@@ -49,7 +55,7 @@ make install
 make clean
 
 # Download Nlohmann JSON
-export JSON_VERSION=3.5.0
+export JSON_VERSION=3.9.1
 JSON_DIR="$ROOT/build/local/json"
 mkdir -p "$JSON_DIR"
 cd "$JSON_DIR"
@@ -59,7 +65,7 @@ fi
 unzip -d "$PREFIX" -o include.zip
 
 # Download Protobuf sources
-export PROTOBUF_VERSION=3.9.0
+export PROTOBUF_VERSION=3.14.0
 PROTOBUF_DIR="$ROOT/build/local/src/protobuf"
 mkdir -p "$PROTOBUF_DIR"
 cd "$PROTOBUF_DIR"
@@ -79,7 +85,7 @@ make clean
 
 if [[ -x "$(command -v swift)" && `uname` == "Darwin" ]]; then
     # Download Swift Protobuf sources
-    export SWIFT_PROTOBUF_VERSION=1.9.0
+    export SWIFT_PROTOBUF_VERSION=1.13.0
     SWIFT_PROTOBUF_DIR="$ROOT/build/local/src/swift-protobuf"
     mkdir -p "$SWIFT_PROTOBUF_DIR"
     cd "$SWIFT_PROTOBUF_DIR"

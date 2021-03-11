@@ -70,13 +70,14 @@ bool Util::fileR(const string& fileName, string& res) {
         _out << "Error: File not found '" << fileName << "'" << endl;
         return false;
     }
+    char* buffer = nullptr;
     try {
         ifstream infile(fileName,  std::ios::in | std::ios::binary);
         // get length of file:
         infile.seekg (0, infile.end);
         auto length = infile.tellg();
         infile.seekg (0, infile.beg);
-        char* buffer = new char[length];
+        buffer = new char[length];
         if (!infile.read(buffer, length)) {
             _out << "Could not read file '" << fileName << "'" << endl;
             delete[] buffer;
@@ -90,6 +91,9 @@ bool Util::fileR(const string& fileName, string& res) {
         return true;
     } catch (exception& ex) {
         _out << "Error reading from file '" << fileName << "': " << ex.what() << endl;
+        if (buffer != nullptr) {
+            delete[] buffer;
+        }
         return false;
     }
 }

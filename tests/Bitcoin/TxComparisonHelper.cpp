@@ -87,7 +87,7 @@ bool verifySelectedUTXOs(const std::vector<Proto::UnspentTransaction>& selected,
     return ret;
 }
 
-bool verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmounts, int64_t outputAmount, int64_t fee) {
+bool verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmounts, int64_t outputAmount, int64_t fee, std::string error) {
     bool ret = true;
     if (!verifySelectedUTXOs(plan.utxos, utxoAmounts)) {
         ret = false;
@@ -112,6 +112,22 @@ bool verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmo
     if (plan.change != expectedChange) {
         ret = false;
         std::cerr << "Mismatch in change, act " << plan.change << ", exp " << expectedChange << std::endl;
+    }
+    if (plan.error.length() > 0) {
+        if (error.length() > 0) {
+            if (plan.error != error) {
+                ret = false;
+                std::cerr << "Unexpected error, act " << plan.error << ", exp " << error << std::endl;
+            }
+        } else {
+            ret = false;
+            std::cerr << "Unexpected error " << plan.error << std::endl;
+        }
+    } else {
+        if (error.length() > 0) {
+            ret = false;
+            std::cerr << "Missing expected error " << error << std::endl;
+        }
     }
     return ret;
 }

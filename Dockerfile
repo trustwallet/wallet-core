@@ -25,17 +25,18 @@ RUN apt-get update \
         libtool autoconf pkg-config \
         ninja-build \
         ruby-full \
-        clang-9 \
-        llvm-9 \
+        clang-10 \
+        llvm-10 \
         libc++-dev libc++abi-dev \
         cmake \        
-        libboost1.70-dev \
+        libboost1.74-dev \
+        ccache \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ENV CC=/usr/bin/clang-9
-ENV CXX=/usr/bin/clang++-9
+ENV CC=/usr/bin/clang-10
+ENV CXX=/usr/bin/clang++-10
 
-# ↑ Setup build environment (could be a base image)
+# ↑ Setup build environment
 # ↓ Build and compile wallet core
 
 RUN git clone https://github.com/trustwallet/wallet-core.git

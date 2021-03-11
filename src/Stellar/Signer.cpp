@@ -9,6 +9,7 @@
 #include "../BinaryCoding.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
+#include "../proto/Stellar.pb.h"
 
 #include <TrustWalletCore/TWStellarMemoType.h>
 
@@ -55,10 +56,21 @@ Data Signer::encode(const Proto::SigningInput& input) const {
     //    Address account, uint32_t fee, uint64_t sequence, uint32_t memoType,
     //    Data memoData, Address destination, uint64_t amount;
     auto data = Data();
+
     encodeAddress(Address(input.account()), data);
     encode32BE(input.fee(), data);
     encode64BE(input.sequence(), data);
-    encode32BE(0, data); // Time bounds
+
+    // Time bounds
+    if (input.has_op_change_trust() && input.op_change_trust().valid_before() != 0) {
+        encode32BE(1, data);
+        encode64BE(0, data); // from
+        encode64BE(input.op_change_trust().valid_before(), data); // to
+    } else {
+        encode32BE(0, data); // missing
+    }
+
+    // Memo
     if (input.has_memo_id()) {
         encode32BE(TWStellarMemoTypeId, data);
         encode64BE(input.memo_id().id(), data);
@@ -77,22 +89,70 @@ Data Signer::encode(const Proto::SigningInput& input) const {
     } else {
         encode32BE(TWStellarMemoTypeNone, data);
     }
+
     // Operations
     encode32BE(1, data);                      // Operation list size. Only 1 operation.
     encode32BE(0, data);                      // Source equals account
-    encode32BE(input.operation_type(), data); // Operation type - PAYMENT
-    encodeAddress(Address(input.destination()), data);
-    if (input.operation_type() == Proto::SigningInput_OperationType_PAYMENT) {
-        encode32BE(0, data); // Asset type
+    encode32BE(operationType(input), data); // Operation type
+
+    switch (input.operation_oneof_case()) {
+        case Proto::SigningInput::kOpCreateAccount:
+        default:
+            encodeAddress(Address(input.op_create_account().destination()), data);
+            encode64BE(input.op_create_account().amount(), data);
+            break;
+
+        case Proto::SigningInput::kOpPayment:
+            encodeAddress(Address(input.op_payment().destination()), data);
+            encodeAsset(input.op_payment().asset(), data);
+            encode64BE(input.op_payment().amount(), data);
+            break;
+
+        case Proto::SigningInput::kOpChangeTrust:
+            encodeAsset(input.op_change_trust().asset(), data);
+            encode64BE(0x7fffffffffffffff, data); // limit MAX
+            break;
     }
-    encode64BE(input.amount(), data);
+
     encode32BE(0, data); // Ext
     return data;
 }
 
-void Signer::encodeAddress(const Address& address, Data& data) const {
+uint32_t Signer::operationType(const Proto::SigningInput& input) {
+    switch (input.operation_oneof_case()) {
+        case Proto::SigningInput::kOpCreateAccount:
+        default:
+            return 0;
+        case Proto::SigningInput::kOpPayment:
+            return 1;
+        case Proto::SigningInput::kOpChangeTrust:
+            return 6;
+    }
+}
+
+void Signer::encodeAddress(const Address& address, Data& data) {
     encode32BE(0, data);
     data.insert(data.end(), address.bytes.begin(), address.bytes.end());
+}
+
+void Signer::encodeAsset(const Proto::Asset& asset, Data& data) {
+    uint32_t assetType = 0; // native
+    std::string alphaUse;
+    if (asset.issuer().length() > 0 && Address::isValid(asset.issuer()) && asset.alphanum4().length() > 0) {
+        assetType = 1; // alphanum4
+        alphaUse = asset.alphanum4();
+    }
+    encode32BE(assetType, data);
+    if (assetType > 0) {
+        for (auto i = 0; i < 4; ++i) {
+            if (alphaUse.length() > i) {
+                data.push_back(alphaUse[i]);
+            } else {
+                data.push_back(0); // pad with 0s
+            }
+        }
+        encodeAddress(Address(asset.issuer()), data);
+    }
 }
 
 void Signer::pad(Data& data) const {

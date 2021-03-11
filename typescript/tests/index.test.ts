@@ -51,12 +51,16 @@ describe('Wallet Core types tests', () => {
             nonce: Buffer.from('09', 'hex'),
             gasPrice: Buffer.from('04a817c800', 'hex'),
             gasLimit: Buffer.from('5208', 'hex'),
-            amount: Buffer.from('0de0b6b3a7640000', 'hex'),
+            transaction: TW.Ethereum.Proto.Transaction.create({
+                transfer: TW.Ethereum.Proto.Transaction.Transfer.create({
+                    amount: Buffer.from('0de0b6b3a7640000', 'hex')
+                })
+            }),
             privateKey: Buffer.from('4646464646464646464646464646464646464646464646464646464646464646', 'hex')
         });
 
         const encoded = TW.Ethereum.Proto.SigningInput.encode(input).finish()
-        expect(Buffer.from(encoded).toString('hex')).to.equal("0a01011201091a0504a817c800220252082a2a30783335333533353335333533353335333533353335333533353335333533353335333533353335333532080de0b6b3a764000042204646464646464646464646464646464646464646464646464646464646464646")
+        expect(Buffer.from(encoded).toString('hex')).to.equal("0a01011201091a0504a817c800220252082a2a307833353335333533353335333533353335333533353335333533353335333533353335333533353335322046464646464646464646464646464646464646464646464646464646464646463a0c0a0a0a080de0b6b3a7640000")
     })
 
     it('test Bitcoin / Bitcoin SigningInput', () => {

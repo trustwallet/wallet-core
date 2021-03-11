@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,11 +6,11 @@
 
 #include "FeeCalculator.h"
 
+#include <cmath>
+
 using namespace TW;
 
 namespace TW::Bitcoin {
-
-DefaultFeeCalculator DefaultFeeCalculator::instance;
 
 int64_t DefaultFeeCalculator::calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const {
     const auto txsize = ((148 * inputs) + (34 * outputs) + 10);
@@ -21,17 +21,14 @@ int64_t DefaultFeeCalculator::calculateSingleInput(int64_t byteFee) const {
     return int64_t(148) * byteFee;
 }
 
-class ZCashFeeCalculator : public FeeCalculator {
-public:
-    int64_t calculate(int64_t inputs, int64_t outputs = 2, int64_t byteFee = 1) const override { return 10000; }
-    int64_t calculateSingleInput(int64_t byteFee) const override { return 0; }
-};
+int64_t SegwitFeeCalculator::calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const {
+    const auto txsize = int64_t(std::ceil(101.25 * inputs + 31.0 * outputs + 10.0));
+    return txsize * byteFee;
+}
 
-class GroestlcoinFeeCalculator : public FeeCalculator {
-public:
-    int64_t calculate(int64_t inputs, int64_t outputs = 2, int64_t byteFee = 1) const override { return 20000; }
-    int64_t calculateSingleInput(int64_t byteFee) const override { return 0; }
-};
+int64_t SegwitFeeCalculator::calculateSingleInput(int64_t byteFee) const {
+    return int64_t(102) * byteFee; // std::ceil(101.25) = 102
+}
 
 class DecredFeeCalculator : public FeeCalculator {
 public:
@@ -46,21 +43,21 @@ public:
 };
 
 DefaultFeeCalculator defaultFeeCalculator;
-ZCashFeeCalculator zcashFeeCalculator;
-GroestlcoinFeeCalculator groestlcoinFeeCalculator;
 DecredFeeCalculator decredFeeCalculator;
+SegwitFeeCalculator segwitFeeCalculator;
 
 FeeCalculator& getFeeCalculator(TWCoinType coinType) {
     switch (coinType) {
-    case TWCoinTypeZelcash:
-    case TWCoinTypeZcash:
-        return zcashFeeCalculator;
-
-    case TWCoinTypeGroestlcoin:
-        return groestlcoinFeeCalculator;
-
     case TWCoinTypeDecred:
         return decredFeeCalculator;
+
+    case TWCoinTypeBitcoin:
+    case TWCoinTypeBitcoinGold:
+    case TWCoinTypeDigiByte:
+    case TWCoinTypeLitecoin:
+    case TWCoinTypeViacoin:
+    case TWCoinTypeGroestlcoin:
+        return segwitFeeCalculator;
 
     default:
         return defaultFeeCalculator;
