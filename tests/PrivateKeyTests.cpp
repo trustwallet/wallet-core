@@ -189,19 +189,39 @@ TEST(PrivateKey, PrivateKeyExtendedError) {
     FAIL() << "Should throw Invalid empty key extension";
 }
 
-TEST(PrivateKey, DeriveECDH) {
-    Data privKeyData = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
+TEST(PrivateKey, getSharedKey) {
+    Data privKeyData = parse_hex("9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0");
+    EXPECT_TRUE(PrivateKey::isValid(privKeyData, TWCurveSECP256k1));
     auto privateKey = PrivateKey(privKeyData);
 
     const Data pubKeyData = parse_hex("02a18a98316b5f52596e75bfa5ca9fa9912edd0c989b86b73d41bb64c9c6adb992");
+    EXPECT_TRUE(PublicKey::isValid(pubKeyData, TWPublicKeyTypeSECP256k1));
     PublicKey publicKey(pubKeyData, TWPublicKeyTypeSECP256k1);
+    EXPECT_TRUE(publicKey.isCompressed());
 
-    const Data derivedKeyData = privateKey.deriveECDH(publicKey);
+    const Data derivedKeyData = privateKey.getSharedKey(publicKey, TWCurveSECP256k1);
 
     EXPECT_EQ(
         "ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a",
         hex(derivedKeyData)
     );
+}
+
+TEST(PrivateKey, getSharedKeyBidirectional) {
+    Data privKeyData1 = parse_hex("9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0");
+    EXPECT_TRUE(PrivateKey::isValid(privKeyData1, TWCurveSECP256k1));
+    auto privateKey1 = PrivateKey(privKeyData1);
+    auto publicKey1 = privateKey1.getPublicKey(TWPublicKeyTypeSECP256k1);
+
+    Data privKeyData2 = parse_hex("ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a");
+    EXPECT_TRUE(PrivateKey::isValid(privKeyData2, TWCurveSECP256k1));
+    auto privateKey2 = PrivateKey(privKeyData2);
+    auto publicKey2 = privateKey2.getPublicKey(TWPublicKeyTypeSECP256k1);
+
+    const Data derivedKeyData1 = privateKey1.getSharedKey(publicKey2, TWCurveSECP256k1);
+    const Data derivedKeyData2 = privateKey2.getSharedKey(publicKey1, TWCurveSECP256k1);
+
+    EXPECT_EQ(hex(derivedKeyData1), hex(derivedKeyData2));
 }
 
 TEST(PrivateKey, SignSECP256k1) {

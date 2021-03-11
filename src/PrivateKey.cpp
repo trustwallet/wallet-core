@@ -146,16 +146,23 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
     return PublicKey(result, type);
 }
 
-Data PrivateKey::deriveECDH(const PublicKey& pubKey) const {
+Data PrivateKey::getSharedKey(const PublicKey& pubKey, TWCurve curve) const {
+    if (curve != TWCurveSECP256k1) {
+        return {};
+    }
+
     Data result;
-    bool success = false;
-    success = ecdh_multiply(&secp256k1, bytes.data(),
-                            pubKey.bytes.data(), result.data()) == 0;
+    result.resize(65);
+    bool success = ecdh_multiply(&secp256k1, bytes.data(),
+                                 pubKey.bytes.data(), result.data()) == 0;
 
     if (!success) {
         return {};
     }
-    return result;
+
+    PublicKey sharedKey(result, TWPublicKeyTypeSECP256k1Extended);
+    auto hash = Hash::sha256(sharedKey.compressed().bytes);
+    return hash;
 }
 
 int ecdsa_sign_digest_checked(const ecdsa_curve *curve, const uint8_t *priv_key, const uint8_t *digest, size_t digest_size, uint8_t *sig, uint8_t *pby, int (*is_canonical)(uint8_t by, uint8_t sig[64])) {
