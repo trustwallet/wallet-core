@@ -53,6 +53,9 @@ class PrivateKey {
     /// Returns the public key for this private key.
     PublicKey getPublicKey(enum TWPublicKeyType type) const;
 
+    /// Performs ECDH derivation
+    Data deriveECDH(const PublicKey& publicKey) const;
+
     /// Signs a digest using the given ECDSA curve.
     Data sign(const Data& digest, TWCurve curve) const;
 

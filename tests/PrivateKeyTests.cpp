@@ -189,6 +189,21 @@ TEST(PrivateKey, PrivateKeyExtendedError) {
     FAIL() << "Should throw Invalid empty key extension";
 }
 
+TEST(PrivateKey, DeriveECDH) {
+    Data privKeyData = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
+    auto privateKey = PrivateKey(privKeyData);
+
+    const Data pubKeyData = parse_hex("02a18a98316b5f52596e75bfa5ca9fa9912edd0c989b86b73d41bb64c9c6adb992");
+    PublicKey publicKey(pubKeyData, TWPublicKeyTypeSECP256k1);
+
+    const Data derivedKeyData = privateKey.deriveECDH(publicKey);
+
+    EXPECT_EQ(
+        "ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a",
+        hex(derivedKeyData)
+    );
+}
+
 TEST(PrivateKey, SignSECP256k1) {
     Data privKeyData = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
     auto privateKey = PrivateKey(privKeyData);
