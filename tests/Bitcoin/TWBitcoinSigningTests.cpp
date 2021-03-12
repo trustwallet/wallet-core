@@ -668,7 +668,7 @@ TEST(BitcoinSigning, EncodeP2SH_P2WPKH) {
     );
 }
 
-Proto::SigningInput buildInputP2SH_P2WPKH(bool omitScript = false, bool omitKeys = false) {
+Proto::SigningInput buildInputP2SH_P2WPKH(bool omitScript = false, bool omitKeys = false, bool invalidOutputScript = false, bool invalidRedeemScript = false) {
     // Setup input
     Proto::SigningInput input;
     input.set_hash_type(hashTypeForCoin(TWCoinTypeBitcoin));
@@ -685,16 +685,24 @@ Proto::SigningInput buildInputP2SH_P2WPKH(bool omitScript = false, bool omitKeys
         input.add_private_key(utxoKey0.bytes.data(), utxoKey0.bytes.size());
     }
 
-    if (!omitScript) {
+    if (!omitScript && !invalidRedeemScript) {
         auto redeemScript = Script::buildPayToWitnessPublicKeyHash(utxoPubkeyHash);
         auto scriptHash = Hash::ripemd(Hash::sha256(redeemScript.bytes));
         assert(hex(scriptHash) == "4733f37cf4db86fbc2efed2500b4f4e49f312023");
         auto scriptString = std::string(redeemScript.bytes.begin(), redeemScript.bytes.end());
         (*input.mutable_scripts())[hex(scriptHash)] = scriptString;
+    } else if (invalidRedeemScript) {
+        auto redeemScript = parse_hex("FAFBFCFDFE");
+        auto scriptHash = Hash::ripemd(Hash::sha256(redeemScript));
+        auto scriptString = std::string(redeemScript.begin(), redeemScript.end());
+        (*input.mutable_scripts())[hex(scriptHash)] = scriptString;
     }
 
     auto utxo0 = input.add_utxo();
     auto utxo0Script = Script(parse_hex("a9144733f37cf4db86fbc2efed2500b4f4e49f31202387"));
+    if (invalidOutputScript) {
+        utxo0Script = Script(parse_hex("FFFEFDFCFB"));
+    }
     utxo0->set_script(utxo0Script.bytes.data(), utxo0Script.bytes.size());
     utxo0->set_amount(1'000'000'000);
     auto hash0 = DATA("db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a5477");
@@ -740,6 +748,38 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH) {
 
 TEST(BitcoinSigning, SignP2SH_P2WPKH_NegativeOmitScript) {
     auto input = buildInputP2SH_P2WPKH(true, false);
+    {
+        // test plan (but do not reuse plan result)
+        auto plan = TransactionBuilder::plan(input);
+        EXPECT_TRUE(verifyPlan(plan, {1'000'000'000}, 200'000'000, 174));
+    }
+
+    // Sign
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
+    auto result = signer.sign();
+
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Common::Proto::Error_script_redeem);
+}
+
+TEST(BitcoinSigning, SignP2SH_P2WPKH_NegativeInvalidOutputScript) {
+    auto input = buildInputP2SH_P2WPKH(false, false, true);
+    {
+        // test plan (but do not reuse plan result)
+        auto plan = TransactionBuilder::plan(input);
+        EXPECT_TRUE(verifyPlan(plan, {1'000'000'000}, 200'000'000, 174));
+    }
+
+    // Sign
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
+    auto result = signer.sign();
+
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Common::Proto::Error_script_output);
+}
+
+TEST(BitcoinSigning, SignP2SH_P2WPKH_NegativeInvalidRedeemScript) {
+    auto input = buildInputP2SH_P2WPKH(false, false, false, true);
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
