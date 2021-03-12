@@ -6,7 +6,7 @@ import org.junit.Test
 import wallet.core.jni.Curve
 import wallet.core.jni.Hash
 import wallet.core.jni.PrivateKey
-
+import wallet.core.jni.PublicKey
 
 class TestPrivateKey {
     private val validPrivateKeyData = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5".toHexBytes()
