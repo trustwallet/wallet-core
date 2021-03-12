@@ -224,6 +224,19 @@ TEST(PrivateKey, getSharedKeyBidirectional) {
     EXPECT_EQ(hex(derivedKeyData1), hex(derivedKeyData2));
 }
 
+TEST(PrivateKey, getSharedKeyError) {
+    Data privKeyData = parse_hex("9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0");
+    auto privateKey = PrivateKey(privKeyData);
+
+    const Data pubKeyData = parse_hex("02a18a98316b5f52596e75bfa5ca9fa9912edd0c989b86b73d41bb64c9c6adb992");
+    PublicKey publicKey(pubKeyData, TWPublicKeyTypeSECP256k1);
+
+    const Data derivedKeyData = privateKey.getSharedKey(publicKey, TWCurveCurve25519);
+    const Data expected = {};
+
+    EXPECT_EQ(expected, derivedKeyData);
+}
+
 TEST(PrivateKey, SignSECP256k1) {
     Data privKeyData = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
     auto privateKey = PrivateKey(privKeyData);
