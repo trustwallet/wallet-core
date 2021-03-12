@@ -7,6 +7,7 @@ import wallet.core.jni.Curve
 import wallet.core.jni.Hash
 import wallet.core.jni.PrivateKey
 import wallet.core.jni.PublicKey
+import wallet.core.jni.PublicKeyType
 
 class TestPrivateKey {
     private val validPrivateKeyData = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5".toHexBytes()
@@ -71,7 +72,7 @@ class TestPrivateKey {
         val privateKey = PrivateKey(privateKeyData)!!
         
         val publicKeyData = "02a18a98316b5f52596e75bfa5ca9fa9912edd0c989b86b73d41bb64c9c6adb992".toHexBytes()
-        val publicKey = PublicKey(publicKeyData, Curve.SECP256K1)!!
+        val publicKey = PublicKey(publicKeyData, PublicKeyType.SECP256K1)!!
 
         val derivedData = privateKey.getSharedKey(publicKey, Curve.SECP256K1)
         assertNotNull(derivedData)
@@ -105,7 +106,7 @@ class TestPrivateKey {
         val privateKey = PrivateKey(privateKeyData)!!
         
         val publicKeyData = "02a18a98316b5f52596e75bfa5ca9fa9912edd0c989b86b73d41bb64c9c6adb992".toHexBytes()
-        val publicKey = PublicKey(publicKeyData, Curve.SECP256K1)!!
+        val publicKey = PublicKey(publicKeyData, PublicKeyType.SECP256K1)!!
 
         val derivedData = privateKey.getSharedKey(publicKey, Curve.ED25519)
         assertNull(derivedData)
