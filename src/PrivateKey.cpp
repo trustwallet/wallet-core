@@ -151,8 +151,7 @@ Data PrivateKey::getSharedKey(const PublicKey& pubKey, TWCurve curve) const {
         return {};
     }
 
-    Data result;
-    result.resize(65);
+    Data result(PublicKey::secp256k1ExtendedSize);
     bool success = ecdh_multiply(&secp256k1, bytes.data(),
                                  pubKey.bytes.data(), result.data()) == 0;
 
