@@ -85,6 +85,47 @@ TEST(TWPrivateKeyTests, PublicKey) {
     }
 }
 
+TEST(TWPrivateKeyTests, GetSharedKey) {
+    const auto privateKeyHex = "9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0";
+    const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privateKeyHex).get()));
+    ASSERT_TRUE(privateKey.get() != nullptr);
+
+    const auto publicKeyHex = "02a18a98316b5f52596e75bfa5ca9fa9912edd0c989b86b73d41bb64c9c6adb992";
+    const auto publicKey = WRAP(TWPublicKey, TWPublicKeyCreateWithData(DATA(publicKeyHex).get(), TWPublicKeyTypeSECP256k1));
+    EXPECT_TRUE(publicKey != nullptr);
+
+    const auto derivedData = WRAPD(TWPrivateKeyGetSharedKey(privateKey.get(), publicKey.get(), TWCurveSECP256k1));
+    ASSERT_EQ(TW::hex(*((TW::Data*)derivedData.get())), "ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a");
+}
+
+TEST(TWPrivateKeyTests, GetSharedKeyBidirectional) {
+    const auto privateKeyHex1 = "9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0";
+    const auto privateKey1 = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privateKeyHex1).get()));
+    ASSERT_TRUE(privateKey1.get() != nullptr);
+    auto publicKey1 = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey1.get(), true));
+
+    const auto privateKeyHex2 = "ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a";
+    const auto privateKey2 = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privateKeyHex2).get()));
+    ASSERT_TRUE(privateKey2.get() != nullptr);
+    auto publicKey2 = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey2.get(), true));
+
+    const auto derivedData1 = WRAPD(TWPrivateKeyGetSharedKey(privateKey1.get(), publicKey2.get(), TWCurveSECP256k1));
+    const auto derivedData2 = WRAPD(TWPrivateKeyGetSharedKey(privateKey2.get(), publicKey1.get(), TWCurveSECP256k1));
+    ASSERT_EQ(TW::hex(*((TW::Data*)derivedData1.get())), TW::hex(*((TW::Data*)derivedData2.get())));
+}
+
+TEST(TWPrivateKeyTests, GetSharedKeyError) {
+    const auto privateKeyHex = "9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0";
+    const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privateKeyHex).get()));
+    ASSERT_TRUE(privateKey.get() != nullptr);
+
+    const auto publicKeyHex = "02a18a98316b5f52596e75bfa5ca9fa9912edd0c989b86b73d41bb64c9c6adb992";
+    const auto publicKey = WRAP(TWPublicKey, TWPublicKeyCreateWithData(DATA(publicKeyHex).get(), TWPublicKeyTypeSECP256k1));
+    EXPECT_TRUE(publicKey != nullptr);
+
+    const auto derivedData = WRAPD(TWPrivateKeyGetSharedKey(privateKey.get(), publicKey.get(), TWCurveED25519));
+    EXPECT_TRUE(derivedData == nullptr);
+}
 
 TEST(TWPrivateKeyTests, Sign) {
     const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5").get()));
