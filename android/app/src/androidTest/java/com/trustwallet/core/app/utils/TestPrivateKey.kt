@@ -77,8 +77,7 @@ class TestPrivateKey {
         val derivedData = privateKey.getSharedKey(publicKey, Curve.SECP256K1)
         assertNotNull(derivedData)
 
-        val expected = "ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a".toHexBytes()
-        assertEquals(derivedData?.toHex(), expected)
+        assertEquals(derivedData?.toHex(), "0xef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a")
     }
 
     @Test
@@ -97,7 +96,7 @@ class TestPrivateKey {
         val derivedData2 = privateKey2.getSharedKey(publicKey1, Curve.SECP256K1)
         assertNotNull(derivedData2)
 
-        assertEquals(derivedData1, derivedData2)
+        assertEquals(derivedData1?.toHex(), derivedData2?.toHex())
     }
 
     @Test
