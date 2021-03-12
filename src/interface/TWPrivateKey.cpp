@@ -89,7 +89,7 @@ struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivate
     return new TWPublicKey{pk->impl.getPublicKey(TWPublicKeyTypeCURVE25519)};
 }
 
-TWData *_Nullable TWPrivateKeyGetSharedkey(struct TWPrivateKey *_Nonnull pk, struct TWPublicKey *_Nonnull publicKey, enum TWCurve curve) {
+TWData *_Nullable TWPrivateKeyGetSharedKey(struct TWPrivateKey *_Nonnull pk, struct TWPublicKey *_Nonnull publicKey, enum TWCurve curve) {
     auto result = pk->impl.getSharedKey(publicKey->impl, curve);
     if (result.empty()) {
         return nullptr;
