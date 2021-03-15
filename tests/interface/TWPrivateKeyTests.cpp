@@ -98,15 +98,22 @@ TEST(TWPrivateKeyTests, GetSharedKey) {
     ASSERT_EQ(TW::hex(*((TW::Data*)derivedData.get())), "ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a");
 }
 
+/**
+ * Valid test vector from Wycherproof project
+ * Source: https://github.com/google/wycheproof/blob/master/testvectors/ecdh_secp256k1_test.json#L31
+ */
 TEST(TWPrivateKeyTests, GetSharedKeyWycherproof) {
+    // Stripped left-padded zeroes from: `00f4b7ff7cccc98813a69fae3df222bfe3f4e28f764bf91b4a10d8096ce446b254`
     const auto privateKeyHex = "f4b7ff7cccc98813a69fae3df222bfe3f4e28f764bf91b4a10d8096ce446b254";
     const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privateKeyHex).get()));
     ASSERT_TRUE(privateKey.get() != nullptr);
 
+    // Decoded from ASN.1 & uncompressed `3056301006072a8648ce3d020106052b8104000a03420004d8096af8a11e0b80037e1ee68246b5dcbb0aeb1cf1244fd767db80f3fa27da2b396812ea1686e7472e9692eaf3e958e50e9500d3b4c77243db1f2acd67ba9cc4`
     const auto publicKeyHex = "02d8096af8a11e0b80037e1ee68246b5dcbb0aeb1cf1244fd767db80f3fa27da2b";
     const auto publicKey = WRAP(TWPublicKey, TWPublicKeyCreateWithData(DATA(publicKeyHex).get(), TWPublicKeyTypeSECP256k1));
     EXPECT_TRUE(publicKey != nullptr);
 
+    // SHA-256 of encoded x-coordinate `02544dfae22af6af939042b1d85b71a1e49e9a5614123c4d6ad0c8af65baf87d65`
     const auto derivedData = WRAPD(TWPrivateKeyGetSharedKey(privateKey.get(), publicKey.get(), TWCurveSECP256k1));
     ASSERT_EQ(TW::hex(*((TW::Data*)derivedData.get())), "81165066322732362ca5d3f0991d7f1f7d0aad7ea533276496785d369e35159a");
 }
