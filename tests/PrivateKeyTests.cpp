@@ -207,6 +207,31 @@ TEST(PrivateKey, getSharedKey) {
     );
 }
 
+/**
+ * Valid test vector from Wycherproof project
+ * Source: https://github.com/google/wycheproof/blob/master/testvectors/ecdh_secp256k1_test.json#L31
+ */
+TEST(PrivateKey, getSharedKeyWycherproof) {
+    // Stripped left-padded zeroes from: `00f4b7ff7cccc98813a69fae3df222bfe3f4e28f764bf91b4a10d8096ce446b254`
+    Data privKeyData = parse_hex("f4b7ff7cccc98813a69fae3df222bfe3f4e28f764bf91b4a10d8096ce446b254");
+    EXPECT_TRUE(PrivateKey::isValid(privKeyData, TWCurveSECP256k1));
+    auto privateKey = PrivateKey(privKeyData);
+
+    // Decoded from ASN.1 & uncompressed `3056301006072a8648ce3d020106052b8104000a03420004d8096af8a11e0b80037e1ee68246b5dcbb0aeb1cf1244fd767db80f3fa27da2b396812ea1686e7472e9692eaf3e958e50e9500d3b4c77243db1f2acd67ba9cc4`
+    const Data pubKeyData = parse_hex("02d8096af8a11e0b80037e1ee68246b5dcbb0aeb1cf1244fd767db80f3fa27da2b");
+    EXPECT_TRUE(PublicKey::isValid(pubKeyData, TWPublicKeyTypeSECP256k1));
+    PublicKey publicKey(pubKeyData, TWPublicKeyTypeSECP256k1);
+    EXPECT_TRUE(publicKey.isCompressed());
+
+    const Data derivedKeyData = privateKey.getSharedKey(publicKey, TWCurveSECP256k1);
+    
+    // SHA-256 of encoded x-coordinate `02544dfae22af6af939042b1d85b71a1e49e9a5614123c4d6ad0c8af65baf87d65`
+    EXPECT_EQ(
+        "81165066322732362ca5d3f0991d7f1f7d0aad7ea533276496785d369e35159a",
+        hex(derivedKeyData)
+    );
+}
+
 TEST(PrivateKey, getSharedKeyBidirectional) {
     Data privKeyData1 = parse_hex("9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0");
     EXPECT_TRUE(PrivateKey::isValid(privKeyData1, TWCurveSECP256k1));

@@ -81,6 +81,20 @@ class TestPrivateKey {
     }
 
     @Test
+    fun testGetSharedKeyWycherproof() {
+        val privateKeyData = "f4b7ff7cccc98813a69fae3df222bfe3f4e28f764bf91b4a10d8096ce446b254".toHexBytes()
+        val privateKey = PrivateKey(privateKeyData)!!
+        
+        val publicKeyData = "02d8096af8a11e0b80037e1ee68246b5dcbb0aeb1cf1244fd767db80f3fa27da2b".toHexBytes()
+        val publicKey = PublicKey(publicKeyData, PublicKeyType.SECP256K1)!!
+
+        val derivedData = privateKey.getSharedKey(publicKey, Curve.SECP256K1)
+        assertNotNull(derivedData)
+
+        assertEquals(derivedData?.toHex(), "0x81165066322732362ca5d3f0991d7f1f7d0aad7ea533276496785d369e35159a")
+    }
+
+    @Test
     fun testGetSharedKeyBidirectional() {
         val privateKeyData1 = "9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0".toHexBytes()
         val privateKey1 = PrivateKey(privateKeyData1)!!
