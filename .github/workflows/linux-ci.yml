@@ -8,13 +8,13 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
     - name: Install system dependencies
       run: |
         # build-essential libboost-all-dev clang-9 ruby-full cmake
-        sudo apt-get install libc++-dev libc++abi-dev ninja-build lcov llvm clang-tidy
+        sudo apt-get install libc++-dev libc++abi-dev ninja-build lcov llvm clang-tidy libboost-all-dev
     - name: Cache internal dependencies
       id: internal_cache
       uses: actions/cache@v1.1.2
@@ -37,14 +37,14 @@ jobs:
     - name: Prepare build with lint
       if: github.ref == 'refs/heads/master'
       run: |
-        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DBOOST_ROOT=${BOOST_ROOT_1_72_0} -DCLANG_TIDY=ON -DCODE_COVERAGE=ON -DCLANG_ASAN=ON
+        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCLANG_TIDY=ON -DCODE_COVERAGE=ON -DCLANG_ASAN=ON
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
     - name: Prepare build without lint
       if: github.ref != 'refs/heads/master'
       run: |
-        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DBOOST_ROOT=${BOOST_ROOT_1_72_0} -DCODE_COVERAGE=ON
+        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
