@@ -11,6 +11,7 @@
 #include "../Base58.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
+#include "../proto/Common.pb.h"
 #include "TransactionBuilder.h"
 
 #include <TrezorCrypto/ecdsa.h>
@@ -28,7 +29,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         const string json = TransactionBuilder::sign(input);
         output.set_json(json);
     } catch(const std::exception& e) {
-        output.set_error("Internal error");
+        output.set_error(Common::Proto::Error_internal);
     }
     return output;
 }

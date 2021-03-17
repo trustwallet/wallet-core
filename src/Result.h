@@ -125,6 +125,8 @@ struct Result {
     /// Returns a new failure result with the given error.
     static Result<T, E> failure(E&& val) { return Result(Types::Failure<E>(std::forward<E>(val))); }
 
+    static Result<T, E> failure(E& val) { return Result(Types::Failure<E>(val)); }
+
     operator bool() const { return success_; }
 
   private:
@@ -163,7 +165,7 @@ struct Result<void, E> {
     E error() const { return *error_; }
 
     /// Returns a new success result with no payloadd.
-    static inline Result<void> success() { return Result(Types::Success<void>()); }
+    static inline Result<void, E> success() { return Result(Types::Success<void>()); }
 
     /// Returns a new failure result with the given error.
     static Result<void, E> failure(E&& val) {
