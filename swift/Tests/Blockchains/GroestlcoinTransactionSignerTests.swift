@@ -44,7 +44,7 @@ class GroestlcoinTransactionSignerTests: XCTestCase {
 
         // https://blockbook.groestlcoin.org/tx/40b539c578934c9863a93c966e278fbeb3e67b0da4eb9e3030092c1b717e7a64
         let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .groestlcoin)
-        XCTAssertTrue(output.error.isEmpty, "Error signing: \(output.error)")
+        XCTAssertEqual(output.error, TW_Common_Proto_SigningError.ok, "Error signing: \(output.error)")
 
         let signedTx = output.transaction
         XCTAssertEqual(signedTx.version, 1)
@@ -97,7 +97,7 @@ class GroestlcoinTransactionSignerTests: XCTestCase {
 
         // https://blockbook.groestlcoin.org/tx/74a0dd12bc178cfcc1e0982a2a5b2c01a50e41abbb63beb031bcd21b3e28eac0
         let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .groestlcoin)
-        XCTAssertTrue(output.error.isEmpty, "Error signing: \(output.error)")
+        XCTAssertEqual(output.error, TW_Common_Proto_SigningError.ok, "Error signing: \(output.error)")
 
         let signedTx = output.transaction
         XCTAssertEqual(signedTx.version, 1)
@@ -150,7 +150,7 @@ class GroestlcoinTransactionSignerTests: XCTestCase {
 
         // https://blockbook.groestlcoin.org/tx/8f4ecc7844e19aa1d3183e47eee89d795f9e7c875a55ec0203946d6c9eb06895
         let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .groestlcoin)
-        XCTAssertTrue(output.error.isEmpty, "Error signing: \(output.error)")
+        XCTAssertEqual(output.error, TW_Common_Proto_SigningError.ok, "Error signing: \(output.error)")
 
         let signedTx = output.transaction
         XCTAssertEqual(signedTx.version, 1)

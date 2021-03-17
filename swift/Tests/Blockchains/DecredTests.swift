@@ -68,7 +68,7 @@ class DecredTests: XCTestCase {
 
         let output: DecredSigningOutput = AnySigner.sign(input: input, coin: .decred)
 
-        XCTAssertTrue(output.error.isEmpty)
+        XCTAssertEqual(output.error, TW_Common_Proto_SigningError.ok)
         XCTAssertEqual(output.encoded.hexString, "0100000001fdbfe9dd703f306794a467f175be5bd9748a7925033ea1cf9889d7cf4dd1155000000000000000000002809698000000000000001976a914989b1aecabf1c24e213cc0f2d8a22ffee25dd4e188ac40b6c6010000000000001976a9142a194fc92e27fef9cc2b057bc9060c580cbb484888ac000000000000000001000000000000000000000000ffffffff6a47304402206ee887c9239e5fff0048674bdfff2a8cfbeec6cd4a3ccebcc12fac44b24cc5ac0220718f7c760818fde18bc5ba8457d43d5a145cc4cf13d2a5557cba9107e9f4558d0121026cc34b92cefb3a4537b3edb0b6044c04af27c01583c577823ecc69a9a21119b6")
     }
 }
