@@ -6,8 +6,11 @@
 
 #include "Bech32.h"
 #include "Bitcoin/SegwitAddress.h"
+#include "HexCoding.h"
 
+#include <string>
 #include <cstring>
+#include <vector>
 #include <gtest/gtest.h>
 
 using namespace TW;
@@ -72,7 +75,7 @@ static const struct valid_address_data valid_address[] = {
     }
 };
 
-static const std::string invalid_address[] = {
+static const std::vector<std::string> invalid_address = {
     "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t5",
     "BC13W508D6QEJXTDG4Y5R3ZARVARY0C5XW7KN40WF2",
     "bc1rw5uspcuh",
@@ -81,7 +84,8 @@ static const std::string invalid_address[] = {
     "tb1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3q0sL5k7",
     "bc1zw508d6qejxtdg4y5r3zarvaryvqyzf3du",
     "tb1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3pjxtptv",
-    "bc1gmk9yu",
+    "bc1gmk9yu", // empty data, no version
+    "bc1q9zpgru", // 1 byte data (only version byte)
     "bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7k7grplx", // version = 1
     "BC1SW50QA3JX3S", // version = 16
     "bc1zw508d6qejxtdg4y5r3zarvaryvg6kdaj", // version = 2
@@ -140,7 +144,7 @@ TEST(SegwitAddress, ValidAddress) {
     for (auto i = 0; i < sizeof(valid_address) / sizeof(valid_address[0]); ++i) {
         std::string hrp = "bc";
         auto dec = SegwitAddress::decode(valid_address[i].address);
-        ASSERT_TRUE(dec.second);
+        ASSERT_TRUE(dec.second) << "Valid address could not be decoded " << valid_address[i].address;
 
         std::vector<uint8_t> spk = segwit_scriptpubkey(dec.first.witnessVersion, dec.first.witnessProgram);
         ASSERT_TRUE(spk.size() == valid_address[i].scriptPubKeyLen && std::memcmp(&spk[0], valid_address[i].scriptPubKey, spk.size()) == 0);
@@ -153,7 +157,7 @@ TEST(SegwitAddress, ValidAddress) {
 }
 
 TEST(SegwitAddress, InvalidAddress) {
-    for (auto i = 0; i < sizeof(invalid_address) / sizeof(invalid_address[0]); ++i) {
+    for (auto i = 0; i < invalid_address.size(); ++i) {
         auto dec = SegwitAddress::decode(invalid_address[i]);
         EXPECT_FALSE(dec.second) <<  "Invalid address reported as valid: " << invalid_address[i];
     }
@@ -170,4 +174,17 @@ TEST(SegwitAddress, InvalidAddressEncoding) {
 TEST(SegwitAddress, LegacyAddress) {
     auto result = SegwitAddress::decode("TLWEciM1CjP5fJqM2r9wymAidkkYtTU5k3");
     EXPECT_FALSE(result.second);
+}
+
+TEST(SegwitAddress, fromRaw) {
+    {
+        auto addr = SegwitAddress::fromRaw("bc", parse_hex("000e140f070d1a001912060b0d081504140311021d030c1d03040f1814060e1e16"));
+        EXPECT_TRUE(addr.second);
+        EXPECT_EQ(addr.first.string(), "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4");
+    }
+    {
+        // empty data
+        auto addr = SegwitAddress::fromRaw("bc", Data());
+        EXPECT_FALSE(addr.second);
+    }
 }
