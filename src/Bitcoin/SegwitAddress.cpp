@@ -38,6 +38,16 @@ bool SegwitAddress::isValid(const std::string& string, const std::string& hrp) {
         return false;
     }
 
+    if (dec.second.size() <= 1) {
+        return false;
+    }
+    assert(dec.second.size() > 1);
+    // First byte is Segwit version
+    // Only version 0 is currently supported; BIP173 BIP350
+    if (dec.second[0] != 0) {
+        return false;
+    }
+
     Data conv;
     if (!Bech32::convertBits<5, 8, false>(conv, Data(dec.second.begin() + 1, dec.second.end())) ||
         conv.size() < 2 || conv.size() > 40 || dec.second[0] > 16 ||

@@ -15,6 +15,7 @@ namespace TW::Bitcoin {
 
 /// A Segwit address.
 /// Note: Similar to Bech32Address, but it differs enough so that reuse makes no sense.
+/// See BIP173 https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki
 class SegwitAddress {
   public:
     /// Human-readable part.
