@@ -1545,8 +1545,8 @@
     }
   },
   {
-    "id": "matic",
-    "name": "Matic",
+    "id": "polygon",
+    "name": "Polygon (Matic)",
     "coinId": 966,
     "symbol": "MATIC",
     "decimals": 18,
