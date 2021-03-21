@@ -20,14 +20,11 @@ class TestPolygonAddress {
 
     @Test
     fun testAddress() {
-        // TODO: Check and finalize implementation
-
-        val key = PrivateKey("__PRIVATE_KEY_DATA__".toHexByteArray())
-        val pubkey = key.publicKeyEd25519
+        val key = PrivateKey("828c4c48c2cef521f0251920891ed79e871faa24f64f43cde83d07bc99f8dbf0".toHexByteArray())
+        val pubkey = key.getPublicKeySecp256k1(false)
         val address = AnyAddress(pubkey, CoinType.POLYGON)
-        val expected = AnyAddress("__EXPECTED_RESULT_ADDRESS__", CoinType.POLYGON)
+        val expected = AnyAddress("0xe32DC46bfBF78D1eada7b0a68C96903e01418D64", CoinType.POLYGON)
 
-        assertEquals(pubkey.data().toHex(), "0x__EXPECTED_PUBKEY_DATA__")
         assertEquals(address.description(), expected.description())
     }
 }
