@@ -32,6 +32,26 @@ bool TransferableOutput::operator<(const TransferableOutput& other) const {
     other.encode(otherData);
     return std::lexicographical_compare(thisData.begin(), thisData.end(), otherData.begin(), otherData.end());
 }
+
+
+TransferableOutput& TransferableOutput::operator=(const TransferableOutput &other) {
+    // check for "self assignment" and do nothing in that case
+    if (this == &other) {
+        return *this;
+    } else {
+        // clean up pointer data members
+        delete Output;
+        // assign members
+        AssetID = other.AssetID;
+        Output = other.Output->duplicate();
+        return *this;
+    }
+}
+
+TransferableOutput::~TransferableOutput() {
+    // clean up pointer data members
+    delete Output;
+}
       
 
 void SECP256k1TransferOutput::encode(Data& data) const {

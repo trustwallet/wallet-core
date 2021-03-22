@@ -17,9 +17,10 @@ class TransactionInput{
     virtual std::vector<uint32_t> getAddressIndices() const = 0;
     virtual uint32_t getTypeID() const = 0;
     virtual void encode (Data& data) const = 0; //we want to enforce that all subclasses can encode
+    virtual ~TransactionInput() {}
+    virtual TransactionInput* duplicate() = 0;
   protected:
     TransactionInput() {}
-    virtual ~TransactionInput() {}
 };
 
 /// Avalanche transaction input.
@@ -34,14 +35,25 @@ class TransferableInput {
     /// Encodes the input into the provided buffer.
     void encode(Data& data) const;
 
-    TransferableInput(Data &txid, uint32_t utxoIndex, Data &assetID, TransactionInput &input, std::vector<Address> &spendableAddresses)
-        : TxID(txid) , UTXOIndex(utxoIndex), AssetID(assetID), Input(&input), SpendableAddresses(spendableAddresses)
+    TransferableInput(Data &txid, uint32_t utxoIndex, Data &assetID, TransactionInput *input, std::vector<Address> &spendableAddresses)
+        : TxID(txid) , UTXOIndex(utxoIndex), AssetID(assetID), Input(input), SpendableAddresses(spendableAddresses)
          {
            std::sort(SpendableAddresses.begin(), SpendableAddresses.end());
          }
 
-    
+    TransferableInput(const TransferableInput& other) {
+      TxID = other.TxID;
+      UTXOIndex = other.UTXOIndex;
+      AssetID = other.AssetID;
+      Input = other.Input->duplicate();
+      SpendableAddresses = other.SpendableAddresses;
+    }
+
     bool operator<(const TransferableInput& other) const;
+
+    TransferableInput& operator=(const TransferableInput& other);
+
+    ~TransferableInput();
 };
 
 
@@ -62,6 +74,11 @@ class SECP256k1TransferInput : public TransactionInput {
 
     std::vector<uint32_t> getAddressIndices() const {return AddressIndices;}
     uint32_t getTypeID() const {return TypeID;}
+
+    TransactionInput* duplicate() {
+      auto dup = new SECP256k1TransferInput(Amount, AddressIndices);
+      return dup;
+    }
 };
 
 } // namespace TW::Avalanche

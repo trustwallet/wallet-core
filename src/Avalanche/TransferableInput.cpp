@@ -36,6 +36,28 @@ bool TransferableInput::operator<(const TransferableInput& other) const {
     return std::lexicographical_compare(thisTxIDData.begin(), thisTxIDData.end(), otherTxIDData.begin(), otherTxIDData.end());
 }
 
+TransferableInput& TransferableInput::operator=(const TransferableInput &other) {
+    // check for "self assignment" and do nothing in that case
+    if (this == &other) {
+        return *this;
+    } else {
+        // clean up pointer data members
+        delete Input;
+        // assign members
+        TxID = other.TxID;
+        UTXOIndex = other.UTXOIndex;
+        AssetID = other.AssetID;
+        Input = other.Input->duplicate();
+        SpendableAddresses = other.SpendableAddresses;
+        return *this;
+    }
+}
+
+TransferableInput::~TransferableInput() {
+    // clean up pointer data members
+    delete Input;
+}
+
 void SECP256k1TransferInput::encode(Data& data) const {
     encode32BE(TypeID, data);
     encode64BE(Amount, data);

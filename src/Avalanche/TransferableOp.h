@@ -17,6 +17,8 @@ class TransactionOp {
   public:
     /// Encodes the op into the provided buffer.
     virtual void encode(Data& data) const = 0;  //we want to enforce that all subclasses can encode
+    virtual ~TransactionOp(){}
+    virtual TransactionOp* duplicate() = 0;
   protected:
     TransactionOp(){}
     virtual ~TransactionOp(){}
@@ -38,12 +40,23 @@ class TransferableOp {
     /// Encodes the op into the provided buffer.
     void encode(Data& data) const;
 
-    TransferableOp(Data &assetID, std::vector<UTXOID> &utxoIDs, TransactionOp &transferOp)
-      : AssetID(assetID), UTXOIDs(utxoIDs), TransferOp(&transferOp) {
+    TransferableOp(Data &assetID, std::vector<UTXOID> &utxoIDs, TransactionOp *transferOp)
+      : AssetID(assetID), UTXOIDs(utxoIDs), TransferOp(transferOp) {
         std::sort(UTXOIDs.begin(), UTXOIDs.end(), sortUTXOIDs);
       }
 
+    TransferableOp(const TransferableOp& other) {
+      UTXOIDs = other.UTXOIDs;
+      std::sort(UTXOIDs.begin(), UTXOIDs.end(), sortUTXOIDs);
+      AssetID = other.AssetID;
+      TransferOp = other.TransferOp->duplicate();
+    }
+
     bool operator<(const TransferableOp& other) const;
+
+    TransferableOp& operator=(const TransferableOp& other);
+    
+    ~TransferableOp();
 };
 
 
@@ -61,6 +74,11 @@ class SECP256k1MintOperation : public TransactionOp {
       }
 
     void encode (Data& data) const;
+
+    TransactionOp* duplicate() {
+      auto dup = new SECP256k1MintOperation(AddressIndices, MintOutput, TransferOutput);
+      return dup;
+    }
 };
 
 class NFTMintOperation : public TransactionOp {
@@ -72,7 +90,6 @@ class NFTMintOperation : public TransactionOp {
     uint32_t GroupID;
     Data Payload;
 
-
     NFTMintOperation(std::vector<uint32_t> &addressIndices, uint32_t groupID, Data &payload, std::vector<Output> &outputs)
     : AddressIndices(addressIndices), GroupID(groupID), Payload(payload), Outputs(outputs) {
       std::sort(AddressIndices.begin(), AddressIndices.end());
@@ -80,6 +97,11 @@ class NFTMintOperation : public TransactionOp {
     }
 
     void encode (Data& data) const;
+
+    TransactionOp* duplicate() {
+      auto dup = new NFTMintOperation(AddressIndices, GroupID, Payload, Outputs);
+      return dup;
+    }
 };
 
 class NFTTransferOperation : public TransactionOp {
@@ -96,6 +118,11 @@ class NFTTransferOperation : public TransactionOp {
       }
 
     void encode (Data& data) const;
+
+    TransactionOp* duplicate() {
+      auto dup = new NFTTransferOperation(AddressIndices, TransferOutput);
+      return dup;
+    }
 };
 
 } // namespace TW::Avalanche

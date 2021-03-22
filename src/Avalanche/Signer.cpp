@@ -38,7 +38,7 @@ std::vector<TransferableInput> structToInputs(const google::protobuf::RepeatedPt
                 for (auto &index : secpTxferStruct.address_indices()) {
                     addressIndices.push_back(index);
                 }
-                auto txnInput = SECP256k1TransferInput(amount, addressIndices);
+                auto txnInput = new SECP256k1TransferInput(amount, addressIndices);
                 auto txferInput = TransferableInput(txid, utxoIndex, assetID, txnInput, spendableAddresses);
                 inputs.push_back(txferInput);
                 break;
@@ -60,7 +60,7 @@ std::vector<TransferableOutput> structToOutputs(const google::protobuf::Repeated
                 auto threshold = secpTxferStruct.threshold();
                 auto addresses = structToAddresses(secpTxferStruct.addresses());
 
-                auto txnOutput = SECP256k1TransferOutput(amount, locktime, threshold, addresses);
+                auto txnOutput = new SECP256k1TransferOutput(amount, locktime, threshold, addresses);
                 auto txferOutput = TransferableOutput(assetID, txnOutput);
                 outputs.push_back(txferOutput);
 
@@ -72,7 +72,7 @@ std::vector<TransferableOutput> structToOutputs(const google::protobuf::Repeated
                 auto threshold = secpMintStruct.threshold();
                 auto addresses = structToAddresses(secpMintStruct.addresses());
                 
-                auto txnOutput = SECP256k1MintOutput(locktime, threshold, addresses);
+                auto txnOutput = new SECP256k1MintOutput(locktime, threshold, addresses);
                 auto txferOutput = TransferableOutput(assetID, txnOutput);
                 outputs.push_back(txferOutput);
 
@@ -86,7 +86,7 @@ std::vector<TransferableOutput> structToOutputs(const google::protobuf::Repeated
                 auto threshold = nftTxferStruct.threshold();
                 auto addresses = structToAddresses(nftTxferStruct.addresses());
                 
-                auto txnOutput = NFTTransferOutput(groupID, payload, locktime, threshold, addresses);
+                auto txnOutput = new NFTTransferOutput(groupID, payload, locktime, threshold, addresses);
                 auto txferOutput = TransferableOutput(assetID, txnOutput);
                 outputs.push_back(txferOutput);
                 break;
@@ -98,7 +98,7 @@ std::vector<TransferableOutput> structToOutputs(const google::protobuf::Repeated
                 auto threshold = nftMintStruct.threshold();
                 auto addresses = structToAddresses(nftMintStruct.addresses());
 
-                auto txnOutput = NFTMintOutput(groupID, locktime, threshold, addresses);
+                auto txnOutput = new NFTMintOutput(groupID, locktime, threshold, addresses);
                 auto txferOutput = TransferableOutput(assetID, txnOutput);
                 outputs.push_back(txferOutput);
                 break;
@@ -144,7 +144,7 @@ std::vector<TransferableOp> structToOperations(google::protobuf::RepeatedPtrFiel
                 auto tferOutput = SECP256k1TransferOutput(tferAmount, tferLocktime, tferThreshold, tferAddresses);
                 // end build transfer output
 
-                auto transactionOp = SECP256k1MintOperation(addressIndices, mintOutput, tferOutput);
+                auto transactionOp = new SECP256k1MintOperation(addressIndices, mintOutput, tferOutput);
                 auto transferableOp = TransferableOp(assetID, utxoIDs, transactionOp);
                 ops.push_back(transferableOp);
                 break;
@@ -165,7 +165,7 @@ std::vector<TransferableOp> structToOperations(google::protobuf::RepeatedPtrFiel
                     auto output = std::make_tuple(locktime, threshold, addrs);
                     outputs.push_back(output);
                 } // end loop building Outputs
-                auto transactionOp = NFTMintOperation(addressIndices, groupID, payload, outputs);
+                auto transactionOp = new NFTMintOperation(addressIndices, groupID, payload, outputs);
                 auto transferableOp = TransferableOp(assetID, utxoIDs, transactionOp);
                 ops.push_back(transferableOp);
                 break;
@@ -182,7 +182,7 @@ std::vector<TransferableOp> structToOperations(google::protobuf::RepeatedPtrFiel
                 auto threshold = txnOp.threshold();
                 auto addresses = structToAddresses(txnOp.addresses());
                 auto nftTransfer = NFTTransferOutput(groupID, payload, locktime, threshold, addresses);
-                auto transactionOp = NFTTransferOperation(addressIndices, nftTransfer);
+                auto transactionOp = new NFTTransferOperation(addressIndices, nftTransfer);
                 auto transferableOp = TransferableOp(assetID, utxoIDs, transactionOp);
                 ops.push_back(transferableOp);
                 break;
@@ -233,7 +233,7 @@ UnsignedCreateAssetTransaction buildCreateAssetTx(const Proto::SigningInput &inp
         // this gives std::vector<TransferableOutput>. need std::vector<TransactionOutput*>.
         std::vector<TransactionOutput*> outputPointers;
         for (auto &output : outputs) {
-            outputPointers.push_back(output.Output);
+            outputPointers.push_back(output.Output->duplicate());
         }
         auto initialState = InitialState(fxID, outputPointers);
         initialStates.push_back(initialState);

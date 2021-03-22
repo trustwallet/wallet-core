@@ -12,8 +12,17 @@
 
 using namespace TW;
 
-// TODO: Finalize tests
-
 TEST(TWAvalanche, Address) {
-    // TODO: Finalize test implementation
+    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("0x98cb077f972feb0481f1d894f272c6a1e3c15e272a1658ff716444f465200070").get()));
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), false));
+    auto string = "X-avax1apmh7wxg3js48fhacfv5y9md9065jxuft30vup";
+    
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeAvalanche));
+    auto expected = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(STRING(string).get(), TWCoinTypeAvalanche));
+
+    auto addressString = WRAPS(TWAnyAddressDescription(address.get()));
+    auto expectedString = WRAPS(TWAnyAddressDescription(expected.get()));
+
+    assertStringsEqual(addressString, string);
+    assertStringsEqual(expectedString, string);
 }

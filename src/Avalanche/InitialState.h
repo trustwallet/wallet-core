@@ -18,14 +18,27 @@ namespace TW::Avalanche {
         
         InitialState(FeatureExtension fxid, std::vector<TransactionOutput*> outputs)
          : FxID(fxid) {
-           Outputs = outputs;
-           std::sort(Outputs.begin(), Outputs.end());
+          Outputs = outputs;
+          std::sort(Outputs.begin(), Outputs.end());
          }
+
+        InitialState(const InitialState &other) {
+          FxID = other.FxID;
+          std::vector<TransactionOutput*> outputs;
+          for (auto output : other.Outputs) {
+            outputs.push_back(output->duplicate());
+          }
+          Outputs = outputs;
+          std::sort(Outputs.begin(), Outputs.end());          
+        }
+
+        InitialState& operator=(const InitialState &other);
 
         /// Encodes the InitialState into the provided buffer.
         void encode(Data& data) const;
 
         bool operator<(const InitialState& other) const;
-    };
 
+        ~InitialState();
+    };
 } // namespace TW::Avalanche
