@@ -1543,5 +1543,29 @@
       "clientPublic": "https://bsc-dataseed1.binance.org",
       "clientDocs": "https://eth.wiki/json-rpc/API"
     }
+  },
+  {
+    "id": "polygon",
+    "name": "Polygon",
+    "coinId": 966,
+    "symbol": "MATIC",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://explorer.matic.network/",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xe26ed1470d5bf99a53d687843e7acdf7e4ba6620af93b4d672e714de90476e8e",
+      "sampleAccount": "0x720E1fa107A1Df39Db4E78A3633121ac36Bec132"
+    },
+    "info": {
+      "url": "https://polygon.technology",
+      "client": "https://github.com/maticnetwork/contracts",
+      "clientPublic": "https://rpc-mainnet.matic.network",
+      "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+    }
   }
 ]
