@@ -273,7 +273,7 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
     } else if (SegwitAddress::isValid(string)) {
         auto result = SegwitAddress::decode(string);
         // address starts with bc/ltc
-        auto program = result.first.witnessProgram;
+        auto program = std::get<0>(result).witnessProgram;
         return buildPayToWitnessProgram(program);
     } else if (CashAddress::isValid(string)) {
         auto address = CashAddress(string);

@@ -142,14 +142,14 @@ TEST(SegwitAddress, InvalidChecksum) {
 
 TEST(SegwitAddress, ValidAddress) {
     for (auto i = 0; i < sizeof(valid_address) / sizeof(valid_address[0]); ++i) {
-        std::string hrp = "bc";
         auto dec = SegwitAddress::decode(valid_address[i].address);
-        ASSERT_TRUE(dec.second) << "Valid address could not be decoded " << valid_address[i].address;
+        ASSERT_TRUE(std::get<2>(dec)) << "Valid address could not be decoded " << valid_address[i].address;
+        ASSERT_EQ(std::get<1>(dec).length(), 2); // hrp
 
-        std::vector<uint8_t> spk = segwit_scriptpubkey(dec.first.witnessVersion, dec.first.witnessProgram);
+        std::vector<uint8_t> spk = segwit_scriptpubkey(std::get<0>(dec).witnessVersion, std::get<0>(dec).witnessProgram);
         ASSERT_TRUE(spk.size() == valid_address[i].scriptPubKeyLen && std::memcmp(&spk[0], valid_address[i].scriptPubKey, spk.size()) == 0);
 
-        std::string recode = dec.first.string();
+        std::string recode = std::get<0>(dec).string();
         ASSERT_FALSE(recode.empty());
 
         ASSERT_TRUE(case_insensitive_equal(valid_address[i].address, recode));
@@ -159,7 +159,7 @@ TEST(SegwitAddress, ValidAddress) {
 TEST(SegwitAddress, InvalidAddress) {
     for (auto i = 0; i < invalid_address.size(); ++i) {
         auto dec = SegwitAddress::decode(invalid_address[i]);
-        EXPECT_FALSE(dec.second) <<  "Invalid address reported as valid: " << invalid_address[i];
+        EXPECT_FALSE(std::get<2>(dec)) <<  "Invalid address reported as valid: " << invalid_address[i];
     }
 }
 
@@ -173,7 +173,7 @@ TEST(SegwitAddress, InvalidAddressEncoding) {
 
 TEST(SegwitAddress, LegacyAddress) {
     auto result = SegwitAddress::decode("TLWEciM1CjP5fJqM2r9wymAidkkYtTU5k3");
-    EXPECT_FALSE(result.second);
+    EXPECT_FALSE(std::get<2>(result));
 }
 
 TEST(SegwitAddress, fromRaw) {

@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <string>
+#include <tuple>
 
 namespace TW::Bitcoin {
 
@@ -46,8 +47,8 @@ class SegwitAddress {
 
     /// Decodes a SegWit address.
     ///
-    /// \returns a pair with the address and a success flag.
-    static std::pair<SegwitAddress, bool> decode(const std::string& addr);
+    /// \returns a tuple with the address, hrp, and a success flag.
+    static std::tuple<SegwitAddress, std::string, bool> decode(const std::string& addr);
 
     /// Encodes the SegWit address.
     ///

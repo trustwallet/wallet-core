@@ -27,11 +27,11 @@ bool TWSegwitAddressIsValidString(TWString *_Nonnull string) {
 struct TWSegwitAddress *_Nullable TWSegwitAddressCreateWithString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
     auto dec = SegwitAddress::decode(*s);
-    if (!dec.second) {
+    if (!std::get<2>(dec)) {
         return nullptr;
     }
 
-    return new TWSegwitAddress{ std::move(dec.first) };
+    return new TWSegwitAddress{ std::move(std::get<0>(dec)) };
 }
 
 struct TWSegwitAddress *_Nonnull TWSegwitAddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey *_Nonnull publicKey) {
