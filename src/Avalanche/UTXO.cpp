@@ -11,11 +11,11 @@
 using namespace TW::Avalanche;
 
 void UTXO::encode(Data& data) const {
-    encode16LE(CodecID, data);
+    encode16BE(CodecID, data);
     for (auto byte : TxID) {
         data.push_back(byte);
     }
-    encode32LE(UTXOIndex, data);
+    encode32BE(UTXOIndex, data);
     for (auto byte : AssetID) {
         data.push_back(byte);
     }

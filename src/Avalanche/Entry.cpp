@@ -26,7 +26,3 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byt
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
-
-void Entry::plan(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    planTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
-}

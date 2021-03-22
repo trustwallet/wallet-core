@@ -12,13 +12,13 @@ namespace TW::Avalanche {
 
     class InitialState {
       public: 
-        uint32_t FxID;
-        std::vector<TransactionOutput> Outputs;
-
         enum FeatureExtension {SECP256k1 = 0, NFT = 1};
+        FeatureExtension FxID;
+        std::vector<TransactionOutput*> Outputs;
         
-        InitialState(FeatureExtension fxid, std::vector<TransactionOutput> &outputs)
-         : FxID(fxid), Outputs(outputs) {
+        InitialState(FeatureExtension fxid, std::vector<TransactionOutput*> outputs)
+         : FxID(fxid) {
+           Outputs = outputs;
            std::sort(Outputs.begin(), Outputs.end());
          }
 

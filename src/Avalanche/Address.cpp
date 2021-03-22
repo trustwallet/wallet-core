@@ -4,9 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "../Bech32.h"
+
 #include "Address.h"
 
-#include "../Bech32.h"
+#include <TrustWalletCore/TWHRP.h>
 
 using namespace TW::Avalanche;
 
@@ -26,7 +28,7 @@ bool Address::isValid(const std::string& string) {
         return false;
     }
     auto afterHyphen = string.substr(hyphenPos + 1);
-    return Bech32Address::isValid(afterHyphen, hrp);
+   return Bech32Address::isValid(afterHyphen, hrp);
 }
 
 void Address::extractKeyHashFromString (const std::string& string) {

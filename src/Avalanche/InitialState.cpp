@@ -11,10 +11,10 @@
 using namespace TW::Avalanche;
 
 void InitialState::encode(Data& data) const {
-    encode32LE(FxID, data);
-    encode32LE(Outputs.size(), data);
+    encode32BE(FxID, data);
+    encode32BE(Outputs.size(), data);
     for (auto output : Outputs) {
-        output.encode(data);
+        output->encode(data);
     }
 }
 

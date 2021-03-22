@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "../Data.h"
 #include "Address.h"
 
 namespace TW::Avalanche {    

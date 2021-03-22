@@ -16,9 +16,10 @@ namespace TW::Avalanche {
 class TransactionOp {
   public:
     /// Encodes the op into the provided buffer.
-    virtual void encode(Data& data) const;
+    virtual void encode(Data& data) const = 0;  //we want to enforce that all subclasses can encode
   protected:
     TransactionOp(){}
+    virtual ~TransactionOp(){}
 };
 
 /// Avalanche transaction operation.
@@ -32,13 +33,13 @@ class TransferableOp {
     static bool sortUTXOIDs(UTXOID lhs, UTXOID rhs);
   public:
     Data AssetID;
-    TransactionOp TransferOp;
+    TransactionOp* TransferOp;
 
     /// Encodes the op into the provided buffer.
     void encode(Data& data) const;
 
     TransferableOp(Data &assetID, std::vector<UTXOID> &utxoIDs, TransactionOp &transferOp)
-      : AssetID(assetID), UTXOIDs(utxoIDs), TransferOp(transferOp) {
+      : AssetID(assetID), UTXOIDs(utxoIDs), TransferOp(&transferOp) {
         std::sort(UTXOIDs.begin(), UTXOIDs.end(), sortUTXOIDs);
       }
 
@@ -46,7 +47,7 @@ class TransferableOp {
 };
 
 
-class SECP256k1MintOperation : TransactionOp {
+class SECP256k1MintOperation : public TransactionOp {
   private:
     uint32_t typeID = 8;
   public: 
@@ -62,15 +63,15 @@ class SECP256k1MintOperation : TransactionOp {
     void encode (Data& data) const;
 };
 
-class NFTMintOperation : TransactionOp {
+class NFTMintOperation : public TransactionOp {
   private:
     uint32_t typeID = 12;
+    std::vector<Output> Outputs; 
   public: 
     std::vector<uint32_t> AddressIndices;
     uint32_t GroupID;
     Data Payload;
 
-    std::vector<Output> Outputs; 
 
     NFTMintOperation(std::vector<uint32_t> &addressIndices, uint32_t groupID, Data &payload, std::vector<Output> &outputs)
     : AddressIndices(addressIndices), GroupID(groupID), Payload(payload), Outputs(outputs) {
@@ -81,7 +82,7 @@ class NFTMintOperation : TransactionOp {
     void encode (Data& data) const;
 };
 
-class NFTTransferOperation : TransactionOp {
+class NFTTransferOperation : public TransactionOp {
   private:
     uint32_t typeID = 13;
   public: 

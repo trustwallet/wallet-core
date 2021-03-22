@@ -24,17 +24,16 @@ class BaseTransaction {
     std::vector<TransferableOutput> Outputs;
     Data Memo;
 
-    virtual void encode(Data& data) const;
+    void encode(Data& data) const;
 
-  protected:
     BaseTransaction(uint32_t typeID, uint32_t networkID, Data &blockchainID, std::vector<TransferableInput> &inputs, std::vector<TransferableOutput> &outputs, Data &memo)
-    : TypeID(typeID), NetworkID(networkID), BlockchainID(blockchainID), Inputs(inputs), Outputs(outputs), Memo(memo) {
+    : TypeID(typeID), NetworkID(networkID), BlockchainID(blockchainID), Memo(memo) {
+      //TODO guard rails and validation would be nice here; for example BlockchainID must be 32 bytes; assetID must be 4 bytes, networkID 4 bytes.
+      Inputs = inputs;
+      Outputs = outputs;
       std::sort(Inputs.begin(), Inputs.end());
       std::sort(Outputs.begin(), Outputs.end());
     }
-
-    /// Encodes the BaseTransaction into the provided buffer.
-    void baseEncode(Data& data) const;
 };
 
 class UnsignedCreateAssetTransaction : public BaseTransaction {
@@ -52,6 +51,12 @@ class UnsignedCreateAssetTransaction : public BaseTransaction {
       Name(name), Symbol(symbol), Denomination(denomination), InitialStates(states) {
         std::sort(InitialStates.begin(), InitialStates.end());
       }
+
+    UnsignedCreateAssetTransaction(BaseTransaction &baseTxn, std::string &name, std::string &symbol, uint8_t denomination, std::vector<InitialState> &states)
+      : BaseTransaction(baseTxn), 
+      Name(name), Symbol(symbol), Denomination(denomination), InitialStates(states) {
+        std::sort(InitialStates.begin(), InitialStates.end());
+      }
 };
 
 class UnsignedOperationTransaction : public BaseTransaction {
@@ -66,6 +71,11 @@ class UnsignedOperationTransaction : public BaseTransaction {
       Operations(ops) {
         std::sort(Operations.begin(), Operations.end());
       }
+
+    UnsignedOperationTransaction(BaseTransaction &baseTxn, std::vector<TransferableOp> &ops)
+    : BaseTransaction(baseTxn), Operations(ops) {
+      std::sort(Operations.begin(), Operations.end());
+    }
 };
 
 class UnsignedImportTransaction : public BaseTransaction {
@@ -78,7 +88,12 @@ class UnsignedImportTransaction : public BaseTransaction {
     UnsignedImportTransaction(uint32_t networkID, Data &blockchainID, std::vector<TransferableInput> &inputs, std::vector<TransferableOutput> &outputs, Data &memo, 
       Data &source, std::vector<TransferableInput> &importInputs)
       : BaseTransaction(3, networkID, blockchainID, inputs, outputs, memo), 
-      SourceChain(source), ImportInputs(inputs) {
+      SourceChain(source), ImportInputs(importInputs) {
+        std::sort(ImportInputs.begin(), ImportInputs.end());
+      }
+
+    UnsignedImportTransaction(BaseTransaction &baseTxn, Data &source, std::vector<TransferableInput> importInputs)
+      : BaseTransaction(baseTxn), SourceChain(source), ImportInputs(importInputs) {
         std::sort(ImportInputs.begin(), ImportInputs.end());
       }
 };
@@ -94,6 +109,11 @@ class UnsignedExportTransaction : public BaseTransaction {
       Data &dest, std::vector<TransferableOutput> &exportOutputs)
       : BaseTransaction(3, networkID, blockchainID, inputs, outputs, memo), 
       DestinationChain(dest), ExportOutputs(exportOutputs) {
+        std::sort(ExportOutputs.begin(), ExportOutputs.end());
+      }
+
+    UnsignedExportTransaction(BaseTransaction &baseTxn, Data &dest, std::vector<TransferableOutput> &exportOutputs)
+      : BaseTransaction(baseTxn), DestinationChain(dest), ExportOutputs(exportOutputs) {
         std::sort(ExportOutputs.begin(), ExportOutputs.end());
       }
 };

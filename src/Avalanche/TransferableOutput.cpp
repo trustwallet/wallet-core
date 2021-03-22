@@ -22,7 +22,7 @@ void TransferableOutput::encode(Data& data) const {
     for (auto byte : AssetID) {
         data.push_back(byte);
     }
-    Output.encode(data);
+    Output->encode(data);
 }
 
 bool TransferableOutput::operator<(const TransferableOutput& other) const {
@@ -35,11 +35,11 @@ bool TransferableOutput::operator<(const TransferableOutput& other) const {
       
 
 void SECP256k1TransferOutput::encode(Data& data) const {
-    encode32LE(typeID, data);
-    encode64LE(Amount, data);
-    encode64LE(Locktime, data);
-    encode32LE(Threshold, data);
-    encode32LE(Addresses.size(), data);
+    encode32BE(typeID, data);
+    encode64BE(Amount, data);
+    encode64BE(Locktime, data);
+    encode32BE(Threshold, data);
+    encode32BE(Addresses.size(), data);
     for (auto Address : Addresses) {
         for (auto byte : Address.getKeyHash()) {
             data.push_back(byte);
@@ -48,10 +48,10 @@ void SECP256k1TransferOutput::encode(Data& data) const {
 }
 
 void SECP256k1MintOutput::encode(Data& data) const {
-    encode32LE(typeID, data);
-    encode64LE(Locktime, data);
-    encode32LE(Threshold, data);
-    encode32LE(Addresses.size(), data);
+    encode32BE(typeID, data);
+    encode64BE(Locktime, data);
+    encode32BE(Threshold, data);
+    encode32BE(Addresses.size(), data);
     for (auto Address : Addresses) {
         for (auto byte : Address.getKeyHash()) {
             data.push_back(byte);
@@ -60,15 +60,15 @@ void SECP256k1MintOutput::encode(Data& data) const {
 }
 
 void NFTTransferOutput::encode(Data& data) const {
-    encode32LE(typeID, data);
-    encode32LE(GroupID, data);
-    encode32LE(Payload.size(), data);
+    encode32BE(typeID, data);
+    encode32BE(GroupID, data);
+    encode32BE(Payload.size(), data);
     for (auto byte : Payload) {
         data.push_back(byte);
     }
-    encode64LE(Locktime, data);
-    encode32LE(Threshold, data);
-    encode32LE(Addresses.size(), data);
+    encode64BE(Locktime, data);
+    encode32BE(Threshold, data);
+    encode32BE(Addresses.size(), data);
     for (auto Address : Addresses) {
         for (auto byte : Address.getKeyHash()) {
             data.push_back(byte);
@@ -77,11 +77,11 @@ void NFTTransferOutput::encode(Data& data) const {
 }
 
 void NFTMintOutput::encode(Data& data) const {
-    encode32LE(typeID, data);
-    encode32LE(GroupID, data);
-    encode64LE(Locktime, data);
-    encode32LE(Threshold, data);
-    encode32LE(Addresses.size(), data);
+    encode32BE(typeID, data);
+    encode32BE(GroupID, data);
+    encode64BE(Locktime, data);
+    encode32BE(Threshold, data);
+    encode32BE(Addresses.size(), data);
     for (auto Address : Addresses) {
         for (auto byte : Address.getKeyHash()) {
             data.push_back(byte);

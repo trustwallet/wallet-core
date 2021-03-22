@@ -21,14 +21,14 @@ void TransferableOp::encode(Data& data) const {
     for (auto byte : AssetID) {
         data.push_back(byte);
     }
-    encode32LE(UTXOIDs.size(), data);
+    encode32BE(UTXOIDs.size(), data);
     for (auto utxoID : UTXOIDs) {
         for (auto byte : utxoID.first) {
             data.push_back(byte);
         }
-        encode32LE(utxoID.second, data);
+        encode32BE(utxoID.second, data);
     }
-    TransferOp.encode(data);
+    TransferOp->encode(data);
 }
 
 bool TransferableOp::operator<(const TransferableOp& other) const {
@@ -40,23 +40,23 @@ bool TransferableOp::operator<(const TransferableOp& other) const {
 }
 
 void SECP256k1MintOperation::encode(Data& data) const {
-    encode32LE(typeID, data);
-    encode32LE(AddressIndices.size(), data);
+    encode32BE(typeID, data);
+    encode32BE(AddressIndices.size(), data);
     for (auto index : AddressIndices) {
-        encode32LE(index, data);
+        encode32BE(index, data);
     }
     MintOutput.encode(data);
     TransferOutput.encode(data);
 }
 
 void NFTMintOperation::encode(Data& data) const {
-    encode32LE(typeID, data);
-    encode32LE(AddressIndices.size(), data);
+    encode32BE(typeID, data);
+    encode32BE(AddressIndices.size(), data);
     for (auto index : AddressIndices) {
-        encode32LE(index, data);
+        encode32BE(index, data);
     }
-    encode32LE(GroupID, data);
-    encode32LE(Payload.size(), data);
+    encode32BE(GroupID, data);
+    encode32BE(Payload.size(), data);
     for (auto byte : Payload) {
         data.push_back(byte);
     }
@@ -65,19 +65,19 @@ void NFTMintOperation::encode(Data& data) const {
 
 
 void NFTTransferOperation::encode(Data& data) const {
-    encode32LE(typeID, data);
-    encode32LE(AddressIndices.size(), data);
+    encode32BE(typeID, data);
+    encode32BE(AddressIndices.size(), data);
     for (auto index : AddressIndices) {
-        encode32LE(index, data);
+        encode32BE(index, data);
     }
-    encode32LE(TransferOutput.GroupID, data);
-    encode32LE(TransferOutput.Payload.size(), data);
+    encode32BE(TransferOutput.GroupID, data);
+    encode32BE(TransferOutput.Payload.size(), data);
     for (auto byte : TransferOutput.Payload) {
         data.push_back(byte);
     }
-    encode64LE(TransferOutput.Locktime, data);
-    encode32LE(TransferOutput.Threshold, data);
-    encode32LE(TransferOutput.Addresses.size(), data);
+    encode64BE(TransferOutput.Locktime, data);
+    encode32BE(TransferOutput.Threshold, data);
+    encode32BE(TransferOutput.Addresses.size(), data);
     for (auto Address : TransferOutput.Addresses) {
         for (auto byte : Address.getKeyHash()) {
             data.push_back(byte);

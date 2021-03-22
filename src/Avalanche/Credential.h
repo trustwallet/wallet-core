@@ -25,11 +25,13 @@ namespace TW::Avalanche {
     };
 
     class SECP256k1Credential : public Credential {
-        SECP256k1Credential(std::vector<Data>&sigs)
+      public:
+        SECP256k1Credential(std::vector<Data> &sigs)
         : Credential(9, sigs) {}
     };
 
     class NFTCredential : public Credential {
+      public:
         NFTCredential(std::vector<Data> &sigs)
         : Credential(14, sigs) {}
     };

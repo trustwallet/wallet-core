@@ -4,8 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Output.h"
 #include "../BinaryCoding.h"
+#include "Output.h"
 
 using namespace TW::Avalanche;
 
@@ -19,7 +19,7 @@ bool compareOutputForSort(Output lhs, Output rhs) {
     return std::lexicographical_compare(std::get<2>(lhs).begin(), std::get<2>(lhs).end(), std::get<2>(rhs).begin(), std::get<2>(rhs).end());
 }
 
-void SortOutputs(std::vector<Output> &outputs){
+void TW::Avalanche::SortOutputs(std::vector<Output> &outputs){
     // sort the addresses in the outputs, then sort the outputs themselves
     for (auto &output : outputs) {
         std::sort(std::get<2>(output).begin(), std::get<2>(output).begin());
@@ -28,13 +28,13 @@ void SortOutputs(std::vector<Output> &outputs){
 }
 
 // must first call SortOutputs
-void EncodeOutputs(std::vector<Output> &outputs, TW::Data &data) {
-    TW::encode32LE(outputs.size(), data);
+void TW::Avalanche::EncodeOutputs(std::vector<Output> outputs, Data &data) {
+    TW::encode32BE(outputs.size(), data);
     for (auto output : outputs) {
-        TW::encode64LE(std::get<0>(output), data);
-        TW::encode32LE(std::get<1>(output), data);
+        TW::encode64BE(std::get<0>(output), data);
+        TW::encode32BE(std::get<1>(output), data);
         std::vector<Address> addrs = std::get<2>(output);
-        TW::encode32LE(addrs.size(), data);
+        TW::encode32BE(addrs.size(), data);
         for (auto addr : addrs) {
             for (auto byte : addr.getKeyHash()) {
                 data.push_back(byte);

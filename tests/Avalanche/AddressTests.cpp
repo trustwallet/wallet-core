@@ -15,34 +15,34 @@ using namespace TW;
 using namespace TW::Avalanche;
 
 TEST(AvalancheAddress, Valid) {
-    ASSERT_TRUE(Address::isValid("__ADD_VALID_ADDRESS_HERE__"));
-
-    // TODO: Add more tests
+    // three known-valid addresses from genesis
+    ASSERT_TRUE(Address::isValid("X-avax1wrgqjed292adreyal364nmz4jfjq2x5qkj7ack"));
+    ASSERT_TRUE(Address::isValid("X-avax1922rpmutaj68chc2k08sjq2ah7k96dvl0ukw3k"));
+    ASSERT_TRUE(Address::isValid("X-avax1hqem6nf0mp3v4gz7l3wsz2en9rp9c2drk0v742"));
 }
 
 TEST(AvalancheAddress, Invalid) {
-    ASSERT_FALSE(Address::isValid("__ADD_INVALID_ADDRESS_HERE__"));
-
-    // TODO: Add more tests
+    ASSERT_FALSE(Address::isValid("")); // Empty
+    ASSERT_FALSE(Address::isValid("X-fuji10feexxuhr3z8vh3wvzg2nhwqkllwpnhs55xum5")) ; // Testnet not supported
+    ASSERT_FALSE(Address::isValid("0x1641303f4c3105e8ba980b271d52cafdb4e5f01e")); // C chain not supported
+    ASSERT_FALSE(Address::isValid("P-avax18lasc0q97jlurnnxuyyqyz0rm6tvl0ecsvkvjj")); // P chain not supported
+    ASSERT_FALSE(Address::isValid("X-custom1hqem6nf0mp3v4gz7l3wsz2en9rp9c2drk0v742")); // non-avax x-chain assets not supported
+    ASSERT_FALSE(Address::isValid("X-avax1hqem6nfmp3v4gz7l3wsz2enrp9c2drk0v712")); // corrupted good value
 }
 
 TEST(AvalancheAddress, FromPrivateKey) {
-    // TODO: Check public key type, finalize implementation
-
-    auto privateKey = PrivateKey(parse_hex("__PRIVATE_KEY_DATA__"));
-    auto address = Address(privateKey.getPublicKey(TWPublicKeyTypeED25519));
-    ASSERT_EQ(address.string(), "__ADD_RESULTING_ADDRESS_HERE__");
+    auto privateKey = PrivateKey(parse_hex("0x98cb077f972feb0481f1d894f272c6a1e3c15e272a1658ff716444f465200070"));
+    auto address = Address(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+    ASSERT_EQ(address.string(), "X-avax1apmh7wxg3js48fhacfv5y9md9065jxuft30vup");
 }
 
 TEST(AvalancheAddress, FromPublicKey) {
-    // TODO: Check public key type, finalize implementation
-    
-    auto publicKey = PublicKey(parse_hex("__PUBLIC_KEY_DATS__"), TWPublicKeyTypeED25519);
+    auto publicKey = PublicKey(parse_hex("0x02b33c917f2f6103448d7feb42614037d05928433cb25e78f01a825aa829bb3c27"), TWPublicKeyTypeSECP256k1);
     auto address = Address(publicKey);
-    ASSERT_EQ(address.string(), "__ADD_RESULTING_ADDRESS_HERE__");
+    ASSERT_EQ(address.string(), "X-avax1apmh7wxg3js48fhacfv5y9md9065jxuft30vup");
 }
 
 TEST(AvalancheAddress, FromString) {
-    auto address = Address("__ADD_VALID_ADDRESS_HERE__");
-    ASSERT_EQ(address.string(), "__ADD_SAME_VALID_ADDRESS_HERE__");
+    auto address = Address("X-avax1apmh7wxg3js48fhacfv5y9md9065jxuft30vup");
+    ASSERT_EQ(address.string(), "X-avax1apmh7wxg3js48fhacfv5y9md9065jxuft30vup");
 }
