@@ -10,11 +10,13 @@
 
 #include <cstdint>
 #include <string>
+#include <tuple>
 
 namespace TW::Bitcoin {
 
 /// A Segwit address.
 /// Note: Similar to Bech32Address, but it differs enough so that reuse makes no sense.
+/// See BIP173 https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki
 class SegwitAddress {
   public:
     /// Human-readable part.
@@ -45,8 +47,8 @@ class SegwitAddress {
 
     /// Decodes a SegWit address.
     ///
-    /// \returns a pair with the address and a success flag.
-    static std::pair<SegwitAddress, bool> decode(const std::string& addr);
+    /// \returns a tuple with the address, hrp, and a success flag.
+    static std::tuple<SegwitAddress, std::string, bool> decode(const std::string& addr);
 
     /// Encodes the SegWit address.
     ///
