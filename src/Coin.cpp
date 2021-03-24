@@ -51,7 +51,10 @@
 #include "Waves/Entry.h"
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
+<<<<<<< HEAD
 #include "Avalanche/Entry.h"
+=======
+>>>>>>> upstream/master
 #include "Oasis/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
