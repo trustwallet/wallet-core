@@ -83,3 +83,8 @@ TWPublicKey *TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, enu
     }
     return new TWPublicKey{ PublicKey(*publicKey) };
 }
+
+TWString* _Nonnull TWHDWalletBip39Suggest(TWString *_Nonnull prefix) {
+    auto result = HDWallet::bip39Suggest(std::string(TWStringUTF8Bytes(prefix)));
+    return TWStringCreateWithUTF8Bytes(result.c_str());
+}

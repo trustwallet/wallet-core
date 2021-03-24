@@ -113,4 +113,10 @@ class TestHDWallet {
         val hdWallet = HDWallet(words, "")
         assertEquals(hdWallet.mnemonic(), words)
     }
+
+    @Test
+    fun testBip39Suggest() {
+        assertEquals(HDWallet.bip39Suggest("air"), "air airport")
+        assertEquals(HDWallet.bip39Suggest("rob"), "robot robust")
+    }
 }

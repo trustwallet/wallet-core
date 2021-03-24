@@ -112,4 +112,35 @@ TEST(HDWallet, privateKeyFromXPRVForDGB) {
     EXPECT_EQ(hex(publicKey.bytes), "03238a5c541c2cbbf769dbe0fb2a373c22db4da029370767fbe746d59da4de07f1");
     EXPECT_EQ(address.string(), "D9Gv7jWSVsS9Y5q98C79WyfEj6P2iM5Nzs");
 }
+
+TEST(HDWallet, bip39Suggest) {
+    EXPECT_EQ(HDWallet::bip39Suggest("air"), "air airport");
+    EXPECT_EQ(HDWallet::bip39Suggest("AIR"), "air airport");
+    EXPECT_EQ(HDWallet::bip39Suggest("abc"), "");
+    EXPECT_EQ(HDWallet::bip39Suggest("ai"), "aim air airport aisle");
+    EXPECT_EQ(HDWallet::bip39Suggest("an"), "analyst anchor ancient anger angle angry animal ankle announce annual");
+    EXPECT_EQ(HDWallet::bip39Suggest("a"), "abandon ability able about above absent absorb abstract absurd abuse");
+    EXPECT_EQ(HDWallet::bip39Suggest("str"), "strategy street strike strong struggle");
+    EXPECT_EQ(HDWallet::bip39Suggest("rob"), "robot robust");
+    EXPECT_EQ(HDWallet::bip39Suggest("saus"), "sausage");
+    EXPECT_EQ(HDWallet::bip39Suggest("saos"), "");
+    EXPECT_EQ(HDWallet::bip39Suggest(""), "");
+    EXPECT_EQ(HDWallet::bip39Suggest("3"), "");
+    EXPECT_EQ(HDWallet::bip39Suggest(" a"), "");
+    EXPECT_EQ(HDWallet::bip39Suggest(" "), "");
+    EXPECT_EQ(HDWallet::bip39Suggest("f"), "fabric face faculty fade faint faith fall false fame family");
+    EXPECT_EQ(HDWallet::bip39Suggest("fa"), "fabric face faculty fade faint faith fall false fame family");
+    EXPECT_EQ(HDWallet::bip39Suggest("fam"), "fame family famous");
+    EXPECT_EQ(HDWallet::bip39Suggest("fami"), "family");
+    EXPECT_EQ(HDWallet::bip39Suggest("famil"), "family");
+    EXPECT_EQ(HDWallet::bip39Suggest("family"), "family");
+    EXPECT_EQ(HDWallet::bip39Suggest("p"), "pact paddle page pair palace palm panda panel panic panther");
+    EXPECT_EQ(HDWallet::bip39Suggest("pr"), "practice praise predict prefer prepare present pretty prevent price pride");
+    EXPECT_EQ(HDWallet::bip39Suggest("pro"), "problem process produce profit program project promote proof property prosper");
+    EXPECT_EQ(HDWallet::bip39Suggest("prog"), "program");
+    EXPECT_EQ(HDWallet::bip39Suggest("progr"), "program");
+    EXPECT_EQ(HDWallet::bip39Suggest("progra"), "program");
+    EXPECT_EQ(HDWallet::bip39Suggest("program"), "program");
+}
+
 } // namespace

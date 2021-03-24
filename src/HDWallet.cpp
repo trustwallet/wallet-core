@@ -193,6 +193,44 @@ HDWallet::PrivateKeyType HDWallet::getPrivateKeyType(TWCurve curve) {
     }
 }
 
+// defined in trezor-crypto, header is not public (TODO)
+extern const char * const wordlist[];
+
+std::string HDWallet::bip39Suggest(const std::string& prefix) {
+    static const int MaxResults = 10;
+    if (prefix.size() == 0) {
+        return "";
+    }
+    assert(prefix.size() >= 1);
+    // lowercase prefix
+    std::string prefixLo = prefix;
+    std::transform(prefixLo.begin(), prefixLo.end(), prefixLo.begin(),
+        [](unsigned char c){ return std::tolower(c); });
+    const char* prefixLoC = prefixLo.c_str();
+    std::vector<std::string> result;
+    for (const char* const* word = wordlist; *word != nullptr; ++word) {
+        // check first letter match (optimization)
+        if ((*word)[0] == prefixLo[0]) {
+            if (strncmp(*word, prefixLoC, prefixLo.length()) == 0) {
+                // we have a match
+                result.push_back(*word);
+                if (result.size() >= MaxResults) {
+                    break; // enough results
+                }
+            }
+        }
+    }
+    // convert results to one string
+    std::string resultString;
+    for (auto& word: result) {
+        if (resultString.length() > 0) {
+            resultString += " ";
+        }
+        resultString += word;
+    }
+    return resultString;
+}
+
 namespace {
 
 uint32_t fingerprint(HDNode *node, Hash::Hasher hasher) {

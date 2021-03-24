@@ -83,4 +83,8 @@ TWString *_Nonnull TWHDWalletGetExtendedPublicKey(struct TWHDWallet *_Nonnull wa
 TW_EXPORT_STATIC_METHOD
 struct TWPublicKey *_Nullable TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, enum TWCoinType coin, TWString *_Nonnull derivationPath);
 
+/// Return BIP39 English words that match the given prefix.  A single string is returned, with space-separated list of words.
+TW_EXPORT_STATIC_METHOD
+TWString* _Nonnull TWHDWalletBip39Suggest(TWString *_Nonnull prefix);
+
 TW_EXTERN_C_END

@@ -420,4 +420,9 @@ class HDWalletTests: XCTestCase {
 
         XCTAssertEqual(address, "band1pe8xm2r46rmctsukuqu7gl900vzprfsp4sguc3")
     }
+
+    func testBip39Suggest() {
+        XCTAssertEqual(HDWallet.bip39Suggest(prefix: "air"), "air airport")
+        XCTAssertEqual(HDWallet.bip39Suggest(prefix: "rob"), "robot robust")
+    }
 }

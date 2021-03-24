@@ -423,3 +423,8 @@ TEST(HDWallet, GetKeyBIP44) {
     const auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
     assertHexEqual(privateKeyData, "1901b5994f075af71397f65bd68a9fff8d3025d65f5a2c731cf90f5e259d6aac");
 }
+
+TEST(HDWallet, bip39Suggest) {
+    EXPECT_EQ(std::string(TWStringUTF8Bytes(WRAPS(TWHDWalletBip39Suggest(WRAPS(TWStringCreateWithUTF8Bytes("air")).get())).get())), "air airport");
+    EXPECT_EQ(std::string(TWStringUTF8Bytes(WRAPS(TWHDWalletBip39Suggest(WRAPS(TWStringCreateWithUTF8Bytes("rob")).get())).get())), "robot robust");
+}
