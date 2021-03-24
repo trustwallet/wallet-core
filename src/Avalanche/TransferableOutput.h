@@ -24,7 +24,6 @@ class TransactionOutput {
     virtual TransactionOutput* duplicate() = 0; 
   protected:
     TransactionOutput(){}
-    virtual ~TransactionOutput(){}
 };
 
 /// Avalanche transaction output.

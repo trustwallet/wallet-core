@@ -21,7 +21,6 @@ class TransactionOp {
     virtual TransactionOp* duplicate() = 0;
   protected:
     TransactionOp(){}
-    virtual ~TransactionOp(){}
 };
 
 /// Avalanche transaction operation.
