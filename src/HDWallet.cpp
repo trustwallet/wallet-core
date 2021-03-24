@@ -12,10 +12,11 @@
 #include "Bitcoin/CashAddress.h"
 #include "Coin.h"
 
+#include <TrustWalletCore/TWHRP.h>
 #include <TrezorCrypto/bip32.h>
 #include <TrezorCrypto/bip39.h>
 #include <TrezorCrypto/curves.h>
-#include <TrustWalletCore/TWHRP.h>
+#include <TrezorCrypto/bip39_english.h>
 
 #include <array>
 
@@ -192,9 +193,6 @@ HDWallet::PrivateKeyType HDWallet::getPrivateKeyType(TWCurve curve) {
         return PrivateKeyTypeDefault32;
     }
 }
-
-// defined in trezor-crypto, header is not public (TODO)
-extern const char * const wordlist[];
 
 std::string HDWallet::bip39Suggest(const std::string& prefix) {
     static const int MaxResults = 10;
