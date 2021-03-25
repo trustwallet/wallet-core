@@ -17,8 +17,8 @@ TEST(TWAvalanche, Address) {
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), false));
     auto string = "X-avax1apmh7wxg3js48fhacfv5y9md9065jxuft30vup";
     
-    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeAvalanche));
-    auto expected = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(STRING(string).get(), TWCoinTypeAvalanche));
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeAvalancheXChain));
+    auto expected = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(STRING(string).get(), TWCoinTypeAvalancheXChain));
 
     auto addressString = WRAPS(TWAnyAddressDescription(address.get()));
     auto expectedString = WRAPS(TWAnyAddressDescription(expected.get()));

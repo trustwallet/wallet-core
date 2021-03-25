@@ -14,21 +14,21 @@
 
 
 TEST(TWAvalancheCoinType, TWCoinType) {
-    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAvalanche));
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAvalancheXChain));
     auto txId = WRAPS(TWStringCreateWithUTF8Bytes("2eLNtbK8bomFKJ6qCGBTuxJvD6LAs6eAXNVK48hGS8MGxGW6B9"));
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAvalanche, txId.get()));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAvalancheXChain, txId.get()));
     auto accId = WRAPS(TWStringCreateWithUTF8Bytes("X-avax19cp7nwkex3kynxug5s3lskdxhdns2vk7yw4m8h"));
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeAvalanche, accId.get()));
-    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAvalanche));
-    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAvalanche));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeAvalancheXChain, accId.get()));
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAvalancheXChain));
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAvalancheXChain));
 
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAvalanche), 9);
-    ASSERT_EQ(TWBlockchainAvalanche, TWCoinTypeBlockchain(TWCoinTypeAvalanche));
-    ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeAvalanche));
-    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeAvalanche));
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAvalancheXChain), 9);
+    ASSERT_EQ(TWBlockchainAvalanche, TWCoinTypeBlockchain(TWCoinTypeAvalancheXChain));
+    ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeAvalancheXChain));
+    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeAvalancheXChain));
     assertStringsEqual(symbol, "AVAX");
     assertStringsEqual(txUrl, "https://explorer.avax.network//tx/2eLNtbK8bomFKJ6qCGBTuxJvD6LAs6eAXNVK48hGS8MGxGW6B9");
     assertStringsEqual(accUrl, "https://explorer.avax.network//address/X-avax19cp7nwkex3kynxug5s3lskdxhdns2vk7yw4m8h");
-    assertStringsEqual(id, "avalanche");
-    assertStringsEqual(name, "Avalanche");
+    assertStringsEqual(id, "avalanchex");
+    assertStringsEqual(name, "Avalanche X Chain"); //typically this would be "X-Chain" but the hyphen breaks autogeneration
 }

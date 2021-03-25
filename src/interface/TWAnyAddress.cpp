@@ -206,7 +206,7 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
         break;
     }
 
-    case TWCoinTypeAvalanche: {
+    case TWCoinTypeAvalancheXChain: {
         Avalanche::Address addr;
         if (Avalanche::Address::decode(string, addr)) {
             data = addr.getKeyHash();
