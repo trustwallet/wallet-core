@@ -1546,7 +1546,7 @@
   },
    {
     "id": "avalanche",
-    "name": "Avalanche",
+    "name": "Avalanche X-Chain",
     "coinId": 31337,
     "symbol": "AVAX", 
     "decimals": 9,
@@ -1567,6 +1567,28 @@
       "client": "https://github.com/ava-labs/avalanchego",
       "clientPublic": "",
       "clientDocs": "https://docs.avax.network/"
+   }
+  },
+  {
+    "id": "avalanchec",
+    "name": "Avalanche C-Chain",
+    "coinId": 31338,
+    "symbol": "AVAX",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/9000'/0'/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://cchain.explorer.avax.network/",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
+   },
+   "info": {
+    "url": "https://www.avalabs.org/",
+    "client": "https://github.com/ava-labs/avalanchego",
+    "clientPublic": "",
+    "clientDocs": "https://docs.avax.network/"
    }
   }
  ]
