@@ -100,23 +100,28 @@ std::pair<std::string, Data> Bech32::decode(const std::string& str) {
     bool ok = true;
     for (size_t i = 0; ok && i < str.size(); ++i) {
         unsigned char c = str[i];
-        if (c < 33 || c > 126)
+        if (c < 33 || c > 126) {
             ok = false;
-        if (c >= 'a' && c <= 'z')
+        }
+        if (c >= 'a' && c <= 'z') {
             lower = true;
-        if (c >= 'A' && c <= 'Z')
+        }
+        if (c >= 'A' && c <= 'Z') {
             upper = true;
+        }
     }
-    if (lower && upper)
+    if (lower && upper) {
         ok = false;
+    }
     size_t pos = str.rfind('1');
     if (ok && str.size() <= 120 && pos != str.npos && pos >= 1 && pos + 7 <= str.size()) {
         Data values;
         values.resize(str.size() - 1 - pos);
         for (size_t i = 0; i < str.size() - 1 - pos; ++i) {
             unsigned char c = str[i + pos + 1];
-            if (charset_rev[c] == -1)
+            if (charset_rev[c] == -1) {
                 ok = false;
+            }
             values[i] = charset_rev[c];
         }
         if (ok) {

@@ -31,10 +31,13 @@ TEST(Bech32Address, Valid) {
     ASSERT_TRUE(Bech32Address::isValid("erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz", "erd"));
     ASSERT_TRUE(Bech32Address::isValid("erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r", "erd"));
     ASSERT_TRUE(Bech32Address::isValid("erd19nu5t7hszckwah5nlcadmk5rlchtugzplznskffpwecygcu0520s9tnyy0", "erd"));
+
+    ASSERT_TRUE(Bech32Address::isValid("BNB1GRPF0955H0YKZQ3AR5NMUM7Y6GDFL6LXFN46H2", "bnb")); // uppercase version
 }
 
 TEST(Bech32Address, Invalid) {
-    ASSERT_FALSE(Bech32Address::isValid("bnb1grpf0955h0ykzq3ar6nmum7y6gdfl6lxfn46h2", "bnb"));
+    ASSERT_FALSE(Bech32Address::isValid("bnb1grpf0955h0ykzq3ar6nmum7y6gdfl6lxfn46h2", "bnb")); // 1-char diff
+    ASSERT_FALSE(Bech32Address::isValid("bnb1grPF0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2", "bnb")); // mixed case
 
     ASSERT_FALSE(Bech32Address::isValid("cosmos1xsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02", "cosmos"));
     ASSERT_FALSE(Bech32Address::isValid("cosmospub1xddwnpepqftjsmkr7d7nx4tmhw4qqze8w39vjq364xt8etn45xqarlu3l2wu2n7pgrq", "cosmos"));

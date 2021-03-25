@@ -42,8 +42,9 @@ TEST(TWBitcoinGoldSegwitAddress, PubkeyToAddress) {
 
 /// Decodes a SegWit address.
 TEST(TWBitcoinGoldSegwitAddress, Decode) {
-    std::pair<Bitcoin::SegwitAddress, bool> result = Bitcoin::SegwitAddress::decode("btg1qtesn92ddy8m5yvypgsdtft3zj5qldj9g2u52sk");
+    auto result = Bitcoin::SegwitAddress::decode("btg1qtesn92ddy8m5yvypgsdtft3zj5qldj9g2u52sk");
 
-    ASSERT_TRUE(result.second);
-    ASSERT_EQ(result.first.string(), "btg1qtesn92ddy8m5yvypgsdtft3zj5qldj9g2u52sk");
+    ASSERT_TRUE(std::get<2>(result));
+    ASSERT_EQ(std::get<0>(result).string(), "btg1qtesn92ddy8m5yvypgsdtft3zj5qldj9g2u52sk");
+    ASSERT_EQ(std::get<1>(result), "btg");
 }

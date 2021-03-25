@@ -189,6 +189,79 @@ TEST(PrivateKey, PrivateKeyExtendedError) {
     FAIL() << "Should throw Invalid empty key extension";
 }
 
+TEST(PrivateKey, getSharedKey) {
+    Data privKeyData = parse_hex("9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0");
+    EXPECT_TRUE(PrivateKey::isValid(privKeyData, TWCurveSECP256k1));
+    auto privateKey = PrivateKey(privKeyData);
+
+    const Data pubKeyData = parse_hex("02a18a98316b5f52596e75bfa5ca9fa9912edd0c989b86b73d41bb64c9c6adb992");
+    EXPECT_TRUE(PublicKey::isValid(pubKeyData, TWPublicKeyTypeSECP256k1));
+    PublicKey publicKey(pubKeyData, TWPublicKeyTypeSECP256k1);
+    EXPECT_TRUE(publicKey.isCompressed());
+
+    const Data derivedKeyData = privateKey.getSharedKey(publicKey, TWCurveSECP256k1);
+
+    EXPECT_EQ(
+        "ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a",
+        hex(derivedKeyData)
+    );
+}
+
+/**
+ * Valid test vector from Wycherproof project
+ * Source: https://github.com/google/wycheproof/blob/master/testvectors/ecdh_secp256k1_test.json#L31
+ */
+TEST(PrivateKey, getSharedKeyWycherproof) {
+    // Stripped left-padded zeroes from: `00f4b7ff7cccc98813a69fae3df222bfe3f4e28f764bf91b4a10d8096ce446b254`
+    Data privKeyData = parse_hex("f4b7ff7cccc98813a69fae3df222bfe3f4e28f764bf91b4a10d8096ce446b254");
+    EXPECT_TRUE(PrivateKey::isValid(privKeyData, TWCurveSECP256k1));
+    auto privateKey = PrivateKey(privKeyData);
+
+    // Decoded from ASN.1 & uncompressed `3056301006072a8648ce3d020106052b8104000a03420004d8096af8a11e0b80037e1ee68246b5dcbb0aeb1cf1244fd767db80f3fa27da2b396812ea1686e7472e9692eaf3e958e50e9500d3b4c77243db1f2acd67ba9cc4`
+    const Data pubKeyData = parse_hex("02d8096af8a11e0b80037e1ee68246b5dcbb0aeb1cf1244fd767db80f3fa27da2b");
+    EXPECT_TRUE(PublicKey::isValid(pubKeyData, TWPublicKeyTypeSECP256k1));
+    PublicKey publicKey(pubKeyData, TWPublicKeyTypeSECP256k1);
+    EXPECT_TRUE(publicKey.isCompressed());
+
+    const Data derivedKeyData = privateKey.getSharedKey(publicKey, TWCurveSECP256k1);
+    
+    // SHA-256 of encoded x-coordinate `02544dfae22af6af939042b1d85b71a1e49e9a5614123c4d6ad0c8af65baf87d65`
+    EXPECT_EQ(
+        "81165066322732362ca5d3f0991d7f1f7d0aad7ea533276496785d369e35159a",
+        hex(derivedKeyData)
+    );
+}
+
+TEST(PrivateKey, getSharedKeyBidirectional) {
+    Data privKeyData1 = parse_hex("9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0");
+    EXPECT_TRUE(PrivateKey::isValid(privKeyData1, TWCurveSECP256k1));
+    auto privateKey1 = PrivateKey(privKeyData1);
+    auto publicKey1 = privateKey1.getPublicKey(TWPublicKeyTypeSECP256k1);
+
+    Data privKeyData2 = parse_hex("ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a");
+    EXPECT_TRUE(PrivateKey::isValid(privKeyData2, TWCurveSECP256k1));
+    auto privateKey2 = PrivateKey(privKeyData2);
+    auto publicKey2 = privateKey2.getPublicKey(TWPublicKeyTypeSECP256k1);
+
+    const Data derivedKeyData1 = privateKey1.getSharedKey(publicKey2, TWCurveSECP256k1);
+    const Data derivedKeyData2 = privateKey2.getSharedKey(publicKey1, TWCurveSECP256k1);
+
+    EXPECT_EQ(hex(derivedKeyData1), hex(derivedKeyData2));
+}
+
+TEST(PrivateKey, getSharedKeyError) {
+    Data privKeyData = parse_hex("9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0");
+    auto privateKey = PrivateKey(privKeyData);
+
+    const Data pubKeyData = parse_hex("02a18a98316b5f52596e75bfa5ca9fa9912edd0c989b86b73d41bb64c9c6adb992");
+    PublicKey publicKey(pubKeyData, TWPublicKeyTypeSECP256k1);
+
+    const Data derivedKeyData = privateKey.getSharedKey(publicKey, TWCurveCurve25519);
+    const Data expected = {};
+
+    EXPECT_EQ(expected, derivedKeyData);
+}
+
 TEST(PrivateKey, SignSECP256k1) {
     Data privKeyData = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
     auto privateKey = PrivateKey(privKeyData);

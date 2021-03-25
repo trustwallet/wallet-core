@@ -54,7 +54,7 @@ class EOSTests: XCTestCase {
 
 
     func testSigning() throws {
-        let ouptut: EOSSigningOutput = AnySigner.sign(input: signingInput, coin: .eos)
+        let output: EOSSigningOutput = AnySigner.sign(input: signingInput, coin: .eos)
 
         let expectedJSON = """
         {
@@ -64,29 +64,29 @@ class EOSTests: XCTestCase {
             "signatures": ["SIG_K1_KfCdjsrTnx5cBpbA5cUdHZAsRYsnC9uKzuS1shFeqfMCfdZwX4PBm9pfHwGRT6ffz3eavhtkyNci5GoFozQAx8P8PBnDmj"]
         }
         """
-        XCTAssertTrue(ouptut.error.isEmpty)
-        XCTAssertJSONEqual(ouptut.jsonEncoded, expectedJSON)
+        XCTAssertEqual(output.error, TW_Common_Proto_SigningError.ok)
+        XCTAssertJSONEqual(output.jsonEncoded, expectedJSON)
     }
 
     func testSigningFailures() throws {
         var badInput = signingInput
         badInput.asset.decimals = 19
         var signingOutput: EOSSigningOutput = AnySigner.sign(input: badInput, coin: .eos)
-        XCTAssertFalse(signingOutput.error.isEmpty, "Expected error but signing suceeded!")
+        XCTAssertEqual(signingOutput.error, TW_Common_Proto_SigningError.errorInternal)
 
         badInput = signingInput
         badInput.asset.symbol = "xyz"
         signingOutput = AnySigner.sign(input: badInput, coin: .eos)
-        XCTAssertFalse(signingOutput.error.isEmpty, "Expected error but signing suceeded!")
+        XCTAssertEqual(signingOutput.error, TW_Common_Proto_SigningError.errorInternal)
 
         badInput = signingInput
         badInput.recipient = String(repeating: "A", count: 15)
         signingOutput = AnySigner.sign(input: badInput, coin: .eos)
-        XCTAssertFalse(signingOutput.error.isEmpty, "Expected error but signing suceeded!")
+        XCTAssertEqual(signingOutput.error, TW_Common_Proto_SigningError.errorInternal)
 
         badInput = signingInput
         badInput.referenceBlockID = Data(hexString: "0000086bf9e7704509aa41311a66fa0a1b479c")!
         signingOutput = AnySigner.sign(input: badInput, coin: .eos)
-        XCTAssertFalse(signingOutput.error.isEmpty, "Expected error but signing suceeded!")
+        XCTAssertEqual(signingOutput.error, TW_Common_Proto_SigningError.errorInternal)
     }
 }

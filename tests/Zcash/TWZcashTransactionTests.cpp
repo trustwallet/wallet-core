@@ -116,7 +116,7 @@ TEST(TWZcashTransaction, SaplingSigning) {
 
     // Sign
     auto result = Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>(std::move(input)).sign();
-    ASSERT_TRUE(result) << result.error();
+    ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
     // txid = "ec9033381c1cc53ada837ef9981c03ead1c7c41700ff3a954389cfaddc949256"
@@ -179,7 +179,7 @@ TEST(TWZcashTransaction, BlossomSigning) {
 
     // Sign
     auto result = Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>(std::move(input)).sign();
-    ASSERT_TRUE(result) << result.error();
+    ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
     Data serialized;
