@@ -84,7 +84,8 @@ enum TWCoinType {
     TWCoinTypeBandChain = 494,
     TWCoinTypeSmartChainLegacy = 10000714,
     TWCoinTypeSmartChain = 20000714,
-    TWCoinTypeAvalanche = 31337,
+    TWCoinTypeAvalancheXChain = 31337,
+    TWCoinTypeAvalancheCChain = 31338,
     TWCoinTypeOasis = 474,
 };
 
