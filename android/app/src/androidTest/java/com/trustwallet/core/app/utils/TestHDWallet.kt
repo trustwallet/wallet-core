@@ -5,6 +5,7 @@ import wallet.core.jni.CoinType
 import wallet.core.jni.Curve
 import wallet.core.jni.HDVersion
 import wallet.core.jni.HDWallet
+import wallet.core.jni.Mnemonic
 import wallet.core.jni.Purpose
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -100,12 +101,12 @@ class TestHDWallet {
         val hdWallet2 = HDWallet(160, "")
         assertFalse(hdWallet2.mnemonic().isNullOrBlank())
         val wordList2 = hdWallet2.mnemonic().split(" ")
-        HDWallet.isValid(wordList2.joinToString { " " })
+        Mnemonic.isValid(wordList2.joinToString { " " })
 
         val hdWallet3 = HDWallet(160, "")
         assertFalse(hdWallet3.mnemonic().isNullOrBlank())
         val wordList3 = hdWallet3.mnemonic().split(" ")
-        HDWallet.isValid(wordList3.joinToString { " " })
+        Mnemonic.isValid(wordList3.joinToString { " " })
     }
 
     @Test

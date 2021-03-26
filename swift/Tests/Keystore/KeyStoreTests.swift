@@ -108,7 +108,7 @@ class KeyStoreTests: XCTestCase {
         XCTAssertEqual(savedWallet.accounts.count, coins.count)
         XCTAssertNotNil(data)
         XCTAssertNotNil(mnemonic)
-        XCTAssert(HDWallet.isValid(mnemonic: mnemonic!))
+        XCTAssert(Mnemonic.isValid(mnemonic: mnemonic!))
         XCTAssertEqual(savedWallet.key.name, "name")
     }
 
@@ -128,7 +128,7 @@ class KeyStoreTests: XCTestCase {
         XCTAssertEqual(savedWallet.accounts.count, coins.count)
         XCTAssertNotNil(data)
         XCTAssertNotNil(mnemonic)
-        XCTAssert(HDWallet.isValid(mnemonic: mnemonic!))
+        XCTAssert(Mnemonic.isValid(mnemonic: mnemonic!))
         XCTAssertEqual(savedWallet.key.name, "testname")
     }
 
