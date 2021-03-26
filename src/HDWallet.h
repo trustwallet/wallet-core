@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -43,9 +43,6 @@ class HDWallet {
     TW::Data entropy;
 
   public:
-    /// Determines if a mnemonic phrase is valid.
-    static bool isValid(const std::string& mnemonic);
-
     /// Initializes a new random HDWallet with the provided strength in bits.
     HDWallet(int strength, const std::string& passphrase);
 
@@ -87,21 +84,6 @@ class HDWallet {
 
     /// Computes the private key from an exteded private key representation.
     static std::optional<PrivateKey> getPrivateKeyFromExtended(const std::string& extended, TWCoinType coin, const DerivationPath& path);
-
-    /// Return BIP39 English words that match the given prefix.
-    // - A single string is returned, with space-separated list of words (or single word or empty string)
-    //   (Why not array?  To simplify the cross-language interfaces)
-    // - A maximum of 10 words are returned
-    // - Only exact prefix match, saus returns sausage, but saos does not.
-    // - Only word start match, rob returns robot, but not aerobic
-    // - Prefix is case insensitive
-    // - Returned words are in lowercase, and in alphabetical order
-    // Examples:
-    // - 'rob' -> 'robot robust'
-    // - 'ai' -> 'aim air airport aisle'
-    // - 'an' -> 'analyst anchor ancient anger angle angry animal ankle announce annual'
-    // - 'a'-> 'abandon ability able about above absent absorb abstract absurd abuse'
-    static std::string bip39Suggest(const std::string& prefix);
 
   public:
     // Private key type (later could be moved out of HDWallet)

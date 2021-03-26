@@ -231,7 +231,7 @@ public final class KeyStore {
     /// - Parameters:
     ///   - wallet: wallet to export
     ///   - password: account password
-    /// - Returns: private key data for encrypted keys or menmonic phrase for HD wallets
+    /// - Returns: private key data for encrypted keys or mnemonic phrase for HD wallets
     public func exportPrivateKey(wallet: Wallet, password: String) throws -> Data {
         guard let key = wallet.key.decryptPrivateKey(password: Data(password.utf8)) else {
             throw Error.invalidPassword

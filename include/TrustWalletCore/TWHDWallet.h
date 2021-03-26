@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -21,7 +21,7 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_CLASS
 struct TWHDWallet;
 
-/// Determines if a mnemonic phrase is valid.
+/// Deprecated; use TWMnemonicIsValid().  Determines if a mnemonic phrase is valid.
 TW_EXPORT_STATIC_METHOD
 bool TWHDWalletIsValid(TWString *_Nonnull mnemonic);
 
@@ -82,9 +82,5 @@ TWString *_Nonnull TWHDWalletGetExtendedPublicKey(struct TWHDWallet *_Nonnull wa
 /// Computes the public key from an exteded public key representation.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWPublicKey *_Nullable TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, enum TWCoinType coin, TWString *_Nonnull derivationPath);
-
-/// Return BIP39 English words that match the given prefix.  A single string is returned, with space-separated list of words.
-TW_EXPORT_STATIC_METHOD
-TWString* _Nonnull TWHDWalletBip39Suggest(TWString *_Nonnull prefix);
 
 TW_EXTERN_C_END

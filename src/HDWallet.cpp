@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -32,10 +32,6 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve);
 
 const char* curveName(TWCurve curve);
 } // namespace
-
-bool HDWallet::isValid(const std::string& mnemonic) {
-    return mnemonic_check(mnemonic.c_str()) != 0;
-}
 
 HDWallet::HDWallet(int strength, const std::string& passphrase)
     : seed(), mnemonic(), passphrase(passphrase) {
@@ -192,41 +188,6 @@ HDWallet::PrivateKeyType HDWallet::getPrivateKeyType(TWCurve curve) {
         // default
         return PrivateKeyTypeDefault32;
     }
-}
-
-std::string HDWallet::bip39Suggest(const std::string& prefix) {
-    static const int MaxResults = 10;
-    if (prefix.size() == 0) {
-        return "";
-    }
-    assert(prefix.size() >= 1);
-    // lowercase prefix
-    std::string prefixLo = prefix;
-    std::transform(prefixLo.begin(), prefixLo.end(), prefixLo.begin(),
-        [](unsigned char c){ return std::tolower(c); });
-    const char* prefixLoC = prefixLo.c_str();
-    std::vector<std::string> result;
-    for (const char* const* word = wordlist; *word != nullptr; ++word) {
-        // check first letter match (optimization)
-        if ((*word)[0] == prefixLo[0]) {
-            if (strncmp(*word, prefixLoC, prefixLo.length()) == 0) {
-                // we have a match
-                result.push_back(*word);
-                if (result.size() >= MaxResults) {
-                    break; // enough results
-                }
-            }
-        }
-    }
-    // convert results to one string
-    std::string resultString;
-    for (auto& word: result) {
-        if (resultString.length() > 0) {
-            resultString += " ";
-        }
-        resultString += word;
-    }
-    return resultString;
 }
 
 namespace {
