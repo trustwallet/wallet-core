@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -419,10 +419,5 @@ class HDWalletTests: XCTestCase {
         let address = coin.deriveAddress(privateKey: key)
 
         XCTAssertEqual(address, "band1pe8xm2r46rmctsukuqu7gl900vzprfsp4sguc3")
-    }
-
-    func testBip39Suggest() {
-        XCTAssertEqual(HDWallet.bip39Suggest(prefix: "air"), "air airport")
-        XCTAssertEqual(HDWallet.bip39Suggest(prefix: "rob"), "robot robust")
     }
 }
