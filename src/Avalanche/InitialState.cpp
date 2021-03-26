@@ -30,21 +30,20 @@ InitialState& InitialState::operator=(const InitialState &other) {
     // check for "self assignment" and do nothing in that case
     if (this == &other) {
         return *this;
-    } else {
-        // clean up pointer data members
-        for (auto output : Outputs) {
-            delete output;
-        }
-        // assign members
-        FxID = other.FxID;
-        std::vector<TransactionOutput*> outputs;
-        for (auto output : other.Outputs) {
-        outputs.push_back(output->duplicate());
-        }
-        Outputs = outputs;
-        std::sort(Outputs.begin(), Outputs.end());
-        return *this;
     }
+    // clean up pointer data members
+    for (auto output : Outputs) {
+        delete output;
+    }
+    // assign members
+    FxID = other.FxID;
+    std::vector<TransactionOutput*> outputs;
+    for (auto output : other.Outputs) {
+    outputs.push_back(output->duplicate());
+    }
+    Outputs = outputs;
+    std::sort(Outputs.begin(), Outputs.end());
+    return *this;
 }
 
 InitialState::~InitialState() {
