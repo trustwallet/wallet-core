@@ -31,7 +31,7 @@ struct TransactionPlan {
     /// Zcash branch id
     std::vector<uint8_t> branchId;
 
-    std::string error;
+    Common::Proto::SigningError error;
 
     TransactionPlan() = default;
 
@@ -42,7 +42,8 @@ struct TransactionPlan {
         , change(plan.change())
         , utxos(plan.utxos().begin(), plan.utxos().end())
         , branchId(plan.branch_id().begin(), plan.branch_id().end())
-        , error(plan.error()) {}
+        , error(plan.error())
+    {}
 
     Proto::TransactionPlan proto() const {
         auto plan = Proto::TransactionPlan();
@@ -52,7 +53,7 @@ struct TransactionPlan {
         plan.set_change(change);
         *plan.mutable_utxos() = {utxos.begin(), utxos.end()};
         plan.set_branch_id(branchId.data(), branchId.size());
-        plan.set_error(error.c_str());
+        plan.set_error(error);
         return plan;
     }
 };

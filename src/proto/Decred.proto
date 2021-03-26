@@ -4,6 +4,7 @@ package TW.Decred.Proto;
 option java_package = "wallet.core.jni.proto";
 
 import "Bitcoin.proto";
+import "Common.proto";
 
 message Transaction {
     /// Serialization format
@@ -64,6 +65,6 @@ message SigningOutput {
     // Transaction id
     string transaction_id = 3;
 
-    // Optional error message
-    string error = 4;
+    // Optional error
+    Common.Proto.SigningError error = 4;
 }
