@@ -13,6 +13,11 @@ class MnemonicTests: XCTestCase {
         XCTAssertFalse(Mnemonic.isValid(mnemonic: "ripple scissors hisc mammal hire column oak again sun offer wealth tomorrow"));
     }
 
+    func testIsWordValid() {
+        XCTAssertTrue(Mnemonic.isWordValid(mnemonic: "credit"));
+        XCTAssertFalse(Mnemonic.isWordValid(mnemonic: "hybridous"));
+    }
+
     func testSuggest() {
         XCTAssertEqual(Mnemonic.suggest(prefix: "air"), "air airport")
         XCTAssertEqual(Mnemonic.suggest(prefix: "rob"), "robot robust")

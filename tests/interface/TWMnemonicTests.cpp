@@ -13,6 +13,11 @@ TEST(TWMnemonic, IsValid) {
     EXPECT_FALSE(TWMnemonicIsValid(STRING("ripple scissors hisc mammal hire column oak again sun offer wealth tomorrow").get())); // invalid word
 }
 
+TEST(TWMnemonic, isWordValid) {
+    EXPECT_TRUE(TWMnemonicIsWordValid(STRING("credit").get()));
+    EXPECT_FALSE(TWMnemonicIsWordValid(STRING("hybridous").get()));
+}
+
 TEST(TWMnemonic, suggest) {
     EXPECT_EQ(std::string(TWStringUTF8Bytes(WRAPS(TWMnemonicSuggest(WRAPS(TWStringCreateWithUTF8Bytes("air")).get())).get())), "air airport");
     EXPECT_EQ(std::string(TWStringUTF8Bytes(WRAPS(TWMnemonicSuggest(WRAPS(TWStringCreateWithUTF8Bytes("rob")).get())).get())), "robot robust");

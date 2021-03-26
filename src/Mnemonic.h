@@ -13,9 +13,12 @@ namespace TW {
 /// BIP39 Mnemonic Sentence handling.
 class Mnemonic {
 public:
-    /// Determines if a mnemonic phrase is valid.
+    /// Determines whether a mnemonic phrase is valid.
     // E.g. for a valid mnemonic: "credit expect life fade cover suit response wash pear what skull force"
     static bool isValid(const std::string& mnemonic);
+
+    /// Determines whether word is a valid menemonic word.
+    static bool isWordValid(const std::string& word);
 
     /// Return BIP39 English words that match the given prefix.
     // - A single string is returned, with space-separated list of words (or single word or empty string)

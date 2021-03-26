@@ -14,6 +14,10 @@ bool TWMnemonicIsValid(TWString *_Nonnull mnemonic) {
     return Mnemonic::isValid(TWStringUTF8Bytes(mnemonic));
 }
 
+bool TWMnemonicIsWordValid(TWString *_Nonnull word) {
+    return Mnemonic::isWordValid(TWStringUTF8Bytes(word));
+}
+
 TWString* _Nonnull TWMnemonicSuggest(TWString *_Nonnull prefix) {
     auto result = Mnemonic::suggest(std::string(TWStringUTF8Bytes(prefix)));
     return TWStringCreateWithUTF8Bytes(result.c_str());

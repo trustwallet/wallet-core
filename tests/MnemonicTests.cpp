@@ -51,6 +51,16 @@ TEST(Mnemonic, invalid) {
     }
 }
 
+TEST(Mnemonic, isWordValid) {
+    EXPECT_TRUE(Mnemonic::isWordValid("credit"));
+    EXPECT_TRUE(Mnemonic::isWordValid("airport"));
+    EXPECT_TRUE(Mnemonic::isWordValid("robot"));
+
+    EXPECT_FALSE(Mnemonic::isWordValid("hybridous"));
+    EXPECT_FALSE(Mnemonic::isWordValid("CREDIT"));
+    EXPECT_FALSE(Mnemonic::isWordValid("credit  "));
+}
+
 TEST(Mnemonic, suggest) {
     EXPECT_EQ(Mnemonic::suggest("air"), "air airport");
     EXPECT_EQ(Mnemonic::suggest("AIR"), "air airport");

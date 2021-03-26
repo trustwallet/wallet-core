@@ -8,6 +8,7 @@
 
 #include <TrezorCrypto/bip39.h>
 
+#include <string.h>
 #include <string>
 #include <vector>
 #include <cassert>
@@ -18,6 +19,17 @@ const int Mnemonic::SuggestMaxCount = 10;
 
 bool Mnemonic::isValid(const std::string& mnemonic) {
     return mnemonic_check(mnemonic.c_str()) != 0;
+}
+
+bool Mnemonic::isWordValid(const std::string& word) {
+    const char* wordC = word.c_str();
+    for (const char* const* w = mnemonic_wordlist(); *w != nullptr; ++w) {
+        if (strncmp(*w, wordC, word.length()) == 0) {
+            return true;
+        }
+    }
+    // not found
+    return false;
 }
 
 std::string Mnemonic::suggest(const std::string& prefix) {

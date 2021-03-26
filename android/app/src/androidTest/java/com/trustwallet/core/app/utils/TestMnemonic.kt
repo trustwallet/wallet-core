@@ -19,6 +19,12 @@ class TestMnemonic {
     }
 
     @Test
+    fun testIsWordValid() {
+        assertTrue(Mnemonic.isWordValid("credit"));
+        assertFalse(Mnemonic.isWordValid("hybridous"));
+    }
+
+    @Test
     fun testSuggest() {
         assertEquals(Mnemonic.suggest("air"), "air airport")
         assertEquals(Mnemonic.suggest("rob"), "robot robust")
