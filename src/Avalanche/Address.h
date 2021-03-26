@@ -18,8 +18,8 @@ namespace TW::Avalanche {
 class Address : public Bech32Address {
 private:
     void extractKeyHashFromString (const std::string& string);
-    static const size_t hashLen;
 public:
+    static const size_t hashLen;
     static const std::string hrp;
 
     static bool isValid(const std::string& addr);
