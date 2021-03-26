@@ -15,6 +15,14 @@
 
 namespace TW::Avalanche {
 
+enum TransactionTypeID {
+  Base = 0,
+  CreateAsset = 1,
+  Operation = 2, 
+  Import = 3,
+  Export = 4
+};
+
 class BaseTransaction {
   public:
     uint32_t TypeID;
@@ -47,7 +55,7 @@ class UnsignedCreateAssetTransaction : public BaseTransaction {
 
     UnsignedCreateAssetTransaction(uint32_t networkID, Data &blockchainID, std::vector<TransferableInput> &inputs, std::vector<TransferableOutput> &outputs, Data &memo, 
       std::string &name, std::string &symbol, uint8_t denomination, std::vector<InitialState> &states)
-      : BaseTransaction(1, networkID, blockchainID, inputs, outputs, memo), 
+      : BaseTransaction(TransactionTypeID::CreateAsset, networkID, blockchainID, inputs, outputs, memo), 
       Name(name), Symbol(symbol), Denomination(denomination), InitialStates(states) {
         std::sort(InitialStates.begin(), InitialStates.end());
       }
@@ -56,6 +64,7 @@ class UnsignedCreateAssetTransaction : public BaseTransaction {
       : BaseTransaction(baseTxn), 
       Name(name), Symbol(symbol), Denomination(denomination), InitialStates(states) {
         std::sort(InitialStates.begin(), InitialStates.end());
+        TypeID = TransactionTypeID::CreateAsset;
       }
 };
 
@@ -67,7 +76,7 @@ class UnsignedOperationTransaction : public BaseTransaction {
 
     UnsignedOperationTransaction(uint32_t networkID, Data &blockchainID, std::vector<TransferableInput> &inputs, std::vector<TransferableOutput> &outputs, Data &memo, 
       std::vector<TransferableOp> &ops)
-      : BaseTransaction(2, networkID, blockchainID, inputs, outputs, memo), 
+      : BaseTransaction(TransactionTypeID::Operation, networkID, blockchainID, inputs, outputs, memo), 
       Operations(ops) {
         std::sort(Operations.begin(), Operations.end());
       }
@@ -75,6 +84,7 @@ class UnsignedOperationTransaction : public BaseTransaction {
     UnsignedOperationTransaction(BaseTransaction &baseTxn, std::vector<TransferableOp> &ops)
     : BaseTransaction(baseTxn), Operations(ops) {
       std::sort(Operations.begin(), Operations.end());
+      TypeID = TransactionTypeID::Operation;
     }
 };
 
@@ -87,7 +97,7 @@ class UnsignedImportTransaction : public BaseTransaction {
 
     UnsignedImportTransaction(uint32_t networkID, Data &blockchainID, std::vector<TransferableInput> &inputs, std::vector<TransferableOutput> &outputs, Data &memo, 
       Data &source, std::vector<TransferableInput> &importInputs)
-      : BaseTransaction(3, networkID, blockchainID, inputs, outputs, memo), 
+      : BaseTransaction(TransactionTypeID::Import, networkID, blockchainID, inputs, outputs, memo), 
       SourceChain(source), ImportInputs(importInputs) {
         std::sort(ImportInputs.begin(), ImportInputs.end());
       }
@@ -95,6 +105,7 @@ class UnsignedImportTransaction : public BaseTransaction {
     UnsignedImportTransaction(BaseTransaction &baseTxn, Data &source, std::vector<TransferableInput> importInputs)
       : BaseTransaction(baseTxn), SourceChain(source), ImportInputs(importInputs) {
         std::sort(ImportInputs.begin(), ImportInputs.end());
+        TypeID = TransactionTypeID::Import;
       }
 };
 
@@ -107,7 +118,7 @@ class UnsignedExportTransaction : public BaseTransaction {
 
     UnsignedExportTransaction(uint32_t networkID, Data &blockchainID, std::vector<TransferableInput> &inputs, std::vector<TransferableOutput> &outputs, Data &memo, 
       Data &dest, std::vector<TransferableOutput> &exportOutputs)
-      : BaseTransaction(3, networkID, blockchainID, inputs, outputs, memo), 
+      : BaseTransaction(TransactionTypeID::Export, networkID, blockchainID, inputs, outputs, memo), 
       DestinationChain(dest), ExportOutputs(exportOutputs) {
         std::sort(ExportOutputs.begin(), ExportOutputs.end());
       }
@@ -115,6 +126,7 @@ class UnsignedExportTransaction : public BaseTransaction {
     UnsignedExportTransaction(BaseTransaction &baseTxn, Data &dest, std::vector<TransferableOutput> &exportOutputs)
       : BaseTransaction(baseTxn), DestinationChain(dest), ExportOutputs(exportOutputs) {
         std::sort(ExportOutputs.begin(), ExportOutputs.end());
+        TypeID = TransactionTypeID::Export;
       }
 };
 

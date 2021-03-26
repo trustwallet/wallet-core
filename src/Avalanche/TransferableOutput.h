@@ -12,6 +12,13 @@
 
 namespace TW::Avalanche {
 
+enum TransactionOutputTypeID {
+  SECPTransfer = 7,
+  SECPMint = 6,
+  NFTTransfer = 11,
+  NFTMint = 10
+};
+
 class TransactionOutput {
   public:
     /// Encodes the output into the provided buffer.
@@ -52,7 +59,7 @@ class TransferableOutput {
 
 
 class SECP256k1TransferOutput : public TransactionOutput {
-  const uint32_t typeID = 7;
+  const uint32_t typeID = TransactionOutputTypeID::SECPTransfer;
   
   public:
     uint64_t Amount;
@@ -76,7 +83,7 @@ class SECP256k1TransferOutput : public TransactionOutput {
 
 
 class SECP256k1MintOutput : public TransactionOutput {
-  const uint32_t typeID = 6;
+  const uint32_t typeID = TransactionOutputTypeID::SECPMint;
   
   public:
     uint64_t Locktime;
@@ -97,7 +104,7 @@ class SECP256k1MintOutput : public TransactionOutput {
 };
 
 class NFTTransferOutput : public TransactionOutput {
-  const uint32_t typeID = 11;
+  const uint32_t typeID = TransactionOutputTypeID::NFTTransfer;
   
   public:
     uint32_t GroupID;
@@ -121,7 +128,7 @@ class NFTTransferOutput : public TransactionOutput {
 };
 
 class NFTMintOutput : public TransactionOutput {
-  const uint32_t typeID = 10;
+  const uint32_t typeID = TransactionOutputTypeID::NFTMint;
   
   public:
     uint32_t GroupID;

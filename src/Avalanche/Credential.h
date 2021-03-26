@@ -7,8 +7,14 @@
 #pragma once
 #include "../Data.h"
 
+
 namespace TW::Avalanche {
 
+    enum CredentialTypeID {
+      SECP = 9,
+      NFT = 14
+    };
+    
     class Credential {
       public: 
         uint32_t TypeID;
@@ -27,13 +33,13 @@ namespace TW::Avalanche {
     class SECP256k1Credential : public Credential {
       public:
         SECP256k1Credential(std::vector<Data> &sigs)
-        : Credential(9, sigs) {}
+        : Credential(CredentialTypeID::SECP, sigs) {}
     };
 
     class NFTCredential : public Credential {
       public:
         NFTCredential(std::vector<Data> &sigs)
-        : Credential(14, sigs) {}
+        : Credential(CredentialTypeID::NFT, sigs) {}
     };
 
 } // namespace TW::Avalanche

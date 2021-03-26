@@ -12,6 +12,10 @@
 
 namespace TW::Avalanche {
 
+enum TransactionInputTypeID {
+  SECP = 5
+};
+
 class TransactionInput{
   public: 
     virtual std::vector<uint32_t> getAddressIndices() const = 0;
@@ -58,7 +62,7 @@ class TransferableInput {
 
 
 class SECP256k1TransferInput : public TransactionInput {
-    uint32_t TypeID = 5; 
+    uint32_t TypeID = TransactionInputTypeID::SECP; 
     uint64_t Amount;
     std::vector<uint32_t> AddressIndices;
   
