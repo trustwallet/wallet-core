@@ -21,6 +21,9 @@ bool Address::isValid(const std::string& string) {
     if (hyphenPos == std::string::npos) {
         return false;
     }
+    if (hyphenPos == 0) {
+        return false;
+    }
     auto chainID = string.substr(hyphenPos - 1, 1);
     // compare before-hyphen with 'X' stringcompare (make it smarter later)
     if (chainID != "X") {
