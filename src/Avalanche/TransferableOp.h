@@ -14,9 +14,9 @@
 namespace TW::Avalanche {
 
 enum OperationTypeID {
-  SECPMint = 8,
-  NFTMint = 12,
-  NFTTransfer = 13
+  SECPMintOp = 8,
+  NFTMintOp = 12,
+  NFTTransferOp = 13
 };
 
 class TransactionOp {
@@ -67,7 +67,7 @@ class TransferableOp {
 
 class SECP256k1MintOperation : public TransactionOp {
   private:
-    uint32_t typeID = OperationTypeID::SECPMint;
+    uint32_t typeID = OperationTypeID::SECPMintOp;
   public: 
     std::vector<uint32_t> AddressIndices;
     SECP256k1MintOutput MintOutput;
@@ -88,7 +88,7 @@ class SECP256k1MintOperation : public TransactionOp {
 
 class NFTMintOperation : public TransactionOp {
   private:
-    uint32_t typeID = OperationTypeID::NFTMint;
+    uint32_t typeID = OperationTypeID::NFTMintOp;
     std::vector<Output> Outputs; 
   public: 
     std::vector<uint32_t> AddressIndices;
@@ -111,7 +111,7 @@ class NFTMintOperation : public TransactionOp {
 
 class NFTTransferOperation : public TransactionOp {
   private:
-    uint32_t typeID = OperationTypeID::NFTTransfer;
+    uint32_t typeID = OperationTypeID::NFTTransferOp;
   public: 
     std::vector<uint32_t> AddressIndices;
     NFTTransferOutput TransferOutput;

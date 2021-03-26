@@ -11,8 +11,8 @@
 namespace TW::Avalanche {
 
     enum CredentialTypeID {
-      SECP = 9,
-      NFT = 14
+      SECPCred = 9,
+      NFTCred = 14
     };
     
     class Credential {
@@ -33,13 +33,13 @@ namespace TW::Avalanche {
     class SECP256k1Credential : public Credential {
       public:
         SECP256k1Credential(std::vector<Data> &sigs)
-        : Credential(CredentialTypeID::SECP, sigs) {}
+        : Credential(CredentialTypeID::SECPCred, sigs) {}
     };
 
     class NFTCredential : public Credential {
       public:
         NFTCredential(std::vector<Data> &sigs)
-        : Credential(CredentialTypeID::NFT, sigs) {}
+        : Credential(CredentialTypeID::NFTCred, sigs) {}
     };
 
 } // namespace TW::Avalanche
