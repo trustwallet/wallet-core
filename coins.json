@@ -1519,7 +1519,7 @@
     },
     "deprecated": true
   },
-   {
+  {
     "id": "smartchain",
     "name": "Smart Chain",
     "coinId": 20000714,
@@ -1544,10 +1544,10 @@
       "clientDocs": "https://eth.wiki/json-rpc/API"
     }
   },
-   {
+  {
     "id": "avalanchex",
     "name": "Avalanche X Chain",
-    "coinId": 31337,
+    "coinId": 9000,
     "symbol": "AVAX", 
     "decimals": 9,
     "hrp": "avax",
@@ -1572,7 +1572,7 @@
   {
     "id": "avalanchec",
     "name": "Avalanche C Chain",
-    "coinId": 31338,
+    "coinId": 10009000,
     "symbol": "AVAX",
     "decimals": 18,
     "blockchain": "Ethereum",
@@ -1582,8 +1582,10 @@
     "explorer": {
       "url": "https://cchain.explorer.avax.network/",
       "txPath": "/tx/",
-      "accountPath": "/address/"
-   },
+      "accountPath": "/address/",
+      "sampleTx": "0x9243890b844219accefd8798271052f5a056453ec18984a56e81c92921330d54",
+      "sampleAccount": "0xa664325f36Ec33E66323fe2620AF3f2294b2Ef3A"
+  },
    "info": {
     "url": "https://www.avalabs.org/",
     "client": "https://github.com/ava-labs/avalanchego",
@@ -1591,4 +1593,4 @@
     "clientDocs": "https://docs.avax.network/"
    }
   }
- ]
+]
