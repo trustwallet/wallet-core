@@ -7,7 +7,6 @@
 #include "Mnemonic.h"
 
 #include <TrezorCrypto/bip39.h>
-#include <TrezorCrypto/bip39_english.h>
 
 #include <string>
 #include <vector>
@@ -33,7 +32,7 @@ std::string Mnemonic::suggest(const std::string& prefix) {
     const char* prefixLoC = prefixLo.c_str();
 
     std::vector<std::string> result;
-    for (const char* const* word = wordlist; *word != nullptr; ++word) {
+    for (const char* const* word = mnemonic_wordlist(); *word != nullptr; ++word) {
         // check first letter match (optimization)
         if ((*word)[0] == prefixLo[0]) {
             if (strncmp(*word, prefixLoC, prefixLo.length()) == 0) {

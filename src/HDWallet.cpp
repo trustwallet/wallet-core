@@ -16,7 +16,6 @@
 #include <TrezorCrypto/bip32.h>
 #include <TrezorCrypto/bip39.h>
 #include <TrezorCrypto/curves.h>
-#include <TrezorCrypto/bip39_english.h>
 
 #include <array>
 
