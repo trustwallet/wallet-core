@@ -47,24 +47,24 @@ TEST(AvalancheSigner, SignWithLocktimeThreshold) {
     auto addressesInOne = std::vector<uint32_t>{3, 7};
     auto txidOne = parse_hex("0xf1e1d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000");
     auto utxoIndexOne = 5;
-    auto coreInputOne = new SECP256k1TransferInput(123456789, addressesInOne);
-    auto inputOne = TransferableInput(txidOne, utxoIndexOne, assetID, coreInputOne, spendableAddresses);
+    auto coreInputOne = std::make_unique<SECP256k1TransferInput>(123456789, addressesInOne);
+    auto inputOne = TransferableInput(txidOne, utxoIndexOne, assetID, std::move(coreInputOne), spendableAddresses);
 
     auto addressesInTwo = std::vector<uint32_t>{3, 7};
     auto txidTwo = parse_hex("0xf1e1d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000");
     auto utxoIndexTwo = 5;
-    auto coreInputTwo = new SECP256k1TransferInput(123456789, addressesInTwo);
-    auto inputTwo = TransferableInput(txidTwo, utxoIndexTwo, assetID, coreInputTwo, spendableAddresses);
+    auto coreInputTwo = std::make_unique<SECP256k1TransferInput>(123456789, addressesInTwo);
+    auto inputTwo = TransferableInput(txidTwo, utxoIndexTwo, assetID, std::move(coreInputTwo), spendableAddresses);
     
     auto inputs = std::vector<TransferableInput>{inputOne, inputTwo};
 
     auto addressesOutOne = std::vector<Address>{addressOne};
-    auto coreOutputOne = new SECP256k1TransferOutput(12345, 54321, threshold, addressesOutOne);
-    auto outputOne = TransferableOutput(assetID, coreOutputOne);
+    auto coreOutputOne = std::make_unique<SECP256k1TransferOutput>(12345, 54321, threshold, addressesOutOne);
+    auto outputOne = TransferableOutput(assetID, std::move(coreOutputOne));
 
     auto addressesOutTwo = std::vector<Address>{addressOne};
-    auto coreOutputTwo = new SECP256k1TransferOutput(amount, locktime, threshold, addressesOutTwo);
-    auto outputTwo = TransferableOutput(assetID, coreOutputTwo);
+    auto coreOutputTwo = std::make_unique<SECP256k1TransferOutput>(amount, locktime, threshold, addressesOutTwo);
+    auto outputTwo = TransferableOutput(assetID, std::move(coreOutputTwo));
 
     auto outputs = std::vector<TransferableOutput>{outputOne, outputTwo};
 

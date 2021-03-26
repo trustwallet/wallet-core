@@ -22,7 +22,7 @@ class TransactionInput{
     virtual uint32_t getTypeID() const = 0;
     virtual void encode (Data& data) const = 0; //we want to enforce that all subclasses can encode
     virtual ~TransactionInput() {}
-    virtual TransactionInput* duplicate() = 0;
+    virtual std::unique_ptr<TransactionInput> duplicate() = 0;
   protected:
     TransactionInput() {}
 };
@@ -33,14 +33,14 @@ class TransferableInput {
     Data TxID;
     uint32_t UTXOIndex;
     Data AssetID;
-    TransactionInput* Input;
+    std::unique_ptr<TransactionInput> Input;
     std::vector<Address> SpendableAddresses; // corresponding to the Output this came from. not encoded
 
     /// Encodes the input into the provided buffer.
     void encode(Data& data) const;
 
-    TransferableInput(Data &txid, uint32_t utxoIndex, Data &assetID, TransactionInput *input, std::vector<Address> &spendableAddresses)
-        : TxID(txid) , UTXOIndex(utxoIndex), AssetID(assetID), Input(input), SpendableAddresses(spendableAddresses)
+    TransferableInput(Data &txid, uint32_t utxoIndex, Data &assetID, std::unique_ptr<TransactionInput> input, std::vector<Address> &spendableAddresses)
+        : TxID(txid) , UTXOIndex(utxoIndex), AssetID(assetID), Input(std::move(input)), SpendableAddresses(spendableAddresses)
          {
            std::sort(SpendableAddresses.begin(), SpendableAddresses.end());
          }
@@ -56,8 +56,6 @@ class TransferableInput {
     bool operator<(const TransferableInput& other) const;
 
     TransferableInput& operator=(const TransferableInput& other);
-
-    ~TransferableInput();
 };
 
 
@@ -79,8 +77,8 @@ class SECP256k1TransferInput : public TransactionInput {
     std::vector<uint32_t> getAddressIndices() const {return AddressIndices;}
     uint32_t getTypeID() const {return TypeID;}
 
-    TransactionInput* duplicate() {
-      auto dup = new SECP256k1TransferInput(Amount, AddressIndices);
+    std::unique_ptr<TransactionInput> duplicate() {
+      auto dup = std::make_unique<SECP256k1TransferInput>(Amount, AddressIndices);
       return dup;
     }
 };

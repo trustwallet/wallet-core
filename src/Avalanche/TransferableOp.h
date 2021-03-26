@@ -24,7 +24,7 @@ class TransactionOp {
     /// Encodes the op into the provided buffer.
     virtual void encode(Data& data) const = 0;  //we want to enforce that all subclasses can encode
     virtual ~TransactionOp(){}
-    virtual TransactionOp* duplicate() = 0;
+    virtual std::unique_ptr<TransactionOp> duplicate() = 0;
   protected:
     TransactionOp(){}
 };
@@ -40,13 +40,13 @@ class TransferableOp {
     static bool sortUTXOIDs(UTXOID lhs, UTXOID rhs);
   public:
     Data AssetID;
-    TransactionOp* TransferOp;
+    std::unique_ptr<TransactionOp> TransferOp;
 
     /// Encodes the op into the provided buffer.
     void encode(Data& data) const;
 
-    TransferableOp(Data &assetID, std::vector<UTXOID> &utxoIDs, TransactionOp *transferOp)
-      : AssetID(assetID), UTXOIDs(utxoIDs), TransferOp(transferOp) {
+    TransferableOp(Data &assetID, std::vector<UTXOID> &utxoIDs, std::unique_ptr<TransactionOp> transferOp)
+      : AssetID(assetID), UTXOIDs(utxoIDs), TransferOp(std::move(transferOp)) {
         std::sort(UTXOIDs.begin(), UTXOIDs.end(), sortUTXOIDs);
       }
 
@@ -61,7 +61,6 @@ class TransferableOp {
 
     TransferableOp& operator=(const TransferableOp& other);
     
-    ~TransferableOp();
 };
 
 
@@ -80,8 +79,8 @@ class SECP256k1MintOperation : public TransactionOp {
 
     void encode (Data& data) const;
 
-    TransactionOp* duplicate() {
-      auto dup = new SECP256k1MintOperation(AddressIndices, MintOutput, TransferOutput);
+    std::unique_ptr<TransactionOp> duplicate() {
+      auto dup = std::make_unique<SECP256k1MintOperation>(AddressIndices, MintOutput, TransferOutput);
       return dup;
     }
 };
@@ -103,8 +102,8 @@ class NFTMintOperation : public TransactionOp {
 
     void encode (Data& data) const;
 
-    TransactionOp* duplicate() {
-      auto dup = new NFTMintOperation(AddressIndices, GroupID, Payload, Outputs);
+    std::unique_ptr<TransactionOp> duplicate() {
+      auto dup = std::make_unique<NFTMintOperation>(AddressIndices, GroupID, Payload, Outputs);
       return dup;
     }
 };
@@ -124,8 +123,8 @@ class NFTTransferOperation : public TransactionOp {
 
     void encode (Data& data) const;
 
-    TransactionOp* duplicate() {
-      auto dup = new NFTTransferOperation(AddressIndices, TransferOutput);
+    std::unique_ptr<TransactionOp> duplicate() {
+      auto dup = std::make_unique<NFTTransferOperation>(AddressIndices, TransferOutput);
       return dup;
     }
 };

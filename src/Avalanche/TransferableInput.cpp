@@ -41,8 +41,6 @@ TransferableInput& TransferableInput::operator=(const TransferableInput &other) 
     if (this == &other) {
         return *this;
     } else {
-        // clean up pointer data members
-        delete Input;
         // assign members
         TxID = other.TxID;
         UTXOIndex = other.UTXOIndex;
@@ -51,11 +49,6 @@ TransferableInput& TransferableInput::operator=(const TransferableInput &other) 
         SpendableAddresses = other.SpendableAddresses;
         return *this;
     }
-}
-
-TransferableInput::~TransferableInput() {
-    // clean up pointer data members
-    delete Input;
 }
 
 void SECP256k1TransferInput::encode(Data& data) const {

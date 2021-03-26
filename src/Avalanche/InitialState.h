@@ -14,21 +14,19 @@ namespace TW::Avalanche {
       public: 
         enum FeatureExtension {SECP256k1 = 0, NFT = 1};
         FeatureExtension FxID;
-        std::vector<TransactionOutput*> Outputs;
+        std::vector<std::unique_ptr<TransactionOutput>> Outputs;
         
-        InitialState(FeatureExtension fxid, std::vector<TransactionOutput*> outputs)
-         : FxID(fxid) {
-          Outputs = outputs;
+        InitialState(FeatureExtension fxid, std::vector<std::unique_ptr<TransactionOutput>> outputs)
+         : FxID(fxid), Outputs(std::move(outputs)) {
           std::sort(Outputs.begin(), Outputs.end());
          }
 
         InitialState(const InitialState &other) {
           FxID = other.FxID;
-          std::vector<TransactionOutput*> outputs;
-          for (auto output : other.Outputs) {
-            outputs.push_back(output->duplicate());
+          Outputs.clear();
+          for (auto &output : other.Outputs) {
+            Outputs.push_back(output->duplicate());
           }
-          Outputs = outputs;
           std::sort(Outputs.begin(), Outputs.end());          
         }
 
@@ -38,7 +36,5 @@ namespace TW::Avalanche {
         void encode(Data& data) const;
 
         bool operator<(const InitialState& other) const;
-
-        ~InitialState();
     };
 } // namespace TW::Avalanche

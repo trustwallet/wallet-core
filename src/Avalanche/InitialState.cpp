@@ -13,7 +13,7 @@ using namespace TW::Avalanche;
 void InitialState::encode(Data& data) const {
     encode32BE(FxID, data);
     encode32BE(Outputs.size(), data);
-    for (auto output : Outputs) {
+    for (auto &output : Outputs) {
         output->encode(data);
     }
 }
@@ -31,24 +31,12 @@ InitialState& InitialState::operator=(const InitialState &other) {
     if (this == &other) {
         return *this;
     }
-    // clean up pointer data members
-    for (auto output : Outputs) {
-        delete output;
-    }
     // assign members
     FxID = other.FxID;
-    std::vector<TransactionOutput*> outputs;
-    for (auto output : other.Outputs) {
-    outputs.push_back(output->duplicate());
+    Outputs.clear();
+    for (auto &output : other.Outputs) {
+        Outputs.push_back(output->duplicate());
     }
-    Outputs = outputs;
     std::sort(Outputs.begin(), Outputs.end());
     return *this;
-}
-
-InitialState::~InitialState() {
-    // clean up pointer data members
-    for (auto output : Outputs) {
-        delete output;
-    }
 }

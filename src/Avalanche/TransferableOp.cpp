@@ -44,8 +44,6 @@ TransferableOp& TransferableOp::operator=(const TransferableOp &other) {
     if (this == &other) {
         return *this;
     } else {
-        // clean up pointer data members
-        delete TransferOp;
         // assign members
         UTXOIDs = other.UTXOIDs;
         std::sort(UTXOIDs.begin(), UTXOIDs.end(), sortUTXOIDs);
@@ -53,11 +51,6 @@ TransferableOp& TransferableOp::operator=(const TransferableOp &other) {
         TransferOp = other.TransferOp->duplicate();
         return *this;
     }
-}
-
-TransferableOp::~TransferableOp() {
-    // clean up pointer data members
-    delete TransferOp;
 }
 
 void SECP256k1MintOperation::encode(Data& data) const {

@@ -39,18 +39,11 @@ TransferableOutput& TransferableOutput::operator=(const TransferableOutput &othe
     if (this == &other) {
         return *this;
     } else {
-        // clean up pointer data members
-        delete Output;
         // assign members
         AssetID = other.AssetID;
         Output = other.Output->duplicate();
         return *this;
     }
-}
-
-TransferableOutput::~TransferableOutput() {
-    // clean up pointer data members
-    delete Output;
 }
       
 
