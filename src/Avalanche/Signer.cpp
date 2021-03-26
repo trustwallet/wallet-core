@@ -322,7 +322,7 @@ Data Signer::sign(const std::vector<PrivateKey>& privateKeys, BaseTransaction& t
     auto msgBytes = Hash::sha256(transactionBytes);
     std::vector<Credential> credentials;
     for (auto &input : transaction.Inputs) {
-        if (input.Input->getTypeID() == 5) {
+        if (input.Input->getTypeID() == TransactionInputTypeID::SECPInput) {
             //secp input, make an SECP credential
             std::vector<Data> sigs;
             for (auto &sigidx: input.Input->getAddressIndices()) { 
