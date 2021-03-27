@@ -9,8 +9,8 @@ import XCTest
 
 class MnemonicTests: XCTestCase {
     func testIsValid() {
-        XCTAssertTrue(Mnemonic.isValid(mnemonic: "credit expect life fade cover suit response wash pear what skull force"));
-        XCTAssertFalse(Mnemonic.isValid(mnemonic: "ripple scissors hisc mammal hire column oak again sun offer wealth tomorrow"));
+        XCTAssertTrue(Mnemonic.isValid(mnemonic: "credit expect life fade cover suit response wash pear what skull force"))
+        XCTAssertFalse(Mnemonic.isValid(mnemonic: "ripple scissors hisc mammal hire column oak again sun offer wealth tomorrow"))
     }
 
     func testValidate() {
@@ -26,8 +26,8 @@ class MnemonicTests: XCTestCase {
     }
 
     func testIsWordValid() {
-        XCTAssertTrue(Mnemonic.isValidWord(word: "credit"));
-        XCTAssertFalse(Mnemonic.isValidWord(word: "hybridous"));
+        XCTAssertTrue(Mnemonic.isValidWord(word: "credit"))
+        XCTAssertFalse(Mnemonic.isValidWord(word: "hybridous"))
     }
 
     func testSuggest() {
