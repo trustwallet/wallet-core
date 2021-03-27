@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,10 +12,10 @@
 #include "Bitcoin/CashAddress.h"
 #include "Coin.h"
 
+#include <TrustWalletCore/TWHRP.h>
 #include <TrezorCrypto/bip32.h>
 #include <TrezorCrypto/bip39.h>
 #include <TrezorCrypto/curves.h>
-#include <TrustWalletCore/TWHRP.h>
 
 #include <array>
 
@@ -31,10 +31,6 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve);
 
 const char* curveName(TWCurve curve);
 } // namespace
-
-bool HDWallet::isValid(const std::string& mnemonic) {
-    return mnemonic_check(mnemonic.c_str()) != 0;
-}
 
 HDWallet::HDWallet(int strength, const std::string& passphrase)
     : seed(), mnemonic(), passphrase(passphrase) {
