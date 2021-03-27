@@ -13,9 +13,21 @@ class MnemonicTests: XCTestCase {
         XCTAssertFalse(Mnemonic.isValid(mnemonic: "ripple scissors hisc mammal hire column oak again sun offer wealth tomorrow"));
     }
 
+    func testValidate() {
+        let words = "credit expect life3 fade cover suit response wash8 pear what skull force"
+            .split(separator: " ")
+            .map { String($0) }
+
+        let result = Mnemonic.validate(mnemonic: words)
+
+        XCTAssertEqual(result.count, 2)
+        XCTAssertEqual(result[0].word, "life3")
+        XCTAssertEqual(result[1].index, 7)
+    }
+
     func testIsWordValid() {
-        XCTAssertTrue(Mnemonic.isWordValid(mnemonic: "credit"));
-        XCTAssertFalse(Mnemonic.isWordValid(mnemonic: "hybridous"));
+        XCTAssertTrue(Mnemonic.isValidWord(word: "credit"));
+        XCTAssertFalse(Mnemonic.isValidWord(word: "hybridous"));
     }
 
     func testSuggest() {

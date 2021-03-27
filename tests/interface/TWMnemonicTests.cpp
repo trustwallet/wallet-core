@@ -14,8 +14,8 @@ TEST(TWMnemonic, IsValid) {
 }
 
 TEST(TWMnemonic, isWordValid) {
-    EXPECT_TRUE(TWMnemonicIsWordValid(STRING("credit").get()));
-    EXPECT_FALSE(TWMnemonicIsWordValid(STRING("hybridous").get()));
+    EXPECT_TRUE(TWMnemonicIsValidWord(STRING("credit").get()));
+    EXPECT_FALSE(TWMnemonicIsValidWord(STRING("hybridous").get()));
 }
 
 TEST(TWMnemonic, suggest) {

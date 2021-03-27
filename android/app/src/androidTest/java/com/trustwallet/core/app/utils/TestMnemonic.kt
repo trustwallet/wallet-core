@@ -20,8 +20,8 @@ class TestMnemonic {
 
     @Test
     fun testIsWordValid() {
-        assertTrue(Mnemonic.isWordValid("credit"));
-        assertFalse(Mnemonic.isWordValid("hybridous"));
+        assertTrue(Mnemonic.isValidWord("credit"));
+        assertFalse(Mnemonic.isValidWord("hybridous"));
     }
 
     @Test
