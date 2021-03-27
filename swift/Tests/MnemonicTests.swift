@@ -31,7 +31,7 @@ class MnemonicTests: XCTestCase {
     }
 
     func testSuggest() {
-        XCTAssertEqual(Mnemonic.suggest(prefix: "air"), "air airport")
-        XCTAssertEqual(Mnemonic.suggest(prefix: "rob"), "robot robust")
+        XCTAssertEqual(Mnemonic.search(prefix: "air"), ["air", "airport"])
+        XCTAssertEqual(Mnemonic.search(prefix: "rob"), ["robot", "robust"])
     }
 }
