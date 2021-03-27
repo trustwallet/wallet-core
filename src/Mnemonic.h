@@ -18,7 +18,7 @@ public:
     static bool isValid(const std::string& mnemonic);
 
     /// Determines whether word is a valid menemonic word.
-    static bool isWordValid(const std::string& word);
+    static bool isValidWord(const std::string& word);
 
     /// Return BIP39 English words that match the given prefix.
     // - A single string is returned, with space-separated list of words (or single word or empty string)

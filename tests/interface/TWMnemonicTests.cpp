@@ -13,7 +13,7 @@ TEST(TWMnemonic, IsValid) {
     EXPECT_FALSE(TWMnemonicIsValid(STRING("ripple scissors hisc mammal hire column oak again sun offer wealth tomorrow").get())); // invalid word
 }
 
-TEST(TWMnemonic, isWordValid) {
+TEST(TWMnemonic, isValidWord) {
     EXPECT_TRUE(TWMnemonicIsValidWord(STRING("credit").get()));
     EXPECT_FALSE(TWMnemonicIsValidWord(STRING("hybridous").get()));
 }

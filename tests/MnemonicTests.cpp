@@ -51,14 +51,14 @@ TEST(Mnemonic, invalid) {
     }
 }
 
-TEST(Mnemonic, isWordValid) {
-    EXPECT_TRUE(Mnemonic::isWordValid("credit"));
-    EXPECT_TRUE(Mnemonic::isWordValid("airport"));
-    EXPECT_TRUE(Mnemonic::isWordValid("robot"));
+TEST(Mnemonic, isValidWord) {
+    EXPECT_TRUE(Mnemonic::isValidWord("credit"));
+    EXPECT_TRUE(Mnemonic::isValidWord("airport"));
+    EXPECT_TRUE(Mnemonic::isValidWord("robot"));
 
-    EXPECT_FALSE(Mnemonic::isWordValid("hybridous"));
-    EXPECT_FALSE(Mnemonic::isWordValid("CREDIT"));
-    EXPECT_FALSE(Mnemonic::isWordValid("credit  "));
+    EXPECT_FALSE(Mnemonic::isValidWord("hybridous"));
+    EXPECT_FALSE(Mnemonic::isValidWord("CREDIT"));
+    EXPECT_FALSE(Mnemonic::isValidWord("credit  "));
 }
 
 TEST(Mnemonic, suggest) {

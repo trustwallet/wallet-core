@@ -15,7 +15,7 @@ bool TWMnemonicIsValid(TWString *_Nonnull mnemonic) {
 }
 
 bool TWMnemonicIsValidWord(TWString *_Nonnull word) {
-    return Mnemonic::isWordValid(TWStringUTF8Bytes(word));
+    return Mnemonic::isValidWord(TWStringUTF8Bytes(word));
 }
 
 TWString* _Nonnull TWMnemonicSuggest(TWString *_Nonnull prefix) {
