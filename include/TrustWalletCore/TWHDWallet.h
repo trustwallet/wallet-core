@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -21,7 +21,7 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_CLASS
 struct TWHDWallet;
 
-/// Determines if a mnemonic phrase is valid.
+/// Deprecated; use TWMnemonicIsValid().  Determines if a mnemonic phrase is valid.
 TW_EXPORT_STATIC_METHOD
 bool TWHDWalletIsValid(TWString *_Nonnull mnemonic);
 
