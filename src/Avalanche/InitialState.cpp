@@ -12,7 +12,7 @@ using namespace TW::Avalanche;
 
 void InitialState::encode(Data& data) const {
     encode32BE(FxID, data);
-    encode32BE(Outputs.size(), data);
+    encode32BE(static_cast<uint32_t>(Outputs.size()), data);
     for (auto &output : Outputs) {
         output->encode(data);
     }

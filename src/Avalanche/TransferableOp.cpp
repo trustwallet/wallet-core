@@ -21,7 +21,7 @@ void TransferableOp::encode(Data& data) const {
     for (auto byte : AssetID) {
         data.push_back(byte);
     }
-    encode32BE(UTXOIDs.size(), data);
+    encode32BE(static_cast<uint32_t>(UTXOIDs.size()), data);
     for (auto utxoID : UTXOIDs) {
         for (auto byte : utxoID.first) {
             data.push_back(byte);
@@ -55,7 +55,7 @@ TransferableOp& TransferableOp::operator=(const TransferableOp &other) {
 
 void SECP256k1MintOperation::encode(Data& data) const {
     encode32BE(typeID, data);
-    encode32BE(AddressIndices.size(), data);
+    encode32BE(static_cast<uint32_t>(AddressIndices.size()), data);
     for (auto index : AddressIndices) {
         encode32BE(index, data);
     }
@@ -65,12 +65,12 @@ void SECP256k1MintOperation::encode(Data& data) const {
 
 void NFTMintOperation::encode(Data& data) const {
     encode32BE(typeID, data);
-    encode32BE(AddressIndices.size(), data);
+    encode32BE(static_cast<uint32_t>(AddressIndices.size()), data);
     for (auto index : AddressIndices) {
         encode32BE(index, data);
     }
     encode32BE(GroupID, data);
-    encode32BE(Payload.size(), data);
+    encode32BE(static_cast<uint32_t>(Payload.size()), data);
     for (auto byte : Payload) {
         data.push_back(byte);
     }
@@ -80,18 +80,18 @@ void NFTMintOperation::encode(Data& data) const {
 
 void NFTTransferOperation::encode(Data& data) const {
     encode32BE(typeID, data);
-    encode32BE(AddressIndices.size(), data);
+    encode32BE(static_cast<uint32_t>(AddressIndices.size()), data);
     for (auto index : AddressIndices) {
         encode32BE(index, data);
     }
     encode32BE(TransferOutput.GroupID, data);
-    encode32BE(TransferOutput.Payload.size(), data);
+    encode32BE(static_cast<uint32_t>(TransferOutput.Payload.size()), data);
     for (auto byte : TransferOutput.Payload) {
         data.push_back(byte);
     }
     encode64BE(TransferOutput.Locktime, data);
     encode32BE(TransferOutput.Threshold, data);
-    encode32BE(TransferOutput.Addresses.size(), data);
+    encode32BE(static_cast<uint32_t>(TransferOutput.Addresses.size()), data);
     for (auto Address : TransferOutput.Addresses) {
         for (auto byte : Address.getKeyHash()) {
             data.push_back(byte);

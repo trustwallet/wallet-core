@@ -29,12 +29,12 @@ void TW::Avalanche::SortOutputs(std::vector<Output> &outputs){
 
 // must first call SortOutputs
 void TW::Avalanche::EncodeOutputs(std::vector<Output> outputs, Data &data) {
-    TW::encode32BE(outputs.size(), data);
+    TW::encode32BE(static_cast<uint32_t>(outputs.size()), data);
     for (auto output : outputs) {
         TW::encode64BE(std::get<0>(output), data);
         TW::encode32BE(std::get<1>(output), data);
         std::vector<Address> addrs = std::get<2>(output);
-        TW::encode32BE(addrs.size(), data);
+        TW::encode32BE(static_cast<uint32_t>(addrs.size()), data);
         for (auto addr : addrs) {
             for (auto byte : addr.getKeyHash()) {
                 data.push_back(byte);

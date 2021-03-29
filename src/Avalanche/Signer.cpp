@@ -217,7 +217,7 @@ UnsignedCreateAssetTransaction buildCreateAssetTx(const Proto::SigningInput &inp
     auto baseTxn = structToBaseTx(txStruct.base_tx());
     auto name = txStruct.name();
     auto symbol = txStruct.symbol();
-    auto denomination = txStruct.denomination();
+    auto denomination = static_cast<uint8_t>(txStruct.denomination());
     std::vector<InitialState> initialStates;
     for (auto &stateStruct : txStruct.initial_states()) {
         InitialState::FeatureExtension fxID = InitialState::FeatureExtension::SECP256k1;

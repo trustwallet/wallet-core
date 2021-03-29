@@ -52,7 +52,7 @@ void SECP256k1TransferOutput::encode(Data& data) const {
     encode64BE(Amount, data);
     encode64BE(Locktime, data);
     encode32BE(Threshold, data);
-    encode32BE(Addresses.size(), data);
+    encode32BE(static_cast<uint32_t>(Addresses.size()), data);
     for (auto Address : Addresses) {
         for (auto byte : Address.getKeyHash()) {
             data.push_back(byte);
@@ -64,7 +64,7 @@ void SECP256k1MintOutput::encode(Data& data) const {
     encode32BE(typeID, data);
     encode64BE(Locktime, data);
     encode32BE(Threshold, data);
-    encode32BE(Addresses.size(), data);
+    encode32BE(static_cast<uint32_t>(Addresses.size()), data);
     for (auto Address : Addresses) {
         for (auto byte : Address.getKeyHash()) {
             data.push_back(byte);
@@ -75,13 +75,13 @@ void SECP256k1MintOutput::encode(Data& data) const {
 void NFTTransferOutput::encode(Data& data) const {
     encode32BE(typeID, data);
     encode32BE(GroupID, data);
-    encode32BE(Payload.size(), data);
+    encode32BE(static_cast<uint32_t>(Payload.size()), data);
     for (auto byte : Payload) {
         data.push_back(byte);
     }
     encode64BE(Locktime, data);
     encode32BE(Threshold, data);
-    encode32BE(Addresses.size(), data);
+    encode32BE(static_cast<uint32_t>(Addresses.size()), data);
     for (auto Address : Addresses) {
         for (auto byte : Address.getKeyHash()) {
             data.push_back(byte);
@@ -94,7 +94,7 @@ void NFTMintOutput::encode(Data& data) const {
     encode32BE(GroupID, data);
     encode64BE(Locktime, data);
     encode32BE(Threshold, data);
-    encode32BE(Addresses.size(), data);
+    encode32BE(static_cast<uint32_t>(Addresses.size()), data);
     for (auto Address : Addresses) {
         for (auto byte : Address.getKeyHash()) {
             data.push_back(byte);
