@@ -46,7 +46,7 @@ class TransferableOp {
     void encode(Data& data) const;
 
     TransferableOp(Data &assetID, std::vector<UTXOID> &utxoIDs, std::unique_ptr<TransactionOp> transferOp)
-      : AssetID(assetID), UTXOIDs(utxoIDs), TransferOp(std::move(transferOp)) {
+      : UTXOIDs(utxoIDs), AssetID(assetID), TransferOp(std::move(transferOp)) {
         std::sort(UTXOIDs.begin(), UTXOIDs.end(), sortUTXOIDs);
       }
 
@@ -95,7 +95,7 @@ class NFTMintOperation : public TransactionOp {
     Data Payload;
 
     NFTMintOperation(std::vector<uint32_t> &addressIndices, uint32_t groupID, Data &payload, std::vector<Output> &outputs)
-    : AddressIndices(addressIndices), GroupID(groupID), Payload(payload), Outputs(outputs) {
+    : Outputs(outputs), AddressIndices(addressIndices), GroupID(groupID), Payload(payload) {
       std::sort(AddressIndices.begin(), AddressIndices.end());
       SortOutputs(Outputs);
     }
