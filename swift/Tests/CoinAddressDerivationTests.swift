@@ -205,8 +205,11 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .oasis:
                     let expectedResult = "oasis1qr2wymrk4mmt4kyjg3rzkn6jsxku3kk6p5jvrvxz"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .avalanche:
-                    let expectedResult = ""
+                case .avalancheXChain:
+                    let expectedResult = "X-avax1n7sz4f043sx76tydchphveqqn9ju9atp266f9s"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .avalancheCChain:
+                    let expectedResult = "0xAC0827570dA0b4B51BE52D597D77985D41f0EEd3"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()
