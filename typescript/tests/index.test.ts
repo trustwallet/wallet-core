@@ -51,6 +51,8 @@ describe('Wallet Core types tests', () => {
             nonce: Buffer.from('09', 'hex'),
             gasPrice: Buffer.from('04a817c800', 'hex'),
             gasLimit: Buffer.from('5208', 'hex'),
+            maxInclusionFeePerGas: Buffer.from('00', 'hex'),
+            maxFeePerGas: Buffer.from('00', 'hex'),
             transaction: TW.Ethereum.Proto.Transaction.create({
                 transfer: TW.Ethereum.Proto.Transaction.Transfer.create({
                     amount: Buffer.from('0de0b6b3a7640000', 'hex')
