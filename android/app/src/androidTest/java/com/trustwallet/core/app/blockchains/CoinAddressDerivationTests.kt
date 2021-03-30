@@ -91,6 +91,7 @@ class CoinAddressDerivationTests {
         BANDCHAIN -> assertEquals("band1624hqgend0s3d94z68fyka2y5jak6vd7u0l50r", address)
         SMARTCHAINLEGACY -> assertEquals("0x49784f90176D8D9d4A3feCDE7C1373dAAb5b13b8", address)
         OASIS -> assertEquals("oasis1qr2wymrk4mmt4kyjg3rzkn6jsxku3kk6p5jvrvxz", address)
-        AVALANCHE -> assertEquals("todo generate this value", address)
+        AVALANCHEXCHAIN -> assertEquals("X-avax1n7sz4f043sx76tydchphveqqn9ju9atp266f9s", address)
+        AVALANCHECCHAIN -> assertEquals("0xAC0827570dA0b4B51BE52D597D77985D41f0EEd3", address)
     }
 }
