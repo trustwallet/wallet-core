@@ -49,6 +49,7 @@ Data RLP::encode(const Transaction& transaction) noexcept {
     }
     // EIP1559
     assert(transaction.gasPrice != 0); // EIP1559 not yet supported
+    return Data();
 }
 
 Data RLP::encodeLegacy(const Transaction& transaction) noexcept {
