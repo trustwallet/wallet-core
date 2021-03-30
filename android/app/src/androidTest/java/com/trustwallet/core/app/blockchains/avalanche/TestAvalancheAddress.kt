@@ -20,14 +20,12 @@ class TestAvalancheAddress {
 
     @Test
     fun testAddress() {
-        // TODO: Check and finalize implementation
-
-        val key = PrivateKey("__PRIVATE_KEY_DATA__".toHexByteArray())
+        val key = PrivateKey("0x98cb077f972feb0481f1d894f272c6a1e3c15e272a1658ff716444f465200070".toHexByteArray())
         val pubkey = key.publicKeyEd25519
-        val address = AnyAddress(pubkey, CoinType.AVALANCHE)
-        val expected = AnyAddress("__EXPECTED_RESULT_ADDRESS__", CoinType.AVALANCHE)
+        val address = AnyAddress(pubkey, CoinType.AVALANCHEXCHAIN)
+        val expected = AnyAddress("X-avax1apmh7wxg3js48fhacfv5y9md9065jxuft30vup", CoinType.AVALANCHEXCHAIN)
 
-        assertEquals(pubkey.data().toHex(), "0x__EXPECTED_PUBKEY_DATA__")
+        assertEquals(pubkey.data().toHex(), "0x57c66cf849b2186cb52398caf8cb9cd390aac3e217e9b66bab9602faff715098")
         assertEquals(address.description(), expected.description())
     }
 }
