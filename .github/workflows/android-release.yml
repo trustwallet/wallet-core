@@ -35,7 +35,7 @@ jobs:
       run: tools/generate-files
     - name: Upload to maven
       run: |
-        tools/maven-android-upload
+        tools/android-release
       env:
         BINTRAY_KEY: ${{ secrets.BINTRAY_API_KEY }}
         BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
