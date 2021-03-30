@@ -9,6 +9,7 @@
 #include "PublicKey.h"
 
 #include <TrezorCrypto/bignum.h>
+#include <TrezorCrypto/curves.h>
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/ed25519-donna/ed25519-blake2b.h>
 #include <TrezorCrypto/memzero.h>
@@ -143,6 +144,24 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
         break;
     }
     return PublicKey(result, type);
+}
+
+Data PrivateKey::getSharedKey(const PublicKey& pubKey, TWCurve curve) const {
+    if (curve != TWCurveSECP256k1) {
+        return {};
+    }
+
+    Data result(PublicKey::secp256k1ExtendedSize);
+    bool success = ecdh_multiply(&secp256k1, bytes.data(),
+                                 pubKey.bytes.data(), result.data()) == 0;
+
+    if (success) {
+        PublicKey sharedKey(result, TWPublicKeyTypeSECP256k1Extended);
+        auto hash = Hash::sha256(sharedKey.compressed().bytes);
+        return hash;
+    }
+
+    return {};
 }
 
 int ecdsa_sign_digest_checked(const ecdsa_curve *curve, const uint8_t *priv_key, const uint8_t *digest, size_t digest_size, uint8_t *sig, uint8_t *pby, int (*is_canonical)(uint8_t by, uint8_t sig[64])) {

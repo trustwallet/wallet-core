@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,6 +11,7 @@
 #include "PrivateKey.h"
 #include "HexCoding.h"
 #include "HDWallet.h"
+#include "Mnemonic.h"
 #include "Coin.h"
 
 #include <iostream>
@@ -86,7 +87,7 @@ void Keys::setMnemonic(const vector<string>& param) {
     }
 
     // verify mnemonic
-    if (!HDWallet::isValid(mnem)) {
+    if (!Mnemonic::isValid(mnem)) {
         _out << "Not a valid mnemonic: " << mnem << endl;
         return;
     }

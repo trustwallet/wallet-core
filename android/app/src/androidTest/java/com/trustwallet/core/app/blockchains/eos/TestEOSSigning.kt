@@ -8,6 +8,7 @@ import org.json.JSONObject
 import wallet.core.jni.*
 import wallet.core.jni.proto.EOS
 import wallet.core.jni.proto.EOS.SigningOutput
+import wallet.core.jni.proto.Common.SigningError
 import wallet.core.java.AnySigner
 
 
@@ -70,7 +71,7 @@ class TestEOSSigning {
         }
 
         val output = AnySigner.sign(signingInput.build(), CoinType.EOS, SigningOutput.parser())
-        assertTrue(output.error.isEmpty())
+        assertEquals(SigningError.OK, output.error)
 
         val jsonObj = JSONObject(output.jsonEncoded)
         assertNotNull(jsonObj)
@@ -108,25 +109,24 @@ class TestEOSSigning {
         var badinput = goodInput;
         badinput.asset = getAssetBuilder(300000, 19, "TKN").build();
         var result = AnySigner.sign(badinput.build(), CoinType.EOS, SigningOutput.parser())
-        assertFalse("Expected error but signing suceeded!", result.error.isEmpty())
+        assertEquals("Expected error but signing succeeded!", SigningError.Error_internal, result.error)
 
 
         badinput = goodInput;
         badinput.asset = getAssetBuilder(300000, 4, "xyz").build()
         result = AnySigner.sign(badinput.build(), CoinType.EOS, SigningOutput.parser())
-        assertFalse("Expected error but signing suceeded!", result.error.isEmpty())
+        assertEquals("Expected error but signing succeeded!", SigningError.Error_internal, result.error)
 
 
         badinput = goodInput;
         badinput.recipient = "A".repeat(15)
         result = AnySigner.sign(badinput.build(), CoinType.EOS, SigningOutput.parser())
-        assertFalse("Expected error but signing suceeded!", result.error.isEmpty())
-
+        assertEquals("Expected error but signing succeeded!", SigningError.Error_internal, result.error)
 
 
         badinput = goodInput;
         badinput.referenceBlockId = ByteString.copyFrom("0000086bf9e7704509aa41311a66fa0a1b479c".toHexByteArray())
         result = AnySigner.sign(badinput.build(), CoinType.EOS, SigningOutput.parser())
-        assertFalse("Expected error but signing suceeded!", result.error.isEmpty())
+        assertEquals("Expected error but signing succeeded!", SigningError.Error_internal, result.error)
     }
 }

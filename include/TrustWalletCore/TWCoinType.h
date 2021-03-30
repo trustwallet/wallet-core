@@ -85,6 +85,7 @@ enum TWCoinType {
     TWCoinTypeSmartChainLegacy = 10000714,
     TWCoinTypeSmartChain = 20000714,
     TWCoinTypeOasis = 474,
+    TWCoinTypePolygon = 966,
 };
 
 /// Returns the blockchain for a coin type.
@@ -109,21 +110,21 @@ enum TWHDVersion TWCoinTypeXprvVersion(enum TWCoinType coin);
 
 /// Validates an address string.
 TW_EXPORT_METHOD
-bool TWCoinTypeValidate(enum TWCoinType coin, TWString *_Nonnull address);
+bool TWCoinTypeValidate(enum TWCoinType coin, TWString* _Nonnull address);
 
 /// Returns the default derivation path for a particular coin.
 TW_EXPORT_METHOD
-TWString *_Nonnull TWCoinTypeDerivationPath(enum TWCoinType coin);
+TWString* _Nonnull TWCoinTypeDerivationPath(enum TWCoinType coin);
 
 /// Derives the address for a particular coin from the private key.
 TW_EXPORT_METHOD
-TWString *_Nonnull TWCoinTypeDeriveAddress(enum TWCoinType coin,
-                                           struct TWPrivateKey *_Nonnull privateKey);
+TWString* _Nonnull TWCoinTypeDeriveAddress(enum TWCoinType coin,
+                                           struct TWPrivateKey* _Nonnull privateKey);
 
 /// Derives the address for a particular coin from the public key.
 TW_EXPORT_METHOD
-TWString *_Nonnull TWCoinTypeDeriveAddressFromPublicKey(enum TWCoinType coin,
-                                                        struct TWPublicKey *_Nonnull publicKey);
+TWString* _Nonnull TWCoinTypeDeriveAddressFromPublicKey(enum TWCoinType coin,
+                                                        struct TWPublicKey* _Nonnull publicKey);
 
 /// HRP for this coin type
 TW_EXPORT_PROPERTY

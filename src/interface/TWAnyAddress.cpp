@@ -93,10 +93,10 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypeLitecoin:
     case TWCoinTypeViacoin: {
         auto decoded = Bitcoin::SegwitAddress::decode(string);
-        if (!decoded.second) {
+        if (!std::get<2>(decoded)) {
             break;
         }
-        data = decoded.first.witnessProgram;
+        data = std::get<0>(decoded).witnessProgram;
         break;
     }
 
@@ -146,6 +146,7 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypeAion:
     case TWCoinTypeSmartChainLegacy:
     case TWCoinTypeSmartChain:
+    case TWCoinTypePolygon:
         data = parse_hex(string);
         break;
 

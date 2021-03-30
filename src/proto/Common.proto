@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package TW.Common.Proto;
+option java_package = "wallet.core.jni.proto";
+
+enum SigningError {
+    OK = 0; // OK
+    // chain-generic, generic
+    Error_general = 1;
+    Error_internal = 2;
+    // chain-generic, input
+    Error_low_balance = 3;
+    Error_zero_amount_requested = 4; // Requested amount is zero
+    Error_missing_private_key = 5;
+    // chain-generic, fee
+    Error_wrong_fee = 6;
+    // chain-generic, signing
+    Error_signing = 7;
+    Error_tx_too_big = 8; // [NEO] Transaction too big, fee in GAS needed or try send by parts
+    // UTXO-chain specific, inputs
+    Error_missing_input_utxos = 9; // No UTXOs provided [BTC]
+    Error_not_enough_utxos = 10; // Not enough non-dust input UTXOs to cover requested amount (dust UTXOs are filtered out) [BTC]
+    // UTXO-chain specific, script
+    Error_script_redeem = 11; // [BTC] Missing redeem script
+    Error_script_output = 12; // [BTC] Invalid output script
+    Error_script_witness_program = 13; // [BTC] Unrecognized witness program
+}
