@@ -26,14 +26,14 @@
 #define __RFC6979_H__
 
 #include <stdint.h>
-#include <TrezorCrypto/bignum.h>
+#include "bignum.h"
+#include "hmac_drbg.h"
 
 // rfc6979 pseudo random number generator state
-typedef struct {
-	uint8_t v[32], k[32];
-} rfc6979_state;
+typedef HMAC_DRBG_CTX rfc6979_state;
 
-void init_rfc6979(const uint8_t *priv_key, const uint8_t *hash, rfc6979_state *rng);
+void init_rfc6979(const uint8_t *priv_key, const uint8_t *hash,
+                  rfc6979_state *rng);
 void generate_rfc6979(uint8_t rnd[32], rfc6979_state *rng);
 void generate_k_rfc6979(bignum256 *k, rfc6979_state *rng);
 

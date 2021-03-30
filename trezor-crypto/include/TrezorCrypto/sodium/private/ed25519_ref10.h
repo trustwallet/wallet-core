@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "ed25519_ref10_fe_25_5.h"
+#include <TrezorCrypto/sodium/private/ed25519_ref10_fe_25_5.h>
 #include "fe_25_5/fe.h"
 
 #ifdef __cplusplus

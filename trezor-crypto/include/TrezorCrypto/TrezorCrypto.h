@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include <TrezorCrypto/options.h>
+
 #include <TrezorCrypto/address.h>
 #include <TrezorCrypto/aes.h>
 #include <TrezorCrypto/base32.h>
@@ -18,8 +20,8 @@
 #include <TrezorCrypto/hasher.h>
 #include <TrezorCrypto/hmac.h>
 #include <TrezorCrypto/memzero.h>
-#include <TrezorCrypto/monero.h>
-#include <TrezorCrypto/nem.h>
+//#include <TrezorCrypto/monero.h>
+//#include <TrezorCrypto/nem.h>
 #include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/pbkdf2.h>
 #include <TrezorCrypto/rand.h>

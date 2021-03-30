@@ -3,7 +3,7 @@
 
 #include <string.h>
 
-#include "ed25519_ref10.h"
+#include <TrezorCrypto/sodium/private/ed25519_ref10.h>
 #include "fe_25_5/fe.h"
 
 #ifdef __cplusplus

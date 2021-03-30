@@ -115,6 +115,7 @@ void sha512_Update(SHA512_CTX*, const uint8_t*, size_t);
 void sha512_Final(SHA512_CTX*, uint8_t[SHA512_DIGEST_LENGTH]);
 char* sha512_End(SHA512_CTX*, char[SHA512_DIGEST_STRING_LENGTH]);
 void sha512_Raw(const uint8_t*, size_t, uint8_t[SHA512_DIGEST_LENGTH]);
+// [wallet-core]
 void sha512_256_Raw(const uint8_t*, size_t, uint8_t[SHA256_DIGEST_LENGTH]);
 char* sha512_Data(const uint8_t*, size_t, char[SHA512_DIGEST_STRING_LENGTH]);
 

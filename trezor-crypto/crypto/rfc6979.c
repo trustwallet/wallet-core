@@ -1,5 +1,7 @@
 /**
+ * Copyright (c) 2013-2014 Tomas Dzetkulic
  * Copyright (c) 2013-2014 Pavol Rusnak
+ * Copyright (c)      2015 Jochen Hoenicke
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the "Software"),
@@ -20,24 +22,25 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __OPTIONS_H__
-#define __OPTIONS_H__
+#include <TrezorCrypto/rfc6979.h>
+#include <TrezorCrypto/hmac_drbg.h>
+#include <TrezorCrypto/memzero.h>
 
-// implement BIP32 caching
-#ifndef USE_BIP32_CACHE
-#define USE_BIP32_CACHE 0
-#define BIP32_CACHE_SIZE 10
-#define BIP32_CACHE_MAXDEPTH 8
-#endif
+void init_rfc6979(const uint8_t *priv_key, const uint8_t *hash,
+                  rfc6979_state *state) {
+  hmac_drbg_init(state, priv_key, 32, hash, 32);
+}
 
-// support constructing BIP32 nodes from ed25519 and curve25519 curves.
-#ifndef USE_BIP32_25519_CURVES
-#define USE_BIP32_25519_CURVES    1
-#endif
+// generate next number from deterministic random number generator
+void generate_rfc6979(uint8_t rnd[32], rfc6979_state *state) {
+  hmac_drbg_generate(state, rnd, 32);
+}
 
-// add way how to mark confidential data
-#ifndef CONFIDENTIAL
-#define CONFIDENTIAL
-#endif
-
-#endif
+// generate K in a deterministic way, according to RFC6979
+// http://tools.ietf.org/html/rfc6979
+void generate_k_rfc6979(bignum256 *k, rfc6979_state *state) {
+  uint8_t buf[32] = {0};
+  generate_rfc6979(buf, state);
+  bn_read_be(buf, k);
+  memzero(buf, sizeof(buf));
+}
