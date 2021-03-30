@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+# This script uploads android build to repositories defined in maven-push.gradle
+
+set -e
+
+version=$1
+if [ -z "$version" ]; then
+    version=`git describe --long --tags | cut -f 1 -d "-"`
+fi
+echo "Building $version"
+
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+pushd android
+./gradlew clean build assembleRelease publish -Pversion="$version"
+
+echo "Android build uploaded"
