@@ -37,6 +37,8 @@ TEST(BinanceSmartChain, SignNativeTransfer) {
         /* nonce: */ 0,
         /* gasPrice: */ 20000000000,
         /* gasLimit: */ 21000,
+        /* maxInclusionFee: */ 0,
+        /* maxFee: */ 0,
         /* to: */ toAddress,
         /* amount: */ 10000000000000000 // 0.01
     );

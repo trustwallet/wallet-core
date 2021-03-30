@@ -90,13 +90,14 @@ Transaction Signer::build(const Proto::SigningInput &input) {
     uint256_t nonce = load(input.nonce());
     uint256_t gasPrice = load(input.gas_price());
     uint256_t gasLimit = load(input.gas_limit());
+    uint256_t maxInclusionFee = load(input.max_inclusion_fee_per_gas());
+    uint256_t maxFee = load(input.max_fee_per_gas());
     switch (input.transaction().transaction_oneof_case()) {
         case Proto::Transaction::kTransfer:
             {
                 auto transaction = Transaction(
-                    /* nonce: */ nonce,
-                    /* gasPrice: */ gasPrice,
-                    /* gasLimit: */ gasLimit,
+                    nonce,
+                    gasPrice, gasLimit, maxInclusionFee, maxFee,
                     /* to: */ toAddress,
                     /* amount: */ load(input.transaction().transfer().amount()),
                     /* optionalTransaction: */ Data(input.transaction().transfer().data().begin(), input.transaction().transfer().data().end()));
@@ -107,9 +108,8 @@ Transaction Signer::build(const Proto::SigningInput &input) {
             {
                 Data tokenToAddress = addressStringToData(input.transaction().erc20_transfer().to());
                 auto transaction = Transaction::buildERC20Transfer(
-                    /* nonce: */ nonce,
-                    /* gasPrice: */ gasPrice,
-                    /* gasLimit: */ gasLimit,
+                    nonce,
+                    gasPrice, gasLimit, maxInclusionFee, maxFee,
                     /* tokenContract: */ toAddress,
                     /* toAddress */ tokenToAddress,
                     /* amount: */ load(input.transaction().erc20_transfer().amount()));
@@ -120,9 +120,8 @@ Transaction Signer::build(const Proto::SigningInput &input) {
             {
                 Data spenderAddress = addressStringToData(input.transaction().erc20_approve().spender());
                 auto transaction = Transaction::buildERC20Approve(
-                    /* nonce: */ nonce,
-                    /* gasPrice: */ gasPrice,
-                    /* gasLimit: */ gasLimit,
+                    nonce,
+                    gasPrice, gasLimit, maxInclusionFee, maxFee,
                     /* tokenContract: */ toAddress,
                     /* toAddress */ spenderAddress,
                     /* amount: */ load(input.transaction().erc20_approve().amount()));
@@ -134,9 +133,8 @@ Transaction Signer::build(const Proto::SigningInput &input) {
                 Data tokenToAddress = addressStringToData(input.transaction().erc721_transfer().to());
                 Data tokenFromAddress = addressStringToData(input.transaction().erc721_transfer().from());
                 auto transaction = Transaction::buildERC721Transfer(
-                    /* nonce: */ nonce,
-                    /* gasPrice: */ gasPrice,
-                    /* gasLimit: */ gasLimit,
+                    nonce,
+                    gasPrice, gasLimit, maxInclusionFee, maxFee,
                     /* tokenContract: */ toAddress,
                     /* fromAddress: */ tokenFromAddress,
                     /* toAddress */ tokenToAddress,
@@ -149,9 +147,8 @@ Transaction Signer::build(const Proto::SigningInput &input) {
                 Data tokenToAddress = addressStringToData(input.transaction().erc1155_transfer().to());
                 Data tokenFromAddress = addressStringToData(input.transaction().erc1155_transfer().from());
                 auto transaction = Transaction::buildERC1155Transfer(
-                    /* nonce: */ nonce,
-                    /* gasPrice: */ gasPrice,
-                    /* gasLimit: */ gasLimit,
+                    nonce,
+                    gasPrice, gasLimit, maxInclusionFee, maxFee,
                     /* tokenContract: */ toAddress,
                     /* fromAddress: */ tokenFromAddress,
                     /* toAddress */ tokenToAddress,
@@ -166,9 +163,8 @@ Transaction Signer::build(const Proto::SigningInput &input) {
         default:
             {
                 auto transaction = Transaction(
-                    /* nonce: */ nonce,
-                    /* gasPrice: */ gasPrice,
-                    /* gasLimit: */ gasLimit,
+                    nonce,
+                    gasPrice, gasLimit, maxInclusionFee, maxFee,
                     /* to: */ toAddress,
                     /* amount: */ load(input.transaction().contract_generic().amount()),
                     /* transaction: */ Data(input.transaction().contract_generic().data().begin(), input.transaction().contract_generic().data().end()));

@@ -16,6 +16,8 @@ public:
     uint256_t nonce;
     uint256_t gasPrice;
     uint256_t gasLimit;
+    uint256_t maxInclusionFeePerGas;
+    uint256_t maxFeePerGas;
     // Public key hash (Address.bytes)
     Data to;
     uint256_t amount;
@@ -28,29 +30,35 @@ public:
 
     // Factory methods
     // Create an ERC20 token transfer transaction
-    static Transaction buildERC20Transfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit,
-        const Data& tokenContract, const Data& toAddress, uint256_t amount);
+    static Transaction buildERC20Transfer(const uint256_t& nonce,
+        const uint256_t& gasPrice, const uint256_t& gasLimit, const uint256_t& maxInclusionFee, const uint256_t& maxFee,
+        const Data& tokenContract, const Data& toAddress, const uint256_t& amount);
 
     // Create an ERC20 approve transaction
-    static Transaction buildERC20Approve(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit,
-        const Data& tokenContract, const Data& spenderAddress, uint256_t amount);
+    static Transaction buildERC20Approve(const uint256_t& nonce,
+        const uint256_t& gasPrice, const uint256_t& gasLimit, const uint256_t& maxInclusionFee, const uint256_t& maxFee,
+        const Data& tokenContract, const Data& spenderAddress, const uint256_t& amount);
 
     // Create an ERC721 NFT transfer transaction
-    static Transaction buildERC721Transfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit,
-        const Data& tokenContract, const Data& from, const Data& to, uint256_t tokenId);
+    static Transaction buildERC721Transfer(const uint256_t& nonce,
+        const uint256_t& gasPrice, const uint256_t& gasLimit, const uint256_t& maxInclusionFee, const uint256_t& maxFee,
+        const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId);
 
     // Create an ERC1155 NFT transfer transaction
-    static Transaction buildERC1155Transfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit,
-        const Data& tokenContract, const Data& from, const Data& to, uint256_t tokenId, uint256_t value, const Data& data);
+    static Transaction buildERC1155Transfer(const uint256_t& nonce,
+        const uint256_t& gasPrice, const uint256_t& gasLimit, const uint256_t& maxInclusionFee, const uint256_t& maxFee,
+        const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data);
 
     // Helpers for building contract calls
-    static Data buildERC20TransferCall(const Data& to, uint256_t amount);
-    static Data buildERC20ApproveCall(const Data& spender, uint256_t amount);
-    static Data buildERC721TransferFromCall(const Data& from, const Data& to, uint256_t tokenId);
-    static Data buildERC1155TransferFromCall(const Data& from, const Data& to, uint256_t tokenId, uint256_t value, const Data& data);
+    static Data buildERC20TransferCall(const Data& to, const uint256_t& amount);
+    static Data buildERC20ApproveCall(const Data& spender, const uint256_t& amount);
+    static Data buildERC721TransferFromCall(const Data& from, const Data& to, const uint256_t& tokenId);
+    static Data buildERC1155TransferFromCall(const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data);
 
 public:
-    Transaction(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, const Data& to, uint256_t amount, const Data& payload = {})
+    Transaction(uint256_t nonce,
+        const uint256_t& gasPrice, const uint256_t& gasLimit, const uint256_t& maxInclusionFee, const uint256_t& maxFee,
+        const Data& to, const uint256_t& amount, const Data& payload = {})
         : nonce(std::move(nonce))
         , gasPrice(std::move(gasPrice))
         , gasLimit(std::move(gasLimit))

@@ -27,6 +27,8 @@ TEST(EthereumSigner, Hash) {
         /* nonce: */ 9,
         /* gasPrice: */ 20000000000,
         /* gasLimit: */ 21000,
+        /* maxInclusionFee: */ 0,
+        /* maxFee: */ 0,
         /* to: */ address,
         /* amount: */ 1000000000000000000
     );
@@ -42,6 +44,8 @@ TEST(EthereumSigner, Sign) {
         /* nonce: */ 9,
         /* gasPrice: */ 20000000000,
         /* gasLimit: */ 21000,
+        /* maxInclusionFee: */ 0,
+        /* maxFee: */ 0,
         /* to: */ address,
         /* amount: */ 1000000000000000000
     );
@@ -60,6 +64,8 @@ TEST(EthereumSigner, SignERC20Transfer) {
         /* nonce: */ 0,
         /* gasPrice: */ 42000000000, // 0x09c7652400
         /* gasLimit: */ 78009, // 130B9
+        /* maxInclusionFee: */ 0,
+        /* maxFee: */ 0,
         /* tokenContract: */ parse_hex("0x6b175474e89094c44da98b954eedeac495271d0f"), // DAI
         /* toAddress: */ parse_hex("0x5322b34c88ed0691971bf52a7047448f0f4efc84"),
         /* amount: */ 2000000000000000000

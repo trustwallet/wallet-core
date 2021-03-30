@@ -27,6 +27,8 @@ TEST(Signer, Sign) {
         /* nonce: */ 9,
         /* gasPrice: */ 20000000000,
         /* gasLimit: */ 21000,
+        /* maxInclusionFee: */ 0,
+        /* maxFee: */ 0,
         /* to: */ address,
         /* amount: */ 1000000000000000000
     );
