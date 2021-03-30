@@ -6,6 +6,7 @@
 
 #include "Mnemonic.h"
 
+#include <TrezorCrypto/bip39_english.h>
 #include <TrezorCrypto/bip39.h>
 
 #include <string.h>
@@ -21,9 +22,11 @@ bool Mnemonic::isValid(const std::string& mnemonic) {
     return mnemonic_check(mnemonic.c_str()) != 0;
 }
 
+inline const char* const* mnemonicWordlist() { return wordlist; }
+
 bool Mnemonic::isValidWord(const std::string& word) {
     const char* wordC = word.c_str();
-    for (const char* const* w = mnemonic_wordlist(); *w != nullptr; ++w) {
+    for (const char* const* w = mnemonicWordlist(); *w != nullptr; ++w) {
         if (strncmp(*w, wordC, word.length()) == 0) {
             return true;
         }
@@ -44,7 +47,7 @@ std::string Mnemonic::suggest(const std::string& prefix) {
     const char* prefixLoC = prefixLo.c_str();
 
     std::vector<std::string> result;
-    for (const char* const* word = mnemonic_wordlist(); *word != nullptr; ++word) {
+    for (const char* const* word = mnemonicWordlist(); *word != nullptr; ++word) {
         // check first letter match (optimization)
         if ((*word)[0] == prefixLo[0]) {
             if (strncmp(*word, prefixLoC, prefixLo.length()) == 0) {
