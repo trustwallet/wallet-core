@@ -21,210 +21,272 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <ctype.h>
-#include <string.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include <TrezorCrypto/bip39.h>
+#include <TrezorCrypto/bip39_english.h>
 #include <TrezorCrypto/hmac.h>
+#include <TrezorCrypto/memzero.h>
+#include <TrezorCrypto/options.h>
+#include <TrezorCrypto/pbkdf2.h>
 #include <TrezorCrypto/rand.h>
 #include <TrezorCrypto/sha2.h>
-#include <TrezorCrypto/pbkdf2.h>
-#include "bip39_english.h"
-#include "options.h"
-#include <TrezorCrypto/memzero.h>
 
-bool mnemonic_generate(int strength, char* mnemonic) {
-	if (strength % 32 || strength < 128 || strength > 256) {
-		return false;
-	}
-	uint8_t data[32];
-	random_buffer(data, 32);
-	bool success = mnemonic_from_data(data, strength / 8, mnemonic);
-	memzero(data, sizeof(data));
-	return success;
+#if USE_BIP39_CACHE
+
+int bip39_cache_index = 0;
+
+CONFIDENTIAL struct {
+  bool set;
+  char mnemonic[256];
+  char passphrase[64];
+  uint8_t seed[512 / 8];
+} bip39_cache[BIP39_CACHE_SIZE];
+
+#endif
+
+const char *mnemonic_generate(int strength) {
+  if (strength % 32 || strength < 128 || strength > 256) {
+    return 0;
+  }
+  uint8_t data[32] = {0};
+  random_buffer(data, 32);
+  const char *r = mnemonic_from_data(data, strength / 8);
+  memzero(data, sizeof(data));
+  return r;
 }
 
-bool mnemonic_from_data(const uint8_t *data, size_t len, char* mnemonic) {
-	if (len % 4 || len < 16 || len > 32) {
-		return 0;
-	}
+CONFIDENTIAL char mnemo[24 * 10];
 
-	uint8_t bits[32 + 1];
+const char *mnemonic_from_data(const uint8_t *data, int len) {
+  if (len % 4 || len < 16 || len > 32) {
+    return 0;
+  }
 
-	sha256_Raw(data, len, bits);
-	// checksum
-	bits[len] = bits[0];
-	// data
-	memcpy(bits, data, len);
+  uint8_t bits[32 + 1] = {0};
 
-	int mlen = len * 3 / 4;
+  sha256_Raw(data, len, bits);
+  // checksum
+  bits[len] = bits[0];
+  // data
+  memcpy(bits, data, len);
 
-	int i, j, idx;
-	char *p = mnemonic;
-	for (i = 0; i < mlen; i++) {
-		idx = 0;
-		for (j = 0; j < 11; j++) {
-			idx <<= 1;
-			idx += (bits[(i * 11 + j) / 8] & (1 << (7 - ((i * 11 + j) % 8)))) > 0;
-		}
-		strcpy(p, wordlist[idx]);
-		p += strlen(wordlist[idx]);
-		*p = (i < mlen - 1) ? ' ' : 0;
-		p++;
-	}
-	memzero(bits, sizeof(bits));
+  int mlen = len * 3 / 4;
 
-	return true;
+  int i = 0, j = 0, idx = 0;
+  char *p = mnemo;
+  for (i = 0; i < mlen; i++) {
+    idx = 0;
+    for (j = 0; j < 11; j++) {
+      idx <<= 1;
+      idx += (bits[(i * 11 + j) / 8] & (1 << (7 - ((i * 11 + j) % 8)))) > 0;
+    }
+    strcpy(p, wordlist[idx]);
+    p += strlen(wordlist[idx]);
+    *p = (i < mlen - 1) ? ' ' : 0;
+    p++;
+  }
+  memzero(bits, sizeof(bits));
+
+  return mnemo;
 }
 
-int mnemonic_to_bits(const char *mnemonic, uint8_t *entropy)
-{
-	if (!mnemonic) {
-		return 0;
-	}
+void mnemonic_clear(void) { memzero(mnemo, sizeof(mnemo)); }
 
-	uint32_t i = 0, n = 0;
+int mnemonic_to_bits(const char *mnemonic, uint8_t *bits) {
+  if (!mnemonic) {
+    return 0;
+  }
 
-	while (mnemonic[i]) {
-		if (mnemonic[i] == ' ') {
-			n++;
-		}
-		i++;
-	}
-	n++;
+  uint32_t i = 0, n = 0;
 
-	// check number of words
-	if (n != 12 && n != 15 && n != 18 && n != 21 && n != 24) {
-		return 0;
-	}
+  while (mnemonic[i]) {
+    if (mnemonic[i] == ' ') {
+      n++;
+    }
+    i++;
+  }
+  n++;
 
-	char current_word[10];
-	uint32_t j, k, ki, bi = 0;
-	uint8_t bits[32 + 1];
+  // check number of words
+  // [wallet-core] also accept 15- and 21-word
+  if (n != 12 && n != 15 && n != 18 && n != 21 && n != 24) {
+    return 0;
+  }
 
-	memzero(bits, sizeof(bits));
-	i = 0;
-	while (mnemonic[i]) {
-		j = 0;
-		while (mnemonic[i] != ' ' && mnemonic[i] != 0) {
-			if (j >= sizeof(current_word) - 1) {
-				return 0;
-			}
-			current_word[j] = mnemonic[i];
-			i++; j++;
-		}
-		current_word[j] = 0;
-		if (mnemonic[i] != 0) {
-			i++;
-		}
-		k = 0;
-		for (;;) {
-			if (!wordlist[k]) { // word not found
-				return 0;
-			}
-			if (strcmp(current_word, wordlist[k]) == 0) { // word found on index k
-				for (ki = 0; ki < 11; ki++) {
-					if (k & (1 << (10 - ki))) {
-						bits[bi / 8] |= 1 << (7 - (bi % 8));
-					}
-					bi++;
-				}
-				break;
-			}
-			k++;
-		}
-	}
-	if (bi != n * 11) {
-		return 0;
-	}
-	memcpy(entropy, bits, sizeof(bits));
-	return n * 11;
+  char current_word[10] = {0};
+  uint32_t j = 0, k = 0, ki = 0, bi = 0;
+  uint8_t result[32 + 1] = {0};
+
+  memzero(result, sizeof(result));
+  i = 0;
+  while (mnemonic[i]) {
+    j = 0;
+    while (mnemonic[i] != ' ' && mnemonic[i] != 0) {
+      if (j >= sizeof(current_word) - 1) {
+        return 0;
+      }
+      current_word[j] = mnemonic[i];
+      i++;
+      j++;
+    }
+    current_word[j] = 0;
+    if (mnemonic[i] != 0) {
+      i++;
+    }
+    k = 0;
+    for (;;) {
+      if (!wordlist[k]) {  // word not found
+        return 0;
+      }
+      if (strcmp(current_word, wordlist[k]) == 0) {  // word found on index k
+        for (ki = 0; ki < 11; ki++) {
+          if (k & (1 << (10 - ki))) {
+            result[bi / 8] |= 1 << (7 - (bi % 8));
+          }
+          bi++;
+        }
+        break;
+      }
+      k++;
+    }
+  }
+  if (bi != n * 11) {
+    return 0;
+  }
+  memcpy(bits, result, sizeof(result));
+  memzero(result, sizeof(result));
+
+  // returns amount of entropy + checksum BITS
+  return n * 11;
 }
 
-int mnemonic_check(const char *mnemonic)
-{
-	uint8_t bits[32 + 1];
-	int seed_len = mnemonic_to_bits(mnemonic, bits);
-	if (seed_len != (12 * 11) && seed_len != (15 * 11) && seed_len != (18 * 11) && seed_len != (21 * 11) && seed_len != (24 * 11)) {
-		return 0;
-	}
-	int words = seed_len / 11;
+int mnemonic_check(const char *mnemonic) {
+  uint8_t bits[32 + 1] = {0};
+  int mnemonic_bits_len = mnemonic_to_bits(mnemonic, bits);
+  // [wallet-core] also accept 15- and 21-word
+  if (mnemonic_bits_len != (12 * 11) && mnemonic_bits_len != (18 * 11) &&
+      mnemonic_bits_len != (24 * 11) &&
+      mnemonic_bits_len != (15 * 11) && mnemonic_bits_len != (21 * 11)) {
+    return 0;
+  }
+  int words = mnemonic_bits_len / 11;
 
-	uint8_t checksum = bits[words * 4 / 3];
-	sha256_Raw(bits, words * 4 / 3, bits);
-	if (words == 12) {
-		return (bits[0] & 0xF0) == (checksum & 0xF0); // compare first 4 bits
-    } else if (words == 15) {
-        return (bits[0] & 0xF8) == (checksum & 0xF8); // compare first 5 bits
-	} else if (words == 18) {
-		return (bits[0] & 0xFC) == (checksum & 0xFC); // compare first 6 bits
-    } else if (words == 21) {
-        return (bits[0] & 0xFE) == (checksum & 0xFE); // compare first 7 bits
-	} else if (words == 24) {
-		return bits[0] == checksum; // compare 8 bits
-	}
-	return 0;
-}
-
-// Normalizes a mnemonic phrase by removing extra spaces.
-char *normalize_mnemonic(const char *mnemonic) {
-	char *normalized = (char *) malloc(strlen(mnemonic) + 1);
-	size_t ni = 0;
-
-	bool boundary = true;
-	for (int i = 0; mnemonic[i] != 0; i += 1) {
-		char c = mnemonic[i];
-		bool isSpace = isspace(c);
-		if (!isSpace) {
-			boundary = false;
-			normalized[ni++] = c;
-			continue;
-		}
-		if (boundary) {
-			// Skip extra space
-			continue;
-		}
-		normalized[ni++] = ' ';
-		boundary = true;
-	}
-
-	// Remove extra spaces at the end.
-	while (ni > 0 && isspace(normalized[ni - 1])) {
-		normalized[ni - 1] = 0;
-		ni -= 1;
-	}
-
-	normalized[ni] = 0;
-	return normalized;
+  uint8_t checksum = bits[words * 4 / 3];
+  sha256_Raw(bits, words * 4 / 3, bits);
+  if (words == 12) {
+    return (bits[0] & 0xF0) == (checksum & 0xF0);  // compare first 4 bits
+  } else if (words == 15) {
+    return (bits[0] & 0xF8) == (checksum & 0xF8);  // compare first 5 bits
+  } else if (words == 18) {
+    return (bits[0] & 0xFC) == (checksum & 0xFC);  // compare first 6 bits
+  } else if (words == 21) {
+    return (bits[0] & 0xFE) == (checksum & 0xFE);  // compare first 7 bits
+  } else if (words == 24) {
+    return bits[0] == checksum;  // compare 8 bits
+  }
+  return 0;
 }
 
 // passphrase must be at most 256 characters otherwise it would be truncated
-void mnemonic_to_seed(const char *mnemonic, const char *passphrase, uint8_t seed[512 / 8], void (*progress_callback)(uint32_t current, uint32_t total))
-{
-	char *normalized = normalize_mnemonic(mnemonic);
-	int normalizedlen = strlen(normalized);
-	int passphraselen = strnlen(passphrase, 256);
-	uint8_t salt[8 + 256];
-	memcpy(salt, "mnemonic", 8);
-	memcpy(salt + 8, passphrase, passphraselen);
-	CONFIDENTIAL PBKDF2_HMAC_SHA512_CTX pctx;
-	pbkdf2_hmac_sha512_Init(&pctx, (const uint8_t *)normalized, normalizedlen, salt, passphraselen + 8, 1);
-	if (progress_callback) {
-		progress_callback(0, BIP39_PBKDF2_ROUNDS);
-	}
-	for (int i = 0; i < 16; i++) {
-		pbkdf2_hmac_sha512_Update(&pctx, BIP39_PBKDF2_ROUNDS / 16);
-		if (progress_callback) {
-			progress_callback((i + 1) * BIP39_PBKDF2_ROUNDS / 16, BIP39_PBKDF2_ROUNDS);
-		}
-	}
-	pbkdf2_hmac_sha512_Final(&pctx, seed);
-	memzero(salt, sizeof(salt));
-	free(normalized);
+void mnemonic_to_seed(const char *mnemonic, const char *passphrase,
+                      uint8_t seed[512 / 8],
+                      void (*progress_callback)(uint32_t current,
+                                                uint32_t total)) {
+  int mnemoniclen = strlen(mnemonic);
+  int passphraselen = strnlen(passphrase, 256);
+#if USE_BIP39_CACHE
+  // check cache
+  if (mnemoniclen < 256 && passphraselen < 64) {
+    for (int i = 0; i < BIP39_CACHE_SIZE; i++) {
+      if (!bip39_cache[i].set) continue;
+      if (strcmp(bip39_cache[i].mnemonic, mnemonic) != 0) continue;
+      if (strcmp(bip39_cache[i].passphrase, passphrase) != 0) continue;
+      // found the correct entry
+      memcpy(seed, bip39_cache[i].seed, 512 / 8);
+      return;
+    }
+  }
+#endif
+  uint8_t salt[8 + 256] = {0};
+  memcpy(salt, "mnemonic", 8);
+  memcpy(salt + 8, passphrase, passphraselen);
+  CONFIDENTIAL PBKDF2_HMAC_SHA512_CTX pctx;
+  pbkdf2_hmac_sha512_Init(&pctx, (const uint8_t *)mnemonic, mnemoniclen, salt,
+                          passphraselen + 8, 1);
+  if (progress_callback) {
+    progress_callback(0, BIP39_PBKDF2_ROUNDS);
+  }
+  for (int i = 0; i < 16; i++) {
+    pbkdf2_hmac_sha512_Update(&pctx, BIP39_PBKDF2_ROUNDS / 16);
+    if (progress_callback) {
+      progress_callback((i + 1) * BIP39_PBKDF2_ROUNDS / 16,
+                        BIP39_PBKDF2_ROUNDS);
+    }
+  }
+  pbkdf2_hmac_sha512_Final(&pctx, seed);
+  memzero(salt, sizeof(salt));
+#if USE_BIP39_CACHE
+  // store to cache
+  if (mnemoniclen < 256 && passphraselen < 64) {
+    bip39_cache[bip39_cache_index].set = true;
+    strcpy(bip39_cache[bip39_cache_index].mnemonic, mnemonic);
+    strcpy(bip39_cache[bip39_cache_index].passphrase, passphrase);
+    memcpy(bip39_cache[bip39_cache_index].seed, seed, 512 / 8);
+    bip39_cache_index = (bip39_cache_index + 1) % BIP39_CACHE_SIZE;
+  }
+#endif
 }
 
-const char * const *mnemonic_wordlist(void)
-{
-	return wordlist;
+// binary search for finding the word in the wordlist
+int mnemonic_find_word(const char *word) {
+  int lo = 0, hi = BIP39_WORDS - 1;
+  while (lo <= hi) {
+    int mid = lo + (hi - lo) / 2;
+    int cmp = strcmp(word, wordlist[mid]);
+    if (cmp == 0) {
+      return mid;
+    }
+    if (cmp > 0) {
+      lo = mid + 1;
+    } else {
+      hi = mid - 1;
+    }
+  }
+  return -1;
+}
+
+const char *mnemonic_complete_word(const char *prefix, int len) {
+  // we need to perform linear search,
+  // because we want to return the first match
+  for (const char *const *w = wordlist; *w != 0; w++) {
+    if (strncmp(*w, prefix, len) == 0) {
+      return *w;
+    }
+  }
+  return NULL;
+}
+
+const char *mnemonic_get_word(int index) {
+  if (index >= 0 && index < BIP39_WORDS) {
+    return wordlist[index];
+  } else {
+    return NULL;
+  }
+}
+
+uint32_t mnemonic_word_completion_mask(const char *prefix, int len) {
+  if (len <= 0) {
+    return 0x3ffffff;  // all letters (bits 1-26 set)
+  }
+  uint32_t res = 0;
+  for (const char *const *w = wordlist; *w != 0; w++) {
+    const char *word = *w;
+    if (strncmp(word, prefix, len) == 0 && word[len] >= 'a' &&
+        word[len] <= 'z') {
+      res |= 1 << (word[len] - 'a');
+    }
+  }
+  return res;
 }

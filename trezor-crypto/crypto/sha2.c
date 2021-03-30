@@ -71,7 +71,7 @@
  *
  * And for little-endian machines, add:
  *
- *   #define BYTE_ORDER LITTLE_ENDIAN 
+ *   #define BYTE_ORDER LITTLE_ENDIAN
  *
  * Or for big-endian machines:
  *
@@ -185,7 +185,7 @@ const sha2_word32 sha1_initial_hash_value[SHA1_DIGEST_LENGTH / sizeof(sha2_word3
 };
 
 /* Hash constant words K for SHA-256: */
-static const sha2_word32 K256[64] = {
+const sha2_word32 K256[64] = {
 	0x428a2f98UL, 0x71374491UL, 0xb5c0fbcfUL, 0xe9b5dba5UL,
 	0x3956c25bUL, 0x59f111f1UL, 0x923f82a4UL, 0xab1c5ed5UL,
 	0xd807aa98UL, 0x12835b01UL, 0x243185beUL, 0x550c7dc3UL,
@@ -217,7 +217,7 @@ const sha2_word32 sha256_initial_hash_value[8] = {
 };
 
 /* Hash constant words K for SHA-384 and SHA-512: */
-static const sha2_word64 K512[80] = {
+const sha2_word64 K512[80] = {
 	0x428a2f98d728ae22ULL, 0x7137449123ef65cdULL,
 	0xb5c0fbcfec4d3b2fULL, 0xe9b5dba58189dbbcULL,
 	0x3956c25bf348b538ULL, 0x59f111f1b605d019ULL,
@@ -272,6 +272,7 @@ const sha2_word64 sha512_initial_hash_value[8] = {
 	0x5be0cd19137e2179ULL
 };
 
+// [wallet-core]
 const sha2_word64 sha512_256_initial_hash_value[8] = {
 	0x22312194fc2bf72cULL,
 	0x9f555fa3c84c64c2ULL,
@@ -287,7 +288,7 @@ const sha2_word64 sha512_256_initial_hash_value[8] = {
  * Constant used by SHA256/384/512_End() functions for converting the
  * digest to a readable hexadecimal character string:
  */
-static const char *sha2_hex_digits = "0123456789abcdef";
+const char *sha2_hex_digits = "0123456789abcdef";
 
 
 /*** SHA-1: ***********************************************************/
@@ -332,10 +333,10 @@ void sha1_Init(SHA1_CTX* context) {
 	j++;
 
 void sha1_Transform(const sha2_word32* state_in, const sha2_word32* data, sha2_word32* state_out) {
-	sha2_word32	a, b, c, d, e;
-	sha2_word32	T1;
-	sha2_word32	W1[16];
-	int		j;
+	sha2_word32	a = 0, b = 0, c = 0, d = 0, e = 0;
+	sha2_word32	T1 = 0;
+	sha2_word32	W1[16] = {0};
+	int		j = 0;
 
 	/* Initialize registers with the prev. intermediate value */
 	a = state_in[0];
@@ -450,10 +451,10 @@ void sha1_Transform(const sha2_word32* state_in, const sha2_word32* data, sha2_w
 #else  /* SHA2_UNROLL_TRANSFORM */
 
 void sha1_Transform(const sha2_word32* state_in, const sha2_word32* data, sha2_word32* state_out) {
-	sha2_word32	a, b, c, d, e;
-	sha2_word32	T1;
-	sha2_word32	W1[16];
-	int		j;
+	sha2_word32	a = 0, b = 0, c = 0, d = 0, e = 0;
+	sha2_word32	T1 = 0;
+	sha2_word32	W1[16] = {0};
+	int		j = 0;
 
 	/* Initialize registers with the prev. intermediate value */
 	a = state_in[0];
@@ -531,7 +532,7 @@ void sha1_Transform(const sha2_word32* state_in, const sha2_word32* data, sha2_w
 #endif /* SHA2_UNROLL_TRANSFORM */
 
 void sha1_Update(SHA1_CTX* context, const sha2_byte *data, size_t len) {
-	unsigned int	freespace, usedspace;
+	unsigned int	freespace = 0, usedspace = 0;
 
 	if (len == 0) {
 		/* Calling with no data is valid - we do nothing */
@@ -589,7 +590,7 @@ void sha1_Update(SHA1_CTX* context, const sha2_byte *data, size_t len) {
 }
 
 void sha1_Final(SHA1_CTX* context, sha2_byte digest[]) {
-	unsigned int	usedspace;
+	unsigned int	usedspace = 0;
 
 	/* If no digest buffer is passed, we don't bother doing this: */
 	if (digest != (sha2_byte*)0) {
@@ -643,8 +644,8 @@ void sha1_Final(SHA1_CTX* context, sha2_byte digest[]) {
 }
 
 char *sha1_End(SHA1_CTX* context, char buffer[]) {
-	sha2_byte	digest[SHA1_DIGEST_LENGTH], *d = digest;
-	int		i;
+	sha2_byte	digest[SHA1_DIGEST_LENGTH] = {0}, *d = digest;
+	int		i = 0;
 
 	if (buffer != (char*)0) {
 		sha1_Final(context, digest);
@@ -663,14 +664,14 @@ char *sha1_End(SHA1_CTX* context, char buffer[]) {
 }
 
 void sha1_Raw(const sha2_byte* data, size_t len, uint8_t digest[SHA1_DIGEST_LENGTH]) {
-	SHA1_CTX	context;
+	SHA1_CTX	context = {0};
 	sha1_Init(&context);
 	sha1_Update(&context, data, len);
 	sha1_Final(&context, digest);
 }
 
 char* sha1_Data(const sha2_byte* data, size_t len, char digest[SHA1_DIGEST_STRING_LENGTH]) {
-	SHA1_CTX	context;
+	SHA1_CTX	context = {0};
 
 	sha1_Init(&context);
 	sha1_Update(&context, data, len);
@@ -710,10 +711,10 @@ void sha256_Init(SHA256_CTX* context) {
 	j++
 
 void sha256_Transform(const sha2_word32* state_in, const sha2_word32* data, sha2_word32* state_out) {
-	sha2_word32	a, b, c, d, e, f, g, h, s0, s1;
-	sha2_word32	T1;
-	sha2_word32 W256[16];
-	int		j;
+	sha2_word32	a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0, s0 = 0, s1 = 0;
+	sha2_word32	T1 = 0;
+	sha2_word32 W256[16] = {0};
+	int		j = 0;
 
 	/* Initialize registers with the prev. intermediate value */
 	a = state_in[0];
@@ -767,9 +768,9 @@ void sha256_Transform(const sha2_word32* state_in, const sha2_word32* data, sha2
 #else /* SHA2_UNROLL_TRANSFORM */
 
 void sha256_Transform(const sha2_word32* state_in, const sha2_word32* data, sha2_word32* state_out) {
-	sha2_word32	a, b, c, d, e, f, g, h, s0, s1;
-	sha2_word32	T1, T2, W256[16];
-	int		j;
+	sha2_word32	a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0, s0 = 0, s1 = 0;
+	sha2_word32	T1 = 0, T2 = 0 , W256[16] = {0};
+	int		j = 0;
 
 	/* Initialize registers with the prev. intermediate value */
 	a = state_in[0];
@@ -802,11 +803,11 @@ void sha256_Transform(const sha2_word32* state_in, const sha2_word32* data, sha2
 		/* Part of the message block expansion: */
 		s0 = W256[(j+1)&0x0f];
 		s0 = sigma0_256(s0);
-		s1 = W256[(j+14)&0x0f];	
+		s1 = W256[(j+14)&0x0f];
 		s1 = sigma1_256(s1);
 
 		/* Apply the SHA-256 compression function to update a..h */
-		T1 = h + Sigma1_256(e) + Ch(e, f, g) + K256[j] + 
+		T1 = h + Sigma1_256(e) + Ch(e, f, g) + K256[j] +
 		     (W256[j&0x0f] += s1 + W256[(j+9)&0x0f] + s0);
 		T2 = Sigma0_256(a) + Maj(a, b, c);
 		h = g;
@@ -838,7 +839,7 @@ void sha256_Transform(const sha2_word32* state_in, const sha2_word32* data, sha2
 #endif /* SHA2_UNROLL_TRANSFORM */
 
 void sha256_Update(SHA256_CTX* context, const sha2_byte *data, size_t len) {
-	unsigned int	freespace, usedspace;
+	unsigned int	freespace = 0, usedspace = 0;
 
 	if (len == 0) {
 		/* Calling with no data is valid - we do nothing */
@@ -896,14 +897,14 @@ void sha256_Update(SHA256_CTX* context, const sha2_byte *data, size_t len) {
 }
 
 void sha256_Final(SHA256_CTX* context, sha2_byte digest[]) {
-	unsigned int	usedspace;
+	unsigned int	usedspace = 0;
 
 	/* If no digest buffer is passed, we don't bother doing this: */
 	if (digest != (sha2_byte*)0) {
 		usedspace = (context->bitcount >> 3) % SHA256_BLOCK_LENGTH;
 		/* Begin padding with a 1 bit: */
 		((uint8_t*)context->buffer)[usedspace++] = 0x80;
-		
+
 		if (usedspace > SHA256_SHORT_BLOCK_LENGTH) {
 			memzero(((uint8_t*)context->buffer) + usedspace, SHA256_BLOCK_LENGTH - usedspace);
 
@@ -915,7 +916,7 @@ void sha256_Final(SHA256_CTX* context, sha2_byte digest[]) {
 #endif
 			/* Do second-to-last transform: */
 			sha256_Transform(context->state, context->buffer, context->state);
-			
+
 			/* And prepare the last transform: */
 			usedspace = 0;
 		}
@@ -950,8 +951,8 @@ void sha256_Final(SHA256_CTX* context, sha2_byte digest[]) {
 }
 
 char *sha256_End(SHA256_CTX* context, char buffer[]) {
-	sha2_byte	digest[SHA256_DIGEST_LENGTH], *d = digest;
-	int		i;
+	sha2_byte	digest[SHA256_DIGEST_LENGTH] = {0}, *d = digest;
+	int		i = 0;
 
 	if (buffer != (char*)0) {
 		sha256_Final(context, digest);
@@ -970,14 +971,14 @@ char *sha256_End(SHA256_CTX* context, char buffer[]) {
 }
 
 void sha256_Raw(const sha2_byte* data, size_t len, uint8_t digest[SHA256_DIGEST_LENGTH]) {
-	SHA256_CTX	context;
+	SHA256_CTX	context = {0};
 	sha256_Init(&context);
 	sha256_Update(&context, data, len);
 	sha256_Final(&context, digest);
 }
 
 char* sha256_Data(const sha2_byte* data, size_t len, char digest[SHA256_DIGEST_STRING_LENGTH]) {
-	SHA256_CTX	context;
+	SHA256_CTX	context = {0};
 
 	sha256_Init(&context);
 	sha256_Update(&context, data, len);
@@ -995,6 +996,7 @@ void sha512_Init(SHA512_CTX* context) {
 	context->bitcount[0] = context->bitcount[1] =  0;
 }
 
+// [wallet-core]
 void sha512_256_Init(SHA512_CTX* context) {
 	if (context == (SHA512_CTX*)0) {
 		return;
@@ -1026,9 +1028,9 @@ void sha512_256_Init(SHA512_CTX* context) {
 	j++
 
 void sha512_Transform(const sha2_word64* state_in, const sha2_word64* data, sha2_word64* state_out) {
-	sha2_word64	a, b, c, d, e, f, g, h, s0, s1;
-	sha2_word64	T1, W512[16];
-	int		j;
+	sha2_word64	a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0, s0 = 0, s1 = 0;
+	sha2_word64	T1 = 0, W512[16] = {0};
+	int		j = 0;
 
 	/* Initialize registers with the prev. intermediate value */
 	a = state_in[0];
@@ -1081,9 +1083,9 @@ void sha512_Transform(const sha2_word64* state_in, const sha2_word64* data, sha2
 #else /* SHA2_UNROLL_TRANSFORM */
 
 void sha512_Transform(const sha2_word64* state_in, const sha2_word64* data, sha2_word64* state_out) {
-	sha2_word64	a, b, c, d, e, f, g, h, s0, s1;
-	sha2_word64	T1, T2, W512[16];
-	int		j;
+	sha2_word64	a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0, s0 = 0, s1 = 0;
+	sha2_word64	T1 = 0, T2 = 0, W512[16] = {0};
+	int		j = 0;
 
 	/* Initialize registers with the prev. intermediate value */
 	a = state_in[0];
@@ -1152,7 +1154,7 @@ void sha512_Transform(const sha2_word64* state_in, const sha2_word64* data, sha2
 #endif /* SHA2_UNROLL_TRANSFORM */
 
 void sha512_Update(SHA512_CTX* context, const sha2_byte *data, size_t len) {
-	unsigned int	freespace, usedspace;
+	unsigned int	freespace = 0, usedspace = 0;
 
 	if (len == 0) {
 		/* Calling with no data is valid - we do nothing */
@@ -1210,12 +1212,12 @@ void sha512_Update(SHA512_CTX* context, const sha2_byte *data, size_t len) {
 }
 
 static void sha512_Last(SHA512_CTX* context) {
-	unsigned int	usedspace;
+	unsigned int	usedspace = 0;
 
 	usedspace = (context->bitcount[0] >> 3) % SHA512_BLOCK_LENGTH;
 	/* Begin padding with a 1 bit: */
 	((uint8_t*)context->buffer)[usedspace++] = 0x80;
-	
+
 	if (usedspace > SHA512_SHORT_BLOCK_LENGTH) {
 		memzero(((uint8_t*)context->buffer) + usedspace, SHA512_BLOCK_LENGTH - usedspace);
 
@@ -1268,8 +1270,8 @@ void sha512_Final(SHA512_CTX* context, sha2_byte digest[]) {
 }
 
 char *sha512_End(SHA512_CTX* context, char buffer[]) {
-	sha2_byte	digest[SHA512_DIGEST_LENGTH], *d = digest;
-	int		i;
+	sha2_byte	digest[SHA512_DIGEST_LENGTH] = {0}, *d = digest;
+	int		i = 0;
 
 	if (buffer != (char*)0) {
 		sha512_Final(context, digest);
@@ -1288,14 +1290,15 @@ char *sha512_End(SHA512_CTX* context, char buffer[]) {
 }
 
 void sha512_Raw(const sha2_byte* data, size_t len, uint8_t digest[SHA512_DIGEST_LENGTH]) {
-	SHA512_CTX	context;
+	SHA512_CTX	context = {0};
 	sha512_Init(&context);
 	sha512_Update(&context, data, len);
 	sha512_Final(&context, digest);
 }
 
+// [wallet-core]
 void sha512_256_Raw(const sha2_byte* data, size_t len, uint8_t digest[SHA256_DIGEST_LENGTH]) {
-	SHA512_CTX	context;
+	SHA512_CTX	context = {0};
 	uint8_t result[SHA512_DIGEST_LENGTH];
 	sha512_256_Init(&context);
 	sha512_Update(&context, data, len);
@@ -1306,7 +1309,7 @@ void sha512_256_Raw(const sha2_byte* data, size_t len, uint8_t digest[SHA256_DIG
 }
 
 char* sha512_Data(const sha2_byte* data, size_t len, char digest[SHA512_DIGEST_STRING_LENGTH]) {
-	SHA512_CTX	context;
+	SHA512_CTX	context = {0};
 
 	sha512_Init(&context);
 	sha512_Update(&context, data, len);

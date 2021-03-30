@@ -1,6 +1,5 @@
 /**
- * Copyright (c) 2013-2014 Tomas Dzetkulic
- * Copyright (c) 2013-2014 Pavol Rusnak
+ * Copyright (c) 2019 Andrew R. Kozlik
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the "Software"),
@@ -21,25 +20,24 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __XRP_BASE58_H__
-#define __XRP_BASE58_H__
+#ifndef __HMAC_DRBG_H__
+#define __HMAC_DRBG_H__
 
+#include <TrezorCrypto/sha2.h>
 #include <stdint.h>
-#include <stdbool.h>
-#include <TrezorCrypto/hasher.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// HMAC based Deterministic Random Bit Generator with SHA-256
 
-extern const char xrp_b58digits[];
-extern const int8_t xrp_b58digits_map[];
+typedef struct _HMAC_DRBG_CTX {
+  uint32_t odig[SHA256_DIGEST_LENGTH / sizeof(uint32_t)];
+  uint32_t idig[SHA256_DIGEST_LENGTH / sizeof(uint32_t)];
+  uint32_t v[SHA256_BLOCK_LENGTH / sizeof(uint32_t)];
+} HMAC_DRBG_CTX;
 
-int xrp_base58_encode_check(const uint8_t *data, int len, HasherType hasher_type, char *str, int strsize);
-int xrp_base58_decode_check(const char *str, HasherType hasher_type, uint8_t *data, int datalen);
-
-#ifdef __cplusplus
-} /* extern "C" */
-#endif
+void hmac_drbg_init(HMAC_DRBG_CTX *ctx, const uint8_t *buf, size_t len,
+                    const uint8_t *nonce, size_t nonce_len);
+void hmac_drbg_reseed(HMAC_DRBG_CTX *ctx, const uint8_t *buf, size_t len,
+                      const uint8_t *addin, size_t addin_len);
+void hmac_drbg_generate(HMAC_DRBG_CTX *ctx, uint8_t *buf, size_t len);
 
 #endif

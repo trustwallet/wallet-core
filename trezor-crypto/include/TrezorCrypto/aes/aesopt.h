@@ -193,7 +193,7 @@ Issue Date: 20/12/2007
 	assembler code will be used with an AESNI build, if it is then
 	AES_REV_DKS must NOT be defined when the assembler files are
 	built (the definition of USE_INTEL_AES_IF_PRESENT in the assembler
-	code files must match that here if they are used). 
+	code files must match that here if they are used).
 */
 
 #if 0 && defined( INTEL_AES_POSSIBLE ) && !defined( USE_INTEL_AES_IF_PRESENT )

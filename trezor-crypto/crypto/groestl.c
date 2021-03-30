@@ -34,10 +34,10 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "groestl_internal.h"
-
-#include <TrezorCrypto/memzero.h>
+#include <TrezorCrypto/groestl_internal.h>
 #include <TrezorCrypto/groestl.h>
+#include <TrezorCrypto/memzero.h>
+
 
 #define C32e(x)     ((SPH_C32(x) >> 24) \
                     | ((SPH_C32(x) >>  8) & SPH_C32(0x0000FF00)) \
@@ -81,7 +81,7 @@
 #define QC64(j, r)  (((sph_u64)(r) << 56) ^ SPH_T64(~((sph_u64)(j) << 56)))
 
 
-static const sph_u32 T0up[] = {
+const sph_u32 T0up[] = {
 	C32e(0xc632f4a5), C32e(0xf86f9784), C32e(0xee5eb099), C32e(0xf67a8c8d),
 	C32e(0xffe8170d), C32e(0xd60adcbd), C32e(0xde16c8b1), C32e(0x916dfc54),
 	C32e(0x6090f050), C32e(0x02070503), C32e(0xce2ee0a9), C32e(0x56d1877d),
@@ -148,7 +148,7 @@ static const sph_u32 T0up[] = {
 	C32e(0x7b3d46cb), C32e(0xa8b71ffc), C32e(0x6d0c61d6), C32e(0x2c624e3a)
 };
 
-static const sph_u32 T0dn[] = {
+const sph_u32 T0dn[] = {
 	C32e(0xf497a5c6), C32e(0x97eb84f8), C32e(0xb0c799ee), C32e(0x8cf78df6),
 	C32e(0x17e50dff), C32e(0xdcb7bdd6), C32e(0xc8a7b1de), C32e(0xfc395491),
 	C32e(0xf0c05060), C32e(0x05040302), C32e(0xe087a9ce), C32e(0x87ac7d56),
@@ -215,7 +215,7 @@ static const sph_u32 T0dn[] = {
 	C32e(0x46f6cb7b), C32e(0x1f4bfca8), C32e(0x61dad66d), C32e(0x4e583a2c)
 };
 
-static const sph_u32 T1up[] = {
+const sph_u32 T1up[] = {
 	C32e(0xc6c632f4), C32e(0xf8f86f97), C32e(0xeeee5eb0), C32e(0xf6f67a8c),
 	C32e(0xffffe817), C32e(0xd6d60adc), C32e(0xdede16c8), C32e(0x91916dfc),
 	C32e(0x606090f0), C32e(0x02020705), C32e(0xcece2ee0), C32e(0x5656d187),
@@ -282,7 +282,7 @@ static const sph_u32 T1up[] = {
 	C32e(0x7b7b3d46), C32e(0xa8a8b71f), C32e(0x6d6d0c61), C32e(0x2c2c624e)
 };
 
-static const sph_u32 T1dn[] = {
+const sph_u32 T1dn[] = {
 	C32e(0xa5f497a5), C32e(0x8497eb84), C32e(0x99b0c799), C32e(0x8d8cf78d),
 	C32e(0x0d17e50d), C32e(0xbddcb7bd), C32e(0xb1c8a7b1), C32e(0x54fc3954),
 	C32e(0x50f0c050), C32e(0x03050403), C32e(0xa9e087a9), C32e(0x7d87ac7d),
@@ -350,7 +350,7 @@ static const sph_u32 T1dn[] = {
 };
 
 #define DECL_STATE_SMALL \
-	sph_u32 H[16];
+	sph_u32 H[16] = {0};
 
 #define READ_STATE_SMALL(sc)   do { \
 		memcpy(H, (sc)->state.narrow, sizeof H); \
@@ -476,7 +476,7 @@ static const sph_u32 T1dn[] = {
 	} while (0)
 
 #define DECL_STATE_BIG \
-	sph_u32 H[32];
+	sph_u32 H[32] = {0};
 
 #define READ_STATE_BIG(sc)   do { \
 		memcpy(H, (sc)->state.narrow, sizeof H); \
@@ -675,7 +675,7 @@ static const sph_u32 T1dn[] = {
 static void
 groestl_big_init(sph_groestl_big_context *sc, unsigned out_size)
 {
-	size_t u;
+	size_t u = 0;
 
 	sc->ptr = 0;
 	for (u = 0; u < 31; u ++)
@@ -688,8 +688,8 @@ groestl_big_init(sph_groestl_big_context *sc, unsigned out_size)
 static void
 groestl_big_core(sph_groestl_big_context *sc, const void *data, size_t len)
 {
-	unsigned char *buf;
-	size_t ptr;
+	unsigned char *buf = NULL;
+	size_t ptr = 0;
 	DECL_STATE_BIG
 
 	buf = sc->buf;
@@ -703,7 +703,7 @@ groestl_big_core(sph_groestl_big_context *sc, const void *data, size_t len)
 
 	READ_STATE_BIG(sc);
 	while (len > 0) {
-		size_t clen;
+		size_t clen = 0;
 
 		clen = (sizeof sc->buf) - ptr;
 		if (clen > len)
@@ -726,10 +726,10 @@ static void
 groestl_big_close(sph_groestl_big_context *sc,
 	unsigned ub, unsigned n, void *dst, size_t out_len)
 {
-	unsigned char pad[136];
-	size_t ptr, pad_len, u2;
-	sph_u64 count;
-	unsigned z;
+	unsigned char pad[136] = {0};
+	size_t ptr = 0, pad_len = 0, u2 = 0;
+	sph_u64 count = 0;
+	unsigned z = 0;
 	DECL_STATE_BIG
 
 	ptr = sc->ptr;
@@ -774,7 +774,7 @@ groestl512_Final(void *cc, void *dst)
 void
 groestl512_DoubleTrunc(void *cc, void *dst)
 {
-	char buf[64];
+	char buf[64] = {0};
 
 	groestl512_Final(cc, buf);
 	groestl512_Update(cc, buf, sizeof(buf));

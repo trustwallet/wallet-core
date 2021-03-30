@@ -16,7 +16,7 @@
 #include <string.h>
 
 #include <TrezorCrypto/blake2b.h>
-#include "blake2_common.h"
+#include <TrezorCrypto/blake2_common.h>
 #include <TrezorCrypto/memzero.h>
 
 typedef struct blake2b_param__
@@ -35,7 +35,7 @@ typedef struct blake2b_param__
     uint8_t  personal[BLAKE2B_PERSONALBYTES];  /* 64 */
 } __attribute__((packed)) blake2b_param;
 
-static const uint64_t blake2b_IV[8] =
+const uint64_t blake2b_IV[8] =
 {
   0x6a09e667f3bcc908ULL, 0xbb67ae8584caa73bULL,
   0x3c6ef372fe94f82bULL, 0xa54ff53a5f1d36f1ULL,
@@ -43,7 +43,7 @@ static const uint64_t blake2b_IV[8] =
   0x1f83d9abfb41bd6bULL, 0x5be0cd19137e2179ULL
 };
 
-static const uint8_t blake2b_sigma[12][16] =
+const uint8_t blake2b_sigma[12][16] =
 {
   {  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 } ,
   { 14, 10,  4,  8,  9, 15, 13,  6,  1, 12,  0,  2, 11,  7,  5,  3 } ,
@@ -86,8 +86,8 @@ static void blake2b_increment_counter( blake2b_state *S, const uint64_t inc )
 
 static void blake2b_init0( blake2b_state *S )
 {
-  size_t i;
-  memset( S, 0, sizeof( blake2b_state ) );
+  size_t i = 0;
+  memzero( S, sizeof( blake2b_state ) );
 
   for( i = 0; i < 8; ++i ) S->h[i] = blake2b_IV[i];
 }
@@ -96,7 +96,7 @@ static void blake2b_init0( blake2b_state *S )
 int blake2b_init_param( blake2b_state *S, const blake2b_param *P )
 {
   const uint8_t *p = ( const uint8_t * )( P );
-  size_t i;
+  size_t i = 0;
 
   blake2b_init0( S );
 
@@ -112,7 +112,7 @@ int blake2b_init_param( blake2b_state *S, const blake2b_param *P )
 /* Sequential blake2b initialization */
 int blake2b_Init( blake2b_state *S, size_t outlen )
 {
-  blake2b_param P[1];
+  blake2b_param P[1] = {0};
 
   if ( ( !outlen ) || ( outlen > BLAKE2B_OUTBYTES ) ) return -1;
 
@@ -125,15 +125,15 @@ int blake2b_Init( blake2b_state *S, size_t outlen )
   store32( &P->xof_length, 0 );
   P->node_depth    = 0;
   P->inner_length  = 0;
-  memset( P->reserved, 0, sizeof( P->reserved ) );
-  memset( P->salt,     0, sizeof( P->salt ) );
-  memset( P->personal, 0, sizeof( P->personal ) );
+  memzero( P->reserved, sizeof( P->reserved ) );
+  memzero( P->salt,     sizeof( P->salt ) );
+  memzero( P->personal, sizeof( P->personal ) );
   return blake2b_init_param( S, P );
 }
 
 int blake2b_InitPersonal( blake2b_state *S, size_t outlen, const void *personal, size_t personal_len)
 {
-  blake2b_param P[1];
+  blake2b_param P[1] = {0};
 
   if ( ( !outlen ) || ( outlen > BLAKE2B_OUTBYTES ) ) return -1;
   if ( ( !personal ) || ( personal_len != BLAKE2B_PERSONALBYTES ) ) return -1;
@@ -147,15 +147,15 @@ int blake2b_InitPersonal( blake2b_state *S, size_t outlen, const void *personal,
   store32( &P->xof_length, 0 );
   P->node_depth    = 0;
   P->inner_length  = 0;
-  memset( P->reserved, 0, sizeof( P->reserved ) );
-  memset( P->salt,     0, sizeof( P->salt ) );
+  memzero( P->reserved, sizeof( P->reserved ) );
+  memzero( P->salt,     sizeof( P->salt ) );
   memcpy( P->personal, personal, BLAKE2B_PERSONALBYTES );
   return blake2b_init_param( S, P );
 }
 
 int blake2b_InitKey( blake2b_state *S, size_t outlen, const void *key, size_t keylen )
 {
-  blake2b_param P[1];
+  blake2b_param P[1] = {0};
 
   if ( ( !outlen ) || ( outlen > BLAKE2B_OUTBYTES ) ) return -1;
 
@@ -170,15 +170,15 @@ int blake2b_InitKey( blake2b_state *S, size_t outlen, const void *key, size_t ke
   store32( &P->xof_length, 0 );
   P->node_depth    = 0;
   P->inner_length  = 0;
-  memset( P->reserved, 0, sizeof( P->reserved ) );
-  memset( P->salt,     0, sizeof( P->salt ) );
-  memset( P->personal, 0, sizeof( P->personal ) );
+  memzero( P->reserved, sizeof( P->reserved ) );
+  memzero( P->salt,     sizeof( P->salt ) );
+  memzero( P->personal, sizeof( P->personal ) );
 
   if( blake2b_init_param( S, P ) < 0 ) return -1;
 
   {
-    uint8_t block[BLAKE2B_BLOCKBYTES];
-    memset( block, 0, BLAKE2B_BLOCKBYTES );
+    uint8_t block[BLAKE2B_BLOCKBYTES] = {0};
+    memzero( block, BLAKE2B_BLOCKBYTES );
     memcpy( block, key, keylen );
     blake2b_Update( S, block, BLAKE2B_BLOCKBYTES );
     memzero( block, BLAKE2B_BLOCKBYTES ); /* Burn the key from stack */
@@ -212,9 +212,9 @@ int blake2b_InitKey( blake2b_state *S, size_t outlen, const void *key, size_t ke
 
 static void blake2b_compress( blake2b_state *S, const uint8_t block[BLAKE2B_BLOCKBYTES] )
 {
-  uint64_t m[16];
-  uint64_t v[16];
-  size_t i;
+  uint64_t m[16] = {0};
+  uint64_t v[16] = {0};
+  size_t i = 0;
 
   for( i = 0; i < 16; ++i ) {
     m[i] = load64( block + i * sizeof( m[i] ) );
@@ -284,7 +284,7 @@ int blake2b_Update( blake2b_state *S, const void *pin, size_t inlen )
 int blake2b_Final( blake2b_state *S, void *out, size_t outlen )
 {
   uint8_t buffer[BLAKE2B_OUTBYTES] = {0};
-  size_t i;
+  size_t i = 0;
 
   if( out == NULL || outlen < S->outlen )
     return -1;
@@ -294,7 +294,7 @@ int blake2b_Final( blake2b_state *S, void *out, size_t outlen )
 
   blake2b_increment_counter( S, S->buflen );
   blake2b_set_lastblock( S );
-  memset( S->buf + S->buflen, 0, BLAKE2B_BLOCKBYTES - S->buflen ); /* Padding */
+  memzero( S->buf + S->buflen, BLAKE2B_BLOCKBYTES - S->buflen ); /* Padding */
   blake2b_compress( S, S->buf );
 
   for( i = 0; i < 8; ++i ) /* Output full hash to temp buffer */
@@ -314,6 +314,7 @@ int blake2b(const uint8_t *msg, uint32_t msg_len, void *out, size_t outlen)
     return 0;
 }
 
+// [wallet-core]
 int blake2b_Personal(const uint8_t *msg, uint32_t msg_len, const void *personal, size_t personal_len, void *out, size_t outlen)
 {
     BLAKE2B_CTX ctx;
