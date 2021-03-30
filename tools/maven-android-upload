@@ -9,11 +9,6 @@ snapshot=$1
 export ANDROID_HOME="$HOME/Library/Android/sdk"
 pushd android
 
-if [ "$snapshot" = true ]; then
-  version=`git rev-parse --short HEAD`"-SNAPSHOT"
-  ./gradlew clean build assembleRelease artifactoryPublish -Pversion="$version"
-else
-  ./gradlew clean build assembleRelease bintrayUpload -Pversion="$version"
-fi
+./gradlew clean build assembleRelease publish -Pversion="$version"
 
 echo "Android build uploaded"
