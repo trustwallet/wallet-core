@@ -23,7 +23,6 @@ class AvalancheTests: XCTestCase {
         let key = PrivateKey(data: Data(hexString: "0x56289e99c94b6912bfc12adc093c9b51124f0dc54ac7a766b2bc5ccf558d8027")!)!
         let blockchainID = Data(hexString: "0xd891ad56056d9c01f18f43f58b5c784ad07a4a49cf3d1f11623804b5cba2c6bf")!
         let pubkey = key.getPublicKeySecp256k1(compressed: false)
-        let address = AnyAddress(publicKey: pubkey, coin: .avalancheXChain)
         let netID = UInt32(12345)
         let assetID = Data(hexString: "0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db")!
         let txID = Data(hexString: "0xf1e1d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000")!
