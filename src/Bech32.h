@@ -12,9 +12,6 @@
 #include <vector>
 #include <tuple>
 
-#include "HexCoding.h" // TODO remove
-#include <iostream> // TODO remove
-
 namespace TW::Bech32 {
 
 enum ChecksumVariant {

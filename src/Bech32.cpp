@@ -31,6 +31,7 @@ constexpr std::array<int8_t, 128> charset_rev = {
     6,  4,  2,  -1, -1, -1, -1, -1, -1, 29, -1, 24, 13, 25, 9,  8,  23, -1, 18, 22, 31, 27,
     19, -1, 1,  0,  3,  16, 11, 28, 12, 14, 6,  4,  2,  -1, -1, -1, -1, -1};
 
+const uint32_t BECH32_XOR_CONST = 0x01;
 const uint32_t BECH32M_XOR_CONST = 0x2bc830a3;
 
 
@@ -66,7 +67,7 @@ Data expand_hrp(const std::string& hrp) {
 
 inline uint32_t xorConstant(ChecksumVariant variant) {
     if (variant == ChecksumVariant::Bech32) {
-        return 0x01;
+        return BECH32_XOR_CONST;
     }
     // Bech32M
     return BECH32M_XOR_CONST;
@@ -77,7 +78,7 @@ ChecksumVariant verify_checksum(const std::string& hrp, const Data& values) {
     Data enc = expand_hrp(hrp);
     append(enc, values);
     auto poly = polymod(enc);
-    if (poly == 1) {
+    if (poly == BECH32_XOR_CONST) {
         return ChecksumVariant::Bech32;
     }
     if (poly == BECH32M_XOR_CONST) {
