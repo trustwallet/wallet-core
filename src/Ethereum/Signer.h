@@ -36,11 +36,15 @@ class Signer {
     explicit Signer(uint256_t chainID) : chainID(std::move(chainID)) {}
 
     /// Signs the given transaction.
-    void sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept;
+    // Works on Legacy, should be more generic
+    void sign(const PrivateKey &privateKey, TransactionLegacy &transaction) const noexcept;
 
   public:
     /// build Transaction from signing input
     static Transaction build(const Proto::SigningInput &input);
+
+    /// build TransactionLegacy from signing input
+    static TransactionLegacy buildLegacy(const Proto::SigningInput &input);
 
     /// Signs a hash with the given private key for the given chain identifier.
     ///
@@ -56,7 +60,7 @@ class Signer {
 
   protected:
     /// Computes the transaction hash.
-    Data hash(const Transaction &transaction) const noexcept;
+    Data hash(const TransactionLegacy &transaction) const noexcept;
 };
 
 } // namespace TW::Ethereum

@@ -32,14 +32,14 @@ class Signer {
     Signer(boost::multiprecision::uint256_t chainID) : chainID(std::move(chainID)) {}
 
     /// Signs the given transaction.
-    void sign(const PrivateKey &privateKey, Ethereum::Transaction &transaction) const noexcept;
+    void sign(const PrivateKey &privateKey, Ethereum::TransactionLegacy &transaction) const noexcept;
 
     /// Encodes a transaction.
-    Data encode(const Ethereum::Transaction &transaction) const noexcept;
+    Data encode(const Ethereum::TransactionLegacy &transaction) const noexcept;
 
   protected:
     /// Computes the transaction hash.
-    Data hash(const Ethereum::Transaction &transaction) const noexcept;
+    Data hash(const Ethereum::TransactionLegacy &transaction) const noexcept;
 };
 
 } // namespace TW::Wanchain

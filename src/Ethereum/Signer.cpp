@@ -15,25 +15,26 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     try {
         auto signer = Signer(load(input.chain_id()));
         auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-        auto transaction = Signer::build(input);
+        // TODO legacy is used here, but should be generic
+        auto transactionLegacy = Signer::buildLegacy(input);
 
-        signer.sign(key, transaction);
+        signer.sign(key, transactionLegacy);
 
         auto output = Proto::SigningOutput();
 
-        auto encoded = RLP::encode(transaction);
+        auto encoded = RLP::encodeLegacy(transactionLegacy);
         output.set_encoded(encoded.data(), encoded.size());
 
-        auto v = store(transaction.v);
+        auto v = store(transactionLegacy.v);
         output.set_v(v.data(), v.size());
 
-        auto r = store(transaction.r);
+        auto r = store(transactionLegacy.r);
         output.set_r(r.data(), r.size());
 
-        auto s = store(transaction.s);
+        auto s = store(transactionLegacy.s);
         output.set_s(s.data(), s.size());
 
-        output.set_data(transaction.payload.data(), transaction.payload.size());
+        output.set_data(transactionLegacy.payload.data(), transactionLegacy.payload.size());
 
         return output;
     } catch (std::exception&) {
@@ -86,18 +87,34 @@ Data addressStringToData(const std::string& asString) {
 }
 
 Transaction Signer::build(const Proto::SigningInput &input) {
+    uint256_t gasPrice = load(input.gas_price());
+    if (gasPrice != 0) {
+        // legacy
+        return Transaction::createLegacy(RLP::encodeLegacy(buildLegacy(input)));
+    }
+    // EIP1559, enveloped
+    // AccessList for now
+    uint256_t nonce = load(input.nonce());
+    uint256_t gasLimit = load(input.gas_limit());
+    Data toAddress = addressStringToData(input.to_address());
+    // TODO field
+    auto accessList = TransactionEnveloped::buildERC2930AccessListPayload(nonce, gasPrice, gasLimit, toAddress,
+        0, Data(), Data(), Data(), Data(), Data());
+    return Transaction::createEnveloped(TransactionType::OptionalAccessList, accessList);
+}
+
+TransactionLegacy Signer::buildLegacy(const Proto::SigningInput &input) {
     Data toAddress = addressStringToData(input.to_address());
     uint256_t nonce = load(input.nonce());
     uint256_t gasPrice = load(input.gas_price());
     uint256_t gasLimit = load(input.gas_limit());
-    uint256_t maxInclusionFee = load(input.max_inclusion_fee_per_gas());
-    uint256_t maxFee = load(input.max_fee_per_gas());
+    assert(gasPrice != 0);
     switch (input.transaction().transaction_oneof_case()) {
         case Proto::Transaction::kTransfer:
             {
-                auto transaction = Transaction(
+                auto transaction = TransactionLegacy(
                     nonce,
-                    gasPrice, gasLimit, maxInclusionFee, maxFee,
+                    gasPrice, gasLimit,
                     /* to: */ toAddress,
                     /* amount: */ load(input.transaction().transfer().amount()),
                     /* optionalTransaction: */ Data(input.transaction().transfer().data().begin(), input.transaction().transfer().data().end()));
@@ -107,9 +124,9 @@ Transaction Signer::build(const Proto::SigningInput &input) {
         case Proto::Transaction::kErc20Transfer:
             {
                 Data tokenToAddress = addressStringToData(input.transaction().erc20_transfer().to());
-                auto transaction = Transaction::buildERC20Transfer(
+                auto transaction = TransactionLegacy::buildERC20Transfer(
                     nonce,
-                    gasPrice, gasLimit, maxInclusionFee, maxFee,
+                    gasPrice, gasLimit,
                     /* tokenContract: */ toAddress,
                     /* toAddress */ tokenToAddress,
                     /* amount: */ load(input.transaction().erc20_transfer().amount()));
@@ -119,9 +136,9 @@ Transaction Signer::build(const Proto::SigningInput &input) {
         case Proto::Transaction::kErc20Approve:
             {
                 Data spenderAddress = addressStringToData(input.transaction().erc20_approve().spender());
-                auto transaction = Transaction::buildERC20Approve(
+                auto transaction = TransactionLegacy::buildERC20Approve(
                     nonce,
-                    gasPrice, gasLimit, maxInclusionFee, maxFee,
+                    gasPrice, gasLimit,
                     /* tokenContract: */ toAddress,
                     /* toAddress */ spenderAddress,
                     /* amount: */ load(input.transaction().erc20_approve().amount()));
@@ -132,9 +149,9 @@ Transaction Signer::build(const Proto::SigningInput &input) {
             {
                 Data tokenToAddress = addressStringToData(input.transaction().erc721_transfer().to());
                 Data tokenFromAddress = addressStringToData(input.transaction().erc721_transfer().from());
-                auto transaction = Transaction::buildERC721Transfer(
+                auto transaction = TransactionLegacy::buildERC721Transfer(
                     nonce,
-                    gasPrice, gasLimit, maxInclusionFee, maxFee,
+                    gasPrice, gasLimit,
                     /* tokenContract: */ toAddress,
                     /* fromAddress: */ tokenFromAddress,
                     /* toAddress */ tokenToAddress,
@@ -146,9 +163,9 @@ Transaction Signer::build(const Proto::SigningInput &input) {
             {
                 Data tokenToAddress = addressStringToData(input.transaction().erc1155_transfer().to());
                 Data tokenFromAddress = addressStringToData(input.transaction().erc1155_transfer().from());
-                auto transaction = Transaction::buildERC1155Transfer(
+                auto transaction = TransactionLegacy::buildERC1155Transfer(
                     nonce,
-                    gasPrice, gasLimit, maxInclusionFee, maxFee,
+                    gasPrice, gasLimit,
                     /* tokenContract: */ toAddress,
                     /* fromAddress: */ tokenFromAddress,
                     /* toAddress */ tokenToAddress,
@@ -162,9 +179,9 @@ Transaction Signer::build(const Proto::SigningInput &input) {
         case Proto::Transaction::kContractGeneric:
         default:
             {
-                auto transaction = Transaction(
+                auto transaction = TransactionLegacy(
                     nonce,
-                    gasPrice, gasLimit, maxInclusionFee, maxFee,
+                    gasPrice, gasLimit,
                     /* to: */ toAddress,
                     /* amount: */ load(input.transaction().contract_generic().amount()),
                     /* transaction: */ Data(input.transaction().contract_generic().data().begin(), input.transaction().contract_generic().data().end()));
@@ -173,7 +190,7 @@ Transaction Signer::build(const Proto::SigningInput &input) {
     }
 }
 
-void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept {
+void Signer::sign(const PrivateKey &privateKey, TransactionLegacy &transaction) const noexcept {
     auto hash = this->hash(transaction);
     auto tuple = Signer::sign(chainID, privateKey, hash);
 
@@ -182,7 +199,7 @@ void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const 
     transaction.v = std::get<2>(tuple);
 }
 
-Data Signer::hash(const Transaction &transaction) const noexcept {
+Data Signer::hash(const TransactionLegacy &transaction) const noexcept {
     auto encoded = Data();
     append(encoded, RLP::encode(transaction.nonce));
     append(encoded, RLP::encode(transaction.gasPrice));

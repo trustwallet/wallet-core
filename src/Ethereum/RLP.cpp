@@ -40,20 +40,20 @@ Data RLP::encodeList(const Data& encoded) noexcept {
 }
 
 Data RLP::encode(const Transaction& transaction) noexcept {
-    if (transaction.gasPrice != 0) {
+    if (transaction.isLegacy) {
         // legacy format
-        Data encoded = encodeLegacy(transaction);
-        assert(encoded.size() >= 2);
-        assert(encoded[0] >= 0xc0); // first byte of legacy
-        return encoded;
+        return transaction.encoded;
     }
-    // EIP1559
-    assert(transaction.gasPrice != 0); // EIP1559 not yet supported
-    return Data();
+    // enveloped transaction (EIP2718)
+    Data encoded;
+    uint8_t type = static_cast<uint8_t>(transaction.type);
+    encoded.push_back(type);
+    append(encoded, transaction.encoded);
+    return encoded;
 }
 
-Data RLP::encodeLegacy(const Transaction& transaction) noexcept {
-    auto encoded = Data();
+Data RLP::encodeLegacy(const TransactionLegacy& transaction) noexcept {
+    Data encoded;
     append(encoded, encode(transaction.nonce));
     append(encoded, encode(transaction.gasPrice));
     append(encoded, encode(transaction.gasLimit));

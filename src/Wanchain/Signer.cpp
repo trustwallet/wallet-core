@@ -13,7 +13,7 @@ using namespace TW::Wanchain;
 Ethereum::Proto::SigningOutput Signer::sign(const Ethereum::Proto::SigningInput& input) noexcept {
     auto signer = Signer(load(input.chain_id()));
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    auto transaction = Ethereum::Signer::build(input);
+    auto transaction = Ethereum::Signer::buildLegacy(input);
 
     signer.sign(key, transaction);
 
@@ -34,7 +34,7 @@ Ethereum::Proto::SigningOutput Signer::sign(const Ethereum::Proto::SigningInput&
     return output;
 }
 
-void Signer::sign(const PrivateKey& privateKey, Ethereum::Transaction& transaction) const noexcept {
+void Signer::sign(const PrivateKey& privateKey, Ethereum::TransactionLegacy& transaction) const noexcept {
     transaction.v = chainID;
     transaction.r = 0;
     transaction.s = 0;
@@ -46,7 +46,7 @@ void Signer::sign(const PrivateKey& privateKey, Ethereum::Transaction& transacti
     transaction.v = std::get<2>(tuple);
 }
 
-Data Signer::encode(const Ethereum::Transaction& transaction) const noexcept {
+Data Signer::encode(const Ethereum::TransactionLegacy& transaction) const noexcept {
     auto encoded = Data();
     append(encoded, Ethereum::RLP::encode(1));
     append(encoded, Ethereum::RLP::encode(transaction.nonce));
@@ -61,7 +61,7 @@ Data Signer::encode(const Ethereum::Transaction& transaction) const noexcept {
     return Ethereum::RLP::encodeList(encoded);
 }
 
-Data Signer::hash(const Ethereum::Transaction& transaction) const noexcept {
+Data Signer::hash(const Ethereum::TransactionLegacy& transaction) const noexcept {
     const auto encoded = Signer::encode(transaction);
     return Hash::keccak256(encoded);
 }

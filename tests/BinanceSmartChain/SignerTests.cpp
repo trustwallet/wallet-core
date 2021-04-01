@@ -33,12 +33,10 @@ TEST(BinanceSmartChain, SignNativeTransfer) {
     // https://explorer.binance.org/smart-testnet/tx/0x6da28164f7b3bc255d749c3ae562e2a742be54c12bf1858b014cc2fe5700684e
 
     auto toAddress = parse_hex("0x31BE00EB1fc8e14A696DBC72f746ec3e95f49683");
-    auto transaction = Transaction(
+    auto transaction = TransactionLegacy(
         /* nonce: */ 0,
         /* gasPrice: */ 20000000000,
         /* gasLimit: */ 21000,
-        /* maxInclusionFee: */ 0,
-        /* maxFee: */ 0,
         /* to: */ toAddress,
         /* amount: */ 10000000000000000 // 0.01
     );
@@ -48,7 +46,7 @@ TEST(BinanceSmartChain, SignNativeTransfer) {
     auto signer = SignerExposed(97);
     signer.sign(privateKey, transaction);
 
-    auto encoded = RLP::encode(transaction);
+    auto encoded = RLP::encodeLegacy(transaction);
     ASSERT_EQ(hex(encoded), "f86c808504a817c8008252089431be00eb1fc8e14a696dbc72f746ec3e95f49683872386f26fc100008081e5a057806b486844c5d0b7b5ce34b289f4e8776aa1fe24a3311cef5053995c51050ca07697aa0695de27da817625df0e7e4c64b0ab22d9df30aec92299a7b380be8db7");
 }
 
