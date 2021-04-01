@@ -16,7 +16,6 @@
 
 #include <boost/multiprecision/cpp_int.hpp>
 #include <cstdint>
-#include <tuple>
 #include <vector>
 
 namespace TW::Ethereum {
@@ -37,30 +36,26 @@ class Signer {
 
     /// Signs the given transaction.
     // Works on Legacy, should be more generic
-    void sign(const PrivateKey &privateKey, TransactionLegacy &transaction) const noexcept;
+    SignatureRSV sign(const PrivateKey& privateKey, const TransactionLegacy& transaction) const noexcept;
 
   public:
+    /*
     /// build Transaction from signing input
-    static Transaction build(const Proto::SigningInput &input);
-
+    static TransactionXX build(const Proto::SigningInput& input);
+    */
+  
     /// build TransactionLegacy from signing input
-    static TransactionLegacy buildLegacy(const Proto::SigningInput &input);
+    static TransactionLegacy buildLegacy(const Proto::SigningInput& input);
 
     /// Signs a hash with the given private key for the given chain identifier.
     ///
     /// @returns the r, s, and v values of the transaction signature
-    static std::tuple<uint256_t, uint256_t, uint256_t>
-    sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data& hash) noexcept;
+    static SignatureRSV sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) noexcept;
 
     /// R, S, and V values for the given chain identifier and signature.
     ///
     /// @returns the r, s, and v values of the transaction signature
-    static std::tuple<uint256_t, uint256_t, uint256_t> values(const uint256_t &chainID,
-                                                              const Data& signature) noexcept;
-
-  protected:
-    /// Computes the transaction hash.
-    Data hash(const TransactionLegacy &transaction) const noexcept;
+    static SignatureRSV values(const uint256_t& chainID, const Data& signature) noexcept;
 };
 
 } // namespace TW::Ethereum

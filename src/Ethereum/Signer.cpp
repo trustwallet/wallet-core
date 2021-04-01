@@ -18,20 +18,21 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         // TODO legacy is used here, but should be generic
         auto transactionLegacy = Signer::buildLegacy(input);
 
-        signer.sign(key, transactionLegacy);
+        auto signature = signer.sign(key, transactionLegacy);
 
         auto output = Proto::SigningOutput();
 
-        auto encoded = RLP::encodeLegacy(transactionLegacy);
+        //auto encoded = RLP::encodeLegacy(transactionLegacy);
+        auto encoded = transactionLegacy.encoded(signature);
         output.set_encoded(encoded.data(), encoded.size());
 
-        auto v = store(transactionLegacy.v);
+        auto v = store(signature.v);
         output.set_v(v.data(), v.size());
 
-        auto r = store(transactionLegacy.r);
+        auto r = store(signature.r);
         output.set_r(r.data(), r.size());
 
-        auto s = store(transactionLegacy.s);
+        auto s = store(signature.s);
         output.set_s(s.data(), s.size());
 
         output.set_data(transactionLegacy.payload.data(), transactionLegacy.payload.size());
@@ -50,8 +51,7 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     return hex(output.encoded());
 }
 
-std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chainID,
-                                                           const Data& signature) noexcept {
+SignatureRSV Signer::values(const uint256_t& chainID, const Data& signature) noexcept {
     boost::multiprecision::uint256_t r, s, v;
     import_bits(r, signature.begin(), signature.begin() + 32);
     import_bits(s, signature.begin() + 32, signature.begin() + 64);
@@ -65,11 +65,10 @@ std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chai
     } else {
         newV = v;
     }
-    return std::make_tuple(r, s, newV);
+    return SignatureRSV{r, s, newV};
 }
 
-std::tuple<uint256_t, uint256_t, uint256_t>
-Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data& hash) noexcept {
+SignatureRSV Signer::sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) noexcept {
     auto signature = privateKey.sign(hash, TWCurveSECP256k1);
     return values(chainID, signature);
 }
@@ -86,11 +85,12 @@ Data addressStringToData(const std::string& asString) {
     return asData;
 }
 
-Transaction Signer::build(const Proto::SigningInput &input) {
+/*
+TransactionXX Signer::build(const Proto::SigningInput& input) {
     uint256_t gasPrice = load(input.gas_price());
     if (gasPrice != 0) {
         // legacy
-        return Transaction::createLegacy(RLP::encodeLegacy(buildLegacy(input)));
+        return TransactionXX::createLegacy(RLP::encodeLegacy(buildLegacy(input)));
     }
     // EIP1559, enveloped
     // AccessList for now
@@ -100,10 +100,11 @@ Transaction Signer::build(const Proto::SigningInput &input) {
     // TODO field
     auto accessList = TransactionEnveloped::buildERC2930AccessListPayload(nonce, gasPrice, gasLimit, toAddress,
         0, Data(), Data(), Data(), Data(), Data());
-    return Transaction::createEnveloped(TransactionType::OptionalAccessList, accessList);
+    return TransactionXX::createEnveloped(TransactionType::OptionalAccessList, accessList);
 }
+*/
 
-TransactionLegacy Signer::buildLegacy(const Proto::SigningInput &input) {
+TransactionLegacy Signer::buildLegacy(const Proto::SigningInput& input) {
     Data toAddress = addressStringToData(input.to_address());
     uint256_t nonce = load(input.nonce());
     uint256_t gasPrice = load(input.gas_price());
@@ -112,12 +113,12 @@ TransactionLegacy Signer::buildLegacy(const Proto::SigningInput &input) {
     switch (input.transaction().transaction_oneof_case()) {
         case Proto::Transaction::kTransfer:
             {
-                auto transaction = TransactionLegacy(
+                auto transaction = TransactionLegacy::buildNativeTransfer(
                     nonce,
                     gasPrice, gasLimit,
                     /* to: */ toAddress,
                     /* amount: */ load(input.transaction().transfer().amount()),
-                    /* optionalTransaction: */ Data(input.transaction().transfer().data().begin(), input.transaction().transfer().data().end()));
+                    /* optional data: */ Data(input.transaction().transfer().data().begin(), input.transaction().transfer().data().end()));
                 return transaction;
             }
 
@@ -179,7 +180,7 @@ TransactionLegacy Signer::buildLegacy(const Proto::SigningInput &input) {
         case Proto::Transaction::kContractGeneric:
         default:
             {
-                auto transaction = TransactionLegacy(
+                auto transaction = TransactionLegacy::buildNativeTransfer(
                     nonce,
                     gasPrice, gasLimit,
                     /* to: */ toAddress,
@@ -190,25 +191,16 @@ TransactionLegacy Signer::buildLegacy(const Proto::SigningInput &input) {
     }
 }
 
-void Signer::sign(const PrivateKey &privateKey, TransactionLegacy &transaction) const noexcept {
-    auto hash = this->hash(transaction);
-    auto tuple = Signer::sign(chainID, privateKey, hash);
+SignatureRSV Signer::sign(const PrivateKey& privateKey, const TransactionLegacy& transaction) const noexcept {
+    //auto hash = this->hash(transaction, chainID);
+    auto hash = transaction.hash(chainID);
+    auto signature = Signer::sign(chainID, privateKey, hash);
 
-    transaction.r = std::get<0>(tuple);
-    transaction.s = std::get<1>(tuple);
-    transaction.v = std::get<2>(tuple);
-}
+    /*
+    transaction.r = signature.r;
+    transaction.s = signature.s;
+    transaction.v = signature.v;
+    */
 
-Data Signer::hash(const TransactionLegacy &transaction) const noexcept {
-    auto encoded = Data();
-    append(encoded, RLP::encode(transaction.nonce));
-    append(encoded, RLP::encode(transaction.gasPrice));
-    append(encoded, RLP::encode(transaction.gasLimit));
-    append(encoded, RLP::encode(transaction.to));
-    append(encoded, RLP::encode(transaction.amount));
-    append(encoded, RLP::encode(transaction.payload));
-    append(encoded, RLP::encode(chainID));
-    append(encoded, RLP::encode(0));
-    append(encoded, RLP::encode(0));
-    return Hash::keccak256(RLP::encodeList(encoded));
+    return signature;
 }

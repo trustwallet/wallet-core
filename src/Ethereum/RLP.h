@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "Transaction.h"
+//#include "Transaction.h"
 #include "../Data.h"
 #include "../uint256.h"
 
@@ -49,11 +49,13 @@ struct RLP {
 
     static Data encode(const uint256_t& number) noexcept;
 
+    /*
     /// Encodes a transaction.
-    static Data encode(const Transaction& transaction) noexcept;
+    static Data encode(const TransactionXX& transaction) noexcept;
 
     /// Encodes a transaction, legacy format.
     static Data encodeLegacy(const TransactionLegacy& transaction) noexcept;
+    */
 
     /// Wraps encoded data as a list.
     static Data encodeList(const Data& encoded) noexcept;

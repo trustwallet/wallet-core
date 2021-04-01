@@ -39,7 +39,8 @@ Data RLP::encodeList(const Data& encoded) noexcept {
     return result;
 }
 
-Data RLP::encode(const Transaction& transaction) noexcept {
+/*
+Data RLP::encode(const TransactionXX& transaction) noexcept {
     if (transaction.isLegacy) {
         // legacy format
         return transaction.encoded;
@@ -65,6 +66,7 @@ Data RLP::encodeLegacy(const TransactionLegacy& transaction) noexcept {
     append(encoded, encode(transaction.s));
     return encodeList(encoded);
 }
+*/
 
 Data RLP::encode(const Data& data) noexcept {
     if (data.size() == 1 && data[0] <= 0x7f) {

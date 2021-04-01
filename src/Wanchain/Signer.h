@@ -20,6 +20,14 @@
 
 namespace TW::Wanchain {
 
+class Transaction {
+public:
+    Ethereum::TransactionLegacy wrapped;
+    Transaction(const Ethereum::TransactionLegacy& wrapped): wrapped(wrapped) {}
+    Data hash(const uint256_t chainID) const;
+    Data encoded(const Ethereum::SignatureRSV& signature) const;
+};
+
 /// Helper class that performs Wanchain transaction signing.
 class Signer {
   public:
@@ -32,14 +40,16 @@ class Signer {
     Signer(boost::multiprecision::uint256_t chainID) : chainID(std::move(chainID)) {}
 
     /// Signs the given transaction.
-    void sign(const PrivateKey &privateKey, Ethereum::TransactionLegacy &transaction) const noexcept;
+    Ethereum::SignatureRSV sign(const PrivateKey& privateKey, const Transaction& transaction) const noexcept;
 
+    /*
     /// Encodes a transaction.
-    Data encode(const Ethereum::TransactionLegacy &transaction) const noexcept;
+    Data encode(const Ethereum::TransactionLegacy& transaction) const noexcept;
 
   protected:
     /// Computes the transaction hash.
-    Data hash(const Ethereum::TransactionLegacy &transaction) const noexcept;
+    Data hash(const Ethereum::TransactionLegacy& transaction) const noexcept;
+    */
 };
 
 } // namespace TW::Wanchain

@@ -15,6 +15,12 @@ using namespace TW::Ethereum;
 using namespace TW;
 
 
+TransactionLegacy TransactionLegacy::buildNativeTransfer(const uint256_t& nonce,
+    const uint256_t& gasPrice, const uint256_t& gasLimit,
+    const Data& toAddress, const uint256_t& amount, const Data& data) {
+    return TransactionLegacy(nonce, gasPrice, gasLimit, toAddress, amount, data);
+}
+
 TransactionLegacy TransactionLegacy::buildERC20Transfer(const uint256_t& nonce,
     const uint256_t& gasPrice, const uint256_t& gasLimit,
     const Data& tokenContract, const Data& toAddress, const uint256_t& amount) {
@@ -37,6 +43,34 @@ TransactionLegacy TransactionLegacy::buildERC1155Transfer(const uint256_t& nonce
     const uint256_t& gasPrice, const uint256_t& gasLimit,
     const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data) {
     return TransactionLegacy(nonce, gasPrice, gasLimit, tokenContract, 0, TransactionLegacyPayload::buildERC1155TransferFromCall(from, to, tokenId, value, data));
+}
+
+Data TransactionLegacy::hash(const uint256_t chainID) const {
+    Data encoded;
+    append(encoded, RLP::encode(nonce));
+    append(encoded, RLP::encode(gasPrice));
+    append(encoded, RLP::encode(gasLimit));
+    append(encoded, RLP::encode(to));
+    append(encoded, RLP::encode(amount));
+    append(encoded, RLP::encode(payload));
+    append(encoded, RLP::encode(chainID));
+    append(encoded, RLP::encode(0));
+    append(encoded, RLP::encode(0));
+    return Hash::keccak256(RLP::encodeList(encoded));
+}
+
+Data TransactionLegacy::encoded(const SignatureRSV& signature) const {
+    Data encoded;
+    append(encoded, RLP::encode(nonce));
+    append(encoded, RLP::encode(gasPrice));
+    append(encoded, RLP::encode(gasLimit));
+    append(encoded, RLP::encode(to));
+    append(encoded, RLP::encode(amount));
+    append(encoded, RLP::encode(payload));
+    append(encoded, RLP::encode(signature.v));
+    append(encoded, RLP::encode(signature.r));
+    append(encoded, RLP::encode(signature.s));
+    return RLP::encodeList(encoded);
 }
 
 Data TransactionLegacyPayload::buildERC20TransferCall(const Data& to, const uint256_t& amount) {
@@ -83,37 +117,44 @@ Data TransactionLegacyPayload::buildERC1155TransferFromCall(const Data& from, co
     return payload;
 }
 
-Data TransactionEnveloped::buildERC2930AccessListPayload(uint256_t nonce,
-    const uint256_t& gasPrice, const uint256_t& gasLimit,
-    const Data& to,
-    const uint256_t& value,
-    const Data& data,
-    const Data& accessList,
-    const Data& yParity,
-    const Data& senderR,
-    const Data& senderS) {
+/*
+TransactionXX TransactionXX::createLegacy(const Data& legacyEncoded) {
+    return TransactionXX(true, TransactionType::Legacy, legacyEncoded);
+}
+
+TransactionXX TransactionXX::createEnveloped(TransactionType type, const Data& payloadEncoded) {
+    uint8_t type8 = static_cast<uint8_t>(type);
+    assert(type8 > 0 && type8 <= 0x7f);
+    return TransactionXX(false, type, payloadEncoded);
+}
+*/
+
+Data TransactionAccessList::hash(const uint256_t chainID) const {
     Data encoded;
-    // TODO chainID
+    append(encoded, static_cast<uint8_t>(type));
+    append(encoded, RLP::encode(chainID));
     append(encoded, RLP::encode(nonce));
     append(encoded, RLP::encode(gasPrice));
     append(encoded, RLP::encode(gasLimit));
     append(encoded, RLP::encode(to));
     append(encoded, RLP::encode(value));
     append(encoded, RLP::encode(data));
-    // TODO proper fields
     append(encoded, RLP::encode(accessList));
-    append(encoded, RLP::encode(yParity));
-    append(encoded, RLP::encode(senderS));
-    append(encoded, RLP::encode(senderR));
-    return encoded;
+    return Hash::keccak256(RLP::encodeList(encoded));
 }
 
-Transaction Transaction::createLegacy(const Data& legacyEncoded) {
-    return Transaction(true, TransactionType::Legacy, legacyEncoded);
-}
-
-Transaction Transaction::createEnveloped(TransactionType type, const Data& payloadEncoded) {
-    uint8_t type8 = static_cast<uint8_t>(type);
-    assert(type8 > 0 && type8 <= 0x7f);
-    return Transaction(false, type, payloadEncoded);
+Data TransactionAccessList::encoded(const SignatureRSV& signature) const {
+    Data encoded;
+    append(encoded, static_cast<uint8_t>(type));
+    append(encoded, RLP::encode(nonce));
+    append(encoded, RLP::encode(gasPrice));
+    append(encoded, RLP::encode(gasLimit));
+    append(encoded, RLP::encode(to));
+    append(encoded, RLP::encode(value));
+    append(encoded, RLP::encode(data));
+    append(encoded, RLP::encode(accessList));
+    append(encoded, RLP::encode(signature.v));
+    append(encoded, RLP::encode(signature.r));
+    append(encoded, RLP::encode(signature.s));
+    return RLP::encodeList(encoded);
 }

@@ -189,37 +189,3 @@ TEST(RLP, DecodeInvalid) {
     EXPECT_THROW(RLP::decode(parse_hex("fb00000040000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f")), std::invalid_argument);
     EXPECT_THROW(RLP::decode(parse_hex("f800")), std::invalid_argument);
 }
-
-TEST(RLP, encodeTransactionLegacy) {
-    auto transaction = TransactionLegacy::buildERC20Transfer(
-        /* nonce: */ 0,
-        /* gasPrice: */ 42000000000, // 0x09c7652400
-        /* gasLimit: */ 78009, // 130B9
-        /* tokenContract: */ parse_hex("0x6b175474e89094c44da98b954eedeac495271d0f"), // DAI
-        /* toAddress: */ parse_hex("0x5322b34c88ed0691971bf52a7047448f0f4efc84"),
-        /* amount: */ 2000000000000000000
-    );
-    auto encoded = RLP::encodeLegacy(transaction);
-    EXPECT_EQ(hex(encoded), "f86a808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000808080");
-}
-
-TEST(RLP, encodeTransactionAccessList) {
-    auto txPayload = TransactionEnveloped::buildERC2930AccessListPayload(
-        /* nonce: */ 0,
-        /* gasPrice: */ 42000000000, // 0x09c7652400
-        /* gasLimit: */ 78009, // 130B9
-        /* toAddress: */ parse_hex("0x5322b34c88ed0691971bf52a7047448f0f4efc84"),
-        /* value: */ 2000000000000000000,
-        /* data */ parse_hex("01"),
-        /* accessList */ parse_hex("02"),
-        /* yParity */ parse_hex("03"),
-        /* senderR */ parse_hex("04"),
-        /* senderS */ parse_hex("05")
-    );
-    auto transaction = Transaction::createEnveloped(
-        TransactionType::OptionalAccessList,
-        txPayload
-    );
-    auto encoded = RLP::encode(transaction);
-    EXPECT_EQ(hex(encoded), "01808509c7652400830130b9945322b34c88ed0691971bf52a7047448f0f4efc84881bc16d674ec800000102030504");
-}
