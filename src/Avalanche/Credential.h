@@ -6,8 +6,6 @@
 
 #pragma once
 #include "../Data.h"
-
-
 namespace TW::Avalanche {
 
     enum CredentialTypeID {

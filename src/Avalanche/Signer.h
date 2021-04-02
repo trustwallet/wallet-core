@@ -26,8 +26,3 @@ public:
 };
 
 } // namespace TW::Avalanche
-
-/// Wrapper for C interface.
-struct TWAvalancheSigner {
-    TW::Avalanche::Signer impl;
-};
