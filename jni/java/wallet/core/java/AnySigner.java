@@ -21,6 +21,13 @@ public class AnySigner {
     }
     public static native byte[] nativeSign(byte[] data, int coin);
 
+    public static byte[] msgHash(Message input, CoinType coin) throws Exception {
+        byte[] data = input.toByteArray();
+        return nativeMsgHash(data, coin.value());
+    }
+
+    public static native byte[] nativeMsgHash(byte[] data, int coin);
+
     public static byte[] encode(Message input, CoinType coin) throws Exception {
         byte[] data = input.toByteArray();
         return nativeEncode(data, coin.value());

@@ -32,6 +32,8 @@ public:
     virtual bool supportsJSONSigning() const { return false; }
     // It is optional, Signing JSON input with private key
     virtual std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const { return ""; }
+    // The hash to be signed, it is useful if you want to sign it by 3rd party KMS(Key Management Service), HSM (Hardware Security Module)
+    virtual void msgHash(TWCoinType coin, const Data& dataIn, Data& dataOut) const { return; }
     // Sign and encode broadcastable raw transaction
     virtual void encodeRawTx(TWCoinType coin, const Data& dataIn, Data& dataOut) const { return; }
     virtual void decodeRawTx(TWCoinType coin, const Data& dataIn, Data& dataOut) const { return; }
@@ -49,6 +51,14 @@ void signTemplate(const Data& dataIn, Data& dataOut) {
     input.ParseFromArray(dataIn.data(), (int)dataIn.size());
     auto serializedOut = Signer::sign(input).SerializeAsString();
     dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+}
+
+template <typename Signer, typename Input>
+void msgHashTemplate(const Data& dataIn, Data& dataOut) {
+    auto input = Input();
+    input.ParseFromArray(dataIn.data(), (int)dataIn.size());
+    auto hash = Signer::msgHash(input);
+    dataOut.insert(dataOut.end(), hash.begin(), hash.end());
 }
 
 template <typename Signer, typename Input>

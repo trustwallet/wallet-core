@@ -324,6 +324,91 @@ TEST(TWAnySignerEthereum, PlanNotSupported) {
     EXPECT_EQ(TWDataSize(outputTWData.get()), 0);
 }
 
+TEST(TWAnySignerEthereum, MsgHash) {
+    // https://etherscan.io/tx/0x0d35e609e94846fb0ff704dfd35edff224c4ac9f9c8724c8541221523249c21d
+    Proto::SigningInput input;
+    auto chainId = store(uint256_t(1));
+    auto nonce = store(uint256_t(32));
+    auto gasPrice = store(uint256_t(17250000000));
+    auto gasLimit = store(uint256_t(21000));
+    auto toAddress = "0xf49fc23ad649bc63bcb692bb43f9ed4c333561f6";
+    auto amount = store(uint256_t(1265693675000000000));
+
+    input.set_chain_id(chainId.data(), chainId.size());
+    input.set_nonce(nonce.data(), nonce.size());
+    input.set_gas_price(gasPrice.data(), gasPrice.size());
+    input.set_gas_limit(gasLimit.data(), gasLimit.size());
+    input.set_to_address(toAddress);
+
+    auto& transfer = *input.mutable_transaction()->mutable_transfer();
+    transfer.set_amount(amount.data(), amount.size());
+
+    std::string expected = "9a52301b8d6d79e5e0249e76a17895496b446c9678c7e578ff77407cf8934b98";
+
+    {
+        // msgHash test
+        Data msgHash;
+        ANY_MSG_HASH(input, TWCoinTypeEthereum);
+
+        ASSERT_EQ(hex(msgHash), expected);
+    }
+}
+
+TEST(TWAnySignerEthereum, EncodeProvidedVRS) {
+    // https://etherscan.io/tx/0x0d35e609e94846fb0ff704dfd35edff224c4ac9f9c8724c8541221523249c21d
+    Proto::SigningInput input;
+    auto chainId = store(uint256_t(1));
+    auto nonce = store(uint256_t(32));
+    auto gasPrice = store(uint256_t(17250000000));
+    auto gasLimit = store(uint256_t(21000));
+    auto toAddress = "0xf49fc23ad649bc63bcb692bb43f9ed4c333561f6";
+    auto amount = store(uint256_t(1265693675000000000));
+
+    auto v = parse_hex("0x01");
+    auto r = parse_hex("0xf201e2cc919177923f7dcf2b7501301a7f4b924f5d05e572c3dae77d59f31a63");
+    auto s = parse_hex("0x7474a8eb5dc73a44fe324931a2137284d35b1c43f573130b8e510581ac611238");
+
+    input.set_chain_id(chainId.data(), chainId.size());
+    input.set_nonce(nonce.data(), nonce.size());
+    input.set_gas_price(gasPrice.data(), gasPrice.size());
+    input.set_gas_limit(gasLimit.data(), gasLimit.size());
+    input.set_to_address(toAddress);
+
+    // provide vrs instead of private key
+    auto ecdsa_vrs = new TW::Ethereum::Proto::SigningInput_VRS();
+    ecdsa_vrs->set_v(v.data(), v.size());
+    ecdsa_vrs->set_r(r.data(), r.size());
+    ecdsa_vrs->set_s(s.data(), s.size());
+    input.set_allocated_vrs(ecdsa_vrs);
+
+    auto& transfer = *input.mutable_transaction()->mutable_transfer();
+    transfer.set_amount(amount.data(), amount.size());
+
+    std::string expected = "f86c208504042e1c8082520894f49fc23ad649bc63bcb692bb43f9ed4c333561f6881190a5b104d56e008026a0f201e2cc919177923f7dcf2b7501301a7f4b924f5d05e572c3dae77d59f31a63a07474a8eb5dc73a44fe324931a2137284d35b1c43f573130b8e510581ac611238";
+
+    {
+        // sign test
+        Proto::SigningOutput output;
+        ANY_SIGN(input, TWCoinTypeEthereum);
+
+        ASSERT_EQ(hex(output.encoded()), expected);
+    }
+
+    {
+        // encode test
+        Data encoded;
+        ANY_ENCODE(input, TWCoinTypeEthereum);
+        ASSERT_EQ(hex(encoded), expected);
+    }
+
+    {
+        // wrong coin
+        Data encoded;
+        ANY_ENCODE(input, TWCoinTypeNano);
+        ASSERT_EQ(hex(encoded), "");
+    }
+}
+
 TEST(TWAnySignerEthereum, Decode) {
     auto rawData = DATA("f86b81a985051f4d5ce982520894515778891c99e3d2e7ae489980cb7c77b37b5e76861b48eb57e0008025a0ad01c32a7c974df9d0bd48c8d7e0ecab62e90811917aa7dc0c966751a0c3f475a00dc77d9ec68484481bdf87faac14378f4f18d477f84c0810d29480372c1bbc65");
     auto decodedData = WRAPD(TWAnySignerDecode(rawData.get(), TWCoinTypeEthereum));

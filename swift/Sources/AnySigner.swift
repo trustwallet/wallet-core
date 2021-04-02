@@ -41,6 +41,22 @@ public final class AnySigner {
         return TWStringNSString(TWAnySignerSignJSON(jsonString, keyData, TWCoinType(rawValue: coin.rawValue)))
     }
 
+    public static func msgHash(input: SigningInput, coin: CoinType) -> Data {
+        do {
+            return nativeMsgHash(data: try input.serializedData(), coin: coin)
+        } catch let error {
+            fatalError(error.localizedDescription)
+        }
+    }
+
+    public static func nativeMsgHash(data: Data, coin: CoinType) -> Data {
+        let inputData = TWDataCreateWithNSData(data)
+        defer {
+            TWDataDelete(inputData)
+        }
+        return TWDataNSData(TWAnySignerMsgHash(inputData, TWCoinType(rawValue: coin.rawValue)))
+    }
+
     public static func encode(input: SigningInput, coin: CoinType) -> Data {
         do {
             return nativeEncode(data: try input.serializedData(), coin: coin)

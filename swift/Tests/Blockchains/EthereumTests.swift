@@ -160,6 +160,54 @@ class EthereumTests: XCTestCase {
         XCTAssertEqual(result, "f86a8084d693a400825208947d8bf18c7ce84b3e175b339c4ca93aed1dd166f1870348bca5a160008025a0fe5802b49e04c6b1705088310e133605ed8b549811a18968ad409ea02ad79f21a05bf845646fb1e1b9365f63a7fd5eb5e984094e3ed35c3bed7361aebbcbf41f10")
     }
 
+    func testMsgHash() {
+        // https://etherscan.io/tx/0x0d35e609e94846fb0ff704dfd35edff224c4ac9f9c8724c8541221523249c21d
+        let input = EthereumSigningInput.with {
+            $0.chainID = Data(hexString: "01")!
+            $0.nonce = Data(hexString: "20")!
+            $0.gasPrice = Data(hexString: "04042e1c80")!
+            $0.gasLimit = Data(hexString: "5208")!
+            $0.toAddress = "0xf49fc23ad649bc63bcb692bb43f9ed4c333561f6"
+            $0.transaction = EthereumTransaction.with {
+                $0.transfer = EthereumTransaction.Transfer.with {
+                    $0.amount = Data(hexString: "1190a5b104d56e00")!
+                }
+            }
+        }
+
+        let msgHash = AnySigner.msgHash(input: input, coin: .ethereum)
+
+        XCTAssertEqual(msgHash.hexString, "9a52301b8d6d79e5e0249e76a17895496b446c9678c7e578ff77407cf8934b98")
+    }
+
+    func testEncodeProvidedVRS() {
+        // https://etherscan.io/tx/0x0d35e609e94846fb0ff704dfd35edff224c4ac9f9c8724c8541221523249c21d
+        let input = EthereumSigningInput.with {
+            $0.chainID = Data(hexString: "01")!
+            $0.nonce = Data(hexString: "20")!
+            $0.gasPrice = Data(hexString: "04042e1c80")!
+            $0.gasLimit = Data(hexString: "5208")!
+            $0.toAddress = "0xf49fc23ad649bc63bcb692bb43f9ed4c333561f6"
+            // provide vrs instead of private key
+            $0.vrs = EthereumSigningInput.VRS.with {
+                $0.v = Data(hexString: "01")!
+                $0.r = Data(hexString: "f201e2cc919177923f7dcf2b7501301a7f4b924f5d05e572c3dae77d59f31a63")!
+                $0.s = Data(hexString: "7474a8eb5dc73a44fe324931a2137284d35b1c43f573130b8e510581ac611238")!
+            }
+            $0.transaction = EthereumTransaction.with {
+                $0.transfer = EthereumTransaction.Transfer.with {
+                    $0.amount = Data(hexString: "1190a5b104d56e00")!
+                }
+            }
+        }
+
+        let output: EthereumSigningOutput = AnySigner.sign(input: input, coin: .ethereum)
+        let encoded = AnySigner.encode(input: input, coin: .ethereum)
+
+        XCTAssertEqual(encoded, output.encoded)
+        XCTAssertEqual(output.encoded.hexString, "f86c208504042e1c8082520894f49fc23ad649bc63bcb692bb43f9ed4c333561f6881190a5b104d56e008026a0f201e2cc919177923f7dcf2b7501301a7f4b924f5d05e572c3dae77d59f31a63a07474a8eb5dc73a44fe324931a2137284d35b1c43f573130b8e510581ac611238")
+    }
+
     func testDecode() {
         let rawTx = Data(hexString: "0xf8a86484b2d05e008277fb9400000000000c2e074ec69a0dfb2997ba6c7d2e1e80b8441896f70ae71cd96d4ba1c4b512b0c5bee30d2b6becf61e574c32a17a67156fa9ed3c4c6f0000000000000000000000004976fb03c32e5b8cfe2b6ccb31c09ba78ebaba4125a0b55e479d5872b7531437621780ead128cd25d8988fb3cda9bcfb4baeb0eda4dfa077b096cf0cb4bee6eb8c756e9cdba95a6cf62af74e05e7e4cdaa8100271a508d")!
         let decoded = AnySigner.decode(data: rawTx, coin: .ethereum)

@@ -16,6 +16,9 @@ JNIEXPORT
 jbyteArray JNICALL Java_wallet_core_java_AnySigner_nativeSign(JNIEnv *env, jclass thisClass, jbyteArray input, jint coin);
 
 JNIEXPORT
+jbyteArray JNICALL Java_wallet_core_java_AnySigner_nativeMsgHash(JNIEnv *env, jclass thisClass, jbyteArray input, jint coin);
+
+JNIEXPORT
 jbyteArray JNICALL Java_wallet_core_java_AnySigner_nativeEncode(JNIEnv *env, jclass thisClass, jbyteArray input, jint coin);
 
 JNIEXPORT

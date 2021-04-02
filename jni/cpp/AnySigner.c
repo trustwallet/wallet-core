@@ -19,6 +19,14 @@ jbyteArray JNICALL Java_wallet_core_java_AnySigner_nativeSign(JNIEnv *env, jclas
     return resultData;
 }
 
+jbyteArray JNICALL Java_wallet_core_java_AnySigner_nativeMsgHash(JNIEnv *env, jclass thisClass, jbyteArray input, jint coin) {
+    TWData *inputData = TWDataCreateWithJByteArray(env, input);
+    TWData *outputData = TWAnySignerMsgHash(inputData, coin);
+    jbyteArray resultData = TWDataJByteArray(outputData, env);
+    TWDataDelete(inputData);
+    return resultData;
+}
+
 jbyteArray JNICALL Java_wallet_core_java_AnySigner_nativeEncode(JNIEnv *env, jclass thisClass, jbyteArray input, jint coin) {
     TWData *inputData = TWDataCreateWithJByteArray(env, input);
     TWData *outputData = TWAnySignerEncode(inputData, coin);

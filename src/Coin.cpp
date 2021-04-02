@@ -232,6 +232,12 @@ bool TW::supportsJSONSigning(TWCoinType coinType) {
     return dispatcher->supportsJSONSigning();
 }
 
+void TW::anyCoinMsgHash(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
+    auto dispatcher = coinDispatcher(coinType);
+    assert(dispatcher != nullptr);
+    dispatcher->msgHash(coinType, dataIn, dataOut);
+}
+
 void TW::anyCoinEncode(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
     auto dispatcher = coinDispatcher(coinType);
     assert(dispatcher != nullptr);

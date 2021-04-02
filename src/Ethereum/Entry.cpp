@@ -34,6 +34,10 @@ string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key
     return Signer::signJSON(json, key);
 }
 
+void Entry::msgHash(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
+    msgHashTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+}
+
 void Entry::encodeRawTx(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     encodeTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }

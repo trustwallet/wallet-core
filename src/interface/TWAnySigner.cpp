@@ -34,6 +34,13 @@ TWData* _Nonnull TWAnySignerEncode(TWData* _Nonnull data, enum TWCoinType coin) 
     return TWDataCreateWithBytes(dataOut.data(), dataOut.size());
 }
 
+TWData* _Nonnull TWAnySignerMsgHash(TWData* _Nonnull data, enum TWCoinType coin) {
+    const Data& dataIn = *(reinterpret_cast<const Data*>(data));
+    Data dataOut;
+    TW::anyCoinMsgHash(coin, dataIn, dataOut);
+    return TWDataCreateWithBytes(dataOut.data(), dataOut.size());
+}
+
 TWData* _Nonnull TWAnySignerDecode(TWData* _Nonnull data, enum TWCoinType coin) {
     const Data& dataIn = *(reinterpret_cast<const Data*>(data));
     Data dataOut;

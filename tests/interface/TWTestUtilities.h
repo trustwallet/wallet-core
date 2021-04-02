@@ -42,6 +42,13 @@ std::string getTestTempDir(void);
             auto outputTWData = WRAPD(TWAnySignerSign(inputTWData.get(), coin));\
             output.ParseFromArray(TWDataBytes(outputTWData.get()), static_cast<int>(TWDataSize(outputTWData.get())));\
         }
+#define ANY_MSG_HASH(input, coin) \
+        {\
+            auto inputData = input.SerializeAsString();\
+            auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));\
+            auto outputTWData = WRAPD(TWAnySignerMsgHash(inputTWData.get(), coin));                              \
+            msgHash = TW::data(TWDataBytes(outputTWData.get()), static_cast<int>(TWDataSize(outputTWData.get())));\
+        }
 #define ANY_ENCODE(input, coin) \
         {\
             auto inputData = input.SerializeAsString();\

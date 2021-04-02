@@ -54,6 +54,10 @@ class Signer {
     static std::tuple<uint256_t, uint256_t, uint256_t> values(const uint256_t &chainID,
                                                               const Data& signature) noexcept;
 
+  public:
+    /// Computes the hash to be signed.
+    static Data msgHash(const Proto::SigningInput& input) noexcept;
+
   protected:
     /// Computes the transaction hash.
     Data hash(const Transaction &transaction) const noexcept;

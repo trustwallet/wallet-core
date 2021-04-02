@@ -13,11 +13,26 @@ using namespace TW::Ethereum;
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     try {
-        auto signer = Signer(load(input.chain_id()));
-        auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+        auto chainID = load(input.chain_id());
+        auto signer = Signer(chainID);
         auto transaction = Signer::build(input);
 
-        signer.sign(key, transaction);
+        if (input.has_vrs()) {
+            // input contains v, r, s
+            auto recoveryID = load(input.vrs().v());
+            boost::multiprecision::uint256_t newV = recoveryID + 27;
+            if (chainID != 0) {  // see eip-155
+                newV = recoveryID + 35 + chainID + chainID;
+            }
+
+            transaction.v = newV;
+            transaction.r = load(input.vrs().r());
+            transaction.s = load(input.vrs().s());
+        } else {
+            // input contains private key
+            auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+            signer.sign(key, transaction);
+        }
 
         auto output = Proto::SigningOutput();
 
@@ -184,6 +199,11 @@ void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const 
     transaction.r = std::get<0>(tuple);
     transaction.s = std::get<1>(tuple);
     transaction.v = std::get<2>(tuple);
+}
+
+Data Signer::msgHash(const Proto::SigningInput& input) noexcept {
+    auto signer = Signer(load(input.chain_id()));
+    return signer.hash(Signer::build(input));
 }
 
 Data Signer::hash(const Transaction &transaction) const noexcept {

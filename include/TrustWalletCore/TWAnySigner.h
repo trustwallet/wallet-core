@@ -23,6 +23,9 @@ extern TWString *_Nonnull TWAnySignerSignJSON(TWString *_Nonnull json, TWData *_
 
 extern bool TWAnySignerSupportsJSON(enum TWCoinType coin);
 
+/// Computes the hash to be signed, it is useful when using 3rd party KMS, HSM.
+extern TWData *_Nonnull TWAnySignerMsgHash(TWData *_Nonnull input, enum TWCoinType coin);
+
 /// Encodes serialized SigningInput data to raw platform/coin specific bytes
 /// Example: EthereumSigningInput will be encoded as raw RLP bytes which can be sent over JSONRPC (eth_sendRawTransaction)
 extern TWData *_Nonnull TWAnySignerEncode(TWData *_Nonnull input, enum TWCoinType coin);

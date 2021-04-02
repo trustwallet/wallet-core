@@ -91,10 +91,20 @@ message SigningInput {
     // Recipient's address.
     string to_address = 5;
 
-    // Private key.
-    bytes private_key = 6;
+    // Payload
+    Transaction transaction = 6;
 
-    Transaction transaction = 7;
+    // ECDSA Transaction Signature Values
+    message VRS {
+        bytes v = 1;
+        bytes r = 2;
+        bytes s = 3;
+    }
+
+    oneof ecdsa_oneof {
+        bytes private_key = 7;
+        VRS vrs = 8;
+    }
 }
 
 // Transaction signing output.
