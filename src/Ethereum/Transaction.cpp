@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,32 +8,72 @@
 #include "ABI/Function.h"
 #include "ABI/ParamBase.h"
 #include "ABI/ParamAddress.h"
+#include "RLP.h"
 
 using namespace TW::Ethereum::ABI;
 using namespace TW::Ethereum;
 using namespace TW;
 
-Transaction Transaction::buildERC20Transfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit,
-                const Data& tokenContract, const Data& toAddress, uint256_t amount) {
-    return Transaction(nonce, gasPrice, gasLimit, tokenContract, 0, buildERC20TransferCall(toAddress, amount));
+
+TransactionLegacy TransactionLegacy::buildNativeTransfer(const uint256_t& nonce,
+    const uint256_t& gasPrice, const uint256_t& gasLimit,
+    const Data& toAddress, const uint256_t& amount, const Data& data) {
+    return TransactionLegacy(nonce, gasPrice, gasLimit, toAddress, amount, data);
 }
 
-Transaction Transaction::buildERC20Approve(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit,
-                const Data& tokenContract, const Data& spenderAddress, uint256_t amount) {
-    return Transaction(nonce, gasPrice, gasLimit, tokenContract, 0, buildERC20ApproveCall(spenderAddress, amount));
+TransactionLegacy TransactionLegacy::buildERC20Transfer(const uint256_t& nonce,
+    const uint256_t& gasPrice, const uint256_t& gasLimit,
+    const Data& tokenContract, const Data& toAddress, const uint256_t& amount) {
+    return TransactionLegacy(nonce, gasPrice, gasLimit, tokenContract, 0, TransactionLegacyPayload::buildERC20TransferCall(toAddress, amount));
 }
 
-Transaction Transaction::buildERC721Transfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit,
-                const Data& tokenContract, const Data& from, const Data& to, uint256_t tokenId) {
-    return Transaction(nonce, gasPrice, gasLimit, tokenContract, 0, buildERC721TransferFromCall(from, to, tokenId));
+TransactionLegacy TransactionLegacy::buildERC20Approve(const uint256_t& nonce,
+    const uint256_t& gasPrice, const uint256_t& gasLimit,
+    const Data& tokenContract, const Data& spenderAddress, const uint256_t& amount) {
+    return TransactionLegacy(nonce, gasPrice, gasLimit, tokenContract, 0, TransactionLegacyPayload::buildERC20ApproveCall(spenderAddress, amount));
 }
 
-Transaction Transaction::buildERC1155Transfer(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit,
-        const Data& tokenContract, const Data& from, const Data& to, uint256_t tokenId, uint256_t value, const Data& data) {
-    return Transaction(nonce, gasPrice, gasLimit, tokenContract, 0, buildERC1155TransferFromCall(from, to, tokenId, value, data));
+TransactionLegacy TransactionLegacy::buildERC721Transfer(const uint256_t& nonce,
+    const uint256_t& gasPrice, const uint256_t& gasLimit,
+    const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId) {
+    return TransactionLegacy(nonce, gasPrice, gasLimit, tokenContract, 0, TransactionLegacyPayload::buildERC721TransferFromCall(from, to, tokenId));
 }
 
-Data Transaction::buildERC20TransferCall(const Data& to, uint256_t amount) {
+TransactionLegacy TransactionLegacy::buildERC1155Transfer(const uint256_t& nonce,
+    const uint256_t& gasPrice, const uint256_t& gasLimit,
+    const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data) {
+    return TransactionLegacy(nonce, gasPrice, gasLimit, tokenContract, 0, TransactionLegacyPayload::buildERC1155TransferFromCall(from, to, tokenId, value, data));
+}
+
+Data TransactionLegacy::hash(const uint256_t chainID) const {
+    Data encoded;
+    append(encoded, RLP::encode(nonce));
+    append(encoded, RLP::encode(gasPrice));
+    append(encoded, RLP::encode(gasLimit));
+    append(encoded, RLP::encode(to));
+    append(encoded, RLP::encode(amount));
+    append(encoded, RLP::encode(payload));
+    append(encoded, RLP::encode(chainID));
+    append(encoded, RLP::encode(0));
+    append(encoded, RLP::encode(0));
+    return Hash::keccak256(RLP::encodeList(encoded));
+}
+
+Data TransactionLegacy::encoded(const SignatureRSV& signature, const uint256_t chainID) const {
+    Data encoded;
+    append(encoded, RLP::encode(nonce));
+    append(encoded, RLP::encode(gasPrice));
+    append(encoded, RLP::encode(gasLimit));
+    append(encoded, RLP::encode(to));
+    append(encoded, RLP::encode(amount));
+    append(encoded, RLP::encode(payload));
+    append(encoded, RLP::encode(signature.v));
+    append(encoded, RLP::encode(signature.r));
+    append(encoded, RLP::encode(signature.s));
+    return RLP::encodeList(encoded);
+}
+
+Data TransactionLegacyPayload::buildERC20TransferCall(const Data& to, const uint256_t& amount) {
     auto func = Function("transfer", std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamAddress>(to),
         std::make_shared<ParamUInt256>(amount)
@@ -43,7 +83,7 @@ Data Transaction::buildERC20TransferCall(const Data& to, uint256_t amount) {
     return payload;
 }
 
-Data Transaction::buildERC20ApproveCall(const Data& spender, uint256_t amount) {
+Data TransactionLegacyPayload::buildERC20ApproveCall(const Data& spender, const uint256_t& amount) {
     auto func = Function("approve", std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamAddress>(spender),
         std::make_shared<ParamUInt256>(amount)
@@ -53,7 +93,7 @@ Data Transaction::buildERC20ApproveCall(const Data& spender, uint256_t amount) {
     return payload;
 }
 
-Data Transaction::buildERC721TransferFromCall(const Data& from, const Data& to, uint256_t tokenId) {
+Data TransactionLegacyPayload::buildERC721TransferFromCall(const Data& from, const Data& to, const uint256_t& tokenId) {
     auto func = Function("transferFrom", std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamAddress>(from),
         std::make_shared<ParamAddress>(to),
@@ -64,7 +104,7 @@ Data Transaction::buildERC721TransferFromCall(const Data& from, const Data& to, 
     return payload;
 }
 
-Data Transaction::buildERC1155TransferFromCall(const Data& from, const Data& to, uint256_t tokenId, uint256_t value, const Data& data) {
+Data TransactionLegacyPayload::buildERC1155TransferFromCall(const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data) {
     auto func = Function("safeTransferFrom", std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamAddress>(from),
         std::make_shared<ParamAddress>(to),

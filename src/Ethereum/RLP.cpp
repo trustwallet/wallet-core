@@ -39,20 +39,6 @@ Data RLP::encodeList(const Data& encoded) noexcept {
     return result;
 }
 
-Data RLP::encode(const Transaction& transaction) noexcept {
-    auto encoded = Data();
-    append(encoded, encode(transaction.nonce));
-    append(encoded, encode(transaction.gasPrice));
-    append(encoded, encode(transaction.gasLimit));
-    append(encoded, encode(transaction.to));
-    append(encoded, encode(transaction.amount));
-    append(encoded, encode(transaction.payload));
-    append(encoded, encode(transaction.v));
-    append(encoded, encode(transaction.r));
-    append(encoded, encode(transaction.s));
-    return encodeList(encoded);
-}
-
 Data RLP::encode(const Data& data) noexcept {
     if (data.size() == 1 && data[0] <= 0x7f) {
         // Fits in single byte, no header
