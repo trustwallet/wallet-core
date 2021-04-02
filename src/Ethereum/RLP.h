@@ -6,7 +6,7 @@
 
 #pragma once
 
-//#include "Transaction.h"
+#include "Transaction.h"
 #include "../Data.h"
 #include "../uint256.h"
 
@@ -110,6 +110,8 @@ struct RLP {
 
     /// Decodes data, remainder from RLP encoded data
     static DecodedItem decode(const Data& data);
+
+    static Data encode(const ALItem& item);
 };
 
 } // namespace TW::Ethereum

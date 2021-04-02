@@ -29,7 +29,7 @@ public:
     // pre-sign encoded tx, for hashing
     virtual Data hash(const uint256_t chainID) const = 0;
     // encoded tx (signed)
-    virtual Data encoded(const SignatureRSV& signature) const = 0;
+    virtual Data encoded(const SignatureRSV& signature, const uint256_t chainID) const = 0;
 
 protected:
     TransactionBase() {}
@@ -81,7 +81,7 @@ public:
         const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data);
 
     virtual Data hash(const uint256_t chainID) const;
-    virtual Data encoded(const SignatureRSV& signature) const;
+    virtual Data encoded(const SignatureRSV& signature, const uint256_t chainID) const;
 
 protected:
     TransactionLegacy(const uint256_t& nonce,
@@ -118,6 +118,11 @@ public:
     TransactionEnveloped(TransactionType type): type(type) {}
 };
 
+struct ALItem {
+    Data address; // 20 byte
+    std::vector<Data> entries; // list, 32 bytes
+};
+
 // ERC2930 access list
 class TransactionAccessList: public TransactionEnveloped {
 public:
@@ -128,14 +133,14 @@ public:
     Data to;
     uint256_t value;
     Data data;
-    Data accessList; // TODO
+    std::vector<ALItem> accessList;
 
     TransactionAccessList(uint256_t nonce,
         const uint256_t& gasPrice, const uint256_t& gasLimit,
         const Data& to,
         const uint256_t& value,
         const Data& data,
-        const Data& accessList)
+        const std::vector<ALItem>& accessList)
         : TransactionEnveloped(TransactionType::OptionalAccessList)
         , nonce(std::move(nonce))
         , gasPrice(std::move(gasPrice))
@@ -145,8 +150,10 @@ public:
         , data(std::move(data))
         , accessList(std::move(accessList)) {}
 
+    static Data encodeAccessList(const std::vector<ALItem>& al);
+
     virtual Data hash(const uint256_t chainID) const;
-    virtual Data encoded(const SignatureRSV& signature) const;
+    virtual Data encoded(const SignatureRSV& signature, const uint256_t chainID) const;
 };
 
 /*

@@ -35,28 +35,45 @@ TEST(EthereumTransaction, encodeTransactionLegacy) {
     auto hash = transaction.hash(dummyChain);
     EXPECT_EQ(hex(hash), "b3525019dc367d3ecac48905f9a95ff3550c25a24823db765f92cae2dec7ebfd");
     
-    auto encoded = transaction.encoded(dummySignature);
+    auto encoded = transaction.encoded(dummySignature, dummyChain);
     EXPECT_EQ(hex(encoded), "f86a808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000808080");
 }
 
 TEST(EthereumTransaction, encodeTransactionAccessList) {
+    auto accessList = std::vector<ALItem>{
+        {
+            parse_hex("0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae"),
+            {
+                parse_hex("0x0000000000000000000000000000000000000000000000000000000000000003"),
+                parse_hex("0x0000000000000000000000000000000000000000000000000000000000000007"),
+            }
+        },
+        {
+            parse_hex("0xbb9bc244d798123fde783fcc1c72d3bb8c189413"),
+            {
+            }
+        },
+    };
     auto transaction = TransactionAccessList(
         /* nonce: */ 0,
         /* gasPrice: */ 42000000000, // 0x09c7652400
         /* gasLimit: */ 78009, // 130B9
         /* toAddress: */ parse_hex("0x5322b34c88ed0691971bf52a7047448f0f4efc84"),
         /* value: */ 2000000000000000000,
-        /* data */ parse_hex("01"),
-        /* accessList */ parse_hex("02")
+        /* data */ Data(),
+        /* accessList */ accessList
     );
+
+    EXPECT_EQ(hex(TransactionAccessList::encodeAccessList(transaction.accessList)), "f86f94de0b295669a9fd93d5f28d9ec85e40f4cb697baef842a00000000000000000000000000000000000000000000000000000000000000003a0000000000000000000000000000000000000000000000000000000000000000794bb9bc244d798123fde783fcc1c72d3bb8c189413c0");
+
     uint256_t dummyChain = 0x34;
     auto dummySignature = SignatureRSV{0, 0, 0};
 
     auto hash = transaction.hash(dummyChain);
-    EXPECT_EQ(hex(hash), "2d4a5679255a62b61c7d1725e1fe1aaa6df6489c732548cc56f9953263edf75c");
+    EXPECT_EQ(hex(hash), "716e8260857080e4e51f9c019e0495b4bcdcb1b9cb87f402fd357b9c1fe1bea3");
 
-    auto encoded = transaction.encoded(dummySignature);
-    EXPECT_EQ(hex(encoded), "ef01808509c7652400830130b9945322b34c88ed0691971bf52a7047448f0f4efc84881bc16d674ec800000102808080");
+    auto encoded = transaction.encoded(dummySignature, dummyChain);
+    EXPECT_EQ(hex(encoded), "f89f01808509c7652400830130b9945322b34c88ed0691971bf52a7047448f0f4efc84881bc16d674ec8000080f86f94de0b295669a9fd93d5f28d9ec85e40f4cb697baef842a00000000000000000000000000000000000000000000000000000000000000003a0000000000000000000000000000000000000000000000000000000000000000794bb9bc244d798123fde783fcc1c72d3bb8c189413c0808080");
 }
 
 TEST(EthereumSigner, Hash) {

@@ -16,14 +16,15 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto signer = Signer(load(input.chain_id()));
         auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
         // TODO legacy is used here, but should be generic
-        auto transactionLegacy = Signer::buildLegacy(input);
+        //const TransactionBase& transaction = Signer::buildLegacy(input);
+        const TransactionBase& transaction = Signer::buildAccessList(input);
 
-        auto signature = signer.sign(key, transactionLegacy);
+        auto signature = signer.sign(key, transaction);
 
         auto output = Proto::SigningOutput();
 
         //auto encoded = RLP::encodeLegacy(transactionLegacy);
-        auto encoded = transactionLegacy.encoded(signature);
+        auto encoded = transaction.encoded(signature, signer.chainID);
         output.set_encoded(encoded.data(), encoded.size());
 
         auto v = store(signature.v);
@@ -35,7 +36,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto s = store(signature.s);
         output.set_s(s.data(), s.size());
 
-        output.set_data(transactionLegacy.payload.data(), transactionLegacy.payload.size());
+        //output.set_data(transactionLegacy.payload.data(), transactionLegacy.payload.size());
 
         return output;
     } catch (std::exception&) {
@@ -191,7 +192,48 @@ TransactionLegacy Signer::buildLegacy(const Proto::SigningInput& input) {
     }
 }
 
-SignatureRSV Signer::sign(const PrivateKey& privateKey, const TransactionLegacy& transaction) const noexcept {
+TransactionAccessList Signer::buildAccessList(const Proto::SigningInput& input) {
+    Data toAddress = addressStringToData(input.to_address());
+    uint256_t nonce = load(input.nonce());
+    uint256_t gasPrice = load(input.gas_price());
+    uint256_t gasLimit = load(input.gas_limit());
+    assert(gasPrice != 0);
+    switch (input.transaction().transaction_oneof_case()) {
+        case Proto::Transaction::kTransfer:
+            {
+                auto accessList = std::vector<ALItem>{
+                    {
+                        parse_hex("0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae"),
+                        //parse_hex("0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae""000000000000000000000000"),
+                        {
+                            parse_hex("0x0000000000000000000000000000000000000000000000000000000000000003"),
+                            //parse_hex("0x0000000000000000000000000000000000000000000000000000000000000007"),
+                        }
+                    },
+                    /*
+                    {
+                        parse_hex("0xbb9bc244d798123fde783fcc1c72d3bb8c189413""000000000000000000000000"),
+                        {
+                        }
+                    },
+                    */
+                };
+                auto transaction = TransactionAccessList(
+
+                    nonce,
+                    gasPrice, gasLimit,
+                    /* to: */ toAddress,
+                    /* amount: */ load(input.transaction().transfer().amount()),
+                    /* optional data: */ Data(),
+                    /* accessList */ accessList
+                );
+                return transaction;
+            }
+    }
+    assert(false);
+}
+
+SignatureRSV Signer::sign(const PrivateKey& privateKey, const TransactionBase& transaction) const noexcept {
     //auto hash = this->hash(transaction, chainID);
     auto hash = transaction.hash(chainID);
     auto signature = Signer::sign(chainID, privateKey, hash);

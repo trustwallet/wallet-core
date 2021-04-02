@@ -36,7 +36,7 @@ class Signer {
 
     /// Signs the given transaction.
     // Works on Legacy, should be more generic
-    SignatureRSV sign(const PrivateKey& privateKey, const TransactionLegacy& transaction) const noexcept;
+    SignatureRSV sign(const PrivateKey& privateKey, const TransactionBase& transaction) const noexcept;
 
   public:
     /*
@@ -46,6 +46,7 @@ class Signer {
   
     /// build TransactionLegacy from signing input
     static TransactionLegacy buildLegacy(const Proto::SigningInput& input);
+    static TransactionAccessList buildAccessList(const Proto::SigningInput& input);
 
     /// Signs a hash with the given private key for the given chain identifier.
     ///

@@ -9,6 +9,7 @@
 #include "ABI/ParamBase.h"
 #include "ABI/ParamAddress.h"
 #include "RLP.h"
+#include "../HexCoding.h"
 
 using namespace TW::Ethereum::ABI;
 using namespace TW::Ethereum;
@@ -59,7 +60,7 @@ Data TransactionLegacy::hash(const uint256_t chainID) const {
     return Hash::keccak256(RLP::encodeList(encoded));
 }
 
-Data TransactionLegacy::encoded(const SignatureRSV& signature) const {
+Data TransactionLegacy::encoded(const SignatureRSV& signature, const uint256_t chainID) const {
     Data encoded;
     append(encoded, RLP::encode(nonce));
     append(encoded, RLP::encode(gasPrice));
@@ -129,9 +130,15 @@ TransactionXX TransactionXX::createEnveloped(TransactionType type, const Data& p
 }
 */
 
+Data TransactionAccessList::encodeAccessList(const std::vector<ALItem>& al) {
+    Data encoded;
+    append(encoded, RLP::encodeList(al));
+    std::cout << "accesslist encoded " << hex(encoded) << "\n";
+    return encoded;
+}
+
 Data TransactionAccessList::hash(const uint256_t chainID) const {
     Data encoded;
-    append(encoded, static_cast<uint8_t>(type));
     append(encoded, RLP::encode(chainID));
     append(encoded, RLP::encode(nonce));
     append(encoded, RLP::encode(gasPrice));
@@ -139,22 +146,29 @@ Data TransactionAccessList::hash(const uint256_t chainID) const {
     append(encoded, RLP::encode(to));
     append(encoded, RLP::encode(value));
     append(encoded, RLP::encode(data));
-    append(encoded, RLP::encode(accessList));
-    return Hash::keccak256(RLP::encodeList(encoded));
+    append(encoded, encodeAccessList(accessList));
+    Data encoded2;
+    append(encoded2, static_cast<uint8_t>(type));
+    append(encoded2, RLP::encodeList(encoded));
+    return Hash::keccak256(encoded2);
 }
 
-Data TransactionAccessList::encoded(const SignatureRSV& signature) const {
+Data TransactionAccessList::encoded(const SignatureRSV& signature, const uint256_t chainID) const {
     Data encoded;
-    append(encoded, static_cast<uint8_t>(type));
+    append(encoded, RLP::encode(chainID));
     append(encoded, RLP::encode(nonce));
     append(encoded, RLP::encode(gasPrice));
     append(encoded, RLP::encode(gasLimit));
     append(encoded, RLP::encode(to));
     append(encoded, RLP::encode(value));
     append(encoded, RLP::encode(data));
-    append(encoded, RLP::encode(accessList));
-    append(encoded, RLP::encode(signature.v));
+    append(encoded, encodeAccessList(accessList));
+    append(encoded, RLP::encode(uint8_t(0)));
     append(encoded, RLP::encode(signature.r));
     append(encoded, RLP::encode(signature.s));
-    return RLP::encodeList(encoded);
+    Data encoded2;
+    append(encoded2, static_cast<uint8_t>(type));
+    append(encoded2, RLP::encodeList(encoded));
+    return encoded2;
 }
+

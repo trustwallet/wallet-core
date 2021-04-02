@@ -289,3 +289,10 @@ RLP::DecodedItem RLP::decode(const Data& input) {
     }
     throw std::invalid_argument("input don't conform RLP encoding form");
 }
+
+Data RLP::encode(const ALItem& item) {
+    Data encoded;
+    append(encoded, encode(item.address));
+    append(encoded, encodeList(item.entries));
+    return RLP::encodeList(encoded);
+}

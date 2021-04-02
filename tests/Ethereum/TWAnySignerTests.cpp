@@ -12,6 +12,7 @@
 #include "Ethereum/ABI/Function.h"
 #include "Ethereum/ABI/ParamBase.h"
 #include "Ethereum/ABI/ParamAddress.h"
+#include "Ethereum/RLP.h"
 
 #include <gtest/gtest.h>
 
@@ -86,6 +87,60 @@ TEST(TWAnySignerEthereum, Sign) {
         Data encoded;
         ANY_ENCODE(input, TWCoinTypeNano);
         ASSERT_EQ(hex(encoded), "");
+    }
+}
+
+TEST(TWAnySignerEthereum, SignRinkeby) {
+    {
+        Data pl;
+        append(pl, RLP::encode(uint256_t(4))); // chainID
+        append(pl, RLP::encode(uint256_t(1))); // nonce
+        append(pl, RLP::encode(uint256_t(20000000))); // gasPrice
+        append(pl, RLP::encode(uint256_t(1000000))); // gasLimit
+        auto toAddress = parse_hex("0x5322b34c88ed0691971bf52a7047448f0f4efc84");
+        std::cout << toAddress.size() << "\n";
+        append(pl, RLP::encode(toAddress)); // to
+        append(pl, RLP::encode(uint256_t(1000000))); // value
+        append(pl, RLP::encode(Data())); // data
+        append(pl, RLP::encode(RLP::encodeList(std::vector<Data>()))); // access list
+        Data x;
+        append(x, 01); // ttype
+        append(x, RLP::encodeList(pl));
+        std::cout << "x "<< hex(x) << "\n";
+    }
+    // from http://thetokenfactory.com/#/factory
+    // https://etherscan.io/tx/0x63879f20909a315bcffe629bc03b20e5bc65ba2a377bd7152e3b69c4bd4cd6cc
+    Proto::SigningInput input;
+    auto chainId = store(uint256_t(4)); // rinkeby
+    auto nonce = store(uint256_t(1));
+    auto gasPrice = store(uint256_t(20000000));
+    auto gasLimit = store(uint256_t(1000000));
+    auto toAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84";
+    auto amount = store(uint256_t(0000000000000));
+    auto data = Data();
+    auto key = parse_hex("0x4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904");
+
+    input.set_chain_id(chainId.data(), chainId.size());
+    input.set_nonce(nonce.data(), nonce.size());
+    input.set_gas_price(gasPrice.data(), gasPrice.size());
+    input.set_gas_limit(gasLimit.data(), gasLimit.size());
+    input.set_to_address(toAddress);
+
+    input.set_private_key(key.data(), key.size());
+    auto& transfer = *input.mutable_transaction()->mutable_transfer();
+    transfer.set_amount(amount.data(), amount.size());
+    transfer.set_data(data.data(), data.size());
+
+    //std::string expected = "f86d808504a817c800830f4240945322b34c88ed0691971bf52a7047448f0f4efc848802c68af0bb140000802ba0c58519debcec046dbb4f4e69d364871e885fa60cae9f03864723a086b30e1a04a01e2c0f222b675c066378a9a2c8783ba288381e6f03d3f870a351a9b529efff2e";
+    //std::string expected = "f8f701808504a817c800830f4240945322b34c88ed0691971bf52a7047448f0f4efc848802c68af0bb14000080f887a0de0b295669a9fd93d5f28d9ec85e40f4cb697bae000000000000000000000000f842a00000000000000000000000000000000000000000000000000000000000000003a00000000000000000000000000000000000000000000000000000000000000007a0bb9bc244d798123fde783fcc1c72d3bb8c189413000000000000000000000000c02ca0851c0f656de52ff802dc20a429efefc686df4bd87fb45f0db9c7d9d67aceafe9a04370b6711984571257bf3aff11b204b644c845846cd2e3a70f7ffa1e6d1ed4c2";
+    std::string expected = "01f89f04018401312d00830f4240945322b34c88ed0691971bf52a7047448f0f4efc848080f838f794de0b295669a9fd93d5f28d9ec85e40f4cb697baee1a0000000000000000000000000000000000000000000000000000000000000000380a0535d8504d5d2583be0d352da094003f1377dd36d69c6ef59f4df3335e40e63e8a0609d8f8a501d814e816634f6104eb53d9287093b58f764fc1d461320516d6343";
+
+    {
+        // sign test
+        Proto::SigningOutput output;
+        ANY_SIGN(input, TWCoinTypeEthereum);
+
+        ASSERT_EQ(hex(output.encoded()), expected);
     }
 }
 

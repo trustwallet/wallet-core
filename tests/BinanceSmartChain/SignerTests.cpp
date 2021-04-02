@@ -45,7 +45,7 @@ TEST(BinanceSmartChain, SignNativeTransfer) {
     auto signer = SignerExposed(97);
     auto signature = signer.sign(privateKey, transaction);
 
-    auto encoded = transaction.encoded(signature);
+    auto encoded = transaction.encoded(signature, signer.chainID);
     ASSERT_EQ(hex(encoded), "f86c808504a817c8008252089431be00eb1fc8e14a696dbc72f746ec3e95f49683872386f26fc100008081e5a057806b486844c5d0b7b5ce34b289f4e8776aa1fe24a3311cef5053995c51050ca07697aa0695de27da817625df0e7e4c64b0ab22d9df30aec92299a7b380be8db7");
 }
 
