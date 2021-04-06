@@ -15,7 +15,7 @@ class AvalancheTests: XCTestCase {
         let address = AnyAddress(publicKey: pubkey, coin: .avalancheXChain)
         let addressFromString = AnyAddress(string: "X-avax1apmh7wxg3js48fhacfv5y9md9065jxuft30vup", coin: .avalancheXChain)!
 
-        XCTAssertEqual(pubkey.data.hexString, "0x02b33c917f2f6103448d7feb42614037d05928433cb25e78f01a825aa829bb3c27")
+        XCTAssertEqual(pubkey.data.hexString, "04b33c917f2f6103448d7feb42614037d05928433cb25e78f01a825aa829bb3c27299a9fb02dd081d37876f145b8d3aa47fe9764145a9d90d4f941105d7de85c82")
         XCTAssertEqual(address.description, addressFromString.description)
     }
 
