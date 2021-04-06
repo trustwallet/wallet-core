@@ -19,13 +19,13 @@ TEST(AvalancheAddress, Valid) {
     ASSERT_TRUE(Address::isValid("X-avax1wrgqjed292adreyal364nmz4jfjq2x5qkj7ack"));
     ASSERT_TRUE(Address::isValid("X-avax1922rpmutaj68chc2k08sjq2ah7k96dvl0ukw3k"));
     ASSERT_TRUE(Address::isValid("X-avax1hqem6nf0mp3v4gz7l3wsz2en9rp9c2drk0v742"));
+    ASSERT_TRUE(Address::isValid("P-avax18lasc0q97jlurnnxuyyqyz0rm6tvl0ecsvkvjj")); // can't make a P-chain address, but this address is a valid Avalanche address, so return true
 }
 
 TEST(AvalancheAddress, Invalid) {
     ASSERT_FALSE(Address::isValid("")); // Empty
     ASSERT_FALSE(Address::isValid("X-fuji10feexxuhr3z8vh3wvzg2nhwqkllwpnhs55xum5")) ; // Testnet not supported
     ASSERT_FALSE(Address::isValid("0x1641303f4c3105e8ba980b271d52cafdb4e5f01e")); // C chain not supported
-    ASSERT_FALSE(Address::isValid("P-avax18lasc0q97jlurnnxuyyqyz0rm6tvl0ecsvkvjj")); // P chain not supported
     ASSERT_FALSE(Address::isValid("X-custom1hqem6nf0mp3v4gz7l3wsz2en9rp9c2drk0v742")); // non-avax x-chain assets not supported
     ASSERT_FALSE(Address::isValid("X-avax1hqem6nfmp3v4gz7l3wsz2enrp9c2drk0v712")); // corrupted good value
 }
