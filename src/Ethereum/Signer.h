@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -38,7 +38,7 @@ class Signer {
     /// Signs the given transaction.
     SignatureRSV sign(const PrivateKey& privateKey, std::shared_ptr<TransactionBase> transaction) const noexcept;
 
-  public:  
+  public:
     /// build Transaction from signing input
     static std::shared_ptr<TransactionBase> build(const Proto::SigningInput& input);
     static std::shared_ptr<TransactionLegacy> buildLegacy(const Proto::SigningInput& input);

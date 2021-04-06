@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -26,6 +26,8 @@ public:
     uint256_t v;
 };
 
+/// Base class for all transactions.
+/// Legacy and various enveloped transactions derive from this.
 class TransactionBase {
 public:
     uint256_t nonce;
