@@ -38,12 +38,8 @@ void Address::extractKeyHashFromString (const std::string& string) {
         throw std::invalid_argument("Invalid address string");
     }
     auto hyphenPos = string.find("-");
-    auto dec = Bech32::decode(string.substr(hyphenPos + 1));
-    Data conv;
-    if (!Bech32::convertBits<5, 8, true>(conv, dec.second)) {
-        throw std::invalid_argument("address string caused bech32 converstion failure");
-    }
-    setKey(conv);
+    auto pad = true;
+    Bech32Address::decode(string.substr(hyphenPos + 1), *this, hrp, pad);
 }
 
 std::string Address::string() const {
