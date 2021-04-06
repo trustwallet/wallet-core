@@ -73,6 +73,12 @@ public:
         const uint256_t& gasPrice, const uint256_t& gasLimit,
         const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data);
 
+    // Helpers for building contract calls
+    static Data buildERC20TransferCall(const Data& to, const uint256_t& amount);
+    static Data buildERC20ApproveCall(const Data& spender, const uint256_t& amount);
+    static Data buildERC721TransferFromCall(const Data& from, const Data& to, const uint256_t& tokenId);
+    static Data buildERC1155TransferFromCall(const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data);
+
     virtual Data hash(const uint256_t chainID) const;
     virtual Data encoded(const SignatureRSV& signature, const uint256_t chainID) const;
 
@@ -86,16 +92,6 @@ protected:
         , to(std::move(to))
         , amount(std::move(amount))
         , payload(std::move(payload)) {}
-};
-
-// TODO move inside TransactionLegacy
-class TransactionLegacyPayload {
-public:
-    // Helpers for building contract calls
-    static Data buildERC20TransferCall(const Data& to, const uint256_t& amount);
-    static Data buildERC20ApproveCall(const Data& spender, const uint256_t& amount);
-    static Data buildERC721TransferFromCall(const Data& from, const Data& to, const uint256_t& tokenId);
-    static Data buildERC1155TransferFromCall(const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data);
 };
 
 enum TransactionType: uint8_t {
