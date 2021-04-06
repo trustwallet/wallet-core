@@ -25,7 +25,7 @@ class TestAvalancheSigner {
         val privKeyBytes = Numeric.hexStringToByteArray("56289e99c94b6912bfc12adc093c9b51124f0dc54ac7a766b2bc5ccf558d8027")
         val key = PrivateKey(privKeyBytes)
         val blockchainID = ByteString.copyFrom(Numeric.hexStringToByteArray("d891ad56056d9c01f18f43f58b5c784ad07a4a49cf3d1f11623804b5cba2c6bf"))
-        val pubkey = key.getPublicKeySecp256k1(false)
+        val pubkey = key.getPublicKeySecp256k1(true)
         val pubkeyBytes = ByteString.copyFrom(pubkey.data())
         val spendableAddresses = arrayOf(pubkeyBytes, pubkeyBytes, pubkeyBytes, pubkeyBytes, pubkeyBytes, pubkeyBytes, pubkeyBytes, pubkeyBytes).asIterable()
         val netID = 12345
