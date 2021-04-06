@@ -25,9 +25,8 @@ bool Address::isValid(const std::string& string) {
         return false;
     }
     auto chainID = string.substr(hyphenPos - 1, 1);
-    // compare before-hyphen with 'X' stringcompare (make it smarter later)
-    if (chainID != "X") {
-        // implementation is currently X-chain only
+    if ((chainID != "X") && (chainID != "P")) {
+        // implementation is currently X-chain only, but a passed address starting with P- follows the same rules
         return false;
     }
     auto afterHyphen = string.substr(hyphenPos + 1);
@@ -48,5 +47,6 @@ void Address::extractKeyHashFromString (const std::string& string) {
 }
 
 std::string Address::string() const {
+    // for now, we only support x-chain addresses
     return "X-" + Bech32Address::string();
 }
