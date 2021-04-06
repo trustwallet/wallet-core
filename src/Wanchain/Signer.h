@@ -22,8 +22,8 @@ namespace TW::Wanchain {
 
 class Transaction {
 public:
-    Ethereum::TransactionLegacy wrapped;
-    Transaction(const Ethereum::TransactionLegacy& wrapped): wrapped(wrapped) {}
+    const std::shared_ptr<Ethereum::TransactionLegacy> wrapped;
+    Transaction(const std::shared_ptr<Ethereum::TransactionLegacy>& wrapped): wrapped(wrapped) {}
     Data hash(const uint256_t chainID) const;
     Data encoded(const Ethereum::SignatureRSV& signature) const;
 };

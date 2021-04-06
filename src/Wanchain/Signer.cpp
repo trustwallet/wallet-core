@@ -14,12 +14,12 @@ using namespace TW::Wanchain;
 Data Transaction::hash(const uint256_t chainID) const {
     Data encoded;
     append(encoded, Ethereum::RLP::encode(1));
-    append(encoded, Ethereum::RLP::encode(wrapped.nonce));
-    append(encoded, Ethereum::RLP::encode(wrapped.gasPrice));
-    append(encoded, Ethereum::RLP::encode(wrapped.gasLimit));
-    append(encoded, Ethereum::RLP::encode(wrapped.to));
-    append(encoded, Ethereum::RLP::encode(wrapped.amount));
-    append(encoded, Ethereum::RLP::encode(wrapped.payload));
+    append(encoded, Ethereum::RLP::encode(wrapped->nonce));
+    append(encoded, Ethereum::RLP::encode(wrapped->gasPrice));
+    append(encoded, Ethereum::RLP::encode(wrapped->gasLimit));
+    append(encoded, Ethereum::RLP::encode(wrapped->to));
+    append(encoded, Ethereum::RLP::encode(wrapped->amount));
+    append(encoded, Ethereum::RLP::encode(wrapped->payload));
     append(encoded, Ethereum::RLP::encode(chainID));
     append(encoded, Ethereum::RLP::encode(0));
     append(encoded, Ethereum::RLP::encode(0));
@@ -29,12 +29,12 @@ Data Transaction::hash(const uint256_t chainID) const {
 Data Transaction::encoded(const Ethereum::SignatureRSV& signature) const {
     Data encoded;
     append(encoded, Ethereum::RLP::encode(1));
-    append(encoded, Ethereum::RLP::encode(wrapped.nonce));
-    append(encoded, Ethereum::RLP::encode(wrapped.gasPrice));
-    append(encoded, Ethereum::RLP::encode(wrapped.gasLimit));
-    append(encoded, Ethereum::RLP::encode(wrapped.to));
-    append(encoded, Ethereum::RLP::encode(wrapped.amount));
-    append(encoded, Ethereum::RLP::encode(wrapped.payload));
+    append(encoded, Ethereum::RLP::encode(wrapped->nonce));
+    append(encoded, Ethereum::RLP::encode(wrapped->gasPrice));
+    append(encoded, Ethereum::RLP::encode(wrapped->gasLimit));
+    append(encoded, Ethereum::RLP::encode(wrapped->to));
+    append(encoded, Ethereum::RLP::encode(wrapped->amount));
+    append(encoded, Ethereum::RLP::encode(wrapped->payload));
     append(encoded, Ethereum::RLP::encode(signature.v));
     append(encoded, Ethereum::RLP::encode(signature.r));
     append(encoded, Ethereum::RLP::encode(signature.s));

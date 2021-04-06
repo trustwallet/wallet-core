@@ -15,14 +15,13 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     try {
         auto signer = Signer(load(input.chain_id()));
         auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-        // TODO legacy is used here, but should be generic
-        auto transaction = Signer::buildLegacy(input);
+        auto transaction = Signer::build(input);
 
         auto signature = signer.sign(key, transaction);
 
         auto output = Proto::SigningOutput();
 
-        auto encoded = transaction.encoded(signature, signer.chainID);
+        auto encoded = transaction->encoded(signature, signer.chainID);
         output.set_encoded(encoded.data(), encoded.size());
 
         auto v = store(signature.v);
@@ -34,7 +33,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto s = store(signature.s);
         output.set_s(s.data(), s.size());
 
-        output.set_data(transaction.payload.data(), transaction.payload.size());
+        output.set_data(transaction->payload.data(), transaction->payload.size());
 
         return output;
     } catch (std::exception&) {
@@ -50,7 +49,7 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     return hex(output.encoded());
 }
 
-SignatureRSV Signer::values(const uint256_t& chainID, const Data& signature) noexcept {
+SignatureRSV Signer::valuesRSV(const uint256_t& chainID, const Data& signature) noexcept {
     boost::multiprecision::uint256_t r, s, v;
     import_bits(r, signature.begin(), signature.begin() + 32);
     import_bits(s, signature.begin() + 32, signature.begin() + 64);
@@ -69,7 +68,7 @@ SignatureRSV Signer::values(const uint256_t& chainID, const Data& signature) noe
 
 SignatureRSV Signer::sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) noexcept {
     auto signature = privateKey.sign(hash, TWCurveSECP256k1);
-    return values(chainID, signature);
+    return valuesRSV(chainID, signature);
 }
 
 // May throw
@@ -84,7 +83,11 @@ Data addressStringToData(const std::string& asString) {
     return asData;
 }
 
-TransactionLegacy Signer::buildLegacy(const Proto::SigningInput& input) {
+std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input) {
+    return buildLegacy(input);
+}
+
+std::shared_ptr<TransactionLegacy> Signer::buildLegacy(const Proto::SigningInput& input) {
     Data toAddress = addressStringToData(input.to_address());
     uint256_t nonce = load(input.nonce());
     uint256_t gasPrice = load(input.gas_price());
@@ -171,9 +174,8 @@ TransactionLegacy Signer::buildLegacy(const Proto::SigningInput& input) {
     }
 }
 
-SignatureRSV Signer::sign(const PrivateKey& privateKey, const TransactionBase& transaction) const noexcept {
-    auto hash = transaction.hash(chainID);
+SignatureRSV Signer::sign(const PrivateKey& privateKey, std::shared_ptr<TransactionBase> transaction) const noexcept {
+    auto hash = transaction->hash(chainID);
     auto signature = Signer::sign(chainID, privateKey, hash);
-
     return signature;
 }

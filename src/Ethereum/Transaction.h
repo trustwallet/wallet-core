@@ -9,6 +9,8 @@
 #include "Address.h"
 #include "../uint256.h"
 
+#include <memory>
+
 namespace TW::Ethereum {
 
 // Transactions can be:
@@ -26,6 +28,12 @@ public:
 
 class TransactionBase {
 public:
+    uint256_t nonce;
+    Data payload;
+
+public:
+    TransactionBase(const uint256_t& nonce, const Data& payload): nonce(nonce), payload(payload) {}
+    virtual ~TransactionBase() {}
     // pre-sign encoded tx, for hashing
     virtual Data hash(const uint256_t chainID) const = 0;
     // encoded tx (signed)
@@ -38,38 +46,35 @@ protected:
 /// Original transaction format, legacy as pre-EIP2718
 class TransactionLegacy: public TransactionBase {
 public:
-    uint256_t nonce;
     uint256_t gasPrice;
     uint256_t gasLimit;
     // Public key hash (Address.bytes)
     Data to;
     uint256_t amount;
-    Data payload;
 
     // Factory methods
-
     // Create a native transfer transaction
-    static TransactionLegacy buildNativeTransfer(const uint256_t& nonce,
+    static std::shared_ptr<TransactionLegacy> buildNativeTransfer(const uint256_t& nonce,
         const uint256_t& gasPrice, const uint256_t& gasLimit,
         const Data& toAddress, const uint256_t& amount, const Data& data = {});
 
     // Create an ERC20 token transfer transaction
-    static TransactionLegacy buildERC20Transfer(const uint256_t& nonce,
+    static std::shared_ptr<TransactionLegacy> buildERC20Transfer(const uint256_t& nonce,
         const uint256_t& gasPrice, const uint256_t& gasLimit,
         const Data& tokenContract, const Data& toAddress, const uint256_t& amount);
 
     // Create an ERC20 approve transaction
-    static TransactionLegacy buildERC20Approve(const uint256_t& nonce,
+    static std::shared_ptr<TransactionLegacy> buildERC20Approve(const uint256_t& nonce,
         const uint256_t& gasPrice, const uint256_t& gasLimit,
         const Data& tokenContract, const Data& spenderAddress, const uint256_t& amount);
 
     // Create an ERC721 NFT transfer transaction
-    static TransactionLegacy buildERC721Transfer(const uint256_t& nonce,
+    static std::shared_ptr<TransactionLegacy> buildERC721Transfer(const uint256_t& nonce,
         const uint256_t& gasPrice, const uint256_t& gasLimit,
         const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId);
 
     // Create an ERC1155 NFT transfer transaction
-    static TransactionLegacy buildERC1155Transfer(const uint256_t& nonce,
+    static std::shared_ptr<TransactionLegacy> buildERC1155Transfer(const uint256_t& nonce,
         const uint256_t& gasPrice, const uint256_t& gasLimit,
         const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data);
 
@@ -82,16 +87,15 @@ public:
     virtual Data hash(const uint256_t chainID) const;
     virtual Data encoded(const SignatureRSV& signature, const uint256_t chainID) const;
 
-protected:
+public:
     TransactionLegacy(const uint256_t& nonce,
         const uint256_t& gasPrice, const uint256_t& gasLimit,
         const Data& to, const uint256_t& amount, const Data& payload = {})
-        : nonce(std::move(nonce))
+        : TransactionBase(nonce, payload)
         , gasPrice(std::move(gasPrice))
         , gasLimit(std::move(gasLimit))
         , to(std::move(to))
-        , amount(std::move(amount))
-        , payload(std::move(payload)) {}
+        , amount(std::move(amount)) {}
 };
 
 enum TransactionType: uint8_t {

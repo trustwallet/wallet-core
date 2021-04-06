@@ -20,7 +20,7 @@ public:
     SignerExposed(boost::multiprecision::uint256_t chainID) : Signer(chainID) {}
 };
 
-TEST(Signer, Sign) {
+TEST(WanchainSigner, Sign) {
     auto address = parse_hex("0x3535353535353535353535353535353535353535");
     auto transaction = Transaction(Ethereum::TransactionLegacy::buildNativeTransfer(
         /* nonce: */ 9,

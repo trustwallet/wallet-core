@@ -17,6 +17,7 @@
 #include <boost/multiprecision/cpp_int.hpp>
 #include <cstdint>
 #include <vector>
+#include <memory>
 
 namespace TW::Ethereum {
 
@@ -35,11 +36,12 @@ class Signer {
     explicit Signer(uint256_t chainID) : chainID(std::move(chainID)) {}
 
     /// Signs the given transaction.
-    SignatureRSV sign(const PrivateKey& privateKey, const TransactionBase& transaction) const noexcept;
+    SignatureRSV sign(const PrivateKey& privateKey, std::shared_ptr<TransactionBase> transaction) const noexcept;
 
   public:  
-    /// build TransactionLegacy from signing input
-    static TransactionLegacy buildLegacy(const Proto::SigningInput& input);
+    /// build Transaction from signing input
+    static std::shared_ptr<TransactionBase> build(const Proto::SigningInput& input);
+    static std::shared_ptr<TransactionLegacy> buildLegacy(const Proto::SigningInput& input);
 
     /// Signs a hash with the given private key for the given chain identifier.
     ///
@@ -49,7 +51,7 @@ class Signer {
     /// R, S, and V values for the given chain identifier and signature.
     ///
     /// @returns the r, s, and v values of the transaction signature
-    static SignatureRSV values(const uint256_t& chainID, const Data& signature) noexcept;
+    static SignatureRSV valuesRSV(const uint256_t& chainID, const Data& signature) noexcept;
 };
 
 } // namespace TW::Ethereum
