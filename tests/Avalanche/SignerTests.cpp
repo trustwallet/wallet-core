@@ -26,11 +26,7 @@ TEST(AvalancheSigner, SignWithLocktimeThreshold) {
     const std::vector<uint8_t> privateKeyOneBytesNoChecksum(privateKeyOneBytes.begin(), privateKeyOneBytes.begin() + 32); // we just want the first 32 bytes
     const auto privateKeyOne = PrivateKey(privateKeyOneBytesNoChecksum); 
     const auto publicKeyOne = privateKeyOne.getPublicKey(TWPublicKeyTypeSECP256k1);
-    const auto addressOne = Address(publicKeyOne); // hopefully comes out as X-avax18jma8ppw3nhx5r4ap8clazz0dps7rv5u00z96u
-    // const auto publicKeyTwo = PublicKey(parse_hex("0x02b33c917f2f6103448d7feb42614037d05928433cb25e78f01a825aa829bb3c27"), TWPublicKeyTypeSECP256k1);
-    // const auto addressTwo = Address(publicKeyTwo); 
-    // const auto publicKeyThree = PublicKey(parse_hex("0xc3344128e060128ede3523a24a461c8943ab0859"), TWPublicKeyTypeSECP256k1);
-    // const auto addressThree = Address(publicKeyTwo); 
+    const auto addressOne = Address(publicKeyOne);
 
     std::vector<Address> spendableAddresses = {addressOne, addressOne, addressOne, addressOne, addressOne, addressOne, addressOne, addressOne, addressOne, addressOne};
 
