@@ -60,8 +60,3 @@ inline bool operator<(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::Avalanche
-
-/// Wrapper for C interface.
-struct TWAvalancheAddress {
-    TW::Avalanche::Address impl;
-};

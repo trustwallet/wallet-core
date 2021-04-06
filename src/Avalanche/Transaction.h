@@ -21,7 +21,7 @@ const int MAX_MEMO_SIZE = 256;
 const int MAX_ASSET_NAME_CHARS = 128;
 const int MAX_SYMBOL_CHARS = 4;
 
-  enum TransactionTypeID {
+enum TransactionTypeID {
   Base = 0,
   CreateAsset = 1,
   Operation = 2, 
