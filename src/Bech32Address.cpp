@@ -34,7 +34,7 @@ bool Bech32Address::isValid(const std::string& addr, const std::string& hrp) {
     return true;
 }
 
-bool Bech32Address::decode(const std::string& addr, Bech32Address& obj_out, const std::string& hrp) {
+bool Bech32Address::decode(const std::string& addr, Bech32Address& obj_out, const std::string& hrp, bool pad) {
     auto dec = Bech32::decode(addr);
     // check hrp prefix (if given)
     if (hrp.length() > 0 && dec.first.compare(0, hrp.length(), hrp) != 0) {
@@ -45,7 +45,13 @@ bool Bech32Address::decode(const std::string& addr, Bech32Address& obj_out, cons
     }
 
     Data conv;
-    auto success = Bech32::convertBits<5, 8, false>(conv, dec.second);
+    bool success;
+    if (pad) {
+        // cannot supply function arguments to template parameters, will cause compiler error
+        success = Bech32::convertBits<5, 8, true>(conv, dec.second);
+    } else {
+        success = Bech32::convertBits<5, 8, false>(conv, dec.second);
+    }
     if (!success || conv.size() < 2 || conv.size() > 40) {
         return false;
     }
