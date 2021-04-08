@@ -38,7 +38,7 @@ class Signer {
   public:
     /// build Transaction from signing input
     static std::shared_ptr<TransactionBase> build(const Proto::SigningInput& input);
-    static std::shared_ptr<TransactionLegacy> buildLegacy(const Proto::SigningInput& input);
+    static std::shared_ptr<TransactionNonTyped> buildNonTyped(const Proto::SigningInput& input);
 
     /// Signs a hash with the given private key for the given chain identifier.
     ///

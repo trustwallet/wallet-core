@@ -11,7 +11,7 @@
 using namespace TW;
 using namespace TW::Wanchain;
 
-Data Transaction::hash(const uint256_t chainID) const {
+Data WrappedTransaction::hash(const uint256_t chainID) const {
     Data encoded;
     append(encoded, Ethereum::RLP::encode(1));
     append(encoded, Ethereum::RLP::encode(wrapped->nonce));
@@ -26,7 +26,7 @@ Data Transaction::hash(const uint256_t chainID) const {
     return Hash::keccak256(Ethereum::RLP::encodeList(encoded));
 }
 
-Data Transaction::encoded(const Ethereum::Signature& signature) const {
+Data WrappedTransaction::encoded(const Ethereum::Signature& signature) const {
     Data encoded;
     append(encoded, Ethereum::RLP::encode(1));
     append(encoded, Ethereum::RLP::encode(wrapped->nonce));
@@ -44,7 +44,7 @@ Data Transaction::encoded(const Ethereum::Signature& signature) const {
 Ethereum::Proto::SigningOutput Signer::sign(const Ethereum::Proto::SigningInput& input) noexcept {
     auto signer = Signer(load(input.chain_id()));
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    auto transaction = Transaction(Ethereum::Signer::buildLegacy(input));
+    auto transaction = WrappedTransaction(Ethereum::Signer::buildNonTyped(input));
 
     auto signature = signer.sign(key, transaction);
 
@@ -65,7 +65,7 @@ Ethereum::Proto::SigningOutput Signer::sign(const Ethereum::Proto::SigningInput&
     return output;
 }
 
-Ethereum::Signature Signer::sign(const PrivateKey& privateKey, const Transaction& transaction) const noexcept {
+Ethereum::Signature Signer::sign(const PrivateKey& privateKey, const WrappedTransaction& transaction) const noexcept {
     auto hash = transaction.hash(chainID);
     auto signature = Ethereum::Signer::sign(chainID, privateKey, hash);
     return signature;

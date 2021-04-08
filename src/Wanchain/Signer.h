@@ -20,10 +20,10 @@
 
 namespace TW::Wanchain {
 
-class Transaction {
+class WrappedTransaction {
 public:
-    const std::shared_ptr<Ethereum::TransactionLegacy> wrapped;
-    Transaction(const std::shared_ptr<Ethereum::TransactionLegacy>& wrapped): wrapped(wrapped) {}
+    const std::shared_ptr<Ethereum::TransactionNonTyped> wrapped;
+    WrappedTransaction(const std::shared_ptr<Ethereum::TransactionNonTyped>& wrapped): wrapped(wrapped) {}
     Data hash(const uint256_t chainID) const;
     Data encoded(const Ethereum::Signature& signature) const;
 };
@@ -40,7 +40,7 @@ class Signer {
     Signer(boost::multiprecision::uint256_t chainID) : chainID(std::move(chainID)) {}
 
     /// Signs the given transaction.
-    Ethereum::Signature sign(const PrivateKey& privateKey, const Transaction& transaction) const noexcept;
+    Ethereum::Signature sign(const PrivateKey& privateKey, const WrappedTransaction& transaction) const noexcept;
 };
 
 } // namespace TW::Wanchain

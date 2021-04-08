@@ -22,7 +22,7 @@ public:
 
 TEST(WanchainSigner, Sign) {
     auto address = parse_hex("0x3535353535353535353535353535353535353535");
-    auto transaction = Transaction(Ethereum::TransactionLegacy::buildNativeTransfer(
+    auto transaction = WrappedTransaction(Ethereum::TransactionNonTyped::buildNativeTransfer(
         /* nonce: */ 9,
         /* gasPrice: */ 20000000000,
         /* gasLimit: */ 21000,

@@ -84,10 +84,10 @@ Data addressStringToData(const std::string& asString) {
 }
 
 std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input) {
-    return buildLegacy(input);
+    return buildNonTyped(input);
 }
 
-std::shared_ptr<TransactionLegacy> Signer::buildLegacy(const Proto::SigningInput& input) {
+std::shared_ptr<TransactionNonTyped> Signer::buildNonTyped(const Proto::SigningInput& input) {
     Data toAddress = addressStringToData(input.to_address());
     uint256_t nonce = load(input.nonce());
     uint256_t gasPrice = load(input.gas_price());
@@ -96,7 +96,7 @@ std::shared_ptr<TransactionLegacy> Signer::buildLegacy(const Proto::SigningInput
     switch (input.transaction().transaction_oneof_case()) {
         case Proto::Transaction::kTransfer:
             {
-                auto transaction = TransactionLegacy::buildNativeTransfer(
+                auto transaction = TransactionNonTyped::buildNativeTransfer(
                     nonce,
                     gasPrice, gasLimit,
                     /* to: */ toAddress,
@@ -108,7 +108,7 @@ std::shared_ptr<TransactionLegacy> Signer::buildLegacy(const Proto::SigningInput
         case Proto::Transaction::kErc20Transfer:
             {
                 Data tokenToAddress = addressStringToData(input.transaction().erc20_transfer().to());
-                auto transaction = TransactionLegacy::buildERC20Transfer(
+                auto transaction = TransactionNonTyped::buildERC20Transfer(
                     nonce,
                     gasPrice, gasLimit,
                     /* tokenContract: */ toAddress,
@@ -120,7 +120,7 @@ std::shared_ptr<TransactionLegacy> Signer::buildLegacy(const Proto::SigningInput
         case Proto::Transaction::kErc20Approve:
             {
                 Data spenderAddress = addressStringToData(input.transaction().erc20_approve().spender());
-                auto transaction = TransactionLegacy::buildERC20Approve(
+                auto transaction = TransactionNonTyped::buildERC20Approve(
                     nonce,
                     gasPrice, gasLimit,
                     /* tokenContract: */ toAddress,
@@ -133,7 +133,7 @@ std::shared_ptr<TransactionLegacy> Signer::buildLegacy(const Proto::SigningInput
             {
                 Data tokenToAddress = addressStringToData(input.transaction().erc721_transfer().to());
                 Data tokenFromAddress = addressStringToData(input.transaction().erc721_transfer().from());
-                auto transaction = TransactionLegacy::buildERC721Transfer(
+                auto transaction = TransactionNonTyped::buildERC721Transfer(
                     nonce,
                     gasPrice, gasLimit,
                     /* tokenContract: */ toAddress,
@@ -147,7 +147,7 @@ std::shared_ptr<TransactionLegacy> Signer::buildLegacy(const Proto::SigningInput
             {
                 Data tokenToAddress = addressStringToData(input.transaction().erc1155_transfer().to());
                 Data tokenFromAddress = addressStringToData(input.transaction().erc1155_transfer().from());
-                auto transaction = TransactionLegacy::buildERC1155Transfer(
+                auto transaction = TransactionNonTyped::buildERC1155Transfer(
                     nonce,
                     gasPrice, gasLimit,
                     /* tokenContract: */ toAddress,
@@ -163,7 +163,7 @@ std::shared_ptr<TransactionLegacy> Signer::buildLegacy(const Proto::SigningInput
         case Proto::Transaction::kContractGeneric:
         default:
             {
-                auto transaction = TransactionLegacy::buildNativeTransfer(
+                auto transaction = TransactionNonTyped::buildNativeTransfer(
                     nonce,
                     gasPrice, gasLimit,
                     /* to: */ toAddress,

@@ -16,8 +16,8 @@ namespace TW::Ethereum {
 using boost::multiprecision::uint256_t;
 
 
-TEST(EthereumTransaction, encodeTransactionLegacy) {
-    auto transaction = TransactionLegacy::buildERC20Transfer(
+TEST(EthereumTransaction, encodeTransactionNonTyped) {
+    auto transaction = TransactionNonTyped::buildERC20Transfer(
         /* nonce: */ 0,
         /* gasPrice: */ 42000000000, // 0x09c7652400
         /* gasLimit: */ 78009, // 130B9
@@ -37,7 +37,7 @@ TEST(EthereumTransaction, encodeTransactionLegacy) {
 
 TEST(EthereumSigner, Hash) {
     auto address = parse_hex("0x3535353535353535353535353535353535353535");
-    auto transaction = TransactionLegacy::buildNativeTransfer(
+    auto transaction = TransactionNonTyped::buildNativeTransfer(
         /* nonce: */ 9,
         /* gasPrice: */ 20000000000,
         /* gasLimit: */ 21000,
@@ -51,7 +51,7 @@ TEST(EthereumSigner, Hash) {
 
 TEST(EthereumSigner, Sign) {
     auto address = parse_hex("0x3535353535353535353535353535353535353535");
-    auto transaction = TransactionLegacy::buildNativeTransfer(
+    auto transaction = TransactionNonTyped::buildNativeTransfer(
         /* nonce: */ 9,
         /* gasPrice: */ 20000000000,
         /* gasLimit: */ 21000,
@@ -68,7 +68,7 @@ TEST(EthereumSigner, Sign) {
 }
 
 TEST(EthereumSigner, SignERC20Transfer) {
-    auto transaction = TransactionLegacy::buildERC20Transfer(
+    auto transaction = TransactionNonTyped::buildERC20Transfer(
         /* nonce: */ 0,
         /* gasPrice: */ 42000000000, // 0x09c7652400
         /* gasLimit: */ 78009, // 130B9
