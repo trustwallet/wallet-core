@@ -27,12 +27,15 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
         auto v = store(signature.v);
         output.set_v(v.data(), v.size());
-
         auto r = store(signature.r);
         output.set_r(r.data(), r.size());
-
         auto s = store(signature.s);
         output.set_s(s.data(), s.size());
+
+        output.set_pre_hash(preHash.data(), preHash.size());
+
+        auto postHash = Hash::keccak256(encoded);
+        output.set_hash(postHash.data(), postHash.size());
 
         output.set_data(transaction->payload.data(), transaction->payload.size());
 
