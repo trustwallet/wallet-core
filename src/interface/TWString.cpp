@@ -15,8 +15,6 @@ TWString *_Nonnull TWStringCreateWithUTF8Bytes(const char *_Nonnull bytes) {
 
 TWString *_Nonnull TWStringCreateWithRawBytes(const uint8_t *_Nonnull bytes, size_t size) {
     auto s = new std::string(bytes, bytes + size);
-    // append null terminator
-    s->append(size, '\0');
     return s;
 }
 
