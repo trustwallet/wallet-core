@@ -13,15 +13,15 @@ using namespace TW::Ethereum;
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     try {
-        auto signer = Signer(load(input.chain_id()));
+        uint256_t chainID = load(input.chain_id());
         auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
         auto transaction = Signer::build(input);
 
-        auto signature = signer.sign(key, transaction);
+        auto signature = sign(key, chainID, transaction);
 
         auto output = Proto::SigningOutput();
 
-        auto encoded = transaction->encoded(signature, signer.chainID);
+        auto encoded = transaction->encoded(signature, chainID);
         output.set_encoded(encoded.data(), encoded.size());
 
         auto v = store(signature.v);
@@ -174,7 +174,7 @@ std::shared_ptr<TransactionLegacy> Signer::buildLegacy(const Proto::SigningInput
     }
 }
 
-Signature Signer::sign(const PrivateKey& privateKey, std::shared_ptr<TransactionBase> transaction) const noexcept {
+Signature Signer::sign(const PrivateKey& privateKey, const uint256_t& chainID, std::shared_ptr<TransactionBase> transaction) noexcept {
     auto hash = transaction->hash(chainID);
     auto signature = Signer::sign(chainID, privateKey, hash);
     return signature;

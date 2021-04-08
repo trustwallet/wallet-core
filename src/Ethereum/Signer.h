@@ -30,13 +30,10 @@ class Signer {
     static std::string signJSON(const std::string& json, const Data& key);
 
   public:
-    uint256_t chainID;
-
-    /// Initializes a signer with a chain identifier.
-    explicit Signer(uint256_t chainID) : chainID(std::move(chainID)) {}
+    Signer() = delete;
 
     /// Signs the given transaction.
-    Signature sign(const PrivateKey& privateKey, std::shared_ptr<TransactionBase> transaction) const noexcept;
+    static Signature sign(const PrivateKey& privateKey, const uint256_t& chainID, std::shared_ptr<TransactionBase> transaction) noexcept;
 
   public:
     /// build Transaction from signing input

@@ -15,10 +15,6 @@ namespace TW::Ethereum {
 
 using boost::multiprecision::uint256_t;
 
-class SignerExposed : public Signer {
-public:
-    SignerExposed(boost::multiprecision::uint256_t chainID) : Signer(chainID) {}
-};
 
 TEST(EthereumTransaction, encodeTransactionLegacy) {
     auto transaction = TransactionLegacy::buildERC20Transfer(
@@ -48,8 +44,7 @@ TEST(EthereumSigner, Hash) {
         /* to: */ address,
         /* amount: */ 1000000000000000000
     );
-    auto signer = SignerExposed(1);
-    auto hash = transaction->hash(signer.chainID);
+    auto hash = transaction->hash(1);
     
     ASSERT_EQ(hex(hash), "daf5a779ae972f972197303d7b574746c7ef83eadac0f2791ad23db92e4c8e53");
 }
@@ -65,8 +60,7 @@ TEST(EthereumSigner, Sign) {
     );
 
     auto key = PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"));
-    auto signer = SignerExposed(1);
-    auto signature = signer.sign(key, transaction);
+    auto signature = Signer::sign(key, 1, transaction);
 
     ASSERT_EQ(signature.v, 37);
     ASSERT_EQ(signature.r, uint256_t("18515461264373351373200002665853028612451056578545711640558177340181847433846"));
@@ -84,8 +78,7 @@ TEST(EthereumSigner, SignERC20Transfer) {
     );
 
     auto key = PrivateKey(parse_hex("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151"));
-    auto signer = SignerExposed(1);
-    auto signature = signer.sign(key, transaction);
+    auto signature = Signer::sign(key, 1, transaction);
 
     ASSERT_EQ(signature.v, 37);
     ASSERT_EQ(hex(TW::store(signature.r)), "724c62ad4fbf47346b02de06e603e013f26f26b56fdc0be7ba3d6273401d98ce");
