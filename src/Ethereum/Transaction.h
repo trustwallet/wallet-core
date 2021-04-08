@@ -35,8 +35,8 @@ public:
 public:
     TransactionBase(const uint256_t& nonce, const Data& payload): nonce(nonce), payload(payload) {}
     virtual ~TransactionBase() {}
-    // pre-sign encoded tx, for hashing
-    virtual Data hash(const uint256_t chainID) const = 0;
+    // pre-sign hash of the tx, for signing
+    virtual Data preHash(const uint256_t chainID) const = 0;
     // encoded tx (signed)
     virtual Data encoded(const Signature& signature, const uint256_t chainID) const = 0;
 
@@ -85,7 +85,7 @@ public:
     static Data buildERC721TransferFromCall(const Data& from, const Data& to, const uint256_t& tokenId);
     static Data buildERC1155TransferFromCall(const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data);
 
-    virtual Data hash(const uint256_t chainID) const;
+    virtual Data preHash(const uint256_t chainID) const;
     virtual Data encoded(const Signature& signature, const uint256_t chainID) const;
 
 public:

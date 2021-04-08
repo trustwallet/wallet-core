@@ -45,7 +45,7 @@ std::shared_ptr<TransactionNonTyped> TransactionNonTyped::buildERC1155Transfer(c
     return std::make_unique<TransactionNonTyped>(nonce, gasPrice, gasLimit, tokenContract, 0, buildERC1155TransferFromCall(from, to, tokenId, value, data));
 }
 
-Data TransactionNonTyped::hash(const uint256_t chainID) const {
+Data TransactionNonTyped::preHash(const uint256_t chainID) const {
     Data encoded;
     append(encoded, RLP::encode(nonce));
     append(encoded, RLP::encode(gasPrice));

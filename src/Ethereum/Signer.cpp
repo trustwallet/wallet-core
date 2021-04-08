@@ -165,7 +165,7 @@ std::shared_ptr<TransactionNonTyped> Signer::buildNonTyped(const Proto::SigningI
 }
 
 Signature Signer::sign(const PrivateKey& privateKey, const uint256_t& chainID, std::shared_ptr<TransactionBase> transaction) noexcept {
-    auto hash = transaction->hash(chainID);
-    auto signature = Signer::sign(chainID, privateKey, hash);
+    auto preHash = transaction->preHash(chainID);
+    auto signature = Signer::sign(chainID, privateKey, preHash);
     return signature;
 }

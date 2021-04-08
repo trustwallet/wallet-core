@@ -28,14 +28,14 @@ TEST(EthereumTransaction, encodeTransactionNonTyped) {
     uint256_t dummyChain = 0x34;
     auto dummySignature = Signature{0, 0, 0};
 
-    auto hash = transaction->hash(dummyChain);
-    EXPECT_EQ(hex(hash), "b3525019dc367d3ecac48905f9a95ff3550c25a24823db765f92cae2dec7ebfd");
+    auto preHash = transaction->preHash(dummyChain);
+    EXPECT_EQ(hex(preHash), "b3525019dc367d3ecac48905f9a95ff3550c25a24823db765f92cae2dec7ebfd");
     
     auto encoded = transaction->encoded(dummySignature, dummyChain);
     EXPECT_EQ(hex(encoded), "f86a808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000808080");
 }
 
-TEST(EthereumSigner, Hash) {
+TEST(EthereumSigner, PreHash) {
     auto address = parse_hex("0x3535353535353535353535353535353535353535");
     auto transaction = TransactionNonTyped::buildNativeTransfer(
         /* nonce: */ 9,
@@ -44,9 +44,9 @@ TEST(EthereumSigner, Hash) {
         /* to: */ address,
         /* amount: */ 1000000000000000000
     );
-    auto hash = transaction->hash(1);
+    auto preHash = transaction->preHash(1);
     
-    ASSERT_EQ(hex(hash), "daf5a779ae972f972197303d7b574746c7ef83eadac0f2791ad23db92e4c8e53");
+    ASSERT_EQ(hex(preHash), "daf5a779ae972f972197303d7b574746c7ef83eadac0f2791ad23db92e4c8e53");
 }
 
 TEST(EthereumSigner, Sign) {
