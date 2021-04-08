@@ -49,7 +49,7 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     return hex(output.encoded());
 }
 
-SignatureRSV Signer::valuesRSV(const uint256_t& chainID, const Data& signature) noexcept {
+Signature Signer::valuesRSV(const uint256_t& chainID, const Data& signature) noexcept {
     boost::multiprecision::uint256_t r, s, v;
     import_bits(r, signature.begin(), signature.begin() + 32);
     import_bits(s, signature.begin() + 32, signature.begin() + 64);
@@ -63,10 +63,10 @@ SignatureRSV Signer::valuesRSV(const uint256_t& chainID, const Data& signature) 
     } else {
         newV = v;
     }
-    return SignatureRSV{r, s, newV};
+    return Signature{r, s, newV};
 }
 
-SignatureRSV Signer::sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) noexcept {
+Signature Signer::sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) noexcept {
     auto signature = privateKey.sign(hash, TWCurveSECP256k1);
     return valuesRSV(chainID, signature);
 }
@@ -174,7 +174,7 @@ std::shared_ptr<TransactionLegacy> Signer::buildLegacy(const Proto::SigningInput
     }
 }
 
-SignatureRSV Signer::sign(const PrivateKey& privateKey, std::shared_ptr<TransactionBase> transaction) const noexcept {
+Signature Signer::sign(const PrivateKey& privateKey, std::shared_ptr<TransactionBase> transaction) const noexcept {
     auto hash = transaction->hash(chainID);
     auto signature = Signer::sign(chainID, privateKey, hash);
     return signature;

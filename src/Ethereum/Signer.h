@@ -36,7 +36,7 @@ class Signer {
     explicit Signer(uint256_t chainID) : chainID(std::move(chainID)) {}
 
     /// Signs the given transaction.
-    SignatureRSV sign(const PrivateKey& privateKey, std::shared_ptr<TransactionBase> transaction) const noexcept;
+    Signature sign(const PrivateKey& privateKey, std::shared_ptr<TransactionBase> transaction) const noexcept;
 
   public:
     /// build Transaction from signing input
@@ -46,12 +46,12 @@ class Signer {
     /// Signs a hash with the given private key for the given chain identifier.
     ///
     /// @returns the r, s, and v values of the transaction signature
-    static SignatureRSV sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) noexcept;
+    static Signature sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) noexcept;
 
     /// R, S, and V values for the given chain identifier and signature.
     ///
     /// @returns the r, s, and v values of the transaction signature
-    static SignatureRSV valuesRSV(const uint256_t& chainID, const Data& signature) noexcept;
+    static Signature valuesRSV(const uint256_t& chainID, const Data& signature) noexcept;
 };
 
 } // namespace TW::Ethereum

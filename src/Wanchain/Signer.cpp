@@ -26,7 +26,7 @@ Data Transaction::hash(const uint256_t chainID) const {
     return Hash::keccak256(Ethereum::RLP::encodeList(encoded));
 }
 
-Data Transaction::encoded(const Ethereum::SignatureRSV& signature) const {
+Data Transaction::encoded(const Ethereum::Signature& signature) const {
     Data encoded;
     append(encoded, Ethereum::RLP::encode(1));
     append(encoded, Ethereum::RLP::encode(wrapped->nonce));
@@ -65,7 +65,7 @@ Ethereum::Proto::SigningOutput Signer::sign(const Ethereum::Proto::SigningInput&
     return output;
 }
 
-Ethereum::SignatureRSV Signer::sign(const PrivateKey& privateKey, const Transaction& transaction) const noexcept {
+Ethereum::Signature Signer::sign(const PrivateKey& privateKey, const Transaction& transaction) const noexcept {
     auto hash = transaction.hash(chainID);
     auto signature = Ethereum::Signer::sign(chainID, privateKey, hash);
     return signature;

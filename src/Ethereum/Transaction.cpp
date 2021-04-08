@@ -59,7 +59,7 @@ Data TransactionLegacy::hash(const uint256_t chainID) const {
     return Hash::keccak256(RLP::encodeList(encoded));
 }
 
-Data TransactionLegacy::encoded(const SignatureRSV& signature, const uint256_t chainID) const {
+Data TransactionLegacy::encoded(const Signature& signature, const uint256_t chainID) const {
     Data encoded;
     append(encoded, RLP::encode(nonce));
     append(encoded, RLP::encode(gasPrice));

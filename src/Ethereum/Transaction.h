@@ -19,7 +19,8 @@ namespace TW::Ethereum {
 //  -- others with payload, function call, e.g. ERC20 transfer
 // - Enveloped transactions (EIP2718), with specific type, and specific transaction payload
 
-struct SignatureRSV {
+/// R-S-V Signature values
+struct Signature {
 public:
     uint256_t r;
     uint256_t s;
@@ -39,7 +40,7 @@ public:
     // pre-sign encoded tx, for hashing
     virtual Data hash(const uint256_t chainID) const = 0;
     // encoded tx (signed)
-    virtual Data encoded(const SignatureRSV& signature, const uint256_t chainID) const = 0;
+    virtual Data encoded(const Signature& signature, const uint256_t chainID) const = 0;
 
 protected:
     TransactionBase() {}
@@ -87,7 +88,7 @@ public:
     static Data buildERC1155TransferFromCall(const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data);
 
     virtual Data hash(const uint256_t chainID) const;
-    virtual Data encoded(const SignatureRSV& signature, const uint256_t chainID) const;
+    virtual Data encoded(const Signature& signature, const uint256_t chainID) const;
 
 public:
     TransactionLegacy(const uint256_t& nonce,

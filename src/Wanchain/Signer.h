@@ -25,7 +25,7 @@ public:
     const std::shared_ptr<Ethereum::TransactionLegacy> wrapped;
     Transaction(const std::shared_ptr<Ethereum::TransactionLegacy>& wrapped): wrapped(wrapped) {}
     Data hash(const uint256_t chainID) const;
-    Data encoded(const Ethereum::SignatureRSV& signature) const;
+    Data encoded(const Ethereum::Signature& signature) const;
 };
 
 /// Helper class that performs Wanchain transaction signing.
@@ -40,7 +40,7 @@ class Signer {
     Signer(boost::multiprecision::uint256_t chainID) : chainID(std::move(chainID)) {}
 
     /// Signs the given transaction.
-    Ethereum::SignatureRSV sign(const PrivateKey& privateKey, const Transaction& transaction) const noexcept;
+    Ethereum::Signature sign(const PrivateKey& privateKey, const Transaction& transaction) const noexcept;
 };
 
 } // namespace TW::Wanchain

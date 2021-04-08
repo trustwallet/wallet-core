@@ -30,7 +30,7 @@ TEST(EthereumTransaction, encodeTransactionLegacy) {
         /* amount: */ 2000000000000000000
     );
     uint256_t dummyChain = 0x34;
-    auto dummySignature = SignatureRSV{0, 0, 0};
+    auto dummySignature = Signature{0, 0, 0};
 
     auto hash = transaction->hash(dummyChain);
     EXPECT_EQ(hex(hash), "b3525019dc367d3ecac48905f9a95ff3550c25a24823db765f92cae2dec7ebfd");
