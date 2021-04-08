@@ -22,9 +22,7 @@ namespace TW::Ethereum {
 /// R-S-V Signature values
 struct Signature {
 public:
-    uint256_t r;
-    uint256_t s;
-    uint256_t v;
+    uint256_t r, s, v;
 };
 
 /// Base class for all transactions.

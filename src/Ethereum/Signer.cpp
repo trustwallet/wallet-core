@@ -83,10 +83,6 @@ Data addressStringToData(const std::string& asString) {
     return asData;
 }
 
-std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input) {
-    return buildNonTyped(input);
-}
-
 std::shared_ptr<TransactionNonTyped> Signer::buildNonTyped(const Proto::SigningInput& input) {
     Data toAddress = addressStringToData(input.to_address());
     uint256_t nonce = load(input.nonce());
@@ -97,8 +93,7 @@ std::shared_ptr<TransactionNonTyped> Signer::buildNonTyped(const Proto::SigningI
         case Proto::Transaction::kTransfer:
             {
                 auto transaction = TransactionNonTyped::buildNativeTransfer(
-                    nonce,
-                    gasPrice, gasLimit,
+                    nonce, gasPrice, gasLimit,
                     /* to: */ toAddress,
                     /* amount: */ load(input.transaction().transfer().amount()),
                     /* optional data: */ Data(input.transaction().transfer().data().begin(), input.transaction().transfer().data().end()));
@@ -109,8 +104,7 @@ std::shared_ptr<TransactionNonTyped> Signer::buildNonTyped(const Proto::SigningI
             {
                 Data tokenToAddress = addressStringToData(input.transaction().erc20_transfer().to());
                 auto transaction = TransactionNonTyped::buildERC20Transfer(
-                    nonce,
-                    gasPrice, gasLimit,
+                    nonce, gasPrice, gasLimit,
                     /* tokenContract: */ toAddress,
                     /* toAddress */ tokenToAddress,
                     /* amount: */ load(input.transaction().erc20_transfer().amount()));
@@ -121,8 +115,7 @@ std::shared_ptr<TransactionNonTyped> Signer::buildNonTyped(const Proto::SigningI
             {
                 Data spenderAddress = addressStringToData(input.transaction().erc20_approve().spender());
                 auto transaction = TransactionNonTyped::buildERC20Approve(
-                    nonce,
-                    gasPrice, gasLimit,
+                    nonce, gasPrice, gasLimit,
                     /* tokenContract: */ toAddress,
                     /* toAddress */ spenderAddress,
                     /* amount: */ load(input.transaction().erc20_approve().amount()));
@@ -134,8 +127,7 @@ std::shared_ptr<TransactionNonTyped> Signer::buildNonTyped(const Proto::SigningI
                 Data tokenToAddress = addressStringToData(input.transaction().erc721_transfer().to());
                 Data tokenFromAddress = addressStringToData(input.transaction().erc721_transfer().from());
                 auto transaction = TransactionNonTyped::buildERC721Transfer(
-                    nonce,
-                    gasPrice, gasLimit,
+                    nonce, gasPrice, gasLimit,
                     /* tokenContract: */ toAddress,
                     /* fromAddress: */ tokenFromAddress,
                     /* toAddress */ tokenToAddress,
@@ -148,8 +140,7 @@ std::shared_ptr<TransactionNonTyped> Signer::buildNonTyped(const Proto::SigningI
                 Data tokenToAddress = addressStringToData(input.transaction().erc1155_transfer().to());
                 Data tokenFromAddress = addressStringToData(input.transaction().erc1155_transfer().from());
                 auto transaction = TransactionNonTyped::buildERC1155Transfer(
-                    nonce,
-                    gasPrice, gasLimit,
+                    nonce, gasPrice, gasLimit,
                     /* tokenContract: */ toAddress,
                     /* fromAddress: */ tokenFromAddress,
                     /* toAddress */ tokenToAddress,
@@ -164,8 +155,7 @@ std::shared_ptr<TransactionNonTyped> Signer::buildNonTyped(const Proto::SigningI
         default:
             {
                 auto transaction = TransactionNonTyped::buildNativeTransfer(
-                    nonce,
-                    gasPrice, gasLimit,
+                    nonce, gasPrice, gasLimit,
                     /* to: */ toAddress,
                     /* amount: */ load(input.transaction().contract_generic().amount()),
                     /* transaction: */ Data(input.transaction().contract_generic().data().begin(), input.transaction().contract_generic().data().end()));
