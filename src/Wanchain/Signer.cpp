@@ -67,6 +67,5 @@ Ethereum::Proto::SigningOutput Signer::sign(const Ethereum::Proto::SigningInput&
 
 Ethereum::Signature Signer::sign(const PrivateKey& privateKey, const WrappedTransaction& transaction) const noexcept {
     auto hash = transaction.hash(chainID);
-    auto signature = Ethereum::Signer::sign(chainID, privateKey, hash);
-    return signature;
+    return Ethereum::Signer::sign(privateKey, chainID, hash);
 }

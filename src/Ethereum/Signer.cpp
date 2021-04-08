@@ -17,7 +17,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
         auto transaction = Signer::build(input);
 
-        auto signature = sign(key, chainID, transaction);
+        auto preHash = transaction->preHash(chainID);
+        auto signature = sign(key, chainID, preHash);
 
         auto output = Proto::SigningOutput();
 
@@ -66,7 +67,7 @@ Signature Signer::valuesRSV(const uint256_t& chainID, const Data& signature) noe
     return Signature{r, s, newV};
 }
 
-Signature Signer::sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) noexcept {
+Signature Signer::sign(const PrivateKey& privateKey, const uint256_t& chainID, const Data& hash) noexcept {
     auto signature = privateKey.sign(hash, TWCurveSECP256k1);
     return valuesRSV(chainID, signature);
 }
@@ -166,6 +167,5 @@ std::shared_ptr<TransactionNonTyped> Signer::buildNonTyped(const Proto::SigningI
 
 Signature Signer::sign(const PrivateKey& privateKey, const uint256_t& chainID, std::shared_ptr<TransactionBase> transaction) noexcept {
     auto preHash = transaction->preHash(chainID);
-    auto signature = Signer::sign(chainID, privateKey, preHash);
-    return signature;
+    return Signer::sign(privateKey, chainID, preHash);
 }

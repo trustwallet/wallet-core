@@ -43,7 +43,7 @@ class Signer {
     /// Signs a hash with the given private key for the given chain identifier.
     ///
     /// @returns the r, s, and v values of the transaction signature
-    static Signature sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) noexcept;
+    static Signature sign(const PrivateKey& privateKey, const uint256_t& chainID, const Data& hash) noexcept;
 
     /// R, S, and V values for the given chain identifier and signature.
     ///
