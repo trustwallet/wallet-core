@@ -98,7 +98,7 @@ Wanchain::Entry wanchainDP;
 Waves::Entry wavesDP;
 Zcash::Entry zcashDP;
 Zilliqa::Entry zilliqaDP;
-Avalanche::Entry AvalancheDP;
+Avalanche::Entry avalancheDP;
 // end_of_coin_dipatcher_declarations_marker_do_not_modify
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
@@ -170,7 +170,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeZelcash: entry = &zcashDP; break;
         case TWCoinTypeZilliqa: entry = &zilliqaDP; break;
         case TWCoinTypePolygon: entry = &ethereumDP; break;
-        case TWCoinTypeAvalancheXChain: entry = &AvalancheDP; break;
+        case TWCoinTypeAvalancheXChain: entry = &avalancheDP; break;
         case TWCoinTypeAvalancheCChain: entry = &ethereumDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
