@@ -316,7 +316,7 @@ Data Signer::sign(const std::vector<PrivateKey>& privateKeys, BaseTransaction& t
     // see avalanchejs/src/apis/avm/basetx.ts and tx.ts for reference implementations
     const Data codecID = {0x0, 0x0};
     Data transactionBytes;
-    transactionBytes.insert(std::end(transactionBytes), std::begin(codecID), std::end(codecID);
+    transactionBytes.insert(std::end(transactionBytes), std::begin(codecID), std::end(codecID));
     transactionBytes.push_back(0x00); // first codecID byte: 0x00
     transactionBytes.push_back(0x00); // second codecID byte: 0x00
     transaction.encode(transactionBytes);
