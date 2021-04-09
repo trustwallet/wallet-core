@@ -329,11 +329,16 @@ Data Signer::sign(const std::vector<PrivateKey>& privateKeys, BaseTransaction& t
             for (auto &sigidx: input.Input->getAddressIndices()) { 
                 auto addresses = input.SpendableAddresses;
                 std::sort(addresses.begin(), addresses.end());
-                auto addressRequested = addresses[sigidx]; // TODO this access is not guaranteed to be safe.
+                if (sigidx >= addresses.size()) {
+                    // would cause a crash, sigidx does not exist in the address vector.
+                    // return empty Data.
+                    return Data{}; 
+                }
+                auto addressRequested = addresses[sigidx];
                 for (auto &key : privateKeys) {
                     auto possibleAddress = Address(key.getPublicKey(TWPublicKeyTypeSECP256k1)); 
                     if (possibleAddress == addressRequested) {
-                        auto signature = key.sign(msgBytes, TWCurveSECP256k1); // TODO EJR I thought this was TWCurveED25519 for sure
+                        auto signature = key.sign(msgBytes, TWCurveSECP256k1);
                         sigs.push_back(signature);
                     }
                 }
@@ -342,8 +347,8 @@ Data Signer::sign(const std::vector<PrivateKey>& privateKeys, BaseTransaction& t
             credentials.push_back(credential);
         } else {
             //nft input, make an NFT credential
-            // TODO define NFT input
-            // TODO add support for NFT inputs
+            // NFT inputs not currently supported. Return empty Data.
+            return Data{};
         }
     }
     auto signedTransaction = SignedTransaction(transaction, credentials);
