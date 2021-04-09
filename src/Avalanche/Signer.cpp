@@ -314,8 +314,9 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
 
 Data Signer::sign(const std::vector<PrivateKey>& privateKeys, BaseTransaction& transaction) noexcept {
     // see avalanchejs/src/apis/avm/basetx.ts and tx.ts for reference implementations
+    const Data codecID = {0x0, 0x0};
     Data transactionBytes;
-    // TODO this is probably not the best place to store and add the codecID bytes...?
+    transactionBytes.insert(std::end(transactionBytes), std::begin(codecID), std::end(codecID);
     transactionBytes.push_back(0x00); // first codecID byte: 0x00
     transactionBytes.push_back(0x00); // second codecID byte: 0x00
     transaction.encode(transactionBytes);
