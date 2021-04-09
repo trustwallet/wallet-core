@@ -8,7 +8,6 @@
 
 #include "Address.h"
 #include "Signer.h"
-#include "RLP.h"
 
 using namespace TW::Ethereum;
 using namespace std;

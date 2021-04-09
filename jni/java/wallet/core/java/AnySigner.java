@@ -21,19 +21,6 @@ public class AnySigner {
     }
     public static native byte[] nativeSign(byte[] data, int coin);
 
-    public static byte[] encode(Message input, CoinType coin) throws Exception {
-        byte[] data = input.toByteArray();
-        return nativeEncode(data, coin.value());
-    }
-
-    public static native byte[] nativeEncode(byte[] data, int coin);
-
-    public static byte[] decode(byte[] data, CoinType coin) throws Exception {
-        return nativeDecode(data, coin.value());
-    }
-
-    public static native byte[] nativeDecode(byte[] data, int coin);
-
     public static native String signJSON(String json, byte[] key, int coin);
 
     public static native boolean supportsJSON(int coin);
