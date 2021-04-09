@@ -26,8 +26,8 @@
 
 #include <stdint.h>
 
-#include <TrezorCrypto/ecdsa.h>
-#include <TrezorCrypto/bip32.h>
+#include "bip32.h"
+#include "ecdsa.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,6 +36,7 @@ extern "C" {
 extern const ecdsa_curve secp256k1;
 extern const curve_info secp256k1_info;
 extern const curve_info secp256k1_decred_info;
+extern const curve_info secp256k1_groestl_info;
 extern const curve_info secp256k1_smart_info;
 
 #ifdef __cplusplus

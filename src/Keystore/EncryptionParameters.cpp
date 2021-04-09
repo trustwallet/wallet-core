@@ -65,8 +65,8 @@ Data EncryptionParameters::decrypt(const Data& password) const {
     } else if (kdfParams.which() == 1) {
         auto pbkdf2Params = boost::get<PBKDF2Parameters>(kdfParams);
         derivedKey.resize(pbkdf2Params.defaultDesiredKeyLength);
-        pbkdf2_hmac_sha256(password.data(), password.size(), pbkdf2Params.salt.data(),
-            pbkdf2Params.salt.size(), pbkdf2Params.iterations, derivedKey.data(),
+        pbkdf2_hmac_sha256(password.data(), static_cast<int>(password.size()), pbkdf2Params.salt.data(),
+            static_cast<int>(pbkdf2Params.salt.size()), pbkdf2Params.iterations, derivedKey.data(),
             pbkdf2Params.defaultDesiredKeyLength);
         mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
     } else {

@@ -99,11 +99,11 @@ targets:
       - trezor-crypto/crypto/ed25519-donna/ed25519-keccak.c
       - trezor-crypto/crypto/monero/base58.c
       - trezor-crypto/crypto/monero/serialize.c
-      - trezor-crypto/crypto/monero/xmr.c
       - trezor-crypto/crypto/monero/range_proof.c
       - trezor-crypto/crypto/blake256.c
       - trezor-crypto/crypto/blake2b.c
       - trezor-crypto/crypto/blake2s.c
+      - trezor-crypto/crypto/chacha_drbg.c
       - trezor-crypto/crypto/chacha20poly1305/chacha20poly1305.c
       - trezor-crypto/crypto/chacha20poly1305/chacha_merged.c
       - trezor-crypto/crypto/chacha20poly1305/poly1305-donna.c
@@ -114,10 +114,12 @@ targets:
       - trezor-crypto/crypto/cash_addr.c
       - trezor-crypto/crypto/memzero.c
       - trezor-crypto/crypto/scrypt.c
-      - trezor-crypto/crypto/ripple/base58.c
       - trezor-crypto/crypto/nist256p1.c
       - trezor-crypto/crypto/groestl.c
+      - trezor-crypto/crypto/hmac_drbg.c
+      - trezor-crypto/crypto/rfc6979.c
       - trezor-crypto/crypto/schnorr.c
+      - trezor-crypto/crypto/shamir.c
       - trezor-crypto/crypto/sodium/private/fe_25_5/fe.c
       - trezor-crypto/crypto/sodium/private/ed25519_ref10.c
       - trezor-crypto/crypto/sodium/private/ed25519_ref10_fe_25_5.c

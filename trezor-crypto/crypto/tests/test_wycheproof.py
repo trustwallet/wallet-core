@@ -102,7 +102,7 @@ def is_valid_der(data):
     try:
         structure, _ = der_decode(data)
         return data == der_encode(structure)
-    except:
+    except Exception:
         return False
 
 
@@ -140,7 +140,7 @@ def parse_ec_pubkey(public_key):
 
     try:
         public_key = bytes(public_key["public_key"].asOctets())
-    except:
+    except Exception:
         raise ParseError("Not a BER encoded named elliptic curve public key")
 
     return curve_name, public_key
@@ -152,13 +152,13 @@ def parse_ecdsa256_signature(signature):
         raise ParseError("Not a valid DER")
     try:
         signature, _ = der_decode(signature, asn1Spec=EcSignature())
-    except:
+    except Exception:
         raise ParseError("Not a valid DER encoded ECDSA signature")
     try:
         r = int(signature["r"]).to_bytes(32, byteorder="big")
         s = int(signature["s"]).to_bytes(32, byteorder="big")
         signature = r + s
-    except:
+    except Exception:
         raise ParseError("Not a valid DER encoded 256 bit ECDSA signature")
     return signature
 
@@ -180,7 +180,9 @@ def get_curve_by_name(name):
 
 
 def parse_curve_name(name):
-    if name == "secp256k1":
+    if name == "secp256r1":
+        return "nist256p1"
+    elif name == "secp256k1":
         return "secp256k1"
     elif name == "curve25519":
         return "curve25519"
@@ -191,6 +193,8 @@ def parse_curve_name(name):
 def get_curve_name_by_identifier(identifier):
     if identifier == univ.ObjectIdentifier("1.3.132.0.10"):
         return "secp256k1"
+    elif identifier == univ.ObjectIdentifier("1.2.840.10045.3.1.7"):
+        return "nist256p1"
     else:
         return None
 
@@ -277,7 +281,7 @@ def aes_cbc_decrypt(key, iv, ciphertext):
 def load_json_testvectors(filename):
     try:
         result = json.loads(open(os.path.join(testvectors_directory, filename)).read())
-    except:
+    except Exception:
         raise DataError()
     return result
 
@@ -306,7 +310,7 @@ def generate_aes(filename):
                 plaintext = unhexlify(test["msg"])
                 ciphertext = unhexlify(test["ct"])
                 result = parse_result(test["result"])
-            except:
+            except Exception:
                 raise DataError()
 
             if len(key) not in [128 / 8, 192 / 8, 256 / 8]:
@@ -355,7 +359,7 @@ def generate_chacha_poly(filename):
                 ciphertext = unhexlify(test["ct"])
                 tag = unhexlify(test["tag"])
                 result = parse_result(test["result"])
-            except:
+            except Exception:
                 raise DataError()
 
             if result is None:
@@ -402,7 +406,7 @@ def generate_curve25519_dh(filename):
                 private_key = unhexlify(test["private"])
                 shared = unhexlify(test["shared"])
                 result = parse_result(test["result"])
-            except:
+            except Exception:
                 raise DataError()
 
             if curve_name != "curve25519":
@@ -444,7 +448,7 @@ def generate_ecdh(filename):
                 private_key = parse_signed_hex(test["private"])
                 shared = unhexlify(test["shared"])
                 result = parse_result(test["result"])
-            except:
+            except Exception:
                 raise DataError()
 
             try:
@@ -494,7 +498,7 @@ def generate_ecdsa(filename):
 
         try:
             public_key = unhexlify(test_group["keyDer"])
-        except:
+        except Exception:
             raise DataError()
 
         try:
@@ -517,7 +521,7 @@ def generate_ecdsa(filename):
                 signature = unhexlify(test["sig"])
                 message = unhexlify(test["msg"])
                 result = parse_result(test["result"])
-            except:
+            except Exception:
                 raise DataError()
 
             if result is None:
@@ -559,7 +563,7 @@ def generate_eddsa(filename):
 
         try:
             public_key = unhexlify(test_group["keyDer"])
-        except:
+        except Exception:
             raise DataError()
 
         try:
@@ -575,7 +579,7 @@ def generate_eddsa(filename):
                 signature = unhexlify(test["sig"])
                 message = unhexlify(test["msg"])
                 result = parse_result(test["result"])
-            except:
+            except Exception:
                 raise DataError()
 
             if result is None:

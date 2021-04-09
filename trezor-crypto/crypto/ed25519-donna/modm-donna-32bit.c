@@ -13,13 +13,13 @@
 	mu = floor( b^(k*2) / m ) = 0xfffffffffffffffffffffffffffffffeb2106215d086329a7ed9ce5a30a2c131b
 */
 
-static const bignum256modm modm_m = {
+const bignum256modm modm_m = {
 	0x1cf5d3ed, 0x20498c69, 0x2f79cd65, 0x37be77a8,
 	0x00000014,	0x00000000, 0x00000000,	0x00000000,
 	0x00001000
 };
 
-static const bignum256modm modm_mu = {
+const bignum256modm modm_mu = {
 	0x0a2c131b, 0x3673968c, 0x06329a7e, 0x01885742,
 	0x3fffeb21, 0x3fffffff, 0x3fffffff, 0x3fffffff,
 	0x000fffff
@@ -32,8 +32,8 @@ lt_modm(bignum256modm_element_t a, bignum256modm_element_t b) {
 
 /* see HAC, Alg. 14.42 Step 4 */
 void reduce256_modm(bignum256modm r) {
-	bignum256modm t;
-	bignum256modm_element_t b = 0, pb, mask;
+	bignum256modm t = {0};
+	bignum256modm_element_t b = 0, pb = 0, mask = 0;
 
 	/* t = r - m */
 	pb = 0;
@@ -66,9 +66,9 @@ void reduce256_modm(bignum256modm r) {
 	Instead of passing in x, pre-process in to q1 and r1 for efficiency
 */
 void barrett_reduce256_modm(bignum256modm r, const bignum256modm q1, const bignum256modm r1) {
-	bignum256modm q3, r2;
-	uint64_t c;
-	bignum256modm_element_t f, b, pb;
+	bignum256modm q3 = {0}, r2 = {0};
+	uint64_t c = 0;
+	bignum256modm_element_t f = 0, b = 0, pb = 0;
 
 	/* q1 = x >> 248 = 264 bits = 9 30 bit elements
 	   q2 = mu * q1
@@ -134,7 +134,7 @@ void barrett_reduce256_modm(bignum256modm r, const bignum256modm q1, const bignu
 
 /* addition modulo m */
 void add256_modm(bignum256modm r, const bignum256modm x, const bignum256modm y) {
-	bignum256modm_element_t c;
+	bignum256modm_element_t c = 0;
 
 	c  = x[0] + y[0]; r[0] = c & 0x3fffffff; c >>= 30;
 	c += x[1] + y[1]; r[1] = c & 0x3fffffff; c >>= 30;
@@ -151,7 +151,7 @@ void add256_modm(bignum256modm r, const bignum256modm x, const bignum256modm y) 
 
 /* -x modulo m */
 void neg256_modm(bignum256modm r, const bignum256modm x) {
-	bignum256modm_element_t b = 0, pb;
+	bignum256modm_element_t b = 0, pb = 0;
 
 	/* r = m - x */
 	pb = 0;
@@ -171,7 +171,7 @@ void neg256_modm(bignum256modm r, const bignum256modm x) {
 
 /* consts for subtraction, > p */
 /* Emilia Kasper trick, https://www.imperialviolet.org/2010/12/04/ecc.html */
-static const uint32_t twoP[] = {
+const uint32_t twoP[] = {
 		0x5cf5d3ed, 0x60498c68, 0x6f79cd64, 0x77be77a7, 0x40000013, 0x3fffffff, 0x3fffffff, 0x3fffffff, 0xfff};
 
 /* subtraction x-y % m */
@@ -191,9 +191,9 @@ void sub256_modm(bignum256modm r, const bignum256modm x, const bignum256modm y) 
 
 /* multiplication modulo m */
 void mul256_modm(bignum256modm r, const bignum256modm x, const bignum256modm y) {
-	bignum256modm r1, q1;
-	uint64_t c;
-	bignum256modm_element_t f;
+	bignum256modm r1 = {0}, q1 = {0};
+	uint64_t c = 0;
+	bignum256modm_element_t f = 0;
 
 	/* r1 = (x mod 256^(32+1)) = x mod (2^8)(31+1) = x & ((1 << 264) - 1)
 	   q1 = x >> 248 = 264 bits = 9 30 bit elements */
@@ -237,8 +237,8 @@ void mul256_modm(bignum256modm r, const bignum256modm x, const bignum256modm y) 
 
 void expand256_modm(bignum256modm out, const unsigned char *in, size_t len) {
 	unsigned char work[64] = {0};
-	bignum256modm_element_t x[16];
-	bignum256modm q1;
+	bignum256modm_element_t x[16] = {0};
+	bignum256modm q1 = {0};
 
 	memcpy(work, in, len);
 	x[0] = U8TO32_LE(work +  0);
@@ -288,7 +288,7 @@ void expand256_modm(bignum256modm out, const unsigned char *in, size_t len) {
 }
 
 void expand_raw256_modm(bignum256modm out, const unsigned char in[32]) {
-	bignum256modm_element_t x[8];
+	bignum256modm_element_t x[8] = {0};
 
 	x[0] = U8TO32_LE(in +  0);
 	x[1] = U8TO32_LE(in +  4);
@@ -312,7 +312,7 @@ void expand_raw256_modm(bignum256modm out, const unsigned char in[32]) {
 
 int is_reduced256_modm(const bignum256modm in)
 {
-	int i;
+	int i = 0;
 	uint32_t res1 = 0;
 	uint32_t res2 = 0;
 	for (i = 8; i >= 0; i--) {
@@ -334,9 +334,9 @@ void contract256_modm(unsigned char out[32], const bignum256modm in) {
 }
 
 void contract256_window4_modm(signed char r[64], const bignum256modm in) {
-	char carry;
+	char carry = 0;
 	signed char *quads = r;
-	bignum256modm_element_t i, j, v;
+	bignum256modm_element_t i = 0, j = 0, v = 0;
 
 	for (i = 0; i < 8; i += 2) {
 		v = in[i];
@@ -369,10 +369,10 @@ void contract256_window4_modm(signed char r[64], const bignum256modm in) {
 }
 
 void contract256_slidingwindow_modm(signed char r[256], const bignum256modm s, int windowsize) {
-	int i,j,k,b;
+	int i = 0, j = 0, k = 0, b = 0;
 	int m = (1 << (windowsize - 1)) - 1, soplen = 256;
 	signed char *bits = r;
-	bignum256modm_element_t v;
+	bignum256modm_element_t v = 0;
 
 	/* first put the binary expansion into r  */
 	for (i = 0; i < 8; i++) {
