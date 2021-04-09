@@ -15,8 +15,6 @@ TWString *_Nonnull TWStringCreateWithUTF8Bytes(const char *_Nonnull bytes) {
 
 TWString *_Nonnull TWStringCreateWithRawBytes(const uint8_t *_Nonnull bytes, size_t size) {
     auto s = new std::string(bytes, bytes + size);
-    // append null terminator
-    s->append(size, '\0');
     return s;
 }
 
@@ -32,7 +30,7 @@ char TWStringGet(TWString *_Nonnull string, size_t index) {
 
 const char *_Nonnull TWStringUTF8Bytes(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
-    return s->data();
+    return s->c_str();
 }
 
 void TWStringDelete(TWString *_Nonnull string) {
