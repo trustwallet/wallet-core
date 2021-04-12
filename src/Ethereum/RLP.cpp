@@ -214,7 +214,6 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         if (inputLen < listLen) {
             throw std::invalid_argument("Invalid rlp string length");
         }
-
         // empty list
         if (listLen == 0) {
             item.remainder = Data(input.begin() + 1, input.end());

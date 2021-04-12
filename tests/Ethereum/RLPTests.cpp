@@ -174,7 +174,6 @@ TEST(RLP, DecodeLength) {
 }
 
 TEST(RLP, DecodeInvalid) {
-
     // decode empty data
     EXPECT_THROW(RLP::decode(Data()), std::invalid_argument);
 
