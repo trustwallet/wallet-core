@@ -9,15 +9,11 @@
 #include "../Data.h"
 #include "../uint256.h"
 #include "../BinaryCoding.h"
-#include "../HexCoding.h"
 
-#include <nlohmann/json.hpp>
 #include <tuple>
 
 using namespace TW;
 using namespace TW::Ethereum;
-
-using json = nlohmann::json;
 
 Data RLP::encode(const uint256_t& value) noexcept {
     using boost::multiprecision::cpp_int;
@@ -141,26 +137,7 @@ Data RLP::putint(uint64_t i) noexcept {
     // clang-format on
 }
 
-Data RLP::decodeRawTransaction(const Data& data) {
-    auto decoded = decode(data).decoded;
-    if (decoded.size() < 9) {
-        return {};
-    }
-    auto result = json {
-        {"nonce", hexEncoded(decoded[0])},
-        {"gasPrice", hexEncoded(decoded[1])},
-        {"gas", hexEncoded(decoded[2])},
-        {"to", hexEncoded(decoded[3])},
-        {"value", hexEncoded(decoded[4])},
-        {"input", hexEncoded(decoded[5])},
-        {"v", hexEncoded(decoded[6])},
-        {"r", hexEncoded(decoded[7])},
-        {"s", hexEncoded(decoded[8])},
-    }.dump();
-    return Data(result.begin(), result.end());
-}
-
-static RLP::DecodedItem decodeList(const Data& input) {
+RLP::DecodedItem RLP::decodeList(const Data& input) {
     RLP::DecodedItem item;
     auto remainder = input;
     while(true) {
@@ -175,7 +152,7 @@ static RLP::DecodedItem decodeList(const Data& input) {
     return item;
 }
 
-static uint64_t decodeLength(const Data& data) {
+uint64_t RLP::decodeLength(const Data& data) {
     size_t index = 0;
     auto decodedLen = decodeVarInt(data, index);
     if (!std::get<0>(decodedLen)) {
@@ -237,7 +214,6 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         if (inputLen < listLen) {
             throw std::invalid_argument("Invalid rlp string length");
         }
-        
         // empty list
         if (listLen == 0) {
             item.remainder = Data(input.begin() + 1, input.end());
