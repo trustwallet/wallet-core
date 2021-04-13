@@ -8,7 +8,6 @@
 
 #include "Address.h"
 #include "Signer.h"
-#include "RLP.h"
 
 using namespace TW::Ethereum;
 using namespace std;
@@ -32,17 +31,4 @@ void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) con
 
 string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const { 
     return Signer::signJSON(json, key);
-}
-
-void Entry::encodeRawTx(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    encodeTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
-}
-
-void Entry::decodeRawTx(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    try {
-        auto data = RLP::decodeRawTransaction(dataIn);
-        dataOut.insert(dataOut.end(), data.begin(), data.end());
-    } catch(...) {
-        return;
-    }
 }

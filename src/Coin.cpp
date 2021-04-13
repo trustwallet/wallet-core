@@ -232,18 +232,6 @@ bool TW::supportsJSONSigning(TWCoinType coinType) {
     return dispatcher->supportsJSONSigning();
 }
 
-void TW::anyCoinEncode(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
-    auto dispatcher = coinDispatcher(coinType);
-    assert(dispatcher != nullptr);
-    dispatcher->encodeRawTx(coinType, dataIn, dataOut);
-}
-
-void TW::anyCoinDecode(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
-    auto dispatcher = coinDispatcher(coinType);
-    assert(dispatcher != nullptr);
-    dispatcher->decodeRawTx(coinType, dataIn, dataOut);
-}
-
 void TW::anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
     auto dispatcher = coinDispatcher(coinType);
     assert(dispatcher != nullptr);

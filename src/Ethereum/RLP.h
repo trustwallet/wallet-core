@@ -100,9 +100,8 @@ struct RLP {
         Data remainder;
     };
 
-    /// Decodes raw transaction to json data
-    static Data decodeRawTransaction(const Data& data);
-
+    static DecodedItem decodeList(const Data& input);
+    static uint64_t decodeLength(const Data& data);
     /// Decodes data, remainder from RLP encoded data
     static DecodedItem decode(const Data& data);
 };
