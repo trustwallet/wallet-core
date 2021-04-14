@@ -44,7 +44,6 @@
 #include "Stellar/Entry.h"
 #include "Tezos/Entry.h"
 #include "Theta/Entry.h"
-#include "THORChain/Entry.h"
 #include "TON/Entry.h"
 #include "Tron/Entry.h"
 #include "VeChain/Entry.h"
@@ -91,7 +90,6 @@ Solana::Entry solanaDP;
 Stellar::Entry stellarDP;
 Tezos::Entry tezosDP;
 Theta::Entry thetaDP;
-THORChain::Entry THORChainDP;
 TON::Entry tonDP;
 Tron::Entry tronDP;
 VeChain::Entry vechainDP;
@@ -161,7 +159,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeKin: entry = &stellarDP; break;
         case TWCoinTypeTezos: entry = &tezosDP; break;
         case TWCoinTypeTheta: entry = &thetaDP; break;
-        case TWCoinTypeTHORChain: entry = &THORChainDP; break;
+        case TWCoinTypeTHORChain: entry = &cosmosDP; break;
         case TWCoinTypeTON: entry = &tonDP; break;
         case TWCoinTypeTron: entry = &tronDP; break;
         case TWCoinTypeVeChain: entry = &vechainDP; break;

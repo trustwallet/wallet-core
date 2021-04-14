@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -76,6 +76,7 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeSolana, privateKey), "H4JcMPicKkHcxxDjkyyrLoQj7Kcibd9t815ak4UvTr9M");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeElrond, privateKey), "erd1a6f6fan035ttsxdmn04ellxdlnwpgyhg0lhx5vjv92v6rc8xw9yq83344f");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeOasis, privateKey), "oasis1qzw4h3wmyjtrttduqqrs8udggyy2emwdzqmuzwg4");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeTHORChain, privateKey), "thor1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0luxce7");
 }
 
 int countThreadReady = 0;

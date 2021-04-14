@@ -1574,7 +1574,7 @@
     "coinId": 931,
     "symbol": "RUNE",
     "decimals": 18,
-    "blockchain": "Thorchain",
+    "blockchain": "Cosmos",
     "derivationPath": "m/44'/931'/0'/0/0",
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
