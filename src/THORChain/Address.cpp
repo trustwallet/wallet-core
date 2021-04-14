@@ -6,7 +6,7 @@
 
 #include "Address.h"
 
-using namespace TW::<%= format_name(coin) %>;
+using namespace TW::THORChain;
 
 bool Address::isValid(const std::string& string) {
     // TODO: Finalize implementation

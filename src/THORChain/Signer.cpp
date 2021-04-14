@@ -9,7 +9,7 @@
 #include "../PublicKey.h"
 
 using namespace TW;
-using namespace TW::<%= name %>;
+using namespace TW::THORChain;
 
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {

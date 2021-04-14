@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -47,6 +47,7 @@ enum TWBlockchain {
     TWBlockchainFilecoin = 32,
     TWBlockchainElrondNetwork = 33,
     TWBlockchainOasisNetwork = 34,
+    TWBlockchainThorchain = 35,
 };
 
 TW_EXTERN_C_END

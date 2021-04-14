@@ -9,7 +9,7 @@
 #include "Address.h"
 #include "Signer.h"
 
-using namespace TW::<%= format_name(coin) %>;
+using namespace TW::THORChain;
 using namespace std;
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.

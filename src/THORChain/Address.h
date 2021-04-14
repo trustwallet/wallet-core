@@ -11,7 +11,7 @@
 
 #include <string>
 
-namespace TW::<%= format_name(coin) %> {
+namespace TW::THORChain {
 
 class Address {
   public:
@@ -20,10 +20,10 @@ class Address {
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
 
-    /// Initializes a <%= format_name(coin) %> address with a string representation.
+    /// Initializes a THORChain address with a string representation.
     explicit Address(const std::string& string);
 
-    /// Initializes a <%= format_name(coin) %> address with a public key.
+    /// Initializes a THORChain address with a public key.
     explicit Address(const PublicKey& publicKey);
 
     /// Returns a string representation of the address.
@@ -35,9 +35,9 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
     return true;
 }
 
-} // namespace TW::<%= format_name(coin) %>
+} // namespace TW::THORChain
 
 /// Wrapper for C interface.
-struct TW<%= format_name(coin) %>Address {
-    TW::<%= format_name(coin) %>::Address impl;
+struct TWTHORChainAddress {
+    TW::THORChain::Address impl;
 };

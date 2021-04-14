@@ -6,7 +6,7 @@
 
 syntax = "proto3";
 
-package TW.<%= name %>.Proto;
+package TW.THORChain.Proto;
 option java_package = "wallet.core.jni.proto";
 
 // TODO: typical balance transfer, add more fields needed to sign

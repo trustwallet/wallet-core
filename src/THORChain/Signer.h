@@ -8,11 +8,11 @@
 
 #include "../Data.h"
 #include "../PrivateKey.h"
-#include "../proto/<%= name %>.pb.h"
+#include "../proto/THORChain.pb.h"
 
-namespace TW::<%= name %> {
+namespace TW::THORChain {
 
-/// Helper class that performs <%= name %> transaction signing.
+/// Helper class that performs THORChain transaction signing.
 class Signer {
 public:
     /// Hide default constructor
@@ -22,9 +22,9 @@ public:
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 };
 
-} // namespace TW::<%= name %>
+} // namespace TW::THORChain
 
 /// Wrapper for C interface.
-struct TW<%= name %>Signer {
-    TW::<%= name %>::Signer impl;
+struct TWTHORChainSigner {
+    TW::THORChain::Signer impl;
 };
