@@ -24,22 +24,23 @@ message Asset {
 
 // Input for a swap between source and destination chains; for creating a TX on the source chain.
 message SwapInput {
+    // Sender address (on the source chain)
+    string from_address = 1;
+
     // Destination chain/asset
-    Asset to_asset = 1;
+    Asset to_asset = 2;
 
     // Destination address (on the destination chain)
-    string to_address = 2;
+    string to_address = 3;
 
     // Vault address.  Address of the vault, on the source network, must match the pair
-    string vault_address = 3;
+    string vault_address = 4;
 
     // Amount, as string, in the native asset of the source chain
-    string amount = 4;
+    string amount = 5;
 
     // Private key, used for deriving from address and for signing
-    bytes private_key = 5;
-
-    //string memo = 6;
+    bytes private_key = 6;
 }
 
 message SwapOutput {
