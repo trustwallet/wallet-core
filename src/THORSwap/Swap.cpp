@@ -55,10 +55,16 @@ std::pair<Data, std::string> Swap::build(
     const Data& privateKey
 )  {
     auto fromCoin = chainCoinType(fromChain);
-    PrivateKey privKey = PrivateKey(privateKey);
 
-    auto fromAddress = deriveAddress(fromCoin, privKey);
-    // TODO check address validity
+    std::string fromAddress = "";
+    try {
+        auto privKey = PrivateKey(privateKey);
+        fromAddress = deriveAddress(fromCoin, privKey);
+    } catch (...) {
+    }
+    if (fromAddress.size() < 3) {
+        return std::make_pair<Data, std::string>({}, "Invalid own address/privatekey");
+    }
 
     uint64_t limit = 343050111; // TODO
     auto memo = buildMemo(toChain, toSymbol, toAddress, limit);
@@ -66,7 +72,7 @@ std::pair<Data, std::string> Swap::build(
     switch (fromChain) {
         case Chain::BNB: {
             Data out;
-            auto res = buildBinance(toChain, toSymbol, toTokenId, fromAddress, toAddress, vaultAddress, amount, privKey, memo, out);
+            auto res = buildBinance(toChain, toSymbol, toTokenId, fromAddress, toAddress, vaultAddress, amount, privateKey, memo, out);
             return std::make_pair(std::move(out), std::move(res));
         }
 
@@ -75,7 +81,7 @@ std::pair<Data, std::string> Swap::build(
     }
 }
 
-std::string Swap::buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, const std::string& amount, const PrivateKey& privateKey, const std::string& memo, Data& out) {
+std::string Swap::buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, const std::string& amount, const Data& privateKey, const std::string& memo, Data& out) {
     auto input = Binance::Proto::SigningInput();
 
     input.set_chain_id("Binance-Chain-Nile");
@@ -85,7 +91,7 @@ std::string Swap::buildBinance(Chain toChain, const std::string& toSymbol, const
 
     input.set_memo(memo);
 
-    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_private_key(privateKey.data(), privateKey.size());
 
     auto& order = *input.mutable_send_order();
 

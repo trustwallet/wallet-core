@@ -23,13 +23,9 @@ const Data PrivateKey1Bnb = parse_hex("7105512f0c020a1dd759e14b865ec0125f59ac31e
 const auto VaultEth = "0x5d5fa69cace0352bf520377e055a34a9f8f7257c";
 const auto VaultBnb = "bnb1ksxqxurvejkndenuv0alqawpr3e4vtqk855aal";
 
-TEST(THORSwap, Memo) {
-    EXPECT_EQ(Swap::buildMemo(Chain::BTC, "BNB", "bnb123", 1234), "SWAP:BTC.BNB:bnb123:1234");
-}
 
 TEST(THORSwap, SwapBtc) {
     auto res = Swap::build(Chain::BTC, Chain::ETH, "ETH", "", Address1Eth, VaultEth, "100000", PrivateKey1Btc);
-    EXPECT_TRUE(res.second.length() > 0);
     EXPECT_EQ(res.second, "Invalid from chain: 2");
 }
 
@@ -80,6 +76,15 @@ TEST(THORSwap, SwapBnbRune) {
 
     // see https://explorer.binance.org/tx/EC8C648C597255EBEADEA68B090161B010BB7ACB3A91ACC604F4EB530AA7BD9B
     // https://viewblock.io/thorchain/tx/C1668A25D351CB5A8C8CEC9EDC6057EBBB8CD68A1ED41B547533874BC0618877
+}
+
+TEST(THORSwap, Memo) {
+    EXPECT_EQ(Swap::buildMemo(Chain::BTC, "BNB", "bnb123", 1234), "SWAP:BTC.BNB:bnb123:1234");
+}
+
+TEST(THORSwap, WrongPrivateKey) {
+    auto res = Swap::build(Chain::BTC, Chain::ETH, "ETH", "", Address1Eth, VaultEth, "100000", parse_hex("0102"));
+    EXPECT_EQ(res.second, "Invalid own address/privatekey");
 }
 
 } // namespace
