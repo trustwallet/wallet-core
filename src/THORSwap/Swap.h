@@ -7,7 +7,6 @@
 #pragma once
 
 #include "Data.h"
-#include "PrivateKey.h"
 
 #include <string>
 #include <utility>
@@ -29,17 +28,16 @@ public:
     static std::pair<Data, std::string> build(
         Chain fromChain,
         Chain toChain,
+        const std::string& fromAddress,
         const std::string& toSymbol,
         const std::string& toTokenId,
         const std::string& toAddress,
         const std::string& vaultAddress,
-        const std::string& amount,
-        const Data& privateKey
-        //const std::string& memo
+        const std::string& amount
     );
 
 protected:
-    static std::string buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, const std::string& amount, const Data& privateKey, const std::string& memo, Data& out);
+    static std::string buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, const std::string& amount, const std::string& memo, Data& out);
 
 public:
     static std::string buildMemo(Chain toChain, const std::string& toSymbol, const std::string& toAddress, uint64_t limit);

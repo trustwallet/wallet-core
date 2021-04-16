@@ -7,7 +7,6 @@
 #include "Swap.h"
 
 #include <TrustWalletCore/TWCoinType.h>
-#include "PrivateKey.h"
 #include "Coin.h"
 #include "../proto/Binance.pb.h"
 
@@ -44,26 +43,24 @@ std::string Swap::buildMemo(Chain toChain, const std::string& toSymbol, const st
     return "SWAP:" + chainName(toChain) + "." + toSymbol + ":" + toAddress + ":" + std::to_string(limit);
 }
 
+bool validateAddress(Chain chain, const std::string& address) {
+    return TW::validateAddress(chainCoinType(chain), address);
+}
+
 std::pair<Data, std::string> Swap::build(
     Chain fromChain,
     Chain toChain,
+    const std::string& fromAddress,
     const std::string& toSymbol,
     const std::string& toTokenId,
     const std::string& toAddress,
     const std::string& vaultAddress,
-    const std::string& amount,
-    const Data& privateKey
+    const std::string& amount
 )  {
     auto fromCoin = chainCoinType(fromChain);
 
-    std::string fromAddress = "";
-    try {
-        auto privKey = PrivateKey(privateKey);
-        fromAddress = deriveAddress(fromCoin, privKey);
-    } catch (...) {
-    }
-    if (fromAddress.size() < 3) {
-        return std::make_pair<Data, std::string>({}, "Invalid own address/privatekey");
+    if (!validateAddress(fromChain, fromAddress)) {
+        return std::make_pair<Data, std::string>({}, "Invalid own address");
     }
 
     uint64_t limit = 343050111; // TODO
@@ -72,7 +69,7 @@ std::pair<Data, std::string> Swap::build(
     switch (fromChain) {
         case Chain::BNB: {
             Data out;
-            auto res = buildBinance(toChain, toSymbol, toTokenId, fromAddress, toAddress, vaultAddress, amount, privateKey, memo, out);
+            auto res = buildBinance(toChain, toSymbol, toTokenId, fromAddress, toAddress, vaultAddress, amount, memo, out);
             return std::make_pair(std::move(out), std::move(res));
         }
 
@@ -81,7 +78,7 @@ std::pair<Data, std::string> Swap::build(
     }
 }
 
-std::string Swap::buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, const std::string& amount, const Data& privateKey, const std::string& memo, Data& out) {
+std::string Swap::buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, const std::string& amount, const std::string& memo, Data& out) {
     auto input = Binance::Proto::SigningInput();
 
     input.set_chain_id("Binance-Chain-Nile");
@@ -90,8 +87,6 @@ std::string Swap::buildBinance(Chain toChain, const std::string& toSymbol, const
     input.set_source(0);
 
     input.set_memo(memo);
-
-    input.set_private_key(privateKey.data(), privateKey.size());
 
     auto& order = *input.mutable_send_order();
 
