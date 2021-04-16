@@ -11,6 +11,7 @@
 #include "../proto/Binance.pb.h"
 
 #include <iostream>
+#include <cstdlib>
 
 /*
  * References:
@@ -67,11 +68,12 @@ std::pair<Data, std::string> Swap::build(
 
     uint64_t limit = 343050111; // TODO
     auto memo = buildMemo(toChain, toSymbol, toAddress, limit);
+    uint64_t amountNum = std::atoll(amount.c_str());
 
     switch (fromChain) {
         case Chain::BNB: {
             Data out;
-            auto res = buildBinance(toChain, toSymbol, toTokenId, fromAddress, toAddress, vaultAddress, amount, memo, out);
+            auto res = buildBinance(toChain, toSymbol, toTokenId, fromAddress, toAddress, vaultAddress, amountNum, memo, out);
             return std::make_pair(std::move(out), std::move(res));
         }
 
@@ -80,7 +82,7 @@ std::pair<Data, std::string> Swap::build(
     }
 }
 
-std::string Swap::buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, const std::string& amount, const std::string& memo, Data& out) {
+std::string Swap::buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out) {
     auto input = Binance::Proto::SigningInput();
 
     input.set_chain_id("Binance-Chain-Nile");
@@ -94,7 +96,7 @@ std::string Swap::buildBinance(Chain toChain, const std::string& toSymbol, const
 
     auto token = Binance::Proto::SendOrder::Token();
     token.set_denom("BNB");
-    token.set_amount(1000000000000); // TODO amount from input string
+    token.set_amount(amount);
     {
         auto input = order.add_inputs();
         input->set_address(fromAddress);
