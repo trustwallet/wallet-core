@@ -39,7 +39,10 @@ public:
     );
 
 protected:
-    static std::string buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, const std::string& amount, const PrivateKey& privateKey, Data& out);
+    static std::string buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, const std::string& amount, const PrivateKey& privateKey, const std::string& memo, Data& out);
+
+public:
+    static std::string buildMemo(Chain toChain, const std::string& toSymbol, const std::string& toAddress, uint64_t limit);
 };
 
 } // namespace TW

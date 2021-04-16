@@ -13,6 +13,11 @@
 
 #include <iostream>
 
+/*
+ * References:
+ *  https://gitlab.com/thorchain/asgardex-common/asgardex-util
+ */
+
 namespace TW::THORSwap {
 
 TWCoinType chainCoinType(Chain chain) {
@@ -35,6 +40,10 @@ std::string chainName(Chain chain) {
     }
 }
 
+std::string Swap::buildMemo(Chain toChain, const std::string& toSymbol, const std::string& toAddress, uint64_t limit) {
+    return "SWAP:" + chainName(toChain) + "." + toSymbol + ":" + toAddress + ":" + std::to_string(limit);
+}
+
 std::pair<Data, std::string> Swap::build(
     Chain fromChain,
     Chain toChain,
@@ -51,10 +60,13 @@ std::pair<Data, std::string> Swap::build(
     auto fromAddress = deriveAddress(fromCoin, privKey);
     // TODO check address validity
 
+    uint64_t limit = 343050111; // TODO
+    auto memo = buildMemo(toChain, toSymbol, toAddress, limit);
+
     switch (fromChain) {
         case Chain::BNB: {
             Data out;
-            auto res = buildBinance(toChain, toSymbol, toTokenId, fromAddress, toAddress, vaultAddress, amount, privKey, out);
+            auto res = buildBinance(toChain, toSymbol, toTokenId, fromAddress, toAddress, vaultAddress, amount, privKey, memo, out);
             return std::make_pair(std::move(out), std::move(res));
         }
 
@@ -63,7 +75,7 @@ std::pair<Data, std::string> Swap::build(
     }
 }
 
-std::string Swap::buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, const std::string& amount, const PrivateKey& privateKey, Data& out) {
+std::string Swap::buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, const std::string& amount, const PrivateKey& privateKey, const std::string& memo, Data& out) {
     auto input = Binance::Proto::SigningInput();
 
     input.set_chain_id("Binance-Chain-Nile");
@@ -71,9 +83,6 @@ std::string Swap::buildBinance(Chain toChain, const std::string& toSymbol, const
     input.set_sequence(0);
     input.set_source(0);
 
-    std::string memo = "SWAP:" + chainName(toChain) +
-        " " + toSymbol + ":" + toAddress +
-        ":" + "343050111"; // TODO
     input.set_memo(memo);
 
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
