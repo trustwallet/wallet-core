@@ -1420,7 +1420,8 @@
   },
   {
     "id": "zelcash",
-    "name": "Flux",
+    "name": "Zelcash",
+    "displayName": "Flux",
     "coinId": 19167,
     "symbol": "FLUX",
     "decimals": 8,
