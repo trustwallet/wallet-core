@@ -44,6 +44,7 @@ std::string Swap::buildMemo(Chain toChain, const std::string& toSymbol, const st
 }
 
 bool validateAddress(Chain chain, const std::string& address) {
+    if (chain == Chain::THOR) { return true;} // TODO remove once ThorChain is supported
     return TW::validateAddress(chainCoinType(chain), address);
 }
 
@@ -57,10 +58,11 @@ std::pair<Data, std::string> Swap::build(
     const std::string& vaultAddress,
     const std::string& amount
 )  {
-    auto fromCoin = chainCoinType(fromChain);
-
     if (!validateAddress(fromChain, fromAddress)) {
-        return std::make_pair<Data, std::string>({}, "Invalid own address");
+        return std::make_pair<Data, std::string>({}, "Invalid from address");
+    }
+    if (!validateAddress(toChain, toAddress)) {
+        return std::make_pair<Data, std::string>({}, "Invalid to address");
     }
 
     uint64_t limit = 343050111; // TODO

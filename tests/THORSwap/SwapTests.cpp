@@ -86,8 +86,25 @@ TEST(THORSwap, Memo) {
 }
 
 TEST(THORSwap, WrongFromAddress) {
-    auto res = Swap::build(Chain::BTC, Chain::ETH, "DummyAddress", "ETH", "", Address1Eth, VaultEth, "100000");
-    EXPECT_EQ(res.second, "Invalid own address");
+    {
+        auto res = Swap::build(Chain::BNB, Chain::ETH, "DummyAddress", "ETH", "", Address1Eth, VaultEth, "100000");
+        EXPECT_EQ(res.second, "Invalid from address");
+    }
+    {
+        auto res = Swap::build(Chain::BNB, Chain::ETH, Address1Btc, "ETH", "", Address1Eth, VaultEth, "100000");
+        EXPECT_EQ(res.second, "Invalid from address");
+    }
+}
+
+TEST(THORSwap, WrongToAddress) {
+    {
+        auto res = Swap::build(Chain::BNB, Chain::ETH, Address1Bnb, "ETH", "", "DummyAddress", VaultEth, "100000");
+        EXPECT_EQ(res.second, "Invalid to address");
+    }
+    {
+        auto res = Swap::build(Chain::BNB, Chain::ETH, Address1Bnb, "ETH", "", Address1Btc, VaultEth, "100000");
+        EXPECT_EQ(res.second, "Invalid to address");
+    }
 }
 
 } // namespace
