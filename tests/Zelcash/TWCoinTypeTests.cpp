@@ -30,5 +30,5 @@ TEST(TWZelcashCoinType, TWCoinType) {
     assertStringsEqual(txUrl, "https://explorer.runonflux.io/tx/t123");
     assertStringsEqual(accUrl, "https://explorer.runonflux.io/address/a12");
     assertStringsEqual(id, "zelcash");
-    assertStringsEqual(name, "Zelcash");
+    assertStringsEqual(name, "Flux");
 }
