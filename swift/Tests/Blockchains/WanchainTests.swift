@@ -11,6 +11,6 @@ class WanchainTests: XCTestCase {
 
     func testAddress() {
         let address = AnyAddress(string: "0xb08f432a3346e90e2ab61830ec227043131f70ff", coin: .wanchain)
-        XCTAssertEqual(address?.description, "0xb08f432A3346E90e2AB61830Ec227043131f70Ff")
+        XCTAssertEqual(address?.description, "0xB08F432a3346e90E2ab61830eC227043131F70fF")
     }
 }
