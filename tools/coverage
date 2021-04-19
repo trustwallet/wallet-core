@@ -28,7 +28,18 @@ lcov --remove coverage.info '*.pb.cc' --output-file coverage.info
 lcov --remove coverage.info '*.pb.h' --output-file coverage.info
 lcov --remove coverage.info '*/tests/*' --output-file coverage.info
 lcov --remove coverage.info '*/samples/*' --output-file coverage.info
-## FIXME setup danger + coverage
+
+current=$(<coverage.stats)
+new=$(lcov --summary coverage.info | awk '/functions.*:/{sub("%", "", $2);print $2}')
+
+if (( $(echo "$current > $new" | bc -l) )); then
+    echo "Code coverage drops to ${new}% (current is $current)%"
+    exit -1
+else
+    echo "Update code coverage ${current}% -> ${new}%"
+    echo -n $new > coverage.stats
+    # commit to master
+fi
 
 # Generate HTML report
 if [[ "$1" == "html" ]]; then
