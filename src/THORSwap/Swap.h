@@ -33,7 +33,8 @@ public:
         const std::string& toTokenId,
         const std::string& toAddress,
         const std::string& vaultAddress,
-        const std::string& amount
+        const std::string& fromAmount,
+        const std::string& toAmountLimit
     );
 
 protected:

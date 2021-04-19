@@ -58,7 +58,8 @@ std::pair<Data, std::string> Swap::build(
     const std::string& toTokenId,
     const std::string& toAddress,
     const std::string& vaultAddress,
-    const std::string& amount
+    const std::string& fromAmount,
+    const std::string& toAmountLimit
 )  {
     if (!validateAddress(fromChain, fromAddress)) {
         return std::make_pair<Data, std::string>({}, "Invalid from address");
@@ -67,14 +68,14 @@ std::pair<Data, std::string> Swap::build(
         return std::make_pair<Data, std::string>({}, "Invalid to address");
     }
 
-    uint64_t limit = 343050111; // TODO
-    auto memo = buildMemo(toChain, toSymbol, toAddress, limit);
-    uint64_t amountNum = std::atoll(amount.c_str());
+    uint64_t fromAmountNum = std::atoll(fromAmount.c_str());
+    uint64_t toAmountLimitNum = std::atoll(toAmountLimit.c_str());
+    auto memo = buildMemo(toChain, toSymbol, toAddress, toAmountLimitNum);
 
     switch (fromChain) {
         case Chain::BNB: {
             Data out;
-            auto res = buildBinance(toChain, toSymbol, toTokenId, fromAddress, toAddress, vaultAddress, amountNum, memo, out);
+            auto res = buildBinance(toChain, toSymbol, toTokenId, fromAddress, toAddress, vaultAddress, fromAmountNum, memo, out);
             return std::make_pair(std::move(out), std::move(res));
         }
 
