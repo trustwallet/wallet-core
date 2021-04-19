@@ -349,7 +349,7 @@ void ge25519_tobytes(unsigned char *s, const ge25519_p2 *h) {
 
 /* multiply by the order of the main subgroup l = 2^252+27742317777372353535851937790883648493 */
 void ge25519_mul_l(ge25519_p3 *r, const ge25519_p3 *A) {
-    static const signed char aslide[253] = {
+    const signed char aslide[253] = {
         13, 0,   0, 0, 0, -1, 0,   0, 0,  0,  -11, 0, 0, 0,  0,  0,  0, -5, 0, 0,  0,  0, 0,
         0,  -3,  0, 0, 0, 0,  -13, 0, 0,  0,  0,   7, 0, 0,  0,  0,  0, 3,  0, 0,  0,  0, -13,
         0,  0,   0, 0, 5, 0,  0,   0, 0,  0,  0,   0, 0, 11, 0,  0,  0, 0,  0, 11, 0,  0, 0,
@@ -429,7 +429,7 @@ int ge25519_is_on_main_subgroup(const ge25519_p3 *p) {
 
 int ge25519_has_small_order(const unsigned char s[32]) {
     CRYPTO_ALIGN(16)
-    static const unsigned char blacklist[][32] = {
+    const unsigned char blacklist[][32] = {
         /* 0 (order 4) */
         {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,

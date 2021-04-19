@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,10 +12,10 @@
 #include "Bitcoin/CashAddress.h"
 #include "Coin.h"
 
+#include <TrustWalletCore/TWHRP.h>
 #include <TrezorCrypto/bip32.h>
 #include <TrezorCrypto/bip39.h>
 #include <TrezorCrypto/curves.h>
-#include <TrustWalletCore/TWHRP.h>
 
 #include <array>
 
@@ -32,16 +32,11 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve);
 const char* curveName(TWCurve curve);
 } // namespace
 
-bool HDWallet::isValid(const std::string& mnemonic) {
-    return mnemonic_check(mnemonic.c_str()) != 0;
-}
-
 HDWallet::HDWallet(int strength, const std::string& passphrase)
     : seed(), mnemonic(), passphrase(passphrase) {
-    std::array<char, HDWallet::maxMnemomincSize> mnemonic_chars;
-    mnemonic_generate(strength, mnemonic_chars.data());
-    mnemonic_to_seed(mnemonic_chars.data(), passphrase.c_str(), seed.data(), nullptr);
-    mnemonic = mnemonic_chars.data();
+    const char* mnemonic_chars = mnemonic_generate(strength);
+    mnemonic_to_seed(mnemonic_chars, passphrase.c_str(), seed.data(), nullptr);
+    mnemonic = mnemonic_chars;
     updateEntropy();
 }
 
@@ -53,10 +48,10 @@ HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase)
 
 HDWallet::HDWallet(const Data& data, const std::string& passphrase)
     : seed(), mnemonic(), passphrase(passphrase) {
-    std::array<char, HDWallet::maxMnemomincSize> mnemonic_chars;
-    if (mnemonic_from_data(data.data(), data.size(), mnemonic_chars.data())) {
-        mnemonic_to_seed(mnemonic_chars.data(), passphrase.c_str(), seed.data(), nullptr);
-        mnemonic = mnemonic_chars.data();
+    const char* mnemonic_chars = mnemonic_from_data(data.data(), static_cast<int>(data.size()));
+    if (mnemonic_chars) {
+        mnemonic_to_seed(mnemonic_chars, passphrase.c_str(), seed.data(), nullptr);
+        mnemonic = mnemonic_chars;
         updateEntropy();
     }
 }

@@ -5,7 +5,7 @@ Public domain.
 */
 
 #include <TrezorCrypto/chacha20poly1305/ecrypt-sync.h>
-#include "ecrypt-portable.h"
+#include <TrezorCrypto/chacha20poly1305/ecrypt-portable.h>
 
 #define ROTATE(v,c) (ROTL32(v,c))
 #define XOR(v,w) ((v) ^ (w))
@@ -23,13 +23,13 @@ void ECRYPT_init(void)
   return;
 }
 
-static const char sigma[16] = "expand 32-byte k";
-static const char tau[16] = "expand 16-byte k";
+const char chacha_sigma[16] = "expand 32-byte k";
+const char tau[16] = "expand 16-byte k";
 
 void ECRYPT_keysetup(ECRYPT_ctx *x,const u8 *k,u32 kbits,u32 ivbits)
 {
   (void)ivbits;
-  const char *constants;
+  const char *constants = (const char *)0;
 
   x->input[4] = U8TO32_LITTLE(k + 0);
   x->input[5] = U8TO32_LITTLE(k + 4);
@@ -37,7 +37,7 @@ void ECRYPT_keysetup(ECRYPT_ctx *x,const u8 *k,u32 kbits,u32 ivbits)
   x->input[7] = U8TO32_LITTLE(k + 12);
   if (kbits == 256) { /* recommended */
     k += 16;
-    constants = sigma;
+    constants = chacha_sigma;
   } else { /* kbits == 128 */
     constants = tau;
   }
@@ -61,11 +61,11 @@ void ECRYPT_ivsetup(ECRYPT_ctx *x,const u8 *iv)
 
 void ECRYPT_encrypt_bytes(ECRYPT_ctx *x,const u8 *m,u8 *c,u32 bytes)
 {
-  u32 x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15;
-  u32 j0, j1, j2, j3, j4, j5, j6, j7, j8, j9, j10, j11, j12, j13, j14, j15;
+  u32 x0 = 0, x1 = 0, x2 = 0, x3 = 0, x4 = 0, x5 = 0, x6 = 0, x7 = 0, x8 = 0, x9 = 0, x10 = 0, x11 = 0, x12 = 0, x13 = 0, x14 = 0, x15 = 0;
+  u32 j0 = 0, j1 = 0, j2 = 0, j3 = 0, j4 = 0, j5 = 0, j6 = 0, j7 = 0, j8 = 0, j9 = 0, j10 = 0, j11 = 0, j12 = 0, j13 = 0, j14 = 0, j15 = 0;
   u8 *ctarget = 0;
-  u8 tmp[64];
-  int i;
+  u8 tmp[64] = {0};
+  int i = 0;
 
   if (!bytes) return;
 
@@ -197,15 +197,15 @@ void ECRYPT_decrypt_bytes(ECRYPT_ctx *x,const u8 *c,u8 *m,u32 bytes)
 
 void ECRYPT_keystream_bytes(ECRYPT_ctx *x,u8 *stream,u32 bytes)
 {
-  u32 i;
+  u32 i = 0;
   for (i = 0;i < bytes;++i) stream[i] = 0;
   ECRYPT_encrypt_bytes(x,stream,stream,bytes);
 }
 
 void hchacha20(ECRYPT_ctx *x,u8 *c)
 {
-  u32 x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15;
-  int i;
+  u32 x0 = 0, x1 = 0, x2 = 0, x3 = 0, x4 = 0, x5 = 0, x6 = 0, x7 = 0, x8 = 0, x9 = 0, x10 = 0, x11 = 0, x12 = 0, x13 = 0, x14 = 0, x15 = 0;
+  int i = 0;
 
   x0 = x->input[0];
   x1 = x->input[1];

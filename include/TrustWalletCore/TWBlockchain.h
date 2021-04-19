@@ -14,7 +14,6 @@ TW_EXPORT_ENUM(uint32_t)
 enum TWBlockchain {
     TWBlockchainBitcoin = 0,
     TWBlockchainEthereum = 1,
-    TWBlockchainWanchain = 2,
     TWBlockchainVechain = 3,
     TWBlockchainTron = 4,
     TWBlockchainIcon = 5,

@@ -1,6 +1,4 @@
 apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
-apply plugin: 'com.jfrog.artifactory'
 
 version project.property('version')
 group 'com.trustwallet'
@@ -39,53 +37,15 @@ publishing {
             }
         }
     }
-}
 
-artifactory {
-    contextUrl = 'https://oss.jfrog.org'
-    resolve {
-        repository {
-            repoKey = 'libs-release'
-        }
-    }
-    publish {
-        repository {
-            if (this.version.endsWith("-SNAPSHOT")) {
-              repoKey = 'oss-snapshot-local'
-            } else {
-              repoKey = 'oss-release-local' 
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/trustwallet/wallet-core")
+            credentials {
+                username = System.getenv("WC_GITHUB_USER")
+                password = System.getenv("WC_GITHUB_TOKEN")
             }
-            username = System.getenv('BINTRAY_USER')
-            password = System.getenv('BINTRAY_KEY')
-        }
-        defaults {
-            publications 'Production'
-            properties = [ 'bintray.repo': 'trust/wallet-core', 'bintray.package': 'com.trustwallet.wallet-core', 'bintray.version': this.version.toString() ]
-        }
-    }
-}
-
-bintray {
-    user = System.getenv('BINTRAY_USER')
-    key = System.getenv('BINTRAY_KEY')
-    publications = ['Production']
-    configurations = ['archives']
-    override = true
-    pkg {
-        userOrg = 'trust'
-        repo = 'wallet-core'
-        name = 'com.trustwallet.wallet-core'
-        description = "Cross-platform, cross-blockchain wallet library."
-        publish = true
-        publicDownloadNumbers = true
-        licenses = ['MIT']
-        vcsUrl = 'https://github.com/trustwallet/wallet-core.git'
-        dryRun = false
-        version {
-            name = this.version
-            desc = "Wallet Core ${this.version}"
-            released = new Date()
-            vcsTag = this.version
         }
     }
 }

@@ -24,40 +24,37 @@
 #ifndef __BIP39_H__
 #define __BIP39_H__
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#define BIP39_WORDS 2048
 #define BIP39_PBKDF2_ROUNDS 2048
 
-/// Generates a random mnemonic phrase with the given strength in bits.
-///
-/// \param strength mnemonic strength in bits. Must be a multiple of 32 between 128 and 256.
-/// \param menmonic [out] mnemonic phrase, must have capacity for 240 bytes.
-/// \returns whether a mnemonic phrase was generated.
-bool mnemonic_generate(int strength, char* mnemonic);
-
-/// Generates a mnemonic phrase from the provided data.
-///
-/// \param data array of data bytes.
-/// \param len data array size.
-/// \param mnemonic [out] mnemonic phrase, must have capacity for 240 bytes.
-/// \returns whether a mnemonic phrase was generated.
-bool mnemonic_from_data(const uint8_t *data, size_t len, char* mnemonic);
+const char *mnemonic_generate(int strength);  // strength in bits
+const char *mnemonic_from_data(const uint8_t *data, int len);
+void mnemonic_clear(void);
 
 int mnemonic_check(const char *mnemonic);
 
-int mnemonic_to_bits(const char *mnemonic, uint8_t *entropy);
+int mnemonic_to_bits(const char *mnemonic, uint8_t *bits);
 
 // passphrase must be at most 256 characters otherwise it would be truncated
-void mnemonic_to_seed(const char *mnemonic, const char *passphrase, uint8_t seed[512 / 8], void (*progress_callback)(uint32_t current, uint32_t total));
-
-const char * const *mnemonic_wordlist(void);
+void mnemonic_to_seed(const char *mnemonic, const char *passphrase,
+                      uint8_t seed[512 / 8],
+                      void (*progress_callback)(uint32_t current,
+                                                uint32_t total));
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
+
+int mnemonic_find_word(const char *word);
+const char *mnemonic_complete_word(const char *prefix, int len);
+const char *mnemonic_get_word(int index);
+uint32_t mnemonic_word_completion_mask(const char *prefix, int len);
 
 #endif

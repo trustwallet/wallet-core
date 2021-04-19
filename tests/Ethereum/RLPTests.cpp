@@ -162,11 +162,18 @@ TEST(RLP, DecodeList) {
     }
 }
 
+TEST(RLP, DecodeLength) {
+    EXPECT_EQ(hex(store(RLP::decodeLength(parse_hex("00")))), "00");
+    EXPECT_EQ(hex(store(RLP::decodeLength(parse_hex("01")))), "01");
+    EXPECT_EQ(hex(store(RLP::decodeLength(parse_hex("fc")))), "fc");
+    EXPECT_EQ(hex(store(RLP::decodeLength(parse_hex("fd0102")))), "0201");
+    EXPECT_EQ(hex(store(RLP::decodeLength(parse_hex("fe01020304")))), "04030201");
+    EXPECT_EQ(hex(store(RLP::decodeLength(parse_hex("ff0102030405060708")))), "0807060504030201");
+    EXPECT_THROW(RLP::decodeLength(parse_hex("fd01")), std::invalid_argument);
+    EXPECT_THROW(RLP::decodeLength(parse_hex("fe010203")), std::invalid_argument);
+}
+
 TEST(RLP, DecodeInvalid) {
-
-    // invalid raw tx
-    EXPECT_EQ(RLP::decodeRawTransaction(parse_hex("0xc0")).size(), 0);
-
     // decode empty data
     EXPECT_THROW(RLP::decode(Data()), std::invalid_argument);
 

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,11 +8,12 @@
 
 #include "../Coin.h"
 #include "../HDWallet.h"
+#include "../Mnemonic.h"
 
 using namespace TW;
 
 bool TWHDWalletIsValid(TWString *_Nonnull mnemonic) {
-    return HDWallet::isValid(TWStringUTF8Bytes(mnemonic));
+    return Mnemonic::isValid(TWStringUTF8Bytes(mnemonic));
 }
 
 struct TWHDWallet *_Nonnull TWHDWalletCreate(int strength, TWString *_Nonnull passphrase) {

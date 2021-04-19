@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -26,17 +26,6 @@ const auto words = STRING(wordsStr);
 const auto seedHex = "7ae6f661157bda6492f6162701e570097fc726b6235011ea5ad09bf04986731ed4d92bc43cbdee047b60ea0dd1b1fa4274377c9bf5bd14ab1982c272d8076f29";
 const auto passphrase = STRING("TREZOR");
 
-auto valid12 = STRING("credit expect life fade cover suit response wash pear what skull force");
-auto valid15 = STRING("rebuild park fatigue flame one clap grocery scheme upon symbol rifle flush brave feed clutch");
-auto valid18 = STRING("find view amazing inject mistake school zone ticket deposit edit deer fuel expect pioneer alpha mirror joke private");
-auto valid21 = STRING("tiger parent future endorse chuckle crazy seat tomato orient prevent swarm nerve duty crazy chief cruel purity team happy strategy level");
-auto valid24 = STRING("admit smart swim bulk empty mystery state lyrics wrap welcome install seat supreme sunny sting roof once accuse envelope uncover arrive twice spoon squeeze");
-auto invalidWord = STRING("ripple scissors hisc mammal hire column oak again sun offer wealth tomorrow");
-auto invalidWord1 = STRING("high culture ostrich wrist exist ignore interest hybridous exclude width more");
-auto invalidChecksum = STRING("ripple scissors kick mammal hire column oak again sun offer wealth tomorrow");
-auto invalid11WordCount = STRING("credit expect life fade cover suit response wash what skull force");
-auto invalid12ExtraSpace = STRING("  credit expect life fade   cover suit response wash pear what skull force    ");
-auto invalid12Upper = STRING("CREDIT expect life fade cover suit response wash pear what skull force");
 
 inline void assertSeedEq(const std::shared_ptr<TWHDWallet>& wallet, const char* expected) {
     const auto seed = WRAPD(TWHDWalletSeed(wallet.get()));
@@ -61,35 +50,8 @@ TEST(HDWallet, Seed) {
 }
 
 TEST(HDWallet, IsValid) {
-    EXPECT_TRUE(TWHDWalletIsValid(valid12.get()));
-    EXPECT_TRUE(TWHDWalletIsValid(valid15.get()));
-    EXPECT_TRUE(TWHDWalletIsValid(valid18.get()));
-    EXPECT_TRUE(TWHDWalletIsValid(valid21.get()));
-    EXPECT_TRUE(TWHDWalletIsValid(valid24.get()));
-}
-
-TEST(HDWallet, InvalidWord) {
-    EXPECT_FALSE(TWHDWalletIsValid(invalidWord.get()));
-}
-
-TEST(HDWallet, InvalidWord1) {
-    EXPECT_FALSE(TWHDWalletIsValid(invalidWord1.get()));
-}
-
-TEST(HDWallet, InvalidChecksum) {
-    EXPECT_FALSE(TWHDWalletIsValid(invalidChecksum.get()));
-}
-
-TEST(HDWallet, InvalidWordCount) {
-    EXPECT_FALSE(TWHDWalletIsValid(invalid11WordCount.get()));
-}
-
-TEST(HDWallet, InvalidExtraSpace) {
-    EXPECT_FALSE(TWHDWalletIsValid(invalid12ExtraSpace.get()));
-}
-
-TEST(HDWallet, InvalidUpper) {
-    EXPECT_FALSE(TWHDWalletIsValid(invalid12Upper.get()));
+    EXPECT_TRUE(TWHDWalletIsValid(STRING("credit expect life fade cover suit response wash pear what skull force").get()));
+    EXPECT_FALSE(TWHDWalletIsValid(STRING("ripple scissors hisc mammal hire column oak again sun offer wealth tomorrow").get())); // invalid word
 }
 
 TEST(HDWallet, SeedWithExtraSpaces) {
