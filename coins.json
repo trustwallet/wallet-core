@@ -1421,8 +1421,9 @@
   {
     "id": "zelcash",
     "name": "Zelcash",
+    "displayName": "Flux",
     "coinId": 19167,
-    "symbol": "ZEL",
+    "symbol": "FLUX",
     "decimals": 8,
     "blockchain": "Bitcoin",
     "derivationPath": "m/44'/19167'/0'/0/0",
@@ -1436,14 +1437,14 @@
     "xpub": "xpub",
     "xprv": "xprv",
     "explorer": {
-      "url": "https://explorer.zel.cash",
+      "url": "https://explorer.runonflux.io",
       "txPath": "/tx/",
       "accountPath": "/address/"
     },
     "info": {
-      "url": "https://zel.cash",
+      "url": "https://runonflux.io",
       "client": "https://github.com/trezor/blockbook",
-      "clientPublic": "https://blockbook.zel.cash",
+      "clientPublic": "https://blockbook.runonflux.io",
       "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
