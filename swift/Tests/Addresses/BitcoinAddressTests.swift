@@ -228,4 +228,41 @@ class BitcoinAddressTests: XCTestCase {
         XCTAssertFalse(CoinType.monacoin.validate(address: addressString3),
                       "'\(addressString3)' should be an invalid Monacoin Bech32 address")
     }
+
+    func testBitcoinDeriveAddress() {
+        let privateKey = PrivateKey(data: Data(hexString: "4646464646464646464646464646464646464646464646464646464646464646")!)!
+        let address = CoinType.bitcoin.deriveAddress(privateKey: privateKey)
+        XCTAssertEqual("bc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z00ppggv", address.description)
+    }
+
+    @objc func testDeriveOneThread() {
+        let n = 200
+        for _ in 1...n {
+            testBitcoinDeriveAddress()
+        }
+    }
+
+    func testMultiThreadedDerive() {
+        let nThread = 5
+        var thread = [Thread](repeating: Thread(), count: nThread)
+        // start threads
+        for i in 0...nThread-1 {
+            thread[i] = Thread.init(target: self, selector: #selector(testDeriveOneThread), object: nil)
+            thread[i].start()
+        }
+        // wait till all finished
+        while (true) {
+            var allFinished = true
+            for i in 0...nThread-1 {
+                if (!thread[i].isFinished) {
+                    allFinished = false
+                    break
+                }
+            }
+            if (allFinished) {
+                break
+            }
+            Thread.sleep(forTimeInterval: 0.005)
+        }
+    }
 }
