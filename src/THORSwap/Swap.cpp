@@ -8,6 +8,7 @@
 
 #include <TrustWalletCore/TWCoinType.h>
 #include "Coin.h"
+#include "Binance/Address.h"
 #include "../proto/Binance.pb.h"
 
 #include <iostream>
@@ -85,6 +86,7 @@ std::pair<Data, std::string> Swap::build(
 std::string Swap::buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out) {
     auto input = Binance::Proto::SigningInput();
 
+    // Following fields need to be set after building, before sending
     input.set_chain_id("Binance-Chain-Nile");
     input.set_account_number(0);
     input.set_sequence(0);
@@ -98,13 +100,17 @@ std::string Swap::buildBinance(Chain toChain, const std::string& toSymbol, const
     token.set_denom("BNB");
     token.set_amount(amount);
     {
+        Binance::Address fromAddressBin;
+        Binance::Address::decode(fromAddress, fromAddressBin);
         auto input = order.add_inputs();
-        input->set_address(fromAddress);
+        input->set_address(fromAddressBin.getKeyHash().data(), fromAddressBin.getKeyHash().size());
         *input->add_coins() = token;
     }
     {
+        Binance::Address vaultAddressBin;
+        Binance::Address::decode(vaultAddress, vaultAddressBin);
         auto output = order.add_outputs();
-        output->set_address(vaultAddress);
+        output->set_address(vaultAddressBin.getKeyHash().data(), vaultAddressBin.getKeyHash().size());
         *output->add_coins() = token;
     }
 
