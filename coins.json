@@ -1454,7 +1454,7 @@
     "coinId": 5718350,
     "symbol": "WAN",
     "decimals": 18,
-    "blockchain": "Wanchain",
+    "blockchain": "Ethereum",
     "derivationPath": "m/44'/5718350'/0'/0/0",
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
@@ -1463,7 +1463,7 @@
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x180ea96a3218b82b9b35d796823266d8a425c182507adfe5eeffc96e6a14d856",
-      "sampleAccount": "0x69b492d57BB777E97AA7044d0575228434E2e8b1"
+      "sampleAccount": "0xc6D3DBf8dF90BA3f957A9634677805eee0e43bBe"
     },
     "info": {
       "url": "https://wanchain.org",
