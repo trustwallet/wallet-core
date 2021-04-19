@@ -26,9 +26,9 @@ TEST(TWZelcashCoinType, TWCoinType) {
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeZelcash));
     ASSERT_EQ(0xbd, TWCoinTypeP2shPrefix(TWCoinTypeZelcash));
     ASSERT_EQ(0x1c, TWCoinTypeStaticPrefix(TWCoinTypeZelcash));
-    assertStringsEqual(symbol, "ZEL");
-    assertStringsEqual(txUrl, "https://explorer.zel.cash/tx/t123");
-    assertStringsEqual(accUrl, "https://explorer.zel.cash/address/a12");
+    assertStringsEqual(symbol, "FLUX");
+    assertStringsEqual(txUrl, "https://explorer.runonflux.io/tx/t123");
+    assertStringsEqual(accUrl, "https://explorer.runonflux.io/address/a12");
     assertStringsEqual(id, "zelcash");
-    assertStringsEqual(name, "Zelcash");
+    assertStringsEqual(name, "Flux");
 }
