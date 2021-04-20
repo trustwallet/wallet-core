@@ -42,7 +42,11 @@ std::string chainName(Chain chain) {
 }
 
 std::string Swap::buildMemo(Chain toChain, const std::string& toSymbol, const std::string& toAddress, uint64_t limit) {
-    return "SWAP:" + chainName(toChain) + "." + toSymbol + ":" + toAddress + ":" + std::to_string(limit);
+    std::string prefix = "SWAP";
+    if (toChain == Chain::ETH) {
+        prefix = "=";
+    }
+    return prefix + ":" + chainName(toChain) + "." + toSymbol + ":" + toAddress + ":" + std::to_string(limit);
 }
 
 bool validateAddress(Chain chain, const std::string& address) {
