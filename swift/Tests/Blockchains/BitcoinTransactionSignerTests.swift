@@ -75,4 +75,93 @@ class BitcoinTransactionSignerTests: XCTestCase {
             "00000000"
         );
     }
+
+    func testSignThreeOutput() throws {
+        let coin: CoinType = .litecoin
+        let ownAddress = "ltc1qt36tu30tgk35tyzsve6jjq3dnhu2rm8l8v5q00"
+        let ownPrivateKey = "b820f41f96c8b7442f3260acd23b3897e1450b8c7c6580136a3c2d3a14e34674"
+        let toAddress0 = "ltc1qgknskahmm6svn42e33gum5wc4dz44wt9vc76q4"
+        let toAddress1 = "ltc1qulgtqdgxyd9nxnn5yxft6jykskz0ffl30nu32z"
+        let utxo0Amount: Int64 = 3_851_829;
+        let toAmount0: Int64 = 1_000_000;
+        let toAmount1: Int64 = 2_000_000;
+
+        // set up input
+        var input = BitcoinSigningInput.with {
+            $0.coinType = coin.rawValue
+            $0.hashType = BitcoinScript.hashTypeForCoin(coinType: coin)
+            // output 0: in to_address/amount
+            $0.toAddress = toAddress0
+            $0.amount = toAmount0
+            // output 1: in extra_outputs, below
+            // output 2: change in change_address, amount will be computed
+            $0.changeAddress = ownAddress
+            $0.useMaxAmount = false
+            $0.byteFee = 1
+        }
+        // output 1: in extra_outputs
+        let output1 = BitcoinOutputAddress.with {
+            $0.toAddress = toAddress1
+            $0.amount = toAmount1
+        }
+        input.extraOutputs.append(output1)
+
+        let utxo0Script = BitcoinScript.lockScriptForAddress(address: ownAddress, coin: coin)
+        let keyHash0 = utxo0Script.matchPayToWitnessPublicKeyHash()!
+        XCTAssertEqual(keyHash0.hexString, "5c74be45eb45a3459050667529022d9df8a1ecff")
+
+        let redeemScript = BitcoinScript.buildPayToPublicKeyHash(hash: keyHash0)
+        input.scripts[keyHash0.hexString] = redeemScript.data
+
+        let utxo0 = BitcoinUnspentTransaction.with {
+            $0.script = utxo0Script.data
+            $0.amount = utxo0Amount
+            $0.outPoint.hash = Data(Data(hexString: "bbe736ada63c4678025dff0ff24d5f38970a3e4d7a2f77808689ed68004f55fe")!.reversed())
+            $0.outPoint.index = 0
+            $0.outPoint.sequence = UInt32.max
+        }
+        input.utxo.append(utxo0)
+
+        // Plan
+        let plan: BitcoinTransactionPlan = AnySigner.plan(input: input, coin: coin)
+
+        XCTAssertEqual(plan.amount, 3000000)
+        XCTAssertEqual(plan.fee, 172)
+        XCTAssertEqual(plan.change, 851657)
+
+        // Extend input with private key
+        input.privateKey.append(Data(hexString: ownPrivateKey)!)
+
+        // Sign
+        let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: coin)
+        XCTAssertTrue(output.error.isEmpty)
+
+        let signedTx = output.transaction
+        XCTAssertEqual(signedTx.version, 1)
+
+        XCTAssertEqual(signedTx.inputs.count, 1)
+
+        XCTAssertEqual(signedTx.outputs.count, 3) // 3 outputs
+        XCTAssertEqual(signedTx.outputs[0].value, 1000000)
+        XCTAssertEqual(signedTx.outputs[1].value, 2000000)
+        XCTAssertEqual(signedTx.outputs[2].value, 851657)
+
+        let encoded = output.encoded
+        // https://blockchair.com/litecoin/transaction/9e3fe98565a904d2da5ec1b3ba9d2b3376dfc074f43d113ce1caac01bf51b34c
+        XCTAssertEqual(encoded.hexString,
+            "01000000" + // version
+            "0001" + // marker & flag
+            "01" + // inputs
+                "fe554f0068ed898680772f7a4d3e0a97385f4df20fff5d0278463ca6ad36e7bb" + "00000000" + "00" + "" + "ffffffff" +
+            "03" + // outputs
+                "40420f0000000000" + "16" + "001445a70b76fbdea0c9d5598c51cdd1d8ab455ab965" +
+                "80841e0000000000" + "16" + "0014e7d0b03506234b334e742192bd48968584f4a7f1" +
+                "c9fe0c0000000000" + "16" + "00145c74be45eb45a3459050667529022d9df8a1ecff" +
+            // witness
+                "02" +
+                    "48" + "30450221008d88197a37ffcb51ecacc7e826aa588cb1068a107a82373c4b54ec42318a395c02204abbf5408504614d8f943d67e7873506c575e85a5e1bd92a02cd345e5192a82701" +
+                    "21" + "036739829f2cfec79cfe6aaf1c22ecb7d4867dfd8ab4deb7121b36a00ab646caed" +
+            "00000000" // nLockTime
+        )
+    }
 }

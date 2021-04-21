@@ -46,16 +46,38 @@ class TransactionSigner {
     /// Initializes a transaction signer with signing input.
     TransactionSigner(Bitcoin::Proto::SigningInput &&input)
         : input(input), plan(TransactionBuilder::plan(input)) {
+        std::vector<std::pair<std::string, int64_t>> outputs;
+        if (input.extra_outputs_size() == 0) {
+          // standard one-destination case, take amount from plan
+          outputs.emplace_back(std::pair<std::string, int64_t>{input.to_address(), plan.amount});
+        } else {
+          // multi-output case
+          outputs.emplace_back(std::pair<std::string, int64_t>{input.to_address(), input.amount()});
+          for (auto i = 0; i < input.extra_outputs_size(); ++i) {
+            outputs.emplace_back(std::pair<std::string, int64_t>(input.extra_outputs(i).to_address(), input.extra_outputs(i).amount()));
+          }
+        }
         transaction = TransactionBuilder::build<Transaction>(
-            plan, input.to_address(), input.change_address(), TWCoinType(input.coin_type()));
+            plan, outputs, input.change_address(), TWCoinType(input.coin_type()));
     }
 
     /// Initializes a transaction signer with signing input, a transaction, and
     /// a hash type.
     TransactionSigner(Bitcoin::Proto::SigningInput &&input, const TransactionPlan &plan)
         : input(input), plan(plan) {
+        std::vector<std::pair<std::string, int64_t>> outputs;
+        if (input.extra_outputs_size() == 0) {
+          // standard one-destination case, take amount from plan
+          outputs.emplace_back(std::pair<std::string, int64_t>{input.to_address(), plan.amount});
+        } else {
+          // multi-output case
+          outputs.emplace_back(std::pair<std::string, int64_t>{input.to_address(), input.amount()});
+          for (auto i = 0; i < input.extra_outputs_size(); ++i) {
+            outputs.emplace_back(std::pair<std::string, int64_t>(input.extra_outputs(i).to_address(), input.extra_outputs(i).amount()));
+          }
+        }
         transaction = TransactionBuilder::build<Transaction>(
-            plan, input.to_address(), input.change_address(), TWCoinType(input.coin_type()));
+            plan, outputs, input.change_address(), TWCoinType(input.coin_type()));
     }
 
     /// Signs the transaction.

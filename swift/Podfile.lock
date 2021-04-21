@@ -7,9 +7,8 @@ DEPENDENCIES:
   - SwiftProtobuf
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
-    - SwiftLint
   trunk:
+    - SwiftLint
     - SwiftProtobuf
 
 SPEC CHECKSUMS:
@@ -18,4 +17,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 9af33e2495c8b16bfcea0f7779a0fcfe29e3ab60
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.10.1
