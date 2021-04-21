@@ -36,7 +36,7 @@ class CoinAddressDerivationTests {
         CALLISTO -> assertEquals("0x3E6FFC80745E6669135a76F4A7ce6BCF02436e04", address)
         DASH -> assertEquals("XqHiz8EXYbTAtBEYs4pWTHh7ipEDQcNQeT", address)
         DIGIBYTE -> assertEquals("dgb1qtjgmerfqwdffyf8ghcrkgy52cghsqptynmyswu", address)
-        ETHEREUM, SMARTCHAIN, POLYGON -> assertEquals("0x8f348F300873Fd5DA36950B2aC75a26584584feE", address)
+        ETHEREUM, SMARTCHAIN, POLYGON, AVALANCHECCHAIN -> assertEquals("0x8f348F300873Fd5DA36950B2aC75a26584584feE", address)
         ETHEREUMCLASSIC -> assertEquals("0x078bA3228F3E6C08bEEac9A005de0b7e7089aD1c", address)
         GOCHAIN -> assertEquals("0x5940ce4A14210d4Ccd0ac206CE92F21828016aC2", address)
         GROESTLCOIN -> assertEquals("grs1qexwmshts5pdpeqglkl39zyl6693tmfwp0cue4j", address)
@@ -92,6 +92,5 @@ class CoinAddressDerivationTests {
         SMARTCHAINLEGACY -> assertEquals("0x49784f90176D8D9d4A3feCDE7C1373dAAb5b13b8", address)
         OASIS -> assertEquals("oasis1qr2wymrk4mmt4kyjg3rzkn6jsxku3kk6p5jvrvxz", address)
         AVALANCHEXCHAIN -> assertEquals("X-avax1n7sz4f043sx76tydchphveqqn9ju9atp266f9s", address)
-        AVALANCHECCHAIN -> assertEquals("0xAC0827570dA0b4B51BE52D597D77985D41f0EEd3", address)
     }
 }
