@@ -33,7 +33,7 @@ current=$(<coverage.stats)
 new=$(lcov --summary coverage.info | awk '/functions.*:/{sub("%", "", $2);print $2}')
 
 if (( $(echo "$current > $new" | bc -l) )); then
-    echo "Code coverage drops to ${new}% (current is $current)%"
+    echo "Code coverage drops to ${new}% (current is ${current}%)"
     exit -1
 else
     echo "Update code coverage ${current}% -> ${new}%"
