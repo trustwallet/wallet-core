@@ -5,9 +5,16 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "THORSwap/Swap.h"
+
+#include "Ethereum/Address.h"
+#include "Ethereum/ABI/Function.h"
+#include "Ethereum/ABI/ParamBase.h"
+#include "Ethereum/ABI/ParamAddress.h"
+#include "proto/Ethereum.pb.h"
+#include "proto/Binance.pb.h"
+
 #include "HexCoding.h"
 #include "Coin.h"
-#include "proto/Binance.pb.h"
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWAnySigner.h>
 #include "../interface/TWTestUtilities.h"
@@ -22,14 +29,79 @@ const auto Address1Eth = "0xb9f5771c27664bf2282d98e09d7f50cec7cb01a7";
 const auto Address1Bnb = "bnb1us47wdhfx08ch97zdueh3x3u5murfrx30jecrx";
 const auto Address1Thor = "thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r";
 const Data PrivateKey1Btc = parse_hex("13fcaabaf9e71ffaf915e242ec58a743d55f102cf836968e5bd4881135e0c52c");
+const Data PrivateKey1Eth = parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904");
 const Data PrivateKey1Bnb = parse_hex("bcf8b072560dda05122c99390def2c385ec400e1a93df0657a85cf6b57a715da");
-const auto VaultEth = "0x5d5fa69cace0352bf520377e055a34a9f8f7257c";
+const auto VaultEth = "0x1091c4De6a3cF09CdA00AbDAeD42c7c3B69C83EC";
 const auto VaultBnb = "bnb1n9esxuw8ca7ts8l6w66kdh800s09msvul6vlse";
 
 
 TEST(THORSwap, SwapBtcEth) {
     auto res = Swap::build(Chain::BTC, Chain::ETH, Address1Btc, "ETH", "", Address1Eth, VaultEth, "10000000", "10000000");
     EXPECT_EQ(res.second, "Invalid from chain: 2");
+}
+
+Data SwapTest_ethAddressStringToData(const std::string& asString) {
+    if (asString.empty()) {
+        return Data();
+    }
+    auto address = Ethereum::Address(asString);
+    Data asData;
+    asData.resize(20);
+    std::copy(address.bytes.begin(), address.bytes.end(), asData.data());
+    return asData;
+}
+
+TEST(THORSwap, SwapEthBnb) {
+    auto res = Swap::build(Chain::ETH, Chain::BNB, Address1Eth, "BNB", "", Address1Bnb, VaultEth, "10000000", "10000000");
+    ASSERT_EQ(res.second, "");
+    EXPECT_EQ(hex(res.first), "0a010112010b1a0502540be40022030f42402a2a3078313039316334446536613363463039436441303041624441654434326337633342363943383345433aef0132ec010a0398968012e4011fece7b40000000000000000000000001091c4de6a3cf09cda00abdaed42c7c3b69c83ec0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000098968000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000040535741503a424e422e424e423a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a3130303030303030");
+
+    auto tx = Ethereum::Proto::SigningInput();
+    ASSERT_TRUE(tx.ParseFromArray(res.first.data(), (int)res.first.size()));
+
+    // check fields
+    EXPECT_EQ(tx.to_address(), VaultEth);
+    ASSERT_TRUE(tx.transaction().has_contract_generic());
+
+    Data vaultAddressBin = SwapTest_ethAddressStringToData(VaultEth);
+    EXPECT_EQ(hex(vaultAddressBin), "1091c4de6a3cf09cda00abdaed42c7c3b69c83ec");
+    auto func = Ethereum::ABI::Function("deposit", std::vector<std::shared_ptr<Ethereum::ABI::ParamBase>>{
+        std::make_shared<Ethereum::ABI::ParamAddress>(vaultAddressBin),
+        std::make_shared<Ethereum::ABI::ParamAddress>(parse_hex("0000000000000000000000000000000000000000")),
+        std::make_shared<Ethereum::ABI::ParamUInt256>(uint256_t(10000000)),
+        std::make_shared<Ethereum::ABI::ParamString>("SWAP:BNB.BNB:bnb1us47wdhfx08ch97zdueh3x3u5murfrx30jecrx:10000000")
+    });
+    Data payload;
+    func.encode(payload);
+    EXPECT_EQ(hex(payload), "1fece7b4"
+        "0000000000000000000000001091c4de6a3cf09cda00abdaed42c7c3b69c83ec"
+        "0000000000000000000000000000000000000000000000000000000000000000"
+        "0000000000000000000000000000000000000000000000000000000000989680"
+        "0000000000000000000000000000000000000000000000000000000000000080"
+        "0000000000000000000000000000000000000000000000000000000000000040"
+        "535741503a424e422e424e423a626e6231757334377764686678303863683937"
+        "7a6475656833783375356d757266727833306a656372783a3130303030303030");
+
+    EXPECT_EQ(hex(TW::data(tx.transaction().contract_generic().amount())), "989680");
+    EXPECT_EQ(hex(TW::data(tx.transaction().contract_generic().data())), hex(payload));
+
+    EXPECT_EQ(hex(TW::data(tx.private_key())), "");
+
+    // set few fields before signing
+    auto chainId = store(uint256_t(1));
+    tx.set_chain_id(chainId.data(), chainId.size());
+    auto nonce = store(uint256_t(11));
+    tx.set_nonce(nonce.data(), nonce.size());
+    auto gasPrice = store(uint256_t(10000000000));
+    tx.set_gas_price(gasPrice.data(), gasPrice.size());
+    auto gasLimit = store(uint256_t(1000000));
+    tx.set_gas_limit(gasLimit.data(), gasLimit.size());
+    tx.set_private_key("");
+    tx.set_private_key(PrivateKey1Bnb.data(), PrivateKey1Bnb.size());
+    // sign and encode resulting input
+    Ethereum::Proto::SigningOutput output;
+    ANY_SIGN(tx, TWCoinTypeEthereum);
+    EXPECT_EQ(hex(output.encoded()), "f9014d0b8502540be400830f4240941091c4de6a3cf09cda00abdaed42c7c3b69c83ec83989680b8e41fece7b40000000000000000000000001091c4de6a3cf09cda00abdaed42c7c3b69c83ec0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000098968000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000040535741503a424e422e424e423a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a313030303030303026a02cf193eaa4acf1a11088b1ff1efa620f06d2ed71c1c9f62d3d019e3cadad3607a01eab200380f20ab7b07c0d18fc8a541ca44d716c16cf2a2b0a15a150d99dc199");
 }
 
 TEST(THORSwap, SwapBnbBtc) {
@@ -41,13 +113,13 @@ TEST(THORSwap, SwapBnbBtc) {
     ASSERT_TRUE(tx.ParseFromArray(res.first.data(), (int)res.first.size()));
 
     // check fields
-    auto pk2 = tx.private_key();
-    EXPECT_EQ(hex(TW::data(pk2)), "");
     EXPECT_EQ(tx.memo(), "SWAP:BTC.BTC:bc1qpjult34k9spjfym8hss2jrwjgf0xjf40ze0pp8:10000000");
+    ASSERT_TRUE(tx.has_send_order());
     ASSERT_EQ(tx.send_order().inputs_size(), 1);
     ASSERT_EQ(tx.send_order().outputs_size(), 1);
     EXPECT_EQ(hex(tx.send_order().inputs(0).address()), "e42be736e933cf8b97c26f33789a3ca6f8348cd1");
     EXPECT_EQ(hex(tx.send_order().outputs(0).address()), "99730371c7c77cb81ffa76b566dcef7c1e5dc19c");
+    EXPECT_EQ(hex(TW::data(tx.private_key())), "");
 
     // sign and encode resulting input
     tx.set_private_key(PrivateKey1Bnb.data(), PrivateKey1Bnb.size());
@@ -65,13 +137,13 @@ TEST(THORSwap, SwapBnbEth) {
     ASSERT_TRUE(tx.ParseFromArray(res.first.data(), (int)res.first.size()));
 
     // check fields
-    auto pk2 = tx.private_key();
-    EXPECT_EQ(hex(TW::data(pk2)), "");
     EXPECT_EQ(tx.memo(), "=:ETH.ETH:0xb9f5771c27664bf2282d98e09d7f50cec7cb01a7:123456");
+    ASSERT_TRUE(tx.has_send_order());
     ASSERT_EQ(tx.send_order().inputs_size(), 1);
     ASSERT_EQ(tx.send_order().outputs_size(), 1);
     EXPECT_EQ(hex(tx.send_order().inputs(0).address()), "e42be736e933cf8b97c26f33789a3ca6f8348cd1");
     EXPECT_EQ(hex(tx.send_order().outputs(0).address()), "99730371c7c77cb81ffa76b566dcef7c1e5dc19c");
+    EXPECT_EQ(hex(TW::data(tx.private_key())), "");
 
     // set private key and few other fields
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeBinance, PrivateKey(PrivateKey1Bnb)), Address1Bnb);
@@ -99,13 +171,13 @@ TEST(THORSwap, SwapBnbRune) {
     ASSERT_TRUE(tx.ParseFromArray(res.first.data(), (int)res.first.size()));
 
     // check fields
-    auto pk2 = tx.private_key();
-    EXPECT_EQ(hex(TW::data(pk2)), "");
     EXPECT_EQ(tx.memo(), "SWAP:THOR.RUNE:thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r:121065076");
+    ASSERT_TRUE(tx.has_send_order());
     ASSERT_EQ(tx.send_order().inputs_size(), 1);
     ASSERT_EQ(tx.send_order().outputs_size(), 1);
     EXPECT_EQ(hex(tx.send_order().inputs(0).address()), "e42be736e933cf8b97c26f33789a3ca6f8348cd1");
     EXPECT_EQ(hex(tx.send_order().outputs(0).address()), "99730371c7c77cb81ffa76b566dcef7c1e5dc19c");
+    EXPECT_EQ(hex(TW::data(tx.private_key())), "");
 
     // set private key and few other fields
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeBinance, PrivateKey(PrivateKey1Bnb)), Address1Bnb);
