@@ -18,7 +18,7 @@ using namespace TW::Avalanche;
 
 
 
-// These tests are modeled after the avalanchejs signer tests
+// This test is modeled after the avalanchejs signer tests
 // many example values are likewise modeled after the docs.avax.network tx serialization examples
 
 TEST(AvalancheSigner, SignWithLocktimeThreshold) {
@@ -73,67 +73,3 @@ TEST(AvalancheSigner, SignWithLocktimeThreshold) {
     auto encodedSignedTransaction = Signer::sign(keyRing, transaction);
     ASSERT_EQ(hex(encodedSignedTransaction), "00000000000000003039d891ad56056d9c01f18f43f58b5c784ad07a4a49cf3d1f11623804b5cba2c6bf00000002dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000700000000000003e8000000000000000000000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29cdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db000000070000000000003039000000000000d43100000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29c00000002f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd15000000020000000300000007f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd1500000002000000030000000700000004deadbeef00000002000000090000000244ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d0044ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d00000000090000000244ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d0044ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d00");
 }
-
-TEST(AvalancheSigner, SignWithoutAsofLocktimeThreshold) {
-  /*
-  test('Creation Tx2 without asof, locktime, threshold', () => {
-    const txu:UnsignedTx = set.buildBaseTx(
-      netid, blockchainID,
-      new BN(9000), assetID,
-      addrs3, addrs1, addrs1
-    );
-    const tx:Tx = txu.sign(keymgr1);
-    const tx2:Tx = new Tx();
-    tx2.fromBuffer(tx.toBuffer());
-    expect(tx2.toBuffer().toString('hex')).toBe(tx.toBuffer().toString('hex'));
-    expect(tx2.toString()).toBe(tx.toString());
-  });
-  */
-}
-
-TEST(AvalancheSigner, SignOperationTx) {
-  /*
-  test('Creation Tx3 using OperationTx', () => {
-    const txu:UnsignedTx = set.buildNFTTransferTx(
-      netid, blockchainID, 
-      addrs3, addrs1, addrs2, nftutxoids, new BN(90), avaxAssetID, undefined,
-      UnixNow(), UnixNow().add(new BN(50)), 1,
-    );
-    const tx:Tx = txu.sign(keymgr1);
-    const tx2:Tx = new Tx();
-    tx2.fromBuffer(tx.toBuffer());
-    expect(tx2.toBuffer().toString('hex')).toBe(tx.toBuffer().toString('hex'));
-  });
-  */
-}
-
-TEST(AvalancheSigner, SignImportTx) {
-/*
-  test('Creation Tx4 using ImportTx', () => {
-    const txu:UnsignedTx = set.buildImportTx(
-      netid, blockchainID, addrs3, addrs1, addrs2, importUTXOs, bintools.cb58Decode(PlatformChainID), new BN(90), assetID,
-      new UTF8Payload("hello world").getPayload(), UnixNow());
-    const tx:Tx = txu.sign(keymgr1);
-    const tx2:Tx = new Tx();
-    tx2.fromBuffer(tx.toBuffer());
-    expect(tx2.toBuffer().toString('hex')).toBe(tx.toBuffer().toString('hex'));
-  });
-*/
-}
-
-TEST(AvalancheSigner, SignExportTx) {
-/*
-  test('Creation Tx5 using ExportTx', () => {
-    const txu:UnsignedTx = set.buildExportTx(
-      netid, blockchainID, new BN(90), avaxAssetID,
-      addrs3, addrs1, addrs2, bintools.cb58Decode(PlatformChainID), 
-      undefined, undefined, new UTF8Payload("hello world").getPayload(), UnixNow()
-    )
-    const tx:Tx = txu.sign(keymgr1);
-    const tx2:Tx = new Tx();
-    tx2.fromBuffer(tx.toBuffer());
-    expect(tx.toBuffer().toString('hex')).toBe(tx2.toBuffer().toString('hex'));
-  });
-*/
-}
-
