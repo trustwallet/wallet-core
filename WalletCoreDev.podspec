@@ -121,6 +121,10 @@ Pod::Spec.new do |s|
       "#{protobuf_source_dir}/src/google/protobuf/wire_format_lite.cc",
       "#{protobuf_source_dir}/src/google/protobuf/wrappers.pb.cc"
     ss.exclude_files = 
+      'trezor-crypto/include/TrezorCrypto/base58.h',
+      'trezor-crypto/crypto/monero',
+      'trezor-crypto/crypto/tests',
+      'trezor-crypto/crypto/tools',
       'trezor-crypto/crypto/rand.c',
       'swift/Sources/Generated/WalletCore.h'
 

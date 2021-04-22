@@ -10,3 +10,7 @@ Pods/
 cpp.xcconfig
 *.xcodeproj
 *.xcworkspace
+
+# fastlane
+fastlane/README.md
+fastlane/report.xml
