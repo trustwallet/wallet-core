@@ -38,8 +38,7 @@ TEST(AvalancheTransactionComponents, TestInitialState) {
     stateTwo = stateOne; // should be able to assign states to each other
     EXPECT_EQ(stateTwo.FxID, InitialState::FeatureExtension::NFT);
     stateOne.FxID = InitialState::FeatureExtension::SECP256k1;
-    auto stateOneLessThanStateTwo = stateOne < stateTwo; // state one should now be less than state two by lexicographical sort
-    EXPECT_TRUE(stateOneLessThanStateTwo);
+    EXPECT_TRUE(stateOne < stateTwo); // state one should now be less than state two by lexicographical sort
 }
 
 TEST(AvalancheTransactionComponents, TestTransferableInput) {
@@ -60,21 +59,57 @@ TEST(AvalancheTransactionComponents, TestTransferableInput) {
 
     auto inputThree = TransferableInput(inputTwo); // should be able to build from each other
     EXPECT_EQ(inputTwo.UTXOIndex, inputThree.UTXOIndex);
-    auto sameUTXOs = inputOne.UTXOIndex == inputThree.UTXOIndex;
-    EXPECT_FALSE(sameUTXOs);
+    EXPECT_FALSE(inputOne.UTXOIndex == inputThree.UTXOIndex);
 
     inputThree = inputOne; // should be able to assign inputs to each other
-    sameUTXOs = inputOne.UTXOIndex == inputThree.UTXOIndex;
-    EXPECT_TRUE(sameUTXOs);
+    EXPECT_TRUE(inputOne.UTXOIndex == inputThree.UTXOIndex);
 
-    auto inputOneLessThanInputTwo = inputThree < inputTwo; // inputThree should be less than inputTwo by lexicographical sort if it was assigned properly
-    EXPECT_TRUE(inputOneLessThanInputTwo); 
+    EXPECT_TRUE(inputThree < inputTwo); // inputThree should be less than inputTwo by lexicographical sort if it was assigned properly
 }
 
 TEST(AvalancheTransactionComponents, TestTransferableOutput) {
+    auto assetIDOne = parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba530000"); 
+    auto addressesOutOne = generateAddresses();
+    auto coreOutputOne = std::make_unique<SECP256k1TransferOutput>(12345, 54321, 5, addressesOutOne);
+    auto outputOne = TransferableOutput(assetIDOne, std::move(coreOutputOne));
+
+    auto assetIDTwo = parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db"); 
+    auto addressesOutTwo = generateAddresses();
+    auto coreOutputTwo = std::make_unique<SECP256k1TransferOutput>(12345, 54321, 6, addressesOutTwo);
+    auto outputTwo = TransferableOutput(assetIDTwo, std::move(coreOutputTwo));
+
+    EXPECT_TRUE(outputOne < outputTwo); // outputOne should be less than outputTwo by lexicographical sort
+
+    auto outputThree = TransferableOutput(outputTwo); // should be able to build from each other
+    EXPECT_EQ(outputThree.AssetID, outputTwo.AssetID);
+    EXPECT_FALSE(outputThree.AssetID == outputOne.AssetID);
+
+    outputThree = outputOne; // should be able to assign from each other
+    EXPECT_EQ(outputThree.AssetID, outputOne.AssetID);
+    EXPECT_FALSE(outputThree.AssetID == outputTwo.AssetID);
+    EXPECT_TRUE(outputThree < outputTwo); // outputOne should be less than outputTwo by lexicographical sort if assignment successful
 }
 
 TEST(AvalancheTransactionComponents, TestOutput) {
+    // make some arbitrary Outputs
+    auto addressesOne = generateAddresses();
+    auto addressesTwo = generateAddresses();
+    auto addressesThree = generateAddresses();
+
+    Output outputOne = std::make_tuple(uint64_t(0), uint32_t(0), addressesOne);
+    Output outputTwo = std::make_tuple(uint64_t(1), uint32_t(1), addressesTwo);
+    Output outputThree = std::make_tuple(uint64_t(2), uint32_t(2), addressesThree);
+
+    // make a vector that is improperly sorted
+    // sort it, and encode it
+    // make sure result is as expected
+    std::vector<Output> outputs = {outputTwo, outputThree, outputOne};
+    SortOutputs(outputs);
+    EXPECT_EQ(outputs.front(), outputOne);
+    EXPECT_EQ(outputs.back(), outputThree);
+    Data outputData; 
+    EncodeOutputs(outputs, outputData);
+    EXPECT_EQ(hexEncoded(outputData), "0x00000003000000000000000000000000000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6000000000000000100000001000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6000000000000000200000002000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6");
 }
 
 TEST(AvalancheTransactionComponents, TestTransactionFailureCases) {
