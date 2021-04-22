@@ -1,6 +1,8 @@
 #!/bin/bash
 #
-# This script captures test code coverage information.
+# This script processes captured test code coverage information,
+# generates HTML report (if html argument is given),
+# and compares current value to previously saved value (stored in coverage.stats).
 #
 # To generate coverage info:
 # - run cmake, to enable coverage measurement
@@ -62,7 +64,7 @@ if (( $(echo "$current > $new" | bc -l) )); then
     echo "Code coverage drops to ${new}% (current is ${current}%)"
     exit -1
 else
-    echo "Update code coverage ${current}% -> ${new}%"
+    echo "Update code coverage: ${current}% -> ${new}%"
     echo -n $new > coverage.stats
     # commit to master
 fi
