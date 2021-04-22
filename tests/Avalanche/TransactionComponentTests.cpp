@@ -7,6 +7,7 @@
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
+#include "Avalanche/CB58.h"
 #include "Avalanche/Transaction.h"
 
 #include <gtest/gtest.h>
@@ -112,5 +113,82 @@ TEST(AvalancheTransactionComponents, TestOutput) {
     EXPECT_EQ(hexEncoded(outputData), "0x00000003000000000000000000000000000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6000000000000000100000001000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6000000000000000200000002000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6");
 }
 
+BaseTransaction generateBaseTransactionBasedOnSignerTest();
+
 TEST(AvalancheTransactionComponents, TestTransactionFailureCases) {
+    auto goodBase = generateBaseTransactionBasedOnSignerTest();
+    // try a too-long memo for a BaseTransaction
+    Data bigMemo;
+    for (int i = 0; i < MAX_MEMO_SIZE + 1; i++) {
+        bigMemo.push_back(0xde);
+    }
+    EXPECT_ANY_THROW(BaseTransaction(goodBase.TypeID, goodBase.NetworkID, goodBase.BlockchainID, goodBase.Inputs, goodBase.Outputs, bigMemo));
+    // try a too-long asset name for an UnsignedCreateAssetTransaction
+    std::vector<InitialState> emptyStates;
+    std::string longAssetName = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    std::string shortSymbol = "";
+    EXPECT_TRUE(longAssetName.size() > MAX_ASSET_NAME_CHARS);
+    uint8_t denomination = 1;
+    EXPECT_ANY_THROW(UnsignedCreateAssetTransaction(goodBase, longAssetName, shortSymbol, denomination, emptyStates));
+    // try a too-long symbol for an UnsignedCreateAssetTransaction
+    std::string shortName = "";
+    std::string longSymbol = "aaaaa";
+    EXPECT_TRUE(longSymbol.size() > MAX_SYMBOL_CHARS);
+    EXPECT_ANY_THROW(UnsignedCreateAssetTransaction(goodBase, shortName, longSymbol, denomination, emptyStates));
+    // try a wrong-size blockchain ID for a BaseTransaction
+    auto tooShortBlockchainID = Data{};
+    EXPECT_TRUE(tooShortBlockchainID.size() != BLOCKCHAIN_ID_SIZE);
+    EXPECT_ANY_THROW(BaseTransaction(goodBase.TypeID, goodBase.NetworkID, tooShortBlockchainID, goodBase.Inputs, goodBase.Outputs, goodBase.Memo));
+    // try a wrong-size blockchain ID for source in an UnsignedImportTransaction
+    std::vector<TransferableInput> emptyInputs;
+    EXPECT_ANY_THROW(UnsignedImportTransaction(goodBase, tooShortBlockchainID, emptyInputs));
+    // try a wrong-size blockchain ID for dest in an UnsignedExportTransaction
+    std::vector<TransferableOutput> emptyOutputs;
+    EXPECT_ANY_THROW(UnsignedExportTransaction(goodBase, tooShortBlockchainID, emptyOutputs));
+}
+
+BaseTransaction generateBaseTransactionBasedOnSignerTest() {
+    const auto privateKeyOneBytes = CB58::avalanche.decode("ewoqjP7PxY4yr3iLTpLisriqt94hdyDFNgchSxGGztUrTXtNN");
+    const std::vector<uint8_t> privateKeyOneBytesNoChecksum(privateKeyOneBytes.begin(), privateKeyOneBytes.begin() + 32); // we just want the first 32 bytes
+    const auto privateKeyOne = PrivateKey(privateKeyOneBytesNoChecksum); 
+    const auto publicKeyOne = privateKeyOne.getPublicKey(TWPublicKeyTypeSECP256k1);
+    const auto addressOne = Address(publicKeyOne);
+
+    std::vector<Address> spendableAddresses = {addressOne, addressOne, addressOne, addressOne, addressOne, addressOne, addressOne, addressOne, addressOne, addressOne};
+
+    auto blockchainID = CB58::avalanche.decode("2eNy1mUFdmaxXNj1eQHUe7Np4gju9sJsEtWQ4MX3ToiNKuADed");
+    Data blockchainIDBytes(blockchainID.begin(), blockchainID.begin() + 32); // we just want the first 32 bytes, no checksum
+    uint32_t netID = 12345;
+    auto assetID = parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db"); 
+    uint32_t baseTypeID = 0;
+    Data memo = {0xde, 0xad, 0xbe, 0xef};
+    auto amount = 1000;   
+    auto locktime = 0;
+    auto threshold = 1;
+
+    auto addressesInOne = std::vector<uint32_t>{3, 7};
+    auto txidOne = parse_hex("0xf1e1d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000");
+    auto utxoIndexOne = 5;
+    auto coreInputOne = std::make_unique<SECP256k1TransferInput>(123456789, addressesInOne);
+    auto inputOne = TransferableInput(txidOne, utxoIndexOne, assetID, std::move(coreInputOne), spendableAddresses);
+
+    auto addressesInTwo = std::vector<uint32_t>{3, 7};
+    auto txidTwo = parse_hex("0xf1e1d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000");
+    auto utxoIndexTwo = 5;
+    auto coreInputTwo = std::make_unique<SECP256k1TransferInput>(123456789, addressesInTwo);
+    auto inputTwo = TransferableInput(txidTwo, utxoIndexTwo, assetID, std::move(coreInputTwo), spendableAddresses);
+    
+    auto inputs = std::vector<TransferableInput>{inputOne, inputTwo};
+
+    auto addressesOutOne = std::vector<Address>{addressOne};
+    auto coreOutputOne = std::make_unique<SECP256k1TransferOutput>(12345, 54321, threshold, addressesOutOne);
+    auto outputOne = TransferableOutput(assetID, std::move(coreOutputOne));
+
+    auto addressesOutTwo = std::vector<Address>{addressOne};
+    auto coreOutputTwo = std::make_unique<SECP256k1TransferOutput>(amount, locktime, threshold, addressesOutTwo);
+    auto outputTwo = TransferableOutput(assetID, std::move(coreOutputTwo));
+
+    auto outputs = std::vector<TransferableOutput>{outputOne, outputTwo};
+
+    return BaseTransaction(baseTypeID, netID, blockchainIDBytes, inputs, outputs, memo);
 }
