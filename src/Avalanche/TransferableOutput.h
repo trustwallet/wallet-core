@@ -23,11 +23,8 @@ class TransactionOutput {
   public:
     /// Encodes the output into the provided buffer.
     virtual void encode(Data& data) const = 0;
-
     bool operator<(const TransactionOutput& other) const;
-
     virtual ~TransactionOutput(){}
-
     virtual std::unique_ptr<TransactionOutput> duplicate() = 0; 
   protected:
     TransactionOutput(){}

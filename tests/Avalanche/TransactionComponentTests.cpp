@@ -15,7 +15,7 @@
 using namespace TW;
 using namespace TW::Avalanche;
 
-std::vector<Address> generateAddresses() {
+std::vector<Address> generateAddressesForComponent() {
     // build some arbitrary addresses for this test
     std::vector<Address> arbitraryAddresses;
     arbitraryAddresses.push_back(Address("X-avax18lasc0q97jlurnnxuyyqyz0rm6tvl0ecsvkvjj"));
@@ -25,7 +25,7 @@ std::vector<Address> generateAddresses() {
 }
 
 TEST(AvalancheTransactionComponents, TestInitialState) {
-    auto arbitraryAddresses = generateAddresses();
+    auto arbitraryAddresses = generateAddressesForComponent();
     // build some arbitrary outputs for this test
     std::vector<std::unique_ptr<TransactionOutput>> arbitraryOutputs;
     // fill outputs with arbitrary transactionoutputs
@@ -43,7 +43,7 @@ TEST(AvalancheTransactionComponents, TestInitialState) {
 }
 
 TEST(AvalancheTransactionComponents, TestTransferableInput) {
-    auto arbitraryAddresses = generateAddresses();
+    auto arbitraryAddresses = generateAddressesForComponent();
     auto assetID = parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db"); 
     
     auto addressesInOne = std::vector<uint32_t>{3, 7};
@@ -70,12 +70,12 @@ TEST(AvalancheTransactionComponents, TestTransferableInput) {
 
 TEST(AvalancheTransactionComponents, TestTransferableOutput) {
     auto assetIDOne = parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba530000"); 
-    auto addressesOutOne = generateAddresses();
+    auto addressesOutOne = generateAddressesForComponent();
     auto coreOutputOne = std::make_unique<SECP256k1TransferOutput>(12345, 54321, 5, addressesOutOne);
     auto outputOne = TransferableOutput(assetIDOne, std::move(coreOutputOne));
 
     auto assetIDTwo = parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db"); 
-    auto addressesOutTwo = generateAddresses();
+    auto addressesOutTwo = generateAddressesForComponent();
     auto coreOutputTwo = std::make_unique<SECP256k1TransferOutput>(12345, 54321, 6, addressesOutTwo);
     auto outputTwo = TransferableOutput(assetIDTwo, std::move(coreOutputTwo));
 
@@ -93,9 +93,9 @@ TEST(AvalancheTransactionComponents, TestTransferableOutput) {
 
 TEST(AvalancheTransactionComponents, TestOutput) {
     // make some arbitrary Outputs
-    auto addressesOne = generateAddresses();
-    auto addressesTwo = generateAddresses();
-    auto addressesThree = generateAddresses();
+    auto addressesOne = generateAddressesForComponent();
+    auto addressesTwo = generateAddressesForComponent();
+    auto addressesThree = generateAddressesForComponent();
 
     Output outputOne = std::make_tuple(uint64_t(0), uint32_t(0), addressesOne);
     Output outputTwo = std::make_tuple(uint64_t(1), uint32_t(1), addressesTwo);
