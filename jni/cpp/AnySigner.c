@@ -19,22 +19,6 @@ jbyteArray JNICALL Java_wallet_core_java_AnySigner_nativeSign(JNIEnv *env, jclas
     return resultData;
 }
 
-jbyteArray JNICALL Java_wallet_core_java_AnySigner_nativeEncode(JNIEnv *env, jclass thisClass, jbyteArray input, jint coin) {
-    TWData *inputData = TWDataCreateWithJByteArray(env, input);
-    TWData *outputData = TWAnySignerEncode(inputData, coin);
-    jbyteArray resultData = TWDataJByteArray(outputData, env);
-    TWDataDelete(inputData);
-    return resultData;
-}
-
-jbyteArray JNICALL Java_wallet_core_java_AnySigner_nativeDecode(JNIEnv *env, jclass thisClass, jbyteArray input, jint coin) {
-    TWData *inputData = TWDataCreateWithJByteArray(env, input);
-    TWData *outputData = TWAnySignerDecode(inputData, coin);
-    jbyteArray resultData = TWDataJByteArray(outputData, env);
-    TWDataDelete(inputData);
-    return resultData;
-}
-
 jboolean JNICALL Java_wallet_core_java_AnySigner_supportsJSON(JNIEnv *env, jclass thisClass, jint coin) {
     return TWAnySignerSupportsJSON(coin);
 }
