@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+
+# get version to release
+
+# zip xcframeworks under swift/build
+
+# get release upload url
+
+# upload zips
+
+# publish to cocoapods
