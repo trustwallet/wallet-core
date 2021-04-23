@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -17,6 +17,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
         auto transaction = Signer::build(input);
 
+        auto preHash = signer.hash(transaction);
         signer.sign(key, transaction);
 
         auto output = Proto::SigningOutput();
@@ -34,6 +35,10 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         output.set_s(s.data(), s.size());
 
         output.set_data(transaction.payload.data(), transaction.payload.size());
+
+        output.set_pre_hash(preHash.data(), preHash.size());
+        auto postHash = Hash::keccak256(encoded);
+        output.set_hash(postHash.data(), postHash.size());
 
         return output;
     } catch (std::exception&) {
