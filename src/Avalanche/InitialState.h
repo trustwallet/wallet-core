@@ -18,7 +18,11 @@ namespace TW::Avalanche {
         
         InitialState(FeatureExtension fxid, std::vector<std::unique_ptr<TransactionOutput>> outputs)
          : FxID(fxid), Outputs(std::move(outputs)) {
-          std::sort(Outputs.begin(), Outputs.end());
+          std::sort(Outputs.begin(), Outputs.end(), [](const auto& lhs, const auto& rhs)
+          {
+            // just calling std::sort will sort based on the unique_ptrs, rather than using the underlying TransactionOutputs' operator<
+            return *lhs < *rhs;
+          });
          }
 
         InitialState(const InitialState &other) {
@@ -27,7 +31,11 @@ namespace TW::Avalanche {
           for (auto &output : other.Outputs) {
             Outputs.push_back(output->duplicate());
           }
-          std::sort(Outputs.begin(), Outputs.end());          
+          std::sort(Outputs.begin(), Outputs.end(), [](const auto& lhs, const auto& rhs)
+          {
+            // just calling std::sort will sort based on the unique_ptrs, rather than using the underlying TransactionOutputs' operator<
+            return *lhs < *rhs;
+          });          
         }
 
         InitialState& operator=(const InitialState &other);

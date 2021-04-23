@@ -37,6 +37,9 @@ InitialState& InitialState::operator=(const InitialState &other) {
     for (auto &output : other.Outputs) {
         Outputs.push_back(output->duplicate());
     }
-    std::sort(Outputs.begin(), Outputs.end());
+    std::sort(Outputs.begin(), Outputs.end(), [](const auto& lhs, const auto& rhs)
+    {
+        return *lhs < *rhs;
+    });
     return *this;
 }
