@@ -2,12 +2,52 @@
 
 set -e
 
-# get version to release
+# load release library code
+base_dir=$(dirname $0)
+source ${base_dir}/library
 
-# zip xcframeworks under swift/build
+# version to release
+version=$(wc_read_version)
+release_url=$(wc_release_url ${version})
+echo "release_url url is $release_url"
 
-# get release upload url
+pushd ${base_dir}/../swift/build
 
-# upload zips
+# archive xcframeworks
+filename="core+protobuf.tar.xz"
+tar -cJvf ${filename} SwiftProtobuf.xcframework WalletCore.xcframework
 
-# publish to cocoapods
+# upload to release
+download_url=$(wc_upload_asset ${release_url} ${filename})
+echo "download_url is ${download_url}"
+
+# create podspec
+podspec=WalletCoreFW.podspec
+cat > $podspec <<EOF 
+Pod::Spec.new do |s|
+  s.name         = 'WalletCoreFW'
+  s.version      = '${version}'
+  s.summary      = 'Trust Wallet core data structures and algorithms.'
+  s.homepage     = 'https://github.com/trustwallet/wallet-core'
+  s.license      = 'MIT'
+  s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
+
+  s.ios.deployment_target = '12.0'
+  s.swift_version = '5.1'
+
+  s.source = {
+    http: '${download_url}'
+  }
+
+  s.vendored_frameworks = 'WalletCore.xcframework', 'SwiftProtobuf.xcframework'
+  s.libraries = 'c++'
+  s.xcconfig = {
+    'OTHER_LDFLAGS' => '\$(inherited) -fprofile-instr-generate'
+  }
+end
+EOF
+
+# pod trunk push
+pod trunk push --allow-warnings ${podspec}
+
+popd
