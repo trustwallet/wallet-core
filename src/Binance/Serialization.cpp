@@ -80,7 +80,22 @@ json Binance::orderJSON(const Binance::Proto::SigningInput& input) {
     } else if (input.has_refundhtlt_order()) {
         j["from"] = addressString(input.refundhtlt_order().from());
         j["swap_id"] = hex(input.refundhtlt_order().swap_id());
+    } else if (input.has_issue_order()) {
+        j["from"] = addressString(input.issue_order().from());
+        j["total_supply"] = input.issue_order().total_supply();
+        j["name"] = input.issue_order().name();
+        j["symbol"] = input.issue_order().symbol();
+        j["mintable"] = input.issue_order().mintable();
+    } else if (input.has_mint_order()) {
+        j["from"] = addressString(input.mint_order().from());
+        j["amount"] = input.mint_order().amount();
+        j["symbol"] = input.mint_order().symbol();
+    } else if (input.has_burn_order()) {
+        j["from"] = addressString(input.burn_order().from());
+        j["amount"] = input.burn_order().amount();
+        j["symbol"] = input.burn_order().symbol();
     }
+
     return j;
 }
 

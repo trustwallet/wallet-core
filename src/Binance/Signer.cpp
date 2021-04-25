@@ -30,6 +30,9 @@ static const auto claimHTLTOrderPrefix = std::vector<uint8_t>{0xC1, 0x66, 0x53, 
 static const auto refundHTLTOrderPrefix = std::vector<uint8_t>{0x34, 0x54, 0xA2, 0x7C};
 static const auto pubKeyPrefix = std::vector<uint8_t>{0xEB, 0x5A, 0xE9, 0x87};
 static const auto transactionPrefix = std::vector<uint8_t>{0xF0, 0x62, 0x5D, 0xEE};
+static const auto tokenIssueOrderPrefix = std::vector<uint8_t>{0x17, 0xEF, 0xAB, 0x80};
+static const auto tokenMintOrderPrefix = std::vector<uint8_t>{0x46, 0x7E, 0x08, 0x29};
+static const auto tokenBurnOrderPrefix = std::vector<uint8_t>{0x7E, 0xD2, 0xD2, 0xA0};
 
 std::vector<uint8_t> Signer::build() const {
     auto signature = encodeSignature(sign());
@@ -72,6 +75,15 @@ std::vector<uint8_t> Signer::encodeOrder() const {
     } else if (input.has_send_order()) {
         data = input.send_order().SerializeAsString();
         prefix = sendOrderPrefix;
+    } else if (input.has_issue_order()) {
+        data = input.issue_order().SerializeAsString();
+        prefix = tokenIssueOrderPrefix;
+    } else if (input.has_mint_order()) {
+        data = input.mint_order().SerializeAsString();
+        prefix = tokenMintOrderPrefix;
+    } else if (input.has_burn_order()) {
+        data = input.burn_order().SerializeAsString();
+        prefix = tokenBurnOrderPrefix;
     } else if (input.has_freeze_order()) {
         data = input.freeze_order().SerializeAsString();
         prefix = tokenFreezeOrderPrefix;

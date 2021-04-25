@@ -38,7 +38,7 @@ class Signer {
     std::vector<uint8_t> encodeTransaction(const std::vector<uint8_t>& signature) const;
     std::vector<uint8_t> encodeSignature(const PublicKey& publicKey, const std::vector<uint8_t>& signature) const;
     std::vector<uint8_t> encodeSignature(const std::vector<uint8_t>& signature) const;
-private:
+  private:
     std::vector<uint8_t> encodeOrder() const;
     std::vector<uint8_t> aminoWrap(const std::string& raw, const std::vector<uint8_t>& typePrefix,
                                    bool isPrefixLength) const;
