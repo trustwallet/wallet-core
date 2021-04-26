@@ -72,7 +72,6 @@ TEST(TWAnySignerEthereum, Sign) {
 
         EXPECT_EQ(hex(output.encoded()), expected);
         EXPECT_EQ(hex(output.pre_hash()), "5d2556f7d0e629dc6ce9dbc8a205853a7b89c136791840a39765e34cb5e3466a");
-        EXPECT_EQ(hex(output.hash()), "5e431ce521158c97a83c7068f246c8d237bb2a5796475be7ed71bfff50fba51e");
         EXPECT_EQ(hex(output.data()), hex(data));
     }
 }
@@ -109,7 +108,6 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsERC20) {
     EXPECT_EQ(hex(output.encoded()), expected);
 
     EXPECT_EQ(hex(output.pre_hash()), "3a3fc6df8815e15874cc8d6c65f88ea0643b375e5b22726269d187035a5cb486");
-    EXPECT_EQ(hex(output.hash()), "199a7829fc5149e49b452c2cab76d8fa5a9682fee6e4891b8acb697ac142513e");
 
     // expected payload
     Data payload;

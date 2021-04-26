@@ -37,8 +37,6 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         output.set_data(transaction.payload.data(), transaction.payload.size());
 
         output.set_pre_hash(preHash.data(), preHash.size());
-        auto postHash = Hash::keccak256(encoded);
-        output.set_hash(postHash.data(), postHash.size());
 
         return output;
     } catch (std::exception&) {
