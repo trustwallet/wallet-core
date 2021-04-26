@@ -235,7 +235,7 @@ class BitcoinAddressTests: XCTestCase {
         XCTAssertEqual("bc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z00ppggv", address.description)
     }
 
-    @objc func testDeriveOneThread() {
+    func testDeriveOneThread() {
         let n = 200
         for _ in 1...n {
             testBitcoinDeriveAddress()
