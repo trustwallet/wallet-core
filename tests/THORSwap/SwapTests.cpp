@@ -28,9 +28,9 @@ const auto Address1Btc = "bc1qpjult34k9spjfym8hss2jrwjgf0xjf40ze0pp8";
 const auto Address1Eth = "0xb9f5771c27664bf2282d98e09d7f50cec7cb01a7";
 const auto Address1Bnb = "bnb1us47wdhfx08ch97zdueh3x3u5murfrx30jecrx";
 const auto Address1Thor = "thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r";
-const Data PrivateKey1Btc = parse_hex("13fcaabaf9e71ffaf915e242ec58a743d55f102cf836968e5bd4881135e0c52c");
-const Data PrivateKey1Eth = parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904");
-const Data PrivateKey1Bnb = parse_hex("bcf8b072560dda05122c99390def2c385ec400e1a93df0657a85cf6b57a715da");
+const Data TestKey1Btc = parse_hex("13fcaabaf9e71ffaf915e242ec58a743d55f102cf836968e5bd4881135e0c52c");
+const Data TestKey1Eth = parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904");
+const Data TestKey1Bnb = parse_hex("bcf8b072560dda05122c99390def2c385ec400e1a93df0657a85cf6b57a715da");
 const auto VaultEth = "0x1091c4De6a3cF09CdA00AbDAeD42c7c3B69C83EC";
 const auto VaultBnb = "bnb1n9esxuw8ca7ts8l6w66kdh800s09msvul6vlse";
 
@@ -96,7 +96,7 @@ TEST(THORSwap, SwapEthBnb) {
     auto gasLimit = store(uint256_t(80000));
     tx.set_gas_limit(gasLimit.data(), gasLimit.size());
     tx.set_private_key("");
-    tx.set_private_key(PrivateKey1Eth.data(), PrivateKey1Eth.size());
+    tx.set_private_key(TestKey1Eth.data(), TestKey1Eth.size());
     // sign and encode resulting input
     Ethereum::Proto::SigningOutput output;
     ANY_SIGN(tx, TWCoinTypeEthereum);
@@ -121,7 +121,7 @@ TEST(THORSwap, SwapBnbBtc) {
     EXPECT_EQ(hex(TW::data(tx.private_key())), "");
 
     // sign and encode resulting input
-    tx.set_private_key(PrivateKey1Bnb.data(), PrivateKey1Bnb.size());
+    tx.set_private_key(TestKey1Bnb.data(), TestKey1Bnb.size());
     Binance::Proto::SigningOutput output;
     ANY_SIGN(tx, TWCoinTypeBinance);
     EXPECT_EQ(hex(output.encoded()), "8002f0625dee0a4c2a2c87fa0a220a14e42be736e933cf8b97c26f33789a3ca6f8348cd1120a0a03424e421080ade20412220a1499730371c7c77cb81ffa76b566dcef7c1e5dc19c120a0a03424e421080ade204126a0a26eb5ae9872103ea4b4bc12dc6f36a28d2c9775e01eef44def32cc70fb54f0e4177b659dbc0e1912404836ee8659caa86771281d3f104424d95977bdedf644ec8585f1674796fde525669a6d446f72da89ee90fb0e064473b0a2159a79630e081592c52948d03d67071a40535741503a4254432e4254433a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070383a3130303030303030");
@@ -145,8 +145,8 @@ TEST(THORSwap, SwapBnbEth) {
     EXPECT_EQ(hex(TW::data(tx.private_key())), "");
 
     // set private key and few other fields
-    EXPECT_EQ(TW::deriveAddress(TWCoinTypeBinance, PrivateKey(PrivateKey1Bnb)), Address1Bnb);
-    tx.set_private_key(PrivateKey1Bnb.data(), PrivateKey1Bnb.size());
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeBinance, PrivateKey(TestKey1Bnb)), Address1Bnb);
+    tx.set_private_key(TestKey1Bnb.data(), TestKey1Bnb.size());
     tx.set_chain_id("Binance-Chain-Tigris");
     tx.set_account_number(1902570);
     tx.set_sequence(12);
@@ -179,8 +179,8 @@ TEST(THORSwap, SwapBnbRune) {
     EXPECT_EQ(hex(TW::data(tx.private_key())), "");
 
     // set private key and few other fields
-    EXPECT_EQ(TW::deriveAddress(TWCoinTypeBinance, PrivateKey(PrivateKey1Bnb)), Address1Bnb);
-    tx.set_private_key(PrivateKey1Bnb.data(), PrivateKey1Bnb.size());
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeBinance, PrivateKey(TestKey1Bnb)), Address1Bnb);
+    tx.set_private_key(TestKey1Bnb.data(), TestKey1Bnb.size());
     tx.set_chain_id("Binance-Chain-Tigris");
     tx.set_account_number(1902570);
     tx.set_sequence(4);
