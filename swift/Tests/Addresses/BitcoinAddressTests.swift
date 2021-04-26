@@ -244,25 +244,12 @@ class BitcoinAddressTests: XCTestCase {
 
     func testMultiThreadedDerive() {
         let nThread = 5
-        var thread = [Thread](repeating: Thread(), count: nThread)
-        // start threads
-        for i in 0...nThread-1 {
-            thread[i] = Thread.init(target: self, selector: #selector(testDeriveOneThread), object: nil)
-            thread[i].start()
-        }
-        // wait till all finished
-        while (true) {
-            var allFinished = true
-            for i in 0...nThread-1 {
-                if (!thread[i].isFinished) {
-                    allFinished = false
-                    break
-                }
+        let queue = OperationQueue()
+        for _ in 1...nThread {
+            queue.addOperation {
+                self.testDeriveOneThread()
             }
-            if (allFinished) {
-                break
-            }
-            Thread.sleep(forTimeInterval: 0.005)
         }
+        queue.waitUntilAllOperationsAreFinished()
     }
 }
