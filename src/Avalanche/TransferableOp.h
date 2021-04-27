@@ -25,7 +25,6 @@ class TransactionOp {
     virtual void encode(Data& data) const = 0;  //we want to enforce that all subclasses can encode
     virtual ~TransactionOp(){}
     virtual std::unique_ptr<TransactionOp> duplicate() = 0;
-    bool operator<(const TransactionOp& other) const;
   protected:
     TransactionOp(){}
 };

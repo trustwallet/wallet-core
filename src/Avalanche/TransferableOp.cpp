@@ -10,14 +10,6 @@
 
 using namespace TW::Avalanche;
 
-bool TransactionOp::operator<(const TransactionOp& other) const {
-    Data thisData;
-    Data otherData;
-    encode(thisData);
-    other.encode(otherData);
-    return std::lexicographical_compare(thisData.begin(), thisData.end(), otherData.begin(), otherData.end());
-}
-
 bool TransferableOp::sortUTXOIDs(TransferableOp::UTXOID lhs, TransferableOp::UTXOID rhs) {
     if (lhs.first == rhs.first) {
         return lhs.second < rhs.second;
