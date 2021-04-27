@@ -24,10 +24,13 @@ TEST(AvalancheAddress, Valid) {
 
 TEST(AvalancheAddress, Invalid) {
     ASSERT_FALSE(Address::isValid("")); // Empty
-    ASSERT_FALSE(Address::isValid("X-fuji10feexxuhr3z8vh3wvzg2nhwqkllwpnhs55xum5")) ; // Testnet not supported
+    ASSERT_FALSE(Address::isValid("X-fuji10feexxuhr3z8vh3wvzg2nhwqkllwpnhs55xum5")); // Testnet not supported
+    ASSERT_FALSE(Address::isValid("-fuji10feexxuhr3z8vh3wvzg2nhwqkllwpnhs55xum5")); // Must prepend with chain designator
+    ASSERT_FALSE(Address::isValid("Z-fuji10feexxuhr3z8vh3wvzg2nhwqkllwpnhs55xum5")); // ...and that chain designator must be X or P
     ASSERT_FALSE(Address::isValid("0x1641303f4c3105e8ba980b271d52cafdb4e5f01e")); // C chain not supported
     ASSERT_FALSE(Address::isValid("X-custom1hqem6nf0mp3v4gz7l3wsz2en9rp9c2drk0v742")); // non-avax x-chain assets not supported
     ASSERT_FALSE(Address::isValid("X-avax1hqem6nfmp3v4gz7l3wsz2enrp9c2drk0v712")); // corrupted good value
+    ASSERT_ANY_THROW(Address("X-fuji10feexxuhr3z8vh3wvzg2nhwqkllwpnhs55xum5")); // building an invalid address should throw
 }
 
 TEST(AvalancheAddress, FromPrivateKey) {
@@ -45,4 +48,20 @@ TEST(AvalancheAddress, FromPublicKey) {
 TEST(AvalancheAddress, FromString) {
     auto address = Address("X-avax1apmh7wxg3js48fhacfv5y9md9065jxuft30vup");
     ASSERT_EQ(address.string(), "X-avax1apmh7wxg3js48fhacfv5y9md9065jxuft30vup");
+}
+
+TEST(AvalancheAddress, FromKeyHash) {
+    auto address = Address("X-avax1apmh7wxg3js48fhacfv5y9md9065jxuft30vup");
+    auto addressFromKeyHash = Address(address.getKeyHash());
+    ASSERT_EQ(addressFromKeyHash.string(), address.string());
+}
+
+TEST(AvalancheAddress, AssignmentAndOperators) {
+    auto emptyAddress = Address();
+    auto baseline = Address("X-avax1apmh7wxg3js48fhacfv5y9md9065jxuft30vup");
+    ASSERT_TRUE(baseline != emptyAddress);
+    auto strippedString = "avax1apmh7wxg3js48fhacfv5y9md9065jxuft30vup";
+    auto success = Address::decode(strippedString, emptyAddress);
+    ASSERT_TRUE(success);
+    ASSERT_EQ("X-avax1apmh7wxg3js48fhacfv5y9md9065jxuft30vup", emptyAddress.string());
 }
