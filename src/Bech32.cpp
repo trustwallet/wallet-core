@@ -1,5 +1,5 @@
 // Copyright © 2017 Pieter Wuille
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,6 +10,11 @@
 
 #include <array>
 
+// Bech32 address encoding
+// Bech32M variant also supported (BIP350)
+// Max length of 90 constraint is extended here to 120 for other usages
+
+using namespace TW::Bech32;
 using namespace TW;
 
 namespace {
@@ -26,11 +31,9 @@ constexpr std::array<int8_t, 128> charset_rev = {
     6,  4,  2,  -1, -1, -1, -1, -1, -1, 29, -1, 24, 13, 25, 9,  8,  23, -1, 18, 22, 31, 27,
     19, -1, 1,  0,  3,  16, 11, 28, 12, 14, 6,  4,  2,  -1, -1, -1, -1, -1};
 
-/** Concatenate two byte arrays. */
-Data cat(Data x, const Data& y) {
-    x.insert(x.end(), y.begin(), y.end());
-    return x;
-}
+const uint32_t BECH32_XOR_CONST = 0x01;
+const uint32_t BECH32M_XOR_CONST = 0x2bc830a3;
+
 
 /** Find the polynomial with value coefficients mod the generator as 30-bit. */
 uint32_t polymod(const Data& values) {
@@ -62,16 +65,35 @@ Data expand_hrp(const std::string& hrp) {
     return ret;
 }
 
+inline uint32_t xorConstant(ChecksumVariant variant) {
+    if (variant == ChecksumVariant::Bech32) {
+        return BECH32_XOR_CONST;
+    }
+    // Bech32M
+    return BECH32M_XOR_CONST;
+}
+
 /** Verify a checksum. */
-bool verify_checksum(const std::string& hrp, const Data& values) {
-    return polymod(cat(expand_hrp(hrp), values)) == 1;
+ChecksumVariant verify_checksum(const std::string& hrp, const Data& values) {
+    Data enc = expand_hrp(hrp);
+    append(enc, values);
+    auto poly = polymod(enc);
+    if (poly == BECH32_XOR_CONST) {
+        return ChecksumVariant::Bech32;
+    }
+    if (poly == BECH32M_XOR_CONST) {
+        return ChecksumVariant::Bech32M;
+    }
+    return ChecksumVariant::None;
 }
 
 /** Create a checksum. */
-Data create_checksum(const std::string& hrp, const Data& values) {
-    Data enc = cat(expand_hrp(hrp), values);
+Data create_checksum(const std::string& hrp, const Data& values, ChecksumVariant variant) {
+    Data enc = expand_hrp(hrp);
+    append(enc, values);
     enc.resize(enc.size() + 6);
-    uint32_t mod = polymod(enc) ^ 1;
+    auto xorConst = xorConstant(variant);
+    uint32_t mod = polymod(enc) ^ xorConst;
     Data ret;
     ret.resize(6);
     for (size_t i = 0; i < 6; ++i) {
@@ -83,9 +105,10 @@ Data create_checksum(const std::string& hrp, const Data& values) {
 } // namespace
 
 /** Encode a Bech32 string. */
-std::string Bech32::encode(const std::string& hrp, const Data& values) {
-    Data checksum = create_checksum(hrp, values);
-    Data combined = cat(values, checksum);
+std::string Bech32::encode(const std::string& hrp, const Data& values, ChecksumVariant variant) {
+    Data checksum = create_checksum(hrp, values, variant);
+    Data combined = values;
+    append(combined, checksum);
     std::string ret = hrp + '1';
     ret.reserve(ret.size() + combined.size());
     for (const auto& value : combined) {
@@ -95,7 +118,11 @@ std::string Bech32::encode(const std::string& hrp, const Data& values) {
 }
 
 /** Decode a Bech32 string. */
-std::pair<std::string, Data> Bech32::decode(const std::string& str) {
+std::tuple<std::string, Data, ChecksumVariant> Bech32::decode(const std::string& str) {
+    if (str.length() > 120 || str.length() < 2) {
+        // too long or too short
+        return std::make_tuple(std::string(), Data(), None);
+    }
     bool lower = false, upper = false;
     bool ok = true;
     for (size_t i = 0; ok && i < str.size(); ++i) {
@@ -114,7 +141,7 @@ std::pair<std::string, Data> Bech32::decode(const std::string& str) {
         ok = false;
     }
     size_t pos = str.rfind('1');
-    if (ok && str.size() <= 120 && pos != str.npos && pos >= 1 && pos + 7 <= str.size()) {
+    if (ok && pos != str.npos && pos >= 1 && pos + 7 <= str.size()) {
         Data values;
         values.resize(str.size() - 1 - pos);
         for (size_t i = 0; i < str.size() - 1 - pos; ++i) {
@@ -129,10 +156,11 @@ std::pair<std::string, Data> Bech32::decode(const std::string& str) {
             for (size_t i = 0; i < pos; ++i) {
                 hrp += lc(str[i]);
             }
-            if (verify_checksum(hrp, values)) {
-                return std::make_pair(hrp, Data(values.begin(), values.end() - 6));
+            auto variant = verify_checksum(hrp, values);
+            if (variant != None) {
+                return std::make_tuple(hrp, Data(values.begin(), values.end() - 6), variant);
             }
         }
     }
-    return std::make_pair(std::string(), Data());
+    return std::make_tuple(std::string(), Data(), None);
 }
