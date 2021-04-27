@@ -97,21 +97,23 @@ TEST(AvalancheTransactionComponents, TestOutput) {
     auto addressesOne = generateAddressesForComponent();
     auto addressesTwo = generateAddressesForComponent();
     auto addressesThree = generateAddressesForComponent();
-
+    auto addressesFour = generateAddressesForComponent();
+    addressesFour.push_back(Address("X-avax1wrgqjed292adreyal364nmz4jfjq2x5qkj7ack"));
+    
     Output outputOne = std::make_tuple(uint64_t(0), uint32_t(0), addressesOne);
-    Output outputTwo = std::make_tuple(uint64_t(1), uint32_t(1), addressesTwo);
+    Output outputTwo = std::make_tuple(uint64_t(1), uint32_t(0), addressesTwo);
     Output outputThree = std::make_tuple(uint64_t(1), uint32_t(1), addressesThree);
-
+    Output outputFour = std::make_tuple(uint64_t(1), uint32_t(1), addressesFour);
     // make a vector that is improperly sorted
     // sort it, and encode it
     // make sure result is as expected
-    std::vector<Output> outputs = {outputTwo, outputThree, outputOne};
+    std::vector<Output> outputs = {outputFour, outputTwo, outputThree, outputOne};
     SortOutputs(outputs);
     EXPECT_EQ(outputs.front(), outputOne);
-    EXPECT_EQ(outputs.back(), outputThree);
+    EXPECT_EQ(outputs.back(), outputFour);
     Data outputData; 
     EncodeOutputs(outputs, outputData);
-    EXPECT_EQ(hexEncoded(outputData), "0x00000003000000000000000000000000000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6000000000000000100000001000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6000000000000000100000002000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6");
+    EXPECT_EQ(hexEncoded(outputData), "0x00000004000000000000000000000000000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6000000000000000100000000000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6000000000000000100000001000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6000000000000000100000001000000043ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda670d00965aa2abad1e49dfc7559ec559264051a80");
 }
 
 BaseTransaction generateBaseTransactionBasedOnSignerTest();
