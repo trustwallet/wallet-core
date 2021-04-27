@@ -47,7 +47,7 @@ TEST(AvalancheTransactionComponents, TestTransferableInput) {
     auto assetID = parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db"); 
     
     auto addressesInOne = std::vector<uint32_t>{3, 7};
-    auto txidOne = parse_hex("0xf1e1d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000");
+    auto txidOne = parse_hex("0x00e1d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000");
     auto utxoIndexOne = 6;
     auto coreInputOne = std::make_unique<SECP256k1TransferInput>(123456789, addressesInOne);
     auto inputOne = TransferableInput(txidOne, utxoIndexOne, assetID, std::move(coreInputOne), arbitraryAddresses);
@@ -63,6 +63,7 @@ TEST(AvalancheTransactionComponents, TestTransferableInput) {
     EXPECT_FALSE(inputOne.UTXOIndex == inputThree.UTXOIndex);
 
     inputThree = inputOne; // should be able to assign inputs to each other
+    inputThree = inputThree; // and self-assignment should be a no-op
     EXPECT_TRUE(inputOne.UTXOIndex == inputThree.UTXOIndex);
 
     EXPECT_TRUE(inputThree < inputTwo); // inputThree should be less than inputTwo by lexicographical sort if it was assigned properly
@@ -99,7 +100,7 @@ TEST(AvalancheTransactionComponents, TestOutput) {
 
     Output outputOne = std::make_tuple(uint64_t(0), uint32_t(0), addressesOne);
     Output outputTwo = std::make_tuple(uint64_t(1), uint32_t(1), addressesTwo);
-    Output outputThree = std::make_tuple(uint64_t(1), uint32_t(2), addressesThree);
+    Output outputThree = std::make_tuple(uint64_t(1), uint32_t(1), addressesThree);
 
     // make a vector that is improperly sorted
     // sort it, and encode it
