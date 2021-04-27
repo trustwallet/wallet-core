@@ -45,21 +45,3 @@ TEST(THORChainSigner, SignTx) {
     EXPECT_EQ(R"({"mode":"block","tx":{"fee":{"amount":[{"amount":"200","denom":"rune"}],"gas":"2000000"},"memo":"csut10husz","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"50000000","denom":"rune"}],"from_address":"thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r","to_address":"thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A+2Zfjls9CkvX85aQrukFZnM1dluMTFUp8nqcEneMXx3"},"signature":"a/QjYovh0KTQlfVm+lF8VrN4ofsku2DAYQnZaPDcsREMuW8dBxusSNwClna7PFB+x6WVIO+pYhrJ6PsxOJnphA=="}]}})", output.json());
     EXPECT_EQ(hex(output.signature()), "6bf423628be1d0a4d095f566fa517c56b378a1fb24bb60c06109d968f0dcb1110cb96f1d071bac48dc029676bb3c507ec7a59520efa9621ac9e8fb313899e984");
 }
-
-/*
-TEST(THORChainSigner, Sign) {
-    // TODO: Finalize test implementation
-
-    //auto key = PrivateKey(parse_hex("__PRIVKEY_DATA__"));
-    //auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
-    //auto from = Address(publicKey);
-    //auto to = Address("__TO_ADDRESS__");
-    //...
-    //auto transaction = Transaction(...)
-    //auto signature = Signer::sign(key, transaction);
-    //auto result = transaction.serialize(signature);
-
-    //ASSERT_EQ(hex(serialized), "__RESULT__");
-    //ASSERT_EQ(...)
-}
-*/
