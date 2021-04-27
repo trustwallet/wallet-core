@@ -147,6 +147,16 @@ TEST(AvalancheTransactionComponents, TestTransactionFailureCases) {
     EXPECT_ANY_THROW(UnsignedExportTransaction(goodBase, tooShortBlockchainID, emptyOutputs));
 }
 
+TEST(AvalancheTransactionComponents, CredentialOperatorLesser) {
+    auto higherSig = parse_hex("44ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d0044ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d00");
+    auto higherSigArray = std::vector<Data>{higherSig};
+    auto higherCredential = SECP256k1Credential(higherSigArray);
+    auto lowerSig = parse_hex("0000007f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d0044ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d00");
+    auto lowerSigArray = std::vector<Data>{lowerSig};
+    auto lowerCredential = SECP256k1Credential(lowerSigArray);
+    ASSERT_TRUE(lowerCredential < higherCredential);
+}
+
 BaseTransaction generateBaseTransactionBasedOnSignerTest() {
     const auto privateKeyOneBytes = CB58::avalanche.decode("ewoqjP7PxY4yr3iLTpLisriqt94hdyDFNgchSxGGztUrTXtNN");
     const std::vector<uint8_t> privateKeyOneBytesNoChecksum(privateKeyOneBytes.begin(), privateKeyOneBytes.begin() + 32); // we just want the first 32 bytes
