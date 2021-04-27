@@ -99,7 +99,7 @@ TEST(AvalancheTransactionComponents, TestOutput) {
 
     Output outputOne = std::make_tuple(uint64_t(0), uint32_t(0), addressesOne);
     Output outputTwo = std::make_tuple(uint64_t(1), uint32_t(1), addressesTwo);
-    Output outputThree = std::make_tuple(uint64_t(2), uint32_t(2), addressesThree);
+    Output outputThree = std::make_tuple(uint64_t(1), uint32_t(2), addressesThree);
 
     // make a vector that is improperly sorted
     // sort it, and encode it
@@ -110,7 +110,8 @@ TEST(AvalancheTransactionComponents, TestOutput) {
     EXPECT_EQ(outputs.back(), outputThree);
     Data outputData; 
     EncodeOutputs(outputs, outputData);
-    EXPECT_EQ(hexEncoded(outputData), "0x00000003000000000000000000000000000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6000000000000000100000001000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6000000000000000200000002000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6");
+    EXPECT_EQ(hexEncoded(outputData), "0x00000003000000000000000000000000000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6000000000000000100000001000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6000000000000000100000002000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6");
+    // EXPECT_EQ(hexEncoded(outputData), "0x00000003000000000000000000000000000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6000000000000000100000001000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6000000000000000200000002000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6");
 }
 
 BaseTransaction generateBaseTransactionBasedOnSignerTest();
