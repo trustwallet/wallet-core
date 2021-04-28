@@ -12,6 +12,11 @@
 
 using namespace TW;
 
+TEST(THORChainAnyAddress, IsValid) {
+    EXPECT_TRUE(TWAnyAddressIsValid(STRING("thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r").get(), TWCoinTypeTHORChain));
+    EXPECT_TRUE(TWAnyAddressIsValid(STRING("thor1c8jd7ad9pcw4k3wkuqlkz4auv95mldr2kyhc65").get(), TWCoinTypeTHORChain));
+}
+
 TEST(THORChainAnyAddress, Create) {
     auto string = STRING("thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r");
     auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeTHORChain));
