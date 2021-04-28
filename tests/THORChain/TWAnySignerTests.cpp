@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -15,7 +15,7 @@
 
 using namespace TW;
 
-TEST(TWAnySignerTHORChain, SignTx) {
+TEST(THORChainTWAnySigner, SignTx) {
     auto privateKey = parse_hex("7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e");
     Cosmos::Proto::SigningInput input;
     input.set_account_number(593);
@@ -42,7 +42,7 @@ TEST(TWAnySignerTHORChain, SignTx) {
     amountOfFee->set_amount(2000000);
 
     Cosmos::Proto::SigningOutput output;
-    ANY_SIGN(input, TWCoinTypeCosmos);
+    ANY_SIGN(input, TWCoinTypeTHORChain);
 
     ASSERT_EQ(output.json(), R"({"mode":"block","tx":{"fee":{"amount":[{"amount":"2000000","denom":"rune"}],"gas":"200000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"10000000","denom":"rune"}],"from_address":"thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r","to_address":"thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A+2Zfjls9CkvX85aQrukFZnM1dluMTFUp8nqcEneMXx3"},"signature":"FehJoB+jbdUVXfEOFb9VKf5IpZF/HxIpOMPXe5Y3gb97PmpwLsASn7JJYBEU8OtW8z64W5rNo6UgCAt6IEv8fA=="}]}})");
 }
