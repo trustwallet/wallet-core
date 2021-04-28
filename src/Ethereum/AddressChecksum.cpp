@@ -24,23 +24,9 @@ std::string Ethereum::checksumed(const Address& address, enum ChecksumType type)
         if (a >= '0' && a <= '9') {
             string.push_back(a);
         } else if ((h >= '8' && h <= '9') || (h >= 'a' && h <= 'f')) {
-            switch (type) {
-            case eip55:
-                string.push_back(static_cast<char>(toupper(a)));
-                break;
-            case wanchain:
-                string.push_back(static_cast<char>(tolower(a)));
-                break;
-            }
+            string.push_back(static_cast<char>(toupper(a)));
         } else {
-            switch (type) {
-            case eip55:
-                string.push_back(static_cast<char>(tolower(a)));
-                break;
-            case wanchain:
-                string.push_back(static_cast<char>(toupper(a)));
-                break;
-            }
+            string.push_back(static_cast<char>(tolower(a)));
         }
     }
 

@@ -210,4 +210,22 @@ class BinanceChainTests: XCTestCase {
 
         XCTAssertEqual(result, "ca01f0625dee0a4a2a2c87fa0a210a1412e654edef9e508b833736a987d069da5a89aedb12090a03424e4210cb8d5212210a1433bbf307b98146f13d20693cf946c2d77a4caf2812090a03424e4210cb8d52126d0a26eb5ae9872102e58176f271a9796b4288908be85094a2ac978e25535fd59a37b58626e3a84d9e1240015b4beb3d6ef366a7a92fd283f66b8f0d8cdb6b152a9189146b27f84f507f047e248517cf691a36ebc2b7f3b7f64e27585ce1c40f1928d119c31af428efcf3e1882671a0754657374696e672002")
     }
+
+    func testSignOrderOneThread() {
+        let n = 50
+        for _ in 1...n {
+            testSignSendOrder()
+        }
+    }
+
+    func testMultiThreadedSign() {
+        let nThread = 5
+        let queue = OperationQueue()
+        for _ in 1...nThread {
+            queue.addOperation {
+                self.testSignOrderOneThread()
+            }
+        }
+        queue.waitUntilAllOperationsAreFinished()
+    }
 }
