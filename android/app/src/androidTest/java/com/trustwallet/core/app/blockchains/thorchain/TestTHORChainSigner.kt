@@ -19,7 +19,6 @@ import wallet.core.jni.CoinType.THORCHAIN
 import wallet.core.jni.THORChainSigner
 import wallet.core.jni.proto.Cosmos
 import wallet.core.jni.proto.Cosmos.SigningOutput
-import wallet.core.jni.proto.THORChain
 import wallet.core.jni.*
 
 class TestTHORChainSigner {
