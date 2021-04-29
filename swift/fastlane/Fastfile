@@ -1,7 +1,7 @@
 default_platform(:ios)
 
 platform :ios do
-  desc "create xcframeworks"
+  desc "create full xcframeworks"
   lane :xcframework do
     core_xcframework
     swift_protobuf_xcframework
