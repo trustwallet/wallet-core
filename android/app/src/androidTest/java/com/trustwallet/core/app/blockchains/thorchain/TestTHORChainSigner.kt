@@ -16,7 +16,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType.THORCHAIN
-import wallet.core.jni.THORChainSigner
 import wallet.core.jni.proto.Cosmos
 import wallet.core.jni.proto.Cosmos.SigningOutput
 import wallet.core.jni.*
@@ -25,27 +24,6 @@ class TestTHORChainSigner {
 
     init {
         System.loadLibrary("TrustWalletCore")
-    }
-
-    @Test
-    fun THORChainTransactionSigning() {
-        // TODO: Finalize implementation
-
-        //val transfer = THORChain.TransferMessage.newBuilder()
-        //    .setTo("...")
-        //    .setAmount(...)
-        //    ...
-        //    .build()
-        //val signingInput = THORChain.SigningInput.newBuilder()
-        //    ...
-        //    .build()
-
-        //val output: THORChain.SigningOutput = THORChainSigner.sign(signingInput)
-
-        //assertEquals(
-        //    "__EXPECTED_RESULT_DATA__",
-        //    Numeric.toHexString(output.encoded.toByteArray())
-        //)
     }
 
     @Test
