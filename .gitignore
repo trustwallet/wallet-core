@@ -9,6 +9,7 @@ cmake-build-debug/
 .cquery_cache/
 .cxx/
 .cache/
+.devcontainer
 
 # Dependencies
 node_modules

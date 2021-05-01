@@ -1568,5 +1568,29 @@
       "clientPublic": "https://rpc-mainnet.matic.network",
       "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
     }
+  },
+  {
+    "id": "Meter",
+    "name": "Meter MetaStable Gas Token",
+    "coinId": 18000,
+    "symbol": "MTR",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/18000'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://scan.meter.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x33d61f9489655747f817fd2a227b6ef67eef4126835780fc446ab82849382fbb",
+      "sampleAccount": "0xe9061c2517bba8a7e2d2c20053cd8323b577efe7"
+    },
+    "info": {
+      "url": "https://meter.io",
+      "client": "https://github.com/meterio",
+      "clientPublic": "https://rpc.meter.io",
+      "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+    }
   }
 ]
