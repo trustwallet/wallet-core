@@ -1,5 +1,5 @@
 PODS:
-  - SwiftProtobuf (1.15.0)
+  - SwiftProtobuf (1.16.0)
   - WalletCoreDev (2.5.6):
     - WalletCoreDev/Core (= 2.5.6)
   - WalletCoreDev/Core (2.5.6):
@@ -8,7 +8,7 @@ PODS:
     - SwiftProtobuf
 
 DEPENDENCIES:
-  - WalletCoreDev (from `../../`)
+  - WalletCoreDev (from `../`)
 
 SPEC REPOS:
   trunk:
@@ -16,12 +16,12 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   WalletCoreDev:
-    :path: "../../"
+    :path: "../"
 
 SPEC CHECKSUMS:
-  SwiftProtobuf: 3320217e9d8fb75f36b40282e78c482640fd75dd
+  SwiftProtobuf: 4e16842b83c6fda06b10fac50d73b3f1fce8ab7b
   WalletCoreDev: 029e86f922529ab5824d2aaff063f604dfeab956
 
-PODFILE CHECKSUM: 30ea9caa62144128cb97f78136eb105898cd2cf8
+PODFILE CHECKSUM: 268becd9282bb788e8962aeb28e444bdcd1d3605
 
 COCOAPODS: 1.10.1

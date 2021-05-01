@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function wc_read_version() {
+wc_read_version() {
     version=$1
     if [ -z "${version}" ]; then
         version=$(git describe --long --tags | cut -f 1 -d "-")
@@ -8,7 +8,7 @@ function wc_read_version() {
     echo ${version}
 }
 
-function wc_release_url() {
+wc_release_url() {
     tag="$1"
 
     id=$(curl "https://api.github.com/repos/trustwallet/wallet-core/releases/tags/${tag}" | jq ".id")
@@ -16,7 +16,7 @@ function wc_release_url() {
     echo ${release_url}
 }
 
-function wc_upload_asset() {
+wc_upload_asset() {
     release_url="$1"
     filename="$2"
 

@@ -22,10 +22,11 @@ download_url=$(wc_upload_asset ${release_url} ${filename})
 echo "download_url is ${download_url}"
 
 # create podspec
-podspec=WalletCoreFW.podspec
+podspec_name=WalletCoreFW
+podspec=${podspec_name}.podspec
 cat > $podspec <<EOF 
 Pod::Spec.new do |s|
-  s.name         = 'WalletCoreFW'
+  s.name         = '${podspec_name}'
   s.version      = '${version}'
   s.summary      = 'Trust Wallet core data structures and algorithms.'
   s.homepage     = 'https://github.com/trustwallet/wallet-core'
