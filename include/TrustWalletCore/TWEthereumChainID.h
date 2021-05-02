@@ -24,6 +24,7 @@ enum TWEthereumChainID {
     TWEthereumChainIDBinanceSmartChain = 56,
     TWEthereumChainIDMatic = 137,
     TWEthereumChainIDWanchain = 888,
+    TWEthereumChainIDMeterMetaStableGasToken = 18000,
 };
 
 TW_EXTERN_C_END
