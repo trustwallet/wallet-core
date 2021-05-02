@@ -392,5 +392,11 @@ TEST(Coin, ValidateAddressOasis) {
     EXPECT_FALSE(validateAddress(TWCoinTypeOasis, "oasi1qp0cnmkjl22gky6p6qeghjytt4v7dkxsrsmueweh"));
 }
 
+TEST(Coin, ValidateAddressVeChain) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeMeterMetaStableGasToken, "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F"));
+
+    EXPECT_EQ(normalizeAddress(TWCoinTypeMeterMetaStableGasToken, "0x9d8a62f656a8d1615c1294fd71e9cfb3e4855a4f"), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
+}
+
 
 } // namespace TW
