@@ -6,7 +6,7 @@ end
 
 target 'Example' do
   platform :ios, '13.0'
-  use_frameworks! :linkage => :dynamic
+  use_frameworks! :linkage => :static
   dev_pod
   target 'ExampleTests' do
       inherit! :complete

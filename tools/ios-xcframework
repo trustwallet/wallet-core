@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# This script builds dynamic WalletCore and SwiftProtobuf xcframework for SPM and CocoaPods
+#
 
 set -e
 
