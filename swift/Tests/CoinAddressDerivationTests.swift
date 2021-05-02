@@ -205,6 +205,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .oasis:
                     let expectedResult = "oasis1qr2wymrk4mmt4kyjg3rzkn6jsxku3kk6p5jvrvxz"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .metermetastablegastoken:
+                    let expectedResult = "0x1a553275df34195eaf23942cb7328acf9d48c160"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()
                 }
