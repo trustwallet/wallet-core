@@ -1306,3 +1306,67 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
         "00000000" // nLockTime
     );
 }
+
+TEST(BitcoinSigning, OpReturnThorSwap) {
+    auto coin = TWCoinTypeBitcoin;
+    auto ownAddress = "bc1q7s0a2l4aguksehx8hf93hs9yggl6njxds6m02g";
+    auto toAddress = "bc1qxu5a8gtnjxw3xwdlmr2gl9d76h9fysu3zl656e";
+    auto utxoAmount = 342101;
+    auto toAmount = 300000;
+
+    auto unsignedTx = Transaction(2, 0);
+
+    auto hash0 = parse_hex("30b82960291a39de3664ec4c844a815e3e680e29b4d3a919e450f0c119cf4e35");
+    std::reverse(hash0.begin(), hash0.end());
+    auto outpoint0 = TW::Bitcoin::OutPoint(hash0, 1);
+    unsignedTx.inputs.emplace_back(outpoint0, Script(), UINT32_MAX);
+
+    int fee = 36888;
+    auto lockingScriptTo = Script::lockScriptForAddress(toAddress, coin);
+    unsignedTx.outputs.push_back(TransactionOutput(toAmount, lockingScriptTo));
+    // change
+    auto lockingScriptChange = Script::lockScriptForAddress(ownAddress, coin);
+    unsignedTx.outputs.push_back(TransactionOutput(utxoAmount - toAmount - fee, lockingScriptChange));
+    // memo OP_RETURN
+    const std::string memo = "SWAP:THOR.RUNE:thor1tpercamkkxec0q0jk6ltdnlqvsw29guap8wmcl:";
+    auto lockingScriptOpReturn = Script::buildOpReturnScript(data(memo));
+    EXPECT_EQ(hex(lockingScriptOpReturn.bytes), "6a3b535741503a54484f522e52554e453a74686f72317470657263616d6b6b7865633071306a6b366c74646e6c7176737732396775617038776d636c3a");
+    unsignedTx.outputs.push_back(TransactionOutput(0, lockingScriptOpReturn));
+
+    Data unsignedData;
+    unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::Segwit);
+    EXPECT_EQ(unsignedData.size(), 186);
+    EXPECT_EQ(hex(unsignedData), // printed using prettyPrintTransaction
+        "02000000" // version
+        "0001" // marker & flag
+        "01" // inputs
+            "354ecf19c1f050e419a9d3b4290e683e5e814a844cec6436de391a296029b830"  "01000000"  "00"  ""  "ffffffff"
+        "03" // outputs
+            "e093040000000000"  "16"  "00143729d3a173919d1339bfd8d48f95bed5ca924391"
+            "5d14000000000000"  "16"  "0014f41fd57ebd472d0cdcc7ba4b1bc0a4423fa9c8cd"
+            "0000000000000000"  "3d"  "6a3b535741503a54484f522e52554e453a74686f72317470657263616d6b6b7865633071306a6b366c74646e6c7176737732396775617038776d636c3a"
+        // witness
+            "00"
+        "00000000" // nLockTime
+    );
+
+    // add signature
+    auto pubkey = parse_hex("0206121b83ebfddbb1997b50cb87b968190857269333e21e295142c8b88af9312a");
+    auto sig = parse_hex("3045022100876eba8f9324d3fbb00b9dad9a34a8166dd75127d4facda63484c19703e9c178022052495a6229cc465d5f0fcf3cde3b22a0f861e762d0bb10acde26a57598bfe7e701");
+
+    // add witness stack
+    unsignedTx.inputs[0].scriptWitness.push_back(sig);
+    unsignedTx.inputs[0].scriptWitness.push_back(pubkey);
+
+    unsignedData.clear();
+    unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::Segwit);
+    EXPECT_EQ(unsignedData.size(), 293);
+    // https://blockchair.com/bitcoin/transaction/eb4c1b064bfaf593d7cc6a5c73b75f932ffefe12a0478acf5a7e3145476683fc
+    EXPECT_EQ(hex(unsignedData),
+        "02000000000101354ecf19c1f050e419a9d3b4290e683e5e814a844cec6436de391a296029b8300100000000ffffffff03e0930400000000001600143729d3a1"
+        "73919d1339bfd8d48f95bed5ca9243915d14000000000000160014f41fd57ebd472d0cdcc7ba4b1bc0a4423fa9c8cd00000000000000003d6a3b535741503a54"
+        "484f522e52554e453a74686f72317470657263616d6b6b7865633071306a6b366c74646e6c7176737732396775617038776d636c3a02483045022100876eba8f"
+        "9324d3fbb00b9dad9a34a8166dd75127d4facda63484c19703e9c178022052495a6229cc465d5f0fcf3cde3b22a0f861e762d0bb10acde26a57598bfe7e70121"
+        "0206121b83ebfddbb1997b50cb87b968190857269333e21e295142c8b88af9312a00000000"
+    );
+}
