@@ -69,7 +69,7 @@ TEST(AvalancheTransactionComponents, TestTransferableInput) {
     EXPECT_TRUE(inputThree < inputTwo); // inputThree should be less than inputTwo by lexicographical sort if it was assigned properly
 }
 
-TEST(AvalancheTransactionComponents, TestTransferableOutput) {
+TEST(AvalancheTransactionComponents, TestTransferableOutputAssignmentConstructing) {
     auto assetIDOne = parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba530000"); 
     auto addressesOutOne = generateAddressesForComponent();
     auto coreOutputOne = std::make_unique<SECP256k1TransferOutput>(12345, 54321, 5, addressesOutOne);
@@ -87,9 +87,39 @@ TEST(AvalancheTransactionComponents, TestTransferableOutput) {
     EXPECT_FALSE(outputThree.AssetID == outputOne.AssetID);
 
     outputThree = outputOne; // should be able to assign from each other
+    outputThree = outputThree; // and self-assignment should be a no-op
     EXPECT_EQ(outputThree.AssetID, outputOne.AssetID);
     EXPECT_FALSE(outputThree.AssetID == outputTwo.AssetID);
     EXPECT_TRUE(outputThree < outputTwo); // outputOne should be less than outputTwo by lexicographical sort if assignment successful
+}
+
+TEST(AvalancheTransactionComponents, TestOutputDuplicateEncodeEquality) {
+    uint32_t groupID = 1;
+    uint64_t locktime = 2;
+    uint32_t threshold = 3;
+    auto addresses = generateAddressesForComponent();
+
+    auto nftMint = NFTMintOutput(groupID, locktime, threshold, addresses);
+    auto dupedMintPtr = nftMint.duplicate();
+    Data nftMintData, dupedMintData;
+    nftMint.encode(nftMintData);
+    dupedMintPtr->encode(dupedMintData);
+    EXPECT_EQ(hex(nftMintData), hex(dupedMintData));
+
+    auto secpMint = SECP256k1MintOutput(locktime, threshold, addresses);
+    auto dupedSecpPtr = secpMint.duplicate();
+    Data secpMintData, dupedSecpData;
+    secpMint.encode(secpMintData);
+    dupedSecpPtr->encode(dupedSecpData);
+    EXPECT_EQ(hex(secpMintData), hex(dupedSecpData));
+
+    auto payload = parse_hex("44ef527");
+    auto nftTxfer = NFTTransferOutput(groupID, payload, locktime, threshold, addresses);
+    auto dupedNftTxferPtr = nftTxfer.duplicate();
+    Data nftTxferData, dupedTxferData;
+    nftTxfer.encode(nftTxferData);
+    dupedNftTxferPtr->encode(dupedTxferData);
+    EXPECT_EQ(hex(nftTxferData), hex(dupedTxferData));
 }
 
 TEST(AvalancheTransactionComponents, CredentialOperatorLesser) {
