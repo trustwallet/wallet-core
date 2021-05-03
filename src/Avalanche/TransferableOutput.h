@@ -131,7 +131,7 @@ class NFTMintOutput : public TransactionOutput {
     uint32_t Threshold;
     std::vector<Address> Addresses;
 
-    NFTMintOutput(uint32_t groupID,uint64_t locktime, uint32_t threshold, std::vector<Address> &addresses)
+    NFTMintOutput(uint32_t groupID, uint64_t locktime, uint32_t threshold, std::vector<Address> &addresses)
       : GroupID(groupID),
       Locktime(locktime), Threshold(threshold), Addresses(addresses) {
         std::sort(Addresses.begin(), Addresses.end());
