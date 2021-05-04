@@ -85,6 +85,7 @@ end
 EOF
 
 # pod trunk push
+echo "Done. running: pod trunk push --allow-warnings ${podspec}"
 
 pod trunk push --verbose --allow-warnings ${podspec}
 

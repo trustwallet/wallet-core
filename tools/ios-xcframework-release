@@ -77,8 +77,11 @@ end
 EOF
 
 # pod trunk push
+
+echo "pod trunk push --verbose --allow-warnings ${podspec}"
 pod trunk push --verbose --allow-warnings ${podspec}
 
+echo "pod trunk push --verbose --allow-warnings ${types_podspec}"
 pod trunk push --verbose --allow-warnings ${types_podspec}
 
 popd
