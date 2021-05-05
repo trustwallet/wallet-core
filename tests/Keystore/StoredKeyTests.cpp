@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,6 +10,7 @@
 #include "HexCoding.h"
 #include "Data.h"
 #include "PrivateKey.h"
+#include "Mnemonic.h"
 
 #include <stdexcept>
 #include <gtest/gtest.h>
@@ -59,7 +60,7 @@ TEST(StoredKey, CreateWithMnemonicRandom) {
     // random mnemonic: check only length and validity
     const Data& mnemo2Data = key.payload.decrypt(password);
     EXPECT_TRUE(mnemo2Data.size() >= 36);
-    EXPECT_TRUE(HDWallet::isValid(string(mnemo2Data.begin(), mnemo2Data.end())));
+    EXPECT_TRUE(Mnemonic::isValid(string(mnemo2Data.begin(), mnemo2Data.end())));
     EXPECT_EQ(key.accounts.size(), 0);
 }
 

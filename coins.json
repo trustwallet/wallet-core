@@ -1421,8 +1421,9 @@
   {
     "id": "zelcash",
     "name": "Zelcash",
+    "displayName": "Flux",
     "coinId": 19167,
-    "symbol": "ZEL",
+    "symbol": "FLUX",
     "decimals": 8,
     "blockchain": "Bitcoin",
     "derivationPath": "m/44'/19167'/0'/0/0",
@@ -1436,14 +1437,14 @@
     "xpub": "xpub",
     "xprv": "xprv",
     "explorer": {
-      "url": "https://explorer.zel.cash",
+      "url": "https://explorer.runonflux.io",
       "txPath": "/tx/",
       "accountPath": "/address/"
     },
     "info": {
-      "url": "https://zel.cash",
+      "url": "https://runonflux.io",
       "client": "https://github.com/trezor/blockbook",
-      "clientPublic": "https://blockbook.zel.cash",
+      "clientPublic": "https://blockbook.runonflux.io",
       "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
@@ -1453,7 +1454,7 @@
     "coinId": 5718350,
     "symbol": "WAN",
     "decimals": 18,
-    "blockchain": "Wanchain",
+    "blockchain": "Ethereum",
     "derivationPath": "m/44'/5718350'/0'/0/0",
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
@@ -1462,7 +1463,7 @@
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x180ea96a3218b82b9b35d796823266d8a425c182507adfe5eeffc96e6a14d856",
-      "sampleAccount": "0x69b492d57BB777E97AA7044d0575228434E2e8b1"
+      "sampleAccount": "0xc6D3DBf8dF90BA3f957A9634677805eee0e43bBe"
     },
     "info": {
       "url": "https://wanchain.org",
@@ -1542,6 +1543,55 @@
       "client": "https://github.com/binance-chain/bsc",
       "clientPublic": "https://bsc-dataseed1.binance.org",
       "clientDocs": "https://eth.wiki/json-rpc/API"
+    }
+  },
+  {
+    "id": "polygon",
+    "name": "Polygon",
+    "coinId": 966,
+    "symbol": "MATIC",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://explorer.matic.network/",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xe26ed1470d5bf99a53d687843e7acdf7e4ba6620af93b4d672e714de90476e8e",
+      "sampleAccount": "0x720E1fa107A1Df39Db4E78A3633121ac36Bec132"
+    },
+    "info": {
+      "url": "https://polygon.technology",
+      "client": "https://github.com/maticnetwork/contracts",
+      "clientPublic": "https://rpc-mainnet.matic.network",
+      "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+    }
+  },
+  {
+    "id": "thorchain",
+    "name": "THORChain",
+    "coinId": 931,
+    "symbol": "RUNE",
+    "decimals": 18,
+    "blockchain": "Cosmos",
+    "derivationPath": "m/44'/931'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "thor",
+    "explorer": {
+      "url": "https://viewblock.io/thorchain",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "ADF0899E58C177E2391F22D04E9C5E1C35BB0F75B42B363A0761687907FD9476",
+      "sampleAccount": "bnb1czhptncu9uhhlrlrk9q0rmy459gae2ua79mapn"
+    },
+    "info": {
+      "url": "https://thorchain.org",
+      "client": "https://gitlab.com/thorchain/thornode",
+      "clientPublic": "https://seed.thorchain.info",
+      "clientDocs": ""
     }
   }
 ]

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,7 +7,7 @@
 #include "StoredKey.h"
 
 #include "Coin.h"
-#include "HDWallet.h"
+#include "Mnemonic.h"
 #include "PrivateKey.h"
 
 #define BOOST_UUID_RANDOM_PROVIDER_FORCE_POSIX 1
@@ -28,7 +28,7 @@ using namespace TW;
 using namespace TW::Keystore;
 
 StoredKey StoredKey::createWithMnemonic(const std::string& name, const Data& password, const std::string& mnemonic) {
-    if (!HDWallet::isValid(mnemonic)) {
+    if (!Mnemonic::isValid(mnemonic)) {
         throw std::invalid_argument("Invalid mnemonic");
     }
     
@@ -40,7 +40,7 @@ StoredKey StoredKey::createWithMnemonic(const std::string& name, const Data& pas
 StoredKey StoredKey::createWithMnemonicRandom(const std::string& name, const Data& password) {
     const auto wallet = TW::HDWallet(128, "");
     const auto& mnemonic = wallet.mnemonic;
-    assert(HDWallet::isValid(mnemonic));
+    assert(Mnemonic::isValid(mnemonic));
     Data mnemonicData = TW::Data(mnemonic.begin(), mnemonic.end());
     StoredKey key = StoredKey(StoredKeyType::mnemonicPhrase, name, password, mnemonicData);
     return key;

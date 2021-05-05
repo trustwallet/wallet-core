@@ -1,21 +1,21 @@
 // Copyright (c) 2014-2018, The Monero Project
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright notice, this list of
 //    conditions and the following disclaimer.
-// 
+//
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list
 //    of conditions and the following disclaimer in the documentation and/or other
 //    materials provided with the distribution.
-// 
+//
 // 3. Neither the name of the copyright holder nor the names of its contributors may be
 //    used to endorse or promote products derived from this software without specific
 //    prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 // MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
@@ -25,18 +25,15 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// 
+//
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #include <assert.h>
 #include <string.h>
 #include <stdbool.h>
 #include <sys/types.h>
-
-#include "int-util.h"
-
-#include <TrezorCrypto/monero/base58.h>
 #include <TrezorCrypto/base58.h>
+#include "int-util.h"
 #include <TrezorCrypto/sha2.h>
 
 const size_t alphabet_size = 58; // sizeof(b58digits_ordered) - 1;
@@ -104,11 +101,13 @@ bool decode_block(const char* block, size_t size, char* res)
 	uint64_t order = 1;
 	for (size_t i = size - 1; i < size; --i)
 	{
+		if (block[i] & 0x80)
+			return false; // Invalid symbol
 		int digit = reverse_alphabet(block[i]);
 		if (digit < 0)
 			return false; // Invalid symbol
 
-		uint64_t product_hi;
+		uint64_t product_hi = 0;
 		uint64_t tmp = res_num + mul128(order, (uint64_t) digit, &product_hi);
 		if (tmp < res_num || 0 != product_hi)
 			return false; // Overflow
@@ -201,7 +200,8 @@ int xmr_base58_addr_encode_check(uint64_t tag, const uint8_t *data, size_t binsz
 	}
 
 	size_t b58size = b58sz;
-	uint8_t buf[binsz + 1 + HASHER_DIGEST_LENGTH];
+	uint8_t buf[(binsz + 1) + HASHER_DIGEST_LENGTH];
+	memset(buf, 0, sizeof(buf));
 	uint8_t *hash = buf + binsz + 1;
 	buf[0] = (uint8_t) tag;
 	memcpy(buf + 1, data, binsz);
@@ -215,7 +215,8 @@ int xmr_base58_addr_decode_check(const char *addr, size_t sz, uint64_t *tag, voi
 {
 	size_t buflen = 1 + 64 + addr_checksum_size;
 	uint8_t buf[buflen];
-	uint8_t hash[HASHER_DIGEST_LENGTH];
+	memset(buf, 0, sizeof(buf));
+	uint8_t hash[HASHER_DIGEST_LENGTH] = {0};
 
 	if (!xmr_base58_decode(addr, sz, buf, &buflen)){
 		return 0;

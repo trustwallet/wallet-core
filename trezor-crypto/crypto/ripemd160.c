@@ -58,7 +58,7 @@
  */
 void ripemd160_Init(RIPEMD160_CTX *ctx)
 {
-    memset(ctx, 0, sizeof(RIPEMD160_CTX));
+    memzero(ctx, sizeof(RIPEMD160_CTX));
     ctx->total[0] = 0;
     ctx->total[1] = 0;
     ctx->state[0] = 0x67452301;
@@ -74,7 +74,7 @@ void ripemd160_Init(RIPEMD160_CTX *ctx)
  */
 void ripemd160_process( RIPEMD160_CTX *ctx, const uint8_t data[RIPEMD160_BLOCK_LENGTH] )
 {
-    uint32_t A, B, C, D, E, Ap, Bp, Cp, Dp, Ep, X[16];
+    uint32_t A = 0, B = 0, C = 0, D = 0, E = 0, Ap = 0, Bp = 0, Cp = 0, Dp = 0, Ep = 0, X[16] = {0};
 
     GET_UINT32_LE( X[ 0], data,  0 );
     GET_UINT32_LE( X[ 1], data,  4 );
@@ -255,8 +255,8 @@ void ripemd160_process( RIPEMD160_CTX *ctx, const uint8_t data[RIPEMD160_BLOCK_L
  */
 void ripemd160_Update( RIPEMD160_CTX *ctx, const uint8_t *input, uint32_t ilen )
 {
-    uint32_t fill;
-    uint32_t left;
+    uint32_t fill = 0;
+    uint32_t left = 0;
 
     if( ilen == 0 )
         return;
@@ -292,7 +292,7 @@ void ripemd160_Update( RIPEMD160_CTX *ctx, const uint8_t *input, uint32_t ilen )
     }
 }
 
-static const uint8_t ripemd160_padding[RIPEMD160_BLOCK_LENGTH] =
+const uint8_t ripemd160_padding[RIPEMD160_BLOCK_LENGTH] =
 {
  0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -305,9 +305,9 @@ static const uint8_t ripemd160_padding[RIPEMD160_BLOCK_LENGTH] =
  */
 void ripemd160_Final( RIPEMD160_CTX *ctx, uint8_t output[RIPEMD160_DIGEST_LENGTH] )
 {
-    uint32_t last, padn;
-    uint32_t high, low;
-    uint8_t msglen[8];
+    uint32_t last = 0; uint32_t padn = 0;
+    uint32_t high = 0; uint32_t low = 0;
+    uint8_t msglen[8] = {0};
 
     high = ( ctx->total[0] >> 29 )
          | ( ctx->total[1] <<  3 );
@@ -336,7 +336,7 @@ void ripemd160_Final( RIPEMD160_CTX *ctx, uint8_t output[RIPEMD160_DIGEST_LENGTH
  */
 void ripemd160(const uint8_t *msg, uint32_t msg_len, uint8_t hash[RIPEMD160_DIGEST_LENGTH])
 {
-    RIPEMD160_CTX ctx;
+    RIPEMD160_CTX ctx = {0};
     ripemd160_Init( &ctx );
     ripemd160_Update( &ctx, msg, msg_len );
     ripemd160_Final( &ctx, hash );

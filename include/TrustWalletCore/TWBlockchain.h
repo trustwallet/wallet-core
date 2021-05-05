@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -14,7 +14,6 @@ TW_EXPORT_ENUM(uint32_t)
 enum TWBlockchain {
     TWBlockchainBitcoin = 0,
     TWBlockchainEthereum = 1,
-    TWBlockchainWanchain = 2,
     TWBlockchainVechain = 3,
     TWBlockchainTron = 4,
     TWBlockchainIcon = 5,

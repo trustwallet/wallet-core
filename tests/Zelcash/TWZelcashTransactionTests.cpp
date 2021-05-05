@@ -11,6 +11,7 @@
 #include "HexCoding.h"
 #include "PublicKey.h"
 #include "Zcash/Transaction.h"
+#include "proto/Bitcoin.pb.h"
 
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWAnySigner.h>
@@ -117,7 +118,7 @@ TEST(TWZelcashTransaction, Signing) {
     Bitcoin::Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeZelcash);
 
-    ASSERT_TRUE(output.error().empty());
+    ASSERT_EQ(output.error(), Common::Proto::OK);
     ASSERT_EQ(hex(output.encoded()),
         "04000080"
         "85202f89"

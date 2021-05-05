@@ -8,6 +8,7 @@
 #include "TransactionSigner.h"
 
 #include "../Coin.h"
+#include "../proto/Bitcoin.pb.h"
 
 #include <algorithm>
 #include <cassert>
@@ -69,9 +70,9 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
     bool maxAmount = input.use_max_amount();
 
     if (input.amount() == 0 && !maxAmount) {
-        plan.error = "Zero amount requested";
+        plan.error = Common::Proto::Error_zero_amount_requested;
     } else if (input.utxo().empty()) {
-        plan.error = "Missing input UTXOs";
+        plan.error = Common::Proto::Error_missing_input_utxos;
     } else {
         // select UTXOs
         plan.amount = input.amount();
@@ -93,7 +94,7 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
 
         if (plan.utxos.size() == 0) {
             plan.amount = 0;
-            plan.error = "Not enough non-dust input UTXOs";
+            plan.error = Common::Proto::Error_not_enough_utxos;
         } else {
             plan.availableAmount = UnspentSelector::sum(plan.utxos);
 

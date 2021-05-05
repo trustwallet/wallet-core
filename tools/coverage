@@ -1,6 +1,22 @@
 #!/bin/bash
 #
-# This script captures test code coverage information.
+# This script processes captured test code coverage information,
+# generates HTML report (if html argument is given),
+# and compares current value to previously saved value (stored in coverage.stats).
+#
+# To generate coverage info:
+# - run cmake, to enable coverage measurement
+#   cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug
+# - build tester
+#   make -Cbuild -j12 tests TrezorCryptoTests
+# - Remove any old coverage files
+#   find . -name "*.gcda" -exec rm \{\} \;
+# - run unit tests
+#   ./build/trezor-crypto/crypto/tests/TrezorCryptoTests
+#   ./build/tests/tests tests --gtest_output=xml
+# - generate coverage info (slow).  Optionally generate report in HTML format:
+#   ./tools/coverage html
+
 
 set -e
 
@@ -28,13 +44,27 @@ lcov --remove coverage.info '*.pb.cc' --output-file coverage.info
 lcov --remove coverage.info '*.pb.h' --output-file coverage.info
 lcov --remove coverage.info '*/tests/*' --output-file coverage.info
 lcov --remove coverage.info '*/samples/*' --output-file coverage.info
-bash <(curl -s https://codecov.io/bash) -f coverage.info -t 1faef852-b196-4697-885b-0ff22a625181 || echo "Codecov did not collect coverage reports"
 
-# Generate HTML report
+# Generate HTML report if requested
 if [[ "$1" == "html" ]]; then
     genhtml --output-directory coverage \
         --demangle-cpp --num-spaces 4 --sort \
         --title "Trust Wallet Core Test Coverage" \
         --function-coverage --branch-coverage --legend \
         coverage.info
+fi
+
+lcov --summary coverage.info
+
+echo
+current=$(<coverage.stats)
+new=$(lcov --summary coverage.info | awk '/lines.*:/{sub("%", "", $2);print $2}')
+
+if (( $(echo "$current > $new" | bc -l) )); then
+    echo "Code coverage drops to ${new}% (current is ${current}%)"
+    exit -1
+else
+    echo "Update code coverage: ${current}% -> ${new}%"
+    echo -n $new > coverage.stats
+    # commit to master
 fi

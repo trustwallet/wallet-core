@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,14 +7,17 @@
 #pragma once
 
 #include "../PublicKey.h"
+#include "../Data.h"
 
 #include <cstdint>
 #include <string>
+#include <tuple>
 
 namespace TW::Bitcoin {
 
 /// A Segwit address.
 /// Note: Similar to Bech32Address, but it differs enough so that reuse makes no sense.
+/// See BIP173 https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki
 class SegwitAddress {
   public:
     /// Human-readable part.
@@ -26,7 +29,7 @@ class SegwitAddress {
     int witnessVersion;
 
     /// Witness program.
-    std::vector<uint8_t> witnessProgram;
+    Data witnessProgram;
 
     /// Determines whether a string makes a valid Bech32 address.
     static bool isValid(const std::string& string);
@@ -37,7 +40,7 @@ class SegwitAddress {
 
     /// Initializes a Bech32 address with a human-readable part, a witness
     /// version, and a witness program.
-    SegwitAddress(std::string hrp, int witver, std::vector<uint8_t> witprog)
+    SegwitAddress(std::string hrp, int witver, Data witprog)
         : hrp(std::move(hrp)), witnessVersion(witver), witnessProgram(std::move(witprog)) {}
 
     /// Initializes a Bech32 address with a public key and a HRP prefix.
@@ -45,8 +48,8 @@ class SegwitAddress {
 
     /// Decodes a SegWit address.
     ///
-    /// \returns a pair with the address and a success flag.
-    static std::pair<SegwitAddress, bool> decode(const std::string& addr);
+    /// \returns a tuple with the address, hrp, and a success flag.
+    static std::tuple<SegwitAddress, std::string, bool> decode(const std::string& addr);
 
     /// Encodes the SegWit address.
     ///
@@ -54,8 +57,7 @@ class SegwitAddress {
     std::string string() const;
 
     /// Initializes a Bech32 address with raw data.
-    static std::pair<SegwitAddress, bool> fromRaw(const std::string& hrp,
-                                                  const std::vector<uint8_t>& data);
+    static std::pair<SegwitAddress, bool> fromRaw(const std::string& hrp, const Data& data);
 
     bool operator==(const SegwitAddress& rhs) const {
         return hrp == rhs.hrp && witnessVersion == rhs.witnessVersion &&
