@@ -90,6 +90,58 @@ TEST(THORSwap, SwapBtcEth) {
     );
 }
 
+TEST(THORSwap, SwapBtcBnb) {
+    auto res = Swap::build(Chain::BTC, Chain::BNB, Address1Btc, "BNB", "", Address1Bnb, VaultBtc, "2000000", "140000000000000000");
+    ASSERT_EQ(res.second, "");
+    EXPECT_EQ(hex(res.first), "08011080897a1801222a62633171366d397532717375386d68387937763872723279776176746a38673561727a6c796863656a372a2a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a6530707038624a535741503a424e422e424e423a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a313430303030303030303030303030303030");
+
+    auto tx = Bitcoin::Proto::SigningInput();
+    ASSERT_TRUE(tx.ParseFromArray(res.first.data(), (int)res.first.size()));
+
+    // check fields
+    EXPECT_EQ(tx.amount(), 2000000);
+    EXPECT_EQ(tx.to_address(), VaultBtc);
+    EXPECT_EQ(tx.change_address(), Address1Btc);
+    EXPECT_EQ(tx.output_op_return(), "SWAP:BNB.BNB:bnb1us47wdhfx08ch97zdueh3x3u5murfrx30jecrx:140000000000000000");
+    EXPECT_EQ(tx.coin_type(), 0);
+    EXPECT_EQ(tx.private_key_size(), 0);
+    EXPECT_FALSE(tx.has_plan());
+
+    // set few fields before signing
+    tx.set_byte_fee(20);
+    EXPECT_EQ(Bitcoin::SegwitAddress(PrivateKey(TestKey1Btc).getPublicKey(TWPublicKeyTypeSECP256k1), 0, "bc").string(), Address1Btc);
+    tx.add_private_key(TestKey1Btc.data(), TestKey1Btc.size());
+    auto& utxo = *tx.add_utxo();
+    Data utxoHash = parse_hex("1234000000000000000000000000000000000000000000000000000000005678");
+    utxo.mutable_out_point()->set_hash(utxoHash.data(), utxoHash.size());
+    utxo.mutable_out_point()->set_index(0);
+    utxo.mutable_out_point()->set_sequence(UINT32_MAX);
+    auto utxoScript = Bitcoin::Script::lockScriptForAddress(Address1Btc, TWCoinTypeBitcoin);
+    utxo.set_script(utxoScript.bytes.data(), utxoScript.bytes.size());
+    utxo.set_amount(50000000);
+    tx.set_use_max_amount(false);
+
+    // sign and encode resulting input
+    Bitcoin::Proto::SigningOutput output;
+    ANY_SIGN(tx, TWCoinTypeBitcoin);
+    EXPECT_EQ(output.error(), 0);
+    EXPECT_EQ(hex(output.encoded()), // printed using prettyPrintTransaction
+        "01000000" // version
+        "0001" // marker & flag
+        "01" // inputs
+            "1234000000000000000000000000000000000000000000000000000000005678"  "00000000"  "00"  ""  "ffffffff"
+        "03" // outputs
+            "80841e0000000000"  "16"  "0014d6cbc5021c3eee72798718d447758b91d14e8c5f"
+            "205bdc0200000000"  "16"  "00140cb9f5c6b62c03249367bc20a90dd2425e6926af"
+            "0000000000000000"  "42"  "6a40535741503a424e422e424e423a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a3134303030303030"
+        // witness
+            "02"
+                "48"  "30450221008e3bfe4f1212af3bc678cc31a89ed2a8cc6ec706c2466e303c48b7f28094d7a3022051baf5261bb1a07ae28fc03c6f3f9570a21ab3e7fdfa9ad5ffa34ed6b3ffc46d01"
+                "21"  "021e582a887bd94d648a9267143eb600449a8d59a0db0653740b1378067a6d0cee"
+        "00000000" // nLockTime
+    );
+}
+
 Data SwapTest_ethAddressStringToData(const std::string& asString) {
     if (asString.empty()) {
         return Data();
