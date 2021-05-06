@@ -9,6 +9,7 @@
 #include <TrustWalletCore/TWCoinType.h>
 #include "Coin.h"
 // BTC
+#include "Bitcoin/SigHashType.h"
 #include "../proto/Bitcoin.pb.h"
 // ETH
 #include "Ethereum/Address.h"
@@ -86,6 +87,12 @@ std::pair<Data, std::string> Swap::build(
     auto memo = buildMemo(toChain, toSymbol, toAddress, toAmountLimitNum);
 
     switch (fromChain) {
+        case Chain::BTC: {
+            Data out;
+            auto res = buildBitcoin(toChain, toSymbol, toTokenId, fromAddress, toAddress, vaultAddress, fromAmountNum, memo, out);
+            return std::make_pair(std::move(out), std::move(res));
+        }
+
         case Chain::ETH: {
             Data out;
             auto res = buildEthereum(toChain, toSymbol, toTokenId, fromAddress, toAddress, vaultAddress, fromAmountNum, memo, out);
@@ -101,6 +108,29 @@ std::pair<Data, std::string> Swap::build(
         default:
             return std::make_pair<Data, std::string>({}, "Invalid from chain: " + std::to_string(toChain));
     }
+}
+
+std::string Swap::buildBitcoin(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out) {
+    auto input = Bitcoin::Proto::SigningInput();
+
+    // Following fields need to be set after building, before sending
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    input.set_byte_fee(1);
+    input.set_use_max_amount(false);
+    // private_key
+    // utxo
+    // scripts
+    // ... end
+
+    input.set_amount(amount);
+    input.set_to_address(vaultAddress);
+    input.set_change_address(fromAddress);
+    input.set_coin_type(TWCoinTypeBitcoin);
+    input.set_output_op_return(memo);
+
+    auto serialized = input.SerializeAsString();
+    out.insert(out.end(), serialized.begin(), serialized.end());
+    return "";
 }
 
 Data ethAddressStringToData(const std::string& asString) {
