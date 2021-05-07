@@ -91,7 +91,7 @@ class PolkadotTests: XCTestCase {
     func testSigningBondAndNominate() {
         // real key in 1p test
         let key = HDWallet.test.getKeyForCoin(coin: .polkadot)
-        print(key.data.hexString)
+
         let input = PolkadotSigningInput.with {
             $0.genesisHash = genesisHash
             $0.blockHash = genesisHash
