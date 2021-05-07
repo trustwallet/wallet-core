@@ -1,7 +1,7 @@
 install! 'cocoapods', :deterministic_uuids => false, :share_schemes_for_development_pods => true
 
 def dev_pod
-  pod 'WalletCoreDev', :path => '../'
+  pod 'WalletCore', :path => '../..'
 end
 
 target 'Example' do
