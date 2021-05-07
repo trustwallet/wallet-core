@@ -89,7 +89,6 @@ class ZilliqaTests: XCTestCase {
             ]
         ]
         let jsonData = try JSONSerialization.data(withJSONObject: json, options: [.sortedKeys])
-        print(String(data: jsonData, encoding: .utf8)!)
 
         let input = ZilliqaSigningInput.with {
             $0.version = 65537 // mainnet tx version
@@ -114,6 +113,5 @@ class ZilliqaTests: XCTestCase {
         let expected = try String(contentsOf: url)
 
         XCTAssertJSONEqual(expected, output.json)
-        print(output.json)
     }
 }
