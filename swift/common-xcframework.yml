@@ -1,22 +1,24 @@
-name: TrustWalletCore
+name: WalletCoreCommon
 options:
   bundleIdPrefix: com.trustwallet
   createIntermediateGroups: true
 settings:
   base:
+    ENABLE_BITCODE: NO
     HEADER_SEARCH_PATHS: $(SRCROOT)/wallet-core ${SRCROOT}/trezor-crypto/crypto
     SYSTEM_HEADER_SEARCH_PATHS: ${SRCROOT}/include ${SRCROOT}/../build/local/include ${SRCROOT}/trezor-crypto/include $(SRCROOT)/protobuf /usr/local/include
     CLANG_CXX_LANGUAGE_STANDARD: c++17
-    SWIFT_VERSION: 5.1
-  configs:
-    release:
-      SWIFT_OPTIMIZATION_LEVEL: -Owholemodule
-      SWIFT_COMPILATION_MODE: wholemodule
+    GCC_WARN_64_TO_32_BIT_CONVERSION: NO
+
 targets:
-  WalletCore:
-    type: framework
-    platform: iOS
-    deploymentTarget: 12.0
+  WalletCoreCommon:
+    type: framework.static
+    platform: [iOS, macOS]
+    deploymentTarget: 
+      iOS: 12.0
+      macOS: 10.14
+    groups:
+      - ${platform}
     sources:
       - path: include
         headerVisibility: public
@@ -25,58 +27,28 @@ targets:
       - path: wallet-core
         headerVisibility: project
         excludes:
-          - ".vscode"
-          - "proto/*.proto"
-          - "Tron/Protobuf/*.proto"
-          - "Zilliqa/Protobuf/*.proto"
-          - "TON/*.md"
-      - Sources
+        - ".vscode"
+        - "proto/*.proto"
+        - "Tron/Protobuf/*.proto"
+        - "Zilliqa/Protobuf/*.proto"
+        - "TON/*.md"
     dependencies:
-      - target: trezor-crypto
+      - target: trezor-crypto_${platform}
         link: true
-      - target: protobuf
+      - target: protobuf_${platform}
         link: true
       - sdk: libc++.tbd
-    scheme:
-      testTargets:
-        - WalletCoreTests
-      gatherCoverageData: true
     settings:
       SKIP_INSTALL: false
       SUPPORTS_MACCATALYST: true
-      BUILD_LIBRARY_FOR_DISTRIBUTION: true
       INFOPLIST_FILE: 'Info.plist'
       CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION: YES_ERROR
       CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER: $(inherited) false
       OTHER_CFLAGS: $(inherited) -Wno-comma
-    postCompileScripts:
-      - script: ${PODS_ROOT}/SwiftLint/swiftlint --config ../.swiftlint.yml
-        name: SwiftLint
-  WalletCoreTypes:
-    type: framework
-    platform: iOS
-    deploymentTarget: 12.0
-    sources:
-      - Sources/Types
-      - Sources/Generated/Enums
-      - Sources/Generated/Protobuf
-    settings:
-      SKIP_INSTALL: false
-      SUPPORTS_MACCATALYST: true
-      BUILD_LIBRARY_FOR_DISTRIBUTION: true
-      INFOPLIST_FILE: 'Info.plist'
-
-  WalletCoreTests:
-    type: bundle.unit-test
-    platform: iOS
-    sources: [Tests]
-    dependencies:
-      - target: WalletCore
-      - sdk: libc++.tbd
 
   trezor-crypto:
     type: library.static
-    platform: iOS
+    platform: [iOS, macOS]
     sources:
       - trezor-crypto/crypto/bignum.c
       - trezor-crypto/crypto/ecdsa.c
@@ -137,12 +109,10 @@ targets:
       - trezor-crypto/crypto/sodium/private/ed25519_ref10.c
       - trezor-crypto/crypto/sodium/private/ed25519_ref10_fe_25_5.c
       - trezor-crypto/crypto/sodium/keypair.c
-    settings:
-      GCC_WARN_64_TO_32_BIT_CONVERSION: NO
 
   protobuf:
     type: library.static
-    platform: iOS
+    platform: [iOS, macOS]
     sources:
       - protobuf/google/protobuf/any.cc
       - protobuf/google/protobuf/any.pb.cc
@@ -226,5 +196,4 @@ targets:
       - protobuf/google/protobuf/wire_format_lite.cc
       - protobuf/google/protobuf/wrappers.pb.cc
     settings:
-      GCC_WARN_64_TO_32_BIT_CONVERSION: NO
       OTHER_CFLAGS: $(inherited) -DHAVE_PTHREAD=1 -Wno-comma -Wno-unreachable-code

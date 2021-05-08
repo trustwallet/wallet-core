@@ -1,7 +1,7 @@
-version = '2.5.6'
+version = '2.6.5'
 
 Pod::Spec.new do |s|
-  s.name         = 'WalletCoreDev'
+  s.name         = 'WalletCore'
   s.version      = version
   s.summary      = 'Trust Wallet core data structures and algorithms.'
   s.homepage     = 'https://github.com/trustwallet/wallet-core'
@@ -121,6 +121,10 @@ Pod::Spec.new do |s|
       "#{protobuf_source_dir}/src/google/protobuf/wire_format_lite.cc",
       "#{protobuf_source_dir}/src/google/protobuf/wrappers.pb.cc"
     ss.exclude_files = 
+      'trezor-crypto/include/TrezorCrypto/base58.h',
+      'trezor-crypto/crypto/monero',
+      'trezor-crypto/crypto/tests',
+      'trezor-crypto/crypto/tools',
       'trezor-crypto/crypto/rand.c',
       'swift/Sources/Generated/WalletCore.h'
 
@@ -150,6 +154,6 @@ Pod::Spec.new do |s|
       'OTHER_CFLAGS' => '-DHAVE_PTHREAD=1',
       'OTHER_LDFLAGS' => '$(inherited) -fprofile-instr-generate'
     }
-    ss.dependency 'WalletCoreDev/Types'
+    ss.dependency 'WalletCore/Types'
   end
 end

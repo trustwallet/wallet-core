@@ -4,9 +4,12 @@
 
 set -e
 
+source $(dirname $0)/library
+version=$(wc_read_version)
+
 pushd android
 ./gradlew assembleRelease
 cp trustwalletcore/build/outputs/aar/trustwalletcore-release.aar ../build/trustwalletcore.aar
 popd
 
-echo "Now upload build/trustwalletcore.aar to https://github.com/TrustWallet/trust-wallet-core/releases/tag/$(git describe --long --tags | cut -f 1 -d "-")"
+echo "Now upload build/trustwalletcore.aar to https://github.com/TrustWallet/trust-wallet-core/releases/tag/$version"

@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+# This script builds dynamic WalletCore and SwiftProtobuf xcframework for SPM and CocoaPods
+#
+
+set -e
+
+pushd swift
+patch ../build/local/src/protobuf/protobuf-3.14.0/src/google/protobuf/stubs/common.cc protobuf.patch
+fastlane ios xcframework
+popd
