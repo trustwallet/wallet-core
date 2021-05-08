@@ -22,7 +22,7 @@ class TestPolkadotSigner {
     }
 
     val genesisHashStr = "0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3".toHexBytesInByteString()
-    val privateKeyThrow2 = "0x70a794d4f1019c3ce002f33062f45029c4f930a56b3d20ec477f7668c6bbc37f".toHexBytesInByteString()
+    val iOSTestKey = "7f44b19b391a8015ca4c7d94097b3695867a448d1391e7f3243f06987bdb6858".toHexBytesInByteString()
 
     @Test
     fun PolkadotTransactionSigning() {
@@ -56,27 +56,22 @@ class TestPolkadotSigner {
 
     @Test
     fun PolkadotTransactionSignBondAndNominate() {
-        val eraP = Polkadot.Era.newBuilder().apply {
-            blockNumber = 3856651
-            period = 64
-        }
         val call = Polkadot.Staking.BondAndNominate.newBuilder().apply {
-            controller = "14Ztd3KJDaB9xyJtRkREtSZDdhLSbm7UUKt8Z7AwSv7q85G2"
-            value = "0x77359400".toHexBytesInByteString() // 0.2
+            controller = "13ZLCqJNPsRZYEbwjtZZFpWt9GyFzg5WahXCVWKpWdUJqrQ5"
+            value = "0x02540be400".toHexBytesInByteString() // 1 DOT
             rewardDestination = Polkadot.RewardDestination.STASH
-            addNominators("14xKzzU1ZYDnzFj7FgdtDAYSMJNARjDc2gNw4XAFDgr4uXgp")
-            addNominators("1REAJ1k691g5Eqqg9gL7vvZCBG7FCCZ8zgQkZWd4va5ESih")
+            addNominators("1zugcavYA9yCuYwiEYeMHNJm9gXznYjNfXQjZsZukF1Mpow")
+            addNominators("15oKi7HoBQbwwdQc47k71q4sJJWnu5opn1pqoGx4NAEYZSHs")
         }
 
         val input = Polkadot.SigningInput.newBuilder().apply {
             genesisHash = genesisHashStr
-            blockHash = "0x3a886617f4bbd4fe2bbe7369acae4163ed0b19ffbf061083abc5e0836ad58f77".toHexBytesInByteString()
-            nonce = 6
-            specVersion = 27
+            blockHash = genesisHashStr
+            nonce = 4
+            specVersion = 30
             network = Polkadot.Network.POLKADOT
-            transactionVersion = 5
-            privateKey = privateKeyThrow2
-            era = eraP.build()
+            transactionVersion = 7
+            privateKey = iOSTestKey
             stakingCall = Polkadot.Staking.newBuilder().apply {
                 bondAndNominate = call.build()
             }.build()
@@ -85,8 +80,8 @@ class TestPolkadotSigner {
         val output = AnySigner.sign(input.build(), POLKADOT, SigningOutput.parser())
         val encoded = Numeric.toHexString(output.encoded.toByteArray())
 
-        // https://polkadot.subscan.io/extrinsic/0xc7a016f961dbf35d58feea22694e7d79ac77175a8cc40cb017bb5e87d56142ce
-        val expected = "0x5103849dca538b7a925b8ea979cc546464a3c5f81d2398a3a272f6f93bdf4803f2f783007d549324f270eb5932b898ce5fc166c3f30942c96668f52d6cc86c7b61a8d65680cd0a979f1e0a43ef9418e6571edab6d9c391a1696abdf56db2af348862d50eb50018001a000807009dca538b7a925b8ea979cc546464a3c5f81d2398a3a272f6f93bdf4803f2f783030094357701070508aee72821ca00e62304e4f0d858122a65b87c8df4f0eae224ae064b951d39f610127a30e486492921e58f2564b36ab1ca21ff630672f0e76920edd601f8f2b89a"
+        // https://polkadot.subscan.io/extrinsic/4955314-2
+        val expected = "0x6103840036092fac541e0e5feda19e537c679b487566d7101141c203ac8322c27e5f076a00a8b1f859d788f11a958e98b731358f89cf3fdd41a667ea992522e8d4f46915f4c03a1896f2ac54bdc5f16e2ce8a2a3bf233d02aad8192332afd2113ed6688e0d0010001a02080700007120f76076bcb0efdf94c7219e116899d0163ea61cb428183d71324eb33b2bce0700e40b540201070508002c2a55b5ffdca266bd0207df97565b03255f70783ca1a349be5ed9f44589c36000d44533a4d21fd9d6f5d57c8cd05c61a6f23f9131cec8ae386b6b437db399ec3d"
         assertEquals(encoded, expected)
     }
 }
