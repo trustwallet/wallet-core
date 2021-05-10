@@ -115,4 +115,26 @@ class PolkadotTests: XCTestCase {
         // https://polkadot.subscan.io/extrinsic/4955314-2
         XCTAssertEqual("0x" + output.encoded.hexString, "0x6103840036092fac541e0e5feda19e537c679b487566d7101141c203ac8322c27e5f076a00a8b1f859d788f11a958e98b731358f89cf3fdd41a667ea992522e8d4f46915f4c03a1896f2ac54bdc5f16e2ce8a2a3bf233d02aad8192332afd2113ed6688e0d0010001a02080700007120f76076bcb0efdf94c7219e116899d0163ea61cb428183d71324eb33b2bce0700e40b540201070508002c2a55b5ffdca266bd0207df97565b03255f70783ca1a349be5ed9f44589c36000d44533a4d21fd9d6f5d57c8cd05c61a6f23f9131cec8ae386b6b437db399ec3d")
     }
+
+    func testSigningBondExtra() {
+        // real key in 1p test
+        let key = HDWallet.test.getKeyForCoin(coin: .polkadot)
+
+        let input = PolkadotSigningInput.with {
+            $0.genesisHash = genesisHash
+            $0.blockHash = genesisHash
+            $0.nonce = 5
+            $0.specVersion = 30
+            $0.network = .polkadot
+            $0.transactionVersion = 7
+            $0.privateKey = key.data
+            $0.stakingCall.bondExtra = PolkadotStaking.BondExtra.with {
+                $0.value = Data(hexString: "0x77359400")! // 0.2 DOT
+            }
+        }
+        let output: PolkadotSigningOutput = AnySigner.sign(input: input, coin: .polkadot)
+
+        // https://polkadot.subscan.io/extrinsic/4999416-1
+        XCTAssertEqual("0x" + output.encoded.hexString, "0xb501840036092fac541e0e5feda19e537c679b487566d7101141c203ac8322c27e5f076a00c8268c2dfd4074f41d225e12e62e5975ff8debf0f828d31ddbfed6f7593e067fb860298eb12f50294f7ba0f82795809c84fc5cce6fcb36cde4cb1c07edbbb60900140007010300943577")
+    }
 }
