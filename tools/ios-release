@@ -36,6 +36,7 @@ popd
 
 # upload to release
 download_url=$(wc_upload_asset ${release_url} ${filename})
+download_url=$(tr -d '"' <<< $download_url)
 echo "download_url is ${download_url}"
 
 # create podspec
@@ -43,7 +44,7 @@ podspec_name=TrustWalletCore
 podspec=${podspec_name}.podspec
 cat > $podspec <<EOF 
 Pod::Spec.new do |s|
-  s.name         = '${podspec}'
+  s.name         = '${podspec_name}'
   s.version      = '${version}'
   s.summary      = 'Trust Wallet core data structures and algorithms.'
   s.homepage     = 'https://github.com/trustwallet/wallet-core'
@@ -54,7 +55,7 @@ Pod::Spec.new do |s|
   s.osx.deployment_target = '10.14'
   s.swift_version = '5.1'
   s.source = {
-    http: "${download_url}"
+    http: '${download_url}'
   }
   s.default_subspec = 'Core'
   s.subspec 'Types' do |ss|
@@ -83,6 +84,9 @@ Pod::Spec.new do |s|
   end
 end
 EOF
+
+echo "generated podspec: "
+cat ${podspec}
 
 # pod trunk push
 echo "Done. running: pod trunk push --allow-warnings ${podspec}"
