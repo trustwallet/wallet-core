@@ -162,7 +162,7 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressTy
 
         case Proto::Staking::kBondExtra:
             {
-                auto value = load(staking.unbond().value());
+                auto value = load(staking.bond_extra().value());
                 // call index
                 append(data, getCallIndex(network, stakingBondExtra));
                 // value
