@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:18.04 as base
 
 # Install some basics
 RUN apt-get update \
@@ -36,13 +36,11 @@ RUN apt-get update \
 ENV CC=/usr/bin/clang-10
 ENV CXX=/usr/bin/clang++-10
 
-# ↑ Setup build environment
-# ↓ Build and compile wallet core
+FROM base AS builder
 
-COPY ./.git-credentials /root/.git-credentials
-COPY ./.gitconfig /root/.gitconfig
-RUN git clone https://github.com/binance-chain/wallet-core.git
+COPY . /wallet-core
 WORKDIR /wallet-core
+RUN git clean -xdf
 
 # Install dependencies
 RUN tools/install-dependencies
@@ -51,5 +49,11 @@ RUN tools/install-dependencies
 RUN tools/generate-files \
     && cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug \
     && make -Cbuild -j12
+
+FROM base AS prod
+COPY --from=builder /wallet-core/build/libTrustWalletCore.a /usr/local/lib
+COPY --from=builder /wallet-core/build/libprotobuf.a /usr/local/lib
+COPY --from=builder /wallet-core/build/trezor-crypto/libTrezorCrypto.a /usr/local/lib
+COPY --from=builder /wallet-core/include/TrustWalletCore /usr/local/include/TrustWalletCore
 
 CMD ["/bin/bash"]
