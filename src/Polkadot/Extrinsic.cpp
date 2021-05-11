@@ -29,13 +29,13 @@ static const std::string stakingChill = "Staking.chill";
 // Readable decoded call index can be found from https://polkascan.io
 static std::map<const std::string, Data> polkadotCallIndices = {
     {balanceTransfer,       Data{0x05, 0x00}},
-    {utilityBatch,          Data{0x1a, 0x00}},
     {stakingBond,           Data{0x07, 0x00}},
     {stakingBondExtra,      Data{0x07, 0x01}},
     {stakingUnbond,         Data{0x07, 0x02}},
     {stakingWithdrawUnbond, Data{0x07, 0x03}},
     {stakingNominate,       Data{0x07, 0x05}},
     {stakingChill,          Data{0x07, 0x06}},
+    {utilityBatch,          Data{0x1a, 0x02}},
 };
 
 static std::map<const std::string, Data> kusamaCallIndices = {
@@ -46,6 +46,7 @@ static std::map<const std::string, Data> kusamaCallIndices = {
     {stakingWithdrawUnbond, Data{0x06, 0x03}},
     {stakingNominate,       Data{0x06, 0x05}},
     {stakingChill,          Data{0x06, 0x06}},
+    {utilityBatch,          Data{0x18, 0x02}},
 };
 
 static Data getCallIndex(TWSS58AddressType network, const std::string& key) {
@@ -161,7 +162,7 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressTy
 
         case Proto::Staking::kBondExtra:
             {
-                auto value = load(staking.unbond().value());
+                auto value = load(staking.bond_extra().value());
                 // call index
                 append(data, getCallIndex(network, stakingBondExtra));
                 // value

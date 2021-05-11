@@ -1,0 +1,87 @@
+#!/bin/bash
+
+set -e
+
+# load release library code
+base_dir=$(dirname $0)
+source ${base_dir}/library
+
+# version to release
+version=$(wc_read_version)
+release_url=$(wc_release_url ${version})
+echo "release_url url is $release_url"
+
+pushd ${base_dir}/../swift/build
+
+# archive xcframeworks
+filename="core+protobuf.tar.xz"
+tar -cJvf ${filename} WalletCore.xcframework SwiftProtobuf.xcframework
+
+types_filename="types+protobuf.tar.xz"
+tar -cJvf ${types_filename} WalletCoreTypes.xcframework SwiftProtobuf.xcframework
+
+# upload to release
+download_url=$(wc_upload_asset ${release_url} ${filename})
+echo "download_url is ${download_url}"
+
+types_download_url=$(wc_upload_asset ${release_url} ${types_filename})
+echo "types_download_url is ${types_download_url}"
+
+# create podspec
+podspec_name=WalletCoreFW
+podspec=${podspec_name}.podspec
+cat > $podspec <<EOF 
+Pod::Spec.new do |s|
+  s.name         = '${podspec_name}'
+  s.version      = '${version}'
+  s.summary      = 'Trust Wallet core data structures and algorithms.'
+  s.homepage     = 'https://github.com/trustwallet/wallet-core'
+  s.license      = 'MIT'
+  s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
+
+  s.ios.deployment_target = '12.0'
+  s.swift_version = '5.1'
+
+  s.source = {
+    http: '${download_url}'
+  }
+
+  s.vendored_frameworks = 'WalletCore.xcframework', 'SwiftProtobuf.xcframework'
+  s.libraries = 'c++'
+  s.xcconfig = {
+    'OTHER_LDFLAGS' => '\$(inherited) -fprofile-instr-generate'
+  }
+end
+EOF
+
+types_spec_name=WalletCoreTypes
+types_podspec=${types_spec_name}.podspec
+cat > $types_podspec <<EOF 
+Pod::Spec.new do |s|
+  s.name         = '${types_spec_name}'
+  s.version      = '${version}'
+  s.summary      = 'Trust Wallet core types.'
+  s.homepage     = 'https://github.com/trustwallet/wallet-core'
+  s.license      = 'MIT'
+  s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
+
+  s.ios.deployment_target = '12.0'
+  s.swift_version = '5.1'
+
+  s.source = {
+    http: '${types_download_url}'
+  }
+
+  s.vendored_frameworks = 'WalletCoreTypes.xcframework', 'SwiftProtobuf.xcframework'
+end
+EOF
+
+# pod trunk push
+
+echo "pod trunk push --verbose --allow-warnings ${podspec}"
+pod trunk push --verbose --allow-warnings ${podspec}
+
+echo "pod trunk push --verbose --allow-warnings ${types_podspec}"
+pod trunk push --verbose --allow-warnings ${types_podspec}
+
+popd

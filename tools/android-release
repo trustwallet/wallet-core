@@ -4,10 +4,9 @@
 
 set -e
 
-version=$1
-if [ -z "$version" ]; then
-    version=`git describe --long --tags | cut -f 1 -d "-"`
-fi
+source $(dirname $0)/library
+version=$(wc_read_version)
+
 echo "Building $version"
 
 export ANDROID_HOME="$HOME/Library/Android/sdk"
