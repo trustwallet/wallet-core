@@ -5,7 +5,7 @@ options:
 settings:
   base:
     HEADER_SEARCH_PATHS: $(SRCROOT)/wallet-core ${SRCROOT}/trezor-crypto/crypto
-    SYSTEM_HEADER_SEARCH_PATHS: ${SRCROOT}/include ${SRCROOT}/../build/local/include ${SRCROOT}/trezor-crypto/include $(SRCROOT)/protobuf /usr/local/include
+    SYSTEM_HEADER_SEARCH_PATHS: ${SRCROOT}/include ${SRCROOT}/../build/local/include ${SRCROOT}/trezor-crypto/include $(SRCROOT)/protobuf /usr/local/include /opt/homebrew/include
     CLANG_CXX_LANGUAGE_STANDARD: c++17
     SWIFT_VERSION: 5.1
   configs:

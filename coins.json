@@ -1568,5 +1568,30 @@
       "clientPublic": "https://rpc-mainnet.matic.network",
       "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
     }
+  },
+  {
+    "id": "thorchain",
+    "name": "THORChain",
+    "coinId": 931,
+    "symbol": "RUNE",
+    "decimals": 18,
+    "blockchain": "Cosmos",
+    "derivationPath": "m/44'/931'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "thor",
+    "explorer": {
+      "url": "https://viewblock.io/thorchain",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "ADF0899E58C177E2391F22D04E9C5E1C35BB0F75B42B363A0761687907FD9476",
+      "sampleAccount": "bnb1czhptncu9uhhlrlrk9q0rmy459gae2ua79mapn"
+    },
+    "info": {
+      "url": "https://thorchain.org",
+      "client": "https://gitlab.com/thorchain/thornode",
+      "clientPublic": "https://seed.thorchain.info",
+      "clientDocs": ""
+    }
   }
 ]
