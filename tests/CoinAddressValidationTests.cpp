@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -392,5 +392,12 @@ TEST(Coin, ValidateAddressOasis) {
     EXPECT_FALSE(validateAddress(TWCoinTypeOasis, "oasi1qp0cnmkjl22gky6p6qeghjytt4v7dkxsrsmueweh"));
 }
 
+TEST(Coin, ValidateAddresTHORChain) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeTHORChain, "thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r"));
+    // wrong prefix
+    EXPECT_FALSE(validateAddress(TWCoinTypeTHORChain, "cosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp"));
+    // wrong checksum
+    EXPECT_FALSE(validateAddress(TWCoinTypeTHORChain, "thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2s"));
+}
 
 } // namespace TW

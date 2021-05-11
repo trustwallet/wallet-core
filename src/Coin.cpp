@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -157,6 +157,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeKin: entry = &stellarDP; break;
         case TWCoinTypeTezos: entry = &tezosDP; break;
         case TWCoinTypeTheta: entry = &thetaDP; break;
+        case TWCoinTypeTHORChain: entry = &cosmosDP; break;
         case TWCoinTypeTON: entry = &tonDP; break;
         case TWCoinTypeTron: entry = &tronDP; break;
         case TWCoinTypeVeChain: entry = &vechainDP; break;
