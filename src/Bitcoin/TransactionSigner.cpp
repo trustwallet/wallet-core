@@ -63,7 +63,7 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
 
 template <typename Transaction, typename TransactionBuilder>
 Result<void, Common::Proto::SigningError> TransactionSigner<Transaction, TransactionBuilder>::sign(Script script, size_t index,
-                                                  const Bitcoin::Proto::UnspentTransaction& utxo) {
+                                                  const Proto::UnspentTransaction& utxo) {
     assert(index < transaction.inputs.size());
 
     Script redeemScript;
@@ -131,7 +131,7 @@ Result<void, Common::Proto::SigningError> TransactionSigner<Transaction, Transac
 
 template <typename Transaction, typename TransactionBuilder>
 Result<std::vector<Data>, Common::Proto::SigningError> TransactionSigner<Transaction, TransactionBuilder>::signStep(
-    Script script, size_t index, const Bitcoin::Proto::UnspentTransaction& utxo, uint32_t version) const {
+    Script script, size_t index, const Proto::UnspentTransaction& utxo, uint32_t version) const {
     Transaction transactionToSign(transaction);
     transactionToSign.inputs = signedInputs;
     transactionToSign.outputs = transaction.outputs;
@@ -149,7 +149,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> TransactionSigner<Transac
         return Result<std::vector<Data>, Common::Proto::SigningError>::success({redeemScript});
     }
     if (script.matchPayToWitnessScriptHash(data)) {
-        auto scripthash = TW::Hash::ripemd(data);
+        auto scripthash = Hash::ripemd(data);
         auto redeemScript = scriptForScriptHash(scripthash);
         if (redeemScript.empty()) {
             // Error: Missing redeem script
@@ -170,7 +170,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> TransactionSigner<Transac
             if (results.size() >= required + 1) {
                 break;
             }
-            auto keyHash = TW::Hash::ripemd(TW::Hash::sha256(pubKey));
+            auto keyHash = Hash::ripemd(Hash::sha256(pubKey));
             auto key = keyForPublicKeyHash(keyHash);
             if (key.empty() && !estimationMode) {
                 // Error: missing key
@@ -188,7 +188,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> TransactionSigner<Transac
         return Result<std::vector<Data>, Common::Proto::SigningError>::success(std::move(results));
     }
     if (script.matchPayToPublicKey(data)) {
-        auto keyHash = TW::Hash::ripemd(TW::Hash::sha256(data));
+        auto keyHash = Hash::ripemd(Hash::sha256(data));
         auto key = keyForPublicKeyHash(keyHash);
         if (key.empty() && !estimationMode) {
             // Error: Missing key
@@ -273,9 +273,11 @@ Data TransactionSigner<Transaction, TransactionBuilder>::pushAll(const std::vect
 template <typename Transaction, typename TransactionBuilder>
 Data TransactionSigner<Transaction, TransactionBuilder>::keyForPublicKeyHash(const Data& hash) const {
     for (auto& key : input.private_key()) {
-        auto publicKey = PrivateKey(key).getPublicKey(TWPublicKeyTypeSECP256k1);
-        auto keyHash = TW::Hash::ripemd(TW::Hash::sha256(publicKey.bytes));
-        if (keyHash == hash) {
+        auto pubKeyExtended = PrivateKey(key).getPublicKey(TWPublicKeyTypeSECP256k1Extended);
+        auto pubKey = pubKeyExtended.compressed();
+        auto keyHash = Hash::sha256ripemd(pubKey.bytes.data(), pubKey.bytes.size());
+        auto keyHash2 = Hash::sha256ripemd(pubKeyExtended.bytes.data(), pubKeyExtended.bytes.size());
+        if (keyHash == hash || keyHash2 == hash) {
             return Data(key.begin(), key.end());
         }
     }
@@ -294,6 +296,6 @@ Data TransactionSigner<Transaction, TransactionBuilder>::scriptForScriptHash(con
 }
 
 // Explicitly instantiate a Signers for compatible transactions.
-template class TW::Bitcoin::TransactionSigner<Bitcoin::Transaction, Bitcoin::TransactionBuilder>;
-template class TW::Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>;
-template class TW::Bitcoin::TransactionSigner<Groestlcoin::Transaction, Bitcoin::TransactionBuilder>;
+template class Bitcoin::TransactionSigner<Bitcoin::Transaction, TransactionBuilder>;
+template class Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>;
+template class Bitcoin::TransactionSigner<Groestlcoin::Transaction, TransactionBuilder>;

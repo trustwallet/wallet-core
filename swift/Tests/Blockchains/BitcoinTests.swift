@@ -88,7 +88,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         let pubkey = key.getPublicKeySecp256k1(compressed: true)
         let utxos = [
             BitcoinUnspentTransaction.with {
-                $0.outPoint.hash = Data(Data(hexString: "8b5f4861c6d4a4ea361aa4066d720067f73854d9a1b1d01e2b0e3c9e150bc5a3")!.reversed())
+                $0.outPoint.hash = Data.reverse(hexString: "8b5f4861c6d4a4ea361aa4066d720067f73854d9a1b1d01e2b0e3c9e150bc5a3")
                 $0.outPoint.index = 0
                 $0.outPoint.sequence = UINT32_MAX
                 $0.script = lockScript.data
@@ -126,5 +126,54 @@ class BitcoinTransactionSignerTests: XCTestCase {
         XCTAssertEqual(BitcoinScript.hashTypeForCoin(coinType: .bitcoin), TWBitcoinSigHashTypeAll.rawValue)
         XCTAssertEqual(BitcoinScript.hashTypeForCoin(coinType: .bitcoinCash), 0x41)
         XCTAssertEqual(BitcoinScript.hashTypeForCoin(coinType: .bitcoinGold), 0x4f41)
+    }
+
+    func testSignExtendedPubkeyUTXO() {
+        // genre awake harsh charge accident census click turn parade solution drill frown
+        // history allow jelly tenant hollow task disagree develop hood nature raise theory
+
+        // compressed WIF
+        let wif = "L4BeKzm3AHDUMkxLRVKTSVxkp6Hz9FcMQPh18YCKU1uioXfovzwP"
+        let decoded = Base58.decode(string: wif)!
+        let key = PrivateKey(data: decoded[1 ..< 33])!
+        let pubkey = key.getPublicKeySecp256k1(compressed: false)
+
+        // shortcut methods only support s compressed public key
+        let address = BitcoinAddress(data: [0x0] + Hash.sha256RIPEMD(data: pubkey.data))!
+        let script = BitcoinScript.lockScriptForAddress(address: address.description, coin: .bitcoin)
+
+        // utxos from: https://blockchair.com/bitcoin/address/1KRhiKNai3ke3hZgSPZ5TpJoSJvs1aZfWo
+        let utxos: [BitcoinUnspentTransaction] = [
+            .with {
+                $0.outPoint.hash = Data.reverse(hexString: "6ae3f1d245521b0ea7627231d27d613d58c237d6bf97a1471341a3532e31906c")
+                $0.outPoint.index = 0
+                $0.outPoint.sequence = UINT32_MAX
+                $0.amount = 16874
+                $0.script = script.data
+            },
+            .with {
+                $0.outPoint.hash = Data.reverse(hexString: "fd1ea8178228e825d4106df0acb61a4fb14a8f04f30cd7c1f39c665c9427bf13")
+                $0.outPoint.index = 0
+                $0.outPoint.sequence = UINT32_MAX
+                $0.amount = 10098
+                $0.script = script.data
+            }
+        ]
+
+        let input = BitcoinSigningInput.with {
+            $0.utxo = utxos
+            $0.privateKey = [key.data]
+            $0.hashType = BitcoinSigHashType.all.rawValue
+            $0.useMaxAmount = true
+            $0.byteFee = 1
+            $0.toAddress = address.description
+            $0.coinType = CoinType.bitcoin.rawValue
+            $0.amount = utxos.map { $0.amount } .reduce(0, +)
+        }
+
+        let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .bitcoin)
+
+        XCTAssertEqual(output.error, .ok)
+        XCTAssertEqual(output.encoded.count, 339)
     }
 }
