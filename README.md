@@ -13,10 +13,8 @@ Swift for iOS and Java for Android.
 ![Typescript CI](https://github.com/trustwallet/wallet-core/workflows/Typescript%20CI/badge.svg)
 
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/trustwallet/wallet-core)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/82e76f6ea4ba4f0d9029e8846c04c093)](https://www.codacy.com/app/hewigovens/wallet-core?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=TrustWallet/wallet-core&amp;utm_campaign=Badge_Grade)
-![Codecov](https://codecov.io/gh/TrustWallet/wallet-core/branch/master/graph/badge.svg)
 ![GitHub](https://img.shields.io/github/license/TrustWallet/wallet-core.svg)
-![Maven](https://api.bintray.com/packages/trust/wallet-core/com.trustwallet.wallet-core/images/download.svg)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/trustwallet/wallet-core)
 ![Cocoapods](https://img.shields.io/cocoapods/v/TrustWalletCore.svg)
 ![Cocoapods platforms](https://img.shields.io/cocoapods/p/TrustWalletCore.svg)
 
@@ -40,14 +38,21 @@ If you want to use wallet core in your project follow these instructions.
 
 ## Android
 
-Add this dependency to build.gradle:
+Future Android releases will be hosted on [GitHub packages](https://github.com/trustwallet/wallet-core/packages/700258), please checkout [this guide](https://docs.github.com/en/packages/guides/configuring-gradle-for-use-with-github-packages#installing-a-package) for more details.
+
+Add this dependency to build.gradle and run `gradle install`
 
 ```groovy
+plugins {
+    id 'maven'
+}
+
 dependencies {
     implementation 'com.trustwallet:wallet-core:x.y.z'
 }
 ```
-Replace x.y.z with a [fresh version](https://github.com/trustwallet/wallet-core/releases)
+Replace x.y.z with latest version:  
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/trustwallet/wallet-core)
 
 ## iOS
 

@@ -36,7 +36,7 @@ class CoinAddressDerivationTests {
         CALLISTO -> assertEquals("0x3E6FFC80745E6669135a76F4A7ce6BCF02436e04", address)
         DASH -> assertEquals("XqHiz8EXYbTAtBEYs4pWTHh7ipEDQcNQeT", address)
         DIGIBYTE -> assertEquals("dgb1qtjgmerfqwdffyf8ghcrkgy52cghsqptynmyswu", address)
-        ETHEREUM, SMARTCHAIN -> assertEquals("0x8f348F300873Fd5DA36950B2aC75a26584584feE", address)
+        ETHEREUM, SMARTCHAIN, POLYGON -> assertEquals("0x8f348F300873Fd5DA36950B2aC75a26584584feE", address)
         ETHEREUMCLASSIC -> assertEquals("0x078bA3228F3E6C08bEEac9A005de0b7e7089aD1c", address)
         GOCHAIN -> assertEquals("0x5940ce4A14210d4Ccd0ac206CE92F21828016aC2", address)
         GROESTLCOIN -> assertEquals("grs1qexwmshts5pdpeqglkl39zyl6693tmfwp0cue4j", address)
@@ -50,7 +50,7 @@ class CoinAddressDerivationTests {
         TOMOCHAIN -> assertEquals("0xC74b6D8897cBa9A4b659d43fEF73C9cA852cE424", address)
         TRON -> assertEquals("TQ5NMqJjhpQGK7YJbESKtNCo86PJ89ujio", address)
         VECHAIN -> assertEquals("0x1a553275dF34195eAf23942CB7328AcF9d48c160", address)
-        WANCHAIN -> assertEquals("0xd5CA90B928279fe5d06144136A25dEd90127Ac15", address)
+        WANCHAIN -> assertEquals("0xD5ca90b928279FE5D06144136a25DeD90127aC15", address)
         ZCASH -> assertEquals("t1YYnByMzdGhQv3W3rnjHMrJs6HH4Y231gy", address)
         ZCOIN -> assertEquals("aEd5XFChyXobvEics2ppAqgK3Bgusjxtik", address)
         NIMIQ -> assertEquals("NQ76 7AVR EHDA N05U X7SY XB14 XJU7 8ERV GM6H", address)
@@ -91,5 +91,6 @@ class CoinAddressDerivationTests {
         BANDCHAIN -> assertEquals("band1624hqgend0s3d94z68fyka2y5jak6vd7u0l50r", address)
         SMARTCHAINLEGACY -> assertEquals("0x49784f90176D8D9d4A3feCDE7C1373dAAb5b13b8", address)
         OASIS -> assertEquals("oasis1qr2wymrk4mmt4kyjg3rzkn6jsxku3kk6p5jvrvxz", address)
+        THORCHAIN -> assertEquals("thor1c8jd7ad9pcw4k3wkuqlkz4auv95mldr2kyhc65", address)
     }
 }

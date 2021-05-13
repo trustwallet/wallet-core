@@ -7,8 +7,8 @@
 
 #include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 
-static const uint32_t reduce_mask_25 = (1 << 25) - 1;
-static const uint32_t reduce_mask_26 = (1 << 26) - 1;
+const uint32_t reduce_mask_25 = (1 << 25) - 1;
+const uint32_t reduce_mask_26 = (1 << 26) - 1;
 
 /* out = in */
 void curve25519_copy(bignum25519 out, const bignum25519 in) {
@@ -39,7 +39,7 @@ void curve25519_add(bignum25519 out, const bignum25519 a, const bignum25519 b) {
 }
 
 void curve25519_add_after_basic(bignum25519 out, const bignum25519 a, const bignum25519 b) {
-	uint32_t c;
+	uint32_t c = 0;
 	out[0] = a[0] + b[0]    ; c = (out[0] >> 26); out[0] &= reduce_mask_26;
 	out[1] = a[1] + b[1] + c; c = (out[1] >> 25); out[1] &= reduce_mask_25;
 	out[2] = a[2] + b[2] + c; c = (out[2] >> 26); out[2] &= reduce_mask_26;
@@ -54,7 +54,7 @@ void curve25519_add_after_basic(bignum25519 out, const bignum25519 a, const bign
 }
 
 void curve25519_add_reduce(bignum25519 out, const bignum25519 a, const bignum25519 b) {
-	uint32_t c;
+	uint32_t c = 0;
 	out[0] = a[0] + b[0]    ; c = (out[0] >> 26); out[0] &= reduce_mask_26;
 	out[1] = a[1] + b[1] + c; c = (out[1] >> 25); out[1] &= reduce_mask_25;
 	out[2] = a[2] + b[2] + c; c = (out[2] >> 26); out[2] &= reduce_mask_26;
@@ -69,16 +69,16 @@ void curve25519_add_reduce(bignum25519 out, const bignum25519 a, const bignum255
 }
 
 /* multiples of p */
-static const uint32_t twoP0       = 0x07ffffda;
-static const uint32_t twoP13579   = 0x03fffffe;
-static const uint32_t twoP2468    = 0x07fffffe;
-static const uint32_t fourP0      = 0x0fffffb4;
-static const uint32_t fourP13579  = 0x07fffffc;
-static const uint32_t fourP2468   = 0x0ffffffc;
+const uint32_t twoP0       = 0x07ffffda;
+const uint32_t twoP13579   = 0x03fffffe;
+const uint32_t twoP2468    = 0x07fffffe;
+const uint32_t fourP0      = 0x0fffffb4;
+const uint32_t fourP13579  = 0x07fffffc;
+const uint32_t fourP2468   = 0x0ffffffc;
 
 /* out = a - b */
 void curve25519_sub(bignum25519 out, const bignum25519 a, const bignum25519 b) {
-	uint32_t c;
+	uint32_t c = 0;
 	out[0] = twoP0     + a[0] - b[0]    ; c = (out[0] >> 26); out[0] &= reduce_mask_26;
 	out[1] = twoP13579 + a[1] - b[1] + c; c = (out[1] >> 25); out[1] &= reduce_mask_25;
 	out[2] = twoP2468  + a[2] - b[2] + c; c = (out[2] >> 26); out[2] &= reduce_mask_26;
@@ -93,8 +93,8 @@ void curve25519_sub(bignum25519 out, const bignum25519 a, const bignum25519 b) {
 
 /* out = in * scalar */
 void curve25519_scalar_product(bignum25519 out, const bignum25519 in, const uint32_t scalar) {
-	uint64_t a;
-	uint32_t c;
+	uint64_t a = 0;
+	uint32_t c = 0;
 	a = mul32x32_64(in[0], scalar);     out[0] = (uint32_t)a & reduce_mask_26; c = (uint32_t)(a >> 26);
 	a = mul32x32_64(in[1], scalar) + c; out[1] = (uint32_t)a & reduce_mask_25; c = (uint32_t)(a >> 25);
 	a = mul32x32_64(in[2], scalar) + c; out[2] = (uint32_t)a & reduce_mask_26; c = (uint32_t)(a >> 26);
@@ -110,7 +110,7 @@ void curve25519_scalar_product(bignum25519 out, const bignum25519 in, const uint
 
 /* out = a - b, where a is the result of a basic op (add,sub) */
 void curve25519_sub_after_basic(bignum25519 out, const bignum25519 a, const bignum25519 b) {
-	uint32_t c;
+	uint32_t c = 0;
 	out[0] = fourP0     + a[0] - b[0]    ; c = (out[0] >> 26); out[0] &= reduce_mask_26;
 	out[1] = fourP13579 + a[1] - b[1] + c; c = (out[1] >> 25); out[1] &= reduce_mask_25;
 	out[2] = fourP2468  + a[2] - b[2] + c; c = (out[2] >> 26); out[2] &= reduce_mask_26;
@@ -125,7 +125,7 @@ void curve25519_sub_after_basic(bignum25519 out, const bignum25519 a, const bign
 }
 
 void curve25519_sub_reduce(bignum25519 out, const bignum25519 a, const bignum25519 b) {
-	uint32_t c;
+	uint32_t c = 0;
 	out[0] = fourP0     + a[0] - b[0]    ; c = (out[0] >> 26); out[0] &= reduce_mask_26;
 	out[1] = fourP13579 + a[1] - b[1] + c; c = (out[1] >> 25); out[1] &= reduce_mask_25;
 	out[2] = fourP2468  + a[2] - b[2] + c; c = (out[2] >> 26); out[2] &= reduce_mask_26;
@@ -141,7 +141,7 @@ void curve25519_sub_reduce(bignum25519 out, const bignum25519 a, const bignum255
 
 /* out = -a */
 void curve25519_neg(bignum25519 out, const bignum25519 a) {
-	uint32_t c;
+	uint32_t c = 0;
 	out[0] = twoP0     - a[0]    ; c = (out[0] >> 26); out[0] &= reduce_mask_26;
 	out[1] = twoP13579 - a[1] + c; c = (out[1] >> 25); out[1] &= reduce_mask_25;
 	out[2] = twoP2468  - a[2] + c; c = (out[2] >> 26); out[2] &= reduce_mask_26;
@@ -158,10 +158,10 @@ void curve25519_neg(bignum25519 out, const bignum25519 a) {
 /* out = a * b */
 #define curve25519_mul_noinline curve25519_mul
 void curve25519_mul(bignum25519 out, const bignum25519 a, const bignum25519 b) {
-	uint32_t r0,r1,r2,r3,r4,r5,r6,r7,r8,r9;
-	uint32_t s0,s1,s2,s3,s4,s5,s6,s7,s8,s9;
-	uint64_t m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,c;
-	uint32_t p;
+	uint32_t r0 = 0, r1 = 0, r2 = 0, r3 = 0, r4 = 0, r5 = 0, r6 = 0, r7 = 0, r8 = 0, r9 = 0;
+	uint32_t s0 = 0, s1 = 0, s2 = 0, s3 = 0, s4 = 0, s5 = 0, s6 = 0, s7 = 0, s8 = 0, s9 = 0;
+	uint64_t m0 = 0, m1 = 0, m2 = 0, m3 = 0, m4 = 0, m5 = 0, m6 = 0, m7 = 0, m8 = 0, m9 = 0, c = 0;
+	uint32_t p = 0;
 
 	r0 = b[0];
 	r1 = b[1];
@@ -255,10 +255,10 @@ void curve25519_mul(bignum25519 out, const bignum25519 a, const bignum25519 b) {
 
 /* out = in * in */
 void curve25519_square(bignum25519 out, const bignum25519 in) {
-	uint32_t r0,r1,r2,r3,r4,r5,r6,r7,r8,r9;
-	uint32_t d6,d7,d8,d9;
-	uint64_t m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,c;
-	uint32_t p;
+	uint32_t r0 = 0, r1 = 0, r2 = 0, r3 = 0, r4 = 0, r5 = 0, r6 = 0, r7 = 0, r8 = 0, r9 = 0;
+	uint32_t d6 = 0, d7 = 0, d8 = 0, d9 = 0;
+	uint64_t m0 = 0, m1 = 0, m2 = 0, m3 = 0, m4 = 0, m5 = 0, m6 = 0, m7 = 0, m8 = 0, m9 = 0, c = 0;
+	uint32_t p = 0;
 
 	r0 = in[0];
 	r1 = in[1];
@@ -328,10 +328,10 @@ void curve25519_square(bignum25519 out, const bignum25519 in) {
 
 /* out = in ^ (2 * count) */
 void curve25519_square_times(bignum25519 out, const bignum25519 in, int count) {
-	uint32_t r0,r1,r2,r3,r4,r5,r6,r7,r8,r9;
-	uint32_t d6,d7,d8,d9;
-	uint64_t m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,c;
-	uint32_t p;
+	uint32_t r0 = 0, r1 = 0, r2 = 0, r3 = 0, r4 = 0, r5 = 0, r6 = 0, r7 = 0, r8 = 0, r9 = 0;
+	uint32_t d6 = 0, d7 = 0, d8 = 0, d9 = 0;
+	uint64_t m0 = 0, m1 = 0, m2 = 0, m3 = 0, m4 = 0, m5 = 0, m6 = 0, m7 = 0, m8 = 0, m9 = 0, c = 0;
+	uint32_t p = 0;
 
 	r0 = in[0];
 	r1 = in[1];
@@ -403,7 +403,7 @@ void curve25519_square_times(bignum25519 out, const bignum25519 in, int count) {
 
 /* Take a little-endian, 32-byte number and expand it into polynomial form */
 void curve25519_expand(bignum25519 out, const unsigned char in[32]) {
-	uint32_t x0,x1,x2,x3,x4,x5,x6,x7;
+	uint32_t x0 = 0, x1 = 0, x2 = 0, x3 = 0, x4 = 0, x5 = 0, x6 = 0, x7 = 0;
 	#define F(s)							 \
 			((((uint32_t)in[s + 0])      ) | \
 			 (((uint32_t)in[s + 1]) <<  8) | \
@@ -435,7 +435,7 @@ void curve25519_expand(bignum25519 out, const unsigned char in[32]) {
  * little-endian, 32-byte array
  */
 void curve25519_contract(unsigned char out[32], const bignum25519 in) {
-	bignum25519 f;
+	bignum25519 f = {0};
 	curve25519_copy(f, in);
 
 	#define carry_pass() \
@@ -517,7 +517,7 @@ void curve25519_contract(unsigned char out[32], const bignum25519 in) {
 /* if (iswap) swap(a, b) */
 void curve25519_swap_conditional(bignum25519 a, bignum25519 b, uint32_t iswap) {
 	const uint32_t swap = (uint32_t)(-(int32_t)iswap);
-	uint32_t x0,x1,x2,x3,x4,x5,x6,x7,x8,x9;
+	uint32_t x0 = 0, x1 = 0, x2 = 0, x3 = 0, x4 = 0, x5 = 0, x6 = 0, x7 = 0, x8 = 0, x9 = 0;
 
 	x0 = swap & (a[0] ^ b[0]); a[0] ^= x0; b[0] ^= x0;
 	x1 = swap & (a[1] ^ b[1]); a[1] ^= x1; b[1] ^= x1;
@@ -557,13 +557,13 @@ void curve25519_set_sqrtneg1(bignum25519 r){
 }
 
 int curve25519_isnegative(const bignum25519 f) {
-	unsigned char s[32];
+	unsigned char s[32] = {0};
 	curve25519_contract(s, f);
 	return s[0] & 1;
 }
 
 int curve25519_isnonzero(const bignum25519 f) {
-	unsigned char s[32];
+	unsigned char s[32] = {0};
 	curve25519_contract(s, f);
 	return ((((int) (s[0] | s[1] | s[2] | s[3] | s[4] | s[5] | s[6] | s[7] | s[8] |
 									s[9] | s[10] | s[11] | s[12] | s[13] | s[14] | s[15] | s[16] | s[17] |
@@ -572,7 +572,7 @@ int curve25519_isnonzero(const bignum25519 f) {
 }
 
 void curve25519_reduce(bignum25519 out, const bignum25519 in) {
-	uint32_t c;
+	uint32_t c = 0;
 	out[0] = in[0]    ; c = (out[0] >> 26); out[0] &= reduce_mask_26;
 	out[1] = in[1] + c; c = (out[1] >> 25); out[1] &= reduce_mask_25;
 	out[2] = in[2] + c; c = (out[2] >> 26); out[2] &= reduce_mask_26;
@@ -588,7 +588,7 @@ void curve25519_reduce(bignum25519 out, const bignum25519 in) {
 
 void curve25519_divpowm1(bignum25519 r, const bignum25519 u, const bignum25519 v) {
 	bignum25519 v3={0}, uv7={0}, t0={0}, t1={0}, t2={0};
-	int i;
+	int i = 0;
 
 	curve25519_square(v3, v);
 	curve25519_mul(v3, v3, v); /* v3 = v^3 */
@@ -650,7 +650,7 @@ void curve25519_divpowm1(bignum25519 r, const bignum25519 u, const bignum25519 v
 }
 
 void curve25519_expand_reduce(bignum25519 out, const unsigned char in[32]) {
-  uint32_t x0,x1,x2,x3,x4,x5,x6,x7;
+  uint32_t x0 = 0, x1 = 0, x2 = 0, x3 = 0, x4 = 0, x5 = 0, x6 = 0, x7 = 0;
 #define F(s) \
 			((((uint32_t)in[s + 0])      ) | \
 			 (((uint32_t)in[s + 1]) <<  8) | \

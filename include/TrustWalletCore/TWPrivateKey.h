@@ -60,6 +60,11 @@ struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519Extended(struct TWPr
 TW_EXPORT_METHOD
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivateKey *_Nonnull pk);
 
+/// Computes an EC Diffie-Hellman secret in constant time
+/// Supported curves: secp256k1
+TW_EXPORT_METHOD
+TWData *_Nullable TWPrivateKeyGetSharedKey(const struct TWPrivateKey *_Nonnull pk, const struct TWPublicKey *_Nonnull publicKey, enum TWCurve curve);
+
 /// Signs a digest using ECDSA and given curve.
 TW_EXPORT_METHOD
 TWData *_Nullable TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest, enum TWCurve curve);

@@ -87,7 +87,7 @@ bool verifySelectedUTXOs(const std::vector<Proto::UnspentTransaction>& selected,
     return ret;
 }
 
-bool verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmounts, int64_t outputAmount, int64_t fee, std::string error) {
+bool verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmounts, int64_t outputAmount, int64_t fee, Common::Proto::SigningError error) {
     bool ret = true;
     if (!verifySelectedUTXOs(plan.utxos, utxoAmounts)) {
         ret = false;
@@ -113,20 +113,20 @@ bool verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmo
         ret = false;
         std::cerr << "Mismatch in change, act " << plan.change << ", exp " << expectedChange << std::endl;
     }
-    if (plan.error.length() > 0) {
-        if (error.length() > 0) {
+    if (plan.error != Common::Proto::OK) {
+        if (error != Common::Proto::OK) {
             if (plan.error != error) {
                 ret = false;
-                std::cerr << "Unexpected error, act " << plan.error << ", exp " << error << std::endl;
+                std::cerr << "Unexpected error, act " << std::to_string(plan.error) << ", exp " << std::to_string(plan.error) << std::endl;
             }
         } else {
             ret = false;
-            std::cerr << "Unexpected error " << plan.error << std::endl;
+            std::cerr << "Unexpected error " << std::to_string(plan.error) << std::endl;
         }
     } else {
-        if (error.length() > 0) {
+        if (error != Common::Proto::OK) {
             ret = false;
-            std::cerr << "Missing expected error " << error << std::endl;
+            std::cerr << "Missing expected error " << std::to_string(plan.error) << std::endl;
         }
     }
     return ret;

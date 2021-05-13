@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -21,7 +21,7 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_CLASS
 struct TWHDWallet;
 
-/// Determines if a mnemonic phrase is valid.
+/// Deprecated; use TWMnemonicIsValid().  Determines if a mnemonic phrase is valid.
 TW_EXPORT_STATIC_METHOD
 bool TWHDWalletIsValid(TWString *_Nonnull mnemonic);
 
@@ -65,11 +65,11 @@ TWString *_Nonnull TWHDWalletGetAddressForCoin(struct TWHDWallet *_Nonnull walle
 TW_EXPORT_METHOD
 struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, TWString *_Nonnull derivationPath);
 
-/// Generates the private key for the specified BIP44 path.  Returned object needs to be deleted.
+/// Shortcut method to generate private key with the specified account/change/address (bip44 standard). Returned object needs to be deleted.
 ///
 /// @see https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
 TW_EXPORT_METHOD
-struct TWPrivateKey *_Nonnull TWHDWalletGetKeyBIP44(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, uint32_t account, uint32_t change, uint32_t address);
+struct TWPrivateKey *_Nonnull TWHDWalletGetDerivedKey(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, uint32_t account, uint32_t change, uint32_t address);
 
 /// Returns the extended private key.
 TW_EXPORT_METHOD

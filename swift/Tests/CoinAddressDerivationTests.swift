@@ -70,7 +70,7 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .eos:
                     let expectedResult = "EOS6hs8sRvGSzuQtq223zwJipMzqTJpXUVjyvHPvPwBSZWWrJTJkg"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .ethereum, .smartChain:
+                case .ethereum, .smartChain, .polygon:
                     let expectedResult = "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ethereumClassic:
@@ -179,7 +179,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     let expectedResult = "via1qnmsgjd6cvfprnszdgmyg9kewtjfgqflz67wwhc"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .wanchain:
-                    let expectedResult = "0xd5CA90B928279fe5d06144136A25dEd90127Ac15"
+                    let expectedResult = "0xD5ca90b928279FE5D06144136a25DeD90127aC15"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .waves:
                     let expectedResult = "3P63vkaHhyE9pPv9EfsjwGKqmZYcCRHys4n"
@@ -204,6 +204,9 @@ class CoinAddressDerivationTests: XCTestCase {
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .oasis:
                     let expectedResult = "oasis1qr2wymrk4mmt4kyjg3rzkn6jsxku3kk6p5jvrvxz"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .thorchain:
+                    let expectedResult = "thor1c8jd7ad9pcw4k3wkuqlkz4auv95mldr2kyhc65"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()

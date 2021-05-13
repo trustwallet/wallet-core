@@ -53,6 +53,10 @@ class PrivateKey {
     /// Returns the public key for this private key.
     PublicKey getPublicKey(enum TWPublicKeyType type) const;
 
+    /// Computes an EC Diffie-Hellman secret in constant time
+    /// Supported curves: secp256k1
+    Data getSharedKey(const PublicKey& publicKey, TWCurve curve) const;
+
     /// Signs a digest using the given ECDSA curve.
     Data sign(const Data& digest, TWCurve curve) const;
 

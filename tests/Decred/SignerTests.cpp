@@ -425,5 +425,5 @@ TEST(DecredSigning, SignP2WPKH_NegativeAddressWrongType) {
     // Sign
     auto result = Signer(std::move(input)).sign();
 
-    ASSERT_FALSE(result) << result.error();
+    ASSERT_FALSE(result) << std::to_string(result.error());
 }

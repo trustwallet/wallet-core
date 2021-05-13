@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.Bitcoin.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 message Transaction {
     // Transaction data format version.
     sint32 version = 1;
@@ -120,8 +122,8 @@ message TransactionPlan {
     // Zcash branch id
     bytes branch_id = 6;
 
-    // Optional error message
-    string error = 7;
+    // Optional error
+    Common.Proto.SigningError error = 7;
 };
 
 // Transaction signing output.
@@ -135,6 +137,6 @@ message SigningOutput {
     // Transaction id
     string transaction_id = 3;
 
-    // Optional error message
-    string error = 4;
+    // Optional error
+    Common.Proto.SigningError error = 4;
 }
