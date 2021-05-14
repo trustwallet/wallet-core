@@ -45,20 +45,11 @@ build_mac_x64_arm64() {
 create_xc_framework() {
     echo "Createing xcframework..."
 
-    pushd ${BUILD_FOLDER}
-
-    rm -rf ${FRAMEWORK}.xcframework && mkdir ${FRAMEWORK}.xcframework
-    cp ../../swift/common-Info.plist $FRAMEWORK.xcframework/Info.plist
-    for xcarchive in *.xcarchive; do
-        arch=${xcarchive%.*}
-        source_fw=Products/Library/Frameworks/${FRAMEWORK}.framework
-        target=${FRAMEWORK}.xcframework/${arch}
-        mkdir ${target}
-        cp -RL ${xcarchive}/${source_fw}/Headers ${target}
-        cp ${xcarchive}/${source_fw}/${FRAMEWORK} ${target}/lib${FRAMEWORK}.a
-    done
-
-    popd
+    xcodebuild -create-xcframework -output ${BUILD_FOLDER}/$FRAMEWORK.xcframework \
+               -framework ${BUILD_FOLDER}/ios-x86_64_arm64-maccatalyst.xcarchive/Products/Library/Frameworks/${FRAMEWORK}.framework \
+               -framework ${BUILD_FOLDER}/ios-arm64.xcarchive/Products/Library/Frameworks/${FRAMEWORK}.framework \
+               -framework ${BUILD_FOLDER}/ios-arm64_x86_64-simulator.xcarchive/Products/Library/Frameworks/${FRAMEWORK}.framework \
+               -framework ${BUILD_FOLDER}/macos-arm64_x86_64.xcarchive/Products/Library/Frameworks/${FRAMEWORK}.framework
 }
 
 main() {
