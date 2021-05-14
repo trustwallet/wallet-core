@@ -77,9 +77,6 @@ Pod::Spec.new do |s|
       'include/**/*.h',
       'Sources/*.h'
     ss.libraries = 'c++'
-    ss.xcconfig = {
-        'OTHER_LDFLAGS' => '\$(inherited) -fprofile-instr-generate'
-    }
     ss.dependency 'TrustWalletCore/Types'
   end
 end
