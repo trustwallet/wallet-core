@@ -1213,8 +1213,8 @@
     "symbol": "ROSE",
     "decimals": 9,
     "blockchain": "OasisNetwork",
-    "derivationPath": "m/44'/474'/0'/0'/0'",
-    "curve": "ed25519HD",
+    "derivationPath": "m/44'/474'/0'",
+    "curve": "ed25519",
     "publicKeyType": "ed25519",
     "hrp": "oasis",
     "explorer": {
