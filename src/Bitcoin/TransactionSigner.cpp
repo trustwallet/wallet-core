@@ -275,9 +275,9 @@ Data TransactionSigner<Transaction, TransactionBuilder>::keyForPublicKeyHash(con
     for (auto& key : input.private_key()) {
         auto pubKeyExtended = PrivateKey(key).getPublicKey(TWPublicKeyTypeSECP256k1Extended);
         auto pubKey = pubKeyExtended.compressed();
-        auto keyHash = Hash::sha256ripemd(pubKey.bytes.data(), pubKey.bytes.size());
-        auto keyHash2 = Hash::sha256ripemd(pubKeyExtended.bytes.data(), pubKeyExtended.bytes.size());
-        if (keyHash == hash || keyHash2 == hash) {
+        if (Hash::sha256ripemd(pubKey.bytes.data(), pubKey.bytes.size()) == hash) {
+            return Data(key.begin(), key.end());
+        } else if (Hash::sha256ripemd(pubKeyExtended.bytes.data(), pubKeyExtended.bytes.size()) == hash) {
             return Data(key.begin(), key.end());
         }
     }
