@@ -138,7 +138,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         let key = PrivateKey(data: decoded[1 ..< 33])!
         let pubkey = key.getPublicKeySecp256k1(compressed: false)
 
-        // shortcut methods only support s compressed public key
+        // shortcut methods only support compressed public key
         let address = BitcoinAddress(data: [0x0] + Hash.sha256RIPEMD(data: pubkey.data))!
         let script = BitcoinScript.lockScriptForAddress(address: address.description, coin: .bitcoin)
 
