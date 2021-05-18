@@ -15,9 +15,9 @@ init() {
     xcodegen -s common-xcframework.yml
     popd
 
-    rm -rf $BUILD_FOLDER/*.xcarchive
-    rm -rf $BUILD_FOLDER/${FRAMEWORK}.xcframework
-    rm -rf $BUILD_FOLDER/${FRAMEWORK}.xcframework.*
+    rm -rf ${BUILD_FOLDER}/*.xcarchive
+    rm -rf ${BUILD_FOLDER}/${FRAMEWORK}.xcframework
+    rm -rf ${BUILD_FOLDER}/${FRAMEWORK}.xcframework.*
 }
 
 # build destination archivePath
@@ -39,22 +39,19 @@ build_ios_mac_catalyst() {
 }
 
 build_mac_x64_arm64() {
-    build "${FRAMEWORK}_macOS" "generic/platform=macOS" "macos-x86_64_arm64"
+    build "${FRAMEWORK}_macOS" "generic/platform=macOS" "macos-arm64_x86_64"
 }
 
 create_xc_framework() {
     echo "Createing xcframework..."
     xcodebuild -create-xcframework -output $BUILD_FOLDER/$FRAMEWORK.xcframework \
-               -framework $BUILD_FOLDER/ios-x86_64_arm64-maccatalyst.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework \
                -framework $BUILD_FOLDER/ios-arm64.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework \
-               -framework $BUILD_FOLDER/ios-arm64_x86_64-simulator.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework \
-               -framework $BUILD_FOLDER/macos-x86_64_arm64.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework
+               -framework $BUILD_FOLDER/ios-arm64_x86_64-simulator.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework
 }
 
 main() {
     init
-    build_ios_arm64 && build_ios_simulator && build_ios_mac_catalyst
-    build_mac_x64_arm64
+    build_ios_arm64 && build_ios_simulator
     create_xc_framework
 }
 
