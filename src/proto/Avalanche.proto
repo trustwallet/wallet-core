@@ -127,7 +127,7 @@ message TransferableInput {
 
 message InitialState {
     uint32 fx_id = 1;                  // 04 bytes
-    repeated TransferableOutput outputs = 2;       // 04 + size(outputs) bytes
+    repeated TransactionOutput outputs = 2;       // 04 + size(outputs) bytes
 }
 
 message BaseTx {

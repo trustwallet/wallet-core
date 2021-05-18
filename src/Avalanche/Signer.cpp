@@ -108,6 +108,60 @@ std::vector<TransferableOutput> structToOutputs(const google::protobuf::Repeated
     return outputs;
 }
 
+// A possible future improvement is to refactor above structToOutputs and below extractOutputsFromInitialState to remove duped code
+std::vector<std::unique_ptr<TransactionOutput>> extractOutputsFromInitialState(TW::Avalanche::Proto::InitialState stateStruct) noexcept {
+    std::vector<std::unique_ptr<TransactionOutput>> outputs;
+    for (auto &outputStruct : stateStruct.outputs()) {
+        switch (outputStruct.output_case()) {
+            case Proto::TransactionOutput::kSecpTransferOutput: {
+                auto secpTxferStruct = outputStruct.secp_transfer_output();
+                auto amount = secpTxferStruct.amount();
+                auto locktime = secpTxferStruct.locktime();
+                auto threshold = secpTxferStruct.threshold();
+                auto addresses = structToAddresses(secpTxferStruct.addresses());
+
+                auto txnOutput = std::make_unique<SECP256k1TransferOutput>(amount, locktime, threshold, addresses);
+                outputs.push_back(std::move(txnOutput));
+                break;
+            }
+            case Proto::TransactionOutput::kSecpMintOutput: {
+                auto secpMintStruct = outputStruct.secp_mint_output();
+                auto locktime = secpMintStruct.locktime();
+                auto threshold = secpMintStruct.threshold();
+                auto addresses = structToAddresses(secpMintStruct.addresses());
+                
+                auto txnOutput = std::make_unique<SECP256k1MintOutput>(locktime, threshold, addresses);
+                outputs.push_back(std::move(txnOutput));
+                break;
+            }
+            case Proto::TransactionOutput::kNftTransferOutput: {
+                auto nftTxferStruct = outputStruct.nft_transfer_output();
+                auto groupID = nftTxferStruct.group_id();
+                auto payload = Data(nftTxferStruct.payload().begin(), nftTxferStruct.payload().end());
+                auto locktime = nftTxferStruct.locktime();
+                auto threshold = nftTxferStruct.threshold();
+                auto addresses = structToAddresses(nftTxferStruct.addresses());
+                
+                auto txnOutput = std::make_unique<NFTTransferOutput>(groupID, payload, locktime, threshold, addresses);
+                outputs.push_back(std::move(txnOutput));
+                break;
+            }
+            case Proto::TransactionOutput::kNftMintOutput: {
+                auto nftMintStruct = outputStruct.nft_mint_output();
+                auto groupID = nftMintStruct.group_id();
+                auto locktime = nftMintStruct.locktime();
+                auto threshold = nftMintStruct.threshold();
+                auto addresses = structToAddresses(nftMintStruct.addresses());
+
+                auto txnOutput = std::make_unique<NFTMintOutput>(groupID, locktime, threshold, addresses);
+                outputs.push_back(std::move(txnOutput));
+                break;
+            }
+        } // end switch-case deciding which output struct to build
+    } // end for loop building output structs
+    return outputs;
+}
+
 std::vector<TransferableOp> structToOperations(google::protobuf::RepeatedPtrField<TW::Avalanche::Proto::TransferableOp> opsStruct) noexcept {
     std::vector<TransferableOp> ops;
     for (auto &op : opsStruct) {
@@ -229,12 +283,7 @@ UnsignedCreateAssetTransaction buildCreateAssetTx(const Proto::SigningInput &inp
                 fxID = InitialState::FeatureExtension::NFT;
                 break;
         } // end switch-case setting fx id
-        auto outputs = structToOutputs(stateStruct.outputs());
-        // this gives std::vector<TransferableOutput>. need std::vector<TransactionOutput*>.
-        std::vector<std::unique_ptr<TransactionOutput>> outputPointers;
-        for (auto &output : outputs) {
-            outputPointers.push_back(output.Output->duplicate());
-        }
+        std::vector<std::unique_ptr<TransactionOutput>> outputPointers = extractOutputsFromInitialState(stateStruct);
         auto initialState = InitialState(fxID, std::move(outputPointers));
         initialStates.push_back(initialState);
     }    
