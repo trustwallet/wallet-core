@@ -6,6 +6,7 @@
 
 #include "TransactionSigner.h"
 
+#include "KeyPair.h"
 #include "TransactionInput.h"
 #include "TransactionOutput.h"
 #include "UnspentSelector.h"
@@ -16,6 +17,7 @@
 #include "../HexCoding.h"
 #include "../Zcash/Transaction.h"
 #include "../Groestlcoin/Transaction.h"
+#include <tuple>
 
 using namespace TW;
 using namespace TW::Bitcoin;
@@ -171,13 +173,12 @@ Result<std::vector<Data>, Common::Proto::SigningError> TransactionSigner<Transac
                 break;
             }
             auto keyHash = Hash::ripemd(Hash::sha256(pubKey));
-            auto key = keyForPublicKeyHash(keyHash);
-            if (key.empty() && !estimationMode) {
+            auto pair = keyPairForPubKeyHash(keyHash);
+            if (!pair.has_value() && !estimationMode) {
                 // Error: missing key
                 return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
             }
-            auto signature =
-                createSignature(transactionToSign, script, key, index, utxo.amount(), version);
+            auto signature = createSignature(transactionToSign, script, pair, index, utxo.amount(), version);
             if (signature.empty()) {
                 // Error: Failed to sign
                 return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
@@ -189,13 +190,12 @@ Result<std::vector<Data>, Common::Proto::SigningError> TransactionSigner<Transac
     }
     if (script.matchPayToPublicKey(data)) {
         auto keyHash = Hash::ripemd(Hash::sha256(data));
-        auto key = keyForPublicKeyHash(keyHash);
-        if (key.empty() && !estimationMode) {
+        auto pair = keyPairForPubKeyHash(keyHash);
+        if (!pair.has_value() && !estimationMode) {
             // Error: Missing key
             return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
         }
-        auto signature =
-            createSignature(transactionToSign, script, key, index, utxo.amount(), version);
+        auto signature = createSignature(transactionToSign, script, pair, index, utxo.amount(), version);
         if (signature.empty()) {
             // Error: Failed to sign
             return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
@@ -203,23 +203,21 @@ Result<std::vector<Data>, Common::Proto::SigningError> TransactionSigner<Transac
         return Result<std::vector<Data>, Common::Proto::SigningError>::success({signature});
     }
     if (script.matchPayToPublicKeyHash(data)) {
-        auto key = keyForPublicKeyHash(data);
-        if (key.empty() && !estimationMode) {
+        auto pair = keyPairForPubKeyHash(data);
+        if (!pair.has_value() && !estimationMode) {
             // Error: Missing keys
             return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
         }
-
-        auto signature =
-            createSignature(transactionToSign, script, key, index, utxo.amount(), version);
+        auto signature = createSignature(transactionToSign, script, pair, index, utxo.amount(), version);
         if (signature.empty()) {
             // Error: Failed to sign
             return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
         }
-        if (key.empty() && estimationMode) {
+        if (!pair.has_value() && estimationMode) {
             // estimation mode, key is missing: use placeholder for public key
             return Result<std::vector<Data>, Common::Proto::SigningError>::success({signature, Data(PublicKey::secp256k1Size)});
         }
-        auto pubkey = PrivateKey(key).getPublicKey(TWPublicKeyTypeSECP256k1);
+        auto pubkey = std::get<1>(pair.value());
         return Result<std::vector<Data>, Common::Proto::SigningError>::success({signature, pubkey.bytes});
     }
     // Error: Invalid output script
@@ -227,14 +225,19 @@ Result<std::vector<Data>, Common::Proto::SigningError> TransactionSigner<Transac
 }
 
 template <typename Transaction, typename TransactionBuilder>
-Data TransactionSigner<Transaction, TransactionBuilder>::createSignature(const Transaction& transaction,
-                                                     const Script& script, const Data& key,
-                                                     size_t index, Amount amount,
-                                                     uint32_t version) const {
+Data TransactionSigner<Transaction, TransactionBuilder>::createSignature(
+    const Transaction& transaction,
+    const Script& script, 
+    const std::optional<KeyPair>& pair,
+    size_t index,
+    Amount amount,
+    uint32_t version
+) const {
     if (estimationMode) {
         // Don't sign, only estimate signature size. It is 71-72 bytes.  Return placeholder.
         return Data(72);
     }
+    auto key = std::get<0>(pair.value());
     Data sighash = transaction.getSignatureHash(script, index, static_cast<TWBitcoinSigHashType>(input.hash_type()), amount,
                                                 static_cast<SignatureVersion>(version));
     auto pk = PrivateKey(key);
@@ -271,14 +274,15 @@ Data TransactionSigner<Transaction, TransactionBuilder>::pushAll(const std::vect
 }
 
 template <typename Transaction, typename TransactionBuilder>
-Data TransactionSigner<Transaction, TransactionBuilder>::keyForPublicKeyHash(const Data& hash) const {
+std::optional<KeyPair> TransactionSigner<Transaction, TransactionBuilder>::keyPairForPubKeyHash(const Data& hash) const {
     for (auto& key : input.private_key()) {
-        auto pubKeyExtended = PrivateKey(key).getPublicKey(TWPublicKeyTypeSECP256k1Extended);
+        auto privKey = PrivateKey(key);
+        auto pubKeyExtended = privKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
         auto pubKey = pubKeyExtended.compressed();
         if (Hash::sha256ripemd(pubKey.bytes.data(), pubKey.bytes.size()) == hash) {
-            return Data(key.begin(), key.end());
+            return std::make_tuple(privKey, pubKey);
         } else if (Hash::sha256ripemd(pubKeyExtended.bytes.data(), pubKeyExtended.bytes.size()) == hash) {
-            return Data(key.begin(), key.end());
+            return std::make_tuple(privKey, pubKeyExtended);
         }
     }
     return {};

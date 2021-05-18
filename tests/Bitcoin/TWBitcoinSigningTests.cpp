@@ -1366,5 +1366,5 @@ TEST(BitcoinSigning, RedeemExtendedPubkeyUTXO) {
 
     Data encoded;
     signer.encodeTx(signedTx, encoded);
-    EXPECT_EQ(encoded.size(), 339);
+    EXPECT_EQ(encoded.size(), 402);
 }
