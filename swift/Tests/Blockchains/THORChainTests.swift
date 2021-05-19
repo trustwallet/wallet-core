@@ -28,7 +28,7 @@ class THORChainSignerTests: XCTestCase {
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         let fromAddress = AnyAddress(publicKey: publicKey, coin: .thorchain)
 
-        let sendCoinsMessage = CosmosMessage.Send.with {
+        let sendCoinsMessage = THORChainMessage.Send.with {
             $0.fromAddress = fromAddress.description
             $0.toAddress = "thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn"
             $0.amounts = [CosmosAmount.with {
@@ -49,7 +49,7 @@ class THORChainSignerTests: XCTestCase {
             }]
         }
 
-        let input = CosmosSigningInput.with {
+        let input = THORChainSigningInput.with {
             $0.accountNumber = 593
             $0.chainID = "thorchain"
             $0.memo = ""
@@ -59,7 +59,7 @@ class THORChainSignerTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .thorchain)
+        let output: THORChainSigningOutput = AnySigner.sign(input: input, coin: .thorchain)
 
         let expectedJSON: String =
 """
