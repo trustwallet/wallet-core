@@ -35,7 +35,7 @@ class DecredTests: XCTestCase {
         // https://mainnet.decred.org/tx/bcc5228e9d956918984d1853c31d7edcd862f8a7fca20ded114d93f8a74ad32a
         let key = PrivateKey(data: Data(hexString: "ba005cd605d8a02e3d5dfd04234cef3a3ee4f76bfbad2722d1fb5af8e12e6764")!)!
 
-        let txHash = Data(Data(hexString: "5015d14dcfd78998cfa13e0325798a74d95bbe75f167a49467303f70dde9bffd")!.reversed())
+        let txHash = Data.reverse(hexString: "5015d14dcfd78998cfa13e0325798a74d95bbe75f167a49467303f70dde9bffd")
         let utxoAddress = CoinType.decred.deriveAddress(privateKey: key)
         let script = BitcoinScript.lockScriptForAddress(address: utxoAddress, coin: .decred)
 
