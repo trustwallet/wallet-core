@@ -58,7 +58,7 @@ class TestTHORChainSigner {
             addAllAmounts(listOf(feeAmount))
         }.build()
 
-        val signingInput = Cosmos.SigningInput.newBuilder().apply {
+        val signingInput = THORCHAIN.SigningInput.newBuilder().apply {
             accountNumber = 593
             chainId = "thorchain"
             memo = ""
