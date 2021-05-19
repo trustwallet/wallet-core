@@ -4,12 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Bitcoin/Address.h"
 #include "Bitcoin/OutPoint.h"
 #include "Bitcoin/Script.h"
 #include "Bitcoin/Transaction.h"
 #include "Bitcoin/TransactionBuilder.h"
 #include "Bitcoin/TransactionSigner.h"
 #include "Bitcoin/SigHashType.h"
+#include "Base58.h"
 #include "Hash.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
@@ -17,10 +19,12 @@
 #include "TxComparisonHelper.h"
 #include "../interface/TWTestUtilities.h"
 
-#include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWAnySigner.h>
+#include <TrustWalletCore/TWBitcoinScript.h>
+#include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWPrivateKey.h>
+#include <TrustWalletCore/TWPublicKeyType.h>
 
 #include <gtest/gtest.h>
 #include <cassert>
@@ -1305,4 +1309,62 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
                 "21"  "036739829f2cfec79cfe6aaf1c22ecb7d4867dfd8ab4deb7121b36a00ab646caed"
         "00000000" // nLockTime
     );
+}
+
+TEST(BitcoinSigning, RedeemExtendedPubkeyUTXO) {
+    auto wif = "L4BeKzm3AHDUMkxLRVKTSVxkp6Hz9FcMQPh18YCKU1uioXfovzwP";
+    auto decoded = Base58::bitcoin.decodeCheck(wif);
+    auto key = PrivateKey(Data(decoded.begin() + 1, decoded.begin() + 33));
+    auto pubkey = key.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
+    auto hash = Hash::sha256ripemd(pubkey.bytes.data(), pubkey.bytes.size());
+
+    Data data;
+    append(data, 0x00);
+    append(data, hash);
+    auto address = Bitcoin::Address(data);
+    auto addressString = address.string();
+
+    EXPECT_EQ(addressString, "1PAmpW5igXUJnuuzRa5yTcsWHwBamZG7Y2");
+
+    // Setup input for Plan
+    Proto::SigningInput input;
+    input.set_coin_type(TWCoinTypeBitcoin);
+    input.set_hash_type(hashTypeForCoin(TWCoinTypeBitcoin));
+    input.set_amount(26972);
+    input.set_use_max_amount(true);
+    input.set_byte_fee(1);
+    input.set_to_address(addressString);
+
+    auto utxo0Script = Script::lockScriptForAddress(addressString, TWCoinTypeBitcoin);
+
+    auto utxo0 = input.add_utxo();
+    utxo0->set_script(utxo0Script.bytes.data(), utxo0Script.bytes.size());
+    utxo0->set_amount(16874);
+    auto hash0 = parse_hex("6ae3f1d245521b0ea7627231d27d613d58c237d6bf97a1471341a3532e31906c");
+    std::reverse(hash0.begin(), hash0.end());
+    utxo0->mutable_out_point()->set_hash(hash0.data(), hash0.size());
+    utxo0->mutable_out_point()->set_index(0);
+    utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    auto utxo1 = input.add_utxo();
+    utxo1->set_script(utxo0Script.bytes.data(), utxo0Script.bytes.size());
+    utxo1->set_amount(10098);
+    auto hash1 = parse_hex("fd1ea8178228e825d4106df0acb61a4fb14a8f04f30cd7c1f39c665c9427bf13");
+    std::reverse(hash1.begin(), hash1.end());
+    utxo1->mutable_out_point()->set_hash(hash1.data(), hash1.size());
+    utxo1->mutable_out_point()->set_index(0);
+    utxo1->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    input.add_private_key(key.bytes.data(), key.bytes.size());
+
+    // Sign
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
+    auto result = signer.sign();
+
+    ASSERT_TRUE(result) << std::to_string(result.error());
+    auto signedTx = result.payload();
+
+    Data encoded;
+    signer.encodeTx(signedTx, encoded);
+    EXPECT_EQ(encoded.size(), 402);
 }

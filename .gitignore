@@ -54,3 +54,5 @@ samples/cpp/*.cmake
 # built binary
 samples/cpp/sample
 
+*.xcuserdatad/
+
