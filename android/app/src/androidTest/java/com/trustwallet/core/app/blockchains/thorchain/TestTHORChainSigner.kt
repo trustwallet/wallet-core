@@ -71,7 +71,7 @@ class TestTHORChainSigner {
         val output = AnySigner.sign(signingInput, THORCHAIN, SigningOutput.parser())
         val jsonPayload = output.json
 
-        val expectedJsonPayload = """{"mode":"block","tx":{"fee":{"amount":[{"amount":"2000000","denom":"rune"}],"gas":"200000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"2000000","denom":"rune"}],"from_address":"thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r","to_address":"thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A+2Zfjls9CkvX85aQrukFZnM1dluMTFUp8nqcEneMXx3"},"signature":"M+AkGL5zZi8gZ2WTqNrcjYsf9YV8nWSuAzAuw7udWBojoNCDC3J0x5yVH2qjUccTGVBQyOENRANGRpf0rF+Nww=="}]}}"""
+        val expectedJsonPayload = """{"mode":"block","tx":{"fee":{"amount":[{"amount":"2000000","denom":"rune"}],"gas":"200000"},"memo":"","msg":[{"type":"thorchain/MsgSend","value":{"amount":[{"amount":"2000000","denom":"rune"}],"from_address":"thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r","to_address":"thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A+2Zfjls9CkvX85aQrukFZnM1dluMTFUp8nqcEneMXx3"},"signature":"M+AkGL5zZi8gZ2WTqNrcjYsf9YV8nWSuAzAuw7udWBojoNCDC3J0x5yVH2qjUccTGVBQyOENRANGRpf0rF+Nww=="}]}}"""
         assertEquals(expectedJsonPayload, jsonPayload)
     }
 }

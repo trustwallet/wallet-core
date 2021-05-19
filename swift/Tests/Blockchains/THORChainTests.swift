@@ -78,7 +78,7 @@ class THORChainSignerTests: XCTestCase {
         "memo": "",
         "msg": [
             {
-                "type": "cosmos-sdk/MsgSend",
+                "type": "thorchain/MsgSend",
                 "value": {
                     "amount": [
                         {

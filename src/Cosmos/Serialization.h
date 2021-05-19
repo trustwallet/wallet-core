@@ -8,6 +8,7 @@
 
 #include "../proto/Cosmos.pb.h"
 #include "Data.h"
+#include <TrustWalletCore/TWCoinType.h>
 #include <nlohmann/json.hpp>
 
 using string = std::string;
@@ -22,7 +23,7 @@ extern const string TYPE_PREFIX_PUBLIC_KEY;
 
 namespace TW::Cosmos {
 
-json signaturePreimage(const Proto::SigningInput& input);
-json transactionJSON(const Proto::SigningInput& input, const Data& signature);
+json signaturePreimage(const Proto::SigningInput& input, TWCoinType coin);
+json transactionJSON(const Proto::SigningInput& input, const Data& signature, TWCoinType coin);
 
 } // namespace

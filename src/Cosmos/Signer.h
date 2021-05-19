@@ -8,6 +8,7 @@
 
 #include "../Data.h"
 #include "../proto/Cosmos.pb.h"
+#include <TrustWalletCore/TWCoinType.h>
 
 namespace TW::Cosmos {
 
@@ -15,9 +16,9 @@ namespace TW::Cosmos {
 class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input, TWCoinType coin = TWCoinTypeCosmos) noexcept;
     /// Signs a json Proto::SigningInput with private key
-    static std::string signJSON(const std::string& json, const Data& key);
+    static std::string signJSON(const std::string& json, const Data& key, TWCoinType coin = TWCoinTypeCosmos);
 };
 
 } // namespace TW::Cosmos
