@@ -16,24 +16,24 @@
 using namespace TW;
 using namespace TW::Cosmos;
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, TWCoinType coin) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto key = PrivateKey(input.private_key());
-    auto preimage = signaturePreimage(input, coin).dump();
+    auto preimage = signaturePreimage(input).dump();
     auto hash = Hash::sha256(preimage);
     auto signedHash = key.sign(hash, TWCurveSECP256k1);
 
     auto output = Proto::SigningOutput();
     auto signature = Data(signedHash.begin(), signedHash.end() - 1);
-    auto txJson = transactionJSON(input, signature, coin);
+    auto txJson = transactionJSON(input, signature);
     output.set_json(txJson.dump());
     output.set_signature(signature.data(), signature.size());
     return output;
 }
 
-std::string Signer::signJSON(const std::string& json, const Data& key, TWCoinType coin) {
+std::string Signer::signJSON(const std::string& json, const Data& key) {
     auto input = Proto::SigningInput();
     google::protobuf::util::JsonStringToMessage(json, &input);
     input.set_private_key(key.data(), key.size());
-    auto output = Signer::sign(input, coin);
+    auto output = Signer::sign(input);
     return output.json();
 }

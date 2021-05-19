@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,11 +7,12 @@
 #pragma once
 
 #include "../Data.h"
-#include "../proto/Cosmos.pb.h"
+#include "../proto/THORChain.pb.h"
+#include <TrustWalletCore/TWCoinType.h>
 
-namespace TW::Cosmos {
+namespace TW::THORChain {
 
-/// Helper class that performs Cosmos transaction signing.
+/// Helper class that performs THORChain transaction signing.
 class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
@@ -20,4 +21,4 @@ class Signer {
     static std::string signJSON(const std::string& json, const Data& key);
 };
 
-} // namespace TW::Cosmos
+} // namespace TW::THORChain

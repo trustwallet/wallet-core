@@ -8,7 +8,6 @@
 
 #include "../Cosmos/Address.h"
 #include "../proto/Cosmos.pb.h"
-#include <TrustWalletCore/TWCoinType.h>
 #include "Base64.h"
 #include "PrivateKey.h"
 
@@ -70,13 +69,8 @@ static json feeJSON(const Proto::Fee& fee) {
     };
 }
 
-static json messageSend(const Proto::Message_Send& message, TWCoinType coin) {
-    auto defaultType = TYPE_PREFIX_MSG_SEND;
-    // exception for THORChain
-    if (coin == TWCoinTypeTHORChain) {
-        defaultType = "thorchain/MsgSend";
-    }
-    auto typePrefix = message.type_prefix().empty() ? defaultType : message.type_prefix();
+static json messageSend(const Proto::Message_Send& message) {
+    auto typePrefix = message.type_prefix().empty() ? TYPE_PREFIX_MSG_SEND : message.type_prefix();
     return {
         {"type", typePrefix},
         {"value", {
@@ -145,11 +139,11 @@ static json messageRawJSON(const Proto::Message_RawJSON& message) {
         {"value", json::parse(message.value())},
     };
 }
-static json messagesJSON(const Proto::SigningInput& input, TWCoinType coin) {
+static json messagesJSON(const Proto::SigningInput& input) {
     json j = json::array();
     for (auto& msg : input.messages()) {
         if (msg.has_send_coins_message()) {
-            j.push_back(messageSend(msg.send_coins_message(), coin));
+            j.push_back(messageSend(msg.send_coins_message()));
         } else if (msg.has_stake_message()) {
             j.push_back(messageDelegate(msg.stake_message()));
         } else if (msg.has_unstake_message()) {
@@ -175,24 +169,24 @@ static json signatureJSON(const Data& signature, const Data& pubkey) {
     };
 }
 
-json Cosmos::signaturePreimage(const Proto::SigningInput& input, TWCoinType coin) {
+json Cosmos::signaturePreimage(const Proto::SigningInput& input) {
     return {
         {"account_number", std::to_string(input.account_number())},
         {"chain_id", input.chain_id()},
         {"fee", feeJSON(input.fee())},
         {"memo", input.memo()},
-        {"msgs", messagesJSON(input, coin)},
+        {"msgs", messagesJSON(input)},
         {"sequence", std::to_string(input.sequence())}
     };
 }
 
-json Cosmos::transactionJSON(const Proto::SigningInput& input, const Data& signature, TWCoinType coin) {
+json Cosmos::transactionJSON(const Proto::SigningInput& input, const Data& signature) {
     auto privateKey = PrivateKey(input.private_key());
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     json tx = {
         {"fee", feeJSON(input.fee())},
         {"memo", input.memo()},
-        {"msg", messagesJSON(input, coin)},
+        {"msg", messagesJSON(input)},
         {"signatures", json::array({
             signatureJSON(signature, Data(publicKey.bytes))
         })}
