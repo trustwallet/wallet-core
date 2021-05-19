@@ -27,5 +27,5 @@ void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) con
 }
 
 string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const { 
-    return Cosmos::Signer::signJSON(json, key);
+    return Signer::signJSON(json, key);
 }

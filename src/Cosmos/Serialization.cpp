@@ -71,6 +71,7 @@ static json feeJSON(const Proto::Fee& fee) {
 
 static json messageSend(const Proto::Message_Send& message) {
     auto typePrefix = message.type_prefix().empty() ? TYPE_PREFIX_MSG_SEND : message.type_prefix();
+
     return {
         {"type", typePrefix},
         {"value", {
