@@ -7,6 +7,7 @@
 #include "Entry.h"
 
 #include "Signer.h"
+#include "../proto/Cosmos.pb.h"
 
 using namespace TW::THORChain;
 using namespace std;
@@ -14,7 +15,10 @@ using namespace std;
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+    auto input = Cosmos::Proto::SigningInput();
+    input.ParseFromArray(dataIn.data(), (int)dataIn.size());
+    auto serializedOut = Signer::sign(input).SerializeAsString();
+    dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
 }
 
 string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const { 

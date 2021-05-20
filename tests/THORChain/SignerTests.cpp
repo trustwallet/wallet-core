@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "proto/THORChain.pb.h"
+#include "proto/Cosmos.pb.h"
 #include "THORChain/Signer.h"
 #include "HexCoding.h"
 
@@ -14,7 +14,7 @@
 using namespace TW;
 
 TEST(THORChainSigner, SignTx) {
-    auto input = THORChain::Proto::SigningInput();
+    auto input = Cosmos::Proto::SigningInput();
     input.set_memo("memo1234");
 
     auto msg = input.add_messages();
