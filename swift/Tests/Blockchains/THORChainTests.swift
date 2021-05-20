@@ -37,7 +37,7 @@ class THORChainSignerTests: XCTestCase {
             }]
         }
 
-        let message = THORChainMessage.with {
+        let message = CosmosMessage.with {
             $0.sendCoinsMessage = sendCoinsMessage
         }
 
@@ -49,7 +49,7 @@ class THORChainSignerTests: XCTestCase {
             }]
         }
 
-        let input = THORChainSigningInput.with {
+        let input = CosmosSigningInput.with {
             $0.accountNumber = 593
             $0.chainID = "thorchain"
             $0.memo = ""
@@ -59,7 +59,7 @@ class THORChainSignerTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output: THORChainSigningOutput = AnySigner.sign(input: input, coin: .thorchain)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .thorchain)
 
         let expectedJSON: String =
 """

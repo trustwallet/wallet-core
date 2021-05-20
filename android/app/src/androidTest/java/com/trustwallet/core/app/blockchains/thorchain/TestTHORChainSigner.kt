@@ -18,8 +18,6 @@ import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType.THORCHAIN
 import wallet.core.jni.proto.Cosmos
 import wallet.core.jni.proto.Cosmos.SigningOutput
-import wallet.core.jni.proto.THORChain
-import wallet.core.jni.proto.THORChain.SigningOutput
 import wallet.core.jni.*
 
 class TestTHORChainSigner {
@@ -46,7 +44,7 @@ class TestTHORChainSigner {
             addAllAmounts(listOf(txAmount))
         }.build()
 
-        val message = THORChain.Message.newBuilder().apply {
+        val message = Cosmos.Message.newBuilder().apply {
             sendCoinsMessage = sendCoinsMsg
         }.build()
 
@@ -60,7 +58,7 @@ class TestTHORChainSigner {
             addAllAmounts(listOf(feeAmount))
         }.build()
 
-        val signingInput = THORChain.SigningInput.newBuilder().apply {
+        val signingInput = Cosmos.SigningInput.newBuilder().apply {
             accountNumber = 593
             chainId = "thorchain"
             memo = ""
