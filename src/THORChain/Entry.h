@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,26 +7,19 @@
 #pragma once
 
 #include "../CoinEntry.h"
+#include "../Cosmos/Entry.h"
 
-namespace TW::Cosmos {
+namespace TW::THORChain {
 
-/// Entry point for implementation of Cosmos coin.
+/// Entry point for implementation of THORChain coin.
 /// Note: do not put the implementation here (no matter how simple), to avoid having coin-specific includes in this file
-class Entry: public CoinEntry {
+class Entry: public Cosmos::Entry {
 public:
     virtual const std::vector<TWCoinType> coinTypes() const {
-        return {
-            TWCoinTypeCosmos,
-            TWCoinTypeKava,
-            TWCoinTypeTerra,
-            TWCoinTypeBandChain,
-        };
+        return { TWCoinTypeTHORChain };
     }
-    virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;
-    virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
-    virtual bool supportsJSONSigning() const { return true; }
     virtual std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const;
 };
 
-} // namespace TW::Cosmos
+} // namespace TW::THORChain
