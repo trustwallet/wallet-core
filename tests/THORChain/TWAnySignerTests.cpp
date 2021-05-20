@@ -20,7 +20,7 @@ TEST(THORChainTWAnySigner, SignTx) {
     Cosmos::Proto::SigningInput input;
     input.set_account_number(593);
     input.set_chain_id("thorchain");
-    input.set_sequence(2);
+    input.set_sequence(3);
     input.set_private_key(privateKey.data(), privateKey.size());
     input.set_memo("");
 
@@ -44,5 +44,6 @@ TEST(THORChainTWAnySigner, SignTx) {
     Cosmos::Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeTHORChain);
 
-    ASSERT_EQ(output.json(), R"({"mode":"block","tx":{"fee":{"amount":[{"amount":"2000000","denom":"rune"}],"gas":"200000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"10000000","denom":"rune"}],"from_address":"thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r","to_address":"thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A+2Zfjls9CkvX85aQrukFZnM1dluMTFUp8nqcEneMXx3"},"signature":"FehJoB+jbdUVXfEOFb9VKf5IpZF/HxIpOMPXe5Y3gb97PmpwLsASn7JJYBEU8OtW8z64W5rNo6UgCAt6IEv8fA=="}]}})");
+    // https://viewblock.io/thorchain/tx/FD0445AFFC4ED9ACCB7B5D3ADE361DAE4596EA096340F1360F1020381EA454AF
+    ASSERT_EQ(output.json(), R"({"mode":"block","tx":{"fee":{"amount":[{"amount":"2000000","denom":"rune"}],"gas":"200000"},"memo":"","msg":[{"type":"thorchain/MsgSend","value":{"amount":[{"amount":"10000000","denom":"rune"}],"from_address":"thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r","to_address":"thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A+2Zfjls9CkvX85aQrukFZnM1dluMTFUp8nqcEneMXx3"},"signature":"qgpMX3WNq4DsNBnYtdmBD4ejiailK4uI/m3/YVqCSNF8AtkUOTmP48ztqCbpkWTFvw1/9S8/ivsFxOcK6AI0jA=="}]}})");
 }

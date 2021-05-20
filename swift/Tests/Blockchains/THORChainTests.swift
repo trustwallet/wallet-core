@@ -78,7 +78,7 @@ class THORChainSignerTests: XCTestCase {
         "memo": "",
         "msg": [
             {
-                "type": "cosmos-sdk/MsgSend",
+                "type": "thorchain/MsgSend",
                 "value": {
                     "amount": [
                         {
@@ -97,7 +97,7 @@ class THORChainSignerTests: XCTestCase {
                     "type": "tendermint/PubKeySecp256k1",
                     "value": "A+2Zfjls9CkvX85aQrukFZnM1dluMTFUp8nqcEneMXx3"
                 },
-                "signature": "FehJoB+jbdUVXfEOFb9VKf5IpZF/HxIpOMPXe5Y3gb97PmpwLsASn7JJYBEU8OtW8z64W5rNo6UgCAt6IEv8fA=="
+                "signature": "ZPhcYubhAd6iz/pBrtLfSJaK04ISnEo+jBFvFFzoToMJA9NGhhCFmsmXMQ1AtoJ6C1aylvUnck93A7ork8ZzEQ=="
             }
         ]
     }
