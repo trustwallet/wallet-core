@@ -18,14 +18,17 @@
 using namespace TW;
 using namespace TW::Avalanche;
 
-std::pair<PrivateKey, Proto::SigningInput> getPrivateKeyAndTransactionAnySigner();
 std::vector<PublicKey> generateAddressesForAnySigner();
+const std::vector<uint8_t> getDefaultPrivateKeyBytes();
+void setUpDefaultPrivateKeyData(Proto::SigningInput &input);
+void setUpDefaultBaseTx(TW::Avalanche::Proto::BaseTx &baseTx);
 
 TEST(TWAnySignerAvalanche, SignBasicTransaction) {
-    auto defaults = getPrivateKeyAndTransactionAnySigner();
-    auto privateKey = defaults.first;
-    auto input = defaults.second;
-
+    Proto::SigningInput input;
+    setUpDefaultPrivateKeyData(input);
+    auto &inputTx = *input.mutable_input_tx();
+    auto &baseTx = *inputTx.mutable_base_tx();
+    setUpDefaultBaseTx(baseTx);
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeAvalancheXChain);
 
@@ -33,96 +36,14 @@ TEST(TWAnySignerAvalanche, SignBasicTransaction) {
 }
 
 TEST(TWAnySignerAvalanche, SignCreateAssetTransaction) {
-    // auto defaults = getPrivateKeyAndTransactionAnySigner();
-    // auto privateKey = defaults.first;
-    // auto defaultInput = defaults.second;
-        const auto privateKeyBytes = CB58::avalanche.decode("ewoqjP7PxY4yr3iLTpLisriqt94hdyDFNgchSxGGztUrTXtNN");
-    const std::vector<uint8_t> privateKeyBytesNoChecksum(privateKeyBytes.begin(), privateKeyBytes.begin() + 32); // we just want the first 32 bytes
-    const auto privateKey = PrivateKey(privateKeyBytesNoChecksum); 
-    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-    
-    auto blockchainID = CB58::avalanche.decode("2eNy1mUFdmaxXNj1eQHUe7Np4gju9sJsEtWQ4MX3ToiNKuADed");
-    Data blockchainIDBytes(blockchainID.begin(), blockchainID.begin() + 32); // we just want the first 32 bytes, no checksum
-    uint32_t netID = 12345;
-    auto assetID = "0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db";
-    auto assetIDBytes = parse_hex(assetID);
-    auto txIDBytes = parse_hex("0xf1e1d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000"); 
-    Data memo = {0xde, 0xad, 0xbe, 0xef};
-    auto amount = 1000;   
-    auto locktime = 0;
-    auto threshold = 1;
-
     Proto::SigningInput input;
-
-    // keep in mind the expected formats in Signer!
-    // for example, addresses are expected as secp pubkey, not avalanche-formatted address
-    input.add_private_keys();
-    input.set_private_keys(0, privateKeyBytesNoChecksum.data(), privateKeyBytesNoChecksum.size());
-    auto &inputTx = *input.mutable_input_tx();
-    auto &baseTx = *inputTx.mutable_base_tx();
-    baseTx.set_typeid_(0);
-    baseTx.set_network_id(netID);
-    baseTx.set_blockchain_id(blockchainIDBytes.data(), blockchainIDBytes.size());
-    baseTx.set_memo(memo.data(), memo.size());
-    
-    auto coreInputOne = new Proto::SECP256K1TransferInput();
-    coreInputOne->set_amount(123456789);
-    coreInputOne->add_address_indices(3);
-    coreInputOne->add_address_indices(7);
-    auto wrappedInputOne = new Proto::TransactionInput();
-    wrappedInputOne->set_allocated_secp_transfer_input(coreInputOne);
-    auto inputOne = baseTx.add_inputs();
-    inputOne->set_utxo_index(5);
-    inputOne->set_tx_id(txIDBytes.data(), txIDBytes.size());
-    inputOne->set_asset_id(assetIDBytes.data(), assetIDBytes.size());
-    for (auto i = 0; i < 8; ++i) {
-        inputOne->add_spendable_addresses();
-        inputOne->set_spendable_addresses(i, publicKey.bytes.data(), publicKey.bytes.size());
-    }
-    inputOne->set_allocated_input(wrappedInputOne);
-    auto coreInputTwo = new Proto::SECP256K1TransferInput();
-    coreInputTwo->set_amount(123456789);
-    coreInputTwo->add_address_indices(3);
-    coreInputTwo->add_address_indices(7);
-    auto wrappedInputTwo = new Proto::TransactionInput();
-    wrappedInputTwo->set_allocated_secp_transfer_input(coreInputTwo);
-    auto inputTwo = baseTx.add_inputs();
-    inputTwo->set_utxo_index(5);
-    inputTwo->set_tx_id(txIDBytes.data(), txIDBytes.size());
-    inputTwo->set_asset_id(assetIDBytes.data(), assetIDBytes.size());
-    for (auto i = 0; i < 8; ++i) {
-        inputTwo->add_spendable_addresses();
-        inputTwo->set_spendable_addresses(i, publicKey.bytes.data(), publicKey.bytes.size());
-    }
-    inputTwo->set_allocated_input(wrappedInputTwo);
-
-    auto coreOutputOne = new Proto::SECP256K1TransferOutput();
-    coreOutputOne->set_amount(12345);
-    coreOutputOne->set_locktime(54321);
-    coreOutputOne->set_threshold(threshold);
-    coreOutputOne->add_addresses();
-    coreOutputOne->set_addresses(0, publicKey.bytes.data(), publicKey.bytes.size());
-    auto wrappedOutputOne = new Proto::TransactionOutput();
-    wrappedOutputOne->set_allocated_secp_transfer_output(coreOutputOne);
-    auto outputOne = baseTx.add_outputs();
-    outputOne->set_asset_id(assetIDBytes.data(), assetIDBytes.size());
-    outputOne->set_allocated_output(wrappedOutputOne);
-
-    auto coreOutputTwo = new Proto::SECP256K1TransferOutput();
-    coreOutputTwo->set_amount(amount);
-    coreOutputTwo->set_locktime(locktime);
-    coreOutputTwo->set_threshold(threshold);
-    coreOutputTwo->add_addresses();
-    coreOutputTwo->set_addresses(0, publicKey.bytes.data(), publicKey.bytes.size());    
-    auto wrappedOutputTwo = new Proto::TransactionOutput();
-    wrappedOutputTwo->set_allocated_secp_transfer_output(coreOutputTwo);
-    auto outputTwo = baseTx.add_outputs();
-    outputTwo->set_asset_id(assetIDBytes.data(), assetIDBytes.size());
-    outputTwo->set_allocated_output(wrappedOutputTwo);
-
-    auto arbitraryAddresses = generateAddressesForAnySigner();
+    setUpDefaultPrivateKeyData(input);
     auto &inputTx = *input.mutable_input_tx();
     auto &createAssetTx = *inputTx.mutable_create_asset_tx();
+    auto &baseTx = *createAssetTx.mutable_base_tx();
+    setUpDefaultBaseTx(baseTx);
+
+    auto arbitraryAddresses = generateAddressesForAnySigner();
 
     auto stateOne = createAssetTx.add_initial_states();
     stateOne->set_fx_id(Avalanche::InitialState::FeatureExtension::SECP256k1);
@@ -176,8 +97,7 @@ TEST(TWAnySignerAvalanche, SignCreateAssetTransaction) {
             firstCoreOutput->add_addresses();
             firstCoreOutput->set_addresses(i, arbitraryAddresses[i].bytes.data(), arbitraryAddresses[i].bytes.size());
         }
-        stateTwo->add_outputs();
-        auto wrappedOutputOne = stateTwo->mutable_outputs(0);
+        auto wrappedOutputOne = stateTwo->add_outputs();
         wrappedOutputOne->set_allocated_secp_transfer_output(firstCoreOutput);
    
         auto secondCoreOutput = new Proto::SECP256K1TransferOutput(); //54321, 54321, 333, arbitraryAddresses
@@ -298,11 +218,24 @@ std::vector<PublicKey> generateAddressesForAnySigner() {
     return arbitraryAddresses;
 }
 
-std::pair<PrivateKey, Proto::SigningInput> getPrivateKeyAndTransactionAnySigner() {
+const std::vector<uint8_t> getDefaultPrivateKeyBytes() {
     const auto privateKeyBytes = CB58::avalanche.decode("ewoqjP7PxY4yr3iLTpLisriqt94hdyDFNgchSxGGztUrTXtNN");
     const std::vector<uint8_t> privateKeyBytesNoChecksum(privateKeyBytes.begin(), privateKeyBytes.begin() + 32); // we just want the first 32 bytes
-    const auto privateKey = PrivateKey(privateKeyBytesNoChecksum); 
+    return privateKeyBytesNoChecksum; 
+}
+
+void setUpDefaultPrivateKeyData(Proto::SigningInput &input) {
+    auto privateKeyBytes = getDefaultPrivateKeyBytes();
+    input.add_private_keys();
+    input.set_private_keys(0, privateKeyBytes.data(), privateKeyBytes.size());
+}
+
+void setUpDefaultBaseTx(TW::Avalanche::Proto::BaseTx &baseTx) {
+    const auto privateKey = PrivateKey(getDefaultPrivateKeyBytes()); 
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    // keep in mind the expected formats in Signer!
+    // for example, addresses are expected as secp pubkey, not avalanche-formatted address
+
     
     auto blockchainID = CB58::avalanche.decode("2eNy1mUFdmaxXNj1eQHUe7Np4gju9sJsEtWQ4MX3ToiNKuADed");
     Data blockchainIDBytes(blockchainID.begin(), blockchainID.begin() + 32); // we just want the first 32 bytes, no checksum
@@ -315,14 +248,6 @@ std::pair<PrivateKey, Proto::SigningInput> getPrivateKeyAndTransactionAnySigner(
     auto locktime = 0;
     auto threshold = 1;
 
-    Proto::SigningInput input;
-
-    // keep in mind the expected formats in Signer!
-    // for example, addresses are expected as secp pubkey, not avalanche-formatted address
-    input.add_private_keys();
-    input.set_private_keys(0, privateKeyBytesNoChecksum.data(), privateKeyBytesNoChecksum.size());
-    auto &inputTx = *input.mutable_input_tx();
-    auto &baseTx = *inputTx.mutable_base_tx();
     baseTx.set_typeid_(0);
     baseTx.set_network_id(netID);
     baseTx.set_blockchain_id(blockchainIDBytes.data(), blockchainIDBytes.size());
@@ -382,6 +307,4 @@ std::pair<PrivateKey, Proto::SigningInput> getPrivateKeyAndTransactionAnySigner(
     auto outputTwo = baseTx.add_outputs();
     outputTwo->set_asset_id(assetIDBytes.data(), assetIDBytes.size());
     outputTwo->set_allocated_output(wrappedOutputTwo);
-
-    return std::make_pair(privateKey, input);
 }
