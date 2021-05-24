@@ -12,6 +12,7 @@
 #include "PrivateKey.h"
 #include "Avalanche/Address.h"
 #include "Avalanche/InitialState.h"
+#include "Avalanche/TransferableOp.h"
 #include "../interface/TWTestUtilities.h"
 #include <gtest/gtest.h>
 
@@ -140,55 +141,127 @@ TEST(TWAnySignerAvalanche, SignCreateAssetTransaction) {
 }
 
 TEST(TWAnySignerAvalanche, SignOperationTransaction) {
-    // auto defaults = getPrivateKeyAndTransaction();
-    // auto privateKey = defaults.first;
-    // auto baseTransaction = defaults.second;
-    // auto assetID = parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db"); 
-    // auto txid = parse_hex("0xf1e1d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000");
+    Proto::SigningInput input;
+    setUpDefaultPrivateKeyData(input);
+    auto &inputTx = *input.mutable_input_tx();
+    auto &operationTx = *inputTx.mutable_operation_tx();
+    auto &baseTx = *operationTx.mutable_base_tx();
+    setUpDefaultBaseTx(baseTx);
 
-    // auto utxoIDOne = std::make_pair(txid, uint32_t(1));
-    // auto utxoIDTwo = std::make_pair(txid, uint32_t(2));
-    // std::vector<TransferableOp::UTXOID> utxoIDsOne = {utxoIDTwo, utxoIDOne}; // create it backwards to force a sort
-    // std::vector<uint32_t> addressIndicesOne = {1, 2, 3};
-    // uint32_t groupIDOne = 1;
-    // Data payloadOne = {0xfe, 0xed, 0xfe, 0xed};
-    // std::vector<Output> outputsOne;
-    // auto outputOne = std::make_tuple(uint64_t(1), uint32_t(2), generateAddressesForSigner());
-    // outputsOne.push_back(outputOne);
-    // auto nftOp = std::make_unique<NFTMintOperation>(addressIndicesOne, groupIDOne, payloadOne, outputsOne);
-    // auto opOne = TransferableOp(assetID, utxoIDsOne, std::move(nftOp));
+    auto assetIDBytes = parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db"); 
+    auto txIDBytes = parse_hex("0xf1e1d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000");
+
+    //TODO typeids of ops are possibly off!
+    {
+        auto op = operationTx.add_ops();
+        op->set_asset_id(assetIDBytes.data(), assetIDBytes.size());
+        {
+            auto utxoID = op->add_utxo_ids();
+            utxoID->set_tx_id(txIDBytes.data(), txIDBytes.size());
+            utxoID->set_utxo_index(1);
+        }
+        {
+            auto utxoID = op->add_utxo_ids();
+            utxoID->set_tx_id(txIDBytes.data(), txIDBytes.size());
+            utxoID->set_utxo_index(2);
+        }
+        auto transferOp = op->mutable_transfer_op(); 
+        auto nftOp = transferOp->mutable_nft_mint_op();
+        nftOp->set_typeid_(TW::Avalanche::OperationTypeID::NFTMintOp);
+        auto output = nftOp->add_outputs();
+        auto addresses = generateAddressesForAnySigner();
+        output->set_locktime(1);
+        output->set_locktime(2);
+        for (int i = 0; i < addresses.size(); ++i) {
+            output->add_addresses();
+            output->set_addresses(i, addresses[i].bytes.data(), addresses[i].bytes.size());
+        }
+        std::vector<uint32_t> addressIndices = {1, 2, 3};
+        uint32_t groupID = 1;
+        Data payload = {0xfe, 0xed, 0xfe, 0xed};
+        for (auto& addressIndex: addressIndices) {
+            nftOp->add_address_indices(addressIndex);
+        }
+        nftOp->set_group_id(groupID);
+        nftOp->set_payload(payload.data(), payload.size());
+    }
+
+    {
+        auto op = operationTx.add_ops();
+        op->set_asset_id(assetIDBytes.data(), assetIDBytes.size());
+        {
+            auto utxoID = op->add_utxo_ids();
+            utxoID->set_tx_id(txIDBytes.data(), txIDBytes.size());
+            utxoID->set_utxo_index(3);
+        }
+        {
+            auto differingTxIDBytes = parse_hex("0x0000d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000");
+            auto utxoID = op->add_utxo_ids();
+            utxoID->set_tx_id(differingTxIDBytes.data(), differingTxIDBytes.size());
+            utxoID->set_utxo_index(3);
+        }
+        auto transferOp = op->mutable_transfer_op(); 
+        auto secpMintOp = transferOp->mutable_secp_mint_op();
+        secpMintOp->set_typeid_(TW::Avalanche::OperationTypeID::SECPMintOp);
+        std::vector<uint32_t> addressIndices = {2, 3, 4};
+        for (auto& addressIndex: addressIndices) {
+            secpMintOp->add_address_indices(addressIndex);
+        }
+        auto mintOutput = secpMintOp->mutable_mint_output();
+        auto mintOutputAddrs = generateAddressesForAnySigner();
+        mintOutput->set_locktime(10);
+        mintOutput->set_threshold(20);
+        for (int i = 0; i < mintOutputAddrs.size(); ++i) {
+            mintOutput->add_addresses();
+            mintOutput->set_addresses(i, mintOutputAddrs[i].bytes.data(), mintOutputAddrs[i].bytes.size());
+        }
+        auto transferOutput = secpMintOp->mutable_transfer_output();
+        transferOutput->set_typeid_(TW::Avalanche::TransactionOutputTypeID::SECPTransferOut);
+        auto transferOutputAddrs = generateAddressesForAnySigner();
+        transferOutput->set_amount(30);
+        transferOutput->set_locktime(40);
+        transferOutput->set_threshold(5);
+        for (int i = 0; i < transferOutputAddrs.size(); ++i) {
+            transferOutput->add_addresses();
+            transferOutput->set_addresses(i, transferOutputAddrs[i].bytes.data(), transferOutputAddrs[i].bytes.size());
+        }
+    }
     
-    // auto differingTxid = parse_hex("0x0000d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000");
-    // auto utxoIDThree = std::make_pair(differingTxid, uint32_t(3));
-    // auto utxoIDFour = std::make_pair(txid, uint32_t(3));
-    // std::vector<TransferableOp::UTXOID> utxoIDsTwo = {utxoIDFour, utxoIDThree}; // create it backwards to force a sort
-    // std::vector<uint32_t> addressIndicesTwo = {2, 3, 4};
-    // auto mintOutputAddrs = generateAddressesForSigner();
-    // auto mintOutput = SECP256k1MintOutput(uint64_t(10), uint32_t(20), mintOutputAddrs);
-    // auto transferOutputAddrs = generateAddressesForSigner();
-    // auto transferOutput = SECP256k1TransferOutput(uint64_t(30), uint64_t(40), uint32_t(5), transferOutputAddrs);
-    // auto secpOp = std::make_unique<SECP256k1MintOperation>(addressIndicesTwo, mintOutput, transferOutput);
-    // auto opTwo = TransferableOp(assetID, utxoIDsTwo, std::move(secpOp));
-    
-    // auto utxoIDFive = std::make_pair(txid, uint32_t(5));
-    // auto utxoIDSix = std::make_pair(txid, uint32_t(6));
-    // std::vector<TransferableOp::UTXOID> utxoIDsThree = {utxoIDSix, utxoIDFive}; // create it backwards to force a sort
-    // std::vector<uint32_t> addressIndicesThree = {3, 4, 5};
-    // auto nftTransferAddrs = generateAddressesForSigner();
-    // auto nftPayload = Data{0xfe, 0xde, 0xfe, 0xde};
-    // auto nftTransferOut = NFTTransferOutput(uint32_t(1), nftPayload, uint64_t(2), uint32_t(3), nftTransferAddrs);
-    // auto nftTransferOp = std::make_unique<NFTTransferOperation>(addressIndicesThree, nftTransferOut);
-    // auto opThree = TransferableOp(assetID, utxoIDsThree, std::move(nftTransferOp));
+    {   
+        auto op = operationTx.add_ops();
+        op->set_asset_id(assetIDBytes.data(), assetIDBytes.size());
+        {
+            auto utxoID = op->add_utxo_ids();
+            utxoID->set_tx_id(txIDBytes.data(), txIDBytes.size());
+            utxoID->set_utxo_index(6);
+        }
+        {
+            auto utxoID = op->add_utxo_ids();
+            utxoID->set_tx_id(txIDBytes.data(), txIDBytes.size());
+            utxoID->set_utxo_index(5);
+        }
+        auto transferOp = op->mutable_transfer_op(); 
+        auto nftTransferOp = transferOp->mutable_nft_transfer_op();
+        nftTransferOp->set_typeid_(TW::Avalanche::OperationTypeID::NFTTransferOp);
+        std::vector<uint32_t> addressIndices = {3, 4, 5};
+        for (auto& addressIndex: addressIndices) {
+            nftTransferOp->add_address_indices(addressIndex);
+        }
+        auto nftTransferAddrs = generateAddressesForAnySigner();
+        for (int i = 0; i < nftTransferAddrs.size(); ++i) {
+            nftTransferOp->add_addresses();
+            nftTransferOp->set_addresses(i, nftTransferAddrs[i].bytes.data(), nftTransferAddrs[i].bytes.size());
+        }
+        auto payload = Data{0xfe, 0xde, 0xfe, 0xde};
+        nftTransferOp->set_payload(payload.data(), payload.size());
+        nftTransferOp->set_group_id(1);
+        nftTransferOp->set_locktime(2);
+        nftTransferOp->set_threshold(3);
+    }
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeAvalancheXChain);
 
-    // std::vector<TransferableOp> ops = {opOne, opTwo, opThree};
-    // auto transaction = UnsignedOperationTransaction(baseTransaction, ops); 
-    // Data encodedUnsignedTransaction;
-    // transaction.encode(encodedUnsignedTransaction);
-
-    // ASSERT_EQ(hex(encodedUnsignedTransaction), "0000000200003039d891ad56056d9c01f18f43f58b5c784ad07a4a49cf3d1f11623804b5cba2c6bf00000002dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000700000000000003e8000000000000000000000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29cdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db000000070000000000003039000000000000d43100000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29c00000002f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd15000000020000000300000007f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd1500000002000000030000000700000004deadbeef00000003dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db000000020000d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000003f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000003000000080000000300000002000000030000000400000006000000000000000a00000014000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38b7678db74fab407771650fdda0198a4be04acda6c1e36a623910c93947b754c410af428005efe85100000007000000000000001e000000000000002800000005000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38b7678db74fab407771650fdda0198a4be04acda6c1e36a623910c93947b754c410af428005efe851dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db00000002f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000001f1e1d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000000000020000000c000000030000000100000002000000030000000100000004feedfeed00000001000000000000000100000002000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db00000002f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005f1e1d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000000000060000000d000000030000000300000004000000050000000100000004fedefede000000000000000200000003000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38b7678db74fab407771650fdda0198a4be04acda6c1e36a623910c93947b754c410af428005efe851");
-    // std::vector<PrivateKey> keyRing = {privateKey};
-    // auto encodedSignedTransaction = Signer::sign(keyRing, transaction);
-    // ASSERT_EQ(hex(encodedSignedTransaction), "00000000000200003039d891ad56056d9c01f18f43f58b5c784ad07a4a49cf3d1f11623804b5cba2c6bf00000002dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000700000000000003e8000000000000000000000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29cdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db000000070000000000003039000000000000d43100000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29c00000002f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd15000000020000000300000007f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd1500000002000000030000000700000004deadbeef0000000200000009000000028d718dfbf41202d03e495cda3eeb2464dfdc0e7e1e73e3189e5b4752dae1a919360e43aeb3c31c1258c8cc80028bbcd83f15d00aa40dffbcbc9ad35e4f57ac8b008d718dfbf41202d03e495cda3eeb2464dfdc0e7e1e73e3189e5b4752dae1a919360e43aeb3c31c1258c8cc80028bbcd83f15d00aa40dffbcbc9ad35e4f57ac8b0000000009000000028d718dfbf41202d03e495cda3eeb2464dfdc0e7e1e73e3189e5b4752dae1a919360e43aeb3c31c1258c8cc80028bbcd83f15d00aa40dffbcbc9ad35e4f57ac8b008d718dfbf41202d03e495cda3eeb2464dfdc0e7e1e73e3189e5b4752dae1a919360e43aeb3c31c1258c8cc80028bbcd83f15d00aa40dffbcbc9ad35e4f57ac8b00");
+    ASSERT_EQ(hex(output.encoded()), "00000000000200003039d891ad56056d9c01f18f43f58b5c784ad07a4a49cf3d1f11623804b5cba2c6bf00000002dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000700000000000003e8000000000000000000000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29cdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db000000070000000000003039000000000000d43100000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29c00000002f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd15000000020000000300000007f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd1500000002000000030000000700000004deadbeef0000000200000009000000028d718dfbf41202d03e495cda3eeb2464dfdc0e7e1e73e3189e5b4752dae1a919360e43aeb3c31c1258c8cc80028bbcd83f15d00aa40dffbcbc9ad35e4f57ac8b008d718dfbf41202d03e495cda3eeb2464dfdc0e7e1e73e3189e5b4752dae1a919360e43aeb3c31c1258c8cc80028bbcd83f15d00aa40dffbcbc9ad35e4f57ac8b0000000009000000028d718dfbf41202d03e495cda3eeb2464dfdc0e7e1e73e3189e5b4752dae1a919360e43aeb3c31c1258c8cc80028bbcd83f15d00aa40dffbcbc9ad35e4f57ac8b008d718dfbf41202d03e495cda3eeb2464dfdc0e7e1e73e3189e5b4752dae1a919360e43aeb3c31c1258c8cc80028bbcd83f15d00aa40dffbcbc9ad35e4f57ac8b00");
 }
 
 TEST(TWAnySignerAvalanche, SignImportTransaction) {
