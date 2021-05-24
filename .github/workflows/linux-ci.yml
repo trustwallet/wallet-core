@@ -57,7 +57,7 @@ jobs:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
         CK_TIMEOUT_MULTIPLIER: 4
-    - name: Gather code coverage
+    - name: Gather and check code coverage
       run: |
         sudo rm -rf coverage.info
         tools/coverage
