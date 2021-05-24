@@ -314,32 +314,47 @@ TEST(TWAnySignerAvalanche, SignImportTransaction) {
 }
 
 TEST(TWAnySignerAvalanche, SignExportTransaction) {
-    // auto defaults = getPrivateKeyAndTransaction();
-    // auto privateKey = defaults.first;
-    // auto baseTransaction = defaults.second;
+    Proto::SigningInput input;
+    setUpDefaultPrivateKeyData(input);
+    auto &inputTx = *input.mutable_input_tx();
+    auto &exportTx = *inputTx.mutable_export_tx();
+    auto &baseTx = *exportTx.mutable_base_tx();
+    setUpDefaultBaseTx(baseTx);
     
-    // auto blockchainID = CB58::avalanche.decode("2eNy1mUFdmaxXNj1eQHUe7Np4gju9sJsEtWQ4MX3ToiNKuADed");
-    // Data destChain(blockchainID.begin(), blockchainID.begin() + BLOCKCHAIN_ID_SIZE); // we just want the first 32 bytes, no checksum
-    // auto assetID = parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db"); 
+    auto blockchainID = CB58::avalanche.decode("2eNy1mUFdmaxXNj1eQHUe7Np4gju9sJsEtWQ4MX3ToiNKuADed");
+    Data destChain(blockchainID.begin(), blockchainID.begin() + BLOCKCHAIN_ID_SIZE); // we just want the first 32 bytes, no checksum
+    exportTx.set_destination_chain(destChain.data(), destChain.size());
 
-    // auto addressesOutOne = generateAddressesForSigner();
-    // auto coreOutputOne = std::make_unique<SECP256k1TransferOutput>(12345, 54321, 1, addressesOutOne);
-    // auto outputOne = TransferableOutput(assetID, std::move(coreOutputOne));
-
-    // auto addressesOutTwo = generateAddressesForSigner();
-    // auto coreOutputTwo = std::make_unique<SECP256k1TransferOutput>(3, 2, 1, addressesOutTwo);
-    // auto outputTwo = TransferableOutput(assetID, std::move(coreOutputTwo));
-
-    // auto outputs = std::vector<TransferableOutput>{outputOne, outputTwo};
-
-    // auto transaction = UnsignedExportTransaction(baseTransaction, destChain, outputs);
-    // Data encodedUnsignedTransaction;
-    // transaction.encode(encodedUnsignedTransaction);
-
-    // ASSERT_EQ(hex(encodedUnsignedTransaction), "0000000400003039d891ad56056d9c01f18f43f58b5c784ad07a4a49cf3d1f11623804b5cba2c6bf00000002dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000700000000000003e8000000000000000000000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29cdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db000000070000000000003039000000000000d43100000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29c00000002f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd15000000020000000300000007f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd1500000002000000030000000700000004deadbeefd891ad56056d9c01f18f43f58b5c784ad07a4a49cf3d1f11623804b5cba2c6bf00000002dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db00000007000000000000000300000000000000020000000100000003355a58440e3647f394aff711aca083e5a5181426e8777f38c88ca153a6fdc25942176d2bf5491b89ee93c2aaa8b4b93d45ce77237e9f65192be9a39bdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db000000070000000000003039000000000000d4310000000100000003355a58440e3647f394aff711aca083e5a5181426e8777f38c88ca153a6fdc25942176d2bf5491b89ee93c2aaa8b4b93d45ce77237e9f65192be9a39b");
-    // std::vector<PrivateKey> keyRing = {privateKey};
-    // auto encodedSignedTransaction = Signer::sign(keyRing, transaction);
-    // ASSERT_EQ(hex(encodedSignedTransaction), "00000000000400003039d891ad56056d9c01f18f43f58b5c784ad07a4a49cf3d1f11623804b5cba2c6bf00000002dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000700000000000003e8000000000000000000000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29cdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db000000070000000000003039000000000000d43100000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29c00000002f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd15000000020000000300000007f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd1500000002000000030000000700000004deadbeef000000020000000900000002a964ef14456ddfa1b4f969c18ec1a139806da2a3869b4205f160a5ad998b075f692b4a052680587a677f1a609cec9e147f2053f676c8b989366f7f84fba17a4e00a964ef14456ddfa1b4f969c18ec1a139806da2a3869b4205f160a5ad998b075f692b4a052680587a677f1a609cec9e147f2053f676c8b989366f7f84fba17a4e000000000900000002a964ef14456ddfa1b4f969c18ec1a139806da2a3869b4205f160a5ad998b075f692b4a052680587a677f1a609cec9e147f2053f676c8b989366f7f84fba17a4e00a964ef14456ddfa1b4f969c18ec1a139806da2a3869b4205f160a5ad998b075f692b4a052680587a677f1a609cec9e147f2053f676c8b989366f7f84fba17a4e00");
+    auto assetIDBytes = parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db");     
+    {
+        auto output = exportTx.add_outs();
+        output->set_asset_id(assetIDBytes.data(), assetIDBytes.size());
+        auto addressesOut = generateAddressesForAnySigner();
+        auto secpTransferOut = output->mutable_output()->mutable_secp_transfer_output();
+        for (int i = 0; i < addressesOut.size(); ++i) {
+            secpTransferOut->add_addresses();
+            secpTransferOut->set_addresses(i, addressesOut[i].bytes.data(), addressesOut[i].bytes.size());
+        }
+        secpTransferOut->set_amount(12345);
+        secpTransferOut->set_locktime(54321);
+        secpTransferOut->set_threshold(1);
+    }
+    {
+        auto output = exportTx.add_outs();
+        output->set_asset_id(assetIDBytes.data(), assetIDBytes.size());
+        auto addressesOut = generateAddressesForAnySigner();
+        auto secpTransferOut = output->mutable_output()->mutable_secp_transfer_output();
+        for (int i = 0; i < addressesOut.size(); ++i) {
+            secpTransferOut->add_addresses();
+            secpTransferOut->set_addresses(i, addressesOut[i].bytes.data(), addressesOut[i].bytes.size());
+        }
+        secpTransferOut->set_amount(3);
+        secpTransferOut->set_locktime(2);
+        secpTransferOut->set_threshold(1);
+    }
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeAvalancheXChain);
+    ASSERT_EQ(hex(output.encoded()), "00000000000400003039d891ad56056d9c01f18f43f58b5c784ad07a4a49cf3d1f11623804b5cba2c6bf00000002dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000700000000000003e8000000000000000000000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29cdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db000000070000000000003039000000000000d43100000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29c00000002f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd15000000020000000300000007f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd1500000002000000030000000700000004deadbeef000000020000000900000002a964ef14456ddfa1b4f969c18ec1a139806da2a3869b4205f160a5ad998b075f692b4a052680587a677f1a609cec9e147f2053f676c8b989366f7f84fba17a4e00a964ef14456ddfa1b4f969c18ec1a139806da2a3869b4205f160a5ad998b075f692b4a052680587a677f1a609cec9e147f2053f676c8b989366f7f84fba17a4e000000000900000002a964ef14456ddfa1b4f969c18ec1a139806da2a3869b4205f160a5ad998b075f692b4a052680587a677f1a609cec9e147f2053f676c8b989366f7f84fba17a4e00a964ef14456ddfa1b4f969c18ec1a139806da2a3869b4205f160a5ad998b075f692b4a052680587a677f1a609cec9e147f2053f676c8b989366f7f84fba17a4e00");
 }
 
 std::vector<PublicKey> generateAddressesForAnySigner() {
