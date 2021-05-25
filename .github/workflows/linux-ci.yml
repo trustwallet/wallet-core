@@ -18,6 +18,7 @@ jobs:
         sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-10 100
         sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 100
         sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-10 100
+        sudo update-alternatives --display clang
         which clang
         ls -l /usr/bin/clang /etc/alternatives/clang
         clang --version
