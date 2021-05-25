@@ -1593,5 +1593,30 @@
       "clientPublic": "https://seed.thorchain.info",
       "clientDocs": ""
     }
+  },
+  {
+    "id": "cryptoorg",
+    "name": "Crypto_org",
+    "coinId": 394,
+    "symbol": "CRO",
+    "decimals": 8,
+    "blockchain": "Cosmos",
+    "derivationPath": "m/44'/394'/0'/0/1",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "basecro",
+    "explorer": {
+      "url": "https://crypto.org/explorer",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "6B9CD39A454F187B7BC5AFE10DC5F8D19A0C50A20A1AABEEE2D5A87B2B62190A",
+      "sampleAccount": "cro1yjjlx5qsrj5rxn5xtd5rkm6dcqzlchxkrvsmg6"
+    },
+    "info": {
+      "url": "https://crypto.org",
+      "client": "https://github.com/crypto-org-chain/chain-main",
+      "clientPublic": "https//mainnet.crypto.org:26657",
+      "clientDocs": ""
+    }
   }
 ]
