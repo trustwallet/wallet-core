@@ -213,42 +213,6 @@ int hdnode_from_seed(const uint8_t *seed, int seed_len, const char *curve,
   return 1;
 }
 
-// [wallet-core]
-int hdnode_from_seed_hd(const uint8_t *seed, int seed_len, const char* curve, HDNode *out)
-{
-  CONFIDENTIAL uint8_t I[32 + 32];
-  uint8_t tmp = 0x01;
-  memzero(out, sizeof(HDNode));
-  out->depth = 0;
-  out->child_num = 0;
-  out->curve = get_curve_by_name(curve);
-  if (out->curve == 0) {
-    return 0;
-  }
-  CONFIDENTIAL HMAC_SHA256_CTX ctxs256;
-  hmac_sha256_Init(&ctxs256, (const uint8_t*) out->curve->bip32_name, strlen(out->curve->bip32_name));
-  hmac_sha256_Update(&ctxs256, &tmp, 1);
-  hmac_sha256_Update(&ctxs256, seed, seed_len);
-  hmac_sha256_Final(&ctxs256, out->chain_code);
-  CONFIDENTIAL HMAC_SHA512_CTX ctx;
-  hmac_sha512_Init(&ctx, (const uint8_t*) out->curve->bip32_name, strlen(out->curve->bip32_name));
-  hmac_sha512_Update(&ctx, seed, seed_len);
-  hmac_sha512_Final(&ctx, I);
-  while ((I[31] & 0b00100000) != 0) {
-    hmac_sha512_Init(&ctx, (const uint8_t*) out->curve->bip32_name, strlen(out->curve->bip32_name));
-    hmac_sha512_Update(&ctx, I, sizeof(I));
-    hmac_sha512_Final(&ctx, I);
-  }
-  I[0] &= 248;
-  I[31] &= 127;
-  I[31] |= 64;
-  memcpy(out->private_key, I, 32);
-  memcpy(out->private_key_extension, I + 32, 32);
-  hdnode_fill_public_key(out);
-  memzero(I, sizeof(I));
-  return 1;
-}
-
 uint32_t hdnode_fingerprint(HDNode *node) {
   uint8_t digest[32] = {0};
   uint32_t fingerprint = 0;
@@ -986,9 +950,6 @@ const curve_info *get_curve_by_name(const char *curve_name) {
     return &ed25519_info;
   }
   // [wallet-core]
-	if (strcmp(curve_name, ED25519_HD_NAME) == 0) {
-		return &ed25519_hd_info;
-	}
   if (strcmp(curve_name, ED25519_CARDANO_NAME) == 0) {
     return &ed25519_cardano_info;
   }

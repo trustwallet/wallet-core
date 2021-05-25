@@ -181,7 +181,6 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
         success = ecdsa_sign_digest_checked(&secp256k1, bytes.data(), digest.data(), digest.size(), result.data(),
                                     result.data() + 64, nullptr) == 0;
     } break;
-    case TWCurveED25519HD:
     case TWCurveED25519: {
         result.resize(64);
         const auto publicKey = getPublicKey(TWPublicKeyTypeED25519);
