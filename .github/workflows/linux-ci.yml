@@ -50,7 +50,7 @@ jobs:
         CXX: /usr/bin/clang++
     - name: Build and test
       run: |
-        make -Cbuild -j12 tests TrezorCryptoTests
+        make -Cbuild tests TrezorCryptoTests
         build/trezor-crypto/crypto/tests/TrezorCryptoTests
         build/tests/tests tests --gtest_output=xml
       env:
