@@ -13,8 +13,9 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install system dependencies
       run: |
-        # build-essential libboost-all-dev clang-9 ruby-full cmake
+        # build-essential libboost-all-dev clang-9 ruby-full cmake libc++-dev libc++abi-dev
         sudo apt-get install ninja-build lcov llvm clang-tidy libboost-all-dev
+        # Set clang default version to lower 10
         sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-10 900
         sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 900
         sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-10 900
