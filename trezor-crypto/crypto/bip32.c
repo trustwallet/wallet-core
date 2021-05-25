@@ -54,16 +54,6 @@
 
 #define CARDANO_MAX_NODE_DEPTH 1048576
 
-// [wallet-core]
-const curve_info ed25519_hd_info = {
-    .bip32_name = "ed25519 seed",
-    .params = NULL,
-    .hasher_base58 = HASHER_SHA2D,
-    .hasher_sign = HASHER_SHA2D,
-    .hasher_pubkey = HASHER_SHA2_RIPEMD,
-    .hasher_script = HASHER_SHA2,
-};
-
 const curve_info ed25519_info = {
     .bip32_name = "ed25519 seed",
     .params = NULL,
@@ -631,8 +621,6 @@ void hdnode_fill_public_key(HDNode *node) {
     node->public_key[0] = 1;
     if (node->curve == &ed25519_info) {
       ed25519_publickey(node->private_key, node->public_key + 1);
-    } else if (node->curve == &ed25519_hd_info) { // [wallet-core]
-      ed25519_publickey_ext(node->private_key, node->private_key_extension, node->public_key + 1);
     } else if (node->curve == &ed25519_sha3_info) {
       ed25519_publickey_sha3(node->private_key, node->public_key + 1);
 #if USE_KECCAK
@@ -792,8 +780,6 @@ int hdnode_sign(HDNode *node, const uint8_t *msg, uint32_t msg_len,
     if (node->curve == &ed25519_info) {
       hdnode_fill_public_key(node);
       ed25519_sign(msg, msg_len, node->private_key, node->public_key + 1, sig);
-		} else if (node->curve == &ed25519_hd_info) { // [wallet-core]
-			ed25519_sign(msg, msg_len, node->private_key, node->public_key + 1, sig);
     } else if (node->curve == &ed25519_sha3_info) {
       hdnode_fill_public_key(node);
       ed25519_sign_sha3(msg, msg_len, node->private_key, node->public_key + 1,
