@@ -176,7 +176,7 @@ set_target_properties(
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
     IMPORTED_CONFIGURATIONS Release
-    INCLUDE_DIRECTORIES ${protobuf_source_dir}/src
+    #INCLUDE_DIRECTORIES ${protobuf_source_dir}/src
     PUBLIC_HEADER "${protobuf_HEADER_FILES}"
     LINK_FLAGS -no-undefined
 )
