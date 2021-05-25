@@ -186,8 +186,8 @@ set_property(TARGET protobuf PROPERTY IMPORTED_CONFIGURATIONS Release)
 set_property(TARGET protobuf PROPERTY PUBLIC_HEADER "${protobuf_HEADER_FILES}")
 set_property(TARGET protobuf PROPERTY LINK_FLAGS -no-undefined)
 
-target_include_directories(protobuf SYSTEM "/usr/include/c++/11")
-target_include_directories(protobuf "/usr/include/c++/11")
+target_include_directories(protobuf SYSTEM PUBLIC "/usr/include/c++/11")
+target_include_directories(protobuf PUBLIC "/usr/include/c++/11")
 target_compile_options(protobuf PRIVATE -DHAVE_PTHREAD=1 -Wno-inconsistent-missing-override -Wno-shorten-64-to-32)
 
 install(TARGETS protobuf
