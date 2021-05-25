@@ -1,7 +1,7 @@
 include_directories(SYSTEM /usr/include/c++/11)
 find_path(TESTIT_CXX_PATH4 string HINTS /usr/include/c++/11)
 message(TESTIT_CXX_PATH4 ${TESTIT_CXX_PATH4})
-include_directories(SYSTEM ${TESTIT_CXX_PATH3})
+include_directories(SYSTEM ${TESTIT_CXX_PATH4})
 
 
 set(protobuf_SOURCE_DIR ${CMAKE_SOURCE_DIR}/build/local/src/protobuf/protobuf-3.14.0)
