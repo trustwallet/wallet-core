@@ -1,4 +1,3 @@
-#include_directories(SYSTEM /usr/include/c++/11)
 #find_path(TESTIT_CXX_PATH5 string HINTS /usr/include/c++/11)
 #message(TESTIT_CXX_PATH5 ${TESTIT_CXX_PATH5})
 #include_directories(${TESTIT_CXX_PATH5})
@@ -175,11 +174,16 @@ set(protobuf_HEADER_FILES
 #file(GLOB_RECURSE protobuf_HEADER_FILES ${protobuf_SOURCE_DIR}/src/**/*.h)
 include_directories(${protobuf_source_dir}/src)
 
+include_directories(SYSTEM /usr/include/c++/11)
+include_directories(/usr/include/c++/11)
+target_include_directories(SYSTEM /usr/include/c++/11)
+target_include_directories(/usr/include/c++/11)
+
 add_library(protobuf ${protobuf_SOURCE_FILES} ${protobuf_HEADER_FILES})
 set_property(TARGET protobuf PROPERTY CXX_STANDARD 17)
 set_property(TARGET protobuf PROPERTY CXX_STANDARD_REQUIRED ON)
 set_property(TARGET protobuf PROPERTY IMPORTED_CONFIGURATIONS Release)
-set_property(TARGET protobuf PROPERTY INCLUDE_DIRECTORIES "/usr/include/c++/11")
+###set_property(TARGET protobuf PROPERTY INCLUDE_DIRECTORIES "/usr/include/c++/11")
 #set_property(protobuf INCLUDE_DIRECTORIES "/usr/include/c++/11;${protobuf_source_dir}/src")
 set_property(TARGET protobuf PROPERTY PUBLIC_HEADER "${protobuf_HEADER_FILES}")
 set_property(TARGET protobuf PROPERTY LINK_FLAGS -no-undefined)
