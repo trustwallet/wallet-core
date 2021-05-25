@@ -1,3 +1,6 @@
+find_path(TESTIT_CXX_PATH string)
+message(TESTIT_CXX_PATH ${TESTIT_CXX_PATH})
+
 set(protobuf_SOURCE_DIR ${CMAKE_SOURCE_DIR}/build/local/src/protobuf/protobuf-3.14.0)
 set(protobuf_source_dir ${CMAKE_SOURCE_DIR}/build/local/src/protobuf/protobuf-3.14.0)
 
