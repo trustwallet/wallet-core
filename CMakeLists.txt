@@ -132,12 +132,19 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/ DESTINATION ${CMAKE_INSTALL_I
 
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-include_directories(/usr/include)
-include_directories(/usr/include/libstd++)
-include_directories(/usr/include/c++)
-include_directories(/usr/include/c++/11)
+include_directories(SYSTEM /usr/include)
+include_directories(SYSTEM /usr/include/libstd++)
+include_directories(SYSTEM /usr/include/c++)
+include_directories(SYSTEM /usr/include/c++/11)
+include_directories(SYSTEM /usr/local/Cellar/llvm/9.0.0_1/include/c++/v1)
 
 find_path(TESTIT_CXX_PATH1 stdlib.h)
 message(TESTIT_CXX_PATH1 ${TESTIT_CXX_PATH1})
+message(Include dir1 ${INCLUDE_DIRECTORIES})
+message(Include dir2 ${CMAKE_SYSTEM_INCLUDE_PATH})
+message(Include dir3 ${CMAKE_INCLUDE_PATH})
+message(Include dir4 INCLUDE_DIRECTORIES)
 find_path(TESTIT_CXX_PATH2 string)
 message(TESTIT_CXX_PATH2 ${TESTIT_CXX_PATH2})
+find_path(TESTIT_CXX_PATH3 string HINTS ${INCLUDE_DIRECTORIES})
+message(TESTIT_CXX_PATH3 ${TESTIT_CXX_PATH3})
