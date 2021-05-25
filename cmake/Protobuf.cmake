@@ -1,8 +1,3 @@
-find_path(TESTIT_CXX_PATH1 stdlib.h)
-message(TESTIT_CXX_PATH1 ${TESTIT_CXX_PATH1})
-find_path(TESTIT_CXX_PATH2 string)
-message(TESTIT_CXX_PATH2 ${TESTIT_CXX_PATH2})
-
 set(protobuf_SOURCE_DIR ${CMAKE_SOURCE_DIR}/build/local/src/protobuf/protobuf-3.14.0)
 set(protobuf_source_dir ${CMAKE_SOURCE_DIR}/build/local/src/protobuf/protobuf-3.14.0)
 

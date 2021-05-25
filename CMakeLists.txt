@@ -132,3 +132,10 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/ DESTINATION ${CMAKE_INSTALL_I
 
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
+include_directories(/usr/include)
+include_directories(/usr/include/libstd++)
+
+find_path(TESTIT_CXX_PATH1 stdlib.h)
+message(TESTIT_CXX_PATH1 ${TESTIT_CXX_PATH1})
+find_path(TESTIT_CXX_PATH2 string)
+message(TESTIT_CXX_PATH2 ${TESTIT_CXX_PATH2})
