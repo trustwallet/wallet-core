@@ -135,7 +135,7 @@ install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 include_directories(/usr/include)
 include_directories(/usr/include/libstd++)
 include_directories(/usr/include/c++)
-include_directories(/usr/include/c++/7.5.0)
+include_directories(/usr/include/c++/11)
 
 find_path(TESTIT_CXX_PATH1 stdlib.h)
 message(TESTIT_CXX_PATH1 ${TESTIT_CXX_PATH1})

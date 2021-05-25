@@ -20,7 +20,7 @@ jobs:
         #sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-10 900
         ls /usr/include
         ls /usr/include/c++
-        ls /usr/include/c++/7.5.0
+        ls /usr/include/c++/11
     - name: Cache internal dependencies
       id: internal_cache
       uses: actions/cache@v1.1.2
