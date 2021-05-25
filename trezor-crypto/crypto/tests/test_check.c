@@ -9147,12 +9147,6 @@ Suite *test_suite(void) {
   tcase_add_test(tc, test_output_script);
   suite_add_tcase(s, tc);
 
-  // [wallet-core]
-  tc = tcase_create("bip32-hd");
-  tcase_add_test(tc, test_bip32_hd_hdnode_vector_1);
-  tcase_add_test(tc, test_bip32_hd_hdnode_vector_2);
-  suite_add_tcase(s, tc);
-
 #if USE_ETHEREUM
   tc = tcase_create("ethereum_pubkeyhash");
   tcase_add_test(tc, test_ethereum_pubkeyhash);
