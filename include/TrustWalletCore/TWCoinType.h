@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -88,6 +88,7 @@ enum TWCoinType {
     TWCoinTypeAvalancheCChain = 10009000,
     TWCoinTypeOasis = 474,
     TWCoinTypePolygon = 966,
+    TWCoinTypeTHORChain = 931,
 };
 
 /// Returns the blockchain for a coin type.

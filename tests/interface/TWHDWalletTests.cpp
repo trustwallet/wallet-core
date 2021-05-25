@@ -379,9 +379,9 @@ TEST(HDWallet, MultipleThreads) {
     th3.join();
 }
 
-TEST(HDWallet, GetKeyBIP44) {
+TEST(HDWallet, GetDerivedKey) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
-    const auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKeyBIP44(wallet.get(), TWCoinTypeBitcoin, 0, 0, 0));
+    const auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetDerivedKey(wallet.get(), TWCoinTypeBitcoin, 0, 0, 0));
     const auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
     assertHexEqual(privateKeyData, "1901b5994f075af71397f65bd68a9fff8d3025d65f5a2c731cf90f5e259d6aac");
 }
