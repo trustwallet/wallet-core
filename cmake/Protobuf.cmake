@@ -1,7 +1,7 @@
-include_directories(SYSTEM /usr/include/c++/11)
-find_path(TESTIT_CXX_PATH4 string HINTS /usr/include/c++/11)
-message(TESTIT_CXX_PATH4 ${TESTIT_CXX_PATH4})
-include_directories(SYSTEM ${TESTIT_CXX_PATH4})
+#include_directories(SYSTEM /usr/include/c++/11)
+#find_path(TESTIT_CXX_PATH5 string HINTS /usr/include/c++/11)
+#message(TESTIT_CXX_PATH5 ${TESTIT_CXX_PATH5})
+#include_directories(${TESTIT_CXX_PATH5})
 
 
 set(protobuf_SOURCE_DIR ${CMAKE_SOURCE_DIR}/build/local/src/protobuf/protobuf-3.14.0)
@@ -182,7 +182,8 @@ set_target_properties(
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
     IMPORTED_CONFIGURATIONS Release
-    #INCLUDE_DIRECTORIES ${protobuf_source_dir}/src
+    #INCLUDE_DIRECTORIES ${protobuf_source_dir}/src;/usr/include/c++/11
+    INCLUDE_DIRECTORIES "${protobuf_source_dir}/src;/usr/include/c++/11"
     PUBLIC_HEADER "${protobuf_HEADER_FILES}"
     LINK_FLAGS -no-undefined
 )
