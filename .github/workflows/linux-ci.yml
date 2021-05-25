@@ -15,8 +15,8 @@ jobs:
       run: |
         # build-essential ruby-full cmake
         sudo apt-get install libc++-dev libc++abi-dev ninja-build lcov llvm clang-tidy libboost-all-dev
-        sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-10 100
-        sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 100
+        sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-10 500
+        sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 500
         sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-10 100
         sudo update-alternatives --display clang
         sudo update-alternatives --set clang /usr/bin/clang-10
