@@ -14,7 +14,10 @@ jobs:
     - name: Install system dependencies
       run: |
         # build-essential libboost-all-dev clang-9 ruby-full cmake
-        sudo apt-get install ninja-build lcov llvm clang-tidy libc6-dev libboost-all-dev
+        sudo apt-get install ninja-build lcov llvm clang-tidy libboost-all-dev
+        sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-10 900
+        sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 900
+        sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-10 900
     - name: Cache internal dependencies
       id: internal_cache
       uses: actions/cache@v1.1.2
