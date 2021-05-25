@@ -176,12 +176,12 @@ set(protobuf_HEADER_FILES
 include_directories(${protobuf_source_dir}/src)
 
 add_library(protobuf ${protobuf_SOURCE_FILES} ${protobuf_HEADER_FILES})
-set_property(TARGET protobuf CXX_STANDARD 17)
-set_property(TARGET protobuf CXX_STANDARD_REQUIRED ON)
-set_property(TARGET protobuf IMPORTED_CONFIGURATIONS Release)
-#set_property(protobuf INCLUDE_DIRECTORIES "/usr/include/c++/11/${protobuf_source_dir}/src")
-set_property(TARGET protobuf PUBLIC_HEADER "${protobuf_HEADER_FILES}")
-set_property(TARGET protobuf LINK_FLAGS -no-undefined)
+set_property(TARGET protobuf PROPERTY CXX_STANDARD 17)
+set_property(TARGET protobuf PROPERTY CXX_STANDARD_REQUIRED ON)
+set_property(TARGET protobuf PROPERTYI MPORTED_CONFIGURATIONS Release)
+#set_property(protobuf INCLUDE_DIRECTORIES "/usr/include/c++/11;${protobuf_source_dir}/src")
+set_property(TARGET protobuf PROPERTY PUBLIC_HEADER "${protobuf_HEADER_FILES}")
+set_property(TARGET protobuf PROPERTY LINK_FLAGS -no-undefined)
 
 target_compile_options(protobuf PRIVATE -DHAVE_PTHREAD=1 -Wno-inconsistent-missing-override -Wno-shorten-64-to-32)
 
