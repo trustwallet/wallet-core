@@ -22,12 +22,12 @@ class TestCrypto_orgAddress {
     fun testAddress() {
         // TODO: Check and finalize implementation
 
-        val key = PrivateKey("__PRIVATE_KEY_DATA__".toHexByteArray())
+        val key = PrivateKey("d49a797db63b61c148d1767e616ff15c3dd9c83b63cba61c218ea172f238622a".toHexByteArray())
         val pubkey = key.publicKeyEd25519
         val address = AnyAddress(pubkey, CoinType.CRYPTO_ORG)
-        val expected = AnyAddress("__EXPECTED_RESULT_ADDRESS__", CoinType.CRYPTO_ORG)
+        val expected = AnyAddress("cro1u9q8mfpzhyv2s43js7l5qseapx5kt3g2rf7ppf", CoinType.CRYPTO_ORG)
 
-        assertEquals(pubkey.data().toHex(), "0x__EXPECTED_PUBKEY_DATA__")
+        assertEquals(pubkey.data().toHex(), "027b4bf94c4cc89f4d67d0c62e9dafedaddd952c6235731a22dc8e5d2470f22622")
         assertEquals(address.description(), expected.description())
     }
 }

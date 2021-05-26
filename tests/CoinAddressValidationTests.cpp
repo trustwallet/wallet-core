@@ -400,4 +400,12 @@ TEST(Coin, ValidateAddresTHORChain) {
     EXPECT_FALSE(validateAddress(TWCoinTypeTHORChain, "thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2s"));
 }
 
+TEST(Coin, ValidateAddresCrypto_org) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeCrypto_org, "cro1u9q8mfpzhyv2s43js7l5qseapx5kt3g2rf7ppf"));
+    // wrong prefix
+    EXPECT_FALSE(validateAddress(TWCoinTypeCrypto_org, "cosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp"));
+    // wrong checksum
+    EXPECT_FALSE(validateAddress(TWCoinTypeCrypto_org, "cro1u9q8mfpzhyv2s43js7l5qseapx5kt3g2rf7ppg"));
+}
+
 } // namespace TW

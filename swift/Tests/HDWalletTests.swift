@@ -420,4 +420,12 @@ class HDWalletTests: XCTestCase {
 
         XCTAssertEqual(address, "band1pe8xm2r46rmctsukuqu7gl900vzprfsp4sguc3")
     }
+
+    func testDeriveCrypto_org() {
+        let coin = CoinType.crypto_org
+        let key = HDWallet.test.getKeyForCoin(coin: coin)
+        let address = coin.deriveAddress(privateKey: key)
+
+        XCTAssertEqual(address, "cro1u9q8mfpzhyv2s43js7l5qseapx5kt3g2rf7ppf")
+    }
 }

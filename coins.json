@@ -1604,7 +1604,7 @@
     "derivationPath": "m/44'/394'/0'/0/1",
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
-    "hrp": "basecro",
+    "hrp": "cro",
     "explorer": {
       "url": "https://crypto.org/explorer",
       "txPath": "/txs/",
