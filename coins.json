@@ -1213,8 +1213,8 @@
     "symbol": "ROSE",
     "decimals": 9,
     "blockchain": "OasisNetwork",
-    "derivationPath": "m/44'/474'/0'/0'/0'",
-    "curve": "ed25519HD",
+    "derivationPath": "m/44'/474'/0'",
+    "curve": "ed25519",
     "publicKeyType": "ed25519",
     "hrp": "oasis",
     "explorer": {
@@ -1225,10 +1225,10 @@
       "sampleAccount": "oasis1qrx376dmwuckmruzn9vq64n49clw72lywctvxdf4"
     },
     "info": {
-      "url": "https://www.oasislabs.com/",
+      "url": "https://oasisprotocol.org/",
       "client": "https://github.com/oasisprotocol/oasis-core",
-      "clientPublic": "https://rosetta.oasis.dev/api/",
-      "clientDocs": "https://github.com/oasisprotocol/oasis-core/blob/master/docs/oasis-node/rpc.md"
+      "clientPublic": "https://rosetta.oasis.dev/api/v1",
+      "clientDocs": "https://docs.oasis.dev/oasis-core/"
     }
   },
   {
