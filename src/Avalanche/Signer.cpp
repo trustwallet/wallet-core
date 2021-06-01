@@ -48,116 +48,63 @@ std::vector<TransferableInput> structToInputs(const google::protobuf::RepeatedPt
     return inputs;
 }
 
+std::unique_ptr<TransactionOutput> extractTransferOut(const TW::Avalanche::Proto::TransactionOutput outputStruct) noexcept {
+    switch (outputStruct.output_case()) {
+        case Proto::TransactionOutput::kSecpTransferOutput: {
+            auto secpTxferStruct = outputStruct.secp_transfer_output();
+            auto amount = secpTxferStruct.amount();
+            auto locktime = secpTxferStruct.locktime();
+            auto threshold = secpTxferStruct.threshold();
+            auto addresses = structToAddresses(secpTxferStruct.addresses());
+
+            return std::make_unique<SECP256k1TransferOutput>(amount, locktime, threshold, addresses);
+        }
+        case Proto::TransactionOutput::kSecpMintOutput: {
+            auto secpMintStruct = outputStruct.secp_mint_output();
+            auto locktime = secpMintStruct.locktime();
+            auto threshold = secpMintStruct.threshold();
+            auto addresses = structToAddresses(secpMintStruct.addresses());
+            
+            return std::make_unique<SECP256k1MintOutput>(locktime, threshold, addresses);
+        }
+        case Proto::TransactionOutput::kNftTransferOutput: {
+            auto nftTxferStruct = outputStruct.nft_transfer_output();
+            auto groupID = nftTxferStruct.group_id();
+            auto payload = Data(nftTxferStruct.payload().begin(), nftTxferStruct.payload().end());
+            auto locktime = nftTxferStruct.locktime();
+            auto threshold = nftTxferStruct.threshold();
+            auto addresses = structToAddresses(nftTxferStruct.addresses());
+            
+            return std::make_unique<NFTTransferOutput>(groupID, payload, locktime, threshold, addresses);
+        }
+        case Proto::TransactionOutput::kNftMintOutput: {
+            auto nftMintStruct = outputStruct.nft_mint_output();
+            auto groupID = nftMintStruct.group_id();
+            auto locktime = nftMintStruct.locktime();
+            auto threshold = nftMintStruct.threshold();
+            auto addresses = structToAddresses(nftMintStruct.addresses());
+
+            return std::make_unique<NFTMintOutput>(groupID, locktime, threshold, addresses);
+        }
+    } // end switch-case deciding which output struct to build
+}
+
 std::vector<TransferableOutput> structToOutputs(const google::protobuf::RepeatedPtrField<TW::Avalanche::Proto::TransferableOutput> outputStructs) noexcept {
     std::vector<TransferableOutput> outputs;
     for (auto &outputStruct : outputStructs) {
         auto assetID = Data(outputStruct.asset_id().begin(), outputStruct.asset_id().end());
-        switch (outputStruct.output().output_case()) {
-            case Proto::TransactionOutput::kSecpTransferOutput: {
-                auto secpTxferStruct = outputStruct.output().secp_transfer_output();
-                auto amount = secpTxferStruct.amount();
-                auto locktime = secpTxferStruct.locktime();
-                auto threshold = secpTxferStruct.threshold();
-                auto addresses = structToAddresses(secpTxferStruct.addresses());
-
-                auto txnOutput = std::make_unique<SECP256k1TransferOutput>(amount, locktime, threshold, addresses);
-                auto txferOutput = TransferableOutput(assetID, std::move(txnOutput));
-                outputs.push_back(txferOutput);
-
-                break;
-            }
-            case Proto::TransactionOutput::kSecpMintOutput: {
-                auto secpMintStruct = outputStruct.output().secp_mint_output();
-                auto locktime = secpMintStruct.locktime();
-                auto threshold = secpMintStruct.threshold();
-                auto addresses = structToAddresses(secpMintStruct.addresses());
-                
-                auto txnOutput = std::make_unique<SECP256k1MintOutput>(locktime, threshold, addresses);
-                auto txferOutput = TransferableOutput(assetID, std::move(txnOutput));
-                outputs.push_back(txferOutput);
-
-                break;
-            }
-            case Proto::TransactionOutput::kNftTransferOutput: {
-                auto nftTxferStruct = outputStruct.output().nft_transfer_output();
-                auto groupID = nftTxferStruct.group_id();
-                auto payload = Data(nftTxferStruct.payload().begin(), nftTxferStruct.payload().end());
-                auto locktime = nftTxferStruct.locktime();
-                auto threshold = nftTxferStruct.threshold();
-                auto addresses = structToAddresses(nftTxferStruct.addresses());
-                
-                auto txnOutput = std::make_unique<NFTTransferOutput>(groupID, payload, locktime, threshold, addresses);
-                auto txferOutput = TransferableOutput(assetID, std::move(txnOutput));
-                outputs.push_back(txferOutput);
-                break;
-            }
-            case Proto::TransactionOutput::kNftMintOutput: {
-                auto nftMintStruct = outputStruct.output().nft_mint_output();
-                auto groupID = nftMintStruct.group_id();
-                auto locktime = nftMintStruct.locktime();
-                auto threshold = nftMintStruct.threshold();
-                auto addresses = structToAddresses(nftMintStruct.addresses());
-
-                auto txnOutput = std::make_unique<NFTMintOutput>(groupID, locktime, threshold, addresses);
-                auto txferOutput = TransferableOutput(assetID, std::move(txnOutput));
-                outputs.push_back(txferOutput);
-                break;
-            }
-        } // end switch-case deciding which output struct to build
+        auto txnOut = extractTransferOut(outputStruct.output());
+        auto txferOut = TransferableOutput(assetID, std::move(txnOut));
+        outputs.push_back(txferOut);
     } // end for loop building output structs
     return outputs;
 }
 
-// A possible future improvement is to refactor above structToOutputs and below extractOutputsFromInitialState to remove duped code
 std::vector<std::unique_ptr<TransactionOutput>> extractOutputsFromInitialState(TW::Avalanche::Proto::InitialState stateStruct) noexcept {
     std::vector<std::unique_ptr<TransactionOutput>> outputs;
     for (auto &outputStruct : stateStruct.outputs()) {
-        switch (outputStruct.output_case()) {
-            case Proto::TransactionOutput::kSecpTransferOutput: {
-                auto secpTxferStruct = outputStruct.secp_transfer_output();
-                auto amount = secpTxferStruct.amount();
-                auto locktime = secpTxferStruct.locktime();
-                auto threshold = secpTxferStruct.threshold();
-                auto addresses = structToAddresses(secpTxferStruct.addresses());
-
-                auto txnOutput = std::make_unique<SECP256k1TransferOutput>(amount, locktime, threshold, addresses);
-                outputs.push_back(std::move(txnOutput));
-                break;
-            }
-            case Proto::TransactionOutput::kSecpMintOutput: {
-                auto secpMintStruct = outputStruct.secp_mint_output();
-                auto locktime = secpMintStruct.locktime();
-                auto threshold = secpMintStruct.threshold();
-                auto addresses = structToAddresses(secpMintStruct.addresses());
-                
-                auto txnOutput = std::make_unique<SECP256k1MintOutput>(locktime, threshold, addresses);
-                outputs.push_back(std::move(txnOutput));
-                break;
-            }
-            case Proto::TransactionOutput::kNftTransferOutput: {
-                auto nftTxferStruct = outputStruct.nft_transfer_output();
-                auto groupID = nftTxferStruct.group_id();
-                auto payload = Data(nftTxferStruct.payload().begin(), nftTxferStruct.payload().end());
-                auto locktime = nftTxferStruct.locktime();
-                auto threshold = nftTxferStruct.threshold();
-                auto addresses = structToAddresses(nftTxferStruct.addresses());
-                
-                auto txnOutput = std::make_unique<NFTTransferOutput>(groupID, payload, locktime, threshold, addresses);
-                outputs.push_back(std::move(txnOutput));
-                break;
-            }
-            case Proto::TransactionOutput::kNftMintOutput: {
-                auto nftMintStruct = outputStruct.nft_mint_output();
-                auto groupID = nftMintStruct.group_id();
-                auto locktime = nftMintStruct.locktime();
-                auto threshold = nftMintStruct.threshold();
-                auto addresses = structToAddresses(nftMintStruct.addresses());
-
-                auto txnOutput = std::make_unique<NFTMintOutput>(groupID, locktime, threshold, addresses);
-                outputs.push_back(std::move(txnOutput));
-                break;
-            }
-        } // end switch-case deciding which output struct to build
+        auto txnOut = extractTransferOut(outputStruct);
+        outputs.push_back(std::move(txnOut));
     } // end for loop building output structs
     return outputs;
 }
