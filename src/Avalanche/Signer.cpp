@@ -86,6 +86,11 @@ std::unique_ptr<TransactionOutput> extractTransferOut(const TW::Avalanche::Proto
 
             return std::make_unique<NFTMintOutput>(groupID, locktime, threshold, addresses);
         }
+        default: {
+            // nil transfer output
+            auto nilAddresses = std::vector<Address>{};
+            std::make_unique<SECP256k1TransferOutput>(0, 0, 0, nilAddresses);
+        }
     } // end switch-case deciding which output struct to build
 }
 
