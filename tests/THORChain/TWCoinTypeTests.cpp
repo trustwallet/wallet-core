@@ -22,7 +22,7 @@ TEST(TWTHORChainCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTHORChain));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTHORChain));
 
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTHORChain), 18);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTHORChain), 8);
     ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeTHORChain));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeTHORChain));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeTHORChain));
