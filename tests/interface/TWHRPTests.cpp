@@ -28,6 +28,7 @@ TEST(TWHRP, StringForHRP) {
     ASSERT_STREQ(stringForHRP(TWHRPMonacoin), "mona");
     ASSERT_STREQ(stringForHRP(TWHRPKava), "kava");
     ASSERT_STREQ(stringForHRP(TWHRPBandChain), "band");
+    ASSERT_STREQ(stringForHRP(TWHRPBluzelle), "bluzelle");
     ASSERT_STREQ(stringForHRP(TWHRPCardano), "addr");
     ASSERT_STREQ(stringForHRP(TWHRPElrond), "erd");
     ASSERT_STREQ(stringForHRP(TWHRPOasis), "oasis");
@@ -55,6 +56,7 @@ TEST(TWHRP, HRPForString) {
     ASSERT_EQ(hrpForString("erd"), TWHRPElrond);
     ASSERT_EQ(hrpForString("oasis"), TWHRPOasis);
     ASSERT_EQ(hrpForString("thor"), TWHRPTHORChain);
+    ASSERT_EQ(hrpForString("bluzelle"), TWHRPBluzelle);
 }
 
 TEST(TWHPR, HPRByCoinType) {
@@ -73,6 +75,7 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPMonacoin, TWCoinTypeHRP(TWCoinTypeMonacoin));
     ASSERT_EQ(TWHRPKava, TWCoinTypeHRP(TWCoinTypeKava));
     ASSERT_EQ(TWHRPBandChain, TWCoinTypeHRP(TWCoinTypeBandChain));
+    ASSERT_EQ(TWHRPBluzelle, TWCoinTypeHRP(TWCoinTypeBluzelle));
     ASSERT_EQ(TWHRPCardano, TWCoinTypeHRP(TWCoinTypeCardano));
     ASSERT_EQ(TWHRPElrond, TWCoinTypeHRP(TWCoinTypeElrond));
     ASSERT_EQ(TWHRPOasis, TWCoinTypeHRP(TWCoinTypeOasis));
