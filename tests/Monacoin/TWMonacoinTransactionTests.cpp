@@ -65,7 +65,7 @@ TEST(MonacoinTransaction, SignTransaction) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeDigiByte);
 
-    ASSERT_TRUE(output.error().empty());
+    ASSERT_EQ(output.error(), Common::Proto::OK);
     ASSERT_EQ(hex(output.encoded()),
         "0100000001441a513dccc3b660c09c42ceaac147fcdc12b5de4b8b56a078fce5d5ce420aed000000006a473044022047789dc7483b178199439bbfce0ab0caf532fec51095ba099d0d9b0b2169033402201745a0160d8d327655a8ef0542367396ce86bbb13df6b183d58c922e422cfa10012102fc08693599fda741558613cd44a50fc65953b1be797637f8790a495b85554f3effffffff0280f0fa02000000001976a914076df984229a2731cbf465ec8fbd35b8da94380f88ac60a2fa02000000001976a914fea39370769d4fed2d8ab98dd5daa482cc56113b88ac00000000"
     );

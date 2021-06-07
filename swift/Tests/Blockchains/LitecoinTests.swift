@@ -119,7 +119,7 @@ class LitecoinTests: XCTestCase {
         let lockScript = BitcoinScript.lockScriptForAddress(address: address, coin: .litecoin)
         let utxos = [
             BitcoinUnspentTransaction.with {
-                $0.outPoint.hash = Data(Data(hexString: "a85fd6a9a7f2f54cacb57e83dfd408e51c0a5fc82885e3fa06be8692962bc407")!.reversed())
+                $0.outPoint.hash = Data.reverse(hexString: "a85fd6a9a7f2f54cacb57e83dfd408e51c0a5fc82885e3fa06be8692962bc407")
                 $0.outPoint.index = 0
                 $0.outPoint.sequence = UINT32_MAX
                 $0.script = lockScript.data
@@ -156,7 +156,7 @@ class LitecoinTests: XCTestCase {
 
         // Sign
         let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .litecoin)
-        XCTAssertTrue(output.error.isEmpty)
+        XCTAssertEqual(output.error, TW_Common_Proto_SigningError.ok)
 
         // https://blockchair.com/litecoin/transaction/8435d205614ee70066060734adf03af4194d0c3bc66dd01bb124ab7fd25e2ef8
         let txId = output.transactionID

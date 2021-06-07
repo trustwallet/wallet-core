@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.NEO.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 message TransactionInput {
     bytes prev_hash = 1;
     fixed32 prev_index = 2;
@@ -36,8 +38,8 @@ message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
 
-    // Error message in case of error
-    string error = 2;
+    // Optional error
+    Common.Proto.SigningError error = 2;
 }
 
 // Describes a preliminary transaction output plan.
@@ -65,6 +67,6 @@ message TransactionPlan {
     // GAS used
     int64 fee = 3;
 
-    // Error message in case of error
-    string error = 4;
+    // Optional error
+    Common.Proto.SigningError error = 4;
 };

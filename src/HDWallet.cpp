@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,10 +12,10 @@
 #include "Bitcoin/CashAddress.h"
 #include "Coin.h"
 
+#include <TrustWalletCore/TWHRP.h>
 #include <TrezorCrypto/bip32.h>
 #include <TrezorCrypto/bip39.h>
 #include <TrezorCrypto/curves.h>
-#include <TrustWalletCore/TWHRP.h>
 
 #include <array>
 
@@ -32,16 +32,11 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve);
 const char* curveName(TWCurve curve);
 } // namespace
 
-bool HDWallet::isValid(const std::string& mnemonic) {
-    return mnemonic_check(mnemonic.c_str()) != 0;
-}
-
 HDWallet::HDWallet(int strength, const std::string& passphrase)
     : seed(), mnemonic(), passphrase(passphrase) {
-    std::array<char, HDWallet::maxMnemomincSize> mnemonic_chars;
-    mnemonic_generate(strength, mnemonic_chars.data());
-    mnemonic_to_seed(mnemonic_chars.data(), passphrase.c_str(), seed.data(), nullptr);
-    mnemonic = mnemonic_chars.data();
+    const char* mnemonic_chars = mnemonic_generate(strength);
+    mnemonic_to_seed(mnemonic_chars, passphrase.c_str(), seed.data(), nullptr);
+    mnemonic = mnemonic_chars;
     updateEntropy();
 }
 
@@ -53,10 +48,10 @@ HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase)
 
 HDWallet::HDWallet(const Data& data, const std::string& passphrase)
     : seed(), mnemonic(), passphrase(passphrase) {
-    std::array<char, HDWallet::maxMnemomincSize> mnemonic_chars;
-    if (mnemonic_from_data(data.data(), data.size(), mnemonic_chars.data())) {
-        mnemonic_to_seed(mnemonic_chars.data(), passphrase.c_str(), seed.data(), nullptr);
-        mnemonic = mnemonic_chars.data();
+    const char* mnemonic_chars = mnemonic_from_data(data.data(), static_cast<int>(data.size()));
+    if (mnemonic_chars) {
+        mnemonic_to_seed(mnemonic_chars, passphrase.c_str(), seed.data(), nullptr);
+        mnemonic = mnemonic_chars;
         updateEntropy();
     }
 }
@@ -185,8 +180,6 @@ HDWallet::PrivateKeyType HDWallet::getPrivateKeyType(TWCurve curve) {
     case TWCurve::TWCurveED25519Extended:
         // used by Cardano
         return PrivateKeyTypeExtended96;
-    case TWCurve::TWCurveED25519HD:
-        return PrivateKeyTypeHD;
     default:
         // default
         return PrivateKeyTypeDefault32;
@@ -256,7 +249,6 @@ HDNode getNode(const HDWallet& wallet, TWCurve curve, const DerivationPath& deri
     auto node = getMasterNode(wallet, curve);
     for (auto& index : derivationPath.indices) {
         switch (privateKeyType) {
-            case HDWallet::PrivateKeyTypeHD:
             case HDWallet::PrivateKeyTypeExtended96:
                 // special handling for extended
                 hdnode_private_ckd_cardano(&node, index.derivationIndex());
@@ -278,9 +270,6 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve) {
             // special handling for extended, use entropy (not seed)
             hdnode_from_entropy_cardano_icarus((const uint8_t*)"", 0, wallet.entropy.data(), (int)wallet.entropy.size(), &node);
             break;
-        case HDWallet::PrivateKeyTypeHD:
-            hdnode_from_seed_hd(wallet.seed.data(), HDWallet::seedSize, curveName(curve), &node);
-            break;
         case HDWallet::PrivateKeyTypeDefault32:
         default:
             hdnode_from_seed(wallet.seed.data(), HDWallet::seedSize, curveName(curve), &node);
@@ -295,8 +284,6 @@ const char* curveName(TWCurve curve) {
         return SECP256K1_NAME;
     case TWCurveED25519:
         return ED25519_NAME;
-    case TWCurveED25519HD:
-        return ED25519_HD_NAME;
     case TWCurveED25519Blake2bNano:
         return ED25519_BLAKE2B_NANO_NAME;
     case TWCurveED25519Extended:

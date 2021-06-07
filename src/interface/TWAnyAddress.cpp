@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -78,6 +78,7 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypeKava:
     case TWCoinTypeTerra:
     case TWCoinTypeBandChain:
+    case TWCoinTypeTHORChain:
     case TWCoinTypeBluzelle:
     case TWCoinTypeIoTeX: {
         Cosmos::Address addr;
@@ -94,10 +95,10 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypeLitecoin:
     case TWCoinTypeViacoin: {
         auto decoded = Bitcoin::SegwitAddress::decode(string);
-        if (!decoded.second) {
+        if (!std::get<2>(decoded)) {
             break;
         }
-        data = decoded.first.witnessProgram;
+        data = std::get<0>(decoded).witnessProgram;
         break;
     }
 
@@ -147,6 +148,7 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypeAion:
     case TWCoinTypeSmartChainLegacy:
     case TWCoinTypeSmartChain:
+    case TWCoinTypePolygon:
         data = parse_hex(string);
         break;
 

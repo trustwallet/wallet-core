@@ -17,7 +17,7 @@ def bytes2num(s):
     return res
 
 
-curves = {"secp256k1": ecdsa.curves.SECP256k1}
+curves = {"nist256p1": ecdsa.curves.NIST256p, "secp256k1": ecdsa.curves.SECP256k1}
 
 
 class Point:
@@ -30,23 +30,48 @@ class Point:
 points = [
     Point(
         "secp256k1",
-        0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798,
-        0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8,
+        0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798,
+        0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8,
     ),
     Point(
         "secp256k1",
         0x1,
-        0x4218f20ae6c646b363db68605822fb14264ca8d2587fdd6fbc750d587e76a7ee,
+        0x4218F20AE6C646B363DB68605822FB14264CA8D2587FDD6FBC750D587E76A7EE,
     ),
     Point(
         "secp256k1",
         0x2,
-        0x66fbe727b2ba09e09f5a98d70a5efce8424c5fa425bbda1c511f860657b8535e,
+        0x66FBE727B2BA09E09F5A98D70A5EFCE8424C5FA425BBDA1C511F860657B8535E,
     ),
     Point(
         "secp256k1",
-        0x1b,
-        0x1adcea1cf831b0ad1653e769d1a229091d0cc68d4b0328691b9caacc76e37c90,
+        0x1B,
+        0x1ADCEA1CF831B0AD1653E769D1A229091D0CC68D4B0328691B9CAACC76E37C90,
+    ),
+    Point(
+        "nist256p1",
+        0x6B17D1F2E12C4247F8BCE6E563A440F277037D812DEB33A0F4A13945D898C296,
+        0x4FE342E2FE1A7F9B8EE7EB4A7C0F9E162BCE33576B315ECECBB6406837BF51F5,
+    ),
+    Point(
+        "nist256p1",
+        0x0,
+        0x66485C780E2F83D72433BD5D84A06BB6541C2AF31DAE871728BF856A174F93F4,
+    ),
+    Point(
+        "nist256p1",
+        0x0,
+        0x99B7A386F1D07C29DBCC42A27B5F9449ABE3D50DE25178E8D7407A95E8B06C0B,
+    ),
+    Point(
+        "nist256p1",
+        0xAF8BBDFE8CDD5577ACBF345B543D28CF402F4E94D3865B97EA0787F2D3AA5D22,
+        0x35802B8B376B995265918B078BC109C21A535176585C40F519ACA52D6AFC147C,
+    ),
+    Point(
+        "nist256p1",
+        0x80000,
+        0x580610071F440F0DCC14A22E2D5D5AFC1224C0CD11A3B4B51B8ECD2224EE1CE2,
     ),
 ]
 
@@ -55,14 +80,29 @@ random_iters = int(os.environ.get("ITERS", 1))
 DIR = os.path.abspath(os.path.dirname(__file__))
 lib = c.cdll.LoadLibrary(os.path.join(DIR, "libtrezor-crypto.so"))
 
+BIGNUM = c.c_uint32 * 9
+
 
 class curve_info(c.Structure):
     _fields_ = [("bip32_name", c.c_char_p), ("params", c.c_void_p)]
 
 
-lib.get_curve_by_name.restype = c.POINTER(curve_info)
+class curve_point(c.Structure):
+    _fields_ = [("x", BIGNUM), ("y", BIGNUM)]
 
-BIGNUM = c.c_uint32 * 9
+
+class ecdsa_curve(c.Structure):
+    _fields_ = [
+        ("prime", BIGNUM),
+        ("G", curve_point),
+        ("order", BIGNUM),
+        ("order_half", BIGNUM),
+        ("a", c.c_int),
+        ("b", BIGNUM),
+    ]
+
+
+lib.get_curve_by_name.restype = c.POINTER(curve_info)
 
 
 class Random(random.Random):
@@ -81,15 +121,15 @@ def int2bn(x, bn_type=BIGNUM):
     b = bn_type()
     b._int = x
     for i in range(len(b)):
-        b[i] = x % (1 << 30)
-        x = x >> 30
+        b[i] = x % (1 << 29)
+        x = x >> 29
     return b
 
 
 def bn2int(b):
     x = 0
     for i in range(len(b)):
-        x += b[i] << (30 * i)
+        x += b[i] << (29 * i)
     return x
 
 
@@ -105,7 +145,7 @@ def curve(request):
     curve_ptr = lib.get_curve_by_name(bytes(name, "ascii")).contents.params
     assert curve_ptr, "curve {} not found".format(name)
     curve_obj = curves[name]
-    curve_obj.ptr = c.c_void_p(curve_ptr)
+    curve_obj.ptr = c.cast(curve_ptr, c.POINTER(ecdsa_curve))
     curve_obj.p = curve_obj.curve.p()  # shorthand
     return curve_obj
 
@@ -121,176 +161,6 @@ def point(request):
         curve_obj.curve, request.param.x, request.param.y
     )
     return curve_obj
-
-
-def test_inverse(curve, r):
-    x = r.randrange(1, curve.p)
-    y = int2bn(x)
-    lib.bn_inverse(y, int2bn(curve.p))
-    y = bn2int(y)
-    y_ = ecdsa.numbertheory.inverse_mod(x, curve.p)
-    assert y == y_
-
-
-def test_is_less(curve, r):
-    x = r.randrange(0, curve.p)
-    y = r.randrange(0, curve.p)
-    x_ = int2bn(x)
-    y_ = int2bn(y)
-
-    res = lib.bn_is_less(x_, y_)
-    assert res == (x < y)
-
-    res = lib.bn_is_less(y_, x_)
-    assert res == (y < x)
-
-
-def test_is_equal(curve, r):
-    x = r.randrange(0, curve.p)
-    y = r.randrange(0, curve.p)
-    x_ = int2bn(x)
-    y_ = int2bn(y)
-
-    assert lib.bn_is_equal(x_, y_) == (x == y)
-    assert lib.bn_is_equal(x_, x_) == 1
-    assert lib.bn_is_equal(y_, y_) == 1
-
-
-def test_is_zero(curve, r):
-    x = r.randrange(0, curve.p)
-    assert lib.bn_is_zero(int2bn(x)) == (not x)
-
-
-def test_simple_comparisons():
-    assert lib.bn_is_zero(int2bn(0)) == 1
-    assert lib.bn_is_zero(int2bn(1)) == 0
-
-    assert lib.bn_is_less(int2bn(0), int2bn(0)) == 0
-    assert lib.bn_is_less(int2bn(1), int2bn(0)) == 0
-    assert lib.bn_is_less(int2bn(0), int2bn(1)) == 1
-
-    assert lib.bn_is_equal(int2bn(0), int2bn(0)) == 1
-    assert lib.bn_is_equal(int2bn(1), int2bn(0)) == 0
-    assert lib.bn_is_equal(int2bn(0), int2bn(1)) == 0
-
-
-def test_mult_half(curve, r):
-    x = r.randrange(0, 2 * curve.p)
-    y = int2bn(x)
-    lib.bn_mult_half(y, int2bn(curve.p))
-    y = bn2int(y)
-    if y >= curve.p:
-        y -= curve.p
-    half = ecdsa.numbertheory.inverse_mod(2, curve.p)
-    assert y == (x * half) % curve.p
-
-
-def test_subtractmod(curve, r):
-    x = r.randrange(0, 2 ** 256)
-    y = r.randrange(0, 2 ** 256)
-    z = int2bn(0)
-    lib.bn_subtractmod(int2bn(x), int2bn(y), z, int2bn(curve.p))
-    z = bn2int(z)
-    z_ = x + 2 * curve.p - y
-    assert z == z_
-
-
-def test_subtract2(r):
-    x = r.randrange(0, 2 ** 256)
-    y = r.randrange(0, 2 ** 256)
-    x, y = max(x, y), min(x, y)
-    z = int2bn(0)
-    lib.bn_subtract(int2bn(x), int2bn(y), z)
-    z = bn2int(z)
-    z_ = x - y
-    assert z == z_
-
-
-def test_add(curve, r):
-    x = r.randrange(0, 2 ** 256)
-    y = r.randrange(0, 2 ** 256)
-    z_ = x + y
-    z = int2bn(x)
-    lib.bn_add(z, int2bn(y))
-    z = bn2int(z)
-
-    assert z == z_
-
-
-def test_addmod(curve, r):
-    x = r.randrange(0, 2 ** 256)
-    y = r.randrange(0, 2 ** 256)
-    z_ = (x + y) % curve.p
-    z = int2bn(x)
-    lib.bn_addmod(z, int2bn(y), int2bn(curve.p))
-    z = bn2int(z)
-    if z >= curve.p:
-        z = z - curve.p
-    assert z == z_
-
-
-def test_multiply(curve, r):
-    k = r.randrange(0, 2 * curve.p)
-    x = r.randrange(0, 2 * curve.p)
-    z = (k * x) % curve.p
-    k = int2bn(k)
-    z_ = int2bn(x)
-    p_ = int2bn(curve.p)
-    lib.bn_multiply(k, z_, p_)
-    z_ = bn2int(z_)
-    assert z_ < 2 * curve.p
-    if z_ >= curve.p:
-        z_ = z_ - curve.p
-    assert z_ == z
-
-
-def test_multiply1(curve, r):
-    k = r.randrange(0, 2 * curve.p)
-    x = r.randrange(0, 2 * curve.p)
-    kx = k * x
-    res = int2bn(0, bn_type=(c.c_uint32 * 18))
-    lib.bn_multiply_long(int2bn(k), int2bn(x), res)
-    res = bn2int(res)
-    assert res == kx
-
-
-def test_multiply2(curve, r):
-    x = int2bn(0)
-    s = r.randrange(0, 2 ** 526)
-    res = int2bn(s, bn_type=(c.c_uint32 * 18))
-    prime = int2bn(curve.p)
-    lib.bn_multiply_reduce(x, res, prime)
-
-    x = bn2int(x) % curve.p
-    x_ = s % curve.p
-
-    assert x == x_
-
-
-def test_fast_mod(curve, r):
-    x = r.randrange(0, 128 * curve.p)
-    y = int2bn(x)
-    lib.bn_fast_mod(y, int2bn(curve.p))
-    y = bn2int(y)
-    assert y < 2 * curve.p
-    if y >= curve.p:
-        y -= curve.p
-    assert x % curve.p == y
-
-
-def test_mod(curve, r):
-    x = r.randrange(0, 2 * curve.p)
-    y = int2bn(x)
-    lib.bn_mod(y, int2bn(curve.p))
-    assert bn2int(y) == x % curve.p
-
-
-def test_mod_specific(curve):
-    p = curve.p
-    for x in [0, 1, 2, p - 2, p - 1, p, p + 1, p + 2, 2 * p - 2, 2 * p - 1]:
-        y = int2bn(x)
-        lib.bn_mod(y, int2bn(curve.p))
-        assert bn2int(y) == x % p
 
 
 POINT = BIGNUM * 2
@@ -313,6 +183,16 @@ def to_JACOBIAN(jp):
 
 def from_JACOBIAN(p):
     return (bn2int(p[0]), bn2int(p[1]), bn2int(p[2]))
+
+
+def test_curve_parameters(curve):
+    assert curve.curve.p() == bn2int(curve.ptr.contents.prime)
+    assert curve.generator.x() == bn2int(curve.ptr.contents.G.x)
+    assert curve.generator.y() == bn2int(curve.ptr.contents.G.y)
+    assert curve.order == bn2int(curve.ptr.contents.order)
+    assert curve.order // 2 == bn2int(curve.ptr.contents.order_half)
+    assert curve.curve.a() == curve.ptr.contents.a
+    assert curve.curve.b() == bn2int(curve.ptr.contents.b)
 
 
 def test_point_multiply(curve, r):
@@ -358,15 +238,6 @@ def test_point_to_jacobian(curve, r):
     lib.jacobian_to_curve(jp, q, int2bn(curve.p))
     q = from_POINT(q)
     assert q == (p.x(), p.y())
-
-
-def test_cond_negate(curve, r):
-    x = r.randrange(0, curve.p)
-    a = int2bn(x)
-    lib.conditional_negate(0, a, int2bn(curve.p))
-    assert bn2int(a) == x
-    lib.conditional_negate(-1, a, int2bn(curve.p))
-    assert bn2int(a) == 2 * curve.p - x
 
 
 def test_jacobian_add(curve, r):

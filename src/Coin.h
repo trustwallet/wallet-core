@@ -86,10 +86,6 @@ std::string anySignJSON(TWCoinType coinType, const std::string& json, const Data
 
 bool supportsJSONSigning(TWCoinType coinType);
 
-void anyCoinEncode(TWCoinType coinType, const Data& dataIn, Data& dataOut);
-
-void anyCoinDecode(TWCoinType coinType, const Data& dataIn, Data& dataOut);
-
 void anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 
 // Return coins handled by the same dispatcher as the given coin (mostly for testing)

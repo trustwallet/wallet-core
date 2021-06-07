@@ -1,0 +1,26 @@
+#!/bin/bash
+
+wc_read_version() {
+    version=$1
+    if [ -z "${version}" ]; then
+        version=$(git describe --long --tags | cut -f 1 -d "-")
+    fi
+    echo ${version}
+}
+
+wc_release_url() {
+    tag="$1"
+
+    id=$(curl "https://api.github.com/repos/trustwallet/wallet-core/releases/tags/${tag}" | jq ".id")
+    release_url="https://uploads.github.com/repos/trustwallet/wallet-core/releases/${id}"
+    echo ${release_url}
+}
+
+wc_upload_asset() {
+    release_url="$1"
+    filename="$2"
+
+    upload_url="${release_url}/assets?name=${filename}"
+    download_url=$(curl -u ${GITHUB_USER}:${GITHUB_TOKEN} -X POST -H "Content-Type: application/octet-stream" --data-binary @${filename} ${upload_url} | jq ".browser_download_url")
+    echo ${download_url}
+}

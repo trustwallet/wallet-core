@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -44,10 +44,10 @@
 #include "Stellar/Entry.h"
 #include "Tezos/Entry.h"
 #include "Theta/Entry.h"
+#include "THORChain/Entry.h"
 #include "TON/Entry.h"
 #include "Tron/Entry.h"
 #include "VeChain/Entry.h"
-#include "Wanchain/Entry.h"
 #include "Waves/Entry.h"
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
@@ -90,10 +90,10 @@ Solana::Entry solanaDP;
 Stellar::Entry stellarDP;
 Tezos::Entry tezosDP;
 Theta::Entry thetaDP;
+THORChain::Entry thorchainDP;
 TON::Entry tonDP;
 Tron::Entry tronDP;
 VeChain::Entry vechainDP;
-Wanchain::Entry wanchainDP;
 Waves::Entry wavesDP;
 Zcash::Entry zcashDP;
 Zilliqa::Entry zilliqaDP;
@@ -160,14 +160,16 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeKin: entry = &stellarDP; break;
         case TWCoinTypeTezos: entry = &tezosDP; break;
         case TWCoinTypeTheta: entry = &thetaDP; break;
+        case TWCoinTypeTHORChain: entry = &thorchainDP; break;
         case TWCoinTypeTON: entry = &tonDP; break;
         case TWCoinTypeTron: entry = &tronDP; break;
         case TWCoinTypeVeChain: entry = &vechainDP; break;
-        case TWCoinTypeWanchain: entry = &wanchainDP; break;
+        case TWCoinTypeWanchain: entry = &ethereumDP; break;
         case TWCoinTypeWaves: entry = &wavesDP; break;
         case TWCoinTypeZcash: entry = &zcashDP; break;
         case TWCoinTypeZelcash: entry = &zcashDP; break;
         case TWCoinTypeZilliqa: entry = &zilliqaDP; break;
+        case TWCoinTypePolygon: entry = &ethereumDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;
@@ -230,18 +232,6 @@ bool TW::supportsJSONSigning(TWCoinType coinType) {
     auto dispatcher = coinDispatcher(coinType);
     assert(dispatcher != nullptr);
     return dispatcher->supportsJSONSigning();
-}
-
-void TW::anyCoinEncode(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
-    auto dispatcher = coinDispatcher(coinType);
-    assert(dispatcher != nullptr);
-    dispatcher->encodeRawTx(coinType, dataIn, dataOut);
-}
-
-void TW::anyCoinDecode(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
-    auto dispatcher = coinDispatcher(coinType);
-    assert(dispatcher != nullptr);
-    dispatcher->decodeRawTx(coinType, dataIn, dataOut);
 }
 
 void TW::anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut) {

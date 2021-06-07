@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,11 +8,12 @@
 
 #include "../Coin.h"
 #include "../HDWallet.h"
+#include "../Mnemonic.h"
 
 using namespace TW;
 
 bool TWHDWalletIsValid(TWString *_Nonnull mnemonic) {
-    return HDWallet::isValid(TWStringUTF8Bytes(mnemonic));
+    return Mnemonic::isValid(TWStringUTF8Bytes(mnemonic));
 }
 
 struct TWHDWallet *_Nonnull TWHDWalletCreate(int strength, TWString *_Nonnull passphrase) {
@@ -62,7 +63,7 @@ struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull walle
     return new TWPrivateKey{ wallet->impl.getKey(coin, path) };
 }
 
-struct TWPrivateKey *_Nonnull TWHDWalletGetKeyBIP44(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) {
+struct TWPrivateKey *_Nonnull TWHDWalletGetDerivedKey(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) {
     const auto derivationPath = DerivationPath(TW::purpose(coin), TW::slip44Id(coin), account, change, address);
     return new TWPrivateKey{ wallet->impl.getKey(coin, derivationPath) };
 }

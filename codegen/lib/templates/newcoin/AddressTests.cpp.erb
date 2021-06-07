@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -37,7 +37,7 @@ TEST(<%= format_name(coin) %>Address, FromPrivateKey) {
 TEST(<%= format_name(coin) %>Address, FromPublicKey) {
     // TODO: Check public key type, finalize implementation
     
-    auto publicKey = PublicKey(parse_hex("__PUBLIC_KEY_DATS__"), TWPublicKeyTypeED25519);
+    auto publicKey = PublicKey(parse_hex("__PUBLIC_KEY_DATA__"), TWPublicKeyTypeED25519);
     auto address = Address(publicKey);
     ASSERT_EQ(address.string(), "__ADD_RESULTING_ADDRESS_HERE__");
 }

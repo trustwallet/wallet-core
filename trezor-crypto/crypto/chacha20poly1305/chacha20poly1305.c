@@ -2,18 +2,18 @@
 // AEAD constructions with a goal of simplicity and correctness rather
 // than performance.
 
-#include <TrezorCrypto/chacha20poly1305.h>
-#include "ecrypt-portable.h"
+#include <TrezorCrypto/chacha20poly1305/chacha20poly1305.h>
+#include <TrezorCrypto/chacha20poly1305/ecrypt-portable.h>
 
 void hchacha20(ECRYPT_ctx *x,u8 *c);
 
 // Initialize the XChaCha20 + Poly1305 context for encryption or decryption
 // using a 32 byte key and 24 byte nonce. The key and the first 16 bytes of
 // the nonce are used as input to HChaCha20 to derive the Chacha20 key.
-void xchacha20poly1305_init(chacha20poly1305_ctx *ctx, uint8_t key[32], uint8_t nonce[24]) {
+void xchacha20poly1305_init(chacha20poly1305_ctx *ctx, const uint8_t key[32], const uint8_t nonce[24]) {
     unsigned char subkey[32] = {0};
     unsigned char block0[64] = {0};
-    ECRYPT_ctx tmp;
+    ECRYPT_ctx tmp = {0};
 
     // Generate the Chacha20 key by applying HChaCha20 to the
     // original key and the first 16 bytes of the nonce.
@@ -37,20 +37,20 @@ void xchacha20poly1305_init(chacha20poly1305_ctx *ctx, uint8_t key[32], uint8_t 
 
 // Encrypt n bytes of plaintext where n must be evenly divisible by the
 // Chacha20 blocksize of 64, except for the final n bytes of plaintext.
-void chacha20poly1305_encrypt(chacha20poly1305_ctx *ctx, uint8_t *in, uint8_t *out, size_t n) {
+void chacha20poly1305_encrypt(chacha20poly1305_ctx *ctx, const uint8_t *in, uint8_t *out, size_t n) {
     ECRYPT_encrypt_bytes(&ctx->chacha20, in, out, n);
     poly1305_update(&ctx->poly1305, out, n);
 }
 
 // Decrypt n bytes of ciphertext where n must be evenly divisible by the
 // Chacha20 blocksize of 64, except for the final n bytes of ciphertext.
-void chacha20poly1305_decrypt(chacha20poly1305_ctx *ctx, uint8_t *in, uint8_t *out, size_t n) {
+void chacha20poly1305_decrypt(chacha20poly1305_ctx *ctx, const uint8_t *in, uint8_t *out, size_t n) {
     poly1305_update(&ctx->poly1305, in, n);
     ECRYPT_encrypt_bytes(&ctx->chacha20, in, out, n);
 }
 
 // Include authenticated data in the Poly1305 MAC.
-void chacha20poly1305_auth(chacha20poly1305_ctx *ctx, uint8_t *in, size_t n) {
+void chacha20poly1305_auth(chacha20poly1305_ctx *ctx, const uint8_t *in, size_t n) {
     poly1305_update(&ctx->poly1305, in, n);
 }
 

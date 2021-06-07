@@ -21,7 +21,7 @@ Issue Date: 20/12/2007
 #define DO_TABLES
 
 #include <TrezorCrypto/aes.h>
-#include "aesopt.h"
+#include <TrezorCrypto/aes/aesopt.h>
 
 #if defined(STATIC_TABLES)
 
@@ -173,7 +173,7 @@ Issue Date: 20/12/2007
 
 #endif
 
-#include "aestab.h"
+#include <TrezorCrypto/aes/aestab.h>
 
 #if defined(__cplusplus)
 extern "C"
@@ -265,14 +265,14 @@ uint8_t inv_affine(const uint8_t x)
     return 0x05 ^ ((w ^ (w >> 8)) & 0xff);
 }
 
-static int init = 0;
+int init = 0;
 
 AES_RETURN aes_init(void)
 {   uint32_t  i, w;
 
 #if defined(FF_TABLES)
 
-    uint8_t  pow[512], log[256];
+    uint8_t  pow[512] = {0}, log[256] = {0};
 
     if(init)
         return EXIT_SUCCESS;
@@ -383,7 +383,7 @@ AES_RETURN aes_init(void)
     return EXIT_SUCCESS;
 }
 
-/* 
+/*
    Automatic code initialisation (suggested by by Henrik S. Gaßmann)
    based on code provided by Joe Lowe and placed in the public domain at:
    http://stackoverflow.com/questions/1113409/attribute-constructor-equivalent-in-vc

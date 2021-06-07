@@ -43,11 +43,16 @@ swift/test_output/
 
 # Samples -- iOS
 Pods/
+
 # Samples -- C++
 # build
 samples/cpp/CMakeFiles
 samples/cpp/CMakeCache.txt
 samples/cpp/Makefile
 samples/cpp/*.cmake
+
 # built binary
 samples/cpp/sample
+
+*.xcuserdatad/
+

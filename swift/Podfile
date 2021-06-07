@@ -4,6 +4,8 @@ deployment_target = '12.0'
 platform :ios, deployment_target
 inhibit_all_warnings!
 
+project 'TrustWalletCore.xcodeproj'
+
 target 'WalletCore' do
   use_frameworks!
 
@@ -11,6 +13,12 @@ target 'WalletCore' do
   pod 'SwiftLint'
 
   target 'WalletCoreTests'
+end
+
+target 'WalletCoreTypes' do
+  use_frameworks!
+
+  pod 'SwiftProtobuf'
 end
 
 post_install do |installer|

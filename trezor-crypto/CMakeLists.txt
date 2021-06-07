@@ -13,10 +13,11 @@ add_library(TrezorCrypto
     crypto/sodium/private/fe_25_5/fe.c crypto/sodium/private/ed25519_ref10.c crypto/sodium/private/ed25519_ref10_fe_25_5.c crypto/sodium/keypair.c
     crypto/monero/base58.c
     crypto/monero/serialize.c
-    crypto/monero/xmr.c
+    #crypto/monero/xmr.c
     crypto/monero/range_proof.c
     crypto/blake256.c
     crypto/blake2b.c crypto/blake2s.c
+    crypto/chacha_drbg.c
     crypto/chacha20poly1305/chacha20poly1305.c crypto/chacha20poly1305/chacha_merged.c crypto/chacha20poly1305/poly1305-donna.c crypto/chacha20poly1305/rfc7539.c
     crypto/rc4.c
     crypto/nano.c
@@ -24,10 +25,12 @@ add_library(TrezorCrypto
     crypto/cash_addr.c
     crypto/memzero.c
     crypto/scrypt.c
-    crypto/ripple/base58.c
     crypto/nist256p1.c
     crypto/groestl.c
+    crypto/hmac_drbg.c
+    crypto/rfc6979.c
     crypto/schnorr.c
+    crypto/shamir.c
 )
 
 target_compile_options(TrezorCrypto
@@ -49,6 +52,7 @@ target_compile_options(TrezorCrypto
         -Winit-self
         -Wuninitialized
         -Wformat-security
+        -Wno-missing-braces
         -Werror
 )
 

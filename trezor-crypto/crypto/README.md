@@ -43,4 +43,3 @@ Distibuted under MIT License.
 - Ed25519: https://github.com/floodyberry/ed25519-donna
 - Chacha20: https://github.com/wg/c20p1305
 - Poly1305: https://github.com/floodyberry/poly1305-donna
-- Libsodium: https://github.com/jedisct1/libsodium

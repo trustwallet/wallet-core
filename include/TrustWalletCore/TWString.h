@@ -34,7 +34,7 @@ size_t TWStringSize(TWString *_Nonnull string);
 /// Returns the byte at the provided index.
 char TWStringGet(TWString *_Nonnull string, size_t index);
 
-/// Returns the raw pointer to the string's UTF8 bytes.
+/// Returns the raw pointer to the string's UTF8 bytes (null-terminated).
 const char *_Nonnull TWStringUTF8Bytes(TWString *_Nonnull string);
 
 /// Deletes a string created with a `TWStringCreate*` method.  After delete it must not be used (can segfault)!

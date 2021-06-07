@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.FIO.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // A public blockchain address, such as {"BTC", "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"}
 message PublicAddress {
     // Coin symbol for the address (a.k.a. tokenCode)
@@ -155,6 +157,6 @@ message SigningOutput {
     // Signed transaction in JSON
     string json = 1;
 
-    // Filled with message upon error
-    string error = 2;
+    // Optional error
+    Common.Proto.SigningError error = 2;
 }

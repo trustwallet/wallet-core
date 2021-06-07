@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -43,9 +43,6 @@ class HDWallet {
     TW::Data entropy;
 
   public:
-    /// Determines if a mnemonic phrase is valid.
-    static bool isValid(const std::string& mnemonic);
-
     /// Initializes a new random HDWallet with the provided strength in bits.
     HDWallet(int strength, const std::string& passphrase);
 
@@ -93,7 +90,6 @@ class HDWallet {
     enum PrivateKeyType {
       PrivateKeyTypeDefault32 = 0, // 32-byte private key
       PrivateKeyTypeExtended96 = 1, // 3*32-byte extended private key
-      PrivateKeyTypeHD = 2,         // 32-byte private key
     };
     
     // obtain privateKeyType used by the coin/curve

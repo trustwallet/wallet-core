@@ -46,6 +46,12 @@ extension Data {
         return UInt8(letter, radix: 16)
     }
 
+    /// Reverses and parses hex string as `Data`
+    public static func reverse(hexString: String) -> Data {
+        guard let data = Data(hexString: hexString) else { return Data() }
+        return Data(data.reversed())
+    }
+
     /// Returns the hex string representation of the data.
     public var hexString: String {
         return map({ String(format: "%02x", $0) }).joined()

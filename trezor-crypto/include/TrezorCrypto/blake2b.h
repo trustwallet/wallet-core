@@ -40,6 +40,7 @@ int blake2b_Update(blake2b_state *S, const void *pin, size_t inlen);
 int blake2b_Final(blake2b_state *S, void *out, size_t outlen);
 
 int blake2b(const uint8_t *msg, uint32_t msg_len, void *out, size_t outlen);
+// [wallet-core]
 int blake2b_Personal(const uint8_t *msg, uint32_t msg_len, const void *personal, size_t personal_len, void *out, size_t outlen);
 int blake2b_Key(const uint8_t *msg, uint32_t msg_len, const void *key, size_t keylen, void *out, size_t outlen);
 
