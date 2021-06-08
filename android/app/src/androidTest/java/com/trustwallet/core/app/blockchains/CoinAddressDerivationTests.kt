@@ -18,12 +18,10 @@ class CoinAddressDerivationTests {
         val wallet = HDWallet("shoot island position soft burden budget tooth cruel issue economy destroy above", "")
 
         for (i in 0 .. 4) {
-            GlobalScope.launch {
-                CoinType.values().forEach { coin ->
-                    val privateKey = wallet.getKeyForCoin(coin)
-                    val address = coin.deriveAddress(privateKey)
-                    runDerivationChecks(coin, address)
-                }
+            CoinType.values().forEach { coin ->
+                val privateKey = wallet.getKeyForCoin(coin)
+                val address = coin.deriveAddress(privateKey)
+                runDerivationChecks(coin, address)
             }
         }
     }
