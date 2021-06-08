@@ -60,7 +60,7 @@ class TestBluzelleSigner {
 
         val signingInput = Cosmos.SigningInput.newBuilder().apply {
             accountNumber = 1037
-            chainId = "band-wenchang-testnet2"
+            chainId = "bluzelle"
             memo = ""
             sequence = 8
             fee = cosmosFee
@@ -71,7 +71,7 @@ class TestBluzelleSigner {
         val output = AnySigner.sign(signingInput, BLUZELLE, SigningOutput.parser())
         val jsonPayload = output.json
 
-        val expectedJsonPayload = """{"mode":"block","tx":{"fee":{"amount":[{"amount":"200","denom":"ubnt"}],"gas":"200000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"1","denom":"ubnt"}],"from_address":"bluzelle1hsk6jryyqjfhp5dhc55tc9jtckygx0epzzw0fm","to_address":"bluzelle1xccvees6ev4wm2r49rc6ptulsdxa8x8jfpmund"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"B8s3xp3hkkKMqJSGp9sPvUtSjEJ2rKmDzERP/FD/cz09Ot//ERMhUEnIr3jsWVuwj+jv5QYQ15B43Uz3CWx9wg=="}]}}"""
+        val expectedJsonPayload = """{"mode":"block","tx":{"fee":{"amount":[{"amount":"200","denom":"ubnt"}],"gas":"200000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"1","denom":"ubnt"}],"from_address":"bluzelle1hsk6jryyqjfhp5dhc55tc9jtckygx0epzzw0fm","to_address":"bluzelle1xccvees6ev4wm2r49rc6ptulsdxa8x8jfpmund"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"0StN9LHr4fIbEzCzyx5bzWJmfgiUqkwoavYGNUDm2shXKmAFogVtOviC4zMNNHKBtFTnHQ07DO1UjqEEWS/2BA=="}]}}"""
         assertEquals(expectedJsonPayload, jsonPayload)
 
     }
