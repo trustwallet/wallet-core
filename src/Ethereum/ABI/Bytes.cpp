@@ -7,6 +7,7 @@
 #include "Bytes.h"
 #include "ParamNumber.h"
 #include "ValueEncoder.h"
+#include <Hash.h>
 
 namespace TW::Ethereum::ABI {
 
@@ -80,6 +81,10 @@ bool ParamString::decodeString(const Data& encoded, std::string& decoded, size_t
     }
     decoded = std::string(decodedData.begin(), decodedData.end());
     return true;
+}
+
+Data ParamString::hashStruct() const {
+    return Hash::keccak256(data(_str));
 }
 
 } // namespace TW::Ethereum::ABI

@@ -7,10 +7,12 @@
 #include "Array.h"
 #include "ParamFactory.h"
 #include "ValueEncoder.h"
+#include <Hash.h>
 
 #include <cassert>
 
 using namespace TW::Ethereum::ABI;
+using namespace TW;
 
 int ParamArray::addParam(const std::shared_ptr<ParamBase>& param) {
     assert(param != nullptr);
@@ -71,4 +73,16 @@ bool ParamArray::decode(const Data& encoded, size_t& offset_inout) {
     // padding
     offset_inout = origOffset + ValueEncoder::paddedTo32(offset_inout - origOffset);
     return res;
+}
+
+Data ParamArray::hashStruct() const {
+    return Hash::keccak256(_params.encodeHashes());
+}
+
+std::string ParamArray::getExtraTypes(std::vector<std::string>& ignoreList) const {
+    std::shared_ptr<ParamBase> p;
+    if (!_params.getParam(0, p)) {
+        return "";
+    }
+    return p->getExtraTypes(ignoreList);
 }

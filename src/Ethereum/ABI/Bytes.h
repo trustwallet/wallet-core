@@ -76,6 +76,7 @@ public:
     virtual bool decode(const Data& encoded, size_t& offset_inout) {
         return decodeString(encoded, _str, offset_inout);
     }
+    virtual Data hashStruct() const;
 };
 
 } // namespace TW::Ethereum::ABI

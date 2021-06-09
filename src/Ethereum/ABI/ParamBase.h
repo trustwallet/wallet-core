@@ -22,6 +22,10 @@ public:
     virtual bool isDynamic() const = 0;
     virtual void encode(Data& data) const = 0;
     virtual bool decode(const Data& encoded, size_t& offset_inout) = 0;
+    // EIP712-style hash of the struct; default implementation
+    virtual Data hashStruct() const;
+    // Helper for EIP712 encoding; provide full type of all used types (recursively).  Default is empty implementation.
+    virtual std::string getExtraTypes(std::vector<std::string>& ignoreList) const { return ""; }
 };
 
 /// Collection parameters base class

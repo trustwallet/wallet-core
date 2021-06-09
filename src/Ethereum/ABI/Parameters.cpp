@@ -6,6 +6,7 @@
 
 #include "Parameters.h"
 #include "ValueEncoder.h"
+#include <Hash.h>
 
 #include <cassert>
 #include <string>
@@ -57,11 +58,10 @@ std::string ParamSet::getType() const {
     std::string t = "(";
     int cnt = 0;
     for (auto p : _params) {
-        if (cnt > 0) {
+        if (cnt++ > 0) {
             t += ",";
         }
         t += p->getType();
-        ++cnt;
     }
     t += ")";
     return t;
@@ -142,4 +142,95 @@ bool ParamSet::decode(const Data& encoded, size_t& offset_inout) {
         }
     }
     return true;
+}
+
+TW::Data ParamSet::encodeHashes() const {
+    TW::Data hashes;
+    for (auto p: _params) {
+        TW::append(hashes, p->hashStruct());
+    }
+    return hashes;
+}
+
+TW::Data Parameters::hashStruct() const {
+    return Hash::keccak256(_params.encodeHashes());
+}
+
+std::string ParamNamed::getType() const {
+    return _param->getType() + " " + _name;
+}
+
+ParamSetNamed::~ParamSetNamed() {
+    _params.clear();
+}
+
+/// Returns the index of the parameter
+int ParamSetNamed::addParam(const std::shared_ptr<ParamNamed>& param) {
+    assert(param.get() != nullptr);
+    if (param.get() == nullptr) {
+        return -1;
+    }
+    _params.push_back(param);
+    return static_cast<int>(_params.size() - 1);
+}
+
+void ParamSetNamed::addParams(const std::vector<std::shared_ptr<ParamNamed>>& params) {
+    for (auto p : params) {
+        addParam(p);
+    }
+}
+
+std::string ParamSetNamed::getType() const {
+    std::string t = "(";
+    int cnt = 0;
+    for (auto p : _params) {
+        if (cnt++ > 0) {
+            t += ",";
+        }
+        t += p->getType();
+    }
+    t += ")";
+    return t;
+}
+
+TW::Data ParamSetNamed::encodeHashes() const {
+    TW::Data hashes;
+    for (auto p: _params) {
+        TW::append(hashes, p->hashStruct());
+    }
+    return hashes;
+}
+
+std::string ParamSetNamed::getExtraTypes(std::vector<std::string>& ignoreList) const {
+    std::string types;
+    for (auto& p: _params) {
+        auto pType = p->_param->getType();
+        if (std::find(ignoreList.begin(), ignoreList.end(), pType) == ignoreList.end()) {
+            types += p->getExtraTypes(ignoreList);
+            ignoreList.push_back(pType);
+        }
+    }
+    return types;
+}
+
+TW::Data ParametersNamed::encodeHashes() const {
+    std::vector<std::string> ignoreList;
+    auto extraTypes = getExtraTypes(ignoreList);
+    Data hashes = Hash::keccak256(TW::data(extraTypes));
+    TW::append(hashes, _params.encodeHashes());
+    return hashes;
+}
+
+TW::Data ParametersNamed::hashStruct() const {
+    return Hash::keccak256(encodeHashes());
+}
+
+std::string ParametersNamed::getExtraTypes(std::vector<std::string>& ignoreList) const {
+    std::string types;
+    if (std::find(ignoreList.begin(), ignoreList.end(), _name) == ignoreList.end()) {
+        types += getTypeLong();
+        ignoreList.push_back(_name);
+    }
+    types += _params.getExtraTypes(ignoreList);
+    return types;
 }
