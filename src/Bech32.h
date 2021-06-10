@@ -50,8 +50,9 @@ inline bool convertBits(Data& out, const Data& in) {
         }
     }
     if (pad) {
-        if (bits)
+        if (bits) {
             out.push_back((acc << (tobits - bits)) & maxv);
+        }
     } else if (bits >= frombits || ((acc << (tobits - bits)) & maxv)) {
         return false;
     }
