@@ -41,6 +41,12 @@ TEST(EthereumAbiStructEncoder, encodeTypes) {
         std::make_shared<ParamNamed>("to", std::make_shared<ParamArray>(std::make_shared<ParametersNamed>(mailMessageTo0))),
         std::make_shared<ParamNamed>("contents", std::make_shared<ParamString>("Hello, Bob!"))
     });
+    ParametersNamed mailMessageEIP712Domain("EIP712Domain", std::vector<std::shared_ptr<ParamNamed>>{
+        std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Ether Mail")),
+        std::make_shared<ParamNamed>("version", std::make_shared<ParamString>("1")),
+        std::make_shared<ParamNamed>("chainId", std::make_shared<ParamUInt256>(1)),
+        std::make_shared<ParamNamed>("verifyingContract", std::make_shared<ParamAddress>(parse_hex("CcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC")))
+    });
 
     {
         EXPECT_EQ(hex(Hash::keccak256(parse_hex(
@@ -123,9 +129,5 @@ TEST(EthereumAbiStructEncoder, encodeTypes) {
     );
     EXPECT_EQ(hex(mailMessage.hashStruct()), "eb4221181ff3f1a83ea7313993ca9218496e424604ba9492bb4052c03d5c3df8");
 
-
-    {
-        EXPECT_EQ(hex(data(std::string("Cow"))), "436f77");
-        EXPECT_EQ(hex(Hash::keccak256(parse_hex("436f77"))), "8c1d2bd5348394761719da11ec67eedae9502d137e8940fee8ecd6f641ee1648");
-    }
+    EXPECT_EQ(hex(mailMessageEIP712Domain.hashStruct()), "f2cee375fa42b42143804025fc449deafd50cc031ca257e0b194a650a912090f");
 }
