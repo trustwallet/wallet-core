@@ -119,7 +119,7 @@ class LitecoinTests: XCTestCase {
         let lockScript = BitcoinScript.lockScriptForAddress(address: address, coin: .litecoin)
         let utxos = [
             BitcoinUnspentTransaction.with {
-                $0.outPoint.hash = Data(Data(hexString: "a85fd6a9a7f2f54cacb57e83dfd408e51c0a5fc82885e3fa06be8692962bc407")!.reversed())
+                $0.outPoint.hash = Data.reverse(hexString: "a85fd6a9a7f2f54cacb57e83dfd408e51c0a5fc82885e3fa06be8692962bc407")
                 $0.outPoint.index = 0
                 $0.outPoint.sequence = UINT32_MAX
                 $0.script = lockScript.data

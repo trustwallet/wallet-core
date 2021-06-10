@@ -14,6 +14,7 @@
 #include "../Groestlcoin/Transaction.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
+#include "../KeyPair.h"
 #include "../Result.h"
 #include "../Zcash/Transaction.h"
 #include "../Zcash/TransactionBuilder.h"
@@ -22,6 +23,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <optional>
 
 namespace TW::Bitcoin {
 
@@ -75,11 +77,11 @@ class TransactionSigner {
     Result<void, Common::Proto::SigningError> sign(Script script, size_t index, const Proto::UnspentTransaction& utxo);
     Result<std::vector<Data>, Common::Proto::SigningError> signStep(Script script, size_t index,
                                        const Proto::UnspentTransaction& utxo, uint32_t version) const;
-    Data createSignature(const Transaction& transaction, const Script& script, const Data& key,
+    Data createSignature(const Transaction& transaction, const Script& script, const std::optional<KeyPair>&,
                          size_t index, Amount amount, uint32_t version) const;
 
     /// Returns the private key for the given public key hash.
-    Data keyForPublicKeyHash(const Data& hash) const;
+    std::optional<KeyPair> keyPairForPubKeyHash(const Data& hash) const;
 
     /// Returns the redeem script for the given script hash.
     Data scriptForScriptHash(const Data& hash) const;

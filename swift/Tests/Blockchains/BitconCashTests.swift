@@ -61,14 +61,14 @@ class BitcoinCashTests: XCTestCase {
     }
 
     func testSign() throws {
-        let utxoTxId = Data(hexString: "050d00e2e18ef13969606f1ceee290d3f49bd940684ce39898159352952b8ce2")!
+        let utxoTxId = "050d00e2e18ef13969606f1ceee290d3f49bd940684ce39898159352952b8ce2"
         let privateKey = PrivateKey(data: Data(hexString: "7fdafb9db5bc501f2096e7d13d331dc7a75d9594af3d251313ba8b6200f4e384")!)!
         let address = CoinType.bitcoinCash.deriveAddress(privateKey: privateKey)
         let utxo = BitcoinUnspentTransaction.with {
-            $0.outPoint.hash = Data(utxoTxId.reversed()) // reverse of UTXO tx id, Bitcoin internal expects network byte order
-            $0.outPoint.index = 2                        // outpoint index of this this UTXO
+            $0.outPoint.hash = Data.reverse(hexString: utxoTxId) // reverse of UTXO tx id, Bitcoin internal expects network byte order
+            $0.outPoint.index = 2                                // outpoint index of this this UTXO
             $0.outPoint.sequence = UINT32_MAX
-            $0.amount = 5151                             // value of this UTXO
+            $0.amount = 5151                                     // value of this UTXO
             $0.script = BitcoinScript.lockScriptForAddress(address: address, coin: .bitcoinCash).data // Build lock script from address or public key hash
         }
 

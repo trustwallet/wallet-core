@@ -54,16 +54,6 @@
 
 #define CARDANO_MAX_NODE_DEPTH 1048576
 
-// [wallet-core]
-const curve_info ed25519_hd_info = {
-    .bip32_name = "ed25519 seed",
-    .params = NULL,
-    .hasher_base58 = HASHER_SHA2D,
-    .hasher_sign = HASHER_SHA2D,
-    .hasher_pubkey = HASHER_SHA2_RIPEMD,
-    .hasher_script = HASHER_SHA2,
-};
-
 const curve_info ed25519_info = {
     .bip32_name = "ed25519 seed",
     .params = NULL,
@@ -209,42 +199,6 @@ int hdnode_from_seed(const uint8_t *seed, int seed_len, const char *curve,
   memcpy(out->private_key, I, 32);
   memcpy(out->chain_code, I + 32, 32);
   memzero(out->public_key, sizeof(out->public_key));
-  memzero(I, sizeof(I));
-  return 1;
-}
-
-// [wallet-core]
-int hdnode_from_seed_hd(const uint8_t *seed, int seed_len, const char* curve, HDNode *out)
-{
-  CONFIDENTIAL uint8_t I[32 + 32];
-  uint8_t tmp = 0x01;
-  memzero(out, sizeof(HDNode));
-  out->depth = 0;
-  out->child_num = 0;
-  out->curve = get_curve_by_name(curve);
-  if (out->curve == 0) {
-    return 0;
-  }
-  CONFIDENTIAL HMAC_SHA256_CTX ctxs256;
-  hmac_sha256_Init(&ctxs256, (const uint8_t*) out->curve->bip32_name, strlen(out->curve->bip32_name));
-  hmac_sha256_Update(&ctxs256, &tmp, 1);
-  hmac_sha256_Update(&ctxs256, seed, seed_len);
-  hmac_sha256_Final(&ctxs256, out->chain_code);
-  CONFIDENTIAL HMAC_SHA512_CTX ctx;
-  hmac_sha512_Init(&ctx, (const uint8_t*) out->curve->bip32_name, strlen(out->curve->bip32_name));
-  hmac_sha512_Update(&ctx, seed, seed_len);
-  hmac_sha512_Final(&ctx, I);
-  while ((I[31] & 0b00100000) != 0) {
-    hmac_sha512_Init(&ctx, (const uint8_t*) out->curve->bip32_name, strlen(out->curve->bip32_name));
-    hmac_sha512_Update(&ctx, I, sizeof(I));
-    hmac_sha512_Final(&ctx, I);
-  }
-  I[0] &= 248;
-  I[31] &= 127;
-  I[31] |= 64;
-  memcpy(out->private_key, I, 32);
-  memcpy(out->private_key_extension, I + 32, 32);
-  hdnode_fill_public_key(out);
   memzero(I, sizeof(I));
   return 1;
 }
@@ -667,8 +621,6 @@ void hdnode_fill_public_key(HDNode *node) {
     node->public_key[0] = 1;
     if (node->curve == &ed25519_info) {
       ed25519_publickey(node->private_key, node->public_key + 1);
-    } else if (node->curve == &ed25519_hd_info) { // [wallet-core]
-      ed25519_publickey_ext(node->private_key, node->private_key_extension, node->public_key + 1);
     } else if (node->curve == &ed25519_sha3_info) {
       ed25519_publickey_sha3(node->private_key, node->public_key + 1);
 #if USE_KECCAK
@@ -828,8 +780,6 @@ int hdnode_sign(HDNode *node, const uint8_t *msg, uint32_t msg_len,
     if (node->curve == &ed25519_info) {
       hdnode_fill_public_key(node);
       ed25519_sign(msg, msg_len, node->private_key, node->public_key + 1, sig);
-		} else if (node->curve == &ed25519_hd_info) { // [wallet-core]
-			ed25519_sign(msg, msg_len, node->private_key, node->public_key + 1, sig);
     } else if (node->curve == &ed25519_sha3_info) {
       hdnode_fill_public_key(node);
       ed25519_sign_sha3(msg, msg_len, node->private_key, node->public_key + 1,
@@ -986,9 +936,6 @@ const curve_info *get_curve_by_name(const char *curve_name) {
     return &ed25519_info;
   }
   // [wallet-core]
-	if (strcmp(curve_name, ED25519_HD_NAME) == 0) {
-		return &ed25519_hd_info;
-	}
   if (strcmp(curve_name, ED25519_CARDANO_NAME) == 0) {
     return &ed25519_cardano_info;
   }

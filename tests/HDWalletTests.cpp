@@ -8,6 +8,7 @@
 #include "Bitcoin/Address.h"
 #include "Bitcoin/CashAddress.h"
 #include "Bitcoin/SegwitAddress.h"
+#include "Ethereum/Address.h"
 #include "HexCoding.h"
 #include "PublicKey.h"
 #include "Hash.h"
@@ -111,6 +112,16 @@ TEST(HDWallet, privateKeyFromXPRVForDGB) {
 
     EXPECT_EQ(hex(publicKey.bytes), "03238a5c541c2cbbf769dbe0fb2a373c22db4da029370767fbe746d59da4de07f1");
     EXPECT_EQ(address.string(), "D9Gv7jWSVsS9Y5q98C79WyfEj6P2iM5Nzs");
+}
+
+TEST(HDWallet, DeriveWithLeadingZerosEth) {
+    // Derivation test case with leading zeroes, see  https://blog.polychainlabs.com/bitcoin,/bip32,/bip39,/kdf/2021/05/17/inconsistent-bip32-derivations.html
+    const auto mnemonic = "name dash bleak force moral disease shine response menu rescue more will";
+    const auto derivationPath = "m/44'/60'";
+    const auto coin = TWCoinTypeEthereum;
+    auto wallet = HDWallet(mnemonic, "");
+    const auto addr = Ethereum::Address(wallet.getKey(coin, DerivationPath(derivationPath)).getPublicKey(TW::publicKeyType(coin)));
+    EXPECT_EQ(addr.string(), "0x0ba17e928471c64AaEaf3ABfB3900EF4c27b380D");
 }
 
 } // namespace
