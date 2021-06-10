@@ -22,12 +22,15 @@ class TestBluzelleAddress {
     fun testAddressPublicKey() {
 
         val key = PrivateKey("1037f828ca313f4c9e120316e8e9ff25e17f07fe66ba557d5bc5e2eeb7cba8f6".toHexByteArray())
-        val pubkey = key.publicKeyEd25519
-        val address = AnyAddress(pubkey, CoinType.BLUZELLE)
-        val expected = AnyAddress("bluzelle1yhtq5zm293m2r3sp2guj9m5pg5e273n6r0szul", CoinType.BLUZELLE)
+        val publicKey = key.getPublicKeySecp256k1(true)
+        val expectedAddress = "bluzelle1jf9aaj9myrzsnmpdr7twecnaftzmku2myvn4dg"
+        val actualAddress = AnyAddress(publicKey, CoinType.BLUZELLE).description()
 
-        assertEquals(pubkey.data().toHex(), "0x381207e7f7fa7c44564534b0f47dfef3fc942e42defc10b2bf614e4dfa773e5a")
-        assertEquals(address.description(), expected.description())
+        val expectedPublicKeyData = "0x035df185566521d6a7802319ee06e1a28e97b7772dfb5fdd13ca6f0575518968e4"
+        val actualPublicKeyData = publicKey.data().toHex()
+
+        assertEquals(expectedAddress, actualAddress)
+        assertEquals(expectedPublicKeyData, actualPublicKeyData)
     }
 
     @Test

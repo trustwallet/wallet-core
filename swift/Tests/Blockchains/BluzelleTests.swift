@@ -7,6 +7,23 @@ import XCTest
 import WalletCore
 
 class BluzelleAddressTests: XCTestCase {
+
+    func testAddressPublicKey() {
+
+        let privateKeyData = Data(hexString: "1037f828ca313f4c9e120316e8e9ff25e17f07fe66ba557d5bc5e2eeb7cba8f6")!
+        let privateKey = PrivateKey(data: privateKeyData)!
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
+
+        let expectedAddress = "bluzelle1jf9aaj9myrzsnmpdr7twecnaftzmku2myvn4dg"
+        let actualAddress = AnyAddress(publicKey: publicKey, coin: .bluzelle).description
+
+        let expectedPublicKeyData = "035df185566521d6a7802319ee06e1a28e97b7772dfb5fdd13ca6f0575518968e4"
+        let actualPublicKeyData = publicKey.data.hexString
+
+        XCTAssertEqual(expectedAddress, actualAddress)
+        XCTAssertEqual(expectedPublicKeyData, actualPublicKeyData)
+    }
+
     func testAddressValidation() {
         let bluzelle = CoinType.bluzelle
         for address in [
