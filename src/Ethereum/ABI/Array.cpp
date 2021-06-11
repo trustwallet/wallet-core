@@ -76,7 +76,12 @@ bool ParamArray::decode(const Data& encoded, size_t& offset_inout) {
 }
 
 Data ParamArray::hashStruct() const {
-    return Hash::keccak256(_params.encodeHashes());
+    Data hash(32);
+    Data hashes = _params.encodeHashes();
+    if (hashes.size() > 0) {
+        hash = Hash::keccak256(hashes);
+    }
+    return hash;
 }
 
 std::string ParamArray::getExtraTypes(std::vector<std::string>& ignoreList) const {

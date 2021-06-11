@@ -12,6 +12,7 @@
 #include <string>
 
 using namespace TW::Ethereum::ABI;
+using namespace TW;
 
 ParamSet::~ParamSet() {
     _params.clear();
@@ -144,16 +145,21 @@ bool ParamSet::decode(const Data& encoded, size_t& offset_inout) {
     return true;
 }
 
-TW::Data ParamSet::encodeHashes() const {
-    TW::Data hashes;
+Data ParamSet::encodeHashes() const {
+    Data hashes;
     for (auto p: _params) {
-        TW::append(hashes, p->hashStruct());
+        append(hashes, p->hashStruct());
     }
     return hashes;
 }
 
-TW::Data Parameters::hashStruct() const {
-    return Hash::keccak256(_params.encodeHashes());
+Data Parameters::hashStruct() const {
+    Data hash(32);
+    Data hashes = _params.encodeHashes();
+    if (hashes.size() > 0) {
+        hash = Hash::keccak256(hashes);
+    }
+    return hash;
 }
 
 std::string ParamNamed::getType() const {
@@ -193,10 +199,10 @@ std::string ParamSetNamed::getType() const {
     return t;
 }
 
-TW::Data ParamSetNamed::encodeHashes() const {
-    TW::Data hashes;
+Data ParamSetNamed::encodeHashes() const {
+    Data hashes;
     for (auto p: _params) {
-        TW::append(hashes, p->hashStruct());
+        append(hashes, p->hashStruct());
     }
     return hashes;
 }
@@ -213,22 +219,34 @@ std::string ParamSetNamed::getExtraTypes(std::vector<std::string>& ignoreList) c
     return types;
 }
 
-TW::Data ParametersNamed::encodeHashes() const {
-    std::vector<std::string> ignoreList;
-    auto extraTypes = getExtraTypes(ignoreList);
-    Data hashes = Hash::keccak256(TW::data(extraTypes));
-    TW::append(hashes, _params.encodeHashes());
+Data ParametersNamed::hashType() const {
+    return Hash::keccak256(TW::data(encodeType()));
+}
+
+Data ParametersNamed::encodeHashes() const {
+    Data hashes;
+    Data paramsHashes = _params.encodeHashes();
+    if (paramsHashes.size() > 0) {
+        auto fullType = encodeType();
+        hashes = Hash::keccak256(TW::data(fullType));
+        append(hashes, paramsHashes);
+    }
     return hashes;
 }
 
-TW::Data ParametersNamed::hashStruct() const {
-    return Hash::keccak256(encodeHashes());
+Data ParametersNamed::hashStruct() const {
+    Data hash(32);
+    Data hashes = encodeHashes();
+    if (hashes.size() > 0) {
+        hash = Hash::keccak256(hashes);
+    }
+    return hash;
 }
 
 std::string ParametersNamed::getExtraTypes(std::vector<std::string>& ignoreList) const {
     std::string types;
     if (std::find(ignoreList.begin(), ignoreList.end(), _name) == ignoreList.end()) {
-        types += getTypeLong();
+        types += _name + _params.getType();
         ignoreList.push_back(_name);
     }
     types += _params.getExtraTypes(ignoreList);

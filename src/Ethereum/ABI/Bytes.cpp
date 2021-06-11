@@ -84,7 +84,12 @@ bool ParamString::decodeString(const Data& encoded, std::string& decoded, size_t
 }
 
 Data ParamString::hashStruct() const {
-    return Hash::keccak256(data(_str));
+    Data hash(32);
+    Data encoded = data(_str);
+    if (encoded.size() > 0) {
+        hash = Hash::keccak256(encoded);
+    }
+    return hash;
 }
 
 } // namespace TW::Ethereum::ABI

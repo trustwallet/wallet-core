@@ -114,7 +114,13 @@ public:
     ParametersNamed(const std::string& name, const std::vector<std::shared_ptr<ParamNamed>>& params) : ParamCollection(), _name(name), _params(ParamSetNamed(params)) {}
 
     std::string getType() const { return _name; }
-    std::string getTypeLong() const { return _name + _params.getType(); }
+    /// Get full type, extended by used sub-types, of the form 'Mail(Person from,Person to,string contents)Person(string name,address wallet)'
+    std::string encodeType() const {
+        std::vector<std::string> ignoreList;
+        return getExtraTypes(ignoreList);
+    }
+    /// Get the hash of the full type.
+    Data hashType() const;
     virtual size_t getSize() const { return _params.getCount(); }
     virtual bool isDynamic() const { return true; }
     virtual size_t getCount() const { return _params.getCount(); }
