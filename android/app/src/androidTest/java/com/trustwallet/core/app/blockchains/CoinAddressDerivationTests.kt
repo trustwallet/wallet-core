@@ -1,11 +1,11 @@
 package com.trustwallet.core.app.blockchains
 
+import kotlinx.coroutines.*
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import wallet.core.jni.HDWallet
 import wallet.core.jni.CoinType
 import wallet.core.jni.CoinType.*
-import kotlinx.coroutines.*
+import wallet.core.jni.HDWallet
 
 class CoinAddressDerivationTests {
 
@@ -14,18 +14,22 @@ class CoinAddressDerivationTests {
     }
 
     @Test
-    fun testDeriveAddressesFromPhrase() {
+    fun testDeriveAddressesFromPhrase() = runBlocking {
         val wallet = HDWallet("shoot island position soft burden budget tooth cruel issue economy destroy above", "")
 
-        for (i in 0 .. 4) {
-            GlobalScope.launch {
-                CoinType.values().forEach { coin ->
+        val scope = CoroutineScope(Dispatchers.IO)
+        val jobs = mutableListOf<Deferred<Unit>>()
+        for (i in 0..4) {
+            CoinType.values().forEach { coin ->
+                val job = scope.async {
                     val privateKey = wallet.getKeyForCoin(coin)
                     val address = coin.deriveAddress(privateKey)
                     runDerivationChecks(coin, address)
                 }
+                jobs.add(job)
             }
         }
+        jobs.forEach { it.await() }
     }
 
     private fun runDerivationChecks(coin: CoinType, address: String?) = when (coin) {
