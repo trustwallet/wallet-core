@@ -17,14 +17,14 @@ using namespace TW;
 
 // https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
 
-ParametersNamed msgPersonCow2("Person", std::vector<std::shared_ptr<ParamNamed>>{
+ParamStruct msgPersonCow2("Person", std::vector<std::shared_ptr<ParamNamed>>{
     std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Cow")),
     std::make_shared<ParamNamed>("wallets", std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamAddress>(parse_hex("CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826")),
         std::make_shared<ParamAddress>(parse_hex("DeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF"))
     }))
 });
-ParametersNamed msgPersonBob3("Person", std::vector<std::shared_ptr<ParamNamed>>{
+ParamStruct msgPersonBob3("Person", std::vector<std::shared_ptr<ParamNamed>>{
     std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Bob")),
     std::make_shared<ParamNamed>("wallets", std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamAddress>(parse_hex("bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB")),
@@ -32,29 +32,29 @@ ParametersNamed msgPersonBob3("Person", std::vector<std::shared_ptr<ParamNamed>>
         std::make_shared<ParamAddress>(parse_hex("B0B0b0b0b0b0B000000000000000000000000000"))
     }))
 });
-ParametersNamed msgGroup("Group", std::vector<std::shared_ptr<ParamNamed>>{
+ParamStruct msgGroup("Group", std::vector<std::shared_ptr<ParamNamed>>{
     std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("")),
     std::make_shared<ParamNamed>("members", std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
-        std::make_shared<ParametersNamed>(msgPersonCow2)
+        std::make_shared<ParamStruct>(msgPersonCow2)
     }))
 });
-ParametersNamed msgMailCow1Bob1("Mail", std::vector<std::shared_ptr<ParamNamed>>{
-    std::make_shared<ParamNamed>("from", std::make_shared<ParametersNamed>("Person", std::vector<std::shared_ptr<ParamNamed>>{
+ParamStruct msgMailCow1Bob1("Mail", std::vector<std::shared_ptr<ParamNamed>>{
+    std::make_shared<ParamNamed>("from", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{
         std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Cow")),
         std::make_shared<ParamNamed>("wallet", std::make_shared<ParamAddress>(parse_hex("CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826")))
     })),
-    std::make_shared<ParamNamed>("to", std::make_shared<ParametersNamed>("Person", std::vector<std::shared_ptr<ParamNamed>>{
+    std::make_shared<ParamNamed>("to", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{
         std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Bob")),
         std::make_shared<ParamNamed>("wallet", std::make_shared<ParamAddress>(parse_hex("bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB")))
     })),
     std::make_shared<ParamNamed>("contents", std::make_shared<ParamString>("Hello, Bob!"))
 });
-ParametersNamed msgMailCow2Bob3("Mail", std::vector<std::shared_ptr<ParamNamed>>{
-    std::make_shared<ParamNamed>("from", std::make_shared<ParametersNamed>(msgPersonCow2)),
-    std::make_shared<ParamNamed>("to", std::make_shared<ParamArray>(std::make_shared<ParametersNamed>(msgPersonBob3))),
+ParamStruct msgMailCow2Bob3("Mail", std::vector<std::shared_ptr<ParamNamed>>{
+    std::make_shared<ParamNamed>("from", std::make_shared<ParamStruct>(msgPersonCow2)),
+    std::make_shared<ParamNamed>("to", std::make_shared<ParamArray>(std::make_shared<ParamStruct>(msgPersonBob3))),
     std::make_shared<ParamNamed>("contents", std::make_shared<ParamString>("Hello, Bob!"))
 });
-ParametersNamed msgEIP712Domain("EIP712Domain", std::vector<std::shared_ptr<ParamNamed>>{
+ParamStruct msgEIP712Domain("EIP712Domain", std::vector<std::shared_ptr<ParamNamed>>{
     std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Ether Mail")),
     std::make_shared<ParamNamed>("version", std::make_shared<ParamString>("1")),
     std::make_shared<ParamNamed>("chainId", std::make_shared<ParamUInt256>(1)),
@@ -149,28 +149,28 @@ TEST(EthereumAbiStructEncoder, encodeTypes_v4) {
 
 // See 'signedTypeData_v4 with recursive types' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
 TEST(EthereumAbiStructEncoder, encodeTypes_v4Rec) {
-    ParametersNamed msgPersonRecursiveMother("Person", std::vector<std::shared_ptr<ParamNamed>>{
+    ParamStruct msgPersonRecursiveMother("Person", std::vector<std::shared_ptr<ParamNamed>>{
         std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Lyanna")),
-        std::make_shared<ParamNamed>("mother", std::make_shared<ParametersNamed>("Person", std::vector<std::shared_ptr<ParamNamed>>{})),
-        std::make_shared<ParamNamed>("father", std::make_shared<ParametersNamed>("Person", std::vector<std::shared_ptr<ParamNamed>>{
+        std::make_shared<ParamNamed>("mother", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{})),
+        std::make_shared<ParamNamed>("father", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{
             std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Rickard")),
-            std::make_shared<ParamNamed>("mother", std::make_shared<ParametersNamed>("Person", std::vector<std::shared_ptr<ParamNamed>>{})),
-            std::make_shared<ParamNamed>("father", std::make_shared<ParametersNamed>("Person", std::vector<std::shared_ptr<ParamNamed>>{}))
+            std::make_shared<ParamNamed>("mother", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{})),
+            std::make_shared<ParamNamed>("father", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{}))
         }))
     });
-    ParametersNamed msgPersonRecursiveFather("Person", std::vector<std::shared_ptr<ParamNamed>>{
+    ParamStruct msgPersonRecursiveFather("Person", std::vector<std::shared_ptr<ParamNamed>>{
         std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Rhaegar")),
-        std::make_shared<ParamNamed>("mother", std::make_shared<ParametersNamed>("Person", std::vector<std::shared_ptr<ParamNamed>>{})),
-        std::make_shared<ParamNamed>("father", std::make_shared<ParametersNamed>("Person", std::vector<std::shared_ptr<ParamNamed>>{
+        std::make_shared<ParamNamed>("mother", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{})),
+        std::make_shared<ParamNamed>("father", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{
             std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Aeris II")),
-            std::make_shared<ParamNamed>("mother", std::make_shared<ParametersNamed>("Person", std::vector<std::shared_ptr<ParamNamed>>{})),
-            std::make_shared<ParamNamed>("father", std::make_shared<ParametersNamed>("Person", std::vector<std::shared_ptr<ParamNamed>>{}))
+            std::make_shared<ParamNamed>("mother", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{})),
+            std::make_shared<ParamNamed>("father", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{}))
         }))
     });
-    ParametersNamed msgPersonRecursive("Person", std::vector<std::shared_ptr<ParamNamed>>{
+    ParamStruct msgPersonRecursive("Person", std::vector<std::shared_ptr<ParamNamed>>{
         std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Jon")),
-        std::make_shared<ParamNamed>("mother", std::make_shared<ParametersNamed>(msgPersonRecursiveMother)),
-        std::make_shared<ParamNamed>("father", std::make_shared<ParametersNamed>(msgPersonRecursiveFather))
+        std::make_shared<ParamNamed>("mother", std::make_shared<ParamStruct>(msgPersonRecursiveMother)),
+        std::make_shared<ParamNamed>("father", std::make_shared<ParamStruct>(msgPersonRecursiveFather))
     });
 
     EXPECT_EQ(msgPersonRecursive.encodeType(), "Person(string name,Person mother,Person father)");
@@ -201,7 +201,7 @@ TEST(EthereumAbiStructEncoder, encodeTypes_v4Rec) {
 
     EXPECT_EQ(hex(msgPersonRecursive.hashStruct()), "fdc7b6d35bbd81f7fa78708604f57569a10edff2ca329c8011373f0667821a45");
 
-    ParametersNamed msgEIP712Domain("EIP712Domain", std::vector<std::shared_ptr<ParamNamed>>{
+    ParamStruct msgEIP712Domain("EIP712Domain", std::vector<std::shared_ptr<ParamNamed>>{
         std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Family Tree")),
         std::make_shared<ParamNamed>("version", std::make_shared<ParamString>("1")),
         std::make_shared<ParamNamed>("chainId", std::make_shared<ParamUInt256>(1)),
