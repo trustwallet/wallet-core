@@ -43,6 +43,12 @@ std::vector<TransferableInput> structToInputs(const google::protobuf::RepeatedPt
                 inputs.push_back(txferInput);
                 break;
             }
+            case Proto::TransferableInput::INPUT_NOT_SET:
+            default: {
+                // fail out and return nil inputs if input unset or not supported
+                inputs.clear();
+                return inputs;
+            }
         } // end switch-case deciding which input to build
     } // end for loop building input structs
     return inputs;
@@ -189,6 +195,13 @@ std::vector<TransferableOp> structToOperations(google::protobuf::RepeatedPtrFiel
                 ops.push_back(transferableOp);
                 break;
             }
+            case Proto::TransferOp::OPERATION_NOT_SET:
+            default:
+            {
+                // fail out and return nil ops if an unset or unsupported op is supplied
+                ops.clear();
+                return ops;
+            }
         } // end switch-case deciding which operations struct to build
     } // end for loop building operations structs
     return ops;
@@ -305,6 +318,11 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
         protoOutput.set_encoded(encoded.data(), encoded.size());
     }
         break;
+    case Proto::UnsignedTx::TxCase::TX_NOT_SET: 
+    default: {
+        // error case: return nil bytes
+        break;
+    }
     }
     return protoOutput;
 }
