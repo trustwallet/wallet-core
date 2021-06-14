@@ -20,8 +20,12 @@ class ParamNamed: public ParamBase
 public:
     std::string _name;
     std::shared_ptr<ParamBase> _param;
+
+public:
     ParamNamed(const std::string& name, std::shared_ptr<ParamBase> param): _name(name), _param(param) {}
 
+    virtual std::string getName() const { return _name; }
+    virtual std::shared_ptr<ParamBase> getParam() const { return _param; }
     virtual std::string getType() const;
     virtual size_t getSize() const { return _param->getSize(); }
     virtual bool isDynamic() const { return _param->isDynamic(); }
@@ -31,7 +35,7 @@ public:
     virtual std::string getExtraTypes(std::vector<std::string>& ignoreList) const { return _param->getExtraTypes(ignoreList); }
 };
 
-/// A collection of named parameters.
+/// A collection of named parameters.  See also: ParamStruct
 class ParamSetNamed {
 private:
     std::vector<std::shared_ptr<ParamNamed>> _params;
@@ -49,6 +53,7 @@ public:
     std::string getType() const;
     Data encodeHashes() const;
     std::string getExtraTypes(std::vector<std::string>& ignoreList) const;
+    std::shared_ptr<ParamNamed> findParamByName(const std::string& name) const;
 };
 
 /// A named structure (set of parameters plus a type name).
@@ -63,6 +68,9 @@ public:
     ParamStruct(const std::string& name, const std::vector<std::shared_ptr<ParamNamed>>& params) : ParamCollection(), _name(name), _params(ParamSetNamed(params)) {}
 
     std::string getType() const { return _name; }
+
+    /// Get the hash of the sruct (used for signing)
+    virtual Data hashStruct() const;
     /// Get full type, extended by used sub-types, of the form 'Mail(Person from,Person to,string contents)Person(string name,address wallet)'
     std::string encodeType() const {
         std::vector<std::string> ignoreList;
@@ -70,14 +78,18 @@ public:
     }
     /// Get the hash of the full type.
     Data hashType() const;
+
     virtual size_t getSize() const { return _params.getCount(); }
     virtual bool isDynamic() const { return true; }
     virtual size_t getCount() const { return _params.getCount(); }
     virtual void encode(Data& data) const {}
     virtual bool decode(const Data& encoded, size_t& offset_inout) { return true; }
     Data encodeHashes() const;
-    virtual Data hashStruct() const;
     virtual std::string getExtraTypes(std::vector<std::string>& ignoreList) const;
+    std::shared_ptr<ParamNamed> findParamByName(const std::string& name) const { return _params.findParamByName(name); }
+
+    /// TODO desc
+    static Data hashStructJson(const std::string& structType, const std::string& valueJson, const std::string& typesJson);
 };
 
 } // namespace TW::Ethereum::ABI

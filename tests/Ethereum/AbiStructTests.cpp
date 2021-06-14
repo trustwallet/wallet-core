@@ -64,7 +64,7 @@ ParamStruct msgEIP712Domain("EIP712Domain", std::vector<std::shared_ptr<ParamNam
 PrivateKey privateKeyCow = PrivateKey(Hash::keccak256(TW::data("cow")));
 
 // See 'signedTypeData' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
-TEST(EthereumAbiStructEncoder, encodeTypes) {
+TEST(EthereumAbiStruct, encodeTypes) {
     EXPECT_EQ(msgMailCow1Bob1.encodeType(), "Mail(Person from,Person to,string contents)Person(string name,address wallet)");
 
     EXPECT_EQ(hex(msgMailCow1Bob1.hashType()), "a0cedeb2dc280ba39b857546d74f5549c3a1d7bdc2dd96bf881f76108e23dac2");
@@ -84,7 +84,7 @@ TEST(EthereumAbiStructEncoder, encodeTypes) {
 }
 
 // See 'signedTypeData with V3 string' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
-TEST(EthereumAbiStructEncoder, encodeTypes_v3) {
+TEST(EthereumAbiStruct, encodeTypes_v3) {
     EXPECT_EQ(msgMailCow1Bob1.encodeType(), "Mail(Person from,Person to,string contents)Person(string name,address wallet)");
 
     EXPECT_EQ(hex(msgMailCow1Bob1.hashType()), "a0cedeb2dc280ba39b857546d74f5549c3a1d7bdc2dd96bf881f76108e23dac2");
@@ -104,7 +104,7 @@ TEST(EthereumAbiStructEncoder, encodeTypes_v3) {
 }
 
 // See 'signedTypeData_v4' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
-TEST(EthereumAbiStructEncoder, encodeTypes_v4) {
+TEST(EthereumAbiStruct, encodeTypes_v4) {
     EXPECT_EQ(msgGroup.encodeType(), "Group(string name,Person[] members)Person(string name,address[] wallets)");
 
     EXPECT_EQ(msgPersonCow2.encodeType(), "Person(string name,address[] wallets)");
@@ -148,7 +148,7 @@ TEST(EthereumAbiStructEncoder, encodeTypes_v4) {
 }
 
 // See 'signedTypeData_v4 with recursive types' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
-TEST(EthereumAbiStructEncoder, encodeTypes_v4Rec) {
+TEST(EthereumAbiStruct, encodeTypes_v4Rec) {
     ParamStruct msgPersonRecursiveMother("Person", std::vector<std::shared_ptr<ParamNamed>>{
         std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Lyanna")),
         std::make_shared<ParamNamed>("mother", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{})),
@@ -217,4 +217,99 @@ TEST(EthereumAbiStructEncoder, encodeTypes_v4Rec) {
     // TODO sig
     // 0x807773b9faa9879d4971b43856c4d60c2da15c6f8c062bd9d33afefb756de19c
     // 0xf2ec61e636ff7bb3ac8bc2a4cc2c8b8f635dd1b2ec8094c963128b358e79c85c5ca6dd637ed7e80f0436fe8fce39c0e5f2082c9517fe677cc2917dcd6c84ba881c
+}
+
+// See 'signedTypeData' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
+TEST(EthereumAbiStruct, encodeTypeCow1) {
+    ParamStruct msgPersonCow1("Person", std::vector<std::shared_ptr<ParamNamed>>{
+        std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Cow")),
+        std::make_shared<ParamNamed>("wallet", std::make_shared<ParamAddress>(parse_hex("CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826")))
+    });
+
+    EXPECT_EQ(msgPersonCow1.encodeType(), "Person(string name,address wallet)");
+
+    EXPECT_EQ(hex(msgPersonCow1.hashType()), "b9d8c78acf9b987311de6c7b45bb6a9c8e1bf361fa7fd3467a2163f994c79500");
+
+    EXPECT_EQ(hex(msgPersonCow1.encodeHashes()), "b9d8c78acf9b987311de6c7b45bb6a9c8e1bf361fa7fd3467a2163f994c795008c1d2bd5348394761719da11ec67eedae9502d137e8940fee8ecd6f641ee1648000000000000000000000000cd2a3d9f938e13cd947ec05abc7fe734df8dd826");
+
+    EXPECT_EQ(hex(msgPersonCow1.hashStruct()), "fc71e5fa27ff56c350aa531bc129ebdf613b772b6604664f5d8dbe21b85eb0c8");
+}
+
+TEST(EthereumAbiStruct, hashStructJson) {
+    {
+        auto hash = ParamStruct::hashStructJson("Person",
+            "{\"name\": \"Cow\", \"wallet\": \"CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826\"}",
+            "[{\"Person\": [{\"name\": \"name\", \"type\": \"string\"}, {\"name\": \"wallet\", \"type\": \"address\" }]}]");
+        ASSERT_EQ(hex(hash), "fc71e5fa27ff56c350aa531bc129ebdf613b772b6604664f5d8dbe21b85eb0c8");
+    }
+}
+
+TEST(EthereumAbiStruct, ParamFactoryMakeNamed) {
+    std::shared_ptr<ParamNamed> p = ParamFactory::makeNamed("firstparam", "uint256");
+    EXPECT_EQ(p->getName(), "firstparam");
+    ASSERT_NE(p->getParam().get(), nullptr);
+    EXPECT_EQ(p->getParam()->getType(), "uint256");
+}
+
+TEST(EthereumAbiStruct, ParamFactoryMakeStruct) {
+    {
+        std::shared_ptr<ParamStruct> s = ParamFactory::makeStruct("Person",
+            "{\"name\": \"Cow\", \"wallet\": \"CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826\"}",
+            "[{\"Person\": [{\"name\": \"name\", \"type\": \"string\"}, {\"name\": \"wallet\", \"type\": \"address\" }]}]");
+        ASSERT_NE(s.get(), nullptr);
+        EXPECT_EQ(s->getType(), "Person");
+        ASSERT_EQ(s->getCount(), 2);
+        ASSERT_EQ(s->encodeType(), "Person(string name,address wallet)");
+        ASSERT_EQ(hex(s->hashStruct()), "fc71e5fa27ff56c350aa531bc129ebdf613b772b6604664f5d8dbe21b85eb0c8");
+    }
+}
+
+TEST(EthereumAbiStruct, ParamFactoryMakeTypes) {
+    {
+        std::vector<std::shared_ptr<ParamStruct>> tt = ParamFactory::makeTypes("[{\"Person\": [{\"name\": \"name\", \"type\": \"string\"}, {\"name\": \"wallet\", \"type\": \"address\" }]}]");
+        ASSERT_EQ(tt.size(), 1);
+        EXPECT_EQ(tt[0]->encodeType(), "Person(string name,address wallet)");
+    }
+    {
+        std::vector<std::shared_ptr<ParamStruct>> tt = ParamFactory::makeTypes("["
+            "{\"Person\": [{\"name\": \"name\", \"type\": \"string\"}, {\"name\": \"wallet\", \"type\": \"address\" }]}, "
+            "{\"Mail\": [{\"name\": \"from\", \"type\": \"Person\"}, {\"name\": \"to\", \"type\": \"Person\"}, {\"name\": \"contents\", \"type\": \"string\"}]}"
+            "]");
+        ASSERT_EQ(tt.size(), 2);
+        EXPECT_EQ(tt[0]->encodeType(), "Person(string name,address wallet)");
+        EXPECT_EQ(tt[1]->encodeType(), "Mail(Person from,Person to,string contents)Person(string name,address wallet)");
+    }
+    {   // edge cases
+        EXPECT_EQ(ParamFactory::makeTypes("NOT_A_JSON").size(), 0);
+        EXPECT_EQ(ParamFactory::makeTypes("+/{\\").size(), 0);
+        EXPECT_EQ(ParamFactory::makeTypes("").size(), 0);
+        EXPECT_EQ(ParamFactory::makeTypes("0").size(), 0);
+        EXPECT_EQ(ParamFactory::makeTypes("{\"a\": 0}").size(), 0);
+        EXPECT_EQ(ParamFactory::makeTypes("[]}").size(), 0);
+        EXPECT_EQ(ParamFactory::makeTypes("[{\"a\": 0}]}").size(), 0);
+        // wrong order, references type comes later
+        EXPECT_EQ(ParamFactory::makeTypes("[{\"Mail\": [{\"name\": \"from\", \"type\": \"Person\"}, {\"name\": \"to\", \"type\": \"Person\"}, {\"name\": \"contents\", \"type\": \"string\"}]}, {\"Person\": [{\"name\": \"name\", \"type\": \"string\"}, {\"name\": \"wallet\", \"type\": \"address\" }]}]").size(), 0);
+    }
+}
+
+TEST(EthereumAbiStruct, ParamFactoryMakeType) {
+    {
+        std::shared_ptr<ParamStruct> t = ParamFactory::makeType("{\"Person\": [{\"name\": \"name\", \"type\": \"string\"}, {\"name\": \"wallet\", \"type\": \"address\" }]}");
+        EXPECT_NE(t.get(), nullptr);
+        EXPECT_EQ(t->getType(), "Person");
+        ASSERT_EQ(t->getCount(), 2);
+        ASSERT_EQ(t->encodeType(), "Person(string name,address wallet)");
+    }
+    {   // edge cases
+        EXPECT_EQ(ParamFactory::makeType("NOT_A_JSON"), nullptr);
+        EXPECT_EQ(ParamFactory::makeType("+/{\\"), nullptr);
+        EXPECT_EQ(ParamFactory::makeType(""), nullptr);
+        EXPECT_EQ(ParamFactory::makeType("{\"Person\": 0}"), nullptr);
+        EXPECT_EQ(ParamFactory::makeType("{\"Person\": []}"), nullptr);
+        EXPECT_EQ(ParamFactory::makeType("{\"Person\": []}"), nullptr);
+        EXPECT_EQ(ParamFactory::makeType("{\"Person\": [{\"dummy\": 0}]}"), nullptr);
+        EXPECT_EQ(ParamFactory::makeType("{\"Person\": [{\"name\": \"val\"}]}"), nullptr);
+        EXPECT_EQ(ParamFactory::makeType("{\"Person\": [{\"type\": \"val\"}]}"), nullptr);
+        EXPECT_EQ(ParamFactory::makeType("{\"Person\": [{\"name\": \"name\", \"type\": \"INVALID_TYPE\"}, {\"name\": \"wallet\", \"type\": \"address\" }]}"), nullptr);
+    }
 }

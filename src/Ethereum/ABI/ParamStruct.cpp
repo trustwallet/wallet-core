@@ -6,6 +6,7 @@
 
 #include "ParamStruct.h"
 #include "ValueEncoder.h"
+#include "ParamFactory.h"
 #include <Hash.h>
 
 #include <cassert>
@@ -71,6 +72,15 @@ std::string ParamSetNamed::getExtraTypes(std::vector<std::string>& ignoreList) c
     return types;
 }
 
+std::shared_ptr<ParamNamed> ParamSetNamed::findParamByName(const std::string& name) const {
+    for (auto& p: _params) {
+        if (p->_name == name) {
+            return p;
+        }
+    }
+    return nullptr;
+}
+
 Data ParamStruct::hashType() const {
     return Hash::keccak256(TW::data(encodeType()));
 }
@@ -103,4 +113,12 @@ std::string ParamStruct::getExtraTypes(std::vector<std::string>& ignoreList) con
     }
     types += _params.getExtraTypes(ignoreList);
     return types;
+}
+
+Data ParamStruct::hashStructJson(const std::string& structType, const std::string& valueJson, const std::string& typesJson) {
+    auto str = ParamFactory::makeStruct(structType, valueJson, typesJson);
+    if (!str) {
+        return {};
+    }
+    return str->hashStruct();
 }

@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "ParamFactory.h"
+#include "ParamAddress.h"
 #include "HexCoding.h"
 
 #include <nlohmann/json.hpp>
@@ -108,6 +109,14 @@ std::string joinArrayElems(const std::vector<std::string>& strings) {
     return array.dump();
 }
 
+std::shared_ptr<ParamNamed> ParamFactory::makeNamed(const std::string& name, const std::string& type) {
+    auto param = make(type);
+    if (!param) {
+        return nullptr;
+    }
+    return std::make_shared<ParamNamed>(name, param);
+}
+
 std::string ParamFactory::getValue(const std::shared_ptr<ParamBase>& param, const std::string& type) {
     std::string result = "";
     if (isArrayType(type)) {
@@ -173,6 +182,125 @@ std::vector<std::string> ParamFactory::getArrayValue(const std::shared_ptr<Param
         values[i] = getValue(elems[i], elemType);
     }
     return values;
+}
+
+std::shared_ptr<ParamStruct> findType(const std::string& typeName, const std::vector<std::shared_ptr<ParamStruct>>& types) {
+    for (auto& t: types) {
+        if (t->getType() == typeName) {
+            return t;
+        }
+    }
+    return nullptr;
+}
+
+std::shared_ptr<ParamStruct> ParamFactory::makeStruct(const std::string& structType, const std::string& valueJson, const std::string& typesJson) {
+    try {
+        // parse types
+        auto types = makeTypes(typesJson);
+        // find type info
+        auto typeInfo = findType(structType, types);
+        if (!typeInfo) {
+            return nullptr;
+        }
+        auto values = json::parse(valueJson, nullptr, false);
+        if (!values.is_discarded()) {
+            if (values.is_object()) {
+                std::vector<std::shared_ptr<ParamNamed>> params;
+                for (json::iterator it = values.begin(); it != values.end(); ++it) {
+                    std::string key = it.key();
+                    auto paramType = typeInfo->findParamByName(key);
+                    if (paramType) {
+                        const std::string paramTypeString = paramType->getParam()->getType();
+                        auto paramVal = make(paramTypeString);
+                        if (paramVal) {
+                            // TODO set value
+                            // TODO handle sub structs
+                            if (paramTypeString == "string") {
+                                std::dynamic_pointer_cast<ParamString>(paramVal)->setVal(it.value().get<std::string>());
+                            } else if (paramTypeString == "address") {
+                                std::dynamic_pointer_cast<ParamAddress>(paramVal)->setVal(TW::load(parse_hex(it.value().get<std::string>())));
+                            }
+                            auto paramNamed = std::make_shared<ParamNamed>(key, paramVal);
+                            params.push_back(paramNamed);
+                        }
+                    }
+                }
+                return std::make_shared<ParamStruct>(structType, params);
+            }
+        }
+    } catch (...) {
+        return nullptr;
+    }
+    // error
+    return nullptr;
+}
+
+std::shared_ptr<ParamStruct> ParamFactory::makeType(const std::string& structType, const std::vector<std::shared_ptr<ParamStruct>>& extraTypes) {
+    try {
+        auto jsonValue = json::parse(structType, nullptr, false);
+        if (!jsonValue.is_discarded()) {
+            std::vector<std::shared_ptr<ParamNamed>> params;
+            std::string structName;
+            for (json::iterator it1 = jsonValue.begin(); it1 != jsonValue.end(); ++it1) {
+                structName = it1.key();
+                if (!it1.value().is_array()) {
+                    return nullptr;
+                }
+                for(auto& p2: it1.value()) {
+                    auto name = p2["name"].get<std::string>();
+                    auto type = p2["type"].get<std::string>();
+                    if (name.empty() || type.empty()) {
+                        return nullptr;
+                    }
+                    auto named = makeNamed(name, type);
+                    if (named) {
+                        // simple type
+                        params.push_back(named);
+                    } else {
+                        // try struct from extra types
+                        auto p2struct = findType(type, extraTypes);
+                        if (p2struct) {
+                            params.push_back(std::make_shared<ParamNamed>(name, p2struct));
+                        } else {
+                            // none
+                            return nullptr;
+                        }
+                    }
+                }
+                break;
+            }
+            if (params.size() == 0) {
+                return nullptr;
+            }
+            return std::make_shared<ParamStruct>(structName, params);
+        }
+    } catch (...) {
+        return nullptr;
+    }
+    // error
+    return nullptr;
+}
+
+std::vector<std::shared_ptr<ParamStruct>> ParamFactory::makeTypes(const std::string& structTypes) {
+    std::vector<std::shared_ptr<ParamStruct>> types;
+    try {
+        auto jsonValue = json::parse(structTypes, nullptr, false);
+        if (!jsonValue.is_discarded()) {
+            if (jsonValue.is_array()) {
+                for (auto& t: jsonValue) {
+                    auto struct1 = makeType(t.dump(), types);
+                    if (!struct1) {
+                        return {};
+                    }
+                    types.push_back(struct1);
+                }
+            }
+        }
+    } catch (...) {
+        return types;
+    }
+    // error
+    return types;
 }
 
 } // namespace TW::Ethereum::ABI
