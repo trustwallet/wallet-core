@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,7 +10,7 @@ package TW.Avalanche.Proto;
 option java_package = "wallet.core.jni.proto";
 
 message SECP256K1TransferOutput {
-    uint32 typeID = 1;            // 04 bytes
+    uint32 type_id = 1;            // 04 bytes
     uint64 amount = 2;            // 08 bytes
     uint64 locktime = 3;          // 08 bytes
     uint32 threshold = 4;         // 04 bytes
@@ -18,14 +18,14 @@ message SECP256K1TransferOutput {
 }
 
 message SECP256K1MintOutput {
-    uint32 typeID = 1;            // 04 bytes
+    uint32 type_id = 1;            // 04 bytes
     uint64 locktime = 2;          // 08 bytes
     uint32 threshold = 3;         // 04 bytes
     repeated bytes addresses = 4; // 04 bytes + 20 bytes * len(addresses)
 }
 
 message NFTTransferOutput {
-    uint32 typeID = 1;            // 04 bytes
+    uint32 type_id = 1;            // 04 bytes
     uint32 group_id = 2;          // 04 bytes
     bytes payload = 3;            // 04 bytes + len(payload)
     uint64 locktime = 4;           // 08 bytes
@@ -184,6 +184,7 @@ message SignedTx {
     UnsignedTx unsigned_tx = 2;          // size(unsigned_tx)
     repeated Credential credentials = 3; // 4 bytes + size(credentials)
 }
+
 message SigningInput {
     repeated bytes private_keys = 1;
     

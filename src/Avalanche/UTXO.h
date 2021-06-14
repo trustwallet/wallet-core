@@ -18,7 +18,7 @@ namespace TW::Avalanche {
         Data AssetID;
         TransferableOutput Output;
         
-        UTXO(Data &txID, uint32_t UTXOIndex, Data &assetID, TransferableOutput &output)
+        UTXO(const Data& txID, uint32_t UTXOIndex, const Data& assetID, const TransferableOutput& output)
         : TxID(txID), UTXOIndex(UTXOIndex), AssetID(assetID), Output(output) {}
 
         /// Encodes the UTXO into the provided buffer.

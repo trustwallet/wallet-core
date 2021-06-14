@@ -39,7 +39,7 @@ class TransferableOutput {
     /// Encodes the output into the provided buffer.
     void encode(Data& data) const;
 
-    TransferableOutput(Data &assetID, std::unique_ptr<TransactionOutput> output)
+    TransferableOutput(const Data& assetID, std::unique_ptr<TransactionOutput> output)
       : AssetID(assetID), Output(std::move(output)) {}
 
     TransferableOutput(const TransferableOutput& other) {
