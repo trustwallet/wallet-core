@@ -43,7 +43,7 @@ std::vector<TransferableInput> structToInputs(const google::protobuf::RepeatedPt
                 inputs.push_back(txferInput);
                 break;
             }
-            case Proto::TransferableInput::INPUT_NOT_SET:
+            case Proto::TransactionInput::INPUT_NOT_SET:
             default: {
                 // fail out and return nil inputs if input unset or not supported
                 inputs.clear();
