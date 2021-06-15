@@ -7,13 +7,18 @@
 #include "ParamStruct.h"
 #include "ValueEncoder.h"
 #include "ParamFactory.h"
+#include "ParamAddress.h"
 #include <Hash.h>
+#include <HexCoding.h>
+
+#include <nlohmann/json.hpp>
 
 #include <cassert>
 #include <string>
 
 using namespace TW::Ethereum::ABI;
 using namespace TW;
+using json = nlohmann::json;
 
 std::string ParamNamed::getType() const {
     return _param->getType() + " " + _name;
@@ -116,7 +121,141 @@ std::string ParamStruct::getExtraTypes(std::vector<std::string>& ignoreList) con
 }
 
 Data ParamStruct::hashStructJson(const std::string& structType, const std::string& valueJson, const std::string& typesJson) {
-    auto str = ParamFactory::makeStruct(structType, valueJson, typesJson);
+    auto str = makeStruct(structType, valueJson, typesJson);
     assert(str);
     return str->hashStruct();
+}
+
+std::shared_ptr<ParamStruct> findType(const std::string& typeName, const std::vector<std::shared_ptr<ParamStruct>>& types) {
+    for (auto& t: types) {
+        if (t->getType() == typeName) {
+            return t;
+        }
+    }
+    return nullptr;
+}
+
+std::shared_ptr<ParamStruct> ParamStruct::makeStruct(const std::string& structType, const std::string& valueJson, const std::string& typesJson) {
+    try {
+        // parse types
+        auto types = makeTypes(typesJson);
+        // find type info
+        auto typeInfo = findType(structType, types);
+        if (!typeInfo) {
+            throw std::invalid_argument("Type not found, " + structType);
+        }
+        auto values = json::parse(valueJson, nullptr, false);
+        if (values.is_discarded()) {
+            throw std::invalid_argument("Could not parse value Json");
+        }
+        if (!values.is_object()) {
+            throw std::invalid_argument("Expecting object");
+        }
+        std::vector<std::shared_ptr<ParamNamed>> params;
+        for (json::iterator it = values.begin(); it != values.end(); ++it) {
+            std::string key = it.key();
+            auto paramType = typeInfo->findParamByName(key);
+            if (paramType) {
+                const std::string paramTypeString = paramType->getParam()->getType();
+                auto paramVal = ParamFactory::make(paramTypeString);
+                if (paramVal) {
+                    // TODO set value
+                    // TODO handle sub structs
+                    if (paramTypeString == "string") {
+                        std::dynamic_pointer_cast<ParamString>(paramVal)->setVal(it.value().get<std::string>());
+                    } else if (paramTypeString == "address") {
+                        std::dynamic_pointer_cast<ParamAddress>(paramVal)->setVal(TW::load(parse_hex(it.value().get<std::string>())));
+                    } else {
+                        throw std::invalid_argument("Unsupported type " + paramTypeString);
+                    }
+                    params.push_back(std::make_shared<ParamNamed>(key, paramVal));
+                } else {
+                    // try if sub struct
+                    auto subTypeInfo = findType(paramTypeString, types);
+                    if (!subTypeInfo) {
+                        throw std::invalid_argument("Could not find type for sub-struct " + paramTypeString);
+                    }
+                    auto subStruct = makeStruct(paramTypeString, it.value().dump(), typesJson);
+                    if (!subStruct) {
+                        throw std::invalid_argument("Could not process sub-struct " + paramTypeString);
+                    }
+                    assert(subStruct);
+                    params.push_back(std::make_shared<ParamNamed>(key, subStruct));
+                }
+            }
+        }
+        return std::make_shared<ParamStruct>(structType, params);
+    } catch (const std::invalid_argument& ex) {
+        throw;
+    } catch (...) {
+        throw std::invalid_argument("Could not process Json");
+    }
+}
+
+std::shared_ptr<ParamStruct> ParamStruct::makeType(const std::string& structType, const std::vector<std::shared_ptr<ParamStruct>>& extraTypes) {
+    try {
+        auto jsonValue = json::parse(structType, nullptr, false);
+        if (jsonValue.is_discarded()) {
+            throw std::invalid_argument("Could not parse type Json");
+        }
+        std::vector<std::shared_ptr<ParamNamed>> params;
+        std::string structName;
+        for (json::iterator it1 = jsonValue.begin(); it1 != jsonValue.end(); ++it1) {
+            structName = it1.key();
+            if (!it1.value().is_array()) {
+                throw std::invalid_argument("Expecting array, " + structName);
+            }
+            for(auto& p2: it1.value()) {
+                auto name = p2["name"].get<std::string>();
+                auto type = p2["type"].get<std::string>();
+                if (name.empty() || type.empty()) {
+                    throw std::invalid_argument("Expecting 'name' and 'type', in " + structName);
+                }
+                auto named = ParamFactory::makeNamed(name, type);
+                if (named) {
+                    // simple type
+                    params.push_back(named);
+                } else {
+                    // try struct from extra types
+                    auto p2struct = findType(type, extraTypes);
+                    if (!p2struct) {
+                        throw std::invalid_argument("Unknown type " + type);
+                    }
+                    params.push_back(std::make_shared<ParamNamed>(name, p2struct));
+                }
+            }
+            break;
+        }
+        if (params.size() == 0) {
+            throw std::invalid_argument("No valid params found");
+        }
+        return std::make_shared<ParamStruct>(structName, params);
+    } catch (const std::invalid_argument& ex) {
+        throw;
+    } catch (...) {
+        throw std::invalid_argument("Could not process Json");
+    }
+}
+
+std::vector<std::shared_ptr<ParamStruct>> ParamStruct::makeTypes(const std::string& structTypes) {
+    try {
+        std::vector<std::shared_ptr<ParamStruct>> types;
+        auto jsonValue = json::parse(structTypes, nullptr, false);
+        if (jsonValue.is_discarded()) {
+            throw std::invalid_argument("Could not parse types Json");
+        }
+        if (!jsonValue.is_array()) {
+            throw std::invalid_argument("Expecting array");
+        }
+        for (auto& t: jsonValue) {
+            // may throw
+            auto struct1 = makeType(t.dump(), types);
+            types.push_back(struct1);
+        }
+        return types;
+    } catch (std::exception& ex) {
+        throw;
+    } catch (...) {
+        throw std::invalid_argument("Could not process Json");
+    }
 }

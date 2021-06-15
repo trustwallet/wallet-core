@@ -91,6 +91,23 @@ public:
     /// TODO desc
     /// Throws on error.
     static Data hashStructJson(const std::string& structType, const std::string& valueJson, const std::string& typesJson);
+
+    /// Make a named struct, with the values from the values json, and type info from type (or types) info.
+    /// Throws on error.
+    static std::shared_ptr<ParamStruct> makeStruct(const std::string& structType, const std::string& valueJson, const std::string& typesJson);
+
+    /// Parse a json with an array of types, and build a vector of named structs.  Structs params have the given name and type, and empty value.
+    /// Ex. input: "[{\"Person\": [{\"name\": \"name\", \"type\": \"string\"}, {\"name\": \"wallet\", \"type\": \"address\" }]}, {\"Mail\": [{\"name\": \"from\", \"type\": \"Person\"}, {\"name\": \"to\", \"type\": \"Person\"}, {\"name\": \"contents\", \"type\": \"string\"}]}]"
+    /// Order is important, if a type is references it must come first.
+    /// Note the quote delimiters.
+    /// Throws on error.
+    static std::vector<std::shared_ptr<ParamStruct>> makeTypes(const std::string& structTypes);
+
+    /// Make a named struct, with the given types, with empty values.
+    /// Similar to makeTypes, but works with only one type.
+    /// Ex. input: "{\"Person\": [{\"name\": \"name\", \"type\": \"string\"}, {\"name\": \"wallet\", \"type\": \"address\" }]}"
+    /// Throws on error.
+    static std::shared_ptr<ParamStruct> makeType(const std::string& structType, const std::vector<std::shared_ptr<ParamStruct>>& extraTypes = {});
 };
 
 } // namespace TW::Ethereum::ABI
