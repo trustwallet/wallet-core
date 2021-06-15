@@ -152,10 +152,11 @@ std::shared_ptr<ParamStruct> ParamStruct::makeStruct(const std::string& structTy
             throw std::invalid_argument("Expecting object");
         }
         std::vector<std::shared_ptr<ParamNamed>> params;
+        const auto& typeParams = typeInfo->getParams();
         // iterate through the type; order is important and field order in the value json is not defined
-        for (int i = 0; i < typeInfo->getParams().getCount(); ++i) {
-            auto name = typeInfo->getParams().getParam(i)->getName();
-            auto type = typeInfo->getParams().getParam(i)->getParam()->getType();
+        for (int i = 0; i < typeParams.getCount(); ++i) {
+            auto name = typeParams.getParam(i)->getName();
+            auto type = typeParams.getParam(i)->getParam()->getType();
             // look for it in value (may throw)
             auto value = values[name];
             auto paramVal = ParamFactory::make(type);
