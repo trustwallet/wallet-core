@@ -117,8 +117,6 @@ std::string ParamStruct::getExtraTypes(std::vector<std::string>& ignoreList) con
 
 Data ParamStruct::hashStructJson(const std::string& structType, const std::string& valueJson, const std::string& typesJson) {
     auto str = ParamFactory::makeStruct(structType, valueJson, typesJson);
-    if (!str) {
-        return {};
-    }
+    assert(str);
     return str->hashStruct();
 }

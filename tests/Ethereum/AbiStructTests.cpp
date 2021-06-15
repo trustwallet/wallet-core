@@ -264,6 +264,16 @@ TEST(EthereumAbiStruct, ParamFactoryMakeStruct) {
     }
 }
 
+#define EXPECT_EXCEPTION(statement, exceptionMsg) \
+    try { \
+        statement; \
+        FAIL() << "No exception"; \
+    } catch (const std::invalid_argument& ex) { \
+        EXPECT_EQ(std::string(ex.what()), exceptionMsg); \
+    } catch (...) { \
+        FAIL() << "Not the expected exception"; \
+    }
+
 TEST(EthereumAbiStruct, ParamFactoryMakeTypes) {
     {
         std::vector<std::shared_ptr<ParamStruct>> tt = ParamFactory::makeTypes(R"([{"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address" }]}])");
@@ -281,15 +291,16 @@ TEST(EthereumAbiStruct, ParamFactoryMakeTypes) {
         EXPECT_EQ(tt[1]->encodeType(), "Mail(Person from,Person to,string contents)Person(string name,address wallet)");
     }
     {   // edge cases
-        EXPECT_EQ(ParamFactory::makeTypes("NOT_A_JSON").size(), 0);
-        EXPECT_EQ(ParamFactory::makeTypes("+/{\\").size(), 0);
-        EXPECT_EQ(ParamFactory::makeTypes("").size(), 0);
-        EXPECT_EQ(ParamFactory::makeTypes("0").size(), 0);
-        EXPECT_EQ(ParamFactory::makeTypes("{\"a\": 0}").size(), 0);
-        EXPECT_EQ(ParamFactory::makeTypes("[]}").size(), 0);
-        EXPECT_EQ(ParamFactory::makeTypes("[{\"a\": 0}]}").size(), 0);
+        EXPECT_EXCEPTION(ParamFactory::makeTypes("NOT_A_JSON"), "Could not parse types Json");
+        EXPECT_EXCEPTION(ParamFactory::makeTypes("+/{\\"), "Could not parse types Json");
+        EXPECT_EXCEPTION(ParamFactory::makeTypes(""), "Could not parse types Json");
+        EXPECT_EXCEPTION(ParamFactory::makeTypes("0"), "Expecting array");
+        EXPECT_EXCEPTION(ParamFactory::makeTypes("{\"a\": 0}"), "Expecting array");
+        EXPECT_EQ(ParamFactory::makeTypes("[]").size(), 0);
+        EXPECT_EXCEPTION(ParamFactory::makeTypes("[{}]"), "No valid params found");
+        EXPECT_EXCEPTION(ParamFactory::makeTypes(R"([{"name": 0}])"), "Expecting array, name");
         // wrong order, references type comes later
-        EXPECT_EQ(ParamFactory::makeTypes(R"([{"Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]}, {"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address" }]}])").size(), 0);
+        EXPECT_EXCEPTION(ParamFactory::makeTypes(R"([{"Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]}, {"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address" }]}])"), "Unknown type Person");
     }
 }
 
@@ -302,15 +313,15 @@ TEST(EthereumAbiStruct, ParamFactoryMakeType) {
         ASSERT_EQ(t->encodeType(), "Person(string name,address wallet)");
     }
     {   // edge cases
-        EXPECT_EQ(ParamFactory::makeType("NOT_A_JSON"), nullptr);
-        EXPECT_EQ(ParamFactory::makeType("+/{\\"), nullptr);
-        EXPECT_EQ(ParamFactory::makeType(""), nullptr);
-        EXPECT_EQ(ParamFactory::makeType(R"({"Person": 0})"), nullptr);
-        EXPECT_EQ(ParamFactory::makeType(R"({"Person": []})"), nullptr);
-        EXPECT_EQ(ParamFactory::makeType(R"({"Person": []})"), nullptr);
-        EXPECT_EQ(ParamFactory::makeType(R"({"Person": [{"dummy": 0}]})"), nullptr);
-        EXPECT_EQ(ParamFactory::makeType(R"({"Person": [{"name": "val"}]})"), nullptr);
-        EXPECT_EQ(ParamFactory::makeType(R"({"Person": [{"type": "val"}]})"), nullptr);
-        EXPECT_EQ(ParamFactory::makeType(R"({"Person": [{"name": "name", "type": "INVALID_TYPE"}, {"name": "wallet", "type": "address" }]})"), nullptr);
+        EXPECT_EXCEPTION(ParamFactory::makeType("NOT_A_JSON"), "Could not parse type Json");
+        EXPECT_EXCEPTION(ParamFactory::makeType("+/{\\"), "Could not parse type Json");
+        EXPECT_EXCEPTION(ParamFactory::makeType(""), "Could not parse type Json");
+        EXPECT_EXCEPTION(ParamFactory::makeType("{}"), "No valid params found");
+        EXPECT_EXCEPTION(ParamFactory::makeType(R"({"Person": 0})"), "Expecting array, Person");
+        EXPECT_EXCEPTION(ParamFactory::makeType(R"({"Person": []})"), "No valid params found");
+        EXPECT_EXCEPTION(ParamFactory::makeType(R"({"Person": [{"dummy": 0}]})"), "Could not process Json");
+        EXPECT_EXCEPTION(ParamFactory::makeType(R"({"Person": [{"name": "val"}]})"), "Could not process Json");
+        EXPECT_EXCEPTION(ParamFactory::makeType(R"({"Person": [{"type": "val"}]})"), "Could not process Json");
+        EXPECT_EXCEPTION(ParamFactory::makeType(R"({"Person": [{"name": "name", "type": "INVALID_TYPE"}, {"name": "wallet", "type": "address" }]})"), "Unknown type INVALID_TYPE");
     }
 }

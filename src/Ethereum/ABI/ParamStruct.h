@@ -89,6 +89,7 @@ public:
     std::shared_ptr<ParamNamed> findParamByName(const std::string& name) const { return _params.findParamByName(name); }
 
     /// TODO desc
+    /// Throws on error.
     static Data hashStructJson(const std::string& structType, const std::string& valueJson, const std::string& typesJson);
 };
 
