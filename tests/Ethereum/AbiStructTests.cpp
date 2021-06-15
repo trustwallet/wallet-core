@@ -238,8 +238,8 @@ TEST(EthereumAbiStruct, encodeTypeCow1) {
 TEST(EthereumAbiStruct, hashStructJson) {
     {
         auto hash = ParamStruct::hashStructJson("Person",
-            "{\"name\": \"Cow\", \"wallet\": \"CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826\"}",
-            "[{\"Person\": [{\"name\": \"name\", \"type\": \"string\"}, {\"name\": \"wallet\", \"type\": \"address\" }]}]");
+            R"({"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"})",
+            R"([{"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address" }]}])");
         ASSERT_EQ(hex(hash), "fc71e5fa27ff56c350aa531bc129ebdf613b772b6604664f5d8dbe21b85eb0c8");
     }
 }
@@ -254,8 +254,8 @@ TEST(EthereumAbiStruct, ParamFactoryMakeNamed) {
 TEST(EthereumAbiStruct, ParamFactoryMakeStruct) {
     {
         std::shared_ptr<ParamStruct> s = ParamFactory::makeStruct("Person",
-            "{\"name\": \"Cow\", \"wallet\": \"CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826\"}",
-            "[{\"Person\": [{\"name\": \"name\", \"type\": \"string\"}, {\"name\": \"wallet\", \"type\": \"address\" }]}]");
+            R"({"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"})",
+            R"([{"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address" }]}])");
         ASSERT_NE(s.get(), nullptr);
         EXPECT_EQ(s->getType(), "Person");
         ASSERT_EQ(s->getCount(), 2);
@@ -266,15 +266,16 @@ TEST(EthereumAbiStruct, ParamFactoryMakeStruct) {
 
 TEST(EthereumAbiStruct, ParamFactoryMakeTypes) {
     {
-        std::vector<std::shared_ptr<ParamStruct>> tt = ParamFactory::makeTypes("[{\"Person\": [{\"name\": \"name\", \"type\": \"string\"}, {\"name\": \"wallet\", \"type\": \"address\" }]}]");
+        std::vector<std::shared_ptr<ParamStruct>> tt = ParamFactory::makeTypes(R"([{"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address" }]}])");
         ASSERT_EQ(tt.size(), 1);
         EXPECT_EQ(tt[0]->encodeType(), "Person(string name,address wallet)");
     }
     {
-        std::vector<std::shared_ptr<ParamStruct>> tt = ParamFactory::makeTypes("["
-            "{\"Person\": [{\"name\": \"name\", \"type\": \"string\"}, {\"name\": \"wallet\", \"type\": \"address\" }]}, "
-            "{\"Mail\": [{\"name\": \"from\", \"type\": \"Person\"}, {\"name\": \"to\", \"type\": \"Person\"}, {\"name\": \"contents\", \"type\": \"string\"}]}"
-            "]");
+        std::vector<std::shared_ptr<ParamStruct>> tt = ParamFactory::makeTypes(
+            R"([
+                {"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address" }]},
+                {"Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]}
+            ])");
         ASSERT_EQ(tt.size(), 2);
         EXPECT_EQ(tt[0]->encodeType(), "Person(string name,address wallet)");
         EXPECT_EQ(tt[1]->encodeType(), "Mail(Person from,Person to,string contents)Person(string name,address wallet)");
@@ -288,13 +289,13 @@ TEST(EthereumAbiStruct, ParamFactoryMakeTypes) {
         EXPECT_EQ(ParamFactory::makeTypes("[]}").size(), 0);
         EXPECT_EQ(ParamFactory::makeTypes("[{\"a\": 0}]}").size(), 0);
         // wrong order, references type comes later
-        EXPECT_EQ(ParamFactory::makeTypes("[{\"Mail\": [{\"name\": \"from\", \"type\": \"Person\"}, {\"name\": \"to\", \"type\": \"Person\"}, {\"name\": \"contents\", \"type\": \"string\"}]}, {\"Person\": [{\"name\": \"name\", \"type\": \"string\"}, {\"name\": \"wallet\", \"type\": \"address\" }]}]").size(), 0);
+        EXPECT_EQ(ParamFactory::makeTypes(R"([{"Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]}, {"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address" }]}])").size(), 0);
     }
 }
 
 TEST(EthereumAbiStruct, ParamFactoryMakeType) {
     {
-        std::shared_ptr<ParamStruct> t = ParamFactory::makeType("{\"Person\": [{\"name\": \"name\", \"type\": \"string\"}, {\"name\": \"wallet\", \"type\": \"address\" }]}");
+        std::shared_ptr<ParamStruct> t = ParamFactory::makeType(R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address" }]})");
         EXPECT_NE(t.get(), nullptr);
         EXPECT_EQ(t->getType(), "Person");
         ASSERT_EQ(t->getCount(), 2);
@@ -304,12 +305,12 @@ TEST(EthereumAbiStruct, ParamFactoryMakeType) {
         EXPECT_EQ(ParamFactory::makeType("NOT_A_JSON"), nullptr);
         EXPECT_EQ(ParamFactory::makeType("+/{\\"), nullptr);
         EXPECT_EQ(ParamFactory::makeType(""), nullptr);
-        EXPECT_EQ(ParamFactory::makeType("{\"Person\": 0}"), nullptr);
-        EXPECT_EQ(ParamFactory::makeType("{\"Person\": []}"), nullptr);
-        EXPECT_EQ(ParamFactory::makeType("{\"Person\": []}"), nullptr);
-        EXPECT_EQ(ParamFactory::makeType("{\"Person\": [{\"dummy\": 0}]}"), nullptr);
-        EXPECT_EQ(ParamFactory::makeType("{\"Person\": [{\"name\": \"val\"}]}"), nullptr);
-        EXPECT_EQ(ParamFactory::makeType("{\"Person\": [{\"type\": \"val\"}]}"), nullptr);
-        EXPECT_EQ(ParamFactory::makeType("{\"Person\": [{\"name\": \"name\", \"type\": \"INVALID_TYPE\"}, {\"name\": \"wallet\", \"type\": \"address\" }]}"), nullptr);
+        EXPECT_EQ(ParamFactory::makeType(R"({"Person": 0})"), nullptr);
+        EXPECT_EQ(ParamFactory::makeType(R"({"Person": []})"), nullptr);
+        EXPECT_EQ(ParamFactory::makeType(R"({"Person": []})"), nullptr);
+        EXPECT_EQ(ParamFactory::makeType(R"({"Person": [{"dummy": 0}]})"), nullptr);
+        EXPECT_EQ(ParamFactory::makeType(R"({"Person": [{"name": "val"}]})"), nullptr);
+        EXPECT_EQ(ParamFactory::makeType(R"({"Person": [{"type": "val"}]})"), nullptr);
+        EXPECT_EQ(ParamFactory::makeType(R"({"Person": [{"name": "name", "type": "INVALID_TYPE"}, {"name": "wallet", "type": "address" }]})"), nullptr);
     }
 }
