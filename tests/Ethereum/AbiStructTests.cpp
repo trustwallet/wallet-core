@@ -81,6 +81,21 @@ TEST(EthereumAbiStruct, encodeTypes) {
     // TODO sig
     // 0xbe609aee343fb3c4b28e1df9e632fca64fcfaede20f02e86244efddf30957bd2
     // 0x4355c47d63924e8a72e509b65029052eb6c299d53a04e167c5775fd466751c9d07299936d304c153f6443dfa05f40ff007d72911b6f72307f996231605b915621c
+
+    // JSON version
+    {
+        auto hash = ParamStruct::hashStructJson("Mail",
+            R"({
+                "from": {"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"},
+                "to": {"name": "Bob", "wallet": "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"},
+                "contents": "Hello, Bob!"
+            })",
+            R"([
+                {"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address" }]},
+                {"Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]}
+            ])");
+        ASSERT_EQ(hex(hash), "c52c0ee5d84264471806290a3f2c4cecfc5490626bf912d01f240d7a274b371e");
+    }
 }
 
 // See 'signedTypeData with V3 string' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
