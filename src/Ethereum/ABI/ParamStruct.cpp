@@ -152,36 +152,35 @@ std::shared_ptr<ParamStruct> ParamStruct::makeStruct(const std::string& structTy
             throw std::invalid_argument("Expecting object");
         }
         std::vector<std::shared_ptr<ParamNamed>> params;
-        for (json::iterator it = values.begin(); it != values.end(); ++it) {
-            std::string key = it.key();
-            auto paramType = typeInfo->findParamByName(key);
-            if (paramType) {
-                const std::string paramTypeString = paramType->getParam()->getType();
-                auto paramVal = ParamFactory::make(paramTypeString);
-                if (paramVal) {
-                    // TODO set value
-                    // TODO handle sub structs
-                    if (paramTypeString == "string") {
-                        std::dynamic_pointer_cast<ParamString>(paramVal)->setVal(it.value().get<std::string>());
-                    } else if (paramTypeString == "address") {
-                        std::dynamic_pointer_cast<ParamAddress>(paramVal)->setVal(TW::load(parse_hex(it.value().get<std::string>())));
-                    } else {
-                        throw std::invalid_argument("Unsupported type " + paramTypeString);
-                    }
-                    params.push_back(std::make_shared<ParamNamed>(key, paramVal));
+        // iterate through the type; order is important and field order in the value json is not defined
+        for (int i = 0; i < typeInfo->getParams().getCount(); ++i) {
+            auto name = typeInfo->getParams().getParam(i)->getName();
+            auto type = typeInfo->getParams().getParam(i)->getParam()->getType();
+            // look for it in value (may throw)
+            auto value = values[name];
+            auto paramVal = ParamFactory::make(type);
+            if (paramVal) {
+                // TODO set value
+                if (type == "string") {
+                    std::dynamic_pointer_cast<ParamString>(paramVal)->setVal(value.get<std::string>());
+                } else if (type == "address") {
+                    std::dynamic_pointer_cast<ParamAddress>(paramVal)->setVal(TW::load(parse_hex(value.get<std::string>())));
                 } else {
-                    // try if sub struct
-                    auto subTypeInfo = findType(paramTypeString, types);
-                    if (!subTypeInfo) {
-                        throw std::invalid_argument("Could not find type for sub-struct " + paramTypeString);
-                    }
-                    auto subStruct = makeStruct(paramTypeString, it.value().dump(), typesJson);
-                    if (!subStruct) {
-                        throw std::invalid_argument("Could not process sub-struct " + paramTypeString);
-                    }
-                    assert(subStruct);
-                    params.push_back(std::make_shared<ParamNamed>(key, subStruct));
+                    throw std::invalid_argument("Unsupported type " + type);
                 }
+                params.push_back(std::make_shared<ParamNamed>(name, paramVal));
+            } else {
+                // try if sub struct
+                auto subTypeInfo = findType(type, types);
+                if (!subTypeInfo) {
+                    throw std::invalid_argument("Could not find type for sub-struct " + type);
+                }
+                auto subStruct = makeStruct(type, value.dump(), typesJson);
+                if (!subStruct) {
+                    throw std::invalid_argument("Could not process sub-struct " + type);
+                }
+                assert(subStruct);
+                params.push_back(std::make_shared<ParamNamed>(name, subStruct));
             }
         }
         return std::make_shared<ParamStruct>(structType, params);

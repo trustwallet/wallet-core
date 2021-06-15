@@ -50,6 +50,7 @@ public:
     int addParam(const std::shared_ptr<ParamNamed>& param);
     void addParams(const std::vector<std::shared_ptr<ParamNamed>>& params);
     size_t getCount() const { return _params.size(); }
+    std::shared_ptr<ParamNamed> getParam(int idx) const { return _params[idx]; }
     std::string getType() const;
     Data encodeHashes() const;
     std::string getExtraTypes(std::vector<std::string>& ignoreList) const;
@@ -68,6 +69,7 @@ public:
     ParamStruct(const std::string& name, const std::vector<std::shared_ptr<ParamNamed>>& params) : ParamCollection(), _name(name), _params(ParamSetNamed(params)) {}
 
     std::string getType() const { return _name; }
+    const ParamSetNamed& getParams() const { return _params; }
 
     /// Get the hash of the sruct (used for signing)
     virtual Data hashStruct() const;
