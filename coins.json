@@ -1596,7 +1596,7 @@
   },
   {
     "id": "cryptoorg",
-    "name": "Crypto_org",
+    "name": "CryptoOrg",
     "coinId": 394,
     "symbol": "CRO",
     "decimals": 8,
@@ -1607,7 +1607,7 @@
     "hrp": "cro",
     "explorer": {
       "url": "https://crypto.org/explorer",
-      "txPath": "/txs/",
+      "txPath": "/tx/",
       "accountPath": "/account/",
       "sampleTx": "6B9CD39A454F187B7BC5AFE10DC5F8D19A0C50A20A1AABEEE2D5A87B2B62190A",
       "sampleAccount": "cro1yjjlx5qsrj5rxn5xtd5rkm6dcqzlchxkrvsmg6"

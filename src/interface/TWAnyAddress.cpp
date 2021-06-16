@@ -80,7 +80,7 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypeBandChain:
     case TWCoinTypeTHORChain:
     case TWCoinTypeIoTeX:
-    case TWCoinTypeCrypto_org: {
+    case TWCoinTypeCryptoOrg: {
         Cosmos::Address addr;
         if (!Cosmos::Address::decode(string, addr)) {
             break;

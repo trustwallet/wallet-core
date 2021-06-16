@@ -20,7 +20,6 @@ class TestCrypto_orgAddress {
 
     @Test
     fun testAddress() {
-        // TODO: Check and finalize implementation
 
         val key = PrivateKey("d49a797db63b61c148d1767e616ff15c3dd9c83b63cba61c218ea172f238622a".toHexByteArray())
         val pubkey = key.publicKeyEd25519
