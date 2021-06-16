@@ -8,8 +8,10 @@
 #include "ParamNumber.h"
 #include "ValueEncoder.h"
 #include <Hash.h>
+#include <HexCoding.h>
 
-namespace TW::Ethereum::ABI {
+using namespace TW::Ethereum::ABI;
+using namespace TW;
 
 void ParamByteArray::encodeBytes(const Data& bytes, Data& data) {
     ValueEncoder::encodeUInt256(uint256_t(bytes.size()), data);
@@ -44,6 +46,11 @@ bool ParamByteArray::decodeBytes(const Data& encoded, Data& decoded, size_t& off
     return true;
 }
 
+bool ParamByteArray::setValueJson(const std::string& value) {
+    setVal(parse_hex(value));
+    return true;
+}
+
 void ParamByteArrayFix::encode(Data& data) const {
     const auto count = _bytes.size();
     const auto padding = ValueEncoder::padNeeded32(count);
@@ -69,6 +76,11 @@ bool ParamByteArrayFix::decodeBytesFix(const Data& encoded, size_t n, Data& deco
     return true;
 }
 
+bool ParamByteArrayFix::setValueJson(const std::string& value) {
+    setVal(parse_hex(value));
+    return true;
+}
+
 void ParamString::encodeString(const std::string& decoded, Data& data) {
     auto bytes = Data(decoded.begin(), decoded.end());
     ParamByteArray::encodeBytes(bytes, data);
@@ -91,5 +103,3 @@ Data ParamString::hashStruct() const {
     }
     return hash;
 }
-
-} // namespace TW::Ethereum::ABI

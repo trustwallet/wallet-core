@@ -31,6 +31,7 @@ public:
     virtual bool isDynamic() const { return _param->isDynamic(); }
     virtual void encode(Data& data) const { return _param->encode(data); }
     virtual bool decode(const Data& encoded, size_t& offset_inout) { return _param->decode(encoded, offset_inout); }
+    virtual bool setValueJson(const std::string& value) { return _param->setValueJson(value); }
     virtual Data hashStruct() const { return _param->hashStruct(); }
     virtual std::string getExtraTypes(std::vector<std::string>& ignoreList) const { return _param->getExtraTypes(ignoreList); }
 };
@@ -86,6 +87,7 @@ public:
     virtual size_t getCount() const { return _params.getCount(); }
     virtual void encode(Data& data) const {}
     virtual bool decode(const Data& encoded, size_t& offset_inout) { return true; }
+    virtual bool setValueJson(const std::string& value) { return false; } // see makeStruct
     Data encodeHashes() const;
     virtual std::string getExtraTypes(std::vector<std::string>& ignoreList) const;
     std::shared_ptr<ParamNamed> findParamByName(const std::string& name) const { return _params.findParamByName(name); }

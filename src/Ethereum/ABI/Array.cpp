@@ -9,10 +9,13 @@
 #include "ValueEncoder.h"
 #include <Hash.h>
 
+#include <nlohmann/json.hpp>
+
 #include <cassert>
 
 using namespace TW::Ethereum::ABI;
 using namespace TW;
+using json = nlohmann::json;
 
 int ParamArray::addParam(const std::shared_ptr<ParamBase>& param) {
     assert(param != nullptr);
@@ -73,6 +76,31 @@ bool ParamArray::decode(const Data& encoded, size_t& offset_inout) {
     // padding
     offset_inout = origOffset + ValueEncoder::paddedTo32(offset_inout - origOffset);
     return res;
+}
+
+bool ParamArray::setValueJson(const std::string& value) {
+    if (_params.getCount() < 1) {
+        // no single element
+        return false;
+    }
+    auto valuesJson = json::parse(value, nullptr, false);
+    if (valuesJson.is_discarded()) {
+        return false;
+    }
+    if (!valuesJson.is_array()) {
+        return false;
+    }
+    // make sure enough elements are in the array
+    while (_params.getCount() < valuesJson.size()) {
+        addParam(ParamFactory::make(getFirstType()));
+    }
+    int cnt = 0;
+    for (const auto& e: valuesJson) {
+        std::string eString = (e.is_string()) ? e.get<std::string>() : e.dump();
+        _params.getParamUnsafe(cnt)->setValueJson(eString);
+        ++cnt;
+    }
+    return true;
 }
 
 Data ParamArray::hashStruct() const {
