@@ -330,7 +330,7 @@ TEST(Coin, ValidateAddresBand) {
     EXPECT_FALSE(validateAddress(TWCoinTypeBandChain, "band1pnndgfwsrff86263xzpc5cd3t6yfvgjyqc8000"));
 }
 
-TEST(Coin, ValidateAddresBluzelle) {
+TEST(Coin, ValidateAddressBluzelle) {
     EXPECT_TRUE(validateAddress(TWCoinTypeBluzelle, "bluzelle1xccvees6ev4wm2r49rc6ptulsdxa8x8jfpmund"));
     // wrong prefix
     EXPECT_FALSE(validateAddress(TWCoinTypeBluzelle, "cosmos1xccvees6ev4wm2r49rc6ptulsdxa8x8jfpmund"));
