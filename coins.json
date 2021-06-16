@@ -1593,5 +1593,29 @@
       "clientPublic": "https://seed.thorchain.info",
       "clientDocs": ""
     }
-  }
+  },
+  {
+    "id": "top",
+    "name": "Top",
+    "coinId": 562,
+    "symbol": "TOP",
+    "decimals": 18,
+    "blockchain": "TOP",
+    "derivationPath": "m/44'/562'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://topscan.io",
+      "txPath": "/transactions/",
+      "accountPath": "/accounts/",
+      "sampleTx": "0xc8f77bc790154ff3990be03d93570108d89b5646b56da1bd808bff4932c1b938",
+      "sampleAccount": "T00000LbgaCLnuxnqaqPh8e9EpeNqsRju6MuCr4z"
+    },
+    "info": {
+      "url": "https://topnetwork.org",
+      "client": "https://github.com/telosprotocol/TOP-chain",
+      "clientPublic": "https://topstaking.io",
+      "clientDocs": "http://developers.topnetwork.org/"
+    }
+  }  
 ]
