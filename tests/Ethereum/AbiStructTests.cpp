@@ -81,21 +81,20 @@ TEST(EthereumAbiStruct, encodeTypes) {
     // TODO sig
     // 0xbe609aee343fb3c4b28e1df9e632fca64fcfaede20f02e86244efddf30957bd2
     // 0x4355c47d63924e8a72e509b65029052eb6c299d53a04e167c5775fd466751c9d07299936d304c153f6443dfa05f40ff007d72911b6f72307f996231605b915621c
+}
 
-    // JSON version
-    {
-        auto hash = ParamStruct::hashStructJson("Mail",
-            R"({
-                "from": {"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"},
-                "to": {"name": "Bob", "wallet": "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"},
-                "contents": "Hello, Bob!"
-            })",
-            R"([
-                {"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address" }]},
-                {"Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]}
-            ])");
-        ASSERT_EQ(hex(hash), "c52c0ee5d84264471806290a3f2c4cecfc5490626bf912d01f240d7a274b371e");
-    }
+TEST(EthereumAbiStruct, encodeTypes_Json) {
+    auto hash = ParamStruct::hashStructJson("Mail",
+        R"({
+            "from": {"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"},
+            "to": {"name": "Bob", "wallet": "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"},
+            "contents": "Hello, Bob!"
+        })",
+        R"([
+            {"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]},
+            {"Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]}
+        ])");
+    ASSERT_EQ(hex(hash), "c52c0ee5d84264471806290a3f2c4cecfc5490626bf912d01f240d7a274b371e");
 }
 
 // See 'signedTypeData with V3 string' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
@@ -116,6 +115,20 @@ TEST(EthereumAbiStruct, encodeTypes_v3) {
     // TODO sig
     // 0xbe609aee343fb3c4b28e1df9e632fca64fcfaede20f02e86244efddf30957bd2
     // 0x4355c47d63924e8a72e509b65029052eb6c299d53a04e167c5775fd466751c9d07299936d304c153f6443dfa05f40ff007d72911b6f72307f996231605b915621c
+}
+
+TEST(EthereumAbiStruct, encodeTypes_v3_Json) {
+    auto hash = ParamStruct::hashStructJson("Mail",
+        R"({
+            "from": {"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"},
+            "to": {"name": "Bob", "wallet": "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"},
+            "contents": "Hello, Bob!"
+        })",
+        R"([
+            {"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]},
+            {"Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]}
+        ])");
+    ASSERT_EQ(hex(hash), "c52c0ee5d84264471806290a3f2c4cecfc5490626bf912d01f240d7a274b371e");
 }
 
 // See 'signedTypeData_v4' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
@@ -160,6 +173,35 @@ TEST(EthereumAbiStruct, encodeTypes_v4) {
     // TODO sig
     // 0xa85c2e2b118698e88db68a8105b794a8cc7cec074e89ef991cb4f5f533819cc2
     // 0x65cbd956f2fae28a601bebc9b906cea0191744bd4c4247bcd27cd08f8eb6b71c78efdf7a31dc9abee78f492292721f362d296cf86b4538e07b51303b67f749061b
+}
+
+TEST(EthereumAbiStruct, encodeTypes_v4_Json) {
+    auto hash = ParamStruct::hashStructJson("Mail",
+        R"({
+            "from": {
+                "name": "Cow",
+                "wallets": [
+                    "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826",
+                    "DeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF"
+                ]
+            },
+            "to": [
+                {
+                    "name": "Bob",
+                    "wallets": [
+                        "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
+                        "B0BdaBea57B0BDABeA57b0bdABEA57b0BDabEa57",
+                        "B0B0b0b0b0b0B000000000000000000000000000"
+                    ]
+                }
+            ],
+            "contents": "Hello, Bob!"
+        })",
+        R"([
+            {"Person": [{"name": "name", "type": "string"}, {"name": "wallets", "type": "address[]"}]},
+            {"Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person[]"}, {"name": "contents", "type": "string"}]}
+        ])");
+    ASSERT_EQ(hex(hash), "eb4221181ff3f1a83ea7313993ca9218496e424604ba9492bb4052c03d5c3df8");
 }
 
 // See 'signedTypeData_v4 with recursive types' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
@@ -234,6 +276,33 @@ TEST(EthereumAbiStruct, encodeTypes_v4Rec) {
     // 0xf2ec61e636ff7bb3ac8bc2a4cc2c8b8f635dd1b2ec8094c963128b358e79c85c5ca6dd637ed7e80f0436fe8fce39c0e5f2082c9517fe677cc2917dcd6c84ba881c
 }
 
+TEST(EthereumAbiStruct, encodeTypes_v4Rec_Json) {
+    auto hash = ParamStruct::hashStructJson("Person",
+        R"({
+            "name": "Jon",
+            "mother": {
+                "name": "Lyanna",
+                "father": {
+                    "name": "Rickard"
+                }
+            },
+            "father": {
+                "name": "Rhaegar",
+                "father": {
+                    "name": "Aeris II"
+                }
+            }
+        })",
+        R"([
+            {"Person": [
+                {"name": "name", "type": "string"},
+                {"name": "mother", "type": "Person"},
+                {"name": "father", "type": "Person"}
+            ]}
+        ])");
+    ASSERT_EQ(hex(hash), "fdc7b6d35bbd81f7fa78708604f57569a10edff2ca329c8011373f0667821a45");
+}
+
 // See 'signedTypeData' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
 TEST(EthereumAbiStruct, encodeTypeCow1) {
     ParamStruct msgPersonCow1("Person", std::vector<std::shared_ptr<ParamNamed>>{
@@ -254,7 +323,7 @@ TEST(EthereumAbiStruct, hashStructJson) {
     {
         auto hash = ParamStruct::hashStructJson("Person",
             R"({"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"})",
-            R"([{"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address" }]}])");
+            R"([{"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]}])");
         ASSERT_EQ(hex(hash), "fc71e5fa27ff56c350aa531bc129ebdf613b772b6604664f5d8dbe21b85eb0c8");
     }
 }
@@ -270,7 +339,7 @@ TEST(EthereumAbiStruct, ParamFactoryMakeStruct) {
     {
         std::shared_ptr<ParamStruct> s = ParamStruct::makeStruct("Person",
             R"({"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"})",
-            R"([{"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address" }]}])");
+            R"([{"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]}])");
         ASSERT_NE(s.get(), nullptr);
         EXPECT_EQ(s->getType(), "Person");
         ASSERT_EQ(s->getCount(), 2);
@@ -291,14 +360,14 @@ TEST(EthereumAbiStruct, ParamFactoryMakeStruct) {
 
 TEST(EthereumAbiStruct, ParamFactoryMakeTypes) {
     {
-        std::vector<std::shared_ptr<ParamStruct>> tt = ParamStruct::makeTypes(R"([{"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address" }]}])");
+        std::vector<std::shared_ptr<ParamStruct>> tt = ParamStruct::makeTypes(R"([{"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]}])");
         ASSERT_EQ(tt.size(), 1);
         EXPECT_EQ(tt[0]->encodeType(), "Person(string name,address wallet)");
     }
     {
         std::vector<std::shared_ptr<ParamStruct>> tt = ParamStruct::makeTypes(
             R"([
-                {"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address" }]},
+                {"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]},
                 {"Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]}
             ])");
         ASSERT_EQ(tt.size(), 2);
@@ -315,13 +384,13 @@ TEST(EthereumAbiStruct, ParamFactoryMakeTypes) {
         EXPECT_EXCEPTION(ParamStruct::makeTypes("[{}]"), "No valid params found");
         EXPECT_EXCEPTION(ParamStruct::makeTypes(R"([{"name": 0}])"), "Expecting array, name");
         // wrong order, references type comes later
-        EXPECT_EXCEPTION(ParamStruct::makeTypes(R"([{"Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]}, {"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address" }]}])"), "Unknown type Person");
+        EXPECT_EXCEPTION(ParamStruct::makeTypes(R"([{"Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]}, {"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]}])"), "Unknown type Person");
     }
 }
 
 TEST(EthereumAbiStruct, ParamFactoryMakeType) {
     {
-        std::shared_ptr<ParamStruct> t = ParamStruct::makeType(R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address" }]})");
+        std::shared_ptr<ParamStruct> t = ParamStruct::makeType(R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})");
         EXPECT_NE(t.get(), nullptr);
         EXPECT_EQ(t->getType(), "Person");
         ASSERT_EQ(t->getCount(), 2);
@@ -337,6 +406,6 @@ TEST(EthereumAbiStruct, ParamFactoryMakeType) {
         EXPECT_EXCEPTION(ParamStruct::makeType(R"({"Person": [{"dummy": 0}]})"), "Could not process Json");
         EXPECT_EXCEPTION(ParamStruct::makeType(R"({"Person": [{"name": "val"}]})"), "Could not process Json");
         EXPECT_EXCEPTION(ParamStruct::makeType(R"({"Person": [{"type": "val"}]})"), "Could not process Json");
-        EXPECT_EXCEPTION(ParamStruct::makeType(R"({"Person": [{"name": "name", "type": "INVALID_TYPE"}, {"name": "wallet", "type": "address" }]})"), "Unknown type INVALID_TYPE");
+        EXPECT_EXCEPTION(ParamStruct::makeType(R"({"Person": [{"name": "name", "type": "INVALID_TYPE"}, {"name": "wallet", "type": "address"}]})"), "Unknown type INVALID_TYPE");
     }
 }
