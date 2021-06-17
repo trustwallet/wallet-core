@@ -966,8 +966,8 @@
     "hrp": "bluzelle",
     "explorer": {
       "url": "https://bigdipper.net.bluzelle.com/",
-      "txPath": "/transactions/",
-      "accountPath": "/account/",
+      "txPath": "transactions/",
+      "accountPath": "account/",
       "sampleTx": "AC026E0EC6E33A77D5EA6B9CEF9810699BC2AD8C5582E007E7857457C6D3B819",
       "sampleAccount": "bluzelle1q9cryfal7u3jvnq6er5ufety20xtzw6ycx2te9"
     },
