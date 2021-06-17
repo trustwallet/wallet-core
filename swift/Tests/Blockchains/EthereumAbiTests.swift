@@ -100,4 +100,51 @@ class EthereumAbiTests: XCTestCase {
         """
         XCTAssertJSONEqual(decoded, expected)
     }
+
+    func testStructHashStruct() throws {
+        let structType = "Mail";
+        let value =
+        """
+            {
+                "from": {
+                    "name": "Cow",
+                    "wallets": [
+                        "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826",
+                        "DeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF"
+                    ]
+                },
+                "to": [
+                    {
+                        "name": "Bob",
+                        "wallets": [
+                            "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
+                            "B0BdaBea57B0BDABeA57b0bdABEA57b0BDabEa57",
+                            "B0B0b0b0b0b0B000000000000000000000000000"
+                        ]
+                    }
+                ],
+                "contents": "Hello, Bob!"
+            }
+        """
+        let types = 
+        """
+            [
+                {
+                    "Person": [
+                        {"name": "name", "type": "string"},
+                        {"name": "wallets", "type": "address[]"}
+                    ]
+                },
+                {
+                    "Mail": [
+                        {"name": "from", "type": "Person"},
+                        {"name": "to", "type": "Person[]"},
+                        {"name": "contents", "type": "string"}
+                    ]
+                }
+            ]
+        """
+        let hash = EthereumAbiStruct.hashStruct(structType: structType, valueJson: value, typesJson: types)
+        XCTAssertEqual(hash.hexString, "eb4221181ff3f1a83ea7313993ca9218496e424604ba9492bb4052c03d5c3df8")
+    }
 }
