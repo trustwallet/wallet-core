@@ -16,7 +16,7 @@ TW_EXPORT_CLASS
 struct TWEthereumAbiStruct;
 
 
-/// Compute the hash of a struct (used for signing).
+/// Compute the hash of a struct, used for signing, according to EIP712.
 /// Struct is described by a json string (with values), and its type info (may contain type info of sub-types also).
 /// Throws on error.
 /// Example input:

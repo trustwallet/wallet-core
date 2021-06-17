@@ -72,7 +72,7 @@ public:
     std::string getType() const { return _name; }
     const ParamSetNamed& getParams() const { return _params; }
 
-    /// Get the hash of the struct (used for signing)
+    /// Compute the hash of a struct, used for signing, according to EIP712
     virtual Data hashStruct() const;
     /// Get full type, extended by used sub-types, of the form 'Mail(Person from,Person to,string contents)Person(string name,address wallet)'
     std::string encodeType() const {
@@ -92,7 +92,7 @@ public:
     virtual std::string getExtraTypes(std::vector<std::string>& ignoreList) const;
     std::shared_ptr<ParamNamed> findParamByName(const std::string& name) const { return _params.findParamByName(name); }
 
-    /// Compute the hash of a struct (used for signing).
+    /// Compute the hash of a struct, used for signing, according to EIP712.
     /// Struct is described by a json string (with values), and its type info (may contain type info of sub-types also).
     /// Throws on error.
     /// Example input:
