@@ -15,33 +15,52 @@
 using namespace TW;
 
 TEST(TWEthereumAbiStruct, hashStruct) {
-    auto structType = WRAPS(TWStringCreateWithUTF8Bytes("Person"));
+    auto structType = WRAPS(TWStringCreateWithUTF8Bytes("Mail"));
     auto valueJson = WRAPS(TWStringCreateWithUTF8Bytes(
         R"(
             {
-                "name": "Cow",
-                "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+                "from": {
+                    "name": "Cow",
+                    "wallets": [
+                        "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826",
+                        "DeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF"
+                    ]
+                },
+                "to": [
+                    {
+                        "name": "Bob",
+                        "wallets": [
+                            "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
+                            "B0BdaBea57B0BDABeA57b0bdABEA57b0BDabEa57",
+                            "B0B0b0b0b0b0B000000000000000000000000000"
+                        ]
+                    }
+                ],
+                "contents": "Hello, Bob!"
             }
         )"));
     auto typesJson = WRAPS(TWStringCreateWithUTF8Bytes(
         R"(
             [
-                {"Person":
-                    [
-                        {
-                            "name": "name",
-                            "type": "string"
-                        },
-                        {
-                            "name": "wallet",
-                            "type": "address"
-                        }
+                {
+                    "Person": [
+                        {"name": "name", "type": "string"},
+                        {"name": "wallets", "type": "address[]"}
+                    ]
+                },
+                {
+                    "Mail": [
+                        {"name": "from", "type": "Person"},
+                        {"name": "to", "type": "Person[]"},
+                        {"name": "contents", "type": "string"}
                     ]
                 }
             ]
         )"));
-
     auto hash = WRAPD(TWEthereumAbiStructHashStruct(structType.get(), valueJson.get(), typesJson.get()));
 
-    EXPECT_EQ(hex(TW::data(TWDataBytes(hash.get()), TWDataSize(hash.get()))), "fc71e5fa27ff56c350aa531bc129ebdf613b772b6604664f5d8dbe21b85eb0c8");
+    EXPECT_EQ(
+        hex(TW::data(TWDataBytes(hash.get()), TWDataSize(hash.get()))),
+        "eb4221181ff3f1a83ea7313993ca9218496e424604ba9492bb4052c03d5c3df8"
+    );
 }
