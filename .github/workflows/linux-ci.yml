@@ -14,7 +14,7 @@ jobs:
     - name: Install system dependencies
       run: |
         # build-essential clang-10 libc++-dev libc++abi-dev ruby-full cmake
-        sudo apt-get install ninja-build lcov llvm clang-tidy libboost-all-dev
+        sudo apt-get update && sudo apt-get install ninja-build lcov llvm clang-tidy libboost-all-dev --fix-missing
         # Set clang default version to lower 10
         sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-10 900
         sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 900
