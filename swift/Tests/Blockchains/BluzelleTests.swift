@@ -44,80 +44,39 @@ class BluzelleSignerTests: XCTestCase {
     
     func testSigningJSON() {
         
+        // Submitted realworld tx for the following test : https://bigdipper.net.bluzelle.com/transactions/DEF394BE0DD1075CDC8B8618A7858AAA4A03A43D04476381224E316E06FD3A5B
+
         let toAddress = "bluzelle1xccvees6ev4wm2r49rc6ptulsdxa8x8jfpmund"
         let inputJson =
         """
         {
-          "accountNumber": "8733",
-          "chainId": "bluzelle",
-          "fee": {
-            "amounts": [
-              {
-                "denom": "ubnt",
-                "amount": "5000"
-              }
-            ],
-            "gas": "200000"
-          },
-          "memo": "Testing",
-          "messages": [
-            {
-              "sendCoinsMessage": {
-                "fromAddress": "\(myAddress)",
-                "toAddress": "\(toAddress)",
-                "amounts": [
-                  {
+            "accountNumber": "590",
+            "chainId": "net-6",
+            "sequence": "3",
+            "fee": {
+                "amounts": [{
                     "denom": "ubnt",
-                    "amount": "995000"
-                  }
-                ]
-              }
-            }
-          ]
+                    "amount": "1000"
+                }],
+                "gas": "500000"
+            },
+            "memo": "Testing",
+            "messages": [{
+                "sendCoinsMessage": {
+                    "fromAddress": "\(myAddress)",
+                    "toAddress": "\(toAddress)",
+                    "amounts": [{
+                        "denom": "ubnt",
+                        "amount": "2"
+                    }]
+                }
+            }]
         }
         """
         
         let expectedSignedJson =
         """
-        {
-          "mode": "block",
-          "tx": {
-            "fee": {
-              "amount": [
-                {
-                  "amount": "5000",
-                  "denom": "ubnt"
-                }
-              ],
-              "gas": "200000"
-            },
-            "memo": "Testing",
-            "msg": [
-              {
-                "type": "cosmos-sdk/MsgSend",
-                "value": {
-                  "amount": [
-                    {
-                      "amount": "995000",
-                      "denom": "ubnt"
-                    }
-                  ],
-                  "from_address": "bluzelle1hsk6jryyqjfhp5dhc55tc9jtckygx0epzzw0fm",
-                  "to_address": "bluzelle1xccvees6ev4wm2r49rc6ptulsdxa8x8jfpmund"
-                }
-              }
-            ],
-            "signatures": [
-              {
-                "pub_key": {
-                  "type": "tendermint/PubKeySecp256k1",
-                  "value": "AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"
-                },
-                "signature": "gKWKk5lku9H/wosvnsD6auWUt7AGNjLEudWS+Fdv4TQr16HUBVpkq9A6gZYqZIawFukq2I/qrtyw9MKR4pVkhg=="
-              }
-            ]
-          }
-        }
+        {"mode":"block","tx":{"fee":{"amount":[{"amount":"1000","denom":"ubnt"}],"gas":"500000"},"memo":"Testing","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"2","denom":"ubnt"}],"from_address":"bluzelle1hsk6jryyqjfhp5dhc55tc9jtckygx0epzzw0fm","to_address":"bluzelle1xccvees6ev4wm2r49rc6ptulsdxa8x8jfpmund"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"2JcfVwq9N3UAk5Lfki7+CngqcefgjfH1q/8chtJMJvEHRe6PvuYKMv5pjeN0Z5Vk2BArJT3V3EHxbpbiY2eLWw=="}]}}
         """
 
         let actualSignedJson = AnySigner.signJSON(inputJson, key: privateKeyData, coin: .bluzelle)
@@ -127,6 +86,8 @@ class BluzelleSignerTests: XCTestCase {
     }
 
     func testSigningMessage() {
+        // Submitted Realworld tx for the following test : https://bigdipper.net.bluzelle.com/transactions/B3A7F30539CCDF72D210BC995FAF65B43F9BE04FA9F8AFAE0EC969660744002F
+
         let privateKey = PrivateKey(data: privateKeyData)!
 
         let sendCoinsMessage = CosmosMessage.Send.with {
@@ -143,18 +104,18 @@ class BluzelleSignerTests: XCTestCase {
         }
 
         let fee = CosmosFee.with {
-            $0.gas = 200000
+            $0.gas = 500000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 200
+                $0.amount = 1000
                 $0.denom = "ubnt"
             }]
         }
 
         let input = CosmosSigningInput.with {
-            $0.accountNumber = 1037
-            $0.chainID = "bluzelle"
+            $0.accountNumber = 590
+            $0.chainID = "net-6"
             $0.memo = ""
-            $0.sequence = 8
+            $0.sequence = 2
             $0.messages = [message]
             $0.fee = fee
             $0.privateKey = privateKey.data
@@ -164,45 +125,7 @@ class BluzelleSignerTests: XCTestCase {
 
         let expectedJSON: String =
         """
-        {
-          "mode": "block",
-          "tx": {
-            "fee": {
-              "amount": [
-                {
-                  "amount": "200",
-                  "denom": "ubnt"
-                }
-              ],
-              "gas": "200000"
-            },
-            "memo": "",
-            "msg": [
-              {
-                "type": "cosmos-sdk/MsgSend",
-                "value": {
-                  "amount": [
-                    {
-                      "amount": "1",
-                      "denom": "ubnt"
-                    }
-                  ],
-                  "from_address": "bluzelle1hsk6jryyqjfhp5dhc55tc9jtckygx0epzzw0fm",
-                  "to_address": "bluzelle1xccvees6ev4wm2r49rc6ptulsdxa8x8jfpmund"
-                }
-              }
-            ],
-            "signatures": [
-              {
-                "pub_key": {
-                  "type": "tendermint/PubKeySecp256k1",
-                  "value": "AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"
-                },
-                "signature": "0StN9LHr4fIbEzCzyx5bzWJmfgiUqkwoavYGNUDm2shXKmAFogVtOviC4zMNNHKBtFTnHQ07DO1UjqEEWS/2BA=="
-              }
-            ]
-          }
-        }
+        {"mode":"block","tx":{"fee":{"amount":[{"amount":"1000","denom":"ubnt"}],"gas":"500000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"1","denom":"ubnt"}],"from_address":"bluzelle1hsk6jryyqjfhp5dhc55tc9jtckygx0epzzw0fm","to_address":"bluzelle1xccvees6ev4wm2r49rc6ptulsdxa8x8jfpmund"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"5e3e13x1F+Y4+cPNvE1jQ/Mrz0J2RQCY69re3g4xuTY3Gw7MNGQ+8E34d9DgvcNLPM05nehdOv/0SvekY/ihIQ=="}]}}
         """
 
         XCTAssertJSONEqual(expectedJSON, output.json)
