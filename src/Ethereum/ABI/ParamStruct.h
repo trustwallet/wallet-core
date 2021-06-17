@@ -72,7 +72,7 @@ public:
     std::string getType() const { return _name; }
     const ParamSetNamed& getParams() const { return _params; }
 
-    /// Get the hash of the sruct (used for signing)
+    /// Get the hash of the struct (used for signing)
     virtual Data hashStruct() const;
     /// Get full type, extended by used sub-types, of the form 'Mail(Person from,Person to,string contents)Person(string name,address wallet)'
     std::string encodeType() const {
@@ -92,11 +92,16 @@ public:
     virtual std::string getExtraTypes(std::vector<std::string>& ignoreList) const;
     std::shared_ptr<ParamNamed> findParamByName(const std::string& name) const { return _params.findParamByName(name); }
 
-    /// TODO desc
+    /// Compute the hash of a struct (used for signing).
+    /// Struct is described by a json string (with values), and its type info (may contain type info of sub-types also).
     /// Throws on error.
+    /// Example input:
+    /// - "Person"
+    /// - R"({"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"})"
+    /// - R"([{"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]}])"
     static Data hashStructJson(const std::string& structType, const std::string& valueJson, const std::string& typesJson);
 
-    /// Make a named struct, with the values from the values json, and type info from type (or types) info.
+    /// Make a named struct, described by a json string (with values), and its type info (may contain type info of sub-types also).
     /// Throws on error.
     static std::shared_ptr<ParamStruct> makeStruct(const std::string& structType, const std::string& valueJson, const std::string& typesJson);
 

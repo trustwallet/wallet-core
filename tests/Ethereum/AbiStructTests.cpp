@@ -338,8 +338,12 @@ TEST(EthereumAbiStruct, ParamFactoryMakeNamed) {
 TEST(EthereumAbiStruct, ParamFactoryMakeStruct) {
     {
         std::shared_ptr<ParamStruct> s = ParamStruct::makeStruct("Person",
-            R"({"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"})",
-            R"([{"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]}])");
+            R"(
+                {"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"}
+            )",
+            R"(
+                [{"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]}]
+            )");
         ASSERT_NE(s.get(), nullptr);
         EXPECT_EQ(s->getType(), "Person");
         ASSERT_EQ(s->getCount(), 2);
