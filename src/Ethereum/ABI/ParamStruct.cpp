@@ -215,51 +215,49 @@ std::shared_ptr<ParamStruct> ParamStruct::makeStruct(const std::string& structTy
     }
 }
 
-std::shared_ptr<ParamStruct> ParamStruct::makeType(const std::string& structType, const std::vector<std::shared_ptr<ParamStruct>>& extraTypes) {
+std::shared_ptr<ParamStruct> ParamStruct::makeType(const std::string& structName, const std::string& structJson, const std::vector<std::shared_ptr<ParamStruct>>& extraTypes) {
     try {
-        auto jsonValue = json::parse(structType, nullptr, false);
+        if (structName.empty()) {
+            throw std::invalid_argument("Missing type name");
+        }
+        auto jsonValue = json::parse(structJson, nullptr, false);
         if (jsonValue.is_discarded()) {
             throw std::invalid_argument("Could not parse type Json");
         }
+        if (!jsonValue.is_array()) {
+            throw std::invalid_argument("Expecting array");
+        }
         std::vector<std::shared_ptr<ParamNamed>> params;
-        std::string structName;
-        for (json::iterator it1 = jsonValue.begin(); it1 != jsonValue.end(); ++it1) {
-            structName = it1.key();
-            if (!it1.value().is_array()) {
-                throw std::invalid_argument("Expecting array, " + structName);
+        for(auto& p2: jsonValue) {
+            auto name = p2["name"].get<std::string>();
+            auto type = p2["type"].get<std::string>();
+            if (name.empty() || type.empty()) {
+                throw std::invalid_argument("Expecting 'name' and 'type', in " + structName);
             }
-            for(auto& p2: it1.value()) {
-                auto name = p2["name"].get<std::string>();
-                auto type = p2["type"].get<std::string>();
-                if (name.empty() || type.empty()) {
-                    throw std::invalid_argument("Expecting 'name' and 'type', in " + structName);
+            auto named = ParamFactory::makeNamed(name, type);
+            if (named) {
+                // simple type
+                params.push_back(named);
+            } else if (type == structName) {
+                // recursive to self
+                params.push_back(std::make_shared<ParamNamed>(name, std::make_shared<ParamStruct>(type, std::vector<std::shared_ptr<ParamNamed>>{})));
+            } else if (type.length() >= 2 && type.substr(type.length() - 2, 2) == "[]") {
+                // array of struct
+                auto arrayType = type.substr(0, type.length() - 2);
+                // try array struct from extra types
+                auto p2struct = findType(arrayType, extraTypes);
+                if (!p2struct) {
+                    throw std::invalid_argument("Unknown struct array type " + arrayType);
                 }
-                auto named = ParamFactory::makeNamed(name, type);
-                if (named) {
-                    // simple type
-                    params.push_back(named);
-                } else if (type == structName) {
-                    // recursive to self
-                    params.push_back(std::make_shared<ParamNamed>(name, std::make_shared<ParamStruct>(type, std::vector<std::shared_ptr<ParamNamed>>{})));
-                } else if (type.length() >= 2 && type.substr(type.length() - 2, 2) == "[]") {
-                    // array of struct
-                    auto arrayType = type.substr(0, type.length() - 2);
-                    // try array struct from extra types
-                    auto p2struct = findType(arrayType, extraTypes);
-                    if (!p2struct) {
-                        throw std::invalid_argument("Unknown struct array type " + arrayType);
-                    }
-                    params.push_back(std::make_shared<ParamNamed>(name, std::make_shared<ParamArray>(p2struct)));
-                } else {
-                    // try struct from extra types
-                    auto p2struct = findType(type, extraTypes);
-                    if (!p2struct) {
-                        throw std::invalid_argument("Unknown type " + type);
-                    }
-                    params.push_back(std::make_shared<ParamNamed>(name, p2struct));
+                params.push_back(std::make_shared<ParamNamed>(name, std::make_shared<ParamArray>(p2struct)));
+            } else {
+                // try struct from extra types
+                auto p2struct = findType(type, extraTypes);
+                if (!p2struct) {
+                    throw std::invalid_argument("Unknown type " + type);
                 }
+                params.push_back(std::make_shared<ParamNamed>(name, p2struct));
             }
-            break; // process only first key
         }
         if (params.size() == 0) {
             throw std::invalid_argument("No valid params found");
@@ -283,9 +281,15 @@ std::vector<std::shared_ptr<ParamStruct>> ParamStruct::makeTypes(const std::stri
             throw std::invalid_argument("Expecting array");
         }
         for (auto& t: jsonValue) {
-            // may throw
-            auto struct1 = makeType(t.dump(), types);
-            types.push_back(struct1);
+            if (t.is_object()) {
+                // take first elem
+                for (json::iterator it = t.begin(); it != t.end(); ) {
+                    // may throw
+                    auto struct1 = makeType(it.key(), it.value().dump(), types);
+                    types.push_back(struct1);
+                    break;
+                }
+            }
         }
         return types;
     } catch (std::exception& ex) {
