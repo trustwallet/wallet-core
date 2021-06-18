@@ -13,8 +13,8 @@ class TestEthereumAbiStruct {
     }
 
     @Test
-    fun testEthereumAbiStructHashStruct() {
-        val hash = EthereumAbiStruct.hashStruct(
+    fun testEthereumAbiEncodeTyped() {
+        val hash = EthereumAbi.encodeTyped(
         """
             {
                 "types": {

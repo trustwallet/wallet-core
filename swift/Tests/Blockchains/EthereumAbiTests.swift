@@ -101,7 +101,7 @@ class EthereumAbiTests: XCTestCase {
         XCTAssertJSONEqual(decoded, expected)
     }
 
-    func testStructHashStruct() throws {
+    func testEncodeTyped() throws {
         let message =
         """
             {
@@ -151,7 +151,7 @@ class EthereumAbiTests: XCTestCase {
                 }
             }
         """
-        let hash = EthereumAbiStruct.hashStruct(messageJson: message)
+        let hash = EthereumAbi.encodeTyped(messageJson: message)
         XCTAssertEqual(hash.hexString, "eb4221181ff3f1a83ea7313993ca9218496e424604ba9492bb4052c03d5c3df8")
     }
 }
