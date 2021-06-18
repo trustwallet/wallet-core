@@ -41,21 +41,17 @@ TEST(TWEthereumAbiStruct, hashStruct) {
         )"));
     auto typesJson = WRAPS(TWStringCreateWithUTF8Bytes(
         R"(
-            [
-                {
-                    "Person": [
-                        {"name": "name", "type": "string"},
-                        {"name": "wallets", "type": "address[]"}
-                    ]
-                },
-                {
-                    "Mail": [
-                        {"name": "from", "type": "Person"},
-                        {"name": "to", "type": "Person[]"},
-                        {"name": "contents", "type": "string"}
-                    ]
-                }
-            ]
+            {
+                "Person": [
+                    {"name": "name", "type": "string"},
+                    {"name": "wallets", "type": "address[]"}
+                ],
+                "Mail": [
+                    {"name": "from", "type": "Person"},
+                    {"name": "to", "type": "Person[]"},
+                    {"name": "contents", "type": "string"}
+                ]
+            }
         )"));
     auto hash = WRAPD(TWEthereumAbiStructHashStruct(structType.get(), valueJson.get(), typesJson.get()));
 

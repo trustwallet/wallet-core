@@ -90,10 +90,10 @@ TEST(EthereumAbiStruct, encodeTypes_Json) {
             "to": {"name": "Bob", "wallet": "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"},
                 "contents": "Hello, Bob!"
         })",
-        R"([
-            {"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]},
-            {"Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]}
-        ])");
+        R"({
+            "Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}],
+            "Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]
+        })");
     ASSERT_EQ(hex(hash), "c52c0ee5d84264471806290a3f2c4cecfc5490626bf912d01f240d7a274b371e");
 }
 
@@ -124,10 +124,10 @@ TEST(EthereumAbiStruct, encodeTypes_v3_Json) {
             "to": {"name": "Bob", "wallet": "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"},
             "contents": "Hello, Bob!"
         })",
-        R"([
-            {"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]},
-            {"Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]}
-        ])");
+        R"({
+            "Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}],
+            "Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]
+        })");
     ASSERT_EQ(hex(hash), "c52c0ee5d84264471806290a3f2c4cecfc5490626bf912d01f240d7a274b371e");
 }
 
@@ -197,10 +197,10 @@ TEST(EthereumAbiStruct, encodeTypes_v4_Json) {
             ],
             "contents": "Hello, Bob!"
         })",
-        R"([
-            {"Person": [{"name": "name", "type": "string"}, {"name": "wallets", "type": "address[]"}]},
-            {"Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person[]"}, {"name": "contents", "type": "string"}]}
-        ])");
+        R"({
+            "Person": [{"name": "name", "type": "string"}, {"name": "wallets", "type": "address[]"}],
+            "Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person[]"}, {"name": "contents", "type": "string"}]
+        })");
     ASSERT_EQ(hex(hash), "eb4221181ff3f1a83ea7313993ca9218496e424604ba9492bb4052c03d5c3df8");
 }
 
@@ -293,13 +293,13 @@ TEST(EthereumAbiStruct, encodeTypes_v4Rec_Json) {
                 }
             }
         })",
-        R"([
-            {"Person": [
+        R"({
+            "Person": [
                 {"name": "name", "type": "string"},
                 {"name": "mother", "type": "Person"},
                 {"name": "father", "type": "Person"}
-            ]}
-        ])");
+            ]
+        })");
     ASSERT_EQ(hex(hash), "fdc7b6d35bbd81f7fa78708604f57569a10edff2ca329c8011373f0667821a45");
 }
 
@@ -323,7 +323,7 @@ TEST(EthereumAbiStruct, hashStructJson) {
     {
         auto hash = ParamStruct::hashStructJson("Person",
             R"({"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"})",
-            R"([{"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]}])");
+            R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})");
         ASSERT_EQ(hex(hash), "fc71e5fa27ff56c350aa531bc129ebdf613b772b6604664f5d8dbe21b85eb0c8");
     }
 }
@@ -341,9 +341,9 @@ TEST(EthereumAbiStruct, ParamFactoryMakeStruct) {
             R"(
                 {"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"}
             )",
-            R"(
-                [{"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]}]
-            )");
+            R"({
+                "Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]
+            })");
         ASSERT_NE(s.get(), nullptr);
         EXPECT_EQ(s->getType(), "Person");
         ASSERT_EQ(s->getCount(), 2);
@@ -364,31 +364,32 @@ TEST(EthereumAbiStruct, ParamFactoryMakeStruct) {
 
 TEST(EthereumAbiStruct, ParamFactoryMakeTypes) {
     {
-        std::vector<std::shared_ptr<ParamStruct>> tt = ParamStruct::makeTypes(R"([{"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]}])");
+        std::vector<std::shared_ptr<ParamStruct>> tt = ParamStruct::makeTypes(R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})");
         ASSERT_EQ(tt.size(), 1);
         EXPECT_EQ(tt[0]->encodeType(), "Person(string name,address wallet)");
     }
     {
         std::vector<std::shared_ptr<ParamStruct>> tt = ParamStruct::makeTypes(
-            R"([
-                {"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]},
-                {"Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]}
-            ])");
+            R"({
+                "Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}],
+                "Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]
+            })");
         ASSERT_EQ(tt.size(), 2);
-        EXPECT_EQ(tt[0]->encodeType(), "Person(string name,address wallet)");
-        EXPECT_EQ(tt[1]->encodeType(), "Mail(Person from,Person to,string contents)Person(string name,address wallet)");
+        EXPECT_EQ(tt[0]->encodeType(), "Mail(Person from,Person to,string contents)Person(string name,address wallet)");
+        EXPECT_EQ(tt[1]->encodeType(), "Person(string name,address wallet)");
     }
     {   // edge cases
         EXPECT_EXCEPTION(ParamStruct::makeTypes("NOT_A_JSON"), "Could not parse types Json");
         EXPECT_EXCEPTION(ParamStruct::makeTypes("+/{\\"), "Could not parse types Json");
         EXPECT_EXCEPTION(ParamStruct::makeTypes(""), "Could not parse types Json");
-        EXPECT_EXCEPTION(ParamStruct::makeTypes("0"), "Expecting array");
+        EXPECT_EXCEPTION(ParamStruct::makeTypes("0"), "Expecting object");
+        EXPECT_EXCEPTION(ParamStruct::makeTypes("[]"), "Expecting object");
+        EXPECT_EXCEPTION(ParamStruct::makeTypes("[{}]"), "Expecting object");
+        EXPECT_EQ(ParamStruct::makeTypes("{}").size(), 0);
         EXPECT_EXCEPTION(ParamStruct::makeTypes("{\"a\": 0}"), "Expecting array");
-        EXPECT_EQ(ParamStruct::makeTypes("[]").size(), 0);
-        EXPECT_EQ(ParamStruct::makeTypes("[{}]").size(), 0); // TODO "No valid params found");
-        EXPECT_EXCEPTION(ParamStruct::makeTypes(R"([{"name": 0}])"), "Expecting array");
-        // wrong order, references type comes later
-        EXPECT_EXCEPTION(ParamStruct::makeTypes(R"([{"Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]}, {"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]}])"), "Unknown type Person");
+        EXPECT_EXCEPTION(ParamStruct::makeTypes(R"({"name": 0})"), "Expecting array");
+        // order does not matter
+        EXPECT_EQ(ParamStruct::makeTypes(R"({"Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}], "Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})").size(), 2);
     }
 }
 
@@ -411,6 +412,7 @@ TEST(EthereumAbiStruct, ParamFactoryMakeType) {
         EXPECT_EXCEPTION(ParamStruct::makeType("Person", R"([{"dummy": 0}])"), "Could not process Json");
         EXPECT_EXCEPTION(ParamStruct::makeType("Person", R"([{"name": "val"}])"), "Could not process Json");
         EXPECT_EXCEPTION(ParamStruct::makeType("Person", R"([{"type": "val"}])"), "Could not process Json");
-        EXPECT_EXCEPTION(ParamStruct::makeType("Person", R"([{"name": "name", "type": "INVALID_TYPE"}, {"name": "wallet", "type": "address"}])"), "Unknown type INVALID_TYPE");
+        EXPECT_EXCEPTION(ParamStruct::makeType("Person", R"([{"name": "name", "type": "UNKNOWN_TYPE"}, {"name": "wallet", "type": "address"}])"), "Unknown type UNKNOWN_TYPE");
+        EXPECT_EQ(ParamStruct::makeType("Person", R"([{"name": "name", "type": "UNKNOWN_TYPE"}, {"name": "wallet", "type": "address"}])", {}, true)->encodeType(), "Person(UNKNOWN_TYPE name,address wallet)UNKNOWN_TYPE()");
     }
 }

@@ -215,7 +215,7 @@ std::shared_ptr<ParamStruct> ParamStruct::makeStruct(const std::string& structTy
     }
 }
 
-std::shared_ptr<ParamStruct> ParamStruct::makeType(const std::string& structName, const std::string& structJson, const std::vector<std::shared_ptr<ParamStruct>>& extraTypes) {
+std::shared_ptr<ParamStruct> ParamStruct::makeType(const std::string& structName, const std::string& structJson, const std::vector<std::shared_ptr<ParamStruct>>& extraTypes, bool ignoreMissingType) {
     try {
         if (structName.empty()) {
             throw std::invalid_argument("Missing type name");
@@ -236,7 +236,7 @@ std::shared_ptr<ParamStruct> ParamStruct::makeType(const std::string& structName
             }
             auto named = ParamFactory::makeNamed(name, type);
             if (named) {
-                // simple type
+                // simple type (incl. array of simple type)
                 params.push_back(named);
             } else if (type == structName) {
                 // recursive to self
@@ -244,19 +244,27 @@ std::shared_ptr<ParamStruct> ParamStruct::makeType(const std::string& structName
             } else if (type.length() >= 2 && type.substr(type.length() - 2, 2) == "[]") {
                 // array of struct
                 auto arrayType = type.substr(0, type.length() - 2);
-                // try array struct from extra types
-                auto p2struct = findType(arrayType, extraTypes);
-                if (!p2struct) {
-                    throw std::invalid_argument("Unknown struct array type " + arrayType);
+                if (ignoreMissingType) {
+                    params.push_back(std::make_shared<ParamNamed>(name, std::make_shared<ParamArray>(std::make_shared<ParamStruct>(arrayType, std::vector<std::shared_ptr<ParamNamed>>{}))));
+                } else {
+                    // try array struct from extra types
+                    auto p2struct = findType(arrayType, extraTypes);
+                    if (!p2struct) {
+                        throw std::invalid_argument("Unknown struct array type " + arrayType);
+                    }
+                    params.push_back(std::make_shared<ParamNamed>(name, std::make_shared<ParamArray>(p2struct)));
                 }
-                params.push_back(std::make_shared<ParamNamed>(name, std::make_shared<ParamArray>(p2struct)));
             } else {
-                // try struct from extra types
-                auto p2struct = findType(type, extraTypes);
-                if (!p2struct) {
-                    throw std::invalid_argument("Unknown type " + type);
+                if (ignoreMissingType) {
+                    params.push_back(std::make_shared<ParamNamed>(name, std::make_shared<ParamStruct>(type, std::vector<std::shared_ptr<ParamNamed>>{})));
+                } else {
+                    // try struct from extra types
+                    auto p2struct = findType(type, extraTypes);
+                    if (!p2struct) {
+                        throw std::invalid_argument("Unknown type " + type);
+                    }
+                    params.push_back(std::make_shared<ParamNamed>(name, p2struct));
                 }
-                params.push_back(std::make_shared<ParamNamed>(name, p2struct));
             }
         }
         if (params.size() == 0) {
@@ -272,26 +280,27 @@ std::shared_ptr<ParamStruct> ParamStruct::makeType(const std::string& structName
 
 std::vector<std::shared_ptr<ParamStruct>> ParamStruct::makeTypes(const std::string& structTypes) {
     try {
-        std::vector<std::shared_ptr<ParamStruct>> types;
         auto jsonValue = json::parse(structTypes, nullptr, false);
         if (jsonValue.is_discarded()) {
             throw std::invalid_argument("Could not parse types Json");
         }
-        if (!jsonValue.is_array()) {
-            throw std::invalid_argument("Expecting array");
+        if (!jsonValue.is_object()) {
+            throw std::invalid_argument("Expecting object");
         }
-        for (auto& t: jsonValue) {
-            if (t.is_object()) {
-                // take first elem
-                for (json::iterator it = t.begin(); it != t.end(); ) {
-                    // may throw
-                    auto struct1 = makeType(it.key(), it.value().dump(), types);
-                    types.push_back(struct1);
-                    break;
-                }
-            }
+        // do it in 2 passes, as type order may be undefined
+        std::vector<std::shared_ptr<ParamStruct>> types1;
+        for (json::iterator it = jsonValue.begin(); it != jsonValue.end(); it++) {
+            // may throw
+            auto struct1 = makeType(it.key(), it.value().dump(), {}, true);
+            types1.push_back(struct1);
         }
-        return types;
+        std::vector<std::shared_ptr<ParamStruct>> types2;
+        for (json::iterator it = jsonValue.begin(); it != jsonValue.end(); it++) {
+            // may throw
+            auto struct1 = makeType(it.key(), it.value().dump(), types1, false);
+            types2.push_back(struct1);
+        }
+        return types2;
     } catch (std::exception& ex) {
         throw;
     } catch (...) {
