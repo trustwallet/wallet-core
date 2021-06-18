@@ -1,0 +1,33 @@
+// Copyright © 2017-2021 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+syntax = "proto3";
+
+package TW.Top.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// TODO: Input data necessary to create a signed transaction.
+message SigningInput {
+    string from = 1;
+    string to = 2;
+    uint64 amount = 3;
+    uint32 tx_deposit = 4;
+    uint64 last_tx_nonce = 5;
+    string last_tx_hash = 6;
+    string token = 7;
+    string note = 8;
+    // Private key.
+    bytes private_key = 9;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+
+    // Signature.
+    bytes signature = 2;
+}

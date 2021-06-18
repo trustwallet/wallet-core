@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "Transaction.h"
 #include "../Data.h"
 #include "../PrivateKey.h"
 #include "../proto/Top.pb.h"
@@ -20,6 +21,9 @@ public:
 
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+
+    /// Signs the given transaction.
+    static void sign(const PrivateKey& privateKey, Transaction& transaction) noexcept;    
 };
 
 } // namespace TW::Top
