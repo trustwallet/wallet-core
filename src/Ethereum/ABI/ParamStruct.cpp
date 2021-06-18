@@ -120,9 +120,30 @@ std::string ParamStruct::getExtraTypes(std::vector<std::string>& ignoreList) con
     return types;
 }
 
-Data ParamStruct::hashStructJson(const std::string& structType, const std::string& valueJson, const std::string& typesJson) {
-    auto str = makeStruct(structType, valueJson, typesJson);
-    assert(str);
+Data ParamStruct::hashStructJson(const std::string& messageJson) {
+    auto message = json::parse(messageJson, nullptr, false);
+    if (message.is_discarded()) {
+        throw std::invalid_argument("Could not parse Json");
+    }
+    if (!message.is_object()) {
+        throw std::invalid_argument("Expecting Json object");
+    }
+    if (!message.contains("primaryType") || !message["primaryType"].is_string()) {
+        throw std::invalid_argument("Top-level string field 'primaryType' missing");
+    }
+    if (!message.contains("message") || !message["message"].is_object()) {
+        throw std::invalid_argument("Top-level object field 'message' missing");
+    }
+    if (!message.contains("types") || !message["types"].is_object()) {
+        throw std::invalid_argument("Top-level object field 'types' missing");
+    }
+    auto str = makeStruct(
+        message["primaryType"].get<std::string>(),
+        message["message"].dump(),
+        message["types"].dump());
+    if (!str) {
+        return {};
+    }
     return str->hashStruct();
 }
 

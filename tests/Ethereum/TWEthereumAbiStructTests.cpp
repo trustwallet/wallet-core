@@ -15,10 +15,33 @@
 using namespace TW;
 
 TEST(TWEthereumAbiStruct, hashStruct) {
-    auto structType = WRAPS(TWStringCreateWithUTF8Bytes("Mail"));
-    auto valueJson = WRAPS(TWStringCreateWithUTF8Bytes(
-        R"(
-            {
+    auto message = WRAPS(TWStringCreateWithUTF8Bytes(
+        R"({
+            "types": {
+                "EIP712Domain": [
+                    {"name": "name", "type": "string"},
+                    {"name": "version", "type": "string"},
+                    {"name": "chainId", "type": "uint256"},
+                    {"name": "verifyingContract", "type": "address"}
+                ],
+                "Person": [
+                    {"name": "name", "type": "string"},
+                    {"name": "wallets", "type": "address[]"}
+                ],
+                "Mail": [
+                    {"name": "from", "type": "Person"},
+                    {"name": "to", "type": "Person[]"},
+                    {"name": "contents", "type": "string"}
+                ]
+            },
+            "primaryType": "Mail",
+            "domain": {
+                "name": "Ether Mail",
+                "version": "1",
+                "chainId": 1,
+                "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+            },
+            "message": {
                 "from": {
                     "name": "Cow",
                     "wallets": [
@@ -38,22 +61,8 @@ TEST(TWEthereumAbiStruct, hashStruct) {
                 ],
                 "contents": "Hello, Bob!"
             }
-        )"));
-    auto typesJson = WRAPS(TWStringCreateWithUTF8Bytes(
-        R"(
-            {
-                "Person": [
-                    {"name": "name", "type": "string"},
-                    {"name": "wallets", "type": "address[]"}
-                ],
-                "Mail": [
-                    {"name": "from", "type": "Person"},
-                    {"name": "to", "type": "Person[]"},
-                    {"name": "contents", "type": "string"}
-                ]
-            }
-        )"));
-    auto hash = WRAPD(TWEthereumAbiStructHashStruct(structType.get(), valueJson.get(), typesJson.get()));
+        })"));
+    auto hash = WRAPD(TWEthereumAbiStructHashStruct(message.get()));
 
     EXPECT_EQ(
         hex(TW::data(TWDataBytes(hash.get()), TWDataSize(hash.get()))),

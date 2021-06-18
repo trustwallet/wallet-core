@@ -11,10 +11,12 @@
 using namespace TW::Ethereum::ABI;
 using namespace TW;
 
-TWData* _Nonnull TWEthereumAbiStructHashStruct(TWString* _Nonnull structType, TWString* _Nonnull valueJson, TWString* _Nonnull typesJson) {
+TWData* _Nonnull TWEthereumAbiStructHashStruct(TWString* _Nonnull messageJson) {
     Data data;
     try {
-        data = ParamStruct::hashStructJson(TWStringUTF8Bytes(structType), TWStringUTF8Bytes(valueJson), TWStringUTF8Bytes(typesJson));
+        data = ParamStruct::hashStructJson(TWStringUTF8Bytes(messageJson));
+    } catch (const std::invalid_argument& ex) {
+        // return empty
     } catch (...) {
         // return empty
     }

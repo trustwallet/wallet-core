@@ -84,15 +84,43 @@ TEST(EthereumAbiStruct, encodeTypes) {
 }
 
 TEST(EthereumAbiStruct, encodeTypes_Json) {
-    auto hash = ParamStruct::hashStructJson("Mail",
+    auto hash = ParamStruct::hashStructJson(
         R"({
-            "from": {"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"},
-            "to": {"name": "Bob", "wallet": "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"},
+            "types": {
+                "EIP712Domain": [
+                    {"name": "name", "type": "string"},
+                    {"name": "version", "type": "string"},
+                    {"name": "chainId", "type": "uint256"},
+                    {"name": "verifyingContract", "type": "address"}
+                ],
+                "Person": [
+                    {"name": "name", "type": "string"},
+                    {"name": "wallet", "type": "address"}
+                ],
+                "Mail": [
+                    {"name": "from", "type": "Person"},
+                    {"name": "to", "type": "Person"},
+                    {"name": "contents", "type": "string"}
+                ]
+            },
+            "primaryType": "Mail",
+            "domain": {
+                "name": "Ether Mail",
+                "version": "1",
+                "chainId": 1,
+                "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+            },
+            "message": {
+                "from": {
+                    "name": "Cow",
+                    "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+                },
+                "to": {
+                    "name": "Bob",
+                    "wallet": "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"
+                },
                 "contents": "Hello, Bob!"
-        })",
-        R"({
-            "Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}],
-            "Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]
+            }
         })");
     ASSERT_EQ(hex(hash), "c52c0ee5d84264471806290a3f2c4cecfc5490626bf912d01f240d7a274b371e");
 }
@@ -118,15 +146,43 @@ TEST(EthereumAbiStruct, encodeTypes_v3) {
 }
 
 TEST(EthereumAbiStruct, encodeTypes_v3_Json) {
-    auto hash = ParamStruct::hashStructJson("Mail",
+    auto hash = ParamStruct::hashStructJson(
         R"({
-            "from": {"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"},
-            "to": {"name": "Bob", "wallet": "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"},
-            "contents": "Hello, Bob!"
-        })",
-        R"({
-            "Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}],
-            "Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]
+            "types": {
+                "EIP712Domain": [
+                    {"name": "name", "type": "string"},
+                    {"name": "version", "type": "string"},
+                    {"name": "chainId", "type": "uint256"},
+                    {"name": "verifyingContract", "type": "address"}
+                ],
+                "Person": [
+                    {"name": "name", "type": "string"},
+                    {"name": "wallet", "type": "address"}
+                ],
+                "Mail": [
+                    {"name": "from", "type": "Person"},
+                    {"name": "to", "type": "Person"},
+                    {"name": "contents", "type": "string"}
+                ]
+            },
+            "primaryType": "Mail",
+            "domain": {
+                "name": "Ether Mail",
+                "version": "1",
+                "chainId": 1,
+                "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+            },
+            "message": {
+                "from": {
+                    "name": "Cow",
+                    "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+                },
+                "to": {
+                    "name": "Bob",
+                    "wallet": "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"
+                },
+                "contents": "Hello, Bob!"
+            }
         })");
     ASSERT_EQ(hex(hash), "c52c0ee5d84264471806290a3f2c4cecfc5490626bf912d01f240d7a274b371e");
 }
@@ -176,30 +232,52 @@ TEST(EthereumAbiStruct, encodeTypes_v4) {
 }
 
 TEST(EthereumAbiStruct, encodeTypes_v4_Json) {
-    auto hash = ParamStruct::hashStructJson("Mail",
+    auto hash = ParamStruct::hashStructJson(
         R"({
-            "from": {
-                "name": "Cow",
-                "wallets": [
-                    "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826",
-                    "DeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF"
+            "types": {
+                "EIP712Domain": [
+                    {"name": "name", "type": "string"},
+                    {"name": "version", "type": "string"},
+                    {"name": "chainId", "type": "uint256"},
+                    {"name": "verifyingContract", "type": "address"}
+                ],
+                "Person": [
+                    {"name": "name", "type": "string"},
+                    {"name": "wallets", "type": "address[]"}
+                ],
+                "Mail": [
+                    {"name": "from", "type": "Person"},
+                    {"name": "to", "type": "Person[]"},
+                    {"name": "contents", "type": "string"}
                 ]
             },
-            "to": [
-                {
-                    "name": "Bob",
+            "primaryType": "Mail",
+            "domain": {
+                "name": "Ether Mail",
+                "version": "1",
+                "chainId": 1,
+                "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+            },
+            "message": {
+                "from": {
+                    "name": "Cow",
                     "wallets": [
-                        "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
-                        "B0BdaBea57B0BDABeA57b0bdABEA57b0BDabEa57",
-                        "B0B0b0b0b0b0B000000000000000000000000000"
+                        "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826",
+                        "DeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF"
                     ]
-                }
-            ],
-            "contents": "Hello, Bob!"
-        })",
-        R"({
-            "Person": [{"name": "name", "type": "string"}, {"name": "wallets", "type": "address[]"}],
-            "Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person[]"}, {"name": "contents", "type": "string"}]
+                },
+                "to": [
+                    {
+                        "name": "Bob",
+                        "wallets": [
+                            "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
+                            "B0BdaBea57B0BDABeA57b0bdABEA57b0BDabEa57",
+                            "B0B0b0b0b0b0B000000000000000000000000000"
+                        ]
+                    }
+                ],
+                "contents": "Hello, Bob!"
+            }
         })");
     ASSERT_EQ(hex(hash), "eb4221181ff3f1a83ea7313993ca9218496e424604ba9492bb4052c03d5c3df8");
 }
@@ -277,28 +355,43 @@ TEST(EthereumAbiStruct, encodeTypes_v4Rec) {
 }
 
 TEST(EthereumAbiStruct, encodeTypes_v4Rec_Json) {
-    auto hash = ParamStruct::hashStructJson("Person",
+    auto hash = ParamStruct::hashStructJson(
         R"({
-            "name": "Jon",
-            "mother": {
-                "name": "Lyanna",
-                "father": {
-                    "name": "Rickard"
-                }
+            "types": {
+                "EIP712Domain": [
+                    {"name": "name", "type": "string"},
+                    {"name": "version", "type": "string"},
+                    {"name": "chainId", "type": "uint256"},
+                    {"name": "verifyingContract", "type": "address"}
+                ],
+                "Person": [
+                    {"name": "name", "type": "string"},
+                    {"name": "mother", "type": "Person"},
+                    {"name": "father", "type": "Person"}
+                ]
             },
-            "father": {
-                "name": "Rhaegar",
+            "primaryType": "Person",
+            "domain": {
+                "name": "Family Tree",
+                "version": "1",
+                "chainId": 1,
+                "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+            },
+            "message": {
+                "name": "Jon",
+                "mother": {
+                    "name": "Lyanna",
+                    "father": {
+                        "name": "Rickard"
+                    }
+                },
                 "father": {
-                    "name": "Aeris II"
+                    "name": "Rhaegar",
+                    "father": {
+                        "name": "Aeris II"
+                    }
                 }
             }
-        })",
-        R"({
-            "Person": [
-                {"name": "name", "type": "string"},
-                {"name": "mother", "type": "Person"},
-                {"name": "father", "type": "Person"}
-            ]
         })");
     ASSERT_EQ(hex(hash), "fdc7b6d35bbd81f7fa78708604f57569a10edff2ca329c8011373f0667821a45");
 }
@@ -319,12 +412,60 @@ TEST(EthereumAbiStruct, encodeTypeCow1) {
     EXPECT_EQ(hex(msgPersonCow1.hashStruct()), "fc71e5fa27ff56c350aa531bc129ebdf613b772b6604664f5d8dbe21b85eb0c8");
 }
 
+#define EXPECT_EXCEPTION(statement, exceptionMsg) \
+    try { \
+        statement; \
+        FAIL() << "No exception"; \
+    } catch (const std::invalid_argument& ex) { \
+        EXPECT_EQ(std::string(ex.what()), exceptionMsg); \
+    } catch (...) { \
+        FAIL() << "Not the expected exception"; \
+    }
+
 TEST(EthereumAbiStruct, hashStructJson) {
     {
-        auto hash = ParamStruct::hashStructJson("Person",
-            R"({"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"})",
-            R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})");
+        auto hash = ParamStruct::hashStructJson(
+            R"({
+                "types": {
+                    "EIP712Domain": [
+                        {"name": "name", "type": "string"},
+                        {"name": "version", "type": "string"},
+                        {"name": "chainId", "type": "uint256"},
+                        {"name": "verifyingContract", "type": "address"}
+                    ],
+                    "Person": [
+                        {"name": "name", "type": "string"},
+                        {"name": "wallet", "type": "address"}
+                    ]
+                },
+                "primaryType": "Person",
+                "domain": {
+                    "name": "Ether Person",
+                    "version": "1",
+                    "chainId": 1,
+                    "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+                },
+                "message": {
+                    "name": "Cow",
+                    "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+                }
+            })");
         ASSERT_EQ(hex(hash), "fc71e5fa27ff56c350aa531bc129ebdf613b772b6604664f5d8dbe21b85eb0c8");
+    }
+    {   // edge cases
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson("NOT_A_JSON"), "Could not parse Json");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson("+/{\\"), "Could not parse Json");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(""), "Could not parse Json");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson("0"), "Expecting Json object");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson("[]"), "Expecting Json object");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({})"), "Top-level string field 'primaryType' missing");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"a": 0})"), "Top-level string field 'primaryType' missing");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": []})"), "Top-level string field 'primaryType' missing");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "a": 0})"), "Top-level object field 'message' missing");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "message": "v2"})"), "Top-level object field 'message' missing");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "message": {}, "a": 0})"), "Top-level object field 'types' missing");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "message": {}, "types": "v3"})"), "Top-level object field 'types' missing");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "message": {}, "types": {}})"), "Type not found, v1");
     }
 }
 
@@ -351,16 +492,6 @@ TEST(EthereumAbiStruct, ParamFactoryMakeStruct) {
         ASSERT_EQ(hex(s->hashStruct()), "fc71e5fa27ff56c350aa531bc129ebdf613b772b6604664f5d8dbe21b85eb0c8");
     }
 }
-
-#define EXPECT_EXCEPTION(statement, exceptionMsg) \
-    try { \
-        statement; \
-        FAIL() << "No exception"; \
-    } catch (const std::invalid_argument& ex) { \
-        EXPECT_EQ(std::string(ex.what()), exceptionMsg); \
-    } catch (...) { \
-        FAIL() << "Not the expected exception"; \
-    }
 
 TEST(EthereumAbiStruct, ParamFactoryMakeTypes) {
     {
