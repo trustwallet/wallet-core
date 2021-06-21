@@ -30,6 +30,7 @@ TEST(TWAnySignerTop, Sign) {
     input.set_token(std::string((char*)data.data(), data.size()));
     data = parse_hex("090a0b0c");
     input.set_note(std::string((char*)data.data(), data.size()));
+    input.set_private_key(privateKey.data(), privateKey.size());
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeTop);
