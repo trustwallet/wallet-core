@@ -24,16 +24,13 @@ TEST(TWAnySignerTop, Sign) {
     input.set_amount(1);
     input.set_tx_deposit(2);
     input.set_last_tx_nonce(3);
-    Data data = parse_hex("01020304");
-    input.set_last_tx_hash(std::string((char*)data.data(), data.size()));
-    data = parse_hex("05060708");
-    input.set_token(std::string((char*)data.data(), data.size()));
-    data = parse_hex("090a0b0c");
-    input.set_note(std::string((char*)data.data(), data.size()));
+    input.set_last_tx_hash("12345678");
+    input.set_token("hello world");
+    input.set_note("top unit test");
     input.set_private_key(privateKey.data(), privateKey.size());
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeTop);
 
-    ASSERT_EQ(hex(output.encoded()), "f83c9466ab344963eaa071f9636faac26b0d1a399003259466ab344963eaa071f9636faac26b0d1a399003250102038401020304840506070884090a0b0c");
+    ASSERT_EQ(hex(output.encoded()), "f8509466ab344963eaa071f9636faac26b0d1a399003259466ab344963eaa071f9636faac26b0d1a399003250102038831323334353637388b68656c6c6f20776f726c648d746f7020756e69742074657374");
 }

@@ -33,7 +33,7 @@ TEST(TopSigner, Sign) {
 TEST(TopSigner, SignWithData) {
     auto from = Top::Address("T0000066ab344963eaa071f9636faac26b0d1a39900325");
     auto to = Top::Address("T0000066ab344963eaa071f9636faac26b0d1a39900325");
-    auto transaction = Transaction(from, to, 1, 2, 3, parse_hex("01020304"), parse_hex("05060708"), parse_hex("090a0b0c"));
+    auto transaction = Transaction(from, to, 1, 2, 3, data(std::string("12345678")), data(std::string("hello world")), data(std::string("top unit test")));
 
     auto privateKey = PrivateKey(parse_hex("2ff271ab38849388c49e24fbc52d357384c24ed929df4f0c7b81afca7c775b62"));
     Signer::sign(privateKey, transaction);
@@ -41,6 +41,6 @@ TEST(TopSigner, SignWithData) {
     std::cout <<"sign:" << hex(transaction.signature) << std::endl;
     std::cout <<"encode:" << hex(transaction.encode()) << std::endl;
 
-    EXPECT_EQ(hex(transaction.signature), "0488227084554fae2b4b270cb56c9d8ee2b6bb1ee06863945ecce5bff9f8a197aa4546799dbe85decd6f3a43f52a2b06f77efd53af8e8530463d27c1b5945608bf789c10a4b4fecf7cd5556e01dcd17bd36d5b638bbdbb6fe371995745b7205f056f740108cf66f367324a24c2c4a22d659b743a102c6d0f4066aae7b972584c3400");
-    EXPECT_EQ(hex(transaction.encode()), "f83c9466ab344963eaa071f9636faac26b0d1a399003259466ab344963eaa071f9636faac26b0d1a399003250102038401020304840506070884090a0b0c");
+    EXPECT_EQ(hex(transaction.signature), "0488227084554fae2b4b270cb56c9d8ee2b6bb1ee06863945ecce5bff9f8a197aa4546799dbe85decd6f3a43f52a2b06f77efd53af8e8530463d27c1b5945608bf216da6f9276fb23e718ef5c85bdcc8b63d5f88540b1b68978837e35334beb60d1de3efbe6948bb10636f9f014553b8b0ca5697a66b0c69c9dc0ce893289fce5100");
+    EXPECT_EQ(hex(transaction.encode()), "f8509466ab344963eaa071f9636faac26b0d1a399003259466ab344963eaa071f9636faac26b0d1a399003250102038831323334353637388b68656c6c6f20776f726c648d746f7020756e69742074657374");
 }

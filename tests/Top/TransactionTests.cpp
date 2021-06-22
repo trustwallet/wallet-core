@@ -23,6 +23,6 @@ TEST(TopTransaction, Encode) {
 TEST(TopTransaction, EncodeWithData) {
     auto from = Top::Address("T0000066ab344963eaa071f9636faac26b0d1a39900325");
     auto to = Top::Address("T0000066ab344963eaa071f9636faac26b0d1a39900325");
-    auto transaction = Transaction(from, to, 1, 2, 3, parse_hex("01020304"), parse_hex("05060708"), parse_hex("090a0b0c"));
-    ASSERT_EQ(hex(transaction.encode()), "f83c9466ab344963eaa071f9636faac26b0d1a399003259466ab344963eaa071f9636faac26b0d1a399003250102038401020304840506070884090a0b0c");
+    auto transaction = Transaction(from, to, 1, 2, 3, data("12345678"), data("hello world"), data("top unit test"));
+    ASSERT_EQ(hex(transaction.encode()), "f8509466ab344963eaa071f9636faac26b0d1a399003259466ab344963eaa071f9636faac26b0d1a399003250102038831323334353637388b68656c6c6f20776f726c648d746f7020756e69742074657374");
 }
