@@ -954,6 +954,31 @@
     }
   },
   {
+    "id": "bluzelle",
+    "name": "Bluzelle",
+    "coinId": 483,
+    "symbol": "BLZ",
+    "decimals": 6,
+    "blockchain": "Cosmos",
+    "derivationPath": "m/44'/483'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "bluzelle",
+    "explorer": {
+      "url": "https://bigdipper.net.bluzelle.com",
+      "txPath": "/transactions/",
+      "accountPath": "/account/",
+      "sampleTx": "AC026E0EC6E33A77D5EA6B9CEF9810699BC2AD8C5582E007E7857457C6D3B819",
+      "sampleAccount": "bluzelle1q9cryfal7u3jvnq6er5ufety20xtzw6ycx2te9"
+    },
+    "info": {
+      "url": "https://bluzelle.com",
+      "client": "https://github.com/bluzelle",
+      "clientPublic": "https://bluzelle.github.io/api/",
+      "clientDocs": "https://docs.bluzelle.com/developers/"
+    }
+  },
+  {
     "id": "band",
     "name": "BandChain",
     "symbol": "BAND",
