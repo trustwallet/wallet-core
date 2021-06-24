@@ -20,5 +20,8 @@ Data Transaction::encode() const noexcept {
     append(encoded, Ethereum::RLP::encode(last_tx_hash));
     append(encoded, Ethereum::RLP::encode(token));
     append(encoded, Ethereum::RLP::encode(note));
+    if (!signature.empty()) {
+        append(encoded, Ethereum::RLP::encode(signature));
+    }
     return Ethereum::RLP::encodeList(encoded);
 }
