@@ -476,7 +476,7 @@ TEST(EthereumAbiStruct, ParamFactoryMakeNamed) {
     EXPECT_EQ(p->getParam()->getType(), "uint256");
 }
 
-TEST(EthereumAbiStruct, ParamFactoryMakeStruct) {
+TEST(EthereumAbiStruct, ParamStructMakeStruct) {
     {
         std::shared_ptr<ParamStruct> s = ParamStruct::makeStruct("Person",
             R"(
@@ -490,6 +490,39 @@ TEST(EthereumAbiStruct, ParamFactoryMakeStruct) {
         ASSERT_EQ(s->getCount(), 2);
         ASSERT_EQ(s->encodeType(), "Person(string name,address wallet)");
         ASSERT_EQ(hex(s->hashStruct()), "fc71e5fa27ff56c350aa531bc129ebdf613b772b6604664f5d8dbe21b85eb0c8");
+    }
+    {
+        std::shared_ptr<ParamStruct> s = ParamStruct::makeStruct("Person",
+            R"(
+                {"name": "Cow", "wallets": ["CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826", "DeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF"]}
+            )",
+            R"({
+                "Person": [{"name": "name", "type": "string"}, {"name": "wallets", "type": "address[]"}]
+            })");
+        ASSERT_NE(s.get(), nullptr);
+        EXPECT_EQ(s->getType(), "Person");
+        ASSERT_EQ(s->getCount(), 2);
+        ASSERT_EQ(s->encodeType(), "Person(string name,address[] wallets)");
+        ASSERT_EQ(hex(s->hashStruct()), "9b4846dd48b866f0ac54d61b9b21a9e746f921cefa4ee94c4c0a1c49c774f67f");
+    }
+    {
+        EXPECT_EXCEPTION(ParamStruct::makeStruct("Person",
+            "NOT_A_JSON+/{\\",
+            R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})"),
+            "Could not parse value Json");
+    }
+    {
+        EXPECT_EXCEPTION(ParamStruct::makeStruct("Person",
+            "0",
+            R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})"),
+            "Expecting object");
+    }
+    {
+        EXPECT_EXCEPTION(ParamStruct::makeStruct("Person",
+            // params mixed up
+            R"({"wallets": "Cow", "name": ["CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826", "DeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF"]})",
+            R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallets", "type": "address[]"}]})"),
+            "Could not set type for param wallets");
     }
 }
 
@@ -546,4 +579,49 @@ TEST(EthereumAbiStruct, ParamFactoryMakeType) {
         EXPECT_EXCEPTION(ParamStruct::makeType("Person", R"([{"name": "name", "type": "UNKNOWN_TYPE"}, {"name": "wallet", "type": "address"}])"), "Unknown type UNKNOWN_TYPE");
         EXPECT_EQ(ParamStruct::makeType("Person", R"([{"name": "name", "type": "UNKNOWN_TYPE"}, {"name": "wallet", "type": "address"}])", {}, true)->encodeType(), "Person(UNKNOWN_TYPE name,address wallet)UNKNOWN_TYPE()");
     }
+}
+
+TEST(EthereumAbiStruct, ParamNamedMethods) {
+    const auto ps = std::make_shared<ParamString>("Hello");
+    auto pn = std::make_shared<ParamNamed>("name", ps);
+
+    EXPECT_EQ(pn->getSize(), ps->getSize());
+    EXPECT_EQ(pn->isDynamic(), ps->isDynamic());
+    Data encoded;
+    pn->encode(encoded);
+    EXPECT_EQ(hex(encoded), "000000000000000000000000000000000000000000000000000000000000000548656c6c6f000000000000000000000000000000000000000000000000000000");
+    size_t offset = 0;
+    EXPECT_EQ(pn->decode(encoded, offset), true);
+    EXPECT_EQ(offset, 64);
+    pn->setValueJson("World");
+    EXPECT_EQ(ps->getVal(), "World");
+}
+
+TEST(EthereumAbiStruct, ParamSetNamed) {
+    const auto pn1 = std::make_shared<ParamNamed>("param1", std::make_shared<ParamString>("Hello"));
+    const auto pn2 = std::make_shared<ParamNamed>("param2", std::make_shared<ParamString>("World"));
+    auto ps = std::make_shared<ParamSetNamed>(std::vector<std::shared_ptr<ParamNamed>>{pn1, pn2});
+    EXPECT_EQ(ps->getCount(), 2);
+    EXPECT_EQ(ps->addParam(std::shared_ptr<ParamNamed>(nullptr)), -1);
+    EXPECT_EQ(ps->findParamByName("NO_SUCH_PARAM"), nullptr);
+    auto pf1 = ps->findParamByName("param2");
+    ASSERT_NE(pf1.get(), nullptr);
+    EXPECT_EQ(pf1->getName(), "param2");
+}
+
+TEST(EthereumAbiStruct, ParamStructMethods) {
+    const auto pn1 = std::make_shared<ParamNamed>("param1", std::make_shared<ParamString>("Hello"));
+    const auto pn2 = std::make_shared<ParamNamed>("param2", std::make_shared<ParamString>("World"));
+    auto ps = std::make_shared<ParamStruct>("struct", std::vector<std::shared_ptr<ParamNamed>>{pn1, pn2});
+
+    EXPECT_EQ(ps->getSize(), 2);
+    EXPECT_EQ(ps->isDynamic(), true);
+    Data encoded;
+    ps->encode(encoded);
+    EXPECT_EQ(hex(encoded), "");
+    size_t offset = 0;
+    EXPECT_EQ(ps->decode(encoded, offset), true);
+    EXPECT_EQ(offset, 0);
+    EXPECT_FALSE(ps->setValueJson("dummy"));
+    EXPECT_EQ(ps->findParamByName("param2")->getName(), "param2");
 }

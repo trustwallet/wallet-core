@@ -30,10 +30,10 @@ ParamSetNamed::~ParamSetNamed() {
 
 /// Returns the index of the parameter
 int ParamSetNamed::addParam(const std::shared_ptr<ParamNamed>& param) {
-    assert(param.get() != nullptr);
     if (param.get() == nullptr) {
         return -1;
     }
+    assert(param.get() != nullptr);
     _params.push_back(param);
     return static_cast<int>(_params.size() - 1);
 }
