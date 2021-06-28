@@ -1138,6 +1138,16 @@ TEST(EthereumAbi, DecodeFunctionContractMulticall) {
     EXPECT_EQ(4 + 29 * 32, offset);
 }
 
+#define EXPECT_EXCEPTION(statement, exceptionMsg) \
+    try { \
+        statement; \
+        FAIL() << "No exception"; \
+    } catch (const std::invalid_argument& ex) { \
+        EXPECT_EQ(std::string(ex.what()), exceptionMsg); \
+    } catch (...) { \
+        FAIL() << "Not the expected exception"; \
+    }
+
 TEST(EthereumAbi, ParamFactoryMake) {
     {
         // test for UInt256: ParamUInt256 and ParamUIntN(256), both have type "uint256", factory produces the more specific ParamUInt256
@@ -1192,6 +1202,29 @@ TEST(EthereumAbi, ParamFactoryMake) {
         EXPECT_TRUE(nullptr != std::dynamic_pointer_cast<ParamArray>(p).get());
         auto elemParam = std::dynamic_pointer_cast<ParamArray>(p)->getParam(0);
         EXPECT_TRUE(nullptr != elemParam.get());
+    }
+}
+
+TEST(EthereumAbi, ParamFactoryMakeException) {
+    EXPECT_EXCEPTION(ParamFactory::make("uint93"), "invalid bit size");
+}
+
+TEST(EthereumAbi, ParamFactoryGetArrayValue) {
+    {
+        auto pArray = std::make_shared<ParamArray>(std::make_shared<ParamUInt8>());
+        const auto vals = ParamFactory::getArrayValue(pArray, pArray->getType());
+        ASSERT_EQ(vals.size(), 1);
+        EXPECT_EQ(vals[0], "0");
+    }
+    {   // wrong type, not array
+        auto pArray = std::make_shared<ParamArray>(std::make_shared<ParamUInt8>());
+        const auto vals = ParamFactory::getArrayValue(pArray, "bool");
+        EXPECT_EQ(vals.size(), 0);
+    }
+    {   // wrong param, not array
+        auto pArray = std::make_shared<ParamUInt8>();
+        const auto vals = ParamFactory::getArrayValue(pArray, "uint8[]");
+        EXPECT_EQ(vals.size(), 0);
     }
 }
 
@@ -1306,6 +1339,7 @@ TEST(EthereumAbi, ParamFactorySetGetValue) {
         EXPECT_EQ("", ParamFactory::getValue(p, p->getType()));
         EXPECT_TRUE(p->setValueJson("ABCdefGHI"));
         EXPECT_EQ("ABCdefGHI", ParamFactory::getValue(p, p->getType()));
+        EXPECT_EQ(9, p->getCount());
     }
     {
         auto p = std::make_shared<ParamByteArray>();
@@ -1387,4 +1421,38 @@ TEST(EthereumAbi, ParamFactoryGetValue) {
 TEST(EthereumAbi, MaskForBits) {
     EXPECT_EQ(0x000000ffffff, ParamUIntN::maskForBits(24));
     EXPECT_EQ(0x00ffffffffff, ParamUIntN::maskForBits(40));
+}
+
+TEST(EthereumAbi, ParamSetMethods) {
+    {
+        auto p = ParamSet(std::vector<std::shared_ptr<ParamBase>>{
+            std::make_shared<ParamUInt256>(16u),
+            std::make_shared<ParamBool>(true) });
+        EXPECT_EQ(p.getCount(), 2);
+        EXPECT_EQ(p.addParam(std::shared_ptr<ParamString>(nullptr)), -1);
+
+        std::shared_ptr<ParamBase> getparam;
+        EXPECT_TRUE(p.getParam(1, getparam));
+        EXPECT_EQ(getparam->getType(), "bool");
+        EXPECT_FALSE(p.getParam(2, getparam));
+
+        EXPECT_EQ(p.getParamUnsafe(0)->getType(), "uint256");
+        EXPECT_EQ(p.getParamUnsafe(1)->getType(), "bool");
+        EXPECT_EQ(p.getParamUnsafe(2)->getType(), "uint256");
+        EXPECT_EQ(p.getParamUnsafe(99)->getType(), "uint256");
+    }
+    {
+        auto pEmpty = ParamSet(std::vector<std::shared_ptr<ParamBase>>{});
+        EXPECT_EQ(pEmpty.getParamUnsafe(0).get(), nullptr);
+    }
+}
+
+TEST(EthereumAbi, ParametersMethods) {
+    auto p = Parameters(std::vector<std::shared_ptr<ParamBase>>{
+        std::make_shared<ParamUInt256>(16u),
+        std::make_shared<ParamBool>(true) });
+    EXPECT_TRUE(p.isDynamic());
+    EXPECT_EQ(p.getCount(), 2);
+    EXPECT_FALSE(p.setValueJson("value"));
+    EXPECT_EQ(hex(p.hashStruct()), "755311b9e2cee471a91b161ccc5deed933d844b5af2b885543cc3c04eb640983");
 }

@@ -41,7 +41,7 @@ static bool isArrayType(const std::string& type) {
 }
 
 static std::string getArrayElemType(const std::string& arrayType) {
-    if (ends_with(arrayType, "[]") && arrayType.length() >= 3) {
+    if (isArrayType(arrayType)) {
         return arrayType.substr(0, arrayType.length() - 2);
     }
     return "";

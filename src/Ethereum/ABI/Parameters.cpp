@@ -20,10 +20,10 @@ ParamSet::~ParamSet() {
 
 /// Returns the index of the parameter
 int ParamSet::addParam(const std::shared_ptr<ParamBase>& param) {
-    assert(param.get() != nullptr);
     if (param.get() == nullptr) {
         return -1;
     }
+    assert(param.get() != nullptr);
     _params.push_back(param);
     return static_cast<int>(_params.size() - 1);
 }

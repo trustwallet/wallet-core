@@ -524,7 +524,14 @@ TEST(EthereumAbiStruct, ParamStructMakeStruct) {
         EXPECT_EQ(s->encodeType(), "Person(string name,address wallet)");
         EXPECT_EQ(hex(s->hashStruct()), "fc71e5fa27ff56c350aa531bc129ebdf613b772b6604664f5d8dbe21b85eb0c8");
     }
-    
+    {   // empty array
+        std::shared_ptr<ParamStruct> s = ParamStruct::makeStruct("Person",
+            R"({"extra_param": "extra_value", "name": "Cow", "wallets": []})",
+            R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallets", "type": "address[]"}]})");
+        ASSERT_NE(s.get(), nullptr);
+        EXPECT_EQ(s->encodeType(), "Person(string name,address[] wallets)");
+    }
+
     {   // missing param
         EXPECT_EXCEPTION(ParamStruct::makeStruct("Person",
             R"({"wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"})",
