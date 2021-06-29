@@ -212,6 +212,52 @@ TEST(THORSwap, SwapEthBnb) {
     EXPECT_EQ(hex(output.encoded()), "f90151038506fc23ac0083013880941091c4de6a3cf09cda00abdaed42c7c3b69c83ec87b1a2bc2ec50000b8e41fece7b40000000000000000000000001091c4de6a3cf09cda00abdaed42c7c3b69c83ec000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b1a2bc2ec500000000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003e535741503a424e422e424e423a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a363030303033000026a0fc56efc22dfb218357945b20d5e09cbb8678e1aa885527135263812367b47dc7a00c909e689c2b75ceb3120d8c4861a4affe6fe1e592ab2e86638280cdc726219f");
 }
 
+TEST(THORSwap, SwapEthBnbDemo) {
+    const auto srcEthAddr = "0x1c01b559b4e8AB181339c8F66ffEFEc703864a37";
+    const auto toBnbAddr = "bnb17tj4yewv4mh23f5rzuc2phfh9qdsg05kwlutyx";
+    const auto vaultAddr = "0x58cd3c4f4d9b603d7ab4d26bc569a8ce92e0907f";
+    const auto privkey = parse_hex("eae61e7415789db0f5fc96e3c69e7a6a5d553506e59ffee2ab47ba7768fa3ade");
+    auto res = Swap::build(
+        Chain::ETH, // fromChain
+        Chain::BNB, // toChain
+        srcEthAddr, // fromAddress
+        "BNB", // toSymbol
+        "", // toTokenId
+        toBnbAddr, // toAddress
+        vaultAddr, // vaultAddress
+        "20000000000000000", // fromAmount
+        "6100000" //toAmountLimit
+    );
+    ASSERT_EQ(res.second, "");
+    EXPECT_EQ(hex(res.first), "0a010112010b1a0502540be40022030f42402a2a3078353863643363346634643962363033643761623464323662633536396138636539326530393037663af30132f0010a07470de4df82000012e4011fece7b400000000000000000000000058cd3c4f4d9b603d7ab4d26bc569a8ce92e0907f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000470de4df8200000000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003f535741503a424e422e424e423a626e623137746a3479657776346d6832336635727a75633270686668397164736730356b776c757479783a3631303030303000");
+
+    auto tx = Ethereum::Proto::SigningInput();
+    ASSERT_TRUE(tx.ParseFromArray(res.first.data(), (int)res.first.size()));
+
+    // check fields
+    EXPECT_EQ(tx.to_address(), vaultAddr);
+    ASSERT_TRUE(tx.transaction().has_contract_generic());
+    EXPECT_EQ(hex(TW::data(tx.private_key())), "");
+
+    // set few fields before signing
+    auto chainId = store(uint256_t(1));
+    tx.set_chain_id(chainId.data(), chainId.size());
+    auto nonce = store(uint256_t(0));
+    tx.set_nonce(nonce.data(), nonce.size());
+    auto gasPrice = store(uint256_t(30000000000));
+    tx.set_gas_price(gasPrice.data(), gasPrice.size());
+    auto gasLimit = store(uint256_t(80000));
+    tx.set_gas_limit(gasLimit.data(), gasLimit.size());
+    tx.set_private_key(privkey.data(), privkey.size());
+
+    // sign and encode resulting input
+    Ethereum::Proto::SigningOutput output;
+    ANY_SIGN(tx, TWCoinTypeEthereum);
+    EXPECT_EQ(hex(output.encoded()), "f90151808506fc23ac00830138809458cd3c4f4d9b603d7ab4d26bc569a8ce92e0907f87470de4df820000b8e41fece7b400000000000000000000000058cd3c4f4d9b603d7ab4d26bc569a8ce92e0907f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000470de4df8200000000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003f535741503a424e422e424e423a626e623137746a3479657776346d6832336635727a75633270686668397164736730356b776c757479783a363130303030300025a0c40abfcf8c2f797130cc3bc65e5fd1bd3e34693800af02f95143cd4f9431a223a06f73da508319493c77868c9ccb293a49e622dedfa3a030b36aea60fa532e74e1");
+    // curl -H 'Content-Type: application/json' -d '{"jsonrpc": "2.0", "method": "eth_sendRawTransaction", "params": ["0x
+    // "], "id": 1 }' https://ethereum-rpc.trustwalletapp.com
+}
+
 TEST(THORSwap, SwapBnbBtc) {
     auto res = Swap::build(Chain::BNB, Chain::BTC, Address1Bnb, "BTC", "", Address1Btc, VaultBnb, "10000000", "10000000");
     ASSERT_EQ(res.second, "");
