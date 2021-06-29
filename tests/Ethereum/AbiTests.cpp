@@ -1142,7 +1142,7 @@ TEST(EthereumAbi, DecodeFunctionContractMulticall) {
     try { \
         statement; \
         FAIL() << "No exception"; \
-    } catch (const std::invalid_argument& ex) { \
+    } catch (const std::exception& ex) { \
         EXPECT_EQ(std::string(ex.what()), exceptionMsg); \
     } catch (...) { \
         FAIL() << "Not the expected exception"; \

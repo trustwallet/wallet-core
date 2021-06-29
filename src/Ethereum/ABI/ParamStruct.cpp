@@ -231,6 +231,8 @@ std::shared_ptr<ParamStruct> ParamStruct::makeStruct(const std::string& structTy
         return std::make_shared<ParamStruct>(structType, params);
     } catch (const std::invalid_argument& ex) {
         throw;
+    } catch (const std::exception& ex) {
+        throw std::invalid_argument(std::string("Could not process Json: ") + ex.what());
     } catch (...) {
         throw std::invalid_argument("Could not process Json");
     }
@@ -294,6 +296,8 @@ std::shared_ptr<ParamStruct> ParamStruct::makeType(const std::string& structName
         return std::make_shared<ParamStruct>(structName, params);
     } catch (const std::invalid_argument& ex) {
         throw;
+    } catch (const std::exception& ex) {
+        throw std::invalid_argument(std::string("Could not process Json: ") + ex.what());
     } catch (...) {
         throw std::invalid_argument("Could not process Json");
     }
@@ -322,8 +326,10 @@ std::vector<std::shared_ptr<ParamStruct>> ParamStruct::makeTypes(const std::stri
             types2.push_back(struct1);
         }
         return types2;
-    } catch (std::exception& ex) {
+    } catch (const std::invalid_argument& ex) {
         throw;
+    } catch (const std::exception& ex) {
+        throw std::invalid_argument(std::string("Could not process Json: ") + ex.what());
     } catch (...) {
         throw std::invalid_argument("Could not process Json");
     }

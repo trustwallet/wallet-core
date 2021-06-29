@@ -400,8 +400,11 @@ TEST(EthereumAbiStruct, encodeTypeCow1) {
     try { \
         statement; \
         FAIL() << "No exception"; \
-    } catch (const std::invalid_argument& ex) { \
-        EXPECT_EQ(std::string(ex.what()), exceptionMsg); \
+    } catch (const std::exception& ex) { \
+        const std::string expEx = exceptionMsg; \
+        const std::string actEx = ex.what(); \
+        const auto actExPrefix = actEx.substr(0, expEx.length()); \
+        EXPECT_EQ(actExPrefix, expEx); \
     } catch (...) { \
         FAIL() << "Not the expected exception"; \
     }
@@ -515,13 +518,14 @@ TEST(EthereumAbiStruct, ParamStructMakeStruct) {
         ASSERT_NE(s.get(), nullptr);
         EXPECT_EQ(s->encodeType(), "Person(string name,address[] wallets)");
     }
-
     {   // missing param
-        EXPECT_EXCEPTION(ParamStruct::makeStruct("Person",
+        std::shared_ptr<ParamStruct> s = ParamStruct::makeStruct("Person",
             R"({"wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"})",
-            R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})"),
-            "Could not process Json");
+            R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})");
+        ASSERT_NE(s.get(), nullptr);
+        EXPECT_EQ(s->encodeType(), "Person(string name,address wallet)");
     }
+
     {
         EXPECT_EXCEPTION(ParamStruct::makeStruct("Person",
             "NOT_A_JSON+/{\\",
@@ -533,12 +537,6 @@ TEST(EthereumAbiStruct, ParamStructMakeStruct) {
             "0",
             R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})"),
             "Expecting object");
-    }
-    {
-        EXPECT_EXCEPTION(ParamStruct::makeStruct("Person",
-            R"({"wallets": ["CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826", "DeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF"]})",
-            R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallets", "type": "address[]"}]})"),
-            "Could not process Json");
     }
     {
         EXPECT_EXCEPTION(ParamStruct::makeStruct("Person",
@@ -564,12 +562,6 @@ TEST(EthereumAbiStruct, ParamStructMakeStruct) {
             R"({"from": {"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"}, "to": {"name": "Bob", "wallet": "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"}, "contents": "Hello, Bob!"})",
             R"({"Mail": [{"name": "from", "type": "Person"},{"name": "to", "type": "Person"},{"name": "contents", "type": "string"}]})"),
             "Unknown type Person");
-    }
-    {
-        EXPECT_EXCEPTION(ParamStruct::makeStruct("Mail",
-            R"({"from": {"nameWrong": "Cow", "walletWrong": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"}, "to": {"name": "Bob", "wallet": "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"}, "contents": "Hello, Bob!"})",
-            R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}], "Mail": [{"name": "from", "type": "Person"},{"name": "to", "type": "Person"},{"name": "contents", "type": "string"}]})"),
-            "Could not process Json");
     }
 }
 
@@ -620,9 +612,9 @@ TEST(EthereumAbiStruct, ParamFactoryMakeType) {
         EXPECT_EXCEPTION(ParamStruct::makeType("Person", "0"), "Expecting array");
         EXPECT_EXCEPTION(ParamStruct::makeType("Person", "{}"), "Expecting array");
         EXPECT_EXCEPTION(ParamStruct::makeType("Person", "[]"), "No valid params found");
-        EXPECT_EXCEPTION(ParamStruct::makeType("Person", R"([{"dummy": 0}])"), "Could not process Json");
-        EXPECT_EXCEPTION(ParamStruct::makeType("Person", R"([{"name": "val"}])"), "Could not process Json");
-        EXPECT_EXCEPTION(ParamStruct::makeType("Person", R"([{"type": "val"}])"), "Could not process Json");
+        EXPECT_EXCEPTION(ParamStruct::makeType("Person", R"([{"dummy": 0}])"), "Could not process Json: ");
+        EXPECT_EXCEPTION(ParamStruct::makeType("Person", R"([{"name": "val"}])"), "Could not process Json: ");
+        EXPECT_EXCEPTION(ParamStruct::makeType("Person", R"([{"type": "val"}])"), "Could not process Json: ");
         EXPECT_EXCEPTION(ParamStruct::makeType("Person", R"([{"name": "", "type": "type"}])"), "Expecting 'name' and 'type', in Person");
         EXPECT_EXCEPTION(ParamStruct::makeType("Person", R"([{"name": "name", "type": ""}])"), "Expecting 'name' and 'type', in Person");
         EXPECT_EXCEPTION(ParamStruct::makeType("Person", R"([{"name": "name", "type": "UNKNOWN_TYPE"}, {"name": "wallet", "type": "address"}])"), "Unknown type UNKNOWN_TYPE");
