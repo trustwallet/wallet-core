@@ -77,10 +77,6 @@ TEST(EthereumAbiStruct, encodeTypes) {
 
     Address address = Address(privateKeyCow.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
     EXPECT_EQ(address.string(), "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826");
-
-    // TODO sig
-    // 0xbe609aee343fb3c4b28e1df9e632fca64fcfaede20f02e86244efddf30957bd2
-    // 0x4355c47d63924e8a72e509b65029052eb6c299d53a04e167c5775fd466751c9d07299936d304c153f6443dfa05f40ff007d72911b6f72307f996231605b915621c
 }
 
 TEST(EthereumAbiStruct, encodeTypes_Json) {
@@ -139,10 +135,6 @@ TEST(EthereumAbiStruct, encodeTypes_v3) {
 
     Address address = Address(privateKeyCow.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
     EXPECT_EQ(address.string(), "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826");
-
-    // TODO sig
-    // 0xbe609aee343fb3c4b28e1df9e632fca64fcfaede20f02e86244efddf30957bd2
-    // 0x4355c47d63924e8a72e509b65029052eb6c299d53a04e167c5775fd466751c9d07299936d304c153f6443dfa05f40ff007d72911b6f72307f996231605b915621c
 }
 
 TEST(EthereumAbiStruct, encodeTypes_v3_Json) {
@@ -225,10 +217,6 @@ TEST(EthereumAbiStruct, encodeTypes_v4) {
 
     Address address = Address(privateKeyCow.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
     EXPECT_EQ(address.string(), "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826");
-
-    // TODO sig
-    // 0xa85c2e2b118698e88db68a8105b794a8cc7cec074e89ef991cb4f5f533819cc2
-    // 0x65cbd956f2fae28a601bebc9b906cea0191744bd4c4247bcd27cd08f8eb6b71c78efdf7a31dc9abee78f492292721f362d296cf86b4538e07b51303b67f749061b
 }
 
 TEST(EthereumAbiStruct, encodeTypes_v4_Json) {
@@ -348,10 +336,6 @@ TEST(EthereumAbiStruct, encodeTypes_v4Rec) {
     PrivateKey privateKeyDragon = PrivateKey(Hash::keccak256(TW::data("dragon")));
     Address address = Address(privateKeyDragon.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
     EXPECT_EQ(address.string(), "0x065a687103C9F6467380beE800ecD70B17f6b72F");
-
-    // TODO sig
-    // 0x807773b9faa9879d4971b43856c4d60c2da15c6f8c062bd9d33afefb756de19c
-    // 0xf2ec61e636ff7bb3ac8bc2a4cc2c8b8f635dd1b2ec8094c963128b358e79c85c5ca6dd637ed7e80f0436fe8fce39c0e5f2082c9517fe677cc2917dcd6c84ba881c
 }
 
 TEST(EthereumAbiStruct, encodeTypes_v4Rec_Json) {
