@@ -96,7 +96,7 @@ bool ParamArray::setValueJson(const std::string& value) {
     }
     int cnt = 0;
     for (const auto& e: valuesJson) {
-        std::string eString = (e.is_string()) ? e.get<std::string>() : e.dump();
+        std::string eString = e.is_string() ? e.get<std::string>() : e.dump();
         _params.getParamUnsafe(cnt)->setValueJson(eString);
         ++cnt;
     }

@@ -184,7 +184,7 @@ std::shared_ptr<ParamStruct> ParamStruct::makeStruct(const std::string& structTy
             auto paramVal = ParamFactory::make(type);
             if (paramVal) {
                 if (!values.is_null()) {
-                    std::string valueString = (!value.is_array() && !value.is_object()) ? value.get<std::string>() : value.dump();
+                    std::string valueString = value.is_string() ? value.get<std::string>() : value.dump();
                     if (!paramVal->setValueJson(valueString)) {
                         throw std::invalid_argument("Could not set type for param " + name);
                     }
