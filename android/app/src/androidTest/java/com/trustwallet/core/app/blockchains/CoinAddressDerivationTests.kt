@@ -1,11 +1,11 @@
 package com.trustwallet.core.app.blockchains
 
+import kotlinx.coroutines.*
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import wallet.core.jni.HDWallet
 import wallet.core.jni.CoinType
 import wallet.core.jni.CoinType.*
-import kotlinx.coroutines.*
+import wallet.core.jni.HDWallet
 
 class CoinAddressDerivationTests {
 
@@ -14,18 +14,22 @@ class CoinAddressDerivationTests {
     }
 
     @Test
-    fun testDeriveAddressesFromPhrase() {
+    fun testDeriveAddressesFromPhrase() = runBlocking {
         val wallet = HDWallet("shoot island position soft burden budget tooth cruel issue economy destroy above", "")
 
-        for (i in 0 .. 4) {
-            GlobalScope.launch {
-                CoinType.values().forEach { coin ->
+        val scope = CoroutineScope(Dispatchers.IO)
+        val jobs = mutableListOf<Deferred<Unit>>()
+        for (i in 0..4) {
+            CoinType.values().forEach { coin ->
+                val job = scope.async {
                     val privateKey = wallet.getKeyForCoin(coin)
                     val address = coin.deriveAddress(privateKey)
                     runDerivationChecks(coin, address)
                 }
+                jobs.add(job)
             }
         }
+        jobs.forEach { it.await() }
     }
 
     private fun runDerivationChecks(coin: CoinType, address: String?) = when (coin) {
@@ -92,5 +96,6 @@ class CoinAddressDerivationTests {
         SMARTCHAINLEGACY -> assertEquals("0x49784f90176D8D9d4A3feCDE7C1373dAAb5b13b8", address)
         OASIS -> assertEquals("oasis1qzcpavvmuw280dk0kd4lxjhtpf0u3ll27yf7sqps", address)
         THORCHAIN -> assertEquals("thor1c8jd7ad9pcw4k3wkuqlkz4auv95mldr2kyhc65", address)
+        BLUZELLE -> assertEquals("bluzelle1xccvees6ev4wm2r49rc6ptulsdxa8x8jfpmund", address)
     }
 }
