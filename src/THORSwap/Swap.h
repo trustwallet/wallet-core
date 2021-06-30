@@ -33,13 +33,14 @@ public:
         const std::string& toTokenId,
         const std::string& toAddress,
         const std::string& vaultAddress,
+        const std::string& routerAddress, // for Ethereum, can be empty otherwise
         const std::string& fromAmount,
         const std::string& toAmountLimit
     );
 
 protected:
     static std::string buildBitcoin(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out);
-    static std::string buildEthereum(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out);
+    static std::string buildEthereum(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, const std::string& routerAddress, uint64_t amount, const std::string& memo, Data& out);
     static std::string buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out);
 
 public:

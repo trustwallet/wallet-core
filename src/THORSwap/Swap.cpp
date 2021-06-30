@@ -72,6 +72,7 @@ std::pair<Data, std::string> Swap::build(
     const std::string& toTokenId,
     const std::string& toAddress,
     const std::string& vaultAddress,
+    const std::string& routerAddress,
     const std::string& fromAmount,
     const std::string& toAmountLimit
 )  {
@@ -95,7 +96,7 @@ std::pair<Data, std::string> Swap::build(
 
         case Chain::ETH: {
             Data out;
-            auto res = buildEthereum(toChain, toSymbol, toTokenId, fromAddress, toAddress, vaultAddress, fromAmountNum, memo, out);
+            auto res = buildEthereum(toChain, toSymbol, toTokenId, fromAddress, toAddress, vaultAddress, routerAddress, fromAmountNum, memo, out);
             return std::make_pair(std::move(out), std::move(res));
         }
 
@@ -144,14 +145,21 @@ Data ethAddressStringToData(const std::string& asString) {
     return asData;
 }
 
-std::string Swap::buildEthereum(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out) {
+std::string Swap::buildEthereum(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, const std::string& routerAddress, uint64_t amount, const std::string& memo, Data& out) {
     auto input = Ethereum::Proto::SigningInput();
 
+    // some sanity check / address conversion
     Data vaultAddressBin = ethAddressStringToData(vaultAddress);
-    if (vaultAddress.size() == 0) {
+    if (!Ethereum::Address::isValid(vaultAddress) || vaultAddressBin.size() != Ethereum::Address::size) {
         return "Invalid vault address: " + vaultAddress;
     }
+    if (!Ethereum::Address::isValid(routerAddress)) {
+        return "Invalid router address: " + routerAddress;
+    }
     Data toAssetAddressBin = ethAddressStringToData(toTokenId);
+    if (!Ethereum::Address::isValid(toTokenId) || toAssetAddressBin.size() != Ethereum::Address::size) {
+        return "Invalid assetId: " + toTokenId;
+    }
 
     // Following fields need to be set after building, before sending
     auto chainId = store(uint256_t(1));
@@ -165,7 +173,7 @@ std::string Swap::buildEthereum(Chain toChain, const std::string& toSymbol, cons
     input.set_private_key("");
     // ... end
 
-    input.set_to_address(vaultAddress);
+    input.set_to_address(routerAddress);
     auto& transfer = *input.mutable_transaction()->mutable_contract_generic();
     auto func = Ethereum::ABI::Function("deposit", std::vector<std::shared_ptr<Ethereum::ABI::ParamBase>>{
         std::make_shared<Ethereum::ABI::ParamAddress>(vaultAddressBin),
