@@ -6,6 +6,7 @@
 
 #include "Ethereum/ABI.h"
 #include "Ethereum/Address.h"
+#include "Ethereum/Signer.h"
 #include <HexCoding.h>
 #include <PrivateKey.h>
 
@@ -118,7 +119,13 @@ TEST(EthereumAbiStruct, encodeTypes_Json) {
                 "contents": "Hello, Bob!"
             }
         })");
-    ASSERT_EQ(hex(hash), "c52c0ee5d84264471806290a3f2c4cecfc5490626bf912d01f240d7a274b371e");
+    ASSERT_EQ(hex(hash), "be609aee343fb3c4b28e1df9e632fca64fcfaede20f02e86244efddf30957bd2");
+
+    // sign the hash
+    const auto rsv = Signer::sign(0, privateKeyCow, hash);
+    EXPECT_EQ(hex(store(std::get<0>(rsv))), "4355c47d63924e8a72e509b65029052eb6c299d53a04e167c5775fd466751c9d");
+    EXPECT_EQ(hex(store(std::get<1>(rsv))), "07299936d304c153f6443dfa05f40ff007d72911b6f72307f996231605b91562");
+    EXPECT_EQ(hex(store(std::get<2>(rsv))), "1c");
 }
 
 // See 'signedTypeData with V3 string' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
@@ -176,7 +183,13 @@ TEST(EthereumAbiStruct, encodeTypes_v3_Json) {
                 "contents": "Hello, Bob!"
             }
         })");
-    ASSERT_EQ(hex(hash), "c52c0ee5d84264471806290a3f2c4cecfc5490626bf912d01f240d7a274b371e");
+    ASSERT_EQ(hex(hash), "be609aee343fb3c4b28e1df9e632fca64fcfaede20f02e86244efddf30957bd2");
+
+    // sign the hash
+    const auto rsv = Signer::sign(0, privateKeyCow, hash);
+    EXPECT_EQ(hex(store(std::get<0>(rsv))), "4355c47d63924e8a72e509b65029052eb6c299d53a04e167c5775fd466751c9d");
+    EXPECT_EQ(hex(store(std::get<1>(rsv))), "07299936d304c153f6443dfa05f40ff007d72911b6f72307f996231605b91562");
+    EXPECT_EQ(hex(store(std::get<2>(rsv))), "1c");
 }
 
 // See 'signedTypeData_v4' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
@@ -267,7 +280,13 @@ TEST(EthereumAbiStruct, encodeTypes_v4_Json) {
                 "contents": "Hello, Bob!"
             }
         })");
-    ASSERT_EQ(hex(hash), "eb4221181ff3f1a83ea7313993ca9218496e424604ba9492bb4052c03d5c3df8");
+    ASSERT_EQ(hex(hash), "a85c2e2b118698e88db68a8105b794a8cc7cec074e89ef991cb4f5f533819cc2");
+
+    // sign the hash
+    const auto rsv = Signer::sign(0, privateKeyCow, hash);
+    EXPECT_EQ(hex(store(std::get<0>(rsv))), "65cbd956f2fae28a601bebc9b906cea0191744bd4c4247bcd27cd08f8eb6b71c");
+    EXPECT_EQ(hex(store(std::get<1>(rsv))), "78efdf7a31dc9abee78f492292721f362d296cf86b4538e07b51303b67f74906");
+    EXPECT_EQ(hex(store(std::get<2>(rsv))), "1b");
 }
 
 // See 'signedTypeData_v4 with recursive types' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
@@ -377,7 +396,14 @@ TEST(EthereumAbiStruct, encodeTypes_v4Rec_Json) {
                 }
             }
         })");
-    ASSERT_EQ(hex(hash), "fdc7b6d35bbd81f7fa78708604f57569a10edff2ca329c8011373f0667821a45");
+    ASSERT_EQ(hex(hash), "807773b9faa9879d4971b43856c4d60c2da15c6f8c062bd9d33afefb756de19c");
+
+    // sign the hash
+    PrivateKey privateKeyDragon = PrivateKey(Hash::keccak256(TW::data("dragon")));
+    const auto rsv = Signer::sign(0, privateKeyDragon, hash);
+    EXPECT_EQ(hex(store(std::get<0>(rsv))), "f2ec61e636ff7bb3ac8bc2a4cc2c8b8f635dd1b2ec8094c963128b358e79c85c");
+    EXPECT_EQ(hex(store(std::get<1>(rsv))), "5ca6dd637ed7e80f0436fe8fce39c0e5f2082c9517fe677cc2917dcd6c84ba88");
+    EXPECT_EQ(hex(store(std::get<2>(rsv))), "1c");
 }
 
 // See 'signedTypeData' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
@@ -437,7 +463,7 @@ TEST(EthereumAbiStruct, hashStructJson) {
                     "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
                 }
             })");
-        ASSERT_EQ(hex(hash), "fc71e5fa27ff56c350aa531bc129ebdf613b772b6604664f5d8dbe21b85eb0c8");
+        ASSERT_EQ(hex(hash), "0b4bb85394b9ebb1c2425e283c9e734a9a7a832622e97c998f77e1c7a3f01a20");
     }
     {   // edge cases
         EXPECT_EXCEPTION(ParamStruct::hashStructJson("NOT_A_JSON"), "Could not parse Json");
@@ -446,13 +472,18 @@ TEST(EthereumAbiStruct, hashStructJson) {
         EXPECT_EXCEPTION(ParamStruct::hashStructJson("0"), "Expecting Json object");
         EXPECT_EXCEPTION(ParamStruct::hashStructJson("[]"), "Expecting Json object");
         EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({})"), "Top-level string field 'primaryType' missing");
-        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"a": 0})"), "Top-level string field 'primaryType' missing");
-        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": []})"), "Top-level string field 'primaryType' missing");
-        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "a": 0})"), "Top-level object field 'message' missing");
-        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "message": "v2"})"), "Top-level object field 'message' missing");
-        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "message": {}, "a": 0})"), "Top-level object field 'types' missing");
-        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "message": {}, "types": "v3"})"), "Top-level object field 'types' missing");
-        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "message": {}, "types": {}})"), "Type not found, v1");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"domain": {}, "message": {}, "types": {}})"), "Top-level string field 'primaryType' missing");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": [], "domain": {}, "message": {}, "types": {}})"), "Top-level string field 'primaryType' missing");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "message": {}, "types": {}})"), "Top-level object field 'domain' missing");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "domain": "vDomain", "message": {}, "types": {}})"), "Top-level object field 'domain' missing");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "domain": {}, "types": {}})"), "Top-level object field 'message' missing");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "domain": {}, "message": "v2", "types": {}})"), "Top-level object field 'message' missing");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "domain": {}, "message": {}})"), "Top-level object field 'types' missing");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "domain": {}, "message": {}, "types": "vTypes"})"), "Top-level object field 'types' missing");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "domain": {}, "message": {}, "types": {}})"), "Type not found, EIP712Domain");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "domain": {}, "message": {}, "types": {"EIP712Domain": []}})"), "No valid params found");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "domain": {}, "message": {}, "types": {"EIP712Domain": [{"name": "param", "type": "type"}]}})"), "Unknown type type");
+        EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "domain": {"param": "val"}, "message": {}, "types": {"EIP712Domain": [{"name": "param", "type": "string"}]}})"), "Type not found, v1");
     }
 }
 

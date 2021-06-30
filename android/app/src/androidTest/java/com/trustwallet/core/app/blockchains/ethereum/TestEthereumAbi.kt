@@ -92,6 +92,6 @@ class TestEthereumAbiDecoder {
                 }
             }
         """)
-        assertEquals(Numeric.toHexString(hash), "0xeb4221181ff3f1a83ea7313993ca9218496e424604ba9492bb4052c03d5c3df8")
+        assertEquals(Numeric.toHexString(hash), "0xa85c2e2b118698e88db68a8105b794a8cc7cec074e89ef991cb4f5f533819cc2")
     }
 }

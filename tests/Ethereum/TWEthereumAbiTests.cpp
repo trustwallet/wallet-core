@@ -333,7 +333,7 @@ TEST(TWEthereumAbi, encodeTyped) {
 
     EXPECT_EQ(
         hex(TW::data(TWDataBytes(hash.get()), TWDataSize(hash.get()))),
-        "eb4221181ff3f1a83ea7313993ca9218496e424604ba9492bb4052c03d5c3df8"
+        "a85c2e2b118698e88db68a8105b794a8cc7cec074e89ef991cb4f5f533819cc2"
     );
 }
 

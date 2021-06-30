@@ -20,6 +20,10 @@ using namespace TW::Ethereum::ABI;
 using namespace TW;
 using json = nlohmann::json;
 
+static const Data EipStructPrefix = parse_hex("1901");
+static const auto Eip712Domain = "EIP712Domain";
+
+
 std::string ParamNamed::getType() const {
     return _param->getType() + " " + _name;
 }
@@ -131,20 +135,36 @@ Data ParamStruct::hashStructJson(const std::string& messageJson) {
     if (!message.contains("primaryType") || !message["primaryType"].is_string()) {
         throw std::invalid_argument("Top-level string field 'primaryType' missing");
     }
+    if (!message.contains("domain") || !message["domain"].is_object()) {
+        throw std::invalid_argument("Top-level object field 'domain' missing");
+    }
     if (!message.contains("message") || !message["message"].is_object()) {
         throw std::invalid_argument("Top-level object field 'message' missing");
     }
     if (!message.contains("types") || !message["types"].is_object()) {
         throw std::invalid_argument("Top-level object field 'types' missing");
     }
-    auto str = makeStruct(
-        message["primaryType"].get<std::string>(),
-        message["message"].dump(),
+
+    // concatenate hashes
+    Data hashes = EipStructPrefix;
+
+    auto domainStruct = makeStruct(
+        Eip712Domain,
+        message["domain"].dump(),
         message["types"].dump());
-    if (!str) {
-        return {};
+    if (domainStruct) {
+        TW::append(hashes, domainStruct->hashStruct());
+
+        auto messageStruct = makeStruct(
+            message["primaryType"].get<std::string>(),
+            message["message"].dump(),
+            message["types"].dump());
+        if (messageStruct) {
+            TW::append(hashes, messageStruct->hashStruct());
+            return Hash::keccak256(hashes);
+        }
     }
-    return str->hashStruct();
+    return {};  // fallback
 }
 
 std::shared_ptr<ParamStruct> findType(const std::string& typeName, const std::vector<std::shared_ptr<ParamStruct>>& types) {
