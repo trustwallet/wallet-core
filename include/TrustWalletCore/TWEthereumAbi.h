@@ -31,7 +31,7 @@ bool TWEthereumAbiDecodeOutput(struct TWEthereumAbiFunction* _Nonnull fn, TWData
 TW_EXPORT_STATIC_METHOD
 TWString* _Nullable TWEthereumAbiDecodeCall(TWData* _Nonnull data, TWString* _Nonnull abi);
 
-/// Compute the hash of a struct, used for signing, according to EIP712.
+/// Compute the hash of a struct, used for signing, according to EIP712 ("v4").
 /// Input is a Json object (as string), with following fields:
 /// - types: map of used struct types (see makeTypes())
 /// - primaryType: the type of the message (string)

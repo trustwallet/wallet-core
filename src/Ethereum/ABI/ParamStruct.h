@@ -92,7 +92,7 @@ public:
     virtual std::string getExtraTypes(std::vector<std::string>& ignoreList) const;
     std::shared_ptr<ParamNamed> findParamByName(const std::string& name) const { return _params.findParamByName(name); }
 
-    /// Compute the hash of a struct, used for signing, according to EIP712.
+    /// Compute the hash of a struct, used for signing, according to EIP712 ("v4").
     /// Input is a Json object (as string), with following fields:
     /// - types: map of used struct types (see makeTypes())
     /// - primaryType: the type of the message (string)
