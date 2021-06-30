@@ -269,7 +269,7 @@ TEST(THORSwap, SwapEthBnbDemo) {
     tx.set_chain_id(chainId.data(), chainId.size());
     auto nonce = store(uint256_t(7));
     tx.set_nonce(nonce.data(), nonce.size());
-    auto gasPrice = store(uint256_t(13000000000));
+    auto gasPrice = store(uint256_t(16000000000));
     tx.set_gas_price(gasPrice.data(), gasPrice.size());
     auto gasLimit = store(uint256_t(80000));
     tx.set_gas_limit(gasLimit.data(), gasLimit.size());
