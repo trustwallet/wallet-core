@@ -1,60 +1,51 @@
-#!/usr/bin/env ruby
+#!/bin/bash
 #
-# Bundles all files required to build for iOS in a zip archive.
+# This script compress and upload the built static wallet core common xcframework to github release
 #
 
-require 'open3'
-require 'tempfile'
-require 'json'
+set -o pipefail
+set -e
 
-version = ARGV[0] || `git describe --long --tags | cut -f 1 -d "-"`.strip
+# load release library code
+base_dir=$(cd `dirname $0`; pwd)
 
-puts "Processing version: #{version}"
+source ${base_dir}/library
+src_dir=${base_dir}/..
+built_dir=${base_dir}/../build/ios-frameworks
 
-# Get release by tag
-release = `curl -u #{ENV['GITHUB_USER']}:#{ENV['GITHUB_TOKEN']} https://api.github.com/repos/trustwallet/wallet-core/releases/tags/#{version}`
-release_hash = JSON.parse(release)
-upload_url = release_hash['upload_url']
-puts "asset upload url: #{upload_url}"
-upload_url.slice!('{?name,label}')
+# version to release
+version=$(wc_read_version)
+release_url=$(wc_release_url ${version})
+echo "release_url url is $release_url"
 
-# First build
-puts 'Building...'
-_, stderr, status = Open3.capture3('tools/ios-build')
-if status != 0
-  STDERR.puts stderr
-  exit 1
-end
+pushd ${built_dir}
+# archive headers, swift code and xcframework
 
-# Make archive
-puts 'Archiving...'
-includes = Dir.glob('include/**/*.h') + Dir.glob('lib/**/*.{h,hpp}')
-sources = Dir.glob('swift/Sources/**/*.{swift,h,m}')
-# Rename libTrustWalletCore.a to avoid conflicts with cocoapods static lib
-File.rename('build/ios/libTrustWalletCore.a', 'build/ios/libCore.a')
-libs = Dir.glob('build/ios/*.a')
-files = includes + sources + libs + ['LICENSE']
-file_name = "TrustWalletCore-iOS-#{version}.zip"
-_, stderr, status = Open3.capture3('zip', file_name, *files)
-if status != 0
-  STDERR.puts stderr
-  exit 1
-end
+rm -rf release && mkdir -p release
 
-# Upload archive
-puts 'Uploading...'
-upload_url = "#{upload_url}?name=#{file_name}"
-puts "asset upload url: #{upload_url}"
-upload_output = `curl -u #{ENV['GITHUB_USER']}:#{ENV['GITHUB_TOKEN']} -X POST -H 'Content-Type: application/octet-stream' --data-binary @#{file_name} #{upload_url}`
-download_url = JSON.parse(upload_output)['browser_download_url']
-puts "final download url: #{download_url}"
+cp -R WalletCoreCommon.xcframework release
+cp -R ${src_dir}/include release
+cp -R ${src_dir}/swift/Sources release
+rm release/Sources/Dummy.cpp
+cp ${src_dir}/License release
 
-# Upload to Cocoapod
-puts 'Publishing...'
-podspec = <<-PODSPEC
+filename="TrustWalletCore-${version}.tar.xz"
+pushd release
+tar -cJvf ../${filename} .
+popd
+
+# upload to release
+download_url=$(wc_upload_asset ${release_url} ${filename})
+download_url=$(tr -d '"' <<< $download_url)
+echo "download_url is ${download_url}"
+
+# create podspec
+podspec_name=TrustWalletCore
+podspec=${podspec_name}.podspec
+cat > $podspec <<EOF 
 Pod::Spec.new do |s|
-  s.name         = 'TrustWalletCore'
-  s.version      = '#{version}'
+  s.name         = '${podspec_name}'
+  s.version      = '${version}'
   s.summary      = 'Trust Wallet core data structures and algorithms.'
   s.homepage     = 'https://github.com/trustwallet/wallet-core'
   s.license      = 'MIT'
@@ -62,55 +53,40 @@ Pod::Spec.new do |s|
   s.module_name  = 'WalletCore'
   s.ios.deployment_target = '12.0'
   s.swift_version = '5.1'
-
   s.source = {
-    http: "#{download_url}"
+    http: '${download_url}'
   }
   s.default_subspec = 'Core'
-
   s.subspec 'Types' do |ss|
     ss.source_files = 
-      'swift/Sources/Types/*.swift',
-      'swift/Sources/Generated/Enums/*.swift',
-      'swift/Sources/Generated/Protobuf/*.swift'
+      'Sources/Types/*.swift',
+      'Sources/Generated/Enums/*.swift',
+      'Sources/Generated/Protobuf/*.swift'
     ss.dependency 'SwiftProtobuf'
   end
-
   s.subspec 'Core' do |ss|
-    ss.preserve_paths = 'build/ios/*.a'
-    ss.vendored_libraries = 'build/ios/*.a'
-    ss.exclude_files = 'swift/Sources/Generated/WalletCore.h'
+    ss.vendored_frameworks = '*.xcframework'
+    ss.exclude_files = 'Sources/Generated/WalletCore.h'
     ss.source_files =
       'include/**/*.h',
-      'swift/Sources/*.{swift,h,m,cpp}',
-      'swift/Sources/Extensions/*.swift',
-      'swift/Sources/Generated/*.{swift,h}'
+      'Sources/*.{swift,h,m,cpp}',
+      'Sources/Extensions/*.swift',
+      'Sources/Generated/*.{swift,h}'
     ss.public_header_files =
       'include/**/*.h',
-      'swift/Sources/*.h'
+      'Sources/*.h'
     ss.libraries = 'c++'
-    ss.xcconfig = {
-        'OTHER_LDFLAGS' => '$(inherited) -fprofile-instr-generate'
-    }
-    ss.pod_target_xcconfig = {
-      'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64'
-    }
-    ss.user_target_xcconfig = { 
-      'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' 
-    }
     ss.dependency 'TrustWalletCore/Types'
   end
 end
-PODSPEC
-file = File.new('build/TrustWalletCore.podspec', 'w')
-file.write(podspec)
-file.close
+EOF
 
-puts "Done. running 'pod trunk push --allow-warnings #{file.path}'"
+echo "generated podspec: "
+cat ${podspec}
 
-stdout, stderr, status = Open3.capture3("pod trunk push --verbose --allow-warnings #{file.path}")
-if status != 0
-  STDERR.puts stdout
-  STDERR.puts stderr
-  exit 1
-end
+# pod trunk push
+echo "Done. running: pod trunk push --allow-warnings ${podspec}"
+
+pod trunk push --verbose --allow-warnings ${podspec}
+
+popd

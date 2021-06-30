@@ -34,8 +34,8 @@ class HDWalletTests: XCTestCase {
     func testDerive() {
         let wallet = HDWallet.test
 
-        let key0 = wallet.getKeyBIP44(coin: .ethereum, account: 0, change: 0, address: 0)
-        let key1 = wallet.getKeyBIP44(coin: .ethereum, account: 0, change: 0, address: 1)
+        let key0 = wallet.getDerivedKey(coin: .ethereum, account: 0, change: 0, address: 0)
+        let key1 = wallet.getDerivedKey(coin: .ethereum, account: 0, change: 0, address: 1)
 
         XCTAssertEqual(AnyAddress(publicKey: key0.getPublicKeySecp256k1(compressed: false), coin: .ethereum).description, "0x27Ef5cDBe01777D62438AfFeb695e33fC2335979")
         XCTAssertEqual(AnyAddress(publicKey: key1.getPublicKeySecp256k1(compressed: false), coin: .ethereum).description, "0x98f5438cDE3F0Ff6E11aE47236e93481899d1C47")
@@ -47,7 +47,7 @@ class HDWalletTests: XCTestCase {
         let key = wallet.getKeyForCoin(coin: wanChain)
         let address = wanChain.deriveAddress(privateKey: key)
 
-        XCTAssertEqual(address, "0x4ddA26870b4B3FA3fBa32222159359038F588318")
+        XCTAssertEqual(address, "0x4DDa26870B4b3fa3FbA32222159359038f588318")
     }
 
     func testDeriveBitcoin() {
@@ -98,7 +98,7 @@ class HDWalletTests: XCTestCase {
         let icon = CoinType.icon
         let wallet = HDWallet.test
         let key0 = wallet.getKeyForCoin(coin: icon)
-        let key1 = wallet.getKeyBIP44(coin: icon, account: 0, change: 0, address: 1)
+        let key1 = wallet.getDerivedKey(coin: icon, account: 0, change: 0, address: 1)
         let address0 = icon.deriveAddress(privateKey: key0)
         let address1 = icon.deriveAddress(privateKey: key1)
 

@@ -1,66 +1,58 @@
 #!/bin/bash
 #
-# This script builds a fat static library for iOS devices and simulators.
+# This script builds a static wallet core common xcframework for iOS devices and simulators.
 #
 
+set -o pipefail
 set -e
 
-BUILD_FOLDER_DEVICE="build/ios-dev"
-BUILD_FOLDER_SIMULATOR="build/ios-sim"
-BUILD_FOLDER_CATALYST="build/ios-mac-catalyst"
-TARGETS="TrezorCrypto protobuf TrustWalletCore"
+FRAMEWORK=WalletCoreCommon
+BUILD_FOLDER=build/ios-frameworks
 
-function buildDevices() {
-    echo -e "\n\nBuilding for iOS Device..."
-    mkdir -p "$BUILD_FOLDER_DEVICE"
-    cmake -H. -B "$BUILD_FOLDER_DEVICE" -DCMAKE_TOOLCHAIN_FILE=cmake/ios.toolchain.cmake \
-                                        -DPLATFORM=OS64 \
-                                        -DDEPLOYMENT_TARGET=12.0 \
-                                        -DCMAKE_BUILD_TYPE=Release
-    make -C "$BUILD_FOLDER_DEVICE" $TARGETS
+init() {
+    echo "Cleanup and init..."
+    pushd swift
+    xcodegen -s common-xcframework.yml
+    popd
+
+    rm -rf ${BUILD_FOLDER}/*.xcarchive
+    rm -rf ${BUILD_FOLDER}/${FRAMEWORK}.xcframework
+    rm -rf ${BUILD_FOLDER}/${FRAMEWORK}.xcframework.*
 }
 
-function buildSimulators() {
-    echo -e "\nBuilding for iOS Simulator..."
-    mkdir -p "$BUILD_FOLDER_SIMULATOR"
-    cmake -H. -B "$BUILD_FOLDER_SIMULATOR" -DCMAKE_TOOLCHAIN_FILE=cmake/ios.toolchain.cmake \
-                                           -DPLATFORM=SIMULATOR64 \
-                                           -DDEPLOYMENT_TARGET=12.0 \
-                                           -DCMAKE_BUILD_TYPE=Release
-    make -C "$BUILD_FOLDER_SIMULATOR" $TARGETS
+# build destination archivePath
+build() {
+    echo "Building scheme: $1, destination: $2, path: $3"
+    xcodebuild archive -project swift/${FRAMEWORK}.xcodeproj -scheme "$1" -destination "$2" -archivePath "$BUILD_FOLDER/$3".xcarchive SKIP_INSTALL=NO | xcpretty
 }
 
-function buildCatalyst() {
-    echo -e "\nBuilding for Mac Catalyst..."
-    CATALYST_FLAG="-target x86_64-apple-ios13.2-macabi"
-    
-    mkdir -p "$BUILD_FOLDER_CATALYST"
-    cmake -H. -B "$BUILD_FOLDER_CATALYST" -DCMAKE_TOOLCHAIN_FILE=cmake/ios.toolchain.cmake \
-                                          -DPLATFORM=MAC_CATALYST \
-                                          -DDEPLOYMENT_TARGET=10.15 \
-                                          -DCMAKE_BUILD_TYPE=Release \
-                                          -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF \
-                                          -DCMAKE_CXX_FLAGS_MAC_CATALYST:STRING="$CATALYST_FLAG" \
-                                          -DCMAKE_C_FLAGS_MAC_CATALYST:STRING="$CATALYST_FLAG" \
-                                          -DCMAKE_BUILD_TYPE=MAC_CATALYST
-    sed -i '' "s/-mmacosx-version-min=10.15//g" "$BUILD_FOLDER_CATALYST"/trezor-crypto/CMakeFiles/TrezorCrypto.dir/flags.make
-    sed -i '' "s/-mmacosx-version-min=10.15//g" "$BUILD_FOLDER_CATALYST"/CMakeFiles/protobuf.dir/flags.make
-    sed -i '' "s/-mmacosx-version-min=10.15//g" "$BUILD_FOLDER_CATALYST"/CMakeFiles/TrustWalletCore.dir/flags.make
-    make -C "$BUILD_FOLDER_CATALYST" $TARGETS
+build_ios_arm64() {
+    build "${FRAMEWORK}_iOS" "generic/platform=iOS" "ios-arm64"
 }
 
-function fattenBinary() {
-    echo -e "\n\nFattenning binary..."
-    mkdir -p build/ios
-    xcrun lipo -create -output build/ios/libprotobuf.a "$BUILD_FOLDER_DEVICE"/libprotobuf.a "$BUILD_FOLDER_SIMULATOR"/libprotobuf.a
-    xcrun lipo -create -output build/ios/libTrezorCrypto.a "$BUILD_FOLDER_DEVICE"/trezor-crypto/libTrezorCrypto.a "$BUILD_FOLDER_SIMULATOR"/trezor-crypto/libTrezorCrypto.a
-    xcrun lipo -create -output build/ios/libTrustWalletCore.a "$BUILD_FOLDER_DEVICE"/libTrustWalletCore.a "$BUILD_FOLDER_SIMULATOR"/libTrustWalletCore.a
+build_ios_simulator() {
+    build "${FRAMEWORK}_iOS" "generic/platform=iOS Simulator" "ios-arm64_x86_64-simulator"
 }
 
-function main() {
-    buildDevices
-    buildSimulators
-    fattenBinary
+build_ios_mac_catalyst() {
+    build "${FRAMEWORK}_iOS" "platform=macOS,arch=x86_64,variant=Mac Catalyst" "ios-x86_64_arm64-maccatalyst"
+}
+
+build_mac_x64_arm64() {
+    build "${FRAMEWORK}_macOS" "generic/platform=macOS" "macos-arm64_x86_64"
+}
+
+create_xc_framework() {
+    echo "Createing xcframework..."
+    xcodebuild -create-xcframework -output $BUILD_FOLDER/$FRAMEWORK.xcframework \
+               -framework $BUILD_FOLDER/ios-arm64.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework \
+               -framework $BUILD_FOLDER/ios-arm64_x86_64-simulator.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework
+}
+
+main() {
+    init
+    build_ios_arm64 && build_ios_simulator
+    create_xc_framework
 }
 
 main

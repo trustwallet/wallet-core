@@ -27,20 +27,6 @@ extern bool TWAnySignerSupportsJSON(enum TWCoinType coin) {
     return TW::supportsJSONSigning(coin);
 }
 
-TWData* _Nonnull TWAnySignerEncode(TWData* _Nonnull data, enum TWCoinType coin) {
-    const Data& dataIn = *(reinterpret_cast<const Data*>(data));
-    Data dataOut;
-    TW::anyCoinEncode(coin, dataIn, dataOut);
-    return TWDataCreateWithBytes(dataOut.data(), dataOut.size());
-}
-
-TWData* _Nonnull TWAnySignerDecode(TWData* _Nonnull data, enum TWCoinType coin) {
-    const Data& dataIn = *(reinterpret_cast<const Data*>(data));
-    Data dataOut;
-    TW::anyCoinDecode(coin, dataIn, dataOut);
-    return TWDataCreateWithBytes(dataOut.data(), dataOut.size());
-}
-
 TWData* _Nonnull TWAnySignerPlan(TWData* _Nonnull data, enum TWCoinType coin) {
     const Data& dataIn = *(reinterpret_cast<const Data*>(data));
     Data dataOut;

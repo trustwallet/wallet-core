@@ -13,8 +13,12 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install system dependencies
       run: |
-        # build-essential libboost-all-dev clang-9 ruby-full cmake
-        sudo apt-get install libc++-dev libc++abi-dev ninja-build lcov llvm clang-tidy libboost-all-dev
+        # build-essential clang-10 libc++-dev libc++abi-dev ruby-full cmake
+        sudo apt-get update && sudo apt-get install ninja-build lcov llvm clang-tidy libboost-all-dev --fix-missing
+        # Set clang default version to lower 10
+        sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-10 900
+        sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 900
+        sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-10 900
     - name: Cache internal dependencies
       id: internal_cache
       uses: actions/cache@v1.1.2
@@ -57,7 +61,7 @@ jobs:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
         CK_TIMEOUT_MULTIPLIER: 4
-    - name: Gather code coverage
+    - name: Gather and check code coverage
       run: |
         sudo rm -rf coverage.info
         tools/coverage

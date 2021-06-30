@@ -1,0 +1,40 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "create full xcframeworks"
+  lane :xcframework do
+    swift_protobuf_xcframework
+    core_xcframework
+    types_xcframework
+  end
+
+  desc "create types xcframework"
+  lane :types_xcframework do
+    create_xcframework(
+      workspace: 'TrustWalletCore.xcworkspace',
+      scheme: 'WalletCoreTypes',
+      destinations: ['iOS', 'macOS'],
+      xcframework_output_directory: 'build'
+    )
+  end
+
+  desc "create wallet core xcframework"
+  lane :core_xcframework do
+    create_xcframework(
+      workspace: 'TrustWalletCore.xcworkspace',
+      scheme: 'WalletCore',
+      destinations: ['iOS', 'macOS'],
+      xcframework_output_directory: 'build'
+    )
+  end
+
+  desc "create swift protobuf xcframework"
+  lane :swift_protobuf_xcframework do
+    create_xcframework(
+      workspace: 'TrustWalletCore.xcworkspace',
+      scheme: 'SwiftProtobuf',
+      destinations: ['iOS', 'macOS'],
+      xcframework_output_directory: 'build'
+    )
+  end
+end

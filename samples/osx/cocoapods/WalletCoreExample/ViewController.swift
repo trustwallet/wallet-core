@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 import Cocoa
-import TrustWalletCore
+import WalletCore
 
 class ViewController: NSViewController {
 
@@ -30,7 +30,12 @@ class ViewController: NSViewController {
             $0.gasPrice = Data(hexString: "d693a400")! // decimal 3600000000
             $0.gasLimit = Data(hexString: "5208")! // decimal 21000
             $0.toAddress = dummyReceiverAddress
-            $0.amount = Data(hexString: "0348bca5a16000")!
+
+            $0.transaction = EthereumTransaction.with {
+                $0.transfer = EthereumTransaction.Transfer.with {
+                    $0.amount = Data(hexString: "0348bca5a16000")!
+                }
+            }
             $0.privateKey = secretPrivateKeyEth.data
         }
         let outputEth: EthereumSigningOutput = AnySigner.sign(input: signerInput, coin: coin)

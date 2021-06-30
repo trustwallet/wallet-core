@@ -73,20 +73,6 @@ TEST(TWAnySignerEthereum, Sign) {
         ASSERT_EQ(hex(output.encoded()), expected);
         ASSERT_EQ(hex(output.data()), hex(data));
     }
-    
-    {
-        // encode test
-        Data encoded;
-        ANY_ENCODE(input, TWCoinTypeEthereum);
-        ASSERT_EQ(hex(encoded), expected);
-    }
-
-    {
-        // wrong coin
-        Data encoded;
-        ANY_ENCODE(input, TWCoinTypeNano);
-        ASSERT_EQ(hex(encoded), "");
-    }
 }
 
 TEST(TWAnySignerEthereum, SignERC20TransferAsERC20) {
@@ -322,19 +308,4 @@ TEST(TWAnySignerEthereum, PlanNotSupported) {
     auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));
     auto outputTWData = WRAPD(TWAnySignerPlan(inputTWData.get(), TWCoinTypeEthereum));
     EXPECT_EQ(TWDataSize(outputTWData.get()), 0);
-}
-
-TEST(TWAnySignerEthereum, Decode) {
-    auto rawData = DATA("f86b81a985051f4d5ce982520894515778891c99e3d2e7ae489980cb7c77b37b5e76861b48eb57e0008025a0ad01c32a7c974df9d0bd48c8d7e0ecab62e90811917aa7dc0c966751a0c3f475a00dc77d9ec68484481bdf87faac14378f4f18d477f84c0810d29480372c1bbc65");
-    auto decodedData = WRAPD(TWAnySignerDecode(rawData.get(), TWCoinTypeEthereum));
-    auto jsonData = TW::data(TWDataBytes(decodedData.get()), TWDataSize(decodedData.get()));
-    auto json = std::string(jsonData.begin(), jsonData.end());
-
-    EXPECT_EQ(json, R"({"gas":"0x5208","gasPrice":"0x051f4d5ce9","input":"0x","nonce":"0xa9","r":"0xad01c32a7c974df9d0bd48c8d7e0ecab62e90811917aa7dc0c966751a0c3f475","s":"0x0dc77d9ec68484481bdf87faac14378f4f18d477f84c0810d29480372c1bbc65","to":"0x515778891c99e3d2e7ae489980cb7c77b37b5e76","v":"0x25","value":"0x1b48eb57e000"})");
-
-    // wrong coin
-    auto emptyData = WRAPD(TWDataCreateWithSize(0));
-    auto empty = WRAPD(TWAnySignerDecode(emptyData.get(), TWCoinTypeNano));
-
-    EXPECT_EQ(TWDataSize(empty.get()), 0);
 }
