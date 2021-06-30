@@ -1581,7 +1581,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
-      "url": "https://explorer.matic.network/",
+      "url": "https://polygonscan.com",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0xe26ed1470d5bf99a53d687843e7acdf7e4ba6620af93b4d672e714de90476e8e",
