@@ -1552,7 +1552,7 @@
   },
   {
     "id": "avalanchex",
-    "name": "Avalanche X Chain",
+    "name": "Avalanche X-Chain",
     "coinId": 9000,
     "symbol": "AVAX", 
     "decimals": 9,
@@ -1562,7 +1562,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "explorer": {
-      "url": "https://explorer.avax.network/",
+      "url": "https://explorer.avax.network",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "2eLNtbK8bomFKJ6qCGBTuxJvD6LAs6eAXNVK48hGS8MGxGW6B9",
@@ -1577,7 +1577,7 @@
   },
   {
     "id": "avalanchec",
-    "name": "Avalanche C Chain",
+    "name": "Avalanche C-Chain",
     "coinId": 10009000,
     "symbol": "AVAX",
     "decimals": 18,
@@ -1586,7 +1586,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
-      "url": "https://cchain.explorer.avax.network/",
+      "url": "https://cchain.explorer.avax.network",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x9243890b844219accefd8798271052f5a056453ec18984a56e81c92921330d54",
