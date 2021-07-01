@@ -1558,7 +1558,7 @@
     "decimals": 9,
     "hrp": "avax",
     "blockchain": "Avalanche",
-    "derivationPath": "m/44'/9000'/0'/0",
+    "derivationPath": "m/44'/9000'/0'/0/0",
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "explorer": {
