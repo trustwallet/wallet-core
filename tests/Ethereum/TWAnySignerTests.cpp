@@ -309,3 +309,42 @@ TEST(TWAnySignerEthereum, PlanNotSupported) {
     auto outputTWData = WRAPD(TWAnySignerPlan(inputTWData.get(), TWCoinTypeEthereum));
     EXPECT_EQ(TWDataSize(outputTWData.get()), 0);
 }
+
+TEST(TWAnySignerEthereum, SignERC1559Transfer_1442) {
+    auto chainId = store(uint256_t(3));
+    auto nonce = store(uint256_t(6));
+    auto gasPrice = store(uint256_t(0));
+    auto gasLimit = store(uint256_t(21100));
+    auto maxInclusionFeePerGas = store(uint256_t(2000000000));
+    auto maxFeePerGas = store(uint256_t(3000000000));
+    auto toAddress = "0xB9F5771C27664bF2282D98E09D7F50cEc7cB01a7";
+    auto value = uint256_t(543210987654321);
+    auto valueData = store(value);
+    auto key = parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904");
+
+    Proto::SigningInput input;
+    input.set_chain_id(chainId.data(), chainId.size());
+    input.set_nonce(nonce.data(), nonce.size());
+    input.set_gas_price(gasPrice.data(), gasPrice.size());
+    input.set_gas_limit(gasLimit.data(), gasLimit.size());
+    input.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
+    input.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
+    input.set_to_address(toAddress);
+    input.set_private_key(key.data(), key.size());
+    auto& transfer = *input.mutable_transaction()->mutable_transfer();
+    transfer.set_amount(valueData.data(), valueData.size());
+    transfer.set_data(Data().data(), 0);
+
+    // https://ropsten.etherscan.io/tx/0x14429509307efebfdaa05227d84c147450d168c68539351fbc01ed87c916ab2e
+    std::string expected = "02f8710306847735940084b2d05e0082526c94b9f5771c27664bf2282d98e09d7f50cec7cb01a78701ee0c29f50cb180c080a092c336138f7d0231fe9422bb30ee9ef10bf222761fe9e04442e3a11e88880c64a06487026011dae03dc281bc21c7d7ede5c2226d197befb813a4ecad686b559e58";
+
+    // sign test
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeEthereum);
+
+    EXPECT_EQ(hex(output.encoded()), expected);
+    EXPECT_EQ(hex(output.v()), "00");
+    EXPECT_EQ(hex(output.r()), "92c336138f7d0231fe9422bb30ee9ef10bf222761fe9e04442e3a11e88880c64");
+    EXPECT_EQ(hex(output.s()), "6487026011dae03dc281bc21c7d7ede5c2226d197befb813a4ecad686b559e58");
+    EXPECT_EQ(hex(output.data()), "");
+}
