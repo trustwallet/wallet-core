@@ -28,7 +28,7 @@ bool Mnemonic::isValidWord(const std::string& word) {
     const char* wordC = word.c_str();
     const auto len = word.length();
     for (const char* const* w = mnemonicWordlist(); *w != nullptr; ++w) {
-        if (strnlen(*w, len) != len) {
+        if (strlen(*w) != len) {
             continue;
         }
         if (strncmp(*w, wordC, len) == 0) {
