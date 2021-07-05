@@ -21,6 +21,9 @@ class TestMnemonic {
     @Test
     fun testIsWordValid() {
         assertTrue(Mnemonic.isValidWord("credit"));
+
+        assertFalse(Mnemonic.isValidWord("di"));
+        assertFalse(Mnemonic.isValidWord("cr"));
         assertFalse(Mnemonic.isValidWord("hybridous"));
     }
 
