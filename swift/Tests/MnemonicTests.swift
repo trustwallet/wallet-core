@@ -27,6 +27,9 @@ class MnemonicTests: XCTestCase {
 
     func testIsWordValid() {
         XCTAssertTrue(Mnemonic.isValidWord(word: "credit"))
+
+        XCTAssertFalse(Mnemonic.isValidWord(word: "di"))
+        XCTAssertFalse(Mnemonic.isValidWord(word: "cr"))
         XCTAssertFalse(Mnemonic.isValidWord(word: "hybridous"))
     }
 
