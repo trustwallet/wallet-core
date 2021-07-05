@@ -404,6 +404,29 @@ json Signer::encodeTransactionToJson(const Proto::SigningInput& input) noexcept 
 
         contractJson["type"] = "TransferAssetContract";
         contractJson["parameter"] = contractParamsJson;
+    } else if (input.transaction().has_trigger_smart_contract()) {
+        auto contract = tx.mutable_raw_data()->add_contract();
+        contract->set_type(protocol::Transaction_Contract_ContractType_TriggerSmartContract);
+
+        auto transfer = to_internal(input.transaction().trigger_smart_contract());
+        google::protobuf::Any any;
+        any.PackFrom(transfer);
+        *contract->mutable_parameter() = any;
+
+        json paramsValueJson;
+        paramsValueJson["owner_address"] = hex(transfer.owner_address());
+        paramsValueJson["contract_address"] = hex(transfer.contract_address());
+        paramsValueJson["data"] = hex(transfer.data());
+        paramsValueJson["call_value"] = transfer.call_value();
+        paramsValueJson["call_token_value"] = transfer.call_token_value();
+        paramsValueJson["token_id"] = transfer.token_id();
+//
+        json contractParamsJson;
+        contractParamsJson["type_url"] = *any.mutable_type_url();
+        contractParamsJson["value"] = paramsValueJson;
+//
+        contractJson["type"] = "TriggerSmartContract";
+        contractJson["parameter"] = contractParamsJson;
     }
     rawData["contract"] = json::array({contractJson});
     rawData["expiration"] = input.transaction().expiration();
