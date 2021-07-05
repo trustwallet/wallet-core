@@ -1561,6 +1561,10 @@
     "derivationPath": "m/44'/9000'/0'/0/0",
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "xpub": "xpub",
+    "xprv": "xprv",
     "explorer": {
       "url": "https://explorer.avax.network",
       "txPath": "/tx/",
