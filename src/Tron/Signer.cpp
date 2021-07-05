@@ -420,11 +420,11 @@ json Signer::encodeTransactionToJson(const Proto::SigningInput& input) noexcept 
         paramsValueJson["call_value"] = transfer.call_value();
         paramsValueJson["call_token_value"] = transfer.call_token_value();
         paramsValueJson["token_id"] = transfer.token_id();
-//
+
         json contractParamsJson;
         contractParamsJson["type_url"] = *any.mutable_type_url();
         contractParamsJson["value"] = paramsValueJson;
-//
+
         contractJson["type"] = "TriggerSmartContract";
         contractJson["parameter"] = contractParamsJson;
     }
