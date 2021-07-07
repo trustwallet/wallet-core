@@ -16,22 +16,29 @@ bool TWHDWalletIsValid(TWString *_Nonnull mnemonic) {
     return Mnemonic::isValid(TWStringUTF8Bytes(mnemonic));
 }
 
-struct TWHDWallet *_Nonnull TWHDWalletCreate(int strength, TWString *_Nonnull passphrase) {
-    return new TWHDWallet{ HDWallet(strength, TWStringUTF8Bytes(passphrase)) };
-}
-
-struct TWHDWallet *_Nullable TWHDWalletCreateWithMnemonic(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase) {
+struct TWHDWallet *_Nullable TWHDWalletCreate(int strength, TWString *_Nonnull passphrase) {
     try {
-        const auto wallet = HDWallet(TWStringUTF8Bytes(mnemonic), TWStringUTF8Bytes(passphrase));
-        return new TWHDWallet{wallet};
+        return new TWHDWallet{ HDWallet(strength, TWStringUTF8Bytes(passphrase)) };
     } catch (...) {
         return nullptr;
     }
 }
 
-struct TWHDWallet *_Nonnull TWHDWalletCreateWithData(TWData *_Nonnull data, TWString *_Nonnull passphrase) {
-    auto *d = reinterpret_cast<const Data*>(data);
-    return new TWHDWallet{ HDWallet(*d, TWStringUTF8Bytes(passphrase)) };
+struct TWHDWallet *_Nullable TWHDWalletCreateWithMnemonic(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase) {
+    try {
+        return new TWHDWallet{ HDWallet(TWStringUTF8Bytes(mnemonic), TWStringUTF8Bytes(passphrase)) };
+    } catch (...) {
+        return nullptr;
+    }
+}
+
+struct TWHDWallet *_Nullable TWHDWalletCreateWithData(TWData *_Nonnull data, TWString *_Nonnull passphrase) {
+    try {
+        auto *d = reinterpret_cast<const Data*>(data);
+        return new TWHDWallet{ HDWallet(*d, TWStringUTF8Bytes(passphrase)) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 void TWHDWalletDelete(struct TWHDWallet *wallet) {

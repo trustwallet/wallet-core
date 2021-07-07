@@ -62,6 +62,9 @@ std::string mnemonicFromDataThreadsafe(const Data& data) {
 HDWallet::HDWallet(int strength, const std::string& passphrase)
     : seed(), mnemonic(), passphrase(passphrase) {
     mnemonic = mnemonicGenerateThreadsafe(strength);
+    if (mnemonic.size() == 0) {
+        throw std::invalid_argument("Invalid strength");
+    }
     assert(mnemonic.length() > 0);
     assert(Mnemonic::isValid(mnemonic));
     mnemonic_to_seed(mnemonic.c_str(), passphrase.c_str(), seed.data(), nullptr);
@@ -80,6 +83,9 @@ HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase)
 HDWallet::HDWallet(const Data& data, const std::string& passphrase)
     : seed(), mnemonic(), passphrase(passphrase) {
     mnemonic = mnemonicFromDataThreadsafe(data);
+    if (mnemonic.size() == 0) {
+        throw std::invalid_argument("Invalid mnemonic data");
+    }
     assert(mnemonic.length() > 0);
     assert(Mnemonic::isValid(mnemonic));
     mnemonic_to_seed(mnemonic.c_str(), passphrase.c_str(), seed.data(), nullptr);
@@ -96,6 +102,9 @@ void HDWallet::updateEntropy() {
     // generate entropy (from mnemonic)
     Data entropyRaw((Mnemonic::MaxWords * 11) / 8);
     auto entropyBytes = mnemonic_to_bits(mnemonic.c_str(), entropyRaw.data()) / 8;
+    if (entropyBytes == 0) {
+        throw std::invalid_argument("Invalid mnemonic");
+    }
     assert(entropyBytes <= ((Mnemonic::MaxWords * 11) / 8) && entropyBytes >= ((Mnemonic::MinWords * 11) / 8));
     // copy to truncate
     entropy = data(entropyRaw.data(), entropyBytes);
