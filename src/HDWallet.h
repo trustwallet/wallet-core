@@ -46,7 +46,7 @@ class HDWallet {
     /// Initializes a new random HDWallet with the provided strength in bits.
     HDWallet(int strength, const std::string& passphrase);
 
-    /// Initializes an HDWallet from a mnemonic seed.
+    /// Initializes an HDWallet from a mnemonic seed.  May throw.
     HDWallet(const std::string& mnemonic, const std::string& passphrase);
 
     /// Initializes an HDWallet from a seed.

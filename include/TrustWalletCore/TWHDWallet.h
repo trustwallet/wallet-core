@@ -31,7 +31,7 @@ struct TWHDWallet *_Nonnull TWHDWalletCreate(int strength, TWString *_Nonnull pa
 
 /// Creates an HDWallet from a mnemonic seed.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
-struct TWHDWallet *_Nonnull TWHDWalletCreateWithMnemonic(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase);
+struct TWHDWallet *_Nullable TWHDWalletCreateWithMnemonic(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase);
 
 /// Creates an HDWallet from a seed.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD

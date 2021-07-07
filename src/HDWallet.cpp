@@ -11,6 +11,7 @@
 #include "Bitcoin/SegwitAddress.h"
 #include "Bitcoin/CashAddress.h"
 #include "Coin.h"
+#include "Mnemonic.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrezorCrypto/bip32.h>
@@ -18,6 +19,7 @@
 #include <TrezorCrypto/curves.h>
 
 #include <array>
+#include <mutex>
 
 using namespace TW;
 
@@ -32,28 +34,56 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve);
 const char* curveName(TWCurve curve);
 } // namespace
 
+std::mutex mnemonicGenerateGuard;
+std::mutex mnemonicFromDataGuard;
+
+std::string mnemonicGenerateThreadsafe(int strength) {
+    std::string mnemonicTemp;
+    mnemonicGenerateGuard.lock();
+    const char* mnemonic_chars = mnemonic_generate(strength);
+    if (mnemonic_chars) {
+        mnemonicTemp = mnemonic_chars;
+    }
+    mnemonicGenerateGuard.unlock();
+    return mnemonicTemp;
+}
+
+std::string mnemonicFromDataThreadsafe(const Data& data) {
+    std::string mnemonicTemp;
+    mnemonicFromDataGuard.lock();
+    const char* mnemonic_chars = mnemonic_from_data(data.data(), static_cast<int>(data.size()));
+    if (mnemonic_chars) {
+        mnemonicTemp = mnemonic_chars;
+    }
+    mnemonicFromDataGuard.unlock();
+    return mnemonicTemp;
+}
+
 HDWallet::HDWallet(int strength, const std::string& passphrase)
     : seed(), mnemonic(), passphrase(passphrase) {
-    const char* mnemonic_chars = mnemonic_generate(strength);
-    mnemonic_to_seed(mnemonic_chars, passphrase.c_str(), seed.data(), nullptr);
-    mnemonic = mnemonic_chars;
+    mnemonic = mnemonicGenerateThreadsafe(strength);
+    assert(mnemonic.length() > 0);
+    assert(Mnemonic::isValid(mnemonic));
+    mnemonic_to_seed(mnemonic.c_str(), passphrase.c_str(), seed.data(), nullptr);
     updateEntropy();
 }
 
 HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase)
     : seed(), mnemonic(mnemonic), passphrase(passphrase) {
+    if (!Mnemonic::isValid(mnemonic)) {
+        throw std::invalid_argument("Invalid mnemonic");
+    }
     mnemonic_to_seed(mnemonic.c_str(), passphrase.c_str(), seed.data(), nullptr);
     updateEntropy();
 }
 
 HDWallet::HDWallet(const Data& data, const std::string& passphrase)
     : seed(), mnemonic(), passphrase(passphrase) {
-    const char* mnemonic_chars = mnemonic_from_data(data.data(), static_cast<int>(data.size()));
-    if (mnemonic_chars) {
-        mnemonic_to_seed(mnemonic_chars, passphrase.c_str(), seed.data(), nullptr);
-        mnemonic = mnemonic_chars;
-        updateEntropy();
-    }
+    mnemonic = mnemonicFromDataThreadsafe(data);
+    assert(mnemonic.length() > 0);
+    assert(Mnemonic::isValid(mnemonic));
+    mnemonic_to_seed(mnemonic.c_str(), passphrase.c_str(), seed.data(), nullptr);
+    updateEntropy();
 }
 
 HDWallet::~HDWallet() {
@@ -64,10 +94,12 @@ HDWallet::~HDWallet() {
 
 void HDWallet::updateEntropy() {
     // generate entropy (from mnemonic)
-    Data entropyRaw(32 + 1);
-    auto entropyBits = mnemonic_to_bits(mnemonic.c_str(), entropyRaw.data());
+    Data entropyRaw((Mnemonic::MaxWords * 11) / 8);
+    auto entropyBytes = mnemonic_to_bits(mnemonic.c_str(), entropyRaw.data()) / 8;
+    assert(entropyBytes <= ((Mnemonic::MaxWords * 11) / 8) && entropyBytes >= ((Mnemonic::MinWords * 11) / 8));
     // copy to truncate
-    entropy = data(entropyRaw.data(), entropyBits / 8);
+    entropy = data(entropyRaw.data(), entropyBytes);
+    assert(entropy.size() > 10);
 }
 
 PrivateKey HDWallet::getMasterKey(TWCurve curve) const {

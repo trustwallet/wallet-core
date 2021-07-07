@@ -20,8 +20,13 @@ struct TWHDWallet *_Nonnull TWHDWalletCreate(int strength, TWString *_Nonnull pa
     return new TWHDWallet{ HDWallet(strength, TWStringUTF8Bytes(passphrase)) };
 }
 
-struct TWHDWallet *_Nonnull TWHDWalletCreateWithMnemonic(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase) {
-    return new TWHDWallet{ HDWallet(TWStringUTF8Bytes(mnemonic), TWStringUTF8Bytes(passphrase)) };
+struct TWHDWallet *_Nullable TWHDWalletCreateWithMnemonic(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase) {
+    try {
+        const auto wallet = HDWallet(TWStringUTF8Bytes(mnemonic), TWStringUTF8Bytes(passphrase));
+        return new TWHDWallet{wallet};
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 struct TWHDWallet *_Nonnull TWHDWalletCreateWithData(TWData *_Nonnull data, TWString *_Nonnull passphrase) {

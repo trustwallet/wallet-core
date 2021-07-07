@@ -64,6 +64,17 @@ TEST(HDWallet, SeedNoPassword) {
     assertSeedEq(wallet, "354c22aedb9a37407adc61f657a6f00d10ed125efa360215f36c6919abd94d6dbc193a5f9c495e21ee74118661e327e84a5f5f11fa373ec33b80897d4697557d");
 }
 
+TEST(HDWallet, MnemonicInvalid) {
+    {
+        auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(STRING("THIS IS INVALID MNEMONIC").get(), STRING("").get()));
+        ASSERT_EQ(wallet.get(), nullptr);
+    }
+    {
+        auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(STRING("").get(), STRING("").get()));
+        ASSERT_EQ(wallet.get(), nullptr);
+    }
+}
+
 TEST(HDWallet, MasterPrivateKey) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
     auto key1 = WRAP(TWPrivateKey, TWHDWalletGetMasterKey(wallet.get(), TWCurveSECP256k1));
