@@ -8,7 +8,7 @@ import WalletCore
 import XCTest
 
 extension HDWallet {
-    static let test = HDWallet(mnemonic: "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal", passphrase: "TREZOR")
+    static let test = HDWallet(mnemonic: "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal", passphrase: "TREZOR")!
 }
 
 class HDWalletTests: XCTestCase {
@@ -19,13 +19,13 @@ class HDWalletTests: XCTestCase {
     }
 
     func testSeedNoPassword() {
-        let wallet = HDWallet(mnemonic: HDWallet.test.mnemonic, passphrase: "")
+        let wallet = HDWallet(mnemonic: HDWallet.test.mnemonic, passphrase: "")!
 
         XCTAssertEqual(wallet.seed.hexString, "354c22aedb9a37407adc61f657a6f00d10ed125efa360215f36c6919abd94d6dbc193a5f9c495e21ee74118661e327e84a5f5f11fa373ec33b80897d4697557d")
     }
 
     func testMasterKey() {
-        let wallet = HDWallet(mnemonic: "tiny escape drive pupil flavor endless love walk gadget match filter luxury", passphrase: "")
+        let wallet = HDWallet(mnemonic: "tiny escape drive pupil flavor endless love walk gadget match filter luxury", passphrase: "")!
         XCTAssertEqual(wallet.seed.hexString, "d430216f5b506dfd281d6ff6e92150d205868923df00774bc301e5ffdc2f4d1ad38a602017ddea6fc7d6315345d8b9cadbd8213ed2ffce5dfc550fa918665eb8")
         let masterKey = wallet.getMasterKey(curve: Curve.secp256k1)
         XCTAssertEqual(masterKey.data.hexString, "e120fc1ef9d193a851926ebd937c3985dc2c4e642fb3d0832317884d5f18f3b3")
@@ -196,7 +196,7 @@ class HDWalletTests: XCTestCase {
     }
 
     func testDeriveTezos2() {
-        let wallet = HDWallet(mnemonic: "kidney setup media hat relief plastic ghost census mouse science expect movie", passphrase: "")
+        let wallet = HDWallet(mnemonic: "kidney setup media hat relief plastic ghost census mouse science expect movie", passphrase: "")!
 
         let key = wallet.getKeyForCoin(coin: .tezos)
         let address = CoinType.tezos.deriveAddress(privateKey: key)
@@ -207,7 +207,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveNimiq() {
         // mnemonic is from https://github.com/Eligioo/nimiq-hd-wallet, compatible with ledger
         // but it's not compatible with safe.nimiq.com (can't import)
-        let wallet = HDWallet(mnemonic: "insane mixed health squeeze physical trust pipe possible garage hero flock stand profit power tooth review note camera express vicious clock machine entire heavy", passphrase: "")
+        let wallet = HDWallet(mnemonic: "insane mixed health squeeze physical trust pipe possible garage hero flock stand profit power tooth review note camera express vicious clock machine entire heavy", passphrase: "")!
         let coin = CoinType.nimiq
         let key = wallet.getKeyForCoin(coin: coin)
         let address = coin.deriveAddress(privateKey: key)
@@ -265,7 +265,7 @@ class HDWalletTests: XCTestCase {
     }
 
     func testExtendedKeys() {
-        let wallet = HDWallet(mnemonic: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about", passphrase: "")
+        let wallet = HDWallet(mnemonic: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about", passphrase: "")!
 
         let xprv = wallet.getExtendedPrivateKey(purpose: .bip44, coin: .bitcoin, version: .xprv)
         let xpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .bitcoin, version: .xpub)
