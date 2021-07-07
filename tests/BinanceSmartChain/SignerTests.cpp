@@ -23,17 +23,12 @@ namespace TW::Binance {
 using namespace TW::Ethereum;
 using namespace TW::Ethereum::ABI;
 
-class SignerExposed : public Signer {
-public:
-    SignerExposed(boost::multiprecision::uint256_t chainID) : Signer(chainID) {}
-    using Signer::hash;
-};
 
 TEST(BinanceSmartChain, SignNativeTransfer) {
     // https://explorer.binance.org/smart-testnet/tx/0x6da28164f7b3bc255d749c3ae562e2a742be54c12bf1858b014cc2fe5700684e
 
     auto toAddress = parse_hex("0x31BE00EB1fc8e14A696DBC72f746ec3e95f49683");
-    auto transaction = Transaction(
+    auto transaction = TransactionNonTyped::buildNativeTransfer(
         /* nonce: */ 0,
         /* gasPrice: */ 20000000000,
         /* gasLimit: */ 21000,
@@ -43,10 +38,10 @@ TEST(BinanceSmartChain, SignNativeTransfer) {
 
     // addr: 0xB9F5771C27664bF2282D98E09D7F50cEc7cB01a7  mnemonic: isolate dismiss ... cruel note
     auto privateKey = PrivateKey(parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904"));
-    auto signer = SignerExposed(97);
-    signer.sign(privateKey, transaction);
+    uint256_t chainID = 97;
+    auto signature = Signer::sign(privateKey, chainID, transaction);
 
-    auto encoded = RLP::encode(transaction);
+    auto encoded = transaction->encoded(signature, chainID);
     ASSERT_EQ(hex(encoded), "f86c808504a817c8008252089431be00eb1fc8e14a696dbc72f746ec3e95f49683872386f26fc100008081e5a057806b486844c5d0b7b5ce34b289f4e8776aa1fe24a3311cef5053995c51050ca07697aa0695de27da817625df0e7e4c64b0ab22d9df30aec92299a7b380be8db7");
 }
 

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,27 +13,28 @@ using namespace TW::Ethereum;
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     try {
-        auto signer = Signer(load(input.chain_id()));
+        uint256_t chainID = load(input.chain_id());
         auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
         auto transaction = Signer::build(input);
 
-        signer.sign(key, transaction);
+        auto preHash = transaction->preHash(chainID);
+        auto signature = sign(key, chainID, preHash);
 
         auto output = Proto::SigningOutput();
 
-        auto encoded = RLP::encode(transaction);
+        auto encoded = transaction->encoded(signature, chainID);
         output.set_encoded(encoded.data(), encoded.size());
 
-        auto v = store(transaction.v);
+        auto v = store(signature.v);
         output.set_v(v.data(), v.size());
 
-        auto r = store(transaction.r);
+        auto r = store(signature.r);
         output.set_r(r.data(), r.size());
 
-        auto s = store(transaction.s);
+        auto s = store(signature.s);
         output.set_s(s.data(), s.size());
 
-        output.set_data(transaction.payload.data(), transaction.payload.size());
+        output.set_data(transaction->payload.data(), transaction->payload.size());
 
         return output;
     } catch (std::exception&) {
@@ -49,8 +50,7 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     return hex(output.encoded());
 }
 
-std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chainID,
-                                                           const Data& signature) noexcept {
+Signature Signer::valuesRSV(const uint256_t& chainID, const Data& signature) noexcept {
     boost::multiprecision::uint256_t r, s, v;
     import_bits(r, signature.begin(), signature.begin() + 32);
     import_bits(s, signature.begin() + 32, signature.begin() + 64);
@@ -64,13 +64,12 @@ std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chai
     } else {
         newV = v;
     }
-    return std::make_tuple(r, s, newV);
+    return Signature{r, s, newV};
 }
 
-std::tuple<uint256_t, uint256_t, uint256_t>
-Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data& hash) noexcept {
+Signature Signer::sign(const PrivateKey& privateKey, const uint256_t& chainID, const Data& hash) noexcept {
     auto signature = privateKey.sign(hash, TWCurveSECP256k1);
-    return values(chainID, signature);
+    return valuesRSV(chainID, signature);
 }
 
 // May throw
@@ -85,31 +84,28 @@ Data addressStringToData(const std::string& asString) {
     return asData;
 }
 
-Transaction Signer::build(const Proto::SigningInput &input) {
+std::shared_ptr<TransactionNonTyped> Signer::buildNonTyped(const Proto::SigningInput& input) {
     Data toAddress = addressStringToData(input.to_address());
     uint256_t nonce = load(input.nonce());
     uint256_t gasPrice = load(input.gas_price());
     uint256_t gasLimit = load(input.gas_limit());
+    assert(gasPrice != 0);
     switch (input.transaction().transaction_oneof_case()) {
         case Proto::Transaction::kTransfer:
             {
-                auto transaction = Transaction(
-                    /* nonce: */ nonce,
-                    /* gasPrice: */ gasPrice,
-                    /* gasLimit: */ gasLimit,
+                auto transaction = TransactionNonTyped::buildNativeTransfer(
+                    nonce, gasPrice, gasLimit,
                     /* to: */ toAddress,
                     /* amount: */ load(input.transaction().transfer().amount()),
-                    /* optionalTransaction: */ Data(input.transaction().transfer().data().begin(), input.transaction().transfer().data().end()));
+                    /* optional data: */ Data(input.transaction().transfer().data().begin(), input.transaction().transfer().data().end()));
                 return transaction;
             }
 
         case Proto::Transaction::kErc20Transfer:
             {
                 Data tokenToAddress = addressStringToData(input.transaction().erc20_transfer().to());
-                auto transaction = Transaction::buildERC20Transfer(
-                    /* nonce: */ nonce,
-                    /* gasPrice: */ gasPrice,
-                    /* gasLimit: */ gasLimit,
+                auto transaction = TransactionNonTyped::buildERC20Transfer(
+                    nonce, gasPrice, gasLimit,
                     /* tokenContract: */ toAddress,
                     /* toAddress */ tokenToAddress,
                     /* amount: */ load(input.transaction().erc20_transfer().amount()));
@@ -119,10 +115,8 @@ Transaction Signer::build(const Proto::SigningInput &input) {
         case Proto::Transaction::kErc20Approve:
             {
                 Data spenderAddress = addressStringToData(input.transaction().erc20_approve().spender());
-                auto transaction = Transaction::buildERC20Approve(
-                    /* nonce: */ nonce,
-                    /* gasPrice: */ gasPrice,
-                    /* gasLimit: */ gasLimit,
+                auto transaction = TransactionNonTyped::buildERC20Approve(
+                    nonce, gasPrice, gasLimit,
                     /* tokenContract: */ toAddress,
                     /* toAddress */ spenderAddress,
                     /* amount: */ load(input.transaction().erc20_approve().amount()));
@@ -133,10 +127,8 @@ Transaction Signer::build(const Proto::SigningInput &input) {
             {
                 Data tokenToAddress = addressStringToData(input.transaction().erc721_transfer().to());
                 Data tokenFromAddress = addressStringToData(input.transaction().erc721_transfer().from());
-                auto transaction = Transaction::buildERC721Transfer(
-                    /* nonce: */ nonce,
-                    /* gasPrice: */ gasPrice,
-                    /* gasLimit: */ gasLimit,
+                auto transaction = TransactionNonTyped::buildERC721Transfer(
+                    nonce, gasPrice, gasLimit,
                     /* tokenContract: */ toAddress,
                     /* fromAddress: */ tokenFromAddress,
                     /* toAddress */ tokenToAddress,
@@ -148,10 +140,8 @@ Transaction Signer::build(const Proto::SigningInput &input) {
             {
                 Data tokenToAddress = addressStringToData(input.transaction().erc1155_transfer().to());
                 Data tokenFromAddress = addressStringToData(input.transaction().erc1155_transfer().from());
-                auto transaction = Transaction::buildERC1155Transfer(
-                    /* nonce: */ nonce,
-                    /* gasPrice: */ gasPrice,
-                    /* gasLimit: */ gasLimit,
+                auto transaction = TransactionNonTyped::buildERC1155Transfer(
+                    nonce, gasPrice, gasLimit,
                     /* tokenContract: */ toAddress,
                     /* fromAddress: */ tokenFromAddress,
                     /* toAddress */ tokenToAddress,
@@ -165,10 +155,8 @@ Transaction Signer::build(const Proto::SigningInput &input) {
         case Proto::Transaction::kContractGeneric:
         default:
             {
-                auto transaction = Transaction(
-                    /* nonce: */ nonce,
-                    /* gasPrice: */ gasPrice,
-                    /* gasLimit: */ gasLimit,
+                auto transaction = TransactionNonTyped::buildNativeTransfer(
+                    nonce, gasPrice, gasLimit,
                     /* to: */ toAddress,
                     /* amount: */ load(input.transaction().contract_generic().amount()),
                     /* transaction: */ Data(input.transaction().contract_generic().data().begin(), input.transaction().contract_generic().data().end()));
@@ -177,25 +165,7 @@ Transaction Signer::build(const Proto::SigningInput &input) {
     }
 }
 
-void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept {
-    auto hash = this->hash(transaction);
-    auto tuple = Signer::sign(chainID, privateKey, hash);
-
-    transaction.r = std::get<0>(tuple);
-    transaction.s = std::get<1>(tuple);
-    transaction.v = std::get<2>(tuple);
-}
-
-Data Signer::hash(const Transaction &transaction) const noexcept {
-    auto encoded = Data();
-    append(encoded, RLP::encode(transaction.nonce));
-    append(encoded, RLP::encode(transaction.gasPrice));
-    append(encoded, RLP::encode(transaction.gasLimit));
-    append(encoded, RLP::encode(transaction.to));
-    append(encoded, RLP::encode(transaction.amount));
-    append(encoded, RLP::encode(transaction.payload));
-    append(encoded, RLP::encode(chainID));
-    append(encoded, RLP::encode(0));
-    append(encoded, RLP::encode(0));
-    return Hash::keccak256(RLP::encodeList(encoded));
+Signature Signer::sign(const PrivateKey& privateKey, const uint256_t& chainID, std::shared_ptr<TransactionBase> transaction) noexcept {
+    auto preHash = transaction->preHash(chainID);
+    return Signer::sign(privateKey, chainID, preHash);
 }
