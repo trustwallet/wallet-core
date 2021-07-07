@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -48,9 +48,6 @@ struct RLP {
     static Data encode(uint64_t number) noexcept { return encode(uint256_t(number)); }
 
     static Data encode(const uint256_t& number) noexcept;
-
-    /// Encodes a transaction.
-    static Data encode(const Transaction& transaction) noexcept;
 
     /// Wraps encoded data as a list.
     static Data encodeList(const Data& encoded) noexcept;
