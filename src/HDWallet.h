@@ -43,13 +43,13 @@ class HDWallet {
     TW::Data entropy;
 
   public:
-    /// Initializes a new random HDWallet with the provided strength in bits.
+    /// Initializes a new random HDWallet with the provided strength in bits.  Throws on invalid strength.
     HDWallet(int strength, const std::string& passphrase);
 
-    /// Initializes an HDWallet from a mnemonic seed.  May throw.
+    /// Initializes an HDWallet from a mnemonic seed.  Throws on invalid passphrase.
     HDWallet(const std::string& mnemonic, const std::string& passphrase);
 
-    /// Initializes an HDWallet from a seed.
+    /// Initializes an HDWallet from a seed.  Throws on invalid data.
     HDWallet(const Data& data, const std::string& passphrase);
 
     HDWallet(const HDWallet& other) = default;
