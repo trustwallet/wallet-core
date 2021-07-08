@@ -33,7 +33,7 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve);
 const char* curveName(TWCurve curve);
 } // namespace
 
-const size_t MnemonicBufLength = 256;
+const size_t MnemonicBufLength = Mnemonic::MaxWords * 10;
 
 HDWallet::HDWallet(int strength, const std::string& passphrase)
     : seed(), mnemonic(), passphrase(passphrase) {
