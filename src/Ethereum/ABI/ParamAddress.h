@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "Bytes.h"
-#include "../../Data.h"
+#include "ParamNumber.h"
+#include <Data.h>
 
 namespace TW::Ethereum::ABI {
 
@@ -17,17 +17,11 @@ class ParamAddress: public ParamUIntN
 public:
     static const size_t bytes = 20;
     ParamAddress(): ParamUIntN(bytes * 8) {}
-    ParamAddress(const Data& val): ParamUIntN(bytes * 8, TW::load(val)) {}
+    ParamAddress(const Data& val): ParamUIntN(bytes * 8, load(val)) {}
     virtual std::string getType() const { return "address"; };
     // get the value as (20-byte) byte array (as opposed to uint256_t)
-    Data getData() const {
-        Data data = TW::store(getVal());
-        if (data.size() >= bytes) { return data; }
-        // need to pad
-        Data padded(bytes - data.size());
-        TW::append(padded, data);
-        return padded;
-    }
+    Data getData() const;
+    virtual bool setValueJson(const std::string& value);
 };
 
 } // namespace TW::Ethereum::ABI

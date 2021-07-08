@@ -9,7 +9,6 @@
 #include "HexCoding.h"
 #include "uint256.h"
 #include <boost/algorithm/string/predicate.hpp>
-#include <iostream>
 
 using namespace std;
 using json = nlohmann::json;

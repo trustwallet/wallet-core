@@ -6,14 +6,37 @@
 
 #include "ParamNumber.h"
 
-#include "../../Data.h"
-#include "../../uint256.h"
+#include <Data.h>
+#include <uint256.h>
+
+#include <boost/lexical_cast.hpp>
 
 #include <string>
 #include <cassert>
 
 using namespace TW;
 using namespace TW::Ethereum::ABI;
+
+
+bool ParamBool::setValueJson(const std::string& value) {
+    if (value == "true" || value == "1") { setVal(true); return true; }
+    if (value == "false" || value == "0") { setVal(false); return true; }
+    return false;
+}
+
+bool ParamUInt8::setValueJson(const std::string& value) {
+    uint16_t val;
+    if (!boost::conversion::detail::try_lexical_convert(value, val)) { return false; }
+    setVal(static_cast<uint8_t>(val));
+    return true;
+}
+
+bool ParamInt8::setValueJson(const std::string& value) {
+    int16_t val;
+    if (!boost::conversion::detail::try_lexical_convert(value, val)) { return false; }
+    setVal(static_cast<int8_t>(val));
+    return true;
+}
 
 void ParamUIntN::setVal(uint256_t val) {
     // mask it to the given bits
@@ -36,6 +59,10 @@ uint256_t ParamUIntN::maskForBits(size_t bits) {
     // exclude predefined sizes
     assert(bits != 8 && bits != 16 && bits != 32 && bits != 64 && bits != 256);
     return (uint256_t(1) << bits) - 1;
+}
+
+bool ParamUIntN::setValueJson(const std::string& value) {
+    return boost::conversion::detail::try_lexical_convert(value, _val);
 }
 
 void ParamIntN::setVal(int256_t val) {
@@ -64,4 +91,8 @@ bool ParamIntN::decode(const Data& encoded, size_t& offset_inout) {
 void ParamIntN::init()
 {
     _mask = ParamUIntN::maskForBits(bits);
+}
+
+bool ParamIntN::setValueJson(const std::string& value) {
+    return boost::conversion::detail::try_lexical_convert(value, _val);
 }

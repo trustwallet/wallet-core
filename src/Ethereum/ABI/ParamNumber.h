@@ -9,8 +9,10 @@
 #include "ParamBase.h"
 #include "ValueEncoder.h"
 
-#include "../../Data.h"
-#include "../../uint256.h"
+#include <Data.h>
+#include <uint256.h>
+
+#include <boost/lexical_cast.hpp>
 
 #include <string>
 
@@ -54,6 +56,9 @@ public:
     virtual bool decode(const Data& encoded, size_t& offset_inout) {
         return decodeNumber(encoded, _val, offset_inout);
     }
+    virtual bool setValueJson(const std::string& value) {
+        return boost::conversion::detail::try_lexical_convert(value, _val);
+    }
 private:
     T _val;
 };
@@ -83,6 +88,7 @@ public:
     ParamBool(bool val) : ParamNumberType<bool>(val) {}
     virtual std::string getType() const { return "bool"; }
     bool getVal() const { return ParamNumberType<bool>::getVal(); }
+    virtual bool setValueJson(const std::string& value);
 };
 
 class ParamUInt8 : public ParamNumberType<uint8_t>
@@ -91,6 +97,7 @@ public:
     ParamUInt8() : ParamNumberType<uint8_t>(0) {}
     ParamUInt8(uint8_t val) : ParamNumberType<uint8_t>(val) {}
     virtual std::string getType() const { return "uint8"; }
+    virtual bool setValueJson(const std::string& value);
 };
 
 class ParamInt8 : public ParamNumberType<int8_t>
@@ -99,6 +106,7 @@ public:
     ParamInt8() : ParamNumberType<int8_t>(0) {}
     ParamInt8(int8_t val) : ParamNumberType<int8_t>(val) {}
     virtual std::string getType() const { return "int8"; }
+    virtual bool setValueJson(const std::string& value);
 };
 
 class ParamUInt16 : public ParamNumberType<uint16_t>
@@ -169,6 +177,7 @@ public:
     }
     virtual bool decode(const Data& encoded, size_t& offset_inout);
     static uint256_t maskForBits(size_t bits);
+    virtual bool setValueJson(const std::string& value);
 
 private:
     void init();
@@ -193,6 +202,7 @@ public:
     virtual void encode(Data& data) const { ValueEncoder::encodeUInt256((uint256_t)_val, data); }
     static bool decodeNumber(const Data& encoded, int256_t& decoded, size_t& offset_inout);
     virtual bool decode(const Data& encoded, size_t& offset_inout);
+    virtual bool setValueJson(const std::string& value);
 
 private:
     void init();
