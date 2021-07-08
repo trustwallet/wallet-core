@@ -4990,7 +4990,7 @@ START_TEST(test_mnemonic) {
   a = vectors;
   b = vectors + 1;
   c = vectors + 2;
-  char buf[256]
+  char buf[256];
   while (*a && *b && *c) {
     m = mnemonic_from_data(fromhex(*a), strlen(*a) / 2, buf, 256);
     ck_assert_str_eq(m, *b);
