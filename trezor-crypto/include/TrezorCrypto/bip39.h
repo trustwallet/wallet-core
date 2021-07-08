@@ -34,8 +34,10 @@ extern "C" {
 #define BIP39_WORDS 2048
 #define BIP39_PBKDF2_ROUNDS 2048
 
-const char *mnemonic_generate(int strength);  // strength in bits
-const char *mnemonic_from_data(const uint8_t *data, int len);
+// [wallet-core] added input buffer
+const char *mnemonic_generate(int strength, char *buf, int buflen);  // strength in bits
+// [wallet-core] added input buffer
+const char *mnemonic_from_data(const uint8_t *data, int datalen, char *buf, int buflen);
 void mnemonic_clear(void);
 
 int mnemonic_check(const char *mnemonic);

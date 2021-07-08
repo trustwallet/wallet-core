@@ -19,7 +19,6 @@
 #include <TrezorCrypto/curves.h>
 
 #include <array>
-#include <mutex>
 
 using namespace TW;
 
@@ -34,37 +33,16 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve);
 const char* curveName(TWCurve curve);
 } // namespace
 
-std::mutex mnemonicGenerateGuard;
-std::mutex mnemonicFromDataGuard;
-
-std::string mnemonicGenerateThreadsafe(int strength) {
-    std::string mnemonicTemp;
-    mnemonicGenerateGuard.lock();
-    const char* mnemonic_chars = mnemonic_generate(strength);
-    if (mnemonic_chars) {
-        mnemonicTemp = mnemonic_chars;
-    }
-    mnemonicGenerateGuard.unlock();
-    return mnemonicTemp;
-}
-
-std::string mnemonicFromDataThreadsafe(const Data& data) {
-    std::string mnemonicTemp;
-    mnemonicFromDataGuard.lock();
-    const char* mnemonic_chars = mnemonic_from_data(data.data(), static_cast<int>(data.size()));
-    if (mnemonic_chars) {
-        mnemonicTemp = mnemonic_chars;
-    }
-    mnemonicFromDataGuard.unlock();
-    return mnemonicTemp;
-}
+const size_t MnemonicBufLength = 256;
 
 HDWallet::HDWallet(int strength, const std::string& passphrase)
     : seed(), mnemonic(), passphrase(passphrase) {
-    mnemonic = mnemonicGenerateThreadsafe(strength);
-    if (mnemonic.size() == 0) {
+    char buf[MnemonicBufLength];
+    const char* mnemonic_chars = mnemonic_generate(strength, buf, MnemonicBufLength);
+    if (mnemonic_chars == nullptr) {
         throw std::invalid_argument("Invalid strength");
     }
+    mnemonic = mnemonic_chars;
     assert(mnemonic.length() > 0);
     assert(Mnemonic::isValid(mnemonic));
     mnemonic_to_seed(mnemonic.c_str(), passphrase.c_str(), seed.data(), nullptr);
@@ -82,10 +60,12 @@ HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase)
 
 HDWallet::HDWallet(const Data& data, const std::string& passphrase)
     : seed(), mnemonic(), passphrase(passphrase) {
-    mnemonic = mnemonicFromDataThreadsafe(data);
-    if (mnemonic.size() == 0) {
+    char buf[MnemonicBufLength];
+    const char* mnemonic_chars = mnemonic_from_data(data.data(), static_cast<int>(data.size()), buf, MnemonicBufLength);
+    if (mnemonic_chars == nullptr) {
         throw std::invalid_argument("Invalid mnemonic data");
     }
+    mnemonic = mnemonic_chars;
     assert(mnemonic.length() > 0);
     assert(Mnemonic::isValid(mnemonic));
     mnemonic_to_seed(mnemonic.c_str(), passphrase.c_str(), seed.data(), nullptr);
