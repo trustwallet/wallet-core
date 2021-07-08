@@ -133,10 +133,22 @@ public:
     static std::shared_ptr<TransactionEip1559> buildNativeTransfer(const uint256_t& nonce,
         const uint256_t& maxInclusionFeePerGas, const uint256_t& maxFeePerGas, const uint256_t& gasPrice,
         const Data& toAddress, const uint256_t& amount, const Data& data = {});
-    // TODO rest
-
-    //// Helpers for building contract calls
-    // TODO
+    // Create an ERC20 token transfer transaction
+    static std::shared_ptr<TransactionEip1559> buildERC20Transfer(const uint256_t& nonce,
+        const uint256_t& maxInclusionFeePerGas, const uint256_t& maxFeePerGas, const uint256_t& gasPrice,
+        const Data& tokenContract, const Data& toAddress, const uint256_t& amount);
+    // Create an ERC20 approve transaction
+    static std::shared_ptr<TransactionEip1559> buildERC20Approve(const uint256_t& nonce,
+        const uint256_t& maxInclusionFeePerGas, const uint256_t& maxFeePerGas, const uint256_t& gasPrice,
+        const Data& tokenContract, const Data& spenderAddress, const uint256_t& amount);
+    // Create an ERC721 NFT transfer transaction
+    static std::shared_ptr<TransactionEip1559> buildERC721Transfer(const uint256_t& nonce,
+        const uint256_t& maxInclusionFeePerGas, const uint256_t& maxFeePerGas, const uint256_t& gasPrice,
+        const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId);
+    // Create an ERC1155 NFT transfer transaction
+    static std::shared_ptr<TransactionEip1559> buildERC1155Transfer(const uint256_t& nonce,
+        const uint256_t& maxInclusionFeePerGas, const uint256_t& maxFeePerGas, const uint256_t& gasPrice,
+        const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data);
 
     virtual Data preHash(const uint256_t chainID) const;
     virtual Data encoded(const Signature& signature, const uint256_t chainID) const;
