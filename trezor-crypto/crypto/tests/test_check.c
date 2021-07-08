@@ -4990,9 +4990,9 @@ START_TEST(test_mnemonic) {
   a = vectors;
   b = vectors + 1;
   c = vectors + 2;
-  char buf[256];
+  char buf[240];
   while (*a && *b && *c) {
-    m = mnemonic_from_data(fromhex(*a), strlen(*a) / 2, buf, 256);
+    m = mnemonic_from_data(fromhex(*a), strlen(*a) / 2, buf, 240);
     ck_assert_str_eq(m, *b);
     mnemonic_to_seed(m, "TREZOR", seed, 0);
     ck_assert_mem_eq(seed, fromhex(*c), strlen(*c) / 2);
