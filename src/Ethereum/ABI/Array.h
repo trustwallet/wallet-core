@@ -34,6 +34,9 @@ public:
     virtual size_t getCount() const { return _params.getCount(); }
     virtual void encode(Data& data) const;
     virtual bool decode(const Data& encoded, size_t& offset_inout);
+    virtual bool setValueJson(const std::string& value);
+    virtual Data hashStruct() const;
+    virtual std::string getExtraTypes(std::vector<std::string>& ignoreList) const;
 };
 
 } // namespace TW::Ethereum::ABI

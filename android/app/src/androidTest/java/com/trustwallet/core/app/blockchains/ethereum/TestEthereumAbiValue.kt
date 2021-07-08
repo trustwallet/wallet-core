@@ -8,7 +8,7 @@ import com.trustwallet.core.app.utils.Numeric
 import wallet.core.jni.EthereumAbi
 import wallet.core.jni.EthereumAbiValue
 
-class TestEthereumAbiEncoder {
+class TestEthereumAbiValue {
 
     init {
         System.loadLibrary("TrustWalletCore")
@@ -24,7 +24,7 @@ class TestEthereumAbiEncoder {
         val encoded = EthereumAbi.encode(function)
         assertEquals("0xa35856da" +
             "0000000000000000000000000000000000000000000000000000000000000001",
-            Numeric.toHexString(encoded));
+            Numeric.toHexString(encoded))
     }
 
     @Test
@@ -52,7 +52,7 @@ class TestEthereumAbiEncoder {
             "0000000000000000000000000000000000000000000000000000000000000001" +
             "0000000000000000000000000000000000000000000000000000000000000002" +
             "0000000000000000000000000000000000000000000000000000000000000003",
-            Numeric.toHexString(encoded));
+            Numeric.toHexString(encoded))
         // original output value
         assertEquals(0, function.getParamUInt64(0, true))
         // decode output

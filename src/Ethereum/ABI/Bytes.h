@@ -8,7 +8,7 @@
 
 #include "ParamBase.h"
 #include "ValueEncoder.h"
-#include "../../Data.h"
+#include <Data.h>
 
 namespace TW::Ethereum::ABI {
 
@@ -32,6 +32,7 @@ public:
     virtual bool decode(const Data& encoded, size_t& offset_inout) {
         return decodeBytes(encoded, _bytes, offset_inout);
     }
+    virtual bool setValueJson(const std::string& value);
 };
 
 /// Fixed-size array of bytes, "bytes<N>"
@@ -54,6 +55,7 @@ public:
     virtual bool decode(const Data& encoded, size_t& offset_inout) {
         return decodeBytesFix(encoded, _n, _bytes, offset_inout);
     }
+    virtual bool setValueJson(const std::string& value);
 };
 
 /// Var-length string parameter
@@ -76,6 +78,8 @@ public:
     virtual bool decode(const Data& encoded, size_t& offset_inout) {
         return decodeString(encoded, _str, offset_inout);
     }
+    virtual bool setValueJson(const std::string& value) { _str = value; return true; }
+    virtual Data hashStruct() const;
 };
 
 } // namespace TW::Ethereum::ABI

@@ -8,7 +8,8 @@
 
 #include "Array.h"
 #include "Bytes.h"
-#include "ParamAddress.h"
+#include "ParamBase.h"
+#include "ParamStruct.h"
 
 #include <string>
 #include <vector>
@@ -19,7 +20,11 @@ namespace TW::Ethereum::ABI {
 class ParamFactory
 {
 public:
+    /// Create a param of given type
     static std::shared_ptr<ParamBase> make(const std::string& type);
+    /// Create a named param, with given name and type
+    static std::shared_ptr<ParamNamed> makeNamed(const std::string& name, const std::string& type);
+
     static std::string getValue(const std::shared_ptr<ParamBase>& param, const std::string& type);
     static std::vector<std::string> getArrayValue(const std::shared_ptr<ParamBase>& param, const std::string& type);
 };
