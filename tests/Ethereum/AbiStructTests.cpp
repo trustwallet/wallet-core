@@ -122,10 +122,10 @@ TEST(EthereumAbiStruct, encodeTypes_Json) {
     ASSERT_EQ(hex(hash), "be609aee343fb3c4b28e1df9e632fca64fcfaede20f02e86244efddf30957bd2");
 
     // sign the hash
-    const auto rsv = Signer::sign(0, privateKeyCow, hash);
-    EXPECT_EQ(hex(store(std::get<0>(rsv))), "4355c47d63924e8a72e509b65029052eb6c299d53a04e167c5775fd466751c9d");
-    EXPECT_EQ(hex(store(std::get<1>(rsv))), "07299936d304c153f6443dfa05f40ff007d72911b6f72307f996231605b91562");
-    EXPECT_EQ(hex(store(std::get<2>(rsv))), "1c");
+    const auto rsv = Signer::sign(privateKeyCow, 0, hash);
+    EXPECT_EQ(hex(store(rsv.r)), "4355c47d63924e8a72e509b65029052eb6c299d53a04e167c5775fd466751c9d");
+    EXPECT_EQ(hex(store(rsv.s)), "07299936d304c153f6443dfa05f40ff007d72911b6f72307f996231605b91562");
+    EXPECT_EQ(hex(store(rsv.v)), "1c");
 }
 
 // See 'signedTypeData with V3 string' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
@@ -186,10 +186,10 @@ TEST(EthereumAbiStruct, encodeTypes_v3_Json) {
     ASSERT_EQ(hex(hash), "be609aee343fb3c4b28e1df9e632fca64fcfaede20f02e86244efddf30957bd2");
 
     // sign the hash
-    const auto rsv = Signer::sign(0, privateKeyCow, hash);
-    EXPECT_EQ(hex(store(std::get<0>(rsv))), "4355c47d63924e8a72e509b65029052eb6c299d53a04e167c5775fd466751c9d");
-    EXPECT_EQ(hex(store(std::get<1>(rsv))), "07299936d304c153f6443dfa05f40ff007d72911b6f72307f996231605b91562");
-    EXPECT_EQ(hex(store(std::get<2>(rsv))), "1c");
+    const auto rsv = Signer::sign(privateKeyCow, 0, hash);
+    EXPECT_EQ(hex(store(rsv.r)), "4355c47d63924e8a72e509b65029052eb6c299d53a04e167c5775fd466751c9d");
+    EXPECT_EQ(hex(store(rsv.s)), "07299936d304c153f6443dfa05f40ff007d72911b6f72307f996231605b91562");
+    EXPECT_EQ(hex(store(rsv.v)), "1c");
 }
 
 // See 'signedTypeData_v4' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
@@ -283,10 +283,10 @@ TEST(EthereumAbiStruct, encodeTypes_v4_Json) {
     ASSERT_EQ(hex(hash), "a85c2e2b118698e88db68a8105b794a8cc7cec074e89ef991cb4f5f533819cc2");
 
     // sign the hash
-    const auto rsv = Signer::sign(0, privateKeyCow, hash);
-    EXPECT_EQ(hex(store(std::get<0>(rsv))), "65cbd956f2fae28a601bebc9b906cea0191744bd4c4247bcd27cd08f8eb6b71c");
-    EXPECT_EQ(hex(store(std::get<1>(rsv))), "78efdf7a31dc9abee78f492292721f362d296cf86b4538e07b51303b67f74906");
-    EXPECT_EQ(hex(store(std::get<2>(rsv))), "1b");
+    const auto rsv = Signer::sign(privateKeyCow, 0, hash);
+    EXPECT_EQ(hex(store(rsv.r)), "65cbd956f2fae28a601bebc9b906cea0191744bd4c4247bcd27cd08f8eb6b71c");
+    EXPECT_EQ(hex(store(rsv.s)), "78efdf7a31dc9abee78f492292721f362d296cf86b4538e07b51303b67f74906");
+    EXPECT_EQ(hex(store(rsv.v)), "1b");
 }
 
 // See 'signedTypeData_v4 with recursive types' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
@@ -400,10 +400,10 @@ TEST(EthereumAbiStruct, encodeTypes_v4Rec_Json) {
 
     // sign the hash
     PrivateKey privateKeyDragon = PrivateKey(Hash::keccak256(TW::data("dragon")));
-    const auto rsv = Signer::sign(0, privateKeyDragon, hash);
-    EXPECT_EQ(hex(store(std::get<0>(rsv))), "f2ec61e636ff7bb3ac8bc2a4cc2c8b8f635dd1b2ec8094c963128b358e79c85c");
-    EXPECT_EQ(hex(store(std::get<1>(rsv))), "5ca6dd637ed7e80f0436fe8fce39c0e5f2082c9517fe677cc2917dcd6c84ba88");
-    EXPECT_EQ(hex(store(std::get<2>(rsv))), "1c");
+    const auto rsv = Signer::sign(privateKeyDragon, 0, hash);
+    EXPECT_EQ(hex(store(rsv.r)), "f2ec61e636ff7bb3ac8bc2a4cc2c8b8f635dd1b2ec8094c963128b358e79c85c");
+    EXPECT_EQ(hex(store(rsv.s)), "5ca6dd637ed7e80f0436fe8fce39c0e5f2082c9517fe677cc2917dcd6c84ba88");
+    EXPECT_EQ(hex(store(rsv.v)), "1c");
 }
 
 // See 'signedTypeData' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
