@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "ParamFactory.h"
+#include "ParamAddress.h"
 #include "HexCoding.h"
 
 #include <nlohmann/json.hpp>
@@ -40,7 +41,7 @@ static bool isArrayType(const std::string& type) {
 }
 
 static std::string getArrayElemType(const std::string& arrayType) {
-    if (ends_with(arrayType, "[]") && arrayType.length() >= 3) {
+    if (isArrayType(arrayType)) {
         return arrayType.substr(0, arrayType.length() - 2);
     }
     return "";
@@ -106,6 +107,14 @@ std::string joinArrayElems(const std::vector<std::string>& strings) {
         array.push_back(value);
     }
     return array.dump();
+}
+
+std::shared_ptr<ParamNamed> ParamFactory::makeNamed(const std::string& name, const std::string& type) {
+    auto param = make(type);
+    if (!param) {
+        return nullptr;
+    }
+    return std::make_shared<ParamNamed>(name, param);
 }
 
 std::string ParamFactory::getValue(const std::shared_ptr<ParamBase>& param, const std::string& type) {

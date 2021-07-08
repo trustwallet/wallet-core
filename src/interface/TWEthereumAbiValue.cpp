@@ -10,8 +10,6 @@
 #include <Ethereum/ABI/ValueDecoder.h>
 #include <Data.h>
 
-#include <iostream>
-
 using namespace TW::Ethereum;
 using namespace TW;
 
