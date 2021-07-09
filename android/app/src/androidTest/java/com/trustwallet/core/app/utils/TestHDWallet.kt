@@ -10,7 +10,6 @@ import wallet.core.jni.Purpose
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import org.junit.Assert.assertNotNull
 import org.junit.Test
 
 
@@ -26,7 +25,6 @@ class TestHDWallet {
     @Test
     fun testCreateFromMnemonic() {
         val hd = HDWallet(words, password)
-        assertNotNull(hd);
         assertEquals(hd.mnemonic(), words)
         assertEquals(Numeric.toHexString(hd.entropy()), "0xba5821e8c356c05ba5f025d9532fe0f21f65d594")
         assertEquals(Numeric.toHexString(hd.seed()), "0x7ae6f661157bda6492f6162701e570097fc726b6235011ea5ad09bf04986731ed4d92bc43cbdee047b60ea0dd1b1fa4274377c9bf5bd14ab1982c272d8076f29")
@@ -35,27 +33,29 @@ class TestHDWallet {
     @Test
     fun testCreateFromMnemonicNoPass() {
         val hd = HDWallet(words, "")
-        assertNotNull(hd);
         assertEquals(Numeric.toHexString(hd.seed()), "0x354c22aedb9a37407adc61f657a6f00d10ed125efa360215f36c6919abd94d6dbc193a5f9c495e21ee74118661e327e84a5f5f11fa373ec33b80897d4697557d")
     }
 
     @Test
     fun testCreateFromMnemonicInvalid() {
-        val hd = HDWallet("THIS IS AN INVALID MNEMONIC", "")
-        assertEquals(hd, null)
+        val exception = false
+        try {
+            val hd = HDWallet("THIS IS AN INVALID MNEMONIC", "")
+        } catch (ex: Exception) {
+            exception = true
+        }
+        assertTrue(exception)
     }
 
     @Test
     fun testGenerate() {
         val hd = HDWallet(128, "")
-        assertNotNull(hd);
         assertTrue(Mnemonic.isValid(hd.mnemonic()))
     }
 
     @Test
     fun tesCreateFromEntropy() {
         val hd = HDWallet(Numeric.hexStringToByteArray("ba5821e8c356c05ba5f025d9532fe0f21f65d594"), "TREZOR")
-        assertNotNull(hd);
         assertEquals(hd.mnemonic(), words)
         assertEquals(Numeric.toHexString(hd.entropy()), "0xba5821e8c356c05ba5f025d9532fe0f21f65d594")
     }
