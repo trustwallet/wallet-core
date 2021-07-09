@@ -53,6 +53,10 @@ TWString *_Nonnull TWHDWalletMnemonic(struct TWHDWallet *_Nonnull wallet){
     return TWStringCreateWithUTF8Bytes(wallet->impl.mnemonic.c_str());
 }
 
+TWData *_Nonnull TWHDWalletEntropy(struct TWHDWallet *_Nonnull wallet) {
+    return TWDataCreateWithBytes(wallet->impl.entropy.data(), wallet->impl.entropy.size());
+}
+
 struct TWPrivateKey *_Nonnull TWHDWalletGetMasterKey(struct TWHDWallet *_Nonnull wallet, TWCurve curve) {
     return new TWPrivateKey{ wallet->impl.getMasterKey(curve) };
 }

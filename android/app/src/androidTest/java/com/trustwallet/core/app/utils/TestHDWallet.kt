@@ -27,8 +27,9 @@ class TestHDWallet {
     fun testCreateFromMnemonic() {
         val hd = HDWallet(words, password)
         assertNotNull(hd);
-        assertEquals(Numeric.toHexString(hd.seed()), "0x7ae6f661157bda6492f6162701e570097fc726b6235011ea5ad09bf04986731ed4d92bc43cbdee047b60ea0dd1b1fa4274377c9bf5bd14ab1982c272d8076f29")
         assertEquals(hd.mnemonic(), words)
+        assertEquals(Numeric.toHexString(hd.entropy()), "0xba5821e8c356c05ba5f025d9532fe0f21f65d594")
+        assertEquals(Numeric.toHexString(hd.seed()), "0x7ae6f661157bda6492f6162701e570097fc726b6235011ea5ad09bf04986731ed4d92bc43cbdee047b60ea0dd1b1fa4274377c9bf5bd14ab1982c272d8076f29")
     }
 
     @Test
@@ -56,6 +57,7 @@ class TestHDWallet {
         val hd = HDWallet(Numeric.hexStringToByteArray("ba5821e8c356c05ba5f025d9532fe0f21f65d594"), "TREZOR")
         assertNotNull(hd);
         assertEquals(hd.mnemonic(), words)
+        assertEquals(Numeric.toHexString(hd.entropy()), "0xba5821e8c356c05ba5f025d9532fe0f21f65d594")
     }
 
     @Test

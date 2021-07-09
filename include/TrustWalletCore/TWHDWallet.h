@@ -52,6 +52,10 @@ TWData *_Nonnull TWHDWalletSeed(struct TWHDWallet *_Nonnull wallet);
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWHDWalletMnemonic(struct TWHDWallet *_Nonnull wallet);
 
+// Wallet entropy
+TW_EXPORT_PROPERTY
+TWData *_Nonnull TWHDWalletEntropy(struct TWHDWallet *_Nonnull wallet);
+
 /// Returns master key.  Returned object needs to be deleted.
 TW_EXPORT_METHOD
 struct TWPrivateKey *_Nonnull TWHDWalletGetMasterKey(struct TWHDWallet *_Nonnull wallet, enum TWCurve curve);
