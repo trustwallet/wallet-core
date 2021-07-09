@@ -38,7 +38,7 @@ class TestHDWallet {
 
     @Test
     fun testCreateFromMnemonicInvalid() {
-        val exception = false
+        var exception = false
         try {
             val hd = HDWallet("THIS IS AN INVALID MNEMONIC", "")
         } catch (ex: Exception) {
