@@ -37,11 +37,6 @@ public:
         extractKeyHashFromString(string);
     }
 
-    // n.b. you'll have to strip the chain-designator ("X-") for this to work
-    static bool decode(const std::string& addr, Address& obj_out) {
-        return Bech32Address::decode(addr, obj_out, hrp, true);
-    }
-
     std::string string() const;
 };
 

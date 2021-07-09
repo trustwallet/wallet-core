@@ -19,6 +19,12 @@ class AvalancheTests: XCTestCase {
         XCTAssertEqual(address.description, addressFromString.description)
     }
 
+    func testAddressData() {
+        let address = AnyAddress(string: "X-avax1q99lxu524h34ey36lzvqp0kzsylztp0j4ejsvm", coin: .avalancheXChain)!
+
+        XCTAssertEqual(address.data.hexString, "014bf3728aade35c923af89800bec2813e2585f2")
+    }
+
     func testXpub() {
         let wallet = HDWallet(mnemonic: "chimney noodle canyon tunnel sample stuff scan symbol sight club net own arrive cause suffer purity manage squirrel boost diesel bring cement father slide", passphrase: "")
         let xpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .avalancheXChain, version: .xpub)
