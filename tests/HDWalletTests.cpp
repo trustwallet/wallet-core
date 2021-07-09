@@ -37,13 +37,13 @@ TEST(HDWallet, generate) {
     {
         HDWallet wallet = HDWallet(128, password);
         EXPECT_TRUE(Mnemonic::isValid(wallet.mnemonic));
-        EXPECT_EQ(wallet.passphrase, password);
+        EXPECT_EQ(wallet.password, password);
         EXPECT_EQ(wallet.entropy.size(), 16);
     }
     {
         HDWallet wallet = HDWallet(256, password);
         EXPECT_TRUE(Mnemonic::isValid(wallet.mnemonic));
-        EXPECT_EQ(wallet.passphrase, password);
+        EXPECT_EQ(wallet.password, password);
         EXPECT_EQ(wallet.entropy.size(), 33);
     }
 }
@@ -57,10 +57,17 @@ TEST(HDWallet, generateInvalid) {
 TEST(HDWallet, createFromMnemonic) {
     {
         HDWallet wallet = HDWallet(mnemonic1, password);
-        EXPECT_EQ(hex(wallet.seed), "97fe6f346b022aa298a2b3e26dfafe75eba39f66610e04ec13528fb118245332f6e1e5801b03d387c2d9e874f4ae86738d6a048c65ba36f014988edbf7b63540");
         EXPECT_EQ(wallet.mnemonic, mnemonic1);
-        EXPECT_EQ(wallet.passphrase, password);
+        EXPECT_EQ(wallet.password, password);
         EXPECT_EQ(hex(wallet.entropy), "ba5821e8c356c05ba5f025d9532fe0f21f65d594");
+        EXPECT_EQ(hex(wallet.seed), "97fe6f346b022aa298a2b3e26dfafe75eba39f66610e04ec13528fb118245332f6e1e5801b03d387c2d9e874f4ae86738d6a048c65ba36f014988edbf7b63540");
+    }
+    {   // empty password
+        HDWallet wallet = HDWallet(mnemonic1, "");
+        EXPECT_EQ(wallet.mnemonic, mnemonic1);
+        EXPECT_EQ(wallet.password, "");
+        EXPECT_EQ(hex(wallet.entropy), "ba5821e8c356c05ba5f025d9532fe0f21f65d594");
+        EXPECT_EQ(hex(wallet.seed), "354c22aedb9a37407adc61f657a6f00d10ed125efa360215f36c6919abd94d6dbc193a5f9c495e21ee74118661e327e84a5f5f11fa373ec33b80897d4697557d");
     }
 }
 
@@ -69,16 +76,28 @@ TEST(HDWallet, createFromMnemonicInvalid) {
     EXPECT_EXCEPTION(HDWallet("", password), "Invalid mnemonic");
 }
 
-TEST(HDWallet, createFromData) {
+TEST(HDWallet, createFromEntropy) {
     {
         HDWallet wallet = HDWallet(parse_hex("ba5821e8c356c05ba5f025d9532fe0f21f65d594"), password);
         EXPECT_EQ(wallet.mnemonic, mnemonic1);
     }
 }
 
-TEST(HDWallet, createFromDataInvalid) {
+TEST(HDWallet, createFromEntropyInvalid) {
     EXPECT_EXCEPTION(HDWallet(parse_hex(""), password), "Invalid mnemonic data");
     EXPECT_EXCEPTION(HDWallet(parse_hex("123456"), password), "Invalid mnemonic data");
+}
+
+TEST(HDWallet, recreateFromEntropy) {
+    {
+        HDWallet wallet1 = HDWallet(mnemonic1, password);
+        EXPECT_EQ(wallet1.mnemonic, mnemonic1);
+        EXPECT_EQ(hex(wallet1.entropy), "ba5821e8c356c05ba5f025d9532fe0f21f65d594");
+        HDWallet wallet2 = HDWallet(wallet1.entropy, password);
+        EXPECT_EQ(wallet2.mnemonic, wallet1.mnemonic);
+        EXPECT_EQ(wallet2.entropy, wallet1.entropy);
+        EXPECT_EQ(wallet2.seed, wallet1.seed);
+    }
 }
 
 TEST(HDWallet, privateKeyFromXPRV) {

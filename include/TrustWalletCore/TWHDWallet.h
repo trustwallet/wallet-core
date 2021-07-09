@@ -25,15 +25,18 @@ struct TWHDWallet;
 TW_EXPORT_STATIC_METHOD
 bool TWHDWalletIsValid(TWString *_Nonnull mnemonic);
 
-/// Creates a new random HDWallet with the provided strength in bits.  Null is returned on invalid strength.  Returned object needs to be deleted.
+/// Creates a new HDWallet with a new random mnemonic with the provided strength in bits.
+/// Null is returned on invalid strength.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWHDWallet *_Nullable TWHDWalletCreate(int strength, TWString *_Nonnull passphrase);
 
-/// Creates an HDWallet from a mnemonic seed.  Null is returned on invalid mnemonic.  Returned object needs to be deleted.
+/// Creates an HDWallet from a mnemonic (aka. recovery phrase).
+/// Null is returned on invalid mnemonic.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWHDWallet *_Nullable TWHDWalletCreateWithMnemonic(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase);
 
-/// Creates an HDWallet from a seed.  Null is returned on invalid input.  Returned object needs to be deleted.
+/// Creates an HDWallet from entropy data (corresponding to a mnemonic).
+/// Null is returned on invalid input.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWHDWallet *_Nullable TWHDWalletCreateWithData(TWData *_Nonnull data, TWString *_Nonnull passphrase);
 
