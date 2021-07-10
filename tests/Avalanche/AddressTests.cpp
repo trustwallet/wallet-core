@@ -8,6 +8,7 @@
 #include "Avalanche/Address.h"
 #include "PublicKey.h"
 #include "PrivateKey.h"
+#include "TrustWalletCore/TWHRP.h"
 #include <gtest/gtest.h>
 #include <vector>
 
@@ -61,7 +62,7 @@ TEST(AvalancheAddress, AssignmentAndOperators) {
     auto baseline = Address("X-avax1apmh7wxg3js48fhacfv5y9md9065jxuft30vup");
     ASSERT_TRUE(baseline != emptyAddress);
     auto strippedString = "avax1apmh7wxg3js48fhacfv5y9md9065jxuft30vup";
-    auto success = Address::decode(strippedString, emptyAddress);
+    auto success = Bech32Address::decode(strippedString, emptyAddress, HRP_AVALANCHEX, true);
     ASSERT_TRUE(success);
     ASSERT_EQ("X-avax1apmh7wxg3js48fhacfv5y9md9065jxuft30vup", emptyAddress.string());
 }
