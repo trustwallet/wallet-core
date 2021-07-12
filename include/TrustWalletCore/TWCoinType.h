@@ -58,7 +58,6 @@ enum TWCoinType {
     TWCoinTypeXRP = 144,
     TWCoinTypeSolana = 501,
     TWCoinTypeStellar = 148,
-    TWCoinTypeTON = 396,
     TWCoinTypeTezos = 1729,
     TWCoinTypeTheta = 500,
     TWCoinTypeThunderToken = 1001,

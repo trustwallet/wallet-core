@@ -10,7 +10,6 @@
 #include "Coins.h"
 #include "Util.h"
 #include "Address.h"
-#include "TonCoin.h"
 
 #include "Base64.h"
 #include "HexCoding.h"
