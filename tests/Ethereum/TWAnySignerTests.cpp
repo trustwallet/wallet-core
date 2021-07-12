@@ -363,6 +363,8 @@ TEST(TWAnySignerEthereum, SignERC20Transfer_1559) {
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_nonce(nonce.data(), nonce.size());
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
+    input.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
+    input.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
     input.set_to_address(token);
     input.set_private_key(key.data(), key.size());
     auto& erc20 = *input.mutable_transaction()->mutable_erc20_transfer();
@@ -373,7 +375,7 @@ TEST(TWAnySignerEthereum, SignERC20Transfer_1559) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeEthereum);
 
-    ASSERT_EQ(hex(output.encoded()), "02f8a801808080830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000c001a08041772b7ba461f2e520b8a05f8d1e8125406a157af58f184accccd2631e59efa06897c06540909b0ff1a25065aa1fee06749c166d7b2e91cdf972188c8af89377");
+    ASSERT_EQ(hex(output.encoded()), "02f8b00180847735940084b2d05e00830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000c080a0adfcfdf98d4ed35a8967a0c1d78b42adb7c5d831cf5a3272654ec8f8bcd7be2ea011641e065684f6aa476f4fd250aa46cd0b44eccdb0a6e1650d658d1998684cdf");
 }
 
 TEST(TWAnySignerEthereum, SignERC20Approve_1559) {
@@ -391,6 +393,8 @@ TEST(TWAnySignerEthereum, SignERC20Approve_1559) {
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_nonce(nonce.data(), nonce.size());
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
+    input.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
+    input.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
     input.set_to_address(token);
     input.set_private_key(key.data(), key.size());
     auto& erc20 = *input.mutable_transaction()->mutable_erc20_approve();
@@ -401,7 +405,7 @@ TEST(TWAnySignerEthereum, SignERC20Approve_1559) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeEthereum);
 
-    ASSERT_EQ(hex(output.encoded()), "02f8a801808080830130b9946b175474e89094c44da98b954eedeac495271d0f80b844095ea7b30000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000c080a025c18c0cf93cfed646177796aed0ad18696dace9beaa6aa28924d40dbc612bfca0036e2897a9612e2a246ec961e439a3b544ae3e50ebe6b0b7db26a515949ed669");
+    ASSERT_EQ(hex(output.encoded()), "02f8b00180847735940084b2d05e00830130b9946b175474e89094c44da98b954eedeac495271d0f80b844095ea7b30000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000c080a05a43dda3dc193480ee532a5ed67ba8fbd2e3afb9eee218f4fb955b415d592925a01300e5b5f51c8cd5bf80f018cea3fb347fae589e65355068ac44ffc996313c60");
 }
 
 TEST(TWAnySignerEthereum, SignERC721Transfer_1559) {
@@ -420,6 +424,8 @@ TEST(TWAnySignerEthereum, SignERC721Transfer_1559) {
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_nonce(nonce.data(), nonce.size());
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
+    input.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
+    input.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
     input.set_to_address(tokenContract);
     input.set_private_key(key.data(), key.size());
     auto& erc721 = *input.mutable_transaction()->mutable_erc721_transfer();
@@ -431,7 +437,7 @@ TEST(TWAnySignerEthereum, SignERC721Transfer_1559) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeEthereum);
 
-    ASSERT_EQ(hex(output.encoded()), "02f8c801808080830130b9944e45e92ed38f885d39a733c14f1817217a89d42580b86423b872dd000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee5c080a010813a041af751d485b5e434fb8a8272a58747bb028ae63490a7fbb76c01ba9ea02badf94794d188a7c8b6fd030ada37d27f9d61b1ae8d54cec1961ea3252f6663");
+    ASSERT_EQ(hex(output.encoded()), "02f8d00180847735940084b2d05e00830130b9944e45e92ed38f885d39a733c14f1817217a89d42580b86423b872dd000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee5c080a0dbd591d1eac39bad62d7c158d5e1d55e7014d2218998f8980462e2f283f42d4aa05acadb904484a0fb5526a4c64b8addb8aac4f6548f90199e40eb787b79faed4a");
 }
 
 TEST(TWAnySignerEthereum, SignERC1155Transfer_1559) {
@@ -453,6 +459,8 @@ TEST(TWAnySignerEthereum, SignERC1155Transfer_1559) {
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_nonce(nonce.data(), nonce.size());
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
+    input.set_max_inclusion_fee_per_gas(maxInclusionFeePerGas.data(), maxInclusionFeePerGas.size());
+    input.set_max_fee_per_gas(maxFeePerGas.data(), maxFeePerGas.size());
     input.set_to_address(tokenContract);
     input.set_private_key(key.data(), key.size());
     auto& erc1155 = *input.mutable_transaction()->mutable_erc1155_transfer();
@@ -466,5 +474,5 @@ TEST(TWAnySignerEthereum, SignERC1155Transfer_1559) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeEthereum);
 
-    ASSERT_EQ(hex(output.encoded()), "02f9014801808080830130b9944e45e92ed38f885d39a733c14f1817217a89d42580b8e4f242432a000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee50000000000000000000000000000000000000000000000001bc16d674ec8000000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000040102030400000000000000000000000000000000000000000000000000000000c001a0f8361ee553306abc1d9392454a760745b387fe6b018791adf4de481d80991b2da07a8fbbf735d4ed8a226f972fb6db94cd84e71a24adbf6068effa0ed7debe4e8a");
+    ASSERT_EQ(hex(output.encoded()), "02f901500180847735940084b2d05e00830130b9944e45e92ed38f885d39a733c14f1817217a89d42580b8e4f242432a000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee50000000000000000000000000000000000000000000000001bc16d674ec8000000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000040102030400000000000000000000000000000000000000000000000000000000c080a0533df41dda5540c57257b7fe89c29cefff0155c333e063220df2bf9680fcc15aa036a844fd20de5a51de96ceaaf078558e87d86426a4a5d4b215ee1fd0fa397f8a");
 }
