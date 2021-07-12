@@ -793,28 +793,6 @@
     }
   },
   {
-    "id": "ton",
-    "name": "TON",
-    "coinId": 396,
-    "symbol": "GRAM",
-    "decimals": 9,
-    "blockchain": "TON",
-    "derivationPath": "m/44'/396'/0'",
-    "curve": "ed25519",
-    "publicKeyType": "ed25519",
-    "explorer": {
-      "url": "https://test.ton.org",
-      "txPath": "/testnet/transaction?hash=",
-      "accountPath": "/testnet/account?account="
-    },
-    "info": {
-      "url": "https://test.ton.org",
-      "client": "https://github.com/ton-blockchain/ton",
-      "clientPublic": "",
-      "clientDocs": "https://test.ton.org/"
-    }
-  },
-  {
     "id": "near",
     "name": "NEAR",
     "coinId": 397,
