@@ -62,6 +62,27 @@ class EthereumTests: XCTestCase {
         XCTAssertEqual(output.data.hexString, "a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000")
     }
 
+    func testSignERC20Transfer_1559() {
+        let input = EthereumSigningInput.with {
+            $0.chainID = Data(hexString: "01")!
+            $0.nonce = Data(hexString: "00")!
+            $0.maxInclusionFeePerGas = Data(hexString: "77359400")! // 2000000000
+            $0.maxFeePerGas = Data(hexString: "B2D05E00")! // 3000000000
+            $0.gasLimit = Data(hexString: "0130B9")! // 78009
+            $0.toAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // DAI
+            $0.privateKey = Data(hexString: "0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151")!
+            $0.transaction = EthereumTransaction.with {
+                $0.erc20Transfer = EthereumTransaction.ERC20Transfer.with {
+                    $0.to = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
+                    $0.amount = Data(hexString: "1bc16d674ec80000")! // 2000000000000000000
+                }
+            }
+        }
+        let output: EthereumSigningOutput = AnySigner.sign(input: input, coin: .ethereum)
+
+        XCTAssertEqual(output.encoded.hexString, "02f8a801808080830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000c001a08041772b7ba461f2e520b8a05f8d1e8125406a157af58f184accccd2631e59efa06897c06540909b0ff1a25065aa1fee06749c166d7b2e91cdf972188c8af89377")
+    }
+
     func testSignERC20Approve() {
         let input = EthereumSigningInput.with {
             $0.chainID = Data(hexString: "01")!

@@ -66,6 +66,30 @@ class TestEthereumTransactionSigner {
     }
 
     @Test
+    fun testEthereumERC20_1559_Signing() {
+        val signingInput = Ethereum.SigningInput.newBuilder()
+        signingInput.apply {
+            privateKey = ByteString.copyFrom(PrivateKey("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151".toHexByteArray()).data())
+            toAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // DAI
+            chainId = ByteString.copyFrom("0x1".toHexByteArray())
+            nonce = ByteString.copyFrom("0x0".toHexByteArray())
+            maxInclusionFeePerGas = ByteString.copyFrom("0x77359400".toHexByteArray()) // 2000000000
+            maxFeePerGas = ByteString.copyFrom("0xB2D05E00".toHexByteArray()) // 3000000000
+            gasLimit = ByteString.copyFrom("0x0130B9".toHexByteArray())
+            transaction = Ethereum.Transaction.newBuilder().apply {
+                erc20Transfer = Ethereum.Transaction.ERC20Transfer.newBuilder().apply {
+                    to = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
+                    amount = ByteString.copyFrom("0x1bc16d674ec80000".toHexByteArray())       
+                }.build()
+            }.build()
+        }
+
+        val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
+
+        assertEquals(Numeric.toHexString(output.encoded.toByteArray()), "02f8a801808080830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000c001a08041772b7ba461f2e520b8a05f8d1e8125406a157af58f184accccd2631e59efa06897c06540909b0ff1a25065aa1fee06749c166d7b2e91cdf972188c8af89377")
+    }
+
+    @Test
     fun testEthereumERC721Signing() {
         val signingInput = Ethereum.SigningInput.newBuilder()
         signingInput.apply {
