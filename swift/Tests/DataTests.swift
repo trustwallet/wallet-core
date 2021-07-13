@@ -21,4 +21,9 @@ class DataTests: XCTestCase {
         XCTAssertNil(Data(hexString: "0x28fa6ae00"))
         XCTAssertNil(Data(hexString: "28fa6ae00"))
     }
+    
+    func testOddCharacters() {
+        XCTAssertNotNil(Data(hexString: String(repeating: "a", count: 64)))
+        XCTAssertNil(Data(hexString: String(repeating: "a", count: 63) + "z"))
+    }
 }
