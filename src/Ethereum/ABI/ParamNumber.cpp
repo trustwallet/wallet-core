@@ -8,6 +8,7 @@
 
 #include <Data.h>
 #include <uint256.h>
+#include <HexCoding.h>
 
 #include <boost/lexical_cast.hpp>
 
@@ -17,6 +18,24 @@
 using namespace TW;
 using namespace TW::Ethereum::ABI;
 
+
+bool ParamUInt256::setUInt256FromValueJson(uint256_t& dest, const std::string& value) {
+    // try hex string or number
+    if (value.length() >= 3 && value.substr(0, 2) == "0x") {
+        dest = load(parse_hex(value));
+        return true;
+    }
+    return boost::conversion::detail::try_lexical_convert(value, dest);
+}
+
+bool ParamInt256::setInt256FromValueJson(int256_t& dest, const std::string& value) {
+    // try hex string or number
+    if (value.length() >= 3 && value.substr(0, 2) == "0x") {
+        dest = ValueEncoder::int256FromUint256(load(parse_hex(value)));
+        return true;
+    }
+    return boost::conversion::detail::try_lexical_convert(value, dest);
+}
 
 bool ParamBool::setValueJson(const std::string& value) {
     if (value == "true" || value == "1") { setVal(true); return true; }
@@ -61,10 +80,6 @@ uint256_t ParamUIntN::maskForBits(size_t bits) {
     return (uint256_t(1) << bits) - 1;
 }
 
-bool ParamUIntN::setValueJson(const std::string& value) {
-    return boost::conversion::detail::try_lexical_convert(value, _val);
-}
-
 void ParamIntN::setVal(int256_t val) {
     // mask it to the given bits
     if (val < 0) {
@@ -91,8 +106,4 @@ bool ParamIntN::decode(const Data& encoded, size_t& offset_inout) {
 void ParamIntN::init()
 {
     _mask = ParamUIntN::maskForBits(bits);
-}
-
-bool ParamIntN::setValueJson(const std::string& value) {
-    return boost::conversion::detail::try_lexical_convert(value, _val);
 }

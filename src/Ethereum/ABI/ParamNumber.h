@@ -59,7 +59,7 @@ public:
     virtual bool setValueJson(const std::string& value) {
         return boost::conversion::detail::try_lexical_convert(value, _val);
     }
-private:
+protected:
     T _val;
 };
 
@@ -70,6 +70,8 @@ public:
     ParamUInt256(uint256_t val) : ParamNumberType<uint256_t>(val) {}
     virtual std::string getType() const { return "uint256"; }
     uint256_t getVal() const { return ParamNumberType<uint256_t>::getVal(); }
+    virtual bool setValueJson(const std::string& value) { return setUInt256FromValueJson(_val, value); }
+    static bool setUInt256FromValueJson(uint256_t& dest, const std::string& value);
 };
 
 class ParamInt256 : public ParamNumberType<int256_t>
@@ -79,6 +81,8 @@ public:
     ParamInt256(int256_t val) : ParamNumberType<int256_t>(val) {}
     virtual std::string getType() const { return "int256"; }
     int256_t getVal() const { return ParamNumberType<int256_t>::getVal(); }
+    virtual bool setValueJson(const std::string& value) { return setInt256FromValueJson(_val, value); }
+    static bool setInt256FromValueJson(int256_t& dest, const std::string& value);
 };
 
 class ParamBool : public ParamNumberType<bool>
@@ -177,7 +181,7 @@ public:
     }
     virtual bool decode(const Data& encoded, size_t& offset_inout);
     static uint256_t maskForBits(size_t bits);
-    virtual bool setValueJson(const std::string& value);
+    virtual bool setValueJson(const std::string& value) { return ParamUInt256::setUInt256FromValueJson(_val, value); }
 
 private:
     void init();
@@ -202,7 +206,7 @@ public:
     virtual void encode(Data& data) const { ValueEncoder::encodeUInt256((uint256_t)_val, data); }
     static bool decodeNumber(const Data& encoded, int256_t& decoded, size_t& offset_inout);
     virtual bool decode(const Data& encoded, size_t& offset_inout);
-    virtual bool setValueJson(const std::string& value);
+    virtual bool setValueJson(const std::string& value) { return ParamInt256::setInt256FromValueJson(_val, value); }
 
 private:
     void init();
