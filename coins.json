@@ -1029,5 +1029,23 @@
             "clientPublic": "",
             "clientDocs": "https://polkadot.js.org/api/substrate/rpc.html"
         }
+    },
+    {
+        "id": "kusama",
+        "name": "Kusama",
+        "coinId": 434,
+        "symbol": "KSM",
+        "decimals": 12,
+        "blockchain": "Polkadot",
+        "derivationPath": "m/44'/434'/0'/0'/0'",
+        "curve": "ed25519",
+        "publicKeyType": "ed25519",
+        "explorer": "https://kusama.subscan.io/extrinsic/",
+        "info": {
+            "url": "https://kusama.network",
+            "client": "https://github.com/paritytech/polkadot",
+            "clientPublic": "wss://kusama-rpc.polkadot.io/",
+            "clientDocs": "https://polkadot.js.org/api/substrate/rpc.html"
+        }
     }
 ]

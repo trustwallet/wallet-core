@@ -76,6 +76,7 @@ enum TWCoinType {
     TWCoinTypeHarmony = 1023,
     TWCoinTypeAlgorand = 283,
     TWCoinTypePolkadot = 354,
+    TWCoinTypeKusama = 434,
 };
 
 /// Returns the blockchain for a coin type.
