@@ -6,14 +6,56 @@
 
 #include "ParamNumber.h"
 
-#include "../../Data.h"
-#include "../../uint256.h"
+#include <Data.h>
+#include <uint256.h>
+#include <HexCoding.h>
+
+#include <boost/lexical_cast.hpp>
 
 #include <string>
 #include <cassert>
 
 using namespace TW;
 using namespace TW::Ethereum::ABI;
+
+
+bool ParamUInt256::setUInt256FromValueJson(uint256_t& dest, const std::string& value) {
+    // try hex string or number
+    if (value.length() >= 3 && value.substr(0, 2) == "0x") {
+        dest = load(parse_hex(value));
+        return true;
+    }
+    return boost::conversion::detail::try_lexical_convert(value, dest);
+}
+
+bool ParamInt256::setInt256FromValueJson(int256_t& dest, const std::string& value) {
+    // try hex string or number
+    if (value.length() >= 3 && value.substr(0, 2) == "0x") {
+        dest = ValueEncoder::int256FromUint256(load(parse_hex(value)));
+        return true;
+    }
+    return boost::conversion::detail::try_lexical_convert(value, dest);
+}
+
+bool ParamBool::setValueJson(const std::string& value) {
+    if (value == "true" || value == "1") { setVal(true); return true; }
+    if (value == "false" || value == "0") { setVal(false); return true; }
+    return false;
+}
+
+bool ParamUInt8::setValueJson(const std::string& value) {
+    uint16_t val;
+    if (!boost::conversion::detail::try_lexical_convert(value, val)) { return false; }
+    setVal(static_cast<uint8_t>(val));
+    return true;
+}
+
+bool ParamInt8::setValueJson(const std::string& value) {
+    int16_t val;
+    if (!boost::conversion::detail::try_lexical_convert(value, val)) { return false; }
+    setVal(static_cast<int8_t>(val));
+    return true;
+}
 
 void ParamUIntN::setVal(uint256_t val) {
     // mask it to the given bits

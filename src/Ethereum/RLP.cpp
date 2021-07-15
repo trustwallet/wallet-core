@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -33,20 +33,6 @@ Data RLP::encodeList(const Data& encoded) noexcept {
     result.reserve(result.size() + encoded.size());
     result.insert(result.end(), encoded.begin(), encoded.end());
     return result;
-}
-
-Data RLP::encode(const Transaction& transaction) noexcept {
-    auto encoded = Data();
-    append(encoded, encode(transaction.nonce));
-    append(encoded, encode(transaction.gasPrice));
-    append(encoded, encode(transaction.gasLimit));
-    append(encoded, encode(transaction.to));
-    append(encoded, encode(transaction.amount));
-    append(encoded, encode(transaction.payload));
-    append(encoded, encode(transaction.v));
-    append(encoded, encode(transaction.r));
-    append(encoded, encode(transaction.s));
-    return encodeList(encoded);
 }
 
 Data RLP::encode(const Data& data) noexcept {
