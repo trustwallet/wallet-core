@@ -16,17 +16,29 @@ bool TWHDWalletIsValid(TWString *_Nonnull mnemonic) {
     return Mnemonic::isValid(TWStringUTF8Bytes(mnemonic));
 }
 
-struct TWHDWallet *_Nonnull TWHDWalletCreate(int strength, TWString *_Nonnull passphrase) {
-    return new TWHDWallet{ HDWallet(strength, TWStringUTF8Bytes(passphrase)) };
+struct TWHDWallet *_Nullable TWHDWalletCreate(int strength, TWString *_Nonnull passphrase) {
+    try {
+        return new TWHDWallet{ HDWallet(strength, TWStringUTF8Bytes(passphrase)) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
-struct TWHDWallet *_Nonnull TWHDWalletCreateWithMnemonic(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase) {
-    return new TWHDWallet{ HDWallet(TWStringUTF8Bytes(mnemonic), TWStringUTF8Bytes(passphrase)) };
+struct TWHDWallet *_Nullable TWHDWalletCreateWithMnemonic(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase) {
+    try {
+        return new TWHDWallet{ HDWallet(TWStringUTF8Bytes(mnemonic), TWStringUTF8Bytes(passphrase)) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
-struct TWHDWallet *_Nonnull TWHDWalletCreateWithData(TWData *_Nonnull data, TWString *_Nonnull passphrase) {
-    auto *d = reinterpret_cast<const Data*>(data);
-    return new TWHDWallet{ HDWallet(*d, TWStringUTF8Bytes(passphrase)) };
+struct TWHDWallet *_Nullable TWHDWalletCreateWithData(TWData *_Nonnull data, TWString *_Nonnull passphrase) {
+    try {
+        auto *d = reinterpret_cast<const Data*>(data);
+        return new TWHDWallet{ HDWallet(*d, TWStringUTF8Bytes(passphrase)) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 void TWHDWalletDelete(struct TWHDWallet *wallet) {
@@ -39,6 +51,10 @@ TWData *_Nonnull TWHDWalletSeed(struct TWHDWallet *_Nonnull wallet) {
 
 TWString *_Nonnull TWHDWalletMnemonic(struct TWHDWallet *_Nonnull wallet){
     return TWStringCreateWithUTF8Bytes(wallet->impl.mnemonic.c_str());
+}
+
+TWData *_Nonnull TWHDWalletEntropy(struct TWHDWallet *_Nonnull wallet) {
+    return TWDataCreateWithBytes(wallet->impl.entropy.data(), wallet->impl.entropy.size());
 }
 
 struct TWPrivateKey *_Nonnull TWHDWalletGetMasterKey(struct TWHDWallet *_Nonnull wallet, TWCurve curve) {
