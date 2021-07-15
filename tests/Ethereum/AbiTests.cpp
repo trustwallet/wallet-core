@@ -1235,6 +1235,8 @@ TEST(EthereumAbi, ParamFactorySetGetValue) {
         EXPECT_TRUE(p->setValueJson("13"));
         EXPECT_EQ("13", ParamFactory::getValue(p, p->getType()));
         EXPECT_FALSE(p->setValueJson("a5"));
+        EXPECT_FALSE(p->setValueJson("0xa5"));
+        EXPECT_FALSE(p->setValueJson("0x00"));
     }
     {
         auto p = std::make_shared<ParamUInt16>();
@@ -1242,6 +1244,8 @@ TEST(EthereumAbi, ParamFactorySetGetValue) {
         EXPECT_TRUE(p->setValueJson("1234"));
         EXPECT_EQ("1234", ParamFactory::getValue(p, p->getType()));
         EXPECT_FALSE(p->setValueJson("a5"));
+        EXPECT_FALSE(p->setValueJson("0xa5"));
+        EXPECT_FALSE(p->setValueJson("0x00"));
     }
     {
         auto p = std::make_shared<ParamUInt32>();
@@ -1249,6 +1253,8 @@ TEST(EthereumAbi, ParamFactorySetGetValue) {
         EXPECT_TRUE(p->setValueJson("1234567"));
         EXPECT_EQ("1234567", ParamFactory::getValue(p, p->getType()));
         EXPECT_FALSE(p->setValueJson("a5"));
+        EXPECT_FALSE(p->setValueJson("0xa5"));
+        EXPECT_FALSE(p->setValueJson("0x00"));
     }
     {
         auto p = std::make_shared<ParamUInt64>();
@@ -1256,12 +1262,16 @@ TEST(EthereumAbi, ParamFactorySetGetValue) {
         EXPECT_TRUE(p->setValueJson("1234567"));
         EXPECT_EQ("1234567", ParamFactory::getValue(p, p->getType()));
         EXPECT_FALSE(p->setValueJson("a5"));
+        EXPECT_FALSE(p->setValueJson("0xa5"));
+        EXPECT_FALSE(p->setValueJson("0x00"));
     }
     {
         auto p = std::make_shared<ParamUIntN>(128);
         EXPECT_EQ("0", ParamFactory::getValue(p, p->getType()));
         EXPECT_TRUE(p->setValueJson("1234567890123456789"));
         EXPECT_EQ("1234567890123456789", ParamFactory::getValue(p, p->getType()));
+        EXPECT_TRUE(p->setValueJson("0xa5"));
+        EXPECT_EQ("165", ParamFactory::getValue(p, p->getType()));
         EXPECT_FALSE(p->setValueJson("a5"));
     }
     {
@@ -1269,6 +1279,8 @@ TEST(EthereumAbi, ParamFactorySetGetValue) {
         EXPECT_EQ("0", ParamFactory::getValue(p, p->getType()));
         EXPECT_TRUE(p->setValueJson("1234567890123456789"));
         EXPECT_EQ("1234567890123456789", ParamFactory::getValue(p, p->getType()));
+        EXPECT_TRUE(p->setValueJson("0xa5"));
+        EXPECT_EQ("165", ParamFactory::getValue(p, p->getType()));
         EXPECT_FALSE(p->setValueJson("a5"));
     }
     {
@@ -1276,7 +1288,11 @@ TEST(EthereumAbi, ParamFactorySetGetValue) {
         EXPECT_EQ("0", ParamFactory::getValue(p, p->getType()));
         EXPECT_TRUE(p->setValueJson("1234567890123456789"));
         EXPECT_EQ("1234567890123456789", ParamFactory::getValue(p, p->getType()));
+        EXPECT_TRUE(p->setValueJson("0xa5"));
+        EXPECT_EQ("165", ParamFactory::getValue(p, p->getType()));
+        EXPECT_TRUE(p->setValueJson("0x00"));
         EXPECT_FALSE(p->setValueJson("a5"));
+        EXPECT_FALSE(p->setValueJson("0x"));
     }
     {
         auto p = std::make_shared<ParamInt8>();
@@ -1284,6 +1300,8 @@ TEST(EthereumAbi, ParamFactorySetGetValue) {
         EXPECT_TRUE(p->setValueJson("13"));
         EXPECT_EQ("13", ParamFactory::getValue(p, p->getType()));
         EXPECT_FALSE(p->setValueJson("a5"));
+        EXPECT_FALSE(p->setValueJson("0xa5"));
+        EXPECT_FALSE(p->setValueJson("0x00"));
     }
     {
         auto p = std::make_shared<ParamInt16>();
@@ -1291,6 +1309,8 @@ TEST(EthereumAbi, ParamFactorySetGetValue) {
         EXPECT_TRUE(p->setValueJson("1234"));
         EXPECT_EQ("1234", ParamFactory::getValue(p, p->getType()));
         EXPECT_FALSE(p->setValueJson("a5"));
+        EXPECT_FALSE(p->setValueJson("0xa5"));
+        EXPECT_FALSE(p->setValueJson("0x00"));
     }
     {
         auto p = std::make_shared<ParamInt32>();
@@ -1298,6 +1318,8 @@ TEST(EthereumAbi, ParamFactorySetGetValue) {
         EXPECT_TRUE(p->setValueJson("1234567"));
         EXPECT_EQ("1234567", ParamFactory::getValue(p, p->getType()));
         EXPECT_FALSE(p->setValueJson("a5"));
+        EXPECT_FALSE(p->setValueJson("0xa5"));
+        EXPECT_FALSE(p->setValueJson("0x00"));
     }
     {
         auto p = std::make_shared<ParamInt64>();
@@ -1305,12 +1327,16 @@ TEST(EthereumAbi, ParamFactorySetGetValue) {
         EXPECT_TRUE(p->setValueJson("1234567"));
         EXPECT_EQ("1234567", ParamFactory::getValue(p, p->getType()));
         EXPECT_FALSE(p->setValueJson("a5"));
+        EXPECT_FALSE(p->setValueJson("0xa5"));
+        EXPECT_FALSE(p->setValueJson("0x00"));
     }
     {
         auto p = std::make_shared<ParamIntN>(128);
         EXPECT_EQ("0", ParamFactory::getValue(p, p->getType()));
         EXPECT_TRUE(p->setValueJson("1234567890123456789"));
         EXPECT_EQ("1234567890123456789", ParamFactory::getValue(p, p->getType()));
+        EXPECT_TRUE(p->setValueJson("0xa5"));
+        EXPECT_EQ("165", ParamFactory::getValue(p, p->getType()));
         EXPECT_FALSE(p->setValueJson("a5"));
     }
     {
@@ -1318,6 +1344,8 @@ TEST(EthereumAbi, ParamFactorySetGetValue) {
         EXPECT_EQ("0", ParamFactory::getValue(p, p->getType()));
         EXPECT_TRUE(p->setValueJson("1234567890123456789"));
         EXPECT_EQ("1234567890123456789", ParamFactory::getValue(p, p->getType()));
+        EXPECT_TRUE(p->setValueJson("0xa5"));
+        EXPECT_EQ("165", ParamFactory::getValue(p, p->getType()));
         EXPECT_FALSE(p->setValueJson("a5"));
     }
     {
@@ -1325,14 +1353,23 @@ TEST(EthereumAbi, ParamFactorySetGetValue) {
         EXPECT_EQ("0", ParamFactory::getValue(p, p->getType()));
         EXPECT_TRUE(p->setValueJson("1234567890123456789"));
         EXPECT_EQ("1234567890123456789", ParamFactory::getValue(p, p->getType()));
+        EXPECT_TRUE(p->setValueJson("0xa5"));
+        EXPECT_EQ("165", ParamFactory::getValue(p, p->getType()));
+        EXPECT_TRUE(p->setValueJson("0x00"));
         EXPECT_FALSE(p->setValueJson("a5"));
+        EXPECT_FALSE(p->setValueJson("0x"));
     }
     {
         auto p = std::make_shared<ParamBool>();
         EXPECT_EQ("false", ParamFactory::getValue(p, p->getType()));
         EXPECT_TRUE(p->setValueJson("true"));
         EXPECT_EQ("true", ParamFactory::getValue(p, p->getType()));
+        EXPECT_TRUE(p->setValueJson("false"));
+        EXPECT_TRUE(p->setValueJson("1"));
+        EXPECT_TRUE(p->setValueJson("0"));
         EXPECT_FALSE(p->setValueJson("a5"));
+        EXPECT_FALSE(p->setValueJson("0xa5"));
+        EXPECT_FALSE(p->setValueJson("0x00"));
     }
     {
         auto p = std::make_shared<ParamString>();

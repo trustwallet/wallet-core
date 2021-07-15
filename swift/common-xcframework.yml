@@ -31,7 +31,6 @@ targets:
         - "proto/*.proto"
         - "Tron/Protobuf/*.proto"
         - "Zilliqa/Protobuf/*.proto"
-        - "TON/*.md"
     dependencies:
       - target: trezor-crypto_${platform}
         link: true

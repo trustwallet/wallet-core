@@ -39,7 +39,6 @@ enum TWBlockchain {
     TWBlockchainHarmony = 25,
     TWBlockchainNEAR = 26,
     TWBlockchainAlgorand = 27,
-    TWBlockchainTON = 28,
     TWBlockchainPolkadot = 29,
     TWBlockchainCardano = 30,
     TWBlockchainNEO = 31,

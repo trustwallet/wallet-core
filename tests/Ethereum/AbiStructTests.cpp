@@ -104,7 +104,7 @@ TEST(EthereumAbiStruct, encodeTypes_Json) {
             "domain": {
                 "name": "Ether Mail",
                 "version": "1",
-                "chainId": 1,
+                "chainId": "0x01",
                 "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
             },
             "message": {
