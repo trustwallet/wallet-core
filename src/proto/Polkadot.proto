@@ -27,8 +27,12 @@ message Balance {
         string to_address = 1;
         bytes value = 2; // big integer
     }
+    message BatchTransfer {
+        repeated Transfer transfers = 1;
+    }
     oneof message_oneof {
         Transfer transfer = 1;
+        BatchTransfer batchTransfer = 2;
     }
 }
 
