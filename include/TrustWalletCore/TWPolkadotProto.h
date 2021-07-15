@@ -8,6 +8,8 @@
 
 #include "TWData.h"
 
-typedef TWData *_Nonnull TW_Polkadot_Proto_ExtrinsicsTransfer;
+typedef TWData *_Nonnull TW_Polkadot_Proto_Era;
+typedef TWData *_Nonnull TW_Polkadot_Proto_Balance;
+typedef TWData *_Nonnull TW_Polkadot_Proto_Staking;
 typedef TWData *_Nonnull TW_Polkadot_Proto_SigningInput;
 typedef TWData *_Nonnull TW_Polkadot_Proto_SigningOutput;

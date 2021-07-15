@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package TW.Polkadot.Proto;
+option java_package = "wallet.core.jni.proto";
+
+enum Network {
+    POLKADOT = 0;
+    KUSAMA = 2;
+}
+
+enum RewardDestination {
+    STAKED = 0;
+    STASH = 1;
+    CONTROLLER = 2;
+}
+
+message Era {
+    // recent block number (called phase in polkadot code), should match block hash
+    uint64 block_number = 1;
+
+    // length of period, calculated from block number, e.g. 64
+    uint64 period = 2;
+}
+
+message Balance {
+    message Transfer {
+        string to_address = 1;
+        bytes value = 2; // big integer
+    }
+    oneof message_oneof {
+        Transfer transfer = 1;
+    }
+}
+
+message Staking {
+    message Bond {
+        string controller = 1;
+        bytes value = 2;
+        RewardDestination reward_destination = 3;
+    }
+
+    message BondAndNominate {
+        string controller = 1;
+        bytes value = 2;
+        RewardDestination reward_destination = 3;
+        repeated string nominators = 4;
+    }
+
+    message BondExtra {
+        bytes value = 1;
+    }
+
+    message Unbond {
+        bytes value = 1;
+    }
+
+    message WithdrawUnbonded {
+        int32 slashing_spans = 1;
+    }
+
+    message Nominate {
+        repeated string nominators = 1;
+    }
+
+    message Chill {}
+
+    oneof message_oneof {
+        Bond bond = 1;
+        BondAndNominate bond_and_nominate = 2;
+        BondExtra bond_extra = 3;
+        Unbond unbond = 4;
+        WithdrawUnbonded withdraw_unbonded = 5;
+        Nominate nominate = 6;
+        Chill chill = 7;
+    }
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Recent block hash, or genesis hash if era is not set
+    bytes block_hash = 1;
+
+    bytes genesis_hash = 2;
+
+    // Current account nonce
+    uint64 nonce = 3;
+
+    uint32 spec_version = 4;
+    uint32 transaction_version = 5;
+    bytes tip = 6;  // big integer
+
+    // Optional time validity limit, recommended, for replay-protection.  Empty means Immortal.
+    Era era = 7;
+
+    bytes private_key = 8;
+    Network network = 9;
+
+    oneof message_oneof {
+        Balance balance_call = 10;
+        Staking staking_call = 11;
+    }
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+}

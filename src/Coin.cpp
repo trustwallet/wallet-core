@@ -41,6 +41,8 @@
 #include "Zcash/TAddress.h"
 #include "Zilliqa/Address.h"
 #include "NEO/Address.h"
+#include "Polkadot/Address.h"
+#include "Kusama/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>
 
@@ -177,6 +179,12 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
 
     case TWCoinTypeNEO:
         return NEO::Address::isValid(string);
+
+    case TWCoinTypePolkadot:
+        return Polkadot::Address::isValid(string);
+
+    case TWCoinTypeKusama:
+        return Kusama::Address::isValid(string);
     }        
 }
 
@@ -308,6 +316,12 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
 
     case TWCoinTypeNEO:
         return NEO::Address(publicKey).string();
+
+    case TWCoinTypePolkadot:
+        return Polkadot::Address(publicKey).string();
+
+    case TWCoinTypeKusama:
+        return Kusama::Address(publicKey).string();
     }
 }
 
