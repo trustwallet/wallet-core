@@ -43,13 +43,16 @@ class HDWallet {
     TW::Data entropy;
 
   public:
-    /// Initializes a new random HDWallet with the provided strength in bits.  Throws on invalid strength.
+    /// Initializes a new random HDWallet with the provided strength in bits.  
+    /// Throws on invalid strength.  Not thread safe!
     HDWallet(int strength, const std::string& password);
 
-    /// Initializes an HDWallet from a mnemonic.  Throws on invalid mnemonic.
+    /// Initializes an HDWallet from a mnemonic.
+    /// Throws on invalid mnemonic.  Not thread safe!
     HDWallet(const std::string& mnemonic, const std::string& password);
 
-    /// Initializes an HDWallet from an entropy.  Throws on invalid data.
+    /// Initializes an HDWallet from an entropy.
+    /// Throws on invalid data.  Not thread safe!
     HDWallet(const Data& entropy, const std::string& password);
 
     HDWallet(const HDWallet& other) = default;
