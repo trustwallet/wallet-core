@@ -21,9 +21,7 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_CLASS
 struct TWHDWallet;
 
-/// Deprecated; use TWMnemonicIsValid().  Determines if a mnemonic phrase is valid.
-TW_EXPORT_STATIC_METHOD
-bool TWHDWalletIsValid(TWString *_Nonnull mnemonic);
+/// TWHDWalletIsValid has been deprecated; use TWMnemonicIsValid().
 
 /// Creates a new HDWallet with a new random mnemonic with the provided strength in bits.
 /// Null is returned on invalid strength.  Returned object needs to be deleted.
@@ -35,10 +33,10 @@ struct TWHDWallet *_Nullable TWHDWalletCreate(int strength, TWString *_Nonnull p
 TW_EXPORT_STATIC_METHOD
 struct TWHDWallet *_Nullable TWHDWalletCreateWithMnemonic(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase);
 
-/// Creates an HDWallet from entropy data (corresponding to a mnemonic).
+/// Creates an HDWallet from entropy (corresponding to a mnemonic).
 /// Null is returned on invalid input.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
-struct TWHDWallet *_Nullable TWHDWalletCreateWithData(TWData *_Nonnull data, TWString *_Nonnull passphrase);
+struct TWHDWallet *_Nullable TWHDWalletCreateWithEntropy(TWData *_Nonnull entropy, TWString *_Nonnull passphrase);
 
 /// Deletes a wallet.
 TW_EXPORT_METHOD
