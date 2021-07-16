@@ -33,8 +33,8 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve);
 const char* curveName(TWCurve curve);
 } // namespace
 
-HDWallet::HDWallet(int strength, const std::string& password)
-    : password(password) {
+HDWallet::HDWallet(int strength, const std::string& passphrase)
+    : passphrase(passphrase) {
     const char* mnemonic_chars = mnemonic_generate(strength);
     if (mnemonic_chars == nullptr) {
         throw std::invalid_argument("Invalid strength");
@@ -44,8 +44,8 @@ HDWallet::HDWallet(int strength, const std::string& password)
     updateSeedAndEntropy();
 }
 
-HDWallet::HDWallet(const std::string& mnemonic, const std::string& password)
-    : mnemonic(mnemonic), password(password) {
+HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase)
+    : mnemonic(mnemonic), passphrase(passphrase) {
     if (!Mnemonic::isValid(mnemonic)) {
         throw std::invalid_argument("Invalid mnemonic");
     }
@@ -53,8 +53,8 @@ HDWallet::HDWallet(const std::string& mnemonic, const std::string& password)
     updateSeedAndEntropy();
 }
 
-HDWallet::HDWallet(const Data& entropy, const std::string& password)
-    : password(password) {
+HDWallet::HDWallet(const Data& entropy, const std::string& passphrase)
+    : passphrase(passphrase) {
     const char* mnemonic_chars = mnemonic_from_data(entropy.data(), static_cast<int>(entropy.size()));
     if (mnemonic_chars == nullptr) {
         throw std::invalid_argument("Invalid mnemonic data");
@@ -67,13 +67,13 @@ HDWallet::HDWallet(const Data& entropy, const std::string& password)
 HDWallet::~HDWallet() {
     std::fill(seed.begin(), seed.end(), 0);
     std::fill(mnemonic.begin(), mnemonic.end(), 0);
-    std::fill(password.begin(), password.end(), 0);
+    std::fill(passphrase.begin(), passphrase.end(), 0);
 }
 
 void HDWallet::updateSeedAndEntropy() {
     // generate seed from mnemonic
     // it is assumed that mnemonic is valid, enforced before calling
-    mnemonic_to_seed(mnemonic.c_str(), password.c_str(), seed.data(), nullptr);
+    mnemonic_to_seed(mnemonic.c_str(), passphrase.c_str(), seed.data(), nullptr);
 
     // generate entropy from mnemonic
     Data entropyRaw((Mnemonic::MaxWords * 11) / 8);
