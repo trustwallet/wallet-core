@@ -62,8 +62,6 @@ class HDWallet {
 
     virtual ~HDWallet();
 
-    void updateSeedAndEntropy();
-
     /// Returns master key.
     PrivateKey getMasterKey(TWCurve curve) const;
 
@@ -97,6 +95,9 @@ class HDWallet {
     
     // obtain privateKeyType used by the coin/curve
     static PrivateKeyType getPrivateKeyType(TWCurve curve);
+
+  private:
+    void updateSeedAndEntropy();
 };
 
 } // namespace TW
