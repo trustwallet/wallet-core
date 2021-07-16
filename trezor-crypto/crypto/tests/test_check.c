@@ -5005,6 +5005,11 @@ START_TEST(test_mnemonic) {
     b += 3;
     c += 3;
   }
+
+  // [wallet-core] negative test: provided buffer invalid (too small or null)
+  ck_assert_int_eq((int)(mnemonic_from_data(fromhex(vectors[0]), strlen(vectors[0]) / 2, buf, 200)), 0);
+  ck_assert_int_eq((int)(mnemonic_from_data(fromhex(vectors[0]), strlen(vectors[0]) / 2, buf, 0)), 0);
+  ck_assert_int_eq((int)(mnemonic_from_data(fromhex(vectors[0]), strlen(vectors[0]) / 2, NULL, 240)), 0);
 }
 END_TEST
 
