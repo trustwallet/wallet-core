@@ -21,9 +21,7 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_CLASS
 struct TWHDWallet;
 
-/// Deprecated; use TWMnemonicIsValid().  Determines if a mnemonic phrase is valid.
-TW_EXPORT_STATIC_METHOD
-bool TWHDWalletIsValid(TWString *_Nonnull mnemonic);
+/// TWHDWalletIsValid has been deprecated; use TWMnemonicIsValid().
 
 /// Creates a new HDWallet with a new random mnemonic with the provided strength in bits.
 /// Null is returned on invalid strength.  Method not thread safe!  Returned object needs to be deleted.

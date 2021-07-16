@@ -12,9 +12,6 @@
 
 using namespace TW;
 
-bool TWHDWalletIsValid(TWString *_Nonnull mnemonic) {
-    return Mnemonic::isValid(TWStringUTF8Bytes(mnemonic));
-}
 
 struct TWHDWallet *_Nullable TWHDWalletCreate(int strength, TWString *_Nonnull passphrase) {
     try {

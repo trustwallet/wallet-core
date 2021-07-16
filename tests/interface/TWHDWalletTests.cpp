@@ -11,6 +11,7 @@
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWData.h>
 #include <TrustWalletCore/TWHDWallet.h>
+#include <TrustWalletCore/TWMnemonic.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWBase58.h>
@@ -59,12 +60,7 @@ TEST(HDWallet, CreateFromEntropy) {
 
 TEST(HDWallet, Generate) {
     const auto wallet = WRAP(TWHDWallet, TWHDWalletCreate(128, passphrase.get()));
-    EXPECT_TRUE(TWHDWalletIsValid(WRAPS(TWHDWalletMnemonic(wallet.get())).get()));
-}
-
-TEST(HDWallet, IsValid) {
-    EXPECT_TRUE(TWHDWalletIsValid(STRING("credit expect life fade cover suit response wash pear what skull force").get()));
-    EXPECT_FALSE(TWHDWalletIsValid(STRING("ripple scissors hisc mammal hire column oak again sun offer wealth tomorrow").get())); // invalid word
+    EXPECT_TRUE(TWMnemonicIsValid(WRAPS(TWHDWalletMnemonic(wallet.get())).get()));
 }
 
 TEST(HDWallet, SeedWithExtraSpaces) {
