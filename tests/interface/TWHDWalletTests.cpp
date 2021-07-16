@@ -51,7 +51,7 @@ TEST(HDWallet, CreateFromMnemonic) {
 }
 
 TEST(HDWallet, CreateFromEntropy) {
-    const auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithData(DATA(entropyHex).get(), passphrase.get()));
+    const auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithEntropy(DATA(entropyHex).get(), passphrase.get()));
     assertMnemonicEq(wallet, wordsStr);
     assertSeedEq(wallet, seedHex);
     assertEntropyEq(wallet, entropyHex);

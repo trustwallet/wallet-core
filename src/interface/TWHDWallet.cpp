@@ -32,9 +32,9 @@ struct TWHDWallet *_Nullable TWHDWalletCreateWithMnemonic(TWString *_Nonnull mne
     }
 }
 
-struct TWHDWallet *_Nullable TWHDWalletCreateWithData(TWData *_Nonnull data, TWString *_Nonnull passphrase) {
+struct TWHDWallet *_Nullable TWHDWalletCreateWithEntropy(TWData *_Nonnull entropy, TWString *_Nonnull passphrase) {
     try {
-        auto *d = reinterpret_cast<const Data*>(data);
+        auto *d = reinterpret_cast<const Data*>(entropy);
         return new TWHDWallet{ HDWallet(*d, TWStringUTF8Bytes(passphrase)) };
     } catch (...) {
         return nullptr;

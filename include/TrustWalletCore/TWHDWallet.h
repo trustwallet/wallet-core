@@ -35,10 +35,10 @@ struct TWHDWallet *_Nullable TWHDWalletCreate(int strength, TWString *_Nonnull p
 TW_EXPORT_STATIC_METHOD
 struct TWHDWallet *_Nullable TWHDWalletCreateWithMnemonic(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase);
 
-/// Creates an HDWallet from entropy data (corresponding to a mnemonic).
+/// Creates an HDWallet from entropy (corresponding to a mnemonic).
 /// Null is returned on invalid input.  Method not thread safe!  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
-struct TWHDWallet *_Nullable TWHDWalletCreateWithData(TWData *_Nonnull data, TWString *_Nonnull passphrase);
+struct TWHDWallet *_Nullable TWHDWalletCreateWithEntropy(TWData *_Nonnull entropy, TWString *_Nonnull passphrase);
 
 /// Deletes a wallet.
 TW_EXPORT_METHOD
