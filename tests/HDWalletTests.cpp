@@ -15,6 +15,7 @@
 #include "Hash.h"
 #include "Base58.h"
 #include "Coin.h"
+#include "interface/TWTestUtilities.h"
 
 #include <gtest/gtest.h>
 
@@ -22,16 +23,6 @@ namespace TW {
 
 const auto mnemonic1 = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
 const auto password = "password";
-
-#define EXPECT_EXCEPTION(statement, exceptionMsg) \
-    try { \
-        statement; \
-        FAIL() << "No exception"; \
-    } catch (const std::exception& ex) { \
-        EXPECT_EQ(std::string(ex.what()), exceptionMsg); \
-    } catch (...) { \
-        FAIL() << "Not the expected exception"; \
-    }
 
 TEST(HDWallet, generate) {
     {
