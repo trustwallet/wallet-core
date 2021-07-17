@@ -51,6 +51,10 @@ bool ParamByteArray::setValueJson(const std::string& value) {
     return true;
 }
 
+Data ParamByteArray::hashStruct() const {
+    return Hash::keccak256(_bytes);
+}
+
 void ParamByteArrayFix::encode(Data& data) const {
     const auto count = _bytes.size();
     const auto padding = ValueEncoder::padNeeded32(count);
@@ -79,6 +83,10 @@ bool ParamByteArrayFix::decodeBytesFix(const Data& encoded, size_t n, Data& deco
 bool ParamByteArrayFix::setValueJson(const std::string& value) {
     setVal(parse_hex(value));
     return true;
+}
+
+Data ParamByteArrayFix::hashStruct() const {
+    return Hash::keccak256(_bytes);
 }
 
 void ParamString::encodeString(const std::string& decoded, Data& data) {

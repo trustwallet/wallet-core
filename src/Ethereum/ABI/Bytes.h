@@ -33,6 +33,7 @@ public:
         return decodeBytes(encoded, _bytes, offset_inout);
     }
     virtual bool setValueJson(const std::string& value);
+    virtual Data hashStruct() const;
 };
 
 /// Fixed-size array of bytes, "bytes<N>"
@@ -56,6 +57,7 @@ public:
         return decodeBytesFix(encoded, _n, _bytes, offset_inout);
     }
     virtual bool setValueJson(const std::string& value);
+    virtual Data hashStruct() const;
 };
 
 /// Var-length string parameter
