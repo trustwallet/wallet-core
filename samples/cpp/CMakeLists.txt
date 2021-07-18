@@ -4,6 +4,7 @@ cmake_minimum_required (VERSION 3.4)
 project (wallet-core-demo-cpp)
 
 set (SETUP_MESSAGE "Please provide TrustWalletCore build directory with -DWALLET_CORE.   Example: cmake . -DWALLET_CORE=../wallet-core")
+set(CMAKE_OSX_DEPLOYMENT_TARGET "10.14" CACHE STRING "Minimum OS X deployment version" FORCE)
 
 if (NOT WALLET_CORE)
     message (FATAL_ERROR "${SETUP_MESSAGE}")
