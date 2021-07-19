@@ -55,7 +55,9 @@ std::vector<uint8_t> Transaction::getWitnessPreImage(const Script &scriptCode, s
     // The prevout may already be contained in hashPrevout, and the nSequence
     // may already be contain in hashSequence.
     reinterpret_cast<const TW::Bitcoin::OutPoint&>(inputs[index].previousOutput).encode(data);
-    scriptCode.encode(data);
+    // According to https://github.com/bitcoin/bips/blob/master/bip-0143.mediawiki#Native_P2WPKH
+    // We should ignore script size
+    std::copy(std::begin(scriptCode.bytes), std::end(scriptCode.bytes), std::back_inserter(data));
 
     encode64LE(amount, data);
     encode32LE(inputs[index].sequence, data);
