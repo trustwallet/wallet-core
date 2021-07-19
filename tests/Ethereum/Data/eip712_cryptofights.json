@@ -1,0 +1,83 @@
+{
+    "types": {
+        "EIP712Domain": [
+            {
+                "name": "name",
+                "type": "string"
+            },
+            {
+                "name": "version",
+                "type": "string"
+            },
+            {
+                "name": "chainId",
+                "type": "uint256"
+            },
+            {
+                "name": "verifyingContract",
+                "type": "address"
+            },
+            {
+                "name": "salt",
+                "type": "bytes32"
+            }
+        ],
+        "Trade": [
+            {
+                "name": "nonce",
+                "type": "bytes32"
+            },
+            {
+                "name": "firstParty",
+                "type": "address"
+            },
+            {
+                "name": "askingId",
+                "type": "uint256"
+            },
+            {
+                "name": "askingQty",
+                "type": "uint256"
+            },
+            {
+                "name": "offeringId",
+                "type": "uint256"
+            },
+            {
+                "name": "offeringQty",
+                "type": "uint256"
+            },
+            {
+                "name": "maxFee",
+                "type": "uint256"
+            },
+            {
+                "name": "secondParty",
+                "type": "address"
+            },
+            {
+                "name": "count",
+                "type": "uint8"
+            }
+        ]
+    },
+    "domain": {
+        "name": "CryptoFights Trading",
+        "version": "1",
+        "chainId": 1,
+        "verifyingContract": "0xdc45529aC0FA3185f79A005e57deF64F600c4e97",
+        "salt": "0x0"
+    },
+    "primaryType": "Trade",
+    "message": {
+        "count": 1,
+        "offeringQty": 1,
+        "askingQty": 2,
+        "nonce": "0xcfe49aa546453df3f2e768a97204a3268cef7c27df53cc2f2d47385cfeaf",
+        "firstParty": "0xC36edF48e21cf395B206352A1819DE658fD7f988",
+        "askingId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "offeringId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "maxFee": "1000000000000000000",
+        "secondParty": "0x0000000000000000000000000000000000000000"
+    }
+}

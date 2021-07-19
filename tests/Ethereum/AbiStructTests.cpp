@@ -10,11 +10,20 @@
 #include <HexCoding.h>
 #include <PrivateKey.h>
 
+#include <fstream>
 #include <gtest/gtest.h>
 
 using namespace TW::Ethereum::ABI;
 using namespace TW::Ethereum;
 using namespace TW;
+
+extern std::string TESTS_ROOT;
+
+std::string load_file(const std::string path) {
+    std::ifstream stream(path);
+    std::string content((std::istreambuf_iterator<char>(stream)), (std::istreambuf_iterator<char>()));
+    return content;
+}
 
 // https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
 
@@ -489,57 +498,9 @@ TEST(EthereumAbiStruct, hashStructJson) {
 
 TEST(EthereumAbiStruct, hashStruct_walletConnect) {
     // https://github.com/WalletConnect/walletconnect-example-dapp/blob/master/src/helpers/eip712.ts
-    auto hash = ParamStruct::hashStructJson(
-        R"({
-            "types": {
-                "EIP712Domain": [
-                    { "name": "name", "type": "string" },
-                    { "name": "version", "type": "string" },
-                    { "name": "verifyingContract", "type": "address" }
-                ],
-                "RelayRequest": [
-                    { "name": "target", "type": "address" },
-                    { "name": "encodedFunction", "type": "bytes" },
-                    { "name": "gasData", "type": "GasData" },
-                    { "name": "relayData", "type": "RelayData" }
-                ],
-                "GasData": [
-                    { "name": "gasLimit", "type": "uint256" },
-                    { "name": "gasPrice", "type": "uint256" },
-                    { "name": "pctRelayFee", "type": "uint256" },
-                    { "name": "baseRelayFee", "type": "uint256" }
-                ],
-                "RelayData": [
-                    { "name": "senderAddress", "type": "address" },
-                    { "name": "senderNonce", "type": "uint256" },
-                    { "name": "relayWorker", "type": "address" },
-                    { "name": "paymaster", "type": "address" }
-                ]
-            },
-            "domain": {
-                "name": "GSN Relayed Transaction",
-                "version": "1",
-                "chainId": 42,
-                "verifyingContract": "0x6453D37248Ab2C16eBd1A8f782a2CBC65860E60B"
-            },
-            "primaryType": "RelayRequest",
-            "message": {
-                "target": "0x9cf40ef3d1622efe270fe6fe720585b4be4eeeff",
-                "encodedFunction": "0xa9059cbb0000000000000000000000002e0d94754b348d208d64d52d78bcd443afa9fa520000000000000000000000000000000000000000000000000000000000000007",
-                "gasData": {
-                    "gasLimit": "39507",
-                    "gasPrice": "1700000000",
-                    "pctRelayFee": "70",
-                    "baseRelayFee": "0"
-                },
-                "relayData": {
-                    "senderAddress": "0x22d491bde2303f2f43325b2108d26f1eaba1e32b",
-                    "senderNonce": "3",
-                    "relayWorker": "0x3baee457ad824c94bd3953183d725847d023a2cf",
-                    "paymaster": "0x957F270d45e9Ceca5c5af2b49f1b5dC1Abb0421c"
-                }
-            }
-        })");
+    auto path = TESTS_ROOT + "/Ethereum/Data/eip712_walletconnect.json";
+    auto typeData = load_file(path);
+    auto hash = ParamStruct::hashStructJson(typeData);
     ASSERT_EQ(hex(hash), "abc79f527273b9e7bca1b3f1ac6ad1a8431fa6dc34ece900deabcd6969856b5e");
 
     // sign the hash
@@ -551,48 +512,9 @@ TEST(EthereumAbiStruct, hashStruct_walletConnect) {
 }
 
 TEST(EthereumAbiStruct, hashStruct_cryptofights) {
-    auto hash = ParamStruct::hashStructJson(
-        R"({
-            "types": {
-                "EIP712Domain": [
-                    { "name": "name", "type": "string" },
-                    { "name": "version", "type": "string" },
-                    { "name": "chainId", "type": "uint256" },
-                    { "name": "verifyingContract", "type": "address" },
-                    { "name": "salt", "type": "bytes32" }
-                ],
-                "Trade": [
-                    { "name": "nonce", "type": "bytes32" },
-                    { "name": "firstParty", "type": "address" },
-                    { "name": "askingId", "type": "uint256" },
-                    { "name": "askingQty", "type": "uint256" },
-                    { "name": "offeringId", "type": "uint256" },
-                    { "name": "offeringQty", "type": "uint256" },
-                    { "name": "maxFee", "type": "uint256" },
-                    { "name": "secondParty", "type": "address" },
-                    { "name": "count", "type": "uint8" }
-                ]
-            },
-            "domain": {
-                "name": "CryptoFights Trading",
-                "version": "1",
-                "chainId": 1,
-                "verifyingContract": "0xdc45529aC0FA3185f79A005e57deF64F600c4e97",
-                "salt": "0x0"
-            },
-            "primaryType": "Trade",
-            "message": {
-                "count": 1,
-                "offeringQty": 1,
-                "askingQty": 2,
-                "nonce": "0xcfe49aa546453df3f2e768a97204a3268cef7c27df53cc2f2d47385cfeaf",
-                "firstParty": "0xC36edF48e21cf395B206352A1819DE658fD7f988",
-                "askingId": "0x0000000000000000000000000000000000000000000000000000000000000000",
-                "offeringId": "0x0000000000000000000000000000000000000000000000000000000000000000",
-                "maxFee": "1000000000000000000",
-                "secondParty": "0x0000000000000000000000000000000000000000"
-            }
-        })");
+    auto path = TESTS_ROOT + "/Ethereum/Data/eip712_cryptofights.json";
+    auto typeData = load_file(path);
+    auto hash = ParamStruct::hashStructJson(typeData);
     ASSERT_EQ(hex(hash), "db12328a6d193965801548e1174936c3aa7adbe1b54b3535a3c905bd4966467c");
 
     // sign the hash
