@@ -9,11 +9,14 @@
 #include "ABI/ParamBase.h"
 #include "ABI/ParamAddress.h"
 #include "RLP.h"
+#include "HexCoding.h"
 
 using namespace TW::Ethereum::ABI;
 using namespace TW::Ethereum;
 using namespace TW;
 
+
+static const Data EmptyListEncoded = parse_hex("c0");
 
 std::shared_ptr<TransactionNonTyped> TransactionNonTyped::buildNativeTransfer(const uint256_t& nonce,
     const uint256_t& gasPrice, const uint256_t& gasLimit,
@@ -127,7 +130,7 @@ Data TransactionEip1559::preHash(const uint256_t chainID) const {
     append(encoded, RLP::encode(to));
     append(encoded, RLP::encode(amount));
     append(encoded, RLP::encode(payload));
-    append(encoded, 0xc0); // accessList empty TODO
+    append(encoded, EmptyListEncoded); // empty accessList
 
     Data envelope;
     append(envelope, static_cast<uint8_t>(type));
@@ -145,7 +148,7 @@ Data TransactionEip1559::encoded(const Signature& signature, const uint256_t cha
     append(encoded, RLP::encode(to));
     append(encoded, RLP::encode(amount));
     append(encoded, RLP::encode(payload));
-    append(encoded, 0xc0); // accessList empty TODO
+    append(encoded, EmptyListEncoded); // empty accessList
     append(encoded, RLP::encode(signature.v));
     append(encoded, RLP::encode(signature.r));
     append(encoded, RLP::encode(signature.s));
