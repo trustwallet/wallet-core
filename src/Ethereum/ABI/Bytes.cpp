@@ -10,6 +10,8 @@
 #include <Hash.h>
 #include <HexCoding.h>
 
+#include <cassert>
+
 using namespace TW::Ethereum::ABI;
 using namespace TW;
 
@@ -61,6 +63,18 @@ Data ParamByteArray::hashStruct() const {
     res.insert(res.end(), _bytes.begin(), _bytes.begin() + count);
     append(res, Data(padding));
     return res;
+}
+
+void ParamByteArrayFix::setVal(const Data& val) {
+    if (val.size() > _n) { // crop right
+        _bytes = subData(val, 0, _n);
+    } else {
+        _bytes = val;
+        if (_bytes.size() < _n) { // pad on right
+            append(_bytes, Data(_n - _bytes.size()));
+        }
+    }
+    assert(_bytes.size() == _n);
 }
 
 void ParamByteArrayFix::encode(Data& data) const {
