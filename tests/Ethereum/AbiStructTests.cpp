@@ -133,7 +133,7 @@ TEST(EthereumAbiStruct, encodeTypes_Json) {
     ASSERT_EQ(hex(hash), "be609aee343fb3c4b28e1df9e632fca64fcfaede20f02e86244efddf30957bd2");
 
     // sign the hash
-    const auto rsv = Signer::sign(privateKeyOilTimes12, hash, true, 0);
+    const auto rsv = Signer::sign(privateKeyCow, hash, true, 0);
     EXPECT_EQ(hex(store(rsv.r)), "4355c47d63924e8a72e509b65029052eb6c299d53a04e167c5775fd466751c9d");
     EXPECT_EQ(hex(store(rsv.s)), "07299936d304c153f6443dfa05f40ff007d72911b6f72307f996231605b91562");
     EXPECT_EQ(hex(store(rsv.v)), "1c");
