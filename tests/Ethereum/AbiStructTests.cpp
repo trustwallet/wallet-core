@@ -10,11 +10,20 @@
 #include <HexCoding.h>
 #include <PrivateKey.h>
 
+#include <fstream>
 #include <gtest/gtest.h>
 
 using namespace TW::Ethereum::ABI;
 using namespace TW::Ethereum;
 using namespace TW;
+
+extern std::string TESTS_ROOT;
+
+std::string load_file(const std::string path) {
+    std::ifstream stream(path);
+    std::string content((std::istreambuf_iterator<char>(stream)), (std::istreambuf_iterator<char>()));
+    return content;
+}
 
 // https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
 
@@ -63,6 +72,8 @@ ParamStruct msgEIP712Domain("EIP712Domain", std::vector<std::shared_ptr<ParamNam
 });
 
 PrivateKey privateKeyCow = PrivateKey(Hash::keccak256(TW::data("cow")));
+PrivateKey privateKeyDragon = PrivateKey(Hash::keccak256(TW::data("dragon")));
+PrivateKey privateKeyOilTimes12 = PrivateKey(parse_hex("b0f20d59451a2fac1be6d458e036adfa5d83ebd4c21f9a76de3c4a3a65671eba")); // 0x60c2A43Cc69658eC4b02a65A07623D7192166F4e
 
 // See 'signedTypeData' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
 TEST(EthereumAbiStruct, encodeTypes) {
@@ -352,7 +363,6 @@ TEST(EthereumAbiStruct, encodeTypes_v4Rec) {
 
     EXPECT_EQ(hex(msgEIP712Domain.hashStruct()), "facb2c1888f63a780c84c216bd9a81b516fc501a19bae1fc81d82df590bbdc60");
 
-    PrivateKey privateKeyDragon = PrivateKey(Hash::keccak256(TW::data("dragon")));
     Address address = Address(privateKeyDragon.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
     EXPECT_EQ(address.string(), "0x065a687103C9F6467380beE800ecD70B17f6b72F");
 }
@@ -399,7 +409,6 @@ TEST(EthereumAbiStruct, encodeTypes_v4Rec_Json) {
     ASSERT_EQ(hex(hash), "807773b9faa9879d4971b43856c4d60c2da15c6f8c062bd9d33afefb756de19c");
 
     // sign the hash
-    PrivateKey privateKeyDragon = PrivateKey(Hash::keccak256(TW::data("dragon")));
     const auto rsv = Signer::sign(privateKeyDragon, 0, hash);
     EXPECT_EQ(hex(store(rsv.r)), "f2ec61e636ff7bb3ac8bc2a4cc2c8b8f635dd1b2ec8094c963128b358e79c85c");
     EXPECT_EQ(hex(store(rsv.s)), "5ca6dd637ed7e80f0436fe8fce39c0e5f2082c9517fe677cc2917dcd6c84ba88");
@@ -489,64 +498,41 @@ TEST(EthereumAbiStruct, hashStructJson) {
 
 TEST(EthereumAbiStruct, hashStruct_walletConnect) {
     // https://github.com/WalletConnect/walletconnect-example-dapp/blob/master/src/helpers/eip712.ts
-    auto hash = ParamStruct::hashStructJson(
-        R"({
-            "types": {
-                "EIP712Domain": [
-                    { "name": "name", "type": "string" },
-                    { "name": "version", "type": "string" },
-                    { "name": "verifyingContract", "type": "address" }
-                ],
-                "RelayRequest": [
-                    { "name": "target", "type": "address" },
-                    { "name": "encodedFunction", "type": "bytes" },
-                    { "name": "gasData", "type": "GasData" },
-                    { "name": "relayData", "type": "RelayData" }
-                ],
-                "GasData": [
-                    { "name": "gasLimit", "type": "uint256" },
-                    { "name": "gasPrice", "type": "uint256" },
-                    { "name": "pctRelayFee", "type": "uint256" },
-                    { "name": "baseRelayFee", "type": "uint256" }
-                ],
-                "RelayData": [
-                    { "name": "senderAddress", "type": "address" },
-                    { "name": "senderNonce", "type": "uint256" },
-                    { "name": "relayWorker", "type": "address" },
-                    { "name": "paymaster", "type": "address" }
-                ]
-            },
-            "domain": {
-                "name": "GSN Relayed Transaction",
-                "version": "1",
-                "chainId": 42,
-                "verifyingContract": "0x6453D37248Ab2C16eBd1A8f782a2CBC65860E60B"
-            },
-            "primaryType": "RelayRequest",
-            "message": {
-                "target": "0x9cf40ef3d1622efe270fe6fe720585b4be4eeeff",
-                "encodedFunction": "0xa9059cbb0000000000000000000000002e0d94754b348d208d64d52d78bcd443afa9fa520000000000000000000000000000000000000000000000000000000000000007",
-                "gasData": {
-                    "gasLimit": "39507",
-                    "gasPrice": "1700000000",
-                    "pctRelayFee": "70",
-                    "baseRelayFee": "0"
-                },
-                "relayData": {
-                    "senderAddress": "0x22d491bde2303f2f43325b2108d26f1eaba1e32b",
-                    "senderNonce": "3",
-                    "relayWorker": "0x3baee457ad824c94bd3953183d725847d023a2cf",
-                    "paymaster": "0x957F270d45e9Ceca5c5af2b49f1b5dC1Abb0421c"
-                }
-            }
-        })");
-    ASSERT_EQ(hex(hash), "abc79f527273b9e7bca1b3f1ac6ad1a8431fa6dc34ece900deabcd6969856b5e");
+    auto path = TESTS_ROOT + "/Ethereum/Data/eip712_walletconnect.json";
+    auto typeData = load_file(path);
+    auto hash = ParamStruct::hashStructJson(typeData);
+    EXPECT_EQ(hex(hash), "abc79f527273b9e7bca1b3f1ac6ad1a8431fa6dc34ece900deabcd6969856b5e");
 
     // sign the hash
-    PrivateKey privateKeyTA1 = PrivateKey(parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904")); // 0xB9F5771C27664bF2282D98E09D7F50cEc7cB01a7
-    const auto rsv = Signer::sign(privateKeyTA1, 0, hash);
-    EXPECT_EQ(hex(store(rsv.r)), "daa002bf9ab8aebcb72d3d38d1a0877e188da7d72d215243b2d48296c4711504");
-    EXPECT_EQ(hex(store(rsv.s)), "632b260a0c6c518ea581c4bf46e513d0b68778a77aa18856eef74c0b65463392");
+    const auto rsv = Signer::sign(privateKeyOilTimes12, 0, hash);
+    EXPECT_EQ(hex(store(rsv.r)), "e9c1ce1307593c378c7e38e8aa00dfb42b5a1ce543b59a138a12f29bd7fea75c");
+    EXPECT_EQ(hex(store(rsv.s)), "3fe71ef91c37abea29fe14b5f0de805f924af19d71bcef09e74aef2f0ccdf52a");
+    EXPECT_EQ(hex(store(rsv.v)), "1c");
+}
+
+TEST(EthereumAbiStruct, hashStruct_cryptofights) {
+    auto path = TESTS_ROOT + "/Ethereum/Data/eip712_cryptofights.json";
+    auto typeData = load_file(path);
+    auto hash = ParamStruct::hashStructJson(typeData);
+    EXPECT_EQ(hex(hash), "db12328a6d193965801548e1174936c3aa7adbe1b54b3535a3c905bd4966467c");
+
+    // sign the hash
+    const auto rsv = Signer::sign(privateKeyOilTimes12, 0, hash);
+    EXPECT_EQ(hex(store(rsv.r)), "9e26bdf0d113a72805acb1c2c8b0734d264290fd1cfbdf5e6502ae65a2f2bd83");
+    EXPECT_EQ(hex(store(rsv.s)), "11512c15ad0833fd457ae5dd59c3bcb3d03f35b3d33c1c5a575852163db42369");
+    EXPECT_EQ(hex(store(rsv.v)), "1b");
+}
+
+TEST(EthereumAbiStruct, hashStruct_snapshot) {
+    auto path = TESTS_ROOT + "/Ethereum/Data/eip712_snapshot_v4.json";
+    auto typeData = load_file(path);
+    auto hash = ParamStruct::hashStructJson(typeData);
+    EXPECT_EQ(hex(hash), "f558d08ad4a7651dbc9ec028cfcb4a8e6878a249073ef4fa694f85ee95f61c0f");
+
+    // sign the hash
+    const auto rsv = Signer::sign(privateKeyOilTimes12, 0, hash);
+    EXPECT_EQ(hex(store(rsv.r)), "9da563ffcafe9fa8809540ebcc4bcf8bbc26874e192f430432e06547593e8681");
+    EXPECT_EQ(hex(store(rsv.s)), "164808603aca259775bdf511124b58651f1b3ce9ccbcd5a8d63df02e2359bb8b");
     EXPECT_EQ(hex(store(rsv.v)), "1b");
 }
 
@@ -845,14 +831,26 @@ TEST(EthereumAbiStruct, ParamHashStruct) {
     {
         auto p = std::make_shared<ParamByteArray>();
         EXPECT_TRUE(p->setValueJson("0123456789"));
-        EXPECT_EQ(hex(p->hashStruct()), "79fad56e6cf52d0c8c2c033d568fc36856ba2b556774960968d79274b0e6b944");
+        EXPECT_EQ(hex(p->hashStruct()), "0123456789000000000000000000000000000000000000000000000000000000");
         EXPECT_TRUE(p->setValueJson("0xa9059cbb0000000000000000000000002e0d94754b348d208d64d52d78bcd443afa9fa520000000000000000000000000000000000000000000000000000000000000007"));
         EXPECT_EQ(hex(p->hashStruct()), "a9485354dd9d340e02789cfc540c6c4a2ff5511beb414b64634a5e11c6a7168c");
+        EXPECT_TRUE(p->setValueJson("0x0000000000000000000000000000000000000000000000000000000123456789"));
+        EXPECT_EQ(hex(p->hashStruct()), "0000000000000000000000000000000000000000000000000000000123456789");
     }
     {
         auto p = std::make_shared<ParamByteArrayFix>(36);
         EXPECT_TRUE(p->setValueJson("0x000000000000000000000000000000000000000000000000000000000000000123456789"));
         EXPECT_EQ(hex(p->hashStruct()), "3deb4663f580c622d668f2121c29c3f4dacf06e40a3a76d1dea25e90bcd63b5d");
+    }
+    {
+        auto p = std::make_shared<ParamByteArrayFix>(20);
+        EXPECT_TRUE(p->setValueJson("0x0000000000000000000000000000000123456789"));
+        EXPECT_EQ(hex(p->hashStruct()), "0000000000000000000000000000000123456789000000000000000000000000");
+    }
+    {
+        auto p = std::make_shared<ParamByteArrayFix>(32);
+        EXPECT_TRUE(p->setValueJson("0x0000000000000000000000000000000000000000000000000000000123456789"));
+        EXPECT_EQ(hex(p->hashStruct()), "0000000000000000000000000000000000000000000000000000000123456789");
     }
     {
         auto p = std::make_shared<ParamAddress>();
