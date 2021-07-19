@@ -133,7 +133,7 @@ TEST(EthereumAbiStruct, encodeTypes_Json) {
     ASSERT_EQ(hex(hash), "be609aee343fb3c4b28e1df9e632fca64fcfaede20f02e86244efddf30957bd2");
 
     // sign the hash
-    const auto rsv = Signer::sign(privateKeyCow, hash, true, 0);
+    const auto rsv = Signer::sign(privateKeyOilTimes12, hash, true, 0);
     EXPECT_EQ(hex(store(rsv.r)), "4355c47d63924e8a72e509b65029052eb6c299d53a04e167c5775fd466751c9d");
     EXPECT_EQ(hex(store(rsv.s)), "07299936d304c153f6443dfa05f40ff007d72911b6f72307f996231605b91562");
     EXPECT_EQ(hex(store(rsv.v)), "1c");
@@ -504,7 +504,7 @@ TEST(EthereumAbiStruct, hashStruct_walletConnect) {
     EXPECT_EQ(hex(hash), "abc79f527273b9e7bca1b3f1ac6ad1a8431fa6dc34ece900deabcd6969856b5e");
 
     // sign the hash
-    const auto rsv = Signer::sign(privateKeyOilTimes12, 0, hash);
+    const auto rsv = Signer::sign(privateKeyOilTimes12, hash, true, 0);
     EXPECT_EQ(hex(store(rsv.r)), "e9c1ce1307593c378c7e38e8aa00dfb42b5a1ce543b59a138a12f29bd7fea75c");
     EXPECT_EQ(hex(store(rsv.s)), "3fe71ef91c37abea29fe14b5f0de805f924af19d71bcef09e74aef2f0ccdf52a");
     EXPECT_EQ(hex(store(rsv.v)), "1c");
@@ -517,7 +517,7 @@ TEST(EthereumAbiStruct, hashStruct_cryptofights) {
     EXPECT_EQ(hex(hash), "db12328a6d193965801548e1174936c3aa7adbe1b54b3535a3c905bd4966467c");
 
     // sign the hash
-    const auto rsv = Signer::sign(privateKeyOilTimes12, 0, hash);
+    const auto rsv = Signer::sign(privateKeyOilTimes12, hash, true, 0);
     EXPECT_EQ(hex(store(rsv.r)), "9e26bdf0d113a72805acb1c2c8b0734d264290fd1cfbdf5e6502ae65a2f2bd83");
     EXPECT_EQ(hex(store(rsv.s)), "11512c15ad0833fd457ae5dd59c3bcb3d03f35b3d33c1c5a575852163db42369");
     EXPECT_EQ(hex(store(rsv.v)), "1b");
@@ -530,7 +530,7 @@ TEST(EthereumAbiStruct, hashStruct_snapshot) {
     EXPECT_EQ(hex(hash), "f558d08ad4a7651dbc9ec028cfcb4a8e6878a249073ef4fa694f85ee95f61c0f");
 
     // sign the hash
-    const auto rsv = Signer::sign(privateKeyOilTimes12, 0, hash);
+    const auto rsv = Signer::sign(privateKeyOilTimes12, hash, true, 0);
     EXPECT_EQ(hex(store(rsv.r)), "9da563ffcafe9fa8809540ebcc4bcf8bbc26874e192f430432e06547593e8681");
     EXPECT_EQ(hex(store(rsv.s)), "164808603aca259775bdf511124b58651f1b3ce9ccbcd5a8d63df02e2359bb8b");
     EXPECT_EQ(hex(store(rsv.v)), "1b");
