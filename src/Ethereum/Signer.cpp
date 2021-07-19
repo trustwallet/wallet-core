@@ -57,6 +57,7 @@ Signature Signer::signatureDataToStruct(const Data& signature) noexcept {
 
 Signature Signer::signatureDataToStructWithEip155(const uint256_t& chainID, const Data& signature) noexcept {
     Signature rsv = signatureDataToStruct(signature);
+    // Embed chainID in V param, for replay protection, legacy (EIP155)
     if (chainID != 0) {
         rsv.v += 35 + chainID + chainID;
     } else {
