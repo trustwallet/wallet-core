@@ -42,6 +42,13 @@ TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWBitcoinTransactionSignerMessage(TW_Bitcoin_Proto_SigningInput data);
 
 TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWBitcoinTransactionSignerMessageSegWit(TW_Bitcoin_Proto_SigningInput data);
+
+TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWBitcoinTransactionSignerTransaction(TW_Bitcoin_Proto_SigningInput data, TW_Bitcoin_Proto_TransactionPlan plan);
+
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWBitcoinTransactionSignerTransactionSegWit(TW_Bitcoin_Proto_SigningInput data, TW_Bitcoin_Proto_TransactionPlan plan);
+
 
 TW_EXTERN_C_END
