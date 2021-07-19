@@ -550,6 +550,59 @@ TEST(EthereumAbiStruct, hashStruct_walletConnect) {
     EXPECT_EQ(hex(store(rsv.v)), "1b");
 }
 
+TEST(EthereumAbiStruct, hashStruct_cryptofights) {
+    auto hash = ParamStruct::hashStructJson(
+        R"({
+            "types": {
+                "EIP712Domain": [
+                    { "name": "name", "type": "string" },
+                    { "name": "version", "type": "string" },
+                    { "name": "chainId", "type": "uint256" },
+                    { "name": "verifyingContract", "type": "address" },
+                    { "name": "salt", "type": "bytes32" }
+                ],
+                "Trade": [
+                    { "name": "nonce", "type": "bytes32" },
+                    { "name": "firstParty", "type": "address" },
+                    { "name": "askingId", "type": "uint256" },
+                    { "name": "askingQty", "type": "uint256" },
+                    { "name": "offeringId", "type": "uint256" },
+                    { "name": "offeringQty", "type": "uint256" },
+                    { "name": "maxFee", "type": "uint256" },
+                    { "name": "secondParty", "type": "address" },
+                    { "name": "count", "type": "uint8" }
+                ]
+            },
+            "domain": {
+                "name": "CryptoFights Trading",
+                "version": "1",
+                "chainId": 1,
+                "verifyingContract": "0xdc45529aC0FA3185f79A005e57deF64F600c4e97",
+                "salt": "0x0"
+            },
+            "primaryType": "Trade",
+            "message": {
+                "count": 1,
+                "offeringQty": 1,
+                "askingQty": 2,
+                "nonce": "0xcfe49aa546453df3f2e768a97204a3268cef7c27df53cc2f2d47385cfeaf",
+                "firstParty": "0xC36edF48e21cf395B206352A1819DE658fD7f988",
+                "askingId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "offeringId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "maxFee": "1000000000000000000",
+                "secondParty": "0x0000000000000000000000000000000000000000"
+            }
+        })");
+    ASSERT_EQ(hex(hash), "db12328a6d193965801548e1174936c3aa7adbe1b54b3535a3c905bd4966467c");
+
+    // sign the hash
+    PrivateKey privateKeyTA1 = PrivateKey(parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904")); // 0xB9F5771C27664bF2282D98E09D7F50cEc7cB01a7
+    const auto rsv = Signer::sign(privateKeyTA1, 0, hash);
+    EXPECT_EQ(hex(store(rsv.r)), "d05555c6e959196c0ebff9ac25faf946b48f3abeb8cfeb2691b899ced6ca71a6");
+    EXPECT_EQ(hex(store(rsv.s)), "2309807a36ffb2448661af0c35c5c23527accd448669fba45713e11d88ac19e7");
+    EXPECT_EQ(hex(store(rsv.v)), "1c");
+}
+
 TEST(EthereumAbiStruct, ParamFactoryMakeNamed) {
     std::shared_ptr<ParamNamed> p = ParamFactory::makeNamed("firstparam", "uint256");
     EXPECT_EQ(p->getName(), "firstparam");
@@ -845,14 +898,26 @@ TEST(EthereumAbiStruct, ParamHashStruct) {
     {
         auto p = std::make_shared<ParamByteArray>();
         EXPECT_TRUE(p->setValueJson("0123456789"));
-        EXPECT_EQ(hex(p->hashStruct()), "79fad56e6cf52d0c8c2c033d568fc36856ba2b556774960968d79274b0e6b944");
+        EXPECT_EQ(hex(p->hashStruct()), "0123456789000000000000000000000000000000000000000000000000000000");
         EXPECT_TRUE(p->setValueJson("0xa9059cbb0000000000000000000000002e0d94754b348d208d64d52d78bcd443afa9fa520000000000000000000000000000000000000000000000000000000000000007"));
         EXPECT_EQ(hex(p->hashStruct()), "a9485354dd9d340e02789cfc540c6c4a2ff5511beb414b64634a5e11c6a7168c");
+        EXPECT_TRUE(p->setValueJson("0x0000000000000000000000000000000000000000000000000000000123456789"));
+        EXPECT_EQ(hex(p->hashStruct()), "0000000000000000000000000000000000000000000000000000000123456789");
     }
     {
         auto p = std::make_shared<ParamByteArrayFix>(36);
         EXPECT_TRUE(p->setValueJson("0x000000000000000000000000000000000000000000000000000000000000000123456789"));
         EXPECT_EQ(hex(p->hashStruct()), "3deb4663f580c622d668f2121c29c3f4dacf06e40a3a76d1dea25e90bcd63b5d");
+    }
+    {
+        auto p = std::make_shared<ParamByteArrayFix>(20);
+        EXPECT_TRUE(p->setValueJson("0x0000000000000000000000000000000123456789"));
+        EXPECT_EQ(hex(p->hashStruct()), "0000000000000000000000000000000123456789000000000000000000000000");
+    }
+    {
+        auto p = std::make_shared<ParamByteArrayFix>(32);
+        EXPECT_TRUE(p->setValueJson("0x0000000000000000000000000000000000000000000000000000000123456789"));
+        EXPECT_EQ(hex(p->hashStruct()), "0000000000000000000000000000000000000000000000000000000123456789");
     }
     {
         auto p = std::make_shared<ParamAddress>();
