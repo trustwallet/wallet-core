@@ -72,6 +72,8 @@ ParamStruct msgEIP712Domain("EIP712Domain", std::vector<std::shared_ptr<ParamNam
 });
 
 PrivateKey privateKeyCow = PrivateKey(Hash::keccak256(TW::data("cow")));
+PrivateKey privateKeyDragon = PrivateKey(Hash::keccak256(TW::data("dragon")));
+PrivateKey privateKeyOilTimes12 = PrivateKey(parse_hex("b0f20d59451a2fac1be6d458e036adfa5d83ebd4c21f9a76de3c4a3a65671eba")); // 0x60c2A43Cc69658eC4b02a65A07623D7192166F4e
 
 // See 'signedTypeData' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
 TEST(EthereumAbiStruct, encodeTypes) {
@@ -361,7 +363,6 @@ TEST(EthereumAbiStruct, encodeTypes_v4Rec) {
 
     EXPECT_EQ(hex(msgEIP712Domain.hashStruct()), "facb2c1888f63a780c84c216bd9a81b516fc501a19bae1fc81d82df590bbdc60");
 
-    PrivateKey privateKeyDragon = PrivateKey(Hash::keccak256(TW::data("dragon")));
     Address address = Address(privateKeyDragon.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
     EXPECT_EQ(address.string(), "0x065a687103C9F6467380beE800ecD70B17f6b72F");
 }
@@ -408,7 +409,6 @@ TEST(EthereumAbiStruct, encodeTypes_v4Rec_Json) {
     ASSERT_EQ(hex(hash), "807773b9faa9879d4971b43856c4d60c2da15c6f8c062bd9d33afefb756de19c");
 
     // sign the hash
-    PrivateKey privateKeyDragon = PrivateKey(Hash::keccak256(TW::data("dragon")));
     const auto rsv = Signer::sign(privateKeyDragon, 0, hash);
     EXPECT_EQ(hex(store(rsv.r)), "f2ec61e636ff7bb3ac8bc2a4cc2c8b8f635dd1b2ec8094c963128b358e79c85c");
     EXPECT_EQ(hex(store(rsv.s)), "5ca6dd637ed7e80f0436fe8fce39c0e5f2082c9517fe677cc2917dcd6c84ba88");
@@ -504,11 +504,10 @@ TEST(EthereumAbiStruct, hashStruct_walletConnect) {
     ASSERT_EQ(hex(hash), "abc79f527273b9e7bca1b3f1ac6ad1a8431fa6dc34ece900deabcd6969856b5e");
 
     // sign the hash
-    PrivateKey privateKeyTA1 = PrivateKey(parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904")); // 0xB9F5771C27664bF2282D98E09D7F50cEc7cB01a7
-    const auto rsv = Signer::sign(privateKeyTA1, 0, hash);
-    EXPECT_EQ(hex(store(rsv.r)), "daa002bf9ab8aebcb72d3d38d1a0877e188da7d72d215243b2d48296c4711504");
-    EXPECT_EQ(hex(store(rsv.s)), "632b260a0c6c518ea581c4bf46e513d0b68778a77aa18856eef74c0b65463392");
-    EXPECT_EQ(hex(store(rsv.v)), "1b");
+    const auto rsv = Signer::sign(privateKeyOilTimes12, 0, hash);
+    EXPECT_EQ(hex(store(rsv.r)), "e9c1ce1307593c378c7e38e8aa00dfb42b5a1ce543b59a138a12f29bd7fea75c");
+    EXPECT_EQ(hex(store(rsv.s)), "3fe71ef91c37abea29fe14b5f0de805f924af19d71bcef09e74aef2f0ccdf52a");
+    EXPECT_EQ(hex(store(rsv.v)), "1c");
 }
 
 TEST(EthereumAbiStruct, hashStruct_cryptofights) {
@@ -518,11 +517,10 @@ TEST(EthereumAbiStruct, hashStruct_cryptofights) {
     ASSERT_EQ(hex(hash), "db12328a6d193965801548e1174936c3aa7adbe1b54b3535a3c905bd4966467c");
 
     // sign the hash
-    PrivateKey privateKeyTA1 = PrivateKey(parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904")); // 0xB9F5771C27664bF2282D98E09D7F50cEc7cB01a7
-    const auto rsv = Signer::sign(privateKeyTA1, 0, hash);
-    EXPECT_EQ(hex(store(rsv.r)), "d05555c6e959196c0ebff9ac25faf946b48f3abeb8cfeb2691b899ced6ca71a6");
-    EXPECT_EQ(hex(store(rsv.s)), "2309807a36ffb2448661af0c35c5c23527accd448669fba45713e11d88ac19e7");
-    EXPECT_EQ(hex(store(rsv.v)), "1c");
+    const auto rsv = Signer::sign(privateKeyOilTimes12, 0, hash);
+    EXPECT_EQ(hex(store(rsv.r)), "9e26bdf0d113a72805acb1c2c8b0734d264290fd1cfbdf5e6502ae65a2f2bd83");
+    EXPECT_EQ(hex(store(rsv.s)), "11512c15ad0833fd457ae5dd59c3bcb3d03f35b3d33c1c5a575852163db42369");
+    EXPECT_EQ(hex(store(rsv.v)), "1b");
 }
 
 TEST(EthereumAbiStruct, ParamFactoryMakeNamed) {
