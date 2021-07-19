@@ -501,7 +501,7 @@ TEST(EthereumAbiStruct, hashStruct_walletConnect) {
     auto path = TESTS_ROOT + "/Ethereum/Data/eip712_walletconnect.json";
     auto typeData = load_file(path);
     auto hash = ParamStruct::hashStructJson(typeData);
-    ASSERT_EQ(hex(hash), "abc79f527273b9e7bca1b3f1ac6ad1a8431fa6dc34ece900deabcd6969856b5e");
+    EXPECT_EQ(hex(hash), "abc79f527273b9e7bca1b3f1ac6ad1a8431fa6dc34ece900deabcd6969856b5e");
 
     // sign the hash
     const auto rsv = Signer::sign(privateKeyOilTimes12, 0, hash);
@@ -514,12 +514,25 @@ TEST(EthereumAbiStruct, hashStruct_cryptofights) {
     auto path = TESTS_ROOT + "/Ethereum/Data/eip712_cryptofights.json";
     auto typeData = load_file(path);
     auto hash = ParamStruct::hashStructJson(typeData);
-    ASSERT_EQ(hex(hash), "db12328a6d193965801548e1174936c3aa7adbe1b54b3535a3c905bd4966467c");
+    EXPECT_EQ(hex(hash), "db12328a6d193965801548e1174936c3aa7adbe1b54b3535a3c905bd4966467c");
 
     // sign the hash
     const auto rsv = Signer::sign(privateKeyOilTimes12, 0, hash);
     EXPECT_EQ(hex(store(rsv.r)), "9e26bdf0d113a72805acb1c2c8b0734d264290fd1cfbdf5e6502ae65a2f2bd83");
     EXPECT_EQ(hex(store(rsv.s)), "11512c15ad0833fd457ae5dd59c3bcb3d03f35b3d33c1c5a575852163db42369");
+    EXPECT_EQ(hex(store(rsv.v)), "1b");
+}
+
+TEST(EthereumAbiStruct, hashStruct_snapshot) {
+    auto path = TESTS_ROOT + "/Ethereum/Data/eip712_snapshot_v4.json";
+    auto typeData = load_file(path);
+    auto hash = ParamStruct::hashStructJson(typeData);
+    EXPECT_EQ(hex(hash), "f558d08ad4a7651dbc9ec028cfcb4a8e6878a249073ef4fa694f85ee95f61c0f");
+
+    // sign the hash
+    const auto rsv = Signer::sign(privateKeyOilTimes12, 0, hash);
+    EXPECT_EQ(hex(store(rsv.r)), "9da563ffcafe9fa8809540ebcc4bcf8bbc26874e192f430432e06547593e8681");
+    EXPECT_EQ(hex(store(rsv.s)), "164808603aca259775bdf511124b58651f1b3ce9ccbcd5a8d63df02e2359bb8b");
     EXPECT_EQ(hex(store(rsv.v)), "1b");
 }
 
