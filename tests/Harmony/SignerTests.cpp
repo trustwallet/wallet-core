@@ -23,7 +23,7 @@ class SignerExposed : public Signer {
     using Signer::hash;
 };
 
-static uint256_t MAIN_NET = TWHarmonyChainIDMainNet;
+static uint256_t MAIN_NET = 0x1;
 
 static uint256_t LOCAL_NET = 0x2;
 

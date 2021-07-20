@@ -22,10 +22,13 @@ TEST(HDWallet, privateKeyFromXPRV) {
     const std::string xprv = "xprv9yqEgpMG2KCjvotCxaiMkzmKJpDXz2xZi3yUe4XsURvo9DUbPySW1qRbdeDLiSxZt88hESHUhm2AAe2EqfWM9ucdQzH3xv1HoKoLDqHMK9n";
     auto privateKey = HDWallet::getPrivateKeyFromExtended(xprv, DerivationPath(TWPurposeBIP44, TWCoinTypeBitcoinCash, 0, 0, 3));
     auto publicKey = privateKey->getPublicKey(TWPublicKeyTypeSECP256k1);
-    auto address = Bitcoin::CashAddress(publicKey);
+    auto address = Bitcoin::CashAddress(publicKey).string();
 
     EXPECT_EQ(hex(publicKey.bytes), "025108168f7e5aad52f7381c18d8f880744dbee21dc02c15abe512da0b1cca7e2f");
-    EXPECT_EQ(address.string(), "bitcoincash:qp3y0dyg6ya8nt4n3algazn073egswkytqs00z7rz4");
+    // Ignore checksum
+    // Testnet: 5at9u59f
+    // Mainnet: s00z7rz4
+    EXPECT_EQ(address.substr(0, address.length() - 8), HRP_BITCOINCASH + std::string(":qp3y0dyg6ya8nt4n3algazn073egswkytq"));
 }
 
 TEST(HDWallet, privateKeyFromMptv) {

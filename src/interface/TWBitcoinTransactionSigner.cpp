@@ -6,6 +6,7 @@
 
 #include "../Bitcoin/TransactionBuilder.h"
 #include "../Bitcoin/TransactionSigner.h"
+#include "../BinaryCoding.h"
 #include "../Data.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
@@ -101,6 +102,33 @@ TWData *_Nonnull TWBitcoinTransactionSignerMessage(TW_Bitcoin_Proto_SigningInput
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
 
+TWData *_Nonnull TWBitcoinTransactionSignerMessageSegWit(TW_Bitcoin_Proto_SigningInput data) {
+    Proto::SigningInput input;
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
+
+    auto signer = new TWBitcoinTransactionSigner{ TransactionSigner<Transaction>(std::move(input)) };
+    for (auto i = 0; i < signer->impl.plan.utxos.size(); i++) {
+        auto signatureVersion = BASE;
+        auto& utxo = signer->impl.plan.utxos[i];
+        auto script = Script(utxo.script().begin(), utxo.script().end());
+        if (script.isWitnessProgram()) {
+            signatureVersion = WITNESS_V0;
+            script = script.buildPayToPublicKeyHash(TW::Data(script.bytes.begin() + 2, script.bytes.end()));
+        }
+        auto sighash = signer->impl.transaction.getPreImage(script, i,
+                                                            static_cast<TWBitcoinSigHashType>(input.hash_type()), utxo.amount(), signatureVersion);
+
+        // Currently, we have no flag to distinguish signature that is segwit or not.
+        // So we have to add flag to sigHash to identify whether it is segwit.
+        sighash.push_back(signatureVersion);
+        signer->impl.plan.utxos[i].set_script(reinterpret_cast<const uint8_t *>(sighash.data()), sighash.size());
+    }
+
+    auto result = signer->impl.plan.proto();
+    auto serialized = result.SerializeAsString();
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+}
+
 TWData *_Nonnull TWBitcoinTransactionSignerTransaction(TW_Bitcoin_Proto_SigningInput data, TW_Bitcoin_Proto_TransactionPlan planData) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
@@ -114,6 +142,97 @@ TWData *_Nonnull TWBitcoinTransactionSignerTransaction(TW_Bitcoin_Proto_SigningI
             auto planOutput = OutPoint(plan.utxos()[j].out_point());
             if (signer->impl.transaction.inputs[i].previousOutput == planOutput ){
                 signer->impl.transaction.inputs[i].script = Script(plan.utxos()[j].script().begin(), plan.utxos()[j].script().end());
+            }
+        }
+    }
+
+    const auto& tx = signer->impl.transaction;
+    auto protoOutput = Proto::SigningOutput();
+    *protoOutput.mutable_transaction() = tx.proto();
+
+    TW::Data encoded;
+    auto hasWitness = std::any_of(tx.inputs.begin(), tx.inputs.end(), [](auto& input) { return !input.scriptWitness.empty(); });
+    tx.encode(hasWitness, encoded);
+    protoOutput.set_encoded(encoded.data(), encoded.size());
+
+    TW::Data txHashData = encoded;
+    if (hasWitness) {
+        txHashData.clear();
+        tx.encode(false, txHashData);
+    }
+
+    auto txHash = TW::Hash::sha256(TW::Hash::sha256(txHashData));
+    std::reverse(txHash.begin(), txHash.end());
+    protoOutput.set_transaction_id(TW::hex(txHash));
+
+    auto serialized = protoOutput.SerializeAsString();
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+}
+
+template <typename It>
+std::uint64_t readVarInt(It begin, It end, std::uint64_t& offset) {
+    std::uint64_t size = 0;
+    TW::byte discriminant = *begin;
+    switch (discriminant) {
+    case 0xff:
+        offset = 9;
+        size = TW::decode64LE(&*(begin + 1));
+        break;
+    case 0xfe:
+        offset = 5;
+        size = TW::decode32LE(&*(begin + 1));
+        break;
+    case 0xfd:
+        offset = 3;
+        size = TW::decode16LE(&*(begin + 1));
+        break;
+    default:
+        offset = 1;
+        size = std::uint64_t(discriminant);
+        break;
+    }
+    return size;
+}
+
+std::vector<TW::Data> decodeWitnessScript(const Script& s) {
+    std::vector<TW::Data> witness;
+    if (s.empty()) {
+        return witness;
+    }
+
+    std::uint64_t offset = 1;
+    std::uint64_t signatureSize = readVarInt(s.bytes.begin(), s.bytes.end(), offset);
+    witness.push_back(TW::Data(s.bytes.begin() + offset, s.bytes.begin() + offset + signatureSize));
+
+    std::uint64_t nextPos = offset + signatureSize;
+    offset = 1;
+    std::uint64_t pubkeySize = readVarInt(s.bytes.begin() + nextPos, s.bytes.end(), offset);
+    witness.push_back(TW::Data(s.bytes.begin() + nextPos + offset, s.bytes.begin() + nextPos + offset + pubkeySize));
+    
+    return witness;
+}
+
+TWData *_Nonnull TWBitcoinTransactionSignerTransactionSegWit(TW_Bitcoin_Proto_SigningInput data, TW_Bitcoin_Proto_TransactionPlan planData) {
+    Proto::SigningInput input;
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
+    Proto::TransactionPlan plan;
+    plan.ParseFromArray(TWDataBytes(planData), static_cast<int>(TWDataSize(planData)));
+
+    auto signer = new TWBitcoinTransactionSigner{ TransactionSigner<Transaction>(std::move(input), plan) };
+
+    for (auto i = 0; i < signer->impl.transaction.inputs.size(); i++) {
+        for (auto j = 0; j < plan.utxos().size(); j++) {
+            auto planOutput = OutPoint(plan.utxos()[j].out_point());
+            if (signer->impl.transaction.inputs[i].previousOutput == planOutput ) {
+                auto length = plan.utxos()[j].script().length();
+                auto signatureVersioon = plan.utxos()[j].script().back();
+                auto script = Script(plan.utxos()[j].script().begin(), plan.utxos()[j].script().begin() + length - 1);
+                if (signatureVersioon == WITNESS_V0) {
+                    // segwit signature
+                    signer->impl.transaction.inputs[i].scriptWitness = decodeWitnessScript(script);
+                } else {
+                    signer->impl.transaction.inputs[i].script = script;
+                }
             }
         }
     }

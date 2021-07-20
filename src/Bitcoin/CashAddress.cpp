@@ -17,7 +17,7 @@
 using namespace TW::Bitcoin;
 
 /// Cash address human-readable part
-static const std::string cashHRP = "bitcoincash";
+static const std::string cashHRP = HRP_BITCOINCASH;
 
 /// From https://github.com/bitcoincashorg/bitcoincash.org/blob/master/spec/cashaddr.md
 
