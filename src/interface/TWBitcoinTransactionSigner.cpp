@@ -106,15 +106,21 @@ TWData *_Nonnull TWBitcoinTransactionSignerMessageSegWit(TW_Bitcoin_Proto_Signin
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
-    auto signatureVersion = WITNESS_V0;
-
     auto signer = new TWBitcoinTransactionSigner{ TransactionSigner<Transaction>(std::move(input)) };
     for (auto i = 0; i < signer->impl.plan.utxos.size(); i++) {
+        auto signatureVersion = BASE;
         auto& utxo = signer->impl.plan.utxos[i];
         auto script = Script(utxo.script().begin(), utxo.script().end());
+        if (script.isWitnessProgram()) {
+            signatureVersion = WITNESS_V0;
+            script = script.buildPayToPublicKeyHash(TW::Data(script.bytes.begin() + 2, script.bytes.end()));
+        }
         auto sighash = signer->impl.transaction.getPreImage(script, i,
                                                             static_cast<TWBitcoinSigHashType>(input.hash_type()), utxo.amount(), signatureVersion);
 
+        // Currently, we have no flag to distinguish signature that is segwit or not.
+        // So we have to add flag to sigHash to identify whether it is segwit.
+        sighash.push_back(signatureVersion);
         signer->impl.plan.utxos[i].set_script(reinterpret_cast<const uint8_t *>(sighash.data()), sighash.size());
     }
 
@@ -217,8 +223,16 @@ TWData *_Nonnull TWBitcoinTransactionSignerTransactionSegWit(TW_Bitcoin_Proto_Si
     for (auto i = 0; i < signer->impl.transaction.inputs.size(); i++) {
         for (auto j = 0; j < plan.utxos().size(); j++) {
             auto planOutput = OutPoint(plan.utxos()[j].out_point());
-            if (signer->impl.transaction.inputs[i].previousOutput == planOutput ){
-                signer->impl.transaction.inputs[i].scriptWitness = decodeWitnessScript(Script(plan.utxos()[j].script().begin(), plan.utxos()[j].script().end()));
+            if (signer->impl.transaction.inputs[i].previousOutput == planOutput ) {
+                auto length = plan.utxos()[j].script().length();
+                auto signatureVersioon = plan.utxos()[j].script().back();
+                auto script = Script(plan.utxos()[j].script().begin(), plan.utxos()[j].script().begin() + length - 1);
+                if (signatureVersioon == WITNESS_V0) {
+                    // segwit signature
+                    signer->impl.transaction.inputs[i].scriptWitness = decodeWitnessScript(script);
+                } else {
+                    signer->impl.transaction.inputs[i].script = script;
+                }
             }
         }
     }
