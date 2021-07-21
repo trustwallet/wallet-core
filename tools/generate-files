@@ -43,7 +43,7 @@ rm -rf jni/cpp/generated
 
 mkdir -p swift/Sources/Generated/Protobuf swift/Sources/Generated/Enums
 
-# Generate coins info from coins.json
+# Generate coins info from registry.json
 codegen/bin/coins
 
 # Generate interface code
