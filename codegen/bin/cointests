@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# Sript for creating/updating CoinType unit tests, based on the coins.json file
+# Sript for creating/updating CoinType unit tests, based on the registry.json file
 # It is intended as a one-time or occasional generation, not every time! (that way the tests would have zero added value)
 # Usage: codegen/bin/cointests
 # Files are generated to: tests/<Coin>/TWCoinTypeTests.cpp
@@ -58,7 +58,7 @@ def self.explorer_sample_account(c)
   end
 end
 
-json_string = File.read('coins.json')
+json_string = File.read('registry.json')
 coins = JSON.parse(json_string).sort_by { |x| x['name'] }
 
 erbs = [

@@ -24,12 +24,12 @@ def self.explorer_account_url(c)
   path = c['explorer']['url'].to_s + c['explorer']['accountPath'].to_s
 end
 
-json_string = File.read('coins.json')
+json_string = File.read('registry.json')
 coins = JSON.parse(json_string).sort_by { |x| x['coinId'] }
 
 erbs = [
   {'template' => 'CoinInfoData.cpp.erb', 'folder' => 'src/Generated', 'file' => 'CoinInfoData.cpp'},
-  {'template' => 'coins.md.erb', 'folder' => 'docs', 'file' => 'coins.md'},
+  {'template' => 'registry.md.erb', 'folder' => 'docs', 'file' => 'registry.md'},
   {'template' => 'hrp.cpp.erb', 'folder' => 'src/Generated', 'file' => 'TWHRP.cpp'},
   {'template' => 'hrp.h.erb', 'folder' => 'include/TrustWalletCore', 'file' => 'TWHRP.h'}
 ]

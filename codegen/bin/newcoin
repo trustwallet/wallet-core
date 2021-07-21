@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Sript for creating new skeleton files for a new coin
-# 1. Add relevsant entry to coins.json (in order to minimize merge conflict, don't add at the very end)
+# 1. Add relevsant entry to registry.json (in order to minimize merge conflict, don't add at the very end)
 # 2. Invoke this script with the id of the coin, e.g.: codegen/bin/newcoin ethereum
 
 require 'erb'
@@ -96,7 +96,7 @@ end
 coin_id = command_line_args[0]
 puts "New coin template for coin '#{coin_id}' requested"
 
-json_string = File.read('coins.json')
+json_string = File.read('registry.json')
 coins = JSON.parse(json_string).sort_by { |x| x['name'] }
 
 entity = EntityDecl.new(name: "New" + coin_id, is_struct: false)

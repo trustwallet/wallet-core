@@ -25,9 +25,9 @@
     },
     "info": {
       "url": "https://bitcoin.org",
-      "client": "https://github.com/trezor/blockbook",
-      "clientPublic": "",
-      "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
   {
@@ -54,9 +54,9 @@
     },
     "info": {
       "url": "https://litecoin.org",
-      "client": "https://github.com/trezor/blockbook",
-      "clientPublic": "",
-      "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
   {
@@ -82,9 +82,9 @@
     },
     "info": {
       "url": "https://dogecoin.com",
-      "client": "https://github.com/trezor/blockbook",
-      "clientPublic": "",
-      "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
   {
@@ -110,9 +110,9 @@
     },
     "info": {
       "url": "https://dash.org",
-      "client": "https://github.com/trezor/blockbook",
-      "clientPublic": "",
-      "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
   {
@@ -139,9 +139,9 @@
     },
     "info": {
       "url": "https://viacoin.org",
-      "client": "https://github.com/trezor/blockbook",
-      "clientPublic": "",
-      "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
   {
@@ -168,9 +168,9 @@
     },
     "info": {
       "url": "https://www.groestlcoin.org",
-      "client": "https://github.com/trezor/blockbook",
-      "clientPublic": "",
-      "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
   {
@@ -197,9 +197,9 @@
     },
     "info": {
       "url": "https://www.digibyte.io",
-      "client": "https://github.com/trezor/blockbook",
-      "clientPublic": "",
-      "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
   {
@@ -226,9 +226,9 @@
     },
     "info": {
       "url": "https://monacoin.org",
-      "client": "https://github.com/trezor/blockbook",
-      "clientPublic": "",
-      "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
   {
@@ -255,9 +255,9 @@
     },
     "info": {
       "url": "https://decred.org",
-      "client": "https://github.com/trezor/blockbook",
-      "clientPublic": "",
-      "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
   {
@@ -279,9 +279,9 @@
     },
     "info": {
       "url": "https://ethereum.org",
-      "client": "https://github.com/ethereum/go-ethereum",
-      "clientPublic": "https://mainnet.infura.io",
-      "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+      "source": "https://github.com/ethereum/go-ethereum",
+      "rpc": "https://mainnet.infura.io",
+      "documentation": "https://eth.wiki/json-rpc/API"
     }
   },
   {
@@ -301,9 +301,9 @@
     },
     "info": {
       "url": "https://ethereumclassic.org",
-      "client": "https://github.com/ethereumclassic/go-ethereum",
-      "clientPublic": "https://www.ethercluster.com/etc",
-      "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+      "source": "https://github.com/ethereumclassic/go-ethereum",
+      "rpc": "https://www.ethercluster.com/etc",
+      "documentation": "https://eth.wiki/json-rpc/API"
     }
   },
   {
@@ -323,9 +323,9 @@
     },
     "info": {
       "url": "https://icon.foundation",
-      "client": "https://github.com/icon-project/icon-rpc-server",
-      "clientPublic": "http://ctz.icxstation.com:9000/api/v3",
-      "clientDocs": "https://www.icondev.io/docs/icon-json-rpc-v3"
+      "source": "https://github.com/icon-project/icon-rpc-server",
+      "rpc": "http://ctz.icxstation.com:9000/api/v3",
+      "documentation": "https://www.icondev.io/docs/icon-json-rpc-v3"
     }
   },
   {
@@ -346,9 +346,9 @@
     },
     "info": {
       "url": "https://cosmos.network",
-      "client": "https://github.com/cosmos/cosmos-sdk",
-      "clientPublic": "https://stargate.cosmos.network",
-      "clientDocs": "https://cosmos.network/rpc"
+      "source": "https://github.com/cosmos/cosmos-sdk",
+      "rpc": "https://stargate.cosmos.network",
+      "documentation": "https://cosmos.network/rpc"
     }
   },
   {
@@ -375,9 +375,9 @@
     },
     "info": {
       "url": "https://z.cash",
-      "client": "https://github.com/trezor/blockbook",
-      "clientPublic": "",
-      "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
   {
@@ -404,9 +404,9 @@
     },
     "info": {
       "url": "https://firo.org/",
-      "client": "https://github.com/firoorg/firo",
-      "clientPublic": "",
-      "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+      "source": "https://github.com/firoorg/firo",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
   {
@@ -428,9 +428,9 @@
     },
     "info": {
       "url": "https://ripple.com/xrp",
-      "client": "https://github.com/ripple/rippled",
-      "clientPublic": "https://s2.ripple.com:51234",
-      "clientDocs": "https://xrpl.org/rippled-api.html"
+      "source": "https://github.com/ripple/rippled",
+      "rpc": "https://s2.ripple.com:51234",
+      "documentation": "https://xrpl.org/rippled-api.html"
     }
   },
   {
@@ -457,9 +457,9 @@
     },
     "info": {
       "url": "https://bitcoincash.org",
-      "client": "https://github.com/trezor/blockbook",
-      "clientPublic": "",
-      "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
   {
@@ -479,9 +479,9 @@
     },
     "info": {
       "url": "https://stellar.org",
-      "client": "https://github.com/stellar/go",
-      "clientPublic": "https://horizon.stellar.org",
-      "clientDocs": "https://www.stellar.org/developers/horizon/reference"
+      "source": "https://github.com/stellar/go",
+      "rpc": "https://horizon.stellar.org",
+      "documentation": "https://www.stellar.org/developers/horizon/reference"
     }
   },
   {
@@ -508,9 +508,9 @@
     },
     "info": {
       "url": "https://bitcoingold.org",
-      "client": "https://github.com/trezor/blockbook",
-      "clientPublic": "",
-      "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
   {
@@ -533,9 +533,9 @@
     },
     "info": {
       "url": "https://nano.org",
-      "client": "https://github.com/nanocurrency/nano-node",
-      "clientPublic": "",
-      "clientDocs": "https://docs.nano.org/commands/rpc-protocol/"
+      "source": "https://github.com/nanocurrency/nano-node",
+      "rpc": "",
+      "documentation": "https://docs.nano.org/commands/rpc-protocol/"
     }
   },
   {
@@ -561,9 +561,9 @@
     },
     "info": {
       "url": "https://ravencoin.org",
-      "client": "https://github.com/trezor/blockbook",
-      "clientPublic": "",
-      "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
   {
@@ -583,9 +583,9 @@
     },
     "info": {
       "url": "https://poa.network",
-      "client": "https://github.com/poanetwork/parity-ethereum",
-      "clientPublic": "https://core.poa.network",
-      "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+      "source": "https://github.com/poanetwork/parity-ethereum",
+      "rpc": "https://core.poa.network",
+      "documentation": "https://eth.wiki/json-rpc/API"
     }
   },
   {
@@ -605,9 +605,9 @@
     },
     "info": {
       "url": "http://eos.io",
-      "client": "https://github.com/eosio/eos",
-      "clientPublic": "",
-      "clientDocs": "https://developers.eos.io/eosio-nodeos/reference"
+      "source": "https://github.com/eosio/eos",
+      "rpc": "",
+      "documentation": "https://developers.eos.io/eosio-nodeos/reference"
     }
   },
   {
@@ -627,9 +627,9 @@
     },
     "info": {
       "url": "https://tron.network",
-      "client": "https://github.com/tronprotocol/java-tron",
-      "clientPublic": "https://api.trongrid.io",
-      "clientDocs": "https://developers.tron.network/docs/tron-wallet-rpc-api"
+      "source": "https://github.com/tronprotocol/java-tron",
+      "rpc": "https://api.trongrid.io",
+      "documentation": "https://developers.tron.network/docs/tron-wallet-rpc-api"
     }
   },
   {
@@ -650,9 +650,9 @@
     },
     "info": {
       "url": "https://fioprotocol.io",
-      "client": "https://github.com/fioprotocol/fio",
-      "clientPublic": "https://mainnet.fioprotocol.io",
-      "clientDocs": "https://developers.fioprotocol.io"
+      "source": "https://github.com/fioprotocol/fio",
+      "rpc": "https://mainnet.fioprotocol.io",
+      "documentation": "https://developers.fioprotocol.io"
     }
   },
   {
@@ -672,9 +672,9 @@
     },
     "info": {
       "url": "https://nimiq.com",
-      "client": "https://github.com/nimiq/core-rs",
-      "clientPublic": "",
-      "clientDocs": "https://github.com/nimiq/core-js/wiki/JSON-RPC-API"
+      "source": "https://github.com/nimiq/core-rs",
+      "rpc": "",
+      "documentation": "https://github.com/nimiq/core-js/wiki/JSON-RPC-API"
     }
   },
   {
@@ -696,9 +696,9 @@
     },
     "info": {
       "url": "https://www.algorand.com/",
-      "client": "https://github.com/algorand/go-algorand",
-      "clientPublic": "https://indexer.algorand.network",
-      "clientDocs": "https://developer.algorand.org/docs/algod-rest-paths"
+      "source": "https://github.com/algorand/go-algorand",
+      "rpc": "https://indexer.algorand.network",
+      "documentation": "https://developer.algorand.org/docs/algod-rest-paths"
     }
   },
   {
@@ -719,9 +719,9 @@
     },
     "info": {
       "url": "https://iotex.io",
-      "client": "https://github.com/iotexproject/iotex-core",
-      "clientPublic": "",
-      "clientDocs": "https://docs.iotex.io/#api"
+      "source": "https://github.com/iotexproject/iotex-core",
+      "rpc": "",
+      "documentation": "https://docs.iotex.io/#api"
     }
   },
   {
@@ -742,9 +742,9 @@
     },
     "info": {
       "url": "https://zilliqa.com",
-      "client": "https://github.com/Zilliqa/Zilliqa",
-      "clientPublic": "https://api.zilliqa.com",
-      "clientDocs": "https://apidocs.zilliqa.com"
+      "source": "https://github.com/Zilliqa/Zilliqa",
+      "rpc": "https://api.zilliqa.com",
+      "documentation": "https://apidocs.zilliqa.com"
     }
   },
   {
@@ -765,9 +765,9 @@
     },
     "info": {
       "url": "https://terra.money",
-      "client": "https://github.com/terra-project/core",
-      "clientPublic": "https://rpc.terra.dev",
-      "clientDocs": "https://docs.terra.money"
+      "source": "https://github.com/terra-project/core",
+      "rpc": "https://rpc.terra.dev",
+      "documentation": "https://docs.terra.money"
     }
   },
   {
@@ -787,9 +787,9 @@
     },
     "info": {
       "url": "https://polkadot.network/",
-      "client": "https://github.com/paritytech/polkadot",
-      "clientPublic": "",
-      "clientDocs": "https://polkadot.js.org/api/substrate/rpc.html"
+      "source": "https://github.com/paritytech/polkadot",
+      "rpc": "",
+      "documentation": "https://polkadot.js.org/api/substrate/rpc.html"
     }
   },
   {
@@ -809,9 +809,9 @@
     },
     "info": {
       "url": "https://nearprotocol.com",
-      "client": "https://github.com/nearprotocol/nearcore",
-      "clientPublic": "https://rpc.nearprotocol.com",
-      "clientDocs": "https://docs.nearprotocol.com"
+      "source": "https://github.com/nearprotocol/nearcore",
+      "rpc": "https://rpc.nearprotocol.com",
+      "documentation": "https://docs.nearprotocol.com"
     }
   },
   {
@@ -831,9 +831,9 @@
     },
     "info": {
       "url": "https://aion.network",
-      "client": "https://github.com/aionnetwork/aion",
-      "clientPublic": "",
-      "clientDocs": "https://github.com/aionnetwork/aion/wiki/JSON-RPC-API-Docs"
+      "source": "https://github.com/aionnetwork/aion",
+      "rpc": "",
+      "documentation": "https://github.com/aionnetwork/aion/wiki/JSON-RPC-API-Docs"
     }
   },
   {
@@ -855,9 +855,9 @@
     },
     "info": {
       "url": "https://kusama.network",
-      "client": "https://github.com/paritytech/polkadot",
-      "clientPublic": "wss://kusama-rpc.polkadot.io/",
-      "clientDocs": "https://polkadot.js.org/api/substrate/rpc.html"
+      "source": "https://github.com/paritytech/polkadot",
+      "rpc": "wss://kusama-rpc.polkadot.io/",
+      "documentation": "https://polkadot.js.org/api/substrate/rpc.html"
     }
   },
   {
@@ -877,9 +877,9 @@
     },
     "info": {
       "url": "https://aeternity.com",
-      "client": "https://github.com/aeternity/aeternity",
-      "clientPublic": "https://sdk-mainnet.aepps.com",
-      "clientDocs": "http://aeternity.com/api-docs/"
+      "source": "https://github.com/aeternity/aeternity",
+      "rpc": "https://sdk-mainnet.aepps.com",
+      "documentation": "http://aeternity.com/api-docs/"
     }
   },
   {
@@ -902,9 +902,9 @@
     },
     "info": {
       "url": "https://kava.io",
-      "client": "https://github.com/kava-labs/kava",
-      "clientPublic": "https://data.kava.io",
-      "clientDocs": "https://rpc.kava.io"
+      "source": "https://github.com/kava-labs/kava",
+      "rpc": "https://data.kava.io",
+      "documentation": "https://rpc.kava.io"
     }
   },
   {
@@ -926,9 +926,9 @@
     },
     "info": {
       "url": "https://filecoin.io/",
-      "client": "https://github.com/filecoin-project/lotus",
-      "clientPublic": "",
-      "clientDocs": "https://docs.lotu.sh"
+      "source": "https://github.com/filecoin-project/lotus",
+      "rpc": "",
+      "documentation": "https://docs.lotu.sh"
     }
   },
   {
@@ -951,9 +951,9 @@
     },
     "info": {
       "url": "https://bluzelle.com",
-      "client": "https://github.com/bluzelle",
-      "clientPublic": "https://bluzelle.github.io/api/",
-      "clientDocs": "https://docs.bluzelle.com/developers/"
+      "source": "https://github.com/bluzelle",
+      "rpc": "https://bluzelle.github.io/api/",
+      "documentation": "https://docs.bluzelle.com/developers/"
     }
   },
   {
@@ -976,9 +976,9 @@
     },
     "info": {
       "url": "https://bandprotocol.com/",
-      "client": "https://github.com/bandprotocol/bandchain",
-      "clientPublic": "https://api-wt2-lb.bandchain.org",
-      "clientDocs": "https://docs.bandchain.org/"
+      "source": "https://github.com/bandprotocol/bandchain",
+      "rpc": "https://api-wt2-lb.bandchain.org",
+      "documentation": "https://docs.bandchain.org/"
     }
   },
   {
@@ -998,9 +998,9 @@
     },
     "info": {
       "url": "https://www.thetatoken.org",
-      "client": "https://github.com/thetatoken/theta-protocol-ledger",
-      "clientPublic": "",
-      "clientDocs": "https://github.com/thetatoken/theta-mainnet-integration-guide/blob/master/docs/api.md#api-reference"
+      "source": "https://github.com/thetatoken/theta-protocol-ledger",
+      "rpc": "",
+      "documentation": "https://github.com/thetatoken/theta-mainnet-integration-guide/blob/master/docs/api.md#api-reference"
     }
   },
   {
@@ -1020,9 +1020,9 @@
     },
     "info": {
       "url": "https://solana.com",
-      "client": "https://github.com/solana-labs/solana",
-      "clientPublic": "https://api.mainnet-beta.solana.com",
-      "clientDocs": "https://docs.solana.com"
+      "source": "https://github.com/solana-labs/solana",
+      "rpc": "https://api.mainnet-beta.solana.com",
+      "documentation": "https://docs.solana.com"
     }
   },
   {
@@ -1043,9 +1043,9 @@
     },
     "info": {
       "url": "https://elrond.com/",
-      "client": "https://github.com/ElrondNetwork/elrond-go",
-      "clientPublic": "https://api.elrond.com",
-      "clientDocs": "https://docs.elrond.com"
+      "source": "https://github.com/ElrondNetwork/elrond-go",
+      "rpc": "https://api.elrond.com",
+      "documentation": "https://docs.elrond.com"
     }
   },
   {
@@ -1069,9 +1069,9 @@
     },
     "info": {
       "url": "https://binance.org",
-      "client": "https://github.com/binance-chain/node-binary",
-      "clientPublic": "https://dex.binance.org",
-      "clientDocs": "https://docs.binance.org/api-reference/dex-api/paths.html"
+      "source": "https://github.com/binance-chain/node-binary",
+      "rpc": "https://dex.binance.org",
+      "documentation": "https://docs.binance.org/api-reference/dex-api/paths.html"
     }
   },
   {
@@ -1091,9 +1091,9 @@
     },
     "info": {
       "url": "https://vechain.org",
-      "client": "https://github.com/vechain/thor",
-      "clientPublic": "",
-      "clientDocs": "https://doc.vechainworld.io/docs"
+      "source": "https://github.com/vechain/thor",
+      "rpc": "",
+      "documentation": "https://doc.vechainworld.io/docs"
     }
   },
   {
@@ -1113,9 +1113,9 @@
     },
     "info": {
       "url": "https://callisto.network",
-      "client": "https://github.com/EthereumCommonwealth/go-callisto",
-      "clientPublic": "https://clo-geth.0xinfra.com",
-      "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+      "source": "https://github.com/EthereumCommonwealth/go-callisto",
+      "rpc": "https://clo-geth.0xinfra.com",
+      "documentation": "https://eth.wiki/json-rpc/API"
     }
   },
   {
@@ -1137,9 +1137,9 @@
     },
     "info": {
       "url": "https://neo.org",
-      "client": "https://github.com/neo-project/neo",
-      "clientPublic": "http://seed1.ngd.network:10332",
-      "clientDocs": "https://neo.org/eco"
+      "source": "https://github.com/neo-project/neo",
+      "rpc": "http://seed1.ngd.network:10332",
+      "documentation": "https://neo.org/eco"
     }
   },
   {
@@ -1159,9 +1159,9 @@
     },
     "info": {
       "url": "https://tomochain.com",
-      "client": "https://github.com/tomochain/tomochain",
-      "clientPublic": "https://rpc.tomochain.com",
-      "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+      "source": "https://github.com/tomochain/tomochain",
+      "rpc": "https://rpc.tomochain.com",
+      "documentation": "https://eth.wiki/json-rpc/API"
     }
   },
   {
@@ -1181,9 +1181,9 @@
     },
     "info": {
       "url": "https://thundercore.com",
-      "client": "https://github.com/thundercore/pala",
-      "clientPublic": "https://mainnet-rpc.thundercore.com",
-      "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+      "source": "https://github.com/thundercore/pala",
+      "rpc": "https://mainnet-rpc.thundercore.com",
+      "documentation": "https://eth.wiki/json-rpc/API"
     }
   },
   {
@@ -1204,9 +1204,9 @@
     },
     "info": {
       "url": "https://harmony.one",
-      "client": "https://github.com/harmony-one/go-sdk",
-      "clientPublic": "",
-      "clientDocs": "https://docs.harmony.one/home/harmony-networks/harmony-network-overview/mainnet"
+      "source": "https://github.com/harmony-one/go-sdk",
+      "rpc": "",
+      "documentation": "https://docs.harmony.one/home/harmony-networks/harmony-network-overview/mainnet"
     }
   },
   {
@@ -1229,9 +1229,9 @@
     },
     "info": {
       "url": "https://oasisprotocol.org/",
-      "client": "https://github.com/oasisprotocol/oasis-core",
-      "clientPublic": "https://rosetta.oasis.dev/api/v1",
-      "clientDocs": "https://docs.oasis.dev/oasis-core/"
+      "source": "https://github.com/oasisprotocol/oasis-core",
+      "rpc": "https://rosetta.oasis.dev/api/v1",
+      "documentation": "https://docs.oasis.dev/oasis-core/"
     }
   },
   {
@@ -1251,9 +1251,9 @@
     },
     "info": {
       "url": "https://ont.io",
-      "client": "https://github.com/ontio/ontology",
-      "clientPublic": "http://dappnode1.ont.io:20336",
-      "clientDocs": "https://github.com/ontio/ontology/blob/master/docs/specifications/rpc_api.md"
+      "source": "https://github.com/ontio/ontology",
+      "rpc": "http://dappnode1.ont.io:20336",
+      "documentation": "https://github.com/ontio/ontology/blob/master/docs/specifications/rpc_api.md"
     }
   },
   {
@@ -1273,9 +1273,9 @@
     },
     "info": {
       "url": "https://tezos.com",
-      "client": "https://gitlab.com/tezos/tezos",
-      "clientPublic": "https://rpc.tulip.tools/mainnet",
-      "clientDocs": "https://tezos.gitlab.io/tezos/api/rpc.html"
+      "source": "https://gitlab.com/tezos/tezos",
+      "rpc": "https://rpc.tulip.tools/mainnet",
+      "documentation": "https://tezos.gitlab.io/tezos/api/rpc.html"
     }
   },
   {
@@ -1298,9 +1298,9 @@
     },
     "info": {
       "url": "https://www.cardano.org",
-      "client": "https://github.com/input-output-hk/cardano-sl",
-      "clientPublic": "",
-      "clientDocs": "https://cardanodocs.com/introduction/"
+      "source": "https://github.com/input-output-hk/cardano-sl",
+      "rpc": "",
+      "documentation": "https://cardanodocs.com/introduction/"
     }
   },
   {
@@ -1320,9 +1320,9 @@
     },
     "info": {
       "url": "https://www.kin.org",
-      "client": "https://github.com/kinecosystem/go",
-      "clientPublic": "https://horizon.kinfederation.com",
-      "clientDocs": "https://www.stellar.org/developers/horizon/reference"
+      "source": "https://github.com/kinecosystem/go",
+      "rpc": "https://horizon.kinfederation.com",
+      "documentation": "https://www.stellar.org/developers/horizon/reference"
     },
     "deprecated": true
   },
@@ -1350,9 +1350,9 @@
     },
     "info": {
       "url": "https://qtum.org",
-      "client": "https://github.com/trezor/blockbook",
-      "clientPublic": "",
-      "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
   {
@@ -1372,9 +1372,9 @@
     },
     "info": {
       "url": "https://nebulas.io",
-      "client": "https://github.com/nebulasio/go-nebulas",
-      "clientPublic": "https://mainnet.nebulas.io",
-      "clientDocs": "https://wiki.nebulas.io/en/latest/dapp-development/rpc/rpc.html"
+      "source": "https://github.com/nebulasio/go-nebulas",
+      "rpc": "https://mainnet.nebulas.io",
+      "documentation": "https://wiki.nebulas.io/en/latest/dapp-development/rpc/rpc.html"
     }
   },
   {
@@ -1394,9 +1394,9 @@
     },
     "info": {
       "url": "https://gochain.io",
-      "client": "https://github.com/gochain-io/gochain",
-      "clientPublic": "https://rpc.gochain.io",
-      "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+      "source": "https://github.com/gochain-io/gochain",
+      "rpc": "https://rpc.gochain.io",
+      "documentation": "https://eth.wiki/json-rpc/API"
     }
   },
   {
@@ -1416,9 +1416,9 @@
     },
     "info": {
       "url": "https://nuls.io",
-      "client": "https://github.com/nuls-io/nuls-v2",
-      "clientPublic": "https://public1.nuls.io/",
-      "clientDocs": "https://docs.nuls.io/"
+      "source": "https://github.com/nuls-io/nuls-v2",
+      "rpc": "https://public1.nuls.io/",
+      "documentation": "https://docs.nuls.io/"
     }
   },
   {
@@ -1446,9 +1446,9 @@
     },
     "info": {
       "url": "https://runonflux.io",
-      "client": "https://github.com/trezor/blockbook",
-      "clientPublic": "https://blockbook.runonflux.io",
-      "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "https://blockbook.runonflux.io",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
   {
@@ -1470,9 +1470,9 @@
     },
     "info": {
       "url": "https://wanchain.org",
-      "client": "https://github.com/wanchain/go-wanchain",
-      "clientPublic": "",
-      "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+      "source": "https://github.com/wanchain/go-wanchain",
+      "rpc": "",
+      "documentation": "https://eth.wiki/json-rpc/API"
     }
   },
   {
@@ -1492,9 +1492,9 @@
     },
     "info": {
       "url": "https://wavesplatform.com",
-      "client": "https://github.com/wavesplatform/Waves",
-      "clientPublic": "https://nodes.wavesnodes.com",
-      "clientDocs": "https://nodes.wavesnodes.com/api-docs/index.html"
+      "source": "https://github.com/wavesplatform/Waves",
+      "rpc": "https://nodes.wavesnodes.com",
+      "documentation": "https://nodes.wavesnodes.com/api-docs/index.html"
     }
   },
   {
@@ -1517,9 +1517,9 @@
     },
     "info": {
       "url": "https://www.binance.org/en/smartChain",
-      "client": "https://github.com/binance-chain/bsc",
-      "clientPublic": "https://data-seed-prebsc-1-s1.binance.org:8545",
-      "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+      "source": "https://github.com/binance-chain/bsc",
+      "rpc": "https://data-seed-prebsc-1-s1.binance.org:8545",
+      "documentation": "https://eth.wiki/json-rpc/API"
     },
     "deprecated": true
   },
@@ -1543,9 +1543,9 @@
     },
     "info": {
       "url": "https://www.binance.org/en/smartChain",
-      "client": "https://github.com/binance-chain/bsc",
-      "clientPublic": "https://bsc-dataseed1.binance.org",
-      "clientDocs": "https://eth.wiki/json-rpc/API"
+      "source": "https://github.com/binance-chain/bsc",
+      "rpc": "https://bsc-dataseed1.binance.org",
+      "documentation": "https://eth.wiki/json-rpc/API"
     }
   },
   {
@@ -1567,9 +1567,9 @@
     },
     "info": {
       "url": "https://polygon.technology",
-      "client": "https://github.com/maticnetwork/contracts",
-      "clientPublic": "https://rpc-mainnet.matic.network",
-      "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+      "source": "https://github.com/maticnetwork/contracts",
+      "rpc": "https://rpc-mainnet.matic.network",
+      "documentation": "https://eth.wiki/json-rpc/API"
     }
   },
   {
@@ -1588,13 +1588,83 @@
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "ADF0899E58C177E2391F22D04E9C5E1C35BB0F75B42B363A0761687907FD9476",
-      "sampleAccount": "bnb1czhptncu9uhhlrlrk9q0rmy459gae2ua79mapn"
+      "sampleAccount": "thor196yf4pq80hjrmz7nnh0ar0ypqg02r0w4dq4mzu"
     },
     "info": {
       "url": "https://thorchain.org",
-      "client": "https://gitlab.com/thorchain/thornode",
-      "clientPublic": "https://seed.thorchain.info",
-      "clientDocs": ""
+      "source": "https://gitlab.com/thorchain/thornode",
+      "rpc": "https://seed.thorchain.info",
+      "documentation": "https://docs.thorchain.org"
+    }
+  },
+  {
+    "id": "optimism",
+    "name": "Optimism",
+    "displayName": "Optimistic Ethereum",
+    "coinId": 10000070,
+    "slip44": 60,
+    "symbol": "OETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://optimistic.etherscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://optimism.io/",
+      "source": "https://github.com/ethereum-optimism/optimism",
+      "rpc": "https://mainnet.optimism.io",
+      "documentation": "https://eth.wiki/json-rpc/API"
+    }
+  },
+  {
+    "id": "arbitrum",
+    "name": "Arbitrum",
+    "coinId": 10042221,
+    "slip44": 60,
+    "symbol": "ARETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://explorer.offchainlabs.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://arbitrum.io",
+      "source": "https://github.com/OffchainLabs/arbitrum",
+      "rpc": "https://node.offchainlabs.com:8547",
+      "documentation": "https://developer.offchainlabs.com"
+    }
+  },
+  {
+    "id": "heco",
+    "name": "ECO Chain",
+    "coinId": 10000553,
+    "slip44": 553,
+    "symbol": "HT",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://hecoinfo.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://www.hecochain.com/en-us",
+      "source": "https://github.com/HuobiGroup/huobi-eco-chain",
+      "rpc": "https://http-mainnet-node.huobichain.com",
+      "documentation": "https://eth.wiki/json-rpc/API"
     }
   }
 ]
