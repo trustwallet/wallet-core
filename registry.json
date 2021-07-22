@@ -1014,9 +1014,11 @@
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
-      "url": "https://explorer.solana.com",
-      "txPath": "/transactions/",
-      "accountPath": "/accounts/"
+      "url": "https://solscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/account/",
+      "sampleTx": "5LmxrEKGchhMuYfw6Qut6CbsvE9pVfb8YvwZKvWssSesDVjHioBCmWKSJQh1WhvcM6CpemhpHNmEMA2a36rzwTa8",
+      "sampleAccount": "Bxp8yhH9zNwxyE4UqxP7a7hgJ5xTZfxNNft7YJJ2VRjT"
     },
     "info": {
       "url": "https://solana.com",
