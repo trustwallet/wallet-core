@@ -53,18 +53,18 @@ TEST(RLP, uint256_t) {
     );
 }
 
-TEST(RLP, PutInt) {
-    EXPECT_EQ(hex(RLP::putint(0)), "00");
-    EXPECT_EQ(hex(RLP::putint(1)), "01");
-    EXPECT_EQ(hex(RLP::putint(0x21)), "21");
-    EXPECT_EQ(hex(RLP::putint(0x4321)), "4321");
-    EXPECT_EQ(hex(RLP::putint(0x654321)), "654321");
-    EXPECT_EQ(hex(RLP::putint(0x87654321)), "87654321");
-    EXPECT_EQ(hex(RLP::putint(0xa987654321)), "a987654321");
-    EXPECT_EQ(hex(RLP::putint(0xcba987654321)), "cba987654321");
-    EXPECT_EQ(hex(RLP::putint(0xedcba987654321)), "edcba987654321");
-    EXPECT_EQ(hex(RLP::putint(0x21edcba987654321)), "21edcba987654321");
-    EXPECT_EQ(hex(RLP::putint(0xffffffffffffffff)), "ffffffffffffffff");
+TEST(RLP, putVarInt) {
+    EXPECT_EQ(hex(RLP::putVarInt(0)), "00");
+    EXPECT_EQ(hex(RLP::putVarInt(1)), "01");
+    EXPECT_EQ(hex(RLP::putVarInt(0x21)), "21");
+    EXPECT_EQ(hex(RLP::putVarInt(0x4321)), "4321");
+    EXPECT_EQ(hex(RLP::putVarInt(0x654321)), "654321");
+    EXPECT_EQ(hex(RLP::putVarInt(0x87654321)), "87654321");
+    EXPECT_EQ(hex(RLP::putVarInt(0xa987654321)), "a987654321");
+    EXPECT_EQ(hex(RLP::putVarInt(0xcba987654321)), "cba987654321");
+    EXPECT_EQ(hex(RLP::putVarInt(0xedcba987654321)), "edcba987654321");
+    EXPECT_EQ(hex(RLP::putVarInt(0x21edcba987654321)), "21edcba987654321");
+    EXPECT_EQ(hex(RLP::putVarInt(0xffffffffffffffff)), "ffffffffffffffff");
 }
 
 TEST(RLP, Lists) {
@@ -162,27 +162,27 @@ TEST(RLP, DecodeList) {
     }
 }
 
-TEST(RLP, decodeLength) {
-    EXPECT_EQ(hex(store(RLP::decodeLength(1, parse_hex("00"), 0))), "00");
-    EXPECT_EQ(hex(store(RLP::decodeLength(1, parse_hex("01"), 0))), "01");
-    EXPECT_EQ(hex(store(RLP::decodeLength(1, parse_hex("fc"), 0))), "fc");
-    EXPECT_EQ(hex(store(RLP::decodeLength(1, parse_hex("ff"), 0))), "ff");
-    EXPECT_EQ(hex(store(RLP::decodeLength(1, parse_hex("abcd"), 1))), "cd");
-    EXPECT_EQ(hex(store(RLP::decodeLength(2, parse_hex("0102"), 0))), "0102");
-    EXPECT_EQ(hex(store(RLP::decodeLength(2, parse_hex("0100"), 0))), "0100");
-    EXPECT_EQ(hex(store(RLP::decodeLength(2, parse_hex("fedc"), 0))), "fedc");
-    EXPECT_EQ(hex(store(RLP::decodeLength(2, parse_hex("ffff"), 0))), "ffff");
-    EXPECT_EQ(hex(store(RLP::decodeLength(3, parse_hex("010203"), 0))), "010203");
-    EXPECT_EQ(hex(store(RLP::decodeLength(4, parse_hex("01020304"), 0))), "01020304");
-    EXPECT_EQ(hex(store(RLP::decodeLength(5, parse_hex("0102030405"), 0))), "0102030405");
-    EXPECT_EQ(hex(store(RLP::decodeLength(6, parse_hex("010203040506"), 0))), "010203040506");
-    EXPECT_EQ(hex(store(RLP::decodeLength(7, parse_hex("01020304050607"), 0))), "01020304050607");
-    EXPECT_EQ(hex(store(RLP::decodeLength(8, parse_hex("0102030405060708"), 0))), "0102030405060708");
-    EXPECT_EQ(hex(store(RLP::decodeLength(8, parse_hex("abcd0102030405060708"), 2))), "0102030405060708");
-    EXPECT_THROW(RLP::decodeLength(0, parse_hex("01"), 0), std::invalid_argument); // wrong size
-    EXPECT_THROW(RLP::decodeLength(9, parse_hex("010203040506070809"), 0), std::invalid_argument); // wrong size
-    EXPECT_THROW(RLP::decodeLength(4, parse_hex("0102"), 0), std::invalid_argument); // too short
-    EXPECT_THROW(RLP::decodeLength(2, parse_hex("0002"), 0), std::invalid_argument); // starts with 0
+TEST(RLP, parseVarInt) {
+    EXPECT_EQ(hex(store(RLP::parseVarInt(1, parse_hex("00"), 0))), "00");
+    EXPECT_EQ(hex(store(RLP::parseVarInt(1, parse_hex("01"), 0))), "01");
+    EXPECT_EQ(hex(store(RLP::parseVarInt(1, parse_hex("fc"), 0))), "fc");
+    EXPECT_EQ(hex(store(RLP::parseVarInt(1, parse_hex("ff"), 0))), "ff");
+    EXPECT_EQ(hex(store(RLP::parseVarInt(1, parse_hex("abcd"), 1))), "cd");
+    EXPECT_EQ(hex(store(RLP::parseVarInt(2, parse_hex("0102"), 0))), "0102");
+    EXPECT_EQ(hex(store(RLP::parseVarInt(2, parse_hex("0100"), 0))), "0100");
+    EXPECT_EQ(hex(store(RLP::parseVarInt(2, parse_hex("fedc"), 0))), "fedc");
+    EXPECT_EQ(hex(store(RLP::parseVarInt(2, parse_hex("ffff"), 0))), "ffff");
+    EXPECT_EQ(hex(store(RLP::parseVarInt(3, parse_hex("010203"), 0))), "010203");
+    EXPECT_EQ(hex(store(RLP::parseVarInt(4, parse_hex("01020304"), 0))), "01020304");
+    EXPECT_EQ(hex(store(RLP::parseVarInt(5, parse_hex("0102030405"), 0))), "0102030405");
+    EXPECT_EQ(hex(store(RLP::parseVarInt(6, parse_hex("010203040506"), 0))), "010203040506");
+    EXPECT_EQ(hex(store(RLP::parseVarInt(7, parse_hex("01020304050607"), 0))), "01020304050607");
+    EXPECT_EQ(hex(store(RLP::parseVarInt(8, parse_hex("0102030405060708"), 0))), "0102030405060708");
+    EXPECT_EQ(hex(store(RLP::parseVarInt(8, parse_hex("abcd0102030405060708"), 2))), "0102030405060708");
+    EXPECT_THROW(RLP::parseVarInt(0, parse_hex("01"), 0), std::invalid_argument); // wrong size
+    EXPECT_THROW(RLP::parseVarInt(9, parse_hex("010203040506070809"), 0), std::invalid_argument); // wrong size
+    EXPECT_THROW(RLP::parseVarInt(4, parse_hex("0102"), 0), std::invalid_argument); // too short
+    EXPECT_THROW(RLP::parseVarInt(2, parse_hex("0002"), 0), std::invalid_argument); // starts with 0
 }
 
 TEST(RLP, DecodeInvalid) {
