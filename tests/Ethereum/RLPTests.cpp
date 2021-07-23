@@ -13,8 +13,11 @@ using namespace TW;
 using namespace TW::Ethereum;
 using boost::multiprecision::uint256_t;
 
+std::string stringifyItems(const RLP::DecodedItem& di);
+
 std::string stringifyData(const Data& data) {
     if (data.size() == 0) return "0";
+    // try if only letters
     bool isLettersOnly = true;
     for(auto i: data) {
         if (!((i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z') || i == ' ' || i == ',')) {
@@ -23,10 +26,20 @@ std::string stringifyData(const Data& data) {
         }
     }
     if (isLettersOnly) return std::string("'") + std::string(data.begin(), data.end()) + "'";
+    // try if it can be parsed (recursive)
+    if (data.size() >= 2) {
+        try {
+            const auto di = RLP::decode(data);
+            if (di.decoded.size() > 0 && di.remainder.size() == 0) {
+                return stringifyItems(di);
+            }
+        } catch (...) {}
+    }
+    // any other: as hex string
     return hex(data);
 }
 
-std::string stringifyItem(const RLP::DecodedItem& di) {
+std::string stringifyItems(const RLP::DecodedItem& di) {
     const auto n = di.decoded.size();
     if (n == 0) {
         return "-";
@@ -47,7 +60,7 @@ std::string stringifyItem(const RLP::DecodedItem& di) {
 std::string decodeHelper(const std::string& hexData) {
     const auto data = parse_hex(hexData);
     const auto di = RLP::decode(data);
-    return stringifyItem(di);
+    return stringifyItems(di);
 }
 
 TEST(RLP, EncodeString) {
@@ -103,6 +116,17 @@ TEST(RLP, EncodeList) {
         const auto encoded = RLP::encodeList(std::vector<int>(1024));
         EXPECT_EQ(hex(subData(encoded, 0, 20)), "f904008080808080808080808080808080808080");
     }
+}
+
+TEST(RLP, EncodeListNested) {
+    const auto l11 = RLP::encodeList(std::vector<int>{1, 2, 3});
+    const auto l12 = RLP::encodeList(std::vector<std::string>{"apple", "banana", "cherry"});
+    const auto l21 = RLP::encodeList(std::vector<Data>{parse_hex("abcdef"), parse_hex("00010203040506070809")});
+    const auto l22 = RLP::encodeList(std::vector<std::string>{"bitcoin", "beeenbee", "eth"});
+    const auto l1 = RLP::encodeList(std::vector<Data>{l11, l12});
+    const auto l2 = RLP::encodeList(std::vector<Data>{l21, l22});
+    const auto encoded = RLP::encodeList(std::vector<Data>{l1, l2});
+    EXPECT_EQ(hex(encoded), "f8479cdb84c301020395d4856170706c658662616e616e6186636865727279a9e890cf83abcdef8a0001020304050607080996d587626974636f696e88626565656e62656583657468");
 }
 
 TEST(RLP, EncodeInvalid) {
@@ -208,6 +232,10 @@ TEST(RLP, DecodeList) {
         auto decoded = RLP::decode(encoded);
         ASSERT_EQ(decoded.decoded.size(), n);
     }
+
+    // nested list
+    EXPECT_EQ(decodeHelper("f8479cdb84c301020395d4856170706c658662616e616e6186636865727279a9e890cf83abcdef8a0001020304050607080996d587626974636f696e88626565656e62656583657468"),
+        "(2: (2: (3: 01 02 03) (3: 'apple' 'banana' 'cherry')) (2: (2: abcdef 00010203040506070809) (3: 'bitcoin' 'beeenbee' 'eth')))");
 }
 
 TEST(RLP, DecodeInvalid) {
