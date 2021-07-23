@@ -98,7 +98,7 @@ struct RLP {
     };
 
     static DecodedItem decodeList(const Data& input);
-    static uint64_t decodeLength(const Data& data);
+    static uint64_t decodeLength(size_t size, const Data& data, size_t index);
     /// Decodes data, remainder from RLP encoded data
     static DecodedItem decode(const Data& data);
 };

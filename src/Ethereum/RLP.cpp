@@ -138,13 +138,22 @@ RLP::DecodedItem RLP::decodeList(const Data& input) {
     return item;
 }
 
-uint64_t RLP::decodeLength(const Data& data) {
-    size_t index = 0;
-    auto decodedLen = decodeVarInt(data, index);
-    if (!std::get<0>(decodedLen)) {
-        throw std::invalid_argument("can't decode length of string/list length");
+uint64_t RLP::decodeLength(size_t size, const Data& data, size_t index) {
+    if (size < 1 || size > 8) {
+        throw std::invalid_argument("invalid length length");
     }
-    return std::get<1>(decodedLen);
+    if (data.size() - index < size) {
+        throw std::invalid_argument("Not enough data for varInt");
+    }
+    if (size >= 2 && data[index] == 0) {
+        throw std::invalid_argument("multi-byte length must have no leading zero");
+    }
+    uint64_t val = 0;
+    for (auto i = 0; i < size; ++i) {
+        val = val << 8;
+        val += data[index + i];
+    }
+    return static_cast<size_t>(val);
 }
 
 RLP::DecodedItem RLP::decode(const Data& input) {
@@ -185,7 +194,7 @@ RLP::DecodedItem RLP::decode(const Data& input) {
     if (prefix <= 0xbf) {
         // long string
         auto lenOfStrLen = prefix - 0xb7;
-        auto strLen = static_cast<size_t>(decodeLength(subData(input, 1, lenOfStrLen)));
+        auto strLen = static_cast<size_t>(decodeLength(lenOfStrLen, input, 1));
         if (inputLen < lenOfStrLen || inputLen < lenOfStrLen + strLen) {
             throw std::invalid_argument("Invalid rlp encoding length");
         }
@@ -216,12 +225,9 @@ RLP::DecodedItem RLP::decode(const Data& input) {
     } 
     if (prefix <= 0xff) {
         auto lenOfListLen = prefix - 0xf7;
-        auto listLen = static_cast<size_t>(decodeLength(subData(input, 1, lenOfListLen)));
+        auto listLen = static_cast<size_t>(decodeLength(lenOfListLen, input, 1));
         if (inputLen < lenOfListLen || inputLen < lenOfListLen + listLen) {
             throw std::invalid_argument("Invalid rlp list length");
-        }
-        if (input[1] == 0) {
-            throw std::invalid_argument("multi-byte length must have no leading zero");
         }
         if (listLen < 56) {
             throw std::invalid_argument("length below 56 must be encoded in one byte");
