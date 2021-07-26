@@ -86,3 +86,86 @@ TEST(AlgorandSigner, Sign) {
     ASSERT_EQ(hex(signature), "de73363dbdeda0682adca06f6268a16a6ec47253c94d5692dc1c49a84a05847812cf66d7c4cf07c7e2f50f143ec365d405e30b35117b264a994626054d2af604");
     ASSERT_EQ(hex(result), "82a3736967c440de73363dbdeda0682adca06f6268a16a6ec47253c94d5692dc1c49a84a05847812cf66d7c4cf07c7e2f50f143ec365d405e30b35117b264a994626054d2af604a374786e89a3616d74cd034fa3666565ce000775e3a2667633a367656eac6d61696e6e65742d76312e30a26768c420c061c4d8fc1dbdded2d7604be4568e3f6d041987ac37bde4b620b5ab39248adfa26c763da3726376c420a089aa6922e3b998fadff6cd4808ddf9e021e4944e389ea3d5c638786689197ea3736e64c42074b000b6368551a6066d713e2866002e8dab34b69ede09a72e85a39bbb1f7928a474797065a3706179");
 }
+
+TEST(AlgorandSigner, SignAsset) {
+    auto key = PrivateKey(parse_hex("c9d3cc16fecabe2747eab86b81528c6ed8b65efc1d6906d86aabc27187a1fe7c"));
+    auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
+    auto from = Address(publicKey);
+    auto to = Address("UCE2U2JC4O4ZR6W763GUQCG57HQCDZEUJY4J5I6VYY4HQZUJDF7AKZO5GM");
+    Data note;
+    std::string genesisId = "mainnet-v1.0";
+    auto genesisHash = Base64::decode("wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=");
+    auto transaction = AssetTransaction(
+        /* from */ from,
+        /* to */ to,
+        /* fee */ 488931,
+        /* amount */ 847,
+        /* asset id */13379146,
+        /* first round */ 51,
+        /* last round */ 61,
+        /* note */ note,
+        /* type */ "axfer",
+        /* genesis id*/ genesisId,
+        /* genesis hash*/ genesisHash
+    );
+
+    auto serialized = transaction.serialize();
+    auto signature = Signer::sign(key, transaction);
+    auto result = transaction.serialize(signature);
+
+    ASSERT_EQ(hex(serialized), "8aa461616d74cd034fa461726376c420a089aa6922e3b998fadff6cd4808ddf9e021e4944e389ea3d5c638786689197ea3666565ce000775e3a2667633a367656eac6d61696e6e65742d76312e30a26768c420c061c4d8fc1dbdded2d7604be4568e3f6d041987ac37bde4b620b5ab39248adfa26c763da3736e64c42074b000b6368551a6066d713e2866002e8dab34b69ede09a72e85a39bbb1f7928a474797065a56178666572a478616964ce00cc264a");
+    ASSERT_EQ(hex(signature), "9f9ab3c2a67e3b98c9db54e85a610fb61d7d4718e680a071f6fb7e9b037841faea432665a5838987bbec88ff3bf970d4512b7701016f88f114575f9ccf357a07");
+    ASSERT_EQ(hex(result), "82a3736967c4409f9ab3c2a67e3b98c9db54e85a610fb61d7d4718e680a071f6fb7e9b037841faea432665a5838987bbec88ff3bf970d4512b7701016f88f114575f9ccf357a07a374786e8aa461616d74cd034fa461726376c420a089aa6922e3b998fadff6cd4808ddf9e021e4944e389ea3d5c638786689197ea3666565ce000775e3a2667633a367656eac6d61696e6e65742d76312e30a26768c420c061c4d8fc1dbdded2d7604be4568e3f6d041987ac37bde4b620b5ab39248adfa26c763da3736e64c42074b000b6368551a6066d713e2866002e8dab34b69ede09a72e85a39bbb1f7928a474797065a56178666572a478616964ce00cc264a");
+}
+
+TEST(AlgorandSigner, SignAssetOptIn) {
+    auto key = PrivateKey(parse_hex("c9d3cc16fecabe2747eab86b81528c6ed8b65efc1d6906d86aabc27187a1fe7c"));
+    auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
+    auto address = Address(publicKey);
+    auto to = Address("UCE2U2JC4O4ZR6W763GUQCG57HQCDZEUJY4J5I6VYY4HQZUJDF7AKZO5GM");
+    Data note;
+    std::string genesisId = "mainnet-v1.0";
+    auto genesisHash = Base64::decode("wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=");
+    auto transaction = OptInAssetTransaction(
+        /* from */ address,
+        /* fee */ 488931,
+        /* asset id */13379146,
+        /* first round */ 51,
+        /* last round */ 61,
+        /* note */ note,
+        /* type */ "axfer",
+        /* genesis id*/ genesisId,
+        /* genesis hash*/ genesisHash
+    );
+
+    auto serialized = transaction.serialize();
+    auto signature = Signer::sign(key, transaction);
+    auto result = transaction.serialize(signature);
+
+    ASSERT_EQ(hex(serialized), "89a461726376c42074b000b6368551a6066d713e2866002e8dab34b69ede09a72e85a39bbb1f7928a3666565ce000775e3a2667633a367656eac6d61696e6e65742d76312e30a26768c420c061c4d8fc1dbdded2d7604be4568e3f6d041987ac37bde4b620b5ab39248adfa26c763da3736e64c42074b000b6368551a6066d713e2866002e8dab34b69ede09a72e85a39bbb1f7928a474797065a56178666572a478616964ce00cc264a");
+    ASSERT_EQ(hex(signature), "c2701f9c3ad97be448a26697d2dc0f8d56cb4c3e5d39283f16ba18f20b6f6e3a9cefc4bf9b115bb75b5c9e85a7d5ff7702d05b4c5e8019cadf3af0b8e119ae05");
+    ASSERT_EQ(hex(result), "82a3736967c440c2701f9c3ad97be448a26697d2dc0f8d56cb4c3e5d39283f16ba18f20b6f6e3a9cefc4bf9b115bb75b5c9e85a7d5ff7702d05b4c5e8019cadf3af0b8e119ae05a374786e89a461726376c42074b000b6368551a6066d713e2866002e8dab34b69ede09a72e85a39bbb1f7928a3666565ce000775e3a2667633a367656eac6d61696e6e65742d76312e30a26768c420c061c4d8fc1dbdded2d7604be4568e3f6d041987ac37bde4b620b5ab39248adfa26c763da3736e64c42074b000b6368551a6066d713e2866002e8dab34b69ede09a72e85a39bbb1f7928a474797065a56178666572a478616964ce00cc264a");
+}
+
+TEST(AlgorandSigner, ProtoSignerOptIn) {
+    auto optIn = new Proto::AssetOptIn();
+    optIn -> set_fee(488931);
+    optIn -> set_asset_id(13379146);
+    optIn -> set_first_round(51);
+    optIn -> set_last_round(61);
+
+    auto privateKey = parse_hex("c9d3cc16fecabe2747eab86b81528c6ed8b65efc1d6906d86aabc27187a1fe7c");
+
+    auto input = Proto::SigningInput();
+    auto genesisHash = Base64::decode("wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=");
+    std::string str(genesisHash.begin(), genesisHash.end());
+    input.set_allocated_asset_opt_in(optIn);
+    input.set_genesis_hash(str);
+    input.set_genesis_id("mainnet-v1.0");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto result = Signer::sign(input);
+    auto encoded = result.encoded();
+
+    ASSERT_EQ(hex(encoded), "82a3736967c440c2701f9c3ad97be448a26697d2dc0f8d56cb4c3e5d39283f16ba18f20b6f6e3a9cefc4bf9b115bb75b5c9e85a7d5ff7702d05b4c5e8019cadf3af0b8e119ae05a374786e89a461726376c42074b000b6368551a6066d713e2866002e8dab34b69ede09a72e85a39bbb1f7928a3666565ce000775e3a2667633a367656eac6d61696e6e65742d76312e30a26768c420c061c4d8fc1dbdded2d7604be4568e3f6d041987ac37bde4b620b5ab39248adfa26c763da3736e64c42074b000b6368551a6066d713e2866002e8dab34b69ede09a72e85a39bbb1f7928a474797065a56178666572a478616964ce00cc264a");
+}

@@ -11,9 +11,25 @@ message TransactionPay {
     uint64 last_round = 5;
 }
 
+message AssetTransaction {
+    string to_address = 1;
+    uint64 fee = 2;
+    uint64 amount = 3;
+    uint64 first_round = 4;
+    uint64 last_round = 5;
+    uint64 asset_id = 6;
+}
+
+message AssetOptIn {
+    uint64 fee = 1;
+    uint64 first_round = 2;
+    uint64 last_round = 3;
+    uint64 asset_id = 4;
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
-    // netowrk / chain id
+    // network / chain id
     string genesis_id = 1;
     // network / chain hash
     bytes genesis_hash = 2;
@@ -24,6 +40,8 @@ message SigningInput {
 
     oneof message_oneof {
         TransactionPay transaction_pay = 10;
+        AssetTransaction asset_transaction = 11;
+        AssetOptIn asset_opt_in = 12;
     }
 }
 

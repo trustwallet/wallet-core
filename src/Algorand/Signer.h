@@ -7,6 +7,8 @@
 #pragma once
 
 #include "Transaction.h"
+#include "AssetTransaction.h"
+#include "OptInAssetTransaction.h"
 
 #include "../Data.h"
 #include "../PrivateKey.h"
@@ -23,6 +25,8 @@ class Signer {
 
     /// Signs the given transaction.
     static Data sign(const PrivateKey& privateKey, Transaction& transaction) noexcept;
+    static Data sign(const PrivateKey& privateKey, AssetTransaction& transaction) noexcept;
+    static Data sign(const PrivateKey& privateKey, OptInAssetTransaction& transaction) noexcept;
 };
 
 } // namespace TW::Algorand
