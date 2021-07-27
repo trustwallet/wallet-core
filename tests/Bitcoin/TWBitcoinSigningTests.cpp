@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -183,8 +183,7 @@ TEST(BitcoinSigning, SignP2WPKH_Bip143) {
     const auto pubKey0 = utxoKey0.getPublicKey(TWPublicKeyTypeSECP256k1);
     EXPECT_EQ(hex(pubKey0.bytes), "03c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432");
 
-    // script could use buildPayToPublicKey()
-    const auto utxo0Script = Script(parse_hex("21" "03c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432" "ac"));
+    const auto utxo0Script = Script::buildPayToPublicKey(pubKey0.bytes);
     Data key2;
     utxo0Script.matchPayToPublicKey(key2);
     EXPECT_EQ(hex(key2), hex(pubKey0.bytes));
