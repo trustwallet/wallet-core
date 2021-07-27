@@ -208,7 +208,7 @@ bool Script::getScriptOp(size_t& index, uint8_t& opcode, Data& operand) const {
 Script Script::buildPayToPublicKey(const Data& publicKey) {
     assert(publicKey.size() == PublicKey::secp256k1Size || publicKey.size() == PublicKey::secp256k1ExtendedSize);
     Script script;
-    script.bytes.push_back(publicKey.size());
+    script.bytes.push_back(static_cast<byte>(publicKey.size()));
     append(script.bytes, publicKey);
     script.bytes.push_back(OP_CHECKSIG);
     return script;
