@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -69,7 +69,7 @@ TEST(TWBitcoinScript, MatchPayToPubkey) {
     ASSERT_EQ(TWBitcoinScriptMatchPayToPubkey(PayToScriptHash.get()), nullptr);
 }
 
-TEST(TWBitcoinScript, TWBitcoinScriptMatchPayToPubkeyHash) {
+TEST(TWBitcoinScript, MatchPayToPubkeyHash) {
     const auto res = WRAPD(TWBitcoinScriptMatchPayToPubkeyHash(PayToPublicKeyHash.get()));
     ASSERT_TRUE(res.get() != nullptr);
     const auto hexRes = WRAPS(TWStringCreateWithHexData(res.get()));
@@ -110,6 +110,14 @@ TEST(TWBitcoinScript, Encode) {
     ASSERT_TRUE(res.get() != nullptr);
     const auto hexRes = WRAPS(TWStringCreateWithHexData(res.get()));
     ASSERT_STREQ(TWStringUTF8Bytes(hexRes.get()), "17a9144733f37cf4db86fbc2efed2500b4f4e49f31202387");
+}
+
+TEST(TWBitcoinScript, BuildPayToPublicKey) {
+    const auto pubkey = DATA("03c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432");
+    const auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildPayToPublicKey(pubkey.get()));
+    ASSERT_TRUE(script.get() != nullptr);
+    const auto hex = WRAPS(TWStringCreateWithHexData(WRAPD(TWBitcoinScriptData(script.get())).get()));
+    ASSERT_STREQ(TWStringUTF8Bytes(hex.get()), "21" "03c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432" "ac");
 }
 
 TEST(TWBitcoinScript, BuildPayToWitnessPubkeyHash) {
