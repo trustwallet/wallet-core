@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -116,6 +116,12 @@ TWData *TWBitcoinScriptEncode(const struct TWBitcoinScript *script) {
     auto result = std::vector<uint8_t>{};
     script->impl.encode(result);
     return TWDataCreateWithBytes(result.data(), result.size());
+}
+
+struct TWBitcoinScript *TWBitcoinScriptBuildPayToPublicKey(TWData *pubkey) {
+    auto v = reinterpret_cast<const std::vector<uint8_t>*>(pubkey);
+    auto script = Script::buildPayToPublicKey(*v);
+    return new TWBitcoinScript{ .impl = script };
 }
 
 struct TWBitcoinScript *TWBitcoinScriptBuildPayToPublicKeyHash(TWData *hash) {

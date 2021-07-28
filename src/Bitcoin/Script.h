@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -67,6 +67,9 @@ class Script {
 
     /// Matches the script to a multisig script.
     bool matchMultisig(std::vector<Data>& publicKeys, int& required) const;
+
+    /// Builds a pay-to-public-key (P2PK) script from a public key.
+    static Script buildPayToPublicKey(const Data& publickKey);
 
     /// Builds a pay-to-public-key-hash (P2PKH) script from a public key hash.
     static Script buildPayToPublicKeyHash(const Data& hash);

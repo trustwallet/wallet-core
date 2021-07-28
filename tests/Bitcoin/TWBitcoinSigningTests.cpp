@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -163,6 +163,93 @@ TEST(BitcoinSigning, EncodeP2WPKH) {
         // witness
             "00"
             "00"
+        "11000000" // nLockTime
+    );
+}
+
+TEST(BitcoinSigning, SignP2WPKH_Bip143) {
+    // https://github.com/bitcoin/bips/blob/master/bip-0143.mediawiki#native-p2wpkh
+
+    Proto::SigningInput input;
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    const auto amount = 112340000; // 0x06B22C20
+    input.set_amount(amount);
+    input.set_byte_fee(20); // not relevant
+    input.set_to_address("1Cu32FVupVCgHkMMRJdYJugxwo2Aprgk7H");
+    input.set_change_address("16TZ8J6Q5iZKBWizWzFAYnrsaox5Z5aBRV");
+
+    const auto hash0 = parse_hex("fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f");
+    const auto utxoKey0 = PrivateKey(parse_hex("bbc27228ddcb9209d7fd6f36b02f7dfa6252af40bb2f1cbc7a557da8027ff866"));
+    const auto pubKey0 = utxoKey0.getPublicKey(TWPublicKeyTypeSECP256k1);
+    EXPECT_EQ(hex(pubKey0.bytes), "03c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432");
+
+    const auto utxo0Script = Script::buildPayToPublicKey(pubKey0.bytes);
+    Data key2;
+    utxo0Script.matchPayToPublicKey(key2);
+    EXPECT_EQ(hex(key2), hex(pubKey0.bytes));
+    input.add_private_key(utxoKey0.bytes.data(), utxoKey0.bytes.size());
+
+    const auto hash1 = parse_hex("ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a");
+    const auto utxoKey1 = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"));
+    const auto pubKey1 = utxoKey1.getPublicKey(TWPublicKeyTypeSECP256k1);
+    EXPECT_EQ(hex(pubKey1.bytes), "025476c2e83188368da1ff3e292e7acafcdb3566bb0ad253f62fc70f07aeee6357");
+    const auto utxoPubkeyHash1 = Hash::ripemd(Hash::sha256(pubKey1.bytes));
+    EXPECT_EQ(hex(utxoPubkeyHash1), "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1");
+    input.add_private_key(utxoKey1.bytes.data(), utxoKey1.bytes.size());
+
+    auto utxo0 = input.add_utxo();
+    utxo0->set_script(utxo0Script.bytes.data(), utxo0Script.bytes.size());
+    utxo0->set_amount(1000000); // note: this amount is not specified in the test
+    utxo0->mutable_out_point()->set_hash(hash0.data(), hash0.size());
+    utxo0->mutable_out_point()->set_index(0);
+    utxo0->mutable_out_point()->set_sequence(0xffffffee);
+
+    auto utxo1 = input.add_utxo();
+    auto utxo1Script = Script::buildPayToWitnessProgram(utxoPubkeyHash1);
+    utxo1->set_script(utxo1Script.bytes.data(), utxo1Script.bytes.size());
+    utxo1->set_amount(600000000); // 0x23C34600 0046c323
+    utxo1->mutable_out_point()->set_hash(hash1.data(), hash1.size());
+    utxo1->mutable_out_point()->set_index(1);
+    utxo1->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    // Set plan to force both UTXOs and exact output amounts
+    auto plan = input.mutable_plan();
+    plan->set_amount(amount);
+    plan->set_available_amount(600000000 + 1000000);
+    plan->set_fee(265210000); // very large, the amounts specified (in1, out0, out1) are not consistent/realistic
+    plan->set_change(223450000); // 0x0d519390
+    plan->set_branch_id("0");
+    *(plan->add_utxos()) = *utxo0;
+    *(plan->add_utxos()) = *utxo1;
+
+    // Sign
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
+    signer.transaction.lockTime = 0x11; // there is no way to set locktime through SigningInput
+    auto result = signer.sign();
+
+    ASSERT_TRUE(result) << std::to_string(result.error());
+    const auto signedTx = result.payload();
+
+    Data serialized;
+    signer.encodeTx(signedTx, serialized);
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{343, 233, 261}));
+    // expected in one string for easy comparison/copy:
+    ASSERT_EQ(hex(serialized), "01000000000102fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f00000000494830450221008b9d1dc26ba6a9cb62127b02742fa9d754cd3bebf337f7a55d114c8e5cdd30be022040529b194ba3f9281a99f2b1c0a19c0489bc22ede944ccf4ecbab4cc618ef3ed01eeffffffef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a0100000000ffffffff02202cb206000000001976a9148280b37df378db99f66f85c95a783a76ac7a6d5988ac9093510d000000001976a9143bde42dbee7e4dbe6a21b2d50ce2f0167faa815988ac000247304402203609e17b84f6a7d30c80bfa610b5b4542f32a8a0d5447a12fb1366d7f01cc44a0220573a954c4518331561406f90300e8f3358f51928d43c212a8caed02de67eebee0121025476c2e83188368da1ff3e292e7acafcdb3566bb0ad253f62fc70f07aeee635711000000");
+    // expected in structured format:
+    ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
+        "01000000" // version
+        "0001" // marker & flag
+        "02" // inputs
+            "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "49"  "4830450221008b9d1dc26ba6a9cb62127b02742fa9d754cd3bebf337f7a55d114c8e5cdd30be022040529b194ba3f9281a99f2b1c0a19c0489bc22ede944ccf4ecbab4cc618ef3ed01"  "eeffffff"
+            "ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a"  "01000000"  "00"  ""  "ffffffff"
+        "02" // outputs
+            "202cb20600000000"  "19"  "76a9148280b37df378db99f66f85c95a783a76ac7a6d5988ac"
+            "9093510d00000000"  "19"  "76a9143bde42dbee7e4dbe6a21b2d50ce2f0167faa815988ac"
+        // witness
+            "00"
+            "02"
+                "47"  "304402203609e17b84f6a7d30c80bfa610b5b4542f32a8a0d5447a12fb1366d7f01cc44a0220573a954c4518331561406f90300e8f3358f51928d43c212a8caed02de67eebee01"
+                "21"  "025476c2e83188368da1ff3e292e7acafcdb3566bb0ad253f62fc70f07aeee6357"
         "11000000" // nLockTime
     );
 }
