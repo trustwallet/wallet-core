@@ -11,11 +11,20 @@
 #include <PrivateKey.h>
 #include "../interface/TWTestUtilities.h"
 
+#include <fstream>
 #include <gtest/gtest.h>
 
 using namespace TW::Ethereum::ABI;
 using namespace TW::Ethereum;
 using namespace TW;
+
+extern std::string TESTS_ROOT;
+
+std::string load_file(const std::string path) {
+    std::ifstream stream(path);
+    std::string content((std::istreambuf_iterator<char>(stream)), (std::istreambuf_iterator<char>()));
+    return content;
+}
 
 // https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
 
@@ -64,6 +73,8 @@ ParamStruct msgEIP712Domain("EIP712Domain", std::vector<std::shared_ptr<ParamNam
 });
 
 PrivateKey privateKeyCow = PrivateKey(Hash::keccak256(TW::data("cow")));
+PrivateKey privateKeyDragon = PrivateKey(Hash::keccak256(TW::data("dragon")));
+PrivateKey privateKeyOilTimes12 = PrivateKey(parse_hex("b0f20d59451a2fac1be6d458e036adfa5d83ebd4c21f9a76de3c4a3a65671eba")); // 0x60c2A43Cc69658eC4b02a65A07623D7192166F4e
 
 // See 'signedTypeData' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
 TEST(EthereumAbiStruct, encodeTypes) {
@@ -353,7 +364,6 @@ TEST(EthereumAbiStruct, encodeTypes_v4Rec) {
 
     EXPECT_EQ(hex(msgEIP712Domain.hashStruct()), "facb2c1888f63a780c84c216bd9a81b516fc501a19bae1fc81d82df590bbdc60");
 
-    PrivateKey privateKeyDragon = PrivateKey(Hash::keccak256(TW::data("dragon")));
     Address address = Address(privateKeyDragon.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
     EXPECT_EQ(address.string(), "0x065a687103C9F6467380beE800ecD70B17f6b72F");
 }
@@ -400,7 +410,6 @@ TEST(EthereumAbiStruct, encodeTypes_v4Rec_Json) {
     ASSERT_EQ(hex(hash), "807773b9faa9879d4971b43856c4d60c2da15c6f8c062bd9d33afefb756de19c");
 
     // sign the hash
-    PrivateKey privateKeyDragon = PrivateKey(Hash::keccak256(TW::data("dragon")));
     const auto rsv = Signer::sign(privateKeyDragon, 0, hash);
     EXPECT_EQ(hex(store(rsv.r)), "f2ec61e636ff7bb3ac8bc2a4cc2c8b8f635dd1b2ec8094c963128b358e79c85c");
     EXPECT_EQ(hex(store(rsv.s)), "5ca6dd637ed7e80f0436fe8fce39c0e5f2082c9517fe677cc2917dcd6c84ba88");
@@ -473,6 +482,46 @@ TEST(EthereumAbiStruct, hashStructJson) {
         EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "domain": {}, "message": {}, "types": {"EIP712Domain": [{"name": "param", "type": "type"}]}})"), "Unknown type type");
         EXPECT_EXCEPTION(ParamStruct::hashStructJson(R"({"primaryType": "v1", "domain": {"param": "val"}, "message": {}, "types": {"EIP712Domain": [{"name": "param", "type": "string"}]}})"), "Type not found, v1");
     }
+}
+
+TEST(EthereumAbiStruct, hashStruct_walletConnect) {
+    // https://github.com/WalletConnect/walletconnect-example-dapp/blob/master/src/helpers/eip712.ts
+    auto path = TESTS_ROOT + "/Ethereum/Data/eip712_walletconnect.json";
+    auto typeData = load_file(path);
+    auto hash = ParamStruct::hashStructJson(typeData);
+    EXPECT_EQ(hex(hash), "abc79f527273b9e7bca1b3f1ac6ad1a8431fa6dc34ece900deabcd6969856b5e");
+
+    // sign the hash
+    const auto rsv = Signer::sign(privateKeyOilTimes12, 0, hash);
+    EXPECT_EQ(hex(store(rsv.r)), "e9c1ce1307593c378c7e38e8aa00dfb42b5a1ce543b59a138a12f29bd7fea75c");
+    EXPECT_EQ(hex(store(rsv.s)), "3fe71ef91c37abea29fe14b5f0de805f924af19d71bcef09e74aef2f0ccdf52a");
+    EXPECT_EQ(hex(store(rsv.v)), "1c");
+}
+
+TEST(EthereumAbiStruct, hashStruct_cryptofights) {
+    auto path = TESTS_ROOT + "/Ethereum/Data/eip712_cryptofights.json";
+    auto typeData = load_file(path);
+    auto hash = ParamStruct::hashStructJson(typeData);
+    EXPECT_EQ(hex(hash), "db12328a6d193965801548e1174936c3aa7adbe1b54b3535a3c905bd4966467c");
+
+    // sign the hash
+    const auto rsv = Signer::sign(privateKeyOilTimes12, 0, hash);
+    EXPECT_EQ(hex(store(rsv.r)), "9e26bdf0d113a72805acb1c2c8b0734d264290fd1cfbdf5e6502ae65a2f2bd83");
+    EXPECT_EQ(hex(store(rsv.s)), "11512c15ad0833fd457ae5dd59c3bcb3d03f35b3d33c1c5a575852163db42369");
+    EXPECT_EQ(hex(store(rsv.v)), "1b");
+}
+
+TEST(EthereumAbiStruct, hashStruct_snapshot) {
+    auto path = TESTS_ROOT + "/Ethereum/Data/eip712_snapshot_v4.json";
+    auto typeData = load_file(path);
+    auto hash = ParamStruct::hashStructJson(typeData);
+    EXPECT_EQ(hex(hash), "f558d08ad4a7651dbc9ec028cfcb4a8e6878a249073ef4fa694f85ee95f61c0f");
+
+    // sign the hash
+    const auto rsv = Signer::sign(privateKeyOilTimes12, 0, hash);
+    EXPECT_EQ(hex(store(rsv.r)), "9da563ffcafe9fa8809540ebcc4bcf8bbc26874e192f430432e06547593e8681");
+    EXPECT_EQ(hex(store(rsv.s)), "164808603aca259775bdf511124b58651f1b3ce9ccbcd5a8d63df02e2359bb8b");
+    EXPECT_EQ(hex(store(rsv.v)), "1b");
 }
 
 TEST(EthereumAbiStruct, ParamFactoryMakeNamed) {
@@ -684,4 +733,131 @@ TEST(EthereumAbiStruct, ParamStructMethods) {
     EXPECT_EQ(offset, 0);
     EXPECT_FALSE(ps->setValueJson("dummy"));
     EXPECT_EQ(ps->findParamByName("param2")->getName(), "param2");
+}
+
+TEST(EthereumAbiStruct, ParamHashStruct) {
+    {
+        auto p = std::make_shared<ParamUInt8>();
+        EXPECT_TRUE(p->setValueJson("13"));
+        EXPECT_EQ(hex(p->hashStruct()), "000000000000000000000000000000000000000000000000000000000000000d");
+    }
+    {
+        auto p = std::make_shared<ParamUInt16>();
+        EXPECT_TRUE(p->setValueJson("1234"));
+        EXPECT_EQ(hex(p->hashStruct()), "00000000000000000000000000000000000000000000000000000000000004d2");
+    }
+    {
+        auto p = std::make_shared<ParamUInt32>();
+        EXPECT_TRUE(p->setValueJson("1234567"));
+        EXPECT_EQ(hex(p->hashStruct()), "000000000000000000000000000000000000000000000000000000000012d687");
+    }
+    {
+        auto p = std::make_shared<ParamUInt64>();
+        EXPECT_TRUE(p->setValueJson("1234567"));
+        EXPECT_EQ(hex(p->hashStruct()), "000000000000000000000000000000000000000000000000000000000012d687");
+    }
+    {
+        auto p = std::make_shared<ParamUIntN>(128);
+        EXPECT_TRUE(p->setValueJson("1234567890123456789"));
+        EXPECT_EQ(hex(p->hashStruct()), "000000000000000000000000000000000000000000000000112210f47de98115");
+    }
+    {
+        auto p = std::make_shared<ParamUIntN>(168);
+        EXPECT_TRUE(p->setValueJson("1234567890123456789"));
+        EXPECT_EQ(hex(p->hashStruct()), "000000000000000000000000000000000000000000000000112210f47de98115");
+    }
+    {
+        auto p = std::make_shared<ParamUInt256>();
+        EXPECT_TRUE(p->setValueJson("1234567890123456789"));
+        EXPECT_EQ(hex(p->hashStruct()), "000000000000000000000000000000000000000000000000112210f47de98115");
+    }
+    {
+        auto p = std::make_shared<ParamInt8>();
+        EXPECT_TRUE(p->setValueJson("13"));
+        EXPECT_EQ(hex(p->hashStruct()), "000000000000000000000000000000000000000000000000000000000000000d");
+    }
+    {
+        auto p = std::make_shared<ParamInt16>();
+        EXPECT_TRUE(p->setValueJson("1234"));
+        EXPECT_EQ(hex(p->hashStruct()), "00000000000000000000000000000000000000000000000000000000000004d2");
+    }
+    {
+        auto p = std::make_shared<ParamInt32>();
+        EXPECT_TRUE(p->setValueJson("1234567"));
+        EXPECT_EQ(hex(p->hashStruct()), "000000000000000000000000000000000000000000000000000000000012d687");
+    }
+    {
+        auto p = std::make_shared<ParamInt64>();
+        EXPECT_TRUE(p->setValueJson("1234567"));
+        EXPECT_EQ(hex(p->hashStruct()), "000000000000000000000000000000000000000000000000000000000012d687");
+    }
+    {
+        auto p = std::make_shared<ParamIntN>(128);
+        EXPECT_TRUE(p->setValueJson("1234567890123456789"));
+        EXPECT_EQ(hex(p->hashStruct()), "000000000000000000000000000000000000000000000000112210f47de98115");
+    }
+    {
+        auto p = std::make_shared<ParamIntN>(168);
+        EXPECT_TRUE(p->setValueJson("1234567890123456789"));
+        EXPECT_EQ(hex(p->hashStruct()), "000000000000000000000000000000000000000000000000112210f47de98115");
+    }
+    {
+        auto p = std::make_shared<ParamInt256>();
+        EXPECT_TRUE(p->setValueJson("1234567890123456789"));
+        EXPECT_EQ(hex(p->hashStruct()), "000000000000000000000000000000000000000000000000112210f47de98115");
+    }
+    {
+        auto p = std::make_shared<ParamBool>();
+        EXPECT_TRUE(p->setValueJson("true"));
+        EXPECT_EQ(hex(p->hashStruct()), "0000000000000000000000000000000000000000000000000000000000000001");
+    }
+    {
+        auto p = std::make_shared<ParamString>();
+        EXPECT_TRUE(p->setValueJson("ABCdefGHI"));
+        EXPECT_EQ(hex(p->hashStruct()), "3a2aa9c027187dbf5a2f0c980281da43e810ecbe4d32e0b5c22211882c691889");
+    }
+    {
+        auto p = std::make_shared<ParamByteArray>();
+        EXPECT_TRUE(p->setValueJson("0123456789"));
+        EXPECT_EQ(hex(p->hashStruct()), "0123456789000000000000000000000000000000000000000000000000000000");
+        EXPECT_TRUE(p->setValueJson("0xa9059cbb0000000000000000000000002e0d94754b348d208d64d52d78bcd443afa9fa520000000000000000000000000000000000000000000000000000000000000007"));
+        EXPECT_EQ(hex(p->hashStruct()), "a9485354dd9d340e02789cfc540c6c4a2ff5511beb414b64634a5e11c6a7168c");
+        EXPECT_TRUE(p->setValueJson("0x0000000000000000000000000000000000000000000000000000000123456789"));
+        EXPECT_EQ(hex(p->hashStruct()), "0000000000000000000000000000000000000000000000000000000123456789");
+    }
+    {
+        auto p = std::make_shared<ParamByteArrayFix>(36);
+        EXPECT_TRUE(p->setValueJson("0x000000000000000000000000000000000000000000000000000000000000000123456789"));
+        EXPECT_EQ(hex(p->hashStruct()), "3deb4663f580c622d668f2121c29c3f4dacf06e40a3a76d1dea25e90bcd63b5d");
+    }
+    {
+        auto p = std::make_shared<ParamByteArrayFix>(20);
+        EXPECT_TRUE(p->setValueJson("0x0000000000000000000000000000000123456789"));
+        EXPECT_EQ(hex(p->hashStruct()), "0000000000000000000000000000000123456789000000000000000000000000");
+    }
+    {
+        auto p = std::make_shared<ParamByteArrayFix>(32);
+        EXPECT_TRUE(p->setValueJson("0x0000000000000000000000000000000000000000000000000000000123456789"));
+        EXPECT_EQ(hex(p->hashStruct()), "0000000000000000000000000000000000000000000000000000000123456789");
+    }
+    {
+        auto p = std::make_shared<ParamAddress>();
+        EXPECT_TRUE(p->setValueJson("0x0000000000000000000000000000000123456789"));
+        EXPECT_EQ(hex(p->hashStruct()), "0000000000000000000000000000000000000000000000000000000123456789");
+    }
+    {
+        auto p = std::make_shared<ParamArray>(std::make_shared<ParamUInt8>());
+        EXPECT_TRUE(p->setValueJson("[13,14,15]"));
+        EXPECT_EQ(hex(p->hashStruct()), "71494e9b6acbff3356f1292cc149101310110b6b13f835ae4665e4b00892fa83");
+    }
+    {
+        auto p = std::make_shared<ParamArray>(std::make_shared<ParamAddress>());
+        EXPECT_TRUE(p->setValueJson("[\"0x0000000000000000000000000000000123456789\"]"));
+        EXPECT_EQ(hex(p->hashStruct()), "c8243991757dc8723e4976248127e573da4a2cbfad54b776d5a7c8d92b6e2a6b");
+    }
+    {
+        auto p = std::make_shared<ParamArray>(std::make_shared<ParamBool>());
+        EXPECT_TRUE(p->setValueJson("[true,false,true]"));
+        EXPECT_EQ(hex(p->hashStruct()), "5c6090c0461491a2941743bda5c3658bf1ea53bbd3edcde54e16205e18b45792");
+    }
 }

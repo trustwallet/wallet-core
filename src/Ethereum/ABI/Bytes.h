@@ -33,6 +33,7 @@ public:
         return decodeBytes(encoded, _bytes, offset_inout);
     }
     virtual bool setValueJson(const std::string& value);
+    virtual Data hashStruct() const;
 };
 
 /// Fixed-size array of bytes, "bytes<N>"
@@ -44,7 +45,7 @@ private:
 public:
     ParamByteArrayFix(size_t n): ParamCollection(), _n(n), _bytes(Data(_n)) {}
     ParamByteArrayFix(size_t n, const Data& val): ParamCollection(), _n(n), _bytes(Data(_n)) { setVal(val); }
-    void setVal(const Data& val) { _bytes = val; }
+    void setVal(const Data& val);
     const std::vector<uint8_t>& getVal() const { return _bytes; }
     virtual std::string getType() const { return "bytes" + std::to_string(_n); };
     virtual size_t getSize() const { return ValueEncoder::paddedTo32(_bytes.size()); }
@@ -56,6 +57,7 @@ public:
         return decodeBytesFix(encoded, _n, _bytes, offset_inout);
     }
     virtual bool setValueJson(const std::string& value);
+    virtual Data hashStruct() const;
 };
 
 /// Var-length string parameter

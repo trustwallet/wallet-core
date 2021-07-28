@@ -10,6 +10,8 @@
 #include <Hash.h>
 #include <HexCoding.h>
 
+#include <cassert>
+
 using namespace TW::Ethereum::ABI;
 using namespace TW;
 
@@ -51,6 +53,30 @@ bool ParamByteArray::setValueJson(const std::string& value) {
     return true;
 }
 
+Data ParamByteArray::hashStruct() const {
+    if (_bytes.size() > 32) {
+        return Hash::keccak256(_bytes);
+    }
+    Data res;
+    const auto count = _bytes.size();
+    const auto padding = ValueEncoder::padNeeded32(count);
+    res.insert(res.end(), _bytes.begin(), _bytes.begin() + count);
+    append(res, Data(padding));
+    return res;
+}
+
+void ParamByteArrayFix::setVal(const Data& val) {
+    if (val.size() > _n) { // crop right
+        _bytes = subData(val, 0, _n);
+    } else {
+        _bytes = val;
+        if (_bytes.size() < _n) { // pad on right
+            append(_bytes, Data(_n - _bytes.size()));
+        }
+    }
+    assert(_bytes.size() == _n);
+}
+
 void ParamByteArrayFix::encode(Data& data) const {
     const auto count = _bytes.size();
     const auto padding = ValueEncoder::padNeeded32(count);
@@ -79,6 +105,13 @@ bool ParamByteArrayFix::decodeBytesFix(const Data& encoded, size_t n, Data& deco
 bool ParamByteArrayFix::setValueJson(const std::string& value) {
     setVal(parse_hex(value));
     return true;
+}
+
+Data ParamByteArrayFix::hashStruct() const {
+    if (_bytes.size() > 32) {
+        return Hash::keccak256(_bytes);
+    }
+    return ParamBase::hashStruct();
 }
 
 void ParamString::encodeString(const std::string& decoded, Data& data) {
