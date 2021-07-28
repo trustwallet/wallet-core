@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -94,6 +94,10 @@ TWData *_Nullable TWBitcoinScriptMatchPayToWitnessScriptHash(const struct TWBitc
 /// Encodes the script.
 TW_EXPORT_METHOD
 TWData *_Nonnull TWBitcoinScriptEncode(const struct TWBitcoinScript *_Nonnull script);
+
+/// Builds a standard 'pay to public key' script.
+TW_EXPORT_STATIC_METHOD
+struct TWBitcoinScript *_Nonnull TWBitcoinScriptBuildPayToPublicKey(TWData *_Nonnull pubkey);
 
 /// Builds a standard 'pay to public key hash' script.
 TW_EXPORT_STATIC_METHOD
