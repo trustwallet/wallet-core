@@ -76,9 +76,9 @@ void HDWallet::updateSeedAndEntropy() {
     mnemonic_to_seed(mnemonic.c_str(), passphrase.c_str(), seed.data(), nullptr);
 
     // generate entropy from mnemonic
-    Data entropyRaw((Mnemonic::MaxWords * 11) / 8);
+    Data entropyRaw((Mnemonic::MaxWords * Mnemonic::BitsPerWord) / 8);
     auto entropyBytes = mnemonic_to_bits(mnemonic.c_str(), entropyRaw.data()) / 8;
-    assert(entropyBytes <= ((Mnemonic::MaxWords * 11) / 8) && entropyBytes >= ((Mnemonic::MinWords * 11) / 8));
+    assert(entropyBytes <= ((Mnemonic::MaxWords * Mnemonic::BitsPerWord) / 8) && entropyBytes >= ((Mnemonic::MinWords * Mnemonic::BitsPerWord) / 8));
     // copy to truncate
     entropy = data(entropyRaw.data(), entropyBytes);
     assert(entropy.size() > 10);

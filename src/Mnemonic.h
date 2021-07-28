@@ -15,6 +15,7 @@ class Mnemonic {
 public:
     static constexpr size_t MaxWords = 24;
     static constexpr size_t MinWords = 12;
+    static constexpr size_t BitsPerWord = 11; // each word encodes this many bits (there are 2^11=2048 different words)
 
 public:
     /// Determines whether a mnemonic phrase is valid.
