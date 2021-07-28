@@ -43,15 +43,15 @@ void TWHDWalletDelete(struct TWHDWallet *wallet) {
 }
 
 TWData *_Nonnull TWHDWalletSeed(struct TWHDWallet *_Nonnull wallet) {
-    return TWDataCreateWithBytes(wallet->impl.seed.data(), HDWallet::seedSize);
+    return TWDataCreateWithBytes(wallet->impl.getSeed().data(), HDWallet::seedSize);
 }
 
 TWString *_Nonnull TWHDWalletMnemonic(struct TWHDWallet *_Nonnull wallet){
-    return TWStringCreateWithUTF8Bytes(wallet->impl.mnemonic.c_str());
+    return TWStringCreateWithUTF8Bytes(wallet->impl.getMnemonic().c_str());
 }
 
 TWData *_Nonnull TWHDWalletEntropy(struct TWHDWallet *_Nonnull wallet) {
-    return TWDataCreateWithBytes(wallet->impl.entropy.data(), wallet->impl.entropy.size());
+    return TWDataCreateWithBytes(wallet->impl.getEntropy().data(), wallet->impl.getEntropy().size());
 }
 
 struct TWPrivateKey *_Nonnull TWHDWalletGetMasterKey(struct TWHDWallet *_Nonnull wallet, TWCurve curve) {

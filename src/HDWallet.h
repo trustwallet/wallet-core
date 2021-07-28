@@ -29,7 +29,7 @@ class HDWallet {
     static constexpr size_t maxMnemomincSize = 240;
     static constexpr size_t maxExtendedKeySize = 128;
 
-  public:
+  private:
     /// Wallet seed, derived one-way from the mnemonic and passphrase
     std::array<byte, seedSize> seed;
 
@@ -41,6 +41,12 @@ class HDWallet {
 
     /// Entropy is the binary 1-to-1 representation of the mnemonic (11 bits from each word)
     TW::Data entropy;
+
+  public:
+    const std::array<byte, seedSize>& getSeed() const { return seed; }
+    const std::string& getMnemonic() const { return mnemonic; }
+    const std::string& getPassphrase() const { return passphrase; }
+    const TW::Data& getEntropy() const { return entropy; }
 
   public:
     /// Initializes a new random HDWallet with the provided strength in bits.  

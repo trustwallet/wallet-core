@@ -283,11 +283,11 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve) {
     switch (privateKeyType) {
         case HDWallet::PrivateKeyTypeExtended96:
             // special handling for extended, use entropy (not seed)
-            hdnode_from_entropy_cardano_icarus((const uint8_t*)"", 0, wallet.entropy.data(), (int)wallet.entropy.size(), &node);
+            hdnode_from_entropy_cardano_icarus((const uint8_t*)"", 0, wallet.getEntropy().data(), (int)wallet.getEntropy().size(), &node);
             break;
         case HDWallet::PrivateKeyTypeDefault32:
         default:
-            hdnode_from_seed(wallet.seed.data(), HDWallet::seedSize, curveName(curve), &node);
+            hdnode_from_seed(wallet.getSeed().data(), HDWallet::seedSize, curveName(curve), &node);
             break;
     }
     return node;

@@ -36,7 +36,7 @@ TEST(StoredKey, CreateWithMnemonic) {
     const Data& mnemo2Data = key.payload.decrypt(password);
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));
     EXPECT_EQ(key.accounts.size(), 0);
-    EXPECT_EQ(key.wallet(password).mnemonic, string(mnemonic));
+    EXPECT_EQ(key.wallet(password).getMnemonic(), string(mnemonic));
 
     const auto json = key.json();
     EXPECT_EQ(json["name"], "name");
@@ -368,8 +368,8 @@ TEST(StoredKey, MissingAddress) {
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
 
     const auto wallet = key.wallet(password);
-    EXPECT_EQ(wallet.mnemonic, "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal");
-    EXPECT_TRUE(Mnemonic::isValid(wallet.mnemonic));
+    EXPECT_EQ(wallet.getMnemonic(), "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal");
+    EXPECT_TRUE(Mnemonic::isValid(wallet.getMnemonic()));
 
     key.fixAddresses(password);
 
