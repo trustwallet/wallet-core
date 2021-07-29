@@ -73,6 +73,9 @@
 #include <TrezorCrypto/schnorr.h> // [wallet-core]
 //#include <TrezorCrypto/slip39.h> // [wallet-core]
 //#include <TrezorCrypto/slip39_wordlist.h>
+#include "../zkp_context.h"
+#include "../zkp_ecdsa.h"
+#include "../zkp_schnorr.h"
 
 #if VALGRIND
 /*
@@ -3405,7 +3408,283 @@ START_TEST(test_bip32_decred_vector_2) {
 }
 END_TEST
 
-START_TEST(test_ecdsa_signature) {
+static void test_ecdsa_get_public_key33_helper(
+  void (*ecdsa_get_public_key33_fn)(const ecdsa_curve *, const uint8_t *,
+                                      uint8_t *)) {
+  uint8_t privkey[32];
+  uint8_t pubkey[65];
+  uint8_t sig[64];
+  const ecdsa_curve *curve = &secp256k1;
+
+  // Signature verification for a digest which is equal to the group order.
+  // https://github.com/trezor/trezor-firmware/pull/1374
+  memcpy(
+      privkey,
+      fromhex(
+          "c46f5b217f04ff28886a89d3c762ed84e5fa318d1c9a635d541131e69f1f49f5"),
+      32);
+  ecdsa_get_public_key33_fn(curve, privkey, pubkey);
+  ck_assert_mem_eq(
+      pubkey,
+      fromhex(
+          "0232b062e9153f573c220b1be0299d6447e81577274bf11a7c08dff71384c6b6ec"),
+      33);
+  memcpy(
+      privkey,
+      fromhex(
+          "3b90a4de80fb00d77795762c389d1279d4b4ab5992ae3cde6bc12ca63116f74c"),
+      32);
+  ecdsa_get_public_key33_fn(curve, privkey, pubkey);
+  ck_assert_mem_eq(
+      pubkey,
+      fromhex(
+          "0332b062e9153f573c220b1be0299d6447e81577274bf11a7c08dff71384c6b6ec"),
+      33);
+}
+
+START_TEST(test_ecdsa_get_public_key33) {
+  test_ecdsa_get_public_key33_helper(ecdsa_get_public_key33);
+}
+END_TEST
+
+START_TEST(test_zkp_ecdsa_get_public_key33) {
+  test_ecdsa_get_public_key33_helper(zkp_ecdsa_get_public_key33);
+}
+END_TEST
+
+static void test_ecdsa_get_public_key65_helper(
+    void (*ecdsa_get_public_key65_fn)(const ecdsa_curve *, const uint8_t *,
+                                      uint8_t *)) {
+  uint8_t privkey[32];
+  uint8_t pubkey[65];
+  const ecdsa_curve *curve = &secp256k1;
+
+  memcpy(
+      privkey,
+      fromhex(
+          "c46f5b217f04ff28886a89d3c762ed84e5fa318d1c9a635d541131e69f1f49f5"),
+      32);
+  ecdsa_get_public_key65_fn(curve, privkey, pubkey);
+  ck_assert_mem_eq(
+      pubkey,
+      fromhex(
+          "0432b062e9153f573c220b1be0299d6447e81577274bf11a7c08dff71384c6b6ec"
+          "179ca56b637a57e0fcd28cefa10c9433dc30532682647f4daa053d43d5cc960a"),
+      65);
+}
+
+START_TEST(test_ecdsa_get_public_key65) {
+  test_ecdsa_get_public_key65_helper(ecdsa_get_public_key65);
+}
+END_TEST
+
+START_TEST(test_zkp_ecdsa_get_public_key65) {
+  test_ecdsa_get_public_key65_helper(zkp_ecdsa_get_public_key65);
+}
+END_TEST
+
+static void test_ecdsa_recover_pub_from_sig_helper(int (
+    *ecdsa_recover_pub_from_sig_fn)(const ecdsa_curve *, uint8_t *,
+                                    const uint8_t *, const uint8_t *, int)) {
+  int res;
+  uint8_t digest[32];
+  uint8_t pubkey[65];
+  const ecdsa_curve *curve = &secp256k1;
+
+  // sha2(sha2("\x18Bitcoin Signed Message:\n\x0cHello World!"))
+  memcpy(
+      digest,
+      fromhex(
+          "de4e9524586d6fce45667f9ff12f661e79870c4105fa0fb58af976619bb11432"),
+      32);
+  // r = 2:  Four points should exist
+  res = ecdsa_recover_pub_from_sig_fn(
+      curve, pubkey,
+      fromhex(
+          "00000000000000000000000000000000000000000000000000000000000000020123"
+          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
+      digest, 0);
+  ck_assert_int_eq(res, 0);
+  ck_assert_mem_eq(
+      pubkey,
+      fromhex(
+          "043fc5bf5fec35b6ffe6fd246226d312742a8c296bfa57dd22da509a2e348529b7dd"
+          "b9faf8afe1ecda3c05e7b2bda47ee1f5a87e952742b22afca560b29d972fcf"),
+      65);
+  res = ecdsa_recover_pub_from_sig_fn(
+      curve, pubkey,
+      fromhex(
+          "00000000000000000000000000000000000000000000000000000000000000020123"
+          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
+      digest, 1);
+  ck_assert_int_eq(res, 0);
+  ck_assert_mem_eq(
+      pubkey,
+      fromhex(
+          "0456d8089137b1fd0d890f8c7d4a04d0fd4520a30b19518ee87bd168ea12ed809032"
+          "9274c4c6c0d9df04515776f2741eeffc30235d596065d718c3973e19711ad0"),
+      65);
+  res = ecdsa_recover_pub_from_sig_fn(
+      curve, pubkey,
+      fromhex(
+          "00000000000000000000000000000000000000000000000000000000000000020123"
+          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
+      digest, 2);
+  ck_assert_int_eq(res, 0);
+  ck_assert_mem_eq(
+      pubkey,
+      fromhex(
+          "04cee0e740f41aab39156844afef0182dea2a8026885b10454a2d539df6f6df9023a"
+          "bfcb0f01c50bef3c0fa8e59a998d07441e18b1c60583ef75cc8b912fb21a15"),
+      65);
+  res = ecdsa_recover_pub_from_sig_fn(
+      curve, pubkey,
+      fromhex(
+          "00000000000000000000000000000000000000000000000000000000000000020123"
+          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
+      digest, 3);
+  ck_assert_int_eq(res, 0);
+  ck_assert_mem_eq(
+      pubkey,
+      fromhex(
+          "0490d2bd2e9a564d6e1d8324fc6ad00aa4ae597684ecf4abea58bdfe7287ea4fa729"
+          "68c2e5b0b40999ede3d7898d94e82c3f8dc4536a567a4bd45998c826a4c4b2"),
+      65);
+
+  memcpy(
+      digest,
+      fromhex(
+          "0000000000000000000000000000000000000000000000000000000000000000"),
+      32);
+  // r = 7:  No point P with P.x = 7,  but P.x = (order + 7) exists
+  res = ecdsa_recover_pub_from_sig_fn(
+      curve, pubkey,
+      fromhex(
+          "00000000000000000000000000000000000000000000000000000000000000070123"
+          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
+      digest, 2);
+  ck_assert_int_eq(res, 0);
+  ck_assert_mem_eq(
+      pubkey,
+      fromhex(
+          "044d81bb47a31ffc6cf1f780ecb1e201ec47214b651650867c07f13ad06e12a1b040"
+          "de78f8dbda700f4d3cd7ee21b3651a74c7661809699d2be7ea0992b0d39797"),
+      65);
+  res = ecdsa_recover_pub_from_sig_fn(
+      curve, pubkey,
+      fromhex(
+          "00000000000000000000000000000000000000000000000000000000000000070123"
+          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
+      digest, 3);
+  ck_assert_int_eq(res, 0);
+  ck_assert_mem_eq(
+      pubkey,
+      fromhex(
+          "044d81bb47a31ffc6cf1f780ecb1e201ec47214b651650867c07f13ad06e12a1b0bf"
+          "21870724258ff0b2c32811de4c9ae58b3899e7f69662d41815f66c4f2c6498"),
+      65);
+  res = ecdsa_recover_pub_from_sig_fn(
+      curve, pubkey,
+      fromhex(
+          "00000000000000000000000000000000000000000000000000000000000000070123"
+          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
+      digest, 0);
+  ck_assert_int_eq(res, 1);
+
+  memcpy(
+      digest,
+      fromhex(
+          "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
+      32);
+  // r = 1:  Two points P with P.x = 1,  but P.x = (order + 7) doesn't exist
+  res = ecdsa_recover_pub_from_sig_fn(
+      curve, pubkey,
+      fromhex(
+          "00000000000000000000000000000000000000000000000000000000000000010123"
+          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
+      digest, 0);
+  ck_assert_int_eq(res, 0);
+  ck_assert_mem_eq(
+      pubkey,
+      fromhex(
+          "045d330b2f89dbfca149828277bae852dd4aebfe136982cb531a88e9e7a89463fe71"
+          "519f34ea8feb9490c707f14bc38c9ece51762bfd034ea014719b7c85d2871b"),
+      65);
+  res = ecdsa_recover_pub_from_sig_fn(
+      curve, pubkey,
+      fromhex(
+          "00000000000000000000000000000000000000000000000000000000000000010123"
+          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
+      digest, 1);
+  ck_assert_int_eq(res, 0);
+  ck_assert_mem_eq(
+      pubkey,
+      fromhex(
+          "049e609c3950e70d6f3e3f3c81a473b1d5ca72739d51debdd80230ae80cab05134a9"
+          "4285375c834a417e8115c546c41da83a263087b79ef1cae25c7b3c738daa2b"),
+      65);
+
+  // r = 0 is always invalid
+  res = ecdsa_recover_pub_from_sig_fn(
+      curve, pubkey,
+      fromhex(
+          "00000000000000000000000000000000000000000000000000000000000000010123"
+          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
+      digest, 2);
+  ck_assert_int_eq(res, 1);
+  res = ecdsa_recover_pub_from_sig_fn(
+      curve, pubkey,
+      fromhex(
+          "00000000000000000000000000000000000000000000000000000000000000000123"
+          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
+      digest, 0);
+  ck_assert_int_eq(res, 1);
+  // r >= order is always invalid
+  res = ecdsa_recover_pub_from_sig_fn(
+      curve, pubkey,
+      fromhex(
+          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd03641410123"
+          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
+      digest, 0);
+  ck_assert_int_eq(res, 1);
+  // check that overflow of r is handled
+  res = ecdsa_recover_pub_from_sig_fn(
+      curve, pubkey,
+      fromhex(
+          "000000000000000000000000000000014551231950B75FC4402DA1722FC9BAEE0123"
+          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
+      digest, 2);
+  ck_assert_int_eq(res, 1);
+  // s = 0 is always invalid
+  res = ecdsa_recover_pub_from_sig_fn(
+      curve, pubkey,
+      fromhex(
+          "00000000000000000000000000000000000000000000000000000000000000020000"
+          "000000000000000000000000000000000000000000000000000000000000"),
+      digest, 0);
+  ck_assert_int_eq(res, 1);
+  // s >= order is always invalid
+  res = ecdsa_recover_pub_from_sig_fn(
+      curve, pubkey,
+      fromhex(
+          "0000000000000000000000000000000000000000000000000000000000000002ffff"
+          "fffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141"),
+      digest, 0);
+  ck_assert_int_eq(res, 1);
+}
+
+START_TEST(test_ecdsa_recover_pub_from_sig) {
+  test_ecdsa_recover_pub_from_sig_helper(ecdsa_recover_pub_from_sig);
+}
+END_TEST
+
+START_TEST(test_zkp_ecdsa_recover_pub_from_sig) {
+  test_ecdsa_recover_pub_from_sig_helper(zkp_ecdsa_recover_pub_from_sig);
+}
+END_TEST
+
+static void test_ecdsa_verify_digest_helper(int (*ecdsa_verify_digest_fn)(
+    const ecdsa_curve *, const uint8_t *, const uint8_t *, const uint8_t *)) {
   int res;
   uint8_t digest[32];
   uint8_t pubkey[65];
@@ -3430,189 +3709,17 @@ START_TEST(test_ecdsa_signature) {
              "a0b37f8fba683cc68f6574cd43b39f0343a50008bf6ccea9d13231d9e7e2e1e41"
              "1edc8d307254296264aebfc3dc76cd8b668373a072fd64665b50000e9fcce52"),
          sizeof(sig));
-  res = ecdsa_verify_digest(curve, pubkey, sig, digest);
+  res = ecdsa_verify_digest_fn(curve, pubkey, sig, digest);
   ck_assert_int_eq(res, 0);
+}
 
-  // sha2(sha2("\x18Bitcoin Signed Message:\n\x0cHello World!"))
-  memcpy(
-      digest,
-      fromhex(
-          "de4e9524586d6fce45667f9ff12f661e79870c4105fa0fb58af976619bb11432"),
-      32);
-  // r = 2:  Four points should exist
-  res = ecdsa_recover_pub_from_sig(
-      curve, pubkey,
-      fromhex(
-          "00000000000000000000000000000000000000000000000000000000000000020123"
-          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
-      digest, 0);
-  ck_assert_int_eq(res, 0);
-  ck_assert_mem_eq(
-      pubkey,
-      fromhex(
-          "043fc5bf5fec35b6ffe6fd246226d312742a8c296bfa57dd22da509a2e348529b7dd"
-          "b9faf8afe1ecda3c05e7b2bda47ee1f5a87e952742b22afca560b29d972fcf"),
-      65);
-  res = ecdsa_recover_pub_from_sig(
-      curve, pubkey,
-      fromhex(
-          "00000000000000000000000000000000000000000000000000000000000000020123"
-          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
-      digest, 1);
-  ck_assert_int_eq(res, 0);
-  ck_assert_mem_eq(
-      pubkey,
-      fromhex(
-          "0456d8089137b1fd0d890f8c7d4a04d0fd4520a30b19518ee87bd168ea12ed809032"
-          "9274c4c6c0d9df04515776f2741eeffc30235d596065d718c3973e19711ad0"),
-      65);
-  res = ecdsa_recover_pub_from_sig(
-      curve, pubkey,
-      fromhex(
-          "00000000000000000000000000000000000000000000000000000000000000020123"
-          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
-      digest, 2);
-  ck_assert_int_eq(res, 0);
-  ck_assert_mem_eq(
-      pubkey,
-      fromhex(
-          "04cee0e740f41aab39156844afef0182dea2a8026885b10454a2d539df6f6df9023a"
-          "bfcb0f01c50bef3c0fa8e59a998d07441e18b1c60583ef75cc8b912fb21a15"),
-      65);
-  res = ecdsa_recover_pub_from_sig(
-      curve, pubkey,
-      fromhex(
-          "00000000000000000000000000000000000000000000000000000000000000020123"
-          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
-      digest, 3);
-  ck_assert_int_eq(res, 0);
-  ck_assert_mem_eq(
-      pubkey,
-      fromhex(
-          "0490d2bd2e9a564d6e1d8324fc6ad00aa4ae597684ecf4abea58bdfe7287ea4fa729"
-          "68c2e5b0b40999ede3d7898d94e82c3f8dc4536a567a4bd45998c826a4c4b2"),
-      65);
+START_TEST(test_ecdsa_verify_digest) {
+  test_ecdsa_verify_digest_helper(ecdsa_verify_digest);
+}
+END_TEST
 
-  memcpy(
-      digest,
-      fromhex(
-          "0000000000000000000000000000000000000000000000000000000000000000"),
-      32);
-  // r = 7:  No point P with P.x = 7,  but P.x = (order + 7) exists
-  res = ecdsa_recover_pub_from_sig(
-      curve, pubkey,
-      fromhex(
-          "00000000000000000000000000000000000000000000000000000000000000070123"
-          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
-      digest, 2);
-  ck_assert_int_eq(res, 0);
-  ck_assert_mem_eq(
-      pubkey,
-      fromhex(
-          "044d81bb47a31ffc6cf1f780ecb1e201ec47214b651650867c07f13ad06e12a1b040"
-          "de78f8dbda700f4d3cd7ee21b3651a74c7661809699d2be7ea0992b0d39797"),
-      65);
-  res = ecdsa_recover_pub_from_sig(
-      curve, pubkey,
-      fromhex(
-          "00000000000000000000000000000000000000000000000000000000000000070123"
-          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
-      digest, 3);
-  ck_assert_int_eq(res, 0);
-  ck_assert_mem_eq(
-      pubkey,
-      fromhex(
-          "044d81bb47a31ffc6cf1f780ecb1e201ec47214b651650867c07f13ad06e12a1b0bf"
-          "21870724258ff0b2c32811de4c9ae58b3899e7f69662d41815f66c4f2c6498"),
-      65);
-  res = ecdsa_recover_pub_from_sig(
-      curve, pubkey,
-      fromhex(
-          "00000000000000000000000000000000000000000000000000000000000000070123"
-          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
-      digest, 0);
-  ck_assert_int_eq(res, 1);
-
-  memcpy(
-      digest,
-      fromhex(
-          "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
-      32);
-  // r = 1:  Two points P with P.x = 1,  but P.x = (order + 7) doesn't exist
-  res = ecdsa_recover_pub_from_sig(
-      curve, pubkey,
-      fromhex(
-          "00000000000000000000000000000000000000000000000000000000000000010123"
-          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
-      digest, 0);
-  ck_assert_int_eq(res, 0);
-  ck_assert_mem_eq(
-      pubkey,
-      fromhex(
-          "045d330b2f89dbfca149828277bae852dd4aebfe136982cb531a88e9e7a89463fe71"
-          "519f34ea8feb9490c707f14bc38c9ece51762bfd034ea014719b7c85d2871b"),
-      65);
-  res = ecdsa_recover_pub_from_sig(
-      curve, pubkey,
-      fromhex(
-          "00000000000000000000000000000000000000000000000000000000000000010123"
-          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
-      digest, 1);
-  ck_assert_int_eq(res, 0);
-  ck_assert_mem_eq(
-      pubkey,
-      fromhex(
-          "049e609c3950e70d6f3e3f3c81a473b1d5ca72739d51debdd80230ae80cab05134a9"
-          "4285375c834a417e8115c546c41da83a263087b79ef1cae25c7b3c738daa2b"),
-      65);
-
-  // r = 0 is always invalid
-  res = ecdsa_recover_pub_from_sig(
-      curve, pubkey,
-      fromhex(
-          "00000000000000000000000000000000000000000000000000000000000000010123"
-          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
-      digest, 2);
-  ck_assert_int_eq(res, 1);
-  res = ecdsa_recover_pub_from_sig(
-      curve, pubkey,
-      fromhex(
-          "00000000000000000000000000000000000000000000000000000000000000000123"
-          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
-      digest, 0);
-  ck_assert_int_eq(res, 1);
-  // r >= order is always invalid
-  res = ecdsa_recover_pub_from_sig(
-      curve, pubkey,
-      fromhex(
-          "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd03641410123"
-          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
-      digest, 0);
-  ck_assert_int_eq(res, 1);
-  // check that overflow of r is handled
-  res = ecdsa_recover_pub_from_sig(
-      curve, pubkey,
-      fromhex(
-          "000000000000000000000000000000014551231950B75FC4402DA1722FC9BAEE0123"
-          "456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
-      digest, 2);
-  ck_assert_int_eq(res, 1);
-  // s = 0 is always invalid
-  res = ecdsa_recover_pub_from_sig(
-      curve, pubkey,
-      fromhex(
-          "00000000000000000000000000000000000000000000000000000000000000020000"
-          "000000000000000000000000000000000000000000000000000000000000"),
-      digest, 0);
-  ck_assert_int_eq(res, 1);
-  // s >= order is always invalid
-  res = ecdsa_recover_pub_from_sig(
-      curve, pubkey,
-      fromhex(
-          "0000000000000000000000000000000000000000000000000000000000000002ffff"
-          "fffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141"),
-      digest, 0);
-  ck_assert_int_eq(res, 1);
+START_TEST(test_zkp_ecdsa_verify_digest) {
+  test_ecdsa_verify_digest_helper(zkp_ecdsa_verify_digest);
 }
 END_TEST
 
@@ -8949,6 +9056,150 @@ START_TEST(test_schnorr_fail_verify) {
 }
 END_TEST
 
+START_TEST(test_zkp_schnorr_sign) {
+  static struct {
+    const char *priv_key;
+    const char *pub_key;
+    const char *aux_input;
+    const char *digest;
+    const char *sig;
+  } tests[] = {
+      // Test vectors from
+      // https://github.com/bitcoin/bips/blob/master/bip-0340/test-vectors.csv
+      {"0000000000000000000000000000000000000000000000000000000000000003",
+       "F9308A019258C31049344F85F89D5229B531C845836F99B08601F113BCE036F9",
+       "0000000000000000000000000000000000000000000000000000000000000000",
+       "0000000000000000000000000000000000000000000000000000000000000000",
+       "E907831F80848D1069A5371B402410364BDF1C5F8307B0084C55F1CE2DCA821525F66A4"
+       "A85EA8B71E482A74F382D2CE5EBEEE8FDB2172F477DF4900D310536C0"},
+      {"B7E151628AED2A6ABF7158809CF4F3C762E7160F38B4DA56A784D9045190CFEF",
+       "DFF1D77F2A671C5F36183726DB2341BE58FEAE1DA2DECED843240F7B502BA659",
+       "0000000000000000000000000000000000000000000000000000000000000001",
+       "243F6A8885A308D313198A2E03707344A4093822299F31D0082EFA98EC4E6C89",
+       "6896BD60EEAE296DB48A229FF71DFE071BDE413E6D43F917DC8DCF8C78DE33418906D11"
+       "AC976ABCCB20B091292BFF4EA897EFCB639EA871CFA95F6DE339E4B0A"},
+      {"C90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74020BBEA63B14E5C9",
+       "DD308AFEC5777E13121FA72B9CC1B7CC0139715309B086C960E18FD969774EB8",
+       "C87AA53824B4D7AE2EB035A2B5BBBCCC080E76CDC6D1692C4B0B62D798E6D906",
+       "7E2D58D8B3BCDF1ABADEC7829054F90DDA9805AAB56C77333024B9D0A508B75C",
+       "5831AAEED7B44BB74E5EAB94BA9D4294C49BCF2A60728D8B4C200F50DD313C1BAB74587"
+       "9A5AD954A72C45A91C3A51D3C7ADEA98D82F8481E0E1E03674A6F3FB7"},
+      {"0B432B2677937381AEF05BB02A66ECD012773062CF3FA2549E44F58ED2401710",
+       "25D1DFF95105F5253C4022F628A996AD3A0D95FBF21D468A1B33F8C160D8F517",
+       "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+       "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+       "7EB0509757E246F19449885651611CB965ECC1A187DD51B64FDA1EDC9637D5EC97582B9"
+       "CB13DB3933705B32BA982AF5AF25FD78881EBB32771FC5922EFC66EA3"}};
+
+  int res = 0;
+  uint8_t priv_key[32] = {0};
+  uint8_t expected_pub_key[32] = {0};
+  uint8_t aux_input[32] = {0};
+  uint8_t digest[32] = {0};
+  uint8_t expected_sig[32] = {0};
+  uint8_t pub_key[32] = {0};
+  uint8_t sig[32] = {0};
+
+  for (size_t i = 0; i < sizeof(tests) / sizeof(*tests); i++) {
+    memcpy(priv_key, fromhex(tests[i].priv_key), 32);
+    memcpy(expected_pub_key, fromhex(tests[i].pub_key), 32);
+    memcpy(aux_input, fromhex(tests[i].aux_input), 32);
+    memcpy(digest, fromhex(tests[i].digest), 32);
+    memcpy(expected_sig, fromhex(tests[i].sig), 32);
+
+    zkp_schnorr_get_public_key(priv_key, pub_key);
+    ck_assert_mem_eq(expected_pub_key, pub_key, 32);
+
+    res = zkp_schnorr_sign_digest(priv_key, digest, sig, aux_input);
+    ck_assert_mem_eq(expected_sig, sig, 32);
+    ck_assert_int_eq(res, 0);
+  }
+}
+END_TEST
+
+START_TEST(test_zkp_schnorr_verify) {
+  static struct {
+    const char *pub_key;
+    const char *digest;
+    const char *sig;
+    const int res;
+  } tests[] = {
+      // Test vectors from
+      // https://github.com/bitcoin/bips/blob/master/bip-0340/test-vectors.csv
+      {"D69C3509BB99E412E68B0FE8544E72837DFA30746D8BE2AA65975F29D22DC7B9",
+       "4DF3C3F68FCC83B27E9D42C90431A72499F17875C81A599B566C9889B9696703",
+       "00000000000000000000003B78CE563F89A0ED9414F5AA28AD0D96D6795F9C6376AFB15"
+       "48AF603B3EB45C9F8207DEE1060CB71C04E80F593060B07D28308D7F4",
+       0},
+      {"EEFDEA4CDB677750A420FEE807EACF21EB9898AE79B9768766E4FAA04A2D4A34",
+       "243F6A8885A308D313198A2E03707344A4093822299F31D0082EFA98EC4E6C89",
+       "6CFF5C3BA86C69EA4B7376F31A9BCB4F74C1976089B2D9963DA2E5543E17776969E89B4"
+       "C5564D00349106B8497785DD7D1D713A8AE82B32FA79D5F7FC407D39B",
+       1},
+      {"DFF1D77F2A671C5F36183726DB2341BE58FEAE1DA2DECED843240F7B502BA659",
+       "243F6A8885A308D313198A2E03707344A4093822299F31D0082EFA98EC4E6C89",
+       "FFF97BD5755EEEA420453A14355235D382F6472F8568A18B2F057A14602975563CC2794"
+       "4640AC607CD107AE10923D9EF7A73C643E166BE5EBEAFA34B1AC553E2",
+       5},
+      {"DFF1D77F2A671C5F36183726DB2341BE58FEAE1DA2DECED843240F7B502BA659",
+       "243F6A8885A308D313198A2E03707344A4093822299F31D0082EFA98EC4E6C89",
+       "1FA62E331EDBC21C394792D2AB1100A7B432B013DF3F6FF4F99FCB33E0E1515F28890B3"
+       "EDB6E7189B630448B515CE4F8622A954CFE545735AAEA5134FCCDB2BD",
+       5},
+      {"DFF1D77F2A671C5F36183726DB2341BE58FEAE1DA2DECED843240F7B502BA659",
+       "243F6A8885A308D313198A2E03707344A4093822299F31D0082EFA98EC4E6C89",
+       "6CFF5C3BA86C69EA4B7376F31A9BCB4F74C1976089B2D9963DA2E5543E177769961764B"
+       "3AA9B2FFCB6EF947B6887A226E8D7C93E00C5ED0C1834FF0D0C2E6DA6",
+       5},
+      {"DFF1D77F2A671C5F36183726DB2341BE58FEAE1DA2DECED843240F7B502BA659",
+       "243F6A8885A308D313198A2E03707344A4093822299F31D0082EFA98EC4E6C89",
+       "0000000000000000000000000000000000000000000000000000000000000000123DDA8"
+       "328AF9C23A94C1FEECFD123BA4FB73476F0D594DCB65C6425BD186051",
+       5},
+      {"DFF1D77F2A671C5F36183726DB2341BE58FEAE1DA2DECED843240F7B502BA659",
+       "243F6A8885A308D313198A2E03707344A4093822299F31D0082EFA98EC4E6C89",
+       "00000000000000000000000000000000000000000000000000000000000000017615FBA"
+       "F5AE28864013C099742DEADB4DBA87F11AC6754F93780D5A1837CF197",
+       5},
+      {"DFF1D77F2A671C5F36183726DB2341BE58FEAE1DA2DECED843240F7B502BA659",
+       "243F6A8885A308D313198A2E03707344A4093822299F31D0082EFA98EC4E6C89",
+       "4A298DACAE57395A15D0795DDBFD1DCB564DA82B0F269BC70A74F8220429BA1D69E89B4"
+       "C5564D00349106B8497785DD7D1D713A8AE82B32FA79D5F7FC407D39B",
+       5},
+      {"DFF1D77F2A671C5F36183726DB2341BE58FEAE1DA2DECED843240F7B502BA659",
+       "243F6A8885A308D313198A2E03707344A4093822299F31D0082EFA98EC4E6C89",
+       "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F69E89B4"
+       "C5564D00349106B8497785DD7D1D713A8AE82B32FA79D5F7FC407D39B",
+       5},
+      {"DFF1D77F2A671C5F36183726DB2341BE58FEAE1DA2DECED843240F7B502BA659",
+       "243F6A8885A308D313198A2E03707344A4093822299F31D0082EFA98EC4E6C89",
+       "6CFF5C3BA86C69EA4B7376F31A9BCB4F74C1976089B2D9963DA2E5543E177769FFFFFFF"
+       "FFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141",
+       5},
+      {"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC30",
+       "243F6A8885A308D313198A2E03707344A4093822299F31D0082EFA98EC4E6C89",
+       "6CFF5C3BA86C69EA4B7376F31A9BCB4F74C1976089B2D9963DA2E5543E17776969E89B4"
+       "C5564D00349106B8497785DD7D1D713A8AE82B32FA79D5F7FC407D39B",
+       1}
+
+  };
+
+  int res = 0;
+  uint8_t pub_key[32] = {0};
+  uint8_t digest[32] = {0};
+  uint8_t sig[64] = {0};
+
+  for (size_t i = 0; i < sizeof(tests) / sizeof(*tests); i++) {
+    memcpy(pub_key, fromhex(tests[i].pub_key), 32);
+    memcpy(digest, fromhex(tests[i].digest), 32);
+    memcpy(sig, fromhex(tests[i].sig), 64);
+
+    res = zkp_schnorr_verify_digest(pub_key, sig, digest);
+    ck_assert_int_eq(res, tests[i].res);
+  }
+}
+END_TEST
+
 static int my_strncasecmp(const char *s1, const char *s2, size_t n) {
   size_t i = 0;
   while (i < n) {
@@ -9062,7 +9313,14 @@ Suite *test_suite(void) {
   suite_add_tcase(s, tc);
 
   tc = tcase_create("ecdsa");
-  tcase_add_test(tc, test_ecdsa_signature);
+  tcase_add_test(tc, test_ecdsa_get_public_key33);
+  tcase_add_test(tc, test_ecdsa_get_public_key65);
+  tcase_add_test(tc, test_ecdsa_recover_pub_from_sig);
+  tcase_add_test(tc, test_ecdsa_verify_digest);
+  tcase_add_test(tc, test_zkp_ecdsa_get_public_key33);
+  tcase_add_test(tc, test_zkp_ecdsa_get_public_key65);
+  tcase_add_test(tc, test_zkp_ecdsa_recover_pub_from_sig);
+  tcase_add_test(tc, test_zkp_ecdsa_verify_digest);
   suite_add_tcase(s, tc);
 
   tc = tcase_create("rfc6979");
@@ -9263,6 +9521,11 @@ Suite *test_suite(void) {
   tcase_add_test(tc, test_compress_coords);
   suite_add_tcase(s, tc);
 
+  tc = tcase_create("zkp_schnorr");
+  tcase_add_test(tc, test_zkp_schnorr_sign);
+  tcase_add_test(tc, test_zkp_schnorr_verify);
+  suite_add_tcase(s, tc);
+
 #if USE_CARDANO
   tc = tcase_create("bip32-cardano");
 
@@ -9333,6 +9596,7 @@ Suite *test_suite(void) {
 
 // run suite
 int main(void) {
+  zkp_context_init();
   int number_failed;
   Suite *s = test_suite();
   SRunner *sr = srunner_create(s);

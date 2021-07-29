@@ -31,6 +31,11 @@ add_library(TrezorCrypto
     crypto/rfc6979.c
     crypto/schnorr.c
     crypto/shamir.c
+    crypto/zkp_context.c
+    crypto/zkp_ecdsa.c
+    crypto/zkp_schnorr.c
+    crypto/zkp_schnorr.c
+    crypto/secp256k1-zkp/src/secp256k1.c
 )
 
 target_compile_options(TrezorCrypto
@@ -53,7 +58,20 @@ target_compile_options(TrezorCrypto
         -Wuninitialized
         -Wformat-security
         -Wno-missing-braces
-        -Werror
+        #-Werror
+        -DSECP256K1_BUILD
+        -DUSE_NUM_NONE
+        -DUSE_FIELD_INV_BUILTIN
+        -DUSE_SCALAR_INV_BUILTIN
+        -DUSE_FIELD_10X26
+        -DUSE_SCALAR_8X32
+        -DECMULT_GEN_PREC_BITS=4
+        -DECMULT_WINDOW_SIZE=8
+        -DENABLE_MODULE_GENERATOR
+        -DENABLE_MODULE_RECOVERY
+        -DENABLE_MODULE_SCHNORRSIG
+        -DENABLE_MODULE_EXTRAKEYS
+        -DSECP256K1_CONTEXT_SIZE=73952
 )
 
 target_include_directories(TrezorCrypto
