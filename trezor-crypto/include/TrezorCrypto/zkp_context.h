@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "secp256k1-zkp/include/secp256k1_preallocated.h"
+#include "../../crypto/secp256k1-zkp/include/secp256k1_preallocated.h"
 
 void secp256k1_context_writeable_randomize(secp256k1_context *context);
 void zkp_context_init(void);

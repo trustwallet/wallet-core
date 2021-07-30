@@ -4,7 +4,7 @@
 
 #include <TrezorCrypto/memzero.h>
 #include <TrezorCrypto/rand.h>
-#include "zkp_context.h"
+#include <TrezorCrypto/zkp_context.h>
 
 #include "secp256k1-zkp/include/secp256k1.h"
 

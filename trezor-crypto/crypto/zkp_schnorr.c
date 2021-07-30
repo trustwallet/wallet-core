@@ -2,13 +2,13 @@
 #include <string.h>
 
 #include <TrezorCrypto/memzero.h>
-#include "zkp_context.h"
+#include <TrezorCrypto/zkp_context.h>
 
 #include "secp256k1-zkp/include/secp256k1.h"
 #include "secp256k1-zkp/include/secp256k1_extrakeys.h"
 #include "secp256k1-zkp/include/secp256k1_schnorrsig.h"
 
-#include "zkp_schnorr.h"
+#include <TrezorCrypto/zkp_schnorr.h>
 
 static bool is_zero_digest(const uint8_t *digest) {
   const uint8_t zeroes[32] = {0};

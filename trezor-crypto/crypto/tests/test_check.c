@@ -73,9 +73,9 @@
 #include <TrezorCrypto/schnorr.h> // [wallet-core]
 //#include <TrezorCrypto/slip39.h> // [wallet-core]
 //#include <TrezorCrypto/slip39_wordlist.h>
-#include "../zkp_context.h"
+#include <TrezorCrypto/zkp_context.h>
+#include <TrezorCrypto/zkp_schnorr.h>
 #include "../zkp_ecdsa.h"
-#include "../zkp_schnorr.h"
 
 #if VALGRIND
 /*
