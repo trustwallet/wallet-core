@@ -18,8 +18,15 @@
 #include <TrezorCrypto/schnorr.h>
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sodium/keypair.h>
+#include <TrezorCrypto/zkp_schnorr.h>
+#include <TrezorCrypto/zkp_context.h>
 
 using namespace TW;
+
+int initializer() { zkp_context_init(); return 0; }
+
+// TODO check if this is OK, may cause issues due to nondeterministic static init order 
+static int ZkpContextInitializer = initializer();
 
 bool PrivateKey::isValid(const Data& data) {
     // Check length.  Extended key needs 3*32 bytes.
@@ -110,6 +117,10 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
     case TWPublicKeyTypeSECP256k1Extended:
         result.resize(PublicKey::secp256k1ExtendedSize);
         ecdsa_get_public_key65(&secp256k1, bytes.data(), result.data());
+        break;
+    case TWPublicKeyTypeSECP256k1Compact:
+        result.resize(PublicKey::secp256k1CompactSize);
+        zkp_schnorr_get_public_key(bytes.data(), result.data());
         break;
     case TWPublicKeyTypeNIST256p1:
         result.resize(PublicKey::secp256k1Size);

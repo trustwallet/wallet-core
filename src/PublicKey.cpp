@@ -37,6 +37,8 @@ bool PublicKey::isValid(const Data& data, enum TWPublicKeyType type) {
     case TWPublicKeyTypeSECP256k1Extended:
     case TWPublicKeyTypeNIST256p1Extended:
         return size == secp256k1ExtendedSize && data[0] == 0x04;
+    case TWPublicKeyTypeSECP256k1Compact:
+        return size == secp256k1CompactSize;
     default:
         return false;
     }
@@ -54,6 +56,7 @@ PublicKey::PublicKey(const Data& data, enum TWPublicKeyType type) : type(type) {
     case TWPublicKeyTypeNIST256p1:
     case TWPublicKeyTypeSECP256k1Extended:
     case TWPublicKeyTypeNIST256p1Extended:
+    case TWPublicKeyTypeSECP256k1Compact:
         bytes.reserve(data.size());
         std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
         break;
@@ -88,6 +91,7 @@ PublicKey PublicKey::compressed() const {
     newBytes[0] = 0x02 | (bytes[64] & 0x01);
 
     assert(type == TWPublicKeyTypeSECP256k1Extended || type == TWPublicKeyTypeNIST256p1Extended);
+    // TODO compact
     switch (type) {
     case TWPublicKeyTypeSECP256k1Extended:
         std::copy(bytes.begin() + 1, bytes.begin() + secp256k1Size, newBytes.begin() + 1);
@@ -117,6 +121,7 @@ PublicKey PublicKey::extended() const {
     case TWPublicKeyTypeCURVE25519:
     case TWPublicKeyTypeED25519Blake2b:
     case TWPublicKeyTypeED25519Extended:
+    case TWPublicKeyTypeSECP256k1Compact: // TODO
        return *this;
     }
 }
@@ -126,6 +131,9 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeSECP256k1Extended:
         return ecdsa_verify_digest(&secp256k1, bytes.data(), signature.data(), message.data()) == 0;
+    case TWPublicKeyTypeSECP256k1Compact:
+        // TODO
+        return false;
     case TWPublicKeyTypeNIST256p1:
     case TWPublicKeyTypeNIST256p1Extended:
         return ecdsa_verify_digest(&nist256p1, bytes.data(), signature.data(), message.data()) == 0;
@@ -158,6 +166,7 @@ bool PublicKey::verifySchnorr(const Data& signature, const Data& message) const 
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeSECP256k1Extended:
         return zil_schnorr_verify(&secp256k1, bytes.data(), signature.data(), message.data(), static_cast<uint32_t>(message.size())) == 0;
+    case TWPublicKeyTypeSECP256k1Compact:
     case TWPublicKeyTypeNIST256p1:
     case TWPublicKeyTypeNIST256p1Extended:
     case TWPublicKeyTypeED25519:

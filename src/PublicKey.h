@@ -29,6 +29,9 @@ class PublicKey {
     /// The number of bytes in a secp256k1 and nist256p1 extended public key.
     static const size_t secp256k1ExtendedSize = 65;
 
+    /// Size of secp256k1 compact public key.
+    static const size_t secp256k1CompactSize = 32;
+
     /// The public key bytes.
     Data bytes;
 

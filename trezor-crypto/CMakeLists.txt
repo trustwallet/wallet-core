@@ -31,11 +31,10 @@ add_library(TrezorCrypto
     crypto/rfc6979.c
     crypto/schnorr.c
     crypto/shamir.c
+    crypto/secp256k1-zkp/src/secp256k1.c
     crypto/zkp_context.c
     crypto/zkp_ecdsa.c
     crypto/zkp_schnorr.c
-    crypto/zkp_schnorr.c
-    crypto/secp256k1-zkp/src/secp256k1.c
 )
 
 target_compile_options(TrezorCrypto
