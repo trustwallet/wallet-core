@@ -42,7 +42,7 @@ class TestHDWallet {
         try {
             val hd = HDWallet("THIS IS AN INVALID MNEMONIC", "")
         } catch (ex: Exception) {
-            exception = ex::class.simpleName
+            exception = ex::class.simpleName!!
         }
         assertEquals(exception, "InvalidParameterException")
     }
