@@ -1,17 +1,17 @@
+// Copyright © 2017-2020 Trust Wallet.
 //
-// Created by Andrew Vasiliev on 26.07.2021.
-//
-
-
-#pragma once
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
+#include "BaseTransaction.h"
 #include "../Data.h"
 #include "../proto/Algorand.pb.h"
 
 namespace TW::Algorand {
 
-class AssetTransaction {
+class AssetTransaction: public BaseTransaction {
   public:
     Address from;
     Address to;
@@ -32,12 +32,12 @@ class AssetTransaction {
         , fee(fee), amount(amount)
         , assetId(assetId), firstRound(firstRound)
         , lastRound(lastRound), note(note)
-        , genesisId(genesisId), genesisHash(genesisHash)
-        , type(type) {}
+        , type(std::move(type)), genesisId(genesisId)
+        , genesisHash(genesisHash) {}
 
   public:
-    Data serialize() const;
-    Data serialize(Data& signature) const;
+    Data serialize() const override;
+    Data serialize(Data& signature) const override;
 };
 
 } // namespace TW::Algorand

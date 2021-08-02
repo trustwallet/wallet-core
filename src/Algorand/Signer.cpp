@@ -19,6 +19,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto pubkey = key.getPublicKey(TWPublicKeyTypeED25519);
     auto from = Address(pubkey);
+    auto firstRound = input.first_round();
+    auto lastRound = input.last_round();
 
     auto note = Data(input.note().begin(), input.note().end());
     auto genesisId = input.genesis_id();
@@ -27,8 +29,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
         auto message = input.transaction_pay();
         auto to = Address(message.to_address());
 
-        auto transaction = Transaction(from, to, message.fee(), message.amount(), message.first_round(),
-                                       message.last_round(), note, TRANSACTION_PAY, genesisId, genesisHash);
+        auto transaction = Transaction(from, to, message.fee(), message.amount(), firstRound,
+                                       lastRound, note, TRANSACTION_PAY, genesisId, genesisHash);
         auto signature = sign(key, transaction);
         auto serialized = transaction.serialize(signature);
         protoOutput.set_encoded(serialized.data(), serialized.size());
@@ -36,17 +38,17 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
         auto message = input.asset_transaction();
         auto to = Address(message.to_address());
 
-        auto transaction = AssetTransaction(from, to, message.fee(), message.amount(), message.asset_id(),
-                                    message.first_round(), message.last_round(), note,
+        auto transaction = AssetTransaction(from, to, message.fee(), message.amount(),
+                                            message.asset_id(), firstRound, lastRound, note,
                                     ASSET_TRANSACTION,genesisId, genesisHash);
         auto signature = sign(key, transaction);
-        auto serialized = transaction.serialize(signature);
+        auto serialized = transaction.BaseTransaction::serialize(signature);
         protoOutput.set_encoded(serialized.data(), serialized.size());
     } else if (input.has_asset_opt_in()) {
         auto message = input.asset_opt_in();
 
         auto transaction = OptInAssetTransaction(from, message.fee(), message.asset_id(),
-                                                 message.first_round(), message.last_round(), note,
+                                                 firstRound, lastRound, note,
                                                  ASSET_TRANSACTION,genesisId, genesisHash);
         auto signature = sign(key, transaction);
         auto serialized = transaction.serialize(signature);

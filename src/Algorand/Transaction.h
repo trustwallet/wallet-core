@@ -7,12 +7,13 @@
 #pragma once
 
 #include "Address.h"
+#include "BaseTransaction.h"
 #include "../Data.h"
 #include "../proto/Algorand.pb.h"
 
 namespace TW::Algorand {
 
-class Transaction {
+class Transaction : virtual public BaseTransaction {
   public:
     Address from;
     Address to;
@@ -35,8 +36,8 @@ class Transaction {
         , genesisId(genesisIdg), genesisHash(genesisHash) {}
 
   public:
-    Data serialize() const;
-    Data serialize(Data& signature) const;
+    Data serialize() const override;
+    Data serialize(Data& signature) const override;
 };
 
 } // namespace TW::Algorand

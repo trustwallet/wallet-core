@@ -7,24 +7,18 @@ message TransactionPay {
     string to_address = 1;
     uint64 fee = 2;
     uint64 amount = 3;
-    uint64 first_round = 4;
-    uint64 last_round = 5;
 }
 
 message AssetTransaction {
     string to_address = 1;
     uint64 fee = 2;
     uint64 amount = 3;
-    uint64 first_round = 4;
-    uint64 last_round = 5;
-    uint64 asset_id = 6;
+    uint64 asset_id = 4;
 }
 
 message AssetOptIn {
     uint64 fee = 1;
-    uint64 first_round = 2;
-    uint64 last_round = 3;
-    uint64 asset_id = 4;
+    uint64 asset_id = 2;
 }
 
 // Input data necessary to create a signed transaction.
@@ -37,6 +31,10 @@ message SigningInput {
     bytes note = 3;
     // private key
     bytes private_key = 4;
+    // network / first round
+    uint64 first_round = 5;
+    // network / last round
+    uint64 last_round = 6;
 
     oneof message_oneof {
         TransactionPay transaction_pay = 10;

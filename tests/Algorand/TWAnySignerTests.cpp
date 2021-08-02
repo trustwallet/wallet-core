@@ -25,8 +25,8 @@ TEST(TWAnySignerAlgorand, Sign) {
     transaction.set_to_address("CRLADAHJZEW2GFY2UPEHENLOGCUOU74WYSTUXQLVLJUJFHEUZOHYZNWYR4");
     transaction.set_fee(263000ull);
     transaction.set_amount(1000000000000ull);
-    transaction.set_first_round(1937767ull);
-    transaction.set_last_round(1938767ull);
+    input.set_first_round(1937767ull);
+    input.set_last_round(1938767ull);
     input.set_genesis_id("mainnet-v1.0");
     input.set_genesis_hash(genesisHash.data(), genesisHash.size());
     input.set_note(note.data(), note.size());
