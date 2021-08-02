@@ -47,18 +47,23 @@ TEST(BitcoinAddress, P2SH_CreateFromString) {
     EXPECT_EQ(hex(address.bytes), TestP2shData1);
 }
 
-TEST(BitcoinAddress, P2SH_CreateCreateFromPubkeyScript) {
+TEST(BitcoinAddress, P2WPKH_Nested_P2SH) {
     // P2SH address cannot be created directly from pubkey, script is built
     const auto publicKey = PublicKey(parse_hex(TestPubKey1), TWPublicKeyTypeSECP256k1);
+    
     const auto pubKeyHash = publicKey.hash({});
     EXPECT_EQ(hex(pubKeyHash), "11d91ce1cc681f95583da3f4a6841c174be950c7");
+    
     const auto script = Script::buildPayToWitnessProgram(pubKeyHash);
     EXPECT_EQ(hex(script.bytes), "0014" "11d91ce1cc681f95583da3f4a6841c174be950c7");
+    
     const auto scriptHash = Hash::sha256ripemd(script.bytes.data(), script.bytes.size());
     EXPECT_EQ(hex(scriptHash), "ee1e69460b59027d9df0a79ca2c92aa382a25fb7");
+    
     Data addressData = {TWCoinTypeP2shPrefix(TWCoinTypeBitcoin)};
     TW::append(addressData, scriptHash);
     EXPECT_EQ(hex(addressData), TestP2shData1);
+    
     const auto address = Address(addressData);
     EXPECT_EQ(address.string(), TestP2shAddr1);
     EXPECT_EQ(hex(address.bytes), TestP2shData1);
