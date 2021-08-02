@@ -38,13 +38,13 @@ class TestHDWallet {
 
     @Test
     fun testCreateFromMnemonicInvalid() {
-        var exception = false
+        var exception = ""
         try {
             val hd = HDWallet("THIS IS AN INVALID MNEMONIC", "")
         } catch (ex: Exception) {
-            exception = true
+            exception = ex::class.simpleName
         }
-        assertTrue(exception)
+        assertEquals(exception, "InvalidParameterException")
     }
 
     @Test
