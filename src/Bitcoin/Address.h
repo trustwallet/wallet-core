@@ -14,15 +14,16 @@
 
 namespace TW::Bitcoin {
 
+/// Class for non-segwit P2PKH and P2SH addresses
 class Address : public TW::Base58Address<21> {
   public:
-    /// Initializes a  address with a string representation.
+    /// Initializes an address with a string representation.
     explicit Address(const std::string& string) : TW::Base58Address<21>(string) {}
 
-    /// Initializes a  address with a collection of bytes.
+    /// Initializes an address with a collection of bytes.
     explicit Address(const Data& data) : TW::Base58Address<21>(data) {}
 
-    /// Initializes a  address with a public key and a prefix.
+    /// Initializes an address with a public key and a prefix.  Applicable for P2PKH addresses (but not P2SH).
     Address(const PublicKey& publicKey, byte prefix) : TW::Base58Address<21>(publicKey, {prefix}) {}
 };
 
