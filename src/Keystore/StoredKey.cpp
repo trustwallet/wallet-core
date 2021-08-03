@@ -39,7 +39,7 @@ StoredKey StoredKey::createWithMnemonic(const std::string& name, const Data& pas
 
 StoredKey StoredKey::createWithMnemonicRandom(const std::string& name, const Data& password) {
     const auto wallet = TW::HDWallet(128, "");
-    const auto& mnemonic = wallet.mnemonic;
+    const auto& mnemonic = wallet.getMnemonic();
     assert(Mnemonic::isValid(mnemonic));
     Data mnemonicData = TW::Data(mnemonic.begin(), mnemonic.end());
     StoredKey key = StoredKey(StoredKeyType::mnemonicPhrase, name, password, mnemonicData);

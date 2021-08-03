@@ -29,28 +29,37 @@ class HDWallet {
     static constexpr size_t maxMnemomincSize = 240;
     static constexpr size_t maxExtendedKeySize = 128;
 
-  public:
-    /// Wallet seed.
+  private:
+    /// Wallet seed, derived one-way from the mnemonic and passphrase
     std::array<byte, seedSize> seed;
 
-    /// Mnemonic word list.
+    /// Mnemonic word list (aka. recovery phrase).
     std::string mnemonic;
 
-    /// Mnemonic passphrase.
+    /// Passphrase for mnemonic encryption.
     std::string passphrase;
 
-    /// Entropy bytes (11 bits from each word)
+    /// Entropy is the binary 1-to-1 representation of the mnemonic (11 bits from each word)
     TW::Data entropy;
 
   public:
-    /// Initializes a new random HDWallet with the provided strength in bits.
+    const std::array<byte, seedSize>& getSeed() const { return seed; }
+    const std::string& getMnemonic() const { return mnemonic; }
+    const std::string& getPassphrase() const { return passphrase; }
+    const TW::Data& getEntropy() const { return entropy; }
+
+  public:
+    /// Initializes a new random HDWallet with the provided strength in bits.  
+    /// Throws on invalid strength.  Not thread safe!
     HDWallet(int strength, const std::string& passphrase);
 
-    /// Initializes an HDWallet from a mnemonic seed.
+    /// Initializes an HDWallet from a mnemonic.
+    /// Throws on invalid mnemonic.  Not thread safe!
     HDWallet(const std::string& mnemonic, const std::string& passphrase);
 
-    /// Initializes an HDWallet from a seed.
-    HDWallet(const Data& data, const std::string& passphrase);
+    /// Initializes an HDWallet from an entropy.
+    /// Throws on invalid data.  Not thread safe!
+    HDWallet(const Data& entropy, const std::string& passphrase);
 
     HDWallet(const HDWallet& other) = default;
     HDWallet(HDWallet&& other) = default;
@@ -58,8 +67,6 @@ class HDWallet {
     HDWallet& operator=(HDWallet&& other) = default;
 
     virtual ~HDWallet();
-
-    void updateEntropy();
 
     /// Returns master key.
     PrivateKey getMasterKey(TWCurve curve) const;
@@ -94,6 +101,9 @@ class HDWallet {
     
     // obtain privateKeyType used by the coin/curve
     static PrivateKeyType getPrivateKeyType(TWCurve curve);
+
+  private:
+    void updateSeedAndEntropy();
 };
 
 } // namespace TW
