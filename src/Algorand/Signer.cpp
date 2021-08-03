@@ -58,23 +58,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     return protoOutput;
 }
 
-Data Signer::sign(const PrivateKey &privateKey, Transaction &transaction) noexcept {
-    Data data;
-    append(data, TRANSACTION_TAG);
-    append(data, transaction.serialize());
-    auto signature = privateKey.sign(data, TWCurveED25519);
-    return Data(signature.begin(), signature.end());
-}
-
-Data Signer::sign(const PrivateKey &privateKey, AssetTransaction &transaction) noexcept {
-    Data data;
-    append(data, TRANSACTION_TAG);
-    append(data, transaction.serialize());
-    auto signature = privateKey.sign(data, TWCurveED25519);
-    return Data(signature.begin(), signature.end());
-}
-
-Data Signer::sign(const PrivateKey &privateKey, OptInAssetTransaction &transaction) noexcept {
+Data Signer::sign(const PrivateKey& privateKey, const BaseTransaction& transaction) noexcept {
     Data data;
     append(data, TRANSACTION_TAG);
     append(data, transaction.serialize());

@@ -24,9 +24,7 @@ class Signer {
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 
     /// Signs the given transaction.
-    static Data sign(const PrivateKey& privateKey, Transaction& transaction) noexcept;
-    static Data sign(const PrivateKey& privateKey, AssetTransaction& transaction) noexcept;
-    static Data sign(const PrivateKey& privateKey, OptInAssetTransaction& transaction) noexcept;
+    static Data sign(const PrivateKey& privateKey, const BaseTransaction& transaction) noexcept;
 };
 
 } // namespace TW::Algorand
