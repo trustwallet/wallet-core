@@ -7,12 +7,12 @@ import wallet.core.jni.HDVersion
 import wallet.core.jni.HDWallet
 import wallet.core.jni.Mnemonic
 import wallet.core.jni.Purpose
+import java.security.InvalidParameterException
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
-
 
 class TestHDWallet {
     init {
