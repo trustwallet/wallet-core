@@ -39,12 +39,19 @@ TEST(AnyAddress, Data) {
         auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
         assertHexEqual(keyHash, "bffe47abfaede50419c577f1074fee6dd1535cd1");
     }
-    // segwit witness program
+    // bitcoin segwit witness program
     {
         auto string = STRING("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4");
         auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeBitcoin));
         auto witness = WRAPD(TWAnyAddressData(addr.get()));
         assertHexEqual(witness, "751e76e8199196d454941c45d1b3a323f1433bd6");
+    }
+    // bitcoin taproot (segwit v1, bech32m)
+    {
+        auto string = STRING("bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7kt5nd6y");
+        auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeBitcoin));
+        auto witness = WRAPD(TWAnyAddressData(addr.get()));
+        assertHexEqual(witness, "751e76e8199196d454941c45d1b3a323f1433bd6751e76e8199196d454941c45d1b3a323f1433bd6");
     }
     // cashaddr
     {
