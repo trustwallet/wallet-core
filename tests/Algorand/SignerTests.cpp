@@ -80,7 +80,7 @@ TEST(AlgorandSigner, Sign) {
 
     auto serialized = transaction.serialize();
     auto signature = Signer::sign(key, transaction);
-    auto result = transaction.serialize(signature);
+    auto result = transaction.BaseTransaction::serialize(signature);
 
     ASSERT_EQ(hex(serialized), "89a3616d74cd034fa3666565ce000775e3a2667633a367656eac6d61696e6e65742d76312e30a26768c420c061c4d8fc1dbdded2d7604be4568e3f6d041987ac37bde4b620b5ab39248adfa26c763da3726376c420a089aa6922e3b998fadff6cd4808ddf9e021e4944e389ea3d5c638786689197ea3736e64c42074b000b6368551a6066d713e2866002e8dab34b69ede09a72e85a39bbb1f7928a474797065a3706179");
     ASSERT_EQ(hex(signature), "de73363dbdeda0682adca06f6268a16a6ec47253c94d5692dc1c49a84a05847812cf66d7c4cf07c7e2f50f143ec365d405e30b35117b264a994626054d2af604");
@@ -88,7 +88,7 @@ TEST(AlgorandSigner, Sign) {
 }
 
 TEST(AlgorandSigner, SignAsset) {
-//    https://testnet.algoexplorer.io/tx/NJ62HYO2LC222AVLIN2GW5LKIWKLGC7NZLIQ3DUL2RDVRYO2UW7A
+    // https://testnet.algoexplorer.io/tx/NJ62HYO2LC222AVLIN2GW5LKIWKLGC7NZLIQ3DUL2RDVRYO2UW7A
     auto key = PrivateKey(parse_hex("5a6a3cfe5ff4cc44c19381d15a0d16de2a76ee5c9b9d83b232e38cb5a2c84b04"));
     auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
     auto from = Address(publicKey);
@@ -112,7 +112,7 @@ TEST(AlgorandSigner, SignAsset) {
 
     auto serialized = transaction.serialize();
     auto signature = Signer::sign(key, transaction);
-    auto result = transaction.serialize(signature);
+    auto result = transaction.BaseTransaction::serialize(signature);
 
     ASSERT_EQ(hex(serialized), "8aa461616d74ce000f4240a461726376c420325164cafa253b116f4b54c63bd960d610209d44df635d65e095f3855a96b956a3666565cd0924a26676ce00f0b7c3a367656eac746573746e65742d76312e30a26768c4204863b518a4b3c84ec810f22d4f1081cb0f71f059a7ac20dec62f7f70e5093a22a26c76ce00f0bbaba3736e64c42082872d60c338cb928006070e02ec0942addcb79e7fbd01c76458aea526899bd3a474797065a56178666572a478616964ce00cc264a");
     ASSERT_EQ(hex(signature), "412720eff99a17280a437bdb8eeba7404b855d6433fffd5dde7f7966c1f9ae531a1af39e18b8a58b4a6c6acb709cca92f8a18c36d8328be9520c915311027005");
@@ -120,7 +120,7 @@ TEST(AlgorandSigner, SignAsset) {
 }
 
 TEST(AlgorandSigner, SignAssetOptIn) {
-//    https://testnet.algoexplorer.io/tx/47LE2QS4B5N6IFHXOUN2MJUTCOQCHNY6AB3AJYECK4IM2VYKJDKQ
+    // https://testnet.algoexplorer.io/tx/47LE2QS4B5N6IFHXOUN2MJUTCOQCHNY6AB3AJYECK4IM2VYKJDKQ
     auto key = PrivateKey(parse_hex("5a6a3cfe5ff4cc44c19381d15a0d16de2a76ee5c9b9d83b232e38cb5a2c84b04"));
     auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
     auto address = Address(publicKey);
@@ -141,7 +141,7 @@ TEST(AlgorandSigner, SignAssetOptIn) {
 
     auto serialized = transaction.serialize();
     auto signature = Signer::sign(key, transaction);
-    auto result = transaction.serialize(signature);
+    auto result = transaction.BaseTransaction::serialize(signature);
 
     ASSERT_EQ(hex(serialized), "89a461726376c42082872d60c338cb928006070e02ec0942addcb79e7fbd01c76458aea526899bd3a3666565cd0924a26676ce00f0b741a367656eac746573746e65742d76312e30a26768c4204863b518a4b3c84ec810f22d4f1081cb0f71f059a7ac20dec62f7f70e5093a22a26c76ce00f0bb29a3736e64c42082872d60c338cb928006070e02ec0942addcb79e7fbd01c76458aea526899bd3a474797065a56178666572a478616964ce00cc264a");
     ASSERT_EQ(hex(signature), "f3a29d9a40271c00b542b38ab2ccb4967015ae6609368d4b8eb2f5e2b5348577cf9e0f62b0777ccb2d8d9b943b15c24c0cf1db312cb01a3c198d9d9c6c5bb00b");
@@ -149,7 +149,7 @@ TEST(AlgorandSigner, SignAssetOptIn) {
 }
 
 TEST(AlgorandSigner, ProtoSignerOptIn) {
-//    https://testnet.algoexplorer.io/tx/47LE2QS4B5N6IFHXOUN2MJUTCOQCHNY6AB3AJYECK4IM2VYKJDKQ
+    // https://testnet.algoexplorer.io/tx/47LE2QS4B5N6IFHXOUN2MJUTCOQCHNY6AB3AJYECK4IM2VYKJDKQ
     auto optIn = new Proto::AssetOptIn();
     optIn -> set_asset_id(13379146);
 
@@ -173,7 +173,7 @@ TEST(AlgorandSigner, ProtoSignerOptIn) {
 }
 
 TEST(AlgorandSigner, ProtoSignerAssetTransaction) {
-//    https://testnet.algoexplorer.io/tx/NJ62HYO2LC222AVLIN2GW5LKIWKLGC7NZLIQ3DUL2RDVRYO2UW7A
+    // https://testnet.algoexplorer.io/tx/NJ62HYO2LC222AVLIN2GW5LKIWKLGC7NZLIQ3DUL2RDVRYO2UW7A
     auto transaction = new Proto::AssetTransfer();
     transaction -> set_asset_id(13379146);
     transaction -> set_amount(1000000);

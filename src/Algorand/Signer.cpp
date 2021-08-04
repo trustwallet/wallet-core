@@ -6,6 +6,7 @@
 
 #include "Signer.h"
 #include "Address.h"
+#include "BaseTransaction.h"
 
 using namespace TW;
 using namespace TW::Algorand;
@@ -33,7 +34,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
         auto transaction = Transfer(from, to, fee, message.amount(), firstRound,
                                        lastRound, note, TRANSACTION_PAY, genesisId, genesisHash);
         auto signature = sign(key, transaction);
-        auto serialized = transaction.serialize(signature);
+        auto serialized = transaction.BaseTransaction::serialize(signature);
         protoOutput.set_encoded(serialized.data(), serialized.size());
     } else if (input.has_asset_transfer()) {
         auto message = input.asset_transfer();
@@ -44,7 +45,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
                                             message.asset_id(), firstRound, lastRound, note,
                                     ASSET_TRANSACTION,genesisId, genesisHash);
         auto signature = sign(key, transaction);
-        auto serialized = transaction.serialize(signature);
+        auto serialized = transaction.BaseTransaction::serialize(signature);
         protoOutput.set_encoded(serialized.data(), serialized.size());
     } else if (input.has_asset_opt_in()) {
         auto message = input.asset_opt_in();
@@ -53,7 +54,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
                                                  firstRound, lastRound, note,
                                                  ASSET_TRANSACTION,genesisId, genesisHash);
         auto signature = sign(key, transaction);
-        auto serialized = transaction.serialize(signature);
+        auto serialized = transaction.BaseTransaction::serialize(signature);
         protoOutput.set_encoded(serialized.data(), serialized.size());
     }
     
