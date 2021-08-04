@@ -26,7 +26,7 @@ class AvalancheTests: XCTestCase {
     }
 
     func testXpub() {
-        let wallet = HDWallet(mnemonic: "chimney noodle canyon tunnel sample stuff scan symbol sight club net own arrive cause suffer purity manage squirrel boost diesel bring cement father slide", passphrase: "")
+        let wallet = HDWallet(mnemonic: "chimney noodle canyon tunnel sample stuff scan symbol sight club net own arrive cause suffer purity manage squirrel boost diesel bring cement father slide", passphrase: "")!
         let xpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .avalancheXChain, version: .xpub)
 
         XCTAssertEqual(xpub, "xpub6CvdTKLRh3ehvVLR2f3M1GUTFesrz5zoYFbw32iZqRShmoDnxtfSaF7mdCvXwNRfTwce5RYEADGb6YAzhqEAujEkvjTod6s2WEkpUBJZwqf")
