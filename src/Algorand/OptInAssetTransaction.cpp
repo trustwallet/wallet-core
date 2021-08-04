@@ -56,7 +56,3 @@ Data OptInAssetTransaction::serialize() const {
 
     return data;
 }
-
-Data OptInAssetTransaction::serialize(Data& signature) const {
-    return BaseTransaction::serialize(signature);
-}

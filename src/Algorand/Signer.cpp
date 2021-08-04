@@ -21,33 +21,35 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     auto from = Address(pubkey);
     auto firstRound = input.first_round();
     auto lastRound = input.last_round();
+    auto fee = input.fee();
 
     auto note = Data(input.note().begin(), input.note().end());
     auto genesisId = input.genesis_id();
     auto genesisHash = Data(input.genesis_hash().begin(), input.genesis_hash().end());
-    if (input.has_transaction_pay()) {
-        auto message = input.transaction_pay();
+    if (input.has_transfer()) {
+        auto message = input.transfer();
         auto to = Address(message.to_address());
 
-        auto transaction = Transaction(from, to, message.fee(), message.amount(), firstRound,
+        auto transaction = Transfer(from, to, fee, message.amount(), firstRound,
                                        lastRound, note, TRANSACTION_PAY, genesisId, genesisHash);
         auto signature = sign(key, transaction);
         auto serialized = transaction.serialize(signature);
         protoOutput.set_encoded(serialized.data(), serialized.size());
-    } else if (input.has_asset_transaction()) {
-        auto message = input.asset_transaction();
+    } else if (input.has_asset_transfer()) {
+        auto message = input.asset_transfer();
         auto to = Address(message.to_address());
 
-        auto transaction = AssetTransaction(from, to, message.fee(), message.amount(),
+        auto transaction =
+            AssetTransfer(from, to, fee, message.amount(),
                                             message.asset_id(), firstRound, lastRound, note,
                                     ASSET_TRANSACTION,genesisId, genesisHash);
         auto signature = sign(key, transaction);
-        auto serialized = transaction.BaseTransaction::serialize(signature);
+        auto serialized = transaction.serialize(signature);
         protoOutput.set_encoded(serialized.data(), serialized.size());
     } else if (input.has_asset_opt_in()) {
         auto message = input.asset_opt_in();
 
-        auto transaction = OptInAssetTransaction(from, message.fee(), message.asset_id(),
+        auto transaction = OptInAssetTransaction(from, fee, message.asset_id(),
                                                  firstRound, lastRound, note,
                                                  ASSET_TRANSACTION,genesisId, genesisHash);
         auto signature = sign(key, transaction);

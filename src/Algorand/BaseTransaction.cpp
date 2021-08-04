@@ -11,7 +11,7 @@
 using namespace TW;
 using namespace TW::Algorand;
 
-Data BaseTransaction::serialize(Data& signature) const {
+Data BaseTransaction::serialize(const Data& signature) const {
     /* Algorand transaction and signature are encoded with msgpack:
     {
         "sig": <signature bytes>

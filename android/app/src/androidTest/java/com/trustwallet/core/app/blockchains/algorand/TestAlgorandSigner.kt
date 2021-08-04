@@ -19,10 +19,9 @@ class TestAlgorandSigner {
 
     @Test
     fun AlgorandTransactionSigning() {
-        val transaction = Algorand.TransactionPay.newBuilder()
+        val transaction = Algorand.Transfer.newBuilder()
             .setToAddress("CRLADAHJZEW2GFY2UPEHENLOGCUOU74WYSTUXQLVLJUJFHEUZOHYZNWYR4")
             .setAmount(1000000000000)
-            .setFee(263000)
             .build()
         val signingInput = Algorand.SigningInput.newBuilder()
             .setGenesisId("mainnet-v1.0")
@@ -31,7 +30,8 @@ class TestAlgorandSigner {
             .setPrivateKey("d5b43d706ef0cb641081d45a2ec213b5d8281f439f2425d1af54e2afdaabf55b".toHexBytesInByteString())
             .setFirstRound(1937767)
             .setLastRound(1938767)
-            .setTransactionPay(transaction)
+            .setFee(263000)
+            .setTransfer(transaction)
             .build()
 
         val output = AnySigner.sign(signingInput, ALGORAND, SigningOutput.parser())

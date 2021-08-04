@@ -34,7 +34,9 @@ class OptInAssetTransaction: public BaseTransaction {
 
   public:
     Data serialize() const override;
-    Data serialize(Data& signature) const override;
+    Data serialize(const Data& signature) const override {
+        return BaseTransaction::serialize(signature);
+    }
 };
 
 } // namespace TW::Algorand

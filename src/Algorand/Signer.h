@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "Transaction.h"
-#include "AssetTransaction.h"
+#include "AssetTransfer.h"
 #include "OptInAssetTransaction.h"
+#include "Transfer.h"
 
 #include "../Data.h"
 #include "../PrivateKey.h"

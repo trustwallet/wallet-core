@@ -20,9 +20,8 @@ class AlgorandTests: XCTestCase {
     }
 
     func testSign() {
-        let transaction = AlgorandTransactionPay.with {
+        let transaction = AlgorandTransfer.with {
             $0.toAddress = "CRLADAHJZEW2GFY2UPEHENLOGCUOU74WYSTUXQLVLJUJFHEUZOHYZNWYR4"
-            $0.fee = 263000
             $0.amount = 1000000000000
         }
         let input = AlgorandSigningInput.with {
@@ -32,7 +31,8 @@ class AlgorandTests: XCTestCase {
             $0.privateKey = Data(hexString: "d5b43d706ef0cb641081d45a2ec213b5d8281f439f2425d1af54e2afdaabf55b")!
             $0.firstRound = 1937767
             $0.lastRound = 1938767
-            $0.transactionPay = transaction
+            $0.fee = 263000
+            $0.transfer = transaction
         }
         let output: AlgorandSigningOutput = AnySigner.sign(input: input, coin: .algorand)
 

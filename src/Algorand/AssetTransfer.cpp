@@ -4,13 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "AssetTransaction.h"
+#include "AssetTransfer.h"
 #include "BinaryCoding.h"
 
 using namespace TW;
 using namespace TW::Algorand;
 
-Data AssetTransaction::serialize() const {
+Data AssetTransfer::serialize() const {
     Data data;
 
     // encode map length
@@ -58,8 +58,4 @@ Data AssetTransaction::serialize() const {
     encodeNumber(assetId, data);
 
     return data;
-}
-
-Data AssetTransaction::serialize(Data& signature) const {
-    return BaseTransaction::serialize(signature);
 }

@@ -13,7 +13,7 @@ namespace TW::Algorand {
 class BaseTransaction {
   public:
     virtual Data serialize() const = 0;
-    virtual Data serialize(Data& signature) const;
+    virtual Data serialize(const Data& signature) const;
 };
 
 } // namespace TW::Algorand

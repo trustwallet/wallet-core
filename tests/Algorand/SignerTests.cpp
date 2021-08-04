@@ -65,7 +65,7 @@ TEST(AlgorandSigner, Sign) {
     Data note;
     std::string genesisId = "mainnet-v1.0";
     auto genesisHash = Base64::decode("wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=");
-    auto transaction = Transaction(
+    auto transaction = Transfer(
         /* from */ from,
         /* to */ to,
         /* fee */ 488931,
@@ -96,7 +96,7 @@ TEST(AlgorandSigner, SignAsset) {
     Data note;
     std::string genesisId = "testnet-v1.0";
     auto genesisHash = Base64::decode("SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=");
-    auto transaction = AssetTransaction(
+    auto transaction = AssetTransfer(
         /* from */ from,
         /* to */ to,
         /* fee */ 2340,
@@ -112,7 +112,7 @@ TEST(AlgorandSigner, SignAsset) {
 
     auto serialized = transaction.serialize();
     auto signature = Signer::sign(key, transaction);
-    auto result = transaction.BaseTransaction::serialize(signature);
+    auto result = transaction.serialize(signature);
 
     ASSERT_EQ(hex(serialized), "8aa461616d74ce000f4240a461726376c420325164cafa253b116f4b54c63bd960d610209d44df635d65e095f3855a96b956a3666565cd0924a26676ce00f0b7c3a367656eac746573746e65742d76312e30a26768c4204863b518a4b3c84ec810f22d4f1081cb0f71f059a7ac20dec62f7f70e5093a22a26c76ce00f0bbaba3736e64c42082872d60c338cb928006070e02ec0942addcb79e7fbd01c76458aea526899bd3a474797065a56178666572a478616964ce00cc264a");
     ASSERT_EQ(hex(signature), "412720eff99a17280a437bdb8eeba7404b855d6433fffd5dde7f7966c1f9ae531a1af39e18b8a58b4a6c6acb709cca92f8a18c36d8328be9520c915311027005");
@@ -151,7 +151,6 @@ TEST(AlgorandSigner, SignAssetOptIn) {
 TEST(AlgorandSigner, ProtoSignerOptIn) {
 //    https://testnet.algoexplorer.io/tx/47LE2QS4B5N6IFHXOUN2MJUTCOQCHNY6AB3AJYECK4IM2VYKJDKQ
     auto optIn = new Proto::AssetOptIn();
-    optIn -> set_fee(2340);
     optIn -> set_asset_id(13379146);
 
     auto privateKey = parse_hex("5a6a3cfe5ff4cc44c19381d15a0d16de2a76ee5c9b9d83b232e38cb5a2c84b04");
@@ -165,6 +164,7 @@ TEST(AlgorandSigner, ProtoSignerOptIn) {
     input.set_private_key(privateKey.data(), privateKey.size());
     input.set_first_round(15775553);
     input.set_last_round(15776553);
+    input.set_fee(2340);
 
     auto result = Signer::sign(input);
     auto encoded = result.encoded();
@@ -174,8 +174,7 @@ TEST(AlgorandSigner, ProtoSignerOptIn) {
 
 TEST(AlgorandSigner, ProtoSignerAssetTransaction) {
 //    https://testnet.algoexplorer.io/tx/NJ62HYO2LC222AVLIN2GW5LKIWKLGC7NZLIQ3DUL2RDVRYO2UW7A
-    auto transaction = new Proto::AssetTransaction();
-    transaction -> set_fee(2340);
+    auto transaction = new Proto::AssetTransfer();
     transaction -> set_asset_id(13379146);
     transaction -> set_amount(1000000);
     transaction -> set_to_address("GJIWJSX2EU5RC32LKTDDXWLA2YICBHKE35RV2ZPASXZYKWUWXFLKNFSS4U");
@@ -185,12 +184,13 @@ TEST(AlgorandSigner, ProtoSignerAssetTransaction) {
     auto input = Proto::SigningInput();
     auto genesisHash = Base64::decode("SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=");
     std::string str(genesisHash.begin(), genesisHash.end());
-    input.set_allocated_asset_transaction(transaction);
+    input.set_allocated_asset_transfer(transaction);
     input.set_genesis_hash(str);
     input.set_genesis_id("testnet-v1.0");
     input.set_private_key(privateKey.data(), privateKey.size());
     input.set_first_round(15775683);
     input.set_last_round(15776683);
+    input.set_fee(2340);
 
     auto result = Signer::sign(input);
     auto encoded = result.encoded();

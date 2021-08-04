@@ -4,8 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#pragma once
-
 #include "Address.h"
 #include "BaseTransaction.h"
 #include "../Data.h"
@@ -13,12 +11,13 @@
 
 namespace TW::Algorand {
 
-class Transaction : virtual public BaseTransaction {
+class AssetTransfer: public BaseTransaction {
   public:
     Address from;
     Address to;
     uint64_t fee;
     uint64_t amount;
+    uint64_t assetId;
     uint64_t firstRound;
     uint64_t lastRound;
     Data note;
@@ -27,17 +26,20 @@ class Transaction : virtual public BaseTransaction {
     std::string genesisId;
     Data genesisHash;
 
-    Transaction(Address &from, Address &to, uint64_t fee, uint64_t amount, uint64_t firstRound,
-                uint64_t lastRound, Data& note, std::string type, std::string& genesisIdg, Data& genesisHash)
-        : from(from) , to(to)
+    AssetTransfer(Address &from, Address &to, uint64_t fee, uint64_t amount, uint64_t assetId, uint64_t firstRound,
+                     uint64_t lastRound, Data& note, std::string type, std::string& genesisId, Data& genesisHash)
+        : from(from), to(to)
         , fee(fee), amount(amount)
-        , firstRound(firstRound), lastRound(lastRound)
-        , note(note), type(type)
-        , genesisId(genesisIdg), genesisHash(genesisHash) {}
+        , assetId(assetId), firstRound(firstRound)
+        , lastRound(lastRound), note(note)
+        , type(std::move(type)), genesisId(genesisId)
+        , genesisHash(genesisHash) {}
 
   public:
     Data serialize() const override;
-    Data serialize(Data& signature) const override;
+    Data serialize(const Data& signature) const override {
+        return BaseTransaction::serialize(signature);
+    }
 };
 
 } // namespace TW::Algorand
