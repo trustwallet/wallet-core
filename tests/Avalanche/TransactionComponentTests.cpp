@@ -24,24 +24,6 @@ std::vector<Address> generateAddressesForComponent() {
     return arbitraryAddresses;
 }
 
-TEST(AvalancheTransactionComponents, TestInitialState) {
-    auto arbitraryAddresses = generateAddressesForComponent();
-    // build some arbitrary outputs for this test
-    std::vector<std::unique_ptr<TransactionOutput>> arbitraryOutputs;
-    // fill outputs with arbitrary transactionoutputs
-    arbitraryOutputs.push_back(std::make_unique<SECP256k1TransferOutput>(12345, 54321, 333, arbitraryAddresses));
-    arbitraryOutputs.push_back(std::make_unique<SECP256k1TransferOutput>(54321, 54321, 333, arbitraryAddresses));
-    arbitraryOutputs.push_back(std::make_unique<SECP256k1TransferOutput>(111, 111, 111, arbitraryAddresses));
-    auto stateOne = InitialState(InitialState::FeatureExtension::SECP256k1, std::move(arbitraryOutputs));
-    auto stateTwo = InitialState(stateOne); // should be able to build a state from another
-    EXPECT_EQ(stateTwo.FxID, InitialState::FeatureExtension::SECP256k1);
-    stateOne.FxID = InitialState::FeatureExtension::NFT;
-    stateTwo = stateOne; // should be able to assign states to each other
-    EXPECT_EQ(stateTwo.FxID, InitialState::FeatureExtension::NFT);
-    stateOne.FxID = InitialState::FeatureExtension::SECP256k1;
-    EXPECT_TRUE(stateOne < stateTwo); // state one should now be less than state two by lexicographical sort
-}
-
 TEST(AvalancheTransactionComponents, TestTransferableInput) {
     auto arbitraryAddresses = generateAddressesForComponent();
     auto assetID = parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db"); 
@@ -157,38 +139,6 @@ TEST(AvalancheTransactionComponents, TestOutput) {
 }
 
 BaseTransaction generateBaseTransactionBasedOnSignerTest();
-
-TEST(AvalancheTransactionComponents, TestTransactionFailureCases) {
-    auto goodBase = generateBaseTransactionBasedOnSignerTest();
-    // try a too-long memo for a BaseTransaction
-    Data bigMemo;
-    for (int i = 0; i < MAX_MEMO_SIZE + 1; i++) {
-        bigMemo.push_back(0xde);
-    }
-    EXPECT_ANY_THROW(BaseTransaction(goodBase.TypeID, goodBase.NetworkID, goodBase.BlockchainID, goodBase.Inputs, goodBase.Outputs, bigMemo));
-    // try a too-long asset name for an UnsignedCreateAssetTransaction
-    std::vector<InitialState> emptyStates;
-    std::string longAssetName = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-    std::string shortSymbol = "";
-    EXPECT_TRUE(longAssetName.size() > MAX_ASSET_NAME_CHARS);
-    uint8_t denomination = 1;
-    EXPECT_ANY_THROW(UnsignedCreateAssetTransaction(goodBase, longAssetName, shortSymbol, denomination, emptyStates));
-    // try a too-long symbol for an UnsignedCreateAssetTransaction
-    std::string shortName = "";
-    std::string longSymbol = "aaaaa";
-    EXPECT_TRUE(longSymbol.size() > MAX_SYMBOL_CHARS);
-    EXPECT_ANY_THROW(UnsignedCreateAssetTransaction(goodBase, shortName, longSymbol, denomination, emptyStates));
-    // try a wrong-size blockchain ID for a BaseTransaction
-    auto tooShortBlockchainID = Data{};
-    EXPECT_TRUE(tooShortBlockchainID.size() != BLOCKCHAIN_ID_SIZE);
-    EXPECT_ANY_THROW(BaseTransaction(goodBase.TypeID, goodBase.NetworkID, tooShortBlockchainID, goodBase.Inputs, goodBase.Outputs, goodBase.Memo));
-    // try a wrong-size blockchain ID for source in an UnsignedImportTransaction
-    std::vector<TransferableInput> emptyInputs;
-    EXPECT_ANY_THROW(UnsignedImportTransaction(goodBase, tooShortBlockchainID, emptyInputs));
-    // try a wrong-size blockchain ID for dest in an UnsignedExportTransaction
-    std::vector<TransferableOutput> emptyOutputs;
-    EXPECT_ANY_THROW(UnsignedExportTransaction(goodBase, tooShortBlockchainID, emptyOutputs));
-}
 
 BaseTransaction generateBaseTransactionBasedOnSignerTest() {
     const auto privateKeyOneBytes = CB58::avalanche.decode("ewoqjP7PxY4yr3iLTpLisriqt94hdyDFNgchSxGGztUrTXtNN");

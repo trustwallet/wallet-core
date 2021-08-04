@@ -8,36 +8,30 @@
 #include "../Data.h"
 namespace TW::Avalanche {
 
-    enum CredentialTypeID {
-      SECPCred = 9,
-      NFTCred = 14
-    };
-    
-    class Credential {
-      public: 
-        uint32_t TypeID;
-        std::vector<Data> Signatures;  
-    
-        /// Encodes the Credential into the provided buffer.
-        void encode(Data& data) const;
+enum CredentialTypeID { SECPCred = 9, NFTCred = 14 };
 
-        bool operator<(const Credential& other) const;
+class Credential {
+  public:
+    uint32_t TypeID;
+    std::vector<Data> Signatures;
 
-      protected:
-        Credential(uint32_t typeID, std::vector<Data> &sigs)
-         : TypeID(typeID), Signatures(sigs) {}
-    };
+    /// Encodes the Credential into the provided buffer.
+    void encode(Data& data) const;
 
-    class SECP256k1Credential : public Credential {
-      public:
-        SECP256k1Credential(std::vector<Data> &sigs)
-        : Credential(CredentialTypeID::SECPCred, sigs) {}
-    };
+    bool operator<(const Credential& other) const;
 
-    class NFTCredential : public Credential {
-      public:
-        NFTCredential(std::vector<Data> &sigs)
-        : Credential(CredentialTypeID::NFTCred, sigs) {}
-    };
+  protected:
+    Credential(uint32_t typeID, std::vector<Data>& sigs) : TypeID(typeID), Signatures(sigs) {}
+};
+
+class SECP256k1Credential : public Credential {
+  public:
+    SECP256k1Credential(std::vector<Data>& sigs) : Credential(CredentialTypeID::SECPCred, sigs) {}
+};
+
+class NFTCredential : public Credential {
+  public:
+    NFTCredential(std::vector<Data>& sigs) : Credential(CredentialTypeID::NFTCred, sigs) {}
+};
 
 } // namespace TW::Avalanche

@@ -26,5 +26,6 @@ bool Credential::operator<(const Credential& other) const {
     Data otherData;
     encode(thisData);
     other.encode(otherData);
-    return std::lexicographical_compare(thisData.begin(), thisData.end(), otherData.begin(), otherData.end());
+    return std::lexicographical_compare(thisData.begin(), thisData.end(), otherData.begin(),
+                                        otherData.end());
 }

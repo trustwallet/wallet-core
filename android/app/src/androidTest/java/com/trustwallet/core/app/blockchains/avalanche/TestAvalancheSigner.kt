@@ -104,19 +104,15 @@ class TestAvalancheSigner {
                 .addInputs(inputTwo)
                 .addOutputs(outputOne)
                 .addOutputs(outputTwo)
-                .setTypeID(0)
+                .setTypeId(0)
                 .setNetworkId(netID)
                 .setBlockchainId(blockchainID)
                 .setMemo(memo)
                 .build()
 
-        val unsignedTx = Avalanche.UnsignedTx.newBuilder()
-                .setBaseTx(baseTx)
-                .build()
-
         val signingInput = Avalanche.SigningInput.newBuilder()
                 .addPrivateKeys(ByteString.copyFrom(privKeyBytes))
-                .setInputTx(unsignedTx)
+                .setBaseTx(baseTx)
                 .build()
 
         val output = AnySigner.sign(signingInput, CoinType.AVALANCHEXCHAIN, Avalanche.SigningOutput.parser())

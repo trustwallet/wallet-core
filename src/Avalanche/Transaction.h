@@ -7,7 +7,6 @@
 #pragma once
 
 #include "Credential.h"
-#include "InitialState.h"
 #include "TransferableInput.h"
 #include "TransferableOp.h"
 #include "TransferableOutput.h"
@@ -56,57 +55,6 @@ class BaseTransaction {
       Outputs = outputs;
       std::sort(Inputs.begin(), Inputs.end());
       std::sort(Outputs.begin(), Outputs.end());
-    }
-};
-
-class UnsignedCreateAssetTransaction : public BaseTransaction {
-  public:
-    std::string Name;
-    std::string Symbol;
-    uint8_t Denomination;
-    std::vector<InitialState> InitialStates;
-
-    void encode(Data& data) const;
-
-    UnsignedCreateAssetTransaction(uint32_t networkID, Data& blockchainID,
-                                   std::vector<TransferableInput>& inputs,
-                                   std::vector<TransferableOutput>& outputs, Data& memo,
-                                   std::string& name, std::string& symbol, uint8_t denomination,
-                                   std::vector<InitialState>& states)
-      : BaseTransaction(TransactionTypeID::CreateAsset, networkID, blockchainID, inputs, outputs, memo)
-      , Name(name)
-      , Symbol(symbol)
-      , Denomination(denomination)
-      , InitialStates(states) {
-      if (name.size() > MAX_ASSET_NAME_CHARS) {
-        throw std::invalid_argument(std::string("Name must be no longer than ") +
-                                    std::to_string(MAX_ASSET_NAME_CHARS) + " characters.");
-      }
-      if (symbol.size() > MAX_SYMBOL_CHARS) {
-        throw std::invalid_argument(std::string("Symbol must be no longer than ") +
-                                    std::to_string(MAX_SYMBOL_CHARS) + " characters.");
-      }
-      std::sort(InitialStates.begin(), InitialStates.end());
-    }
-
-
-    UnsignedCreateAssetTransaction(BaseTransaction& baseTxn, std::string& name, std::string& symbol,
-                                   uint8_t denomination, std::vector<InitialState>& states)
-      : BaseTransaction(baseTxn)
-      , Name(name)
-      , Symbol(symbol)
-      , Denomination(denomination)
-      , InitialStates(states) {
-      if (name.size() > MAX_ASSET_NAME_CHARS) {
-        throw std::invalid_argument(std::string("Name must be no longer than ") +
-                                    std::to_string(MAX_ASSET_NAME_CHARS) + " characters.");
-      }
-      if (symbol.size() > MAX_SYMBOL_CHARS) {
-        throw std::invalid_argument(std::string("Symbol must be no longer than ") +
-                                    std::to_string(MAX_SYMBOL_CHARS) + " characters.");
-      }
-      TypeID = TransactionTypeID::CreateAsset;
-      std::sort(InitialStates.begin(), InitialStates.end());
     }
 };
 

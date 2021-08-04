@@ -31,17 +31,6 @@ void BaseTransaction::encode(Data& data) const {
     }
 }
 
-void UnsignedCreateAssetTransaction::encode(Data& data) const {
-    BaseTransaction::encode(data);
-    encodeString(Name, data);
-    encodeString(Symbol, data);
-    data.push_back(Denomination);
-    encode32BE(static_cast<uint32_t>(InitialStates.size()), data);
-    for (auto state : InitialStates) {
-        state.encode(data);
-    }
-}
-
 void UnsignedOperationTransaction::encode(Data& data) const {
     BaseTransaction::encode(data);
     encode32BE(static_cast<uint32_t>(Operations.size()), data);

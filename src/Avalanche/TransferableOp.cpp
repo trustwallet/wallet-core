@@ -14,7 +14,8 @@ bool TransferableOp::sortUTXOIDs(TransferableOp::UTXOID lhs, TransferableOp::UTX
     if (lhs.first == rhs.first) {
         return lhs.second < rhs.second;
     }
-    return std::lexicographical_compare(lhs.first.begin(), lhs.first.end(), rhs.first.begin(), rhs.first.end());
+    return std::lexicographical_compare(lhs.first.begin(), lhs.first.end(), rhs.first.begin(),
+                                        rhs.first.end());
 }
 
 void TransferableOp::encode(Data& data) const {
@@ -36,10 +37,11 @@ bool TransferableOp::operator<(const TransferableOp& other) const {
     Data otherData;
     encode(thisData);
     other.encode(otherData);
-    return std::lexicographical_compare(thisData.begin(), thisData.end(), otherData.begin(), otherData.end());
+    return std::lexicographical_compare(thisData.begin(), thisData.end(), otherData.begin(),
+                                        otherData.end());
 }
 
-TransferableOp& TransferableOp::operator=(const TransferableOp &other) {
+TransferableOp& TransferableOp::operator=(const TransferableOp& other) {
     // check for "self assignment" and do nothing in that case
     if (this == &other) {
         return *this;
@@ -76,7 +78,6 @@ void NFTMintOperation::encode(Data& data) const {
     }
     EncodeOutputs(Outputs, data);
 }
-
 
 void NFTTransferOperation::encode(Data& data) const {
     encode32BE(typeID, data);

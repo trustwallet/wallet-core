@@ -16,7 +16,7 @@ const std::string Address::hrp = HRP_AVALANCHEX;
 const size_t Address::hashLen = 20;
 
 bool Address::isValid(const std::string& string) {
-    // split into before and after - 
+    // split into before and after -
     auto hyphenPos = string.find("-");
     if (hyphenPos == std::string::npos) {
         return false;
@@ -26,14 +26,15 @@ bool Address::isValid(const std::string& string) {
     }
     auto chainID = string.substr(hyphenPos - 1, 1);
     if ((chainID != "X") && (chainID != "P")) {
-        // implementation is currently X-chain only, but a passed address starting with P- follows the same rules
+        // implementation is currently X-chain only, but a passed address starting with P- follows
+        // the same rules
         return false;
     }
     auto afterHyphen = string.substr(hyphenPos + 1);
-   return Bech32Address::isValid(afterHyphen, hrp);
+    return Bech32Address::isValid(afterHyphen, hrp);
 }
 
-void Address::extractKeyHashFromString (const std::string& string) {
+void Address::extractKeyHashFromString(const std::string& string) {
     if (!isValid(string)) {
         throw std::invalid_argument("Invalid address string");
     }

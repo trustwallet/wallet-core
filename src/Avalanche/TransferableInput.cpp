@@ -24,7 +24,7 @@ void TransferableInput::encode(Data& data) const {
 bool TransferableInput::operator<(const TransferableInput& other) const {
     if (TxID == other.TxID) {
         return UTXOIndex < other.UTXOIndex;
-    } 
+    }
     Data thisTxIDData;
     Data otherTxIDData;
     for (auto byte : TxID) {
@@ -33,10 +33,11 @@ bool TransferableInput::operator<(const TransferableInput& other) const {
     for (auto byte : other.TxID) {
         otherTxIDData.push_back(byte);
     }
-    return std::lexicographical_compare(thisTxIDData.begin(), thisTxIDData.end(), otherTxIDData.begin(), otherTxIDData.end());
+    return std::lexicographical_compare(thisTxIDData.begin(), thisTxIDData.end(),
+                                        otherTxIDData.begin(), otherTxIDData.end());
 }
 
-TransferableInput& TransferableInput::operator=(const TransferableInput &other) {
+TransferableInput& TransferableInput::operator=(const TransferableInput& other) {
     // check for "self assignment" and do nothing in that case
     if (this == &other) {
         return *this;
@@ -55,7 +56,7 @@ void SECP256k1TransferInput::encode(Data& data) const {
     encode32BE(TypeID, data);
     encode64BE(Amount, data);
     encode32BE(static_cast<uint32_t>(AddressIndices.size()), data);
-    for (auto index: AddressIndices) {
+    for (auto index : AddressIndices) {
         encode32BE(index, data);
     }
 }

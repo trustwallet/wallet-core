@@ -14,11 +14,13 @@
 
 namespace TW::Avalanche {
 
-/// Avalanche address is a Bech32Address, with "avax" prefix and Sha2 hash; and then the chain prefixed to that.
+/// Avalanche address is a Bech32Address, with "avax" prefix and Sha2 hash; and then the chain
+/// prefixed to that.
 class Address : public Bech32Address {
-private:
-    void extractKeyHashFromString (const std::string& string);
-public:
+  private:
+    void extractKeyHashFromString(const std::string& string);
+
+  public:
     static const size_t hashLen;
     static const std::string hrp;
 
@@ -33,9 +35,7 @@ public:
     Address(const PublicKey& publicKey) : Bech32Address(hrp, HASHER_SHA2_RIPEMD, publicKey) {}
 
     /// Initializes an address from a string.
-    Address(const std::string& string) : Bech32Address(hrp) {
-        extractKeyHashFromString(string);
-    }
+    Address(const std::string& string) : Bech32Address(hrp) { extractKeyHashFromString(string); }
 
     std::string string() const;
 };
@@ -51,7 +51,8 @@ inline bool operator!=(const Address& lhs, const Address& rhs) {
 
 inline bool operator<(const Address& lhs, const Address& rhs) {
     // prefer lexicographical comparison of bytes for encoding
-    return std::lexicographical_compare(lhs.getKeyHash().begin(), lhs.getKeyHash().end(), rhs.getKeyHash().begin(), rhs.getKeyHash().end());
+    return std::lexicographical_compare(lhs.getKeyHash().begin(), lhs.getKeyHash().end(),
+                                        rhs.getKeyHash().begin(), rhs.getKeyHash().end());
 }
 
 } // namespace TW::Avalanche

@@ -10,8 +10,8 @@
 #include "Hash.h"
 
 #include <algorithm>
-#include <cctype>
 #include <cassert>
+#include <cctype>
 
 using namespace TW;
 using namespace TW::Avalanche;

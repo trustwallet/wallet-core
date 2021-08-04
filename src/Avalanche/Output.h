@@ -8,12 +8,11 @@
 
 #include "Address.h"
 
-namespace TW::Avalanche {    
-    using Locktime = uint64_t;
-    using Threshold = uint32_t;
-    using Output = std::tuple<Locktime, Threshold, std::vector<Address>>;
+namespace TW::Avalanche {
+using Locktime = uint64_t;
+using Threshold = uint32_t;
+using Output = std::tuple<Locktime, Threshold, std::vector<Address>>;
 
-    void SortOutputs(std::vector<Output> &outputs);
-    void EncodeOutputs(std::vector<Output> outputs, Data &data);
-}
-
+void SortOutputs(std::vector<Output>& outputs);
+void EncodeOutputs(std::vector<Output> outputs, Data& data);
+} // namespace TW::Avalanche
