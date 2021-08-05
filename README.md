@@ -24,7 +24,7 @@ For comprehensive documentation, see [developer.trustwallet.com](https://develop
 # Supported Blockchains
 
 Wallet Core supports more than **50** blockchains: Bitcoin, Ethereum, Binance Chain, and most major blockchain platforms.
-The full list is [here](docs/coins.md).
+The full list is [here](docs/registry.md).
 
 # Building
 

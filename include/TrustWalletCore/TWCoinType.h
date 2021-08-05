@@ -87,6 +87,9 @@ enum TWCoinType {
     TWCoinTypePolygon = 966,
     TWCoinTypeTHORChain = 931,
     TWCoinTypeBluzelle = 483,
+    TWCoinTypeOptimism = 10000070,
+    TWCoinTypeArbitrum = 10042221,
+    TWCoinTypeECOChain = 10000553,
 };
 
 /// Returns the blockchain for a coin type.
@@ -143,7 +146,7 @@ uint8_t TWCoinTypeP2shPrefix(enum TWCoinType coin);
 TW_EXPORT_PROPERTY
 uint8_t TWCoinTypeStaticPrefix(enum TWCoinType coin);
 
-/// Static prefix for this coin type
+/// SLIP-0044 id for this coin type
 TW_EXPORT_PROPERTY
 uint32_t TWCoinTypeSlip44Id(enum TWCoinType coin);
 

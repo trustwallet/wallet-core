@@ -10,7 +10,7 @@ import WalletCore
 class CoinAddressDerivationTests: XCTestCase {
 
     func testDerive() {
-        let wallet = HDWallet(mnemonic: "shoot island position soft burden budget tooth cruel issue economy destroy above", passphrase: "")
+        let wallet = HDWallet(mnemonic: "shoot island position soft burden budget tooth cruel issue economy destroy above", passphrase: "")!
 
         for _ in 0..<4 {
             for coin in CoinType.allCases {
@@ -70,7 +70,7 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .eos:
                     let expectedResult = "EOS6hs8sRvGSzuQtq223zwJipMzqTJpXUVjyvHPvPwBSZWWrJTJkg"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .ethereum, .smartChain, .polygon:
+                case .ethereum, .smartChain, .polygon, .optimism, .arbitrum, .ecochain:
                     let expectedResult = "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ethereumClassic:
