@@ -14,6 +14,7 @@
 #include "../proto/Common.pb.h"
 
 #include <TrustWalletCore/TWBitcoinTransactionSigner.h>
+#include <TrustWalletCore/TWCoinType.h>
 
 #include <algorithm>
 
@@ -114,13 +115,24 @@ TWData *_Nonnull TWBitcoinTransactionSignerMessageSegWit(TW_Bitcoin_Proto_Signin
         if (script.isWitnessProgram()) {
             signatureVersion = WITNESS_V0;
             script = script.buildPayToPublicKeyHash(TW::Data(script.bytes.begin() + 2, script.bytes.end()));
+        } else if (input.coin_type() == TWCoinTypeBitcoinCash) {
+            // bitcoin cash pre sign image is same as segwit format,
+            // so we set signatureVersion as WITNESS_0.
+            // But NOTICE, BCH transaction is assembled based on legacy format.
+            signatureVersion = WITNESS_V0;
         }
         auto sighash = signer->impl.transaction.getPreImage(script, i,
                                                             static_cast<TWBitcoinSigHashType>(input.hash_type()), utxo.amount(), signatureVersion);
 
         // Currently, we have no flag to distinguish signature that is segwit or not.
         // So we have to add flag to sigHash to identify whether it is segwit.
-        sighash.push_back(signatureVersion);
+        if (input.coin_type() == TWCoinTypeBitcoinCash) {
+            // Assemble BCH transaction based on legacy format
+            sighash.push_back(BASE);
+        } else {
+            sighash.push_back(signatureVersion);
+        }
+        
         signer->impl.plan.utxos[i].set_script(reinterpret_cast<const uint8_t *>(sighash.data()), sighash.size());
     }
 
