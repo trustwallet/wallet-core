@@ -43,7 +43,7 @@ class TransactionSigner {
 
   private:
     /// List of signed inputs.
-    std::vector<TransactionInput> signedInputs;
+    TransactionInputs<TransactionInput> signedInputs;
 
     bool estimationMode = false;
 

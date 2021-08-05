@@ -31,7 +31,7 @@ const std::array<byte, 4> Zcash::BlossomBranchID = {0x60, 0x0e, 0xb4, 0x2b};
 
 Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType,
                               uint64_t amount) const {
-    assert(index < inputs.size());
+    assert(index < inputs.inputs.size());
 
     auto data = Data{};
 
@@ -99,18 +99,18 @@ Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index, e
     // The input being signed (replacing the scriptSig with scriptCode + amount)
     // The prevout may already be contained in hashPrevout, and the nSequence
     // may already be contain in hashSequence.
-    reinterpret_cast<const Bitcoin::OutPoint&>(inputs[index].previousOutput).encode(data);
+    reinterpret_cast<const Bitcoin::OutPoint&>(inputs.inputs[index].previousOutput).encode(data);
     scriptCode.encode(data);
 
     encode64LE(amount, data);
-    encode32LE(inputs[index].sequence, data);
+    encode32LE(inputs.inputs[index].sequence, data);
 
     return data;
 }
 
 Data Transaction::getPrevoutHash() const {
     auto data = Data{};
-    for (auto& input : inputs) {
+    for (auto& input : inputs.inputs) {
         auto& outpoint = input.previousOutput;
         outpoint.encode(data);
     }
@@ -120,7 +120,7 @@ Data Transaction::getPrevoutHash() const {
 
 Data Transaction::getSequenceHash() const {
     auto data = Data{};
-    for (auto& input : inputs) {
+    for (auto& input : inputs.inputs) {
         encode32LE(input.sequence, data);
     }
     auto hash = TW::Hash::blake2b(data, 32, sequenceHashPersonalization);
@@ -156,8 +156,8 @@ void Transaction::encode(Data& data) const {
     encode32LE(versionGroupId, data);
 
     // vin
-    encodeVarInt(inputs.size(), data);
-    for (auto& input : inputs) {
+    encodeVarInt(inputs.inputs.size(), data);
+    for (auto& input : inputs.inputs) {
         input.encode(data);
     }
 
@@ -197,7 +197,7 @@ Bitcoin::Proto::Transaction Transaction::proto() const {
     protoTx.set_version(version);
     protoTx.set_locktime(lockTime);
 
-    for (const auto& input : inputs) {
+    for (const auto& input : inputs.inputs) {
         auto protoInput = protoTx.add_inputs();
         protoInput->mutable_previousoutput()->set_hash(input.previousOutput.hash.data(),
                                                        input.previousOutput.hash.size());

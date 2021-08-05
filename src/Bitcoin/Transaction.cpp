@@ -20,7 +20,7 @@ using namespace TW::Bitcoin;
 
 Data Transaction::getPreImage(const Script& scriptCode, size_t index,
                               enum TWBitcoinSigHashType hashType, uint64_t amount) const {
-    assert(index < inputs.size());
+    assert(index < inputs.inputs.size());
 
     Data data;
 
@@ -47,11 +47,11 @@ Data Transaction::getPreImage(const Script& scriptCode, size_t index,
     // The input being signed (replacing the scriptSig with scriptCode + amount)
     // The prevout may already be contained in hashPrevout, and the nSequence
     // may already be contain in hashSequence.
-    reinterpret_cast<const OutPoint&>(inputs[index].previousOutput).encode(data);
+    reinterpret_cast<const OutPoint&>(inputs.inputs[index].previousOutput).encode(data);
     scriptCode.encode(data);
 
     encode64LE(amount, data);
-    encode32LE(inputs[index].sequence, data);
+    encode32LE(inputs.inputs[index].sequence, data);
 
     // Outputs (none/one/all, depending on flags)
     if (!hashTypeIsSingle(hashType) && !hashTypeIsNone(hashType)) {
@@ -77,7 +77,7 @@ Data Transaction::getPreImage(const Script& scriptCode, size_t index,
 
 Data Transaction::getPrevoutHash() const {
     Data data;
-    for (auto& input : inputs) {
+    for (auto& input : inputs.inputs) {
         auto& outpoint = reinterpret_cast<const OutPoint&>(input.previousOutput);
         outpoint.encode(data);
     }
@@ -87,7 +87,7 @@ Data Transaction::getPrevoutHash() const {
 
 Data Transaction::getSequenceHash() const {
     Data data;
-    for (auto& input : inputs) {
+    for (auto& input : inputs.inputs) {
         encode32LE(input.sequence, data);
     }
     auto hash = Hash::hash(hasher, data);
@@ -120,8 +120,8 @@ void Transaction::encode(Data& data, enum SegwitFormatMode segwitFormat) const {
     }
 
     // txins
-    encodeVarInt(inputs.size(), data);
-    for (auto& input : inputs) {
+    encodeVarInt(inputs.inputs.size(), data);
+    for (auto& input : inputs.inputs) {
         input.encode(data);
     }
 
@@ -139,13 +139,13 @@ void Transaction::encode(Data& data, enum SegwitFormatMode segwitFormat) const {
 }
 
 void Transaction::encodeWitness(Data& data) const {
-    for (auto& input : inputs) {
+    for (auto& input : inputs.inputs) {
         input.encodeWitness(data);
     }
 }
 
 bool Transaction::hasWitness() const {
-    return std::any_of(inputs.begin(), inputs.end(), [](auto& input) { return !input.scriptWitness.empty(); });    
+    return std::any_of(inputs.inputs.begin(), inputs.inputs.end(), [](auto& input) { return !input.scriptWitness.empty(); });    
 }
 
 Data Transaction::getSignatureHash(const Script& scriptCode, size_t index,
@@ -171,14 +171,14 @@ Data Transaction::getSignatureHashWitnessV0(const Script& scriptCode, size_t ind
 /// Generates the signature hash for for scripts other than witness scripts.
 Data Transaction::getSignatureHashBase(const Script& scriptCode, size_t index,
                                        enum TWBitcoinSigHashType hashType) const {
-    assert(index < inputs.size());
+    assert(index < inputs.inputs.size());
 
     Data data;
 
     encode32LE(version, data);
 
     auto serializedInputCount =
-        (hashType & TWBitcoinSigHashTypeAnyoneCanPay) != 0 ? 1 : inputs.size();
+        (hashType & TWBitcoinSigHashTypeAnyoneCanPay) != 0 ? 1 : inputs.inputs.size();
     encodeVarInt(serializedInputCount, data);
     for (auto subindex = 0; subindex < serializedInputCount; subindex += 1) {
         serializeInput(subindex, scriptCode, index, hashType, data);
@@ -215,7 +215,7 @@ void Transaction::serializeInput(size_t subindex, const Script& scriptCode, size
         subindex = index;
     }
 
-    reinterpret_cast<const OutPoint&>(inputs[subindex].previousOutput).encode(data);
+    reinterpret_cast<const OutPoint&>(inputs.inputs[subindex].previousOutput).encode(data);
 
     // Serialize the script
     if (subindex != index) {
@@ -230,7 +230,7 @@ void Transaction::serializeInput(size_t subindex, const Script& scriptCode, size
     if (subindex != index && (hashSingle || hashNone)) {
         encode32LE(0, data);
     } else {
-        encode32LE(inputs[subindex].sequence, data);
+        encode32LE(inputs.inputs[subindex].sequence, data);
     }
 }
 
@@ -239,7 +239,7 @@ Proto::Transaction Transaction::proto() const {
     protoTx.set_version(version);
     protoTx.set_locktime(lockTime);
 
-    for (const auto& input : inputs) {
+    for (const auto& input : inputs.inputs) {
         auto protoInput = protoTx.add_inputs();
         protoInput->mutable_previousoutput()->set_hash(input.previousOutput.hash.data(),
                                                        input.previousOutput.hash.size());

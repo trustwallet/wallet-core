@@ -18,6 +18,15 @@
 
 namespace TW::Bitcoin {
 
+/// A list of 1 or more transaction inputs or sources for coins
+template <typename TransactionInput>
+class TransactionInputs {
+public:
+    std::vector<TransactionInput> inputs;
+
+    bool empty() const { return inputs.empty(); }
+};
+
 struct Transaction {
 public:
     /// Transaction data format version (note, this is signed)
@@ -35,8 +44,7 @@ public:
     /// transaction may not be added to a block until after `lockTime`.
     uint32_t lockTime = 0;
 
-    /// A list of 1 or more transaction inputs or sources for coins
-    std::vector<TransactionInput> inputs;
+    TransactionInputs<TransactionInput> inputs;
 
     /// A list of 1 or more transaction outputs or destinations for coins
     std::vector<TransactionOutput> outputs;

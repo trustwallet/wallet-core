@@ -40,7 +40,7 @@ public:
 
         const auto emptyScript = Script();
         for (auto& utxo : plan.utxos) {
-            tx.inputs.emplace_back(utxo.out_point(), emptyScript, utxo.out_point().sequence());
+            tx.inputs.inputs.emplace_back(utxo.out_point(), emptyScript, utxo.out_point().sequence());
         }
 
         return tx;

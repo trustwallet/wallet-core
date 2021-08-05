@@ -28,13 +28,13 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
         // plan with error, fail
         return Result<Transaction, Common::Proto::SigningError>::failure(plan.error);
     }
-    if (transaction.inputs.size() == 0 || plan.utxos.size() == 0) {
+    if (transaction.inputs.inputs.size() == 0 || plan.utxos.size() == 0) {
         return Result<Transaction, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_input_utxos);
     }
 
-    signedInputs.clear();
-    std::copy(std::begin(transaction.inputs), std::end(transaction.inputs),
-              std::back_inserter(signedInputs));
+    signedInputs.inputs.clear();
+    std::copy(std::begin(transaction.inputs.inputs), std::end(transaction.inputs.inputs),
+              std::back_inserter(signedInputs.inputs));
 
     const auto hashSingle = hashTypeIsSingle(static_cast<enum TWBitcoinSigHashType>(input.hash_type()));
     for (auto i = 0; i < plan.utxos.size(); i++) {
@@ -44,7 +44,7 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
         }
         auto& utxo = plan.utxos[i];
         auto script = Script(utxo.script().begin(), utxo.script().end());
-        if (i < transaction.inputs.size()) {
+        if (i < transaction.inputs.inputs.size()) {
             auto result = sign(script, i, utxo);
             if (!result) {
                 return Result<Transaction, Common::Proto::SigningError>::failure(result.error());
@@ -53,7 +53,7 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
     }
 
     Transaction tx(transaction);
-    tx.inputs = move(signedInputs);
+    tx.inputs.inputs = move(signedInputs.inputs);
     tx.outputs = transaction.outputs;
     // save estimated size
     if ((input.byte_fee()) > 0 && (plan.fee > 0)) {
@@ -66,7 +66,7 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
 template <typename Transaction, typename TransactionBuilder>
 Result<void, Common::Proto::SigningError> TransactionSigner<Transaction, TransactionBuilder>::sign(Script script, size_t index,
                                                   const Proto::UnspentTransaction& utxo) {
-    assert(index < transaction.inputs.size());
+    assert(index < transaction.inputs.inputs.size());
 
     Script redeemScript;
     std::vector<Data> results;
@@ -84,7 +84,7 @@ Result<void, Common::Proto::SigningError> TransactionSigner<Transaction, Transac
     }
     results = result.payload();
     assert(results.size() >= 1);
-    auto txin = transaction.inputs[index];
+    auto txin = transaction.inputs.inputs[index];
 
     if (script.isPayToScriptHash()) {
         script = Script(results[0]);
@@ -125,9 +125,9 @@ Result<void, Common::Proto::SigningError> TransactionSigner<Transaction, Transac
         results.push_back(redeemScript.bytes);
     }
 
-    signedInputs[index] =
+    signedInputs.inputs[index] =
         TransactionInput(txin.previousOutput, Script(pushAll(results)), txin.sequence);
-    signedInputs[index].scriptWitness = witnessStack;
+    signedInputs.inputs[index].scriptWitness = witnessStack;
     return Result<void, Common::Proto::SigningError>::success();
 }
 
@@ -135,7 +135,7 @@ template <typename Transaction, typename TransactionBuilder>
 Result<std::vector<Data>, Common::Proto::SigningError> TransactionSigner<Transaction, TransactionBuilder>::signStep(
     Script script, size_t index, const Proto::UnspentTransaction& utxo, uint32_t version) const {
     Transaction transactionToSign(transaction);
-    transactionToSign.inputs = signedInputs;
+    transactionToSign.inputs.inputs = signedInputs.inputs;
     transactionToSign.outputs = transaction.outputs;
 
     Data data;

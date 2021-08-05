@@ -29,7 +29,7 @@ struct Transaction {
     uint32_t expiryHeight = 0;
     uint64_t valueBalance = 0;
 
-    std::vector<Bitcoin::TransactionInput> inputs;
+    Bitcoin::TransactionInputs<Bitcoin::TransactionInput> inputs;
     std::vector<Bitcoin::TransactionOutput> outputs;
     std::array<byte, 4> branchId;
 

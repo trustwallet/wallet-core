@@ -202,9 +202,9 @@ void prettyPrintTransaction(const Transaction& tx, bool useWitnessFormat) {
 
     // txins
     data.clear();
-    encodeVarInt(tx.inputs.size(), data);
-    std::cout << "        \"" << hex(data) << "\" // inputs\n";
-    for (auto& input: tx.inputs) {
+    encodeVarInt(tx.inputs.inputs.size(), data);
+    std::cout << "        \"" << hex(data) << "\" // inputs.inputs\n";
+    for (auto& input: tx.inputs.inputs) {
         auto& outpoint = reinterpret_cast<const TW::Bitcoin::OutPoint&>(input.previousOutput);
         std::cout << "            \"" << hex(outpoint.hash) << "\"";
         data.clear();
@@ -230,7 +230,7 @@ void prettyPrintTransaction(const Transaction& tx, bool useWitnessFormat) {
 
     if (useWitnessFormat) {
         std::cout << "        // witness\n";
-        for (auto& input: tx.inputs) {
+        for (auto& input: tx.inputs.inputs) {
             data.clear();
             encodeVarInt(input.scriptWitness.size(), data);
             std::cout << "            \"" << hex(data) << "\"\n";
