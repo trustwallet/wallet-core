@@ -73,7 +73,7 @@ TEST(TWBitcoinGoldSigner, SignTransaction) {
     input.mutable_plan()->set_change(88851);
 
     // Sign
-    auto txSigner = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
+    auto txSigner = TransactionSigner<Transaction, TransactionBuilder>(SigningInput(input));
     txSigner.transaction.lockTime = 0x00098971;
     auto result = txSigner.sign();
 

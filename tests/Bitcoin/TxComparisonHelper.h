@@ -25,12 +25,22 @@ Proto::UnspentTransaction buildTestUTXO(int64_t amount);
 /// Build a set of dummy UTXO with the given amounts
 std::vector<Proto::UnspentTransaction> buildTestUTXOs(const std::vector<int64_t>& amounts);
 
+/// Build a dummy UTXO with the given amount
+UTXO buildTestUTXO2(int64_t amount);
+
+/// Build a set of dummy UTXO with the given amounts
+std::vector<UTXO> buildTestUTXOs2(const std::vector<int64_t>& amounts);
+
 Proto::SigningInput buildSigningInput(Amount amount, int byteFee, const std::vector<Proto::UnspentTransaction>& utxos, 
     bool useMaxAmount = false, enum TWCoinType coin = TWCoinTypeBitcoin);
 
 /// Compare a set of selected UTXOs to the expected set of amounts.
 /// Returns false on mismatch, and error is printed (stderr).
 bool verifySelectedUTXOs(const std::vector<Proto::UnspentTransaction>& selected, const std::vector<int64_t>& expectedAmounts);
+
+/// Compare a set of selected UTXOs to the expected set of amounts.
+/// Returns false on mismatch, and error is printed (stderr).
+bool verifySelectedUTXOs2(const std::vector<UTXO>& selected, const std::vector<int64_t>& expectedAmounts);
 
 /// Compare a transaction plan against expected values (UTXO amounts, amount, fee, change is implicit).
 /// Returns false on mismatch, and error is printed (stderr).

@@ -63,8 +63,7 @@ Result<Transaction, Common::Proto::SigningError> Signer::sign() {
         if (hashSingle && i >= transaction.outputs.size()) {
             continue;
         }
-        auto script = Bitcoin::Script(utxo.script().begin(), utxo.script().end());
-        auto result = sign(script, i);
+        auto result = sign(utxo.script, i);
         if (!result) {
             return Result<Transaction, Common::Proto::SigningError>::failure(result.error());
         }

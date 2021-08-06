@@ -100,7 +100,7 @@ TEST(TWBitcoinGoldTxGeneration, TxGeneration) {
     utxo0->mutable_out_point()->set_sequence(0xfffffffd);
 
     // Sign
-    auto txSigner = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
+    auto txSigner = TransactionSigner<Transaction, TransactionBuilder>(SigningInput(input));
     txSigner.transaction.lockTime = 0x00098971;
     auto result = txSigner.sign();
 

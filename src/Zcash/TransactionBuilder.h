@@ -19,7 +19,7 @@ namespace TW::Zcash {
 
 struct TransactionBuilder {
     /// Plans a transaction by selecting UTXOs and calculating fees.
-    static Bitcoin::TransactionPlan plan(const Bitcoin::Proto::SigningInput& input) {
+    static Bitcoin::TransactionPlan plan(const Bitcoin::SigningInput& input) {
         return Bitcoin::TransactionBuilder::plan(input);
     }
 

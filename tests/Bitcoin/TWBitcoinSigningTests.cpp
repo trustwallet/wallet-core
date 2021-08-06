@@ -32,8 +32,8 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
-
-Proto::SigningInput buildInputP2PKH(bool omitKey = false) {
+// TODO make non-Proto
+SigningInput buildInputP2PKH(bool omitKey = false) {
     auto hash0 = parse_hex("fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f");
     auto hash1 = parse_hex("ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a");
 
@@ -80,7 +80,7 @@ Proto::SigningInput buildInputP2PKH(bool omitKey = false) {
     utxo1->mutable_out_point()->set_hash(hash1.data(), hash1.size());
     utxo1->mutable_out_point()->set_index(1);
     utxo1->mutable_out_point()->set_sequence(UINT32_MAX);
-    return input;
+    return SigningInput(input);
 }
 
 TEST(BitcoinSigning, SignP2PKH) {
@@ -94,6 +94,7 @@ TEST(BitcoinSigning, SignP2PKH) {
 
     // Sign
     auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
+
     auto result = signer.sign();
 
     ASSERT_TRUE(result) << std::to_string(result.error());
@@ -135,11 +136,11 @@ TEST(BitcoinSigning, EncodeP2WPKH) {
     auto unsignedTx = Transaction(1, 0x11);
 
     auto hash0 = parse_hex("fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f");
-    auto outpoint0 = TW::Bitcoin::OutPoint(hash0, 0);
+    auto outpoint0 = TW::Bitcoin::OutPoint(hash0, 0, 0xffffffee);
     unsignedTx.inputs.inputs.emplace_back(outpoint0, Script(), 0xffffffee);
 
     auto hash1 = parse_hex("ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a");
-    auto outpoint1 = TW::Bitcoin::OutPoint(hash1, 1);
+    auto outpoint1 = TW::Bitcoin::OutPoint(hash1, 1, UINT32_MAX);
     unsignedTx.inputs.inputs.emplace_back(outpoint1, Script(), UINT32_MAX);
 
     auto outScript0 = Script(parse_hex("76a9148280b37df378db99f66f85c95a783a76ac7a6d5988ac"));
@@ -223,7 +224,7 @@ TEST(BitcoinSigning, SignP2WPKH_Bip143) {
     *(plan->add_utxos()) = *utxo1;
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(SigningInput(input)); // TODO
     signer.transaction.lockTime = 0x11; // there is no way to set locktime through SigningInput
     auto result = signer.sign();
 
@@ -254,7 +255,8 @@ TEST(BitcoinSigning, SignP2WPKH_Bip143) {
     );
 }
 
-Proto::SigningInput buildInputP2WPKH(int64_t amount, TWBitcoinSigHashType hashType, int64_t utxo0Amount, int64_t utxo1Amount, bool useMaxAmount = false) {
+// TODO make non-Proto
+SigningInput buildInputP2WPKH(int64_t amount, TWBitcoinSigHashType hashType, int64_t utxo0Amount, int64_t utxo1Amount, bool useMaxAmount = false) {
     auto hash0 = parse_hex("fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f");
     auto hash1 = parse_hex("ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a");
 
@@ -304,7 +306,7 @@ Proto::SigningInput buildInputP2WPKH(int64_t amount, TWBitcoinSigHashType hashTy
     utxo1->mutable_out_point()->set_hash(hash1.data(), hash1.size());
     utxo1->mutable_out_point()->set_index(1);
     utxo1->mutable_out_point()->set_sequence(UINT32_MAX);
-    return input;
+    return SigningInput(input);
 }
 
 TEST(BitcoinSigning, SignP2WPKH) {
@@ -466,7 +468,7 @@ TEST(BitcoinSigning, SignP2WPKH_MaxAmount) {
 TEST(BitcoinSigning, EncodeP2WSH) {
     auto unsignedTx = Transaction(1, 0);
 
-    auto outpoint0 = OutPoint(parse_hex("0001000000000000000000000000000000000000000000000000000000000000"), 0);
+    auto outpoint0 = OutPoint(parse_hex("0001000000000000000000000000000000000000000000000000000000000000"), 0, UINT32_MAX);
     unsignedTx.inputs.inputs.emplace_back(outpoint0, Script(), UINT32_MAX);
 
     auto outScript0 = Script(parse_hex("76a9144c9c3dfac4207d5d8cb89df5722cb3d712385e3f88ac"));
@@ -484,7 +486,7 @@ TEST(BitcoinSigning, EncodeP2WSH) {
     );
 }
 
-Proto::SigningInput buildInputP2WSH(uint32_t hashType, bool omitScript = false, bool omitKeys = false) {
+SigningInput buildInputP2WSH(uint32_t hashType, bool omitScript = false, bool omitKeys = false) {
     Proto::SigningInput input;
     input.set_hash_type(hashType);
     input.set_amount(1000);
@@ -515,7 +517,7 @@ Proto::SigningInput buildInputP2WSH(uint32_t hashType, bool omitScript = false, 
     utxo0->mutable_out_point()->set_hash(hash0.data(), hash0.size());
     utxo0->mutable_out_point()->set_index(0);
     utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
-    return input;
+    return SigningInput(input);
 }
 
 TEST(BitcoinSigning, SignP2WSH) {
@@ -696,8 +698,8 @@ TEST(BitcoinSigning, SignP2WSH_NegativeMissingKeys) {
 TEST(BitcoinSigning, SignP2WSH_NegativePlanWithError) {
     // Setup input
     auto input = buildInputP2WSH((uint32_t)TWBitcoinSigHashTypeAll);
-    auto plan = Bitcoin::TransactionPlan();
-    input.mutable_plan()->set_error(Common::Proto::Error_missing_input_utxos);
+    input.plan = TransactionBuilder::plan(input);
+    input.plan->error = Common::Proto::Error_missing_input_utxos;
 
     // Sign
     auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
@@ -710,8 +712,8 @@ TEST(BitcoinSigning, SignP2WSH_NegativePlanWithError) {
 TEST(BitcoinSigning, SignP2WSH_NegativeNoUTXOs) {
     // Setup input
     auto input = buildInputP2WSH((uint32_t)TWBitcoinSigHashTypeAll);
-    input.clear_utxo();
-    input.mutable_plan()->clear_utxos();
+    input.utxos.clear();
+    ASSERT_FALSE(input.plan.has_value());
 
     // Sign
     auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
@@ -724,7 +726,8 @@ TEST(BitcoinSigning, SignP2WSH_NegativeNoUTXOs) {
 TEST(BitcoinSigning, SignP2WSH_NegativePlanWithNoUTXOs) {
     // Setup input
     auto input = buildInputP2WSH((uint32_t)TWBitcoinSigHashTypeAll);
-    input.mutable_plan()->clear_utxos();
+    input.plan = TransactionBuilder::plan(input);
+    input.plan->utxos.clear();
 
     // Sign
     auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
@@ -737,7 +740,7 @@ TEST(BitcoinSigning, SignP2WSH_NegativePlanWithNoUTXOs) {
 TEST(BitcoinSigning, EncodeP2SH_P2WPKH) {
     auto unsignedTx = Transaction(1, 0x492);
 
-    auto outpoint0 = OutPoint(parse_hex("db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a5477"), 1);
+    auto outpoint0 = OutPoint(parse_hex("db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a5477"), 1, 0xfffffffe);
     unsignedTx.inputs.inputs.emplace_back(outpoint0, Script(), 0xfffffffe);
 
     auto outScript0 = Script(parse_hex("76a914a457b684d7f0d539a46a45bbc043f35b59d0d96388ac"));
@@ -759,7 +762,7 @@ TEST(BitcoinSigning, EncodeP2SH_P2WPKH) {
     );
 }
 
-Proto::SigningInput buildInputP2SH_P2WPKH(bool omitScript = false, bool omitKeys = false, bool invalidOutputScript = false, bool invalidRedeemScript = false) {
+SigningInput buildInputP2SH_P2WPKH(bool omitScript = false, bool omitKeys = false, bool invalidOutputScript = false, bool invalidRedeemScript = false) {
     // Setup input
     Proto::SigningInput input;
     input.set_hash_type(hashTypeForCoin(TWCoinTypeBitcoin));
@@ -801,7 +804,7 @@ Proto::SigningInput buildInputP2SH_P2WPKH(bool omitScript = false, bool omitKeys
     utxo0->mutable_out_point()->set_index(1);
     utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
 
-    return input;
+    return SigningInput(input);
 }
 
 TEST(BitcoinSigning, SignP2SH_P2WPKH) {
@@ -905,7 +908,7 @@ TEST(BitcoinSigning, EncodeP2SH_P2WSH) {
     auto unsignedTx = Transaction(1, 0);
 
     auto hash0 = parse_hex("36641869ca081e70f394c6948e8af409e18b619df2ed74aa106c1ca29787b96e");
-    auto outpoint0 = OutPoint(hash0, 1);
+    auto outpoint0 = OutPoint(hash0, 1, 0xffffffff);
     unsignedTx.inputs.inputs.emplace_back(outpoint0, Script(), 0xffffffff);
 
     auto outScript0 = Script(parse_hex("76a914389ffce9cd9ae88dcc0631e88a821ffdbe9bfe2688ac"));
@@ -931,7 +934,7 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
     auto emptyScript = Script();
     auto unsignedTx = Transaction(1, 0);
 
-    auto outpoint0 = OutPoint(parse_hex("36641869ca081e70f394c6948e8af409e18b619df2ed74aa106c1ca29787b96e"), 1);
+    auto outpoint0 = OutPoint(parse_hex("36641869ca081e70f394c6948e8af409e18b619df2ed74aa106c1ca29787b96e"), 1, 0xffffffff);
     unsignedTx.inputs.inputs.emplace_back(outpoint0, emptyScript, 0xffffffff);
 
     auto outScript0 = Script(parse_hex("76a914389ffce9cd9ae88dcc0631e88a821ffdbe9bfe2688ac"));
@@ -1095,12 +1098,12 @@ TEST(BitcoinSigning, Sign_NegativeInvalidAddress) {
 
     {
         // test plan (but do not reuse plan result)
-        auto plan = TransactionBuilder::plan(input);
+        auto plan = TransactionBuilder::plan(std::move(SigningInput(input)));
         EXPECT_TRUE(verifyPlan(plan, {625'000'000}, 335'790'000, 174));
     }
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(SigningInput(input));
     auto result = signer.sign();
 
     ASSERT_FALSE(result);
@@ -1323,7 +1326,7 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
 
     auto hash0 = parse_hex("bbe736ada63c4678025dff0ff24d5f38970a3e4d7a2f77808689ed68004f55fe");
     std::reverse(hash0.begin(), hash0.end());
-    auto outpoint0 = TW::Bitcoin::OutPoint(hash0, 0);
+    auto outpoint0 = TW::Bitcoin::OutPoint(hash0, 0, UINT32_MAX);
     unsignedTx.inputs.inputs.emplace_back(outpoint0, Script(), UINT32_MAX);
 
     auto lockingScript0 = Script::lockScriptForAddress(toAddress0, coin);

@@ -10,11 +10,15 @@
 #include "Script.h"
 #include "TransactionInput.h"
 #include "TransactionOutput.h"
+#include "TransactionPlan.h"
+#include "UTXO.h"
+#include "../PrivateKey.h"
 #include "../Hash.h"
 #include "../Data.h"
-
 #include "SignatureVersion.h"
+
 #include <vector>
+#include <optional>
 
 namespace TW::Bitcoin {
 
@@ -103,6 +107,50 @@ private:
     /// Generates the signature hash for for scripts other than witness scripts.
     Data getSignatureHashBase(const Script& scriptCode, size_t index,
                               enum TWBitcoinSigHashType hashType) const;
+};
+
+// TODO move to separate file
+class SigningInput {
+public:
+    // Hash type to use when signing
+    TWBitcoinSigHashType hashType;
+
+    // Amount to send.  Transaction created will have this amount in its output, 
+    // except when use_max_amount is set, in that case this amount is not relevant, maximum possible amount will be used (max avail less fee).
+    // If amount is equal or more than the available amount, also max amount will be used.
+    Amount amount;
+
+    // Transaction fee per byte
+    Amount byteFee;
+
+    // Recipient's address
+    std::string toAddress;
+
+    // Change address
+    std::string changeAddress;
+
+    // Available private keys
+    std::vector<PrivateKey> privateKeys;
+
+    // Available redeem scripts indexed by script hash
+    std::map<std::string, Script> scripts;
+
+    // Available unspent transaction outputs
+    std::vector<UTXO> utxos;
+
+    // If sending max amount
+    bool useMaxAmount;
+
+    // Coin type (forks)
+    TWCoinType coinType;
+
+    // Optional transaction plan
+    std::optional<TransactionPlan> plan;
+
+public:
+    SigningInput() = default;
+
+    SigningInput(const Proto::SigningInput& input);
 };
 
 } // namespace TW::Bitcoin

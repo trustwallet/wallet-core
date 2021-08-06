@@ -19,7 +19,7 @@ namespace TW::Bitcoin {
 class TransactionBuilder {
 public:
     /// Plans a transaction by selecting UTXOs and calculating fees.
-    static TransactionPlan plan(const Bitcoin::Proto::SigningInput& input);
+    static TransactionPlan plan(const SigningInput& input);
 
     /// Builds a transaction by selecting UTXOs and calculating fees.
     template <typename Transaction>
@@ -40,7 +40,7 @@ public:
 
         const auto emptyScript = Script();
         for (auto& utxo : plan.utxos) {
-            tx.inputs.inputs.emplace_back(utxo.out_point(), emptyScript, utxo.out_point().sequence());
+            tx.inputs.inputs.emplace_back(utxo.outPoint, emptyScript, utxo.outPoint.sequence);
         }
 
         return tx;

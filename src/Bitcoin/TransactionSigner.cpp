@@ -36,16 +36,15 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
     std::copy(std::begin(transaction.inputs.inputs), std::end(transaction.inputs.inputs),
               std::back_inserter(signedInputs.inputs));
 
-    const auto hashSingle = hashTypeIsSingle(static_cast<enum TWBitcoinSigHashType>(input.hash_type()));
+    const auto hashSingle = hashTypeIsSingle(input.hashType);
     for (auto i = 0; i < plan.utxos.size(); i++) {
         // Only sign TWBitcoinSigHashTypeSingle if there's a corresponding output
         if (hashSingle && i >= transaction.outputs.size()) {
             continue;
         }
         auto& utxo = plan.utxos[i];
-        auto script = Script(utxo.script().begin(), utxo.script().end());
         if (i < transaction.inputs.inputs.size()) {
-            auto result = sign(script, i, utxo);
+            auto result = sign(utxo.script, i, utxo);
             if (!result) {
                 return Result<Transaction, Common::Proto::SigningError>::failure(result.error());
             }
@@ -56,8 +55,8 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
     tx.inputs.inputs = move(signedInputs.inputs);
     tx.outputs = transaction.outputs;
     // save estimated size
-    if ((input.byte_fee()) > 0 && (plan.fee > 0)) {
-        tx.previousEstimatedVirtualSize = static_cast<int>(plan.fee / input.byte_fee());
+    if ((input.byteFee > 0) && (plan.fee > 0)) {
+        tx.previousEstimatedVirtualSize = static_cast<int>(plan.fee / input.byteFee);
     }
 
     return Result<Transaction, Common::Proto::SigningError>::success(std::move(tx));
@@ -65,14 +64,14 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
 
 template <typename Transaction, typename TransactionBuilder>
 Result<void, Common::Proto::SigningError> TransactionSigner<Transaction, TransactionBuilder>::sign(Script script, size_t index,
-                                                  const Proto::UnspentTransaction& utxo) {
+                                                  const UTXO& utxo) {
     assert(index < transaction.inputs.inputs.size());
 
     Script redeemScript;
     std::vector<Data> results;
 
     uint32_t signatureVersion = [this]() {
-        if ((input.hash_type() & TWBitcoinSigHashTypeFork) != 0) {
+        if ((input.hashType & TWBitcoinSigHashTypeFork) != 0) {
             return WITNESS_V0;
         } else {
             return BASE;
@@ -133,7 +132,7 @@ Result<void, Common::Proto::SigningError> TransactionSigner<Transaction, Transac
 
 template <typename Transaction, typename TransactionBuilder>
 Result<std::vector<Data>, Common::Proto::SigningError> TransactionSigner<Transaction, TransactionBuilder>::signStep(
-    Script script, size_t index, const Proto::UnspentTransaction& utxo, uint32_t version) const {
+    Script script, size_t index, const UTXO& utxo, uint32_t version) const {
     Transaction transactionToSign(transaction);
     transactionToSign.inputs.inputs = signedInputs.inputs;
     transactionToSign.outputs = transaction.outputs;
@@ -178,7 +177,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> TransactionSigner<Transac
                 // Error: missing key
                 return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
             }
-            auto signature = createSignature(transactionToSign, script, pair, index, utxo.amount(), version);
+            auto signature = createSignature(transactionToSign, script, pair, index, utxo.amount, version);
             if (signature.empty()) {
                 // Error: Failed to sign
                 return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
@@ -195,7 +194,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> TransactionSigner<Transac
             // Error: Missing key
             return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
         }
-        auto signature = createSignature(transactionToSign, script, pair, index, utxo.amount(), version);
+        auto signature = createSignature(transactionToSign, script, pair, index, utxo.amount, version);
         if (signature.empty()) {
             // Error: Failed to sign
             return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
@@ -208,7 +207,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> TransactionSigner<Transac
             // Error: Missing keys
             return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
         }
-        auto signature = createSignature(transactionToSign, script, pair, index, utxo.amount(), version);
+        auto signature = createSignature(transactionToSign, script, pair, index, utxo.amount, version);
         if (signature.empty()) {
             // Error: Failed to sign
             return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
@@ -238,12 +237,12 @@ Data TransactionSigner<Transaction, TransactionBuilder>::createSignature(
         return Data(72);
     }
     auto key = std::get<0>(pair.value());
-    Data sighash = transaction.getSignatureHash(script, index, static_cast<TWBitcoinSigHashType>(input.hash_type()), amount,
+    Data sighash = transaction.getSignatureHash(script, index, input.hashType, amount,
                                                 static_cast<SignatureVersion>(version));
     auto pk = PrivateKey(key);
     auto sig = pk.signAsDER(sighash, TWCurveSECP256k1);
     if (!sig.empty()) {
-        sig.push_back(static_cast<uint8_t>(input.hash_type()));
+        sig.push_back(input.hashType);
     }
     return sig;
 }
@@ -275,14 +274,13 @@ Data TransactionSigner<Transaction, TransactionBuilder>::pushAll(const std::vect
 
 template <typename Transaction, typename TransactionBuilder>
 std::optional<KeyPair> TransactionSigner<Transaction, TransactionBuilder>::keyPairForPubKeyHash(const Data& hash) const {
-    for (auto& key : input.private_key()) {
-        auto privKey = PrivateKey(key);
-        auto pubKeyExtended = privKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
+    for (auto& key : input.privateKeys) {
+        auto pubKeyExtended = key.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
         auto pubKey = pubKeyExtended.compressed();
         if (Hash::sha256ripemd(pubKey.bytes.data(), pubKey.bytes.size()) == hash) {
-            return std::make_tuple(privKey, pubKey);
+            return std::make_tuple(key, pubKey);
         } else if (Hash::sha256ripemd(pubKeyExtended.bytes.data(), pubKeyExtended.bytes.size()) == hash) {
-            return std::make_tuple(privKey, pubKeyExtended);
+            return std::make_tuple(key, pubKeyExtended);
         }
     }
     return {};
@@ -291,12 +289,12 @@ std::optional<KeyPair> TransactionSigner<Transaction, TransactionBuilder>::keyPa
 template <typename Transaction, typename TransactionBuilder>
 Data TransactionSigner<Transaction, TransactionBuilder>::scriptForScriptHash(const Data& hash) const {
     auto hashString = hex(hash);
-    auto it = input.scripts().find(hashString);
-    if (it == input.scripts().end()) {
+    auto it = input.scripts.find(hashString);
+    if (it == input.scripts.end()) {
         // Error: Missing redeem script
         return {};
     }
-    return Data(it->second.begin(), it->second.end());
+    return it->second.bytes;
 }
 
 // Explicitly instantiate a Signers for compatible transactions.

@@ -32,7 +32,7 @@ template <typename Transaction, typename TransactionBuilder>
 class TransactionSigner {
   private:
     /// Private key and redeem script provider for signing.
-    Proto::SigningInput input;
+    SigningInput input;
 
   public:
     /// Transaction plan.
@@ -50,16 +50,14 @@ class TransactionSigner {
   public:
     /// Initializes a transaction signer with signing input.
     /// estimationMode: is set, no real signing is performed, only as much as needed to get the almost-exact signed size 
-    TransactionSigner(const Bitcoin::Proto::SigningInput& input, bool estimationMode = false) :
+    TransactionSigner(const SigningInput& input, bool estimationMode = false) :
     input(input), estimationMode(estimationMode) {
-      if (input.has_plan()) {
-        plan = TransactionPlan(input.plan());
+      if (input.plan.has_value()) {
+        plan = input.plan.value();
       } else {
         plan = TransactionBuilder::plan(input);
       }
-      transaction = TransactionBuilder::template build<Transaction>(
-        plan, input.to_address(), input.change_address(), TWCoinType(input.coin_type())
-      );
+      transaction = TransactionBuilder::template build<Transaction>(plan, input.toAddress, input.changeAddress, input.coinType);
     }
 
     /// Signs the transaction.
@@ -74,9 +72,9 @@ class TransactionSigner {
     static Data pushAll(const std::vector<Data>& results);
 
   private:
-    Result<void, Common::Proto::SigningError> sign(Script script, size_t index, const Proto::UnspentTransaction& utxo);
+    Result<void, Common::Proto::SigningError> sign(Script script, size_t index, const UTXO& utxo);
     Result<std::vector<Data>, Common::Proto::SigningError> signStep(Script script, size_t index,
-                                       const Proto::UnspentTransaction& utxo, uint32_t version) const;
+                                       const UTXO& utxo, uint32_t version) const;
     Data createSignature(const Transaction& transaction, const Script& script, const std::optional<KeyPair>&,
                          size_t index, Amount amount, uint32_t version) const;
 

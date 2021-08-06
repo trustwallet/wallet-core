@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Amount.h"
+#include "UTXO.h"
 #include "../proto/Bitcoin.pb.h"
 
 namespace TW::Bitcoin {
@@ -26,12 +27,12 @@ struct TransactionPlan {
     Amount change = 0;
 
     /// Selected unspent transaction outputs.
-    std::vector<Bitcoin::Proto::UnspentTransaction> utxos;
+    std::vector<UTXO> utxos;
 
     /// Zcash branch id
     std::vector<uint8_t> branchId;
 
-    Common::Proto::SigningError error;
+    Common::Proto::SigningError error = Common::Proto::SigningError::OK;
 
     TransactionPlan() = default;
 
@@ -51,7 +52,9 @@ struct TransactionPlan {
         plan.set_available_amount(availableAmount);
         plan.set_fee(fee);
         plan.set_change(change);
-        *plan.mutable_utxos() = {utxos.begin(), utxos.end()};
+        for (auto& utxo: utxos) {
+            *plan.add_utxos() = utxo.proto();
+        }
         plan.set_branch_id(branchId.data(), branchId.size());
         plan.set_error(error);
         return plan;

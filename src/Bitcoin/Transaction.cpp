@@ -256,3 +256,25 @@ Proto::Transaction Transaction::proto() const {
 
     return protoTx;
 }
+
+SigningInput::SigningInput(const Proto::SigningInput& input) {
+    hashType = static_cast<TWBitcoinSigHashType>(input.hash_type());
+    amount = input.amount();
+    byteFee = input.byte_fee();
+    toAddress = input.to_address();
+    changeAddress = input.change_address();
+    for (auto& key: input.private_key()) {
+        privateKeys.push_back(PrivateKey(key));
+    }
+    for (auto& script: input.scripts()) {
+        scripts[script.first] = Script(script.second.begin(), script.second.end());
+    }
+    for (auto& u: input.utxo()) {
+        utxos.push_back(UTXO(u));
+    }
+    useMaxAmount = input.use_max_amount();
+    coinType = static_cast<TWCoinType>(input.coin_type());
+    if (input.has_plan()) {
+        plan = TransactionPlan(input.plan());
+    }
+}
