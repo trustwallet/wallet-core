@@ -9,6 +9,7 @@
 #include "OutPoint.h"
 #include "Script.h"
 #include "Amount.h"
+#include "../proto/Bitcoin.pb.h"
 
 namespace TW::Bitcoin {
 
@@ -26,14 +27,12 @@ public:
 public:
     UTXO() = default;
 
-    // TODO move to .cpp
     UTXO(const Proto::UnspentTransaction& utxo)
         : outPoint(utxo.out_point())
         , script(utxo.script().begin(), utxo.script().end())
         , amount(utxo.amount())
         {}
 
-    // TODO move to .cpp
     Proto::UnspentTransaction proto() const {
         auto utxo = Proto::UnspentTransaction();
         *utxo.mutable_out_point() = outPoint.proto();

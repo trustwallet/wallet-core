@@ -16,6 +16,7 @@
 #include "../Hash.h"
 #include "../Data.h"
 #include "SignatureVersion.h"
+#include "../proto/Bitcoin.pb.h"
 
 #include <vector>
 #include <optional>
