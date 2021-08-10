@@ -929,7 +929,7 @@ TEST(BitcoinSigning, EncodeP2SH_P2WSH) {
 
 TEST(BitcoinSigning, SignP2SH_P2WSH) {
     auto emptyScript = Script();
-    auto unsignedTx = Transaction(1, 0);
+    auto unsignedTx = Transaction(1);
 
     auto outpoint0 = OutPoint(parse_hex("36641869ca081e70f394c6948e8af409e18b619df2ed74aa106c1ca29787b96e"), 1);
     unsignedTx.inputs.emplace_back(outpoint0, emptyScript, 0xffffffff);
@@ -1319,7 +1319,7 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
     auto toAmount0 = 1'000'000;
     auto toAmount1 = 2'000'000;
 
-    auto unsignedTx = Transaction(1, 0);
+    auto unsignedTx = Transaction(1);
 
     auto hash0 = parse_hex("bbe736ada63c4678025dff0ff24d5f38970a3e4d7a2f77808689ed68004f55fe");
     std::reverse(hash0.begin(), hash0.end());
