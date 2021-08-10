@@ -24,13 +24,14 @@ class OutPoint {
     /// The index of the specific output in the transaction.
     uint32_t index;
 
+    /// Sequence number, matches sequence from Proto::OutPoint (not always used, see also TransactionInput.sequence)
     uint32_t sequence;
 
     OutPoint() = default;
 
     /// Initializes an out-point reference with hash, index.
     template <typename T>
-    OutPoint(const T& h, uint32_t index, uint32_t sequence) {
+    OutPoint(const T& h, uint32_t index, uint32_t sequence = 0 ) {
         std::copy(std::begin(h), std::end(h), hash.begin());
         this->index = index;
         this->sequence = sequence;

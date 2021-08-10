@@ -23,7 +23,7 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
-auto emptyTxOutPoint = OutPoint(parse_hex("1d0f172a0ecb48aee1be1f2687d2963ae33f71a1"), 0, UINT32_MAX);
+auto emptyTxOutPoint = OutPoint(parse_hex("1d0f172a0ecb48aee1be1f2687d2963ae33f71a1"), 0);
 
 Proto::UnspentTransaction buildTestUTXOProto(int64_t amount) {
     Proto::UnspentTransaction utxo;
