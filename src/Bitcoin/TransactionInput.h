@@ -20,7 +20,6 @@ class TransactionInput {
     /// Reference to the previous transaction's output.
     OutPoint previousOutput;
 
-    // TODO this is in OutPoint now, remove
     /// Transaction version as defined by the sender.
     ///
     /// Intended for "replacement" of transactions when information is updated

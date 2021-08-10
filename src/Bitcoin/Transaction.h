@@ -33,7 +33,7 @@ public:
     void add(TransactionInput input) { inputs.emplace_back(input); }
     const TransactionInput& get(size_t index) const { return inputs[index]; }
     void set(size_t index, TransactionInput input) { inputs[index] = input; }
-    bool clear() { inputs.clear(); }
+    void clear() { inputs.clear(); }
 };
 
 struct Transaction {
