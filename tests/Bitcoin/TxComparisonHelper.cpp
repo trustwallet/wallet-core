@@ -25,7 +25,7 @@ using namespace TW::Bitcoin;
 
 auto emptyTxOutPoint = OutPoint(parse_hex("1d0f172a0ecb48aee1be1f2687d2963ae33f71a1"), 0, UINT32_MAX);
 
-Proto::UnspentTransaction buildTestUTXO(int64_t amount) {
+Proto::UnspentTransaction buildTestUTXOProto(int64_t amount) {
     Proto::UnspentTransaction utxo;
     utxo.set_amount(amount);
     const auto& outPoint = emptyTxOutPoint;
@@ -37,15 +37,15 @@ Proto::UnspentTransaction buildTestUTXO(int64_t amount) {
     return utxo;
 }
 
-std::vector<Proto::UnspentTransaction> buildTestUTXOs(const std::vector<int64_t>& amounts) {
+std::vector<Proto::UnspentTransaction> buildTestUTXOsProto(const std::vector<int64_t>& amounts) {
     std::vector<Proto::UnspentTransaction> utxos;
     for (auto it = amounts.begin(); it != amounts.end(); it++) {
-        utxos.push_back(buildTestUTXO(*it));
+        utxos.push_back(buildTestUTXOProto(*it));
     }
     return utxos;
 }
 
-UTXO buildTestUTXO2(int64_t amount) {
+UTXO buildTestUTXO(int64_t amount) {
     UTXO utxo;
     utxo.amount = amount;
     utxo.outPoint = emptyTxOutPoint;
@@ -54,10 +54,10 @@ UTXO buildTestUTXO2(int64_t amount) {
     return utxo;
 }
 
-std::vector<UTXO> buildTestUTXOs2(const std::vector<int64_t>& amounts) {
+std::vector<UTXO> buildTestUTXOs(const std::vector<int64_t>& amounts) {
     std::vector<UTXO> utxos;
     for (auto it = amounts.begin(); it != amounts.end(); it++) {
-        utxos.push_back(buildTestUTXO2(*it));
+        utxos.push_back(buildTestUTXO(*it));
     }
     return utxos;
 }
@@ -89,7 +89,7 @@ int64_t sumUTXOs(const std::vector<Proto::UnspentTransaction>& utxos) {
     return s;
 }
 
-bool verifySelectedUTXOs(const std::vector<Proto::UnspentTransaction>& selected, const std::vector<int64_t>& expectedAmounts) {
+bool verifySelectedUTXOsProto(const std::vector<Proto::UnspentTransaction>& selected, const std::vector<int64_t>& expectedAmounts) {
     bool ret = true;
     if (selected.size() != expectedAmounts.size()) {
         ret = false;
@@ -104,7 +104,7 @@ bool verifySelectedUTXOs(const std::vector<Proto::UnspentTransaction>& selected,
     return ret;
 }
 
-bool verifySelectedUTXOs2(const std::vector<UTXO>& selected, const std::vector<int64_t>& expectedAmounts) {
+bool verifySelectedUTXOs(const std::vector<UTXO>& selected, const std::vector<int64_t>& expectedAmounts) {
     bool ret = true;
     if (selected.size() != expectedAmounts.size()) {
         ret = false;
@@ -121,7 +121,7 @@ bool verifySelectedUTXOs2(const std::vector<UTXO>& selected, const std::vector<i
 
 bool verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmounts, int64_t outputAmount, int64_t fee, Common::Proto::SigningError error) {
     bool ret = true;
-    if (!verifySelectedUTXOs2(plan.utxos, utxoAmounts)) {
+    if (!verifySelectedUTXOs(plan.utxos, utxoAmounts)) {
         ret = false;
     }
     if (plan.amount != outputAmount) {
