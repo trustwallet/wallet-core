@@ -46,7 +46,7 @@ class OutPoint {
     }
 
     /// Encodes the out-point into the provided buffer.
-    void encode(std::vector<uint8_t>& data) const;
+    void encode(Data& data) const;
 
     friend bool operator<(const OutPoint& a, const OutPoint& b) {
         int cmp = std::memcmp(a.hash.data(), b.hash.data(), 32);

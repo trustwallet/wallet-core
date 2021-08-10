@@ -8,6 +8,7 @@
 
 #include "Amount.h"
 #include "UTXO.h"
+#include "../Data.h"
 #include "../proto/Bitcoin.pb.h"
 
 namespace TW::Bitcoin {
@@ -30,7 +31,7 @@ struct TransactionPlan {
     std::vector<UTXO> utxos;
 
     /// Zcash branch id
-    std::vector<uint8_t> branchId;
+    Data branchId;
 
     Common::Proto::SigningError error = Common::Proto::SigningError::OK;
 

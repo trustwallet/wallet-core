@@ -57,6 +57,7 @@ public:
     TransactionInputs<TransactionInput> inputs;
 
     /// A list of 1 or more transaction outputs or destinations for coins
+    // TODO: make TransactionOutputs
     std::vector<TransactionOutput> outputs;
 
     TW::Hash::Hasher hasher = TW::Hash::sha256d;
