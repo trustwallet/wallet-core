@@ -28,7 +28,12 @@ class TransactionInputs {
 public:
     std::vector<TransactionInput> inputs;
 
+    size_t size() const { return inputs.size(); }
     bool empty() const { return inputs.empty(); }
+    void add(TransactionInput input) { inputs.emplace_back(input); }
+    const TransactionInput& get(size_t index) const { return inputs[index]; }
+    void set(size_t index, TransactionInput input) { inputs[index] = input; }
+    bool clear() { inputs.clear(); }
 };
 
 struct Transaction {

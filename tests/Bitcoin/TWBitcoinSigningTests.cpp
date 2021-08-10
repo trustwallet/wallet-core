@@ -106,7 +106,7 @@ TEST(BitcoinSigning, SignP2PKH) {
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
-        "01" // inputs.inputs
+        "01" // inputs
             "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "6a"  "47304402202819d70d4bec472113a1392cadc0860a7a1b34ea0869abb4bdce3290c3aba086022023eff75f410ad19cdbe6c6a017362bd554ce5fb906c13534ddc306be117ad30a012103c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432"  "ffffffff"
         "02" // outputs
             "b0bf031400000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
@@ -137,11 +137,11 @@ TEST(BitcoinSigning, EncodeP2WPKH) {
 
     auto hash0 = parse_hex("fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f");
     auto outpoint0 = TW::Bitcoin::OutPoint(hash0, 0, 0xffffffee);
-    unsignedTx.inputs.inputs.emplace_back(outpoint0, Script(), 0xffffffee);
+    unsignedTx.inputs.add(TransactionInput(outpoint0, Script(), 0xffffffee));
 
     auto hash1 = parse_hex("ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a");
     auto outpoint1 = TW::Bitcoin::OutPoint(hash1, 1, UINT32_MAX);
-    unsignedTx.inputs.inputs.emplace_back(outpoint1, Script(), UINT32_MAX);
+    unsignedTx.inputs.add(TransactionInput(outpoint1, Script(), UINT32_MAX));
 
     auto outScript0 = Script(parse_hex("76a9148280b37df378db99f66f85c95a783a76ac7a6d5988ac"));
     unsignedTx.outputs.emplace_back(112340000, outScript0);
@@ -155,7 +155,7 @@ TEST(BitcoinSigning, EncodeP2WPKH) {
     ASSERT_EQ(hex(unsignedData),
         "01000000" // version
         "0001" // marker & flag
-        "02" // inputs.inputs
+        "02" // inputs
             "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "00"  ""  "eeffffff"
             "ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a"  "01000000"  "00"  ""  "ffffffff"
         "02" // outputs
@@ -240,7 +240,7 @@ TEST(BitcoinSigning, SignP2WPKH_Bip143) {
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
-        "02" // inputs.inputs
+        "02" // inputs
             "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "49"  "4830450221008b9d1dc26ba6a9cb62127b02742fa9d754cd3bebf337f7a55d114c8e5cdd30be022040529b194ba3f9281a99f2b1c0a19c0489bc22ede944ccf4ecbab4cc618ef3ed01"  "eeffffff"
             "ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a"  "01000000"  "00"  ""  "ffffffff"
         "02" // outputs
@@ -332,7 +332,7 @@ TEST(BitcoinSigning, SignP2WPKH) {
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
-        "01" // inputs.inputs
+        "01" // inputs
             "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "49"  "483045022100c327babdd370f0fc5b24cf920736446bf7d9c5660e4a5f7df432386fd652fe280220269c4fc3690c1c248e50c8bf2435c20b4ef00f308b403575f4437f862a91c53a01"  "ffffffff"
         "02" // outputs
             "b0bf031400000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
@@ -348,7 +348,7 @@ TEST(BitcoinSigning, SignP2WPKH) {
         EXPECT_EQ(serialized.size(), 192);
         ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
             "01000000" // version
-            "01" // inputs.inputs
+            "01" // inputs
                 "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "49"  "483045022100c327babdd370f0fc5b24cf920736446bf7d9c5660e4a5f7df432386fd652fe280220269c4fc3690c1c248e50c8bf2435c20b4ef00f308b403575f4437f862a91c53a01"  "ffffffff"
             "02" // outputs
                 "b0bf031400000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
@@ -381,7 +381,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashSingle_TwoInput) {
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
-        "02" // inputs.inputs
+        "02" // inputs
             "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "49"  "483045022100fd8591c3611a07b55f509ec850534c7a9c49713c9b8fa0e844ea06c2e65e19d702205e3806676192e790bc93dd4c28e937c4bf97b15f189158ba1a30d7ecff5ee75503"  "ffffffff"
             "ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a"  "01000000"  "00"  ""  "ffffffff"
         "02" // outputs
@@ -417,7 +417,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashAnyoneCanPay_TwoInput) {
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
-        "02" // inputs.inputs
+        "02" // inputs
             "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "49"  "483045022100e21fb2f1cfd59bdb3703fd45db38fd680d0c06e5d0be86fb7dc233c07ee7ab2f02207367220a73e43df4352a6831f6f31d8dc172c83c9f613a9caf679f0f15621c5e80"  "ffffffff"
             "ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a"  "01000000"  "00"  ""  "ffffffff"
         "02" // outputs
@@ -453,7 +453,7 @@ TEST(BitcoinSigning, SignP2WPKH_MaxAmount) {
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
-        "02" // inputs.inputs
+        "02" // inputs
             "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "49"  "483045022100a8b3c1619e985923994e80efdc0be0eac12f2419e11ce5e4286a0a5ac27c775d02205d6feee85ffe19ae0835cba1562beb3beb172107cd02ac4caf24a8be3749811f01"  "ffffffff"
             "ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a"  "01000000"  "00"  ""  "ffffffff"
         "01" // outputs
@@ -469,7 +469,7 @@ TEST(BitcoinSigning, EncodeP2WSH) {
     auto unsignedTx = Transaction(1, 0);
 
     auto outpoint0 = OutPoint(parse_hex("0001000000000000000000000000000000000000000000000000000000000000"), 0, UINT32_MAX);
-    unsignedTx.inputs.inputs.emplace_back(outpoint0, Script(), UINT32_MAX);
+    unsignedTx.inputs.add(TransactionInput(outpoint0, Script(), UINT32_MAX));
 
     auto outScript0 = Script(parse_hex("76a9144c9c3dfac4207d5d8cb89df5722cb3d712385e3f88ac"));
     unsignedTx.outputs.emplace_back(1000, outScript0);
@@ -478,7 +478,7 @@ TEST(BitcoinSigning, EncodeP2WSH) {
     unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::NonSegwit);
     ASSERT_EQ(hex(unsignedData),
         "01000000" // version
-        "01" // inputs.inputs
+        "01" // inputs
             "0001000000000000000000000000000000000000000000000000000000000000"  "00000000"  "00"  ""  "ffffffff"
         "01" // outputs
             "e803000000000000"  "19"  "76a9144c9c3dfac4207d5d8cb89df5722cb3d712385e3f88ac"
@@ -544,7 +544,7 @@ TEST(BitcoinSigning, SignP2WSH) {
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
-        "01" // inputs.inputs
+        "01" // inputs
             "0001000000000000000000000000000000000000000000000000000000000000"  "00000000"  "00"  ""  "ffffffff"
         "02" // outputs
             "e803000000000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
@@ -579,7 +579,7 @@ TEST(BitcoinSigning, SignP2WSH_HashNone) {
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
-        "01" // inputs.inputs
+        "01" // inputs
             "0001000000000000000000000000000000000000000000000000000000000000"  "00000000"  "00"  ""  "ffffffff"
         "02" // outputs
             "e803000000000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
@@ -614,7 +614,7 @@ TEST(BitcoinSigning, SignP2WSH_HashSingle) {
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
-        "01" // inputs.inputs
+        "01" // inputs
             "0001000000000000000000000000000000000000000000000000000000000000"  "00000000"  "00"  ""  "ffffffff"
         "02" // outputs
             "e803000000000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
@@ -650,7 +650,7 @@ TEST(BitcoinSigning, SignP2WSH_HashAnyoneCanPay) {
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
-        "01" // inputs.inputs
+        "01" // inputs
             "0001000000000000000000000000000000000000000000000000000000000000"  "00000000"  "00"  ""  "ffffffff"
         "02" // outputs
             "e803000000000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
@@ -741,7 +741,7 @@ TEST(BitcoinSigning, EncodeP2SH_P2WPKH) {
     auto unsignedTx = Transaction(1, 0x492);
 
     auto outpoint0 = OutPoint(parse_hex("db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a5477"), 1, 0xfffffffe);
-    unsignedTx.inputs.inputs.emplace_back(outpoint0, Script(), 0xfffffffe);
+    unsignedTx.inputs.add(TransactionInput(outpoint0, Script(), 0xfffffffe));
 
     auto outScript0 = Script(parse_hex("76a914a457b684d7f0d539a46a45bbc043f35b59d0d96388ac"));
     unsignedTx.outputs.emplace_back(199'996'600, outScript0);
@@ -753,7 +753,7 @@ TEST(BitcoinSigning, EncodeP2SH_P2WPKH) {
     unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::NonSegwit);
     ASSERT_EQ(hex(unsignedData),
         "01000000" // version
-        "01" // inputs.inputs
+        "01" // inputs
             "db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a5477"  "01000000"  "00"  ""  "feffffff"
         "02" // outputs
             "b8b4eb0b00000000"  "19"  "76a914a457b684d7f0d539a46a45bbc043f35b59d0d96388ac"
@@ -829,7 +829,7 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH) {
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
-        "01" // inputs.inputs
+        "01" // inputs
             "db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a5477"  "01000000"  "17"  "16001479091972186c449eb1ded22b78e40d009bdf0089"  "ffffffff"
         "02" // outputs
             "00c2eb0b00000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
@@ -909,7 +909,7 @@ TEST(BitcoinSigning, EncodeP2SH_P2WSH) {
 
     auto hash0 = parse_hex("36641869ca081e70f394c6948e8af409e18b619df2ed74aa106c1ca29787b96e");
     auto outpoint0 = OutPoint(hash0, 1, 0xffffffff);
-    unsignedTx.inputs.inputs.emplace_back(outpoint0, Script(), 0xffffffff);
+    unsignedTx.inputs.add(TransactionInput(outpoint0, Script(), 0xffffffff));
 
     auto outScript0 = Script(parse_hex("76a914389ffce9cd9ae88dcc0631e88a821ffdbe9bfe2688ac"));
     unsignedTx.outputs.emplace_back(0x0000000035a4e900, outScript0);
@@ -921,7 +921,7 @@ TEST(BitcoinSigning, EncodeP2SH_P2WSH) {
     unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::NonSegwit);
     ASSERT_EQ(hex(unsignedData),
         "01000000" // version
-        "01" // inputs.inputs
+        "01" // inputs
             "36641869ca081e70f394c6948e8af409e18b619df2ed74aa106c1ca29787b96e"  "01000000"  "00"  ""  "ffffffff"
         "02" // outputs
             "00e9a43500000000"  "19"  "76a914389ffce9cd9ae88dcc0631e88a821ffdbe9bfe2688ac"
@@ -935,7 +935,7 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
     auto unsignedTx = Transaction(1, 0);
 
     auto outpoint0 = OutPoint(parse_hex("36641869ca081e70f394c6948e8af409e18b619df2ed74aa106c1ca29787b96e"), 1, 0xffffffff);
-    unsignedTx.inputs.inputs.emplace_back(outpoint0, emptyScript, 0xffffffff);
+    unsignedTx.inputs.add(TransactionInput(outpoint0, emptyScript, 0xffffffff));
 
     auto outScript0 = Script(parse_hex("76a914389ffce9cd9ae88dcc0631e88a821ffdbe9bfe2688ac"));
     unsignedTx.outputs.emplace_back(0x0000000035a4e900, outScript0);
@@ -998,7 +998,7 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
     auto expected =
         "01000000" // version
         "0001" // marker & flag
-        "01" // inputs.inputs
+        "01" // inputs
             "36641869ca081e70f394c6948e8af409e18b619df2ed74aa106c1ca29787b96e"  "01000000"  "23"  "220020a16b5755f7f6f96dbd65f5f0d6ab9418b89af4b1f14a1bb8a09062c35f0dcb54"  "ffffffff"
         "02" // outputs
             "00e9a43500000000"  "19"  "76a914389ffce9cd9ae88dcc0631e88a821ffdbe9bfe2688ac"
@@ -1229,7 +1229,7 @@ TEST(BitcoinSigning, Sign_LitecoinReal_a85f) {
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
-        "01" // inputs.inputs
+        "01" // inputs
             "b5fd8e818ad98a3f4570383954c1c41513797ec6f9f0ab44a801941818cd5170"  "09000000"  "00"  ""  "feffffff"
         "01" // outputs
             "7e813b0000000000"  "16"  "00147b59c096c20fd9a273e240846b23276c69d35815"
@@ -1299,7 +1299,7 @@ TEST(BitcoinSigning, PlanAndSign_LitecoinReal_8435) {
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
-        "01" // inputs.inputs
+        "01" // inputs
             "07c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa8"  "00000000"  "00"  ""  "ffffffff"
         "02" // outputs
             "804f120000000000"  "16"  "00145c74be45eb45a3459050667529022d9df8a1ecff"
@@ -1327,7 +1327,7 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
     auto hash0 = parse_hex("bbe736ada63c4678025dff0ff24d5f38970a3e4d7a2f77808689ed68004f55fe");
     std::reverse(hash0.begin(), hash0.end());
     auto outpoint0 = TW::Bitcoin::OutPoint(hash0, 0, UINT32_MAX);
-    unsignedTx.inputs.inputs.emplace_back(outpoint0, Script(), UINT32_MAX);
+    unsignedTx.inputs.add(TransactionInput(outpoint0, Script(), UINT32_MAX));
 
     auto lockingScript0 = Script::lockScriptForAddress(toAddress0, coin);
     unsignedTx.outputs.push_back(TransactionOutput(toAmount0, lockingScript0));
@@ -1343,7 +1343,7 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
     EXPECT_EQ(hex(unsignedData), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
-        "01" // inputs.inputs
+        "01" // inputs
             "fe554f0068ed898680772f7a4d3e0a97385f4df20fff5d0278463ca6ad36e7bb"  "00000000"  "00"  ""  "ffffffff"
         "03" // outputs
             "40420f0000000000"  "16"  "001445a70b76fbdea0c9d5598c51cdd1d8ab455ab965"
@@ -1369,7 +1369,7 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
     EXPECT_EQ(hex(redeemScript0.bytes), "76a9145c74be45eb45a3459050667529022d9df8a1ecff88ac");
 
     auto hashType = TWBitcoinSigHashType::TWBitcoinSigHashTypeAll;
-    Data sighash = unsignedTx.getSignatureHash(redeemScript0, unsignedTx.inputs.inputs[0].previousOutput.index,
+    Data sighash = unsignedTx.getSignatureHash(redeemScript0, unsignedTx.inputs.get(0).previousOutput.index,
         hashType, utxo0Amount, static_cast<SignatureVersion>(unsignedTx.version));
     auto sig = privkey.signAsDER(sighash, TWCurveSECP256k1);
     ASSERT_FALSE(sig.empty());
@@ -1377,8 +1377,10 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
     EXPECT_EQ(hex(sig), "30450221008d88197a37ffcb51ecacc7e826aa588cb1068a107a82373c4b54ec42318a395c02204abbf5408504614d8f943d67e7873506c575e85a5e1bd92a02cd345e5192a82701");
     
     // add witness stack
-    unsignedTx.inputs.inputs[0].scriptWitness.push_back(sig);
-    unsignedTx.inputs.inputs[0].scriptWitness.push_back(pubkey.bytes);
+    TransactionInput txInput = unsignedTx.inputs.get(0);
+    txInput.scriptWitness.push_back(sig);
+    txInput.scriptWitness.push_back(pubkey.bytes);
+    unsignedTx.inputs.set(0, txInput);
 
     unsignedData.clear();
     unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::Segwit);
@@ -1387,7 +1389,7 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
     EXPECT_EQ(hex(unsignedData), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
-        "01" // inputs.inputs
+        "01" // inputs
             "fe554f0068ed898680772f7a4d3e0a97385f4df20fff5d0278463ca6ad36e7bb"  "00000000"  "00"  ""  "ffffffff"
         "03" // outputs
             "40420f0000000000"  "16"  "001445a70b76fbdea0c9d5598c51cdd1d8ab455ab965"

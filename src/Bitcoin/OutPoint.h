@@ -28,7 +28,7 @@ class OutPoint {
 
     OutPoint() = default;
 
-    /// Initializes an out-point reference with a hash and an index.
+    /// Initializes an out-point reference with hash, index.
     template <typename T>
     OutPoint(const T& h, uint32_t index, uint32_t sequence) {
         std::copy(std::begin(h), std::end(h), hash.begin());
