@@ -263,6 +263,7 @@ TEST(TWAnySignerSolana, SignCreateAndTransferToken) {
 TEST(TWAnySignerSolana, SignJSON) {
     auto json = STRING(R"({"recentBlockhash":"11111111111111111111111111111111","transferTransaction":{"recipient":"EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd","value":"42"}})");
     Data keyData = Base58::bitcoin.decode("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr");
+    EXPECT_EQ(hex(keyData), "8778cc93c6596387e751d2dc693bbd93e434bd233bc5b68a826c56131821cb63");
     auto key = WRAPD(TWDataCreateWithBytes(keyData.data(), keyData.size()));
 
     auto result = WRAPS(TWAnySignerSignJSON(json.get(), key.get(), TWCoinTypeSolana));
