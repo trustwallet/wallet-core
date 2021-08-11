@@ -30,7 +30,7 @@ struct Transaction {
     uint64_t valueBalance = 0;
 
     Bitcoin::TransactionInputs<Bitcoin::TransactionInput> inputs;
-    std::vector<Bitcoin::TransactionOutput> outputs;
+    Bitcoin::TransactionOutputs<Bitcoin::TransactionOutput> outputs;
     std::array<byte, 4> branchId;
 
     /// Used for diagnostics; store previously estimated virtual size (if any; size in bytes)

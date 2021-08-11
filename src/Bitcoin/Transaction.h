@@ -23,7 +23,7 @@
 
 namespace TW::Bitcoin {
 
-/// A list of 1 or more transaction inputs or sources for coins
+/// A list of transaction inputs
 template <typename TransactionInput>
 class TransactionInputs {
 public:
@@ -35,6 +35,20 @@ public:
     const TransactionInput& get(size_t index) const { return inputs[index]; }
     void set(size_t index, TransactionInput input) { inputs[index] = input; }
     void clear() { inputs.clear(); }
+};
+
+/// A list of transaction outputs
+template <typename TransactionOutput>
+class TransactionOutputs {
+public:
+    std::vector<TransactionOutput> outputs;
+
+    size_t size() const { return outputs.size(); }
+    bool empty() const { return outputs.empty(); }
+    void add(TransactionOutput output) { outputs.emplace_back(output); }
+    const TransactionOutput& get(size_t index) const { return outputs[index]; }
+    void set(size_t index, TransactionOutput output) { outputs[index] = output; }
+    void clear() { outputs.clear(); }
 };
 
 struct Transaction {
@@ -54,11 +68,11 @@ public:
     /// transaction may not be added to a block until after `lockTime`.
     uint32_t lockTime = 0;
 
+    // List of transaction inputs
     TransactionInputs<TransactionInput> inputs;
 
-    /// A list of 1 or more transaction outputs or destinations for coins
-    // TODO: make TransactionOutputs
-    std::vector<TransactionOutput> outputs;
+    // List of transaction outputs
+    TransactionOutputs<TransactionOutput> outputs;
 
     TW::Hash::Hasher hasher = TW::Hash::sha256d;
 

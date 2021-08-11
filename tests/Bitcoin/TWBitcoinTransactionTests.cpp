@@ -28,10 +28,10 @@ TEST(BitcoinTransaction, Encode) {
     transaction.inputs.add(TransactionInput(po2, Script(), 4294967295));
 
     auto oscript0 = Script(parse_hex("76a9141fc11f39be1729bf973a7ab6a615ca4729d6457488ac"));
-    transaction.outputs.emplace_back(18000000, oscript0);
+    transaction.outputs.add(TransactionOutput(18000000, oscript0));
 
     auto oscript1 = Script(parse_hex("0x76a914f2d4db28cad6502226ee484ae24505c2885cb12d88ac"));
-    transaction.outputs.emplace_back(400000000, oscript1);
+    transaction.outputs.add(TransactionOutput(400000000, oscript1));
 
     Data unsignedData;
     transaction.encode(unsignedData, Transaction::SegwitFormatMode::NonSegwit);
