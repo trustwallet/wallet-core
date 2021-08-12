@@ -19,19 +19,19 @@ TEST(BitcoinTransaction, Encode) {
     auto transaction = Transaction(2, 0);
 
     auto po0 = OutPoint(parse_hex("5897de6bd6027a475eadd57019d4e6872c396d0716c4875a5f1a6fcfdf385c1f"), 0);
-    transaction.inputs.push_back(TransactionInput(po0, Script(), 4294967295));
+    transaction.inputs.emplace_back(po0, Script(), 4294967295);
 
     auto po1 = OutPoint(parse_hex("bf829c6bcf84579331337659d31f89dfd138f7f7785802d5501c92333145ca7c"), 18);
-    transaction.inputs.push_back(TransactionInput(po1, Script(), 4294967295));
+    transaction.inputs.emplace_back(po1, Script(), 4294967295);
 
     auto po2 = OutPoint(parse_hex("22a6f904655d53ae2ff70e701a0bbd90aa3975c0f40bfc6cc996a9049e31cdfc"), 1);
-    transaction.inputs.push_back(TransactionInput(po2, Script(), 4294967295));
+    transaction.inputs.emplace_back(po2, Script(), 4294967295);
 
     auto oscript0 = Script(parse_hex("76a9141fc11f39be1729bf973a7ab6a615ca4729d6457488ac"));
-    transaction.outputs.push_back(TransactionOutput(18000000, oscript0));
+    transaction.outputs.emplace_back(18000000, oscript0);
 
     auto oscript1 = Script(parse_hex("0x76a914f2d4db28cad6502226ee484ae24505c2885cb12d88ac"));
-    transaction.outputs.push_back(TransactionOutput(400000000, oscript1));
+    transaction.outputs.emplace_back(400000000, oscript1);
 
     Data unsignedData;
     transaction.encode(unsignedData, Transaction::SegwitFormatMode::NonSegwit);

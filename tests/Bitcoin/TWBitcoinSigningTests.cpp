@@ -137,17 +137,17 @@ TEST(BitcoinSigning, EncodeP2WPKH) {
 
     auto hash0 = parse_hex("fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f");
     auto outpoint0 = TW::Bitcoin::OutPoint(hash0, 0);
-    unsignedTx.inputs.push_back(TransactionInput(outpoint0, Script(), 0xffffffee));
+    unsignedTx.inputs.emplace_back(outpoint0, Script(), 0xffffffee);
 
     auto hash1 = parse_hex("ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a");
     auto outpoint1 = TW::Bitcoin::OutPoint(hash1, 1);
-    unsignedTx.inputs.push_back(TransactionInput(outpoint1, Script(), UINT32_MAX));
+    unsignedTx.inputs.emplace_back(outpoint1, Script(), UINT32_MAX);
 
     auto outScript0 = Script(parse_hex("76a9148280b37df378db99f66f85c95a783a76ac7a6d5988ac"));
-    unsignedTx.outputs.push_back(TransactionOutput(112340000, outScript0));
+    unsignedTx.outputs.emplace_back(112340000, outScript0);
 
     auto outScript1 = Script(parse_hex("76a9143bde42dbee7e4dbe6a21b2d50ce2f0167faa815988ac"));
-    unsignedTx.outputs.push_back(TransactionOutput(223450000, outScript1));
+    unsignedTx.outputs.emplace_back(223450000, outScript1);
 
     Data unsignedData;
     unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::Segwit);
@@ -469,10 +469,10 @@ TEST(BitcoinSigning, EncodeP2WSH) {
     auto unsignedTx = Transaction(1, 0);
 
     auto outpoint0 = OutPoint(parse_hex("0001000000000000000000000000000000000000000000000000000000000000"), 0);
-    unsignedTx.inputs.push_back(TransactionInput(outpoint0, Script(), UINT32_MAX));
+    unsignedTx.inputs.emplace_back(outpoint0, Script(), UINT32_MAX);
 
     auto outScript0 = Script(parse_hex("76a9144c9c3dfac4207d5d8cb89df5722cb3d712385e3f88ac"));
-    unsignedTx.outputs.push_back(TransactionOutput(1000, outScript0));
+    unsignedTx.outputs.emplace_back(1000, outScript0);
 
     Data unsignedData;
     unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::NonSegwit);
@@ -741,13 +741,13 @@ TEST(BitcoinSigning, EncodeP2SH_P2WPKH) {
     auto unsignedTx = Transaction(1, 0x492);
 
     auto outpoint0 = OutPoint(parse_hex("db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a5477"), 1);
-    unsignedTx.inputs.push_back(TransactionInput(outpoint0, Script(), 0xfffffffe));
+    unsignedTx.inputs.emplace_back(outpoint0, Script(), 0xfffffffe);
 
     auto outScript0 = Script(parse_hex("76a914a457b684d7f0d539a46a45bbc043f35b59d0d96388ac"));
-    unsignedTx.outputs.push_back(TransactionOutput(199'996'600, outScript0));
+    unsignedTx.outputs.emplace_back(199'996'600, outScript0);
 
     auto outScript1 = Script(parse_hex("76a914fd270b1ee6abcaea97fea7ad0402e8bd8ad6d77c88ac"));
-    unsignedTx.outputs.push_back(TransactionOutput(800'000'000, outScript1));
+    unsignedTx.outputs.emplace_back(800'000'000, outScript1);
 
     Data unsignedData;
     unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::NonSegwit);
@@ -909,13 +909,13 @@ TEST(BitcoinSigning, EncodeP2SH_P2WSH) {
 
     auto hash0 = parse_hex("36641869ca081e70f394c6948e8af409e18b619df2ed74aa106c1ca29787b96e");
     auto outpoint0 = OutPoint(hash0, 1);
-    unsignedTx.inputs.push_back(TransactionInput(outpoint0, Script(), 0xffffffff));
+    unsignedTx.inputs.emplace_back(outpoint0, Script(), 0xffffffff);
 
     auto outScript0 = Script(parse_hex("76a914389ffce9cd9ae88dcc0631e88a821ffdbe9bfe2688ac"));
-    unsignedTx.outputs.push_back(TransactionOutput(0x0000000035a4e900, outScript0));
+    unsignedTx.outputs.emplace_back(0x0000000035a4e900, outScript0);
 
     auto outScript1 = Script(parse_hex("76a9147480a33f950689af511e6e84c138dbbd3c3ee41588ac"));
-    unsignedTx.outputs.push_back(TransactionOutput(0x00000000052f83c0, outScript1));
+    unsignedTx.outputs.emplace_back(0x00000000052f83c0, outScript1);
 
     Data unsignedData;
     unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::NonSegwit);
@@ -935,13 +935,13 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
     auto unsignedTx = Transaction(1, 0);
 
     auto outpoint0 = OutPoint(parse_hex("36641869ca081e70f394c6948e8af409e18b619df2ed74aa106c1ca29787b96e"), 1);
-    unsignedTx.inputs.push_back(TransactionInput(outpoint0, emptyScript, 0xffffffff));
+    unsignedTx.inputs.emplace_back(outpoint0, emptyScript, 0xffffffff);
 
     auto outScript0 = Script(parse_hex("76a914389ffce9cd9ae88dcc0631e88a821ffdbe9bfe2688ac"));
-    unsignedTx.outputs.push_back(TransactionOutput(0x0000000035a4e900, outScript0));
+    unsignedTx.outputs.emplace_back(0x0000000035a4e900, outScript0);
 
     auto outScript1 = Script(parse_hex("76a9147480a33f950689af511e6e84c138dbbd3c3ee41588ac"));
-    unsignedTx.outputs.push_back(TransactionOutput(0x00000000052f83c0, outScript1));
+    unsignedTx.outputs.emplace_back(0x00000000052f83c0, outScript1);
 
     // Setup signing input
     auto input = Proto::SigningInput();
@@ -1327,15 +1327,15 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
     auto hash0 = parse_hex("bbe736ada63c4678025dff0ff24d5f38970a3e4d7a2f77808689ed68004f55fe");
     std::reverse(hash0.begin(), hash0.end());
     auto outpoint0 = TW::Bitcoin::OutPoint(hash0, 0);
-    unsignedTx.inputs.push_back(TransactionInput(outpoint0, Script(), UINT32_MAX));
+    unsignedTx.inputs.emplace_back(outpoint0, Script(), UINT32_MAX);
 
     auto lockingScript0 = Script::lockScriptForAddress(toAddress0, coin);
-    unsignedTx.outputs.push_back(TransactionOutput(toAmount0, lockingScript0));
+    unsignedTx.outputs.emplace_back(toAmount0, lockingScript0);
     auto lockingScript1 = Script::lockScriptForAddress(toAddress1, coin);
-    unsignedTx.outputs.push_back(TransactionOutput(toAmount1, lockingScript1));
+    unsignedTx.outputs.emplace_back(toAmount1, lockingScript1);
     // change
     auto lockingScript2 = Script::lockScriptForAddress(ownAddress, coin);
-    unsignedTx.outputs.push_back(TransactionOutput(utxo0Amount - toAmount0 - toAmount1 - 172, lockingScript2));
+    unsignedTx.outputs.emplace_back(utxo0Amount - toAmount0 - toAmount1 - 172, lockingScript2);
 
     Data unsignedData;
     unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::Segwit);
@@ -1377,10 +1377,8 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
     EXPECT_EQ(hex(sig), "30450221008d88197a37ffcb51ecacc7e826aa588cb1068a107a82373c4b54ec42318a395c02204abbf5408504614d8f943d67e7873506c575e85a5e1bd92a02cd345e5192a82701");
     
     // add witness stack
-    TransactionInput txInput = unsignedTx.inputs[0];
-    txInput.scriptWitness.push_back(sig);
-    txInput.scriptWitness.push_back(pubkey.bytes);
-    unsignedTx.inputs[0] = txInput;
+    unsignedTx.inputs[0].scriptWitness.push_back(sig);
+    unsignedTx.inputs[0].scriptWitness.push_back(pubkey.bytes);
 
     unsignedData.clear();
     unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::Segwit);

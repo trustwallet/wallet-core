@@ -52,7 +52,7 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
     }
 
     Transaction tx(transaction);
-    tx.inputs = std::move(signedInputs);
+    tx.inputs = move(signedInputs);
     tx.outputs = transaction.outputs;
     // save estimated size
     if ((input.byteFee > 0) && (plan.fee > 0)) {

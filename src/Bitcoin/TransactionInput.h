@@ -32,7 +32,8 @@ class TransactionInput {
     /// Witness stack.
     std::vector<Data> scriptWitness;
 
-    /// Initializes a transaction input with a previous output, a script, and a sequence.
+    /// Initializes a transaction input with a previous output, a script and a
+    /// sequence number.
     TransactionInput(OutPoint previousOutput, Script script, uint32_t sequence)
         : previousOutput(std::move(previousOutput)), sequence(sequence), script(std::move(script)) {}
 
