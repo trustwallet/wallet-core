@@ -9,7 +9,6 @@
 #include "Bitcoin/Amount.h"
 #include "Bitcoin/Transaction.h"
 #include "Bitcoin/TransactionPlan.h"
-#include "proto/Bitcoin.pb.h"
 #include <TrustWalletCore/TWCoinType.h>
 
 #include <gtest/gtest.h>
@@ -19,11 +18,6 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
-/// Build a dummy UTXO with the given amount
-Proto::UnspentTransaction buildTestUTXOProto(int64_t amount);
-
-/// Build a set of dummy UTXO with the given amounts
-std::vector<Proto::UnspentTransaction> buildTestUTXOsProto(const std::vector<int64_t>& amounts);
 
 /// Build a dummy UTXO with the given amount
 UTXO buildTestUTXO(int64_t amount);
@@ -31,12 +25,8 @@ UTXO buildTestUTXO(int64_t amount);
 /// Build a set of dummy UTXO with the given amounts
 UTXOs buildTestUTXOs(const std::vector<int64_t>& amounts);
 
-Proto::SigningInput buildSigningInput(Amount amount, int byteFee, const std::vector<Proto::UnspentTransaction>& utxos, 
+SigningInput buildSigningInput(Amount amount, int byteFee, const UTXOs& utxos, 
     bool useMaxAmount = false, enum TWCoinType coin = TWCoinTypeBitcoin);
-
-/// Compare a set of selected UTXOs to the expected set of amounts.
-/// Returns false on mismatch, and error is printed (stderr).
-bool verifySelectedUTXOsProto(const std::vector<Proto::UnspentTransaction>& selected, const std::vector<int64_t>& expectedAmounts);
 
 /// Compare a set of selected UTXOs to the expected set of amounts.
 /// Returns false on mismatch, and error is printed (stderr).
@@ -46,7 +36,7 @@ bool verifySelectedUTXOs(const UTXOs& selected, const std::vector<int64_t>& expe
 /// Returns false on mismatch, and error is printed (stderr).
 bool verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmounts, int64_t outputAmount, int64_t fee, Common::Proto::SigningError error = Common::Proto::OK);
 
-int64_t sumUTXOs(const std::vector<Proto::UnspentTransaction>& utxos);
+int64_t sumUTXOs(const UTXOs& utxos);
 
 struct EncodedTxSize {
     uint64_t segwit;
