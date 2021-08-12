@@ -114,15 +114,15 @@ private:
 class SigningInput {
 public:
     // Hash type to use when signing
-    TWBitcoinSigHashType hashType;
+    TWBitcoinSigHashType hashType = TWBitcoinSigHashTypeAll;
 
     // Amount to send.  Transaction created will have this amount in its output, 
     // except when use_max_amount is set, in that case this amount is not relevant, maximum possible amount will be used (max avail less fee).
     // If amount is equal or more than the available amount, also max amount will be used.
-    Amount amount;
+    Amount amount = 0;
 
     // Transaction fee per byte
-    Amount byteFee;
+    Amount byteFee = 0;
 
     // Recipient's address
     std::string toAddress;
@@ -140,10 +140,10 @@ public:
     std::vector<UTXO> utxos;
 
     // If sending max amount
-    bool useMaxAmount;
+    bool useMaxAmount = false;
 
     // Coin type (forks)
-    TWCoinType coinType;
+    TWCoinType coinType = TWCoinTypeBitcoin;
 
     // Optional transaction plan
     std::optional<TransactionPlan> plan;
