@@ -221,7 +221,7 @@ TEST(BitcoinSigning, SignP2WPKH_Bip143) {
     input.plan = plan;
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(input); // TODO
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(input);
     signer.transaction.lockTime = 0x11; // there is no way to set locktime through SigningInput
     auto result = signer.sign();
 
