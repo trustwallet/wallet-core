@@ -33,8 +33,8 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
     }
 
     signedInputs.clear();
-    std::copy(std::begin(transaction.inputs.inputs), std::end(transaction.inputs.inputs),
-              std::back_inserter(signedInputs.inputs));
+    std::copy(std::begin(transaction.inputs), std::end(transaction.inputs),
+              std::back_inserter(signedInputs));
 
     const auto hashSingle = hashTypeIsSingle(input.hashType);
     for (auto i = 0; i < plan.utxos.size(); i++) {
@@ -83,7 +83,7 @@ Result<void, Common::Proto::SigningError> TransactionSigner<Transaction, Transac
     }
     results = result.payload();
     assert(results.size() >= 1);
-    auto txin = transaction.inputs.get(index);
+    auto txin = transaction.inputs[index];
 
     if (script.isPayToScriptHash()) {
         script = Script(results[0]);
@@ -126,7 +126,7 @@ Result<void, Common::Proto::SigningError> TransactionSigner<Transaction, Transac
 
     auto transactionInput = TransactionInput(txin.previousOutput, Script(pushAll(results)), txin.sequence);
     transactionInput.scriptWitness = witnessStack;
-    signedInputs.set(index, transactionInput);
+    signedInputs[index] = transactionInput;
     return Result<void, Common::Proto::SigningError>::success();
 }
 

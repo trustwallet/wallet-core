@@ -36,7 +36,7 @@ TEST(DecredSigner, SignP2PKH) {
     txInOrigin.previousOutput = OutPoint(std::array<byte, 32>{}, UINT32_MAX, 0);
     txInOrigin.valueIn = 100'000'000;
     txInOrigin.script = Bitcoin::Script(Data{OP_0, OP_0});
-    originTx.inputs.add(txInOrigin);
+    originTx.inputs.push_back(txInOrigin);
 
     auto txOutOrigin = TransactionOutput();
     txOutOrigin.value = 100'000'000;
@@ -71,7 +71,7 @@ TEST(DecredSigner, SignP2PKH) {
     auto txIn = TransactionInput();
     txIn.previousOutput = OutPoint(originTx.hash(), 0, 0);
     txIn.valueIn = 100'000'000;
-    redeemTx.inputs.add(txIn);
+    redeemTx.inputs.push_back(txIn);
 
     auto txOut = TransactionOutput();
     redeemTx.outputs.add(txOut);
@@ -94,7 +94,7 @@ TEST(DecredSigner, SignP2PKH) {
 
     const auto expectedSignature = "47304402201ac7bdf56a9d12f3bc09cf7b47cdfafc1348628f659e37b455d497cb6e7a748802202b3630eedee1bbc9248424e4a1b8671e14631a069f36ac8860dee0bb9ea1541f0121"
         "02a673638cb9587cb68ea08dbef685c6f2d2a751a8b3c6f2a7e9a4999e6e4bfaf5";
-    EXPECT_EQ(hex(result.payload().inputs.get(0).script.bytes), expectedSignature);
+    EXPECT_EQ(hex(result.payload().inputs[0].script.bytes), expectedSignature);
 
     const auto expectedEncoded =
         "0100" // Serialize type
@@ -138,7 +138,7 @@ TEST(DecredSigner, SignP2SH) {
     txInOrigin.previousOutput = OutPoint(std::array<byte, 32>{}, UINT32_MAX, 0);
     txInOrigin.valueIn = 100'000'000;
     txInOrigin.script = Bitcoin::Script(Data{OP_0, OP_0});
-    originTx.inputs.add(txInOrigin);
+    originTx.inputs.push_back(txInOrigin);
 
     auto txOutOrigin = TransactionOutput();
     txOutOrigin.value = 100'000'000;
@@ -185,7 +185,7 @@ TEST(DecredSigner, SignP2SH) {
     auto txIn = TransactionInput();
     txIn.previousOutput = OutPoint(originTx.hash(), 0, 0);
     txIn.valueIn = 100'000'000;
-    redeemTx.inputs.add(txIn);
+    redeemTx.inputs.push_back(txIn);
 
     auto txOut = TransactionOutput();
     redeemTx.outputs.add(txOut);
@@ -200,7 +200,7 @@ TEST(DecredSigner, SignP2SH) {
     ASSERT_TRUE(result);
 
     const auto expectedSignature = "47304402201ac7bdf56a9d12f3bc09cf7b47cdfafc1348628f659e37b455d497cb6e7a748802202b3630eedee1bbc9248424e4a1b8671e14631a069f36ac8860dee0bb9ea1541f012102a673638cb9587cb68ea08dbef685c6f2d2a751a8b3c6f2a7e9a4999e6e4bfaf51976a914f5eba6730a4052ddeef0a93d93d24004f49db51e88ac1976a914f5eba6730a4052ddeef0a93d93d24004f49db51e88ac";
-    EXPECT_EQ(hex(result.payload().inputs.get(0).script.bytes), expectedSignature);
+    EXPECT_EQ(hex(result.payload().inputs[0].script.bytes), expectedSignature);
 
     const auto expectedEncoded =
         "0100" // Serialize type
@@ -240,7 +240,7 @@ TEST(DecredSigner, SignNegativeNoUtxo) {
     txInOrigin.previousOutput = OutPoint(std::array<byte, 32>{}, UINT32_MAX, 0);
     txInOrigin.valueIn = 100'000'000;
     txInOrigin.script = Bitcoin::Script(Data{OP_0, OP_0});
-    originTx.inputs.add(txInOrigin);
+    originTx.inputs.push_back(txInOrigin);
 
     auto txOutOrigin = TransactionOutput();
     txOutOrigin.value = 100'000'000;
@@ -266,7 +266,7 @@ TEST(DecredSigner, SignNegativeNoUtxo) {
     auto txIn = TransactionInput();
     txIn.previousOutput = OutPoint(originTx.hash(), 0, 0);
     txIn.valueIn = 100'000'000;
-    redeemTx.inputs.add(txIn);
+    redeemTx.inputs.push_back(txIn);
 
     auto txOut = TransactionOutput();
     redeemTx.outputs.add(txOut);
@@ -299,7 +299,7 @@ TEST(DecredSigner, SignP2PKH_NoPlan) {
     txInOrigin.previousOutput = OutPoint(std::array<byte, 32>{}, UINT32_MAX, 0);
     txInOrigin.valueIn = 150'000'000;
     txInOrigin.script = Bitcoin::Script(Data{OP_0, OP_0});
-    originTx.inputs.add(txInOrigin);
+    originTx.inputs.push_back(txInOrigin);
 
     auto txOutOrigin = TransactionOutput();
     txOutOrigin.value = 100'000'000;
@@ -334,7 +334,7 @@ TEST(DecredSigner, SignP2PKH_NoPlan) {
     auto txIn = TransactionInput();
     txIn.previousOutput = OutPoint(originTx.hash(), 0, 0);
     txIn.valueIn = 100'000'000;
-    redeemTx.inputs.add(txIn);
+    redeemTx.inputs.push_back(txIn);
 
     auto txOut = TransactionOutput();
     redeemTx.outputs.add(txOut);
@@ -352,7 +352,7 @@ TEST(DecredSigner, SignP2PKH_NoPlan) {
 
     const auto expectedSignature = "47304402201ac7bdf56a9d12f3bc09cf7b47cdfafc1348628f659e37b455d497cb6e7a748802202b3630eedee1bbc9248424e4a1b8671e14631a069f36ac8860dee0bb9ea1541f0121"
         "02a673638cb9587cb68ea08dbef685c6f2d2a751a8b3c6f2a7e9a4999e6e4bfaf5";
-    EXPECT_EQ(hex(result.payload().inputs.get(0).script.bytes), expectedSignature);
+    EXPECT_EQ(hex(result.payload().inputs[0].script.bytes), expectedSignature);
 
     const auto expectedEncoded =
         "0100" // Serialize type

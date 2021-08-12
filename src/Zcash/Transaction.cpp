@@ -99,18 +99,18 @@ Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index, e
     // The input being signed (replacing the scriptSig with scriptCode + amount)
     // The prevout may already be contained in hashPrevout, and the nSequence
     // may already be contain in hashSequence.
-    reinterpret_cast<const Bitcoin::OutPoint&>(inputs.get(index).previousOutput).encode(data);
+    reinterpret_cast<const Bitcoin::OutPoint&>(inputs[index].previousOutput).encode(data);
     scriptCode.encode(data);
 
     encode64LE(amount, data);
-    encode32LE(inputs.get(index).sequence, data);
+    encode32LE(inputs[index].sequence, data);
 
     return data;
 }
 
 Data Transaction::getPrevoutHash() const {
     auto data = Data{};
-    for (auto& input : inputs.inputs) {
+    for (auto& input : inputs) {
         auto& outpoint = input.previousOutput;
         outpoint.encode(data);
     }
@@ -120,7 +120,7 @@ Data Transaction::getPrevoutHash() const {
 
 Data Transaction::getSequenceHash() const {
     auto data = Data{};
-    for (auto& input : inputs.inputs) {
+    for (auto& input : inputs) {
         encode32LE(input.sequence, data);
     }
     auto hash = TW::Hash::blake2b(data, 32, sequenceHashPersonalization);
@@ -157,7 +157,7 @@ void Transaction::encode(Data& data) const {
 
     // vin
     encodeVarInt(inputs.size(), data);
-    for (auto& input : inputs.inputs) {
+    for (auto& input : inputs) {
         input.encode(data);
     }
 
@@ -197,7 +197,7 @@ Bitcoin::Proto::Transaction Transaction::proto() const {
     protoTx.set_version(version);
     protoTx.set_locktime(lockTime);
 
-    for (const auto& input : inputs.inputs) {
+    for (const auto& input : inputs) {
         auto protoInput = protoTx.add_inputs();
         protoInput->mutable_previousoutput()->set_hash(input.previousOutput.hash.data(),
                                                        input.previousOutput.hash.size());

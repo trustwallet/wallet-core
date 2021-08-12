@@ -65,9 +65,7 @@ Result<Transaction, Common::Proto::SigningError> Signer::sign() {
         if (!result) {
             return Result<Transaction, Common::Proto::SigningError>::failure(result.error());
         }
-        auto transactionInput = signedInputs.get(i);
-        transactionInput.script = result.payload();
-        signedInputs.set(i, transactionInput);
+        signedInputs[i].script = result.payload();
     }
 
     Transaction tx(transaction);
@@ -88,7 +86,7 @@ Result<Bitcoin::Script, Common::Proto::SigningError> Signer::sign(Bitcoin::Scrip
     } else {
         return Result<Bitcoin::Script, Common::Proto::SigningError>::failure(result.error());
     }
-    auto txin = transaction.inputs.get(index);
+    auto txin = transaction.inputs[index];
 
     if (script.isPayToScriptHash()) {
         script = Bitcoin::Script(results.front().begin(), results.front().end());

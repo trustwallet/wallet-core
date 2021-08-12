@@ -41,7 +41,7 @@ Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, siz
     auto signIndex = index;
     if ((hashType & TWBitcoinSigHashTypeAnyoneCanPay) != 0) {
         inputsToSign.clear();
-        inputsToSign.add(inputs.get(index));
+        inputsToSign.push_back(inputs[index]);
         signIndex = 0;
     }
 
@@ -64,10 +64,10 @@ Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, siz
     encode32LE(hashType, preimage);
 
     const auto prefixHash =
-        computePrefixHash(inputsToSign.inputs, outputsToSign.outputs, signIndex, index, hashType);
+        computePrefixHash(inputsToSign, outputsToSign.outputs, signIndex, index, hashType);
     std::copy(prefixHash.begin(), prefixHash.end(), std::back_inserter(preimage));
 
-    const auto witnessHash = computeWitnessHash(inputsToSign.inputs, prevOutScript, signIndex);
+    const auto witnessHash = computeWitnessHash(inputsToSign, prevOutScript, signIndex);
     std::copy(witnessHash.begin(), witnessHash.end(), std::back_inserter(preimage));
 
     return Hash::blake256(preimage);
@@ -172,7 +172,7 @@ void Transaction::encode(Data& data) const {
 
 void Transaction::encodePrefix(Data& data) const {
     encodeVarInt(inputs.size(), data);
-    for (auto& input : inputs.inputs) {
+    for (auto& input : inputs) {
         input.encode(data);
     }
 
@@ -187,7 +187,7 @@ void Transaction::encodePrefix(Data& data) const {
 
 void Transaction::encodeWitness(Data& data) const {
     encodeVarInt(inputs.size(), data);
-    for (auto& input : inputs.inputs) {
+    for (auto& input : inputs) {
         input.encodeWitness(data);
     }
 }
@@ -197,7 +197,7 @@ Proto::Transaction Transaction::proto() const {
     protoTx.set_version(version);
     protoTx.set_locktime(lockTime);
 
-    for (const auto& input : inputs.inputs) {
+    for (const auto& input : inputs) {
         auto protoInput = protoTx.add_inputs();
         protoInput->mutable_previousoutput()->set_hash(input.previousOutput.hash.data(),
                                                        input.previousOutput.hash.size());
