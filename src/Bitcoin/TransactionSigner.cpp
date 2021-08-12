@@ -242,7 +242,7 @@ Data TransactionSigner<Transaction, TransactionBuilder>::createSignature(
     auto pk = PrivateKey(key);
     auto sig = pk.signAsDER(sighash, TWCurveSECP256k1);
     if (!sig.empty()) {
-        sig.push_back(input.hashType);
+        sig.push_back(static_cast<byte>(input.hashType));
     }
     return sig;
 }
