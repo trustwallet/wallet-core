@@ -31,11 +31,11 @@ public:
         }
 
         Transaction tx;
-        tx.outputs.add(TransactionOutput(plan.amount, lockingScriptTo));
+        tx.outputs.push_back(TransactionOutput(plan.amount, lockingScriptTo));
 
         if (plan.change > 0) {
             auto lockingScriptChange = Script::lockScriptForAddress(changeAddress, coin);
-            tx.outputs.add(TransactionOutput(plan.change, lockingScriptChange));
+            tx.outputs.push_back(TransactionOutput(plan.change, lockingScriptChange));
         }
 
         const auto emptyScript = Script();

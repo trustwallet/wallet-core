@@ -144,10 +144,10 @@ TEST(BitcoinSigning, EncodeP2WPKH) {
     unsignedTx.inputs.push_back(TransactionInput(outpoint1, Script(), UINT32_MAX));
 
     auto outScript0 = Script(parse_hex("76a9148280b37df378db99f66f85c95a783a76ac7a6d5988ac"));
-    unsignedTx.outputs.add(TransactionOutput(112340000, outScript0));
+    unsignedTx.outputs.push_back(TransactionOutput(112340000, outScript0));
 
     auto outScript1 = Script(parse_hex("76a9143bde42dbee7e4dbe6a21b2d50ce2f0167faa815988ac"));
-    unsignedTx.outputs.add(TransactionOutput(223450000, outScript1));
+    unsignedTx.outputs.push_back(TransactionOutput(223450000, outScript1));
 
     Data unsignedData;
     unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::Segwit);
@@ -472,7 +472,7 @@ TEST(BitcoinSigning, EncodeP2WSH) {
     unsignedTx.inputs.push_back(TransactionInput(outpoint0, Script(), UINT32_MAX));
 
     auto outScript0 = Script(parse_hex("76a9144c9c3dfac4207d5d8cb89df5722cb3d712385e3f88ac"));
-    unsignedTx.outputs.add(TransactionOutput(1000, outScript0));
+    unsignedTx.outputs.push_back(TransactionOutput(1000, outScript0));
 
     Data unsignedData;
     unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::NonSegwit);
@@ -744,10 +744,10 @@ TEST(BitcoinSigning, EncodeP2SH_P2WPKH) {
     unsignedTx.inputs.push_back(TransactionInput(outpoint0, Script(), 0xfffffffe));
 
     auto outScript0 = Script(parse_hex("76a914a457b684d7f0d539a46a45bbc043f35b59d0d96388ac"));
-    unsignedTx.outputs.add(TransactionOutput(199'996'600, outScript0));
+    unsignedTx.outputs.push_back(TransactionOutput(199'996'600, outScript0));
 
     auto outScript1 = Script(parse_hex("76a914fd270b1ee6abcaea97fea7ad0402e8bd8ad6d77c88ac"));
-    unsignedTx.outputs.add(TransactionOutput(800'000'000, outScript1));
+    unsignedTx.outputs.push_back(TransactionOutput(800'000'000, outScript1));
 
     Data unsignedData;
     unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::NonSegwit);
@@ -912,10 +912,10 @@ TEST(BitcoinSigning, EncodeP2SH_P2WSH) {
     unsignedTx.inputs.push_back(TransactionInput(outpoint0, Script(), 0xffffffff));
 
     auto outScript0 = Script(parse_hex("76a914389ffce9cd9ae88dcc0631e88a821ffdbe9bfe2688ac"));
-    unsignedTx.outputs.add(TransactionOutput(0x0000000035a4e900, outScript0));
+    unsignedTx.outputs.push_back(TransactionOutput(0x0000000035a4e900, outScript0));
 
     auto outScript1 = Script(parse_hex("76a9147480a33f950689af511e6e84c138dbbd3c3ee41588ac"));
-    unsignedTx.outputs.add(TransactionOutput(0x00000000052f83c0, outScript1));
+    unsignedTx.outputs.push_back(TransactionOutput(0x00000000052f83c0, outScript1));
 
     Data unsignedData;
     unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::NonSegwit);
@@ -938,10 +938,10 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
     unsignedTx.inputs.push_back(TransactionInput(outpoint0, emptyScript, 0xffffffff));
 
     auto outScript0 = Script(parse_hex("76a914389ffce9cd9ae88dcc0631e88a821ffdbe9bfe2688ac"));
-    unsignedTx.outputs.add(TransactionOutput(0x0000000035a4e900, outScript0));
+    unsignedTx.outputs.push_back(TransactionOutput(0x0000000035a4e900, outScript0));
 
     auto outScript1 = Script(parse_hex("76a9147480a33f950689af511e6e84c138dbbd3c3ee41588ac"));
-    unsignedTx.outputs.add(TransactionOutput(0x00000000052f83c0, outScript1));
+    unsignedTx.outputs.push_back(TransactionOutput(0x00000000052f83c0, outScript1));
 
     // Setup signing input
     auto input = Proto::SigningInput();
@@ -1330,12 +1330,12 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
     unsignedTx.inputs.push_back(TransactionInput(outpoint0, Script(), UINT32_MAX));
 
     auto lockingScript0 = Script::lockScriptForAddress(toAddress0, coin);
-    unsignedTx.outputs.add(TransactionOutput(toAmount0, lockingScript0));
+    unsignedTx.outputs.push_back(TransactionOutput(toAmount0, lockingScript0));
     auto lockingScript1 = Script::lockScriptForAddress(toAddress1, coin);
-    unsignedTx.outputs.add(TransactionOutput(toAmount1, lockingScript1));
+    unsignedTx.outputs.push_back(TransactionOutput(toAmount1, lockingScript1));
     // change
     auto lockingScript2 = Script::lockScriptForAddress(ownAddress, coin);
-    unsignedTx.outputs.add(TransactionOutput(utxo0Amount - toAmount0 - toAmount1 - 172, lockingScript2));
+    unsignedTx.outputs.push_back(TransactionOutput(utxo0Amount - toAmount0 - toAmount1 - 172, lockingScript2));
 
     Data unsignedData;
     unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::Segwit);

@@ -41,7 +41,7 @@ TEST(DecredSigner, SignP2PKH) {
     auto txOutOrigin = TransactionOutput();
     txOutOrigin.value = 100'000'000;
     txOutOrigin.script = Bitcoin::Script::buildPayToPublicKeyHash(keyhash);
-    originTx.outputs.add(txOutOrigin);
+    originTx.outputs.push_back(txOutOrigin);
 
     ASSERT_EQ(hex(originTx.hash()), "0ff6ff7c6774a56ccc51598b11724c9c441cadc52978ddb5f08f3511a0cc777a");
 
@@ -74,7 +74,7 @@ TEST(DecredSigner, SignP2PKH) {
     redeemTx.inputs.push_back(txIn);
 
     auto txOut = TransactionOutput();
-    redeemTx.outputs.add(txOut);
+    redeemTx.outputs.push_back(txOut);
 
     auto plan = input.mutable_plan();
     plan->set_amount(100'000'000);
@@ -143,7 +143,7 @@ TEST(DecredSigner, SignP2SH) {
     auto txOutOrigin = TransactionOutput();
     txOutOrigin.value = 100'000'000;
     txOutOrigin.script = Bitcoin::Script::buildPayToPublicKeyHash(keyhash);
-    originTx.outputs.add(txOutOrigin);
+    originTx.outputs.push_back(txOutOrigin);
 
     ASSERT_EQ(hex(originTx.hash()), "0ff6ff7c6774a56ccc51598b11724c9c441cadc52978ddb5f08f3511a0cc777a");
 
@@ -188,7 +188,7 @@ TEST(DecredSigner, SignP2SH) {
     redeemTx.inputs.push_back(txIn);
 
     auto txOut = TransactionOutput();
-    redeemTx.outputs.add(txOut);
+    redeemTx.outputs.push_back(txOut);
 
 
     // Sign
@@ -245,7 +245,7 @@ TEST(DecredSigner, SignNegativeNoUtxo) {
     auto txOutOrigin = TransactionOutput();
     txOutOrigin.value = 100'000'000;
     txOutOrigin.script = Bitcoin::Script::buildPayToPublicKeyHash(keyhash);
-    originTx.outputs.add(txOutOrigin);
+    originTx.outputs.push_back(txOutOrigin);
 
     ASSERT_EQ(hex(originTx.hash()), "0ff6ff7c6774a56ccc51598b11724c9c441cadc52978ddb5f08f3511a0cc777a");
 
@@ -269,7 +269,7 @@ TEST(DecredSigner, SignNegativeNoUtxo) {
     redeemTx.inputs.push_back(txIn);
 
     auto txOut = TransactionOutput();
-    redeemTx.outputs.add(txOut);
+    redeemTx.outputs.push_back(txOut);
 
     // Sign
     auto signer = Signer(std::move(input));
@@ -304,7 +304,7 @@ TEST(DecredSigner, SignP2PKH_NoPlan) {
     auto txOutOrigin = TransactionOutput();
     txOutOrigin.value = 100'000'000;
     txOutOrigin.script = Bitcoin::Script::buildPayToPublicKeyHash(keyhash);
-    originTx.outputs.add(txOutOrigin);
+    originTx.outputs.push_back(txOutOrigin);
 
     ASSERT_EQ(hex(originTx.hash()), "0ff6ff7c6774a56ccc51598b11724c9c441cadc52978ddb5f08f3511a0cc777a");
 
@@ -337,7 +337,7 @@ TEST(DecredSigner, SignP2PKH_NoPlan) {
     redeemTx.inputs.push_back(txIn);
 
     auto txOut = TransactionOutput();
-    redeemTx.outputs.add(txOut);
+    redeemTx.outputs.push_back(txOut);
 
 
     // Sign

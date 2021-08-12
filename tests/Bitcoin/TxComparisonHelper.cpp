@@ -252,7 +252,7 @@ void prettyPrintTransaction(const Transaction& tx, bool useWitnessFormat) {
     data.clear();
     encodeVarInt(tx.outputs.size(), data);
     std::cout << "        \"" << hex(data) << "\" // outputs\n";
-    for (auto& output: tx.outputs.outputs) {
+    for (auto& output: tx.outputs) {
         data.clear();
         encode64LE(output.value, data);
         std::cout << "            \"" << hex(data) << "\"";

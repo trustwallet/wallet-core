@@ -64,7 +64,7 @@ Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index, e
         copy(begin(hashOutputs), end(hashOutputs), back_inserter(data));
     } else if (Bitcoin::hashTypeIsSingle(hashType) && index < outputs.size()) {
         auto outputData = Data{};
-        outputs.get(index).encode(outputData);
+        outputs[index].encode(outputData);
         auto hashOutputs =
             TW::Hash::blake2b(outputData, outputData.size(), outputsHashPersonalization);
         copy(begin(hashOutputs), end(hashOutputs), back_inserter(data));
@@ -129,7 +129,7 @@ Data Transaction::getSequenceHash() const {
 
 Data Transaction::getOutputsHash() const {
     auto data = Data{};
-    for (auto& output : outputs.outputs) {
+    for (auto& output : outputs) {
         output.encode(data);
     }
     auto hash = TW::Hash::blake2b(data, 32, outputsHashPersonalization);
@@ -163,7 +163,7 @@ void Transaction::encode(Data& data) const {
 
     // vout
     encodeVarInt(outputs.size(), data);
-    for (auto& output : outputs.outputs) {
+    for (auto& output : outputs) {
         output.encode(data);
     }
 
@@ -206,7 +206,7 @@ Bitcoin::Proto::Transaction Transaction::proto() const {
         protoInput->set_script(input.script.bytes.data(), input.script.bytes.size());
     }
 
-    for (const auto& output : outputs.outputs) {
+    for (const auto& output : outputs) {
         auto protoOutput = protoTx.add_outputs();
         protoOutput->set_value(output.value);
         protoOutput->set_script(output.script.bytes.data(), output.script.bytes.size());

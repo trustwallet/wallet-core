@@ -29,17 +29,7 @@ class TransactionInputs: public std::vector<TransactionInput> {};
 
 /// A list of transaction outputs
 template <typename TransactionOutput>
-class TransactionOutputs {
-public:
-    std::vector<TransactionOutput> outputs;
-
-    size_t size() const { return outputs.size(); }
-    bool empty() const { return outputs.empty(); }
-    void add(TransactionOutput output) { outputs.emplace_back(output); }
-    const TransactionOutput& get(size_t index) const { return outputs[index]; }
-    void set(size_t index, TransactionOutput output) { outputs[index] = output; }
-    void clear() { outputs.clear(); }
-};
+class TransactionOutputs: public std::vector<TransactionOutput> {};
 
 struct Transaction {
 public:

@@ -59,7 +59,7 @@ Data Transaction::getPreImage(const Script& scriptCode, size_t index,
         copy(begin(hashOutputs), end(hashOutputs), back_inserter(data));
     } else if (hashTypeIsSingle(hashType) && index < outputs.size()) {
         Data outputData;
-        outputs.get(index).encode(outputData);
+        outputs[index].encode(outputData);
         auto hashOutputs = Hash::hash(hasher, outputData);
         copy(begin(hashOutputs), end(hashOutputs), back_inserter(data));
     } else {
@@ -96,7 +96,7 @@ Data Transaction::getSequenceHash() const {
 
 Data Transaction::getOutputsHash() const {
     Data data;
-    for (auto& output : outputs.outputs) {
+    for (auto& output : outputs) {
         output.encode(data);
     }
     auto hash = Hash::hash(hasher, data);
@@ -127,7 +127,7 @@ void Transaction::encode(Data& data, enum SegwitFormatMode segwitFormat) const {
 
     // txouts
     encodeVarInt(outputs.size(), data);
-    for (auto& output : outputs.outputs) {
+    for (auto& output : outputs) {
         output.encode(data);
     }
 
@@ -193,7 +193,7 @@ Data Transaction::getSignatureHashBase(const Script& scriptCode, size_t index,
             auto output = TransactionOutput(-1, {});
             output.encode(data);
         } else {
-            outputs.get(subindex).encode(data);
+            outputs[subindex].encode(data);
         }
     }
 
@@ -248,7 +248,7 @@ Proto::Transaction Transaction::proto() const {
         protoInput->set_script(input.script.bytes.data(), input.script.bytes.size());
     }
 
-    for (const auto& output : outputs.outputs) {
+    for (const auto& output : outputs) {
         auto protoOutput = protoTx.add_outputs();
         protoOutput->set_value(output.value);
         protoOutput->set_script(output.script.bytes.data(), output.script.bytes.size());

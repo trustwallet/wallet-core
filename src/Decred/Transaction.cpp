@@ -52,7 +52,7 @@ Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, siz
         break;
     case TWBitcoinSigHashTypeSingle:
         outputsToSign.clear();
-        std::copy(outputs.outputs.begin(), outputs.outputs.begin() + index + 1, outputsToSign.outputs.end());
+        std::copy(outputs.begin(), outputs.begin() + index + 1, outputsToSign.end());
         break;
     default:
         // Keep all outputs
@@ -64,7 +64,7 @@ Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, siz
     encode32LE(hashType, preimage);
 
     const auto prefixHash =
-        computePrefixHash(inputsToSign, outputsToSign.outputs, signIndex, index, hashType);
+        computePrefixHash(inputsToSign, outputsToSign, signIndex, index, hashType);
     std::copy(prefixHash.begin(), prefixHash.end(), std::back_inserter(preimage));
 
     const auto witnessHash = computeWitnessHash(inputsToSign, prevOutScript, signIndex);
@@ -177,7 +177,7 @@ void Transaction::encodePrefix(Data& data) const {
     }
 
     encodeVarInt(outputs.size(), data);
-    for (auto& output : outputs.outputs) {
+    for (auto& output : outputs) {
         output.encode(data);
     }
 
@@ -206,7 +206,7 @@ Proto::Transaction Transaction::proto() const {
         protoInput->set_script(input.script.bytes.data(), input.script.bytes.size());
     }
 
-    for (const auto& output : outputs.outputs) {
+    for (const auto& output : outputs) {
         auto protoOutput = protoTx.add_outputs();
         protoOutput->set_value(output.value);
         protoOutput->set_script(output.script.bytes.data(), output.script.bytes.size());
