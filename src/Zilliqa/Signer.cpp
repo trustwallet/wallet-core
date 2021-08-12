@@ -15,6 +15,7 @@
 
 #include <cassert>
 
+#include <google/protobuf/util/json_util.h>
 #include <nlohmann/json.hpp>
 
 using namespace TW;
@@ -127,4 +128,11 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     output.set_signature(signature.data(), signature.size());
 
     return output;
+}
+
+std::string Signer::signJSON(const std::string& json, const Data& key) {
+    auto input = Proto::SigningInput();
+    google::protobuf::util::JsonStringToMessage(json, &input);
+    input.set_private_key(key.data(), key.size());
+    return hex(Signer::sign(input).json());
 }

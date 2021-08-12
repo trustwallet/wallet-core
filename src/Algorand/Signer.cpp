@@ -7,6 +7,9 @@
 #include "Signer.h"
 #include "Address.h"
 #include "BaseTransaction.h"
+#include "../HexCoding.h"
+
+#include <google/protobuf/util/json_util.h>
 
 using namespace TW;
 using namespace TW::Algorand;
@@ -59,6 +62,13 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     }
     
     return protoOutput;
+}
+
+std::string Signer::signJSON(const std::string& json, const Data& key) {
+    auto input = Proto::SigningInput();
+    google::protobuf::util::JsonStringToMessage(json, &input);
+    input.set_private_key(key.data(), key.size());
+    return hex(Signer::sign(input).encoded());
 }
 
 Data Signer::sign(const PrivateKey& privateKey, const BaseTransaction& transaction) noexcept {
