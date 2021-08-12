@@ -28,7 +28,7 @@ struct TransactionPlan {
     Amount change = 0;
 
     /// Selected unspent transaction outputs.
-    std::vector<UTXO> utxos;
+    UTXOs utxos;
 
     /// Zcash branch id
     Data branchId;
@@ -42,7 +42,7 @@ struct TransactionPlan {
         , availableAmount(plan.available_amount())
         , fee(plan.fee())
         , change(plan.change())
-        , utxos(plan.utxos().begin(), plan.utxos().end())
+        , utxos(std::vector<UTXO>(plan.utxos().begin(), plan.utxos().end()))
         , branchId(plan.branch_id().begin(), plan.branch_id().end())
         , error(plan.error())
     {}

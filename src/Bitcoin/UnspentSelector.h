@@ -22,17 +22,17 @@ class UnspentSelector {
     ///
     /// \returns the list of selected utxos or an empty list if there are
     /// insufficient funds.
-    std::vector<UTXO> select(const std::vector<UTXO>& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs = 2);
+    UTXOs select(const UTXOs& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs = 2);
 
     /// Selects UTXOs for max amount; select all except those which would reduce output (dust).
     /// One output and no change is assumed.
-    std::vector<UTXO> selectMaxAmount(const std::vector<UTXO>& utxos, int64_t byteFee);
+    UTXOs selectMaxAmount(const UTXOs& utxos, int64_t byteFee);
 
     /// Construct, using provided feeCalculator (see getFeeCalculator()).
     explicit UnspentSelector(const FeeCalculator& feeCalculator) : feeCalculator(feeCalculator) {}
     UnspentSelector() : UnspentSelector(getFeeCalculator(TWCoinTypeBitcoin)) {}
 
-    static inline int64_t sum(const std::vector<UTXO>& utxos) {
+    static inline int64_t sum(const UTXOs& utxos) {
         int64_t sum = 0;
         for (auto& utxo : utxos) {
             sum += utxo.amount;
@@ -42,7 +42,7 @@ class UnspentSelector {
 
   private:
     const FeeCalculator& feeCalculator;
-    std::vector<UTXO> filterDustInput(const std::vector<UTXO>& selectedUtxos, int64_t byteFee);
+    UTXOs filterDustInput(const UTXOs& selectedUtxos, int64_t byteFee);
 };
 
 } // namespace TW::Bitcoin

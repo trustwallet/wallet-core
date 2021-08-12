@@ -984,7 +984,8 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
     // Sign
     auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
     signer.transaction = unsignedTx;
-    signer.plan.utxos = {*utxo};
+
+    signer.plan.utxos = UTXOs(UTXO(*utxo));
     auto result = signer.sign();
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();

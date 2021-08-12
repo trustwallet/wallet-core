@@ -11,6 +11,8 @@
 #include "Amount.h"
 #include "../proto/Bitcoin.pb.h"
 
+#include <vector>
+
 namespace TW::Bitcoin {
 
 class UTXO {
@@ -40,6 +42,14 @@ public:
         utxo.set_amount(amount);
         return utxo;
     }
+};
+
+/// A list of UTXO's
+class UTXOs: public std::vector<UTXO> {
+public:
+    UTXOs() = default;
+    UTXOs(const std::vector<UTXO>& vector): std::vector<UTXO>(vector) {}
+    UTXOs(UTXO utxo): std::vector<UTXO>({utxo}) {}
 };
 
 } // namespace TW::Bitcoin

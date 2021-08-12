@@ -54,8 +54,8 @@ UTXO buildTestUTXO(int64_t amount) {
     return utxo;
 }
 
-std::vector<UTXO> buildTestUTXOs(const std::vector<int64_t>& amounts) {
-    std::vector<UTXO> utxos;
+UTXOs buildTestUTXOs(const std::vector<int64_t>& amounts) {
+    UTXOs utxos;
     for (auto it = amounts.begin(); it != amounts.end(); it++) {
         utxos.push_back(buildTestUTXO(*it));
     }
@@ -104,7 +104,7 @@ bool verifySelectedUTXOsProto(const std::vector<Proto::UnspentTransaction>& sele
     return ret;
 }
 
-bool verifySelectedUTXOs(const std::vector<UTXO>& selected, const std::vector<int64_t>& expectedAmounts) {
+bool verifySelectedUTXOs(const UTXOs& selected, const std::vector<int64_t>& expectedAmounts) {
     bool ret = true;
     if (selected.size() != expectedAmounts.size()) {
         ret = false;

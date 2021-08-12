@@ -14,14 +14,14 @@ using namespace TW::Bitcoin;
 
 /// A selection of unspent transactions.
 struct Selection {
-    std::vector<UTXO> utxos;
+    UTXOs utxos;
     int64_t total;
 };
 
 // Filters utxos that are dust
-std::vector<UTXO> UnspentSelector::filterDustInput(const std::vector<UTXO>& selectedUtxos, int64_t byteFee) {
+UTXOs UnspentSelector::filterDustInput(const UTXOs& selectedUtxos, int64_t byteFee) {
     auto inputFeeLimit = feeCalculator.calculateSingleInput(byteFee);
-    std::vector<UTXO> filteredUtxos;
+    UTXOs filteredUtxos;
     for (auto utxo: selectedUtxos) {
         if (utxo.amount > inputFeeLimit) {
             filteredUtxos.push_back(utxo);
@@ -35,8 +35,8 @@ std::vector<UTXO> UnspentSelector::filterDustInput(const std::vector<UTXO>& sele
 // >
 // [[0, 1, 2], [1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [5, 6, 7], [6, 7, 8],
 // [7, 8, 9]]
-static inline auto slice(const std::vector<UTXO>& elements, size_t sliceSize) {
-    std::vector<std::vector<UTXO>> slices;
+static inline auto slice(const UTXOs& elements, size_t sliceSize) {
+    std::vector<UTXOs> slices;
     for (auto i = 0; i <= elements.size() - sliceSize; i += 1) {
         slices.emplace_back();
         slices[i].reserve(sliceSize);
@@ -47,7 +47,7 @@ static inline auto slice(const std::vector<UTXO>& elements, size_t sliceSize) {
     return slices;
 }
 
-std::vector<UTXO> UnspentSelector::select(const std::vector<UTXO>& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs) {
+UTXOs UnspentSelector::select(const UTXOs& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs) {
     // if target value is zero, no UTXOs are needed
     if (targetValue == 0) {
         return {};
@@ -102,14 +102,14 @@ std::vector<UTXO> UnspentSelector::select(const std::vector<UTXO>& utxos, int64_
         auto slices = slice(sortedUtxos, static_cast<size_t>(numInputs));
         slices.erase(
             std::remove_if(slices.begin(), slices.end(),
-                [targetWithFeeAndDust](const std::vector<UTXO>& slice) {
+                [targetWithFeeAndDust](const UTXOs& slice) {
                     return sum(slice) < targetWithFeeAndDust;
                 }),
             slices.end());
         if (!slices.empty()) {
             std::sort(slices.begin(), slices.end(),
-                [distFrom2x](const std::vector<UTXO>& lhs,
-                            const std::vector<UTXO>& rhs) {
+                [distFrom2x](const UTXOs& lhs,
+                            const UTXOs& rhs) {
                     return distFrom2x(sum(lhs)) < distFrom2x(sum(rhs));
                 });
             return filterDustInput(slices.front(), byteFee);
@@ -127,7 +127,7 @@ std::vector<UTXO> UnspentSelector::select(const std::vector<UTXO>& utxos, int64_
         auto slices = slice(sortedUtxos, static_cast<size_t>(numInputs));
         slices.erase(
             std::remove_if(slices.begin(), slices.end(),
-                [targetWithFee](const std::vector<UTXO>& slice) {
+                [targetWithFee](const UTXOs& slice) {
                     return sum(slice) < targetWithFee;
                 }),
             slices.end());
@@ -139,6 +139,6 @@ std::vector<UTXO> UnspentSelector::select(const std::vector<UTXO>& utxos, int64_
     return {};
 }
 
-std::vector<UTXO> UnspentSelector::selectMaxAmount(const std::vector<UTXO>& utxos, int64_t byteFee) {
+UTXOs UnspentSelector::selectMaxAmount(const UTXOs& utxos, int64_t byteFee) {
     return filterDustInput(utxos, byteFee);
 }

@@ -137,7 +137,7 @@ public:
     std::map<std::string, Script> scripts;
 
     // Available unspent transaction outputs
-    std::vector<UTXO> utxos;
+    UTXOs utxos;
 
     // If sending max amount
     bool useMaxAmount = false;
