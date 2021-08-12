@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,21 +6,33 @@
 
 #include "TransactionSigner.h"
 
-#include "KeyPair.h"
+#include "SigHashType.h"
 #include "TransactionInput.h"
 #include "TransactionOutput.h"
 #include "UnspentSelector.h"
-#include "SigHashType.h"
 
 #include "../BinaryCoding.h"
+#include "../Groestlcoin/Transaction.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
 #include "../Zcash/Transaction.h"
-#include "../Groestlcoin/Transaction.h"
+#include "../Zcash/TransactionBuilder.h"
+
 #include <tuple>
 
 using namespace TW;
 using namespace TW::Bitcoin;
+
+template <typename Transaction, typename TransactionBuilder>
+TransactionSigner<Transaction, TransactionBuilder>::TransactionSigner(const SigningInput& input, bool estimationMode)
+    : input(input), estimationMode(estimationMode) {
+    if (input.plan.has_value()) {
+        plan = input.plan.value();
+    } else {
+        plan = TransactionBuilder::plan(input);
+    }
+    transaction = TransactionBuilder::template build<Transaction>(plan, input.toAddress, input.changeAddress, input.coinType);
+}
 
 template <typename Transaction, typename TransactionBuilder>
 Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, TransactionBuilder>::sign() {

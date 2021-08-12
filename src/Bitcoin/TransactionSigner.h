@@ -12,17 +12,10 @@
 #include "Transaction.h"
 #include "TransactionBuilder.h"
 #include "TransactionInput.h"
-#include "../Groestlcoin/Transaction.h"
-#include "../Hash.h"
-#include "../PrivateKey.h"
 #include "../KeyPair.h"
 #include "../Result.h"
-#include "../Zcash/Transaction.h"
-#include "../Zcash/TransactionBuilder.h"
 #include "../proto/Bitcoin.pb.h"
 
-#include <memory>
-#include <string>
 #include <vector>
 #include <optional>
 
@@ -51,15 +44,7 @@ class TransactionSigner {
   public:
     /// Initializes a transaction signer with signing input.
     /// estimationMode: is set, no real signing is performed, only as much as needed to get the almost-exact signed size 
-    TransactionSigner(const SigningInput& input, bool estimationMode = false) :
-    input(input), estimationMode(estimationMode) {
-      if (input.plan.has_value()) {
-        plan = input.plan.value();
-      } else {
-        plan = TransactionBuilder::plan(input);
-      }
-      transaction = TransactionBuilder::template build<Transaction>(plan, input.toAddress, input.changeAddress, input.coinType);
-    }
+    TransactionSigner(const SigningInput& input, bool estimationMode = false);
 
     /// Signs the transaction.
     ///
