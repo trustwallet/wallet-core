@@ -313,4 +313,14 @@ class HarmonyTests: XCTestCase {
         XCTAssertEqual(output.r.hexString, "4c15c72f42577001083a9c7ff9d9724077aec704a524e53dc7c9afe97ca4e625")
         XCTAssertEqual(output.s.hexString, "55c13ea17c3efd1cd91f2988c7e7673950bac5a08c174f2d0af27a82039f1e3d")
     }
+
+    func testSignJSON() {
+        let json = """
+            {"chainId":"Ag==","transactionMessage":{"nonce":"AQ==","gasPrice":"AA==","gasLimit":"Ugg=","toAddress":"one129r9pj3sk0re76f7zs3qz92rggmdgjhtwge62k","amount":"Br/I2l7oIgAA","fromShardId":"AQ==","toShardId":"AA=="}}
+        """
+        let key = Data(hexString: "4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48")!
+        let result = AnySigner.signJSON(json, key: key, coin: .harmony)
+
+        XCTAssertEqual(result, "f86a0180825208018094514650ca30b3c79f693e14220115434236d44aeb8906bfc8da5ee82200008028a084cc200aab11f5e1b2f7ece0d56ec67385ac50cefb6e3dc2a2f3e036ed575a5ca0643f18005b790cac8d8e7dc90e6147df0b83874b52db198864694ea28a79e6fc")
+    }
 }

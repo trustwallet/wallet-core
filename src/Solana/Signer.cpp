@@ -10,6 +10,8 @@
 #include "../Base58.h"
 #include <TrezorCrypto/ed25519.h>
 
+#include <google/protobuf/util/json_util.h>
+
 #include <algorithm>
 
 using namespace TW;
@@ -173,4 +175,11 @@ Data Signer::signRawMessage(const std::vector<PrivateKey>& privateKeys, const Da
     append(buffer, messageData);
 
     return buffer;
+}
+
+std::string Signer::signJSON(const std::string& json, const Data& key) {
+    auto input = Proto::SigningInput();
+    google::protobuf::util::JsonStringToMessage(json, &input);
+    input.set_private_key(key.data(), key.size());
+    return Signer::sign(input).encoded();
 }
