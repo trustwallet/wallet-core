@@ -11,7 +11,7 @@
 TW_EXTERN_C_BEGIN
 
 TW_EXPORT_ENUM(uint32_t)
-enum TWBitcoinSigHashType {
+enum TWBitcoinSigHashType: uint32_t {
     TWBitcoinSigHashTypeAll = 0x01,
     TWBitcoinSigHashTypeNone = 0x02,
     TWBitcoinSigHashTypeSingle = 0x03,

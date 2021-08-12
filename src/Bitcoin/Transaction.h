@@ -114,7 +114,7 @@ private:
 class SigningInput {
 public:
     // Hash type to use when signing
-    TWBitcoinSigHashType hashType = TWBitcoinSigHashTypeAll;
+    enum TWBitcoinSigHashType hashType = TWBitcoinSigHashTypeAll;
 
     // Amount to send.  Transaction created will have this amount in its output, 
     // except when use_max_amount is set, in that case this amount is not relevant, maximum possible amount will be used (max avail less fee).
