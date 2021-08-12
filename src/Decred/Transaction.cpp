@@ -40,7 +40,8 @@ Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, siz
     auto inputsToSign = inputs;
     auto signIndex = index;
     if ((hashType & TWBitcoinSigHashTypeAnyoneCanPay) != 0) {
-        inputsToSign = {inputs[index]};
+        inputsToSign.clear();
+        inputsToSign.add(inputs.get(index));
         signIndex = 0;
     }
 
@@ -51,7 +52,7 @@ Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, siz
         break;
     case TWBitcoinSigHashTypeSingle:
         outputsToSign.clear();
-        std::copy(outputs.begin(), outputs.begin() + index + 1, outputsToSign.end());
+        std::copy(outputs.outputs.begin(), outputs.outputs.begin() + index + 1, outputsToSign.outputs.end());
         break;
     default:
         // Keep all outputs
@@ -63,10 +64,10 @@ Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, siz
     encode32LE(hashType, preimage);
 
     const auto prefixHash =
-        computePrefixHash(inputsToSign, outputsToSign, signIndex, index, hashType);
+        computePrefixHash(inputsToSign.inputs, outputsToSign.outputs, signIndex, index, hashType);
     std::copy(prefixHash.begin(), prefixHash.end(), std::back_inserter(preimage));
 
-    const auto witnessHash = computeWitnessHash(inputsToSign, prevOutScript, signIndex);
+    const auto witnessHash = computeWitnessHash(inputsToSign.inputs, prevOutScript, signIndex);
     std::copy(witnessHash.begin(), witnessHash.end(), std::back_inserter(preimage));
 
     return Hash::blake256(preimage);
@@ -171,12 +172,12 @@ void Transaction::encode(Data& data) const {
 
 void Transaction::encodePrefix(Data& data) const {
     encodeVarInt(inputs.size(), data);
-    for (auto& input : inputs) {
+    for (auto& input : inputs.inputs) {
         input.encode(data);
     }
 
     encodeVarInt(outputs.size(), data);
-    for (auto& output : outputs) {
+    for (auto& output : outputs.outputs) {
         output.encode(data);
     }
 
@@ -186,7 +187,7 @@ void Transaction::encodePrefix(Data& data) const {
 
 void Transaction::encodeWitness(Data& data) const {
     encodeVarInt(inputs.size(), data);
-    for (auto& input : inputs) {
+    for (auto& input : inputs.inputs) {
         input.encodeWitness(data);
     }
 }
@@ -196,7 +197,7 @@ Proto::Transaction Transaction::proto() const {
     protoTx.set_version(version);
     protoTx.set_locktime(lockTime);
 
-    for (const auto& input : inputs) {
+    for (const auto& input : inputs.inputs) {
         auto protoInput = protoTx.add_inputs();
         protoInput->mutable_previousoutput()->set_hash(input.previousOutput.hash.data(),
                                                        input.previousOutput.hash.size());
@@ -205,7 +206,7 @@ Proto::Transaction Transaction::proto() const {
         protoInput->set_script(input.script.bytes.data(), input.script.bytes.size());
     }
 
-    for (const auto& output : outputs) {
+    for (const auto& output : outputs.outputs) {
         auto protoOutput = protoTx.add_outputs();
         protoOutput->set_value(output.value);
         protoOutput->set_script(output.script.bytes.data(), output.script.bytes.size());

@@ -34,11 +34,11 @@ struct TransactionBuilder {
         }
 
         Transaction tx;
-        tx.outputs.emplace_back(TransactionOutput(plan.amount, /* version: */ 0, lockingScriptTo));
+        tx.outputs.add(TransactionOutput(plan.amount, /* version: */ 0, lockingScriptTo));
 
         if (plan.change > 0) {
             auto lockingScriptChange = Bitcoin::Script::lockScriptForAddress(changeAddress, coin);
-            tx.outputs.emplace_back(
+            tx.outputs.add(
                 TransactionOutput(plan.change, /* version: */ 0, lockingScriptChange));
         }
 
@@ -47,7 +47,7 @@ struct TransactionBuilder {
             auto input = TransactionInput();
             input.previousOutput = utxo.outPoint;
             input.sequence = utxo.outPoint.sequence;
-            tx.inputs.push_back(std::move(input));
+            tx.inputs.add(std::move(input));
         }
 
         return tx;

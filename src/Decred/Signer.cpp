@@ -51,9 +51,7 @@ Result<Transaction, Common::Proto::SigningError> Signer::sign() {
         return Result<Transaction, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_input_utxos);
     }
 
-    signedInputs.clear();
-    std::copy(std::begin(transaction.inputs), std::end(transaction.inputs),
-              std::back_inserter(signedInputs));
+    signedInputs = transaction.inputs;
 
     const auto hashSingle = Bitcoin::hashTypeIsSingle(static_cast<enum TWBitcoinSigHashType>(input.hash_type()));
     for (auto i = 0; i < txPlan.utxos.size(); i += 1) {
@@ -67,11 +65,13 @@ Result<Transaction, Common::Proto::SigningError> Signer::sign() {
         if (!result) {
             return Result<Transaction, Common::Proto::SigningError>::failure(result.error());
         }
-        signedInputs[i].script = result.payload();
+        auto transactionInput = signedInputs.get(i);
+        transactionInput.script = result.payload();
+        signedInputs.set(i, transactionInput);
     }
 
     Transaction tx(transaction);
-    tx.inputs = move(signedInputs);
+    tx.inputs = std::move(signedInputs);
     tx.outputs = transaction.outputs;
     return Result<Transaction, Common::Proto::SigningError>::success(std::move(tx));
 }
@@ -88,7 +88,7 @@ Result<Bitcoin::Script, Common::Proto::SigningError> Signer::sign(Bitcoin::Scrip
     } else {
         return Result<Bitcoin::Script, Common::Proto::SigningError>::failure(result.error());
     }
-    auto txin = transaction.inputs[index];
+    auto txin = transaction.inputs.get(index);
 
     if (script.isPayToScriptHash()) {
         script = Bitcoin::Script(results.front().begin(), results.front().end());
