@@ -13,6 +13,7 @@
 #include "../proto/Bitcoin.pb.h"
 #include <TrustWalletCore/TWCoinType.h>
 
+#include <optional>
 #include <algorithm>
 
 namespace TW::Bitcoin {
@@ -22,21 +23,20 @@ public:
     /// Plans a transaction by selecting UTXOs and calculating fees.
     static TransactionPlan plan(const SigningInput& input);
 
-    /// Builds a transaction by selecting UTXOs and calculating fees.
+    /// Builds a transaction with the selected input UTXOs, and one main output and an optional change output.
     template <typename Transaction>
     static Transaction build(const TransactionPlan& plan, const std::string& toAddress,
                              const std::string& changeAddress, enum TWCoinType coin) {
-        auto lockingScriptTo = Script::lockScriptForAddress(toAddress, coin);
-        if (lockingScriptTo.empty()) {
-            return {};
-        }
-
         Transaction tx;
-        tx.outputs.push_back(TransactionOutput(plan.amount, lockingScriptTo));
+
+        auto outputTo = prepareOutput(toAddress, plan.amount, coin);
+        if (!outputTo.has_value()) { return {}; }
+        tx.outputs.push_back(outputTo.value());
 
         if (plan.change > 0) {
-            auto lockingScriptChange = Script::lockScriptForAddress(changeAddress, coin);
-            tx.outputs.push_back(TransactionOutput(plan.change, lockingScriptChange));
+            auto outputChange = prepareOutput(changeAddress, plan.change, coin);
+            if (!outputChange.has_value()) { return {}; }
+            tx.outputs.push_back(outputChange.value());
         }
 
         const auto emptyScript = Script();
@@ -46,6 +46,9 @@ public:
 
         return tx;
     }
+
+    /// Prepares a TransactionOutput with given address and amount, prepares script for it
+    static std::optional<TransactionOutput> prepareOutput(std::string address, Amount amount, enum TWCoinType coin);
 };
 
 } // namespace TW::Bitcoin

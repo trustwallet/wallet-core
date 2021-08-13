@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "TransactionBuilder.h"
+#include "Script.h"
 #include "TransactionSigner.h"
 
 #include "../Coin.h"
@@ -14,6 +15,15 @@
 #include <cassert>
 
 namespace TW::Bitcoin {
+
+std::optional<TransactionOutput> TransactionBuilder::prepareOutput(std::string address, Amount amount, enum TWCoinType coin) {
+    auto lockingScript = Script::lockScriptForAddress(address, coin);
+    if (lockingScript.empty()) {
+        return {};
+    }
+    return TransactionOutput(amount, lockingScript);
+}
+
 
 /// Estimate encoded size by simple formula
 int64_t estimateSimpleFee(const FeeCalculator& feeCalculator, const TransactionPlan& plan, int outputSize, int64_t byteFee) {
