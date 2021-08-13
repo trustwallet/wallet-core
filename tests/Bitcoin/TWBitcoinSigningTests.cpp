@@ -921,22 +921,12 @@ TEST(BitcoinSigning, EncodeP2SH_P2WSH) {
 }
 
 TEST(BitcoinSigning, SignP2SH_P2WSH) {
-    auto emptyScript = Script();
-    auto unsignedTx = Transaction(1, 0);
-
-    auto outpoint0 = OutPoint(parse_hex("36641869ca081e70f394c6948e8af409e18b619df2ed74aa106c1ca29787b96e"), 1);
-    unsignedTx.inputs.emplace_back(outpoint0, emptyScript, 0xffffffff);
-
-    auto outScript0 = Script(parse_hex("76a914389ffce9cd9ae88dcc0631e88a821ffdbe9bfe2688ac"));
-    unsignedTx.outputs.emplace_back(0x0000000035a4e900, outScript0);
-
-    auto outScript1 = Script(parse_hex("76a9147480a33f950689af511e6e84c138dbbd3c3ee41588ac"));
-    unsignedTx.outputs.emplace_back(0x00000000052f83c0, outScript1);
-
     // Setup signing input
     SigningInput input;
     input.amount = 900000000;
     input.hashType = (TWBitcoinSigHashType)0;
+    input.toAddress = "16AQVuBMt818u2HBcbxztAZTT2VTDKupPS";
+    input.changeAddress = "1Bd1VA2bnLjoBk4ook3H19tZWETk8s6Ym5";
 
     auto key0 = parse_hex("730fff80e1413068a05b57d6a58261f07551163369787f349438ea38ca80fac6");
     input.privateKeys.push_back(PrivateKey(key0));
@@ -955,7 +945,7 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
     auto scriptHash = Hash::ripemd(Hash::sha256(redeemScript.bytes));
     input.scripts[hex(scriptHash)] = redeemScript;
 
-    auto witnessScript = Script(parse_hex(""
+    auto witnessScript = Script(parse_hex(
         "56"
             "210307b8ae49ac90a048e9b53357a2354b3334e9c8bee813ecb98e99a7e07e8c3ba3"
             "2103b28f0c28bfab54554ae8c658ac5c3e0ce6e79ad336331f78c428dd43eea8449b"
@@ -970,16 +960,21 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
 
     auto utxo0Script = Script(parse_hex("a9149993a429037b5d912407a71c252019287b8d27a587"));
     UTXO utxo;
-    utxo.outPoint = OutPoint(outpoint0.hash, outpoint0.index, UINT32_MAX);
+    utxo.outPoint = OutPoint(parse_hex("36641869ca081e70f394c6948e8af409e18b619df2ed74aa106c1ca29787b96e"), 1, UINT32_MAX);
     utxo.script = utxo0Script;
     utxo.amount = 987654321;
     input.utxos.push_back(utxo);
 
+    TransactionPlan plan;
+    plan.amount = input.amount;
+    plan.availableAmount = input.utxos[0].amount;
+    plan.change = 87000000;
+    plan.fee = plan.availableAmount - plan.amount - plan.change;
+    plan.utxos = input.utxos;
+    input.plan = plan;
+
     // Sign
     auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    signer.transaction = unsignedTx;
-
-    signer.plan.utxos = UTXOs(utxo);
     auto result = signer.sign();
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
