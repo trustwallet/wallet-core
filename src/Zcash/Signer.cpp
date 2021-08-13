@@ -15,7 +15,7 @@ using namespace TW;
 using namespace TW::Zcash;
 
 TransactionPlan Signer::plan(const SigningInput& input) noexcept {
-    auto plan = Bitcoin::TransactionSigner<Transaction, TransactionBuilder>::plan2(input);
+    auto plan = Bitcoin::TransactionSigner<Transaction, TransactionBuilder>::plan(input);
     return plan.proto();
 }
 

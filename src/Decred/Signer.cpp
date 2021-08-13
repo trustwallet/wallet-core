@@ -100,7 +100,7 @@ Result<Bitcoin::Script, Common::Proto::SigningError> Signer::sign(Bitcoin::Scrip
         results.push_back(redeemScript.bytes);
     }
 
-    return Result<Bitcoin::Script, Common::Proto::SigningError>::success(Bitcoin::Script(Bitcoin::TransactionSigner<Bitcoin::Transaction, Bitcoin::TransactionBuilder>::pushAll(results)));
+    return Result<Bitcoin::Script, Common::Proto::SigningError>::success(Bitcoin::Script(Bitcoin::SignatureBuilder<Bitcoin::Transaction>::pushAll(results)));
 }
 
 Result<std::vector<Data>, Common::Proto::SigningError> Signer::signStep(Bitcoin::Script script, size_t index) {

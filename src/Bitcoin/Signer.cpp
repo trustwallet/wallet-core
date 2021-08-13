@@ -15,7 +15,7 @@ using namespace TW;
 using namespace TW::Bitcoin;
 
 Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
-    auto plan = TransactionSigner<Transaction, TransactionBuilder>::plan2(input);
+    auto plan = TransactionSigner<Transaction, TransactionBuilder>::plan(input);
     return plan.proto();
 }
 

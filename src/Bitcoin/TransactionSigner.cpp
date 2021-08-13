@@ -24,7 +24,7 @@ using namespace TW;
 using namespace TW::Bitcoin;
 
 template <typename Transaction, typename TransactionBuilder>
-TransactionPlan TransactionSigner<Transaction, TransactionBuilder>::plan2(const SigningInput& input) {
+TransactionPlan TransactionSigner<Transaction, TransactionBuilder>::plan(const SigningInput& input) {
     return TransactionBuilder::plan(input);
 }
 
@@ -37,12 +37,12 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
         plan = TransactionBuilder::plan(input);
     }
     auto transaction = TransactionBuilder::template build<Transaction>(plan, input.toAddress, input.changeAddress, input.coinType, input.lockTime);
-    TransactionSigner<Transaction, TransactionBuilder> signer(std::move(input), plan, transaction, estimationMode);
+    SignatureBuilder<Transaction> signer(std::move(input), plan, transaction, estimationMode);
     return signer.sign();
 }
 
-template <typename Transaction, typename TransactionBuilder>
-Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, TransactionBuilder>::sign() {
+template <typename Transaction>
+Result<Transaction, Common::Proto::SigningError> SignatureBuilder<Transaction>::sign() {
     if (plan.error != Common::Proto::OK) {
         // plan with error, fail
         return Result<Transaction, Common::Proto::SigningError>::failure(plan.error);
@@ -81,8 +81,8 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
     return Result<Transaction, Common::Proto::SigningError>::success(std::move(tx));
 }
 
-template <typename Transaction, typename TransactionBuilder>
-Result<void, Common::Proto::SigningError> TransactionSigner<Transaction, TransactionBuilder>::sign(Script script, size_t index,
+template <typename Transaction>
+Result<void, Common::Proto::SigningError> SignatureBuilder<Transaction>::sign(Script script, size_t index,
                                                   const UTXO& utxo) {
     assert(index < transaction.inputs.size());
 
@@ -149,8 +149,8 @@ Result<void, Common::Proto::SigningError> TransactionSigner<Transaction, Transac
     return Result<void, Common::Proto::SigningError>::success();
 }
 
-template <typename Transaction, typename TransactionBuilder>
-Result<std::vector<Data>, Common::Proto::SigningError> TransactionSigner<Transaction, TransactionBuilder>::signStep(
+template <typename Transaction>
+Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transaction>::signStep(
     Script script, size_t index, const UTXO& utxo, uint32_t version) const {
     Transaction transactionToSign(transaction);
     transactionToSign.inputs = signedInputs;
@@ -242,8 +242,8 @@ Result<std::vector<Data>, Common::Proto::SigningError> TransactionSigner<Transac
     return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_script_output);
 }
 
-template <typename Transaction, typename TransactionBuilder>
-Data TransactionSigner<Transaction, TransactionBuilder>::createSignature(
+template <typename Transaction>
+Data SignatureBuilder<Transaction>::createSignature(
     const Transaction& transaction,
     const Script& script, 
     const std::optional<KeyPair>& pair,
@@ -266,8 +266,8 @@ Data TransactionSigner<Transaction, TransactionBuilder>::createSignature(
     return sig;
 }
 
-template <typename Transaction, typename TransactionBuilder>
-Data TransactionSigner<Transaction, TransactionBuilder>::pushAll(const std::vector<Data>& results) {
+template <typename Transaction>
+Data SignatureBuilder<Transaction>::pushAll(const std::vector<Data>& results) {
     Data data;
     for (auto& result : results) {
         if (result.empty()) {
@@ -291,8 +291,8 @@ Data TransactionSigner<Transaction, TransactionBuilder>::pushAll(const std::vect
     return data;
 }
 
-template <typename Transaction, typename TransactionBuilder>
-std::optional<KeyPair> TransactionSigner<Transaction, TransactionBuilder>::keyPairForPubKeyHash(const Data& hash) const {
+template <typename Transaction>
+std::optional<KeyPair> SignatureBuilder<Transaction>::keyPairForPubKeyHash(const Data& hash) const {
     for (auto& key : input.privateKeys) {
         auto pubKeyExtended = key.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
         auto pubKey = pubKeyExtended.compressed();
@@ -305,8 +305,8 @@ std::optional<KeyPair> TransactionSigner<Transaction, TransactionBuilder>::keyPa
     return {};
 }
 
-template <typename Transaction, typename TransactionBuilder>
-Data TransactionSigner<Transaction, TransactionBuilder>::scriptForScriptHash(const Data& hash) const {
+template <typename Transaction>
+Data SignatureBuilder<Transaction>::scriptForScriptHash(const Data& hash) const {
     auto hashString = hex(hash);
     auto it = input.scripts.find(hashString);
     if (it == input.scripts.end()) {

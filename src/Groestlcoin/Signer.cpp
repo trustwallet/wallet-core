@@ -18,7 +18,7 @@ using namespace TW::Groestlcoin;
 using TransactionBuilder = Bitcoin::TransactionBuilder;
 
 TransactionPlan Signer::plan(const SigningInput& input) noexcept {
-    auto plan = Bitcoin::TransactionSigner<Transaction, TransactionBuilder>::plan2(input);
+    auto plan = Bitcoin::TransactionSigner<Transaction, TransactionBuilder>::plan(input);
     return plan.proto();
 }
 
