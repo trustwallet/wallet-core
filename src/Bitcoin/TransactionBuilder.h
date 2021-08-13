@@ -26,8 +26,9 @@ public:
     /// Builds a transaction with the selected input UTXOs, and one main output and an optional change output.
     template <typename Transaction>
     static Transaction build(const TransactionPlan& plan, const std::string& toAddress,
-                             const std::string& changeAddress, enum TWCoinType coin) {
+                             const std::string& changeAddress, enum TWCoinType coin, uint32_t lockTime) {
         Transaction tx;
+        tx.lockTime = lockTime;
 
         auto outputTo = prepareOutput(toAddress, plan.amount, coin);
         if (!outputTo.has_value()) { return {}; }

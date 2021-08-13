@@ -24,14 +24,21 @@ using namespace TW;
 using namespace TW::Bitcoin;
 
 template <typename Transaction, typename TransactionBuilder>
-TransactionSigner<Transaction, TransactionBuilder>::TransactionSigner(const SigningInput& input, bool estimationMode)
-    : input(input), estimationMode(estimationMode) {
+TransactionPlan TransactionSigner<Transaction, TransactionBuilder>::plan2(const SigningInput& input) {
+    return TransactionBuilder::plan(input);
+}
+
+template <typename Transaction, typename TransactionBuilder>
+Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, TransactionBuilder>::sign(const SigningInput& input, bool estimationMode) {
+    TransactionPlan plan;
     if (input.plan.has_value()) {
         plan = input.plan.value();
     } else {
         plan = TransactionBuilder::plan(input);
     }
-    transaction = TransactionBuilder::template build<Transaction>(plan, input.toAddress, input.changeAddress, input.coinType);
+    auto transaction = TransactionBuilder::template build<Transaction>(plan, input.toAddress, input.changeAddress, input.coinType, input.lockTime);
+    TransactionSigner<Transaction, TransactionBuilder> signer(std::move(input), plan, transaction, estimationMode);
+    return signer.sign();
 }
 
 template <typename Transaction, typename TransactionBuilder>

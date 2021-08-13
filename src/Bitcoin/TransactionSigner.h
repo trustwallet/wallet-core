@@ -24,40 +24,44 @@ namespace TW::Bitcoin {
 /// Helper class that performs Bitcoin transaction signing.
 template <typename Transaction, typename TransactionBuilder>
 class TransactionSigner {
-  private:
+public:
+    // Create plan for a transaction
+    // TODO rename
+    static TransactionPlan plan2(const SigningInput& input);
+
+    // Sign an unsigned transaction.  Plan it if needed beforehand.
+    static Result<Transaction, Common::Proto::SigningError> sign(const SigningInput& input, bool estimationMode = false);
+
+    // internal, public for testability and Decred
+    static Data pushAll(const std::vector<Data>& results);
+
+private:
     /// Private key and redeem script provider for signing.
     SigningInput input;
 
-  public:
     /// Transaction plan.
     TransactionPlan plan;
 
     /// Transaction being signed.
     Transaction transaction;
 
-  private:
     /// List of signed inputs.
     TransactionInputs<TransactionInput> signedInputs;
 
     bool estimationMode = false;
 
-  public:
+private:
     /// Initializes a transaction signer with signing input.
     /// estimationMode: is set, no real signing is performed, only as much as needed to get the almost-exact signed size 
-    TransactionSigner(const SigningInput& input, bool estimationMode = false);
+    TransactionSigner(const SigningInput& input, const TransactionPlan& plan, Transaction& transaction, bool estimationMode = false)
+      : input(input), plan(plan), transaction(transaction), estimationMode(estimationMode) {}
 
     /// Signs the transaction.
     ///
     /// \returns the signed transaction or an error.
     Result<Transaction, Common::Proto::SigningError> sign();
 
-    // helper, return binary encoded transaction (used right after sign())
-    static void encodeTx(const Transaction& tx, Data& outData) { tx.encode(outData); }
-
-    // internal, public for testability and Decred
-    static Data pushAll(const std::vector<Data>& results);
-
-  private:
+private:
     Result<void, Common::Proto::SigningError> sign(Script script, size_t index, const UTXO& utxo);
     Result<std::vector<Data>, Common::Proto::SigningError> signStep(Script script, size_t index,
                                        const UTXO& utxo, uint32_t version) const;

@@ -100,15 +100,15 @@ TEST(TWBitcoinGoldTxGeneration, TxGeneration) {
     utxo0->mutable_out_point()->set_sequence(0xfffffffd);
 
     // Sign
-    auto txSigner = TransactionSigner<Transaction, TransactionBuilder>(SigningInput(input));
-    txSigner.transaction.lockTime = 0x00098971;
-    auto result = txSigner.sign();
+    auto signingInput = SigningInput(input);
+    signingInput.lockTime = 0x00098971;
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(signingInput);
 
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
     Data serialized;
-    txSigner.encodeTx(signedTx, serialized);
+    signedTx.encode(serialized);
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag

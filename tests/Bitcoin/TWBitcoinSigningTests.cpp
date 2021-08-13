@@ -91,15 +91,13 @@ TEST(BitcoinSigning, SignP2PKH) {
     }
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
     Data serialized;
-    signer.encodeTx(signedTx, serialized);
+    signedTx.encode(serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{228, 225, 226}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -123,8 +121,7 @@ TEST(BitcoinSigning, SignP2PKH_NegativeMissingKey) {
     }
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Common::Proto::Error_missing_private_key);
@@ -221,15 +218,14 @@ TEST(BitcoinSigning, SignP2WPKH_Bip143) {
     input.plan = plan;
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(input);
-    signer.transaction.lockTime = 0x11; // there is no way to set locktime through SigningInput
-    auto result = signer.sign();
+    input.lockTime = 0x11;
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_TRUE(result) << std::to_string(result.error());
     const auto signedTx = result.payload();
 
     Data serialized;
-    signer.encodeTx(signedTx, serialized);
+    signedTx.encode(serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{343, 233, 261}));
     // expected in one string for easy comparison/copy:
     ASSERT_EQ(hex(serialized), "01000000000102fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f00000000494830450221008b9d1dc26ba6a9cb62127b02742fa9d754cd3bebf337f7a55d114c8e5cdd30be022040529b194ba3f9281a99f2b1c0a19c0489bc22ede944ccf4ecbab4cc618ef3ed01eeffffffef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a0100000000ffffffff02202cb206000000001976a9148280b37df378db99f66f85c95a783a76ac7a6d5988ac9093510d000000001976a9143bde42dbee7e4dbe6a21b2d50ce2f0167faa815988ac000247304402203609e17b84f6a7d30c80bfa610b5b4542f32a8a0d5447a12fb1366d7f01cc44a0220573a954c4518331561406f90300e8f3358f51928d43c212a8caed02de67eebee0121025476c2e83188368da1ff3e292e7acafcdb3566bb0ad253f62fc70f07aeee635711000000");
@@ -312,14 +308,13 @@ TEST(BitcoinSigning, SignP2WPKH) {
     }
 
     // Signs
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
     Data serialized;
-    signer.encodeTx(signedTx, serialized);
+    signedTx.encode(serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{195, 192, 193}));
     EXPECT_EQ(serialized.size(), 192);
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
@@ -361,14 +356,13 @@ TEST(BitcoinSigning, SignP2WPKH_HashSingle_TwoInput) {
     }
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
     Data serialized;
-    signer.encodeTx(signedTx, serialized);
+    signedTx.encode(serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{343, 233, 261}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -397,14 +391,13 @@ TEST(BitcoinSigning, SignP2WPKH_HashAnyoneCanPay_TwoInput) {
     }
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
     Data serialized;
-    signer.encodeTx(signedTx, serialized);
+    signedTx.encode(serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{344, 233, 261}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -433,14 +426,13 @@ TEST(BitcoinSigning, SignP2WPKH_MaxAmount) {
     }
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
     Data serialized;
-    signer.encodeTx(signedTx, serialized);
+    signedTx.encode(serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{310, 199, 227}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -523,14 +515,13 @@ TEST(BitcoinSigning, SignP2WSH) {
     }
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
     Data serialized;
-    signer.encodeTx(signedTx, serialized);
+    signedTx.encode(serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{231, 119, 147}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -558,14 +549,13 @@ TEST(BitcoinSigning, SignP2WSH_HashNone) {
     }
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
     Data serialized;
-    signer.encodeTx(signedTx, serialized);
+    signedTx.encode(serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{231, 119, 147}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -593,14 +583,13 @@ TEST(BitcoinSigning, SignP2WSH_HashSingle) {
     }
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
     Data serialized;
-    signer.encodeTx(signedTx, serialized);
+    signedTx.encode(serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{230, 119, 147}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -628,14 +617,13 @@ TEST(BitcoinSigning, SignP2WSH_HashAnyoneCanPay) {
     }
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
     Data serialized;
-    signer.encodeTx(signedTx, serialized);
+    signedTx.encode(serialized);
     EXPECT_EQ(serialized.size(), 231);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{231, 119, 147}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
@@ -663,8 +651,7 @@ TEST(BitcoinSigning, SignP2WSH_NegativeMissingScript) {
     }
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Common::Proto::Error_script_redeem);
@@ -680,8 +667,7 @@ TEST(BitcoinSigning, SignP2WSH_NegativeMissingKeys) {
     }
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Common::Proto::Error_missing_private_key);
@@ -694,8 +680,7 @@ TEST(BitcoinSigning, SignP2WSH_NegativePlanWithError) {
     input.plan->error = Common::Proto::Error_missing_input_utxos;
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Common::Proto::Error_missing_input_utxos);
@@ -708,8 +693,7 @@ TEST(BitcoinSigning, SignP2WSH_NegativeNoUTXOs) {
     ASSERT_FALSE(input.plan.has_value());
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Common::Proto::Error_missing_input_utxos);
@@ -722,8 +706,7 @@ TEST(BitcoinSigning, SignP2WSH_NegativePlanWithNoUTXOs) {
     input.plan->utxos.clear();
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Common::Proto::Error_missing_input_utxos);
@@ -806,14 +789,13 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH) {
     }
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
     Data serialized;
-    signer.encodeTx(signedTx, serialized);
+    signedTx.encode(serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{251, 142, 170}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -839,8 +821,7 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH_NegativeOmitScript) {
     }
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Common::Proto::Error_script_redeem);
@@ -855,8 +836,7 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH_NegativeInvalidOutputScript) {
     }
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Common::Proto::Error_script_output);
@@ -871,8 +851,7 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH_NegativeInvalidRedeemScript) {
     }
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Common::Proto::Error_script_redeem);
@@ -887,8 +866,7 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH_NegativeOmitKeys) {
     }
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Common::Proto::Error_missing_private_key);
@@ -974,8 +952,8 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
     input.plan = plan;
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
+
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
@@ -1001,7 +979,7 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
     ;
 
     Data serialized;
-    signer.encodeTx(signedTx, serialized);
+    signedTx.encode(serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{800, 154, 316}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), expected);
@@ -1035,8 +1013,7 @@ TEST(BitcoinSigning, Sign_NegativeNoUtxos) {
     }
 
     // Invoke Sign nonetheless
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     // Fails as there are 0 utxos
     ASSERT_FALSE(result);
@@ -1091,8 +1068,7 @@ TEST(BitcoinSigning, Sign_NegativeInvalidAddress) {
     }
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(input);
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Common::Proto::Error_missing_input_utxos);
@@ -1142,14 +1118,13 @@ TEST(BitcoinSigning, Plan_10input_MaxAmount) {
     input.plan = plan;
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
     Data serialized;
-    signer.encodeTx(signedTx, serialized);
+    signedTx.encode(serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{1529, 451, 721}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
 
@@ -1201,14 +1176,13 @@ TEST(BitcoinSigning, Sign_LitecoinReal_a85f) {
     EXPECT_TRUE(verifyPlan(input.plan.value(), {3'900'000}, 3'899'774, 226));
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
     Data serialized;
-    signer.encodeTx(signedTx, serialized);
+    signedTx.encode(serialized);
 
     // https://blockchair.com/litecoin/transaction/a85fd6a9a7f2f54cacb57e83dfd408e51c0a5fc82885e3fa06be8692962bc407
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -1267,14 +1241,13 @@ TEST(BitcoinSigning, PlanAndSign_LitecoinReal_8435) {
     input.plan = plan;
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
     Data serialized;
-    signer.encodeTx(signedTx, serialized);
+    signedTx.encode(serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{222, 113, 141}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
 
@@ -1429,13 +1402,12 @@ TEST(BitcoinSigning, RedeemExtendedPubkeyUTXO) {
     input.privateKeys.push_back(key);
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
     Data encoded;
-    signer.encodeTx(signedTx, encoded);
+    signedTx.encode(encoded);
     EXPECT_EQ(encoded.size(), 402);
 }

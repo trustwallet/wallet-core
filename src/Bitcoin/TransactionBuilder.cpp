@@ -42,8 +42,7 @@ int64_t estimateSegwitFee(const FeeCalculator& feeCalculator, const TransactionP
     auto inputWithPlan = std::move(input);
     inputWithPlan.plan = plan;
 
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(inputWithPlan), true);
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(inputWithPlan, true);
     if (!result) {
         // signing failed; return default simple estimate
         return estimateSimpleFee(feeCalculator, plan, outputSize, input.byteFee);

@@ -57,6 +57,8 @@ public:
     // Optional transaction plan
     std::optional<TransactionPlan> plan;
 
+    uint32_t lockTime = 0;
+
 public:
     SigningInput() = default;
 
