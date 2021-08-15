@@ -38,3 +38,6 @@ jobs:
     - name: Build sample app
       run: |
         tools/samples-build android
+      env:
+        GITHUB_USER: ${{ github.actor }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

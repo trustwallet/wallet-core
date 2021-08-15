@@ -12,6 +12,7 @@ import wallet.core.jni.proto.Ethereum
 import wallet.core.jni.BitcoinScript
 import wallet.core.jni.BitcoinSigHashType
 import wallet.core.jni.proto.Bitcoin
+import wallet.core.jni.proto.Common
 import java.math.BigInteger
 import kotlin.experimental.and
 
@@ -47,7 +48,11 @@ class MainActivity : AppCompatActivity() {
             this.gasPrice = BigInteger("d693a400", 16).toByteString() // decimal 3600000000
             this.gasLimit = BigInteger("5208", 16).toByteString()     // decimal 21000
             this.toAddress = dummyReceiverAddress
-            this.amount = BigInteger("0348bca5a16000", 16).toByteString()
+            this.transaction = Ethereum.Transaction.newBuilder().apply {
+                this.transfer = Ethereum.Transaction.Transfer.newBuilder().apply {
+                    this.amount = BigInteger("0348bca5a16000", 16).toByteString()
+                }.build()
+            }.build()
             this.privateKey = ByteString.copyFrom(secretPrivateKey.data())
         }.build()
         val signerOutput = AnySigner.sign(signerInput, CoinType.ETHEREUM, Ethereum.SigningOutput.parser())
@@ -96,7 +101,7 @@ class MainActivity : AppCompatActivity() {
 
         val output = AnySigner.sign(input.build(), coinBtc, Bitcoin.SigningOutput.parser())
 
-        assert(output.error.isEmpty())
+        assert(output.error == Common.SigningError.OK)
         val signedTransaction = output.encoded?.toByteArray()
         showLog("Signed BTC transaction: \n${signedTransaction?.toHexString()}")
     }
