@@ -93,10 +93,11 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
     uint256_t gasLimit = load(input.gas_limit());
     uint256_t maxInclusionFeePerGas = load(input.max_inclusion_fee_per_gas());
     uint256_t maxFeePerGas = load(input.max_fee_per_gas());
+    bool isLegacy = input.tx_mode() == Proto::TransactionMode::Legacy;
     switch (input.transaction().transaction_oneof_case()) {
         case Proto::Transaction::kTransfer:
             {
-                if (gasPrice != 0) { // legacy
+                if (isLegacy) {
                     return TransactionNonTyped::buildNativeTransfer(
                         nonce, gasPrice, gasLimit,
                         /* to: */ toAddress,
@@ -114,7 +115,7 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
         case Proto::Transaction::kErc20Transfer:
             {
                 Data tokenToAddress = addressStringToData(input.transaction().erc20_transfer().to());
-                if (gasPrice != 0) { // legacy
+                if (isLegacy) {
                     return TransactionNonTyped::buildERC20Transfer(
                         nonce, gasPrice, gasLimit,
                         /* tokenContract: */ toAddress,
@@ -132,7 +133,7 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
         case Proto::Transaction::kErc20Approve:
             {
                 Data spenderAddress = addressStringToData(input.transaction().erc20_approve().spender());
-                if (gasPrice != 0) { // legacy
+                if (isLegacy) {
                     return TransactionNonTyped::buildERC20Approve(
                         nonce, gasPrice, gasLimit,
                         /* tokenContract: */ toAddress,
@@ -151,7 +152,7 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
             {
                 Data tokenToAddress = addressStringToData(input.transaction().erc721_transfer().to());
                 Data tokenFromAddress = addressStringToData(input.transaction().erc721_transfer().from());
-                if (gasPrice != 0) { // legacy
+                if (isLegacy) {
                     return TransactionNonTyped::buildERC721Transfer(
                         nonce, gasPrice, gasLimit,
                         /* tokenContract: */ toAddress,
@@ -172,7 +173,7 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
             {
                 Data tokenToAddress = addressStringToData(input.transaction().erc1155_transfer().to());
                 Data tokenFromAddress = addressStringToData(input.transaction().erc1155_transfer().from());
-                if (gasPrice != 0) { // legacy
+                if (isLegacy) {
                     return TransactionNonTyped::buildERC1155Transfer(
                         nonce, gasPrice, gasLimit,
                         /* tokenContract: */ toAddress,
@@ -197,7 +198,7 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
         case Proto::Transaction::kContractGeneric:
         default:
             {
-                if (gasPrice != 0) { // legacy
+                if (isLegacy) {
                     return TransactionNonTyped::buildNativeTransfer(
                         nonce, gasPrice, gasLimit,
                         /* to: */ toAddress,
