@@ -25,7 +25,7 @@ class EthereumTests: XCTestCase {
         let input = EthereumSigningInput.with {
             $0.chainID = Data(hexString: "01")!
             $0.nonce = Data(hexString: "09")!
-            $0.txMode = EthereumTransactionMode.Legacy
+            // txMode not set, Legacy is the default
             $0.gasPrice = Data(hexString: "04a817c800")!
             $0.gasLimit = Data(hexString: "5208")!
             $0.toAddress = "0x3535353535353535353535353535353535353535"
@@ -46,7 +46,7 @@ class EthereumTests: XCTestCase {
         let input = EthereumSigningInput.with {
             $0.chainID = Data(hexString: "01")!
             $0.nonce = Data(hexString: "00")!
-            $0.txMode = EthereumTransactionMode.Legacy
+            // txMode not set, Legacy is the default
             $0.gasPrice = Data(hexString: "09c7652400")! // 42000000000
             $0.gasLimit = Data(hexString: "0130B9")! // 78009
             $0.toAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // DAI
@@ -90,7 +90,7 @@ class EthereumTests: XCTestCase {
         let input = EthereumSigningInput.with {
             $0.chainID = Data(hexString: "01")!
             $0.nonce = Data(hexString: "00")!
-            $0.txMode = EthereumTransactionMode.Legacy
+            // txMode not set, Legacy is the default
             $0.gasPrice = Data(hexString: "09c7652400")! // 42000000000
             $0.gasLimit = Data(hexString: "0130B9")! // 78009
             $0.toAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // DAI
@@ -113,7 +113,7 @@ class EthereumTests: XCTestCase {
         let input = EthereumSigningInput.with {
             $0.chainID = Data(hexString: "01")!
             $0.nonce = Data(hexString: "02de")! // 734
-            $0.txMode = EthereumTransactionMode.Legacy
+            // txMode not set, Legacy is the default
             $0.gasPrice = Data(hexString: "22ecb25c00")! // 150000000000
             $0.gasLimit = Data(hexString: "0130b9")! // 78009
             $0.toAddress = "0x0d8c864DA1985525e0af0acBEEF6562881827bd5" // contract
@@ -136,7 +136,7 @@ class EthereumTests: XCTestCase {
         let input = EthereumSigningInput.with {
             $0.chainID = Data(hexString: "01")!
             $0.nonce = Data(hexString: "00")!
-            $0.txMode = EthereumTransactionMode.Legacy
+            // txMode not set, Legacy is the default
             $0.gasPrice = Data(hexString: "09C7652400")! // 42000000000
             $0.gasLimit = Data(hexString: "0130b9")! // 78009
             $0.toAddress = "0x4e45e92ed38f885d39a733c14f1817217a89d425" // contract

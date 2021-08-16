@@ -57,7 +57,7 @@ TEST(TWAnySignerEthereum, Sign) {
 
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_nonce(nonce.data(), nonce.size());
-    input.set_tx_mode(Proto::TransactionMode::Legacy);
+    // tx_mode not set, Legacy is the default
     input.set_gas_price(gasPrice.data(), gasPrice.size());
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_private_key(key.data(), key.size());
@@ -90,7 +90,7 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsERC20) {
     Proto::SigningInput input;
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_nonce(nonce.data(), nonce.size());
-    input.set_tx_mode(Proto::TransactionMode::Legacy);
+    // tx_mode not set, Legacy is the default
     input.set_gas_price(gasPrice.data(), gasPrice.size());
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_to_address(token);
@@ -134,7 +134,7 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsGenericContract) {
     Proto::SigningInput input;
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_nonce(nonce.data(), nonce.size());
-    input.set_tx_mode(Proto::TransactionMode::Legacy);
+    // tx_mode not set, Legacy is the default
     input.set_gas_price(gasPrice.data(), gasPrice.size());
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_to_address(toAddress);
@@ -165,7 +165,7 @@ TEST(TWAnySignerEthereum, SignERC20TransferInvalidAddress) {
     Proto::SigningInput input;
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_nonce(nonce.data(), nonce.size());
-    input.set_tx_mode(Proto::TransactionMode::Legacy);
+    // tx_mode not set, Legacy is the default
     input.set_gas_price(gasPrice.data(), gasPrice.size());
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_to_address(invalidAddress);
@@ -194,7 +194,7 @@ TEST(TWAnySignerEthereum, SignERC20Approve) {
     Proto::SigningInput input;
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_nonce(nonce.data(), nonce.size());
-    input.set_tx_mode(Proto::TransactionMode::Legacy);
+    // tx_mode not set, Legacy is the default
     input.set_gas_price(gasPrice.data(), gasPrice.size());
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_to_address(token);
@@ -226,7 +226,7 @@ TEST(TWAnySignerEthereum, SignERC721Transfer) {
     Proto::SigningInput input;
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_nonce(nonce.data(), nonce.size());
-    input.set_tx_mode(Proto::TransactionMode::Legacy);
+    // tx_mode not set, Legacy is the default
     input.set_gas_price(gasPrice.data(), gasPrice.size());
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_to_address(tokenContract);
@@ -263,7 +263,7 @@ TEST(TWAnySignerEthereum, SignERC1155Transfer) {
     Proto::SigningInput input;
     input.set_chain_id(chainId.data(), chainId.size());
     input.set_nonce(nonce.data(), nonce.size());
-    input.set_tx_mode(Proto::TransactionMode::Legacy);
+    // tx_mode not set, Legacy is the default
     input.set_gas_price(gasPrice.data(), gasPrice.size());
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_to_address(tokenContract);
