@@ -89,6 +89,7 @@ message SigningInput {
     bytes nonce = 2;
 
     // Transaction version selector: Legacy or enveloped, has impact on fee structure.
+    // Default is Legacy (value 0)
     TransactionMode tx_mode = 3;
 
     // Gas price (256-bit number)
