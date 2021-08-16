@@ -68,7 +68,7 @@ class EthereumTests: XCTestCase {
         let input = EthereumSigningInput.with {
             $0.chainID = Data(hexString: "01")!
             $0.nonce = Data(hexString: "00")!
-            $0.txMode = EthereumTransactionMode.Enveloped
+            $0.txMode = .enveloped
             $0.gasLimit = Data(hexString: "0130B9")! // 78009
             $0.maxInclusionFeePerGas = Data(hexString: "0077359400")! // 2000000000
             $0.maxFeePerGas = Data(hexString: "00B2D05E00")! // 3000000000
