@@ -54,15 +54,7 @@ bool ParamByteArray::setValueJson(const std::string& value) {
 }
 
 Data ParamByteArray::hashStruct() const {
-    if (_bytes.size() > 32) {
-        return Hash::keccak256(_bytes);
-    }
-    Data res;
-    const auto count = _bytes.size();
-    const auto padding = ValueEncoder::padNeeded32(count);
-    res.insert(res.end(), _bytes.begin(), _bytes.begin() + count);
-    append(res, Data(padding));
-    return res;
+    return Hash::keccak256(_bytes);
 }
 
 void ParamByteArrayFix::setVal(const Data& val) {
