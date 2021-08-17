@@ -511,6 +511,19 @@ TEST(EthereumAbiStruct, hashStruct_cryptofights) {
     EXPECT_EQ(hex(store(rsv.v)), "1b");
 }
 
+TEST(EthereumAbiStruct, hashStruct_rarible) {
+    auto path = TESTS_ROOT + "/Ethereum/Data/eip712_rarible.json";
+    auto typeData = load_file(path);
+    auto hash = ParamStruct::hashStructJson(typeData);
+    EXPECT_EQ(hex(hash), "df0200de55c05eb55af2597012767ea3af653d68000be49580f8e05acd91d366");
+
+    // sign the hash
+    const auto rsv = Signer::sign(privateKeyCow, hash, true, 0);
+    EXPECT_EQ(hex(store(rsv.r)), "9e6155c62a55d3dc6034973d93821dace5a0c66bfbd8413ad29205c2fb079e84");
+    EXPECT_EQ(hex(store(rsv.s)), "3ca5906f24b82672304302a0e42e5dc090acc800060bad51fb81cc4469f69930");
+    EXPECT_EQ(hex(store(rsv.v)), "1b");
+}
+
 TEST(EthereumAbiStruct, hashStruct_snapshot) {
     auto path = TESTS_ROOT + "/Ethereum/Data/eip712_snapshot_v4.json";
     auto typeData = load_file(path);
@@ -819,11 +832,17 @@ TEST(EthereumAbiStruct, ParamHashStruct) {
     {
         auto p = std::make_shared<ParamByteArray>();
         EXPECT_TRUE(p->setValueJson("0123456789"));
-        EXPECT_EQ(hex(p->hashStruct()), "0123456789000000000000000000000000000000000000000000000000000000");
+        EXPECT_EQ(hex(p->hashStruct()), "79fad56e6cf52d0c8c2c033d568fc36856ba2b556774960968d79274b0e6b944");
         EXPECT_TRUE(p->setValueJson("0xa9059cbb0000000000000000000000002e0d94754b348d208d64d52d78bcd443afa9fa520000000000000000000000000000000000000000000000000000000000000007"));
         EXPECT_EQ(hex(p->hashStruct()), "a9485354dd9d340e02789cfc540c6c4a2ff5511beb414b64634a5e11c6a7168c");
         EXPECT_TRUE(p->setValueJson("0x0000000000000000000000000000000000000000000000000000000123456789"));
-        EXPECT_EQ(hex(p->hashStruct()), "0000000000000000000000000000000000000000000000000000000123456789");
+        EXPECT_EQ(hex(p->hashStruct()), "c8243991757dc8723e4976248127e573da4a2cbfad54b776d5a7c8d92b6e2a6b");
+        EXPECT_TRUE(p->setValueJson("0x00"));
+        EXPECT_EQ(hex(p->hashStruct()), "bc36789e7a1e281436464229828f817d6612f7b477d66591ff96a9e064bcc98a");
+        EXPECT_TRUE(p->setValueJson("0x"));
+        EXPECT_EQ(hex(p->hashStruct()), "c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470");
+        EXPECT_TRUE(p->setValueJson(""));
+        EXPECT_EQ(hex(p->hashStruct()), "c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470");
     }
     {
         auto p = std::make_shared<ParamByteArrayFix>(36);
