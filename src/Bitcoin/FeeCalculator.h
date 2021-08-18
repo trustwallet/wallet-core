@@ -13,22 +13,33 @@ namespace TW::Bitcoin {
 /// Interface for transaction fee calculator.
 class FeeCalculator {
 public:
-    virtual int64_t calculate(int64_t inputs, int64_t outputs = 2, int64_t byteFee = 1) const = 0;
+    virtual int64_t calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const = 0;
     virtual int64_t calculateSingleInput(int64_t byteFee) const = 0;
 };
 
-/// Default Bitcoin transaction fee calculator, non-segwit.
-class DefaultFeeCalculator : public FeeCalculator {
+/// Generic fee calculator with linear input and output size, and a fix size
+class LinearFeeCalculator : public FeeCalculator {
 public:
-    int64_t calculate(int64_t inputs, int64_t outputs = 2, int64_t byteFee = 1) const override;
-    int64_t calculateSingleInput(int64_t byteFee) const override;
+    const double bytesPerInput;
+    const double bytesPerOutput;
+    const double bytesBase;
+    LinearFeeCalculator(double bytesPerInput, double bytesPerOutput, double bytesBase)
+        :bytesPerInput(bytesPerInput), bytesPerOutput(bytesPerOutput), bytesBase(bytesBase) {}
+
+    virtual int64_t calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const override;
+    virtual int64_t calculateSingleInput(int64_t byteFee) const override;
+};
+
+/// Default Bitcoin transaction fee calculator, non-segwit.
+class DefaultFeeCalculator : public LinearFeeCalculator {
+public:
+    DefaultFeeCalculator(): LinearFeeCalculator(148, 34, 10) {}
 };
 
 /// Bitcoin Segwit transaction fee calculator
-class SegwitFeeCalculator : public FeeCalculator {
+class SegwitFeeCalculator : public LinearFeeCalculator {
 public:
-    int64_t calculate(int64_t inputs, int64_t outputs = 2, int64_t byteFee = 1) const override;
-    int64_t calculateSingleInput(int64_t byteFee) const override;
+    SegwitFeeCalculator(): LinearFeeCalculator(101.25, 31, 10) {}
 };
 
 /// Return the fee calculator for the given coin.
