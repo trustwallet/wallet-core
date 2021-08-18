@@ -66,6 +66,7 @@ const char *mnemonic_from_data(const uint8_t *data, int len, char *buf, int bufl
   if (len % 4 || len < 16 || len > 32) {
     return 0;
   }
+  // [wallet-core] Check provided buffer validity, size
   if (!buf || buflen < 24 * 10) {
     return 0;
   }
