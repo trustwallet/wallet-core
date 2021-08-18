@@ -100,6 +100,13 @@ message SigningInput {
 
     // Optional transaction plan
     TransactionPlan plan = 11;
+
+    // Optional lockTime, default value 0 means no time locking.
+    // If all inputs have final (`0xffffffff`) sequence numbers then `lockTime` is irrelevant.
+    // Otherwise, the transaction may not be added to a block until after `lockTime`.
+    //  value  < 500000000 : Block number at which this transaction is unlocked
+    //  value >= 500000000 : UNIX timestamp at which this transaction is unlocked
+    uint32 lock_time = 12;
 }
 
 // Describes a preliminary transaction plan.

@@ -24,13 +24,14 @@ public:
     /// Builds a transaction by selecting UTXOs and calculating fees.
     template <typename Transaction>
     static Transaction build(const TransactionPlan& plan, const std::string& toAddress,
-                             const std::string& changeAddress, enum TWCoinType coin) {
+                             const std::string& changeAddress, enum TWCoinType coin, uint32_t lockTime) {
         auto lockingScriptTo = Script::lockScriptForAddress(toAddress, coin);
         if (lockingScriptTo.empty()) {
             return {};
         }
 
         Transaction tx;
+        tx.lockTime = lockTime;
         tx.outputs.push_back(TransactionOutput(plan.amount, lockingScriptTo));
 
         if (plan.change > 0) {

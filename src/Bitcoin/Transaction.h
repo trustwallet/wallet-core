@@ -49,7 +49,7 @@ public:
 public:
     Transaction() = default;
 
-    Transaction(int32_t version, uint32_t lockTime, TW::Hash::Hasher hasher = TW::Hash::sha256d)
+    Transaction(int32_t version, uint32_t lockTime = 0, TW::Hash::Hasher hasher = TW::Hash::sha256d)
         : version(version), lockTime(lockTime), inputs(), outputs(), hasher(hasher) {}
 
     /// Whether the transaction is empty.
