@@ -12,7 +12,6 @@
 #include "FeeCalculator.h"
 #include "UTXO.h"
 #include <TrustWalletCore/TWCoinType.h>
-#include "../proto/Bitcoin.pb.h"
 
 namespace TW::Bitcoin {
 
