@@ -7,6 +7,7 @@
 #include "Signer.h"
 #include "../Ethereum/RLP.h"
 #include "../HexCoding.h"
+#include <google/protobuf/util/json_util.h>
 
 
 using namespace TW;
@@ -66,6 +67,13 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
         }
     }
     return Proto::SigningOutput();
+}
+
+std::string Signer::signJSON(const std::string& json, const Data& key) {
+    auto input = Proto::SigningInput();
+    google::protobuf::util::JsonStringToMessage(json, &input);
+    input.set_private_key(key.data(), key.size());
+    return hex(Signer::sign(input).encoded());
 }
 
 Proto::SigningOutput Signer::signTransaction(const Proto::SigningInput &input) noexcept {

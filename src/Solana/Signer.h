@@ -19,6 +19,10 @@ class Signer {
   public:
     /// Signs the given transaction.
     static void sign(const std::vector<PrivateKey>& privateKeys, Transaction& transaction);
+
+    /// Signs a json Proto::SigningInput with private key
+    static std::string signJSON(const std::string& json, const Data& key);
+
     static void signUpdateBlockhash(const std::vector<PrivateKey>& privateKeys,
                                     Transaction& transaction, Solana::Hash& recentBlockhash);
     static Data signRawMessage(const std::vector<PrivateKey>& privateKeys, const Data messageData);

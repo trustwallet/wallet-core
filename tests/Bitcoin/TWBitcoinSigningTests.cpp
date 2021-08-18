@@ -192,6 +192,7 @@ TEST(BitcoinSigning, SignP2WPKH_Bip143) {
     const auto utxoPubkeyHash1 = Hash::ripemd(Hash::sha256(pubKey1.bytes));
     EXPECT_EQ(hex(utxoPubkeyHash1), "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1");
     input.privateKeys.push_back(utxoKey1);
+    input.lockTime = 0x11;
 
     UTXO utxo0;
     utxo0.script = utxo0Script;
@@ -218,7 +219,6 @@ TEST(BitcoinSigning, SignP2WPKH_Bip143) {
     input.plan = plan;
 
     // Sign
-    input.lockTime = 0x11;
     auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
 
     ASSERT_TRUE(result) << std::to_string(result.error());
@@ -451,7 +451,7 @@ TEST(BitcoinSigning, SignP2WPKH_MaxAmount) {
 }
 
 TEST(BitcoinSigning, EncodeP2WSH) {
-    auto unsignedTx = Transaction(1, 0);
+    auto unsignedTx = Transaction(1);
 
     auto outpoint0 = OutPoint(parse_hex("0001000000000000000000000000000000000000000000000000000000000000"), 0);
     unsignedTx.inputs.emplace_back(outpoint0, Script(), UINT32_MAX);
@@ -873,7 +873,7 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH_NegativeOmitKeys) {
 }
 
 TEST(BitcoinSigning, EncodeP2SH_P2WSH) {
-    auto unsignedTx = Transaction(1, 0);
+    auto unsignedTx = Transaction(1);
 
     auto hash0 = parse_hex("36641869ca081e70f394c6948e8af409e18b619df2ed74aa106c1ca29787b96e");
     auto outpoint0 = OutPoint(hash0, 1);
@@ -1278,7 +1278,7 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
     auto toAmount0 = 1'000'000;
     auto toAmount1 = 2'000'000;
 
-    auto unsignedTx = Transaction(1, 0);
+    auto unsignedTx = Transaction(1);
 
     auto hash0 = parse_hex("bbe736ada63c4678025dff0ff24d5f38970a3e4d7a2f77808689ed68004f55fe");
     std::reverse(hash0.begin(), hash0.end());
