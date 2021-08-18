@@ -58,7 +58,7 @@ class TransactionSigner {
         plan = TransactionBuilder::plan(input);
       }
       transaction = TransactionBuilder::template build<Transaction>(
-        plan, input.to_address(), input.change_address(), TWCoinType(input.coin_type())
+        plan, input.to_address(), input.change_address(), TWCoinType(input.coin_type()), input.lock_time()
       );
     }
 
