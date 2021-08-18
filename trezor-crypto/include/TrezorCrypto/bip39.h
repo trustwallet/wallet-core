@@ -34,6 +34,9 @@ extern "C" {
 #define BIP39_WORDS 2048
 #define BIP39_PBKDF2_ROUNDS 2048
 
+#define BIP39_MAX_WORDS 24  // [wallet-core]
+#define BIP39_MAX_WORD_LENGTH 9  // [wallet-core]
+
 // [wallet-core] Added output buffer
 const char *mnemonic_generate(int strength, char *buf, int buflen);  // strength in bits
 // [wallet-core] Added output buffer

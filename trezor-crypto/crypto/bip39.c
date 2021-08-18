@@ -67,7 +67,7 @@ const char *mnemonic_from_data(const uint8_t *data, int len, char *buf, int bufl
     return 0;
   }
   // [wallet-core] Check provided buffer validity, size
-  if (!buf || buflen < 24 * 10) {
+  if (!buf || buflen < (BIP39_MAX_WORDS * (BIP39_MAX_WORD_LENGTH + 1))) {
     return 0;
   }
 

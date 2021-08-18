@@ -33,7 +33,7 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve);
 const char* curveName(TWCurve curve);
 } // namespace
 
-const size_t MnemonicBufLength = Mnemonic::MaxWords * (Mnemonic::MaxWordLength + 3) + 20; // some extra slack
+const int MnemonicBufLength = Mnemonic::MaxWords * (BIP39_MAX_WORD_LENGTH + 3) + 20; // some extra slack
 
 HDWallet::HDWallet(int strength, const std::string& passphrase)
     : passphrase(passphrase) {
