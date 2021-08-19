@@ -34,11 +34,15 @@ extern "C" {
 #define BIP39_WORDS 2048
 #define BIP39_PBKDF2_ROUNDS 2048
 
-// [wallet-core] Note: not thread safe!
-const char *mnemonic_generate(int strength);  // strength in bits
-// [wallet-core] Note: not thread safe!
-const char *mnemonic_from_data(const uint8_t *data, int len);
-void mnemonic_clear(void);
+#define BIP39_MAX_WORDS 24  // [wallet-core]
+#define BIP39_MAX_WORD_LENGTH 9  // [wallet-core]
+
+// [wallet-core] Added output buffer
+const char *mnemonic_generate(int strength, char *buf, int buflen);  // strength in bits
+// [wallet-core] Added output buffer
+const char *mnemonic_from_data(const uint8_t *data, int datalen, char *buf, int buflen);
+// [wallet-core] No longer used
+//void mnemonic_clear(void);
 
 int mnemonic_check(const char *mnemonic);
 

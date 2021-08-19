@@ -78,7 +78,8 @@ TEST(TWBitcoinGoldTxGeneration, TxGeneration) {
 
     auto utxoKey0 = parse_hex("cbe13a79b82ec7f8871b336a64fd8d531f598e7c9022e29c67e824cfd54af57f");
     input.add_private_key(utxoKey0.data(), utxoKey0.size());
-
+    input.set_lock_time(0x00098971);
+    
 
     auto scriptPub1 = Script(parse_hex("0014db746a75d9aae8995d135b1e19a04d7765242a8f"));
     auto scriptHash = std::vector<uint8_t>();
@@ -101,7 +102,6 @@ TEST(TWBitcoinGoldTxGeneration, TxGeneration) {
 
     // Sign
     auto txSigner = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    txSigner.transaction.lockTime = 0x00098971;
     auto result = txSigner.sign();
 
     ASSERT_TRUE(result) << std::to_string(result.error());

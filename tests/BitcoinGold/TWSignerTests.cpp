@@ -58,6 +58,7 @@ TEST(TWBitcoinGoldSigner, SignTransaction) {
     utxo0->mutable_out_point()->set_hash(hash0.data(), hash0.size());
     utxo0->mutable_out_point()->set_index(1);
     utxo0->mutable_out_point()->set_sequence(0xfffffffd);
+    input.set_lock_time(0x00098971);
 
 
     Proto::TransactionPlan plan;
@@ -74,7 +75,6 @@ TEST(TWBitcoinGoldSigner, SignTransaction) {
 
     // Sign
     auto txSigner = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    txSigner.transaction.lockTime = 0x00098971;
     auto result = txSigner.sign();
 
     ASSERT_TRUE(result) << std::to_string(result.error());

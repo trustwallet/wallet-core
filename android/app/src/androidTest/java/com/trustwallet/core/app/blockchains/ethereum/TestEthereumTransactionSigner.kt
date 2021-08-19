@@ -10,6 +10,7 @@ import wallet.core.jni.CoinType
 import wallet.core.jni.CoinType.ETHEREUM
 import wallet.core.jni.proto.Ethereum
 import wallet.core.jni.proto.Ethereum.SigningOutput
+import wallet.core.jni.proto.Ethereum.TransactionMode
 import com.trustwallet.core.app.utils.Numeric
 import org.junit.Assert.assertArrayEquals
 
@@ -27,6 +28,7 @@ class TestEthereumTransactionSigner {
             toAddress = "0x3535353535353535353535353535353535353535"
             chainId = ByteString.copyFrom("0x1".toHexByteArray())
             nonce = ByteString.copyFrom("0x9".toHexByteArray())
+            // txMode not set, Legacy is the default
             gasPrice = ByteString.copyFrom("0x04a817c800".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x5208".toHexByteArray())
             transaction = Ethereum.Transaction.newBuilder().apply {
@@ -49,6 +51,7 @@ class TestEthereumTransactionSigner {
             toAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // DAI
             chainId = ByteString.copyFrom("0x1".toHexByteArray())
             nonce = ByteString.copyFrom("0x0".toHexByteArray())
+            // txMode not set, Legacy is the default
             gasPrice = ByteString.copyFrom("0x09c7652400".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x0130B9".toHexByteArray())
             transaction = Ethereum.Transaction.newBuilder().apply {
@@ -66,6 +69,31 @@ class TestEthereumTransactionSigner {
     }
 
     @Test
+    fun testEthereumERC20_1559_Signing() {
+        val signingInput = Ethereum.SigningInput.newBuilder()
+        signingInput.apply {
+            privateKey = ByteString.copyFrom(PrivateKey("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151".toHexByteArray()).data())
+            toAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // DAI
+            chainId = ByteString.copyFrom("0x1".toHexByteArray())
+            nonce = ByteString.copyFrom("0x0".toHexByteArray())
+            txMode = TransactionMode.Enveloped
+            maxInclusionFeePerGas = ByteString.copyFrom("0x77359400".toHexByteArray()) // 2000000000
+            maxFeePerGas = ByteString.copyFrom("0xB2D05E00".toHexByteArray()) // 3000000000
+            gasLimit = ByteString.copyFrom("0x0130B9".toHexByteArray())
+            transaction = Ethereum.Transaction.newBuilder().apply {
+                erc20Transfer = Ethereum.Transaction.ERC20Transfer.newBuilder().apply {
+                    to = "0x5322b34c88ed0691971bf52a7047448f0f4efc84"
+                    amount = ByteString.copyFrom("0x1bc16d674ec80000".toHexByteArray())       
+                }.build()
+            }.build()
+        }
+
+        val output = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
+
+        assertEquals(Numeric.toHexString(output.encoded.toByteArray()), "0x02f8b00180847735940084b2d05e00830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000c080a0adfcfdf98d4ed35a8967a0c1d78b42adb7c5d831cf5a3272654ec8f8bcd7be2ea011641e065684f6aa476f4fd250aa46cd0b44eccdb0a6e1650d658d1998684cdf")
+    }
+
+    @Test
     fun testEthereumERC721Signing() {
         val signingInput = Ethereum.SigningInput.newBuilder()
         signingInput.apply {
@@ -73,6 +101,7 @@ class TestEthereumTransactionSigner {
             toAddress = "0x0d8c864DA1985525e0af0acBEEF6562881827bd5"
             chainId = ByteString.copyFrom("0x1".toHexByteArray())
             nonce = ByteString.copyFrom("0x02de".toHexByteArray())
+            // txMode not set, Legacy is the default
             gasPrice = ByteString.copyFrom("0x22ecb25c00".toHexByteArray()) // 150 Gwei
             gasLimit = ByteString.copyFrom("0x0130b9".toHexByteArray())
             transaction = Ethereum.Transaction.newBuilder().apply {
@@ -98,6 +127,7 @@ class TestEthereumTransactionSigner {
             toAddress = "0x4e45e92ed38f885d39a733c14f1817217a89d425" // contract
             chainId = ByteString.copyFrom("0x01".toHexByteArray())
             nonce = ByteString.copyFrom("0x00".toHexByteArray())
+            // txMode not set, Legacy is the default
             gasPrice = ByteString.copyFrom("0x09C7652400".toHexByteArray()) // 42000000000
             gasLimit = ByteString.copyFrom("0x0130b9".toHexByteArray()) // 78009
             transaction = Ethereum.Transaction.newBuilder().apply {

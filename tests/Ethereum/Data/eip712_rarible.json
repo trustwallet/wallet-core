@@ -1,0 +1,110 @@
+{
+    "types": {
+        "EIP712Domain": [
+            {
+                "type": "string",
+                "name": "name"
+            },
+            {
+                "type": "string",
+                "name": "version"
+            },
+            {
+                "type": "uint256",
+                "name": "chainId"
+            },
+            {
+                "type": "address",
+                "name": "verifyingContract"
+            }
+        ],
+        "AssetType": [
+            {
+                "name": "assetClass",
+                "type": "bytes4"
+            },
+            {
+                "name": "data",
+                "type": "bytes"
+            }
+        ],
+        "Asset": [
+            {
+                "name": "assetType",
+                "type": "AssetType"
+            },
+            {
+                "name": "value",
+                "type": "uint256"
+            }
+        ],
+        "Order": [
+            {
+                "name": "maker",
+                "type": "address"
+            },
+            {
+                "name": "makeAsset",
+                "type": "Asset"
+            },
+            {
+                "name": "taker",
+                "type": "address"
+            },
+            {
+                "name": "takeAsset",
+                "type": "Asset"
+            },
+            {
+                "name": "salt",
+                "type": "uint256"
+            },
+            {
+                "name": "start",
+                "type": "uint256"
+            },
+            {
+                "name": "end",
+                "type": "uint256"
+            },
+            {
+                "name": "dataType",
+                "type": "bytes4"
+            },
+            {
+                "name": "data",
+                "type": "bytes"
+            }
+        ]
+    },
+    "domain": {
+        "chainId": 1,
+        "name": "Exchange",
+        "verifyingContract": "0x9757f2d2b135150bbeb65308d4a91804107cd8d6",
+        "version": "2"
+    },
+    "primaryType": "Order",
+    "message": {
+        "maker": "0xc182a38ae564fd05b0261cf6eec416aef02fc3fe",
+        "makeAsset": {
+            "assetType": {
+                "assetClass": "0x73ad2146",
+                "data": "0x0000000000000000000000006a5ff3ceecae9ceb96e6ac6c76b82af8b39f0eb30000000000000000000000000000000000000000000000000000000000001398"
+            },
+            "value": "1"
+        },
+        "taker": "0x0000000000000000000000000000000000000000",
+        "takeAsset": {
+            "assetType": {
+                "assetClass": "0xaaaebeba",
+                "data": "0x"
+            },
+            "value": "699000000000000000000"
+        },
+        "salt": "108946545279938080742200552539328985411221282471150769260125599178294648928102",
+        "start": 0,
+        "end": 0,
+        "dataType": "0x4c234266",
+        "data": "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000001cf0df2a5a20cd61d68d4489eebbf85b8d39e18a00000000000000000000000000000000000000000000000000000000000000fa"
+    }
+}
