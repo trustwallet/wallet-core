@@ -439,23 +439,23 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual(address, "band1pe8xm2r46rmctsukuqu7gl900vzprfsp4sguc3")
     }
 
-    func testCreateMultiThreaded() throws {
-        let generated = HDWallet(strength: 256, passphrase: "")
-        XCTAssertNotNil(generated)
-
-        let mnemonic = generated?.mnemonic ?? ""
+    func testGenerateMultiThreaded() throws {
         let group = DispatchGroup()
-        for _ in 0..<50 {
+        for _ in 0..<5 {
             group.enter()
 
             Thread.init {
-                let wallet = HDWallet(mnemonic: mnemonic, passphrase: "")
-                XCTAssertEqual(wallet?.mnemonic, mnemonic)
+                // multiple steps in one thread
+                for _ in 0..<20 {
+                    let wallet = HDWallet(strength: 128, passphrase: "")
+                    XCTAssertNotNil(wallet)
+                    XCTAssertTrue(Mnemonic.isValid(mnemonic: wallet?.mnemonic  ?? ""))
+                }
 
                 group.leave()
             }.start()
         }
 
-        XCTAssertEqual(group.wait(timeout: .now() + .seconds(5)), .success)
+        XCTAssertEqual(group.wait(timeout: .now() + .seconds(10)), .success)
     }
 }
