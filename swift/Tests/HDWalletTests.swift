@@ -455,7 +455,7 @@ class HDWalletTests: XCTestCase {
                     // also try mnemonic-based generation
                     let mnemonic = wallet?.mnemonic ?? ""
                     let wallet2 = HDWallet(mnemonic: mnemonic, passphrase: "")
-                    XCTAssertEqual(wallet?.mnemonic, mnemonic)
+                    XCTAssertEqual(wallet2?.mnemonic, mnemonic)
                 }
 
                 group.leave()
