@@ -33,9 +33,12 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve);
 const char* curveName(TWCurve curve);
 } // namespace
 
+const int MnemonicBufLength = Mnemonic::MaxWords * (BIP39_MAX_WORD_LENGTH + 3) + 20; // some extra slack
+
 HDWallet::HDWallet(int strength, const std::string& passphrase)
     : passphrase(passphrase) {
-    const char* mnemonic_chars = mnemonic_generate(strength);
+    char buf[MnemonicBufLength];
+    const char* mnemonic_chars = mnemonic_generate(strength, buf, MnemonicBufLength);
     if (mnemonic_chars == nullptr) {
         throw std::invalid_argument("Invalid strength");
     }
@@ -55,7 +58,8 @@ HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase)
 
 HDWallet::HDWallet(const Data& entropy, const std::string& passphrase)
     : passphrase(passphrase) {
-    const char* mnemonic_chars = mnemonic_from_data(entropy.data(), static_cast<int>(entropy.size()));
+    char buf[MnemonicBufLength];
+    const char* mnemonic_chars = mnemonic_from_data(entropy.data(), static_cast<int>(entropy.size()), buf, MnemonicBufLength);
     if (mnemonic_chars == nullptr) {
         throw std::invalid_argument("Invalid mnemonic data");
     }
