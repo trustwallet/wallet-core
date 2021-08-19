@@ -13,9 +13,9 @@ namespace TW {
 /// BIP39 Mnemonic Sentence handling.
 class Mnemonic {
 public:
-    static constexpr size_t MaxWords = 24;
-    static constexpr size_t MinWords = 12;
-    static constexpr size_t BitsPerWord = 11; // each word encodes this many bits (there are 2^11=2048 different words)
+    static constexpr int MaxWords = 24;
+    static constexpr int MinWords = 12;
+    static constexpr int BitsPerWord = 11; // each word encodes this many bits (there are 2^11=2048 different words)
 
 public:
     /// Determines whether a mnemonic phrase is valid.

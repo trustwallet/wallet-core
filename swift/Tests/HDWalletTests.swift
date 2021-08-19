@@ -438,4 +438,30 @@ class HDWalletTests: XCTestCase {
 
         XCTAssertEqual(address, "band1pe8xm2r46rmctsukuqu7gl900vzprfsp4sguc3")
     }
+
+    func testGenerateMultiThreaded() throws {
+        let group = DispatchGroup()
+        for _ in 0..<5 {
+            group.enter()
+
+            Thread.init {
+                // multiple steps in one thread
+                for _ in 0..<10 {
+                    // random wallet generation
+                    let wallet = HDWallet(strength: 128, passphrase: "")
+                    XCTAssertNotNil(wallet)
+                    XCTAssertTrue(Mnemonic.isValid(mnemonic: wallet?.mnemonic  ?? ""))
+
+                    // also try mnemonic-based generation
+                    let mnemonic = wallet?.mnemonic ?? ""
+                    let wallet2 = HDWallet(mnemonic: mnemonic, passphrase: "")
+                    XCTAssertEqual(wallet2?.mnemonic, mnemonic)
+                }
+
+                group.leave()
+            }.start()
+        }
+
+        XCTAssertEqual(group.wait(timeout: .now() + .seconds(10)), .success)
+    }
 }
