@@ -446,10 +446,16 @@ class HDWalletTests: XCTestCase {
 
             Thread.init {
                 // multiple steps in one thread
-                for _ in 0..<20 {
+                for _ in 0..<10 {
+                    // random wallet generation
                     let wallet = HDWallet(strength: 128, passphrase: "")
                     XCTAssertNotNil(wallet)
                     XCTAssertTrue(Mnemonic.isValid(mnemonic: wallet?.mnemonic  ?? ""))
+
+                    // also try mnemonic-based generation
+                    let mnemonic = wallet?.mnemonic ?? ""
+                    let wallet2 = HDWallet(mnemonic: mnemonic, passphrase: "")
+                    XCTAssertEqual(wallet?.mnemonic, mnemonic)
                 }
 
                 group.leave()
