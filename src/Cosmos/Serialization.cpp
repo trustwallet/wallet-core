@@ -55,7 +55,7 @@ static json feeJSON(const Fee& fee) {
 
     for (auto& amount : fee.amounts()) {
         jsonAmounts.push_back(
-            amountJSON(std::to_string(amount.amount()), amount.denom()));
+            amountJSON(amount.amount(), amount.denom()));
     }
 
     json jsonFee;
@@ -110,7 +110,7 @@ static json sendCoinsMessageJSON(const SendCoinsMessage& message) {
     json jsonAmounts = json::array();
 
     for (auto& amount : message.amounts()) {
-        jsonAmounts.push_back(amountJSON(std::to_string(amount.amount()), amount.denom()));
+        jsonAmounts.push_back(amountJSON(amount.amount(), amount.denom()));
     }
 
     return sendCoinsMessageJSON(jsonAmounts, message.from_address(), message.to_address(), message.type_prefix());
@@ -119,14 +119,14 @@ static json sendCoinsMessageJSON(const SendCoinsMessage& message) {
 
 static json stakeMessageJSON(const StakeMessage& message) {
     auto amount = message.amount();
-    json jsonAmount = amountJSON(std::to_string(amount.amount()), amount.denom());
+    json jsonAmount = amountJSON(amount.amount(), amount.denom());
 
     return stakeMessageJSON(jsonAmount, message.delegator_address(), message.validator_address(), message.type_prefix());
 }
 
 static json restakeMessageJSON(const ReStakeMessage& message) {
     auto amount = message.amount();
-    json jsonAmount = amountJSON(std::to_string(amount.amount()), amount.denom());
+    json jsonAmount = amountJSON(amount.amount(), amount.denom());
 
     return restakeMessageJSON(jsonAmount, message.delegator_address(), message.validator_src_address(),
             message.validator_dst_address(), message.type_prefix());

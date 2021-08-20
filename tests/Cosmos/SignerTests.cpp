@@ -33,13 +33,13 @@ TEST(CosmosSigner, SignTx) {
     message.set_to_address(toAddress.string());
     auto amountOfTx = message.add_amounts();
     amountOfTx->set_denom("muon");
-    amountOfTx->set_amount(1);
+    amountOfTx->set_amount("1");
 
     auto &fee = *input.mutable_fee();
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("muon");
-    amountOfFee->set_amount(200);
+    amountOfFee->set_amount("200");
 
     auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
     input.set_private_key(privateKey.data(), privateKey.size());
