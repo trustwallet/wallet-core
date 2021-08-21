@@ -1707,7 +1707,7 @@
       "url": "https://blockscout.com/xdai/mainnet",
       "txPath": "/tx/",
       "accountPath": "/address/",
-      "sampleTx": "0xcf5162062379ccdb0d4fe9595ff61a2ea8b6a59c79275002e690f0c6ddfda8b4",
+      "sampleTx": "0x936798a1ef607c9e856d7861b15999c770c06f0887c4fc1f6acbf3bef09899c1",
       "sampleAccount": "0x12d61a95CF55e18D267C2F1AA67d8e42ae1368f8"
     },
     "info": {

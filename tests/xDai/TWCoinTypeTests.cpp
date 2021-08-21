@@ -15,7 +15,7 @@
 
 TEST(TWxDaiCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeXDai));
-    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x9243890b844219accefd8798271052f5a056453ec18984a56e81c92921330d54"));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x936798a1ef607c9e856d7861b15999c770c06f0887c4fc1f6acbf3bef09899c1"));
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeXDai, txId.get()));
     auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0x12d61a95CF55e18D267C2F1AA67d8e42ae1368f8"));
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeXDai, accId.get()));
@@ -27,7 +27,7 @@ TEST(TWxDaiCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeXDai));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeXDai));
     assertStringsEqual(symbol, "xDAI");
-    assertStringsEqual(txUrl, "https://blockscout.com/xdai/mainnet/tx/0x9243890b844219accefd8798271052f5a056453ec18984a56e81c92921330d54");
+    assertStringsEqual(txUrl, "https://blockscout.com/xdai/mainnet/tx/0x936798a1ef607c9e856d7861b15999c770c06f0887c4fc1f6acbf3bef09899c1");
     assertStringsEqual(accUrl, "https://blockscout.com/xdai/mainnet/address/0x12d61a95CF55e18D267C2F1AA67d8e42ae1368f8");
     assertStringsEqual(id, "xdai");
     assertStringsEqual(name, "xDai");
