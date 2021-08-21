@@ -11,10 +11,10 @@
 using namespace TW::Avalanche;
 
 void Credential::encode(Data& data) const {
-    encode32BE(TypeID, data);
+    encode32BE(typeID, data);
     // do not sort signatures, they must match input signature indices
-    encode32BE(static_cast<uint32_t>(Signatures.size()), data);
-    for (auto sig : Signatures) {
+    encode32BE(static_cast<uint32_t>(signatures.size()), data);
+    for (auto sig : signatures) {
         for (auto byte : sig) {
             data.push_back(byte);
         }

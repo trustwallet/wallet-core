@@ -4,11 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Avalanche/CB58.h"
+#include "Avalanche/Transaction.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
-#include "Avalanche/CB58.h"
-#include "Avalanche/Transaction.h"
 
 #include <gtest/gtest.h>
 
@@ -26,53 +26,62 @@ std::vector<Address> generateAddressesForComponent() {
 
 TEST(AvalancheTransactionComponents, TestTransferableInput) {
     auto arbitraryAddresses = generateAddressesForComponent();
-    auto assetID = parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db"); 
-    
+    auto assetID = parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db");
+
     auto addressesInOne = std::vector<uint32_t>{3, 7};
     auto txidOne = parse_hex("0x00e1d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000");
     auto utxoIndexOne = 6;
     auto coreInputOne = std::make_unique<SECP256k1TransferInput>(123456789, addressesInOne);
-    auto inputOne = TransferableInput(txidOne, utxoIndexOne, assetID, std::move(coreInputOne), arbitraryAddresses);
+    auto inputOne = TransferableInput(txidOne, utxoIndexOne, assetID, std::move(coreInputOne),
+                                      arbitraryAddresses);
 
     auto addressesInTwo = std::vector<uint32_t>{4, 8};
     auto txidTwo = parse_hex("0xf1e1d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000");
     auto utxoIndexTwo = 9;
     auto coreInputTwo = std::make_unique<SECP256k1TransferInput>(987654321, addressesInTwo);
-    auto inputTwo = TransferableInput(txidTwo, utxoIndexTwo, assetID, std::move(coreInputTwo), arbitraryAddresses);
+    auto inputTwo = TransferableInput(txidTwo, utxoIndexTwo, assetID, std::move(coreInputTwo),
+                                      arbitraryAddresses);
 
     auto inputThree = TransferableInput(inputTwo); // should be able to build from each other
-    EXPECT_EQ(inputTwo.UTXOIndex, inputThree.UTXOIndex);
-    EXPECT_FALSE(inputOne.UTXOIndex == inputThree.UTXOIndex);
+    EXPECT_EQ(inputTwo.utxoIndex, inputThree.utxoIndex);
+    EXPECT_FALSE(inputOne.utxoIndex == inputThree.utxoIndex);
 
-    inputThree = inputOne; // should be able to assign inputs to each other
+    inputThree = inputOne;   // should be able to assign inputs to each other
     inputThree = inputThree; // and self-assignment should be a no-op
-    EXPECT_TRUE(inputOne.UTXOIndex == inputThree.UTXOIndex);
+    EXPECT_TRUE(inputOne.utxoIndex == inputThree.utxoIndex);
 
-    EXPECT_TRUE(inputThree < inputTwo); // inputThree should be less than inputTwo by lexicographical sort if it was assigned properly
+    EXPECT_TRUE(inputThree < inputTwo); // inputThree should be less than inputTwo by
+                                        // lexicographical sort if it was assigned properly
 }
 
 TEST(AvalancheTransactionComponents, TestTransferableOutputAssignmentConstructing) {
-    auto assetIDOne = parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba530000"); 
+    auto assetIDOne =
+        parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba530000");
     auto addressesOutOne = generateAddressesForComponent();
-    auto coreOutputOne = std::make_unique<SECP256k1TransferOutput>(12345, 54321, 5, addressesOutOne);
+    auto coreOutputOne =
+        std::make_unique<SECP256k1TransferOutput>(12345, 54321, 5, addressesOutOne);
     auto outputOne = TransferableOutput(assetIDOne, std::move(coreOutputOne));
 
-    auto assetIDTwo = parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db"); 
+    auto assetIDTwo =
+        parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db");
     auto addressesOutTwo = generateAddressesForComponent();
-    auto coreOutputTwo = std::make_unique<SECP256k1TransferOutput>(12345, 54321, 6, addressesOutTwo);
+    auto coreOutputTwo =
+        std::make_unique<SECP256k1TransferOutput>(12345, 54321, 6, addressesOutTwo);
     auto outputTwo = TransferableOutput(assetIDTwo, std::move(coreOutputTwo));
 
-    EXPECT_TRUE(outputOne < outputTwo); // outputOne should be less than outputTwo by lexicographical sort
+    EXPECT_TRUE(outputOne <
+                outputTwo); // outputOne should be less than outputTwo by lexicographical sort
 
     auto outputThree = TransferableOutput(outputTwo); // should be able to build from each other
-    EXPECT_EQ(outputThree.AssetID, outputTwo.AssetID);
-    EXPECT_FALSE(outputThree.AssetID == outputOne.AssetID);
+    EXPECT_EQ(outputThree.assetID, outputTwo.assetID);
+    EXPECT_FALSE(outputThree.assetID == outputOne.assetID);
 
-    outputThree = outputOne; // should be able to assign from each other
+    outputThree = outputOne;   // should be able to assign from each other
     outputThree = outputThree; // and self-assignment should be a no-op
-    EXPECT_EQ(outputThree.AssetID, outputOne.AssetID);
-    EXPECT_FALSE(outputThree.AssetID == outputTwo.AssetID);
-    EXPECT_TRUE(outputThree < outputTwo); // outputOne should be less than outputTwo by lexicographical sort if assignment successful
+    EXPECT_EQ(outputThree.assetID, outputOne.assetID);
+    EXPECT_FALSE(outputThree.assetID == outputTwo.assetID);
+    EXPECT_TRUE(outputThree < outputTwo); // outputOne should be less than outputTwo by
+                                          // lexicographical sort if assignment successful
 }
 
 TEST(AvalancheTransactionComponents, TestOutputDuplicateEncodeEquality) {
@@ -105,10 +114,16 @@ TEST(AvalancheTransactionComponents, TestOutputDuplicateEncodeEquality) {
 }
 
 TEST(AvalancheTransactionComponents, CredentialOperatorLesser) {
-    auto higherSig = parse_hex("44ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d0044ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d00");
+    auto higherSig = parse_hex(
+        "44ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b4720"
+        "62f7e809dde19059fa7048f9972a481fe9390d0044ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc"
+        "97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d00");
     auto higherSigArray = std::vector<Data>{higherSig};
     auto higherCredential = SECP256k1Credential(higherSigArray);
-    auto lowerSig = parse_hex("0000007f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d0044ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d00");
+    auto lowerSig = parse_hex(
+        "0000007f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b4720"
+        "62f7e809dde19059fa7048f9972a481fe9390d0044ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc"
+        "97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d00");
     auto lowerSigArray = std::vector<Data>{lowerSig};
     auto lowerCredential = SECP256k1Credential(lowerSigArray);
     ASSERT_TRUE(lowerCredential < higherCredential);
@@ -121,7 +136,7 @@ TEST(AvalancheTransactionComponents, TestOutput) {
     auto addressesThree = generateAddressesForComponent();
     auto addressesFour = generateAddressesForComponent();
     addressesFour.push_back(Address("X-avax1wrgqjed292adreyal364nmz4jfjq2x5qkj7ack"));
-    
+
     Output outputOne = std::make_tuple(uint64_t(0), uint32_t(0), addressesOne);
     Output outputTwo = std::make_tuple(uint64_t(1), uint32_t(0), addressesTwo);
     Output outputThree = std::make_tuple(uint64_t(1), uint32_t(1), addressesThree);
@@ -133,29 +148,45 @@ TEST(AvalancheTransactionComponents, TestOutput) {
     SortOutputs(outputs);
     EXPECT_EQ(outputs.front(), outputOne);
     EXPECT_EQ(outputs.back(), outputFour);
-    Data outputData; 
+    Data outputData;
     EncodeOutputs(outputs, outputData);
-    EXPECT_EQ(hexEncoded(outputData), "0x00000004000000000000000000000000000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6000000000000000100000000000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6000000000000000100000001000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6000000000000000100000001000000043ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda670d00965aa2abad1e49dfc7559ec559264051a80");
+    EXPECT_EQ(hexEncoded(outputData),
+              "0x00000004000000000000000000000000000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1"
+              "e36a623910c93947b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda6000000"
+              "000000000100000000000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947"
+              "b754c410af428005efe851b7678db74fab407771650fdda0198a4be04acda60000000000000001000000"
+              "01000000033ffb0c3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005"
+              "efe851b7678db74fab407771650fdda0198a4be04acda6000000000000000100000001000000043ffb0c"
+              "3c05f4bfc1ce66e1080209e3de96cfbf38c1e36a623910c93947b754c410af428005efe851b7678db74f"
+              "ab407771650fdda0198a4be04acda670d00965aa2abad1e49dfc7559ec559264051a80");
 }
 
 BaseTransaction generateBaseTransactionBasedOnSignerTest();
 
 BaseTransaction generateBaseTransactionBasedOnSignerTest() {
-    const auto privateKeyOneBytes = CB58::avalanche.decode("ewoqjP7PxY4yr3iLTpLisriqt94hdyDFNgchSxGGztUrTXtNN");
-    const std::vector<uint8_t> privateKeyOneBytesNoChecksum(privateKeyOneBytes.begin(), privateKeyOneBytes.begin() + 32); // we just want the first 32 bytes
-    const auto privateKeyOne = PrivateKey(privateKeyOneBytesNoChecksum); 
+    const auto privateKeyOneBytes =
+        CB58::avalanche.decode("ewoqjP7PxY4yr3iLTpLisriqt94hdyDFNgchSxGGztUrTXtNN");
+    const std::vector<uint8_t> privateKeyOneBytesNoChecksum(
+        privateKeyOneBytes.begin(),
+        privateKeyOneBytes.begin() + 32); // we just want the first 32 bytes
+    const auto privateKeyOne = PrivateKey(privateKeyOneBytesNoChecksum);
     const auto publicKeyOne = privateKeyOne.getPublicKey(TWPublicKeyTypeSECP256k1);
     const auto addressOne = Address(publicKeyOne);
 
-    std::vector<Address> spendableAddresses = {addressOne, addressOne, addressOne, addressOne, addressOne, addressOne, addressOne, addressOne, addressOne, addressOne};
+    std::vector<Address> spendableAddresses = {addressOne, addressOne, addressOne, addressOne,
+                                               addressOne, addressOne, addressOne, addressOne,
+                                               addressOne, addressOne};
 
-    auto blockchainID = CB58::avalanche.decode("2eNy1mUFdmaxXNj1eQHUe7Np4gju9sJsEtWQ4MX3ToiNKuADed");
-    Data blockchainIDBytes(blockchainID.begin(), blockchainID.begin() + BLOCKCHAIN_ID_SIZE); // we just want the first 32 bytes, no checksum
+    auto blockchainID =
+        CB58::avalanche.decode("2eNy1mUFdmaxXNj1eQHUe7Np4gju9sJsEtWQ4MX3ToiNKuADed");
+    Data blockchainIDBytes(blockchainID.begin(),
+                           blockchainID.begin() +
+                               BLOCKCHAIN_ID_SIZE); // we just want the first 32 bytes, no checksum
     uint32_t netID = 12345;
-    auto assetID = parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db"); 
+    auto assetID = parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db");
     uint32_t baseTypeID = 0;
     Data memo = {0xde, 0xad, 0xbe, 0xef};
-    auto amount = 1000;   
+    auto amount = 1000;
     auto locktime = 0;
     auto threshold = 1;
 
@@ -163,22 +194,26 @@ BaseTransaction generateBaseTransactionBasedOnSignerTest() {
     auto txidOne = parse_hex("0xf1e1d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000");
     auto utxoIndexOne = 5;
     auto coreInputOne = std::make_unique<SECP256k1TransferInput>(123456789, addressesInOne);
-    auto inputOne = TransferableInput(txidOne, utxoIndexOne, assetID, std::move(coreInputOne), spendableAddresses);
+    auto inputOne = TransferableInput(txidOne, utxoIndexOne, assetID, std::move(coreInputOne),
+                                      spendableAddresses);
 
     auto addressesInTwo = std::vector<uint32_t>{3, 7};
     auto txidTwo = parse_hex("0xf1e1d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000");
     auto utxoIndexTwo = 5;
     auto coreInputTwo = std::make_unique<SECP256k1TransferInput>(123456789, addressesInTwo);
-    auto inputTwo = TransferableInput(txidTwo, utxoIndexTwo, assetID, std::move(coreInputTwo), spendableAddresses);
-    
+    auto inputTwo = TransferableInput(txidTwo, utxoIndexTwo, assetID, std::move(coreInputTwo),
+                                      spendableAddresses);
+
     auto inputs = std::vector<TransferableInput>{inputOne, inputTwo};
 
     auto addressesOutOne = std::vector<Address>{addressOne};
-    auto coreOutputOne = std::make_unique<SECP256k1TransferOutput>(12345, 54321, threshold, addressesOutOne);
+    auto coreOutputOne =
+        std::make_unique<SECP256k1TransferOutput>(12345, 54321, threshold, addressesOutOne);
     auto outputOne = TransferableOutput(assetID, std::move(coreOutputOne));
 
     auto addressesOutTwo = std::vector<Address>{addressOne};
-    auto coreOutputTwo = std::make_unique<SECP256k1TransferOutput>(amount, locktime, threshold, addressesOutTwo);
+    auto coreOutputTwo =
+        std::make_unique<SECP256k1TransferOutput>(amount, locktime, threshold, addressesOutTwo);
     auto outputTwo = TransferableOutput(assetID, std::move(coreOutputTwo));
 
     auto outputs = std::vector<TransferableOutput>{outputOne, outputTwo};

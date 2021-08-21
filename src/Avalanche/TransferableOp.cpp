@@ -19,17 +19,17 @@ bool TransferableOp::sortUTXOIDs(TransferableOp::UTXOID lhs, TransferableOp::UTX
 }
 
 void TransferableOp::encode(Data& data) const {
-    for (auto byte : AssetID) {
+    for (auto byte : assetID) {
         data.push_back(byte);
     }
-    encode32BE(static_cast<uint32_t>(UTXOIDs.size()), data);
-    for (auto utxoID : UTXOIDs) {
+    encode32BE(static_cast<uint32_t>(utxoIDs.size()), data);
+    for (auto utxoID : utxoIDs) {
         for (auto byte : utxoID.first) {
             data.push_back(byte);
         }
         encode32BE(utxoID.second, data);
     }
-    TransferOp->encode(data);
+    transferOp->encode(data);
 }
 
 bool TransferableOp::operator<(const TransferableOp& other) const {
@@ -47,53 +47,53 @@ TransferableOp& TransferableOp::operator=(const TransferableOp& other) {
         return *this;
     } else {
         // assign members
-        UTXOIDs = other.UTXOIDs;
-        std::sort(UTXOIDs.begin(), UTXOIDs.end(), sortUTXOIDs);
-        AssetID = other.AssetID;
-        TransferOp = other.TransferOp->duplicate();
+        utxoIDs = other.utxoIDs;
+        std::sort(utxoIDs.begin(), utxoIDs.end(), sortUTXOIDs);
+        assetID = other.assetID;
+        transferOp = other.transferOp->duplicate();
         return *this;
     }
 }
 
 void SECP256k1MintOperation::encode(Data& data) const {
     encode32BE(typeID, data);
-    encode32BE(static_cast<uint32_t>(AddressIndices.size()), data);
-    for (auto index : AddressIndices) {
+    encode32BE(static_cast<uint32_t>(addressIndices.size()), data);
+    for (auto index : addressIndices) {
         encode32BE(index, data);
     }
-    MintOutput.encode(data);
-    TransferOutput.encode(data);
+    mintOutput.encode(data);
+    transferOutput.encode(data);
 }
 
 void NFTMintOperation::encode(Data& data) const {
     encode32BE(typeID, data);
-    encode32BE(static_cast<uint32_t>(AddressIndices.size()), data);
-    for (auto index : AddressIndices) {
+    encode32BE(static_cast<uint32_t>(addressIndices.size()), data);
+    for (auto index : addressIndices) {
         encode32BE(index, data);
     }
-    encode32BE(GroupID, data);
-    encode32BE(static_cast<uint32_t>(Payload.size()), data);
-    for (auto byte : Payload) {
+    encode32BE(groupID, data);
+    encode32BE(static_cast<uint32_t>(payload.size()), data);
+    for (auto byte : payload) {
         data.push_back(byte);
     }
-    EncodeOutputs(Outputs, data);
+    EncodeOutputs(outputs, data);
 }
 
 void NFTTransferOperation::encode(Data& data) const {
     encode32BE(typeID, data);
-    encode32BE(static_cast<uint32_t>(AddressIndices.size()), data);
-    for (auto index : AddressIndices) {
+    encode32BE(static_cast<uint32_t>(addressIndices.size()), data);
+    for (auto index : addressIndices) {
         encode32BE(index, data);
     }
-    encode32BE(TransferOutput.GroupID, data);
-    encode32BE(static_cast<uint32_t>(TransferOutput.Payload.size()), data);
-    for (auto byte : TransferOutput.Payload) {
+    encode32BE(transferOutput.groupID, data);
+    encode32BE(static_cast<uint32_t>(transferOutput.payload.size()), data);
+    for (auto byte : transferOutput.payload) {
         data.push_back(byte);
     }
-    encode64BE(TransferOutput.Locktime, data);
-    encode32BE(TransferOutput.Threshold, data);
-    encode32BE(static_cast<uint32_t>(TransferOutput.Addresses.size()), data);
-    for (auto Address : TransferOutput.Addresses) {
+    encode64BE(transferOutput.locktime, data);
+    encode32BE(transferOutput.threshold, data);
+    encode32BE(static_cast<uint32_t>(transferOutput.addresses.size()), data);
+    for (auto Address : transferOutput.addresses) {
         for (auto byte : Address.getKeyHash()) {
             data.push_back(byte);
         }

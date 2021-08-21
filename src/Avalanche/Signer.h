@@ -6,17 +6,17 @@
 
 #pragma once
 
+#include "Transaction.h"
 #include "../Data.h"
 #include "../PrivateKey.h"
-#include "../proto/Bitcoin.pb.h"
 #include "../proto/Avalanche.pb.h"
-#include "Transaction.h"
+#include "../proto/Bitcoin.pb.h"
 
 namespace TW::Avalanche {
 
 /// Helper class that performs Avalanche transaction signing.
 class Signer {
-public:
+  public:
     /// Hide default constructor
     Signer() = delete;
     /// Returns a transaction plan (utxo selection, fee estimation)
@@ -26,7 +26,8 @@ public:
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 
     /// Signs the given transaction.
-    static Data sign(const std::vector<PrivateKey>& privateKeys, BaseTransaction& transaction) noexcept;
+    static Data sign(const std::vector<PrivateKey>& privateKeys,
+                     BaseTransaction& transaction) noexcept;
 };
 
 } // namespace TW::Avalanche

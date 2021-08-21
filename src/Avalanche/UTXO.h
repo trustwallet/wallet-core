@@ -7,22 +7,24 @@
 #pragma once
 
 #include "TransferableOutput.h"
+#include "../Data.h"
 
 namespace TW::Avalanche {
 
-    class UTXO {
-      public: 
-        const uint16_t CodecID = 0;
-        Data TxID;
-        uint32_t UTXOIndex;
-        Data AssetID;
-        TransferableOutput Output;
-        
-        UTXO(const Data& txID, uint32_t UTXOIndex, const Data& assetID, const TransferableOutput& output)
-        : TxID(txID), UTXOIndex(UTXOIndex), AssetID(assetID), Output(output) {}
+class UTXO {
+  public:
+    const uint16_t codecID = 0;
+    Data txID;
+    uint32_t utxoIndex;
+    Data assetID;
+    TransferableOutput output;
 
-        /// Encodes the UTXO into the provided buffer.
-        void encode(Data& data) const;
-    };
+    UTXO(const Data& txID, uint32_t utxoIndex, const Data& assetID,
+         const TransferableOutput& output)
+        : txID(txID), utxoIndex(utxoIndex), assetID(assetID), output(output) {}
+
+    /// Encodes the UTXO into the provided buffer.
+    void encode(Data& data) const;
+};
 
 } // namespace TW::Avalanche

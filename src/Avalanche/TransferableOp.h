@@ -13,7 +13,15 @@
 
 namespace TW::Avalanche {
 
-enum OperationTypeID { SECPMintOp = 8, NFTMintOp = 12, NFTTransferOp = 13 };
+// clang-format off
+
+enum OperationTypeID {
+    SECPMintOp = 8,
+    NFTMintOp = 12,
+    NFTTransferOp = 13
+};
+
+// clang-format on
 
 class TransactionOp {
   public:
@@ -32,29 +40,29 @@ class TransferableOp {
     using TxID = Data;
     using OutputIndex = uint32_t;
     using UTXOID = std::pair<TxID, OutputIndex>;
-    std::vector<UTXOID> UTXOIDs;
+    std::vector<UTXOID> utxoIDs;
 
   private:
     static bool sortUTXOIDs(UTXOID lhs, UTXOID rhs);
 
   public:
-    Data AssetID;
-    std::unique_ptr<TransactionOp> TransferOp;
+    Data assetID;
+    std::unique_ptr<TransactionOp> transferOp;
 
     /// Encodes the op into the provided buffer.
     void encode(Data& data) const;
 
     TransferableOp(Data& assetID, std::vector<UTXOID>& utxoIDs,
                    std::unique_ptr<TransactionOp> transferOp)
-        : UTXOIDs(utxoIDs), AssetID(assetID), TransferOp(std::move(transferOp)) {
-        std::sort(UTXOIDs.begin(), UTXOIDs.end(), sortUTXOIDs);
+        : utxoIDs(utxoIDs), assetID(assetID), transferOp(std::move(transferOp)) {
+        std::sort(this->utxoIDs.begin(), this->utxoIDs.end(), sortUTXOIDs);
     }
 
     TransferableOp(const TransferableOp& other) {
-        UTXOIDs = other.UTXOIDs;
-        std::sort(UTXOIDs.begin(), UTXOIDs.end(), sortUTXOIDs);
-        AssetID = other.AssetID;
-        TransferOp = other.TransferOp->duplicate();
+        utxoIDs = other.utxoIDs;
+        std::sort(utxoIDs.begin(), utxoIDs.end(), sortUTXOIDs);
+        assetID = other.assetID;
+        transferOp = other.transferOp->duplicate();
     }
 
     bool operator<(const TransferableOp& other) const;
@@ -67,21 +75,21 @@ class SECP256k1MintOperation : public TransactionOp {
     uint32_t typeID = OperationTypeID::SECPMintOp;
 
   public:
-    std::vector<uint32_t> AddressIndices;
-    SECP256k1MintOutput MintOutput;
-    SECP256k1TransferOutput TransferOutput;
+    std::vector<uint32_t> addressIndices;
+    SECP256k1MintOutput mintOutput;
+    SECP256k1TransferOutput transferOutput;
 
     SECP256k1MintOperation(std::vector<uint32_t>& addressIndices, SECP256k1MintOutput& mintOutput,
                            SECP256k1TransferOutput& transferOutput)
-        : AddressIndices(addressIndices), MintOutput(mintOutput), TransferOutput(transferOutput) {
-        std::sort(AddressIndices.begin(), AddressIndices.end());
+        : addressIndices(addressIndices), mintOutput(mintOutput), transferOutput(transferOutput) {
+        std::sort(this->addressIndices.begin(), this->addressIndices.end());
     }
 
     void encode(Data& data) const;
 
     std::unique_ptr<TransactionOp> duplicate() {
         auto dup =
-            std::make_unique<SECP256k1MintOperation>(AddressIndices, MintOutput, TransferOutput);
+            std::make_unique<SECP256k1MintOperation>(addressIndices, mintOutput, transferOutput);
         return dup;
     }
 };
@@ -89,24 +97,24 @@ class SECP256k1MintOperation : public TransactionOp {
 class NFTMintOperation : public TransactionOp {
   private:
     uint32_t typeID = OperationTypeID::NFTMintOp;
-    std::vector<Output> Outputs;
+    std::vector<Output> outputs;
 
   public:
-    std::vector<uint32_t> AddressIndices;
-    uint32_t GroupID;
-    Data Payload;
+    std::vector<uint32_t> addressIndices;
+    uint32_t groupID;
+    Data payload;
 
     NFTMintOperation(std::vector<uint32_t>& addressIndices, uint32_t groupID, Data& payload,
                      std::vector<Output>& outputs)
-        : Outputs(outputs), AddressIndices(addressIndices), GroupID(groupID), Payload(payload) {
-        std::sort(AddressIndices.begin(), AddressIndices.end());
-        SortOutputs(Outputs);
+        : outputs(outputs), addressIndices(addressIndices), groupID(groupID), payload(payload) {
+        std::sort(this->addressIndices.begin(), this->addressIndices.end());
+        SortOutputs(this->outputs);
     }
 
     void encode(Data& data) const;
 
     std::unique_ptr<TransactionOp> duplicate() {
-        auto dup = std::make_unique<NFTMintOperation>(AddressIndices, GroupID, Payload, Outputs);
+        auto dup = std::make_unique<NFTMintOperation>(addressIndices, groupID, payload, outputs);
         return dup;
     }
 };
@@ -116,19 +124,19 @@ class NFTTransferOperation : public TransactionOp {
     uint32_t typeID = OperationTypeID::NFTTransferOp;
 
   public:
-    std::vector<uint32_t> AddressIndices;
-    NFTTransferOutput TransferOutput;
+    std::vector<uint32_t> addressIndices;
+    NFTTransferOutput transferOutput;
 
     NFTTransferOperation(std::vector<uint32_t>& addressIndices, NFTTransferOutput& transferOutput)
-        : AddressIndices(addressIndices), TransferOutput(transferOutput) {
-        std::sort(AddressIndices.begin(), AddressIndices.end());
-        std::sort(TransferOutput.Addresses.begin(), TransferOutput.Addresses.end());
+        : addressIndices(addressIndices), transferOutput(transferOutput) {
+        std::sort(this->addressIndices.begin(), this->addressIndices.end());
+        std::sort(this->transferOutput.addresses.begin(), this->transferOutput.addresses.end());
     }
 
     void encode(Data& data) const;
 
     std::unique_ptr<TransactionOp> duplicate() {
-        auto dup = std::make_unique<NFTTransferOperation>(AddressIndices, TransferOutput);
+        auto dup = std::make_unique<NFTTransferOperation>(addressIndices, transferOutput);
         return dup;
     }
 };

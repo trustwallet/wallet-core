@@ -6,8 +6,8 @@
 
 #include "Signer.h"
 #include "Address.h"
-#include "../proto/Bitcoin.pb.h"
 #include "../PublicKey.h"
+#include "../proto/Bitcoin.pb.h"
 
 using namespace TW;
 using namespace TW::Avalanche;
@@ -48,6 +48,7 @@ std::vector<TransferableInput> structToInputs(
             inputs.push_back(txferInput);
             break;
         }
+
         case Proto::TransactionInput::INPUT_NOT_SET:
         default: {
             // fail out and return nil inputs if input unset or not supported
@@ -138,12 +139,12 @@ Data Signer::sign(const std::vector<PrivateKey>& privateKeys,
     transaction.encode(transactionBytes);
     auto msgBytes = Hash::sha256(transactionBytes);
     std::vector<Credential> credentials;
-    for (auto& input : transaction.Inputs) {
-        if (input.Input->getTypeID() == TransactionInputTypeID::SECPInput) {
+    for (auto& input : transaction.inputs) {
+        if (input.input->getTypeID() == TransactionInputTypeID::SECPInput) {
             // secp input, make an SECP credential
             std::vector<Data> sigs;
-            for (auto& sigidx : input.Input->getAddressIndices()) {
-                auto addresses = input.SpendableAddresses;
+            for (auto& sigidx : input.input->getAddressIndices()) {
+                auto addresses = input.spendableAddresses;
                 std::sort(addresses.begin(), addresses.end());
                 if (sigidx >= addresses.size()) {
                     // would cause a crash, sigidx does not exist in the address vector.

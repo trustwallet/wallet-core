@@ -29,12 +29,12 @@ class TransactionInput {
 /// Avalanche transaction input.
 class TransferableInput {
   public:
-    Data TxID;
-    uint32_t UTXOIndex;
-    Data AssetID;
-    std::unique_ptr<TransactionInput> Input;
+    Data txID;
+    uint32_t utxoIndex;
+    Data assetID;
+    std::unique_ptr<TransactionInput> input;
     std::vector<Address>
-        SpendableAddresses; // corresponding to the Output this came from. not encoded
+        spendableAddresses; // corresponding to the Output this came from. not encoded
 
     /// Encodes the input into the provided buffer.
     void encode(Data& data) const;
@@ -42,20 +42,20 @@ class TransferableInput {
     TransferableInput(Data& txid, uint32_t utxoIndex, Data& assetID,
                       std::unique_ptr<TransactionInput> input,
                       std::vector<Address>& spendableAddresses)
-        : TxID(txid)
-        , UTXOIndex(utxoIndex)
-        , AssetID(assetID)
-        , Input(std::move(input))
-        , SpendableAddresses(spendableAddresses) {
-        std::sort(SpendableAddresses.begin(), SpendableAddresses.end());
+        : txID(txid)
+        , utxoIndex(utxoIndex)
+        , assetID(assetID)
+        , input(std::move(input))
+        , spendableAddresses(spendableAddresses) {
+        std::sort(this->spendableAddresses.begin(), this->spendableAddresses.end());
     }
 
     TransferableInput(const TransferableInput& other) {
-        TxID = other.TxID;
-        UTXOIndex = other.UTXOIndex;
-        AssetID = other.AssetID;
-        Input = other.Input->duplicate();
-        SpendableAddresses = other.SpendableAddresses;
+        txID = other.txID;
+        utxoIndex = other.utxoIndex;
+        assetID = other.assetID;
+        input = other.input->duplicate();
+        spendableAddresses = other.spendableAddresses;
     }
 
     bool operator<(const TransferableInput& other) const;
@@ -64,23 +64,23 @@ class TransferableInput {
 };
 
 class SECP256k1TransferInput : public TransactionInput {
-    uint32_t TypeID = TransactionInputTypeID::SECPInput;
-    uint64_t Amount;
-    std::vector<uint32_t> AddressIndices;
+    uint32_t typeID = TransactionInputTypeID::SECPInput;
+    uint64_t amount;
+    std::vector<uint32_t> addressIndices;
 
   public:
-    SECP256k1TransferInput(uint64_t amount, std::vector<uint32_t> addressIndices) : Amount(amount) {
-        AddressIndices = addressIndices;
-        std::sort(AddressIndices.begin(), AddressIndices.end());
+    SECP256k1TransferInput(uint64_t amount, std::vector<uint32_t> addressIndices)
+        : amount(amount), addressIndices(addressIndices) {
+        std::sort(this->addressIndices.begin(), this->addressIndices.end());
     }
 
     void encode(Data& data) const;
 
-    std::vector<uint32_t> getAddressIndices() const { return AddressIndices; }
-    uint32_t getTypeID() const { return TypeID; }
+    std::vector<uint32_t> getAddressIndices() const { return addressIndices; }
+    uint32_t getTypeID() const { return typeID; }
 
     std::unique_ptr<TransactionInput> duplicate() {
-        auto dup = std::make_unique<SECP256k1TransferInput>(Amount, AddressIndices);
+        auto dup = std::make_unique<SECP256k1TransferInput>(amount, addressIndices);
         return dup;
     }
 };

@@ -11,26 +11,26 @@
 using namespace TW::Avalanche;
 
 void TransferableInput::encode(Data& data) const {
-    for (auto byte : TxID) {
+    for (auto byte : txID) {
         data.push_back(byte);
     }
-    encode32BE(UTXOIndex, data);
-    for (auto byte : AssetID) {
+    encode32BE(utxoIndex, data);
+    for (auto byte : assetID) {
         data.push_back(byte);
     }
-    Input->encode(data);
+    input->encode(data);
 }
 
 bool TransferableInput::operator<(const TransferableInput& other) const {
-    if (TxID == other.TxID) {
-        return UTXOIndex < other.UTXOIndex;
+    if (txID == other.txID) {
+        return utxoIndex < other.utxoIndex;
     }
     Data thisTxIDData;
     Data otherTxIDData;
-    for (auto byte : TxID) {
+    for (auto byte : txID) {
         thisTxIDData.push_back(byte);
     }
-    for (auto byte : other.TxID) {
+    for (auto byte : other.txID) {
         otherTxIDData.push_back(byte);
     }
     return std::lexicographical_compare(thisTxIDData.begin(), thisTxIDData.end(),
@@ -41,22 +41,21 @@ TransferableInput& TransferableInput::operator=(const TransferableInput& other) 
     // check for "self assignment" and do nothing in that case
     if (this == &other) {
         return *this;
-    } else {
-        // assign members
-        TxID = other.TxID;
-        UTXOIndex = other.UTXOIndex;
-        AssetID = other.AssetID;
-        Input = other.Input->duplicate();
-        SpendableAddresses = other.SpendableAddresses;
-        return *this;
     }
+    // assign members
+    txID = other.txID;
+    utxoIndex = other.utxoIndex;
+    assetID = other.assetID;
+    input = other.input->duplicate();
+    spendableAddresses = other.spendableAddresses;
+    return *this;
 }
 
 void SECP256k1TransferInput::encode(Data& data) const {
-    encode32BE(TypeID, data);
-    encode64BE(Amount, data);
-    encode32BE(static_cast<uint32_t>(AddressIndices.size()), data);
-    for (auto index : AddressIndices) {
+    encode32BE(typeID, data);
+    encode64BE(amount, data);
+    encode32BE(static_cast<uint32_t>(addressIndices.size()), data);
+    for (auto index : addressIndices) {
         encode32BE(index, data);
     }
 }

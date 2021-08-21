@@ -8,12 +8,19 @@
 #include "../Data.h"
 namespace TW::Avalanche {
 
-enum CredentialTypeID { SECPCred = 9, NFTCred = 14 };
+// clang-format off
+
+enum CredentialTypeID {
+    SECPCred = 9,
+    NFTCred = 14,
+};
+
+// clang-format on
 
 class Credential {
   public:
-    uint32_t TypeID;
-    std::vector<Data> Signatures;
+    uint32_t typeID;
+    std::vector<Data> signatures;
 
     /// Encodes the Credential into the provided buffer.
     void encode(Data& data) const;
@@ -21,7 +28,7 @@ class Credential {
     bool operator<(const Credential& other) const;
 
   protected:
-    Credential(uint32_t typeID, std::vector<Data>& sigs) : TypeID(typeID), Signatures(sigs) {}
+    Credential(uint32_t typeID, std::vector<Data>& sigs) : typeID(typeID), signatures(sigs) {}
 };
 
 class SECP256k1Credential : public Credential {

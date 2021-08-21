@@ -34,18 +34,18 @@ class TransactionOutput {
 /// Avalanche transaction output.
 class TransferableOutput {
   public:
-    Data AssetID;
-    std::unique_ptr<TransactionOutput> Output;
+    Data assetID;
+    std::unique_ptr<TransactionOutput> output;
 
     /// Encodes the output into the provided buffer.
     void encode(Data& data) const;
 
     TransferableOutput(const Data& assetID, std::unique_ptr<TransactionOutput> output)
-        : AssetID(assetID), Output(std::move(output)) {}
+        : assetID(assetID), output(std::move(output)) {}
 
     TransferableOutput(const TransferableOutput& other) {
-        AssetID = other.AssetID;
-        Output = other.Output->duplicate();
+        assetID = other.assetID;
+        output = other.output->duplicate();
     }
 
     TransferableOutput& operator=(const TransferableOutput& other);
@@ -57,22 +57,22 @@ class SECP256k1TransferOutput : public TransactionOutput {
     const uint32_t typeID = TransactionOutputTypeID::SECPTransferOut;
 
   public:
-    uint64_t Amount;
-    uint64_t Locktime;
-    uint32_t Threshold;
-    std::vector<Address> Addresses;
+    uint64_t amount;
+    uint64_t locktime;
+    uint32_t threshold;
+    std::vector<Address> addresses;
 
     SECP256k1TransferOutput(uint64_t amount, uint64_t locktime, uint32_t threshold,
                             std::vector<Address>& addresses)
-        : Amount(amount), Locktime(locktime), Threshold(threshold), Addresses(addresses) {
-        std::sort(Addresses.begin(), Addresses.end());
+        : amount(amount), locktime(locktime), threshold(threshold), addresses(addresses) {
+        std::sort(this->addresses.begin(), this->addresses.end());
     }
 
     void encode(Data& data) const;
 
     std::unique_ptr<TransactionOutput> duplicate() {
         auto dup =
-            std::make_unique<SECP256k1TransferOutput>(Amount, Locktime, Threshold, Addresses);
+            std::make_unique<SECP256k1TransferOutput>(amount, locktime, threshold, addresses);
         return dup;
     }
 };
@@ -81,19 +81,19 @@ class SECP256k1MintOutput : public TransactionOutput {
     const uint32_t typeID = TransactionOutputTypeID::SECPMint;
 
   public:
-    uint64_t Locktime;
-    uint32_t Threshold;
-    std::vector<Address> Addresses;
+    uint64_t locktime;
+    uint32_t threshold;
+    std::vector<Address> addresses;
 
     SECP256k1MintOutput(uint64_t locktime, uint32_t threshold, std::vector<Address>& addresses)
-        : Locktime(locktime), Threshold(threshold), Addresses(addresses) {
-        std::sort(Addresses.begin(), Addresses.end());
+        : locktime(locktime), threshold(threshold), addresses(addresses) {
+        std::sort(this->addresses.begin(), this->addresses.end());
     }
 
     void encode(Data& data) const;
 
     std::unique_ptr<TransactionOutput> duplicate() {
-        auto dup = std::make_unique<SECP256k1MintOutput>(Locktime, Threshold, Addresses);
+        auto dup = std::make_unique<SECP256k1MintOutput>(locktime, threshold, addresses);
         return dup;
     }
 };
@@ -102,27 +102,27 @@ class NFTTransferOutput : public TransactionOutput {
     const uint32_t typeID = TransactionOutputTypeID::NFTTransferOut;
 
   public:
-    uint32_t GroupID;
-    Data Payload;
-    uint64_t Locktime;
-    uint32_t Threshold;
-    std::vector<Address> Addresses;
+    uint32_t groupID;
+    Data payload;
+    uint64_t locktime;
+    uint32_t threshold;
+    std::vector<Address> addresses;
 
     NFTTransferOutput(uint32_t groupID, Data& payload, uint64_t locktime, uint32_t threshold,
                       std::vector<Address>& addresses)
-        : GroupID(groupID)
-        , Payload(payload)
-        , Locktime(locktime)
-        , Threshold(threshold)
-        , Addresses(addresses) {
-        std::sort(Addresses.begin(), Addresses.end());
+        : groupID(groupID)
+        , payload(payload)
+        , locktime(locktime)
+        , threshold(threshold)
+        , addresses(addresses) {
+        std::sort(this->addresses.begin(), this->addresses.end());
     }
 
     void encode(Data& data) const;
 
     std::unique_ptr<TransactionOutput> duplicate() {
         auto dup =
-            std::make_unique<NFTTransferOutput>(GroupID, Payload, Locktime, Threshold, Addresses);
+            std::make_unique<NFTTransferOutput>(groupID, payload, locktime, threshold, addresses);
         return dup;
     }
 };
@@ -131,21 +131,21 @@ class NFTMintOutput : public TransactionOutput {
     const uint32_t typeID = TransactionOutputTypeID::NFTMintOut;
 
   public:
-    uint32_t GroupID;
-    uint64_t Locktime;
-    uint32_t Threshold;
-    std::vector<Address> Addresses;
+    uint32_t groupID;
+    uint64_t locktime;
+    uint32_t threshold;
+    std::vector<Address> addresses;
 
     NFTMintOutput(uint32_t groupID, uint64_t locktime, uint32_t threshold,
                   std::vector<Address>& addresses)
-        : GroupID(groupID), Locktime(locktime), Threshold(threshold), Addresses(addresses) {
-        std::sort(Addresses.begin(), Addresses.end());
+        : groupID(groupID), locktime(locktime), threshold(threshold), addresses(addresses) {
+        std::sort(this->addresses.begin(), this->addresses.end());
     }
 
     void encode(Data& data) const;
 
     std::unique_ptr<TransactionOutput> duplicate() {
-        auto dup = std::make_unique<NFTMintOutput>(GroupID, Locktime, Threshold, Addresses);
+        auto dup = std::make_unique<NFTMintOutput>(groupID, locktime, threshold, addresses);
         return dup;
     }
 };
