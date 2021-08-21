@@ -272,18 +272,20 @@ TEST(HDWallet, DeriveBinance) {
     assertHexEqual(keyData2, expectedETH);
 }
 
-TEST(HDWallet, DeriveAvalanche) {
+TEST(HDWallet, DeriveAvalancheCChain) {
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeAvalancheCChain));
+    auto keyData = WRAPD(TWPrivateKeyData(key.get()));
+
+    assertHexEqual(keyData, "c4f77b4a9f5a0db3a7ffc3599e61bef986037ae9a7cc1972a10d55c030270020");
+}
+
+TEST(HDWallet, DeriveAvalancheXChain) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeAvalancheXChain));
-    auto key2 = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeAvalancheCChain));
     auto keyData = WRAPD(TWPrivateKeyData(key.get()));
-    auto keyData2 = WRAPD(TWPrivateKeyData(key2.get()));
 
-    auto expected = "268369a69d7372fe04a5f7d2fa9a91be5bdb7538bdbf70aa94103f7e7eac5c97";
-    auto expectedETH = "c4f77b4a9f5a0db3a7ffc3599e61bef986037ae9a7cc1972a10d55c030270020";
-
-    assertHexEqual(keyData, expected);
-    assertHexEqual(keyData2, expectedETH);
+    assertHexEqual(keyData, "268369a69d7372fe04a5f7d2fa9a91be5bdb7538bdbf70aa94103f7e7eac5c97");
 }
 
 TEST(HDWallet, ExtendedKeys) {

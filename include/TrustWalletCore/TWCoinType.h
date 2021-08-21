@@ -83,8 +83,6 @@ enum TWCoinType {
     TWCoinTypeBandChain = 494,
     TWCoinTypeSmartChainLegacy = 10000714,
     TWCoinTypeSmartChain = 20000714,
-    TWCoinTypeAvalancheXChain = 9000,
-    TWCoinTypeAvalancheCChain = 10009000,
     TWCoinTypeOasis = 474,
     TWCoinTypePolygon = 966,
     TWCoinTypeTHORChain = 931,
@@ -92,6 +90,8 @@ enum TWCoinType {
     TWCoinTypeOptimism = 10000070,
     TWCoinTypeArbitrum = 10042221,
     TWCoinTypeECOChain = 10000553,
+    TWCoinTypeAvalancheXChain = 9000,
+    TWCoinTypeAvalancheCChain = 10009000,
 };
 
 /// Returns the blockchain for a coin type.

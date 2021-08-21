@@ -27,6 +27,7 @@ enum TWEthereumChainID {
     TWEthereumChainIDOptimism = 10,
     TWEthereumChainIDArbitrum = 42161,
     TWEthereumChainIDHeco = 128,
+    TWEthereumChainIDAvalanche = 9000,
 };
 
 TW_EXTERN_C_END

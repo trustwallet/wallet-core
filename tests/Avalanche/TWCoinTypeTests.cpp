@@ -13,7 +13,27 @@
 #include <gtest/gtest.h>
 
 
-TEST(TWAvalancheCoinType, TWCoinType) {
+TEST(TWAvalancheCoinType, TWCoinTypeCChain) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAvalancheCChain));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x9243890b844219accefd8798271052f5a056453ec18984a56e81c92921330d54"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAvalancheCChain, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0xa664325f36Ec33E66323fe2620AF3f2294b2Ef3A"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeAvalancheCChain, accId.get()));
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAvalancheCChain));
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAvalancheCChain));
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAvalancheCChain), 18);
+    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeAvalancheCChain));
+    ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeAvalancheCChain));
+    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeAvalancheCChain));
+    assertStringsEqual(symbol, "AVAX");
+    assertStringsEqual(txUrl, "https://cchain.explorer.avax.network/tx/0x9243890b844219accefd8798271052f5a056453ec18984a56e81c92921330d54");
+    assertStringsEqual(accUrl, "https://cchain.explorer.avax.network/address/0xa664325f36Ec33E66323fe2620AF3f2294b2Ef3A");
+    assertStringsEqual(id, "avalanchec");
+    assertStringsEqual(name, "Avalanche C-Chain");
+}
+
+TEST(TWAvalancheCoinType, TWCoinTypeXChain) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAvalancheXChain));
     auto txId = WRAPS(TWStringCreateWithUTF8Bytes("2eLNtbK8bomFKJ6qCGBTuxJvD6LAs6eAXNVK48hGS8MGxGW6B9"));
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAvalancheXChain, txId.get()));
