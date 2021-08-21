@@ -171,6 +171,8 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeOptimism: entry = &ethereumDP; break;
         case TWCoinTypeArbitrum: entry = &ethereumDP; break;
         case TWCoinTypeECOChain: entry = &ethereumDP; break;
+        case TWCoinTypeAvalancheCChain: entry = &ethereumDP; break;
+        case TWCoinTypeXDai: entry = &ethereumDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;

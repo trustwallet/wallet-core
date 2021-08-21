@@ -15,12 +15,6 @@ target 'WalletCore' do
   target 'WalletCoreTests'
 end
 
-target 'WalletCoreTypes' do
-  use_frameworks!
-
-  pod 'SwiftProtobuf'
-end
-
 post_install do |installer|
   installer.pods_project.build_configurations.each do |config|
     config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
