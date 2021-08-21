@@ -276,16 +276,20 @@ TEST(HDWallet, DeriveAvalancheCChain) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeAvalancheCChain));
     auto keyData = WRAPD(TWPrivateKeyData(key.get()));
+    auto address = WRAPS(TWCoinTypeDeriveAddress(TWCoinTypeAvalancheCChain, key.get()));
 
     assertHexEqual(keyData, "c4f77b4a9f5a0db3a7ffc3599e61bef986037ae9a7cc1972a10d55c030270020");
+    assertStringsEqual(address, "0x27Ef5cDBe01777D62438AfFeb695e33fC2335979");
 }
 
 TEST(HDWallet, DeriveAvalancheXChain) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeAvalancheXChain));
     auto keyData = WRAPD(TWPrivateKeyData(key.get()));
+    auto address = WRAPS(TWCoinTypeDeriveAddress(TWCoinTypeAvalancheXChain, key.get()));
 
     assertHexEqual(keyData, "268369a69d7372fe04a5f7d2fa9a91be5bdb7538bdbf70aa94103f7e7eac5c97");
+    assertStringsEqual(address, "X-avax1t4f8uqtrrlq2nlyy2c66y9rguyfgxrfd9nhqcj");
 }
 
 TEST(HDWallet, ExtendedKeys) {
