@@ -11,20 +11,18 @@
 #include "../PublicKey.h"
 
 #include <string>
+#include <tuple>
 
 namespace TW::Avalanche {
 
 /// Avalanche address is a Bech32Address, with "avax" prefix and Sha2 hash; and then the chain
 /// prefixed to that.
 class Address : public Bech32Address {
-  private:
-    void extractKeyHashFromString(const std::string& string);
-
-  public:
+public:
     static const size_t hashLen;
     static const std::string hrp;
 
-    static bool isValid(const std::string& addr);
+    static bool isValid(const std::string& addr) { return std::get<0>(isValidParse(addr)); }
 
     Address() : Bech32Address(hrp) {}
 
@@ -35,9 +33,13 @@ class Address : public Bech32Address {
     Address(const PublicKey& publicKey) : Bech32Address(hrp, HASHER_SHA2_RIPEMD, publicKey) {}
 
     /// Initializes an address from a string.
-    Address(const std::string& string) : Bech32Address(hrp) { extractKeyHashFromString(string); }
+    Address(const std::string& string);
 
     std::string string() const;
+
+private:
+    /// Checks validity and also extracts chainID and key.
+    static std::tuple<bool, std::string, std::string> isValidParse(const std::string& string);
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
