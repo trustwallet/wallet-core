@@ -20,7 +20,7 @@ extension Data {
         if string.count % 2 != 0 {
             return nil
         }
-        
+
         // Check odd characters
         if string.contains(where: { !$0.isHexDigit }) {
             return nil
