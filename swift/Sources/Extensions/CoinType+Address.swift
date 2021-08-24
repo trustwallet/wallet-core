@@ -101,6 +101,10 @@ public extension CoinType {
             return TONAddress(string: string)
         case .neo:
             return NEOAddress(string: string)
+        case .kusama:
+            return KusamaAddress(string: string)
+        case .polkadot:
+            return PolkadotAddress(string: string)
         }
     }
 }
