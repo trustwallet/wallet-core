@@ -153,6 +153,8 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypeOptimism:
     case TWCoinTypeArbitrum:
     case TWCoinTypeECOChain:
+    case TWCoinTypeXDai:
+    case TWCoinTypeAvalancheCChain:
         data = parse_hex(string);
         break;
 
