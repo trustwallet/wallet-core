@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         System.loadLibrary("TrustWalletCore")
     }
 
-    private val seedPhrase = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal"
+    private val seedPhrase = "memory capital stool joke clarify eager defy shoe civil ball name music"
     private val passphrase = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
