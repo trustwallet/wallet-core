@@ -15,6 +15,7 @@
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWBase58.h>
+#include <TrustWalletCore/TWCoinType.h>
 #include <proto/Stellar.pb.h>
 
 #include "HexCoding.h"
@@ -79,7 +80,7 @@ TEST(HDWallet, CreateFromStrengthInvalid) {
 }
 
 TEST(HDWallet, CreateFromMnemonicInvalid) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(STRING("THIS IS INVALID MNEMONIC").get(), STRING("").get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(STRING("").get(), STRING("").get()));
     ASSERT_EQ(wallet.get(), nullptr);
 }
 
@@ -352,6 +353,15 @@ TEST(HDWallet, PublicKeyFromZ) {
     assertHexEqual(data11, "0226a07edd0227fa6bc36239c0bd4db83d5e488f8fb1eeb68f89a5be916aad2d60");
 
     assertStringsEqual(address4, "bc1qm97vqzgj934vnaq9s53ynkyf9dgr05rargr04n");
+}
+
+TEST(HDWallet, PublicKeyFromExtended_Ethereum) {
+    const auto xpub = STRING("xpub6C7LtZJgtz1BKXG9mExKUxYvX7HSF38UMMmGbpqNQw3DfYwAw8E6sH7VSVxFipvEEm2afSqTjoRgcLmycXX4zfxCWJ4HY73a9KdgvfHEQGB");
+    const auto xpubAddr = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeEthereum, STRING("m/44'/60'/0'/0/1").get()));
+    ASSERT_NE(xpubAddr.get(), nullptr);
+    auto data = WRAPD(TWPublicKeyData(xpubAddr.get()));
+    ASSERT_NE(data.get(), nullptr);
+    assertHexEqual(data, "044516c4aa5352035e1bb5be132694e1389a4ac37d32e5e717d35ee4c4dfab513226a9d14ea37a55962ad3644a08e2ce551b4495beabb9b09e688c7b92eba18acc");
 }
 
 TEST(HDWallet, PublicKeyFromExtended_NIST256p1) {
