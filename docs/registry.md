@@ -5,6 +5,7 @@ This list is generated from [./registry.json](../registry.json)
 | Index   | Name             | Symbol | Logo                                                                                                                        | URL                           |
 | ------- | ---------------- | ------ | --------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
 | 0       | Bitcoin          | BTC    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoin/info/logo.png" width="32" />      | <https://bitcoin.org>         |
+| 1       | Bitcoin Testnet  | BTC    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcointestnet/info/logo.png" width="32" /> | <https://bitcoin.org>         |
 | 2       | Litecoin         | LTC    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/litecoin/info/logo.png" width="32" />     | <https://litecoin.org>        |
 | 3       | Dogecoin         | DOGE   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/doge/info/logo.png" width="32" />         | <https://dogecoin.com>        |
 | 5       | Dash             | DASH   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/dash/info/logo.png" width="32" />         | <https://dash.org>            |

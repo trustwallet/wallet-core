@@ -36,6 +36,7 @@ FeeCalculator& getFeeCalculator(TWCoinType coinType) {
         return decredFeeCalculator;
 
     case TWCoinTypeBitcoin:
+    case TWCoinTypeBitcoinTestnet:
     case TWCoinTypeBitcoinGold:
     case TWCoinTypeDigiByte:
     case TWCoinTypeLitecoin:
