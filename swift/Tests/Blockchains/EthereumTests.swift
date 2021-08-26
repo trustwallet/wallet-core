@@ -176,4 +176,37 @@ class EthereumTests: XCTestCase {
 
         XCTAssertEqual(result, "f86a8084d693a400825208947d8bf18c7ce84b3e175b339c4ca93aed1dd166f1870348bca5a160008025a0fe5802b49e04c6b1705088310e133605ed8b549811a18968ad409ea02ad79f21a05bf845646fb1e1b9365f63a7fd5eb5e984094e3ed35c3bed7361aebbcbf41f10")
     }
+
+    func testGetPublicKeyFromXpub() throws {
+        let wallet = HDWallet(mnemonic: "broom ramp luggage this language sketch door allow elbow wife moon impulse", passphrase: "")!
+        let path = "m/44'/60'/0'/0/1"
+        let xpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .ethereum, version: .xpub)
+
+        XCTAssertEqual(xpub, "xpub6C7LtZJgtz1BKXG9mExKUxYvX7HSF38UMMmGbpqNQw3DfYwAw8E6sH7VSVxFipvEEm2afSqTjoRgcLmycXX4zfxCWJ4HY73a9KdgvfHEQGB")
+
+        let key = wallet.getKey(coin: .ethereum, derivationPath: path)
+        let pubkey = key.getPublicKeySecp256k1(compressed: true)
+        XCTAssertEqual(pubkey.data.hexString, "024516c4aa5352035e1bb5be132694e1389a4ac37d32e5e717d35ee4c4dfab5132")
+
+        let pubkey2 = HDWallet.getPublicKeyFromExtended(extended: xpub, coin: .ethereum, derivationPath: path)!
+        XCTAssertEqual(pubkey2.data.hexString, "044516c4aa5352035e1bb5be132694e1389a4ac37d32e5e717d35ee4c4dfab513226a9d14ea37a55962ad3644a08e2ce551b4495beabb9b09e688c7b92eba18acc")
+
+        let address = CoinType.ethereum.deriveAddressFromPublicKey(publicKey: pubkey2)
+        XCTAssertEqual(address, "0x996891c410FB76C19DBA72C6f6cEFF2d9DD069b1")
+    }
+
+    func testSpanishMnemonic() throws {
+        let wallet = HDWallet(mnemonic: "llanto radical atraer riesgo actuar masa fondo cielo dieta archivo sonrisa mamut", passphrase: "")!
+        let btcXpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .bitcoin, version: .xpub)
+        let ethXpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .ethereum, version: .xpub)
+
+        XCTAssertEqual(btcXpub, "xpub6Cq43Vqyvb2DwXzjzNeMpPuxXRCN1WnmRCmYLPaaSv2XZXM2yCwUHpWEyB3zQ3FGCQsvY21gecMaQR7b2zhhgiHnjzDYpKCE2LACueaSMuR")
+        XCTAssertEqual(ethXpub, "xpub6Bgma7boPVudhExmB97iySvatGfnXkfBxYZYNTFYJvVzigUPk1X2iE8VhJPPxVuzjH8wBuTqRBMKCbwMYQNLrFCwYzMugYw4RM5VGNeVDpp")
+
+        let ethAddress = wallet.getAddressForCoin(coin: .ethereum)
+        let btcAddress = wallet.getAddressForCoin(coin: .bitcoin)
+
+        XCTAssertEqual(ethAddress, "0xa4531dE99E22B2166d340E7221669DF565c52024")
+        XCTAssertEqual(btcAddress, "bc1q97jc0jdgsyvvhxydxxd6np8sa920c39l3qpscf")
+    }
 }
