@@ -25,6 +25,16 @@ class AvalancheTests: XCTestCase {
         XCTAssertEqual(address.data.hexString, "014bf3728aade35c923af89800bec2813e2585f2")
     }
 
+    func testCChainAddress() {
+        let key = PrivateKey(data: Data(hexString: "98cb077f972feb0481f1d894f272c6a1e3c15e272a1658ff716444f465200070")!)!
+        let pubkey = key.getPublicKeySecp256k1(compressed: false)
+        let address = AnyAddress(publicKey: pubkey, coin: .avalancheCChain)
+        let addressETH = AnyAddress(publicKey: pubkey, coin: .ethereum)
+
+        XCTAssertEqual(address.description, addressETH.description)
+        XCTAssertEqual(address.data.hexString, addressETH.data.hexString)
+    }
+  
     func testXpub() {
         let wallet = HDWallet(mnemonic: "chimney noodle canyon tunnel sample stuff scan symbol sight club net own arrive cause suffer purity manage squirrel boost diesel bring cement father slide", passphrase: "")!
         let xpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .avalancheXChain, version: .xpub)
