@@ -68,9 +68,9 @@ class SECP256k1TransferOutput : public TransactionOutput {
         std::sort(this->addresses.begin(), this->addresses.end());
     }
 
-    void encode(Data& data) const;
+    void encode(Data& data) const override;
 
-    std::unique_ptr<TransactionOutput> duplicate() {
+    std::unique_ptr<TransactionOutput> duplicate() override {
         auto dup =
             std::make_unique<SECP256k1TransferOutput>(amount, locktime, threshold, addresses);
         return dup;

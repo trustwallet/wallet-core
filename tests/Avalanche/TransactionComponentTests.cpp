@@ -70,8 +70,8 @@ TEST(AvalancheTransactionComponents, TestTransferableOutputAssignmentConstructin
         std::make_unique<SECP256k1TransferOutput>(12345, 54321, 6, addressesOutTwo);
     auto outputTwo = TransferableOutput(assetIDTwo, std::move(coreOutputTwo));
 
-    EXPECT_TRUE(outputOne <
-                outputTwo); // outputOne should be less than outputTwo by lexicographical sort
+    EXPECT_TRUE(outputOne < outputTwo); // outputOne should be less than outputTwo by lexicographical sort
+    EXPECT_FALSE(outputTwo < outputOne);
 
     auto outputThree = TransferableOutput(outputTwo); // should be able to build from each other
     EXPECT_EQ(outputThree.assetID, outputTwo.assetID);
@@ -83,6 +83,21 @@ TEST(AvalancheTransactionComponents, TestTransferableOutputAssignmentConstructin
     EXPECT_FALSE(outputThree.assetID == outputTwo.assetID);
     EXPECT_TRUE(outputThree < outputTwo); // outputOne should be less than outputTwo by
                                           // lexicographical sort if assignment successful
+}
+
+TEST(AvalancheTransactionComponents, TestSECP256k1TransferOutput) {
+    auto assetIDOne =
+        parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba530000");
+    auto addressesOutOne = generateAddressesForComponent();
+    auto coreOutputOne = SECP256k1TransferOutput(12345, 54321, 5, addressesOutOne);
+
+    auto assetIDTwo =
+        parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db");
+    auto addressesOutTwo = generateAddressesForComponent();
+    auto coreOutputTwo = SECP256k1TransferOutput(12345, 54321, 6, addressesOutTwo);
+
+    EXPECT_TRUE(coreOutputOne < coreOutputTwo);
+    EXPECT_FALSE(coreOutputTwo < coreOutputOne);
 }
 
 TEST(AvalancheTransactionComponents, TestOutputDuplicateEncodeEquality) {
