@@ -6,6 +6,7 @@
 
 #include "Avalanche/CB58.h"
 #include "Avalanche/Transaction.h"
+#include "Avalanche/Output.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"

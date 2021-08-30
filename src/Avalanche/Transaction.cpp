@@ -30,36 +30,6 @@ void BaseTransaction::encode(Data& data) const {
     }
 }
 
-void UnsignedOperationTransaction::encode(Data& data) const {
-    BaseTransaction::encode(data);
-    encode32BE(static_cast<uint32_t>(operations.size()), data);
-    for (auto op : operations) {
-        op.encode(data);
-    }
-}
-
-void UnsignedImportTransaction::encode(Data& data) const {
-    BaseTransaction::encode(data);
-    for (auto byte : sourceChain) {
-        data.push_back(byte);
-    }
-    encode32BE(static_cast<uint32_t>(importInputs.size()), data);
-    for (auto in : importInputs) {
-        in.encode(data);
-    }
-}
-
-void UnsignedExportTransaction::encode(Data& data) const {
-    BaseTransaction::encode(data);
-    for (auto byte : destinationChain) {
-        data.push_back(byte);
-    }
-    encode32BE(static_cast<uint32_t>(exportOutputs.size()), data);
-    for (auto out : exportOutputs) {
-        out.encode(data);
-    }
-}
-
 void SignedTransaction::encode(Data& data) const {
     encode16BE(codecID, data);
     unsignedTransaction.encode(data);

@@ -8,7 +8,6 @@
 
 #include "Credential.h"
 #include "TransferableInput.h"
-#include "TransferableOp.h"
 #include "TransferableOutput.h"
 #include "../CoinEntry.h"
 #include <stdexcept>
@@ -59,95 +58,6 @@ class BaseTransaction {
         this->outputs = outputs;
         std::sort(this->inputs.begin(), this->inputs.end());
         std::sort(this->outputs.begin(), this->outputs.end());
-    }
-};
-
-class UnsignedOperationTransaction : public BaseTransaction {
-  public:
-    std::vector<TransferableOp> operations;
-
-    void encode(Data& data) const;
-
-    UnsignedOperationTransaction(uint32_t networkID, Data& blockchainID,
-                                 std::vector<TransferableInput>& inputs,
-                                 std::vector<TransferableOutput>& outputs, Data& memo,
-                                 std::vector<TransferableOp>& ops)
-        : BaseTransaction(TransactionTypeID::Operation, networkID, blockchainID, inputs, outputs,
-                          memo)
-        , operations(ops) {
-        std::sort(this->operations.begin(), this->operations.end());
-    }
-
-    UnsignedOperationTransaction(BaseTransaction& baseTxn, std::vector<TransferableOp>& ops)
-        : BaseTransaction(baseTxn), operations(ops) {
-        std::sort(this->operations.begin(), this->operations.end());
-        typeID = TransactionTypeID::Operation;
-    }
-};
-
-class UnsignedImportTransaction : public BaseTransaction {
-  public:
-    Data sourceChain;
-    std::vector<TransferableInput> importInputs;
-
-    void encode(Data& data) const;
-
-    UnsignedImportTransaction(uint32_t networkID, Data& blockchainID,
-                              std::vector<TransferableInput>& inputs,
-                              std::vector<TransferableOutput>& outputs, Data& memo, Data& source,
-                              std::vector<TransferableInput>& importInputs)
-        : BaseTransaction(TransactionTypeID::Import, networkID, blockchainID, inputs, outputs, memo)
-        , sourceChain(source)
-        , importInputs(importInputs) {
-        if (source.size() != BLOCKCHAIN_ID_SIZE) {
-            throw std::invalid_argument(std::string("SourceChain must be ") +
-                                        std::to_string(BLOCKCHAIN_ID_SIZE) + " bytes.");
-        }
-        std::sort(this->importInputs.begin(), this->importInputs.end());
-    }
-
-    UnsignedImportTransaction(BaseTransaction& baseTxn, Data& source,
-                              std::vector<TransferableInput> importInputs)
-        : BaseTransaction(baseTxn), sourceChain(source), importInputs(importInputs) {
-        if (source.size() != BLOCKCHAIN_ID_SIZE) {
-            throw std::invalid_argument(std::string("SourceChain must be ") +
-                                        std::to_string(BLOCKCHAIN_ID_SIZE) + " bytes.");
-        }
-        typeID = TransactionTypeID::Import;
-        std::sort(this->importInputs.begin(), this->importInputs.end());
-    }
-};
-
-class UnsignedExportTransaction : public BaseTransaction {
-  public:
-    Data destinationChain;
-    std::vector<TransferableOutput> exportOutputs;
-
-    void encode(Data& data) const;
-
-    UnsignedExportTransaction(uint32_t networkID, Data& blockchainID,
-                              std::vector<TransferableInput>& inputs,
-                              std::vector<TransferableOutput>& outputs, Data& memo, Data& dest,
-                              std::vector<TransferableOutput>& exportOutputs)
-        : BaseTransaction(TransactionTypeID::Export, networkID, blockchainID, inputs, outputs, memo)
-        , destinationChain(dest)
-        , exportOutputs(exportOutputs) {
-        if (dest.size() != BLOCKCHAIN_ID_SIZE) {
-            throw std::invalid_argument(std::string("DestinationChain must be ") +
-                                        std::to_string(BLOCKCHAIN_ID_SIZE) + " bytes.");
-        }
-        std::sort(this->exportOutputs.begin(), this->exportOutputs.end());
-    }
-
-    UnsignedExportTransaction(BaseTransaction& baseTxn, Data& dest,
-                              std::vector<TransferableOutput>& exportOutputs)
-        : BaseTransaction(baseTxn), destinationChain(dest), exportOutputs(exportOutputs) {
-        if (dest.size() != BLOCKCHAIN_ID_SIZE) {
-            throw std::invalid_argument(std::string("DestinationChain must be ") +
-                                        std::to_string(BLOCKCHAIN_ID_SIZE) + " bytes.");
-        }
-        typeID = TransactionTypeID::Export;
-        std::sort(this->exportOutputs.begin(), this->exportOutputs.end());
     }
 };
 
