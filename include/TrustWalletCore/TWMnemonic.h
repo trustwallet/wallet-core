@@ -14,15 +14,15 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_CLASS
 struct TWMnemonic;
 
-/// Determines whether a mnemonic phrase is valid.
+/// Determines whether a BIP39 English mnemonic phrase is valid.
 TW_EXPORT_STATIC_METHOD
 bool TWMnemonicIsValid(TWString *_Nonnull mnemonic);
 
-/// Determines whether word is a valid menemonic word.
+/// Determines whether word is a valid BIP39 English menemonic word.
 TW_EXPORT_STATIC_METHOD
 bool TWMnemonicIsValidWord(TWString *_Nonnull word);
 
-/// Return BIP39 English words that match the given prefix.  A single string is returned, with space-separated list of words.
+/// Return BIP39 English words that match the given prefix. A single string is returned, with space-separated list of words.
 TW_EXPORT_STATIC_METHOD
 TWString* _Nonnull TWMnemonicSuggest(TWString *_Nonnull prefix);
 
