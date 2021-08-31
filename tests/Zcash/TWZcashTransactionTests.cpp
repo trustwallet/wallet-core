@@ -10,7 +10,7 @@
 #include "Bitcoin/OutPoint.h"
 #include "Bitcoin/Script.h"
 #include "Zcash/TransactionBuilder.h"
-#include "Bitcoin/TransactionSigner.h"
+#include "Bitcoin/SignatureBuilder.h"
 #include "HexCoding.h"
 #include "PublicKey.h"
 #include "Data.h"

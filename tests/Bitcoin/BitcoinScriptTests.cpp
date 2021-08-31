@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Bitcoin/Script.h"
-#include "Bitcoin/TransactionSigner.h"
+#include "Bitcoin/SignatureBuilder.h"
 #include "../interface/TWTestUtilities.h"
 #include "HexCoding.h"
 

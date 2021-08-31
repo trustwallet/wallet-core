@@ -9,7 +9,7 @@
 #include "TransactionInput.h"
 #include "TransactionOutput.h"
 #include "../Bitcoin/SigHashType.h"
-#include "../Bitcoin/TransactionSigner.h"
+#include "../Bitcoin/SignatureBuilder.h"
 
 #include "../BinaryCoding.h"
 #include "../Hash.h"
