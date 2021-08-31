@@ -48,6 +48,9 @@ int mnemonic_check(const char *mnemonic);
 
 int mnemonic_to_bits(const char *mnemonic, uint8_t *bits);
 
+// [wallet-core] Like mnemonic_to_bits, but with a custom dictionary.  Dictionary is like English wordlist, with 2048+1 words, last element is null.
+int mnemonic_to_bits_dict(const char *mnemonic, const char* const wordlist[], uint8_t *bits);
+
 // passphrase must be at most 256 characters otherwise it would be truncated
 void mnemonic_to_seed(const char *mnemonic, const char *passphrase,
                       uint8_t seed[512 / 8],

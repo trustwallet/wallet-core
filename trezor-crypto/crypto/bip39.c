@@ -103,6 +103,12 @@ const char *mnemonic_from_data(const uint8_t *data, int len, char *buf, int bufl
 //void mnemonic_clear(void) { memzero(mnemo, sizeof(mnemo)); }
 
 int mnemonic_to_bits(const char *mnemonic, uint8_t *bits) {
+  // [wallet-core] Using default English dictionary
+  return mnemonic_to_bits_dict(mnemonic, wordlist, bits);
+}
+
+// [wallet-core]
+int mnemonic_to_bits_dict(const char *mnemonic, const char* const dict[], uint8_t *bits) {
   if (!mnemonic) {
     return 0;
   }
@@ -145,10 +151,10 @@ int mnemonic_to_bits(const char *mnemonic, uint8_t *bits) {
     }
     k = 0;
     for (;;) {
-      if (!wordlist[k]) {  // word not found
+      if (!dict[k]) {  // word not found
         return 0;
       }
-      if (strcmp(current_word, wordlist[k]) == 0) {  // word found on index k
+      if (strcmp(current_word, dict[k]) == 0) {  // word found on index k
         for (ki = 0; ki < 11; ki++) {
           if (k & (1 << (10 - ki))) {
             result[bi / 8] |= 1 << (7 - (bi % 8));

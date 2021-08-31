@@ -20,8 +20,34 @@
 #include <array>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace TW {
+
+/// Represents a Bip39 dictionary for a language, a list of words.
+/// Internally also has C-representation usable into Trezor lib.
+/// Note that word comparison and sorting is done verbatim, no special handling is done for accented characters (recommendation is to use normalization beforehand).
+class Bip39Dictionary {
+private:
+    std::vector<std::string> list;
+    char** p = nullptr; // pointers into list
+
+    Bip39Dictionary() : Bip39Dictionary(std::vector<std::string>()) {}
+    Bip39Dictionary(std::vector<std::string> list);
+    void freePointers();
+    void updatePointers();
+
+public:
+    static const size_t DictionarySize = 2048;
+
+    /// Create a dictionary from a single string with 2048 space-separated words
+    static std::pair<bool, Bip39Dictionary> prepareDictionary(const char* dictionaryString);
+
+    char** const pointers() const { return p; }
+    Bip39Dictionary(const Bip39Dictionary& other) : Bip39Dictionary(other.list) {}
+    void operator=(const Bip39Dictionary& other) { list = other.list; updatePointers(); }
+    ~Bip39Dictionary() { freePointers(); }
+};
 
 class HDWallet {
   public:
@@ -56,6 +82,10 @@ class HDWallet {
     /// Initializes an HDWallet from a mnemonic.
     /// Throws on invalid mnemonic.
     HDWallet(const std::string& mnemonic, const std::string& passphrase);
+
+    /// Initializes an HDWallet from a mnemonic using a custom BIP39 dictionary (see Bip39Dictionary)
+    /// Throws on invalid mnemonic.
+    HDWallet(const std::string& mnemonic, const std::string& passphrase, const Bip39Dictionary& dictionary);
 
     /// Initializes an HDWallet from an entropy.
     /// Throws on invalid data.
@@ -103,7 +133,7 @@ class HDWallet {
     static PrivateKeyType getPrivateKeyType(TWCurve curve);
 
   private:
-    void updateSeedAndEntropy();
+    void updateSeedAndEntropy(char** customDictionary = nullptr);
 };
 
 } // namespace TW

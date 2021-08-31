@@ -21,6 +21,8 @@
 #include <TrezorCrypto/curves.h>
 
 #include <array>
+#include <tuple>
+#include <algorithm>
 
 using namespace TW;
 
@@ -36,6 +38,66 @@ const char* curveName(TWCurve curve);
 } // namespace
 
 const int MnemonicBufLength = Mnemonic::MaxWords * (BIP39_MAX_WORD_LENGTH + 3) + 20; // some extra slack
+
+Bip39Dictionary::Bip39Dictionary(std::vector<std::string> list) : list(list) {
+    updatePointers();
+}
+
+void Bip39Dictionary::updatePointers() {
+    // sort words
+    std::sort(list.begin(), list.end());
+    auto n = list.size();
+    p = new char*[n + 1];
+    p[n] = nullptr;
+    for (auto i = 0; i < n; ++i) {
+        size_t wlen = strlen(list[i].c_str());
+        p[i] = new char[wlen + 1];
+        memcpy(p[i], list[i].c_str(), wlen);
+        p[i][wlen] = 0;
+    }
+}
+
+void Bip39Dictionary::freePointers() {
+    if (p) {
+        auto n = list.size();
+        for (auto i = 0; i < n; ++i) {
+            if (p[i]) {
+                delete[] p[i];
+            }
+        }
+        delete[] p;
+        p = nullptr;
+    }
+}
+
+std::pair<bool, Bip39Dictionary> Bip39Dictionary::prepareDictionary(const char* dictionaryString) {
+    // tokenize into words
+    std::vector<std::string> words;
+    const char* i = dictionaryString;
+    std::string currWord;
+    while (*i) {
+        if (*i == ' ') {
+            if (currWord.length() >= 2) {
+                words.push_back(currWord);
+            }
+            currWord = "";
+        } else {
+            currWord.append(1, *i);
+        }
+        ++i;
+    };
+    if (currWord.length() >= 2) {
+        words.push_back(currWord);
+    }
+
+    Bip39Dictionary dict;
+    if (words.size() != DictionarySize) {
+        // incorrect number of words
+        return std::make_pair(false, dict);
+    }
+    dict = Bip39Dictionary(words);
+    return std::make_pair(true, dict);
+}
 
 HDWallet::HDWallet(int strength, const std::string& passphrase)
     : passphrase(passphrase) {
@@ -57,6 +119,14 @@ HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase)
     updateSeedAndEntropy();
 }
 
+HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase, const Bip39Dictionary& dictionary)
+    : mnemonic(mnemonic), passphrase(passphrase) {
+    if (mnemonic.size() == 0) {
+        throw std::invalid_argument("Invalid mnemonic");
+    }
+    updateSeedAndEntropy(dictionary.pointers());
+}
+
 HDWallet::HDWallet(const Data& entropy, const std::string& passphrase)
     : passphrase(passphrase) {
     char buf[MnemonicBufLength];
@@ -75,14 +145,19 @@ HDWallet::~HDWallet() {
     std::fill(passphrase.begin(), passphrase.end(), 0);
 }
 
-void HDWallet::updateSeedAndEntropy() {
+void HDWallet::updateSeedAndEntropy(char** customDictionary) {
     // generate seed from mnemonic
     // it is assumed that mnemonic is valid, enforced before calling
     mnemonic_to_seed(mnemonic.c_str(), passphrase.c_str(), seed.data(), nullptr);
 
     // generate entropy from mnemonic
     Data entropyRaw((Mnemonic::MaxWords * Mnemonic::BitsPerWord) / 8);
-    auto entropyBytes = mnemonic_to_bits(mnemonic.c_str(), entropyRaw.data()) / 8;
+    int entropyBytes;
+    if (customDictionary == nullptr) {
+        entropyBytes = mnemonic_to_bits(mnemonic.c_str(), entropyRaw.data()) / 8;
+    } else {
+        entropyBytes = mnemonic_to_bits_dict(mnemonic.c_str(), customDictionary,  entropyRaw.data()) / 8;
+    }
     // copy to truncate
     entropy = data(entropyRaw.data(), entropyBytes);
 }
