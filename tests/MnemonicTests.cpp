@@ -53,6 +53,21 @@ TEST(Mnemonic, invalid) {
     }
 }
 
+extern const char* SpanishBip39Dictionary;
+
+TEST(Mnemonic, isValidSpanish) {
+    auto dictionary = Bip39Dictionary::prepareDictionary(SpanishBip39Dictionary);
+    ASSERT_TRUE(dictionary.first);
+    ASSERT_TRUE(dictionary.second.pointers() != nullptr);
+
+    EXPECT_TRUE(Mnemonic::isValidDictionary("llanto radical atraer riesgo actuar masa fondo cielo dieta archivo sonrisa mamut", dictionary.second));
+    EXPECT_TRUE(Mnemonic::isValidDictionary("careta llanto jefe tarjeta tren osadia carga alejar banda recurso aguila macho", dictionary.second));
+    // not valid with default dictionary
+    EXPECT_FALSE(Mnemonic::isValid("llanto radical atraer riesgo actuar masa fondo cielo dieta archivo sonrisa mamut"));
+    // no exact match due to accents
+    EXPECT_FALSE(Mnemonic::isValidDictionary("careta llanto jefe tarjeta tren osadía carga alejar banda recurso águila macho", dictionary.second));
+}
+
 TEST(Mnemonic, isValidWord) {
     EXPECT_TRUE(Mnemonic::isValidWord("credit"));
     EXPECT_TRUE(Mnemonic::isValidWord("airport"));
