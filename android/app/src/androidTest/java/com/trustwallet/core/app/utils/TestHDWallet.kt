@@ -38,8 +38,13 @@ class TestHDWallet {
     }
 
     @Test
-    fun testMnemonicInvalid() {
-        assertFalse(Mnemonic.isValid("THIS IS AN INVALID MNEMONIC"))
+    fun testCreateFromMnemonicInvalid() {
+        try {
+            HDWallet("THIS IS AN INVALID MNEMONIC", "")
+            fail("Missing exception")
+        } catch (ex: Exception) {
+            assertTrue(ex is InvalidParameterException)
+        }
     }
 
     @Test

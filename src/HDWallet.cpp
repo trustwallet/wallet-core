@@ -113,7 +113,7 @@ HDWallet::HDWallet(int strength, const std::string& passphrase)
 
 HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase)
     : mnemonic(mnemonic), passphrase(passphrase) {
-    if (mnemonic.size() == 0) {
+    if (!Mnemonic::isValid(mnemonic)) {
         throw std::invalid_argument("Invalid mnemonic");
     }
     updateSeedAndEntropy();
@@ -121,6 +121,7 @@ HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase)
 
 HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase, const Bip39Dictionary& dictionary)
     : mnemonic(mnemonic), passphrase(passphrase) {
+    //if (!Mnemonic::isValid(mnemonic)) { // TODO
     if (mnemonic.size() == 0) {
         throw std::invalid_argument("Invalid mnemonic");
     }
@@ -158,8 +159,10 @@ void HDWallet::updateSeedAndEntropy(char** customDictionary) {
     } else {
         entropyBytes = mnemonic_to_bits_dict(mnemonic.c_str(), customDictionary,  entropyRaw.data()) / 8;
     }
+    assert(entropyBytes <= ((Mnemonic::MaxWords * Mnemonic::BitsPerWord) / 8) && entropyBytes >= ((Mnemonic::MinWords * Mnemonic::BitsPerWord) / 8));
     // copy to truncate
     entropy = data(entropyRaw.data(), entropyBytes);
+    assert(entropy.size() > 10);
 }
 
 PrivateKey HDWallet::getMasterKey(TWCurve curve) const {

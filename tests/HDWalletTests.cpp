@@ -188,7 +188,7 @@ TEST(HDWallet, createFromSpanishMnemonicDict) {
 }
 
 TEST(HDWallet, createFromMnemonicInvalid) {
-    EXPECT_FALSE(Mnemonic::isValid("THIS IS AN INVALID MNEMONIC"));
+    EXPECT_EXCEPTION(HDWallet("THIS IS AN INVALID MNEMONIC", passphrase), "Invalid mnemonic");
     EXPECT_EXCEPTION(HDWallet("", passphrase), "Invalid mnemonic");
 }
 
