@@ -16,7 +16,7 @@
 
 namespace TW::Bitcoin {
 
-std::optional<TransactionOutput> TransactionBuilder::prepareOutput(std::string address, Amount amount, enum TWCoinType coin) {
+std::optional<TransactionOutput> TransactionBuilder::prepareOutputWithScript(std::string address, Amount amount, enum TWCoinType coin) {
     auto lockingScript = Script::lockScriptForAddress(address, coin);
     if (lockingScript.empty()) {
         return {};

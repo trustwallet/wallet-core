@@ -30,12 +30,12 @@ public:
         Transaction tx;
         tx.lockTime = lockTime;
 
-        auto outputTo = prepareOutput(toAddress, plan.amount, coin);
+        auto outputTo = prepareOutputWithScript(toAddress, plan.amount, coin);
         if (!outputTo.has_value()) { return {}; }
         tx.outputs.push_back(outputTo.value());
 
         if (plan.change > 0) {
-            auto outputChange = prepareOutput(changeAddress, plan.change, coin);
+            auto outputChange = prepareOutputWithScript(changeAddress, plan.change, coin);
             if (!outputChange.has_value()) { return {}; }
             tx.outputs.push_back(outputChange.value());
         }
@@ -49,7 +49,7 @@ public:
     }
 
     /// Prepares a TransactionOutput with given address and amount, prepares script for it
-    static std::optional<TransactionOutput> prepareOutput(std::string address, Amount amount, enum TWCoinType coin);
+    static std::optional<TransactionOutput> prepareOutputWithScript(std::string address, Amount amount, enum TWCoinType coin);
 };
 
 } // namespace TW::Bitcoin
