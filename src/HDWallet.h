@@ -142,3 +142,8 @@ class HDWallet {
 struct TWHDWallet {
     TW::HDWallet impl;
 };
+
+/// Wrapper for C interface.
+struct TWBip39Dictionary {
+    TW::Bip39Dictionary impl;
+};

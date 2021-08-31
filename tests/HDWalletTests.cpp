@@ -175,15 +175,20 @@ const char* SpanishBip39Dictionary =
    "yegua yema yerno yeso yodo yoga yogur zafiro zanja zapato zarza zona zorro zumo zurdo";
 
 TEST(HDWallet, createFromSpanishMnemonicDict) {
+    auto dictionary = Bip39Dictionary::prepareDictionary(SpanishBip39Dictionary);
+    ASSERT_TRUE(dictionary.first);
+    ASSERT_TRUE(dictionary.second.pointers() != nullptr);
     {
-        auto dictionary = Bip39Dictionary::prepareDictionary(SpanishBip39Dictionary);
-        ASSERT_TRUE(dictionary.first);
-        ASSERT_TRUE(dictionary.second.pointers() != nullptr);
-
         HDWallet wallet = HDWallet("llanto radical atraer riesgo actuar masa fondo cielo dieta archivo sonrisa mamut", "", dictionary.second);
         EXPECT_EQ(wallet.getMnemonic(), "llanto radical atraer riesgo actuar masa fondo cielo dieta archivo sonrisa mamut");
         EXPECT_EQ(hex(wallet.getEntropy()), "81d8185b64f0371457198b43c22b6c43");
         EXPECT_EQ(hex(wallet.getSeed()), "ec8f8703432fc7d32e699ee056e9d84b1435e6a64a6a40ad63dbde11eab189a276ddcec20f3326d3c6ee39cbd018585b104fc3633b801c011063ae4c318fb9b6");
+    }
+    {
+        HDWallet wallet = HDWallet("careta llanto jefe tarjeta tren osadia carga alejar banda recurso aguila macho", "", dictionary.second);
+        EXPECT_EQ(wallet.getMnemonic(), "careta llanto jefe tarjeta tren osadia carga alejar banda recurso aguila macho");
+        EXPECT_EQ(hex(wallet.getEntropy()), "2b3039d7f0fee54d0ad0441bb87c19c2");
+        EXPECT_EQ(hex(wallet.getSeed()), "47b6780dbb64c5ad8285b19c43c3781de97bc0b3aaec62edd81c831d2d1e05044daf9f03a2d618765296c381942ebdd9787ba08c3d23d020d5fc21d9f2cb980e");
     }
 }
 

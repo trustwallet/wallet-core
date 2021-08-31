@@ -14,6 +14,7 @@
 #include "TWPrivateKey.h"
 #include "TWPublicKey.h"
 #include "TWPurpose.h"
+#include "TWBip39Dictionary.h"
 #include "TWString.h"
 
 TW_EXTERN_C_BEGIN
@@ -28,10 +29,15 @@ struct TWHDWallet;
 TW_EXPORT_STATIC_METHOD
 struct TWHDWallet *_Nullable TWHDWalletCreate(int strength, TWString *_Nonnull passphrase);
 
-/// Creates an HDWallet from a mnemonic (aka. recovery phrase).
+/// Creates an HDWallet from a BIP39 English mnemonic (aka. recovery phrase).
 /// Null is returned on invalid mnemonic.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWHDWallet *_Nullable TWHDWalletCreateWithMnemonic(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase);
+
+/// Creates an HDWallet from a mnemonic using a custom BIP39 dictionary (see TWBip39Dictionary)
+/// Null is returned on invalid mnemonic.  Returned object needs to be deleted.
+TW_EXPORT_STATIC_METHOD
+struct TWHDWallet *_Nullable TWHDWalletCreateWithMnemonicDictionary(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase, struct TWBip39Dictionary *_Nonnull dictionary);
 
 /// Creates an HDWallet from entropy (corresponding to a mnemonic).
 /// Null is returned on invalid input.  Returned object needs to be deleted.

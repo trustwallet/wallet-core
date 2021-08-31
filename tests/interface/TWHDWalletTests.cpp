@@ -30,6 +30,8 @@ const auto seedHex = "7ae6f661157bda6492f6162701e570097fc726b6235011ea5ad09bf049
 const auto entropyHex = "ba5821e8c356c05ba5f025d9532fe0f21f65d594";
 
 
+namespace TW {
+
 inline void assertSeedEq(const std::shared_ptr<TWHDWallet>& wallet, const char* expected) {
     const auto seed = WRAPD(TWHDWalletSeed(wallet.get()));
     assertHexEqual(seed, expected);
@@ -62,6 +64,20 @@ TEST(HDWallet, CreateFromEntropy) {
 TEST(HDWallet, Generate) {
     const auto wallet = WRAP(TWHDWallet, TWHDWalletCreate(128, passphrase.get()));
     EXPECT_TRUE(TWMnemonicIsValid(WRAPS(TWHDWalletMnemonic(wallet.get())).get()));
+}
+
+extern const char* SpanishBip39Dictionary;
+
+TEST(HDWallet, CreateFromMnemonicDictionary) {
+    auto dictStr = STRING(SpanishBip39Dictionary);
+    auto dict = WRAP(TWBip39Dictionary, TWBip39DictionaryCreate(dictStr.get()));
+    ASSERT_TRUE(dict != nullptr);
+
+    const auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonicDictionary(STRING("careta llanto jefe tarjeta tren osadia carga alejar banda recurso aguila macho").get(), STRING("").get(), dict.get()));
+    ASSERT_TRUE(wallet != nullptr);
+    assertMnemonicEq(wallet, "careta llanto jefe tarjeta tren osadia carga alejar banda recurso aguila macho");
+    assertEntropyEq(wallet, "2b3039d7f0fee54d0ad0441bb87c19c2");
+    assertSeedEq(wallet, "47b6780dbb64c5ad8285b19c43c3781de97bc0b3aaec62edd81c831d2d1e05044daf9f03a2d618765296c381942ebdd9787ba08c3d23d020d5fc21d9f2cb980e");
 }
 
 TEST(HDWallet, SeedWithExtraSpaces) {
@@ -425,3 +441,5 @@ TEST(HDWallet, GetDerivedKey) {
     const auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
     assertHexEqual(privateKeyData, "1901b5994f075af71397f65bd68a9fff8d3025d65f5a2c731cf90f5e259d6aac");
 }
+
+} // namespace
