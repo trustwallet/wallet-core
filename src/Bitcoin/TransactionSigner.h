@@ -26,7 +26,6 @@ template <typename Transaction, typename TransactionBuilder>
 class TransactionSigner {
 public:
     // Create plan for a transaction
-    // TODO rename
     static TransactionPlan plan(const SigningInput& input);
 
     // Sign an unsigned transaction.  Plan it if needed beforehand.
