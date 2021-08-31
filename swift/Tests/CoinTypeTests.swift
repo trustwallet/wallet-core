@@ -27,5 +27,7 @@ class CoinTypeTests: XCTestCase {
         XCTAssertEqual(CoinType.tezos.rawValue, 1729)
         XCTAssertEqual(CoinType.qtum.rawValue, 2301)
         XCTAssertEqual(CoinType.nebulas.rawValue, 2718)
+        XCTAssertEqual(CoinType.avalancheCChain.rawValue, 10009000)
+        XCTAssertEqual(CoinType.xdai.rawValue, 10000100)
     }
 }

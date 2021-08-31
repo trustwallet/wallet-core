@@ -15,6 +15,7 @@
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWBase58.h>
+#include <TrustWalletCore/TWCoinType.h>
 #include <proto/Stellar.pb.h>
 
 #include "HexCoding.h"
@@ -79,7 +80,7 @@ TEST(HDWallet, CreateFromStrengthInvalid) {
 }
 
 TEST(HDWallet, CreateFromMnemonicInvalid) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(STRING("THIS IS INVALID MNEMONIC").get(), STRING("").get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(STRING("").get(), STRING("").get()));
     ASSERT_EQ(wallet.get(), nullptr);
 }
 
@@ -261,14 +262,25 @@ TEST(HDWallet, DeriveElrond) {
 TEST(HDWallet, DeriveBinance) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeBinance));
-    auto key2 = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeSmartChainLegacy));
+    auto key2 = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeSmartChain));
     auto keyData = WRAPD(TWPrivateKeyData(key.get()));
     auto keyData2 = WRAPD(TWPrivateKeyData(key2.get()));
 
     auto expected = "ca81b1b0974aa063de2f74c17b9dc364a8208d105659f4f900c121fb170922fe";
+    auto expectedETH = "c4f77b4a9f5a0db3a7ffc3599e61bef986037ae9a7cc1972a10d55c030270020";
 
     assertHexEqual(keyData, expected);
-    assertHexEqual(keyData2, expected);
+    assertHexEqual(keyData2, expectedETH);
+}
+
+TEST(HDWallet, DeriveAvalancheCChain) {
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeAvalancheCChain));
+    auto keyData = WRAPD(TWPrivateKeyData(key.get()));
+
+    auto expectedETH = "c4f77b4a9f5a0db3a7ffc3599e61bef986037ae9a7cc1972a10d55c030270020";
+
+    assertHexEqual(keyData, expectedETH);
 }
 
 TEST(HDWallet, ExtendedKeys) {
@@ -343,6 +355,15 @@ TEST(HDWallet, PublicKeyFromZ) {
     assertStringsEqual(address4, "bc1qm97vqzgj934vnaq9s53ynkyf9dgr05rargr04n");
 }
 
+TEST(HDWallet, PublicKeyFromExtended_Ethereum) {
+    const auto xpub = STRING("xpub6C7LtZJgtz1BKXG9mExKUxYvX7HSF38UMMmGbpqNQw3DfYwAw8E6sH7VSVxFipvEEm2afSqTjoRgcLmycXX4zfxCWJ4HY73a9KdgvfHEQGB");
+    const auto xpubAddr = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeEthereum, STRING("m/44'/60'/0'/0/1").get()));
+    ASSERT_NE(xpubAddr.get(), nullptr);
+    auto data = WRAPD(TWPublicKeyData(xpubAddr.get()));
+    ASSERT_NE(data.get(), nullptr);
+    assertHexEqual(data, "044516c4aa5352035e1bb5be132694e1389a4ac37d32e5e717d35ee4c4dfab513226a9d14ea37a55962ad3644a08e2ce551b4495beabb9b09e688c7b92eba18acc");
+}
+
 TEST(HDWallet, PublicKeyFromExtended_NIST256p1) {
     const auto xpub = STRING("xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj");
     const auto xpubAddr = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeNEO, STRING("m/44'/888'/0'/0/0").get())); // Neo
@@ -372,7 +393,6 @@ TEST(HDWallet, PublicKeyFromExtended_Negative) {
     }
 }
 
-/* Test disabled temporarily, as HDWallet creation is not thread safe, can produce invalid result which is checked now.
 TEST(HDWallet, MultipleThreads) {
     auto passphrase = STRING("");
 
@@ -398,7 +418,6 @@ TEST(HDWallet, MultipleThreads) {
     th2.join();
     th3.join();
 }
-*/
 
 TEST(HDWallet, GetDerivedKey) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));

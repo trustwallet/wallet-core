@@ -96,119 +96,137 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
     switch (input.transaction().transaction_oneof_case()) {
         case Proto::Transaction::kTransfer:
             {
-                if (gasPrice != 0) { // legacy
-                    return TransactionNonTyped::buildNativeTransfer(
-                        nonce, gasPrice, gasLimit,
-                        /* to: */ toAddress,
-                        /* amount: */ load(input.transaction().transfer().amount()),
-                        /* optional data: */ Data(input.transaction().transfer().data().begin(), input.transaction().transfer().data().end()));
+                switch (input.tx_mode()) {
+                    case Proto::TransactionMode::Legacy:
+                    default:
+                        return TransactionNonTyped::buildNativeTransfer(
+                            nonce, gasPrice, gasLimit,
+                            /* to: */ toAddress,
+                            /* amount: */ load(input.transaction().transfer().amount()),
+                            /* optional data: */ Data(input.transaction().transfer().data().begin(), input.transaction().transfer().data().end()));
+
+                    case Proto::TransactionMode::Enveloped: // Eip1559
+                        return TransactionEip1559::buildNativeTransfer(
+                            nonce, maxInclusionFeePerGas, maxFeePerGas, gasLimit,
+                            /* to: */ toAddress,
+                            /* amount: */ load(input.transaction().transfer().amount()),
+                            /* optional data: */ Data(input.transaction().transfer().data().begin(), input.transaction().transfer().data().end()));
                 }
-                // Eip1559
-                return TransactionEip1559::buildNativeTransfer(
-                    nonce, maxInclusionFeePerGas, maxFeePerGas, gasLimit,
-                    /* to: */ toAddress,
-                    /* amount: */ load(input.transaction().transfer().amount()),
-                    /* optional data: */ Data(input.transaction().transfer().data().begin(), input.transaction().transfer().data().end()));
             }
 
         case Proto::Transaction::kErc20Transfer:
             {
                 Data tokenToAddress = addressStringToData(input.transaction().erc20_transfer().to());
-                if (gasPrice != 0) { // legacy
-                    return TransactionNonTyped::buildERC20Transfer(
-                        nonce, gasPrice, gasLimit,
-                        /* tokenContract: */ toAddress,
-                        /* toAddress */ tokenToAddress,
-                        /* amount: */ load(input.transaction().erc20_transfer().amount()));
+                switch (input.tx_mode()) {
+                    case Proto::TransactionMode::Legacy:
+                    default:
+                        return TransactionNonTyped::buildERC20Transfer(
+                            nonce, gasPrice, gasLimit,
+                            /* tokenContract: */ toAddress,
+                            /* toAddress */ tokenToAddress,
+                            /* amount: */ load(input.transaction().erc20_transfer().amount()));
+
+                    case Proto::TransactionMode::Enveloped: // Eip1559
+                        return TransactionEip1559::buildERC20Transfer(
+                            nonce, maxInclusionFeePerGas, maxFeePerGas, gasLimit,
+                            /* tokenContract: */ toAddress,
+                            /* toAddress */ tokenToAddress,
+                            /* amount: */ load(input.transaction().erc20_transfer().amount()));
                 }
-                // Eip1559
-                return TransactionEip1559::buildERC20Transfer(
-                    nonce, maxInclusionFeePerGas, maxFeePerGas, gasLimit,
-                    /* tokenContract: */ toAddress,
-                    /* toAddress */ tokenToAddress,
-                    /* amount: */ load(input.transaction().erc20_transfer().amount()));
             }
 
         case Proto::Transaction::kErc20Approve:
             {
                 Data spenderAddress = addressStringToData(input.transaction().erc20_approve().spender());
-                if (gasPrice != 0) { // legacy
-                    return TransactionNonTyped::buildERC20Approve(
-                        nonce, gasPrice, gasLimit,
-                        /* tokenContract: */ toAddress,
-                        /* toAddress */ spenderAddress,
-                        /* amount: */ load(input.transaction().erc20_approve().amount()));
+                switch (input.tx_mode()) {
+                    case Proto::TransactionMode::Legacy:
+                    default:
+                        return TransactionNonTyped::buildERC20Approve(
+                            nonce, gasPrice, gasLimit,
+                            /* tokenContract: */ toAddress,
+                            /* toAddress */ spenderAddress,
+                            /* amount: */ load(input.transaction().erc20_approve().amount()));
+
+                    case Proto::TransactionMode::Enveloped: // Eip1559
+                        return TransactionEip1559::buildERC20Approve(
+                            nonce, maxInclusionFeePerGas, maxFeePerGas, gasLimit,
+                            /* tokenContract: */ toAddress,
+                            /* toAddress */ spenderAddress,
+                            /* amount: */ load(input.transaction().erc20_approve().amount()));
                 }
-                // Eip1559
-                return TransactionEip1559::buildERC20Approve(
-                    nonce, maxInclusionFeePerGas, maxFeePerGas, gasLimit,
-                    /* tokenContract: */ toAddress,
-                    /* toAddress */ spenderAddress,
-                    /* amount: */ load(input.transaction().erc20_approve().amount()));
             }
 
         case Proto::Transaction::kErc721Transfer:
             {
                 Data tokenToAddress = addressStringToData(input.transaction().erc721_transfer().to());
                 Data tokenFromAddress = addressStringToData(input.transaction().erc721_transfer().from());
-                if (gasPrice != 0) { // legacy
-                    return TransactionNonTyped::buildERC721Transfer(
-                        nonce, gasPrice, gasLimit,
-                        /* tokenContract: */ toAddress,
-                        /* fromAddress: */ tokenFromAddress,
-                        /* toAddress */ tokenToAddress,
-                        /* tokenId: */ load(input.transaction().erc721_transfer().token_id()));
+                switch (input.tx_mode()) {
+                    case Proto::TransactionMode::Legacy:
+                    default:
+                        return TransactionNonTyped::buildERC721Transfer(
+                            nonce, gasPrice, gasLimit,
+                            /* tokenContract: */ toAddress,
+                            /* fromAddress: */ tokenFromAddress,
+                            /* toAddress */ tokenToAddress,
+                            /* tokenId: */ load(input.transaction().erc721_transfer().token_id()));
+
+                    case Proto::TransactionMode::Enveloped: // Eip1559
+                        return TransactionEip1559::buildERC721Transfer(
+                            nonce, maxInclusionFeePerGas, maxFeePerGas, gasLimit,
+                            /* tokenContract: */ toAddress,
+                            /* fromAddress: */ tokenFromAddress,
+                            /* toAddress */ tokenToAddress,
+                            /* tokenId: */ load(input.transaction().erc721_transfer().token_id()));
                 }
-                // Eip1559
-                return TransactionEip1559::buildERC721Transfer(
-                    nonce, maxInclusionFeePerGas, maxFeePerGas, gasLimit,
-                    /* tokenContract: */ toAddress,
-                    /* fromAddress: */ tokenFromAddress,
-                    /* toAddress */ tokenToAddress,
-                    /* tokenId: */ load(input.transaction().erc721_transfer().token_id()));
             }
 
         case Proto::Transaction::kErc1155Transfer:
             {
                 Data tokenToAddress = addressStringToData(input.transaction().erc1155_transfer().to());
                 Data tokenFromAddress = addressStringToData(input.transaction().erc1155_transfer().from());
-                if (gasPrice != 0) { // legacy
-                    return TransactionNonTyped::buildERC1155Transfer(
-                        nonce, gasPrice, gasLimit,
-                        /* tokenContract: */ toAddress,
-                        /* fromAddress: */ tokenFromAddress,
-                        /* toAddress */ tokenToAddress,
-                        /* tokenId: */ load(input.transaction().erc1155_transfer().token_id()),
-                        /* value */ load(input.transaction().erc1155_transfer().value()),
-                        /* data */ Data(input.transaction().erc1155_transfer().data().begin(), input.transaction().erc1155_transfer().data().end())
-                    );
+                switch (input.tx_mode()) {
+                    case Proto::TransactionMode::Legacy:
+                    default:
+                        return TransactionNonTyped::buildERC1155Transfer(
+                            nonce, gasPrice, gasLimit,
+                            /* tokenContract: */ toAddress,
+                            /* fromAddress: */ tokenFromAddress,
+                            /* toAddress */ tokenToAddress,
+                            /* tokenId: */ load(input.transaction().erc1155_transfer().token_id()),
+                            /* value */ load(input.transaction().erc1155_transfer().value()),
+                            /* data */ Data(input.transaction().erc1155_transfer().data().begin(), input.transaction().erc1155_transfer().data().end()));
+
+                    case Proto::TransactionMode::Enveloped: // Eip1559
+                        return TransactionEip1559::buildERC1155Transfer(
+                            nonce, maxInclusionFeePerGas, maxFeePerGas, gasLimit,
+                            /* tokenContract: */ toAddress,
+                            /* fromAddress: */ tokenFromAddress,
+                            /* toAddress */ tokenToAddress,
+                            /* tokenId: */ load(input.transaction().erc1155_transfer().token_id()),
+                            /* value */ load(input.transaction().erc1155_transfer().value()),
+                            /* data */ Data(input.transaction().erc1155_transfer().data().begin(), input.transaction().erc1155_transfer().data().end()));
                 }
-                return TransactionEip1559::buildERC1155Transfer(
-                    nonce, maxInclusionFeePerGas, maxFeePerGas, gasLimit,
-                    /* tokenContract: */ toAddress,
-                    /* fromAddress: */ tokenFromAddress,
-                    /* toAddress */ tokenToAddress,
-                    /* tokenId: */ load(input.transaction().erc1155_transfer().token_id()),
-                    /* value */ load(input.transaction().erc1155_transfer().value()),
-                    /* data */ Data(input.transaction().erc1155_transfer().data().begin(), input.transaction().erc1155_transfer().data().end())
-                );
             }
 
         case Proto::Transaction::kContractGeneric:
         default:
             {
-                if (gasPrice != 0) { // legacy
-                    return TransactionNonTyped::buildNativeTransfer(
-                        nonce, gasPrice, gasLimit,
-                        /* to: */ toAddress,
-                        /* amount: */ load(input.transaction().contract_generic().amount()),
-                        /* transaction: */ Data(input.transaction().contract_generic().data().begin(), input.transaction().contract_generic().data().end()));
+                switch (input.tx_mode()) {
+                    case Proto::TransactionMode::Legacy:
+                    default:
+                        return TransactionNonTyped::buildNativeTransfer(
+                            nonce, gasPrice, gasLimit,
+                            /* to: */ toAddress,
+                            /* amount: */ load(input.transaction().contract_generic().amount()),
+                            /* transaction: */ Data(input.transaction().contract_generic().data().begin(), input.transaction().contract_generic().data().end()));
+
+                    case Proto::TransactionMode::Enveloped: // Eip1559
+                        return TransactionEip1559::buildNativeTransfer(
+                            nonce, maxInclusionFeePerGas, maxFeePerGas, gasLimit,
+                            /* to: */ toAddress,
+                            /* amount: */ load(input.transaction().contract_generic().amount()),
+                            /* transaction: */ Data(input.transaction().contract_generic().data().begin(), input.transaction().contract_generic().data().end()));
                 }
-                return TransactionEip1559::buildNativeTransfer(
-                    nonce, maxInclusionFeePerGas, maxFeePerGas, gasLimit,
-                    /* to: */ toAddress,
-                    /* amount: */ load(input.transaction().contract_generic().amount()),
-                    /* transaction: */ Data(input.transaction().contract_generic().data().begin(), input.transaction().contract_generic().data().end()));
             }
     }
 }

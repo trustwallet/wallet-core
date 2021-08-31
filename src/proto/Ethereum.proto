@@ -74,10 +74,13 @@ message Transaction {
     }
 }
 
+enum TransactionMode {
+    Legacy = 0; // Legacy transaction, pre-EIP2718/EIP1559; for fee gasPrice/gasLimit is used
+    Enveloped = 1; // Enveloped transaction EIP2718 (with type 0x2), fee is according to EIP1559 (base fee, inclusion fee, ...) 
+}
+
 // Input data necessary to create a signed transaction.
-// Supported:
-// - Legacy transaction, with legacy fee (pre-EIP1559; gas price, gas limit)
-// - EIP1559 fee (transaction type: ?; max inclusion fee, max fee per gas)
+// Legacy and EIP2718/EIP1559 transactions supported, see TransactionMode.
 message SigningInput {
     // Chain identifier (256-bit number)
     bytes chain_id = 1;
@@ -85,28 +88,32 @@ message SigningInput {
     // Nonce (256-bit number)
     bytes nonce = 2;
 
+    // Transaction version selector: Legacy or enveloped, has impact on fee structure.
+    // Default is Legacy (value 0)
+    TransactionMode tx_mode = 3;
+
     // Gas price (256-bit number)
-    // If > 0, legacy fee scheme is used; if 0, EIP1559 fee scheme is used
-    bytes gas_price = 3;
+    // Relevant for legacy transactions only (disregarded for enveloped/EIP1559)
+    bytes gas_price = 4;
 
     // Gas limit (256-bit number)
-    bytes gas_limit = 4;
+    bytes gas_limit = 5;
 
     // Maxinmum optional inclusion fee (aka tip) (256-bit number)
-    // Used only for EIP1559 fee, disregarded for legacy
-    bytes max_inclusion_fee_per_gas = 8;
+    // Relevant for enveloped/EIP1559 transactions only, tx_mode=Enveloped, (disregarded for legacy)
+    bytes max_inclusion_fee_per_gas = 6;
 
     // Maxinmum fee (256-bit number)
-    // Used only for EIP1559 fee, disregarded for legacy
-    bytes max_fee_per_gas = 9;
+    // Relevant for enveloped/EIP1559 transactions only, tx_mode=Enveloped, (disregarded for legacy)
+    bytes max_fee_per_gas = 7;
 
     // Recipient's address.
-    string to_address = 5;
+    string to_address = 8;
 
     // Private key.
-    bytes private_key = 6;
+    bytes private_key = 9;
 
-    Transaction transaction = 7;
+    Transaction transaction = 10;
 }
 
 // Transaction signing output.

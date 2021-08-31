@@ -1668,5 +1668,53 @@
       "rpc": "https://http-mainnet-node.huobichain.com",
       "documentation": "https://eth.wiki/json-rpc/API"
     }
+  },
+  {
+    "id": "avalanchec",
+    "name": "Avalanche C-Chain",
+    "coinId": 10009000,
+    "symbol": "AVAX",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://cchain.explorer.avax.network",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x9243890b844219accefd8798271052f5a056453ec18984a56e81c92921330d54",
+      "sampleAccount": "0xa664325f36Ec33E66323fe2620AF3f2294b2Ef3A"
+    },
+    "info": {
+      "url": "https://www.avalabs.org/",
+      "client": "https://github.com/ava-labs/avalanchego",
+      "clientPublic": "https://api.avax.network/ext/bc/C/rpc",
+      "clientDocs": "https://docs.avax.network/"
+    }
+  },
+  {
+    "id": "xdai",
+    "name": "xDai",
+    "coinId": 10000100,
+    "symbol": "xDAI",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://blockscout.com/xdai/mainnet",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x936798a1ef607c9e856d7861b15999c770c06f0887c4fc1f6acbf3bef09899c1",
+      "sampleAccount": "0x12d61a95CF55e18D267C2F1AA67d8e42ae1368f8"
+    },
+    "info": {
+      "url": "https://www.xdaichain.com",
+      "client": "https://github.com/openethereum/openethereum",
+      "clientPublic": "https://rpc.xdaichain.com",
+      "clientDocs": "https://eth.wiki/json-rpc/API"
+    }
   }
 ]
