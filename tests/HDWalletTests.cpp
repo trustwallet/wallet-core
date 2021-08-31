@@ -174,6 +174,18 @@ const char* SpanishBip39Dictionary =
    "vispera vista vitamina viudo vivaz vivero vivir vivo volcan volumen volver voraz votar voto voz vuelo vulgar yacer yate "
    "yegua yema yerno yeso yodo yoga yogur zafiro zanja zapato zarza zona zorro zumo zurdo";
 
+TEST(HDWallet, bip39Dict) {
+    {
+        auto dictionary = Bip39Dictionary::prepareDictionary(SpanishBip39Dictionary);
+        ASSERT_TRUE(dictionary.first);
+        ASSERT_TRUE(dictionary.second.pointers() != nullptr);
+    }
+    {
+        auto dictionary = Bip39Dictionary::prepareDictionary("not enough words");
+        ASSERT_FALSE(dictionary.first);
+    }
+}
+
 TEST(HDWallet, createFromSpanishMnemonicDict) {
     auto dictionary = Bip39Dictionary::prepareDictionary(SpanishBip39Dictionary);
     ASSERT_TRUE(dictionary.first);
@@ -324,6 +336,22 @@ TEST(HDWallet, DeriveWithLeadingZerosEth) {
     auto wallet = HDWallet(mnemonic, "");
     const auto addr = Ethereum::Address(wallet.getKey(coin, DerivationPath(derivationPath)).getPublicKey(TW::publicKeyType(coin)));
     EXPECT_EQ(addr.string(), "0x0ba17e928471c64AaEaf3ABfB3900EF4c27b380D");
+}
+
+TEST(HDWallet, SpanishXpubBtcEth) {
+    auto dictionary = Bip39Dictionary::prepareDictionary(SpanishBip39Dictionary);
+    ASSERT_TRUE(dictionary.first);
+    ASSERT_TRUE(dictionary.second.pointers() != nullptr);
+
+    HDWallet wallet = HDWallet("llanto radical atraer riesgo actuar masa fondo cielo dieta archivo sonrisa mamut", "", dictionary.second);
+    auto btcXpub = wallet.getExtendedPublicKey(TWPurposeBIP44, TWCoinTypeBitcoin, TWHDVersionXPUB);
+    EXPECT_EQ(btcXpub, "xpub6Cq43Vqyvb2DwXzjzNeMpPuxXRCN1WnmRCmYLPaaSv2XZXM2yCwUHpWEyB3zQ3FGCQsvY21gecMaQR7b2zhhgiHnjzDYpKCE2LACueaSMuR");
+    auto ethXpub = wallet.getExtendedPublicKey(TWPurposeBIP44, TWCoinTypeEthereum, TWHDVersionXPUB);
+    EXPECT_EQ(ethXpub, "xpub6Bgma7boPVudhExmB97iySvatGfnXkfBxYZYNTFYJvVzigUPk1X2iE8VhJPPxVuzjH8wBuTqRBMKCbwMYQNLrFCwYzMugYw4RM5VGNeVDpp");
+    auto btcAddress = wallet.deriveAddress(TWCoinTypeBitcoin);
+    EXPECT_EQ(btcAddress, "bc1q97jc0jdgsyvvhxydxxd6np8sa920c39l3qpscf");
+    auto ethAddress = wallet.deriveAddress(TWCoinTypeEthereum);
+    EXPECT_EQ(ethAddress, "0xa4531dE99E22B2166d340E7221669DF565c52024");
 }
 
 } // namespace
