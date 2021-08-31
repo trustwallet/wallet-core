@@ -6,7 +6,7 @@
 
 #include "TransactionBuilder.h"
 #include "Script.h"
-#include "SignatureBuilder.h"
+#include "TransactionSigner.h"
 
 #include "../Coin.h"
 #include "../proto/Bitcoin.pb.h"

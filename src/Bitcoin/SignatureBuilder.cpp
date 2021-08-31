@@ -12,34 +12,15 @@
 #include "UnspentSelector.h"
 
 #include "../BinaryCoding.h"
-#include "../Groestlcoin/Transaction.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
+
+#include "../Groestlcoin/Transaction.h"
 #include "../Zcash/Transaction.h"
 #include "../Zcash/TransactionBuilder.h"
 
-#include <tuple>
-
 using namespace TW;
 using namespace TW::Bitcoin;
-
-template <typename Transaction, typename TransactionBuilder>
-TransactionPlan TransactionSigner<Transaction, TransactionBuilder>::plan(const SigningInput& input) {
-    return TransactionBuilder::plan(input);
-}
-
-template <typename Transaction, typename TransactionBuilder>
-Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, TransactionBuilder>::sign(const SigningInput& input, bool estimationMode) {
-    TransactionPlan plan;
-    if (input.plan.has_value()) {
-        plan = input.plan.value();
-    } else {
-        plan = TransactionBuilder::plan(input);
-    }
-    auto transaction = TransactionBuilder::template build<Transaction>(plan, input.toAddress, input.changeAddress, input.coinType, input.lockTime);
-    SignatureBuilder<Transaction> signer(std::move(input), plan, transaction, estimationMode);
-    return signer.sign();
-}
 
 template <typename Transaction>
 Result<Transaction, Common::Proto::SigningError> SignatureBuilder<Transaction>::sign() {
@@ -317,6 +298,6 @@ Data SignatureBuilder<Transaction>::scriptForScriptHash(const Data& hash) const 
 }
 
 // Explicitly instantiate a Signers for compatible transactions.
-template class Bitcoin::TransactionSigner<Bitcoin::Transaction, TransactionBuilder>;
-template class Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>;
-template class Bitcoin::TransactionSigner<Groestlcoin::Transaction, TransactionBuilder>;
+template class Bitcoin::SignatureBuilder<Bitcoin::Transaction>;
+template class Bitcoin::SignatureBuilder<Zcash::Transaction>;
+template class Bitcoin::SignatureBuilder<Groestlcoin::Transaction>;

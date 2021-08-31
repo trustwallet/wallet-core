@@ -9,7 +9,7 @@
 #include "HexCoding.h"
 #include "Transaction.h"
 #include "TransactionBuilder.h"
-#include "SignatureBuilder.h"
+#include "TransactionSigner.h"
 
 using namespace TW;
 using namespace TW::Bitcoin;

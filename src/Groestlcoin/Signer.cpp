@@ -6,7 +6,7 @@
 
 #include "Signer.h"
 #include "Bitcoin/TransactionBuilder.h"
-#include "Bitcoin/SignatureBuilder.h"
+#include "Bitcoin/TransactionSigner.h"
 #include "Hash.h"
 #include "Data.h"
 #include "HexCoding.h"

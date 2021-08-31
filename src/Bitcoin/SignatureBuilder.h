@@ -6,34 +6,20 @@
 
 #pragma once
 
-#include "Amount.h"
 #include "Script.h"
 #include "SigningInput.h"
 #include "Transaction.h"
-#include "TransactionBuilder.h"
 #include "TransactionInput.h"
+#include "../proto/Bitcoin.pb.h"
 #include "../KeyPair.h"
 #include "../Result.h"
-#include "../proto/Bitcoin.pb.h"
 
 #include <vector>
 #include <optional>
 
 namespace TW::Bitcoin {
 
-/// Frontend class for transaction planning, building, and signing
-template <typename Transaction, typename TransactionBuilder>
-class TransactionSigner {
-public:
-    // Create plan for a transaction
-    static TransactionPlan plan(const SigningInput& input);
-
-    // Sign an unsigned transaction.  Plan it if needed beforehand.
-    static Result<Transaction, Common::Proto::SigningError> sign(const SigningInput& input, bool estimationMode = false);
-};
-
 /// Class that performs Bitcoin transaction signing.
-// TODO move to separate file
 template <typename Transaction>
 class SignatureBuilder {
 private:

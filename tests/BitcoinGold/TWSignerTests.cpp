@@ -15,7 +15,7 @@
 #include "Bitcoin/Script.h"
 #include "Bitcoin/Transaction.h"
 #include "Bitcoin/TransactionBuilder.h"
-#include "Bitcoin/SignatureBuilder.h"
+#include "Bitcoin/TransactionSigner.h"
 #include "Bitcoin/SigHashType.h"
 #include "HexCoding.h"
 #include "../interface/TWTestUtilities.h"
