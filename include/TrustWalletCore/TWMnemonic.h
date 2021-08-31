@@ -8,6 +8,7 @@
 
 #include "TWBase.h"
 #include "TWString.h"
+#include "TWBip39Dictionary.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -17,6 +18,10 @@ struct TWMnemonic;
 /// Determines whether a BIP39 English mnemonic phrase is valid.
 TW_EXPORT_STATIC_METHOD
 bool TWMnemonicIsValid(TWString *_Nonnull mnemonic);
+
+/// Determines whether a mnemonic phrase is valid, according to the custom dictionary.
+TW_EXPORT_STATIC_METHOD
+bool TWMnemonicIsValidDictionary(TWString *_Nonnull mnemonic, struct TWBip39Dictionary *_Nonnull dictionary);
 
 /// Determines whether word is a valid BIP39 English menemonic word.
 TW_EXPORT_STATIC_METHOD

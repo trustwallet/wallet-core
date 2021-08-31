@@ -14,6 +14,10 @@ bool TWMnemonicIsValid(TWString *_Nonnull mnemonic) {
     return Mnemonic::isValid(TWStringUTF8Bytes(mnemonic));
 }
 
+bool TWMnemonicIsValidDictionary(TWString *_Nonnull mnemonic, struct TWBip39Dictionary *_Nonnull dictionary) {
+    return Mnemonic::isValidDictionary(TWStringUTF8Bytes(mnemonic), dictionary->impl);
+}
+
 bool TWMnemonicIsValidWord(TWString *_Nonnull word) {
     return Mnemonic::isValidWord(TWStringUTF8Bytes(word));
 }

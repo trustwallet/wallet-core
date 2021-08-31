@@ -23,14 +23,14 @@
 #include <gtest/gtest.h>
 #include <thread>
 
+namespace TW {
+
 const auto wordsStr = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
 const auto words = STRING(wordsStr);
 const auto passphrase = STRING("TREZOR");
 const auto seedHex = "7ae6f661157bda6492f6162701e570097fc726b6235011ea5ad09bf04986731ed4d92bc43cbdee047b60ea0dd1b1fa4274377c9bf5bd14ab1982c272d8076f29";
 const auto entropyHex = "ba5821e8c356c05ba5f025d9532fe0f21f65d594";
 
-
-namespace TW {
 
 inline void assertSeedEq(const std::shared_ptr<TWHDWallet>& wallet, const char* expected) {
     const auto seed = WRAPD(TWHDWalletSeed(wallet.get()));

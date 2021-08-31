@@ -64,6 +64,8 @@ TEST(Mnemonic, isValidSpanish) {
     EXPECT_TRUE(Mnemonic::isValidDictionary("careta llanto jefe tarjeta tren osadia carga alejar banda recurso aguila macho", dictionary.second));
     // not valid with default dictionary
     EXPECT_FALSE(Mnemonic::isValid("llanto radical atraer riesgo actuar masa fondo cielo dieta archivo sonrisa mamut"));
+    // English phrase not valid with Spanish dictionary
+    EXPECT_FALSE(Mnemonic::isValidDictionary("ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal", dictionary.second));
     // no exact match due to accents
     EXPECT_FALSE(Mnemonic::isValidDictionary("careta llanto jefe tarjeta tren osadía carga alejar banda recurso águila macho", dictionary.second));
 }
