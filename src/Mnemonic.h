@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "HDWallet.h"
+
 #include <string>
 
 namespace TW {
@@ -18,11 +20,14 @@ public:
     static constexpr int BitsPerWord = 11; // each word encodes this many bits (there are 2^11=2048 different words)
 
 public:
-    /// Determines whether a mnemonic phrase is valid.
+    /// Determines whether a BIP39 English mnemonic phrase is valid.
     // E.g. for a valid mnemonic: "credit expect life fade cover suit response wash pear what skull force"
     static bool isValid(const std::string& mnemonic);
 
-    /// Determines whether word is a valid menemonic word.
+    /// Determines whether a mnemonic phrase is valid, according to the custom dictionary.
+    static bool isValidDictionary(const std::string& mnemonic, const Bip39Dictionary& dictionary);
+
+    /// Determines whether word is a valid BIP39 English menemonic word.
     static bool isValidWord(const std::string& word);
 
     /// Return BIP39 English words that match the given prefix.

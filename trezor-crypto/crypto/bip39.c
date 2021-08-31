@@ -177,8 +177,14 @@ int mnemonic_to_bits_dict(const char *mnemonic, const char* const dict[], uint8_
 }
 
 int mnemonic_check(const char *mnemonic) {
+  // [wallet-core] Use English dictionary
+  return mnemonic_check_dict(mnemonic, wordlist);
+}
+
+// [wallet-core]
+int mnemonic_check_dict(const char *mnemonic, const char* const dict[]) {
   uint8_t bits[32 + 1] = {0};
-  int mnemonic_bits_len = mnemonic_to_bits(mnemonic, bits);
+  int mnemonic_bits_len = mnemonic_to_bits_dict(mnemonic, dict, bits);
   // [wallet-core] also accept 15- and 21-word
   if (mnemonic_bits_len != (12 * 11) && mnemonic_bits_len != (18 * 11) &&
       mnemonic_bits_len != (24 * 11) &&

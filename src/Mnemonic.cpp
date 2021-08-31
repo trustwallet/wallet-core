@@ -22,6 +22,10 @@ bool Mnemonic::isValid(const std::string& mnemonic) {
     return mnemonic_check(mnemonic.c_str()) != 0;
 }
 
+bool Mnemonic::isValidDictionary(const std::string& mnemonic, const Bip39Dictionary& dictionary) {
+    return mnemonic_check_dict(mnemonic.c_str(), dictionary.pointers()) != 0;
+}
+
 inline const char* const* mnemonicWordlist() { return wordlist; }
 
 bool Mnemonic::isValidWord(const std::string& word) {

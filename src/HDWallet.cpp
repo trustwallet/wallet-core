@@ -121,8 +121,7 @@ HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase)
 
 HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase, const Bip39Dictionary& dictionary)
     : mnemonic(mnemonic), passphrase(passphrase) {
-    //if (!Mnemonic::isValid(mnemonic)) { // TODO
-    if (mnemonic.size() == 0) {
+    if (!Mnemonic::isValidDictionary(mnemonic, dictionary)) {
         throw std::invalid_argument("Invalid mnemonic");
     }
     updateSeedAndEntropy(dictionary.pointers());
