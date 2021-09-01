@@ -48,7 +48,8 @@ TEST(AvalancheTransactionComponents, TestTransferableInput) {
     EXPECT_FALSE(inputOne.utxoIndex == inputThree.utxoIndex);
 
     inputThree = inputOne;   // should be able to assign inputs to each other
-    inputThree = inputThree; // and self-assignment should be a no-op
+    auto inputFour = inputThree;
+    inputThree = inputFour;
     EXPECT_TRUE(inputOne.utxoIndex == inputThree.utxoIndex);
 
     EXPECT_TRUE(inputThree < inputTwo); // inputThree should be less than inputTwo by
@@ -78,7 +79,8 @@ TEST(AvalancheTransactionComponents, TestTransferableOutputAssignmentConstructin
     EXPECT_FALSE(outputThree.assetID == outputOne.assetID);
 
     outputThree = outputOne;   // should be able to assign from each other
-    outputThree = outputThree; // and self-assignment should be a no-op
+    auto outputFour = outputThree;
+    outputThree = outputFour;
     EXPECT_EQ(outputThree.assetID, outputOne.assetID);
     EXPECT_FALSE(outputThree.assetID == outputTwo.assetID);
     EXPECT_TRUE(outputThree < outputTwo); // outputOne should be less than outputTwo by
