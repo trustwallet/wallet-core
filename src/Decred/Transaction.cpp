@@ -40,7 +40,8 @@ Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, siz
     auto inputsToSign = inputs;
     auto signIndex = index;
     if ((hashType & TWBitcoinSigHashTypeAnyoneCanPay) != 0) {
-        inputsToSign = {inputs[index]};
+        inputsToSign.clear();
+        inputsToSign.push_back(inputs[index]);
         signIndex = 0;
     }
 
