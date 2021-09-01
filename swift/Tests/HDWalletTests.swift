@@ -26,8 +26,9 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual(wallet.seed.hexString, "354c22aedb9a37407adc61f657a6f00d10ed125efa360215f36c6919abd94d6dbc193a5f9c495e21ee74118661e327e84a5f5f11fa373ec33b80897d4697557d")
     }
 
-    func testMnemonicInvalid() {
-        XCTAssertFalse(Mnemonic.isValid(mnemonic: "THIS IS AN INVALID MNEMONIC"))
+    func testCreateFromMnemonicInvalid() {
+        let wallet = HDWallet(mnemonic: "THIS IS AN INVALID MNEMONIC", passphrase: "")
+        XCTAssertNil(wallet)
     }
 
     func testGenerate() {

@@ -28,7 +28,7 @@ struct TWHDWallet;
 TW_EXPORT_STATIC_METHOD
 struct TWHDWallet *_Nullable TWHDWalletCreate(int strength, TWString *_Nonnull passphrase);
 
-/// Creates an HDWallet from a mnemonic (aka. recovery phrase).
+/// Creates an HDWallet from a BIP39 English mnemonic (aka. recovery phrase).
 /// Null is returned on invalid mnemonic.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWHDWallet *_Nullable TWHDWalletCreateWithMnemonic(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase);
