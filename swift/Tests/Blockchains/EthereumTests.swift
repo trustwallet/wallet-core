@@ -194,4 +194,23 @@ class EthereumTests: XCTestCase {
         let address = CoinType.ethereum.deriveAddressFromPublicKey(publicKey: pubkey2)
         XCTAssertEqual(address, "0x996891c410FB76C19DBA72C6f6cEFF2d9DD069b1")
     }
+
+    func testSpanishMnemonicUnchecked() throws {
+        let wallet = HDWallet(
+            mnemonic: "llanto radical atraer riesgo actuar masa fondo cielo dieta archivo sonrisa mamut",
+            passphrase: "",
+            entropy: Data(hexString: "81d8185b64f0371457198b43c22b6c43")!)!
+
+        let btcXpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .bitcoin, version: .xpub)
+        let ethXpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .ethereum, version: .xpub)
+
+        XCTAssertEqual(btcXpub, "xpub6Cq43Vqyvb2DwXzjzNeMpPuxXRCN1WnmRCmYLPaaSv2XZXM2yCwUHpWEyB3zQ3FGCQsvY21gecMaQR7b2zhhgiHnjzDYpKCE2LACueaSMuR")
+        XCTAssertEqual(ethXpub, "xpub6Bgma7boPVudhExmB97iySvatGfnXkfBxYZYNTFYJvVzigUPk1X2iE8VhJPPxVuzjH8wBuTqRBMKCbwMYQNLrFCwYzMugYw4RM5VGNeVDpp")
+
+        let ethAddress = wallet.getAddressForCoin(coin: .ethereum)
+        let btcAddress = wallet.getAddressForCoin(coin: .bitcoin)
+
+        XCTAssertEqual(ethAddress, "0xa4531dE99E22B2166d340E7221669DF565c52024")
+        XCTAssertEqual(btcAddress, "bc1q97jc0jdgsyvvhxydxxd6np8sa920c39l3qpscf")
+    }
 }
