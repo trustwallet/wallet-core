@@ -61,12 +61,9 @@ TEST(DigiByteTransaction, SignTransaction) {
     protoPlan = plan.proto();
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(Bitcoin::SigningInput(input));
     auto signedTx = result.payload();
-
     ASSERT_TRUE(result);
-    ASSERT_EQ(fee, signer.plan.fee);
 
     Data serialized;
     signedTx.encode(serialized, Transaction::SegwitFormatMode::NonSegwit);
@@ -119,13 +116,12 @@ TEST(DigiByteTransaction, SignP2WPKH) {
     utxo0->mutable_out_point()->set_index(1);
     utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
 
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
     Data serialized;
-    signer.encodeTx(signedTx, serialized);
+    signedTx.encode(serialized);
     ASSERT_EQ(hex(serialized), "0100000000010180a16412a880d13b0c88929397a50341018da2e78b70b313062b4a496fea59400100000000ffffffff0280841e00000000001600145c91bc8d2073529224e8be0764128ac22f000564d3351e00000000001600144b62694cfdd7bdac59cbed211288ccd5c0dabd0202473044022057b876880b6c98511d9e5baab00428c50bf96868bdf4dc50bd61c2477ed8438b0220312ff89a078ab5a38b7b909ceb58310d93a5b4e2d637b37b77c4d7baf35a1815012102ac2e56f40d38530fcbf21f1eba0c3c668aa839cda8f2c615e99df44b6447772600000000");
 }
 

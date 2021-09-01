@@ -9,7 +9,7 @@
 #include "TransactionInput.h"
 #include "TransactionOutput.h"
 #include "../Bitcoin/SigHashType.h"
-#include "../Bitcoin/TransactionSigner.h"
+#include "../Bitcoin/SignatureBuilder.h"
 
 #include "../BinaryCoding.h"
 #include "../Hash.h"
@@ -51,9 +51,7 @@ Result<Transaction, Common::Proto::SigningError> Signer::sign() {
         return Result<Transaction, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_input_utxos);
     }
 
-    signedInputs.clear();
-    std::copy(std::begin(transaction.inputs), std::end(transaction.inputs),
-              std::back_inserter(signedInputs));
+    signedInputs = transaction.inputs;
 
     const auto hashSingle = Bitcoin::hashTypeIsSingle(static_cast<enum TWBitcoinSigHashType>(input.hash_type()));
     for (auto i = 0; i < txPlan.utxos.size(); i += 1) {
@@ -63,8 +61,7 @@ Result<Transaction, Common::Proto::SigningError> Signer::sign() {
         if (hashSingle && i >= transaction.outputs.size()) {
             continue;
         }
-        auto script = Bitcoin::Script(utxo.script().begin(), utxo.script().end());
-        auto result = sign(script, i);
+        auto result = sign(utxo.script, i);
         if (!result) {
             return Result<Transaction, Common::Proto::SigningError>::failure(result.error());
         }
@@ -103,7 +100,7 @@ Result<Bitcoin::Script, Common::Proto::SigningError> Signer::sign(Bitcoin::Scrip
         results.push_back(redeemScript.bytes);
     }
 
-    return Result<Bitcoin::Script, Common::Proto::SigningError>::success(Bitcoin::Script(Bitcoin::TransactionSigner<Bitcoin::Transaction, Bitcoin::TransactionBuilder>::pushAll(results)));
+    return Result<Bitcoin::Script, Common::Proto::SigningError>::success(Bitcoin::Script(Bitcoin::SignatureBuilder<Bitcoin::Transaction>::pushAll(results)));
 }
 
 Result<std::vector<Data>, Common::Proto::SigningError> Signer::signStep(Bitcoin::Script script, size_t index) {

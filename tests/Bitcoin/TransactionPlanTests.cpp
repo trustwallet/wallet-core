@@ -223,8 +223,8 @@ TEST(TransactionPlan, SelectionSuboptimal_ExtraSmallUtxo) {
     auto expectedFee = 702;
     EXPECT_TRUE(verifyPlan(txPlan, {500, 600, 800, 1'000}, 1'570, expectedFee));
     auto change = 2'900 - 1'570 - expectedFee;
-    auto firstUtxo = txPlan.utxos[0].amount();
-    EXPECT_TRUE(change - 204 < txPlan.utxos[0].amount());
+    auto firstUtxo = txPlan.utxos[0].amount;
+    EXPECT_TRUE(change - 204 < txPlan.utxos[0].amount);
     EXPECT_EQ(change, 628);
     EXPECT_EQ(firstUtxo, 500);
 }

@@ -74,14 +74,14 @@ TEST(TWBitcoinGoldSigner, SignTransaction) {
     input.mutable_plan()->set_change(88851);
 
     // Sign
-    auto txSigner = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = txSigner.sign();
+    auto signingInput = SigningInput(input);
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(signingInput);
 
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
     Data serialized;
-    txSigner.encodeTx(signedTx, serialized);
+    signedTx.encode(serialized);
     // BitcoinGold Mainnet: https://btg2.trezor.io/tx/db26faec66d070045df0da56140349beb5a12bd14bca12b162fded8f84d18afa
     EXPECT_EQ(serialized.size(), 222);
     ASSERT_EQ(hex(serialized),
