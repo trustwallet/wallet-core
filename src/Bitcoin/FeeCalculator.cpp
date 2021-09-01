@@ -12,34 +12,18 @@ using namespace TW;
 
 namespace TW::Bitcoin {
 
-int64_t DefaultFeeCalculator::calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const {
-    const auto txsize = ((148 * inputs) + (34 * outputs) + 10);
-    return int64_t(txsize) * byteFee;
-}
-
-int64_t DefaultFeeCalculator::calculateSingleInput(int64_t byteFee) const {
-    return int64_t(148) * byteFee;
-}
-
-int64_t SegwitFeeCalculator::calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const {
-    const auto txsize = int64_t(std::ceil(101.25 * inputs + 31.0 * outputs + 10.0));
+int64_t LinearFeeCalculator::calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const {
+    const auto txsize = int64_t(std::ceil(bytesPerInput * (double)inputs + bytesPerOutput * (double)outputs + bytesBase));
     return txsize * byteFee;
 }
 
-int64_t SegwitFeeCalculator::calculateSingleInput(int64_t byteFee) const {
-    return int64_t(102) * byteFee; // std::ceil(101.25) = 102
+int64_t LinearFeeCalculator::calculateSingleInput(int64_t byteFee) const {
+    return int64_t(std::ceil(bytesPerInput)) * byteFee; // std::ceil(101.25) = 102
 }
 
-class DecredFeeCalculator : public FeeCalculator {
+class DecredFeeCalculator : public LinearFeeCalculator {
 public:
-    int64_t calculate(int64_t inputs, int64_t outputs = 2, int64_t byteFee = 1) const override {
-        const auto txsize = ((166 * inputs) + (38 * outputs) + 12);
-        return int64_t(txsize) * byteFee;
-    }
-
-    int64_t calculateSingleInput(int64_t byteFee) const override {
-        return int64_t(166) * byteFee;
-    }
+    DecredFeeCalculator(): LinearFeeCalculator(166, 38, 12) {}
 };
 
 DefaultFeeCalculator defaultFeeCalculator;

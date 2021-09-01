@@ -7,6 +7,7 @@
 #pragma once
 
 #include "../Data.h"
+#include "../Bitcoin/OutPoint.h"
 #include "../proto/Bitcoin.pb.h"
 
 #include <algorithm>
@@ -43,6 +44,13 @@ class OutPoint {
     OutPoint(const Bitcoin::Proto::OutPoint& other) {
         std::copy(other.hash().begin(), other.hash().begin() + hash.size(), hash.begin());
         index = other.index();
+        tree = 0;
+    }
+
+    /// Initializes an out-point from a Protobuf out-point.
+    OutPoint(const Bitcoin::OutPoint& other) {
+        hash = other.hash;
+        index = other.index;
         tree = 0;
     }
 

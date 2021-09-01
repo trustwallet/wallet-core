@@ -10,7 +10,7 @@
 
 using namespace TW::Bitcoin;
 
-void TransactionOutput::encode(std::vector<uint8_t>& data) const {
+void TransactionOutput::encode(Data& data) const {
     encode64LE(value, data);
     script.encode(data);
 }

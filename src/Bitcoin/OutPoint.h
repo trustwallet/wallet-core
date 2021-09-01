@@ -24,11 +24,17 @@ class OutPoint {
     /// The index of the specific output in the transaction.
     uint32_t index;
 
-    /// Initializes an out-point reference with a hash and an index.
+    /// Sequence number, matches sequence from Proto::OutPoint (not always used, see also TransactionInput.sequence)
+    uint32_t sequence;
+
+    OutPoint() = default;
+
+    /// Initializes an out-point reference with hash, index.
     template <typename T>
-    OutPoint(const T& h, uint32_t index) {
+    OutPoint(const T& h, uint32_t index, uint32_t sequence = 0 ) {
         std::copy(std::begin(h), std::end(h), hash.begin());
         this->index = index;
+        this->sequence = sequence;
     }
 
     /// Initializes an out-point from a Protobuf out-point.
@@ -36,10 +42,11 @@ class OutPoint {
         assert(other.hash().size() == 32);
         std::copy(other.hash().begin(), other.hash().end(), hash.begin());
         index = other.index();
+        sequence = other.sequence();
     }
 
     /// Encodes the out-point into the provided buffer.
-    void encode(std::vector<uint8_t>& data) const;
+    void encode(Data& data) const;
 
     friend bool operator<(const OutPoint& a, const OutPoint& b) {
         int cmp = std::memcmp(a.hash.data(), b.hash.data(), 32);
@@ -52,6 +59,14 @@ class OutPoint {
     }
 
     friend bool operator!=(const OutPoint& a, const OutPoint& b) { return !(a == b); }
+
+    Proto::OutPoint proto() const {
+        auto op = Proto::OutPoint();
+        op.set_hash(std::string(hash.begin(), hash.end()));
+        op.set_index(index);
+        op.set_sequence(sequence);
+        return op;
+    }
 };
 
 } // namespace TW::Bitcoin

@@ -15,14 +15,13 @@ using namespace TW;
 using namespace TW::Bitcoin;
 
 Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    return signer.plan.proto();
+    auto plan = TransactionSigner<Transaction, TransactionBuilder>::plan(input);
+    return plan.proto();
 }
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     Proto::SigningOutput output;
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
     if (!result) {
         output.set_error(result.error());
         return output;
@@ -32,7 +31,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     *output.mutable_transaction() = tx.proto();
 
     Data encoded;
-    signer.encodeTx(tx, encoded);
+    tx.encode(encoded);
     output.set_encoded(encoded.data(), encoded.size());
 
     Data txHashData = encoded;

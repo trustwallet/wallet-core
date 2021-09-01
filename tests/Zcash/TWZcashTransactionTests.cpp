@@ -115,7 +115,7 @@ TEST(TWZcashTransaction, SaplingSigning) {
     protoPlan = plan.proto();
 
     // Sign
-    auto result = Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>(std::move(input)).sign();
+    auto result = Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>::sign(input);
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 
@@ -178,7 +178,7 @@ TEST(TWZcashTransaction, BlossomSigning) {
     protoPlan = plan.proto();
 
     // Sign
-    auto result = Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>(std::move(input)).sign();
+    auto result = Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>::sign(input);
     ASSERT_TRUE(result) << std::to_string(result.error());
     auto signedTx = result.payload();
 

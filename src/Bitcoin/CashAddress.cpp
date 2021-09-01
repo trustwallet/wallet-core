@@ -61,7 +61,7 @@ CashAddress::CashAddress(const std::string& string) {
     std::copy(data.begin(), data.begin() + dataLen, bytes.begin());
 }
 
-CashAddress::CashAddress(const std::vector<uint8_t>& data) {
+CashAddress::CashAddress(const Data& data) {
     if (!isValid(data)) {
         throw std::invalid_argument("Invalid address key data");
     }
@@ -90,7 +90,7 @@ std::string CashAddress::string() const {
 }
 
 Address CashAddress::legacyAddress() const {
-    std::vector<uint8_t> result(Address::size);
+    Data result(Address::size);
     size_t outlen = 0;
     cash_data_to_addr(result.data(), &outlen, bytes.data(), CashAddress::size);
     assert(outlen == 21 && "Invalid length");

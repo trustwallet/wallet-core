@@ -45,8 +45,8 @@ struct TransactionBuilder {
         const auto emptyScript = Bitcoin::Script();
         for (auto& utxo : plan.utxos) {
             auto input = TransactionInput();
-            input.previousOutput = utxo.out_point();
-            input.sequence = utxo.out_point().sequence();
+            input.previousOutput = utxo.outPoint;
+            input.sequence = utxo.outPoint.sequence;
             tx.inputs.push_back(std::move(input));
         }
 

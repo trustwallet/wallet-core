@@ -9,6 +9,7 @@
 #include <TrustWalletCore/TWBitcoinSigHashType.h>
 #include "TransactionInput.h"
 #include "TransactionOutput.h"
+#include "Bitcoin/Transaction.h"
 #include "Bitcoin/Script.h"
 #include "../Data.h"
 #include "../proto/Decred.pb.h"
@@ -28,10 +29,10 @@ struct Transaction {
     uint16_t version = 1;
 
     /// A list of 1 or more transaction inputs or sources for coins
-    std::vector<TransactionInput> inputs;
+    Bitcoin::TransactionInputs<TransactionInput> inputs;
 
     /// A list of 1 or more transaction outputs or destinations for coins
-    std::vector<TransactionOutput> outputs;
+    Bitcoin::TransactionOutputs<TransactionOutput> outputs;
 
     /// The time when a transaction can be spent (usually zero, in which case it
     /// has no effect).
