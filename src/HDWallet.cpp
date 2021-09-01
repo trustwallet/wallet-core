@@ -45,7 +45,6 @@ HDWallet::HDWallet(int strength, const std::string& passphrase)
         throw std::invalid_argument("Invalid strength");
     }
     mnemonic = mnemonic_chars;
-    assert(Mnemonic::isValid(mnemonic));
     updateSeedAndEntropy();
 }
 
@@ -65,8 +64,20 @@ HDWallet::HDWallet(const Data& entropy, const std::string& passphrase)
         throw std::invalid_argument("Invalid mnemonic data");
     }
     mnemonic = mnemonic_chars;
-    assert(Mnemonic::isValid(mnemonic));
     updateSeedAndEntropy();
+}
+
+HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase, const Data& entropy)
+    : mnemonic(mnemonic), passphrase(passphrase) {
+    if (mnemonic.length() <= 3) {
+        throw std::invalid_argument("Invalid mnemonic");
+    }
+    if (entropy.size() > ((Mnemonic::MaxWords * Mnemonic::BitsPerWord) / 8 + 1) ||
+        entropy.size() < ((Mnemonic::MinWords * Mnemonic::BitsPerWord) / 8)) {
+        throw std::invalid_argument("Invalid entropy");
+    }
+    updateSeed();
+    setEntropy(entropy);
 }
 
 HDWallet::~HDWallet() {
@@ -76,16 +87,26 @@ HDWallet::~HDWallet() {
 }
 
 void HDWallet::updateSeedAndEntropy() {
-    // generate seed from mnemonic
-    // it is assumed that mnemonic is valid, enforced before calling
-    mnemonic_to_seed(mnemonic.c_str(), passphrase.c_str(), seed.data(), nullptr);
+    assert(Mnemonic::isValid(mnemonic));
+
+    updateSeed();
 
     // generate entropy bits from mnemonic
     Data entropyRaw((Mnemonic::MaxWords * Mnemonic::BitsPerWord) / 8);
     auto entropyBytes = mnemonic_to_bits(mnemonic.c_str(), entropyRaw.data()) / 8;
     // copy to truncate
-    entropy = data(entropyRaw.data(), entropyBytes);
+    setEntropy(data(entropyRaw.data(), entropyBytes));
+}
+
+void HDWallet::updateSeed() {
+    // generate seed from mnemonic
+    mnemonic_to_seed(mnemonic.c_str(), passphrase.c_str(), seed.data(), nullptr);
+}
+
+void HDWallet::setEntropy(const Data& entropy) {
+    this->entropy = entropy;
     assert(entropy.size() > 10);
+    assert(entropy.size() <= ((Mnemonic::MaxWords * Mnemonic::BitsPerWord) / 8 + 1) && entropy.size() >= ((Mnemonic::MinWords * Mnemonic::BitsPerWord) / 8));
 }
 
 PrivateKey HDWallet::getMasterKey(TWCurve curve) const {

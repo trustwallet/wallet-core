@@ -61,6 +61,13 @@ class HDWallet {
     /// Throws on invalid data.
     HDWallet(const Data& entropy, const std::string& passphrase);
 
+    /// UNCHECKED Initializes an HDWallet from a mnemonic AND entropy.  Use with care!  Can be used for non-English phrases.
+    /// mnemonic: BIP39 mnemonic, can be of any language. It is assumed to be valid, not checked!
+    /// passphrase: optional passphrase used for encrypting the mnemonic.
+    /// entropy: entropy bits, assumed to be derived from mnemonic, not checked!
+    /// Throws on invalid data.
+    HDWallet(const std::string& mnemonic, const std::string& passphrase, const Data& entropy);
+
     HDWallet(const HDWallet& other) = default;
     HDWallet(HDWallet&& other) = default;
     HDWallet& operator=(const HDWallet& other) = default;
@@ -104,6 +111,8 @@ class HDWallet {
 
   private:
     void updateSeedAndEntropy();
+    void updateSeed();
+    void setEntropy(const Data& entropy);
 };
 
 } // namespace TW

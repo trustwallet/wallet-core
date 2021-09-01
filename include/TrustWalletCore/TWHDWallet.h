@@ -38,6 +38,14 @@ struct TWHDWallet *_Nullable TWHDWalletCreateWithMnemonic(TWString *_Nonnull mne
 TW_EXPORT_STATIC_METHOD
 struct TWHDWallet *_Nullable TWHDWalletCreateWithEntropy(TWData *_Nonnull entropy, TWString *_Nonnull passphrase);
 
+/// UNCHECKED Initializes an HDWallet from a mnemonic AND entropy.  Use with care!  Can be used for non-English phrases.
+/// mnemonic: BIP39 mnemonic, can be of any language. It is assumed to be valid, not checked!
+/// passphrase: optional passphrase used for encrypting the mnemonic.
+/// entropy: entropy bits, assumed to be derived from mnemonic, not checked!
+/// Null is returned on invalid mnemonic.  Returned object needs to be deleted.
+TW_EXPORT_STATIC_METHOD
+struct TWHDWallet *_Nullable TWHDWalletCreateWithMnemonicUnchecked(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase, TWData *_Nonnull entropy);
+
 /// Deletes a wallet.
 TW_EXPORT_METHOD
 void TWHDWalletDelete(struct TWHDWallet *_Nonnull wallet);
