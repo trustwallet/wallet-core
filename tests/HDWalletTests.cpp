@@ -63,14 +63,11 @@ TEST(HDWallet, createFromMnemonic) {
 }
 
 TEST(HDWallet, createFromSpanishMnemonic) {
-    {
-        HDWallet wallet = HDWallet("llanto radical atraer riesgo actuar masa fondo cielo dieta archivo sonrisa mamut", "");
-        EXPECT_EQ(hex(wallet.getSeed()), "ec8f8703432fc7d32e699ee056e9d84b1435e6a64a6a40ad63dbde11eab189a276ddcec20f3326d3c6ee39cbd018585b104fc3633b801c011063ae4c318fb9b6");
-    }
+    EXPECT_EXCEPTION(HDWallet("llanto radical atraer riesgo actuar masa fondo cielo dieta archivo sonrisa mamut", ""), "Invalid mnemonic");
 }
 
 TEST(HDWallet, createFromMnemonicInvalid) {
-    EXPECT_FALSE(Mnemonic::isValid("THIS IS AN INVALID MNEMONIC"));
+    EXPECT_EXCEPTION(HDWallet("THIS IS AN INVALID MNEMONIC", passphrase), "Invalid mnemonic");
     EXPECT_EXCEPTION(HDWallet("", passphrase), "Invalid mnemonic");
 }
 

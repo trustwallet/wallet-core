@@ -53,7 +53,7 @@ class HDWallet {
     /// Throws on invalid strength.
     HDWallet(int strength, const std::string& passphrase);
 
-    /// Initializes an HDWallet from a mnemonic.
+    /// Initializes an HDWallet from a BIP39 English mnemonic.
     /// Throws on invalid mnemonic.
     HDWallet(const std::string& mnemonic, const std::string& passphrase);
 
