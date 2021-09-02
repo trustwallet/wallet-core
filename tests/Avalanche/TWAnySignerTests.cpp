@@ -68,6 +68,7 @@ TEST(TWAnySignerAvalanche, SignBasicTransaction) {
 }
 
 // TODO Sign test with plan set, PlanAndSign
+// TODO Sign test with no change (maxamount)
 
 std::vector<PublicKey> generateAddressesForAnySigner() {
     // build some arbitrary addresses for this test
