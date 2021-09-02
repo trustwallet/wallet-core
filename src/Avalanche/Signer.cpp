@@ -7,7 +7,6 @@
 #include "Signer.h"
 #include "Address.h"
 #include "../PublicKey.h"
-#include "../proto/Bitcoin.pb.h"
 
 using namespace TW;
 using namespace TW::Avalanche;
@@ -108,8 +107,39 @@ BaseTransaction buildBaseTx(const Proto::SigningInput& input) noexcept {
     return structToBaseTx(txStruct);
 }
 
-Bitcoin::Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
-    return Bitcoin::Proto::TransactionPlan();
+Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
+    auto plan = Proto::TransactionPlan();
+
+    if (!input.has_simple_transfer_tx()) {
+        // not simple transaction
+        return plan;
+    }
+    auto tx = input.simple_transfer_tx();
+
+    plan.set_amount(tx.amount());
+    const auto n = tx.inputs_size();
+
+    // TODO proper selection -- is it really needed?
+    for (auto i = 0; i < n; ++i) {
+        auto utxo = plan.add_utxos();
+        *utxo = tx.inputs(i);
+    }
+
+    uint64_t availAmount = 0;
+    for (auto i = 0; i < plan.utxos_size(); ++i) {
+        if (plan.utxos(i).input().has_secp_transfer_input()) {
+            availAmount += plan.utxos(i).input().secp_transfer_input().amount();
+        }
+    }
+
+    plan.set_available_amount(availAmount);
+    plan.set_fee(tx.fee());
+    int64_t change = (int64_t)availAmount - (int64_t)(tx.amount() + tx.fee());
+    plan.set_change(change);
+
+    std::cout << "plan avail " << availAmount << " amount " << tx.amount() << " fee " << tx.fee() << " change " << change << " \n";
+
+    return plan;
 }
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
@@ -121,8 +151,47 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         privateKeys.push_back(privateKey);
     }
 
+    // TODO switch
     if (input.has_base_tx()) {
         auto transaction = buildBaseTx(input);
+        auto encoded = Signer::sign(privateKeys, transaction);
+        protoOutput.set_encoded(encoded.data(), encoded.size());
+    } else if (input.has_simple_transfer_tx()) {
+        // TODO move to separate method
+        auto tx = input.simple_transfer_tx();
+
+        Proto::TransactionPlan plan;
+        // plan if needed
+        if (tx.has_plan()) {
+            plan = tx.plan();
+        } else {
+            plan = Signer::plan(input);
+        }
+
+        // grab members of struct
+        auto typeID = tx.type_id();
+        auto networkID = tx.network_id();
+        auto blockchainID = Data(tx.blockchain_id().begin(), tx.blockchain_id().end());
+        auto memo = Data(tx.memo().begin(), tx.memo().end());
+
+        auto inputStructs = plan.utxos();
+        auto inputs = structToInputs(inputStructs);
+
+        // build outputs
+        auto toAddresses = structToAddresses(tx.to_addresses());
+        auto changeAddresses = structToAddresses(tx.change_addresses());
+        auto firstOutput = TransferableOutput(
+            Data(tx.output_asset_id().begin(), tx.output_asset_id().end()),
+            std::make_unique<SECP256k1TransferOutput>(plan.amount(), tx.locktime(), tx.threshold(), toAddresses)
+        );
+        auto changeOutput = TransferableOutput(
+            Data(tx.output_asset_id().begin(), tx.output_asset_id().end()),
+            std::make_unique<SECP256k1TransferOutput>(plan.change(), tx.locktime(), tx.threshold(), changeAddresses)
+        );
+        std::vector<TransferableOutput> outputs = {firstOutput, changeOutput};
+
+        auto transaction = BaseTransaction(typeID, networkID, blockchainID, inputs, outputs, memo);
+
         auto encoded = Signer::sign(privateKeys, transaction);
         protoOutput.set_encoded(encoded.data(), encoded.size());
     }

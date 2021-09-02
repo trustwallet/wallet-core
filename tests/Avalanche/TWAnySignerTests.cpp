@@ -21,32 +21,53 @@ using namespace TW::Avalanche;
 
 std::vector<PublicKey> generateAddressesForAnySigner();
 const std::vector<uint8_t> getDefaultPrivateKeyBytes();
-void setUpDefaultPrivateKeyData(Proto::SigningInput &input);
-void setUpDefaultBaseTx(TW::Avalanche::Proto::BaseTx &baseTx);
+void setUpDefaultPrivateKeyData(Proto::SigningInput& input);
+void setUpDefaultSimpleTx(TW::Avalanche::Proto::SimpleTransferTx& simpleTx);
+void setUpDefaultBaseTx(TW::Avalanche::Proto::BaseTx& baseTx);
+
+const char* DefaultAssetId = "0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db";
+
+TEST(TWAnySignerAvalanche, SignSimpleTransaction) {
+    Proto::SigningInput input;
+    setUpDefaultPrivateKeyData(input);
+    auto& simpleTx = *input.mutable_simple_transfer_tx();
+    setUpDefaultSimpleTx(simpleTx);
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeAvalancheXChain);
+
+    ASSERT_EQ(hex(output.encoded()), "00000000000000003039d891ad56056d9c01f18f43f58b5c784ad07a4a49cf3d1f11623804b5cba2c6bf00000002dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db000000070000000005f5e100000000000000000000000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29cdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db000000070000000008af69aa000000000000000000000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29c00000002f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd15000000020000000300000007f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd1500000002000000030000000700000004deadbeef000000020000000900000002eda0910bee7df09079201a3b28a0cee59962dddb783c6971659ab244ab49425b36cda387ebfe267db08b66c1925ea515e949327e817a15dcfed9f5e653ab82c300eda0910bee7df09079201a3b28a0cee59962dddb783c6971659ab244ab49425b36cda387ebfe267db08b66c1925ea515e949327e817a15dcfed9f5e653ab82c3000000000900000002eda0910bee7df09079201a3b28a0cee59962dddb783c6971659ab244ab49425b36cda387ebfe267db08b66c1925ea515e949327e817a15dcfed9f5e653ab82c300eda0910bee7df09079201a3b28a0cee59962dddb783c6971659ab244ab49425b36cda387ebfe267db08b66c1925ea515e949327e817a15dcfed9f5e653ab82c300");
+}
+
+TEST(TWAnySignerAvalanche, PlanSimpleTransaction) {
+    Proto::SigningInput input;
+    setUpDefaultPrivateKeyData(input);
+    auto& simpleTx = *input.mutable_simple_transfer_tx();
+    setUpDefaultSimpleTx(simpleTx);
+
+    Proto::TransactionPlan plan;
+    ANY_PLAN(input, plan, TWCoinTypeAvalancheXChain);
+
+    EXPECT_EQ(plan.amount(), 100000000);
+    EXPECT_EQ(plan.available_amount(), 246913578); // 2 * 123456789
+    EXPECT_EQ(plan.fee(), 1200000);
+    EXPECT_EQ(plan.change(), 145713578);
+    EXPECT_EQ(plan.utxos_size(), 2);
+}
 
 TEST(TWAnySignerAvalanche, SignBasicTransaction) {
     Proto::SigningInput input;
     setUpDefaultPrivateKeyData(input);
-    auto &baseTx = *input.mutable_base_tx();
+    auto& baseTx = *input.mutable_base_tx();
     setUpDefaultBaseTx(baseTx);
+
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeAvalancheXChain);
 
     ASSERT_EQ(hex(output.encoded()), "00000000000000003039d891ad56056d9c01f18f43f58b5c784ad07a4a49cf3d1f11623804b5cba2c6bf00000002dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000700000000000003e8000000000000000000000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29cdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db000000070000000000003039000000000000d43100000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29c00000002f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd15000000020000000300000007f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd1500000002000000030000000700000004deadbeef00000002000000090000000244ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d0044ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d00000000090000000244ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d0044ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d00");
 }
 
-TEST(TWAnySignerAvalanche, PlanTransaction) {
-    Proto::SigningInput input;
-    setUpDefaultPrivateKeyData(input);
-    auto &baseTx = *input.mutable_base_tx();
-    setUpDefaultBaseTx(baseTx);
-    Bitcoin::Proto::TransactionPlan plan;
-    ANY_PLAN(input, plan, TWCoinTypeAvalancheXChain);
-
-    // Not implemented
-    ASSERT_EQ(plan.utxos_size(), 0);
-    ASSERT_EQ(plan.amount(), 0);
-}
+// TODO Sign test with plan set, PlanAndSign
 
 std::vector<PublicKey> generateAddressesForAnySigner() {
     // build some arbitrary addresses for this test
@@ -75,64 +96,99 @@ const std::vector<uint8_t> getDefaultPrivateKeyBytes() {
     return privateKeyBytesNoChecksum; 
 }
 
-void setUpDefaultPrivateKeyData(Proto::SigningInput &input) {
+void setUpDefaultPrivateKeyData(Proto::SigningInput& input) {
     auto privateKeyBytes = getDefaultPrivateKeyBytes();
     input.add_private_keys();
     input.set_private_keys(0, privateKeyBytes.data(), privateKeyBytes.size());
 }
 
-void setUpDefaultBaseTx(TW::Avalanche::Proto::BaseTx &baseTx) {
+Data getDefaultBlockchainID() {
+    auto id = CB58::avalanche.decode("2eNy1mUFdmaxXNj1eQHUe7Np4gju9sJsEtWQ4MX3ToiNKuADed");
+    return Data(id.begin(), id.begin() + 32); // we just want the first 32 bytes, no checksum
+}
+
+Proto::TransferableInput buildTransferableInput(const PublicKey& publicKey, const Data& txId, const Data& assetId, uint64_t amount) {
+    auto coreInput = new Proto::SECP256K1TransferInput();
+    coreInput->set_amount(amount);
+    coreInput->add_address_indices(3);
+    coreInput->add_address_indices(7);
+    auto wrappedInput = new Proto::TransactionInput();
+    wrappedInput->set_allocated_secp_transfer_input(coreInput);
+    auto input = Proto::TransferableInput();
+    input.set_utxo_index(5);
+    input.set_tx_id(txId.data(), txId.size());
+    input.set_asset_id(assetId.data(), assetId.size());
+    for (auto i = 0; i < 8; ++i) {
+        input.add_spendable_addresses();
+        input.set_spendable_addresses(i, publicKey.bytes.data(), publicKey.bytes.size());
+    }
+    input.set_allocated_input(wrappedInput);
+    return input;
+}
+
+void setUpDefaultSimpleTx(TW::Avalanche::Proto::SimpleTransferTx& simpleTx) {
     const auto privateKey = PrivateKey(getDefaultPrivateKeyBytes()); 
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     // keep in mind the expected formats in Signer!
     // for example, addresses are expected as secp pubkey, not avalanche-formatted address
-
     
-    auto blockchainID = CB58::avalanche.decode("2eNy1mUFdmaxXNj1eQHUe7Np4gju9sJsEtWQ4MX3ToiNKuADed");
-    Data blockchainIDBytes(blockchainID.begin(), blockchainID.begin() + 32); // we just want the first 32 bytes, no checksum
+    auto blockchainIDBytes = getDefaultBlockchainID();
     uint32_t netID = 12345;
-    auto assetID = "0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db";
-    auto assetIDBytes = parse_hex(assetID);
+    auto assetIDBytes = parse_hex(DefaultAssetId);
     auto txIDBytes = parse_hex("0xf1e1d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000"); 
-    Data memo = {0xde, 0xad, 0xbe, 0xef};
+    Data memo = parse_hex("deadbeef");
+    auto locktime = 0;
+    auto threshold = 1;
+
+    simpleTx.set_type_id(0);
+    simpleTx.set_network_id(netID);
+    simpleTx.set_blockchain_id(blockchainIDBytes.data(), blockchainIDBytes.size());
+
+    simpleTx.set_amount(100000000);
+    simpleTx.set_fee(1200000);
+    simpleTx.add_to_addresses();
+    simpleTx.set_to_addresses(0, publicKey.bytes.data(), publicKey.bytes.size());
+    simpleTx.add_change_addresses();
+    simpleTx.set_change_addresses(0, publicKey.bytes.data(), publicKey.bytes.size());
+
+    simpleTx.set_output_type_id(0);
+    simpleTx.set_output_asset_id(assetIDBytes.data(), assetIDBytes.size());
+    simpleTx.set_memo(memo.data(), memo.size());
+    simpleTx.set_locktime(locktime);
+    simpleTx.set_threshold(threshold);
+
+    auto inputOne = simpleTx.add_inputs();
+    *inputOne = buildTransferableInput(publicKey, txIDBytes, assetIDBytes, 123456789);
+
+    auto inputTwo = simpleTx.add_inputs();
+    *inputTwo = buildTransferableInput(publicKey, txIDBytes, assetIDBytes, 123456789);
+}
+
+void setUpDefaultBaseTx(TW::Avalanche::Proto::BaseTx& baseTx) {
+    const auto privateKey = PrivateKey(getDefaultPrivateKeyBytes()); 
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    // keep in mind the expected formats in Signer!
+    // for example, addresses are expected as secp pubkey, not avalanche-formatted address
+    
+    auto blockchainIDBytes = getDefaultBlockchainID();
+    uint32_t netID = 12345;
+    auto assetIDBytes = parse_hex(DefaultAssetId);
+    auto txIDBytes = parse_hex("0xf1e1d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000"); 
+    Data memo = parse_hex("deadbeef");
     auto amount = 1000;   
     auto locktime = 0;
     auto threshold = 1;
 
+    baseTx.set_type_id(0);
     baseTx.set_network_id(netID);
     baseTx.set_blockchain_id(blockchainIDBytes.data(), blockchainIDBytes.size());
     baseTx.set_memo(memo.data(), memo.size());
     
-    auto coreInputOne = new Proto::SECP256K1TransferInput();
-    coreInputOne->set_amount(123456789);
-    coreInputOne->add_address_indices(3);
-    coreInputOne->add_address_indices(7);
-    auto wrappedInputOne = new Proto::TransactionInput();
-    wrappedInputOne->set_allocated_secp_transfer_input(coreInputOne);
     auto inputOne = baseTx.add_inputs();
-    inputOne->set_utxo_index(5);
-    inputOne->set_tx_id(txIDBytes.data(), txIDBytes.size());
-    inputOne->set_asset_id(assetIDBytes.data(), assetIDBytes.size());
-    for (auto i = 0; i < 8; ++i) {
-        inputOne->add_spendable_addresses();
-        inputOne->set_spendable_addresses(i, publicKey.bytes.data(), publicKey.bytes.size());
-    }
-    inputOne->set_allocated_input(wrappedInputOne);
-    auto coreInputTwo = new Proto::SECP256K1TransferInput();
-    coreInputTwo->set_amount(123456789);
-    coreInputTwo->add_address_indices(3);
-    coreInputTwo->add_address_indices(7);
-    auto wrappedInputTwo = new Proto::TransactionInput();
-    wrappedInputTwo->set_allocated_secp_transfer_input(coreInputTwo);
+    *inputOne = buildTransferableInput(publicKey, txIDBytes, assetIDBytes, 123456789);
+
     auto inputTwo = baseTx.add_inputs();
-    inputTwo->set_utxo_index(5);
-    inputTwo->set_tx_id(txIDBytes.data(), txIDBytes.size());
-    inputTwo->set_asset_id(assetIDBytes.data(), assetIDBytes.size());
-    for (auto i = 0; i < 8; ++i) {
-        inputTwo->add_spendable_addresses();
-        inputTwo->set_spendable_addresses(i, publicKey.bytes.data(), publicKey.bytes.size());
-    }
-    inputTwo->set_allocated_input(wrappedInputTwo);
+    *inputTwo = buildTransferableInput(publicKey, txIDBytes, assetIDBytes, 123456789);
 
     auto coreOutputOne = new Proto::SECP256K1TransferOutput();
     coreOutputOne->set_amount(12345);

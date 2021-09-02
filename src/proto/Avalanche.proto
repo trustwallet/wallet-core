@@ -69,10 +69,61 @@ message BaseTx {
     bytes memo = 6;
 }
 
+message SimpleTransferTx {
+    uint32 type_id = 1;
+    uint32 network_id = 2;
+    bytes blockchain_id = 3;  // 32 bytes
+
+    // List of available input; 4 bytes + size(ins)
+    repeated TransferableInput inputs = 4;
+
+    uint32 output_type_id = 5;
+
+    bytes output_asset_id = 6;  // 32 bytes
+
+    uint64 amount = 7;
+
+    uint64 fee = 8;
+
+    uint64 locktime = 9;
+
+    uint32 threshold = 10;
+
+    // Destination addresses; 4 bytes + len(address_indices) * 4 bytes
+    repeated bytes to_addresses = 11;
+
+    // Change addresses, usually same as sender; 4 bytes + len(address_indices) * 4 bytes
+    repeated bytes change_addresses = 12;
+
+    // 4 bytes + size(memo)
+    bytes memo = 13;
+
+    // Optional transaction plan
+    TransactionPlan plan = 14;
+}
+
+message TransactionPlan {
+    // Amount to be received at the other end.
+    uint64 amount = 1;
+
+    // Maximum available amount.
+    uint64 available_amount = 2;
+
+    // Estimated transaction fee.
+    uint64 fee = 3;
+
+    // Change.
+    uint64 change = 4;
+
+    // Selected unspent transaction outputs.
+    repeated TransferableInput utxos = 5;
+}
+
 message SigningInput {
     repeated bytes private_keys = 1;
     oneof tx_oneof {
         BaseTx base_tx = 2;
+        SimpleTransferTx simple_transfer_tx = 3;
     }
 }
 

@@ -10,7 +10,6 @@
 #include "../Data.h"
 #include "../PrivateKey.h"
 #include "../proto/Avalanche.pb.h"
-#include "../proto/Bitcoin.pb.h"
 
 namespace TW::Avalanche {
 
@@ -19,8 +18,9 @@ class Signer {
   public:
     /// Hide default constructor
     Signer() = delete;
+
     /// Returns a transaction plan (utxo selection, fee estimation)
-    static Bitcoin::Proto::TransactionPlan plan(const Proto::SigningInput& input) noexcept;
+    static Proto::TransactionPlan plan(const Proto::SigningInput& input) noexcept;
 
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
