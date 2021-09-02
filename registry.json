@@ -1635,7 +1635,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
-      "url": "https://explorer.offchainlabs.com",
+      "url": "https://arbiscan.io",
       "txPath": "/tx/",
       "accountPath": "/address/"
     },
@@ -1714,6 +1714,30 @@
       "url": "https://www.xdaichain.com",
       "client": "https://github.com/openethereum/openethereum",
       "clientPublic": "https://rpc.xdaichain.com",
+      "clientDocs": "https://eth.wiki/json-rpc/API"
+    }
+  },
+  {
+    "id": "fantom",
+    "name": "Fantom",
+    "coinId": 10000250,
+    "symbol": "FTM",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://ftmscan.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xb0a741d882291951de1fac72e90b9baf886ddb0c9c87658a0c206490dfaa5202",
+      "sampleAccount": "0x9474feb9917b87da6f0d830ba66ee0035835c0d3"
+    },
+    "info": {
+      "url": "https://fantom.foundation",
+      "client": "https://github.com/openethereum/openethereum",
+      "clientPublic": "https://rpc.ftm.tools",
       "clientDocs": "https://eth.wiki/json-rpc/API"
     }
   }

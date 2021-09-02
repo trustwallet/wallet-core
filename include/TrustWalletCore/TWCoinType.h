@@ -92,6 +92,7 @@ enum TWCoinType {
     TWCoinTypeECOChain = 10000553,
     TWCoinTypeAvalancheCChain = 10009000,
     TWCoinTypeXDai = 10000100,
+    TWCoinTypeFantom = 10000250,
 };
 
 /// Returns the blockchain for a coin type.
