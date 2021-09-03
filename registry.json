@@ -1649,6 +1649,7 @@
   {
     "id": "heco",
     "name": "ECO Chain",
+    "displayName": "Huobi ECO Chain",
     "coinId": 10000553,
     "slip44": 553,
     "symbol": "HT",
