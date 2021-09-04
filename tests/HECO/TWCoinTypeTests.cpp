@@ -26,5 +26,5 @@ TEST(TWHECOCoinType, TWCoinType) {
     assertStringsEqual(txUrl, "https://hecoinfo.com/tx/0x2e62832615f5b68b3bbcd72046a24260ce47052841c1679841b9c574d3959f13");
     assertStringsEqual(accUrl, "https://hecoinfo.com/address/0xc5a5b3e49e5d06afe163553c942dc59b4e358cf1");
     assertStringsEqual(id, "heco");
-    assertStringsEqual(name, "ECO Chain");
+    assertStringsEqual(name, "Huobi ECO Chain");
 }
