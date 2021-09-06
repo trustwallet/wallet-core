@@ -7,6 +7,8 @@
 #include "Signer.h"
 #include "Address.h"
 #include "../PublicKey.h"
+#include "../Bitcoin/UnspentSelector.h"
+#include "../Bitcoin/FeeCalculator.h"
 
 using namespace TW;
 using namespace TW::Avalanche;
@@ -116,25 +118,32 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
     }
     auto tx = input.simple_transfer_tx();
 
-    plan.set_amount(tx.amount());
+    auto amount = tx.amount();
+    auto fee = tx.fee();
     const auto n = tx.inputs_size();
 
-    // TODO proper selection based on amount -- is it really needed?
+    plan.set_amount(amount);
+
+    // Input selection
+    std::vector<uint64_t> inputAmounts;
     for (auto i = 0; i < n; ++i) {
-        auto utxo = plan.add_utxos();
-        *utxo = tx.inputs(i);
+        if (tx.inputs(i).input().has_secp_transfer_input()) {
+            inputAmounts.push_back(tx.inputs(i).input().secp_transfer_input().amount());
+        }
     }
+    auto unspentSelector = Bitcoin::UnspentSelector(inputAmounts, Bitcoin::ConstantFeeCalculator(static_cast<double>(fee)));
+    auto selectedIndices = unspentSelector.select(amount, 0);
 
     uint64_t availAmount = 0;
-    for (auto i = 0; i < plan.utxos_size(); ++i) {
-        if (plan.utxos(i).input().has_secp_transfer_input()) {
-            availAmount += plan.utxos(i).input().secp_transfer_input().amount();
-        }
+    for (auto i: selectedIndices) {
+        auto utxo = plan.add_utxos();
+        *utxo = tx.inputs(static_cast<int>(i));
+        availAmount += plan.utxos(i).input().secp_transfer_input().amount();
     }
 
     plan.set_available_amount(availAmount);
-    plan.set_fee(tx.fee());
-    int64_t change = (int64_t)availAmount - (int64_t)(tx.amount() + tx.fee());
+    plan.set_fee(fee);
+    int64_t change = (int64_t)availAmount - (int64_t)(amount + fee);
     plan.set_change(change);
 
     return plan;
