@@ -174,7 +174,7 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
             inputAmounts.push_back(tx.inputs(i).input().secp_transfer_input().amount());
         }
     }
-    auto inputSelector = Bitcoin::InputSelector(inputAmounts, Bitcoin::ConstantFeeCalculator(static_cast<double>(fee)));
+    auto inputSelector = Bitcoin::InputSelector(inputAmounts, Bitcoin::ConstantFeeCalculator(static_cast<int64_t>(fee)));
     auto selectedIndices = inputSelector.select(amount, 0);
 
     uint64_t availAmount = 0;

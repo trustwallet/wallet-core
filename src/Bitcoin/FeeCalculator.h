@@ -33,8 +33,8 @@ public:
 /// Constant fee calculator
 class ConstantFeeCalculator : public FeeCalculator {
 public:
-    const double fee;
-    ConstantFeeCalculator(double fee) : fee(fee) {}
+    const int64_t fee;
+    ConstantFeeCalculator(int64_t fee) : fee(fee) {}
 
     virtual int64_t calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const override { return fee; }
     virtual int64_t calculateSingleInput(int64_t byteFee) const override { return 0; }
