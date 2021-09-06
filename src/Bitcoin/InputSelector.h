@@ -14,7 +14,7 @@
 
 namespace TW::Bitcoin {
 
-class UnspentSelector {
+class InputSelector {
   public:
     /// Selects unspent transactions to use given a target transaction value.
     ///
@@ -27,8 +27,8 @@ class UnspentSelector {
     std::vector<size_t> selectMaxAmount(int64_t byteFee);
 
     /// Construct, using provided feeCalculator (see getFeeCalculator()).
-    explicit UnspentSelector(const std::vector<uint64_t> inputs, const FeeCalculator& feeCalculator) : inputs(inputs), feeCalculator(feeCalculator) {}
-    UnspentSelector(const std::vector<uint64_t> inputs) : UnspentSelector(inputs, getFeeCalculator(TWCoinTypeBitcoin)) {}
+    explicit InputSelector(const std::vector<uint64_t> inputs, const FeeCalculator& feeCalculator) : inputs(inputs), feeCalculator(feeCalculator) {}
+    InputSelector(const std::vector<uint64_t> inputs) : InputSelector(inputs, getFeeCalculator(TWCoinTypeBitcoin)) {}
 
     static uint64_t sum(const std::vector<uint64_t>& amounts);
 

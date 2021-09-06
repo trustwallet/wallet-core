@@ -78,8 +78,8 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
     std::vector<uint64_t> inputAmounts;
     std::transform(input.utxos.begin(), input.utxos.end(), std::back_inserter(inputAmounts),
         [](UTXO utxo) -> uint64_t { return utxo.amount; });
-    auto unspentSelector = UnspentSelector(inputAmounts, feeCalculator);
-    auto inputSum = UnspentSelector::sum(inputAmounts);
+    auto inputSelector = InputSelector(inputAmounts, feeCalculator);
+    auto inputSum = InputSelector::sum(inputAmounts);
     bool maxAmount = input.useMaxAmount;
 
     if (input.amount == 0 && !maxAmount) {
@@ -100,10 +100,10 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
         std::vector<size_t> selectedIndices;
         if (!maxAmount) {
             output_size = 2; // output + change
-            selectedIndices = unspentSelector.select(plan.amount, input.byteFee, output_size);
+            selectedIndices = inputSelector.select(plan.amount, input.byteFee, output_size);
         } else {
             output_size = 1; // no change
-            selectedIndices = unspentSelector.selectMaxAmount(input.byteFee);
+            selectedIndices = inputSelector.selectMaxAmount(input.byteFee);
         }
         plan.utxos.clear();
         plan.availableAmount = 0;

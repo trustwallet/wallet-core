@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "UnspentSelector.h"
+#include "InputSelector.h"
 
 #include <algorithm>
 #include <cassert>
@@ -13,11 +13,11 @@ using namespace TW;
 using namespace TW::Bitcoin;
 
 
-uint64_t UnspentSelector::sum(const std::vector<uint64_t>& amounts) {
+uint64_t InputSelector::sum(const std::vector<uint64_t>& amounts) {
     return std::accumulate(amounts.begin(), amounts.end(), 0);
 }
 
-inline int64_t UnspentSelector::sumIndices(const std::vector<size_t>& indices) {
+inline int64_t InputSelector::sumIndices(const std::vector<size_t>& indices) {
     int64_t sum = 0;
     for (auto i : indices) {
         sum += inputs[i];
@@ -26,7 +26,7 @@ inline int64_t UnspentSelector::sumIndices(const std::vector<size_t>& indices) {
 }
 
 // Filters utxos that are dust
-std::vector<size_t> UnspentSelector::filterDustInput(const std::vector<size_t>& inputIndices, int64_t byteFee) {
+std::vector<size_t> InputSelector::filterDustInput(const std::vector<size_t>& inputIndices, int64_t byteFee) {
     auto inputFeeLimit = feeCalculator.calculateSingleInput(byteFee);
     std::vector<size_t> filteredIndices;
     for (auto i: inputIndices) {
@@ -54,7 +54,7 @@ static inline std::vector<std::vector<size_t>> slice(const std::vector<size_t>& 
     return slices;
 }
 
-std::vector<size_t> UnspentSelector::select(int64_t targetValue, int64_t byteFee, int64_t numOutputs) {
+std::vector<size_t> InputSelector::select(int64_t targetValue, int64_t byteFee, int64_t numOutputs) {
     // if target value is zero, no UTXOs are needed
     if (targetValue == 0) {
         return {};
@@ -151,7 +151,7 @@ std::vector<size_t> UnspentSelector::select(int64_t targetValue, int64_t byteFee
     return {};
 }
 
-std::vector<size_t> UnspentSelector::selectMaxAmount(int64_t byteFee) {
+std::vector<size_t> InputSelector::selectMaxAmount(int64_t byteFee) {
     std::vector<size_t> indices;
     for (auto i = 0; i < inputs.size(); ++i) {
         indices.push_back(i);
