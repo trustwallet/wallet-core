@@ -104,9 +104,52 @@ BaseTransaction structToBaseTx(const Proto::BaseTx txStruct) noexcept {
     return BaseTransaction(typeID, networkID, blockchainID, inputs, outputs, memo);
 }
 
+BaseTransaction structToSimpleTransferTx(const Proto::SimpleTransferTx& tx) noexcept {
+    assert(tx.has_plan());
+
+    // grab members of struct
+    auto typeID = tx.type_id();
+    auto networkID = tx.network_id();
+    auto blockchainID = Data(tx.blockchain_id().begin(), tx.blockchain_id().end());
+    auto memo = Data(tx.memo().begin(), tx.memo().end());
+
+    auto inputStructs = tx.plan().utxos();
+    auto inputs = structToInputs(inputStructs);
+
+    // build outputs
+    std::vector<TransferableOutput> outputs;
+    auto toAddresses = structToAddresses(tx.to_addresses());
+    outputs.push_back(TransferableOutput(
+        Data(tx.output_asset_id().begin(), tx.output_asset_id().end()),
+        std::make_unique<SECP256k1TransferOutput>(tx.plan().amount(), tx.locktime(), tx.threshold(), toAddresses)
+    ));
+    if (tx.plan().change() > 0) {
+        auto changeAddresses = structToAddresses(tx.change_addresses());
+        outputs.push_back(TransferableOutput(
+            Data(tx.output_asset_id().begin(), tx.output_asset_id().end()),
+            std::make_unique<SECP256k1TransferOutput>(tx.plan().change(), tx.locktime(), tx.threshold(), changeAddresses)
+        ));
+    }
+
+    return BaseTransaction(typeID, networkID, blockchainID, inputs, outputs, memo);
+}
+
 BaseTransaction buildBaseTx(const Proto::SigningInput& input) noexcept {
     auto txStruct = input.base_tx();
     return structToBaseTx(txStruct);
+}
+
+BaseTransaction buildSimpleTransferTx(const Proto::SigningInput& input) noexcept {
+    auto tx = input.simple_transfer_tx();
+
+    Proto::TransactionPlan plan;
+    // plan if needed
+    if (!tx.has_plan()) {
+        plan = Signer::plan(input);
+        *tx.mutable_plan() = plan;
+    }
+
+    return structToSimpleTransferTx(tx);
 }
 
 Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
@@ -138,7 +181,7 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
     for (auto i: selectedIndices) {
         auto utxo = plan.add_utxos();
         *utxo = tx.inputs(static_cast<int>(i));
-        availAmount += plan.utxos(i).input().secp_transfer_input().amount();
+        availAmount += plan.utxos(static_cast<int>(i)).input().secp_transfer_input().amount();
     }
 
     plan.set_available_amount(availAmount);
@@ -159,51 +202,15 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     }
 
     // TODO use switch
+    Data encoded;
     if (input.has_base_tx()) {
         auto transaction = buildBaseTx(input);
         auto encoded = Signer::sign(privateKeys, transaction);
-        protoOutput.set_encoded(encoded.data(), encoded.size());
     } else if (input.has_simple_transfer_tx()) {
-        // TODO move to separate method
-        auto tx = input.simple_transfer_tx();
-
-        Proto::TransactionPlan plan;
-        // plan if needed
-        if (tx.has_plan()) {
-            plan = tx.plan();
-        } else {
-            plan = Signer::plan(input);
-        }
-
-        // grab members of struct
-        auto typeID = tx.type_id();
-        auto networkID = tx.network_id();
-        auto blockchainID = Data(tx.blockchain_id().begin(), tx.blockchain_id().end());
-        auto memo = Data(tx.memo().begin(), tx.memo().end());
-
-        auto inputStructs = plan.utxos();
-        auto inputs = structToInputs(inputStructs);
-
-        // build outputs
-        std::vector<TransferableOutput> outputs;
-        auto toAddresses = structToAddresses(tx.to_addresses());
-        outputs.push_back(TransferableOutput(
-            Data(tx.output_asset_id().begin(), tx.output_asset_id().end()),
-            std::make_unique<SECP256k1TransferOutput>(plan.amount(), tx.locktime(), tx.threshold(), toAddresses)
-        ));
-        if (plan.change() > 0) {
-            auto changeAddresses = structToAddresses(tx.change_addresses());
-            outputs.push_back(TransferableOutput(
-                Data(tx.output_asset_id().begin(), tx.output_asset_id().end()),
-                std::make_unique<SECP256k1TransferOutput>(plan.change(), tx.locktime(), tx.threshold(), changeAddresses)
-            ));
-        }
-
-        auto transaction = BaseTransaction(typeID, networkID, blockchainID, inputs, outputs, memo);
-
+        auto transaction = buildSimpleTransferTx(input);
         auto encoded = Signer::sign(privateKeys, transaction);
-        protoOutput.set_encoded(encoded.data(), encoded.size());
     }
+    protoOutput.set_encoded(encoded.data(), encoded.size());
 
     return protoOutput;
 }
