@@ -75,7 +75,11 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
     TransactionPlan plan;
 
     const auto& feeCalculator = getFeeCalculator(static_cast<TWCoinType>(input.coinType));
-    auto unspentSelector = UnspentSelector(feeCalculator);
+    std::vector<uint64_t> inputAmounts;
+    std::transform(input.utxos.begin(), input.utxos.end(), std::back_inserter(inputAmounts),
+        [](UTXO utxo) -> uint64_t { return utxo.amount; });
+    auto unspentSelector = UnspentSelector(inputAmounts, feeCalculator);
+    auto inputSum = UnspentSelector::sum(inputAmounts);
     bool maxAmount = input.useMaxAmount;
 
     if (input.amount == 0 && !maxAmount) {
@@ -88,25 +92,30 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
 
         // if amount requested is the same or more than available amount, it cannot be satisifed, but
         // treat this case as MaxAmount, and send maximum available (which will be less)
-        if (!maxAmount && input.amount >= UnspentSelector::sum(input.utxos)) {
+        if (!maxAmount && input.amount >= inputSum) {
             maxAmount = true;
         }
 
         auto output_size = 2;
+        std::vector<size_t> selectedIndices;
         if (!maxAmount) {
             output_size = 2; // output + change
-            plan.utxos = unspentSelector.select(input.utxos, plan.amount, input.byteFee, output_size);
+            selectedIndices = unspentSelector.select(plan.amount, input.byteFee, output_size);
         } else {
             output_size = 1; // no change
-            plan.utxos = unspentSelector.selectMaxAmount(input.utxos, input.byteFee);
+            selectedIndices = unspentSelector.selectMaxAmount(input.byteFee);
+        }
+        plan.utxos.clear();
+        plan.availableAmount = 0;
+        for(auto i: selectedIndices) {
+            plan.utxos.push_back(input.utxos[i]);
+            plan.availableAmount += input.utxos[i].amount;
         }
 
         if (plan.utxos.size() == 0) {
             plan.amount = 0;
             plan.error = Common::Proto::Error_not_enough_utxos;
         } else {
-            plan.availableAmount = UnspentSelector::sum(plan.utxos);
-
             // Compute fee.
             // must preliminary set change so that there is a second output
             if (!maxAmount) {
