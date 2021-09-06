@@ -205,10 +205,10 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     Data encoded;
     if (input.has_base_tx()) {
         auto transaction = buildBaseTx(input);
-        auto encoded = Signer::sign(privateKeys, transaction);
+        encoded = Signer::sign(privateKeys, transaction);
     } else if (input.has_simple_transfer_tx()) {
         auto transaction = buildSimpleTransferTx(input);
-        auto encoded = Signer::sign(privateKeys, transaction);
+        encoded = Signer::sign(privateKeys, transaction);
     }
     protoOutput.set_encoded(encoded.data(), encoded.size());
 
