@@ -23,12 +23,7 @@ public:
     ParamTuple(const std::vector<std::shared_ptr<ParamBase>>& params) : _params(ParamSet(params)) {}
 
     /// Add a parameter. Returns the index of the parameter.
-    int addParam(std::shared_ptr<ParamBase> param) {
-        if (!_isDynamic && param->isDynamic()) {
-            _isDynamic = true;
-        }
-        return _params.addParam(param);
-    }
+    int addParam(std::shared_ptr<ParamBase> param);
     /// Get a parameter.
     bool getParam(int paramIndex, std::shared_ptr<ParamBase>& param_out) {
         return _params.getParam(paramIndex, param_out);
@@ -36,11 +31,11 @@ public:
     /// Return the function type signature, of the form "baz(int32,uint256)"
     std::string getType() const { return _params.getType(); }
 
-    virtual size_t getSize() const;
+    virtual size_t getSize() const { return _params.getSize(); }
     virtual bool isDynamic() const { return _isDynamic; }
-    virtual void encode(Data& data) const;
-    virtual bool decode(const Data& encoded, size_t& offset_inout);
-    virtual bool setValueJson(const std::string& value);
+    virtual void encode(Data& data) const { return _params.encode(data); }
+    virtual bool decode(const Data& encoded, size_t& offset_inout) { return _params.decode(encoded, offset_inout); }
+    virtual bool setValueJson(const std::string& value) { return false; }
     virtual size_t getCount() const { return _params.getCount(); }
 };
 

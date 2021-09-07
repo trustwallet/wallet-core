@@ -14,19 +14,9 @@ using namespace TW;
 using namespace TW::Ethereum::ABI;
 
 
-size_t ParamTuple::getSize() const {
-    return _params.getSize();
-}
-
-bool ParamTuple::setValueJson(const std::string& value) {
-    // TODO
-    return false;
-}
-
-void ParamTuple::encode(Data& data) const {
-    return _params.encode(data);
-}
-
-bool ParamTuple::decode(const Data& encoded, size_t& offset_inout) {
-    return _params.decode(encoded, offset_inout);
+int ParamTuple::addParam(std::shared_ptr<ParamBase> param) {
+    if (!_isDynamic && param->isDynamic()) {
+        _isDynamic = true;
+    }
+    return _params.addParam(param);
 }

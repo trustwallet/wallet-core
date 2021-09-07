@@ -572,6 +572,7 @@ TEST(EthereumAbi, ParamTupleStatic) {
         auto param = ParamTuple();
         param.addParam(std::make_shared<ParamBool>(true));
         param.addParam(std::make_shared<ParamUInt64>(123));
+        EXPECT_EQ("(bool,uint64)", param.getType());
         EXPECT_FALSE(param.isDynamic());
         EXPECT_EQ(2, param.getCount());
         EXPECT_EQ(64, param.getSize());
@@ -594,6 +595,7 @@ TEST(EthereumAbi, ParamTupleStatic) {
         auto param = ParamTuple();
         param.addParam(std::make_shared<ParamUInt64>(456));
         param.addParam(std::make_shared<ParamAddress>(parse_hex("000102030405060708090a0b0c0d0e0f10111213")));
+        EXPECT_EQ("(uint64,address)", param.getType());
         EXPECT_FALSE(param.isDynamic());
         EXPECT_EQ(2, param.getCount());
         EXPECT_EQ(64, param.getSize());
@@ -609,6 +611,7 @@ TEST(EthereumAbi, ParamTupleDynamic) {
         param.addParam(std::make_shared<ParamString>("Don't trust, verify!"));
         param.addParam(std::make_shared<ParamUInt64>(13));
         param.addParam(std::make_shared<ParamByteArray>(parse_hex("00010203040506070809")));
+        EXPECT_EQ("(string,uint64,bytes)", param.getType());
         EXPECT_TRUE(param.isDynamic());
         EXPECT_EQ(3, param.getCount());
         EXPECT_EQ(7 * 32, param.getSize());
