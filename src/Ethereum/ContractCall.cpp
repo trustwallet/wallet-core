@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -15,37 +15,20 @@ using json = nlohmann::json;
 
 namespace TW::Ethereum::ABI {
 
-static void fillArray(Function& func, const string& type) {
+static void fillArray(ParamSet& paramSet, const string& type) {
     auto param = make_shared<ParamArray>();
     auto baseType = string(type.begin(), type.end() - 2);
     auto value = ParamFactory::make(baseType);
     param->addParam(value);
-    func.addParam(param, false);
+    paramSet.addParam(param);
 }
 
-static void fill(Function& func, const string& type) {
+static void fill(ParamSet& paramSet, const string& type) {
     if (boost::algorithm::ends_with(type, "[]")) {
-        fillArray(func, type);
+        fillArray(paramSet, type);
     } else {
         auto param = ParamFactory::make(type);
-        func.addParam(param, false);
-    }
-}
-
-static void fillArrayToTuple(std::shared_ptr<ParamTuple>& tuple, const string& type) {
-    auto param = make_shared<ParamArray>();
-    auto baseType = string(type.begin(), type.end() - 2);
-    auto value = ParamFactory::make(baseType);
-    param->addParam(value);
-    tuple->addParam(param);
-}
-
-static void fillToTuple(std::shared_ptr<ParamTuple>& tuple, const string& type) {
-    if (boost::algorithm::ends_with(type, "[]")) {
-        fillArrayToTuple(tuple, type);
-    } else {
-        auto param = ParamFactory::make(type);
-        tuple->addParam(param);
+        paramSet.addParam(param);
     }
 }
 
@@ -82,28 +65,22 @@ static json buildInputs(Function& func, const json& registry) {
     return inputs;
 }
 
-void fillTupleToTuple(std::shared_ptr<ParamTuple>& tuple, const json& tupleJson); // forward
+void fillTuple(ParamSet& paramSet, const json& jsonSet); // forward
 
-void decodeTuple(std::shared_ptr<ParamTuple>& tuple, const json& tupleJson) {
-    for (auto& comp : tupleJson["components"]) {
+void decodeParamSet(ParamSet& paramSet, const json& jsonSet) {
+    for (auto& comp : jsonSet) {
         if (comp["type"] == "tuple") {
-            fillTupleToTuple(tuple, comp);
+            fillTuple(paramSet, comp["components"]);
         } else {        
-            fillToTuple(tuple, comp["type"]);
+            fill(paramSet, comp["type"]);
         }
     }    
 }
 
-void fillTuple(Function& func, const json& tupleJson) {
+void fillTuple(ParamSet& paramSet, const json& jsonSet) {
     std::shared_ptr<ParamTuple> param = make_shared<ParamTuple>();
-    decodeTuple(param, tupleJson);
-    func.addParam(param, false);
-}
-
-void fillTupleToTuple(std::shared_ptr<ParamTuple>& tuple, const json& tupleJson) {
-    std::shared_ptr<ParamTuple> param = make_shared<ParamTuple>();
-    decodeTuple(param, tupleJson);
-    tuple->addParam(param);
+    decodeParamSet(param->_params, jsonSet);
+    paramSet.addParam(param);
 }
 
 optional<string> decodeCall(const Data& call, const json& abi) {
@@ -121,13 +98,7 @@ optional<string> decodeCall(const Data& call, const json& abi) {
     // build Function with types
     const auto registry = abi[methodId];
     auto func = Function(registry["name"]);
-    for (auto& input : registry["inputs"]) {
-        if (input["type"] == "tuple") {
-            fillTuple(func, input);
-        } else {
-            fill(func, input["type"]);
-        }
-    }
+    decodeParamSet(func._inParams, registry["inputs"]);
 
     // decode inputs
     size_t offset = 0;
