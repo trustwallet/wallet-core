@@ -32,33 +32,47 @@ static void fill(ParamSet& paramSet, const string& type) {
     }
 }
 
-static vector<string> getArrayValue(Function& func, const string& type, int idx) {
+static vector<string> getArrayValue(ParamSet& paramSet, const string& type, int idx) {
     shared_ptr<ParamBase> param;
-    func.getInParam(idx, param);
+    paramSet.getParam(idx, param);
     return ParamFactory::getArrayValue(param, type);
 }
 
-static string getValue(Function& func, const string& type, int idx) {
+static json buildInputs(ParamSet& paramSet, const json& registry); // forward
+
+static json getTupleValue(ParamSet& paramSet, const string& type, int idx, const json& typeInfo) {
     shared_ptr<ParamBase> param;
-    func.getInParam(idx, param);
+    paramSet.getParam(idx, param);
+    auto paramTuple = dynamic_pointer_cast<ParamTuple>(param);
+    if (!paramTuple.get()) {
+        return {};
+    }
+    return buildInputs(paramTuple->_params, typeInfo["components"]);
+}
+
+static string getValue(ParamSet& paramSet, const string& type, int idx) {
+    shared_ptr<ParamBase> param;
+    paramSet.getParam(idx, param);
     return ParamFactory::getValue(param, type);
 }
 
-static json buildInputs(Function& func, const json& registry) {
+static json buildInputs(ParamSet& paramSet, const json& registry) {
     auto inputs = json::array();
-    for (int i = 0; i < registry["inputs"].size(); i++) {
-        auto info = registry["inputs"][i];
+    for (int i = 0; i < registry.size(); i++) {
+        auto info = registry[i];
         auto type = info["type"];
         auto input = json{
             {"name", info["name"]},
             {"type", type}
         };
         if (boost::algorithm::ends_with(type.get<string>(), "[]")) {
-            input["value"] = json(getArrayValue(func, type, i));
+            input["value"] = json(getArrayValue(paramSet, type, i));
+        } else if (type == "tuple") {
+            input["components"] = getTupleValue(paramSet, type, i, info);
         } else if (type == "bool") {
-            input["value"] = getValue(func, type, i) == "true" ? json(true) : json(false);
+            input["value"] = getValue(paramSet, type, i) == "true" ? json(true) : json(false);
         } else {
-            input["value"] = getValue(func, type, i);
+            input["value"] = getValue(paramSet, type, i);
         }
         inputs.push_back(input);
     }
@@ -110,7 +124,7 @@ optional<string> decodeCall(const Data& call, const json& abi) {
     // build output json
     auto decoded = json{
         {"function", func.getType()},
-        {"inputs", buildInputs(func, registry)},
+        {"inputs", buildInputs(func._inParams, registry["inputs"])},
     };
     return decoded.dump();
 }
