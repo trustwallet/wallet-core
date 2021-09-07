@@ -101,7 +101,8 @@ int main() {
             "\",\"gasPrice\":\"" + gasPriceB64 +
             "\",\"gasLimit\":\"" + gasLimitB64 +
             "\",\"toAddress\":\"" + dummyReceiverAddress +
-            "\",\"amount\":\"" + amountB64 + "\"}";
+            "\",\"transaction\":{\"transfer\":{\"amount\":\"" + amountB64 +
+            "\"}}}";            
         cout << "transaction: " << transaction << endl;
 
         cout << "signing transaction ... ";
