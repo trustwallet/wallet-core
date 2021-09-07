@@ -39,6 +39,7 @@ TEST(EthereumAbi, ParamTypeNames) {
     EXPECT_EQ("empty[]", paramArray.getType());
     paramArray.addParam(std::make_shared<ParamBool>());
     EXPECT_EQ("bool[]", paramArray.getType());
+    EXPECT_EQ("()", ParamTuple().getType());
 }
 
 TEST(EthereumAbi, ParamBool) {
@@ -566,10 +567,71 @@ TEST(EthereumAbi, ParamArrayBytesContract) {
     EXPECT_EQ(896, param.getSize());
 }
 
+TEST(EthereumAbi, ParamTupleStatic) {
+    {
+        auto param = ParamTuple();
+        param.addParam(std::make_shared<ParamBool>(true));
+        param.addParam(std::make_shared<ParamUInt64>(123));
+        EXPECT_EQ("(bool,uint64)", param.getType());
+        EXPECT_FALSE(param.isDynamic());
+        EXPECT_EQ(2, param.getCount());
+        EXPECT_EQ(64, param.getSize());
+        Data encoded;
+        param.encode(encoded);
+        EXPECT_EQ("0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000007b", hex(encoded));
+        {   // decode
+            size_t offset = 0;
+            auto param2 = ParamTuple();
+            param2.addParam(std::make_shared<ParamBool>());
+            param2.addParam(std::make_shared<ParamUInt64>());
+            EXPECT_TRUE(param2.decode(encoded, offset));
+            EXPECT_EQ(2, param2.getCount());
+            Data encoded2;
+            param2.encode(encoded2);
+            EXPECT_EQ("0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000007b", hex(encoded));
+        }
+    }
+    {
+        auto param = ParamTuple();
+        param.addParam(std::make_shared<ParamUInt64>(456));
+        param.addParam(std::make_shared<ParamAddress>(parse_hex("000102030405060708090a0b0c0d0e0f10111213")));
+        EXPECT_EQ("(uint64,address)", param.getType());
+        EXPECT_FALSE(param.isDynamic());
+        EXPECT_EQ(2, param.getCount());
+        EXPECT_EQ(64, param.getSize());
+        Data encoded;
+        param.encode(encoded);
+        EXPECT_EQ("00000000000000000000000000000000000000000000000000000000000001c8000000000000000000000000000102030405060708090a0b0c0d0e0f10111213", hex(encoded));
+    }
+}
+
+TEST(EthereumAbi, ParamTupleDynamic) {
+    {
+        auto param = ParamTuple();
+        param.addParam(std::make_shared<ParamString>("Don't trust, verify!"));
+        param.addParam(std::make_shared<ParamUInt64>(13));
+        param.addParam(std::make_shared<ParamByteArray>(parse_hex("00010203040506070809")));
+        EXPECT_EQ("(string,uint64,bytes)", param.getType());
+        EXPECT_TRUE(param.isDynamic());
+        EXPECT_EQ(3, param.getCount());
+        EXPECT_EQ(7 * 32, param.getSize());
+        Data encoded;
+        param.encode(encoded);
+        EXPECT_EQ(
+            "0000000000000000000000000000000000000000000000000000000000000060" // offet 3*32
+            "000000000000000000000000000000000000000000000000000000000000000d"
+            "00000000000000000000000000000000000000000000000000000000000000a0" // offet 5*32
+            "0000000000000000000000000000000000000000000000000000000000000014" // len
+            "446f6e27742074727573742c2076657269667921000000000000000000000000"
+            "000000000000000000000000000000000000000000000000000000000000000a" // len
+            "0001020304050607080900000000000000000000000000000000000000000000", hex(encoded));
+    }
+}
+
 ///// Direct encode & decode
 
 TEST(EthereumAbi, EncodeVectorByte10) {
-    auto p = ParamByteArrayFix(10, std::vector<byte>{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30});
+    auto p = ParamByteArrayFix(10, parse_hex("31323334353637383930"));
     EXPECT_EQ("bytes10", p.getType());
     Data encoded;
     p.encode(encoded);
@@ -577,7 +639,7 @@ TEST(EthereumAbi, EncodeVectorByte10) {
 }
 
 TEST(EthereumAbi, EncodeVectorByte) {
-    auto p = ParamByteArray(std::vector<byte>{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30});
+    auto p = ParamByteArray(parse_hex("31323334353637383930"));
     EXPECT_EQ("bytes", p.getType());
     Data encoded;
     p.encode(encoded);

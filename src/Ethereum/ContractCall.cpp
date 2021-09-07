@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -15,54 +15,86 @@ using json = nlohmann::json;
 
 namespace TW::Ethereum::ABI {
 
-static void fillArray(Function& func, const string& type) {
+static void fillArray(ParamSet& paramSet, const string& type) {
     auto param = make_shared<ParamArray>();
     auto baseType = string(type.begin(), type.end() - 2);
     auto value = ParamFactory::make(baseType);
     param->addParam(value);
-    func.addParam(param, false);
+    paramSet.addParam(param);
 }
 
-static void fill(Function& func, const string& type) {
+static void fill(ParamSet& paramSet, const string& type) {
     if (boost::algorithm::ends_with(type, "[]")) {
-        fillArray(func, type);
+        fillArray(paramSet, type);
     } else {
         auto param = ParamFactory::make(type);
-        func.addParam(param, false);
+        paramSet.addParam(param);
     }
 }
 
-static vector<string> getArrayValue(Function& func, const string& type, int idx) {
+static vector<string> getArrayValue(ParamSet& paramSet, const string& type, int idx) {
     shared_ptr<ParamBase> param;
-    func.getInParam(idx, param);
+    paramSet.getParam(idx, param);
     return ParamFactory::getArrayValue(param, type);
 }
 
-static string getValue(Function& func, const string& type, int idx) {
+static json buildInputs(ParamSet& paramSet, const json& registry); // forward
+
+static json getTupleValue(ParamSet& paramSet, const string& type, int idx, const json& typeInfo) {
     shared_ptr<ParamBase> param;
-    func.getInParam(idx, param);
+    paramSet.getParam(idx, param);
+    auto paramTuple = dynamic_pointer_cast<ParamTuple>(param);
+    if (!paramTuple.get()) {
+        return {};
+    }
+    return buildInputs(paramTuple->_params, typeInfo["components"]);
+}
+
+static string getValue(ParamSet& paramSet, const string& type, int idx) {
+    shared_ptr<ParamBase> param;
+    paramSet.getParam(idx, param);
     return ParamFactory::getValue(param, type);
 }
 
-static json buildInputs(Function& func, const json& registry) {
+static json buildInputs(ParamSet& paramSet, const json& registry) {
     auto inputs = json::array();
-    for (int i = 0; i < registry["inputs"].size(); i++) {
-        auto info = registry["inputs"][i];
+    for (int i = 0; i < registry.size(); i++) {
+        auto info = registry[i];
         auto type = info["type"];
         auto input = json{
             {"name", info["name"]},
             {"type", type}
         };
         if (boost::algorithm::ends_with(type.get<string>(), "[]")) {
-            input["value"] = json(getArrayValue(func, type, i));
+            input["value"] = json(getArrayValue(paramSet, type, i));
+        } else if (type == "tuple") {
+            input["components"] = getTupleValue(paramSet, type, i, info);
         } else if (type == "bool") {
-            input["value"] = getValue(func, type, i) == "true" ? json(true) : json(false);
+            input["value"] = getValue(paramSet, type, i) == "true" ? json(true) : json(false);
         } else {
-            input["value"] = getValue(func, type, i);
+            input["value"] = getValue(paramSet, type, i);
         }
         inputs.push_back(input);
     }
     return inputs;
+}
+
+void fillTuple(ParamSet& paramSet, const json& jsonSet); // forward
+
+void decodeParamSet(ParamSet& paramSet, const json& jsonSet) {
+    for (auto& comp : jsonSet) {
+        if (comp["type"] == "tuple") {
+            fillTuple(paramSet, comp["components"]);
+        } else {        
+            fill(paramSet, comp["type"]);
+        }
+    }    
+}
+
+void fillTuple(ParamSet& paramSet, const json& jsonSet) {
+    std::shared_ptr<ParamTuple> param = make_shared<ParamTuple>();
+    decodeParamSet(param->_params, jsonSet);
+    paramSet.addParam(param);
 }
 
 optional<string> decodeCall(const Data& call, const json& abi) {
@@ -80,9 +112,7 @@ optional<string> decodeCall(const Data& call, const json& abi) {
     // build Function with types
     const auto registry = abi[methodId];
     auto func = Function(registry["name"]);
-    for (auto& input : registry["inputs"]) {
-        fill(func, input["type"]);
-    }
+    decodeParamSet(func._inParams, registry["inputs"]);
 
     // decode inputs
     size_t offset = 0;
@@ -94,7 +124,7 @@ optional<string> decodeCall(const Data& call, const json& abi) {
     // build output json
     auto decoded = json{
         {"function", func.getType()},
-        {"inputs", buildInputs(func, registry)},
+        {"inputs", buildInputs(func._inParams, registry["inputs"])},
     };
     return decoded.dump();
 }
