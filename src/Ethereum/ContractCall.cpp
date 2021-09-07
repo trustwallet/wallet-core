@@ -32,6 +32,23 @@ static void fill(Function& func, const string& type) {
     }
 }
 
+static void fillArrayToTuple(std::shared_ptr<ParamTuple>& tuple, const string& type) {
+    auto param = make_shared<ParamArray>();
+    auto baseType = string(type.begin(), type.end() - 2);
+    auto value = ParamFactory::make(baseType);
+    param->addParam(value);
+    tuple->addParam(param);
+}
+
+static void fillToTuple(std::shared_ptr<ParamTuple>& tuple, const string& type) {
+    if (boost::algorithm::ends_with(type, "[]")) {
+        fillArrayToTuple(tuple, type);
+    } else {
+        auto param = ParamFactory::make(type);
+        tuple->addParam(param);
+    }
+}
+
 static vector<string> getArrayValue(Function& func, const string& type, int idx) {
     shared_ptr<ParamBase> param;
     func.getInParam(idx, param);
@@ -65,6 +82,30 @@ static json buildInputs(Function& func, const json& registry) {
     return inputs;
 }
 
+void fillTupleToTuple(std::shared_ptr<ParamTuple>& tuple, const json& tupleJson); // forward
+
+void decodeTuple(std::shared_ptr<ParamTuple>& tuple, const json& tupleJson) {
+    for (auto& comp : tupleJson["components"]) {
+        if (comp["type"] == "tuple") {
+            fillTupleToTuple(tuple, comp);
+        } else {        
+            fillToTuple(tuple, comp["type"]);
+        }
+    }    
+}
+
+void fillTuple(Function& func, const json& tupleJson) {
+    std::shared_ptr<ParamTuple> param = make_shared<ParamTuple>();
+    decodeTuple(param, tupleJson);
+    func.addParam(param, false);
+}
+
+void fillTupleToTuple(std::shared_ptr<ParamTuple>& tuple, const json& tupleJson) {
+    std::shared_ptr<ParamTuple> param = make_shared<ParamTuple>();
+    decodeTuple(param, tupleJson);
+    tuple->addParam(param);
+}
+
 optional<string> decodeCall(const Data& call, const json& abi) {
     // check bytes length
     if (call.size() <= 4) {
@@ -81,7 +122,11 @@ optional<string> decodeCall(const Data& call, const json& abi) {
     const auto registry = abi[methodId];
     auto func = Function(registry["name"]);
     for (auto& input : registry["inputs"]) {
-        fill(func, input["type"]);
+        if (input["type"] == "tuple") {
+            fillTuple(func, input);
+        } else {
+            fill(func, input["type"]);
+        }
     }
 
     // decode inputs
