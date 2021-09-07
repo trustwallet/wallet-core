@@ -39,7 +39,7 @@ TEST(EthereumAbi, ParamTypeNames) {
     EXPECT_EQ("empty[]", paramArray.getType());
     paramArray.addParam(std::make_shared<ParamBool>());
     EXPECT_EQ("bool[]", paramArray.getType());
-    EXPECT_EQ("tuple", ParamTuple().getType());
+    EXPECT_EQ("()", ParamTuple().getType());
 }
 
 TEST(EthereumAbi, ParamBool) {

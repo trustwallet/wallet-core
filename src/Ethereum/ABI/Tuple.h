@@ -34,7 +34,7 @@ public:
         return _params.getParam(paramIndex, param_out);
     }
     /// Return the function type signature, of the form "baz(int32,uint256)"
-    std::string getType() const { return "tuple"; }
+    std::string getType() const { return _params.getType(); }
 
     virtual size_t getSize() const;
     virtual bool isDynamic() const { return _isDynamic; }
