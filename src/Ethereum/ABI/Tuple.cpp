@@ -15,8 +15,5 @@ using namespace TW::Ethereum::ABI;
 
 
 int ParamTuple::addParam(std::shared_ptr<ParamBase> param) {
-    if (!_isDynamic && param->isDynamic()) {
-        _isDynamic = true;
-    }
     return _params.addParam(param);
 }

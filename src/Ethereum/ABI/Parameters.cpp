@@ -68,6 +68,15 @@ std::string ParamSet::getType() const {
     return t;
 }
 
+bool ParamSet::isDynamic() const {
+    for (const auto& p: _params) {
+        if (p->isDynamic()) {
+            return true;
+        }
+    }
+    return false;
+}
+
 size_t ParamSet::getSize() const {
     // 2-pass encoding
     size_t s = 0;
