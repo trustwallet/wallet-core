@@ -48,9 +48,9 @@ HDWallet::HDWallet(int strength, const std::string& passphrase)
     updateSeedAndEntropy();
 }
 
-HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase)
+HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase, const bool check)
     : mnemonic(mnemonic), passphrase(passphrase) {
-    if (!Mnemonic::isValid(mnemonic)) {
+    if (check && !Mnemonic::isValid(mnemonic)) {
         throw std::invalid_argument("Invalid mnemonic");
     }
     updateSeedAndEntropy();

@@ -55,7 +55,7 @@ class HDWallet {
 
     /// Initializes an HDWallet from a BIP39 English mnemonic.
     /// Throws on invalid mnemonic.
-    HDWallet(const std::string& mnemonic, const std::string& passphrase);
+    HDWallet(const std::string& mnemonic, const std::string& passphrase, const bool check = true);
 
     /// Initializes an HDWallet from an entropy.
     /// Throws on invalid data.
