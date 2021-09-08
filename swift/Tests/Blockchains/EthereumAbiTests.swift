@@ -118,35 +118,35 @@ class EthereumAbiTests: XCTestCase {
                 "components": [{
                     "name": "srcToken",
                     "type": "address",
-                    "value": "0x0000000000000000000000000000000000000060"
+                    "value": "0x2b591e99afe9f32eaa6214f7b7629768c40eeb39"
                 }, {
                     "name": "dstToken",
                     "type": "address",
-                    "value": "0x0000000000000000000000000000000000000180"
+                    "value": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
                 }, {
                     "name": "srcReceiver",
                     "type": "address",
-                    "value": "0x2b591e99afe9f32eaa6214f7b7629768c40eeb39"
+                    "value": "0x27239549dd40e1d60f5b80b0c4196923745b1fd2"
                 }, {
                     "name": "dstReceiver",
                     "type": "address",
-                    "value": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+                    "value": "0x1611c227725c5e420ef058275ae772b41775e261"
                 }, {
                     "name": "amount",
                     "type": "uint256",
-                    "value": "223444171009391205329457672839989411531212922834"
+                    "value": "6395120000000"
                 }, {
                     "name": "minReturnAmount",
                     "type": "uint256",
-                    "value": "125993822832994156141635224110058901740841198177"
+                    "value": "24748356058"
                 }, {
                     "name": "flags",
                     "type": "uint256",
-                    "value": "6395120000000"
+                    "value": "4"
                 }, {
                     "name": "permit",
                     "type": "bytes",
-                    "value": "0x00000000"
+                    "value": "0x"
                 }],
                 "name": "desc",
                 "type": "tuple"
