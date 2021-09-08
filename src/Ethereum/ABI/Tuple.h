@@ -17,7 +17,6 @@ class ParamTuple: public ParamCollection
 {
 public:
     ParamSet _params;
-    bool _isDynamic = false;
 
     ParamTuple() {}
     ParamTuple(const std::vector<std::shared_ptr<ParamBase>>& params) : _params(ParamSet(params)) {}
@@ -32,7 +31,7 @@ public:
     std::string getType() const { return _params.getType(); }
 
     virtual size_t getSize() const { return _params.getSize(); }
-    virtual bool isDynamic() const { return _isDynamic; }
+    virtual bool isDynamic() const { return _params.isDynamic(); }
     virtual void encode(Data& data) const { return _params.encode(data); }
     virtual bool decode(const Data& encoded, size_t& offset_inout) { return _params.decode(encoded, offset_inout); }
     virtual bool setValueJson(const std::string& value) { return false; }
