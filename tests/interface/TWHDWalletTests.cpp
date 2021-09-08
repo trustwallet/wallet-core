@@ -80,7 +80,7 @@ TEST(HDWallet, CreateFromStrengthInvalid) {
 }
 
 TEST(HDWallet, CreateFromMnemonicInvalid) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(STRING("").get(), STRING("").get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(STRING("THIS IS INVALID MNEMONIC").get(), STRING("").get()));
     ASSERT_EQ(wallet.get(), nullptr);
 }
 

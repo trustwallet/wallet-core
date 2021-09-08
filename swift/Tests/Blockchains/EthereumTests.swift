@@ -196,7 +196,10 @@ class EthereumTests: XCTestCase {
     }
 
     func testSpanishMnemonic() throws {
-        let wallet = HDWallet(mnemonic: "llanto radical atraer riesgo actuar masa fondo cielo dieta archivo sonrisa mamut", passphrase: "")!
+        let mnemonic = "llanto radical atraer riesgo actuar masa fondo cielo dieta archivo sonrisa mamut"
+        XCTAssertNil(HDWallet(mnemonic: mnemonic, passphrase: ""))
+
+        let wallet = HDWallet(mnemonic: mnemonic, passphrase: "", check: false)!
         let btcXpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .bitcoin, version: .xpub)
         let ethXpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .ethereum, version: .xpub)
 

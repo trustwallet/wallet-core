@@ -24,17 +24,22 @@ struct TWHDWallet;
 /// TWHDWalletIsValid has been deprecated; use TWMnemonicIsValid().
 
 /// Creates a new HDWallet with a new random mnemonic with the provided strength in bits.
-/// Null is returned on invalid strength.  Returned object needs to be deleted.
+/// Null is returned on invalid strength. Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWHDWallet *_Nullable TWHDWalletCreate(int strength, TWString *_Nonnull passphrase);
 
-/// Creates an HDWallet from a mnemonic (aka. recovery phrase).
-/// Null is returned on invalid mnemonic.  Returned object needs to be deleted.
+/// Creates an HDWallet from a valid BIP39 English mnemonic and a passphrase.
+/// Null is returned on invalid mnemonic. Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWHDWallet *_Nullable TWHDWalletCreateWithMnemonic(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase);
 
+/// Creates an HDWallet from a BIP39 mnemonic, a passphrase and validation flag.
+/// Null is returned on invalid mnemonic. Returned object needs to be deleted.
+TW_EXPORT_STATIC_METHOD
+struct TWHDWallet *_Nullable TWHDWalletCreateWithMnemonicCheck(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase, bool check);
+
 /// Creates an HDWallet from entropy (corresponding to a mnemonic).
-/// Null is returned on invalid input.  Returned object needs to be deleted.
+/// Null is returned on invalid input. Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWHDWallet *_Nullable TWHDWalletCreateWithEntropy(TWData *_Nonnull entropy, TWString *_Nonnull passphrase);
 

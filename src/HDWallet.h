@@ -53,9 +53,9 @@ class HDWallet {
     /// Throws on invalid strength.
     HDWallet(int strength, const std::string& passphrase);
 
-    /// Initializes an HDWallet from a mnemonic.
+    /// Initializes an HDWallet from a BIP39 mnemonic and a passphrase, check English dict by default.
     /// Throws on invalid mnemonic.
-    HDWallet(const std::string& mnemonic, const std::string& passphrase);
+    HDWallet(const std::string& mnemonic, const std::string& passphrase, const bool check = true);
 
     /// Initializes an HDWallet from an entropy.
     /// Throws on invalid data.
@@ -83,13 +83,13 @@ class HDWallet {
     /// Returns the extended private key.
     std::string getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const;
 
-    /// Returns the exteded public key.
+    /// Returns the extended public key.
     std::string getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const;
 
-    /// Computes the public key from an exteded public key representation.
+    /// Computes the public key from an extended public key representation.
     static std::optional<PublicKey> getPublicKeyFromExtended(const std::string& extended, TWCoinType coin, const DerivationPath& path);
 
-    /// Computes the private key from an exteded private key representation.
+    /// Computes the private key from an extended private key representation.
     static std::optional<PrivateKey> getPrivateKeyFromExtended(const std::string& extended, TWCoinType coin, const DerivationPath& path);
 
   public:
