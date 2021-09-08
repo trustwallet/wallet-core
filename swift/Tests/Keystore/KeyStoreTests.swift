@@ -31,6 +31,7 @@ class KeyStoreTests: XCTestCase {
     let keyAddress = AnyAddress(string: "0x008AeEda4D805471dF9b2A5B0f38A0C3bCBA786b", coin: .ethereum)!
     let walletAddress = AnyAddress(string: "0x32dd55E0BCF509a35A3F5eEb8593fbEb244796b1", coin: .ethereum)!
     let mnemonic = "often tobacco bread scare imitate song kind common bar forest yard wisdom"
+    let fileManager = FileManager.default
 
     var keyDirectory: URL!
 
@@ -344,11 +345,7 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testSave() throws {
-        let fileManager = FileManager.default
-        let dir = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("keystore")
-        try? fileManager.removeItem(at: dir)
-        try fileManager.createDirectory(at: dir, withIntermediateDirectories: true, attributes: nil)
-
+        let dir = try createTempDirURL()
         let keyStore = try KeyStore(keyDirectory: dir)
         try keyStore.watch([
             Watch(coin: .ethereum, name: "name", address: "0x008AeEda4D805471dF9b2A5B0f38A0C3bCBA786b", xpub: nil)
@@ -357,5 +354,41 @@ class KeyStoreTests: XCTestCase {
 
         XCTAssertTrue(fileManager.fileExists(atPath: dir.appendingPathComponent("watches.json").path))
         XCTAssertTrue(fileManager.fileExists(atPath: wallet.keyURL.path))
+    }
+
+    func testImportError() throws {
+        let url = try createTempDirURL()
+        let keystore = try KeyStore(keyDirectory: url)
+
+        do {
+            _ = try keystore.import(json: Data(mnemonic.utf8), name: "", password: "", newPassword: "", coins: [])
+        } catch {
+            guard
+                let err = error as? KeyStore.Error,
+                err == .invalidJSON
+            else {
+                XCTFail("Should be invalid json error")
+                return
+            }
+        }
+
+        do {
+            _ = try keystore.import(json: Data("{}".utf8), name: "", password: "", newPassword: "", coins: [])
+        } catch {
+            guard
+                let err = error as? KeyStore.Error,
+                err == .invalidJSON
+            else {
+                XCTFail("Should be invalid json error")
+                return
+            }
+        }
+    }
+
+    func createTempDirURL() throws -> URL {
+        let dir = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("keystore")
+        try? fileManager.removeItem(at: dir)
+        try fileManager.createDirectory(at: dir, withIntermediateDirectories: true, attributes: nil)
+        return dir
     }
 }
