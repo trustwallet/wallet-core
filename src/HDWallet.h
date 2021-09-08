@@ -103,7 +103,7 @@ class HDWallet {
     static PrivateKeyType getPrivateKeyType(TWCurve curve);
 
   private:
-    void updateSeedAndEntropy();
+    void updateSeedAndEntropy(bool check = true);
 };
 
 } // namespace TW
