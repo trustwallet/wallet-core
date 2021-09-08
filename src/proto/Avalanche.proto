@@ -81,6 +81,9 @@ message SimpleTransferTx {
 
     bytes output_asset_id = 6;  // 32 bytes
 
+    // Amount to send.  Transaction created will have this amount in its output, 
+    // except when use_max_amount is set, in that case this amount is not relevant, maximum possible amount will be used (max avail less fee).
+    // If amount is equal or more than the available amount, also max amount will be used.
     uint64 amount = 7;
 
     uint64 fee = 8;
@@ -100,6 +103,9 @@ message SimpleTransferTx {
 
     // Optional transaction plan
     TransactionPlan plan = 14;
+
+    // If sending max possibe amount.
+    bool use_max_amount = 15;
 }
 
 message TransactionPlan {

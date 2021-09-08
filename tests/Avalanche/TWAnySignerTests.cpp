@@ -72,6 +72,24 @@ TEST(TWAnySignerAvalanche, PlanSmallAmount) {
     EXPECT_EQ(plan.utxos_size(), 1);
 }
 
+TEST(TWAnySignerAvalanche, PlanMaxAmount) {
+    Proto::SigningInput input;
+    setUpDefaultPrivateKeyData(input);
+    auto& simpleTx = *input.mutable_simple_transfer_tx();
+    setUpDefaultSimpleTx(simpleTx);
+    simpleTx.set_amount(123); // does not matter with max amount
+    simpleTx.set_use_max_amount(true);
+
+    Proto::TransactionPlan plan;
+    ANY_PLAN(input, plan, TWCoinTypeAvalancheXChain);
+
+    EXPECT_EQ(plan.amount(), 246913578 - 1200000);
+    EXPECT_EQ(plan.available_amount(), 246913578);
+    EXPECT_EQ(plan.fee(), 1200000);
+    EXPECT_EQ(plan.change(), 0);
+    EXPECT_EQ(plan.utxos_size(), 2);
+}
+
 TEST(TWAnySignerAvalanche, SignBasicTransaction) {
     Proto::SigningInput input;
     setUpDefaultPrivateKeyData(input);

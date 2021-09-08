@@ -10,6 +10,8 @@
 #include "../Bitcoin/InputSelector.h"
 #include "../Bitcoin/FeeCalculator.h"
 
+#include <algorithm>
+
 using namespace TW;
 using namespace TW::Avalanche;
 
@@ -161,21 +163,35 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
     }
     auto tx = input.simple_transfer_tx();
 
-    auto amount = tx.amount();
-    auto fee = tx.fee();
     const auto n = tx.inputs_size();
-
-    plan.set_amount(amount);
-
-    // Input selection
     std::vector<uint64_t> inputAmounts;
+    uint64_t inputSum = 0;
     for (auto i = 0; i < n; ++i) {
         if (tx.inputs(i).input().has_secp_transfer_input()) {
-            inputAmounts.push_back(tx.inputs(i).input().secp_transfer_input().amount());
+            auto amount = tx.inputs(i).input().secp_transfer_input().amount();
+            inputAmounts.push_back(amount);
+            inputSum += amount;
         }
     }
+
+    bool maxAmount = tx.use_max_amount();
+    // if amount requested is the same or more than available amount, it cannot be satisifed, but
+    // treat this case as MaxAmount, and send maximum available (which will be less)
+    if (!maxAmount && tx.amount() >= inputSum) {
+        maxAmount = true;
+    }
+
+    auto amount = tx.amount();
+    auto fee = tx.fee();
+
+    // Input selection
     auto inputSelector = Bitcoin::InputSelector(inputAmounts, Bitcoin::ConstantFeeCalculator(static_cast<int64_t>(fee)));
-    auto selectedIndices = inputSelector.select(amount, 0);
+    std::vector<size_t> selectedIndices;
+    if (!maxAmount) {
+        selectedIndices = inputSelector.select(amount, 0);
+    } else {
+        selectedIndices = inputSelector.selectMaxAmount(0);
+    }
 
     uint64_t availAmount = 0;
     for (auto i: selectedIndices) {
@@ -184,9 +200,18 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
         availAmount += plan.utxos(static_cast<int>(i)).input().secp_transfer_input().amount();
     }
 
+    fee = std::min(availAmount, tx.fee());
+    if (!maxAmount) {
+        amount = std::max(uint64_t(0), std::min(amount, availAmount - fee));
+    } else {
+        // max available amount
+        amount = std::max(uint64_t(0), availAmount - fee);
+    }
+    uint64_t change = (uint64_t)((int64_t)availAmount - (int64_t)(amount + fee));
+
+    plan.set_amount(amount);
     plan.set_available_amount(availAmount);
     plan.set_fee(fee);
-    int64_t change = (int64_t)availAmount - (int64_t)(amount + fee);
     plan.set_change(change);
 
     return plan;
