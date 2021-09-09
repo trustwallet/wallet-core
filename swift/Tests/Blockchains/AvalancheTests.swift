@@ -42,6 +42,33 @@ class AvalancheTests: XCTestCase {
         XCTAssertEqual(xpub, "xpub6CvdTKLRh3ehvVLR2f3M1GUTFesrz5zoYFbw32iZqRShmoDnxtfSaF7mdCvXwNRfTwce5RYEADGb6YAzhqEAujEkvjTod6s2WEkpUBJZwqf")
     }
 
+    func testDecodeUTXO() {
+        let nftUTXO = "0x0000283a7309eb1e2d2df00430de66b2b7abf77716bd06aadfa2fa957be1e748a9680000000a1096e1457b26e622f7b417bc1b41f4d2396fe1d7a1f99a91b9df5ae8f741be850000000b00000000000000a1187b226176616c616e636865223a7b2276657273696f6e223a312c2274797065223a2267656e65726963222c227469746c65223a224361707461696e222c22696d67223a2268747470733a2f2f636c6f7564666c6172652d697066732e636f6d2f697066732f516d50576e4156505770674466535548594b78735741353670714837616e50334e396b4a753571585a69394b5a72222c2264657363223a22227d7d000000000000000000000001000000010d2fbcab2f97ef944fb6a808da9dc4416884c17fe069be69"
+
+        XCTAssertNil(AvalancheDecoder.decodeUTXO(data: Data(hexString: nftUTXO)!))
+
+        let utxo = "0x0000da7ba5f0c8cc5d1c14c2279ffe77abe7c22d1e90f2b0575843d8458e82c7e5320000000021e67317cbc4be2aeb00677ad6462778a8f52274b9d605df2591b23027a87dff00000007000000003b7c458000000000000000000000000100000001b7bce5a6b2263881816034938606a12c014f8bf7363e9c39"
+        let decoded = AvalancheDecoder.decodeUTXO(data: Data(hexString: utxo)!)!
+        let expectedJSON: String = """
+        {
+            "addresses": ["b7bce5a6b2263881816034938606a12c014f8bf7"],
+            "amount": 998000000,
+            "asset": "21e67317cbc4be2aeb00677ad6462778a8f52274b9d605df2591b23027a87dff",
+            "codec": 0,
+            "hash": "da7ba5f0c8cc5d1c14c2279ffe77abe7c22d1e90f2b0575843d8458e82c7e532",
+            "index": 0,
+            "locktime": 0,
+            "threshold": 1,
+            "type": 7
+        }
+        """
+
+        XCTAssertJSONEqual(decoded, expectedJSON)
+
+        let address = AnyAddress(string: "X-avax1k77wtf4jycugrqtqxjfcvp4p9sq5lzlh5vl83n", coin: .avalancheXChain)
+        XCTAssertEqual(address?.data.hexString, "b7bce5a6b2263881816034938606a12c014f8bf7")
+    }
+
     func testSign() {
         let key = PrivateKey(data: Data(hexString: "56289e99c94b6912bfc12adc093c9b51124f0dc54ac7a766b2bc5ccf558d8027")!)!
         let blockchainID = Data(hexString: "d891ad56056d9c01f18f43f58b5c784ad07a4a49cf3d1f11623804b5cba2c6bf")!
@@ -54,7 +81,6 @@ class AvalancheTests: XCTestCase {
         let locktime = UInt64(0)
         let threshold = UInt32(1)
 
-        
         var baseTx = AvalancheBaseTx()
         baseTx.typeID = 0
         baseTx.networkID = netID
@@ -73,7 +99,7 @@ class AvalancheTests: XCTestCase {
         inputOne.spendableAddresses = [pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data]
         inputOne.input = wrappedInputOne
         baseTx.inputs.append(inputOne)
-        
+
         var coreInputTwo = AvalancheSECP256K1TransferInput()
         coreInputTwo.amount = 123456789
         coreInputTwo.addressIndices = [3, 7]
@@ -86,7 +112,7 @@ class AvalancheTests: XCTestCase {
         inputTwo.spendableAddresses = [pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data]
         inputTwo.input = wrappedInputTwo
         baseTx.inputs.append(inputTwo)
-        
+
         var coreOutputOne = AvalancheSECP256K1TransferOutput()
         coreOutputOne.amount = 12345
         coreOutputOne.locktime = 54321
@@ -98,7 +124,7 @@ class AvalancheTests: XCTestCase {
         outputOne.assetID = assetID
         outputOne.output = wrappedOutputOne
         baseTx.outputs.append(outputOne)
-        
+
         var coreOutputTwo = AvalancheSECP256K1TransferOutput()
         coreOutputTwo.amount = amount
         coreOutputTwo.locktime = locktime

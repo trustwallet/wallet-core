@@ -45,7 +45,7 @@ bool Bech32Address::decode(const std::string& addr, Bech32Address& obj_out, cons
     }
 
     Data conv;
-    bool success = success = Bech32::convertBits<5, 8>(conv, std::get<1>(dec), pad);
+    bool success = Bech32::convertBits<5, 8>(conv, std::get<1>(dec), pad);
     if (!success || conv.size() < 2 || conv.size() > 40) {
         return false;
     }

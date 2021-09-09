@@ -88,13 +88,9 @@ TEST(AvalancheTransactionComponents, TestTransferableOutputAssignmentConstructin
 }
 
 TEST(AvalancheTransactionComponents, TestSECP256k1TransferOutput) {
-    auto assetIDOne =
-        parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba530000");
     auto addressesOutOne = generateAddressesForComponent();
     auto coreOutputOne = SECP256k1TransferOutput(12345, 54321, 5, addressesOutOne);
 
-    auto assetIDTwo =
-        parse_hex("0xdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db");
     auto addressesOutTwo = generateAddressesForComponent();
     auto coreOutputTwo = SECP256k1TransferOutput(12345, 54321, 6, addressesOutTwo);
 

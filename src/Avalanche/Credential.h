@@ -5,7 +5,9 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #pragma once
+
 #include "../Data.h"
+
 namespace TW::Avalanche {
 
 // clang-format off
