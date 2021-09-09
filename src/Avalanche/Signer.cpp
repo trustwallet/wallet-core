@@ -136,9 +136,8 @@ BaseTransaction structToSimpleTransferTx(const Proto::SimpleTransferTx& tx) noex
     return BaseTransaction(typeID, networkID, blockchainID, inputs, outputs, memo);
 }
 
-BaseTransaction buildBaseTx(const Proto::SigningInput& input) noexcept {
-    auto txStruct = input.base_tx();
-    return structToBaseTx(txStruct);
+BaseTransaction buildBaseTx(const Proto::BaseTx& tx) noexcept {
+    return structToBaseTx(tx);
 }
 
 BaseTransaction buildSimpleTransferTx(const Proto::SigningInput& input) noexcept {
@@ -226,14 +225,24 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         privateKeys.push_back(privateKey);
     }
 
-    // TODO use switch
     Data encoded;
-    if (input.has_base_tx()) {
-        auto transaction = buildBaseTx(input);
-        encoded = Signer::sign(privateKeys, transaction);
-    } else if (input.has_simple_transfer_tx()) {
-        auto transaction = buildSimpleTransferTx(input);
-        encoded = Signer::sign(privateKeys, transaction);
+    switch (input.tx_oneof_case()) {
+        case Proto::SigningInput::kBaseTx:
+            {
+                auto transaction = buildBaseTx(input.base_tx());
+                encoded = Signer::sign(privateKeys, transaction);
+            }
+            break;
+
+        case Proto::SigningInput::kSimpleTransferTx:
+            {
+                auto transaction = buildSimpleTransferTx(input);
+                encoded = Signer::sign(privateKeys, transaction);
+            }
+            break;
+
+        default:
+            return protoOutput;
     }
     protoOutput.set_encoded(encoded.data(), encoded.size());
 
