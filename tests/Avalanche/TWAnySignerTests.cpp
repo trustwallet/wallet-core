@@ -183,6 +183,7 @@ void setUpDefaultSimpleTx(TW::Avalanche::Proto::SimpleTransferTx& simpleTx) {
     simpleTx.set_to_addresses(0, publicKey.bytes.data(), publicKey.bytes.size());
     simpleTx.add_change_addresses();
     simpleTx.set_change_addresses(0, publicKey.bytes.data(), publicKey.bytes.size());
+    simpleTx.set_use_max_amount(false);
 
     simpleTx.set_output_type_id(0);
     simpleTx.set_output_asset_id(assetIDBytes.data(), assetIDBytes.size());

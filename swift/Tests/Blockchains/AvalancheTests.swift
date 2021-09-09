@@ -69,7 +69,7 @@ class AvalancheTests: XCTestCase {
         XCTAssertEqual(address?.data.hexString, "b7bce5a6b2263881816034938606a12c014f8bf7")
     }
 
-    func testSign() {
+    func testSignSimpleTransfer() {
         let key = PrivateKey(data: Data(hexString: "56289e99c94b6912bfc12adc093c9b51124f0dc54ac7a766b2bc5ccf558d8027")!)!
         let blockchainID = Data(hexString: "d891ad56056d9c01f18f43f58b5c784ad07a4a49cf3d1f11623804b5cba2c6bf")!
         let pubkey = key.getPublicKeySecp256k1(compressed: true)
@@ -81,11 +81,22 @@ class AvalancheTests: XCTestCase {
         let locktime = UInt64(0)
         let threshold = UInt32(1)
 
-        var baseTx = AvalancheBaseTx()
-        baseTx.typeID = 0
-        baseTx.networkID = netID
-        baseTx.blockchainID = blockchainID
-        baseTx.memo = memo
+        var transfer = AvalancheSimpleTransferTx()
+        transfer.typeID = 0
+        transfer.networkID = netID
+        transfer.blockchainID = blockchainID
+        transfer.amount = 180000000
+        transfer.fee = 1200000
+     
+        transfer.toAddresses = [pubkey.data]
+        transfer.changeAddresses = [pubkey.data]
+        transfer.useMaxAmount = false
+
+        transfer.outputTypeID = 0
+        transfer.outputAssetID = assetID
+        transfer.memo = memo
+        transfer.locktime = 0
+        transfer.threshold = 1
 
         var coreInputOne = AvalancheSECP256K1TransferInput()
         coreInputOne.amount = 123456789
@@ -98,7 +109,7 @@ class AvalancheTests: XCTestCase {
         inputOne.assetID = assetID
         inputOne.spendableAddresses = [pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data]
         inputOne.input = wrappedInputOne
-        baseTx.inputs.append(inputOne)
+        transfer.inputs.append(inputOne)
 
         var coreInputTwo = AvalancheSECP256K1TransferInput()
         coreInputTwo.amount = 123456789
@@ -111,38 +122,14 @@ class AvalancheTests: XCTestCase {
         inputTwo.assetID = assetID
         inputTwo.spendableAddresses = [pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data]
         inputTwo.input = wrappedInputTwo
-        baseTx.inputs.append(inputTwo)
-
-        var coreOutputOne = AvalancheSECP256K1TransferOutput()
-        coreOutputOne.amount = 12345
-        coreOutputOne.locktime = 54321
-        coreOutputOne.threshold = threshold
-        coreOutputOne.addresses = [pubkey.data]
-        var wrappedOutputOne = AvalancheTransactionOutput()
-        wrappedOutputOne.secpTransferOutput = coreOutputOne
-        var outputOne = AvalancheTransferableOutput()
-        outputOne.assetID = assetID
-        outputOne.output = wrappedOutputOne
-        baseTx.outputs.append(outputOne)
-
-        var coreOutputTwo = AvalancheSECP256K1TransferOutput()
-        coreOutputTwo.amount = amount
-        coreOutputTwo.locktime = locktime
-        coreOutputTwo.threshold = threshold
-        coreOutputTwo.addresses = [pubkey.data]
-        var wrappedOutputTwo = AvalancheTransactionOutput()
-        wrappedOutputTwo.secpTransferOutput = coreOutputTwo
-        var outputTwo = AvalancheTransferableOutput()
-        outputTwo.assetID = assetID
-        outputTwo.output = wrappedOutputTwo
-        baseTx.outputs.append(outputTwo)
+        transfer.inputs.append(inputTwo)
 
         var input = AvalancheSigningInput()
         input.privateKeys = [key.data]
-        input.baseTx = baseTx
+        input.simpleTransferTx = transfer
 
         let output: AvalancheSigningOutput = AnySigner.sign(input: input, coin: .avalancheXChain)
 
-        XCTAssertEqual(output.encoded.hexString, "00000000000000003039d891ad56056d9c01f18f43f58b5c784ad07a4a49cf3d1f11623804b5cba2c6bf00000002dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000700000000000003e8000000000000000000000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29cdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db000000070000000000003039000000000000d43100000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29c00000002f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd15000000020000000300000007f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd1500000002000000030000000700000004deadbeef00000002000000090000000244ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d0044ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d00000000090000000244ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d0044ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d00")
+        XCTAssertEqual(output.encoded.hexString, "00000000000000003039d891ad56056d9c01f18f43f58b5c784ad07a4a49cf3d1f11623804b5cba2c6bf00000002dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db000000070000000003eab5aa000000000000000000000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29cdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db00000007000000000aba9500000000000000000000000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29c00000002f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd15000000020000000300000007f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd1500000002000000030000000700000004deadbeef0000000200000009000000022302423a2710d8c5887c99aaad1fed8e3a104995b5dce6b4743e8adecf034c545d8a41afa3fe0308998a1a528f3514df2deec89a125176f1c412693a60939bbf012302423a2710d8c5887c99aaad1fed8e3a104995b5dce6b4743e8adecf034c545d8a41afa3fe0308998a1a528f3514df2deec89a125176f1c412693a60939bbf0100000009000000022302423a2710d8c5887c99aaad1fed8e3a104995b5dce6b4743e8adecf034c545d8a41afa3fe0308998a1a528f3514df2deec89a125176f1c412693a60939bbf012302423a2710d8c5887c99aaad1fed8e3a104995b5dce6b4743e8adecf034c545d8a41afa3fe0308998a1a528f3514df2deec89a125176f1c412693a60939bbf01")
     }
 }
