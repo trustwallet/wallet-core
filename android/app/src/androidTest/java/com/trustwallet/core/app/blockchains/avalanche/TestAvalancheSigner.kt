@@ -90,7 +90,7 @@ class TestAvalancheSigner {
 
         val signingInput = Avalanche.SigningInput.newBuilder()
                 .addPrivateKeys(ByteString.copyFrom(privKeyBytes))
-                .setSimpleTransaction(transfer)
+                .setSimpleTransactionTx(transfer)
                 .build()
 
         val output = AnySigner.sign(signingInput, CoinType.AVALANCHEXCHAIN, Avalanche.SigningOutput.parser())
