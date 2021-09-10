@@ -37,7 +37,6 @@ class TestAvalancheSigner {
         val threshold = 1
 
 
-
         val coreInputOne = Avalanche.SECP256K1TransferInput.newBuilder()
                 .setAmount(123456789)
                 .addAddressIndices(3)
@@ -71,53 +70,32 @@ class TestAvalancheSigner {
                 .build()
 
 
-        val coreOutputOne = Avalanche.SECP256K1TransferOutput.newBuilder()
-                .setAmount(12345)
-                .setLocktime(54321)
-                .setThreshold(threshold)
-                .addAddresses(pubkeyBytes)
-                .build()
-        val wrappedOutputOne = Avalanche.TransactionOutput.newBuilder()
-                .setSecpTransferOutput(coreOutputOne)
-                .build()
-        val outputOne = Avalanche.TransferableOutput.newBuilder()
-                .setAssetId(assetID)
-                .setOutput(wrappedOutputOne)
-                .build()
-
-        val coreOutputTwo = Avalanche.SECP256K1TransferOutput.newBuilder()
-                .setAmount(amount)
-                .setLocktime(locktime)
-                .setThreshold(threshold)
-                .addAddresses(pubkeyBytes)
-                .build()
-        val wrappedOutputTwo = Avalanche.TransactionOutput.newBuilder()
-                .setSecpTransferOutput(coreOutputTwo)
-                .build()
-        val outputTwo = Avalanche.TransferableOutput.newBuilder()
-                .setAssetId(assetID)
-                .setOutput(wrappedOutputTwo)
-                .build()
-
-        val baseTx = Avalanche.BaseTx.newBuilder()
+        val transfer = Avalanche.SimpleTransferTx.newBuilder()
                 .addInputs(inputOne)
                 .addInputs(inputTwo)
-                .addOutputs(outputOne)
-                .addOutputs(outputTwo)
                 .setTypeId(0)
                 .setNetworkId(netID)
                 .setBlockchainId(blockchainID)
+                .setAmount(180000000)
+                .setFee(1200000)
+                .addToAddresses(pubkeyBytes)
+                .addChangeAddresses(pubkeyBytes)
+                .setUseMaxAmount(false)
+                .setOutputTypeId(0)
+                .setOutputAssetId(assetID)
                 .setMemo(memo)
+                .setLocktime(locktime)
+                .setThreshold(threshold)
                 .build()
 
         val signingInput = Avalanche.SigningInput.newBuilder()
                 .addPrivateKeys(ByteString.copyFrom(privKeyBytes))
-                .setBaseTx(baseTx)
+                .setSimpleTransferTx(transfer)
                 .build()
 
         val output = AnySigner.sign(signingInput, CoinType.AVALANCHEXCHAIN, Avalanche.SigningOutput.parser())
         assertEquals(
-            "0x00000000000000003039d891ad56056d9c01f18f43f58b5c784ad07a4a49cf3d1f11623804b5cba2c6bf00000002dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000700000000000003e8000000000000000000000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29cdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db000000070000000000003039000000000000d43100000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29c00000002f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd15000000020000000300000007f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd1500000002000000030000000700000004deadbeef00000002000000090000000244ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d0044ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d00000000090000000244ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d0044ef527f47cab3ed82eb267c27c04869e46531b05db643f5bc97da21148afe161f17634a90f4e22adb810b472062f7e809dde19059fa7048f9972a481fe9390d00",
+            "0x00000000000000003039d891ad56056d9c01f18f43f58b5c784ad07a4a49cf3d1f11623804b5cba2c6bf00000002dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db000000070000000003eab5aa000000000000000000000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29cdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db00000007000000000aba9500000000000000000000000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29c00000002f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd15000000020000000300000007f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd1500000002000000030000000700000004deadbeef0000000200000009000000022302423a2710d8c5887c99aaad1fed8e3a104995b5dce6b4743e8adecf034c545d8a41afa3fe0308998a1a528f3514df2deec89a125176f1c412693a60939bbf012302423a2710d8c5887c99aaad1fed8e3a104995b5dce6b4743e8adecf034c545d8a41afa3fe0308998a1a528f3514df2deec89a125176f1c412693a60939bbf0100000009000000022302423a2710d8c5887c99aaad1fed8e3a104995b5dce6b4743e8adecf034c545d8a41afa3fe0308998a1a528f3514df2deec89a125176f1c412693a60939bbf012302423a2710d8c5887c99aaad1fed8e3a104995b5dce6b4743e8adecf034c545d8a41afa3fe0308998a1a528f3514df2deec89a125176f1c412693a60939bbf01",
             Numeric.toHexString(output.encoded.toByteArray())
         )
     }

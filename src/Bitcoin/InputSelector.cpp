@@ -104,7 +104,7 @@ std::vector<size_t> InputSelector::select(int64_t targetValue, int64_t byteFee, 
     //    (1) bigger than what we need
     //    (2) closer to 2x the amount,
     //    (3) and does not produce dust change.
-    for (int64_t numInputs = 1; numInputs <= n; ++numInputs) {
+    for (size_t numInputs = 1; numInputs <= n; ++numInputs) {
         const auto fee = feeCalculator.calculate(numInputs, numOutputs, byteFee);
         const auto targetWithFeeAndDust = targetValue + fee + dustThreshold;
         if (maxWithXInputs[numInputs] < targetWithFeeAndDust) {
@@ -129,7 +129,7 @@ std::vector<size_t> InputSelector::select(int64_t targetValue, int64_t byteFee, 
     }
 
     // 2. If not, find a valid combination of outputs even if they produce dust change.
-    for (int64_t numInputs = 1; numInputs <= n; ++numInputs) {
+    for (size_t numInputs = 1; numInputs <= n; ++numInputs) {
         const auto fee = feeCalculator.calculate(numInputs, numOutputs, byteFee);
         const auto targetWithFee = targetValue + fee;
         if (maxWithXInputs[numInputs] < targetWithFee) {
