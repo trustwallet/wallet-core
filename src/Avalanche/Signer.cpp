@@ -27,6 +27,17 @@ std::vector<Address> structToAddresses(
     return out;
 }
 
+std::vector<Address> keyHashToAddresses(
+    const google::protobuf::internal::RepeatedStringTypeTraits::RepeatedFieldType inAddrs) {
+    std::vector<Address> out;
+    for (auto& addrBytes : inAddrs) {
+        auto keyHashData = Data(addrBytes.begin(), addrBytes.end());
+        auto addr = Address(keyHashData);
+        out.push_back(addr);
+    }
+    return out;
+}
+
 std::vector<TransferableInput> structToInputs(
     const google::protobuf::RepeatedPtrField<Proto::TransferableInput> inputStructs) noexcept {
     std::vector<TransferableInput> inputs;
@@ -120,13 +131,13 @@ BaseTransaction structToSimpleTransferTx(const Proto::SimpleTransferTx& tx) noex
 
     // build outputs
     std::vector<TransferableOutput> outputs;
-    auto toAddresses = structToAddresses(tx.to_addresses());
+    auto toAddresses = keyHashToAddresses(tx.to_addresses());
     outputs.push_back(TransferableOutput(
         Data(tx.output_asset_id().begin(), tx.output_asset_id().end()),
         std::make_unique<SECP256k1TransferOutput>(tx.plan().amount(), tx.locktime(), tx.threshold(), toAddresses)
     ));
     if (tx.plan().change() > 0) {
-        auto changeAddresses = structToAddresses(tx.change_addresses());
+        auto changeAddresses = keyHashToAddresses(tx.change_addresses());
         outputs.push_back(TransferableOutput(
             Data(tx.output_asset_id().begin(), tx.output_asset_id().end()),
             std::make_unique<SECP256k1TransferOutput>(tx.plan().change(), tx.locktime(), tx.threshold(), changeAddresses)

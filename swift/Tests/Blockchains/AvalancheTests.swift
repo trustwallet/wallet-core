@@ -70,66 +70,63 @@ class AvalancheTests: XCTestCase {
     }
 
     func testSignSimpleTransfer() {
+//        let wallet = HDWallet(mnemonic: "", passphrase: "")!
+//        let key = wallet.getKey(coin: .avalancheXChain, derivationPath: "m/44'/9000'/0'/0/4")
+
         let key = PrivateKey(data: Data(hexString: "56289e99c94b6912bfc12adc093c9b51124f0dc54ac7a766b2bc5ccf558d8027")!)!
-        let blockchainID = Data(hexString: "d891ad56056d9c01f18f43f58b5c784ad07a4a49cf3d1f11623804b5cba2c6bf")!
+        let address = AnyAddress(string: "X-avax1k77wtf4jycugrqtqxjfcvp4p9sq5lzlh5vl83n", coin: .avalancheXChain)!
+        print("m/44'/9000'/0'/0/4 address: \(address.data.hexString)")
+
+        let toAddress = AnyAddress(string: "X-avax1f0ee803c7jdue3slku7azyf78zs0fs04cxuvv9", coin: .avalancheXChain)!
+        let blockchainID = Data(hexString: "ed5f38341e436e5d46e2bb00b45d62ae97d1b050c64bc634ae10626739e35c4b")! // CB58: 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+
         let pubkey = key.getPublicKeySecp256k1(compressed: true)
-        let netID = UInt32(12345)
-        let assetID = Data(hexString: "dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db")!
-        let txID = Data(hexString: "f1e1d1c1b1a191817161514131211101f0e0d0c0b0a090807060504030201000")!
-        let memo = Data(hexString: "deadbeef")!
-        let amount = UInt64(1000)
-        let locktime = UInt64(0)
-        let threshold = UInt32(1)
+        let netID = UInt32(1)
+        let assetID = Data(hexString: "21e67317cbc4be2aeb00677ad6462778a8f52274b9d605df2591b23027a87dff")!
 
-        var transfer = AvalancheSimpleTransferTx()
-        transfer.typeID = 0
-        transfer.networkID = netID
-        transfer.blockchainID = blockchainID
-        transfer.amount = 180000000
-        transfer.fee = 1200000
-     
-        transfer.toAddresses = [pubkey.data]
-        transfer.changeAddresses = [pubkey.data]
-        transfer.useMaxAmount = false
+        let txID = Data(hexString: "da7ba5f0c8cc5d1c14c2279ffe77abe7c22d1e90f2b0575843d8458e82c7e532")! // CB58: 2fDrbHifgfLG9oSy2en9FsZK1SGWXRLVQDmkHKQsB1ri43bTi3
+        let memo = Data("hello".utf8)
 
-        transfer.outputTypeID = 0
-        transfer.outputAssetID = assetID
-        transfer.memo = memo
-        transfer.locktime = 0
-        transfer.threshold = 1
+        var transfer = AvalancheSimpleTransferTx.with {
+            $0.typeID = 0
+            $0.networkID = netID
+            $0.blockchainID = blockchainID
+            $0.amount = 10000000 // 0.01
+            $0.fee = 1200000
 
-        var coreInputOne = AvalancheSECP256K1TransferInput()
-        coreInputOne.amount = 123456789
-        coreInputOne.addressIndices = [3, 7]
-        var wrappedInputOne = AvalancheTransactionInput()
-        wrappedInputOne.secpTransferInput = coreInputOne
-        var inputOne = AvalancheTransferableInput()
-        inputOne.utxoIndex = 5
-        inputOne.txID = txID
-        inputOne.assetID = assetID
-        inputOne.spendableAddresses = [pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data]
-        inputOne.input = wrappedInputOne
+            $0.toAddresses = [toAddress.data]
+            $0.changeAddresses = [toAddress.data]
+            $0.useMaxAmount = false
+
+            $0.outputTypeID = 0
+            $0.outputAssetID = assetID
+            $0.memo = memo
+            $0.locktime = 0
+            $0.threshold = 1
+        }
+
+        let inputOne = AvalancheTransferableInput.with {
+            $0.utxoIndex = 0
+            $0.txID = txID
+            $0.assetID = assetID
+            $0.spendableAddresses = [pubkey.data]
+            $0.input = AvalancheTransactionInput.with {
+                $0.secpTransferInput = AvalancheSECP256K1TransferInput.with {
+                    $0.amount = 998000000
+                    $0.addressIndices = [0]
+                }
+            }
+        }
+
         transfer.inputs.append(inputOne)
 
-        var coreInputTwo = AvalancheSECP256K1TransferInput()
-        coreInputTwo.amount = 123456789
-        coreInputTwo.addressIndices = [3, 7]
-        var wrappedInputTwo = AvalancheTransactionInput()
-        wrappedInputTwo.secpTransferInput = coreInputTwo
-        var inputTwo = AvalancheTransferableInput()
-        inputTwo.utxoIndex = 5
-        inputTwo.txID = txID
-        inputTwo.assetID = assetID
-        inputTwo.spendableAddresses = [pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data, pubkey.data]
-        inputTwo.input = wrappedInputTwo
-        transfer.inputs.append(inputTwo)
-
-        var input = AvalancheSigningInput()
-        input.privateKeys = [key.data]
-        input.simpleTransferTx = transfer
+        let input = AvalancheSigningInput.with {
+            $0.privateKeys = [key.data]
+            $0.simpleTransferTx = transfer
+        }
 
         let output: AvalancheSigningOutput = AnySigner.sign(input: input, coin: .avalancheXChain)
 
-        XCTAssertEqual(output.encoded.hexString, "00000000000000003039d891ad56056d9c01f18f43f58b5c784ad07a4a49cf3d1f11623804b5cba2c6bf00000002dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db000000070000000003eab5aa000000000000000000000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29cdbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db00000007000000000aba9500000000000000000000000001000000013cb7d3842e8cee6a0ebd09f1fe884f6861e1b29c00000002f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd15000000020000000300000007f1e1d1c1b1a191817161514131211101f0e0d0c0b0a09080706050403020100000000005dbcf890f77f49b96857648b72b77f9f82937f28a68704af05da0dc12ba53f2db0000000500000000075bcd1500000002000000030000000700000004deadbeef0000000200000009000000022302423a2710d8c5887c99aaad1fed8e3a104995b5dce6b4743e8adecf034c545d8a41afa3fe0308998a1a528f3514df2deec89a125176f1c412693a60939bbf012302423a2710d8c5887c99aaad1fed8e3a104995b5dce6b4743e8adecf034c545d8a41afa3fe0308998a1a528f3514df2deec89a125176f1c412693a60939bbf0100000009000000022302423a2710d8c5887c99aaad1fed8e3a104995b5dce6b4743e8adecf034c545d8a41afa3fe0308998a1a528f3514df2deec89a125176f1c412693a60939bbf012302423a2710d8c5887c99aaad1fed8e3a104995b5dce6b4743e8adecf034c545d8a41afa3fe0308998a1a528f3514df2deec89a125176f1c412693a60939bbf01")
+        XCTAssertEqual(output.encoded.hexString, "00000000000000000001ed5f38341e436e5d46e2bb00b45d62ae97d1b050c64bc634ae10626739e35c4b0000000221e67317cbc4be2aeb00677ad6462778a8f52274b9d605df2591b23027a87dff000000070000000000989680000000000000000000000001000000014bf393be38f49bccc61fb73dd1113e38a0f4c1f521e67317cbc4be2aeb00677ad6462778a8f52274b9d605df2591b23027a87dff00000007000000003ad15f80000000000000000000000001000000014bf393be38f49bccc61fb73dd1113e38a0f4c1f500000001da7ba5f0c8cc5d1c14c2279ffe77abe7c22d1e90f2b0575843d8458e82c7e5320000000021e67317cbc4be2aeb00677ad6462778a8f52274b9d605df2591b23027a87dff00000005000000003b7c458000000001000000000000000568656c6c6f000000010000000900000001a2fd0500b784683e56116ecddd31bac12751f46ac6867f20bdb2c9374f413bf50b9b429c45ad1225b28c59ff35eeff46eaa700ab3c178417ac16b3962a7ea5a900")
     }
 }
