@@ -82,7 +82,7 @@ class TestAvalancheSigner {
                 .addChangeAddresses(pubkeyBytes)
                 .setUseMaxAmount(false)
                 .setOutputTypeId(0)
-                .setAssetId(assetID)
+                .setOutputAssetId(assetID)
                 .setMemo(memo)
                 .setLocktime(locktime)
                 .setThreshold(threshold)
