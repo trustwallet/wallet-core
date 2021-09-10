@@ -47,7 +47,7 @@ targets:
       INFOPLIST_FILE: 'Info.plist'
       CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION: YES_ERROR
       CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER: $(inherited) false
-      OTHER_CFLAGS: $(inherited) -Wno-comma
+      OTHER_CFLAGS: $(inherited) -Wno-comma -DNDEBUG
     postCompileScripts:
       - script: ${PODS_ROOT}/SwiftLint/swiftlint --config ../.swiftlint.yml
         name: SwiftLint

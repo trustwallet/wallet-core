@@ -81,14 +81,14 @@ Data EncryptionParameters::decrypt(const Data& password) const {
     Data iv = cipherParams.iv;
     if (cipher == "aes-128-ctr") {
         aes_encrypt_ctx ctx;
-        auto result = aes_encrypt_key(derivedKey.data(), 16, &ctx);
+        auto __attribute__((unused)) result = aes_encrypt_key(derivedKey.data(), 16, &ctx);
         assert(result != EXIT_FAILURE);
 
         aes_ctr_decrypt(encrypted.data(), decrypted.data(), static_cast<int>(encrypted.size()), iv.data(),
                         aes_ctr_cbuf_inc, &ctx);
     } else if (cipher == "aes-128-cbc") {
         aes_decrypt_ctx ctx;
-        auto result = aes_decrypt_key(derivedKey.data(), 16, &ctx);
+        auto __attribute__((unused)) result = aes_decrypt_key(derivedKey.data(), 16, &ctx);
         assert(result != EXIT_FAILURE);
 
         for (auto i = 0; i < encrypted.size(); i += 16) {

@@ -35,6 +35,7 @@ public:
     std::vector<std::shared_ptr<ParamBase>> const& getParams() const { return _params; }
     /// Return the function type signature, of the form "baz(int32,uint256)"
     std::string getType() const;
+    bool isDynamic() const;
     size_t getSize() const;
     virtual void encode(Data& data) const;
     virtual bool decode(const Data& encoded, size_t& offset_inout);

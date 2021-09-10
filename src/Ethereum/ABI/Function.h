@@ -18,7 +18,7 @@
 namespace TW::Ethereum::ABI {
 
 /// Non-generic version of Function, templated version is impossible to pass around to and back over C interface
-/// (void* looses the temaplate parameters).
+/// (void* looses the template parameters).
 class Function {
 public:
     std::string name;

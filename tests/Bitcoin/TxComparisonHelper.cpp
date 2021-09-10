@@ -25,63 +25,60 @@ using namespace TW::Bitcoin;
 
 auto emptyTxOutPoint = OutPoint(parse_hex("1d0f172a0ecb48aee1be1f2687d2963ae33f71a1"), 0);
 
-Proto::UnspentTransaction buildTestUTXO(int64_t amount) {
-    Proto::UnspentTransaction utxo;
-    utxo.set_amount(amount);
-    const auto& outPoint = emptyTxOutPoint;
-    utxo.mutable_out_point()->set_hash(outPoint.hash.data(), outPoint.hash.size());
-    utxo.mutable_out_point()->set_index(outPoint.index);
-    utxo.mutable_out_point()->set_sequence(UINT32_MAX);
-    auto utxo1Script = parse_hex("0014" "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1");
-    utxo.set_script(utxo1Script.data(), utxo1Script.size());
+UTXO buildTestUTXO(int64_t amount) {
+    UTXO utxo;
+    utxo.amount = amount;
+    utxo.outPoint = emptyTxOutPoint;
+    utxo.outPoint.sequence = UINT32_MAX;
+    utxo.script = Script(parse_hex("0014" "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1"));
     return utxo;
 }
 
-std::vector<Proto::UnspentTransaction> buildTestUTXOs(const std::vector<int64_t>& amounts) {
-    std::vector<Proto::UnspentTransaction> utxos;
+UTXOs buildTestUTXOs(const std::vector<int64_t>& amounts) {
+    UTXOs utxos;
     for (auto it = amounts.begin(); it != amounts.end(); it++) {
         utxos.push_back(buildTestUTXO(*it));
     }
     return utxos;
 }
 
-Proto::SigningInput buildSigningInput(Amount amount, int byteFee, const std::vector<Proto::UnspentTransaction>& utxos, bool useMaxAmount, enum TWCoinType coin) {
-    Proto::SigningInput input;
-    input.set_amount(amount);
-    input.set_byte_fee(byteFee);
-    input.set_use_max_amount(useMaxAmount);
-    input.set_coin_type(coin);
+SigningInput buildSigningInput(Amount amount, int byteFee, const UTXOs& utxos, bool useMaxAmount, enum TWCoinType coin) {
+    SigningInput input;
+    input.amount = amount;
+    input.byteFee = byteFee;
+    input.useMaxAmount = useMaxAmount;
+    input.coinType = coin;
     
     auto utxoKey = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"));
     auto pubKey = utxoKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
     assert(hex(utxoPubkeyHash) == "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1");
-    input.add_private_key(utxoKey.bytes.data(), utxoKey.bytes.size());
+    input.privateKeys.push_back(utxoKey);
 
-    *input.mutable_utxo() = { utxos.begin(), utxos.end() };
-    input.set_to_address("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx");
-    input.set_change_address("1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU");
+    input.utxos = utxos;
+    input.toAddress = "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx";
+    input.changeAddress = "1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU";
     return input;
 }
 
-int64_t sumUTXOs(const std::vector<Proto::UnspentTransaction>& utxos) {
+int64_t sumUTXOs(const UTXOs& utxos) {
     int64_t s = 0u;
     for (auto& utxo: utxos) {
-        s += utxo.amount();
+        s += utxo.amount;
     }
     return s;
 }
 
-bool verifySelectedUTXOs(const std::vector<Proto::UnspentTransaction>& selected, const std::vector<int64_t>& expectedAmounts) {
+bool verifySelectedUTXOs(const UTXOs& selected, const std::vector<int64_t>& expectedAmounts) {
     bool ret = true;
     if (selected.size() != expectedAmounts.size()) {
         ret = false;
         std::cerr << "Wrong number of selected UTXOs, " << selected.size() << " vs. " << expectedAmounts.size() << std::endl;
     }
     for (auto i = 0; i < selected.size() && i < expectedAmounts.size(); ++i) {
-        if (expectedAmounts[i] != selected[i].amount()) {
+        if (expectedAmounts[i] != selected[i].amount) {
             ret = false;
-            std::cerr << "Wrong UTXOs amount, pos " << i << " amount " << selected[i].amount() << " expected " << expectedAmounts[i] << std::endl;
+            std::cerr << "Wrong UTXOs amount, pos " << i << " amount " << selected[i].amount << " expected " << expectedAmounts[i] << std::endl;
         }
     }
     return ret;

@@ -1,0 +1,46 @@
+{
+    "74b6ef0b": {
+        "inputs": [
+            {
+                "name": "param1",
+                "type": "uint16"
+            },
+            {
+                "name": "param2",
+                "type": "tuple",
+                "components": [
+                    {
+                        "name": "param21",
+                        "type": "uint16"
+                    },
+                    {
+                        "name": "param22",
+                        "type": "tuple",
+                        "components": [
+                            {
+                                "name": "param221",
+                                "type": "uint16"
+                            },
+                            {
+                                "name": "param222",
+                                "type": "uint64"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "param23",
+                        "type": "uint32"
+                    }
+                ]
+            },
+            {
+                "name": "param3",
+                "type": "bool"
+            }
+        ],
+        "name": "nested_tuple",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    }
+}

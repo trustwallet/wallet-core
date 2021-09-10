@@ -8,6 +8,7 @@
 
 #include "Address.h"
 #include "../PublicKey.h"
+#include "../Data.h"
 
 #include <cstdint>
 #include <string>
@@ -36,7 +37,7 @@ class CashAddress {
     explicit CashAddress(const std::string& string);
 
     /// Initializes a  address with a collection of bytes.
-    explicit CashAddress(const std::vector<uint8_t>& data);
+    explicit CashAddress(const Data& data);
 
     /// Initializes a  address with a public key.
     explicit CashAddress(const PublicKey& publicKey);
