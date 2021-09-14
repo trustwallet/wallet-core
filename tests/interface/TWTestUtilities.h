@@ -10,6 +10,7 @@
 #include <TrustWalletCore/TWString.h>
 #include <gtest/gtest.h>
 #include <google/protobuf/util/json_util.h>
+#include <nlohmann/json.hpp>
 
 #include <vector>
 
@@ -26,6 +27,12 @@ inline void assertStringsEqual(const std::shared_ptr<TWString>& string, const ch
 inline void assertHexEqual(const std::shared_ptr<TWData>& data, const char* expected) {
     auto hex = WRAPS(TWStringCreateWithHexData(data.get()));
     assertStringsEqual(hex, expected);
+}
+
+inline void assertJSONEqual(std::string& lhs, const char* expected) {
+    auto lhsJson = nlohmann::json::parse(lhs);
+    auto rhsJson = nlohmann::json::parse(std::string(expected));
+    ASSERT_EQ(lhsJson.dump(), rhsJson.dump());
 }
 
 inline std::vector<uint8_t>* dataFromTWData(TWData* data) {
