@@ -6,42 +6,37 @@
 
 #pragma once
 
+#include "FeeCalculator.h"
+#include <TrustWalletCore/TWCoinType.h>
+
 #include <numeric>
 #include <vector>
 
-#include "FeeCalculator.h"
-#include "UTXO.h"
-#include <TrustWalletCore/TWCoinType.h>
-
 namespace TW::Bitcoin {
 
-class UnspentSelector {
+class InputSelector {
   public:
     /// Selects unspent transactions to use given a target transaction value.
     ///
-    /// \returns the list of selected utxos or an empty list if there are
+    /// \returns the list of indices of selected inputs, or an empty list if there are
     /// insufficient funds.
-    UTXOs select(const UTXOs& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs = 2);
+    std::vector<size_t> select(int64_t targetValue, int64_t byteFee, int64_t numOutputs = 2);
 
-    /// Selects UTXOs for max amount; select all except those which would reduce output (dust).
+    /// Selects UTXOs for max amount; select all except those which would reduce output (dust). Return indIces.
     /// One output and no change is assumed.
-    UTXOs selectMaxAmount(const UTXOs& utxos, int64_t byteFee);
+    std::vector<size_t> selectMaxAmount(int64_t byteFee);
 
     /// Construct, using provided feeCalculator (see getFeeCalculator()).
-    explicit UnspentSelector(const FeeCalculator& feeCalculator) : feeCalculator(feeCalculator) {}
-    UnspentSelector() : UnspentSelector(getFeeCalculator(TWCoinTypeBitcoin)) {}
+    explicit InputSelector(const std::vector<uint64_t> inputs, const FeeCalculator& feeCalculator) : inputs(inputs), feeCalculator(feeCalculator) {}
+    InputSelector(const std::vector<uint64_t> inputs) : InputSelector(inputs, getFeeCalculator(TWCoinTypeBitcoin)) {}
 
-    static inline int64_t sum(const UTXOs& utxos) {
-        int64_t sum = 0;
-        for (auto& utxo : utxos) {
-            sum += utxo.amount;
-        }
-        return sum;
-    }
+    static uint64_t sum(const std::vector<uint64_t>& amounts);
 
   private:
+    const std::vector<uint64_t> inputs;
     const FeeCalculator& feeCalculator;
-    UTXOs filterDustInput(const UTXOs& selectedUtxos, int64_t byteFee);
+    int64_t sumIndices(const std::vector<size_t>& indices);
+    std::vector<size_t> filterDustInput(const std::vector<size_t>& inputIndices, int64_t byteFee);
 };
 
 } // namespace TW::Bitcoin
