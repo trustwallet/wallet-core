@@ -69,4 +69,21 @@ TEST(CosmosAddress, ThorValid) {
     ASSERT_FALSE(Address::isValid("thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2s"));
 }
 
+TEST(CosmosAddress, CryptoorgFromPublicKey) {
+    auto privateKey = PrivateKey(parse_hex("7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e"));
+    auto publicKeyData = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    ASSERT_EQ(hex(publicKeyData.bytes.begin(), publicKeyData.bytes.end()), "03ed997e396cf4292f5fce5a42bba41599ccd5d96e313154a7c9ea7049de317c77");
+
+    auto publicKey = PublicKey(publicKeyData);
+    auto address = Address("cro", publicKey);
+    ASSERT_EQ(address.string(), "cro1z53wwe7md6cewz9sqwqzn0aavpaun0gw39h3rd");
+    ASSERT_EQ(hex(address.getKeyHash()), "1522e767db6eb19708b0038029bfbd607bc9bd0e");
+}
+
+TEST(CosmosAddress, CryptoorgValid) {
+    ASSERT_TRUE(Address::isValid("cro1z53wwe7md6cewz9sqwqzn0aavpaun0gw39h3rd"));
+    ASSERT_TRUE(Address::isValid("cro1y8ua5laceufhqtwzyhahq0qk7rm87hhugtsfey"));
+    ASSERT_FALSE(Address::isValid("cro1z53wwe7md6cewz9sqwqzn0aavpaun0gw39h3re"));
+}
+
 } // namespace TW::Cosmos
