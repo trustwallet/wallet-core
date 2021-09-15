@@ -68,7 +68,6 @@ std::vector<size_t> InputSelector::select(int64_t targetValue, int64_t byteFee, 
 
     // definitions for the following caluculation
     const auto doubleTargetValue = targetValue * 2;
-    //std::cout << "QQQ2 " << doubleTargetValue << "\n";
 
     // Get all possible utxo selections up to a maximum size, sort by total amount, increasing
     std::vector<size_t> sortedIndices;
