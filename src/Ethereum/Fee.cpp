@@ -9,6 +9,7 @@
 #include "HexCoding.h"
 #include "Data.h"
 #include "uint256.h"
+#include <boost/serialization/nvp.hpp>
 #include <boost/multiprecision/cpp_bin_float.hpp>
 
 #include <cmath>
@@ -21,9 +22,11 @@ using namespace std;
 
 namespace TW::Ethereum::Fee {
 
+static const uint256_t defaultTip = 2000000000;
+
 auto samplingCurve(double sumWeight) -> double {
-    double sampleMin = 0.1;
-    double sampleMax = 0.3;
+    static const double sampleMin = 0.1;
+    static const double sampleMax = 0.3;
 
     if (sumWeight <= sampleMin) {
         return 0.0;
@@ -48,8 +51,7 @@ auto suggestTip(const json& feeHistory) -> uint256_t {
     }
 
     if (rewards.empty()) {
-        // default 2 gwei
-        return uint256_t(2000000000);    
+        return defaultTip;
     }
 
     // return the median of the rewards
@@ -89,6 +91,8 @@ auto suggestFee(const json& feeHistory) -> json {
         baseFees.push_back(load(hex));
         order.push_back(i);
     }
+
+    // The last (pending) block is also assumed to end up being full
     baseFees.back() = baseFees.back() * 9 / 8;
 
     const auto& gasRatio = feeHistory["gasUsedRatio"];
