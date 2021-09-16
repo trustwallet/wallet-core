@@ -40,6 +40,11 @@ auto samplingCurve(double sumWeight) -> double {
 }
 
 auto suggestTip(const json& feeHistory) -> uint256_t {
+
+    if (!feeHistory.contains("reward")) {
+        return defaultTip;
+    }
+
     vector<uint256_t> rewards;
 
     for (auto& item : feeHistory["reward"]) {

@@ -9,7 +9,7 @@ import WalletCore
 
 class EthereumFeeTests: XCTestCase {
 
-    func testSuggestBaseFee() throws {
+    func testBaseFeeOnly() throws {
         let url = Bundle(for: EthereumFeeTests.self).url(forResource: "eth_feeHistory", withExtension: "json")!
         let data = try String(contentsOf: url)
 
@@ -22,6 +22,25 @@ class EthereumFeeTests: XCTestCase {
         {
             "baseFee": "80885125075",
             "maxPriorityFee": "2000000000"
+        }
+        """
+
+        XCTAssertJSONEqual(result, expected)
+    }
+
+    func testBaseFeeAndPriority() throws {
+        let url = Bundle(for: EthereumFeeTests.self).url(forResource: "eth_feeHistory2", withExtension: "json")!
+        let data = try String(contentsOf: url)
+
+        guard let result = EthereumFee.suggest(feeHistory: data) else {
+            XCTFail("fail to suggest fee")
+            return
+        }
+
+        let expected = """
+        {
+            "baseFee": "87408740684",
+            "maxPriorityFee": "1500000000"
         }
         """
 
