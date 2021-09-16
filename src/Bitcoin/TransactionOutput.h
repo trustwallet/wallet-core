@@ -8,7 +8,6 @@
 
 #include "Amount.h"
 #include "Script.h"
-#include "../Data.h"
 
 #include <memory>
 
@@ -30,7 +29,7 @@ struct TransactionOutput {
     TransactionOutput(Amount value, Script script) : value(value), script(std::move(script)) {}
 
     /// Encodes the output into the provided buffer.
-    void encode(Data& data) const;
+    void encode(std::vector<uint8_t>& data) const;
 };
 
 } // namespace TW::Bitcoin

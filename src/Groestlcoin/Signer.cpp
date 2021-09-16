@@ -18,13 +18,14 @@ using namespace TW::Groestlcoin;
 using TransactionBuilder = Bitcoin::TransactionBuilder;
 
 TransactionPlan Signer::plan(const SigningInput& input) noexcept {
-    auto plan = Bitcoin::TransactionSigner<Transaction, TransactionBuilder>::plan(input);
-    return plan.proto();
+    auto signer = Bitcoin::TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
+    return signer.plan.proto();
 }
 
 SigningOutput Signer::sign(const SigningInput& input) noexcept {
     SigningOutput output;
-    auto result = Bitcoin::TransactionSigner<Transaction, TransactionBuilder>::sign(input);
+    auto signer = Bitcoin::TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
+    auto result = signer.sign();
     if (!result) {
         output.set_error(result.error());
         return output;
@@ -33,7 +34,7 @@ SigningOutput Signer::sign(const SigningInput& input) noexcept {
     *output.mutable_transaction() = tx.proto();
 
     Data encoded;
-    tx.encode(encoded);
+    signer.encodeTx(tx, encoded);
     output.set_encoded(encoded.data(), encoded.size());
 
     Data txHashData = encoded;

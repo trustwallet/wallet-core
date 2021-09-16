@@ -14,16 +14,18 @@ using namespace TW::Bitcoin;
 
 /// A selection of unspent transactions.
 struct Selection {
-    UTXOs utxos;
+    std::vector<Proto::UnspentTransaction> utxos;
     int64_t total;
 };
 
 // Filters utxos that are dust
-UTXOs UnspentSelector::filterDustInput(const UTXOs& selectedUtxos, int64_t byteFee) {
+template <typename T>
+std::vector<Proto::UnspentTransaction>
+UnspentSelector::filterDustInput(const T& selectedUtxos, int64_t byteFee) {
     auto inputFeeLimit = feeCalculator.calculateSingleInput(byteFee);
-    UTXOs filteredUtxos;
+    std::vector<Proto::UnspentTransaction> filteredUtxos;
     for (auto utxo: selectedUtxos) {
-        if (utxo.amount > inputFeeLimit) {
+        if (utxo.amount() > inputFeeLimit) {
             filteredUtxos.push_back(utxo);
         }
     }
@@ -35,8 +37,9 @@ UTXOs UnspentSelector::filterDustInput(const UTXOs& selectedUtxos, int64_t byteF
 // >
 // [[0, 1, 2], [1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [5, 6, 7], [6, 7, 8],
 // [7, 8, 9]]
-static inline auto slice(const UTXOs& elements, size_t sliceSize) {
-    std::vector<UTXOs> slices;
+template <typename T>
+static inline auto slice(const T& elements, size_t sliceSize) {
+    std::vector<std::vector<Proto::UnspentTransaction>> slices;
     for (auto i = 0; i <= elements.size() - sliceSize; i += 1) {
         slices.emplace_back();
         slices[i].reserve(sliceSize);
@@ -47,7 +50,9 @@ static inline auto slice(const UTXOs& elements, size_t sliceSize) {
     return slices;
 }
 
-UTXOs UnspentSelector::select(const UTXOs& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs) {
+template <typename T>
+std::vector<Proto::UnspentTransaction>
+UnspentSelector::select(const T& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs) {
     // if target value is zero, no UTXOs are needed
     if (targetValue == 0) {
         return {};
@@ -65,8 +70,8 @@ UTXOs UnspentSelector::select(const UTXOs& utxos, int64_t targetValue, int64_t b
     // Get all possible utxo selections up to a maximum size, sort by total amount, increasing
     auto sortedUtxos = utxos;
     std::sort(sortedUtxos.begin(), sortedUtxos.end(),
-              [](const UTXO& lhs, const UTXO& rhs) {
-                  return lhs.amount < rhs.amount;
+              [](const Proto::UnspentTransaction& lhs, const Proto::UnspentTransaction& rhs) {
+                  return lhs.amount() < rhs.amount();
               });
     // Precompute maximum amount possible to obtain with given number of UTXOs
     const auto n = sortedUtxos.size();
@@ -74,7 +79,7 @@ UTXOs UnspentSelector::select(const UTXOs& utxos, int64_t targetValue, int64_t b
     maxWithXInputs.push_back(0);
     int64_t maxSum = 0;
     for (auto i = 0; i < n; ++i) {
-        maxSum += sortedUtxos[n - 1 - i].amount;
+        maxSum += sortedUtxos[n - 1 - i].amount();
         maxWithXInputs.push_back(maxSum);
     }
 
@@ -102,14 +107,14 @@ UTXOs UnspentSelector::select(const UTXOs& utxos, int64_t targetValue, int64_t b
         auto slices = slice(sortedUtxos, static_cast<size_t>(numInputs));
         slices.erase(
             std::remove_if(slices.begin(), slices.end(),
-                [targetWithFeeAndDust](const UTXOs& slice) {
+                [targetWithFeeAndDust](const std::vector<Proto::UnspentTransaction>& slice) {
                     return sum(slice) < targetWithFeeAndDust;
                 }),
             slices.end());
         if (!slices.empty()) {
             std::sort(slices.begin(), slices.end(),
-                [distFrom2x](const UTXOs& lhs,
-                            const UTXOs& rhs) {
+                [distFrom2x](const std::vector<Proto::UnspentTransaction>& lhs,
+                            const std::vector<Proto::UnspentTransaction>& rhs) {
                     return distFrom2x(sum(lhs)) < distFrom2x(sum(rhs));
                 });
             return filterDustInput(slices.front(), byteFee);
@@ -127,7 +132,7 @@ UTXOs UnspentSelector::select(const UTXOs& utxos, int64_t targetValue, int64_t b
         auto slices = slice(sortedUtxos, static_cast<size_t>(numInputs));
         slices.erase(
             std::remove_if(slices.begin(), slices.end(),
-                [targetWithFee](const UTXOs& slice) {
+                [targetWithFee](const std::vector<Proto::UnspentTransaction>& slice) {
                     return sum(slice) < targetWithFee;
                 }),
             slices.end());
@@ -139,6 +144,13 @@ UTXOs UnspentSelector::select(const UTXOs& utxos, int64_t targetValue, int64_t b
     return {};
 }
 
-UTXOs UnspentSelector::selectMaxAmount(const UTXOs& utxos, int64_t byteFee) {
+template <typename T>
+std::vector<Proto::UnspentTransaction>
+UnspentSelector::selectMaxAmount(const T& utxos, int64_t byteFee) {
     return filterDustInput(utxos, byteFee);
 }
+
+template std::vector<Proto::UnspentTransaction> UnspentSelector::select(const ::google::protobuf::RepeatedPtrField<Proto::UnspentTransaction>& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs);
+template std::vector<Proto::UnspentTransaction> UnspentSelector::select(const std::vector<Proto::UnspentTransaction>& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs);
+template std::vector<Proto::UnspentTransaction> UnspentSelector::selectMaxAmount(const ::google::protobuf::RepeatedPtrField<Proto::UnspentTransaction>& utxos, int64_t byteFee);
+template std::vector<Proto::UnspentTransaction> UnspentSelector::selectMaxAmount(const std::vector<Proto::UnspentTransaction>& utxos, int64_t byteFee);

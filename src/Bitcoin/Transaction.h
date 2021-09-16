@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,25 +10,13 @@
 #include "Script.h"
 #include "TransactionInput.h"
 #include "TransactionOutput.h"
-#include "TransactionPlan.h"
-#include "UTXO.h"
-#include "../PrivateKey.h"
 #include "../Hash.h"
 #include "../Data.h"
-#include "SignatureVersion.h"
-#include "../proto/Bitcoin.pb.h"
 
+#include "SignatureVersion.h"
 #include <vector>
 
 namespace TW::Bitcoin {
-
-/// A list of transaction inputs
-template <typename TransactionInput>
-class TransactionInputs: public std::vector<TransactionInput> {};
-
-/// A list of transaction outputs
-template <typename TransactionOutput>
-class TransactionOutputs: public std::vector<TransactionOutput> {};
 
 struct Transaction {
 public:
@@ -47,11 +35,11 @@ public:
     /// transaction may not be added to a block until after `lockTime`.
     uint32_t lockTime = 0;
 
-    // List of transaction inputs
-    TransactionInputs<TransactionInput> inputs;
+    /// A list of 1 or more transaction inputs or sources for coins
+    std::vector<TransactionInput> inputs;
 
-    // List of transaction outputs
-    TransactionOutputs<TransactionOutput> outputs;
+    /// A list of 1 or more transaction outputs or destinations for coins
+    std::vector<TransactionOutput> outputs;
 
     TW::Hash::Hasher hasher = TW::Hash::sha256d;
 

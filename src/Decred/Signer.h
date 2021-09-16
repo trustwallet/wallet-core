@@ -45,7 +45,7 @@ class Signer {
 
   private:
     /// List of signed inputs.
-    Bitcoin::TransactionInputs<TransactionInput> signedInputs;
+    std::vector<TransactionInput> signedInputs;
 
   public:
     /// Initializes a transaction signer.
