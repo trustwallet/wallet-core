@@ -7,7 +7,7 @@
 import TrustWalletCore
 import XCTest
 
-class Crypto.orgTests: XCTestCase {
+class CryptoorgTests: XCTestCase {
     // TODO: Check and finalize implementation
 
     func testAddress() {
@@ -15,8 +15,8 @@ class Crypto.orgTests: XCTestCase {
 
         let key = PrivateKey(data: Data(hexString: "7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e")!)!
         let pubkey = key.getPublicKeyEd25519()
-        let address = AnyAddress(publicKey: pubkey, coin: .crypto.org)
-        let addressFromString = AnyAddress(string: "__ADDRESS_DATA__", coin: .crypto.org)!
+        let address = AnyAddress(publicKey: pubkey, coin: .cryptoorg
+        let addressFromString = AnyAddress(string: "__ADDRESS_DATA__", coin: .cryptoorg)!
 
         XCTAssertEqual(pubkey.data.hexString, "cro1z53wwe7md6cewz9sqwqzn0aavpaun0gw39h3rd")
         XCTAssertEqual(address.description, addressFromString.description)
