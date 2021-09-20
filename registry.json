@@ -759,7 +759,7 @@
     "publicKeyType": "secp256k1",
     "hrp": "terra",
     "explorer": {
-      "url": "https://finder.terra.money/columbus-5",
+      "url": "https://finder.terra.money/tx",
       "txPath": "/tx/",
       "accountPath": "/address/"
     },
