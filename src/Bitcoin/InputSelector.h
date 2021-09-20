@@ -14,29 +14,29 @@
 
 namespace TW::Bitcoin {
 
+template <typename TypeWithAmount> // TypeWithAmount has to have a uint64_t amount
 class InputSelector {
   public:
     /// Selects unspent transactions to use given a target transaction value.
     ///
     /// \returns the list of indices of selected inputs, or an empty list if there are
     /// insufficient funds.
-    std::vector<size_t> select(int64_t targetValue, int64_t byteFee, int64_t numOutputs = 2);
+    std::vector<TypeWithAmount> select(int64_t targetValue, int64_t byteFee, int64_t numOutputs = 2);
 
     /// Selects UTXOs for max amount; select all except those which would reduce output (dust). Return indIces.
     /// One output and no change is assumed.
-    std::vector<size_t> selectMaxAmount(int64_t byteFee);
+    std::vector<TypeWithAmount> selectMaxAmount(int64_t byteFee);
 
     /// Construct, using provided feeCalculator (see getFeeCalculator()).
-    explicit InputSelector(const std::vector<uint64_t> inputs, const FeeCalculator& feeCalculator) : inputs(inputs), feeCalculator(feeCalculator) {}
-    InputSelector(const std::vector<uint64_t> inputs) : InputSelector(inputs, getFeeCalculator(TWCoinTypeBitcoin)) {}
+    explicit InputSelector(const std::vector<TypeWithAmount>& inputs, const FeeCalculator& feeCalculator) : inputs(inputs), feeCalculator(feeCalculator) {}
+    InputSelector(const std::vector<TypeWithAmount>& inputs) : InputSelector(inputs, getFeeCalculator(TWCoinTypeBitcoin)) {}
 
-    static uint64_t sum(const std::vector<uint64_t>& amounts);
+    static uint64_t sum(const std::vector<TypeWithAmount>& amounts);
 
   private:
-    const std::vector<uint64_t> inputs;
+    const std::vector<TypeWithAmount> inputs;
     const FeeCalculator& feeCalculator;
-    int64_t sumIndices(const std::vector<size_t>& indices);
-    std::vector<size_t> filterDustInput(const std::vector<size_t>& inputIndices, int64_t byteFee);
+    std::vector<TypeWithAmount> filterDustInput(const std::vector<TypeWithAmount>& inputs, int64_t byteFee);
 };
 
 } // namespace TW::Bitcoin
