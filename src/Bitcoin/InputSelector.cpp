@@ -24,13 +24,18 @@ uint64_t InputSelector<TypeWithAmount>::sum(const std::vector<TypeWithAmount>& a
     return sum;
 }
 
-// Filters utxos that are dust
 template <typename TypeWithAmount>
 std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::filterDustInput(const std::vector<TypeWithAmount>& inputs, int64_t byteFee) {
-    auto inputFeeLimit = feeCalculator.calculateSingleInput(byteFee);
+    auto inputFeeLimit = static_cast<uint64_t>(feeCalculator.calculateSingleInput(byteFee));
+    return filterThreshold(inputs, inputFeeLimit);
+}
+
+// Filters utxos that are dust
+template <typename TypeWithAmount>
+std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::filterThreshold(const std::vector<TypeWithAmount>& inputs, uint64_t minimumAmount) {
     std::vector<TypeWithAmount> filtered;
     for (auto& i: inputs) {
-        if (i.amount > inputFeeLimit) {
+        if (i.amount > minimumAmount) {
             filtered.push_back(i);
         }
     }

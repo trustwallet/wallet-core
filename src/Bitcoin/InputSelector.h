@@ -36,7 +36,10 @@ class InputSelector {
   private:
     const std::vector<TypeWithAmount> inputs;
     const FeeCalculator& feeCalculator;
+    /// Filters out utxos that are dust
     std::vector<TypeWithAmount> filterDustInput(const std::vector<TypeWithAmount>& inputs, int64_t byteFee);
+    /// Filters out inputs below (or equal) a certain threshold limit
+    std::vector<TypeWithAmount> filterThreshold(const std::vector<TypeWithAmount>& inputs, uint64_t minimumAmount);
 };
 
 } // namespace TW::Bitcoin
