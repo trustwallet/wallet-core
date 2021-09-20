@@ -31,15 +31,16 @@ class InputSelector {
     explicit InputSelector(const std::vector<TypeWithAmount>& inputs, const FeeCalculator& feeCalculator) : inputs(inputs), feeCalculator(feeCalculator) {}
     InputSelector(const std::vector<TypeWithAmount>& inputs) : InputSelector(inputs, getFeeCalculator(TWCoinTypeBitcoin)) {}
 
+    /// Sum of input amounts
     static uint64_t sum(const std::vector<TypeWithAmount>& amounts);
+    /// Filters out utxos that are dust
+    std::vector<TypeWithAmount> filterOutDust(const std::vector<TypeWithAmount>& inputs, int64_t byteFee);
+    /// Filters out inputs below (or equal) a certain threshold limit
+    std::vector<TypeWithAmount> filterThreshold(const std::vector<TypeWithAmount>& inputs, uint64_t minimumAmount);
 
   private:
     const std::vector<TypeWithAmount> inputs;
     const FeeCalculator& feeCalculator;
-    /// Filters out utxos that are dust
-    std::vector<TypeWithAmount> filterDustInput(const std::vector<TypeWithAmount>& inputs, int64_t byteFee);
-    /// Filters out inputs below (or equal) a certain threshold limit
-    std::vector<TypeWithAmount> filterThreshold(const std::vector<TypeWithAmount>& inputs, uint64_t minimumAmount);
 };
 
 } // namespace TW::Bitcoin

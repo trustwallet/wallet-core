@@ -25,7 +25,7 @@ uint64_t InputSelector<TypeWithAmount>::sum(const std::vector<TypeWithAmount>& a
 }
 
 template <typename TypeWithAmount>
-std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::filterDustInput(const std::vector<TypeWithAmount>& inputs, int64_t byteFee) {
+std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::filterOutDust(const std::vector<TypeWithAmount>& inputs, int64_t byteFee) {
     auto inputFeeLimit = static_cast<uint64_t>(feeCalculator.calculateSingleInput(byteFee));
     return filterThreshold(inputs, inputFeeLimit);
 }
@@ -127,7 +127,7 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::select(int64_t target
                 [distFrom2x](const std::vector<TypeWithAmount>& lhs, const std::vector<TypeWithAmount>& rhs) {
                     return distFrom2x(sum(lhs)) < distFrom2x(sum(rhs));
                 });
-            return filterDustInput(slices.front(), byteFee);
+            return filterOutDust(slices.front(), byteFee);
         }
     }
 
@@ -147,7 +147,7 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::select(int64_t target
                 }),
             slices.end());
         if (!slices.empty()) {
-            return filterDustInput(slices.front(), byteFee);
+            return filterOutDust(slices.front(), byteFee);
         }
     }
 
@@ -156,7 +156,7 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::select(int64_t target
 
 template <typename TypeWithAmount>
 std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectMaxAmount(int64_t byteFee) {
-    return filterDustInput(inputs, byteFee);
+    return filterOutDust(inputs, byteFee);
 }
 
 // Explicitly instantiate
