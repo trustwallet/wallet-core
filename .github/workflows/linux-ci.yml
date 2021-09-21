@@ -1,4 +1,4 @@
-name: Linux CI
+name: Linux CI g
 
 on:
   push:
