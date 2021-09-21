@@ -11,6 +11,26 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
+
+TEST(BitcoinFeeCalculator, ConstantFeeCalculator) {
+    const auto feeCalculator = ConstantFeeCalculator(33);
+    EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 33);
+    EXPECT_EQ(feeCalculator.calculate(0, 2, 1), 33);
+    EXPECT_EQ(feeCalculator.calculate(1, 2, 10), 33);
+    EXPECT_EQ(feeCalculator.calculateSingleInput(10), 0);
+}
+
+TEST(BitcoinFeeCalculator, LinearFeeCalculator) {
+    const auto feeCalculator = LinearFeeCalculator(10, 20, 50);
+    EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 100);
+    EXPECT_EQ(feeCalculator.calculate(1, 1, 1), 80);
+    EXPECT_EQ(feeCalculator.calculate(0, 2, 1), 90);
+    EXPECT_EQ(feeCalculator.calculate(1, 0, 1), 60);
+    EXPECT_EQ(feeCalculator.calculate(0, 0, 1), 50);
+    EXPECT_EQ(feeCalculator.calculate(1, 2, 10), 1000);
+    EXPECT_EQ(feeCalculator.calculateSingleInput(10), 100);
+}
+
 TEST(BitcoinFeeCalculator, BitcoinCalculate) {
     FeeCalculator& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 174);

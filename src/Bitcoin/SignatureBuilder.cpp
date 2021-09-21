@@ -9,7 +9,7 @@
 #include "SigHashType.h"
 #include "TransactionInput.h"
 #include "TransactionOutput.h"
-#include "UnspentSelector.h"
+#include "InputSelector.h"
 
 #include "../BinaryCoding.h"
 #include "../Hash.h"

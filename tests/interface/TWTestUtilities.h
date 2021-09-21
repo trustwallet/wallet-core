@@ -8,6 +8,7 @@
 
 #include <TrustWalletCore/TWData.h>
 #include <TrustWalletCore/TWString.h>
+
 #include <gtest/gtest.h>
 #include <google/protobuf/util/json_util.h>
 #include <nlohmann/json.hpp>
