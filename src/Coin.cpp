@@ -52,7 +52,6 @@
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
 #include "Oasis/Entry.h"
-#include "Cryptoorg/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
@@ -97,7 +96,6 @@ VeChain::Entry vechainDP;
 Waves::Entry wavesDP;
 Zcash::Entry zcashDP;
 Zilliqa::Entry zilliqaDP;
-Cryptoorg::Entry cryptoorgDP;
 // end_of_coin_dipatcher_declarations_marker_do_not_modify
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
@@ -176,7 +174,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeAvalancheCChain: entry = &ethereumDP; break;
         case TWCoinTypeXDai: entry = &ethereumDP; break;
         case TWCoinTypeFantom: entry = &ethereumDP; break;
-        case TWCoinTypeCryptoorg: entry = &cryptoorgDP; break;
+        case TWCoinTypeCryptoorg: entry = &cosmosDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;
