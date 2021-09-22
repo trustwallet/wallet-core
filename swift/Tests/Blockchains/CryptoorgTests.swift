@@ -22,7 +22,7 @@ class CryptoorgTests: XCTestCase {
 
     func testSign() {
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
-        let fromAddress = AnyAddress(publicKey: publicKey, coin: .thorchain)
+        let fromAddress = AnyAddress(publicKey: publicKey, coin: .cryptoorg)
 
         let sendCoinsMessage = CosmosMessage.Send.with {
             $0.fromAddress = fromAddress.description
@@ -55,7 +55,7 @@ class CryptoorgTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .thorchain)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cryptoorg)
 
         let expectedJSON: String =
 """

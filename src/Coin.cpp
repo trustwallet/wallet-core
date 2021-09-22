@@ -97,7 +97,7 @@ VeChain::Entry vechainDP;
 Waves::Entry wavesDP;
 Zcash::Entry zcashDP;
 Zilliqa::Entry zilliqaDP;
-Cryptoorg::Entry cryptoorgDP; // TODO
+Cryptoorg::Entry cryptoorgDP;
 // end_of_coin_dipatcher_declarations_marker_do_not_modify
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
