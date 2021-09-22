@@ -13,6 +13,7 @@ import com.trustwallet.core.app.utils.toHexBytes
 import com.trustwallet.core.app.utils.toHexBytesInByteString
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import wallet.core.jni.CoinType.CRYPTOORG
 import wallet.core.jni.proto.Cosmos
 import wallet.core.jni.*
 
