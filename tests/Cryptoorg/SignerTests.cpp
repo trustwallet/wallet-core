@@ -17,7 +17,7 @@
 using namespace TW;
 using namespace TW::Cosmos;
 
-TEST(CryptoorgSigner, SignTx) {
+TEST(CryptoorgSigner, SignTx_DDCCE4) {
     auto input = Cosmos::Proto::SigningInput();
     input.set_account_number(125798);
     input.set_sequence(0);
@@ -43,12 +43,6 @@ TEST(CryptoorgSigner, SignTx) {
     EXPECT_EQ(R"({"accountNumber":"125798","chainId":"crypto-org-chain-mainnet-1","fee":{"amounts":[{"denom":"basecro","amount":"5000"}],"gas":"200000"},"messages":[{"sendCoinsMessage":{"fromAddress":"cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0","toAddress":"cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus","amounts":[{"denom":"basecro","amount":"100000000"}]}}]})", json);
 
     auto privateKey = parse_hex("200e439e39cf1aad465ee3de6166247f914cbc0f823fc2dd48bf16dcd556f39d");
-    {
-        auto privateKeyKey = PrivateKey(privateKey);
-        auto publicKey = privateKeyKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-        auto address = Address("cro", publicKey);
-        EXPECT_EQ("cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0", address.string());
-    }
     input.set_private_key(privateKey.data(), privateKey.size());
 
     auto output = Cosmos::Signer::sign(input);
@@ -58,4 +52,13 @@ TEST(CryptoorgSigner, SignTx) {
 
     /// https://crypto.org/explorer/tx/DDCCE4052040B05914CADEFE78C0A75BE363AE39504E7EF6B2EDB8A9072AD44B
     /// curl -H 'Content-Type: application/json' -D '{"mode":"block","tx":{"fee": ... }}' https://mainnet.crypto.org:1317/txs
+}
+
+TEST(CryptoorgSigner, SignJson) {
+    auto inputJson = R"({"accountNumber":"125798","chainId":"crypto-org-chain-mainnet-1","fee":{"amounts":[{"denom":"basecro","amount":"5000"}],"gas":"200000"},"messages":[{"sendCoinsMessage":{"fromAddress":"cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0","toAddress":"cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus","amounts":[{"denom":"basecro","amount":"100000000"}]}}]})";
+    auto privateKey = parse_hex("200e439e39cf1aad465ee3de6166247f914cbc0f823fc2dd48bf16dcd556f39d");
+
+    auto outputJson = Cosmos::Signer::signJSON(inputJson, privateKey);
+
+    EXPECT_EQ(R"({"mode":"block","tx":{"fee":{"amount":[{"amount":"5000","denom":"basecro"}],"gas":"200000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"100000000","denom":"basecro"}],"from_address":"cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0","to_address":"cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A4gxsGFiPn6L5Z2IjHEISkXI0IkwfL9exV3GLB171Wvj"},"signature":"5+5rSFFg0FE9cTklQWQHNktBDJsz7UCnMSgF0t0+gYcrIhEWUyTtibXaHZQbKAAaciJ1BkHXYREjU55VswByVg=="}]}})", outputJson);
 }
