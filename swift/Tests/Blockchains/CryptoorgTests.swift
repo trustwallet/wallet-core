@@ -10,7 +10,7 @@ import XCTest
 class CryptoorgTests: XCTestCase {
     func testAddress() {
         let key = PrivateKey(data: Data(hexString: "7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e")!)!
-        let pubkey = key.getPublicKeySecp256k1(true)
+        let pubkey = key.getPublicKeySecp256k1(compressed: true)
         let address = AnyAddress(publicKey: pubkey, coin: .cryptoorg)
         let addressFromString = AnyAddress(string: "cro1z53wwe7md6cewz9sqwqzn0aavpaun0gw39h3rd", coin: .cryptoorg)!
 
