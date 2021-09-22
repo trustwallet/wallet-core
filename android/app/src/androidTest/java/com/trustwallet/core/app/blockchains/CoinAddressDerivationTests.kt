@@ -97,5 +97,6 @@ class CoinAddressDerivationTests {
         OASIS -> assertEquals("oasis1qzcpavvmuw280dk0kd4lxjhtpf0u3ll27yf7sqps", address)
         THORCHAIN -> assertEquals("thor1c8jd7ad9pcw4k3wkuqlkz4auv95mldr2kyhc65", address)
         BLUZELLE -> assertEquals("bluzelle1xccvees6ev4wm2r49rc6ptulsdxa8x8jfpmund", address)
+        CRYPTOORG -> assertEquals("cro16fdf785ejm00jf9a24d23pzqzjh2h05klxjwu8", address)
     }
 }
