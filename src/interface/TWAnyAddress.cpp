@@ -81,8 +81,17 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypeBandChain:
     case TWCoinTypeTHORChain:
     case TWCoinTypeBluzelle:
-    case TWCoinTypeCryptoorg:
     case TWCoinTypeIoTeX: {
+        Cosmos::Address addr;
+        if (!Cosmos::Address::decode(string, addr)) {
+            break;
+        }
+        data = addr.getKeyHash();
+        break;
+    }
+
+    case TWCoinTypeCryptoorg:
+    {
         Cosmos::Address addr;
         if (!Cosmos::Address::decode(string, addr)) {
             break;
