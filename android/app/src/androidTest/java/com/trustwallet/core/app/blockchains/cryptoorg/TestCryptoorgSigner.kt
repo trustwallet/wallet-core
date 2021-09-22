@@ -24,22 +24,49 @@ class TestCryptoorgSigner {
 
     @Test
     fun CryptoorgTransactionSigning() {
-        // TODO: Finalize implementation
+        val key = PrivateKey("200e439e39cf1aad465ee3de6166247f914cbc0f823fc2dd48bf16dcd556f39d".toHexByteArray())
+        val publicKey = key.getPublicKeySecp256k1()
+        val from = AnyAddress(publicKey, CRYPTOORG).description()
 
-        //val transfer = Cryptoorg.TransferMessage.newBuilder()
-        //    .setTo("...")
-        //    .setAmount(...)
-        //    ...
-        //    .build()
-        //val signingInput = Cryptoorg.SigningInput.newBuilder()
-        //    ...
-        //    .build()
+        val txAmount = Cosmos.Amount.newBuilder().apply {
+            amount = 100000000
+            denom = "basecro"
+        }.build()
 
-        //val output: Cryptoorg.SigningOutput = CryptoorgSigner.sign(signingInput)
+        val sendCoinsMsg = Cosmos.Message.Send.newBuilder().apply {
+            fromAddress = from
+            toAddress = "cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus"
+            addAllAmounts(listOf(txAmount))
+        }.build()
 
-        //assertEquals(
-        //    "__EXPECTED_RESULT_DATA__",
-        //    Numeric.toHexString(output.encoded.toByteArray())
-        //)
+        val message = Cosmos.Message.newBuilder().apply {
+            sendCoinsMessage = sendCoinsMsg
+        }.build()
+
+        val feeAmount = Cosmos.Amount.newBuilder().apply {
+            amount = 5000
+            denom = "basecro"
+        }.build()
+
+        val cosmosFee = Cosmos.Fee.newBuilder().apply {
+            gas = 200000
+            addAllAmounts(listOf(feeAmount))
+        }.build()
+
+        val signingInput = Cosmos.SigningInput.newBuilder().apply {
+            accountNumber = 125798
+            chainId = "crypto-org-chain-mainnet-1"
+            memo = ""
+            sequence = 0
+            fee = cosmosFee
+            privateKey = ByteString.copyFrom(key.data())
+            addAllMessages(listOf(message))
+        }.build()
+
+        val output = AnySigner.sign(signingInput, CRYPTOORG, SigningOutput.parser())
+        val jsonPayload = output.json
+
+        val expectedJsonPayload = """{"mode": "block"}"""
+        assertEquals(expectedJsonPayload, jsonPayload)
     }
 }
