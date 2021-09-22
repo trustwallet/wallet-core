@@ -12,11 +12,17 @@
 
 using namespace TW;
 
-TEST(TWCryptoorg, Address) {
-    auto string = STRING("cro1y8ua5laceufhqtwzyhahq0qk7rm87hhugtsfey");
+TEST(CryptoorgAnyAddress, IsValid) {
+    EXPECT_TRUE(TWAnyAddressIsValid(STRING("cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0").get(), TWCoinTypeCryptoorg));
+    EXPECT_TRUE(TWAnyAddressIsValid(STRING("cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus").get(), TWCoinTypeCryptoorg));
+    EXPECT_FALSE(TWAnyAddressIsValid(STRING("cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02").get(), TWCoinTypeCryptoorg));
+}
+
+TEST(CryptoorgAnyAddress, Create) {
+    auto string = STRING("cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0");
     auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeCryptoorg));
     auto string2 = WRAPS(TWAnyAddressDescription(addr.get()));
     EXPECT_TRUE(TWStringEqual(string.get(), string2.get()));
     auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
-    assertHexEqual(keyHash, "21f9da7fb8cf13702dc225fb703c16f0f67f5efc");
+    assertHexEqual(keyHash, "c2dcbc3828b42c429cedbaefa943e66679b471ed");
 }
