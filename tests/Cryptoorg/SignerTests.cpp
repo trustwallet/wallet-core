@@ -10,6 +10,7 @@
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
+#include "../interface/TWTestUtilities.h"
 
 #include <gtest/gtest.h>
 #include <google/protobuf/util/json_util.h>
@@ -40,14 +41,82 @@ TEST(CryptoorgSigner, SignTx_DDCCE4) {
     std::string json;
     google::protobuf::util::MessageToJsonString(input, &json);
 
-    EXPECT_EQ(R"({"accountNumber":"125798","chainId":"crypto-org-chain-mainnet-1","fee":{"amounts":[{"denom":"basecro","amount":"5000"}],"gas":"200000"},"messages":[{"sendCoinsMessage":{"fromAddress":"cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0","toAddress":"cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus","amounts":[{"denom":"basecro","amount":"100000000"}]}}]})", json);
+    assertJSONEqual(json, R"(
+        {
+            "accountNumber": "125798",
+            "chainId": "crypto-org-chain-mainnet-1",
+            "fee": {
+                "amounts": [
+                    {
+                        "denom": "basecro",
+                        "amount": "5000"
+                    }
+                ],
+                "gas": "200000"
+            },
+            "messages": [
+                {
+                    "sendCoinsMessage": {
+                        "fromAddress": "cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0",
+                        "toAddress": "cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus",
+                        "amounts": [
+                            {
+                                "denom": "basecro",
+                                "amount": "100000000"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    )");
 
     auto privateKey = parse_hex("200e439e39cf1aad465ee3de6166247f914cbc0f823fc2dd48bf16dcd556f39d");
     input.set_private_key(privateKey.data(), privateKey.size());
 
     auto output = Cosmos::Signer::sign(input);
 
-    EXPECT_EQ(R"({"mode":"block","tx":{"fee":{"amount":[{"amount":"5000","denom":"basecro"}],"gas":"200000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"100000000","denom":"basecro"}],"from_address":"cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0","to_address":"cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A4gxsGFiPn6L5Z2IjHEISkXI0IkwfL9exV3GLB171Wvj"},"signature":"5+5rSFFg0FE9cTklQWQHNktBDJsz7UCnMSgF0t0+gYcrIhEWUyTtibXaHZQbKAAaciJ1BkHXYREjU55VswByVg=="}]}})", output.json());
+    assertJSONEqual(output.json(), R"(
+        {
+            "mode": "block",
+            "tx": {
+                "fee": {
+                    "amount": [
+                        {
+                            "amount": "5000",
+                            "denom": "basecro"
+                        }
+                    ],
+                    "gas": "200000"
+                },
+                "memo": "",
+                "msg": [
+                    {
+                        "type": "cosmos-sdk/MsgSend",
+                        "value": {
+                            "amount": [
+                                {
+                                    "amount": "100000000",
+                                    "denom": "basecro"
+                                }
+                            ],
+                            "from_address": "cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0",
+                            "to_address": "cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus"
+                        }
+                    }
+                ],
+                "signatures": [
+                    {
+                        "pub_key": {
+                            "type": "tendermint/PubKeySecp256k1",
+                            "value": "A4gxsGFiPn6L5Z2IjHEISkXI0IkwfL9exV3GLB171Wvj"
+                        },
+                        "signature": "5+5rSFFg0FE9cTklQWQHNktBDJsz7UCnMSgF0t0+gYcrIhEWUyTtibXaHZQbKAAaciJ1BkHXYREjU55VswByVg=="
+                    }
+                ]
+            }
+        }
+    )");
     EXPECT_EQ(hex(output.signature()), "e7ee6b485160d0513d713925416407364b410c9b33ed40a7312805d2dd3e81872b2211165324ed89b5da1d941b28001a7222750641d7611123539e55b3007256");
 
     /// https://crypto.org/explorer/tx/DDCCE4052040B05914CADEFE78C0A75BE363AE39504E7EF6B2EDB8A9072AD44B
@@ -60,5 +129,45 @@ TEST(CryptoorgSigner, SignJson) {
 
     auto outputJson = Cosmos::Signer::signJSON(inputJson, privateKey);
 
-    EXPECT_EQ(R"({"mode":"block","tx":{"fee":{"amount":[{"amount":"5000","denom":"basecro"}],"gas":"200000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"100000000","denom":"basecro"}],"from_address":"cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0","to_address":"cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A4gxsGFiPn6L5Z2IjHEISkXI0IkwfL9exV3GLB171Wvj"},"signature":"5+5rSFFg0FE9cTklQWQHNktBDJsz7UCnMSgF0t0+gYcrIhEWUyTtibXaHZQbKAAaciJ1BkHXYREjU55VswByVg=="}]}})", outputJson);
+    assertJSONEqual(outputJson, R"(
+        {
+            "mode": "block",
+            "tx": {
+                "fee": {
+                    "amount": [
+                        {
+                            "amount": "5000",
+                            "denom": "basecro"
+                        }
+                    ],
+                    "gas": "200000"
+                },
+                "memo": "",
+                "msg": [
+                    {
+                        "type": "cosmos-sdk/MsgSend",
+                        "value": {
+                            "amount": [
+                                {
+                                    "amount": "100000000",
+                                    "denom": "basecro"
+                                }
+                            ],
+                            "from_address": "cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0",
+                            "to_address": "cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus"
+                        }
+                    }
+                ],
+                "signatures": [
+                    {
+                        "pub_key": {
+                            "type": "tendermint/PubKeySecp256k1",
+                            "value": "A4gxsGFiPn6L5Z2IjHEISkXI0IkwfL9exV3GLB171Wvj"
+                        },
+                        "signature": "5+5rSFFg0FE9cTklQWQHNktBDJsz7UCnMSgF0t0+gYcrIhEWUyTtibXaHZQbKAAaciJ1BkHXYREjU55VswByVg=="
+                    }
+                ]
+            }
+        }
+    )");
 }
