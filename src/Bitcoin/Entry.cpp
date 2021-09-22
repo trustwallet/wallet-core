@@ -14,7 +14,7 @@
 using namespace TW::Bitcoin;
 using namespace std;
 
-bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const {
+bool Entry::validateAddress(TWCoinType coin, const string& address, byte p2pkh, byte p2sh, const char* hrp) const {
     switch (coin) {
         case TWCoinTypeBitcoin:
         case TWCoinTypeDigiByte:
@@ -55,7 +55,7 @@ string Entry::normalizeAddress(TWCoinType coin, const string& address) const {
     }
 }
 
-string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const {
+string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, byte p2pkh, const char* hrp) const {
     switch (coin) {
         case TWCoinTypeBitcoin:
         case TWCoinTypeDigiByte:
@@ -78,10 +78,10 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byt
     }
 }
 
-void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+void Entry::sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
-void Entry::plan(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+void Entry::plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
     planTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }

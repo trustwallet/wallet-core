@@ -9,7 +9,7 @@
 #include "SigningInput.h"
 #include "Transaction.h"
 #include "TransactionPlan.h"
-#include "UnspentSelector.h"
+#include "InputSelector.h"
 #include "../proto/Bitcoin.pb.h"
 #include <TrustWalletCore/TWCoinType.h>
 
