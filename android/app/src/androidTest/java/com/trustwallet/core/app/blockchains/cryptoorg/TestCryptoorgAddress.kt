@@ -21,7 +21,7 @@ class TestCryptoorgAddress {
     @Test
     fun testAddress() {
         val key = PrivateKey("7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e".toHexByteArray())
-        val pubkey = key.publicKeyEd25519
+        val pubkey = key.getPublicKeySecp256k1(true)
         val address = AnyAddress(pubkey, CoinType.CRYPTOORG)
         val expected = AnyAddress("cro1z53wwe7md6cewz9sqwqzn0aavpaun0gw39h3rd", CoinType.CRYPTOORG)
 
