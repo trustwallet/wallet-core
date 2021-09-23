@@ -30,6 +30,17 @@ Address StakeProgram::addressFromValidatorSeed(const Address& fromAddress, const
     return Address(hash);
 }
 
+Address StakeProgram::addressFromOnetimeRecentblock(const Address& fromAddress, const Hash& recentBlockhash, const Address& programId) {
+    Data extended = fromAddress.vector();
+    Data vecSeed(recentBlockhash.bytes.begin(), recentBlockhash.bytes.end());
+    vecSeed.resize(32);
+    Data additional = programId.vector();
+    extended.insert(extended.end(), vecSeed.begin(), vecSeed.end());
+    extended.insert(extended.end(), additional.begin(), additional.end());
+    Data hash = TW::Hash::sha256(extended);
+    return Address(hash);
+}
+
 /*
  * Based on solana-program-library code, get_associated_token_address()
  * https://github.com/solana-labs/solana-program-library/blob/master/associated-token-account/program/src/lib.rs#L35
