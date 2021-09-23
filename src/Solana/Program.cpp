@@ -32,7 +32,8 @@ Address StakeProgram::addressFromValidatorSeed(const Address& fromAddress, const
 
 Address StakeProgram::addressFromOnetimeRecentblock(const Address& fromAddress, const Hash& recentBlockhash, const Address& programId) {
     Data extended = fromAddress.vector();
-    Data vecSeed(recentBlockhash.bytes.begin(), recentBlockhash.bytes.end());
+    std::string seed = recentBlockhash.string();
+    Data vecSeed(seed.begin(), seed.end());
     vecSeed.resize(32);
     Data additional = programId.vector();
     extended.insert(extended.end(), vecSeed.begin(), vecSeed.end());

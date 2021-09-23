@@ -222,6 +222,8 @@ class Hash {
         const auto data = Base58::bitcoin.decode(string);
         std::copy(data.begin(), data.end(), this->bytes.begin());
     }
+
+    std::string string() const { return Base58::bitcoin.encode(bytes); }
 };
 
 class Signature {
@@ -306,11 +308,12 @@ class Message {
         auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
         std::vector<Instruction> instructions;
         // create_account_with_seed instruction
+        Address seed = Address(data(recentBlockhash.bytes.data(), recentBlockhash.bytes.size()));
         auto createAccountInstruction = Instruction(std::vector<AccountMeta>{
                 AccountMeta(signer, true, true),
                 AccountMeta(stakeAddress, false, false),
                 AccountMeta(signer, true, true),
-            }, value, 200, stakeProgramId, voteAddress, 32, signer);
+            }, value, 200, stakeProgramId, seed, 32, signer);
         instructions.push_back(createAccountInstruction);
         // initialize instruction
         auto initializeInstruction = Instruction(Initialize, std::vector<AccountMeta>{
