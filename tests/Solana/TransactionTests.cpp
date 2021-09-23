@@ -66,6 +66,33 @@ TEST(SolanaTransaction, TransferTransactionPayToSelf) {
     ASSERT_EQ(transaction.serialize(), expectedString);
 }
 
+TEST(SolanaTransaction, StakeSerializeTransactionV2) {
+    auto signer = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
+    auto voteAddress = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
+    auto programId = Address("Stake11111111111111111111111111111111111111");
+    Solana::Hash recentBlockhash("11111111111111111111111111111111");
+    auto stakeAddress = StakeProgram::addressFromOnetimeRecentblock(signer, recentBlockhash, programId);
+    auto message = Message::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
+    auto transaction = Transaction(message);
+    Signature signature(
+        "2GXRrZMMWTaY8ycwFTLFojAVZ1EepFqnVGW7b5bBuuKPiVrpaPXMAwyYsSmYc2okCa1MuJjNguu1emSJRtZxVdwt");
+    transaction.signatures.clear();
+    transaction.signatures.push_back(signature);
+
+    auto expectedString =
+        "W1EAswaWK7mF4r9eZ2hHBZnfPnqLuNPiYkEMzFbwQsgSQu6XbSTL9AN92iyMbAMxPoRpt9ipUyztrmszAnm688N3k7"
+        "uhiKn2osm9nxi6YkGLfu31jHTSu7mn3RtmenV3qopfPDAM8UN6nAHxACMavSNuCUJwaATKhQ9PieSWsGxqyqmmj3c8"
+        "hcz1ztwM8iBYkXqg9FxamP8G3MufJwZeHroodC6wE6EyBsZeDB4BrQTUuNfXWtgvDhaJh56jESJRR8tWoZXt1NjRQR"
+        "XHsYjF97SgaqCXbvgxwpVDLr9mYURTEHbPjgBRiEsGwMT7MPEm2VxVxh5HUwA3Dykc6d3cXQw9ovzYvZs24jNu7Cqu"
+        "imWRta65vr3fx8K67b3xr7vqkmvRbtwz6WXa5GSbuQ7trvtt43QiKQ3DWrD6VkKWqQLAKCzxszsKMSCrVdd9A3KrEx"
+        "ZpsHJmLW1uzUCEAbuZTAxppSuB3CKcL7LhPGxcgbnPJ8q1oRRqRQvwZEkXCFpQ42r4Hosb2XgtDxYJEGMcfY7db6XV"
+        "cDTuota8HaAVDYznkPf1vPZFws49mPQSE251fPaBPTSPPpxFhcWf6zwwPzGr5GrUMcw4EU8xmKTwWfmR8XpT1eGEXZ"
+        "vAzUvggkBNeSiWgP5LfZxQvJXSDqdJ8tn9BBEPdq9RM9TDjVYefFhET41cwEV8CPy62MtpsUbnKEuHpBp7xgSvv5Go"
+        "5EHLQePNLvSKKtvmPeeyCJ1mUgEadTVqaYY4KCF1SSumUuemXJS5VkokH6nVbp4ZrMRXnQ73BeqQc8dXn35Ait7u5J"
+        "c7i1j7n1kFMF6KDWA3i3T3q5Y2mK9JMovE27VTtdJWG8BEVCnHRCeSYWCNZsW9KBpYfcJ5n6KL3KzfK8HM";
+    EXPECT_EQ(transaction.serialize(), expectedString);
+}
+
 TEST(SolanaTransaction, StakeSerializeTransactionV1) {
     auto signer = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
     auto voteAddress = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");

@@ -47,6 +47,52 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
             }
             break;
 
+        case Proto::SigningInput::TransactionTypeCase::kStakeV2Transaction:
+            {
+                auto protoMessage = input.stake_v2_transaction();
+                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+                auto validatorAddress = Address(protoMessage.validator_pubkey());
+                auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
+                auto stakeAddress = StakeProgram::addressFromOnetimeRecentblock(userAddress, blockhash, stakeProgramId);
+                message = Message::createStake(
+                    /* signer */ userAddress,
+                    /* stakeAddress */ stakeAddress,
+                    /* voteAddress */ validatorAddress,
+                    /* value */ protoMessage.value(),
+                    /* recent_blockhash */ blockhash);
+                signerKeys.push_back(key);
+            }
+            break;
+
+        case Proto::SigningInput::TransactionTypeCase::kDeactivateStakeV2Transaction:
+            {
+                auto protoMessage = input.deactivate_stake_v2_transaction();
+                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+                auto stakeAddress = Address(protoMessage.stake_account_pubkey());
+                message = Message::createStakeDeactivate(
+                    /* signer */ userAddress,
+                    /* stakeAddress */ stakeAddress,
+                    /* type */ Deactivate,
+                    /* recent_blockhash */ blockhash);
+                signerKeys.push_back(key);
+            }
+            break;
+
+        case Proto::SigningInput::TransactionTypeCase::kWithdrawV2Transaction:
+            {
+                auto protoMessage = input.withdraw_v2_transaction();
+                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+                auto stakeAddress = Address(protoMessage.stake_account_pubkey());
+                message = Message::createStakeWithdraw(
+                    /* signer */ userAddress,
+                    /* stakeAddress */ stakeAddress,
+                    /* value */ protoMessage.value(),
+                    /* type */ Withdraw,
+                    /* recent_blockhash */ blockhash);
+                signerKeys.push_back(key);
+            }
+            break;
+
         case Proto::SigningInput::TransactionTypeCase::kStakeTransaction:
             {
                 auto protoMessage = input.stake_transaction();
