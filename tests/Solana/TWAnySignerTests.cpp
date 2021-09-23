@@ -59,7 +59,57 @@ TEST(TWAnySignerSolana, SignTransferToSelf) {
     ASSERT_EQ(output.encoded(), expectedString);
 }
 
-TEST(TWAnySignerSolana, SignDelegateStakeTransaction) {
+TEST(TWAnySignerSolana, SignDelegateStakeTransactionV2) {
+    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto input = Solana::Proto::SigningInput();
+
+    auto& message = *input.mutable_stake_v2_transaction();
+    message.set_validator_pubkey("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
+    message.set_value((uint64_t)42L);
+    input.set_private_key(privateKey.data(), privateKey.size());
+    input.set_recent_blockhash("11111111111111111111111111111111");
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    auto expectedString = "njv9hbFAu273QDUjkfXF46nCERzyDmzqb9Z5MhiTFNQiJHHiP9445Pv4uds8zFy2JRNSFTY6HBcnqPSc9Pg9S2sT8TQzi7qqouxU475gK5sCJVtL4BMyJbBzSnZ8xcqUcnRE4hpvg8wpgtUwW9sZvuDKAcNCDGghQEhAJ6TptXbmUKrc7sW5zfB89qRg3ecJwW9iap5ky2o8aetUzhSPHeewanHCZRqUPKHrtz39sBqHW1P2sSvsJLUqojxPvAMJ6afw4y8CZGNLzXmFpMmh4onB4wBkk5CaQ6R38rxLJCPVVg2gyGJZwEcbptQygLeMfHV3DeQAkzimLM77RKXiamrud7koEAfpzKtQm23fw8iTDvRgqvuqJeXL3ECefoqFanfkrdkTKbFNucfQntdW3aa9MeF1sntbZoAhVvi5AYnRxgejg3SWCSZpQcyELwkgPbiXyT1fE2jBweHerBEYeChLmb6oTVojZhD3tWTokH8ak1XgPwzo8Y3iXXyth9PD6KEixZ1rBA1uBAzgxA6SJ9FVULC5u3iA7bMXymyvwGzpgX52mdupmEkf4yE2ZMHzYrSKV12kJA5HaiAPoJMqYcaPD9P9Lyoto9bdp8uQakGbBBXuunje2BRk4mj4M9RMDnRqVgN2ba1UP8nKAqiuAA9rA6TwW2wFiRuVwvysZz9resMhCCZfNqLzn41oTozqfwCAoiXWJKQhd32wYNcofRyZEQxJ3sTYQZPhr5NeebQACeP4so7GjLtt5wXunRQcEWAjHPLKxrxWh2qa7hBWesHuq52Rp6jKvv7LDPZgGrS2t3iLEYnk398bBZobQQAQA2W6w7G4WqPuQX2dn2ooJUYRYEZmWyaKAudPQULcEpPXbkKTSB9TdHwGPCL7";
+    EXPECT_EQ(output.encoded(), expectedString);
+}
+
+TEST(TWAnySignerSolana, SignDeactivateStakeTransactionV2) {
+    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto input = Solana::Proto::SigningInput();
+
+    auto& message = *input.mutable_deactivate_stake_v2_transaction();
+    message.set_stake_account_pubkey("6XMLCn47d5kPi3g4YcjqFvDuxWnpVADpN2tXpeRc4XUB");
+    input.set_private_key(privateKey.data(), privateKey.size());
+    input.set_recent_blockhash("11111111111111111111111111111111");
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    auto expectedString = "6x3fSstNz4GpPxmT5jHXwyD62uyJMKaPWeBDNNcwXZA9NJ3E7KavCXPNUd8ZYTX5VpkfHKGszkwzM6AdAp4giLD29jvWdNYjkV1Nvb42xFwGD6ryMPZzXkJijaRTrA7SvPTDSRU2haGVmorqkywAXLQUCw47NmBUfLTb5gDcKoBeaAsahckv1eCE746thJVTg2dQNvUTULKF6xckUg7kwFkcUuRe4HCcRgrKcNAUKLR2rEM3brVQkUyAaAtMMtc3gVDXxxpbtW5Fa9wGaEnh31FdRo4z5YBzAUaz7vcrvzF2j81KCPTVnYyTmeJzCzJafzCVCtw";
+    EXPECT_EQ(output.encoded(), expectedString);
+}
+
+TEST(TWAnySignerSolana, SignWithdrawStakeTransactionV2) {
+    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto input = Solana::Proto::SigningInput();
+
+    auto& message = *input.mutable_withdraw_v2_transaction();
+    message.set_stake_account_pubkey("6XMLCn47d5kPi3g4YcjqFvDuxWnpVADpN2tXpeRc4XUB");
+    message.set_value((uint64_t)42L);
+    input.set_private_key(privateKey.data(), privateKey.size());
+    input.set_recent_blockhash("11111111111111111111111111111111");
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    auto expectedString = "9zm2Rrytetme1r9GQ7NXJzDsTvJ11HGQaEdsrSeTTTabFRxiWCcfJzTWmDVbE3JLtaiZrtFYM2txfgnQ18FwLqEGKAZFmvtYsTaXKqTmTBmS3A89hyV3hSLJER2RqnSki3Q9EagpqQ5Zc5dj8nPT4HncdRpvCXvUfti89qA5YcZkTD8BserPuHdbMVFBHuexbtJeRdADKWRTkRgKimZYAZsBqijdyiCicw2BK41a7JgL5f5WYJWVZ6x4tWfDe9qrZ2jbjMUxK9AbhMXL8JYRPRxsTuVoqwWexAkwNzXvasDeQm3GNfPhX4pEBzsTL8EbeQYGSseMGTH7PrwbTw1eo7KNQadJAxGK8nxEUWNikwCJ1vU1XwvnbvmymW6jSsh";
+    EXPECT_EQ(output.encoded(), expectedString);
+}
+
+TEST(TWAnySignerSolana, SignDelegateStakeTransactionV1) {
     auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
@@ -86,7 +136,7 @@ TEST(TWAnySignerSolana, SignDelegateStakeTransaction) {
     ASSERT_EQ(output.encoded(), expectedString);
 }
 
-TEST(TWAnySignerSolana, SignDeactivateStakeTransaction) {
+TEST(TWAnySignerSolana, SignDeactivateStakeTransactionV1) {
     auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
@@ -106,7 +156,7 @@ TEST(TWAnySignerSolana, SignDeactivateStakeTransaction) {
     ASSERT_EQ(output.encoded(), expectedString);
 }
 
-TEST(TWAnySignerSolana, SignWithdrawStakeTransaction) {
+TEST(TWAnySignerSolana, SignWithdrawStakeTransactionV1) {
     auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 

@@ -293,8 +293,6 @@ TEST(SolanaSigner, SignDelegateStakeV2) {
     expectedSignatures.push_back(expectedSignature);
     EXPECT_EQ(transaction.signatures, expectedSignatures);
 
-    std::cout << transaction.serialize() << "\n";
-
     auto expectedString =
         "njv9hbFAu273QDUjkfXF46nCERzyDmzqb9Z5MhiTFNQiJHHiP9445Pv4uds8zFy2JRNSFTY6HBcnqPSc9Pg9S2sT8T"
         "Qzi7qqouxU475gK5sCJVtL4BMyJbBzSnZ8xcqUcnRE4hpvg8wpgtUwW9sZvuDKAcNCDGghQEhAJ6TptXbmUKrc7sW5"
