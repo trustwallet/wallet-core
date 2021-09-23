@@ -298,7 +298,7 @@ class Message {
 
     // This constructor creates a create_account_with_seed_and_delegate_stake message
     // see delegate_stake() solana/programs/stake/src/stake_instruction.rs
-    static Message createStake(const Address& signer, const Address& stakeAddress, const Address& voteAddress, uint64_t value, Hash recentBlockhash) {
+    static Message createStakeV1(const Address& signer, const Address& stakeAddress, const Address& voteAddress, uint64_t value, Hash recentBlockhash) {
         auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
         auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
         auto stakeConfigId = Address(STAKE_CONFIG_ID_ADDRESS);
@@ -333,7 +333,7 @@ class Message {
     }
 
     // This constructor creates a deactivate_stake message
-    static Message createStakeDeactivate(const Address& signer, const Address& stakeAddress, StakeInstruction type, Hash recentBlockhash) {
+    static Message createStakeDeactivateV1(const Address& signer, const Address& stakeAddress, StakeInstruction type, Hash recentBlockhash) {
         auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
         auto instruction = Instruction(Deactivate, std::vector<AccountMeta>{
             AccountMeta(stakeAddress, false, false),
@@ -344,7 +344,7 @@ class Message {
     }
 
     // This constructor creates a withdraw message, with the signer as the default recipient
-    static Message createStakeWithdraw(const Address& signer, const Address& stakeAddress, uint64_t value, StakeInstruction type, Hash recentBlockhash) {
+    static Message createStakeWithdrawV1(const Address& signer, const Address& stakeAddress, uint64_t value, StakeInstruction type, Hash recentBlockhash) {
         auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
         auto sysvarStakeHistoryId = Address(SYSVAR_STAKE_HISTORY_ID_ADDRESS);
         auto instruction = Instruction(Withdraw, std::vector<AccountMeta>{

@@ -280,7 +280,7 @@ TEST(SolanaSigner, SignDelegateStake) {
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
     auto stakeAddress = StakeProgram::addressFromValidatorSeed(signer, voteAddress, programId);
 
-    auto message = Message::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
+    auto message = Message::createStakeV1(signer, stakeAddress, voteAddress, 42, recentBlockhash);
     auto transaction = Transaction(message);
 
     std::vector<PrivateKey> signerKeys;
