@@ -15,6 +15,7 @@ using namespace TW;
 TEST(THORChainAnyAddress, IsValid) {
     EXPECT_TRUE(TWAnyAddressIsValid(STRING("thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r").get(), TWCoinTypeTHORChain));
     EXPECT_TRUE(TWAnyAddressIsValid(STRING("thor1c8jd7ad9pcw4k3wkuqlkz4auv95mldr2kyhc65").get(), TWCoinTypeTHORChain));
+    EXPECT_FALSE(TWAnyAddressIsValid(STRING("cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02").get(), TWCoinTypeTHORChain));
 }
 
 TEST(THORChainAnyAddress, Create) {
