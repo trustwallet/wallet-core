@@ -37,7 +37,7 @@ TEST(TWAnySignerCryptoorg, SignTx_DDCCE4) {
     input.set_private_key(privateKey.data(), privateKey.size());
 
     Cosmos::Proto::SigningOutput output;
-    ANY_SIGN(input, TWCoinTypeCryptoorg);
+    ANY_SIGN(input, TWCoinTypeCryptoOrg);
 
     assertJSONEqual(output.json(), R"(
         {

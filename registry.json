@@ -1744,7 +1744,8 @@
   },
   {
     "id": "cryptoorg",
-    "name": "Crypto.org",
+    "name": "CryptoOrg",
+    "displayName": "Crypto.org",
     "coinId": 394,
     "symbol": "CRO",
     "decimals": 8,

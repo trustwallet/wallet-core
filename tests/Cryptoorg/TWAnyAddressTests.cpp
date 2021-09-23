@@ -13,14 +13,14 @@
 using namespace TW;
 
 TEST(CryptoorgAnyAddress, IsValid) {
-    EXPECT_TRUE(TWAnyAddressIsValid(STRING("cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0").get(), TWCoinTypeCryptoorg));
-    EXPECT_TRUE(TWAnyAddressIsValid(STRING("cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus").get(), TWCoinTypeCryptoorg));
-    EXPECT_FALSE(TWAnyAddressIsValid(STRING("cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02").get(), TWCoinTypeCryptoorg));
+    EXPECT_TRUE(TWAnyAddressIsValid(STRING("cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0").get(), TWCoinTypeCryptoOrg));
+    EXPECT_TRUE(TWAnyAddressIsValid(STRING("cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus").get(), TWCoinTypeCryptoOrg));
+    EXPECT_FALSE(TWAnyAddressIsValid(STRING("cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02").get(), TWCoinTypeCryptoOrg));
 }
 
 TEST(CryptoorgAnyAddress, Create) {
     auto string = STRING("cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0");
-    auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeCryptoorg));
+    auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeCryptoOrg));
     auto string2 = WRAPS(TWAnyAddressDescription(addr.get()));
     EXPECT_TRUE(TWStringEqual(string.get(), string2.get()));
     auto keyHash = WRAPD(TWAnyAddressData(addr.get()));

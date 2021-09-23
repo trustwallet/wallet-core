@@ -82,7 +82,7 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPElrond, TWCoinTypeHRP(TWCoinTypeElrond));
     ASSERT_EQ(TWHRPOasis, TWCoinTypeHRP(TWCoinTypeOasis));
     ASSERT_EQ(TWHRPTHORChain, TWCoinTypeHRP(TWCoinTypeTHORChain));
-    ASSERT_EQ(TWHRPCryptoorg, TWCoinTypeHRP(TWCoinTypeCryptoorg));
+    ASSERT_EQ(TWHRPCryptoorg, TWCoinTypeHRP(TWCoinTypeCryptoOrg));
 
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeAion));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeCallisto));
