@@ -8,6 +8,20 @@ message Transfer {
     uint64 value = 2;
 }
 
+message StakeV2 {
+    string validator_pubkey = 1;
+    uint64 value = 2;
+}
+
+message DeactivateStakeV2 {
+    string stake_account_pubkey = 1;
+}
+
+message WithdrawStakeV2 {
+    string stake_account_pubkey = 1;
+    uint64 value = 2;
+}
+
 message Stake {
     string validator_pubkey = 1;
     uint64 value = 2;
@@ -63,6 +77,9 @@ message SigningInput {
         CreateTokenAccount create_token_account_transaction = 7;
         TokenTransfer token_transfer_transaction = 8;
         CreateAndTransferToken create_and_transfer_token_transaction = 9;
+        StakeV2 stake_v2_transaction = 10;
+        DeactivateStakeV2 deactivate_stake_v2_transaction = 11;
+        WithdrawStakeV2 withdraw_v2_transaction = 12;
     }
 }
 
