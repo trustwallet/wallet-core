@@ -11,8 +11,8 @@ class CryptoorgTests: XCTestCase {
     func testAddress() {
         let key = PrivateKey(data: Data(hexString: "7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e")!)!
         let pubkey = key.getPublicKeySecp256k1(compressed: true)
-        let address = AnyAddress(publicKey: pubkey, coin: .cryptoorg)
-        let addressFromString = AnyAddress(string: "cro1z53wwe7md6cewz9sqwqzn0aavpaun0gw39h3rd", coin: .cryptoorg)!
+        let address = AnyAddress(publicKey: pubkey, coin: .cryptoOrg)
+        let addressFromString = AnyAddress(string: "cro1z53wwe7md6cewz9sqwqzn0aavpaun0gw39h3rd", coin: .cryptoOrg)!
 
         XCTAssertEqual(pubkey.data.hexString, "03ed997e396cf4292f5fce5a42bba41599ccd5d96e313154a7c9ea7049de317c77")
         XCTAssertEqual(address.description, addressFromString.description)
@@ -22,7 +22,7 @@ class CryptoorgTests: XCTestCase {
 
     func testSign() {
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
-        let fromAddress = AnyAddress(publicKey: publicKey, coin: .cryptoorg)
+        let fromAddress = AnyAddress(publicKey: publicKey, coin: .cryptoOrg)
 
         let sendCoinsMessage = CosmosMessage.Send.with {
             $0.fromAddress = fromAddress.description
@@ -55,7 +55,7 @@ class CryptoorgTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cryptoorg)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cryptoOrg)
 
         let expectedJSON: String =
 """
