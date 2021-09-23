@@ -92,6 +92,23 @@ TEST(TWAnySignerSolana, SignDeactivateStakeTransactionV2) {
     EXPECT_EQ(output.encoded(), expectedString);
 }
 
+TEST(TWAnySignerSolana, SignDeactivateAllStakeTransactionV2) {
+    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto input = Solana::Proto::SigningInput();
+
+    auto& message = *input.mutable_deactivate_all_stake_v2_transaction();
+    *message.add_stake_account_pubkeys() = "CJQStmfyoHbosX1GfVn64yWrNJAo214q2aqxwS6FGh4k";
+    *message.add_stake_account_pubkeys() = "6XMLCn47d5kPi3g4YcjqFvDuxWnpVADpN2tXpeRc4XUB";
+    input.set_private_key(privateKey.data(), privateKey.size());
+    input.set_recent_blockhash("11111111111111111111111111111111");
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    auto expectedString = "U9azMJWRfDhypoDeQLYWyBYFZCwRNZy8sbrVX9awKK84zNGbSQfYTTJ3ZyzjNUVbU5npbw2MsWfmZGHZRvpfN7G7o3sVePyFRXrmLxrGZzGycFv25Zff4zPxDarbsugbCBgzVGpgwu8x7MdkwBAVHVtNsgMcHgArEAjEmk7YEGpZ15rjo39bCRvmuprWLqSv2SK1RyTZPpTPXVevAbA4i9vvcY8eUbwW29SZCoyGaagLU5EBV9vckMjzGa7gq2yMR6rbq8tDdWaXapYs8RavU49WN94yg4wdE4fzYq8DjqXHq3MuUBLxeYDKJnvj84ioeM4eR1EwjBNrGyz5GHTRuhbNg1nc57SpKsSMVSZW5Ra3tUk84YZXYFHxzeQ9Tv4o";
+    EXPECT_EQ(output.encoded(), expectedString);
+}
+
 TEST(TWAnySignerSolana, SignWithdrawStakeTransactionV2) {
     auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
@@ -106,6 +123,27 @@ TEST(TWAnySignerSolana, SignWithdrawStakeTransactionV2) {
     ANY_SIGN(input, TWCoinTypeSolana);
 
     auto expectedString = "9zm2Rrytetme1r9GQ7NXJzDsTvJ11HGQaEdsrSeTTTabFRxiWCcfJzTWmDVbE3JLtaiZrtFYM2txfgnQ18FwLqEGKAZFmvtYsTaXKqTmTBmS3A89hyV3hSLJER2RqnSki3Q9EagpqQ5Zc5dj8nPT4HncdRpvCXvUfti89qA5YcZkTD8BserPuHdbMVFBHuexbtJeRdADKWRTkRgKimZYAZsBqijdyiCicw2BK41a7JgL5f5WYJWVZ6x4tWfDe9qrZ2jbjMUxK9AbhMXL8JYRPRxsTuVoqwWexAkwNzXvasDeQm3GNfPhX4pEBzsTL8EbeQYGSseMGTH7PrwbTw1eo7KNQadJAxGK8nxEUWNikwCJ1vU1XwvnbvmymW6jSsh";
+    EXPECT_EQ(output.encoded(), expectedString);
+}
+
+TEST(TWAnySignerSolana, SignWithdrawAllStakeTransactionV2) {
+    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto input = Solana::Proto::SigningInput();
+
+    auto& message = *input.mutable_withdraw_all_v2_transaction();
+    message.add_stake_accounts();
+    message.add_stake_accounts();
+    message.mutable_stake_accounts(0)->set_stake_account_pubkey("CJQStmfyoHbosX1GfVn64yWrNJAo214q2aqxwS6FGh4k");
+    message.mutable_stake_accounts(0)->set_value((uint64_t)42L);
+    message.mutable_stake_accounts(1)->set_stake_account_pubkey("6XMLCn47d5kPi3g4YcjqFvDuxWnpVADpN2tXpeRc4XUB");
+    message.mutable_stake_accounts(1)->set_value((uint64_t)67L);
+    input.set_private_key(privateKey.data(), privateKey.size());
+    input.set_recent_blockhash("11111111111111111111111111111111");
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    auto expectedString = "35Lhmy5Laap1wQ21Ho4q1jAeLPT4PvnxsTES3T27Ey32WpLfuwy5hwKxR4jvje9w363JQHGZnFKDMQ7F6r5VP5yACivhzX9EpVKjdTNyrGVnmu3sdn8GFijZUhgNNENXDFRTp2g4tNZ1YTMEGeecLTQhn1tGx4QwoDBrbMcCHJWhY4LYofGC8kmLSUpTxXckrTxDCrhfyLMSRXj5Mz9mmcM6bSbv7n4u49BPPZALqmiF3JAvaunEBfWwNLLuoK4RfEJHDXdBX1yfGXWQ1dDUNg1RgBcWc1iY4aEv98EKRWB44vDEPw4JFz99uv23BUrec3LXzPKeHPCLkUbRpFEJwKrNRxv9AgRMqxLYxYqWXBFjKvVZKzDtsQxxwzSbdgU81RGMh5D34HGoWDLWWcSdwutfwwoeT2MDV6PB6NBXzU5scUiNU9BxaoSqJ3QiW3VjdLDbd";
     EXPECT_EQ(output.encoded(), expectedString);
 }
 

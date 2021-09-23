@@ -333,7 +333,7 @@ class Message {
     }
 
     // This constructor creates a deactivate_stake message
-    static Message createStakeDeactivate(const Address& signer, const Address& stakeAddress, StakeInstruction type, Hash recentBlockhash) {
+    static Message createStakeDeactivate(const Address& signer, const Address& stakeAddress, Hash recentBlockhash) {
         auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
         auto instruction = Instruction(Deactivate, std::vector<AccountMeta>{
             AccountMeta(stakeAddress, false, false),
@@ -343,8 +343,23 @@ class Message {
         return Message(recentBlockhash, {instruction});
     }
 
+    // This constructor creates a deactivate_stake message with multiple stake accounts
+    static Message createStakeDeactivateAll(const Address& signer, const std::vector<Address>& stakeAddresses, Hash recentBlockhash) {
+        auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
+        std::vector<Instruction> instructions;
+        for(auto& address: stakeAddresses) {
+            auto instruction = Instruction(Deactivate, std::vector<AccountMeta>{
+                AccountMeta(address, false, false),
+                AccountMeta(sysvarClockId, false, true),
+                AccountMeta(signer, true, false),
+            });
+            instructions.push_back(instruction);
+        }
+        return Message(recentBlockhash, instructions);
+    }
+
     // This constructor creates a withdraw message, with the signer as the default recipient
-    static Message createStakeWithdraw(const Address& signer, const Address& stakeAddress, uint64_t value, StakeInstruction type, Hash recentBlockhash) {
+    static Message createStakeWithdraw(const Address& signer, const Address& stakeAddress, uint64_t value, Hash recentBlockhash) {
         auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
         auto sysvarStakeHistoryId = Address(SYSVAR_STAKE_HISTORY_ID_ADDRESS);
         auto instruction = Instruction(Withdraw, std::vector<AccountMeta>{
@@ -354,6 +369,23 @@ class Message {
             AccountMeta(sysvarStakeHistoryId, false, true)
         }, value);
         return Message(recentBlockhash, {instruction});
+    }
+
+    // This constructor creates a withdraw message, with multiple stake accounts
+    static Message createStakeWithdrawAll(const Address& signer, const std::vector<std::pair<Address, uint64_t>>& stakes, Hash recentBlockhash) {
+        auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
+        auto sysvarStakeHistoryId = Address(SYSVAR_STAKE_HISTORY_ID_ADDRESS);
+        std::vector<Instruction> instructions;
+        for(auto& stake: stakes) {
+            auto instruction = Instruction(Withdraw, std::vector<AccountMeta>{
+                AccountMeta(stake.first, false, false),
+                AccountMeta(signer, true, false),
+                AccountMeta(sysvarClockId, false, true),
+                AccountMeta(sysvarStakeHistoryId, false, true)
+            }, stake.second);
+            instructions.push_back(instruction);
+        }
+        return Message(recentBlockhash, instructions);
     }
 
     // This constructor creates a createAccount token message

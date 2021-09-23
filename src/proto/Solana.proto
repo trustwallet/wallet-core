@@ -17,9 +17,22 @@ message DeactivateStakeV2 {
     string stake_account_pubkey = 1;
 }
 
+message DeactivateAllStakeV2 {
+    repeated string stake_account_pubkeys = 1;
+}
+
 message WithdrawStakeV2 {
     string stake_account_pubkey = 1;
     uint64 value = 2;
+}
+
+message StakeAccountValue {
+    string stake_account_pubkey = 1;
+    uint64 value = 2;
+}
+
+message WithdrawAllStakeV2 {
+    repeated StakeAccountValue stake_accounts = 1;
 }
 
 message Stake {
@@ -79,7 +92,9 @@ message SigningInput {
         CreateAndTransferToken create_and_transfer_token_transaction = 9;
         StakeV2 stake_v2_transaction = 10;
         DeactivateStakeV2 deactivate_stake_v2_transaction = 11;
-        WithdrawStakeV2 withdraw_v2_transaction = 12;
+        DeactivateAllStakeV2 deactivate_all_stake_v2_transaction = 12;
+        WithdrawStakeV2 withdraw_v2_transaction = 13;
+        WithdrawAllStakeV2 withdraw_all_v2_transaction = 14;
     }
 }
 
