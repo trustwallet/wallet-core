@@ -268,7 +268,7 @@ TEST(SolanaSigner, SignRawMessage) {
     ASSERT_EQ(hex(rawTransaction), expectedHex);
 }
 
-TEST(SolanaSigner, SignDelegateStake) {
+TEST(SolanaSigner, SignDelegateStakeV1) {
     const auto privateKeySigner =
         PrivateKey(Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746"));
     const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
@@ -280,7 +280,7 @@ TEST(SolanaSigner, SignDelegateStake) {
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
     auto stakeAddress = StakeProgram::addressFromValidatorSeed(signer, voteAddress, programId);
 
-    auto message = Message::createStakeV1(signer, stakeAddress, voteAddress, 42, recentBlockhash);
+    auto message = Message::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
     auto transaction = Transaction(message);
 
     std::vector<PrivateKey> signerKeys;
@@ -291,7 +291,7 @@ TEST(SolanaSigner, SignDelegateStake) {
     Signature expectedSignature(
         "2GXRrZMMWTaY8ycwFTLFojAVZ1EepFqnVGW7b5bBuuKPiVrpaPXMAwyYsSmYc2okCa1MuJjNguu1emSJRtZxVdwt");
     expectedSignatures.push_back(expectedSignature);
-    ASSERT_EQ(transaction.signatures, expectedSignatures);
+    EXPECT_EQ(transaction.signatures, expectedSignatures);
 
     auto expectedString =
         "W1EAswaWK7mF4r9eZ2hHBZnfPnqLuNPiYkEMzFbwQsgSQu6XbSTL9AN92iyMbAMxPoRpt9ipUyztrmszAnm688N3k7"
@@ -304,7 +304,7 @@ TEST(SolanaSigner, SignDelegateStake) {
         "rXzariX8P4sprRgKUoj4b7Nu72Pya1zr7k45isMwgxtLnnnTK5k7mrZRDw3jBSBuukJBja93zaidm8HCQdwQsBt5CN"
         "SgSXug1R2t6Sdm5tjJrsd1gyRv7udFbHCdbVEeatzULNSSGdwjwwJDy1DTC12ddBNHd8k5ic5TDwrWdfCxbDRoFYw8"
         "49YNNUuyNAPz1jDCkLG9af6KFFLxfuR9pnF8jSyTcQAq95YiiD9sC3mAUoe8AkYfy929XzTEatP1vasMvo";
-    ASSERT_EQ(transaction.serialize(), expectedString);
+    EXPECT_EQ(transaction.serialize(), expectedString);
 }
 
 TEST(SolanaSigner, SignCreateTokenAccount) {

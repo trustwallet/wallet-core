@@ -66,13 +66,13 @@ TEST(SolanaTransaction, TransferTransactionPayToSelf) {
     ASSERT_EQ(transaction.serialize(), expectedString);
 }
 
-TEST(SolanaTransaction, StakeSerializeTransaction) {
+TEST(SolanaTransaction, StakeSerializeTransactionV1) {
     auto signer = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
     auto voteAddress = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
     auto programId = Address("Stake11111111111111111111111111111111111111");
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
     auto stakeAddress = StakeProgram::addressFromValidatorSeed(signer, voteAddress, programId);
-    auto message = Message::createStakeV1(signer, stakeAddress, voteAddress, 42, recentBlockhash);
+    auto message = Message::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
     auto transaction = Transaction(message);
     Signature signature(
         "2GXRrZMMWTaY8ycwFTLFojAVZ1EepFqnVGW7b5bBuuKPiVrpaPXMAwyYsSmYc2okCa1MuJjNguu1emSJRtZxVdwt");
