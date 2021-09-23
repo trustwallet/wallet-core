@@ -273,14 +273,11 @@ class Message {
 
     Message() : recentBlockhash(NULL_ID_ADDRESS) {};
 
-    Message(MessageHeader header, const std::vector<Address>& accountKeys, Hash recentBlockhash,
-            const std::vector<Instruction>& instructions)
-        : header(header)
-        , accountKeys(accountKeys)
-        , recentBlockhash(recentBlockhash)
+    Message(Hash recentBlockhash, const std::vector<Instruction>& instructions)
+        : recentBlockhash(recentBlockhash)
         , instructions(instructions) {
-            compileInstructions();
-        }
+            compileAccounts();
+    }
 
     // add an acount, to the corresponding bucket
     void addAccount(const AccountMeta& account);
@@ -290,21 +287,18 @@ class Message {
     void compileInstructions();
 
     // This constructor creates a default single-signer Transfer message
-    Message(const Address& from, const Address& to, uint64_t value, Hash recentBlockhash)
-        : recentBlockhash(recentBlockhash) {
+    static Message createTransfer(const Address& from, const Address& to, uint64_t value, Hash recentBlockhash) {
         auto instruction = Instruction(std::vector<AccountMeta>{
             AccountMeta(from, true, false),
             AccountMeta(to, false, false),
         }, value);
-        this->instructions.push_back(instruction);
-        compileAccounts();
+        std::vector<Instruction> instructions = {instruction};
+        return Message(recentBlockhash, {instruction});
     }
 
     // This constructor creates a create_account_with_seed_and_delegate_stake message
     // see delegate_stake() solana/programs/stake/src/stake_instruction.rs
-    Message(const Address& signer, const Address& stakeAddress, const Address& voteAddress, uint64_t value,
-            Hash recentBlockhash)
-        : recentBlockhash(recentBlockhash) {
+    static Message createStake(const Address& signer, const Address& stakeAddress, const Address& voteAddress, uint64_t value, Hash recentBlockhash) {
         auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
         auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
         auto stakeConfigId = Address(STAKE_CONFIG_ID_ADDRESS);
@@ -335,27 +329,22 @@ class Message {
                 AccountMeta(signer, true, true),
             });
         instructions.push_back(delegateInstruction);
-        this->instructions = instructions;
-        compileAccounts();
+        return Message(recentBlockhash, instructions);
     }
 
     // This constructor creates a deactivate_stake message
-    Message(const Address& signer, const Address& stakeAddress, StakeInstruction type, Hash recentBlockhash)
-        : recentBlockhash(recentBlockhash) {
+    static Message createStakeDeactivate(const Address& signer, const Address& stakeAddress, StakeInstruction type, Hash recentBlockhash) {
         auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
         auto instruction = Instruction(Deactivate, std::vector<AccountMeta>{
             AccountMeta(stakeAddress, false, false),
             AccountMeta(sysvarClockId, false, true),
             AccountMeta(signer, true, false),
         });
-        this->instructions.push_back(instruction);
-        compileAccounts();
+        return Message(recentBlockhash, {instruction});
     }
 
     // This constructor creates a withdraw message, with the signer as the default recipient
-    Message(const Address& signer, const Address& stakeAddress, uint64_t value, StakeInstruction type,
-            Hash recentBlockhash)
-        : recentBlockhash(recentBlockhash) {
+    static Message createStakeWithdraw(const Address& signer, const Address& stakeAddress, uint64_t value, StakeInstruction type, Hash recentBlockhash) {
         auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
         auto sysvarStakeHistoryId = Address(SYSVAR_STAKE_HISTORY_ID_ADDRESS);
         auto instruction = Instruction(Withdraw, std::vector<AccountMeta>{
@@ -364,14 +353,12 @@ class Message {
             AccountMeta(sysvarClockId, false, true),
             AccountMeta(sysvarStakeHistoryId, false, true)
         }, value);
-        this->instructions.push_back(instruction);
-        compileAccounts();
+        return Message(recentBlockhash, {instruction});
     }
 
     // This constructor creates a createAccount token message
     // see create_associated_token_account() solana-program-library/associated-token-account/program/src/lib.rs
-    Message(const Address& signer, TokenInstruction type, const Address& otherMainAccount, const Address& tokenMintAddress, const Address& tokenAddress, Hash recentBlockhash)
-        : recentBlockhash(recentBlockhash) {
+    static Message createTokenCreateAccount(const Address& signer, TokenInstruction type, const Address& otherMainAccount, const Address& tokenMintAddress, const Address& tokenAddress, Hash recentBlockhash) {
         assert(type == TokenInstruction::CreateTokenAccount);
         auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
         auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
@@ -385,15 +372,13 @@ class Message {
             AccountMeta(tokenProgramId, false, true),
             AccountMeta(sysvarRentId, false, true),
         });
-        this->instructions.push_back(instruction);
-        compileAccounts();
+        return Message(recentBlockhash, {instruction});
     }
 
     // This constructor creates a transfer token message.
     // see transfer_checked() solana-program-library/token/program/src/instruction.rs
-    Message(const Address& signer, TokenInstruction type, const Address& tokenMintAddress,
-        const Address& senderTokenAddress, const Address& recipientTokenAddress, uint64_t amount, uint8_t decimals, Hash recentBlockhash)
-        : recentBlockhash(recentBlockhash) {
+    static Message createTokenTransfer(const Address& signer, TokenInstruction type, const Address& tokenMintAddress,
+        const Address& senderTokenAddress, const Address& recipientTokenAddress, uint64_t amount, uint8_t decimals, Hash recentBlockhash) {
         assert(type == TokenInstruction::TokenTransfer);
         auto instruction = Instruction(type, std::vector<AccountMeta>{
             AccountMeta(senderTokenAddress, false, false),
@@ -401,14 +386,12 @@ class Message {
             AccountMeta(recipientTokenAddress, false, false),
             AccountMeta(signer, true, false),
         }, amount, decimals);
-        this->instructions.push_back(instruction);
-        compileAccounts();
+        return Message(recentBlockhash, {instruction});
     }
 
     // This constructor creates a createAndTransferToken message, combining createAccount and transfer.
-    Message(const Address& signer, const Address& recipientMainAddress, const Address& tokenMintAddress,
-        const Address& recipientTokenAddress, const Address& senderTokenAddress, uint64_t amount, uint8_t decimals, Hash recentBlockhash)
-        : recentBlockhash(recentBlockhash) {
+    static Message createTokenCreateAndTransfer(const Address& signer, const Address& recipientMainAddress, const Address& tokenMintAddress,
+        const Address& recipientTokenAddress, const Address& senderTokenAddress, uint64_t amount, uint8_t decimals, Hash recentBlockhash) {
         auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
         auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
         auto tokenProgramId = Address(TOKEN_PROGRAM_ID_ADDRESS);
@@ -427,9 +410,7 @@ class Message {
             AccountMeta(recipientTokenAddress, false, false),
             AccountMeta(signer, true, false),
         }, amount, decimals);
-        this->instructions.push_back(createInstruction);
-        this->instructions.push_back(transferInstruction);
-        compileAccounts();
+        return Message(recentBlockhash, {createInstruction, transferInstruction});
     }
 };
 
@@ -446,7 +427,7 @@ class Transaction {
 
     // Default basic transfer transaction
     Transaction(const Address& from, const Address& to, uint64_t value, Hash recentBlockhash)
-        : message(Message(from, to, value, recentBlockhash)) {
+        : message(Message::createTransfer(from, to, value, recentBlockhash)) {
         this->signatures.resize(1, Signature(defaultSignature));
     }
 

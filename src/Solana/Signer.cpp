@@ -38,7 +38,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         case Proto::SigningInput::TransactionTypeCase::kTransferTransaction:
             {
                 auto protoMessage = input.transfer_transaction();
-                message = Message(
+                message = Message::createTransfer(
                     /* from */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
                     /* to */ Address(protoMessage.recipient()),
                     /* value */ protoMessage.value(),
@@ -54,7 +54,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto validatorAddress = Address(protoMessage.validator_pubkey());
                 auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
                 auto stakeAddress = StakeProgram::addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
-                message = Message(
+                message = Message::createStake(
                     /* signer */ userAddress,
                     /* stakeAddress */ stakeAddress,
                     /* voteAddress */ validatorAddress,
@@ -71,7 +71,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto validatorAddress = Address(protoMessage.validator_pubkey());
                 auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
                 auto stakeAddress = StakeProgram::addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
-                message = Message(
+                message = Message::createStakeDeactivate(
                     /* signer */ userAddress,
                     /* stakeAddress */ stakeAddress,
                     /* type */ Deactivate,
@@ -87,7 +87,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto validatorAddress = Address(protoMessage.validator_pubkey());
                 auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
                 auto stakeAddress = StakeProgram::addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
-                message = Message(
+                message = Message::createStakeWithdraw(
                     /* signer */ userAddress,
                     /* stakeAddress */ stakeAddress,
                     /* value */ protoMessage.value(),
@@ -104,7 +104,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto mainAddress = Address(protoMessage.main_address());
                 auto tokenMintAddress = Address(protoMessage.token_mint_address());
                 auto tokenAddress = Address(protoMessage.token_address());
-                message = Message(userAddress, TokenInstruction::CreateTokenAccount, mainAddress, tokenMintAddress, tokenAddress, blockhash);
+                message = Message::createTokenCreateAccount(userAddress, TokenInstruction::CreateTokenAccount, mainAddress, tokenMintAddress, tokenAddress, blockhash);
                 signerKeys.push_back(key);
             }
             break;
@@ -118,7 +118,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto recipientTokenAddress = Address(protoMessage.recipient_token_address());
                 auto amount = protoMessage.amount();
                 auto decimals = static_cast<uint8_t>(protoMessage.decimals());
-                message = Message(userAddress, TokenInstruction::TokenTransfer, tokenMintAddress, senderTokenAddress, recipientTokenAddress, amount, decimals, blockhash);
+                message = Message::createTokenTransfer(userAddress, TokenInstruction::TokenTransfer, tokenMintAddress, senderTokenAddress, recipientTokenAddress, amount, decimals, blockhash);
                 signerKeys.push_back(key);
             }
             break;
@@ -133,7 +133,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto senderTokenAddress = Address(protoMessage.sender_token_address());
                 auto amount = protoMessage.amount();
                 auto decimals = static_cast<uint8_t>(protoMessage.decimals());
-                message = Message(userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress, senderTokenAddress, amount, decimals, blockhash);
+                message = Message::createTokenCreateAndTransfer(userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress, senderTokenAddress, amount, decimals, blockhash);
                 signerKeys.push_back(key);                
             }
             break;
