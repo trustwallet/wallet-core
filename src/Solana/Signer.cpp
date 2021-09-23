@@ -38,11 +38,84 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         case Proto::SigningInput::TransactionTypeCase::kTransferTransaction:
             {
                 auto protoMessage = input.transfer_transaction();
-                message = Message(
+                message = Message::createTransfer(
                     /* from */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
                     /* to */ Address(protoMessage.recipient()),
                     /* value */ protoMessage.value(),
                     /* recent_blockhash */ blockhash);
+                signerKeys.push_back(key);
+            }
+            break;
+
+        case Proto::SigningInput::TransactionTypeCase::kStakeV2Transaction:
+            {
+                auto protoMessage = input.stake_v2_transaction();
+                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+                auto validatorAddress = Address(protoMessage.validator_pubkey());
+                auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
+                auto stakeAddress = StakeProgram::addressFromOnetimeRecentblock(userAddress, blockhash, stakeProgramId);
+                message = Message::createStake(
+                    /* signer */ userAddress,
+                    /* stakeAddress */ stakeAddress,
+                    /* voteAddress */ validatorAddress,
+                    /* value */ protoMessage.value(),
+                    /* recent_blockhash */ blockhash);
+                signerKeys.push_back(key);
+            }
+            break;
+
+        case Proto::SigningInput::TransactionTypeCase::kDeactivateStakeV2Transaction:
+            {
+                auto protoMessage = input.deactivate_stake_v2_transaction();
+                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+                auto stakeAddress = Address(protoMessage.stake_account_pubkey());
+                message = Message::createStakeDeactivate(
+                    /* signer */ userAddress,
+                    /* stakeAddress */ stakeAddress,
+                    /* recent_blockhash */ blockhash);
+                signerKeys.push_back(key);
+            }
+            break;
+
+        case Proto::SigningInput::TransactionTypeCase::kDeactivateAllStakeV2Transaction:
+            {
+                auto protoMessage = input.deactivate_all_stake_v2_transaction();
+                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+                std::vector<Address> addresses;
+                for (auto i = 0; i < protoMessage.stake_account_pubkeys_size(); ++i) {
+                    addresses.push_back(Address(protoMessage.stake_account_pubkeys(i)));
+                }
+                message = Message::createStakeDeactivateAll(userAddress, addresses, blockhash);
+                signerKeys.push_back(key);
+            }
+            break;
+
+        case Proto::SigningInput::TransactionTypeCase::kWithdrawV2Transaction:
+            {
+                auto protoMessage = input.withdraw_v2_transaction();
+                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+                auto stakeAddress = Address(protoMessage.stake_account_pubkey());
+                message = Message::createStakeWithdraw(
+                    /* signer */ userAddress,
+                    /* stakeAddress */ stakeAddress,
+                    /* value */ protoMessage.value(),
+                    /* recent_blockhash */ blockhash);
+                signerKeys.push_back(key);
+            }
+            break;
+
+        case Proto::SigningInput::TransactionTypeCase::kWithdrawAllV2Transaction:
+            {
+                auto protoMessage = input.withdraw_all_v2_transaction();
+                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+                std::vector<std::pair<Address, uint64_t>> stakes;
+                for (auto i = 0; i < protoMessage.stake_accounts_size(); ++i) {
+                    stakes.push_back(std::make_pair<Address, uint64_t>(
+                        Address(protoMessage.stake_accounts(i).stake_account_pubkey()),
+                        protoMessage.stake_accounts(i).value()
+                    ));
+                }
+                message = Message::createStakeWithdrawAll(userAddress, stakes, blockhash);
                 signerKeys.push_back(key);
             }
             break;
@@ -54,7 +127,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto validatorAddress = Address(protoMessage.validator_pubkey());
                 auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
                 auto stakeAddress = StakeProgram::addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
-                message = Message(
+                message = Message::createStake(
                     /* signer */ userAddress,
                     /* stakeAddress */ stakeAddress,
                     /* voteAddress */ validatorAddress,
@@ -71,10 +144,9 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto validatorAddress = Address(protoMessage.validator_pubkey());
                 auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
                 auto stakeAddress = StakeProgram::addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
-                message = Message(
+                message = Message::createStakeDeactivate(
                     /* signer */ userAddress,
                     /* stakeAddress */ stakeAddress,
-                    /* type */ Deactivate,
                     /* recent_blockhash */ blockhash);
                 signerKeys.push_back(key);
             }
@@ -87,11 +159,10 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto validatorAddress = Address(protoMessage.validator_pubkey());
                 auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
                 auto stakeAddress = StakeProgram::addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
-                message = Message(
+                message = Message::createStakeWithdraw(
                     /* signer */ userAddress,
                     /* stakeAddress */ stakeAddress,
                     /* value */ protoMessage.value(),
-                    /* type */ Withdraw,
                     /* recent_blockhash */ blockhash);
                 signerKeys.push_back(key);
             }
@@ -104,7 +175,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto mainAddress = Address(protoMessage.main_address());
                 auto tokenMintAddress = Address(protoMessage.token_mint_address());
                 auto tokenAddress = Address(protoMessage.token_address());
-                message = Message(userAddress, TokenInstruction::CreateTokenAccount, mainAddress, tokenMintAddress, tokenAddress, blockhash);
+                message = Message::createTokenCreateAccount(userAddress, TokenInstruction::CreateTokenAccount, mainAddress, tokenMintAddress, tokenAddress, blockhash);
                 signerKeys.push_back(key);
             }
             break;
@@ -118,7 +189,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto recipientTokenAddress = Address(protoMessage.recipient_token_address());
                 auto amount = protoMessage.amount();
                 auto decimals = static_cast<uint8_t>(protoMessage.decimals());
-                message = Message(userAddress, TokenInstruction::TokenTransfer, tokenMintAddress, senderTokenAddress, recipientTokenAddress, amount, decimals, blockhash);
+                message = Message::createTokenTransfer(userAddress, TokenInstruction::TokenTransfer, tokenMintAddress, senderTokenAddress, recipientTokenAddress, amount, decimals, blockhash);
                 signerKeys.push_back(key);
             }
             break;
@@ -133,7 +204,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto senderTokenAddress = Address(protoMessage.sender_token_address());
                 auto amount = protoMessage.amount();
                 auto decimals = static_cast<uint8_t>(protoMessage.decimals());
-                message = Message(userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress, senderTokenAddress, amount, decimals, blockhash);
+                message = Message::createTokenCreateAndTransfer(userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress, senderTokenAddress, amount, decimals, blockhash);
                 signerKeys.push_back(key);                
             }
             break;
