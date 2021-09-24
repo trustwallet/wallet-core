@@ -174,12 +174,12 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
     auto tx = input.simple_transfer_tx();
 
     const auto n = tx.inputs_size();
-    std::vector<uint64_t> inputAmounts;
+    std::vector<InputProtoWrapper> inputs;
     uint64_t inputSum = 0;
     for (auto i = 0; i < n; ++i) {
         if (tx.inputs(i).input().has_secp_transfer_input()) {
             auto amount = tx.inputs(i).input().secp_transfer_input().amount();
-            inputAmounts.push_back(amount);
+            inputs.push_back(InputProtoWrapper(tx.inputs(i)));
             inputSum += amount;
         }
     }
@@ -194,21 +194,20 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
     auto amount = tx.amount();
     auto fee = tx.fee();
 
-    /* TODO
     // Input selection
-    auto inputSelector = Bitcoin::InputSelector(inputAmounts, Bitcoin::ConstantFeeCalculator(static_cast<int64_t>(fee)));
-    std::vector<size_t> selectedIndices;
+    auto inputSelector = Bitcoin::InputSelector<InputProtoWrapper>(inputs, Bitcoin::ConstantFeeCalculator(static_cast<int64_t>(fee)));
+    std::vector<InputProtoWrapper> selectedInputs;
     if (!maxAmount) {
-        selectedIndices = inputSelector.select(amount, 0);
+        selectedInputs = inputSelector.select(amount, 0);
     } else {
-        selectedIndices = inputSelector.selectMaxAmount(0);
+        selectedInputs = inputSelector.selectMaxAmount(0);
     }
 
     uint64_t availAmount = 0;
-    for (auto i: selectedIndices) {
+    for (auto i: selectedInputs) {
         auto utxo = plan.add_utxos();
-        *utxo = tx.inputs(static_cast<int>(i));
-        availAmount += plan.utxos(static_cast<int>(i)).input().secp_transfer_input().amount();
+        *utxo = i._proto;
+        availAmount += i.amount();
     }
 
     fee = std::min(availAmount, tx.fee());
@@ -224,7 +223,6 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
     plan.set_available_amount(availAmount);
     plan.set_fee(fee);
     plan.set_change(change);
-    */
 
     return plan;
 }

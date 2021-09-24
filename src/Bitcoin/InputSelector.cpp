@@ -158,7 +158,9 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectMaxAmount(int64
     return filterOutDust(inputs, byteFee);
 }
 
-// Explicit template instantiations
+// Explicit template instantiations.  Dependency is reverse, from here to usages, but this is the frawback of template usage
 #include "UTXO.h"
+#include "../Avalanche/Signer.h"
 
 template class Bitcoin::InputSelector<UTXO>;
+template class Bitcoin::InputSelector<Avalanche::InputProtoWrapper>;

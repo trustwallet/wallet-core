@@ -13,6 +13,19 @@
 
 namespace TW::Avalanche {
 
+/// Helper wrapper for proto input class
+class InputProtoWrapper {
+public:
+    Proto::TransferableInput _proto;
+    InputProtoWrapper(const Proto::TransferableInput& input): _proto(input) {}
+    uint64_t amount() const {
+        if (_proto.input().has_secp_transfer_input()) {
+            return _proto.input().secp_transfer_input().amount();
+        }
+        return 0;
+    }
+};
+
 /// Helper class that performs Avalanche transaction signing.
 class Signer {
   public:

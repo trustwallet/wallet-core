@@ -33,8 +33,7 @@ class TransferableInput {
     uint32_t utxoIndex;
     Data assetID;
     std::unique_ptr<TransactionInput> input;
-    std::vector<Address>
-        spendableAddresses; // corresponding to the Output this came from. not encoded
+    std::vector<Address> spendableAddresses; // corresponding to the Output this came from. not encoded
 
     /// Encodes the input into the provided buffer.
     void encode(Data& data) const;
