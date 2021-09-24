@@ -10,6 +10,7 @@ extension KeyStore {
     public enum Error: Swift.Error, LocalizedError {
         case accountNotFound
         case invalidMnemonic
+        case invalidJSON
         case invalidKey
         case invalidPassword
 
@@ -19,6 +20,8 @@ extension KeyStore {
                 return NSLocalizedString("Account not found", comment: "Error message when trying to access an account that does not exist")
             case .invalidMnemonic:
                 return NSLocalizedString("Invalid mnemonic phrase", comment: "Error message when trying to import an invalid mnemonic phrase")
+            case .invalidJSON:
+                return NSLocalizedString("Invalid Keystore/JSON format", comment: "Error message when trying to import an invalid json phrase")
             case .invalidKey:
                 return NSLocalizedString("Invalid private key", comment: "Error message when trying to import an invalid private key")
             case .invalidPassword:

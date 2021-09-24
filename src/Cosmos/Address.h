@@ -9,6 +9,9 @@
 #include "../Bech32Address.h"
 #include "../Data.h"
 #include "../PublicKey.h"
+#include "../Coin.h"
+#include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWHRP.h>
 
 #include <string>
 
@@ -19,11 +22,23 @@ class Address: public Bech32Address {
 public:
     Address() : Bech32Address("") {}
 
-    /// Initializes an address with a key hash.
+    /// Initializes an address with a key hash, with prefix of the given coin.
+    Address(TWCoinType coin, const Data& keyHash) : Bech32Address(stringForHRP(TW::hrp(coin)), keyHash) {}
+
+    /// Initializes an address with a key hash, with given prefix.
     Address(const std::string& hrp, const Data& keyHash) : Bech32Address(hrp, keyHash) {}
 
-    /// Initializes an address with a public key.
+    /// Initializes an address with a public key, with prefix of the given coin.
+    Address(TWCoinType coin, const PublicKey& publicKey) : Bech32Address(stringForHRP(TW::hrp(coin)), HASHER_SHA2_RIPEMD, publicKey) {}
+
+    /// Initializes an address with a public key, with given prefix.
     Address(const std::string& hrp, const PublicKey& publicKey) : Bech32Address(hrp, HASHER_SHA2_RIPEMD, publicKey) {}
+
+    /// Determines whether a string makes a valid Bech32 address, and the HRP matches to the coin.
+    static bool isValid(TWCoinType coin, const std::string& addr) {
+        const auto hrp = stringForHRP(TW::hrp(coin));
+        return Bech32Address::isValid(addr, hrp);
+    }
 
     /// Creates an address object from the given string, if valid.  Returns success.
     static bool decode(const std::string& addr, Address& obj_out) {

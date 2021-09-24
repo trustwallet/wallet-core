@@ -29,6 +29,14 @@ struct TWHDWallet *_Nullable TWHDWalletCreateWithMnemonic(TWString *_Nonnull mne
     }
 }
 
+struct TWHDWallet *_Nullable TWHDWalletCreateWithMnemonicCheck(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase, bool check) {
+    try {
+        return new TWHDWallet{ HDWallet(TWStringUTF8Bytes(mnemonic), TWStringUTF8Bytes(passphrase), check) };
+    } catch (...) {
+        return nullptr;
+    }
+}
+
 struct TWHDWallet *_Nullable TWHDWalletCreateWithEntropy(TWData *_Nonnull entropy, TWString *_Nonnull passphrase) {
     try {
         auto *d = reinterpret_cast<const Data*>(entropy);

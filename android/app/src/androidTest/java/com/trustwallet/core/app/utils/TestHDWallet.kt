@@ -38,8 +38,18 @@ class TestHDWallet {
     }
 
     @Test
-    fun testMnemonicInvalid() {
-        assertFalse(Mnemonic.isValid("THIS IS AN INVALID MNEMONIC"))
+    fun testCreateFromSpanishMnemonic() {
+        val mnemonic = "llanto radical atraer riesgo actuar masa fondo cielo dieta archivo sonrisa mamut"
+        try {
+            HDWallet(mnemonic, "")
+            fail("Missing exception")
+        } catch (ex: Exception) {
+            assertTrue(ex is InvalidParameterException)
+        }
+        val wallet = HDWallet(mnemonic, "", false)
+        val address = wallet.getAddressForCoin(CoinType.ETHEREUM)
+
+        assertEquals(address, "0xa4531dE99E22B2166d340E7221669DF565c52024")
     }
 
     @Test

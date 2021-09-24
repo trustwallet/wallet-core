@@ -45,16 +45,16 @@ HDWallet::HDWallet(int strength, const std::string& passphrase)
         throw std::invalid_argument("Invalid strength");
     }
     mnemonic = mnemonic_chars;
-    assert(Mnemonic::isValid(mnemonic));
     updateSeedAndEntropy();
 }
 
-HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase)
+HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase, const bool check)
     : mnemonic(mnemonic), passphrase(passphrase) {
-    if (mnemonic.size() == 0) {
+    if (mnemonic.length() == 0 ||
+        (check && !Mnemonic::isValid(mnemonic))) {
         throw std::invalid_argument("Invalid mnemonic");
     }
-    updateSeedAndEntropy();
+    updateSeedAndEntropy(check);
 }
 
 HDWallet::HDWallet(const Data& entropy, const std::string& passphrase)
@@ -65,7 +65,6 @@ HDWallet::HDWallet(const Data& entropy, const std::string& passphrase)
         throw std::invalid_argument("Invalid mnemonic data");
     }
     mnemonic = mnemonic_chars;
-    assert(Mnemonic::isValid(mnemonic));
     updateSeedAndEntropy();
 }
 
@@ -75,16 +74,18 @@ HDWallet::~HDWallet() {
     std::fill(passphrase.begin(), passphrase.end(), 0);
 }
 
-void HDWallet::updateSeedAndEntropy() {
+void HDWallet::updateSeedAndEntropy(bool check) {
+    assert(!check || Mnemonic::isValid(mnemonic)); // precondition
+
     // generate seed from mnemonic
-    // it is assumed that mnemonic is valid, enforced before calling
     mnemonic_to_seed(mnemonic.c_str(), passphrase.c_str(), seed.data(), nullptr);
 
-    // generate entropy from mnemonic
+    // generate entropy bits from mnemonic
     Data entropyRaw((Mnemonic::MaxWords * Mnemonic::BitsPerWord) / 8);
     auto entropyBytes = mnemonic_to_bits(mnemonic.c_str(), entropyRaw.data()) / 8;
     // copy to truncate
     entropy = data(entropyRaw.data(), entropyBytes);
+    assert(!check || entropy.size() > 10);
 }
 
 PrivateKey HDWallet::getMasterKey(TWCurve curve) const {

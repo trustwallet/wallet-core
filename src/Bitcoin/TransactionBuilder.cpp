@@ -75,11 +75,8 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
     TransactionPlan plan;
 
     const auto& feeCalculator = getFeeCalculator(static_cast<TWCoinType>(input.coinType));
-    std::vector<uint64_t> inputAmounts;
-    std::transform(input.utxos.begin(), input.utxos.end(), std::back_inserter(inputAmounts),
-        [](UTXO utxo) -> uint64_t { return utxo.amount; });
-    auto inputSelector = InputSelector(inputAmounts, feeCalculator);
-    auto inputSum = InputSelector::sum(inputAmounts);
+    auto inputSelector = InputSelector<UTXO>(input.utxos, feeCalculator);
+    auto inputSum = InputSelector<UTXO>::sum(input.utxos);
     bool maxAmount = input.useMaxAmount;
 
     if (input.amount == 0 && !maxAmount) {
@@ -100,22 +97,18 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
         std::vector<size_t> selectedIndices;
         if (!maxAmount) {
             output_size = 2; // output + change
-            selectedIndices = inputSelector.select(plan.amount, input.byteFee, output_size);
+            plan.utxos = inputSelector.select(plan.amount, input.byteFee, output_size);
         } else {
             output_size = 1; // no change
-            selectedIndices = inputSelector.selectMaxAmount(input.byteFee);
-        }
-        plan.utxos.clear();
-        plan.availableAmount = 0;
-        for(auto i: selectedIndices) {
-            plan.utxos.push_back(input.utxos[i]);
-            plan.availableAmount += input.utxos[i].amount;
+            plan.utxos = inputSelector.selectMaxAmount(input.byteFee);
         }
 
         if (plan.utxos.size() == 0) {
             plan.amount = 0;
             plan.error = Common::Proto::Error_not_enough_utxos;
         } else {
+            plan.availableAmount = InputSelector<UTXO>::sum(plan.utxos);
+
             // Compute fee.
             // must preliminary set change so that there is a second output
             if (!maxAmount) {

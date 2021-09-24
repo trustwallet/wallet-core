@@ -70,7 +70,15 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .eos:
                     let expectedResult = "EOS6hs8sRvGSzuQtq223zwJipMzqTJpXUVjyvHPvPwBSZWWrJTJkg"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .ethereum, .smartChain, .polygon, .optimism, .arbitrum, .ecochain, .avalancheCChain, .xdai:
+                case .ethereum,
+                     .smartChain,
+                     .polygon,
+                     .optimism,
+                     .arbitrum,
+                     .ecochain,
+                     .avalancheCChain,
+                     .xdai,
+                     .fantom:
                     let expectedResult = "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ethereumClassic:
@@ -210,6 +218,9 @@ class CoinAddressDerivationTests: XCTestCase {
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .bluzelle:
                     let expectedResult = "bluzelle1xccvees6ev4wm2r49rc6ptulsdxa8x8jfpmund"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .cryptoOrg:
+                    let expectedResult = "cro16fdf785ejm00jf9a24d23pzqzjh2h05klxjwu8"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()

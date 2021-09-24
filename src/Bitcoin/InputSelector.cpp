@@ -6,6 +6,8 @@
 
 #include "InputSelector.h"
 
+#include "UTXO.h"
+
 #include <algorithm>
 #include <cassert>
 
@@ -13,28 +15,31 @@ using namespace TW;
 using namespace TW::Bitcoin;
 
 
-uint64_t InputSelector::sum(const std::vector<uint64_t>& amounts) {
-    return std::accumulate(amounts.begin(), amounts.end(), 0);
-}
-
-inline int64_t InputSelector::sumIndices(const std::vector<size_t>& indices) {
-    int64_t sum = 0;
-    for (auto i : indices) {
-        sum += inputs[i];
+template <typename TypeWithAmount>
+uint64_t InputSelector<TypeWithAmount>::sum(const std::vector<TypeWithAmount>& amounts) {
+    uint64_t sum = 0;
+    for(auto& i: amounts) {
+        sum += i.amount;
     }
     return sum;
 }
 
+template <typename TypeWithAmount>
+std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::filterOutDust(const std::vector<TypeWithAmount>& inputs, int64_t byteFee) {
+    auto inputFeeLimit = static_cast<uint64_t>(feeCalculator.calculateSingleInput(byteFee));
+    return filterThreshold(inputs, inputFeeLimit);
+}
+
 // Filters utxos that are dust
-std::vector<size_t> InputSelector::filterDustInput(const std::vector<size_t>& inputIndices, int64_t byteFee) {
-    auto inputFeeLimit = feeCalculator.calculateSingleInput(byteFee);
-    std::vector<size_t> filteredIndices;
-    for (auto i: inputIndices) {
-        if (inputs[i] > inputFeeLimit) {
-            filteredIndices.push_back(i);
+template <typename TypeWithAmount>
+std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::filterThreshold(const std::vector<TypeWithAmount>& inputs, uint64_t minimumAmount) {
+    std::vector<TypeWithAmount> filtered;
+    for (auto& i: inputs) {
+        if (i.amount > minimumAmount) {
+            filtered.push_back(i);
         }
     }
-    return filteredIndices;
+    return filtered;
 }
 
 // Slice Array
@@ -42,19 +47,21 @@ std::vector<size_t> InputSelector::filterDustInput(const std::vector<size_t>& in
 // >
 // [[0, 1, 2], [1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [5, 6, 7], [6, 7, 8],
 // [7, 8, 9]]
-static inline std::vector<std::vector<size_t>> slice(const std::vector<size_t>& indices, size_t sliceSize) {
-    std::vector<std::vector<size_t>> slices;
-    for (auto i = 0; i <= indices.size() - sliceSize; ++i) {
+template <typename TypeWithAmount>
+static inline std::vector<std::vector<TypeWithAmount>> slice(const std::vector<TypeWithAmount>& inputs, size_t sliceSize) {
+    std::vector<std::vector<TypeWithAmount>> slices;
+    for (auto i = 0; i <= inputs.size() - sliceSize; ++i) {
         slices.emplace_back();
         slices[i].reserve(sliceSize);
         for (auto j = i; j < i + sliceSize; j++) {
-            slices[i].push_back(indices[j]);
+            slices[i].push_back(inputs[j]);
         }
     }
     return slices;
 }
 
-std::vector<size_t> InputSelector::select(int64_t targetValue, int64_t byteFee, int64_t numOutputs) {
+template <typename TypeWithAmount>
+std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int64_t numOutputs) {
     // if target value is zero, no UTXOs are needed
     if (targetValue == 0) {
         return {};
@@ -71,22 +78,19 @@ std::vector<size_t> InputSelector::select(int64_t targetValue, int64_t byteFee, 
     //std::cout << "QQQ2 " << doubleTargetValue << "\n";
 
     // Get all possible utxo selections up to a maximum size, sort by total amount, increasing
-    std::vector<size_t> sortedIndices;
-    for (auto i = 0; i < inputs.size(); ++i) {
-        sortedIndices.push_back(i);
-    }
-    std::sort(sortedIndices.begin(), sortedIndices.end(),
-        [this](const size_t& lhs, const size_t& rhs) {
-            return inputs[lhs] < inputs[rhs];
+    std::vector<TypeWithAmount> sorted = inputs;
+    std::sort(sorted.begin(), sorted.end(),
+        [](const TypeWithAmount& lhs, const TypeWithAmount& rhs) {
+            return lhs.amount < rhs.amount;
         });
 
     // Precompute maximum amount possible to obtain with given number of inputs
-    const auto n = sortedIndices.size();
+    const auto n = sorted.size();
     std::vector<uint64_t> maxWithXInputs = std::vector<uint64_t>();
     maxWithXInputs.push_back(0);
     int64_t maxSum = 0;
     for (auto i = 0; i < n; ++i) {
-        maxSum += inputs[sortedIndices[n - 1 - i]];
+        maxSum += sorted[n - 1 - i].amount;
         maxWithXInputs.push_back(maxSum);
     }
 
@@ -111,20 +115,20 @@ std::vector<size_t> InputSelector::select(int64_t targetValue, int64_t byteFee, 
             // no way to satisfy with only numInputs inputs, skip
             continue;
         }
-        auto slices = slice(sortedIndices, static_cast<size_t>(numInputs));
+        auto slices = slice(sorted, static_cast<size_t>(numInputs));
 
         slices.erase(
             std::remove_if(slices.begin(), slices.end(),
-                [this, targetWithFeeAndDust](const std::vector<size_t>& slice) {
-                    return sumIndices(slice) < targetWithFeeAndDust;
+                [targetWithFeeAndDust](const std::vector<TypeWithAmount>& slice) {
+                    return sum(slice) < targetWithFeeAndDust;
                 }),
             slices.end());
         if (!slices.empty()) {
             std::sort(slices.begin(), slices.end(),
-                [this, distFrom2x](const std::vector<size_t>& lhs, const std::vector<size_t>& rhs) {
-                    return distFrom2x(sumIndices(lhs)) < distFrom2x(sumIndices(rhs));
+                [distFrom2x](const std::vector<TypeWithAmount>& lhs, const std::vector<TypeWithAmount>& rhs) {
+                    return distFrom2x(sum(lhs)) < distFrom2x(sum(rhs));
                 });
-            return filterDustInput(slices.front(), byteFee);
+            return filterOutDust(slices.front(), byteFee);
         }
     }
 
@@ -136,25 +140,25 @@ std::vector<size_t> InputSelector::select(int64_t targetValue, int64_t byteFee, 
             // no way to satisfy with only numInputs inputs, skip
             continue;
         }
-        auto slices = slice(sortedIndices, static_cast<size_t>(numInputs));
+        auto slices = slice(sorted, static_cast<size_t>(numInputs));
         slices.erase(
             std::remove_if(slices.begin(), slices.end(),
-                [this,  targetWithFee](const std::vector<size_t>& slice) {
-                    return sumIndices(slice) < targetWithFee;
+                [targetWithFee](const std::vector<TypeWithAmount>& slice) {
+                    return sum(slice) < targetWithFee;
                 }),
             slices.end());
         if (!slices.empty()) {
-            return filterDustInput(slices.front(), byteFee);
+            return filterOutDust(slices.front(), byteFee);
         }
     }
 
     return {};
 }
 
-std::vector<size_t> InputSelector::selectMaxAmount(int64_t byteFee) {
-    std::vector<size_t> indices;
-    for (auto i = 0; i < inputs.size(); ++i) {
-        indices.push_back(i);
-    }
-    return filterDustInput(indices, byteFee);
+template <typename TypeWithAmount>
+std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectMaxAmount(int64_t byteFee) {
+    return filterOutDust(inputs, byteFee);
 }
+
+// Explicitly instantiate
+template class Bitcoin::InputSelector<UTXO>;
