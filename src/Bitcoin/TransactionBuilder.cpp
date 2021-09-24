@@ -94,6 +94,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
         }
 
         auto output_size = 2;
+        std::vector<size_t> selectedIndices;
         if (!maxAmount) {
             output_size = 2; // output + change
             plan.utxos = inputSelector.select(plan.amount, input.byteFee, output_size);

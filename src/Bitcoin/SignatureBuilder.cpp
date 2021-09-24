@@ -177,7 +177,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
                 // Error: missing key
                 return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
             }
-            auto signature = createSignature(transactionToSign, script, pair, index, utxo.amount, version);
+            auto signature = createSignature(transactionToSign, script, pair, index, utxo.amount(), version);
             if (signature.empty()) {
                 // Error: Failed to sign
                 return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
@@ -194,7 +194,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
             // Error: Missing key
             return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
         }
-        auto signature = createSignature(transactionToSign, script, pair, index, utxo.amount, version);
+        auto signature = createSignature(transactionToSign, script, pair, index, utxo.amount(), version);
         if (signature.empty()) {
             // Error: Failed to sign
             return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
@@ -207,7 +207,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
             // Error: Missing keys
             return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
         }
-        auto signature = createSignature(transactionToSign, script, pair, index, utxo.amount, version);
+        auto signature = createSignature(transactionToSign, script, pair, index, utxo.amount(), version);
         if (signature.empty()) {
             // Error: Failed to sign
             return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);

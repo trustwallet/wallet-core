@@ -27,7 +27,7 @@ auto emptyTxOutPoint = OutPoint(parse_hex("1d0f172a0ecb48aee1be1f2687d2963ae33f7
 
 UTXO buildTestUTXO(int64_t amount) {
     UTXO utxo;
-    utxo.amount = amount;
+    utxo._amount = amount;
     utxo.outPoint = emptyTxOutPoint;
     utxo.outPoint.sequence = UINT32_MAX;
     utxo.script = Script(parse_hex("0014" "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1"));
@@ -64,7 +64,7 @@ SigningInput buildSigningInput(Amount amount, int byteFee, const UTXOs& utxos, b
 int64_t sumUTXOs(const UTXOs& utxos) {
     int64_t s = 0u;
     for (auto& utxo: utxos) {
-        s += utxo.amount;
+        s += utxo._amount;
     }
     return s;
 }
@@ -76,9 +76,9 @@ bool verifySelectedUTXOs(const UTXOs& selected, const std::vector<int64_t>& expe
         std::cerr << "Wrong number of selected UTXOs, " << selected.size() << " vs. " << expectedAmounts.size() << std::endl;
     }
     for (auto i = 0; i < selected.size() && i < expectedAmounts.size(); ++i) {
-        if (expectedAmounts[i] != selected[i].amount) {
+        if (expectedAmounts[i] != selected[i]._amount) {
             ret = false;
-            std::cerr << "Wrong UTXOs amount, pos " << i << " amount " << selected[i].amount << " expected " << expectedAmounts[i] << std::endl;
+            std::cerr << "Wrong UTXOs amount, pos " << i << " amount " << selected[i]._amount << " expected " << expectedAmounts[i] << std::endl;
         }
     }
     return ret;

@@ -1,0 +1,140 @@
+// Copyright © 2017-2021 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+syntax = "proto3";
+
+package TW.Avalanche.Proto;
+option java_package = "wallet.core.jni.proto";
+
+message SECP256K1TransferOutput {
+    uint32 type_id = 1;
+    uint64 amount = 2;
+    uint64 locktime = 3;
+    uint32 threshold = 4;
+
+    // 4 bytes + len(addresses) * 20 bytes
+    repeated bytes addresses = 5;
+}
+
+message TransactionOutput {
+    oneof output {
+        SECP256K1TransferOutput secp_transfer_output = 1;
+    }
+}
+
+message SECP256K1TransferInput {
+    uint32 type_id = 1;
+    uint64 amount = 2;
+
+    // 4 bytes + len(address_indices) * 4 bytes
+    repeated uint32 address_indices = 3;
+}
+
+message TransactionInput {
+    oneof input {
+        SECP256K1TransferInput secp_transfer_input = 1;
+    }
+}
+
+message TransferableOutput {
+    bytes asset_id = 1;  // 32 bytes
+    TransactionOutput output = 2;
+}
+
+message TransferableInput {
+    bytes tx_id = 1;  // 32 bytes
+    uint32 utxo_index = 2;
+    bytes asset_id = 3;  // 32 bytes
+    TransactionInput input = 4;
+
+    // not encoded. represented as pubkeys.
+    repeated bytes spendable_addresses = 5;
+}
+
+message BaseTx {
+    uint32 type_id = 1;
+    uint32 network_id = 2;
+    bytes blockchain_id = 3;  // 32 bytes
+
+    // 4 bytes + size(outs)
+    repeated TransferableOutput outputs = 4;
+
+    // 4 bytes + size(ins)
+    repeated TransferableInput inputs = 5;
+
+    // 4 bytes + size(memo)
+    bytes memo = 6;
+}
+
+message SimpleTransferTx {
+    uint32 type_id = 1;
+    uint32 network_id = 2;
+    bytes blockchain_id = 3;  // 32 bytes
+
+    // List of available input; 4 bytes + size(ins)
+    repeated TransferableInput inputs = 4;
+
+    uint32 output_type_id = 5;
+
+    bytes output_asset_id = 6;  // 32 bytes
+
+    // Amount to send.  Transaction created will have this amount in its output, 
+    // except when use_max_amount is set, in that case this amount is not relevant, maximum possible amount will be used (max avail less fee).
+    // If amount is equal or more than the available amount, also max amount will be used.
+    uint64 amount = 7;
+
+    uint64 fee = 8;
+
+    uint64 locktime = 9;
+
+    uint32 threshold = 10;
+
+    // Destination addresses; 4 bytes + len(address_indices) * 4 bytes
+    repeated bytes to_addresses = 11;
+
+    // Change addresses, usually same as sender; 4 bytes + len(address_indices) * 4 bytes
+    repeated bytes change_addresses = 12;
+
+    // 4 bytes + size(memo)
+    bytes memo = 13;
+
+    // Optional transaction plan
+    TransactionPlan plan = 14;
+
+    // If sending max possibe amount.
+    bool use_max_amount = 15;
+}
+
+message TransactionPlan {
+    // Amount to be received at the other end.
+    uint64 amount = 1;
+
+    // Maximum available amount.
+    uint64 available_amount = 2;
+
+    // Estimated transaction fee.
+    uint64 fee = 3;
+
+    // Change.
+    uint64 change = 4;
+
+    // Selected unspent transaction outputs.
+    repeated TransferableInput utxos = 5;
+}
+
+message SigningInput {
+    repeated bytes private_keys = 1;
+    oneof tx_oneof {
+        BaseTx base_tx = 2;
+        SimpleTransferTx simple_transfer_tx = 3;
+    }
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+}

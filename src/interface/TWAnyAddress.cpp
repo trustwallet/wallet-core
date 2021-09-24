@@ -23,6 +23,7 @@
 #include "../Nano/Address.h"
 #include "../Elrond/Address.h"
 #include "../NEAR/Address.h"
+#include "../Avalanche/Address.h"
 
 #include "../Coin.h"
 #include "../HexCoding.h"
@@ -214,6 +215,12 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypeNEAR: {
         auto addr = NEAR::Address(string);
         data = Data(addr.bytes.begin(), addr.bytes.end());
+        break;
+    }
+
+    case TWCoinTypeAvalancheXChain: {
+        auto addr = Avalanche::Address(string);
+        data = addr.getKeyHash();
         break;
     }
 
