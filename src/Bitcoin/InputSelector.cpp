@@ -6,8 +6,6 @@
 
 #include "InputSelector.h"
 
-#include "UTXO.h"
-
 #include <algorithm>
 #include <cassert>
 
@@ -19,7 +17,7 @@ template <typename TypeWithAmount>
 uint64_t InputSelector<TypeWithAmount>::sum(const std::vector<TypeWithAmount>& amounts) {
     uint64_t sum = 0;
     for(auto& i: amounts) {
-        sum += i.amount;
+        sum += i.amount();
     }
     return sum;
 }
@@ -35,7 +33,7 @@ template <typename TypeWithAmount>
 std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::filterThreshold(const std::vector<TypeWithAmount>& inputs, uint64_t minimumAmount) {
     std::vector<TypeWithAmount> filtered;
     for (auto& i: inputs) {
-        if (i.amount > minimumAmount) {
+        if (i.amount() > minimumAmount) {
             filtered.push_back(i);
         }
     }
@@ -81,7 +79,7 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::select(int64_t target
     std::vector<TypeWithAmount> sorted = inputs;
     std::sort(sorted.begin(), sorted.end(),
         [](const TypeWithAmount& lhs, const TypeWithAmount& rhs) {
-            return lhs.amount < rhs.amount;
+            return lhs.amount() < rhs.amount();
         });
 
     // Precompute maximum amount possible to obtain with given number of inputs
@@ -90,7 +88,7 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::select(int64_t target
     maxWithXInputs.push_back(0);
     int64_t maxSum = 0;
     for (auto i = 0; i < n; ++i) {
-        maxSum += sorted[n - 1 - i].amount;
+        maxSum += sorted[n - 1 - i].amount();
         maxWithXInputs.push_back(maxSum);
     }
 
@@ -160,5 +158,7 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectMaxAmount(int64
     return filterOutDust(inputs, byteFee);
 }
 
-// Explicitly instantiate
+// Explicit template instantiations
+#include "UTXO.h"
+
 template class Bitcoin::InputSelector<UTXO>;

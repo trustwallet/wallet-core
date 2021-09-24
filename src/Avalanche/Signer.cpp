@@ -194,6 +194,7 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
     auto amount = tx.amount();
     auto fee = tx.fee();
 
+    /* TODO
     // Input selection
     auto inputSelector = Bitcoin::InputSelector(inputAmounts, Bitcoin::ConstantFeeCalculator(static_cast<int64_t>(fee)));
     std::vector<size_t> selectedIndices;
@@ -223,6 +224,7 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
     plan.set_available_amount(availAmount);
     plan.set_fee(fee);
     plan.set_change(change);
+    */
 
     return plan;
 }

@@ -68,13 +68,13 @@ SigningInput buildInputP2PKH(bool omitKey = false) {
 
     UTXO utxo0;
     utxo0.script = utxo0Script;
-    utxo0.amount = 625'000'000;
+    utxo0._amount = 625'000'000;
     utxo0.outPoint = OutPoint(hash0, 0, UINT32_MAX);
     input.utxos.push_back(utxo0);
 
     UTXO utxo1;
     utxo1.script = Script(parse_hex("0014" "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1"));
-    utxo1.amount = 600'000'000;
+    utxo1._amount = 600'000'000;
     utxo1.outPoint = OutPoint(hash1, 1, UINT32_MAX);
     input.utxos.push_back(utxo1);
 
@@ -196,14 +196,14 @@ TEST(BitcoinSigning, SignP2WPKH_Bip143) {
 
     UTXO utxo0;
     utxo0.script = utxo0Script;
-    utxo0.amount = 1000000; // note: this amount is not specified in the test
+    utxo0._amount = 1000000; // note: this amount is not specified in the test
     utxo0.outPoint = OutPoint(hash0, 0, 0xffffffee);
     input.utxos.push_back(utxo0);
 
     UTXO utxo1;
     auto utxo1Script = Script::buildPayToWitnessProgram(utxoPubkeyHash1);
     utxo1.script = utxo1Script;
-    utxo1.amount = 600000000; // 0x23C34600 0046c323
+    utxo1._amount = 600000000; // 0x23C34600 0046c323
     utxo1.outPoint = OutPoint(hash1, 1, UINT32_MAX);
     input.utxos.push_back(utxo1); 
 
@@ -285,13 +285,13 @@ SigningInput buildInputP2WPKH(int64_t amount, TWBitcoinSigHashType hashType, int
 
     UTXO utxo0;
     utxo0.script = Script(parse_hex("2103c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432ac"));
-    utxo0.amount = utxo0Amount;
+    utxo0._amount = utxo0Amount;
     utxo0.outPoint = OutPoint(hash0, 0, UINT32_MAX);
     input.utxos.push_back(utxo0);
 
     UTXO utxo1;
     utxo1.script = Script(parse_hex("0014" "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1"));
-    utxo1.amount = utxo1Amount;
+    utxo1._amount = utxo1Amount;
     utxo1.outPoint = OutPoint(hash1, 1, UINT32_MAX);
     input.utxos.push_back(utxo1);
 
@@ -496,7 +496,7 @@ SigningInput buildInputP2WSH(enum TWBitcoinSigHashType hashType, bool omitScript
     UTXO utxo0;
     auto p2wsh = Script::buildPayToWitnessScriptHash(parse_hex("ff25429251b5a84f452230a3c75fd886b7fc5a7865ce4a7bb7a9d7c5be6da3db"));
     utxo0.script = p2wsh;
-    utxo0.amount = 1226;
+    utxo0._amount = 1226;
     auto hash0 = parse_hex("0001000000000000000000000000000000000000000000000000000000000000");
     utxo0.outPoint = OutPoint(hash0, 0, UINT32_MAX);
     input.utxos.push_back(utxo0);
@@ -772,7 +772,7 @@ SigningInput buildInputP2SH_P2WPKH(bool omitScript = false, bool omitKeys = fals
         utxo0Script = Script(parse_hex("FFFEFDFCFB"));
     }
     utxo0.script = utxo0Script;
-    utxo0.amount = 1'000'000'000;
+    utxo0._amount = 1'000'000'000;
     auto hash0 = parse_hex("db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a5477");
     utxo0.outPoint = OutPoint(hash0, 1, UINT32_MAX);
     input.utxos.push_back(utxo0);
@@ -940,12 +940,12 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
     UTXO utxo;
     utxo.outPoint = OutPoint(parse_hex("36641869ca081e70f394c6948e8af409e18b619df2ed74aa106c1ca29787b96e"), 1, UINT32_MAX);
     utxo.script = utxo0Script;
-    utxo.amount = 987654321;
+    utxo._amount = 987654321;
     input.utxos.push_back(utxo);
 
     TransactionPlan plan;
     plan.amount = input.amount;
-    plan.availableAmount = input.utxos[0].amount;
+    plan.availableAmount = input.utxos[0]._amount;
     plan.change = 87000000;
     plan.fee = plan.availableAmount - plan.amount - plan.change;
     plan.utxos = input.utxos;
@@ -1050,14 +1050,14 @@ TEST(BitcoinSigning, Sign_NegativeInvalidAddress) {
     UTXO utxo0;
     auto utxo0Script = Script(parse_hex("2103c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432ac"));
     utxo0.script = utxo0Script;
-    utxo0.amount = 625'000'000;
+    utxo0._amount = 625'000'000;
     utxo0.outPoint = OutPoint(hash0, 0, UINT32_MAX);
     input.utxos.push_back(utxo0);
 
     UTXO utxo1;
     auto utxo1Script = Script(parse_hex("00141d0f172a0ecb48aee1be1f2687d2963ae33f71a1"));
     utxo1.script = utxo1Script;
-    utxo1.amount = 600'000'000;
+    utxo1._amount = 600'000'000;
     utxo1.outPoint = OutPoint(hash1, 1, UINT32_MAX);
     input.utxos.push_back(utxo1);
 
@@ -1091,7 +1091,7 @@ TEST(BitcoinSigning, Plan_10input_MaxAmount) {
 
         UTXO utxo;
         utxo.script = utxoScript;
-        utxo.amount = 1'000'000 + i * 10'000;
+        utxo._amount = 1'000'000 + i * 10'000;
         auto hash = parse_hex("a85fd6a9a7f2f54cacb57e83dfd408e51c0a5fc82885e3fa06be8692962bc407");
         std::reverse(hash.begin(), hash.end());
         utxo.outPoint = OutPoint(hash, 0, UINT32_MAX);
@@ -1159,7 +1159,7 @@ TEST(BitcoinSigning, Sign_LitecoinReal_a85f) {
 
     UTXO utxo0;
     utxo0.script = utxo0Script;
-    utxo0.amount = 3'900'000;
+    utxo0._amount = 3'900'000;
     auto hash0 = parse_hex("7051cd18189401a844abf0f9c67e791315c4c154393870453f8ad98a818efdb5");
     std::reverse(hash0.begin(), hash0.end());
     utxo0.outPoint = OutPoint(hash0, 9, UINT32_MAX - 1);
@@ -1225,7 +1225,7 @@ TEST(BitcoinSigning, PlanAndSign_LitecoinReal_8435) {
 
     UTXO utxo0;
     utxo0.script = utxo0Script;
-    utxo0.amount = 3'899'774;
+    utxo0._amount = 3'899'774;
     auto hash0 = parse_hex("a85fd6a9a7f2f54cacb57e83dfd408e51c0a5fc82885e3fa06be8692962bc407");
     std::reverse(hash0.begin(), hash0.end());
     utxo0.outPoint = OutPoint(hash0, 0, UINT32_MAX);
@@ -1385,7 +1385,7 @@ TEST(BitcoinSigning, RedeemExtendedPubkeyUTXO) {
 
     UTXO utxo0;
     utxo0.script = utxo0Script;
-    utxo0.amount = 16874;
+    utxo0._amount = 16874;
     auto hash0 = parse_hex("6ae3f1d245521b0ea7627231d27d613d58c237d6bf97a1471341a3532e31906c");
     std::reverse(hash0.begin(), hash0.end());
     utxo0.outPoint = OutPoint(hash0, 0, UINT32_MAX);
@@ -1393,7 +1393,7 @@ TEST(BitcoinSigning, RedeemExtendedPubkeyUTXO) {
 
     UTXO utxo1;
     utxo1.script = utxo0Script;
-    utxo1.amount = 10098;
+    utxo1._amount = 10098;
     auto hash1 = parse_hex("fd1ea8178228e825d4106df0acb61a4fb14a8f04f30cd7c1f39c665c9427bf13");
     std::reverse(hash1.begin(), hash1.end());
     utxo1.outPoint = OutPoint(hash1, 0, UINT32_MAX);
