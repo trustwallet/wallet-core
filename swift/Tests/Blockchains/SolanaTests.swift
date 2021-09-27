@@ -57,6 +57,7 @@ class SolanaTests: XCTestCase {
         let delegateStakeMessage = SolanaDelegateStake.with {
             $0.validatorPubkey = "4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC"
             $0.value = 42
+            $0.stakeAccount = ""
         }
         let input = SolanaSigningInput.with {
             $0.stakeTransaction = delegateStakeMessage

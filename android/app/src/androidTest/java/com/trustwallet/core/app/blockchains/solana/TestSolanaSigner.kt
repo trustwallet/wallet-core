@@ -41,9 +41,10 @@ class TestSolanaSigner {
 
     @Test
     fun testDelegateStakeSign() {
-        val delegateStakeMessage = Solana.Stake.newBuilder().apply {
+        val delegateStakeMessage = Solana.DelegateStake.newBuilder().apply {
             validatorPubkey = commonValidatorPubkey
             value = 42
+            stakeAccount = ""
         }.build()
         val signingInput = Solana.SigningInput.newBuilder().apply {
             stakeTransaction = delegateStakeMessage
@@ -60,7 +61,7 @@ class TestSolanaSigner {
     @Test
     fun testDeactivateStakeSign() {
         val deactivateStakeMessage = Solana.DeactivateStake.newBuilder().apply {
-            validatorPubkey = commonValidatorPubkey
+            stakeAccount = "6u9vJH9pRj66N5oJFCBADEbpMTrLxQATcL6q5p5MXwYv"
         }.build()
         val signingInput = Solana.SigningInput.newBuilder().apply {
             deactivateStakeTransaction = deactivateStakeMessage
@@ -77,7 +78,7 @@ class TestSolanaSigner {
     @Test
     fun testWithdrawStakeSign() {
         val withdrawStakeMessage = Solana.WithdrawStake.newBuilder().apply {
-            validatorPubkey = commonValidatorPubkey
+            stakeAccount = "6u9vJH9pRj66N5oJFCBADEbpMTrLxQATcL6q5p5MXwYv"
             value = 42
         }.build()
         val signingInput = Solana.SigningInput.newBuilder().apply {
