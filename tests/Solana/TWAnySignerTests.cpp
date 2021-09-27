@@ -167,7 +167,7 @@ TEST(TWAnySignerSolana, SignWithdrawAllStakeTransaction) {
     EXPECT_EQ(output.encoded(), expectedString);
 }
 
-TEST(TWAnySignerSolana, SignDeactivateStakeTransactionV1) {
+TEST(TWAnySignerSolana, SignDeactivateStakeTransaction_1) {
     auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
@@ -188,7 +188,7 @@ TEST(TWAnySignerSolana, SignDeactivateStakeTransactionV1) {
     ASSERT_EQ(output.encoded(), expectedString);
 }
 
-TEST(TWAnySignerSolana, SignWithdrawStakeTransactionV1) {
+TEST(TWAnySignerSolana, SignWithdrawStakeTransaction_1) {
     auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 

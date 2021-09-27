@@ -54,7 +54,7 @@ class SolanaTests: XCTestCase {
     }
 
     func testDelegateStakeSigner() throws {
-        let delegateStakeMessage = SolanaStake.with {
+        let delegateStakeMessage = SolanaDelegateStake.with {
             $0.validatorPubkey = "4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC"
             $0.value = 42
         }
@@ -84,7 +84,7 @@ class SolanaTests: XCTestCase {
 
     func testDeactivateStakeSigner() throws {
         let deactivateStakeMessage = SolanaDeactivateStake.with {
-            $0.validatorPubkey = "4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC"
+            $0.stakeAccount = "6u9vJH9pRj66N5oJFCBADEbpMTrLxQATcL6q5p5MXwYv"
         }
         let input = SolanaSigningInput.with {
             $0.deactivateStakeTransaction = deactivateStakeMessage
@@ -106,7 +106,7 @@ class SolanaTests: XCTestCase {
 
     func testWithdrawStakeSigner() throws {
         let withdrawMessage = SolanaWithdrawStake.with {
-            $0.validatorPubkey = "4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC"
+            $0.stakeAccount = "6u9vJH9pRj66N5oJFCBADEbpMTrLxQATcL6q5p5MXwYv"
             $0.value = 42
         }
         let input = SolanaSigningInput.with {
