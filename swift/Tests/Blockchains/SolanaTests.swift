@@ -60,7 +60,7 @@ class SolanaTests: XCTestCase {
             $0.stakeAccount = ""
         }
         let input = SolanaSigningInput.with {
-            $0.stakeTransaction = delegateStakeMessage
+            $0.delegateStakeTransaction = delegateStakeMessage
             $0.recentBlockhash = "11111111111111111111111111111111"
             $0.privateKey = Data(Base58.decodeNoCheck( string: "AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746")!)
         }
