@@ -47,7 +47,7 @@ class TestSolanaSigner {
             stakeAccount = ""
         }.build()
         val signingInput = Solana.SigningInput.newBuilder().apply {
-            stakeTransaction = delegateStakeMessage
+            delegateStakeTransaction = delegateStakeMessage
             recentBlockhash = blockhash
             privateKey = ByteString.copyFrom(Base58.decodeNoCheck(commonPrivateKey))
         }.build()
