@@ -507,7 +507,7 @@ TEST(TransactionPlan, AmountDecred) {
     EXPECT_TRUE(verifyPlan(txPlan, {39900000}, 10000000, 2540));
 }
 
-TEST(TransactionPlan, LotsofUtxosNonmax_900) {
+TEST(TransactionPlan, ManyUtxosNonmax_900) {
     const auto n = 900;
     const auto byteFee = 10;
     std::vector<int64_t> values;
@@ -538,7 +538,7 @@ TEST(TransactionPlan, LotsofUtxosNonmax_900) {
     EXPECT_TRUE(verifyPlan(txPlan, subset, requestedAmount, 40'910));
 }
 
-TEST(TransactionPlan, LotsofUtxosNonmax_4000_simple) {
+TEST(TransactionPlan, ManyUtxosNonmax_4000_simple) {
     const auto n = 4000;
     const auto byteFee = 10;
     std::vector<int64_t> values;
@@ -569,7 +569,7 @@ TEST(TransactionPlan, LotsofUtxosNonmax_4000_simple) {
     EXPECT_TRUE(verifyPlan(txPlan, subset, requestedAmount, 1'520'490));
 }
 
-TEST(TransactionPlan, LotsofUtxosMax_900) {
+TEST(TransactionPlan, ManyUtxosMax_900) {
     const auto n = 900;
     const auto byteFee = 10;
     std::vector<int64_t> values;
@@ -604,7 +604,7 @@ TEST(TransactionPlan, LotsofUtxosMax_900) {
     EXPECT_TRUE(verifyPlan(txPlan, filteredValues, 39'222'780, 1'311'720));
 }
 
-TEST(TransactionPlan, LotsofUtxosMax_4000_simple) {
+TEST(TransactionPlan, ManyUtxosMax_4000_simple) {
     const auto n = 4000;
     const auto byteFee = 10;
     std::vector<int64_t> values;

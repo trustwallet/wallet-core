@@ -420,3 +420,63 @@ TEST(BitcoinInputSelector, SelectZcashMaxUnspents2) {
 
     EXPECT_TRUE(verifySelectedUTXOs(selected, {}));
 }
+
+TEST(BitcoinInputSelector, ManyUtxos_900) {
+    const auto n = 900;
+    const auto byteFee = 10;
+    std::vector<int64_t> values;
+    uint64_t valueSum = 0;
+    for (int i = 0; i < n; ++i) {
+        const uint64_t val = (i + 1) * 100;
+        values.push_back(val);
+        valueSum += val;
+    }
+    const uint64_t requestedAmount = valueSum / 8;
+    EXPECT_EQ(requestedAmount, 5'068'125);
+    auto utxos = buildTestUTXOs(values);
+
+    auto selector = InputSelector<UTXO>(utxos);
+    auto selected = selector.select(requestedAmount, byteFee);
+
+    // expected result: 59 utxos, with the largest amounts
+    std::vector<int64_t> subset;
+    uint64_t subsetSum = 0;
+    for (int i = n - 59; i < n; ++i) {
+        const uint64_t val = (i + 1) * 100;
+        subset.push_back(val);
+        subsetSum += val;
+    }
+    EXPECT_EQ(subset.size(), 59);
+    EXPECT_EQ(subsetSum, 5'138'900);
+    EXPECT_TRUE(verifySelectedUTXOs(selected, subset));
+}
+
+TEST(BitcoinInputSelector, ManyUtxos_4000_simple) {
+    const auto n = 4000;
+    const auto byteFee = 10;
+    std::vector<int64_t> values;
+    uint64_t valueSum = 0;
+    for (int i = 0; i < n; ++i) {
+        const uint64_t val = (i + 1) * 100;
+        values.push_back(val);
+        valueSum += val;
+    }
+    const uint64_t requestedAmount = valueSum / 8;
+    EXPECT_EQ(requestedAmount, 100'025'000);
+    auto utxos = buildTestUTXOs(values);
+
+    auto selector = InputSelector<UTXO>(utxos);
+    auto selected = selector.selectSimple(requestedAmount, byteFee);
+
+    // expected result: 1501 utxos, with the smaller amounts (except the very small dust ones)
+    std::vector<int64_t> subset;
+    uint64_t subsetSum = 0;
+    for (int i = 10; i < 1501+10; ++i) {
+        const uint64_t val = (i + 1) * 100;
+        subset.push_back(val);
+        subsetSum += val;
+    }
+    EXPECT_EQ(subset.size(), 1501);
+    EXPECT_EQ(subsetSum, 114'226'100);
+    EXPECT_TRUE(verifySelectedUTXOs(selected, subset));
+}
