@@ -16,6 +16,10 @@
 
 namespace TW::Bitcoin {
 
+
+// Above this number of UTXOs a simplified selection is used (optimization)
+static const auto SimpleModeLimit = 1000;
+
 std::optional<TransactionOutput> TransactionBuilder::prepareOutputWithScript(std::string address, Amount amount, enum TWCoinType coin) {
     auto lockingScript = Script::lockScriptForAddress(address, coin);
     if (lockingScript.empty()) {
@@ -96,7 +100,11 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
         auto output_size = 2;
         if (!maxAmount) {
             output_size = 2; // output + change
-            plan.utxos = inputSelector.select(plan.amount, input.byteFee, output_size);
+            if (input.utxos.size() <= SimpleModeLimit) {
+                plan.utxos = inputSelector.select(plan.amount, input.byteFee, output_size);
+            } else {
+                plan.utxos = inputSelector.selectSimple(plan.amount, input.byteFee, output_size);
+            }
         } else {
             output_size = 1; // no change
             plan.utxos = inputSelector.selectMaxAmount(input.byteFee);
@@ -120,7 +128,14 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
                 plan.fee = 0;
                 plan.change = 0;
             }
-            plan.fee = estimateSegwitFee(feeCalculator, plan, output_size, input);
+            
+            if (input.utxos.size() <= SimpleModeLimit) {
+                plan.fee = estimateSegwitFee(feeCalculator, plan, output_size, input);
+            } else {
+                // simple & fast mode for large inputs
+                plan.fee = estimateSimpleFee(feeCalculator, plan, output_size, input.byteFee);
+            }
+
             // If fee is larger then availableAmount (can happen in special maxAmount case), we reduce it (and hope it will go through)
             plan.fee = std::min(plan.availableAmount, plan.fee);
             assert(plan.fee >= 0 && plan.fee <= plan.availableAmount);

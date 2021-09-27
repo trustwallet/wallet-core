@@ -64,6 +64,15 @@ TEST(BitcoinInputSelector, SelectUnspents5) {
     EXPECT_TRUE(verifySelectedUTXOs(selected, {6000, 7000, 8000, 9000}));
 }
 
+TEST(BitcoinInputSelector, SelectUnspents5_simple) {
+    auto utxos = buildTestUTXOs({1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000});
+
+    auto selector = InputSelector<UTXO>(utxos);
+    auto selected = selector.selectSimple(28000, 1);
+
+    EXPECT_TRUE(verifySelectedUTXOs(selected, {1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000}));
+}
+
 TEST(BitcoinInputSelector, SelectUnspentsInsufficient) {
     auto utxos = buildTestUTXOs({4000, 4000, 4000});
 
@@ -234,7 +243,7 @@ TEST(BitcoinInputSelector, SelectTwoFirstEnoughButSecond) {
 }
 
 TEST(BitcoinInputSelector, SelectTenThree) {
-    auto utxos = buildTestUTXOs({1'000, 2'000, 100'000, 3'000, 4'000, 5,000, 125'000, 6'000, 150'000, 7'000});
+    auto utxos = buildTestUTXOs({1'000, 2'000, 100'000, 3'000, 4'000, 5'000, 125'000, 6'000, 150'000, 7'000});
 
     auto selector = InputSelector<UTXO>(utxos);
     auto selected = selector.select(300'000, 1);
@@ -242,8 +251,35 @@ TEST(BitcoinInputSelector, SelectTenThree) {
     EXPECT_TRUE(verifySelectedUTXOs(selected, {100'000, 125'000, 150'000}));
 }
 
+TEST(BitcoinInputSelector, SelectTenThree_simple1) {
+    auto utxos = buildTestUTXOs({1'000, 2'000, 100'000, 3'000, 4'000, 5'000, 125'000, 6'000, 150'000, 7'000});
+
+    auto selector = InputSelector<UTXO>(utxos);
+    auto selected = selector.selectSimple(300'000, 1);
+
+    EXPECT_TRUE(verifySelectedUTXOs(selected, {1'000, 2'000, 100'000, 3'000, 4'000, 5'000, 125'000, 6'000, 150'000}));
+}
+
+TEST(BitcoinInputSelector, SelectTenThree_simple2) {
+    auto utxos = buildTestUTXOs({150'000, 125'000, 100'000, 7'000, 6'000, 5'000, 4'000, 3'000, 2'000, 1'000});
+
+    auto selector = InputSelector<UTXO>(utxos);
+    auto selected = selector.selectSimple(300'000, 1);
+
+    EXPECT_TRUE(verifySelectedUTXOs(selected, {150'000, 125'000, 100'000}));
+}
+
+TEST(BitcoinInputSelector, SelectTenThree_simple3) {
+    auto utxos = buildTestUTXOs({1'000, 2'000, 3'000, 4'000, 5'000, 6'000, 7'000, 100'000, 125'000, 150'000});
+
+    auto selector = InputSelector<UTXO>(utxos);
+    auto selected = selector.selectSimple(300'000, 1);
+
+    EXPECT_TRUE(verifySelectedUTXOs(selected, {1'000, 2'000, 3'000, 4'000, 5'000, 6'000, 7'000, 100'000, 125'000, 150'000}));
+}
+
 TEST(BitcoinInputSelector, SelectTenThreeExact) {
-    auto utxos = buildTestUTXOs({1'000, 2'000, 100'000, 3'000, 4'000, 5,000, 125'000, 6'000, 150'000, 7'000});
+    auto utxos = buildTestUTXOs({1'000, 2'000, 100'000, 3'000, 4'000, 5'000, 125'000, 6'000, 150'000, 7'000});
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     auto selector = InputSelector<UTXO>(utxos, feeCalculator);
