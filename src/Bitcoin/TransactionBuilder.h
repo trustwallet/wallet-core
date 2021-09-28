@@ -41,7 +41,6 @@ public:
         }
 
         const auto emptyScript = Script();
-        // prepare inputs
         for (auto& utxo : plan.utxos) {
             tx.inputs.emplace_back(utxo.outPoint, emptyScript, utxo.outPoint.sequence);
         }

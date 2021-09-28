@@ -86,19 +86,9 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
     } else if (input.utxos.empty()) {
         plan.error = Common::Proto::Error_missing_input_utxos;
     } else {
-        UTXOs inputUtxos;
-        if (input.utxos.size() <= MaxUtxosHardLimit) {
-            inputUtxos = input.utxos;
-        } else {
-            // truncate input UTXOs to MaxUtxosHardLimit
-            for (auto i = 0; i < MaxUtxosHardLimit; ++i) {
-                inputUtxos.push_back(input.utxos[i]);
-            }
-        }
-
         const auto& feeCalculator = getFeeCalculator(static_cast<TWCoinType>(input.coinType));
-        auto inputSelector = InputSelector<UTXO>(inputUtxos, feeCalculator);
-        auto inputSum = InputSelector<UTXO>::sum(inputUtxos);
+        auto inputSelector = InputSelector<UTXO>(input.utxos, feeCalculator);
+        auto inputSum = InputSelector<UTXO>::sum(input.utxos);
 
         // select UTXOs
         plan.amount = input.amount;
@@ -110,16 +100,26 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
         }
 
         auto output_size = 2;
+        UTXOs selectedInputs;
         if (!maxAmount) {
             output_size = 2; // output + change
-            if (inputUtxos.size() <= SimpleModeLimit) {
-                plan.utxos = inputSelector.select(plan.amount, input.byteFee, output_size);
+            if (input.utxos.size() <= SimpleModeLimit && input.utxos.size() <= MaxUtxosHardLimit) {
+                selectedInputs = inputSelector.select(plan.amount, input.byteFee, output_size);
             } else {
-                plan.utxos = inputSelector.selectSimple(plan.amount, input.byteFee, output_size);
+                selectedInputs = inputSelector.selectSimple(plan.amount, input.byteFee, output_size);
             }
         } else {
             output_size = 1; // no change
-            plan.utxos = inputSelector.selectMaxAmount(input.byteFee);
+            selectedInputs = inputSelector.selectMaxAmount(input.byteFee);
+        }
+        if (selectedInputs.size() <= MaxUtxosHardLimit) {
+            plan.utxos = selectedInputs;
+        } else {
+            // truncate to limit number of selected UTXOs
+            plan.utxos.clear();
+            for (auto i = 0; i < MaxUtxosHardLimit; ++i) {
+                plan.utxos.push_back(selectedInputs[i]);
+            }
         }
 
         if (plan.utxos.size() == 0) {

@@ -557,17 +557,17 @@ TEST(TransactionPlan, ManyUtxosNonmax_5000_simple) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    // expected result: 1196 utxos, with the smaller amounts (except the very small dust ones)
+    // expected result: 1220 utxos, with the smaller amounts (except the very small dust ones)
     std::vector<int64_t> subset;
     uint64_t subsetSum = 0;
-    for (int i = 14; i < 1196 + 14; ++i) {
+    for (int i = 14; i < 1220 + 14; ++i) {
         const uint64_t val = (i + 1) * 100;
         subset.push_back(val);
         subsetSum += val;
     }
-    EXPECT_EQ(subset.size(), 1196);
-    EXPECT_EQ(subsetSum, 73'255'000);
-    EXPECT_TRUE(verifyPlan(txPlan, subset, requestedAmount, 1'770'860));
+    EXPECT_EQ(subset.size(), 1220);
+    EXPECT_EQ(subsetSum, 76'189'000);
+    EXPECT_TRUE(verifyPlan(txPlan, subset, requestedAmount, 1'806'380));
 }
 
 TEST(TransactionPlan, ManyUtxosMax_400) {
@@ -622,11 +622,11 @@ TEST(TransactionPlan, ManyUtxosMax_5000_simple) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    // only the first 3000 are selected, minus a few small dust UTXOs
+    // only 3000 are selected, the first ones minus a few small dust ones
     const uint64_t dustLimit = byteFee * 150;
     std::vector<int64_t> filteredValues;
     uint64_t filteredValueSum = 0;
-    for (int i = 0; i < 3000; ++i) {
+    for (int i = 0; i < 3000 + 14; ++i) {
         const uint64_t val = (i + 1) * 100;
         if (val >= dustLimit) {
             filteredValues.push_back(val);
@@ -635,7 +635,7 @@ TEST(TransactionPlan, ManyUtxosMax_5000_simple) {
     }
     EXPECT_EQ(valueSum, 1'250'250'000);
     EXPECT_EQ(dustLimit, 1500);
-    EXPECT_EQ(filteredValues.size(), 2986);
-    EXPECT_EQ(filteredValueSum, 450'139'500);
-    EXPECT_TRUE(verifyPlan(txPlan, filteredValues, 445'719'780, 4'419'720));
+    EXPECT_EQ(filteredValues.size(), 3000);
+    EXPECT_EQ(filteredValueSum, 454'350'000);
+    EXPECT_TRUE(verifyPlan(txPlan, filteredValues, 449'909'560, 4'440'440));
 }
