@@ -80,6 +80,7 @@ int64_t estimateSegwitFee(const FeeCalculator& feeCalculator, const TransactionP
 TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
     TransactionPlan plan;
 
+    bool maxAmount = input.useMaxAmount;
     if (input.amount == 0 && !maxAmount) {
         plan.error = Common::Proto::Error_zero_amount_requested;
     } else if (input.utxos.empty()) {
@@ -98,7 +99,6 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
         const auto& feeCalculator = getFeeCalculator(static_cast<TWCoinType>(input.coinType));
         auto inputSelector = InputSelector<UTXO>(inputUtxos, feeCalculator);
         auto inputSum = InputSelector<UTXO>::sum(inputUtxos);
-        bool maxAmount = input.useMaxAmount;
 
         // select UTXOs
         plan.amount = input.amount;
