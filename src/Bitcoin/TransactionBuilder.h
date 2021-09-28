@@ -41,12 +41,9 @@ public:
         }
 
         const auto emptyScript = Script();
-        // prepare inputs (truncate if needed)
+        // prepare inputs
         for (auto& utxo : plan.utxos) {
             tx.inputs.emplace_back(utxo.outPoint, emptyScript, utxo.outPoint.sequence);
-            if (tx.inputs.size() >= MaxUtxosHardLimit) {
-                break;
-            }
         }
 
         return tx;
