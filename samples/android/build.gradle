@@ -9,7 +9,6 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.16'
     }
 }
 
@@ -23,10 +22,6 @@ allprojects {
                 username = project.findProperty("gpr.user") as String?: System.getenv("GITHUB_USER")
                 password = project.findProperty("gpr.key") as String?: System.getenv("GITHUB_TOKEN")
             }
-        }
-        jcenter()
-        flatDir {
-            dirs 'libs'
         }
     }
 }
