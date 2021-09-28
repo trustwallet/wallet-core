@@ -223,7 +223,7 @@ class Hash {
         std::copy(data.begin(), data.end(), this->bytes.begin());
     }
 
-    std::string string() const { return Base58::bitcoin.encode(bytes); }
+    std::string encoded() const { return Base58::bitcoin.encode(bytes); }
 };
 
 class Signature {

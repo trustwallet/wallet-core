@@ -10,7 +10,7 @@ message Transfer {
 
 // Create and initialize a stake account, and delegate amount to it.
 // Recommendation behavior is to not specify a stake account, and a new unique account will be created each time.
-// Optionally a stake account pubkey can be specified, but it should not exist.
+// Optionally a stake account pubkey can be specified, but it should not exist on chain.
 message DelegateStake {
     string validator_pubkey = 1;
     uint64 value = 2;

@@ -30,9 +30,9 @@ Address StakeProgram::addressFromValidatorSeed(const Address& fromAddress, const
     return Address(hash);
 }
 
-Address StakeProgram::addressFromOnetimeRecentblock(const Address& fromAddress, const Hash& recentBlockhash, const Address& programId) {
+Address StakeProgram::addressFromRecentBlockhash(const Address& fromAddress, const Hash& recentBlockhash, const Address& programId) {
     Data extended = fromAddress.vector();
-    std::string seed = recentBlockhash.string();
+    std::string seed = recentBlockhash.encoded();
     Data vecSeed(seed.begin(), seed.end());
     vecSeed.resize(32);
     Data additional = programId.vector();

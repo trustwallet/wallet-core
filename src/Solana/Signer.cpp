@@ -56,7 +56,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 std::optional<Address> stakeAddress;
                 if (protoMessage.stake_account().size() == 0) {
                     // no stake address specified, generate a new unique
-                    stakeAddress = StakeProgram::addressFromOnetimeRecentblock(userAddress, blockhash, stakeProgramId);
+                    stakeAddress = StakeProgram::addressFromRecentBlockhash(userAddress, blockhash, stakeProgramId);
                 } else {
                     // stake address specified, use it
                     stakeAddress = Address(protoMessage.stake_account());

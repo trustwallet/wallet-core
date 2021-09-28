@@ -23,20 +23,20 @@ TEST(SolanaStakeProgram, addressFromValidatorSeed) {
     EXPECT_EQ(StakeProgram::addressFromValidatorSeed(user, validator, programId), expected);
 }
 
-TEST(SolanaStakeProgram, addressFromOnetimeRecentblock) {
+TEST(SolanaStakeProgram, addressFromRecentBlockhash) {
     {
         auto user = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
         Solana::Hash recentBlockhash("11111111111111111111111111111111");
         auto programId = Address("Stake11111111111111111111111111111111111111");
         auto expected = Address("GQDDc5EVGJZFC7AvpEJ8eoCQ75Yy4gr7eu17frCjvQRQ");
-        EXPECT_EQ(StakeProgram::addressFromOnetimeRecentblock(user, recentBlockhash, programId), expected);
+        EXPECT_EQ(StakeProgram::addressFromRecentBlockhash(user, recentBlockhash, programId), expected);
     }
     {
         auto user = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
         Solana::Hash recentBlockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
         auto programId = Address("Stake11111111111111111111111111111111111111");
         auto expected = Address("2Kos1xJRBq3Ae1GnVNBx7HgJhq8KvdUe2bXE4QGdNaXb");
-        EXPECT_EQ(StakeProgram::addressFromOnetimeRecentblock(user, recentBlockhash, programId), expected);
+        EXPECT_EQ(StakeProgram::addressFromRecentBlockhash(user, recentBlockhash, programId), expected);
     }
 }
 

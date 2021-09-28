@@ -278,7 +278,7 @@ TEST(SolanaSigner, SignDelegateStakeV2) {
     auto voteAddress = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
     auto programId = Address("Stake11111111111111111111111111111111111111");
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
-    auto stakeAddress = StakeProgram::addressFromOnetimeRecentblock(signer, recentBlockhash, programId);
+    auto stakeAddress = StakeProgram::addressFromRecentBlockhash(signer, recentBlockhash, programId);
 
     auto message = Message::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
     auto transaction = Transaction(message);
