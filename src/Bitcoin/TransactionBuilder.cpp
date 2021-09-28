@@ -140,9 +140,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
                 plan.fee = 0;
                 plan.change = 0;
             }
-            
             plan.fee = estimateSegwitFee(feeCalculator, plan, output_size, input);
-
             // If fee is larger then availableAmount (can happen in special maxAmount case), we reduce it (and hope it will go through)
             plan.fee = std::min(plan.availableAmount, plan.fee);
             assert(plan.fee >= 0 && plan.fee <= plan.availableAmount);
@@ -160,11 +158,11 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
             // compute change
             plan.change = plan.availableAmount - plan.amount - plan.fee;
         }
-        assert(plan.change >= 0 && plan.change <= plan.availableAmount);
-        assert(!maxAmount || plan.change == 0); // change is 0 in max amount case
-
-        assert(plan.amount + plan.change + plan.fee == plan.availableAmount);
     }
+    assert(plan.change >= 0 && plan.change <= plan.availableAmount);
+    assert(!maxAmount || plan.change == 0); // change is 0 in max amount case
+
+    assert(plan.amount + plan.change + plan.fee == plan.availableAmount);
 
     return plan;
 }
