@@ -1,7 +1,7 @@
 apply plugin: 'maven-publish'
 
 version project.property('version')
-group 'com.trustwallet'
+group 'com.weishirongzhen'
 
 task sourcesJar(type: Jar) {
     classifier = 'sources'
@@ -41,7 +41,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/trustwallet/wallet-core")
+            url = uri("https://maven.pkg.github.com/weishirongzhen/wallet-core")
             credentials {
                 username = System.getenv("WC_GITHUB_USER")
                 password = System.getenv("WC_GITHUB_TOKEN")
