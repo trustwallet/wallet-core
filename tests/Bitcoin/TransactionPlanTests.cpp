@@ -551,26 +551,27 @@ TEST(TransactionPlan, ManyUtxosNonmax_5000_simple) {
     const uint64_t requestedAmount = valueSum / 20;
     EXPECT_EQ(requestedAmount, 62'512'500);
 
+    // Use Ravencoin, because of faster non-segwit estimation, and one of the original issues was with this coin.
     auto utxos = buildTestUTXOs(values);
-    auto sigingInput = buildSigningInput(requestedAmount, byteFee, utxos, false, TWCoinTypeBitcoin);
+    auto sigingInput = buildSigningInput(requestedAmount, byteFee, utxos, false, TWCoinTypeRavencoin);
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    // expected result: 1188 utxos, with the smaller amounts (except the very small dust ones)
+    // expected result: 1196 utxos, with the smaller amounts (except the very small dust ones)
     std::vector<int64_t> subset;
     uint64_t subsetSum = 0;
-    for (int i = 10; i < 1188 + 10; ++i) {
+    for (int i = 14; i < 1196 + 14; ++i) {
         const uint64_t val = (i + 1) * 100;
         subset.push_back(val);
         subsetSum += val;
     }
-    EXPECT_EQ(subset.size(), 1188);
-    EXPECT_EQ(subsetSum, 71'814'600);
-    EXPECT_TRUE(verifyPlan(txPlan, subset, requestedAmount, 808'650));
+    EXPECT_EQ(subset.size(), 1196);
+    EXPECT_EQ(subsetSum, 73'255'000);
+    EXPECT_TRUE(verifyPlan(txPlan, subset, requestedAmount, 1'770'860));
 }
 
-TEST(TransactionPlan, ManyUtxosMax_900) {
-    const auto n = 900;
+TEST(TransactionPlan, ManyUtxosMax_400) {
+    const auto n = 400;
     const auto byteFee = 10;
     std::vector<int64_t> values;
     uint64_t valueSum = 0;
@@ -597,11 +598,11 @@ TEST(TransactionPlan, ManyUtxosMax_900) {
             filteredValueSum += val;
         }
     }
-    EXPECT_EQ(valueSum, 40'545'000);
+    EXPECT_EQ(valueSum, 8'020'000);
     EXPECT_EQ(dustLimit, 1480);
-    EXPECT_EQ(filteredValues.size(), 886);
-    EXPECT_EQ(filteredValueSum, 40'534'500);
-    EXPECT_TRUE(verifyPlan(txPlan, filteredValues, 39'222'780, 1'311'720));
+    EXPECT_EQ(filteredValues.size(), 386);
+    EXPECT_EQ(filteredValueSum, 80'09'500);
+    EXPECT_TRUE(verifyPlan(txPlan, filteredValues, 7'437'780, 571'720));
 }
 
 TEST(TransactionPlan, ManyUtxosMax_5000_simple) {
@@ -615,13 +616,14 @@ TEST(TransactionPlan, ManyUtxosMax_5000_simple) {
         valueSum += val;
     }
 
+    // Use Ravencoin, because of faster non-segwit estimation, and one of the original issues was with this coin.
     auto utxos = buildTestUTXOs(values);
-    auto sigingInput = buildSigningInput(valueSum, byteFee, utxos, true);
+    auto sigingInput = buildSigningInput(valueSum, byteFee, utxos, true, TWCoinTypeRavencoin);
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
     // only the first 3000 are selected, minus a few small dust UTXOs
-    const uint64_t dustLimit = byteFee * 110;
+    const uint64_t dustLimit = byteFee * 150;
     std::vector<int64_t> filteredValues;
     uint64_t filteredValueSum = 0;
     for (int i = 0; i < 3000; ++i) {
@@ -632,8 +634,8 @@ TEST(TransactionPlan, ManyUtxosMax_5000_simple) {
         }
     }
     EXPECT_EQ(valueSum, 1'250'250'000);
-    EXPECT_EQ(dustLimit, 1100);
-    EXPECT_EQ(filteredValues.size(), 2990);
-    EXPECT_EQ(filteredValueSum, 450'144'500);
-    EXPECT_TRUE(verifyPlan(txPlan, filteredValues, 448'110'830, 2'033'670));
+    EXPECT_EQ(dustLimit, 1500);
+    EXPECT_EQ(filteredValues.size(), 2986);
+    EXPECT_EQ(filteredValueSum, 450'139'500);
+    EXPECT_TRUE(verifyPlan(txPlan, filteredValues, 445'719'780, 4'419'720));
 }
