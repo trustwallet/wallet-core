@@ -507,8 +507,8 @@ TEST(TransactionPlan, AmountDecred) {
     EXPECT_TRUE(verifyPlan(txPlan, {39900000}, 10000000, 2540));
 }
 
-TEST(TransactionPlan, ManyUtxosNonmax_900) {
-    const auto n = 900;
+TEST(TransactionPlan, ManyUtxosNonmax_400) {
+    const auto n = 400;
     const auto byteFee = 10;
     std::vector<int64_t> values;
     uint64_t valueSum = 0;
@@ -518,28 +518,28 @@ TEST(TransactionPlan, ManyUtxosNonmax_900) {
         valueSum += val;
     }
     const uint64_t requestedAmount = valueSum / 8;
-    EXPECT_EQ(requestedAmount, 5'068'125);
+    EXPECT_EQ(requestedAmount, 1'002'500);
 
     auto utxos = buildTestUTXOs(values);
     auto sigingInput = buildSigningInput(requestedAmount, byteFee, utxos, false, TWCoinTypeBitcoin);
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    // expected result: 59 utxos, with the largest amounts
+    // expected result: 27 utxos, with the largest amounts
     std::vector<int64_t> subset;
     uint64_t subsetSum = 0;
-    for (int i = n - 59; i < n; ++i) {
+    for (int i = n - 27; i < n; ++i) {
         const uint64_t val = (i + 1) * 100;
         subset.push_back(val);
         subsetSum += val;
     }
-    EXPECT_EQ(subset.size(), 59);
-    EXPECT_EQ(subsetSum, 5'138'900);
-    EXPECT_TRUE(verifyPlan(txPlan, subset, requestedAmount, 40'910));
+    EXPECT_EQ(subset.size(), 27);
+    EXPECT_EQ(subsetSum, 1'044'900);
+    EXPECT_TRUE(verifyPlan(txPlan, subset, requestedAmount, 19'150));
 }
 
-TEST(TransactionPlan, ManyUtxosNonmax_4000_simple) {
-    const auto n = 4000;
+TEST(TransactionPlan, ManyUtxosNonmax_5000_simple) {
+    const auto n = 5000;
     const auto byteFee = 10;
     std::vector<int64_t> values;
     uint64_t valueSum = 0;
@@ -548,25 +548,25 @@ TEST(TransactionPlan, ManyUtxosNonmax_4000_simple) {
         values.push_back(val);
         valueSum += val;
     }
-    const uint64_t requestedAmount = valueSum / 8;
-    EXPECT_EQ(requestedAmount, 100'025'000);
+    const uint64_t requestedAmount = valueSum / 20;
+    EXPECT_EQ(requestedAmount, 62'512'500);
 
     auto utxos = buildTestUTXOs(values);
     auto sigingInput = buildSigningInput(requestedAmount, byteFee, utxos, false, TWCoinTypeBitcoin);
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    // expected result: 1501 utxos, with the smaller amounts (except the very small dust ones)
+    // expected result: 1188 utxos, with the smaller amounts (except the very small dust ones)
     std::vector<int64_t> subset;
     uint64_t subsetSum = 0;
-    for (int i = 10; i < 1501+10; ++i) {
+    for (int i = 10; i < 1188 + 10; ++i) {
         const uint64_t val = (i + 1) * 100;
         subset.push_back(val);
         subsetSum += val;
     }
-    EXPECT_EQ(subset.size(), 1501);
-    EXPECT_EQ(subsetSum, 114'226'100);
-    EXPECT_TRUE(verifyPlan(txPlan, subset, requestedAmount, 1'520'490));
+    EXPECT_EQ(subset.size(), 1188);
+    EXPECT_EQ(subsetSum, 71'814'600);
+    EXPECT_TRUE(verifyPlan(txPlan, subset, requestedAmount, 808'650));
 }
 
 TEST(TransactionPlan, ManyUtxosMax_900) {
@@ -604,8 +604,8 @@ TEST(TransactionPlan, ManyUtxosMax_900) {
     EXPECT_TRUE(verifyPlan(txPlan, filteredValues, 39'222'780, 1'311'720));
 }
 
-TEST(TransactionPlan, ManyUtxosMax_4000_simple) {
-    const auto n = 4000;
+TEST(TransactionPlan, ManyUtxosMax_5000_simple) {
+    const auto n = 5000;
     const auto byteFee = 10;
     std::vector<int64_t> values;
     uint64_t valueSum = 0;
@@ -620,20 +620,20 @@ TEST(TransactionPlan, ManyUtxosMax_4000_simple) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    // all are selected, except a few smallest UTXOs are filtered out
+    // only the first 3000 are selected, minus a few small dust UTXOs
     const uint64_t dustLimit = byteFee * 110;
     std::vector<int64_t> filteredValues;
     uint64_t filteredValueSum = 0;
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < 3000; ++i) {
         const uint64_t val = (i + 1) * 100;
         if (val >= dustLimit) {
             filteredValues.push_back(val);
             filteredValueSum += val;
         }
     }
-    EXPECT_EQ(valueSum, 800'200'000);
+    EXPECT_EQ(valueSum, 1'250'250'000);
     EXPECT_EQ(dustLimit, 1100);
-    EXPECT_EQ(filteredValues.size(), 3990);
-    EXPECT_EQ(filteredValueSum, 800'194'500);
-    EXPECT_TRUE(verifyPlan(txPlan, filteredValues, 796'154'210, 4'040'290));
+    EXPECT_EQ(filteredValues.size(), 2990);
+    EXPECT_EQ(filteredValueSum, 450'144'500);
+    EXPECT_TRUE(verifyPlan(txPlan, filteredValues, 448'110'830, 2'033'670));
 }

@@ -41,8 +41,12 @@ public:
         }
 
         const auto emptyScript = Script();
+        // prepare inputs (truncate if needed)
         for (auto& utxo : plan.utxos) {
             tx.inputs.emplace_back(utxo.outPoint, emptyScript, utxo.outPoint.sequence);
+            if (tx.inputs.size() >= MaxUtxosHardLimit) {
+                break;
+            }
         }
 
         return tx;
@@ -50,6 +54,9 @@ public:
 
     /// Prepares a TransactionOutput with given address and amount, prepares script for it
     static std::optional<TransactionOutput> prepareOutputWithScript(std::string address, Amount amount, enum TWCoinType coin);
+
+    /// The maximum number of UTXOs to consider.  UTXOs above this limit are cut off because it cak take very long.
+    static const size_t MaxUtxosHardLimit;
 };
 
 } // namespace TW::Bitcoin

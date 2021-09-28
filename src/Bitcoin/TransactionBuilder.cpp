@@ -19,6 +19,8 @@ namespace TW::Bitcoin {
 
 // Above this number of UTXOs a simplified selection is used (optimization)
 static const auto SimpleModeLimit = 1000;
+// The maximum number of UTXOs to consider.  UTXOs above this limit are cut off because it cak take very long
+const size_t TransactionBuilder::MaxUtxosHardLimit = 3000;
 
 std::optional<TransactionOutput> TransactionBuilder::prepareOutputWithScript(std::string address, Amount amount, enum TWCoinType coin) {
     auto lockingScript = Script::lockScriptForAddress(address, coin);
@@ -78,16 +80,26 @@ int64_t estimateSegwitFee(const FeeCalculator& feeCalculator, const TransactionP
 TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
     TransactionPlan plan;
 
-    const auto& feeCalculator = getFeeCalculator(static_cast<TWCoinType>(input.coinType));
-    auto inputSelector = InputSelector<UTXO>(input.utxos, feeCalculator);
-    auto inputSum = InputSelector<UTXO>::sum(input.utxos);
-    bool maxAmount = input.useMaxAmount;
-
     if (input.amount == 0 && !maxAmount) {
         plan.error = Common::Proto::Error_zero_amount_requested;
     } else if (input.utxos.empty()) {
         plan.error = Common::Proto::Error_missing_input_utxos;
     } else {
+        UTXOs inputUtxos;
+        if (input.utxos.size() <= MaxUtxosHardLimit) {
+            inputUtxos = input.utxos;
+        } else {
+            // truncate input UTXOs to MaxUtxosHardLimit
+            for (auto i = 0; i < MaxUtxosHardLimit; ++i) {
+                inputUtxos.push_back(input.utxos[i]);
+            }
+        }
+
+        const auto& feeCalculator = getFeeCalculator(static_cast<TWCoinType>(input.coinType));
+        auto inputSelector = InputSelector<UTXO>(inputUtxos, feeCalculator);
+        auto inputSum = InputSelector<UTXO>::sum(inputUtxos);
+        bool maxAmount = input.useMaxAmount;
+
         // select UTXOs
         plan.amount = input.amount;
 
@@ -100,7 +112,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
         auto output_size = 2;
         if (!maxAmount) {
             output_size = 2; // output + change
-            if (input.utxos.size() <= SimpleModeLimit) {
+            if (inputUtxos.size() <= SimpleModeLimit) {
                 plan.utxos = inputSelector.select(plan.amount, input.byteFee, output_size);
             } else {
                 plan.utxos = inputSelector.selectSimple(plan.amount, input.byteFee, output_size);
@@ -129,12 +141,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
                 plan.change = 0;
             }
             
-            if (input.utxos.size() <= SimpleModeLimit) {
-                plan.fee = estimateSegwitFee(feeCalculator, plan, output_size, input);
-            } else {
-                // simple & fast mode for large inputs
-                plan.fee = estimateSimpleFee(feeCalculator, plan, output_size, input.byteFee);
-            }
+            plan.fee = estimateSegwitFee(feeCalculator, plan, output_size, input);
 
             // If fee is larger then availableAmount (can happen in special maxAmount case), we reduce it (and hope it will go through)
             plan.fee = std::min(plan.availableAmount, plan.fee);
@@ -153,11 +160,11 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
             // compute change
             plan.change = plan.availableAmount - plan.amount - plan.fee;
         }
-    }
-    assert(plan.change >= 0 && plan.change <= plan.availableAmount);
-    assert(!maxAmount || plan.change == 0); // change is 0 in max amount case
+        assert(plan.change >= 0 && plan.change <= plan.availableAmount);
+        assert(!maxAmount || plan.change == 0); // change is 0 in max amount case
 
-    assert(plan.amount + plan.change + plan.fee == plan.availableAmount);
+        assert(plan.amount + plan.change + plan.fee == plan.availableAmount);
+    }
 
     return plan;
 }

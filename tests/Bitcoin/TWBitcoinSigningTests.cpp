@@ -1268,14 +1268,14 @@ TEST(BitcoinSigning, PlanAndSign_LitecoinReal_8435) {
     );
 }
 
-TEST(BitcoinSigning, Sign_ManyUtxos_800) {
+TEST(BitcoinSigning, Sign_ManyUtxos_400) {
     auto ownAddress = "bc1q0yy3juscd3zfavw76g4h3eqdqzda7qyf58rj4m";
     auto ownPrivateKey = "eb696a065ef48a2192da5b28b694f87544b30fae8327c4510137a922f32c6dcf";
 
     // Setup input
     SigningInput input;
 
-    const auto n = 800;
+    const auto n = 400;
     uint64_t utxoSum = 0;
     for (int i = 0; i < n; ++i) {
         auto utxoScript = Script::lockScriptForAddress(ownAddress, TWCoinTypeBitcoin);
@@ -1295,12 +1295,12 @@ TEST(BitcoinSigning, Sign_ManyUtxos_800) {
         input.utxos.push_back(utxo);
         utxoSum += utxo.amount;
     }
-    EXPECT_EQ(utxoSum, 4'004'000);
+    EXPECT_EQ(utxoSum, 1'202'000);
 
     input.coinType = TWCoinTypeBitcoin;
     input.hashType = hashTypeForCoin(TWCoinTypeBitcoin);
     input.useMaxAmount = false;
-    input.amount = 400'000;
+    input.amount = 300'000;
     input.byteFee = 1;
     input.toAddress = "bc1qauwlpmzamwlf9tah6z4w0t8sunh6pnyyjgk0ne";
     input.changeAddress = ownAddress;
@@ -1308,17 +1308,17 @@ TEST(BitcoinSigning, Sign_ManyUtxos_800) {
     // Plan
     auto plan = TransactionBuilder::plan(input);
 
-    // expected result: 47 utxos, with the largest amounts
+    // expected result: 66 utxos, with the largest amounts
     std::vector<int64_t> subset;
     uint64_t subsetSum = 0;
-    for (int i = n - 47; i < n; ++i) {
+    for (int i = n - 66; i < n; ++i) {
         const uint64_t val = 1000 + (i + 1) * 10;
         subset.push_back(val);
         subsetSum += val;
     }
-    EXPECT_EQ(subset.size(), 47);
-    EXPECT_EQ(subsetSum, 412'190);
-    EXPECT_TRUE(verifyPlan(plan, subset, 400'000, 3'269));
+    EXPECT_EQ(subset.size(), 66);
+    EXPECT_EQ(subsetSum, 308'550);
+    EXPECT_TRUE(verifyPlan(plan, subset, 300'000, 4'561));
 
     // Extend input with keys, reuse plan, Sign
     auto privKey = PrivateKey(parse_hex(ownPrivateKey));
@@ -1334,7 +1334,7 @@ TEST(BitcoinSigning, Sign_ManyUtxos_800) {
     Data serialized;
     signedTx.encode(serialized);
 
-    EXPECT_EQ(serialized.size(), 7050);
+    EXPECT_EQ(serialized.size(), 9871);
 }
 
 TEST(BitcoinSigning, EncodeThreeOutput) {
