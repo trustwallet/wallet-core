@@ -480,3 +480,31 @@ TEST(BitcoinInputSelector, ManyUtxos_5000_simple) {
     EXPECT_EQ(subsetSum, 73'866'500);
     EXPECT_TRUE(verifySelectedUTXOs(selected, subset));
 }
+
+TEST(BitcoinInputSelector, ManyUtxos_MaxAmount_5000) {
+    const auto n = 5000;
+    const auto byteFee = 10;
+    std::vector<int64_t> values;
+    uint64_t valueSum = 0;
+    for (int i = 0; i < n; ++i) {
+        const uint64_t val = (i + 1) * 100;
+        values.push_back(val);
+        valueSum += val;
+    }
+    auto utxos = buildTestUTXOs(values);
+
+    auto selector = InputSelector<UTXO>(utxos);
+    auto selected = selector.selectMaxAmount(byteFee);
+
+    // expected result: 4990 utxos (none of which is dust)
+    std::vector<int64_t> subset;
+    uint64_t subsetSum = 0;
+    for (int i = 10; i < 4990+10; ++i) {
+        const uint64_t val = (i + 1) * 100;
+        subset.push_back(val);
+        subsetSum += val;
+    }
+    EXPECT_EQ(subset.size(), 4990);
+    EXPECT_EQ(subsetSum, 1'250'244'500);
+    EXPECT_TRUE(verifySelectedUTXOs(selected, subset));
+}
