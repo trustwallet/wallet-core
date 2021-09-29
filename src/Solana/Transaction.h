@@ -324,12 +324,12 @@ class Message {
         // delegate_stake instruction
         auto delegateInstruction = Instruction(DelegateStake,
             std::vector<AccountMeta>{
-                AccountMeta(stakeAddress, false, false),
-                AccountMeta(voteAddress, false, true),
-                AccountMeta(sysvarClockId, false, true),
-                AccountMeta(sysvarStakeHistoryId, false, true),
-                AccountMeta(stakeConfigId, false, true),
-                AccountMeta(signer, true, true),
+                AccountMeta(stakeAddress, false, false),        // 0. `[WRITE]` Initialized stake account to be delegated
+                AccountMeta(voteAddress, false, true),          // 1. `[]` Vote account to which this stake will be delegated
+                AccountMeta(sysvarClockId, false, true),        // 2. `[]` Clock sysvar
+                AccountMeta(sysvarStakeHistoryId, false, true), // 3. `[]` Stake history sysvar that carries stake warmup/cooldown history
+                AccountMeta(stakeConfigId, false, true),        // 4. `[]` Address of config account that carries stake config
+                AccountMeta(signer, true, true),                // 5. `[SIGNER]` Stake authority
             });
         instructions.push_back(delegateInstruction);
         return Message(recentBlockhash, instructions);
@@ -339,9 +339,9 @@ class Message {
     static Message createStakeDeactivate(const Address& signer, const Address& stakeAddress, Hash recentBlockhash) {
         auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
         auto instruction = Instruction(Deactivate, std::vector<AccountMeta>{
-            AccountMeta(stakeAddress, false, false),
-            AccountMeta(sysvarClockId, false, true),
-            AccountMeta(signer, true, false),
+            AccountMeta(stakeAddress, false, false),    // 0. `[WRITE]` Delegated stake account
+            AccountMeta(sysvarClockId, false, true),    // 1. `[]` Clock sysvar
+            AccountMeta(signer, true, false),           // 2. `[SIGNER]` Stake authority
         });
         return Message(recentBlockhash, {instruction});
     }
@@ -366,11 +366,11 @@ class Message {
         auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
         auto sysvarStakeHistoryId = Address(SYSVAR_STAKE_HISTORY_ID_ADDRESS);
         auto instruction = Instruction(Withdraw, std::vector<AccountMeta>{
-            AccountMeta(stakeAddress, false, false),  // `[WRITE]` Stake account from which to withdraw
-            AccountMeta(signer, true, false),  // `[WRITE]` Recipient account
-            AccountMeta(sysvarClockId, false, true),  // `[]` Clock sysvar
-            AccountMeta(sysvarStakeHistoryId, false, true),  // `[]` Stake history sysvar that carries stake warmup/cooldown history
-            AccountMeta(signer, false, false),  // `[SIGNER]` Withdraw authority
+            AccountMeta(stakeAddress, false, false),            // 0. `[WRITE]` Stake account from which to withdraw
+            AccountMeta(signer, true, false),                   // 1. `[WRITE]` Recipient account
+            AccountMeta(sysvarClockId, false, true),            // 2. `[]` Clock sysvar
+            AccountMeta(sysvarStakeHistoryId, false, true),     // 3. `[]` Stake history sysvar that carries stake warmup/cooldown history
+            AccountMeta(signer, false, false),                  // 4. `[SIGNER]` Withdraw authority
         }, value);
         return Message(recentBlockhash, {instruction});
     }
