@@ -366,10 +366,11 @@ class Message {
         auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
         auto sysvarStakeHistoryId = Address(SYSVAR_STAKE_HISTORY_ID_ADDRESS);
         auto instruction = Instruction(Withdraw, std::vector<AccountMeta>{
-            AccountMeta(stakeAddress, false, false),
-            AccountMeta(signer, true, false),
-            AccountMeta(sysvarClockId, false, true),
-            AccountMeta(sysvarStakeHistoryId, false, true)
+            AccountMeta(stakeAddress, false, false),  // `[WRITE]` Stake account from which to withdraw
+            AccountMeta(signer, true, false),  // `[WRITE]` Recipient account
+            AccountMeta(sysvarClockId, false, true),  // `[]` Clock sysvar
+            AccountMeta(sysvarStakeHistoryId, false, true),  // `[]` Stake history sysvar that carries stake warmup/cooldown history
+            AccountMeta(signer, false, false),  // `[SIGNER]` Withdraw authority
         }, value);
         return Message(recentBlockhash, {instruction});
     }
