@@ -55,7 +55,7 @@ make install
 make clean
 
 # Download Nlohmann JSON
-export JSON_VERSION=3.9.1
+export JSON_VERSION=3.10.2
 JSON_DIR="$ROOT/build/local/json"
 mkdir -p "$JSON_DIR"
 cd "$JSON_DIR"
@@ -85,7 +85,7 @@ make clean
 
 if [[ -x "$(command -v swift)" && `uname` == "Darwin" ]]; then
     # Download Swift Protobuf sources
-    export SWIFT_PROTOBUF_VERSION=1.13.0
+    export SWIFT_PROTOBUF_VERSION=1.18.0
     SWIFT_PROTOBUF_DIR="$ROOT/build/local/src/swift-protobuf"
     mkdir -p "$SWIFT_PROTOBUF_DIR"
     cd "$SWIFT_PROTOBUF_DIR"
