@@ -283,6 +283,8 @@ class Message {
 
     // add an acount, to the corresponding bucket
     void addAccount(const AccountMeta& account);
+    // add an account to accountKeys if not yet present
+    void addAccountKeys(const Address& account);
     // compile the single accounts lists from the buckets
     void compileAccounts();
     // compile the instructions; replace instruction accounts with indices
