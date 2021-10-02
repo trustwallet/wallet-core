@@ -354,9 +354,9 @@ class Message {
         std::vector<Instruction> instructions;
         for(auto& address: stakeAddresses) {
             auto instruction = Instruction(Deactivate, std::vector<AccountMeta>{
-                AccountMeta(address, false, false),
-                AccountMeta(sysvarClockId, false, true),
-                AccountMeta(signer, true, false),
+                AccountMeta(address, false, false),         // 0. `[WRITE]` Delegated stake account
+                AccountMeta(sysvarClockId, false, true),    // 1. `[]` Clock sysvar
+                AccountMeta(signer, true, false),           // 2. `[SIGNER]` Stake authority
             });
             instructions.push_back(instruction);
         }
@@ -369,10 +369,10 @@ class Message {
         auto sysvarStakeHistoryId = Address(SYSVAR_STAKE_HISTORY_ID_ADDRESS);
         auto instruction = Instruction(Withdraw, std::vector<AccountMeta>{
             AccountMeta(stakeAddress, false, false),            // 0. `[WRITE]` Stake account from which to withdraw
-            AccountMeta(signer, true, false),                   // 1. `[WRITE]` Recipient account
+            AccountMeta(signer, false, false),                  // 1. `[WRITE]` Recipient account
             AccountMeta(sysvarClockId, false, true),            // 2. `[]` Clock sysvar
             AccountMeta(sysvarStakeHistoryId, false, true),     // 3. `[]` Stake history sysvar that carries stake warmup/cooldown history
-            AccountMeta(signer, false, false),                  // 4. `[SIGNER]` Withdraw authority
+            AccountMeta(signer, true, false),                   // 4. `[SIGNER]` Withdraw authority
         }, value);
         return Message(recentBlockhash, {instruction});
     }
