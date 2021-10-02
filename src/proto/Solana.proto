@@ -8,18 +8,40 @@ message Transfer {
     uint64 value = 2;
 }
 
-message Stake {
+// Create and initialize a stake account, and delegate amount to it.
+// Recommendation behavior is to not specify a stake account, and a new unique account will be created each time.
+// Optionally a stake account pubkey can be specified, but it should not exist on chain.
+message DelegateStake {
     string validator_pubkey = 1;
     uint64 value = 2;
+    string stake_account = 3;
 }
 
+// Deactivate staking on stake account
 message DeactivateStake {
-    string validator_pubkey = 1;
+    string stake_account = 1;
 }
 
+// Deactivate staking on multiple stake account
+message DeactivateAllStake {
+    repeated string stake_accounts = 1;
+}
+
+// Withdraw amount from stake account
 message WithdrawStake {
-    string validator_pubkey = 1;
+    string stake_account = 1;
     uint64 value = 2;
+}
+
+// Techinical structure to group a staking account and an amount
+message StakeAccountValue {
+    string stake_account = 1;
+    uint64 value = 2;
+}
+
+// Withdraw amounts from stake accounts
+message WithdrawAllStake {
+    repeated StakeAccountValue stake_accounts = 1;
 }
 
 // Create a token account under a main account for a token type
@@ -57,12 +79,14 @@ message SigningInput {
     string recent_blockhash = 2;
     oneof transaction_type {
         Transfer transfer_transaction = 3;
-        Stake stake_transaction = 4;
+        DelegateStake delegate_stake_transaction = 4;
         DeactivateStake deactivate_stake_transaction = 5;
-        WithdrawStake withdraw_transaction = 6;
-        CreateTokenAccount create_token_account_transaction = 7;
-        TokenTransfer token_transfer_transaction = 8;
-        CreateAndTransferToken create_and_transfer_token_transaction = 9;
+        DeactivateAllStake deactivate_all_stake_transaction = 6;
+        WithdrawStake withdraw_transaction = 7;
+        WithdrawAllStake withdraw_all_transaction = 8;
+        CreateTokenAccount create_token_account_transaction = 9;
+        TokenTransfer token_transfer_transaction = 10;
+        CreateAndTransferToken create_and_transfer_token_transaction = 11;
     }
 }
 

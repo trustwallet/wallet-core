@@ -47,6 +47,12 @@ void Message::addAccount(const AccountMeta& account) {
     }
 }
 
+void Message::addAccountKeys(const Address& account) {
+    if (std::find(accountKeys.begin(), accountKeys.end(), account) == accountKeys.end()) {
+        accountKeys.push_back(account);
+    }
+}
+
 void Message::compileAccounts() {
     for (auto& instr: instructions) {
         for (auto& address: instr.accounts) {
@@ -67,13 +73,13 @@ void Message::compileAccounts() {
     // merge the three buckets
     accountKeys.clear();
     for(auto& a: signedAccounts) {
-        accountKeys.push_back(a);
+        addAccountKeys(a);
     }
     for(auto& a: unsignedAccounts) {
-        accountKeys.push_back(a);
+        addAccountKeys(a);
     }
     for(auto& a: readOnlyAccounts) {
-        accountKeys.push_back(a);
+        addAccountKeys(a);
     }
 
     compileInstructions();

@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Address.h"
+#include "Transaction.h"
 
 #include <vector>
 
@@ -17,6 +18,8 @@ public:
     static Address addressFromValidatorSeed(const Address& fromAddress,
                                             const Address& validatorAddress,
                                             const Address& programId);
+
+    static Address addressFromRecentBlockhash(const Address& fromAddress, const Hash& recentBlockhash, const Address& programId);
 };
 
 
