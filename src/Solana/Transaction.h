@@ -384,10 +384,11 @@ class Message {
         std::vector<Instruction> instructions;
         for(auto& stake: stakes) {
             auto instruction = Instruction(Withdraw, std::vector<AccountMeta>{
-                AccountMeta(stake.first, false, false),
-                AccountMeta(signer, true, false),
-                AccountMeta(sysvarClockId, false, true),
-                AccountMeta(sysvarStakeHistoryId, false, true)
+                AccountMeta(stake.first, false, false),         // 0. `[WRITE]` Stake account from which to withdraw
+                AccountMeta(signer, false, false),              // 1. `[WRITE]` Recipient account
+                AccountMeta(sysvarClockId, false, true),        // 2. `[]` Clock sysvar
+                AccountMeta(sysvarStakeHistoryId, false, true), // 3. `[]` Stake history sysvar that carries stake warmup/cooldown history
+                AccountMeta(signer, true, false),               // 4. `[SIGNER]` Withdraw authority
             }, stake.second);
             instructions.push_back(instruction);
         }
