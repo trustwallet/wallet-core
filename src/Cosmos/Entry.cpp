@@ -15,11 +15,11 @@ using namespace std;
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
 bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW::byte, const char* hrp) const {
-    return Address::isValid(address, hrp);
+    return Address::isValid(coin, address);
 }
 
 string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char* hrp) const {
-    return Address(hrp, publicKey).string();
+    return Address(coin, publicKey).string();
 }
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {

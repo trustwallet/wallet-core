@@ -155,6 +155,41 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::select(int64_t target
 }
 
 template <typename TypeWithAmount>
+std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(int64_t targetValue, int64_t byteFee, int64_t numOutputs) {
+    // if target value is zero, no UTXOs are needed
+    if (targetValue == 0) {
+        return {};
+    }
+    if (inputs.empty()) {
+        return {};
+    }
+    assert(inputs.size() >= 1);
+
+    // target value is larger that original, but not by a factor of 2 (optioized for large UTXO cases)
+    const uint64_t increasedTargetValue = (uint64_t)((double)targetValue * 1.1 + feeCalculator.calculate(inputs.size(), numOutputs, byteFee) + 1000);
+
+    const int64_t dustThreshold = feeCalculator.calculateSingleInput(byteFee);
+
+    // Go through inputs in a single pass, in the order they appear, no optimization
+    uint64_t sum = 0;
+    std::vector<TypeWithAmount> selected;
+    for (auto& input: inputs) {
+        if (input.amount <= dustThreshold) {
+            continue; // skip dust
+        }
+        selected.push_back(input);
+        sum += input.amount;
+        if (sum >= increasedTargetValue) {
+            // we have enough
+            return selected;
+        }
+    }
+
+    // not enough
+    return {};
+}
+
+template <typename TypeWithAmount>
 std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectMaxAmount(int64_t byteFee) {
     return filterOutDust(inputs, byteFee);
 }

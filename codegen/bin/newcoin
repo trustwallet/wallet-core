@@ -18,6 +18,7 @@ require 'coin_test_gen'
 def self.format_name(coin)
     formatted = coin['name']
     formatted = formatted.gsub(/-/, ' ')
+    formatted = formatted.gsub(/\./, ' ')
     formatted = formatted.gsub(/\s/, '')
     formatted
 end

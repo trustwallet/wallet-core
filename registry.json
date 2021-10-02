@@ -1741,5 +1741,31 @@
       "clientPublic": "https://rpc.ftm.tools",
       "clientDocs": "https://eth.wiki/json-rpc/API"
     }
+  },
+  {
+    "id": "cryptoorg",
+    "name": "CryptoOrg",
+    "displayName": "Crypto.org",
+    "coinId": 394,
+    "symbol": "CRO",
+    "decimals": 8,
+    "blockchain": "Cosmos",
+    "derivationPath": "m/44'/394'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "cro",
+    "explorer": {
+      "url": "https://crypto.org/explorer",
+      "txPath": "/tx/",
+      "accountPath": "/account/",
+      "sampleTx": "D87D2EB46B21466886EE149C1DEA3AE6C2E019C7D8C24FA1533A95439DDCE1E2",
+      "sampleAccount": "cro10wrflcdc4pys9vvgqm98yg7yv5ltj7d3xehent"
+    },
+    "info": {
+      "url": "https://crypto.org/",
+      "client": "https://github.com/crypto-org-chain/chain-main",
+      "clientPublic": "https://mainnet.crypto.org:1317/",
+      "clientDocs": "https://crypto.org/docs/resources/chain-integration.html#api-documentation"
+    }
   }
 ]
