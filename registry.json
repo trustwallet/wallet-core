@@ -759,9 +759,9 @@
     "publicKeyType": "secp256k1",
     "hrp": "terra",
     "explorer": {
-      "url": "https://terra.stake.id",
-      "txPath": "/#/tx/",
-      "accountPath": "/#/address/"
+      "url": "https://finder.terra.money/tx",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
     },
     "info": {
       "url": "https://terra.money",
