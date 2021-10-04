@@ -6,6 +6,7 @@
 
 #include "HexCoding.h"
 #include "Data.h"
+#include "uint256.h"
 #include <gtest/gtest.h>
 
 namespace TW {
@@ -21,10 +22,10 @@ TEST(HexCoding, validation) {
 }
 
 TEST(HexCoding, OddLength) {
-    const std::string invalid = "28fa6ae00";
-    const auto bytes = parse_hex(invalid);
-
-    ASSERT_TRUE(bytes.empty());
+    const std::string oddHex = "0x28fa6ae00";
+    const auto bytes = parse_hex(oddHex, true);
+    const auto number = load(bytes);
+    ASSERT_EQ(number, 11000000000);
 }
 
 }
