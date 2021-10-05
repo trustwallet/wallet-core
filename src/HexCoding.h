@@ -82,7 +82,15 @@ inline Data parse_hex(const Iter begin, const Iter end) {
 ///
 /// \returns the array or parsed bytes or an empty array if the string is not
 /// valid hexadecimal.
-inline Data parse_hex(const std::string& string) {
+inline Data parse_hex(const std::string& string, bool padLeft = false) {
+    if (string.size() % 2 != 0 && padLeft) {
+        std::string temp = string;
+        if (temp.compare(0, 2, "0x") == 0) {
+            temp.erase(0, 2);
+        }
+        temp.insert(0, 1, '0');
+        return parse_hex(temp.begin(), temp.end());
+    }
     return parse_hex(string.begin(), string.end());
 }
 

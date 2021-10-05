@@ -23,13 +23,13 @@ static nlohmann::json load_json(std::string path) {
 }
 
 TEST(EthereumFee, suggestBaseFeeAndTip) {
-    const auto path = TESTS_ROOT + "/Ethereum/Data/eth_feeHistory2.json";
+    const auto path = TESTS_ROOT + "/Ethereum/Data/eth_feeHistory3.json";
     const auto history = load_json(path);
 
     auto fee = Fee::suggestFee(history).dump();
     auto expected = R"|(
         {
-            "baseFee": "87408740684",
+            "baseFee": "44208904214",
             "maxPriorityFee": "1500000000"
         }
     )|";
