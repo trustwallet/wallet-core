@@ -45,8 +45,8 @@
 #include "Tezos/Entry.h"
 #include "Theta/Entry.h"
 #include "THORChain/Entry.h"
-#include "TON/Entry.h"
 #include "Tron/Entry.h"
+#include "TrustWalletCore/TWCoinType.h"
 #include "VeChain/Entry.h"
 #include "Waves/Entry.h"
 #include "Zcash/Entry.h"
@@ -91,7 +91,6 @@ Stellar::Entry stellarDP;
 Tezos::Entry tezosDP;
 Theta::Entry thetaDP;
 THORChain::Entry thorchainDP;
-TON::Entry tonDP;
 Tron::Entry tronDP;
 VeChain::Entry vechainDP;
 Waves::Entry wavesDP;
@@ -161,7 +160,6 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeTezos: entry = &tezosDP; break;
         case TWCoinTypeTheta: entry = &thetaDP; break;
         case TWCoinTypeTHORChain: entry = &thorchainDP; break;
-        case TWCoinTypeTON: entry = &tonDP; break;
         case TWCoinTypeTron: entry = &tronDP; break;
         case TWCoinTypeVeChain: entry = &vechainDP; break;
         case TWCoinTypeWanchain: entry = &ethereumDP; break;
@@ -170,6 +168,13 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeZelcash: entry = &zcashDP; break;
         case TWCoinTypeZilliqa: entry = &zilliqaDP; break;
         case TWCoinTypePolygon: entry = &ethereumDP; break;
+        case TWCoinTypeOptimism: entry = &ethereumDP; break;
+        case TWCoinTypeArbitrum: entry = &ethereumDP; break;
+        case TWCoinTypeECOChain: entry = &ethereumDP; break;
+        case TWCoinTypeAvalancheCChain: entry = &ethereumDP; break;
+        case TWCoinTypeXDai: entry = &ethereumDP; break;
+        case TWCoinTypeFantom: entry = &ethereumDP; break;
+        case TWCoinTypeCryptoOrg: entry = &cosmosDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;

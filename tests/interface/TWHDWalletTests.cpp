@@ -11,9 +11,11 @@
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWData.h>
 #include <TrustWalletCore/TWHDWallet.h>
+#include <TrustWalletCore/TWMnemonic.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWBase58.h>
+#include <TrustWalletCore/TWCoinType.h>
 #include <proto/Stellar.pb.h>
 
 #include "HexCoding.h"
@@ -23,8 +25,9 @@
 
 const auto wordsStr = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
 const auto words = STRING(wordsStr);
-const auto seedHex = "7ae6f661157bda6492f6162701e570097fc726b6235011ea5ad09bf04986731ed4d92bc43cbdee047b60ea0dd1b1fa4274377c9bf5bd14ab1982c272d8076f29";
 const auto passphrase = STRING("TREZOR");
+const auto seedHex = "7ae6f661157bda6492f6162701e570097fc726b6235011ea5ad09bf04986731ed4d92bc43cbdee047b60ea0dd1b1fa4274377c9bf5bd14ab1982c272d8076f29";
+const auto entropyHex = "ba5821e8c356c05ba5f025d9532fe0f21f65d594";
 
 
 inline void assertSeedEq(const std::shared_ptr<TWHDWallet>& wallet, const char* expected) {
@@ -37,21 +40,28 @@ inline void assertMnemonicEq(const std::shared_ptr<TWHDWallet>& wallet, const ch
     assertStringsEqual(mnemonic, expected);
 }
 
-TEST(HDWallet, Mnemonic) {
+inline void assertEntropyEq(const std::shared_ptr<TWHDWallet>& wallet, const char* expected) {
+    const auto entropy = WRAPD(TWHDWalletEntropy(wallet.get()));
+    assertHexEqual(entropy, expected);
+}
+
+TEST(HDWallet, CreateFromMnemonic) {
     const auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
-    assertSeedEq(wallet, seedHex);
     assertMnemonicEq(wallet, wordsStr);
+    assertEntropyEq(wallet, entropyHex);
+    assertSeedEq(wallet, seedHex);
 }
 
-TEST(HDWallet, Seed) {
-    const auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithData(DATA("ba5821e8c356c05ba5f025d9532fe0f21f65d594").get(), passphrase.get()));
-    assertSeedEq(wallet, seedHex);
+TEST(HDWallet, CreateFromEntropy) {
+    const auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithEntropy(DATA(entropyHex).get(), passphrase.get()));
     assertMnemonicEq(wallet, wordsStr);
+    assertSeedEq(wallet, seedHex);
+    assertEntropyEq(wallet, entropyHex);
 }
 
-TEST(HDWallet, IsValid) {
-    EXPECT_TRUE(TWHDWalletIsValid(STRING("credit expect life fade cover suit response wash pear what skull force").get()));
-    EXPECT_FALSE(TWHDWalletIsValid(STRING("ripple scissors hisc mammal hire column oak again sun offer wealth tomorrow").get())); // invalid word
+TEST(HDWallet, Generate) {
+    const auto wallet = WRAP(TWHDWallet, TWHDWalletCreate(128, passphrase.get()));
+    EXPECT_TRUE(TWMnemonicIsValid(WRAPS(TWHDWalletMnemonic(wallet.get())).get()));
 }
 
 TEST(HDWallet, SeedWithExtraSpaces) {
@@ -59,9 +69,19 @@ TEST(HDWallet, SeedWithExtraSpaces) {
     assertSeedEq(wallet, "7ae6f661157bda6492f6162701e570097fc726b6235011ea5ad09bf04986731ed4d92bc43cbdee047b60ea0dd1b1fa4274377c9bf5bd14ab1982c272d8076f29");
 }
 
-TEST(HDWallet, SeedNoPassword) {
+TEST(HDWallet, CreateFromMnemonicNoPassword) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
     assertSeedEq(wallet, "354c22aedb9a37407adc61f657a6f00d10ed125efa360215f36c6919abd94d6dbc193a5f9c495e21ee74118661e327e84a5f5f11fa373ec33b80897d4697557d");
+}
+
+TEST(HDWallet, CreateFromStrengthInvalid) {
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreate(64, STRING("").get()));
+    ASSERT_EQ(wallet.get(), nullptr);
+}
+
+TEST(HDWallet, CreateFromMnemonicInvalid) {
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(STRING("THIS IS INVALID MNEMONIC").get(), STRING("").get()));
+    ASSERT_EQ(wallet.get(), nullptr);
 }
 
 TEST(HDWallet, MasterPrivateKey) {
@@ -242,14 +262,25 @@ TEST(HDWallet, DeriveElrond) {
 TEST(HDWallet, DeriveBinance) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeBinance));
-    auto key2 = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeSmartChainLegacy));
+    auto key2 = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeSmartChain));
     auto keyData = WRAPD(TWPrivateKeyData(key.get()));
     auto keyData2 = WRAPD(TWPrivateKeyData(key2.get()));
 
     auto expected = "ca81b1b0974aa063de2f74c17b9dc364a8208d105659f4f900c121fb170922fe";
+    auto expectedETH = "c4f77b4a9f5a0db3a7ffc3599e61bef986037ae9a7cc1972a10d55c030270020";
 
     assertHexEqual(keyData, expected);
-    assertHexEqual(keyData2, expected);
+    assertHexEqual(keyData2, expectedETH);
+}
+
+TEST(HDWallet, DeriveAvalancheCChain) {
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeAvalancheCChain));
+    auto keyData = WRAPD(TWPrivateKeyData(key.get()));
+
+    auto expectedETH = "c4f77b4a9f5a0db3a7ffc3599e61bef986037ae9a7cc1972a10d55c030270020";
+
+    assertHexEqual(keyData, expectedETH);
 }
 
 TEST(HDWallet, ExtendedKeys) {
@@ -322,6 +353,15 @@ TEST(HDWallet, PublicKeyFromZ) {
     assertHexEqual(data11, "0226a07edd0227fa6bc36239c0bd4db83d5e488f8fb1eeb68f89a5be916aad2d60");
 
     assertStringsEqual(address4, "bc1qm97vqzgj934vnaq9s53ynkyf9dgr05rargr04n");
+}
+
+TEST(HDWallet, PublicKeyFromExtended_Ethereum) {
+    const auto xpub = STRING("xpub6C7LtZJgtz1BKXG9mExKUxYvX7HSF38UMMmGbpqNQw3DfYwAw8E6sH7VSVxFipvEEm2afSqTjoRgcLmycXX4zfxCWJ4HY73a9KdgvfHEQGB");
+    const auto xpubAddr = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeEthereum, STRING("m/44'/60'/0'/0/1").get()));
+    ASSERT_NE(xpubAddr.get(), nullptr);
+    auto data = WRAPD(TWPublicKeyData(xpubAddr.get()));
+    ASSERT_NE(data.get(), nullptr);
+    assertHexEqual(data, "044516c4aa5352035e1bb5be132694e1389a4ac37d32e5e717d35ee4c4dfab513226a9d14ea37a55962ad3644a08e2ce551b4495beabb9b09e688c7b92eba18acc");
 }
 
 TEST(HDWallet, PublicKeyFromExtended_NIST256p1) {

@@ -7,8 +7,13 @@
 #include "Bytes.h"
 #include "ParamNumber.h"
 #include "ValueEncoder.h"
+#include <Hash.h>
+#include <HexCoding.h>
 
-namespace TW::Ethereum::ABI {
+#include <cassert>
+
+using namespace TW::Ethereum::ABI;
+using namespace TW;
 
 void ParamByteArray::encodeBytes(const Data& bytes, Data& data) {
     ValueEncoder::encodeUInt256(uint256_t(bytes.size()), data);
@@ -43,6 +48,27 @@ bool ParamByteArray::decodeBytes(const Data& encoded, Data& decoded, size_t& off
     return true;
 }
 
+bool ParamByteArray::setValueJson(const std::string& value) {
+    setVal(parse_hex(value));
+    return true;
+}
+
+Data ParamByteArray::hashStruct() const {
+    return Hash::keccak256(_bytes);
+}
+
+void ParamByteArrayFix::setVal(const Data& val) {
+    if (val.size() > _n) { // crop right
+        _bytes = subData(val, 0, _n);
+    } else {
+        _bytes = val;
+        if (_bytes.size() < _n) { // pad on right
+            append(_bytes, Data(_n - _bytes.size()));
+        }
+    }
+    assert(_bytes.size() == _n);
+}
+
 void ParamByteArrayFix::encode(Data& data) const {
     const auto count = _bytes.size();
     const auto padding = ValueEncoder::padNeeded32(count);
@@ -68,6 +94,18 @@ bool ParamByteArrayFix::decodeBytesFix(const Data& encoded, size_t n, Data& deco
     return true;
 }
 
+bool ParamByteArrayFix::setValueJson(const std::string& value) {
+    setVal(parse_hex(value));
+    return true;
+}
+
+Data ParamByteArrayFix::hashStruct() const {
+    if (_bytes.size() > 32) {
+        return Hash::keccak256(_bytes);
+    }
+    return ParamBase::hashStruct();
+}
+
 void ParamString::encodeString(const std::string& decoded, Data& data) {
     auto bytes = Data(decoded.begin(), decoded.end());
     ParamByteArray::encodeBytes(bytes, data);
@@ -82,4 +120,11 @@ bool ParamString::decodeString(const Data& encoded, std::string& decoded, size_t
     return true;
 }
 
-} // namespace TW::Ethereum::ABI
+Data ParamString::hashStruct() const {
+    Data hash(32);
+    Data encoded = data(_str);
+    if (encoded.size() > 0) {
+        hash = Hash::keccak256(encoded);
+    }
+    return hash;
+}

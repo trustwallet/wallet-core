@@ -21,6 +21,11 @@ extension Data {
             return nil
         }
 
+        // Check odd characters
+        if string.contains(where: { !$0.isHexDigit }) {
+            return nil
+        }
+
         // Convert the string to bytes for better performance
         guard let stringData = string.data(using: .ascii, allowLossyConversion: true) else {
             return nil

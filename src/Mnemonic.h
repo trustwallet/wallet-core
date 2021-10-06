@@ -10,14 +10,19 @@
 
 namespace TW {
 
-/// BIP39 Mnemonic Sentence handling.
+/// BIP39 Mnemonic recovery phrase handling.
 class Mnemonic {
 public:
-    /// Determines whether a mnemonic phrase is valid.
+    static constexpr int MaxWords = 24;
+    static constexpr int MinWords = 12;
+    static constexpr int BitsPerWord = 11; // each word encodes this many bits (there are 2^11=2048 different words)
+
+public:
+    /// Determines whether a BIP39 English mnemonic phrase is valid.
     // E.g. for a valid mnemonic: "credit expect life fade cover suit response wash pear what skull force"
     static bool isValid(const std::string& mnemonic);
 
-    /// Determines whether word is a valid menemonic word.
+    /// Determines whether word is a valid BIP39 English menemonic word.
     static bool isValidWord(const std::string& word);
 
     /// Return BIP39 English words that match the given prefix.

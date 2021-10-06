@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -49,9 +49,6 @@ struct RLP {
 
     static Data encode(const uint256_t& number) noexcept;
 
-    /// Encodes a transaction.
-    static Data encode(const Transaction& transaction) noexcept;
-
     /// Wraps encoded data as a list.
     static Data encodeList(const Data& encoded) noexcept;
 
@@ -91,19 +88,19 @@ struct RLP {
     /// Encodes a list header.
     static Data encodeHeader(uint64_t size, uint8_t smallTag, uint8_t largeTag) noexcept;
 
-    /// Returns the representation of an integer using the least number of bytes
-    /// needed.
-    static Data putint(uint64_t i) noexcept;
-
     struct DecodedItem {
         std::vector<Data> decoded;
         Data remainder;
     };
 
     static DecodedItem decodeList(const Data& input);
-    static uint64_t decodeLength(const Data& data);
     /// Decodes data, remainder from RLP encoded data
     static DecodedItem decode(const Data& data);
+
+    /// Returns the representation of an integer using the least number of bytes needed, between 1 and 8 bytes, big endian
+    static Data putVarInt(uint64_t i) noexcept;
+    /// Parses an integer of given size, between 1 and 8 bytes, big endian
+    static uint64_t parseVarInt(size_t size, const Data& data, size_t index);
 };
 
 } // namespace TW::Ethereum

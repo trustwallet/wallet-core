@@ -6,11 +6,13 @@
 
 #include "Parameters.h"
 #include "ValueEncoder.h"
+#include <Hash.h>
 
 #include <cassert>
 #include <string>
 
 using namespace TW::Ethereum::ABI;
+using namespace TW;
 
 ParamSet::~ParamSet() {
     _params.clear();
@@ -18,10 +20,10 @@ ParamSet::~ParamSet() {
 
 /// Returns the index of the parameter
 int ParamSet::addParam(const std::shared_ptr<ParamBase>& param) {
-    assert(param.get() != nullptr);
     if (param.get() == nullptr) {
         return -1;
     }
+    assert(param.get() != nullptr);
     _params.push_back(param);
     return static_cast<int>(_params.size() - 1);
 }
@@ -57,14 +59,22 @@ std::string ParamSet::getType() const {
     std::string t = "(";
     int cnt = 0;
     for (auto p : _params) {
-        if (cnt > 0) {
+        if (cnt++ > 0) {
             t += ",";
         }
         t += p->getType();
-        ++cnt;
     }
     t += ")";
     return t;
+}
+
+bool ParamSet::isDynamic() const {
+    for (const auto& p: _params) {
+        if (p->isDynamic()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 size_t ParamSet::getSize() const {
@@ -142,4 +152,21 @@ bool ParamSet::decode(const Data& encoded, size_t& offset_inout) {
         }
     }
     return true;
+}
+
+Data ParamSet::encodeHashes() const {
+    Data hashes;
+    for (auto p: _params) {
+        append(hashes, p->hashStruct());
+    }
+    return hashes;
+}
+
+Data Parameters::hashStruct() const {
+    Data hash(32);
+    Data hashes = _params.encodeHashes();
+    if (hashes.size() > 0) {
+        hash = Hash::keccak256(hashes);
+    }
+    return hash;
 }

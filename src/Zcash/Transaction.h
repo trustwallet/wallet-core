@@ -29,8 +29,8 @@ struct Transaction {
     uint32_t expiryHeight = 0;
     uint64_t valueBalance = 0;
 
-    std::vector<Bitcoin::TransactionInput> inputs;
-    std::vector<Bitcoin::TransactionOutput> outputs;
+    Bitcoin::TransactionInputs<Bitcoin::TransactionInput> inputs;
+    Bitcoin::TransactionOutputs<Bitcoin::TransactionOutput> outputs;
     std::array<byte, 4> branchId;
 
     /// Used for diagnostics; store previously estimated virtual size (if any; size in bytes)

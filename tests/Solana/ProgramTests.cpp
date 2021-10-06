@@ -20,7 +20,24 @@ TEST(SolanaStakeProgram, addressFromValidatorSeed) {
     auto validator = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
     auto programId = Address("Stake11111111111111111111111111111111111111");
     auto expected = Address("6u9vJH9pRj66N5oJFCBADEbpMTrLxQATcL6q5p5MXwYv");
-    ASSERT_EQ(StakeProgram::addressFromValidatorSeed(user, validator, programId), expected);
+    EXPECT_EQ(StakeProgram::addressFromValidatorSeed(user, validator, programId), expected);
+}
+
+TEST(SolanaStakeProgram, addressFromRecentBlockhash) {
+    {
+        auto user = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
+        Solana::Hash recentBlockhash("11111111111111111111111111111111");
+        auto programId = Address("Stake11111111111111111111111111111111111111");
+        auto expected = Address("GQDDc5EVGJZFC7AvpEJ8eoCQ75Yy4gr7eu17frCjvQRQ");
+        EXPECT_EQ(StakeProgram::addressFromRecentBlockhash(user, recentBlockhash, programId), expected);
+    }
+    {
+        auto user = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
+        Solana::Hash recentBlockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
+        auto programId = Address("Stake11111111111111111111111111111111111111");
+        auto expected = Address("2Kos1xJRBq3Ae1GnVNBx7HgJhq8KvdUe2bXE4QGdNaXb");
+        EXPECT_EQ(StakeProgram::addressFromRecentBlockhash(user, recentBlockhash, programId), expected);
+    }
 }
 
 TEST(SolanaTokenProgram, defaultTokenAddress) {

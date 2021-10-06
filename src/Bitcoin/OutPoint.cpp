@@ -10,7 +10,8 @@
 
 using namespace TW::Bitcoin;
 
-void OutPoint::encode(std::vector<uint8_t>& data) const {
+void OutPoint::encode(Data& data) const {
     std::copy(std::begin(hash), std::end(hash), std::back_inserter(data));
     encode32LE(index, data);
+    // sequence is encoded in TransactionInputs
 }

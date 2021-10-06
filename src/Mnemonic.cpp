@@ -9,10 +9,10 @@
 #include <TrezorCrypto/bip39_english.h>
 #include <TrezorCrypto/bip39.h>
 
-#include <string.h>
 #include <string>
 #include <vector>
 #include <cassert>
+#include <cstring>
 
 namespace TW {
 
@@ -26,8 +26,12 @@ inline const char* const* mnemonicWordlist() { return wordlist; }
 
 bool Mnemonic::isValidWord(const std::string& word) {
     const char* wordC = word.c_str();
+    const auto len = word.length();
     for (const char* const* w = mnemonicWordlist(); *w != nullptr; ++w) {
-        if (strncmp(*w, wordC, word.length()) == 0) {
+        if (strlen(*w) != len) {
+            continue;
+        }
+        if (strncmp(*w, wordC, len) == 0) {
             return true;
         }
     }

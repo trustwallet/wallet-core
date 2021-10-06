@@ -128,7 +128,7 @@ public final class KeyStore {
     /// - Returns: new account
     public func `import`(json: Data, name: String, password: String, newPassword: String, coins: [CoinType]) throws -> Wallet {
         guard let key = StoredKey.importJSON(json: json) else {
-            throw Error.invalidKey
+            throw Error.invalidJSON
         }
         guard let data = key.decryptPrivateKey(password: Data(password.utf8)) else {
             throw Error.invalidPassword

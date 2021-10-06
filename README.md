@@ -10,7 +10,6 @@ Swift for iOS and Java for Android.
 ![Android CI](https://github.com/trustwallet/wallet-core/workflows/Android%20CI/badge.svg)
 ![Linux CI](https://github.com/trustwallet/wallet-core/workflows/Linux%20CI/badge.svg)
 ![Docker CI](https://github.com/trustwallet/wallet-core/workflows/Docker%20CI/badge.svg)
-![Typescript CI](https://github.com/trustwallet/wallet-core/workflows/Typescript%20CI/badge.svg)
 
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/trustwallet/wallet-core)
 ![GitHub](https://img.shields.io/github/license/TrustWallet/wallet-core.svg)
@@ -25,7 +24,7 @@ For comprehensive documentation, see [developer.trustwallet.com](https://develop
 # Supported Blockchains
 
 Wallet Core supports more than **50** blockchains: Bitcoin, Ethereum, Binance Chain, and most major blockchain platforms.
-The full list is [here](docs/coins.md).
+The full list is [here](docs/registry.md).
 
 # Building
 

@@ -1,11 +1,11 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Bitcoin/Script.h"
-#include "Bitcoin/TransactionSigner.h"
+#include "Bitcoin/SignatureBuilder.h"
 #include "../interface/TWTestUtilities.h"
 #include "HexCoding.h"
 
@@ -22,6 +22,11 @@ const Script PayToPublicKeySecp256k1Extended(parse_hex("41" "0499c6f51ad6f98c9c5
 const Script PayToPublicKeyHash(parse_hex("76a914" "79091972186c449eb1ded22b78e40d009bdf0089" "88ac"));
 
 TEST(BitcoinScript, PayToPublicKey) {
+    const Script script = Script::buildPayToPublicKey(parse_hex("03c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432"));
+    EXPECT_EQ(hex(script.bytes), hex(PayToPublicKeySecp256k1.bytes));
+    const Script scriptExtended = Script::buildPayToPublicKey(parse_hex("0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c166b489a4b7c491e7688e6ebea3a71fc3a1a48d60f98d5ce84c93b65e423fde91"));
+    EXPECT_EQ(hex(scriptExtended.bytes), hex(PayToPublicKeySecp256k1Extended.bytes));
+
     Data res;
     EXPECT_EQ(PayToPublicKeySecp256k1.matchPayToPublicKey(res), true);
     EXPECT_EQ(hex(res), "03c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432");
@@ -35,6 +40,9 @@ TEST(BitcoinScript, PayToPublicKey) {
 }
 
 TEST(BitcoinScript, PayToPublicKeyHash) {
+    const Script script = Script::buildPayToPublicKeyHash(parse_hex("79091972186c449eb1ded22b78e40d009bdf0089"));
+    EXPECT_EQ(hex(script.bytes), hex(PayToPublicKeyHash.bytes));
+
     Data res;
     EXPECT_EQ(PayToPublicKeyHash.matchPayToPublicKeyHash(res), true);
     EXPECT_EQ(hex(res), "79091972186c449eb1ded22b78e40d009bdf0089");
@@ -49,6 +57,9 @@ TEST(BitcoinScript, PayToPublicKeyHash) {
 }
 
 TEST(BitcoinScript, PayToScriptHash) {
+    const Script script = Script::buildPayToScriptHash(parse_hex("4733f37cf4db86fbc2efed2500b4f4e49f312023"));
+    EXPECT_EQ(hex(script.bytes), hex(PayToScriptHash.bytes));
+
     EXPECT_EQ(PayToScriptHash.isPayToScriptHash(), true);
     EXPECT_EQ(PayToScriptHash.bytes.size(), 23);
 
@@ -70,6 +81,9 @@ TEST(BitcoinScript, PayToScriptHash) {
 }
 
 TEST(BitcoinScript, PayToWitnessScriptHash) {
+    const Script script = Script::buildPayToWitnessScriptHash(parse_hex("ff25429251b5a84f452230a3c75fd886b7fc5a7865ce4a7bb7a9d7c5be6da3db"));
+    EXPECT_EQ(hex(script.bytes), hex(PayToWitnessScriptHash.bytes));
+
     EXPECT_EQ(PayToWitnessScriptHash.isPayToWitnessScriptHash(), true);
     EXPECT_EQ(PayToWitnessScriptHash.bytes.size(), 34);
 
@@ -91,6 +105,9 @@ TEST(BitcoinScript, PayToWitnessScriptHash) {
 }
 
 TEST(BitcoinScript, PayToWitnessPublicKeyHash) {
+    const Script script = Script::buildPayToWitnessPublicKeyHash(parse_hex("79091972186c449eb1ded22b78e40d009bdf0089"));
+    EXPECT_EQ(hex(script.bytes), hex(PayToWitnessPublicKeyHash.bytes));
+
     EXPECT_EQ(PayToWitnessPublicKeyHash.isPayToWitnessPublicKeyHash(), true);
     EXPECT_EQ(PayToWitnessPublicKeyHash.bytes.size(), 22);
 
@@ -307,27 +324,27 @@ TEST(BitcoinScript, OpReturn) {
 TEST(BitcoinTransactionSigner, PushAllEmpty) {
     {
         std::vector<Data> input = {};
-        Data res = TransactionSigner<Transaction, TransactionBuilder>::pushAll(input);
+        Data res = SignatureBuilder<Transaction>::pushAll(input);
         EXPECT_EQ(hex(res), "");
     }
     {
         std::vector<Data> input = {parse_hex("")};
-        Data res = TransactionSigner<Transaction, TransactionBuilder>::pushAll(input);
+        Data res = SignatureBuilder<Transaction>::pushAll(input);
         EXPECT_EQ(hex(res), "00");
     }
     {
         std::vector<Data> input = {parse_hex("09")};
-        Data res = TransactionSigner<Transaction, TransactionBuilder>::pushAll(input);
+        Data res = SignatureBuilder<Transaction>::pushAll(input);
         EXPECT_EQ(hex(res), "59" "09");
     }
     {
         std::vector<Data> input = {parse_hex("00010203040506070809")};
-        Data res = TransactionSigner<Transaction, TransactionBuilder>::pushAll(input);
+        Data res = SignatureBuilder<Transaction>::pushAll(input);
         EXPECT_EQ(hex(res), "0a" "00010203040506070809");
     }
     {
         std::vector<Data> input = {parse_hex("0001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809")};
-        Data res = TransactionSigner<Transaction, TransactionBuilder>::pushAll(input);
+        Data res = SignatureBuilder<Transaction>::pushAll(input);
         EXPECT_EQ(hex(res), "4c50" "0001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809");
     }
     {
@@ -336,7 +353,7 @@ TEST(BitcoinTransactionSigner, PushAllEmpty) {
         Data expected = parse_hex("4d" "0a01");
         TW::append(expected, in1);
         std::vector<Data> input = {in1};
-        Data res = TransactionSigner<Transaction, TransactionBuilder>::pushAll(input);
+        Data res = SignatureBuilder<Transaction>::pushAll(input);
         EXPECT_EQ(hex(res), hex(expected));
     }
     {
@@ -345,7 +362,7 @@ TEST(BitcoinTransactionSigner, PushAllEmpty) {
         Data expected = parse_hex("4e" "0a010100");
         TW::append(expected, in1);
         std::vector<Data> input = {in1};
-        Data res = TransactionSigner<Transaction, TransactionBuilder>::pushAll(input);
+        Data res = SignatureBuilder<Transaction>::pushAll(input);
         EXPECT_EQ(hex(res), hex(expected));
     }
 }

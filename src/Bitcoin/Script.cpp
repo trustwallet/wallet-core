@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -205,13 +205,22 @@ bool Script::getScriptOp(size_t& index, uint8_t& opcode, Data& operand) const {
     return true;
 }
 
+Script Script::buildPayToPublicKey(const Data& publicKey) {
+    assert(publicKey.size() == PublicKey::secp256k1Size || publicKey.size() == PublicKey::secp256k1ExtendedSize);
+    Script script;
+    script.bytes.push_back(static_cast<byte>(publicKey.size()));
+    append(script.bytes, publicKey);
+    script.bytes.push_back(OP_CHECKSIG);
+    return script;
+}
+
 Script Script::buildPayToPublicKeyHash(const Data& hash) {
     assert(hash.size() == 20);
     Script script;
     script.bytes.push_back(OP_DUP);
     script.bytes.push_back(OP_HASH160);
     script.bytes.push_back(20);
-    script.bytes.insert(script.bytes.end(), hash.begin(), hash.end());
+    append(script.bytes, hash);
     script.bytes.push_back(OP_EQUALVERIFY);
     script.bytes.push_back(OP_CHECKSIG);
     return script;
@@ -222,7 +231,7 @@ Script Script::buildPayToScriptHash(const Data& scriptHash) {
     Script script;
     script.bytes.push_back(OP_HASH160);
     script.bytes.push_back(20);
-    script.bytes.insert(script.bytes.end(), scriptHash.begin(), scriptHash.end());
+    append(script.bytes, scriptHash);
     script.bytes.push_back(OP_EQUAL);
     return script;
 }
@@ -232,7 +241,7 @@ Script Script::buildPayToWitnessProgram(const Data& program) {
     Script script;
     script.bytes.push_back(OP_0);
     script.bytes.push_back(static_cast<byte>(program.size()));
-    script.bytes.insert(script.bytes.end(), program.begin(), program.end());
+    append(script.bytes, program);
     assert(script.bytes.size() == 22 || script.bytes.size() == 34);
     return script;
 }

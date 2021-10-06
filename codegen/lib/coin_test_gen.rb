@@ -1,4 +1,4 @@
-# Helper for creating/updating CoinType unit tests, based on the coins.json file
+# Helper for creating/updating CoinType unit tests, based on the registry.json file
 
 require 'erb'
 require 'fileutils'

@@ -54,34 +54,9 @@ Pod::Spec.new do |s|
 end
 EOF
 
-types_spec_name=WalletCoreTypes
-types_podspec=${types_spec_name}.podspec
-cat > $types_podspec <<EOF 
-Pod::Spec.new do |s|
-  s.name         = '${types_spec_name}'
-  s.version      = '${version}'
-  s.summary      = 'Trust Wallet core types.'
-  s.homepage     = 'https://github.com/trustwallet/wallet-core'
-  s.license      = 'MIT'
-  s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
-
-  s.ios.deployment_target = '12.0'
-  s.swift_version = '5.1'
-
-  s.source = {
-    http: '${types_download_url}'
-  }
-
-  s.vendored_frameworks = 'WalletCoreTypes.xcframework', 'SwiftProtobuf.xcframework'
-end
-EOF
-
 # pod trunk push
 
 echo "pod trunk push --verbose --allow-warnings ${podspec}"
 pod trunk push --verbose --allow-warnings ${podspec}
-
-echo "pod trunk push --verbose --allow-warnings ${types_podspec}"
-pod trunk push --verbose --allow-warnings ${types_podspec}
 
 popd

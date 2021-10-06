@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrezorCrypto/cash_addr.h>
@@ -80,7 +81,9 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypeBandChain:
     case TWCoinTypeTHORChain:
     case TWCoinTypeBluzelle:
-    case TWCoinTypeIoTeX: {
+    case TWCoinTypeIoTeX:
+    case TWCoinTypeCryptoOrg:
+    {
         Cosmos::Address addr;
         if (!Cosmos::Address::decode(string, addr)) {
             break;
@@ -149,6 +152,12 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypeSmartChainLegacy:
     case TWCoinTypeSmartChain:
     case TWCoinTypePolygon:
+    case TWCoinTypeOptimism:
+    case TWCoinTypeArbitrum:
+    case TWCoinTypeECOChain:
+    case TWCoinTypeXDai:
+    case TWCoinTypeAvalancheCChain:
+    case TWCoinTypeFantom:
         data = parse_hex(string);
         break;
 

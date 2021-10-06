@@ -65,12 +65,9 @@ TEST(RavencoinTransaction, SignTransaction) {
     protoPlan = plan.proto();
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
     auto signedTx = result.payload();
-
     ASSERT_TRUE(result);
-    ASSERT_EQ(fee, signer.plan.fee);
 
     Data serialized;
     signedTx.encode(serialized, Transaction::SegwitFormatMode::NonSegwit);
