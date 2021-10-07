@@ -9,10 +9,10 @@ import "Binance.proto";
 
 // Supported blockchains
 enum Chain {
-        THOR = 0;
-        BTC = 1;
-        ETH = 2;
-        BNB = 3;
+    THOR = 0;
+    BTC = 1;
+    ETH = 2;
+    BNB = 3;
 }
 
 // Represents an asset.  Examples: BNB.BNB, RUNE.RUNE, BNB.RUNE-67C
@@ -24,32 +24,42 @@ message Asset {
 
 // Input for a swap between source and destination chains; for creating a TX on the source chain.
 message SwapInput {
-    // Sender address (on the source chain)
-    string from_address = 1;
+    // Source chain
+    Chain from_chain = 1;
 
-    // Destination chain/asset
-    Asset to_asset = 2;
+    // Sender address (on the source chain)
+    string from_address = 2;
+
+    // Destination chain+asset
+    Asset to_asset = 3;
 
     // Destination address (on the destination chain)
-    string to_address = 3;
+    string to_address = 4;
 
     // Vault address.  Address of the vault, on the source network, must match the pair
-    string vault_address = 4;
+    string vault_address = 5;
 
-    // Amount, as string, in the native asset of the source chain
-    string amount = 5;
+    // For Ethereum, can be empty otherwise
+    string router_address = 6;
 
-    // Private key, used for deriving from address and for signing
-    bytes private_key = 6;
+    // Source amount, as string, in the native asset of the source chain
+    string from_amount = 7;
+
+    // Destination limit amount, as string, in the native asset of the destination chain
+    string to_amount_limit = 8;
 }
 
 message SwapOutput {
     Chain from_chain = 1;
     Chain to_chain = 2;
 
+    // Filled in case of error, empty on success
+    string error = 3;
+
+    // Prepared unsigned transaction input, on the source chain, to THOR.  Some fields must be completed, and it has to be signed.
     oneof signing_input_oneof {
-        Bitcoin.Proto.SigningInput bitcoin = 3;
-        Ethereum.Proto.SigningInput ethereum = 4;
-        Binance.Proto.SigningInput binance = 5;
+        Bitcoin.Proto.SigningInput bitcoin = 4;
+        Ethereum.Proto.SigningInput ethereum = 5;
+        Binance.Proto.SigningInput binance = 6;
     }
 }
