@@ -28,7 +28,6 @@ TEST(TWTHORSwap, SwapBtcToEth) {
     // prepare swap input
     Proto::SwapInput input;
     input.set_from_chain(Proto::BTC);
-    input.set_to_chain(Proto::ETH);
     input.set_from_address(Address1Btc);
     Proto::Asset toAsset;
     toAsset.set_chain(Proto::ETH);

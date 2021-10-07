@@ -33,7 +33,7 @@ namespace TW::THORSwap {
 
 TWCoinType chainCoinType(Chain chain) {
     switch (chain) {
-        //case Chain::THOR: return TWCoinTypeBitcoin; // TODO
+        case Chain::THOR: return TWCoinTypeTHORChain;
         case Chain::BTC: return TWCoinTypeBitcoin;
         case Chain::ETH: return TWCoinTypeEthereum;
         case Chain::BNB: return TWCoinTypeBinance;
@@ -60,7 +60,6 @@ std::string Swap::buildMemo(Chain toChain, const std::string& toSymbol, const st
 }
 
 bool validateAddress(Chain chain, const std::string& address) {
-    if (chain == Chain::THOR) { return true;} // TODO remove once ThorChain is supported
     return TW::validateAddress(chainCoinType(chain), address);
 }
 
