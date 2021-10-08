@@ -50,6 +50,9 @@ public:
 
     /// Prepares a TransactionOutput with given address and amount, prepares script for it
     static std::optional<TransactionOutput> prepareOutputWithScript(std::string address, Amount amount, enum TWCoinType coin);
+
+    /// The maximum number of UTXOs to consider.  UTXOs above this limit are cut off because it cak take very long.
+    static const size_t MaxUtxosHardLimit;
 };
 
 } // namespace TW::Bitcoin

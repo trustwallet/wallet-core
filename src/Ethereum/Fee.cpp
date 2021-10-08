@@ -48,7 +48,7 @@ auto suggestTip(const json& feeHistory) -> uint256_t {
     vector<uint256_t> rewards;
 
     for (auto& item : feeHistory["reward"]) {
-        const auto hex = parse_hex(item[0]);
+        const auto hex = parse_hex(item[0], true);
         const auto reward = load(hex);
         if (reward > 0 ) {
             rewards.push_back(reward);
@@ -92,7 +92,7 @@ auto suggestFee(const json& feeHistory) -> json {
 
     const auto& array = feeHistory["baseFeePerGas"];
     for(size_t i = 0; i < array.size(); i++) {
-        const auto hex = parse_hex(array[i]);
+        const auto hex = parse_hex(array[i], true);
         baseFees.push_back(load(hex));
         order.push_back(i);
     }

@@ -1268,6 +1268,144 @@ TEST(BitcoinSigning, PlanAndSign_LitecoinReal_8435) {
     );
 }
 
+TEST(BitcoinSigning, Sign_ManyUtxos_400) {
+    auto ownAddress = "bc1q0yy3juscd3zfavw76g4h3eqdqzda7qyf58rj4m";
+    auto ownPrivateKey = "eb696a065ef48a2192da5b28b694f87544b30fae8327c4510137a922f32c6dcf";
+
+    // Setup input
+    SigningInput input;
+
+    const auto n = 400;
+    uint64_t utxoSum = 0;
+    for (int i = 0; i < n; ++i) {
+        auto utxoScript = Script::lockScriptForAddress(ownAddress, TWCoinTypeBitcoin);
+        Data keyHash;
+        EXPECT_TRUE(utxoScript.matchPayToWitnessPublicKeyHash(keyHash));
+        EXPECT_EQ(hex(keyHash), "79091972186c449eb1ded22b78e40d009bdf0089");
+
+        auto redeemScript = Script::buildPayToPublicKeyHash(keyHash);
+        input.scripts[std::string(keyHash.begin(), keyHash.end())] = redeemScript;
+
+        UTXO utxo;
+        utxo.script = utxoScript;
+        utxo.amount = 1000 + (i + 1) * 10;
+        auto hash = parse_hex("a85fd6a9a7f2f54cacb57e83dfd408e51c0a5fc82885e3fa06be8692962bc407");
+        std::reverse(hash.begin(), hash.end());
+        utxo.outPoint = OutPoint(hash, 0, UINT32_MAX);
+        input.utxos.push_back(utxo);
+        utxoSum += utxo.amount;
+    }
+    EXPECT_EQ(utxoSum, 1'202'000);
+
+    input.coinType = TWCoinTypeBitcoin;
+    input.hashType = hashTypeForCoin(TWCoinTypeBitcoin);
+    input.useMaxAmount = false;
+    input.amount = 300'000;
+    input.byteFee = 1;
+    input.toAddress = "bc1qauwlpmzamwlf9tah6z4w0t8sunh6pnyyjgk0ne";
+    input.changeAddress = ownAddress;
+
+    // Plan
+    auto plan = TransactionBuilder::plan(input);
+
+    // expected result: 66 utxos, with the largest amounts
+    std::vector<int64_t> subset;
+    uint64_t subsetSum = 0;
+    for (int i = n - 66; i < n; ++i) {
+        const uint64_t val = 1000 + (i + 1) * 10;
+        subset.push_back(val);
+        subsetSum += val;
+    }
+    EXPECT_EQ(subset.size(), 66);
+    EXPECT_EQ(subsetSum, 308'550);
+    EXPECT_TRUE(verifyPlan(plan, subset, 300'000, 4'561));
+
+    // Extend input with keys, reuse plan, Sign
+    auto privKey = PrivateKey(parse_hex(ownPrivateKey));
+    input.privateKeys.push_back(privKey);
+    input.plan = plan;
+
+    // Sign
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
+
+    ASSERT_TRUE(result) << std::to_string(result.error());
+    auto signedTx = result.payload();
+
+    Data serialized;
+    signedTx.encode(serialized);
+
+    EXPECT_EQ(serialized.size(), 9871);
+}
+
+TEST(BitcoinSigning, Sign_ManyUtxos_2000) {
+    auto ownAddress = "bc1q0yy3juscd3zfavw76g4h3eqdqzda7qyf58rj4m";
+    auto ownPrivateKey = "eb696a065ef48a2192da5b28b694f87544b30fae8327c4510137a922f32c6dcf";
+
+    // Setup input
+    SigningInput input;
+
+    const auto n = 2000;
+    uint64_t utxoSum = 0;
+    for (int i = 0; i < n; ++i) {
+        auto utxoScript = Script::lockScriptForAddress(ownAddress, TWCoinTypeBitcoin);
+        Data keyHash;
+        EXPECT_TRUE(utxoScript.matchPayToWitnessPublicKeyHash(keyHash));
+        EXPECT_EQ(hex(keyHash), "79091972186c449eb1ded22b78e40d009bdf0089");
+
+        auto redeemScript = Script::buildPayToPublicKeyHash(keyHash);
+        input.scripts[std::string(keyHash.begin(), keyHash.end())] = redeemScript;
+
+        UTXO utxo;
+        utxo.script = utxoScript;
+        utxo.amount = 1000 + (i + 1) * 10;
+        auto hash = parse_hex("a85fd6a9a7f2f54cacb57e83dfd408e51c0a5fc82885e3fa06be8692962bc407");
+        std::reverse(hash.begin(), hash.end());
+        utxo.outPoint = OutPoint(hash, 0, UINT32_MAX);
+        input.utxos.push_back(utxo);
+        utxoSum += utxo.amount;
+    }
+    EXPECT_EQ(utxoSum, 22'010'000);
+
+    input.coinType = TWCoinTypeBitcoin;
+    input.hashType = hashTypeForCoin(TWCoinTypeBitcoin);
+    input.useMaxAmount = false;
+    input.amount = 2'000'000;
+    input.byteFee = 1;
+    input.toAddress = "bc1qauwlpmzamwlf9tah6z4w0t8sunh6pnyyjgk0ne";
+    input.changeAddress = ownAddress;
+
+    // Plan
+    auto plan = TransactionBuilder::plan(input);
+
+    // expected result: 601 utxos (smaller ones)
+    std::vector<int64_t> subset;
+    uint64_t subsetSum = 0;
+    for (int i = 0; i < 601; ++i) {
+        const uint64_t val = 1000 + (i + 1) * 10;
+        subset.push_back(val);
+        subsetSum += val;
+    }
+    EXPECT_EQ(subset.size(), 601);
+    EXPECT_EQ(subsetSum, 2'410'010);
+    EXPECT_TRUE(verifyPlan(plan, subset, 2'000'000, 40'943));
+
+    // Extend input with keys, reuse plan, Sign
+    auto privKey = PrivateKey(parse_hex(ownPrivateKey));
+    input.privateKeys.push_back(privKey);
+    input.plan = plan;
+
+    // Sign
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
+
+    ASSERT_TRUE(result) << std::to_string(result.error());
+    auto signedTx = result.payload();
+
+    Data serialized;
+    signedTx.encode(serialized);
+
+    EXPECT_EQ(serialized.size(), 89'339);
+}
+
 TEST(BitcoinSigning, EncodeThreeOutput) {
     auto coin = TWCoinTypeLitecoin;
     auto ownAddress = "ltc1qt36tu30tgk35tyzsve6jjq3dnhu2rm8l8v5q00";

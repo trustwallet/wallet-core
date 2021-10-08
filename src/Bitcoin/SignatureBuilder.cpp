@@ -32,9 +32,10 @@ Result<Transaction, Common::Proto::SigningError> SignatureBuilder<Transaction>::
         return Result<Transaction, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_input_utxos);
     }
 
-    signedInputs.clear();
+    transactionToSign = transaction;
+    transactionToSign.inputs.clear();
     std::copy(std::begin(transaction.inputs), std::end(transaction.inputs),
-              std::back_inserter(signedInputs));
+              std::back_inserter(transactionToSign.inputs));
 
     const auto hashSingle = hashTypeIsSingle(input.hashType);
     for (auto i = 0; i < plan.utxos.size(); i++) {
@@ -51,15 +52,12 @@ Result<Transaction, Common::Proto::SigningError> SignatureBuilder<Transaction>::
         }
     }
 
-    Transaction tx(transaction);
-    tx.inputs = move(signedInputs);
-    tx.outputs = transaction.outputs;
     // save estimated size
     if ((input.byteFee > 0) && (plan.fee > 0)) {
-        tx.previousEstimatedVirtualSize = static_cast<int>(plan.fee / input.byteFee);
+        transactionToSign.previousEstimatedVirtualSize = static_cast<int>(plan.fee / input.byteFee);
     }
 
-    return Result<Transaction, Common::Proto::SigningError>::success(std::move(tx));
+    return Result<Transaction, Common::Proto::SigningError>::success(std::move(transactionToSign));
 }
 
 template <typename Transaction>
@@ -126,16 +124,13 @@ Result<void, Common::Proto::SigningError> SignatureBuilder<Transaction>::sign(Sc
 
     auto transactionInput = TransactionInput(txin.previousOutput, Script(pushAll(results)), txin.sequence);
     transactionInput.scriptWitness = witnessStack;
-    signedInputs[index] = transactionInput;
+    transactionToSign.inputs[index] = transactionInput;
     return Result<void, Common::Proto::SigningError>::success();
 }
 
 template <typename Transaction>
 Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transaction>::signStep(
     Script script, size_t index, const UTXO& utxo, uint32_t version) const {
-    Transaction transactionToSign(transaction);
-    transactionToSign.inputs = signedInputs;
-    transactionToSign.outputs = transaction.outputs;
 
     Data data;
     std::vector<Data> keys;

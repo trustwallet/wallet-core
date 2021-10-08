@@ -46,4 +46,23 @@ class EthereumFeeTests: XCTestCase {
 
         XCTAssertJSONEqual(result, expected)
     }
+
+    func testHexPadding() throws {
+        let url = Bundle(for: EthereumFeeTests.self).url(forResource: "eth_feeHistory3", withExtension: "json")!
+        let data = try String(contentsOf: url)
+
+        guard let result = EthereumFee.suggest(feeHistory: data) else {
+            XCTFail("fail to suggest fee")
+            return
+        }
+
+        let expected = """
+        {
+            "baseFee": "44208904214",
+            "maxPriorityFee": "1500000000"
+        }
+        """
+
+        XCTAssertJSONEqual(result, expected)
+    }
 }
