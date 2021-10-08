@@ -1767,5 +1767,29 @@
       "clientPublic": "https://mainnet.crypto.org:1317/",
       "clientDocs": "https://crypto.org/docs/resources/chain-integration.html#api-documentation"
     }
+  },
+  {
+    "id": "celo",
+    "name": "Celo",
+    "coinId": 52752,
+    "symbol": "CELO",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/52752'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://explorer.celo.org",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xaf41ee58afe633dc7b179c15693cca40fe0372c1d7c70351620105d59d326693",
+      "sampleAccount": "0xFBFf95e2Fa7e4Ff3aeA34eFB05fB60F9968a6aaD"
+    },
+    "info": {
+      "url": "https://celo.org",
+      "client": "https://github.com/celo-org/celo-blockchain",
+      "clientPublic": "https://forno.celo.org",
+      "clientDocs": "https://eth.wiki/json-rpc/API"
+    }
   }
 ]

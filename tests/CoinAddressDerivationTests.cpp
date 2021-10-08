@@ -78,6 +78,7 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeTHORChain, privateKey), "thor1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0luxce7");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeAvalancheCChain, privateKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeXDai, privateKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeCelo, privateKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
 }
 
 int countThreadReady = 0;
