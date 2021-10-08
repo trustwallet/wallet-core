@@ -1288,12 +1288,12 @@ TEST(BitcoinSigning, Sign_ManyUtxos_400) {
 
         UTXO utxo;
         utxo.script = utxoScript;
-        utxo.amount = 1000 + (i + 1) * 10;
+        utxo._amount = 1000 + (i + 1) * 10;
         auto hash = parse_hex("a85fd6a9a7f2f54cacb57e83dfd408e51c0a5fc82885e3fa06be8692962bc407");
         std::reverse(hash.begin(), hash.end());
         utxo.outPoint = OutPoint(hash, 0, UINT32_MAX);
         input.utxos.push_back(utxo);
-        utxoSum += utxo.amount;
+        utxoSum += utxo.amount();
     }
     EXPECT_EQ(utxoSum, 1'202'000);
 
@@ -1357,12 +1357,12 @@ TEST(BitcoinSigning, Sign_ManyUtxos_2000) {
 
         UTXO utxo;
         utxo.script = utxoScript;
-        utxo.amount = 1000 + (i + 1) * 10;
+        utxo._amount = 1000 + (i + 1) * 10;
         auto hash = parse_hex("a85fd6a9a7f2f54cacb57e83dfd408e51c0a5fc82885e3fa06be8692962bc407");
         std::reverse(hash.begin(), hash.end());
         utxo.outPoint = OutPoint(hash, 0, UINT32_MAX);
         input.utxos.push_back(utxo);
-        utxoSum += utxo.amount;
+        utxoSum += utxo.amount();
     }
     EXPECT_EQ(utxoSum, 22'010'000);
 

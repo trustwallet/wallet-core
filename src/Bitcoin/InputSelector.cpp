@@ -173,11 +173,11 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(int64_t 
     uint64_t sum = 0;
     std::vector<TypeWithAmount> selected;
     for (auto& input: inputs) {
-        if (input.amount <= dustThreshold) {
+        if (input.amount() <= dustThreshold) {
             continue; // skip dust
         }
         selected.push_back(input);
-        sum += input.amount;
+        sum += input.amount();
         if (sum >= increasedTargetValue) {
             // we have enough
             return selected;

@@ -81,7 +81,7 @@ bool verifySelectedUTXOs(const UTXOs& selected, const std::vector<int64_t>& expe
             ret = false;
             ++errorCount;
             if (errorCount < 10) {
-                std::cerr << "Wrong UTXOs amount, pos " << i << " amount " << selected[i].amount << " expected " << expectedAmounts[i] << std::endl;
+                std::cerr << "Wrong UTXOs amount, pos " << i << " amount " << selected[i].amount() << " expected " << expectedAmounts[i] << std::endl;
             }
         }
     }
