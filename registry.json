@@ -1791,5 +1791,30 @@
       "clientPublic": "https://forno.celo.org",
       "clientDocs": "https://eth.wiki/json-rpc/API"
     }
+  },
+  {
+    "id": "ronin",
+    "name": "Ronin",
+    "coinId": 10002020,
+    "slip44": 60,
+    "symbol": "RON",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://explorer.roninchain.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xc09835aaf9c1cacea8ce322865583c791d3a4dfbd9a3b72f79539db88d3697ab",
+      "sampleAccount": "0xdc05ecd5fbdb64058d94f3182d66f44342b9adcb"
+    },
+    "info": {
+      "url": "https://whitepaper.axieinfinity.com/technology/ronin-ethereum-sidechain",
+      "client": "https://github.com/axieinfinity/ronin-smart-contracts",
+      "clientPublic": "https://api.roninchain.com/rpc",
+      "clientDocs": "https://eth.wiki/json-rpc/API"
+    }
   }
 ]
