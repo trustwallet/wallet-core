@@ -23,7 +23,7 @@ set -e
 function install_llvm_gcov() {
     cat << EOF > /tmp/llvm-gcov.sh
 #!/bin/bash
-exec /usr/bin/llvm-cov gcov "\$@"
+exec /usr/bin/llvm-cov-11 gcov "\$@"
 EOF
     sudo chmod 755 /tmp/llvm-gcov.sh
 }
