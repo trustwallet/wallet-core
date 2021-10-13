@@ -18,7 +18,7 @@ TEST(TW<%= name %>, Address) {
     // TODO: Finalize test implementation
 
     auto string = STRING("__ADD_VALID_ADDRESS_HERE__");
-    auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinType<%= format_name(coin['name']) %>));
+    auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinType<%= format_name(coin) %>));
     auto string2 = WRAPS(TWAnyAddressDescription(addr.get()));
     EXPECT_TRUE(TWStringEqual(string.get(), string2.get()));
     auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
