@@ -9,6 +9,7 @@
 #include <TrezorCrypto/bip39_english.h>
 #include <TrezorCrypto/bip39.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 #include <cassert>

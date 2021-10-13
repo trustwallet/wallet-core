@@ -78,7 +78,7 @@ Data Base58::decode(const char* begin, const char* end) const {
     auto it = begin;
 
     // Skip leading spaces.
-    it = std::find_if_not(it, end, std::isspace);
+    it = std::find_if_not(it, end, [](char c) { return std::isspace(c);});
 
     // Skip and count leading zeros.
     std::size_t zeroes = 0;
@@ -119,7 +119,7 @@ Data Base58::decode(const char* begin, const char* end) const {
     }
 
     // Skip trailing spaces.
-    it = std::find_if_not(it, end, std::isspace);
+    it = std::find_if_not(it, end, [](char c) { return std::isspace(c);});
     if (it != end) {
         // Extra charaters at the end
         return {};
