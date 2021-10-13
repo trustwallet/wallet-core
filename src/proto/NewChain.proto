@@ -1,0 +1,137 @@
+// Copyright © 2017-2021 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+syntax = "proto3";
+
+package TW.NewChain.Proto;
+option java_package = "wallet.core.jni.proto";
+
+
+// Transaction (transfer, smart contract call, ...)
+message Transaction {
+    // Native coin transfer transaction
+    message Transfer {
+        // Amount to send in wei (256-bit number)
+        bytes amount = 1;
+
+        // Optional payload data
+        bytes data = 2;
+    }
+
+    // ERC20 token transfer transaction
+    message ERC20Transfer {
+        string to = 1;
+
+        // Amount to send (256-bit number)
+        bytes amount = 2;
+    }
+
+    // ERC20 approve transaction
+    message ERC20Approve {
+        string spender = 1;
+
+        // Amount to send (256-bit number)
+        bytes amount = 2;
+    }
+
+    // ERC721 NFT transfer transaction
+    message ERC721Transfer {
+        string from = 1;
+
+        string to = 2;
+
+        // ID of the token (256-bit number)
+        bytes token_id = 3;
+    }
+
+    // ERC1155 NFT transfer transaction
+    message ERC1155Transfer {
+        string from = 1;
+
+        string to = 2;
+
+        // ID of the token (256-bit number)
+        bytes token_id = 3;
+
+        // The amount of tokens being transferred
+        bytes value = 4;
+
+        bytes data = 5;
+    }
+
+    // Generic smart contract transaction
+    message ContractGeneric {
+        // Amount to send in wei (256-bit number)
+        bytes amount = 1;
+
+        // Contract call payload data
+        bytes data = 2;
+    }
+
+    oneof transaction_oneof {
+        Transfer transfer = 1;
+        ERC20Transfer erc20_transfer = 2;
+        ERC20Approve erc20_approve = 3;
+        ERC721Transfer erc721_transfer = 4;
+        ERC1155Transfer erc1155_transfer = 5;
+        ContractGeneric contract_generic = 6;
+    }
+}
+
+enum TransactionMode {
+    Legacy = 0; // Legacy transaction, pre-EIP2718/EIP1559; for fee gasPrice/gasLimit is used
+    Enveloped = 1; // Enveloped transaction EIP2718 (with type 0x2), fee is according to EIP1559 (base fee, inclusion fee, ...)
+}
+
+// Input data necessary to create a signed transaction.
+// Legacy and EIP2718/EIP1559 transactions supported, see TransactionMode.
+message SigningInput {
+    // Chain identifier (256-bit number)
+    bytes chain_id = 1;
+
+    // Nonce (256-bit number)
+    bytes nonce = 2;
+
+    // Transaction version selector: Legacy or enveloped, has impact on fee structure.
+    // Default is Legacy (value 0)
+    TransactionMode tx_mode = 3;
+
+    // Gas price (256-bit number)
+    // Relevant for legacy transactions only (disregarded for enveloped/EIP1559)
+    bytes gas_price = 4;
+
+    // Gas limit (256-bit number)
+    bytes gas_limit = 5;
+
+    // Maxinmum optional inclusion fee (aka tip) (256-bit number)
+    // Relevant for enveloped/EIP1559 transactions only, tx_mode=Enveloped, (disregarded for legacy)
+    bytes max_inclusion_fee_per_gas = 6;
+
+    // Maxinmum fee (256-bit number)
+    // Relevant for enveloped/EIP1559 transactions only, tx_mode=Enveloped, (disregarded for legacy)
+    bytes max_fee_per_gas = 7;
+
+    // Recipient's address.
+    string to_address = 8;
+
+    // Private key.
+    bytes private_key = 9;
+
+    Transaction transaction = 10;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+
+    bytes v = 2;
+    bytes r = 3;
+    bytes s = 4;
+
+    // The payload part, supplied in the input or assembled from input parameters
+    bytes data = 5;
+}
