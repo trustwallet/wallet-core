@@ -17,6 +17,17 @@ using namespace TW;
 using namespace TW::Cosmos;
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    switch (input.signing_mode()) {
+        case Proto::JSON:
+            return signJsonSerialized(input);
+        
+        case Proto::Protobuf:
+        default:
+            return signProtobuf(input);
+    }
+}
+
+Proto::SigningOutput Signer::signJsonSerialized(const Proto::SigningInput& input) noexcept {
     auto key = PrivateKey(input.private_key());
     auto preimage = signaturePreimage(input).dump();
     auto hash = Hash::sha256(preimage);
@@ -27,6 +38,15 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto txJson = transactionJSON(input, signature);
     output.set_json(txJson.dump());
     output.set_signature(signature.data(), signature.size());
+    return output;
+}
+
+Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input) noexcept {
+    // TODO preimage, signature, serialization
+    auto output = Proto::SigningOutput();
+    output.set_serialized("TODO"); // TODO
+    output.set_json("");
+    output.set_signature("TODO"); // TODO
     return output;
 }
 

@@ -17,7 +17,47 @@
 using namespace TW;
 using namespace TW::Cosmos;
 
-TEST(CosmosSigner, SignTx) {
+TEST(CosmosSigner, SignTxProtobuf) {
+    auto input = Proto::SigningInput();
+    input.set_signing_mode(Proto::Protobuf);
+    input.set_account_number(1037);
+    input.set_chain_id("gaia-13003");
+    input.set_memo("");
+    input.set_sequence(8);
+
+    auto fromAddress = Address("cosmos", parse_hex("BC2DA90C84049370D1B7C528BC164BC588833F21"));
+    auto toAddress = Address("cosmos", parse_hex("12E8FE8B81ECC1F4F774EA6EC8DF267138B9F2D9"));
+
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_send_coins_message();
+    message.set_from_address(fromAddress.string());
+    message.set_to_address(toAddress.string());
+    auto amountOfTx = message.add_amounts();
+    amountOfTx->set_denom("muon");
+    amountOfTx->set_amount(1);
+
+    auto &fee = *input.mutable_fee();
+    fee.set_gas(200000);
+    auto amountOfFee = fee.add_amounts();
+    amountOfFee->set_denom("muon");
+    amountOfFee->set_amount(200);
+
+    std::string json;
+    google::protobuf::util::MessageToJsonString(input, &json);
+
+    EXPECT_EQ(R"({"signingMode":"Protobuf","accountNumber":"1037","chainId":"gaia-13003","fee":{"amounts":[{"denom":"muon","amount":"200"}],"gas":"200000"},"sequence":"8","messages":[{"sendCoinsMessage":{"fromAddress":"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02","toAddress":"cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573","amounts":[{"denom":"muon","amount":"1"}]}}]})", json);
+
+    auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(input);
+
+    EXPECT_EQ(hex(output.serialized()), "544f444f");
+    EXPECT_EQ(output.json(), "");
+    EXPECT_EQ(hex(output.signature()), "544f444f");
+}
+
+TEST(CosmosSigner, SignTxJson) {
     auto input = Proto::SigningInput();
     input.set_account_number(1037);
     input.set_chain_id("gaia-13003");
