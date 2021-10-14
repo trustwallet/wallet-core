@@ -6,10 +6,9 @@
 
 #include "Address.h"
 #include "../HexCoding.h"
-#include "Ethereum/AddressChecksum.h"
-#include "Ethereum/Address.h"
+#include "AddressChecksum.h"
+#include "Address.h"
 
-using EthAddress = TW::Ethereum::Address;
 
 using namespace TW::NewChain;
 
@@ -45,7 +44,5 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    const auto addressString = hex(this->bytes);
-    auto *const ethAddress = new EthAddress(addressString);
-    return TW::Ethereum::checksumed(*ethAddress, TW::Ethereum::ChecksumType::eip55);
+    return checksumed(*this, ChecksumType::eip55);
 }

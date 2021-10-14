@@ -9,26 +9,30 @@
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
-
+#include "Ethereum/Transaction.h"
 #include <gtest/gtest.h>
 
 using namespace TW;
 using namespace TW::NewChain;
+using TransactionNonTyped = TW::Ethereum::TransactionNonTyped;
 
-// TODO: Add tests
 
 TEST(NewChainSigner, Sign) {
-    // TODO: Finalize test implementation
+    const auto address = parse_hex("0x524e6cc2bfa3b2d3f35818ab47a3fcd5621a4ff9");
+    const auto transaction = TransactionNonTyped::buildNativeTransfer(
+        /* nonce: */ 1,
+        /* gasPrice: */ 1,
+        /* gasLimit: */ 21000,
+        /* to: */ address,
+        /* amount: */ 1000000000000000000l
+    );
 
-    //auto key = PrivateKey(parse_hex("__PRIVKEY_DATA__"));
-    //auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
-    //auto from = Address(publicKey);
-    //auto to = Address("__TO_ADDRESS__");
-    //...
-    //auto transaction = Transaction(...)
-    //auto signature = Signer::sign(key, transaction);
-    //auto result = transaction.serialize(signature);
-
-    //ASSERT_EQ(hex(serialized), "__RESULT__");
-    //ASSERT_EQ(...)
+    const auto key = PrivateKey(parse_hex("298b9bee0a0431e8f1a81323df6810b72467db21f9c252cb6d134d149005a386"));
+    const auto signature = Signer::sign(key, 1642, transaction);
+    std::cout << "hello" << std::endl;
+    std::cout << signature.r << std::endl;
+    std::cout << signature.s << std::endl;
+    ASSERT_EQ(signature.v, 3319);
+    ASSERT_EQ(signature.r, uint256_t("46571765288188216591534782960426097699348716487079705089053857077177255770603"));
+    ASSERT_EQ(signature.s, uint256_t("12308270257649765253016795538144573553021596290578393318018091052042357355987"));
 }

@@ -80,7 +80,7 @@ Signature Signer::sign(const PrivateKey& privateKey, const Data& hash, bool incl
 }
 
 // May throw
-Data addressStringToData(const std::string& asString) {
+Data addressStringToDatas(const std::string& asString) {
     if (asString.empty()) {
         return {};
     }
@@ -92,7 +92,7 @@ Data addressStringToData(const std::string& asString) {
 }
 
 std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input) {
-    Data toAddress = addressStringToData(input.to_address());
+    Data toAddress = addressStringToDatas(input.to_address());
     uint256_t nonce = load(input.nonce());
     uint256_t gasPrice = load(input.gas_price());
     uint256_t gasLimit = load(input.gas_limit());
@@ -121,7 +121,7 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
 
     case Proto::Transaction::kErc20Transfer:
     {
-        Data tokenToAddress = addressStringToData(input.transaction().erc20_transfer().to());
+        Data tokenToAddress = addressStringToDatas(input.transaction().erc20_transfer().to());
         switch (input.tx_mode()) {
         case Proto::TransactionMode::Legacy:
         default:
@@ -142,7 +142,7 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
 
     case Proto::Transaction::kErc20Approve:
     {
-        Data spenderAddress = addressStringToData(input.transaction().erc20_approve().spender());
+        Data spenderAddress = addressStringToDatas(input.transaction().erc20_approve().spender());
         switch (input.tx_mode()) {
         case Proto::TransactionMode::Legacy:
         default:
@@ -163,8 +163,8 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
 
     case Proto::Transaction::kErc721Transfer:
     {
-        Data tokenToAddress = addressStringToData(input.transaction().erc721_transfer().to());
-        Data tokenFromAddress = addressStringToData(input.transaction().erc721_transfer().from());
+        Data tokenToAddress = addressStringToDatas(input.transaction().erc721_transfer().to());
+        Data tokenFromAddress = addressStringToDatas(input.transaction().erc721_transfer().from());
         switch (input.tx_mode()) {
         case Proto::TransactionMode::Legacy:
         default:
@@ -187,8 +187,8 @@ std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input)
 
     case Proto::Transaction::kErc1155Transfer:
     {
-        Data tokenToAddress = addressStringToData(input.transaction().erc1155_transfer().to());
-        Data tokenFromAddress = addressStringToData(input.transaction().erc1155_transfer().from());
+        Data tokenToAddress = addressStringToDatas(input.transaction().erc1155_transfer().to());
+        Data tokenFromAddress = addressStringToDatas(input.transaction().erc1155_transfer().from());
         switch (input.tx_mode()) {
         case Proto::TransactionMode::Legacy:
         default:
