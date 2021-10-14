@@ -1,6 +1,20 @@
 ---
-Checks:          'clang-diagnostic-*,clang-analyzer-*,modernize-*,portability-*,llvm-*,-llvm-include-order,-modernize-use-nodiscard,-llvm-header-guard'
-WarningsAsErrors: 'clang-diagnostic-*,clang-analyzer-*,portability-*,llvm-*'
+Checks: >
+    clang-diagnostic-*,
+    clang-analyzer-*,
+    modernize-*,
+    portability-*,
+    llvm-*,
+    -llvm-include-order,
+    -modernize-use-nodiscard,
+    -llvm-header-guard,
+    -modernize-use-trailing-return-type,
+    -llvm-else-after-return
+WarningsAsErrors: >
+    clang-diagnostic-*,
+    clang-analyzer-*,
+    portability-*,
+    llvm-*
 HeaderFilterRegex: 'TrustWallet|^src|^./src'
 AnalyzeTemporaryDtors: false
 FormatStyle:     none

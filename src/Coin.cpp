@@ -188,10 +188,10 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
 bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     auto p2pkh = TW::p2pkhPrefix(coin);
     auto p2sh = TW::p2shPrefix(coin);
-    auto hrp = stringForHRP(TW::hrp(coin));
+    const auto *hrp = stringForHRP(TW::hrp(coin));
 
     // dispatch
-    auto dispatcher = coinDispatcher(coin);
+    auto *dispatcher = coinDispatcher(coin);
     assert(dispatcher != nullptr);
     return dispatcher->validateAddress(coin, string, p2pkh, p2sh, hrp);
 }
@@ -203,7 +203,7 @@ std::string TW::normalizeAddress(TWCoinType coin, const std::string& address) {
     }
 
     // dispatch
-    auto dispatcher = coinDispatcher(coin);
+    auto *dispatcher = coinDispatcher(coin);
     assert(dispatcher != nullptr);
     return dispatcher->normalizeAddress(coin, address);
 }
@@ -215,34 +215,34 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
 
 std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     auto p2pkh = TW::p2pkhPrefix(coin);
-    auto hrp = stringForHRP(TW::hrp(coin));
+    const auto *hrp = stringForHRP(TW::hrp(coin));
 
     // dispatch
-    auto dispatcher = coinDispatcher(coin);
+    auto *dispatcher = coinDispatcher(coin);
     assert(dispatcher != nullptr);
     return dispatcher->deriveAddress(coin, publicKey, p2pkh, hrp);
 }
 
 void TW::anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
-    auto dispatcher = coinDispatcher(coinType);
+    auto *dispatcher = coinDispatcher(coinType);
     assert(dispatcher != nullptr);
     dispatcher->sign(coinType, dataIn, dataOut);
 }
 
 std::string TW::anySignJSON(TWCoinType coinType, const std::string& json, const Data& key) {
-    auto dispatcher = coinDispatcher(coinType);
+    auto *dispatcher = coinDispatcher(coinType);
     assert(dispatcher != nullptr);
     return dispatcher->signJSON(coinType, json, key);
 }
 
 bool TW::supportsJSONSigning(TWCoinType coinType) {
-    auto dispatcher = coinDispatcher(coinType);
+    auto *dispatcher = coinDispatcher(coinType);
     assert(dispatcher != nullptr);
     return dispatcher->supportsJSONSigning();
 }
 
 void TW::anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
-    auto dispatcher = coinDispatcher(coinType);
+    auto *dispatcher = coinDispatcher(coinType);
     assert(dispatcher != nullptr);
     dispatcher->plan(coinType, dataIn, dataOut);
 }
@@ -336,7 +336,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType coin) {
 }
 
 const std::vector<TWCoinType> TW::getSimilarCoinTypes(TWCoinType coinType) {
-    const auto dispatcher = coinDispatcher(coinType);
+    const auto *dispatcher = coinDispatcher(coinType);
     assert(dispatcher != nullptr);
     return dispatcher->coinTypes();
 }

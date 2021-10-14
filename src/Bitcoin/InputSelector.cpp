@@ -95,10 +95,10 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::select(int64_t target
 
     // difference from 2x targetValue
     auto distFrom2x = [doubleTargetValue](int64_t val) -> int64_t {
-        if (val > doubleTargetValue)
+        if (val > doubleTargetValue) {
             return val - doubleTargetValue;
-        else
-            return doubleTargetValue - val;
+        }
+        return doubleTargetValue - val;
     };
 
     const int64_t dustThreshold = feeCalculator.calculateSingleInput(byteFee);
