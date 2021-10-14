@@ -73,7 +73,7 @@ auto suggestBaseFee(vector<uint256_t> baseFees, vector<size_t> order, double tim
     double sumWeight = 0.0;
     double samplingCurveLast = 0.0;
     float128_t result = 0;
-    for(size_t i = 0; i < order.size(); i++) {
+    for(unsigned long i : order) {
         sumWeight += pendingWeight * exp((double(order[i]) - baseFees.size() + 1) / timeFactor);
         double samplingCurveValue = samplingCurve(sumWeight);
         result += (samplingCurveValue - samplingCurveLast) * float128_t(baseFees[order[i]]);

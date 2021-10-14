@@ -65,6 +65,6 @@
 #endif
 #endif
 
-#include <cstddef>
-#include <cstdint>
-#include <cstdlib>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdlib.h>

@@ -5,11 +5,14 @@ Checks: >
     modernize-*,
     portability-*,
     llvm-*,
+    -clang-analyzer-core.uninitialized.Assign,
     -llvm-include-order,
-    -modernize-use-nodiscard,
     -llvm-header-guard,
+    -llvm-else-after-return,
+    -modernize-use-using,
+    -modernize-use-nodiscard,
     -modernize-use-trailing-return-type,
-    -llvm-else-after-return
+    -modernize-deprecated-headers,    
 WarningsAsErrors: >
     clang-diagnostic-*,
     clang-analyzer-*,

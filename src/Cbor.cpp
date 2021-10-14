@@ -318,7 +318,7 @@ vector<pair<Decode, Decode>> Decode::getMapElements() const {
     auto elems = getCompoundElements(2, MT_map);
     vector<pair<Decode, Decode>> map;
     for (int i = 0; i < elems.size(); i += 2) {
-        map.push_back(make_pair(elems[i], elems[i + 1]));
+        map.emplace_back(make_pair(elems[i], elems[i + 1]));
     }
     return map;
 }
