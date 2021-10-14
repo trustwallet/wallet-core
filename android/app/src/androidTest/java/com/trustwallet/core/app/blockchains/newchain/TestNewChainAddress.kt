@@ -20,14 +20,10 @@ class TestNewChainAddress {
 
     @Test
     fun testAddress() {
-        // TODO: Check and finalize implementation
-
-        val key = PrivateKey("__PRIVATE_KEY_DATA__".toHexByteArray())
+        val key = PrivateKey("ea2a7f292949079272bf082b1301ce31cf49015622d48f0036777848705f2650".toHexByteArray())
         val pubkey = key.publicKeyEd25519
         val address = AnyAddress(pubkey, CoinType.NEWCHAIN)
-        val expected = AnyAddress("__EXPECTED_RESULT_ADDRESS__", CoinType.NEWCHAIN)
-
-        assertEquals(pubkey.data().toHex(), "0x__EXPECTED_PUBKEY_DATA__")
+        val expected = AnyAddress("0x9DE95e3234410B89A363d3429d5Ca24D20Fa91Bc", CoinType.NEWCHAIN)
         assertEquals(address.description(), expected.description())
     }
 }
