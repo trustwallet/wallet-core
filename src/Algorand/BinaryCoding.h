@@ -12,6 +12,7 @@
 namespace TW::Algorand {
 
 #pragma GCC diagnostic ignored "-Wtautological-constant-out-of-range-compare"
+#pragma GCC diagnostic ignored "-Wunused-function"
 
 static inline void encodeString(std::string string, Data& data) {
     // encode string header

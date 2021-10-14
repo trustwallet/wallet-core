@@ -12,7 +12,8 @@ Checks: >
     -modernize-use-using,
     -modernize-use-nodiscard,
     -modernize-use-trailing-return-type,
-    -modernize-deprecated-headers,    
+    -modernize-deprecated-headers,
+    -modernize-avoid-c-arrays
 WarningsAsErrors: >
     clang-diagnostic-*,
     clang-analyzer-*,
