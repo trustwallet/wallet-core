@@ -122,7 +122,7 @@ protocol::VoteWitnessContract to_internal(const Proto::VoteWitnessContract& vote
     internal.set_support(voteContract.support());
     for(int i = 0; i < voteContract.votes_size(); i++) {
         auto voteAddress = Base58::bitcoin.decodeCheck(voteContract.votes(i).vote_address());
-        auto vote = internal.add_votes();
+        auto* vote = internal.add_votes();
 
         vote->set_vote_address(voteAddress.data(), voteAddress.size());
         vote->set_vote_count(voteContract.votes(i).vote_count());
@@ -211,7 +211,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto output = Proto::SigningOutput();
 
     if (input.transaction().has_transfer()) {
-        auto contract = internal.mutable_raw_data()->add_contract();
+        auto* contract = internal.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_TransferContract);
 
         auto transfer = to_internal(input.transaction().transfer());
@@ -219,7 +219,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         any.PackFrom(transfer);
         *contract->mutable_parameter() = any;
     } else if (input.transaction().has_transfer_asset()) {
-        auto contract = internal.mutable_raw_data()->add_contract();
+        auto* contract = internal.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_TransferAssetContract);
 
         auto transfer = to_internal(input.transaction().transfer_asset());
@@ -227,7 +227,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         any.PackFrom(transfer);
         *contract->mutable_parameter() = any;
     } else if (input.transaction().has_freeze_balance()) {
-        auto contract = internal.mutable_raw_data()->add_contract();
+        auto* contract = internal.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_FreezeBalanceContract);
 
         auto freeze_balance = to_internal(input.transaction().freeze_balance());
@@ -235,7 +235,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         any.PackFrom(freeze_balance);
         *contract->mutable_parameter() = any;
     } else if (input.transaction().has_unfreeze_balance()) {
-        auto contract = internal.mutable_raw_data()->add_contract();
+        auto* contract = internal.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_UnfreezeBalanceContract);
 
         auto unfreeze_balance = to_internal(input.transaction().unfreeze_balance());
@@ -243,7 +243,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         any.PackFrom(unfreeze_balance);
         *contract->mutable_parameter() = any;
     } else if (input.transaction().has_unfreeze_asset()) {
-        auto contract = internal.mutable_raw_data()->add_contract();
+        auto* contract = internal.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_UnfreezeAssetContract);
 
         auto unfreeze_asset = to_internal(input.transaction().unfreeze_asset());
@@ -251,7 +251,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         any.PackFrom(unfreeze_asset);
         *contract->mutable_parameter() = any;
     } else if (input.transaction().has_vote_asset()) {
-        auto contract = internal.mutable_raw_data()->add_contract();
+        auto* contract = internal.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_VoteAssetContract);
 
         auto vote_asset = to_internal(input.transaction().vote_asset());
@@ -259,7 +259,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         any.PackFrom(vote_asset);
         *contract->mutable_parameter() = any;
     } else if (input.transaction().has_vote_witness()) {
-        auto contract = internal.mutable_raw_data()->add_contract();
+        auto* contract = internal.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_VoteWitnessContract);
 
         auto vote_witness = to_internal(input.transaction().vote_witness());
@@ -267,7 +267,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         any.PackFrom(vote_witness);
         *contract->mutable_parameter() = any;
     } else if (input.transaction().has_withdraw_balance()) {
-        auto contract = internal.mutable_raw_data()->add_contract();
+        auto* contract = internal.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_WithdrawBalanceContract);
 
         auto withdraw = to_internal(input.transaction().withdraw_balance());
@@ -275,7 +275,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         any.PackFrom(withdraw);
         *contract->mutable_parameter() = any;
     } else if (input.transaction().has_trigger_smart_contract()) {
-        auto contract = internal.mutable_raw_data()->add_contract();
+        auto* contract = internal.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_TriggerSmartContract);
 
         auto trigger_smart_contract = to_internal(input.transaction().trigger_smart_contract());
@@ -283,7 +283,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         any.PackFrom(trigger_smart_contract);
         *contract->mutable_parameter() = any;
     } else if (input.transaction().has_transfer_trc20_contract()) {
-        auto contract = internal.mutable_raw_data()->add_contract();
+        auto* contract = internal.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_TriggerSmartContract);
 
         auto trigger_smart_contract = to_internal(input.transaction().transfer_trc20_contract());

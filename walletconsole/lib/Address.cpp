@@ -31,7 +31,7 @@ bool Address::addrPub(const string& coinid, const string& pubkey_in, string& res
         _out << "Error: could not parse public key data" << endl;
         return false; 
     }
-    TWCoinType ctype = (TWCoinType)coin.c;
+    auto ctype = (TWCoinType)coin.c;
     PublicKey pubKey = PublicKey(pubDat, (TWPublicKeyType)coin.pubKeyType);
     res = TW::deriveAddress(ctype, pubKey);
     return true;
@@ -47,7 +47,7 @@ bool Address::addrPri(const string& coinid, const string& prikey_in, string& res
         _out << "Error: could not parse private key data" << endl;
         return false; 
     }
-    TWCoinType ctype = (TWCoinType)coin.c;
+    auto ctype = (TWCoinType)coin.c;
     PrivateKey priKey = PrivateKey(priDat);
     res = TW::deriveAddress(ctype, priKey);
     return true;
@@ -56,7 +56,7 @@ bool Address::addrPri(const string& coinid, const string& prikey_in, string& res
 bool Address::addr(const string& coinid, const string& addrStr, string& res) {
     Coin coin;
     if (!_coins.findCoin(coinid, coin)) { return false; }
-    TWCoinType ctype = (TWCoinType)coin.c;
+    auto ctype = (TWCoinType)coin.c;
     if (!TW::validateAddress(ctype, addrStr)) {
         _out << "Address is not a valid " << coin.name << " address! " << addrStr << endl;
         return false;
@@ -68,7 +68,7 @@ bool Address::addr(const string& coinid, const string& addrStr, string& res) {
 bool Address::addrDefault(const string& coinid, string& res) {
     Coin coin;
     if (!_coins.findCoin(coinid, coin)) { return false; }
-    TWCoinType ctype = (TWCoinType)coin.c;
+    auto ctype = (TWCoinType)coin.c;
     string mnemo = _keys.getMnemo();
     assert(mnemo.length() > 0); // a mnemonic is always set
     HDWallet wallet(mnemo, "");
@@ -82,7 +82,7 @@ bool Address::addrDefault(const string& coinid, string& res) {
 bool Address::deriveFromPath(const string& coinid, const string& derivPath, string& res) {
     Coin coin;
     if (!_coins.findCoin(coinid, coin)) { return false; }
-    TWCoinType ctype = (TWCoinType)coin.c;
+    auto ctype = (TWCoinType)coin.c;
 
     DerivationPath dp(derivPath);
     // get the private key
@@ -99,7 +99,7 @@ bool Address::deriveFromPath(const string& coinid, const string& derivPath, stri
 bool Address::deriveFromXpubIndex(const string& coinid, const string& xpub, const string& accountIndex, string& res) {
     Coin coin;
     if (!_coins.findCoin(coinid, coin)) { return false; }
-    TWCoinType ctype = (TWCoinType)coin.c;
+    auto ctype = (TWCoinType)coin.c;
 
     int index = std::stoi(accountIndex);
 

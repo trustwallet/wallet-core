@@ -52,7 +52,7 @@ bool ParamArray::decode(const Data& encoded, size_t& offset_inout) {
         return false;
     }
     // check if length is in the size_t range
-    size_t len = static_cast<size_t>(len256);
+    auto len = static_cast<size_t>(len256);
     if (len256 != uint256_t(len)) {
         return false;
     }
