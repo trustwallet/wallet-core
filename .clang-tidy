@@ -14,12 +14,8 @@ Checks: >
     -modernize-use-trailing-return-type,
     -modernize-deprecated-headers,
     -modernize-avoid-c-arrays
-WarningsAsErrors: >
-    clang-diagnostic-*,
-    clang-analyzer-*,
-    portability-*,
-    llvm-*
-HeaderFilterRegex: 'TrustWallet|^src|^./src'
+WarningsAsErrors: false
+HeaderFilterRegex: '^src|^./src'
 AnalyzeTemporaryDtors: false
 FormatStyle:     none
 InheritParentConfig: false
