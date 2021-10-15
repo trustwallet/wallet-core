@@ -56,14 +56,17 @@ cosmos::proto::base::v1beta1::Coin convertCoin(const Proto::Amount amount) {
 }
 
 // TODO move to separate src file
-std::string buildProtoTx(const Proto::SigningInput& input) noexcept {
-    // TODO support other msgs
+cosmos::proto::TxBody buildProtoTxBody(const Proto::SigningInput& input) noexcept {
+    auto txBody = cosmos::proto::TxBody();
+
     if (input.messages_size() < 1) {
-        return "";
+        // TODO support multiple msgs
+        return txBody;
     }
     assert(input.messages_size() >= 1);
     if (!input.messages(0).has_send_coins_message()) {
-        return "";
+        // TODO support other msgs
+        return txBody;
     }
     assert(input.messages(0).has_send_coins_message());
     const Proto::Message::Send& send = input.messages(0).send_coins_message();
@@ -75,29 +78,50 @@ std::string buildProtoTx(const Proto::SigningInput& input) noexcept {
         *msgSend.add_amount() = convertCoin(send.amounts(i));
     }
 
-    auto txBody = cosmos::proto::TxBody();
     txBody.add_messages()->PackFrom(msgSend);
     txBody.set_memo(input.memo());
     txBody.set_timeout_height(0);
 
-    const auto serialized = txBody.SerializeAsString();
-    return serialized;
+    return txBody;
+}
+
+// TODO move to separate src file
+std::string buildProtoTxRaw(const Proto::SigningInput& input) noexcept {
+    auto txRaw = cosmos::proto::TxRaw();
+
+    // Preimage
+    const auto txBody = buildProtoTxBody(input);
+    const auto serializedTxBody = txBody.SerializeAsString();
+
+    // Signature
+    auto key = PrivateKey(input.private_key());
+    auto hash = Hash::sha256(serializedTxBody);
+    auto signedHash = key.sign(hash, TWCurveSECP256k1);
+    auto signature = Data(signedHash.begin(), signedHash.end() - 1);
+
+    txRaw.set_body_bytes(serializedTxBody);
+    txRaw.set_auth_info_bytes(""); // TODO
+    *txRaw.add_signatures() = std::string(signature.begin(), signature.end());
+
+    return txRaw.SerializeAsString();
 }
 
 Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input) noexcept {
     auto output = Proto::SigningOutput();
 
     // Preimage
-    auto serializedTxBody = buildProtoTx(input);
+    auto serializedTxRaw = buildProtoTxRaw(input);
 
+    // TODO prevent signing again, reuse from build...
+    const auto serializedTxBody = buildProtoTxBody(input).SerializeAsString();
     auto key = PrivateKey(input.private_key());
     auto hash = Hash::sha256(serializedTxBody);
     auto signedHash = key.sign(hash, TWCurveSECP256k1);
     auto signature = Data(signedHash.begin(), signedHash.end() - 1);
 
     // TODO: TxBody, TxRaw
-    output.set_serialized(serializedTxBody);
-    output.set_serialized_base64(Base64::encode(TW::data(serializedTxBody)));
+    output.set_serialized(serializedTxRaw);
+    output.set_serialized_base64(Base64::encode(TW::data(serializedTxRaw)));
     output.set_json("");
     output.set_signature(signature.data(), signature.size());
     return output;
