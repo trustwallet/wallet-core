@@ -4,15 +4,38 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Protobuf/Article.pb.h"
+#include "Cosmos/Address.h"
+#include "Cosmos/Protobuf/bank.tx.pb.h"
+#include "Cosmos/Protobuf/tx.pb.h"
 #include "Data.h"
 #include "HexCoding.h"
 
+#include "Protobuf/Article.pb.h"
+
 #include <gtest/gtest.h>
 
+using namespace TW::Cosmos;
 using namespace TW;
 
-TEST(CosmosProtobufSerialization, DeterministicSerialization_Article) {
+
+TEST(CosmosProtobuf, SendMsg) {
+    auto msgSend = cosmos::proto::bank::v1beta1::MsgSend();
+    msgSend.set_from_address("cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02");
+    msgSend.set_to_address("cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573");
+    auto coin = msgSend.add_amount();
+    coin->set_denom("muon");
+    coin->set_amount("1");
+
+    auto txBody = cosmos::proto::TxBody();
+    txBody.add_messages()->PackFrom(msgSend);
+    txBody.set_memo("");
+    txBody.set_timeout_height(0);
+
+    const auto serialized = data(txBody.SerializeAsString());
+    EXPECT_EQ(hex(serialized), "0aa2010a35747970652e676f6f676c65617069732e636f6d2f636f736d6f732e70726f746f2e62616e6b2e763162657461312e4d736753656e6412690a2d636f736d6f733168736b366a727979716a6668703564686335357463396a74636b796778306570683664643032122d636f736d6f73317a743530617a7570616e716c66616d356166687633686578777975746e756b656834633537331a090a046d756f6e120131");
+}
+
+TEST(CosmosProtobuf, DeterministicSerialization_Article) {
     // https://github.com/cosmos/cosmos-sdk/blob/master/docs/architecture/adr-027-deterministic-protobuf-serialization.md
     auto article = blog::Article();
     article.set_title("The world needs change 🌳");

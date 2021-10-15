@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Serialization.h"
+#include "JsonSerialization.h"
 
 #include "../Cosmos/Address.h"
 #include "../proto/Cosmos.pb.h"

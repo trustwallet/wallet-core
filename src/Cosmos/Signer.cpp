@@ -5,8 +5,11 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
+#include "../proto/Cosmos.pb.h"
 #include "PrivateKey.h"
-#include "Serialization.h"
+#include "JsonSerialization.h"
+#include "Protobuf/bank.tx.pb.h"
+#include "Protobuf/tx.pb.h"
 
 #include "Data.h"
 #include "Hash.h"
@@ -41,12 +44,58 @@ Proto::SigningOutput Signer::signJsonSerialized(const Proto::SigningInput& input
     return output;
 }
 
+// TODO move to separate src file
+cosmos::proto::base::v1beta1::Coin convertCoin(const Proto::Amount amount) {
+    cosmos::proto::base::v1beta1::Coin coin;
+    coin.set_denom(amount.denom());
+    coin.set_amount(std::to_string(amount.amount()));
+    return coin;
+}
+
+// TODO move to separate src file
+std::string buildProtoTx(const Proto::SigningInput& input) noexcept {
+    // TODO support other msgs
+    if (input.messages_size() < 1) {
+        return "";
+    }
+    assert(input.messages_size() >= 1);
+    if (!input.messages(0).has_send_coins_message()) {
+        return "";
+    }
+    assert(input.messages(0).has_send_coins_message());
+    const Proto::Message::Send& send = input.messages(0).send_coins_message();
+
+    auto msgSend = cosmos::proto::bank::v1beta1::MsgSend();
+    msgSend.set_from_address(send.from_address());
+    msgSend.set_to_address(send.to_address());
+    for (auto i = 0; i < send.amounts_size(); ++i) {
+        *msgSend.add_amount() = convertCoin(send.amounts(i));
+    }
+
+    auto txBody = cosmos::proto::TxBody();
+    txBody.add_messages()->PackFrom(msgSend);
+    txBody.set_memo(input.memo());
+    txBody.set_timeout_height(0);
+
+    const auto serialized = txBody.SerializeAsString();
+    return serialized;
+}
+
 Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input) noexcept {
-    // TODO preimage, signature, serialization
     auto output = Proto::SigningOutput();
-    output.set_serialized("TODO"); // TODO
+
+    // Preimage
+    auto serializedTxBody = buildProtoTx(input);
+
+    auto key = PrivateKey(input.private_key());
+    auto hash = Hash::sha256(serializedTxBody);
+    auto signedHash = key.sign(hash, TWCurveSECP256k1);
+    auto signature = Data(signedHash.begin(), signedHash.end() - 1);
+
+    // TODO signature, serialization
+    output.set_serialized(serializedTxBody);
     output.set_json("");
-    output.set_signature("TODO"); // TODO
+    output.set_signature(signature.data(), signature.size());
     return output;
 }
 
