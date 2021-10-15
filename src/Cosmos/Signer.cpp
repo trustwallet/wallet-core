@@ -13,6 +13,7 @@
 
 #include "Data.h"
 #include "Hash.h"
+#include "Base64.h"
 
 #include <google/protobuf/util/json_util.h>
 
@@ -41,6 +42,8 @@ Proto::SigningOutput Signer::signJsonSerialized(const Proto::SigningInput& input
     auto txJson = transactionJSON(input, signature);
     output.set_json(txJson.dump());
     output.set_signature(signature.data(), signature.size());
+    output.set_serialized("");
+    output.set_serialized_base64("");
     return output;
 }
 
@@ -92,8 +95,9 @@ Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input) noex
     auto signedHash = key.sign(hash, TWCurveSECP256k1);
     auto signature = Data(signedHash.begin(), signedHash.end() - 1);
 
-    // TODO signature, serialization
+    // TODO: TxBody, TxRaw
     output.set_serialized(serializedTxBody);
+    output.set_serialized_base64(Base64::encode(TW::data(serializedTxBody)));
     output.set_json("");
     output.set_signature(signature.data(), signature.size());
     return output;

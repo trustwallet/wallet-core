@@ -7,13 +7,20 @@
 #include <TrustWalletCore/TWAnySigner.h>
 #include "proto/Cosmos.pb.h"
 #include "HexCoding.h"
+#include "Base64.h"
+#include "Data.h"
 
 #include "../interface/TWTestUtilities.h"
 #include <gtest/gtest.h>
 
 using namespace TW;
 
-TEST(TWAnySignerCryptoorg, SignTx_DDCCE4) {
+
+const auto Address1 = "cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0";
+const auto Address2 = "cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus";
+const auto PrivateKey1 = "200e439e39cf1aad465ee3de6166247f914cbc0f823fc2dd48bf16dcd556f39d";
+
+TEST(TWAnySignerCryptoorg, SignTx_Json_DDCCE4) {
     auto input = Cosmos::Proto::SigningInput();
     input.set_account_number(125798);
     input.set_sequence(0);
@@ -21,8 +28,8 @@ TEST(TWAnySignerCryptoorg, SignTx_DDCCE4) {
 
     auto msg = input.add_messages();
     auto& message = *msg->mutable_send_coins_message();
-    message.set_from_address("cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0");
-    message.set_to_address("cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus");
+    message.set_from_address(Address1);
+    message.set_to_address(Address2);
     auto amountOfTx = message.add_amounts();
     amountOfTx->set_denom("basecro");
     amountOfTx->set_amount(100000000);
@@ -33,7 +40,7 @@ TEST(TWAnySignerCryptoorg, SignTx_DDCCE4) {
     amountOfFee->set_denom("basecro");
     amountOfFee->set_amount(5000);
 
-    auto privateKey = parse_hex("200e439e39cf1aad465ee3de6166247f914cbc0f823fc2dd48bf16dcd556f39d");
+    auto privateKey = parse_hex(PrivateKey1);
     input.set_private_key(privateKey.data(), privateKey.size());
 
     Cosmos::Proto::SigningOutput output;
@@ -80,6 +87,9 @@ TEST(TWAnySignerCryptoorg, SignTx_DDCCE4) {
             }
         }
     )");
+    EXPECT_EQ(hex(output.signature()), "e7ee6b485160d0513d713925416407364b410c9b33ed40a7312805d2dd3e81872b2211165324ed89b5da1d941b28001a7222750641d7611123539e55b3007256");
+    EXPECT_EQ(output.serialized(), "");
+    EXPECT_EQ(output.serialized_base64(), "");
 
     /// https://crypto.org/explorer/tx/DDCCE4052040B05914CADEFE78C0A75BE363AE39504E7EF6B2EDB8A9072AD44B
 }

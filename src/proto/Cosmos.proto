@@ -108,4 +108,7 @@ message SigningOutput {
 
     // Signed transaction in protobuf form (Stargate case)
     bytes serialized = 3;
+
+    // Base64-encoded version of the serialized transaction
+    string serialized_base64 = 4;
 }
