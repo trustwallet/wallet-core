@@ -170,7 +170,7 @@ static json signatureJSON(const Data& signature, const Data& pubkey) {
     };
 }
 
-json Cosmos::signaturePreimage(const Proto::SigningInput& input) {
+json Cosmos::signaturePreimageJSON(const Proto::SigningInput& input) {
     return {
         {"account_number", std::to_string(input.account_number())},
         {"chain_id", input.chain_id()},
