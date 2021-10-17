@@ -17,7 +17,7 @@ using namespace TW::Oasis;
 TEST(TWAnySignerOasis, Sign) {
     auto input = Proto::SigningInput();
     auto output = Proto::SigningOutput();
-    auto &transfer = *input.mutable_transfer();
+    auto& transfer = *input.mutable_transfer();
 
     transfer.set_gas_price(0);
     transfer.set_gas_amount("0");

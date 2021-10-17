@@ -59,7 +59,7 @@ Data Transaction::serialize() const {
     if(witnesses.size())
 	 {
 		resp.push_back((byte) witnesses.size());
-		for (const auto & witnesse : witnesses)
+		for (const auto& witnesse : witnesses)
 		  append(resp, witnesse.serialize());
 	 }
 

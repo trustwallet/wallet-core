@@ -39,7 +39,7 @@ TEST(HashTests, Sha512_256) {
         make_tuple(brownFox, string("dd9d67b371519c339ed8dbd25af90e976a1eeefd4ad3d889005e532fc5bef04d")),
         make_tuple(brownFoxDot, string("1546741840f8a492b959d9b8b2344b9b0eb51b004bba35c0aebaac86d45264c3")),
     };
-    for (auto &test : tests) {
+    for (auto& test : tests) {
         auto hashed = Hash::sha512_256(get<0>(test));
         ASSERT_EQ(hex(hashed), get<1>(test));
     }
@@ -51,7 +51,7 @@ TEST(HashTests, Sha1) {
         make_tuple(brownFox, string("2fd4e1c67a2d28fced849ee1bb76e7391b93eb12")),
         make_tuple(brownFoxDot, string("408d94384216f890ff7a0c3528e8bed1e0b01621")),
     };
-    for (auto &test: tests) {
+    for (auto& test: tests) {
         const auto hash = Hash::sha1(TW::data(get<0>(test)));
         EXPECT_EQ(hex(hash), get<1>(test));
     }

@@ -97,7 +97,7 @@ std::shared_ptr<ParamBase> ParamFactory::make(const std::string& type) {
 
 std::string joinArrayElems(const std::vector<std::string>& strings) {
     auto array = json::array();
-    for (const auto & string : strings) {
+    for (const auto& string : strings) {
         // parse to prevent quotes on simple values
         auto value = json::parse(string, nullptr, false);
         if (value.is_discarded()) {
