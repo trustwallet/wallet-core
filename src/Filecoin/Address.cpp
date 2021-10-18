@@ -6,6 +6,8 @@
 
 #include "Address.h"
 
+#include <cstring>
+
 #include "../Base32.h"
 #include "../Data.h"
 
