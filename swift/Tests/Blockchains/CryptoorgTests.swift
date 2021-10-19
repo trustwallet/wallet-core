@@ -46,7 +46,7 @@ class CryptoorgTests: XCTestCase {
         }
 
         let input = CosmosSigningInput.with {
-            $0.signingMode = Protobuf;
+            $0.signingMode = .protobuf;
             $0.accountNumber = 125798
             $0.chainID = "crypto-org-chain-mainnet-1"
             $0.memo = ""
