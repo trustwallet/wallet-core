@@ -1,5 +1,5 @@
 syntax = "proto3";
-package cosmos.proto;
+package cosmos;
 
 import "coin.proto";
 import "multisig.proto";
@@ -41,7 +41,6 @@ message TxRaw {
     repeated bytes signatures = 3;
 }
 
-/*
 // SignDoc is the type used for generating sign bytes for SIGN_MODE_DIRECT.
 message SignDoc {
     // body_bytes is protobuf serialization of a TxBody that matches the
@@ -61,32 +60,7 @@ message SignDoc {
     uint64 account_number = 4;
 }
 
-// SignDocDirectAux is the type used for generating sign bytes for
-// SIGN_MODE_DIRECT_AUX.
-message SignDocDirectAux {
-    // body_bytes is protobuf serialization of a TxBody that matches the
-    // representation in TxRaw.
-    bytes body_bytes = 1;
-
-    // public_key is the public key of the signing account.
-    google.protobuf.Any public_key = 2;
-
-    // chain_id is the identifier of the chain this transaction targets.
-    // It prevents signed transactions from being used on another chain by an
-    // attacker.
-    string chain_id = 3;
-
-    // account_number is the account number of the account in state.
-    uint64 account_number = 4;
-
-    // sequence is the sequence number of the signing account.
-    uint64 sequence = 5;
-
-    // Tip is the optional tip used for meta-transactions. It should be left
-    // empty if the signer is not the tipper for this transaction.
-    Tip tip = 6;
-}
-*/
+// SignDocDirectAux is omitted
 
 // TxBody is the body of a transaction that all signers sign over.
 message TxBody {

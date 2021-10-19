@@ -10,6 +10,8 @@
 #include "JsonSerialization.h"
 #include "Protobuf/bank.tx.pb.h"
 #include "Protobuf/tx.pb.h"
+#include "Protobuf/crypto.secp256k1.pb.h"
+#include "Protobuf/signing.pb.h"
 
 #include "Data.h"
 #include "Hash.h"
@@ -19,6 +21,8 @@
 
 using namespace TW;
 using namespace TW::Cosmos;
+
+const auto ProtobufAnyNamespacePrefix = "";  // to override default 'type.googleapis.com'
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     switch (input.signing_mode()) {
@@ -48,17 +52,16 @@ Proto::SigningOutput Signer::signJsonSerialized(const Proto::SigningInput& input
 }
 
 // TODO move to separate src file
-cosmos::proto::base::v1beta1::Coin convertCoin(const Proto::Amount amount) {
-    cosmos::proto::base::v1beta1::Coin coin;
+cosmos::base::v1beta1::Coin convertCoin(const Proto::Amount amount) {
+    cosmos::base::v1beta1::Coin coin;
     coin.set_denom(amount.denom());
     coin.set_amount(std::to_string(amount.amount()));
     return coin;
 }
 
 // TODO move to separate src file
-cosmos::proto::TxBody buildProtoTxBody(const Proto::SigningInput& input) noexcept {
-    auto txBody = cosmos::proto::TxBody();
-
+cosmos::TxBody buildProtoTxBody(const Proto::SigningInput& input) noexcept {
+    auto txBody = cosmos::TxBody();
     if (input.messages_size() < 1) {
         // TODO support multiple msgs
         return txBody;
@@ -71,14 +74,14 @@ cosmos::proto::TxBody buildProtoTxBody(const Proto::SigningInput& input) noexcep
     assert(input.messages(0).has_send_coins_message());
     const Proto::Message::Send& send = input.messages(0).send_coins_message();
 
-    auto msgSend = cosmos::proto::bank::v1beta1::MsgSend();
+    auto msgSend = cosmos::bank::v1beta1::MsgSend();
     msgSend.set_from_address(send.from_address());
     msgSend.set_to_address(send.to_address());
     for (auto i = 0; i < send.amounts_size(); ++i) {
         *msgSend.add_amount() = convertCoin(send.amounts(i));
     }
 
-    txBody.add_messages()->PackFrom(msgSend);
+    txBody.add_messages()->PackFrom(msgSend, ProtobufAnyNamespacePrefix);
     txBody.set_memo(input.memo());
     txBody.set_timeout_height(0);
 
@@ -87,20 +90,45 @@ cosmos::proto::TxBody buildProtoTxBody(const Proto::SigningInput& input) noexcep
 
 // TODO move to separate src file
 std::string buildProtoTxRaw(const Proto::SigningInput& input) noexcept {
-    auto txRaw = cosmos::proto::TxRaw();
-
-    // Preimage
+    // TxBody
     const auto txBody = buildProtoTxBody(input);
     const auto serializedTxBody = txBody.SerializeAsString();
 
+    // AuthInfo
+    const auto privateKey = PrivateKey(input.private_key());
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    auto authInfo = cosmos::AuthInfo();
+    auto* signerInfo = authInfo.add_signer_infos();
+    auto pubKey = cosmos::crypto::secp256k1::PubKey();
+    pubKey.set_key(publicKey.bytes.data(), publicKey.bytes.size());
+    signerInfo->mutable_public_key()->PackFrom(pubKey, ProtobufAnyNamespacePrefix);
+    signerInfo->mutable_mode_info()->mutable_single()->set_mode(cosmos::signing::v1beta1::SIGN_MODE_DIRECT);
+    signerInfo->set_sequence(input.sequence());
+    auto* fee = authInfo.mutable_fee();
+    for (auto i = 0; i < input.fee().amounts_size(); ++i) {
+        *fee->add_amount() = convertCoin(input.fee().amounts(i));
+    }
+    fee->set_gas_limit(input.fee().gas());
+    fee->set_payer("");
+    fee->set_granter("");
+    // tip is omitted
+
+    // SignDoc Preimage
+    auto signDoc = cosmos::SignDoc();
+    signDoc.set_body_bytes(serializedTxBody);
+    signDoc.set_auth_info_bytes(authInfo.SerializeAsString());
+    signDoc.set_chain_id(input.chain_id());
+    signDoc.set_account_number(input.account_number());
+    const auto serializedSignDoc = signDoc.SerializeAsString();
+
     // Signature
-    auto key = PrivateKey(input.private_key());
-    auto hash = Hash::sha256(serializedTxBody);
-    auto signedHash = key.sign(hash, TWCurveSECP256k1);
+    auto hash = Hash::sha256(serializedSignDoc);
+    auto signedHash = privateKey.sign(hash, TWCurveSECP256k1);
     auto signature = Data(signedHash.begin(), signedHash.end() - 1);
 
+    auto txRaw = cosmos::TxRaw();
     txRaw.set_body_bytes(serializedTxBody);
-    txRaw.set_auth_info_bytes(""); // TODO
+    txRaw.set_auth_info_bytes(authInfo.SerializeAsString());
     *txRaw.add_signatures() = std::string(signature.begin(), signature.end());
 
     return txRaw.SerializeAsString();

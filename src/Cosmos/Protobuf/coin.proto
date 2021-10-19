@@ -1,12 +1,5 @@
 syntax = "proto3";
-package cosmos.proto.base.v1beta1;
-
-//import "gogoproto/gogo.proto";
-//import "cosmos_proto/cosmos.proto";
-
-//option go_package                       = "github.com/cosmos/cosmos-sdk/types";
-//option (gogoproto.goproto_stringer_all) = false;
-//option (gogoproto.stringer_all)         = false;
+package cosmos.base.v1beta1;
 
 // Coin defines a token with a denomination and an amount.
 //

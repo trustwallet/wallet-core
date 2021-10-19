@@ -1,5 +1,5 @@
 syntax = "proto3";
-package cosmos.proto.bank.v1beta1;
+package cosmos.bank.v1beta1;
 
 import "coin.proto";
 

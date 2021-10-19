@@ -1,5 +1,5 @@
 syntax = "proto3";
-package cosmos.proto.signing.v1beta1;
+package cosmos.signing.v1beta1;
 
 import "multisig.proto";
 import "google/protobuf/any.proto";

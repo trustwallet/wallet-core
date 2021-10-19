@@ -1,5 +1,5 @@
 syntax = "proto3";
-package cosmos.proto.multisig.v1beta1;
+package cosmos.multisig.v1beta1;
 
 // MultiSignature wraps the signatures from a multisig.LegacyAminoPubKey.
 // See cosmos.tx.v1betata1.ModeInfo.Multi for how to specify which signers
