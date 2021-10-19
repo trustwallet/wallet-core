@@ -60,16 +60,15 @@ cosmos::base::v1beta1::Coin convertCoin(const Proto::Amount amount) {
 }
 
 // TODO move to separate src file
-cosmos::TxBody buildProtoTxBody(const Proto::SigningInput& input) noexcept {
-    auto txBody = cosmos::TxBody();
+std::string buildProtoTxBody(const Proto::SigningInput& input) noexcept {
     if (input.messages_size() < 1) {
         // TODO support multiple msgs
-        return txBody;
+        return "";
     }
     assert(input.messages_size() >= 1);
     if (!input.messages(0).has_send_coins_message()) {
         // TODO support other msgs
-        return txBody;
+        return "";
     }
     assert(input.messages(0).has_send_coins_message());
     const Proto::Message::Send& send = input.messages(0).send_coins_message();
@@ -81,19 +80,16 @@ cosmos::TxBody buildProtoTxBody(const Proto::SigningInput& input) noexcept {
         *msgSend.add_amount() = convertCoin(send.amounts(i));
     }
 
+    auto txBody = cosmos::TxBody();
     txBody.add_messages()->PackFrom(msgSend, ProtobufAnyNamespacePrefix);
     txBody.set_memo(input.memo());
     txBody.set_timeout_height(0);
 
-    return txBody;
+    return txBody.SerializeAsString();
 }
 
 // TODO move to separate src file
-std::string buildProtoTxRaw(const Proto::SigningInput& input) noexcept {
-    // TxBody
-    const auto txBody = buildProtoTxBody(input);
-    const auto serializedTxBody = txBody.SerializeAsString();
-
+std::string buildAuthInfo(const Proto::SigningInput& input) noexcept {
     // AuthInfo
     const auto privateKey = PrivateKey(input.private_key());
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
@@ -112,46 +108,47 @@ std::string buildProtoTxRaw(const Proto::SigningInput& input) noexcept {
     fee->set_payer("");
     fee->set_granter("");
     // tip is omitted
+    return authInfo.SerializeAsString();
+}
 
+// TODO move to separate src file
+Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo) noexcept {
     // SignDoc Preimage
     auto signDoc = cosmos::SignDoc();
     signDoc.set_body_bytes(serializedTxBody);
-    signDoc.set_auth_info_bytes(authInfo.SerializeAsString());
+    signDoc.set_auth_info_bytes(serializedAuthInfo);
     signDoc.set_chain_id(input.chain_id());
     signDoc.set_account_number(input.account_number());
     const auto serializedSignDoc = signDoc.SerializeAsString();
 
-    // Signature
-    auto hash = Hash::sha256(serializedSignDoc);
-    auto signedHash = privateKey.sign(hash, TWCurveSECP256k1);
+    auto hashToSign = Hash::sha256(serializedSignDoc);
+    const auto privateKey = PrivateKey(input.private_key());
+    auto signedHash = privateKey.sign(hashToSign, TWCurveSECP256k1);
     auto signature = Data(signedHash.begin(), signedHash.end() - 1);
+    return signature;
+}
 
+// TODO move to separate src file
+std::string buildProtoTxRaw(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, const Data& signature) noexcept {
     auto txRaw = cosmos::TxRaw();
     txRaw.set_body_bytes(serializedTxBody);
-    txRaw.set_auth_info_bytes(authInfo.SerializeAsString());
+    txRaw.set_auth_info_bytes(serializedAuthInfo);
     *txRaw.add_signatures() = std::string(signature.begin(), signature.end());
-
     return txRaw.SerializeAsString();
 }
 
 Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input) noexcept {
+    // TxBody
+    const auto serializedTxBody = buildProtoTxBody(input);
+    const auto serializedAuthInfo = buildAuthInfo(input);
+    const auto signature = buildSignature(input, serializedTxBody, serializedAuthInfo);
+    auto serializedTxRaw = buildProtoTxRaw(input, serializedTxBody, serializedAuthInfo, signature);
+
     auto output = Proto::SigningOutput();
-
-    // Preimage
-    auto serializedTxRaw = buildProtoTxRaw(input);
-
-    // TODO prevent signing again, reuse from build...
-    const auto serializedTxBody = buildProtoTxBody(input).SerializeAsString();
-    auto key = PrivateKey(input.private_key());
-    auto hash = Hash::sha256(serializedTxBody);
-    auto signedHash = key.sign(hash, TWCurveSECP256k1);
-    auto signature = Data(signedHash.begin(), signedHash.end() - 1);
-
-    // TODO: TxBody, TxRaw
     output.set_serialized(serializedTxRaw);
     output.set_serialized_base64(Base64::encode(TW::data(serializedTxRaw)));
-    output.set_json("");
     output.set_signature(signature.data(), signature.size());
+    output.set_json("");
     return output;
 }
 
