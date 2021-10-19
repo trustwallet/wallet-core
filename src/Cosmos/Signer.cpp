@@ -8,10 +8,10 @@
 #include "../proto/Cosmos.pb.h"
 #include "PrivateKey.h"
 #include "JsonSerialization.h"
-#include "Protobuf/bank.tx.pb.h"
+#include "Protobuf/bank_tx.pb.h"
 #include "Protobuf/tx.pb.h"
-#include "Protobuf/crypto.secp256k1.pb.h"
-#include "Protobuf/signing.pb.h"
+#include "Protobuf/crypto_secp256k1_keys.pb.h"
+#include "Protobuf/tx_signing.pb.h"
 
 #include "Data.h"
 #include "Hash.h"

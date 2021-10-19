@@ -1,9 +1,11 @@
 syntax = "proto3";
 package cosmos;
 
+// Src: https://github.com/cosmos/cosmos-sdk/blob/master/proto/cosmos/tx/v1beta1/tx.proto
+
 import "coin.proto";
-import "multisig.proto";
-import "signing.proto";
+import "crypto_multisig.proto";
+import "tx_signing.proto";
 import "google/protobuf/any.proto";
 
 // Tx is the standard type used for broadcasting transactions.

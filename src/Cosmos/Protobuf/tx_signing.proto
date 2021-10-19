@@ -1,7 +1,9 @@
 syntax = "proto3";
 package cosmos.signing.v1beta1;
 
-import "multisig.proto";
+// Src: https://github.com/cosmos/cosmos-sdk/blob/master/proto/cosmos/tx/signing/v1beta1/signing.proto
+
+import "crypto_multisig.proto";
 import "google/protobuf/any.proto";
 
 // SignMode represents a signing mode with its own security guarantees.

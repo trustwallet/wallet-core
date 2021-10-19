@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Cosmos/Address.h"
-#include "Cosmos/Protobuf/bank.tx.pb.h"
+#include "Cosmos/Protobuf/bank_tx.pb.h"
 #include "Cosmos/Protobuf/tx.pb.h"
 #include "Data.h"
 #include "HexCoding.h"
