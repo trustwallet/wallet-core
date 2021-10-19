@@ -57,6 +57,7 @@ TEST(TWAnySignerCryptoorg, SignTx_Proto_BCB213) {
 
 TEST(TWAnySignerCryptoorg, SignTx_Json_DDCCE4) {
     auto input = Cosmos::Proto::SigningInput();
+    input.set_signing_mode(Cosmos::Proto::JSON); // obsolete
     input.set_account_number(125798);
     input.set_sequence(0);
     input.set_chain_id("crypto-org-chain-mainnet-1");
