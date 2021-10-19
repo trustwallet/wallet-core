@@ -17,11 +17,13 @@ pushd ${base_dir}/../swift/build
 core_zip_filename="WalletCore.xcframework.zip"
 protobuf_zip_filename="SwiftProtobuf.xcframework.zip"
 
+rm -rf ${core_zip_filename} ${protobuf_zip_filename}
+
 zip -r ${core_zip_filename} WalletCore.xcframework
-core_hash=$(sha256 ${core_zip_filename} | awk '{printf $1}')
+core_hash=$(/usr/bin/shasum -a 256 ${core_zip_filename} | awk '{printf $1}')
 
 zip -r ${protobuf_zip_filename} SwiftProtobuf.xcframework
-protobuf_hash=$(sha256 ${protobuf_zip_filename} | awk '{printf $1}')
+protobuf_hash=$(/usr/bin/shasum -a 256 ${protobuf_zip_filename} | awk '{printf $1}')
 
 # upload to release
 core_download_url=$(wc_upload_asset ${release_url} ${core_zip_filename})
