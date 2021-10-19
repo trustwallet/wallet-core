@@ -51,20 +51,20 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
             }
 
         default:
-            // TODO support other msgs
-            return any;
+            throw std::invalid_argument(std::string("Message not supported ") + std::to_string(msg.message_oneof_case()));
     }
 }
 
 std::string buildProtoTxBody(const Proto::SigningInput& input) {
     if (input.messages_size() < 1) {
-        // TODO support multiple msgs
-        return "";
+        throw std::invalid_argument("No message found");
     }
     assert(input.messages_size() >= 1);
-    const auto msgAny = convertMessage(input.messages(0));
     auto txBody = cosmos::TxBody();
-    *txBody.add_messages() = msgAny;
+    for (auto i = 0; i < input.messages_size(); ++i) {
+        const auto msgAny = convertMessage(input.messages(i));
+        *txBody.add_messages() = msgAny;
+    }
     txBody.set_memo(input.memo());
     txBody.set_timeout_height(0);
 
