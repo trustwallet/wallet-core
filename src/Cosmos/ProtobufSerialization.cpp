@@ -22,11 +22,38 @@ namespace TW::Cosmos {
 
 const auto ProtobufAnyNamespacePrefix = "";  // to override default 'type.googleapis.com'
 
-cosmos::base::v1beta1::Coin convertCoin(const Proto::Amount amount) noexcept {
+cosmos::base::v1beta1::Coin convertCoin(const Proto::Amount& amount) noexcept {
     cosmos::base::v1beta1::Coin coin;
     coin.set_denom(amount.denom());
     coin.set_amount(std::to_string(amount.amount()));
     return coin;
+}
+
+cosmos::bank::v1beta1::MsgSend convertMsgSend(const Proto::Message::Send& send) {
+    auto msgSend = cosmos::bank::v1beta1::MsgSend();
+    msgSend.set_from_address(send.from_address());
+    msgSend.set_to_address(send.to_address());
+    for (auto i = 0; i < send.amounts_size(); ++i) {
+        *msgSend.add_amount() = convertCoin(send.amounts(i));
+    }
+    return msgSend;
+}
+
+google::protobuf::Any convertMessage(const Proto::Message& msg) {
+    google::protobuf::Any any;
+    switch (msg.message_oneof_case()) {
+        case Proto::Message::kSendCoinsMessage:
+            {
+                assert(msg.has_send_coins_message());
+                const auto msgSend = convertMsgSend(msg.send_coins_message());
+                any.PackFrom(msgSend, ProtobufAnyNamespacePrefix);
+                return any;
+            }
+
+        default:
+            // TODO support other msgs
+            return any;
+    }
 }
 
 std::string buildProtoTxBody(const Proto::SigningInput& input) noexcept {
@@ -35,22 +62,9 @@ std::string buildProtoTxBody(const Proto::SigningInput& input) noexcept {
         return "";
     }
     assert(input.messages_size() >= 1);
-    if (!input.messages(0).has_send_coins_message()) {
-        // TODO support other msgs
-        return "";
-    }
-    assert(input.messages(0).has_send_coins_message());
-    const Proto::Message::Send& send = input.messages(0).send_coins_message();
-
-    auto msgSend = cosmos::bank::v1beta1::MsgSend();
-    msgSend.set_from_address(send.from_address());
-    msgSend.set_to_address(send.to_address());
-    for (auto i = 0; i < send.amounts_size(); ++i) {
-        *msgSend.add_amount() = convertCoin(send.amounts(i));
-    }
-
+    const auto msgAny = convertMessage(input.messages(0));
     auto txBody = cosmos::TxBody();
-    txBody.add_messages()->PackFrom(msgSend, ProtobufAnyNamespacePrefix);
+    *txBody.add_messages() = msgAny;
     txBody.set_memo(input.memo());
     txBody.set_timeout_height(0);
 
