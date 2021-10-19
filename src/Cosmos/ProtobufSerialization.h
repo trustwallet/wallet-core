@@ -13,12 +13,12 @@
 
 namespace TW::Cosmos {
 
-std::string buildProtoTxBody(const Proto::SigningInput& input) noexcept;
+std::string buildProtoTxBody(const Proto::SigningInput& input);
 
-std::string buildAuthInfo(const Proto::SigningInput& input) noexcept;
+std::string buildAuthInfo(const Proto::SigningInput& input);
 
-Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo) noexcept;
+Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo);
 
-std::string buildProtoTxRaw(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, const Data& signature) noexcept;
+std::string buildProtoTxRaw(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, const Data& signature);
 
 } // namespace

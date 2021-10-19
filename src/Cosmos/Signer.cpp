@@ -42,21 +42,29 @@ Proto::SigningOutput Signer::signJsonSerialized(const Proto::SigningInput& input
     output.set_signature(signature.data(), signature.size());
     output.set_serialized("");
     output.set_serialized_base64("");
+    output.set_error("");
     return output;
 }
 
 Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input) noexcept {
-    const auto serializedTxBody = buildProtoTxBody(input);
-    const auto serializedAuthInfo = buildAuthInfo(input);
-    const auto signature = buildSignature(input, serializedTxBody, serializedAuthInfo);
-    auto serializedTxRaw = buildProtoTxRaw(input, serializedTxBody, serializedAuthInfo, signature);
+    try {
+        const auto serializedTxBody = buildProtoTxBody(input);
+        const auto serializedAuthInfo = buildAuthInfo(input);
+        const auto signature = buildSignature(input, serializedTxBody, serializedAuthInfo);
+        auto serializedTxRaw = buildProtoTxRaw(input, serializedTxBody, serializedAuthInfo, signature);
 
-    auto output = Proto::SigningOutput();
-    output.set_serialized(serializedTxRaw);
-    output.set_serialized_base64(Base64::encode(TW::data(serializedTxRaw)));
-    output.set_signature(signature.data(), signature.size());
-    output.set_json("");
-    return output;
+        auto output = Proto::SigningOutput();
+        output.set_serialized(serializedTxRaw);
+        output.set_serialized_base64(Base64::encode(TW::data(serializedTxRaw)));
+        output.set_signature(signature.data(), signature.size());
+        output.set_json("");
+        output.set_error("");
+        return output;
+    } catch (const std::exception& ex) {
+        auto output = Proto::SigningOutput();
+        output.set_error(std::string("Error: ") + ex.what());
+        return output;
+    }
 }
 
 std::string Signer::signJSON(const std::string& json, const Data& key) {

@@ -22,7 +22,7 @@ namespace TW::Cosmos {
 
 const auto ProtobufAnyNamespacePrefix = "";  // to override default 'type.googleapis.com'
 
-cosmos::base::v1beta1::Coin convertCoin(const Proto::Amount& amount) noexcept {
+cosmos::base::v1beta1::Coin convertCoin(const Proto::Amount& amount) {
     cosmos::base::v1beta1::Coin coin;
     coin.set_denom(amount.denom());
     coin.set_amount(std::to_string(amount.amount()));
@@ -56,7 +56,7 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
     }
 }
 
-std::string buildProtoTxBody(const Proto::SigningInput& input) noexcept {
+std::string buildProtoTxBody(const Proto::SigningInput& input) {
     if (input.messages_size() < 1) {
         // TODO support multiple msgs
         return "";
@@ -71,7 +71,7 @@ std::string buildProtoTxBody(const Proto::SigningInput& input) noexcept {
     return txBody.SerializeAsString();
 }
 
-std::string buildAuthInfo(const Proto::SigningInput& input) noexcept {
+std::string buildAuthInfo(const Proto::SigningInput& input) {
     // AuthInfo
     const auto privateKey = PrivateKey(input.private_key());
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
@@ -93,7 +93,7 @@ std::string buildAuthInfo(const Proto::SigningInput& input) noexcept {
     return authInfo.SerializeAsString();
 }
 
-Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo) noexcept {
+Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo) {
     // SignDoc Preimage
     auto signDoc = cosmos::SignDoc();
     signDoc.set_body_bytes(serializedTxBody);
@@ -109,7 +109,7 @@ Data buildSignature(const Proto::SigningInput& input, const std::string& seriali
     return signature;
 }
 
-std::string buildProtoTxRaw(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, const Data& signature) noexcept {
+std::string buildProtoTxRaw(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, const Data& signature) {
     auto txRaw = cosmos::TxRaw();
     txRaw.set_body_bytes(serializedTxBody);
     txRaw.set_auth_info_bytes(serializedAuthInfo);
