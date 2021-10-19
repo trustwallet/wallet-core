@@ -10,6 +10,7 @@ import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.Numeric
 import com.trustwallet.core.app.utils.toHexByteArray
 import com.trustwallet.core.app.utils.toHexBytes
+import com.trustwallet.core.app.utils.toHex
 import com.trustwallet.core.app.utils.toHexBytesInByteString
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -17,6 +18,7 @@ import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType.CRYPTOORG
 import wallet.core.jni.proto.Cosmos
 import wallet.core.jni.proto.Cosmos.SigningOutput
+import wallet.core.jni.proto.Cosmos.SigningMode
 import wallet.core.jni.*
 
 class TestCryptoorgSigner {
