@@ -3,12 +3,14 @@ package com.trustwalval.core.app.blockchains.cosmos
 import android.util.Log
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.toHexByteArray
+import com.trustwallet.core.app.utils.toHex
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.*
 import wallet.core.jni.CoinType.COSMOS
 import wallet.core.jni.proto.Cosmos
 import wallet.core.jni.proto.Cosmos.SigningOutput
+import wallet.core.jni.proto.Cosmos.SigningMode
 import wallet.core.java.AnySigner
 
 class TestCosmosTransactions {
