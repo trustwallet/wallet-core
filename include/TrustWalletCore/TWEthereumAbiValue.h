@@ -12,8 +12,10 @@
 
 TW_EXTERN_C_BEGIN
 
-TW_EXPORT_CLASS
-struct TWEthereumAbiValue;
+TW_EXPORT_STRUCT
+struct TWEthereumAbiValue {
+    uint8_t unused; // C doesn't allow zero-sized struct
+};
 
 /// Returned data must be deleted (hint: use WRAPD() macro).
 /// Encode a type according to Ethereum ABI, into 32 bytes. Values are padded by 0 on the left, unless specified otherwise.
