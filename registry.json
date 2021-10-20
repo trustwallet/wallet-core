@@ -1815,7 +1815,7 @@
       "client": "https://github.com/newtonproject/newchain",
       "clientPublic": "https://global.rpc.mainnet.newtonproject.org",
     }
-  }
+  },
   {
     "id": "ronin",
     "name": "Ronin",
