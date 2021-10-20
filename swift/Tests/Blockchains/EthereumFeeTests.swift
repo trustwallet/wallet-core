@@ -20,7 +20,7 @@ class EthereumFeeTests: XCTestCase {
 
         let expected = """
         {
-            "baseFee": "80885125075",
+            "baseFee": "105150662597",
             "maxPriorityFee": "2000000000"
         }
         """
@@ -39,7 +39,7 @@ class EthereumFeeTests: XCTestCase {
 
         let expected = """
         {
-            "baseFee": "87408740684",
+            "baseFee": "113631362889",
             "maxPriorityFee": "1500000000"
         }
         """
@@ -58,7 +58,7 @@ class EthereumFeeTests: XCTestCase {
 
         let expected = """
         {
-            "baseFee": "44208904214",
+            "baseFee": "57471575478",
             "maxPriorityFee": "1500000000"
         }
         """

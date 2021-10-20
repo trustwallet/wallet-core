@@ -6,10 +6,12 @@
 
 #pragma once
 
+#include "uint256.h"
 #include <nlohmann/json.hpp>
 
 namespace TW::Ethereum::Fee {
 
-nlohmann::json suggestFee(const nlohmann::json& feeHistory);
+auto suggestFee(const nlohmann::json& feeHistory) -> nlohmann::json;
+auto baseFeeMultiplier(const uint256_t baseFee) -> uint256_t;
 
 } // namespace TW::Ethereum::Fee
