@@ -60,6 +60,18 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 return any;
             }
 
+        case Proto::Message::kUnstakeMessage:
+            {
+                assert(msg.has_unstake_message());
+                const auto& unstake = msg.unstake_message();
+                auto msgUndelegate = cosmos::staking::v1beta1::MsgUndelegate();
+                msgUndelegate.set_delegator_address(unstake.delegator_address());
+                msgUndelegate.set_validator_address(unstake.validator_address());
+                *msgUndelegate.mutable_amount() = convertCoin(unstake.amount());
+                any.PackFrom(msgUndelegate, ProtobufAnyNamespacePrefix);
+                return any;
+            }
+
         default:
             throw std::invalid_argument(std::string("Message not supported ") + std::to_string(msg.message_oneof_case()));
     }

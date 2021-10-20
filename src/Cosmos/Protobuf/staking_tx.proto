@@ -8,7 +8,15 @@ import "coin.proto";
 // MsgDelegate defines a SDK message for performing a delegation of coins
 // from a delegator to a validator.
 message MsgDelegate {
-  string            delegator_address = 1;
-  string            validator_address = 2;
-  base.v1beta1.Coin amount            = 3;
+    string            delegator_address = 1;
+    string            validator_address = 2;
+    base.v1beta1.Coin amount            = 3;
+}
+
+// MsgUndelegate defines a SDK message for performing an undelegation from a
+// delegate and a validator.
+message MsgUndelegate {
+    string            delegator_address = 1;
+    string            validator_address = 2;
+    base.v1beta1.Coin amount            = 3;
 }
