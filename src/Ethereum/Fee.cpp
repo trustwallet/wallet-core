@@ -80,20 +80,23 @@ auto suggestBaseFee(vector<uint256_t> baseFees, vector<size_t> order, double tim
         double samplingCurveValue = samplingCurve(sumWeight);
         result += (samplingCurveValue - samplingCurveLast) * float128_t(baseFees[order[i]]);
         if (samplingCurveValue >= 1) {
-            return uint256_t(result);
+            return uint256_t(boost::multiprecision::ceil(result));
         }
         samplingCurveLast = samplingCurveValue;
     }
-    return uint256_t(result);
+    return uint256_t(boost::multiprecision::ceil(result));
 }
 
 auto baseFeeMultiplier(const uint256_t baseFee) -> uint256_t {
+    // 1.3x for base fee < 100 gwei
     if (baseFee <= uint256_t(100000000000)) {
         return uint256_t(130);
     }
+    // 1.25x for base fee < 200 gwei
     if (baseFee <= uint256_t(200000000000)) {
         return uint256_t(125);
     }
+    // default multiplier is 1.2x
     return uint256_t(120);
 }
 
