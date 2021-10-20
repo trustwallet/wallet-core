@@ -55,8 +55,8 @@ TEST(CosmosSigner, SignTxProtobuf) {
 
     EXPECT_EQ(hex(output.serialized()), "0a8c010a89010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e6412690a2d636f736d6f733168736b366a727979716a6668703564686335357463396a74636b796778306570683664643032122d636f736d6f73317a743530617a7570616e716c66616d356166687633686578777975746e756b656834633537331a090a046d756f6e12013112650a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a210257286ec3f37d33557bbbaa000b27744ac9023aa9967cae75a181d1ff91fa9dc512040a020801180812110a0b0a046d756f6e120332303010c09a0c1a40f9e1f4001657a42009c4eb6859625d2e41e961fc72efd2842909c898e439fc1f549916e4ecac676ee353c7d54c5ae30a29b4210b8bff0ebfdcb375e105002f47");
     EXPECT_EQ(output.serialized_base64(), "CowBCokBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmkKLWNvc21vczFoc2s2anJ5eXFqZmhwNWRoYzU1dGM5anRja3lneDBlcGg2ZGQwMhItY29zbW9zMXp0NTBhenVwYW5xbGZhbTVhZmh2M2hleHd5dXRudWtlaDRjNTczGgkKBG11b24SATESZQpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3FEgQKAggBGAgSEQoLCgRtdW9uEgMyMDAQwJoMGkD54fQAFlekIAnE62hZYl0uQelh/HLv0oQpCciY5Dn8H1SZFuTsrGdu41PH1Uxa4woptCELi/8Ov9yzdeEFAC9H");
-    EXPECT_EQ(output.json(), "");
     EXPECT_EQ(hex(output.signature()), "f9e1f4001657a42009c4eb6859625d2e41e961fc72efd2842909c898e439fc1f549916e4ecac676ee353c7d54c5ae30a29b4210b8bff0ebfdcb375e105002f47");
+    EXPECT_EQ(output.json(), "");
     EXPECT_EQ(output.error(), "");
 }
 
@@ -91,6 +91,7 @@ TEST(CosmosSigner, SignProtobuf_ErrorMissingMessage) {
 
 TEST(CosmosSigner, SignTxJson) {
     auto input = Proto::SigningInput();
+    input.set_signing_mode(Proto::JSON); // obsolete
     input.set_account_number(1037);
     input.set_chain_id("gaia-13003");
     input.set_memo("");
@@ -133,8 +134,9 @@ TEST(CosmosSigner, SignTxJson) {
     EXPECT_EQ(output.error(), "");
 }
 
-TEST(CosmosSigner, SignTxWithMode) {
+TEST(CosmosSigner, SignTxJson_WithMode) {
     auto input = Proto::SigningInput();
+    input.set_signing_mode(Proto::JSON); // obsolete
     input.set_account_number(1037);
     input.set_chain_id("gaia-13003");
     input.set_memo("");
