@@ -1813,7 +1813,7 @@
     "info": {
       "url": "https://www.newtonproject.org",
       "client": "https://github.com/newtonproject/newchain",
-      "clientPublic": "https://global.rpc.mainnet.newtonproject.org",
+      "clientPublic": "https://global.rpc.mainnet.newtonproject.org"
     }
   },
   {
