@@ -7,7 +7,7 @@ base_dir=$(dirname $0)
 source ${base_dir}/library
 
 # version to release
-version=$(wc_read_version 2.6.30)
+version=$(wc_read_version)
 release_url=$(wc_release_url ${version})
 echo "release_url url is $release_url"
 
@@ -51,12 +51,12 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "WalletCore",
-            url: "${core_download_url}",
+            url: ${core_download_url},
             checksum: "${core_hash}"
         ),
         .binaryTarget(
             name: "SwiftProtobuf",
-            url: "${protobuf_download_url}",
+            url: ${protobuf_download_url},
             checksum: "${protobuf_hash}"
         )
     ]
