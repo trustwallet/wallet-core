@@ -8,6 +8,7 @@
 #include "../proto/Cosmos.pb.h"
 #include "Protobuf/coin.pb.h"
 #include "Protobuf/bank_tx.pb.h"
+#include "Protobuf/staking_tx.pb.h"
 #include "Protobuf/tx.pb.h"
 #include "Protobuf/crypto_secp256k1_keys.pb.h"
 
@@ -29,24 +30,33 @@ cosmos::base::v1beta1::Coin convertCoin(const Proto::Amount& amount) {
     return coin;
 }
 
-cosmos::bank::v1beta1::MsgSend convertMsgSend(const Proto::Message::Send& send) {
-    auto msgSend = cosmos::bank::v1beta1::MsgSend();
-    msgSend.set_from_address(send.from_address());
-    msgSend.set_to_address(send.to_address());
-    for (auto i = 0; i < send.amounts_size(); ++i) {
-        *msgSend.add_amount() = convertCoin(send.amounts(i));
-    }
-    return msgSend;
-}
-
+// Convert messages from external protobuf to internal protobuf
 google::protobuf::Any convertMessage(const Proto::Message& msg) {
     google::protobuf::Any any;
     switch (msg.message_oneof_case()) {
         case Proto::Message::kSendCoinsMessage:
             {
                 assert(msg.has_send_coins_message());
-                const auto msgSend = convertMsgSend(msg.send_coins_message());
+                const auto& send = msg.send_coins_message();
+                auto msgSend = cosmos::bank::v1beta1::MsgSend();
+                msgSend.set_from_address(send.from_address());
+                msgSend.set_to_address(send.to_address());
+                for (auto i = 0; i < send.amounts_size(); ++i) {
+                    *msgSend.add_amount() = convertCoin(send.amounts(i));
+                }
                 any.PackFrom(msgSend, ProtobufAnyNamespacePrefix);
+                return any;
+            }
+
+        case Proto::Message::kStakeMessage:
+            {
+                assert(msg.has_stake_message());
+                const auto& stake = msg.stake_message();
+                auto msgDelegate = cosmos::staking::v1beta1::MsgDelegate();
+                msgDelegate.set_delegator_address(stake.delegator_address());
+                msgDelegate.set_validator_address(stake.validator_address());
+                *msgDelegate.mutable_amount() = convertCoin(stake.amount());
+                any.PackFrom(msgDelegate, ProtobufAnyNamespacePrefix);
                 return any;
             }
 

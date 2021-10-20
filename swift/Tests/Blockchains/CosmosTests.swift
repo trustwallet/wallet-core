@@ -92,7 +92,7 @@ class CosmosSignerTests: XCTestCase {
         }
 
         let input = CosmosSigningInput.with {
-            $0.signingMode = .json;
+            $0.signingMode = .protobuf;
             $0.accountNumber = 1037
             $0.chainID = "gaia-13003"
             $0.memo = ""
@@ -104,47 +104,9 @@ class CosmosSignerTests: XCTestCase {
 
         let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)
 
-        let expectedJSON = """
-{
-  "mode": "block",
-  "tx": {
-    "fee": {
-      "amount": [
-        {
-          "amount": "1018",
-          "denom": "muon"
-        }
-      ],
-      "gas": "101721"
-    },
-    "memo": "",
-    "msg": [
-      {
-        "type": "cosmos-sdk/MsgDelegate",
-        "value": {
-          "amount": {
-            "amount": "10",
-            "denom": "muon"
-          },
-          "delegator_address": "cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02",
-          "validator_address": "cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp"
-        }
-      }
-    ],
-    "signatures": [
-      {
-        "pub_key": {
-          "type": "tendermint/PubKeySecp256k1",
-          "value": "AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"
-        },
-        "signature": "wIvfbCsLRCjzeXXoXTKfHLGXRbAAmUp0O134HVfVc6pfdVNJvvzISMHRUHgYcjsSiFlLyR32heia/yLgMDtIYQ=="
-      }
-    ]
-  }
-}
-
-"""
-        XCTAssertJSONEqual(expectedJSON, output.json)
+        XCTAssertEqual(output.serialized.hexString, "0a9b010a98010a232f636f736d6f732e7374616b696e672e763162657461312e4d736744656c656761746512710a2d636f736d6f733168736b366a727979716a6668703564686335357463396a74636b7967783065706836646430321234636f736d6f7376616c6f706572317a6b757072383368727a6b6e33757035656c6b747a63713374756674386e78736d77647167701a0a0a046d756f6e1202313012660a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a210257286ec3f37d33557bbbaa000b27744ac9023aa9967cae75a181d1ff91fa9dc512040a020801180712120a0c0a046d756f6e12043130313810d99a061a40f0ef499bf90be996b6237a680ece6fa4ca3060980dbd808905153fbf1023b3494d658b2ae34aa94dbc0e4db3918c903952343a6ae738d2feae0854f8ab8cfeb8")
+        XCTAssertEqual(output.serializedBase64, "CpsBCpgBCiMvY29zbW9zLnN0YWtpbmcudjFiZXRhMS5Nc2dEZWxlZ2F0ZRJxCi1jb3Ntb3MxaHNrNmpyeXlxamZocDVkaGM1NXRjOWp0Y2t5Z3gwZXBoNmRkMDISNGNvc21vc3ZhbG9wZXIxemt1cHI4M2hyemtuM3VwNWVsa3R6Y3EzdHVmdDhueHNtd2RxZ3AaCgoEbXVvbhICMTASZgpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3FEgQKAggBGAcSEgoMCgRtdW9uEgQxMDE4ENmaBhpA8O9Jm/kL6Za2I3poDs5vpMowYJgNvYCJBRU/vxAjs0lNZYsq40qpTbwOTbORjJA5UjQ6auc40v6uCFT4q4z+uA==")
+        XCTAssertEqual(output.error, "")
     }
 
     func testWithdraw() {
