@@ -9,8 +9,9 @@
 #include "Data.h"
 #include "HexCoding.h"
 #include "uint256.h"
-#include <boost/multiprecision/cpp_bin_float.hpp>
+// always includes nvp.hpp before cpp_bin_float.hpp
 #include <boost/serialization/nvp.hpp>
+#include <boost/multiprecision/cpp_bin_float.hpp>
 
 #include <cmath>
 #include <cstddef>
