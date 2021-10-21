@@ -48,7 +48,7 @@ Address StakeProgram::addressFromRecentBlockhash(const Address& fromAddress, con
  * https://github.com/solana-labs/solana-program-library/blob/master/associated-token-account/program/src/lib.rs#L19
  */
 Address TokenProgram::defaultTokenAddress(const Address& mainAddress, const Address& tokenMintAddress) {
-    Address programId = Address(TOKEN_PROGRAM_ID_ADDRESS);
+    auto programId = Address(TOKEN_PROGRAM_ID_ADDRESS);
     std::vector<Data> seeds = {
         TW::data(mainAddress.bytes.data(), mainAddress.bytes.size()),
         TW::data(programId.bytes.data(), programId.bytes.size()),

@@ -27,7 +27,7 @@ TEST(WavesSigner, SignTransaction) {
     input.set_timestamp(int64_t(1526641218066));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     
-    auto &message = *input.mutable_transfer_message();
+    auto& message = *input.mutable_transfer_message();
     message.set_amount(int64_t(100000000));
     message.set_asset(Transaction::WAVES);
     message.set_fee(int64_t(100000000));

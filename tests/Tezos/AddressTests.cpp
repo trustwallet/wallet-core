@@ -59,7 +59,7 @@ TEST(TezosAddress, isValid) {
         "tz3VEZ4k6a4Wx42iyev6i2aVAptTRLEAivNN"
     };
 
-    for (auto &address : validAddresses) {
+    for (auto& address : validAddresses) {
       ASSERT_TRUE(Address::isValid(address));
     }
 }

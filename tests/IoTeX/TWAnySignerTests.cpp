@@ -23,7 +23,7 @@ TEST(TWAnySignerIoTeX, Sign) {
     input.set_gaslimit(1);
     input.set_gasprice("1");
     input.set_privatekey(key.data(), key.size());
-    auto & transfer = *input.mutable_transfer();
+    auto& transfer = *input.mutable_transfer();
     transfer.set_amount("1");
     transfer.set_recipient("io1e2nqsyt7fkpzs5x7zf2uk0jj72teu5n6aku3tr");
 

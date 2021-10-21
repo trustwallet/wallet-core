@@ -21,12 +21,14 @@ bool Address::isValid(const std::string& address) {
     valid = nano_validate_address(
         kPrefixNano.c_str(), kPrefixNano.length(),
         address.c_str(), address.length(),
-        NULL);
+        nullptr
+    );
     if (!valid) {
         valid = nano_validate_address(
             kPrefixXrb.c_str(), kPrefixXrb.length(),
             address.c_str(), address.length(),
-            NULL);
+            nullptr
+        );
     }
 
     return valid;

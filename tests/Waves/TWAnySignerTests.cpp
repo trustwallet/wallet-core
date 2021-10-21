@@ -20,7 +20,7 @@ TEST(TWAnySignerWaves, Sign) {
     
     input.set_timestamp(int64_t(1559146613));
     input.set_private_key(privateKey.data(), privateKey.size());
-    auto &message = *input.mutable_transfer_message();
+    auto& message = *input.mutable_transfer_message();
     message.set_amount(int64_t(100000000));
     message.set_asset("DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq");
     message.set_fee(int64_t(100000));

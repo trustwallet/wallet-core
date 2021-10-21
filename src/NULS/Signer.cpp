@@ -65,7 +65,7 @@ Data Signer::sign() const {
         throw std::invalid_argument("User account balance not sufficient");
     }
 
-    Proto::TransactionCoinFrom& coinFrom = (Proto::TransactionCoinFrom&)tx.input();
+    auto& coinFrom = (Proto::TransactionCoinFrom&)tx.input();
     Data amount;
     amount = store(fromAmount);
     std::reverse(amount.begin(), amount.end());
@@ -74,7 +74,7 @@ Data Signer::sign() const {
     amountStr.append(static_cast<unsigned long>(amount.capacity() - amount.size()), '\0');
     coinFrom.set_id_amount(amountStr);
 
-    Proto::TransactionCoinTo& coinTo = (Proto::TransactionCoinTo&)tx.output();
+    auto& coinTo = (Proto::TransactionCoinTo&)tx.output();
     Data amountTo;
     amountTo = store(txAmount);
     std::reverse(amountTo.begin(), amountTo.end());

@@ -23,7 +23,7 @@ TEST(NEARSigner, SignTx) {
     input.set_receiver_id("whatever.near");
 
     input.add_actions();
-    auto &transfer = *input.mutable_actions(0)->mutable_transfer();
+    auto& transfer = *input.mutable_actions(0)->mutable_transfer();
     Data deposit(16, 0);
     deposit[0] = 1;
     // uint128_t / little endian byte order

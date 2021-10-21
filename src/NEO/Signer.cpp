@@ -80,7 +80,7 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) {
 
         int existGASTransfer = -1;
         for (int i = 0; i < input.outputs_size(); i++) {
-            auto outputPlan = plan.add_outputs();
+            auto* outputPlan = plan.add_outputs();
 
             if (available.find(input.inputs(i).asset_id()) == available.end() ||
                 available[input.outputs(i).asset_id()] < input.outputs(i).amount()) {
@@ -114,7 +114,7 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) {
             feeNeed = true;
         }
         if (feeNeed && existGASTransfer < 0) {
-            auto outputPlan = plan.add_outputs();
+            auto* outputPlan = plan.add_outputs();
             existGASTransfer = plan.outputs_size() - 1;
 
             if (available.find(input.gas_asset_id()) == available.end() ||
