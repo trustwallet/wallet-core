@@ -87,19 +87,6 @@ auto suggestBaseFee(vector<uint256_t> baseFees, vector<size_t> order, double tim
     return uint256_t(boost::multiprecision::ceil(result));
 }
 
-auto baseFeeMultiplier(const uint256_t baseFee) -> uint256_t {
-    // 1.3x for base fee < 100 gwei
-    if (baseFee <= uint256_t(100000000000)) {
-        return uint256_t(130);
-    }
-    // 1.25x for base fee < 200 gwei
-    if (baseFee <= uint256_t(200000000000)) {
-        return uint256_t(125);
-    }
-    // default multiplier is 1.2x
-    return uint256_t(120);
-}
-
 auto suggestFee(const json& feeHistory) -> json {
     // tailored from:
     // https://github.com/zsfelfoldi/ethereum-docs/blob/master/eip1559/feeHistory_example.js
@@ -128,11 +115,10 @@ auto suggestFee(const json& feeHistory) -> json {
     });
 
     const auto baseFee = suggestBaseFee(baseFees, order, 15);
-    const auto multiplied = baseFee * baseFeeMultiplier(baseFee) / uint256_t(100);
     const auto tip = suggestTip(feeHistory);
 
     return json{
-        {"baseFee", toString(multiplied)},
+        {"baseFee", toString(baseFee)},
         {"maxPriorityFee", toString(tip)},
     };
 }
