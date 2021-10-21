@@ -14,49 +14,57 @@ echo "release_url url is $release_url"
 pushd ${base_dir}/../swift/build
 
 # archive xcframeworks
-filename="core+protobuf.tar.xz"
-tar -cJvf ${filename} WalletCore.xcframework SwiftProtobuf.xcframework
+core_zip_filename="WalletCore.xcframework.zip"
+protobuf_zip_filename="SwiftProtobuf.xcframework.zip"
 
-types_filename="types+protobuf.tar.xz"
-tar -cJvf ${types_filename} WalletCoreTypes.xcframework SwiftProtobuf.xcframework
+rm -rf ${core_zip_filename} ${protobuf_zip_filename}
+
+zip -r ${core_zip_filename} WalletCore.xcframework
+core_hash=$(/usr/bin/shasum -a 256 ${core_zip_filename} | awk '{printf $1}')
+
+zip -r ${protobuf_zip_filename} SwiftProtobuf.xcframework
+protobuf_hash=$(/usr/bin/shasum -a 256 ${protobuf_zip_filename} | awk '{printf $1}')
 
 # upload to release
-download_url=$(wc_upload_asset ${release_url} ${filename})
-echo "download_url is ${download_url}"
+core_download_url=$(wc_upload_asset ${release_url} ${core_zip_filename})
+echo "wallet core url is: ${core_download_url}"
 
-types_download_url=$(wc_upload_asset ${release_url} ${types_filename})
-echo "types_download_url is ${types_download_url}"
+protobuf_download_url=$(wc_upload_asset ${release_url} ${protobuf_zip_filename})
+echo "swift protobuf url is: ${protobuf_download_url}"
 
-# create podspec
-podspec_name=WalletCoreFW
-podspec=${podspec_name}.podspec
-cat > $podspec <<EOF 
-Pod::Spec.new do |s|
-  s.name         = '${podspec_name}'
-  s.version      = '${version}'
-  s.summary      = 'Trust Wallet core data structures and algorithms.'
-  s.homepage     = 'https://github.com/trustwallet/wallet-core'
-  s.license      = 'MIT'
-  s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
+# create Package.swift
 
-  s.ios.deployment_target = '12.0'
-  s.swift_version = '5.1'
+package_swift="Package.swift"
+cat > $package_swift <<EOF
+// swift-tools-version:5.3
+import PackageDescription
 
-  s.source = {
-    http: '${download_url}'
-  }
-
-  s.vendored_frameworks = 'WalletCore.xcframework', 'SwiftProtobuf.xcframework'
-  s.libraries = 'c++'
-  s.xcconfig = {
-    'OTHER_LDFLAGS' => '\$(inherited) -fprofile-instr-generate'
-  }
-end
+let package = Package(
+    name: "WalletCore",
+    platforms: [.iOS(.v13)],
+    products: [
+        .library(
+            name: "WalletCore", targets: ["WalletCore", "SwiftProtobuf"]
+        )
+    ],
+    dependencies: [],
+    targets: [
+        .binaryTarget(
+            name: "WalletCore",
+            url: ${core_download_url},
+            checksum: "${core_hash}"
+        ),
+        .binaryTarget(
+            name: "SwiftProtobuf",
+            url: ${protobuf_download_url},
+            checksum: "${protobuf_hash}"
+        )
+    ]
+)
 EOF
 
-# pod trunk push
+echo "Package.swift generated."
 
-echo "pod trunk push --verbose --allow-warnings ${podspec}"
-pod trunk push --verbose --allow-warnings ${podspec}
+cat $package_swift
 
 popd
