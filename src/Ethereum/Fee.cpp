@@ -6,9 +6,10 @@
 
 #include "Fee.h"
 
-#include "HexCoding.h"
 #include "Data.h"
+#include "HexCoding.h"
 #include "uint256.h"
+// always includes nvp.hpp before cpp_bin_float.hpp
 #include <boost/serialization/nvp.hpp>
 #include <boost/multiprecision/cpp_bin_float.hpp>
 
@@ -50,7 +51,7 @@ auto suggestTip(const json& feeHistory) -> uint256_t {
     for (auto& item : feeHistory["reward"]) {
         const auto hex = parse_hex(item[0], true);
         const auto reward = load(hex);
-        if (reward > 0 ) {
+        if (reward > 0) {
             rewards.push_back(reward);
         }
     }
@@ -64,7 +65,8 @@ auto suggestTip(const json& feeHistory) -> uint256_t {
     return rewards[rewards.size() / 2];
 }
 
-auto suggestBaseFee(vector<uint256_t> baseFees, vector<size_t> order, double timeFactor) -> uint256_t {
+auto suggestBaseFee(vector<uint256_t> baseFees, vector<size_t> order, double timeFactor)
+    -> uint256_t {
     if (timeFactor < 1e-6) {
         return baseFees.back();
     }
@@ -73,25 +75,26 @@ auto suggestBaseFee(vector<uint256_t> baseFees, vector<size_t> order, double tim
     double sumWeight = 0.0;
     double samplingCurveLast = 0.0;
     float128_t result = 0;
-    for(size_t i = 0; i < order.size(); i++) {
+    for (size_t i = 0; i < order.size(); i++) {
         sumWeight += pendingWeight * exp((double(order[i]) - baseFees.size() + 1) / timeFactor);
         double samplingCurveValue = samplingCurve(sumWeight);
         result += (samplingCurveValue - samplingCurveLast) * float128_t(baseFees[order[i]]);
         if (samplingCurveValue >= 1) {
-            return uint256_t(result);
+            return uint256_t(boost::multiprecision::ceil(result));
         }
         samplingCurveLast = samplingCurveValue;
     }
-    return uint256_t(result);
+    return uint256_t(boost::multiprecision::ceil(result));
 }
 
 auto suggestFee(const json& feeHistory) -> json {
-    // tailored from: https://github.com/zsfelfoldi/ethereum-docs/blob/master/eip1559/feeHistory_example.js
+    // tailored from:
+    // https://github.com/zsfelfoldi/ethereum-docs/blob/master/eip1559/feeHistory_example.js
     vector<uint256_t> baseFees;
     vector<size_t> order;
 
     const auto& array = feeHistory["baseFeePerGas"];
-    for(size_t i = 0; i < array.size(); i++) {
+    for (size_t i = 0; i < array.size(); i++) {
         const auto hex = parse_hex(array[i], true);
         baseFees.push_back(load(hex));
         order.push_back(i);
@@ -107,7 +110,7 @@ auto suggestFee(const json& feeHistory) -> json {
         }
     }
 
-    std::sort(order.begin(), order.end(), [&baseFees] (const size_t lhs, const size_t rhs) {
+    std::sort(order.begin(), order.end(), [&baseFees](const size_t lhs, const size_t rhs) {
         return baseFees[lhs] > baseFees[rhs];
     });
 
