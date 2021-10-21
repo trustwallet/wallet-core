@@ -12,6 +12,5 @@
 namespace TW::Ethereum::Fee {
 
 auto suggestFee(const nlohmann::json& feeHistory) -> nlohmann::json;
-auto baseFeeMultiplier(const uint256_t baseFee) -> uint256_t;
 
 } // namespace TW::Ethereum::Fee
