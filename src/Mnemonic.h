@@ -44,8 +44,3 @@ public:
 };
 
 } // namespace TW
-
-/// Wrapper for C interface.
-struct TWMnemonic {
-    TW::Mnemonic impl;
-};

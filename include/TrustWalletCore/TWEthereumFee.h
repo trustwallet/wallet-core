@@ -14,8 +14,10 @@
 
 TW_EXTERN_C_BEGIN
 
-TW_EXPORT_CLASS
-struct TWEthereumFee;
+TW_EXPORT_STRUCT
+struct TWEthereumFee {
+    uint8_t unused; // C doesn't allow zero-sized struct
+};
 
 /// Suggest baseFee and maxPriorityFee based on eth_feeHistory RPC call response
 TW_EXPORT_STATIC_METHOD
