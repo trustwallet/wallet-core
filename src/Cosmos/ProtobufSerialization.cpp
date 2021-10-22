@@ -8,6 +8,7 @@
 #include "../proto/Cosmos.pb.h"
 #include "Protobuf/coin.pb.h"
 #include "Protobuf/bank_tx.pb.h"
+#include "Protobuf/distribution_tx.pb.h"
 #include "Protobuf/staking_tx.pb.h"
 #include "Protobuf/tx.pb.h"
 #include "Protobuf/crypto_secp256k1_keys.pb.h"
@@ -69,6 +70,30 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 msgUndelegate.set_validator_address(unstake.validator_address());
                 *msgUndelegate.mutable_amount() = convertCoin(unstake.amount());
                 any.PackFrom(msgUndelegate, ProtobufAnyNamespacePrefix);
+                return any;
+            }
+
+        case Proto::Message::kRestakeMessage:
+            {
+                assert(msg.has_restake_message());
+                const auto& restake = msg.restake_message();
+                auto msgRedelegate = cosmos::staking::v1beta1::MsgBeginRedelegate();
+                msgRedelegate.set_delegator_address(restake.delegator_address());
+                msgRedelegate.set_validator_src_address(restake.validator_src_address());
+                msgRedelegate.set_validator_dst_address(restake.validator_dst_address());
+                *msgRedelegate.mutable_amount() = convertCoin(restake.amount());
+                any.PackFrom(msgRedelegate, ProtobufAnyNamespacePrefix);
+                return any;
+            }
+
+        case Proto::Message::kWithdrawStakeRewardMessage:
+            {
+                assert(msg.has_withdraw_stake_reward_message());
+                const auto& withdraw = msg.withdraw_stake_reward_message();
+                auto msgWithdraw = cosmos::distribution::v1beta1::MsgWithdrawDelegatorReward();
+                msgWithdraw.set_delegator_address(withdraw.delegator_address());
+                msgWithdraw.set_validator_address(withdraw.validator_address());
+                any.PackFrom(msgWithdraw, ProtobufAnyNamespacePrefix);
                 return any;
             }
 
