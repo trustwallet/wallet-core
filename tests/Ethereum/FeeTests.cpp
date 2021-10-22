@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Ethereum/Fee.h"
+#include "uint256.h"
 #include "../interface/TWTestUtilities.h"
 
 #include <fstream>
@@ -29,8 +30,22 @@ TEST(EthereumFee, suggestBaseFeeAndTip) {
     auto fee = Fee::suggestFee(history).dump();
     auto expected = R"|(
         {
-            "baseFee": "44208904214",
+            "baseFee": "44208904215",
             "maxPriorityFee": "1500000000"
+        }
+    )|";
+    assertJSONEqual(fee, expected);
+}
+
+TEST(EthereumFee, suggestHighBaseFee) {
+    const auto path = TESTS_ROOT + "/Ethereum/Data/eth_feeHistory4.json";
+    const auto history = load_json(path);
+
+    auto fee = Fee::suggestFee(history).dump();
+    auto expected = R"|(
+        {
+            "baseFee": "1098508176069",
+            "maxPriorityFee": "23492129063"
         }
     )|";
     assertJSONEqual(fee, expected);

@@ -27,7 +27,7 @@ TEST(WavesLease, serialize) {
     input.set_timestamp(int64_t(1526646497465));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     
-    auto &message = *input.mutable_lease_message();
+    auto& message = *input.mutable_lease_message();
     message.set_amount(int64_t(100000000));
     message.set_fee(int64_t(100000));
     message.set_to("3P9DEDP5VbyXQyKtXDUt2crRPn5B7gs6ujc");
@@ -48,7 +48,7 @@ TEST(WavesLease, CancelSerialize) {
     input.set_timestamp(int64_t(1568831000826));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     
-    auto &message = *input.mutable_cancel_lease_message();
+    auto& message = *input.mutable_cancel_lease_message();
     message.set_fee(int64_t(100000));
     message.set_lease_id("44re3UEDw1QwPFP8dKzfuGHVMNBejUW9NbhxG6b4KJ1T");
     auto tx1 = Transaction(
@@ -70,7 +70,7 @@ TEST(WavesLease, jsonSerialize) {
   input.set_timestamp(int64_t(1568973547102));
   input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
-  auto &message = *input.mutable_lease_message();
+  auto& message = *input.mutable_lease_message();
   message.set_amount(int64_t(100000));
   message.set_fee(int64_t(100000));
   message.set_to("3P9DEDP5VbyXQyKtXDUt2crRPn5B7gs6ujc");
@@ -110,7 +110,7 @@ TEST(WavesLease, jsonCancelSerialize) {
     input.set_timestamp(int64_t(1568973547102));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     
-    auto &message = *input.mutable_cancel_lease_message();
+    auto& message = *input.mutable_cancel_lease_message();
     message.set_lease_id("DKhmXrCsBwf6WVhGh8bYVBnjtAXGpk2K4Yd3CW4u1huG");
     message.set_fee(int64_t(100000));
     auto tx1 = Transaction(input,

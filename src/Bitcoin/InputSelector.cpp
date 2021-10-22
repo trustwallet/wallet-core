@@ -95,10 +95,10 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::select(int64_t target
 
     // difference from 2x targetValue
     auto distFrom2x = [doubleTargetValue](int64_t val) -> int64_t {
-        if (val > doubleTargetValue)
+        if (val > doubleTargetValue) {
             return val - doubleTargetValue;
-        else
-            return doubleTargetValue - val;
+        }
+        return doubleTargetValue - val;
     };
 
     const int64_t dustThreshold = feeCalculator.calculateSingleInput(byteFee);
@@ -166,7 +166,7 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(int64_t 
     assert(inputs.size() >= 1);
 
     // target value is larger that original, but not by a factor of 2 (optioized for large UTXO cases)
-    const uint64_t increasedTargetValue = (uint64_t)((double)targetValue * 1.1 + feeCalculator.calculate(inputs.size(), numOutputs, byteFee) + 1000);
+    const auto increasedTargetValue = (uint64_t)((double)targetValue * 1.1 + feeCalculator.calculate(inputs.size(), numOutputs, byteFee) + 1000);
 
     const int64_t dustThreshold = feeCalculator.calculateSingleInput(byteFee);
 

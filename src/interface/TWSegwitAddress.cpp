@@ -20,12 +20,12 @@ bool TWSegwitAddressEqual(struct TWSegwitAddress *_Nonnull lhs, struct TWSegwitA
 }
 
 bool TWSegwitAddressIsValidString(TWString *_Nonnull string) {
-    auto s = reinterpret_cast<const std::string*>(string);
+    auto* s = reinterpret_cast<const std::string*>(string);
     return SegwitAddress::isValid(*s);
 }
 
 struct TWSegwitAddress *_Nullable TWSegwitAddressCreateWithString(TWString *_Nonnull string) {
-    auto s = reinterpret_cast<const std::string*>(string);
+    auto* s = reinterpret_cast<const std::string*>(string);
     auto dec = SegwitAddress::decode(*s);
     if (!std::get<2>(dec)) {
         return nullptr;

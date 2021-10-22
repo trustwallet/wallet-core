@@ -19,4 +19,4 @@ class Signer {
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 };
 
-} // namespace
+} // namespace TW::NEAR

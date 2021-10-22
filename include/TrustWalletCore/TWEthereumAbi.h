@@ -16,8 +16,10 @@ TW_EXTERN_C_BEGIN
 
 struct TWEthereumAbiFunction;
 
-TW_EXPORT_CLASS
-struct TWEthereumAbi;
+TW_EXPORT_STRUCT
+struct TWEthereumAbi {
+    uint8_t unused; // C doesn't allow zero-sized struct
+};
 
 /// Encode function to Eth ABI binary
 TW_EXPORT_STATIC_METHOD

@@ -27,7 +27,7 @@ TEST(WavesTransaction, serialize) {
     input.set_timestamp(int64_t(1526641218066));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     
-    auto &message = *input.mutable_transfer_message();
+    auto& message = *input.mutable_transfer_message();
     message.set_amount(int64_t(100000000));
     message.set_asset("");
     message.set_fee(int64_t(100000000));
@@ -48,7 +48,7 @@ TEST(WavesTransaction, serialize) {
     input2.set_timestamp(int64_t(1));
     input2.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
                             
-    auto &message2 = *input2.mutable_transfer_message();
+    auto& message2 = *input2.mutable_transfer_message();
     message2.set_amount(int64_t(1));
     message2.set_asset("DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq");
     message2.set_fee(int64_t(1));
@@ -76,7 +76,7 @@ TEST(WavesTransaction, failedSerialize) {
     input.set_timestamp(int64_t(1526641218066));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
                           
-    auto &message = *input.mutable_transfer_message();
+    auto& message = *input.mutable_transfer_message();
     message.set_amount(int64_t(100000000));
     message.set_asset("");
     message.set_fee(int64_t(100000000));
@@ -105,7 +105,7 @@ TEST(WavesTransaction, jsonSerialize) {
     input.set_timestamp(int64_t(1526641218066));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     
-    auto &message = *input.mutable_transfer_message();
+    auto& message = *input.mutable_transfer_message();
     message.set_amount(int64_t(10000000));
     message.set_asset("DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq");
     message.set_fee(int64_t(100000000));

@@ -43,7 +43,6 @@ TW::Data Transaction::buildTag(const std::string& address) {
 TW::Data Transaction::encodeSafeZero(uint256_t value) {
     if (value == 0) {
         return Ethereum::RLP::encode(Data{0});
-    } else {
-        return Ethereum::RLP::encode(value);
     }
+    return Ethereum::RLP::encode(value);
 }

@@ -21,10 +21,6 @@ using namespace TW::Ethereum::ABI;
 using namespace TW::Ethereum;
 using namespace TW;
 
-/// Wrapper for C interface, empty as all methods are static
-struct TWEthereumAbi {
-    // TW::Ethereum::ABI::Encoder impl;
-};
 
 TWData* _Nonnull TWEthereumAbiEncode(struct TWEthereumAbiFunction* _Nonnull func_in) {
     assert(func_in != nullptr);

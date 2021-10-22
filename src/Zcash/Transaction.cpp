@@ -198,7 +198,7 @@ Bitcoin::Proto::Transaction Transaction::proto() const {
     protoTx.set_locktime(lockTime);
 
     for (const auto& input : inputs) {
-        auto protoInput = protoTx.add_inputs();
+        auto* protoInput = protoTx.add_inputs();
         protoInput->mutable_previousoutput()->set_hash(input.previousOutput.hash.data(),
                                                        input.previousOutput.hash.size());
         protoInput->mutable_previousoutput()->set_index(input.previousOutput.index);
@@ -207,7 +207,7 @@ Bitcoin::Proto::Transaction Transaction::proto() const {
     }
 
     for (const auto& output : outputs) {
-        auto protoOutput = protoTx.add_outputs();
+        auto* protoOutput = protoTx.add_outputs();
         protoOutput->set_value(output.value);
         protoOutput->set_script(output.script.bytes.data(), output.script.bytes.size());
     }

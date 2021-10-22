@@ -80,12 +80,12 @@ TEST(PolkadotSigner, SignTransferDOT) {
     input.set_network(Proto::Network::POLKADOT);
     input.set_transaction_version(3);
 
-    auto &era = *input.mutable_era();
+    auto& era = *input.mutable_era();
     era.set_block_number(927699);
     era.set_period(8);
 
     auto balanceCall = input.mutable_balance_call();
-    auto &transfer = *balanceCall->mutable_transfer();
+    auto& transfer = *balanceCall->mutable_transfer();
     auto value = store(uint256_t(12345));
     transfer.set_to_address(toAddress.string());
     transfer.set_value(value.data(), value.size());
@@ -112,12 +112,12 @@ TEST(PolkadotSigner, SignTransfer_72dd5b) {
     input.set_network(Proto::Network::POLKADOT);
     input.set_transaction_version(6);
 
-    auto &era = *input.mutable_era();
+    auto& era = *input.mutable_era();
     era.set_block_number(3910736);
     era.set_period(64);
 
     auto balanceCall = input.mutable_balance_call();
-    auto &transfer = *balanceCall->mutable_transfer();
+    auto& transfer = *balanceCall->mutable_transfer();
     auto value = store(uint256_t(10000000000));
     transfer.set_to_address("13ZLCqJNPsRZYEbwjtZZFpWt9GyFzg5WahXCVWKpWdUJqrQ5");
     transfer.set_value(value.data(), value.size());
@@ -229,7 +229,7 @@ TEST(PolkadotSigner, SignNominate2) {
     input.set_transaction_version(3);
 
     auto stakingCall = input.mutable_staking_call();
-    auto &nominate = *stakingCall->mutable_nominate();
+    auto& nominate = *stakingCall->mutable_nominate();
     // payload size larger than 256, will be hashed
     nominate.add_nominators("1zugcabYjgfQdMLC3cAzQ8tJZMo45tMnGpivpAzpxB4CZyK");
     nominate.add_nominators("1REAJ1k691g5Eqqg9gL7vvZCBG7FCCZ8zgQkZWd4va5ESih");
@@ -275,7 +275,7 @@ TEST(PolkadotSigner, SignWithdraw) {
     input.set_transaction_version(3);
 
     auto stakingCall = input.mutable_staking_call();
-    auto &withdraw = *stakingCall->mutable_withdraw_unbonded();
+    auto& withdraw = *stakingCall->mutable_withdraw_unbonded();
     withdraw.set_slashing_spans(10);
 
     auto output = Signer::sign(input);
