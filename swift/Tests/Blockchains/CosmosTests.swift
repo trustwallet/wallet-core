@@ -138,7 +138,7 @@ class CosmosSignerTests: XCTestCase {
         }
 
         let input = CosmosSigningInput.with {
-            $0.signingMode = .json;
+            $0.signingMode = .protobuf;
             $0.fee = fee
             $0.accountNumber = 8698
             $0.chainID = "cosmoshub-2"
@@ -150,54 +150,8 @@ class CosmosSignerTests: XCTestCase {
 
         let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)
 
-        let expectedJSON = """
-        {
-          "mode": "block",
-          "tx": {
-            "fee": {
-              "amount": [
-                {
-                  "amount": "1",
-                  "denom": "uatom"
-                }
-              ],
-              "gas": "220000"
-            },
-            "memo": "",
-            "msg": [
-              {
-                "type": "cosmos-sdk/MsgWithdrawDelegationReward",
-                "value": {
-                  "delegator_address": "cosmos100rhxclqasy6vnrcervgh99alx5xw7lkfp4u54",
-                  "validator_address": "cosmosvaloper1ey69r37gfxvxg62sh4r0ktpuc46pzjrm873ae8"
-                }
-              },{
-                "type": "cosmos-sdk/MsgWithdrawDelegationReward",
-                "value": {
-                  "delegator_address": "cosmos100rhxclqasy6vnrcervgh99alx5xw7lkfp4u54",
-                  "validator_address": "cosmosvaloper1sjllsnramtg3ewxqwwrwjxfgc4n4ef9u2lcnj0"
-                }
-              },{
-                "type": "cosmos-sdk/MsgWithdrawDelegationReward",
-                "value": {
-                  "delegator_address": "cosmos100rhxclqasy6vnrcervgh99alx5xw7lkfp4u54",
-                  "validator_address": "cosmosvaloper1648ynlpdw7fqa2axt0w2yp3fk542junl7rsvq6"
-                }
-              }
-            ],
-            "signatures": [
-              {
-                "pub_key": {
-                  "type": "tendermint/PubKeySecp256k1",
-                  "value": "AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"
-                },
-                "signature": "2k5bSnfWxaauXHBNJTKmf4CpLiCWLg7UAC/q2SVhZNkU+n0DdLBSTdmYhKYmmtpl/Njm4YrcxE0WLb/hVccQ+g=="
-              }
-            ]
-          }
-        }
-
-        """
-        XCTAssertJSONEqual(expectedJSON, output.json)
+        XCTAssertEqual(output.serialized.hexString, "0ae9030aa0010a372f636f736d6f732e646973747269627574696f6e2e763162657461312e4d7367576974686472617744656c656761746f7252657761726412650a2d636f736d6f73313030726878636c7161737936766e726365727667683939616c78357877376c6b6670347535341234636f736d6f7376616c6f7065723165793639723337676678767867363273683472306b747075633436707a6a726d3837336165380aa0010a372f636f736d6f732e646973747269627574696f6e2e763162657461312e4d7367576974686472617744656c656761746f7252657761726412650a2d636f736d6f73313030726878636c7161737936766e726365727667683939616c78357877376c6b6670347535341234636f736d6f7376616c6f70657231736a6c6c736e72616d74673365777871777772776a78666763346e3465663975326c636e6a300aa0010a372f636f736d6f732e646973747269627574696f6e2e763162657461312e4d7367576974686472617744656c656761746f7252657761726412650a2d636f736d6f73313030726878636c7161737936766e726365727667683939616c78357877376c6b6670347535341234636f736d6f7376616c6f70657231363438796e6c7064773766716132617874307732797033666b3534326a756e6c37727376713612650a510a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a210257286ec3f37d33557bbbaa000b27744ac9023aa9967cae75a181d1ff91fa9dc512040a02080118be0212100a0a0a057561746f6d12013110e0b60d1a405cb809fbcc443149fb9e4163dee920d95eb9561e686fb1ca78268da4c33a38f42ba56dabe9ab247ecb0815c39df13862044cfae5b273f351666f932d0d31afe2")
+        XCTAssertEqual(output.serializedBase64, "CukDCqABCjcvY29zbW9zLmRpc3RyaWJ1dGlvbi52MWJldGExLk1zZ1dpdGhkcmF3RGVsZWdhdG9yUmV3YXJkEmUKLWNvc21vczEwMHJoeGNscWFzeTZ2bnJjZXJ2Z2g5OWFseDV4dzdsa2ZwNHU1NBI0Y29zbW9zdmFsb3BlcjFleTY5cjM3Z2Z4dnhnNjJzaDRyMGt0cHVjNDZwempybTg3M2FlOAqgAQo3L2Nvc21vcy5kaXN0cmlidXRpb24udjFiZXRhMS5Nc2dXaXRoZHJhd0RlbGVnYXRvclJld2FyZBJlCi1jb3Ntb3MxMDByaHhjbHFhc3k2dm5yY2VydmdoOTlhbHg1eHc3bGtmcDR1NTQSNGNvc21vc3ZhbG9wZXIxc2psbHNucmFtdGczZXd4cXd3cndqeGZnYzRuNGVmOXUybGNuajAKoAEKNy9jb3Ntb3MuZGlzdHJpYnV0aW9uLnYxYmV0YTEuTXNnV2l0aGRyYXdEZWxlZ2F0b3JSZXdhcmQSZQotY29zbW9zMTAwcmh4Y2xxYXN5NnZucmNlcnZnaDk5YWx4NXh3N2xrZnA0dTU0EjRjb3Ntb3N2YWxvcGVyMTY0OHlubHBkdzdmcWEyYXh0MHcyeXAzZms1NDJqdW5sN3JzdnE2EmUKUQpGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQJXKG7D830zVXu7qgALJ3RKyQI6qZZ8rnWhgdH/kfqdxRIECgIIARi+AhIQCgoKBXVhdG9tEgExEOC2DRpAXLgJ+8xEMUn7nkFj3ukg2V65Vh5ob7HKeCaNpMM6OPQrpW2r6askfssIFcOd8ThiBEz65bJz81Fmb5MtDTGv4g==")
+        XCTAssertEqual(output.error, "")
     }
 }
