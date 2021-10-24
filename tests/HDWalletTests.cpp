@@ -68,6 +68,11 @@ TEST(HDWallet, entropyLength_createFromMnemonic) {
         EXPECT_EQ(wallet.getEntropy().size(), 16);
         EXPECT_EQ(hex(wallet.getEntropy()), "99d33a674ce99d33a674ce99d33a674c");
     }
+    {   // 12 words, from https://github.com/trezor/python-mnemonic/blob/master/vectors.json
+        HDWallet wallet = HDWallet("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about", "");
+        EXPECT_EQ(wallet.getEntropy().size(), 16);
+        EXPECT_EQ(hex(wallet.getEntropy()), "00000000000000000000000000000000");
+    }
     {   // 15 words
         HDWallet wallet = HDWallet("history step cheap card humble screen raise seek robot slot coral roof spoil wreck caution", "");
         EXPECT_EQ(wallet.getEntropy().size(), 20);
@@ -87,6 +92,11 @@ TEST(HDWallet, entropyLength_createFromMnemonic) {
         HDWallet wallet = HDWallet("poet spider smile swift roof pilot subject save hand diet ice universe over brown inspire ugly wide economy symbol shove episode patient plug swamp", "");
         EXPECT_EQ(wallet.getEntropy().size(), 32);
         EXPECT_EQ(hex(wallet.getEntropy()), "a73a3732edebbb49f5fdfe68c7b5c0f6e9de3a1d5760faa8c771e384bf4229b6");
+    }
+    {   // 24 words, from https://github.com/trezor/python-mnemonic/blob/master/vectors.json
+        HDWallet wallet = HDWallet("letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic bless", "");
+        EXPECT_EQ(wallet.getEntropy().size(), 32);
+        EXPECT_EQ(hex(wallet.getEntropy()), "8080808080808080808080808080808080808080808080808080808080808080");
     }
 }
 
