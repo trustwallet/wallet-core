@@ -83,7 +83,8 @@ void HDWallet::updateSeedAndEntropy(bool check) {
 
     // generate entropy bits from mnemonic
     Data entropyRaw((Mnemonic::MaxWords * Mnemonic::BitsPerWord) / 8);
-    auto entropyBytes = mnemonic_to_bits(mnemonic.c_str(), entropyRaw.data()) / 8;
+    // entropy is truncated to fully bytes, 4 bytes for each 3 words (=33 bits)
+    auto entropyBytes = mnemonic_to_bits(mnemonic.c_str(), entropyRaw.data()) / 33 * 4;
     // copy to truncate
     entropy = data(entropyRaw.data(), entropyBytes);
     assert(!check || entropy.size() > 10);
