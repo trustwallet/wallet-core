@@ -12,9 +12,7 @@
 TW_EXTERN_C_BEGIN
 
 TW_EXPORT_STRUCT
-struct TWMnemonic {
-    uint8_t unused; // C doesn't allow zero-sized struct
-};
+struct TWMnemonic;
 
 /// Determines whether a BIP39 English mnemonic phrase is valid.
 TW_EXPORT_STATIC_METHOD
