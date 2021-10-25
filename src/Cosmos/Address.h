@@ -36,7 +36,7 @@ public:
 
     /// Determines whether a string makes a valid Bech32 address, and the HRP matches to the coin.
     static bool isValid(TWCoinType coin, const std::string& addr) {
-        const auto hrp = stringForHRP(TW::hrp(coin));
+        const auto* const hrp = stringForHRP(TW::hrp(coin));
         return Bech32Address::isValid(addr, hrp);
     }
 
