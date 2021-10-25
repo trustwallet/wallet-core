@@ -10,6 +10,12 @@ import XCTest
 class HarmonyTests: XCTestCase {
     let localNet = "0x02"
 
+    func testAddressData() {
+        let address = AnyAddress(string: "one1c8dpswxg2p50znzecnq0peuxlxtcm9je7q7yje", coin: .harmony)!
+
+        XCTAssertEqual(address.data.hexString, "c1da1838c85068f14c59c4c0f0e786f9978d9659")
+    }
+
     func testSigner() {
         let transaction = HarmonyTransactionMessage.with {
             $0.nonce = Data(hexString: "0x09")!
