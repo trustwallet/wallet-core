@@ -46,6 +46,7 @@ HDWallet::HDWallet(int strength, const std::string& passphrase)
         throw std::invalid_argument("Invalid strength");
     }
     mnemonic = mnemonic_chars;
+    memset(buf, 0, MnemonicBufLength);
     updateSeedAndEntropy();
 }
 
@@ -66,6 +67,7 @@ HDWallet::HDWallet(const Data& entropy, const std::string& passphrase)
         throw std::invalid_argument("Invalid mnemonic data");
     }
     mnemonic = mnemonic_chars;
+    memset(buf, 0, MnemonicBufLength);
     updateSeedAndEntropy();
 }
 
