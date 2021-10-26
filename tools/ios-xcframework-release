@@ -7,7 +7,8 @@ base_dir=$(dirname $0)
 source ${base_dir}/library
 
 # version to release
-version=$(wc_read_version)
+version=$(wc_read_version $1)
+echo "release version ${version}"
 release_url=$(wc_release_url ${version})
 echo "release_url url is $release_url"
 
