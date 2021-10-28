@@ -27,8 +27,8 @@ TEST(TWTomoChainCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeTomoChain));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeTomoChain));
     assertStringsEqual(symbol, "TOMO");
-    assertStringsEqual(txUrl, "https://scan.tomochain.com/txs/t123");
-    assertStringsEqual(accUrl, "https://scan.tomochain.com/address/a12");
+    assertStringsEqual(txUrl, "https://tomoscan.io/tx/t123");
+    assertStringsEqual(accUrl, "https://tomoscan.io/address/a12");
     assertStringsEqual(id, "tomochain");
     assertStringsEqual(name, "TomoChain");
 }
