@@ -19,6 +19,7 @@
 #include <TrezorCrypto/bip32.h>
 #include <TrezorCrypto/bip39.h>
 #include <TrezorCrypto/curves.h>
+#include <TrezorCrypto/memzero.h>
 
 #include <array>
 #include <cstring>
@@ -46,6 +47,7 @@ HDWallet::HDWallet(int strength, const std::string& passphrase)
         throw std::invalid_argument("Invalid strength");
     }
     mnemonic = mnemonic_chars;
+    memzero(buf, MnemonicBufLength);
     updateSeedAndEntropy();
 }
 
@@ -66,6 +68,7 @@ HDWallet::HDWallet(const Data& entropy, const std::string& passphrase)
         throw std::invalid_argument("Invalid mnemonic data");
     }
     mnemonic = mnemonic_chars;
+    memzero(buf, MnemonicBufLength);
     updateSeedAndEntropy();
 }
 
