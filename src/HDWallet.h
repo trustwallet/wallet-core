@@ -42,11 +42,15 @@ class HDWallet {
     /// Entropy is the binary 1-to-1 representation of the mnemonic (11 bits from each word)
     TW::Data entropy;
 
+    /// Legacy version of incorrect entropy, longer for 24-word mnemonics
+    TW::Data entropyLegacyLong;
+
   public:
     const std::array<byte, seedSize>& getSeed() const { return seed; }
     const std::string& getMnemonic() const { return mnemonic; }
     const std::string& getPassphrase() const { return passphrase; }
     const TW::Data& getEntropy() const { return entropy; }
+    const TW::Data& getEntropyLegacy() const { return entropyLegacyLong; }
 
   public:
     /// Initializes a new random HDWallet with the provided strength in bits.  
