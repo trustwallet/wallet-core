@@ -7,6 +7,7 @@
 #include "TWTestUtilities.h"
 
 #include <string>
+#include <fstream>
 
 using namespace std;
 
@@ -16,4 +17,11 @@ string getTestTempDir(void) {
     const char* fromEnvironment = getenv("TEST_TMPDIR");
     if (fromEnvironment == NULL || fromEnvironment[0] == '\0') { return "/tmp"; }
     return string(fromEnvironment);
+}
+
+nlohmann::json loadJson(std::string path) {
+    std::ifstream stream(path);
+    nlohmann::json json;
+    stream >> json;
+    return json;
 }

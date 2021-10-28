@@ -86,6 +86,9 @@ class HDWallet {
     /// Returns the extended public key.
     std::string getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const;
 
+    /// Returns the BIP32 Root Key (private)
+    std::string getRootKey(TWCoinType coin, TWHDVersion version) const;
+
     /// Computes the public key from an extended public key representation.
     static std::optional<PublicKey> getPublicKeyFromExtended(const std::string& extended, TWCoinType coin, const DerivationPath& path);
 
