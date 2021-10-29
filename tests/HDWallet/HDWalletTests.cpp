@@ -15,7 +15,7 @@
 #include "Hash.h"
 #include "Base58.h"
 #include "Coin.h"
-#include "interface/TWTestUtilities.h"
+#include "../interface/TWTestUtilities.h"
 
 #include <gtest/gtest.h>
 
