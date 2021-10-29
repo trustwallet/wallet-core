@@ -200,7 +200,11 @@ int xmr_base58_addr_encode_check(uint64_t tag, const uint8_t *data, size_t binsz
 	}
 
 	size_t b58size = b58sz;
+#ifdef _MSC_VER
+	uint8_t *buf = _alloca((binsz + 1) + HASHER_DIGEST_LENGTH);
+#else
 	uint8_t buf[(binsz + 1) + HASHER_DIGEST_LENGTH];
+#endif
 	memset(buf, 0, sizeof(buf));
 	uint8_t *hash = buf + binsz + 1;
 	buf[0] = (uint8_t) tag;
@@ -214,7 +218,11 @@ int xmr_base58_addr_encode_check(uint64_t tag, const uint8_t *data, size_t binsz
 int xmr_base58_addr_decode_check(const char *addr, size_t sz, uint64_t *tag, void *data, size_t datalen)
 {
 	size_t buflen = 1 + 64 + addr_checksum_size;
+#ifdef _MSC_VER
+	uint8_t *buf = _alloca(buflen);
+#else
 	uint8_t buf[buflen];
+#endif
 	memset(buf, 0, sizeof(buf));
 	uint8_t hash[HASHER_DIGEST_LENGTH] = {0};
 

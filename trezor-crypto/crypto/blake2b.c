@@ -19,6 +19,9 @@
 #include <TrezorCrypto/blake2_common.h>
 #include <TrezorCrypto/memzero.h>
 
+#ifdef _MSC_VER
+#pragma pack(push, 1)
+#endif
 typedef struct blake2b_param__
 {
     uint8_t  digest_length; /* 1 */
@@ -33,7 +36,14 @@ typedef struct blake2b_param__
     uint8_t  reserved[14];  /* 32 */
     uint8_t  salt[BLAKE2B_SALTBYTES]; /* 48 */
     uint8_t  personal[BLAKE2B_PERSONALBYTES];  /* 64 */
-} __attribute__((packed)) blake2b_param;
+}
+#ifndef _MSC_VER
+__attribute__((packed))
+#endif
+blake2b_param;
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif
 
 const uint64_t blake2b_IV[8] =
 {

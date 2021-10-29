@@ -25,6 +25,67 @@
 
 #include <fcntl.h>
 #include <sys/types.h>
+
+#ifdef _MSC_VER
+
+#if 1
+
+#include <Windows.h>
+#include <bcrypt.h>
+
+#pragma comment(lib, "Bcrypt")
+
+uint32_t random32() {
+    BCRYPT_ALG_HANDLE prov;
+    uint32_t res;
+    if (!BCRYPT_SUCCESS(BCryptOpenAlgorithmProvider(&prov, BCRYPT_RNG_ALGORITHM, NULL, 0))) {
+        return 0;
+    }
+    if (!BCRYPT_SUCCESS(BCryptGenRandom(prov, (PUCHAR)(&res), sizeof(res), 0))) {
+        res = 0;
+    }
+    BCryptCloseAlgorithmProvider(prov, 0);
+    return res;
+}
+
+void random_buffer(uint8_t *buf, size_t len) {
+    BCRYPT_ALG_HANDLE prov;
+    if (!BCRYPT_SUCCESS(BCryptOpenAlgorithmProvider(&prov, BCRYPT_RNG_ALGORITHM, NULL, 0))) {
+        return;
+    }
+    (void)BCryptGenRandom(prov, (PUCHAR)buf, len, 0);
+    BCryptCloseAlgorithmProvider(prov, 0);
+}
+
+#else
+
+// TODO: Use a secure random number generator
+// https://docs.microsoft.com/en-us/windows/win32/api/bcrypt/nf-bcrypt-bcryptgenrandom
+// https://docs.microsoft.com/en-us/windows/win32/api/wincrypt/nf-wincrypt-cryptgenrandom
+// Assumes seed() has been called
+
+uint32_t random32() {
+    uint32_t res = 0;
+    res = rand() & 0xFF;
+    res <<= 8;
+    res = rand() & 0xFF;
+    res <<= 8;
+    res = rand() & 0xFF;
+    res <<= 8;
+    res = rand() & 0xFF;
+    return res;
+}
+
+void random_buffer(uint8_t *buf, size_t len) {
+    for (size_t i = 0; i < len; ++i) {
+        buf[i] = rand() & 0xFF;
+    }
+}
+
+#endif
+
+#else
+
 #include <sys/uio.h>
 #include <unistd.h>
 
@@ -55,3 +116,5 @@ void __attribute__((weak)) random_buffer(uint8_t *buf, size_t len) {
     }
     close(randomData);
 }
+
+#endif

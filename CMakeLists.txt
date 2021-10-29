@@ -5,7 +5,9 @@ project(TrustWalletCore)
 include(GNUInstallDirs)
 
 # Configure warnings
-set(TW_CXX_WARNINGS "-Wshorten-64-to-32")
+if(NOT (WIN32 AND ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")))
+    set(TW_CXX_WARNINGS "-Wshorten-64-to-32")
+endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TW_CXX_WARNINGS}")
@@ -15,7 +17,8 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.14" CACHE STRING "Minimum OS X deployment version" FORCE)
 
-if (NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang"))
+if(WIN32 AND ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC"))
+elseif(NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang"))
     message(FATAL_ERROR "You should use clang compiler")
 endif()
 
@@ -52,7 +55,11 @@ find_host_package(Boost REQUIRED)
 include(ExternalProject)
 
 # Dependencies
-include(cmake/Protobuf.cmake)
+if (WIN32 AND ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC"))
+  find_package(Protobuf REQUIRED)
+else()
+  include(cmake/Protobuf.cmake)
+endif()
 
 option(CODE_COVERAGE "Enable coverage reporting" OFF)
 if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -116,7 +123,9 @@ target_include_directories(TrustWalletCore
 )
 
 if(NOT ANDROID AND NOT IOS_PLATFORM)
-    add_subdirectory(tests)
+    if(NOT (WIN32 AND ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")))
+        add_subdirectory(tests)
+    endif()
     add_subdirectory(walletconsole/lib)
     add_subdirectory(walletconsole)
 endif()
