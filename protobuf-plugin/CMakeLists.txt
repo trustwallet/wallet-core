@@ -5,6 +5,10 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET "10.14" CACHE STRING "Minimum OS X deployment ve
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if (WIN32 AND ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC"))
+    add_definitions(-DPROTOBUF_USE_DLLS)
+endif()
+
 if ("$ENV{PREFIX}" STREQUAL "")
     set(PREFIX "${CMAKE_SOURCE_DIR}/../build/local")
 else()
@@ -19,9 +23,17 @@ include_directories(${Protobuf_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(protoc-gen-c-typedef c_typedef.cc ${PROTO_SRCS} ${PROTO_HDRS})
-target_link_libraries(protoc-gen-c-typedef protobuf -lprotoc -pthread)
+if (WIN32 AND ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC"))
+    target_link_libraries(protoc-gen-c-typedef ${Protobuf_LIBRARIES} ${Protobuf_PROTOC_LIBRARIES})
+else()
+    target_link_libraries(protoc-gen-c-typedef protobuf -lprotoc -pthread)
+endif()
 
 add_executable(protoc-gen-swift-typealias swift_typealias.cc ${PROTO_SRCS} ${PROTO_HDRS})
-target_link_libraries(protoc-gen-swift-typealias protobuf -lprotoc -pthread)
+if (WIN32 AND ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC"))
+    target_link_libraries(protoc-gen-swift-typealias ${Protobuf_LIBRARIES} ${Protobuf_PROTOC_LIBRARIES})
+else()
+    target_link_libraries(protoc-gen-swift-typealias protobuf -lprotoc -pthread)
+endif()
 
 install(TARGETS protoc-gen-c-typedef protoc-gen-swift-typealias DESTINATION bin)
