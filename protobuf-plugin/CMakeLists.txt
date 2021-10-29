@@ -5,10 +5,6 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET "10.14" CACHE STRING "Minimum OS X deployment ve
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if (WIN32 AND ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC"))
-    add_definitions(-DPROTOBUF_USE_DLLS)
-endif()
-
 if ("$ENV{PREFIX}" STREQUAL "")
     set(PREFIX "${CMAKE_SOURCE_DIR}/../build/local")
 else()

@@ -1,7 +1,7 @@
 # walletconsole executable
 file(GLOB walletconsole_sources *.cpp)
 add_executable(walletconsole ${walletconsole_sources})
-#target_link_libraries(tests gtest_main TrezorCrypto TrustWalletCore protobuf Boost::boost)
+#target_link_libraries(tests gtest_main TrezorCrypto TrustWalletCore ${Protobuf_LIBRARIES} Boost::boost)
 target_link_libraries(walletconsole walletconsolelib TrezorCrypto TrustWalletCore ${Protobuf_LIBRARIES} Boost::boost)
 target_include_directories(walletconsole PRIVATE ${CMAKE_SOURCE_DIR}/walletconsole/lib ${CMAKE_SOURCE_DIR}/src)
 if(NOT (WIN32 AND ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")))
