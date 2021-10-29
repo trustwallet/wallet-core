@@ -250,16 +250,4 @@ TEST(HDWallet, DeriveWithLeadingZerosEth) {
     EXPECT_EQ(addr.string(), "0x0ba17e928471c64AaEaf3ABfB3900EF4c27b380D");
 }
 
-TEST(HDWallet, DeriveCardano24WordsLegacy) {
-    { // 24-word mnemonic
-        HDWallet wallet = HDWallet("letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic bless", "");
-        // correct is addr1snrqwa0l0ec445sdkw7ghgf8uscu0y7sllw3t2q3dqnaj4jknqf6an5eqgdq9rsxdgw50pu53gt99twl5d5uh5qmu8ynsxgxtsek60ph6nfklc
-        EXPECT_EQ(wallet.deriveAddress(TWCoinTypeCardano), "addr1snr8g8cdfw99g8qcmhum5h9wqf89myzz2uaa92xdn2xutymqrm03xfusvh98627daddurkaldxtzfmphpjxlv0w87mgaxdtahafdaghgafs3ec");
-    }
-    { // 12-word mnemonic
-        HDWallet wallet = HDWallet("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about", "");
-        EXPECT_EQ(wallet.deriveAddress(TWCoinTypeCardano), "addr1s3l2px3546a38jvyr3cnj7cu40lvth0e2pq99y77ujtv4sh5xayq4zyy3690v23854lfsgs4wswfatqhumj9e07kafj6pcxucqamwaaj5f0gn8");
-    }
-}
-
 } // namespace
