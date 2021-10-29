@@ -1155,8 +1155,8 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
-      "url": "https://scan.tomochain.com",
-      "txPath": "/txs/",
+      "url": "https://tomoscan.io",
+      "txPath": "/tx/",
       "accountPath": "/address/"
     },
     "info": {
