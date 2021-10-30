@@ -33,7 +33,7 @@ add_library(TrezorCrypto
     crypto/shamir.c
 )
 
-if(NOT (WIN32 AND ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")))
+if(NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC"))
     target_compile_options(TrezorCrypto
         PRIVATE
             -W
