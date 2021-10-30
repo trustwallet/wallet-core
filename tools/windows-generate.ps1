@@ -4,6 +4,9 @@
 
 # Ported from `generate-files`
 
+# Run after installing dependencies
+# > powershell .\tools\windows-generate.ps1
+
 $root = $pwd
 $prefix = Join-Path $pwd "build\local"
 $bin = Join-Path $prefix "bin"

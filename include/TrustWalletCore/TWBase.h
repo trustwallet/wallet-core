@@ -15,14 +15,14 @@
 #endif
 
 #ifdef _WIN32
-#ifdef TW_SHARED_LIBRARY
+#ifdef TW_STATIC_LIBRARY
+#define TW_EXTERN
+#else
 #ifdef TW_EXPORT_LIBRARY
 #define TW_EXTERN __declspec(dllexport)
 #else
 #define TW_EXTERN __declspec(dllimport)
 #endif
-#else
-#define TW_EXTERN
 #endif
 #else
 #define TW_EXTERN extern

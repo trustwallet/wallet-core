@@ -8,13 +8,13 @@
 # TODO: GoogleTest
 # TODO: Check
 # Downloads the single-header Nlohmann JSON library
+# Downloads boost library, only require the headers
 # Downloads and builds Protobuf in static debug and release mode, with dynamic C runtime
 # Builds the Wallet Core protobuf plugins in release mode
-# (next script) Builds Wallet Core in static release mode, to build the console wallet
-# (next script) Builds Wallet Core in dynamic release and debug mode, to build a DLL for applications
 
 $root = $pwd
 $prefix = Join-Path $pwd "build\local"
+$include = Join-Path $prefix "include"
 
 $cmakeGenerator = "Visual Studio 17 2022"
 $cmakePlatform = "x64"
@@ -32,6 +32,32 @@ if (-not(Test-Path -Path $jsonDir -PathType Container)) {
     mkdir $jsonDir | Out-Null
 }
 Invoke-WebRequest -Uri $jsonUrl -OutFile $jsonFile
+
+# Boost
+$boostVersion = "1.77.0"
+$boostVersionU = $boostVersion.Replace(".", "_")
+$boostDir = Join-Path $prefix "src\boost"
+$boostZip = "boost_$boostVersionU.zip"
+$boostUrl = "https://nchc.dl.sourceforge.net/project/boost/boost/$boostVersion/$boostZip"
+
+# Download and extract
+if (-not(Test-Path -Path $boostDir -PathType Container)) {
+    mkdir $boostDir | Out-Null
+}
+cd $boostDir
+if (-not(Test-Path -Path $boostZip -PathType Leaf)) {
+    Invoke-WebRequest -Uri $boostUrl -OutFile $boostZip
+}
+if (Test-Path -Path boost_$boostVersionU -PathType Container) {
+     Remove-Item –Path boost_$boostVersionU -Recurse
+}
+# Expand-Archive -LiteralPath $boostZip -DestinationPath $boostDir
+Add-Type -Assembly "System.IO.Compression.Filesystem"
+[System.IO.Compression.ZipFile]::ExtractToDirectory($boostZip , $boostDir)
+if (-not(Test-Path -Path $include -PathType Container)) {
+    mkdir $include | Out-Null
+}
+move ".\boost_$boostVersionU\boost" "$include\boost"
 
 # Protobuf
 $protobufVersion = "3.19.1"
