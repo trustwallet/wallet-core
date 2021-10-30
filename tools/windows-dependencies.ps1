@@ -29,7 +29,7 @@ if (Test-Path -Path $jsonFile -PathType Leaf) {
     Remove-Item –Path $jsonFile
 }
 if (-not(Test-Path -Path $jsonDir -PathType Container)) {
-    mkdir -p $jsonDir
+    mkdir $jsonDir | Out-Null
 }
 Invoke-WebRequest -Uri $jsonUrl -OutFile $jsonFile
 
@@ -41,7 +41,7 @@ $protobufUrl = "https://github.com/protocolbuffers/protobuf/releases/download/v$
 
 # Download and extract
 if (-not(Test-Path -Path $protobufDir -PathType Container)) {
-    mkdir -p $protobufDir
+    mkdir $protobufDir | Out-Null
 }
 cd $protobufDir
 if (-not(Test-Path -Path $protobufZip -PathType Leaf)) {
