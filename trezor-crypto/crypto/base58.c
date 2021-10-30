@@ -79,7 +79,7 @@ bool b58tobin(void *bin, size_t *binszp, const char *b58) {
 
   size_t b58sz = strlen(b58);
 
-  memzero(outi, sizeof(outi));
+  memzero(outi, sizeof(b58_almostmaxint_t) * outisz);
 
   // Leading zeros, just count
   for (i = 0; i < b58sz && b58u[i] == '1'; ++i) ++zerocount;
