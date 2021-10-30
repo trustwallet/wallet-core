@@ -66,6 +66,8 @@ if(WIN32)
     option(TW_STATIC_LIBRARY "Build static TrustWalletCore library" ON)
     if(TW_STATIC_LIBRARY)
         add_definitions(-DTW_STATIC_LIBRARY)
+    else()
+        set(TW_SHARED_LIBRARY 1)
     endif()
 endif()
 

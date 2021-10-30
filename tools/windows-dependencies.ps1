@@ -12,6 +12,8 @@
 # Downloads and builds Protobuf in static debug and release mode, with dynamic C runtime
 # Builds the Wallet Core protobuf plugins in release mode
 
+$ErrorActionPreference = "Stop"
+
 $root = $pwd
 $prefix = Join-Path $pwd "build\local"
 $include = Join-Path $prefix "include"
@@ -93,8 +95,17 @@ $protobufCMake = $protobufCMake.Replace("set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThr
     "if (MSVC AND protobuf_MSVC_STATIC_RUNTIME)`r`nset(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded$<$<CONFIG:Debug>:Debug>)`r`nendif()") # Bugfix
 $protobufCMake | Out-File -encoding UTF8 ..\cmake\CMakeLists.txt # Bugfix
 cmake -G $cmakeGenerator -A $cmakePlatform -T $cmakeToolset "-DCMAKE_INSTALL_PREFIX=$prefix" "-DCMAKE_BUILD_TYPE=Release" "-Dprotobuf_WITH_ZLIB=OFF" "-Dprotobuf_MSVC_STATIC_RUNTIME=OFF" "-Dprotobuf_BUILD_TESTS=OFF" "-Dprotobuf_BUILD_SHARED_LIBS=OFF" ../cmake
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}
 cmake --build . --target INSTALL --config Debug
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}
 cmake --build . --target INSTALL --config Release
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}
 
 # Protobuf plugins
 $pluginSrc = Join-Path $root "protobuf-plugin"
@@ -105,6 +116,12 @@ if (Test-Path -Path build -PathType Container) {
 mkdir build
 cd build
 cmake -G $cmakeGenerator -A $cmakePlatform -T $cmakeToolset "-DCMAKE_INSTALL_PREFIX=$prefix" "-DCMAKE_BUILD_TYPE=Release" ..
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}
 cmake --build . --target INSTALL --config Release
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}
 
 cd $root
