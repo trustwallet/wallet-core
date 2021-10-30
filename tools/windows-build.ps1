@@ -45,6 +45,9 @@ cmake --build . --target INSTALL --config Debug
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
+$pdbBuild = Join-Path $root "build\shared\Debug\TrustWalletCored.pdb"
+$pdbInstall = Join-Path $install "bin\TrustWalletCored.pdb"
+copy $pdbBuild $pdbInstall
 cmake --build . --target INSTALL --config Release
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
