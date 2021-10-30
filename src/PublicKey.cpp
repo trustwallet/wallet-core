@@ -14,6 +14,8 @@
 #include <TrezorCrypto/sodium/keypair.h>
 #include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 
+#include <iterator>
+
 namespace TW {
 
 /// Determines if a collection of bytes makes a valid public key of the

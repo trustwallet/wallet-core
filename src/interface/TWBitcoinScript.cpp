@@ -9,6 +9,8 @@
 #include "../Bitcoin/Script.h"
 #include "../Bitcoin/SigHashType.h"
 
+#include <iterator>
+
 using namespace TW::Bitcoin;
 
 struct TWBitcoinScript *_Nonnull TWBitcoinScriptCreate() {
