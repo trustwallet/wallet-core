@@ -17,9 +17,8 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.14" CACHE STRING "Minimum OS X deployment version" FORCE)
 
-if("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
-elseif(NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang"))
-    message(FATAL_ERROR "You should use clang compiler")
+if((NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")) AND (NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")))
+    message(FATAL_ERROR "You should use clang or msvc compiler")
 endif()
 
 if ("$ENV{PREFIX}" STREQUAL "")
@@ -55,19 +54,20 @@ find_host_package(Boost REQUIRED)
 include(ExternalProject)
 
 # Dependencies
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
-  find_package(Protobuf REQUIRED)
-  include_directories(${Protobuf_INCLUDE_DIRS})
+if(WIN32)
+    # Use regular static lib on Windows
+    find_package(Protobuf REQUIRED)
+    include_directories(${Protobuf_INCLUDE_DIRS})
 else()
-  include(cmake/Protobuf.cmake)
+    # Build as part of project otherwise
+    include(cmake/Protobuf.cmake)
 endif()
 
 if(WIN32)
-    option(TW_STATIC_LIBRARY "Build static TrustWalletCore library" ON)
+    # Static library is required when building tools (walletconsole) that include the C++ headers
+    option(TW_STATIC_LIBRARY "Build static TrustWalletCore library" OFF)
     if(TW_STATIC_LIBRARY)
         add_definitions(-DTW_STATIC_LIBRARY)
-    else()
-        set(TW_SHARED_LIBRARY 1)
     endif()
 endif()
 
@@ -146,7 +146,7 @@ target_include_directories(TrustWalletCore
         ${CMAKE_CURRENT_SOURCE_DIR}/build/local/include
 )
 
-if(NOT ANDROID AND NOT IOS_PLATFORM AND NOT TW_SHARED_LIBRARY)
+if(NOT ANDROID AND NOT IOS_PLATFORM AND NOT (WIN32 AND NOT TW_STATIC_LIBRARY))
     if(NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC"))
         add_subdirectory(tests)
     endif()
@@ -156,7 +156,7 @@ endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig.in ${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig @ONLY)
 
-if(TW_SHARED_LIBRARY)
+if(WIN32 AND NOT TW_STATIC_LIBRARY)
     install(TARGETS TrustWalletCore RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
 
