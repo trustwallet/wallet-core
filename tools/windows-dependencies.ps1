@@ -52,12 +52,18 @@ if (Test-Path -Path boost_$boostVersionU -PathType Container) {
      Remove-Item –Path boost_$boostVersionU -Recurse
 }
 # Expand-Archive -LiteralPath $boostZip -DestinationPath $boostDir
+$boostZipPath = Join-Path $boostDir $boostZip
 Add-Type -Assembly "System.IO.Compression.Filesystem"
-[System.IO.Compression.ZipFile]::ExtractToDirectory($boostZip , $boostDir)
+[System.IO.Compression.ZipFile]::ExtractToDirectory($boostZipPath, $boostDir)
 if (-not(Test-Path -Path $include -PathType Container)) {
     mkdir $include | Out-Null
 }
-move ".\boost_$boostVersionU\boost" "$include\boost"
+$boostInclude = Join-Path $include "boost"
+if (Test-Path -Path $boostInclude -PathType Container) {
+     Remove-Item –Path $boostInclude -Recurse
+}
+$boostSrcInclude = Join-Path $boostDir "boost_$boostVersionU\boost"
+move $boostSrcInclude $boostInclude
 
 # Protobuf
 $protobufVersion = "3.19.1"
