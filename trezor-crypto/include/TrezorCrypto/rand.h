@@ -32,8 +32,8 @@ extern "C" {
 #endif
 
 // [wallet-core] Reference counted init and release
-void *random_init();
-void random_release();
+void *random_init(void);
+void random_release(void);
 
 uint32_t random32(void);
 void random_buffer(uint8_t *buf, size_t len);

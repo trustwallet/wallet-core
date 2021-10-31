@@ -26,12 +26,10 @@
 #include <fcntl.h>
 #include <sys/types.h>
 
-#ifdef _MSC_VER
+#ifdef WIN32
 
 #include <Windows.h>
 #include <bcrypt.h>
-
-#pragma comment(lib, "Bcrypt")
 
 static volatile LONG random_refc = 0;
 static volatile BOOL random_lock = 0;

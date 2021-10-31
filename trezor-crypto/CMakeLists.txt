@@ -58,6 +58,10 @@ if(NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC"))
     )
 endif()
 
+if(WIN32)
+    target_link_libraries(TrezorCrypto bcrypt)
+endif()
+
 target_include_directories(TrezorCrypto
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
