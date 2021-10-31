@@ -59,10 +59,12 @@
 #define PROTO(x) TWData *
 
 #ifdef _MSC_VER
-#define __has_feature(x) 0
+#define TW_HAS_FEATURE(feature) 0
+#else
+#define TW_HAS_FEATURE(feature) __has_feature(feature)
 #endif
 
-#if __has_feature(assume_nonnull)
+#if TW_HAS_FEATURE(assume_nonnull)
 #define TW_ASSUME_NONNULL_BEGIN _Pragma("clang assume_nonnull begin")
 #define TW_ASSUME_NONNULL_END   _Pragma("clang assume_nonnull end")
 #else
@@ -71,7 +73,7 @@
 #endif
 
 
-#if !__has_feature(nullability)
+#if !TW_HAS_FEATURE(nullability)
 #ifndef _Nullable
 #define _Nullable
 #endif
