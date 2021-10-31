@@ -266,10 +266,17 @@ bool shamir_interpolate(uint8_t *result, uint8_t result_index,
                         size_t len) {
   size_t i = 0, j = 0;
   uint32_t x[8] = {0};
+#ifdef _MSC_VER
+  uint32_t (*xs)[8] = _alloca(sizeof(uint32_t) * share_count * 8);
+  memset(xs, 0, sizeof(uint32_t) * share_count * 8);
+  uint32_t (*ys)[8] = _alloca(sizeof(uint32_t) * share_count * 8);
+  memset(ys, 0, sizeof(uint32_t) * share_count * 8);
+#else
   uint32_t xs[share_count][8];
   memset(xs, 0, sizeof(xs));
   uint32_t ys[share_count][8];
   memset(ys, 0, sizeof(ys));
+#endif
   uint32_t num[8] = {~0}; /* num is the numerator (=1) */
   uint32_t denom[8] = {0};
   uint32_t tmp[8] = {0};
@@ -325,8 +332,13 @@ bool shamir_interpolate(uint8_t *result, uint8_t result_index,
   }
 
   memzero(x, sizeof(x));
+#ifdef _MSC_VER
+  memzero(xs, sizeof(uint32_t) * share_count * 8);
+  memzero(ys, sizeof(uint32_t) * share_count * 8);
+#else
   memzero(xs, sizeof(xs));
   memzero(ys, sizeof(ys));
+#endif
   memzero(num, sizeof(num));
   memzero(denom, sizeof(denom));
   memzero(tmp, sizeof(tmp));
