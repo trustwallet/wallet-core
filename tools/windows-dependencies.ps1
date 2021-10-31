@@ -6,7 +6,7 @@
 # Ported from the `install-dependencies` bash script
 
 # TODO: GoogleTest
-# TODO: Check
+# Check
 # Downloads the single-header Nlohmann JSON library
 # Downloads boost library, only require the headers
 # Downloads and builds Protobuf in static debug and release mode, with dynamic C runtime
@@ -22,6 +22,42 @@ $cmakeGenerator = "Visual Studio 17 2022"
 $cmakePlatform = "x64"
 $cmakeToolset = "v143"
 
+# Check
+$checkVersion = "0.15.2"
+$checkDir = Join-Path $prefix "src\check"
+$checkZip = "check-0.15.2.zip"
+$checkUrl = "https://codeload.github.com/libcheck/check/zip/refs/tags/$checkVersion"
+
+# Download and extract
+if (-not(Test-Path -Path $checkDir -PathType Container)) {
+    mkdir $checkDir | Out-Null
+}
+cd $checkDir
+if (-not(Test-Path -Path $checkZip -PathType Leaf)) {
+    Invoke-WebRequest -Uri $checkUrl -OutFile $checkZip
+}
+if (Test-Path -Path check-$checkVersion -PathType Container) {
+     Remove-Item –Path check-$checkVersion -Recurse
+}
+Expand-Archive -LiteralPath $checkZip -DestinationPath $checkDir
+
+# Build debug and release libraries
+cd check-$checkVersion
+mkdir build_msvc | Out-Null
+cd build_msvc
+cmake -G $cmakeGenerator -A $cmakePlatform -T $cmakeToolset "-DCMAKE_INSTALL_PREFIX=$prefix" "-DCMAKE_DEBUG_POSTFIX=d" "-DCMAKE_BUILD_TYPE=Release" ..
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}
+cmake --build . --target INSTALL --config Debug
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}
+cmake --build . --target INSTALL --config Release
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}
+return
 # Nlohmann JSON
 $jsonVersion = "3.10.4"
 $jsonDir = Join-Path $prefix "include\nlohmann"
@@ -88,7 +124,7 @@ Expand-Archive -LiteralPath $protobufZip -DestinationPath $protobufDir
 
 # Build debug and release libraries
 cd protobuf-$protobufVersion
-mkdir build_msvc
+mkdir build_msvc | Out-Null
 cd build_msvc
 $protobufCMake = Get-Content ..\cmake\CMakeLists.txt # Bugfix
 $protobufCMake = $protobufCMake.Replace("set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded$<$<CONFIG:Debug>:Debug>)",
@@ -113,7 +149,7 @@ cd $pluginSrc
 if (Test-Path -Path build -PathType Container) {
      Remove-Item –Path build -Recurse
 }
-mkdir build
+mkdir build | Out-Null
 cd build
 cmake -G $cmakeGenerator -A $cmakePlatform -T $cmakeToolset "-DCMAKE_INSTALL_PREFIX=$prefix" "-DCMAKE_BUILD_TYPE=Release" ..
 if ($LASTEXITCODE -ne 0) {
