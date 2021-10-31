@@ -199,7 +199,7 @@ int base58_encode_check(const uint8_t *data, int datalen,
     return 0;
   }
 #ifdef _MSC_VER
-  uint8_t *buf = alloca(datalen + 32);
+  uint8_t *buf = _alloca(datalen + 32);
 #else
   uint8_t buf[datalen + 32];
 #endif
@@ -219,7 +219,7 @@ int base58_decode_check(const char *str, HasherType hasher_type, uint8_t *data,
     return 0;
   }
 #ifdef _MSC_VER
-  uint8_t *d = alloca(datalen + 4);
+  uint8_t *d = _alloca(datalen + 4);
 #else
   uint8_t d[datalen + 4];
 #endif
