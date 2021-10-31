@@ -33,28 +33,34 @@ add_library(TrezorCrypto
     crypto/shamir.c
 )
 
-target_compile_options(TrezorCrypto
-    PRIVATE
-        -W
-        -Wall
-        -Wextra
-        -Wimplicit-function-declaration
-        -Wredundant-decls
-        -Wstrict-prototypes
-        -Wundef
-        -Wshadow
-        -Wpointer-arith
-        -Wformat
-        -Wreturn-type
-        -Wsign-compare
-        -Wmultichar
-        -Wformat-nonliteral
-        -Winit-self
-        -Wuninitialized
-        -Wformat-security
-        -Wno-missing-braces
-        -Werror
-)
+if(NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC"))
+    target_compile_options(TrezorCrypto
+        PRIVATE
+            -W
+            -Wall
+            -Wextra
+            -Wimplicit-function-declaration
+            -Wredundant-decls
+            -Wstrict-prototypes
+            -Wundef
+            -Wshadow
+            -Wpointer-arith
+            -Wformat
+            -Wreturn-type
+            -Wsign-compare
+            -Wmultichar
+            -Wformat-nonliteral
+            -Winit-self
+            -Wuninitialized
+            -Wformat-security
+            -Wno-missing-braces
+            -Werror
+    )
+endif()
+
+if(WIN32)
+    target_link_libraries(TrezorCrypto bcrypt)
+endif()
 
 target_include_directories(TrezorCrypto
     PUBLIC
@@ -64,7 +70,7 @@ target_include_directories(TrezorCrypto
         src
 )
 
-if(NOT ANDROID AND NOT IOS_PLATFORM)
+if(NOT ANDROID AND NOT IOS_PLATFORM AND NOT WIN32)
     add_subdirectory(crypto/tests)
 endif()
 
