@@ -44,7 +44,13 @@
 // Marker for Protobuf types to be serialized across the interface
 #define PROTO(x) TWData *
 
-#if __has_feature(assume_nonnull)
+#ifdef _MSC_VER
+#define TW_HAS_FEATURE(feature) 0
+#else
+#define TW_HAS_FEATURE(feature) __has_feature(feature)
+#endif
+
+#if TW_HAS_FEATURE(assume_nonnull)
 #define TW_ASSUME_NONNULL_BEGIN _Pragma("clang assume_nonnull begin")
 #define TW_ASSUME_NONNULL_END   _Pragma("clang assume_nonnull end")
 #else
@@ -53,7 +59,7 @@
 #endif
 
 
-#if !__has_feature(nullability)
+#if !TW_HAS_FEATURE(nullability)
 #ifndef _Nullable
 #define _Nullable
 #endif
