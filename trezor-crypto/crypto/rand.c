@@ -25,8 +25,103 @@
 
 #include <fcntl.h>
 #include <sys/types.h>
+
+#ifdef WIN32
+
+#include <Windows.h>
+#include <bcrypt.h>
+
+static volatile LONG random_refc = 0;
+static volatile BOOL random_lock = 0;
+static volatile PVOID random_provider = NULL;
+
+// [wallet-core]
+void *random_init() {
+    BCRYPT_ALG_HANDLE prov;
+    while (InterlockedCompareExchange(&random_lock, 1, 0))
+    {
+        SwitchToThread();
+    }
+    LONG inc = InterlockedIncrement(&random_refc);
+    if (inc == 1)
+    {
+        // Create new provider
+        if (!BCRYPT_SUCCESS(BCryptOpenAlgorithmProvider(&prov, BCRYPT_RNG_ALGORITHM, NULL, 0))) {
+            prov = NULL;
+        }
+        (void)InterlockedExchangePointer(&random_provider, prov);
+    }
+    else
+    {
+        // Get existing provider
+        prov = InterlockedCompareExchangePointer(&random_provider, 0, 0);
+    }
+    if (!prov)
+    {
+        InterlockedDecrement(&random_refc);
+    }
+    (void)InterlockedExchange(&random_lock, 0);
+    return prov;
+}
+
+// [wallet-core]
+void random_release() {
+    while (InterlockedCompareExchange(&random_lock, 1, 0))
+    {
+        SwitchToThread();
+    }
+    LONG dec = InterlockedDecrement(&random_refc);
+    if (dec == 0)
+    {
+        BCryptCloseAlgorithmProvider(random_provider, 0);
+        random_provider = NULL;
+    }
+    (void)InterlockedExchange(&random_lock, 0);
+}
+
+// [wallet-core]
+uint32_t random32() {
+    BCRYPT_ALG_HANDLE prov;
+    uint32_t res;
+    if (!(prov = random_init())) {
+        return 0;
+    }
+    if (!BCRYPT_SUCCESS(BCryptGenRandom(prov, (PUCHAR)(&res), sizeof(res), 0))) {
+        res = 0;
+    }
+    random_release();
+    return res;
+}
+
+void random_buffer(uint8_t *buf, size_t len) {
+    BCRYPT_ALG_HANDLE prov;
+    if (!(prov = random_init())) {
+        return;
+    }
+    for (size_t i = 0; i < len;)
+    {
+        size_t l = min(0x80000000UL, len);
+        (void)BCryptGenRandom(prov, (PUCHAR)(buf + i), (ULONG)l, 0);
+        i += l;
+    }
+    random_release();
+}
+
+#else
+
 #include <sys/uio.h>
 #include <unistd.h>
+
+ // [wallet-core]
+void *random_init() {
+    static int dummy;
+    return &dummy; // return a valid pointer
+}
+
+// [wallet-core]
+void random_release() {
+    // no-op
+}
 
 // [wallet-core]
 uint32_t __attribute__((weak)) random32() {
@@ -55,3 +150,5 @@ void __attribute__((weak)) random_buffer(uint8_t *buf, size_t len) {
     }
     close(randomData);
 }
+
+#endif
