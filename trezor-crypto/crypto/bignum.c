@@ -162,6 +162,20 @@ void bn_read_uint64(uint64_t in_number, bignum256 *out_number) {
   for (uint32_t i = 3; i < BN_LIMBS; i++) out_number->val[i] = 0;
 }
 
+#ifdef _MSC_VER
+#include <intrin.h>
+uint32_t __forceinline bn_clz(uint32_t value)
+{
+    unsigned long leading_zero = 0;
+    if (_BitScanReverse(&leading_zero, value))
+        return 31 - leading_zero;
+    else
+        return 32;
+}
+#else
+#define bn_clz __builtin_clz
+#endif
+
 // Returns the bitsize of x
 // Assumes x is normalized
 // The function doesn't have neither constant control flow nor constant memory
@@ -172,7 +186,7 @@ int bn_bitcount(const bignum256 *x) {
     if (limb != 0) {
       // __builtin_clz returns the number of leading zero bits starting at the
       // most significant bit position
-      return i * BN_BITS_PER_LIMB + (32 - __builtin_clz(limb));
+      return i * BN_BITS_PER_LIMB + (32 - bn_clz(limb));
     }
   }
   return 0;
