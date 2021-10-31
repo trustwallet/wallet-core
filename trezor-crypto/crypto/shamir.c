@@ -267,9 +267,9 @@ bool shamir_interpolate(uint8_t *result, uint8_t result_index,
   size_t i = 0, j = 0;
   uint32_t x[8] = {0};
 #ifdef _MSC_VER
-  uint32_t *xs = _alloca(sizeof(uint32_t) * share_count * 8);
+  uint32_t (*xs)[8] = _alloca(sizeof(uint32_t) * share_count * 8);
   memset(xs, 0, sizeof(uint32_t) * share_count * 8);
-  uint32_t *ys = _alloca(sizeof(uint32_t) * share_count * 8);
+  uint32_t (*ys)[8] = _alloca(sizeof(uint32_t) * share_count * 8);
   memset(ys, 0, sizeof(uint32_t) * share_count * 8);
 #else
   uint32_t xs[share_count][8];
