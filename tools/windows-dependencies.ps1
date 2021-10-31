@@ -36,8 +36,8 @@ cd $gtestDir
 if (-not(Test-Path -Path $gtestZip -PathType Leaf)) {
     Invoke-WebRequest -Uri $gtestUrl -OutFile $gtestZip
 }
-if (Test-Path -Path gtest-$gtestVersion -PathType Container) {
-     Remove-Item –Path gtest-$gtestVersion -Recurse
+if (Test-Path -Path googletest-release-$gtestVersion -PathType Container) {
+     Remove-Item –Path googletest-release-$gtestVersion -Recurse
 }
 Expand-Archive -LiteralPath $gtestZip -DestinationPath $gtestDir
 
@@ -45,7 +45,7 @@ Expand-Archive -LiteralPath $gtestZip -DestinationPath $gtestDir
 cd googletest-release-$gtestVersion
 mkdir build_msvc | Out-Null
 cd build_msvc
-cmake -G $cmakeGenerator -A $cmakePlatform -T $cmakeToolset "-DCMAKE_INSTALL_PREFIX=$prefix" "-DCMAKE_DEBUG_POSTFIX=d" "-DCMAKE_BUILD_TYPE=Release" ..
+cmake -G $cmakeGenerator -A $cmakePlatform -T $cmakeToolset "-DCMAKE_INSTALL_PREFIX=$prefix" "-DCMAKE_DEBUG_POSTFIX=d" "-DCMAKE_BUILD_TYPE=Release" "-Dgtest_force_shared_crt=ON" ..
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
@@ -57,7 +57,7 @@ cmake --build . --target INSTALL --config Release
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
-return
+
 # Check
 $checkVersion = "0.15.2"
 $checkDir = Join-Path $prefix "src\check"

@@ -256,7 +256,7 @@ TEST(PolkadotSigner, SignChill) {
     input.set_transaction_version(3);
 
     auto stakingCall = input.mutable_staking_call();
-    auto __attribute__((unused)) &chill = *stakingCall->mutable_chill();
+    [[maybe_unused]] auto &chill = *stakingCall->mutable_chill();
     auto output = Signer::sign(input);
 
     ASSERT_EQ(hex(output.encoded()), "9d018488dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee0088b5e1cd93ba74b82e329f95e1b22660385970182172b2ae280801fdd1ee5652cf7bf319e5e176ccc299dd8eb1e7fccb0ea7717efaf4aacd7640789dd09c1e070000000706");
