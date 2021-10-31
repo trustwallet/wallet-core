@@ -114,10 +114,12 @@ void random_buffer(uint8_t *buf, size_t len) {
 #include <sys/uio.h>
 #include <unistd.h>
 
+ // [wallet-core]
 void *random_init() {
     return (void *)open; // return a valid pointer
 }
 
+// [wallet-core]
 void random_release() {
     // no-op
 }
