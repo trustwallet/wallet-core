@@ -14,6 +14,20 @@
 #endif
 #endif
 
+#ifdef _WIN32
+#ifdef TW_STATIC_LIBRARY
+#define TW_EXTERN
+#else
+#ifdef TW_EXPORT_LIBRARY
+#define TW_EXTERN __declspec(dllexport)
+#else
+#define TW_EXTERN __declspec(dllimport)
+#endif
+#endif
+#else
+#define TW_EXTERN extern
+#endif
+
 // Marker for exported classes
 #define TW_EXPORT_CLASS
 
@@ -24,19 +38,19 @@
 #define TW_EXPORT_ENUM(...)
 
 // Marker for exported functions
-#define TW_EXPORT_FUNC extern
+#define TW_EXPORT_FUNC TW_EXTERN
 
 // Marker for exported methods
-#define TW_EXPORT_METHOD extern
+#define TW_EXPORT_METHOD TW_EXTERN
 
 // Marker for exported properties
-#define TW_EXPORT_PROPERTY extern
+#define TW_EXPORT_PROPERTY TW_EXTERN
 
 // Marker for exported static methods
-#define TW_EXPORT_STATIC_METHOD extern
+#define TW_EXPORT_STATIC_METHOD TW_EXTERN
 
 // Marker for exported static properties
-#define TW_EXPORT_STATIC_PROPERTY extern
+#define TW_EXPORT_STATIC_PROPERTY TW_EXTERN
 
 // Marker for discardable result (static) method
 #define TW_METHOD_DISCARDABLE_RESULT
