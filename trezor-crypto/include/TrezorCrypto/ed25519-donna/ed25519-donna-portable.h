@@ -10,7 +10,11 @@ extern "C" {
 
 #define DONNA_INLINE
 #undef ALIGN
+#ifdef _MSC_VER
+#define ALIGN(x) __declspec(align(x))
+#else
 #define ALIGN(x) __attribute__((aligned(x)))
+#endif
 
 static inline void U32TO8_LE(unsigned char *p, const uint32_t v) {
 	p[0] = (unsigned char)(v      );

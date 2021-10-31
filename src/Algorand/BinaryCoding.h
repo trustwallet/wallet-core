@@ -11,8 +11,10 @@
 
 namespace TW::Algorand {
 
+#ifndef _MSC_VER
 #pragma GCC diagnostic ignored "-Wtautological-constant-out-of-range-compare"
 #pragma GCC diagnostic ignored "-Wunused-function"
+#endif
 
 static inline void encodeString(std::string string, Data& data) {
     // encode string header

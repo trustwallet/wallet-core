@@ -14,6 +14,10 @@
 #include <tuple>
 #include <vector>
 
+#ifdef _MSC_VER
+#define _Nonnull
+#endif
+
 namespace TW {
 
 /// Encodes a 16-bit little-endian value into the provided buffer.
