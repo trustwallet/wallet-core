@@ -28,10 +28,6 @@
 #include <TrezorCrypto/ripemd160.h>
 #include <TrezorCrypto/sha2.h>
 
-#ifdef _MSC_VER
-#include <malloc.h>
-#endif
-
 const char b58digits_ordered[] =
     "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 const int8_t b58digits_map[] = {
