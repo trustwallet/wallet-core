@@ -126,7 +126,7 @@ std::string ParamFactory::getValue(const std::shared_ptr<ParamBase>& param, cons
         auto value = dynamic_pointer_cast<ParamAddress>(param);
         result = hexEncoded(value->getData());
     } else if (type == "uint8") {
-        result = boost::lexical_cast<std::string>((uint)dynamic_pointer_cast<ParamUInt8>(param)->getVal());
+        result = boost::lexical_cast<std::string>((unsigned int)dynamic_pointer_cast<ParamUInt8>(param)->getVal());
     } else if (type == "uint16") {
         result = boost::lexical_cast<std::string>(dynamic_pointer_cast<ParamUInt16>(param)->getVal());
     } else if (type == "uint32") {
