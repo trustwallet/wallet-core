@@ -5,7 +5,9 @@ project(TrustWalletCore)
 include(GNUInstallDirs)
 
 # Configure warnings
-set(TW_CXX_WARNINGS "-Wshorten-64-to-32")
+if(NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC"))
+    set(TW_CXX_WARNINGS "-Wshorten-64-to-32")
+endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TW_CXX_WARNINGS}")
@@ -15,8 +17,8 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.14" CACHE STRING "Minimum OS X deployment version" FORCE)
 
-if (NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang"))
-    message(FATAL_ERROR "You should use clang compiler")
+if((NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")) AND (NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")))
+    message(FATAL_ERROR "You should use clang or msvc compiler")
 endif()
 
 if ("$ENV{PREFIX}" STREQUAL "")
@@ -35,6 +37,10 @@ endif(CCACHE_FOUND)
 include_directories(${PREFIX}/include)
 link_directories(${PREFIX}/lib)
 
+if(WIN32)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS) # Disable strcpy warnings
+endif()
+
 add_subdirectory(trezor-crypto)
 
 macro(find_host_package)
@@ -52,7 +58,22 @@ find_host_package(Boost REQUIRED)
 include(ExternalProject)
 
 # Dependencies
-include(cmake/Protobuf.cmake)
+if(WIN32)
+    # Use regular static lib on Windows
+    find_package(Protobuf REQUIRED)
+    include_directories(${Protobuf_INCLUDE_DIRS})
+else()
+    # Build as part of project otherwise
+    include(cmake/Protobuf.cmake)
+endif()
+
+if(WIN32)
+    # Static library is required when building tools (walletconsole) that include the C++ headers
+    option(TW_STATIC_LIBRARY "Build static TrustWalletCore library" OFF)
+    if(TW_STATIC_LIBRARY)
+        add_definitions(-DTW_STATIC_LIBRARY)
+    endif()
+endif()
 
 option(CODE_COVERAGE "Enable coverage reporting" OFF)
 if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -87,15 +108,29 @@ if(${ANDROID})
     add_library(TrustWalletCore SHARED ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
 
     find_library(log-lib log)
-    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf ${log-lib} Boost::boost)
+    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto ${Protobuf_LIBRARIES} ${log-lib} Boost::boost)
 else()
-    message("Configuring standalone")
     file(GLOB_RECURSE sources src/*.c src/*.cc src/*.cpp src/*.h)
-    add_library(TrustWalletCore ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
+    if(WIN32)
+        file(GLOB_RECURSE headers include/TrustWalletCore/*.h)
+        if(TW_STATIC_LIBRARY)
+            message("Configuring static for Windows")
+            add_library(TrustWalletCore ${sources} ${headers} ${PROTO_SRCS} ${PROTO_HDRS})
+        else()
+            message("Configuring shared for Windows")
+            add_library(TrustWalletCore SHARED ${sources} ${headers} ${PROTO_SRCS} ${PROTO_HDRS})
+            target_compile_definitions(TrustWalletCore PRIVATE TW_EXPORT_LIBRARY)
+        endif()
+    else()
+        message("Configuring standalone")
+        add_library(TrustWalletCore ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
+    endif()
 
-    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf Boost::boost)
+    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto ${Protobuf_LIBRARIES} Boost::boost)
 endif()
-target_compile_options(TrustWalletCore PRIVATE "-Wall")
+if(NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC"))
+    target_compile_options(TrustWalletCore PRIVATE "-Wall")
+endif()
 
 set_target_properties(TrustWalletCore
     PROPERTIES
@@ -115,13 +150,19 @@ target_include_directories(TrustWalletCore
         ${CMAKE_CURRENT_SOURCE_DIR}/build/local/include
 )
 
-if(NOT ANDROID AND NOT IOS_PLATFORM)
-    add_subdirectory(tests)
+if(NOT ANDROID AND NOT IOS_PLATFORM AND NOT (WIN32 AND NOT TW_STATIC_LIBRARY))
+    if(NOT WIN32) # TODO
+        add_subdirectory(tests)
+    endif()
     add_subdirectory(walletconsole/lib)
     add_subdirectory(walletconsole)
 endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig.in ${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig @ONLY)
+
+if(WIN32 AND NOT TW_STATIC_LIBRARY)
+    install(TARGETS TrustWalletCore RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif()
 
 install(TARGETS TrustWalletCore
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
