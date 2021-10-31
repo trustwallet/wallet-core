@@ -188,3 +188,5 @@ install(TARGETS protobuf
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/protobuf
         )
+
+set(Protobuf_LIBRARIES protobuf)

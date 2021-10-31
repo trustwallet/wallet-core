@@ -63,4 +63,4 @@ SET (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINK_FLAGS}")
 add_executable (sample sample.cpp)
 
 # link with our library, and default platform libraries
-target_link_libraries (sample TrustWalletCore TrezorCrypto protobuf ${PLATFORM_LIBS})
+target_link_libraries (sample TrustWalletCore TrezorCrypto ${Protobuf_LIBRARIES} ${PLATFORM_LIBS})
