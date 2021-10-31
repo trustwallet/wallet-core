@@ -82,6 +82,10 @@ Data Transaction::serializeAmount(int64_t amount) {
 }
 
 Data Transaction::serializeAddress(Address address) {
-    auto data = Data(&address.bytes[0] + 1, &address.bytes[21]);
+    auto data = Data();
+    data.resize(20);
+    if (!address.bytes.empty()) {
+        std::copy(&address.bytes[0] + 1, &address.bytes[0] + (address.bytes.size() < 21 ? address.bytes.size() : 21), &data[0]);
+    }
     return data;
 }
