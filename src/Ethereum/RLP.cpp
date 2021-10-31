@@ -136,9 +136,10 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         }
 
         item.decoded.push_back(subData(input, 1, strLen));
-        if (input.size() > (1 + strLen)) {
-            item.remainder = Data(input.begin() + 1 + strLen, input.end());
+        if (input.size() < (1 + strLen)) {
+            throw std::invalid_argument("length overrun");
         }
+        item.remainder = Data(input.begin() + 1 + strLen, input.end());
 
         return item;
     } 
@@ -151,9 +152,10 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         }
         auto data = subData(input, 1 + lenOfStrLen, strLen);
         item.decoded.push_back(data);
-        if (input.size() > (1 + lenOfStrLen + strLen)) {
-            item.remainder = Data(input.begin() + 1 + lenOfStrLen + strLen, input.end());
+        if (input.size() < (1 + lenOfStrLen + strLen)) {
+            throw std::invalid_argument("length overrun");
         }
+        item.remainder = Data(input.begin() + 1 + lenOfStrLen + strLen, input.end());
         return item;
     } 
     if (prefix <= 0xf7) {
@@ -173,9 +175,10 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         for (auto& data : listItem.decoded) {
             item.decoded.push_back(data);
         }
-        if (input.size() > (1 + listLen)) {
-            item.remainder = Data(input.begin() + 1 + listLen, input.end());
+        if (input.size() < (1 + listLen)) {
+            throw std::invalid_argument("length overrun");
         }
+        item.remainder = Data(input.begin() + 1 + listLen, input.end());
         return item;
     } 
     // f8--ff 
@@ -193,8 +196,9 @@ RLP::DecodedItem RLP::decode(const Data& input) {
     for (auto& data : listItem.decoded) {
         item.decoded.push_back(data);
     }
-    if (input.size() > (1 + lenOfListLen + listLen)) {
-        item.remainder = Data(input.begin() + 1 + lenOfListLen + listLen, input.end());
+    if (input.size() < (1 + lenOfListLen + listLen)) {
+        throw std::invalid_argument("length overrun");
     }
+    item.remainder = Data(input.begin() + 1 + lenOfListLen + listLen, input.end());
     return item;
 }
