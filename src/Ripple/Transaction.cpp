@@ -82,6 +82,9 @@ Data Transaction::serializeAmount(int64_t amount) {
 }
 
 Data Transaction::serializeAddress(Address address) {
-    auto data = Data(&address.bytes[0] + 1, &address.bytes[21]);
+    auto data = Data(&address.bytes[0] + 1, &address.bytes[address.bytes.size() < 21 ? address.bytes.size() : 21]);
+    if (data.size() < 20) {
+        data.resize(20);
+    }
     return data;
 }
