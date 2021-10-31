@@ -22,10 +22,46 @@ $cmakeGenerator = "Visual Studio 17 2022"
 $cmakePlatform = "x64"
 $cmakeToolset = "v143"
 
+# GoogleTest
+$gtestVersion = "1.11.0"
+$gtestDir = Join-Path $prefix "src\gtest"
+$gtestZip = "googletest-release-$gtestVersion.zip"
+$gtestUrl = "https://github.com/google/googletest/archive/refs/tags/release-$gtestVersion.zip"
+
+# Download and extract
+if (-not(Test-Path -Path $gtestDir -PathType Container)) {
+    mkdir $gtestDir | Out-Null
+}
+cd $gtestDir
+if (-not(Test-Path -Path $gtestZip -PathType Leaf)) {
+    Invoke-WebRequest -Uri $gtestUrl -OutFile $gtestZip
+}
+if (Test-Path -Path gtest-$gtestVersion -PathType Container) {
+     Remove-Item –Path gtest-$gtestVersion -Recurse
+}
+Expand-Archive -LiteralPath $gtestZip -DestinationPath $gtestDir
+
+# Build debug and release libraries
+cd googletest-release-$gtestVersion
+mkdir build_msvc | Out-Null
+cd build_msvc
+cmake -G $cmakeGenerator -A $cmakePlatform -T $cmakeToolset "-DCMAKE_INSTALL_PREFIX=$prefix" "-DCMAKE_DEBUG_POSTFIX=d" "-DCMAKE_BUILD_TYPE=Release" ..
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}
+cmake --build . --target INSTALL --config Debug
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}
+cmake --build . --target INSTALL --config Release
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}
+return
 # Check
 $checkVersion = "0.15.2"
 $checkDir = Join-Path $prefix "src\check"
-$checkZip = "check-0.15.2.zip"
+$checkZip = "check-$checkVersion.zip"
 $checkUrl = "https://codeload.github.com/libcheck/check/zip/refs/tags/$checkVersion"
 
 # Download and extract
@@ -57,7 +93,7 @@ cmake --build . --target INSTALL --config Release
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
-return
+
 # Nlohmann JSON
 $jsonVersion = "3.10.4"
 $jsonDir = Join-Path $prefix "include\nlohmann"
