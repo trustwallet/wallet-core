@@ -21,8 +21,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __SECP256K1_H__
-#define __SECP256K1_H__
+#ifndef TC__SECP256K1_H__
+#define TC__SECP256K1_H__
 
 #include <stdint.h>
 

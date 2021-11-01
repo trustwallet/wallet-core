@@ -19,8 +19,8 @@
  * THE SOFTWARE.
  */
 
-#ifndef _CASH_ADDR_H_
-#define _CASH_ADDR_H_ 1
+#ifndef TC_CASH_ADDR_H_
+#define TC_CASH_ADDR_H_ 1
 
 #include <stdint.h>
 

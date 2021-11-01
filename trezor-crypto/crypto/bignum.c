@@ -158,13 +158,13 @@ void bn_read_uint32(uint32_t in_number, bignum256 *out_number) {
 void bn_read_uint64(uint64_t in_number, bignum256 *out_number) {
   out_number->val[0] = in_number & BN_LIMB_MASK;
   out_number->val[1] = (in_number >>= BN_BITS_PER_LIMB) & BN_LIMB_MASK;
-  out_number->val[2] = in_number >> BN_BITS_PER_LIMB;
+  out_number->val[2] = (uint32_t)(in_number >> BN_BITS_PER_LIMB);
   for (uint32_t i = 3; i < BN_LIMBS; i++) out_number->val[i] = 0;
 }
 
 #ifdef _MSC_VER
 #include <intrin.h>
-uint32_t __forceinline bn_clz(uint32_t value)
+uint32_t __inline bn_clz(uint32_t value)
 {
     unsigned long leading_zero = 0;
     if (_BitScanReverse(&leading_zero, value))
@@ -186,7 +186,7 @@ int bn_bitcount(const bignum256 *x) {
     if (limb != 0) {
       // __builtin_clz returns the number of leading zero bits starting at the
       // most significant bit position
-      return i * BN_BITS_PER_LIMB + (32 - bn_clz(limb));
+      return i * BN_BITS_PER_LIMB + (32 - (int32_t)bn_clz(limb));
     }
   }
   return 0;
@@ -524,7 +524,7 @@ void bn_mult_k(bignum256 *x, uint8_t k, const bignum256 *prime) {
 // Guarantees x is fully reduced modulo prime
 // Assumes prime is nonzero and normalized
 void bn_mod(bignum256 *x, const bignum256 *prime) {
-  uint32_t x_less_prime = bn_is_less(x, prime);
+  uint32_t x_less_prime = (uint32_t)bn_is_less(x, prime);
 
   bignum256 temp = {0};
   bn_subtract(x, prime, &temp);
@@ -537,7 +537,7 @@ void bn_mod(bignum256 *x, const bignum256 *prime) {
 // res = k * x
 // Assumes k and x are normalized
 // Guarantees res is normalized 18 digit little endian number in base 2**29
-void bn_multiply_long(const bignum256 *k, const bignum256 *x,
+static void bn_multiply_long(const bignum256 *k, const bignum256 *x,
                       uint32_t res[2 * BN_LIMBS]) {
   // Uses long multiplication in base 2**29, see
   // https://en.wikipedia.org/wiki/Multiplication_algorithm#Long_multiplication
@@ -580,7 +580,7 @@ void bn_multiply_long(const bignum256 *k, const bignum256 *x,
     // acc < 2**35 == 2**(64 - BITS_PER_LIMB)
   }
 
-  res[2 * BN_LIMBS - 1] = acc;
+  res[2 * BN_LIMBS - 1] = (uint32_t)acc;
 }
 
 // Auxiliary function for bn_multiply
@@ -588,7 +588,7 @@ void bn_multiply_long(const bignum256 *k, const bignum256 *x,
 // Assumes res is normalized and res < 2**(256 + 29*d + 31)
 // Guarantess res in normalized and res < 2 * prime * 2**(29*d)
 // Assumes prime is normalized, 2**256 - 2**224 <= prime <= 2**256
-void bn_multiply_reduce_step(uint32_t res[2 * BN_LIMBS], const bignum256 *prime,
+static void bn_multiply_reduce_step(uint32_t res[2 * BN_LIMBS], const bignum256 *prime,
                              uint32_t d) {
   // clang-format off
   // Computes res = res - (res // 2**(256 + BITS_PER_LIMB * d)) * prime * 2**(BITS_PER_LIMB * d)
@@ -625,7 +625,7 @@ void bn_multiply_reduce_step(uint32_t res[2 * BN_LIMBS], const bignum256 *prime,
   uint64_t acc = 1ull << shift;
 
   for (int i = 0; i < BN_LIMBS; i++) {
-    acc += (((uint64_t)(BN_BASE - 1)) << shift) + res[d + i] -
+    acc += (((uint64_t)(BN_BASE - 1)) << shift) + res[(ptrdiff_t)d + i] -
            prime->val[i] * (uint64_t)coef;
     // acc neither overflow 64 bits nor underflow zero
     // Proof:
@@ -645,7 +645,7 @@ void bn_multiply_reduce_step(uint32_t res[2 * BN_LIMBS], const bignum256 *prime,
     //     == (2**35 - 1) + (2**31 + 1) * (2**29 - 1)
     //     <= 2**35 + 2**60 + 2**29 < 2**64
 
-    res[d + i] = acc & BN_LIMB_MASK;
+    res[(ptrdiff_t)d + i] = acc & BN_LIMB_MASK;
     acc >>= BN_BITS_PER_LIMB;
     // acc <= 2**(64 - BITS_PER_LIMB) - 1 == 2**35 - 1
 
@@ -684,7 +684,7 @@ void bn_multiply_reduce_step(uint32_t res[2 * BN_LIMBS], const bignum256 *prime,
 // Assumes res in normalized and res < 2**519
 // Guarantees x is normalized and partly reduced modulo prime
 // Assumes prime is normalized, 2**256 - 2**224 <= prime <= 2**256
-void bn_multiply_reduce(bignum256 *x, uint32_t res[2 * BN_LIMBS],
+static void bn_multiply_reduce(bignum256 *x, uint32_t res[2 * BN_LIMBS],
                         const bignum256 *prime) {
   for (int i = BN_LIMBS - 1; i >= 0; i--) {
     // res < 2**(256 + 29*i + 31)
@@ -696,7 +696,7 @@ void bn_multiply_reduce(bignum256 *x, uint32_t res[2 * BN_LIMBS],
     //   else:
     //     res < 2 * prime * 2**(29 * (i + 1))
     //       <= 2**256 * 2**(29*i + 29) < 2**(256 + 29*i + 31)
-    bn_multiply_reduce_step(res, prime, i);
+    bn_multiply_reduce_step(res, prime, (uint32_t)i);
   }
 
   for (int i = 0; i < BN_LIMBS; i++) {
@@ -963,7 +963,7 @@ void bn_divide_base(bignum256 *x, const bignum256 *prime) {
     // acc == x[:i + 1] + m * prime[:i + 1] >> BITS_PER_LIMB * (i + 1)
   }
 
-  x->val[BN_LIMBS - 1] = acc;
+  x->val[BN_LIMBS - 1] = (uint32_t)acc;
 
   assert(acc >> BN_BITS_PER_LIMB == 0);
 
@@ -1105,6 +1105,7 @@ void bn_inverse_fast(bignum256 *x, const bignum256 *prime) {
 // Assumes prime is odd, normalized, 2**256 - 2**224 <= prime <= 2**256
 // The function has constant control flow but not constant memory access flow
 //   with regard to prime and x
+void bn_inverse_fast(bignum256 *x, const bignum256 *prime);
 void bn_inverse_fast(bignum256 *x, const bignum256 *prime) {
   // Custom constant time version of "The Almost Montgomery Inverse" from the
   // section 3 of "Constant Time Modular Inversion" by Joppe W. Bos
@@ -1171,7 +1172,7 @@ void bn_inverse_fast(bignum256 *x, const bignum256 *prime) {
 // BN_INVERSE_FAST_TERNARY(c, t, f) = t if c else f
 // Very nasty hack, sorry for that
 #define BN_INVERSE_FAST_TERNARY(c, t, f) \
-  ((void *)(((c) & (uintptr_t)(t)) | (~(c) & (uintptr_t)(f))))
+  ((void *)(((c) & (ptrdiff_t)(t)) | (~(c) & (ptrdiff_t)(f))))
 
     bn_subtract(BN_INVERSE_FAST_TERNARY(b3, &u, &v),
                 BN_INVERSE_FAST_TERNARY(
@@ -1203,7 +1204,7 @@ void bn_inverse_fast(bignum256 *x, const bignum256 *prime) {
     bn_cmov(&s, i < k % BN_BITS_PER_LIMB, &r, &s);
   }
 
-  bn_cmov(x, bn_is_zero(x), x, &s);
+  bn_cmov(x, (uint32_t)bn_is_zero(x), x, &s);
 
   memzero(&u, sizeof(u));
   memzero(&v, sizeof(v));
@@ -1670,7 +1671,7 @@ void bn_divmod1000(bignum256 *x, uint32_t *r) {
 // x = x // 10, r = x % 10
 // Assumes x is normalized
 // Guarantees x is normalized
-void bn_divmod10(bignum256 *x, uint32_t *r) { bn_long_division(x, 10, x, r); }
+static void bn_divmod10(bignum256 *x, uint32_t *r) { bn_long_division(x, 10, x, r); }
 
 // Formats amount
 // Assumes amount is normalized
@@ -1721,11 +1722,11 @@ size_t bn_format(const bignum256 *amount, const char *prefix, const char *suffix
   char *position = output + output_length;
 
   // Add string ending character
-  BN_FORMAT_ADD_OUTPUT_CHAR('\0');
+  BN_FORMAT_ADD_OUTPUT_CHAR('\0')
 
   // Add suffix
-  size_t suffix_length = suffix ? strlen(suffix) : 0;
-  for (int i = suffix_length - 1; i >= 0; --i)
+  ptrdiff_t suffix_length = suffix ? (ptrdiff_t)strlen(suffix) : 0;
+  for (ptrdiff_t i = suffix_length - 1; i >= 0; --i)
     BN_FORMAT_ADD_OUTPUT_CHAR(suffix[i])
 
   // amount //= 10**exponent
@@ -1753,7 +1754,7 @@ size_t bn_format(const bignum256 *amount, const char *prefix, const char *suffix
     if (trailing && trailing_zeros) {
       fractional_part = true;
       for (; trailing_zeros > 0; --trailing_zeros)
-          BN_FORMAT_ADD_OUTPUT_CHAR('0')
+        BN_FORMAT_ADD_OUTPUT_CHAR('0')
     }
 
     // exponent == 0 || decimals == 0
@@ -1764,7 +1765,7 @@ size_t bn_format(const bignum256 *amount, const char *prefix, const char *suffix
 
       if (fractional_part || digit || trailing) {
         fractional_part = true;
-        BN_FORMAT_ADD_OUTPUT_CHAR('0' + digit)
+        BN_FORMAT_ADD_OUTPUT_CHAR('0' + (char)digit)
       }
       else if (bn_is_zero(&temp)) {
         // We break since the remaining digits are zeroes and fractional_part == trailing == false
@@ -1791,17 +1792,17 @@ size_t bn_format(const bignum256 *amount, const char *prefix, const char *suffix
     // Add significant digits
     do {
       bn_divmod10(&temp, &digit);
-      BN_FORMAT_ADD_OUTPUT_CHAR('0' + digit)
+      BN_FORMAT_ADD_OUTPUT_CHAR('0' + (char)digit)
     } while (!bn_is_zero(&temp));
   }
 
   // Add prefix
-  size_t prefix_length = prefix ? strlen(prefix) : 0;
-  for (int i = prefix_length - 1; i >= 0; --i)
+  ptrdiff_t prefix_length = prefix ? (ptrdiff_t)strlen(prefix) : 0;
+  for (ptrdiff_t i = prefix_length - 1; i >= 0; --i)
     BN_FORMAT_ADD_OUTPUT_CHAR(prefix[i])
 
   // Move formatted amount to the start of output
-  int length = output - position + output_length;
+  size_t length = (size_t)(output - position) + output_length;
   memmove(output, position, length);
   return length - 1;
 }

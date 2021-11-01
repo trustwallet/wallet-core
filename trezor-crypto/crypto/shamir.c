@@ -277,7 +277,7 @@ bool shamir_interpolate(uint8_t *result, uint8_t result_index,
   uint32_t ys[share_count][8];
   memset(ys, 0, sizeof(ys));
 #endif
-  uint32_t num[8] = {~0}; /* num is the numerator (=1) */
+  uint32_t num[8] = {~0UL}; /* num is the numerator (=1) */
   uint32_t denom[8] = {0};
   uint32_t tmp[8] = {0};
   uint32_t secret[8] = {0};

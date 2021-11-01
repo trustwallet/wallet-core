@@ -1,6 +1,6 @@
 #include <TrezorCrypto/sodium/private/fe_25_5/fe.h>
 
-uint64_t load_3(const unsigned char *in) {
+static uint64_t load_3(const unsigned char *in) {
     uint64_t result;
 
     result = (uint64_t)in[0];
@@ -10,7 +10,7 @@ uint64_t load_3(const unsigned char *in) {
     return result;
 }
 
-uint64_t load_4(const unsigned char *in) {
+static uint64_t load_4(const unsigned char *in) {
     uint64_t result;
 
     result = (uint64_t)in[0];
@@ -26,16 +26,16 @@ uint64_t load_4(const unsigned char *in) {
  */
 
 void fe25519_frombytes(fe25519 h, const unsigned char *s) {
-    int64_t h0 = load_4(s);
-    int64_t h1 = load_3(s + 4) << 6;
-    int64_t h2 = load_3(s + 7) << 5;
-    int64_t h3 = load_3(s + 10) << 3;
-    int64_t h4 = load_3(s + 13) << 2;
-    int64_t h5 = load_4(s + 16);
-    int64_t h6 = load_3(s + 20) << 7;
-    int64_t h7 = load_3(s + 23) << 5;
-    int64_t h8 = load_3(s + 26) << 4;
-    int64_t h9 = (load_3(s + 29) & 8388607) << 2;
+    int64_t h0 = (int64_t)load_4(s);
+    int64_t h1 = (int64_t)load_3(s + 4) << 6;
+    int64_t h2 = (int64_t)load_3(s + 7) << 5;
+    int64_t h3 = (int64_t)load_3(s + 10) << 3;
+    int64_t h4 = (int64_t)load_3(s + 13) << 2;
+    int64_t h5 = (int64_t)load_4(s + 16);
+    int64_t h6 = (int64_t)load_3(s + 20) << 7;
+    int64_t h7 = (int64_t)load_3(s + 23) << 5;
+    int64_t h8 = (int64_t)load_3(s + 26) << 4;
+    int64_t h9 = (int64_t)(load_3(s + 29) & 8388607) << 2;
 
     int64_t carry0;
     int64_t carry1;
@@ -50,35 +50,35 @@ void fe25519_frombytes(fe25519 h, const unsigned char *s) {
 
     carry9 = (h9 + (int64_t)(1L << 24)) >> 25;
     h0 += carry9 * 19;
-    h9 -= carry9 * ((uint64_t)1L << 25);
+    h9 -= carry9 * ((int64_t)1L << 25);
     carry1 = (h1 + (int64_t)(1L << 24)) >> 25;
     h2 += carry1;
-    h1 -= carry1 * ((uint64_t)1L << 25);
+    h1 -= carry1 * ((int64_t)1L << 25);
     carry3 = (h3 + (int64_t)(1L << 24)) >> 25;
     h4 += carry3;
-    h3 -= carry3 * ((uint64_t)1L << 25);
+    h3 -= carry3 * ((int64_t)1L << 25);
     carry5 = (h5 + (int64_t)(1L << 24)) >> 25;
     h6 += carry5;
-    h5 -= carry5 * ((uint64_t)1L << 25);
+    h5 -= carry5 * ((int64_t)1L << 25);
     carry7 = (h7 + (int64_t)(1L << 24)) >> 25;
     h8 += carry7;
-    h7 -= carry7 * ((uint64_t)1L << 25);
+    h7 -= carry7 * ((int64_t)1L << 25);
 
     carry0 = (h0 + (int64_t)(1L << 25)) >> 26;
     h1 += carry0;
-    h0 -= carry0 * ((uint64_t)1L << 26);
+    h0 -= carry0 * ((int64_t)1L << 26);
     carry2 = (h2 + (int64_t)(1L << 25)) >> 26;
     h3 += carry2;
-    h2 -= carry2 * ((uint64_t)1L << 26);
+    h2 -= carry2 * ((int64_t)1L << 26);
     carry4 = (h4 + (int64_t)(1L << 25)) >> 26;
     h5 += carry4;
-    h4 -= carry4 * ((uint64_t)1L << 26);
+    h4 -= carry4 * ((int64_t)1L << 26);
     carry6 = (h6 + (int64_t)(1L << 25)) >> 26;
     h7 += carry6;
-    h6 -= carry6 * ((uint64_t)1L << 26);
+    h6 -= carry6 * ((int64_t)1L << 26);
     carry8 = (h8 + (int64_t)(1L << 25)) >> 26;
     h9 += carry8;
-    h8 -= carry8 * ((uint64_t)1L << 26);
+    h8 -= carry8 * ((int64_t)1L << 26);
 
     h[0] = (int32_t)h0;
     h[1] = (int32_t)h1;
@@ -117,7 +117,7 @@ void fe25519_frombytes(fe25519 h, const unsigned char *s) {
  so floor(2^(-255)(h + 19 2^(-25) h9 + 2^(-1))) = q.
 */
 
-void fe25519_reduce(fe25519 h, const fe25519 f) {
+static void fe25519_reduce(fe25519 h, const fe25519 f) {
     int32_t h0 = f[0];
     int32_t h1 = f[1];
     int32_t h2 = f[2];
@@ -132,7 +132,7 @@ void fe25519_reduce(fe25519 h, const fe25519 f) {
     int32_t q;
     int32_t carry0, carry1, carry2, carry3, carry4, carry5, carry6, carry7, carry8, carry9;
 
-    q = (19 * h9 + ((uint32_t)1L << 24)) >> 25;
+    q = (19 * h9 + ((int32_t)1L << 24)) >> 25;
     q = (h0 + q) >> 26;
     q = (h1 + q) >> 25;
     q = (h2 + q) >> 26;
@@ -150,33 +150,33 @@ void fe25519_reduce(fe25519 h, const fe25519 f) {
 
     carry0 = h0 >> 26;
     h1 += carry0;
-    h0 -= carry0 * ((uint32_t)1L << 26);
+    h0 -= carry0 * ((int32_t)1L << 26);
     carry1 = h1 >> 25;
     h2 += carry1;
-    h1 -= carry1 * ((uint32_t)1L << 25);
+    h1 -= carry1 * ((int32_t)1L << 25);
     carry2 = h2 >> 26;
     h3 += carry2;
-    h2 -= carry2 * ((uint32_t)1L << 26);
+    h2 -= carry2 * ((int32_t)1L << 26);
     carry3 = h3 >> 25;
     h4 += carry3;
-    h3 -= carry3 * ((uint32_t)1L << 25);
+    h3 -= carry3 * ((int32_t)1L << 25);
     carry4 = h4 >> 26;
     h5 += carry4;
-    h4 -= carry4 * ((uint32_t)1L << 26);
+    h4 -= carry4 * ((int32_t)1L << 26);
     carry5 = h5 >> 25;
     h6 += carry5;
-    h5 -= carry5 * ((uint32_t)1L << 25);
+    h5 -= carry5 * ((int32_t)1L << 25);
     carry6 = h6 >> 26;
     h7 += carry6;
-    h6 -= carry6 * ((uint32_t)1L << 26);
+    h6 -= carry6 * ((int32_t)1L << 26);
     carry7 = h7 >> 25;
     h8 += carry7;
-    h7 -= carry7 * ((uint32_t)1L << 25);
+    h7 -= carry7 * ((int32_t)1L << 25);
     carry8 = h8 >> 26;
     h9 += carry8;
-    h8 -= carry8 * ((uint32_t)1L << 26);
+    h8 -= carry8 * ((int32_t)1L << 26);
     carry9 = h9 >> 25;
-    h9 -= carry9 * ((uint32_t)1L << 25);
+    h9 -= carry9 * ((int32_t)1L << 25);
 
     h[0] = h0;
     h[1] = h1;
@@ -202,36 +202,36 @@ void fe25519_tobytes(unsigned char *s, const fe25519 h) {
     fe25519 t;
 
     fe25519_reduce(t, h);
-    s[0] = t[0] >> 0;
-    s[1] = t[0] >> 8;
-    s[2] = t[0] >> 16;
-    s[3] = (t[0] >> 24) | (t[1] * ((uint32_t)1 << 2));
-    s[4] = t[1] >> 6;
-    s[5] = t[1] >> 14;
-    s[6] = (t[1] >> 22) | (t[2] * ((uint32_t)1 << 3));
-    s[7] = t[2] >> 5;
-    s[8] = t[2] >> 13;
-    s[9] = (t[2] >> 21) | (t[3] * ((uint32_t)1 << 5));
-    s[10] = t[3] >> 3;
-    s[11] = t[3] >> 11;
-    s[12] = (t[3] >> 19) | (t[4] * ((uint32_t)1 << 6));
-    s[13] = t[4] >> 2;
-    s[14] = t[4] >> 10;
-    s[15] = t[4] >> 18;
-    s[16] = t[5] >> 0;
-    s[17] = t[5] >> 8;
-    s[18] = t[5] >> 16;
-    s[19] = (t[5] >> 24) | (t[6] * ((uint32_t)1 << 1));
-    s[20] = t[6] >> 7;
-    s[21] = t[6] >> 15;
-    s[22] = (t[6] >> 23) | (t[7] * ((uint32_t)1 << 3));
-    s[23] = t[7] >> 5;
-    s[24] = t[7] >> 13;
-    s[25] = (t[7] >> 21) | (t[8] * ((uint32_t)1 << 4));
-    s[26] = t[8] >> 4;
-    s[27] = t[8] >> 12;
-    s[28] = (t[8] >> 20) | (t[9] * ((uint32_t)1 << 6));
-    s[29] = t[9] >> 2;
-    s[30] = t[9] >> 10;
-    s[31] = t[9] >> 18;
+    s[0] = (unsigned char)(t[0] >> 0);
+    s[1] = (unsigned char)(t[0] >> 8);
+    s[2] = (unsigned char)(t[0] >> 16);
+    s[3] = (unsigned char)((t[0] >> 24) | (t[1] * ((int32_t)1 << 2)));
+    s[4] = (unsigned char)(t[1] >> 6);
+    s[5] = (unsigned char)(t[1] >> 14);
+    s[6] = (unsigned char)((t[1] >> 22) | (t[2] * ((int32_t)1 << 3)));
+    s[7] = (unsigned char)(t[2] >> 5);
+    s[8] = (unsigned char)(t[2] >> 13);
+    s[9] = (unsigned char)((t[2] >> 21) | (t[3] * ((int32_t)1 << 5)));
+    s[10] = (unsigned char)(t[3] >> 3);
+    s[11] = (unsigned char)(t[3] >> 11);
+    s[12] = (unsigned char)((t[3] >> 19) | (t[4] * ((int32_t)1 << 6)));
+    s[13] = (unsigned char)(t[4] >> 2);
+    s[14] = (unsigned char)(t[4] >> 10);
+    s[15] = (unsigned char)(t[4] >> 18);
+    s[16] = (unsigned char)(t[5] >> 0);
+    s[17] = (unsigned char)(t[5] >> 8);
+    s[18] = (unsigned char)(t[5] >> 16);
+    s[19] = (unsigned char)((t[5] >> 24) | (t[6] * ((int32_t)1 << 1)));
+    s[20] = (unsigned char)(t[6] >> 7);
+    s[21] = (unsigned char)(t[6] >> 15);
+    s[22] = (unsigned char)((t[6] >> 23) | (t[7] * ((int32_t)1 << 3)));
+    s[23] = (unsigned char)(t[7] >> 5);
+    s[24] = (unsigned char)(t[7] >> 13);
+    s[25] = (unsigned char)((t[7] >> 21) | (t[8] * ((int32_t)1 << 4)));
+    s[26] = (unsigned char)(t[8] >> 4);
+    s[27] = (unsigned char)(t[8] >> 12);
+    s[28] = (unsigned char)((t[8] >> 20) | (t[9] * ((int32_t)1 << 6)));
+    s[29] = (unsigned char)(t[9] >> 2);
+    s[30] = (unsigned char)(t[9] >> 10);
+    s[31] = (unsigned char)(t[9] >> 18);
 }

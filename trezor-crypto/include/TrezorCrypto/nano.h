@@ -20,8 +20,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __NANO_H__
-#define __NANO_H__
+#ifndef TC__NANO_H__
+#define TC__NANO_H__
 
 #include <stdbool.h>
 #include <stddef.h>

@@ -35,14 +35,14 @@ void pbkdf2_hmac_sha256_Init(PBKDF2_HMAC_SHA256_CTX *pctx, const uint8_t *pass,
   REVERSE32(blocknr, blocknr);
 #endif
 
-  hmac_sha256_prepare(pass, passlen, pctx->odig, pctx->idig);
+  hmac_sha256_prepare(pass, (uint32_t)passlen, pctx->odig, pctx->idig);
   memzero(pctx->g, sizeof(pctx->g));
   pctx->g[8] = 0x80000000;
   pctx->g[15] = (SHA256_BLOCK_LENGTH + SHA256_DIGEST_LENGTH) * 8;
 
   memcpy(ctx.state, pctx->idig, sizeof(pctx->idig));
   ctx.bitcount = SHA256_BLOCK_LENGTH * 8;
-  sha256_Update(&ctx, salt, saltlen);
+  sha256_Update(&ctx, salt, (size_t)saltlen);
   sha256_Update(&ctx, (uint8_t *)&blocknr, sizeof(blocknr));
   sha256_Final(&ctx, (uint8_t *)pctx->g);
 #if BYTE_ORDER == LITTLE_ENDIAN
@@ -57,7 +57,7 @@ void pbkdf2_hmac_sha256_Init(PBKDF2_HMAC_SHA256_CTX *pctx, const uint8_t *pass,
 
 void pbkdf2_hmac_sha256_Update(PBKDF2_HMAC_SHA256_CTX *pctx,
                                uint32_t iterations) {
-  for (uint32_t i = pctx->first; i < iterations; i++) {
+  for (uint32_t i = (uint32_t)pctx->first; i < iterations; i++) {
     sha256_Transform(pctx->idig, pctx->g, pctx->g);
     sha256_Transform(pctx->odig, pctx->g, pctx->g);
     for (uint32_t j = 0; j < SHA256_DIGEST_LENGTH / sizeof(uint32_t); j++) {
@@ -80,8 +80,8 @@ void pbkdf2_hmac_sha256_Final(PBKDF2_HMAC_SHA256_CTX *pctx, uint8_t *key) {
 void pbkdf2_hmac_sha256(const uint8_t *pass, int passlen, const uint8_t *salt,
                         int saltlen, uint32_t iterations, uint8_t *key,
                         int keylen) {
-  uint32_t last_block_size = keylen % SHA256_DIGEST_LENGTH;
-  uint32_t blocks_count = keylen / SHA256_DIGEST_LENGTH;
+  uint32_t last_block_size = (uint32_t)(keylen % SHA256_DIGEST_LENGTH);
+  uint32_t blocks_count = (uint32_t)(keylen / SHA256_DIGEST_LENGTH);
   if (last_block_size) {
     blocks_count++;
   } else {
@@ -110,7 +110,7 @@ void pbkdf2_hmac_sha512_Init(PBKDF2_HMAC_SHA512_CTX *pctx, const uint8_t *pass,
   REVERSE32(blocknr, blocknr);
 #endif
 
-  hmac_sha512_prepare(pass, passlen, pctx->odig, pctx->idig);
+  hmac_sha512_prepare(pass, (uint32_t)passlen, pctx->odig, pctx->idig);
   memzero(pctx->g, sizeof(pctx->g));
   pctx->g[8] = 0x8000000000000000;
   pctx->g[15] = (SHA512_BLOCK_LENGTH + SHA512_DIGEST_LENGTH) * 8;
@@ -118,7 +118,7 @@ void pbkdf2_hmac_sha512_Init(PBKDF2_HMAC_SHA512_CTX *pctx, const uint8_t *pass,
   memcpy(ctx.state, pctx->idig, sizeof(pctx->idig));
   ctx.bitcount[0] = SHA512_BLOCK_LENGTH * 8;
   ctx.bitcount[1] = 0;
-  sha512_Update(&ctx, salt, saltlen);
+  sha512_Update(&ctx, salt, (size_t)saltlen);
   sha512_Update(&ctx, (uint8_t *)&blocknr, sizeof(blocknr));
   sha512_Final(&ctx, (uint8_t *)pctx->g);
 #if BYTE_ORDER == LITTLE_ENDIAN
@@ -133,7 +133,7 @@ void pbkdf2_hmac_sha512_Init(PBKDF2_HMAC_SHA512_CTX *pctx, const uint8_t *pass,
 
 void pbkdf2_hmac_sha512_Update(PBKDF2_HMAC_SHA512_CTX *pctx,
                                uint32_t iterations) {
-  for (uint32_t i = pctx->first; i < iterations; i++) {
+  for (uint32_t i = (uint32_t)pctx->first; i < iterations; i++) {
     sha512_Transform(pctx->idig, pctx->g, pctx->g);
     sha512_Transform(pctx->odig, pctx->g, pctx->g);
     for (uint32_t j = 0; j < SHA512_DIGEST_LENGTH / sizeof(uint64_t); j++) {
@@ -156,8 +156,8 @@ void pbkdf2_hmac_sha512_Final(PBKDF2_HMAC_SHA512_CTX *pctx, uint8_t *key) {
 void pbkdf2_hmac_sha512(const uint8_t *pass, int passlen, const uint8_t *salt,
                         int saltlen, uint32_t iterations, uint8_t *key,
                         int keylen) {
-  uint32_t last_block_size = keylen % SHA512_DIGEST_LENGTH;
-  uint32_t blocks_count = keylen / SHA512_DIGEST_LENGTH;
+  uint32_t last_block_size = (uint32_t)(keylen % SHA512_DIGEST_LENGTH);
+  uint32_t blocks_count = (uint32_t)(keylen / SHA512_DIGEST_LENGTH);
   if (last_block_size) {
     blocks_count++;
   } else {

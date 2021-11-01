@@ -110,7 +110,7 @@ void point_double(const ecdsa_curve *curve, curve_point *cp) {
   xr = cp->x;
   bn_multiply(&xr, &xr, &curve->prime);
   bn_mult_k(&xr, 3, &curve->prime);
-  bn_subi(&xr, -curve->a, &curve->prime);
+  bn_subi(&xr, (uint32_t)(-curve->a), &curve->prime);
   bn_multiply(&xr, &lambda, &curve->prime);
 
   // xr = lambda^2 - 2*x
@@ -182,7 +182,7 @@ static void generate_k_random(bignum256 *k, const bignum256 *prime) {
   } while (bn_is_zero(k) || !bn_is_less(k, prime));
 }
 
-void curve_to_jacobian(const curve_point *p, jacobian_curve_point *jp,
+static void curve_to_jacobian(const curve_point *p, jacobian_curve_point *jp,
                        const bignum256 *prime) {
   // randomize z coordinate
   generate_k_random(&jp->z, prime);
@@ -198,7 +198,7 @@ void curve_to_jacobian(const curve_point *p, jacobian_curve_point *jp,
   bn_multiply(&p->y, &jp->y, prime);
 }
 
-void jacobian_to_curve(const jacobian_curve_point *jp, curve_point *p,
+static void jacobian_to_curve(const jacobian_curve_point *jp, curve_point *p,
                        const bignum256 *prime) {
   p->y = jp->z;
   bn_inverse(&p->y, prime);
@@ -216,7 +216,7 @@ void jacobian_to_curve(const jacobian_curve_point *jp, curve_point *p,
   bn_mod(&p->y, prime);
 }
 
-void point_jacobian_add(const curve_point *p1, jacobian_curve_point *p2,
+static void point_jacobian_add(const curve_point *p1, jacobian_curve_point *p2,
                         const ecdsa_curve *curve) {
   bignum256 r = {0}, h = {0}, r2 = {0};
   bignum256 hcby = {0}, hsqx = {0};
@@ -267,7 +267,7 @@ void point_jacobian_add(const curve_point *p1, jacobian_curve_point *p2,
   if (a != 0) {
     az = xz;
     bn_multiply(&az, &az, prime);  // az = z2^4
-    bn_mult_k(&az, -a, prime);     // az = -az2^4
+    bn_mult_k(&az, (uint8_t)(-a), prime);     // az = -az2^4
   }
 
   bn_multiply(&p1->x, &xz, prime);  // xz = x1' = x1*z2^2;
@@ -300,8 +300,8 @@ void point_jacobian_add(const curve_point *p1, jacobian_curve_point *p2,
     // subtract -a z2^4, i.e, add a z2^4
     bn_subtractmod(&r2, &az, &r2, prime);
   }
-  bn_cmov(&r, is_doubling, &r2, &r);
-  bn_cmov(&h, is_doubling, &yz, &h);
+  bn_cmov(&r, (uint32_t)is_doubling, &r2, &r);
+  bn_cmov(&h, (uint32_t)is_doubling, &yz, &h);
 
   // hsqx = h^2
   hsqx = h;
@@ -335,7 +335,7 @@ void point_jacobian_add(const curve_point *p1, jacobian_curve_point *p2,
   bn_fast_mod(&p2->y, prime);
 }
 
-void point_jacobian_double(jacobian_curve_point *p, const ecdsa_curve *curve) {
+static void point_jacobian_double(jacobian_curve_point *p, const ecdsa_curve *curve) {
   bignum256 az4 = {0}, m = {0}, msq = {0}, ysq = {0}, xysq = {0};
   const bignum256 *prime = &curve->prime;
 
@@ -371,7 +371,7 @@ void point_jacobian_double(jacobian_curve_point *p, const ecdsa_curve *curve) {
   az4 = p->z;
   bn_multiply(&az4, &az4, prime);
   bn_multiply(&az4, &az4, prime);
-  bn_mult_k(&az4, -curve->a, prime);
+  bn_mult_k(&az4, (uint8_t)(-curve->a), prime);
   bn_subtractmod(&m, &az4, &m, prime);
   bn_mult_half(&m, prime);
 
@@ -826,7 +826,7 @@ void ecdsa_get_address(const uint8_t *pub_key, uint32_t version,
   uint8_t raw[MAX_ADDR_RAW_SIZE] = {0};
   size_t prefix_len = address_prefix_bytes_len(version);
   ecdsa_get_address_raw(pub_key, version, hasher_pubkey, raw);
-  base58_encode_check(raw, 20 + prefix_len, hasher_base58, addr, addrsize);
+  base58_encode_check(raw, (int)(20 + prefix_len), hasher_base58, addr, addrsize);
   // not as important to clear this one, but we might as well
   memzero(raw, sizeof(raw));
 }
@@ -850,7 +850,7 @@ void ecdsa_get_address_segwit_p2sh(const uint8_t *pub_key, uint32_t version,
   uint8_t raw[MAX_ADDR_RAW_SIZE] = {0};
   size_t prefix_len = address_prefix_bytes_len(version);
   ecdsa_get_address_segwit_p2sh_raw(pub_key, version, hasher_pubkey, raw);
-  base58_encode_check(raw, prefix_len + 20, hasher_base58, addr, addrsize);
+  base58_encode_check(raw, (int)(prefix_len + 20), hasher_base58, addr, addrsize);
   memzero(raw, sizeof(raw));
 }
 
@@ -861,7 +861,7 @@ void ecdsa_get_wif(const uint8_t *priv_key, uint32_t version,
   address_write_prefix_bytes(version, wif_raw);
   memcpy(wif_raw + prefix_len, priv_key, 32);
   wif_raw[prefix_len + 32] = 0x01;
-  base58_encode_check(wif_raw, prefix_len + 32 + 1, hasher_base58, wif,
+  base58_encode_check(wif_raw, (int)(prefix_len + 32 + 1), hasher_base58, wif,
                       wifsize);
   // private keys running around our stack can cause trouble
   memzero(wif_raw, sizeof(wif_raw));
@@ -870,9 +870,9 @@ void ecdsa_get_wif(const uint8_t *priv_key, uint32_t version,
 int ecdsa_address_decode(const char *addr, uint32_t version,
                          HasherType hasher_base58, uint8_t *out) {
   if (!addr) return 0;
-  int prefix_len = address_prefix_bytes_len(version);
-  return base58_decode_check(addr, hasher_base58, out, 20 + prefix_len) ==
-             20 + prefix_len &&
+  size_t prefix_len = address_prefix_bytes_len(version);
+  return base58_decode_check(addr, hasher_base58, out, (int)(20 + prefix_len)) ==
+             (int)(20 + prefix_len) &&
          address_check_prefix(out, version);
 }
 
@@ -886,7 +886,7 @@ void uncompress_coords(const ecdsa_curve *curve, uint8_t odd,
   // y^2 = x^3 + a*x + b
   memcpy(y, x, sizeof(bignum256));       // y is x
   bn_multiply(x, y, &curve->prime);      // y is x^2
-  bn_subi(y, -curve->a, &curve->prime);  // y is x^2 + a
+  bn_subi(y, (uint32_t)(-curve->a), &curve->prime);  // y is x^2 + a
   bn_multiply(x, y, &curve->prime);      // y is x^3 + ax
   bn_add(y, &curve->b);                  // y is x^3 + ax + b
   bn_sqrt(y, &curve->prime);             // y = sqrt(y)
@@ -941,7 +941,7 @@ int ecdsa_validate_pubkey(const ecdsa_curve *curve, const curve_point *pub) {
 
   // x^3 + ax + b
   bn_multiply(&(pub->x), &x3_ax_b, &curve->prime);  // x^2
-  bn_subi(&x3_ax_b, -curve->a, &curve->prime);      // x^2 + a
+  bn_subi(&x3_ax_b, (uint32_t)(-curve->a), &curve->prime);      // x^2 + a
   bn_multiply(&(pub->x), &x3_ax_b, &curve->prime);  // x^3 + ax
   bn_addmod(&x3_ax_b, &curve->b, &curve->prime);    // x^3 + ax + b
   bn_mod(&x3_ax_b, &curve->prime);

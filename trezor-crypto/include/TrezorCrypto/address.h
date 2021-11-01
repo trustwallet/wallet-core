@@ -21,8 +21,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __ADDRESS_H__
-#define __ADDRESS_H__
+#ifndef TC__ADDRESS_H__
+#define TC__ADDRESS_H__
 
 #include <stdbool.h>
 #include <stddef.h>

@@ -21,8 +21,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __HMAC_H__
-#define __HMAC_H__
+#ifndef TC__HMAC_H__
+#define TC__HMAC_H__
 
 #include <stdint.h>
 #include <TrezorCrypto/sha2.h>

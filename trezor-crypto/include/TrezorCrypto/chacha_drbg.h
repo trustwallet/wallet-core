@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CHACHA_DRBG__
-#define __CHACHA_DRBG__
+#ifndef TC__CHACHA_DRBG__
+#define TC__CHACHA_DRBG__
 
 #include <TrezorCrypto/chacha20poly1305/chacha20poly1305.h>
 

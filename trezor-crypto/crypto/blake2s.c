@@ -19,7 +19,7 @@
 #include <TrezorCrypto/blake2_common.h>
 #include <TrezorCrypto/memzero.h>
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(__clang__)
 #pragma pack(push, 1)
 #endif
 typedef struct blake2s_param__
@@ -37,21 +37,21 @@ typedef struct blake2s_param__
     uint8_t  salt[BLAKE2S_SALTBYTES]; /* 24 */
     uint8_t  personal[BLAKE2S_PERSONALBYTES];  /* 32 */
 }
-#ifndef _MSC_VER
+#if !(defined(_MSC_VER) && !defined(__clang__))
 __attribute__((packed))
 #endif
 blake2s_param;
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(__clang__)
 #pragma pack(pop)
 #endif
 
-const uint32_t blake2s_IV[8] =
+static const uint32_t blake2s_IV[8] =
 {
   0x6A09E667UL, 0xBB67AE85UL, 0x3C6EF372UL, 0xA54FF53AUL,
   0x510E527FUL, 0x9B05688CUL, 0x1F83D9ABUL, 0x5BE0CD19UL
 };
 
-const uint8_t blake2s_sigma[10][16] =
+static const uint8_t blake2s_sigma[10][16] =
 {
   {  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 } ,
   { 14, 10,  4,  8,  9, 15, 13,  6,  1, 12,  0,  2, 11,  7,  5,  3 } ,
@@ -98,7 +98,7 @@ static void blake2s_init0( blake2s_state *S )
 }
 
 /* init2 xors IV with input parameter block */
-int blake2s_init_param( blake2s_state *S, const blake2s_param *P )
+static int blake2s_init_param( blake2s_state *S, const blake2s_param *P )
 {
   const unsigned char *p = ( const unsigned char * )( P );
   size_t i = 0;

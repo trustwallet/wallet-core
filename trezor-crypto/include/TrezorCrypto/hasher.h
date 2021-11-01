@@ -20,8 +20,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __HASHER_H__
-#define __HASHER_H__
+#ifndef TC__HASHER_H__
+#define TC__HASHER_H__
 
 #include <stddef.h>
 #include <stdint.h>

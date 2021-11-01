@@ -7,8 +7,8 @@
 
 #include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 
-const uint32_t reduce_mask_25 = (1 << 25) - 1;
-const uint32_t reduce_mask_26 = (1 << 26) - 1;
+static const uint32_t reduce_mask_25 = (1 << 25) - 1;
+static const uint32_t reduce_mask_26 = (1 << 26) - 1;
 
 /* out = in */
 void curve25519_copy(bignum25519 out, const bignum25519 in) {
@@ -69,12 +69,12 @@ void curve25519_add_reduce(bignum25519 out, const bignum25519 a, const bignum255
 }
 
 /* multiples of p */
-const uint32_t twoP0       = 0x07ffffda;
-const uint32_t twoP13579   = 0x03fffffe;
-const uint32_t twoP2468    = 0x07fffffe;
-const uint32_t fourP0      = 0x0fffffb4;
-const uint32_t fourP13579  = 0x07fffffc;
-const uint32_t fourP2468   = 0x0ffffffc;
+static const uint32_t twoP0       = 0x07ffffda;
+static const uint32_t twoP13579   = 0x03fffffe;
+static const uint32_t twoP2468    = 0x07fffffe;
+static const uint32_t fourP0      = 0x0fffffb4;
+static const uint32_t fourP13579  = 0x07fffffc;
+static const uint32_t fourP2468   = 0x0ffffffc;
 
 /* out = a - b */
 void curve25519_sub(bignum25519 out, const bignum25519 a, const bignum25519 b) {
@@ -156,7 +156,9 @@ void curve25519_neg(bignum25519 out, const bignum25519 a) {
 }
 
 /* out = a * b */
+/*
 #define curve25519_mul_noinline curve25519_mul
+*/
 void curve25519_mul(bignum25519 out, const bignum25519 a, const bignum25519 b) {
 	uint32_t r0 = 0, r1 = 0, r2 = 0, r3 = 0, r4 = 0, r5 = 0, r6 = 0, r7 = 0, r8 = 0, r9 = 0;
 	uint32_t s0 = 0, s1 = 0, s2 = 0, s3 = 0, s4 = 0, s5 = 0, s6 = 0, s7 = 0, s8 = 0, s9 = 0;
@@ -493,11 +495,11 @@ void curve25519_contract(unsigned char out[32], const bignum25519 in) {
 	f[8] <<= 4;
 	f[9] <<= 6;
 
-	#define F(i, s) \
+	#define F(i, s) do { \
 		out[s+0] |= (unsigned char )(f[i] & 0xff); \
 		out[s+1] = (unsigned char )((f[i] >> 8) & 0xff); \
 		out[s+2] = (unsigned char )((f[i] >> 16) & 0xff); \
-		out[s+3] = (unsigned char )((f[i] >> 24) & 0xff);
+		out[s+3] = (unsigned char )((f[i] >> 24) & 0xff); } while (0)
 
 	out[0] = 0;
 	out[16] = 0;

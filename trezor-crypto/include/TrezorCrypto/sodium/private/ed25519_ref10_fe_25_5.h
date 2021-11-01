@@ -1,5 +1,5 @@
-#ifndef __ED25519_REF10_FE_25_H__
-#define __ED25519_REF10_FE_25_H__
+#ifndef TC__ED25519_REF10_FE_25_H__
+#define TC__ED25519_REF10_FE_25_H__
 
 #include <string.h>
 

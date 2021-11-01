@@ -5,6 +5,8 @@
 #include <TrezorCrypto/chacha20poly1305/chacha20poly1305.h>
 #include <TrezorCrypto/chacha20poly1305/ecrypt-portable.h>
 
+#include <assert.h>
+
 void hchacha20(ECRYPT_ctx *x,u8 *c);
 
 // Initialize the XChaCha20 + Poly1305 context for encryption or decryption
@@ -18,6 +20,7 @@ void xchacha20poly1305_init(chacha20poly1305_ctx *ctx, const uint8_t key[32], co
     // Generate the Chacha20 key by applying HChaCha20 to the
     // original key and the first 16 bytes of the nonce.
     ECRYPT_keysetup(&tmp, key, 256, 16);
+    assert(IS_ALIGNED_32(nonce));
     tmp.input[12] = U8TO32_LITTLE(nonce + 0);
     tmp.input[13] = U8TO32_LITTLE(nonce + 4);
     tmp.input[14] = U8TO32_LITTLE(nonce + 8);
@@ -38,7 +41,7 @@ void xchacha20poly1305_init(chacha20poly1305_ctx *ctx, const uint8_t key[32], co
 // Encrypt n bytes of plaintext where n must be evenly divisible by the
 // Chacha20 blocksize of 64, except for the final n bytes of plaintext.
 void chacha20poly1305_encrypt(chacha20poly1305_ctx *ctx, const uint8_t *in, uint8_t *out, size_t n) {
-    ECRYPT_encrypt_bytes(&ctx->chacha20, in, out, n);
+    ECRYPT_encrypt_bytes(&ctx->chacha20, in, out, (uint32_t)n);
     poly1305_update(&ctx->poly1305, out, n);
 }
 
@@ -46,7 +49,7 @@ void chacha20poly1305_encrypt(chacha20poly1305_ctx *ctx, const uint8_t *in, uint
 // Chacha20 blocksize of 64, except for the final n bytes of ciphertext.
 void chacha20poly1305_decrypt(chacha20poly1305_ctx *ctx, const uint8_t *in, uint8_t *out, size_t n) {
     poly1305_update(&ctx->poly1305, in, n);
-    ECRYPT_encrypt_bytes(&ctx->chacha20, in, out, n);
+    ECRYPT_encrypt_bytes(&ctx->chacha20, in, out, (uint32_t)n);
 }
 
 // Include authenticated data in the Poly1305 MAC.

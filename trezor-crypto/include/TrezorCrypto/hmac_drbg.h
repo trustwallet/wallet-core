@@ -20,8 +20,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __HMAC_DRBG_H__
-#define __HMAC_DRBG_H__
+#ifndef TC__HMAC_DRBG_H__
+#define TC__HMAC_DRBG_H__
 
 #include <TrezorCrypto/sha2.h>
 #include <stdint.h>

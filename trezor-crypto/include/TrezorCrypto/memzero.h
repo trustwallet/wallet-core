@@ -1,5 +1,5 @@
-#ifndef __MEMZERO_H__
-#define __MEMZERO_H__
+#ifndef TC__MEMZERO_H__
+#define TC__MEMZERO_H__
 
 #include <stddef.h>
 

@@ -21,6 +21,8 @@ Issue Date: 20/12/2007
 #include <TrezorCrypto/aes/aesopt.h>
 #include <TrezorCrypto/aes/aestab.h>
 
+#include <assert.h>
+
 #if defined( USE_INTEL_AES_IF_PRESENT )
 #  include "aes_ni.h"
 #else
@@ -42,8 +44,8 @@ extern "C"
 #define locals(y,x)     x##0,x##1,x##2,x##3,y##0,y##1,y##2,y##3
 #endif
 
-#define l_copy(y, x)    s(y,0) = s(x,0); s(y,1) = s(x,1); \
-                        s(y,2) = s(x,2); s(y,3) = s(x,3);
+//#define l_copy(y, x)    s(y,0) = s(x,0); s(y,1) = s(x,1); \
+//                        s(y,2) = s(x,2); s(y,3) = s(x,3);
 #define state_in(y,x,k) si(y,x,k,0); si(y,x,k,1); si(y,x,k,2); si(y,x,k,3)
 #define state_out(y,x)  so(y,x,0); so(y,x,1); so(y,x,2); so(y,x,3)
 #define round(rm,y,x,k) rm(y,x,k,0); rm(y,x,k,1); rm(y,x,k,2); rm(y,x,k,3)
@@ -105,6 +107,7 @@ AES_RETURN aes_xi(encrypt)(const unsigned char *in, unsigned char *out, const ae
 		return EXIT_FAILURE;
 
 	kp = cx->ks;
+    assert(IS_ALIGNED_32(in));
     state_in(b0, in, kp);
 
 #if (ENC_UNROLL == FULL)
@@ -115,11 +118,17 @@ AES_RETURN aes_xi(encrypt)(const unsigned char *in, unsigned char *out, const ae
         round(fwd_rnd,  b1, b0, kp + 1 * N_COLS);
         round(fwd_rnd,  b0, b1, kp + 2 * N_COLS);
         kp += 2 * N_COLS;
+#ifdef __clang__
+        __attribute__((fallthrough));
+#endif
         //-fallthrough
     case 12 * AES_BLOCK_SIZE:
         round(fwd_rnd,  b1, b0, kp + 1 * N_COLS);
         round(fwd_rnd,  b0, b1, kp + 2 * N_COLS);
         kp += 2 * N_COLS;
+#ifdef __clang__
+        __attribute__((fallthrough));
+#endif
         //-fallthrough
     case 10 * AES_BLOCK_SIZE:
         round(fwd_rnd,  b1, b0, kp + 1 * N_COLS);
@@ -162,6 +171,7 @@ AES_RETURN aes_xi(encrypt)(const unsigned char *in, unsigned char *out, const ae
     }
 #endif
 
+    assert(IS_ALIGNED_32(out));
     state_out(out, b0);
     return EXIT_SUCCESS;
 }
@@ -240,6 +250,7 @@ AES_RETURN aes_xi(decrypt)(const unsigned char *in, unsigned char *out, const ae
 		return EXIT_FAILURE;
 
     kp = cx->ks + (key_ofs ? (cx->inf.b[0] >> 2) : 0);
+    assert(IS_ALIGNED_32(in));
     state_in(b0, in, kp);
 
 #if (DEC_UNROLL == FULL)
@@ -250,10 +261,16 @@ AES_RETURN aes_xi(decrypt)(const unsigned char *in, unsigned char *out, const ae
     case 14 * AES_BLOCK_SIZE:
         round(inv_rnd,  b1, b0, rnd_key(-13));
         round(inv_rnd,  b0, b1, rnd_key(-12));
+#ifdef __clang__
+        __attribute__((fallthrough));
+#endif
         //-fallthrough
     case 12 * AES_BLOCK_SIZE:
         round(inv_rnd,  b1, b0, rnd_key(-11));
         round(inv_rnd,  b0, b1, rnd_key(-10));
+#ifdef __clang__
+        __attribute__((fallthrough));
+#endif
         //-fallthrough
     case 10 * AES_BLOCK_SIZE:
         round(inv_rnd,  b1, b0, rnd_key(-9));

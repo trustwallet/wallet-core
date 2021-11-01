@@ -1,5 +1,5 @@
-#ifndef __BLAKE2S_H__
-#define __BLAKE2S_H__
+#ifndef TC__BLAKE2S_H__
+#define TC__BLAKE2S_H__
 
 #include <stdint.h>
 #include <stddef.h>

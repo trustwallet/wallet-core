@@ -58,8 +58,8 @@ Issue Date: 20/12/2007
         t_xxx(r,c)      => the rcon table
 */
 
-#if !defined( _AESTAB_H )
-#define _AESTAB_H
+#if !defined( TC_AESTAB_H )
+#define TC_AESTAB_H
 
 #if defined(__cplusplus)
 extern "C" {
@@ -81,7 +81,7 @@ extern "C" {
 #endif
 
 #if defined(DO_TABLES)
-#  define EXTERN
+#  define EXTERN static
 #else
 #  define EXTERN extern
 #endif

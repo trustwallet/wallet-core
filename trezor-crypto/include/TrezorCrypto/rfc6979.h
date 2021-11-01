@@ -22,8 +22,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __RFC6979_H__
-#define __RFC6979_H__
+#ifndef TC__RFC6979_H__
+#define TC__RFC6979_H__
 
 #include <stdint.h>
 #include "bignum.h"

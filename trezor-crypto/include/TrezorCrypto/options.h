@@ -20,8 +20,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __OPTIONS_H__
-#define __OPTIONS_H__
+#ifndef TC__OPTIONS_H__
+#define TC__OPTIONS_H__
 
 #ifndef AES_128
 #define AES_128 1 // [wallet-core]

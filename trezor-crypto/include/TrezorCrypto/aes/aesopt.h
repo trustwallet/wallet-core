@@ -84,8 +84,8 @@ Issue Date: 20/12/2007
           AES_RETURN decrypt(const unsigned char *in, unsigned char *out) const
 */
 
-#if !defined( _AESOPT_H )
-#define _AESOPT_H
+#if !defined( TC_AESOPT_H )
+#define TC_AESOPT_H
 
 #if defined( __cplusplus )
 #include "aescpp.h"
@@ -590,6 +590,8 @@ Issue Date: 20/12/2007
         (((uint32_t)(b3) << 24) | ((uint32_t)(b2) << 16) | ((uint32_t)(b1) << 8) | (b0))
 #endif
 
+#define IS_ALIGNED_32(p) (0 == (3 & ((const char*)(p) - (const char*)0)))
+
 #if ( ALGORITHM_BYTE_ORDER == IS_BIG_ENDIAN )
 #  define upr(x,n)      (((uint32_t)(x) >> (8 * (n))) | ((uint32_t)(x) << (32 - 8 * (n))))
 #  define ups(x,n)      ((uint32_t) (x) >> (8 * (n)))
@@ -604,11 +606,11 @@ Issue Date: 20/12/2007
 #  define word_out(x,c,v) { ((uint8_t*)(x)+4*c)[0] = bval(v,0); ((uint8_t*)(x)+4*c)[1] = bval(v,1); \
                           ((uint8_t*)(x)+4*c)[2] = bval(v,2); ((uint8_t*)(x)+4*c)[3] = bval(v,3); }
 #elif ( ALGORITHM_BYTE_ORDER == PLATFORM_BYTE_ORDER )
-#  define word_in(x,c)    (*((uint32_t*)(x)+(c)))
-#  define word_out(x,c,v) (*((uint32_t*)(x)+(c)) = (v))
+#  define word_in(x,c)    (*((const uint32_t*)(const void*)(x)+(c)))
+#  define word_out(x,c,v) (*((uint32_t*)(void*)(x)+(c)) = (v))
 #else
-#  define word_in(x,c)    aes_sw32(*((uint32_t*)(x)+(c)))
-#  define word_out(x,c,v) (*((uint32_t*)(x)+(c)) = aes_sw32(v))
+#  define word_in(x,c)    aes_sw32(*((const uint32_t*)(const void*)(x)+(c)))
+#  define word_out(x,c,v) (*((uint32_t*)(void*)(x)+(c)) = aes_sw32(v))
 #endif
 
 /* the finite field modular polynomial and elements */

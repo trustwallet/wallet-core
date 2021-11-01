@@ -123,21 +123,25 @@
 
 #if (!defined(ECRYPT_UNKNOWN) && defined(ECRYPT_I8T_IS_BYTE))
 
-#define U8TO16_LITTLE(p) U16TO16_LITTLE(((u16*)(p))[0])
-#define U8TO32_LITTLE(p) U32TO32_LITTLE(((u32*)(p))[0])
-#define U8TO64_LITTLE(p) U64TO64_LITTLE(((u64*)(p))[0])
+#define IS_ALIGNED_16(p) (0 == (1 & ((const char*)(p) - (const char*)0)))
+#define IS_ALIGNED_32(p) (0 == (3 & ((const char*)(p) - (const char*)0)))
+#define IS_ALIGNED_64(p) (0 == (7 & ((const char*)(p) - (const char*)0)))
 
-#define U8TO16_BIG(p) U16TO16_BIG(((u16*)(p))[0])
-#define U8TO32_BIG(p) U32TO32_BIG(((u32*)(p))[0])
-#define U8TO64_BIG(p) U64TO64_BIG(((u64*)(p))[0])
+#define U8TO16_LITTLE(p) U16TO16_LITTLE(((const u16*)(const void *)(p))[0])
+#define U8TO32_LITTLE(p) U32TO32_LITTLE(((const u32*)(const void *)(p))[0])
+#define U8TO64_LITTLE(p) U64TO64_LITTLE(((const u64*)(const void *)(p))[0])
 
-#define U16TO8_LITTLE(p, v) (((u16*)(p))[0] = U16TO16_LITTLE(v))
-#define U32TO8_LITTLE(p, v) (((u32*)(p))[0] = U32TO32_LITTLE(v))
-#define U64TO8_LITTLE(p, v) (((u64*)(p))[0] = U64TO64_LITTLE(v))
+#define U8TO16_BIG(p) U16TO16_BIG(((const u16*)(const void *)(p))[0])
+#define U8TO32_BIG(p) U32TO32_BIG(((const u32*)(const void *)(p))[0])
+#define U8TO64_BIG(p) U64TO64_BIG(((const u64*)(const void *)(p))[0])
 
-#define U16TO8_BIG(p, v) (((u16*)(p))[0] = U16TO16_BIG(v))
-#define U32TO8_BIG(p, v) (((u32*)(p))[0] = U32TO32_BIG(v))
-#define U64TO8_BIG(p, v) (((u64*)(p))[0] = U64TO64_BIG(v))
+#define U16TO8_LITTLE(p, v) (((u16*)(void*)(p))[0] = U16TO16_LITTLE(v))
+#define U32TO8_LITTLE(p, v) (((u32*)(void*)(p))[0] = U32TO32_LITTLE(v))
+#define U64TO8_LITTLE(p, v) (((u64*)(void*)(p))[0] = U64TO64_LITTLE(v))
+
+#define U16TO8_BIG(p, v) (((u16*)(void*)(p))[0] = U16TO16_BIG(v))
+#define U32TO8_BIG(p, v) (((u32*)(void*)(p))[0] = U32TO32_BIG(v))
+#define U64TO8_BIG(p, v) (((u64*)(void*)(p))[0] = U64TO64_BIG(v))
 
 #else
 

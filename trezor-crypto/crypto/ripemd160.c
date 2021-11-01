@@ -35,22 +35,22 @@
  */
 #ifndef GET_UINT32_LE
 #define GET_UINT32_LE(n,b,i)                            \
-{                                                       \
+do {                                                    \
     (n) = ( (uint32_t) (b)[(i)    ]       )             \
         | ( (uint32_t) (b)[(i) + 1] <<  8 )             \
         | ( (uint32_t) (b)[(i) + 2] << 16 )             \
         | ( (uint32_t) (b)[(i) + 3] << 24 );            \
-}
+} while (0)
 #endif
 
 #ifndef PUT_UINT32_LE
 #define PUT_UINT32_LE(n,b,i)                                    \
-{                                                               \
+do {                                                            \
     (b)[(i)    ] = (uint8_t) ( ( (n)       ) & 0xFF );    \
     (b)[(i) + 1] = (uint8_t) ( ( (n) >>  8 ) & 0xFF );    \
     (b)[(i) + 2] = (uint8_t) ( ( (n) >> 16 ) & 0xFF );    \
     (b)[(i) + 3] = (uint8_t) ( ( (n) >> 24 ) & 0xFF );    \
-}
+} while (0)
 #endif
 
 /*
@@ -72,7 +72,7 @@ void ripemd160_Init(RIPEMD160_CTX *ctx)
 /*
  * Process one block
  */
-void ripemd160_process( RIPEMD160_CTX *ctx, const uint8_t data[RIPEMD160_BLOCK_LENGTH] )
+static void ripemd160_process( RIPEMD160_CTX *ctx, const uint8_t data[RIPEMD160_BLOCK_LENGTH] )
 {
     uint32_t A = 0, B = 0, C = 0, D = 0, E = 0, Ap = 0, Bp = 0, Cp = 0, Dp = 0, Ep = 0, X[16] = {0};
 
@@ -107,14 +107,14 @@ void ripemd160_process( RIPEMD160_CTX *ctx, const uint8_t data[RIPEMD160_BLOCK_L
 
 #define S( x, n ) ( ( x << n ) | ( x >> (32 - n) ) )
 
-#define P( a, b, c, d, e, r, s, f, k )      \
+#define P( a, b, c, d, e, r, s, f, k ) do { \
     a += f( b, c, d ) + X[r] + k;           \
     a = S( a, s ) + e;                      \
-    c = S( c, 10 );
+    c = S( c, 10 ); } while (0)
 
 #define P2( a, b, c, d, e, r, s, rp, sp )   \
-    P( a, b, c, d, e, r, s, F, K );         \
-    P( a ## p, b ## p, c ## p, d ## p, e ## p, rp, sp, Fp, Kp );
+    do { P( a, b, c, d, e, r, s, F, K );    \
+    P( a ## p, b ## p, c ## p, d ## p, e ## p, rp, sp, Fp, Kp ); } while (0)
 
 #define F   F1
 #define K   0x00000000
@@ -292,7 +292,7 @@ void ripemd160_Update( RIPEMD160_CTX *ctx, const uint8_t *input, uint32_t ilen )
     }
 }
 
-const uint8_t ripemd160_padding[RIPEMD160_BLOCK_LENGTH] =
+static const uint8_t ripemd160_padding[RIPEMD160_BLOCK_LENGTH] =
 {
  0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

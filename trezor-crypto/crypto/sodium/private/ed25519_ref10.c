@@ -73,7 +73,7 @@ void fe25519_invert(fe25519 out, const fe25519 z) {
     fe25519_mul(out, t1, t0);
 }
 
-void fe25519_pow22523(fe25519 out, const fe25519 z) {
+static void fe25519_pow22523(fe25519 out, const fe25519 z) {
     fe25519 t0;
     fe25519 t1;
     fe25519 t2;
@@ -204,7 +204,7 @@ void ge25519_p1p1_to_p3(ge25519_p3 *r, const ge25519_p1p1_1 *p) {
  r = 2 * p
  */
 
-void ge25519_p2_dbl(ge25519_p1p1_1 *r, const ge25519_p2 *p) {
+static void ge25519_p2_dbl(ge25519_p1p1_1 *r, const ge25519_p2 *p) {
     fe25519 t0;
 
     fe25519_sq(r->X, p->X);
@@ -218,14 +218,14 @@ void ge25519_p2_dbl(ge25519_p1p1_1 *r, const ge25519_p2 *p) {
     fe25519_sub(r->T, r->T, r->Z);
 }
 
-void ge25519_p3_0(ge25519_p3 *h) {
+static void ge25519_p3_0(ge25519_p3 *h) {
     fe25519_0(h->X);
     fe25519_1(h->Y);
     fe25519_1(h->Z);
     fe25519_0(h->T);
 }
 
-void ge25519_cached_0(ge25519_cached *h) {
+static void ge25519_cached_0(ge25519_cached *h) {
     fe25519_1(h->YplusX);
     fe25519_1(h->YminusX);
     fe25519_1(h->Z);
@@ -247,7 +247,7 @@ void ge25519_p3_to_cached(ge25519_cached *r, const ge25519_p3 *p) {
  r = p
  */
 
-void ge25519_p3_to_p2(ge25519_p2 *r, const ge25519_p3 *p) {
+static void ge25519_p3_to_p2(ge25519_p2 *r, const ge25519_p3 *p) {
     fe25519_copy(r->X, p->X);
     fe25519_copy(r->Y, p->Y);
     fe25519_copy(r->Z, p->Z);
@@ -269,19 +269,19 @@ void ge25519_p3_tobytes(unsigned char *s, const ge25519_p3 *h) {
  r = 2 * p
  */
 
-void ge25519_p3_dbl(ge25519_p1p1_1 *r, const ge25519_p3 *p) {
+static void ge25519_p3_dbl(ge25519_p1p1_1 *r, const ge25519_p3 *p) {
     ge25519_p2 q;
     ge25519_p3_to_p2(&q, p);
     ge25519_p2_dbl(r, &q);
 }
 
-void ge25519_precomp_0(ge25519_precomp *h) {
+static void ge25519_precomp_0(ge25519_precomp *h) {
     fe25519_1(h->yplusx);
     fe25519_1(h->yminusx);
     fe25519_0(h->xy2d);
 }
 
-unsigned char equal(signed char b, signed char c) {
+static unsigned char equal(signed char b, signed char c) {
     unsigned char ub = b;
     unsigned char uc = c;
     unsigned char x = ub ^ uc; /* 0: yes; 1..255: no */

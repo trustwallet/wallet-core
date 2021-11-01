@@ -28,8 +28,8 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#ifndef __BLAKE256_H__
-#define __BLAKE256_H__
+#ifndef TC__BLAKE256_H__
+#define TC__BLAKE256_H__
 
 #include <stdint.h>
 #include <stddef.h>
