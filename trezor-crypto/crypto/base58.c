@@ -199,18 +199,18 @@ int base58_encode_check(const uint8_t *data, int datalen,
     return 0;
   }
 #ifdef _MSC_VER
-  uint8_t *buf = _alloca(datalen + 32);
+  uint8_t *buf = _alloca((size_t)datalen + 32);
 #else
   uint8_t buf[datalen + 32];
 #endif
-  memset(buf, 0, sizeof(buf));
+  memset(buf, 0, (size_t)datalen + 32);
   uint8_t *hash = buf + datalen;
-  memcpy(buf, data, datalen);
-  hasher_Raw(hasher_type, data, datalen, hash);
-  size_t res = strsize;
-  bool success = b58enc(str, &res, buf, datalen + 4);
-  memzero(buf, sizeof(buf));
-  return success ? res : 0;
+  memcpy(buf, data, (size_t)datalen);
+  hasher_Raw(hasher_type, data, (size_t)datalen, hash);
+  size_t res = (size_t)strsize;
+  bool success = b58enc(str, &res, buf, (size_t)datalen + 4);
+  memzero(buf, (size_t)datalen + 32);
+  return success ? (int)res : 0;
 }
 
 int base58_decode_check(const char *str, HasherType hasher_type, uint8_t *data,
@@ -219,12 +219,12 @@ int base58_decode_check(const char *str, HasherType hasher_type, uint8_t *data,
     return 0;
   }
 #ifdef _MSC_VER
-  uint8_t *d = _alloca(datalen + 4);
+  uint8_t *d = _alloca((size_t)datalen + 4);
 #else
   uint8_t d[datalen + 4];
 #endif
-  memset(d, 0, sizeof(d));
-  size_t res = datalen + 4;
+  memset(d, 0, (size_t)datalen + 4);
+  size_t res = (size_t)datalen + 4;
   if (b58tobin(d, &res, str) != true) {
     return 0;
   }
@@ -233,7 +233,7 @@ int base58_decode_check(const char *str, HasherType hasher_type, uint8_t *data,
     return 0;
   }
   memcpy(data, nd, res - 4);
-  return res - 4;
+  return (int)(res - 4);
 }
 
 #if USE_GRAPHENE
