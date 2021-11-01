@@ -225,12 +225,14 @@ static void ge25519_p3_0(ge25519_p3 *h) {
     fe25519_0(h->T);
 }
 
+#if 0
 static void ge25519_cached_0(ge25519_cached *h) {
     fe25519_1(h->YplusX);
     fe25519_1(h->YminusX);
     fe25519_1(h->Z);
     fe25519_0(h->T2d);
 }
+#endif
 
 /*
  r = p
@@ -275,6 +277,7 @@ static void ge25519_p3_dbl(ge25519_p1p1_1 *r, const ge25519_p3 *p) {
     ge25519_p2_dbl(r, &q);
 }
 
+#if 0
 static void ge25519_precomp_0(ge25519_precomp *h) {
     fe25519_1(h->yplusx);
     fe25519_1(h->yminusx);
@@ -282,38 +285,39 @@ static void ge25519_precomp_0(ge25519_precomp *h) {
 }
 
 static unsigned char equal(signed char b, signed char c) {
-    unsigned char ub = b;
-    unsigned char uc = c;
+    unsigned char ub = (unsigned char)b;
+    unsigned char uc = (unsigned char)c;
     unsigned char x = ub ^ uc; /* 0: yes; 1..255: no */
     uint32_t y = x;            /* 0: yes; 1..255: no */
 
     y -= 1;   /* 4294967295: yes; 0..254: no */
     y >>= 31; /* 1: yes; 0: no */
 
-    return y;
+    return (unsigned char)y;
 }
 
-unsigned char negative(signed char b) {
+static unsigned char negative(signed char b) {
     /* 18446744073709551361..18446744073709551615: yes; 0..255: no */
-    uint64_t x = b;
+    uint64_t x = (uint64_t)(int64_t)b;
 
     x >>= 63; /* 1: yes; 0: no */
 
-    return x;
+    return (unsigned char)x;
 }
 
-void ge25519_cmov(ge25519_precomp *t, const ge25519_precomp *u, unsigned char b) {
+void static ge25519_cmov(ge25519_precomp *t, const ge25519_precomp *u, unsigned char b) {
     fe25519_cmov(t->yplusx, u->yplusx, b);
     fe25519_cmov(t->yminusx, u->yminusx, b);
     fe25519_cmov(t->xy2d, u->xy2d, b);
 }
 
-void ge25519_cmov_cached(ge25519_cached *t, const ge25519_cached *u, unsigned char b) {
+void static ge25519_cmov_cached(ge25519_cached *t, const ge25519_cached *u, unsigned char b) {
     fe25519_cmov(t->YplusX, u->YplusX, b);
     fe25519_cmov(t->YminusX, u->YminusX, b);
     fe25519_cmov(t->Z, u->Z, b);
     fe25519_cmov(t->T2d, u->T2d, b);
 }
+#endif
 
 /*
  r = p - q
@@ -348,7 +352,7 @@ void ge25519_tobytes(unsigned char *s, const ge25519_p2 *h) {
 }
 
 /* multiply by the order of the main subgroup l = 2^252+27742317777372353535851937790883648493 */
-void ge25519_mul_l(ge25519_p3 *r, const ge25519_p3 *A) {
+void static ge25519_mul_l(ge25519_p3 *r, const ge25519_p3 *A) {
     const signed char aslide[253] = {
         13, 0,   0, 0, 0, -1, 0,   0, 0,  0,  -11, 0, 0, 0,  0,  0,  0, -5, 0, 0,  0,  0, 0,
         0,  -3,  0, 0, 0, 0,  -13, 0, 0,  0,  0,   7, 0, 0,  0,  0,  0, 3,  0, 0,  0,  0, -13,

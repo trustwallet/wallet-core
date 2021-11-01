@@ -26,8 +26,8 @@
  * This file was originally written by Colin Percival as part of the Tarsnap
  * online backup system.
  */
-#ifndef _ENDIAN_H_
-#define _ENDIAN_H_
+#ifndef TC_ENDIAN_H_
+#define TC_ENDIAN_H_
 
 
 #include <stdint.h>

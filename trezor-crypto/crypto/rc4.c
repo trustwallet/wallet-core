@@ -32,14 +32,14 @@ void rc4_init(RC4_CTX *ctx, const uint8_t *key, size_t length) {
   ctx->i = 0;
   ctx->j = 0;
 
-  for (size_t i = 0; i < 256; i++) {
-    ctx->S[i] = i;
+  for (int i = 0; i < 256; i++) {
+    ctx->S[i] = (uint8_t)i;
   }
 
   uint8_t j = 0;
-  for (size_t i = 0; i < 256; i++) {
-    j += ctx->S[i] + key[i % length];
-    rc4_swap(ctx, i, j);
+  for (int i = 0; i < 256; i++) {
+    j += ctx->S[i] + key[(size_t)i % length];
+    rc4_swap(ctx, (uint8_t)i, j);
   }
 }
 

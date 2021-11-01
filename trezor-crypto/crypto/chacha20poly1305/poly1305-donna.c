@@ -24,7 +24,7 @@ poly1305_update(poly1305_context *ctx, const unsigned char *m, size_t bytes) {
 
 	/* process full blocks */
 	if (bytes >= poly1305_block_size) {
-		size_t want = (bytes & ~(poly1305_block_size - 1));
+		size_t want = (bytes & ~((size_t)poly1305_block_size - 1));
 		poly1305_blocks(st, m, want);
 		m += want;
 		bytes -= want;
@@ -166,9 +166,9 @@ poly1305_power_on_self_test(void) {
 	for (i = 0; i < 256; i++) {
 		/* set key and message to 'i,i,i..' */
 		for (j = 0; j < sizeof(all_key); j++)
-			all_key[j] = i;
+			all_key[j] = (unsigned char)i;
 		for (j = 0; j < i; j++)
-			all_msg[j] = i;
+			all_msg[j] = (unsigned char)i;
 		poly1305_auth(mac, all_msg, i, all_key);
 		poly1305_update(&total_ctx, mac, 16);
 	}

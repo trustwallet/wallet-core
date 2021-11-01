@@ -309,7 +309,7 @@ scrypt(const uint8_t * passwd, size_t passwdlen,
 #endif
 
 	/* 1: (B_0 ... B_{p-1}) <-- PBKDF2(P, S, 1, p * MFLen) */
-	pbkdf2_hmac_sha256(passwd, passwdlen, salt, saltlen, 1, B, p * 128 * r);
+	pbkdf2_hmac_sha256(passwd, (int)passwdlen, salt, (int)saltlen, 1, B, (int)(p * 128 * r));
 
 	/* 2: for i = 0 to p - 1 do */
 	for (i = 0; i < p; i++) {
@@ -318,7 +318,7 @@ scrypt(const uint8_t * passwd, size_t passwdlen,
 	}
 
 	/* 5: DK <-- PBKDF2(P, B, 1, dkLen) */
-	pbkdf2_hmac_sha256(passwd, passwdlen, B, p * 128 * r, 1, buf, buflen);
+	pbkdf2_hmac_sha256(passwd, (int)passwdlen, B, (int)(p * 128 * r), 1, buf, (int)buflen);
 
 	/* Free memory. */
 #ifdef MAP_ANON

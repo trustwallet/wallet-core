@@ -44,7 +44,7 @@ void rfc7539_finish(chacha20poly1305_ctx *ctx, int64_t alen, int64_t plen, uint8
     memcpy(lengths + 8, &plen, sizeof(int64_t));
 
     if (plen % 16 != 0)
-        poly1305_update(&ctx->poly1305, padding, 16 - plen%16);
+        poly1305_update(&ctx->poly1305, padding, (size_t)(16 - plen % 16));
     poly1305_update(&ctx->poly1305, lengths, 16);
 
     poly1305_finish(&ctx->poly1305, mac);

@@ -153,8 +153,8 @@ sph_bswap64(sph_u64 x)
 static inline void
 sph_enc16be(void *dst, unsigned val)
 {
-	((unsigned char *)dst)[0] = (val >> 8);
-	((unsigned char *)dst)[1] = val;
+	((unsigned char *)dst)[0] = (unsigned char)(val >> 8);
+	((unsigned char *)dst)[1] = (unsigned char)val;
 }
 
 static inline unsigned
@@ -167,8 +167,8 @@ sph_dec16be(const void *src)
 static inline void
 sph_enc16le(void *dst, unsigned val)
 {
-	((unsigned char *)dst)[0] = val;
-	((unsigned char *)dst)[1] = val >> 8;
+	((unsigned char *)dst)[0] = (unsigned char)val;
+	((unsigned char *)dst)[1] = (unsigned char)(val >> 8);
 }
 
 static inline unsigned
@@ -187,10 +187,10 @@ sph_dec16le(const void *src)
 static inline void
 sph_enc32be(void *dst, sph_u32 val)
 {
-	((unsigned char *)dst)[0] = (val >> 24);
-	((unsigned char *)dst)[1] = (val >> 16);
-	((unsigned char *)dst)[2] = (val >> 8);
-	((unsigned char *)dst)[3] = val;
+	((unsigned char *)dst)[0] = (unsigned char)(val >> 24);
+	((unsigned char *)dst)[1] = (unsigned char)(val >> 16);
+	((unsigned char *)dst)[2] = (unsigned char)(val >> 8);
+	((unsigned char *)dst)[3] = (unsigned char)(val);
 }
 
 /**
@@ -261,10 +261,10 @@ sph_dec32be_aligned(const void *src)
 static inline void
 sph_enc32le(void *dst, sph_u32 val)
 {
-	((unsigned char *)dst)[0] = val;
-	((unsigned char *)dst)[1] = (val >> 8);
-	((unsigned char *)dst)[2] = (val >> 16);
-	((unsigned char *)dst)[3] = (val >> 24);
+	((unsigned char *)dst)[0] = (unsigned char)(val);
+	((unsigned char *)dst)[1] = (unsigned char)(val >> 8);
+	((unsigned char *)dst)[2] = (unsigned char)(val >> 16);
+	((unsigned char *)dst)[3] = (unsigned char)(val >> 24);
 }
 
 /**
@@ -335,14 +335,14 @@ sph_dec32le_aligned(const void *src)
 static inline void
 sph_enc64be(void *dst, sph_u64 val)
 {
-	((unsigned char *)dst)[0] = (val >> 56);
-	((unsigned char *)dst)[1] = (val >> 48);
-	((unsigned char *)dst)[2] = (val >> 40);
-	((unsigned char *)dst)[3] = (val >> 32);
-	((unsigned char *)dst)[4] = (val >> 24);
-	((unsigned char *)dst)[5] = (val >> 16);
-	((unsigned char *)dst)[6] = (val >> 8);
-	((unsigned char *)dst)[7] = val;
+	((unsigned char *)dst)[0] = (unsigned char)(val >> 56);
+	((unsigned char *)dst)[1] = (unsigned char)(val >> 48);
+	((unsigned char *)dst)[2] = (unsigned char)(val >> 40);
+	((unsigned char *)dst)[3] = (unsigned char)(val >> 32);
+	((unsigned char *)dst)[4] = (unsigned char)(val >> 24);
+	((unsigned char *)dst)[5] = (unsigned char)(val >> 16);
+	((unsigned char *)dst)[6] = (unsigned char)(val >> 8);
+	((unsigned char *)dst)[7] = (unsigned char)(val);
 }
 
 /**
@@ -425,14 +425,14 @@ sph_dec64be_aligned(const void *src)
 static inline void
 sph_enc64le(void *dst, sph_u64 val)
 {
-	((unsigned char *)dst)[0] = val;
-	((unsigned char *)dst)[1] = (val >> 8);
-	((unsigned char *)dst)[2] = (val >> 16);
-	((unsigned char *)dst)[3] = (val >> 24);
-	((unsigned char *)dst)[4] = (val >> 32);
-	((unsigned char *)dst)[5] = (val >> 40);
-	((unsigned char *)dst)[6] = (val >> 48);
-	((unsigned char *)dst)[7] = (val >> 56);
+	((unsigned char *)dst)[0] = (unsigned char)(val);
+	((unsigned char *)dst)[1] = (unsigned char)(val >> 8);
+	((unsigned char *)dst)[2] = (unsigned char)(val >> 16);
+	((unsigned char *)dst)[3] = (unsigned char)(val >> 24);
+	((unsigned char *)dst)[4] = (unsigned char)(val >> 32);
+	((unsigned char *)dst)[5] = (unsigned char)(val >> 40);
+	((unsigned char *)dst)[6] = (unsigned char)(val >> 48);
+	((unsigned char *)dst)[7] = (unsigned char)(val >> 56);
 }
 
 /**

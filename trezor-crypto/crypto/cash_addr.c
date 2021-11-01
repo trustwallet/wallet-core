@@ -32,7 +32,7 @@
 #define CHECKSUM_SIZE 8
 
 static uint64_t cashaddr_polymod_step(uint64_t pre) {
-  uint8_t b = pre >> 35;
+  uint8_t b = (pre >> 35) & 0xFF;
   return ((pre & 0x7FFFFFFFFULL) << 5) ^ (-((b >> 0) & 1) & 0x98f2bc8e61ULL) ^
          (-((b >> 1) & 1) & 0x79b76d99e2ULL) ^
          (-((b >> 2) & 1) & 0xf33e5fb3c4ULL) ^
@@ -60,7 +60,7 @@ int cash_encode(char* output, const char* hrp, const uint8_t* data,
     if (ch < 33 || ch > 126) {
       return 0;
     }
-    *(output++) = ch;
+    *(output++) = (char)ch;
     chk = cashaddr_polymod_step(chk) ^ (ch & 0x1f);
     ++i;
   }
@@ -117,7 +117,7 @@ int cash_decode(char* hrp, uint8_t* data, size_t* data_len, const char* input) {
       have_upper = 1;
       ch = (ch - 'A') + 'a';
     }
-    hrp[i] = ch;
+    hrp[i] = (char)ch;
     chk = cashaddr_polymod_step(chk) ^ (ch & 0x1f);
   }
   hrp[i] = 0;
@@ -130,9 +130,9 @@ int cash_decode(char* hrp, uint8_t* data, size_t* data_len, const char* input) {
     if (v == -1) {
       return 0;
     }
-    chk = cashaddr_polymod_step(chk) ^ v;
+    chk = cashaddr_polymod_step(chk) ^ (uint64_t)(int64_t)v;
     if (i + CHECKSUM_SIZE < input_len) {
-      data[i - (1 + hrp_len)] = v;
+      data[i - (1 + hrp_len)] = (uint8_t)v;
     }
     ++i;
   }
@@ -152,12 +152,12 @@ static int convert_bits(uint8_t* out, size_t* outlen, int outbits,
     bits += inbits;
     while (bits >= outbits) {
       bits -= outbits;
-      out[(*outlen)++] = (val >> bits) & maxv;
+      out[(*outlen)++] = (val >> bits) & maxv & 0xFF;
     }
   }
   if (pad) {
     if (bits) {
-      out[(*outlen)++] = (val << (outbits - bits)) & maxv;
+      out[(*outlen)++] = (val << (outbits - bits)) & maxv & 0xFF;
     }
   } else if (((val << (outbits - bits)) & maxv) || bits >= inbits) {
     return 0;

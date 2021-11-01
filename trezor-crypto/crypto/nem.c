@@ -98,8 +98,8 @@ static inline bool nem_write_tagged(nem_transaction_ctx *ctx,
 
 static inline bool nem_write_mosaic_str(nem_transaction_ctx *ctx,
                                         const char *name, const char *value) {
-  uint32_t name_length = strlen(name);
-  uint32_t value_length = strlen(value);
+  uint32_t name_length = (uint32_t)strlen(name);
+  uint32_t value_length = (uint32_t)strlen(value);
 
   SERIALIZE_U32(sizeof(uint32_t) + name_length + sizeof(uint32_t) +
                 value_length);
@@ -273,10 +273,10 @@ bool nem_transaction_write_mosaic(nem_transaction_ctx *ctx,
   size_t identifier_length =
       sizeof(uint32_t) + namespace_length + sizeof(uint32_t) + mosaic_length;
 
-  SERIALIZE_U32(sizeof(uint32_t) + sizeof(uint64_t) + identifier_length);
-  SERIALIZE_U32(identifier_length);
-  SERIALIZE_TAGGED((const uint8_t *)namespace, namespace_length);
-  SERIALIZE_TAGGED((const uint8_t *)mosaic, mosaic_length);
+  SERIALIZE_U32(sizeof(uint32_t) + sizeof(uint64_t) + (uint32_t)identifier_length);
+  SERIALIZE_U32((uint32_t)identifier_length);
+  SERIALIZE_TAGGED((const uint8_t *)namespace, (uint32_t)namespace_length);
+  SERIALIZE_TAGGED((const uint8_t *)mosaic, (uint32_t)mosaic_length);
   SERIALIZE_U64(quantity);
 
   return true;
@@ -296,7 +296,7 @@ bool nem_transaction_create_multisig(nem_transaction_ctx *ctx, uint8_t network,
                                           timestamp, signer, fee, deadline);
   if (!ret) return false;
 
-  SERIALIZE_TAGGED(inner->buffer, inner->offset);
+  SERIALIZE_TAGGED(inner->buffer, (uint32_t)inner->offset);
 
   return true;
 }
@@ -344,12 +344,12 @@ bool nem_transaction_create_provision_namespace(
   if (parent) {
     SERIALIZE_TAGGED((const uint8_t *)rental_sink, NEM_ADDRESS_SIZE);
     SERIALIZE_U64(rental_fee);
-    SERIALIZE_TAGGED((const uint8_t *)namespace, strlen(namespace));
-    SERIALIZE_TAGGED((const uint8_t *)parent, strlen(parent));
+    SERIALIZE_TAGGED((const uint8_t *)namespace, (uint32_t)strlen(namespace));
+    SERIALIZE_TAGGED((const uint8_t *)parent, (uint32_t)strlen(parent));
   } else {
     SERIALIZE_TAGGED((const uint8_t *)rental_sink, NEM_ADDRESS_SIZE);
     SERIALIZE_U64(rental_fee);
-    SERIALIZE_TAGGED((const uint8_t *)namespace, strlen(namespace));
+    SERIALIZE_TAGGED((const uint8_t *)namespace, (uint32_t)strlen(namespace));
     SERIALIZE_U32(0xffffffff);
   }
 
@@ -384,10 +384,10 @@ bool nem_transaction_create_mosaic_creation(
 
   SERIALIZE_U32(0);
   SERIALIZE_TAGGED(signer, sizeof(ed25519_public_key));
-  SERIALIZE_U32(identifier_length);
-  SERIALIZE_TAGGED((const uint8_t *)namespace, namespace_length);
-  SERIALIZE_TAGGED((const uint8_t *)mosaic, mosaic_length);
-  SERIALIZE_TAGGED((const uint8_t *)description, strlen(description));
+  SERIALIZE_U32((uint32_t)identifier_length);
+  SERIALIZE_TAGGED((const uint8_t *)namespace, (uint32_t)namespace_length);
+  SERIALIZE_TAGGED((const uint8_t *)mosaic, (uint32_t)mosaic_length);
+  SERIALIZE_TAGGED((const uint8_t *)description, (uint32_t)strlen(description));
   SERIALIZE_U32(4);  // Number of properties
 
   if (!nem_write_mosaic_u64(ctx, "divisibility", divisibility)) return false;
@@ -403,19 +403,19 @@ bool nem_transaction_create_mosaic_creation(
                                     sizeof(uint32_t) + levy_mosaic_length;
 
     SERIALIZE_U32(sizeof(uint32_t) + sizeof(uint32_t) + NEM_ADDRESS_SIZE +
-                  sizeof(uint32_t) + levy_identifier_length + sizeof(uint64_t));
+                  sizeof(uint32_t) + (uint32_t)levy_identifier_length + sizeof(uint64_t));
     SERIALIZE_U32(levy_type);
     SERIALIZE_TAGGED((const uint8_t *)levy_address, NEM_ADDRESS_SIZE);
-    SERIALIZE_U32(levy_identifier_length);
-    SERIALIZE_TAGGED((const uint8_t *)levy_namespace, levy_namespace_length);
-    SERIALIZE_TAGGED((const uint8_t *)levy_mosaic, levy_mosaic_length);
+    SERIALIZE_U32((uint32_t)levy_identifier_length);
+    SERIALIZE_TAGGED((const uint8_t *)levy_namespace, (uint32_t)levy_namespace_length);
+    SERIALIZE_TAGGED((const uint8_t *)levy_mosaic, (uint32_t)levy_mosaic_length);
     SERIALIZE_U64(levy_fee);
   } else {
     SERIALIZE_U32(0);
   }
 
   // Rewrite length
-  nem_write_u32(&state, ctx->offset - state.offset - sizeof(uint32_t));
+  nem_write_u32(&state, (uint32_t)(ctx->offset - state.offset - sizeof(uint32_t)));
 
   SERIALIZE_TAGGED((const uint8_t *)creation_sink, NEM_ADDRESS_SIZE);
   SERIALIZE_U64(creation_fee);
@@ -441,9 +441,9 @@ bool nem_transaction_create_mosaic_supply_change(
   size_t identifier_length =
       sizeof(uint32_t) + namespace_length + sizeof(uint32_t) + mosaic_length;
 
-  SERIALIZE_U32(identifier_length);
-  SERIALIZE_TAGGED((const uint8_t *)namespace, namespace_length);
-  SERIALIZE_TAGGED((const uint8_t *)mosaic, mosaic_length);
+  SERIALIZE_U32((uint32_t)identifier_length);
+  SERIALIZE_TAGGED((const uint8_t *)namespace, (uint32_t)namespace_length);
+  SERIALIZE_TAGGED((const uint8_t *)mosaic, (uint32_t)mosaic_length);
   SERIALIZE_U32(type);
   SERIALIZE_U64(delta);
 

@@ -1,7 +1,16 @@
 #ifndef __STDC_WANT_LIB_EXT1__
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreserved-id-macro"
+#endif
 #define __STDC_WANT_LIB_EXT1__ 1  // C11's bounds-checking interface.
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 #endif
 #include <string.h>
+
+#include <TrezorCrypto/memzero.h>
 
 #ifdef _WIN32
 #include <Windows.h>
