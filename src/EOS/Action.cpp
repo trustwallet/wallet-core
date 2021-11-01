@@ -48,7 +48,7 @@ TransferAction::TransferAction( const std::string& currency,
                                 const std::string& memo) {
     account = Name(currency);
     name = Name("transfer");
-    authorization.push_back(PermissionLevel(Name(from), Name("active")));
+    authorization.emplace_back(PermissionLevel(Name(from), Name("active")));
 
     setData(from, to, asset, memo);
 }

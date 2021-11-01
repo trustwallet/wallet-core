@@ -11,7 +11,7 @@
 
 TW_EXTERN_C_BEGIN
 
-TW_EXPORT_CLASS
+TW_EXPORT_STRUCT
 struct TWMnemonic;
 
 /// Determines whether a BIP39 English mnemonic phrase is valid.

@@ -97,12 +97,12 @@ std::shared_ptr<ParamBase> ParamFactory::make(const std::string& type) {
 
 std::string joinArrayElems(const std::vector<std::string>& strings) {
     auto array = json::array();
-    for (auto i = 0; i < strings.size(); ++i) {
+    for (const auto& string : strings) {
         // parse to prevent quotes on simple values
-        auto value = json::parse(strings[i], nullptr, false);
+        auto value = json::parse(string, nullptr, false);
         if (value.is_discarded()) {
             // fallback
-            value = json(strings[i]);
+            value = json(string);
         }
         array.push_back(value);
     }

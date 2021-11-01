@@ -7,6 +7,7 @@
 #include "BinaryCoding.h"
 
 #include <cassert>
+#include <tuple>
 
 namespace TW {
 

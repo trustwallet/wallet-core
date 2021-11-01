@@ -31,6 +31,7 @@ enum TWEthereumChainID {
     TWEthereumChainIDXDai = 100,
     TWEthereumChainIDFantom = 250,
     TWEthereumChainIDCelo = 42220,
+    TWEthereumChainIDRonin = 2020,
 };
 
 TW_EXTERN_C_END

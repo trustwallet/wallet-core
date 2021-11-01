@@ -36,7 +36,7 @@ TEST(PolkadotSigner, SignTransferKSM) {
     input.set_transaction_version(2);
 
     auto balanceCall = input.mutable_balance_call();
-    auto &transfer = *balanceCall->mutable_transfer();
+    auto& transfer = *balanceCall->mutable_transfer();
     auto value = store(uint256_t(12345));
     transfer.set_to_address(toAddress.string());
     transfer.set_value(value.data(), value.size());

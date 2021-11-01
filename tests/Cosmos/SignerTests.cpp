@@ -35,7 +35,7 @@ TEST(CosmosSigner, SignTx) {
     amountOfTx->set_denom("muon");
     amountOfTx->set_amount(1);
 
-    auto &fee = *input.mutable_fee();
+    auto& fee = *input.mutable_fee();
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("muon");
@@ -79,7 +79,7 @@ TEST(CosmosSigner, SignTxWithMode) {
     amountOfTx->set_denom("muon");
     amountOfTx->set_amount(1);
 
-    auto &fee = *input.mutable_fee();
+    auto& fee = *input.mutable_fee();
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("muon");

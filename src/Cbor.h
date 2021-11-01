@@ -8,6 +8,7 @@
 
 #include "Data.h"
 
+#include <stdexcept>
 #include <string>
 #include <memory>
 

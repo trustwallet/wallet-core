@@ -71,9 +71,8 @@ Result<void, Common::Proto::SigningError> SignatureBuilder<Transaction>::sign(Sc
     uint32_t signatureVersion = [this]() {
         if ((input.hashType & TWBitcoinSigHashTypeFork) != 0) {
             return WITNESS_V0;
-        } else {
-            return BASE;
-        }
+        } 
+        return BASE;
     }();
     auto result = signStep(script, index, utxo, signatureVersion);
     if (!result) {
@@ -274,7 +273,8 @@ std::optional<KeyPair> SignatureBuilder<Transaction>::keyPairForPubKeyHash(const
         auto pubKey = pubKeyExtended.compressed();
         if (Hash::sha256ripemd(pubKey.bytes.data(), pubKey.bytes.size()) == hash) {
             return std::make_tuple(key, pubKey);
-        } else if (Hash::sha256ripemd(pubKeyExtended.bytes.data(), pubKeyExtended.bytes.size()) == hash) {
+        }
+        if (Hash::sha256ripemd(pubKeyExtended.bytes.data(), pubKeyExtended.bytes.size()) == hash) {
             return std::make_tuple(key, pubKeyExtended);
         }
     }

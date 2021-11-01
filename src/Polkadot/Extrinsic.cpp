@@ -135,7 +135,7 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressTy
                 Data call1;
                 {
                     auto staking1 = Proto::Staking();
-                    auto bond = staking1.mutable_bond();
+                    auto* bond = staking1.mutable_bond();
                     bond->set_controller(staking.bond_and_nominate().controller());
                     bond->set_value(staking.bond_and_nominate().value());
                     bond->set_reward_destination(staking.bond_and_nominate().reward_destination());
@@ -147,7 +147,7 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressTy
                 Data call2;
                 {
                     auto staking2 = Proto::Staking();
-                    auto nominate = staking2.mutable_nominate();
+                    auto* nominate = staking2.mutable_nominate();
                     for (auto i = 0; i < staking.bond_and_nominate().nominators_size(); ++i) {
                         nominate->add_nominators(staking.bond_and_nominate().nominators(i));
                     }
@@ -194,7 +194,7 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressTy
             {
                 std::vector<SS58Address> accountIds;
                 for (auto& n : staking.nominate().nominators()) {
-                    accountIds.push_back(SS58Address(n, network));
+                    accountIds.emplace_back(SS58Address(n, network));
                 }
                 // call index
                 append(data, getCallIndex(network, stakingNominate));

@@ -12,8 +12,8 @@
 using namespace TW;
 
 DerivationPath::DerivationPath(const std::string& string) {
-    auto it = string.data();
-    const auto end = string.data() + string.size();
+    const auto* it = string.data();
+    const auto* end = string.data() + string.size();
 
     if (it != end && *it == 'm') {
         ++it;

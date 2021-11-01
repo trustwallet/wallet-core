@@ -31,7 +31,7 @@ TEST(CosmosStaking, Staking) {
     amountOfTx.set_denom("muon");
     amountOfTx.set_amount(10);
 
-    auto &fee = *input.mutable_fee();
+    auto& fee = *input.mutable_fee();
     fee.set_gas(101721);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("muon");
@@ -61,7 +61,7 @@ TEST(CosmosStaking, Unstaking) {
     amountOfTx.set_denom("muon");
     amountOfTx.set_amount(10);
 
-    auto &fee = *input.mutable_fee();
+    auto& fee = *input.mutable_fee();
     fee.set_gas(101721);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("muon");
@@ -93,7 +93,7 @@ TEST(CosmosStaking, Restaking) {
     amountOfTx.set_denom("muon");
     amountOfTx.set_amount(10);
 
-    auto &fee = *input.mutable_fee();
+    auto& fee = *input.mutable_fee();
     fee.set_gas(101721);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("muon");
@@ -120,7 +120,7 @@ TEST(CosmosStaking, Withdraw) {
     message.set_delegator_address("cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02");
     message.set_validator_address("cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp");
 
-    auto &fee = *input.mutable_fee();
+    auto& fee = *input.mutable_fee();
     fee.set_gas(101721);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("muon");
@@ -146,7 +146,7 @@ TEST(CosmosStaking, WithdrawAllRaw) {
     auto& message = *msg->mutable_raw_json_message();
     message.set_type("cosmos-sdk/MsgWithdrawDelegationRewardsAll");
     message.set_value("{\"delegator_address\":\"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02\"}");
-    auto &fee = *input.mutable_fee();
+    auto& fee = *input.mutable_fee();
     fee.set_gas(101721);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("muon");

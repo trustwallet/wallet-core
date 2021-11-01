@@ -12,7 +12,7 @@
 
 TW_EXTERN_C_BEGIN
 
-TW_EXPORT_CLASS
+TW_EXPORT_STRUCT
 struct TWEthereumAbiValue;
 
 /// Returned data must be deleted (hint: use WRAPD() macro).

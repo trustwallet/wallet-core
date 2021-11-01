@@ -59,7 +59,7 @@ TEST(MonacoinTransaction, SignTransaction) {
     plan.set_fee(fee);
     plan.set_change(utxo_amount - amount - fee);
 
-    auto &protoPlan = *input.mutable_plan();
+    auto& protoPlan = *input.mutable_plan();
     protoPlan = plan;
 
     Proto::SigningOutput output;
