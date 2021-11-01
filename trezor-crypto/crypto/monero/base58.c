@@ -44,6 +44,11 @@ static const size_t addr_checksum_size = 4;
 static const int decoded_block_sizes[] = {0, -1, 1, 2, -1, 3, 4, 5, -1, 6, 7, 8};
 #define reverse_alphabet(letter) ((int8_t) b58digits_map[(int)letter])
 
+#ifdef __clang__
+#define TC_FALLTHROUGH __attribute__((fallthrough))
+#else
+#define TC_FALLTHROUGH
+#endif
 
 static uint64_t uint_8be_to_64(const uint8_t* data, size_t size)
 {
@@ -52,13 +57,13 @@ static uint64_t uint_8be_to_64(const uint8_t* data, size_t size)
 	uint64_t res = 0;
 	switch (9 - size)
 	{
-	case 1:            res |= *data++; /* FALLTHRU */
-	case 2: res <<= 8; res |= *data++; /* FALLTHRU */
-	case 3: res <<= 8; res |= *data++; /* FALLTHRU */
-	case 4: res <<= 8; res |= *data++; /* FALLTHRU */
-	case 5: res <<= 8; res |= *data++; /* FALLTHRU */
-	case 6: res <<= 8; res |= *data++; /* FALLTHRU */
-	case 7: res <<= 8; res |= *data++; /* FALLTHRU */
+	case 1:            res |= *data++; TC_FALLTHROUGH;
+	case 2: res <<= 8; res |= *data++; TC_FALLTHROUGH;
+	case 3: res <<= 8; res |= *data++; TC_FALLTHROUGH;
+	case 4: res <<= 8; res |= *data++; TC_FALLTHROUGH;
+	case 5: res <<= 8; res |= *data++; TC_FALLTHROUGH;
+	case 6: res <<= 8; res |= *data++; TC_FALLTHROUGH;
+	case 7: res <<= 8; res |= *data++; TC_FALLTHROUGH;
 	case 8: res <<= 8; res |= *data; break;
 	default: assert(false);
 	}
@@ -78,7 +83,7 @@ static void encode_block(const char* block, size_t size, char* res)
 {
 	assert(1 <= size && size <= full_block_size);
 
-	uint64_t num = uint_8be_to_64((uint8_t*)(block), size);
+	uint64_t num = uint_8be_to_64((const uint8_t*)(block), size);
 	int i = ((int)(encoded_block_sizes[size])) - 1;
 	while (0 <= i)
 	{
@@ -119,7 +124,7 @@ static bool decode_block(const char* block, size_t size, char* res)
 	if ((size_t)res_size < full_block_size && (UINT64_C(1) << (8 * res_size)) <= res_num)
 		return false; // Overflow
 
-	uint_64_to_8be(res_num, res_size, (uint8_t*)(res));
+	uint_64_to_8be(res_num, (size_t)res_size, (uint8_t*)(res));
 
 	return true;
 }
@@ -170,7 +175,7 @@ static bool xmr_base58_decode(const char *b58, size_t b58sz, void *data, size_t 
 		return false; // Invalid enc length
 	}
 
-	size_t data_size = full_block_count * full_block_size + last_block_decoded_size;
+	size_t data_size = full_block_count * full_block_size + (size_t)last_block_decoded_size;
 	if (*binsz < data_size){
 		*binsz = 0;
 		return false;
@@ -193,7 +198,8 @@ static bool xmr_base58_decode(const char *b58, size_t b58sz, void *data, size_t 
 	return true;
 }
 
-static int xmr_base58_addr_encode_check(uint64_t tag, const uint8_t *data, size_t binsz, char *b58, size_t b58sz)
+int xmr_base58_addr_encode_check(uint64_t tag, const uint8_t *data, size_t binsz, char *b58, size_t b58sz);
+int xmr_base58_addr_encode_check(uint64_t tag, const uint8_t *data, size_t binsz, char *b58, size_t b58sz)
 {
 	if (binsz > 128 || tag > 127) {  // tag varint
 		return false;
@@ -215,6 +221,7 @@ static int xmr_base58_addr_encode_check(uint64_t tag, const uint8_t *data, size_
 	return (int) (!r ? 0 : b58size);
 }
 
+int xmr_base58_addr_decode_check(const char *addr, size_t sz, uint64_t *tag, void *data, size_t datalen);
 int xmr_base58_addr_decode_check(const char *addr, size_t sz, uint64_t *tag, void *data, size_t datalen)
 {
 	size_t buflen = 1 + 64 + addr_checksum_size;
