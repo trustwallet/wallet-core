@@ -70,7 +70,7 @@ target_include_directories(TrezorCrypto
         src
 )
 
-if(NOT ANDROID AND NOT IOS_PLATFORM AND NOT WIN32)
+if(NOT ANDROID AND NOT IOS_PLATFORM AND NOT (WIN32 AND NOT TW_STATIC_LIBRARY))
     add_subdirectory(crypto/tests)
 endif()
 
