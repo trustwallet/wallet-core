@@ -151,9 +151,7 @@ target_include_directories(TrustWalletCore
 )
 
 if(NOT ANDROID AND NOT IOS_PLATFORM AND NOT (WIN32 AND NOT TW_STATIC_LIBRARY))
-    if(NOT WIN32) # TODO
-        add_subdirectory(tests)
-    endif()
+    add_subdirectory(tests)
     add_subdirectory(walletconsole/lib)
     add_subdirectory(walletconsole)
 endif()
