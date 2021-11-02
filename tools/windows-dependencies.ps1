@@ -5,7 +5,7 @@
 
 # Ported from the `install-dependencies` bash script
 
-# TODO: GoogleTest
+# GoogleTest
 # Check
 # Downloads the single-header Nlohmann JSON library
 # Downloads boost library, only require the headers
@@ -21,6 +21,42 @@ $include = Join-Path $prefix "include"
 $cmakeGenerator = "Visual Studio 17 2022"
 $cmakePlatform = "x64"
 $cmakeToolset = "v143"
+
+# GoogleTest
+$gtestVersion = "1.11.0"
+$gtestDir = Join-Path $prefix "src\gtest"
+$gtestZip = "googletest-release-$gtestVersion.zip"
+$gtestUrl = "https://github.com/google/googletest/archive/refs/tags/release-$gtestVersion.zip"
+
+# Download and extract
+if (-not(Test-Path -Path $gtestDir -PathType Container)) {
+    mkdir $gtestDir | Out-Null
+}
+cd $gtestDir
+if (-not(Test-Path -Path $gtestZip -PathType Leaf)) {
+    Invoke-WebRequest -Uri $gtestUrl -OutFile $gtestZip
+}
+if (Test-Path -Path googletest-release-$gtestVersion -PathType Container) {
+     Remove-Item –Path googletest-release-$gtestVersion -Recurse
+}
+Expand-Archive -LiteralPath $gtestZip -DestinationPath $gtestDir
+
+# Build debug and release libraries
+cd googletest-release-$gtestVersion
+mkdir build_msvc | Out-Null
+cd build_msvc
+cmake -G $cmakeGenerator -A $cmakePlatform -T $cmakeToolset "-DCMAKE_INSTALL_PREFIX=$prefix" "-DCMAKE_DEBUG_POSTFIX=d" "-DCMAKE_BUILD_TYPE=Release" "-Dgtest_force_shared_crt=ON" ..
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}
+cmake --build . --target INSTALL --config Debug
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}
+cmake --build . --target INSTALL --config Release
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}
 
 # Check
 $checkVersion = "0.15.2"
