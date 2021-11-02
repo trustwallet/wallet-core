@@ -1,5 +1,5 @@
-#ifndef TC__KEYPAIR_H__
-#define TC__KEYPAIR_H__
+#ifndef __KEYPAIR_H__
+#define __KEYPAIR_H__
 
 #include <string.h>
 

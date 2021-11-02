@@ -20,8 +20,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef TC__NEM_H__
-#define TC__NEM_H__
+#ifndef __NEM_H__
+#define __NEM_H__
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -61,10 +61,10 @@ extern "C" {
 #define NEM_ENCRYPTED_PAYLOAD_SIZE(size) \
   (AES_BLOCK_SIZE + NEM_SALT_SIZE + NEM_ENCRYPTED_SIZE(size))
 
-#define TC_NEM_PADDING_SIZE(buffer, size) ((buffer)[(size)-1])
+#define _NEM_PADDING_SIZE(buffer, size) ((buffer)[(size)-1])
 #define NEM_PADDING_SIZE(buffer, size)               \
-  (TC_NEM_PADDING_SIZE(buffer, size) > (size) ? (size) \
-                                            : TC_NEM_PADDING_SIZE(buffer, size))
+  (_NEM_PADDING_SIZE(buffer, size) > (size) ? (size) \
+                                            : _NEM_PADDING_SIZE(buffer, size))
 
 #define NEM_DECRYPTED_SIZE(buffer, size) ((size)-NEM_PADDING_SIZE(buffer, size))
 

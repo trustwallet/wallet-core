@@ -27,8 +27,8 @@
  * online backup system.
  */
 
-#ifndef TC_SCRYPT_H_
-#define TC_SCRYPT_H_
+#ifndef _SCRYPT_H_
+#define _SCRYPT_H_
 
 
 #include <stdint.h>

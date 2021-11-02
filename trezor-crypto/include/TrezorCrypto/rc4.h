@@ -20,8 +20,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef TC__RC4_H__
-#define TC__RC4_H__
+#ifndef __RC4_H__
+#define __RC4_H__
 
 #include <stddef.h>
 #include <stdint.h>
