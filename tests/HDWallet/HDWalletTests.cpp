@@ -15,9 +15,11 @@
 #include "Hash.h"
 #include "Base58.h"
 #include "Coin.h"
-#include "interface/TWTestUtilities.h"
+#include "../interface/TWTestUtilities.h"
 
 #include <gtest/gtest.h>
+
+extern std::string TESTS_ROOT;
 
 namespace TW {
 
@@ -35,7 +37,7 @@ TEST(HDWallet, generate) {
         HDWallet wallet = HDWallet(256, passphrase);
         EXPECT_TRUE(Mnemonic::isValid(wallet.getMnemonic()));
         EXPECT_EQ(wallet.getPassphrase(), passphrase);
-        EXPECT_EQ(wallet.getEntropy().size(), 33);
+        EXPECT_EQ(wallet.getEntropy().size(), 32);
     }
 }
 
@@ -59,6 +61,44 @@ TEST(HDWallet, createFromMnemonic) {
         EXPECT_EQ(wallet.getPassphrase(), "");
         EXPECT_EQ(hex(wallet.getEntropy()), "ba5821e8c356c05ba5f025d9532fe0f21f65d594");
         EXPECT_EQ(hex(wallet.getSeed()), "354c22aedb9a37407adc61f657a6f00d10ed125efa360215f36c6919abd94d6dbc193a5f9c495e21ee74118661e327e84a5f5f11fa373ec33b80897d4697557d");
+    }
+}
+
+TEST(HDWallet, entropyLength_createFromMnemonic) {
+    {   // 12 words
+        HDWallet wallet = HDWallet("oil oil oil oil oil oil oil oil oil oil oil oil", "");
+        EXPECT_EQ(wallet.getEntropy().size(), 16);
+        EXPECT_EQ(hex(wallet.getEntropy()), "99d33a674ce99d33a674ce99d33a674c");
+    }
+    {   // 12 words, from https://github.com/trezor/python-mnemonic/blob/master/vectors.json
+        HDWallet wallet = HDWallet("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about", "");
+        EXPECT_EQ(wallet.getEntropy().size(), 16);
+        EXPECT_EQ(hex(wallet.getEntropy()), "00000000000000000000000000000000");
+    }
+    {   // 15 words
+        HDWallet wallet = HDWallet("history step cheap card humble screen raise seek robot slot coral roof spoil wreck caution", "");
+        EXPECT_EQ(wallet.getEntropy().size(), 20);
+        EXPECT_EQ(hex(wallet.getEntropy()), "6c3aac9b9146ef832c4e18bb3980c0dddd25fc49");
+    }
+    {   // 18 words
+        HDWallet wallet = HDWallet("caught hockey split gun symbol code payment copy broccoli silly shed secret stove tell citizen staff photo high", "");
+        EXPECT_EQ(wallet.getEntropy().size(), 24);
+        EXPECT_EQ(hex(wallet.getEntropy()), "246d8f48b3fdc65a2869801c791715614d6bbd8a56a0a3ad");
+    }
+    {   // 21 words
+        HDWallet wallet = HDWallet("diary shine country alpha bridge coast loan hungry hip media sell crucial swarm share gospel lake visa coin dizzy physical basket", "");
+        EXPECT_EQ(wallet.getEntropy().size(), 28);
+        EXPECT_EQ(hex(wallet.getEntropy()), "3d58bcc40381bc59a0c37a6bf14f0d9a3db78a5933e5f4a5ad00d1f1");
+    }
+    {   // 24 words
+        HDWallet wallet = HDWallet("poet spider smile swift roof pilot subject save hand diet ice universe over brown inspire ugly wide economy symbol shove episode patient plug swamp", "");
+        EXPECT_EQ(wallet.getEntropy().size(), 32);
+        EXPECT_EQ(hex(wallet.getEntropy()), "a73a3732edebbb49f5fdfe68c7b5c0f6e9de3a1d5760faa8c771e384bf4229b6");
+    }
+    {   // 24 words, from https://github.com/trezor/python-mnemonic/blob/master/vectors.json
+        HDWallet wallet = HDWallet("letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic bless", "");
+        EXPECT_EQ(wallet.getEntropy().size(), 32);
+        EXPECT_EQ(hex(wallet.getEntropy()), "8080808080808080808080808080808080808080808080808080808080808080");
     }
 }
 
@@ -210,6 +250,40 @@ TEST(HDWallet, DeriveWithLeadingZerosEth) {
     auto wallet = HDWallet(mnemonic, "");
     const auto addr = Ethereum::Address(wallet.getKey(coin, DerivationPath(derivationPath)).getPublicKey(TW::publicKeyType(coin)));
     EXPECT_EQ(addr.string(), "0x0ba17e928471c64AaEaf3ABfB3900EF4c27b380D");
+}
+
+static nlohmann::json getVectors() {
+    const std::string vectorsJsonPath = std::string(TESTS_ROOT) + "/HDWallet/bip39_vectors.json";
+    auto vectorsJson = loadJson(vectorsJsonPath)["english"];
+    return vectorsJson;
+}
+
+TEST(HDWallet, Bip39Vectors) {
+    // BIP39 test vectors, from https://github.com/trezor/python-mnemonic/blob/master/vectors.json
+    const auto passphrase = "TREZOR";
+    const auto vectors = getVectors();
+    for (const auto& v: vectors) {
+        const std::string entropy = v[0];
+        const std::string mnemonic = v[1];
+        const std::string seed = v[2];
+        const std::string xprv = v[3];
+        { // from mnemonic
+            HDWallet wallet = HDWallet(mnemonic, passphrase);
+            EXPECT_EQ(wallet.getMnemonic(), mnemonic);
+            EXPECT_EQ(wallet.getPassphrase(), passphrase);
+            EXPECT_EQ(hex(wallet.getEntropy()), entropy);
+            EXPECT_EQ(hex(wallet.getSeed()), seed);
+            EXPECT_EQ(wallet.getRootKey(TWCoinTypeBitcoin, TWHDVersionXPRV), xprv);
+        }
+        { // from entropy
+            HDWallet wallet = HDWallet(parse_hex(entropy), passphrase);
+            EXPECT_EQ(wallet.getMnemonic(), mnemonic);
+            EXPECT_EQ(wallet.getPassphrase(), passphrase);
+            EXPECT_EQ(hex(wallet.getEntropy()), entropy);
+            EXPECT_EQ(hex(wallet.getSeed()), seed);
+            EXPECT_EQ(wallet.getRootKey(TWCoinTypeBitcoin, TWHDVersionXPRV), xprv);
+        }
+    }
 }
 
 } // namespace
