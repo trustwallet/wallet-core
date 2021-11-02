@@ -114,7 +114,8 @@ void random_buffer(uint8_t *buf, size_t len) {
 
  // [wallet-core]
 void *random_init() {
-    return (void *)open; // return a valid pointer
+    static int dummy;
+    return &dummy; // return a valid pointer
 }
 
 // [wallet-core]
