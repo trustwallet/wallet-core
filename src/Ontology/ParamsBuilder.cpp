@@ -13,6 +13,7 @@
 #include <TrezorCrypto/nist256p1.h>
 
 #include <list>
+#include <algorithm>
 
 using namespace TW;
 using namespace TW::Ontology;
