@@ -115,7 +115,7 @@ RLP::DecodedItem RLP::decode(const Data& input) {
     if (prefix <= 0x7f) {
         // 00--7f: a single byte whose value is in the [0x00, 0x7f] range, that byte is its own RLP encoding.
         item.decoded.push_back(Data{input[0]});
-        item.remainder = subData(input, 1, inputLen - 1);
+        item.remainder = subData(input, 1);
         return item;
     }
     if (prefix <= 0xb7) {
@@ -126,7 +126,7 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         // empty string
         if (prefix == 0x80) {
             item.decoded.emplace_back(Data());
-            item.remainder = subData(input, 1, inputLen - 1);
+            item.remainder = subData(input, 1);
             return item;
         }
 
@@ -139,7 +139,7 @@ RLP::DecodedItem RLP::decode(const Data& input) {
             throw std::invalid_argument(std::string("invalid short string, length ") + std::to_string(strLen));
         }
         item.decoded.push_back(subData(input, 1, strLen));
-        item.remainder = subData(input, 1 + strLen, inputLen - (1 + strLen));
+        item.remainder = subData(input, 1 + strLen);
 
         return item;
     } 
@@ -152,7 +152,7 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         }
         auto data = subData(input, 1 + lenOfStrLen, strLen);
         item.decoded.push_back(data);
-        item.remainder = subData(input, 1 + lenOfStrLen + strLen, inputLen - (1 + lenOfStrLen + strLen));
+        item.remainder = subData(input, 1 + lenOfStrLen + strLen);
         return item;
     } 
     if (prefix <= 0xf7) {
@@ -163,7 +163,7 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         }
         // empty list
         if (listLen == 0) {
-            item.remainder = subData(input, 1, inputLen - 1);
+            item.remainder = subData(input, 1);
             return item;
         }
 
@@ -172,7 +172,7 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         for (auto& data : listItem.decoded) {
             item.decoded.push_back(data);
         }
-        item.remainder = subData(input, 1 + listLen, inputLen - (1 + listLen));
+        item.remainder = subData(input, 1 + listLen);
         return item;
     } 
     // f8--ff 
@@ -190,6 +190,6 @@ RLP::DecodedItem RLP::decode(const Data& input) {
     for (auto& data : listItem.decoded) {
         item.decoded.push_back(data);
     }
-    item.remainder = subData(input, 1 + lenOfListLen + listLen, inputLen - (1 + lenOfListLen + listLen));
+    item.remainder = subData(input, 1 + lenOfListLen + listLen);
     return item;
 }
