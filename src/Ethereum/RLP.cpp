@@ -115,7 +115,7 @@ RLP::DecodedItem RLP::decode(const Data& input) {
     if (prefix <= 0x7f) {
         // 00--7f: a single byte whose value is in the [0x00, 0x7f] range, that byte is its own RLP encoding.
         item.decoded.push_back(Data{input[0]});
-        item.remainder = Data(input.begin() + 1, input.end());
+        item.remainder = subData(input, 1, inputLen - 1);
         return item;
     }
     if (prefix <= 0xb7) {
@@ -126,7 +126,7 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         // empty string
         if (prefix == 0x80) {
             item.decoded.emplace_back(Data());
-            item.remainder = Data(input.begin() + 1, input.end());
+            item.remainder = subData(input, 1, inputLen - 1);
             return item;
         }
 
@@ -135,11 +135,11 @@ RLP::DecodedItem RLP::decode(const Data& input) {
             throw std::invalid_argument("single byte below 128 must be encoded as itself");
         }
 
-        item.decoded.push_back(subData(input, 1, strLen));
-        if (input.size() < (1 + strLen)) {
-            throw std::invalid_argument("length overrun");
+        if (inputLen < (1 + strLen)) {
+            throw std::invalid_argument(std::string("invalid short string, length ") + std::to_string(strLen));
         }
-        item.remainder = Data(input.begin() + 1 + strLen, input.end());
+        item.decoded.push_back(subData(input, 1, strLen));
+        item.remainder = subData(input, 1 + strLen, inputLen - (1 + strLen));
 
         return item;
     } 
@@ -147,26 +147,23 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         // b8--bf: long string
         auto lenOfStrLen = prefix - 0xb7;
         auto strLen = parseVarInt(lenOfStrLen, input, 1);
-        if (inputLen < lenOfStrLen || inputLen < lenOfStrLen + strLen) {
-            throw std::invalid_argument("Invalid rlp encoding length");
+        if (inputLen < lenOfStrLen || inputLen < (1 + lenOfStrLen + strLen)) {
+            throw std::invalid_argument(std::string("Invalid rlp encoding length, length ") + std::to_string(strLen));
         }
         auto data = subData(input, 1 + lenOfStrLen, strLen);
         item.decoded.push_back(data);
-        if (input.size() < (1 + lenOfStrLen + strLen)) {
-            throw std::invalid_argument("length overrun");
-        }
-        item.remainder = Data(input.begin() + 1 + lenOfStrLen + strLen, input.end());
+        item.remainder = subData(input, 1 + lenOfStrLen + strLen, inputLen - (1 + lenOfStrLen + strLen));
         return item;
     } 
     if (prefix <= 0xf7) {
         // c0--f7: a list between  0-55 bytes long
         auto listLen = prefix - 0xc0;
-        if (inputLen < listLen) {
-            throw std::invalid_argument("Invalid rlp string length");
+        if (inputLen < (1 + listLen)) {
+            throw std::invalid_argument(std::string("Invalid rlp string length, length ") + std::to_string(listLen));
         }
         // empty list
         if (listLen == 0) {
-            item.remainder = Data(input.begin() + 1, input.end());
+            item.remainder = subData(input, 1, inputLen - 1);
             return item;
         }
 
@@ -175,10 +172,7 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         for (auto& data : listItem.decoded) {
             item.decoded.push_back(data);
         }
-        if (input.size() < (1 + listLen)) {
-            throw std::invalid_argument("length overrun");
-        }
-        item.remainder = Data(input.begin() + 1 + listLen, input.end());
+        item.remainder = subData(input, 1 + listLen, inputLen - (1 + listLen));
         return item;
     } 
     // f8--ff 
@@ -187,8 +181,8 @@ RLP::DecodedItem RLP::decode(const Data& input) {
     if (listLen < 56) {
         throw std::invalid_argument("length below 56 must be encoded in one byte");
     }
-    if (inputLen < lenOfListLen || inputLen < lenOfListLen + listLen) {
-        throw std::invalid_argument("Invalid rlp list length");
+    if (inputLen < lenOfListLen || inputLen < (1 + lenOfListLen + listLen)) {
+        throw std::invalid_argument(std::string("Invalid rlp list length, length ") + std::to_string(listLen));
     }
 
     // decode list
@@ -196,9 +190,6 @@ RLP::DecodedItem RLP::decode(const Data& input) {
     for (auto& data : listItem.decoded) {
         item.decoded.push_back(data);
     }
-    if (input.size() < (1 + lenOfListLen + listLen)) {
-        throw std::invalid_argument("length overrun");
-    }
-    item.remainder = Data(input.begin() + 1 + lenOfListLen + listLen, input.end());
+    item.remainder = subData(input, 1 + lenOfListLen + listLen, inputLen - (1 + lenOfListLen + listLen));
     return item;
 }
