@@ -21,8 +21,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef TC__RAND_H__
-#define TC__RAND_H__
+#ifndef __RAND_H__
+#define __RAND_H__
 
 #include <stdint.h>
 #include <stdlib.h>

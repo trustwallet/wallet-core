@@ -5,26 +5,26 @@
 /* sqrt(x) is such an integer y that 0 <= y <= p - 1, y % 2 = 0, and y^2 = x (mod p). */
 /* d = -121665 / 121666 */
 #if !defined(NDEBUG)
-const bignum25519 ALIGN(16) static fe_d = {
+const bignum25519 ALIGN(16) fe_d = {
 		0x35978a3, 0x0d37284, 0x3156ebd, 0x06a0a0e, 0x001c029, 0x179e898, 0x3a03cbb, 0x1ce7198, 0x2e2b6ff, 0x1480db3}; /* d */
 #endif
-const bignum25519 ALIGN(16) static fe_sqrtm1 = {
+const bignum25519 ALIGN(16) fe_sqrtm1 = {
 		0x20ea0b0, 0x186c9d2, 0x08f189d, 0x035697f, 0x0bd0c60, 0x1fbd7a7, 0x2804c9e, 0x1e16569, 0x004fc1d, 0x0ae0c92}; /* sqrt(-1) */
 //const bignum25519 ALIGN(16) fe_d2 = {
 //		0x2b2f159, 0x1a6e509, 0x22add7a, 0x0d4141d, 0x0038052, 0x0f3d130, 0x3407977, 0x19ce331, 0x1c56dff, 0x0901b67}; /* 2 * d */
 
 /* A = 2 * (1 - d) / (1 + d) = 486662 */
-const bignum25519 ALIGN(16) static fe_ma2 = {
+const bignum25519 ALIGN(16) fe_ma2 = {
 		0x33de3c9, 0x1fff236, 0x3ffffff, 0x1ffffff, 0x3ffffff, 0x1ffffff, 0x3ffffff, 0x1ffffff, 0x3ffffff, 0x1ffffff}; /* -A^2 */
-const bignum25519 ALIGN(16) static fe_ma = {
+const bignum25519 ALIGN(16) fe_ma = {
 		0x3f892e7, 0x1ffffff, 0x3ffffff, 0x1ffffff, 0x3ffffff, 0x1ffffff, 0x3ffffff, 0x1ffffff, 0x3ffffff, 0x1ffffff}; /* -A */
-const bignum25519 ALIGN(16) static fe_fffb1 = {
+const bignum25519 ALIGN(16) fe_fffb1 = {
 		0x1e3bdff, 0x025a2b3, 0x18e5bab, 0x0ba36ac, 0x0b9afed, 0x004e61c, 0x31d645f, 0x09d1bea, 0x102529e, 0x0063810}; /* sqrt(-2 * A * (A + 2)) */
-const bignum25519 ALIGN(16) static fe_fffb2 = {
+const bignum25519 ALIGN(16) fe_fffb2 = {
 		0x383650d, 0x066df27, 0x10405a4, 0x1cfdd48, 0x2b887f2, 0x1e9a041, 0x1d7241f, 0x0612dc5, 0x35fba5d, 0x0cbe787}; /* sqrt(2 * A * (A + 2)) */
-const bignum25519 ALIGN(16) static fe_fffb3 = {
+const bignum25519 ALIGN(16) fe_fffb3 = {
 		0x0cfd387, 0x1209e3a, 0x3bad4fc, 0x18ad34d, 0x2ff6c02, 0x0f25d12, 0x15cdfe0, 0x0e208ed, 0x32eb3df, 0x062d7bb}; /* sqrt(-sqrt(-1) * A * (A + 2)) */
-const bignum25519 ALIGN(16) static fe_fffb4 = {
+const bignum25519 ALIGN(16) fe_fffb4 = {
 		0x2b39186, 0x14640ed, 0x14930a7, 0x04509fa, 0x3b91bf0, 0x0f7432e, 0x07a443f, 0x17f24d8, 0x031067d, 0x0690fcc}; /* sqrt(sqrt(-1) * A * (A + 2)) */
 
 
@@ -258,9 +258,7 @@ void ge25519_set_neutral(ge25519 *r)
 #else
 #define S2_SWINDOWSIZE 7
 #endif
-#ifdef ED25519_NO_PRECOMP
 #define S2_TABLE_SIZE (1<<(S2_SWINDOWSIZE-2))
-#endif
 
 /* computes [s1]p1 + [s2]base */
 void ge25519_double_scalarmult_vartime(ge25519 *r, const ge25519 *p1, const bignum256modm s1, const bignum256modm s2) {
@@ -379,7 +377,7 @@ void ge25519_double_scalarmult_vartime2(ge25519 *r, const ge25519 *p1, const big
  * cause the code to not generate conditional moves.  Don't use any -march=
  * with less than i686 on x86
  */
-static void ge25519_cmove_stride4(long * r, const long * p, const long * pos, const long * n, int stride) {
+static void ge25519_cmove_stride4(long * r, long * p, long * pos, long * n, int stride) {
   long x0=r[0], x1=r[1], x2=r[2], x3=r[3], y0 = 0, y1 = 0, y2 = 0, y3 = 0;
   for(; p<n; p+=stride) {
     volatile int flag=(p==pos);
@@ -397,11 +395,9 @@ static void ge25519_cmove_stride4(long * r, const long * p, const long * pos, co
   r[2] = x2;
   r[3] = x3;
 }
-/*
 #define HAS_CMOVE_STRIDE4
-*/
 
-static void ge25519_cmove_stride4b(long * r, const long * p, const long * pos, const long * n, int stride) {
+static void ge25519_cmove_stride4b(long * r, long * p, long * pos, long * n, int stride) {
   long x0=p[0], x1=p[1], x2=p[2], x3=p[3], y0 = 0, y1 = 0, y2 = 0, y3 = 0;
   for(p+=stride; p<n; p+=stride) {
     volatile int flag=(p==pos);
@@ -421,14 +417,14 @@ static void ge25519_cmove_stride4b(long * r, const long * p, const long * pos, c
 }
 #define HAS_CMOVE_STRIDE4B
 
-static void ge25519_move_conditional_pniels_array(ge25519_pniels * r, const ge25519_pniels * p, int pos, int n) {
+void ge25519_move_conditional_pniels_array(ge25519_pniels * r, const ge25519_pniels * p, int pos, int n) {
 #ifdef HAS_CMOVE_STRIDE4B
   size_t i = 0;
   for(i=0; i<sizeof(ge25519_pniels)/sizeof(long); i+=4) {
     ge25519_cmove_stride4b(((long*)r)+i,
-			   ((const long*)p)+i,
-			   ((const long*)(p+pos))+i,
-			   ((const long*)(p+n))+i,
+			   ((long*)p)+i,
+			   ((long*)(p+pos))+i,
+			   ((long*)(p+n))+i,
 			   sizeof(ge25519_pniels)/sizeof(long));
   }
 #else
@@ -439,18 +435,13 @@ static void ge25519_move_conditional_pniels_array(ge25519_pniels * r, const ge25
 #endif
 }
 
-#ifndef NDEBUG
-#define IS_ALIGNED_32(p) (0 == (3 & ((const char*)(p) - (const char*)0)))
-#endif
-
-static void ge25519_move_conditional_niels_array(ge25519_niels * r, const uint8_t p[8][96], int pos, int n) {
+void ge25519_move_conditional_niels_array(ge25519_niels * r, const uint8_t p[8][96], int pos, int n) {
   size_t i = 0;
-  assert(IS_ALIGNED_32(p));
   for(i=0; i<96/sizeof(long); i+=4) {
     ge25519_cmove_stride4(((long*)r)+i,
-			  ((const long*)(const void*)p)+i,
-			  ((const long*)(const void*)(p+pos))+i,
-			  ((const long*)(const void*)(p+n))+i,
+			  ((long*)p)+i,
+			  ((long*)(p+pos))+i,
+			  ((long*)(p+n))+i,
 			  96/sizeof(long));
   }
 }
@@ -496,14 +487,14 @@ void ge25519_scalarmult_base_choose_niels(ge25519_niels *t, const uint8_t table[
 	bignum25519 neg = {0};
 	uint32_t sign = (uint32_t)((unsigned char)b >> 7);
 	uint32_t mask = ~(sign - 1);
-	uint32_t u = ((uint32_t)(int32_t)b + mask) ^ mask;
+	uint32_t u = (b + mask) ^ mask;
 
 	/* ysubx, xaddy, t2d in packed form. initialize to ysubx = 1, xaddy = 1, t2d = 0 */
 	uint8_t packed[96] = {0};
 	packed[0] = 1;
 	packed[32] = 1;
 
-	ge25519_move_conditional_niels_array((ge25519_niels *)packed, &table[pos*8], (int)u-1, 8);
+	ge25519_move_conditional_niels_array((ge25519_niels *)packed, &table[pos*8], u-1, 8);
 
 	/* expand in to t */
 	curve25519_expand(t->ysubx, packed +  0);

@@ -22,8 +22,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef TC__BIGNUM_H__
-#define TC__BIGNUM_H__
+#ifndef __BIGNUM_H__
+#define __BIGNUM_H__
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -52,10 +52,10 @@ static inline uint32_t read_be(const uint8_t *data) {
 }
 
 static inline void write_be(uint8_t *data, uint32_t x) {
-  data[0] = (x >> 24) & 0xFF;
-  data[1] = (x >> 16) & 0xFF;
-  data[2] = (x >> 8) & 0xFF;
-  data[3] = (x) & 0xFF;
+  data[0] = x >> 24;
+  data[1] = x >> 16;
+  data[2] = x >> 8;
+  data[3] = x;
 }
 
 static inline uint32_t read_le(const uint8_t *data) {
@@ -64,10 +64,10 @@ static inline uint32_t read_le(const uint8_t *data) {
 }
 
 static inline void write_le(uint8_t *data, uint32_t x) {
-  data[3] = (x >> 24) & 0xFF;
-  data[2] = (x >> 16) & 0xFF;
-  data[1] = (x >> 8) & 0xFF;
-  data[0] = (x) & 0xFF;
+  data[3] = x >> 24;
+  data[2] = x >> 16;
+  data[1] = x >> 8;
+  data[0] = x;
 }
 
 void bn_read_be(const uint8_t *in_number, bignum256 *out_number);

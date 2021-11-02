@@ -20,8 +20,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef TC__CURVES_H__
-#define TC__CURVES_H__
+#ifndef __CURVES_H__
+#define __CURVES_H__
 
 #ifdef __cplusplus
 extern "C" {

@@ -32,7 +32,7 @@
 #include <bcrypt.h>
 
 static volatile LONG random_refc = 0;
-static volatile LONG random_lock = 0;
+static volatile BOOL random_lock = 0;
 static volatile PVOID random_provider = NULL;
 
 // [wallet-core]

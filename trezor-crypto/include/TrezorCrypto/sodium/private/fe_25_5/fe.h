@@ -1,5 +1,5 @@
-#ifndef TC__FE_H__
-#define TC__FE_H__
+#ifndef __FE_H__
+#define __FE_H__
 
 #include <stdint.h>
 

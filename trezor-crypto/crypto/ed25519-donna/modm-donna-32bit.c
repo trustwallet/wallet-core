@@ -4,8 +4,6 @@
 
 #include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 
-#include <assert.h>
-
 /*
 	Arithmetic modulo the group order n = 2^252 +  27742317777372353535851937790883648493 = 7237005577332262213973186563042994240857116359379907606001950938285454250989
 
@@ -15,13 +13,13 @@
 	mu = floor( b^(k*2) / m ) = 0xfffffffffffffffffffffffffffffffeb2106215d086329a7ed9ce5a30a2c131b
 */
 
-static const bignum256modm modm_m = {
+const bignum256modm modm_m = {
 	0x1cf5d3ed, 0x20498c69, 0x2f79cd65, 0x37be77a8,
 	0x00000014,	0x00000000, 0x00000000,	0x00000000,
 	0x00001000
 };
 
-static const bignum256modm modm_mu = {
+const bignum256modm modm_mu = {
 	0x0a2c131b, 0x3673968c, 0x06329a7e, 0x01885742,
 	0x3fffeb21, 0x3fffffff, 0x3fffffff, 0x3fffffff,
 	0x000fffff
@@ -173,7 +171,7 @@ void neg256_modm(bignum256modm r, const bignum256modm x) {
 
 /* consts for subtraction, > p */
 /* Emilia Kasper trick, https://www.imperialviolet.org/2010/12/04/ecc.html */
-static const uint32_t twoP[] = {
+const uint32_t twoP[] = {
 		0x5cf5d3ed, 0x60498c68, 0x6f79cd64, 0x77be77a7, 0x40000013, 0x3fffffff, 0x3fffffff, 0x3fffffff, 0xfff};
 
 /* subtraction x-y % m */
@@ -243,7 +241,6 @@ void expand256_modm(bignum256modm out, const unsigned char *in, size_t len) {
 	bignum256modm q1 = {0};
 
 	memcpy(work, in, len);
-	assert(IS_ALIGNED_32(work));
 	x[0] = U8TO32_LE(work +  0);
 	x[1] = U8TO32_LE(work +  4);
 	x[2] = U8TO32_LE(work +  8);
@@ -293,7 +290,6 @@ void expand256_modm(bignum256modm out, const unsigned char *in, size_t len) {
 void expand_raw256_modm(bignum256modm out, const unsigned char in[32]) {
 	bignum256modm_element_t x[8] = {0};
 
-	assert(IS_ALIGNED_32(in));
 	x[0] = U8TO32_LE(in +  0);
 	x[1] = U8TO32_LE(in +  4);
 	x[2] = U8TO32_LE(in +  8);
@@ -472,7 +468,7 @@ int cmp256_modm(const bignum256modm x, const bignum256modm y){
 		b_gt |= limb_b_gt & ~a_gt;
 	}
 
-	return (int)a_gt - (int)b_gt;
+	return a_gt - b_gt;
 }
 
 int iszero256_modm(const bignum256modm x){

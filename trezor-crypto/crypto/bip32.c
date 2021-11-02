@@ -54,7 +54,7 @@
 
 #define CARDANO_MAX_NODE_DEPTH 1048576
 
-static const curve_info ed25519_info = {
+const curve_info ed25519_info = {
     .bip32_name = "ed25519 seed",
     .params = NULL,
     .hasher_base58 = HASHER_SHA2D,
@@ -63,7 +63,7 @@ static const curve_info ed25519_info = {
     .hasher_script = HASHER_SHA2,
 };
 
-static const curve_info ed25519_cardano_info = {
+const curve_info ed25519_cardano_info = {
     .bip32_name = "ed25519 cardano seed",
     .params = NULL,
     .hasher_base58 = HASHER_SHA2D,
@@ -73,7 +73,7 @@ static const curve_info ed25519_cardano_info = {
 };
 
 // [wallet-core]
-static const curve_info ed25519_blake2b_nano_info = {
+const curve_info ed25519_blake2b_nano_info = {
 	.bip32_name = "ed25519 seed",
 	.params = NULL,
 	.hasher_base58 = HASHER_SHA2D,
@@ -82,7 +82,7 @@ static const curve_info ed25519_blake2b_nano_info = {
 	.hasher_script = HASHER_SHA2,
 };
 
-static const curve_info ed25519_sha3_info = {
+const curve_info ed25519_sha3_info = {
     .bip32_name = "ed25519-sha3 seed",
     .params = NULL,
     .hasher_base58 = HASHER_SHA2D,
@@ -92,7 +92,7 @@ static const curve_info ed25519_sha3_info = {
 };
 
 #if USE_KECCAK
-static const curve_info ed25519_keccak_info = {
+const curve_info ed25519_keccak_info = {
     .bip32_name = "ed25519-keccak seed",
     .params = NULL,
     .hasher_base58 = HASHER_SHA2D,
@@ -102,7 +102,7 @@ static const curve_info ed25519_keccak_info = {
 };
 #endif
 
-static const curve_info curve25519_info = {
+const curve_info curve25519_info = {
     .bip32_name = "curve25519 seed",
     .params = NULL,
     .hasher_base58 = HASHER_SHA2D,
@@ -177,8 +177,8 @@ int hdnode_from_seed(const uint8_t *seed, int seed_len, const char *curve,
   }
   CONFIDENTIAL HMAC_SHA512_CTX ctx;
   hmac_sha512_Init(&ctx, (const uint8_t *)out->curve->bip32_name,
-                   (uint32_t)strlen(out->curve->bip32_name));
-  hmac_sha512_Update(&ctx, seed, (uint32_t)seed_len);
+                   strlen(out->curve->bip32_name));
+  hmac_sha512_Update(&ctx, seed, seed_len);
   hmac_sha512_Final(&ctx, I);
 
   if (out->curve->params) {
@@ -190,7 +190,7 @@ int hdnode_from_seed(const uint8_t *seed, int seed_len, const char *curve,
         break;
       }
       hmac_sha512_Init(&ctx, (const uint8_t *)out->curve->bip32_name,
-                       (uint32_t)strlen(out->curve->bip32_name));
+                       strlen(out->curve->bip32_name));
       hmac_sha512_Update(&ctx, I, sizeof(I));
       hmac_sha512_Final(&ctx, I);
     }
@@ -209,8 +209,8 @@ uint32_t hdnode_fingerprint(HDNode *node) {
 
   hdnode_fill_public_key(node);
   hasher_Raw(node->curve->hasher_pubkey, node->public_key, 33, digest);
-  fingerprint = ((uint32_t)digest[0] << 24) + ((uint32_t)digest[1] << 16) +
-                ((uint32_t)digest[2] << 8) + digest[3];
+  fingerprint = ((uint32_t)digest[0] << 24) + (digest[1] << 16) +
+                (digest[2] << 8) + digest[3];
   memzero(digest, sizeof(digest));
   return fingerprint;
 }
@@ -285,7 +285,7 @@ int hdnode_private_ckd(HDNode *inout, uint32_t i) {
 static void scalar_multiply8(const uint8_t *src, int bytes, uint8_t *dst) {
   uint8_t prev_acc = 0;
   for (int i = 0; i < bytes; i++) {
-    dst[i] = ((src[i] << 3) + (prev_acc & 0x7)) & 0xFF;
+    dst[i] = (src[i] << 3) + (prev_acc & 0x7);
     prev_acc = src[i] >> 5;
   }
   dst[bytes] = src[bytes - 1] >> 5;
@@ -335,7 +335,7 @@ int hdnode_private_ckd_cardano(HDNode *inout, uint32_t index) {
 
   CONFIDENTIAL HMAC_SHA512_CTX ctx;
   hmac_sha512_Init(&ctx, inout->chain_code, 32);
-  hmac_sha512_Update(&ctx, data, 1 + (uint32_t)keysize + 4);
+  hmac_sha512_Update(&ctx, data, 1 + keysize + 4);
   hmac_sha512_Final(&ctx, z);
 
   CONFIDENTIAL uint8_t zl8[32];
@@ -358,7 +358,7 @@ int hdnode_private_ckd_cardano(HDNode *inout, uint32_t index) {
     data[0] = 3;
   }
   hmac_sha512_Init(&ctx, inout->chain_code, 32);
-  hmac_sha512_Update(&ctx, data, 1 + (uint32_t)keysize + 4);
+  hmac_sha512_Update(&ctx, data, 1 + keysize + 4);
   hmac_sha512_Final(&ctx, z);
 
   memcpy(inout->chain_code, z + 32, 32);
@@ -402,8 +402,8 @@ int hdnode_from_seed_cardano(const uint8_t *seed, int seed_len, HDNode *out) {
   CONFIDENTIAL HMAC_SHA512_CTX ctx;
 
   hmac_sha512_Init(&ctx, (const uint8_t *)ED25519_CARDANO_NAME,
-                   (uint32_t)strlen(ED25519_CARDANO_NAME));
-  hmac_sha512_Update(&ctx, seed, (uint32_t)seed_len);
+                   strlen(ED25519_CARDANO_NAME));
+  hmac_sha512_Update(&ctx, seed, seed_len);
   hmac_sha512_Final(&ctx, I);
 
   sha512_Raw(I, 32, k);
@@ -840,7 +840,7 @@ static int hdnode_serialize(const HDNode *node, uint32_t fingerprint,
                             int strsize) {
   uint8_t node_data[78] = {0};
   write_be(node_data, version);
-  node_data[4] = node->depth & 0xFF;
+  node_data[4] = node->depth;
   write_be(node_data + 5, fingerprint);
   write_be(node_data + 9, node->child_num);
   memcpy(node_data + 13, node->chain_code, 32);

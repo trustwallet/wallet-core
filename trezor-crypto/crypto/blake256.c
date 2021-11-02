@@ -13,17 +13,16 @@
 #include <TrezorCrypto/blake256.h>
 
 #include <string.h>
-#include <assert.h>
 
 #define U8TO32_BIG(p)					      \
   (((uint32_t)((p)[0]) << 24) | ((uint32_t)((p)[1]) << 16) |  \
    ((uint32_t)((p)[2]) <<  8) | ((uint32_t)((p)[3])      ))
 
-#define U32TO8_BIG(p, v) do {				        \
+#define U32TO8_BIG(p, v)				        \
   (p)[0] = (uint8_t)((v) >> 24); (p)[1] = (uint8_t)((v) >> 16); \
-  (p)[2] = (uint8_t)((v) >>  8); (p)[3] = (uint8_t)((v)      ); } while (0)
+  (p)[2] = (uint8_t)((v) >>  8); (p)[3] = (uint8_t)((v)      );
 
-static const uint8_t sigma[][16] =
+const uint8_t sigma[][16] =
 {
   { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
   {14, 10, 4, 8, 9, 15, 13, 6, 1, 12, 0, 2, 11, 7, 5, 3 },
@@ -43,7 +42,7 @@ static const uint8_t sigma[][16] =
   { 2, 12, 6, 10, 0, 11, 8, 3, 4, 13, 7, 5, 15, 14, 1, 9 }
 };
 
-static const uint32_t u256[16] =
+const uint32_t u256[16] =
 {
   0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344,
   0xa4093822, 0x299f31d0, 0x082efa98, 0xec4e6c89,
@@ -51,7 +50,7 @@ static const uint32_t u256[16] =
   0xc0ac29b7, 0xc97c50dd, 0x3f84d5b5, 0xb5470917
 };
 
-static const uint8_t padding[129] =
+const uint8_t padding[129] =
 {
   0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -63,15 +62,11 @@ static const uint8_t padding[129] =
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-#ifndef NDEBUG
-#define IS_ALIGNED_32(p) (0 == (3 & ((const char*)(p) - (const char*)0)))
-#endif
-
 static void blake256_compress( BLAKE256_CTX *S, const uint8_t *block )
 {
   uint32_t v[16] = {0}, m[16] = {0}, i = 0;
 #define ROT(x,n) (((x)<<(32-n))|( (x)>>(n)))
-#define G(a,b,c,d,e) do {         \
+#define G(a,b,c,d,e)          \
   v[a] += (m[sigma[i][e]] ^ u256[sigma[i][e+1]]) + v[b]; \
   v[d] = ROT( v[d] ^ v[a],16);        \
   v[c] += v[d];           \
@@ -79,9 +74,8 @@ static void blake256_compress( BLAKE256_CTX *S, const uint8_t *block )
   v[a] += (m[sigma[i][e+1]] ^ u256[sigma[i][e]])+v[b]; \
   v[d] = ROT( v[d] ^ v[a], 8);        \
   v[c] += v[d];           \
-  v[b] = ROT( v[b] ^ v[c], 7); } while (0)
+  v[b] = ROT( v[b] ^ v[c], 7);
 
-  assert(IS_ALIGNED_32(block));
   for( i = 0; i < 16; ++i )  m[i] = U8TO32_BIG( block + i * 4 );
 
   for( i = 0; i < 8; ++i )  v[i] = S->h[i];
@@ -147,7 +141,7 @@ void blake256_Update( BLAKE256_CTX *S, const uint8_t *in, size_t inlen )
   /* data left and data received fill a block  */
   if( left && ( inlen >= fill ) )
   {
-    memcpy( ( void * ) ( S->buf + left ), ( const void * ) in, fill );
+    memcpy( ( void * ) ( S->buf + left ), ( void * ) in, fill );
     S->t[0] += 512;
 
     if ( S->t[0] == 0 ) S->t[1]++;
@@ -174,8 +168,8 @@ void blake256_Update( BLAKE256_CTX *S, const uint8_t *in, size_t inlen )
   if( inlen > 0 )
   {
     memcpy( ( void * ) ( S->buf + left ),   \
-            ( const void * ) in, ( size_t ) inlen );
-    S->buflen = left + inlen;
+            ( void * ) in, ( size_t ) inlen );
+    S->buflen = left + ( int )inlen;
   }
   else S->buflen = 0;
 }
@@ -184,7 +178,7 @@ void blake256_Update( BLAKE256_CTX *S, const uint8_t *in, size_t inlen )
 void blake256_Final( BLAKE256_CTX *S, uint8_t *out )
 {
   uint8_t msglen[8] = {0}, zo = 0x01, oo = 0x81;
-  uint32_t lo = S->t[0] + (uint32_t)( S->buflen << 3 ), hi = S->t[1];
+  uint32_t lo = S->t[0] + ( S->buflen << 3 ), hi = S->t[1];
 
   /* support for hashing more than 2^32 bits */
   if ( lo < ( S->buflen << 3 ) ) hi++;

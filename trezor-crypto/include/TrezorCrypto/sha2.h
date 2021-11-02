@@ -28,8 +28,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef TC__SHA2_H__
-#define TC__SHA2_H__
+#ifndef __SHA2_H__
+#define __SHA2_H__
 
 #include <stdint.h>
 #include <stddef.h>
@@ -75,19 +75,19 @@ typedef struct _SHA512_CTX {
 #endif
 
 #if BYTE_ORDER == LITTLE_ENDIAN
-#define REVERSE32(w,x)	do { \
+#define REVERSE32(w,x)	{ \
 	uint32_t tmp = (w); \
 	tmp = (tmp >> 16) | (tmp << 16); \
 	(x) = ((tmp & 0xff00ff00UL) >> 8) | ((tmp & 0x00ff00ffUL) << 8); \
-} while (0)
-#define REVERSE64(w,x)	do { \
+}
+#define REVERSE64(w,x)	{ \
 	uint64_t tmp = (w); \
 	tmp = (tmp >> 32) | (tmp << 32); \
 	tmp = ((tmp & 0xff00ff00ff00ff00ULL) >> 8) | \
 	      ((tmp & 0x00ff00ff00ff00ffULL) << 8); \
 	(x) = ((tmp & 0xffff0000ffff0000ULL) >> 16) | \
 	      ((tmp & 0x0000ffff0000ffffULL) << 16); \
-} while (0)
+}
 #endif /* BYTE_ORDER == LITTLE_ENDIAN */
 
 extern const uint32_t sha256_initial_hash_value[8];

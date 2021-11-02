@@ -20,8 +20,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef TC__SCHNORR_H__
-#define TC__SCHNORR_H__
+#ifndef __SCHNORR_H__
+#define __SCHNORR_H__
 
 #include <TrezorCrypto/ecdsa.h>
 

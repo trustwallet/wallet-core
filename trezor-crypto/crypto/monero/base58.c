@@ -36,16 +36,16 @@
 #include "int-util.h"
 #include <TrezorCrypto/sha2.h>
 
-static const size_t alphabet_size = 58; // sizeof(b58digits_ordered) - 1;
-static const size_t encoded_block_sizes[] = {0, 2, 3, 5, 6, 7, 9, 10, 11};
-static const size_t full_block_size = sizeof(encoded_block_sizes) / sizeof(encoded_block_sizes[0]) - 1;
-static const size_t full_encoded_block_size = 11; // encoded_block_sizes[full_block_size];
-static const size_t addr_checksum_size = 4;
-static const int decoded_block_sizes[] = {0, -1, 1, 2, -1, 3, 4, 5, -1, 6, 7, 8};
+const size_t alphabet_size = 58; // sizeof(b58digits_ordered) - 1;
+const size_t encoded_block_sizes[] = {0, 2, 3, 5, 6, 7, 9, 10, 11};
+const size_t full_block_size = sizeof(encoded_block_sizes) / sizeof(encoded_block_sizes[0]) - 1;
+const size_t full_encoded_block_size = 11; // encoded_block_sizes[full_block_size];
+const size_t addr_checksum_size = 4;
+const int decoded_block_sizes[] = {0, -1, 1, 2, -1, 3, 4, 5, -1, 6, 7, 8};
 #define reverse_alphabet(letter) ((int8_t) b58digits_map[(int)letter])
 
 
-static uint64_t uint_8be_to_64(const uint8_t* data, size_t size)
+uint64_t uint_8be_to_64(const uint8_t* data, size_t size)
 {
 	assert(1 <= size && size <= sizeof(uint64_t));
 
@@ -66,7 +66,7 @@ static uint64_t uint_8be_to_64(const uint8_t* data, size_t size)
 	return res;
 }
 
-static void uint_64_to_8be(uint64_t num, size_t size, uint8_t* data)
+void uint_64_to_8be(uint64_t num, size_t size, uint8_t* data)
 {
 	assert(1 <= size && size <= sizeof(uint64_t));
 
@@ -74,7 +74,7 @@ static void uint_64_to_8be(uint64_t num, size_t size, uint8_t* data)
 	memcpy(data, (uint8_t*)(&num_be) + sizeof(uint64_t) - size, size);
 }
 
-static void encode_block(const char* block, size_t size, char* res)
+void encode_block(const char* block, size_t size, char* res)
 {
 	assert(1 <= size && size <= full_block_size);
 
@@ -89,7 +89,7 @@ static void encode_block(const char* block, size_t size, char* res)
 	}
 }
 
-static bool decode_block(const char* block, size_t size, char* res)
+bool decode_block(const char* block, size_t size, char* res)
 {
 	assert(1 <= size && size <= full_encoded_block_size);
 
@@ -125,7 +125,7 @@ static bool decode_block(const char* block, size_t size, char* res)
 }
 
 
-static bool xmr_base58_encode(char *b58, size_t *b58sz, const void *data, size_t binsz)
+bool xmr_base58_encode(char *b58, size_t *b58sz, const void *data, size_t binsz)
 {
 	if (binsz==0)
 		return true;
@@ -155,7 +155,7 @@ static bool xmr_base58_encode(char *b58, size_t *b58sz, const void *data, size_t
 	return true;
 }
 
-static bool xmr_base58_decode(const char *b58, size_t b58sz, void *data, size_t *binsz)
+bool xmr_base58_decode(const char *b58, size_t b58sz, void *data, size_t *binsz)
 {
 	if (b58sz == 0) {
 		*binsz = 0;
@@ -193,7 +193,7 @@ static bool xmr_base58_decode(const char *b58, size_t b58sz, void *data, size_t 
 	return true;
 }
 
-static int xmr_base58_addr_encode_check(uint64_t tag, const uint8_t *data, size_t binsz, char *b58, size_t b58sz)
+int xmr_base58_addr_encode_check(uint64_t tag, const uint8_t *data, size_t binsz, char *b58, size_t b58sz)
 {
 	if (binsz > 128 || tag > 127) {  // tag varint
 		return false;

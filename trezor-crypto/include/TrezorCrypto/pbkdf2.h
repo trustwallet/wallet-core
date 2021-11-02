@@ -21,8 +21,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef TC__PBKDF2_H__
-#define TC__PBKDF2_H__
+#ifndef __PBKDF2_H__
+#define __PBKDF2_H__
 
 #include <stdint.h>
 #include <TrezorCrypto/sha2.h>

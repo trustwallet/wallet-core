@@ -37,10 +37,6 @@ endif(CCACHE_FOUND)
 include_directories(${PREFIX}/include)
 link_directories(${PREFIX}/lib)
 
-if(WIN32)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS) # Disable strcpy warnings
-endif()
-
 add_subdirectory(trezor-crypto)
 
 macro(find_host_package)

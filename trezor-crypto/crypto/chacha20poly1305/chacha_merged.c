@@ -7,8 +7,6 @@ Public domain.
 #include <TrezorCrypto/chacha20poly1305/ecrypt-sync.h>
 #include <TrezorCrypto/chacha20poly1305/ecrypt-portable.h>
 
-#include <assert.h>
-
 #define ROTATE(v,c) (ROTL32(v,c))
 #define XOR(v,w) ((v) ^ (w))
 #define PLUS(v,w) (U32V((v) + (w)))
@@ -25,15 +23,14 @@ void ECRYPT_init(void)
   return;
 }
 
-static const char chacha_sigma[16] = "expand 32-byte k";
-static const char tau[16] = "expand 16-byte k";
+const char chacha_sigma[16] = "expand 32-byte k";
+const char tau[16] = "expand 16-byte k";
 
 void ECRYPT_keysetup(ECRYPT_ctx *x,const u8 *k,u32 kbits,u32 ivbits)
 {
   (void)ivbits;
   const char *constants = (const char *)0;
 
-  assert(IS_ALIGNED_32(k));
   x->input[4] = U8TO32_LITTLE(k + 0);
   x->input[5] = U8TO32_LITTLE(k + 4);
   x->input[6] = U8TO32_LITTLE(k + 8);
@@ -48,8 +45,6 @@ void ECRYPT_keysetup(ECRYPT_ctx *x,const u8 *k,u32 kbits,u32 ivbits)
   x->input[9] = U8TO32_LITTLE(k + 4);
   x->input[10] = U8TO32_LITTLE(k + 8);
   x->input[11] = U8TO32_LITTLE(k + 12);
-
-  assert(IS_ALIGNED_32(constants));
   x->input[0] = U8TO32_LITTLE(constants + 0);
   x->input[1] = U8TO32_LITTLE(constants + 4);
   x->input[2] = U8TO32_LITTLE(constants + 8);
@@ -60,7 +55,6 @@ void ECRYPT_ivsetup(ECRYPT_ctx *x,const u8 *iv)
 {
   x->input[12] = 0;
   x->input[13] = 0;
-  assert(IS_ALIGNED_32(iv));
   x->input[14] = U8TO32_LITTLE(iv + 0);
   x->input[15] = U8TO32_LITTLE(iv + 4);
 }
@@ -142,7 +136,6 @@ void ECRYPT_encrypt_bytes(ECRYPT_ctx *x,const u8 *m,u8 *c,u32 bytes)
     x14 = PLUS(x14,j14);
     x15 = PLUS(x15,j15);
 
-    assert(IS_ALIGNED_32(m));
     x0 = XOR(x0,U8TO32_LITTLE(m + 0));
     x1 = XOR(x1,U8TO32_LITTLE(m + 4));
     x2 = XOR(x2,U8TO32_LITTLE(m + 8));
@@ -209,7 +202,6 @@ void ECRYPT_keystream_bytes(ECRYPT_ctx *x,u8 *stream,u32 bytes)
   ECRYPT_encrypt_bytes(x,stream,stream,bytes);
 }
 
-void hchacha20(ECRYPT_ctx *x, u8 *c);
 void hchacha20(ECRYPT_ctx *x,u8 *c)
 {
   u32 x0 = 0, x1 = 0, x2 = 0, x3 = 0, x4 = 0, x5 = 0, x6 = 0, x7 = 0, x8 = 0, x9 = 0, x10 = 0, x11 = 0, x12 = 0, x13 = 0, x14 = 0, x15 = 0;

@@ -5,15 +5,12 @@
 #include <TrezorCrypto/chacha20poly1305/rfc7539.h>
 #include <TrezorCrypto/chacha20poly1305/ecrypt-portable.h>
 
-#include <assert.h>
-
 // Initialize the ChaCha20 + Poly1305 context for encryption or decryption
 // using a 32 byte key and 12 byte nonce as in the RFC 7539 style.
 void rfc7539_init(chacha20poly1305_ctx *ctx, const uint8_t key[32], const uint8_t nonce[12]) {
     unsigned char block0[64] = {0};
 
     ECRYPT_keysetup(&ctx->chacha20, key, 256, 16);
-    assert(IS_ALIGNED_32(nonce));
     ctx->chacha20.input[12] = 0;
     ctx->chacha20.input[13] = U8TO32_LITTLE(nonce + 0);
     ctx->chacha20.input[14] = U8TO32_LITTLE(nonce + 4);

@@ -27,8 +27,8 @@
  * intermediate level API. You have been warned!
  */
 
-#ifndef TC__SHAMIR_H__
-#define TC__SHAMIR_H__
+#ifndef __SHAMIR_H__
+#define __SHAMIR_H__
 
 #include <stdbool.h>
 #include <stddef.h>

@@ -17,8 +17,8 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  Use this program  at  your own risk!
  */
 
-#ifndef TC__SHA3_H__
-#define TC__SHA3_H__
+#ifndef __SHA3_H__
+#define __SHA3_H__
 
 #include <stdint.h>
 #include <TrezorCrypto/options.h>

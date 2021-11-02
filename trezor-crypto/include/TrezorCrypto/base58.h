@@ -21,8 +21,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef TC__BASE58_H__
-#define TC__BASE58_H__
+#ifndef __BASE58_H__
+#define __BASE58_H__
 
 #include <stdbool.h>
 #include <stdint.h>

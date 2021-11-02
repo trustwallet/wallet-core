@@ -131,9 +131,7 @@ Issue Date: 20/12/2007
     w(0x01), w(0x02), w(0x04), w(0x08), w(0x10),w(0x20), w(0x40), w(0x80),\
     w(0x1b), w(0x36) }
 
-/*
 #define h0(x)   (x)
-*/
 
 #define w0(p)   bytes2word(p, 0, 0, 0)
 #define w1(p)   bytes2word(0, p, 0, 0)

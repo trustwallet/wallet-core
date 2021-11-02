@@ -21,8 +21,8 @@ Issue Date: 02/08/2018
  for optimisation details.
 */
 
-#ifndef TC_AES_H
-#define TC_AES_H
+#ifndef _AES_H
+#define _AES_H
 
 #include <TrezorCrypto/options.h>
 

@@ -21,8 +21,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef TC__BIP39_H__
-#define TC__BIP39_H__
+#ifndef __BIP39_H__
+#define __BIP39_H__
 
 #include <stdbool.h>
 #include <stdint.h>

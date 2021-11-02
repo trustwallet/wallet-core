@@ -20,8 +20,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef TC__BASE32_H__
-#define TC__BASE32_H__
+#ifndef __BASE32_H__
+#define __BASE32_H__
 
 #include <stdbool.h>
 #include <stddef.h>

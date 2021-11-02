@@ -8,7 +8,6 @@
  *   basepoint: a packed little endian point of the curve
  */
 
-void curve25519_scalarmult_donna(curve25519_key mypublic, const curve25519_key n, const curve25519_key basepoint);
 void curve25519_scalarmult_donna(curve25519_key mypublic, const curve25519_key n, const curve25519_key basepoint) {
 	bignum25519 nqpqx = {1}, nqpqz = {0}, nqz = {1}, nqx = {0};
 	bignum25519 q = {0}, qx = {0}, qpqx = {0}, qqx = {0}, zzz = {0}, zmone = {0};
@@ -44,8 +43,8 @@ void curve25519_scalarmult_donna(curve25519_key mypublic, const curve25519_key n
 		curve25519_mul(nqz, nqz, zzz);
 
 		bit = (n[i/8] >> (i & 7)) & 1;
-		curve25519_swap_conditional(nqx, nqpqx, (uint32_t)(bit ^ lastbit));
-		curve25519_swap_conditional(nqz, nqpqz, (uint32_t)(bit ^ lastbit));
+		curve25519_swap_conditional(nqx, nqpqx, bit ^ lastbit);
+		curve25519_swap_conditional(nqz, nqpqz, bit ^ lastbit);
 		lastbit = bit;
 	}
 

@@ -33,13 +33,13 @@
 #define NumberOfRounds 24
 
 /* SHA3 (Keccak) constants for 24 rounds */
-static uint64_t keccak_round_constants[NumberOfRounds] = {
-	(uint64_t)I64(0x0000000000000001), (uint64_t)I64(0x0000000000008082), (uint64_t)I64(0x800000000000808A), (uint64_t)I64(0x8000000080008000),
-	(uint64_t)I64(0x000000000000808B), (uint64_t)I64(0x0000000080000001), (uint64_t)I64(0x8000000080008081), (uint64_t)I64(0x8000000000008009),
-	(uint64_t)I64(0x000000000000008A), (uint64_t)I64(0x0000000000000088), (uint64_t)I64(0x0000000080008009), (uint64_t)I64(0x000000008000000A),
-	(uint64_t)I64(0x000000008000808B), (uint64_t)I64(0x800000000000008B), (uint64_t)I64(0x8000000000008089), (uint64_t)I64(0x8000000000008003),
-	(uint64_t)I64(0x8000000000008002), (uint64_t)I64(0x8000000000000080), (uint64_t)I64(0x000000000000800A), (uint64_t)I64(0x800000008000000A),
-	(uint64_t)I64(0x8000000080008081), (uint64_t)I64(0x8000000000008080), (uint64_t)I64(0x0000000080000001), (uint64_t)I64(0x8000000080008008)
+uint64_t keccak_round_constants[NumberOfRounds] = {
+	I64(0x0000000000000001), I64(0x0000000000008082), I64(0x800000000000808A), I64(0x8000000080008000),
+	I64(0x000000000000808B), I64(0x0000000080000001), I64(0x8000000080008081), I64(0x8000000000008009),
+	I64(0x000000000000008A), I64(0x0000000000000088), I64(0x0000000080008009), I64(0x000000008000000A),
+	I64(0x000000008000808B), I64(0x800000000000008B), I64(0x8000000000008089), I64(0x8000000000008003),
+	I64(0x8000000000008002), I64(0x8000000000000080), I64(0x000000000000800A), I64(0x800000008000000A),
+	I64(0x8000000080008081), I64(0x8000000000008080), I64(0x0000000080000001), I64(0x8000000080008008)
 };
 
 /* Initializing a sha3 context for given number of output bits */
@@ -287,11 +287,11 @@ void sha3_Update(SHA3_CTX *ctx, const unsigned char *msg, size_t size)
 		size -= left;
 	}
 	while (size >= block_size) {
-		const uint64_t *aligned_message_block = NULL;
+		uint64_t *aligned_message_block = NULL;
 		if (IS_ALIGNED_64(msg)) {
 			/* the most common case is processing of an already aligned message
 			without copying it */
-			aligned_message_block = (const uint64_t*)(const void*)msg;
+			aligned_message_block = (uint64_t*)(void*)msg;
 		} else {
 			memcpy(ctx->message, msg, block_size);
 			aligned_message_block = ctx->message;

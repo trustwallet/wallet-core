@@ -20,8 +20,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef TC__SCRIPT_H__
-#define TC__SCRIPT_H__
+#ifndef __SCRIPT_H__
+#define __SCRIPT_H__
 
 #include <stdint.h>
 

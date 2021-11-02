@@ -56,8 +56,6 @@ ED25519_FN(ed25519_publickey) (const ed25519_secret_key sk, ed25519_public_key p
 
 #if USE_CARDANO
 void
-ED25519_FN(ed25519_publickey_ext) (const ed25519_secret_key sk, const ed25519_secret_key skext, ed25519_public_key pk);
-void
 ED25519_FN(ed25519_publickey_ext) (const ed25519_secret_key sk, const ed25519_secret_key skext, ed25519_public_key pk) {
 	bignum256modm a = {0};
 	ge25519 ALIGN(16) A;
@@ -73,8 +71,6 @@ ED25519_FN(ed25519_publickey_ext) (const ed25519_secret_key sk, const ed25519_se
 }
 #endif
 
-void
-ED25519_FN(ed25519_cosi_sign) (const unsigned char *m, size_t mlen, const ed25519_secret_key sk, const ed25519_secret_key nonce, const ed25519_public_key R, const ed25519_public_key pk, ed25519_cosi_signature sig);
 void
 ED25519_FN(ed25519_cosi_sign) (const unsigned char *m, size_t mlen, const ed25519_secret_key sk, const ed25519_secret_key nonce, const ed25519_public_key R, const ed25519_public_key pk, ed25519_cosi_signature sig) {
 	bignum256modm r = {0}, S = {0}, a = {0};
@@ -138,8 +134,6 @@ ED25519_FN(ed25519_sign) (const unsigned char *m, size_t mlen, const ed25519_sec
 }
 
 #if USE_CARDANO
-void
-ED25519_FN(ed25519_sign_ext) (const unsigned char *m, size_t mlen, const ed25519_secret_key sk, const ed25519_secret_key skext, const ed25519_public_key pk, ed25519_signature RS);
 void
 ED25519_FN(ed25519_sign_ext) (const unsigned char *m, size_t mlen, const ed25519_secret_key sk, const ed25519_secret_key skext, const ed25519_public_key pk, ed25519_signature RS) {
 	ed25519_hash_context ctx;

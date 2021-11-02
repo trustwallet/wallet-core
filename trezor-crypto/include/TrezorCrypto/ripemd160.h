@@ -1,5 +1,5 @@
-#ifndef TC__RIPEMD160_H__
-#define TC__RIPEMD160_H__
+#ifndef __RIPEMD160_H__
+#define __RIPEMD160_H__
 
 #include <stdint.h>
 

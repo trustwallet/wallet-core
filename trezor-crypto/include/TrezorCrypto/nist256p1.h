@@ -21,8 +21,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef TC__NIST256P1_H__
-#define TC__NIST256P1_H__
+#ifndef __NIST256P1_H__
+#define __NIST256P1_H__
 
 #include <stdint.h>
 

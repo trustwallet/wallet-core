@@ -21,8 +21,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef TC__ECDSA_H__
-#define TC__ECDSA_H__
+#ifndef __ECDSA_H__
+#define __ECDSA_H__
 
 #include <stdint.h>
 #include "bignum.h"
