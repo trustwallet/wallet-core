@@ -35,7 +35,7 @@
 #define TW_EXPORT_STRUCT
 
 // Marker for exported enums
-#define TW_EXPORT_ENUM(type)
+#define TW_EXPORT_ENUM(...)
 
 // Marker for exported functions
 #define TW_EXPORT_FUNC TW_EXTERN
