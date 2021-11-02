@@ -5,7 +5,7 @@
 
 # Ported from the `install-dependencies` bash script
 
-# TODO: GoogleTest
+# GoogleTest
 # Check
 # Downloads the single-header Nlohmann JSON library
 # Downloads boost library, only require the headers
