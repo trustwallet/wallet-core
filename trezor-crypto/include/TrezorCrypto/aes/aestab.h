@@ -81,7 +81,7 @@ extern "C" {
 #endif
 
 #if defined(DO_TABLES)
-#  define EXTERN
+#  define EXTERN static
 #else
 #  define EXTERN extern
 #endif
@@ -99,9 +99,9 @@ extern "C" {
 #endif
 
 #if defined(DO_TABLES) && defined(STATIC_TABLES)
-#define d_1(t,n,b,e)       extern ALIGN CONST XP_DIR t n[256]; ALIGN CONST XP_DIR t n[256]    =   b(e)
-#define d_4(t,n,b,e,f,g,h) extern ALIGN CONST XP_DIR t n[4][256]; ALIGN CONST XP_DIR t n[4][256] = { b(e), b(f), b(g), b(h) }
-extern ALIGN CONST uint32_t t_dec(r,c)[RC_LENGTH]; ALIGN CONST uint32_t t_dec(r,c)[RC_LENGTH] = rc_data(w0);
+#define d_1(t,n,b,e)       EXTERN ALIGN CONST XP_DIR t n[256]    =   b(e)
+#define d_4(t,n,b,e,f,g,h) EXTERN ALIGN CONST XP_DIR t n[4][256] = { b(e), b(f), b(g), b(h) }
+EXTERN ALIGN CONST uint32_t t_dec(r,c)[RC_LENGTH] = rc_data(w0);
 #else
 #define d_1(t,n,b,e)       EXTERN ALIGN CONST XP_DIR t n[256]
 #define d_4(t,n,b,e,f,g,h) EXTERN ALIGN CONST XP_DIR t n[4][256]
