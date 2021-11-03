@@ -14,7 +14,8 @@ src_dir=${base_dir}/..
 built_dir=${base_dir}/../build/ios-frameworks
 
 # version to release
-version=$(wc_read_version)
+version=$(wc_read_version $1)
+echo "release version ${version}"
 release_url=$(wc_release_url ${version})
 echo "release_url url is $release_url"
 

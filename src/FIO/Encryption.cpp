@@ -91,7 +91,8 @@ Data Encryption::getSharedSecret(const PrivateKey& privateKey1, const PublicKey&
     // See https://github.com/fioprotocol/fiojs/blob/master/src/ecc/key_private.js
     
     curve_point KBP;
-	assert(ecdsa_read_pubkey(&secp256k1, publicKey2.bytes.data(), &KBP));
+    [[maybe_unused]] int read_res = ecdsa_read_pubkey(&secp256k1, publicKey2.bytes.data(), &KBP);
+    assert(read_res);
 
     bignum256 privBN;
     bn_read_be(privateKey1.bytes.data(), &privBN);

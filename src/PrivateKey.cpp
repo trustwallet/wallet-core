@@ -19,6 +19,8 @@
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sodium/keypair.h>
 
+#include <iterator>
+
 using namespace TW;
 
 bool PrivateKey::isValid(const Data& data) {

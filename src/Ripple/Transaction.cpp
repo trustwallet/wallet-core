@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -82,6 +82,9 @@ Data Transaction::serializeAmount(int64_t amount) {
 }
 
 Data Transaction::serializeAddress(Address address) {
-    auto data = Data(&address.bytes[0] + 1, &address.bytes[21]);
+    auto data = Data(20);
+    if (!address.bytes.empty()) {
+        std::copy(&address.bytes[0] + 1, &address.bytes[0] + (address.bytes.size() < 21 ? address.bytes.size() : 21), &data[0]);
+    }
     return data;
 }

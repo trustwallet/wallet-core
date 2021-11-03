@@ -29,7 +29,7 @@ static constexpr size_t maxDataSize = 104;
 
 bool CashAddress::isValid(const std::string& string) {
     auto withPrefix = string;
-    if (!std::equal(cashHRP.begin(), cashHRP.end(), string.begin())) {
+    if (string.size() < cashHRP.size() || !std::equal(cashHRP.begin(), cashHRP.end(), string.begin())) {
         withPrefix = cashHRP + ":" + string;
     }
 

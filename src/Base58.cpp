@@ -10,6 +10,7 @@
 #include "Hash.h"
 
 #include <algorithm>
+#include <iterator>
 #include <cctype>
 #include <cassert>
 

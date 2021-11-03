@@ -13,6 +13,7 @@
 #include <google/protobuf/util/json_util.h>
 
 #include <algorithm>
+#include <optional>
 
 using namespace TW;
 using namespace TW::Solana;
