@@ -41,7 +41,6 @@ Proto::SigningOutput Signer::signJsonSerialized(const Proto::SigningInput& input
     output.set_json(txJson.dump());
     output.set_signature(signature.data(), signature.size());
     output.set_serialized("");
-    output.set_serialized_base64("");
     output.set_error("");
     return output;
 }
@@ -54,8 +53,7 @@ Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input) noex
         auto serializedTxRaw = buildProtoTxRaw(input, serializedTxBody, serializedAuthInfo, signature);
 
         auto output = Proto::SigningOutput();
-        output.set_serialized(serializedTxRaw);
-        output.set_serialized_base64(Base64::encode(TW::data(serializedTxRaw)));
+        output.set_serialized(Base64::encode(TW::data(serializedTxRaw)));
         output.set_signature(signature.data(), signature.size());
         output.set_json("");
         output.set_error("");

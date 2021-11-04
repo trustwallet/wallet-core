@@ -106,11 +106,8 @@ message SigningOutput {
     // Signed transaction in JSON (pre-Stargate case)
     string json = 2;
 
-    // Signed transaction in protobuf form (Stargate case)
+    // Signed transaction in protobuf encoded form, Base64-encoded (Stargate case)
     bytes serialized = 3;
-
-    // Base64-encoded version of the serialized transaction
-    string serialized_base64 = 4;
 
     // Set in case of error
     string error = 5;
