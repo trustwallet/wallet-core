@@ -10,6 +10,7 @@ import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.Numeric
 import com.trustwallet.core.app.utils.toHexByteArray
 import com.trustwallet.core.app.utils.toHexBytes
+import com.trustwallet.core.app.utils.toHex
 import com.trustwallet.core.app.utils.toHexBytesInByteString
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -17,6 +18,7 @@ import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType.CRYPTOORG
 import wallet.core.jni.proto.Cosmos
 import wallet.core.jni.proto.Cosmos.SigningOutput
+import wallet.core.jni.proto.Cosmos.SigningMode
 import wallet.core.jni.*
 
 class TestCryptoorgSigner {
@@ -32,7 +34,7 @@ class TestCryptoorgSigner {
         val from = AnyAddress(publicKey, CRYPTOORG).description()
 
         val txAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 100000000
+            amount = 50000000
             denom = "basecro"
         }.build()
 
@@ -57,19 +59,20 @@ class TestCryptoorgSigner {
         }.build()
 
         val signingInput = Cosmos.SigningInput.newBuilder().apply {
+            signingMode = SigningMode.Protobuf
             accountNumber = 125798
             chainId = "crypto-org-chain-mainnet-1"
             memo = ""
-            sequence = 0
+            sequence = 2
             fee = cosmosFee
             privateKey = ByteString.copyFrom(key.data())
             addAllMessages(listOf(message))
         }.build()
 
         val output = AnySigner.sign(signingInput, CRYPTOORG, SigningOutput.parser())
-        val jsonPayload = output.json
 
-        val expectedJsonPayload = """{"mode":"block","tx":{"fee":{"amount":[{"amount":"5000","denom":"basecro"}],"gas":"200000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"100000000","denom":"basecro"}],"from_address":"cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0","to_address":"cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A4gxsGFiPn6L5Z2IjHEISkXI0IkwfL9exV3GLB171Wvj"},"signature":"5+5rSFFg0FE9cTklQWQHNktBDJsz7UCnMSgF0t0+gYcrIhEWUyTtibXaHZQbKAAaciJ1BkHXYREjU55VswByVg=="}]}}"""
-        assertEquals(expectedJsonPayload, jsonPayload)
+        // https://crypto.org/explorer/tx/BCB213B0A121F0CF11BECCF52475F1C8328D6070F3CFDA9E14C42E6DB30E847E
+        assertEquals(output.serialized, "CpABCo0BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm0KKmNybzFjdHd0Y3dwZ2tza3k5ODhkaHRoNmpzbHh2ZXVtZ3UwZDQ1emdmMBIqY3JvMXhwYWh5NmM3d2xkeGFjdjZsZDk5aDQzNW1odmZuc3VwMjR2Y3VzGhMKB2Jhc2Vjcm8SCDUwMDAwMDAwEmkKUApGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQOIMbBhYj5+i+WdiIxxCEpFyNCJMHy/XsVdxiwde9Vr4xIECgIIARgCEhUKDwoHYmFzZWNybxIENTAwMBDAmgwaQAcxK9xk6r69gmz+1UWaCnYxNuXPXZdp59YcqKPJE5d6fp+IICTBOwd2rs8MiApcf8kNSrbZ6oECxcGQAdxF0SI=")
+        assertEquals(output.error, "")
     }
 }

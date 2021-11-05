@@ -75,25 +75,40 @@ message Message {
     }
 }
 
+enum SigningMode {
+    JSON = 0;        // JSON format, Pre-Stargate
+    Protobuf = 1;    // Protobuf-serialized (binary), Stargate
+}
+
 // Input data necessary to create a signed order.
 message SigningInput {
-    uint64 account_number = 1;
-    string chain_id = 2;
-    Fee fee = 3;
-    string memo = 4;
-    uint64 sequence = 5; 
+    // Specify if Stargate or earlier serialization is used
+    SigningMode signing_mode = 1;
 
-    bytes private_key = 6;
+    uint64 account_number = 2;
+    string chain_id = 3;
+    Fee fee = 4;
+    string memo = 5;
+    uint64 sequence = 6; 
 
-    repeated Message messages = 7;
+    bytes private_key = 7;
 
-    BroadcastMode mode = 8;
+    repeated Message messages = 8;
+
+    BroadcastMode mode = 9;
 }
 
 // Transaction signing output.
 message SigningOutput {
     // Signature
     bytes signature = 1;
-    // Signed transaction in JSON.
+
+    // Signed transaction in JSON (pre-Stargate case)
     string json = 2;
+
+    // Signed transaction in protobuf encoded form, Base64-encoded (Stargate case)
+    string serialized = 3;
+
+    // Set in case of error
+    string error = 5;
 }
