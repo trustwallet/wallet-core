@@ -83,6 +83,7 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypeBluzelle:
     case TWCoinTypeIoTeX:
     case TWCoinTypeCryptoOrg:
+    case TWCoinTypeOsmosis:
     case TWCoinTypeHarmony:
     {
         Cosmos::Address addr;
