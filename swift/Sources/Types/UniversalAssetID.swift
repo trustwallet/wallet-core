@@ -23,7 +23,7 @@ public struct UniversalAssetID: CustomStringConvertible, Equatable, Hashable {
         return [prefix, suffix].joined(separator: "_")
     }
 
-    public init(coin: CoinType, token: String) {
+    public init(coin: CoinType, token: String = "") {
         self.coin = coin
         self.token = token
     }
