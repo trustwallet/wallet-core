@@ -31,6 +31,37 @@
     }
   },
   {
+    "id": "bitcointestnet",
+    "name": "Bitcoin Testnet",
+    "coinId": 90,
+    "symbol": "BTC",
+    "decimals": 8,
+    "blockchain": "Bitcoin",
+    "derivationPath": "m/44'/1'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "p2pkhPrefix": 111,
+    "p2shPrefix": 196,
+    "hrp": "tb",
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "xpub": "zpub",
+    "xprv": "zprv",
+    "explorer": {
+      "url": "https://blockchair.com",
+      "txPath": "/bitcoin/transaction/",
+      "accountPath": "/bitcoin/address/",
+      "sampleTx": "0607f62530b68cfcc91c57a1702841dd399a899d0eecda8e31ecca3f52f01df2",
+      "sampleAccount": "17A16QmavnUfCW11DAApiJxp7ARnxN5pGX"
+    },
+    "info": {
+      "url": "https://bitcoin.org",
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+    }
+  },
+  {
     "id": "litecoin",
     "name": "Litecoin",
     "coinId": 2,
