@@ -178,3 +178,11 @@ bool TWStoredKeyFixAddresses(struct TWStoredKey* _Nonnull key, TWData* _Nonnull 
         return false;
     }
 }
+
+TWString* _Nullable TWStoredKeyEncryptionParameters(struct TWStoredKey* _Nonnull key) {
+    if (!key->impl.id) {
+        return nullptr;
+    }
+    const std::string params = key->impl.payload.json().dump();
+    return TWStringCreateWithUTF8Bytes(params.c_str());
+}

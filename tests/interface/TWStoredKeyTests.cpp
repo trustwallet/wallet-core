@@ -14,6 +14,7 @@
 #include "../src/HexCoding.h"
 
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 #include <fstream>
 
@@ -224,4 +225,37 @@ TEST(TWStoredKey, getWalletPasswordInvalid) {
     auto key = WRAP(TWStoredKey, TWStoredKeyCreate (name.get(), password.get()));
     ASSERT_NE(WRAP(TWHDWallet, TWStoredKeyWallet(key.get(), password.get())).get(), nullptr);
     ASSERT_EQ(WRAP(TWHDWallet, TWStoredKeyWallet(key.get(), passwordInvalid.get())).get(), nullptr);
+}
+
+TEST(TWStoredKey, encryptionParameters) {
+    const auto key = createDefaultStoredKey();
+    const auto params = WRAPS(TWStoredKeyEncryptionParameters(key.get()));
+
+    nlohmann::json jsonParams = nlohmann::json::parse(string(TWStringUTF8Bytes(params.get())));
+
+    // compare one parameter
+    EXPECT_EQ(jsonParams["kdfparams"]["n"], 4096);
+
+    // compare all keys, except dynamic ones (like cipherparams/iv)
+    jsonParams["cipherparams"] = {};
+    jsonParams["ciphertext"] = "<ciphertext>";
+    jsonParams["kdfparams"]["salt"] = "<salt>";
+    jsonParams["mac"] = "<mac>";
+    const auto params2 = jsonParams.dump();
+    assertJSONEqual(params2, R"(
+        {
+            "cipher": "aes-128-ctr",
+            "cipherparams": null,
+            "ciphertext": "<ciphertext>",
+            "kdf": "scrypt",
+            "kdfparams": {
+                "dklen": 32,
+                "n": 4096,
+                "p": 6,
+                "r": 8,
+                "salt": "<salt>"
+            },
+            "mac": "<mac>"
+        }        
+    )");
 }

@@ -105,4 +105,8 @@ TWData* _Nullable TWStoredKeyExportJSON(struct TWStoredKey* _Nonnull key);
 TW_EXPORT_METHOD
 bool TWStoredKeyFixAddresses(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password);
 
+/// Retrieve stored key encoding parameters, as JSON string.
+TW_EXPORT_PROPERTY
+TWString* _Nullable TWStoredKeyEncryptionParameters(struct TWStoredKey* _Nonnull key);
+
 TW_EXTERN_C_END
