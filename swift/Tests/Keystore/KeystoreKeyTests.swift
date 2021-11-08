@@ -119,4 +119,25 @@ class KeystoreKeyTests: XCTestCase {
         let data = keystore.decryptPrivateKey(password: password)
         XCTAssertEqual(data?.hexString, "4357b2f9a6150ba969bc52f01c98cce5313595fe49f2d08303759c73e5c7a46c")
     }
+
+    struct KdfParamsStruct: Decodable {
+        let dklen: Int
+        let n: Int
+    }
+
+    struct EncryptionParametersStruct: Decodable {
+        let kdf: String
+        let kdfparams: KdfParamsStruct
+    }
+
+    func testEncryptionParameters() {
+        let url = Bundle(for: type(of: self)).url(forResource: "key", withExtension: "json")!
+        let key = StoredKey.load(path: url.path)!
+
+        let params = key.encryptionParameters
+        let paramsData = params!.data(using: .utf8)!
+        let paramsSruct: EncryptionParametersStruct = try! JSONDecoder().decode(EncryptionParametersStruct.self, from: paramsData)
+        XCTAssertEqual(paramsSruct.kdf, "scrypt");
+        XCTAssertEqual(paramsSruct.kdfparams.n, 262144);
+    }
 }
