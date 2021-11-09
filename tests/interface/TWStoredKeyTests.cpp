@@ -233,8 +233,9 @@ TEST(TWStoredKey, encryptionParameters) {
 
     nlohmann::json jsonParams = nlohmann::json::parse(string(TWStringUTF8Bytes(params.get())));
 
-    // compare one parameter
+    // compare some specific parameters
     EXPECT_EQ(jsonParams["kdfparams"]["n"], 4096);
+    EXPECT_EQ(std::string(jsonParams["cipherparams"]["iv"]).length(), 32);
 
     // compare all keys, except dynamic ones (like cipherparams/iv)
     jsonParams["cipherparams"] = {};
