@@ -27,6 +27,7 @@ targets:
         excludes:
           - ".vscode"
           - "proto/*.proto"
+          - "Cosmos/Protobuf/*.proto"
           - "Tron/Protobuf/*.proto"
           - "Zilliqa/Protobuf/*.proto"
       - Sources
