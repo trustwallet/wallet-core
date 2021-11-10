@@ -1,7 +1,7 @@
 FROM ubuntu:20.04 as base
 
 # Install some basics
-RUN apt-get update \
+RUN apt-get update -y \
     && apt-get install -y \
         wget \
         curl \
@@ -19,7 +19,7 @@ RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc | apt-key 
     && apt-add-repository -y ppa:mhier/libboost-latest
 
 # Install required packages for dev
-RUN apt-get update \
+RUN apt-get update -y \
     && apt-get install -y \
         build-essential \
         libtool autoconf pkg-config \
