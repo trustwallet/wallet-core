@@ -51,12 +51,13 @@ std::string chainName(Chain chain) {
     }
 }
 
-std::string Swap::buildMemo(Chain toChain, const std::string& toSymbol, const std::string& toAddress, uint64_t limit) {
+std::string Swap::buildMemo(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& toAddress, uint64_t limit) {
     std::string prefix = "SWAP";
     if (toChain == Chain::ETH) {
         prefix = "=";
     }
-    return prefix + ":" + chainName(toChain) + "." + toSymbol + ":" + toAddress + ":" + std::to_string(limit);
+    const auto toCoinToken = (!toTokenId.empty() && toTokenId != "0x0000000000000000000000000000000000000000") ? toTokenId : toSymbol;
+    return prefix + ":" + chainName(toChain) + "." + toCoinToken + ":" + toAddress + ":" + std::to_string(limit);
 }
 
 bool validateAddress(Chain chain, const std::string& address) {
@@ -84,7 +85,7 @@ std::pair<Data, std::string> Swap::build(
 
     uint64_t fromAmountNum = std::atoll(fromAmount.c_str());
     uint64_t toAmountLimitNum = std::atoll(toAmountLimit.c_str());
-    auto memo = buildMemo(toChain, toSymbol, toAddress, toAmountLimitNum);
+    const auto memo = buildMemo(toChain, toSymbol, toTokenId, toAddress, toAmountLimitNum);
 
     switch (fromChain) {
         case Chain::BTC: {

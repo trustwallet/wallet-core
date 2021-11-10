@@ -11,6 +11,7 @@
 #include "Ethereum/ABI/Function.h"
 #include "Ethereum/ABI/ParamBase.h"
 #include "Ethereum/ABI/ParamAddress.h"
+#include "Binance/Address.h"
 #include "proto/Bitcoin.pb.h"
 #include "proto/Ethereum.pb.h"
 #include "proto/Binance.pb.h"
@@ -304,8 +305,61 @@ TEST(THORSwap, SwapBnbRune) {
     // https://viewblock.io/thorchain/tx/D582E1473FE229F02F162055833C64F49FB4FF515989A4785ED7898560A448FC
 }
 
+TEST(THORSwap, SwapBnbBnbToken) {
+    auto res = Swap::build(
+        Chain::BNB,
+        Chain::BNB,
+        "bnb1us47wdhfx08ch97zdueh3x3u5murfrx30jecrx",
+        "BNB",
+        "TWT-8C2",
+        "bnb1us47wdhfx08ch97zdueh3x3u5murfrx30jecrx",
+        "bnb1qefsjm654cdw94ejj8g4s49w7z8te75veslusz",
+        "",
+        "10000000", // 0.1 bnb
+        "5400000000" // 54.0 twt
+    ); 
+    ASSERT_EQ(res.second, "");
+    EXPECT_EQ(hex(res.first), "0a1242696e616e63652d436861696e2d4e696c652a46535741503a424e422e5457542d3843323a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a3534303030303030303052480a220a14e42be736e933cf8b97c26f33789a3ca6f8348cd1120a0a03424e421080ade20412220a140653096f54ae1ae2d73291d15854aef08ebcfa8c120a0a03424e421080ade204");
+
+    auto tx = Binance::Proto::SigningInput();
+    ASSERT_TRUE(tx.ParseFromArray(res.first.data(), (int)res.first.size()));
+
+    // check fields
+    EXPECT_EQ(tx.memo(), "SWAP:BNB.TWT-8C2:bnb1us47wdhfx08ch97zdueh3x3u5murfrx30jecrx:5400000000");
+    ASSERT_TRUE(tx.has_send_order());
+    ASSERT_EQ(tx.send_order().inputs_size(), 1);
+    ASSERT_EQ(tx.send_order().outputs_size(), 1);
+    EXPECT_EQ(hex(tx.send_order().inputs(0).address()), "e42be736e933cf8b97c26f33789a3ca6f8348cd1");
+    EXPECT_EQ(hex(tx.send_order().outputs(0).address()), "0653096f54ae1ae2d73291d15854aef08ebcfa8c");
+    EXPECT_EQ(hex(TW::data(tx.private_key())), "");
+
+    // set private key and few other fields
+    const Data privateKey = parse_hex("bcf8b072560dda05122c99390def2c385ec400e1a93df0657a85cf6b57a715da");
+    EXPECT_EQ(Binance::Address(PrivateKey(privateKey).getPublicKey(TWPublicKeyTypeSECP256k1)).string(), "bnb1us47wdhfx08ch97zdueh3x3u5murfrx30jecrx");
+    tx.set_private_key(privateKey.data(), privateKey.size());
+    tx.set_chain_id("Binance-Chain-Tigris");
+    tx.set_account_number(1902570);
+    tx.set_sequence(18);
+
+    // sign and encode resulting input
+    Binance::Proto::SigningOutput output;
+    ANY_SIGN(tx, TWCoinTypeBinance);
+    EXPECT_EQ(hex(output.encoded()), "8c02f0625dee0a4c2a2c87fa0a220a14e42be736e933cf8b97c26f33789a3ca6f8348cd1120a0a03424e421080ade20412220a140653096f54ae1ae2d73291d15854aef08ebcfa8c120a0a03424e421080ade20412700a26eb5ae9872103ea4b4bc12dc6f36a28d2c9775e01eef44def32cc70fb54f0e4177b659dbc0e1912405fd64a0ed5777f5ea4556624bd096f8b20b6d2b510655e4c928db1ec967e6c7025453882ce7e10138ac92f5d6a949acc5382a5539f81347856c67c4bb678d3c418ea8f7420121a46535741503a424e422e5457542d3843323a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a35343030303030303030");
+
+    // real transaction:
+    // curl -X GET "http://dataseed1.binance.org/broadcast_tx_sync?tx=0x8c02...3030"
+    // https://viewblock.io/thorchain/tx/6D1EDC9BD9BFAFEF0F88F95A164191262EA02A0413BF3D9773110AD5676E1523
+    // https://explorer.binance.org/tx/6D1EDC9BD9BFAFEF0F88F95A164191262EA02A0413BF3D9773110AD5676E1523
+    // https://explorer.binance.org/tx/60C54C9F253B89C36A2788AB66951045E8AC5F5729597CB6C64A13013A7A54CC
+}
+
 TEST(THORSwap, Memo) {
-    EXPECT_EQ(Swap::buildMemo(Chain::BTC, "BNB", "bnb123", 1234), "SWAP:BTC.BNB:bnb123:1234");
+    EXPECT_EQ(Swap::buildMemo(Chain::BTC, "BTC", "", "btc123", 1234), "SWAP:BTC.BTC:btc123:1234");
+    EXPECT_EQ(Swap::buildMemo(Chain::BNB, "BNB", "", "bnb123", 1234), "SWAP:BNB.BNB:bnb123:1234");
+    EXPECT_EQ(Swap::buildMemo(Chain::ETH, "ETH", "", "0xaabbccdd", 1234), "=:ETH.ETH:0xaabbccdd:1234");
+    EXPECT_EQ(Swap::buildMemo(Chain::ETH, "ETH", "0x0000000000000000000000000000000000000000", "0xaabbccdd", 1234), "=:ETH.ETH:0xaabbccdd:1234");
+    EXPECT_EQ(Swap::buildMemo(Chain::ETH, "ETH", "0x4B0F1812e5Df2A09796481Ff14017e6005508003", "0xaabbccdd", 1234), "=:ETH.0x4B0F1812e5Df2A09796481Ff14017e6005508003:0xaabbccdd:1234");
+    EXPECT_EQ(Swap::buildMemo(Chain::BNB, "BNB", "TWT-8C2", "bnb123", 1234), "SWAP:BNB.TWT-8C2:bnb123:1234");
 }
 
 TEST(THORSwap, WrongFromAddress) {
