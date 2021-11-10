@@ -5,11 +5,13 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
-#include "PrivateKey.h"
-#include "Serialization.h"
+#include "../proto/Cosmos.pb.h"
+#include "JsonSerialization.h"
+#include "ProtobufSerialization.h"
 
+#include "PrivateKey.h"
 #include "Data.h"
-#include "Hash.h"
+#include "Base64.h"
 
 #include <google/protobuf/util/json_util.h>
 
@@ -17,8 +19,19 @@ using namespace TW;
 using namespace TW::Cosmos;
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    switch (input.signing_mode()) {
+        case Proto::JSON:
+            return signJsonSerialized(input);
+        
+        case Proto::Protobuf:
+        default:
+            return signProtobuf(input);
+    }
+}
+
+Proto::SigningOutput Signer::signJsonSerialized(const Proto::SigningInput& input) noexcept {
     auto key = PrivateKey(input.private_key());
-    auto preimage = signaturePreimage(input).dump();
+    auto preimage = signaturePreimageJSON(input).dump();
     auto hash = Hash::sha256(preimage);
     auto signedHash = key.sign(hash, TWCurveSECP256k1);
 
@@ -27,7 +40,29 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto txJson = transactionJSON(input, signature);
     output.set_json(txJson.dump());
     output.set_signature(signature.data(), signature.size());
+    output.set_serialized("");
+    output.set_error("");
     return output;
+}
+
+Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input) noexcept {
+    try {
+        const auto serializedTxBody = buildProtoTxBody(input);
+        const auto serializedAuthInfo = buildAuthInfo(input);
+        const auto signature = buildSignature(input, serializedTxBody, serializedAuthInfo);
+        auto serializedTxRaw = buildProtoTxRaw(input, serializedTxBody, serializedAuthInfo, signature);
+
+        auto output = Proto::SigningOutput();
+        output.set_serialized(Base64::encode(TW::data(serializedTxRaw)));
+        output.set_signature(signature.data(), signature.size());
+        output.set_json("");
+        output.set_error("");
+        return output;
+    } catch (const std::exception& ex) {
+        auto output = Proto::SigningOutput();
+        output.set_error(std::string("Error: ") + ex.what());
+        return output;
+    }
 }
 
 std::string Signer::signJSON(const std::string& json, const Data& key) {

@@ -19,8 +19,10 @@
 #include <TrezorCrypto/bip32.h>
 #include <TrezorCrypto/bip39.h>
 #include <TrezorCrypto/curves.h>
+#include <TrezorCrypto/memzero.h>
 
 #include <array>
+#include <cstring>
 
 using namespace TW;
 
@@ -45,6 +47,7 @@ HDWallet::HDWallet(int strength, const std::string& passphrase)
         throw std::invalid_argument("Invalid strength");
     }
     mnemonic = mnemonic_chars;
+    memzero(buf, MnemonicBufLength);
     updateSeedAndEntropy();
 }
 
@@ -65,6 +68,7 @@ HDWallet::HDWallet(const Data& entropy, const std::string& passphrase)
         throw std::invalid_argument("Invalid mnemonic data");
     }
     mnemonic = mnemonic_chars;
+    memzero(buf, MnemonicBufLength);
     updateSeedAndEntropy();
 }
 
@@ -82,7 +86,8 @@ void HDWallet::updateSeedAndEntropy(bool check) {
 
     // generate entropy bits from mnemonic
     Data entropyRaw((Mnemonic::MaxWords * Mnemonic::BitsPerWord) / 8);
-    auto entropyBytes = mnemonic_to_bits(mnemonic.c_str(), entropyRaw.data()) / 8;
+    // entropy is truncated to fully bytes, 4 bytes for each 3 words (=33 bits)
+    auto entropyBytes = mnemonic_to_bits(mnemonic.c_str(), entropyRaw.data()) / 33 * 4;
     // copy to truncate
     entropy = data(entropyRaw.data(), entropyBytes);
     assert(!check || entropy.size() > 10);
@@ -119,6 +124,12 @@ PrivateKey HDWallet::getKey(TWCoinType coin, const DerivationPath& derivationPat
             auto data = Data(node.private_key, node.private_key + PrivateKey::size);
             return PrivateKey(data);
     }
+}
+
+std::string HDWallet::getRootKey(TWCoinType coin, TWHDVersion version) const {
+    const auto curve = TWCoinTypeCurve(coin);
+    auto node = getMasterNode(*this, curve);
+    return serialize(&node, 0, version, false, base58Hasher(coin));
 }
 
 std::string HDWallet::deriveAddress(TWCoinType coin) const {

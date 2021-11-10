@@ -15,9 +15,9 @@
 
 TEST(TWTomoChainCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTomoChain));
-    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("t123"));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x35a8d3ab06c94d5b7d27221b7c9a24ba3f1710dd0fcfd75c5d59b3a885fd709b"));
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTomoChain, txId.get()));
-    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("a12"));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0x86cCbD9bfb371c355202086882bC644A7D0b024B"));
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeTomoChain, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTomoChain));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTomoChain));
@@ -27,8 +27,8 @@ TEST(TWTomoChainCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeTomoChain));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeTomoChain));
     assertStringsEqual(symbol, "TOMO");
-    assertStringsEqual(txUrl, "https://scan.tomochain.com/txs/t123");
-    assertStringsEqual(accUrl, "https://scan.tomochain.com/address/a12");
+    assertStringsEqual(txUrl, "https://tomoscan.io/tx/0x35a8d3ab06c94d5b7d27221b7c9a24ba3f1710dd0fcfd75c5d59b3a885fd709b");
+    assertStringsEqual(accUrl, "https://tomoscan.io/address/0x86cCbD9bfb371c355202086882bC644A7D0b024B");
     assertStringsEqual(id, "tomochain");
     assertStringsEqual(name, "TomoChain");
 }

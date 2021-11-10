@@ -83,6 +83,7 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypeBluzelle:
     case TWCoinTypeIoTeX:
     case TWCoinTypeCryptoOrg:
+    case TWCoinTypeHarmony:
     {
         Cosmos::Address addr;
         if (!Cosmos::Address::decode(string, addr)) {
@@ -158,6 +159,7 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypeXDai:
     case TWCoinTypeAvalancheCChain:
     case TWCoinTypeFantom:
+    case TWCoinTypeCelo:
         data = parse_hex(string);
         break;
 

@@ -7,5 +7,5 @@ set -e
 pushd swift
 xcodegen
 pod install
-fastlane scan --workspace TrustWalletCore.xcworkspace --scheme TrustWalletCore --sdk iphonesimulator --device='iPhone 11' --clean
+fastlane scan --workspace TrustWalletCore.xcworkspace --scheme TrustWalletCore --sdk iphonesimulator --device='iPhone 13' --clean
 popd

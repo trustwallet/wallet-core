@@ -52,6 +52,7 @@ class CosmosSignerTests: XCTestCase {
         }
 
         let input = CosmosSigningInput.with {
+            $0.signingMode = .protobuf;
             $0.accountNumber = 1037
             $0.chainID = "gaia-13003"
             $0.memo = ""
@@ -63,50 +64,8 @@ class CosmosSignerTests: XCTestCase {
 
         let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)
 
-        let expectedJSON: String =
-"""
-{
-  "mode": "block",
-  "tx": {
-    "fee": {
-      "amount": [
-        {
-          "amount": "200",
-          "denom": "muon"
-        }
-      ],
-      "gas": "200000"
-    },
-    "memo": "",
-    "msg": [
-      {
-        "type": "cosmos-sdk/MsgSend",
-        "value": {
-          "amount": [
-            {
-              "amount": "1",
-              "denom": "muon"
-            }
-          ],
-          "from_address": "cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02",
-          "to_address": "cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573"
-        }
-      }
-    ],
-    "signatures": [
-      {
-        "pub_key": {
-          "type": "tendermint/PubKeySecp256k1",
-          "value": "AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"
-        },
-        "signature": "/D74mdIGyIB3/sQvIboLTfS9P9EV/fYGrgHZE2/vNj9X6eM6e57G3atljNB+PABnRw3pTk51uXmhCFop8O/ZJg=="
-      }
-    ]
-  }
-}
-"""
-
-        XCTAssertJSONEqual(expectedJSON, output.json)
+        XCTAssertEqual(output.serialized, "CowBCokBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmkKLWNvc21vczFoc2s2anJ5eXFqZmhwNWRoYzU1dGM5anRja3lneDBlcGg2ZGQwMhItY29zbW9zMXp0NTBhenVwYW5xbGZhbTVhZmh2M2hleHd5dXRudWtlaDRjNTczGgkKBG11b24SATESZQpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3FEgQKAggBGAgSEQoLCgRtdW9uEgMyMDAQwJoMGkD54fQAFlekIAnE62hZYl0uQelh/HLv0oQpCciY5Dn8H1SZFuTsrGdu41PH1Uxa4woptCELi/8Ov9yzdeEFAC9H")
+        XCTAssertEqual(output.error, "")
     }
 
     func testStaking() {
@@ -132,6 +91,7 @@ class CosmosSignerTests: XCTestCase {
         }
 
         let input = CosmosSigningInput.with {
+            $0.signingMode = .protobuf;
             $0.accountNumber = 1037
             $0.chainID = "gaia-13003"
             $0.memo = ""
@@ -143,47 +103,8 @@ class CosmosSignerTests: XCTestCase {
 
         let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)
 
-        let expectedJSON = """
-{
-  "mode": "block",
-  "tx": {
-    "fee": {
-      "amount": [
-        {
-          "amount": "1018",
-          "denom": "muon"
-        }
-      ],
-      "gas": "101721"
-    },
-    "memo": "",
-    "msg": [
-      {
-        "type": "cosmos-sdk/MsgDelegate",
-        "value": {
-          "amount": {
-            "amount": "10",
-            "denom": "muon"
-          },
-          "delegator_address": "cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02",
-          "validator_address": "cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp"
-        }
-      }
-    ],
-    "signatures": [
-      {
-        "pub_key": {
-          "type": "tendermint/PubKeySecp256k1",
-          "value": "AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"
-        },
-        "signature": "wIvfbCsLRCjzeXXoXTKfHLGXRbAAmUp0O134HVfVc6pfdVNJvvzISMHRUHgYcjsSiFlLyR32heia/yLgMDtIYQ=="
-      }
-    ]
-  }
-}
-
-"""
-        XCTAssertJSONEqual(expectedJSON, output.json)
+        XCTAssertEqual(output.serialized, "CpsBCpgBCiMvY29zbW9zLnN0YWtpbmcudjFiZXRhMS5Nc2dEZWxlZ2F0ZRJxCi1jb3Ntb3MxaHNrNmpyeXlxamZocDVkaGM1NXRjOWp0Y2t5Z3gwZXBoNmRkMDISNGNvc21vc3ZhbG9wZXIxemt1cHI4M2hyemtuM3VwNWVsa3R6Y3EzdHVmdDhueHNtd2RxZ3AaCgoEbXVvbhICMTASZgpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3FEgQKAggBGAcSEgoMCgRtdW9uEgQxMDE4ENmaBhpA8O9Jm/kL6Za2I3poDs5vpMowYJgNvYCJBRU/vxAjs0lNZYsq40qpTbwOTbORjJA5UjQ6auc40v6uCFT4q4z+uA==")
+        XCTAssertEqual(output.error, "")
     }
 
     func testWithdraw() {
@@ -215,6 +136,7 @@ class CosmosSignerTests: XCTestCase {
         }
 
         let input = CosmosSigningInput.with {
+            $0.signingMode = .protobuf;
             $0.fee = fee
             $0.accountNumber = 8698
             $0.chainID = "cosmoshub-2"
@@ -226,54 +148,7 @@ class CosmosSignerTests: XCTestCase {
 
         let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)
 
-        let expectedJSON = """
-        {
-          "mode": "block",
-          "tx": {
-            "fee": {
-              "amount": [
-                {
-                  "amount": "1",
-                  "denom": "uatom"
-                }
-              ],
-              "gas": "220000"
-            },
-            "memo": "",
-            "msg": [
-              {
-                "type": "cosmos-sdk/MsgWithdrawDelegationReward",
-                "value": {
-                  "delegator_address": "cosmos100rhxclqasy6vnrcervgh99alx5xw7lkfp4u54",
-                  "validator_address": "cosmosvaloper1ey69r37gfxvxg62sh4r0ktpuc46pzjrm873ae8"
-                }
-              },{
-                "type": "cosmos-sdk/MsgWithdrawDelegationReward",
-                "value": {
-                  "delegator_address": "cosmos100rhxclqasy6vnrcervgh99alx5xw7lkfp4u54",
-                  "validator_address": "cosmosvaloper1sjllsnramtg3ewxqwwrwjxfgc4n4ef9u2lcnj0"
-                }
-              },{
-                "type": "cosmos-sdk/MsgWithdrawDelegationReward",
-                "value": {
-                  "delegator_address": "cosmos100rhxclqasy6vnrcervgh99alx5xw7lkfp4u54",
-                  "validator_address": "cosmosvaloper1648ynlpdw7fqa2axt0w2yp3fk542junl7rsvq6"
-                }
-              }
-            ],
-            "signatures": [
-              {
-                "pub_key": {
-                  "type": "tendermint/PubKeySecp256k1",
-                  "value": "AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"
-                },
-                "signature": "2k5bSnfWxaauXHBNJTKmf4CpLiCWLg7UAC/q2SVhZNkU+n0DdLBSTdmYhKYmmtpl/Njm4YrcxE0WLb/hVccQ+g=="
-              }
-            ]
-          }
-        }
-
-        """
-        XCTAssertJSONEqual(expectedJSON, output.json)
+        XCTAssertEqual(output.serialized, "CukDCqABCjcvY29zbW9zLmRpc3RyaWJ1dGlvbi52MWJldGExLk1zZ1dpdGhkcmF3RGVsZWdhdG9yUmV3YXJkEmUKLWNvc21vczEwMHJoeGNscWFzeTZ2bnJjZXJ2Z2g5OWFseDV4dzdsa2ZwNHU1NBI0Y29zbW9zdmFsb3BlcjFleTY5cjM3Z2Z4dnhnNjJzaDRyMGt0cHVjNDZwempybTg3M2FlOAqgAQo3L2Nvc21vcy5kaXN0cmlidXRpb24udjFiZXRhMS5Nc2dXaXRoZHJhd0RlbGVnYXRvclJld2FyZBJlCi1jb3Ntb3MxMDByaHhjbHFhc3k2dm5yY2VydmdoOTlhbHg1eHc3bGtmcDR1NTQSNGNvc21vc3ZhbG9wZXIxc2psbHNucmFtdGczZXd4cXd3cndqeGZnYzRuNGVmOXUybGNuajAKoAEKNy9jb3Ntb3MuZGlzdHJpYnV0aW9uLnYxYmV0YTEuTXNnV2l0aGRyYXdEZWxlZ2F0b3JSZXdhcmQSZQotY29zbW9zMTAwcmh4Y2xxYXN5NnZucmNlcnZnaDk5YWx4NXh3N2xrZnA0dTU0EjRjb3Ntb3N2YWxvcGVyMTY0OHlubHBkdzdmcWEyYXh0MHcyeXAzZms1NDJqdW5sN3JzdnE2EmUKUQpGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQJXKG7D830zVXu7qgALJ3RKyQI6qZZ8rnWhgdH/kfqdxRIECgIIARi+AhIQCgoKBXVhdG9tEgExEOC2DRpAXLgJ+8xEMUn7nkFj3ukg2V65Vh5ob7HKeCaNpMM6OPQrpW2r6askfssIFcOd8ThiBEz65bJz81Fmb5MtDTGv4g==")
+        XCTAssertEqual(output.error, "")
     }
 }

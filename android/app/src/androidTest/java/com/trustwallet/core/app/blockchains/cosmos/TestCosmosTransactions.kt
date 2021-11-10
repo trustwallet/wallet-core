@@ -3,12 +3,14 @@ package com.trustwalval.core.app.blockchains.cosmos
 import android.util.Log
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.toHexByteArray
+import com.trustwallet.core.app.utils.toHex
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.*
 import wallet.core.jni.CoinType.COSMOS
 import wallet.core.jni.proto.Cosmos
 import wallet.core.jni.proto.Cosmos.SigningOutput
+import wallet.core.jni.proto.Cosmos.SigningMode
 import wallet.core.java.AnySigner
 
 class TestCosmosTransactions {
@@ -50,6 +52,7 @@ class TestCosmosTransactions {
         }.build()
 
         val signingInput = Cosmos.SigningInput.newBuilder().apply {
+            signingMode = SigningMode.Protobuf
             accountNumber = 1037
             chainId = "gaia-13003"
             memo = ""
@@ -60,11 +63,9 @@ class TestCosmosTransactions {
         }.build()
 
         val output = AnySigner.sign(signingInput, COSMOS, SigningOutput.parser())
-        val jsonPayload = output.json
 
-        val expectedJsonPayload = """{"mode":"block","tx":{"fee":{"amount":[{"amount":"200","denom":"muon"}],"gas":"200000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"1","denom":"muon"}],"from_address":"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02","to_address":"cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"/D74mdIGyIB3/sQvIboLTfS9P9EV/fYGrgHZE2/vNj9X6eM6e57G3atljNB+PABnRw3pTk51uXmhCFop8O/ZJg=="}]}}"""
-        assertEquals(expectedJsonPayload, jsonPayload)
-
+        assertEquals(output.serialized, "CowBCokBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmkKLWNvc21vczFoc2s2anJ5eXFqZmhwNWRoYzU1dGM5anRja3lneDBlcGg2ZGQwMhItY29zbW9zMXp0NTBhenVwYW5xbGZhbTVhZmh2M2hleHd5dXRudWtlaDRjNTczGgkKBG11b24SATESZQpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3FEgQKAggBGAgSEQoLCgRtdW9uEgMyMDAQwJoMGkD54fQAFlekIAnE62hZYl0uQelh/HLv0oQpCciY5Dn8H1SZFuTsrGdu41PH1Uxa4woptCELi/8Ov9yzdeEFAC9H")
+        assertEquals(output.error, "")
     }
 
     @Test

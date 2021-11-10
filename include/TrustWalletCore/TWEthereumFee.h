@@ -14,7 +14,7 @@
 
 TW_EXTERN_C_BEGIN
 
-TW_EXPORT_CLASS
+TW_EXPORT_STRUCT
 struct TWEthereumFee;
 
 /// Suggest baseFee and maxPriorityFee based on eth_feeHistory RPC call response

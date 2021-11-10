@@ -28,7 +28,7 @@ class CryptoorgTests: XCTestCase {
             $0.fromAddress = fromAddress.description
             $0.toAddress = "cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus"
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 100000000
+                $0.amount = 50000000
                 $0.denom = "basecro"
             }]
         }
@@ -46,10 +46,11 @@ class CryptoorgTests: XCTestCase {
         }
 
         let input = CosmosSigningInput.with {
+            $0.signingMode = .protobuf;
             $0.accountNumber = 125798
             $0.chainID = "crypto-org-chain-mainnet-1"
             $0.memo = ""
-            $0.sequence = 0
+            $0.sequence = 2
             $0.messages = [message]
             $0.fee = fee
             $0.privateKey = privateKey.data
@@ -57,49 +58,8 @@ class CryptoorgTests: XCTestCase {
 
         let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cryptoOrg)
 
-        let expectedJSON: String =
-"""
-{
-    "mode": "block",
-    "tx": {
-        "fee": {
-            "amount": [
-                {
-                    "amount": "5000",
-                    "denom": "basecro"
-                }
-            ],
-            "gas": "200000"
-        },
-        "memo": "",
-        "msg": [
-            {
-                "type": "cosmos-sdk/MsgSend",
-                "value": {
-                    "amount": [
-                        {
-                            "amount": "100000000",
-                            "denom": "basecro"
-                        }
-                    ],
-                    "from_address": "cro1ctwtcwpgksky988dhth6jslxveumgu0d45zgf0",
-                    "to_address": "cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus"
-                }
-            }
-        ],
-        "signatures": [
-            {
-                "pub_key": {
-                    "type": "tendermint/PubKeySecp256k1",
-                    "value": "A4gxsGFiPn6L5Z2IjHEISkXI0IkwfL9exV3GLB171Wvj"
-                },
-                "signature": "5+5rSFFg0FE9cTklQWQHNktBDJsz7UCnMSgF0t0+gYcrIhEWUyTtibXaHZQbKAAaciJ1BkHXYREjU55VswByVg=="
-            }
-        ]
-    }
-}
-"""
-
-        XCTAssertJSONEqual(expectedJSON, output.json)
+        // https://crypto.org/explorer/tx/BCB213B0A121F0CF11BECCF52475F1C8328D6070F3CFDA9E14C42E6DB30E847E
+        XCTAssertEqual(output.serialized, "CpABCo0BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm0KKmNybzFjdHd0Y3dwZ2tza3k5ODhkaHRoNmpzbHh2ZXVtZ3UwZDQ1emdmMBIqY3JvMXhwYWh5NmM3d2xkeGFjdjZsZDk5aDQzNW1odmZuc3VwMjR2Y3VzGhMKB2Jhc2Vjcm8SCDUwMDAwMDAwEmkKUApGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQOIMbBhYj5+i+WdiIxxCEpFyNCJMHy/XsVdxiwde9Vr4xIECgIIARgCEhUKDwoHYmFzZWNybxIENTAwMBDAmgwaQAcxK9xk6r69gmz+1UWaCnYxNuXPXZdp59YcqKPJE5d6fp+IICTBOwd2rs8MiApcf8kNSrbZ6oECxcGQAdxF0SI=")
+        XCTAssertEqual(output.error, "")
     }
 }

@@ -85,7 +85,7 @@ void Signer::sign(const PrivateKey& privateKey, Type type, Transaction& transact
 
     const Data result = privateKey.sign(hash(transaction), curve, canonicalChecker);
 
-    transaction.signatures.push_back(Signature(result, type));
+    transaction.signatures.emplace_back(Signature(result, type));
 }
 
 TW::Data Signer::hash(const Transaction& transaction) const noexcept {

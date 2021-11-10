@@ -56,7 +56,7 @@ string TransactionBuilder::sign(Proto::SigningInput in) {
         // process addresses
         std::vector<std::pair<std::string, std::string>> addresses;
         for (int i = 0; i < action.public_addresses_size(); ++i) {
-            addresses.push_back(std::make_pair(action.public_addresses(i).coin_symbol(), action.public_addresses(i).address()));
+            addresses.emplace_back(std::make_pair(action.public_addresses(i).coin_symbol(), action.public_addresses(i).address()));
         }
         json = TransactionBuilder::createAddPubAddress(owner, privateKey,
             action.fio_address(), addresses, 
@@ -86,7 +86,7 @@ string TransactionBuilder::createRegisterFioAddress(const Address& address, cons
     const string& fioName,
     const ChainParams& chainParams, uint64_t fee, const string& walletTpId, uint32_t expiryTime) {
 
-    const auto apiName = "regaddress";
+    const auto* const apiName = "regaddress";
 
     string actor = Actor::actor(address);
     RegisterFioAddressData raData(fioName, address.string(), fee, walletTpId, actor);
@@ -113,7 +113,7 @@ string TransactionBuilder::createAddPubAddress(const Address& address, const Pri
     const vector<pair<string, string>>& pubAddresses,
     const ChainParams& chainParams, uint64_t fee, const string& walletTpId, uint32_t expiryTime) {
 
-    const auto apiName = "addaddress";
+    const auto* const apiName = "addaddress";
 
     string actor = Actor::actor(address);
     // convert addresses to add chainCode -- set it equal to coinSymbol
@@ -145,7 +145,7 @@ string TransactionBuilder::createTransfer(const Address& address, const PrivateK
         const string& payeePublicKey, uint64_t amount,
         const ChainParams& chainParams, uint64_t fee, const string& walletTpId, uint32_t expiryTime) {
 
-    const auto apiName = "trnsfiopubky";
+    const auto* const apiName = "trnsfiopubky";
 
     string actor = Actor::actor(address);
     TransferData ttData(payeePublicKey, amount, fee, walletTpId, actor);
@@ -172,7 +172,7 @@ string TransactionBuilder::createRenewFioAddress(const Address& address, const P
     const string& fioName,
     const ChainParams& chainParams, uint64_t fee, const string& walletTpId, uint32_t expiryTime) {
 
-    const auto apiName = "renewaddress";
+    const auto* const apiName = "renewaddress";
 
     string actor = Actor::actor(address);
     RenewFioAddressData raData(fioName, fee, walletTpId, actor);
@@ -201,7 +201,7 @@ string TransactionBuilder::createNewFundsRequest(const Address& address, const P
         const ChainParams& chainParams, uint64_t fee, const string& walletTpId, uint32_t expiryTime,
         const Data& iv) {
 
-    const auto apiName = "newfundsreq";
+    const auto* const apiName = "newfundsreq";
 
     // use coinSymbol for chainCode as well
     NewFundsContent newFundsContent { payeePublicAddress, amount, coinSymbol, coinSymbol, memo, hash, offlineUrl };

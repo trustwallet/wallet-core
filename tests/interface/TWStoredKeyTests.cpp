@@ -196,7 +196,8 @@ TEST(TWStoredKey, removeAccountForCoin) {
     const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
     const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
     
-    auto key = WRAP(TWStoredKey, TWStoredKeyCreate("Test KeyStore", password.get()));
+    const auto name = WRAPS(TWStringCreateWithUTF8Bytes("Test KeyStore"));
+    auto key = WRAP(TWStoredKey, TWStoredKeyCreate(name.get(), password.get()));
     auto wallet = WRAP(TWHDWallet, TWStoredKeyWallet(key.get(), password.get()));
     
     ASSERT_NE(WRAP(TWAccount, TWStoredKeyAccountForCoin(key.get(), TWCoinTypeEthereum, wallet.get())).get(), nullptr);

@@ -6,6 +6,7 @@
 
 #include "../Data.h"
 #include "ReadData.h"
+#include <stdexcept>
 
 
 TW::Data TW::readBytes(const TW::Data& from, int max, int initial_pos) {

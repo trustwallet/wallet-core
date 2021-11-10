@@ -24,6 +24,7 @@
 #include "OpCodes.h"
 
 #include <algorithm>
+#include <iterator>
 #include <cassert>
 #include <set>
 

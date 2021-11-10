@@ -15,35 +15,43 @@ using namespace TW;
 using namespace TW::Cosmos;
 
 TEST(TWAnySignerCosmos, SignTx) {
-    auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
+    auto privateKey = parse_hex("8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af");
     Proto::SigningInput input;
-    input.set_account_number(1037);
-    input.set_chain_id("gaia-13003");
+    input.set_signing_mode(Proto::Protobuf);
+    input.set_account_number(546179);
+    input.set_chain_id("cosmoshub-4");
     input.set_memo("");
-    input.set_sequence(8);
+    input.set_sequence(0);
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto fromAddress = Address("cosmos", parse_hex("BC2DA90C84049370D1B7C528BC164BC588833F21"));
-    auto toAddress = Address("cosmos", parse_hex("12E8FE8B81ECC1F4F774EA6EC8DF267138B9F2D9"));
+    Address fromAddress;
+    EXPECT_TRUE(Address::decode("cosmos1mky69cn8ektwy0845vec9upsdphktxt03gkwlx", fromAddress));
+    Address toAddress;
+    EXPECT_TRUE(Address::decode("cosmos18s0hdnsllgcclweu9aymw4ngktr2k0rkygdzdp", toAddress));
 
     auto msg = input.add_messages();
     auto& message = *msg->mutable_send_coins_message();
     message.set_from_address(fromAddress.string());
     message.set_to_address(toAddress.string());
     auto amountOfTx = message.add_amounts();
-    amountOfTx->set_denom("muon");
-    amountOfTx->set_amount(1);
+    amountOfTx->set_denom("uatom");
+    amountOfTx->set_amount(400000);
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amounts();
-    amountOfFee->set_denom("muon");
-    amountOfFee->set_amount(200);
+    amountOfFee->set_denom("uatom");
+    amountOfFee->set_amount(1000);
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeCosmos);
 
-    ASSERT_EQ(output.json(), R"({"mode":"block","tx":{"fee":{"amount":[{"amount":"200","denom":"muon"}],"gas":"200000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"1","denom":"muon"}],"from_address":"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02","to_address":"cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"/D74mdIGyIB3/sQvIboLTfS9P9EV/fYGrgHZE2/vNj9X6eM6e57G3atljNB+PABnRw3pTk51uXmhCFop8O/ZJg=="}]}})");
+    // https://www.mintscan.io/cosmos/txs/85392373F54577562067030BF0D61596C91188AA5E6CA8FFE731BD0349296411
+    // curl -H 'Content-Type: application/json' --data-binary '{"tx_bytes": "CpIBC...JXoCX", "mode": "BROADCAST_MODE_BLOCK"}' https://api.cosmos.network/cosmos/tx/v1beta1/txs
+    EXPECT_EQ(output.serialized(), "CpIBCo8BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm8KLWNvc21vczFta3k2OWNuOGVrdHd5MDg0NXZlYzl1cHNkcGhrdHh0MDNna3dseBItY29zbW9zMThzMGhkbnNsbGdjY2x3ZXU5YXltdzRuZ2t0cjJrMHJreWdkemRwGg8KBXVhdG9tEgY0MDAwMDASZQpOCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAuzvXOQ3owLGf5VGjeSzHzbpEfRn1+alK0HB4T4dVjZJEgQKAggBEhMKDQoFdWF0b20SBDEwMDAQwJoMGkCvvVE6d29P30cO9/lnXyGunWMPxNY12NuqDcCnFkNM0H4CUQdl1Gc9+ogIJbro5nyzZzlv9rl2/GsZox/JXoCX");
+    EXPECT_EQ(hex(output.signature()), "afbd513a776f4fdf470ef7f9675f21ae9d630fc4d635d8dbaa0dc0a716434cd07e02510765d4673dfa880825bae8e67cb367396ff6b976fc6b19a31fc95e8097");
+    EXPECT_EQ(output.json(), "");
+    EXPECT_EQ(output.error(), "");
 }
 
 TEST(TWAnySignerCosmos, SignJSON) {

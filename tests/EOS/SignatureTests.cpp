@@ -14,8 +14,7 @@ using namespace TW::EOS;
 
 TEST(EOSSignature, Serialization) {
     Data buf;
-    Signature *sig = nullptr;
-    ASSERT_NO_THROW(sig = new Signature(parse_hex("1f14262320d5b145220fb94d8fe204117edd25e52bbe9557b6e0909dd00307af266f5be1deef001446979523ac9de32c7eae5e5be4180b5a60c0e6bf14b2dd3e05"), Type::ModernK1));
+    Signature *sig = new Signature(parse_hex("1f14262320d5b145220fb94d8fe204117edd25e52bbe9557b6e0909dd00307af266f5be1deef001446979523ac9de32c7eae5e5be4180b5a60c0e6bf14b2dd3e05"), Type::ModernK1);
     sig->serialize(buf);
 
     ASSERT_EQ(
@@ -29,7 +28,7 @@ TEST(EOSSignature, Serialization) {
     );
 
     delete sig;
-    ASSERT_NO_THROW(sig = new Signature(parse_hex("1f5c419d16f573ddbf07d2eb959621f690f9cb856ea2d113e3af02b3b40005488410e82ffa37a079e119844d213f4eb066a640507db68851752bea6e61eb864d84"), Type::ModernR1));
+    sig = new Signature(parse_hex("1f5c419d16f573ddbf07d2eb959621f690f9cb856ea2d113e3af02b3b40005488410e82ffa37a079e119844d213f4eb066a640507db68851752bea6e61eb864d84"), Type::ModernR1);
     buf.clear();
     sig->serialize(buf);
 

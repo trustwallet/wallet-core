@@ -16,7 +16,7 @@ TW_EXTERN_C_BEGIN
 
 struct TWEthereumAbiFunction;
 
-TW_EXPORT_CLASS
+TW_EXPORT_STRUCT
 struct TWEthereumAbi;
 
 /// Encode function to Eth ABI binary

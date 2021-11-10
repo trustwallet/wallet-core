@@ -57,7 +57,7 @@ TEST(DigiByteTransaction, SignTransaction) {
     plan.fee = fee;
     plan.change = utxo_amount - amount - fee;
 
-    auto &protoPlan = *input.mutable_plan();
+    auto& protoPlan = *input.mutable_plan();
     protoPlan = plan.proto();
 
     // Sign

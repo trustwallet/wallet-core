@@ -149,11 +149,11 @@ Proto::SigningOutput Signer::signCreateValidator(const Proto::SigningInput &inpu
     auto commissionRates = CommissionRate(rate, maxRate, maxChangeRate);
     std::vector<Data> slotPubKeys;
     for (auto pk : input.staking_message().create_validator_message().slot_pub_keys()) {
-        slotPubKeys.push_back(Data(pk.begin(), pk.end()));
+        slotPubKeys.emplace_back(Data(pk.begin(), pk.end()));
     }
     std::vector<Data> slotKeySigs;
     for (auto sig : input.staking_message().create_validator_message().slot_key_sigs()) {
-        slotKeySigs.push_back(Data(sig.begin(), sig.end()));
+        slotKeySigs.emplace_back(Data(sig.begin(), sig.end()));
     }
     Address validatorAddr;
     if (!Address::decode(input.staking_message().create_validator_message().validator_address(),

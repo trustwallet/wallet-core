@@ -20,12 +20,12 @@ bool TWRippleXAddressEqual(struct TWRippleXAddress *_Nonnull lhs, struct TWRippl
 }
 
 bool TWRippleXAddressIsValidString(TWString *_Nonnull string) {
-    auto s = reinterpret_cast<const std::string*>(string);
+    auto* s = reinterpret_cast<const std::string*>(string);
     return XAddress::isValid(*s);
 }
 
 struct TWRippleXAddress *_Nullable TWRippleXAddressCreateWithString(TWString *_Nonnull string) {
-    auto s = reinterpret_cast<const std::string*>(string);
+    auto* s = reinterpret_cast<const std::string*>(string);
     try {
         const auto address = XAddress(*s);
         return new TWRippleXAddress{ std::move(address) };

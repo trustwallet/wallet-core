@@ -1,4 +1,3 @@
-    var rawValue: TW<%= entity.name %>
 
 <%# Properties -%>
 <%- entity.properties.each do |property| -%>
@@ -7,8 +6,7 @@
     }
 
 <%- end -%>
-    init(rawValue: TW<%= entity.name %>) {
-        self.rawValue = rawValue
+    init() {
     }
 
 <%# Initializers -%>

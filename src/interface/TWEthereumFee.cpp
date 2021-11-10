@@ -18,9 +18,6 @@
 
 using namespace TW;
 
-/// Wrapper for C interface, empty as all methods are static
-struct TWEthereumFee {};
-
 TWString* _Nullable TWEthereumFeeSuggest(TWString* _Nonnull feeHistory) {
     const auto& json = *reinterpret_cast<const std::string*>(feeHistory);
     try {

@@ -78,3 +78,6 @@ std::string getTestTempDir(void);
     } catch (...) { \
         FAIL() << "Not the expected exception"; \
     }
+
+/// Open a json file
+nlohmann::json loadJson(std::string path);

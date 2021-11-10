@@ -1,10 +1,10 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Serialization.h"
+#include "JsonSerialization.h"
 
 #include "../Cosmos/Address.h"
 #include "../proto/Cosmos.pb.h"
@@ -16,6 +16,8 @@ using namespace TW::Cosmos;
 
 using json = nlohmann::json;
 using string = std::string;
+
+namespace TW::Cosmos {
 
 const string TYPE_PREFIX_MSG_SEND = "cosmos-sdk/MsgSend";
 const string TYPE_PREFIX_MSG_DELEGATE = "cosmos-sdk/MsgDelegate";
@@ -170,7 +172,7 @@ static json signatureJSON(const Data& signature, const Data& pubkey) {
     };
 }
 
-json Cosmos::signaturePreimage(const Proto::SigningInput& input) {
+json signaturePreimageJSON(const Proto::SigningInput& input) {
     return {
         {"account_number", std::to_string(input.account_number())},
         {"chain_id", input.chain_id()},
@@ -181,7 +183,7 @@ json Cosmos::signaturePreimage(const Proto::SigningInput& input) {
     };
 }
 
-json Cosmos::transactionJSON(const Proto::SigningInput& input, const Data& signature) {
+json transactionJSON(const Proto::SigningInput& input, const Data& signature) {
     auto privateKey = PrivateKey(input.private_key());
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     json tx = {
@@ -194,3 +196,5 @@ json Cosmos::transactionJSON(const Proto::SigningInput& input, const Data& signa
     };
     return broadcastJSON(tx, input.mode());
 }
+
+} // namespace

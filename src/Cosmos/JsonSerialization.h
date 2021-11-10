@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -22,7 +22,7 @@ extern const string TYPE_PREFIX_PUBLIC_KEY;
 
 namespace TW::Cosmos {
 
-json signaturePreimage(const Proto::SigningInput& input);
+json signaturePreimageJSON(const Proto::SigningInput& input);
 json transactionJSON(const Proto::SigningInput& input, const Data& signature);
 
 } // namespace

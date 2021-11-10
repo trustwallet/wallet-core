@@ -16,7 +16,7 @@ SigningInput::SigningInput(const Proto::SigningInput& input) {
     toAddress = input.to_address();
     changeAddress = input.change_address();
     for (auto& key: input.private_key()) {
-        privateKeys.push_back(PrivateKey(key));
+        privateKeys.emplace_back(PrivateKey(key));
     }
     for (auto& script: input.scripts()) {
         scripts[script.first] = Script(script.second.begin(), script.second.end());

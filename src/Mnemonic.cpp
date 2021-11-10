@@ -9,6 +9,7 @@
 #include <TrezorCrypto/bip39_english.h>
 #include <TrezorCrypto/bip39.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 #include <cassert>
@@ -56,7 +57,7 @@ std::string Mnemonic::suggest(const std::string& prefix) {
         if ((*word)[0] == prefixLo[0]) {
             if (strncmp(*word, prefixLoC, prefixLo.length()) == 0) {
                 // we have a match
-                result.push_back(*word);
+                result.emplace_back(*word);
                 if (result.size() >= SuggestMaxCount) {
                     break; // enough results
                 }
@@ -75,4 +76,4 @@ std::string Mnemonic::suggest(const std::string& prefix) {
     return resultString;
 }
 
-}
+} // namespace TW

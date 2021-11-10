@@ -13,6 +13,7 @@
 #include <google/protobuf/util/json_util.h>
 
 #include <algorithm>
+#include <optional>
 
 using namespace TW;
 using namespace TW::Solana;
@@ -90,7 +91,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
                 std::vector<Address> addresses;
                 for (auto i = 0; i < protoMessage.stake_accounts_size(); ++i) {
-                    addresses.push_back(Address(protoMessage.stake_accounts(i)));
+                    addresses.emplace_back(Address(protoMessage.stake_accounts(i)));
                 }
                 message = Message::createStakeDeactivateAll(userAddress, addresses, blockhash);
                 signerKeys.push_back(key);
