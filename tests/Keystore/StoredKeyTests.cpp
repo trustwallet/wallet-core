@@ -383,4 +383,22 @@ TEST(StoredKey, EtherWalletAddressNo0x) {
     EXPECT_EQ(key.account(TWCoinTypeEthereum, nullptr)->address, "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309");
 }
 
+TEST(StoredKey, CreateWithMnemonicDefaultEncryptionParameters) {
+    const auto key = StoredKey::createWithMnemonic("name", password, mnemonic);
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+    const Data& mnemo2Data = key.payload.decrypt(password);
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));
+    EXPECT_EQ(key.accounts.size(), 0);
+    EXPECT_EQ(key.wallet(password).getMnemonic(), string(mnemonic));
+
+    const auto json = key.json();
+
+    EXPECT_EQ(json["crypto"]["kdf"], "scrypt");
+    EXPECT_EQ(json["crypto"]["kdfparams"]["n"], 4096);
+
+    // load it back
+    const auto key2 = StoredKey::createWithJson(json);
+    EXPECT_EQ(key2.wallet(password).getMnemonic(), string(mnemonic));
+}
+
 } // namespace TW::Keystore
