@@ -10,7 +10,7 @@ import XCTest
 class OsmosisTests: XCTestCase {
     func testAddress() {
         let key = PrivateKey(data: Data(hexString: "8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af")!)!
-        let pubkey = key.getPublicKeySecp256k1()
+        let pubkey = key.getPublicKeySecp256k1(compressed: true)
         let address = AnyAddress(publicKey: pubkey, coin: .osmosis)
         let addressFromString = AnyAddress(string: "osmo1mky69cn8ektwy0845vec9upsdphktxt0en97f5", coin: .osmosis)!
 
