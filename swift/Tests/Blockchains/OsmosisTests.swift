@@ -40,7 +40,7 @@ class OsmosisTests: XCTestCase {
             $0.gas = 200000
             $0.amounts = [CosmosAmount.with {
                 $0.amount = 200
-                $0.denom = "uosmos"
+                $0.denom = "uosmo"
             }]
         }
 
