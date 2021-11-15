@@ -41,7 +41,7 @@ class TestOsmosisSigner {
 
         val sendCoinsMsg = Cosmos.Message.Send.newBuilder().apply {
             fromAddress = from
-            toAddress = "osmo1mky69cn8ektwy0845vec9upsdphktxt0en97f5"
+            toAddress = "osmo18s0hdnsllgcclweu9aymw4ngktr2k0rkvn7jmn"
             addAllAmounts(listOf(txAmount))
         }.build()
 
