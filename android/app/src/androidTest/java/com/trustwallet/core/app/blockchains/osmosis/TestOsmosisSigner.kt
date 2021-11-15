@@ -17,7 +17,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.*
 import wallet.core.jni.CoinType.OSMOSIS
-import wallet.core.jni.CosmosSigner
 import wallet.core.jni.proto.Cosmos
 import wallet.core.jni.proto.Cosmos.SigningOutput
 import wallet.core.jni.proto.Cosmos.SigningMode
