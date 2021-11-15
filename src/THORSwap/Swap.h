@@ -13,6 +13,7 @@
 
 namespace TW::THORSwap {
 
+/// Supported blockchains
 enum Chain {
     THOR = 0,
     BTC = 1,
@@ -28,14 +29,14 @@ public:
     static std::pair<Data, std::string> build(
         Chain fromChain,
         Chain toChain,
-        const std::string& fromAddress,
-        const std::string& toSymbol,
-        const std::string& toTokenId,
-        const std::string& toAddress,
-        const std::string& vaultAddress,
-        const std::string& routerAddress, // for Ethereum, can be empty otherwise
-        const std::string& fromAmount,
-        const std::string& toAmountLimit
+        const std::string& fromAddress,     // source address, on source chain, string format
+        const std::string& toSymbol,        // destination coin symbol
+        const std::string& toTokenId,       // destination token ID, on the destination chain, in case destination is a token, empty otherwise
+        const std::string& toAddress,       // destination address, on destination chain, string format
+        const std::string& vaultAddress,    // ThorSwap vault, on the source chain. Should be queried afresh, as it may change
+        const std::string& routerAddress,   // ThorSwap router, only in case of Ethereum source network
+        const std::string& fromAmount,      // The source amount, as integer in the smallest native unit of the chain
+        const std::string& toAmountLimit    // The minimum accepted destination amount.  Actual destination amount will depend on current rates, limit amount can be used to prevent using very unfavorable rates.
     );
 
 protected:

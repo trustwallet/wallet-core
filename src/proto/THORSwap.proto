@@ -27,25 +27,25 @@ message SwapInput {
     // Source chain
     Chain from_chain = 1;
 
-    // Sender address (on the source chain)
+    // Source address, on source chain
     string from_address = 2;
 
-    // Destination chain+asset
+    // Destination chain+asset, on destination chain
     Asset to_asset = 3;
 
-    // Destination address (on the destination chain)
+    // Destination address, on destination chain
     string to_address = 4;
 
-    // Vault address.  Address of the vault, on the source network, must match the pair
+    // ThorSwap vault, on the source chain. Should be queried afresh, as it may change
     string vault_address = 5;
 
-    // For Ethereum, can be empty otherwise
+    // ThorSwap router, only in case of Ethereum source network
     string router_address = 6;
 
-    // Source amount, as string, in the native asset of the source chain
+    // The source amount, integer as string, in the smallest native unit of the chain
     string from_amount = 7;
 
-    // Destination limit amount, as string, in the native asset of the destination chain
+    // The minimum accepted destination amount.  Actual destination amount will depend on current rates, limit amount can be used to prevent using very unfavorable rates.
     string to_amount_limit = 8;
 }
 
