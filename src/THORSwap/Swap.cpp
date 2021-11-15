@@ -135,8 +135,7 @@ std::string Swap::buildBitcoin(Chain toChain, const std::string& toSymbol, const
 }
 
 Data ethAddressStringToData(const std::string& asString) {
-    Data asData;
-    asData.resize(20);
+    Data asData(20);
     if (asString.empty()) {
         return asData;
     }
@@ -157,9 +156,6 @@ std::string Swap::buildEthereum(Chain toChain, const std::string& toSymbol, cons
         return "Invalid router address: " + routerAddress;
     }
     Data toAssetAddressBin = ethAddressStringToData(toTokenId);
-    if (!Ethereum::Address::isValid(toTokenId) || toAssetAddressBin.size() != Ethereum::Address::size) {
-        return "Invalid assetId: " + toTokenId;
-    }
 
     // Following fields need to be set after building, before sending
     auto chainId = store(uint256_t(1));
