@@ -21,7 +21,7 @@ class TestOsmosisAddress {
     @Test
     fun testAddress() {
         val key = PrivateKey("8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af".toHexByteArray())
-        val pubkey = key.publicKeySecp256k1
+        val pubkey = key.getPublicKeySecp256k1(true)
         val address = AnyAddress(pubkey, CoinType.OSMOSIS)
         val expected = AnyAddress("osmo1mky69cn8ektwy0845vec9upsdphktxt0en97f5", CoinType.OSMOSIS)
 
