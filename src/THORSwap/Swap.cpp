@@ -33,21 +33,23 @@ namespace TW::THORSwap {
 
 TWCoinType chainCoinType(Chain chain) {
     switch (chain) {
-        case Chain::THOR: return TWCoinTypeTHORChain;
-        case Chain::BTC: return TWCoinTypeBitcoin;
         case Chain::ETH: return TWCoinTypeEthereum;
         case Chain::BNB: return TWCoinTypeBinance;
-        default: return TWCoinTypeBitcoin;
+        case Chain::BTC: return TWCoinTypeBitcoin;
+        case Chain::THOR:
+        default:
+            return TWCoinTypeTHORChain;
     }
 }
 
 std::string chainName(Chain chain) {
     switch (chain) {
-        case Chain::THOR: return "THOR";
-        case Chain::BTC: return "BTC";
         case Chain::ETH: return "ETH";
         case Chain::BNB: return "BNB";
-        default: return "";
+        case Chain::BTC: return "BTC";
+        case Chain::THOR:
+        default:
+            return "THOR";
     }
 }
 
@@ -106,6 +108,7 @@ std::pair<Data, std::string> Swap::build(
             return std::make_pair(std::move(out), std::move(res));
         }
 
+        case Chain::THOR:
         default:
             return std::make_pair<Data, std::string>({}, "Invalid from chain: " + std::to_string(toChain));
     }
@@ -136,7 +139,7 @@ std::string Swap::buildBitcoin(Chain toChain, const std::string& toSymbol, const
 
 Data ethAddressStringToData(const std::string& asString) {
     Data asData(20);
-    if (asString.empty()) {
+    if (asString.empty() || !Ethereum::Address::isValid(asString)) {
         return asData;
     }
     auto address = Ethereum::Address(asString);

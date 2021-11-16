@@ -20,6 +20,7 @@
 #include "Coin.h"
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWAnySigner.h>
+#include "uint256.h"
 #include "../interface/TWTestUtilities.h"
 
 #include <gtest/gtest.h>
@@ -382,6 +383,22 @@ TEST(THORSwap, WrongToAddress) {
     {
         auto res = Swap::build(Chain::BNB, Chain::ETH, Address1Bnb, "ETH", "", Address1Btc, VaultEth, "", "100000", "100000");
         EXPECT_EQ(res.second, "Invalid to address");
+    }
+}
+
+TEST(THORSwap, FromRuneNotSupported) {
+    auto res = Swap::build(Chain::THOR, Chain::BNB, Address1Thor, "BNB", "", Address1Bnb, "", "", "1000", "1000");
+    EXPECT_EQ(res.second, "Invalid from chain: 3");
+}
+
+TEST(THORSwap, EthInvalidVault) {
+    {
+        auto res = Swap::build(Chain::ETH, Chain::BNB, Address1Eth, "BNB", "", Address1Bnb, "_INVALID_ADDRESS_", RouterEth, "50000000000000000", "600003");
+        EXPECT_EQ(res.second, "Invalid vault address: _INVALID_ADDRESS_");
+    }
+    {
+        auto res = Swap::build(Chain::ETH, Chain::BNB, Address1Eth, "BNB", "", Address1Bnb, VaultEth, "_INVALID_ADDRESS_", "50000000000000000", "600003");
+        EXPECT_EQ(res.second, "Invalid router address: _INVALID_ADDRESS_");
     }
 }
 
