@@ -87,7 +87,7 @@ class Script {
     /// Builds a pay-to-witness-script-hash (P2WSH) script from a script hash.
     static Script buildPayToWitnessScriptHash(const Data& scriptHash);
 
-    /// Builds a pay-to-taproot (P2TR) script from a Taproot public key.
+    /// Builds a pay-to-taproot (P2TR) script from a 32-byte Schnorr public key.
     static Script buildPayToTaprootPublicKey(const Data& publicKey);
 
     /// Builds a appropriate lock script for the given
