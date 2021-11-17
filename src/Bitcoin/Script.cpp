@@ -237,7 +237,7 @@ Script Script::buildPayToScriptHash(const Data& scriptHash) {
     return script;
 }
 
-Script Script::buildPayToWitnessProgram(const Data& program) {
+Script Script::buildPayToV0WitnessProgram(const Data& program) {
     assert(program.size() == 20 || program.size() == 32);
     Script script;
     script.bytes.push_back(OP_0);
@@ -249,15 +249,15 @@ Script Script::buildPayToWitnessProgram(const Data& program) {
 
 Script Script::buildPayToWitnessPublicKeyHash(const Data& hash) {
     assert(hash.size() == 20);
-    return Script::buildPayToWitnessProgram(hash);
+    return Script::buildPayToV0WitnessProgram(hash);
 }
 
 Script Script::buildPayToWitnessScriptHash(const Data& scriptHash) {
     assert(scriptHash.size() == 32);
-    return Script::buildPayToWitnessProgram(scriptHash);
+    return Script::buildPayToV0WitnessProgram(scriptHash);
 }
 
-Script Script::buildPayToTaprootPublicKey(const Data& publicKey) {
+Script Script::buildPayToV1WitnessProgram(const Data& publicKey) {
     assert(publicKey.size() == 32);
     Script script;
     script.bytes.push_back(OP_1);
@@ -295,10 +295,10 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
         // address starts with bc/ltc
         const auto address = std::get<0>(result);
         if (address.witnessVersion == 0) {
-            return buildPayToWitnessProgram(address.witnessProgram);
+            return buildPayToV0WitnessProgram(address.witnessProgram);
         }
         if (address.witnessVersion == 1 && address.witnessProgram.size() == 32) {
-            return buildPayToTaprootPublicKey(address.witnessProgram);
+            return buildPayToV1WitnessProgram(address.witnessProgram);
         }
     } else if (CashAddress::isValid(string)) {
         auto address = CashAddress(string);

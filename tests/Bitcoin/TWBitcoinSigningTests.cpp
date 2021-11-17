@@ -202,7 +202,7 @@ TEST(BitcoinSigning, SignP2WPKH_Bip143) {
     input.utxos.push_back(utxo0);
 
     UTXO utxo1;
-    auto utxo1Script = Script::buildPayToWitnessProgram(utxoPubkeyHash1);
+    auto utxo1Script = Script::buildPayToV0WitnessProgram(utxoPubkeyHash1);
     utxo1.script = utxo1Script;
     utxo1.amount = 600000000; // 0x23C34600 0046c323
     utxo1.outPoint = OutPoint(hash1, 1, UINT32_MAX);
@@ -1455,7 +1455,7 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
     auto pubkey = PrivateKey(privkey).getPublicKey(TWPublicKeyTypeSECP256k1);
     EXPECT_EQ(hex(pubkey.bytes), "036739829f2cfec79cfe6aaf1c22ecb7d4867dfd8ab4deb7121b36a00ab646caed");
 
-    auto utxo0Script = Script::lockScriptForAddress(ownAddress, coin); // buildPayToWitnessProgram()
+    auto utxo0Script = Script::lockScriptForAddress(ownAddress, coin); // buildPayToV0WitnessProgram()
     Data keyHashIn0;
     EXPECT_TRUE(utxo0Script.matchPayToWitnessPublicKeyHash(keyHashIn0));
     EXPECT_EQ(hex(keyHashIn0), "5c74be45eb45a3459050667529022d9df8a1ecff");
