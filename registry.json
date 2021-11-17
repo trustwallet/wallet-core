@@ -1816,5 +1816,31 @@
       "clientPublic": "https://api.roninchain.com/rpc",
       "clientDocs": "https://eth.wiki/json-rpc/API"
     }
+  },
+  {
+    "id": "osmosis",
+    "name": "Osmosis",
+    "displayName": "Osmosis",
+    "coinId": 10000118,
+    "symbol": "OSMO",
+    "decimals": 6,
+    "blockchain": "Cosmos",
+    "derivationPath": "m/44'/118'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "osmo",
+    "explorer": {
+      "url": "https://www.mintscan.io/osmosis",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "5A6E50A6F2927E4B8C87BB094D5FBF15F1287429A09111806FC44B3CD86CACA8",
+      "sampleAccount": "osmo1mky69cn8ektwy0845vec9upsdphktxt0en97f5"
+    },
+    "info": {
+      "url": "https://osmosis.zone/",
+      "client": "https://github.com/osmosis-labs/osmosis",
+      "clientPublic": "https://rpc-osmosis.keplr.app/",
+      "clientDocs": ""
+    }
   }
 ]

@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Bitcoin/Address.h"
+#include "Bitcoin/SegwitAddress.h"
 #include "Bitcoin/OutPoint.h"
 #include "Bitcoin/Script.h"
 #include "Bitcoin/Transaction.h"
@@ -201,7 +202,7 @@ TEST(BitcoinSigning, SignP2WPKH_Bip143) {
     input.utxos.push_back(utxo0);
 
     UTXO utxo1;
-    auto utxo1Script = Script::buildPayToWitnessProgram(utxoPubkeyHash1);
+    auto utxo1Script = Script::buildPayToV0WitnessProgram(utxoPubkeyHash1);
     utxo1.script = utxo1Script;
     utxo1.amount = 600000000; // 0x23C34600 0046c323
     utxo1.outPoint = OutPoint(hash1, 1, UINT32_MAX);
@@ -1454,7 +1455,7 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
     auto pubkey = PrivateKey(privkey).getPublicKey(TWPublicKeyTypeSECP256k1);
     EXPECT_EQ(hex(pubkey.bytes), "036739829f2cfec79cfe6aaf1c22ecb7d4867dfd8ab4deb7121b36a00ab646caed");
 
-    auto utxo0Script = Script::lockScriptForAddress(ownAddress, coin); // buildPayToWitnessProgram()
+    auto utxo0Script = Script::lockScriptForAddress(ownAddress, coin); // buildPayToV0WitnessProgram()
     Data keyHashIn0;
     EXPECT_TRUE(utxo0Script.matchPayToWitnessPublicKeyHash(keyHashIn0));
     EXPECT_EQ(hex(keyHashIn0), "5c74be45eb45a3459050667529022d9df8a1ecff");
@@ -1548,4 +1549,77 @@ TEST(BitcoinSigning, RedeemExtendedPubkeyUTXO) {
     Data encoded;
     signedTx.encode(encoded);
     EXPECT_EQ(encoded.size(), 402);
+}
+
+TEST(BitcoinSigning, SignP2TR_5df51e) {
+    const auto privateKey = "13fcaabaf9e71ffaf915e242ec58a743d55f102cf836968e5bd4881135e0c52c";
+    const auto ownAddress = "bc1qpjult34k9spjfym8hss2jrwjgf0xjf40ze0pp8";
+    const auto toAddress = "bc1ptmsk7c2yut2xah4pgflpygh2s7fh0cpfkrza9cjj29awapv53mrslgd5cf"; // Taproot
+    const auto coin =  TWCoinTypeBitcoin;
+
+    // Setup input
+    SigningInput input;
+    input.hashType = hashTypeForCoin(coin);
+    input.amount = 1100;
+    input.useMaxAmount = false;
+    input.byteFee = 1;
+    input.toAddress = toAddress;
+    input.changeAddress = ownAddress;
+    input.coinType = coin;
+
+    auto utxoKey0 = PrivateKey(parse_hex(privateKey));
+    auto pubKey0 = utxoKey0.getPublicKey(TWPublicKeyTypeSECP256k1);
+    EXPECT_EQ(hex(pubKey0.bytes), "021e582a887bd94d648a9267143eb600449a8d59a0db0653740b1378067a6d0cee");
+    EXPECT_EQ(SegwitAddress(pubKey0, 0, "bc").string(), ownAddress);
+    auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(pubKey0.bytes));
+    EXPECT_EQ(hex(utxoPubkeyHash), "0cb9f5c6b62c03249367bc20a90dd2425e6926af");
+    input.privateKeys.push_back(utxoKey0);
+
+    auto redeemScript = Script::lockScriptForAddress(input.toAddress, coin);
+    EXPECT_EQ(hex(redeemScript.bytes), "51205ee16f6144e2d46edea1427e1222ea879377e029b0c5d2e252517aee85948ec7");
+    auto scriptHash = Hash::ripemd(Hash::sha256(redeemScript.bytes));
+    EXPECT_EQ(hex(scriptHash), "e0a5001e7b394a1a6b2978cdcab272241280bf46");
+    input.scripts[hex(scriptHash)] = redeemScript;
+
+    UTXO utxo0;
+    auto utxo0Script = Script::lockScriptForAddress(ownAddress, coin);
+    EXPECT_EQ(hex(utxo0Script.bytes), "00140cb9f5c6b62c03249367bc20a90dd2425e6926af");
+    utxo0.script = utxo0Script;
+    utxo0.amount = 49429;
+    auto hash0 = parse_hex("c24bd72e3eaea797bd5c879480a0db90980297bc7085efda97df2bf7d31413fb");
+    std::reverse(hash0.begin(), hash0.end());
+    utxo0.outPoint = OutPoint(hash0, 1, UINT32_MAX);
+    input.utxos.push_back(utxo0);
+
+    {
+        // test plan (but do not reuse plan result)
+        auto plan = TransactionBuilder::plan(input);
+        EXPECT_TRUE(verifyPlan(plan, {49429}, 1100, 153));
+    }
+
+    // Sign
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
+
+    ASSERT_TRUE(result) << std::to_string(result.error());
+    auto signedTx = result.payload();
+
+    Data serialized;
+    signedTx.encode(serialized);
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{234, 125, 153}));
+    EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
+    // https://mempool.space/tx/5df51e13bfeb79f386e1e17237f06d1b5c87c5bfcaa907c0c1cfe51cd7ca446d
+    EXPECT_EQ(hex(serialized), // printed using prettyPrintTransaction
+        "01000000" // version
+        "0001" // marker & flag
+        "01" // inputs
+            "fb1314d3f72bdf97daef8570bc97029890dba08094875cbd97a7ae3e2ed74bc2"  "01000000"  "00"  ""  "ffffffff"
+        "02" // outputs
+            "4c04000000000000"  "22"  "51205ee16f6144e2d46edea1427e1222ea879377e029b0c5d2e252517aee85948ec7"
+            "30bc000000000000"  "16"  "00140cb9f5c6b62c03249367bc20a90dd2425e6926af"
+        // witness
+            "02"
+                "47"  "3044022021cea91157fdab33226e38ee7c1a686538fc323f5e28feb35775cf82ba8c62210220723743b150cea8ead877d8b8d059499779a5df69f9bdc755c9f968c56cfb528f01"
+                "21"  "021e582a887bd94d648a9267143eb600449a8d59a0db0653740b1378067a6d0cee"
+        "00000000" // nLockTime
+    );
 }

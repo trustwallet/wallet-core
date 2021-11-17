@@ -54,6 +54,9 @@ static const std::vector<struct valid_address_data> valid_address = {
     //{"BC1SW50QA3JX3S", "6002751e"},
     //{"bc1zw508d6qejxtdg4y5r3zarvaryvg6kdaj", "5210751e76e8199196d454941c45d1b3a323"},
     {"tb1qqqqqp399et2xygdj5xreqhjjvcmzhxw4aywxecjdzew6hylgvsesrxh6hy", "0020000000c4a5cad46221b2a187905e5266362b99d5e91c6ce24d165dab93e86433"},
+    {"bc1qpjult34k9spjfym8hss2jrwjgf0xjf40ze0pp8", "00140cb9f5c6b62c03249367bc20a90dd2425e6926af"},
+    {"bc1qm9jzmujvdqjj6y28hptk859zs3yyv78hpqqjfj", "0014d9642df24c68252d1147b85763d0a284484678f7"},
+    {"bc1ptmsk7c2yut2xah4pgflpygh2s7fh0cpfkrza9cjj29awapv53mrslgd5cf", "51205ee16f6144e2d46edea1427e1222ea879377e029b0c5d2e252517aee85948ec7"}, // Taproot
 
     /// test vectors from BIP350
     {"bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7kt5nd6y", "5128751e76e8199196d454941c45d1b3a323f1433bd6751e76e8199196d454941c45d1b3a323f1433bd6"},
