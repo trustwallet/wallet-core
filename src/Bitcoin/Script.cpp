@@ -297,7 +297,7 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
         if (address.witnessVersion == 0) {
             return buildPayToWitnessProgram(address.witnessProgram);
         }
-        if (address.witnessVersion == 1) {
+        if (address.witnessVersion == 1 && address.witnessProgram.size() == 32) {
             return buildPayToTaprootPublicKey(address.witnessProgram);
         }
     } else if (CashAddress::isValid(string)) {
