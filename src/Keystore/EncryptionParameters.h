@@ -26,6 +26,15 @@ enum EncryptionLevel {
 
 /// Set of parameters used when encoding
 struct EncryptionParameters {
+    static EncryptionParameters getPreset(enum EncryptionLevel preset) {
+        switch (preset) {
+            case Weak:
+            case Default:
+            default:        return EncryptionParameters(AESParameters(), ScryptParameters::Light);
+            case Standard:  return EncryptionParameters(AESParameters(), ScryptParameters::Standard);
+        }
+    }
+
     /// Cipher algorithm.
     std::string cipher = "aes-128-ctr";
 
@@ -84,7 +93,7 @@ public:
 
     /// Initializes by encrypting data with a password
     /// using standard values.
-    EncryptedPayload(const Data& password, const Data& data);
+    EncryptedPayload(const Data& password, const Data& data, const EncryptionParameters& params);
 
     /// Initializes with a JSON object.
     EncryptedPayload(const nlohmann::json& json);

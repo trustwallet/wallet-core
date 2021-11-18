@@ -43,7 +43,7 @@ public:
 
     /// Create a new StoredKey, with the given name, mnemonic and password.
     /// @throws std::invalid_argument if mnemonic is invalid
-    static StoredKey createWithMnemonic(const std::string& name, const Data& password, const std::string& mnemonic);
+    static StoredKey createWithMnemonic(const std::string& name, const Data& password, const std::string& mnemonic, EncryptionLevel encryptionLevel = Default);
 
     /// Create a new StoredKey, with the given name, mnemonic and password.
     /// @throws std::invalid_argument if mnemonic is invalid
@@ -119,7 +119,7 @@ private:
     /// Initializes a `StoredKey` with a type, an encryption password, and unencrypted data.
     /// This contstructor will encrypt the provided data with default encryption
     /// parameters.
-    StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data);
+    StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, EncryptionLevel encryptionLevel = Default);
 };
 
 } // namespace TW::Keystore

@@ -28,7 +28,8 @@ static Data computeMAC(Iter begin, Iter end, const Data& key) {
     return Hash::keccak256(data);
 }
 
-EncryptedPayload::EncryptedPayload(const Data& password, const Data& data) : mac() {
+EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const EncryptionParameters& params) :
+    params(std::move(params)), mac() {
     auto scryptParams = boost::get<ScryptParameters>(params.kdfParams);
     auto derivedKey = Data(scryptParams.desiredKeyLength);
     scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
