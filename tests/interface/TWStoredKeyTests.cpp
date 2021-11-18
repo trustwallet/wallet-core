@@ -57,7 +57,7 @@ TEST(TWStoredKey, createWallet) {
     const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
     const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
     const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
-    const auto key = WRAP(TWStoredKey, TWStoredKeyCreate(name.get(), password.get()));
+    const auto key = WRAP(TWStoredKey, TWStoredKeyCreateLevel(name.get(), password.get(), TWEncryptionLevelDefault));
     const auto name2 = WRAPS(TWStoredKeyName(key.get()));
     EXPECT_EQ(string(TWStringUTF8Bytes(name2.get())), "name");
     const auto mnemonic = WRAPS(TWStoredKeyDecryptMnemonic(key.get(), password.get()));
@@ -222,7 +222,7 @@ TEST(TWStoredKey, getWalletPasswordInvalid) {
     const auto invalidString = WRAPS(TWStringCreateWithUTF8Bytes("_THIS_IS_INVALID_PASSWORD_"));
     const auto passwordInvalid = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(invalidString.get())), TWStringSize(invalidString.get())));
     
-    auto key = WRAP(TWStoredKey, TWStoredKeyCreate (name.get(), password.get()));
+    auto key = WRAP(TWStoredKey, TWStoredKeyCreate(name.get(), password.get()));
     ASSERT_NE(WRAP(TWHDWallet, TWStoredKeyWallet(key.get(), password.get())).get(), nullptr);
     ASSERT_EQ(WRAP(TWHDWallet, TWStoredKeyWallet(key.get(), passwordInvalid.get())).get(), nullptr);
 }

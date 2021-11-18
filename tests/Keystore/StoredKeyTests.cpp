@@ -31,7 +31,7 @@ const TWCoinType coinTypeEth = TWCoinTypeEthereum;
 const TWCoinType coinTypeBscLegacy = TWCoinTypeSmartChainLegacy;
 
 TEST(StoredKey, CreateWithMnemonic) {
-    auto key = StoredKey::createWithMnemonic("name", password, mnemonic);
+    auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWEncryptionLevelDefault);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
     const Data& mnemo2Data = key.payload.decrypt(password);
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));
@@ -46,7 +46,7 @@ TEST(StoredKey, CreateWithMnemonic) {
 
 TEST(StoredKey, CreateWithMnemonicInvalid) {
     try {
-        auto key = StoredKey::createWithMnemonic("name", password, "_THIS_IS_NOT_A_VALID_MNEMONIC_");
+        auto key = StoredKey::createWithMnemonic("name", password, "_THIS_IS_NOT_A_VALID_MNEMONIC_", TWEncryptionLevelDefault);
     } catch (std::invalid_argument&) {
         // expedcted exception OK
         return;
@@ -55,7 +55,7 @@ TEST(StoredKey, CreateWithMnemonicInvalid) {
 }
 
 TEST(StoredKey, CreateWithMnemonicRandom) {
-    const auto key = StoredKey::createWithMnemonicRandom("name", password);
+    const auto key = StoredKey::createWithMnemonicRandom("name", password, TWEncryptionLevelDefault);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
     // random mnemonic: check only length and validity
     const Data& mnemo2Data = key.payload.decrypt(password);
@@ -102,7 +102,7 @@ TEST(StoredKey, CreateWithPrivateKeyAddDefaultAddressInvalid) {
 }
 
 TEST(StoredKey, AccountGetCreate) {
-    auto key = StoredKey::createWithMnemonic("name", password, mnemonic);
+    auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWEncryptionLevelDefault);
     EXPECT_EQ(key.accounts.size(), 0);
 
     // not exists
@@ -140,7 +140,7 @@ TEST(StoredKey, AccountGetCreate) {
 }
 
 TEST(StoredKey, AccountGetDoesntChange) {
-    auto key = StoredKey::createWithMnemonic("name", password, mnemonic);
+    auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWEncryptionLevelDefault);
     auto wallet = key.wallet(password);
     EXPECT_EQ(key.accounts.size(), 0);
 
@@ -164,7 +164,7 @@ TEST(StoredKey, AccountGetDoesntChange) {
 }
 
 TEST(StoredKey, AddRemoveAccount) {
-    auto key = StoredKey::createWithMnemonic("name", password, mnemonic);
+    auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWEncryptionLevelDefault);
     EXPECT_EQ(key.accounts.size(), 0);
 
     {
@@ -195,7 +195,7 @@ TEST(StoredKey, AddRemoveAccount) {
 
 TEST(StoredKey, FixAddress) {
     {
-        auto key = StoredKey::createWithMnemonic("name", password, mnemonic);
+        auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWEncryptionLevelDefault);
         key.fixAddresses(password);
     }
     {
@@ -333,7 +333,7 @@ TEST(StoredKey, CreateWallet) {
 
 TEST(StoredKey, CreateAccounts) {
     string mnemonicPhrase = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
-    auto key = StoredKey::createWithMnemonic("name", password, mnemonicPhrase);
+    auto key = StoredKey::createWithMnemonic("name", password, mnemonicPhrase, TWEncryptionLevelDefault);
     const auto wallet = key.wallet(password);
     
     EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->address, "0x494f60cb6Ac2c8F5E1393aD9FdBdF4Ad589507F7");

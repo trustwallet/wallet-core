@@ -37,17 +37,17 @@ StoredKey StoredKey::createWithMnemonic(const std::string& name, const Data& pas
     return key;
 }
 
-StoredKey StoredKey::createWithMnemonicRandom(const std::string& name, const Data& password) {
+StoredKey StoredKey::createWithMnemonicRandom(const std::string& name, const Data& password, TWStoredKeyEncryptionLevel encryptionLevel) {
     const auto wallet = TW::HDWallet(128, "");
     const auto& mnemonic = wallet.getMnemonic();
     assert(Mnemonic::isValid(mnemonic));
     Data mnemonicData = TW::Data(mnemonic.begin(), mnemonic.end());
-    StoredKey key = StoredKey(StoredKeyType::mnemonicPhrase, name, password, mnemonicData);
+    StoredKey key = StoredKey(StoredKeyType::mnemonicPhrase, name, password, mnemonicData, encryptionLevel);
     return key;
 }
 
 StoredKey StoredKey::createWithMnemonicAddDefaultAddress(const std::string& name, const Data& password, const std::string& mnemonic, TWCoinType coin) {
-    StoredKey key = createWithMnemonic(name, password, mnemonic);
+    StoredKey key = createWithMnemonic(name, password, mnemonic, TWEncryptionLevelDefault);
 
     const auto wallet = HDWallet(mnemonic, "");
     const auto derivationPath = TW::derivationPath(coin);

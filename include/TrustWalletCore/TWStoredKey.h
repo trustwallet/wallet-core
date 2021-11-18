@@ -36,7 +36,11 @@ struct TWStoredKey* _Nullable TWStoredKeyImportHDWallet(TWString* _Nonnull mnemo
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nullable TWStoredKeyImportJSON(TWData* _Nonnull json);
 
-/// Creates a new key.  Returned object needs to be deleted.
+/// Creates a new key, with given encrpytion strength level.  Returned object needs to be deleted.
+TW_EXPORT_STATIC_METHOD
+struct TWStoredKey* _Nonnull TWStoredKeyCreateLevel(TWString* _Nonnull name, TWData* _Nonnull password, enum TWStoredKeyEncryptionLevel encryptionLevel);
+
+/// DEPRECATED, use TWStoredKeyCreateLevel. Creates a new key.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nonnull TWStoredKeyCreate(TWString* _Nonnull name, TWData* _Nonnull password);
 
