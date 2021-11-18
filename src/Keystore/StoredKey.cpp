@@ -59,7 +59,7 @@ StoredKey StoredKey::createWithMnemonicAddDefaultAddress(const std::string& name
 }
 
 StoredKey StoredKey::createWithPrivateKey(const std::string& name, const Data& password, const Data& privateKeyData) {
-    StoredKey key = StoredKey(StoredKeyType::privateKey, name, password, privateKeyData);
+    StoredKey key = StoredKey(StoredKeyType::privateKey, name, password, privateKeyData, TWEncryptionLevelDefault);
     return key;
 }
 

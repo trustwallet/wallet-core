@@ -119,7 +119,7 @@ private:
     /// Initializes a `StoredKey` with a type, an encryption password, and unencrypted data.
     /// This contstructor will encrypt the provided data with default encryption
     /// parameters.
-    StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel = TWEncryptionLevelDefault);
+    StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel);
 };
 
 } // namespace TW::Keystore
