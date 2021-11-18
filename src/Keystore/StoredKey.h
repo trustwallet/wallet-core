@@ -36,7 +36,7 @@ public:
     std::string name;
 
     /// Encrypted payload.
-    EncryptionParameters payload;
+    EncryptedPayload payload;
 
     /// Active accounts.
     std::vector<Account> accounts;

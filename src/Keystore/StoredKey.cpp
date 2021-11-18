@@ -225,10 +225,10 @@ void StoredKey::loadJson(const nlohmann::json& json) {
     }
 
     if (json.count(CodingKeys::crypto) != 0) {
-        payload = EncryptionParameters(json[CodingKeys::crypto]);
+        payload = EncryptedPayload(json[CodingKeys::crypto]);
     } else if (json.count(UppercaseCodingKeys::crypto) != 0) {
         // Workaround for myEtherWallet files
-        payload = EncryptionParameters(json[UppercaseCodingKeys::crypto]);
+        payload = EncryptedPayload(json[UppercaseCodingKeys::crypto]);
     } else {
         throw DecryptionError::invalidKeyFile;
     }
