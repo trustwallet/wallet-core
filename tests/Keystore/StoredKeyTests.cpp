@@ -384,7 +384,7 @@ TEST(StoredKey, EtherWalletAddressNo0x) {
 }
 
 TEST(StoredKey, CreateWeakEncryptionParameters) {
-    const auto key = StoredKey::createWithMnemonic("name", password, mnemonic, Weak);
+    const auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWEncryptionLevelWeak);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
     const Data& mnemo2Data = key.payload.decrypt(password);
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));
@@ -402,7 +402,7 @@ TEST(StoredKey, CreateWeakEncryptionParameters) {
 }
 
 TEST(StoredKey, CreateStandardEncryptionParameters) {
-    const auto key = StoredKey::createWithMnemonic("name", password, mnemonic, Standard);
+    const auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWEncryptionLevelStandard);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
     const Data& mnemo2Data = key.payload.decrypt(password);
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));

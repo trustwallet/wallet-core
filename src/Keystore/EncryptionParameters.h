@@ -22,10 +22,10 @@ namespace TW::Keystore {
 struct EncryptionParameters {
     static EncryptionParameters getPreset(enum TWStoredKeyEncryptionLevel preset) {
         switch (preset) {
-            case Weak:
-            case Default:
-            default:        return EncryptionParameters(AESParameters(), ScryptParameters::Light);
-            case Standard:  return EncryptionParameters(AESParameters(), ScryptParameters::Standard);
+            case TWEncryptionLevelWeak:
+            case TWEncryptionLevelDefault:
+            default:                        return EncryptionParameters(AESParameters(), ScryptParameters::Light);
+            case TWEncryptionLevelStandard: return EncryptionParameters(AESParameters(), ScryptParameters::Standard);
         }
     }
 

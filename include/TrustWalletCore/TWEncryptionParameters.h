@@ -10,14 +10,14 @@
 
 TW_EXTERN_C_BEGIN
 
-TW_EXPORT_ENUM(uint32_t)
 /// Preset encryption parameter with different security strength, for key store
+TW_EXPORT_ENUM(uint32_t)
 enum TWStoredKeyEncryptionLevel {
     /// Default, which is one of the below values, determined by the implementation.
-    Default = 0,
+    TWEncryptionLevelDefault = 0,
     /// Minimal sufficient level of encryption strength
-    Weak,
-    Standard,
+    TWEncryptionLevelWeak,
+    TWEncryptionLevelStandard,
 };
 
 TW_EXTERN_C_END
