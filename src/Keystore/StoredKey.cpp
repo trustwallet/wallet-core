@@ -27,7 +27,7 @@
 using namespace TW;
 using namespace TW::Keystore;
 
-StoredKey StoredKey::createWithMnemonic(const std::string& name, const Data& password, const std::string& mnemonic, EncryptionLevel encryptionLevel) {
+StoredKey StoredKey::createWithMnemonic(const std::string& name, const Data& password, const std::string& mnemonic, TWStoredKeyEncryptionLevel encryptionLevel) {
     if (!Mnemonic::isValid(mnemonic)) {
         throw std::invalid_argument("Invalid mnemonic");
     }
@@ -78,7 +78,7 @@ StoredKey StoredKey::createWithPrivateKeyAddDefaultAddress(const std::string& na
     return key;
 }
 
-StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, EncryptionLevel encryptionLevel)
+StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel)
     : type(type), id(), name(std::move(name)), accounts() {
     const auto encryptionParams = EncryptionParameters::getPreset(encryptionLevel);
     payload = EncryptedPayload(password, data, encryptionParams);

@@ -12,6 +12,7 @@
 #include "TWHDWallet.h"
 #include "TWPrivateKey.h"
 #include "TWString.h"
+#include "TWEncryptionParameters.h"
 
 TW_EXTERN_C_BEGIN
 
