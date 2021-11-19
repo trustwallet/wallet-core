@@ -1598,6 +1598,14 @@ TEST(BitcoinSigning, SignP2TR_5df51e) {
         EXPECT_TRUE(verifyPlan(plan, {49429}, 1100, 153));
     }
 
+    // Sign
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
+
+    ASSERT_TRUE(result) << std::to_string(result.error());
+    auto signedTx = result.payload();
+
+    Data serialized;
+    signedTx.encode(serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{234, 125, 153}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     // https://mempool.space/tx/5df51e13bfeb79f386e1e17237f06d1b5c87c5bfcaa907c0c1cfe51cd7ca446d
