@@ -14,11 +14,11 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_ENUM(uint32_t)
 enum TWStoredKeyEncryptionLevel {
     /// Default, which is one of the below values, determined by the implementation.
-    TWEncryptionLevelDefault = 0,
+    TWStoredKeyEncryptionLevelDefault = 0,
     /// Minimal sufficient level of encryption strength (scrypt 4096)
-    TWEncryptionLevelWeak,
+    TWStoredKeyEncryptionLevelWeak = 1,
     /// Standard level of encryption strength (scrypt 262k)
-    TWEncryptionLevelStandard,
+    TWStoredKeyEncryptionLevelStandard = 2,
 };
 
 TW_EXTERN_C_END

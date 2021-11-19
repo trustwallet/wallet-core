@@ -57,7 +57,7 @@ TEST(TWStoredKey, createWallet) {
     const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
     const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
     const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
-    const auto key = WRAP(TWStoredKey, TWStoredKeyCreateLevel(name.get(), password.get(), TWEncryptionLevelDefault));
+    const auto key = WRAP(TWStoredKey, TWStoredKeyCreateLevel(name.get(), password.get(), TWStoredKeyEncryptionLevelDefault));
     const auto name2 = WRAPS(TWStoredKeyName(key.get()));
     EXPECT_EQ(string(TWStringUTF8Bytes(name2.get())), "name");
     const auto mnemonic = WRAPS(TWStoredKeyDecryptMnemonic(key.get(), password.get()));

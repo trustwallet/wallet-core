@@ -10,7 +10,7 @@
 #include "PBKDF2Parameters.h"
 #include "ScryptParameters.h"
 #include "../Data.h"
-#include <TrustWalletCore/TWEncryptionParameters.h>
+#include <TrustWalletCore/TWStoredKeyEncryptionLevel.h>
 
 #include <boost/variant.hpp>
 #include <nlohmann/json.hpp>
@@ -22,10 +22,12 @@ namespace TW::Keystore {
 struct EncryptionParameters {
     static EncryptionParameters getPreset(enum TWStoredKeyEncryptionLevel preset) {
         switch (preset) {
-            case TWEncryptionLevelWeak:
-            case TWEncryptionLevelDefault:
-            default:                        return EncryptionParameters(AESParameters(), ScryptParameters::Light);
-            case TWEncryptionLevelStandard: return EncryptionParameters(AESParameters(), ScryptParameters::Standard);
+            case TWStoredKeyEncryptionLevelWeak:
+            case TWStoredKeyEncryptionLevelDefault:
+            default:
+                return EncryptionParameters(AESParameters(), ScryptParameters::Light);
+            case TWStoredKeyEncryptionLevelStandard:
+                return EncryptionParameters(AESParameters(), ScryptParameters::Standard);
         }
     }
 
