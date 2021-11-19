@@ -28,6 +28,49 @@ static Data computeMAC(Iter begin, Iter end, const Data& key) {
     return Hash::keccak256(data);
 }
 
+// -----------------
+// Encoding/Decoding
+// -----------------
+
+namespace CodingKeys {
+static const auto encrypted = "ciphertext";
+static const auto cipher = "cipher";
+static const auto cipherParams = "cipherparams";
+static const auto kdf = "kdf";
+static const auto kdfParams = "kdfparams";
+static const auto mac = "mac";
+} // namespace CodingKeys
+
+EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
+    cipher = json[CodingKeys::cipher].get<std::string>();
+    cipherParams = AESParameters(json[CodingKeys::cipherParams]);
+
+    auto kdf = json[CodingKeys::kdf].get<std::string>();
+    if (kdf == "scrypt") {
+        kdfParams = ScryptParameters(json[CodingKeys::kdfParams]);
+    } else if (kdf == "pbkdf2") {
+        kdfParams = PBKDF2Parameters(json[CodingKeys::kdfParams]);
+    }
+}
+
+nlohmann::json EncryptionParameters::json() const {
+    nlohmann::json j;
+    j[CodingKeys::cipher] = cipher;
+    j[CodingKeys::cipherParams] = cipherParams.json();
+
+    if (kdfParams.which() == 0) {
+        auto scryptParams = boost::get<ScryptParameters>(kdfParams);
+        j[CodingKeys::kdf] = "scrypt";
+        j[CodingKeys::kdfParams] = scryptParams.json();
+    } else if (kdfParams.which() == 1) {
+        auto pbkdf2Params = boost::get<PBKDF2Parameters>(kdfParams);
+        j[CodingKeys::kdf] = "pbkdf2";
+        j[CodingKeys::kdfParams] = pbkdf2Params.json();
+    }
+
+    return j;
+}
+
 EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const EncryptionParameters& params) :
     params(std::move(params)), mac() {
     auto scryptParams = boost::get<ScryptParameters>(params.kdfParams);
@@ -103,49 +146,15 @@ Data EncryptedPayload::decrypt(const Data& password) const {
     return decrypted;
 }
 
-// -----------------
-// Encoding/Decoding
-// -----------------
-
-namespace CodingKeys {
-static const auto encrypted = "ciphertext";
-static const auto cipher = "cipher";
-static const auto cipherParams = "cipherparams";
-static const auto kdf = "kdf";
-static const auto kdfParams = "kdfparams";
-static const auto mac = "mac";
-} // namespace CodingKeys
-
 EncryptedPayload::EncryptedPayload(const nlohmann::json& json) {
+    params = EncryptionParameters(json);
     encrypted = parse_hex(json[CodingKeys::encrypted].get<std::string>());
-    params.cipher = json[CodingKeys::cipher].get<std::string>();
-    params.cipherParams = AESParameters(json[CodingKeys::cipherParams]);
     mac = parse_hex(json[CodingKeys::mac].get<std::string>());
-
-    auto kdf = json[CodingKeys::kdf].get<std::string>();
-    if (kdf == "scrypt") {
-        params.kdfParams = ScryptParameters(json[CodingKeys::kdfParams]);
-    } else if (kdf == "pbkdf2") {
-        params.kdfParams = PBKDF2Parameters(json[CodingKeys::kdfParams]);
-    }
 }
 
 nlohmann::json EncryptedPayload::json() const {
-    nlohmann::json j;
+    nlohmann::json j = params.json();
     j[CodingKeys::encrypted] = hex(encrypted);
-    j[CodingKeys::cipher] = params.cipher;
-    j[CodingKeys::cipherParams] = params.cipherParams.json();
     j[CodingKeys::mac] = hex(mac);
-
-    if (params.kdfParams.which() == 0) {
-        auto scryptParams = boost::get<ScryptParameters>(params.kdfParams);
-        j[CodingKeys::kdf] = "scrypt";
-        j[CodingKeys::kdfParams] = scryptParams.json();
-    } else if (params.kdfParams.which() == 1) {
-        auto pbkdf2Params = boost::get<PBKDF2Parameters>(params.kdfParams);
-        j[CodingKeys::kdf] = "pbkdf2";
-        j[CodingKeys::kdfParams] = pbkdf2Params.json();
-    }
-
     return j;
 }

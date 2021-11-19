@@ -47,6 +47,9 @@ struct EncryptionParameters {
         : cipherParams(std::move(cipherParams))
         , kdfParams(std::move(kdfParams)) {}
 
+    /// Initializes with a JSON object.
+    EncryptionParameters(const nlohmann::json& json);
+
     /// Saves `this` as a JSON object.
     nlohmann::json json() const;
 
