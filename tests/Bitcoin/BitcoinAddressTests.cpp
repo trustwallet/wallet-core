@@ -54,7 +54,7 @@ TEST(BitcoinAddress, P2WPKH_Nested_P2SH) {
     const auto pubKeyHash = publicKey.hash({});
     EXPECT_EQ(hex(pubKeyHash), "11d91ce1cc681f95583da3f4a6841c174be950c7");
     
-    const auto script = Script::buildPayToWitnessProgram(pubKeyHash);
+    const auto script = Script::buildPayToV0WitnessProgram(pubKeyHash);
     EXPECT_EQ(hex(script.bytes), "0014" "11d91ce1cc681f95583da3f4a6841c174be950c7");
     
     const auto scriptHash = Hash::sha256ripemd(script.bytes.data(), script.bytes.size());

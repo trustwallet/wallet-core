@@ -96,6 +96,7 @@ enum TWCoinType {
     TWCoinTypeCryptoOrg = 394,
     TWCoinTypeCelo = 52752,
     TWCoinTypeRonin = 10002020,
+    TWCoinTypeOsmosis = 10000118,
 };
 
 /// Returns the blockchain for a coin type.
