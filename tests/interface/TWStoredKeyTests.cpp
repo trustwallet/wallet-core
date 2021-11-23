@@ -14,6 +14,7 @@
 #include "../src/HexCoding.h"
 
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 #include <fstream>
 
@@ -56,7 +57,7 @@ TEST(TWStoredKey, createWallet) {
     const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
     const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
     const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
-    const auto key = WRAP(TWStoredKey, TWStoredKeyCreate(name.get(), password.get()));
+    const auto key = WRAP(TWStoredKey, TWStoredKeyCreateLevel(name.get(), password.get(), TWStoredKeyEncryptionLevelDefault));
     const auto name2 = WRAPS(TWStoredKeyName(key.get()));
     EXPECT_EQ(string(TWStringUTF8Bytes(name2.get())), "name");
     const auto mnemonic = WRAPS(TWStoredKeyDecryptMnemonic(key.get(), password.get()));
@@ -221,7 +222,41 @@ TEST(TWStoredKey, getWalletPasswordInvalid) {
     const auto invalidString = WRAPS(TWStringCreateWithUTF8Bytes("_THIS_IS_INVALID_PASSWORD_"));
     const auto passwordInvalid = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(invalidString.get())), TWStringSize(invalidString.get())));
     
-    auto key = WRAP(TWStoredKey, TWStoredKeyCreate (name.get(), password.get()));
+    auto key = WRAP(TWStoredKey, TWStoredKeyCreate(name.get(), password.get()));
     ASSERT_NE(WRAP(TWHDWallet, TWStoredKeyWallet(key.get(), password.get())).get(), nullptr);
     ASSERT_EQ(WRAP(TWHDWallet, TWStoredKeyWallet(key.get(), passwordInvalid.get())).get(), nullptr);
+}
+
+TEST(TWStoredKey, encryptionParameters) {
+    const auto key = createDefaultStoredKey();
+    const auto params = WRAPS(TWStoredKeyEncryptionParameters(key.get()));
+
+    nlohmann::json jsonParams = nlohmann::json::parse(string(TWStringUTF8Bytes(params.get())));
+
+    // compare some specific parameters
+    EXPECT_EQ(jsonParams["kdfparams"]["n"], 4096);
+    EXPECT_EQ(std::string(jsonParams["cipherparams"]["iv"]).length(), 32);
+
+    // compare all keys, except dynamic ones (like cipherparams/iv)
+    jsonParams["cipherparams"] = {};
+    jsonParams["ciphertext"] = "<ciphertext>";
+    jsonParams["kdfparams"]["salt"] = "<salt>";
+    jsonParams["mac"] = "<mac>";
+    const auto params2 = jsonParams.dump();
+    assertJSONEqual(params2, R"(
+        {
+            "cipher": "aes-128-ctr",
+            "cipherparams": null,
+            "ciphertext": "<ciphertext>",
+            "kdf": "scrypt",
+            "kdfparams": {
+                "dklen": 32,
+                "n": 4096,
+                "p": 6,
+                "r": 8,
+                "salt": "<salt>"
+            },
+            "mac": "<mac>"
+        }        
+    )");
 }
