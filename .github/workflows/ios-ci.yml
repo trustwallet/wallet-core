@@ -6,14 +6,15 @@ on:
   pull_request:
     branches: [ master ]
 
+concurrency: 
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: macos-11
     steps:
     - uses: actions/checkout@v2
-    - name: Select Xcode Version
-      run: |
-        sudo xcode-select -s '/Applications/Xcode_13.0.app'
     - name: Install system dependencies
       run: |
         brew install boost ninja xcodegen
