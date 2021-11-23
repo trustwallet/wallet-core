@@ -50,8 +50,15 @@ targets:
       CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER: $(inherited) false
       OTHER_CFLAGS: $(inherited) -Wno-comma -DNDEBUG
     postCompileScripts:
-      - script: ${PODS_ROOT}/SwiftLint/swiftlint --config ../.swiftlint.yml
+      - script: |
+          export PATH=/opt/homebrew/bin:$PATH; 
+          if which swiftlint >/dev/null; then
+            swiftlint
+          else
+            echo "warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint"
+          fi
         name: SwiftLint
+        shell: /bin/bash
 
   WalletCoreTests:
     type: bundle.unit-test
