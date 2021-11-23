@@ -57,13 +57,14 @@ TEST(TWTHORSwap, SwapBtcToEth) {
     // invoke swap
     const auto outputTWData = WRAPD(TWTHORSwapBuildSwap(inputTWData.get()));
     const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
-    EXPECT_EQ(outputData.size(), 176);
+    EXPECT_EQ(outputData.size(), 178);
     // parse result in proto
     Proto::SwapOutput outputProto;
     EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
     EXPECT_EQ(outputProto.from_chain(), Proto::BTC);
     EXPECT_EQ(outputProto.to_chain(), Proto::ETH);
-    EXPECT_EQ(outputProto.error(), "");
+    EXPECT_EQ(outputProto.error().code(), 0);
+    EXPECT_EQ(outputProto.error().message(), "");
     EXPECT_TRUE(outputProto.has_bitcoin());
     Bitcoin::Proto::SigningInput txInput = outputProto.bitcoin();
     
@@ -136,13 +137,14 @@ TEST(TWTHORSwap, SwapEthBnb) {
     // invoke swap
     const auto outputTWData = WRAPD(TWTHORSwapBuildSwap(inputTWData.get()));
     const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
-    EXPECT_EQ(outputData.size(), 309);
+    EXPECT_EQ(outputData.size(), 311);
     // parse result in proto
     Proto::SwapOutput outputProto;
     EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
     EXPECT_EQ(outputProto.from_chain(), Proto::ETH);
     EXPECT_EQ(outputProto.to_chain(), Proto::BNB);
-    EXPECT_EQ(outputProto.error(), "");
+    EXPECT_EQ(outputProto.error().code(), 0);
+    EXPECT_EQ(outputProto.error().message(), "");
     EXPECT_TRUE(outputProto.has_ethereum());
     Ethereum::Proto::SigningInput txInput = outputProto.ethereum();
     
@@ -189,13 +191,14 @@ TEST(TWTHORSwap, SwapBnbBtc) {
     // invoke swap
     const auto outputTWData = WRAPD(TWTHORSwapBuildSwap(inputTWData.get()));
     const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
-    EXPECT_EQ(outputData.size(), 124);
+    EXPECT_EQ(outputData.size(), 126);
     // parse result in proto
     Proto::SwapOutput outputProto;
     EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
     EXPECT_EQ(outputProto.from_chain(), Proto::BNB);
     EXPECT_EQ(outputProto.to_chain(), Proto::BTC);
-    EXPECT_EQ(outputProto.error(), "");
+    EXPECT_EQ(outputProto.error().code(), 0);
+    EXPECT_EQ(outputProto.error().message(), "");
     EXPECT_TRUE(outputProto.has_binance());
     Binance::Proto::SigningInput txInput = outputProto.binance();
     
@@ -215,7 +218,7 @@ TEST(TWTHORSwap, NegativeInvalidInput) {
 
     const auto outputTWData = WRAPD(TWTHORSwapBuildSwap(inputTWData.get()));
     const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
-    EXPECT_EQ(outputData.size(), 35);
-    EXPECT_EQ(hex(outputData), "1a21436f756c64206e6f7420646573657269616c697a6520696e7075742070726f746f");
+    EXPECT_EQ(outputData.size(), 39);
+    EXPECT_EQ(hex(outputData), "1a2508021221436f756c64206e6f7420646573657269616c697a6520696e7075742070726f746f");
     EXPECT_EQ(hex(data(std::string("Could not deserialize input proto"))), "436f756c64206e6f7420646573657269616c697a6520696e7075742070726f746f");
 }

@@ -12,6 +12,7 @@
 #include "Ethereum/ABI/ParamBase.h"
 #include "Ethereum/ABI/ParamAddress.h"
 #include "Binance/Address.h"
+#include "proto/THORSwap.pb.h"
 #include "proto/Bitcoin.pb.h"
 #include "proto/Ethereum.pb.h"
 #include "proto/Binance.pb.h"
@@ -43,11 +44,12 @@ const auto RouterEth = "0x42A5Ed456650a09Dc10EBc6361A7480fDd61f27B";
 
 TEST(THORSwap, SwapBtcEth) {
     auto res = Swap::build(Chain::BTC, Chain::ETH, Address1Btc, "ETH", "", Address1Eth, VaultBtc, "", "1000000", "140000000000000000");
-    ASSERT_EQ(res.second, "");
-    EXPECT_EQ(hex(res.first), "080110c0843d1801222a62633171366d397532717375386d68387937763872723279776176746a38673561727a6c796863656a372a2a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070386a473d3a4554482e4554483a3078623966353737316332373636346266323238326439386530396437663530636563376362303161373a313430303030303030303030303030303030");
+    ASSERT_EQ(std::get<1>(res), 0);
+    ASSERT_EQ(std::get<2>(res), "");
+    EXPECT_EQ(hex(std::get<0>(res)), "080110c0843d1801222a62633171366d397532717375386d68387937763872723279776176746a38673561727a6c796863656a372a2a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070386a473d3a4554482e4554483a3078623966353737316332373636346266323238326439386530396437663530636563376362303161373a313430303030303030303030303030303030");
 
     auto tx = Bitcoin::Proto::SigningInput();
-    ASSERT_TRUE(tx.ParseFromArray(res.first.data(), (int)res.first.size()));
+    ASSERT_TRUE(tx.ParseFromArray(std::get<0>(res).data(), (int)std::get<0>(res).size()));
 
     // check fields
     EXPECT_EQ(tx.amount(), 1000000);
@@ -95,11 +97,12 @@ TEST(THORSwap, SwapBtcEth) {
 
 TEST(THORSwap, SwapBtcBnb) {
     auto res = Swap::build(Chain::BTC, Chain::BNB, Address1Btc, "BNB", "", Address1Bnb, VaultBtc, "", "200000", "140000000");
-    ASSERT_EQ(res.second, "");
-    EXPECT_EQ(hex(res.first), "080110c09a0c1801222a62633171366d397532717375386d68387937763872723279776176746a38673561727a6c796863656a372a2a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070386a41535741503a424e422e424e423a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a313430303030303030");
+    ASSERT_EQ(std::get<1>(res), 0);
+    ASSERT_EQ(std::get<2>(res), "");
+    EXPECT_EQ(hex(std::get<0>(res)), "080110c09a0c1801222a62633171366d397532717375386d68387937763872723279776176746a38673561727a6c796863656a372a2a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070386a41535741503a424e422e424e423a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a313430303030303030");
 
     auto tx = Bitcoin::Proto::SigningInput();
-    ASSERT_TRUE(tx.ParseFromArray(res.first.data(), (int)res.first.size()));
+    ASSERT_TRUE(tx.ParseFromArray(std::get<0>(res).data(), (int)std::get<0>(res).size()));
 
     // check fields
     EXPECT_EQ(tx.amount(), 200000);
@@ -164,11 +167,12 @@ Data SwapTest_ethAddressStringToData(const std::string& asString) {
 
 TEST(THORSwap, SwapEthBnb) {
     auto res = Swap::build(Chain::ETH, Chain::BNB, Address1Eth, "BNB", "", Address1Bnb, VaultEth, RouterEth, "50000000000000000", "600003");
-    ASSERT_EQ(res.second, "");
-    EXPECT_EQ(hex(res.first), "0a01001201002201002a0100422a30783432413545643435363635306130394463313045426336333631413734383066446436316632374252f30132f0010a07b1a2bc2ec5000012e4011fece7b40000000000000000000000001091c4de6a3cf09cda00abdaed42c7c3b69c83ec000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b1a2bc2ec500000000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003e535741503a424e422e424e423a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a3630303030330000");
+    ASSERT_EQ(std::get<1>(res), 0);
+    ASSERT_EQ(std::get<2>(res), "");
+    EXPECT_EQ(hex(std::get<0>(res)), "0a01001201002201002a0100422a30783432413545643435363635306130394463313045426336333631413734383066446436316632374252f30132f0010a07b1a2bc2ec5000012e4011fece7b40000000000000000000000001091c4de6a3cf09cda00abdaed42c7c3b69c83ec000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b1a2bc2ec500000000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003e535741503a424e422e424e423a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a3630303030330000");
 
     auto tx = Ethereum::Proto::SigningInput();
-    ASSERT_TRUE(tx.ParseFromArray(res.first.data(), (int)res.first.size()));
+    ASSERT_TRUE(tx.ParseFromArray(std::get<0>(res).data(), (int)std::get<0>(res).size()));
 
     // check fields
     EXPECT_EQ(tx.to_address(), RouterEth);
@@ -217,11 +221,12 @@ TEST(THORSwap, SwapEthBnb) {
 
 TEST(THORSwap, SwapBnbBtc) {
     auto res = Swap::build(Chain::BNB, Chain::BTC, Address1Bnb, "BTC", "", Address1Btc, VaultBnb, "", "10000000", "10000000");
-    ASSERT_EQ(res.second, "");
-    EXPECT_EQ(hex(res.first), "2a40535741503a4254432e4254433a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070383a313030303030303052480a220a14e42be736e933cf8b97c26f33789a3ca6f8348cd1120a0a03424e421080ade20412220a1499730371c7c77cb81ffa76b566dcef7c1e5dc19c120a0a03424e421080ade204");
+    ASSERT_EQ(std::get<1>(res), 0);
+    ASSERT_EQ(std::get<2>(res), "");
+    EXPECT_EQ(hex(std::get<0>(res)), "2a40535741503a4254432e4254433a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070383a313030303030303052480a220a14e42be736e933cf8b97c26f33789a3ca6f8348cd1120a0a03424e421080ade20412220a1499730371c7c77cb81ffa76b566dcef7c1e5dc19c120a0a03424e421080ade204");
 
     auto tx = Binance::Proto::SigningInput();
-    ASSERT_TRUE(tx.ParseFromArray(res.first.data(), (int)res.first.size()));
+    ASSERT_TRUE(tx.ParseFromArray(std::get<0>(res).data(), (int)std::get<0>(res).size()));
 
     // check fields
     EXPECT_EQ(tx.memo(), "SWAP:BTC.BTC:bc1qpjult34k9spjfym8hss2jrwjgf0xjf40ze0pp8:10000000");
@@ -244,11 +249,12 @@ TEST(THORSwap, SwapBnbBtc) {
 
 TEST(THORSwap, SwapBnbEth) {
     auto res = Swap::build(Chain::BNB, Chain::ETH, Address1Bnb, "ETH", "", Address1Eth, VaultBnb, "", "27000000", "123456");
-    ASSERT_EQ(res.second, "");
-    EXPECT_EQ(hex(res.first), "2a3b3d3a4554482e4554483a3078623966353737316332373636346266323238326439386530396437663530636563376362303161373a31323334353652480a220a14e42be736e933cf8b97c26f33789a3ca6f8348cd1120a0a03424e4210c0f9ef0c12220a1499730371c7c77cb81ffa76b566dcef7c1e5dc19c120a0a03424e4210c0f9ef0c");
+    ASSERT_EQ(std::get<1>(res), 0);
+    ASSERT_EQ(std::get<2>(res), "");
+    EXPECT_EQ(hex(std::get<0>(res)), "2a3b3d3a4554482e4554483a3078623966353737316332373636346266323238326439386530396437663530636563376362303161373a31323334353652480a220a14e42be736e933cf8b97c26f33789a3ca6f8348cd1120a0a03424e4210c0f9ef0c12220a1499730371c7c77cb81ffa76b566dcef7c1e5dc19c120a0a03424e4210c0f9ef0c");
 
     auto tx = Binance::Proto::SigningInput();
-    ASSERT_TRUE(tx.ParseFromArray(res.first.data(), (int)res.first.size()));
+    ASSERT_TRUE(tx.ParseFromArray(std::get<0>(res).data(), (int)std::get<0>(res).size()));
 
     // check fields
     EXPECT_EQ(tx.memo(), "=:ETH.ETH:0xb9f5771c27664bf2282d98e09d7f50cec7cb01a7:123456");
@@ -278,11 +284,12 @@ TEST(THORSwap, SwapBnbEth) {
 
 TEST(THORSwap, SwapBnbRune) {
     auto res = Swap::build(Chain::BNB, Chain::THOR, Address1Bnb, "RUNE", "", Address1Thor, VaultBnb, "", "4000000", "121065076");
-    ASSERT_EQ(res.second, "");
-    EXPECT_EQ(hex(res.first), "2a44535741503a54484f522e52554e453a74686f72317a3533777765376d64366365777a39737177717a6e306161767061756e3067773065786e32723a31323130363530373652480a220a14e42be736e933cf8b97c26f33789a3ca6f8348cd1120a0a03424e42108092f40112220a1499730371c7c77cb81ffa76b566dcef7c1e5dc19c120a0a03424e42108092f401");
+    ASSERT_EQ(std::get<1>(res), 0);
+    ASSERT_EQ(std::get<2>(res), "");
+    EXPECT_EQ(hex(std::get<0>(res)), "2a44535741503a54484f522e52554e453a74686f72317a3533777765376d64366365777a39737177717a6e306161767061756e3067773065786e32723a31323130363530373652480a220a14e42be736e933cf8b97c26f33789a3ca6f8348cd1120a0a03424e42108092f40112220a1499730371c7c77cb81ffa76b566dcef7c1e5dc19c120a0a03424e42108092f401");
 
     auto tx = Binance::Proto::SigningInput();
-    ASSERT_TRUE(tx.ParseFromArray(res.first.data(), (int)res.first.size()));
+    ASSERT_TRUE(tx.ParseFromArray(std::get<0>(res).data(), (int)std::get<0>(res).size()));
 
     // check fields
     EXPECT_EQ(tx.memo(), "SWAP:THOR.RUNE:thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r:121065076");
@@ -322,11 +329,12 @@ TEST(THORSwap, SwapBnbBnbToken) {
         "10000000", // 0.1 bnb
         "5400000000" // 54.0 twt
     ); 
-    ASSERT_EQ(res.second, "");
-    EXPECT_EQ(hex(res.first), "2a46535741503a424e422e5457542d3843323a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a3534303030303030303052480a220a14e42be736e933cf8b97c26f33789a3ca6f8348cd1120a0a03424e421080ade20412220a140653096f54ae1ae2d73291d15854aef08ebcfa8c120a0a03424e421080ade204");
+    ASSERT_EQ(std::get<1>(res), 0);
+    ASSERT_EQ(std::get<2>(res), "");
+    EXPECT_EQ(hex(std::get<0>(res)), "2a46535741503a424e422e5457542d3843323a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a3534303030303030303052480a220a14e42be736e933cf8b97c26f33789a3ca6f8348cd1120a0a03424e421080ade20412220a140653096f54ae1ae2d73291d15854aef08ebcfa8c120a0a03424e421080ade204");
 
     auto tx = Binance::Proto::SigningInput();
-    ASSERT_TRUE(tx.ParseFromArray(res.first.data(), (int)res.first.size()));
+    ASSERT_TRUE(tx.ParseFromArray(std::get<0>(res).data(), (int)std::get<0>(res).size()));
 
     // check fields
     EXPECT_EQ(tx.memo(), "SWAP:BNB.TWT-8C2:bnb1us47wdhfx08ch97zdueh3x3u5murfrx30jecrx:5400000000");
@@ -370,38 +378,45 @@ TEST(THORSwap, Memo) {
 TEST(THORSwap, WrongFromAddress) {
     {
         auto res = Swap::build(Chain::BNB, Chain::ETH, "DummyAddress", "ETH", "", Address1Eth, VaultEth, "", "100000", "100000");
-        EXPECT_EQ(res.second, "Invalid from address");
+        EXPECT_EQ(std::get<1>(res), Proto::ErrorCode::Error_Invalid_from_address);
+        EXPECT_EQ(std::get<2>(res), "Invalid from address");
     }
     {
         auto res = Swap::build(Chain::BNB, Chain::ETH, Address1Btc, "ETH", "", Address1Eth, VaultEth, "", "100000", "100000");
-        EXPECT_EQ(res.second, "Invalid from address");
+        EXPECT_EQ(std::get<1>(res), Proto::ErrorCode::Error_Invalid_from_address);
+        EXPECT_EQ(std::get<2>(res), "Invalid from address");
     }
 }
 
 TEST(THORSwap, WrongToAddress) {
     {
         auto res = Swap::build(Chain::BNB, Chain::ETH, Address1Bnb, "ETH", "", "DummyAddress", VaultEth, "", "100000", "100000");
-        EXPECT_EQ(res.second, "Invalid to address");
+        EXPECT_EQ(std::get<1>(res), Proto::ErrorCode::Error_Invalid_to_address);
+        EXPECT_EQ(std::get<2>(res), "Invalid to address");
     }
     {
         auto res = Swap::build(Chain::BNB, Chain::ETH, Address1Bnb, "ETH", "", Address1Btc, VaultEth, "", "100000", "100000");
-        EXPECT_EQ(res.second, "Invalid to address");
+        EXPECT_EQ(std::get<1>(res), Proto::ErrorCode::Error_Invalid_to_address);
+        EXPECT_EQ(std::get<2>(res), "Invalid to address");
     }
 }
 
 TEST(THORSwap, FromRuneNotSupported) {
     auto res = Swap::build(Chain::THOR, Chain::BNB, Address1Thor, "BNB", "", Address1Bnb, "", "", "1000", "1000");
-    EXPECT_EQ(res.second, "Invalid from chain: 3");
+    EXPECT_EQ(std::get<1>(res), Proto::ErrorCode::Error_Unsupported_from_chain);
+    EXPECT_EQ(std::get<2>(res), "Unsupported from chain: 3");
 }
 
 TEST(THORSwap, EthInvalidVault) {
     {
         auto res = Swap::build(Chain::ETH, Chain::BNB, Address1Eth, "BNB", "", Address1Bnb, "_INVALID_ADDRESS_", RouterEth, "50000000000000000", "600003");
-        EXPECT_EQ(res.second, "Invalid vault address: _INVALID_ADDRESS_");
+        EXPECT_EQ(std::get<1>(res), Proto::ErrorCode::Error_Invalid_vault_address);
+        EXPECT_EQ(std::get<2>(res), "Invalid vault address: _INVALID_ADDRESS_");
     }
     {
         auto res = Swap::build(Chain::ETH, Chain::BNB, Address1Eth, "BNB", "", Address1Bnb, VaultEth, "_INVALID_ADDRESS_", "50000000000000000", "600003");
-        EXPECT_EQ(res.second, "Invalid router address: _INVALID_ADDRESS_");
+        EXPECT_EQ(std::get<1>(res), Proto::ErrorCode::Error_Invalid_router_address);
+        EXPECT_EQ(std::get<2>(res), "Invalid router address: _INVALID_ADDRESS_");
     }
 }
 

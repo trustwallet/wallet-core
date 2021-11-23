@@ -25,8 +25,9 @@ enum Chain {
 class Swap {
 public:
     /// Logic to build a native transaction on the source chain for a swap
-    /// Returns serialized SigningInput proto message, on the source chain, and an optional error message
-    static std::pair<Data, std::string> build(
+    /// Returns serialized SigningInput proto message, on the source chain,
+    /// and an optional error code + message
+    static std::tuple<Data, int, std::string> build(
         Chain fromChain,
         Chain toChain,
         const std::string& fromAddress,     // source address, on source chain, string format
@@ -40,9 +41,9 @@ public:
     );
 
 protected:
-    static std::string buildBitcoin(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out);
-    static std::string buildEthereum(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, const std::string& routerAddress, uint64_t amount, const std::string& memo, Data& out);
-    static std::string buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out);
+    static std::pair<int, std::string> buildBitcoin(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out);
+    static std::pair<int, std::string> buildEthereum(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, const std::string& routerAddress, uint64_t amount, const std::string& memo, Data& out);
+    static std::pair<int, std::string> buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out);
 
 public:
     static std::string buildMemo(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& toAddress, uint64_t limit);

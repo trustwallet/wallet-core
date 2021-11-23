@@ -17,7 +17,8 @@ TWData *_Nonnull TWTHORSwapBuildSwap(TWData *_Nonnull input) {
     Proto::SwapOutput outputProto;
     if (!inputProto.ParseFromArray(TWDataBytes(input), static_cast<int>(TWDataSize(input)))) {
         // error
-        outputProto.set_error("Could not deserialize input proto");
+        outputProto.mutable_error()->set_code(Proto::ErrorCode::Error_Input_proto_deserialization);
+        outputProto.mutable_error()->set_message("Could not deserialize input proto");
         auto outputData = data(outputProto.SerializeAsString());
         return TWDataCreateWithBytes(outputData.data(), outputData.size());
     }
@@ -39,12 +40,14 @@ TWData *_Nonnull TWTHORSwapBuildSwap(TWData *_Nonnull input) {
 
     outputProto.set_from_chain(fromChain);
     outputProto.set_to_chain(toChain);
-    if (std::get<1>(res).length() > 0) {
+    if (std::get<1>(res) != 0) {
         // error
-        outputProto.set_error(std::get<1>(res));
+        outputProto.mutable_error()->set_code(static_cast<Proto::ErrorCode>(std::get<1>(res)));
+        outputProto.mutable_error()->set_message(std::get<2>(res));
     } else {
         // no error
-        outputProto.set_error("");
+        outputProto.mutable_error()->set_code(Proto::ErrorCode::OK);
+        outputProto.mutable_error()->set_message("");
 
         const Data& txInput = std::get<0>(res);
         switch (fromChain) {
@@ -52,7 +55,8 @@ TWData *_Nonnull TWTHORSwapBuildSwap(TWData *_Nonnull input) {
                 {
                     Bitcoin::Proto::SigningInput btcInput;
                     if (!btcInput.ParseFromArray(txInput.data(), static_cast<int>(txInput.size()))) {
-                        outputProto.set_error("Could not deserialize BTC input");
+                        outputProto.mutable_error()->set_code(Proto::ErrorCode::Error_Input_proto_deserialization);
+                        outputProto.mutable_error()->set_message("Could not deserialize BTC input");
                     } else {
                         *outputProto.mutable_bitcoin() = btcInput;
                     }
@@ -63,7 +67,8 @@ TWData *_Nonnull TWTHORSwapBuildSwap(TWData *_Nonnull input) {
                 {
                     Ethereum::Proto::SigningInput ethInput;
                     if (!ethInput.ParseFromArray(txInput.data(), static_cast<int>(txInput.size()))) {
-                        outputProto.set_error("Could not deserialize ETH input");
+                        outputProto.mutable_error()->set_code(Proto::ErrorCode::Error_Input_proto_deserialization);
+                        outputProto.mutable_error()->set_message("Could not deserialize ETH input");
                     } else {
                         *outputProto.mutable_ethereum() = ethInput;
                     }
@@ -74,7 +79,8 @@ TWData *_Nonnull TWTHORSwapBuildSwap(TWData *_Nonnull input) {
                 {
                     Binance::Proto::SigningInput bnbInput;
                     if (!bnbInput.ParseFromArray(txInput.data(), static_cast<int>(txInput.size()))) {
-                        outputProto.set_error("Could not deserialize BNB input");
+                        outputProto.mutable_error()->set_code(Proto::ErrorCode::Error_Input_proto_deserialization);
+                        outputProto.mutable_error()->set_message("Could not deserialize BNB input");
                     } else {
                         *outputProto.mutable_binance() = bnbInput;
                     }
@@ -82,7 +88,8 @@ TWData *_Nonnull TWTHORSwapBuildSwap(TWData *_Nonnull input) {
                 break;
 
             default:
-                outputProto.set_error(std::string("Unsupported fromChain ") + std::to_string(fromChain));
+                outputProto.mutable_error()->set_code(Proto::ErrorCode::Error_Unsupported_from_chain);
+                outputProto.mutable_error()->set_message(std::string("Unsupported from chain ") + std::to_string(fromChain));
                 break;
         }
     }
