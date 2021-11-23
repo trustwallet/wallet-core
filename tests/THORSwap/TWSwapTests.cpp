@@ -26,7 +26,6 @@ using namespace TW;
 const auto Address1Bnb = "bnb1us47wdhfx08ch97zdueh3x3u5murfrx30jecrx";
 const auto Address1Btc = "bc1qpjult34k9spjfym8hss2jrwjgf0xjf40ze0pp8";
 const auto Address1Eth = "0xb9f5771c27664bf2282d98e09d7f50cec7cb01a7";
-const auto VaultBnb = "bnb1n9esxuw8ca7ts8l6w66kdh800s09msvul6vlse";
 const auto VaultBtc = "bc1q6m9u2qsu8mh8y7v8rr2ywavtj8g5arzlyhcej7";
 const auto VaultEth = "0x1091c4De6a3cF09CdA00AbDAeD42c7c3B69C83EC";
 const auto RouterEth = "0x42A5Ed456650a09Dc10EBc6361A7480fDd61f27B";
@@ -56,7 +55,7 @@ TEST(TWTHORSwap, SwapBtcToEth) {
     const auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));
 
     // invoke swap
-    const auto outputTWData = WRAPD(TWTHORSwapSwap(inputTWData.get()));
+    const auto outputTWData = WRAPD(TWTHORSwapSignSwap(inputTWData.get()));
     const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
     EXPECT_EQ(outputData.size(), 176);
     // parse result in proto
@@ -135,7 +134,7 @@ TEST(TWTHORSwap, SwapEthBnb) {
     const auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));
 
     // invoke swap
-    const auto outputTWData = WRAPD(TWTHORSwapSwap(inputTWData.get()));
+    const auto outputTWData = WRAPD(TWTHORSwapSignSwap(inputTWData.get()));
     const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
     EXPECT_EQ(outputData.size(), 309);
     // parse result in proto
@@ -188,7 +187,7 @@ TEST(TWTHORSwap, SwapBnbBtc) {
     const auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));
 
     // invoke swap
-    const auto outputTWData = WRAPD(TWTHORSwapSwap(inputTWData.get()));
+    const auto outputTWData = WRAPD(TWTHORSwapSignSwap(inputTWData.get()));
     const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
     EXPECT_EQ(outputData.size(), 145);
     // parse result in proto
@@ -214,7 +213,7 @@ TEST(TWTHORSwap, NegativeInvalidInput) {
     const auto inputData = parse_hex("00112233");
     const auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));
 
-    const auto outputTWData = WRAPD(TWTHORSwapSwap(inputTWData.get()));
+    const auto outputTWData = WRAPD(TWTHORSwapSignSwap(inputTWData.get()));
     const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
     EXPECT_EQ(outputData.size(), 35);
     EXPECT_EQ(hex(outputData), "1a21436f756c64206e6f7420646573657269616c697a6520696e7075742070726f746f");
