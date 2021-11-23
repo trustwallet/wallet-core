@@ -55,7 +55,7 @@ TEST(TWTHORSwap, SwapBtcToEth) {
     const auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));
 
     // invoke swap
-    const auto outputTWData = WRAPD(TWTHORSwapSignSwap(inputTWData.get()));
+    const auto outputTWData = WRAPD(TWTHORSwapBuildSwap(inputTWData.get()));
     const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
     EXPECT_EQ(outputData.size(), 176);
     // parse result in proto
@@ -134,7 +134,7 @@ TEST(TWTHORSwap, SwapEthBnb) {
     const auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));
 
     // invoke swap
-    const auto outputTWData = WRAPD(TWTHORSwapSignSwap(inputTWData.get()));
+    const auto outputTWData = WRAPD(TWTHORSwapBuildSwap(inputTWData.get()));
     const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
     EXPECT_EQ(outputData.size(), 309);
     // parse result in proto
@@ -187,7 +187,7 @@ TEST(TWTHORSwap, SwapBnbBtc) {
     const auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));
 
     // invoke swap
-    const auto outputTWData = WRAPD(TWTHORSwapSignSwap(inputTWData.get()));
+    const auto outputTWData = WRAPD(TWTHORSwapBuildSwap(inputTWData.get()));
     const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
     EXPECT_EQ(outputData.size(), 124);
     // parse result in proto
@@ -213,7 +213,7 @@ TEST(TWTHORSwap, NegativeInvalidInput) {
     const auto inputData = parse_hex("00112233");
     const auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));
 
-    const auto outputTWData = WRAPD(TWTHORSwapSignSwap(inputTWData.get()));
+    const auto outputTWData = WRAPD(TWTHORSwapBuildSwap(inputTWData.get()));
     const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
     EXPECT_EQ(outputData.size(), 35);
     EXPECT_EQ(hex(outputData), "1a21436f756c64206e6f7420646573657269616c697a6520696e7075742070726f746f");

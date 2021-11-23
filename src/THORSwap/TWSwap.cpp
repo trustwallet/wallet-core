@@ -12,7 +12,7 @@
 using namespace TW::THORSwap;
 using namespace TW;
 
-TWData *_Nonnull TWTHORSwapSignSwap(TWData *_Nonnull input) {
+TWData *_Nonnull TWTHORSwapBuildSwap(TWData *_Nonnull input) {
     Proto::SwapInput inputProto;
     Proto::SwapOutput outputProto;
     if (!inputProto.ParseFromArray(TWDataBytes(input), static_cast<int>(TWDataSize(input)))) {
