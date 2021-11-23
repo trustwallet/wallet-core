@@ -117,13 +117,13 @@ std::pair<Data, std::string> Swap::build(
 std::string Swap::buildBitcoin(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out) {
     auto input = Bitcoin::Proto::SigningInput();
 
-    // Following fields need to be set after building, before sending
+    // Following fields must be set afterwards, before signing ...
     input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_byte_fee(1);
     input.set_use_max_amount(false);
-    // private_key
-    // utxo
-    // scripts
+    // private_key[]
+    // utxo[]
+    // scripts[]
     // ... end
 
     input.set_amount(amount);
@@ -160,14 +160,14 @@ std::string Swap::buildEthereum(Chain toChain, const std::string& toSymbol, cons
     }
     Data toAssetAddressBin = ethAddressStringToData(toTokenId);
 
-    // Following fields need to be set afterwards, before signing
-    auto chainId = store(uint256_t(0));
+    // Following fields must be set afterwards, before signing ...
+    const auto chainId = store(uint256_t(0));
     input.set_chain_id(chainId.data(), chainId.size());
-    auto nonce = store(uint256_t(0));
+    const auto nonce = store(uint256_t(0));
     input.set_nonce(nonce.data(), nonce.size());
-    auto gasPrice = store(uint256_t(0));
+    const auto gasPrice = store(uint256_t(0));
     input.set_gas_price(gasPrice.data(), gasPrice.size());
-    auto gasLimit = store(uint256_t(0));
+    const auto gasLimit = store(uint256_t(0));
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_private_key("");
     // ... end
@@ -194,8 +194,8 @@ std::string Swap::buildEthereum(Chain toChain, const std::string& toSymbol, cons
 std::string Swap::buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out) {
     auto input = Binance::Proto::SigningInput();
 
-    // Following fields need to be set after building, before sending
-    input.set_chain_id("Binance-Chain-Nile");
+    // Following fields must be set afterwards, before signing ...
+    input.set_chain_id("");
     input.set_account_number(0);
     input.set_sequence(0);
     input.set_source(0);

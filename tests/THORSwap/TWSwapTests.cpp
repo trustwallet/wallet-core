@@ -189,7 +189,7 @@ TEST(TWTHORSwap, SwapBnbBtc) {
     // invoke swap
     const auto outputTWData = WRAPD(TWTHORSwapSignSwap(inputTWData.get()));
     const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
-    EXPECT_EQ(outputData.size(), 145);
+    EXPECT_EQ(outputData.size(), 124);
     // parse result in proto
     Proto::SwapOutput outputProto;
     EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
@@ -199,8 +199,8 @@ TEST(TWTHORSwap, SwapBnbBtc) {
     EXPECT_TRUE(outputProto.has_binance());
     Binance::Proto::SigningInput txInput = outputProto.binance();
     
-    // sign tx input for signed full tx
     // set few fields before signing
+    txInput.set_chain_id("Binance-Chain-Nile");
     txInput.set_private_key(TestKey1Bnb.data(), TestKey1Bnb.size());
 
     // sign and encode resulting input
