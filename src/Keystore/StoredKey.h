@@ -36,18 +36,18 @@ public:
     std::string name;
 
     /// Encrypted payload.
-    EncryptionParameters payload;
+    EncryptedPayload payload;
 
     /// Active accounts.
     std::vector<Account> accounts;
 
     /// Create a new StoredKey, with the given name, mnemonic and password.
     /// @throws std::invalid_argument if mnemonic is invalid
-    static StoredKey createWithMnemonic(const std::string& name, const Data& password, const std::string& mnemonic);
+    static StoredKey createWithMnemonic(const std::string& name, const Data& password, const std::string& mnemonic, TWStoredKeyEncryptionLevel encryptionLevel);
 
     /// Create a new StoredKey, with the given name, mnemonic and password.
     /// @throws std::invalid_argument if mnemonic is invalid
-    static StoredKey createWithMnemonicRandom(const std::string& name, const Data& password);
+    static StoredKey createWithMnemonicRandom(const std::string& name, const Data& password, TWStoredKeyEncryptionLevel encryptionLevel);
 
     /// Create a new StoredKey, with the given name, mnemonic and password, and also add the default address for the given coin..
     /// @throws std::invalid_argument if mnemonic is invalid
@@ -119,7 +119,7 @@ private:
     /// Initializes a `StoredKey` with a type, an encryption password, and unencrypted data.
     /// This contstructor will encrypt the provided data with default encryption
     /// parameters.
-    StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data);
+    StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel);
 };
 
 } // namespace TW::Keystore

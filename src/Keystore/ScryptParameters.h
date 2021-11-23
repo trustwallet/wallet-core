@@ -23,6 +23,10 @@ enum class ScryptValidationError {
 
 /// Scrypt function parameters.
 struct ScryptParameters {
+    static ScryptParameters Light;
+
+    static ScryptParameters Standard;
+
     /// The N parameter of Scrypt encryption algorithm, using 256MB memory and
     /// taking approximately 1s CPU time on a modern processor.
     static const uint32_t standardN = 1 << 18;

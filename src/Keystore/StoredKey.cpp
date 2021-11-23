@@ -27,27 +27,27 @@
 using namespace TW;
 using namespace TW::Keystore;
 
-StoredKey StoredKey::createWithMnemonic(const std::string& name, const Data& password, const std::string& mnemonic) {
+StoredKey StoredKey::createWithMnemonic(const std::string& name, const Data& password, const std::string& mnemonic, TWStoredKeyEncryptionLevel encryptionLevel) {
     if (!Mnemonic::isValid(mnemonic)) {
         throw std::invalid_argument("Invalid mnemonic");
     }
     
     Data mnemonicData = TW::Data(mnemonic.begin(), mnemonic.end());
-    StoredKey key = StoredKey(StoredKeyType::mnemonicPhrase, name, password, mnemonicData);
+    StoredKey key = StoredKey(StoredKeyType::mnemonicPhrase, name, password, mnemonicData, encryptionLevel);
     return key;
 }
 
-StoredKey StoredKey::createWithMnemonicRandom(const std::string& name, const Data& password) {
+StoredKey StoredKey::createWithMnemonicRandom(const std::string& name, const Data& password, TWStoredKeyEncryptionLevel encryptionLevel) {
     const auto wallet = TW::HDWallet(128, "");
     const auto& mnemonic = wallet.getMnemonic();
     assert(Mnemonic::isValid(mnemonic));
     Data mnemonicData = TW::Data(mnemonic.begin(), mnemonic.end());
-    StoredKey key = StoredKey(StoredKeyType::mnemonicPhrase, name, password, mnemonicData);
+    StoredKey key = StoredKey(StoredKeyType::mnemonicPhrase, name, password, mnemonicData, encryptionLevel);
     return key;
 }
 
 StoredKey StoredKey::createWithMnemonicAddDefaultAddress(const std::string& name, const Data& password, const std::string& mnemonic, TWCoinType coin) {
-    StoredKey key = createWithMnemonic(name, password, mnemonic);
+    StoredKey key = createWithMnemonic(name, password, mnemonic, TWStoredKeyEncryptionLevelDefault);
 
     const auto wallet = HDWallet(mnemonic, "");
     const auto derivationPath = TW::derivationPath(coin);
@@ -59,7 +59,7 @@ StoredKey StoredKey::createWithMnemonicAddDefaultAddress(const std::string& name
 }
 
 StoredKey StoredKey::createWithPrivateKey(const std::string& name, const Data& password, const Data& privateKeyData) {
-    StoredKey key = StoredKey(StoredKeyType::privateKey, name, password, privateKeyData);
+    StoredKey key = StoredKey(StoredKeyType::privateKey, name, password, privateKeyData, TWStoredKeyEncryptionLevelDefault);
     return key;
 }
 
@@ -78,8 +78,10 @@ StoredKey StoredKey::createWithPrivateKeyAddDefaultAddress(const std::string& na
     return key;
 }
 
-StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data)
-    : type(type), id(), name(std::move(name)), payload(password, data), accounts() {
+StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel)
+    : type(type), id(), name(std::move(name)), accounts() {
+    const auto encryptionParams = EncryptionParameters::getPreset(encryptionLevel);
+    payload = EncryptedPayload(password, data, encryptionParams);
     boost::uuids::random_generator gen;
     id = boost::lexical_cast<std::string>(gen());
 }
@@ -225,10 +227,10 @@ void StoredKey::loadJson(const nlohmann::json& json) {
     }
 
     if (json.count(CodingKeys::crypto) != 0) {
-        payload = EncryptionParameters(json[CodingKeys::crypto]);
+        payload = EncryptedPayload(json[CodingKeys::crypto]);
     } else if (json.count(UppercaseCodingKeys::crypto) != 0) {
         // Workaround for myEtherWallet files
-        payload = EncryptionParameters(json[UppercaseCodingKeys::crypto]);
+        payload = EncryptedPayload(json[UppercaseCodingKeys::crypto]);
     } else {
         throw DecryptionError::invalidKeyFile;
     }

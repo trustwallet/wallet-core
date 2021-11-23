@@ -12,6 +12,7 @@
 #include "TWHDWallet.h"
 #include "TWPrivateKey.h"
 #include "TWString.h"
+#include "TWStoredKeyEncryptionLevel.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -35,7 +36,11 @@ struct TWStoredKey* _Nullable TWStoredKeyImportHDWallet(TWString* _Nonnull mnemo
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nullable TWStoredKeyImportJSON(TWData* _Nonnull json);
 
-/// Creates a new key.  Returned object needs to be deleted.
+/// Creates a new key, with given encrpytion strength level.  Returned object needs to be deleted.
+TW_EXPORT_STATIC_METHOD
+struct TWStoredKey* _Nonnull TWStoredKeyCreateLevel(TWString* _Nonnull name, TWData* _Nonnull password, enum TWStoredKeyEncryptionLevel encryptionLevel);
+
+/// DEPRECATED, use TWStoredKeyCreateLevel. Creates a new key.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nonnull TWStoredKeyCreate(TWString* _Nonnull name, TWData* _Nonnull password);
 
@@ -104,5 +109,9 @@ TWData* _Nullable TWStoredKeyExportJSON(struct TWStoredKey* _Nonnull key);
 /// @returns `false` if the password is incorrect.
 TW_EXPORT_METHOD
 bool TWStoredKeyFixAddresses(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password);
+
+/// Retrieve stored key encoding parameters, as JSON string.
+TW_EXPORT_PROPERTY
+TWString* _Nullable TWStoredKeyEncryptionParameters(struct TWStoredKey* _Nonnull key);
 
 TW_EXTERN_C_END

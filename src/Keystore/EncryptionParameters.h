@@ -10,12 +10,56 @@
 #include "PBKDF2Parameters.h"
 #include "ScryptParameters.h"
 #include "../Data.h"
+#include <TrustWalletCore/TWStoredKeyEncryptionLevel.h>
 
 #include <boost/variant.hpp>
 #include <nlohmann/json.hpp>
 #include <string>
 
 namespace TW::Keystore {
+
+/// Set of parameters used when encoding
+struct EncryptionParameters {
+    static EncryptionParameters getPreset(enum TWStoredKeyEncryptionLevel preset) {
+        switch (preset) {
+            case TWStoredKeyEncryptionLevelWeak:
+            case TWStoredKeyEncryptionLevelDefault:
+            default:
+                return EncryptionParameters(AESParameters(), ScryptParameters::Light);
+            case TWStoredKeyEncryptionLevelStandard:
+                return EncryptionParameters(AESParameters(), ScryptParameters::Standard);
+        }
+    }
+
+    /// Cipher algorithm.
+    std::string cipher = "aes-128-ctr";
+
+    /// Cipher parameters.
+    AESParameters cipherParams = AESParameters();
+
+    /// Key derivation function parameters.
+    boost::variant<ScryptParameters, PBKDF2Parameters> kdfParams = ScryptParameters();
+
+    EncryptionParameters() = default;
+
+    /// Initializes with standard values.
+    EncryptionParameters(AESParameters cipherParams, boost::variant<ScryptParameters, PBKDF2Parameters> kdfParams)
+        : cipherParams(std::move(cipherParams))
+        , kdfParams(std::move(kdfParams)) {}
+
+    /// Initializes with a JSON object.
+    EncryptionParameters(const nlohmann::json& json);
+
+    /// Saves `this` as a JSON object.
+    nlohmann::json json() const;
+
+    EncryptionParameters(const EncryptionParameters& other) = default;
+    EncryptionParameters(EncryptionParameters&& other) = default;
+    EncryptionParameters& operator=(const EncryptionParameters& other) = default;
+    EncryptionParameters& operator=(EncryptionParameters&& other) = default;
+
+    virtual ~EncryptionParameters() = default;
+};
 
 /// Errors thrown when decrypting a key.
 enum class DecryptionError {
@@ -27,37 +71,31 @@ enum class DecryptionError {
     invalidPassword,
 };
 
-struct EncryptionParameters {
+/// An encrypted payload data
+struct EncryptedPayload {
+public:
+    EncryptionParameters params;
+
     /// Encrypted data.
     Data encrypted;
-
-    /// Cipher algorithm.
-    std::string cipher = "aes-128-ctr";
-
-    /// Cipher parameters.
-    AESParameters cipherParams = AESParameters();
-
-    /// Key derivation function parameters.
-    boost::variant<ScryptParameters, PBKDF2Parameters> kdfParams = ScryptParameters();
 
     /// Message authentication code.
     Data mac;
 
-    EncryptionParameters() = default;
+    EncryptedPayload() = default;
 
-    /// Initializes `EncryptionParameters` with standard values.
-    EncryptionParameters(const Data& encrypted, AESParameters cipherParams, boost::variant<ScryptParameters, PBKDF2Parameters> kdfParams, const Data& mac)
-        : encrypted(std::move(encrypted))
-        , cipherParams(std::move(cipherParams))
-        , kdfParams(std::move(kdfParams))
+    /// Initializes with standard values.
+    EncryptedPayload(const EncryptionParameters& params, const Data& encrypted, const Data& mac)
+        : params(std::move(params))
+        , encrypted(std::move(encrypted))
         , mac(std::move(mac)) {}
 
-    /// Initializes `EncryptionParameters` by encrypting data with a password
+    /// Initializes by encrypting data with a password
     /// using standard values.
-    EncryptionParameters(const Data& password, const Data& data);
+    EncryptedPayload(const Data& password, const Data& data, const EncryptionParameters& params);
 
-    /// Initializes `EncryptionParameters` with a JSON object.
-    EncryptionParameters(const nlohmann::json& json);
+    /// Initializes with a JSON object.
+    EncryptedPayload(const nlohmann::json& json);
 
     /// Decrypts the payload with the given password.
     Data decrypt(const Data& password) const;
@@ -65,12 +103,12 @@ struct EncryptionParameters {
     /// Saves `this` as a JSON object.
     nlohmann::json json() const;
 
-    EncryptionParameters(const EncryptionParameters& other) = default;
-    EncryptionParameters(EncryptionParameters&& other) = default;
-    EncryptionParameters& operator=(const EncryptionParameters& other) = default;
-    EncryptionParameters& operator=(EncryptionParameters&& other) = default;
+    EncryptedPayload(const EncryptedPayload& other) = default;
+    EncryptedPayload(EncryptedPayload&& other) = default;
+    EncryptedPayload& operator=(const EncryptedPayload& other) = default;
+    EncryptedPayload& operator=(EncryptedPayload&& other) = default;
 
-    virtual ~EncryptionParameters();
+    virtual ~EncryptedPayload();
 };
 
 } // namespace TW::Keystore
