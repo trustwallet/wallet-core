@@ -160,14 +160,14 @@ std::string Swap::buildEthereum(Chain toChain, const std::string& toSymbol, cons
     }
     Data toAssetAddressBin = ethAddressStringToData(toTokenId);
 
-    // Following fields need to be set after building, before sending
-    auto chainId = store(uint256_t(1));
+    // Following fields need to be set afterwards, before signing
+    auto chainId = store(uint256_t(0));
     input.set_chain_id(chainId.data(), chainId.size());
-    auto nonce = store(uint256_t(11));
+    auto nonce = store(uint256_t(0));
     input.set_nonce(nonce.data(), nonce.size());
-    auto gasPrice = store(uint256_t(10000000000));
+    auto gasPrice = store(uint256_t(0));
     input.set_gas_price(gasPrice.data(), gasPrice.size());
-    auto gasLimit = store(uint256_t(1000000));
+    auto gasLimit = store(uint256_t(0));
     input.set_gas_limit(gasLimit.data(), gasLimit.size());
     input.set_private_key("");
     // ... end

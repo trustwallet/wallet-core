@@ -137,7 +137,7 @@ TEST(TWTHORSwap, SwapEthBnb) {
     // invoke swap
     const auto outputTWData = WRAPD(TWTHORSwapSwap(inputTWData.get()));
     const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
-    EXPECT_EQ(outputData.size(), 315);
+    EXPECT_EQ(outputData.size(), 309);
     // parse result in proto
     Proto::SwapOutput outputProto;
     EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
