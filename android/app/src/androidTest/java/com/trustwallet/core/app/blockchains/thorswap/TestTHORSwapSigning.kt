@@ -1,6 +1,7 @@
 package com.trustwallet.core.app.blockchains.ethereum
 
 import com.google.protobuf.ByteString
+import com.google.protobuf.ProtoBuf
 import com.trustwallet.core.app.utils.toHexByteArray
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -12,6 +13,7 @@ import wallet.core.jni.proto.Ethereum
 import wallet.core.jni.proto.Ethereum.SigningOutput
 import wallet.core.jni.proto.Ethereum.TransactionMode
 import wallet.core.jni.proto.THORSwap
+import wallet.core.jni.THORSwap
 import com.trustwallet.core.app.utils.Numeric
 import org.junit.Assert.assertArrayEquals
 
@@ -53,7 +55,7 @@ class TestTHORSwap {
         assertEquals(outputProto.fromChain, THORSwap.Chain.ETH)
         assertEquals(outputProto.toChain, THORSwap.Chain.BNB)
         assertEquals(outputProto.error.code, THORSwap.ErrorCode.OK)
-        val txInput = outputProto.ethereum
+        var txInput = outputProto.ethereum
 
         // set few fields before signing
         txInput.chainID = ByteString.copyFrom("0x01".toHexByteArray())
