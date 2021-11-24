@@ -16,9 +16,11 @@ enum TWStoredKeyEncryptionLevel {
     /// Default, which is one of the below values, determined by the implementation.
     TWStoredKeyEncryptionLevelDefault = 0,
     /// Minimal sufficient level of encryption strength (scrypt 4096)
-    TWStoredKeyEncryptionLevelWeak = 1,
+    TWStoredKeyEncryptionLevelMinimal = 1,
+    /// Weak encryption strength (scrypt 16k)
+    TWStoredKeyEncryptionLevelWeak = 2,
     /// Standard level of encryption strength (scrypt 262k)
-    TWStoredKeyEncryptionLevelStandard = 2,
+    TWStoredKeyEncryptionLevelStandard = 3,
 };
 
 TW_EXTERN_C_END
