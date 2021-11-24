@@ -75,7 +75,7 @@ Projects using Trust Wallet Core.  Add yours too!
 
 # Community
 
-There are a few community-maintained projects that extend Wallet Core to a few other platforms and languages. Note this is not an endorsement, please do your own research before using them:
+There are a few community-maintained projects that extend Wallet Core to some additional platforms and languages. Note this is not an endorsement, please do your own research before using them:
 
 - Flutter binding https://github.com/weishirongzhen/flutter_trust_wallet_core
 - Python binding https://github.com/phuang/wallet-core-python
