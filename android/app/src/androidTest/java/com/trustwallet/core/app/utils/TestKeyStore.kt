@@ -53,8 +53,8 @@ class TestKeyStore {
                 "kdf": "scrypt",
                 "kdfparams": {
                     "dklen": 32,
-                    "n": 16384,
-                    "p": 4,
+                    "n": 4096,
+                    "p": 6,
                     "r": 8,
                     "salt": "24c72d92bf88a4f7c7b3f5e3cb3620714d71fceabbb0bc6099f50c6d5d898e7c"
                 },
