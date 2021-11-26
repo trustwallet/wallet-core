@@ -425,26 +425,26 @@ TEST(SolanaSigner, SignMarinadeDeposit) {
         Address("3JLPCS1qM2zRw3Dp6V4hZnYHd4toMNPkNesXdX9tg6KM"), // tokenMintAuthority
     };
 
-    const auto privateKeySigner = PrivateKey(Base58::bitcoin.decode("FY7M85QESj49DrHoSiPGVB8ijdh9mmKqfGNUHFuC2TSP"));
-    EXPECT_EQ(hex(privateKeySigner.bytes), "d7fbcc6da48d60cccc959010a7b4cbd808c675a39c2a1f90eabc4ccacb243240");
+    const auto privateKeySigner = PrivateKey(Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746"));
+    EXPECT_EQ(hex(privateKeySigner.bytes), "8f6fee9bbb525c2fdb14682b2d682fb4346d5ce9d0254a39863cd113ad9d1a53");
     const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
-    EXPECT_EQ(hex(publicKeySigner.bytes), "6bd9d7428b012e9acb6b17e860c79f999076ec9dd257a364892dc5d74d12b14a");
+    EXPECT_EQ(hex(publicKeySigner.bytes), "0eba44e56f060007284dc037275a15094c1d6c0697ddb28b2be661dfb0f4bab8");
     const auto signer = Address(publicKeySigner);
-    EXPECT_EQ(signer.string(), "8G1HRkjV7c7jooyjhv23qksuWi6mZUcnkEfcz2SBo1YM");
+    EXPECT_EQ(signer.string(), "zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
 
     const auto tokenAddress = TokenProgram::defaultTokenAddress(signer, marinadeConsts.tokenMintAddress);
-    EXPECT_EQ(tokenAddress.string(), "3AfqpYmTB4tagaSMLky2KryDzPWf8dN4Yu1LP9jj63b8");
+    EXPECT_EQ(tokenAddress.string(), "3Bg2DdFniUdiNKmB9tCyXzXSbF4S36TJZiRns8nbebyW");
 
-    uint64_t amount = 32000000;
-    Solana::Hash recentBlockhash("4cpzcCpzfJ6k6qkwSB51DuykDKR244rXX4AvddzWiRrp");
+    uint64_t amount = 500000000;
+    Solana::Hash recentBlockhash("CNaHfvqePgGYMvtYi9RuUdVxDYttr1zs4TWrTXYabxZi");
 
-    auto message = Message::createStakePoolDeposit(marinadeConsts, signer, tokenAddress, amount, recentBlockhash);
+    auto message = Message::createStakePoolCreateAndDeposit(marinadeConsts, signer, tokenAddress, amount, recentBlockhash);
     auto transaction = Transaction(message);
 
     std::vector<PrivateKey> signerKeys;
     signerKeys.push_back(privateKeySigner);
     Signer::sign(signerKeys, transaction);
 
-    auto expectedString = "5jvGFfFr1Wb9wGdirC4ihQiJfPac7wsR7q1GAaqALFswz94CGtcbFrPquZQZM7f2cMT2YR9fU5mmrVDWNGTtpisDpjSzBysCftGtSmGAZZWE9B1jgEFYfneChLKHAgUpXrGBe1Erkbkdk6SsJwFEVgSVfhnrBazjNiVvb6y3hx1g6Kcb1fnFgzPQnnVBNr6NFS5f3RZRsmKo8Tz7zU4BfrpgNAw1kudQbXC6RfuKcpgbDmPcSnaYu9GsVGMADymbu4X1HqCH8fM2NyB3M9HkVbm4tPJXXvMfxUR65SYNRYF1paHtPAFoxMuiZrkpdxx9NPkhgYk3EcPcYcEPzbzWSqU97N2Pn9JCLmBe5qFj34B6R6nu2S4VmrgdNYWmJCrrKX1aDaKxMAJ3WCN9GXgKDsAXrZ3ikPxRT9scru51bzwSNWoWsEcArWTQ8S1xjPLPxKYnToh3vzmaMPKy7Jm3P7qe3SCR5JHszZo9Nmuc4QhKLr8ZMonfSbHoKjibGQTqYxWxFGoCYMEgavYz91yUk8Z2LAnwT8pRMQmTt5GJ94gQE6teE2gViqDEYNyNThEcnXyjZCa2Dybq5kBxjg2aRQgzmsgZRTKWUYhNdaBNTSjsWJN5ehVGqe5oBV4GKag5DswPCfn5WEFf96iMCyWVGKLzyU1Y6e9ZyPJvmgxUALTzAoW6Qqbqc8E9DFP44p7Z";
+    auto expectedString = "9cNrVimWHc9QtfnpsgkB8x8ydATn1QDxTXbYYt5SS3iiSyiECXspRTbefD9hZaZNaBiLjXrgUyv4kmjDwBqipNnYdf3ANU6jp93zpA1tCDE8w5j7cw87XeZeSw9prDKbfMWt4HQUMvtP6ULRGg4UM2yMNUnm9HaMqSsZfTQEGdxD16EW4RUd8AF9nVXfsCrkPKQb9LBgLi2QwWDZfUfekNA52CDJwUevi3rpgBPif8V6UDAHQ5H7TwnySZqxdRWMs9hFvTDeEG9bFeCgG5LeBoaJM3kRU9QSUtiYg9QhyzFGrPvdHy3jqhh7678psMmw1wiinNknvWg9ibUXeAHuCrCSfMK4ffjonBqMKY51QDbu8nbxUTeumNB9ZCFBHLFTxCsDhVVDdz3T4fP6X6Abn8TXR64zMWJfQ5LBw9mf4WajRccFHQTeYQuyngX9G4BRVohhKyXXb81N5wcC8p87TmSVdRCfpDBiAtUHgkKVrFp3R3NHereXbWsWBJWjfXjYv78nojSyGYpBshKrh69H1js3Xa5QpzL9QAhrF4bM8j2TdpWZNWnjSviQ9VxAAAPoPwLz9xew5s9ZmtVjXdK6dXjzZm88BPwWetjEcHdbGiqHciDxghK6fPQNHYpVQTgPShxW2tVhck4EKhqmAQb7XfQCpbdiETp68WCXiUaH4CWr85ySH2Cc1RZcWkitoTyDAGhYSuQDmDL1HmHqeTwzoWg8nVBZ48ejACZ5HXDrfKHfhW7XnqyKMr412xNqhrcRKF4L4ESyT6hbey3PjzaW2QL3xog1K372UYsQT";
     EXPECT_EQ(transaction.serialize(), expectedString);
 }
