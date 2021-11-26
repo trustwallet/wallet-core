@@ -44,9 +44,8 @@ let package = Package(
     name: "WalletCore",
     platforms: [.iOS(.v13)],
     products: [
-        .library(
-            name: "WalletCore", targets: ["WalletCore", "SwiftProtobuf"]
-        )
+        .library(name: "WalletCore", targets: ["WalletCore"]),
+        .library(name: "SwiftProtobuf", targets: ["SwiftProtobuf"])
     ],
     dependencies: [],
     targets: [
@@ -65,7 +64,9 @@ let package = Package(
 EOF
 
 echo "Package.swift generated."
-
 cat $package_swift
+
+package_swift_download_url=$(wc_upload_asset ${release_url} "Package.swift")
+echo "swift protobuf url is: ${package_swift_download_url}"
 
 popd
