@@ -37,7 +37,7 @@ If you want to use wallet core in your project follow these instructions.
 
 ## Android
 
-Future Android releases will be hosted on [GitHub packages](https://github.com/trustwallet/wallet-core/packages/700258), please checkout [this guide](https://docs.github.com/en/packages/guides/configuring-gradle-for-use-with-github-packages#installing-a-package) for more details.
+Android releases are hosted on [GitHub packages](https://github.com/trustwallet/wallet-core/packages/700258), please checkout [this installation guide](https://docs.github.com/en/packages/guides/configuring-gradle-for-use-with-github-packages#installing-a-package), you need to add GitHub access token to install it.
 
 Add this dependency to build.gradle and run `gradle install`
 
@@ -55,7 +55,21 @@ Replace x.y.z with latest version:
 
 ## iOS
 
-We currently support only CocoaPods. Add this line to your Podfile and run `pod install`:
+We currently support Swift Package Manager and CocoaPods.
+
+### SPM
+
+Add this line to the `dependencies` parameter in your `Package.swift`:
+
+```swift
+.package(name: "WalletCore", url: "https://github.com/trustwallet/wallet-core", .branchItem("master")),
+```
+
+Or add it to your Xcode project, `master` branch will point to latest binary release. 
+
+### CocoaPods
+
+Add this line to your Podfile and run `pod install`:
 
 ```ruby
 pod 'TrustWalletCore'
