@@ -411,3 +411,40 @@ TEST(SolanaSigner, SignTransferToken) {
         "PGfKqEaH2zZXDMZLcU6LUKdBSzU1GJWJ1CJXtRYCxaCH7k8uok38WSadZfrZw3TGejiau7nSpan2GvbK26hQim24jRe2AupmcYJFrgsdaCt1Aqs5kpGjPqzgj9krgxTZwwob3xgC1NdHK5BcNwhxwRtrCphGEH7zUFpGFrFrHzgpf2KY8FvPiPELQyxzTBuyNtjLjMMreehSKShEjD9Xzp1QeC1pEF8JL6vUKzxMXuveoEYem8q8JiWszYzmTMfDk13JPgv7pXFGMqDV3yNGCLsWccBeSFKN4UKECre6x2QbUEiKGkHkMc4zQwwyD8tGmEMBAGm339qdANssEMNpDeJp2LxLDStSoWShHnotcrH7pUa94xCVvCPPaomF";
     EXPECT_EQ(transaction.serialize(), expectedString);
 }
+
+TEST(SolanaSigner, SignMarinadeDeposit) {
+    // Marinade constants, https://docs.marinade.finance/developers/contract-addresses
+    const Message::StakePoolProgramConsts marinadeConsts = {
+        Address("MarBmsSgKXdrN1egZf5sqe1TMai9K1rChYNDJgjq7aD"), // programId
+        Address("8szGkuLTAux9XMgZ2vtY39jVSowEcpBfFfD8hXSEqdGC"), // mainState
+        Address("mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"), // tokenMintAddress
+        Address("UefNb6z6yvArqe4cJHTXCqStRsKmWhGxnZzuHbikP5Q"), // liqPoolSolLegPda
+        Address("7GgPYjS5Dza89wV6FpZ23kUJRG5vbQ1GM25ezspYFSoE"), // liqPoolTokenLeg
+        Address("EyaSjUtSgo9aRD1f8LWXwdvkpDTmXAW54yoSHZRF14WL"), // liqPoolTokenLegAuthority
+        Address("Du3Ysj1wKbxPKkuPPnvzQLQh8oMSVifs3jGZjJWXFmHN"), // reservePda
+        Address("3JLPCS1qM2zRw3Dp6V4hZnYHd4toMNPkNesXdX9tg6KM"), // tokenMintAuthority
+    };
+
+    const auto privateKeySigner = PrivateKey(Base58::bitcoin.decode("FY7M85QESj49DrHoSiPGVB8ijdh9mmKqfGNUHFuC2TSP"));
+    EXPECT_EQ(hex(privateKeySigner.bytes), "d7fbcc6da48d60cccc959010a7b4cbd808c675a39c2a1f90eabc4ccacb243240");
+    const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
+    EXPECT_EQ(hex(publicKeySigner.bytes), "6bd9d7428b012e9acb6b17e860c79f999076ec9dd257a364892dc5d74d12b14a");
+    const auto signer = Address(publicKeySigner);
+    EXPECT_EQ(signer.string(), "8G1HRkjV7c7jooyjhv23qksuWi6mZUcnkEfcz2SBo1YM");
+
+    const auto tokenAddress = TokenProgram::defaultTokenAddress(signer, marinadeConsts.tokenMintAddress);
+    EXPECT_EQ(tokenAddress.string(), "3AfqpYmTB4tagaSMLky2KryDzPWf8dN4Yu1LP9jj63b8");
+
+    uint64_t amount = 32000000;
+    Solana::Hash recentBlockhash("4cpzcCpzfJ6k6qkwSB51DuykDKR244rXX4AvddzWiRrp");
+
+    auto message = Message::createStakePoolDeposit(marinadeConsts, signer, tokenAddress, amount, recentBlockhash);
+    auto transaction = Transaction(message);
+
+    std::vector<PrivateKey> signerKeys;
+    signerKeys.push_back(privateKeySigner);
+    Signer::sign(signerKeys, transaction);
+
+    auto expectedString = "5jvGFfFr1Wb9wGdirC4ihQiJfPac7wsR7q1GAaqALFswz94CGtcbFrPquZQZM7f2cMT2YR9fU5mmrVDWNGTtpisDpjSzBysCftGtSmGAZZWE9B1jgEFYfneChLKHAgUpXrGBe1Erkbkdk6SsJwFEVgSVfhnrBazjNiVvb6y3hx1g6Kcb1fnFgzPQnnVBNr6NFS5f3RZRsmKo8Tz7zU4BfrpgNAw1kudQbXC6RfuKcpgbDmPcSnaYu9GsVGMADymbu4X1HqCH8fM2NyB3M9HkVbm4tPJXXvMfxUR65SYNRYF1paHtPAFoxMuiZrkpdxx9NPkhgYk3EcPcYcEPzbzWSqU97N2Pn9JCLmBe5qFj34B6R6nu2S4VmrgdNYWmJCrrKX1aDaKxMAJ3WCN9GXgKDsAXrZ3ikPxRT9scru51bzwSNWoWsEcArWTQ8S1xjPLPxKYnToh3vzmaMPKy7Jm3P7qe3SCR5JHszZo9Nmuc4QhKLr8ZMonfSbHoKjibGQTqYxWxFGoCYMEgavYz91yUk8Z2LAnwT8pRMQmTt5GJ94gQE6teE2gViqDEYNyNThEcnXyjZCa2Dybq5kBxjg2aRQgzmsgZRTKWUYhNdaBNTSjsWJN5ehVGqe5oBV4GKag5DswPCfn5WEFf96iMCyWVGKLzyU1Y6e9ZyPJvmgxUALTzAoW6Qqbqc8E9DFP44p7Z";
+    EXPECT_EQ(transaction.serialize(), expectedString);
+}

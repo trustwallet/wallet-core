@@ -10,6 +10,7 @@
 #include "../Base58.h"
 #include "../BinaryCoding.h"
 #include "../Data.h"
+#include "../HexCoding.h" // TODO remove
 
 #include <vector>
 #include <string>
@@ -68,6 +69,10 @@ enum TokenInstruction {
     CreateTokenAccount = 1,
     //SetAuthority = 6,
     TokenTransfer = 12,
+};
+
+enum StakePoolInstruction {
+    Deposit = 99,
 };
 
 enum TokenAuthorityType {
@@ -183,6 +188,16 @@ struct Instruction {
         data.push_back(static_cast<uint8_t>(type));
         encode64LE(value, data);
         data.push_back(static_cast<uint8_t>(decimals));
+        this->data = data;
+    }
+
+    Instruction(StakePoolInstruction, const Address& programId, const std::vector<AccountMeta>& accounts, uint64_t value) :
+        programId(programId),
+        accounts(accounts)
+    {
+        auto data = Data();
+        append(data, parse_hex("f223c68952e1f2b6")); // TODO hardcoded 64-bit magic number
+        encode64LE(value, data);
         this->data = data;
     }
 };
@@ -450,6 +465,54 @@ class Message {
             AccountMeta(signer, true, false),
         }, amount, decimals);
         return Message(recentBlockhash, {createInstruction, transferInstruction});
+    }
+
+    struct StakePoolProgramConsts {
+        Address programId;
+        Address mainState;
+        Address tokenMintAddress;
+        Address liqPoolSolLegPda;
+        Address liqPoolTokenLeg;
+        Address liqPoolTokenLegAuthority;
+        Address reservePda;
+        Address tokenMintAuthority;
+    };
+
+    // This constructor creates a createAndTransferToken message, combining createAccount and transfer.
+    static Message createStakePoolDeposit(const StakePoolProgramConsts stakePoolConsts, const Address& signer,
+        const Address& tokenAddress, uint64_t amount, Hash recentBlockhash) {
+        const auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
+        const auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
+        const auto tokenProgramId = Address(TOKEN_PROGRAM_ID_ADDRESS);
+
+        /*
+        const auto createInstruction = Instruction(TokenInstruction::CreateTokenAccount, std::vector<AccountMeta>{
+            AccountMeta(signer, true, false),
+            AccountMeta(tokenAddress, false, false),
+            AccountMeta(signer, false, true),
+            AccountMeta(stakePoolConsts.tokenMintAddress, false, true),
+            AccountMeta(systemProgramId, false, true),
+            AccountMeta(tokenProgramId, false, true),
+            AccountMeta(sysvarRentId, false, true),
+        });
+        */
+
+        const auto depositInstruction = Instruction(StakePoolInstruction::Deposit, stakePoolConsts.programId, std::vector<AccountMeta>{
+            AccountMeta(stakePoolConsts.mainState, false, false),
+            AccountMeta(stakePoolConsts.tokenMintAddress, false, false),
+            AccountMeta(stakePoolConsts.liqPoolSolLegPda, false, false),
+            AccountMeta(stakePoolConsts.liqPoolTokenLeg, false, false),
+            AccountMeta(stakePoolConsts.liqPoolTokenLegAuthority, false, true),
+            AccountMeta(stakePoolConsts.reservePda, false, false),
+            AccountMeta(signer, true, false),
+            AccountMeta(tokenAddress, false, false),
+            AccountMeta(stakePoolConsts.tokenMintAuthority, false, true),
+            AccountMeta(systemProgramId , false, true),
+            AccountMeta(tokenProgramId , false, true),
+        }, amount);
+
+        //return Message(recentBlockhash, {createInstruction, depositInstruction});
+        return Message(recentBlockhash, {depositInstruction});
     }
 };
 
