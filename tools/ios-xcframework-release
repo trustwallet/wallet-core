@@ -63,10 +63,10 @@ let package = Package(
 )
 EOF
 
-echo "Package.swift generated."
+echo "${package_swift} generated."
 cat $package_swift
 
-package_swift_download_url=$(wc_upload_asset ${release_url} "Package.swift")
-echo "swift protobuf url is: ${package_swift_download_url}"
+package_swift_download_url=$(wc_upload_asset ${release_url} ${package_swift})
+echo "${package_swift} url is: ${package_swift_download_url}"
 
 popd
