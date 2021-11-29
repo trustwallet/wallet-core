@@ -1,21 +1,17 @@
-package com.trustwallet.core.app.blockchains.ethereum
+package com.trustwallet.core.app.blockchains.thorswap
 
 import com.google.protobuf.ByteString
-import com.google.protobuf.ProtoBuf
 import com.trustwallet.core.app.utils.toHexByteArray
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import wallet.core.jni.PrivateKey
 import wallet.core.java.AnySigner
-import wallet.core.jni.CoinType
 import wallet.core.jni.CoinType.ETHEREUM
-import wallet.core.jni.proto.Ethereum
 import wallet.core.jni.proto.Ethereum.SigningOutput
-import wallet.core.jni.proto.Ethereum.TransactionMode
 import wallet.core.jni.proto.THORSwap
-import wallet.core.jni.THORSwap
+import wallet.core.jni.THORSwap.buildSwap
 import com.trustwallet.core.app.utils.Numeric
-import org.junit.Assert.assertArrayEquals
 
 class TestTHORSwap {
 
@@ -43,26 +39,29 @@ class TestTHORSwap {
         }
 
         // serialize input
-        val inputSerialized = ProtoBuf.encodeToByteArray(input)
-        assertEquals(Numeric.toHexString(inputSerialized.toByteArray()), "0x0802122a3078623966353737316332373636346266323238326439386530396437663530636563376362303161371a0708031203424e42222a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372782a2a307831303931633444653661336346303943644130304162444165443432633763334236394338334543322a3078343241354564343536363530613039446331304542633633363141373438306644643631663237423a1135303030303030303030303030303030304206363030303033")
+        val inputSerialized = input.build().toByteArray()
+        assertEquals(Numeric.toHexString(inputSerialized), "0x0802122a3078623966353737316332373636346266323238326439386530396437663530636563376362303161371a0708031203424e42222a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372782a2a307831303931633444653661336346303943644130304162444165443432633763334236394338334543322a3078343241354564343536363530613039446331304542633633363141373438306644643631663237423a1135303030303030303030303030303030304206363030303033")
 
         // invoke swap
-        val outputData = THORSwap.buildSwap(inputSerialized)
-        assertEquals(outputData.count, 311)
+        val outputData = buildSwap(inputSerialized)
+        assertEquals(outputData.count(), 311)
 
         // parse result in proto
-        val outputProto = ProtoBuf.decodeFromByteArray<THORSwap.SwapOutput>(outputData)
+        val outputProto = THORSwap.SwapOutput.newBuilder().mergeFrom(outputData)
         assertEquals(outputProto.fromChain, THORSwap.Chain.ETH)
         assertEquals(outputProto.toChain, THORSwap.Chain.BNB)
         assertEquals(outputProto.error.code, THORSwap.ErrorCode.OK)
-        var txInput = outputProto.ethereum
+        assertTrue(outputProto.hasEthereum())
+        val txInput = outputProto.ethereum
 
         // set few fields before signing
-        txInput.chainID = ByteString.copyFrom("0x01".toHexByteArray())
-        txInput.nonce = ByteString.copyFrom("0x03".toHexByteArray())
-        txInput.gasPrice = ByteString.copyFrom("0x06FC23AC00".toHexByteArray())
-        txInput.gasLimit = ByteString.copyFrom("0x013880".toHexByteArray())
-        txInput.privateKey = ByteString.copyFrom(PrivateKey("0x4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904".toHexByteArray()).data())
+        txInput.toBuilder().apply {
+            chainId = ByteString.copyFrom("0x01".toHexByteArray())
+            nonce = ByteString.copyFrom("0x03".toHexByteArray())
+            gasPrice = ByteString.copyFrom("0x06FC23AC00".toHexByteArray())
+            gasLimit = ByteString.copyFrom("0x013880".toHexByteArray())
+            privateKey = ByteString.copyFrom(PrivateKey("0x4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904".toHexByteArray()).data())
+        }.build()
 
         // sign and encode resulting input
         val output = AnySigner.sign(txInput, ETHEREUM, SigningOutput.parser())
