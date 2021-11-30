@@ -9,12 +9,12 @@ import WalletCore
 
 class THORSwapTests: XCTestCase {
 
-    func testSignerEthBnb() {
+    func testSignerEthBnb() throws {
         // prepare swap input
-        let input = THORSwapSwapInput.with {
+        let input = THORChainSwapSwapInput.with {
             $0.fromChain = .eth
             $0.fromAddress = "0xb9f5771c27664bf2282d98e09d7f50cec7cb01a7"
-            $0.toAsset = THORSwapAsset.with {
+            $0.toAsset = THORChainSwapAsset.with {
                 $0.chain = .bnb
                 $0.symbol = "BNB"
                 $0.tokenID = ""
@@ -27,19 +27,19 @@ class THORSwapTests: XCTestCase {
         }
 
         // serialize input
-        let inputSerialized = try? input.serializedData()
-        XCTAssertEqual(inputSerialized!.hexString, "0802122a3078623966353737316332373636346266323238326439386530396437663530636563376362303161371a0708031203424e42222a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372782a2a307831303931633444653661336346303943644130304162444165443432633763334236394338334543322a3078343241354564343536363530613039446331304542633633363141373438306644643631663237423a1135303030303030303030303030303030304206363030303033")
+        let inputSerialized = try input.serializedData()
+        XCTAssertEqual(inputSerialized.hexString, "0802122a3078623966353737316332373636346266323238326439386530396437663530636563376362303161371a0708031203424e42222a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372782a2a307831303931633444653661336346303943644130304162444165443432633763334236394338334543322a3078343241354564343536363530613039446331304542633633363141373438306644643631663237423a1135303030303030303030303030303030304206363030303033")
 
         // invoke swap
-        let outputData = THORSwap.buildSwap(input: inputSerialized!)
+        let outputData = THORChainSwap.buildSwap(input: inputSerialized)
         XCTAssertEqual(outputData.count, 311)
 
         // parse result in proto
-        let outputProto = try? THORSwapSwapOutput(serializedData: outputData)
-        XCTAssertEqual(outputProto!.fromChain, TW_THORSwap_Proto_Chain.eth)
-        XCTAssertEqual(outputProto!.toChain, TW_THORSwap_Proto_Chain.bnb)
-        XCTAssertEqual(outputProto!.error.code, TW_THORSwap_Proto_ErrorCode.ok)
-        var txInput = outputProto!.ethereum
+        let outputProto = try THORChainSwapSwapOutput(serializedData: outputData)
+        XCTAssertEqual(outputProto.fromChain, TW_THORChainSwap_Proto_Chain.eth)
+        XCTAssertEqual(outputProto.toChain, TW_THORChainSwap_Proto_Chain.bnb)
+        XCTAssertEqual(outputProto.error.code, TW_THORChainSwap_Proto_ErrorCode.ok)
+        var txInput = outputProto.ethereum
 
         // set few fields before signing
         txInput.chainID = Data(hexString: "01")!
@@ -54,12 +54,12 @@ class THORSwapTests: XCTestCase {
         XCTAssertEqual(output.encoded.hexString, "f90151038506fc23ac00830138809442a5ed456650a09dc10ebc6361a7480fdd61f27b87b1a2bc2ec50000b8e41fece7b40000000000000000000000001091c4de6a3cf09cda00abdaed42c7c3b69c83ec000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b1a2bc2ec500000000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003e535741503a424e422e424e423a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a363030303033000025a06ae104be3201baca38315352f81fac70ca4dd47339981914e64e91149813e780a066a3f0b2c44ddf5a96a38481274f623f552a593d723237d6742185f4885c0064")
     }
 
-    func testSignerBnbBtc() {
+    func testSignerBnbBtc() throws {
         // prepare swap input
-        let input = THORSwapSwapInput.with {
+        let input = THORChainSwapSwapInput.with {
             $0.fromChain = .bnb
             $0.fromAddress = "bnb1us47wdhfx08ch97zdueh3x3u5murfrx30jecrx"
-            $0.toAsset = THORSwapAsset.with {
+            $0.toAsset = THORChainSwapAsset.with {
                 $0.chain = .btc
                 $0.symbol = "BTC"
                 $0.tokenID = ""
@@ -72,19 +72,19 @@ class THORSwapTests: XCTestCase {
         }
         
         // serialize input
-        let inputSerialized = try? input.serializedData()
-        XCTAssertEqual(inputSerialized!.hexString, "0803122a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372781a0708011203425443222a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070382a2a626e62316e396573787577386361377473386c367736366b64683830307330396d7376756c36766c73653a08313030303030303042083130303030303030")
+        let inputSerialized = try input.serializedData()
+        XCTAssertEqual(inputSerialized.hexString, "0803122a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372781a0708011203425443222a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070382a2a626e62316e396573787577386361377473386c367736366b64683830307330396d7376756c36766c73653a08313030303030303042083130303030303030")
 
         // invoke swap
-        let outputData = THORSwap.buildSwap(input: inputSerialized!)
+        let outputData = THORChainSwap.buildSwap(input: inputSerialized)
         XCTAssertEqual(outputData.count, 149)
 
         // parse result in proto
-        let outputProto = try? THORSwapSwapOutput(serializedData: outputData)
-        XCTAssertEqual(outputProto!.fromChain, TW_THORSwap_Proto_Chain.bnb)
-        XCTAssertEqual(outputProto!.toChain, TW_THORSwap_Proto_Chain.btc)
-        XCTAssertEqual(outputProto!.error.code, TW_THORSwap_Proto_ErrorCode.ok)
-        var txInput = outputProto!.binance
+        let outputProto = try THORChainSwapSwapOutput(serializedData: outputData)
+        XCTAssertEqual(outputProto.fromChain, TW_THORChainSwap_Proto_Chain.bnb)
+        XCTAssertEqual(outputProto.toChain, TW_THORChainSwap_Proto_Chain.btc)
+        XCTAssertEqual(outputProto.error.code, TW_THORChainSwap_Proto_ErrorCode.ok)
+        var txInput = outputProto.binance
 
         // set few fields before signing
         
