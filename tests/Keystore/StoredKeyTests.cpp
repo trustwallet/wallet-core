@@ -11,6 +11,7 @@
 #include "Data.h"
 #include "PrivateKey.h"
 #include "Mnemonic.h"
+#include "Bitcoin/Address.h"
 
 #include <stdexcept>
 #include <gtest/gtest.h>
@@ -417,6 +418,76 @@ TEST(StoredKey, CreateStandardEncryptionParameters) {
     // load it back
     const auto key2 = StoredKey::createWithJson(json);
     EXPECT_EQ(key2.wallet(password).getMnemonic(), string(mnemonic));
+}
+
+TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
+    auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWStoredKeyEncryptionLevelDefault);
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+    const Data& mnemo2Data = key.payload.decrypt(password);
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));
+    EXPECT_EQ(key.wallet(password).getMnemonic(), string(mnemonic));
+    EXPECT_EQ(key.accounts.size(), 0);
+
+    const auto expectedBtc1 = "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny";
+    const auto expectedSol1 = "HiipoCKL8hX2RVmJTz3vaLy34hS2zLhWWMkUWtw85TmZ";
+    const auto wallet = key.wallet(password);
+    int expectedAccounts = 0;
+
+    { // Create default Bitcoin account
+        const auto coin = TWCoinTypeBitcoin;
+
+        const auto btc1 = key.account(coin, &wallet);
+        
+        EXPECT_TRUE(btc1.has_value());
+        EXPECT_EQ(btc1->address, expectedBtc1);
+        EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
+        EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedBtc1);
+        EXPECT_EQ(key.account(coin)->address, expectedBtc1);
+    }
+    { // Create default Solana account
+        const auto coin = TWCoinTypeSolana;
+
+        const auto sol1 = key.account(coin, &wallet);
+
+        EXPECT_TRUE(sol1.has_value());
+        EXPECT_EQ(sol1->address, expectedSol1);
+        EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
+        EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedSol1);
+        EXPECT_EQ(key.account(coin)->address, expectedSol1);
+    }
+    { // Create account with alternative non-Segwit Bitcoin address
+        const auto coin = TWCoinTypeBitcoin;
+        const auto btcPrivateKey = key.privateKey(coin, password);
+        EXPECT_EQ(TW::deriveAddress(coin, btcPrivateKey), expectedBtc1);
+        const auto btcPublicKey = btcPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+        const auto p2pkhBtcAddress = Bitcoin::Address(btcPublicKey, TWCoinTypeP2pkhPrefix(coin)).string();
+        const auto expectedBtc2 = "19fUCoUeGmHRFSgFtv4hoMYatCHcifNDEy";
+        EXPECT_EQ(p2pkhBtcAddress, expectedBtc2);
+        const auto extendedPublicKey = wallet.getExtendedPublicKey(TW::purpose(coin), coin, TWHDVersionZPUB);
+        EXPECT_EQ(extendedPublicKey, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
+
+        key.addAccount(p2pkhBtcAddress, coin, TW::derivationPath(coin), extendedPublicKey);
+
+        EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
+        EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedBtc2);
+        // Now we have 2 Bitcoin addresses, 1st is returned here
+        EXPECT_EQ(key.account(coin)->address, expectedBtc1);
+    }
+    { // Create alternative Solana account with non-default derivation path
+        const auto coin = TWCoinTypeSolana;
+        const auto derivationPath2 = DerivationPath("m/44'/123'/0'");
+        const auto sol2Key = wallet.getKey(coin, derivationPath2);
+        const auto sol2 = TW::deriveAddress(coin, sol2Key);
+        const auto expectedSol2 = "6w6gohRij5nH3ReBNZRhQokkHz3hsfxKbaRERWtirYPq";
+        EXPECT_EQ(sol2, expectedSol2);
+
+        key.addAccount(sol2, coin, derivationPath2, "");
+
+        EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
+        EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedSol2);
+        // Now we have 2 Solana addresses, 1st is returned here
+        EXPECT_EQ(key.account(coin)->address, expectedSol1);
+    }
 }
 
 } // namespace TW::Keystore
