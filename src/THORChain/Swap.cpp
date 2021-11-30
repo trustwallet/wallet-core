@@ -8,7 +8,7 @@
 
 #include <TrustWalletCore/TWCoinType.h>
 #include "Coin.h"
-#include "proto/THORSwap.pb.h"
+#include "proto/THORChainSwap.pb.h"
 // BTC
 #include "Bitcoin/SigHashType.h"
 #include "../proto/Bitcoin.pb.h"
@@ -30,7 +30,7 @@
  *  https://gitlab.com/thorchain/asgardex-common/asgardex-util
  */
 
-namespace TW::THORSwap {
+namespace TW::THORChainSwap {
 
 TWCoinType chainCoinType(Chain chain) {
     switch (chain) {

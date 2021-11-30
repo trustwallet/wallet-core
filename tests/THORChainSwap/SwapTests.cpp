@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "THORSwap/Swap.h"
+#include "THORChain/Swap.h"
 #include "Bitcoin/Script.h"
 #include "Bitcoin/SegwitAddress.h"
 #include "Ethereum/Address.h"
@@ -12,7 +12,7 @@
 #include "Ethereum/ABI/ParamBase.h"
 #include "Ethereum/ABI/ParamAddress.h"
 #include "Binance/Address.h"
-#include "proto/THORSwap.pb.h"
+#include "proto/THORChainSwap.pb.h"
 #include "proto/Bitcoin.pb.h"
 #include "proto/Ethereum.pb.h"
 #include "proto/Binance.pb.h"
@@ -26,7 +26,7 @@
 
 #include <gtest/gtest.h>
 
-namespace TW::THORSwap {
+namespace TW::THORChainSwap {
 
 // Addresses for wallet 'isolate dismiss fury ... note'
 const auto Address1Btc = "bc1qpjult34k9spjfym8hss2jrwjgf0xjf40ze0pp8";
@@ -42,7 +42,7 @@ const auto VaultBnb = "bnb1n9esxuw8ca7ts8l6w66kdh800s09msvul6vlse";
 const auto RouterEth = "0x42A5Ed456650a09Dc10EBc6361A7480fDd61f27B";
 
 
-TEST(THORSwap, SwapBtcEth) {
+TEST(THORChainSwap, SwapBtcEth) {
     auto res = Swap::build(Chain::BTC, Chain::ETH, Address1Btc, "ETH", "", Address1Eth, VaultBtc, "", "1000000", "140000000000000000");
     ASSERT_EQ(std::get<1>(res), 0);
     ASSERT_EQ(std::get<2>(res), "");
@@ -95,7 +95,7 @@ TEST(THORSwap, SwapBtcEth) {
     );
 }
 
-TEST(THORSwap, SwapBtcBnb) {
+TEST(THORChainSwap, SwapBtcBnb) {
     auto res = Swap::build(Chain::BTC, Chain::BNB, Address1Btc, "BNB", "", Address1Bnb, VaultBtc, "", "200000", "140000000");
     ASSERT_EQ(std::get<1>(res), 0);
     ASSERT_EQ(std::get<2>(res), "");
@@ -165,7 +165,7 @@ Data SwapTest_ethAddressStringToData(const std::string& asString) {
     return asData;
 }
 
-TEST(THORSwap, SwapEthBnb) {
+TEST(THORChainSwap, SwapEthBnb) {
     auto res = Swap::build(Chain::ETH, Chain::BNB, Address1Eth, "BNB", "", Address1Bnb, VaultEth, RouterEth, "50000000000000000", "600003");
     ASSERT_EQ(std::get<1>(res), 0);
     ASSERT_EQ(std::get<2>(res), "");
@@ -219,7 +219,7 @@ TEST(THORSwap, SwapEthBnb) {
     EXPECT_EQ(hex(output.encoded()), "f90151038506fc23ac00830138809442a5ed456650a09dc10ebc6361a7480fdd61f27b87b1a2bc2ec50000b8e41fece7b40000000000000000000000001091c4de6a3cf09cda00abdaed42c7c3b69c83ec000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b1a2bc2ec500000000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003e535741503a424e422e424e423a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a363030303033000025a06ae104be3201baca38315352f81fac70ca4dd47339981914e64e91149813e780a066a3f0b2c44ddf5a96a38481274f623f552a593d723237d6742185f4885c0064");
 }
 
-TEST(THORSwap, SwapBnbBtc) {
+TEST(THORChainSwap, SwapBnbBtc) {
     auto res = Swap::build(Chain::BNB, Chain::BTC, Address1Bnb, "BTC", "", Address1Btc, VaultBnb, "", "10000000", "10000000");
     ASSERT_EQ(std::get<1>(res), 0);
     ASSERT_EQ(std::get<2>(res), "");
@@ -247,7 +247,7 @@ TEST(THORSwap, SwapBnbBtc) {
     EXPECT_EQ(hex(output.encoded()), "8002f0625dee0a4c2a2c87fa0a220a14e42be736e933cf8b97c26f33789a3ca6f8348cd1120a0a03424e421080ade20412220a1499730371c7c77cb81ffa76b566dcef7c1e5dc19c120a0a03424e421080ade204126a0a26eb5ae9872103ea4b4bc12dc6f36a28d2c9775e01eef44def32cc70fb54f0e4177b659dbc0e1912404836ee8659caa86771281d3f104424d95977bdedf644ec8585f1674796fde525669a6d446f72da89ee90fb0e064473b0a2159a79630e081592c52948d03d67071a40535741503a4254432e4254433a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070383a3130303030303030");
 }
 
-TEST(THORSwap, SwapBnbEth) {
+TEST(THORChainSwap, SwapBnbEth) {
     auto res = Swap::build(Chain::BNB, Chain::ETH, Address1Bnb, "ETH", "", Address1Eth, VaultBnb, "", "27000000", "123456");
     ASSERT_EQ(std::get<1>(res), 0);
     ASSERT_EQ(std::get<2>(res), "");
@@ -282,7 +282,7 @@ TEST(THORSwap, SwapBnbEth) {
     // https://etherscan.io/tx/0x8e5bb7d87e17af86e649e402bc5c182ea8c32ddaca153804679de1184e0d9747
 }
 
-TEST(THORSwap, SwapBnbRune) {
+TEST(THORChainSwap, SwapBnbRune) {
     auto res = Swap::build(Chain::BNB, Chain::THOR, Address1Bnb, "RUNE", "", Address1Thor, VaultBnb, "", "4000000", "121065076");
     ASSERT_EQ(std::get<1>(res), 0);
     ASSERT_EQ(std::get<2>(res), "");
@@ -316,7 +316,7 @@ TEST(THORSwap, SwapBnbRune) {
     // https://viewblock.io/thorchain/tx/D582E1473FE229F02F162055833C64F49FB4FF515989A4785ED7898560A448FC
 }
 
-TEST(THORSwap, SwapBnbBnbToken) {
+TEST(THORChainSwap, SwapBnbBnbToken) {
     auto res = Swap::build(
         Chain::BNB,
         Chain::BNB,
@@ -365,7 +365,7 @@ TEST(THORSwap, SwapBnbBnbToken) {
     // https://explorer.binance.org/tx/60C54C9F253B89C36A2788AB66951045E8AC5F5729597CB6C64A13013A7A54CC
 }
 
-TEST(THORSwap, Memo) {
+TEST(THORChainSwap, Memo) {
     EXPECT_EQ(Swap::buildMemo(Chain::BTC, "BTC", "", "btc123", 1234), "SWAP:BTC.BTC:btc123:1234");
     EXPECT_EQ(Swap::buildMemo(Chain::BNB, "BNB", "", "bnb123", 1234), "SWAP:BNB.BNB:bnb123:1234");
     EXPECT_EQ(Swap::buildMemo(Chain::ETH, "ETH", "", "0xaabbccdd", 1234), "=:ETH.ETH:0xaabbccdd:1234");
@@ -375,7 +375,7 @@ TEST(THORSwap, Memo) {
     EXPECT_EQ(Swap::buildMemo(Chain::BNB, "BNB", "TWT-8C2", "bnb123", 1234), "SWAP:BNB.TWT-8C2:bnb123:1234");
 }
 
-TEST(THORSwap, WrongFromAddress) {
+TEST(THORChainSwap, WrongFromAddress) {
     {
         auto res = Swap::build(Chain::BNB, Chain::ETH, "DummyAddress", "ETH", "", Address1Eth, VaultEth, "", "100000", "100000");
         EXPECT_EQ(std::get<1>(res), Proto::ErrorCode::Error_Invalid_from_address);
@@ -388,7 +388,7 @@ TEST(THORSwap, WrongFromAddress) {
     }
 }
 
-TEST(THORSwap, WrongToAddress) {
+TEST(THORChainSwap, WrongToAddress) {
     {
         auto res = Swap::build(Chain::BNB, Chain::ETH, Address1Bnb, "ETH", "", "DummyAddress", VaultEth, "", "100000", "100000");
         EXPECT_EQ(std::get<1>(res), Proto::ErrorCode::Error_Invalid_to_address);
@@ -401,13 +401,13 @@ TEST(THORSwap, WrongToAddress) {
     }
 }
 
-TEST(THORSwap, FromRuneNotSupported) {
+TEST(THORChainSwap, FromRuneNotSupported) {
     auto res = Swap::build(Chain::THOR, Chain::BNB, Address1Thor, "BNB", "", Address1Bnb, "", "", "1000", "1000");
     EXPECT_EQ(std::get<1>(res), Proto::ErrorCode::Error_Unsupported_from_chain);
     EXPECT_EQ(std::get<2>(res), "Unsupported from chain: 3");
 }
 
-TEST(THORSwap, EthInvalidVault) {
+TEST(THORChainSwap, EthInvalidVault) {
     {
         auto res = Swap::build(Chain::ETH, Chain::BNB, Address1Eth, "BNB", "", Address1Bnb, "_INVALID_ADDRESS_", RouterEth, "50000000000000000", "600003");
         EXPECT_EQ(std::get<1>(res), Proto::ErrorCode::Error_Invalid_vault_address);

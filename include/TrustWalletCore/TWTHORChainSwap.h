@@ -12,10 +12,10 @@
 TW_EXTERN_C_BEGIN
 
 TW_EXPORT_STRUCT
-struct TWTHORSwap;
+struct TWTHORChainSwap;
 
-/// Build a THORSwap transaction input. Input is SwapInput protobuf, return is SwapOutput.
+/// Build a THORChainSwap transaction input. Input is SwapInput protobuf, return is SwapOutput.
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWTHORSwapBuildSwap(TWData *_Nonnull input);
+TWData *_Nonnull TWTHORChainSwapBuildSwap(TWData *_Nonnull input);
 
 TW_EXTERN_C_END

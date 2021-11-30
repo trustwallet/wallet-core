@@ -1,4 +1,4 @@
-package com.trustwallet.core.app.blockchains.thorswap
+package com.trustwallet.core.app.blockchains.thorchainswap
 
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.toHexByteArray
@@ -9,11 +9,11 @@ import wallet.core.jni.PrivateKey
 import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType.ETHEREUM
 import wallet.core.jni.proto.Ethereum.SigningOutput
-import wallet.core.jni.proto.THORSwap
-import wallet.core.jni.THORSwap.buildSwap
+import wallet.core.jni.proto.THORChainSwap
+import wallet.core.jni.THORChainSwap.buildSwap
 import com.trustwallet.core.app.utils.Numeric
 
-class TestTHORSwap {
+class TestTHORChainSwap {
 
     init {
         System.loadLibrary("TrustWalletCore")
@@ -22,12 +22,12 @@ class TestTHORSwap {
     @Test
     fun testSwapEthBnb() {
         // prepare swap input
-        val input = THORSwap.SwapInput.newBuilder()
+        val input = THORChainSwap.SwapInput.newBuilder()
         input.apply {
-            fromChain = THORSwap.Chain.ETH
+            fromChain = THORChainSwap.Chain.ETH
             fromAddress = "0xb9f5771c27664bf2282d98e09d7f50cec7cb01a7"
-            toAsset = THORSwap.Asset.newBuilder().apply {
-                chain = THORSwap.Chain.BNB
+            toAsset = THORChainSwap.Asset.newBuilder().apply {
+                chain = THORChainSwap.Chain.BNB
                 symbol = "BNB"
                 tokenId = ""
             }.build()
@@ -47,10 +47,10 @@ class TestTHORSwap {
         assertEquals(outputData.count(), 311)
 
         // parse result in proto
-        val outputProto = THORSwap.SwapOutput.newBuilder().mergeFrom(outputData)
-        assertEquals(outputProto.fromChain, THORSwap.Chain.ETH)
-        assertEquals(outputProto.toChain, THORSwap.Chain.BNB)
-        assertEquals(outputProto.error.code, THORSwap.ErrorCode.OK)
+        val outputProto = THORChainSwap.SwapOutput.newBuilder().mergeFrom(outputData)
+        assertEquals(outputProto.fromChain, THORChainSwap.Chain.ETH)
+        assertEquals(outputProto.toChain, THORChainSwap.Chain.BNB)
+        assertEquals(outputProto.error.code, THORChainSwap.ErrorCode.OK)
         assertTrue(outputProto.hasEthereum())
         val txInput = outputProto.ethereum
 

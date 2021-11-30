@@ -4,15 +4,15 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWTHORSwap.h>
+#include <TrustWalletCore/TWTHORChainSwap.h>
 #include "Swap.h"
-#include "proto/THORSwap.pb.h"
+#include "proto/THORChainSwap.pb.h"
 #include "Data.h"
 
-using namespace TW::THORSwap;
+using namespace TW::THORChainSwap;
 using namespace TW;
 
-TWData *_Nonnull TWTHORSwapBuildSwap(TWData *_Nonnull input) {
+TWData *_Nonnull TWTHORChainSwapBuildSwap(TWData *_Nonnull input) {
     Proto::SwapInput inputProto;
     Proto::SwapOutput outputProto;
     if (!inputProto.ParseFromArray(TWDataBytes(input), static_cast<int>(TWDataSize(input)))) {

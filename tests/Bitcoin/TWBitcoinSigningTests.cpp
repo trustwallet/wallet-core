@@ -1625,7 +1625,7 @@ TEST(BitcoinSigning, SignP2TR_5df51e) {
     );
 }
 
-TEST(BitcoinSigning, Build_OpReturn_THORSwap_eb4c) {
+TEST(BitcoinSigning, Build_OpReturn_THORChainSwap_eb4c) {
     auto coin = TWCoinTypeBitcoin;
     auto ownAddress = "bc1q7s0a2l4aguksehx8hf93hs9yggl6njxds6m02g";
     auto toAddress = "bc1qxu5a8gtnjxw3xwdlmr2gl9d76h9fysu3zl656e";
@@ -1689,7 +1689,7 @@ TEST(BitcoinSigning, Build_OpReturn_THORSwap_eb4c) {
     );
 }
 
-TEST(BitcoinSigning, Sign_OpReturn_THORSwap) {
+TEST(BitcoinSigning, Sign_OpReturn_THORChainSwap) {
     PrivateKey privateKey = PrivateKey(parse_hex("6bd4096fa6f08bd3af2b437244ba0ca2d35045c5233b8d6796df37e61e974de5"));
     PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto ownAddress = SegwitAddress(publicKey, 0, "bc");
