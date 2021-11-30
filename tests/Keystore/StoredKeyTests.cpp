@@ -443,6 +443,8 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedBtc1);
         EXPECT_EQ(key.account(coin)->address, expectedBtc1);
+        EXPECT_EQ(key.getAccounts(coin).size(), 1);
+        EXPECT_EQ(key.getAccounts(coin)[0].address, expectedBtc1);
     }
     { // Create default Solana account
         const auto coin = TWCoinTypeSolana;
@@ -454,6 +456,8 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedSol1);
         EXPECT_EQ(key.account(coin)->address, expectedSol1);
+        EXPECT_EQ(key.getAccounts(coin).size(), 1);
+        EXPECT_EQ(key.getAccounts(coin)[0].address, expectedSol1);
     }
     { // Create account with alternative non-Segwit Bitcoin address
         const auto coin = TWCoinTypeBitcoin;
@@ -472,6 +476,9 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedBtc2);
         // Now we have 2 Bitcoin addresses, 1st is returned here
         EXPECT_EQ(key.account(coin)->address, expectedBtc1);
+        EXPECT_EQ(key.getAccounts(coin).size(), 2);
+        EXPECT_EQ(key.getAccounts(coin)[0].address, expectedBtc1);
+        EXPECT_EQ(key.getAccounts(coin)[1].address, expectedBtc2);
     }
     { // Create alternative Solana account with non-default derivation path
         const auto coin = TWCoinTypeSolana;
@@ -487,6 +494,9 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedSol2);
         // Now we have 2 Solana addresses, 1st is returned here
         EXPECT_EQ(key.account(coin)->address, expectedSol1);
+        EXPECT_EQ(key.getAccounts(coin).size(), 2);
+        EXPECT_EQ(key.getAccounts(coin)[0].address, expectedSol1);
+        EXPECT_EQ(key.getAccounts(coin)[1].address, expectedSol2);
     }
 }
 

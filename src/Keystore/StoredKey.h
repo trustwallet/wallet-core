@@ -16,6 +16,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace TW::Keystore {
 
@@ -69,13 +70,16 @@ public:
     /// @throws std::invalid_argument if this key is of a type other than `mnemonicPhrase`.
     const HDWallet wallet(const Data& password) const;
 
-    /// Returns the account for a specific coin, creating it if necessary and
-    /// the provided wallet is not `nullptr`.
+    /// Returns the account for a specific coin, creating it if none exists and the provided wallet is not `nullptr`.
+    /// In case of muliple accounts, the first one is returned.
     std::optional<const Account> account(TWCoinType coin, const HDWallet* wallet);
 
-    /// Returns the account for a specific coin if it exists.
+    /// Returns the account for a specific coin if it exists.  In case of muliple accounts, the first one is returned.
     std::optional<const Account> account(TWCoinType coin) const;
     
+    /// Returns all the accounts for a specific coin: 0, 1, or more.
+    std::vector<const Account> getAccounts(TWCoinType coin) const;
+
     /// Add an account
     void addAccount(const std::string& address, TWCoinType coin, const DerivationPath& derivationPath, const std::string& extetndedPublicKey);
 

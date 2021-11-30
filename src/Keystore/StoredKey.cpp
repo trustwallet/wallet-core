@@ -104,6 +104,16 @@ std::optional<const Account> StoredKey::account(TWCoinType coin) const {
     return std::nullopt;
 }
 
+std::vector<const Account> StoredKey::getAccounts(TWCoinType coin) const {
+    std::vector<const Account> result;
+    for (auto& account : accounts) {
+        if (account.coin == coin) {
+            result.push_back(account);
+        }
+    }
+    return result;
+}
+
 std::optional<const Account> StoredKey::account(TWCoinType coin, const HDWallet* wallet) {
     if (wallet == nullptr) {
         return account(coin);
