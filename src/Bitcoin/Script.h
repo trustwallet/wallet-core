@@ -90,6 +90,9 @@ class Script {
     /// Builds a V1 pay-to-witness-program script, P2TR (from a 32-byte Schnorr public key).
     static Script buildPayToV1WitnessProgram(const Data& publicKey);
 
+    /// Builds an OP_RETURN script with given data
+    static Script buildOpReturnScript(const Data& data);
+
     /// Builds a appropriate lock script for the given
     /// address.
     static Script lockScriptForAddress(const std::string& address, enum TWCoinType coin);

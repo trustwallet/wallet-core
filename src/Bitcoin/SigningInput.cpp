@@ -29,5 +29,6 @@ SigningInput::SigningInput(const Proto::SigningInput& input) {
     if (input.has_plan()) {
         plan = TransactionPlan(input.plan());
     }
+    outputOpReturn = data(input.output_op_return());
     lockTime = input.lock_time();
 }

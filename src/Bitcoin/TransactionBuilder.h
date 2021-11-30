@@ -45,6 +45,12 @@ public:
             tx.inputs.emplace_back(utxo.outPoint, emptyScript, utxo.outPoint.sequence);
         }
 
+        // Optional OP_RETURN output
+        if (plan.outputOpReturn.size() > 0) {
+            auto lockingScriptOpReturn = Script::buildOpReturnScript(plan.outputOpReturn);
+            tx.outputs.push_back(TransactionOutput(0, lockingScriptOpReturn));
+        }
+
         return tx;
     }
 

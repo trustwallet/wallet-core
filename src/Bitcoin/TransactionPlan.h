@@ -33,6 +33,8 @@ struct TransactionPlan {
     /// Zcash branch id
     Data branchId;
 
+    Data outputOpReturn;
+
     Common::Proto::SigningError error = Common::Proto::SigningError::OK;
 
     TransactionPlan() = default;
@@ -44,6 +46,7 @@ struct TransactionPlan {
         , change(plan.change())
         , utxos(std::vector<UTXO>(plan.utxos().begin(), plan.utxos().end()))
         , branchId(plan.branch_id().begin(), plan.branch_id().end())
+        , outputOpReturn(plan.output_op_return().begin(), plan.output_op_return().end())
         , error(plan.error())
     {}
 
@@ -57,6 +60,7 @@ struct TransactionPlan {
             *plan.add_utxos() = utxo.proto();
         }
         plan.set_branch_id(branchId.data(), branchId.size());
+        plan.set_output_op_return(outputOpReturn.data(), outputOpReturn.size());
         plan.set_error(error);
         return plan;
     }
