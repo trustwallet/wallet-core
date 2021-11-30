@@ -7,6 +7,17 @@
     "decimals": 8,
     "blockchain": "Bitcoin",
     "derivationPath": "m/84'/0'/0'/0/0",
+    "otherPaths": {
+      "SAMPLEWallet": "m/84'/99'/0'/0/0",
+      "Electrum": "m/84'/2'/0'/0/0"
+    },
+    "defaultAddressFormats": "segwit",
+    "addressFormats": [
+      "SAMPLE",
+      "p2pkh",
+      "segwit",
+      "taproot"
+    ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "p2pkhPrefix": 0,
