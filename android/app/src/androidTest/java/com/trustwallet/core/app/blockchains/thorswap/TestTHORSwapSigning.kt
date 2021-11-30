@@ -55,7 +55,7 @@ class TestTHORSwap {
         val txInput = outputProto.ethereum
 
         // set few fields before signing
-        txInput.toBuilder().apply {
+        val txInputFull = txInput.toBuilder().apply {
             chainId = ByteString.copyFrom("0x01".toHexByteArray())
             nonce = ByteString.copyFrom("0x03".toHexByteArray())
             gasPrice = ByteString.copyFrom("0x06FC23AC00".toHexByteArray())
@@ -64,7 +64,7 @@ class TestTHORSwap {
         }.build()
 
         // sign and encode resulting input
-        val output = AnySigner.sign(txInput, ETHEREUM, SigningOutput.parser())
+        val output = AnySigner.sign(txInputFull, ETHEREUM, SigningOutput.parser())
 
         assertEquals(Numeric.toHexString(output.encoded.toByteArray()), "0xf90151038506fc23ac00830138809442a5ed456650a09dc10ebc6361a7480fdd61f27b87b1a2bc2ec50000b8e41fece7b40000000000000000000000001091c4de6a3cf09cda00abdaed42c7c3b69c83ec000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b1a2bc2ec500000000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003e535741503a424e422e424e423a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372783a363030303033000025a06ae104be3201baca38315352f81fac70ca4dd47339981914e64e91149813e780a066a3f0b2c44ddf5a96a38481274f623f552a593d723237d6742185f4885c0064")
     }
