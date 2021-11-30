@@ -35,7 +35,7 @@ public:
         const std::string& toTokenId,       // destination token ID, on the destination chain, in case destination is a token, empty otherwise
         const std::string& toAddress,       // destination address, on destination chain, string format
         const std::string& vaultAddress,    // ThorSwap vault, on the source chain. Should be queried afresh, as it may change
-        const std::string& routerAddress,   // ThorSwap router, only in case of Ethereum source network
+        const std::string& routerAddress,   // ThorChain router, only in case of Ethereum source network
         const std::string& fromAmount,      // The source amount, as integer in the smallest native unit of the chain
         const std::string& toAmountLimit    // The minimum accepted destination amount.  Actual destination amount will depend on current rates, limit amount can be used to prevent using very unfavorable rates.
     );

@@ -55,10 +55,10 @@ message SwapInput {
     // Destination address, on destination chain
     string to_address = 4;
 
-    // ThorSwap vault, on the source chain. Should be queried afresh, as it may change
+    // ThorChainSwap vault, on the source chain. Should be queried afresh, as it may change
     string vault_address = 5;
 
-    // ThorSwap router, only in case of Ethereum source network
+    // ThorChain router, only in case of Ethereum source network
     string router_address = 6;
 
     // The source amount, integer as string, in the smallest native unit of the chain
