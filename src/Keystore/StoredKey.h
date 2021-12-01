@@ -78,7 +78,7 @@ public:
     std::optional<const Account> account(TWCoinType coin) const;
     
     /// Returns all the accounts for a specific coin: 0, 1, or more.
-    std::vector<const Account> getAccounts(TWCoinType coin) const;
+    std::vector<Account> getAccounts(TWCoinType coin) const;
 
     /// Add an account
     void addAccount(const std::string& address, TWCoinType coin, const DerivationPath& derivationPath, const std::string& extetndedPublicKey);
