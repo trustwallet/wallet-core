@@ -172,3 +172,42 @@ TEST(CosmosSigner, SignTxJson_WithMode) {
         EXPECT_EQ(output.error(), "");
     }
 }
+
+TEST(CosmosSigner, SignIbcTransferJson) {
+    auto input = Proto::SigningInput();
+    input.set_signing_mode(Proto::JSON);
+    input.set_account_number(1037);
+    input.set_chain_id("cosmoshub-4");
+    input.set_memo("");
+    input.set_sequence(1);
+
+    Address fromAddress;
+    EXPECT_TRUE(Address::decode("cosmos1mky69cn8ektwy0845vec9upsdphktxt03gkwlx", fromAddress));
+    Address toAddress;
+    EXPECT_TRUE(Address::decode("osmo1mky69cn8ektwy0845vec9upsdphktxt0en97f5", toAddress));
+
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_transfer_tokens_message();
+    message.set_source_port("transfer");
+    message.set_source_channel("channel-141");
+    message.set_sender(fromAddress.string());
+    message.set_receiver(toAddress.string());
+    message.mutable_token()->set_denom("uatom");
+    message.mutable_token()->set_amount(100000);
+
+    auto& fee = *input.mutable_fee();
+    fee.set_gas(500000);
+    auto amountOfFee = fee.add_amounts();
+    amountOfFee->set_denom("uatom");
+    amountOfFee->set_amount(12500);
+
+    auto privateKey = parse_hex("8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(input);
+
+    EXPECT_EQ(output.json(), R"({"mode":"block","tx":{"fee":{"amount":[{"amount":"12500","denom":"uatom"}],"gas":"500000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgTransfer","value":{"receiver":"osmo1mky69cn8ektwy0845vec9upsdphktxt0en97f5","sender":"cosmos1mky69cn8ektwy0845vec9upsdphktxt03gkwlx","source_channel":"channel-141","source_port":"transfer","token":{"amount":"100000","denom":"uatom"}}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AuzvXOQ3owLGf5VGjeSzHzbpEfRn1+alK0HB4T4dVjZJ"},"signature":"Vlcg0DtgxcbnnBse1gHnDFofpzOdagdMeCa4jpOcJKNMZNcYSz5klYEgGeSmUQM+tmDXQLUoDdIP+xpOc1SPFw=="}]}})");
+    EXPECT_EQ(hex(output.signature()), "565720d03b60c5c6e79c1b1ed601e70c5a1fa7339d6a074c7826b88e939c24a34c64d7184b3e6495812019e4a651033eb660d740b5280dd20ffb1a4e73548f17");
+    EXPECT_EQ(output.serialized(), "");
+    EXPECT_EQ(output.error(), "");
+}

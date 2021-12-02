@@ -28,6 +28,15 @@ message Message {
         string type_prefix = 4;
     }
 
+    // cosmos-sdk/MsgTransfer
+    message Transfer {
+        string source_port = 1; // Usually "transfer"
+        string source_channel = 2;
+        Amount token = 3;
+        string sender = 4;
+        string receiver = 5;
+    }
+
     // cosmos-sdk/MsgDelegate to stake
     message Delegate {
         string delegator_address = 1;
@@ -67,11 +76,12 @@ message Message {
 
     oneof message_oneof {
         Send send_coins_message = 1;
-        Delegate stake_message = 2;
-        Undelegate unstake_message = 3;
-        BeginRedelegate restake_message = 4;
-        WithdrawDelegationReward withdraw_stake_reward_message = 5;
-        RawJSON raw_json_message = 6;
+        Transfer transfer_tokens_message = 2;
+        Delegate stake_message = 3;
+        Undelegate unstake_message = 4;
+        BeginRedelegate restake_message = 5;
+        WithdrawDelegationReward withdraw_stake_reward_message = 6;
+        RawJSON raw_json_message = 7;
     }
 }
 

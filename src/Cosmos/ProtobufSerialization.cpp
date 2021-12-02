@@ -49,6 +49,23 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 return any;
             }
 
+        case Proto::Message::kTransferTokensMessage:
+            {
+                assert(msg.has_transfer_tokens_message());
+                const auto& send = msg.transfer_tokens_message();
+                assert(false); // TODO add proto for transfer
+                /*
+                auto msgSend = cosmos::bank::v1beta1::MsgSend();
+                msgSend.set_from_address(send.from_address());
+                msgSend.set_to_address(send.to_address());
+                for (auto i = 0; i < send.amounts_size(); ++i) {
+                    *msgSend.add_amount() = convertCoin(send.amounts(i));
+                }
+                any.PackFrom(msgSend, ProtobufAnyNamespacePrefix);
+                return any;
+                */
+            }
+
         case Proto::Message::kStakeMessage:
             {
                 assert(msg.has_stake_message());
