@@ -28,10 +28,11 @@ message Message {
         string type_prefix = 4;
     }
 
-    // cosmos-sdk/MsgTransfer
+    // cosmos-sdk/MsgTransfer, IBC transfer
     message Transfer {
-        // IBC port, usually "transfer"
+        // IBC port, e.g. "transfer"
         string source_port = 1;
+        // IBC connection channel, e.g. "channel-141"
         string source_channel = 2;
         Amount token = 3;
         string sender = 4;

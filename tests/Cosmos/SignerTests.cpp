@@ -174,18 +174,18 @@ TEST(CosmosSigner, SignTxJson_WithMode) {
     }
 }
 
-TEST(CosmosSigner, SignIbcTransferJson) {
+TEST(CosmosSigner, SignIbcTransferProtobuf) {
     auto input = Proto::SigningInput();
-    input.set_signing_mode(Proto::JSON);
-    input.set_account_number(1037);
+    input.set_signing_mode(Proto::Protobuf);
+    input.set_account_number(546179);
     input.set_chain_id("cosmoshub-4");
     input.set_memo("");
-    input.set_sequence(1);
+    input.set_sequence(2);
 
     Address fromAddress;
     EXPECT_TRUE(Address::decode("cosmos1mky69cn8ektwy0845vec9upsdphktxt03gkwlx", fromAddress));
     Address toAddress;
-    EXPECT_TRUE(Address::decode("osmo1mky69cn8ektwy0845vec9upsdphktxt0en97f5", toAddress));
+    EXPECT_TRUE(Address::decode("osmo18s0hdnsllgcclweu9aymw4ngktr2k0rkvn7jmn", toAddress));
 
     auto msg = input.add_messages();
     auto& message = *msg->mutable_transfer_tokens_message();
@@ -194,10 +194,10 @@ TEST(CosmosSigner, SignIbcTransferJson) {
     message.set_sender(fromAddress.string());
     message.set_receiver(toAddress.string());
     message.mutable_token()->set_denom("uatom");
-    message.mutable_token()->set_amount(100000);
+    message.mutable_token()->set_amount(100000); // 0.1 ATOM
     message.set_timeout_height_revision_number(1);
-    message.set_timeout_height_revision_height(2189581);
-    message.set_timeout_timestamp(3600000000000l);
+    message.set_timeout_height_revision_height(8800000);
+    message.set_timeout_timestamp(0);
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(500000);
@@ -206,6 +206,53 @@ TEST(CosmosSigner, SignIbcTransferJson) {
     amountOfFee->set_amount(12500);
 
     auto privateKey = parse_hex("8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af");
+    EXPECT_EQ(Cosmos::Address(TWCoinTypeCosmos, PrivateKey(privateKey).getPublicKey(TWPublicKeyTypeSECP256k1)).string(), "cosmos1mky69cn8ektwy0845vec9upsdphktxt03gkwlx");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(input);
+
+    // https://www.mintscan.io/cosmos/txs/817101F3D96314AD028733248B28BAFAD535024D7D2C8875D3FE31DC159F096B
+    // curl -H 'Content-Type: application/json' --data-binary '{"tx_bytes": "Cr4BCr...1yKOU=", "mode": "BROADCAST_MODE_BLOCK"}' https://api.cosmos.network/cosmos/tx/v1beta1/txs 
+    // also similar TX: BCDAC36B605576C8182C2829C808B30A69CAD4959D5ED1E6FF9984ABF280D603
+    EXPECT_EQ(output.serialized(), "Cr4BCrsBCikvaWJjLmFwcGxpY2F0aW9ucy50cmFuc2Zlci52MS5Nc2dUcmFuc2ZlchKNAQoIdHJhbnNmZXISC2NoYW5uZWwtMTQxGg8KBXVhdG9tEgYxMDAwMDAiLWNvc21vczFta3k2OWNuOGVrdHd5MDg0NXZlYzl1cHNkcGhrdHh0MDNna3dseCorb3NtbzE4czBoZG5zbGxnY2Nsd2V1OWF5bXc0bmdrdHIyazBya3ZuN2ptbjIHCAEQgI6ZBBJoClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiEC7O9c5DejAsZ/lUaN5LMfNukR9GfX5qUrQcHhPh1WNkkSBAoCCAEYAhIUCg4KBXVhdG9tEgUxMjUwMBCgwh4aQK0HIWdFMk+C6Gi1KG/vELe1ffcc1aEWUIqz2t/ZhwqNNHxUUSp27wteiugHEMVTEIOBhs84t2gIcT/nD/1yKOU=");
+    EXPECT_EQ(hex(output.signature()), "ad07216745324f82e868b5286fef10b7b57df71cd5a116508ab3dadfd9870a8d347c54512a76ef0b5e8ae80710c55310838186cf38b76808713fe70ffd7228e5");
+    EXPECT_EQ(output.json(), "");
+    EXPECT_EQ(output.error(), "");
+}
+
+TEST(CosmosSigner, SignIbcTransferJson) {
+    auto input = Proto::SigningInput();
+    input.set_signing_mode(Proto::JSON);
+    input.set_account_number(546179);
+    input.set_chain_id("cosmoshub-4");
+    input.set_memo("");
+    input.set_sequence(2);
+
+    Address fromAddress;
+    EXPECT_TRUE(Address::decode("cosmos1mky69cn8ektwy0845vec9upsdphktxt03gkwlx", fromAddress));
+    Address toAddress;
+    EXPECT_TRUE(Address::decode("osmo18s0hdnsllgcclweu9aymw4ngktr2k0rkvn7jmn", toAddress));
+
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_transfer_tokens_message();
+    message.set_source_port("transfer");
+    message.set_source_channel("channel-141");
+    message.set_sender(fromAddress.string());
+    message.set_receiver(toAddress.string());
+    message.mutable_token()->set_denom("uatom");
+    message.mutable_token()->set_amount(100000); // 0.1 ATOM
+    message.set_timeout_height_revision_number(1);
+    message.set_timeout_height_revision_height(8800000);
+    message.set_timeout_timestamp(0);
+
+    auto& fee = *input.mutable_fee();
+    fee.set_gas(500000);
+    auto amountOfFee = fee.add_amounts();
+    amountOfFee->set_denom("uatom");
+    amountOfFee->set_amount(12500);
+
+    auto privateKey = parse_hex("8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af");
+    EXPECT_EQ(Cosmos::Address(TWCoinTypeCosmos, PrivateKey(privateKey).getPublicKey(TWPublicKeyTypeSECP256k1)).string(), "cosmos1mky69cn8ektwy0845vec9upsdphktxt03gkwlx");
     input.set_private_key(privateKey.data(), privateKey.size());
 
     auto output = Signer::sign(input);
@@ -228,15 +275,15 @@ TEST(CosmosSigner, SignIbcTransferJson) {
                     {
                         "type": "cosmos-sdk/MsgTransfer",
                         "value": {
-                            "receiver": "osmo1mky69cn8ektwy0845vec9upsdphktxt0en97f5",
+                            "receiver": "osmo18s0hdnsllgcclweu9aymw4ngktr2k0rkvn7jmn",
                             "sender": "cosmos1mky69cn8ektwy0845vec9upsdphktxt03gkwlx",
                             "source_channel": "channel-141",
                             "source_port": "transfer",
                             "timeout_height": {
-                                "revision_height": 2189581,
+                                "revision_height": 8800000,
                                 "revision_number": 1
                             },
-                            "timeout_timestamp": 3600000000000,
+                            "timeout_timestamp": 0,
                             "token": {
                                 "amount": "100000",
                                 "denom": "uatom"
@@ -250,55 +297,11 @@ TEST(CosmosSigner, SignIbcTransferJson) {
                             "type": "tendermint/PubKeySecp256k1",
                             "value": "AuzvXOQ3owLGf5VGjeSzHzbpEfRn1+alK0HB4T4dVjZJ"
                         },
-                        "signature": "FVPvEWjv1fnUvoSu37/ORIihtRQOwkbl+fVAM+MHWb4TO0IAmAekUI4dSaR8hmAEK6z//KuuRD6G/GVI/H1ATA=="
+                        "signature": "LgqzOQKhWkoRGEiIZddSESMtL2gyuqraR68Ah8DZpFE+stDtndFVFi7QPFP6/Cp+Hbx1uHo96YW3OAD60c10Ow=="
                     }
                 ]
             }
         }
     )");
-    EXPECT_EQ(hex(output.signature()), "1553ef1168efd5f9d4be84aedfbfce4488a1b5140ec246e5f9f54033e30759be133b42009807a4508e1d49a47c8660042bacfffcabae443e86fc6548fc7d404c");
-    EXPECT_EQ(output.serialized(), "");
-    EXPECT_EQ(output.error(), "");
-}
-
-TEST(CosmosSigner, SignIbcTransferProtobuf) {
-    auto input = Proto::SigningInput();
-    input.set_signing_mode(Proto::Protobuf);
-    input.set_account_number(1037);
-    input.set_chain_id("cosmoshub-4");
-    input.set_memo("");
-    input.set_sequence(1);
-
-    Address fromAddress;
-    EXPECT_TRUE(Address::decode("cosmos1mky69cn8ektwy0845vec9upsdphktxt03gkwlx", fromAddress));
-    Address toAddress;
-    EXPECT_TRUE(Address::decode("osmo1mky69cn8ektwy0845vec9upsdphktxt0en97f5", toAddress));
-
-    auto msg = input.add_messages();
-    auto& message = *msg->mutable_transfer_tokens_message();
-    message.set_source_port("transfer");
-    message.set_source_channel("channel-141");
-    message.set_sender(fromAddress.string());
-    message.set_receiver(toAddress.string());
-    message.mutable_token()->set_denom("uatom");
-    message.mutable_token()->set_amount(100000);
-    message.set_timeout_height_revision_number(1);
-    message.set_timeout_height_revision_height(2189581);
-    message.set_timeout_timestamp(3600000000000l);
-
-    auto& fee = *input.mutable_fee();
-    fee.set_gas(500000);
-    auto amountOfFee = fee.add_amounts();
-    amountOfFee->set_denom("uatom");
-    amountOfFee->set_amount(12500);
-
-    auto privateKey = parse_hex("8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af");
-    input.set_private_key(privateKey.data(), privateKey.size());
-
-    auto output = Signer::sign(input);
-
-    EXPECT_EQ(output.serialized(), "CsUBCsIBCikvaWJjLmFwcGxpY2F0aW9ucy50cmFuc2Zlci52MS5Nc2dUcmFuc2ZlchKUAQoIdHJhbnNmZXISC2NoYW5uZWwtMTQxGg8KBXVhdG9tEgYxMDAwMDAiLWNvc21vczFta3k2OWNuOGVrdHd5MDg0NXZlYzl1cHNkcGhrdHh0MDNna3dseCorb3NtbzFta3k2OWNuOGVrdHd5MDg0NXZlYzl1cHNkcGhrdHh0MGVuOTdmNTIHCAEQjdKFATiAwOKF42gSaApQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAuzvXOQ3owLGf5VGjeSzHzbpEfRn1+alK0HB4T4dVjZJEgQKAggBGAESFAoOCgV1YXRvbRIFMTI1MDAQoMIeGkDtUjFDrjcRrpb8OIGs5zPStQNUJXT9qeca1f0RVpsJ2zLdu42M+mcsTKiF8YmRC0E2P3eC9N6gBGAZDnJMfjpz");
-    EXPECT_EQ(hex(output.signature()), "ed523143ae3711ae96fc3881ace733d2b503542574fda9e71ad5fd11569b09db32ddbb8d8cfa672c4ca885f189910b41363f7782f4dea00460190e724c7e3a73");
-    EXPECT_EQ(output.json(), "");
     EXPECT_EQ(output.error(), "");
 }
