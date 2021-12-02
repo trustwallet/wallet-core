@@ -211,3 +211,42 @@ TEST(CosmosSigner, SignIbcTransferJson) {
     EXPECT_EQ(output.serialized(), "");
     EXPECT_EQ(output.error(), "");
 }
+
+TEST(CosmosSigner, SignIbcTransferProtobuf) {
+    auto input = Proto::SigningInput();
+    input.set_signing_mode(Proto::Protobuf);
+    input.set_account_number(1037);
+    input.set_chain_id("cosmoshub-4");
+    input.set_memo("");
+    input.set_sequence(1);
+
+    Address fromAddress;
+    EXPECT_TRUE(Address::decode("cosmos1mky69cn8ektwy0845vec9upsdphktxt03gkwlx", fromAddress));
+    Address toAddress;
+    EXPECT_TRUE(Address::decode("osmo1mky69cn8ektwy0845vec9upsdphktxt0en97f5", toAddress));
+
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_transfer_tokens_message();
+    message.set_source_port("transfer");
+    message.set_source_channel("channel-141");
+    message.set_sender(fromAddress.string());
+    message.set_receiver(toAddress.string());
+    message.mutable_token()->set_denom("uatom");
+    message.mutable_token()->set_amount(100000);
+
+    auto& fee = *input.mutable_fee();
+    fee.set_gas(500000);
+    auto amountOfFee = fee.add_amounts();
+    amountOfFee->set_denom("uatom");
+    amountOfFee->set_amount(12500);
+
+    auto privateKey = parse_hex("8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(input);
+
+    EXPECT_EQ(output.serialized(), "CrcBCrQBCikvaWJjLmFwcGxpY2F0aW9ucy50cmFuc2Zlci52MS5Nc2dUcmFuc2ZlchKGAQoIdHJhbnNmZXISC2NoYW5uZWwtMTQxGg8KBXVhdG9tEgYxMDAwMDAiLWNvc21vczFta3k2OWNuOGVrdHd5MDg0NXZlYzl1cHNkcGhrdHh0MDNna3dseCorb3NtbzFta3k2OWNuOGVrdHd5MDg0NXZlYzl1cHNkcGhrdHh0MGVuOTdmNTIAEmgKUApGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQLs71zkN6MCxn+VRo3ksx826RH0Z9fmpStBweE+HVY2SRIECgIIARgBEhQKDgoFdWF0b20SBTEyNTAwEKDCHhpAi/bh0G4zABR62EUCt3C2yj9WvC1afsEvEhAdk9JcZm03MuoK0MCT09qbyIQVgoRASOgWjodUiCBa0P39zCcXMQ==");
+    EXPECT_EQ(hex(output.signature()), "8bf6e1d06e3300147ad84502b770b6ca3f56bc2d5a7ec12f12101d93d25c666d3732ea0ad0c093d3da9bc8841582844048e8168e875488205ad0fdfdcc271731");
+    EXPECT_EQ(output.json(), "");
+    EXPECT_EQ(output.error(), "");
+}

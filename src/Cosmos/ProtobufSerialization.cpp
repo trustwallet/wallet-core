@@ -12,6 +12,7 @@
 #include "Protobuf/staking_tx.pb.h"
 #include "Protobuf/tx.pb.h"
 #include "Protobuf/crypto_secp256k1_keys.pb.h"
+#include "Protobuf/ibc_applications_transfer_tx.pb.h"
 
 #include "PrivateKey.h"
 #include "Data.h"
@@ -52,18 +53,18 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
         case Proto::Message::kTransferTokensMessage:
             {
                 assert(msg.has_transfer_tokens_message());
-                const auto& send = msg.transfer_tokens_message();
-                assert(false); // TODO add proto for transfer
-                /*
-                auto msgSend = cosmos::bank::v1beta1::MsgSend();
-                msgSend.set_from_address(send.from_address());
-                msgSend.set_to_address(send.to_address());
-                for (auto i = 0; i < send.amounts_size(); ++i) {
-                    *msgSend.add_amount() = convertCoin(send.amounts(i));
-                }
-                any.PackFrom(msgSend, ProtobufAnyNamespacePrefix);
+                const auto& transfer = msg.transfer_tokens_message();
+                auto msgTransfer = ibc::applications::transfer::v1::MsgTransfer();
+                msgTransfer.set_source_port(transfer.source_port());
+                msgTransfer.set_source_channel(transfer.source_channel());
+                *msgTransfer.mutable_token() = convertCoin(transfer.token());
+                msgTransfer.set_sender(transfer.sender());
+                msgTransfer.set_receiver(transfer.receiver());
+                msgTransfer.mutable_timeout_height()->set_revision_number(0);
+                msgTransfer.mutable_timeout_height()->set_revision_height(0);
+                msgTransfer.set_timeout_timestamp(0);
+                any.PackFrom(msgTransfer, ProtobufAnyNamespacePrefix);
                 return any;
-                */
             }
 
         case Proto::Message::kStakeMessage:
