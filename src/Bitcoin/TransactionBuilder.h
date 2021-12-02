@@ -13,6 +13,7 @@
 #include <TrustWalletCore/TWCoinType.h>
 
 #include <algorithm>
+#include <iostream>
 
 namespace TW::Bitcoin {
 
@@ -77,6 +78,7 @@ public:
         for (auto i = 0; i < outputs.size(); ++i) {
             auto lockingScriptTo = Script::buildForAddress(std::get<0>(outputs[i]), coin);
             if (lockingScriptTo.empty()) {
+                std::cerr << "build locking script: " << coin << ", invalid output address:" << std::get<0>(outputs[i]) << std::endl;
                 return {};
             }
 

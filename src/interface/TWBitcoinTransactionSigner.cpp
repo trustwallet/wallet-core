@@ -121,6 +121,13 @@ TWData *_Nonnull TWBitcoinTransactionSignerMessageSegWit(TW_Bitcoin_Proto_Signin
             // But NOTICE, BCH transaction is assembled based on legacy format.
             signatureVersion = WITNESS_V0;
         }
+
+        if (i >= signer->impl.transaction.inputs.size()) {
+            // Check if inputs consistent with utxos,
+            // if not, we return NULL in case of app crash.
+            return NULL;
+        }
+
         auto sighash = signer->impl.transaction.getPreImage(script, i,
                                                             static_cast<TWBitcoinSigHashType>(input.hash_type()), utxo.amount(), signatureVersion);
 
