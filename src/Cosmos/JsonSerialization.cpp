@@ -95,7 +95,12 @@ static json messageTransfer(const Proto::Message_Transfer& message) {
             {"source_channel", message.source_channel()},
             {"token", amountJSON(message.token())},
             {"sender", message.sender()},
-            {"receiver", message.receiver()}
+            {"receiver", message.receiver()},
+            {"timeout_height", {
+                {"revision_number", message.timeout_height_revision_number()},
+                {"revision_height", message.timeout_height_revision_height()}
+            }},
+            {"timeout_timestamp", message.timeout_timestamp()}
         }}
     };
 }

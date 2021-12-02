@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,6 +10,7 @@
 #include "proto/Cosmos.pb.h"
 #include "Cosmos/Address.h"
 #include "Cosmos/Signer.h"
+#include "../interface/TWTestUtilities.h"
 
 #include <gtest/gtest.h>
 #include <google/protobuf/util/json_util.h>
@@ -194,6 +195,9 @@ TEST(CosmosSigner, SignIbcTransferJson) {
     message.set_receiver(toAddress.string());
     message.mutable_token()->set_denom("uatom");
     message.mutable_token()->set_amount(100000);
+    message.set_timeout_height_revision_number(1);
+    message.set_timeout_height_revision_height(2189581);
+    message.set_timeout_timestamp(3600000000000l);
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(500000);
@@ -206,8 +210,53 @@ TEST(CosmosSigner, SignIbcTransferJson) {
 
     auto output = Signer::sign(input);
 
-    EXPECT_EQ(output.json(), R"({"mode":"block","tx":{"fee":{"amount":[{"amount":"12500","denom":"uatom"}],"gas":"500000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgTransfer","value":{"receiver":"osmo1mky69cn8ektwy0845vec9upsdphktxt0en97f5","sender":"cosmos1mky69cn8ektwy0845vec9upsdphktxt03gkwlx","source_channel":"channel-141","source_port":"transfer","token":{"amount":"100000","denom":"uatom"}}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AuzvXOQ3owLGf5VGjeSzHzbpEfRn1+alK0HB4T4dVjZJ"},"signature":"Vlcg0DtgxcbnnBse1gHnDFofpzOdagdMeCa4jpOcJKNMZNcYSz5klYEgGeSmUQM+tmDXQLUoDdIP+xpOc1SPFw=="}]}})");
-    EXPECT_EQ(hex(output.signature()), "565720d03b60c5c6e79c1b1ed601e70c5a1fa7339d6a074c7826b88e939c24a34c64d7184b3e6495812019e4a651033eb660d740b5280dd20ffb1a4e73548f17");
+    assertJSONEqual(output.json(), R"(
+        {
+            "mode": "block",
+            "tx": {
+                "fee": {
+                    "amount": [
+                        {
+                            "amount": "12500",
+                            "denom": "uatom"
+                        }
+                    ],
+                    "gas": "500000"
+                },
+                "memo": "",
+                "msg": [
+                    {
+                        "type": "cosmos-sdk/MsgTransfer",
+                        "value": {
+                            "receiver": "osmo1mky69cn8ektwy0845vec9upsdphktxt0en97f5",
+                            "sender": "cosmos1mky69cn8ektwy0845vec9upsdphktxt03gkwlx",
+                            "source_channel": "channel-141",
+                            "source_port": "transfer",
+                            "timeout_height": {
+                                "revision_height": 2189581,
+                                "revision_number": 1
+                            },
+                            "timeout_timestamp": 3600000000000,
+                            "token": {
+                                "amount": "100000",
+                                "denom": "uatom"
+                            }
+                        }
+                    }
+                ],
+                "signatures": [
+                    {
+                        "pub_key": {
+                            "type": "tendermint/PubKeySecp256k1",
+                            "value": "AuzvXOQ3owLGf5VGjeSzHzbpEfRn1+alK0HB4T4dVjZJ"
+                        },
+                        "signature": "FVPvEWjv1fnUvoSu37/ORIihtRQOwkbl+fVAM+MHWb4TO0IAmAekUI4dSaR8hmAEK6z//KuuRD6G/GVI/H1ATA=="
+                    }
+                ]
+            }
+        }
+    )");
+    EXPECT_EQ(hex(output.signature()), "1553ef1168efd5f9d4be84aedfbfce4488a1b5140ec246e5f9f54033e30759be133b42009807a4508e1d49a47c8660042bacfffcabae443e86fc6548fc7d404c");
     EXPECT_EQ(output.serialized(), "");
     EXPECT_EQ(output.error(), "");
 }
@@ -233,6 +282,9 @@ TEST(CosmosSigner, SignIbcTransferProtobuf) {
     message.set_receiver(toAddress.string());
     message.mutable_token()->set_denom("uatom");
     message.mutable_token()->set_amount(100000);
+    message.set_timeout_height_revision_number(1);
+    message.set_timeout_height_revision_height(2189581);
+    message.set_timeout_timestamp(3600000000000l);
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(500000);
@@ -245,8 +297,8 @@ TEST(CosmosSigner, SignIbcTransferProtobuf) {
 
     auto output = Signer::sign(input);
 
-    EXPECT_EQ(output.serialized(), "CrcBCrQBCikvaWJjLmFwcGxpY2F0aW9ucy50cmFuc2Zlci52MS5Nc2dUcmFuc2ZlchKGAQoIdHJhbnNmZXISC2NoYW5uZWwtMTQxGg8KBXVhdG9tEgYxMDAwMDAiLWNvc21vczFta3k2OWNuOGVrdHd5MDg0NXZlYzl1cHNkcGhrdHh0MDNna3dseCorb3NtbzFta3k2OWNuOGVrdHd5MDg0NXZlYzl1cHNkcGhrdHh0MGVuOTdmNTIAEmgKUApGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQLs71zkN6MCxn+VRo3ksx826RH0Z9fmpStBweE+HVY2SRIECgIIARgBEhQKDgoFdWF0b20SBTEyNTAwEKDCHhpAi/bh0G4zABR62EUCt3C2yj9WvC1afsEvEhAdk9JcZm03MuoK0MCT09qbyIQVgoRASOgWjodUiCBa0P39zCcXMQ==");
-    EXPECT_EQ(hex(output.signature()), "8bf6e1d06e3300147ad84502b770b6ca3f56bc2d5a7ec12f12101d93d25c666d3732ea0ad0c093d3da9bc8841582844048e8168e875488205ad0fdfdcc271731");
+    EXPECT_EQ(output.serialized(), "CsUBCsIBCikvaWJjLmFwcGxpY2F0aW9ucy50cmFuc2Zlci52MS5Nc2dUcmFuc2ZlchKUAQoIdHJhbnNmZXISC2NoYW5uZWwtMTQxGg8KBXVhdG9tEgYxMDAwMDAiLWNvc21vczFta3k2OWNuOGVrdHd5MDg0NXZlYzl1cHNkcGhrdHh0MDNna3dseCorb3NtbzFta3k2OWNuOGVrdHd5MDg0NXZlYzl1cHNkcGhrdHh0MGVuOTdmNTIHCAEQjdKFATiAwOKF42gSaApQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAuzvXOQ3owLGf5VGjeSzHzbpEfRn1+alK0HB4T4dVjZJEgQKAggBGAESFAoOCgV1YXRvbRIFMTI1MDAQoMIeGkDtUjFDrjcRrpb8OIGs5zPStQNUJXT9qeca1f0RVpsJ2zLdu42M+mcsTKiF8YmRC0E2P3eC9N6gBGAZDnJMfjpz");
+    EXPECT_EQ(hex(output.signature()), "ed523143ae3711ae96fc3881ace733d2b503542574fda9e71ad5fd11569b09db32ddbb8d8cfa672c4ca885f189910b41363f7782f4dea00460190e724c7e3a73");
     EXPECT_EQ(output.json(), "");
     EXPECT_EQ(output.error(), "");
 }

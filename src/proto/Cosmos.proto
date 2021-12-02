@@ -30,11 +30,18 @@ message Message {
 
     // cosmos-sdk/MsgTransfer
     message Transfer {
-        string source_port = 1; // Usually "transfer"
+        // IBC port, usually "transfer"
+        string source_port = 1;
         string source_channel = 2;
         Amount token = 3;
         string sender = 4;
         string receiver = 5;
+        // Timeout height, the revision that the client is currently on, 0 for none
+        uint64 timeout_height_revision_number = 6;
+        // Timeout height, the height within the given revision, 0 for none
+        uint64 timeout_height_revision_height = 7;
+        // Timeout timestamp (in nanoseconds) relative to the current block timestamp, 0 for none
+        uint64 timeout_timestamp = 8;
     }
 
     // cosmos-sdk/MsgDelegate to stake
