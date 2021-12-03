@@ -3,9 +3,15 @@
 # This script runs the iOS tests.
 
 set -e
+set -o pipefail
 
 pushd swift
-xcodegen
-pod install
-fastlane scan --workspace TrustWalletCore.xcworkspace --scheme WalletCore --sdk iphonesimulator --device='iPhone 13' --clean
+
+xcodegen && pod install
+xcodebuild -workspace TrustWalletCore.xcworkspace \
+	-scheme WalletCore \
+	-sdk iphonesimulator \
+	-destination "platform=iOS Simulator,name=iPhone 13" \
+	test | xcbeautify
+
 popd
