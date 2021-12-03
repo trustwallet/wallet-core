@@ -37,22 +37,29 @@ TWData *_Nonnull TWStellarSignerMessage(TW_Stellar_Proto_SigningInput inputData)
 
     const auto signer = Signer(input);
 
-    auto account = Address(input.account());
-    auto encoded = signer.encode(input);
+    try {
+        auto account = Address(input.account());
+        auto encoded = signer.encode(input);
 
-    auto encodedWithHeaders = Data();
-    auto publicNetwork = input.passphrase(); // Header
-    auto passphrase = Hash::sha256(publicNetwork);
-    encodedWithHeaders.insert(encodedWithHeaders.end(), passphrase.begin(), passphrase.end());
-    auto transactionType = Data{0, 0, 0, 2}; // Header
-    encodedWithHeaders.insert(encodedWithHeaders.end(), transactionType.begin(),
-                              transactionType.end());
-    encodedWithHeaders.insert(encodedWithHeaders.end(), encoded.begin(), encoded.end());
+        auto encodedWithHeaders = Data();
+        auto publicNetwork = input.passphrase(); // Header
+        auto passphrase = Hash::sha256(publicNetwork);
+        encodedWithHeaders.insert(encodedWithHeaders.end(), passphrase.begin(), passphrase.end());
+        auto transactionType = Data{0, 0, 0, 2}; // Header
+        encodedWithHeaders.insert(encodedWithHeaders.end(), transactionType.begin(),
+                                  transactionType.end());
+        encodedWithHeaders.insert(encodedWithHeaders.end(), encoded.begin(), encoded.end());
 
-    auto hash = Hash::sha256(encodedWithHeaders);
-    auto data = Data(hash.begin(), hash.end());
+        auto hash = Hash::sha256(encodedWithHeaders);
+        auto data = Data(hash.begin(), hash.end());
 
-    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(data.data()), data.size());
+        return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(data.data()), data.size());
+    } catch (const std::exception& e) {
+        // Here only address class will throw exception,
+        // so if it happens, we print the account.
+        std::cerr << "Account:" << input.account() << ", Err:" << e.what() << '\n';
+        return nullptr;
+    }
 }
 
 TWString *_Nonnull TWStellarSignerTransaction(TW_Stellar_Proto_SigningInput inputData, TWData *_Nonnull signature) {
