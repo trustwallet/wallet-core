@@ -166,8 +166,10 @@ class CosmosSignerTests: XCTestCase {
                 $0.amount = 100000
                 $0.denom = "uatom"
             }
-            $0.timeoutHeightRevisionNumber = 1
-            $0.timeoutHeightRevisionHeight = 8800000
+            $0.timeoutHeight = Height.with {
+                $0.revisionNumber = 1
+                $0.revisionHeight = 8800000
+            }
             $0.timeoutTimestamp = 0
         }
 

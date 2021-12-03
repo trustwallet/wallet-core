@@ -195,8 +195,8 @@ TEST(CosmosSigner, SignIbcTransferProtobuf_817101) {
     message.set_receiver(toAddress.string());
     message.mutable_token()->set_denom("uatom");
     message.mutable_token()->set_amount(100000); // 0.1 ATOM
-    message.set_timeout_height_revision_number(1);
-    message.set_timeout_height_revision_height(8800000);
+    message.mutable_timeout_height()->set_revision_number(1);
+    message.mutable_timeout_height()->set_revision_height(8800000);
     message.set_timeout_timestamp(0);
 
     auto& fee = *input.mutable_fee();

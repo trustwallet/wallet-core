@@ -60,8 +60,8 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 *msgTransfer.mutable_token() = convertCoin(transfer.token());
                 msgTransfer.set_sender(transfer.sender());
                 msgTransfer.set_receiver(transfer.receiver());
-                msgTransfer.mutable_timeout_height()->set_revision_number(transfer.timeout_height_revision_number());
-                msgTransfer.mutable_timeout_height()->set_revision_height(transfer.timeout_height_revision_height());
+                msgTransfer.mutable_timeout_height()->set_revision_number(transfer.timeout_height().revision_number());
+                msgTransfer.mutable_timeout_height()->set_revision_height(transfer.timeout_height().revision_height());
                 msgTransfer.set_timeout_timestamp(transfer.timeout_timestamp());
                 any.PackFrom(msgTransfer, ProtobufAnyNamespacePrefix);
                 return any;
