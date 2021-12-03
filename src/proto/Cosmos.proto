@@ -41,7 +41,7 @@ message Message {
     message Transfer {
         // IBC port, e.g. "transfer"
         string source_port = 1;
-        // IBC connection channel, e.g. "channel-141", see api /ibc/applications/transfer/v1beta1/denom_traces
+        // IBC connection channel, e.g. "channel-141", see apis /ibc/applications/transfer/v1beta1/denom_traces (connections) or /node_info (own channel)
         string source_channel = 2;
         Amount token = 3;
         string sender = 4;
