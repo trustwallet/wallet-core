@@ -20,7 +20,6 @@ using string = std::string;
 namespace TW::Cosmos {
 
 const string TYPE_PREFIX_MSG_SEND = "cosmos-sdk/MsgSend";
-const string TYPE_PREFIX_MSG_TRANSFER = "cosmos-sdk/MsgTransfer";
 const string TYPE_PREFIX_MSG_DELEGATE = "cosmos-sdk/MsgDelegate";
 const string TYPE_PREFIX_MSG_UNDELEGATE = "cosmos-sdk/MsgUndelegate";
 const string TYPE_PREFIX_MSG_REDELEGATE = "cosmos-sdk/MsgBeginRedelegate";
