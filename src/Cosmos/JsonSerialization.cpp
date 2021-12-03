@@ -85,26 +85,6 @@ static json messageSend(const Proto::Message_Send& message) {
     };
 }
 
-static json messageTransfer(const Proto::Message_Transfer& message) {
-    auto typePrefix = TYPE_PREFIX_MSG_TRANSFER;
-
-    return {
-        {"type", typePrefix},
-        {"value", {
-            {"source_port", message.source_port()},
-            {"source_channel", message.source_channel()},
-            {"token", amountJSON(message.token())},
-            {"sender", message.sender()},
-            {"receiver", message.receiver()},
-            {"timeout_height", {
-                {"revision_number", message.timeout_height_revision_number()},
-                {"revision_height", message.timeout_height_revision_height()}
-            }},
-            {"timeout_timestamp", message.timeout_timestamp()}
-        }}
-    };
-}
-
 static json messageDelegate(const Proto::Message_Delegate& message) {
     auto typePrefix = message.type_prefix().empty() ? TYPE_PREFIX_MSG_DELEGATE : message.type_prefix();
 
@@ -168,8 +148,6 @@ static json messagesJSON(const Proto::SigningInput& input) {
     for (auto& msg : input.messages()) {
         if (msg.has_send_coins_message()) {
             j.push_back(messageSend(msg.send_coins_message()));
-        } else if (msg.has_transfer_tokens_message()) {
-            j.push_back(messageTransfer(msg.transfer_tokens_message()));
         } else if (msg.has_stake_message()) {
             j.push_back(messageDelegate(msg.stake_message()));
         } else if (msg.has_unstake_message()) {
@@ -180,6 +158,9 @@ static json messagesJSON(const Proto::SigningInput& input) {
             j.push_back(messageRedelegate(msg.restake_message()));
         } else if (msg.has_raw_json_message()) {
             j.push_back(messageRawJSON(msg.raw_json_message()));
+        } else if (msg.has_transfer_tokens_message()) {
+            assert(false); // not suppored, use protobuf serialization
+            return json::array();
         }
     }
     return j;
