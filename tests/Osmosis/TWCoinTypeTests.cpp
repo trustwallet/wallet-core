@@ -27,8 +27,8 @@ TEST(TWOsmosisCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeOsmosis));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeOsmosis));
     assertStringsEqual(symbol, "OSMO");
-    assertStringsEqual(txUrl, "https://www.mintscan.io/osmosis/txs/5A6E50A6F2927E4B8C87BB094D5FBF15F1287429A09111806FC44B3CD86CACA8");
-    assertStringsEqual(accUrl, "https://www.mintscan.io/osmosis/account/osmo1mky69cn8ektwy0845vec9upsdphktxt0en97f5");
+    assertStringsEqual(txUrl, "https://mintscan.io/osmosis/txs/5A6E50A6F2927E4B8C87BB094D5FBF15F1287429A09111806FC44B3CD86CACA8");
+    assertStringsEqual(accUrl, "https://mintscan.io/osmosis/account/osmo1mky69cn8ektwy0845vec9upsdphktxt0en97f5");
     assertStringsEqual(id, "osmosis");
     assertStringsEqual(name, "Osmosis");
 }

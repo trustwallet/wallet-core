@@ -340,7 +340,7 @@
     "publicKeyType": "secp256k1",
     "hrp": "cosmos",
     "explorer": {
-      "url": "https://www.mintscan.io",
+      "url": "https://mintscan.io/cosmos",
       "txPath": "/txs/",
       "accountPath": "/account/"
     },
@@ -894,7 +894,7 @@
     "publicKeyType": "secp256k1",
     "hrp": "kava",
     "explorer": {
-      "url": "https://kava.mintscan.io",
+      "url": "https://mintscan.io/kava",
       "txPath": "/txs/",
       "accountPath": "/account/",
       "sampleTx": "2988DF83FCBFAA38179D583A96734CBD071541D6768221BB23111BC8136D5E6A",
@@ -1830,7 +1830,7 @@
     "publicKeyType": "secp256k1",
     "hrp": "osmo",
     "explorer": {
-      "url": "https://www.mintscan.io/osmosis",
+      "url": "https://mintscan.io/osmosis",
       "txPath": "/txs/",
       "accountPath": "/account/",
       "sampleTx": "5A6E50A6F2927E4B8C87BB094D5FBF15F1287429A09111806FC44B3CD86CACA8",
