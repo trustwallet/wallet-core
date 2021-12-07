@@ -179,7 +179,6 @@ TEST(CosmosSigner, SignIbcTransferProtobuf_817101) {
     input.set_signing_mode(Proto::Protobuf);
     input.set_account_number(546179);
     input.set_chain_id("cosmoshub-4");
-    input.set_memo("");
     input.set_sequence(2);
 
     Address fromAddress;
@@ -197,7 +196,6 @@ TEST(CosmosSigner, SignIbcTransferProtobuf_817101) {
     message.mutable_token()->set_amount(100000); // 0.1 ATOM
     message.mutable_timeout_height()->set_revision_number(1);
     message.mutable_timeout_height()->set_revision_height(8800000);
-    message.set_timeout_timestamp(0);
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(500000);

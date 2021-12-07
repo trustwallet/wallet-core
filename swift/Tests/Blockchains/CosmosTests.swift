@@ -170,7 +170,6 @@ class CosmosSignerTests: XCTestCase {
                 $0.revisionNumber = 1
                 $0.revisionHeight = 8800000
             }
-            $0.timeoutTimestamp = 0
         }
 
         let message = CosmosMessage.with {
@@ -189,7 +188,6 @@ class CosmosSignerTests: XCTestCase {
             $0.signingMode = .protobuf;
             $0.accountNumber = 546179
             $0.chainID = "cosmoshub-4"
-            $0.memo = ""
             $0.sequence = 2
             $0.messages = [message]
             $0.fee = fee
