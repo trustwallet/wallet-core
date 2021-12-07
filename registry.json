@@ -6,18 +6,20 @@
     "symbol": "BTC",
     "decimals": 8,
     "blockchain": "Bitcoin",
-    "derivationPath": "m/84'/0'/0'/0/0",
-    "otherPaths": {
-      "SAMPLEWallet": "m/84'/99'/0'/0/0",
-      "Electrum": "m/84'/2'/0'/0/0"
+    "derivation": {
+      "path": "m/84'/0'/0'/0/0",
+      "otherPaths": {
+        "SAMPLEWallet": "m/84'/99'/0'/0/0",
+        "Electrum": "m/84'/2'/0'/0/0"
+      },
+      "defaultAddressFormats": "segwit",
+      "addressFormats": [
+        "SAMPLE",
+        "p2pkh",
+        "segwit",
+        "taproot"
+      ]
     },
-    "defaultAddressFormats": "segwit",
-    "addressFormats": [
-      "SAMPLE",
-      "p2pkh",
-      "segwit",
-      "taproot"
-    ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "p2pkhPrefix": 0,
@@ -48,7 +50,9 @@
     "symbol": "LTC",
     "decimals": 8,
     "blockchain": "Bitcoin",
-    "derivationPath": "m/84'/2'/0'/0/0",
+    "derivation": {
+      "path": "m/84'/2'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "p2pkhPrefix": 48,
@@ -77,7 +81,9 @@
     "symbol": "DOGE",
     "decimals": 8,
     "blockchain": "Bitcoin",
-    "derivationPath": "m/44'/3'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/3'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "p2pkhPrefix": 30,
@@ -105,7 +111,9 @@
     "symbol": "DASH",
     "decimals": 8,
     "blockchain": "Bitcoin",
-    "derivationPath": "m/44'/5'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/5'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "p2pkhPrefix": 76,
@@ -133,7 +141,9 @@
     "symbol": "VIA",
     "decimals": 8,
     "blockchain": "Bitcoin",
-    "derivationPath": "m/84'/14'/0'/0/0",
+    "derivation": {
+      "path": "m/84'/14'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "p2pkhPrefix": 71,
@@ -162,7 +172,9 @@
     "symbol": "GRS",
     "decimals": 8,
     "blockchain": "Bitcoin",
-    "derivationPath": "m/84'/17'/0'/0/0",
+    "derivation": {
+      "path": "m/84'/17'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "p2pkhPrefix": 36,
@@ -191,7 +203,9 @@
     "symbol": "DGB",
     "decimals": 8,
     "blockchain": "Bitcoin",
-    "derivationPath": "m/84'/20'/0'/0/0",
+    "derivation": {
+      "path": "m/84'/20'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "p2pkhPrefix": 30,
@@ -220,7 +234,9 @@
     "symbol": "MONA",
     "decimals": 8,
     "blockchain": "Bitcoin",
-    "derivationPath": "m/44'/22'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/22'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "p2pkhPrefix": 50,
@@ -249,7 +265,9 @@
     "symbol": "DCR",
     "decimals": 8,
     "blockchain": "Bitcoin",
-    "derivationPath": "m/44'/42'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/42'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "staticPrefix": 7,
@@ -278,7 +296,9 @@
     "symbol": "ETH",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/60'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/60'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -302,7 +322,9 @@
     "symbol": "ETC",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/61'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/61'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -324,7 +346,9 @@
     "symbol": "ICX",
     "decimals": 18,
     "blockchain": "Icon",
-    "derivationPath": "m/44'/74'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/74'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -346,7 +370,9 @@
     "symbol": "ATOM",
     "decimals": 6,
     "blockchain": "Cosmos",
-    "derivationPath": "m/44'/118'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/118'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "cosmos",
@@ -369,7 +395,9 @@
     "symbol": "ZEC",
     "decimals": 8,
     "blockchain": "Bitcoin",
-    "derivationPath": "m/44'/133'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/133'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "staticPrefix": 28,
@@ -399,7 +427,9 @@
     "symbol": "FIRO",
     "decimals": 8,
     "blockchain": "Bitcoin",
-    "derivationPath": "m/44'/136'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/136'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "p2pkhPrefix": 82,
@@ -427,7 +457,9 @@
     "symbol": "XRP",
     "decimals": 6,
     "blockchain": "Ripple",
-    "derivationPath": "m/44'/144'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/144'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "explorer": {
@@ -451,7 +483,9 @@
     "symbol": "BCH",
     "decimals": 8,
     "blockchain": "Bitcoin",
-    "derivationPath": "m/44'/145'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/145'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "p2pkhPrefix": 0,
@@ -480,7 +514,9 @@
     "symbol": "XLM",
     "decimals": 7,
     "blockchain": "Stellar",
-    "derivationPath": "m/44'/148'/0'",
+    "derivation": {
+      "path": "m/44'/148'/0'"
+    },
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
@@ -502,7 +538,9 @@
     "symbol": "BTG",
     "decimals": 8,
     "blockchain": "Bitcoin",
-    "derivationPath": "m/84'/156'/0'/0/0",
+    "derivation": {
+      "path": "m/84'/156'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "p2pkhPrefix": 38,
@@ -531,7 +569,9 @@
     "symbol": "NANO",
     "decimals": 30,
     "blockchain": "Nano",
-    "derivationPath": "m/44'/165'/0'",
+    "derivation": {
+      "path": "m/44'/165'/0'"
+    },
     "curve": "ed25519Blake2bNano",
     "publicKeyType": "ed25519Blake2b",
     "url": "https://nano.org",
@@ -556,7 +596,9 @@
     "symbol": "RVN",
     "decimals": 8,
     "blockchain": "Bitcoin",
-    "derivationPath": "m/44'/175'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/175'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "p2pkhPrefix": 60,
@@ -584,7 +626,9 @@
     "symbol": "POA",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/178'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/178'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -606,7 +650,9 @@
     "symbol": "EOS",
     "decimals": 4,
     "blockchain": "EOS",
-    "derivationPath": "m/44'/194'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/194'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "explorer": {
@@ -628,7 +674,9 @@
     "symbol": "TRX",
     "decimals": 6,
     "blockchain": "Tron",
-    "derivationPath": "m/44'/195'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/195'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -650,7 +698,9 @@
     "symbol": "FIO",
     "decimals": 9,
     "blockchain": "FIO",
-    "derivationPath": "m/44'/235'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/235'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "url": "https://fioprotocol.io/",
@@ -673,7 +723,9 @@
     "symbol": "NIM",
     "decimals": 5,
     "blockchain": "Nimiq",
-    "derivationPath": "m/44'/242'/0'/0'",
+    "derivation": {
+      "path": "m/44'/242'/0'/0'"
+    },
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
@@ -695,7 +747,9 @@
     "symbol": "ALGO",
     "decimals": 6,
     "blockchain": "Algorand",
-    "derivationPath": "m/44'/283'/0'/0'/0'",
+    "derivation": {
+      "path": "m/44'/283'/0'/0'/0'"
+    },
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
@@ -719,7 +773,9 @@
     "symbol": "IOTX",
     "decimals": 18,
     "blockchain": "IoTeX",
-    "derivationPath": "m/44'/304'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/304'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "hrp": "io",
@@ -742,7 +798,9 @@
     "symbol": "ZIL",
     "decimals": 12,
     "blockchain": "Zilliqa",
-    "derivationPath": "m/44'/313'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/313'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "zil",
@@ -765,7 +823,9 @@
     "symbol": "LUNA",
     "decimals": 6,
     "blockchain": "Cosmos",
-    "derivationPath": "m/44'/330'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/330'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "terra",
@@ -788,7 +848,9 @@
     "symbol": "DOT",
     "decimals": 10,
     "blockchain": "Polkadot",
-    "derivationPath": "m/44'/354'/0'/0'/0'",
+    "derivation": {
+      "path": "m/44'/354'/0'/0'/0'"
+    },
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
@@ -810,7 +872,9 @@
     "symbol": "NEAR",
     "decimals": 24,
     "blockchain": "NEAR",
-    "derivationPath": "m/44'/397'/0'",
+    "derivation": {
+      "path": "m/44'/397'/0'"
+    },
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
@@ -832,7 +896,9 @@
     "symbol": "AION",
     "decimals": 18,
     "blockchain": "Aion",
-    "derivationPath": "m/44'/425'/0'/0'/0'",
+    "derivation": {
+      "path": "m/44'/425'/0'/0'/0'"
+    },
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
@@ -854,7 +920,9 @@
     "symbol": "KSM",
     "decimals": 12,
     "blockchain": "Polkadot",
-    "derivationPath": "m/44'/434'/0'/0'/0'",
+    "derivation": {
+      "path": "m/44'/434'/0'/0'/0'"
+    },
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
@@ -878,7 +946,9 @@
     "symbol": "AE",
     "decimals": 18,
     "blockchain": "Aeternity",
-    "derivationPath": "m/44'/457'/0'/0'/0'",
+    "derivation": {
+      "path": "m/44'/457'/0'/0'/0'"
+    },
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
@@ -900,7 +970,9 @@
     "symbol": "KAVA",
     "decimals": 6,
     "blockchain": "Cosmos",
-    "derivationPath": "m/44'/459'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/459'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "kava",
@@ -925,7 +997,9 @@
     "symbol": "FIL",
     "decimals": 18,
     "blockchain": "Filecoin",
-    "derivationPath": "m/44'/461'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/461'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -949,7 +1023,9 @@
     "symbol": "BLZ",
     "decimals": 6,
     "blockchain": "Cosmos",
-    "derivationPath": "m/44'/483'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/483'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "bluzelle",
@@ -974,7 +1050,9 @@
     "coinId": 494,
     "decimals": 6,
     "blockchain": "Cosmos",
-    "derivationPath": "m/44'/494'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/494'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "band",
@@ -999,7 +1077,9 @@
     "symbol": "THETA",
     "decimals": 18,
     "blockchain": "Theta",
-    "derivationPath": "m/44'/500'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/500'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -1021,7 +1101,9 @@
     "symbol": "SOL",
     "decimals": 9,
     "blockchain": "Solana",
-    "derivationPath": "m/44'/501'/0'",
+    "derivation": {
+      "path": "m/44'/501'/0'"
+    },
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
@@ -1045,7 +1127,9 @@
     "symbol": "eGLD",
     "decimals": 18,
     "blockchain": "ElrondNetwork",
-    "derivationPath": "m/44'/508'/0'/0'/0'",
+    "derivation": {
+      "path": "m/44'/508'/0'/0'/0'"
+    },
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "hrp": "erd",
@@ -1069,7 +1153,9 @@
     "symbol": "BNB",
     "decimals": 8,
     "blockchain": "Binance",
-    "derivationPath": "m/44'/714'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/714'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "bnb",
@@ -1094,7 +1180,9 @@
     "symbol": "VET",
     "decimals": 18,
     "blockchain": "Vechain",
-    "derivationPath": "m/44'/818'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/818'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -1116,7 +1204,9 @@
     "symbol": "CLO",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/820'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/820'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -1138,7 +1228,9 @@
     "symbol": "NEO",
     "decimals": 8,
     "blockchain": "NEO",
-    "derivationPath": "m/44'/888'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/888'/0'/0/0"
+    },
     "curve": "nist256p1",
     "publicKeyType": "nist256p1",
     "explorer": {
@@ -1162,7 +1254,9 @@
     "symbol": "TOMO",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/889'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/889'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -1184,7 +1278,9 @@
     "symbol": "TT",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/1001'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/1001'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -1206,7 +1302,9 @@
     "symbol": "ONE",
     "decimals": 18,
     "blockchain": "Harmony",
-    "derivationPath": "m/44'/1023'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/1023'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "hrp": "one",
@@ -1229,7 +1327,9 @@
     "symbol": "ROSE",
     "decimals": 9,
     "blockchain": "OasisNetwork",
-    "derivationPath": "m/44'/474'/0'",
+    "derivation": {
+      "path": "m/44'/474'/0'"
+    },
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "hrp": "oasis",
@@ -1254,7 +1354,9 @@
     "symbol": "ONT",
     "decimals": 0,
     "blockchain": "Ontology",
-    "derivationPath": "m/44'/1024'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/1024'/0'/0/0"
+    },
     "curve": "nist256p1",
     "publicKeyType": "nist256p1",
     "explorer": {
@@ -1276,7 +1378,9 @@
     "symbol": "XTZ",
     "decimals": 6,
     "blockchain": "Tezos",
-    "derivationPath": "m/44'/1729'/0'/0'",
+    "derivation": {
+      "path": "m/44'/1729'/0'/0'"
+    },
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
@@ -1298,7 +1402,9 @@
     "symbol": "ADA",
     "decimals": 6,
     "blockchain": "Cardano",
-    "derivationPath": "m/1852'/1815'/0'/0/0",
+    "derivation": {
+      "path": "m/1852'/1815'/0'/0/0"
+    },
     "curve": "ed25519Extended",
     "publicKeyType": "ed25519Extended",
     "hrp": "addr",
@@ -1323,7 +1429,9 @@
     "symbol": "KIN",
     "decimals": 5,
     "blockchain": "Stellar",
-    "derivationPath": "m/44'/2017'/0'",
+    "derivation": {
+      "path": "m/44'/2017'/0'"
+    },
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
@@ -1346,7 +1454,9 @@
     "symbol": "QTUM",
     "decimals": 8,
     "blockchain": "Bitcoin",
-    "derivationPath": "m/44'/2301'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/2301'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "p2pkhPrefix": 58,
@@ -1375,7 +1485,9 @@
     "symbol": "NAS",
     "decimals": 18,
     "blockchain": "Nebulas",
-    "derivationPath": "m/44'/2718'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/2718'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -1397,7 +1509,9 @@
     "symbol": "GO",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/6060'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/6060'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -1419,7 +1533,9 @@
     "symbol": "NULS",
     "decimals": 8,
     "blockchain": "NULS",
-    "derivationPath": "m/44'/8964'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/8964'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "explorer": {
@@ -1442,7 +1558,9 @@
     "symbol": "FLUX",
     "decimals": 8,
     "blockchain": "Bitcoin",
-    "derivationPath": "m/44'/19167'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/19167'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "staticPrefix": 28,
@@ -1471,7 +1589,9 @@
     "symbol": "WAN",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/5718350'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/5718350'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -1495,7 +1615,9 @@
     "symbol": "WAVES",
     "decimals": 8,
     "blockchain": "Waves",
-    "derivationPath": "m/44'/5741564'/0'/0'/0'",
+    "derivation": {
+      "path": "m/44'/5741564'/0'/0'/0'"
+    },
     "curve": "ed25519",
     "publicKeyType": "curve25519",
     "explorer": {
@@ -1518,7 +1640,9 @@
     "symbol": "BNB",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/714'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/714'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -1544,7 +1668,9 @@
     "symbol": "BNB",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/60'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/60'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -1568,7 +1694,9 @@
     "symbol": "MATIC",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/60'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/60'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -1592,7 +1720,9 @@
     "symbol": "RUNE",
     "decimals": 8,
     "blockchain": "Cosmos",
-    "derivationPath": "m/44'/931'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/931'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "thor",
@@ -1619,7 +1749,9 @@
     "symbol": "OETH",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/60'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/60'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -1642,7 +1774,9 @@
     "symbol": "ARETH",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/60'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/60'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -1666,7 +1800,9 @@
     "symbol": "HT",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/60'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/60'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -1688,7 +1824,9 @@
     "symbol": "AVAX",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/60'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/60'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -1712,7 +1850,9 @@
     "symbol": "xDAI",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/60'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/60'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -1736,7 +1876,9 @@
     "symbol": "FTM",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/60'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/60'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -1761,7 +1903,9 @@
     "symbol": "CRO",
     "decimals": 8,
     "blockchain": "Cosmos",
-    "derivationPath": "m/44'/394'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/394'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "cro",
@@ -1786,7 +1930,9 @@
     "symbol": "CELO",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/60'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/60'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -1811,7 +1957,9 @@
     "symbol": "RON",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/60'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/60'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -1836,7 +1984,9 @@
     "symbol": "OSMO",
     "decimals": 6,
     "blockchain": "Cosmos",
-    "derivationPath": "m/44'/118'/0'/0/0",
+    "derivation": {
+      "path": "m/44'/118'/0'/0/0"
+    },
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "osmo",
