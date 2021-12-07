@@ -157,6 +157,9 @@ static json messagesJSON(const Proto::SigningInput& input) {
             j.push_back(messageRedelegate(msg.restake_message()));
         } else if (msg.has_raw_json_message()) {
             j.push_back(messageRawJSON(msg.raw_json_message()));
+        } else if (msg.has_transfer_tokens_message()) {
+            assert(false); // not suppored, use protobuf serialization
+            return json::array();
         }
     }
     return j;

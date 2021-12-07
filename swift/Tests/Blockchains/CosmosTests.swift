@@ -151,4 +151,53 @@ class CosmosSignerTests: XCTestCase {
         XCTAssertEqual(output.serialized, "CukDCqABCjcvY29zbW9zLmRpc3RyaWJ1dGlvbi52MWJldGExLk1zZ1dpdGhkcmF3RGVsZWdhdG9yUmV3YXJkEmUKLWNvc21vczEwMHJoeGNscWFzeTZ2bnJjZXJ2Z2g5OWFseDV4dzdsa2ZwNHU1NBI0Y29zbW9zdmFsb3BlcjFleTY5cjM3Z2Z4dnhnNjJzaDRyMGt0cHVjNDZwempybTg3M2FlOAqgAQo3L2Nvc21vcy5kaXN0cmlidXRpb24udjFiZXRhMS5Nc2dXaXRoZHJhd0RlbGVnYXRvclJld2FyZBJlCi1jb3Ntb3MxMDByaHhjbHFhc3k2dm5yY2VydmdoOTlhbHg1eHc3bGtmcDR1NTQSNGNvc21vc3ZhbG9wZXIxc2psbHNucmFtdGczZXd4cXd3cndqeGZnYzRuNGVmOXUybGNuajAKoAEKNy9jb3Ntb3MuZGlzdHJpYnV0aW9uLnYxYmV0YTEuTXNnV2l0aGRyYXdEZWxlZ2F0b3JSZXdhcmQSZQotY29zbW9zMTAwcmh4Y2xxYXN5NnZucmNlcnZnaDk5YWx4NXh3N2xrZnA0dTU0EjRjb3Ntb3N2YWxvcGVyMTY0OHlubHBkdzdmcWEyYXh0MHcyeXAzZms1NDJqdW5sN3JzdnE2EmUKUQpGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQJXKG7D830zVXu7qgALJ3RKyQI6qZZ8rnWhgdH/kfqdxRIECgIIARi+AhIQCgoKBXVhdG9tEgExEOC2DRpAXLgJ+8xEMUn7nkFj3ukg2V65Vh5ob7HKeCaNpMM6OPQrpW2r6askfssIFcOd8ThiBEz65bJz81Fmb5MtDTGv4g==")
         XCTAssertEqual(output.error, "")
     }
+
+    func testIbcTransfer() {
+        let privateKey = PrivateKey(data: Data(hexString: "8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af")!)!
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
+        let fromAddress = AnyAddress(publicKey: publicKey, coin: .cosmos)
+
+        let transferMessage = CosmosMessage.Transfer.with {
+            $0.sourcePort = "transfer"
+            $0.sourceChannel = "channel-141"
+            $0.sender = fromAddress.description
+            $0.receiver = "osmo18s0hdnsllgcclweu9aymw4ngktr2k0rkvn7jmn"
+            $0.token = CosmosAmount.with {
+                $0.amount = 100000
+                $0.denom = "uatom"
+            }
+            $0.timeoutHeight = CosmosHeight.with {
+                $0.revisionNumber = 1
+                $0.revisionHeight = 8800000
+            }
+        }
+
+        let message = CosmosMessage.with {
+            $0.transferTokensMessage = transferMessage
+        }
+
+        let fee = CosmosFee.with {
+            $0.gas = 500000
+            $0.amounts = [CosmosAmount.with {
+                $0.amount = 12500
+                $0.denom = "uatom"
+            }]
+        }
+
+        let input = CosmosSigningInput.with {
+            $0.signingMode = .protobuf;
+            $0.accountNumber = 546179
+            $0.chainID = "cosmoshub-4"
+            $0.sequence = 2
+            $0.messages = [message]
+            $0.fee = fee
+            $0.privateKey = privateKey.data
+        }
+
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)
+
+        // https://www.mintscan.io/cosmos/txs/817101F3D96314AD028733248B28BAFAD535024D7D2C8875D3FE31DC159F096B
+        XCTAssertEqual(output.serialized, "Cr4BCrsBCikvaWJjLmFwcGxpY2F0aW9ucy50cmFuc2Zlci52MS5Nc2dUcmFuc2ZlchKNAQoIdHJhbnNmZXISC2NoYW5uZWwtMTQxGg8KBXVhdG9tEgYxMDAwMDAiLWNvc21vczFta3k2OWNuOGVrdHd5MDg0NXZlYzl1cHNkcGhrdHh0MDNna3dseCorb3NtbzE4czBoZG5zbGxnY2Nsd2V1OWF5bXc0bmdrdHIyazBya3ZuN2ptbjIHCAEQgI6ZBBJoClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiEC7O9c5DejAsZ/lUaN5LMfNukR9GfX5qUrQcHhPh1WNkkSBAoCCAEYAhIUCg4KBXVhdG9tEgUxMjUwMBCgwh4aQK0HIWdFMk+C6Gi1KG/vELe1ffcc1aEWUIqz2t/ZhwqNNHxUUSp27wteiugHEMVTEIOBhs84t2gIcT/nD/1yKOU=")
+        XCTAssertEqual(output.error, "")
+    }
 }

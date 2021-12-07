@@ -13,6 +13,15 @@ message Fee {
     uint64 gas = 2;
 }
 
+// Block height, a revision and block height tuple.
+// A height can be compared against another Height for the purposes of updating and freezing clients
+message Height {
+    // the revision that the client is currently on
+    uint64 revision_number = 1;
+    // the height within the given revision
+    uint64 revision_height = 2;
+}
+
 enum BroadcastMode {
     BLOCK = 0; // Wait for the tx to pass/fail CheckTx, DeliverTx, and be committed in a block
     SYNC = 1;  // Wait for the tx to pass/fail CheckTx
@@ -26,6 +35,22 @@ message Message {
         string to_address = 2;
         repeated Amount amounts = 3;
         string type_prefix = 4;
+    }
+
+    // cosmos-sdk/MsgTransfer, IBC transfer
+    message Transfer {
+        // IBC port, e.g. "transfer"
+        string source_port = 1;
+        // IBC connection channel, e.g. "channel-141", see apis /ibc/applications/transfer/v1beta1/denom_traces (connections) or /node_info (own channel)
+        string source_channel = 2;
+        Amount token = 3;
+        string sender = 4;
+        string receiver = 5;
+        // Timeout block height. Either timeout height or timestamp should be set.
+        // Recommendation is to set height, to rev. 1 and block current + 1000 (see api /blocks/latest)
+        Height timeout_height = 6;
+        // Timeout timestamp (in nanoseconds) relative to the current block timestamp.  Either timeout height or timestamp should be set.
+        uint64 timeout_timestamp = 7;
     }
 
     // cosmos-sdk/MsgDelegate to stake
@@ -67,11 +92,12 @@ message Message {
 
     oneof message_oneof {
         Send send_coins_message = 1;
-        Delegate stake_message = 2;
-        Undelegate unstake_message = 3;
-        BeginRedelegate restake_message = 4;
-        WithdrawDelegationReward withdraw_stake_reward_message = 5;
-        RawJSON raw_json_message = 6;
+        Transfer transfer_tokens_message = 2;
+        Delegate stake_message = 3;
+        Undelegate unstake_message = 4;
+        BeginRedelegate restake_message = 5;
+        WithdrawDelegationReward withdraw_stake_reward_message = 6;
+        RawJSON raw_json_message = 7;
     }
 }
 
