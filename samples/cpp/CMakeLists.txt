@@ -1,13 +1,23 @@
 # Expected input configuration: WALLET_CORE: directory for TrustWalletCore build dir
 # e.g. cmake . -DWALLET_CORE=../wallet-core
-cmake_minimum_required (VERSION 3.4)
+cmake_minimum_required (VERSION 3.8 FATAL_ERROR)
 project (wallet-core-demo-cpp)
+
+if (NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang"))
+    message(FATAL_ERROR "You should use clang compiler")
+endif()
 
 set (SETUP_MESSAGE "Please provide TrustWalletCore build directory with -DWALLET_CORE.   Example: cmake . -DWALLET_CORE=../wallet-core")
 
 if (NOT WALLET_CORE)
     message (FATAL_ERROR "${SETUP_MESSAGE}")
 endif ()
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set (CMAKE_C_STANDARD 11)
+set (CMAKE_C_STANDARD_REQUIRED ON)
 
 # Include dirs:
 # ${WALLET_CORE}/include -- public TrustWalletCore includes
@@ -39,14 +49,6 @@ else ()
 	add_compile_options (-Werror=switch)
 endif ()
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-
-set (CMAKE_C_STANDARD 11)
-set (CMAKE_C_STANDARD_REQUIRED ON)
-
-set (CMAKE_CXX_STANDARD 14)
-set (CMAKE_CXX_STANDARD_REQUIRED ON)
-
 if (WIN32)
 	add_definitions(/bigobj)
 endif ()
@@ -58,6 +60,13 @@ elseif (WIN32)
 endif ()
 
 SET (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINK_FLAGS}")
+
+### Coverage processing needed because in CI TW lib may be compiled with coverage support
+option(CODE_COVERAGE "Enable coverage reporting" OFF)
+if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fprofile-arcs -ftest-coverage")
+    set(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
+endif()
 
 # sources of this exec
 add_executable (sample sample.cpp)

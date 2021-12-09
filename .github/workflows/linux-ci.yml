@@ -61,3 +61,12 @@ jobs:
       run: |
         sudo rm -rf coverage.info
         tools/coverage
+    - name: Build and run sample app
+      run: |
+        cd samples/cpp
+        cmake . -DWALLET_CORE=../../ -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON
+        make
+        ./sample || true
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
