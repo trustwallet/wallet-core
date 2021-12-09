@@ -105,7 +105,7 @@ struct CoinInfo {
     TWCurve curve;
     TWHDVersion xpubVersion;
     TWHDVersion xprvVersion;
-    std::vector<const Derivation> derivation;
+    std::vector<Derivation> derivation;
     TWPublicKeyType publicKeyType;
     byte staticPrefix;
     byte p2pkhPrefix;
