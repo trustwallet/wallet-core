@@ -273,7 +273,7 @@ TWHDVersion TW::xprvVersion(TWCoinType coin) {
 }
 
 DerivationPath TW::derivationPath(TWCoinType coin) {
-    return DerivationPath(getCoinInfo(coin).derivationPath);
+    return DerivationPath(getCoinInfo(coin).defaultDerivation().path);
 }
 
 enum TWPublicKeyType TW::publicKeyType(TWCoinType coin) {

@@ -91,6 +91,11 @@ void anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 // Return coins handled by the same dispatcher as the given coin (mostly for testing)
 const std::vector<TWCoinType> getSimilarCoinTypes(TWCoinType coinType);
 
+// Describes a derivation: path + optional format + optional name
+struct Derivation {
+    const char* path = "";
+};
+
 // Contains only simple types.
 struct CoinInfo {
     const char* id;
@@ -100,7 +105,7 @@ struct CoinInfo {
     TWCurve curve;
     TWHDVersion xpubVersion;
     TWHDVersion xprvVersion;
-    const char* derivationPath;
+    std::vector<const Derivation> derivation;
     TWPublicKeyType publicKeyType;
     byte staticPrefix;
     byte p2pkhPrefix;
@@ -113,6 +118,11 @@ struct CoinInfo {
     const char* explorerTransactionUrl;
     const char* explorerAccountUrl;
     uint32_t slip44;
+
+    // returns default derivation
+    const Derivation defaultDerivation() const {
+        return (derivation.size() > 0) ? derivation[0] : Derivation{};
+    }
 };
 
 } // namespace TW
