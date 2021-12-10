@@ -23,8 +23,8 @@ def self.camel_case(id)
 end
 
 def self.derivation_name(deriv)
-  return "Default" if deriv['name'].nil?
-  camel_case(deriv['name'])
+  return "" if deriv['name'].nil?
+  deriv['name'].downcase
 end
 
 def self.derivation_enum_name(deriv, coin)

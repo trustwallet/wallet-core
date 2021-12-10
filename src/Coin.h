@@ -54,6 +54,9 @@ DerivationPath derivationPath(TWCoinType coin);
 /// Returns an alternative derivation path for a particular coin, TWDerivationDefault for default.
 DerivationPath derivationPath(TWCoinType coin, TWDerivation derivation);
 
+/// Returns the string name of a derivation for a particular coin.
+const char* derivationName(TWCoinType coin, TWDerivation derivation);
+
 /// Returns the public key type for a particular coin.
 enum TWPublicKeyType publicKeyType(TWCoinType coin);
 
@@ -105,6 +108,7 @@ const std::vector<TWCoinType> getSimilarCoinTypes(TWCoinType coinType);
 struct Derivation {
     TWDerivation name = TWDerivationDefault;
     const char* path = "";
+    const char* nameString = "";
 };
 
 // Contains only simple types.

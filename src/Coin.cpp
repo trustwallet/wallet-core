@@ -300,6 +300,10 @@ DerivationPath TW::derivationPath(TWCoinType coin, TWDerivation derivation) {
     return DerivationPath(getCoinInfo(coin).derivationByName(derivation).path);
 }
 
+const char* TW::derivationName(TWCoinType coin, TWDerivation derivation) {
+    return getCoinInfo(coin).derivationByName(derivation).nameString;
+}
+
 enum TWPublicKeyType TW::publicKeyType(TWCoinType coin) {
     return getCoinInfo(coin).publicKeyType;
 }
