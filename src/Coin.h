@@ -17,6 +17,7 @@
 #include <TrustWalletCore/TWCurve.h>
 #include <TrustWalletCore/TWHDVersion.h>
 #include <TrustWalletCore/TWPurpose.h>
+#include <TrustWalletCore/TWDerivation.h>
 
 #include <string>
 #include <vector>
@@ -49,6 +50,9 @@ TWHDVersion xprvVersion(TWCoinType coin);
 
 /// Returns the default derivation path for a particular coin.
 DerivationPath derivationPath(TWCoinType coin);
+
+/// Returns an alternative derivation path for a particular coin, TWDerivationDefault for default.
+DerivationPath derivationPath(TWCoinType coin, TWDerivation derivation);
 
 /// Returns the public key type for a particular coin.
 enum TWPublicKeyType publicKeyType(TWCoinType coin);
@@ -93,6 +97,7 @@ const std::vector<TWCoinType> getSimilarCoinTypes(TWCoinType coinType);
 
 // Describes a derivation: path + optional format + optional name
 struct Derivation {
+    TWDerivation name = TWDerivationDefault;
     const char* path = "";
 };
 
@@ -121,7 +126,15 @@ struct CoinInfo {
 
     // returns default derivation
     const Derivation defaultDerivation() const {
-        return (derivation.size() > 0) ? derivation[0] : Derivation{};
+        return (derivation.size() > 0) ? derivation[0] : Derivation();
+    }
+    const Derivation derivationByName(TWDerivation name) const {
+        for (auto deriv: derivation) {
+            if (deriv.name == name) {
+                return deriv;
+            }
+        }
+        return Derivation();
     }
 };
 

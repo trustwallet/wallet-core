@@ -276,6 +276,10 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     return DerivationPath(getCoinInfo(coin).defaultDerivation().path);
 }
 
+DerivationPath TW::derivationPath(TWCoinType coin, TWDerivation derivation) {
+    return DerivationPath(getCoinInfo(coin).derivationByName(derivation).path);
+}
+
 enum TWPublicKeyType TW::publicKeyType(TWCoinType coin) {
     return getCoinInfo(coin).publicKeyType;
 }

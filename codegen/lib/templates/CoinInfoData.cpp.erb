@@ -52,7 +52,7 @@ const CoinInfo getCoinInfo(TWCoinType coin) {
                 TWCurve<%= format_name(coin['curve']) %>,
                 TWHDVersion<% if coin['xpub'].nil? -%>None<% else -%><%= format_name(coin['xpub']) %><% end -%>,
                 TWHDVersion<% if coin['xprv'].nil? -%>None<% else -%><%= format_name(coin['xprv']) %><% end -%>,
-                {{"<%= derivation_path(coin) %>"}},
+                {<% coin['derivation'].each do |deriv| -%>{<%= derivation_enum_name(deriv, coin) %>, "<%= deriv['path'] %>"},<% end -%>},
                 TWPublicKeyType<%= format_name(coin['publicKeyType']) %>,
                 <% if coin['staticPrefix'].nil? -%>0<% else -%><%= coin['staticPrefix'] %><% end -%>,
                 <% if coin['p2pkhPrefix'].nil? -%>0<% else -%><%= coin['p2pkhPrefix'] %><% end -%>,

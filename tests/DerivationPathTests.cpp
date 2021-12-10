@@ -5,6 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "DerivationPath.h"
+#include "Coin.h"
+#include <TrustWalletCore/TWDerivation.h>
 
 #include <gtest/gtest.h>
 
@@ -68,6 +70,11 @@ TEST(DerivationPath, Equal) {
     const auto path1 = DerivationPath("m/44'/60'/0'/0/0");
     const auto path2 = DerivationPath("44'/60'/0'/0/0");
     ASSERT_EQ(path1, path2);
+}
+
+TEST(Derivation, alternativeDerivation) {
+    EXPECT_EQ(TW::derivationPath(TWCoinTypeSolana).string(), "m/44'/501'/0'");
+    EXPECT_EQ(TW::derivationPath(TWCoinTypeSolana, TWDerivationSolanaPhantom).string(), "m/44'/501'/0'/0'");
 }
 
 } // namespace
