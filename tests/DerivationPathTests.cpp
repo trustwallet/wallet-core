@@ -72,6 +72,11 @@ TEST(DerivationPath, Equal) {
     ASSERT_EQ(path1, path2);
 }
 
+TEST(Derivation, derivationPath) {
+    EXPECT_EQ(TW::derivationPath(TWCoinTypeBitcoin).string(), "m/84'/0'/0'/0/0");
+    EXPECT_EQ(TW::derivationPath(TWCoinTypeSolana).string(), "m/44'/501'/0'");
+}
+
 TEST(Derivation, alternativeDerivation) {
     EXPECT_EQ(TW::derivationPath(TWCoinTypeBitcoin).string(), "m/84'/0'/0'/0/0");
     EXPECT_EQ(TW::derivationPath(TWCoinTypeBitcoin, TWDerivationDefault).string(), "m/84'/0'/0'/0/0");
