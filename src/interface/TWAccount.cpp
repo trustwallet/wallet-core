@@ -15,7 +15,7 @@ struct TWAccount *_Nonnull TWAccountCreate(TWString *_Nonnull address, enum TWCo
     auto& derivationPathString = *reinterpret_cast<const std::string*>(derivationPath);
     auto& extendedPublicKeyString = *reinterpret_cast<const std::string*>(extendedPublicKey);
     const auto dp = DerivationPath(derivationPathString);
-    return new TWAccount{ Keystore::Account(addressString, coin, dp, extendedPublicKeyString) };
+    return new TWAccount{ Keystore::Account(addressString, coin, TWDerivationDefault, dp, extendedPublicKeyString) };  // TODO add version with alternative derivation
 }
 
 void TWAccountDelete(struct TWAccount *_Nonnull account) {

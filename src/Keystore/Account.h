@@ -7,6 +7,7 @@
 #pragma once
 
 #include "../DerivationPath.h"
+#include <TrustWalletCore/TWDerivation.h>
 
 #include <nlohmann/json.hpp>
 #include <string>
@@ -19,21 +20,26 @@ class Account {
     /// Account public address
     std::string address;
 
+    /// Coin this account is for.
+    TWCoinType coin;
+
+    /// Account derivatrion
+    TWDerivation derivation;
+
     /// Account derivation path, only relevant for HD wallets.
     DerivationPath derivationPath;
 
     /// Extended public key.
     std::string extendedPublicKey;
 
-    /// Coin this account is for.
-    TWCoinType coin;
-
     Account() = default;
-    Account(std::string address, TWCoinType coin, DerivationPath derivationPath, std::string extendedPublicKey = "")
+    Account(std::string address, TWCoinType coin, TWDerivation derivation, DerivationPath derivationPath, std::string extendedPublicKey = "")
         : address(std::move(address))
+        , coin(coin)
+        , derivation(derivation)
         , derivationPath(std::move(derivationPath))
         , extendedPublicKey(std::move(extendedPublicKey))
-        , coin(coin) {}
+        {}
 
     /// Initializes `Account` with a JSON object.
     Account(const nlohmann::json& json);

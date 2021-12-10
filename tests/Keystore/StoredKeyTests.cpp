@@ -170,19 +170,19 @@ TEST(StoredKey, AddRemoveAccount) {
 
     {
         const auto derivationPath = DerivationPath("m/84'/0'/0'/0/0");
-        key.addAccount("bc1qaucw06s3agez8tyyk4zj9kt0q2934e3mcewdpf", coinTypeBc, derivationPath, "zpub6rxtad3SPT1C5GUDjPiKQ5oJN5DBeMbdUR7LrdYt12VbU7TBSpGUkdLvfVYGuj1N5edkDoZ3bu1fdN1HprQYfCBdsSH5CaAAygHGsanwtTe");
+        key.addAccount("bc1qaucw06s3agez8tyyk4zj9kt0q2934e3mcewdpf", coinTypeBc, TWDerivationDefault, derivationPath, "zpub6rxtad3SPT1C5GUDjPiKQ5oJN5DBeMbdUR7LrdYt12VbU7TBSpGUkdLvfVYGuj1N5edkDoZ3bu1fdN1HprQYfCBdsSH5CaAAygHGsanwtTe");
         EXPECT_EQ(key.accounts.size(), 1);
     }
     {
         const auto derivationPath = DerivationPath("m/714'/0'/0'/0/0");
-        key.addAccount("bnb1utrnnjym7ustgw7pgyvtmnxay4qmt3ahh276nu", coinTypeBnb, derivationPath, "");
-        key.addAccount("0x23b02dC8f67eD6cF8DCa47935791954286ffe7c9", coinTypeBsc, derivationPath, "");
+        key.addAccount("bnb1utrnnjym7ustgw7pgyvtmnxay4qmt3ahh276nu", coinTypeBnb, TWDerivationDefault, derivationPath, "");
+        key.addAccount("0x23b02dC8f67eD6cF8DCa47935791954286ffe7c9", coinTypeBsc, TWDerivationDefault, derivationPath, "");
         EXPECT_EQ(key.accounts.size(), 3);
     }
     {
         const auto derivationPath = DerivationPath("m/60'/0'/0'/0/0");
-        key.addAccount("0xC0d97f61A84A0708225F15d54978D628Fe2C5E62", coinTypeEth, derivationPath, "");
-        key.addAccount("0xC0d97f61A84A0708225F15d54978D628Fe2C5E62", coinTypeBscLegacy, derivationPath, "");
+        key.addAccount("0xC0d97f61A84A0708225F15d54978D628Fe2C5E62", coinTypeEth, TWDerivationDefault, derivationPath, "");
+        key.addAccount("0xC0d97f61A84A0708225F15d54978D628Fe2C5E62", coinTypeBscLegacy, TWDerivationDefault, derivationPath, "");
         EXPECT_EQ(key.accounts.size(), 5);
     }
 
@@ -470,7 +470,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         const auto extendedPublicKey = wallet.getExtendedPublicKey(TW::purpose(coin), coin, TWHDVersionZPUB);
         EXPECT_EQ(extendedPublicKey, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
 
-        key.addAccount(p2pkhBtcAddress, coin, TW::derivationPath(coin), extendedPublicKey);
+        key.addAccount(p2pkhBtcAddress, coin, TWDerivationDefault, TW::derivationPath(coin), extendedPublicKey);
 
         EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedBtc2);
@@ -488,7 +488,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         const auto expectedSol2 = "6w6gohRij5nH3ReBNZRhQokkHz3hsfxKbaRERWtirYPq";
         EXPECT_EQ(sol2, expectedSol2);
 
-        key.addAccount(sol2, coin, derivationPath2, "");
+        key.addAccount(sol2, coin, TWDerivationDefault, derivationPath2, "");
 
         EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedSol2);

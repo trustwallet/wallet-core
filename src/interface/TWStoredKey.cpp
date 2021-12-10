@@ -116,7 +116,7 @@ void TWStoredKeyAddAccount(struct TWStoredKey* _Nonnull key, TWString* _Nonnull 
     const auto& addressString = *reinterpret_cast<const std::string*>(address);
     const auto& extetndedPublicKeyString = *reinterpret_cast<const std::string*>(extetndedPublicKey);
     const auto dp = TW::DerivationPath(*reinterpret_cast<const std::string*>(derivationPath));
-    key->impl.addAccount(addressString, coin, dp, extetndedPublicKeyString);
+    key->impl.addAccount(addressString, coin, TWDerivationDefault, dp, extetndedPublicKeyString); // TODO add version with arbitrary derivation
 }
 
 bool TWStoredKeyStore(struct TWStoredKey* _Nonnull key, TWString* _Nonnull path) {

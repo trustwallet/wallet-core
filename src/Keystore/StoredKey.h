@@ -12,6 +12,7 @@
 #include "../HDWallet.h"
 
 #include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWDerivation.h>
 #include <nlohmann/json.hpp>
 
 #include <optional>
@@ -71,17 +72,26 @@ public:
     const HDWallet wallet(const Data& password) const;
 
     /// Returns the account for a specific coin, creating it if none exists and the provided wallet is not `nullptr`.
-    /// In case of muliple accounts, the first one is returned.
+    /// Default derivation is used.  In case of muliple accounts, the first one is returned.
     std::optional<const Account> account(TWCoinType coin, const HDWallet* wallet);
 
-    /// Returns the account for a specific coin if it exists.  In case of muliple accounts, the first one is returned.
+    /// Returns the account for a specific coin, creating it if none exists and the provided wallet is not `nullptr`.
+    /// In case of muliple accounts, the first one is returned.
+    std::optional<const Account> account(TWCoinType coin, TWDerivation derivation, const HDWallet* wallet);
+
+    /// Returns the account for a specific coin if it exists.
+    /// Default derivation is used.  In case of muliple accounts, the first one is returned.
     std::optional<const Account> account(TWCoinType coin) const;
     
+    /// Returns the account for a specific coin if it exists.
+    /// In case of muliple accounts, the first one is returned.
+    std::optional<const Account> account(TWCoinType coin, TWDerivation derivation) const;
+
     /// Returns all the accounts for a specific coin: 0, 1, or more.
     std::vector<Account> getAccounts(TWCoinType coin) const;
 
-    /// Add an account
-    void addAccount(const std::string& address, TWCoinType coin, const DerivationPath& derivationPath, const std::string& extetndedPublicKey);
+    /// Add an account with aribitrary address/derivation path.  Discouraged, use ...TODO
+    void addAccount(const std::string& address, TWCoinType coin, TWDerivation derivation, const DerivationPath& derivationPath, const std::string& extetndedPublicKey);
 
     /// Remove the account for a specific coin
     void removeAccount(TWCoinType coin);

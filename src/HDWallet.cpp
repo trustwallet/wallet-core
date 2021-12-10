@@ -133,7 +133,11 @@ std::string HDWallet::getRootKey(TWCoinType coin, TWHDVersion version) const {
 }
 
 std::string HDWallet::deriveAddress(TWCoinType coin) const {
-    const auto derivationPath = TW::derivationPath(coin);
+    return deriveAddress(coin, TWDerivationDefault);
+}
+
+std::string HDWallet::deriveAddress(TWCoinType coin, TWDerivation derivation) const {
+    const auto derivationPath = TW::derivationPath(coin, derivation);
     return TW::deriveAddress(coin, getKey(coin, derivationPath));
 }
 
