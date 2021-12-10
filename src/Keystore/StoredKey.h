@@ -95,7 +95,8 @@ public:
 
     /// Remove the account for a specific coin
     void removeAccount(TWCoinType coin);
-    
+
+/// TODO add version with derivation parameter    
     /// Returns the private key for a specific coin, creating an account if necessary.
     ///
     /// @throws std::invalid_argument if this key is of a type other than

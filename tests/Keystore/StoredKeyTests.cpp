@@ -429,6 +429,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
     EXPECT_EQ(key.accounts.size(), 0);
 
     const auto expectedBtc1 = "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny";
+    const auto expectedBtc2 = "19fUCoUeGmHRFSgFtv4hoMYatCHcifNDEy";
     const auto expectedSol1 = "HiipoCKL8hX2RVmJTz3vaLy34hS2zLhWWMkUWtw85TmZ";
     const auto wallet = key.wallet(password);
     int expectedAccounts = 0;
@@ -459,28 +460,21 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         EXPECT_EQ(key.getAccounts(coin).size(), 1);
         EXPECT_EQ(key.getAccounts(coin)[0].address, expectedSol1);
     }
-    { // Create CUSTOM account with alternative non-Segwit Bitcoin address
+    { // Create alternative P2PK Bitcoin account (same derivation path, different address)
         const auto coin = TWCoinTypeBitcoin;
-        const auto btcPrivateKey = key.privateKey(coin, password);
-        EXPECT_EQ(TW::deriveAddress(coin, btcPrivateKey), expectedBtc1);
-        const auto btcPublicKey = btcPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-        const auto p2pkhBtcAddress = Bitcoin::Address(btcPublicKey, TWCoinTypeP2pkhPrefix(coin)).string();
-        const auto expectedBtc2 = "19fUCoUeGmHRFSgFtv4hoMYatCHcifNDEy";
-        EXPECT_EQ(p2pkhBtcAddress, expectedBtc2);
-        const auto extendedPublicKey = wallet.getExtendedPublicKey(TW::purpose(coin), coin, TWHDVersionZPUB);
-        EXPECT_EQ(extendedPublicKey, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
 
-        key.addAccount(p2pkhBtcAddress, coin, TWDerivationDefault, TW::derivationPath(coin), extendedPublicKey);
-
+        const auto btc2 = key.account(coin, TWDerivationBitcoinP2pk, &wallet);
+        
+        EXPECT_TRUE(btc2.has_value());
+        EXPECT_EQ(btc2->address, expectedBtc2);
         EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
-        EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedBtc2);
-        // Now we have 2 Bitcoin addresses, 1st is returned here
+        EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedBtc1);
         EXPECT_EQ(key.account(coin)->address, expectedBtc1);
         EXPECT_EQ(key.getAccounts(coin).size(), 2);
         EXPECT_EQ(key.getAccounts(coin)[0].address, expectedBtc1);
         EXPECT_EQ(key.getAccounts(coin)[1].address, expectedBtc2);
     }
-    { // Create alternative Solana account with non-default derivation path
+    { // Create alternative Solana account with non-default derivation path (different derivation path and address)
         const auto coin = TWCoinTypeSolana;
 
         const auto sol2 = key.account(coin, TWDerivationSolanaPhantom, &wallet);
@@ -496,6 +490,28 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         EXPECT_EQ(key.getAccounts(coin).size(), 2);
         EXPECT_EQ(key.getAccounts(coin)[0].address, expectedSol1);
         EXPECT_EQ(key.getAccounts(coin)[1].address, expectedSol2);
+    }
+    { // Create CUSTOM account with alternative Bitcoin address
+        const auto coin = TWCoinTypeBitcoin;
+        const auto btcPrivateKey = key.privateKey(coin, password);
+        EXPECT_EQ(TW::deriveAddress(coin, btcPrivateKey), expectedBtc1);
+        const auto btcPublicKey = btcPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+        const auto p2pkhBtcAddress = Bitcoin::Address(btcPublicKey, TWCoinTypeP2pkhPrefix(coin)).string();
+        const auto expectedBtc3 = "19fUCoUeGmHRFSgFtv4hoMYatCHcifNDEy";
+        EXPECT_EQ(p2pkhBtcAddress, expectedBtc3);
+        const auto extendedPublicKey = wallet.getExtendedPublicKey(TW::purpose(coin), coin, TWHDVersionZPUB);
+        EXPECT_EQ(extendedPublicKey, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
+
+        key.addAccount(p2pkhBtcAddress, coin, TWDerivationDefault, TW::derivationPath(coin), extendedPublicKey);
+
+        EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
+        EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedBtc3);
+        // Now we have 2 Bitcoin addresses, 1st is returned here
+        EXPECT_EQ(key.account(coin)->address, expectedBtc1);
+        EXPECT_EQ(key.getAccounts(coin).size(), 3);
+        EXPECT_EQ(key.getAccounts(coin)[0].address, expectedBtc1);
+        EXPECT_EQ(key.getAccounts(coin)[1].address, expectedBtc2);
+        EXPECT_EQ(key.getAccounts(coin)[2].address, expectedBtc3);
     }
 }
 

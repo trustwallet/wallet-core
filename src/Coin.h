@@ -63,6 +63,9 @@ std::string deriveAddress(TWCoinType coin, const PrivateKey& privateKey);
 /// Derives the address for a particular coin from the public key.
 std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey);
 
+/// Derives the address for a particular coin from the public key.
+std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation);
+
 /// Hasher for deriving the public key hash.
 Hash::Hasher publicKeyHasher(TWCoinType coin);
 

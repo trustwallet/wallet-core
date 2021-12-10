@@ -223,17 +223,21 @@ std::string TW::normalizeAddress(TWCoinType coin, const std::string& address) {
 
 std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
     auto keyType = TW::publicKeyType(coin);
-    return TW::deriveAddress(coin, privateKey.getPublicKey(keyType));
+    return TW::deriveAddress(coin, privateKey.getPublicKey(keyType), TWDerivationDefault);
 }
 
 std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
+    return deriveAddress(coin, publicKey, TWDerivationDefault);
+}
+
+std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation) {
     auto p2pkh = TW::p2pkhPrefix(coin);
     const auto* hrp = stringForHRP(TW::hrp(coin));
 
     // dispatch
     auto* dispatcher = coinDispatcher(coin);
     assert(dispatcher != nullptr);
-    return dispatcher->deriveAddress(coin, publicKey, p2pkh, hrp);
+    return dispatcher->deriveAddress(coin, derivation, publicKey, p2pkh, hrp);
 }
 
 void TW::anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
