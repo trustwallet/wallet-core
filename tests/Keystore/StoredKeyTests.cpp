@@ -459,7 +459,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         EXPECT_EQ(key.getAccounts(coin).size(), 1);
         EXPECT_EQ(key.getAccounts(coin)[0].address, expectedSol1);
     }
-    { // Create account with alternative non-Segwit Bitcoin address
+    { // Create CUSTOM account with alternative non-Segwit Bitcoin address
         const auto coin = TWCoinTypeBitcoin;
         const auto btcPrivateKey = key.privateKey(coin, password);
         EXPECT_EQ(TW::deriveAddress(coin, btcPrivateKey), expectedBtc1);
@@ -482,18 +482,17 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
     }
     { // Create alternative Solana account with non-default derivation path
         const auto coin = TWCoinTypeSolana;
-        const auto derivationPath2 = DerivationPath("m/44'/123'/0'");
-        const auto sol2Key = wallet.getKey(coin, derivationPath2);
-        const auto sol2 = TW::deriveAddress(coin, sol2Key);
-        const auto expectedSol2 = "6w6gohRij5nH3ReBNZRhQokkHz3hsfxKbaRERWtirYPq";
-        EXPECT_EQ(sol2, expectedSol2);
 
-        key.addAccount(sol2, coin, TWDerivationDefault, derivationPath2, "");
+        const auto sol2 = key.account(coin, TWDerivationSolanaPhantom, &wallet);
 
+        const auto expectedSol2 = "CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C";
+        EXPECT_TRUE(sol2.has_value());
+        EXPECT_EQ(sol2->address, expectedSol2);
         EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedSol2);
         // Now we have 2 Solana addresses, 1st is returned here
         EXPECT_EQ(key.account(coin)->address, expectedSol1);
+        EXPECT_EQ(key.account(coin, TWDerivationSolanaPhantom)->address, expectedSol2);
         EXPECT_EQ(key.getAccounts(coin).size(), 2);
         EXPECT_EQ(key.getAccounts(coin)[0].address, expectedSol1);
         EXPECT_EQ(key.getAccounts(coin)[1].address, expectedSol2);

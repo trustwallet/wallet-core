@@ -24,7 +24,7 @@ class Account {
     TWCoinType coin;
 
     /// Account derivatrion
-    TWDerivation derivation;
+    TWDerivation derivation = TWDerivationDefault;
 
     /// Account derivation path, only relevant for HD wallets.
     DerivationPath derivationPath;

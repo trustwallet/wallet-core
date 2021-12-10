@@ -72,13 +72,9 @@ StoredKey StoredKey::createWithPrivateKeyAddDefaultAddress(const std::string& na
     }
 
     StoredKey key = createWithPrivateKey(name, password, privateKeyData);
-    const auto wallet = key.wallet(password);
-    key.account(coin, &wallet);
-    /* TODO remove
     const auto derivationPath = TW::derivationPath(coin);
     const auto address = TW::deriveAddress(coin, PrivateKey(privateKeyData));
-    key.accounts.emplace_back(address, coin, derivationPath);
-    */
+    key.accounts.emplace_back(address, coin, TWDerivationDefault, derivationPath);
     return key;
 }
 
