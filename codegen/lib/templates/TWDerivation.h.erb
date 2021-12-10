@@ -16,7 +16,9 @@ TW_EXTERN_C_BEGIN
 /// Non-default coin address derivation names (default, unnamed derivations are not included).
 TW_EXPORT_ENUM()
 enum TWDerivation {
-    TWDerivationDefault = 0, // coin-independent default
+    TWDerivationDefault = 0, // default, for any coin
+    TWDerivationCustom = 1, // custom, for any coin
+<% enum_count += 1 -%>
 <% coins.each do |coin| -%>
 <% if coin['derivation'].count > 1 -%>
 <% coin['derivation'].each_with_index do |deriv, index| -%>

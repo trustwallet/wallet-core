@@ -222,8 +222,12 @@ std::string TW::normalizeAddress(TWCoinType coin, const std::string& address) {
 }
 
 std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
+    return TW::deriveAddress(coin, privateKey, TWDerivationDefault);
+}
+
+std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey, TWDerivation derivation) {
     auto keyType = TW::publicKeyType(coin);
-    return TW::deriveAddress(coin, privateKey.getPublicKey(keyType), TWDerivationDefault);
+    return TW::deriveAddress(coin, privateKey.getPublicKey(keyType), derivation);
 }
 
 std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {

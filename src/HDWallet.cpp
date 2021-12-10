@@ -105,6 +105,11 @@ PrivateKey HDWallet::getMasterKeyExtension(TWCurve curve) const {
     return PrivateKey(data);
 }
 
+PrivateKey HDWallet::getKey(TWCoinType coin, TWDerivation derivation) const {
+    const auto path = TW::derivationPath(coin, derivation);
+    return getKey(coin, path);
+}
+
 PrivateKey HDWallet::getKey(TWCoinType coin, const DerivationPath& derivationPath) const {
     const auto curve = TWCoinTypeCurve(coin);
     const auto privateKeyType = getPrivateKeyType(curve);
@@ -138,7 +143,7 @@ std::string HDWallet::deriveAddress(TWCoinType coin) const {
 
 std::string HDWallet::deriveAddress(TWCoinType coin, TWDerivation derivation) const {
     const auto derivationPath = TW::derivationPath(coin, derivation);
-    return TW::deriveAddress(coin, getKey(coin, derivationPath));
+    return TW::deriveAddress(coin, getKey(coin, derivationPath), derivation);
 }
 
 std::string HDWallet::getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const {

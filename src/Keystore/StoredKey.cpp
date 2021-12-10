@@ -95,22 +95,9 @@ const HDWallet StoredKey::wallet(const Data& password) const {
     return HDWallet(mnemonic, "");
 }
 
-std::optional<const Account> StoredKey::account(TWCoinType coin) const {
-    return account(coin, TWDerivationDefault);
-}
-
-std::optional<const Account> StoredKey::account(TWCoinType coin, TWDerivation derivation) const {
-    for (auto& account : accounts) {
-        if (account.coin == coin && account.derivation == derivation) {
-            return account;
-        }
-    }
-    return std::nullopt;
-}
-
 std::vector<Account> StoredKey::getAccounts(TWCoinType coin) const {
     std::vector<Account> result;
-    for (auto& account : accounts) {
+    for (auto& account: accounts) {
         if (account.coin == coin) {
             result.push_back(account);
         }
@@ -118,33 +105,89 @@ std::vector<Account> StoredKey::getAccounts(TWCoinType coin) const {
     return result;
 }
 
-std::optional<const Account> StoredKey::account(TWCoinType coin, const HDWallet* wallet) {
-    return account(coin, TWDerivationDefault, wallet);
-}
-
-std::optional<const Account> StoredKey::account(TWCoinType coin, TWDerivation derivation, const HDWallet* wallet) {
-    if (wallet == nullptr) {
-        return account(coin);
+std::optional<Account> StoredKey::getDefaultAccount(TWCoinType coin, const HDWallet* wallet) const {
+    const auto coinAccounts = getAccounts(coin);
+    // there are multiple, try to look for default
+    if (wallet != nullptr) {
+        const auto address = wallet->deriveAddress(coin);
+        return getAccount(coin, address);
     }
-    assert(wallet != nullptr);
-
-    for (auto& account : accounts) {
-        if (account.coin == coin && account.derivation == derivation) {
-            if (account.address.empty()) {
-                account.address = wallet->deriveAddress(coin, derivation);
-            }
+    // no wallet, rely on derivation=0 condition
+    for (auto& account: coinAccounts) {
+        if (account.derivation == TWDerivationDefault) {
             return account;
         }
     }
+    return std::nullopt;
+}
 
-    const auto derivationPath = TW::derivationPath(coin, derivation);
-    const auto address = wallet->deriveAddress(coin, derivation);
-    
+std::optional<Account> StoredKey::getDefaultAccountOrAny(TWCoinType coin, const HDWallet* wallet) const {
+    const auto defaultAccount = getDefaultAccount(coin, wallet);
+    if (defaultAccount.has_value()) {
+        return defaultAccount;
+    }
+    // return any
+    const auto coinAccounts = getAccounts(coin);
+    if (coinAccounts.size() > 0) {
+        return coinAccounts[0];
+    }
+    return std::nullopt;
+}
+
+std::optional<Account> StoredKey::getAccount(TWCoinType coin, const std::string& address) const {
+    for (auto& account : accounts) {
+        if (account.coin == coin && account.address == address) {
+            return account;
+        }
+    }
+    return std::nullopt;
+}
+
+std::optional<Account> StoredKey::getAccount(TWCoinType coin, TWDerivation derivation, const HDWallet& wallet) const {
+    // obtain address
+    const auto address = wallet.deriveAddress(coin, derivation);
+    return getAccount(coin, address);
+}
+
+std::optional<const Account> StoredKey::account(TWCoinType coin, const HDWallet* wallet) {
+    const auto account = getDefaultAccountOrAny(coin, wallet);
+    if (account.has_value()) {
+        return account;
+    }
+    // not found, add
+    if (wallet == nullptr) {
+        return std::nullopt;
+    }
+    assert(wallet != nullptr);
+    const auto derivationPath = TW::derivationPath(coin);
+    const auto address = wallet->deriveAddress(coin);
     const auto version = TW::xpubVersion(coin);
     const auto extendedPublicKey = wallet->getExtendedPublicKey(derivationPath.purpose(), coin, version);
 
+    accounts.emplace_back(address, coin, TWDerivationDefault, derivationPath, extendedPublicKey);
+    return accounts.back();
+}
+
+Account StoredKey::account(TWCoinType coin, TWDerivation derivation, const HDWallet& wallet) {
+    const auto coinAccount = getAccount(coin, derivation, wallet);
+    if (coinAccount.has_value()) {
+        return coinAccount.value();
+    }
+    const auto derivationPath = TW::derivationPath(coin, derivation);
+    const auto address = wallet.deriveAddress(coin, derivation);
+    const auto version = TW::xpubVersion(coin);
+    const auto extendedPublicKey = wallet.getExtendedPublicKey(derivationPath.purpose(), coin, version);
+
     accounts.emplace_back(address, coin, derivation, derivationPath, extendedPublicKey);
     return accounts.back();
+}
+
+std::optional<const Account> StoredKey::account(TWCoinType coin) const {
+    return getDefaultAccountOrAny(coin, nullptr);
+}
+
+std::optional<const Account> StoredKey::account(TWCoinType coin, TWDerivation derivation, const HDWallet& wallet) const {
+    return getAccount(coin, derivation, wallet);
 }
 
 void StoredKey::addAccount(const std::string& address, TWCoinType coin, TWDerivation derivation, const DerivationPath& derivationPath, const std::string& extetndedPublicKey) {
@@ -158,6 +201,10 @@ void StoredKey::removeAccount(TWCoinType coin) {
 }
 
 const PrivateKey StoredKey::privateKey(TWCoinType coin, const Data& password) {
+    return privateKey(coin, TWDerivationDefault, password);
+}
+
+const PrivateKey StoredKey::privateKey(TWCoinType coin, TWDerivation derivation, const Data& password) {
     switch (type) {
     case StoredKeyType::mnemonicPhrase: {
         const auto wallet = this->wallet(password);

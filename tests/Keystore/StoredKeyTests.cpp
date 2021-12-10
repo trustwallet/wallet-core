@@ -463,13 +463,13 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
     { // Create alternative P2PK Bitcoin account (same derivation path, different address)
         const auto coin = TWCoinTypeBitcoin;
 
-        const auto btc2 = key.account(coin, TWDerivationBitcoinP2pk, &wallet);
+        const auto btc2 = key.account(coin, TWDerivationBitcoinP2pk, wallet);
         
-        EXPECT_TRUE(btc2.has_value());
-        EXPECT_EQ(btc2->address, expectedBtc2);
+        EXPECT_EQ(btc2.address, expectedBtc2);
         EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
-        EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedBtc1);
+        EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedBtc2);
         EXPECT_EQ(key.account(coin)->address, expectedBtc1);
+        EXPECT_EQ(key.account(coin, TWDerivationBitcoinP2pk, wallet).address, expectedBtc2);
         EXPECT_EQ(key.getAccounts(coin).size(), 2);
         EXPECT_EQ(key.getAccounts(coin)[0].address, expectedBtc1);
         EXPECT_EQ(key.getAccounts(coin)[1].address, expectedBtc2);
@@ -477,32 +477,32 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
     { // Create alternative Solana account with non-default derivation path (different derivation path and address)
         const auto coin = TWCoinTypeSolana;
 
-        const auto sol2 = key.account(coin, TWDerivationSolanaPhantom, &wallet);
+        const auto sol2 = key.account(coin, TWDerivationSolanaPhantom, wallet);
 
         const auto expectedSol2 = "CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C";
-        EXPECT_TRUE(sol2.has_value());
-        EXPECT_EQ(sol2->address, expectedSol2);
+        EXPECT_EQ(sol2.address, expectedSol2);
         EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedSol2);
         // Now we have 2 Solana addresses, 1st is returned here
         EXPECT_EQ(key.account(coin)->address, expectedSol1);
-        EXPECT_EQ(key.account(coin, TWDerivationSolanaPhantom)->address, expectedSol2);
+        EXPECT_EQ(key.account(coin, TWDerivationSolanaPhantom, wallet).address, expectedSol2);
         EXPECT_EQ(key.getAccounts(coin).size(), 2);
         EXPECT_EQ(key.getAccounts(coin)[0].address, expectedSol1);
         EXPECT_EQ(key.getAccounts(coin)[1].address, expectedSol2);
     }
-    { // Create CUSTOM account with alternative Bitcoin address
+    { // Create CUSTOM account with alternative Bitcoin address. Note: this is not recommended.
         const auto coin = TWCoinTypeBitcoin;
-        const auto btcPrivateKey = key.privateKey(coin, password);
-        EXPECT_EQ(TW::deriveAddress(coin, btcPrivateKey), expectedBtc1);
+        const auto customPath = DerivationPath("m/84'/2'/0'/0/0");
+        const auto btcPrivateKey = wallet.getKey(coin, customPath);
+        EXPECT_NE(TW::deriveAddress(coin, btcPrivateKey), expectedBtc1);
         const auto btcPublicKey = btcPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
         const auto p2pkhBtcAddress = Bitcoin::Address(btcPublicKey, TWCoinTypeP2pkhPrefix(coin)).string();
-        const auto expectedBtc3 = "19fUCoUeGmHRFSgFtv4hoMYatCHcifNDEy";
+        const auto expectedBtc3 = "18QhahVFgXGgpEj6u92LDfbrwzdrUSHUfL";
         EXPECT_EQ(p2pkhBtcAddress, expectedBtc3);
         const auto extendedPublicKey = wallet.getExtendedPublicKey(TW::purpose(coin), coin, TWHDVersionZPUB);
         EXPECT_EQ(extendedPublicKey, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
 
-        key.addAccount(p2pkhBtcAddress, coin, TWDerivationDefault, TW::derivationPath(coin), extendedPublicKey);
+        key.addAccount(p2pkhBtcAddress, coin, TWDerivationCustom, customPath, extendedPublicKey);
 
         EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedBtc3);
