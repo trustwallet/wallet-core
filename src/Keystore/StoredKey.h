@@ -40,7 +40,7 @@ public:
     /// Encrypted payload.
     EncryptedPayload payload;
 
-    /// Active accounts.
+    /// Active accounts.  Address should be unique.
     std::vector<Account> accounts;
 
     /// Create a new StoredKey, with the given name, mnemonic and password.
@@ -89,7 +89,8 @@ public:
     /// Returns the account for a specific coin and derivation, if it exists.
     std::optional<const Account> account(TWCoinType coin, TWDerivation derivation, const HDWallet& wallet) const;
 
-    /// Add an account with aribitrary address/derivation path.  Discouraged, use ...TODO
+    /// Add an account with aribitrary address/derivation path.  Discouraged, use account() versions.
+    /// Address must be unique (for a coin).
     void addAccount(const std::string& address, TWCoinType coin, TWDerivation derivation, const DerivationPath& derivationPath, const std::string& extetndedPublicKey);
 
     /// Remove the account(s) for a specific coin

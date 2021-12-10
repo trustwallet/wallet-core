@@ -50,13 +50,6 @@ StoredKey StoredKey::createWithMnemonicAddDefaultAddress(const std::string& name
     StoredKey key = createWithMnemonic(name, password, mnemonic, TWStoredKeyEncryptionLevelDefault);
     const auto wallet = key.wallet(password);
     key.account(coin, &wallet);
-    /* TODO remove
-    const auto wallet = HDWallet(mnemonic, "");
-    const auto derivationPath = TW::derivationPath(coin);
-    const auto address = TW::deriveAddress(coin, wallet.getKey(coin, derivationPath));
-    const auto extendedKey = wallet.getExtendedPublicKey(TW::purpose(coin), coin, TW::xpubVersion(coin));
-    key.accounts.emplace_back(address, coin, TWDerivationDefault, derivationPath, extendedKey);
-    */
     return key;
 }
 
@@ -164,7 +157,7 @@ std::optional<const Account> StoredKey::account(TWCoinType coin, const HDWallet*
     const auto version = TW::xpubVersion(coin);
     const auto extendedPublicKey = wallet->getExtendedPublicKey(derivationPath.purpose(), coin, version);
 
-    accounts.emplace_back(address, coin, TWDerivationDefault, derivationPath, extendedPublicKey);
+    addAccount(address, coin, TWDerivationDefault, derivationPath, extendedPublicKey);
     return accounts.back();
 }
 
@@ -178,7 +171,7 @@ Account StoredKey::account(TWCoinType coin, TWDerivation derivation, const HDWal
     const auto version = TW::xpubVersion(coin);
     const auto extendedPublicKey = wallet.getExtendedPublicKey(derivationPath.purpose(), coin, version);
 
-    accounts.emplace_back(address, coin, derivation, derivationPath, extendedPublicKey);
+    addAccount(address, coin, derivation, derivationPath, extendedPublicKey);
     return accounts.back();
 }
 
@@ -191,6 +184,10 @@ std::optional<const Account> StoredKey::account(TWCoinType coin, TWDerivation de
 }
 
 void StoredKey::addAccount(const std::string& address, TWCoinType coin, TWDerivation derivation, const DerivationPath& derivationPath, const std::string& extetndedPublicKey) {
+    if (getAccount(coin, address).has_value()) {
+        // address already present
+        return;
+    }
     accounts.emplace_back(address, coin, derivation, derivationPath, extetndedPublicKey);
 }
 
