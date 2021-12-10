@@ -62,10 +62,6 @@ string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const Publ
                 case TWDerivationBitcoinP2pk:
                     return Address(publicKey, 0).string();
 
-                case TWDerivationBitcoinTaproot:
-                    assert(false);
-                    return "_TAPROOT_NOT_SUPPORTED_TODO_";
-
                 case TWDerivationBitcoinSegwit:
                 case TWDerivationDefault:
                 default:

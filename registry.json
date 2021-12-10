@@ -14,10 +14,6 @@
       {
         "name": "p2pk",
         "path": "m/84'/0'/0'/0/0"
-      },
-      {
-        "name": "taproot",
-        "path": "m/84'/0'/0'/0/0"
       }
     ],
     "curve": "secp256k1",

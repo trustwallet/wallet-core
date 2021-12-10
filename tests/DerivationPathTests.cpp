@@ -81,7 +81,7 @@ TEST(Derivation, alternativeDerivation) {
     EXPECT_EQ(TW::derivationPath(TWCoinTypeBitcoin).string(), "m/84'/0'/0'/0/0");
     EXPECT_EQ(TW::derivationPath(TWCoinTypeBitcoin, TWDerivationDefault).string(), "m/84'/0'/0'/0/0");
     EXPECT_EQ(TW::derivationPath(TWCoinTypeBitcoin, TWDerivationBitcoinSegwit).string(), "m/84'/0'/0'/0/0");
-    EXPECT_EQ(TW::derivationPath(TWCoinTypeBitcoin, TWDerivationBitcoinTaproot).string(), "m/84'/0'/0'/0/0");
+    EXPECT_EQ(TW::derivationPath(TWCoinTypeBitcoin, TWDerivationBitcoinP2pk).string(), "m/84'/0'/0'/0/0");
 
     EXPECT_EQ(TW::derivationPath(TWCoinTypeSolana).string(), "m/44'/501'/0'");
     EXPECT_EQ(TW::derivationPath(TWCoinTypeSolana, TWDerivationDefault).string(), "m/44'/501'/0'");
