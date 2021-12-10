@@ -13,14 +13,14 @@ using namespace TW;
 
 TW_EXTERN_C_BEGIN
 
-/// Non-default coin address derivation names.
+/// Non-default coin address derivation names (default, unnamed derivations are not included).
 TW_EXPORT_ENUM()
 enum TWDerivation {
     TWDerivationDefault = 0, // coin-independent default
 <% coins.each do |coin| -%>
 <% if coin['derivation'].count > 1 -%>
 <% coin['derivation'].each_with_index do |deriv, index| -%>
-<% if index > 0 -%>
+<% if index > 0 or !deriv['name'].nil? -%>
     <%= derivation_enum_name(deriv, coin) %> = <% enum_count += 1 -%><%= enum_count %>,
 <% end -%>
 <% end -%>

@@ -8,18 +8,16 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "path": "m/84'/0'/0'/0/0",
-        "otherPaths": {
-          "SAMPLEWallet": "m/84'/99'/0'/0/0",
-          "Electrum": "m/84'/2'/0'/0/0"
-        },
-        "defaultAddressFormats": "segwit",
-        "addressFormats": [
-          "SAMPLE",
-          "p2pkh",
-          "segwit",
-          "taproot"
-        ]
+        "name": "segwit",
+        "path": "m/84'/0'/0'/0/0"
+      },
+      {
+        "name": "p2pk",
+        "path": "m/84'/0'/0'/0/0"
+      },
+      {
+        "name": "taproot",
+        "path": "m/84'/0'/0'/0/0"
       }
     ],
     "curve": "secp256k1",

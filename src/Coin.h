@@ -128,14 +128,7 @@ struct CoinInfo {
     const Derivation defaultDerivation() const {
         return (derivation.size() > 0) ? derivation[0] : Derivation();
     }
-    const Derivation derivationByName(TWDerivation name) const {
-        for (auto deriv: derivation) {
-            if (deriv.name == name) {
-                return deriv;
-            }
-        }
-        return Derivation();
-    }
+    const Derivation derivationByName(TWDerivation name) const;
 };
 
 } // namespace TW

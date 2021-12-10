@@ -186,6 +186,18 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
     return entry;
 }
 
+const Derivation CoinInfo::derivationByName(TWDerivation name) const {
+    if (name == TWDerivationDefault && derivation.size() > 0) {
+        return derivation[0];
+    }
+    for (auto deriv: derivation) {
+        if (deriv.name == name) {
+            return deriv;
+        }
+    }
+    return Derivation();
+}
+
 bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     auto p2pkh = TW::p2pkhPrefix(coin);
     auto p2sh = TW::p2shPrefix(coin);
