@@ -193,7 +193,12 @@ std::optional<const Account> StoredKey::account(TWCoinType coin) const {
 }
 
 std::optional<const Account> StoredKey::account(TWCoinType coin, TWDerivation derivation, const HDWallet& wallet) const {
-    return getAccount(coin, derivation, wallet);
+    const auto account = getAccount(coin, derivation, wallet);
+    if (account.has_value()) {
+        Account accountLval = account.value();
+        return fillAddressIfMissing(accountLval, &wallet);
+    }
+    return std::nullopt;
 }
 
 void StoredKey::addAccount(const std::string& address, TWCoinType coin, TWDerivation derivation, const DerivationPath& derivationPath, const std::string& extetndedPublicKey) {
