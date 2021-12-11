@@ -364,7 +364,7 @@ TEST(StoredKey, RemoveAccount) {
     EXPECT_EQ(key.accounts[0].coin, coinTypeBc);
 }
 
-TEST(StoredKey, MissingAddress) {
+TEST(StoredKey, MissingAddressFix) {
     auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/missing-address.json");
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
 
@@ -372,10 +372,34 @@ TEST(StoredKey, MissingAddress) {
     EXPECT_EQ(wallet.getMnemonic(), "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal");
     EXPECT_TRUE(Mnemonic::isValid(wallet.getMnemonic()));
 
+    EXPECT_EQ(key.account(TWCoinTypeBitcoin)->address, "");
+    EXPECT_EQ(key.account(TWCoinTypeEthereum)->address, "");
+
     key.fixAddresses(password);
 
     EXPECT_EQ(key.account(TWCoinTypeEthereum, nullptr)->address, "0xA3Dcd899C0f3832DFDFed9479a9d828c6A4EB2A7");
     EXPECT_EQ(key.account(coinTypeBc, nullptr)->address, "bc1qpsp72plnsqe6e2dvtsetxtww2cz36ztmfxghpd");
+}
+
+TEST(StoredKey, MissingAddressReadd) {
+    auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/missing-address.json");
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+
+    const auto wallet = key.wallet(password);
+    EXPECT_EQ(wallet.getMnemonic(), "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal");
+    EXPECT_TRUE(Mnemonic::isValid(wallet.getMnemonic()));
+
+    EXPECT_EQ(key.account(TWCoinTypeBitcoin)->address, "");
+    EXPECT_EQ(key.account(TWCoinTypeEthereum)->address, "");
+
+    // get accounts, this will also fill addresses as they are empty
+    const auto btcAccount = key.account(TWCoinTypeBitcoin, &wallet);
+    const auto ethAccount = key.account(TWCoinTypeEthereum, &wallet);
+
+    EXPECT_TRUE(btcAccount.has_value());
+    EXPECT_EQ(btcAccount->address, "bc1qpsp72plnsqe6e2dvtsetxtww2cz36ztmfxghpd");
+    EXPECT_TRUE(ethAccount.has_value());
+    EXPECT_EQ(ethAccount->address, "0xA3Dcd899C0f3832DFDFed9479a9d828c6A4EB2A7");
 }
 
 TEST(StoredKey, EtherWalletAddressNo0x) {

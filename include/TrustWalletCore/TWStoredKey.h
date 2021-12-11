@@ -68,6 +68,7 @@ TW_EXPORT_METHOD
 struct TWAccount* _Nullable TWStoredKeyAccount(struct TWStoredKey* _Nonnull key, size_t index);
 
 /// Returns the account for a specific coin, creating it if necessary.  Returned object needs to be deleted.
+// TODO: version with derivation
 TW_EXPORT_METHOD
 struct TWAccount* _Nullable TWStoredKeyAccountForCoin(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, struct TWHDWallet* _Nullable wallet);
 

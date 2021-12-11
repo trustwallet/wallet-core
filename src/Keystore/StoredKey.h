@@ -154,6 +154,9 @@ private:
 
     /// Find account by coin+derivation (should be one, if multiple, first is returned)
     std::optional<Account> getAccount(TWCoinType coin, TWDerivation derivation, const HDWallet& wallet) const;
+
+    /// Re-derive account address if missing
+    Account fillAddressIfMissing(Account& account, const HDWallet* wallet) const;
 };
 
 } // namespace TW::Keystore

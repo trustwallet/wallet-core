@@ -99,13 +99,16 @@ std::vector<Account> StoredKey::getAccounts(TWCoinType coin) const {
 }
 
 std::optional<Account> StoredKey::getDefaultAccount(TWCoinType coin, const HDWallet* wallet) const {
-    const auto coinAccounts = getAccounts(coin);
     // there are multiple, try to look for default
     if (wallet != nullptr) {
         const auto address = wallet->deriveAddress(coin);
-        return getAccount(coin, address);
+        const auto defaultAccount = getAccount(coin, address);
+        if (defaultAccount.has_value()) {
+            return defaultAccount;
+        }
     }
-    // no wallet, rely on derivation=0 condition
+    // no wallet or not found, rely on derivation=0 condition
+    const auto coinAccounts = getAccounts(coin);
     for (auto& account: coinAccounts) {
         if (account.derivation == TWDerivationDefault) {
             return account;
@@ -142,10 +145,18 @@ std::optional<Account> StoredKey::getAccount(TWCoinType coin, TWDerivation deriv
     return getAccount(coin, address);
 }
 
+Account StoredKey::fillAddressIfMissing(Account& account, const HDWallet* wallet) const {
+    if (account.address.length() == 0 && wallet != nullptr) {
+        account.address = wallet->deriveAddress(account.coin, account.derivation);
+    }
+    return account;
+}
+
 std::optional<const Account> StoredKey::account(TWCoinType coin, const HDWallet* wallet) {
     const auto account = getDefaultAccountOrAny(coin, wallet);
     if (account.has_value()) {
-        return account;
+        Account accountLval = account.value();
+        return fillAddressIfMissing(accountLval, wallet);
     }
     // not found, add
     if (wallet == nullptr) {
@@ -164,8 +175,10 @@ std::optional<const Account> StoredKey::account(TWCoinType coin, const HDWallet*
 Account StoredKey::account(TWCoinType coin, TWDerivation derivation, const HDWallet& wallet) {
     const auto coinAccount = getAccount(coin, derivation, wallet);
     if (coinAccount.has_value()) {
-        return coinAccount.value();
+        Account accountLval = coinAccount.value();
+        return fillAddressIfMissing(accountLval, &wallet);
     }
+    // not found, add
     const auto derivationPath = TW::derivationPath(coin, derivation);
     const auto address = wallet.deriveAddress(coin, derivation);
     const auto version = TW::xpubVersion(coin);
