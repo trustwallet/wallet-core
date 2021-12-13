@@ -401,9 +401,11 @@ class KeyStoreTests: XCTestCase {
 
         let solana1 = try wallet.getAccount(password: password, coin: .solana, derivation: .default)
         XCTAssertEqual(solana1.address, "HiipoCKL8hX2RVmJTz3vaLy34hS2zLhWWMkUWtw85TmZ")
+        XCTAssertEqual(solana1.derivationPath, "m/44'/501'/0'")
 
         let solana2 = try wallet.getAccount(password: password, coin: .solana, derivation: .solanaPhantom)
         XCTAssertEqual(solana2.address, "CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C")
+        XCTAssertEqual(solana2.derivationPath, "m/44'/501'/0'/0'")
     }
 
     func createTempDirURL() throws -> URL {

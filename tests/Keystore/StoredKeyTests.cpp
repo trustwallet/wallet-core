@@ -465,6 +465,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         
         EXPECT_TRUE(btc1.has_value());
         EXPECT_EQ(btc1->address, expectedBtc1);
+        EXPECT_EQ(btc1->derivationPath.string(), "m/84'/0'/0'/0/0");
         EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedBtc1);
         EXPECT_EQ(key.account(coin)->address, expectedBtc1);
@@ -478,6 +479,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
 
         EXPECT_TRUE(sol1.has_value());
         EXPECT_EQ(sol1->address, expectedSol1);
+        EXPECT_EQ(sol1->derivationPath.string(), "m/44'/501'/0'");
         EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedSol1);
         EXPECT_EQ(key.account(coin)->address, expectedSol1);
@@ -490,6 +492,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         const auto btc2 = key.account(coin, TWDerivationBitcoinP2pk, wallet);
         
         EXPECT_EQ(btc2.address, expectedBtc2);
+        EXPECT_EQ(btc2.derivationPath.string(), "m/84'/0'/0'/0/0");
         EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedBtc2);
         EXPECT_EQ(key.account(coin)->address, expectedBtc1);
@@ -505,6 +508,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
 
         const auto expectedSol2 = "CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C";
         EXPECT_EQ(sol2.address, expectedSol2);
+        EXPECT_EQ(sol2.derivationPath.string(), "m/44'/501'/0'/0'");
         EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedSol2);
         // Now we have 2 Solana addresses, 1st is returned here
@@ -536,6 +540,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         EXPECT_EQ(key.getAccounts(coin)[0].address, expectedBtc1);
         EXPECT_EQ(key.getAccounts(coin)[1].address, expectedBtc2);
         EXPECT_EQ(key.getAccounts(coin)[2].address, expectedBtc3);
+        EXPECT_EQ(key.getAccounts(coin)[2].derivationPath.string(), "m/84'/2'/0'/0/0");
     }
 }
 
