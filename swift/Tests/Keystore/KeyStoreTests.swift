@@ -391,4 +391,19 @@ class KeyStoreTests: XCTestCase {
         try fileManager.createDirectory(at: dir, withIntermediateDirectories: true, attributes: nil)
         return dir
     }
+
+    func createMultiAccount() throws {
+        let mnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle"
+        let password = "password"
+        let keyStore = try KeyStore(keyDirectory: keyDirectory)
+        let wallet = try keyStore.import(mnemonic: mnemonic, name: "name", encryptPassword: password, coins: [.bitcoin, .solana])
+
+        _ = try keyStore.addAccounts(wallet: wallet, coins: [.bitcoin, .solana], password: password)
+
+        let btc = try wallet.getAccount(password: password, coin: .bitcoin)
+        XCTAssertEqual(btc.address, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny")
+
+        let solana = try wallet.getAccount(password: password, coin: .solana)
+        XCTAssertEqual(btc.address, "HiipoCKL8hX2RVmJTz3vaLy34hS2zLhWWMkUWtw85TmZ")
+    }
 }
