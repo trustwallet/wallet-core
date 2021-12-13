@@ -385,14 +385,7 @@ class KeyStoreTests: XCTestCase {
         }
     }
 
-    func createTempDirURL() throws -> URL {
-        let dir = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("keystore")
-        try? fileManager.removeItem(at: dir)
-        try fileManager.createDirectory(at: dir, withIntermediateDirectories: true, attributes: nil)
-        return dir
-    }
-
-    func createMultiAccount() throws {
+    func testCreateMultiAccount() throws {
         let mnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle"
         let password = "password"
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
@@ -404,6 +397,13 @@ class KeyStoreTests: XCTestCase {
         XCTAssertEqual(btc.address, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny")
 
         let solana = try wallet.getAccount(password: password, coin: .solana)
-        XCTAssertEqual(btc.address, "HiipoCKL8hX2RVmJTz3vaLy34hS2zLhWWMkUWtw85TmZ")
+        XCTAssertEqual(solana.address, "HiipoCKL8hX2RVmJTz3vaLy34hS2zLhWWMkUWtw85TmZ")
+    }
+
+    func createTempDirURL() throws -> URL {
+        let dir = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("keystore")
+        try? fileManager.removeItem(at: dir)
+        try fileManager.createDirectory(at: dir, withIntermediateDirectories: true, attributes: nil)
+        return dir
     }
 }
