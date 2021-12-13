@@ -108,6 +108,18 @@ struct TWAccount* _Nullable TWStoredKeyAccountForCoin(struct TWStoredKey* _Nonnu
     }
 }
 
+struct TWAccount* _Nullable TWStoredKeyAccountForCoinDerivation(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWDerivation derivation, struct TWHDWallet* _Nullable wallet) {
+    try {
+        if (wallet == nullptr) {
+            return nullptr;
+        }
+        const auto account = key->impl.account(coin, derivation, wallet->impl);
+        return new TWAccount{ account };
+    } catch (...) {
+        return nullptr;
+    }
+}
+
 void TWStoredKeyRemoveAccountForCoin(struct TWStoredKey* _Nonnull key, enum TWCoinType coin) {
     key->impl.removeAccount(coin);
 }

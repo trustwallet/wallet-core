@@ -393,11 +393,17 @@ class KeyStoreTests: XCTestCase {
 
         _ = try keyStore.addAccounts(wallet: wallet, coins: [.bitcoin, .solana], password: password)
 
-        let btc = try wallet.getAccount(password: password, coin: .bitcoin)
-        XCTAssertEqual(btc.address, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny")
+        let btc1 = try wallet.getAccount(password: password, coin: .bitcoin, derivation: .default)
+        XCTAssertEqual(btc1.address, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny")
 
-        let solana = try wallet.getAccount(password: password, coin: .solana)
-        XCTAssertEqual(solana.address, "HiipoCKL8hX2RVmJTz3vaLy34hS2zLhWWMkUWtw85TmZ")
+        let btc2 = try wallet.getAccount(password: password, coin: .bitcoin, derivation: .bitcoinP2pk)
+        XCTAssertEqual(btc2.address, "19fUCoUeGmHRFSgFtv4hoMYatCHcifNDEy")
+
+        let solana1 = try wallet.getAccount(password: password, coin: .solana, derivation: .default)
+        XCTAssertEqual(solana1.address, "HiipoCKL8hX2RVmJTz3vaLy34hS2zLhWWMkUWtw85TmZ")
+
+        let solana2 = try wallet.getAccount(password: password, coin: .solana, derivation: .solanaPhantom)
+        XCTAssertEqual(solana2.address, "CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C")
     }
 
     func createTempDirURL() throws -> URL {
