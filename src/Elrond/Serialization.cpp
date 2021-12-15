@@ -18,12 +18,15 @@ std::map<string, int> fields_order {
     {"value", 2},
     {"receiver", 3},
     {"sender", 4},
-    {"gasPrice", 5},
-    {"gasLimit", 6},
-    {"data", 7},
-    {"chainID", 8},
-    {"version", 9},
-    {"signature", 10}
+    {"senderUsername", 5},
+    {"receiverUsername", 6},
+    {"gasPrice", 7},
+    {"gasLimit", 8},
+    {"data", 9},
+    {"chainID", 10},
+    {"version", 11},
+    {"options", 12},
+    {"signature", 13}
 };
 
 struct FieldsSorter {
@@ -46,12 +49,24 @@ sorted_json preparePayload(const Elrond::Proto::TransactionMessage& message) {
         {"gasLimit", json(message.gas_limit())},
     };
 
+    if (!message.sender_username().empty()) {
+        payload["senderUsername"] = json(TW::Base64::encode(TW::data(message.sender_username())));
+    }
+
+    if (!message.receiver_username().empty()) {
+        payload["receiverUsername"] = json(TW::Base64::encode(TW::data(message.receiver_username())));
+    }
+
     if (!message.data().empty()) {
         payload["data"] = json(TW::Base64::encode(TW::data(message.data())));
     }
 
     payload["chainID"] = json(message.chain_id());
     payload["version"] = json(message.version());
+
+    if (message.options() != 0) {
+        payload["options"] = json(message.options());
+    }
 
     return payload;
 }

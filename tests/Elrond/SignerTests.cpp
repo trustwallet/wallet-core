@@ -91,3 +91,79 @@ TEST(ElrondSigner, SignJSONWithoutData) {
 
     ASSERT_EQ(expectedEncoded, encoded);
 }
+
+TEST(ElrondSigner, SignWithUsernames) {
+    // https://github.com/ElrondNetwork/elrond-go/blob/master/examples/construction_test.go, scenario "TestConstructTransaction_Usernames".
+
+    auto input = Proto::SigningInput();
+    auto privateKey = PrivateKey(parse_hex("413f42575f7f26fad3317a778771212fdb80245850981e48b58a4f25e344e8f9"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    input.mutable_transaction()->set_nonce(89);
+    input.mutable_transaction()->set_value("0");
+    input.mutable_transaction()->set_sender("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th");
+    input.mutable_transaction()->set_receiver("erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx");
+    input.mutable_transaction()->set_sender_username("alice");
+    input.mutable_transaction()->set_receiver_username("bob");
+    input.mutable_transaction()->set_gas_price(1000000000);
+    input.mutable_transaction()->set_gas_limit(50000);
+    input.mutable_transaction()->set_data("");
+    input.mutable_transaction()->set_chain_id("local-testnet");
+    input.mutable_transaction()->set_version(1);
+    
+    auto output = Signer::sign(input);
+    auto signature = output.signature();
+    auto encoded = output.encoded();
+    auto expectedSignature = "1bed82c3f91c9d24f3a163e7b93a47453d70e8743201fe7d3656c0214569566a76503ef0968279ac942ca43b9c930bd26638dfb075a220ce80b058ab7bca140a";
+    auto expectedEncoded = 
+    (
+        boost::format(R"({"nonce":89,"value":"0","receiver":"%1%","sender":"%2%","senderUsername":"%3%","receiverUsername":"%4%","gasPrice":1000000000,"gasLimit":50000,"chainID":"local-testnet","version":1,"signature":"%5%"})")
+        % "erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx" 
+        % "erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th" 
+        // "alice"
+        % "YWxpY2U=" 
+        // "bob"
+        % "Ym9i" 
+        % expectedSignature
+    ).str();
+
+    ASSERT_EQ(expectedSignature, signature);
+    ASSERT_EQ(expectedEncoded, encoded);
+}
+
+TEST(ElrondSigner, SignWithOptions) {
+    auto input = Proto::SigningInput();
+    auto privateKey = PrivateKey(parse_hex("413f42575f7f26fad3317a778771212fdb80245850981e48b58a4f25e344e8f9"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    input.mutable_transaction()->set_nonce(89);
+    input.mutable_transaction()->set_value("0");
+    input.mutable_transaction()->set_sender("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th");
+    input.mutable_transaction()->set_receiver("erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx");
+    input.mutable_transaction()->set_gas_price(1000000000);
+    input.mutable_transaction()->set_gas_limit(50000);
+    input.mutable_transaction()->set_data("");
+    input.mutable_transaction()->set_chain_id("local-testnet");
+    // We'll set a dummy value on the "options" field (merely an example).
+    // Currently, the "options" field should be ignored (not set) by applications using TW Core.
+    // In the future, TW Core will handle specific transaction options 
+    // (such as the "SignedWithHash" flag, as seen in https://github.com/ElrondNetwork/elrond-go-core/blob/main/core/versioning/txVersionChecker.go)
+    // when building and signing transactions.
+    input.mutable_transaction()->set_options(42);
+    input.mutable_transaction()->set_version(1);
+    
+    auto output = Signer::sign(input);
+    auto signature = output.signature();
+    auto encoded = output.encoded();
+    auto expectedSignature = "d9a624f13960ae1cc471de48bdb43b101b9d469bb8b159f68bb629bb32d0109e1acfebb62d6d2fc5786c0b85f9e7ce2caff74988864a8285f34797c5a5fa5801";
+    auto expectedEncoded = 
+    (
+        boost::format(R"({"nonce":89,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"chainID":"local-testnet","version":1,"options":42,"signature":"%3%"})")
+        % "erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx" 
+        % "erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th" 
+        % expectedSignature
+    ).str();
+
+    ASSERT_EQ(expectedSignature, signature);
+    ASSERT_EQ(expectedEncoded, encoded);
+}
