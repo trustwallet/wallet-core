@@ -92,6 +92,13 @@ TWData *_Nonnull TWBitcoinTransactionSignerMessage(TW_Bitcoin_Proto_SigningInput
     for (auto i = 0; i < signer->impl.plan.utxos.size(); i++) {
         auto& utxo = signer->impl.plan.utxos[i];
         auto script = Script(utxo.script().begin(), utxo.script().end());
+
+        if (i >= signer->impl.transaction.inputs.size()) {
+            // Check if inputs consistent with utxos,
+            // if not, we return null in case of app crash.
+            return nullptr;
+        }
+        
         auto sighash = signer->impl.transaction.getPreImage(script, i,
                                                             static_cast<TWBitcoinSigHashType>(input.hash_type()), utxo.amount(), signatureVersion);
 
@@ -124,8 +131,8 @@ TWData *_Nonnull TWBitcoinTransactionSignerMessageSegWit(TW_Bitcoin_Proto_Signin
 
         if (i >= signer->impl.transaction.inputs.size()) {
             // Check if inputs consistent with utxos,
-            // if not, we return NULL in case of app crash.
-            return NULL;
+            // if not, we return null in case of app crash.
+            return nullptr;
         }
 
         auto sighash = signer->impl.transaction.getPreImage(script, i,
@@ -149,43 +156,53 @@ TWData *_Nonnull TWBitcoinTransactionSignerMessageSegWit(TW_Bitcoin_Proto_Signin
 }
 
 TWData *_Nonnull TWBitcoinTransactionSignerTransaction(TW_Bitcoin_Proto_SigningInput data, TW_Bitcoin_Proto_TransactionPlan planData) {
-    Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
-    Proto::TransactionPlan plan;
-    plan.ParseFromArray(TWDataBytes(planData), static_cast<int>(TWDataSize(planData)));
+    try {
+        Proto::SigningInput input;
+        input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
+        Proto::TransactionPlan plan;
+        plan.ParseFromArray(TWDataBytes(planData), static_cast<int>(TWDataSize(planData)));
 
-    auto signer = new TWBitcoinTransactionSigner{ TransactionSigner<Transaction>(std::move(input), plan) };
+        auto signer =
+            new TWBitcoinTransactionSigner{TransactionSigner<Transaction>(std::move(input), plan)};
 
-    for (auto i = 0; i < signer->impl.transaction.inputs.size(); i++) {
-        for (auto j = 0; j < plan.utxos().size(); j++) {
-            auto planOutput = OutPoint(plan.utxos()[j].out_point());
-            if (signer->impl.transaction.inputs[i].previousOutput == planOutput ){
-                signer->impl.transaction.inputs[i].script = Script(plan.utxos()[j].script().begin(), plan.utxos()[j].script().end());
+        for (auto i = 0; i < signer->impl.transaction.inputs.size(); i++) {
+            for (auto j = 0; j < plan.utxos().size(); j++) {
+                auto planOutput = OutPoint(plan.utxos()[j].out_point());
+                if (signer->impl.transaction.inputs[i].previousOutput == planOutput) {
+                    signer->impl.transaction.inputs[i].script =
+                        Script(plan.utxos()[j].script().begin(), plan.utxos()[j].script().end());
+                }
             }
         }
+
+        const auto& tx = signer->impl.transaction;
+        auto protoOutput = Proto::SigningOutput();
+        *protoOutput.mutable_transaction() = tx.proto();
+
+        TW::Data encoded;
+        auto hasWitness = std::any_of(tx.inputs.begin(), tx.inputs.end(),
+                                      [](auto& input) { return !input.scriptWitness.empty(); });
+        tx.encode(hasWitness, encoded);
+        protoOutput.set_encoded(encoded.data(), encoded.size());
+
+        TW::Data txHashData = encoded;
+        if (hasWitness) {
+            txHashData.clear();
+            tx.encode(false, txHashData);
+        }
+
+        auto txHash = TW::Hash::sha256(TW::Hash::sha256(txHashData));
+        std::reverse(txHash.begin(), txHash.end());
+        protoOutput.set_transaction_id(TW::hex(txHash));
+
+        auto serialized = protoOutput.SerializeAsString();
+        return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serialized.data()),
+                                     serialized.size());
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << '\n';
     }
 
-    const auto& tx = signer->impl.transaction;
-    auto protoOutput = Proto::SigningOutput();
-    *protoOutput.mutable_transaction() = tx.proto();
-
-    TW::Data encoded;
-    auto hasWitness = std::any_of(tx.inputs.begin(), tx.inputs.end(), [](auto& input) { return !input.scriptWitness.empty(); });
-    tx.encode(hasWitness, encoded);
-    protoOutput.set_encoded(encoded.data(), encoded.size());
-
-    TW::Data txHashData = encoded;
-    if (hasWitness) {
-        txHashData.clear();
-        tx.encode(false, txHashData);
-    }
-
-    auto txHash = TW::Hash::sha256(TW::Hash::sha256(txHashData));
-    std::reverse(txHash.begin(), txHash.end());
-    protoOutput.set_transaction_id(TW::hex(txHash));
-
-    auto serialized = protoOutput.SerializeAsString();
-    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+    return nullptr;
 }
 
 template <typename It>
@@ -232,49 +249,60 @@ std::vector<TW::Data> decodeWitnessScript(const Script& s) {
 }
 
 TWData *_Nonnull TWBitcoinTransactionSignerTransactionSegWit(TW_Bitcoin_Proto_SigningInput data, TW_Bitcoin_Proto_TransactionPlan planData) {
-    Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
-    Proto::TransactionPlan plan;
-    plan.ParseFromArray(TWDataBytes(planData), static_cast<int>(TWDataSize(planData)));
+    try {
+        Proto::SigningInput input;
+        input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
+        Proto::TransactionPlan plan;
+        plan.ParseFromArray(TWDataBytes(planData), static_cast<int>(TWDataSize(planData)));
 
-    auto signer = new TWBitcoinTransactionSigner{ TransactionSigner<Transaction>(std::move(input), plan) };
+        auto signer =
+            new TWBitcoinTransactionSigner{TransactionSigner<Transaction>(std::move(input), plan)};
 
-    for (auto i = 0; i < signer->impl.transaction.inputs.size(); i++) {
-        for (auto j = 0; j < plan.utxos().size(); j++) {
-            auto planOutput = OutPoint(plan.utxos()[j].out_point());
-            if (signer->impl.transaction.inputs[i].previousOutput == planOutput ) {
-                auto length = plan.utxos()[j].script().length();
-                auto signatureVersioon = plan.utxos()[j].script().back();
-                auto script = Script(plan.utxos()[j].script().begin(), plan.utxos()[j].script().begin() + length - 1);
-                if (signatureVersioon == WITNESS_V0) {
-                    // segwit signature
-                    signer->impl.transaction.inputs[i].scriptWitness = decodeWitnessScript(script);
-                } else {
-                    signer->impl.transaction.inputs[i].script = script;
+        for (auto i = 0; i < signer->impl.transaction.inputs.size(); i++) {
+            for (auto j = 0; j < plan.utxos().size(); j++) {
+                auto planOutput = OutPoint(plan.utxos()[j].out_point());
+                if (signer->impl.transaction.inputs[i].previousOutput == planOutput) {
+                    auto length = plan.utxos()[j].script().length();
+                    auto signatureVersioon = plan.utxos()[j].script().back();
+                    auto script = Script(plan.utxos()[j].script().begin(),
+                                         plan.utxos()[j].script().begin() + length - 1);
+                    if (signatureVersioon == WITNESS_V0) {
+                        // segwit signature
+                        signer->impl.transaction.inputs[i].scriptWitness =
+                            decodeWitnessScript(script);
+                    } else {
+                        signer->impl.transaction.inputs[i].script = script;
+                    }
                 }
             }
         }
+
+        const auto& tx = signer->impl.transaction;
+        auto protoOutput = Proto::SigningOutput();
+        *protoOutput.mutable_transaction() = tx.proto();
+
+        TW::Data encoded;
+        auto hasWitness = std::any_of(tx.inputs.begin(), tx.inputs.end(),
+                                      [](auto& input) { return !input.scriptWitness.empty(); });
+        tx.encode(hasWitness, encoded);
+        protoOutput.set_encoded(encoded.data(), encoded.size());
+
+        TW::Data txHashData = encoded;
+        if (hasWitness) {
+            txHashData.clear();
+            tx.encode(false, txHashData);
+        }
+
+        auto txHash = TW::Hash::sha256(TW::Hash::sha256(txHashData));
+        std::reverse(txHash.begin(), txHash.end());
+        protoOutput.set_transaction_id(TW::hex(txHash));
+
+        auto serialized = protoOutput.SerializeAsString();
+        return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serialized.data()),
+                                     serialized.size());
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << '\n';
     }
 
-    const auto& tx = signer->impl.transaction;
-    auto protoOutput = Proto::SigningOutput();
-    *protoOutput.mutable_transaction() = tx.proto();
-
-    TW::Data encoded;
-    auto hasWitness = std::any_of(tx.inputs.begin(), tx.inputs.end(), [](auto& input) { return !input.scriptWitness.empty(); });
-    tx.encode(hasWitness, encoded);
-    protoOutput.set_encoded(encoded.data(), encoded.size());
-
-    TW::Data txHashData = encoded;
-    if (hasWitness) {
-        txHashData.clear();
-        tx.encode(false, txHashData);
-    }
-
-    auto txHash = TW::Hash::sha256(TW::Hash::sha256(txHashData));
-    std::reverse(txHash.begin(), txHash.end());
-    protoOutput.set_transaction_id(TW::hex(txHash));
-
-    auto serialized = protoOutput.SerializeAsString();
-    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+    return nullptr;
 }

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -52,7 +52,7 @@ struct Result {
     /// Initializes a failure result.
     Result(Types::Failure<E> error) : success_(false) { new (&storage_) E(error.val); }
 
-    Result(const Result& other) : success_(success_) {
+    Result(const Result& other) : success_(other.success_) {
         if (success_) {
             new (&storage_) T(other.get<T>());
         } else {
@@ -125,6 +125,8 @@ struct Result {
     /// Returns a new failure result with the given error.
     static Result<T, E> failure(E&& val) { return Result(Types::Failure<E>(std::forward<E>(val))); }
 
+    static Result<T, E> failure(E& val) { return Result(Types::Failure<E>(val)); }
+
     operator bool() const { return success_; }
 
   private:
@@ -163,7 +165,7 @@ struct Result<void, E> {
     E error() const { return *error_; }
 
     /// Returns a new success result with no payloadd.
-    static inline Result<void> success() { return Result(Types::Success<void>()); }
+    static inline Result<void, E> success() { return Result(Types::Success<void>()); }
 
     /// Returns a new failure result with the given error.
     static Result<void, E> failure(E&& val) {
