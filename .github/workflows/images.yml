@@ -3,12 +3,13 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Publish Docker image
+name: Release and Publish Docker image
 
 on:
   push:
-    branches:
-      - master
+    # Publish `v1.2.3` tags as releases.
+    tags:
+      - v*
 jobs:
   push_to_registry:
     name: Push Docker image to Docker Hub
@@ -16,13 +17,15 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
-      - name: Set version
-        id: semantic
-        uses: cycjimmy/semantic-release-action@v2
-        with:
-          semantic_version: '15.13.31'
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@latest
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN_SEMANTIC_RELEASE }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: false
       - name: Log in to Docker Hub
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
