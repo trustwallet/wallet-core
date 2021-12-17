@@ -142,9 +142,9 @@ TEST(TWStoredKey, addressAddDerivation) {
     const auto accountAddress1 = WRAPS(TWAccountAddress(accountCoin1.get()));
     EXPECT_EQ(string(TWStringUTF8Bytes(accountAddress1.get())), "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
 
-    const auto accountCoin2 = WRAP(TWAccount, TWStoredKeyAccountForCoinDerivation(key.get(), coin, TWDerivationBitcoinP2pk, wallet.get()));
+    const auto accountCoin2 = WRAP(TWAccount, TWStoredKeyAccountForCoinDerivation(key.get(), coin, TWDerivationBitcoinLegacy, wallet.get()));
     const auto accountAddress2 = WRAPS(TWAccountAddress(accountCoin2.get()));
-    EXPECT_EQ(string(TWStringUTF8Bytes(accountAddress2.get())), "19fUCoUeGmHRFSgFtv4hoMYatCHcifNDEy");
+    EXPECT_EQ(string(TWStringUTF8Bytes(accountAddress2.get())), "1NyRyFewhZcWMa9XCj3bBxSXPXyoSg8dKz");
 
     EXPECT_EQ(TWStoredKeyAccountCount(key.get()), 2);
 }

@@ -59,7 +59,7 @@ string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const Publ
     switch (coin) {
         case TWCoinTypeBitcoin:
             switch (derivation) {
-                case TWDerivationBitcoinP2pk:
+                case TWDerivationBitcoinLegacy:
                     return Address(publicKey, 0).string();
 
                 case TWDerivationBitcoinSegwit:
