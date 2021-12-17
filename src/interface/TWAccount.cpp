@@ -10,12 +10,12 @@
 
 using namespace TW;
 
-struct TWAccount *_Nonnull TWAccountCreate(TWString *_Nonnull address, enum TWCoinType coin, TWString *_Nonnull derivationPath, TWString *_Nonnull extendedPublicKey) {
+struct TWAccount *_Nonnull TWAccountCreate(TWString *_Nonnull address, enum TWCoinType coin, enum TWDerivation derivation, TWString *_Nonnull derivationPath, TWString *_Nonnull extendedPublicKey) {
     auto& addressString = *reinterpret_cast<const std::string*>(address);
     auto& derivationPathString = *reinterpret_cast<const std::string*>(derivationPath);
     auto& extendedPublicKeyString = *reinterpret_cast<const std::string*>(extendedPublicKey);
     const auto dp = DerivationPath(derivationPathString);
-    return new TWAccount{ Keystore::Account(addressString, coin, TWDerivationDefault, dp, extendedPublicKeyString) };  // TODO add version with alternative derivation
+    return new TWAccount{ Keystore::Account(addressString, coin, derivation, dp, extendedPublicKeyString) };
 }
 
 void TWAccountDelete(struct TWAccount *_Nonnull account) {
