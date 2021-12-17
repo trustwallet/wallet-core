@@ -504,7 +504,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
     { // Create alternative Solana account with non-default derivation path (different derivation path and address)
         const auto coin = TWCoinTypeSolana;
 
-        const auto sol2 = key.account(coin, TWDerivationSolanaPhantom, wallet);
+        const auto sol2 = key.account(coin, TWDerivationSolanaSolana, wallet);
 
         const auto expectedSol2 = "CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C";
         EXPECT_EQ(sol2.address, expectedSol2);
@@ -513,7 +513,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedSol2);
         // Now we have 2 Solana addresses, 1st is returned here
         EXPECT_EQ(key.account(coin)->address, expectedSol1);
-        EXPECT_EQ(key.account(coin, TWDerivationSolanaPhantom, wallet).address, expectedSol2);
+        EXPECT_EQ(key.account(coin, TWDerivationSolanaSolana, wallet).address, expectedSol2);
         EXPECT_EQ(key.getAccounts(coin).size(), 2);
         EXPECT_EQ(key.getAccounts(coin)[0].address, expectedSol1);
         EXPECT_EQ(key.getAccounts(coin)[1].address, expectedSol2);

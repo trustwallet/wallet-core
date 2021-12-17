@@ -87,8 +87,8 @@ TEST(Derivation, alternativeDerivation) {
 
     EXPECT_EQ(TW::derivationPath(TWCoinTypeSolana).string(), "m/44'/501'/0'");
     EXPECT_EQ(TW::derivationPath(TWCoinTypeSolana, TWDerivationDefault).string(), "m/44'/501'/0'");
-    EXPECT_EQ(TW::derivationPath(TWCoinTypeSolana, TWDerivationSolanaPhantom).string(), "m/44'/501'/0'/0'");
-    EXPECT_EQ(std::string(TW::derivationName(TWCoinTypeSolana, TWDerivationSolanaPhantom)), "phantom");
+    EXPECT_EQ(TW::derivationPath(TWCoinTypeSolana, TWDerivationSolanaSolana).string(), "m/44'/501'/0'/0'");
+    EXPECT_EQ(std::string(TW::derivationName(TWCoinTypeSolana, TWDerivationSolanaSolana)), "solana");
 }
 
 } // namespace
