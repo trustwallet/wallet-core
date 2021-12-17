@@ -397,7 +397,7 @@ class KeyStoreTests: XCTestCase {
         XCTAssertEqual(btc1.address, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny")
 
         let btc2 = try wallet.getAccount(password: password, coin: .bitcoin, derivation: .bitcoinLegacy)
-        XCTAssertEqual(btc2.address, "19fUCoUeGmHRFSgFtv4hoMYatCHcifNDEy")
+        XCTAssertEqual(btc2.address, "1NyRyFewhZcWMa9XCj3bBxSXPXyoSg8dKz")
 
         let solana1 = try wallet.getAccount(password: password, coin: .solana, derivation: .default)
         XCTAssertEqual(solana1.address, "HiipoCKL8hX2RVmJTz3vaLy34hS2zLhWWMkUWtw85TmZ")
