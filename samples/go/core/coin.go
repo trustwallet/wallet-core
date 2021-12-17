@@ -5,6 +5,7 @@ package core
 // #include <TrustWalletCore/TWCoinType.h>
 // #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 import "C"
+
 import "tw/types"
 
 type CoinType uint32
@@ -19,4 +20,8 @@ func (c CoinType) GetName() string {
 	name := C.TWCoinTypeConfigurationGetName(C.enum_TWCoinType(c))
 	defer C.TWStringDelete(name)
 	return types.TWStringGoString(name)
+}
+
+func (c CoinType) Decimals() int {
+	return int(C.TWCoinTypeConfigurationGetDecimals(C.enum_TWCoinType(c)))
 }
