@@ -12,15 +12,19 @@ import (
 )
 
 func main() {
+	fmt.Println("==> calling wallet core from go")
+
 	mn := "confirm bleak useless tail chalk destroy horn step bulb genuine attract split"
-	
+
+	fmt.Println("==> mnemonic is valid: ", core.IsMnemonicValid(mn))
+
 	// bitcoin wallet
 	bw, err := core.CreateWalletWithMnemonic(mn, core.CoinTypeBitcoin)
 	if err != nil {
 		panic(err)
 	}
 	printWallet(bw)
-	
+
 	// ethereum wallet
 	ew, err := core.CreateWalletWithMnemonic(mn, core.CoinTypeEthereum)
 	if err != nil {
