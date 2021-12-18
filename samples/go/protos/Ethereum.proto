@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package TW.Ethereum.Proto;
 option java_package = "wallet.core.jni.proto";
-option go_package = "./ethereum";
+option go_package = "tw/protos/ethereum";
 
 // Transaction (transfer, smart contract call, ...)
 message Transaction {
