@@ -11,7 +11,6 @@
 
 #include "PrivateKey.h"
 #include "Data.h"
-#include "Base64.h"
 
 #include <google/protobuf/util/json_util.h>
 
@@ -53,11 +52,9 @@ Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input) noex
         auto serializedTxRaw = buildProtoTxRaw(input, serializedTxBody, serializedAuthInfo, signature);
 
         auto output = Proto::SigningOutput();
-        const string serializedBase64 =Base64::encode(TW::data(serializedTxRaw)); 
-        output.set_serialized(serializedBase64);
+        const string jsonSerialized = buildProtoTxJson(input, serializedTxRaw);
+        output.set_serialized(jsonSerialized);
         output.set_signature(signature.data(), signature.size());
-        const string jsonSerialized = "{\"tx_bytes\": \"" + serializedBase64 + "\", \"mode\": \"BROADCAST_MODE_SYNC\"}";
-        output.set_json_serialized(jsonSerialized);
         output.set_json("");
         output.set_error("");
         return output;

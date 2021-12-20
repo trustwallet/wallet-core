@@ -17,6 +17,9 @@
 #include "PrivateKey.h"
 #include "Data.h"
 #include "Hash.h"
+#include "Base64.h"
+
+#include <google/protobuf/util/json_util.h>
 
 using namespace TW;
 using namespace TW::Cosmos;
@@ -180,6 +183,26 @@ std::string buildProtoTxRaw(const Proto::SigningInput& input, const std::string&
     txRaw.set_auth_info_bytes(serializedAuthInfo);
     *txRaw.add_signatures() = std::string(signature.begin(), signature.end());
     return txRaw.SerializeAsString();
+}
+
+static string broadcastMode(Proto::BroadcastMode mode) {
+    switch (mode) {
+    case Proto::BroadcastMode::BLOCK:
+        return "BROADCAST_MODE_BLOCK";
+    case Proto::BroadcastMode::ASYNC:
+        return "BROADCAST_MODE_ASYNC";
+    case Proto::BroadcastMode::SYNC:
+    default: return "BROADCAST_MODE_SYNC";
+    }
+}
+
+std::string buildProtoTxJson(const Proto::SigningInput& input, const std::string& serializedTx) {
+    const string serializedBase64 = Base64::encode(TW::data(serializedTx)); 
+    const json jsonSerialized = {
+        {"tx_bytes", serializedBase64},
+        {"mode", broadcastMode(input.mode())}
+    };
+    return jsonSerialized.dump();
 }
 
 } // namespace
