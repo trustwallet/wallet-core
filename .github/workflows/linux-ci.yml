@@ -61,7 +61,18 @@ jobs:
       run: |
         sudo rm -rf coverage.info
         tools/coverage
-    - name: Build and run sample app
+    - name: Build and run sample app (coverage/clang-tidy/clang-asan)
+      if: github.ref != 'refs/heads/master'
+      run: |
+        cd samples/cpp
+        cmake . -DWALLET_CORE=../../ -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON -DCLANG_TIDY=ON -DCLANG_ASAN=ON
+        make
+        ./sample || true
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+    - name: Build and run sample app (coverage)
+      if: github.ref != 'refs/heads/master'
       run: |
         cd samples/cpp
         cmake . -DWALLET_CORE=../../ -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON
