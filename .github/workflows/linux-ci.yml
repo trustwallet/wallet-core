@@ -64,7 +64,7 @@ jobs:
     - name: Build and run sample app
       run: |
         cd samples/cpp
-        cmake . -DWALLET_CORE=../../ -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON
+        cmake . -DWALLET_CORE=../../ -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON -DCLANG_TIDY=ON -DCLANG_ASAN=ON
         make
         ./sample || true
       env:
