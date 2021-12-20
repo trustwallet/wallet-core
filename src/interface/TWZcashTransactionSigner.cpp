@@ -73,6 +73,13 @@ TWData *_Nonnull TWZcashTransactionSignerMessage(TW_Bitcoin_Proto_SigningInput d
     for (auto i = 0; i < signer->impl.plan.utxos.size(); i++) {
         auto& utxo = signer->impl.plan.utxos[i];
         auto script = Bitcoin::Script(utxo.script().begin(), utxo.script().end());
+
+        if (i >= signer->impl.transaction.inputs.size()) {
+            // Check if inputs consistent with utxos,
+            // if not, we return null in case of app crash.
+            return nullptr;
+        }
+
         auto preImage = signer->impl.transaction.getPreImage(script, i,
                                                             static_cast<TWBitcoinSigHashType>(input.hash_type()), utxo.amount());
 
@@ -85,30 +92,39 @@ TWData *_Nonnull TWZcashTransactionSignerMessage(TW_Bitcoin_Proto_SigningInput d
 }
 
 TWData *_Nonnull TWZcashTransactionSignerTransaction(TW_Bitcoin_Proto_SigningInput data, TW_Bitcoin_Proto_TransactionPlan planData) {
-    Bitcoin::Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
-    Bitcoin::Proto::TransactionPlan plan;
-    plan.ParseFromArray(TWDataBytes(planData), static_cast<int>(TWDataSize(planData)));
+    try {
+        Bitcoin::Proto::SigningInput input;
+        input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
+        Bitcoin::Proto::TransactionPlan plan;
+        plan.ParseFromArray(TWDataBytes(planData), static_cast<int>(TWDataSize(planData)));
 
-    auto signer = new TWZcashTransactionSigner{ Bitcoin::TransactionSigner<Transaction>(std::move(input), plan) };
+        auto signer = new TWZcashTransactionSigner{
+            Bitcoin::TransactionSigner<Transaction>(std::move(input), plan)};
 
-    for (auto i = 0; i < signer->impl.transaction.inputs.size(); i++) {
-        for (auto j = 0; j < plan.utxos().size(); j++) {
-            auto planOutput = Bitcoin::OutPoint(plan.utxos()[j].out_point());
-            if (signer->impl.transaction.inputs[i].previousOutput == planOutput ){
-                signer->impl.transaction.inputs[i].script = Bitcoin::Script(plan.utxos()[j].script().begin(), plan.utxos()[j].script().end());
+        for (auto i = 0; i < signer->impl.transaction.inputs.size(); i++) {
+            for (auto j = 0; j < plan.utxos().size(); j++) {
+                auto planOutput = Bitcoin::OutPoint(plan.utxos()[j].out_point());
+                if (signer->impl.transaction.inputs[i].previousOutput == planOutput) {
+                    signer->impl.transaction.inputs[i].script = Bitcoin::Script(
+                        plan.utxos()[j].script().begin(), plan.utxos()[j].script().end());
+                }
             }
         }
+
+        const auto& tx = signer->impl.transaction;
+        auto protoOutput = Bitcoin::Proto::SigningOutput();
+        *protoOutput.mutable_transaction() = tx.proto();
+
+        TW::Data encoded;
+        tx.encode(encoded);
+        protoOutput.set_encoded(encoded.data(), encoded.size());
+
+        auto serialized = protoOutput.SerializeAsString();
+        return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serialized.data()),
+                                     serialized.size());
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << '\n';
     }
 
-    const auto& tx = signer->impl.transaction;
-    auto protoOutput = Bitcoin::Proto::SigningOutput();
-    *protoOutput.mutable_transaction() = tx.proto();
-
-    TW::Data encoded;
-    tx.encode(encoded);
-    protoOutput.set_encoded(encoded.data(), encoded.size());
-
-    auto serialized = protoOutput.SerializeAsString();
-    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+    return nullptr;
 }
