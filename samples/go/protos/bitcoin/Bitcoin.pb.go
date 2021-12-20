@@ -238,8 +238,7 @@ type TransactionOutput struct {
 
 	// Transaction amount.
 	Value int64 `protobuf:"varint,1,opt,name=value,proto3" json:"value,omitempty"`
-	// Usually contains the public key as a Bitcoin script setting up conditions to claim this
-	// output.
+	// Usually contains the public key as a Bitcoin script setting up conditions to claim this output.
 	Script []byte `protobuf:"bytes,2,opt,name=script,proto3" json:"script,omitempty"`
 }
 
@@ -365,9 +364,8 @@ type SigningInput struct {
 	// Hash type to use when signing.
 	HashType uint32 `protobuf:"varint,1,opt,name=hash_type,json=hashType,proto3" json:"hash_type,omitempty"`
 	// Amount to send.  Transaction created will have this amount in its output,
-	// except when use_max_amount is set, in that case this amount is not relevant, maximum possible
-	// amount will be used (max avail less fee). If amount is equal or more than the available
-	// amount, also max amount will be used.
+	// except when use_max_amount is set, in that case this amount is not relevant, maximum possible amount will be used (max avail less fee).
+	// If amount is equal or more than the available amount, also max amount will be used.
 	Amount int64 `protobuf:"varint,2,opt,name=amount,proto3" json:"amount,omitempty"`
 	// Transaction fee per byte.
 	ByteFee int64 `protobuf:"varint,3,opt,name=byte_fee,json=byteFee,proto3" json:"byte_fee,omitempty"`
@@ -638,8 +636,7 @@ type SigningOutput struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Resulting transaction. Note that the amount may be different than the requested amount to
-	// account for fees and available funds.
+	// Resulting transaction. Note that the amount may be different than the requested amount to account for fees and available funds.
 	Transaction *Transaction `protobuf:"bytes,1,opt,name=transaction,proto3" json:"transaction,omitempty"`
 	// Signed and encoded transaction bytes.
 	Encoded []byte `protobuf:"bytes,2,opt,name=encoded,proto3" json:"encoded,omitempty"`
@@ -821,10 +818,9 @@ var file_Bitcoin_proto_rawDesc = []byte{
 	0x6f, 0x6e, 0x49, 0x64, 0x12, 0x33, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x04, 0x20,
 	0x01, 0x28, 0x0e, 0x32, 0x1d, 0x2e, 0x54, 0x57, 0x2e, 0x43, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e,
 	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x53, 0x69, 0x67, 0x6e, 0x69, 0x6e, 0x67, 0x45, 0x72, 0x72,
-	0x6f, 0x72, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x42, 0x2a, 0x0a, 0x15, 0x77, 0x61, 0x6c,
+	0x6f, 0x72, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x42, 0x17, 0x0a, 0x15, 0x77, 0x61, 0x6c,
 	0x6c, 0x65, 0x74, 0x2e, 0x63, 0x6f, 0x72, 0x65, 0x2e, 0x6a, 0x6e, 0x69, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x5a, 0x11, 0x74, 0x77, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2f, 0x62, 0x69,
-	0x74, 0x63, 0x6f, 0x69, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
