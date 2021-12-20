@@ -135,6 +135,9 @@ message SigningOutput {
     // Signed transaction in protobuf encoded form, Base64-encoded (Stargate case)
     string serialized = 3;
 
+    // Json format directly suitable for broadcast message, containing Stargate serialized field.
+    string json_serialized = 4;
+
     // Set in case of error
     string error = 5;
 }

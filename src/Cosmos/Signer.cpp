@@ -53,8 +53,11 @@ Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input) noex
         auto serializedTxRaw = buildProtoTxRaw(input, serializedTxBody, serializedAuthInfo, signature);
 
         auto output = Proto::SigningOutput();
-        output.set_serialized(Base64::encode(TW::data(serializedTxRaw)));
+        const string serializedBase64 =Base64::encode(TW::data(serializedTxRaw)); 
+        output.set_serialized(serializedBase64);
         output.set_signature(signature.data(), signature.size());
+        const string jsonSerialized = "{\"tx_bytes\": \"" + serializedBase64 + "\", \"mode\": \"BROADCAST_MODE_SYNC\"}";
+        output.set_json_serialized(jsonSerialized);
         output.set_json("");
         output.set_error("");
         return output;
