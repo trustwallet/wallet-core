@@ -22,7 +22,7 @@ jobs:
       run: |
         curl -O -L "https://golang.org/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"
         tar -xf "go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"
-        chown -R root:root ./go
+        sudo chown -R root:root ./go
         sudo mv -v go /usr/local
     - name: Build and run GoLang sample app
       run: |
