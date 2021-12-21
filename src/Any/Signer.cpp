@@ -38,16 +38,7 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
     auto output = TW::Any::Proto::SigningOutput();
 
     switch (coinType) {
-    case TWCoinTypeCosmos: {
-        Cosmos::Proto::SigningInput message;
-        parse(transaction, &message, output);
-        if (output.success()) {
-            message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-            auto signerOutput = Cosmos::Signer(std::move(message)).build();
-            output.set_output(signerOutput.json());
-        }
-        break;
-    }
+    case TWCoinTypeCosmos:
     case TWCoinTypeBinance: {
         Binance::Proto::SigningInput message;
         parse(transaction, &message, output);

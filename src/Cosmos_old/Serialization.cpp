@@ -10,8 +10,8 @@
 #include "../Base64.h"
 
 using namespace TW;
-using namespace TW::Cosmos;
-using namespace TW::Cosmos::Proto;
+using namespace TW::Cosmos_old;
+using namespace TW::Cosmos_old::Proto;
 
 using json = nlohmann::json;
 using string = std::string;
@@ -179,7 +179,7 @@ static json signatureJSON(const Signature& signature) {
     return jsonSignature;
 }
 
-json TW::Cosmos::signaturePreimageJSON(const SigningInput& input) {
+json TW::Cosmos_old::signaturePreimageJSON(const SigningInput& input) {
     json jsonForSigning;
 
     jsonForSigning["account_number"] = std::to_string(input.account_number());
@@ -192,7 +192,7 @@ json TW::Cosmos::signaturePreimageJSON(const SigningInput& input) {
     return jsonForSigning;
 }
 
-json TW::Cosmos::transactionJSON(const Transaction& transaction, const string& type_prefix) {
+json TW::Cosmos_old::transactionJSON(const Transaction& transaction, const string& type_prefix) {
     json jsonTx;
 
     jsonTx["type"] = type_prefix;

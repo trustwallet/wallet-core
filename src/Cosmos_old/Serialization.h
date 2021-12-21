@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "../proto/Cosmos.pb.h"
+#include "../proto/Cosmos_old.pb.h"
 #include <nlohmann/json.hpp>
 
 extern const std::string AMINO_PREFIX_SEND_COIN_MESSAGE;
@@ -16,7 +16,7 @@ extern const std::string AMINO_PREFIX_RESTAKE_MESSAGE;
 extern const std::string AMINO_PREFIX_WITHDRAW_STAKE_MESSAGE;
 extern const std::string AMINO_PREFIX_PUBLIC_KEY;
 
-namespace TW::Cosmos {
+namespace TW::Cosmos_old {
 
 nlohmann::json signaturePreimageJSON(const Proto::SigningInput& input);
 nlohmann::json transactionJSON(const Proto::Transaction& transaction, const std::string& type_prefix);

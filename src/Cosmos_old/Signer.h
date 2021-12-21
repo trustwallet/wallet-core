@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include "../proto/Cosmos.pb.h"
+#include "../proto/Cosmos_old.pb.h"
 #include "../Data.h"
 #include "../PublicKey.h"
 #include <nlohmann/json.hpp>
 #include <stdint.h>
 #include <vector>
 
-namespace TW::Cosmos {
+namespace TW::Cosmos_old {
 
 /// Helper class that performs Cosmos transaction signing.
 class Signer {
@@ -33,9 +33,9 @@ public:
     /// \returns the signed transaction.
     Proto::SigningOutput build() const;
 
-    std::string encodeTransaction(const Data& signature, const PublicKey& publicKey) const;
-
-    std::string signaturePreimage(const Data& publicKey) const;
+    Data encodeTransaction(const Cosmos_old::Proto::Signature& signature) const;
+    Cosmos_old::Proto::Signature encodeSignature(const PublicKey& publicKey, const Data& signature) const;
+    std::string signaturePreimage() const;
 
 private:
     nlohmann::json buildTransactionJSON(const Data& signature) const;
@@ -46,5 +46,5 @@ private:
 
 /// Wrapper for C interface.
 struct TWCosmosSigner {
-    TW::Cosmos::Signer impl;
+    TW::Cosmos_old::Signer impl;
 };

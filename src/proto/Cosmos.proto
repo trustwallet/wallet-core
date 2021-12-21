@@ -15,88 +15,108 @@ message Fee {
     uint64 gas = 2;
 }
 
-// Message for sending coins.
-message SendCoinsMessage {
-    string from_address = 1;
-    string to_address = 2;
-    repeated Amount amounts = 3;
-    // default is cosmos-sdk/MsgSend
-    string type_prefix = 4;
+enum BroadcastMode {
+    BLOCK = 0; // Wait for the tx to pass/fail CheckTx, DeliverTx, and be committed in a block
+    SYNC = 1;  // Wait for the tx to pass/fail CheckTx
+    ASYNC = 2; // Don't wait for pass/fail CheckTx; send and return tx immediately
 }
 
-// Message for staking.
-message StakeMessage {
-    string delegator_address = 1;
-    string validator_address = 2;
-    Amount amount = 3;
-    // cosmos-sdk/MsgDelegate to stake and cosmos-sdk/MsgUndelegate to unstake
-    string type_prefix = 4;
-}
+message Message {
+    // cosmos-sdk/MsgSend
+    message Send {
+        string from_address = 1;
+        string to_address = 2;
+        repeated Amount amounts = 3;
+        string type_prefix = 4;
+    }
 
-// Message for restaking.
-message ReStakeMessage {
-    string delegator_address = 1;
-    string validator_src_address = 2;
-    string validator_dst_address = 3;
-    Amount amount = 4;
+    // cosmos-sdk/MsgDelegate to stake
+    message Delegate {
+        string delegator_address = 1;
+        string validator_address = 2;
+        Amount amount = 3;
+        string type_prefix = 4;
+    }
+
+    // cosmos-sdk/MsgUndelegate to unstake
+    message Undelegate {
+        string delegator_address = 1;
+        string validator_address = 2;
+        Amount amount = 3;
+        string type_prefix = 4;
+    }
+
     // cosmos-sdk/MsgBeginRedelegate
-    string type_prefix = 5;
-}
+    message BeginRedelegate {
+        string delegator_address = 1;
+        string validator_src_address = 2;
+        string validator_dst_address = 3;
+        Amount amount = 4;
+        string type_prefix = 5;
+    }
 
-// Message for staking.
-message WithdrawStakeRewardMessage {
-    string delegator_address = 1;
-    string validator_address = 2;
-    // default is cosmos-sdk/MsgWithdrawDelegationReward
-    string type_prefix = 3;
-}
+    // cosmos-sdk/MsgWithdrawDelegationReward
+    message WithdrawDelegationReward {
+        string delegator_address = 1;
+        string validator_address = 2;
+        string type_prefix = 3;
+    }
 
-// Signature
-message Signature {
-    bytes public_key = 1;
-    bytes signature = 2;
-}
-
-// Transaction
-message Transaction {
-    Fee fee = 1;
-    string memo = 2;
-    Signature signature = 3;
+    message RawJSON {
+        string type = 1;
+        string value = 2;
+    }
 
     oneof message_oneof {
-        SendCoinsMessage send_coins_message = 4;
-        StakeMessage stake_message = 5;
-        StakeMessage unstake_message = 6;
-        ReStakeMessage restake_message = 7;
-        WithdrawStakeRewardMessage withdraw_stake_reward_message = 8;
+        Send send_coins_message = 1;
+        Delegate stake_message = 2;
+        Undelegate unstake_message = 3;
+        BeginRedelegate restake_message = 4;
+        WithdrawDelegationReward withdraw_stake_reward_message = 5;
+        RawJSON raw_json_message = 6;
     }
+}
+
+enum SigningMode {
+    JSON = 0;        // JSON format, Pre-Stargate
+    Protobuf = 1;    // Protobuf-serialized (binary), Stargate
 }
 
 // Input data necessary to create a signed order.
 message SigningInput {
-    uint64 account_number = 1;
-    string chain_id = 2;
-    Fee fee = 3;
-    string memo = 4;
-    uint64 sequence = 5; 
+    // Specify if Stargate or earlier serialization is used
+    SigningMode signing_mode = 1;
 
-    bytes private_key = 6;
+    uint64 account_number = 2;
+    string chain_id = 3;
+    Fee fee = 4;
+    string memo = 5;
+    uint64 sequence = 6;
 
-    oneof message_oneof {
-        SendCoinsMessage send_coins_message = 7;
-        StakeMessage stake_message = 8;
-        StakeMessage unstake_message = 9;
-        ReStakeMessage restake_message = 10;
-        WithdrawStakeRewardMessage withdraw_stake_reward_message = 11;
-    }
-    // default is cosmos-sdk/MsgSend
-    string type_prefix = 12;
+    bytes private_key = 7;
+
+    repeated Message messages = 8;
+
+    BroadcastMode mode = 9;
 }
 
 // Transaction signing output.
 message SigningOutput {
     // Signature
     bytes signature = 1;
-    // Signed transaction in JSON.
+
+    // Signed transaction in JSON (pre-Stargate case)
     string json = 2;
+
+    // Signed transaction in protobuf encoded form, Base64-encoded (Stargate case)
+    string serialized = 3;
+
+    // Set in case of error
+    string error = 5;
+}
+
+// Signature
+message Signature {
+    bytes public_key = 1;
+    bytes signature = 2;
 }

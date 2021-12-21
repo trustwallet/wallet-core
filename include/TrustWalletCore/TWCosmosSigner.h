@@ -22,7 +22,7 @@ TW_Cosmos_Proto_SigningOutput TWCosmosSignerSign(TW_Cosmos_Proto_SigningInput in
 
 /// Builds a message to be signed
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWCosmosSignerMessage(TW_Cosmos_Proto_SigningInput data);
+TWData *_Nonnull TWCosmosSignerMessage(TW_Cosmos_Proto_SigningInput data, TWData *_Nonnull publicKey);
 /// Builds a transaction to be broadcasted
 TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWCosmosSignerTransaction(TW_Cosmos_Proto_SigningInput data, TWData *_Nonnull pubKey, TWData *_Nonnull signature);
