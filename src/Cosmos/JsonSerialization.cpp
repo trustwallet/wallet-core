@@ -194,13 +194,7 @@ json transactionJSON(const Proto::SigningInput& input, const PublicKey& publicKe
 }
 
 std::string buildJsonTxRaw(const Proto::SigningInput& input, const PublicKey& publicKey, const Data& signature) {
-    auto output = Proto::SigningOutput();
-    auto txJson = transactionJSON(input, publicKey, signature);
-    output.set_json(txJson.dump());
-    output.set_signature(signature.data(), signature.size());
-    output.set_serialized("");
-    output.set_error("");
-    return output.SerializeAsString();
+    return transactionJSON(input, publicKey, signature).dump();
 }
 
 } // namespace
