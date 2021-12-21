@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,11 +9,16 @@
 #include "../Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
-#include <proto/Stellar.pb.h>
+#include "../proto/Stellar.pb.h"
+
+#include <string>
 
 namespace TW::Stellar {
 /// Helper class that performs Ripple transaction signing.
 class Signer {
+  public:
+    /// Signs a Proto::SigningInput transaction
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
   public:
     const Proto::SigningInput& input;
 
@@ -25,14 +30,10 @@ class Signer {
     Data encode(const Proto::SigningInput& input) const;
 
   private:
-    void encodeAddress(const Address& address, Data& data) const;
-
+    static uint32_t operationType(const Proto::SigningInput& input);
+    static void encodeAddress(const Address& address, Data& data);
+    static void encodeAsset(const Proto::Asset& asset, Data& data);
     void pad(Data& data) const;
 };
 
 } // namespace TW::Stellar
-
-/// Wrapper for C interface.
-struct TWStellarSigner {
-    TW::Stellar::Signer impl;
-};
