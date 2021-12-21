@@ -78,6 +78,8 @@ message SigningInput {
         MemoHash memo_hash = 12;
         MemoHash memo_return_hash = 13;
     }
+
+    int64 time_bounds = 14;
 }
 
 // Transaction signing output.
