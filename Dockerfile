@@ -12,7 +12,6 @@ RUN apt-get update \
         unzip \
         xz-utils \
         software-properties-common \
-        sudo \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Add latest cmake/boost
@@ -58,8 +57,8 @@ ENV GO_VERSION=1.15.5
 ENV GO_ARCH=amd64
 RUN wget "https://golang.org/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" \
     && tar -xf "go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" \
-    && sudo chown -R root:root ./go \
-    && sudo mv -v ./go /usr/local \
+    && chown -R root:root ./go \
+    && mv -v ./go /usr/local \
     && ls /usr/local/go \
     && /usr/local/go/bin/go version
 
