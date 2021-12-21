@@ -72,3 +72,5 @@ cd wallet-core/samples/go
 ==> Bitcoin...
 ```
 4. *(optional)* You might want to copy and run `main` outside of the docker container, make sure you have `libc++1` and `libc++abi1` installed in your host Ubuntu.
+
+5. *(optional)* If you want to make transaction on other networks you need to compile `src/proto` proto files and to do that, just run the `./compile.sh` . you can also modify it based on your project.
