@@ -14,7 +14,7 @@ jobs:
     - name: Install system dependencies
       run: |
         # build-essential clang-11 libc++-dev libc++abi-dev ruby-full cmake
-        sudo apt-get update && sudo apt-get install ninja-build llvm-11 libboost-all-dev --fix-missing
+        sudo apt-get update && sudo apt-get install ninja-build llvm-11 libboost-all-dev goland --fix-missing
     - name: Cache internal dependencies
       id: internal_cache
       uses: actions/cache@v1.1.2
@@ -47,12 +47,20 @@ jobs:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
         CK_TIMEOUT_MULTIPLIER: 4
-    - name: Build and run sample app
+    - name: Build and run C++ sample app
       run: |
         cd samples/cpp
         cmake . -DWALLET_CORE=../../ -DCMAKE_BUILD_TYPE=Debug
         make
         ./sample || true
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+    - name: Build and run GoLang sample app
+      run: |
+        cd samples/go
+        go build -o main
+        ./main
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
