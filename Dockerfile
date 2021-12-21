@@ -12,6 +12,7 @@ RUN apt-get update \
         unzip \
         xz-utils \
         software-properties-common \
+        sudo \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Add latest cmake/boost
@@ -50,6 +51,18 @@ RUN tools/install-dependencies
 # Build: generate, cmake, and make
 RUN tools/generate-files \
     && cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug \
-    && make -Cbuild -j12
+    && make -Cbuild -j12 tests
+
+# Install go tooling, for Go sample app. Nnot via apt-get, but a newer version.
+ENV GO_VERSION=1.15.5
+ENV GO_ARCH=amd64
+RUN curl -O -L "https://golang.org/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" \
+    && tar -xf "go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" \
+    && sudo chown -R root:root ./go \
+    && sudo mv -v ./go /usr/local \
+    && ls /usr/local/go \
+    && /usr/local/go/bin/go version
+
+# Building GoLang sample app:  cd samples/go && /usr/local/go/bin/go build -o main && ./main
 
 CMD ["/bin/bash"]
