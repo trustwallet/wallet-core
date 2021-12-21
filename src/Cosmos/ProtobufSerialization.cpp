@@ -11,6 +11,7 @@
 #include "Protobuf/staking_tx.pb.h"
 #include "Protobuf/tx.pb.h"
 #include "Protobuf/crypto_secp256k1_keys.pb.h"
+#include "Base64.h"
 
 #include "PrivateKey.h"
 #include "Data.h"
@@ -18,6 +19,7 @@
 using namespace TW;
 using namespace TW::Cosmos;
 
+using json = nlohmann::json;
 using string = std::string;
 
 namespace TW::Cosmos {
@@ -29,6 +31,23 @@ const string TYPE_PREFIX_MSG_REDELEGATE = "cosmos-sdk/MsgBeginRedelegate";
 const string TYPE_PREFIX_MSG_WITHDRAW_REWARD = "cosmos-sdk/MsgWithdrawDelegationReward";
 const string TYPE_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 const auto ProtobufAnyNamespacePrefix = "";  // to override default 'type.googleapis.com'
+
+static string broadcastMode(Proto::BroadcastMode mode) {
+    switch (mode) {
+    case Proto::BroadcastMode::BLOCK:
+        return "BROADCAST_MODE_BLOCK";
+    case Proto::BroadcastMode::ASYNC:
+        return "BROADCAST_MODE_ASYNC";
+    default: return "BROADCAST_MODE_SYNC";
+    }
+}
+
+static json broadcastJSON(std::string data, Proto::BroadcastMode mode) {
+    return {
+        {"tx_bytes", data},
+        {"mode", broadcastMode(mode)}
+    };
+}
 
 cosmos::base::v1beta1::Coin convertCoin(const Proto::Amount& amount) {
     cosmos::base::v1beta1::Coin coin;
@@ -165,7 +184,8 @@ std::string buildProtoTxRaw(const Proto::SigningInput& input, const PublicKey& p
     txRaw.set_body_bytes(serializedTxBody);
     txRaw.set_auth_info_bytes(serializedAuthInfo);
     *txRaw.add_signatures() = std::string(signature.begin(), signature.end());
-    return txRaw.SerializeAsString();
+    auto data = txRaw.SerializeAsString();
+    return broadcastJSON(Base64::encode(Data(data.begin(), data.end())), input.mode()).dump();
 }
 
 } // namespace

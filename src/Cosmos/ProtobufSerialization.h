@@ -11,8 +11,10 @@
 #include "Data.h"
 
 #include <string>
+#include <nlohmann/json.hpp>
 
 using string = std::string;
+using json = nlohmann::json;
 
 extern const string TYPE_PREFIX_MSG_SEND;
 extern const string TYPE_PREFIX_MSG_DELEGATE;
