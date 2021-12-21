@@ -61,33 +61,6 @@ endif ()
 
 SET (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINK_FLAGS}")
 
-### Coverage processing needed because in CI TW lib may be compiled with coverage support
-option(CODE_COVERAGE "Enable coverage reporting" OFF)
-if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fprofile-arcs -ftest-coverage")
-    set(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
-endif()
-
-option(CLANG_TIDY "Enable static code analysis with (clang-tidy)" OFF)
-if(CLANG_TIDY)
-    find_program(CLANG_TIDY_BIN NAMES clang-tidy-11)
-    if(CLANG_TIDY_BIN)
-        set(CMAKE_CXX_CLANG_TIDY clang-tidy-11;)
-        message("clang-tidy ${CMAKE_CXX_CLANG_TIDY} ${CLANG_TIDY_BIN}")
-    else()
-        message(FATAL_ERROR "Could not find clang-tidy")
-    endif()
-endif()
-
-option(CLANG_ASAN "Enable ASAN dynamic address sanitizer" OFF)
-if(CLANG_ASAN)
-    # https://clang.llvm.org/docs/AddressSanitizer.html
-    # https://github.com/trustwallet/wallet-core/issues/1170
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
-    set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
-    message("CLANG_ASAN on, ${CMAKE_CXX_FLAGS_DEBUG}")
-endif()
-
 # sources of this exec
 add_executable (sample sample.cpp)
 
