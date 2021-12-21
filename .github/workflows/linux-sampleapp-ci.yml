@@ -42,7 +42,7 @@ jobs:
         CXX: /usr/bin/clang++
     - name: Build
       run: |
-        make -Cbuild -j12 tests TrezorCryptoTests
+        make -Cbuild -j12 TrustWalletCore
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
