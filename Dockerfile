@@ -47,10 +47,13 @@ WORKDIR /wallet-core
 # Install dependencies
 RUN tools/install-dependencies
 
-# Build: generate, cmake, and make
+# Build: generate, cmake, and make lib
 RUN tools/generate-files \
     && cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug \
-    && make -Cbuild -j12 tests
+    && make -Cbuild -j12 TrustWalletCore
+
+# Build unit tester
+RUN make -Cbuild -j12 tests
 
 # Install go tooling, for Go sample app. Nnot via apt-get, but a newer version.
 ENV GO_VERSION=1.16.12
@@ -60,7 +63,8 @@ RUN wget "https://golang.org/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" \
     && chown -R root:root ./go \
     && mv -v ./go /usr/local \
     && ls /usr/local/go \
-    && /usr/local/go/bin/go version
+    && /usr/local/go/bin/go version \
+    && rm "go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"
 
 # Building GoLang sample app:  cd samples/go && /usr/local/go/bin/go build -o main && ./main
 
