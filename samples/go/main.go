@@ -1,55 +1,91 @@
 package main
 
-// #cgo CFLAGS: -I../../include
-// #cgo LDFLAGS: -L../../build -L../../build/trezor-crypto -lTrustWalletCore -lprotobuf -lTrezorCrypto -lc++ -lm
-// #include <TrustWalletCore/TWHDWallet.h>
-// #include <TrustWalletCore/TWPrivateKey.h>
-// #include <TrustWalletCore/TWPublicKey.h>
-// #include <TrustWalletCore/TWBitcoinScript.h>
-// #include <TrustWalletCore/TWAnySigner.h>
-import "C"
-
 import (
 	"encoding/hex"
 	"fmt"
+	"math"
+	"math/big"
+	"tw/core"
 	"tw/protos/bitcoin"
-	"tw/types"
-
-	"github.com/golang/protobuf/proto"
+	"tw/protos/common"
+	"tw/protos/ethereum"
 )
 
 func main() {
 	fmt.Println("==> calling wallet core from go")
-	str := types.TWStringCreateWithGoString("confirm bleak useless tail chalk destroy horn step bulb genuine attract split")
-	emtpy := types.TWStringCreateWithGoString("")
-	defer C.TWStringDelete(str)
-	defer C.TWStringDelete(emtpy)
 
-	fmt.Println("==> mnemonic is valid: ", C.TWMnemonicIsValid(str))
+	mn := "confirm bleak useless tail chalk destroy horn step bulb genuine attract split"
 
-	wallet := C.TWHDWalletCreateWithMnemonic(str, emtpy)
-	defer C.TWHDWalletDelete(wallet)
+	fmt.Println("==> mnemonic is valid: ", core.IsMnemonicValid(mn))
 
-	key := C.TWHDWalletGetKeyForCoin(wallet, C.TWCoinTypeBitcoin)
-	keyData := C.TWPrivateKeyData(key)
-	defer C.TWDataDelete(keyData)
+	// bitcoin wallet
+	bw, err := core.CreateWalletWithMnemonic(mn, core.CoinTypeBitcoin)
+	if err != nil {
+		panic(err)
+	}
+	printWallet(bw)
 
-	fmt.Println("<== bitcoin private key: ", types.TWDataHexString(keyData))
+	// ethereum wallet
+	ew, err := core.CreateWalletWithMnemonic(mn, core.CoinTypeEthereum)
+	if err != nil {
+		panic(err)
+	}
+	printWallet(ew)
 
-	pubKey, _ := hex.DecodeString("0288be7586c41a0498c1f931a0aaf08c15811ee2651a5fe0fa213167dcaba59ae8")
-	pubKeyData := types.TWDataCreateWithGoBytes(pubKey)
-	defer C.TWDataDelete(pubKeyData)
-	fmt.Println("==> bitcoin public key is valid: ", C.TWPublicKeyIsValid(pubKeyData, C.TWPublicKeyTypeSECP256k1))
+	// tron wallet
+	tw, err := core.CreateWalletWithMnemonic(mn, core.CoinTypeTron)
+	if err != nil {
+		panic(err)
+	}
+	printWallet(tw)
 
-	address := C.TWHDWalletGetAddressForCoin(wallet, C.TWCoinTypeBitcoin)
-	defer C.TWStringDelete(address)
-	fmt.Println("<== bitcoin address: ", types.TWStringGoString(address))
+	// Ethereum transaction
+	ethTxn := createEthTransaction(ew)
+	fmt.Println("Ethereum signed tx:")
+	fmt.Println("\t", ethTxn)
 
-	script := C.TWBitcoinScriptLockScriptForAddress(address, C.TWCoinTypeBitcoin)
-	scriptData := C.TWBitcoinScriptData(script)
-	defer C.TWBitcoinScriptDelete(script)
-	defer C.TWDataDelete(scriptData)
-	fmt.Println("<== bitcoin address lock script: ", types.TWDataHexString(scriptData))
+	// Bitcion transaction
+	btcTxn := createBtcTransaction(bw)
+	fmt.Println("\nBitcoin signed tx:")
+	fmt.Println("\t", btcTxn)
+}
+
+func createEthTransaction(ew *core.Wallet) string {
+	priKeyByte, _ := hex.DecodeString(ew.PriKey)
+
+	input := ethereum.SigningInput{
+		ChainId:    big.NewInt(4).Bytes(), // mainnet: 1, rinkeby: 4 https://chainlist.org/
+		Nonce:      big.NewInt(0).Bytes(), // get nonce from network
+		TxMode:     ethereum.TransactionMode_Legacy,
+		GasPrice:   big.NewInt(100000000000).Bytes(), // 100 gwei
+		GasLimit:   big.NewInt(21000).Bytes(),
+		ToAddress:  "0xE9B511C0753649E5F3E78Ed8AdBEE92d0d2Db384",
+		PrivateKey: priKeyByte,
+		Transaction: &ethereum.Transaction{
+			TransactionOneof: &ethereum.Transaction_Transfer_{
+				Transfer: &ethereum.Transaction_Transfer{
+					// amount should be in wei unit, eth * (10^decimals) = wei
+					Amount: big.NewInt(int64(
+						0.01 * math.Pow10(ew.CoinType.Decimals()),
+					)).Bytes(),
+					Data: []byte{},
+				},
+			},
+		},
+	}
+
+	var output ethereum.SigningOutput
+	err := core.CreateSignedTx(&input, ew.CoinType, &output)
+	if err != nil {
+		panic(err)
+	}
+	return hex.EncodeToString(output.GetEncoded())
+}
+
+func createBtcTransaction(bw *core.Wallet) string {
+	lockScript := core.BitcoinLockScriptForAddress(bw.Address, bw.CoinType)
+	fmt.Println("\nBitcoin address lock script:")
+	fmt.Println("\t", hex.EncodeToString(lockScript))
 
 	utxoHash, _ := hex.DecodeString("fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f")
 
@@ -60,28 +96,37 @@ func main() {
 			Sequence: 4294967295,
 		},
 		Amount: 625000000,
-		Script: types.TWDataGoBytes(scriptData),
+		Script: lockScript,
 	}
 
+	priKeyByte, _ := hex.DecodeString(bw.PriKey)
+
 	input := bitcoin.SigningInput{
-		HashType:      1, // TWBitcoinSigHashTypeAll
+		HashType:      uint32(core.BitcoinSigHashTypeAll),
 		Amount:        1000000,
 		ByteFee:       1,
 		ToAddress:     "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx",
 		ChangeAddress: "1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU",
-		PrivateKey:    [][]byte{types.TWDataGoBytes(keyData)},
+		PrivateKey:    [][]byte{priKeyByte},
 		Utxo:          []*bitcoin.UnspentTransaction{&utxo},
-		CoinType:      0, // TWCoinTypeBitcoin
+		CoinType:      uint32(core.CoinTypeBitcoin),
 	}
 
-	inputBytes, _ := proto.Marshal(&input)
-	inputData := types.TWDataCreateWithGoBytes(inputBytes)
-	defer C.TWDataDelete(inputData)
-
-	outputData := C.TWAnySignerSign(inputData, C.TWCoinTypeBitcoin)
-	defer C.TWDataDelete(outputData)
-
 	var output bitcoin.SigningOutput
-	_ = proto.Unmarshal(types.TWDataGoBytes(outputData), &output)
-	fmt.Println("<== bitcoin signed tx: ", hex.EncodeToString(output.Encoded))
+	err := core.CreateSignedTx(&input, bw.CoinType, &output)
+	if err != nil {
+		panic(err)
+	}
+	if output.GetError() != common.SigningError_OK {
+		panic(output.GetError().String())
+	}
+	return hex.EncodeToString(output.GetEncoded())
+}
+
+func printWallet(w *core.Wallet) {
+	fmt.Printf("%s wallet: \n", w.CoinType.GetName())
+	fmt.Printf("\t address: %s \n", w.Address)
+	fmt.Printf("\t pri key: %s \n", w.PriKey)
+	fmt.Printf("\t pub key: %s \n", w.PubKey)
+	fmt.Println("")
 }
