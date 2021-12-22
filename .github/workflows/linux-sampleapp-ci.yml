@@ -58,7 +58,7 @@ jobs:
         CXX: /usr/bin/clang++
     - name: Install GO dependencies (not from apt, but newer version)
       env:
-        GO_VERSION: 1.15.5
+        GO_VERSION: 1.16.12
         GO_ARCH: amd64
       run: |
         curl -O -L "https://golang.org/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"

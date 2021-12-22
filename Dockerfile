@@ -53,7 +53,7 @@ RUN tools/generate-files \
     && make -Cbuild -j12 tests
 
 # Install go tooling, for Go sample app. Nnot via apt-get, but a newer version.
-ENV GO_VERSION=1.15.5
+ENV GO_VERSION=1.16.12
 ENV GO_ARCH=amd64
 RUN wget "https://golang.org/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" \
     && tar -xf "go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" \
