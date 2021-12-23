@@ -240,6 +240,16 @@ Script Script::buildPayToWitnessProgram(const Data& program) {
     return script;
 }
 
+Script Script::buildPayToV1WitnessProgram(const Data& publicKey) {
+    assert(publicKey.size() == 32);
+    Script script;
+    script.bytes.push_back(OP_1);
+    script.bytes.push_back(static_cast<byte>(publicKey.size()));
+    append(script.bytes, publicKey);
+    assert(script.bytes.size() == 34);
+    return script;
+}
+
 Script Script::buildPayToWitnessPubkeyHash(const Data& hash) {
     return Script::buildPayToWitnessProgram(hash);
 }
@@ -274,8 +284,13 @@ Script Script::buildForAddress(const std::string& string, enum TWCoinType coin) 
     } else if (SegwitAddress::isValid(string)) {
         auto result = SegwitAddress::decode(string);
         // address starts with bc/ltc
-        auto program = std::get<0>(result).witnessProgram;
-        return buildPayToWitnessProgram(program);
+        auto address = std::get<0>(result);
+        if (address.witnessVersion == 0) {
+            return buildPayToWitnessProgram(address.witnessProgram);
+        }
+        if (address.witnessVersion == 1 && address.witnessProgram.size() == 32) {
+            return buildPayToV1WitnessProgram(address.witnessProgram);
+        }
     } else if (CashAddress::isValid(string)) {
         auto address = CashAddress(string);
         auto bitcoinAddress = address.legacyAddress();

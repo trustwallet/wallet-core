@@ -80,6 +80,9 @@ class Script {
     /// Builds a pay-to-witness-script-hash (P2WSH) script from a script hash.
     static Script buildPayToWitnessScriptHash(const Data& scriptHash);
 
+    /// Builds a V1 pay-to-witness-program script, P2TR (from a 32-byte Schnorr public key).
+    static Script buildPayToV1WitnessProgram(const Data& publicKey);
+
     /// Builds a pay-to-public-key-hash (P2PKH) script appropriate for the given
     /// address.
     static Script buildForAddress(const std::string& address, enum TWCoinType coin);
