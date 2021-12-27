@@ -263,6 +263,16 @@ void Script::encode(Data& data) const {
     std::copy(std::begin(bytes), std::end(bytes), std::back_inserter(data));
 }
 
+bool isLtcP2sh(enum TWCoinType coin, byte start) {
+    // For ltc, we need to support legacy p2sh which starts with 5.
+    // Here we check prefix 5 and 50 in case of wallet-core changing its config value.
+    // Ref: https://github.com/litecoin-project/litecoin/blob/0.21/src/chainparams.cpp#L128
+    if (TWCoinTypeLitecoin == coin && (5 == start || 50 == start)) {
+        return true;
+    }
+    return false;
+}
+
 Script Script::buildForAddress(const std::string& string, enum TWCoinType coin) {
     if (Address::isValid(string)) {
         auto address = Address(string);
@@ -274,7 +284,8 @@ Script Script::buildForAddress(const std::string& string, enum TWCoinType coin) 
             data.reserve(Address::size - 1);
             std::copy(address.bytes.begin() + 1, address.bytes.end(), std::back_inserter(data));
             return buildPayToPublicKeyHash(data);
-        } else if (p2sh == address.bytes[0]) {
+        } else if (p2sh == address.bytes[0]
+            || isLtcP2sh(coin, address.bytes[0])) {
             // address starts with 3/M
             auto data = Data();
             data.reserve(Address::size - 1);
