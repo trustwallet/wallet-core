@@ -54,5 +54,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ steps.semantic_version.outputs.version_tag }}
+          tags: ackratos/wallet-core:${{ steps.semantic_version.outputs.version_tag }}
           labels: ${{ steps.meta.outputs.labels }}
