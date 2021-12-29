@@ -1,4 +1,4 @@
-name: Linux CI
+name: Linux SampleApp CI
 
 on:
   push:
@@ -13,8 +13,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install system dependencies
       run: |
-        # build-essential clang-11 libc++-dev libc++abi-dev ruby-full cmake
-        sudo apt-get update && sudo apt-get install ninja-build lcov llvm-11 clang-tidy-11 libboost-all-dev --fix-missing
+        sudo apt-get update && sudo apt-get install ninja-build llvm-11 libboost-all-dev clang-11 --fix-missing
     - name: Cache internal dependencies
       id: internal_cache
       uses: actions/cache@v1.1.2
@@ -34,30 +33,43 @@ jobs:
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
-    - name: CMake (coverage/clang-tidy/clang-asan)
-      if: github.ref == 'refs/heads/master'
+    - name: CMake
       run: |
-        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON -DCLANG_TIDY=ON -DCLANG_ASAN=ON
+        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
-    - name: CMake (coverage)
-      if: github.ref != 'refs/heads/master'
+    - name: Build
       run: |
-        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON
-      env:
-        CC: /usr/bin/clang
-        CXX: /usr/bin/clang++
-    - name: Build and test
-      run: |
-        make -Cbuild -j12 tests TrezorCryptoTests
-        build/trezor-crypto/crypto/tests/TrezorCryptoTests
-        build/tests/tests tests --gtest_output=xml
+        make -Cbuild -j12 TrustWalletCore
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
         CK_TIMEOUT_MULTIPLIER: 4
-    - name: Gather and check code coverage
+    - name: Build and run C++ sample app
       run: |
-        sudo rm -rf coverage.info
-        tools/coverage
+        cd samples/cpp
+        cmake . -DWALLET_CORE=../../ -DCMAKE_BUILD_TYPE=Debug
+        make
+        ./sample || true
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+    - name: Install Go
+      env:
+        GO_VERSION: 1.16.12
+        GO_ARCH: amd64
+      run: |
+        curl -O -L "https://golang.org/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"
+        tar -xf "go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"
+        sudo chown -R root:root ./go
+        sudo mv -v go /usr/local
+    - name: Build and run GoLang sample app
+      run: |
+        cd samples/go
+        go version
+        go build -o main
+        ./main
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
