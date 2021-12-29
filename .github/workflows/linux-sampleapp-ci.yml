@@ -13,7 +13,6 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install system dependencies
       run: |
-        # build-essential clang-11 libc++-dev libc++abi-dev libc++1 libc++abi1 ruby-full cmake
         sudo apt-get update && sudo apt-get install ninja-build llvm-11 libboost-all-dev clang-11 --fix-missing
     - name: Cache internal dependencies
       id: internal_cache
