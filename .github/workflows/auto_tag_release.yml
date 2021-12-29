@@ -14,6 +14,7 @@ jobs:
         with:
           fetch-depth: 0
       - uses: paulhatch/semantic-version@v4.0.2
+        id:semantic_version
         with:
           # The prefix to use to identify tags
           tag_prefix: "v"
@@ -41,8 +42,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
+          tag_name: ${{ steps.semantic_version.outputs.version_tag }}
+          release_name: ${{ steps.semantic_version.outputs.version_tag }}
           draft: false
       - name: Log in to Docker Hub
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
