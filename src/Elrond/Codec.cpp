@@ -13,7 +13,7 @@ using namespace TW::Elrond;
 
 void normalizeHexStringTopLevel(std::string& value);
 
-std::string Codec::encodeStringTopLevel(std::string value) {
+std::string Codec::encodeStringTopLevel(const std::string& value) {
     std::string encoded = hex(TW::data(value));
     return encoded;
 }
@@ -22,6 +22,10 @@ std::string Codec::encodeUint64TopLevel(uint64_t value) {
     std::string encoded = hex(value);
     normalizeHexStringTopLevel(encoded);
     return encoded;
+}
+
+std::string Codec::encodeBigIntTopLevel(const std::string& value) {
+    return encodeBigIntTopLevel(uint256_t(value));
 }
 
 // For reference, see https://docs.elrond.com/developers/developer-reference/elrond-serialization-format/#arbitrary-width-big-numbers.
@@ -45,6 +49,12 @@ void normalizeHexStringTopLevel(std::string& value) {
     if (value.size() % 2 != 0) {
         value.insert(0, 1, '0');
     }
+}
+
+std::string Codec::encodeAddressTopLevel(const std::string& bech32Address) {
+    Address address;
+    Address::decode(bech32Address, address);
+    return encodeAddressTopLevel(address);
 }
 
 std::string Codec::encodeAddressTopLevel(const Address& address) {

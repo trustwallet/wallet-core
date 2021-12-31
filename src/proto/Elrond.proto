@@ -9,7 +9,9 @@ syntax = "proto3";
 package TW.Elrond.Proto;
 option java_package = "wallet.core.jni.proto";
 
-// A transaction: EGLD / tokens transfer and / or smart contract call.
+// Generic / general-purpose transaction. Using one of the more specific messages (below) is recommended.
+// TODO: Ideally, we should rename this to "Transaction" or "GenericTransaction". The renaming is temporarily postponed (as of December 2021)
+// in order to delay unnecessary breaking changes.
 message TransactionMessage {
     uint64      nonce = 1;
     string      value = 2;
@@ -29,12 +31,57 @@ message TransactionMessage {
     uint32      options = 12;
 }
 
+// EGLD transfer (move balance).
+message EGLDTransfer {
+    uint64      nonce = 1;
+    string      sender = 2;
+    string      sender_username = 3;
+    string      receiver = 4;
+    string      receiver_username = 5;
+    string      amount = 6;
+    uint64      gas_limit = 7;
+    uint64      gas_price = 8;
+    string      chain_id = 9;
+}
+
+// ESDT transfer (transfer regular ESDTs - fungible tokens).
+message ESDTTransfer {
+    uint64      nonce = 1;
+    string      sender = 2;
+    string      sender_username = 3;
+    string      receiver = 4;
+    string      receiver_username = 5;
+    string      token_identifier = 6;
+    string      amount = 7;
+    uint64      gas_limit = 8;
+    uint64      gas_price = 9;
+    string      chain_id = 10;
+}
+
+// ESDTNFT transfer (transfer NFTs, SFTs and Meta ESDTs).
+message ESDTNFTTransfer {
+    uint64      nonce = 1;
+    string      sender = 2;
+    string      sender_username = 3;
+    string      receiver = 4;
+    string      receiver_username = 5;
+    string      token_collection = 6;
+    uint64      token_nonce = 7;
+    string      amount = 8;
+    uint64      gas_limit = 9;
+    uint64      gas_price = 10;
+    string      chain_id = 11;
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     bytes private_key = 1;
 
     oneof message_oneof {
         TransactionMessage transaction = 2;
+        EGLDTransfer egld_transfer = 3;
+        ESDTTransfer esdt_transfer = 4;
+        ESDTNFTTransfer esdtnft_transfer = 5;
     }
 }
 

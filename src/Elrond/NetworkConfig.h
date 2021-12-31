@@ -44,11 +44,11 @@ public:
 
     uint32_t getGasCostESDTNFTTransfer();
     void setGasCostESDTNFTTransfer(uint32_t value);
+
+    static NetworkConfig GetDefault();
+
+    /// Useful to implement upwards-compatible changes of the network configuration (a TWCore client can receive planned configuration updates, in advance).
+    static NetworkConfig GetByTimestamp(uint64_t timestamp);
 };
 
 } // namespace
-
-/// Wrapper for C interface.
-struct TWElrondNetworkConfig {
-    TW::Elrond::NetworkConfig impl;
-};

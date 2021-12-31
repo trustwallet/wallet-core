@@ -6,16 +6,14 @@
 
 #include "NetworkConfig.h"
 
+#include <chrono>
+
 using namespace TW;
 using namespace TW::Elrond;
+using namespace std::chrono;
 
 NetworkConfig::NetworkConfig() :
-    chainId("1"), // Mainnet
-    gasPerDataByte(1500),
-    minGasLimit(50000),
-    minGasPrice(1000000000),
-    gasCostESDTTransfer(200000),
-    gasCostESDTNFTTransfer(200000) {
+    chainId("1") /* Mainnet */ {
 }
 
 const std::string& NetworkConfig::getChainId() {
@@ -64,4 +62,30 @@ uint32_t NetworkConfig::getGasCostESDTNFTTransfer() {
 
 void NetworkConfig::setGasCostESDTNFTTransfer(uint32_t value) {
     this->gasCostESDTNFTTransfer = value;
+}
+
+NetworkConfig NetworkConfig::GetDefault() {
+    const uint64_t timestamp = duration_cast<seconds>(system_clock::now().time_since_epoch()).count();
+    return GetByTimestamp(timestamp);
+}
+
+NetworkConfig NetworkConfig::GetByTimestamp(uint64_t timestamp) {
+    NetworkConfig networkConfig;
+
+    // Mainnet values at the time of defining the "NetworkConfig" component (December 2021).
+    if (timestamp > 0) {
+        networkConfig.setGasPerDataByte(1500);
+        networkConfig.setMinGasLimit(50000);
+        networkConfig.setMinGasPrice(1000000000);
+        networkConfig.setGasCostESDTTransfer(200000);
+        networkConfig.setGasCostESDTNFTTransfer(200000);
+    }
+
+    // Example for ...
+    // if (timestamp > ...) {
+    //     networkConfig.setPerDataByte(...)
+    //     networkConfig.setMinGasPrice(...)
+    // }
+
+    return networkConfig;
 }

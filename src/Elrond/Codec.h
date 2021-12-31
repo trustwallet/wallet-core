@@ -19,9 +19,11 @@ namespace TW::Elrond {
 /// - https://github.com/ElrondNetwork/elrond-wasm-rs/tree/master/elrond-codec
 class Codec {
 public:
-    static std::string encodeStringTopLevel(std::string value);
+    static std::string encodeStringTopLevel(const std::string& value);
     static std::string encodeUint64TopLevel(uint64_t value);
+    static std::string encodeBigIntTopLevel(const std::string& value);
     static std::string encodeBigIntTopLevel(TW::uint256_t value);
+    static std::string encodeAddressTopLevel(const std::string& bech32Address);
     static std::string encodeAddressTopLevel(const Address& address);
 };
 
