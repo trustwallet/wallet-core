@@ -51,7 +51,7 @@ jobs:
         cd samples/cpp
         cmake . -DWALLET_CORE=../../ -DCMAKE_BUILD_TYPE=Debug
         make
-        ./sample || true
+        ./sample
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
