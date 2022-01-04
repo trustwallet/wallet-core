@@ -34,11 +34,17 @@ Data Transfer::serialize() const {
         // note is optional
         size += 1;
     }
+    // don't encode 0 amount
+    if (amount == 0) {
+        size -= 1;
+    }
     data.push_back(0x80 + size);
 
     // encode fields one by one (sorted by name)
-    encodeString("amt", data);
-    encodeNumber(amount, data);
+    if (amount > 0) {
+        encodeString("amt", data);
+        encodeNumber(amount, data);
+    }
 
     encodeString("fee", data);
     encodeNumber(fee, data);
