@@ -11,53 +11,37 @@
 using namespace TW;
 using namespace TW::Elrond;
 
-void normalizeHexStringTopLevel(std::string& value);
-
-std::string Codec::encodeStringTopLevel(const std::string& value) {
+std::string Codec::encodeString(const std::string& value) {
     std::string encoded = hex(TW::data(value));
     return encoded;
 }
 
-std::string Codec::encodeUint64TopLevel(uint64_t value) {
-    std::string encoded = hex(value);
-    normalizeHexStringTopLevel(encoded);
+std::string Codec::encodeUint64(uint64_t value) {
+    std::string encoded = normalizeHex(hex(value));
     return encoded;
 }
 
-std::string Codec::encodeBigIntTopLevel(const std::string& value) {
-    return encodeBigIntTopLevel(uint256_t(value));
+std::string Codec::encodeBigInt(const std::string& value) {
+    return encodeBigInt(uint256_t(value));
 }
 
 // For reference, see https://docs.elrond.com/developers/developer-reference/elrond-serialization-format/#arbitrary-width-big-numbers.
-std::string Codec::encodeBigIntTopLevel(uint256_t value) {
+std::string Codec::encodeBigInt(uint256_t value) {
     // First, load the 256-bit value into a "Data" object.
     auto valueAsData = Data();
     encode256BE(valueAsData, value, 256);
     
-    std::string encoded = hex(valueAsData);
-    normalizeHexStringTopLevel(encoded);
+    std::string encoded = normalizeHex(hex(valueAsData));
     return encoded;
 }
 
-/// Normalizes a hex string. The passed string is mutated.
-/// E.g.: "A" -> "0A"; "00A" -> "0A".
-void normalizeHexStringTopLevel(std::string& value) {
-    // Strip the redundant leading zeros (if any).
-    value.erase(0, value.find_first_not_of('0'));
-
-    // Make sure the result has even length (valid hex).
-    if (value.size() % 2 != 0) {
-        value.insert(0, 1, '0');
-    }
-}
-
-std::string Codec::encodeAddressTopLevel(const std::string& bech32Address) {
+std::string Codec::encodeAddress(const std::string& bech32Address) {
     Address address;
     Address::decode(bech32Address, address);
-    return encodeAddressTopLevel(address);
+    return encodeAddress(address);
 }
 
-std::string Codec::encodeAddressTopLevel(const Address& address) {
+std::string Codec::encodeAddress(const Address& address) {
     std::string encoded = hex(address.getKeyHash());
     return encoded;
 }

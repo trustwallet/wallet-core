@@ -64,8 +64,8 @@ Proto::TransactionMessage TransactionFactory::createEGLDTransfer(const Proto::EG
 Proto::TransactionMessage TransactionFactory::createESDTTransfer(const Proto::ESDTTransfer& transfer) {
     Proto::TransactionMessage transaction;
 
-    std::string encodedTokenIdentifier = Codec::encodeStringTopLevel(transfer.token_identifier());
-    std::string encodedAmount = Codec::encodeBigIntTopLevel(transfer.amount());
+    std::string encodedTokenIdentifier = Codec::encodeString(transfer.token_identifier());
+    std::string encodedAmount = Codec::encodeBigInt(transfer.amount());
     std::string data = prepareFunctionCall("ESDTTransfer", { encodedTokenIdentifier, encodedAmount });
     uint64_t estimatedGasLimit = this->gasEstimator.forESDTTransfer(data.size());
 
@@ -87,10 +87,10 @@ Proto::TransactionMessage TransactionFactory::createESDTTransfer(const Proto::ES
 Proto::TransactionMessage TransactionFactory::createESDTNFTTransfer(const Proto::ESDTNFTTransfer& transfer) {
     Proto::TransactionMessage transaction;
 
-    std::string encodedCollection = Codec::encodeStringTopLevel(transfer.token_collection());
-    std::string encodedNonce = Codec::encodeUint64TopLevel(transfer.token_nonce());
-    std::string encodedQuantity = Codec::encodeBigIntTopLevel(transfer.amount());
-    std::string encodedReceiver = Codec::encodeAddressTopLevel(transfer.receiver());
+    std::string encodedCollection = Codec::encodeString(transfer.token_collection());
+    std::string encodedNonce = Codec::encodeUint64(transfer.token_nonce());
+    std::string encodedQuantity = Codec::encodeBigInt(transfer.amount());
+    std::string encodedReceiver = Codec::encodeAddress(transfer.receiver());
     std::string data = prepareFunctionCall("ESDTNFTTransfer", { encodedCollection, encodedNonce, encodedQuantity, encodedReceiver });
     uint64_t estimatedGasLimit = this->gasEstimator.forESDTNFTTransfer(data.size());
     
@@ -127,8 +127,7 @@ std::string TransactionFactory::prepareFunctionCall(const std::string& function,
 
     result.append(function);
 
-    for(auto argument : arguments)
-    {
+    for (auto argument : arguments) {
         result.append(ARGUMENTS_SEPARATOR);
         result.append(argument);
     }

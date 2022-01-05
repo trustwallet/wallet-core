@@ -50,15 +50,15 @@ sorted_json preparePayload(const Elrond::Proto::TransactionMessage& message) {
     };
 
     if (!message.sender_username().empty()) {
-        payload["senderUsername"] = json(TW::Base64::encode(TW::data(message.sender_username())));
+        payload["senderUsername"] = json(Base64::encode(data(message.sender_username())));
     }
 
     if (!message.receiver_username().empty()) {
-        payload["receiverUsername"] = json(TW::Base64::encode(TW::data(message.receiver_username())));
+        payload["receiverUsername"] = json(Base64::encode(data(message.receiver_username())));
     }
 
     if (!message.data().empty()) {
-        payload["data"] = json(TW::Base64::encode(TW::data(message.data())));
+        payload["data"] = json(Base64::encode(data(message.data())));
     }
 
     payload["chainID"] = json(message.chain_id());

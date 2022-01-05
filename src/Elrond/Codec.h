@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "../proto/Elrond.pb.h"
 #include "Address.h"
 #include "uint256.h"
 
@@ -19,12 +18,12 @@ namespace TW::Elrond {
 /// - https://github.com/ElrondNetwork/elrond-wasm-rs/tree/master/elrond-codec
 class Codec {
 public:
-    static std::string encodeStringTopLevel(const std::string& value);
-    static std::string encodeUint64TopLevel(uint64_t value);
-    static std::string encodeBigIntTopLevel(const std::string& value);
-    static std::string encodeBigIntTopLevel(TW::uint256_t value);
-    static std::string encodeAddressTopLevel(const std::string& bech32Address);
-    static std::string encodeAddressTopLevel(const Address& address);
+    static std::string encodeString(const std::string& value);
+    static std::string encodeUint64(uint64_t value);
+    static std::string encodeBigInt(const std::string& value);
+    static std::string encodeBigInt(TW::uint256_t value);
+    static std::string encodeAddress(const std::string& bech32Address);
+    static std::string encodeAddress(const Address& address);
 };
 
 } // namespace
