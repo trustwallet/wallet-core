@@ -18,7 +18,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto output = Proto::SigningOutput();
 
     const int64_t tag = input.destination_tag();
-    if (tag > std::numeric_limits<uint32_t>::max()) {
+    if (tag > std::numeric_limits<uint32_t>::max() || tag < 0) {
         output.set_error(Common::Proto::SigningError::Error_invalid_memo);
         return output;
     }
