@@ -18,39 +18,39 @@ using namespace TW;
 using namespace TW::Elrond;
 
 
-TEST(ElrondSigner, SignGenericTransaction) {
+TEST(ElrondSigner, SignGenericAction) {
     auto input = Proto::SigningInput();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
-    input.mutable_transaction()->set_nonce(0);
-    input.mutable_transaction()->set_value("0");
-    input.mutable_transaction()->set_sender(ALICE_BECH32);
-    input.mutable_transaction()->set_receiver(BOB_BECH32);
-    input.mutable_transaction()->set_gas_price(1000000000);
-    input.mutable_transaction()->set_gas_limit(50000);
-    input.mutable_transaction()->set_data("foo");
-    input.mutable_transaction()->set_chain_id("1");
-    input.mutable_transaction()->set_version(1);
+    input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(7);
+    input.mutable_generic_action()->mutable_accounts()->set_sender(ALICE_BECH32);
+    input.mutable_generic_action()->mutable_accounts()->set_receiver(BOB_BECH32);
+    input.mutable_generic_action()->set_value("0");
+    input.mutable_generic_action()->set_data("foo");
+    input.mutable_generic_action()->set_version(1);
+    input.set_gas_price(1000000000);
+    input.set_gas_limit(50000);
+    input.set_chain_id("1");
 
     auto output = Signer::sign(input);
     auto signature = output.signature();
     auto encoded = output.encoded();
-    auto expectedSignature = "b4f60c20ad6393bb3315853fe151e6c1ea5fadbeef059e9a4391a1fe8dd07aa955ec2330bb9461a1bb44a66688eaac8618c82f8a305afec5e5bb0aa5244c420c";
-    auto expectedEncoded = (boost::format(R"({"nonce":0,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"data":"Zm9v","chainID":"1","version":1,"signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
+    auto expectedSignature = "e8647dae8b16e034d518a1a860c6a6c38d16192d0f1362833e62424f424e5da660770dff45f4b951d9cc58bfb9d14559c977d443449bfc4b8783ff9c84065700";
+    auto expectedEncoded = (boost::format(R"({"nonce":7,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"data":"Zm9v","chainID":"1","version":1,"signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
 
-    ASSERT_EQ(expectedSignature, signature);
     ASSERT_EQ(expectedEncoded, encoded);
+    ASSERT_EQ(expectedSignature, signature);
 }
 
-TEST(ElrondSigner, SignJSON) {
+TEST(ElrondSigner, SignGenericActionJSON) {
     // Shuffle some fields, assume arbitrary order in the input
-    auto input = (boost::format(R"({"transaction" : {"data":"foo","value":"0","nonce":0,"receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"chainId":"1","version":1}})") % BOB_BECH32 % ALICE_BECH32).str();
+    auto input = (boost::format(R"({"genericAction" : {"accounts": {"senderNonce": 7, "receiver": "%1%", "sender": "%2%"}, "data": "foo", "value": "0", "version": 1}, "gasPrice": 1000000000, "gasLimit": 50000, "chainId": "1"})") % BOB_BECH32 % ALICE_BECH32).str();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     
     auto encoded = Signer::signJSON(input, privateKey.bytes);
-    auto expectedSignature = "b4f60c20ad6393bb3315853fe151e6c1ea5fadbeef059e9a4391a1fe8dd07aa955ec2330bb9461a1bb44a66688eaac8618c82f8a305afec5e5bb0aa5244c420c";
-    auto expectedEncoded = (boost::format(R"({"nonce":0,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"data":"Zm9v","chainID":"1","version":1,"signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
+    auto expectedSignature = "e8647dae8b16e034d518a1a860c6a6c38d16192d0f1362833e62424f424e5da660770dff45f4b951d9cc58bfb9d14559c977d443449bfc4b8783ff9c84065700";
+    auto expectedEncoded = (boost::format(R"({"nonce":7,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"data":"Zm9v","chainID":"1","version":1,"signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
 
     ASSERT_EQ(expectedEncoded, encoded);
 }
@@ -60,15 +60,15 @@ TEST(ElrondSigner, SignWithoutData) {
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
-    input.mutable_transaction()->set_nonce(0);
-    input.mutable_transaction()->set_value("0");
-    input.mutable_transaction()->set_sender(ALICE_BECH32);
-    input.mutable_transaction()->set_receiver(BOB_BECH32);
-    input.mutable_transaction()->set_gas_price(1000000000);
-    input.mutable_transaction()->set_gas_limit(50000);
-    input.mutable_transaction()->set_data("");
-    input.mutable_transaction()->set_chain_id("1");
-    input.mutable_transaction()->set_version(1);
+    input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(0);
+    input.mutable_generic_action()->mutable_accounts()->set_sender(ALICE_BECH32);
+    input.mutable_generic_action()->mutable_accounts()->set_receiver(BOB_BECH32);
+    input.mutable_generic_action()->set_value("0");
+    input.mutable_generic_action()->set_data("");
+    input.mutable_generic_action()->set_version(1);
+    input.set_gas_price(1000000000);
+    input.set_gas_limit(50000);
+    input.set_chain_id("1");
     
     auto output = Signer::sign(input);
     auto signature = output.signature();
@@ -82,7 +82,7 @@ TEST(ElrondSigner, SignWithoutData) {
 
 TEST(ElrondSigner, SignJSONWithoutData) {
     // Shuffle some fields, assume arbitrary order in the input
-    auto input = (boost::format(R"({"transaction" : {"value":"0","nonce":0,"receiver":"%1%","sender":"%2%","gasPrice":1000000000,"gasLimit":50000,"chainId":"1","version":1}})") % BOB_BECH32 % ALICE_BECH32).str();
+    auto input = (boost::format(R"({"genericAction" : {"accounts": {"senderNonce": 0, "receiver": "%1%", "sender": "%2%"}, "value": "0", "version": 1}, "gasPrice": 1000000000, "gasLimit": 50000, "chainId": "1"})") % BOB_BECH32 % ALICE_BECH32).str();
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     
     auto encoded = Signer::signJSON(input, privateKey.bytes);
@@ -99,18 +99,18 @@ TEST(ElrondSigner, SignWithUsernames) {
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
-    input.mutable_transaction()->set_nonce(89);
-    input.mutable_transaction()->set_value("0");
-    input.mutable_transaction()->set_sender(ALICE_BECH32);
-    input.mutable_transaction()->set_receiver(BOB_BECH32);
-    input.mutable_transaction()->set_sender_username("alice");
-    input.mutable_transaction()->set_receiver_username("bob");
-    input.mutable_transaction()->set_gas_price(1000000000);
-    input.mutable_transaction()->set_gas_limit(50000);
-    input.mutable_transaction()->set_data("");
-    input.mutable_transaction()->set_chain_id("local-testnet");
-    input.mutable_transaction()->set_version(1);
-    
+    input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(89);
+    input.mutable_generic_action()->mutable_accounts()->set_sender(ALICE_BECH32);
+    input.mutable_generic_action()->mutable_accounts()->set_receiver(BOB_BECH32);
+    input.mutable_generic_action()->mutable_accounts()->set_sender_username("alice");
+    input.mutable_generic_action()->mutable_accounts()->set_receiver_username("bob");
+    input.mutable_generic_action()->set_value("0");
+    input.mutable_generic_action()->set_data("");
+    input.mutable_generic_action()->set_version(1);
+    input.set_gas_price(1000000000);
+    input.set_gas_limit(50000);
+    input.set_chain_id("local-testnet");
+
     auto output = Signer::sign(input);
     auto signature = output.signature();
     auto encoded = output.encoded();
@@ -136,22 +136,22 @@ TEST(ElrondSigner, SignWithOptions) {
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
-    input.mutable_transaction()->set_nonce(89);
-    input.mutable_transaction()->set_value("0");
-    input.mutable_transaction()->set_sender(ALICE_BECH32);
-    input.mutable_transaction()->set_receiver(BOB_BECH32);
-    input.mutable_transaction()->set_gas_price(1000000000);
-    input.mutable_transaction()->set_gas_limit(50000);
-    input.mutable_transaction()->set_data("");
-    input.mutable_transaction()->set_chain_id("local-testnet");
+    input.mutable_generic_action()->mutable_accounts()->set_sender_nonce(89);
+    input.mutable_generic_action()->mutable_accounts()->set_sender(ALICE_BECH32);
+    input.mutable_generic_action()->mutable_accounts()->set_receiver(BOB_BECH32);
+    input.mutable_generic_action()->set_value("0");
+    input.mutable_generic_action()->set_data("");
+    input.mutable_generic_action()->set_version(1);
     // We'll set a dummy value on the "options" field (merely an example).
     // Currently, the "options" field should be ignored (not set) by applications using TW Core.
     // In the future, TW Core will handle specific transaction options 
     // (such as the "SignedWithHash" flag, as seen in https://github.com/ElrondNetwork/elrond-go-core/blob/main/core/versioning/txVersionChecker.go)
     // when building and signing transactions.
-    input.mutable_transaction()->set_options(42);
-    input.mutable_transaction()->set_version(1);
-    
+    input.mutable_generic_action()->set_options(42);
+    input.set_gas_price(1000000000);
+    input.set_gas_limit(50000);
+    input.set_chain_id("local-testnet");
+
     auto output = Signer::sign(input);
     auto signature = output.signature();
     auto encoded = output.encoded();
@@ -164,8 +164,8 @@ TEST(ElrondSigner, SignWithOptions) {
         % expectedSignature
     ).str();
 
-    ASSERT_EQ(expectedSignature, signature);
     ASSERT_EQ(expectedEncoded, encoded);
+    ASSERT_EQ(expectedSignature, signature);
 }
 
 TEST(ElrondSigner, SignEGLDTransfer) {
@@ -173,9 +173,9 @@ TEST(ElrondSigner, SignEGLDTransfer) {
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
-    input.mutable_egld_transfer()->set_nonce(7);
-    input.mutable_egld_transfer()->set_sender(ALICE_BECH32);
-    input.mutable_egld_transfer()->set_receiver(BOB_BECH32);
+    input.mutable_egld_transfer()->mutable_accounts()->set_sender_nonce(7);
+    input.mutable_egld_transfer()->mutable_accounts()->set_sender(ALICE_BECH32);
+    input.mutable_egld_transfer()->mutable_accounts()->set_receiver(BOB_BECH32);
     input.mutable_egld_transfer()->set_amount("1000000000000000000");
     
     auto output = Signer::sign(input);
@@ -199,9 +199,9 @@ TEST(ElrondSigner, SignESDTTransfer) {
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
-    input.mutable_esdt_transfer()->set_nonce(7);
-    input.mutable_esdt_transfer()->set_sender(ALICE_BECH32);
-    input.mutable_esdt_transfer()->set_receiver(BOB_BECH32);
+    input.mutable_esdt_transfer()->mutable_accounts()->set_sender_nonce(7);
+    input.mutable_esdt_transfer()->mutable_accounts()->set_sender(ALICE_BECH32);
+    input.mutable_esdt_transfer()->mutable_accounts()->set_receiver(BOB_BECH32);
     input.mutable_esdt_transfer()->set_token_identifier("MYTOKEN-1234");
     input.mutable_esdt_transfer()->set_amount("10000000000000");
     
@@ -228,9 +228,9 @@ TEST(ElrondSigner, SignESDTNFTTransfer) {
     auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
-    input.mutable_esdtnft_transfer()->set_nonce(7);
-    input.mutable_esdtnft_transfer()->set_sender(ALICE_BECH32);
-    input.mutable_esdtnft_transfer()->set_receiver(BOB_BECH32);
+    input.mutable_esdtnft_transfer()->mutable_accounts()->set_sender_nonce(7);
+    input.mutable_esdtnft_transfer()->mutable_accounts()->set_sender(ALICE_BECH32);
+    input.mutable_esdtnft_transfer()->mutable_accounts()->set_receiver(BOB_BECH32);
     input.mutable_esdtnft_transfer()->set_token_collection("LKMEX-aab910");
     input.mutable_esdtnft_transfer()->set_token_nonce(4);
     input.mutable_esdtnft_transfer()->set_amount("184300000000000000");

@@ -20,7 +20,7 @@ using namespace TW::Elrond::Proto;
 SigningOutput Signer::sign(const SigningInput &input) noexcept {
     TransactionFactory factory;
 
-    auto transaction = factory.createTransaction(input);
+    auto transaction = factory.create(input);
     auto privateKey = PrivateKey(input.private_key());
     auto signableAsString = serializeTransaction(transaction);
     auto signableAsData = TW::data(signableAsString);

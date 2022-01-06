@@ -10,6 +10,7 @@
 #include "Address.h"
 #include "NetworkConfig.h"
 #include "GasEstimator.h"
+#include "Transaction.h"
 #include "uint256.h"
 
 namespace TW::Elrond {
@@ -24,19 +25,19 @@ public:
     TransactionFactory(const NetworkConfig& networkConfig);
 
     /// Creates the appropriate transaction object, with respect to the "oneof" field (substructure) of Proto::SigningInput.
-    Proto::TransactionMessage createTransaction(const Proto::SigningInput &input);
+    Transaction create(const Proto::SigningInput &input);
 
-    Proto::TransactionMessage createGenericTransaction(const Proto::TransactionMessage& genericTransaction);
+    Transaction fromGenericAction(const Proto::SigningInput& input);
 
     /// This should be used to transfer EGLD.
     /// For reference, see: https://docs.elrond.com/developers/signing-transactions/signing-transactions/#general-structure.
-    Proto::TransactionMessage createEGLDTransfer(const Proto::EGLDTransfer& transfer);
+    Transaction fromEGLDTransfer(const Proto::SigningInput& input);
 
     /// This should be used to transfer regular ESDTs (fungible tokens).
     /// For reference, see: https://docs.elrond.com/developers/esdt-tokens/#transfers
     ///
     /// The "regular" ESDT tokens held by an account can be fetched from https://api.elrond.com/accounts/{address}/tokens.
-    Proto::TransactionMessage createESDTTransfer(const Proto::ESDTTransfer& transfer);
+    Transaction fromESDTTransfer(const Proto::SigningInput& input);
 
     /// This should be used to transfer NFTs, SFTs and Meta ESDTs.
     /// For reference, see: https://docs.elrond.com/developers/nft-tokens/#transfers
@@ -44,8 +45,8 @@ public:
     /// The semi-fungible and non-fungible tokens held by an account can be fetched from https://api.elrond.com/accounts/{address}/nfts?type=SemiFungibleESDT,NonFungibleESDT.
     /// The Meta ESDTs (a special kind of SFTs) held by an account can be fetched from https://api.elrond.com/accounts/{address}/nfts?type=MetaESDT.
     ///
-    /// The fields "transfer.token_collection" and "transfer.token_nonce" are found as well in the HTTP response of the API call (as "collection" and "nonce", respectively).
-    Proto::TransactionMessage createESDTNFTTransfer(const Proto::ESDTNFTTransfer& transfer);
+    /// The fields "token_collection" and "token_nonce" are found as well in the HTTP response of the API call (as "collection" and "nonce", respectively).
+    Transaction fromESDTNFTTransfer(const Proto::SigningInput& input);
 private:
     uint64_t coalesceGasLimit(uint64_t providedGasLimit, uint64_t estimatedGasLimit);
     uint64_t coalesceGasPrice(uint64_t gasPrice);
