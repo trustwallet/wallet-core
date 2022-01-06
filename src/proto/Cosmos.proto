@@ -67,6 +67,14 @@ message Message {
         string value = 2;
     }
 
+    message ExecuteContract {
+        string sender = 1;
+        string contract = 2;
+        string execute_msg = 3;
+        repeated Amount coins = 4;
+        string type_prefix = 5;
+    }
+
     oneof message_oneof {
         Send send_coins_message = 1;
         Delegate stake_message = 2;
@@ -74,6 +82,8 @@ message Message {
         BeginRedelegate restake_message = 4;
         WithdrawDelegationReward withdraw_stake_reward_message = 5;
         RawJSON raw_json_message = 6;
+
+        ExecuteContract execute_contract_message = 7;
     }
 }
 

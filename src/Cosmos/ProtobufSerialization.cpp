@@ -9,6 +9,7 @@
 #include "Protobuf/bank_tx.pb.h"
 #include "Protobuf/distribution_tx.pb.h"
 #include "Protobuf/staking_tx.pb.h"
+#include "Protobuf/terra_execute_contract.pb.h"
 #include "Protobuf/tx.pb.h"
 #include "Protobuf/crypto_secp256k1_keys.pb.h"
 #include "Base64.h"
@@ -31,6 +32,8 @@ const string TYPE_PREFIX_MSG_REDELEGATE = "cosmos-sdk/MsgBeginRedelegate";
 const string TYPE_PREFIX_MSG_WITHDRAW_REWARD = "cosmos-sdk/MsgWithdrawDelegationReward";
 const string TYPE_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 const auto ProtobufAnyNamespacePrefix = "";  // to override default 'type.googleapis.com'
+
+const string TYPE_PREFIX_MSG_EXECUTE_CONTRACT = "wasm/MsgExecuteContract"; //from terra
 
 static string broadcastMode(Proto::BroadcastMode mode) {
     switch (mode) {
@@ -119,6 +122,21 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 msgWithdraw.set_delegator_address(withdraw.delegator_address());
                 msgWithdraw.set_validator_address(withdraw.validator_address());
                 any.PackFrom(msgWithdraw, ProtobufAnyNamespacePrefix);
+                return any;
+            }
+
+        case Proto::Message::kExecuteContractMessage:
+            {
+                assert(msg.has_execute_contract_message());
+                const auto& execContract = msg.execute_contract_message();
+                auto executeContractMsg = terra::wasm::v1beta1::MsgExecuteContract();
+                executeContractMsg.set_sender(execContract.sender());
+                executeContractMsg.set_contract(execContract.contract());
+                executeContractMsg.set_execute_msg(execContract.execute_msg());
+                for (auto i = 0; i < execContract.coins_size(); ++i){
+                    *executeContractMsg.add_coins() = convertCoin(execContract.coins(i));
+                }
+                any.PackFrom(executeContractMsg, ProtobufAnyNamespacePrefix);
                 return any;
             }
 

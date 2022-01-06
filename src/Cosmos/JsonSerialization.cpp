@@ -24,6 +24,8 @@ const string TYPE_PREFIX_MSG_REDELEGATE = "cosmos-sdk/MsgBeginRedelegate";
 const string TYPE_PREFIX_MSG_WITHDRAW_REWARD = "cosmos-sdk/MsgWithdrawDelegationReward";
 const string TYPE_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 
+const string TYPE_PREFIX_MSG_EXECUTE_CONTRACT = "wasm/MsgExecuteContract"; //from terra
+
 static string broadcastMode(Proto::BroadcastMode mode) {
     switch (mode) {
     case Proto::BroadcastMode::BLOCK:
@@ -134,6 +136,21 @@ static json messageWithdrawReward(const Proto::Message_WithdrawDelegationReward&
     };
 }
 
+// https://docs.terra.money/Tutorials/Smart-contracts/Manage-CW20-tokens.html#interacting-with-cw20-contract
+static json messageExecuteContract(const Proto::Message_ExecuteContract& message) {
+    auto typePrefix = message.type_prefix().empty() ? TYPE_PREFIX_MSG_EXECUTE_CONTRACT : message.type_prefix();
+
+    return {
+        {"type", typePrefix},
+        {"value", {
+            {"sender", message.sender()},
+            {"contract", message.contract()},
+            {"execute_msg", message.execute_msg()},
+            {"coins", amountsJSON(message.coins())}
+        }}
+    };
+}
+
 static json messageRawJSON(const Proto::Message_RawJSON& message) {
     return {
         {"type", message.type()},
@@ -155,6 +172,8 @@ static json messagesJSON(const Proto::SigningInput& input) {
             j.push_back(messageRedelegate(msg.restake_message()));
         } else if (msg.has_raw_json_message()) {
             j.push_back(messageRawJSON(msg.raw_json_message()));
+        } else if (msg.has_execute_contract_message()) {
+            j.push_back(messageExecuteContract(msg.execute_contract_message()));
         }
     }
     return j;

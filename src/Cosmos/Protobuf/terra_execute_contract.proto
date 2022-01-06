@@ -1,0 +1,11 @@
+syntax = "proto3";
+package terra.wasm.v1beta1;
+
+import "coin.proto";
+
+message MsgExecuteContract {
+  string sender = 1;
+  string contract = 2;
+  string execute_msg = 3;
+  repeated cosmos.base.v1beta1.Coin coins = 4;
+}
