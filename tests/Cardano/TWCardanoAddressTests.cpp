@@ -14,19 +14,22 @@
 #include <gtest/gtest.h>
 
 TEST(TWCardano, Address) {
-    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71effbf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4").get()));
+    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(
+        "b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71effbf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4"
+        "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" // dummy second
+        ).get()));
     ASSERT_NE(nullptr, privateKey.get());
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519Extended(privateKey.get()));
     ASSERT_NE(nullptr, publicKey.get());
-    ASSERT_EQ(64, publicKey.get()->impl.bytes.size());
+    ASSERT_EQ(128, publicKey.get()->impl.bytes.size());
     auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeCardano));
     auto addressString = WRAPS(TWAnyAddressDescription(address.get()));
-    assertStringsEqual(addressString, "addr1s3tl64970vuthz2j0qkz7kd2ya5j3fxuhdnv333vu38e6c37e4dq80ek4raf7hs3adag2tzpuxz7895a2x8xde5f8jqa8lrjyuqfj5k50pm668");
+    assertStringsEqual(addressString, "addr1qx4z6twzknkkux0hhp0kq6hvdfutczp56g56y5em8r8mgvqgu83fq6ft8wnx2h6e039x78ul8a04yqlt4jg4378pszts5a80gr");
 
-    auto address2 = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(STRING("addr1s3tl64970vuthz2j0qkz7kd2ya5j3fxuhdnv333vu38e6c37e4dq80ek4raf7hs3adag2tzpuxz7895a2x8xde5f8jqa8lrjyuqfj5k50pm668").get(), TWCoinTypeCardano));
+    auto address2 = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(STRING("addr1qx4z6twzknkkux0hhp0kq6hvdfutczp56g56y5em8r8mgvqgu83fq6ft8wnx2h6e039x78ul8a04yqlt4jg4378pszts5a80gr").get(), TWCoinTypeCardano));
     ASSERT_NE(nullptr, address2.get());
     auto address2String = WRAPS(TWAnyAddressDescription(address2.get()));
-    assertStringsEqual(address2String, "addr1s3tl64970vuthz2j0qkz7kd2ya5j3fxuhdnv333vu38e6c37e4dq80ek4raf7hs3adag2tzpuxz7895a2x8xde5f8jqa8lrjyuqfj5k50pm668");
+    assertStringsEqual(address2String, "addr1qx4z6twzknkkux0hhp0kq6hvdfutczp56g56y5em8r8mgvqgu83fq6ft8wnx2h6e039x78ul8a04yqlt4jg4378pszts5a80gr");
 
     ASSERT_TRUE(TWAnyAddressEqual(address.get(), address2.get()));
 }

@@ -20,7 +20,7 @@ enum TWPublicKeyType {
     TWPublicKeyTypeED25519 = 4,
     TWPublicKeyTypeED25519Blake2b = 5,
     TWPublicKeyTypeCURVE25519 = 6,
-    TWPublicKeyTypeED25519Extended = 7,
+    TWPublicKeyTypeED25519Extended = 7, // used by Cardano
 };
 
 TW_EXTERN_C_END

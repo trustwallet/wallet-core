@@ -24,8 +24,8 @@
 using namespace TW;
 
 bool PrivateKey::isValid(const Data& data) {
-    // Check length.  Extended key needs 3*32 bytes.
-    if (data.size() != size && data.size() != extendedSize) {
+    // Check length
+    if (data.size() != size && data.size() != doubleExtendedSize) {
         return false;
     }
 
@@ -81,25 +81,32 @@ PrivateKey::PrivateKey(const Data& data) {
     if (!isValid(data)) {
         throw std::invalid_argument("Invalid private key data");
     }
-    if (data.size() == extendedSize) {
-        // special extended case
+    if (data.size() == doubleExtendedSize) {
+        // special double extended key case
         *this = PrivateKey(
-            TW::data(data.data(), 32),
-            TW::data(data.data() + 32, 32),
-            TW::data(data.data() + 64, 32));
+            subData(data, 0, 32),
+            subData(data, 32, 32),
+            subData(data, 64, 32),
+            subData(data, 96, 32),
+            subData(data, 128, 32),
+            subData(data, 160, 32));
     } else {
         // default case
         bytes = data;
     }
 }
 
-PrivateKey::PrivateKey(const Data& data, const Data& ext, const Data& chainCode) {
-    if (!isValid(data) || !isValid(ext) || !isValid(chainCode)) {
+PrivateKey::PrivateKey(const Data& first, const Data& firstExtension, const Data& firstChainCode, const Data& second, const Data& secondExtension, const Data& secondChainCode) {
+    if (!isValid(first) || !isValid(firstExtension) || !isValid(firstChainCode) ||
+        !isValid(second) || !isValid(secondExtension) || !isValid(secondChainCode)) {
         throw std::invalid_argument("Invalid private key or extended key data");
     }
-    bytes = data;
-    extensionBytes = ext;
-    chainCodeBytes = chainCode;
+    bytes = first;
+    extension = firstExtension;
+    chainCode = firstChainCode;
+    this->second = second;
+    this->secondExtension = secondExtension;
+    this->secondChainCode = secondChainCode;
 }
 
 PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
@@ -130,15 +137,25 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
         ed25519_publickey_blake2b(bytes.data(), result.data());
         break;
     case TWPublicKeyTypeED25519Extended:
-        // must be extended key
-        if (bytes.size() + extensionBytes.size() + chainCodeBytes.size() != extendedSize) {
-            throw std::invalid_argument("Invalid extended key");
+        {
+            // must be double extended key
+            if (bytes.size() != size || extension.size() != size || chainCode.size() != size ||
+                second.size() != size || secondExtension.size() != size || secondChainCode.size() != size) {
+                throw std::invalid_argument("Invalid extended key");
+            }
+            Data tempPub(64);
+            ed25519_publickey_ext(bytes.data(), extension.data(), tempPub.data());
+            result = Data();
+            append(result, subData(tempPub, 0, 32));
+            // copy chainCode
+            append(result, chainCode);
+            // second key
+            ed25519_publickey_ext(second.data(), secondExtension.data(), tempPub.data());
+            append(result, subData(tempPub, 0, 32));
+            append(result, secondChainCode);
         }
-        result.resize(PublicKey::ed25519ExtendedSize);
-        ed25519_publickey_ext(bytes.data(), extensionBytes.data(), result.data());
-        // append chainCode to the end of the public key
-        std::copy(chainCodeBytes.begin(), chainCodeBytes.end(), result.begin() + 32);
         break;
+
     case TWPublicKeyTypeCURVE25519:
         result.resize(PublicKey::ed25519Size);
         PublicKey ed25519PublicKey = getPublicKey(TWPublicKeyTypeED25519);
@@ -197,9 +214,10 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
         success = true;
     } break;
     case TWCurveED25519Extended: {
+        // TODO check
         result.resize(64);
         const auto publicKey = getPublicKey(TWPublicKeyTypeED25519Extended);
-        ed25519_sign_ext(digest.data(), digest.size(), bytes.data(), extensionBytes.data(), publicKey.bytes.data(), result.data());
+        ed25519_sign_ext(digest.data(), digest.size(), bytes.data(), extension.data(), publicKey.bytes.data(), result.data());
         success = true;
     } break;
     case TWCurveCurve25519: {
@@ -304,6 +322,9 @@ Data PrivateKey::signSchnorr(const Data& message, TWCurve curve) const {
 
 void PrivateKey::cleanup() {
     std::fill(bytes.begin(), bytes.end(), 0);
-    std::fill(extensionBytes.begin(), extensionBytes.end(), 0);
-    std::fill(chainCodeBytes.begin(), chainCodeBytes.end(), 0);
+    std::fill(extension.begin(), extension.end(), 0);
+    std::fill(chainCode.begin(), chainCode.end(), 0);
+    std::fill(second.begin(), second.end(), 0);
+    std::fill(secondExtension.begin(), secondExtension.end(), 0);
+    std::fill(secondChainCode.begin(), secondChainCode.end(), 0);
 }

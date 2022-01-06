@@ -24,6 +24,8 @@ class AddressV3 {
     };
 
     enum Kind: uint8_t {
+        Kind_Base = 0,
+        // TODO review rest
         Kind_Sentinel_Low = 2,
         Kind_Single = 3,
         Kind_Group = 4,
@@ -36,11 +38,8 @@ class AddressV3 {
 
     Kind kind;
 
-    /// key1: spending key or account key
-    Data key1;
-
-    /// group key (in case of Group address, empty otherwise)
-    Data groupKey;
+    /// raw key/hash bytes
+    Data bytes;
 
     /// Used in case of legacy address (V2)
     std::optional<AddressV2> legacyAddressV2;
@@ -48,12 +47,8 @@ class AddressV3 {
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& addr);
 
-    /// Create a single spending key address
-    static AddressV3 createSingle(Discrimination discrimination_in, const TW::Data& spendingKey);
-    /// Create a group address
-    static AddressV3 createGroup(Discrimination discrimination_in, const TW::Data& spendingKey, const TW::Data& groupKey);
-    /// Create an account address
-    static AddressV3 createAccount(Discrimination discrimination_in, const TW::Data& accountKey);
+    /// Create a base address
+    static AddressV3 createBase(Discrimination discrimination_in, const TW::Data& spendingKey, const TW::Data& stakingKey);
 
     /// Initializes a Cardano address with a string representation.  Throws if invalid.
     explicit AddressV3(const std::string& addr);
@@ -77,7 +72,7 @@ class AddressV3 {
     std::string stringBase32() const;
 
     /// Check validity and parse elements of a string address.  Used internally by isValid and ctor.
-    static bool parseAndCheckV3(const std::string& addr, Discrimination& discrimination, Kind& kind, TW::Data& key1, TW::Data& key2);
+    static bool parseAndCheckV3(const std::string& addr, Discrimination& discrimination, Kind& kind, TW::Data& raw);
 
     /// Return the binary data representation (keys appended, internal format)
     Data data() const;
@@ -87,7 +82,7 @@ private:
 };
 
 inline bool operator==(const AddressV3& lhs, const AddressV3& rhs) {
-    return lhs.discrimination == rhs.discrimination && lhs.kind == rhs.kind && lhs.key1 == rhs.key1 && lhs.groupKey == rhs.groupKey;
+    return lhs.discrimination == rhs.discrimination && lhs.kind == rhs.kind && lhs.bytes == rhs.bytes;
 }
 
 } // namespace TW::Cardano
