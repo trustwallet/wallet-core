@@ -24,4 +24,6 @@ enum SigningError {
     Error_script_redeem = 11; // [BTC] Missing redeem script
     Error_script_output = 12; // [BTC] Invalid output script
     Error_script_witness_program = 13; // [BTC] Unrecognized witness program
+
+    Error_invalid_memo = 14; // e.g. [XRP] Invalid tag
 }

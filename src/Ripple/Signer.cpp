@@ -7,6 +7,7 @@
 #include "Signer.h"
 #include "../BinaryCoding.h"
 #include "../Hash.h"
+#include <limits>
 
 using namespace TW;
 using namespace TW::Ripple;
@@ -14,6 +15,14 @@ using namespace TW::Ripple;
 static const int64_t fullyCanonical = 0x80000000;
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    auto output = Proto::SigningOutput();
+
+    const int64_t tag = input.destination_tag();
+    if (tag > std::numeric_limits<uint32_t>::max() || tag < 0) {
+        output.set_error(Common::Proto::SigningError::Error_invalid_memo);
+        return output;
+    }
+
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto transaction = Transaction(
         /* amount */input.amount(),
@@ -23,13 +32,12 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         /* last_ledger_sequence */input.last_ledger_sequence(),
         /* account */Address(input.account()),
         /* destination */input.destination(),
-        /* destination_tag*/input.destination_tag()
+        /* destination_tag*/tag
     );
 
     auto signer = Signer();
     signer.sign(key, transaction);
 
-    auto output = Proto::SigningOutput();
     auto encoded = transaction.serialize();
     output.set_encoded(encoded.data(), encoded.size());
     return output;
