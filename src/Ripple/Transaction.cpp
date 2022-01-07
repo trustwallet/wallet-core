@@ -9,6 +9,8 @@
 #include "../BinaryCoding.h"
 #include "../HexCoding.h"
 
+#include <algorithm>
+
 using namespace TW;
 using namespace TW::Ripple;
 
@@ -84,7 +86,7 @@ Data Transaction::serializeAmount(int64_t amount) {
 Data Transaction::serializeAddress(Address address) {
     auto data = Data(20);
     if (!address.bytes.empty()) {
-        std::copy(&address.bytes[0] + 1, &address.bytes[0] + MIN(address.bytes.size(), 21), &data[0]);
+        std::copy(&address.bytes[0] + 1, &address.bytes[0] + std::min(address.bytes.size(), size_t(21)), &data[0]);
     }
     return data;
 }
