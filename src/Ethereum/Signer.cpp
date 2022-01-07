@@ -9,102 +9,106 @@
 using namespace TW;
 using namespace TW::Ethereum;
 
-std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chainID,
-                                                           const Data &signature) noexcept {
+// May throw
+Data addressStringToData(const std::string& asString) {
+    if (asString.empty()) {
+        return {};
+    }
+    auto address = Address(asString);
+    Data asData;
+    asData.resize(20);
+    std::copy(address.bytes.begin(), address.bytes.end(), asData.data());
+    return asData;
+}
+
+Signature Signer::values(const uint256_t &chainID, const Data &signature, bool includeEip155) noexcept {
     boost::multiprecision::uint256_t r, s, v;
     import_bits(r, signature.begin(), signature.begin() + 32);
     import_bits(s, signature.begin() + 32, signature.begin() + 64);
     import_bits(v, signature.begin() + 64, signature.begin() + 65);
-    v += 27;
+    auto rsv = Signature{r, s, v};
 
-    boost::multiprecision::uint256_t newV;
-    if (chainID != 0) {
-        import_bits(newV, signature.begin() + 64, signature.begin() + 65);
-        newV += 35 + chainID + chainID;
-    } else {
-        newV = v;
+    // Embed chainID in V param, for replay protection, legacy (EIP155)
+    if (includeEip155) {
+        if (chainID != 0) {
+            rsv.v += 35 + chainID + chainID;
+        } else {
+            rsv.v += 27;
+        }
     }
-    return std::make_tuple(r, s, newV);
+
+    return rsv;
 }
 
-std::tuple<uint256_t, uint256_t, uint256_t> Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data &hash) noexcept {
+
+Signature Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data &hash, bool includeEip155) noexcept {
     auto signature = privateKey.sign(hash, TWCurveSECP256k1);
-    return values(chainID, signature);
+    return Signer::values(chainID, signature, includeEip155);
 }
 
-Transaction Signer::build(const Proto::SigningInput &input) {
-    Data toAddress;
-    if (!input.to_address().empty()) {
-        toAddress.resize(20);
-        auto address = Address(input.to_address());
-        std::copy(address.bytes.begin(), address.bytes.end(), toAddress.data());
+
+std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput &input) {
+    Data toAddress = addressStringToData(input.to_address());
+    uint256_t nonce = load(input.nonce());
+    uint256_t gasPrice = load(input.gas_price());
+    uint256_t gasLimit = load(input.gas_limit());
+    uint256_t maxInclusionFeePerGas = load(input.max_inclusion_fee_per_gas());
+    uint256_t maxFeePerGas = load(input.max_fee_per_gas());
+
+    switch (input.tx_mode()) {
+    case Proto::TransactionMode::Legacy:
+    default:
+        return TransactionNonTyped::buildNativeTransfer(
+            nonce, gasPrice, gasLimit,
+            /* to: */ toAddress,
+            /* amount: */ load(input.amount()),
+            /* optional data: */Data(input.payload().begin(),
+                                      input.payload().end()));
+
+    case Proto::TransactionMode::Enveloped: // Eip1559
+        return TransactionEip1559::buildNativeTransfer(
+            nonce, maxInclusionFeePerGas, maxFeePerGas, gasLimit,
+            /* to: */ toAddress,
+            /* amount: */ load(input.amount()),
+            /* optional data: */
+            Data(input.payload().begin(),
+                 input.payload().end()));
     }
-    auto transaction = Transaction(
-        /* nonce: */ load(input.nonce()),
-        /* gasPrice: */ load(input.gas_price()),
-        /* gasLimit: */ load(input.gas_limit()),
-        /* to: */ toAddress,
-        /* amount: */ load(input.amount()),
-        /* payload: */ Data(input.payload().begin(), input.payload().end()));
-    return transaction;
+
 }
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) const noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto transaction = Signer::build(input);
 
-    sign(key, transaction);
+    auto signature = sign(key, transaction);
 
     auto protoOutput = Proto::SigningOutput();
 
-    auto encoded = RLP::encode(transaction);
+    auto encoded = transaction->encoded(signature, chainID);
     protoOutput.set_encoded(encoded.data(), encoded.size());
 
-    auto v = store(transaction.v);
+    auto v = store(signature.v);
     protoOutput.set_v(v.data(), v.size());
 
-    auto r = store(transaction.r);
+    auto r = store(signature.r);
     protoOutput.set_r(r.data(), r.size());
 
-    auto s = store(transaction.s);
+    auto s = store(signature.s);
     protoOutput.set_s(s.data(), s.size());
 
     return protoOutput;
 }
 
-void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept {
-    auto hash = this->hash(transaction);
-    auto tuple = Signer::sign(chainID, privateKey, hash);
-
-    transaction.r = std::get<0>(tuple);
-    transaction.s = std::get<1>(tuple);
-    transaction.v = std::get<2>(tuple);
+Signature Signer::sign(const PrivateKey &privateKey, const std::shared_ptr<TransactionBase> transaction) const noexcept {
+    auto txHash = this->hash(transaction);
+    return Signer::sign(this->chainID, privateKey, txHash, transaction->usesReplayProtection());
 }
 
-Data Signer::serialize(const Transaction& transaction) const noexcept {
-    auto encoded = Data();
-    append(encoded, RLP::encode(transaction.nonce));
-    append(encoded, RLP::encode(transaction.gasPrice));
-    append(encoded, RLP::encode(transaction.gasLimit));
-    append(encoded, RLP::encode(transaction.to));
-    append(encoded, RLP::encode(transaction.amount));
-    append(encoded, RLP::encode(transaction.payload));
-    append(encoded, RLP::encode(chainID));
-    append(encoded, RLP::encode(0));
-    append(encoded, RLP::encode(0));
-    return RLP::encodeList(encoded);
+Data Signer::serialize(const std::shared_ptr<TransactionBase> transaction) const noexcept {
+    return transaction->serialize(this->chainID);
 }
 
-Data Signer::hash(const Transaction& transaction) const noexcept {
-    auto encoded = Data();
-    append(encoded, RLP::encode(transaction.nonce));
-    append(encoded, RLP::encode(transaction.gasPrice));
-    append(encoded, RLP::encode(transaction.gasLimit));
-    append(encoded, RLP::encode(transaction.to));
-    append(encoded, RLP::encode(transaction.amount));
-    append(encoded, RLP::encode(transaction.payload));
-    append(encoded, RLP::encode(chainID));
-    append(encoded, RLP::encode(0));
-    append(encoded, RLP::encode(0));
-    return Hash::keccak256(RLP::encodeList(encoded));
+Data Signer::hash(const std::shared_ptr<TransactionBase> transaction) const noexcept {
+    return transaction->preHash(this->chainID);
 }

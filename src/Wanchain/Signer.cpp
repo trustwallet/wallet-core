@@ -14,53 +14,53 @@ Ethereum::Proto::SigningOutput Signer::sign(const Ethereum::Proto::SigningInput 
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto transaction = Ethereum::Signer::build(input);
 
-    sign(key, transaction);
+    auto signature = sign(key, transaction);
 
     auto protoOutput = Ethereum::Proto::SigningOutput();
 
-    auto encoded = encode(transaction);
+    auto encoded = this->encode(transaction, signature);
     protoOutput.set_encoded(encoded.data(), encoded.size());
 
-    auto v = store(transaction.v);
+    auto v = store(signature.v);
     protoOutput.set_v(v.data(), v.size());
 
-    auto r = store(transaction.r);
+    auto r = store(signature.r);
     protoOutput.set_r(r.data(), r.size());
 
-    auto s = store(transaction.s);
+    auto s = store(signature.s);
     protoOutput.set_s(s.data(), s.size());
 
     return protoOutput;
 }
 
-void Signer::sign(const PrivateKey& privateKey, Ethereum::Transaction& transaction) const noexcept {
-    transaction.v = chainID;
-    transaction.r = 0;
-    transaction.s = 0;
-    auto hash = this->hash(transaction);
-    auto tuple = Ethereum::Signer::sign(chainID, privateKey, hash);
-
-    transaction.r = std::get<0>(tuple);
-    transaction.s = std::get<1>(tuple);
-    transaction.v = std::get<2>(tuple);
+Ethereum::Signature Signer::sign(const PrivateKey& privateKey, const std::shared_ptr<Ethereum::TransactionBase> transaction) const noexcept {
+    auto emptySig = Ethereum::Signature{0, 0, chainID};
+    auto txHash = this->hash(transaction, emptySig);
+    return Ethereum::Signer::sign(chainID, privateKey, txHash, transaction->usesReplayProtection());
 }
 
-Data Signer::encode(const Ethereum::Transaction& transaction) const noexcept {
-    auto encoded = Data();
-    append(encoded, Ethereum::RLP::encode(1));
-    append(encoded, Ethereum::RLP::encode(transaction.nonce));
-    append(encoded, Ethereum::RLP::encode(transaction.gasPrice));
-    append(encoded, Ethereum::RLP::encode(transaction.gasLimit));
-    append(encoded, Ethereum::RLP::encode(transaction.to));
-    append(encoded, Ethereum::RLP::encode(transaction.amount));
-    append(encoded, Ethereum::RLP::encode(transaction.payload));
-    append(encoded, Ethereum::RLP::encode(transaction.v));
-    append(encoded, Ethereum::RLP::encode(transaction.r));
-    append(encoded, Ethereum::RLP::encode(transaction.s));
-    return Ethereum::RLP::encodeList(encoded);
+Data Signer::encode(const std::shared_ptr<Ethereum::TransactionBase> transaction,  const Ethereum::Signature &signature) const noexcept {
+    std::shared_ptr<Ethereum::TransactionNonTyped> nonTypeTx = std::dynamic_pointer_cast<Ethereum::TransactionNonTyped>(transaction);
+    if (nonTypeTx) {
+        auto encoded = Data();
+        append(encoded, Ethereum::RLP::encode(1));
+        append(encoded, Ethereum::RLP::encode(nonTypeTx->nonce));
+        append(encoded, Ethereum::RLP::encode(nonTypeTx->gasPrice));
+        append(encoded, Ethereum::RLP::encode(nonTypeTx->gasLimit));
+        append(encoded, Ethereum::RLP::encode(nonTypeTx->to));
+        append(encoded, Ethereum::RLP::encode(nonTypeTx->amount));
+        append(encoded, Ethereum::RLP::encode(nonTypeTx->payload));
+        append(encoded, Ethereum::RLP::encode(signature.v));
+        append(encoded, Ethereum::RLP::encode(signature.r));
+        append(encoded, Ethereum::RLP::encode(signature.s));
+        return Ethereum::RLP::encodeList(encoded);
+    } else {
+        return Data();
+    }
+
 }
 
-Data Signer::hash(const Ethereum::Transaction& transaction) const noexcept {
-    const auto encoded = Signer::encode(transaction);
+Data Signer::hash(const std::shared_ptr<Ethereum::TransactionBase> transaction, const Ethereum::Signature &signature) const noexcept {
+    const auto encoded = Signer::encode(transaction, signature);
     return Hash::keccak256(encoded);
 }

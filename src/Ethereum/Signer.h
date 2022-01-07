@@ -33,26 +33,25 @@ class Signer {
     Proto::SigningOutput sign(const Proto::SigningInput &input) const noexcept;
 
     /// Signs the given transaction.
-    void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
+    Signature sign(const PrivateKey& privateKey, const std::shared_ptr<TransactionBase> transaction) const noexcept;
 
-    Data serialize(const Transaction& transaction) const noexcept;
+    Data serialize(const std::shared_ptr<TransactionBase> transaction) const noexcept;
 
     /// Computes the transaction hash.
-    Data hash(const Transaction& transaction) const noexcept;
+    Data hash(const std::shared_ptr<TransactionBase> transaction) const noexcept;
 
     /// build Transaction from signing input
-    static Transaction build(const Proto::SigningInput &input);
+    static std::shared_ptr<TransactionBase> build(const Proto::SigningInput &input);
 
     /// Signs a hash with the given private key for the given chain identifier.
     ///
     /// @returns the r, s, and v values of the transaction signature
-    static std::tuple<uint256_t, uint256_t, uint256_t> sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data &hash) noexcept;
+    static Signature sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data &hash, bool includeEip155) noexcept;
 
     /// R, S, and V values for the given chain identifier and signature.
     ///
     /// @returns the r, s, and v values of the transaction signature
-    static std::tuple<uint256_t, uint256_t, uint256_t> values(const uint256_t &chainID,
-                                                              const Data &signature) noexcept;
+    static Signature values(const uint256_t &chainID, const Data &signature, bool includeEip155) noexcept;
 };
 
 } // namespace TW::Ethereum

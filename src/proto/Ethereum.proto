@@ -3,7 +3,14 @@ syntax = "proto3";
 package TW.Ethereum.Proto;
 option java_package = "wallet.core.jni.proto";
 
+
+enum TransactionMode {
+    Legacy = 0; // Legacy transaction; for fee gasPrice/gasLimit is used
+    Enveloped = 1; // Enveloped transaction EIP2718 (with type 0x2), fee is according to EIP1559 (base fee, inclusion fee, ...)
+}
+
 // Input data necessary to create a signed transaction.
+// Legacy and EIP1559 transactions supported, see TransactionMode.
 message SigningInput {
     // Chain identifier (256-bit number)
     bytes chain_id = 1;
@@ -12,6 +19,7 @@ message SigningInput {
     bytes nonce = 2;
 
     // Gas price (256-bit number)
+    // Relevant for legacy transactions only (disregarded for enveloped/EIP1559)
     bytes gas_price = 3;
 
     // Gas limit (256-bit number)
@@ -28,6 +36,18 @@ message SigningInput {
 
     // Private key.
     bytes private_key = 8;
+
+    // Maxinmum optional inclusion fee (aka tip) (256-bit number)
+    // Relevant for enveloped/EIP1559 transactions only, tx_mode=Enveloped, (disregarded for legacy)
+    bytes max_inclusion_fee_per_gas = 9;
+
+    // Maxinmum fee (256-bit number)
+    // Relevant for enveloped/EIP1559 transactions only, tx_mode=Enveloped, (disregarded for legacy)
+    bytes max_fee_per_gas = 10;
+
+     // Transaction version selector: Legacy or enveloped, has impact on fee structure.
+     // Default is Legacy (value 0)
+     TransactionMode tx_mode = 11;
 }
 
 // Transaction signing output.

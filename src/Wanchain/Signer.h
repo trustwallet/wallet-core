@@ -32,14 +32,14 @@ class Signer {
     Ethereum::Proto::SigningOutput sign(const Ethereum::Proto::SigningInput &input) const noexcept;
 
     /// Signs the given transaction.
-    void sign(const PrivateKey &privateKey, Ethereum::Transaction &transaction) const noexcept;
+    Ethereum::Signature sign(const PrivateKey& privateKey, const std::shared_ptr<Ethereum::TransactionBase> transaction) const noexcept;
 
     /// Encodes a transaction.
-    Data encode(const Ethereum::Transaction &transaction) const noexcept;
+    Data encode(const std::shared_ptr<Ethereum::TransactionBase> transaction, const Ethereum::Signature& signature) const noexcept;
 
   protected:
     /// Computes the transaction hash.
-    Data hash(const Ethereum::Transaction &transaction) const noexcept;
+    Data hash(const std::shared_ptr<Ethereum::TransactionBase> transaction, const Ethereum::Signature& signature) const noexcept;
 };
 
 } // namespace TW::Wanchain
