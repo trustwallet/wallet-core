@@ -10,12 +10,192 @@
 #include "Ethereum/Transaction.h"
 #include "HexCoding.h"
 
+#include "HDWallet.h"
+#include "Coin.h"
+
 #include <gtest/gtest.h>
+
+#include <TrezorCrypto/ecdsa.h>
+#include <TrezorCrypto/secp256k1.h>
+#include <boost/multiprecision/cpp_int.hpp>
 
 namespace TW::Ethereum {
 
 using boost::multiprecision::uint256_t;
 
+
+byte calculateSigRecovery(byte v, byte chainId) {
+    //std::cout << "calculateSigRecovery  chainId: " << (int)chainId << " v_hex: " << hex(store(v)) << " v_int: " << int(v) << "\n";
+    if (chainId != 0 && v >= 35) {
+        return v - (35 + chainId * 2);
+    }
+    if (v >= 27) {
+        return v - 27;
+    }
+    return v;
+}
+
+Data uint256ToData(const uint256_t number) {
+    Data d;
+    export_bits(number, std::back_inserter(d), 8);
+    if (d.size() < 32) {
+        std::cout << "\nadjustLength32 SPECIAL CASE d.size != 32 " << d.size() << "\n\n";
+        Data corr(32 - d.size());
+        append(corr, d);
+        d = corr;
+    }
+    return d;
+}
+
+// Signature struct to byte array, reverse of Signer::signatureDataToStruct()
+Data signatureToData(const Signature& signature, byte chainId) {
+    Data rr = uint256ToData(signature.r);
+    Data ss = uint256ToData(signature.s);
+
+    byte vv = byte(signature.v);
+    if (vv >= 35) {
+        vv = vv - (35 + chainId * 2);
+    } else if (vv >= 27) {
+        vv = vv - 27;
+    }
+
+    Data sig;
+    append(sig, rr);
+    append(sig, ss);
+    append(sig, vv); // 1 byte
+    //std::cout << "signatureToData sig " << sig.size() << " " << hex(sig) << "\n";
+    return sig;
+}
+
+PublicKey ecdsaRecover(const Signature& signature, byte recoveryV, const Data& msgHash, byte chainId) {
+    const Data sig = signatureToData(signature, chainId);
+    //std::cout << "ecdsaRecover sig " << sig.size() << " " << hex(sig) << "\n";
+
+    Data pubkey(65);
+    int res = ecdsa_recover_pub_from_sig(&secp256k1, pubkey.data(), sig.data(), msgHash.data(), (int)recoveryV);
+    if (res) {
+        std::cout << "ecdsaRecover wrong res " << res << " recovery " << (int)recoveryV << "\n";
+
+        curve_point cp;
+        // read r
+        bn_read_be(sig.data(), &cp.x);
+        uncompress_coords(&secp256k1, recoveryV & 1, &cp.x, &cp.y);
+
+        Data xd(32);
+        bn_write_be(&cp.x, xd.data());
+        std::cout << "x " << hex(xd) << "\n";
+        Data yd(32);
+        bn_write_be(&cp.y, yd.data());
+        std::cout << "y " << hex(yd) << "\n";
+
+        int validate = ecdsa_validate_pubkey(&secp256k1, &cp);
+        std::cout << "validate " << validate << "\n";
+    }
+    //std::cout << "ecdsaRecover pubkey " << pubkey.size() << " " << hex(pubkey) << "\n";
+    assert(res == 0);
+
+    /*
+    curve_point pub;
+    int res2 = ecdsa_read_pubkey(&secp256k1, pubkey.data(), &pub);
+    assert(res2 == 1);
+    Data compr(33);
+    compress_coords(&pub, compr.data());
+    std::cout << "ecdsaRecover compr " << compr.size() << " " << hex(compr) << "\n";
+
+    const PublicKey pubKey = PublicKey(compr, TWPublicKeyTypeSECP256k1);
+    */
+    const PublicKey pubKey = PublicKey(pubkey, TWPublicKeyTypeSECP256k1Extended);
+    return pubKey;
+}
+
+PublicKey ecrecover(const Data& msgHash, const Signature& signature, byte chainId) {
+    const byte recovery = calculateSigRecovery(byte(signature.v), chainId);
+    if (recovery < 0 || recovery > 1) {
+        std::cout << "wrong recovery value!  v: " << hex(store(signature.v)) << " recovery: " << (int)recovery << " chainId: " << (int)chainId << "\n";
+    }
+    assert(recovery >= 0 && recovery <= 1);
+    const PublicKey publicKey = ecdsaRecover(signature, recovery, msgHash, chainId);
+    return publicKey;
+}
+
+bool testRecover(const PrivateKey& privateKey, const Data& hashToSign, byte chainId) {
+    bool res = true;
+    std::cout << "privateKey: " << hex(privateKey.bytes) << "\n";
+    //const PublicKey publicKeyCompr = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1); // compressed
+    //std::cout << "publicKeyCompr: " << hex(publicKeyCompr.bytes) << "\n";
+    const PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended); // extended
+    std::cout << "publicKey: " << hex(publicKey.bytes) << "\n";
+
+    const Signature signature = Signer::sign(privateKey, hashToSign, true, chainId);
+    const Data sigData = signatureToData(signature, chainId);
+    std::cout << "sigData: " << sigData.size() << " " << hex(sigData) << "\n";
+
+    // Check recover, PublicKey implementation
+    {
+        const PublicKey recoveredKeyPK = PublicKey::recover(sigData, hashToSign);
+        std::cout << "recoveredKeyPK: " << recoveredKeyPK.bytes.size() << " " << hex(recoveredKeyPK.bytes) << "\n";
+        if (hex(recoveredKeyPK.bytes) != hex(publicKey.bytes)) {
+            std::cout << "MISMATCH recoveredKeyPK! \n";
+            res = false;
+        }
+    }
+
+    // Check ecrecover, local implementation
+    {
+        Data sig2 = sigData;
+        sig2[64] = sig2[64] - (35 + chainId * 2); // need to adjust v, recover() does not support chainId
+        const PublicKey recoveredKeyLocal = ecrecover(hashToSign, signature, chainId);
+        std::cout << "recoveredKeyLocal: " << recoveredKeyLocal.bytes.size() << " " << hex(recoveredKeyLocal.bytes) << "\n";
+        if (hex(recoveredKeyLocal.bytes) != hex(publicKey.bytes)) {
+            std::cout << "MISMATCH recoveredKeyLocal! \n";
+            res = false;
+        }
+    }
+
+    std::cout << "\n";
+    return res;
+}
+
+TEST(EthereumSigning, verifySignature) {
+    const Data hashToSign1 = parse_hex("68bfc34d28afcb7ae03691816548965dffba6c427c79d15fe6ef548384395fb0");
+    const PrivateKey privKey1 = PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"));
+    const byte chainId = 1;
+
+    {   // a case with leading 0
+        const PrivateKey privKey2 = PrivateKey(parse_hex("3b1a45e27d4eba4bdf5e1fd366f9b4c2dc4d891aee55ef2a2814093cb25484d2"));
+
+        const Signature signature = Signer::sign(privKey2, hashToSign1, true, chainId);
+        const Data sigData = signatureToData(signature, chainId);
+        EXPECT_EQ(sigData[0], 0);
+
+        bool res = testRecover(privKey2, hashToSign1, chainId);
+        ASSERT_TRUE(res);
+    }
+
+    {   // a case with leading 0 in second coordinate
+        const PrivateKey privKey2 = PrivateKey(parse_hex("98301c5ece08396c6ee29210f1b12ed65895376401d7eab642b692ae6b00176c"));
+
+        const Signature signature = Signer::sign(privKey2, hashToSign1, true, chainId);
+        const Data sigData = signatureToData(signature, chainId);
+        EXPECT_EQ(sigData[32], 0);
+
+        bool res = testRecover(privKey2, hashToSign1, chainId);
+        ASSERT_TRUE(res);
+    }
+
+    {
+        const auto derivationPath = TW::derivationPath(TWCoinTypeEthereum);
+        for(auto i = 0; i < 2000; ++i) {
+            std::cout << ">>> i: " << i << ":   ";
+
+            const HDWallet wallet = HDWallet(128, "");
+            const PrivateKey privateKey = wallet.getKey(TWCoinTypeEthereum, derivationPath);
+
+            bool res = testRecover(privateKey, hashToSign1, chainId);
+            ASSERT_TRUE(res); // stop on error
+        }
+    }
+}
 
 TEST(EthereumTransaction, encodeTransactionNonTyped) {
     const auto transaction = TransactionNonTyped::buildERC20Transfer(
