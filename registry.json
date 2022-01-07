@@ -517,7 +517,7 @@
     "id": "nano",
     "name": "Nano",
     "coinId": 165,
-    "symbol": "NANO",
+    "symbol": "XNO",
     "decimals": 30,
     "blockchain": "Nano",
     "derivationPath": "m/44'/165'/0'",
