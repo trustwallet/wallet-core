@@ -157,11 +157,15 @@ targets:
       - protobuf/google/protobuf/extension_set_heavy.cc
       - protobuf/google/protobuf/field_mask.pb.cc
       - protobuf/google/protobuf/generated_enum_util.cc
+      - protobuf/google/protobuf/generated_message_bases.cc
       - protobuf/google/protobuf/generated_message_reflection.cc
       - protobuf/google/protobuf/generated_message_table_driven.cc
       - protobuf/google/protobuf/generated_message_table_driven_lite.cc
+      - protobuf/google/protobuf/generated_message_tctable_full.cc
+      - protobuf/google/protobuf/generated_message_tctable_lite.cc
       - protobuf/google/protobuf/generated_message_util.cc
       - protobuf/google/protobuf/implicit_weak_message.cc
+      - protobuf/google/protobuf/inlined_string_field.cc
       - protobuf/google/protobuf/io/coded_stream.cc
       - protobuf/google/protobuf/io/gzip_stream.cc
       - protobuf/google/protobuf/io/io_win32.cc
@@ -178,6 +182,7 @@ targets:
       - protobuf/google/protobuf/parse_context.cc
       - protobuf/google/protobuf/reflection_ops.cc
       - protobuf/google/protobuf/repeated_field.cc
+      - protobuf/google/protobuf/repeated_ptr_field.cc
       - protobuf/google/protobuf/service.cc
       - protobuf/google/protobuf/source_context.pb.cc
       - protobuf/google/protobuf/struct.pb.cc
@@ -211,7 +216,6 @@ targets:
       - protobuf/google/protobuf/util/internal/protostream_objectsource.cc
       - protobuf/google/protobuf/util/internal/protostream_objectwriter.cc
       - protobuf/google/protobuf/util/internal/type_info.cc
-      - protobuf/google/protobuf/util/internal/type_info_test_helper.cc
       - protobuf/google/protobuf/util/internal/utility.cc
       - protobuf/google/protobuf/util/json_util.cc
       - protobuf/google/protobuf/util/message_differencer.cc
