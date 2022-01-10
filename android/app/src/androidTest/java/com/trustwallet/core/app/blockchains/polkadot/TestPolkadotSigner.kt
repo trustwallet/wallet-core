@@ -12,8 +12,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType.POLKADOT
-import wallet.core.jni.proto.Polkadot
-import wallet.core.jni.proto.Polkadot.SigningOutput
+import wallet.core.proto.Polkadot.*
 
 class TestPolkadotSigner {
 
@@ -28,21 +27,21 @@ class TestPolkadotSigner {
     fun PolkadotTransactionSigning() {
         val key = "0x37932b086586a6675e66e562fe68bd3eeea4177d066619c602fe3efc290ada62".toHexBytesInByteString()
 
-        val call = Polkadot.Staking.Bond.newBuilder().apply {
+        val call = Staking.Bond.newBuilder().apply {
             controller = "14CeRumfZBNBVux9GgaiR5qw9E8RndNsiFWvhcHs76HEPjbP"
             value = "0x02540be400".toHexBytesInByteString()
-            rewardDestination = Polkadot.RewardDestination.STAKED
+            rewardDestination = RewardDestination.STAKED
         }
 
-        val input = Polkadot.SigningInput.newBuilder().apply {
+        val input = SigningInput.newBuilder().apply {
             genesisHash = genesisHashStr
             blockHash = genesisHashStr
             nonce = 0
             specVersion = 17
-            network = Polkadot.Network.POLKADOT
+            network = Network.POLKADOT
             transactionVersion = 3
             privateKey = key
-            stakingCall = Polkadot.Staking.newBuilder().apply {
+            stakingCall = Staking.newBuilder().apply {
                 bond = call.build()
             }.build()
         }
@@ -56,23 +55,23 @@ class TestPolkadotSigner {
 
     @Test
     fun PolkadotTransactionSignBondAndNominate() {
-        val call = Polkadot.Staking.BondAndNominate.newBuilder().apply {
+        val call = Staking.BondAndNominate.newBuilder().apply {
             controller = "13ZLCqJNPsRZYEbwjtZZFpWt9GyFzg5WahXCVWKpWdUJqrQ5"
             value = "0x02540be400".toHexBytesInByteString() // 1 DOT
-            rewardDestination = Polkadot.RewardDestination.STASH
+            rewardDestination = RewardDestination.STASH
             addNominators("1zugcavYA9yCuYwiEYeMHNJm9gXznYjNfXQjZsZukF1Mpow")
             addNominators("15oKi7HoBQbwwdQc47k71q4sJJWnu5opn1pqoGx4NAEYZSHs")
         }
 
-        val input = Polkadot.SigningInput.newBuilder().apply {
+        val input = SigningInput.newBuilder().apply {
             genesisHash = genesisHashStr
             blockHash = genesisHashStr
             nonce = 4
             specVersion = 30
-            network = Polkadot.Network.POLKADOT
+            network = Network.POLKADOT
             transactionVersion = 7
             privateKey = iOSTestKey
-            stakingCall = Polkadot.Staking.newBuilder().apply {
+            stakingCall = Staking.newBuilder().apply {
                 bondAndNominate = call.build()
             }.build()
         }

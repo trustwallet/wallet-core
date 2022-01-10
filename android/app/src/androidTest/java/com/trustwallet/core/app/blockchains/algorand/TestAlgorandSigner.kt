@@ -8,8 +8,7 @@ import org.junit.Assert.*
 import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType.ALGORAND
-import wallet.core.jni.proto.Algorand
-import wallet.core.jni.proto.Algorand.SigningOutput
+import wallet.core.proto.Algorand.*
 
 class TestAlgorandSigner {
 
@@ -19,11 +18,11 @@ class TestAlgorandSigner {
 
     @Test
     fun AlgorandTransactionSigning() {
-        val transaction = Algorand.Transfer.newBuilder()
+        val transaction = Transfer.newBuilder()
             .setToAddress("CRLADAHJZEW2GFY2UPEHENLOGCUOU74WYSTUXQLVLJUJFHEUZOHYZNWYR4")
             .setAmount(1000000000000)
             .build()
-        val signingInput = Algorand.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
             .setGenesisId("mainnet-v1.0")
             .setGenesisHash(ByteString.copyFrom("c061c4d8fc1dbdded2d7604be4568e3f6d041987ac37bde4b620b5ab39248adf".toHexByteArray()))
             .setNote(ByteString.copyFrom("68656c6c6f".toHexByteArray()))

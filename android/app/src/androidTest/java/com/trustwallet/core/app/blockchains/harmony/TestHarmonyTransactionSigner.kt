@@ -6,8 +6,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.PrivateKey
 import wallet.core.java.AnySigner
-import wallet.core.jni.proto.Harmony
-import wallet.core.jni.proto.Harmony.SigningOutput
+import wallet.core.proto.Harmony.*
 import com.trustwallet.core.app.utils.Numeric
 import wallet.core.jni.CoinType.HARMONY
 
@@ -19,7 +18,7 @@ class TestHarmonyTransactionSigner {
 
     @Test
     fun testHarmonyTransactionSigning() {
-        val transaction = Harmony.TransactionMessage.newBuilder()
+        val transaction = TransactionMessage.newBuilder()
         transaction.apply {
             nonce = ByteString.copyFrom("0x9".toHexByteArray())
             gasPrice = ByteString.copyFrom("0x0".toHexByteArray())
@@ -29,7 +28,7 @@ class TestHarmonyTransactionSigner {
             toShardId = ByteString.copyFrom("0x0".toHexByteArray())
             amount = ByteString.copyFrom("0x4c53ecdc18a60000".toHexByteArray())
         }
-        val signingInput = Harmony.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
         signingInput.apply {
             privateKey = ByteString.copyFrom(PrivateKey("0xb578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e".toHexByteArray()).data())
             chainId = ByteString.copyFrom("0x02".toHexByteArray())

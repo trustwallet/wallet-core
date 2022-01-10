@@ -1,7 +1,8 @@
 syntax = "proto3";
 
 package TW.Algorand.Proto;
-option java_package = "wallet.core.jni.proto";
+option java_package = "wallet.core.proto.Algorand";
+option java_multiple_files = true;
 
 message Transfer {
     string to_address = 1;

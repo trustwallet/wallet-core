@@ -8,15 +8,11 @@ package com.trustwallet.core.app.blockchains.oasis
 
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.Numeric
-import com.trustwallet.core.app.utils.toHexByteArray
-import com.trustwallet.core.app.utils.toHexBytes
-import com.trustwallet.core.app.utils.toHexBytesInByteString
 import junit.framework.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType.OASIS
-import wallet.core.jni.proto.Oasis
-import wallet.core.jni.proto.Oasis.SigningOutput
+import wallet.core.proto.Oasis.*
 import java.math.BigInteger
 
 class TestOasisSigner {
@@ -27,7 +23,7 @@ class TestOasisSigner {
 
     @Test
     fun OasisTransactionSigning() {
-        val transferMsg = Oasis.TransferMessage.newBuilder()
+        val transferMsg = TransferMessage.newBuilder()
 
         transferMsg.apply {
             to = "oasis1qrrnesqpgc6rfy2m50eew5d7klqfqk69avhv4ak5"
@@ -41,7 +37,7 @@ class TestOasisSigner {
             context = "oasis-core/consensus: tx for chain a245619497e580dd3bc1aa3256c07f68b8dcc13f92da115eadc3b231b083d3c4"
         }
 
-        val signingInput = Oasis.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
         signingInput.apply {
             privateKey = (ByteString.copyFrom(Numeric.hexStringToByteArray("4f8b5676990b00e23d9904a92deb8d8f428ff289c8939926358f1d20537c21a0")))
             transfer = transferMsg.build()

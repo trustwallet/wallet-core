@@ -1,7 +1,8 @@
 syntax = "proto3";
 
 package TW.THORChainSwap.Proto;
-option java_package = "wallet.core.jni.proto";
+option java_package = "wallet.core.proto.THORChainSwap";
+option java_multiple_files = true;
 
 import "Bitcoin.proto";
 import "Ethereum.proto";

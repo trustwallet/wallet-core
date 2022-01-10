@@ -1,7 +1,8 @@
 syntax = "proto3";
 
 package TW.Ontology.Proto;
-option java_package = "wallet.core.jni.proto";
+option java_package = "wallet.core.proto.Ontology";
+option java_multiple_files = true;
 
 // Input data necessary to create a signed transaction.
 message SigningInput {

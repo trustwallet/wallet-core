@@ -6,8 +6,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType.ONTOLOGY
-import wallet.core.jni.proto.Ontology
-import wallet.core.jni.proto.Ontology.SigningOutput
+import wallet.core.proto.Ontology.*
 
 class TestOntologySigning {
     init {
@@ -16,7 +15,7 @@ class TestOntologySigning {
 
     @Test
     fun testSignOngBalanceOf() {
-        val signerBuilder = Ontology.SigningInput.newBuilder()
+        val signerBuilder = SigningInput.newBuilder()
         val input = signerBuilder.apply {
             contract = "ONG"
             method = "balanceOf"
@@ -36,7 +35,7 @@ class TestOntologySigning {
 
     @Test
     fun testSignOntBalanceOf() {
-        val signerBuilder = Ontology.SigningInput.newBuilder()
+        val signerBuilder = SigningInput.newBuilder()
         val input = signerBuilder.apply {
             contract = "ONT"
             method = "balanceOf"
@@ -56,7 +55,7 @@ class TestOntologySigning {
 
     @Test
     fun testSignOntTransfer() {
-        val signerBuilder = Ontology.SigningInput.newBuilder()
+        val signerBuilder = SigningInput.newBuilder()
         val input = signerBuilder.apply {
             contract = "ONT"
             method = "transfer"
@@ -80,7 +79,7 @@ class TestOntologySigning {
 
     @Test
     fun testSignOngTransfer() {
-        val signerBuilder = Ontology.SigningInput.newBuilder()
+        val signerBuilder = SigningInput.newBuilder()
         val input = signerBuilder.apply {
             contract = "ONG"
             method = "transfer"

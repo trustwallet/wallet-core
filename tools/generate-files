@@ -49,11 +49,12 @@ codegen/bin/coins
 # Generate interface code
 codegen/bin/codegen
 
-# Generate Java, C++ and Swift Protobuf files
+# Generate C++ / Java / Kotlin protobuf code
+"$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=jni/java --kotlin_out=jni/java src/proto/*.proto
+
+# Generate Swift code
 if [ -x "$(command -v protoc-gen-swift)" ]; then
-    "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=jni/java --swift_out=swift/Sources/Generated/Protobuf --swift_opt=Visibility=Public src/proto/*.proto
-else
-    "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=jni/java src/proto/*.proto
+    "$PROTOC" -I=$PREFIX/include -I=src/proto --swift_out=swift/Sources/Generated/Protobuf --swift_opt=Visibility=Public src/proto/*.proto
 fi
 
 # Generate internal message protocol Protobuf files
@@ -68,10 +69,10 @@ fi
 
 # Generate Xcode project
 if [ -x "$(command -v xcodegen)" ]; then
-    pushd swift
+    pushd swift > /dev/null
     xcodegen
     pod install
-    popd
+    popd > /dev/null
 else
     echo -e "\nWARNING: Skipped generating Xcode project because the xcodegen tool is not installed."
 fi

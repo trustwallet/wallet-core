@@ -1,7 +1,8 @@
 syntax = "proto3";
 
 package TW.Binance.Proto;
-option java_package = "wallet.core.jni.proto";
+option java_package = "wallet.core.proto.Binance";
+option java_multiple_files = true;
 
 message Transaction {
     // int64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding

@@ -8,8 +8,7 @@ import org.junit.Test
 import wallet.core.jni.CoinType.NEBULAS
 import wallet.core.jni.PrivateKey
 import wallet.core.java.AnySigner
-import wallet.core.jni.proto.Nebulas
-import wallet.core.jni.proto.Nebulas.SigningOutput
+import wallet.core.proto.Nebulas.*
 
 class TestNebulasSigner {
 
@@ -19,7 +18,7 @@ class TestNebulasSigner {
 
     @Test
     fun testNebulasSigner() {
-        val signingInput = Nebulas.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
         signingInput.apply {
             fromAddress = "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY"
             toAddress = "n1SAeQRVn33bamxN4ehWUT7JGdxipwn8b17"

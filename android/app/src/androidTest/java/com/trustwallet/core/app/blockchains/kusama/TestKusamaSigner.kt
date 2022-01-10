@@ -12,8 +12,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType.KUSAMA
-import wallet.core.jni.proto.Polkadot
-import wallet.core.jni.proto.Polkadot.SigningOutput
+import wallet.core.proto.Polkadot.*
 
 class TestKusamaSigner {
 
@@ -26,20 +25,20 @@ class TestKusamaSigner {
         val key = "0x8cdc538e96f460da9d639afc5c226f477ce98684d77fb31e88db74c1f1dd86b2".toHexBytesInByteString()
         val hash = "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe".toHexBytesInByteString()
 
-        val call = Polkadot.Balance.Transfer.newBuilder().apply {
+        val call = Balance.Transfer.newBuilder().apply {
             toAddress = "CtwdfrhECFs3FpvCGoiE4hwRC4UsSiM8WL899HjRdQbfYZY"
             value = "0x02540be400".toHexBytesInByteString()
         }
 
-        val input = Polkadot.SigningInput.newBuilder().apply {
+        val input = SigningInput.newBuilder().apply {
             genesisHash = hash
             blockHash = hash
             nonce = 1
             specVersion = 2019
-            network = Polkadot.Network.KUSAMA
+            network = Network.KUSAMA
             transactionVersion = 2
             privateKey = key
-            balanceCall = Polkadot.Balance.newBuilder().apply {
+            balanceCall = Balance.newBuilder().apply {
                 transfer = call.build()
             }.build()
         }

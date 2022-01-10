@@ -1,7 +1,8 @@
 syntax = "proto3";
 
 package TW.Common.Proto;
-option java_package = "wallet.core.jni.proto";
+option java_package = "wallet.core.proto.Common";
+option java_multiple_files = true;
 
 enum SigningError {
     OK = 0; // OK

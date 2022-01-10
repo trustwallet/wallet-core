@@ -17,9 +17,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.*
 import wallet.core.jni.CoinType.OSMOSIS
-import wallet.core.jni.proto.Cosmos
-import wallet.core.jni.proto.Cosmos.SigningOutput
-import wallet.core.jni.proto.Cosmos.SigningMode
+import wallet.core.proto.Cosmos.*
 import wallet.core.java.AnySigner
 
 class TestOsmosisSigner {
@@ -34,32 +32,32 @@ class TestOsmosisSigner {
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, OSMOSIS).description()
 
-        val txAmount = Cosmos.Amount.newBuilder().apply {
+        val txAmount = Amount.newBuilder().apply {
             amount = 100000 - 200
             denom = "uosmo"
         }.build()
 
-        val sendCoinsMsg = Cosmos.Message.Send.newBuilder().apply {
+        val sendCoinsMsg = Message.Send.newBuilder().apply {
             fromAddress = from
             toAddress = "osmo18s0hdnsllgcclweu9aymw4ngktr2k0rkvn7jmn"
             addAllAmounts(listOf(txAmount))
         }.build()
 
-        val message = Cosmos.Message.newBuilder().apply {
+        val message = Message.newBuilder().apply {
             sendCoinsMessage = sendCoinsMsg
         }.build()
 
-        val feeAmount = Cosmos.Amount.newBuilder().apply {
+        val feeAmount = Amount.newBuilder().apply {
             amount = 200
             denom = "uosmo"
         }.build()
 
-        val osmosisFee = Cosmos.Fee.newBuilder().apply {
+        val osmosisFee = Fee.newBuilder().apply {
             gas = 200000
             addAllAmounts(listOf(feeAmount))
         }.build()
 
-        val signingInput = Cosmos.SigningInput.newBuilder().apply {
+        val signingInput = SigningInput.newBuilder().apply {
             signingMode = SigningMode.Protobuf
             accountNumber = 124703
             chainId = "osmosis-1"

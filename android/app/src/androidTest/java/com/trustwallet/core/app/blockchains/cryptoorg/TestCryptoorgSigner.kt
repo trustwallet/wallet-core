@@ -7,18 +7,12 @@
 package com.trustwallet.core.app.blockchains.cryptoorg
 
 import com.google.protobuf.ByteString
-import com.trustwallet.core.app.utils.Numeric
 import com.trustwallet.core.app.utils.toHexByteArray
-import com.trustwallet.core.app.utils.toHexBytes
-import com.trustwallet.core.app.utils.toHex
-import com.trustwallet.core.app.utils.toHexBytesInByteString
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType.CRYPTOORG
-import wallet.core.jni.proto.Cosmos
-import wallet.core.jni.proto.Cosmos.SigningOutput
-import wallet.core.jni.proto.Cosmos.SigningMode
+import wallet.core.proto.Cosmos.*
 import wallet.core.jni.*
 
 class TestCryptoorgSigner {
@@ -33,32 +27,32 @@ class TestCryptoorgSigner {
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, CRYPTOORG).description()
 
-        val txAmount = Cosmos.Amount.newBuilder().apply {
+        val txAmount = Amount.newBuilder().apply {
             amount = 50000000
             denom = "basecro"
         }.build()
 
-        val sendCoinsMsg = Cosmos.Message.Send.newBuilder().apply {
+        val sendCoinsMsg = Message.Send.newBuilder().apply {
             fromAddress = from
             toAddress = "cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus"
             addAllAmounts(listOf(txAmount))
         }.build()
 
-        val message = Cosmos.Message.newBuilder().apply {
+        val message = Message.newBuilder().apply {
             sendCoinsMessage = sendCoinsMsg
         }.build()
 
-        val feeAmount = Cosmos.Amount.newBuilder().apply {
+        val feeAmount = Amount.newBuilder().apply {
             amount = 5000
             denom = "basecro"
         }.build()
 
-        val cosmosFee = Cosmos.Fee.newBuilder().apply {
+        val cosmosFee = Fee.newBuilder().apply {
             gas = 200000
             addAllAmounts(listOf(feeAmount))
         }.build()
 
-        val signingInput = Cosmos.SigningInput.newBuilder().apply {
+        val signingInput = SigningInput.newBuilder().apply {
             signingMode = SigningMode.Protobuf
             accountNumber = 125798
             chainId = "crypto-org-chain-mainnet-1"

@@ -7,8 +7,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.*
 import wallet.core.jni.CoinType.KAVA
-import wallet.core.jni.proto.Cosmos
-import wallet.core.jni.proto.Cosmos.SigningOutput
+import wallet.core.proto.Cosmos.*
 import wallet.core.java.AnySigner
 
 class TestKavaTransactions {
@@ -23,7 +22,7 @@ class TestKavaTransactions {
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, KAVA).description()
 
-        val rawJSON = Cosmos.Message.RawJSON.newBuilder().apply {
+        val rawJSON = Message.RawJSON.newBuilder().apply {
             type = "withdraw_cdp"
             value = """
                 {
@@ -39,21 +38,21 @@ class TestKavaTransactions {
                 """.trimIndent()
         }.build()
 
-        val feeAmount = Cosmos.Amount.newBuilder().apply {
+        val feeAmount = Amount.newBuilder().apply {
             amount = 100
             denom = "ukava"
         }.build()
 
-        val kavaFee = Cosmos.Fee.newBuilder().apply {
+        val kavaFee = Fee.newBuilder().apply {
             gas = 200000
             addAllAmounts(listOf(feeAmount))
         }.build()
 
-        val message = Cosmos.Message.newBuilder().apply {
+        val message = Message.newBuilder().apply {
             rawJsonMessage = rawJSON
         }.build()
 
-        val signingInput = Cosmos.SigningInput.newBuilder().apply {
+        val signingInput = SigningInput.newBuilder().apply {
             accountNumber = 204
             chainId = "kava-2"
             sequence = 4

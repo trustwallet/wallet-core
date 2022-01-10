@@ -7,8 +7,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.PrivateKey
-import wallet.core.jni.proto.Harmony
-import wallet.core.jni.proto.Harmony.SigningOutput
+import wallet.core.proto.Harmony.*
 import wallet.core.jni.CoinType.HARMONY
 
 class TestHarmonyStakingDelegateSigner {
@@ -22,31 +21,31 @@ class TestHarmonyStakingDelegateSigner {
         System.loadLibrary("TrustWalletCore")
     }
 
-    fun createValidator(): Harmony.DirectiveCreateValidator.Builder {
-        val desc = Harmony.Description.newBuilder()
+    fun createValidator(): DirectiveCreateValidator.Builder {
+        val desc = Description.newBuilder()
         desc.apply {
             name = "Alice"
             identity = "alice"
-            website = "alice.harmony.one"
+            website = "alice.one"
             securityContact = "Bob"
             details = "Don't mess with me!!!"
         }
-        val r = Harmony.Decimal.newBuilder()
+        val r = Decimal.newBuilder()
         r.apply {
             value = ByteString.copyFrom("0x1".toHexByteArray())
             precision = ByteString.copyFrom("0x1".toHexByteArray())
         }
-        val mr = Harmony.Decimal.newBuilder()
+        val mr = Decimal.newBuilder()
         mr.apply {
             value = ByteString.copyFrom("0x9".toHexByteArray())
             precision = ByteString.copyFrom("0x1".toHexByteArray())
         }
-        val mcr = Harmony.Decimal.newBuilder()
+        val mcr = Decimal.newBuilder()
         mcr.apply {
             value = ByteString.copyFrom("0x5".toHexByteArray())
             precision = ByteString.copyFrom("0x2".toHexByteArray())
         }
-        val cRate = Harmony.CommissionRate.newBuilder()
+        val cRate = CommissionRate.newBuilder()
         cRate.apply {
             rate = r.build()
             maxRate = mr.build()
@@ -54,7 +53,7 @@ class TestHarmonyStakingDelegateSigner {
         }
         val pubKey = pubKeyData
         val blsSig = blsSigData
-        val createValidator = Harmony.DirectiveCreateValidator.newBuilder()
+        val createValidator = DirectiveCreateValidator.newBuilder()
         createValidator.apply {
             validatorAddress = oneAddress
             description = desc.build()
@@ -71,14 +70,14 @@ class TestHarmonyStakingDelegateSigner {
     @Test
     fun testHarmonyStakingTransactionCreateValidatorSigning() {
         val createValidator = createValidator();
-        val staking = Harmony.StakingMessage.newBuilder()
+        val staking = StakingMessage.newBuilder()
         staking.apply {
             nonce = ByteString.copyFrom("0x2".toHexByteArray())
             gasPrice = ByteString.copyFrom("0x0".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x64".toHexByteArray())
             createValidatorMessage = createValidator.build()
         }
-        val signingInput = Harmony.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
         signingInput.apply {
             privateKey = privateKeyData
             chainId = ByteString.copyFrom("0x02".toHexByteArray())
@@ -96,20 +95,20 @@ class TestHarmonyStakingDelegateSigner {
 
     @Test
     fun testHarmonyStakingTransactionEditValidatorSigning() {
-        val desc = Harmony.Description.newBuilder()
+        val desc = Description.newBuilder()
         desc.apply {
             name = "Alice"
             identity = "alice"
-            website = "alice.harmony.one"
+            website = "alice.one"
             securityContact = "Bob"
             details = "Don't mess with me!!!"
         }
-        val rate = Harmony.Decimal.newBuilder()
+        val rate = Decimal.newBuilder()
         rate.apply {
             value = ByteString.copyFrom("0x1".toHexByteArray())
             precision = ByteString.copyFrom("0x1".toHexByteArray())
         }
-        val editValidator = Harmony.DirectiveEditValidator.newBuilder()
+        val editValidator = DirectiveEditValidator.newBuilder()
         editValidator.apply {
             validatorAddress = oneAddress
             description = desc.build()
@@ -121,14 +120,14 @@ class TestHarmonyStakingDelegateSigner {
             slotKeyToAddSig = blsSigData
             active = ByteString.copyFrom("0x1".toHexByteArray())
         }
-        val staking = Harmony.StakingMessage.newBuilder()
+        val staking = StakingMessage.newBuilder()
         staking.apply {
             nonce = ByteString.copyFrom("0x2".toHexByteArray())
             gasPrice = ByteString.copyFrom("0x0".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x64".toHexByteArray())
             editValidatorMessage = editValidator.build()
         }
-        val signingInput = Harmony.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
         signingInput.apply {
             privateKey = privateKeyData
             chainId = ByteString.copyFrom("0x02".toHexByteArray())
@@ -146,20 +145,20 @@ class TestHarmonyStakingDelegateSigner {
 
     @Test
     fun testHarmonyStakingTransactionEditValidatorSigning2() {
-        val desc = Harmony.Description.newBuilder()
+        val desc = Description.newBuilder()
         desc.apply {
             name = "Alice"
             identity = "alice"
-            website = "alice.harmony.one"
+            website = "alice.one"
             securityContact = "Bob"
             details = "Don't mess with me!!!"
         }
-        val rate = Harmony.Decimal.newBuilder()
+        val rate = Decimal.newBuilder()
         rate.apply {
             value = ByteString.copyFrom("0x1".toHexByteArray())
             precision = ByteString.copyFrom("0x1".toHexByteArray())
         }
-        val editValidator = Harmony.DirectiveEditValidator.newBuilder()
+        val editValidator = DirectiveEditValidator.newBuilder()
         editValidator.apply {
             validatorAddress = oneAddress
             description = desc.build()
@@ -171,14 +170,14 @@ class TestHarmonyStakingDelegateSigner {
             slotKeyToAddSig = blsSigData
             active = ByteString.copyFrom("0x2".toHexByteArray())
         }
-        val staking = Harmony.StakingMessage.newBuilder()
+        val staking = StakingMessage.newBuilder()
         staking.apply {
             nonce = ByteString.copyFrom("0x2".toHexByteArray())
             gasPrice = ByteString.copyFrom("0x0".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x64".toHexByteArray())
             editValidatorMessage = editValidator.build()
         }
-        val signingInput = Harmony.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
         signingInput.apply {
             privateKey = privateKeyData
             chainId = ByteString.copyFrom("0x02".toHexByteArray())
@@ -196,20 +195,20 @@ class TestHarmonyStakingDelegateSigner {
 
     @Test
     fun testHarmonyStakingTransactionEditValidatorSigning3() {
-        val desc = Harmony.Description.newBuilder()
+        val desc = Description.newBuilder()
         desc.apply {
             name = "Alice"
             identity = "alice"
-            website = "alice.harmony.one"
+            website = "alice.one"
             securityContact = "Bob"
             details = "Don't mess with me!!!"
         }
-        val rate = Harmony.Decimal.newBuilder()
+        val rate = Decimal.newBuilder()
         rate.apply {
             value = ByteString.copyFrom("0x1".toHexByteArray())
             precision = ByteString.copyFrom("0x1".toHexByteArray())
         }
-        val editValidator = Harmony.DirectiveEditValidator.newBuilder()
+        val editValidator = DirectiveEditValidator.newBuilder()
         editValidator.apply {
             validatorAddress = oneAddress
             description = desc.build()
@@ -221,14 +220,14 @@ class TestHarmonyStakingDelegateSigner {
             slotKeyToAddSig = blsSigData
             active = ByteString.copyFrom("0x0".toHexByteArray())
         }
-        val staking = Harmony.StakingMessage.newBuilder()
+        val staking = StakingMessage.newBuilder()
         staking.apply {
             nonce = ByteString.copyFrom("0x2".toHexByteArray())
             gasPrice = ByteString.copyFrom("0x0".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x64".toHexByteArray())
             editValidatorMessage = editValidator.build()
         }
-        val signingInput = Harmony.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
         signingInput.apply {
             privateKey = privateKeyData
             chainId = ByteString.copyFrom("0x02".toHexByteArray())
@@ -246,20 +245,20 @@ class TestHarmonyStakingDelegateSigner {
 
     @Test
     fun testHarmonyStakingTransactionDelegateSigning() {
-        val delegate = Harmony.DirectiveDelegate.newBuilder()
+        val delegate = DirectiveDelegate.newBuilder()
         delegate.apply {
             delegatorAddress = oneAddress
             validatorAddress = oneAddress
             amount = ByteString.copyFrom("0xa".toHexByteArray())
         }
-        val staking = Harmony.StakingMessage.newBuilder()
+        val staking = StakingMessage.newBuilder()
         staking.apply {
             nonce = ByteString.copyFrom("0x2".toHexByteArray())
             gasPrice = ByteString.copyFrom("0x0".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x64".toHexByteArray())
             delegateMessage = delegate.build()
         }
-        val signingInput = Harmony.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
         signingInput.apply {
             privateKey = privateKeyData
             chainId = ByteString.copyFrom("0x02".toHexByteArray())
@@ -276,20 +275,20 @@ class TestHarmonyStakingDelegateSigner {
 
     @Test
     fun testHarmonyStakingTransactionUndelegateSigning() {
-        val undelegate = Harmony.DirectiveUndelegate.newBuilder()
+        val undelegate = DirectiveUndelegate.newBuilder()
         undelegate.apply {
             delegatorAddress = oneAddress
             validatorAddress = oneAddress
             amount = ByteString.copyFrom("0xa".toHexByteArray())
         }
-        val staking = Harmony.StakingMessage.newBuilder()
+        val staking = StakingMessage.newBuilder()
         staking.apply {
             nonce = ByteString.copyFrom("0x2".toHexByteArray())
             gasPrice = ByteString.copyFrom("0x0".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x64".toHexByteArray())
             undelegateMessage = undelegate.build()
         }
-        val signingInput = Harmony.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
         signingInput.apply {
             privateKey = privateKeyData
             chainId = ByteString.copyFrom("0x02".toHexByteArray())
@@ -306,18 +305,18 @@ class TestHarmonyStakingDelegateSigner {
 
     @Test
     fun testHarmonyStakingTransactionCollectRewardsSigning() {
-        val cRewards = Harmony.DirectiveCollectRewards.newBuilder()
+        val cRewards = DirectiveCollectRewards.newBuilder()
         cRewards.apply {
             delegatorAddress = oneAddress
         }
-        val staking = Harmony.StakingMessage.newBuilder()
+        val staking = StakingMessage.newBuilder()
         staking.apply {
             nonce = ByteString.copyFrom("0x2".toHexByteArray())
             gasPrice = ByteString.copyFrom("0x0".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x64".toHexByteArray())
             collectRewards = cRewards.build()
         }
-        val signingInput = Harmony.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
         signingInput.apply {
             privateKey = privateKeyData
             chainId = ByteString.copyFrom("0x02".toHexByteArray())

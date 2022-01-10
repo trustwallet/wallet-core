@@ -14,8 +14,7 @@ import wallet.core.java.AnySigner
 import wallet.core.jni.AnyAddress
 import wallet.core.jni.CoinType.BANDCHAIN
 import wallet.core.jni.PrivateKey
-import wallet.core.jni.proto.Cosmos
-import wallet.core.jni.proto.Cosmos.SigningOutput
+import wallet.core.proto.Cosmos.*
 
 class TestBandChainSigner {
 
@@ -30,32 +29,32 @@ class TestBandChainSigner {
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, BANDCHAIN).description()
 
-        val txAmount = Cosmos.Amount.newBuilder().apply {
+        val txAmount = Amount.newBuilder().apply {
             amount = 1
             denom = "uband"
         }.build()
 
-        val sendCoinsMsg = Cosmos.Message.Send.newBuilder().apply {
+        val sendCoinsMsg = Message.Send.newBuilder().apply {
             fromAddress = from
             toAddress = "band1jf9aaj9myrzsnmpdr7twecnaftzmku2mgms4n3"
             addAllAmounts(listOf(txAmount))
         }.build()
 
-        val message = Cosmos.Message.newBuilder().apply {
+        val message = Message.newBuilder().apply {
             sendCoinsMessage = sendCoinsMsg
         }.build()
 
-        val feeAmount = Cosmos.Amount.newBuilder().apply {
+        val feeAmount = Amount.newBuilder().apply {
             amount = 200
             denom = "uband"
         }.build()
 
-        val cosmosFee = Cosmos.Fee.newBuilder().apply {
+        val cosmosFee = Fee.newBuilder().apply {
             gas = 200000
             addAllAmounts(listOf(feeAmount))
         }.build()
 
-        val signingInput = Cosmos.SigningInput.newBuilder().apply {
+        val signingInput = SigningInput.newBuilder().apply {
             accountNumber = 1037
             chainId = "band-wenchang-testnet2"
             memo = ""

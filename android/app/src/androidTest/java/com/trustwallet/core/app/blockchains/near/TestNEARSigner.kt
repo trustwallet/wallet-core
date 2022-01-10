@@ -8,8 +8,7 @@ import org.junit.Test
 import wallet.core.jni.Base58
 import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType
-import wallet.core.jni.proto.NEAR
-import wallet.core.jni.proto.NEAR.SigningOutput
+import wallet.core.proto.NEAR.*
 
 class TestNEARSigner {
 
@@ -19,10 +18,10 @@ class TestNEARSigner {
 
     @Test
     fun testTransferSign() {
-        val transferAction = NEAR.Transfer.newBuilder().apply {
+        val transferAction = Transfer.newBuilder().apply {
             deposit = ByteString.copyFrom("01000000000000000000000000000000".toHexByteArray())
         }.build()
-        val signingInput = NEAR.SigningInput.newBuilder().apply {
+        val signingInput = SigningInput.newBuilder().apply {
             signerId = "test.near"
             nonce = 1
             receiverId = "whatever.near"

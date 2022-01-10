@@ -11,8 +11,8 @@ import wallet.core.jni.AnyAddress
 import wallet.core.jni.CoinType
 import wallet.core.jni.CoinType.AION
 import wallet.core.jni.PrivateKey
-import wallet.core.jni.proto.Aion
-import wallet.core.jni.proto.Aion.SigningOutput
+import wallet.core.proto.Aion.SigningInput
+import wallet.core.proto.Aion.SigningOutput
 
 class TestAionAddress {
 
@@ -38,7 +38,7 @@ class TestAionAddress {
 
     @Test
     fun aeternityTransactionSigning() {
-        val signingInput = Aion.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
             .setNonce("09".toHexBytesInByteString())
             .setGasPrice("04a817c800".toHexBytesInByteString())
             .setGasLimit("5208".toHexBytesInByteString())

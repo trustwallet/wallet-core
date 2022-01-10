@@ -1,7 +1,8 @@
 syntax = "proto3";
 
 package TW.Stellar.Proto;
-option java_package = "wallet.core.jni.proto";
+option java_package = "wallet.core.proto.Stellar";
+option java_multiple_files = true;
 
 message Asset {
     // Optional in case of non-native asset; the asset issuer address

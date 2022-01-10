@@ -7,8 +7,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.CoinType
 import wallet.core.java.AnySigner
-import wallet.core.jni.proto.NULS
-import wallet.core.jni.proto.NULS.SigningOutput
+import wallet.core.proto.NULS.*
 
 class TestNULSSigner {
 
@@ -18,7 +17,7 @@ class TestNULSSigner {
 
     @Test
     fun NULSTransactionSigning() { 
-        val signingInput = NULS.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
             .setPrivateKey(ByteString.copyFrom(Numeric.hexStringToByteArray("9ce21dad67e0f0af2599b41b515a7f7018059418bab892a7b68f283d489abc4b")))
             .setFrom("NULSd6Hgj7ZoVgsPN9ybB4C1N2TbvkgLc8Z9H")
             .setTo("NULSd6Hgied7ym6qMEfVzZanMaa9qeqA6TZSe")

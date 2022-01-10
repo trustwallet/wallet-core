@@ -1,7 +1,8 @@
 syntax = "proto3";
 
 package TW.IoTeX.Proto;
-option java_package = "wallet.core.jni.proto";
+option java_package = "wallet.core.proto.IoTex";
+option java_multiple_files = true;
 
 message Transfer {
     string amount  = 1;

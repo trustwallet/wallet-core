@@ -16,8 +16,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType.THORCHAIN
-import wallet.core.jni.proto.Cosmos
-import wallet.core.jni.proto.Cosmos.SigningOutput
+import wallet.core.proto.Cosmos.*
 import wallet.core.jni.*
 
 class TestTHORChainSigner {
@@ -33,32 +32,32 @@ class TestTHORChainSigner {
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, THORCHAIN).description()
 
-        val txAmount = Cosmos.Amount.newBuilder().apply {
+        val txAmount = Amount.newBuilder().apply {
             amount = 2000000
             denom = "rune"
         }.build()
 
-        val sendCoinsMsg = Cosmos.Message.Send.newBuilder().apply {
+        val sendCoinsMsg = Message.Send.newBuilder().apply {
             fromAddress = from
             toAddress = "thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn"
             addAllAmounts(listOf(txAmount))
         }.build()
 
-        val message = Cosmos.Message.newBuilder().apply {
+        val message = Message.newBuilder().apply {
             sendCoinsMessage = sendCoinsMsg
         }.build()
 
-        val feeAmount = Cosmos.Amount.newBuilder().apply {
+        val feeAmount = Amount.newBuilder().apply {
             amount = 2000000
             denom = "rune"
         }.build()
 
-        val cosmosFee = Cosmos.Fee.newBuilder().apply {
+        val cosmosFee = Fee.newBuilder().apply {
             gas = 200000
             addAllAmounts(listOf(feeAmount))
         }.build()
 
-        val signingInput = Cosmos.SigningInput.newBuilder().apply {
+        val signingInput = SigningInput.newBuilder().apply {
             accountNumber = 593
             chainId = "thorchain"
             memo = ""

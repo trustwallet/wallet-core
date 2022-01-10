@@ -7,8 +7,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.CoinType.WAVES
 import wallet.core.java.AnySigner
-import wallet.core.jni.proto.Waves
-import wallet.core.jni.proto.Waves.SigningOutput
+import wallet.core.proto.Waves.*
 
 class TestWavesTransactionSigner {
 
@@ -18,8 +17,8 @@ class TestWavesTransactionSigner {
 
     @Test
     fun testWavesTransactionSigning() {
-        val signingInput = Waves.SigningInput.newBuilder()
-        val transferMsg = Waves.TransferMessage.newBuilder().apply {
+        val signingInput = SigningInput.newBuilder()
+        val transferMsg = TransferMessage.newBuilder().apply {
             amount = 100_000_000
             asset = "DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq"
             fee = 100_000

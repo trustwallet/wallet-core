@@ -13,7 +13,7 @@ import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType
 import wallet.core.jni.PrivateKey
-import wallet.core.jni.proto.Elrond
+import wallet.core.proto.Elrond.*
 
 class TestElrondSigner {
 
@@ -31,7 +31,7 @@ class TestElrondSigner {
 
     @Test
     fun signTransaction() {
-        val transaction = Elrond.TransactionMessage.newBuilder()
+        val transaction = TransactionMessage.newBuilder()
             .setNonce(0)
             .setValue("0")
             .setSender(aliceBech32)
@@ -45,12 +45,12 @@ class TestElrondSigner {
         
         val privateKey = ByteString.copyFrom(PrivateKey(aliceSeedHex.toHexByteArray()).data())
 
-        val signingInput = Elrond.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
             .setPrivateKey(privateKey)
             .setTransaction(transaction)
             .build()
 
-        val output = AnySigner.sign(signingInput, CoinType.ELROND, Elrond.SigningOutput.parser())
+        val output = AnySigner.sign(signingInput, CoinType.ELROND, SigningOutput.parser())
         val expectedSignature = "b5fddb8c16fa7f6123cb32edc854f1e760a3eb62c6dc420b5a4c0473c58befd45b621b31a448c5b59e21428f2bc128c80d0ee1caa4f2bf05a12be857ad451b00"
 
         assertEquals(expectedSignature, output.signature)

@@ -15,9 +15,8 @@ import wallet.core.java.AnySigner
 import wallet.core.jni.AnyAddress
 import wallet.core.jni.CoinType
 import wallet.core.jni.PrivateKey
-import wallet.core.jni.proto.FIO
-import wallet.core.jni.proto.FIO.SigningOutput
-import wallet.core.jni.proto.Common.SigningError
+import wallet.core.proto.FIO.*
+import wallet.core.proto.Common.SigningError
 
 class TestFIOSigner {
 
@@ -32,17 +31,17 @@ class TestFIOSigner {
         val publicKey = privateKey.getPublicKeySecp256k1(false)
         val address = AnyAddress(publicKey, CoinType.FIO)
 
-        val chainParams = FIO.ChainParams.newBuilder()
+        val chainParams = ChainParams.newBuilder()
             .setChainId(chainId)
             .setHeadBlockNumber(39881)
             .setRefBlockPrefix(4279583376)
-        val regAddrAction = FIO.Action.RegisterFioAddress.newBuilder()
+        val regAddrAction = Action.RegisterFioAddress.newBuilder()
             .setFioAddress("adam@fiotestnet")
             .setOwnerFioPublicKey(address.description())
             .setFee(5000000000)
-        val action = FIO.Action.newBuilder()
+        val action = Action.newBuilder()
             .setRegisterFioAddressMessage(regAddrAction)
-        val input = FIO.SigningInput.newBuilder()
+        val input = SigningInput.newBuilder()
             .setExpiry(1579784511)
             .setChainParams(chainParams)
             .setPrivateKey(ByteString.copyFrom(privateKey.data()))
@@ -61,19 +60,19 @@ class TestFIOSigner {
         val chainId = ByteString.copyFrom("4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77".toHexBytes())
         val privateKey = PrivateKey("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035".toHexByteArray())
 
-        val chainParams = FIO.ChainParams.newBuilder()
+        val chainParams = ChainParams.newBuilder()
             .setChainId(chainId)
             .setHeadBlockNumber(11565)
             .setRefBlockPrefix(4281229859)
-        val addAddrAction = FIO.Action.AddPubAddress.newBuilder()
+        val addAddrAction = Action.AddPubAddress.newBuilder()
             .setFioAddress("adam@fiotestnet")
-            .addPublicAddresses(FIO.PublicAddress.newBuilder().setCoinSymbol("BTC").setAddress("bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"))
-            .addPublicAddresses(FIO.PublicAddress.newBuilder().setCoinSymbol("ETH").setAddress("0xce5cB6c92Da37bbBa91Bd40D4C9D4D724A3a8F51"))
-            .addPublicAddresses(FIO.PublicAddress.newBuilder().setCoinSymbol("BNB").setAddress("bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s"))
+            .addPublicAddresses(PublicAddress.newBuilder().setCoinSymbol("BTC").setAddress("bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"))
+            .addPublicAddresses(PublicAddress.newBuilder().setCoinSymbol("ETH").setAddress("0xce5cB6c92Da37bbBa91Bd40D4C9D4D724A3a8F51"))
+            .addPublicAddresses(PublicAddress.newBuilder().setCoinSymbol("BNB").setAddress("bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s"))
             .setFee(0)
-        val action = FIO.Action.newBuilder()
+        val action = Action.newBuilder()
             .setAddPubAddressMessage(addAddrAction)
-        val input = FIO.SigningInput.newBuilder()
+        val input = SigningInput.newBuilder()
             .setExpiry(1579729429)
             .setChainParams(chainParams)
             .setPrivateKey(ByteString.copyFrom(privateKey.data()))
@@ -92,17 +91,17 @@ class TestFIOSigner {
         val chainId = ByteString.copyFrom("4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77".toHexBytes())
         val privateKey = PrivateKey("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035".toHexByteArray())
 
-        val chainParams = FIO.ChainParams.newBuilder()
+        val chainParams = ChainParams.newBuilder()
             .setChainId(chainId)
             .setHeadBlockNumber(50000)
             .setRefBlockPrefix(4000123456)
-        val transferAction = FIO.Action.Transfer.newBuilder()
+        val transferAction = Action.Transfer.newBuilder()
             .setPayeePublicKey("FIO7uMZoeei5HtXAD24C4yCkpWWbf24bjYtrRNjWdmGCXHZccwuiE")
             .setAmount(1000000000)
             .setFee(250000000)
-        val action = FIO.Action.newBuilder()
+        val action = Action.newBuilder()
             .setTransferMessage(transferAction)
-        val input = FIO.SigningInput.newBuilder()
+        val input = SigningInput.newBuilder()
             .setExpiry(1579790000)
             .setChainParams(chainParams)
             .setPrivateKey(ByteString.copyFrom(privateKey.data()))

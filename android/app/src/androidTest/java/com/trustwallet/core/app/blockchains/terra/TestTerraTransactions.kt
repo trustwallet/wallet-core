@@ -8,8 +8,7 @@ import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.*
 import wallet.core.jni.CoinType.TERRA
-import wallet.core.jni.proto.Cosmos
-import wallet.core.jni.proto.Cosmos.SigningOutput
+import wallet.core.proto.Cosmos.*
 
 class TestTerraTransactions {
 
@@ -24,33 +23,33 @@ class TestTerraTransactions {
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, TERRA).description()
 
-        val txAmount = Cosmos.Amount.newBuilder().apply {
+        val txAmount = Amount.newBuilder().apply {
             amount = 1000000
             denom = "uluna"
         }.build()
 
-        val sendCoinsMsg = Cosmos.Message.Send.newBuilder().apply {
+        val sendCoinsMsg = Message.Send.newBuilder().apply {
             fromAddress = from
             toAddress = "terra1hdp298kaz0eezpgl6scsykxljrje3667d233ms"
             addAllAmounts(listOf(txAmount))
             typePrefix = "bank/MsgSend"
         }.build()
 
-        val message = Cosmos.Message.newBuilder().apply {
+        val message = Message.newBuilder().apply {
             sendCoinsMessage = sendCoinsMsg
         }.build()
 
-        val feeAmount = Cosmos.Amount.newBuilder().apply {
+        val feeAmount = Amount.newBuilder().apply {
             amount = 3000
             denom = "uluna"
         }.build()
 
-        val cosmosFee = Cosmos.Fee.newBuilder().apply {
+        val cosmosFee = Fee.newBuilder().apply {
             gas = 200000
             addAllAmounts(listOf(feeAmount))
         }.build()
 
-        val signingInput = Cosmos.SigningInput.newBuilder().apply {
+        val signingInput = SigningInput.newBuilder().apply {
             accountNumber = 158
             chainId = "soju-0013"
             memo = ""

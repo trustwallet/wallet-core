@@ -1,7 +1,8 @@
 syntax = "proto3";
 
 package TW.Cosmos.Proto;
-option java_package = "wallet.core.jni.proto";
+option java_package = "wallet.core.proto.Cosmos";
+option java_multiple_files = true;
 
 message Amount {
     string denom = 1;

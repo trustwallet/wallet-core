@@ -7,8 +7,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.CoinType.NANO
 import wallet.core.java.AnySigner
-import wallet.core.jni.proto.Nano
-import wallet.core.jni.proto.Nano.SigningOutput
+import wallet.core.proto.Nano.*
 
 class TestNanoSigner {
 
@@ -18,7 +17,7 @@ class TestNanoSigner {
 
     @Test
     fun testSign() {
-        val signingInput = Nano.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
         signingInput.apply {
             privateKey = ByteString.copyFrom("173c40e97fe2afcd24187e74f6b603cb949a5365e72fbdd065a6b165e2189e34".toHexByteArray())
             linkBlock = ByteString.copyFrom("491fca2c69a84607d374aaf1f6acd3ce70744c5be0721b5ed394653e85233507".toHexByteArray())

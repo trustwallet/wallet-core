@@ -17,8 +17,7 @@ import wallet.core.java.AnySigner
 import wallet.core.jni.AnyAddress
 import wallet.core.jni.CoinType.BLUZELLE
 import wallet.core.jni.PrivateKey
-import wallet.core.jni.proto.Cosmos
-import wallet.core.jni.proto.Cosmos.SigningOutput
+import wallet.core.proto.Cosmos.*
 
 class TestBluzelleSigner {
 
@@ -35,32 +34,32 @@ class TestBluzelleSigner {
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, BLUZELLE).description()
 
-        val txAmount = Cosmos.Amount.newBuilder().apply {
+        val txAmount = Amount.newBuilder().apply {
             amount = 1
             denom = "ubnt"
         }.build()
 
-        val sendCoinsMsg = Cosmos.Message.Send.newBuilder().apply {
+        val sendCoinsMsg = Message.Send.newBuilder().apply {
             fromAddress = from
             toAddress = "bluzelle1xccvees6ev4wm2r49rc6ptulsdxa8x8jfpmund"
             addAllAmounts(listOf(txAmount))
         }.build()
 
-        val message = Cosmos.Message.newBuilder().apply {
+        val message = Message.newBuilder().apply {
             sendCoinsMessage = sendCoinsMsg
         }.build()
 
-        val feeAmount = Cosmos.Amount.newBuilder().apply {
+        val feeAmount = Amount.newBuilder().apply {
             amount = 1000
             denom = "ubnt"
         }.build()
 
-        val cosmosFee = Cosmos.Fee.newBuilder().apply {
+        val cosmosFee = Fee.newBuilder().apply {
             gas = 500000
             addAllAmounts(listOf(feeAmount))
         }.build()
 
-        val signingInput = Cosmos.SigningInput.newBuilder().apply {
+        val signingInput = SigningInput.newBuilder().apply {
             accountNumber = 590
             chainId = "net-6"
             memo = ""

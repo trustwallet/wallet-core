@@ -1,15 +1,13 @@
 package com.trustwallet.core.app.blockchains.solana
 
 import com.google.protobuf.ByteString
-import com.trustwallet.core.app.utils.toHex
 import com.trustwallet.core.app.utils.toHexByteArray
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.Base58
 import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType.SOLANA
-import wallet.core.jni.proto.Solana
-import wallet.core.jni.proto.Solana.SigningOutput
+import wallet.core.proto.Solana.*
 
 class TestSolanaSigner {
 
@@ -23,11 +21,11 @@ class TestSolanaSigner {
 
     @Test
     fun testTransferSign() {
-        val transferMessage = Solana.Transfer.newBuilder().apply {
+        val transferMessage = Transfer.newBuilder().apply {
             recipient = "EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd"
             value = 42
         }.build()
-        val signingInput = Solana.SigningInput.newBuilder().apply {
+        val signingInput = SigningInput.newBuilder().apply {
             transferTransaction = transferMessage
             recentBlockhash = blockhash
             privateKey = ByteString.copyFrom(Base58.decodeNoCheck("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr"))
@@ -41,12 +39,12 @@ class TestSolanaSigner {
 
     @Test
     fun testDelegateStakeSign() {
-        val delegateStakeMessage = Solana.DelegateStake.newBuilder().apply {
+        val delegateStakeMessage = DelegateStake.newBuilder().apply {
             validatorPubkey = commonValidatorPubkey
             value = 42
             stakeAccount = ""
         }.build()
-        val signingInput = Solana.SigningInput.newBuilder().apply {
+        val signingInput = SigningInput.newBuilder().apply {
             delegateStakeTransaction = delegateStakeMessage
             recentBlockhash = blockhash
             privateKey = ByteString.copyFrom(Base58.decodeNoCheck(commonPrivateKey))
@@ -60,10 +58,10 @@ class TestSolanaSigner {
 
     @Test
     fun testDeactivateStakeSign() {
-        val deactivateStakeMessage = Solana.DeactivateStake.newBuilder().apply {
+        val deactivateStakeMessage = DeactivateStake.newBuilder().apply {
             stakeAccount = "6u9vJH9pRj66N5oJFCBADEbpMTrLxQATcL6q5p5MXwYv"
         }.build()
-        val signingInput = Solana.SigningInput.newBuilder().apply {
+        val signingInput = SigningInput.newBuilder().apply {
             deactivateStakeTransaction = deactivateStakeMessage
             recentBlockhash = blockhash
             privateKey = ByteString.copyFrom(Base58.decodeNoCheck(commonPrivateKey))
@@ -77,11 +75,11 @@ class TestSolanaSigner {
 
     @Test
     fun testWithdrawStakeSign() {
-        val withdrawStakeMessage = Solana.WithdrawStake.newBuilder().apply {
+        val withdrawStakeMessage = WithdrawStake.newBuilder().apply {
             stakeAccount = "6u9vJH9pRj66N5oJFCBADEbpMTrLxQATcL6q5p5MXwYv"
             value = 42
         }.build()
-        val signingInput = Solana.SigningInput.newBuilder().apply {
+        val signingInput = SigningInput.newBuilder().apply {
             withdrawTransaction = withdrawStakeMessage
             recentBlockhash = blockhash
             privateKey = ByteString.copyFrom(Base58.decodeNoCheck(commonPrivateKey))
@@ -95,12 +93,12 @@ class TestSolanaSigner {
 
     @Test
     fun testCreateTokenAccountSign() {
-        val createAccountMessage = Solana.CreateTokenAccount.newBuilder().apply {
+        val createAccountMessage = CreateTokenAccount.newBuilder().apply {
             mainAddress = "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V"
             tokenMintAddress = "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"
             tokenAddress = "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP"
         }.build()
-        val signingInput = Solana.SigningInput.newBuilder().apply {
+        val signingInput = SigningInput.newBuilder().apply {
             createTokenAccountTransaction = createAccountMessage
             recentBlockhash = "9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K"
             privateKey = ByteString.copyFrom(Base58.decodeNoCheck("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"))
@@ -114,14 +112,14 @@ class TestSolanaSigner {
 
     @Test
     fun testTokenTransferSign() {
-        val tokenTransferMessage = Solana.TokenTransfer.newBuilder().apply {
+        val tokenTransferMessage = TokenTransfer.newBuilder().apply {
             tokenMintAddress = "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"
             senderTokenAddress = "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP"
             recipientTokenAddress = "3WUX9wASxyScbA7brDipioKfXS1XEYkQ4vo3Kej9bKei"
             amount = 4000  // 0.004
             decimals = 6
         }.build()
-        val signingInput = Solana.SigningInput.newBuilder().apply {
+        val signingInput = SigningInput.newBuilder().apply {
             tokenTransferTransaction = tokenTransferMessage
             recentBlockhash = "CNaHfvqePgGYMvtYi9RuUdVxDYttr1zs4TWrTXYabxZi"
             privateKey = ByteString.copyFrom(Base58.decodeNoCheck("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"))
@@ -135,7 +133,7 @@ class TestSolanaSigner {
 
     @Test
     fun testCreateAndTransferTokenSign() {
-        val createAndTransferTokenMessage = Solana.CreateAndTransferToken.newBuilder().apply {
+        val createAndTransferTokenMessage = CreateAndTransferToken.newBuilder().apply {
             recipientMainAddress = "71e8mDsh3PR6gN64zL1HjwuxyKpgRXrPDUJT7XXojsVd"
             tokenMintAddress = "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"
             recipientTokenAddress = "EF6L8yJT1SoRoDCkAZfSVmaweqMzfhxZiptKi7Tgj5XY"
@@ -143,7 +141,7 @@ class TestSolanaSigner {
             amount = 2900
             decimals = 6
         }.build()
-        val signingInput = Solana.SigningInput.newBuilder().apply {
+        val signingInput = SigningInput.newBuilder().apply {
             createAndTransferTokenTransaction = createAndTransferTokenMessage
             recentBlockhash = "DMmDdJP41M9mw8Z4586VSvxqGCrqPy5uciF6HsKUVDja"
             privateKey = ByteString.copyFrom(Base58.decodeNoCheck("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c"))

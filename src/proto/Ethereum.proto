@@ -1,7 +1,8 @@
 syntax = "proto3";
 
 package TW.Ethereum.Proto;
-option java_package = "wallet.core.jni.proto";
+option java_package = "wallet.core.proto.Ethereum";
+option java_multiple_files = true;
 
 // Transaction (transfer, smart contract call, ...)
 message Transaction {

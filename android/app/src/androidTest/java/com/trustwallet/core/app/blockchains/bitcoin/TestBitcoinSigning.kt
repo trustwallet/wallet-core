@@ -10,9 +10,8 @@ import wallet.core.jni.BitcoinScript
 import wallet.core.jni.BitcoinSigHashType
 import wallet.core.jni.CoinType
 import wallet.core.jni.CoinType.BITCOIN
-import wallet.core.jni.proto.Bitcoin
-import wallet.core.jni.proto.Bitcoin.SigningOutput
-import wallet.core.jni.proto.Common.SigningError
+import wallet.core.proto.Bitcoin.*
+import wallet.core.proto.Common.SigningError
 
 class TestBitcoinSigning {
 
@@ -22,7 +21,7 @@ class TestBitcoinSigning {
 
     @Test
     fun testSignP2WPKH() {
-        val input = Bitcoin.SigningInput.newBuilder()
+        val input = SigningInput.newBuilder()
             .setAmount(335_790_000)
             .setHashType(BitcoinScript.hashTypeForCoin(CoinType.BITCOIN))
             .setToAddress("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx")
@@ -41,13 +40,13 @@ class TestBitcoinSigning {
 
         // Redeem scripts
 
-        val outpoint0 = Bitcoin.OutPoint.newBuilder()
+        val outpoint0 = OutPoint.newBuilder()
             .setHash(ByteString.copyFrom(Numeric.hexStringToByteArray("fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f")))
             .setIndex(0)
             .setSequence(Long.MAX_VALUE.toInt())
             .build()
 
-        val utxo0 = Bitcoin.UnspentTransaction.newBuilder()
+        val utxo0 = UnspentTransaction.newBuilder()
             .setAmount(625_000_000)
             .setOutPoint(outpoint0)
             .setScript(ByteString.copyFrom("2103c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432ac".toHexBytes()))
@@ -56,13 +55,13 @@ class TestBitcoinSigning {
         input.addUtxo(utxo0)
 
 
-        val outpoint1 = Bitcoin.OutPoint.newBuilder()
+        val outpoint1 = OutPoint.newBuilder()
             .setHash(ByteString.copyFrom("ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a".toHexBytes()))
             .setIndex(1)
             .setSequence(Long.MAX_VALUE.toInt())
             .build()
 
-        val utxo1 = Bitcoin.UnspentTransaction.newBuilder()
+        val utxo1 = UnspentTransaction.newBuilder()
             .setAmount(600_000_000)
             .setOutPoint(outpoint1)
             .setScript(ByteString.copyFrom(Numeric.hexStringToByteArray("00141d0f172a0ecb48aee1be1f2687d2963ae33f71a1")))
@@ -86,7 +85,7 @@ class TestBitcoinSigning {
 
     @Test
     fun testSignP2PKH() {
-        val input = Bitcoin.SigningInput.newBuilder()
+        val input = SigningInput.newBuilder()
             .setAmount(55_000)
             .setHashType(BitcoinScript.hashTypeForCoin(CoinType.BITCOIN))
             .setToAddress("1GDCMHsTLBkawQXP8dqcZtr8zGgb4XpCug")
@@ -105,13 +104,13 @@ class TestBitcoinSigning {
 
         // Redeem scripts
 
-        val outpoint0 = Bitcoin.OutPoint.newBuilder()
+        val outpoint0 = OutPoint.newBuilder()
             .setHash(ByteString.copyFrom(Numeric.hexStringToByteArray("fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f")))
             .setIndex(0)
             .setSequence(Long.MAX_VALUE.toInt())
             .build()
 
-        val utxo0 = Bitcoin.UnspentTransaction.newBuilder()
+        val utxo0 = UnspentTransaction.newBuilder()
             .setAmount(30_000)
             .setOutPoint(outpoint0)
             .setScript(ByteString.copyFrom("2103c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432ac".toHexBytes()))
@@ -119,13 +118,13 @@ class TestBitcoinSigning {
 
         input.addUtxo(utxo0)
 
-        val outpoint1 = Bitcoin.OutPoint.newBuilder()
+        val outpoint1 = OutPoint.newBuilder()
             .setHash(ByteString.copyFrom("ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a".toHexBytes()))
             .setIndex(1)
             .setSequence(Long.MAX_VALUE.toInt())
             .build()
 
-        val utxo1 = Bitcoin.UnspentTransaction.newBuilder()
+        val utxo1 = UnspentTransaction.newBuilder()
             .setAmount(45_000)
             .setOutPoint(outpoint1)
             .setScript(ByteString.copyFrom(Numeric.hexStringToByteArray("00141d0f172a0ecb48aee1be1f2687d2963ae33f71a1")))
@@ -134,7 +133,7 @@ class TestBitcoinSigning {
         input.addUtxo(utxo1)
 
         // Calculate fee (plan a transaction)
-        val plan = AnySigner.plan(input.build(), BITCOIN, Bitcoin.TransactionPlan.parser())
+        val plan = AnySigner.plan(input.build(), BITCOIN, TransactionPlan.parser())
         assertEquals(55_000, plan.amount)
         assertEquals(75_000, plan.availableAmount)
         assertEquals(2610, plan.fee)

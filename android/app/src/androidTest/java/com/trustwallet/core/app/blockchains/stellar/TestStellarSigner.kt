@@ -8,8 +8,7 @@ import wallet.core.jni.PrivateKey
 import wallet.core.jni.StellarPassphrase
 import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType.STELLAR
-import wallet.core.jni.proto.Stellar
-import wallet.core.jni.proto.Stellar.SigningOutput
+import wallet.core.proto.Stellar.*
 
 class TestStellarTransactionSigner {
 
@@ -19,12 +18,12 @@ class TestStellarTransactionSigner {
 
     @Test
     fun testStellarTransactionSigning() {
-        val operation = Stellar.OperationPayment.newBuilder()
+        val operation = OperationPayment.newBuilder()
         operation.apply {
             destination = "GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52"
             amount = 10_000_000
         }
-        val signingInput = Stellar.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
         signingInput.apply {
             account = "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI"
             fee = 1000
@@ -43,19 +42,19 @@ class TestStellarTransactionSigner {
 
     @Test
     fun testStellarTransactionSigningMemoHash() {
-        val operation = Stellar.OperationPayment.newBuilder()
+        val operation = OperationPayment.newBuilder()
         operation.apply {
             destination = "GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52"
             amount = 10_000_000
         }
-        val signingInput = Stellar.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
         signingInput.apply {
             account = "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI"
             fee = 1000
             sequence = 2
             passphrase = StellarPassphrase.STELLAR.toString()
             opPayment = operation.build()
-            memoHash = Stellar.MemoHash.newBuilder().setHash(ByteString.copyFrom("315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3".toHexByteArray())).build()
+            memoHash = MemoHash.newBuilder().setHash(ByteString.copyFrom("315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3".toHexByteArray())).build()
             privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray()).data())
         }
 
@@ -67,19 +66,19 @@ class TestStellarTransactionSigner {
 
     @Test
     fun testStellarTransactionSigningMemoReturn() {
-        val operation = Stellar.OperationPayment.newBuilder()
+        val operation = OperationPayment.newBuilder()
         operation.apply {
             destination = "GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52"
             amount = 10_000_000
         }
-        val signingInput = Stellar.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
         signingInput.apply {
             account = "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI"
             fee = 1000
             sequence = 2
             passphrase = StellarPassphrase.STELLAR.toString()
             opPayment = operation.build()
-            memoReturnHash = Stellar.MemoHash.newBuilder().setHash(ByteString.copyFrom("315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3".toHexByteArray())).build()
+            memoReturnHash = MemoHash.newBuilder().setHash(ByteString.copyFrom("315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3".toHexByteArray())).build()
             privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray()).data())
         }
 
@@ -91,19 +90,19 @@ class TestStellarTransactionSigner {
 
     @Test
     fun testStellarTransactionSigningMemoId() {
-        val operation = Stellar.OperationPayment.newBuilder()
+        val operation = OperationPayment.newBuilder()
         operation.apply {
             destination = "GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52"
             amount = 10_000_000
         }
-        val signingInput = Stellar.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
         signingInput.apply {
             account = "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI"
             fee = 1000
             sequence = 2
             passphrase = StellarPassphrase.STELLAR.toString()
             opPayment = operation.build()
-            memoId = Stellar.MemoId.newBuilder().setId(1234567890).build()
+            memoId = MemoId.newBuilder().setId(1234567890).build()
             privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray()).data())
         }
 
@@ -115,19 +114,19 @@ class TestStellarTransactionSigner {
 
     @Test
     fun testStellarTransactionSigningCreateAccount() {
-        val operation = Stellar.OperationCreateAccount.newBuilder()
+        val operation = OperationCreateAccount.newBuilder()
         operation.apply {
             destination = "GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52"
             amount = 10_000_000
         }
-        val signingInput = Stellar.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
         signingInput.apply {
             account = "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI"
             fee = 1000
             sequence = 2
             passphrase = StellarPassphrase.STELLAR.toString()
             opCreateAccount = operation.build()
-            memoId = Stellar.MemoId.newBuilder().setId(1234567890).build()
+            memoId = MemoId.newBuilder().setId(1234567890).build()
             privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray()).data())
         }
 
@@ -139,17 +138,17 @@ class TestStellarTransactionSigner {
 
     @Test
     fun testStellarTransactionSigningChangeTrust() {
-        val assetMobi = Stellar.Asset.newBuilder()
+        val assetMobi = Asset.newBuilder()
         assetMobi.apply {
             issuer = "GA6HCMBLTZS5VYYBCATRBRZ3BZJMAFUDKYYF6AH6MVCMGWMRDNSWJPIH"
             alphanum4 = "MOBI"
         }
-        val operation = Stellar.OperationChangeTrust.newBuilder()
+        val operation = OperationChangeTrust.newBuilder()
         operation.apply {
             asset = assetMobi.build()
             validBefore = 1613336576
         }
-        val signingInput = Stellar.SigningInput.newBuilder()
+        val signingInput = SigningInput.newBuilder()
         signingInput.apply {
             account = "GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL"
             fee = 10000

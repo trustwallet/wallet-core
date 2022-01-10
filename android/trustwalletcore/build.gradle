@@ -1,15 +1,14 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 group='com.github.trustwallet'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     ndkVersion '21.2.6472646'
     defaultConfig {
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
         externalNativeBuild {
             cmake {
                 arguments "-DCMAKE_BUILD_TYPE=Release"
@@ -48,7 +47,13 @@ android {
 }
 
 dependencies {
-    implementation 'io.grpc:grpc-protobuf:1.43.2'
+    implementation "io.grpc:grpc-protobuf:1.43.2"
+    implementation "com.google.protobuf:protobuf-kotlin:3.19.2"
+    implementation "androidx.core:core-ktx:1.6.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 apply from: 'maven-push.gradle'
+repositories {
+    mavenCentral()
+}

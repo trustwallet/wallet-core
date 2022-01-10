@@ -6,9 +6,8 @@ import org.junit.Assert.*
 import org.junit.Test
 import org.json.JSONObject
 import wallet.core.jni.*
-import wallet.core.jni.proto.EOS
-import wallet.core.jni.proto.EOS.SigningOutput
-import wallet.core.jni.proto.Common.SigningError
+import wallet.core.proto.EOS.*
+import wallet.core.proto.Common.SigningError
 import wallet.core.java.AnySigner
 
 
@@ -39,8 +38,8 @@ class TestEOSSigning {
         }
     }
 
-    fun getAssetBuilder(amt: Long, decimal: Int, sym: String): EOS.Asset.Builder {
-        var asset: EOS.Asset.Builder = EOS.Asset.newBuilder();
+    fun getAssetBuilder(amt: Long, decimal: Int, sym: String): Asset.Builder {
+        var asset: Asset.Builder = Asset.newBuilder();
         asset.apply {
             amount = amt
             decimals = decimal
@@ -53,7 +52,7 @@ class TestEOSSigning {
     // ensure valid input is signed
     @Test
     fun eosTransactionSigning() {
-        val signingInput: EOS.SigningInput.Builder = EOS.SigningInput.newBuilder()
+        val signingInput: SigningInput.Builder = SigningInput.newBuilder()
 
         signingInput.apply {
             chainId =
@@ -67,7 +66,7 @@ class TestEOSSigning {
             memo = "my second transfer"
             asset = getAssetBuilder(300000, 4, "TKN").build()
             privateKey = ByteString.copyFrom(Hash.sha256("A".toByteArray()))
-            privateKeyType = EOS.KeyType.MODERNK1
+            privateKeyType = KeyType.MODERNK1
         }
 
         val output = AnySigner.sign(signingInput.build(), CoinType.EOS, SigningOutput.parser())
@@ -91,7 +90,7 @@ class TestEOSSigning {
     // ensure invalid inputs are not signed
     @Test
     fun testFailures() {
-        val signingInput: EOS.SigningInput.Builder = EOS.SigningInput.newBuilder()
+        val signingInput: SigningInput.Builder = SigningInput.newBuilder()
         val goodInput = signingInput.apply {
             chainId =ByteString.copyFrom("cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f".toHexByteArray())
             referenceBlockId =ByteString.copyFrom("000067d6f6a7e7799a1f3d487439a679f8cf95f1c986f35c0d2fa320f51a7144".toHexByteArray())
@@ -102,7 +101,7 @@ class TestEOSSigning {
             memo = "my second transfer"
             asset = getAssetBuilder(300000, 4, "TKN").build()
             privateKey = ByteString.copyFrom(Hash.sha256("A".toByteArray()))
-            privateKeyType = EOS.KeyType.MODERNK1
+            privateKeyType = KeyType.MODERNK1
         }
 
 

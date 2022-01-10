@@ -7,7 +7,8 @@
 syntax = "proto3";
 
 package TW.Elrond.Proto;
-option java_package = "wallet.core.jni.proto";
+option java_package = "wallet.core.proto.Elrond";
+option java_multiple_files = true;
 
 // A transaction, typical balance transfer
 message TransactionMessage {

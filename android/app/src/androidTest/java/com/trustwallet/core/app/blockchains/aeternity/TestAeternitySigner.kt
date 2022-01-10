@@ -7,8 +7,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType.AETERNITY
-import wallet.core.jni.proto.Aeternity
-import wallet.core.jni.proto.Aeternity.SigningOutput
+import wallet.core.proto.Aeternity.signingInput
+import wallet.core.proto.Aeternity.SigningOutput
 
 class TestAeternitySigner {
 
@@ -18,18 +18,18 @@ class TestAeternitySigner {
 
     @Test
     fun aeternityTransactionSigning() {
-        val signingInput = Aeternity.SigningInput.newBuilder()
-            .setFromAddress("ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw")
-            .setToAddress("ak_Egp9yVdpxmvAfQ7vsXGvpnyfNq71msbdUpkMNYGTeTe8kPL3v")
-            .setAmount(ByteString.copyFrom("0a".toHexByteArray()))
-            .setFee(ByteString.copyFrom("12309ce54000".toHexByteArray()))
-            .setPayload("Hello World")
-            .setTtl(82757)
-            .setNonce(49)
-            .setPrivateKey("4646464646464646464646464646464646464646464646464646464646464646".toHexBytesInByteString())
-            .build()
+        val input = signingInput {
+            fromAddress = "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw"
+            toAddress = "ak_Egp9yVdpxmvAfQ7vsXGvpnyfNq71msbdUpkMNYGTeTe8kPL3v"
+            amount = ByteString.copyFrom("0a".toHexByteArray())
+            fee = ByteString.copyFrom("12309ce54000".toHexByteArray())
+            payload = "Hello World"
+            ttl = 82757
+            nonce = 49
+            privateKey = "4646464646464646464646464646464646464646464646464646464646464646".toHexBytesInByteString()
+        }
 
-        val output = AnySigner.sign(signingInput, AETERNITY, SigningOutput.parser())
+        val output = AnySigner.sign(input, AETERNITY, SigningOutput.parser())
 
         assertEquals(
             output.encoded,

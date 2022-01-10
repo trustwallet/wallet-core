@@ -9,7 +9,7 @@ package com.trustwallet.core.app.blockchains.neo
 import com.trustwallet.core.app.utils.Numeric
 import org.junit.Test
 import wallet.core.java.AnySigner
-import wallet.core.jni.proto.NEO
+import wallet.core.proto.NEO.*
 import com.trustwallet.core.app.utils.toHexBytesInByteString
 import org.junit.Assert.assertEquals
 import wallet.core.jni.CoinType
@@ -20,8 +20,8 @@ class TestNEOSigner {
         System.loadLibrary("TrustWalletCore")
     }
 
-    fun addInput(builder: NEO.SigningInput.Builder, hash: String, index: Int, assetID: String, value: Long) {
-        builder.addInputs(NEO.TransactionInput.newBuilder()
+    fun addInput(builder: SigningInput.Builder, hash: String, index: Int, assetID: String, value: Long) {
+        builder.addInputs(TransactionInput.newBuilder()
                 .setPrevHash(hash.toHexBytesInByteString())
                 .setPrevIndex(index)
                 .setAssetId(assetID)
@@ -29,7 +29,7 @@ class TestNEOSigner {
                 .build())
     }
 
-    fun prepareInputs(builder: NEO.SigningInput.Builder) {
+    fun prepareInputs(builder: SigningInput.Builder) {
         val NEO_ASSET_ID = "9b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc5"
         val GAS_ASSET_ID = "e72d286979ee6cb1b7e65dfddfb2e384100b8d148e7758de42e4168b71792c60"
 
@@ -75,14 +75,14 @@ class TestNEOSigner {
         val NEO_ASSET_ID = "9b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc5"
         val GAS_ASSET_ID = "e72d286979ee6cb1b7e65dfddfb2e384100b8d148e7758de42e4168b71792c60"
 
-        val input = NEO.SigningInput.newBuilder().apply {
+        val input = SigningInput.newBuilder().apply {
             privateKey = "F18B2F726000E86B4950EBEA7BFF151F69635951BC4A31C44F28EE6AF7AEC128".toHexBytesInByteString()
             fee = 12345
             gasAssetId = GAS_ASSET_ID
             gasChangeAddress = "AdtSLMBqACP4jv8tRWwyweXGpyGG46eMXV"
         }
         prepareInputs(input)
-        val output = NEO.TransactionOutput.newBuilder()
+        val output = TransactionOutput.newBuilder()
                 .setAssetId(NEO_ASSET_ID)
                 .setAmount(25000000000)
                 .setToAddress("Ad9A1xPbuA5YBFr1XPznDwBwQzdckAjCev")
@@ -90,9 +90,9 @@ class TestNEOSigner {
                 .build()
         input.addOutputs(output)
 
-        val plan = AnySigner.plan(input.build(), CoinType.NEO,NEO.TransactionPlan.parser())
+        val plan = AnySigner.plan(input.build(), CoinType.NEO,TransactionPlan.parser())
         input.setPlan(plan)
-        val result = AnySigner.sign(input.build(), CoinType.NEO, NEO.SigningOutput.parser()).encoded.toByteArray()
+        val result = AnySigner.sign(input.build(), CoinType.NEO, SigningOutput.parser()).encoded.toByteArray()
         val hex = Numeric.toHexString(result, 0, result.size, false)
 
         //  https://testnet-explorer.o3.network/transactions/0x7b138c753c24f474d0f70af30a9d79756e0ee9c1f38c12ed07fbdf6fc5132eaf

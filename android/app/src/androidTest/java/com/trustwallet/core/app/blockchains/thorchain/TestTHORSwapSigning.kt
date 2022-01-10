@@ -8,8 +8,8 @@ import org.junit.Test
 import wallet.core.jni.PrivateKey
 import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType.ETHEREUM
-import wallet.core.jni.proto.Ethereum.SigningOutput
-import wallet.core.jni.proto.THORChainSwap
+import wallet.core.proto.Ethereum.SigningOutput
+import wallet.core.proto.THORChainSwap.*
 import wallet.core.jni.THORChainSwap.buildSwap
 import com.trustwallet.core.app.utils.Numeric
 
@@ -22,12 +22,12 @@ class TestTHORChainSwap {
     @Test
     fun testSwapEthBnb() {
         // prepare swap input
-        val input = THORChainSwap.SwapInput.newBuilder()
+        val input = SwapInput.newBuilder()
         input.apply {
-            fromChain = THORChainSwap.Chain.ETH
+            fromChain = Chain.ETH
             fromAddress = "0xb9f5771c27664bf2282d98e09d7f50cec7cb01a7"
-            toAsset = THORChainSwap.Asset.newBuilder().apply {
-                chain = THORChainSwap.Chain.BNB
+            toAsset = Asset.newBuilder().apply {
+                chain = Chain.BNB
                 symbol = "BNB"
                 tokenId = ""
             }.build()
@@ -47,10 +47,10 @@ class TestTHORChainSwap {
         assertEquals(outputData.count(), 311)
 
         // parse result in proto
-        val outputProto = THORChainSwap.SwapOutput.newBuilder().mergeFrom(outputData)
-        assertEquals(outputProto.fromChain, THORChainSwap.Chain.ETH)
-        assertEquals(outputProto.toChain, THORChainSwap.Chain.BNB)
-        assertEquals(outputProto.error.code, THORChainSwap.ErrorCode.OK)
+        val outputProto = SwapOutput.newBuilder().mergeFrom(outputData)
+        assertEquals(outputProto.fromChain, Chain.ETH)
+        assertEquals(outputProto.toChain, Chain.BNB)
+        assertEquals(outputProto.error.code, ErrorCode.OK)
         assertTrue(outputProto.hasEthereum())
         val txInput = outputProto.ethereum
 
