@@ -187,8 +187,9 @@ PublicKey PublicKey::recover(const Data& signature, const Data& message) {
         throw std::invalid_argument("signature too short");
     }
     auto v = signature[64];
+    // handle EIP155 Eth encoding of V, of the form 27+v, or 35+chainID*2+v
     if (v >= 27) {
-        v -= 27;
+        v = !(v & 0x01);
     }
     TW::Data result(65);
     if (ecdsa_recover_pub_from_sig(&secp256k1, result.data(), signature.data(), message.data(), v) != 0) {

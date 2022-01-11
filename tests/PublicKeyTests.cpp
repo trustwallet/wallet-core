@@ -231,12 +231,36 @@ TEST(PublicKeyTests, VerifySchnorrWrongType) {
 }
 
 TEST(PublicKeyTests, Recover) {
-    const auto message = parse_hex("de4e9524586d6fce45667f9ff12f661e79870c4105fa0fb58af976619bb11432");
-    const auto signature = parse_hex("00000000000000000000000000000000000000000000000000000000000000020123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef80");
-    const auto publicKey = PublicKey::recover(signature, message);
-    EXPECT_EQ(publicKey.type, TWPublicKeyTypeSECP256k1Extended);
-    EXPECT_EQ(hex(publicKey.bytes), 
-        "0456d8089137b1fd0d890f8c7d4a04d0fd4520a30b19518ee87bd168ea12ed8090329274c4c6c0d9df04515776f2741eeffc30235d596065d718c3973e19711ad0");
+    {
+        const auto message = parse_hex("de4e9524586d6fce45667f9ff12f661e79870c4105fa0fb58af976619bb11432");
+        const auto signature = parse_hex("00000000000000000000000000000000000000000000000000000000000000020123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef80");
+        const auto publicKey = PublicKey::recover(signature, message);
+        EXPECT_EQ(publicKey.type, TWPublicKeyTypeSECP256k1Extended);
+        EXPECT_EQ(hex(publicKey.bytes),
+            "0456d8089137b1fd0d890f8c7d4a04d0fd4520a30b19518ee87bd168ea12ed8090329274c4c6c0d9df04515776f2741eeffc30235d596065d718c3973e19711ad0");
+    }
+
+    const auto privateKey = PrivateKey(parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904"));
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
+    EXPECT_EQ(hex(publicKey.bytes), "0463ade8ebc212b85e7e4278dc3dcb4f9cc18aab912ef5d302b5d1940e772e9e1a9213522efddad487bbd5dd7907e8e776f918e9a5e4cb51893724e9fe76792a4f");
+    {
+        const auto message = parse_hex("6468eb103d51c9a683b51818fdb73390151c9973831d2cfb4e9587ad54273155");
+        const auto signature = parse_hex("92c336138f7d0231fe9422bb30ee9ef10bf222761fe9e04442e3a11e88880c646487026011dae03dc281bc21c7d7ede5c2226d197befb813a4ecad686b559e5800");
+        const auto recovered = PublicKey::recover(signature, message);
+        EXPECT_EQ(hex(recovered.bytes), hex(publicKey.bytes));
+    }
+    { // same with v=27
+        const auto message = parse_hex("6468eb103d51c9a683b51818fdb73390151c9973831d2cfb4e9587ad54273155");
+        const auto signature = parse_hex("92c336138f7d0231fe9422bb30ee9ef10bf222761fe9e04442e3a11e88880c646487026011dae03dc281bc21c7d7ede5c2226d197befb813a4ecad686b559e581b");
+        const auto recovered = PublicKey::recover(signature, message);
+        EXPECT_EQ(hex(recovered.bytes), hex(publicKey.bytes));
+    }
+    { // same with v=35+2
+        const auto message = parse_hex("6468eb103d51c9a683b51818fdb73390151c9973831d2cfb4e9587ad54273155");
+        const auto signature = parse_hex("92c336138f7d0231fe9422bb30ee9ef10bf222761fe9e04442e3a11e88880c646487026011dae03dc281bc21c7d7ede5c2226d197befb813a4ecad686b559e5825");
+        const auto recovered = PublicKey::recover(signature, message);
+        EXPECT_EQ(hex(recovered.bytes), hex(publicKey.bytes));
+    }
 }
 
 TEST(PublicKeyTests, isValidED25519) {
