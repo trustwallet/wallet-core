@@ -250,16 +250,16 @@ TWData *_Nonnull TWEthereumAbiFunctionGetParamUInt256(struct TWEthereumAbiFuncti
     uint256_t val256 = 0;
     std::shared_ptr<ParamBase> param;
     if (!function.getParam(idx, param, isOutput)) {
-        TW::Data valData = TW::store(val256, 0);
+        TW::Data valData = TW::store(val256);
         return TWDataCreateWithData(&valData);
     }
     auto param2 = std::dynamic_pointer_cast<ParamUInt256>(param);
     if (param2 == nullptr) {
-        TW::Data valData = TW::store(val256, 0);
+        TW::Data valData = TW::store(val256);
         return TWDataCreateWithData(&valData);
     }
     val256 = param2->getVal();
-    TW::Data valData = TW::store(val256, 0);
+    TW::Data valData = TW::store(val256);
     return TWDataCreateWithData(&valData);
 }
 

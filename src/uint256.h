@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -55,8 +55,8 @@ inline uint256_t load(const std::string& data) {
     return result;
 }
 
-/// Stores a `uint256_t` as a collection of bytes, with minimal length (if given)
-/// If needed, it will be padded with zeros (on the left, big endian)
+/// Stores a `uint256_t` as a collection of bytes, with optional padding (typically to 32 bytes).
+/// If minLen is given (non-zero), and result is shorter, it is padded (with zeroes, on the left, big endian)
 inline Data store(const uint256_t& v, byte minLen = 0) {
     using boost::multiprecision::cpp_int;
     Data bytes;
