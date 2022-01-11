@@ -184,7 +184,7 @@ std::pair<int, std::string> Swap::buildEthereum(Chain toChain, const std::string
     Data payload;
     func.encode(payload);
     transfer.set_data(payload.data(), payload.size());
-    Data amountData = store(uint256_t(amount), 0);
+    Data amountData = store(uint256_t(amount));
     transfer.set_amount(amountData.data(), amountData.size());
 
     auto serialized = input.SerializeAsString();
