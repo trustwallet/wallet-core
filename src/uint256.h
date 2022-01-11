@@ -55,12 +55,18 @@ inline uint256_t load(const std::string& data) {
     return result;
 }
 
-/// Stores a `uint256_t` as a collection of bytes.
-inline Data store(const uint256_t& v) {
+/// Stores a `uint256_t` as a collection of bytes, with minimal length (if given)
+/// If needed, it will be padded with zeros (on the left, big endian)
+inline Data store(const uint256_t& v, byte minLen = 0) {
     using boost::multiprecision::cpp_int;
     Data bytes;
     bytes.reserve(32);
     export_bits(v, std::back_inserter(bytes), 8);
+    if (minLen && bytes.size() < minLen) {
+        Data padded(minLen - bytes.size());
+        append(padded, bytes);
+        return padded;
+    }
     return bytes;
 }
 
