@@ -67,7 +67,7 @@ Data Signer::sign() const {
 
     auto& coinFrom = (Proto::TransactionCoinFrom&)tx.input();
     Data amount;
-    amount = store(fromAmount);
+    amount = store(fromAmount, 0);
     std::reverse(amount.begin(), amount.end());
     std::string amountStr;
     amountStr.insert(amountStr.begin(), amount.begin(), amount.end());
@@ -76,7 +76,7 @@ Data Signer::sign() const {
 
     auto& coinTo = (Proto::TransactionCoinTo&)tx.output();
     Data amountTo;
-    amountTo = store(txAmount);
+    amountTo = store(txAmount, 0);
     std::reverse(amountTo.begin(), amountTo.end());
     std::string amountToStr;
     amountToStr.insert(amountToStr.begin(), amountTo.begin(), amountTo.end());

@@ -12,12 +12,8 @@ using namespace TW::Ethereum::ABI;
 using namespace TW;
 
 Data ParamAddress::getData() const {
-    Data data = store(getVal());
-    if (data.size() >= bytes) { return data; }
-    // need to pad
-    Data padded(bytes - data.size());
-    append(padded, data);
-    return padded;
+    Data data = store(getVal(), bytes);
+    return data;
 }
 
 bool ParamAddress::setValueJson(const std::string& value) {
