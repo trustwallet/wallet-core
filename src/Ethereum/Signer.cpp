@@ -24,11 +24,11 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto encoded = transaction->encoded(signature, chainID);
         output.set_encoded(encoded.data(), encoded.size());
 
-        auto v = store(signature.v);
+        auto v = store(signature.v, 1);
         output.set_v(v.data(), v.size());
-        auto r = store(signature.r);
+        auto r = store(signature.r, 32);
         output.set_r(r.data(), r.size());
-        auto s = store(signature.s);
+        auto s = store(signature.s, 32);
         output.set_s(s.data(), s.size());
 
         output.set_data(transaction->payload.data(), transaction->payload.size());
