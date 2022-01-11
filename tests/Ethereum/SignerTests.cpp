@@ -12,6 +12,8 @@
 
 #include "HDWallet.h"
 #include "Coin.h"
+#include "Hash.h"
+#include "Data.h"
 
 #include <gtest/gtest.h>
 
@@ -157,12 +159,19 @@ bool testRecover(const PrivateKey& privateKey, const Data& hashToSign, byte chai
 }
 
 TEST(EthereumSigning, verifySignature) {
-    const Data hashToSign1 = parse_hex("68bfc34d28afcb7ae03691816548965dffba6c427c79d15fe6ef548384395fb0");
-    const PrivateKey privKey1 = PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"));
+    const auto messageContent = "Some data";
+    const Data ethPrefix = data("\x019""Ethereum Signed Message:\n");
+    EXPECT_EQ(hex(ethPrefix), "19457468657265756d205369676e6564204d6573736167653a0a");
+    Data message = ethPrefix;
+    TW::append(message, '0' + strlen(messageContent));
+    TW::append(message, data(messageContent));
+    EXPECT_EQ(hex(message), "19457468657265756d205369676e6564204d6573736167653a0a39536f6d652064617461");
+    const Data hashToSign1 = Hash::keccak256(message);
+    EXPECT_EQ(hex(hashToSign1), "1da44b586eb0729ff70a73c326926f6ed5a25f5b056e7f47fbc6e58d86871655");
     const byte chainId = 1;
 
     {   // a case with leading 0
-        const PrivateKey privKey2 = PrivateKey(parse_hex("3b1a45e27d4eba4bdf5e1fd366f9b4c2dc4d891aee55ef2a2814093cb25484d2"));
+        const PrivateKey privKey2 = PrivateKey(parse_hex("54f485342a8ebccd04351e0a0c1a458fefc2571f7aeeaaf88a4196c1e3083b3e"));
 
         const Signature signature = Signer::sign(privKey2, hashToSign1, true, chainId);
         const Data sigData = signatureToData(signature, chainId);
@@ -173,7 +182,7 @@ TEST(EthereumSigning, verifySignature) {
     }
 
     {   // a case with leading 0 in second coordinate
-        const PrivateKey privKey2 = PrivateKey(parse_hex("98301c5ece08396c6ee29210f1b12ed65895376401d7eab642b692ae6b00176c"));
+        const PrivateKey privKey2 = PrivateKey(parse_hex("0fcb27122f5e3274beefc54ce86272b11eff9ed6a284cc8fa09a19c890593f9d"));
 
         const Signature signature = Signer::sign(privKey2, hashToSign1, true, chainId);
         const Data sigData = signatureToData(signature, chainId);
