@@ -62,7 +62,7 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, byte p2
         case TWCoinTypeLitecoin:
         case TWCoinTypeViacoin:
         case TWCoinTypeBitcoinGold:
-            return SegwitAddress(publicKey, 0, hrp).string();
+            return SegwitAddress(publicKey, hrp).string();
 
         case TWCoinTypeBitcoinCash:
             return CashAddress(publicKey).string();

@@ -35,7 +35,7 @@ struct TWSegwitAddress *_Nullable TWSegwitAddressCreateWithString(TWString *_Non
 }
 
 struct TWSegwitAddress *_Nonnull TWSegwitAddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey *_Nonnull publicKey) {
-    const auto address = SegwitAddress(publicKey->impl, 0, stringForHRP(hrp));
+    const auto address = SegwitAddress(publicKey->impl, stringForHRP(hrp));
     return new TWSegwitAddress{ std::move(address) };
 }
 
@@ -50,6 +50,10 @@ TWString *_Nonnull TWSegwitAddressDescription(struct TWSegwitAddress *_Nonnull a
 
 enum TWHRP TWSegwitAddressHRP(struct TWSegwitAddress *_Nonnull address) {
     return hrpForString(address->impl.hrp.c_str());
+}
+
+int TWSegwitAddressWitnessVersion(struct TWSegwitAddress *_Nonnull address) {
+    return address->impl.witnessVersion;
 }
 
 TWData *_Nonnull TWSegwitAddressWitnessProgram(struct TWSegwitAddress *_Nonnull address) {

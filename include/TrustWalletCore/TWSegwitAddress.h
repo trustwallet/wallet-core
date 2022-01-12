@@ -31,7 +31,8 @@ bool TWSegwitAddressIsValidString(TWString *_Nonnull string);
 TW_EXPORT_STATIC_METHOD
 struct TWSegwitAddress *_Nullable TWSegwitAddressCreateWithString(TWString *_Nonnull string);
 
-/// Creates an address from a public key.
+/// Creates a segwit-version-0 address from a public key and HRP prefix.
+/// Taproot (v>=1) is not supported by this method.
 TW_EXPORT_STATIC_METHOD
 struct TWSegwitAddress *_Nonnull TWSegwitAddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey *_Nonnull publicKey);
 
@@ -45,6 +46,10 @@ TWString *_Nonnull TWSegwitAddressDescription(struct TWSegwitAddress *_Nonnull a
 /// Returns the human-readable part.
 TW_EXPORT_PROPERTY
 enum TWHRP TWSegwitAddressHRP(struct TWSegwitAddress *_Nonnull address);
+
+/// Returns the human-readable part.
+TW_EXPORT_PROPERTY
+int TWSegwitAddressWitnessVersion(struct TWSegwitAddress *_Nonnull address);
 
 /// Returns the witness program
 TW_EXPORT_PROPERTY
