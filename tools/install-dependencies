@@ -15,7 +15,7 @@ export LD_LIBRARY_PATH="$PREFIX/lib"
 export LD_RUN_PATH="$PREFIX/lib"
 
 # Download Google Test
-export GTEST_VERSION=1.10.0
+export GTEST_VERSION=1.11.0
 GTEST_DIR="$ROOT/build/local/src/gtest"
 mkdir -p "$GTEST_DIR"
 cd "$GTEST_DIR"
@@ -26,12 +26,6 @@ tar xzf release-$GTEST_VERSION.tar.gz
 
 # Build gtest
 cd googletest-release-$GTEST_VERSION
-echo "patching cmake minimum version"
-cp $ROOT/tools/*.patch .
-patch CMakeLists.txt gtest.patch
-patch googletest/CMakeLists.txt gtest_test.patch
-patch googlemock/CMakeLists.txt gtest_mock.patch
-
 cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -H.
 make -j4
 make install
