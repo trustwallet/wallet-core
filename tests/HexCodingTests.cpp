@@ -28,11 +28,4 @@ TEST(HexCoding, OddLength) {
     ASSERT_EQ(number, 11000000000);
 }
 
-TEST(HexCoding, NormalizeHex) {
-    ASSERT_EQ(normalizeHex("a"), "0a");
-    ASSERT_EQ(normalizeHex("00a"), "0a");
-    ASSERT_EQ(hex(uint64_t(10)), "000000000000000a");
-    ASSERT_EQ(normalizeHex(hex(uint64_t(10))), "0a");
-}
-
 }

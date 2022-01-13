@@ -16,7 +16,7 @@ NetworkConfig::NetworkConfig() :
     chainId("1") /* Mainnet */ {
 }
 
-const std::string& NetworkConfig::getChainId() {
+const std::string& NetworkConfig::getChainId() const {
     return this->chainId;
 }
 
@@ -24,7 +24,7 @@ void NetworkConfig::setChainId(const std::string& value) {
     this->chainId = value;
 }
 
-uint32_t NetworkConfig::getGasPerDataByte() {
+uint32_t NetworkConfig::getGasPerDataByte() const {
     return this->gasPerDataByte;
 }
 
@@ -32,7 +32,7 @@ void NetworkConfig::setGasPerDataByte(uint32_t value) {
     this->gasPerDataByte = value;
 }
 
-uint32_t NetworkConfig::getMinGasLimit() {
+uint32_t NetworkConfig::getMinGasLimit() const {
     return this->minGasLimit;
 }
 
@@ -40,7 +40,7 @@ void NetworkConfig::setMinGasLimit(uint32_t value) {
     this->minGasLimit = value;
 }
 
-uint64_t NetworkConfig::getMinGasPrice() {
+uint64_t NetworkConfig::getMinGasPrice() const {
     return this->minGasPrice;
 }
 
@@ -48,7 +48,7 @@ void NetworkConfig::setMinGasPrice(uint64_t value) {
     this->minGasPrice = value;
 }
 
-uint32_t NetworkConfig::getGasCostESDTTransfer() {
+uint32_t NetworkConfig::getGasCostESDTTransfer() const {
     return this->gasCostESDTTransfer;
 }
 
@@ -56,7 +56,7 @@ void NetworkConfig::setGasCostESDTTransfer(uint32_t value) {
     this->gasCostESDTTransfer = value;
 }
 
-uint32_t NetworkConfig::getGasCostESDTNFTTransfer() {
+uint32_t NetworkConfig::getGasCostESDTNFTTransfer() const {
     return this->gasCostESDTNFTTransfer;
 }
 
@@ -80,12 +80,6 @@ NetworkConfig NetworkConfig::GetByTimestamp(uint64_t timestamp) {
         networkConfig.setGasCostESDTTransfer(200000);
         networkConfig.setGasCostESDTNFTTransfer(200000);
     }
-
-    // Example for ...
-    // if (timestamp > ...) {
-    //     networkConfig.setPerDataByte(...)
-    //     networkConfig.setMinGasPrice(...)
-    // }
 
     return networkConfig;
 }

@@ -27,22 +27,22 @@ class NetworkConfig {
 public:
     NetworkConfig();
 
-    const std::string& getChainId();
+    const std::string& getChainId() const;
     void setChainId(const std::string& value);
     
-    uint32_t getGasPerDataByte();
+    uint32_t getGasPerDataByte() const;
     void setGasPerDataByte(uint32_t value);
     
-    uint32_t getMinGasLimit();
+    uint32_t getMinGasLimit() const;
     void setMinGasLimit(uint32_t value);
     
-    uint64_t getMinGasPrice();
+    uint64_t getMinGasPrice() const;
     void setMinGasPrice(uint64_t value);
     
-    uint32_t getGasCostESDTTransfer();
+    uint32_t getGasCostESDTTransfer() const;
     void setGasCostESDTTransfer(uint32_t value);
 
-    uint32_t getGasCostESDTNFTTransfer();
+    uint32_t getGasCostESDTNFTTransfer() const;
     void setGasCostESDTNFTTransfer(uint32_t value);
 
     static NetworkConfig GetDefault();

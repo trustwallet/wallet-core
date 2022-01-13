@@ -16,9 +16,9 @@ class GasEstimator {
 public:
     GasEstimator(const NetworkConfig& networkConfig);
 
-    uint64_t forEGLDTransfer(size_t dataLength);
-    uint64_t forESDTTransfer(size_t dataLength);
-    uint64_t forESDTNFTTransfer(size_t dataLength);
+    uint64_t forEGLDTransfer(size_t dataLength) const;
+    uint64_t forESDTTransfer(size_t dataLength) const;
+    uint64_t forESDTNFTTransfer(size_t dataLength) const;
 };
 
 } // namespace

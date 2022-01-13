@@ -94,22 +94,4 @@ inline Data parse_hex(const std::string& string, bool padLeft = false) {
     return parse_hex(string.begin(), string.end());
 }
 
-/// "Normalizes" a hexadecimal string (redundant leading zeros are removed, even length is ensured). 
-/// E.g.: normalizeHex("A") -> "0A", normalizeHex("00A") -> "0A".
-///
-/// \returns the "normalized" hexadecimal string.
-inline std::string normalizeHex(const std::string& input) {
-    std::string normalized = input;
-
-    // Strip the redundant leading zeros (if any).
-    normalized.erase(0, normalized.find_first_not_of('0'));
-
-    // Make sure the result has even length (valid hex).
-    if (normalized.size() % 2 != 0) {
-        normalized.insert(0, 1, '0');
-    }
-
-    return normalized;
-}
-
 } // namespace TW

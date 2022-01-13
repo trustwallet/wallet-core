@@ -7,6 +7,7 @@
 #include "Codec.h"
 
 #include "HexCoding.h"
+#include "uint256.h"
 
 using namespace TW;
 using namespace TW::Elrond;
@@ -17,7 +18,7 @@ std::string Codec::encodeString(const std::string& value) {
 }
 
 std::string Codec::encodeUint64(uint64_t value) {
-    std::string encoded = normalizeHex(hex(value));
+    std::string encoded = hex(store(uint256_t(value)));
     return encoded;
 }
 
@@ -27,11 +28,7 @@ std::string Codec::encodeBigInt(const std::string& value) {
 
 // For reference, see https://docs.elrond.com/developers/developer-reference/elrond-serialization-format/#arbitrary-width-big-numbers.
 std::string Codec::encodeBigInt(uint256_t value) {
-    // First, load the 256-bit value into a "Data" object.
-    auto valueAsData = Data();
-    encode256BE(valueAsData, value, 256);
-    
-    std::string encoded = normalizeHex(hex(valueAsData));
+    std::string encoded = hex(store(value));
     return encoded;
 }
 

@@ -22,7 +22,7 @@ GasEstimator::GasEstimator(const NetworkConfig& networkConfig) {
     this->networkConfig = networkConfig;
 }
 
-uint64_t GasEstimator::forEGLDTransfer(size_t dataLength) {
+uint64_t GasEstimator::forEGLDTransfer(size_t dataLength) const {
     uint64_t gasLimit = 
         this->networkConfig.getMinGasLimit() + 
         this->networkConfig.getGasPerDataByte() * dataLength;
@@ -30,7 +30,7 @@ uint64_t GasEstimator::forEGLDTransfer(size_t dataLength) {
     return gasLimit;
 }
 
-uint64_t GasEstimator::forESDTTransfer(size_t dataLength) {
+uint64_t GasEstimator::forESDTTransfer(size_t dataLength) const {
     uint64_t gasLimit = 
         this->networkConfig.getMinGasLimit() + 
         this->networkConfig.getGasCostESDTTransfer() + 
@@ -40,7 +40,7 @@ uint64_t GasEstimator::forESDTTransfer(size_t dataLength) {
     return gasLimit;
 }
 
-uint64_t GasEstimator::forESDTNFTTransfer(size_t dataLength) {
+uint64_t GasEstimator::forESDTNFTTransfer(size_t dataLength) const {
     uint64_t gasLimit = 
         this->networkConfig.getMinGasLimit() + 
         this->networkConfig.getGasCostESDTNFTTransfer() + 
