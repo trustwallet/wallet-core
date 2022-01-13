@@ -216,7 +216,7 @@ TEST(HDWallet, privateKeyFromZprv) {
     const std::string zprv = "zprvAdzGEQ44z4WPLNCRpDaup2RumWxLGgR8PQ9UVsSmJigXsHVDaHK1b6qGM2u9PmxB2Gx264ctAz4yRoN3Xwf1HZmKcn6vmjqwsawF4WqQjfd";
     auto privateKey = HDWallet::getPrivateKeyFromExtended(zprv, TWCoinTypeBitcoinCash, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeBitcoin), 0, 0, 5));
     auto publicKey = privateKey->getPublicKey(TWPublicKeyTypeSECP256k1);
-    auto address = Bitcoin::SegwitAddress(publicKey, 0, "bc");
+    auto address = Bitcoin::SegwitAddress(publicKey, "bc");
 
     EXPECT_EQ(hex(publicKey.bytes), "022dc3f5a3fcfd2d1cc76d0cb386eaad0e30247ba729da0d8847a2713e444fdafa");
     EXPECT_EQ(address.string(), "bc1q5yyq60jepll68hds7exa7kpj20gsvdu0aztw5x");
