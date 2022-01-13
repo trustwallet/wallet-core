@@ -27,6 +27,7 @@ using namespace TW::Bitcoin;
 
 TEST(BitcoinCash, Address) {
     EXPECT_TRUE(TWAnyAddressIsValid(STRING("pqx578nanz2h2estzmkr53zqdg6qt8xyqvwhn6qeyc").get(), TWCoinTypeBitcoinCash));
+    EXPECT_TRUE(TWAnyAddressIsValid(STRING("bitcoincash:pqx578nanz2h2estzmkr53zqdg6qt8xyqvwhn6qeyc").get(), TWCoinTypeBitcoinCash));
 }
 
 TEST(BitcoinCash, ValidAddress) {
@@ -36,6 +37,18 @@ TEST(BitcoinCash, ValidAddress) {
     
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptLockScriptForAddress(string.get(), TWCoinTypeBitcoinCash));
     ASSERT_FALSE(TWBitcoinScriptSize(script.get()) == 0);
+}
+
+TEST(BitcoinCash, InvalidAddress) {
+    // Wrong checksum
+    EXPECT_FALSE(TWAnyAddressIsValid(STRING("pqx578nanz2h2estzmkr53zqdg6qt8xyqvh683mrz0").get(), TWCoinTypeBitcoinCash));
+    EXPECT_FALSE(TWAnyAddressIsValid(STRING("bitcoincash:pqx578nanz2h2estzmkr53zqdg6qt8xyqvh683mrz0").get(), TWCoinTypeBitcoinCash));
+
+    // Wrong prefix
+    EXPECT_FALSE(TWAnyAddressIsValid(STRING("bcash:pqx578nanz2h2estzmkr53zqdg6qt8xyqvwhn6qeyc").get(), TWCoinTypeBitcoinCash));
+
+    // Wrong base 32 (characters o, i)
+    EXPECT_FALSE(TWAnyAddressIsValid(STRING("poi578nanz2h2estzmkr53zqdg6qt8xyqvwhn6qeyc").get(), TWCoinTypeBitcoinCash));
 }
 
 TEST(BitcoinCash, LegacyToCashAddr) {
