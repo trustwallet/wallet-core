@@ -53,4 +53,16 @@ inline bool operator==(const CashAddress& lhs, const CashAddress& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
+class BitcoinCashAddress : public CashAddress {
+  public:
+    /// Initializes a  address with a string representation.
+    explicit BitcoinCashAddress(const std::string& string) : CashAddress(string) {}
+
+    /// Initializes a  address with a collection of bytes.
+    explicit BitcoinCashAddress(const Data& data) : CashAddress(data) {}
+
+    /// Initializes a  address with a public key.
+    explicit BitcoinCashAddress(const PublicKey& publicKey) : CashAddress(publicKey) {}
+};
+
 } // namespace TW::Bitcoin

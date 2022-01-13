@@ -310,8 +310,8 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
         if (address.witnessVersion == 1 && address.witnessProgram.size() == 32) {
             return buildPayToV1WitnessProgram(address.witnessProgram);
         }
-    } else if (CashAddress::isValid(string)) {
-        auto address = CashAddress(string);
+    } else if (BitcoinCashAddress::isValid(string)) {
+        auto address = BitcoinCashAddress(string);
         auto bitcoinAddress = address.legacyAddress();
         return lockScriptForAddress(bitcoinAddress.string(), TWCoinTypeBitcoinCash);
     } else if (Decred::Address::isValid(string)) {
