@@ -20,6 +20,9 @@ public:
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
     virtual bool supportsJSONSigning() const { return true; }
     virtual std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const;
+
+    virtual Data preImageHash(TWCoinType coin, const Data& dataIn) const;
+    virtual void compile(TWCoinType coin, const Data& dataIn, const Data& signature, const Data& publicKey, Data& dataOut) const;
 };
 
 } // namespace TW::Binance

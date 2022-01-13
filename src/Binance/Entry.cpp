@@ -10,6 +10,7 @@
 #include "Signer.h"
 
 using namespace TW::Binance;
+using namespace TW;
 using namespace std;
 
 bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
@@ -26,4 +27,20 @@ void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) con
 
 string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const { 
     return Signer::signJSON(json, key);
+}
+
+Data Entry::preImageHash(TWCoinType coin, const Data& dataIn) const {
+    auto input = Proto::SigningInput();
+    input.ParseFromArray(dataIn.data(), (int)dataIn.size());
+    const auto signer = Signer(input);
+    return signer.preImageHash();
+}
+
+void Entry::compile(TWCoinType coin, const Data& dataIn, const Data& signature, const Data& publicKey, Data& dataOut) const {
+    auto input = Proto::SigningInput();
+    input.ParseFromArray(dataIn.data(), (int)dataIn.size());
+    const auto signer = Signer(input);
+    const auto output = signer.compile(signature, publicKey);
+    const auto serializedOut = output.SerializeAsString();
+    dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
 }
