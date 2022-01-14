@@ -24,6 +24,8 @@ static const uint8_t p2shVersion = 0x08;
 static constexpr size_t maxHRPSize = 20;
 static constexpr size_t maxDataSize = 104;
 
+const std::string BitcoinCashAddress::hrp = HRP_BITCOINCASH;
+
 bool CashAddress::isValid(const std::string& hrp, const std::string& string) {
     auto withPrefix = string;
     if (string.size() < hrp.size() || !std::equal(hrp.begin(), hrp.end(), string.begin())) {

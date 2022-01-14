@@ -58,20 +58,22 @@ inline bool operator==(const CashAddress& lhs, const CashAddress& rhs) {
 
 class BitcoinCashAddress : public CashAddress {
   public:
+    static const std::string hrp; // HRP_BITCOINCASH
+
     /// Initializes an address with a string representation.
     explicit BitcoinCashAddress(const std::string& string)
-        : CashAddress("bitcoincash", string) {}
+        : CashAddress(hrp, string) {}
 
     /// Initializes an address with a collection of bytes.
     explicit BitcoinCashAddress(const Data& data)
-        : CashAddress("bitcoincash", data) {}
+        : CashAddress(hrp, data) {}
 
     /// Initializes an address with a public key.
     explicit BitcoinCashAddress(const PublicKey& publicKey)
-        : CashAddress("bitcoincash", publicKey) {}
+        : CashAddress(hrp, publicKey) {}
 
     static bool isValid(const std::string& string) {
-        return CashAddress::isValid("bitcoincash", string);
+        return CashAddress::isValid(hrp, string);
     }
 };
 
