@@ -16,9 +16,6 @@
 
 using namespace TW::Bitcoin;
 
-/// Cash address human-readable part
-static const std::string cashHRP = "bitcoincash";
-
 /// From https://github.com/bitcoincashorg/bitcoincash.org/blob/master/spec/cashaddr.md
 
 static const uint8_t p2khVersion = 0x00;
@@ -27,48 +24,53 @@ static const uint8_t p2shVersion = 0x08;
 static constexpr size_t maxHRPSize = 20;
 static constexpr size_t maxDataSize = 104;
 
-bool CashAddress::isValid(const std::string& string) {
+const std::string BitcoinCashAddress::hrp = HRP_BITCOINCASH;
+
+bool CashAddress::isValid(const std::string& hrp, const std::string& string) {
     auto withPrefix = string;
-    if (string.size() < cashHRP.size() || !std::equal(cashHRP.begin(), cashHRP.end(), string.begin())) {
-        withPrefix = cashHRP + ":" + string;
+    if (string.size() < hrp.size() || !std::equal(hrp.begin(), hrp.end(), string.begin())) {
+        withPrefix = hrp + ":" + string;
     }
 
-    std::array<char, maxHRPSize + 1> hrp = {0};
+    std::array<char, maxHRPSize + 1> decodedHRP = {0};
     std::array<uint8_t, maxDataSize> data;
     size_t dataLen;
-    if (cash_decode(hrp.data(), data.data(), &dataLen, withPrefix.c_str()) == 0 || dataLen != CashAddress::size) {
+    if (cash_decode(decodedHRP.data(), data.data(), &dataLen, withPrefix.c_str()) == 0 || dataLen != CashAddress::size) {
         return false;
     }
-    if (std::strncmp(hrp.data(), cashHRP.c_str(), std::min(cashHRP.size(), maxHRPSize)) != 0) {
+    if (std::strncmp(decodedHRP.data(), hrp.c_str(), std::min(hrp.size(), maxHRPSize)) != 0) {
         return false;
     }
     return true;
 }
 
-CashAddress::CashAddress(const std::string& string) {
+CashAddress::CashAddress(const std::string& hrp, const std::string& string)
+    : hrp(hrp) {
     auto withPrefix = string;
-    if (!std::equal(cashHRP.begin(), cashHRP.end(), string.begin())) {
-        withPrefix = cashHRP + ":" + string;
+    if (!std::equal(hrp.begin(), hrp.end(), string.begin())) {
+        withPrefix = hrp + ":" + string;
     }
 
-    std::array<char, maxHRPSize + 1> hrp;
+    std::array<char, maxHRPSize + 1> decodedHRP;
     std::array<uint8_t, maxDataSize> data;
     size_t dataLen;
-    auto success = cash_decode(hrp.data(), data.data(), &dataLen, withPrefix.c_str()) != 0;
-    if (!success || std::strncmp(hrp.data(), cashHRP.c_str(), std::min(cashHRP.size(), maxHRPSize)) != 0 || dataLen != CashAddress::size) {
+    auto success = cash_decode(decodedHRP.data(), data.data(), &dataLen, withPrefix.c_str()) != 0;
+    if (!success || std::strncmp(decodedHRP.data(), hrp.c_str(), std::min(hrp.size(), maxHRPSize)) != 0 || dataLen != CashAddress::size) {
         throw std::invalid_argument("Invalid address string");
     }
     std::copy(data.begin(), data.begin() + dataLen, bytes.begin());
 }
 
-CashAddress::CashAddress(const Data& data) {
+CashAddress::CashAddress(const std::string& hrp, const Data& data)
+    : hrp(hrp) {
     if (!isValid(data)) {
         throw std::invalid_argument("Invalid address key data");
     }
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
-CashAddress::CashAddress(const PublicKey& publicKey) {
+CashAddress::CashAddress(const std::string& hrp, const PublicKey& publicKey)
+    : hrp(hrp) {
     if (publicKey.type != TWPublicKeyTypeSECP256k1) {
         throw std::invalid_argument("CashAddress needs a compressed SECP256k1 public key.");
     }
@@ -85,7 +87,7 @@ CashAddress::CashAddress(const PublicKey& publicKey) {
 
 std::string CashAddress::string() const {
     std::array<char, 129> result;
-    cash_encode(result.data(), cashHRP.c_str(), bytes.data(), CashAddress::size);
+    cash_encode(result.data(), hrp.c_str(), bytes.data(), CashAddress::size);
     return result.data();
 }
 
