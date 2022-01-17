@@ -20,7 +20,7 @@ using namespace TW;
 using namespace TW::Cardano;
 using namespace std;
 
-bool AddressV3::parseAndCheckV3(const std::string& addr, Discrimination& discrimination, Kind& kind, Data& raw) {
+bool AddressV3::parseAndCheckV3(const std::string& addr, NetworkId& networkId, Kind& kind, Data& raw) {
     try {
         auto bech = Bech32::decode(addr);
         if (std::get<1>(bech).size() == 0) {
@@ -33,23 +33,12 @@ bool AddressV3::parseAndCheckV3(const std::string& addr, Discrimination& discrim
         if (!success) {
             return false;
         }
-        /* TODO update tests, enforce 57 length
-        //if (conv.size() != 33 && conv.size() != 65) {
-        //if (conv.size() != 57) {
+        if (conv.size() != EncodedSize) {
             return false;
         }
-        */
-        discrimination = (Discrimination)((conv[0] & 0b10000000) >> 7);
-        kind = (Kind)(conv[0] & 0b01111111);
-        /* TODO update tests, enforce 57 length
-        if (kind <= Kind_Sentinel_Low || kind >= Kind_Sentinel_High) {
-            return false;
-        }
-        if ((kind == Kind_Group && conv.size() != 65) ||
-            (kind != Kind_Group && conv.size() != 33)) {
-            return false;
-        }
-        */
+        kind = kindFromFirstByte(conv[0]);
+        networkId = networkIdFromFirstByte(conv[0]);
+        //if ((kind == Kind_Base && conv.size() != EncodedSize) || ...) {
 
         raw = Data(conv.size() - 1);
         std::copy(conv.begin() + 1, conv.end(), raw.begin());
@@ -60,10 +49,10 @@ bool AddressV3::parseAndCheckV3(const std::string& addr, Discrimination& discrim
 }
 
 bool AddressV3::isValid(const std::string& addr) {
-    Discrimination discrimination;
+    NetworkId networkId;
     Kind kind;
     Data key;
-    if (parseAndCheckV3(addr, discrimination, kind, key)) {
+    if (parseAndCheckV3(addr, networkId, kind, key)) {
         return true;
     }
     // not V3, try older
@@ -75,57 +64,39 @@ Data blakeHash(Data d) {
     return Hash::blake2b(d.data(), d.size(), 28);
 }
 
-AddressV3 AddressV3::createBase(Discrimination discrimination_in, const TW::Data& spendingKey, const TW::Data& stakingKey) {
-    if (spendingKey.size() != 32) {
-        throw std::invalid_argument("Wrong spending key size");
+AddressV3 AddressV3::createBase(NetworkId networkId, const TW::Data& spendingKeyHash, const TW::Data& stakingKeyHash) {
+    if (spendingKeyHash.size() != 28) {
+        throw std::invalid_argument("Wrong spending key hash size");
     }
-    if (stakingKey.size() != 32) {
-        throw std::invalid_argument("Wrong spending key size");
+    if (stakingKeyHash.size() != 28) {
+        throw std::invalid_argument("Wrong spending key hash size");
     }
     auto addr = AddressV3();
-    addr.discrimination = discrimination_in;
+    addr.networkId = networkId;
     addr.kind = Kind_Base;
 
-    const Data hash1 = blakeHash(spendingKey);
-    const Data hash2 = blakeHash(stakingKey);
-
     addr.bytes = Data();
-    append(addr.bytes, hash1);
-    append(addr.bytes, hash2);
+    append(addr.bytes, spendingKeyHash);
+    append(addr.bytes, stakingKeyHash);
 
     return addr;
 }
 
-/*
-AddressV3 AddressV3::createGroup(Discrimination discrimination_in, const Data& spendingKey, const Data& groupKey) {
-    if (spendingKey.size() != 32) {
+AddressV3 AddressV3::createBase(NetworkId networkId, const PublicKey& spendingKey, const PublicKey& stakingKey) {
+    if (spendingKey.bytes.size() != 32) {
         throw std::invalid_argument("Wrong spending key size");
     }
-    if (groupKey.size() != 32) {
-        throw std::invalid_argument("Wrong group key size");
-    }
-    auto addr = AddressV3();
-    addr.discrimination = discrimination_in;
-    addr.kind = Kind_Group;
-    addr.key1 = spendingKey;
-    addr.groupKey = groupKey;
-    return addr;
-}
-
-AddressV3 AddressV3::createAccount(Discrimination discrimination_in, const Data& accountKey) {
-    if (accountKey.size() != 32) {
+    if (stakingKey.bytes.size() != 32) {
         throw std::invalid_argument("Wrong spending key size");
     }
-    auto addr = AddressV3();
-    addr.discrimination = discrimination_in;
-    addr.kind = Kind_Account;
-    addr.key1 = accountKey;
-    return addr;
+
+    const Data hash1 = blakeHash(spendingKey.bytes);
+    const Data hash2 = blakeHash(stakingKey.bytes);
+    return createBase(networkId, hash1, hash2);
 }
-*/
 
 AddressV3::AddressV3(const std::string& addr) {
-    if (parseAndCheckV3(addr, discrimination, kind, bytes)) {
+    if (parseAndCheckV3(addr, networkId, kind, bytes)) {
         // values stored
         return;
     }
@@ -139,45 +110,38 @@ AddressV3::AddressV3(const PublicKey& publicKey) {
     if (publicKey.type != TWPublicKeyTypeED25519Extended || publicKey.bytes.size() != PublicKey::ed25519DoubleExtendedSize) {
         throw std::invalid_argument("Invalid public key type");
     }
-    discrimination = Discrim_Production;
     kind = Kind_Base;
 
-    *this = createBase(Discrim_Production, subData(publicKey.bytes, 0, 32), subData(publicKey.bytes, 64, 32));
+    *this = createBase(Network_Production, PublicKey(subData(publicKey.bytes, 0, 32), TWPublicKeyTypeED25519), PublicKey(subData(publicKey.bytes, 64, 32), TWPublicKeyTypeED25519));
 }
 
 AddressV3::AddressV3(const Data& data) {
-    // TODO check
-    /*
-    // min 4 bytes, 2 prefix + 2 len
-    if (data.size() < 4) { throw std::invalid_argument("Address data too short"); }
-    assert(data.size() >= 4);
-    int index = 0;
-    discrimination = (Discrimination)data[index++];
-    kind = (Kind)data[index++];
-    // key1:
-    byte len1 = data[index++];
-    if (data.size() < 4 + len1) { throw std::invalid_argument("Address data too short"); }
-    assert(data.size() >= 4 + len1);
-    key1 = Data(len1);
-    std::copy(data.begin() + index, data.begin() + index + len1, key1.begin());
-    index += len1;
-    // groupKey:
-    byte len2 = data[index++];
-    if (data.size() < 4 + len1 + len2) { throw std::invalid_argument("Address data too short"); }
-    assert(data.size() >= 4 + len1 + len2);
-    groupKey = Data(len2);
-    std::copy(data.begin() + index, data.begin() + index + len2, groupKey.begin());
-    */
-    discrimination = Discrim_Production; // TODO from byte 0
-    kind = Kind_Base; // TODO from byte 0
+    if (data.size() != EncodedSize) {
+        throw std::invalid_argument("Address data too short");
+    }
+    networkId = networkIdFromFirstByte(data[0]);
+    kind = kindFromFirstByte(data[0]);
     bytes = subData(data, 1);
 }
 
 AddressV3::AddressV3(const AddressV3& other) = default;
 
+uint8_t AddressV3::firstByte(NetworkId networkId, Kind kind) {
+    byte first = ((byte)kind << 4) + networkId;
+    return first;
+}
+
+AddressV3::NetworkId AddressV3::networkIdFromFirstByte(uint8_t first) {
+    return (NetworkId)(first & 0x0F);
+}
+
+AddressV3::Kind AddressV3::kindFromFirstByte(uint8_t first) {
+    return (Kind)((first & 0xF0) >> 4);
+}
+
 void AddressV3::operator=(const AddressV3& other)
 {
-    discrimination = other.discrimination;
+    networkId = other.networkId;
     kind = other.kind;
     bytes = other.bytes;
     legacyAddressV2 = other.legacyAddressV2;
@@ -187,9 +151,6 @@ string AddressV3::string() const {
     std::string hrp;
     switch (kind) {
         case Kind_Base:
-        case Kind_Single:
-        case Kind_Group:
-        case Kind_Account:
             hrp = stringForHRP(TWHRPCardano); break;
         default:
             hrp = ""; break;
@@ -202,17 +163,7 @@ string AddressV3::string(const std::string& hrp) const {
         return legacyAddressV2->string();
     }
 
-    const byte first = 01; // TODO from networkId, kind
-    /*
-    (byte)kind;
-    if (discrimination == Discrim_Test) {
-        first = first | 0b10000000;
-    }
-    */
-    Data raw;
-    append(raw, first);
-    append(raw, bytes);
-
+    const Data raw = data();
     // bech
     Data bech;
     if (!Bech32::convertBits<8, 5, true>(bech, raw)) {
@@ -226,38 +177,15 @@ string AddressV3::stringBase32() const {
         return legacyAddressV2->string();
     }
 
-    // TODO to common
-    byte first = (byte)kind;
-    if (discrimination == Discrim_Test) {
-        first = first | 0b10000000;
-    }
-    Data raw;
-    TW::append(raw, first);
-    TW::append(raw, bytes);
+    const Data raw = data();
     std::string base32 = Base32::encode(raw, "abcdefghijklmnopqrstuvwxyz23456789");
     return base32;
 }
 
 Data AddressV3::data() const {
-    // TODO check
-
-    // TODO to common
-    byte first = (byte)kind;
-    if (discrimination == Discrim_Test) {
-        first = first | 0b10000000;
-    }
+    const byte first = firstByte(networkId, kind);
     Data raw;
     TW::append(raw, first);
     TW::append(raw, bytes);
     return raw;
-    /*
-    Data data;
-    TW::append(data, (uint8_t)discrimination);
-    TW::append(data, (uint8_t)kind);
-    TW::append(data, (uint8_t)bytes.size());
-    TW::append(data, bytes);
-    //TW::append(data, (uint8_t)groupKey.size());
-    //TW::append(data, groupKey);
-    return data;
-    */
 }
