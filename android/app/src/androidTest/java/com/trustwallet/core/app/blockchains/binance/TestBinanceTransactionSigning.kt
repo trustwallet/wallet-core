@@ -33,7 +33,7 @@ class TestBinanceTransactionSigning {
 
         val token = Binance.SendOrder.Token.newBuilder()
         token.denom = "BNB"
-        token.amount = 1
+        token.amount = 2
 
         val input = Binance.SendOrder.Input.newBuilder()
         input.address = ByteString.copyFrom(AnyAddress(publicKey, BINANCE).data())
