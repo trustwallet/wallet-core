@@ -107,6 +107,9 @@ class HDWallet {
 
   private:
     void updateSeedAndEntropy(bool check = true);
+
+    // For Cardano, derive 2nd, staking derivation path from the primary one
+    static DerivationPath cardanoStakingDerivationPath(const DerivationPath& path);
 };
 
 } // namespace TW

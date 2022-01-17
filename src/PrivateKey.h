@@ -22,7 +22,8 @@ class PrivateKey {
 
     /// The private key bytes.
     Data bytes;
-    /// Optional extended and second extended keys ...
+
+    /// Optional members for extended keys and second extended keys
     Data extension;
     Data chainCode;
     Data second;
@@ -41,8 +42,10 @@ class PrivateKey {
     /// Initializes a private key from a string of bytes (convenience method).
     explicit PrivateKey(const std::string& data) : PrivateKey(TW::data(data)) {}
 
-    /// Initializes a double extended private key with two keys
-    explicit PrivateKey(const Data& first, const Data& firstExtension, const Data& firstChainCode, const Data& second, const Data& secondExtension, const Data& secondChainCode);
+    /// Initializes a double extended private key with two extended keys
+    explicit PrivateKey(
+        const Data& bytes1, const Data& extension1, const Data& chainCode1,
+        const Data& bytes2, const Data& extension2, const Data& chainCode2);
 
     PrivateKey(const PrivateKey& other) = default;
     PrivateKey& operator=(const PrivateKey& other) = default;

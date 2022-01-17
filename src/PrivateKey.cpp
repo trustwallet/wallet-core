@@ -86,27 +86,29 @@ PrivateKey::PrivateKey(const Data& data) {
         *this = PrivateKey(
             subData(data, 0, 32),
             subData(data, 32, 32),
-            subData(data, 64, 32),
-            subData(data, 96, 32),
-            subData(data, 128, 32),
-            subData(data, 160, 32));
+            subData(data, 32*2, 32),
+            subData(data, 32*3, 32),
+            subData(data, 32*4, 32),
+            subData(data, 32*5, 32));
     } else {
         // default case
         bytes = data;
     }
 }
 
-PrivateKey::PrivateKey(const Data& first, const Data& firstExtension, const Data& firstChainCode, const Data& second, const Data& secondExtension, const Data& secondChainCode) {
-    if (!isValid(first) || !isValid(firstExtension) || !isValid(firstChainCode) ||
-        !isValid(second) || !isValid(secondExtension) || !isValid(secondChainCode)) {
+PrivateKey::PrivateKey(
+    const Data& bytes1, const Data& extension1, const Data& chainCode1,
+    const Data& bytes2, const Data& extension2, const Data& chainCode2) {
+    if (!isValid(bytes1) || !isValid(extension1) || !isValid(chainCode1) ||
+        !isValid(bytes2) || !isValid(extension2) || !isValid(chainCode2)) {
         throw std::invalid_argument("Invalid private key or extended key data");
     }
-    bytes = first;
-    extension = firstExtension;
-    chainCode = firstChainCode;
-    this->second = second;
-    this->secondExtension = secondExtension;
-    this->secondChainCode = secondChainCode;
+    bytes = bytes1;
+    extension = extension1;
+    chainCode = chainCode1;
+    this->second = bytes2;
+    this->secondExtension = extension2;
+    this->secondChainCode = chainCode2;
 }
 
 PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
@@ -149,6 +151,7 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
             append(result, subData(tempPub, 0, 32));
             // copy chainCode
             append(result, chainCode);
+
             // second key
             ed25519_publickey_ext(second.data(), secondExtension.data(), tempPub.data());
             append(result, subData(tempPub, 0, 32));

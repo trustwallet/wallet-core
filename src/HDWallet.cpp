@@ -105,25 +105,30 @@ PrivateKey HDWallet::getMasterKeyExtension(TWCurve curve) const {
     return PrivateKey(data);
 }
 
+DerivationPath HDWallet::cardanoStakingDerivationPath(const DerivationPath& path) {
+    DerivationPath stakingPath = path;
+    stakingPath.indices[3].value = 2;
+    return stakingPath;
+}
+
 PrivateKey HDWallet::getKey(TWCoinType coin, const DerivationPath& derivationPath) const {
     const auto curve = TWCoinTypeCurve(coin);
     const auto privateKeyType = getPrivateKeyType(curve);
     const auto node = getNode(*this, curve, derivationPath);
     switch (privateKeyType) {
-        // special handling for Cardano TODO streamline better in exisitng impl.
-        case PrivateKeyTypeDoubleExtended: // Cardano
+        case PrivateKeyTypeDoubleExtended: // special handling for Cardano
             {
                 if (derivationPath.indices.size() < 4 || derivationPath.indices[3].value > 1) {
                     // invalid derivation path
                     return PrivateKey(Data(192));
                 }
-                DerivationPath stakingPath = derivationPath;
-                stakingPath.indices[3].value = 2;
+                const DerivationPath stakingPath = cardanoStakingDerivationPath(derivationPath);
 
                 auto pkData = Data(node.private_key, node.private_key + PrivateKey::size);
                 auto extData = Data(node.private_key_extension, node.private_key_extension + PrivateKey::size);
                 auto chainCode = Data(node.chain_code, node.chain_code + PrivateKey::size);
 
+                // repeat with staking path
                 const auto node2 = getNode(*this, curve, stakingPath);
                 auto pkData2 = Data(node2.private_key, node2.private_key + PrivateKey::size);
                 auto extData2 = Data(node2.private_key_extension, node2.private_key_extension + PrivateKey::size);
@@ -302,8 +307,7 @@ HDNode getNode(const HDWallet& wallet, TWCurve curve, const DerivationPath& deri
     auto node = getMasterNode(wallet, curve);
     for (auto& index : derivationPath.indices) {
         switch (privateKeyType) {
-            case HDWallet::PrivateKeyTypeDoubleExtended: // used by Cardano
-                // special handling for extended
+            case HDWallet::PrivateKeyTypeDoubleExtended: // used by Cardano, special handling
                 hdnode_private_ckd_cardano(&node, index.derivationIndex());
                 break;
            case HDWallet::PrivateKeyTypeDefault32:
