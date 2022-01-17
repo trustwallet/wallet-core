@@ -1842,5 +1842,34 @@
       "clientPublic": "https://rpc-osmosis.keplr.app/",
       "clientDocs": ""
     }
+  },
+  {
+    "id": "ecash",
+    "name": "ECash",
+    "coinId": 899,
+    "symbol": "XEC",
+    "decimals": 2,
+    "blockchain": "Bitcoin",
+    "derivationPath": "m/44'/899'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "p2pkhPrefix": 0,
+    "p2shPrefix": 5,
+    "hrp": "ecash",
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "xpub": "xpub",
+    "xprv": "xprv",
+    "explorer": {
+      "url": "https://explorer.bitcoinabc.org",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://e.cash",
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+    }
   }
 ]
