@@ -116,6 +116,15 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
         break;
     }
 
+    case TWCoinTypeECash: {
+        auto addr = Bitcoin::ECashAddress(string);
+        data.resize(Bitcoin::Address::size);
+        size_t outlen = 0;
+        cash_data_to_addr(data.data(), &outlen, addr.bytes.data(), 34);
+        data = Data(data.begin() + 1, data.end());
+        break;
+    }
+
     case TWCoinTypeDash:
     case TWCoinTypeDogecoin:
     case TWCoinTypeMonacoin:

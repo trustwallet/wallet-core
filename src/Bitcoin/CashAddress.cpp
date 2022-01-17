@@ -25,6 +25,7 @@ static constexpr size_t maxHRPSize = 20;
 static constexpr size_t maxDataSize = 104;
 
 const std::string BitcoinCashAddress::hrp = HRP_BITCOINCASH;
+const std::string ECashAddress::hrp = HRP_ECASH;
 
 bool CashAddress::isValid(const std::string& hrp, const std::string& string) {
     auto withPrefix = string;
