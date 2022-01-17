@@ -31,8 +31,8 @@ bool SegwitAddress::isValid(const std::string& string, const std::string& hrp) {
     return true;
 }
 
-SegwitAddress::SegwitAddress(const PublicKey& publicKey, int witver, std::string hrp)
-    : hrp(std::move(hrp)), witnessVersion(witver), witnessProgram() {
+SegwitAddress::SegwitAddress(const PublicKey& publicKey, std::string hrp)
+    : hrp(std::move(hrp)), witnessVersion(0), witnessProgram() {
     if (publicKey.type != TWPublicKeyTypeSECP256k1) {
         throw std::invalid_argument("SegwitAddress needs a compressed SECP256k1 public key.");
     }
@@ -73,10 +73,10 @@ std::tuple<SegwitAddress, std::string, bool> SegwitAddress::decode(const std::st
 
 std::string SegwitAddress::string() const {
     Data enc;
-    enc.push_back(static_cast<uint8_t>(witnessVersion));
+    enc.push_back(witnessVersion);
     Bech32::convertBits<8, 5, true>(enc, witnessProgram);
     Bech32::ChecksumVariant variant = Bech32::ChecksumVariant::Bech32;
-    if (witnessVersion== 0) {
+    if (witnessVersion == 0) {
         variant = Bech32::ChecksumVariant::Bech32;
     } else if (witnessVersion >= 1) {
         variant = Bech32::ChecksumVariant::Bech32M;

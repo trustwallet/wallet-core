@@ -46,7 +46,7 @@ inline Data paddedOnLeft(const Data& inout) {
 }
 
 void ValueEncoder::encodeUInt256(const uint256_t& value, Data& inout) {
-    append(inout, paddedOnLeft(store(value)));
+    append(inout, store(value, 32));
 }
 
 /// Encoding primitive: encode a number of bytes by taking hash

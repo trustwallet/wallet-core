@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec 'Core' do |ss|
-    protobuf_source_dir = 'build/local/src/protobuf/protobuf-3.14.0'
+    protobuf_source_dir = 'build/local/src/protobuf/protobuf-3.19.2'
     include_dir = 'build/local/include'
     ss.source_files =
       'src/**/*.{c,cc,cpp,h}',
@@ -57,11 +57,15 @@ Pod::Spec.new do |s|
       "#{protobuf_source_dir}/src/google/protobuf/extension_set_heavy.cc",
       "#{protobuf_source_dir}/src/google/protobuf/field_mask.pb.cc",
       "#{protobuf_source_dir}/src/google/protobuf/generated_enum_util.cc",
+      "#{protobuf_source_dir}/src/google/protobuf/generated_message_bases.cc",
       "#{protobuf_source_dir}/src/google/protobuf/generated_message_reflection.cc",
       "#{protobuf_source_dir}/src/google/protobuf/generated_message_table_driven.cc",
       "#{protobuf_source_dir}/src/google/protobuf/generated_message_table_driven_lite.cc",
+      "#{protobuf_source_dir}/src/google/protobuf/generated_message_tctable_full.cc",
+      "#{protobuf_source_dir}/src/google/protobuf/generated_message_tctable_lite.cc",
       "#{protobuf_source_dir}/src/google/protobuf/generated_message_util.cc",
       "#{protobuf_source_dir}/src/google/protobuf/implicit_weak_message.cc",
+      "#{protobuf_source_dir}/src/google/protobuf/inlined_string_field.cc",
       "#{protobuf_source_dir}/src/google/protobuf/io/coded_stream.cc",
       "#{protobuf_source_dir}/src/google/protobuf/io/gzip_stream.cc",
       "#{protobuf_source_dir}/src/google/protobuf/io/io_win32.cc",
@@ -78,6 +82,7 @@ Pod::Spec.new do |s|
       "#{protobuf_source_dir}/src/google/protobuf/parse_context.cc",
       "#{protobuf_source_dir}/src/google/protobuf/reflection_ops.cc",
       "#{protobuf_source_dir}/src/google/protobuf/repeated_field.cc",
+      "#{protobuf_source_dir}/src/google/protobuf/repeated_ptr_field.cc",
       "#{protobuf_source_dir}/src/google/protobuf/service.cc",
       "#{protobuf_source_dir}/src/google/protobuf/source_context.pb.cc",
       "#{protobuf_source_dir}/src/google/protobuf/struct.pb.cc",
@@ -111,7 +116,6 @@ Pod::Spec.new do |s|
       "#{protobuf_source_dir}/src/google/protobuf/util/internal/protostream_objectsource.cc",
       "#{protobuf_source_dir}/src/google/protobuf/util/internal/protostream_objectwriter.cc",
       "#{protobuf_source_dir}/src/google/protobuf/util/internal/type_info.cc",
-      "#{protobuf_source_dir}/src/google/protobuf/util/internal/type_info_test_helper.cc",
       "#{protobuf_source_dir}/src/google/protobuf/util/internal/utility.cc",
       "#{protobuf_source_dir}/src/google/protobuf/util/json_util.cc",
       "#{protobuf_source_dir}/src/google/protobuf/util/message_differencer.cc",
@@ -120,6 +124,7 @@ Pod::Spec.new do |s|
       "#{protobuf_source_dir}/src/google/protobuf/wire_format.cc",
       "#{protobuf_source_dir}/src/google/protobuf/wire_format_lite.cc",
       "#{protobuf_source_dir}/src/google/protobuf/wrappers.pb.cc"
+      
     ss.exclude_files = 
       'trezor-crypto/include/TrezorCrypto/base58.h',
       'trezor-crypto/crypto/monero',

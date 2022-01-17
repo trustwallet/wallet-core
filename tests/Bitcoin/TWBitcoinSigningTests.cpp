@@ -1571,7 +1571,7 @@ TEST(BitcoinSigning, SignP2TR_5df51e) {
     auto utxoKey0 = PrivateKey(parse_hex(privateKey));
     auto pubKey0 = utxoKey0.getPublicKey(TWPublicKeyTypeSECP256k1);
     EXPECT_EQ(hex(pubKey0.bytes), "021e582a887bd94d648a9267143eb600449a8d59a0db0653740b1378067a6d0cee");
-    EXPECT_EQ(SegwitAddress(pubKey0, 0, "bc").string(), ownAddress);
+    EXPECT_EQ(SegwitAddress(pubKey0, "bc").string(), ownAddress);
     auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(pubKey0.bytes));
     EXPECT_EQ(hex(utxoPubkeyHash), "0cb9f5c6b62c03249367bc20a90dd2425e6926af");
     input.privateKeys.push_back(utxoKey0);
@@ -1692,7 +1692,7 @@ TEST(BitcoinSigning, Build_OpReturn_THORChainSwap_eb4c) {
 TEST(BitcoinSigning, Sign_OpReturn_THORChainSwap) {
     PrivateKey privateKey = PrivateKey(parse_hex("6bd4096fa6f08bd3af2b437244ba0ca2d35045c5233b8d6796df37e61e974de5"));
     PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-    auto ownAddress = SegwitAddress(publicKey, 0, "bc");
+    auto ownAddress = SegwitAddress(publicKey, "bc");
     auto ownAddressString = ownAddress.string();
     EXPECT_EQ(ownAddressString, "bc1q2gzg42w98ytatvmsgxfc8vrg6l24c25pydup9u");
     auto toAddress = "bc1qxu5a8gtnjxw3xwdlmr2gl9d76h9fysu3zl656e";

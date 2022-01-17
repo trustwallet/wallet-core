@@ -62,7 +62,7 @@ TEST(THORChainSwap, SwapBtcEth) {
 
     // set few fields before signing
     tx.set_byte_fee(20);
-    EXPECT_EQ(Bitcoin::SegwitAddress(PrivateKey(TestKey1Btc).getPublicKey(TWPublicKeyTypeSECP256k1), 0, "bc").string(), Address1Btc);
+    EXPECT_EQ(Bitcoin::SegwitAddress(PrivateKey(TestKey1Btc).getPublicKey(TWPublicKeyTypeSECP256k1), "bc").string(), Address1Btc);
     tx.add_private_key(TestKey1Btc.data(), TestKey1Btc.size());
     auto& utxo = *tx.add_utxo();
     Data utxoHash = parse_hex("1234000000000000000000000000000000000000000000000000000000005678");
@@ -115,7 +115,7 @@ TEST(THORChainSwap, SwapBtcBnb) {
 
     // set few fields before signing
     tx.set_byte_fee(80);
-    EXPECT_EQ(Bitcoin::SegwitAddress(PrivateKey(TestKey1Btc).getPublicKey(TWPublicKeyTypeSECP256k1), 0, "bc").string(), Address1Btc);
+    EXPECT_EQ(Bitcoin::SegwitAddress(PrivateKey(TestKey1Btc).getPublicKey(TWPublicKeyTypeSECP256k1), "bc").string(), Address1Btc);
     tx.add_private_key(TestKey1Btc.data(), TestKey1Btc.size());
     auto& utxo = *tx.add_utxo();
     Data utxoHash = parse_hex("8eae5c3a4c75058d4e3facd5d72f18a40672bcd3d1f35ebf3094bd6c78da48eb");

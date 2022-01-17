@@ -24,6 +24,9 @@ class CashAddress {
     /// hash.
     std::array<byte, size> bytes;
 
+    /// Cash address human-readable part
+    const std::string hrp;
+
     /// Determines whether a collection of bytes makes a valid  address.
     template <typename T>
     static bool isValid(const T& data) {
@@ -31,16 +34,16 @@ class CashAddress {
     }
 
     /// Determines whether a string makes a valid  address.
-    static bool isValid(const std::string& string);
+    static bool isValid(const std::string& hrp, const std::string& string);
 
     /// Initializes a  address with a string representation.
-    explicit CashAddress(const std::string& string);
+    explicit CashAddress(const std::string& hrp, const std::string& string);
 
     /// Initializes a  address with a collection of bytes.
-    explicit CashAddress(const Data& data);
+    explicit CashAddress(const std::string& hrp, const Data& data);
 
     /// Initializes a  address with a public key.
-    explicit CashAddress(const PublicKey& publicKey);
+    explicit CashAddress(const std::string& hrp, const PublicKey& publicKey);
 
     /// Returns a string representation of the address.
     std::string string() const;
@@ -52,5 +55,26 @@ class CashAddress {
 inline bool operator==(const CashAddress& lhs, const CashAddress& rhs) {
     return lhs.bytes == rhs.bytes;
 }
+
+class BitcoinCashAddress : public CashAddress {
+  public:
+    static const std::string hrp; // HRP_BITCOINCASH
+
+    /// Initializes an address with a string representation.
+    explicit BitcoinCashAddress(const std::string& string)
+        : CashAddress(hrp, string) {}
+
+    /// Initializes an address with a collection of bytes.
+    explicit BitcoinCashAddress(const Data& data)
+        : CashAddress(hrp, data) {}
+
+    /// Initializes an address with a public key.
+    explicit BitcoinCashAddress(const PublicKey& publicKey)
+        : CashAddress(hrp, publicKey) {}
+
+    static bool isValid(const std::string& string) {
+        return CashAddress::isValid(hrp, string);
+    }
+};
 
 } // namespace TW::Bitcoin

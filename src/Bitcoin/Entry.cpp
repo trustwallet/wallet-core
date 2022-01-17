@@ -27,7 +27,7 @@ bool Entry::validateAddress(TWCoinType coin, const string& address, byte p2pkh, 
                 || Address::isValid(address, {{p2pkh}, {p2sh}});
 
         case TWCoinTypeBitcoinCash:
-            return CashAddress::isValid(address)
+            return BitcoinCashAddress::isValid(address)
                 || Address::isValid(address, {{p2pkh}, {p2sh}});
 
         case TWCoinTypeDash:
@@ -43,8 +43,8 @@ string Entry::normalizeAddress(TWCoinType coin, const string& address) const {
     switch (coin) {
         case TWCoinTypeBitcoinCash:
             // normalized with bitcoincash: prefix
-            if (CashAddress::isValid(address)) {
-                return CashAddress(address).string();
+            if (BitcoinCashAddress::isValid(address)) {
+                return BitcoinCashAddress(address).string();
             } else {
                 return std::string(address);
             }
@@ -62,10 +62,10 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, byte p2
         case TWCoinTypeLitecoin:
         case TWCoinTypeViacoin:
         case TWCoinTypeBitcoinGold:
-            return SegwitAddress(publicKey, 0, hrp).string();
+            return SegwitAddress(publicKey, hrp).string();
 
         case TWCoinTypeBitcoinCash:
-            return CashAddress(publicKey).string();
+            return BitcoinCashAddress(publicKey).string();
 
         case TWCoinTypeDash:
         case TWCoinTypeDogecoin:

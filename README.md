@@ -60,13 +60,26 @@ We currently support Swift Package Manager and CocoaPods.
 
 ### SPM
 
+Download latest `Package.swift` from [GitHub Releases](https://github.com/trustwallet/wallet-core/releases) and put it in a local `WalletCore` folder.
+
 Add this line to the `dependencies` parameter in your `Package.swift`:
+
+```swift
+.package(name: "WalletCore", path: "../WalletCore"),
+```
+
+Or add remote url + `master` branch, it points to recent (not always latest) binary release.
 
 ```swift
 .package(name: "WalletCore", url: "https://github.com/trustwallet/wallet-core", .branchItem("master")),
 ```
 
-Or add it to your Xcode project, `master` branch will point to latest binary release. 
+Then add libraries to target's `dependencies`: 
+
+```swift
+.product(name: "WalletCore", package: "WalletCore"),
+.product(name: "SwiftProtobuf", package: "WalletCore"),
+```
 
 ### CocoaPods
 
