@@ -85,6 +85,53 @@ message Message {
         string type_prefix = 3;
     }
 
+    // wasm/MsgExecuteContract
+    message WasmExecuteContract {
+        // sender address
+        string sender_address = 1;
+
+        // token contract address
+        string contract_address = 2;
+
+        // base64-encoded payload of contract execution message (refer to below)
+        string execute_msg = 3;
+
+        // used in case you are sending native tokens along with this message
+        repeated string coin = 4;
+    }
+
+    // transfer within wasm/MsgExecuteContract
+    message WasmExecuteContractTransfer {
+        // sender address
+        string sender_address = 1;
+
+        // token contract address
+        string contract_address = 2;
+
+        int64 amount = 3;
+
+        string recipient_address = 4;
+    }
+
+    // send within wasm/MsgExecuteContract
+    message WasmExecuteContractSend {
+        // sender address
+        string sender_address = 1;
+
+        // token contract address
+        string contract_address = 2;
+
+        int64 amount = 3;
+
+        string recipient_contract_address = 4;
+
+        // execute_msg to be executed in the context of recipient contract
+        string msg = 5;
+
+        // used in case you are sending native tokens along with this message
+        repeated string coin = 6;
+    }
+
     message RawJSON {
         string type = 1;
         string value = 2;
@@ -97,7 +144,10 @@ message Message {
         Undelegate unstake_message = 4;
         BeginRedelegate restake_message = 5;
         WithdrawDelegationReward withdraw_stake_reward_message = 6;
-        RawJSON raw_json_message = 7;
+        WasmExecuteContract wasm_execute_contract = 7;
+        WasmExecuteContractTransfer wasm_execute_contract_transfer = 8;
+        WasmExecuteContractSend wasm_execute_contract_send = 9;
+        RawJSON raw_json_message = 10;
     }
 }
 
