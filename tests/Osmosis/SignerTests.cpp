@@ -10,6 +10,7 @@
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
+#include "../interface/TWTestUtilities.h"
 
 #include <gtest/gtest.h>
 
@@ -51,7 +52,7 @@ TEST(OsmosisSigner, SignTransfer_81B4) {
     // https://www.mintscan.io/osmosis/txs/81B4F01BDE72AF7FF4536E5D7E66EB218E9FC9ACAA7C5EB5DB237DD0595D5F5F
     // curl -H 'Content-Type: application/json' --data-binary '{"tx_bytes": "Co0B...rYVj", "mode": "BROADCAST_MODE_BLOCK"}' https://lcd-osmosis.keplr.app/cosmos/tx/v1beta1/txs
 
-    EXPECT_EQ(output.serialized(), "Co0BCooBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmoKK29zbW8xbWt5Njljbjhla3R3eTA4NDV2ZWM5dXBzZHBoa3R4dDBlbjk3ZjUSK29zbW8xOHMwaGRuc2xsZ2NjbHdldTlheW13NG5na3RyMmswcmt2bjdqbW4aDgoFdW9zbW8SBTk5ODAwEmQKTgpGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQLs71zkN6MCxn+VRo3ksx826RH0Z9fmpStBweE+HVY2SRIECgIIARISCgwKBXVvc21vEgMyMDAQwJoMGkAMY//Md5GRUR4lVZhk558hFS3kii9QZYoYKfg4+ac/xgNeyoiEweVDhcmEvlH1orVwjLUOnYs4ly2a/yIurYVj");
+    assertJSONEqual(output.serialized(), "{\"tx_bytes\":\"Co0BCooBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmoKK29zbW8xbWt5Njljbjhla3R3eTA4NDV2ZWM5dXBzZHBoa3R4dDBlbjk3ZjUSK29zbW8xOHMwaGRuc2xsZ2NjbHdldTlheW13NG5na3RyMmswcmt2bjdqbW4aDgoFdW9zbW8SBTk5ODAwEmQKTgpGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQLs71zkN6MCxn+VRo3ksx826RH0Z9fmpStBweE+HVY2SRIECgIIARISCgwKBXVvc21vEgMyMDAQwJoMGkAMY//Md5GRUR4lVZhk558hFS3kii9QZYoYKfg4+ac/xgNeyoiEweVDhcmEvlH1orVwjLUOnYs4ly2a/yIurYVj\",\"mode\":\"BROADCAST_MODE_BLOCK\"}");
     EXPECT_EQ(hex(output.signature()), "0c63ffcc779191511e25559864e79f21152de48a2f50658a1829f838f9a73fc6035eca8884c1e54385c984be51f5a2b5708cb50e9d8b38972d9aff222ead8563");
     EXPECT_EQ(output.error(), "");
     EXPECT_EQ(output.json(), "");

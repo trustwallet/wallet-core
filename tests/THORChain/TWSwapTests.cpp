@@ -79,7 +79,7 @@ TEST(TWTHORChainSwap, SwapBtcToEth) {
     // sign tx input for signed full tx
     // set few fields before signing
     txInput.set_byte_fee(20);
-    EXPECT_EQ(Bitcoin::SegwitAddress(PrivateKey(TestKey1Btc).getPublicKey(TWPublicKeyTypeSECP256k1), 0, "bc").string(), Address1Btc);
+    EXPECT_EQ(Bitcoin::SegwitAddress(PrivateKey(TestKey1Btc).getPublicKey(TWPublicKeyTypeSECP256k1), "bc").string(), Address1Btc);
     txInput.add_private_key(TestKey1Btc.data(), TestKey1Btc.size());
     auto& utxo = *txInput.add_utxo();
     Data utxoHash = parse_hex("1234000000000000000000000000000000000000000000000000000000005678");

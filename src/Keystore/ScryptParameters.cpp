@@ -12,8 +12,8 @@
 using namespace TW;
 using namespace TW::Keystore;
 
-ScryptParameters ScryptParameters::Light = ScryptParameters(Data(), lightN, defaultR, lightP, defaultDesiredKeyLength);
-
+ScryptParameters ScryptParameters::Minimal = ScryptParameters(Data(), minimalN, defaultR, minimalP, defaultDesiredKeyLength);
+ScryptParameters ScryptParameters::Weak = ScryptParameters(Data(), weakN, defaultR, weakP, defaultDesiredKeyLength);
 ScryptParameters ScryptParameters::Standard = ScryptParameters(Data(), standardN, defaultR, standardP, defaultDesiredKeyLength);
 
 ScryptParameters::ScryptParameters() : salt(32) {

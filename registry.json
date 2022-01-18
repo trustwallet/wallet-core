@@ -602,7 +602,7 @@
     "id": "nano",
     "name": "Nano",
     "coinId": 165,
-    "symbol": "NANO",
+    "symbol": "XNO",
     "decimals": 30,
     "blockchain": "Nano",
     "derivation": [

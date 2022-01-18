@@ -32,9 +32,9 @@ template <typename T>
 Proto::SigningOutput Signer::prepareOutput(const Data& encoded, const T &transaction) noexcept {
     auto protoOutput = Proto::SigningOutput();
 
-    auto v = store(transaction.v);
-    auto r = store(transaction.r);
-    auto s = store(transaction.s);
+    auto v = store(transaction.v, 1);
+    auto r = store(transaction.r, 32);
+    auto s = store(transaction.s, 32);
 
     protoOutput.set_encoded(encoded.data(), encoded.size());
     protoOutput.set_v(v.data(), v.size());
