@@ -41,8 +41,15 @@ TEST(BitcoinCash, ValidAddress) {
 
 TEST(BitcoinCash, InvalidAddress) {
     // Wrong checksum
+    EXPECT_FALSE(TWAnyAddressIsValid(STRING("pqx578nanz2h2estzmkr53zqdg6qt8xyqvffffffff").get(), TWCoinTypeBitcoinCash));
+    EXPECT_FALSE(TWAnyAddressIsValid(STRING("bitcoincash:pqx578nanz2h2estzmkr53zqdg6qt8xyqvffffffff").get(), TWCoinTypeBitcoinCash));
+
+    // Valid eCash addresses are invalid for BCH
+    EXPECT_TRUE(TWAnyAddressIsValid(STRING("pqx578nanz2h2estzmkr53zqdg6qt8xyqvh683mrz0").get(), TWCoinTypeECash));
     EXPECT_FALSE(TWAnyAddressIsValid(STRING("pqx578nanz2h2estzmkr53zqdg6qt8xyqvh683mrz0").get(), TWCoinTypeBitcoinCash));
-    EXPECT_FALSE(TWAnyAddressIsValid(STRING("bitcoincash:pqx578nanz2h2estzmkr53zqdg6qt8xyqvh683mrz0").get(), TWCoinTypeBitcoinCash));
+
+    EXPECT_TRUE(TWAnyAddressIsValid(STRING("ecash:pqx578nanz2h2estzmkr53zqdg6qt8xyqvh683mrz0").get(), TWCoinTypeECash));
+    EXPECT_FALSE(TWAnyAddressIsValid(STRING("ecash:pqx578nanz2h2estzmkr53zqdg6qt8xyqvh683mrz0").get(), TWCoinTypeBitcoinCash));
 
     // Wrong prefix
     EXPECT_FALSE(TWAnyAddressIsValid(STRING("bcash:pqx578nanz2h2estzmkr53zqdg6qt8xyqvwhn6qeyc").get(), TWCoinTypeBitcoinCash));

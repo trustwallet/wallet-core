@@ -38,6 +38,25 @@ TEST(ECash, ValidAddress) {
     ASSERT_FALSE(TWBitcoinScriptSize(script.get()) == 0);
 }
 
+TEST(ECash, InvalidAddress) {
+    // Wrong checksum
+    EXPECT_FALSE(TWAnyAddressIsValid(STRING("pqx578nanz2h2estzmkr53zqdg6qt8xyqvffffffff").get(), TWCoinTypeECash));
+    EXPECT_FALSE(TWAnyAddressIsValid(STRING("ecash:pqx578nanz2h2estzmkr53zqdg6qt8xyqvffffffff").get(), TWCoinTypeECash));
+
+    // Valid BCH addresses are invalid for eCash
+    EXPECT_TRUE(TWAnyAddressIsValid(STRING("pqx578nanz2h2estzmkr53zqdg6qt8xyqvwhn6qeyc").get(), TWCoinTypeBitcoinCash));
+    EXPECT_FALSE(TWAnyAddressIsValid(STRING("pqx578nanz2h2estzmkr53zqdg6qt8xyqvwhn6qeyc").get(), TWCoinTypeECash));
+
+    EXPECT_TRUE(TWAnyAddressIsValid(STRING("bitcoincash:pqx578nanz2h2estzmkr53zqdg6qt8xyqvwhn6qeyc").get(), TWCoinTypeBitcoinCash));
+    EXPECT_FALSE(TWAnyAddressIsValid(STRING("bitcoincash:pqx578nanz2h2estzmkr53zqdg6qt8xyqvwhn6qeyc").get(), TWCoinTypeECash));
+
+    // Wrong prefix
+    EXPECT_FALSE(TWAnyAddressIsValid(STRING("fcash:pqx578nanz2h2estzmkr53zqdg6qt8xyqvh683mrz0").get(), TWCoinTypeECash));
+
+    // Wrong base 32 (characters o, i)
+    EXPECT_FALSE(TWAnyAddressIsValid(STRING("poi578nanz2h2estzmkr53zqdg6qt8xyqvwhn6qeyc").get(), TWCoinTypeECash));
+}
+
 TEST(ECash, LegacyToECashAddr) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("28071bf4e2b0340db41b807ed8a5514139e5d6427ff9d58dbd22b7ed187103a4").get()));
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true));
