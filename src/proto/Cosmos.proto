@@ -144,9 +144,9 @@ message Message {
         Undelegate unstake_message = 4;
         BeginRedelegate restake_message = 5;
         WithdrawDelegationReward withdraw_stake_reward_message = 6;
-        WasmExecuteContract wasm_execute_contract = 7;
-        WasmExecuteContractTransfer wasm_execute_contract_transfer = 8;
-        WasmExecuteContractSend wasm_execute_contract_send = 9;
+        WasmExecuteContract wasm_execute_contract_message = 7;
+        WasmExecuteContractTransfer wasm_execute_contract_transfer_message = 8;
+        WasmExecuteContractSend wasm_execute_contract_send_message = 9;
         RawJSON raw_json_message = 10;
     }
 }

@@ -136,15 +136,46 @@ static json messageWithdrawReward(const Proto::Message_WithdrawDelegationReward&
     };
 }
 
+json wasmTransferPayloadJson(const Proto::Message_WasmExecuteContractTransfer& msg) {
+    return {
+        {"transfer",
+            {
+                {"amount", std::to_string(msg.amount())},
+                {"recipient", msg.recipient_address()}
+            }
+        }
+    };
+}
+
+std::string wasmTransferPayloadBase64(const Proto::Message_WasmExecuteContractTransfer& msg) {
+    return Base64::encode(TW::data(wasmTransferPayloadJson(msg).dump()));
+}
+
+json messageWasmTransfer(const Proto::Message_WasmExecuteContractTransfer& msg) {
+    return {
+        {"type", "wasm/MsgExecuteContract"}, // TODO contract
+        {"value",
+            {
+                {"sender", msg.sender_address()},
+                {"contract", msg.contract_address()},
+                {"execute_msg", wasmTransferPayloadBase64(msg)},
+                {"coins", json::array()}  // used in case you are sending native tokens along with this message
+            }
+        }
+    };
+}
+
 static json messageRawJSON(const Proto::Message_RawJSON& message) {
     return {
         {"type", message.type()},
         {"value", json::parse(message.value())},
     };
 }
+
 static json messagesJSON(const Proto::SigningInput& input) {
     json j = json::array();
     for (auto& msg : input.messages()) {
+        // TODO switch
         if (msg.has_send_coins_message()) {
             j.push_back(messageSend(msg.send_coins_message()));
         } else if (msg.has_stake_message()) {
@@ -160,6 +191,8 @@ static json messagesJSON(const Proto::SigningInput& input) {
         } else if (msg.has_transfer_tokens_message()) {
             assert(false); // not suppored, use protobuf serialization
             return json::array();
+        } else if ((msg.has_wasm_execute_contract_transfer_message())) {
+            j.push_back(messageWasmTransfer(msg.wasm_execute_contract_transfer_message()));
         }
     }
     return j;
