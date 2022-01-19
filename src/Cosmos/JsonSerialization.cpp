@@ -149,7 +149,6 @@ json wasmTransferPayloadJson(const Proto::Message_WasmExecuteContractTransfer& m
 
 std::string wasmTransferPayloadBase64(const Proto::Message_WasmExecuteContractTransfer& msg) {
     return Base64::encode(TW::data(wasmTransferPayloadJson(msg).dump()));
-    //return Base64::encode(TW::data(wasmTransferPayloadJson(msg).dump(2)));
 }
 
 json messageWasmTransfer(const Proto::Message_WasmExecuteContractTransfer& msg) {
@@ -159,7 +158,6 @@ json messageWasmTransfer(const Proto::Message_WasmExecuteContractTransfer& msg) 
             {
                 {"sender", msg.sender_address()},
                 {"contract", msg.contract_address()},
-                //{"execute_msg", wasmTransferPayloadBase64(msg)},
                 {"execute_msg", wasmTransferPayloadJson(msg)},
                 {"coins", json::array()}  // used in case you are sending native tokens along with this message
             }
