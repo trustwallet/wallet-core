@@ -78,7 +78,7 @@ class HDWalletTests: XCTestCase {
     }
 
     func testDeriveDigiByte() {
-        let digibye = CoinType.digiByte
+        let digibye = CoinType.digibyte
         let wallet = HDWallet.test
         let key = wallet.getKeyForCoin(coin: digibye)
         let address = digibye.deriveAddress(privateKey: key)
@@ -134,7 +134,7 @@ class HDWalletTests: XCTestCase {
     }
 
     func testDeriveBitcoinCash() {
-        let bitcoinCash = CoinType.bitcoinCash
+        let bitcoinCash = CoinType.bitcoincash
         let wallet = HDWallet.test
         let key = wallet.getKeyForCoin(coin: bitcoinCash)
         let address = bitcoinCash.deriveAddress(privateKey: key)
@@ -252,7 +252,7 @@ class HDWalletTests: XCTestCase {
     }
 
     func testDeriveDoge() {
-        let doge = CoinType.dogecoin
+        let doge = CoinType.doge
         let wallet = HDWallet.test
         let key = wallet.getKeyForCoin(coin: doge)
         let address = doge.deriveAddress(privateKey: key)
@@ -307,7 +307,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveFromXPub() {
         let xpub = "xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj"
 
-        let bitcoin = CoinType.bitcoinCash
+        let bitcoin = CoinType.bitcoincash
         let xpub2 = HDWallet.getPublicKeyFromExtended(
             extended: xpub,
             coin: bitcoin,
@@ -432,7 +432,7 @@ class HDWalletTests: XCTestCase {
     }
 
     func testDeriveBandChain() {
-        let coin = CoinType.bandChain
+        let coin = CoinType.band
         let key = HDWallet.test.getKeyForCoin(coin: coin)
         let address = coin.deriveAddress(privateKey: key)
 

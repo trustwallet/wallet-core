@@ -23,7 +23,7 @@ TEST(TWNULSCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNULS));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNULS), 8);
-    ASSERT_EQ(TWBlockchainNULS, TWCoinTypeBlockchain(TWCoinTypeNULS));
+    ASSERT_EQ(TWBlockchainNuls, TWCoinTypeBlockchain(TWCoinTypeNULS));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeNULS));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeNULS));
     assertStringsEqual(symbol, "NULS");

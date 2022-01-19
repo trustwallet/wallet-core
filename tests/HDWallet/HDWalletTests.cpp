@@ -224,9 +224,9 @@ TEST(HDWallet, privateKeyFromZprv) {
 
 TEST(HDWallet, privateKeyFromDGRV) {
     const std::string dgpv = "dgpv595jAJYGBLanByCJXRzrWBZFVXdNisfuPmKRDquCQcwBbwKbeR21AtkETf4EpjBsfsK3kDZgMqhcuky1B9PrT5nxiEcjghxpUVYviHXuCmc";
-    auto privateKey = HDWallet::getPrivateKeyFromExtended(dgpv, TWCoinTypeDogecoin, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeDogecoin), 0, 0, 1));
+    auto privateKey = HDWallet::getPrivateKeyFromExtended(dgpv, TWCoinTypeDoge, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeDoge), 0, 0, 1));
     auto publicKey = privateKey->getPublicKey(TWPublicKeyTypeSECP256k1);
-    auto address = Bitcoin::Address(publicKey, TW::p2pkhPrefix(TWCoinTypeDogecoin));
+    auto address = Bitcoin::Address(publicKey, TW::p2pkhPrefix(TWCoinTypeDoge));
 
     EXPECT_EQ(hex(publicKey.bytes), "03eb6bf281990ee074a39c71ed8ce78c486066ac433bcf066dd5eb08f87d3a6c34");
     EXPECT_EQ(address.string(), "D5taDndQJ1fDF3AM1yWavmJY2BgSi17CUv");

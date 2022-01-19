@@ -23,7 +23,7 @@ TEST(TWIoTeXCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeIoTeX));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeIoTeX), 18);
-    ASSERT_EQ(TWBlockchainIoTeX, TWCoinTypeBlockchain(TWCoinTypeIoTeX));
+    ASSERT_EQ(TWBlockchainIotex, TWCoinTypeBlockchain(TWCoinTypeIoTeX));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeIoTeX));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeIoTeX));
     assertStringsEqual(symbol, "IOTX");

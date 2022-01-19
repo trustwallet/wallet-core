@@ -13,7 +13,8 @@ import com.trustwallet.core.app.utils.toHexBytes
 import com.trustwallet.core.app.utils.toHexBytesInByteString
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import wallet.core.jni.<%= format_name(coin) %>Signer
+import wallet.core.java.AnySigner
+import wallet.core.jni.CoinType.<%= format_name_uppercase(coin) %>
 import wallet.core.jni.proto.<%= format_name(coin) %>
 
 class Test<%= format_name(coin) %>Signer {
@@ -35,7 +36,7 @@ class Test<%= format_name(coin) %>Signer {
         //    ...
         //    .build()
 
-        //val output: <%= format_name(coin) %>.SigningOutput = <%= format_name(coin) %>Signer.sign(signingInput)
+        //val output = AnySigner.sign(signingInput.build(), <%= format_name_uppercase(coin) %>, <%= format_name(coin) %>.SigningOutput.parser())
 
         //assertEquals(
         //    "__EXPECTED_RESULT_DATA__",

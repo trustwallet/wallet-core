@@ -63,7 +63,7 @@ TEST(AnyAddress, Data) {
     // base58 dogecoin
     {
         auto string = STRING("DQkiL71KkuGEgS9QFCKJkBeHmzM5YFYGkG");
-        auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeDogecoin));
+        auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeDoge));
         auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
         assertHexEqual(keyHash, "d726d32d9ff0560e7df35764987fcf01a6a343cf");
     }

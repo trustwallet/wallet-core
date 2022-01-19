@@ -31,7 +31,7 @@ bool Entry::validateAddress(TWCoinType coin, const string& address, byte p2pkh, 
                 || Address::isValid(address, {{p2pkh}, {p2sh}});
 
         case TWCoinTypeDash:
-        case TWCoinTypeDogecoin:
+        case TWCoinTypeDoge:
         case TWCoinTypeRavencoin:
         case TWCoinTypeZcoin:
         default:
@@ -68,7 +68,7 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, byte p2
             return BitcoinCashAddress(publicKey).string();
 
         case TWCoinTypeDash:
-        case TWCoinTypeDogecoin:
+        case TWCoinTypeDoge:
         case TWCoinTypeMonacoin:
         case TWCoinTypeQtum:
         case TWCoinTypeRavencoin:

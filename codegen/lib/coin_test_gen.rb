@@ -14,24 +14,18 @@ class CoinTestGen
   # Transforms a coin name to a C++ name
   def format_name(n)
     formatted = n
-    #formatted = formatted.sub(/^([a-z]+)/, &:upcase)
     formatted = formatted.sub(/\s/, '')
     formatted
   end
 
   # Transforms number to hex
   def to_hex(i)
-    hex = i.to_i().to_s(16)
-    hex
+    i.to_i().to_s(16)
   end
 
   # Display name, or name if not specified
   def display_name(coin)
-    name = coin['displayName']
-    if name == nil
-      name = coin['name']
-    end
-    name
+    coin['displayName'] || coin['name']
   end
 
   # Explorer urls

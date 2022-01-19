@@ -9,7 +9,7 @@ import WalletCore
 
 class DogeTests: XCTestCase {
 
-    private let coin = CoinType.dogecoin
+    private let coin = CoinType.doge
 
     func testAddress() {
         let string = "DLrjRgrVqbbpGrSQUtSYgsiWWMvRz5skQE"
@@ -41,7 +41,7 @@ class DogeTests: XCTestCase {
         let dgub = "dgub8rjvUmFc6cqR6NRBEj2FBZCHUDUrykPyv24Vea6bCsPex5PzNFrRtr4KN37XgwuVzzC2MikJRW2Ddcp99Ehsqp2iaU4eerNCJVruKxz6Gci"
         let pubkey8 = HDWallet.getPublicKeyFromExtended(
             extended: dgub,
-            coin: .dogecoin,
+            coin: .doge,
             derivationPath: DerivationPath(purpose: .bip44, coin: coin.slip44Id, account: 0, change: 0, address: 8).description
         )!
 

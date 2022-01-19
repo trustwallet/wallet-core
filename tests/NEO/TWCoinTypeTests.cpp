@@ -23,7 +23,7 @@ TEST(TWNEOCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNEO));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNEO), 8);
-    ASSERT_EQ(TWBlockchainNEO, TWCoinTypeBlockchain(TWCoinTypeNEO));
+    ASSERT_EQ(TWBlockchainNeo, TWCoinTypeBlockchain(TWCoinTypeNEO));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeNEO));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeNEO));
     assertStringsEqual(symbol, "NEO");

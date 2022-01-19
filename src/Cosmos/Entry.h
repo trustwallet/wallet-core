@@ -19,7 +19,7 @@ public:
             TWCoinTypeCosmos,
             TWCoinTypeKava,
             TWCoinTypeTerra,
-            TWCoinTypeBandChain,
+            TWCoinTypeBand,
             TWCoinTypeBluzelle,
             TWCoinTypeCryptoOrg,
             TWCoinTypeOsmosis,

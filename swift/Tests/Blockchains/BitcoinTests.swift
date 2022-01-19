@@ -124,8 +124,8 @@ class BitcoinTransactionSignerTests: XCTestCase {
 
     func testHashTypeForCoin() {
         XCTAssertEqual(BitcoinScript.hashTypeForCoin(coinType: .bitcoin), TWBitcoinSigHashTypeAll.rawValue)
-        XCTAssertEqual(BitcoinScript.hashTypeForCoin(coinType: .bitcoinCash), 0x41)
-        XCTAssertEqual(BitcoinScript.hashTypeForCoin(coinType: .bitcoinGold), 0x4f41)
+        XCTAssertEqual(BitcoinScript.hashTypeForCoin(coinType: .bitcoincash), 0x41)
+        XCTAssertEqual(BitcoinScript.hashTypeForCoin(coinType: .bitcoingold), 0x4f41)
     }
 
     func testSignExtendedPubkeyUTXO() {

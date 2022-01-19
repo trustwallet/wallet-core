@@ -14,18 +14,18 @@
 
 
 TEST(TWDogecoinCoinType, TWCoinType) {
-    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDogecoin));
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDoge));
     auto txId = WRAPS(TWStringCreateWithUTF8Bytes("t123"));
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDogecoin, txId.get()));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDoge, txId.get()));
     auto accId = WRAPS(TWStringCreateWithUTF8Bytes("a12"));
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeDogecoin, accId.get()));
-    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDogecoin));
-    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDogecoin));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeDoge, accId.get()));
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDoge));
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDoge));
 
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDogecoin), 8);
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeDogecoin));
-    ASSERT_EQ(0x16, TWCoinTypeP2shPrefix(TWCoinTypeDogecoin));
-    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeDogecoin));
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDoge), 8);
+    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeDoge));
+    ASSERT_EQ(0x16, TWCoinTypeP2shPrefix(TWCoinTypeDoge));
+    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeDoge));
     assertStringsEqual(symbol, "DOGE");
     assertStringsEqual(txUrl, "https://blockchair.com/dogecoin/transaction/t123");
     assertStringsEqual(accUrl, "https://blockchair.com/dogecoin/address/a12");

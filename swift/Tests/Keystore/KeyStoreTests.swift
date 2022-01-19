@@ -82,7 +82,7 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testCreateHDWallet() throws {
-        let coins = [CoinType.ethereum, .binance, .smartChain]
+        let coins = [CoinType.ethereum, .binance, .smartchain]
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let newWallet = try keyStore.createWallet(name: "name", password: "password", coins: coins)
 
@@ -90,12 +90,12 @@ class KeyStoreTests: XCTestCase {
         XCTAssertEqual(keyStore.wallets.count, 5)
         XCTAssertNoThrow(try newWallet.getAccount(password: "password", coin: .ethereum))
         XCTAssertNoThrow(try newWallet.getAccount(password: "password", coin: .binance))
-        XCTAssertNoThrow(try newWallet.getAccount(password: "password", coin: .smartChain))
+        XCTAssertNoThrow(try newWallet.getAccount(password: "password", coin: .smartchain))
     }
 
     func testUpdateKey() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
-        let coins = [CoinType.ethereum, .callisto, .poanetwork]
+        let coins = [CoinType.ethereum, .callisto, .poa]
         let wallet = try keyStore.createWallet(name: "name", password: "password", coins: coins)
 
         try keyStore.update(wallet: wallet, password: "password", newPassword: "testpassword")
@@ -115,7 +115,7 @@ class KeyStoreTests: XCTestCase {
 
     func testUpdateName() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
-        let coins = [CoinType.ethereum, .callisto, .poanetwork]
+        let coins = [CoinType.ethereum, .callisto, .poa]
         let wallet = try keyStore.createWallet(name: "name", password: "password", coins: coins)
 
         try keyStore.update(wallet: wallet, password: "password", newName: "testname")
@@ -136,7 +136,7 @@ class KeyStoreTests: XCTestCase {
     func testAddAccounts() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let wallet = keyStore.hdWallet!
-        _ = try keyStore.addAccounts(wallet: wallet, coins: [.ethereum, .callisto, .poanetwork], password: "password")
+        _ = try keyStore.addAccounts(wallet: wallet, coins: [.ethereum, .callisto, .poa], password: "password")
 
         let savedKeyStore = try KeyStore(keyDirectory: keyDirectory)
         let savedWallet = savedKeyStore.hdWallet!
@@ -145,7 +145,7 @@ class KeyStoreTests: XCTestCase {
 
     func testRemoveAccounts() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
-        let coins = [CoinType.ethereum, .callisto, .poanetwork, .bitcoin]
+        let coins = [CoinType.ethereum, .callisto, .poa, .bitcoin]
         let wallet = try keyStore.createWallet(name: "name", password: "password", coins: coins)
 
         _ = try keyStore.removeAccounts(wallet: wallet, coins: coins.dropLast(), password: "password")
@@ -264,7 +264,7 @@ class KeyStoreTests: XCTestCase {
 
         let password = "e28ddf66cec05c1fc09939a00628b230459202b2493fccac288038ef37815723"
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
-        _ = try keyStore.addAccounts(wallet: keyStore.bnbWallet, coins: [.smartChainLegacy, .smartChain], password: password)
+        _ = try keyStore.addAccounts(wallet: keyStore.bnbWallet, coins: [.smartchainlegacy, .smartchain], password: password)
 
         // simulate migration code
         _ = try keyStore.removeAccounts(wallet: keyStore.bnbWallet, coins: [.near], password: password)
@@ -276,10 +276,10 @@ class KeyStoreTests: XCTestCase {
         let account = keyStore.bnbWallet.accounts[4]
         let accountNear = keyStore.bnbWallet.accounts[5]
 
-        XCTAssertEqual(accountLegacy.coin, CoinType.smartChainLegacy)
+        XCTAssertEqual(accountLegacy.coin, CoinType.smartchainlegacy)
         XCTAssertEqual(accountLegacy.address, "0x5dEc7A9299360aEb44c83B8F730F2BF5Dd1688bC")
 
-        XCTAssertEqual(account.coin, CoinType.smartChain)
+        XCTAssertEqual(account.coin, CoinType.smartchain)
         XCTAssertEqual(account.address, "0x33F44330cc4253cCd4ce4224186DB9baCe2190ea")
 
         XCTAssertEqual(accountNear.coin, CoinType.near)

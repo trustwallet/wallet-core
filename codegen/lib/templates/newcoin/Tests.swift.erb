@@ -11,7 +11,7 @@ class <%= name %>Tests: XCTestCase {
     // TODO: Check and finalize implementation
 
     func testAddress() {
-        // TODO: Check and finalize implementation
+        // TODO: Check public key type and finalize implementation
 
         let key = PrivateKey(data: Data(hexString: "__PRIVATE_KEY_DATA__")!)!
         let pubkey = key.getPublicKeyEd25519()
@@ -24,5 +24,10 @@ class <%= name %>Tests: XCTestCase {
 
     func testSign() {
         // TODO: Create implementation
+
+        // let input = <%= format_name(coin) %>SigningInput.with {
+        //}
+
+        // let output: <%= format_name(coin) %>SigningOutput = AnySigner.sign(input: input, coin: .<%= format_name_lowercase(coin) %>)
     }
 }

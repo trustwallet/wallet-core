@@ -117,19 +117,19 @@ class BitcoinAddressTests: XCTestCase {
     func testValidDigiByteAddress() {
         let addressString = "DTPQ92zp96TwpG2pRuUB3oEA3kWGRZPGhg"
 
-        XCTAssertEqual(CoinType.digiByte.p2pkhPrefix, BitcoinAddress(string: addressString)?.prefix)
+        XCTAssertEqual(CoinType.digibyte.p2pkhPrefix, BitcoinAddress(string: addressString)?.prefix)
         XCTAssertTrue(BitcoinAddress.isValidString(string: addressString),
                       "'\(addressString)' should be a valid DigiByte address")
 
         let addressString2 = "SUngTA1vaC2E62mbnc81Mdos3TcvZHwsVo"
 
-        XCTAssertEqual(CoinType.digiByte.p2shPrefix, BitcoinAddress(string: addressString2)?.prefix)
+        XCTAssertEqual(CoinType.digibyte.p2shPrefix, BitcoinAddress(string: addressString2)?.prefix)
         XCTAssertTrue(BitcoinAddress.isValidString(string: addressString2),
                       "'\(addressString2)' should be a valid DigiByte address")
 
         let addressString3 = "dgb1qtjgmerfqwdffyf8ghcrkgy52cghsqptynmyswu"
 
-        XCTAssertEqual(HRP.digiByte, SegwitAddress(string: addressString3)?.hrp)
+        XCTAssertEqual(HRP.digibyte, SegwitAddress(string: addressString3)?.hrp)
         XCTAssertTrue(SegwitAddress.isValidString(string: addressString3),
                       "'\(addressString3)' should be a valid DigiByte Bech32 address")
     }

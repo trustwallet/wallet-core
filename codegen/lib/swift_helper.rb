@@ -22,6 +22,10 @@ module SwiftHelper
     formatted
   end
 
+  def self.format_lower_name(n)
+    self.format_name(n).downcase
+  end
+
   def self.parameters(params)
     names = params.map do |param|
       "#{param.name || '_ value'}: #{type(param.type)}"

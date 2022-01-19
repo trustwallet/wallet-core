@@ -23,7 +23,7 @@ TEST(TWOasisCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeOasis));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeOasis), 9);
-    ASSERT_EQ(TWBlockchainOasisNetwork, TWCoinTypeBlockchain(TWCoinTypeOasis));
+    ASSERT_EQ(TWBlockchainOasis, TWCoinTypeBlockchain(TWCoinTypeOasis));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeOasis));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeOasis));
     assertStringsEqual(symbol, "ROSE");

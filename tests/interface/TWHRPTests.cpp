@@ -27,7 +27,7 @@ TEST(TWHRP, StringForHRP) {
     ASSERT_STREQ(stringForHRP(TWHRPTerra), "terra");
     ASSERT_STREQ(stringForHRP(TWHRPMonacoin), "mona");
     ASSERT_STREQ(stringForHRP(TWHRPKava), "kava");
-    ASSERT_STREQ(stringForHRP(TWHRPBandChain), "band");
+    ASSERT_STREQ(stringForHRP(TWHRPBand), "band");
     ASSERT_STREQ(stringForHRP(TWHRPBluzelle), "bluzelle");
     ASSERT_STREQ(stringForHRP(TWHRPCardano), "addr");
     ASSERT_STREQ(stringForHRP(TWHRPElrond), "erd");
@@ -53,7 +53,7 @@ TEST(TWHRP, HRPForString) {
     ASSERT_EQ(hrpForString("terra"), TWHRPTerra);
     ASSERT_EQ(hrpForString("mona"), TWHRPMonacoin);
     ASSERT_EQ(hrpForString("kava"), TWHRPKava);
-    ASSERT_EQ(hrpForString("band"), TWHRPBandChain);
+    ASSERT_EQ(hrpForString("band"), TWHRPBand);
     ASSERT_EQ(hrpForString("addr"), TWHRPCardano);
     ASSERT_EQ(hrpForString("erd"), TWHRPElrond);
     ASSERT_EQ(hrpForString("oasis"), TWHRPOasis);
@@ -78,7 +78,7 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPTerra, TWCoinTypeHRP(TWCoinTypeTerra));
     ASSERT_EQ(TWHRPMonacoin, TWCoinTypeHRP(TWCoinTypeMonacoin));
     ASSERT_EQ(TWHRPKava, TWCoinTypeHRP(TWCoinTypeKava));
-    ASSERT_EQ(TWHRPBandChain, TWCoinTypeHRP(TWCoinTypeBandChain));
+    ASSERT_EQ(TWHRPBand, TWCoinTypeHRP(TWCoinTypeBand));
     ASSERT_EQ(TWHRPBluzelle, TWCoinTypeHRP(TWCoinTypeBluzelle));
     ASSERT_EQ(TWHRPCardano, TWCoinTypeHRP(TWCoinTypeCardano));
     ASSERT_EQ(TWHRPElrond, TWCoinTypeHRP(TWCoinTypeElrond));
@@ -91,10 +91,10 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeCallisto));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeDash));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeDecred));
-    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeDogecoin));
+    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeDoge));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeEOS));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeEthereum));
-    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeEthereumClassic));
+    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeClassic));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeGoChain));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeICON));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeKin));
@@ -102,7 +102,7 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeNano));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeNimiq));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeOntology));
-    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypePOANetwork));
+    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypePOA));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeXRP));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeStellar));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeTezos));

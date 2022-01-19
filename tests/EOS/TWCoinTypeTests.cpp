@@ -23,7 +23,7 @@ TEST(TWEOSCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEOS));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEOS), 4);
-    ASSERT_EQ(TWBlockchainEOS, TWCoinTypeBlockchain(TWCoinTypeEOS));
+    ASSERT_EQ(TWBlockchainEos, TWCoinTypeBlockchain(TWCoinTypeEOS));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeEOS));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeEOS));
     assertStringsEqual(symbol, "EOS");

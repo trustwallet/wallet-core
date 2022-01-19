@@ -14,18 +14,18 @@
 
 
 TEST(TWEthereumClassicCoinType, TWCoinType) {
-    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEthereumClassic));
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeClassic));
     auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x66004165d3901819dc22e568931591d2e4287bda54995f4ce2701a12016f5997"));
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEthereumClassic, txId.get()));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeClassic, txId.get()));
     auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0x9eab4b0fc468a7f5d46228bf5a76cb52370d068d"));
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeEthereumClassic, accId.get()));
-    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEthereumClassic));
-    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEthereumClassic));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeClassic, accId.get()));
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeClassic));
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeClassic));
 
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEthereumClassic), 18);
-    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeEthereumClassic));
-    ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeEthereumClassic));
-    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeEthereumClassic));
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeClassic), 18);
+    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeClassic));
+    ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeClassic));
+    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeClassic));
     assertStringsEqual(symbol, "ETC");
     assertStringsEqual(txUrl, "https://blockscout.com/etc/mainnet/tx/0x66004165d3901819dc22e568931591d2e4287bda54995f4ce2701a12016f5997");
     assertStringsEqual(accUrl, "https://blockscout.com/etc/mainnet/address/0x9eab4b0fc468a7f5d46228bf5a76cb52370d068d");

@@ -46,8 +46,8 @@ const CoinInfo getCoinInfo(TWCoinType coin) {
         case TWCoinType<%= format_name(coin['name']) %>:
             return CoinInfo {
                 "<%= coin['id'] %>",
-                <% if coin['displayName'].nil? -%>"<%= coin['name'] %>"<% else -%>"<%= coin['displayName'] %>"<% end -%>,
-                TWBlockchain<%= format_name(coin['blockchain']) %>,
+                "<%= coin_name(coin) %>",
+                TWBlockchain<%= format_name_capitalize(coin['blockchain']) %>,
                 TWPurposeBIP<%= /^m\/(\d+)'?(\/\d+'?)+$/.match(coin['derivationPath'])[1] %>,
                 TWCurve<%= format_name(coin['curve']) %>,
                 TWHDVersion<% if coin['xpub'].nil? -%>None<% else -%><%= format_name(coin['xpub']) %><% end -%>,

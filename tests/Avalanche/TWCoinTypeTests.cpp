@@ -14,18 +14,18 @@
 
 
 TEST(TWAvalancheCoinType, TWCoinTypeCChain) {
-    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAvalancheCChain));
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAvalancheC));
     auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x9243890b844219accefd8798271052f5a056453ec18984a56e81c92921330d54"));
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAvalancheCChain, txId.get()));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAvalancheC, txId.get()));
     auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0xa664325f36Ec33E66323fe2620AF3f2294b2Ef3A"));
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeAvalancheCChain, accId.get()));
-    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAvalancheCChain));
-    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAvalancheCChain));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeAvalancheC, accId.get()));
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAvalancheC));
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAvalancheC));
 
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAvalancheCChain), 18);
-    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeAvalancheCChain));
-    ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeAvalancheCChain));
-    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeAvalancheCChain));
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAvalancheC), 18);
+    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeAvalancheC));
+    ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeAvalancheC));
+    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeAvalancheC));
     assertStringsEqual(symbol, "AVAX");
     assertStringsEqual(txUrl, "https://cchain.explorer.avax.network/tx/0x9243890b844219accefd8798271052f5a056453ec18984a56e81c92921330d54");
     assertStringsEqual(accUrl, "https://cchain.explorer.avax.network/address/0xa664325f36Ec33E66323fe2620AF3f2294b2Ef3A");

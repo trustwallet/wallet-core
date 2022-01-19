@@ -14,18 +14,18 @@
 
 
 TEST(TWPOANetworkCoinType, TWCoinType) {
-    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypePOANetwork));
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypePOA));
     auto txId = WRAPS(TWStringCreateWithUTF8Bytes("t123"));
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypePOANetwork, txId.get()));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypePOA, txId.get()));
     auto accId = WRAPS(TWStringCreateWithUTF8Bytes("a12"));
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypePOANetwork, accId.get()));
-    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypePOANetwork));
-    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypePOANetwork));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypePOA, accId.get()));
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypePOA));
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypePOA));
 
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypePOANetwork), 18);
-    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypePOANetwork));
-    ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypePOANetwork));
-    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypePOANetwork));
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypePOA), 18);
+    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypePOA));
+    ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypePOA));
+    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypePOA));
     assertStringsEqual(symbol, "POA");
     assertStringsEqual(txUrl, "https://blockscout.com/poa/core/tx/t123");
     assertStringsEqual(accUrl, "https://blockscout.com/poa/core/address/a12");

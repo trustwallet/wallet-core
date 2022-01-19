@@ -9,11 +9,13 @@ import XCTest
 
 class BitcoinCashTests: XCTestCase {
 
+    let coin = CoinType.bitcoincash
+
     func testExtendedKeys() {
         let wallet = HDWallet.test
 
-        let xprv = wallet.getExtendedPrivateKey(purpose: .bip44, coin: .bitcoinCash, version: .xprv)
-        let xpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .bitcoinCash, version: .xpub)
+        let xprv = wallet.getExtendedPrivateKey(purpose: .bip44, coin: coin, version: .xprv)
+        let xpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: coin, version: .xpub)
 
         XCTAssertEqual(xprv, "xprv9yEvwSfPanK5gLYVnYvNyF2CEWJx1RsktQtKDeT6jnCnqASBiPCvFYHFSApXv39bZbF6hRaha1kWQBVhN1xjo7NHuhAn5uUfzy79TBuGiHh")
         XCTAssertEqual(xpub, "xpub6CEHLxCHR9sNtpcxtaTPLNxvnY9SQtbcFdov22riJ7jmhxmLFvXAoLbjHSzwXwNNuxC1jUP6tsHzFV9rhW9YKELfmR9pJaKFaM8C3zMPgjw")
@@ -22,7 +24,6 @@ class BitcoinCashTests: XCTestCase {
     func testDeriveFromXPub() {
         let xpub = "xpub6CEHLxCHR9sNtpcxtaTPLNxvnY9SQtbcFdov22riJ7jmhxmLFvXAoLbjHSzwXwNNuxC1jUP6tsHzFV9rhW9YKELfmR9pJaKFaM8C3zMPgjw"
 
-        let coin = CoinType.bitcoinCash
         let xpubAddr2 = HDWallet.getPublicKeyFromExtended(
             extended: xpub,
             coin: coin,
@@ -42,38 +43,38 @@ class BitcoinCashTests: XCTestCase {
     func testAddress() {
         XCTAssertEqual(
             "bitcoincash:prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd",
-            AnyAddress(string: "bitcoincash:prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd", coin: .bitcoinCash)?.description
+            AnyAddress(string: "bitcoincash:prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd", coin: coin)?.description
         )
         XCTAssertEqual(
             "bitcoincash:prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd",
-            AnyAddress(string: "prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd", coin: .bitcoinCash)?.description
+            AnyAddress(string: "prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd", coin: coin)?.description
         )
     }
 
     func testLockScript() {
-        let address = AnyAddress(string: "pzukqjmcyzrkh3gsqzdcy3e3d39cqxhl3g0f405k5l", coin: .bitcoinCash)!
-        let script = BitcoinScript.lockScriptForAddress(address: address.description, coin: .bitcoinCash)
+        let address = AnyAddress(string: "pzukqjmcyzrkh3gsqzdcy3e3d39cqxhl3g0f405k5l", coin: coin)!
+        let script = BitcoinScript.lockScriptForAddress(address: address.description, coin: coin)
         XCTAssertEqual(script.data.hexString, "a914b9604b7820876bc510009b8247316c4b801aff8a87")
 
-        let address2 = AnyAddress(string: "qphr8l8ns8wd99a8653ctfe5qcrxaumz5qpmqlk2ex", coin: .bitcoinCash)!
-        let script2 = BitcoinScript.lockScriptForAddress(address: address2.description, coin: .bitcoinCash)
+        let address2 = AnyAddress(string: "qphr8l8ns8wd99a8653ctfe5qcrxaumz5qpmqlk2ex", coin: coin)!
+        let script2 = BitcoinScript.lockScriptForAddress(address: address2.description, coin: coin)
         XCTAssertEqual(script2.data.hexString, "76a9146e33fcf381dcd297a7d52385a73406066ef362a088ac")
     }
 
     func testSign() throws {
         let utxoTxId = "050d00e2e18ef13969606f1ceee290d3f49bd940684ce39898159352952b8ce2"
         let privateKey = PrivateKey(data: Data(hexString: "7fdafb9db5bc501f2096e7d13d331dc7a75d9594af3d251313ba8b6200f4e384")!)!
-        let address = CoinType.bitcoinCash.deriveAddress(privateKey: privateKey)
+        let address = coin.deriveAddress(privateKey: privateKey)
         let utxo = BitcoinUnspentTransaction.with {
             $0.outPoint.hash = Data.reverse(hexString: utxoTxId) // reverse of UTXO tx id, Bitcoin internal expects network byte order
             $0.outPoint.index = 2                                // outpoint index of this this UTXO
             $0.outPoint.sequence = UINT32_MAX
             $0.amount = 5151                                     // value of this UTXO
-            $0.script = BitcoinScript.lockScriptForAddress(address: address, coin: .bitcoinCash).data // Build lock script from address or public key hash
+            $0.script = BitcoinScript.lockScriptForAddress(address: address, coin: coin).data // Build lock script from address or public key hash
         }
 
         let input = BitcoinSigningInput.with {
-            $0.hashType = BitcoinScript.hashTypeForCoin(coinType: .bitcoinCash)
+            $0.hashType = BitcoinScript.hashTypeForCoin(coinType: coin)
             $0.amount = 600
             $0.byteFee = 1
             $0.toAddress = "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx"
@@ -82,7 +83,7 @@ class BitcoinCashTests: XCTestCase {
             $0.privateKey = [privateKey.data]
         }
 
-        let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .bitcoinCash)
+        let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: coin)
         XCTAssertEqual(output.error, TW_Common_Proto_SigningError.ok)
 
         XCTAssertEqual(output.transactionID, "96ee20002b34e468f9d3c5ee54f6a8ddaa61c118889c4f35395c2cd93ba5bbb4")

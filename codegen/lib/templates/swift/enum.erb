@@ -3,7 +3,7 @@
 public enum <%= entity.name %>: <%= type %>, CaseIterable<% if has_string %>, CustomStringConvertible <% end %> {
 <%# Cases -%>
 <%  entity.cases.each do |c| -%>
-    case <%= SwiftHelper.format_name(c.name) %><% unless c.value.nil? %> = <%= c.value %><% end %>
+    case <%= SwiftHelper.format_lower_name(c.name) %><% unless c.value.nil? %> = <%= c.value %><% end %>
 <%  end -%>
 <%# Description -%>
 <%  if has_string -%>
@@ -11,7 +11,7 @@ public enum <%= entity.name %>: <%= type %>, CaseIterable<% if has_string %>, Cu
     public var description: String {
         switch self {
 <%    entity.cases.each do |c| -%>
-        case .<%= SwiftHelper.format_name(c.name) %>: return <%= c.string %>
+        case .<%= SwiftHelper.format_lower_name(c.name) %>: return <%= c.string %>
 <%    end -%>
         }
     }

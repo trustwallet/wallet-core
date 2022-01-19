@@ -23,7 +23,7 @@ class PublicKeyTests: XCTestCase {
         let result1 = privateKey.getPublicKeyEd25519()
                             .verify(signature: sig1, message: message)
 
-        let sig2 = privateKey.sign(digest: message, curve: .ed25519Blake2bNano)!
+        let sig2 = privateKey.sign(digest: message, curve: .ed25519blake2bnano)!
         let result2 = privateKey.getPublicKeyEd25519Blake2b()
             .verify(signature: sig2, message: message)
 

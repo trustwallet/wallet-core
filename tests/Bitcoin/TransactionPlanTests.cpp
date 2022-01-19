@@ -492,7 +492,7 @@ TEST(TransactionPlan, One_MaxAmount_FeeMoreThanAvailable) {
 TEST(TransactionPlan, MaxAmountDoge) {
     auto utxos = buildTestUTXOs({Amount(100000000), Amount(2000000000), Amount(200000000)});
     ASSERT_EQ(sumUTXOs(utxos), Amount(2300000000));
-    auto sigingInput = buildSigningInput(Amount(2300000000), 100, utxos, true, TWCoinTypeDogecoin);
+    auto sigingInput = buildSigningInput(Amount(2300000000), 100, utxos, true, TWCoinTypeDoge);
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 

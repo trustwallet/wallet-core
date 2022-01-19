@@ -23,7 +23,7 @@ TEST(TWNEARCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNEAR));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNEAR), 24);
-    ASSERT_EQ(TWBlockchainNEAR, TWCoinTypeBlockchain(TWCoinTypeNEAR));
+    ASSERT_EQ(TWBlockchainNear, TWCoinTypeBlockchain(TWCoinTypeNEAR));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeNEAR));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeNEAR));
     assertStringsEqual(symbol, "NEAR");

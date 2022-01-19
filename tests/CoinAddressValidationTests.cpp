@@ -73,11 +73,11 @@ TEST(Coin, ValidateAddressBitcoinCash) {
 }
 
 TEST(Coin, ValidateAddressDogecoin) {
-    EXPECT_TRUE(validateAddress(TWCoinTypeDogecoin, "DHKM6NDUUv9kaHAGi1QU7MRBNKfQiAdP3F"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeDoge, "DHKM6NDUUv9kaHAGi1QU7MRBNKfQiAdP3F"));
 
-    EXPECT_FALSE(validateAddress(TWCoinTypeDogecoin, "NmH7tmeJUmHcncBDvpr7aJNEBk7rp5zYsB1qt"));
-    EXPECT_FALSE(validateAddress(TWCoinTypeDogecoin, "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3AAAA"));
-    EXPECT_FALSE(validateAddress(TWCoinTypeDogecoin, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeDoge, "NmH7tmeJUmHcncBDvpr7aJNEBk7rp5zYsB1qt"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeDoge, "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3AAAA"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeDoge, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"));
 }
 
 TEST(Coin, ValidateAddressDecred) {
@@ -307,11 +307,11 @@ TEST(Coin, ValidateAddresKavaa) {
 }
 
 TEST(Coin, ValidateAddresBand) {
-    EXPECT_TRUE(validateAddress(TWCoinTypeBandChain, "band1pnndgfwsrff86263xzpc5cd3t6yfvgjyqc87jh"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeBand, "band1pnndgfwsrff86263xzpc5cd3t6yfvgjyqc87jh"));
     // wrong prefix
-    EXPECT_FALSE(validateAddress(TWCoinTypeBandChain, "cosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeBand, "cosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp"));
     // wrong checksum
-    EXPECT_FALSE(validateAddress(TWCoinTypeBandChain, "band1pnndgfwsrff86263xzpc5cd3t6yfvgjyqc8000"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeBand, "band1pnndgfwsrff86263xzpc5cd3t6yfvgjyqc8000"));
 }
 
 TEST(Coin, ValidateAddressBluzelle) {

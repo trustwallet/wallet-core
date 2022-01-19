@@ -23,7 +23,7 @@ TEST(TWElrondCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeElrond));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeElrond), 18);
-    ASSERT_EQ(TWBlockchainElrondNetwork, TWCoinTypeBlockchain(TWCoinTypeElrond));
+    ASSERT_EQ(TWBlockchainElrond, TWCoinTypeBlockchain(TWCoinTypeElrond));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeElrond));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeElrond));
     assertStringsEqual(symbol, "eGLD");

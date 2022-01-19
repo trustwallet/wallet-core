@@ -78,7 +78,7 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypeCosmos:
     case TWCoinTypeKava:
     case TWCoinTypeTerra:
-    case TWCoinTypeBandChain:
+    case TWCoinTypeBand:
     case TWCoinTypeTHORChain:
     case TWCoinTypeBluzelle:
     case TWCoinTypeIoTeX:
@@ -117,7 +117,7 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     }
 
     case TWCoinTypeDash:
-    case TWCoinTypeDogecoin:
+    case TWCoinTypeDoge:
     case TWCoinTypeMonacoin:
     case TWCoinTypeQtum:
     case TWCoinTypeRavencoin:
@@ -142,9 +142,9 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
 
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
-    case TWCoinTypeEthereumClassic:
+    case TWCoinTypeClassic:
     case TWCoinTypeGoChain:
-    case TWCoinTypePOANetwork:
+    case TWCoinTypePOA:
     case TWCoinTypeThunderToken:
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
@@ -156,9 +156,9 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypePolygon:
     case TWCoinTypeOptimism:
     case TWCoinTypeArbitrum:
-    case TWCoinTypeECOChain:
+    case TWCoinTypeHECO:
     case TWCoinTypeXDai:
-    case TWCoinTypeAvalancheCChain:
+    case TWCoinTypeAvalancheC:
     case TWCoinTypeFantom:
     case TWCoinTypeCelo:
         data = parse_hex(string);
