@@ -17,25 +17,20 @@ class TestData {
 
     @Test
     fun testUsingExtensions() {
-        {
-            val data = "01020304".toHexBytes()
-            assertEquals(data.toHex(), "0x01020304")
-        }
-        {   // with prefix
-            val data = "0x01020304".toHexBytes()
-            assertEquals(data.toHex(), "0x01020304")
-        }
+        val data = "01020304".toHexBytes()
+        assertEquals(data.toHex(), "0x01020304")
+
+        // with prefix
+        val data2 = "0x01020304".toHexBytes()
+        assertEquals(data2.toHex(), "0x01020304")
     }
 
     @Test
     fun testOddLength() {
-        {
-            val data = "0x0".toHexBytes()
-            assertEquals(data.toHex(), "0x00")
-        }
-        {
-            val data = "0x28fa6ae00".toHexBytes()
-            assertEquals(data.toHex(), "0x28fa6ae00")
-        }
+        val data = "0x0".toHexBytes()
+        assertEquals(data.toHex(), "0x00")
+
+        val data2 = "0x28fa6ae00".toHexBytes()
+        assertEquals(data2.toHex(), "0x28fa6ae00")
     }
 }
