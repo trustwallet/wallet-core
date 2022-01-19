@@ -25,6 +25,7 @@ const string TYPE_PREFIX_MSG_UNDELEGATE = "cosmos-sdk/MsgUndelegate";
 const string TYPE_PREFIX_MSG_REDELEGATE = "cosmos-sdk/MsgBeginRedelegate";
 const string TYPE_PREFIX_MSG_WITHDRAW_REWARD = "cosmos-sdk/MsgWithdrawDelegationReward";
 const string TYPE_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
+const string TYPE_PREFIX_WASM_MSG_EXECUTE = "wasm/MsgExecuteContract";
 
 static string broadcastMode(Proto::BroadcastMode mode) {
     switch (mode) {
@@ -153,7 +154,7 @@ std::string wasmTransferPayloadBase64(const Proto::Message_WasmExecuteContractTr
 
 json messageWasmTransfer(const Proto::Message_WasmExecuteContractTransfer& msg) {
     return {
-        {"type", "wasm/MsgExecuteContract"}, // TODO contract
+        {"type", TYPE_PREFIX_WASM_MSG_EXECUTE},
         {"value",
             {
                 {"sender", msg.sender_address()},
