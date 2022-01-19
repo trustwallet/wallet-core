@@ -32,6 +32,11 @@ android {
             ndk {
                 abiFilters 'x86'
             }
+            externalNativeBuild {
+                cmake {
+                    abiFilters 'x86'
+                }
+            }
         }
     }
 
