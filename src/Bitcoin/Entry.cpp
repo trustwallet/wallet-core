@@ -67,7 +67,7 @@ string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const Publ
                 case TWDerivationBitcoinSegwit:
                 case TWDerivationDefault:
                 default:
-                    return SegwitAddress(publicKey, 0, hrp).string();
+                    return SegwitAddress(publicKey, hrp).string();
             }
 
         case TWCoinTypeDigiByte:
