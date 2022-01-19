@@ -31,6 +31,6 @@ class TestData {
         assertEquals(data.toHex(), "0x00")
 
         val data2 = "0x28fa6ae00".toHexBytes()
-        assertEquals(data2.toHex(), "0x28fa6ae00")
+        assertEquals(data2.toHex(), "0x028fa6ae00")
     }
 }
