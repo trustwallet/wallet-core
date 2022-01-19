@@ -61,48 +61,50 @@ TEST(TerraSigner, SignSendTx) {
     EXPECT_EQ(output.error(), "");
 }
 
-TEST(TerraSigner, SignWasmTransferTx) {
+TEST(TerraSigner, SignWasmTransferTxJson_078E90) {
     auto input = Proto::SigningInput();
     input.set_signing_mode(Proto::JSON);
-    input.set_account_number(1037);
+    input.set_account_number(3407705);
     input.set_chain_id("columbus-5");
     input.set_memo("");
     input.set_sequence(2);
 
     Address fromAddress;
-    ASSERT_TRUE(Address::decode("terra1hsk6jryyqjfhp5dhc55tc9jtckygx0ep37hdd2", fromAddress));
+    ASSERT_TRUE(Address::decode("terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf", fromAddress));
     Address toAddress;
-    ASSERT_TRUE(Address::decode("terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf", toAddress));
+    ASSERT_TRUE(Address::decode("terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp", toAddress));
     const auto tokenContractAddress = "terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76"; // ANC
 
     auto msg = input.add_messages();
     auto& message = *msg->mutable_wasm_execute_contract_transfer_message();
     message.set_sender_address(fromAddress.string());
     message.set_contract_address(tokenContractAddress);
-    message.set_amount(1000000);
+    message.set_amount(250000);
     message.set_recipient_address(toAddress.string());
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amounts();
-    amountOfFee->set_denom("luna");
-    amountOfFee->set_amount(200);
+    amountOfFee->set_denom("uluna");
+    amountOfFee->set_amount(3000);
 
     std::string json;
     google::protobuf::util::MessageToJsonString(input, &json);
-    EXPECT_EQ(json, R"({"accountNumber":"1037","chainId":"columbus-5","fee":{"amounts":[{"denom":"luna","amount":"200"}],"gas":"200000"},"sequence":"2","messages":[{"wasmExecuteContractTransferMessage":{"senderAddress":"terra1hsk6jryyqjfhp5dhc55tc9jtckygx0ep37hdd2","contractAddress":"terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76","amount":"1000000","recipientAddress":"terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf"}}]})");
+    EXPECT_EQ(json, R"({"accountNumber":"3407705","chainId":"columbus-5","fee":{"amounts":[{"denom":"uluna","amount":"3000"}],"gas":"200000"},"sequence":"2","messages":[{"wasmExecuteContractTransferMessage":{"senderAddress":"terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf","contractAddress":"terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76","amount":"250000","recipientAddress":"terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp"}}]})");
 
-    auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
+    auto privateKey = parse_hex("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616");
     input.set_private_key(privateKey.data(), privateKey.size());
 
     auto output = Signer::sign(input);
 
+    // https://finder.terra.money/mainnet/tx/078E90458061611F6FD8B708882B55FF5C1FFB3FCE61322107A0A0DE39FC0F3E
+    // curl -H 'Content-Type: application/json' --data-binary '{"mode":"block","tx":{...}}' https://blockdaemon-terra-lcd.api.bdnodes.net:1317/txs
     assertJSONEqual(output.json(), R"(
         {
             "mode":"block",
             "tx":
                 {
-                    "fee": {"amount":[{"amount":"200","denom":"luna"}],"gas":"200000"},
+                    "fee": {"amount":[{"amount":"3000","denom":"uluna"}],"gas":"200000"},
                     "memo":"",
                     "msg":
                         [
@@ -110,9 +112,16 @@ TEST(TerraSigner, SignWasmTransferTx) {
                                 "type":"wasm/MsgExecuteContract",
                                 "value":
                                     {
-                                        "sender": "terra1hsk6jryyqjfhp5dhc55tc9jtckygx0ep37hdd2",
+                                        "sender": "terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf",
                                         "contract": "terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76",
-                                        "execute_msg": "eyJ0cmFuc2ZlciI6eyJhbW91bnQiOiIxMDAwMDAwIiwicmVjaXBpZW50IjoidGVycmExOHd1a3A4NGRxMjI3d3U0bWdoMGptNm45bmxuajZyczgycHA5d2YifX0=",
+                                        "execute_msg":
+                                            {
+                                                "transfer":
+                                                    {
+                                                        "amount": "250000",
+                                                        "recipient": "terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp"
+                                                    }
+                                            },
                                         "coins": []
                                     }
                             }
@@ -123,14 +132,14 @@ TEST(TerraSigner, SignWasmTransferTx) {
                                 "pub_key":
                                     {
                                         "type": "tendermint/PubKeySecp256k1",
-                                        "value": "AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"
+                                        "value": "A3BmOsew+Ykpb+tc5Z+6SlDX6U4c4lbf8iUUWcos2awA"
                                     },
-                                "signature": "Vi6/1XljuueyJw6L8a8KHUNMhqosbP0SuRpySWNHQfh8HqUg459Ax13S8kOEi5/POy++RF3UDSmmnz1LmgH2lA=="
+                                "signature": "BjETdtbA97Wv1zvcsCV1tM+bdYKC8O3uGTk4mMRv6pBJB2y/Ds7qoS7s/zrkhYak1YChklQetHsI30XRXzGIkg=="
                             }
                         ]
                 }
         })");
-    EXPECT_EQ(hex(output.signature()), "562ebfd57963bae7b2270e8bf1af0a1d434c86aa2c6cfd12b91a7249634741f87c1ea520e39f40c75dd2f243848b9fcf3b2fbe445dd40d29a69f3d4b9a01f694");
+    EXPECT_EQ(hex(output.signature()), "06311376d6c0f7b5afd73bdcb02575b4cf9b758282f0edee19393898c46fea9049076cbf0eceeaa12eecff3ae48586a4d580a192541eb47b08df45d15f318892");
     EXPECT_EQ(output.serialized(), "");
     EXPECT_EQ(output.error(), "");
 }
