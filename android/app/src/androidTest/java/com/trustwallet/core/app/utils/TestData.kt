@@ -15,6 +15,7 @@ class TestData {
         assertEquals(Numeric.toHexString(data), "0x01020304")
     }
 
+    @Test
     fun testUsingExtensions() {
         {
             val data = "01020304".toHexBytes()
@@ -26,6 +27,7 @@ class TestData {
         }
     }
 
+    @Test
     fun testOddLength() {
         {
             val data = "0x0".toHexBytes()
