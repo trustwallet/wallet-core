@@ -21,11 +21,11 @@ jobs:
       run: brew install boost ninja
     - name: Install Android Dependencies
       run: |
-        ls $ANDROID_HOME/cmdline-tools
-        $ANDROID_HOME/cmdline-tools/4.0/bin/sdkmanager --verbose "cmake;3.18.1" "ndk;23.1.7779620"
-        $ANDROID_HOME/cmdline-tools/4.0/bin/sdkmanager "system-images;android-26;google_apis;x86"
+        ls $ANDROID_HOME/cmdline-tools/latest/bin
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --verbose "cmake;3.18.1" "ndk;23.1.7779620"
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "system-images;android-26;google_apis;x86"
     - name: Accept Licenses
-      run: echo -e "y\ny\ny\ny\ny\n" | $ANDROID_HOME/cmdline-tools/4.0/bin/sdkmanager --licenses
+      run: echo -e "y\ny\ny\ny\ny\n" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
     - name: Cache internal dependencies
       id: internal_cache
       uses: actions/cache@v1.1.2
