@@ -145,8 +145,8 @@ RLP::DecodedItem RLP::decode(const Data& input) {
     } 
     if (prefix <= 0xbf) {
         // b8--bf: long string
-        auto lenOfStrLen = prefix - 0xb7;
-        auto strLen = parseVarInt(lenOfStrLen, input, 1);
+        auto lenOfStrLen = size_t(prefix - 0xb7);
+        auto strLen = static_cast<size_t>(parseVarInt(lenOfStrLen, input, 1));
         if (inputLen < lenOfStrLen || inputLen < (1 + lenOfStrLen + strLen)) {
             throw std::invalid_argument(std::string("Invalid rlp encoding length, length ") + std::to_string(strLen));
         }
@@ -157,7 +157,7 @@ RLP::DecodedItem RLP::decode(const Data& input) {
     } 
     if (prefix <= 0xf7) {
         // c0--f7: a list between  0-55 bytes long
-        auto listLen = prefix - 0xc0;
+        auto listLen = size_t(prefix - 0xc0);
         if (inputLen < (1 + listLen)) {
             throw std::invalid_argument(std::string("Invalid rlp string length, length ") + std::to_string(listLen));
         }
@@ -176,8 +176,8 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         return item;
     } 
     // f8--ff 
-    auto lenOfListLen = prefix - 0xf7;
-    auto listLen = parseVarInt(lenOfListLen, input, 1);
+    auto lenOfListLen = size_t(prefix - 0xf7);
+    auto listLen = static_cast<size_t>(parseVarInt(lenOfListLen, input, 1));
     if (listLen < 56) {
         throw std::invalid_argument("length below 56 must be encoded in one byte");
     }

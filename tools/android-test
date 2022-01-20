@@ -17,7 +17,7 @@ SERIAL=emulator-${PORT}
 
 # We have to echo "no" because it will ask us if we want to use a custom hardware profile, and we don't.
 echo -e "\nCreating Android emulator...\n"
-echo "no" | "$ANDROID_HOME/tools/bin/avdmanager" create avd \
+echo "no" | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd \
     -n "${AVD_NAME}" \
     -k "system-images;android-26;google_apis;x86" \
 	-f

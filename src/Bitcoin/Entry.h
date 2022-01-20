@@ -22,6 +22,7 @@ public:
             TWCoinTypeDash,
             TWCoinTypeDigiByte,
             TWCoinTypeDoge,
+            TWCoinTypeECash,
             TWCoinTypeLitecoin,
             TWCoinTypeMonacoin,
             TWCoinTypeQtum,
