@@ -85,7 +85,7 @@ class TestTerraTransactions {
         }.build()
 
         val message = Cosmos.Message.newBuilder().apply {
-            wasmExecuteContracctTransferMessage = wasmTransferMessage
+            wasmExecuteContractTransferMessage = wasmTransferMessage
         }.build()
 
         val feeAmount = Cosmos.Amount.newBuilder().apply {
