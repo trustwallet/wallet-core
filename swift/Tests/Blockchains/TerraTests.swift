@@ -23,7 +23,7 @@ class TerraSignerTests: XCTestCase {
         }
 
         let message = CosmosMessage.with {
-            $0.wasmExecuteContracctTransferMessage = wasmTransferMessage
+            $0.wasmExecuteContractTransferMessage = wasmTransferMessage
         }
 
         let fee = CosmosFee.with {
