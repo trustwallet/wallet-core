@@ -10,6 +10,8 @@ import wallet.core.jni.*
 import wallet.core.jni.CoinType.TERRA
 import wallet.core.jni.proto.Cosmos
 import wallet.core.jni.proto.Cosmos.SigningOutput
+import wallet.core.jni.proto.Cosmos.SigningMode
+import wallet.core.java.AnySigner
 
 class TestTerraTransactions {
 
