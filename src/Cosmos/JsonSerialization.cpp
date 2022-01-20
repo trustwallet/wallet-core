@@ -162,7 +162,6 @@ static json messageRawJSON(const Proto::Message_RawJSON& message) {
 static json messagesJSON(const Proto::SigningInput& input) {
     json j = json::array();
     for (auto& msg : input.messages()) {
-        // TODO switch
         if (msg.has_send_coins_message()) {
             j.push_back(messageSend(msg.send_coins_message()));
         } else if (msg.has_stake_message()) {

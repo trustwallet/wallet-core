@@ -134,7 +134,7 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
             }
 
         default:
-            throw std::invalid_argument(std::string("Message not supported: ") + std::to_string(msg.message_oneof_case()));
+            throw std::invalid_argument(std::string("Message not supported ") + std::to_string(msg.message_oneof_case()));
     }
 }
 
