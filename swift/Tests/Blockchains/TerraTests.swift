@@ -7,7 +7,7 @@
 import XCTest
 import WalletCore
 
-class CosmosSignerTests: XCTestCase {
+class TerraSignerTests: XCTestCase {
 
     let privateKey = PrivateKey(data: Data(hexString: "cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616")!)!
 
