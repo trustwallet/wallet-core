@@ -18,7 +18,7 @@ class TestAddress {
         val pubkey = key.publicKeyEd25519
         val address = AnyAddress(pubkey, CoinType.STELLAR)
 
-        assertEquals(pubkey.data().toHex(), "0x09A966BCAACC103E38896BAAE3F8C2F06C21FD47DD4F864FF0D33F9819DF5CA2".toLowerCase())
+        assertEquals(pubkey.data().toHex(), "0x09A966BCAACC103E38896BAAE3F8C2F06C21FD47DD4F864FF0D33F9819DF5CA2".lowercase())
         assertEquals(address.description(), "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI")
     }
 
