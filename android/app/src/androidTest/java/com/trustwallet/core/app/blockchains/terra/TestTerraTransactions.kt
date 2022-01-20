@@ -3,9 +3,9 @@ package com.trustwalval.core.app.blockchains.terra
 import android.util.Log
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.toHexByteArray
+import com.trustwallet.core.app.utils.toHex
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import wallet.core.java.AnySigner
 import wallet.core.jni.*
 import wallet.core.jni.CoinType.TERRA
 import wallet.core.jni.proto.Cosmos
