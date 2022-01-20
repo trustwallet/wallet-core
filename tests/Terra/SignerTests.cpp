@@ -61,6 +61,50 @@ TEST(TerraSigner, SignSendTx) {
     EXPECT_EQ(output.error(), "");
 }
 
+TEST(TerraSigner, SignWasmTransferTxProtobuf_9FF3F0) {
+    auto input = Proto::SigningInput();
+    input.set_signing_mode(Proto::Protobuf);
+    input.set_account_number(3407705);
+    input.set_chain_id("columbus-5");
+    input.set_memo("");
+    input.set_sequence(3);
+
+    Address fromAddress;
+    ASSERT_TRUE(Address::decode("terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf", fromAddress));
+    Address toAddress;
+    ASSERT_TRUE(Address::decode("terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp", toAddress));
+    const auto tokenContractAddress = "terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76"; // ANC
+
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_wasm_execute_contract_transfer_message();
+    message.set_sender_address(fromAddress.string());
+    message.set_contract_address(tokenContractAddress);
+    message.set_amount(250000);
+    message.set_recipient_address(toAddress.string());
+
+    auto& fee = *input.mutable_fee();
+    fee.set_gas(200000);
+    auto amountOfFee = fee.add_amounts();
+    amountOfFee->set_denom("uluna");
+    amountOfFee->set_amount(3000);
+
+    std::string json;
+    google::protobuf::util::MessageToJsonString(input, &json);
+    EXPECT_EQ(json, R"({"signingMode":"Protobuf","accountNumber":"3407705","chainId":"columbus-5","fee":{"amounts":[{"denom":"uluna","amount":"3000"}],"gas":"200000"},"sequence":"3","messages":[{"wasmExecuteContractTransferMessage":{"senderAddress":"terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf","contractAddress":"terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76","amount":"250000","recipientAddress":"terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp"}}]})");
+
+    auto privateKey = parse_hex("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(input);
+
+    // https://finder.terra.money/mainnet/tx/9FF3F0A16879254C22EB90D8B4D6195467FE5014381FD36BD3C23CA6698FE94B
+    // curl -H 'Content-Type: application/json' --data-binary '{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CogCCo..wld8"})' https://blockdaemon-terra-lcd.api.bdnodes.net:1317/cosmos/tx/v1beta1/txs
+    assertJSONEqual(output.serialized(), R"({"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CucBCuQBCiYvdGVycmEud2FzbS52MWJldGExLk1zZ0V4ZWN1dGVDb250cmFjdBK5AQosdGVycmExOHd1a3A4NGRxMjI3d3U0bWdoMGptNm45bmxuajZyczgycHA5d2YSLHRlcnJhMTR6NTZsMGZwMmxzZjg2enkzaHR5Mno0N2V6a2hudGh0cjl5cTc2Glt7InRyYW5zZmVyIjp7ImFtb3VudCI6IjI1MDAwMCIsInJlY2lwaWVudCI6InRlcnJhMWpsZ2FxeTludm4yaGY1dDJzcmE5eWN6OHM3N3duZjlsMGttZ2NwIn19EmcKUApGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQNwZjrHsPmJKW/rXOWfukpQ1+lOHOJW3/IlFFnKLNmsABIECgIIARgDEhMKDQoFdWx1bmESBDMwMDAQwJoMGkAaprIEMLPH2HmFdwFGoaipb2GIyhXt6ombz+WMnG2mORBI6gFt0M+IymYgzZz6w1SW52R922yafDnn7yXfutRw"})");
+    EXPECT_EQ(hex(output.signature()), "1aa6b20430b3c7d87985770146a1a8a96f6188ca15edea899bcfe58c9c6da6391048ea016dd0cf88ca6620cd9cfac35496e7647ddb6c9a7c39e7ef25dfbad470");
+    EXPECT_EQ(output.json(), "");
+    EXPECT_EQ(output.error(), "");
+}
+
 TEST(TerraSigner, SignWasmTransferTxJson_078E90) {
     auto input = Proto::SigningInput();
     input.set_signing_mode(Proto::JSON);

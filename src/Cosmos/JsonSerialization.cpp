@@ -1,10 +1,11 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #include "JsonSerialization.h"
+#include "ProtobufSerialization.h"
 
 #include "../Cosmos/Address.h"
 #include "../proto/Cosmos.pb.h"
@@ -137,21 +138,6 @@ static json messageWithdrawReward(const Proto::Message_WithdrawDelegationReward&
     };
 }
 
-json wasmTransferPayloadJson(const Proto::Message_WasmExecuteContractTransfer& msg) {
-    return {
-        {"transfer",
-            {
-                {"amount", std::to_string(msg.amount())},
-                {"recipient", msg.recipient_address()}
-            }
-        }
-    };
-}
-
-std::string wasmTransferPayloadBase64(const Proto::Message_WasmExecuteContractTransfer& msg) {
-    return Base64::encode(TW::data(wasmTransferPayloadJson(msg).dump()));
-}
-
 json messageWasmTransfer(const Proto::Message_WasmExecuteContractTransfer& msg) {
     return {
         {"type", TYPE_PREFIX_WASM_MSG_EXECUTE},
@@ -159,7 +145,7 @@ json messageWasmTransfer(const Proto::Message_WasmExecuteContractTransfer& msg) 
             {
                 {"sender", msg.sender_address()},
                 {"contract", msg.contract_address()},
-                {"execute_msg", wasmTransferPayloadJson(msg)},
+                {"execute_msg", wasmExecuteTransferPayload(msg)},
                 {"coins", json::array()}  // used in case you are sending native tokens along with this message
             }
         }
