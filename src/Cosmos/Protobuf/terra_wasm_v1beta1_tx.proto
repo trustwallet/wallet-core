@@ -2,6 +2,7 @@ syntax = "proto3";
 package terra.wasm.v1beta1;
 
 // Src: https://github.com/terra-money/core/blob/main/proto/terra/wasm/v1beta1/tx.proto
+// Terra-specific fork, original in https://github.com/CosmWasm/wasmd/blob/master/proto/cosmwasm/wasm/v1/tx.proto
 
 import "coin.proto";
 
