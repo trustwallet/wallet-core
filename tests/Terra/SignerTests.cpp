@@ -10,6 +10,8 @@
 #include "proto/Cosmos.pb.h"
 #include "Cosmos/Address.h"
 #include "Cosmos/Signer.h"
+#include "Cosmos/ProtobufSerialization.h"
+#include "uint256.h"
 #include "../interface/TWTestUtilities.h"
 
 #include <gtest/gtest.h>
@@ -119,7 +121,8 @@ TEST(TerraSigner, SignWasmTransferTxProtobuf_9FF3F0) {
     auto& message = *msg->mutable_wasm_execute_contract_transfer_message();
     message.set_sender_address(fromAddress.string());
     message.set_contract_address(tokenContractAddress);
-    message.set_amount(250000);
+    const auto amount = store(uint256_t(250000), 0);
+    message.set_amount(amount.data(), amount.size());
     message.set_recipient_address(toAddress.string());
 
     auto& fee = *input.mutable_fee();
@@ -130,7 +133,33 @@ TEST(TerraSigner, SignWasmTransferTxProtobuf_9FF3F0) {
 
     std::string json;
     google::protobuf::util::MessageToJsonString(input, &json);
-    EXPECT_EQ(json, R"({"signingMode":"Protobuf","accountNumber":"3407705","chainId":"columbus-5","fee":{"amounts":[{"denom":"uluna","amount":"3000"}],"gas":"200000"},"sequence":"3","messages":[{"wasmExecuteContractTransferMessage":{"senderAddress":"terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf","contractAddress":"terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76","amount":"250000","recipientAddress":"terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp"}}]})");
+    assertJSONEqual(json, R"(
+        {
+            "signingMode": "Protobuf",
+            "accountNumber": "3407705",
+            "chainId": "columbus-5",
+            "fee": {
+                "amounts": [
+                    {
+                        "denom": "uluna",
+                        "amount": "3000"
+                    }
+                ],
+                "gas": "200000"
+            },
+            "sequence": "3",
+            "messages": [
+                {
+                    "wasmExecuteContractTransferMessage": {
+                        "senderAddress": "terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf",
+                        "contractAddress": "terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76",
+                        "amount": "A9CQ",
+                        "recipientAddress": "terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp"
+                    }
+                }
+            ]
+        }
+    )");
 
     auto privateKey = parse_hex("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616");
     input.set_private_key(privateKey.data(), privateKey.size());
@@ -168,7 +197,8 @@ TEST(TerraSigner, SignWasmTransferTxJson_078E90) {
     auto& message = *msg->mutable_wasm_execute_contract_transfer_message();
     message.set_sender_address(fromAddress.string());
     message.set_contract_address(tokenContractAddress);
-    message.set_amount(250000);
+    const auto amount = store(250000);
+    message.set_amount(amount.data(), amount.size());
     message.set_recipient_address(toAddress.string());
 
     auto& fee = *input.mutable_fee();
@@ -227,4 +257,23 @@ TEST(TerraSigner, SignWasmTransferTxJson_078E90) {
     EXPECT_EQ(hex(output.signature()), "06311376d6c0f7b5afd73bdcb02575b4cf9b758282f0edee19393898c46fea9049076cbf0eceeaa12eecff3ae48586a4d580a192541eb47b08df45d15f318892");
     EXPECT_EQ(output.serialized(), "");
     EXPECT_EQ(output.error(), "");
+}
+
+TEST(TerraSigner, SignWasmTransferPayload) {
+    auto proto = Proto::Message_WasmExecuteContractTransfer();
+    proto.set_recipient_address("recipient=address");
+    const auto amount = store(uint256_t(250000), 0);
+    proto.set_amount(amount.data(), amount.size());
+
+    const auto payload = wasmExecuteTransferPayload(proto);
+
+    assertJSONEqual(payload.dump(), R"(
+        {
+            "transfer":
+                {
+                    "amount": "250000",
+                    "recipient": "recipient=address"
+                }
+        }
+    )");
 }

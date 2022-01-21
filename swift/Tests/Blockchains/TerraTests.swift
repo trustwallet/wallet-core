@@ -461,7 +461,7 @@ class TerraTests: XCTestCase {
         let wasmTransferMessage = CosmosMessage.WasmExecuteContractTransfer.with {
             $0.senderAddress = fromAddress.description
             $0.contractAddress = "terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76" // ANC
-            $0.amount = 250000
+            $0.amount = Data(hexString: "3D090")! // 250000
             $0.recipientAddress = "terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp"
         }
 

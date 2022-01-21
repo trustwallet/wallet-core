@@ -20,6 +20,7 @@
 #include "Data.h"
 #include "Hash.h"
 #include "Base64.h"
+#include "uint256.h"
 
 #include <google/protobuf/util/json_util.h>
 
@@ -224,7 +225,7 @@ json wasmExecuteTransferPayload(const Proto::Message_WasmExecuteContractTransfer
     return {
         {"transfer",
             {
-                {"amount", std::to_string(msg.amount())},
+                {"amount", toString(load(data(msg.amount())))},
                 {"recipient", msg.recipient_address()}
             }
         }

@@ -108,7 +108,8 @@ message Message {
         // token contract address
         string contract_address = 2;
 
-        int64 amount = 3;
+        // size is uint128, as bigint
+        bytes amount = 3;
 
         string recipient_address = 4;
     }
@@ -121,7 +122,8 @@ message Message {
         // token contract address
         string contract_address = 2;
 
-        int64 amount = 3;
+        // size is uint128, as bigint
+        bytes amount = 3;
 
         string recipient_contract_address = 4;
 

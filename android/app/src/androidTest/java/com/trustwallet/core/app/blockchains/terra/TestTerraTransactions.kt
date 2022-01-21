@@ -80,7 +80,7 @@ class TestTerraTransactions {
         val wasmTransferMessage = Cosmos.Message.WasmExecuteContractTransfer.newBuilder().apply {
             senderAddress = from
             contractAddress = "terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76" // ANC
-            amount = 250000
+            amount = ByteString.copyFrom("0x3D090".toHexByteArray()) // 250000
             recipientAddress = "terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp"
         }.build()
 
