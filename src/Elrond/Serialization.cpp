@@ -6,10 +6,8 @@
 
 #include "Serialization.h"
 
-#include "../Elrond/Address.h"
-#include "../proto/Elrond.pb.h"
+#include "Address.h"
 #include "Base64.h"
-#include "PrivateKey.h"
 
 using namespace TW;
 
@@ -18,12 +16,15 @@ std::map<string, int> fields_order {
     {"value", 2},
     {"receiver", 3},
     {"sender", 4},
-    {"gasPrice", 5},
-    {"gasLimit", 6},
-    {"data", 7},
-    {"chainID", 8},
-    {"version", 9},
-    {"signature", 10}
+    {"senderUsername", 5},
+    {"receiverUsername", 6},
+    {"gasPrice", 7},
+    {"gasLimit", 8},
+    {"data", 9},
+    {"chainID", 10},
+    {"version", 11},
+    {"options", 12},
+    {"signature", 13}
 };
 
 struct FieldsSorter {
@@ -36,33 +37,45 @@ template<class Key, class T, class Compare, class Allocator>
 using sorted_map = std::map<Key, T, FieldsSorter, Allocator>;
 using sorted_json = nlohmann::basic_json<sorted_map>;
 
-sorted_json preparePayload(const Elrond::Proto::TransactionMessage& message) {
+sorted_json preparePayload(const Elrond::Transaction& transaction) {
     sorted_json payload {
-        {"nonce", json(message.nonce())},
-        {"value", json(message.value())},
-        {"receiver", json(message.receiver())},
-        {"sender", json(message.sender())},
-        {"gasPrice", json(message.gas_price())},
-        {"gasLimit", json(message.gas_limit())},
+        {"nonce", json(transaction.nonce)},
+        {"value", json(transaction.value)},
+        {"receiver", json(transaction.receiver)},
+        {"sender", json(transaction.sender)},
+        {"gasPrice", json(transaction.gasPrice)},
+        {"gasLimit", json(transaction.gasLimit)},
     };
 
-    if (!message.data().empty()) {
-        payload["data"] = json(TW::Base64::encode(TW::data(message.data())));
+    if (!transaction.senderUsername.empty()) {
+        payload["senderUsername"] = json(Base64::encode(data(transaction.senderUsername)));
     }
 
-    payload["chainID"] = json(message.chain_id());
-    payload["version"] = json(message.version());
+    if (!transaction.receiverUsername.empty()) {
+        payload["receiverUsername"] = json(Base64::encode(data(transaction.receiverUsername)));
+    }
+
+    if (!transaction.data.empty()) {
+        payload["data"] = json(Base64::encode(data(transaction.data)));
+    }
+
+    payload["chainID"] = json(transaction.chainID);
+    payload["version"] = json(transaction.version);
+
+    if (transaction.options != 0) {
+        payload["options"] = json(transaction.options);
+    }
 
     return payload;
 }
 
-string Elrond::serializeTransaction(const Proto::TransactionMessage& message) {
-    sorted_json payload = preparePayload(message);
+string Elrond::serializeTransaction(const Elrond::Transaction& transaction) {
+    sorted_json payload = preparePayload(transaction);
     return payload.dump();
 }
 
-string Elrond::serializeSignedTransaction(const Proto::TransactionMessage& message, string signature) {
-    sorted_json payload = preparePayload(message);
+string Elrond::serializeSignedTransaction(const Elrond::Transaction& transaction, string signature) {
+    sorted_json payload = preparePayload(transaction);
     payload["signature"] = json(signature);
     return payload.dump();
 }

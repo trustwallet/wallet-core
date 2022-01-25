@@ -152,7 +152,7 @@ TEST(HDWallet, privateKeyFromXPRV) {
     auto privateKey = HDWallet::getPrivateKeyFromExtended(xprv, TWCoinTypeBitcoinCash, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(TWCoinTypeBitcoinCash), 0, 0, 3));
     ASSERT_TRUE(privateKey);
     auto publicKey = privateKey->getPublicKey(TWPublicKeyTypeSECP256k1);
-    auto address = Bitcoin::CashAddress(publicKey);
+    auto address = Bitcoin::BitcoinCashAddress(publicKey);
 
     EXPECT_EQ(hex(publicKey.bytes), "025108168f7e5aad52f7381c18d8f880744dbee21dc02c15abe512da0b1cca7e2f");
     EXPECT_EQ(address.string(), "bitcoincash:qp3y0dyg6ya8nt4n3algazn073egswkytqs00z7rz4");

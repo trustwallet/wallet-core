@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e
+
+$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --verbose "cmake;3.18.1" "ndk;23.1.7779620"
+$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "system-images;android-26;google_apis;x86"
+
+echo -e "y\ny\ny\ny\ny\n" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
