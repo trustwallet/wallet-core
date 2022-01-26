@@ -10,6 +10,7 @@
 #include <TrustWalletCore/TWAnySigner.h>
 #include "Coin.h"
 #include <TrustWalletCore/TWTransactionHelper.h>
+#include "TransactionHelper.h"// TODO remove
 
 #include "../interface/TWTestUtilities.h"
 #include <gtest/gtest.h>
@@ -19,45 +20,27 @@ using namespace TW;
 using namespace TW::Binance;
 
 TEST(TWAnySignerBinanceTSS, Sign) {
-    auto input = Proto::SigningInput();
-    input.set_chain_id("Binance-Chain-Nile");
-    input.set_account_number(0);
-    input.set_sequence(0);
-    input.set_source(0);
-
-    // do not set private_key!
-    input.set_private_key("");
-
-    auto& order = *input.mutable_send_order();
-
-    Address fromAddress;
-    EXPECT_TRUE(Address::decode("bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2", fromAddress));
-    EXPECT_EQ(hex(fromAddress.getKeyHash()), "40c2979694bbc961023d1d27be6fc4d21a9febe6");
-    auto fromKeyhash = fromAddress.getKeyHash();
-    Address toAddress;
-    EXPECT_TRUE(Address::decode("bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5", toAddress));
-    EXPECT_EQ(hex(toAddress.getKeyHash()), "bffe47abfaede50419c577f1074fee6dd1535cd1");
-    auto toKeyhash = toAddress.getKeyHash();
+    /// Step 1: Prepare transaction input (protobuf)
+    const auto txInputData = WRAPD(TWTransactionHelperBuildInput(
+        TWCoinTypeBinance,
+        STRING("bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2").get(),  // from
+        STRING("bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5").get(),  // to
+        STRING("1").get(),  // amount
+        STRING("BNB").get(),  // asset
+        STRING("").get()  // memo
+    ));
 
     {
-        auto input = order.add_inputs();
-        input->set_address(fromKeyhash.data(), fromKeyhash.size());
-        auto inputCoin = input->add_coins();
-        inputCoin->set_denom("BNB");
-        inputCoin->set_amount(1);
+        // Check, by parsing
+        Proto::SigningInput input;
+        ASSERT_TRUE(input.ParseFromArray(TWDataBytes(txInputData.get()), (int)TWDataSize(txInputData.get())));
+        EXPECT_EQ(input.chain_id(), "Binance-Chain-Nile");
+        EXPECT_TRUE(input.has_send_order());
+        ASSERT_EQ(input.send_order().inputs_size(), 1);
+        EXPECT_EQ(hex(data(input.send_order().inputs(0).address())), "40c2979694bbc961023d1d27be6fc4d21a9febe6");
     }
 
-    {
-        auto output = order.add_outputs();
-        output->set_address(toKeyhash.data(), toKeyhash.size());
-        auto outputCoin = output->add_coins();
-        outputCoin->set_denom("BNB");
-        outputCoin->set_amount(1);
-    }
-
-    // Obtain preimage hash
-    const auto txInputStr = input.SerializeAsString();
-    const auto txInputData = WRAPD(TWDataCreateWithBytes((const uint8_t*)txInputStr.data(), txInputStr.size()));
+    /// Step 2: Obtain preimage hash
     const auto preImageHash = WRAPD(TWTransactionHelperPreImageHash(TWCoinTypeBinance, txInputData.get()));
 
     const auto preImageHashData = data(TWDataBytes(preImageHash.get()), TWDataSize(preImageHash.get()));
@@ -73,9 +56,13 @@ TEST(TWAnySignerBinanceTSS, Sign) {
         EXPECT_TRUE(publicKey.verify(signature, preImageHashData));
     }
 
-    // Compile transaction info
-    //const auto outputData = TransactionHelper::compileWithSignature(TWCoinTypeBinance, data(txInputStr), signature, publicKeyData);
-    const auto outputData = WRAPD(TWTransactionHelperCompileWithSignature(TWCoinTypeBinance, txInputData.get(), WRAPD(TWDataCreateWithData((TWData*)&signature)).get(), WRAPD(TWDataCreateWithData((TWData*)&publicKeyData)).get()));
+    /// Step 3: Compile transaction info
+    const auto outputData = WRAPD(TWTransactionHelperCompileWithSignature(
+        TWCoinTypeBinance,
+        txInputData.get(),
+        WRAPD(TWDataCreateWithData((TWData*)&signature)).get(),
+        WRAPD(TWDataCreateWithData((TWData*)&publicKeyData)).get())
+    );
 
     EXPECT_EQ(TWDataSize(outputData.get()), 189);
     Proto::SigningOutput output;
@@ -85,6 +72,8 @@ TEST(TWAnySignerBinanceTSS, Sign) {
     EXPECT_EQ(hex(output.encoded()), ExpectedTx);
 
     { // Double check: check if simple signature process gives the same result
+        Proto::SigningInput input;
+        ASSERT_TRUE(input.ParseFromArray(TWDataBytes(txInputData.get()), (int)TWDataSize(txInputData.get())));
         auto key = parse_hex("95949f757db1f57ca94a5dff23314accbe7abee89597bf6a3c7382c84d7eb832");
         input.set_private_key(key.data(), key.size());
 

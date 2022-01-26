@@ -11,6 +11,7 @@
 #include "DerivationPath.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
+#include "uint256.h"
 
 #include <TrustWalletCore/TWBlockchain.h>
 #include <TrustWalletCore/TWCoinType.h>
@@ -91,6 +92,8 @@ void anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 Data anyCoinPreImageHash(TWCoinType coinType, const Data& txInputData);
 
 void anyCoinCompileWithSignature(TWCoinType coinType, const Data& txInputData, const Data& signature, const PublicKey& publicKey, Data& txOutputOut);
+
+Data anyCoinBuildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo);
 
 // Return coins handled by the same dispatcher as the given coin (mostly for testing)
 const std::vector<TWCoinType> getSimilarCoinTypes(TWCoinType coinType);

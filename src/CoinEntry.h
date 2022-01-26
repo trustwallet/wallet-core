@@ -11,6 +11,7 @@
 #include "Data.h"
 #include "PublicKey.h"
 #include "PrivateKey.h"
+#include "uint256.h"
 
 #include <string>
 #include <vector>
@@ -36,8 +37,9 @@ public:
     // It is optional, only UTXO chains need it, default impl. leaves empty result.
     virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const { return; }
 
-    virtual Data preImageHash(TWCoinType coin, const Data& dataIn) const { return Data(); }
-    virtual void compile(TWCoinType coin, const Data& dataIn, const Data& signature, const PublicKey& publicKey, Data& dataOut) const {}
+    virtual Data preImageHash(TWCoinType coin, const Data& txInputData) const { return Data(); }
+    virtual void compile(TWCoinType coin, const Data& txInputData, const Data& signature, const PublicKey& publicKey, Data& dataOut) const {}
+    virtual Data buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo) const { return Data(); }
 };
 
 // In each coin's Entry.cpp the specific types of the coin are used, this template enforces the Signer implement:

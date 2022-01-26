@@ -29,18 +29,60 @@ string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key
     return Signer::signJSON(json, key);
 }
 
-Data Entry::preImageHash(TWCoinType coin, const Data& dataIn) const {
+Data Entry::preImageHash(TWCoinType coin, const Data& txInputData) const {
     auto input = Proto::SigningInput();
-    input.ParseFromArray(dataIn.data(), (int)dataIn.size());
+    input.ParseFromArray(txInputData.data(), (int)txInputData.size());
     const auto signer = Signer(input);
     return signer.preImageHash();
 }
 
-void Entry::compile(TWCoinType coin, const Data& dataIn, const Data& signature, const PublicKey& publicKey, Data& dataOut) const {
+void Entry::compile(TWCoinType coin, const Data& txInputData, const Data& signature, const PublicKey& publicKey, Data& dataOut) const {
     auto input = Proto::SigningInput();
-    input.ParseFromArray(dataIn.data(), (int)dataIn.size());
+    input.ParseFromArray(txInputData.data(), (int)txInputData.size());
     const auto signer = Signer(input);
     const auto output = signer.compile(signature, publicKey);
     const auto serializedOut = output.SerializeAsString();
     dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+}
+
+Data Entry::buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo) const {
+    auto input = Proto::SigningInput();
+    input.set_chain_id("Binance-Chain-Nile");
+    input.set_account_number(0);
+    input.set_sequence(0);
+    input.set_source(0);
+    input.set_memo(memo);
+    // do not set private_key!
+    input.set_private_key("");
+
+    auto& order = *input.mutable_send_order();
+
+    Address fromAddress;
+    if (!Address::decode(from, fromAddress)) {
+        throw std::invalid_argument("Invalid from address");
+    }
+    const auto fromKeyhash = fromAddress.getKeyHash();
+    Address toAddress;
+    if (!Address::decode(to, toAddress)) {
+        throw std::invalid_argument("Invalid to address");
+    }
+    const auto toKeyhash = toAddress.getKeyHash();
+
+    {
+        auto input = order.add_inputs();
+        input->set_address(fromKeyhash.data(), fromKeyhash.size());
+        auto inputCoin = input->add_coins();
+        inputCoin->set_denom(asset);
+        inputCoin->set_amount(static_cast<uint64_t>(amount));
+    }
+    {
+        auto output = order.add_outputs();
+        output->set_address(toKeyhash.data(), toKeyhash.size());
+        auto outputCoin = output->add_coins();
+        outputCoin->set_denom(asset);
+        outputCoin->set_amount(static_cast<uint64_t>(amount));
+    }
+
+    const auto txInputData = data(input.SerializeAsString());
+    return txInputData;
 }

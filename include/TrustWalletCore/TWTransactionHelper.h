@@ -13,16 +13,20 @@
 
 TW_EXTERN_C_BEGIN
 
-/// Non-core transaction utility methods
+/// Non-core transaction utility methods, like building a transaction using an external signature.
 TW_EXPORT_CLASS
 struct TWTransactionHelper;
 
+/// Build a coin-specific SigningInput protobuf transaction input, from simple transaction parameters
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWTransactionHelperBuildInput(enum TWCoinType coinType, TWString *_Nonnull from, TWString *_Nonnull to, TWString *_Nonnull amount, TWString *_Nonnull asset, TWString *_Nonnull memo);
+
 /// Obtain pre-signing hash of a transaction.
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWTransactionHelperPreImageHash(TWCoinType coinType, TWData *_Nonnull txInputData);
+TWData *_Nonnull TWTransactionHelperPreImageHash(enum TWCoinType coinType, TWData *_Nonnull txInputData);
 
-/// Compile a complete transation with provided signature, put together from transaction input and provided public key and signature
+/// Compile a complete transation with an external signature, put together from transaction input and provided public key and signature
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWTransactionHelperCompileWithSignature(TWCoinType coinType, TWData *_Nonnull txInputData, TWData *_Nonnull signature, TWData *_Nonnull publicKey);
+TWData *_Nonnull TWTransactionHelperCompileWithSignature(enum TWCoinType coinType, TWData *_Nonnull txInputData, TWData *_Nonnull signature, TWData *_Nonnull publicKey);
 
 TW_EXTERN_C_END

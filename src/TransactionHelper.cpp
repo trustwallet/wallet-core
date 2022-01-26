@@ -12,7 +12,9 @@ using namespace TW;
 
 
 Data TransactionHelper::buildInput(TWCoinType coinType, const std::string& from, const std::string& to, const std::string& amount, const std::string& asset, const std::string& memo) {
-    throw std::invalid_argument("Not implemented"); // TODO
+    // parse amount
+    uint256_t amount256 { amount };
+    return anyCoinBuildTransactionInput(coinType, from, to, amount256, asset, memo);
 }
 
 Data TransactionHelper::preImageHash(TWCoinType coinType, const Data& txInputData) {

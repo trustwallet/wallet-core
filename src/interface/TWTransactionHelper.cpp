@@ -15,7 +15,24 @@
 using namespace TW;
 
 
-TWData *_Nonnull TWTransactionHelperPreImageHash(TWCoinType coinType, TWData *_Nonnull txInputData) {
+TWData *_Nonnull TWTransactionHelperBuildInput(enum TWCoinType coinType, TWString *_Nonnull from, TWString *_Nonnull to, TWString *_Nonnull amount, TWString *_Nonnull asset, TWString *_Nonnull memo) {
+    Data result;
+    try {
+        result = TransactionHelper::buildInput(
+            coinType,
+            std::string(TWStringUTF8Bytes(from)),
+            std::string(TWStringUTF8Bytes(to)),
+            std::string(TWStringUTF8Bytes(amount)),
+            std::string(TWStringUTF8Bytes(asset)),
+            std::string(TWStringUTF8Bytes(memo))
+        );
+    } catch (...) {
+        // return empty
+    }
+    return TWDataCreateWithBytes(result.data(), result.size());
+}
+
+TWData *_Nonnull TWTransactionHelperPreImageHash(enum TWCoinType coinType, TWData *_Nonnull txInputData) {
     Data result;
     try {
         assert(txInputData != nullptr);
@@ -28,7 +45,7 @@ TWData *_Nonnull TWTransactionHelperPreImageHash(TWCoinType coinType, TWData *_N
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
-TWData *_Nonnull TWTransactionHelperCompileWithSignature(TWCoinType coinType, TWData *_Nonnull txInputData, TWData *_Nonnull signature, TWData *_Nonnull publicKey) {
+TWData *_Nonnull TWTransactionHelperCompileWithSignature(enum TWCoinType coinType, TWData *_Nonnull txInputData, TWData *_Nonnull signature, TWData *_Nonnull publicKey) {
     Data result;
     try {
         assert(txInputData != nullptr);
