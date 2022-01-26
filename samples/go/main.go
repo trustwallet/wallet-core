@@ -11,43 +11,83 @@ import (
 	"tw/protos/ethereum"
 )
 
+func tssSignDemo() {
+	fmt.Println("==> TSS Signing Demo")
+
+	coin := core.CoinTypeBinance
+
+	fmt.Println("\n==> Step 1: Prepare transaction input (protobuf)")
+	txInputData := core.BuildInput(
+		coin,
+		"bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2", // from
+		"bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5", // to
+		"1",   // amount
+		"BNB", // asset
+		"",    // memo
+	)
+	fmt.Println("txInputData len: ", len(txInputData))
+
+	fmt.Println("\n==> Step 2: Obtain preimage hash")
+	hash := core.PreImageHash(coin, txInputData)
+	fmt.Println("hash: ", hex.EncodeToString(hash))
+
+	fmt.Println("\n==> Step 3: Compile transaction info")
+	// Simulate signature, normally obtained from signature server
+	signature, _ := hex.DecodeString("1b1181faec30b60a2ddaa2804c253cf264c69180ec31814929b5de62088c0c5a45e8a816d1208fc5366bb8b041781a6771248550d04094c3d7a504f9e8310679")
+	publicKey, _ := hex.DecodeString("026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502")
+	txOutput := core.CompileWithSignature(coin, txInputData, signature, publicKey)
+
+	fmt.Println("final txOutput proto:  ", len(txOutput))
+	fmt.Println(hex.EncodeToString(txOutput))
+
+	fmt.Println("==> Double check signature validity (result should be true)")
+	verifyRes := core.PublicKeyVerify(publicKey, core.PublicKeyTypeSECP256k1, signature, hash)
+	fmt.Println(verifyRes)
+
+	fmt.Println("")
+}
+
 func main() {
-	fmt.Println("==> calling wallet core from go")
+	tssSignDemo()
 
-	mn := "confirm bleak useless tail chalk destroy horn step bulb genuine attract split"
+	/*
+		fmt.Println("==> calling wallet core from go")
 
-	fmt.Println("==> mnemonic is valid: ", core.IsMnemonicValid(mn))
+		mn := "confirm bleak useless tail chalk destroy horn step bulb genuine attract split"
 
-	// bitcoin wallet
-	bw, err := core.CreateWalletWithMnemonic(mn, core.CoinTypeBitcoin)
-	if err != nil {
-		panic(err)
-	}
-	printWallet(bw)
+		fmt.Println("==> mnemonic is valid: ", core.IsMnemonicValid(mn))
 
-	// ethereum wallet
-	ew, err := core.CreateWalletWithMnemonic(mn, core.CoinTypeEthereum)
-	if err != nil {
-		panic(err)
-	}
-	printWallet(ew)
+		// bitcoin wallet
+		bw, err := core.CreateWalletWithMnemonic(mn, core.CoinTypeBitcoin)
+		if err != nil {
+			panic(err)
+		}
+		printWallet(bw)
 
-	// tron wallet
-	tw, err := core.CreateWalletWithMnemonic(mn, core.CoinTypeTron)
-	if err != nil {
-		panic(err)
-	}
-	printWallet(tw)
+		// ethereum wallet
+		ew, err := core.CreateWalletWithMnemonic(mn, core.CoinTypeEthereum)
+		if err != nil {
+			panic(err)
+		}
+		printWallet(ew)
 
-	// Ethereum transaction
-	ethTxn := createEthTransaction(ew)
-	fmt.Println("Ethereum signed tx:")
-	fmt.Println("\t", ethTxn)
+		// tron wallet
+		tw, err := core.CreateWalletWithMnemonic(mn, core.CoinTypeTron)
+		if err != nil {
+			panic(err)
+		}
+		printWallet(tw)
 
-	// Bitcion transaction
-	btcTxn := createBtcTransaction(bw)
-	fmt.Println("\nBitcoin signed tx:")
-	fmt.Println("\t", btcTxn)
+		// Ethereum transaction
+		ethTxn := createEthTransaction(ew)
+		fmt.Println("Ethereum signed tx:")
+		fmt.Println("\t", ethTxn)
+
+		// Bitcion transaction
+		btcTxn := createBtcTransaction(bw)
+		fmt.Println("\nBitcoin signed tx:")
+		fmt.Println("\t", btcTxn)
+	*/
 }
 
 func createEthTransaction(ew *core.Wallet) string {

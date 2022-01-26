@@ -32,6 +32,7 @@ TEST(TWAnySignerBinanceTSS, Sign) {
 
     {
         // Check, by parsing
+        EXPECT_EQ((int)TWDataSize(txInputData.get()), 88);
         Proto::SigningInput input;
         ASSERT_TRUE(input.ParseFromArray(TWDataBytes(txInputData.get()), (int)TWDataSize(txInputData.get())));
         EXPECT_EQ(input.chain_id(), "Binance-Chain-Nile");
