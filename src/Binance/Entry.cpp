@@ -36,7 +36,7 @@ Data Entry::preImageHash(TWCoinType coin, const Data& dataIn) const {
     return signer.preImageHash();
 }
 
-void Entry::compile(TWCoinType coin, const Data& dataIn, const Data& signature, const Data& publicKey, Data& dataOut) const {
+void Entry::compile(TWCoinType coin, const Data& dataIn, const Data& signature, const PublicKey& publicKey, Data& dataOut) const {
     auto input = Proto::SigningInput();
     input.ParseFromArray(dataIn.data(), (int)dataIn.size());
     const auto signer = Signer(input);

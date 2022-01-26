@@ -37,7 +37,7 @@ public:
     virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const { return; }
 
     virtual Data preImageHash(TWCoinType coin, const Data& dataIn) const { return Data(); }
-    virtual void compile(TWCoinType coin, const Data& dataIn, const Data& signature, const Data& publicKey, Data& dataOut) const {}
+    virtual void compile(TWCoinType coin, const Data& dataIn, const Data& signature, const PublicKey& publicKey, Data& dataOut) const {}
 };
 
 // In each coin's Entry.cpp the specific types of the coin are used, this template enforces the Signer implement:

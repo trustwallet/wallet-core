@@ -88,6 +88,10 @@ bool supportsJSONSigning(TWCoinType coinType);
 
 void anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 
+Data anyCoinPreImageHash(TWCoinType coinType, const Data& txInputData);
+
+void anyCoinCompileWithSignature(TWCoinType coinType, const Data& txInputData, const Data& signature, const PublicKey& publicKey, Data& txOutputOut);
+
 // Return coins handled by the same dispatcher as the given coin (mostly for testing)
 const std::vector<TWCoinType> getSimilarCoinTypes(TWCoinType coinType);
 

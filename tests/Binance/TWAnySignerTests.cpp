@@ -8,7 +8,8 @@
 #include "Binance/Address.h"
 #include "proto/Binance.pb.h"
 #include <TrustWalletCore/TWAnySigner.h>
-#include "Binance/Entry.h"
+#include "Coin.h"
+#include "TransactionHelper.h"
 
 #include "../interface/TWTestUtilities.h"
 #include <gtest/gtest.h>
@@ -55,23 +56,23 @@ TEST(TWAnySignerBinanceTSS, Sign) {
     }
 
     // Obtain preimage hash
-    const auto entry = Entry(); // TODO don't use directly
-    const Data preImageHash = entry.preImageHash(TWCoinTypeBinance, data(input.SerializeAsString()));
+    const Data txInputData = data(input.SerializeAsString());
+    const Data preImageHash = TransactionHelper::preImageHash(TWCoinTypeBinance, txInputData);
+
     EXPECT_EQ(hex(preImageHash), "3f3fece9059e714d303a9a1496ddade8f2c38fa78fc4cc2e505c5dbb0ea678d1");
 
-    // Simulate signature, obtained from signature server
-    const auto publicKey = parse_hex("026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502");
+    // Simulate signature, normally obtained from signature server
+    const auto publicKeyData = parse_hex("026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502");
+    const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeSECP256k1);
     const auto signature = parse_hex("1b1181faec30b60a2ddaa2804c253cf264c69180ec31814929b5de62088c0c5a45e8a816d1208fc5366bb8b041781a6771248550d04094c3d7a504f9e8310679");
 
-    // Verify signature (pubkey X hash X signature)
+    // Verify signature (pubkey & hash & signature)
     {
-        const PublicKey publicKeyKey = PublicKey(publicKey, TWPublicKeyTypeSECP256k1);
-        EXPECT_TRUE(publicKeyKey.verify(signature, preImageHash));
+        EXPECT_TRUE(publicKey.verify(signature, preImageHash));
     }
 
     // Compile transaction info
-    Data outputData;
-    entry.compile(TWCoinTypeBinance, data(input.SerializeAsString()), signature, publicKey, outputData);
+    const auto outputData = TransactionHelper::compileWithSignature(TWCoinTypeBinance, txInputData, signature, publicKeyData);
 
     EXPECT_EQ(outputData.size(), 189);
     Proto::SigningOutput output;

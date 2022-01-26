@@ -77,16 +77,15 @@ Data Signer::preImageHash() const {
     return hash;
 }
 
-Proto::SigningOutput Signer::compile(const Data& signature, const Data& publicKey) const {
+Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& publicKey) const {
     // validate public key
-    if (!PublicKey::isValid(publicKey, TWPublicKeyTypeSECP256k1)) {
+    if (publicKey.type != TWPublicKeyTypeSECP256k1) {
         throw std::invalid_argument("Invalid public key");
     }
     {
         // validate correctness of signature
         const auto hash = this->preImageHash();
-        const auto pub = PublicKey(publicKey, TWPublicKeyTypeSECP256k1);
-        if (!pub.verify(signature, hash)) {
+        if (!publicKey.verify(signature, hash)) {
             throw std::invalid_argument("Invalid signature/hash/publickey combination");
         }
     }
@@ -182,13 +181,13 @@ Data Signer::encodeOrder() const {
 Data Signer::encodeSignature(const Data& signature) const {
     auto key = PrivateKey(input.private_key());
     auto publicKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
-    return encodeSignature(signature, publicKey.bytes);
+    return encodeSignature(signature, publicKey);
 }
 
-Data Signer::encodeSignature(const Data& signature, const Data& publicKey) const {
+Data Signer::encodeSignature(const Data& signature, const PublicKey& publicKey) const {
     auto encodedPublicKey = pubKeyPrefix;
-    encodedPublicKey.insert(encodedPublicKey.end(), static_cast<uint8_t>(publicKey.size()));
-    encodedPublicKey.insert(encodedPublicKey.end(), publicKey.begin(), publicKey.end());
+    encodedPublicKey.insert(encodedPublicKey.end(), static_cast<uint8_t>(publicKey.bytes.size()));
+    encodedPublicKey.insert(encodedPublicKey.end(), publicKey.bytes.begin(), publicKey.bytes.end());
 
     auto object = Binance::Proto::Signature();
     object.set_pub_key(encodedPublicKey.data(), encodedPublicKey.size());
