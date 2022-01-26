@@ -13,12 +13,15 @@
 
 namespace TW {
 
+/// Non-core transaction utility methods
 class TransactionHelper {
 public:
     static Data buildInput(TWCoinType coinType, const std::string& from, const std::string& to, const std::string& amount, const std::string& asset, const std::string& memo);
 
+    /// Obtain pre-signing hash of a transaction.
     static Data preImageHash(TWCoinType coinType, const Data& txInputData);
 
+    /// Compile a complete transation with provided signature, put together from transaction input and provided public key and signature
     static Data compileWithSignature(TWCoinType coinType, const Data& txInputData, const Data& signature, const Data& publicKey);
 };
 

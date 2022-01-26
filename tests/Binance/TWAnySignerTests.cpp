@@ -9,7 +9,7 @@
 #include "proto/Binance.pb.h"
 #include <TrustWalletCore/TWAnySigner.h>
 #include "Coin.h"
-#include "TransactionHelper.h"
+#include <TrustWalletCore/TWTransactionHelper.h>
 
 #include "../interface/TWTestUtilities.h"
 #include <gtest/gtest.h>
@@ -56,10 +56,12 @@ TEST(TWAnySignerBinanceTSS, Sign) {
     }
 
     // Obtain preimage hash
-    const Data txInputData = data(input.SerializeAsString());
-    const Data preImageHash = TransactionHelper::preImageHash(TWCoinTypeBinance, txInputData);
+    const auto txInputStr = input.SerializeAsString();
+    const auto txInputData = WRAPD(TWDataCreateWithBytes((const uint8_t*)txInputStr.data(), txInputStr.size()));
+    const auto preImageHash = WRAPD(TWTransactionHelperPreImageHash(TWCoinTypeBinance, txInputData.get()));
 
-    EXPECT_EQ(hex(preImageHash), "3f3fece9059e714d303a9a1496ddade8f2c38fa78fc4cc2e505c5dbb0ea678d1");
+    const auto preImageHashData = data(TWDataBytes(preImageHash.get()), TWDataSize(preImageHash.get()));
+    EXPECT_EQ(hex(preImageHashData), "3f3fece9059e714d303a9a1496ddade8f2c38fa78fc4cc2e505c5dbb0ea678d1");
 
     // Simulate signature, normally obtained from signature server
     const auto publicKeyData = parse_hex("026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502");
@@ -68,18 +70,19 @@ TEST(TWAnySignerBinanceTSS, Sign) {
 
     // Verify signature (pubkey & hash & signature)
     {
-        EXPECT_TRUE(publicKey.verify(signature, preImageHash));
+        EXPECT_TRUE(publicKey.verify(signature, preImageHashData));
     }
 
     // Compile transaction info
-    const auto outputData = TransactionHelper::compileWithSignature(TWCoinTypeBinance, txInputData, signature, publicKeyData);
+    //const auto outputData = TransactionHelper::compileWithSignature(TWCoinTypeBinance, data(txInputStr), signature, publicKeyData);
+    const auto outputData = WRAPD(TWTransactionHelperCompileWithSignature(TWCoinTypeBinance, txInputData.get(), WRAPD(TWDataCreateWithData((TWData*)&signature)).get(), WRAPD(TWDataCreateWithData((TWData*)&publicKeyData)).get()));
 
-    EXPECT_EQ(outputData.size(), 189);
+    EXPECT_EQ(TWDataSize(outputData.get()), 189);
     Proto::SigningOutput output;
-    ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+    ASSERT_TRUE(output.ParseFromArray(TWDataBytes(outputData.get()), (int)TWDataSize(outputData.get())));
 
     const auto ExpectedTx = "b801f0625dee0a462a2c87fa0a1f0a1440c2979694bbc961023d1d27be6fc4d21a9febe612070a03424e421001121f0a14bffe47abfaede50419c577f1074fee6dd1535cd112070a03424e421001126a0a26eb5ae98721026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e50212401b1181faec30b60a2ddaa2804c253cf264c69180ec31814929b5de62088c0c5a45e8a816d1208fc5366bb8b041781a6771248550d04094c3d7a504f9e8310679";
-    ASSERT_EQ(hex(output.encoded()), ExpectedTx);
+    EXPECT_EQ(hex(output.encoded()), ExpectedTx);
 
     { // Double check: check if simple signature process gives the same result
         auto key = parse_hex("95949f757db1f57ca94a5dff23314accbe7abee89597bf6a3c7382c84d7eb832");
