@@ -1697,6 +1697,7 @@
   {
     "id": "xdai",
     "name": "xDai",
+    "displayName": "Gnosis Chain",
     "coinId": 10000100,
     "symbol": "xDAI",
     "decimals": 18,
