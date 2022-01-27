@@ -497,6 +497,7 @@ class TerraTests: XCTestCase {
     "mode": "BROADCAST_MODE_BLOCK"
 }
 """
+        )
         XCTAssertEqual(output.error, "")
     }
 }
