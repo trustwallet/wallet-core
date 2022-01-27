@@ -118,7 +118,7 @@ TEST(TerraSigner, SignWasmTransferTxProtobuf_9FF3F0) {
     const auto tokenContractAddress = "terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76"; // ANC
 
     auto msg = input.add_messages();
-    auto& message = *msg->mutable_wasm_execute_contract_transfer_message();
+    auto& message = *msg->mutable_wasm_terra_execute_contract_transfer_message();
     message.set_sender_address(fromAddress.string());
     message.set_contract_address(tokenContractAddress);
     const auto amount = store(uint256_t(250000), 0);
@@ -150,7 +150,7 @@ TEST(TerraSigner, SignWasmTransferTxProtobuf_9FF3F0) {
             "sequence": "3",
             "messages": [
                 {
-                    "wasmExecuteContractTransferMessage": {
+                    "wasmTerraExecuteContractTransferMessage": {
                         "senderAddress": "terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf",
                         "contractAddress": "terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76",
                         "amount": "A9CQ",
@@ -194,7 +194,7 @@ TEST(TerraSigner, SignWasmTransferTxJson_078E90) {
     const auto tokenContractAddress = "terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76"; // ANC
 
     auto msg = input.add_messages();
-    auto& message = *msg->mutable_wasm_execute_contract_transfer_message();
+    auto& message = *msg->mutable_wasm_terra_execute_contract_transfer_message();
     message.set_sender_address(fromAddress.string());
     message.set_contract_address(tokenContractAddress);
     const auto amount = store(250000);
@@ -259,13 +259,13 @@ TEST(TerraSigner, SignWasmTransferTxJson_078E90) {
     EXPECT_EQ(output.error(), "");
 }
 
-TEST(TerraSigner, SignWasmTransferPayload) {
-    auto proto = Proto::Message_WasmExecuteContractTransfer();
+TEST(TerraSigner, SignWasmTerraTransferPayload) {
+    auto proto = Proto::Message_WasmTerraExecuteContractTransfer();
     proto.set_recipient_address("recipient=address");
     const auto amount = store(uint256_t(250000), 0);
     proto.set_amount(amount.data(), amount.size());
 
-    const auto payload = wasmExecuteTransferPayload(proto);
+    const auto payload = wasmTerraExecuteTransferPayload(proto);
 
     assertJSONEqual(payload.dump(), R"(
         {

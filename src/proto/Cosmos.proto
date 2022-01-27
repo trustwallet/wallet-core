@@ -85,23 +85,8 @@ message Message {
         string type_prefix = 3;
     }
 
-    // wasm/MsgExecuteContract
-    message WasmExecuteContract {
-        // sender address
-        string sender_address = 1;
-
-        // token contract address
-        string contract_address = 2;
-
-        // base64-encoded payload of contract execution message (refer to below)
-        string execute_msg = 3;
-
-        // used in case you are sending native tokens along with this message
-        repeated string coin = 4;
-    }
-
-    // transfer within wasm/MsgExecuteContract
-    message WasmExecuteContractTransfer {
+    // transfer within wasm/MsgExecuteContract, used by Terra
+    message WasmTerraExecuteContractTransfer {
         // sender address
         string sender_address = 1;
 
@@ -114,8 +99,8 @@ message Message {
         string recipient_address = 4;
     }
 
-    // send within wasm/MsgExecuteContract
-    message WasmExecuteContractSend {
+    // send within wasm/MsgExecuteContract, used by Terra
+    message WasmTerraExecuteContractSend {
         // sender address
         string sender_address = 1;
 
@@ -147,9 +132,8 @@ message Message {
         BeginRedelegate restake_message = 5;
         WithdrawDelegationReward withdraw_stake_reward_message = 6;
         RawJSON raw_json_message = 7;
-        WasmExecuteContract wasm_execute_contract_message = 8;
-        WasmExecuteContractTransfer wasm_execute_contract_transfer_message = 9;
-        WasmExecuteContractSend wasm_execute_contract_send_message = 10;
+        WasmTerraExecuteContractTransfer wasm_terra_execute_contract_transfer_message = 8;
+        WasmTerraExecuteContractSend wasm_terra_execute_contract_send_message = 9;
     }
 }
 

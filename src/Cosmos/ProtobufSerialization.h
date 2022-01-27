@@ -24,6 +24,6 @@ std::string buildProtoTxRaw(const Proto::SigningInput& input, const std::string&
 
 std::string buildProtoTxJson(const Proto::SigningInput& input, const std::string& serializedTx);
 
-nlohmann::json wasmExecuteTransferPayload(const Proto::Message_WasmExecuteContractTransfer& msg);
+nlohmann::json wasmTerraExecuteTransferPayload(const Proto::Message_WasmTerraExecuteContractTransfer& msg);
 
 } // namespace

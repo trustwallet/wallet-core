@@ -121,14 +121,14 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 return any;
             }
 
-        case Proto::Message::kWasmExecuteContractTransferMessage:
+        case Proto::Message::kWasmTerraExecuteContractTransferMessage:
             {
-                assert(msg.has_wasm_execute_contract_transfer_message());
-                const auto& wasmExecute = msg.wasm_execute_contract_transfer_message();
+                assert(msg.has_wasm_terra_execute_contract_transfer_message());
+                const auto& wasmExecute = msg.wasm_terra_execute_contract_transfer_message();
                 auto msgExecute = terra::wasm::v1beta1::MsgExecuteContract();
                 msgExecute.set_sender(wasmExecute.sender_address());
                 msgExecute.set_contract(wasmExecute.contract_address());
-                const std::string payload = Cosmos::wasmExecuteTransferPayload(wasmExecute).dump();
+                const std::string payload = Cosmos::wasmTerraExecuteTransferPayload(wasmExecute).dump();
                 msgExecute.set_execute_msg(payload);
                 any.PackFrom(msgExecute, ProtobufAnyNamespacePrefix);
                 return any;
@@ -221,7 +221,7 @@ std::string buildProtoTxJson(const Proto::SigningInput& input, const std::string
     return jsonSerialized.dump();
 }
 
-json wasmExecuteTransferPayload(const Proto::Message_WasmExecuteContractTransfer& msg) {
+json wasmTerraExecuteTransferPayload(const Proto::Message_WasmTerraExecuteContractTransfer& msg) {
     return {
         {"transfer",
             {

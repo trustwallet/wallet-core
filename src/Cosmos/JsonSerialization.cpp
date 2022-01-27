@@ -138,14 +138,14 @@ static json messageWithdrawReward(const Proto::Message_WithdrawDelegationReward&
     };
 }
 
-json messageWasmTransfer(const Proto::Message_WasmExecuteContractTransfer& msg) {
+json messageWasmTerraTransfer(const Proto::Message_WasmTerraExecuteContractTransfer& msg) {
     return {
         {"type", TYPE_PREFIX_WASM_MSG_EXECUTE},
         {"value",
             {
                 {"sender", msg.sender_address()},
                 {"contract", msg.contract_address()},
-                {"execute_msg", wasmExecuteTransferPayload(msg)},
+                {"execute_msg", wasmTerraExecuteTransferPayload(msg)},
                 {"coins", json::array()}  // used in case you are sending native tokens along with this message
             }
         }
@@ -177,8 +177,8 @@ static json messagesJSON(const Proto::SigningInput& input) {
         } else if (msg.has_transfer_tokens_message()) {
             assert(false); // not suppored, use protobuf serialization
             return json::array();
-        } else if ((msg.has_wasm_execute_contract_transfer_message())) {
-            j.push_back(messageWasmTransfer(msg.wasm_execute_contract_transfer_message()));
+        } else if ((msg.has_wasm_terra_execute_contract_transfer_message())) {
+            j.push_back(messageWasmTerraTransfer(msg.wasm_terra_execute_contract_transfer_message()));
         }
     }
     return j;

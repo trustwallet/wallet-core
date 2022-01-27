@@ -453,12 +453,12 @@ class TerraTests: XCTestCase {
         XCTAssertJSONEqual(expectedJSON, output.json)
     }
 
-    func testSigningWasmTransferTxProtobuf() {
+    func testSigningWasmTerraTransferTxProtobuf() {
         let privateKey = PrivateKey(data: Data(hexString: "cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616")!)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         let fromAddress = AnyAddress(publicKey: publicKey, coin: .terra)
 
-        let wasmTransferMessage = CosmosMessage.WasmExecuteContractTransfer.with {
+        let wasmTransferMessage = CosmosMessage.WasmTerraExecuteContractTransfer.with {
             $0.senderAddress = fromAddress.description
             $0.contractAddress = "terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76" // ANC
             $0.amount = Data(hexString: "3D090")! // 250000
@@ -466,7 +466,7 @@ class TerraTests: XCTestCase {
         }
 
         let message = CosmosMessage.with {
-            $0.wasmExecuteContractTransferMessage = wasmTransferMessage
+            $0.wasmTerraExecuteContractTransferMessage = wasmTransferMessage
         }
 
         let fee = CosmosFee.with {
