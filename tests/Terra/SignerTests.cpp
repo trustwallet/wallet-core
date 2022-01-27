@@ -167,11 +167,11 @@ TEST(TerraSigner, SignWasmTransferTxProtobuf_9FF3F0) {
     auto output = Signer::sign(input);
 
     // https://finder.terra.money/mainnet/tx/9FF3F0A16879254C22EB90D8B4D6195467FE5014381FD36BD3C23CA6698FE94B
-    // curl -H 'Content-Type: application/json' --data-binary '{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CogCCo..wld8"})' https://<lcd-node-url>/cosmos/tx/v1beta1/txs
+    // curl -H 'Content-Type: application/json' --data-binary '{"mode": "BROADCAST_MODE_BLOCK","tx_bytes": "CogCCo..wld8"})' https://<lcd-node-url>/cosmos/tx/v1beta1/txs
     assertJSONEqual(output.serialized(), R"(
         {
-            "tx_bytes":"CucBCuQBCiYvdGVycmEud2FzbS52MWJldGExLk1zZ0V4ZWN1dGVDb250cmFjdBK5AQosdGVycmExOHd1a3A4NGRxMjI3d3U0bWdoMGptNm45bmxuajZyczgycHA5d2YSLHRlcnJhMTR6NTZsMGZwMmxzZjg2enkzaHR5Mno0N2V6a2hudGh0cjl5cTc2Glt7InRyYW5zZmVyIjp7ImFtb3VudCI6IjI1MDAwMCIsInJlY2lwaWVudCI6InRlcnJhMWpsZ2FxeTludm4yaGY1dDJzcmE5eWN6OHM3N3duZjlsMGttZ2NwIn19EmcKUApGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQNwZjrHsPmJKW/rXOWfukpQ1+lOHOJW3/IlFFnKLNmsABIECgIIARgDEhMKDQoFdWx1bmESBDMwMDAQwJoMGkAaprIEMLPH2HmFdwFGoaipb2GIyhXt6ombz+WMnG2mORBI6gFt0M+IymYgzZz6w1SW52R922yafDnn7yXfutRw",
-            "mode":"BROADCAST_MODE_BLOCK"
+            "tx_bytes": "CucBCuQBCiYvdGVycmEud2FzbS52MWJldGExLk1zZ0V4ZWN1dGVDb250cmFjdBK5AQosdGVycmExOHd1a3A4NGRxMjI3d3U0bWdoMGptNm45bmxuajZyczgycHA5d2YSLHRlcnJhMTR6NTZsMGZwMmxzZjg2enkzaHR5Mno0N2V6a2hudGh0cjl5cTc2Glt7InRyYW5zZmVyIjp7ImFtb3VudCI6IjI1MDAwMCIsInJlY2lwaWVudCI6InRlcnJhMWpsZ2FxeTludm4yaGY1dDJzcmE5eWN6OHM3N3duZjlsMGttZ2NwIn19EmcKUApGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQNwZjrHsPmJKW/rXOWfukpQ1+lOHOJW3/IlFFnKLNmsABIECgIIARgDEhMKDQoFdWx1bmESBDMwMDAQwJoMGkAaprIEMLPH2HmFdwFGoaipb2GIyhXt6ombz+WMnG2mORBI6gFt0M+IymYgzZz6w1SW52R922yafDnn7yXfutRw",
+            "mode": "BROADCAST_MODE_BLOCK"
         }
     )");
     EXPECT_EQ(hex(output.signature()), "1aa6b20430b3c7d87985770146a1a8a96f6188ca15edea899bcfe58c9c6da6391048ea016dd0cf88ca6620cd9cfac35496e7647ddb6c9a7c39e7ef25dfbad470");
@@ -213,18 +213,18 @@ TEST(TerraSigner, SignWasmTransferTxJson_078E90) {
     auto output = Signer::sign(input);
 
     // https://finder.terra.money/mainnet/tx/078E90458061611F6FD8B708882B55FF5C1FFB3FCE61322107A0A0DE39FC0F3E
-    // curl -H 'Content-Type: application/json' --data-binary '{"mode":"block","tx":{...}}' https://<lcd-node-url>/txs
+    // curl -H 'Content-Type: application/json' --data-binary '{"mode": "block","tx":{...}}' https://<lcd-node-url>/txs
     assertJSONEqual(output.json(), R"(
         {
-            "mode":"block",
+            "mode": "block",
             "tx":
                 {
-                    "fee": {"amount":[{"amount":"3000","denom":"uluna"}],"gas":"200000"},
-                    "memo":"",
+                    "fee": {"amount":[{"amount": "3000","denom": "uluna"}],"gas": "200000"},
+                    "memo": "",
                     "msg":
                         [
                             {
-                                "type":"wasm/MsgExecuteContract",
+                                "type": "wasm/MsgExecuteContract",
                                 "value":
                                     {
                                         "sender": "terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf",
@@ -327,7 +327,7 @@ TEST(TerraSigner, SignWasmSendTxProtobuf) {
     auto output = Signer::sign(input);
 
     // https://finder.terra.money/mainnet/tx/9FF3F0A16879254C22EB90D8B4D6195467FE5014381FD36BD3C23CA6698FE94B
-    // curl -H 'Content-Type: application/json' --data-binary '{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CogCCo..wld8"})' https://<lcd-node-url>/cosmos/tx/v1beta1/txs
+    // curl -H 'Content-Type: application/json' --data-binary '{"mode": "BROADCAST_MODE_BLOCK","tx_bytes": "CogCCo..wld8"})' https://<lcd-node-url>/cosmos/tx/v1beta1/txs
     assertJSONEqual(output.serialized(), R"(
         {
             "tx_bytes": "CocCCoQCCiYvdGVycmEud2FzbS52MWJldGExLk1zZ0V4ZWN1dGVDb250cmFjdBLZAQosdGVycmExOHd1a3A4NGRxMjI3d3U0bWdoMGptNm45bmxuajZyczgycHA5d2YSLHRlcnJhMTR6NTZsMGZwMmxzZjg2enkzaHR5Mno0N2V6a2hudGh0cjl5cTc2Gnt7InNlbmQiOnsiYW1vdW50IjoiMjUwMDAwIiwiY29udHJhY3QiOiJ0ZXJyYTFqbGdhcXk5bnZuMmhmNXQyc3JhOXljejhzNzd3bmY5bDBrbWdjcCIsIm1zZyI6ImV5SnpiMjFsWDIxbGMzTmhaMlVpT250OWZRPT0ifX0SZwpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohA3BmOsew+Ykpb+tc5Z+6SlDX6U4c4lbf8iUUWcos2awAEgQKAggBGAQSEwoNCgV1bHVuYRIEMzAwMBDAmgwaQL6NByKeRZsyq5g6CTMdmPqiM77nOe9uLO8FjpetFgkBFiG3Le7ieZZ+4vCMhD1bcFgMwSHibFI/uPil847U/+g=",
