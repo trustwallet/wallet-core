@@ -392,4 +392,14 @@ TEST(Coin, ValidateAddresTHORChain) {
     EXPECT_FALSE(validateAddress(TWCoinTypeTHORChain, "thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2s"));
 }
 
+TEST(Coin, ValidateAddressECash) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeECash, "ecash:qruxj7zq6yzpdx8dld0e9hfvt7u47zrw9gswqul42q"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeECash, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeECash, "qq07l6rr5lsdm3m80qxw80ku2ex0tj76vvft48qjaw"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeECash, "qqslmu0jxk4st3ldjyuazfpf5thd6vlgfu395x2elz"));
+
+    ASSERT_EQ(normalizeAddress(TWCoinTypeECash, "qqslmu0jxk4st3ldjyuazfpf5thd6vlgfu395x2elz"), "ecash:qqslmu0jxk4st3ldjyuazfpf5thd6vlgfu395x2elz");
+    ASSERT_EQ(normalizeAddress(TWCoinTypeECash, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"), "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2");
+}
+
 } // namespace TW

@@ -216,6 +216,7 @@ TEST(TWBitcoinSigHashType, HashTypeForCoin) {
     EXPECT_EQ(TWBitcoinScriptHashTypeForCoin(TWCoinTypeLitecoin), (uint32_t)TWBitcoinSigHashTypeAll);
     EXPECT_EQ(TWBitcoinScriptHashTypeForCoin(TWCoinTypeZcash), (uint32_t)TWBitcoinSigHashTypeAll);
     EXPECT_EQ(TWBitcoinScriptHashTypeForCoin(TWCoinTypeBitcoinCash), (uint32_t)TWBitcoinSigHashTypeAll | (uint32_t)TWBitcoinSigHashTypeFork);
+    EXPECT_EQ(TWBitcoinScriptHashTypeForCoin(TWCoinTypeECash), (uint32_t)TWBitcoinSigHashTypeAll | (uint32_t)TWBitcoinSigHashTypeFork);
     EXPECT_EQ(TWBitcoinScriptHashTypeForCoin(TWCoinTypeBitcoinGold), (uint32_t)TWBitcoinSigHashTypeAll | (uint32_t)TWBitcoinSigHashTypeForkBTG);
 }
 

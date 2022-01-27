@@ -322,6 +322,10 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
         if (bytes[1] == TW::p2shPrefix(TWCoinTypeDecred)) {
             return buildPayToScriptHash(Data(bytes.begin() + 2, bytes.end()));
         }
+    } else if (ECashAddress::isValid(string)) {
+        auto address = ECashAddress(string);
+        auto bitcoinAddress = address.legacyAddress();
+        return lockScriptForAddress(bitcoinAddress.string(), TWCoinTypeECash);
     } else if (Groestlcoin::Address::isValid(string)) {
         auto address = Groestlcoin::Address(string);
         auto data = Data();
