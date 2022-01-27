@@ -259,6 +259,86 @@ TEST(TerraSigner, SignWasmTransferTxJson_078E90) {
     EXPECT_EQ(output.error(), "");
 }
 
+TEST(TerraSigner, SignWasmSendTxProtobuf) {
+    auto input = Proto::SigningInput();
+    input.set_signing_mode(Proto::Protobuf);
+    input.set_account_number(3407705);
+    input.set_chain_id("columbus-5");
+    input.set_memo("");
+    input.set_sequence(4);
+
+    Address fromAddress;
+    ASSERT_TRUE(Address::decode("terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf", fromAddress));
+    Address toAddress;
+    ASSERT_TRUE(Address::decode("terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp", toAddress));
+    const auto tokenContractAddress = "terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76"; // ANC
+
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_wasm_terra_execute_contract_send_message();
+    message.set_sender_address(fromAddress.string());
+    message.set_contract_address(tokenContractAddress);
+    const auto amount = store(uint256_t(250000), 0);
+    message.set_amount(amount.data(), amount.size());
+    message.set_recipient_contract_address(toAddress.string());
+    const auto msgMsg = Base64::encode(data(std::string(R"({"some_message":{}})")));
+    EXPECT_EQ(msgMsg, "eyJzb21lX21lc3NhZ2UiOnt9fQ==");
+    message.set_msg(msgMsg);
+
+    auto& fee = *input.mutable_fee();
+    fee.set_gas(200000);
+    auto amountOfFee = fee.add_amounts();
+    amountOfFee->set_denom("uluna");
+    amountOfFee->set_amount(3000);
+
+    std::string json;
+    google::protobuf::util::MessageToJsonString(input, &json);
+    assertJSONEqual(json, R"(
+        {
+            "signingMode": "Protobuf",
+            "accountNumber": "3407705",
+            "chainId": "columbus-5",
+            "fee": {
+                "amounts": [
+                    {
+                        "denom": "uluna",
+                        "amount": "3000"
+                    }
+                ],
+                "gas": "200000"
+            },
+            "sequence": "4",
+            "messages": [
+                {
+                    "wasmTerraExecuteContractSendMessage": {
+                        "senderAddress": "terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf",
+                        "contractAddress": "terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76",
+                        "amount": "A9CQ",
+                        "recipientContractAddress": "terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp",
+                        "msg": "eyJzb21lX21lc3NhZ2UiOnt9fQ=="
+                    }
+                }
+            ]
+        }
+    )");
+
+    auto privateKey = parse_hex("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(input);
+
+    // https://finder.terra.money/mainnet/tx/9FF3F0A16879254C22EB90D8B4D6195467FE5014381FD36BD3C23CA6698FE94B
+    // curl -H 'Content-Type: application/json' --data-binary '{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CogCCo..wld8"})' https://<lcd-node-url>/cosmos/tx/v1beta1/txs
+    assertJSONEqual(output.serialized(), R"(
+        {
+            "tx_bytes": "CocCCoQCCiYvdGVycmEud2FzbS52MWJldGExLk1zZ0V4ZWN1dGVDb250cmFjdBLZAQosdGVycmExOHd1a3A4NGRxMjI3d3U0bWdoMGptNm45bmxuajZyczgycHA5d2YSLHRlcnJhMTR6NTZsMGZwMmxzZjg2enkzaHR5Mno0N2V6a2hudGh0cjl5cTc2Gnt7InNlbmQiOnsiYW1vdW50IjoiMjUwMDAwIiwiY29udHJhY3QiOiJ0ZXJyYTFqbGdhcXk5bnZuMmhmNXQyc3JhOXljejhzNzd3bmY5bDBrbWdjcCIsIm1zZyI6ImV5SnpiMjFsWDIxbGMzTmhaMlVpT250OWZRPT0ifX0SZwpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohA3BmOsew+Ykpb+tc5Z+6SlDX6U4c4lbf8iUUWcos2awAEgQKAggBGAQSEwoNCgV1bHVuYRIEMzAwMBDAmgwaQL6NByKeRZsyq5g6CTMdmPqiM77nOe9uLO8FjpetFgkBFiG3Le7ieZZ+4vCMhD1bcFgMwSHibFI/uPil847U/+g=",
+            "mode": "BROADCAST_MODE_BLOCK"
+        }
+    )");
+    EXPECT_EQ(hex(output.signature()), "be8d07229e459b32ab983a09331d98faa233bee739ef6e2cef058e97ad1609011621b72deee279967ee2f08c843d5b70580cc121e26c523fb8f8a5f38ed4ffe8");
+    EXPECT_EQ(output.json(), "");
+    EXPECT_EQ(output.error(), "");
+}
+
 TEST(TerraSigner, SignWasmTerraTransferPayload) {
     auto proto = Proto::Message_WasmTerraExecuteContractTransfer();
     proto.set_recipient_address("recipient=address");

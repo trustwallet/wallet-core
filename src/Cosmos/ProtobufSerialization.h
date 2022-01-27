@@ -26,4 +26,6 @@ std::string buildProtoTxJson(const Proto::SigningInput& input, const std::string
 
 nlohmann::json wasmTerraExecuteTransferPayload(const Proto::Message_WasmTerraExecuteContractTransfer& msg);
 
+nlohmann::json wasmTerraExecuteSendPayload(const Proto::Message_WasmTerraExecuteContractSend& msg);
+
 } // namespace

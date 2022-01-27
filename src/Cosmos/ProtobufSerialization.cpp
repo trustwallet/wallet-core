@@ -134,6 +134,19 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 return any;
             }
 
+        case Proto::Message::kWasmTerraExecuteContractSendMessage:
+            {
+                assert(msg.has_wasm_terra_execute_contract_send_message());
+                const auto& wasmExecute = msg.wasm_terra_execute_contract_send_message();
+                auto msgExecute = terra::wasm::v1beta1::MsgExecuteContract();
+                msgExecute.set_sender(wasmExecute.sender_address());
+                msgExecute.set_contract(wasmExecute.contract_address());
+                const std::string payload = Cosmos::wasmTerraExecuteSendPayload(wasmExecute).dump();
+                msgExecute.set_execute_msg(payload);
+                any.PackFrom(msgExecute, ProtobufAnyNamespacePrefix);
+                return any;
+            }
+
         default:
             throw std::invalid_argument(std::string("Message not supported ") + std::to_string(msg.message_oneof_case()));
     }
@@ -227,6 +240,18 @@ json wasmTerraExecuteTransferPayload(const Proto::Message_WasmTerraExecuteContra
             {
                 {"amount", toString(load(data(msg.amount())))},
                 {"recipient", msg.recipient_address()}
+            }
+        }
+    };
+}
+
+json wasmTerraExecuteSendPayload(const Proto::Message_WasmTerraExecuteContractSend& msg) {
+    return {
+        {"send",
+            {
+                {"amount", toString(load(data(msg.amount())))},
+                {"contract", msg.recipient_contract_address()},
+                {"msg", msg.msg()}
             }
         }
     };
