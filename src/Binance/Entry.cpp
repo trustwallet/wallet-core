@@ -45,9 +45,9 @@ void Entry::compile(TWCoinType coin, const Data& txInputData, const Data& signat
     dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
 }
 
-Data Entry::buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo) const {
+Data Entry::buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const {
     auto input = Proto::SigningInput();
-    input.set_chain_id("Binance-Chain-Nile");
+    input.set_chain_id(chainId.length() > 0 ? chainId : "Binance-Chain-Nile");
     input.set_account_number(0);
     input.set_sequence(0);
     input.set_source(0);

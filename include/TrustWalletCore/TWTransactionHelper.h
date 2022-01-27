@@ -19,7 +19,15 @@ struct TWTransactionHelper;
 
 /// Build a coin-specific SigningInput protobuf transaction input, from simple transaction parameters
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWTransactionHelperBuildInput(enum TWCoinType coinType, TWString *_Nonnull from, TWString *_Nonnull to, TWString *_Nonnull amount, TWString *_Nonnull asset, TWString *_Nonnull memo);
+TWData *_Nonnull TWTransactionHelperBuildInput(
+    enum TWCoinType coinType,
+    TWString *_Nonnull from,
+    TWString *_Nonnull to,
+    TWString *_Nonnull amount,  // decimal number as string
+    TWString *_Nonnull asset,  // optional asset name, like "BNB"
+    TWString *_Nonnull memo,  // optional memo
+    TWString *_Nonnull chainId  // optional chainId to override default
+);
 
 /// Obtain pre-signing hash of a transaction.
 TW_EXPORT_STATIC_METHOD

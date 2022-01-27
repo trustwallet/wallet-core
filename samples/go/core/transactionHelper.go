@@ -6,7 +6,7 @@ package core
 import "C"
 import "tw/types"
 
-func BuildInput(c CoinType, from, to string, amount string, asset string, memo string) []byte {
+func BuildInput(c CoinType, from, to string, amount string, asset string, memo string, chainId string) []byte {
 	fromStr := types.TWStringCreateWithGoString(from)
 	defer C.TWStringDelete(fromStr)
 	toStr := types.TWStringCreateWithGoString(to)
@@ -17,8 +17,10 @@ func BuildInput(c CoinType, from, to string, amount string, asset string, memo s
 	defer C.TWStringDelete(assetStr)
 	memoStr := types.TWStringCreateWithGoString(memo)
 	defer C.TWStringDelete(memoStr)
+	chainIdStr := types.TWStringCreateWithGoString(chainId)
+	defer C.TWStringDelete(chainIdStr)
 
-	result := C.TWTransactionHelperBuildInput(C.enum_TWCoinType(c), fromStr, toStr, amountStr, assetStr, memoStr)
+	result := C.TWTransactionHelperBuildInput(C.enum_TWCoinType(c), fromStr, toStr, amountStr, assetStr, memoStr, chainIdStr)
 	defer C.TWDataDelete(result)
 	return types.TWDataGoBytes(result)
 }

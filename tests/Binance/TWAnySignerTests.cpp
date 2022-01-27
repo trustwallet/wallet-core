@@ -27,7 +27,8 @@ TEST(TWAnySignerBinanceTSS, Sign) {
         STRING("bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5").get(),  // to
         STRING("1").get(),  // amount
         STRING("BNB").get(),  // asset
-        STRING("").get()  // memo
+        STRING("").get(),  // memo
+        STRING("").get()  // chainId
     ));
 
     {

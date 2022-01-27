@@ -24,6 +24,7 @@ func tssSignDemo() {
 		"1",   // amount
 		"BNB", // asset
 		"",    // memo
+		"",    // chainId
 	)
 	fmt.Println("txInputData len: ", len(txInputData))
 

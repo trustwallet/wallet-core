@@ -15,7 +15,7 @@
 using namespace TW;
 
 
-TWData *_Nonnull TWTransactionHelperBuildInput(enum TWCoinType coinType, TWString *_Nonnull from, TWString *_Nonnull to, TWString *_Nonnull amount, TWString *_Nonnull asset, TWString *_Nonnull memo) {
+TWData *_Nonnull TWTransactionHelperBuildInput(enum TWCoinType coinType, TWString *_Nonnull from, TWString *_Nonnull to, TWString *_Nonnull amount, TWString *_Nonnull asset, TWString *_Nonnull memo, TWString *_Nonnull chainId) {
     Data result;
     try {
         result = TransactionHelper::buildInput(
@@ -24,7 +24,8 @@ TWData *_Nonnull TWTransactionHelperBuildInput(enum TWCoinType coinType, TWStrin
             std::string(TWStringUTF8Bytes(to)),
             std::string(TWStringUTF8Bytes(amount)),
             std::string(TWStringUTF8Bytes(asset)),
-            std::string(TWStringUTF8Bytes(memo))
+            std::string(TWStringUTF8Bytes(memo)),
+            std::string(TWStringUTF8Bytes(chainId))
         );
     } catch (...) {
         // return empty

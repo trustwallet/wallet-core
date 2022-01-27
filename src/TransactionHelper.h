@@ -17,7 +17,7 @@ namespace TW {
 class TransactionHelper {
 public:
     /// Build a coin-specific SigningInput protobuf transaction input, from simple transaction parameters
-    static Data buildInput(TWCoinType coinType, const std::string& from, const std::string& to, const std::string& amount, const std::string& asset, const std::string& memo);
+    static Data buildInput(TWCoinType coinType, const std::string& from, const std::string& to, const std::string& amount, const std::string& asset, const std::string& memo, const std::string& chainId);
 
     /// Obtain pre-signing hash of a transaction.
     static Data preImageHash(TWCoinType coinType, const Data& txInputData);

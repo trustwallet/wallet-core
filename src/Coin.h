@@ -93,7 +93,7 @@ Data anyCoinPreImageHash(TWCoinType coinType, const Data& txInputData);
 
 void anyCoinCompileWithSignature(TWCoinType coinType, const Data& txInputData, const Data& signature, const PublicKey& publicKey, Data& txOutputOut);
 
-Data anyCoinBuildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo);
+Data anyCoinBuildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId);
 
 // Return coins handled by the same dispatcher as the given coin (mostly for testing)
 const std::vector<TWCoinType> getSimilarCoinTypes(TWCoinType coinType);

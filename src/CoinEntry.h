@@ -39,7 +39,7 @@ public:
 
     virtual Data preImageHash(TWCoinType coin, const Data& txInputData) const { return Data(); }
     virtual void compile(TWCoinType coin, const Data& txInputData, const Data& signature, const PublicKey& publicKey, Data& dataOut) const {}
-    virtual Data buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo) const { return Data(); }
+    virtual Data buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const { return Data(); }
 };
 
 // In each coin's Entry.cpp the specific types of the coin are used, this template enforces the Signer implement:

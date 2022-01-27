@@ -261,10 +261,10 @@ void TW::anyCoinCompileWithSignature(TWCoinType coinType, const Data& txInputDat
     dispatcher->compile(coinType, txInputData, signature, publicKey, txOutputOut);
 }
 
-Data TW::anyCoinBuildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo) {
+Data TW::anyCoinBuildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) {
     auto* dispatcher = coinDispatcher(coinType);
     assert(dispatcher != nullptr);
-    return dispatcher->buildTransactionInput(coinType, from, to, amount, asset, memo);
+    return dispatcher->buildTransactionInput(coinType, from, to, amount, asset, memo, chainId);
 }
 
 // Coin info accessors
