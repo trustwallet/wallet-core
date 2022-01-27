@@ -30,5 +30,5 @@ TEST(TWxDaiCoinType, TWCoinType) {
     assertStringsEqual(txUrl, "https://blockscout.com/xdai/mainnet/tx/0x936798a1ef607c9e856d7861b15999c770c06f0887c4fc1f6acbf3bef09899c1");
     assertStringsEqual(accUrl, "https://blockscout.com/xdai/mainnet/address/0x12d61a95CF55e18D267C2F1AA67d8e42ae1368f8");
     assertStringsEqual(id, "xdai");
-    assertStringsEqual(name, "xDai");
+    assertStringsEqual(name, "Gnosis Chain");
 }

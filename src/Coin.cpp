@@ -113,6 +113,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeDash: entry = &bitcoinDP; break;
         case TWCoinTypeDigiByte: entry = &bitcoinDP; break;
         case TWCoinTypeDogecoin: entry = &bitcoinDP; break;
+        case TWCoinTypeECash: entry = &bitcoinDP; break;
         case TWCoinTypeLitecoin: entry = &bitcoinDP; break;
         case TWCoinTypeMonacoin: entry = &bitcoinDP; break;
         case TWCoinTypeQtum: entry = &bitcoinDP; break;
