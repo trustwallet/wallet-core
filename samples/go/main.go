@@ -9,10 +9,12 @@ import (
 	"tw/protos/bitcoin"
 	"tw/protos/common"
 	"tw/protos/ethereum"
+
+	"google.golang.org/protobuf/proto"
 )
 
-func tssSignDemo() {
-	fmt.Println("==> TSS Signing Demo")
+func tssSignBinanceDemo() {
+	fmt.Println("==> TSS Signing Binance Demo")
 
 	coin := core.CoinTypeBinance
 
@@ -48,8 +50,56 @@ func tssSignDemo() {
 	fmt.Println("")
 }
 
+func tssSignEthereumDemo() {
+	fmt.Println("==> TSS Signing Ethereum Demo")
+
+	coin := core.CoinTypeEthereum
+
+	fmt.Println("\n==> Step 1: Prepare transaction input (protobuf)")
+	txInputData := core.BuildInput(
+		coin,
+		"0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F", // from
+		"0x3535353535353535353535353535353535353535", // to
+		"1000000000000000000",                        // amount
+		"ETH",                                        // asset
+		"",                                           // memo
+		"",                                           // chainId
+	)
+	fmt.Println("txInputData len: ", len(txInputData))
+
+	// Set a few other values
+	var input ethereum.SigningInput
+	proto.Unmarshal(txInputData, &input)
+	input.Nonce = big.NewInt(11).Bytes()
+	input.GasPrice = big.NewInt(20000000000).Bytes()
+	input.GasLimit = big.NewInt(21000).Bytes()
+	input.TxMode = ethereum.TransactionMode_Legacy
+	txInputData2, _ := proto.Marshal(&input)
+	fmt.Println("txInputData len: ", len(txInputData2))
+
+	fmt.Println("\n==> Step 2: Obtain preimage hash")
+	hash := core.PreImageHash(coin, txInputData2)
+	fmt.Println("hash: ", hex.EncodeToString(hash))
+
+	fmt.Println("\n==> Step 3: Compile transaction info")
+	// Simulate signature, normally obtained from signature server
+	signature, _ := hex.DecodeString("360a84fb41ad07f07c845fedc34cde728421803ebbaae392fc39c116b29fc07b53bd9d1376e15a191d844db458893b928f3efbfee90c9febf51ab84c9796677900")
+	publicKey, _ := hex.DecodeString("044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a")
+	txOutput := core.CompileWithSignature(coin, txInputData2, signature, publicKey)
+
+	fmt.Println("final txOutput proto:  ", len(txOutput))
+	fmt.Println(hex.EncodeToString(txOutput))
+
+	fmt.Println("==> Double check signature validity (result should be true)")
+	verifyRes := core.PublicKeyVerify(publicKey, core.PublicKeyTypeSECP256k1Extended, signature, hash)
+	fmt.Println(verifyRes)
+
+	fmt.Println("")
+}
+
 func main() {
-	tssSignDemo()
+	tssSignBinanceDemo()
+	tssSignEthereumDemo()
 
 	/*
 		fmt.Println("==> calling wallet core from go")

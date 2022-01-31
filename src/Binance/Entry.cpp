@@ -9,6 +9,8 @@
 #include "Address.h"
 #include "Signer.h"
 
+#include <cassert>
+
 using namespace TW::Binance;
 using namespace TW;
 using namespace std;
@@ -31,14 +33,14 @@ string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key
 
 Data Entry::preImageHash(TWCoinType coin, const Data& txInputData) const {
     auto input = Proto::SigningInput();
-    input.ParseFromArray(txInputData.data(), (int)txInputData.size());
+    assert(input.ParseFromArray(txInputData.data(), (int)txInputData.size()));
     const auto signer = Signer(input);
     return signer.preImageHash();
 }
 
 void Entry::compile(TWCoinType coin, const Data& txInputData, const Data& signature, const PublicKey& publicKey, Data& dataOut) const {
     auto input = Proto::SigningInput();
-    input.ParseFromArray(txInputData.data(), (int)txInputData.size());
+    assert(input.ParseFromArray(txInputData.data(), (int)txInputData.size()));
     const auto signer = Signer(input);
     const auto output = signer.compile(signature, publicKey);
     const auto serializedOut = output.SerializeAsString();
