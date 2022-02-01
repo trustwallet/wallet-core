@@ -3,13 +3,15 @@ package com.trustwalval.core.app.blockchains.terra
 import android.util.Log
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.toHexByteArray
+import com.trustwallet.core.app.utils.toHex
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import wallet.core.java.AnySigner
 import wallet.core.jni.*
 import wallet.core.jni.CoinType.TERRA
 import wallet.core.jni.proto.Cosmos
 import wallet.core.jni.proto.Cosmos.SigningOutput
+import wallet.core.jni.proto.Cosmos.SigningMode
+import wallet.core.java.AnySigner
 
 class TestTerraTransactions {
 
@@ -66,5 +68,50 @@ class TestTerraTransactions {
         val expectedJsonPayload = """{"mode":"block","tx":{"fee":{"amount":[{"amount":"3000","denom":"uluna"}],"gas":"200000"},"memo":"","msg":[{"type":"bank/MsgSend","value":{"amount":[{"amount":"1000000","denom":"uluna"}],"from_address":"terra1jf9aaj9myrzsnmpdr7twecnaftzmku2mhs2hfe","to_address":"terra1hdp298kaz0eezpgl6scsykxljrje3667d233ms"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"},"signature":"KPdiVsKpY12JG/VKEJVa/FpMKclxlS0qNNG6VOAypj10R5vY5UX5IgRJET1zNYnH0wvcXxfNXV+s8jtwN2UXiQ=="}]}}"""
         assertEquals(expectedJsonPayload, jsonPayload)
 
+    }
+
+    @Test
+    fun testSigningWasmTerraTransferTxProtobuf() {
+        val key =
+            PrivateKey("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616".toHexByteArray())
+        val publicKey = key.getPublicKeySecp256k1(true)
+        val from = AnyAddress(publicKey, TERRA).description()
+
+        val wasmTransferMessage = Cosmos.Message.WasmTerraExecuteContractTransfer.newBuilder().apply {
+            senderAddress = from
+            contractAddress = "terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76" // ANC
+            amount = ByteString.copyFrom("0x3D090".toHexByteArray()) // 250000
+            recipientAddress = "terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp"
+        }.build()
+
+        val message = Cosmos.Message.newBuilder().apply {
+            wasmTerraExecuteContractTransferMessage = wasmTransferMessage
+        }.build()
+
+        val feeAmount = Cosmos.Amount.newBuilder().apply {
+            amount = 3000
+            denom = "uluna"
+        }.build()
+
+        val cosmosFee = Cosmos.Fee.newBuilder().apply {
+            gas = 200000
+            addAllAmounts(listOf(feeAmount))
+        }.build()
+
+        val signingInput = Cosmos.SigningInput.newBuilder().apply {
+            signingMode = SigningMode.Protobuf
+            accountNumber = 3407705
+            chainId = "columbus-5"
+            memo = ""
+            sequence = 3
+            fee = cosmosFee
+            privateKey = ByteString.copyFrom(key.data())
+            addAllMessages(listOf(message))
+        }.build()
+
+        val output = AnySigner.sign(signingInput, TERRA, SigningOutput.parser())
+
+        assertEquals(output.serialized, "{\"mode\":\"BROADCAST_MODE_BLOCK\",\"tx_bytes\":\"CucBCuQBCiYvdGVycmEud2FzbS52MWJldGExLk1zZ0V4ZWN1dGVDb250cmFjdBK5AQosdGVycmExOHd1a3A4NGRxMjI3d3U0bWdoMGptNm45bmxuajZyczgycHA5d2YSLHRlcnJhMTR6NTZsMGZwMmxzZjg2enkzaHR5Mno0N2V6a2hudGh0cjl5cTc2Glt7InRyYW5zZmVyIjp7ImFtb3VudCI6IjI1MDAwMCIsInJlY2lwaWVudCI6InRlcnJhMWpsZ2FxeTludm4yaGY1dDJzcmE5eWN6OHM3N3duZjlsMGttZ2NwIn19EmcKUApGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQNwZjrHsPmJKW/rXOWfukpQ1+lOHOJW3/IlFFnKLNmsABIECgIIARgDEhMKDQoFdWx1bmESBDMwMDAQwJoMGkAaprIEMLPH2HmFdwFGoaipb2GIyhXt6ombz+WMnG2mORBI6gFt0M+IymYgzZz6w1SW52R922yafDnn7yXfutRw\"}")
+        assertEquals(output.error, "")
     }
 }

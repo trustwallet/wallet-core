@@ -1,10 +1,11 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #include "JsonSerialization.h"
+#include "ProtobufSerialization.h"
 
 #include "../Cosmos/Address.h"
 #include "../proto/Cosmos.pb.h"
@@ -25,6 +26,7 @@ const string TYPE_PREFIX_MSG_UNDELEGATE = "cosmos-sdk/MsgUndelegate";
 const string TYPE_PREFIX_MSG_REDELEGATE = "cosmos-sdk/MsgBeginRedelegate";
 const string TYPE_PREFIX_MSG_WITHDRAW_REWARD = "cosmos-sdk/MsgWithdrawDelegationReward";
 const string TYPE_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
+const string TYPE_PREFIX_WASM_MSG_EXECUTE = "wasm/MsgExecuteContract";
 
 static string broadcastMode(Proto::BroadcastMode mode) {
     switch (mode) {
@@ -136,12 +138,27 @@ static json messageWithdrawReward(const Proto::Message_WithdrawDelegationReward&
     };
 }
 
+json messageWasmTerraTransfer(const Proto::Message_WasmTerraExecuteContractTransfer& msg) {
+    return {
+        {"type", TYPE_PREFIX_WASM_MSG_EXECUTE},
+        {"value",
+            {
+                {"sender", msg.sender_address()},
+                {"contract", msg.contract_address()},
+                {"execute_msg", wasmTerraExecuteTransferPayload(msg)},
+                {"coins", json::array()}  // used in case you are sending native tokens along with this message
+            }
+        }
+    };
+}
+
 static json messageRawJSON(const Proto::Message_RawJSON& message) {
     return {
         {"type", message.type()},
         {"value", json::parse(message.value())},
     };
 }
+
 static json messagesJSON(const Proto::SigningInput& input) {
     json j = json::array();
     for (auto& msg : input.messages()) {
@@ -160,6 +177,8 @@ static json messagesJSON(const Proto::SigningInput& input) {
         } else if (msg.has_transfer_tokens_message()) {
             assert(false); // not suppored, use protobuf serialization
             return json::array();
+        } else if ((msg.has_wasm_terra_execute_contract_transfer_message())) {
+            j.push_back(messageWasmTerraTransfer(msg.wasm_terra_execute_contract_transfer_message()));
         }
     }
     return j;
