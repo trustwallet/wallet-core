@@ -64,6 +64,8 @@ class PublicKey {
     /// Verifies a schnorr signature for the provided message.
     bool verifySchnorr(const Data& signature, const Data& message) const;
 
+    bool verifyDer(const Data& signature, const Data& message) const;
+
     /// Computes the public key hash.
     ///
     /// The public key hash is computed by applying the hasher to the public key
