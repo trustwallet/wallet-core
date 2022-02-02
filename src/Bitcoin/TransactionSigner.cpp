@@ -29,7 +29,8 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
         plan = TransactionBuilder::plan(input);
     }
     auto transaction = TransactionBuilder::template build<Transaction>(plan, input.toAddress, input.changeAddress, input.coinType, input.lockTime);
-    SignatureBuilder<Transaction> signer(std::move(input), plan, transaction, estimationMode);
+    SigningMode signingMode = estimationMode ? SigningMode_SizeEstimationOnly : SigningMode_Normal;
+    SignatureBuilder<Transaction> signer(std::move(input), plan, transaction, signingMode);
     return signer.sign();
 }
 

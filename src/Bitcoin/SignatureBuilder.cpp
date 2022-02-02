@@ -167,7 +167,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
             }
             auto keyHash = Hash::ripemd(Hash::sha256(pubKey));
             auto pair = keyPairForPubKeyHash(keyHash);
-            if (!pair.has_value() && !estimationMode) {
+            if (!pair.has_value() && signingMode == SigningMode_Normal) {
                 // Error: missing key
                 return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
             }
@@ -184,7 +184,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
     if (script.matchPayToPublicKey(data)) {
         auto keyHash = Hash::ripemd(Hash::sha256(data));
         auto pair = keyPairForPubKeyHash(keyHash);
-        if (!pair.has_value() && !estimationMode) {
+        if (!pair.has_value() && signingMode == SigningMode_Normal) {
             // Error: Missing key
             return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
         }
@@ -196,22 +196,28 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
         return Result<std::vector<Data>, Common::Proto::SigningError>::success({signature});
     }
     if (script.matchPayToPublicKeyHash(data)) {
+        // obtain public key
         auto pair = keyPairForPubKeyHash(data);
-        if (!pair.has_value() && !estimationMode) {
-            // Error: Missing keys
-            return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
+        Data pubkey;
+        if (!pair.has_value()) {
+            if (signingMode == SigningMode_SizeEstimationOnly) {
+                // estimation mode, key is missing: use placeholder for public key
+                pubkey = Data(PublicKey::secp256k1Size);
+            } else {
+                // Error: Missing keys
+                return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
+            }
+        } else {
+            pubkey = std::get<1>(pair.value()).bytes;
         }
+        assert(!pubkey.empty());
+
         auto signature = createSignature(transactionToSign, script, pair, index, utxo.amount, version);
         if (signature.empty()) {
             // Error: Failed to sign
             return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
         }
-        if (!pair.has_value() && estimationMode) {
-            // estimation mode, key is missing: use placeholder for public key
-            return Result<std::vector<Data>, Common::Proto::SigningError>::success({signature, Data(PublicKey::secp256k1Size)});
-        }
-        auto pubkey = std::get<1>(pair.value());
-        return Result<std::vector<Data>, Common::Proto::SigningError>::success({signature, pubkey.bytes});
+        return Result<std::vector<Data>, Common::Proto::SigningError>::success({signature, pubkey});
     }
     // Error: Invalid output script
     return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_script_output);
@@ -226,14 +232,16 @@ Data SignatureBuilder<Transaction>::createSignature(
     Amount amount,
     uint32_t version
 ) const {
-    if (estimationMode) {
+    if (signingMode == SigningMode_SizeEstimationOnly) {
         // Don't sign, only estimate signature size. It is 71-72 bytes.  Return placeholder.
         return Data(72);
     }
-    auto key = std::get<0>(pair.value());
-    Data sighash = transaction.getSignatureHash(script, index, input.hashType, amount,
+
+    const Data sighash = transaction.getSignatureHash(script, index, input.hashType, amount,
                                                 static_cast<SignatureVersion>(version));
-    auto pk = PrivateKey(key);
+
+    const auto key = std::get<0>(pair.value());
+    const auto pk = PrivateKey(key);
     auto sig = pk.signAsDER(sighash, TWCurveSECP256k1);
     if (!sig.empty()) {
         sig.push_back(static_cast<byte>(input.hashType));

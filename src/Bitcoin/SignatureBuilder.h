@@ -19,6 +19,12 @@
 
 namespace TW::Bitcoin {
 
+/// Normal and special signature modes
+enum SigningMode {
+    SigningMode_Normal = 0, // normal signing
+    SigningMode_SizeEstimationOnly, // no signing, only estimate size of the signature
+};
+
 /// Class that performs Bitcoin transaction signing.
 template <typename Transaction>
 class SignatureBuilder {
@@ -35,13 +41,18 @@ private:
     /// Transaction being signed, with list of signed inputs
     Transaction transactionToSign;
 
-    bool estimationMode = false;
+    SigningMode signingMode = SigningMode_Normal;
 
 public:
     /// Initializes a transaction signer with signing input.
     /// estimationMode: is set, no real signing is performed, only as much as needed to get the almost-exact signed size 
-    SignatureBuilder(const SigningInput& input, const TransactionPlan& plan, Transaction& transaction, bool estimationMode = false)
-      : input(input), plan(plan), transaction(transaction), estimationMode(estimationMode) {}
+    SignatureBuilder(
+        const SigningInput& input,
+        const TransactionPlan& plan,
+        Transaction& transaction,
+        SigningMode signingMode = SigningMode_Normal
+    )
+      : input(input), plan(plan), transaction(transaction), signingMode(signingMode) {}
 
     /// Signs the transaction.
     ///
