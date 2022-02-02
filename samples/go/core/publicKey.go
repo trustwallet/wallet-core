@@ -26,3 +26,16 @@ func PublicKeyVerify(key []byte, keyType PublicKeyType, signature []byte, messag
 
 	return bool(C.TWPublicKeyVerify(publicKey, sig, msg))
 }
+
+func PublicKeyVerifyDer(key []byte, keyType PublicKeyType, signature []byte, message []byte) bool {
+	keyData := types.TWDataCreateWithGoBytes(key)
+	defer C.TWDataDelete(keyData)
+	publicKey := C.TWPublicKeyCreateWithData(keyData, C.enum_TWPublicKeyType(keyType))
+	defer C.TWPublicKeyDelete(publicKey)
+	sig := types.TWDataCreateWithGoBytes(signature)
+	defer C.TWDataDelete(sig)
+	msg := types.TWDataCreateWithGoBytes(message)
+	defer C.TWDataDelete(msg)
+
+	return bool(C.TWPublicKeyVerifyDer(publicKey, sig, msg))
+}

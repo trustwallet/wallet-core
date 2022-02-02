@@ -42,8 +42,11 @@ func tssSignBinanceDemo() {
 
 	fmt.Println("final txOutput proto:  ", len(txOutput))
 	fmt.Println(hex.EncodeToString(txOutput))
+	//var output binance.SigningOutput
+	//_ = proto.Unmarshal(txOutput, &output)
+	//fmt.Println("output.encoded:  ", len(output.Encoded), hex.EncodeToString(output.Encoded))
 
-	fmt.Println("==> Double check signature validity (result should be true)")
+	fmt.Println("\n==> Double check signature validity (result should be true)")
 	verifyRes := core.PublicKeyVerify(publicKey, core.PublicKeyTypeSECP256k1, signature, hash)
 	fmt.Println(verifyRes)
 
@@ -88,10 +91,76 @@ func tssSignEthereumDemo() {
 	txOutput := core.CompileWithSignature(coin, txInputData2, signature, publicKey)
 
 	fmt.Println("final txOutput proto:  ", len(txOutput))
-	fmt.Println(hex.EncodeToString(txOutput))
+	//fmt.Println(hex.EncodeToString(txOutput))
+	var output ethereum.SigningOutput
+	_ = proto.Unmarshal(txOutput, &output)
+	fmt.Println("output.encoded:  ", len(output.Encoded), hex.EncodeToString(output.Encoded))
 
-	fmt.Println("==> Double check signature validity (result should be true)")
+	fmt.Println("\n==> Double check signature validity (result should be true)")
 	verifyRes := core.PublicKeyVerify(publicKey, core.PublicKeyTypeSECP256k1Extended, signature, hash)
+	fmt.Println(verifyRes)
+
+	fmt.Println("")
+}
+
+func tssSignBitcoinDemo() {
+	fmt.Println("==> TSS Signing Bitcoin Demo")
+
+	coin := core.CoinTypeBitcoin
+
+	fmt.Println("\n==> Step 1: Prepare transaction input (protobuf)")
+	ownAddress := "bc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z00ppggv"
+
+	lockScript := core.BitcoinScriptLockScriptForAddress(ownAddress, coin)
+	fmt.Println("lockScript: ", hex.EncodeToString(lockScript))
+	utxoHash, _ := hex.DecodeString("07c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa8") // reversed
+	utxo := bitcoin.UnspentTransaction{
+		OutPoint: &bitcoin.OutPoint{
+			Hash:     utxoHash,
+			Index:    0,
+			Sequence: 4294967295,
+		},
+		Amount: 3899774,
+		Script: lockScript,
+	}
+
+	input := bitcoin.SigningInput{
+		HashType:      uint32(core.BitcoinSigHashTypeAll),
+		Amount:        1200000,
+		ByteFee:       1,
+		ToAddress:     "bc1q2dsdlq3343vk29runkgv4yc292hmq53jedfjmp",
+		ChangeAddress: ownAddress,
+		Utxo:          []*bitcoin.UnspentTransaction{&utxo},
+		CoinType:      uint32(coin),
+		Scripts:       map[string][]byte{},
+	}
+	keyHash0 := core.BitcoinScriptMatchPayToWitnessPublicKeyHash(lockScript)
+	fmt.Println("keyHash0: ", hex.EncodeToString(keyHash0))
+	redeemScript := core.BitcoinScriptBuildPayToPublicKeyHash(keyHash0)
+	fmt.Println("redeemScript: ", hex.EncodeToString(redeemScript))
+	input.Scripts[hex.EncodeToString(keyHash0)] = redeemScript
+
+	txInputData, _ := proto.Marshal(&input)
+	fmt.Println("txInputData len: ", len(txInputData))
+
+	fmt.Println("\n==> Step 2: Obtain preimage hash")
+	hash := core.PreImageHash(coin, txInputData)
+	fmt.Println("hash: ", hex.EncodeToString(hash))
+
+	fmt.Println("\n==> Step 3: Compile transaction info")
+	// Simulate signature, normally obtained from signature server
+	signature, _ := hex.DecodeString("30450221009f61304eb182a4862825f27f1d93406d1e8b25d2cb889ffb7d191d8c8f6de1ea0220205e43a91abb8b7e4e4f40f54cbb3c7ebfcc725c3a97c0c42c77acebf17a7d00")
+	publicKey, _ := hex.DecodeString("024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382")
+	txOutput := core.CompileWithSignature(coin, txInputData, signature, publicKey)
+
+	fmt.Println("final txOutput proto:  ", len(txOutput))
+	//fmt.Println(hex.EncodeToString(txOutput))
+	var output bitcoin.SigningOutput
+	_ = proto.Unmarshal(txOutput, &output)
+	fmt.Println("output.encoded:  ", len(output.Encoded), hex.EncodeToString(output.Encoded))
+
+	fmt.Println("\n==> Double check signature validity (result should be true)")
+	verifyRes := core.PublicKeyVerifyDer(publicKey, core.PublicKeyTypeSECP256k1, signature, hash)
 	fmt.Println(verifyRes)
 
 	fmt.Println("")
@@ -100,6 +169,7 @@ func tssSignEthereumDemo() {
 func main() {
 	tssSignBinanceDemo()
 	tssSignEthereumDemo()
+	tssSignBitcoinDemo()
 
 	/*
 		fmt.Println("==> calling wallet core from go")
@@ -174,7 +244,7 @@ func createEthTransaction(ew *core.Wallet) string {
 }
 
 func createBtcTransaction(bw *core.Wallet) string {
-	lockScript := core.BitcoinLockScriptForAddress(bw.Address, bw.CoinType)
+	lockScript := core.BitcoinScriptLockScriptForAddress(bw.Address, bw.CoinType)
 	fmt.Println("\nBitcoin address lock script:")
 	fmt.Println("\t", hex.EncodeToString(lockScript))
 

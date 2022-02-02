@@ -163,6 +163,7 @@ TEST(TWTransactionHelper, ExternalSignatureSignEthereum) {
         Ethereum::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(TWDataBytes(outputData.get()), (int)TWDataSize(outputData.get())));
 
+        EXPECT_EQ(output.encoded().size(), 110);
         EXPECT_EQ(hex(output.encoded()), ExpectedTx);
     }
 
@@ -200,6 +201,7 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
     EXPECT_EQ(hex(keyHash0), "bd92088bb7e82d611a9b94fbb74a0908152b784f");
 
     const auto redeemScript = Bitcoin::Script::buildPayToPublicKeyHash(keyHash0);
+    EXPECT_EQ(hex(redeemScript.bytes), "76a914bd92088bb7e82d611a9b94fbb74a0908152b784f88ac");
     (*input.mutable_scripts())[hex(keyHash0)] = std::string(redeemScript.bytes.begin(), redeemScript.bytes.end());
 
     auto utxo0 = input.add_utxo();
@@ -207,6 +209,7 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
     utxo0->set_amount(3'899'774);
     auto hash0 = parse_hex("a85fd6a9a7f2f54cacb57e83dfd408e51c0a5fc82885e3fa06be8692962bc407");
     std::reverse(hash0.begin(), hash0.end());
+    EXPECT_EQ(hex(hash0), "07c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa8");
     utxo0->mutable_out_point()->set_hash(std::string(hash0.begin(), hash0.end()));
     utxo0->mutable_out_point()->set_index(0);
     utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
@@ -258,6 +261,7 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
         Bitcoin::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(TWDataBytes(outputData.get()), (int)TWDataSize(outputData.get())));
 
+        EXPECT_EQ(output.encoded().size(), 223);
         EXPECT_EQ(hex(output.encoded()), ExpectedTx);
     }
 
