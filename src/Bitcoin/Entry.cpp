@@ -108,10 +108,10 @@ Data Entry::preImageHash(TWCoinType coin, const Data& txInputData) const {
 
     const auto hashes = Signer::preImageHashes(input);
 
-    if (hashes.size() == 0) {
+    // support only 1-signature case
+    if (hashes.size() != 1) {
         return Data();
     }
-    // for now return first hash TODO
     return hashes[0];
 }
 
