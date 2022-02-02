@@ -6,6 +6,10 @@
 
 #pragma once
 #include "../proto/Bitcoin.pb.h"
+#include "Data.h"
+
+#include <vector>
+#include <optional>
 
 namespace TW::Bitcoin {
 
@@ -17,7 +21,10 @@ class Signer {
     static Proto::TransactionPlan plan(const Proto::SigningInput& input) noexcept;
 
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input, std::optional<std::vector<std::pair<Data, Data>>> optionalExternalSigs = {}) noexcept;
+
+    /// Collect pre-image hashes to be signed
+    static std::vector<Data> preImageHashes(const Proto::SigningInput& input) noexcept;
 };
 
 } // namespace TW::Bitcoin

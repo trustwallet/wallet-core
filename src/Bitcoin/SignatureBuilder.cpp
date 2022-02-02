@@ -129,7 +129,7 @@ Result<void, Common::Proto::SigningError> SignatureBuilder<Transaction>::sign(Sc
 
 template <typename Transaction>
 Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transaction>::signStep(
-    Script script, size_t index, const UTXO& utxo, uint32_t version) const {
+    Script script, size_t index, const UTXO& utxo, uint32_t version) {
 
     Data data;
     std::vector<Data> keys;
@@ -200,9 +200,16 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
         auto pair = keyPairForPubKeyHash(data);
         Data pubkey;
         if (!pair.has_value()) {
-            if (signingMode == SigningMode_SizeEstimationOnly) {
+            if (signingMode == SigningMode_SizeEstimationOnly || signingMode == SigningMode_HashOnly) {
                 // estimation mode, key is missing: use placeholder for public key
                 pubkey = Data(PublicKey::secp256k1Size);
+            } else if (signingMode == SigningMode_External) {
+                size_t index = hashesForSigning.size();
+                if (!externalSignatures.has_value() || externalSignatures.value().size() <= index) {
+                    // Error: no or not enough signatures provided
+                    return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
+                }
+                pubkey = std::get<1>(externalSignatures.value()[index]);
             } else {
                 // Error: Missing keys
                 return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
@@ -231,7 +238,7 @@ Data SignatureBuilder<Transaction>::createSignature(
     size_t index,
     Amount amount,
     uint32_t version
-) const {
+) {
     if (signingMode == SigningMode_SizeEstimationOnly) {
         // Don't sign, only estimate signature size. It is 71-72 bytes.  Return placeholder.
         return Data(72);
@@ -239,6 +246,28 @@ Data SignatureBuilder<Transaction>::createSignature(
 
     const Data sighash = transaction.getSignatureHash(script, index, input.hashType, amount,
                                                 static_cast<SignatureVersion>(version));
+
+    if (signingMode == SigningMode_HashOnly) {
+        // Don't sign, only store hash-to-be-signed.  Return placeholder.
+        hashesForSigning.push_back(sighash);
+        return Data(72);
+    }
+    if (signingMode == SigningMode_External) {
+        // Use externally-provided signature
+        // Store hash for counting
+        size_t index = hashesForSigning.size();
+        hashesForSigning.push_back(sighash);
+
+        if (!externalSignatures.has_value() || externalSignatures.value().size() <= index) {
+            // Error: no or not enough signatures provided
+            return Data();
+        }
+        Data externalSignature = std::get<0>(externalSignatures.value()[index]);
+        externalSignature.push_back(static_cast<byte>(input.hashType));
+
+        // TODO verify signature
+        return externalSignature;
+    }
 
     const auto key = std::get<0>(pair.value());
     const auto pk = PrivateKey(key);

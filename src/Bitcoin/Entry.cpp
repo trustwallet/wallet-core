@@ -12,6 +12,7 @@
 #include "Signer.h"
 
 using namespace TW::Bitcoin;
+using namespace TW;
 using namespace std;
 
 bool Entry::validateAddress(TWCoinType coin, const string& address, byte p2pkh, byte p2sh, const char* hrp) const {
@@ -99,4 +100,27 @@ void Entry::sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
 
 void Entry::plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
     planTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+}
+
+Data Entry::preImageHash(TWCoinType coin, const Data& txInputData) const {
+    auto input = Proto::SigningInput();
+    assert(input.ParseFromArray(txInputData.data(), (int)txInputData.size()));
+
+    const auto hashes = Signer::preImageHashes(input);
+
+    if (hashes.size() == 0) {
+        return Data();
+    }
+    // for now return first hash TODO
+    return hashes[0];
+}
+
+void Entry::compile(TWCoinType coin, const Data& txInputData, const Data& signature, const PublicKey& publicKey, Data& dataOut) const {
+    auto input = Proto::SigningInput();
+    assert(input.ParseFromArray(txInputData.data(), (int)txInputData.size()));
+
+    std::vector<std::pair<Data, Data>> externalSignatures = {{signature, publicKey.bytes}};
+
+    auto serializedOut = Signer::sign(input, externalSignatures).SerializeAsString();
+    dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
 }

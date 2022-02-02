@@ -36,6 +36,9 @@ public:
     virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
     virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
+
+    virtual Data preImageHash(TWCoinType coin, const Data& txInputData) const;
+    virtual void compile(TWCoinType coin, const Data& txInputData, const Data& signature, const PublicKey& publicKey, Data& dataOut) const;
 };
 
 } // namespace TW::Bitcoin

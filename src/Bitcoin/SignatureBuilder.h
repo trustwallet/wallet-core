@@ -23,6 +23,8 @@ namespace TW::Bitcoin {
 enum SigningMode {
     SigningMode_Normal = 0, // normal signing
     SigningMode_SizeEstimationOnly, // no signing, only estimate size of the signature
+    SigningMode_HashOnly, // no signing, only collect hash to be signed
+    SigningMode_External, // no signing, signatures are provided
 };
 
 /// Class that performs Bitcoin transaction signing.
@@ -43,6 +45,12 @@ private:
 
     SigningMode signingMode = SigningMode_Normal;
 
+    /// For SigningMode_HashOnly, collect hash(es) here
+    std::vector<Data> hashesForSigning;
+
+    /// For SigningMode_External, signatures are provided here
+    std::optional<std::vector<std::pair<Data, Data>>> externalSignatures;
+
 public:
     /// Initializes a transaction signer with signing input.
     /// estimationMode: is set, no real signing is performed, only as much as needed to get the almost-exact signed size 
@@ -50,9 +58,10 @@ public:
         const SigningInput& input,
         const TransactionPlan& plan,
         Transaction& transaction,
-        SigningMode signingMode = SigningMode_Normal
+        SigningMode signingMode = SigningMode_Normal,
+        std::optional<std::vector<std::pair<Data, Data>>> externalSignatures = {}
     )
-      : input(input), plan(plan), transaction(transaction), signingMode(signingMode) {}
+      : input(input), plan(plan), transaction(transaction), signingMode(signingMode), externalSignatures(externalSignatures) {}
 
     /// Signs the transaction.
     ///
@@ -63,12 +72,14 @@ public:
     // internal, public for testability and Decred
     static Data pushAll(const std::vector<Data>& results);
 
+    std::vector<Data> getHashesForSigning() const { return hashesForSigning; }
+
 private:
     Result<void, Common::Proto::SigningError> sign(Script script, size_t index, const UTXO& utxo);
     Result<std::vector<Data>, Common::Proto::SigningError> signStep(Script script, size_t index,
-                                       const UTXO& utxo, uint32_t version) const;
+                                       const UTXO& utxo, uint32_t version);
     Data createSignature(const Transaction& transaction, const Script& script, const std::optional<KeyPair>&,
-                         size_t index, Amount amount, uint32_t version) const;
+                         size_t index, Amount amount, uint32_t version);
 
     /// Returns the private key for the given public key hash.
     std::optional<KeyPair> keyPairForPubKeyHash(const Data& hash) const;

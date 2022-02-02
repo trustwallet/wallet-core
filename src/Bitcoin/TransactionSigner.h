@@ -9,9 +9,13 @@
 #include "SigningInput.h"
 #include "Transaction.h"
 #include "TransactionBuilder.h"
+#include "../Data.h"
 #include "../KeyPair.h"
 #include "../Result.h"
 #include "../proto/Bitcoin.pb.h"
+
+#include <vector>
+#include <optional>
 
 namespace TW::Bitcoin {
 
@@ -23,7 +27,10 @@ public:
     static TransactionPlan plan(const SigningInput& input);
 
     // Sign an unsigned transaction.  Plan it if needed beforehand.
-    static Result<Transaction, Common::Proto::SigningError> sign(const SigningInput& input, bool estimationMode = false);
+    static Result<Transaction, Common::Proto::SigningError> sign(const SigningInput& input, bool estimationMode = false, std::optional<std::vector<std::pair<Data, Data>>> optionalExternalSigs = {});
+
+    /// Collect pre-image hashes to be signed
+    static std::vector<Data> preImageHashes(const SigningInput& input);
 };
 
 } // namespace TW::Bitcoin
