@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -287,7 +287,7 @@ TEST(HDWallet, Bip39Vectors) {
 }
 
 TEST(HDWallet, Derive_XpubPub_vs_PrivPub) {
-    // Test 3 routes for deriving address from mnemonic, result should be the same:
+    // Test different routes for deriving address from mnemonic, result should be the same:
     // - Direct: mnemonic -> seed -> privateKey -> publicKey -> address
     // - Extended Public: mnemonic -> seed -> zpub -> publicKey -> address
     // - Extended Private: mnemonic -> seed -> zpriv -> privateKey -> publicKey -> address
