@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -79,6 +79,23 @@ TEST(TWPublicKeyTests, Verify) {
 
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), false));
     ASSERT_TRUE(TWPublicKeyVerify(publicKey.get(), signature.get(), digest.get()));
+}
+
+TEST(TWPublicKeyTests, VerifyAsDER) {
+    const PrivateKey key = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const auto privateKey = WRAP(TWPrivateKey, new TWPrivateKey{ key });
+
+    const char* message = "Hello";
+    auto messageData = WRAPD(TWDataCreateWithBytes((const uint8_t*)message, strlen(message)));
+    auto digest = WRAPD(TWHashKeccak256(messageData.get()));
+
+    auto signature = WRAPD(TWPrivateKeySignAsDER(privateKey.get(), digest.get(), TWCurveSECP256k1));
+
+    auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), false));
+
+    ASSERT_TRUE(TWPublicKeyVerifyAsDER(publicKey.get(), signature.get(), digest.get()));
+
+    ASSERT_FALSE(TWPublicKeyVerify(publicKey.get(), signature.get(), digest.get()));
 }
 
 TEST(TWPublicKeyTests, VerifyEd25519) {

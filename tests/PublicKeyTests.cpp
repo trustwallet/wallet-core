@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -157,8 +157,7 @@ TEST(PublicKeyTests, IsValidWrongType) {
 }
 
 TEST(PublicKeyTests, Verify) {
-    const auto key = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
-    const auto privateKey = PrivateKey(key);
+    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
 
     const char* message = "Hello";
     const Data messageData = TW::data(message);
@@ -190,9 +189,32 @@ TEST(PublicKeyTests, Verify) {
     }
 }
 
+TEST(PublicKeyTests, VerifyAsDER) {
+    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+
+    const char* message = "Hello";
+    const Data messageData = TW::data(message);
+    const Data digest = Hash::sha256(messageData);
+
+    const auto signature = privateKey.signAsDER(digest, TWCurveSECP256k1);
+    EXPECT_EQ(signature.size(), 70);
+    EXPECT_EQ(hex(signature), "304402200f5d5a9e5fc4b82a625312f3be5d3e8ad017d882de86c72c92fcefa924e894c102202071772a14201a3a0debf381b5e8dea39fadb9bcabdc02ee71ab018f55bf717f");
+
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    EXPECT_EQ(hex(publicKey.bytes), "0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1");
+
+    EXPECT_TRUE(publicKey.verifyAsDER(signature, digest));
+
+    EXPECT_FALSE(publicKey.verify(signature, digest));
+
+    { // Negative: wrong key type
+        const auto publicKeyWrong = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1Extended);
+        EXPECT_FALSE(publicKeyWrong.verifyAsDER(signature, digest));
+    }
+}
+
 TEST(PublicKeyTests, VerifyEd25519Extended) {
-    const auto key = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
-    const auto privateKey = PrivateKey(key);
+    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
 
     const Data messageData = TW::data("Hello");
     const Data digest = Hash::sha256(messageData);
