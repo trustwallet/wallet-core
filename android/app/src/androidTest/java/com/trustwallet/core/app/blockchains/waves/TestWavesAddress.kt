@@ -18,7 +18,7 @@ class TestAddress {
         val pubkey = key.publicKeyCurve25519
         val address = AnyAddress(pubkey, CoinType.WAVES)
 
-        assertEquals(pubkey.data().toHex(), "0x559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d".toLowerCase())
+        assertEquals(pubkey.data().toHex(), "0x559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d".lowercase())
         assertEquals(address.description(), "3P2uzAzX9XTu1t32GkWw68YFFLwtapWvDds")
     }
 

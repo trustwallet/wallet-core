@@ -1,9 +1,10 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "ProtobufSerialization.h"
 #include "JsonSerialization.h"
 #include "../proto/Cosmos.pb.h"
 #include "Protobuf/coin.pb.h"
@@ -13,11 +14,13 @@
 #include "Protobuf/tx.pb.h"
 #include "Protobuf/crypto_secp256k1_keys.pb.h"
 #include "Protobuf/ibc_applications_transfer_tx.pb.h"
+#include "Protobuf/terra_wasm_v1beta1_tx.pb.h"
 
 #include "PrivateKey.h"
 #include "Data.h"
 #include "Hash.h"
 #include "Base64.h"
+#include "uint256.h"
 
 #include <google/protobuf/util/json_util.h>
 
@@ -118,6 +121,32 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 return any;
             }
 
+        case Proto::Message::kWasmTerraExecuteContractTransferMessage:
+            {
+                assert(msg.has_wasm_terra_execute_contract_transfer_message());
+                const auto& wasmExecute = msg.wasm_terra_execute_contract_transfer_message();
+                auto msgExecute = terra::wasm::v1beta1::MsgExecuteContract();
+                msgExecute.set_sender(wasmExecute.sender_address());
+                msgExecute.set_contract(wasmExecute.contract_address());
+                const std::string payload = Cosmos::wasmTerraExecuteTransferPayload(wasmExecute).dump();
+                msgExecute.set_execute_msg(payload);
+                any.PackFrom(msgExecute, ProtobufAnyNamespacePrefix);
+                return any;
+            }
+
+        case Proto::Message::kWasmTerraExecuteContractSendMessage:
+            {
+                assert(msg.has_wasm_terra_execute_contract_send_message());
+                const auto& wasmExecute = msg.wasm_terra_execute_contract_send_message();
+                auto msgExecute = terra::wasm::v1beta1::MsgExecuteContract();
+                msgExecute.set_sender(wasmExecute.sender_address());
+                msgExecute.set_contract(wasmExecute.contract_address());
+                const std::string payload = Cosmos::wasmTerraExecuteSendPayload(wasmExecute).dump();
+                msgExecute.set_execute_msg(payload);
+                any.PackFrom(msgExecute, ProtobufAnyNamespacePrefix);
+                return any;
+            }
+
         default:
             throw std::invalid_argument(std::string("Message not supported ") + std::to_string(msg.message_oneof_case()));
     }
@@ -203,6 +232,29 @@ std::string buildProtoTxJson(const Proto::SigningInput& input, const std::string
         {"mode", broadcastMode(input.mode())}
     };
     return jsonSerialized.dump();
+}
+
+json wasmTerraExecuteTransferPayload(const Proto::Message_WasmTerraExecuteContractTransfer& msg) {
+    return {
+        {"transfer",
+            {
+                {"amount", toString(load(data(msg.amount())))},
+                {"recipient", msg.recipient_address()}
+            }
+        }
+    };
+}
+
+json wasmTerraExecuteSendPayload(const Proto::Message_WasmTerraExecuteContractSend& msg) {
+    return {
+        {"send",
+            {
+                {"amount", toString(load(data(msg.amount())))},
+                {"contract", msg.recipient_contract_address()},
+                {"msg", msg.msg()}
+            }
+        }
+    };
 }
 
 } // namespace

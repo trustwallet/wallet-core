@@ -77,4 +77,25 @@ class BitcoinCashAddress : public CashAddress {
     }
 };
 
+class ECashAddress : public CashAddress {
+  public:
+    static const std::string hrp; // HRP_ECASH
+
+    /// Initializes an address with a string representation.
+    explicit ECashAddress(const std::string& string)
+        : CashAddress(hrp, string) {}
+
+    /// Initializes an address with a collection of bytes.
+    explicit ECashAddress(const Data& data)
+        : CashAddress(hrp, data) {}
+
+    /// Initializes an address with a public key.
+    explicit ECashAddress(const PublicKey& publicKey)
+        : CashAddress(hrp, publicKey) {}
+
+    static bool isValid(const std::string& string) {
+        return CashAddress::isValid(hrp, string);
+    }
+};
+
 } // namespace TW::Bitcoin

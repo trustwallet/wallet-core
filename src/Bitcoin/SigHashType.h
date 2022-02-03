@@ -17,9 +17,10 @@ static const uint32_t SigHashMask = 0x1f;
 
 // Return the default HashType for the given coin, such as TWBitcoinSigHashTypeAll.
 inline enum TWBitcoinSigHashType hashTypeForCoin(enum TWCoinType coinType) {
-    // set fork hash type for BCH
+    // set fork hash type for BCH and XEC
     switch (coinType) {
         case TWCoinTypeBitcoinCash:
+        case TWCoinTypeECash:
             return (TWBitcoinSigHashType)((uint32_t)TWBitcoinSigHashTypeAll | (uint32_t)TWBitcoinSigHashTypeFork);
         case TWCoinTypeBitcoinGold:
             return (TWBitcoinSigHashType)((uint32_t)TWBitcoinSigHashTypeAll | (uint32_t)TWBitcoinSigHashTypeForkBTG);

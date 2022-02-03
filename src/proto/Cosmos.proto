@@ -85,6 +85,40 @@ message Message {
         string type_prefix = 3;
     }
 
+    // transfer within wasm/MsgExecuteContract, used by Terra
+    message WasmTerraExecuteContractTransfer {
+        // sender address
+        string sender_address = 1;
+
+        // token contract address
+        string contract_address = 2;
+
+        // size is uint128, as bigint
+        bytes amount = 3;
+
+        string recipient_address = 4;
+    }
+
+    // send within wasm/MsgExecuteContract, used by Terra
+    message WasmTerraExecuteContractSend {
+        // sender address
+        string sender_address = 1;
+
+        // token contract address
+        string contract_address = 2;
+
+        // size is uint128, as bigint
+        bytes amount = 3;
+
+        string recipient_contract_address = 4;
+
+        // execute_msg to be executed in the context of recipient contract
+        string msg = 5;
+
+        // used in case you are sending native tokens along with this message
+        repeated string coin = 6;
+    }
+
     message RawJSON {
         string type = 1;
         string value = 2;
@@ -98,6 +132,8 @@ message Message {
         BeginRedelegate restake_message = 5;
         WithdrawDelegationReward withdraw_stake_reward_message = 6;
         RawJSON raw_json_message = 7;
+        WasmTerraExecuteContractTransfer wasm_terra_execute_contract_transfer_message = 8;
+        WasmTerraExecuteContractSend wasm_terra_execute_contract_send_message = 9;
     }
 }
 
