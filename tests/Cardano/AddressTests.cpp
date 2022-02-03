@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,6 +9,7 @@
 #include "HDWallet.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
+#include "Coin.h"
 
 #include <gtest/gtest.h>
 
@@ -47,6 +48,8 @@ TEST(CardanoAddress, Validation) {
     ASSERT_TRUE(AddressV3::isValid("DdzFFzCqrhssmYoG5Eca1bKZFdGS8d6iag1mU4wbLeYcSPVvBNF2wRG8yhjzQqErbg63N6KJA4DHqha113tjKDpGEwS5x1dT2KfLSbSJ"));
     ASSERT_TRUE(AddressV3::isValid("DdzFFzCqrht7HGoJ87gznLktJGywK1LbAJT2sbd4txmgS7FcYLMQFhawb18ojS9Hx55mrbsHPr7PTraKh14TSQbGBPJHbDZ9QVh6Z6Di"));
 
+    // invalid V3, length (cardano-crypto.js)
+    ASSERT_FALSE(AddressV3::isValid("addr1sna05l45z33zpkm8z44q8f0h57wxvm0c86e34wlmua7gtcrdgrdrzy8ny3walyfjanhe33nsyuh088qr5gepqaen6jsa9r94xvvd7fh6jc3e6x"));
     // invalid checksum V3
     ASSERT_FALSE(AddressV3::isValid("PREFIX1qvqsyqcyq5rqwzqfpg9scrgwpugpzysnzs23v9ccrydpk8qarc0jqxuzx4s"));
     // invalid checksum V2
@@ -77,6 +80,31 @@ TEST(CardanoAddress, FromStringV3) {
         EXPECT_EQ(AddressV3::Network_Production, address.networkId);
         EXPECT_EQ(AddressV3::Kind_Base, address.kind);
         EXPECT_EQ("8d98bea0414243dc84070f96265577e7e6cf702d62e871016885034ecc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468", hex(address.bytes));
+    }
+}
+
+TEST(CardanoAddress, MnemonicToAddressV3) {
+    // Test from cardano-crypto.js; Test wallet
+    const auto mnemonic = "cost dash dress stove morning robust group affair stomach vacant route volume yellow salute laugh";
+    const auto coin = TWCoinTypeCardano;
+    const auto derivPath = derivationPath(coin);
+
+    auto wallet = HDWallet(mnemonic, "");
+
+    {
+        const auto address = wallet.deriveAddress(coin);
+        EXPECT_EQ(address, "addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq");
+    }
+
+    {
+        const auto privateKey = wallet.getKey(coin, derivPath);
+        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Extended);
+
+        const auto address = AddressV3(publicKey);
+        EXPECT_EQ(address.string(), "addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq");
+        EXPECT_EQ(address.networkId, AddressV3::Network_Production);
+        EXPECT_EQ(address.kind, AddressV3::Kind_Base);
+        EXPECT_EQ(hex(address.bytes), "8d98bea0414243dc84070f96265577e7e6cf702d62e871016885034e" "cc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468");
     }
 }
 
