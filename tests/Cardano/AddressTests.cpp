@@ -14,8 +14,8 @@
 #include <gtest/gtest.h>
 
 
-using namespace TW;
 using namespace TW::Cardano;
+using namespace TW;
 using namespace std;
 
 
