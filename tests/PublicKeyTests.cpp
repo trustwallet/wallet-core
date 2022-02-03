@@ -206,6 +206,11 @@ TEST(PublicKeyTests, VerifyAsDER) {
     EXPECT_TRUE(publicKey.verifyAsDER(signature, digest));
 
     EXPECT_FALSE(publicKey.verify(signature, digest));
+
+    { // Negative: wrong key type
+        const auto publicKeyWrong = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1Extended);
+        EXPECT_FALSE(publicKey.verifyAsDER(signature, digest));
+    }
 }
 
 TEST(PublicKeyTests, VerifyEd25519Extended) {
