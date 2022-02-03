@@ -209,7 +209,7 @@ TEST(PublicKeyTests, VerifyAsDER) {
 
     { // Negative: wrong key type
         const auto publicKeyWrong = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1Extended);
-        EXPECT_FALSE(publicKey.verifyAsDER(signature, digest));
+        EXPECT_FALSE(publicKeyWrong.verifyAsDER(signature, digest));
     }
 }
 
