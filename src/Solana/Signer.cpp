@@ -150,7 +150,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto recipientTokenAddress = Address(protoMessage.recipient_token_address());
                 auto amount = protoMessage.amount();
                 auto decimals = static_cast<uint8_t>(protoMessage.decimals());
-                message = Message::createTokenTransfer(userAddress, tokenMintAddress, senderTokenAddress, recipientTokenAddress, amount, decimals, blockhash);
+                const auto memo = protoMessage.memo();
+                message = Message::createTokenTransfer(userAddress, tokenMintAddress, senderTokenAddress, recipientTokenAddress, amount, decimals, blockhash, memo);
                 signerKeys.push_back(key);
             }
             break;
@@ -165,7 +166,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto senderTokenAddress = Address(protoMessage.sender_token_address());
                 auto amount = protoMessage.amount();
                 auto decimals = static_cast<uint8_t>(protoMessage.decimals());
-                message = Message::createTokenCreateAndTransfer(userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress, senderTokenAddress, amount, decimals, blockhash);
+                const auto memo = protoMessage.memo();
+                message = Message::createTokenCreateAndTransfer(userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress, senderTokenAddress, amount, decimals, blockhash, memo);
                 signerKeys.push_back(key);                
             }
             break;

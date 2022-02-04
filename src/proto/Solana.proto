@@ -60,6 +60,7 @@ message TokenTransfer {
     string recipient_token_address = 3;
     uint64 amount = 4;
     uint32 decimals = 5; // Note: 8-bit value
+    string memo = 6;  // optional
 }
 
 // CreateTokenAccount and TokenTransfer combined
@@ -72,6 +73,7 @@ message CreateAndTransferToken {
     string sender_token_address = 4;
     uint64 amount = 5;
     uint32 decimals = 6; // Note: 8-bit value
+    string memo = 7;  // optional
 }
 
 // Input data necessary to create a signed transaction.

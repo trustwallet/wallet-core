@@ -355,6 +355,29 @@ TEST(TWAnySignerSolana, SignCreateAndTransferToken) {
     ASSERT_EQ(output.encoded(), expectedString);
 }
 
+TEST(TWAnySignerSolana, SignCreateAndTransferTokenWithMemo) {
+    const auto privateKeyData = Base58::bitcoin.decode("66ApBuKpo2uSzpjGBraHq7HP8UZMUJzp3um8FdEjkC9c");
+    EXPECT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ");
+
+    auto input = Solana::Proto::SigningInput();
+    auto& message = *input.mutable_create_and_transfer_token_transaction();
+    message.set_recipient_main_address("71e8mDsh3PR6gN64zL1HjwuxyKpgRXrPDUJT7XXojsVd");
+    message.set_token_mint_address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
+    message.set_recipient_token_address("EF6L8yJT1SoRoDCkAZfSVmaweqMzfhxZiptKi7Tgj5XY");
+    message.set_sender_token_address("ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf");
+    message.set_amount(2900);
+    message.set_decimals(6);
+    message.set_memo("HelloSolanaMemo370");
+    input.set_private_key(privateKeyData.data(), privateKeyData.size());
+    input.set_recent_blockhash("DMmDdJP41M9mw8Z4586VSvxqGCrqPy5uciF6HsKUVDja");
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    auto expectedString = "A1evX2WGFXJHJaKbkrAtQBqY8cLF9ZGZUBRp6jJBEavwTLUuwHkk4m9CUJK4MLAwXswrzQZHchbhEeAW82FPmbRQguZqmjyC923PBs9UBVXj8NSvU8pGDNjJikQwkkH6NZxr94o3DtqM9isACTDarBqDauT4VLsWFFbnu8d2fxeQ1u2BhwNsssRNSkUYGQzTk66FRpDLsQDudM8koBaqyBRaXmU7HUYqtvNoHeKF38GPwKExTAz89LXhWyo6rLkEzGwKZhL6f8SKnqjLjzaFNN2j1UD6j34nVbXkxKm3X6kZY82qQtpvxh1yPKPUypK5TUfJD829nKePJRSj8wRw1awFGvdbr7oG6bx9cAVJFszABQTYWPY7r114tcJi39vFqRfmxVczPBLwL4yZ4pZWEJcCe9fe411bi4qj46zryLB6D91XfHRYFmnUha5EgqyXRASiSKQSnTwHtDFJaoRqaTTrTuAk6x5Zinp5q1nasGCWKxT7TKCXh1UFMyyJeFmofMM7gvAubNd3HmaxYtiz5Vrs6E1h6ViMvct3YmmzJW6WMRkq9S6nskCPRaJdfhvUASJST8huasDq3niFyvVfv5ABUqoG5vGB19bKiHR9eQAcn8hjqiJSpKxRkKn8JKJYV";
+    ASSERT_EQ(output.encoded(), expectedString);
+}
+
 TEST(TWAnySignerSolana, SignJSON) {
     auto json = STRING(R"({"recentBlockhash":"11111111111111111111111111111111","transferTransaction":{"recipient":"EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd","value":"42"}})");
     Data keyData = Base58::bitcoin.decode("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr");
