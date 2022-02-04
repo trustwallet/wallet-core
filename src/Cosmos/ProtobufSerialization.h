@@ -9,6 +9,7 @@
 #include "../proto/Cosmos.pb.h"
 #include "Data.h"
 
+#include <nlohmann/json.hpp>
 #include <string>
 
 namespace TW::Cosmos {
@@ -22,5 +23,9 @@ Data buildSignature(const Proto::SigningInput& input, const std::string& seriali
 std::string buildProtoTxRaw(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, const Data& signature);
 
 std::string buildProtoTxJson(const Proto::SigningInput& input, const std::string& serializedTx);
+
+nlohmann::json wasmTerraExecuteTransferPayload(const Proto::Message_WasmTerraExecuteContractTransfer& msg);
+
+nlohmann::json wasmTerraExecuteSendPayload(const Proto::Message_WasmTerraExecuteContractSend& msg);
 
 } // namespace
