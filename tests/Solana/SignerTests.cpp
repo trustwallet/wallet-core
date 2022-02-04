@@ -81,6 +81,33 @@ TEST(SolanaSigner, CompiledInstructionFindAccount) {
     }
 }
 
+TEST(SolanaSigner, Adam) {
+    const auto privateKey =
+        PrivateKey(parse_hex("09ffc7b106b52dc0c49016dcb819de514d4070982036e23c36a548356739df0d"));
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+    ASSERT_EQ(hex(publicKey.bytes), "dbffc9869d1f9bdf6bf8757d79dd8895a9ac3fc88c430c539d4096084216d6b2");
+
+    const auto from = Address(publicKey);
+    EXPECT_EQ(from.string(), "FonWJt4Ck3Hda5UcbsFZKAgfncoXPVfvnHfaM2wCf6V7");
+
+    auto to = Address("GWi9jLQRLgi5X868PgtaKg9HrgkwoHxfSHsLGonFM2VJ");
+    Solana::Hash recentBlockhash("AvkdWj3QhN8HDN1csDiQzt22WqdCFoy7GxvicS35Lecw");
+    auto transaction = Transaction(from,
+        to,
+        10000000, // 0.01
+        recentBlockhash);
+
+    std::vector<PrivateKey> signerKeys;
+    signerKeys.push_back(privateKey);
+    Signer::sign(signerKeys, transaction);
+
+    EXPECT_EQ(transaction.signatures.size(), 1);
+    //EXPECT_EQ(hex(Data(transaction.signatures[0].bytes.begin(), transaction.signatures[0].bytes.end())), "297066e8db90f0a5130dbd353ca23584d719b5d0b58dbd18c995b5a0b9efa9f76362b1d77249fd5e8c075cbba398fe21181942b2f6097148c684d4ce8c07530e");
+
+    auto expectedString = "4RRg8Hgq4x99fx4QMFCiMBRtVu9NMMY9uHoZJdNE3ryXeosXehPY2KYV6nYJUaE7Nb4RVCjgrXMwUyyraDtmsXWzEvbNZqX82eD6v4RHMXw4SbbAn9MYu1wpJpNbwCXwDC1L7R4E3MViqgCmo2md21tm5HQzv8EcWGjh7U6eAcndyzRCX21LoF1YAfGJvQisA6suG4x1Ty1cHBimUemvx1bBA62hA8wzTxFJUCU6tgsGepETWbx22hVBqzfxPSykYv2JvdMNrZcDPBECevoeJZX2Ktf4DDhd3ZnPH";
+    EXPECT_EQ(transaction.serialize(), expectedString);
+}
+
 TEST(SolanaSigner, SingleSignTransaction) {
     const auto privateKey =
         PrivateKey(Base58::bitcoin.decode("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr"));
