@@ -353,7 +353,7 @@ TEST(SolanaSigner, SignCreateTokenAccount) {
     EXPECT_EQ(transaction.serialize(), expectedString);
 }
 
-TEST(SolanaSigner, SignCreateTokenAccountForOther) {
+TEST(SolanaSigner, SignCreateTokenAccountForOther_3E6UFV) {
     const auto privateKeySigner =
         PrivateKey(parse_hex("4b9d6f57d28b06cbfa1d4cc710953e62d653caf853415c56ffd9d150acdeb7f7"));
     const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
@@ -378,7 +378,7 @@ TEST(SolanaSigner, SignCreateTokenAccountForOther) {
     EXPECT_EQ(transaction.serialize(), expectedString);
 }
 
-TEST(SolanaSigner, SignTransferToken) {
+TEST(SolanaSigner, SignTransferToken_3vZ67C) {
     const auto privateKeySigner =
         PrivateKey(Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"));
     const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);

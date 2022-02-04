@@ -153,7 +153,7 @@ TEST(SolanaTransaction, CreateTokenAccountTransaction) {
     EXPECT_EQ(transaction.serialize(), expectedString);
 }
 
-TEST(SolanaTransaction, TransferTokenTransaction) {
+TEST(SolanaTransaction, TransferTokenTransaction_3vZ67C) {
     auto signer = Address("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
     auto token = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
     auto senderTokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
