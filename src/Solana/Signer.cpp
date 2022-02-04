@@ -28,6 +28,17 @@ void Signer::sign(const std::vector<PrivateKey>& privateKeys, Transaction& trans
     }
 }
 
+// Helper to convert protobuf-string-collection references to Address vector
+std::vector<Address> convertReferences(const google::protobuf::RepeatedPtrField<std::string>& references) {
+    std::vector<Address> ret;
+    for (auto i = 0; i < references.size(); ++i) {
+        if (Address::isValid(references[i])) {
+            ret.push_back(Address(references[i]));
+        }
+    }
+    return ret;
+}
+
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto blockhash = Solana::Hash(input.recent_blockhash());
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
@@ -44,7 +55,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                     /* to */ Address(protoMessage.recipient()),
                     /* value */ protoMessage.value(),
                     /* recent_blockhash */ blockhash,
-                    /* memo */ protoMessage.memo());
+                    /* memo */ protoMessage.memo(),
+                    convertReferences(protoMessage.references()));
                 signerKeys.push_back(key);
             }
             break;
@@ -151,7 +163,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto amount = protoMessage.amount();
                 auto decimals = static_cast<uint8_t>(protoMessage.decimals());
                 const auto memo = protoMessage.memo();
-                message = Message::createTokenTransfer(userAddress, tokenMintAddress, senderTokenAddress, recipientTokenAddress, amount, decimals, blockhash, memo);
+                message = Message::createTokenTransfer(userAddress, tokenMintAddress, senderTokenAddress, recipientTokenAddress, amount, decimals, blockhash,
+                    memo, convertReferences(protoMessage.references()));
                 signerKeys.push_back(key);
             }
             break;
@@ -167,7 +180,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto amount = protoMessage.amount();
                 auto decimals = static_cast<uint8_t>(protoMessage.decimals());
                 const auto memo = protoMessage.memo();
-                message = Message::createTokenCreateAndTransfer(userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress, senderTokenAddress, amount, decimals, blockhash, memo);
+                message = Message::createTokenCreateAndTransfer(userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress, senderTokenAddress, amount, decimals, blockhash,
+                    memo, convertReferences(protoMessage.references()));
                 signerKeys.push_back(key);                
             }
             break;

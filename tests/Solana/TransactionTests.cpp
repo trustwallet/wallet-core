@@ -66,17 +66,18 @@ TEST(SolanaTransaction, TransferTransactionPayToSelf) {
     ASSERT_EQ(transaction.serialize(), expectedString);
 }
 
-TEST(SolanaTransaction, TransferWithMemoTransaction) {
+TEST(SolanaTransaction, TransferWithMemoAndReferenceTransaction) {
     const auto from = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
     const auto to = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
     const Solana::Hash recentBlockhash("11111111111111111111111111111111");
     const auto memo = "HelloSolana73";
-    auto transaction = Transaction(from, to, 42, recentBlockhash, memo);
+    std::vector<Address> references = {Address("GaeTAQZyhVEocTC7iY8GztSyY5cBAJTkAUUA1kLFLMV")};
+    auto transaction = Transaction(from, to, 42, recentBlockhash, memo, references);
     const Signature signature("3CFWDEK51noPJP4v2t8JZ3qj7kC7kLKyws9akfHMyuJnQ35EtzBptHqvaHfeswiLsvUSxzMVNoj4CuRxWtDD9zB1");
     transaction.signatures.clear();
     transaction.signatures.push_back(signature);
 
-    auto expectedString = "3A58Y1sbbudSV1piZjeYomRYLxi6veFv4udmhePrVSacAMRoaUonTuVKrctSMJsuGczycbRwhvHUUh6FDgYCkGjYRxaz5xJe7jLbcmViLDNCeFk3kTcLMGYFk1KFhiQG55zVTXSF75R1Z6vsXPN96hk914yN6sDW4LBp8CUpMQNGW73QnuUS4jMqp8kuAtT5EWHMq4JR5mB6jcuVCENaN87p5nbKPaqDoZ7BR9kWQEBwawXSW1MR1UE13VMXHmYAoxtCmSHaGSoRJqoWjTBK3ksco5YuTzuZfwxaFzQazZpEHZyE6duy5aX4yEw";
+    auto expectedString = "3pzQEdU38uMQgegTyRsRLi23NK4YokgZeSVLXYzFB7HShqZZH8FdBLqj6CeA2d2L8oR9KF2UaJPWbE8YBFmSdaafegoSXJtyj7ciwTjk5ieSXnPXtqH1TEcnMntZATg7gKpeFg6iehqdSUtZuQD1PGmHA1TrzzqLpRSRrc1sqPz8EpSJcQr1Y41B1XCEAfSJDfcuNKrfFrnQaVtRz6tseQfd9uXNYNuR1NQSepWdav5wQiohLUMDiZtxuwb7FQkQ68WE1FDsHmd4JpbWKmDEjz7HFyQY37vf6NBJyX5qWJpFMSg5qGKWvhNCDM32yM4A7HhPeoTWEywE5CXcNmQqdbRt4BzF1A11uqv4etWj";
     EXPECT_EQ(transaction.serialize(), expectedString);
 }
 

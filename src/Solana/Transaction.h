@@ -284,17 +284,27 @@ class Message {
     // compile the instructions; replace instruction accounts with indices
     void compileInstructions();
 
+    static void appendReferences(std::vector<AccountMeta>& accountMetas, const std::vector<Address>& references) {
+        for (auto reference: references) {
+            accountMetas.push_back(AccountMeta(reference, false, true));
+        }
+    }
+
     // This constructor creates a default single-signer Transfer message
-    static Message createTransfer(const Address& from, const Address& to, uint64_t value, Hash recentBlockhash, std::string memo = "") {
+    static Message createTransfer(const Address& from, const Address& to, uint64_t value, Hash recentBlockhash,
+        std::string memo = "", std::vector<Address> references = {}
+    ) {
         std::vector<Instruction> instructions;
         if (memo.length() > 0) {
             // Optional memo. Order: before transfer, as per documentation.
             instructions.push_back(Instruction::createMemo(memo));
         }
-        instructions.push_back(Instruction::createTransfer(std::vector<AccountMeta>{
+        std::vector<AccountMeta> accountMetas = {
             AccountMeta(from, true, false),
             AccountMeta(to, false, false),
-        }, value));
+        };
+        appendReferences(accountMetas, references);
+        instructions.push_back(Instruction::createTransfer(accountMetas, value));
         return Message(recentBlockhash, instructions);
     }
 
@@ -415,26 +425,28 @@ class Message {
     // see transfer_checked() solana-program-library/token/program/src/instruction.rs
     static Message createTokenTransfer(const Address& signer, const Address& tokenMintAddress,
         const Address& senderTokenAddress, const Address& recipientTokenAddress, uint64_t amount, uint8_t decimals, Hash recentBlockhash,
-        std::string memo = ""
+        std::string memo = "", std::vector<Address> references = {}
     ) {
         std::vector<Instruction> instructions;
         if (memo.length() > 0) {
             // Optional memo. Order: before transfer, as per documentation.
             instructions.push_back(Instruction::createMemo(memo));
         }
-        instructions.push_back(Instruction::createTokenTransfer(std::vector<AccountMeta>{
+        std::vector<AccountMeta> accountMetas = {
             AccountMeta(senderTokenAddress, false, false),
             AccountMeta(tokenMintAddress, false, true),
             AccountMeta(recipientTokenAddress, false, false),
             AccountMeta(signer, true, false),
-        }, amount, decimals));
+        };
+        appendReferences(accountMetas, references);
+        instructions.push_back(Instruction::createTokenTransfer(accountMetas, amount, decimals));
         return Message(recentBlockhash, instructions);
     }
 
     // This constructor creates a createAndTransferToken message, combining createAccount and transfer.
     static Message createTokenCreateAndTransfer(const Address& signer, const Address& recipientMainAddress, const Address& tokenMintAddress,
         const Address& recipientTokenAddress, const Address& senderTokenAddress, uint64_t amount, uint8_t decimals, Hash recentBlockhash,
-        std::string memo = ""
+        std::string memo = "", std::vector<Address> references = {}
     ) {
         const auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
         const auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
@@ -453,12 +465,14 @@ class Message {
             // Optional memo. Order: before transfer, as per documentation.
             instructions.push_back(Instruction::createMemo(memo));
         }
-        instructions.push_back(Instruction::createTokenTransfer(std::vector<AccountMeta>{
+        std::vector<AccountMeta> accountMetas = {
             AccountMeta(senderTokenAddress, false, false),
             AccountMeta(tokenMintAddress, false, true),
             AccountMeta(recipientTokenAddress, false, false),
             AccountMeta(signer, true, false),
-        }, amount, decimals));
+        };
+        appendReferences(accountMetas, references);
+        instructions.push_back(Instruction::createTokenTransfer(accountMetas, amount, decimals));
         return Message(recentBlockhash, instructions);
     }
 };
@@ -475,8 +489,8 @@ class Transaction {
     }
 
     // Default basic transfer transaction
-    Transaction(const Address& from, const Address& to, uint64_t value, Hash recentBlockhash, std::string memo = "")
-        : message(Message::createTransfer(from, to, value, recentBlockhash, memo)) {
+    Transaction(const Address& from, const Address& to, uint64_t value, Hash recentBlockhash, std::string memo = "", std::vector<Address> references = {})
+        : message(Message::createTransfer(from, to, value, recentBlockhash, memo, references)) {
         this->signatures.resize(1, Signature(defaultSignature));
     }
 
