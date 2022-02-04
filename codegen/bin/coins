@@ -14,6 +14,10 @@ def self.format_name(n)
   formatted
 end
 
+def self.coin_name(coin)
+  coin['displayName'] || coin['name']
+end
+
 def self.coin_img(coin)
   "<img src=\"https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/#{coin}/info/logo.png\" width=\"32\" />"
 end
