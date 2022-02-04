@@ -66,12 +66,6 @@ bool TWPublicKeyVerifySchnorr(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull 
     return pk->impl.verifySchnorr(s, m);
 }
 
-bool TWPublicKeyVerifyDer(struct TWPublicKey *_Nonnull pk, TWData *signature, TWData *message) {
-    const auto& s = *reinterpret_cast<const TW::Data *>(signature);
-    const auto& m = *reinterpret_cast<const TW::Data *>(message);
-    return pk->impl.verifyDer(s, m);
-}
-
 enum TWPublicKeyType TWPublicKeyKeyType(struct TWPublicKey *_Nonnull publicKey) {
     return publicKey->impl.type;
 }

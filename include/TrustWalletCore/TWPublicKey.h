@@ -49,9 +49,6 @@ bool TWPublicKeyVerifyAsDER(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull si
 TW_EXPORT_METHOD
 bool TWPublicKeyVerifySchnorr(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull signature, TWData *_Nonnull message);
 
-TW_EXPORT_METHOD
-bool TWPublicKeyVerifyDer(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull signature, TWData *_Nonnull message);
-
 TW_EXPORT_PROPERTY
 enum TWPublicKeyType TWPublicKeyKeyType(struct TWPublicKey *_Nonnull publicKey);
 

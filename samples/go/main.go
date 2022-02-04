@@ -160,7 +160,7 @@ func tssSignBitcoinDemo() {
 	fmt.Println("output.encoded:  ", len(output.Encoded), hex.EncodeToString(output.Encoded))
 
 	fmt.Println("\n==> Double check signature validity (result should be true)")
-	verifyRes := core.PublicKeyVerifyDer(publicKey, core.PublicKeyTypeSECP256k1, signature, hash)
+	verifyRes := core.PublicKeyVerifyAsDER(publicKey, core.PublicKeyTypeSECP256k1, signature, hash)
 	fmt.Println(verifyRes)
 
 	fmt.Println("")

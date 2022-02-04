@@ -189,23 +189,6 @@ bool PublicKey::verifySchnorr(const Data& signature, const Data& message) const 
     }
 }
 
-bool PublicKey::verifyDer(const Data& signature, const Data& message) const {
-    switch (type) {
-    case TWPublicKeyTypeSECP256k1:
-        {
-            Data sig(64);
-            int ret = ecdsa_sig_from_der(signature.data(), signature.size(), sig.data());
-            if (ret) {
-                return false;
-            }
-            return ecdsa_verify_digest(&secp256k1, bytes.data(), sig.data(), message.data()) == 0;
-        }
-
-    default:
-        return false;
-    }
-}
-
 Data PublicKey::hash(const Data& prefix, Hash::Hasher hasher, bool skipTypeByte) const {
     const auto offset = std::size_t(skipTypeByte ? 1 : 0);
     const auto hash = hasher(bytes.data() + offset, bytes.size() - offset);

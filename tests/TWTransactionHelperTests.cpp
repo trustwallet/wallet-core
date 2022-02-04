@@ -244,7 +244,7 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
 
     // Verify signature (pubkey & hash & signature)
     {
-        EXPECT_TRUE(publicKey.verifyDer(signature, preImageHashData));
+        EXPECT_TRUE(publicKey.verifyAsDER(signature, preImageHashData));
     }
 
     /// Step 3: Compile transaction info
