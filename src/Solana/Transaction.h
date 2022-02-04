@@ -27,6 +27,7 @@ const std::string SYSVAR_CLOCK_ID_ADDRESS = "SysvarC1ock111111111111111111111111
 const std::string STAKE_CONFIG_ID_ADDRESS = "StakeConfig11111111111111111111111111111111";
 const std::string NULL_ID_ADDRESS = "11111111111111111111111111111111";
 const std::string SYSVAR_STAKE_HISTORY_ID_ADDRESS = "SysvarStakeHistory1111111111111111111111111";
+const std::string MEMO_PROGRAM_ID_ADDRESS = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
 
 template <typename T>
 Data shortVecLength(std::vector<T> vec) {
@@ -172,6 +173,12 @@ struct Instruction {
 
         return Instruction(Address(TOKEN_PROGRAM_ID_ADDRESS), accounts, data);
     }
+
+    static Instruction createMemo(std::string memo) {
+        auto data = TW::data(memo);
+        std::vector<AccountMeta> accounts; // empty
+        return Instruction(Address(MEMO_PROGRAM_ID_ADDRESS), accounts, data);
+    }
 };
 
 // A compiled instruction
@@ -278,13 +285,17 @@ class Message {
     void compileInstructions();
 
     // This constructor creates a default single-signer Transfer message
-    static Message createTransfer(const Address& from, const Address& to, uint64_t value, Hash recentBlockhash) {
-        auto instruction = Instruction::createTransfer(std::vector<AccountMeta>{
+    static Message createTransfer(const Address& from, const Address& to, uint64_t value, Hash recentBlockhash, std::string memo = "") {
+        std::vector<Instruction> instructions;
+        if (memo.length() > 0) {
+            // Optional memo. Order: before transfer, as per documentation.
+            instructions.push_back(Instruction::createMemo(memo));
+        }
+        instructions.push_back(Instruction::createTransfer(std::vector<AccountMeta>{
             AccountMeta(from, true, false),
             AccountMeta(to, false, false),
-        }, value);
-        std::vector<Instruction> instructions = {instruction};
-        return Message(recentBlockhash, {instruction});
+        }, value));
+        return Message(recentBlockhash, instructions);
     }
 
     // This constructor creates a create_account_with_seed_and_delegate_stake message
@@ -450,8 +461,8 @@ class Transaction {
     }
 
     // Default basic transfer transaction
-    Transaction(const Address& from, const Address& to, uint64_t value, Hash recentBlockhash)
-        : message(Message::createTransfer(from, to, value, recentBlockhash)) {
+    Transaction(const Address& from, const Address& to, uint64_t value, Hash recentBlockhash, std::string memo = "")
+        : message(Message::createTransfer(from, to, value, recentBlockhash, memo)) {
         this->signatures.resize(1, Signature(defaultSignature));
     }
 

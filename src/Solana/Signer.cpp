@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -43,7 +43,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                     /* from */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
                     /* to */ Address(protoMessage.recipient()),
                     /* value */ protoMessage.value(),
-                    /* recent_blockhash */ blockhash);
+                    /* recent_blockhash */ blockhash,
+                    /* memo */ protoMessage.memo());
                 signerKeys.push_back(key);
             }
             break;

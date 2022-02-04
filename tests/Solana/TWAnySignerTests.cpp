@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -58,6 +58,24 @@ TEST(TWAnySignerSolana, SignTransferToSelf) {
         "EFJ1xmRwW9ZKw8SKMAL6VRWxp87oLu7PSmf5b8R34vCaww3XLKtZkoP49a7TUK31DqPN5xJCceMB3BZJyaojQaKU8n"
         "UkzSGf89LY6abZXp9krKAebvc6bSMzTP8SHSvbmZbf3VtejmpQeN9X6e7WVDn6oDa2bGT";
     ASSERT_EQ(output.encoded(), expectedString);
+}
+
+TEST(TWAnySignerSolana, SignTransferWithMemo) {
+    const auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto input = Solana::Proto::SigningInput();
+
+    auto& message = *input.mutable_transfer_transaction();
+    message.set_recipient("71e8mDsh3PR6gN64zL1HjwuxyKpgRXrPDUJT7XXojsVd");
+    message.set_value((uint64_t)10000000L);
+    message.set_memo("HelloSolanaMemo");
+    input.set_private_key(privateKey.data(), privateKey.size());
+    input.set_recent_blockhash("11111111111111111111111111111111");
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    const auto expectedString = "JLex7MBfUroknTPtuqayRCPHxZX2ddnxz4WeT7FEFJBb8U3RKHEhYi6GwPkJSYswV4eoymv7zanw8hcDmTnubXGTXKPRtxeiMSKzbMvsJXwG7qQS45sKFEq9jeoCWyz9poCq9c8S66N5UuJuFqVuopoxkcGMAh9VyZgvgPAVjWGPUWqJxp8kuP13gVx8csYMVxZKHKFUbFJW7XNkY2vCUVT68azH9fzS6NmfBFrVEncU2bD93iadaNX2QJeic4AYXvHi6bKXMoXzyPgjbUAcx5gt7HooXtSGzMTX6GfdnUyecYrMKGEFHHbSMz255NRx83Y7Q6RKRj2hmMV1isDyF7Ft5e6xe136usK4dzX27";
+    EXPECT_EQ(output.encoded(), expectedString);
 }
 
 TEST(TWAnySignerSolana, SignDelegateStakeTransaction_noStakeAccount) {

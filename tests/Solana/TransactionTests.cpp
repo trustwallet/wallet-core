@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -64,6 +64,20 @@ TEST(SolanaTransaction, TransferTransactionPayToSelf) {
         "EFJ1xmRwW9ZKw8SKMAL6VRWxp87oLu7PSmf5b8R34vCaww3XLKtZkoP49a7TUK31DqPN5xJCceMB3BZJyaojQaKU8n"
         "UkzSGf89LY6abZXp9krKAebvc6bSMzTP8SHSvbmZbf3VtejmpQeN9X6e7WVDn6oDa2bGT";
     ASSERT_EQ(transaction.serialize(), expectedString);
+}
+
+TEST(SolanaTransaction, TransferWithMemoTransaction) {
+    const auto from = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
+    const auto to = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
+    const Solana::Hash recentBlockhash("11111111111111111111111111111111");
+    const auto memo = "HelloSolana73";
+    auto transaction = Transaction(from, to, 42, recentBlockhash, memo);
+    const Signature signature("3CFWDEK51noPJP4v2t8JZ3qj7kC7kLKyws9akfHMyuJnQ35EtzBptHqvaHfeswiLsvUSxzMVNoj4CuRxWtDD9zB1");
+    transaction.signatures.clear();
+    transaction.signatures.push_back(signature);
+
+    auto expectedString = "3A58Y1sbbudSV1piZjeYomRYLxi6veFv4udmhePrVSacAMRoaUonTuVKrctSMJsuGczycbRwhvHUUh6FDgYCkGjYRxaz5xJe7jLbcmViLDNCeFk3kTcLMGYFk1KFhiQG55zVTXSF75R1Z6vsXPN96hk914yN6sDW4LBp8CUpMQNGW73QnuUS4jMqp8kuAtT5EWHMq4JR5mB6jcuVCENaN87p5nbKPaqDoZ7BR9kWQEBwawXSW1MR1UE13VMXHmYAoxtCmSHaGSoRJqoWjTBK3ksco5YuTzuZfwxaFzQazZpEHZyE6duy5aX4yEw";
+    EXPECT_EQ(transaction.serialize(), expectedString);
 }
 
 TEST(SolanaTransaction, StakeSerializeTransactionV2) {

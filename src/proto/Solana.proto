@@ -6,6 +6,7 @@ option java_package = "wallet.core.jni.proto";
 message Transfer {
     string recipient = 1;
     uint64 value = 2;
+    string memo = 3;  // optional
 }
 
 // Create and initialize a stake account, and delegate amount to it.
