@@ -13,7 +13,7 @@
 
 namespace TW::Ronin {
 
-class Address: Ethereum::Address {
+class Address: public Ethereum::Address {
   public:
     /// Determines whether a string makes a valid  address.
     static bool isValid(const std::string& string);

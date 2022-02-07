@@ -23,6 +23,7 @@
 #include "../Nano/Address.h"
 #include "../Elrond/Address.h"
 #include "../NEAR/Address.h"
+#include "../Ronin/Address.h"
 
 #include "../Coin.h"
 #include "../HexCoding.h"
@@ -172,7 +173,11 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypeCelo:
         data = parse_hex(string);
         break;
-
+    case TWCoinTypeRonin: {
+        const auto addr = Ronin::Address(string);
+        data = Data(addr.bytes.begin(), addr.bytes.end());
+        break;
+    }
     case TWCoinTypeNano: {
         auto addr = Nano::Address(string);
         data = Data(addr.bytes.begin(), addr.bytes.end());
