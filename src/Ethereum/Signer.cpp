@@ -6,6 +6,8 @@
 
 #include "Signer.h"
 #include "HexCoding.h"
+#include "AnyAddress.h"
+#include <TrustWalletCore/TWCoinType.h>
 #include <google/protobuf/util/json_util.h>
 
 using namespace TW;
@@ -79,11 +81,11 @@ Data addressStringToData(const std::string& asString) {
     if (asString.empty()) {
         return {};
     }
-    auto address = Address(asString);
-    Data asData;
-    asData.resize(20);
-    std::copy(address.bytes.begin(), address.bytes.end(), asData.data());
-    return asData;
+    // only ronin address prefix is not 0x
+    if (asString.compare(0, 2, "0x") != 0) {
+        return AnyAddress::dataFromString(asString, TWCoinTypeRonin);
+    }
+    return AnyAddress::dataFromString(asString, TWCoinTypeEthereum);
 }
 
 std::shared_ptr<TransactionBase> Signer::build(const Proto::SigningInput& input) {
