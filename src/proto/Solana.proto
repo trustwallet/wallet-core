@@ -6,6 +6,8 @@ option java_package = "wallet.core.jni.proto";
 message Transfer {
     string recipient = 1;
     uint64 value = 2;
+    string memo = 3;  // optional
+    repeated string references = 4; // optional referenced public keys
 }
 
 // Create and initialize a stake account, and delegate amount to it.
@@ -59,6 +61,8 @@ message TokenTransfer {
     string recipient_token_address = 3;
     uint64 amount = 4;
     uint32 decimals = 5; // Note: 8-bit value
+    string memo = 6;  // optional
+    repeated string references = 7; // optional referenced public keys
 }
 
 // CreateTokenAccount and TokenTransfer combined
@@ -71,6 +75,8 @@ message CreateAndTransferToken {
     string sender_token_address = 4;
     uint64 amount = 5;
     uint32 decimals = 6; // Note: 8-bit value
+    string memo = 7;  // optional
+    repeated string references = 8; // optional referenced public keys
 }
 
 // Input data necessary to create a signed transaction.

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,7 +13,6 @@
 
 #include <vector>
 #include <string>
-#include <cassert>
 
 namespace TW::Solana {
 
@@ -28,6 +27,7 @@ const std::string SYSVAR_CLOCK_ID_ADDRESS = "SysvarC1ock111111111111111111111111
 const std::string STAKE_CONFIG_ID_ADDRESS = "StakeConfig11111111111111111111111111111111";
 const std::string NULL_ID_ADDRESS = "11111111111111111111111111111111";
 const std::string SYSVAR_STAKE_HISTORY_ID_ADDRESS = "SysvarStakeHistory1111111111111111111111111";
+const std::string MEMO_PROGRAM_ID_ADDRESS = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
 
 template <typename T>
 Data shortVecLength(std::vector<T> vec) {
@@ -98,25 +98,19 @@ struct Instruction {
     Instruction(const Address& programId, const std::vector<AccountMeta>& accounts, const Data& data)
         : programId(programId), accounts(accounts), data(data) {}
 
-    // This constructor creates a default System Transfer instruction
-    Instruction(const std::vector<AccountMeta>& accounts, uint64_t value) :
-        programId(Address(SYSTEM_PROGRAM_ID_ADDRESS)),
-        accounts(accounts)
-    {
-        SystemInstruction type = Transfer;
+    // This creator creates a default System Transfer instruction
+    static Instruction createTransfer(const std::vector<AccountMeta>& accounts, uint64_t value) {
+        const SystemInstruction type = Transfer;
         auto data = Data();
         encode32LE(static_cast<uint32_t>(type), data);
         encode64LE(static_cast<uint64_t>(value), data);
-        this->data = data;
+
+        return Instruction(Address(SYSTEM_PROGRAM_ID_ADDRESS), accounts, data);
     }
 
-    // This constructor creates a System CreateAccountWithSeed instruction
-    Instruction(const std::vector<AccountMeta>& accounts, uint64_t value, uint64_t space, const Address& programId,
-        const Address& voteAddress, uint64_t seedLength, const Address& signer) :
-        programId(Address(SYSTEM_PROGRAM_ID_ADDRESS)),
-        accounts(accounts)
-    {
-        SystemInstruction type = CreateAccountWithSeed;
+    static Instruction createAccountWithSeed(const std::vector<AccountMeta>& accounts, uint64_t value, uint64_t space, const Address& programId,
+        const Address& voteAddress, uint64_t seedLength, const Address& signer) {
+        const SystemInstruction type = CreateAccountWithSeed;
         auto data = Data();
         std::string seed = voteAddress.string();
         Data vecSeed(seed.begin(), seed.end());
@@ -128,62 +122,62 @@ struct Instruction {
         encode64LE(static_cast<uint64_t>(value), data);
         encode64LE(static_cast<uint64_t>(space), data);
         append(data, programId.vector());
-        this->data = data;
+
+        return Instruction(Address(SYSTEM_PROGRAM_ID_ADDRESS), accounts, data);
     }
 
-    // This constructor creates an Initialize Stake instruction
-    Instruction(StakeInstruction type, const std::vector<AccountMeta>& accounts, const Address& signer) :
-        programId(Address(STAKE_PROGRAM_ID_ADDRESS)),
-        accounts(accounts)
-    {
+    // creates an Initialize Stake instruction
+    static Instruction createStakeInitialize(const std::vector<AccountMeta>& accounts, const Address& signer) {
+        const StakeInstruction type = Initialize;
         auto data = Data();
         encode32LE(static_cast<uint32_t>(type), data);
         append(data, signer.vector());
         append(data, signer.vector());
         auto lockup = Data(48);
         append(data, lockup);
-        this->data = data;
+
+        return Instruction(Address(STAKE_PROGRAM_ID_ADDRESS), accounts, data);
     }
 
-    // This constructor creates a Withdraw Stake instruction
-    Instruction(StakeInstruction type, const std::vector<AccountMeta>& accounts, uint64_t value) :
-        programId(Address(STAKE_PROGRAM_ID_ADDRESS)),
-        accounts(accounts)
-    {
+    // creates a Withdraw Stake instruction
+    static Instruction createStakeWithdraw(const std::vector<AccountMeta>& accounts, uint64_t value) {
+        const StakeInstruction type = Withdraw;
         auto data = Data();
         encode32LE(static_cast<uint32_t>(type), data);
         encode64LE(static_cast<uint64_t>(value), data);
-        this->data = data;
+
+        return Instruction(Address(STAKE_PROGRAM_ID_ADDRESS), accounts, data);
     }
 
-    // This constructor creates a Stake instruction
-    Instruction(StakeInstruction type, const std::vector<AccountMeta>& accounts) :
-        programId(Address(STAKE_PROGRAM_ID_ADDRESS)),
-        accounts(accounts)
-    {
+    // creates a Stake instruction
+    static Instruction createStake(StakeInstruction type, const std::vector<AccountMeta>& accounts) {
         auto data = Data();
         encode32LE(static_cast<uint32_t>(type), data);
-        this->data = data;
+
+        return Instruction(Address(STAKE_PROGRAM_ID_ADDRESS), accounts, data);
     }
 
-    // This constructor creates a createAccount token instruction.
-    Instruction(TokenInstruction type, const std::vector<AccountMeta>& accounts) :
-        programId(Address(ASSOCIATED_TOKEN_PROGRAM_ID_ADDRESS)),
-        accounts(accounts)
-    {
-        this->data = Data();
+    // creates a createAccount token instruction.
+    static Instruction createTokenCreateAccount(const std::vector<AccountMeta>& accounts) {
+        auto data = Data();
+        return Instruction(Address(ASSOCIATED_TOKEN_PROGRAM_ID_ADDRESS), accounts, data);
     }
 
-    // This constructor creates a transfer token instruction.
-    Instruction(TokenInstruction type, const std::vector<AccountMeta>& accounts, uint64_t value, uint8_t decimals) :
-        programId(Address(TOKEN_PROGRAM_ID_ADDRESS)),
-        accounts(accounts)
-    {
+    // creates a transfer token instruction.
+    static Instruction createTokenTransfer(const std::vector<AccountMeta>& accounts, uint64_t value, uint8_t decimals) {
+        const TokenInstruction type = TokenTransfer;
         auto data = Data();
         data.push_back(static_cast<uint8_t>(type));
         encode64LE(value, data);
         data.push_back(static_cast<uint8_t>(decimals));
-        this->data = data;
+
+        return Instruction(Address(TOKEN_PROGRAM_ID_ADDRESS), accounts, data);
+    }
+
+    static Instruction createMemo(std::string memo) {
+        auto data = TW::data(memo);
+        std::vector<AccountMeta> accounts; // empty
+        return Instruction(Address(MEMO_PROGRAM_ID_ADDRESS), accounts, data);
     }
 };
 
@@ -290,14 +284,28 @@ class Message {
     // compile the instructions; replace instruction accounts with indices
     void compileInstructions();
 
+    static void appendReferences(std::vector<AccountMeta>& accountMetas, const std::vector<Address>& references) {
+        for (auto reference: references) {
+            accountMetas.push_back(AccountMeta(reference, false, true));
+        }
+    }
+
     // This constructor creates a default single-signer Transfer message
-    static Message createTransfer(const Address& from, const Address& to, uint64_t value, Hash recentBlockhash) {
-        auto instruction = Instruction(std::vector<AccountMeta>{
+    static Message createTransfer(const Address& from, const Address& to, uint64_t value, Hash recentBlockhash,
+        std::string memo = "", std::vector<Address> references = {}
+    ) {
+        std::vector<Instruction> instructions;
+        if (memo.length() > 0) {
+            // Optional memo. Order: before transfer, as per documentation.
+            instructions.push_back(Instruction::createMemo(memo));
+        }
+        std::vector<AccountMeta> accountMetas = {
             AccountMeta(from, true, false),
             AccountMeta(to, false, false),
-        }, value);
-        std::vector<Instruction> instructions = {instruction};
-        return Message(recentBlockhash, {instruction});
+        };
+        appendReferences(accountMetas, references);
+        instructions.push_back(Instruction::createTransfer(accountMetas, value));
+        return Message(recentBlockhash, instructions);
     }
 
     // This constructor creates a create_account_with_seed_and_delegate_stake message
@@ -311,20 +319,20 @@ class Message {
         std::vector<Instruction> instructions;
         // create_account_with_seed instruction
         Address seed = Address(data(recentBlockhash.bytes.data(), recentBlockhash.bytes.size()));
-        auto createAccountInstruction = Instruction(std::vector<AccountMeta>{
+        auto createAccountInstruction = Instruction::createAccountWithSeed(std::vector<AccountMeta>{
                 AccountMeta(signer, true, true),
                 AccountMeta(stakeAddress, false, false),
                 AccountMeta(signer, true, true),
             }, value, 200, stakeProgramId, seed, 32, signer);
         instructions.push_back(createAccountInstruction);
         // initialize instruction
-        auto initializeInstruction = Instruction(Initialize, std::vector<AccountMeta>{
+        auto initializeInstruction = Instruction::createStakeInitialize(std::vector<AccountMeta>{
             AccountMeta(stakeAddress, false, false),
             AccountMeta(sysvarRentId, false, true)
         }, signer);
         instructions.push_back(initializeInstruction);
         // delegate_stake instruction
-        auto delegateInstruction = Instruction(DelegateStake,
+        auto delegateInstruction = Instruction::createStake(DelegateStake,
             std::vector<AccountMeta>{
                 AccountMeta(stakeAddress, false, false),        // 0. `[WRITE]` Initialized stake account to be delegated
                 AccountMeta(voteAddress, false, true),          // 1. `[]` Vote account to which this stake will be delegated
@@ -340,7 +348,7 @@ class Message {
     // This constructor creates a deactivate_stake message
     static Message createStakeDeactivate(const Address& signer, const Address& stakeAddress, Hash recentBlockhash) {
         auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
-        auto instruction = Instruction(Deactivate, std::vector<AccountMeta>{
+        auto instruction = Instruction::createStake(Deactivate, std::vector<AccountMeta>{
             AccountMeta(stakeAddress, false, false),    // 0. `[WRITE]` Delegated stake account
             AccountMeta(sysvarClockId, false, true),    // 1. `[]` Clock sysvar
             AccountMeta(signer, true, false),           // 2. `[SIGNER]` Stake authority
@@ -353,7 +361,7 @@ class Message {
         auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
         std::vector<Instruction> instructions;
         for(auto& address: stakeAddresses) {
-            auto instruction = Instruction(Deactivate, std::vector<AccountMeta>{
+            auto instruction = Instruction::createStake(Deactivate, std::vector<AccountMeta>{
                 AccountMeta(address, false, false),         // 0. `[WRITE]` Delegated stake account
                 AccountMeta(sysvarClockId, false, true),    // 1. `[]` Clock sysvar
                 AccountMeta(signer, true, false),           // 2. `[SIGNER]` Stake authority
@@ -367,7 +375,7 @@ class Message {
     static Message createStakeWithdraw(const Address& signer, const Address& stakeAddress, uint64_t value, Hash recentBlockhash) {
         auto sysvarClockId = Address(SYSVAR_CLOCK_ID_ADDRESS);
         auto sysvarStakeHistoryId = Address(SYSVAR_STAKE_HISTORY_ID_ADDRESS);
-        auto instruction = Instruction(Withdraw, std::vector<AccountMeta>{
+        auto instruction = Instruction::createStakeWithdraw(std::vector<AccountMeta>{
             AccountMeta(stakeAddress, false, false),            // 0. `[WRITE]` Stake account from which to withdraw
             AccountMeta(signer, false, false),                  // 1. `[WRITE]` Recipient account
             AccountMeta(sysvarClockId, false, true),            // 2. `[]` Clock sysvar
@@ -383,7 +391,7 @@ class Message {
         auto sysvarStakeHistoryId = Address(SYSVAR_STAKE_HISTORY_ID_ADDRESS);
         std::vector<Instruction> instructions;
         for(auto& stake: stakes) {
-            auto instruction = Instruction(Withdraw, std::vector<AccountMeta>{
+            auto instruction = Instruction::createStakeWithdraw(std::vector<AccountMeta>{
                 AccountMeta(stake.first, false, false),         // 0. `[WRITE]` Stake account from which to withdraw
                 AccountMeta(signer, false, false),              // 1. `[WRITE]` Recipient account
                 AccountMeta(sysvarClockId, false, true),        // 2. `[]` Clock sysvar
@@ -397,12 +405,11 @@ class Message {
 
     // This constructor creates a createAccount token message
     // see create_associated_token_account() solana-program-library/associated-token-account/program/src/lib.rs
-    static Message createTokenCreateAccount(const Address& signer, TokenInstruction type, const Address& otherMainAccount, const Address& tokenMintAddress, const Address& tokenAddress, Hash recentBlockhash) {
-        assert(type == TokenInstruction::CreateTokenAccount);
+    static Message createTokenCreateAccount(const Address& signer, const Address& otherMainAccount, const Address& tokenMintAddress, const Address& tokenAddress, Hash recentBlockhash) {
         auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
         auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
         auto tokenProgramId = Address(TOKEN_PROGRAM_ID_ADDRESS);
-        auto instruction = Instruction(type, std::vector<AccountMeta>{
+        auto instruction = Instruction::createTokenCreateAccount(std::vector<AccountMeta>{
             AccountMeta(signer, true, false), // fundingAddress,
             AccountMeta(tokenAddress, false, false),
             AccountMeta(otherMainAccount, false, true),
@@ -416,25 +423,36 @@ class Message {
 
     // This constructor creates a transfer token message.
     // see transfer_checked() solana-program-library/token/program/src/instruction.rs
-    static Message createTokenTransfer(const Address& signer, TokenInstruction type, const Address& tokenMintAddress,
-        const Address& senderTokenAddress, const Address& recipientTokenAddress, uint64_t amount, uint8_t decimals, Hash recentBlockhash) {
-        assert(type == TokenInstruction::TokenTransfer);
-        auto instruction = Instruction(type, std::vector<AccountMeta>{
+    static Message createTokenTransfer(const Address& signer, const Address& tokenMintAddress,
+        const Address& senderTokenAddress, const Address& recipientTokenAddress, uint64_t amount, uint8_t decimals, Hash recentBlockhash,
+        std::string memo = "", std::vector<Address> references = {}
+    ) {
+        std::vector<Instruction> instructions;
+        if (memo.length() > 0) {
+            // Optional memo. Order: before transfer, as per documentation.
+            instructions.push_back(Instruction::createMemo(memo));
+        }
+        std::vector<AccountMeta> accountMetas = {
             AccountMeta(senderTokenAddress, false, false),
             AccountMeta(tokenMintAddress, false, true),
             AccountMeta(recipientTokenAddress, false, false),
             AccountMeta(signer, true, false),
-        }, amount, decimals);
-        return Message(recentBlockhash, {instruction});
+        };
+        appendReferences(accountMetas, references);
+        instructions.push_back(Instruction::createTokenTransfer(accountMetas, amount, decimals));
+        return Message(recentBlockhash, instructions);
     }
 
     // This constructor creates a createAndTransferToken message, combining createAccount and transfer.
     static Message createTokenCreateAndTransfer(const Address& signer, const Address& recipientMainAddress, const Address& tokenMintAddress,
-        const Address& recipientTokenAddress, const Address& senderTokenAddress, uint64_t amount, uint8_t decimals, Hash recentBlockhash) {
-        auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
-        auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
-        auto tokenProgramId = Address(TOKEN_PROGRAM_ID_ADDRESS);
-        auto createInstruction = Instruction(TokenInstruction::CreateTokenAccount, std::vector<AccountMeta>{
+        const Address& recipientTokenAddress, const Address& senderTokenAddress, uint64_t amount, uint8_t decimals, Hash recentBlockhash,
+        std::string memo = "", std::vector<Address> references = {}
+    ) {
+        const auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
+        const auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
+        const auto tokenProgramId = Address(TOKEN_PROGRAM_ID_ADDRESS);
+        std::vector<Instruction> instructions;
+        instructions.push_back(Instruction::createTokenCreateAccount(std::vector<AccountMeta>{
             AccountMeta(signer, true, false), // fundingAddress,
             AccountMeta(recipientTokenAddress, false, false),
             AccountMeta(recipientMainAddress, false, true),
@@ -442,14 +460,20 @@ class Message {
             AccountMeta(systemProgramId, false, true),
             AccountMeta(tokenProgramId, false, true),
             AccountMeta(sysvarRentId, false, true),
-        });
-        auto transferInstruction = Instruction(TokenInstruction::TokenTransfer, std::vector<AccountMeta>{
+        }));
+        if (memo.length() > 0) {
+            // Optional memo. Order: before transfer, as per documentation.
+            instructions.push_back(Instruction::createMemo(memo));
+        }
+        std::vector<AccountMeta> accountMetas = {
             AccountMeta(senderTokenAddress, false, false),
             AccountMeta(tokenMintAddress, false, true),
             AccountMeta(recipientTokenAddress, false, false),
             AccountMeta(signer, true, false),
-        }, amount, decimals);
-        return Message(recentBlockhash, {createInstruction, transferInstruction});
+        };
+        appendReferences(accountMetas, references);
+        instructions.push_back(Instruction::createTokenTransfer(accountMetas, amount, decimals));
+        return Message(recentBlockhash, instructions);
     }
 };
 
@@ -465,8 +489,8 @@ class Transaction {
     }
 
     // Default basic transfer transaction
-    Transaction(const Address& from, const Address& to, uint64_t value, Hash recentBlockhash)
-        : message(Message::createTransfer(from, to, value, recentBlockhash)) {
+    Transaction(const Address& from, const Address& to, uint64_t value, Hash recentBlockhash, std::string memo = "", std::vector<Address> references = {})
+        : message(Message::createTransfer(from, to, value, recentBlockhash, memo, references)) {
         this->signatures.resize(1, Signature(defaultSignature));
     }
 
