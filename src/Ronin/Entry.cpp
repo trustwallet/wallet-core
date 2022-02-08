@@ -7,9 +7,9 @@
 #include "Entry.h"
 
 #include "Address.h"
-#include "Signer.h"
+#include "../Ethereum/Signer.h"
 
-using namespace TW::Ethereum;
+using namespace TW::Ronin;
 using namespace std;
 
 bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
@@ -17,7 +17,6 @@ bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW
 }
 
 string Entry::normalizeAddress(TWCoinType coin, const string& address) const {
-    // normalized with EIP55 checksum
     return Address(address).string();
 }
 
@@ -26,9 +25,9 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byt
 }
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+    signTemplate<Ethereum::Signer, Ethereum::Proto::SigningInput>(dataIn, dataOut);
 }
 
 string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const { 
-    return Signer::signJSON(json, key);
+    return Ethereum::Signer::signJSON(json, key);
 }
