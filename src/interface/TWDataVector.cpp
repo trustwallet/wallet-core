@@ -43,11 +43,11 @@ void TWDataVectorAdd(struct TWDataVector *_Nonnull dataVector, TWData *_Nonnull 
     dataVector->impl.push_back(*dataData);
 }
 
-unsigned int TWDataVectorSize(struct TWDataVector *_Nonnull dataVector) {
-    return static_cast<unsigned int>(dataVector->impl.size());
+size_t TWDataVectorSize(struct TWDataVector *_Nonnull dataVector) {
+    return dataVector->impl.size();
 }
 
-TWData *_Nullable TWDataVectorGet(struct TWDataVector *_Nonnull dataVector, unsigned int index) {
+TWData *_Nullable TWDataVectorGet(struct TWDataVector *_Nonnull dataVector, size_t index) {
     if (index >= dataVector->impl.size()) {
         return nullptr;
     }

@@ -32,10 +32,10 @@ void TWDataVectorAdd(struct TWDataVector *_Nonnull dataVector, TWData *_Nonnull 
 
 // Retrieve the number of elements
 TW_EXPORT_PROPERTY
-unsigned int TWDataVectorSize(struct TWDataVector *_Nonnull dataVector);
+size_t TWDataVectorSize(struct TWDataVector *_Nonnull dataVector);
 
 // Retrieve the n-th element. A clone is returned (must be freed).
 TW_EXPORT_METHOD
-TWData *_Nullable TWDataVectorGet(struct TWDataVector *_Nonnull dataVector, unsigned int index);
+TWData *_Nullable TWDataVectorGet(struct TWDataVector *_Nonnull dataVector, size_t index);
 
 TW_EXTERN_C_END
