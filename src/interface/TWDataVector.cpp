@@ -38,16 +38,14 @@ void TWDataVectorDelete(struct TWDataVector *_Nonnull dataVector) {
 }
 
 void TWDataVectorAdd(struct TWDataVector *_Nonnull dataVector, TWData *_Nonnull data) {
-    const auto dataData = static_cast<const Data*>(data);
-    assert(dataData != nullptr);
-    dataVector->impl.push_back(*dataData);
+    dataVector->impl.push_back(TW::data(TWDataBytes(data), TWDataSize(data)));
 }
 
-size_t TWDataVectorSize(struct TWDataVector *_Nonnull dataVector) {
+size_t TWDataVectorSize(const struct TWDataVector *_Nonnull dataVector) {
     return dataVector->impl.size();
 }
 
-TWData *_Nullable TWDataVectorGet(struct TWDataVector *_Nonnull dataVector, size_t index) {
+TWData *_Nullable TWDataVectorGet(const struct TWDataVector *_Nonnull dataVector, size_t index) {
     if (index >= dataVector->impl.size()) {
         return nullptr;
     }

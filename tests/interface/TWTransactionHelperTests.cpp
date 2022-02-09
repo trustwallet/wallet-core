@@ -19,7 +19,7 @@
 #include "uint256.h"
 #include <TrustWalletCore/TWAnySigner.h>
 
-#include "interface/TWTestUtilities.h"
+#include "../interface/TWTestUtilities.h"
 #include <gtest/gtest.h>
 
 #include <thread>
@@ -52,8 +52,10 @@ TEST(TWTransactionHelper, ExternalSignatureSignBinance) {
     }
 
     /// Step 2: Obtain preimage hash
-    const auto preImageHash = WRAPD(TWTransactionHelperPreImageHash(coin, txInputData.get()));
+    const auto preImageHashes = WRAP(TWDataVector, TWTransactionHelperPreImageHashes(coin, txInputData.get()));
 
+    ASSERT_EQ(TWDataVectorSize(preImageHashes.get()), 1);
+    auto preImageHash = WRAPD(TWDataVectorGet(preImageHashes.get(), 0));
     const auto preImageHashData = data(TWDataBytes(preImageHash.get()), TWDataSize(preImageHash.get()));
     EXPECT_EQ(hex(preImageHashData), "3f3fece9059e714d303a9a1496ddade8f2c38fa78fc4cc2e505c5dbb0ea678d1");
 
@@ -68,11 +70,11 @@ TEST(TWTransactionHelper, ExternalSignatureSignBinance) {
     }
 
     /// Step 3: Compile transaction info
-    const auto outputData = WRAPD(TWTransactionHelperCompileWithSignature(
+    const auto outputData = WRAPD(TWTransactionHelperCompileWithSignatures(
         coin,
         txInputData.get(),
-        WRAPD(TWDataCreateWithData((TWData*)&signature)).get(),
-        WRAPD(TWDataCreateWithData((TWData*)&publicKeyData)).get())
+        WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&signature)).get(),
+        WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&publicKeyData)).get())
     );
 
     const auto ExpectedTx = "b801f0625dee0a462a2c87fa0a1f0a1440c2979694bbc961023d1d27be6fc4d21a9febe612070a03424e421001121f0a14bffe47abfaede50419c577f1074fee6dd1535cd112070a03424e421001126a0a26eb5ae98721026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e50212401b1181faec30b60a2ddaa2804c253cf264c69180ec31814929b5de62088c0c5a45e8a816d1208fc5366bb8b041781a6771248550d04094c3d7a504f9e8310679";
@@ -134,8 +136,10 @@ TEST(TWTransactionHelper, ExternalSignatureSignEthereum) {
     EXPECT_EQ((int)TWDataSize(txInputData.get()), 75);
 
     /// Step 2: Obtain preimage hash
-    const auto preImageHash = WRAPD(TWTransactionHelperPreImageHash(coin, txInputData.get()));
+    const auto preImageHashes = WRAP(TWDataVector, TWTransactionHelperPreImageHashes(coin, txInputData.get()));
 
+    ASSERT_EQ(TWDataVectorSize(preImageHashes.get()), 1);
+    auto preImageHash = WRAPD(TWDataVectorGet(preImageHashes.get(), 0));
     const auto preImageHashData = data(TWDataBytes(preImageHash.get()), TWDataSize(preImageHash.get()));
     EXPECT_EQ(hex(preImageHashData), "15e180a6274b2f6a572b9b51823fce25ef39576d10188ecdcd7de44526c47217");
 
@@ -150,11 +154,11 @@ TEST(TWTransactionHelper, ExternalSignatureSignEthereum) {
     }
 
     /// Step 3: Compile transaction info
-    const auto outputData = WRAPD(TWTransactionHelperCompileWithSignature(
+    const auto outputData = WRAPD(TWTransactionHelperCompileWithSignatures(
         coin,
         txInputData.get(),
-        WRAPD(TWDataCreateWithData((TWData*)&signature)).get(),
-        WRAPD(TWDataCreateWithData((TWData*)&publicKeyData)).get())
+        WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&signature)).get(),
+        WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&publicKeyData)).get())
     );
 
     const auto ExpectedTx = "f86c0b8504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a0360a84fb41ad07f07c845fedc34cde728421803ebbaae392fc39c116b29fc07ba053bd9d1376e15a191d844db458893b928f3efbfee90c9febf51ab84c97966779";
@@ -232,8 +236,10 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
     EXPECT_EQ((int)TWDataSize(txInputData.get()), 332);
 
     /// Step 2: Obtain preimage hash
-    const auto preImageHash = WRAPD(TWTransactionHelperPreImageHash(coin, txInputData.get()));
+    const auto preImageHashes = WRAP(TWDataVector, TWTransactionHelperPreImageHashes(coin, txInputData.get()));
 
+    ASSERT_EQ(TWDataVectorSize(preImageHashes.get()), 1);
+    auto preImageHash = WRAPD(TWDataVectorGet(preImageHashes.get(), 0));
     const auto preImageHashData = data(TWDataBytes(preImageHash.get()), TWDataSize(preImageHash.get()));
     EXPECT_EQ(hex(preImageHashData), "61a6dc2f342f09c2c34d13c90bee0dda48e0515d185a8cd1758d70d31ca0b8ec");
 
@@ -248,11 +254,11 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
     }
 
     /// Step 3: Compile transaction info
-    const auto outputData = WRAPD(TWTransactionHelperCompileWithSignature(
+    const auto outputData = WRAPD(TWTransactionHelperCompileWithSignatures(
         coin,
         txInputData.get(),
-        WRAPD(TWDataCreateWithData((TWData*)&signature)).get(),
-        WRAPD(TWDataCreateWithData((TWData*)&publicKeyData)).get())
+        WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&signature)).get(),
+        WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&publicKeyData)).get())
     );
 
     const auto ExpectedTx = "0100000000010107c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa80000000000ffffffff02804f1200000000001600145360df8231ac5965147c9d90ca930a2aafb052327131290000000000160014bd92088bb7e82d611a9b94fbb74a0908152b784f024830450221009f61304eb182a4862825f27f1d93406d1e8b25d2cb889ffb7d191d8c8f6de1ea0220205e43a91abb8b7e4e4f40f54cbb3c7ebfcc725c3a97c0c42c77acebf17a7d000121024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb49338200000000";

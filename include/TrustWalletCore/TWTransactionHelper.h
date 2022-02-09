@@ -9,6 +9,7 @@
 #include "TWBase.h"
 #include "TWCoinType.h"
 #include "TWData.h"
+#include "TWDataVector.h"
 #include "TWString.h"
 
 TW_EXTERN_C_BEGIN
@@ -25,12 +26,12 @@ struct TWTransactionHelper;
 TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWTransactionHelperBuildInput(enum TWCoinType coinType, TWString *_Nonnull from, TWString *_Nonnull to, TWString *_Nonnull amount, TWString *_Nonnull asset, TWString *_Nonnull memo, TWString *_Nonnull chainId);
 
-/// Obtain pre-signing hash of a transaction.
+/// Obtain pre-signing hashes of a transaction.
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWTransactionHelperPreImageHash(enum TWCoinType coinType, TWData *_Nonnull txInputData);
+struct TWDataVector *_Nonnull TWTransactionHelperPreImageHashes(enum TWCoinType coinType, TWData *_Nonnull txInputData);
 
-/// Compile a complete transation with an external signature, put together from transaction input and provided public key and signature
+/// Compile a complete transation with one or more external signatures, put together from transaction input and provided public keys and signatures
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWTransactionHelperCompileWithSignature(enum TWCoinType coinType, TWData *_Nonnull txInputData, TWData *_Nonnull signature, TWData *_Nonnull publicKey);
+TWData *_Nonnull TWTransactionHelperCompileWithSignatures(enum TWCoinType coinType, TWData *_Nonnull txInputData, const struct TWDataVector *_Nonnull signatures, const struct TWDataVector *_Nonnull publicKeys);
 
 TW_EXTERN_C_END

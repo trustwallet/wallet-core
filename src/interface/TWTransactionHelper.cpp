@@ -33,30 +33,51 @@ TWData *_Nonnull TWTransactionHelperBuildInput(enum TWCoinType coinType, TWStrin
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
-TWData *_Nonnull TWTransactionHelperPreImageHash(enum TWCoinType coinType, TWData *_Nonnull txInputData) {
-    Data result;
+struct TWDataVector* _Nonnull createFromVector(const std::vector<Data>& dataVector) {
+    auto ret = TWDataVectorCreate();
+    for (auto& i: dataVector) {
+        auto newElem = TWDataCreateWithBytes(i.data(), i.size());
+        TWDataVectorAdd(ret, newElem);
+        TWDataDelete(newElem);
+    }
+    return ret;
+}
+
+std::vector<Data> createFromTWDataVector(const struct TWDataVector* _Nonnull dataVector) {
+    std::vector<Data> ret;
+    const auto n = TWDataVectorSize(dataVector);
+    for (auto i = 0; i < n; ++i) {
+        auto elem = TWDataVectorGet(dataVector, i);
+        ret.push_back(*(static_cast<const Data*>(elem)));
+        TWDataDelete(elem);
+    }
+    return ret;
+}
+
+struct TWDataVector *_Nonnull TWTransactionHelperPreImageHashes(enum TWCoinType coinType, TWData *_Nonnull txInputData) {
+    std::vector<Data> result;
     try {
         assert(txInputData != nullptr);
         const Data inputData = data(TWDataBytes(txInputData), TWDataSize(txInputData));
 
-        result = TransactionHelper::preImageHash(coinType, inputData);
+        result = TransactionHelper::preImageHashes(coinType, inputData);
     } catch (...) {
         // return empty
     }
-    return TWDataCreateWithBytes(result.data(), result.size());
+    return createFromVector(result);
 }
 
-TWData *_Nonnull TWTransactionHelperCompileWithSignature(enum TWCoinType coinType, TWData *_Nonnull txInputData, TWData *_Nonnull signature, TWData *_Nonnull publicKey) {
+TWData *_Nonnull TWTransactionHelperCompileWithSignatures(enum TWCoinType coinType, TWData *_Nonnull txInputData, const struct TWDataVector *_Nonnull signatures, const struct TWDataVector *_Nonnull publicKeys) {
     Data result;
     try {
         assert(txInputData != nullptr);
         const Data inputData = data(TWDataBytes(txInputData), TWDataSize(txInputData));
-        assert(signature != nullptr);
-        const Data signatureData = data(TWDataBytes(signature), TWDataSize(signature));
-        assert(publicKey != nullptr);
-        const Data publicKeyData = data(TWDataBytes(publicKey), TWDataSize(publicKey));
+        assert(signatures != nullptr);
+        const auto signaturesVec = createFromTWDataVector(signatures);
+        assert(publicKeys != nullptr);
+        const auto publicKeysVec = createFromTWDataVector(publicKeys);
 
-        result  = TransactionHelper::compileWithSignature(coinType, inputData, signatureData, publicKeyData);
+        result  = TransactionHelper::compileWithSignatures(coinType, inputData, signaturesVec, publicKeysVec);
     } catch (...) {
         // return empty
     }

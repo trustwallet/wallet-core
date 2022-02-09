@@ -37,8 +37,8 @@ public:
     // It is optional, only UTXO chains need it, default impl. leaves empty result.
     virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const { return; }
 
-    virtual Data preImageHash(TWCoinType coin, const Data& txInputData) const { return Data(); }
-    virtual void compile(TWCoinType coin, const Data& txInputData, const Data& signature, const PublicKey& publicKey, Data& dataOut) const {}
+    virtual std::vector<Data> preImageHashes(TWCoinType coin, const Data& txInputData) const { return std::vector<Data>(); }
+    virtual void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {}
     virtual Data buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const { return Data(); }
 };
 

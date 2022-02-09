@@ -10,6 +10,7 @@
 #include "Data.h"
 
 #include <string>
+#include <vector>
 
 namespace TW {
 
@@ -20,10 +21,10 @@ public:
     static Data buildInput(TWCoinType coinType, const std::string& from, const std::string& to, const std::string& amount, const std::string& asset, const std::string& memo, const std::string& chainId);
 
     /// Obtain pre-signing hash of a transaction.
-    static Data preImageHash(TWCoinType coinType, const Data& txInputData);
+    static std::vector<Data> preImageHashes(TWCoinType coinType, const Data& txInputData);
 
     /// Compile a complete transation with an external signature, put together from transaction input and provided public key and signature
-    static Data compileWithSignature(TWCoinType coinType, const Data& txInputData, const Data& signature, const Data& publicKey);
+    static Data compileWithSignatures(TWCoinType coinType, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<Data>& publicKeys);
 };
 
 } // namespace TW

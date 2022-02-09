@@ -36,21 +36,23 @@ string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key
     return Signer::signJSON(json, key);
 }
 
-Data Entry::preImageHash(TWCoinType coin, const Data& txInputData) const {
+std::vector<Data> Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
     auto input = Proto::SigningInput();
     assert(input.ParseFromArray(txInputData.data(), (int)txInputData.size()));
     const auto transaction = Signer::build(input);
     const auto chainId = load(data(input.chain_id())); // retrieve chainId from input
     const auto preHash = transaction->preHash(chainId);
-    return preHash;
+    return std::vector<Data>{preHash};
 }
 
-void Entry::compile(TWCoinType coin, const Data& txInputData, const Data& signature, const PublicKey& publicKey, Data& dataOut) const {
+void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
     auto input = Proto::SigningInput();
     assert(input.ParseFromArray(txInputData.data(), (int)txInputData.size()));
-    const auto output = Signer::compile(input, signature);
-    const auto serializedOut = output.SerializeAsString();
-    dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+    if (signatures.size() == 1) {
+        const auto output = Signer::compile(input, signatures[0]);
+        const auto serializedOut = output.SerializeAsString();
+        dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+    }
 }
 
 Data Entry::buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const {

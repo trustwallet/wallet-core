@@ -16,26 +16,26 @@ TW_EXPORT_CLASS
 struct TWDataVector;
 
 TW_EXPORT_STATIC_METHOD
-struct TWDataVector *_Nullable TWDataVectorCreate();
+struct TWDataVector *_Nonnull TWDataVectorCreate();
 
 // Create with one element
 TW_EXPORT_STATIC_METHOD
-struct TWDataVector *_Nullable TWDataVectorCreateWithData(TWData *_Nonnull data);
+struct TWDataVector *_Nonnull TWDataVectorCreateWithData(TWData *_Nonnull data);
 
 // Delete must be called at the end
 TW_EXPORT_METHOD
 void TWDataVectorDelete(struct TWDataVector *_Nonnull dataVector);
 
-// Add an element to the vector
+// Add an element to the vector. Element is cloned (will be deleted with the vector, but input parameter must be deleted on its own)
 TW_EXPORT_METHOD
 void TWDataVectorAdd(struct TWDataVector *_Nonnull dataVector, TWData *_Nonnull data);
 
 // Retrieve the number of elements
 TW_EXPORT_PROPERTY
-size_t TWDataVectorSize(struct TWDataVector *_Nonnull dataVector);
+size_t TWDataVectorSize(const struct TWDataVector *_Nonnull dataVector);
 
 // Retrieve the n-th element. A clone is returned (must be freed).
 TW_EXPORT_METHOD
-TWData *_Nullable TWDataVectorGet(struct TWDataVector *_Nonnull dataVector, size_t index);
+TWData *_Nullable TWDataVectorGet(const struct TWDataVector *_Nonnull dataVector, size_t index);
 
 TW_EXTERN_C_END

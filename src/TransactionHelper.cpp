@@ -17,17 +17,20 @@ Data TransactionHelper::buildInput(TWCoinType coinType, const std::string& from,
     return anyCoinBuildTransactionInput(coinType, from, to, amount256, asset, memo, chainId);
 }
 
-Data TransactionHelper::preImageHash(TWCoinType coinType, const Data& txInputData) {
-    return anyCoinPreImageHash(coinType, txInputData);
+std::vector<Data> TransactionHelper::preImageHashes(TWCoinType coinType, const Data& txInputData) {
+    return anyCoinPreImageHashes(coinType, txInputData);
 }
 
-Data TransactionHelper::compileWithSignature(TWCoinType coinType, const Data& txInputData, const Data& signature, const Data& publicKey) {
+Data TransactionHelper::compileWithSignatures(TWCoinType coinType, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<Data>& publicKeys) {
     Data txOutput;
     const auto publicKeyType = ::publicKeyType(coinType);
-    if (!PublicKey::isValid(publicKey, publicKeyType)) {
-        throw std::invalid_argument("Invalid public key");
+    std::vector<PublicKey> pubs;
+    for (auto& p: publicKeys) {
+        if (!PublicKey::isValid(p, publicKeyType)) {
+            throw std::invalid_argument("Invalid public key");
+        }
+        pubs.push_back(PublicKey(p, publicKeyType));
     }
-    const auto pub = PublicKey(publicKey, publicKeyType);
-    anyCoinCompileWithSignature(coinType, txInputData, signature, pub, txOutput);
+    anyCoinCompileWithSignatures(coinType, txInputData, signatures, pubs, txOutput);
     return txOutput;
 }

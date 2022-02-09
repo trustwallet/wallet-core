@@ -102,24 +102,22 @@ void Entry::plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
     planTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
-Data Entry::preImageHash(TWCoinType coin, const Data& txInputData) const {
+std::vector<Data> Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
     auto input = Proto::SigningInput();
     assert(input.ParseFromArray(txInputData.data(), (int)txInputData.size()));
 
-    const auto hashes = Signer::preImageHashes(input);
-
-    // support only 1-signature case
-    if (hashes.size() != 1) {
-        return Data();
-    }
-    return hashes[0];
+    return Signer::preImageHashes(input);
 }
 
-void Entry::compile(TWCoinType coin, const Data& txInputData, const Data& signature, const PublicKey& publicKey, Data& dataOut) const {
+void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
     auto input = Proto::SigningInput();
     assert(input.ParseFromArray(txInputData.data(), (int)txInputData.size()));
 
-    std::vector<std::pair<Data, Data>> externalSignatures = {{signature, publicKey.bytes}};
+    std::vector<std::pair<Data, Data>> externalSignatures;
+    auto n = std::min(signatures.size(), publicKeys.size());
+    for (auto i = 0; i < n; ++i) {
+        externalSignatures.push_back(std::make_pair(signatures[i], publicKeys[i].bytes));
+    }
 
     auto serializedOut = Signer::sign(input, externalSignatures).SerializeAsString();
     dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
