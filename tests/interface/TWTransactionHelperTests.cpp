@@ -248,6 +248,10 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
     EXPECT_EQ(plan.amount(), 1'200'000);
     EXPECT_EQ(plan.fee(), 209);
     EXPECT_EQ(plan.change(), 599'791);
+    ASSERT_EQ(plan.utxos_size(), 2);
+    // Note that UTXOs happen to be in reverse order compared to the input
+    EXPECT_EQ(hex(plan.utxos(0).out_point().hash()), hex(hash1));
+    EXPECT_EQ(hex(plan.utxos(1).out_point().hash()), hex(hash0));
 
     // Extend input with accepted plan
     *input.mutable_plan() = plan;
@@ -268,8 +272,8 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
     const auto preImageHashData1 = data(TWDataBytes(preImageHash1.get()), TWDataSize(preImageHash1.get()));
     EXPECT_EQ(hex(preImageHashData1), "1ea2205440222a7b0270955b1122a7b3db869c7094296b6b72661e6df9e3c8fa");
 
-    // Simulate signature, normally obtained from signature server
-    // TODO note order!
+    // Simulate signature, normally obtained from signature server.
+    // Note that they are in the order of the hashes, which is in the order of the UTXOs in the plan (accidentally reverse of the input)
     const auto publicKeyData0 = parse_hex("0217142f69535e4dad0dc7060df645c55a174cc1bfa5b9eb2e59aad2ae96072dfc");
     const PublicKey publicKey0 = PublicKey(publicKeyData0, TWPublicKeyTypeSECP256k1);
     const auto signature0 = parse_hex("3045022100b2f3f682fe4b4c17c5bc075afd758a048ae42b7ee5ce525d2a80af4d8c08e66a02204d11207c15610086159870ef27cb0d3472d08e5b43c99ad4b4e681445f9bed73");
