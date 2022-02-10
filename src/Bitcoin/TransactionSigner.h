@@ -13,9 +13,11 @@
 #include "../KeyPair.h"
 #include "../Result.h"
 #include "../proto/Bitcoin.pb.h"
+#include "../CoinEntry.h"
 
 #include <vector>
 #include <optional>
+#include <utility>
 
 namespace TW::Bitcoin {
 
@@ -30,7 +32,7 @@ public:
     static Result<Transaction, Common::Proto::SigningError> sign(const SigningInput& input, bool estimationMode = false, std::optional<std::vector<std::pair<Data, Data>>> optionalExternalSigs = {});
 
     /// Collect pre-image hashes to be signed
-    static std::vector<Data> preImageHashes(const SigningInput& input);
+    static HashPubkeyList preImageHashes(const SigningInput& input);
 };
 
 } // namespace TW::Bitcoin

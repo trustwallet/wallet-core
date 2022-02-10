@@ -13,9 +13,11 @@
 #include "../proto/Bitcoin.pb.h"
 #include "../KeyPair.h"
 #include "../Result.h"
+#include "../PublicKey.h"
 
 #include <vector>
 #include <optional>
+#include <utility>
 
 namespace TW::Bitcoin {
 
@@ -45,8 +47,8 @@ private:
 
     SigningMode signingMode = SigningMode_Normal;
 
-    /// For SigningMode_HashOnly, collect hash(es) here
-    std::vector<Data> hashesForSigning;
+    /// For SigningMode_HashOnly, collect hashes (plus corresponding publickey hashes) here
+    std::vector<std::pair<Data, Data>> hashesForSigning;
 
     /// For SigningMode_External, signatures are provided here
     std::optional<std::vector<std::pair<Data, Data>>> externalSignatures;
@@ -72,13 +74,15 @@ public:
     // internal, public for testability and Decred
     static Data pushAll(const std::vector<Data>& results);
 
-    std::vector<Data> getHashesForSigning() const { return hashesForSigning; }
+    std::vector<std::pair<Data, Data>> getHashesForSigning() const { return hashesForSigning; }
 
 private:
     Result<void, Common::Proto::SigningError> sign(Script script, size_t index, const UTXO& utxo);
     Result<std::vector<Data>, Common::Proto::SigningError> signStep(Script script, size_t index,
                                        const UTXO& utxo, uint32_t version);
-    Data createSignature(const Transaction& transaction, const Script& script, const std::optional<KeyPair>&,
+
+    Data createSignature(const Transaction& transaction, const Script& script,
+                         const Data& publicKeyHash, const std::optional<KeyPair>& key,
                          size_t index, Amount amount, uint32_t version);
 
     /// Returns the private key for the given public key hash.

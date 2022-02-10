@@ -37,7 +37,7 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
 }
 
 template <typename Transaction, typename TransactionBuilder>
-std::vector<Data> TransactionSigner<Transaction, TransactionBuilder>::preImageHashes(const SigningInput& input) {
+HashPubkeyList TransactionSigner<Transaction, TransactionBuilder>::preImageHashes(const SigningInput& input) {
     TransactionPlan plan;
     if (input.plan.has_value()) {
         plan = input.plan.value();

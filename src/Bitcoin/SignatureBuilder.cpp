@@ -171,7 +171,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
                 // Error: missing key
                 return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
             }
-            auto signature = createSignature(transactionToSign, script, pair, index, utxo.amount, version);
+            auto signature = createSignature(transactionToSign, script, keyHash, pair, index, utxo.amount, version);
             if (signature.empty()) {
                 // Error: Failed to sign
                 return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
@@ -188,7 +188,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
             // Error: Missing key
             return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
         }
-        auto signature = createSignature(transactionToSign, script, pair, index, utxo.amount, version);
+        auto signature = createSignature(transactionToSign, script, keyHash, pair, index, utxo.amount, version);
         if (signature.empty()) {
             // Error: Failed to sign
             return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
@@ -219,7 +219,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
         }
         assert(!pubkey.empty());
 
-        auto signature = createSignature(transactionToSign, script, pair, index, utxo.amount, version);
+        auto signature = createSignature(transactionToSign, script, data, pair, index, utxo.amount, version);
         if (signature.empty()) {
             // Error: Failed to sign
             return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
@@ -233,7 +233,8 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
 template <typename Transaction>
 Data SignatureBuilder<Transaction>::createSignature(
     const Transaction& transaction,
-    const Script& script, 
+    const Script& script,
+    const Data& publicKeyHash,
     const std::optional<KeyPair>& pair,
     size_t index,
     Amount amount,
@@ -248,15 +249,16 @@ Data SignatureBuilder<Transaction>::createSignature(
                                                 static_cast<SignatureVersion>(version));
 
     if (signingMode == SigningMode_HashOnly) {
-        // Don't sign, only store hash-to-be-signed.  Return placeholder.
-        hashesForSigning.push_back(sighash);
+        // Don't sign, only store hash-to-be-signed + pubkeyhash.  Return placeholder.
+        hashesForSigning.push_back(std::make_pair(sighash, publicKeyHash));
         return Data(72);
     }
+
     if (signingMode == SigningMode_External) {
         // Use externally-provided signature
-        // Store hash for counting
+        // Store hash, only for counting
         size_t index = hashesForSigning.size();
-        hashesForSigning.push_back(sighash);
+        hashesForSigning.push_back(std::make_pair(sighash, publicKeyHash));
 
         if (!externalSignatures.has_value() || externalSignatures.value().size() <= index) {
             // Error: no or not enough signatures provided
@@ -271,6 +273,7 @@ Data SignatureBuilder<Transaction>::createSignature(
 
     const auto key = std::get<0>(pair.value());
     const auto pk = PrivateKey(key);
+
     auto sig = pk.signAsDER(sighash, TWCurveSECP256k1);
     if (!sig.empty()) {
         sig.push_back(static_cast<byte>(input.hashType));

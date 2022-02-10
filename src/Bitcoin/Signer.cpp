@@ -45,6 +45,6 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input, std::optiona
     return output;
 }
 
-std::vector<Data> Signer::preImageHashes(const Proto::SigningInput& input) noexcept {
+HashPubkeyList Signer::preImageHashes(const Proto::SigningInput& input) noexcept {
     return TransactionSigner<Transaction, TransactionBuilder>::preImageHashes(input);
 }

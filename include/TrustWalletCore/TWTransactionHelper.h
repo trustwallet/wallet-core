@@ -26,7 +26,8 @@ struct TWTransactionHelper;
 TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWTransactionHelperBuildInput(enum TWCoinType coinType, TWString *_Nonnull from, TWString *_Nonnull to, TWString *_Nonnull amount, TWString *_Nonnull asset, TWString *_Nonnull memo, TWString *_Nonnull chainId);
 
-/// Obtain pre-signing hashes of a transaction.
+/// Obtain pre-signing hashes of a transaction. For each hash its corresponding publickKeyHash follows, so return is always even size.
+/// For chains with one signature only, the result contains 2 elements, but the second may be ignored.
 TW_EXPORT_STATIC_METHOD
 struct TWDataVector *_Nonnull TWTransactionHelperPreImageHashes(enum TWCoinType coinType, TWData *_Nonnull txInputData);
 

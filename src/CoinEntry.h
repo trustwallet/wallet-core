@@ -15,8 +15,11 @@
 
 #include <string>
 #include <vector>
+#include <utility>
 
 namespace TW {
+
+typedef std::vector<std::pair<Data, Data>> HashPubkeyList;
 
 /// Interface for coin-specific entry, used to dispatch calls to coins
 /// Implement this for all coins.
@@ -37,7 +40,7 @@ public:
     // It is optional, only UTXO chains need it, default impl. leaves empty result.
     virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const { return; }
 
-    virtual std::vector<Data> preImageHashes(TWCoinType coin, const Data& txInputData) const { return std::vector<Data>(); }
+    virtual HashPubkeyList preImageHashes(TWCoinType coin, const Data& txInputData) const { return HashPubkeyList(); }
     virtual void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {}
     virtual Data buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const { return Data(); }
 };

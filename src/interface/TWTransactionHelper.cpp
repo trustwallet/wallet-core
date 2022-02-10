@@ -33,12 +33,17 @@ TWData *_Nonnull TWTransactionHelperBuildInput(enum TWCoinType coinType, TWStrin
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
-struct TWDataVector* _Nonnull createFromVector(const std::vector<Data>& dataVector) {
+struct TWDataVector* _Nonnull createFromVector(const HashPubkeyList& dataVector) {
     auto ret = TWDataVectorCreate();
     for (auto& i: dataVector) {
-        auto newElem = TWDataCreateWithBytes(i.data(), i.size());
-        TWDataVectorAdd(ret, newElem);
-        TWDataDelete(newElem);
+        const auto& hash = std::get<0>(i);
+        const auto& pubkeyhash = std::get<1>(i);
+        auto newElem1 = TWDataCreateWithBytes(hash.data(), hash.size());
+        TWDataVectorAdd(ret, newElem1);
+        TWDataDelete(newElem1);
+        auto newElem2 = TWDataCreateWithBytes(pubkeyhash.data(), pubkeyhash.size());
+        TWDataVectorAdd(ret, newElem2);
+        TWDataDelete(newElem2);
     }
     return ret;
 }
@@ -55,7 +60,7 @@ std::vector<Data> createFromTWDataVector(const struct TWDataVector* _Nonnull dat
 }
 
 struct TWDataVector *_Nonnull TWTransactionHelperPreImageHashes(enum TWCoinType coinType, TWData *_Nonnull txInputData) {
-    std::vector<Data> result;
+    HashPubkeyList result;
     try {
         assert(txInputData != nullptr);
         const Data inputData = data(TWDataBytes(txInputData), TWDataSize(txInputData));

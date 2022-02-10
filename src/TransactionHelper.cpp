@@ -17,7 +17,7 @@ Data TransactionHelper::buildInput(TWCoinType coinType, const std::string& from,
     return anyCoinBuildTransactionInput(coinType, from, to, amount256, asset, memo, chainId);
 }
 
-std::vector<Data> TransactionHelper::preImageHashes(TWCoinType coinType, const Data& txInputData) {
+HashPubkeyList TransactionHelper::preImageHashes(TWCoinType coinType, const Data& txInputData) {
     return anyCoinPreImageHashes(coinType, txInputData);
 }
 

@@ -102,7 +102,7 @@ void Entry::plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
     planTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
-std::vector<Data> Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
+HashPubkeyList Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
     auto input = Proto::SigningInput();
     assert(input.ParseFromArray(txInputData.data(), (int)txInputData.size()));
 

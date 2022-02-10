@@ -36,13 +36,14 @@ string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key
     return Signer::signJSON(json, key);
 }
 
-std::vector<Data> Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
+HashPubkeyList Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
     auto input = Proto::SigningInput();
     assert(input.ParseFromArray(txInputData.data(), (int)txInputData.size()));
     const auto transaction = Signer::build(input);
     const auto chainId = load(data(input.chain_id())); // retrieve chainId from input
+    // return preimage hash and dummy pubkeyhash (not available here, and only one signature anyways)
     const auto preHash = transaction->preHash(chainId);
-    return std::vector<Data>{preHash};
+    return HashPubkeyList{std::make_pair(preHash, Data())};
 }
 
 void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {

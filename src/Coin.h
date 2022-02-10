@@ -12,6 +12,7 @@
 #include "PrivateKey.h"
 #include "PublicKey.h"
 #include "uint256.h"
+#include "CoinEntry.h"
 
 #include <TrustWalletCore/TWBlockchain.h>
 #include <TrustWalletCore/TWCoinType.h>
@@ -89,7 +90,7 @@ bool supportsJSONSigning(TWCoinType coinType);
 
 void anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 
-std::vector<Data> anyCoinPreImageHashes(TWCoinType coinType, const Data& txInputData);
+HashPubkeyList anyCoinPreImageHashes(TWCoinType coinType, const Data& txInputData);
 
 void anyCoinCompileWithSignatures(TWCoinType coinType, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& txOutputOut);
 
