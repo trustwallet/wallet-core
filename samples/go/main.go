@@ -31,14 +31,14 @@ func tssSignBinanceDemo() {
 	fmt.Println("txInputData len: ", len(txInputData))
 
 	fmt.Println("\n==> Step 2: Obtain preimage hash")
-	hash := core.PreImageHash(coin, txInputData)
-	fmt.Println("hash: ", hex.EncodeToString(hash))
+	hashes := core.PreImageHashes(coin, txInputData)
+	fmt.Println("hash(es): ", len(hashes), hex.EncodeToString(hashes[0]))
 
 	fmt.Println("\n==> Step 3: Compile transaction info")
 	// Simulate signature, normally obtained from signature server
 	signature, _ := hex.DecodeString("1b1181faec30b60a2ddaa2804c253cf264c69180ec31814929b5de62088c0c5a45e8a816d1208fc5366bb8b041781a6771248550d04094c3d7a504f9e8310679")
 	publicKey, _ := hex.DecodeString("026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502")
-	txOutput := core.CompileWithSignature(coin, txInputData, signature, publicKey)
+	txOutput := core.CompileWithSignatures(coin, txInputData, [][]byte{signature}, [][]byte{publicKey})
 
 	fmt.Println("final txOutput proto:  ", len(txOutput))
 	fmt.Println(hex.EncodeToString(txOutput))
@@ -47,7 +47,7 @@ func tssSignBinanceDemo() {
 	//fmt.Println("output.encoded:  ", len(output.Encoded), hex.EncodeToString(output.Encoded))
 
 	fmt.Println("\n==> Double check signature validity (result should be true)")
-	verifyRes := core.PublicKeyVerify(publicKey, core.PublicKeyTypeSECP256k1, signature, hash)
+	verifyRes := core.PublicKeyVerify(publicKey, core.PublicKeyTypeSECP256k1, signature, hashes[0])
 	fmt.Println(verifyRes)
 
 	fmt.Println("")
@@ -81,14 +81,14 @@ func tssSignEthereumDemo() {
 	fmt.Println("txInputData len: ", len(txInputData2))
 
 	fmt.Println("\n==> Step 2: Obtain preimage hash")
-	hash := core.PreImageHash(coin, txInputData2)
-	fmt.Println("hash: ", hex.EncodeToString(hash))
+	hashes := core.PreImageHashes(coin, txInputData2)
+	fmt.Println("hash(es): ", len(hashes), hex.EncodeToString(hashes[0]))
 
 	fmt.Println("\n==> Step 3: Compile transaction info")
 	// Simulate signature, normally obtained from signature server
 	signature, _ := hex.DecodeString("360a84fb41ad07f07c845fedc34cde728421803ebbaae392fc39c116b29fc07b53bd9d1376e15a191d844db458893b928f3efbfee90c9febf51ab84c9796677900")
 	publicKey, _ := hex.DecodeString("044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a")
-	txOutput := core.CompileWithSignature(coin, txInputData2, signature, publicKey)
+	txOutput := core.CompileWithSignatures(coin, txInputData2, [][]byte{signature}, [][]byte{publicKey})
 
 	fmt.Println("final txOutput proto:  ", len(txOutput))
 	//fmt.Println(hex.EncodeToString(txOutput))
@@ -97,7 +97,7 @@ func tssSignEthereumDemo() {
 	fmt.Println("output.encoded:  ", len(output.Encoded), hex.EncodeToString(output.Encoded))
 
 	fmt.Println("\n==> Double check signature validity (result should be true)")
-	verifyRes := core.PublicKeyVerify(publicKey, core.PublicKeyTypeSECP256k1Extended, signature, hash)
+	verifyRes := core.PublicKeyVerify(publicKey, core.PublicKeyTypeSECP256k1Extended, signature, hashes[0])
 	fmt.Println(verifyRes)
 
 	fmt.Println("")
@@ -144,14 +144,14 @@ func tssSignBitcoinDemo() {
 	fmt.Println("txInputData len: ", len(txInputData))
 
 	fmt.Println("\n==> Step 2: Obtain preimage hash")
-	hash := core.PreImageHash(coin, txInputData)
-	fmt.Println("hash: ", hex.EncodeToString(hash))
+	hashes := core.PreImageHashes(coin, txInputData)
+	fmt.Println("hash(es): ", len(hashes), hex.EncodeToString(hashes[0]))
 
 	fmt.Println("\n==> Step 3: Compile transaction info")
 	// Simulate signature, normally obtained from signature server
 	signature, _ := hex.DecodeString("30450221009f61304eb182a4862825f27f1d93406d1e8b25d2cb889ffb7d191d8c8f6de1ea0220205e43a91abb8b7e4e4f40f54cbb3c7ebfcc725c3a97c0c42c77acebf17a7d00")
 	publicKey, _ := hex.DecodeString("024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382")
-	txOutput := core.CompileWithSignature(coin, txInputData, signature, publicKey)
+	txOutput := core.CompileWithSignatures(coin, txInputData, [][]byte{signature}, [][]byte{publicKey})
 
 	fmt.Println("final txOutput proto:  ", len(txOutput))
 	//fmt.Println(hex.EncodeToString(txOutput))
@@ -160,8 +160,8 @@ func tssSignBitcoinDemo() {
 	fmt.Println("output.encoded:  ", len(output.Encoded), hex.EncodeToString(output.Encoded))
 
 	fmt.Println("\n==> Double check signature validity (result should be true)")
-	verifyRes := core.PublicKeyVerifyAsDER(publicKey, core.PublicKeyTypeSECP256k1, signature, hash)
-	fmt.Println(verifyRes)
+	// TODO verifyRes := core.PublicKeyVerifyAsDER(publicKey, core.PublicKeyTypeSECP256k1, signature, hash)
+	//fmt.Println(verifyRes)
 
 	fmt.Println("")
 }

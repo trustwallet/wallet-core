@@ -25,24 +25,25 @@ func BuildInput(c CoinType, from, to string, amount string, asset string, memo s
 	return types.TWDataGoBytes(result)
 }
 
-func PreImageHash(c CoinType, txInputData []byte) []byte {
+func PreImageHashes(c CoinType, txInputData []byte) [][]byte {
 	input := types.TWDataCreateWithGoBytes(txInputData)
 	defer C.TWDataDelete(input)
 
-	result := C.TWTransactionHelperPreImageHash(C.enum_TWCoinType(c), input)
-	defer C.TWDataDelete(result)
-	return types.TWDataGoBytes(result)
+	result := C.TWTransactionHelperPreImageHashes(C.enum_TWCoinType(c), input)
+	defer C.TWDataVectorDelete(result)
+	return TWDataVectorGoBytes(result)
 }
 
-func CompileWithSignature(c CoinType, txInputData []byte, signature []byte, publicKey []byte) []byte {
+func CompileWithSignatures(c CoinType, txInputData []byte, signatures [][]byte, publicKeyHashes [][]byte) []byte {
 	input := types.TWDataCreateWithGoBytes(txInputData)
 	defer C.TWDataDelete(input)
-	sig := types.TWDataCreateWithGoBytes(signature)
-	defer C.TWDataDelete(sig)
-	pubkey := types.TWDataCreateWithGoBytes(publicKey)
-	defer C.TWDataDelete(pubkey)
 
-	result := C.TWTransactionHelperCompileWithSignature(C.enum_TWCoinType(c), input, sig, pubkey)
+	sigs := TWDataVectorCreateWithGoBytes(signatures)
+	defer C.TWDataVectorDelete(sigs)
+	pubkeyhashes := TWDataVectorCreateWithGoBytes(publicKeyHashes)
+	defer C.TWDataVectorDelete(pubkeyhashes)
+
+	result := C.TWTransactionHelperCompileWithSignatures(C.enum_TWCoinType(c), input, sigs, pubkeyhashes)
 	defer C.TWDataDelete(result)
 	return types.TWDataGoBytes(result)
 }
