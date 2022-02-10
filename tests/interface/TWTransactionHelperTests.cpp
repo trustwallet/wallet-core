@@ -89,7 +89,7 @@ TEST(TWTransactionHelper, ExternalSignatureSignBinance) {
         EXPECT_EQ(hex(output.encoded()), ExpectedTx);
     }
 
-    { // Double check: check if simple signature process gives the same result
+    { // Double check: check if simple signature process gives the same result. Note that private keys were not used anywhere up to this point.
         Binance::Proto::SigningInput input;
         ASSERT_TRUE(input.ParseFromArray(TWDataBytes(txInputData.get()), (int)TWDataSize(txInputData.get())));
         auto key = parse_hex("95949f757db1f57ca94a5dff23314accbe7abee89597bf6a3c7382c84d7eb832");
@@ -174,7 +174,7 @@ TEST(TWTransactionHelper, ExternalSignatureSignEthereum) {
         EXPECT_EQ(hex(output.encoded()), ExpectedTx);
     }
 
-    { // Double check: check if simple signature process gives the same result
+    { // Double check: check if simple signature process gives the same result. Note that private keys were not used anywhere up to this point.
         Ethereum::Proto::SigningInput input;
         ASSERT_TRUE(input.ParseFromArray(TWDataBytes(txInputData.get()), (int)TWDataSize(txInputData.get())));
         auto key = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
@@ -193,12 +193,18 @@ Data dataFromTWData(std::shared_ptr<TWData> data) {
 }
 
 TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
+    // Test external signining with a Bircoin transaction with 3 input UTXOs, all used, but only using 2 public keys.
+    // Three signatures are neeeded.  This illustrates that order of UTXOs/hashes is not always the same.
+
     const auto utxoHash0 = parse_hex("a85fd6a9a7f2f54cacb57e83dfd408e51c0a5fc82885e3fa06be8692962bc407");
     const auto utxoHash1 = parse_hex("5e90d18df4799198d915c9d7a9aa330795a8493fd2ef30e48f3b4ea55a2a89d6");
+    const auto utxoHash2 = parse_hex("4dc72d7aeaf4f8a4a2b22ccb6ca040dd391192fc3943362706f95575cfef2160");
     auto revUtxoHash0 = utxoHash0;
     std::reverse(revUtxoHash0.begin(), revUtxoHash0.end());
     auto revUtxoHash1 = utxoHash1;
     std::reverse(revUtxoHash1.begin(), revUtxoHash1.end());
+    auto revUtxoHash2 = utxoHash2;
+    std::reverse(revUtxoHash2.begin(), revUtxoHash2.end());
     const auto inPubKey0 = parse_hex("024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382");
     const auto inPubKey1 = parse_hex("0217142f69535e4dad0dc7060df645c55a174cc1bfa5b9eb2e59aad2ae96072dfc");
     const auto inPubKeyHash0 = parse_hex("bd92088bb7e82d611a9b94fbb74a0908152b784f");
@@ -213,25 +219,40 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
     };
     std::vector<UtxoInfo> utxoInfos = {
         // first
-        UtxoInfo {utxoHash0, inPubKey0, 1'000'000, 0},
-        // second UTXO, with different pubkey
-        UtxoInfo {utxoHash1, inPubKey1, 800'000, 0},
+        UtxoInfo {utxoHash0, inPubKey0, 600'000, 0},
+        // second UTXO, with same pubkey
+        UtxoInfo {utxoHash1, inPubKey0, 500'000, 1},
+        // third UTXO, with different pubkey
+        UtxoInfo {utxoHash2, inPubKey1, 400'000, 0},
     };
 
-    // Signature infos, indexed by pubkeyhash
+    // Signature infos, indexed by pubkeyhash+hash
     struct SignatureInfo {
         Data signature;
         Data publicKey;
     };
-    std::map<Data, SignatureInfo> signatureInfos = {
-        {inPubKeyHash0, {
-            parse_hex("3045022100b407ce439a7e09b0d64a926e4987f2ceecd9307025c16bec63e44792eef8e79e0220739af2622399bf302e1e2f2a8dd461250d94c76e17bf42154687f825ae9effee"),
-            inPubKey0,
-        }},
-        {inPubKeyHash1, {
-            parse_hex("3045022100b2f3f682fe4b4c17c5bc075afd758a048ae42b7ee5ce525d2a80af4d8c08e66a02204d11207c15610086159870ef27cb0d3472d08e5b43c99ad4b4e681445f9bed73"),
-            inPubKey1,
-        }},
+    std::map<std::string, SignatureInfo> signatureInfos = {
+        {
+            hex(inPubKeyHash0) + "+" + "a296bead4172007be69b21971a790e076388666c162a9505698415f1b003ebd7",
+            {
+                parse_hex("304402201857bc6e6e48b46046a4bd204136fc77e24c240943fb5a1f0e86387aae59b34902200a7f31478784e51c49f46ef072745a4f263d7efdbc9c6784aa2571ff4f6f2a40"),
+                inPubKey0,
+            }
+        },
+        {
+            hex(inPubKeyHash1) + "+" + "505f527f00e15fcc5a2d2416c9970beb57dfdfaca99e572a01f143b24dd8fab6",
+            {
+                parse_hex("3044022041294880caa09bb1b653775310fcdd1458da6b8e7d7fae34e37966414fe115820220646397c9d2513edc5974ecc336e9b287de0cdf071c366f3b3dc3ff309213e4e4"),
+                inPubKey1,
+            }
+        },
+        {
+            hex(inPubKeyHash0) + "+" + "60ed6e9371e5ddc72fd88e46a12cb2f68516ebd307c0fd31b1b55cf767272101",
+            {
+                parse_hex("30440220764e3d5b3971c4b3e70b23fb700a7462a6fe519d9830e863a1f8388c402ad0b102207e777f7972c636961f92375a2774af3b7a2a04190251bbcb31d19c70927952dc"),
+                inPubKey0,
+            }
+        },
     };
 
     const auto coin = TWCoinTypeBitcoin;
@@ -254,24 +275,29 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
         std::reverse(reverseHash.begin(), reverseHash.end());
         if (count == 0) EXPECT_EQ(hex(reverseHash), "07c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa8");
         if (count == 1) EXPECT_EQ(hex(reverseHash), "d6892a5aa54e3b8fe430efd23f49a8950733aaa9d7c915d9989179f48dd1905e");
+        if (count == 2) EXPECT_EQ(hex(reverseHash), "6021efcf7555f90627364339fc921139dd40a06ccb2cb2a2a4f8f4ea7a2dc74d");
 
         const auto publicKey = PublicKey(u.publicKey, TWPublicKeyTypeSECP256k1);
         const auto address = Bitcoin::SegwitAddress(publicKey, "bc");
         if (count == 0) EXPECT_EQ(address.string(), ownAddress);
-        if (count == 1) EXPECT_EQ(address.string(), "bc1qveq6hmdvl9yrk7f6lct3s6yue9pqhwcuxedggg");
+        if (count == 1) EXPECT_EQ(address.string(), ownAddress);
+        if (count == 2) EXPECT_EQ(address.string(), "bc1qveq6hmdvl9yrk7f6lct3s6yue9pqhwcuxedggg");
 
         const auto utxoScript = Bitcoin::Script::lockScriptForAddress(address.string(), coin);
         if (count == 0) EXPECT_EQ(hex(utxoScript.bytes), "0014bd92088bb7e82d611a9b94fbb74a0908152b784f");
-        if (count == 1) EXPECT_EQ(hex(utxoScript.bytes), "00146641abedacf9483b793afe1718689cc9420bbb1c");
+        if (count == 1) EXPECT_EQ(hex(utxoScript.bytes), "0014bd92088bb7e82d611a9b94fbb74a0908152b784f");
+        if (count == 2) EXPECT_EQ(hex(utxoScript.bytes), "00146641abedacf9483b793afe1718689cc9420bbb1c");
 
         Data keyHash;
         EXPECT_TRUE(utxoScript.matchPayToWitnessPublicKeyHash(keyHash));
-        if (count == 0) EXPECT_EQ(hex(keyHash), "bd92088bb7e82d611a9b94fbb74a0908152b784f");
-        if (count == 1) EXPECT_EQ(hex(keyHash), "6641abedacf9483b793afe1718689cc9420bbb1c");
+        if (count == 0) EXPECT_EQ(hex(keyHash), hex(inPubKeyHash0));
+        if (count == 1) EXPECT_EQ(hex(keyHash), hex(inPubKeyHash0));
+        if (count == 2) EXPECT_EQ(hex(keyHash), hex(inPubKeyHash1));
 
         const auto redeemScript = Bitcoin::Script::buildPayToPublicKeyHash(keyHash);
         if (count == 0) EXPECT_EQ(hex(redeemScript.bytes), "76a914bd92088bb7e82d611a9b94fbb74a0908152b784f88ac");
-        if (count == 1) EXPECT_EQ(hex(redeemScript.bytes), "76a9146641abedacf9483b793afe1718689cc9420bbb1c88ac");
+        if (count == 1) EXPECT_EQ(hex(redeemScript.bytes), "76a914bd92088bb7e82d611a9b94fbb74a0908152b784f88ac");
+        if (count == 2) EXPECT_EQ(hex(redeemScript.bytes), "76a9146641abedacf9483b793afe1718689cc9420bbb1c88ac");
         (*input.mutable_scripts())[hex(keyHash)] = std::string(redeemScript.bytes.begin(), redeemScript.bytes.end());
 
         auto utxo = input.add_utxo();
@@ -283,6 +309,8 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
 
         ++count;
     }
+    EXPECT_EQ(count, 3);
+    EXPECT_EQ(input.utxo_size(), 3);
 
     // Plan
     Bitcoin::Proto::TransactionPlan plan;
@@ -290,12 +318,13 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
 
     // Plan is checked, assume it is accepted
     EXPECT_EQ(plan.amount(), 1'200'000);
-    EXPECT_EQ(plan.fee(), 209);
-    EXPECT_EQ(plan.change(), 599'791);
-    ASSERT_EQ(plan.utxos_size(), 2);
+    EXPECT_EQ(plan.fee(), 277);
+    EXPECT_EQ(plan.change(), 299'723);
+    ASSERT_EQ(plan.utxos_size(), 3);
     // Note that UTXOs happen to be in reverse order compared to the input
-    EXPECT_EQ(hex(plan.utxos(0).out_point().hash()), hex(revUtxoHash1));
-    EXPECT_EQ(hex(plan.utxos(1).out_point().hash()), hex(revUtxoHash0));
+    EXPECT_EQ(hex(plan.utxos(0).out_point().hash()), hex(revUtxoHash2));
+    EXPECT_EQ(hex(plan.utxos(1).out_point().hash()), hex(revUtxoHash1));
+    EXPECT_EQ(hex(plan.utxos(2).out_point().hash()), hex(revUtxoHash0));
 
     // Extend input with accepted plan
     *input.mutable_plan() = plan;
@@ -303,33 +332,36 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
     // Serialize input
     const auto txInputDataData = data(input.SerializeAsString());
     const auto txInputData = WRAPD(TWDataCreateWithBytes(txInputDataData.data(), txInputDataData.size()));
-    EXPECT_EQ((int)TWDataSize(txInputData.get()), 544);
+    EXPECT_EQ((int)TWDataSize(txInputData.get()), 692);
 
-    /// Step 2: Obtain preimage hash
+    /// Step 2: Obtain preimage hashes
     const auto preImageHashes = WRAP(TWDataVector, TWTransactionHelperPreImageHashes(coin, txInputData.get()));
 
-    ASSERT_EQ(TWDataVectorSize(preImageHashes.get()), 2*2);
-    const auto preImageHash0 = dataFromTWData(WRAPD(TWDataVectorGet(preImageHashes.get(), 0*2)));
-    const auto pubKeyHash0 = dataFromTWData(WRAPD(TWDataVectorGet(preImageHashes.get(), 0*2+1)));
-    const auto preImageHash1 = dataFromTWData(WRAPD(TWDataVectorGet(preImageHashes.get(), 1*2)));
-    const auto pubKeyHash1 = dataFromTWData(WRAPD(TWDataVectorGet(preImageHashes.get(), 1*2+1)));
-    std::map<Data, Data> preImageHashDatas = {
-        {pubKeyHash0, preImageHash0},
-        {pubKeyHash1, preImageHash1},
-    };
-    EXPECT_EQ(hex(preImageHashDatas[inPubKeyHash1]), "cf3083599f7a75e0ef2da8c96627dae8b0b0c2393988ce0b65d356ece3c1c66c");
-    EXPECT_EQ(hex(preImageHashDatas[inPubKeyHash0]), "1ea2205440222a7b0270955b1122a7b3db869c7094296b6b72661e6df9e3c8fa");
+    ASSERT_EQ(TWDataVectorSize(preImageHashes.get()), 3*2);
+    std::vector<std::pair<Data, Data>> hashes;
+    for (auto i = 0; i < 3; ++i) {
+        const auto preImageHash = dataFromTWData(WRAPD(TWDataVectorGet(preImageHashes.get(), i*2)));
+        const auto pubKeyHash = dataFromTWData(WRAPD(TWDataVectorGet(preImageHashes.get(), i*2+1)));
+        hashes.push_back(std::make_pair(preImageHash, pubKeyHash));
+    }
+    EXPECT_EQ(hex(std::get<0>(hashes[0])), "505f527f00e15fcc5a2d2416c9970beb57dfdfaca99e572a01f143b24dd8fab6");
+    EXPECT_EQ(hex(std::get<0>(hashes[1])), "a296bead4172007be69b21971a790e076388666c162a9505698415f1b003ebd7");
+    EXPECT_EQ(hex(std::get<0>(hashes[2])), "60ed6e9371e5ddc72fd88e46a12cb2f68516ebd307c0fd31b1b55cf767272101");
+    EXPECT_EQ(hex(std::get<1>(hashes[0])), hex(inPubKeyHash1));
+    EXPECT_EQ(hex(std::get<1>(hashes[1])), hex(inPubKeyHash0));
+    EXPECT_EQ(hex(std::get<1>(hashes[2])), hex(inPubKeyHash0));
 
     // Simulate signatures, normally obtained from signature server.
     // Note that they are in the order of the hashes, which are in the order of the UTXOs in the plan (accidentally reverse of the input)
     auto signatureVec = WRAP(TWDataVector, TWDataVectorCreate());
     auto pubkeyVec = WRAP(TWDataVector, TWDataVectorCreate());
-    for (const auto& h: preImageHashDatas) {
-        const auto& pubkeyhash = h.first;
-        const auto& preImageHash = h.second;
+    for (const auto& h: hashes) {
+        const auto& preImageHash = std::get<0>(h);
+        const auto& pubkeyhash = std::get<1>(h);
 
-        const auto sigInfoFind = signatureInfos.find(pubkeyhash);
-        EXPECT_TRUE(sigInfoFind != signatureInfos.end());
+        const std::string key = hex(pubkeyhash) + "+" + hex(preImageHash);
+        const auto sigInfoFind = signatureInfos.find(key);
+        ASSERT_TRUE(sigInfoFind != signatureInfos.end());
         const auto& sigInfo = std::get<1>(*sigInfoFind);
         const auto& publicKeyData = sigInfo.publicKey;
         const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeSECP256k1);
@@ -347,24 +379,25 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
         coin, txInputData.get(), signatureVec.get(), pubkeyVec.get()
     ));
 
-    const auto ExpectedTx = "01000000000102d6892a5aa54e3b8fe430efd23f49a8950733aaa9d7c915d9989179f48dd1905e0000000000ffffffff07c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa80000000000ffffffff02804f1200000000001600145360df8231ac5965147c9d90ca930a2aafb05232ef26090000000000160014bd92088bb7e82d611a9b94fbb74a0908152b784f02483045022100b2f3f682fe4b4c17c5bc075afd758a048ae42b7ee5ce525d2a80af4d8c08e66a02204d11207c15610086159870ef27cb0d3472d08e5b43c99ad4b4e681445f9bed7301210217142f69535e4dad0dc7060df645c55a174cc1bfa5b9eb2e59aad2ae96072dfc02483045022100b407ce439a7e09b0d64a926e4987f2ceecd9307025c16bec63e44792eef8e79e0220739af2622399bf302e1e2f2a8dd461250d94c76e17bf42154687f825ae9effee0121024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb49338200000000";
+    const auto ExpectedTx = "010000000001036021efcf7555f90627364339fc921139dd40a06ccb2cb2a2a4f8f4ea7a2dc74d0000000000ffffffffd6892a5aa54e3b8fe430efd23f49a8950733aaa9d7c915d9989179f48dd1905e0100000000ffffffff07c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa80000000000ffffffff02804f1200000000001600145360df8231ac5965147c9d90ca930a2aafb05232cb92040000000000160014bd92088bb7e82d611a9b94fbb74a0908152b784f02473044022041294880caa09bb1b653775310fcdd1458da6b8e7d7fae34e37966414fe115820220646397c9d2513edc5974ecc336e9b287de0cdf071c366f3b3dc3ff309213e4e401210217142f69535e4dad0dc7060df645c55a174cc1bfa5b9eb2e59aad2ae96072dfc0247304402201857bc6e6e48b46046a4bd204136fc77e24c240943fb5a1f0e86387aae59b34902200a7f31478784e51c49f46ef072745a4f263d7efdbc9c6784aa2571ff4f6f2a400121024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382024730440220764e3d5b3971c4b3e70b23fb700a7462a6fe519d9830e863a1f8388c402ad0b102207e777f7972c636961f92375a2774af3b7a2a04190251bbcb31d19c70927952dc0121024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb49338200000000";
     {
-        EXPECT_EQ(TWDataSize(outputData.get()), 594);
+        EXPECT_EQ(TWDataSize(outputData.get()), 786);
         Bitcoin::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(TWDataBytes(outputData.get()), (int)TWDataSize(outputData.get())));
 
-        EXPECT_EQ(output.encoded().size(), 372);
+        EXPECT_EQ(output.encoded().size(), 518);
         EXPECT_EQ(hex(output.encoded()), ExpectedTx);
     }
 
-    { // Double check: check if simple signature process gives the same result
+    { // Double check: check if simple signature process gives the same result. Note that private keys were not used anywhere up to this point.
         Bitcoin::Proto::SigningInput input;
         ASSERT_TRUE(input.ParseFromArray(TWDataBytes(txInputData.get()), (int)TWDataSize(txInputData.get())));
 
+        // 2 private keys are needed (despite >2 UTXOs)
         auto key0 = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
         auto key1 = parse_hex("7878787878787878787878787878787878787878787878787878787878787878");
-        EXPECT_EQ(hex(PrivateKey(key0).getPublicKey(TWPublicKeyTypeSECP256k1).bytes), "024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382");
-        EXPECT_EQ(hex(PrivateKey(key1).getPublicKey(TWPublicKeyTypeSECP256k1).bytes), "0217142f69535e4dad0dc7060df645c55a174cc1bfa5b9eb2e59aad2ae96072dfc");
+        EXPECT_EQ(hex(PrivateKey(key0).getPublicKey(TWPublicKeyTypeSECP256k1).bytes), hex(inPubKey0));
+        EXPECT_EQ(hex(PrivateKey(key1).getPublicKey(TWPublicKeyTypeSECP256k1).bytes), hex(inPubKey1));
         *input.add_private_key() = std::string(key0.begin(), key0.end());
         *input.add_private_key() = std::string(key1.begin(), key1.end());
 
