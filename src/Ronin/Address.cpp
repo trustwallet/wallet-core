@@ -33,5 +33,5 @@ Address::Address(const std::string& string) {
 }
 
 std::string Address::string() const {
-    return "ronin:" + hex(bytes);
+    return prefix + hex(bytes);
 }
