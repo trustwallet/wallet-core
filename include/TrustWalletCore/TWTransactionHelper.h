@@ -31,7 +31,9 @@ TWData *_Nonnull TWTransactionHelperBuildInput(enum TWCoinType coinType, TWStrin
 TW_EXPORT_STATIC_METHOD
 struct TWDataVector *_Nonnull TWTransactionHelperPreImageHashes(enum TWCoinType coinType, TWData *_Nonnull txInputData);
 
-/// Compile a complete transation with one or more external signatures, put together from transaction input and provided public keys and signatures
+/// Compile a complete transation with one or more external signatures, put together from transaction input and provided public keys and signatures.
+/// The signatures must match the hashes returned by TWTransactionHelperPreImageHashes, in the same order.
+/// The publicKeyHash attached to the hashes enable identifying the private key needed for signing the hash.
 TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWTransactionHelperCompileWithSignatures(enum TWCoinType coinType, TWData *_Nonnull txInputData, const struct TWDataVector *_Nonnull signatures, const struct TWDataVector *_Nonnull publicKeys);
 

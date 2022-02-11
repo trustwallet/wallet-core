@@ -264,10 +264,22 @@ Data SignatureBuilder<Transaction>::createSignature(
             // Error: no or not enough signatures provided
             return Data();
         }
+
         Data externalSignature = std::get<0>(externalSignatures.value()[index]);
+        const Data publicKey = std::get<1>(externalSignatures.value()[index]);
+
+        // Verify provided signature
+        if (!PublicKey::isValid(publicKey, TWPublicKeyTypeSECP256k1)) {
+            // Error: invalid public key
+            return Data();
+        }
+        const auto publicKeyObj = PublicKey(publicKey, TWPublicKeyTypeSECP256k1);
+        if (!publicKeyObj.verifyAsDER(externalSignature, sighash)) {
+            // Error: Signature does not match publickey+hash
+            return Data();
+        }
         externalSignature.push_back(static_cast<byte>(input.hashType));
 
-        // TODO verify signature
         return externalSignature;
     }
 
