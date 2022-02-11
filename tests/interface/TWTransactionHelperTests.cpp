@@ -196,15 +196,9 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
     // Test external signining with a Bircoin transaction with 3 input UTXOs, all used, but only using 2 public keys.
     // Three signatures are neeeded.  This illustrates that order of UTXOs/hashes is not always the same.
 
-    const auto utxoHash0 = parse_hex("a85fd6a9a7f2f54cacb57e83dfd408e51c0a5fc82885e3fa06be8692962bc407");
-    const auto utxoHash1 = parse_hex("5e90d18df4799198d915c9d7a9aa330795a8493fd2ef30e48f3b4ea55a2a89d6");
-    const auto utxoHash2 = parse_hex("4dc72d7aeaf4f8a4a2b22ccb6ca040dd391192fc3943362706f95575cfef2160");
-    auto revUtxoHash0 = utxoHash0;
-    std::reverse(revUtxoHash0.begin(), revUtxoHash0.end());
-    auto revUtxoHash1 = utxoHash1;
-    std::reverse(revUtxoHash1.begin(), revUtxoHash1.end());
-    auto revUtxoHash2 = utxoHash2;
-    std::reverse(revUtxoHash2.begin(), revUtxoHash2.end());
+    const auto revUtxoHash0 = parse_hex("07c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa8");
+    const auto revUtxoHash1 = parse_hex("d6892a5aa54e3b8fe430efd23f49a8950733aaa9d7c915d9989179f48dd1905e");
+    const auto revUtxoHash2 = parse_hex("6021efcf7555f90627364339fc921139dd40a06ccb2cb2a2a4f8f4ea7a2dc74d");
     const auto inPubKey0 = parse_hex("024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382");
     const auto inPubKey1 = parse_hex("0217142f69535e4dad0dc7060df645c55a174cc1bfa5b9eb2e59aad2ae96072dfc");
     const auto inPubKeyHash0 = parse_hex("bd92088bb7e82d611a9b94fbb74a0908152b784f");
@@ -212,18 +206,18 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
 
     // Input UTXO infos
     struct UtxoInfo {
-        Data utxoHash;
+        Data revUtxoHash;
         Data publicKey;
         long amount;
         int index;
     };
     std::vector<UtxoInfo> utxoInfos = {
         // first
-        UtxoInfo {utxoHash0, inPubKey0, 600'000, 0},
+        UtxoInfo {revUtxoHash0, inPubKey0, 600'000, 0},
         // second UTXO, with same pubkey
-        UtxoInfo {utxoHash1, inPubKey0, 500'000, 1},
+        UtxoInfo {revUtxoHash1, inPubKey0, 500'000, 1},
         // third UTXO, with different pubkey
-        UtxoInfo {utxoHash2, inPubKey1, 400'000, 0},
+        UtxoInfo {revUtxoHash2, inPubKey1, 400'000, 0},
     };
 
     // Signature infos, indexed by pubkeyhash+hash
@@ -271,12 +265,6 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
     // process UTXOs
     int count = 0;
     for (auto& u: utxoInfos) {
-        Data reverseHash = u.utxoHash;
-        std::reverse(reverseHash.begin(), reverseHash.end());
-        if (count == 0) EXPECT_EQ(hex(reverseHash), "07c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa8");
-        if (count == 1) EXPECT_EQ(hex(reverseHash), "d6892a5aa54e3b8fe430efd23f49a8950733aaa9d7c915d9989179f48dd1905e");
-        if (count == 2) EXPECT_EQ(hex(reverseHash), "6021efcf7555f90627364339fc921139dd40a06ccb2cb2a2a4f8f4ea7a2dc74d");
-
         const auto publicKey = PublicKey(u.publicKey, TWPublicKeyTypeSECP256k1);
         const auto address = Bitcoin::SegwitAddress(publicKey, "bc");
         if (count == 0) EXPECT_EQ(address.string(), ownAddress);
@@ -303,7 +291,7 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
         auto utxo = input.add_utxo();
         utxo->set_script(utxoScript.bytes.data(), utxoScript.bytes.size());
         utxo->set_amount(u.amount);
-        utxo->mutable_out_point()->set_hash(std::string(reverseHash.begin(), reverseHash.end()));
+        utxo->mutable_out_point()->set_hash(std::string(u.revUtxoHash.begin(), u.revUtxoHash.end()));
         utxo->mutable_out_point()->set_index(u.index);
         utxo->mutable_out_point()->set_sequence(UINT32_MAX);
 
@@ -352,7 +340,6 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
     EXPECT_EQ(hex(std::get<1>(hashes[2])), hex(inPubKeyHash0));
 
     // Simulate signatures, normally obtained from signature server.
-    // Note that they are in the order of the hashes, which are in the order of the UTXOs in the plan (accidentally reverse of the input)
     auto signatureVec = WRAP(TWDataVector, TWDataVectorCreate());
     auto pubkeyVec = WRAP(TWDataVector, TWDataVectorCreate());
     for (const auto& h: hashes) {
