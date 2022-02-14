@@ -27,6 +27,10 @@ class UnspentSelector {
     std::vector<Proto::UnspentTransaction> select(const T& utxos, int64_t targetValue,
                                                   int64_t byteFee, int64_t numOutputs = 2);
 
+    /// Selects all unspent transactions.
+    template <typename T>
+    std::vector<Proto::UnspentTransaction> selectAll(const T& utxos, int64_t targetValue, int64_t byteFee);
+
     UnspentCalculator calculator;
 
     UnspentSelector() : calculator(UnspentCalculator()) {}

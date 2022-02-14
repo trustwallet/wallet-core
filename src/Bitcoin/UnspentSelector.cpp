@@ -126,9 +126,35 @@ UnspentSelector::select(const T& utxos, int64_t targetValue, int64_t byteFee, in
     return {};
 }
 
+template <typename T>
+std::vector<Proto::UnspentTransaction>
+UnspentSelector::selectAll(const T& utxos, int64_t targetValue, int64_t byteFee) {
+    // if target value is zero, fee is zero
+    if (targetValue == 0) {
+        return {};
+    }
+
+    // total values of utxos should be greater than targetValue
+    if (sum(utxos) < targetValue || utxos.empty()) {
+        return {};
+    }
+
+    // filterDustInput needs non-const vector, 
+    // so we use a trick to convert const vector to non-const vector by slice function
+    auto selectedUtxos = slice(utxos, utxos.size());
+    return filterDustInput(selectedUtxos.front(), byteFee);
+}
+
 template std::vector<Proto::UnspentTransaction> UnspentSelector::select(
     const ::google::protobuf::RepeatedPtrField<Proto::UnspentTransaction>& utxos,
     int64_t targetValue, int64_t byteFee, int64_t numOutputs);
 template std::vector<Proto::UnspentTransaction>
 UnspentSelector::select(const std::vector<Proto::UnspentTransaction>& utxos, int64_t targetValue,
                         int64_t byteFee, int64_t numOutputs);
+
+template std::vector<Proto::UnspentTransaction> UnspentSelector::selectAll(
+    const ::google::protobuf::RepeatedPtrField<Proto::UnspentTransaction>& utxos,
+    int64_t targetValue, int64_t byteFee);
+template std::vector<Proto::UnspentTransaction>
+UnspentSelector::selectAll(const std::vector<Proto::UnspentTransaction>& utxos, int64_t targetValue,
+                        int64_t byteFee);

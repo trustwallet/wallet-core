@@ -26,6 +26,17 @@ UnspentCalculator UnspentCalculator::getCalculator(TWCoinType coinType) {
         };
         return UnspentCalculator(calc, calcInput);
     }
+    case TWCoinTypeBitcoinCash:
+    case TWCoinTypeDash:
+    case TWCoinTypeLitecoin: 
+    case TWCoinTypeDogecoin:   
+    case TWCoinTypeBitcoin: {
+        auto calcInput = [](int64_t byteFee) -> int64_t { 
+            // Ignore dust check, leave this for callers.
+            return 0;
+        };
+        return UnspentCalculator(UnspentCalculator::calculateFee, calcInput);
+    }
     default:
         return UnspentCalculator();
     }

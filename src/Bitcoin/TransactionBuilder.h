@@ -52,8 +52,14 @@ public:
             plan.amount = std::max(Amount(0), plan.amount);
         }
 
-        plan.utxos =
-            unspentSelector.select(input.utxo(), plan.amount, input.byte_fee(), output_size);
+        bool useMaxUtxo = input.use_max_utxo();
+        if (useMaxUtxo) {
+            plan.utxos = unspentSelector.selectAll(input.utxo(), plan.amount, input.byte_fee());
+        } else {
+            plan.utxos = unspentSelector.select(input.utxo(), plan.amount, input.byte_fee(),
+                                                output_size);
+        }
+
         plan.fee =
             unspentSelector.calculator.calculate(plan.utxos.size(), output_size, input.byte_fee());
 

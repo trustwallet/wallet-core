@@ -99,6 +99,9 @@ message SigningInput {
     
     // Optional additional destination addresses, additional to first to_address output
     repeated OutputAddress extra_outputs = 15;
+
+    // If use max utxo.
+    bool use_max_utxo = 16;
 }
 
 // Describes a preliminary transaction plan.
