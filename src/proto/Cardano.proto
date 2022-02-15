@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package TW.Cardano.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+message Utxo {
+    string tx_hash = 1;
+    string address = 2;
+    
+    // ADA amount // TODO proper type
+    uint64 amount = 3;
+
+    uint64 output_index = 4;
+}
+
+message Transfer {
+    // Destination address as string
+    string to_address = 1;
+
+    // TODO check correct type
+    uint64 amount = 2;
+}
+
+// Input data necessary to create a signed transaction
+message SigningInput {
+    repeated Utxo utxos = 1;
+
+    // Private key bytes (double extended)
+    bytes private_key = 2;
+
+    oneof message_type {
+        Transfer transfer_message = 3;
+    }
+}
+
+// Transaction signing output
+message SigningOutput {
+    string encoded = 1;
+
+    // Optional error
+    Common.Proto.SigningError error = 4;
+}
