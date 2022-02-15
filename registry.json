@@ -381,9 +381,8 @@
     }
   },
   {
-    "id": "zcoin",
-    "name": "Zcoin",
-    "displayName": "Firo",
+    "id": "firo",
+    "name": "Firo",
     "coinId": 136,
     "symbol": "FIRO",
     "decimals": 8,
@@ -1715,7 +1714,7 @@
     "info": {
       "url": "https://www.xdaichain.com",
       "client": "https://github.com/openethereum/openethereum",
-      "clientPublic": "https://rpc.xdaichain.com",
+      "clientPublic": "https://rpc.gnosischain.com",
       "clientDocs": "https://eth.wiki/json-rpc/API"
     }
   },

@@ -203,8 +203,8 @@ TEST(Coin, validateAddressTron) {
 }
 
 TEST(Coin, validateAddressZcoin) {
-    EXPECT_TRUE(validateAddress(TWCoinTypeZcoin, "aHzpPjmY132KseS4nkiQTbDahTEXqesY89"));
-    EXPECT_FALSE(validateAddress(TWCoinTypeZcoin, "xHzpPjmY132KseS4nkiQTbDahTEXqesY89"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeFiro, "aHzpPjmY132KseS4nkiQTbDahTEXqesY89"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeFiro, "xHzpPjmY132KseS4nkiQTbDahTEXqesY89"));
 }
 
 TEST(Coin, validateAddressLitecoin) {

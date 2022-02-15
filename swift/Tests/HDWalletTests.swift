@@ -152,7 +152,7 @@ class HDWalletTests: XCTestCase {
     }
 
     func testDeriveZcoin() {
-        let zcoin = CoinType.zcoin
+        let zcoin = CoinType.firo
         let wallet = HDWallet.test
         let key = wallet.getKeyForCoin(coin: zcoin)
         let address = zcoin.deriveAddress(privateKey: key)

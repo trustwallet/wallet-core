@@ -335,7 +335,7 @@ TEST(SolanaSigner, SignCreateTokenAccount) {
     auto tokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
     Solana::Hash recentBlockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
 
-    auto message = Message::createTokenCreateAccount(signer, TokenInstruction::CreateTokenAccount, signer, token, tokenAddress, recentBlockhash);
+    auto message = Message::createTokenCreateAccount(signer, signer, token, tokenAddress, recentBlockhash);
     auto transaction = Transaction(message);
 
     std::vector<PrivateKey> signerKeys;
@@ -353,7 +353,7 @@ TEST(SolanaSigner, SignCreateTokenAccount) {
     EXPECT_EQ(transaction.serialize(), expectedString);
 }
 
-TEST(SolanaSigner, SignCreateTokenAccountForOther) {
+TEST(SolanaSigner, SignCreateTokenAccountForOther_3E6UFV) {
     const auto privateKeySigner =
         PrivateKey(parse_hex("4b9d6f57d28b06cbfa1d4cc710953e62d653caf853415c56ffd9d150acdeb7f7"));
     const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
@@ -365,7 +365,7 @@ TEST(SolanaSigner, SignCreateTokenAccountForOther) {
     auto tokenAddress = Address("67BrwFYt7qUnbAcYBVx7sQ4jeD2KWN1ohP6bMikmmQV3");
     Solana::Hash recentBlockhash("HmWyvrif3QfZJnDiRyrojmH9iLr7eMxxqiC9RJWFeunr");
 
-    auto message = Message::createTokenCreateAccount(signer, TokenInstruction::CreateTokenAccount, otherMainAddress, token, tokenAddress, recentBlockhash);
+    auto message = Message::createTokenCreateAccount(signer, otherMainAddress, token, tokenAddress, recentBlockhash);
     auto transaction = Transaction(message);
 
     std::vector<PrivateKey> signerKeys;
@@ -378,7 +378,7 @@ TEST(SolanaSigner, SignCreateTokenAccountForOther) {
     EXPECT_EQ(transaction.serialize(), expectedString);
 }
 
-TEST(SolanaSigner, SignTransferToken) {
+TEST(SolanaSigner, SignTransferToken_3vZ67C) {
     const auto privateKeySigner =
         PrivateKey(Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5"));
     const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
@@ -392,7 +392,7 @@ TEST(SolanaSigner, SignTransferToken) {
     uint8_t decimals = 6;
     Solana::Hash recentBlockhash("CNaHfvqePgGYMvtYi9RuUdVxDYttr1zs4TWrTXYabxZi");
 
-    auto message = Message::createTokenTransfer(signer, TokenInstruction::TokenTransfer, token,
+    auto message = Message::createTokenTransfer(signer, token,
         senderTokenAddress, recipientTokenAddress, amount, decimals, recentBlockhash);
     auto transaction = Transaction(message);
 

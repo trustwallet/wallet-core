@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -66,6 +66,21 @@ TEST(SolanaTransaction, TransferTransactionPayToSelf) {
     ASSERT_EQ(transaction.serialize(), expectedString);
 }
 
+TEST(SolanaTransaction, TransferWithMemoAndReferenceTransaction) {
+    const auto from = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
+    const auto to = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
+    const Solana::Hash recentBlockhash("11111111111111111111111111111111");
+    const auto memo = "HelloSolana73";
+    std::vector<Address> references = {Address("GaeTAQZyhVEocTC7iY8GztSyY5cBAJTkAUUA1kLFLMV")};
+    auto transaction = Transaction(from, to, 42, recentBlockhash, memo, references);
+    const Signature signature("3CFWDEK51noPJP4v2t8JZ3qj7kC7kLKyws9akfHMyuJnQ35EtzBptHqvaHfeswiLsvUSxzMVNoj4CuRxWtDD9zB1");
+    transaction.signatures.clear();
+    transaction.signatures.push_back(signature);
+
+    auto expectedString = "3pzQEdU38uMQgegTyRsRLi23NK4YokgZeSVLXYzFB7HShqZZH8FdBLqj6CeA2d2L8oR9KF2UaJPWbE8YBFmSdaafegoSXJtyj7ciwTjk5ieSXnPXtqH1TEcnMntZATg7gKpeFg6iehqdSUtZuQD1PGmHA1TrzzqLpRSRrc1sqPz8EpSJcQr1Y41B1XCEAfSJDfcuNKrfFrnQaVtRz6tseQfd9uXNYNuR1NQSepWdav5wQiohLUMDiZtxuwb7FQkQ68WE1FDsHmd4JpbWKmDEjz7HFyQY37vf6NBJyX5qWJpFMSg5qGKWvhNCDM32yM4A7HhPeoTWEywE5CXcNmQqdbRt4BzF1A11uqv4etWj";
+    EXPECT_EQ(transaction.serialize(), expectedString);
+}
+
 TEST(SolanaTransaction, StakeSerializeTransactionV2) {
     auto signer = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
     auto voteAddress = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
@@ -105,7 +120,7 @@ TEST(SolanaTransaction, CreateTokenAccountTransaction) {
     auto token = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
     auto tokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
     Solana::Hash recentBlockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
-    auto message = Message::createTokenCreateAccount(signer, TokenInstruction::CreateTokenAccount, signer, token, tokenAddress, recentBlockhash);
+    auto message = Message::createTokenCreateAccount(signer, signer, token, tokenAddress, recentBlockhash);
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
     EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 5);
@@ -139,7 +154,7 @@ TEST(SolanaTransaction, CreateTokenAccountTransaction) {
     EXPECT_EQ(transaction.serialize(), expectedString);
 }
 
-TEST(SolanaTransaction, TransferTokenTransaction) {
+TEST(SolanaTransaction, TransferTokenTransaction_3vZ67C) {
     auto signer = Address("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
     auto token = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
     auto senderTokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
@@ -147,7 +162,7 @@ TEST(SolanaTransaction, TransferTokenTransaction) {
     uint64_t amount = 4000;
     uint8_t decimals = 6;
     Solana::Hash recentBlockhash("CNaHfvqePgGYMvtYi9RuUdVxDYttr1zs4TWrTXYabxZi");
-    auto message = Message::createTokenTransfer(signer, TokenInstruction::TokenTransfer, token, senderTokenAddress, recipientTokenAddress, amount, decimals, recentBlockhash);
+    auto message = Message::createTokenTransfer(signer, token, senderTokenAddress, recipientTokenAddress, amount, decimals, recentBlockhash);
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
     EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 2);

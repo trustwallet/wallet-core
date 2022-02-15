@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -152,6 +152,24 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
         verifyBuffer[63] &= 127;
         return ed25519_sign_open(message.data(), message.size(), ed25519PublicKey.data(),
                                  verifyBuffer.data()) == 0;
+    }
+}
+
+bool PublicKey::verifyAsDER(const Data& signature, const Data& message) const {
+    switch (type) {
+    case TWPublicKeyTypeSECP256k1:
+    case TWPublicKeyTypeSECP256k1Extended:
+        {
+            Data sig(64);
+            int ret = ecdsa_sig_from_der(signature.data(), signature.size(), sig.data());
+            if (ret) {
+                return false;
+            }
+            return ecdsa_verify_digest(&secp256k1, bytes.data(), sig.data(), message.data()) == 0;
+        }
+
+    default:
+        return false;
     }
 }
 
