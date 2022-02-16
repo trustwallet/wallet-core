@@ -16,6 +16,7 @@
 #include "Aeternity/Entry.h"
 #include "Aion/Entry.h"
 #include "Algorand/Entry.h"
+#include "Astar/Entry.h"
 #include "Binance/Entry.h"
 #include "Bitcoin/Entry.h"
 #include "Cardano/Entry.h"
@@ -61,6 +62,7 @@ using namespace std;
 Aeternity::Entry aeternityDP;
 Aion::Entry aionDP;
 Algorand::Entry algorandDP;
+Astar::Entry astarDP;
 Binance::Entry binanceDP;
 Bitcoin::Entry bitcoinDP;
 Cardano::Entry cardanoDP;
@@ -106,6 +108,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeAeternity: entry = &aeternityDP; break;
         case TWCoinTypeAion: entry = &aionDP; break;
         case TWCoinTypeAlgorand: entry = &algorandDP; break;
+        case TWCoinTypeAstar: entry = &astarDP; break;
         case TWCoinTypeBinance: entry = &binanceDP; break;
         case TWCoinTypeBitcoin: entry = &bitcoinDP; break;
         case TWCoinTypeBitcoinCash: entry = &bitcoinDP; break;

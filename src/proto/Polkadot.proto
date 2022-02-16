@@ -6,6 +6,7 @@ option java_package = "wallet.core.jni.proto";
 enum Network {
     POLKADOT = 0;
     KUSAMA = 2;
+    ASTAR = 5;
 }
 
 enum RewardDestination {
