@@ -32,7 +32,7 @@ TransactionPlan Signer::plan() const {
     for (auto& u: utxos) {
         plan.availableAmount += u.amount;
     }
-    plan.amount = input.transfer_message().amount(); // TODO case?
+    plan.amount = input.transfer_message().amount();
     plan.amount = std::min(plan.availableAmount, plan.amount);
     plan.fee = 0; // TODO
     plan.fee = std::min(plan.availableAmount - plan.amount, plan.fee);

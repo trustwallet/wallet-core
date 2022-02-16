@@ -23,6 +23,8 @@ message Transfer {
     uint64 amount = 2;
 }
 
+// TODO TransactionPlan message, to be able to return result of plan
+
 // Input data necessary to create a signed transaction
 message SigningInput {
     repeated Utxo utxos = 1;
@@ -30,9 +32,10 @@ message SigningInput {
     // Private key bytes (double extended)
     bytes private_key = 2;
 
-    oneof message_type {
-        Transfer transfer_message = 3;
-    }
+    // Later this can be made oneof if more message types are supported
+    Transfer transfer_message = 3;
+
+    // TODO plan as additional input
 }
 
 // Transaction signing output
