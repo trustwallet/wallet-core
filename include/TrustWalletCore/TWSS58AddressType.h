@@ -18,6 +18,7 @@ TW_EXPORT_ENUM(uint8_t)
 enum TWSS58AddressType {
     TWSS58AddressTypePolkadot = 0,
     TWSS58AddressTypeKusama = 2,
+    TWSS58AddressTypeAstar = 5,
 };
 
 TW_EXTERN_C_END

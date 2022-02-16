@@ -76,6 +76,7 @@ enum TWCoinType {
     TWCoinTypeTerra = 330,
     TWCoinTypeHarmony = 1023,
     TWCoinTypeAlgorand = 283,
+    TWCoinTypeAstar = 654,
     TWCoinTypeKusama = 434,
     TWCoinTypePolkadot = 354,
     TWCoinTypeFilecoin = 461,

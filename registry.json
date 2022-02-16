@@ -860,6 +860,30 @@
     }
   },
   {
+    "id": "astar",
+    "name": "Astar",
+    "coinId": 634,
+    "symbol": "ASTR",
+    "decimals": 18,
+    "blockchain": "Polkadot",
+    "derivationPath": "m/44'/434'/0'/0'/0'",
+    "curve": "ed25519",
+    "publicKeyType": "ed25519",
+    "explorer": {
+      "url": "https://astar.subscan.io",
+      "txPath": "/extrinsic/",
+      "accountPath": "/account/",
+      "sampleTx": "0xcbe0c2e2851c1245bedaae4d52f06eaa6b4784b786bea2f0bff11af7715973dd",
+      "sampleAccount": "DbCNECPna3k6MXFWWNZa5jGsuWycqEE6zcUxZYkxhVofrFk"
+    },
+    "info": {
+      "url": "https://astar.network",
+      "source": "https://github.com/AstarNetwork/Astar",
+      "rpc": "wss://rpc.astar.network/",
+      "documentation": "https://polkadot.js.org/api/substrate/rpc.html"
+    }
+  },
+  {
     "id": "aeternity",
     "name": "Aeternity",
     "coinId": 457,

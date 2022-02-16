@@ -49,18 +49,26 @@ static std::map<const std::string, Data> kusamaCallIndices = {
     {utilityBatch,          Data{0x18, 0x02}},
 };
 
+static std::map<const std::string, Data> astarCallIndices = {
+    {balanceTransfer,       Data{0x1F, 0x00}},
+    {utilityBatch,          Data{0x0B, 0x02}},
+};
+
 static Data getCallIndex(TWSS58AddressType network, const std::string& key) {
     switch (network) {
     case TWSS58AddressTypePolkadot:
         return polkadotCallIndices[key];
     case TWSS58AddressTypeKusama:
         return kusamaCallIndices[key];
+    case TWSS58AddressTypeAstar:
+        return astarCallIndices[key];
     }
 }
 
 bool Extrinsic::encodeRawAccount(TWSS58AddressType network, uint32_t specVersion) {
     if ((network == TWSS58AddressTypePolkadot && specVersion >= multiAddrSpecVersion) ||
-        (network == TWSS58AddressTypeKusama && specVersion >= multiAddrSpecVersionKsm)) {
+        (network == TWSS58AddressTypeKusama && specVersion >= multiAddrSpecVersionKsm) ||
+        (network == TWSS58AddressTypeAstar)) {
             return false;
         }
     return true;
