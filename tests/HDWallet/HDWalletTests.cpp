@@ -292,7 +292,7 @@ TEST(HDWallet, Derive_XpubPub_vs_PrivPub) {
     // - Extended Public: mnemonic -> seed -> zpub -> publicKey -> address
     // - Extended Private: mnemonic -> seed -> zpriv -> privateKey -> publicKey -> address
 
-    HDWallet wallet = HDWallet(mnemonic1, "");
+    const HDWallet wallet = HDWallet(mnemonic1, "");
     const auto coin = TWCoinTypeBitcoin;
     const auto derivPath1 = DerivationPath("m/84'/0'/0'/0/0");
     const auto derivPath2 = DerivationPath("m/84'/0'/0'/0/2");
