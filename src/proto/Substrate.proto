@@ -52,6 +52,8 @@ message SigningInput {
   oneof message_oneof {
     Balance balance_call = 10;
   }
+
+  bool multi_address = 11;
 }
 
 // Transaction signing output.

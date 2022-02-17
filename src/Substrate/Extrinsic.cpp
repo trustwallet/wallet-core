@@ -36,7 +36,7 @@ Data Extrinsic::encodeCall(const Proto::SigningInput& input) {
     }
     auto network = TWSS58AddressType(byte(input.network()));
     if (input.has_balance_call()) {
-        data = encodeBalanceCall(input.balance_call(), network, input.spec_version());
+        data = encodeBalanceCall(input.balance_call(), network, input.spec_version(), input.multi_address());
     }
 
     return data;
@@ -60,13 +60,15 @@ Data Extrinsic::encodePayload() const {
     return data;
 }
 
+//length prefix (2 bytes) + version header (1 bytes) + signer public key (AccountId [1byte] + pub key [32 bytes]) + signature types (1 byte, ed25519 is 0) + signature...
+
 // Encode final data with signer public key and signature.
 Data Extrinsic::encodeSignature(const PublicKey& signer, const Data& signature) const {
     Data data;
     // version header
     append(data, Data{extrinsicFormat | signedBit});
     // signer public key
-    append(data, encodeAccountId(signer.bytes, encodeRawAccount(network, specVersion)));
+    append(data, encodeAccountId(signer.bytes, encodeRawAccount(multiAddress)));
     // signature type
     append(data, sigTypeEd25519);
     // signature
@@ -80,17 +82,11 @@ Data Extrinsic::encodeSignature(const PublicKey& signer, const Data& signature) 
     return data;
 }
 
-//TODO check parachains specVersion
-bool Extrinsic::encodeRawAccount(byte network, uint32_t specVersion) {
-    TWSS58AddressType ss58network = TWSS58AddressType(network);
-    if ((ss58network == TWSS58AddressTypePolkadot && specVersion >= multiAddrSpecVersion) ||
-    (ss58network == TWSS58AddressTypeKusama && specVersion >= multiAddrSpecVersionKsm)) {
-        return false;
-    }
-    return true;
+bool Extrinsic::encodeRawAccount(bool enableMultiAddress) {
+    return !enableMultiAddress;
 }
 
-Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance, byte network, uint32_t specVersion) {
+Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance, byte network, uint32_t specVersion, bool enableMultiAddress) {
     Data data;
     if (balance.has_transfer()) {
         auto transfer = balance.transfer();
@@ -99,7 +95,7 @@ Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance, byte network, u
         // call index
         append(data, encodeCallIndex(balance.transfer().module_index(), balance.transfer().method_index()));
         // destination
-        append(data, encodeAccountId(address.keyBytes(), encodeRawAccount(network, specVersion)));
+        append(data, encodeAccountId(address.keyBytes(), encodeRawAccount(enableMultiAddress)));
         // value
         append(data, encodeCompact(value));
     } else if (balance.has_batchtransfer()) {
@@ -113,7 +109,7 @@ Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance, byte network, u
             // index
             append(itemData, encodeCallIndex(transfer.module_index(), transfer.method_index()));
             // destination
-            append(itemData, encodeAccountId(address.keyBytes(), encodeRawAccount(network, specVersion)));
+            append(itemData, encodeAccountId(address.keyBytes(), encodeRawAccount(enableMultiAddress)));
             // value
             append(itemData, encodeCompact(value));
             // put into calls array

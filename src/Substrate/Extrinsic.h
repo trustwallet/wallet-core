@@ -30,6 +30,8 @@ class Extrinsic {
     Data call;
     // network
     byte network;
+    // enable multi-address
+    bool multiAddress;
 
     Extrinsic(const Proto::SigningInput& input)
     : blockHash(input.block_hash().begin(), input.block_hash().end())
@@ -37,6 +39,7 @@ class Extrinsic {
     , nonce(input.nonce())
     , specVersion(input.spec_version())
     , version(input.transaction_version())
+    , multiAddress (input.multi_address())
     , tip(load(input.tip())) {
         if (input.has_era()) {
             era = encodeEra(input.era().block_number(), input.era().period());
@@ -55,8 +58,8 @@ class Extrinsic {
     Data encodeSignature(const PublicKey& signer, const Data& signature) const;
 
   protected:
-    static bool encodeRawAccount(byte network, uint32_t specVersion);
-    static Data encodeBalanceCall(const Proto::Balance& balance, byte network, uint32_t specVersion);
+    static bool encodeRawAccount(bool enableMultiAddress);
+    static Data encodeBalanceCall(const Proto::Balance& balance, byte network, uint32_t specVersion, bool enableMultiAddress);
     static Data encodeBatchCall(const std::vector<Data>& calls, int32_t moduleIndex, int32_t methodIndex);
     Data encodeEraNonceTip() const;
 };
