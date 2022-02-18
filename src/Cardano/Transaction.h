@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "AddressV3.h"
+
 #include "Data.h"
 #include "../proto/Cardano.pb.h"
 #include "../proto/Common.pb.h"
@@ -16,24 +18,48 @@ namespace TW::Cardano {
 
 typedef uint64_t Amount; // TODO proper type
 
-class Utxo {
+class OutPoint {
 public:
-    Data txHash;
-    std::string address;
-    Amount amount; // ADA amount 
+    std::string txHash;
     uint64_t outputIndex;
 
-    static Utxo fromProto(const Proto::Utxo& proto);
+    static OutPoint fromProto(const Proto::OutPoint& proto);
+};
+
+class TxInput: public OutPoint {
+public:
+    /// ADA amount
+    Amount amount;
+
+    static TxInput fromProto(const Proto::TxInput& proto);
+};
+
+class TxOutput {
+public:
+    Data address;
+    /// ADA amount
+    Amount amount;
 };
 
 class TransactionPlan {
 public:
-    Amount amount = 0;
+    std::vector<TxInput> utxos;
     Amount availableAmount = 0;
+    Amount amount = 0;
     Amount fee = 0;
     Amount change = 0;
-    std::vector<Utxo> utxos;
     Common::Proto::SigningError error = Common::Proto::SigningError::OK;
+};
+
+class Transaction {
+public:
+    std::vector<OutPoint> inputs;
+    std::vector<TxOutput> outputs;
+    Amount fee;
+    uint64_t ttl;
+
+    // Encode into CBOR binary format
+    Data encode() const;
 };
 
 } // namespace TW::Cardano

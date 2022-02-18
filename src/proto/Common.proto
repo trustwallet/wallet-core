@@ -12,6 +12,7 @@ enum SigningError {
     Error_low_balance = 3;
     Error_zero_amount_requested = 4; // Requested amount is zero
     Error_missing_private_key = 5;
+    Error_invalid_address = 15;
     // chain-generic, fee
     Error_wrong_fee = 6;
     // chain-generic, signing

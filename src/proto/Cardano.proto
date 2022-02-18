@@ -5,14 +5,23 @@ option java_package = "wallet.core.jni.proto";
 
 import "Common.proto";
 
-message Utxo {
+message OutPoint {
     string tx_hash = 1;
-    string address = 2;
+    uint64 output_index = 2;
+}
+
+message TxInput {
+    OutPoint out_point = 1;
     
     // ADA amount // TODO proper type
-    uint64 amount = 3;
+    uint64 amount = 2;
+}
 
-    uint64 output_index = 4;
+message TxOutput {
+    string address = 1;
+    
+    // ADA amount // TODO proper type
+    uint64 amount = 2;
 }
 
 message Transfer {
@@ -23,11 +32,18 @@ message Transfer {
     uint64 amount = 2;
 }
 
-// TODO TransactionPlan message, to be able to return result of plan
+message TransactionPlan {
+    uint64 amount = 1;
+    uint64 availableAmount = 2;
+    uint64 fee = 3;
+    uint64 change = 4;
+    repeated TxInput utxos = 5;
+    Common.Proto.SigningError error = 6;
+}
 
 // Input data necessary to create a signed transaction
 message SigningInput {
-    repeated Utxo utxos = 1;
+    repeated TxInput utxos = 1;
 
     // Private key bytes (double extended)
     bytes private_key = 2;
@@ -36,12 +52,14 @@ message SigningInput {
     Transfer transfer_message = 3;
 
     // TODO plan as additional input
+
+    uint64 ttl = 4;
 }
 
 // Transaction signing output
 message SigningOutput {
-    string encoded = 1;
+    bytes encoded = 1;
 
     // Optional error
-    Common.Proto.SigningError error = 4;
+    Common.Proto.SigningError error = 2;
 }

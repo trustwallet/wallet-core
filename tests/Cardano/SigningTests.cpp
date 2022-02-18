@@ -4,12 +4,15 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Cardano/Signer.h"
 #include "Cardano/AddressV3.h"
 
 #include "PrivateKey.h"
 #include "HexCoding.h"
+#include "Cbor.h"
 
 #include <gtest/gtest.h>
+#include <vector>
 
 
 using namespace TW::Cardano;
@@ -17,8 +20,113 @@ using namespace TW;
 using namespace std;
 
 
+TEST(CardanoSigning, selectInputsSimple) {
+    const auto inputs = std::vector<TxInput>({
+        TxInput{{"h1", 0}, 700},
+        TxInput{{"h2", 1}, 900},
+        TxInput{{"h3", 2}, 300},
+        TxInput{{"h4", 3}, 600},
+    });
+
+    {   // 2
+        const auto s1 = Signer::selectInputsSimple(inputs, 1500);
+        ASSERT_EQ(s1.size(), 2);
+        EXPECT_EQ(s1[0].amount, 900);
+        EXPECT_EQ(s1[1].amount, 700);
+    }
+    {   // all
+        const auto s1 = Signer::selectInputsSimple(inputs, 10000);
+        ASSERT_EQ(s1.size(), 4);
+        EXPECT_EQ(s1[0].amount, 900);
+        EXPECT_EQ(s1[1].amount, 700);
+        EXPECT_EQ(s1[2].amount, 600);
+        EXPECT_EQ(s1[3].amount, 300);
+    }
+    {   // 3
+        const auto s1 = Signer::selectInputsSimple(inputs, 2000);
+        ASSERT_EQ(s1.size(), 3);
+    }
+    {   // 1
+        const auto s1 = Signer::selectInputsSimple(inputs, 500);
+        ASSERT_EQ(s1.size(), 1);
+    }
+    {   // at least 0 is returned
+        const auto s1 = Signer::selectInputsSimple(inputs, 0);
+        ASSERT_EQ(s1.size(), 1);
+    }
+}
+
+Proto::SigningInput createSampleInput() {
+    Proto::SigningInput input;
+    auto* utxo1 = input.add_utxos();
+    utxo1->mutable_out_point()->set_tx_hash("f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767");
+    utxo1->mutable_out_point()->set_output_index(1);
+    utxo1->set_amount(1500000);
+    auto* utxo2 = input.add_utxos();
+    utxo2->mutable_out_point()->set_tx_hash("554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0");
+    utxo2->mutable_out_point()->set_output_index(0);
+    utxo2->set_amount(6500000);
+
+    const auto privateKeyData = parse_hex("484d5bc3375435c9a0b0d121e86d6eba7d55929a263530d75bb1cb1d098bc653f75e5127219208a9d28ca6fecd95530b97470957f72be0648b2c99e2a29cc841fa49248845144b2dbccf6e85c172cd44099f5977e7126209e7c3e4b1fba4a264f0607785e71ace08560b30e3ffaab13f46418493f223e1407c0e6358108bc65351b30406485ad396ac0a390f6d718413fc5256069a36dd7bc2670fc49597d83556a8d4c88d10db7883dad1e70e03bbfbdff3545d33eb4cf2ea8f044a29462cde");
+    input.set_private_key(privateKeyData.data(), privateKeyData.size());
+    input.mutable_transfer_message()->set_to_address("addr1q9068st87h22h3l6w6t5evnlm067rag94llqya2hkjrsd3wvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qpmxzjt");
+    input.mutable_transfer_message()->set_amount(7000000);
+    input.set_ttl(53333333);
+    return input;
+}
+
+TEST(CardanoSigning, Plan) {
+    auto input = createSampleInput();
+
+    {
+        auto signer = Signer(input);
+        const auto plan = signer.plan();
+        EXPECT_EQ(plan.utxos.size(), 2);
+        EXPECT_EQ(plan.availableAmount, 8000000);
+        EXPECT_EQ(plan.amount, 7000000);
+        EXPECT_EQ(plan.fee, 168302);
+        EXPECT_EQ(plan.change, 1168302);
+        EXPECT_EQ(plan.error, Common::Proto::OK);
+    }
+    {   // very small target amount
+        input.mutable_transfer_message()->set_amount(1);
+        auto signer = Signer(input);
+        const auto plan = signer.plan();
+        EXPECT_EQ(plan.utxos.size(), 1);
+        EXPECT_EQ(plan.availableAmount, 6500000);
+        EXPECT_EQ(plan.amount, 1);
+        EXPECT_EQ(plan.fee, 165138);
+    }
+    {   // small target amount
+        input.mutable_transfer_message()->set_amount(2000000);
+        auto signer = Signer(input);
+        const auto plan = signer.plan();
+        EXPECT_EQ(plan.utxos.size(), 1);
+        EXPECT_EQ(plan.availableAmount, 6500000);
+        EXPECT_EQ(plan.amount, 2000000);
+        EXPECT_EQ(plan.fee, 165313);
+    }
+}
+
+TEST(CardanoSigning, Sign1) {
+    const auto input = createSampleInput();
+
+    auto signer = Signer(input);
+    const auto output = signer.sign();
+
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+
+    const auto encoded = data(output.encoded());
+    EXPECT_EQ(hex(encoded), "a40082827840353534663266643934326132336430363833356432366262643738663031303666613934633861353531313134613062656638313932376636363436376166300082784066303734313334616162626662313362386165633763663534363562316535613836326264653563623838353332636337653634363139313739623365373637010182825839015fa3c167f5d4abc7fa76974cb27fdbf5e1f505affe027557b48706c5cc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a34681a006acfc082583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a0011d3ae021a0002916e031a032dcd55");
+
+    {
+        const auto decode = Cbor::Decode(encoded);
+        EXPECT_EQ(decode.dumpToString(), "{0: [[\"554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0\", 0], [\"f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767\", 1]], 1: [[h\"015fa3c167f5d4abc7fa76974cb27fdbf5e1f505affe027557b48706c5cc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468\", 7000000], [h\"01558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd5\", 1168302]], 2: 168302, 3: 53333333}");
+    }
+}
+
 TEST(CardanoSigning, SignMessageWithKey) {
-    // from cardano-crypto.js
+    // test case from cardano-crypto.js
 
     const auto privateKey = PrivateKey(parse_hex(
         "d809b1b4b4c74734037f76aace501730a3fe2fca30b5102df99ad3f7c0103e48"
