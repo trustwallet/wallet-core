@@ -862,19 +862,19 @@
   {
     "id": "astar",
     "name": "Astar",
-    "coinId": 634,
+    "coinId": 810,
     "symbol": "ASTR",
     "decimals": 18,
     "blockchain": "Polkadot",
-    "derivationPath": "m/44'/434'/0'/0'/0'",
+    "derivationPath": "m/44'/810'/0'/0'/0'",
     "curve": "ed25519",
     "publicKeyType": "ed25519",
     "explorer": {
       "url": "https://astar.subscan.io",
       "txPath": "/extrinsic/",
       "accountPath": "/account/",
-      "sampleTx": "0xcbe0c2e2851c1245bedaae4d52f06eaa6b4784b786bea2f0bff11af7715973dd",
-      "sampleAccount": "DbCNECPna3k6MXFWWNZa5jGsuWycqEE6zcUxZYkxhVofrFk"
+      "sampleTx": "0x7d20bd691f5943a98aa05ebada7b45f156edfef53d5a911194d5cb2a1694d979",
+      "sampleAccount": "XYaYWVDEgk95eGEZuAHKUvcNDgai46hfiWbkXh4Cy6TT1Ao"
     },
     "info": {
       "url": "https://astar.network",
