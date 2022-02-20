@@ -15,7 +15,7 @@
 #endif
 
 // Marker to make methods visible to dart ffi
-#define TW_VISIBILITY __attribute__((visibility("default")))
+#define TW_VISIBILITY_DEFAULT __attribute__((visibility("default")))
 
 // Marker for exported classes
 #define TW_EXPORT_CLASS
