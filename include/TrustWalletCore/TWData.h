@@ -16,7 +16,7 @@ typedef const void TWString TW_VISIBILITY_DEFAULT;
 ///
 /// The implementantion of these methods should be language-specific to minimize translation overhead. For instance it
 /// should be a `jbyteArray` for Java and an `NSData` for Swift.
-typedef const void TWData TW_VISIBILITY_DEFAULT;
+typedef const void TWData;
 
 /// Creates a block of data from a byte array.
 TWData *_Nonnull TWDataCreateWithBytes(const uint8_t *_Nonnull bytes, size_t size) TW_VISIBILITY_DEFAULT;
