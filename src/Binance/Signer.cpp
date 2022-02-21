@@ -72,8 +72,7 @@ Data Signer::sign() const {
 }
 
 Data Signer::preImageHash() const {
-    auto hash = Hash::sha256(signaturePreimage());
-    return hash;
+    return Hash::sha256(signaturePreimage());
 }
 
 Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& publicKey) const {

@@ -19,7 +19,7 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
     return plan.proto();
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput &input, std::optional<std::vector<std::pair<Data, Data>>> optionalExternalSigs) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput &input, std::optional<SignaturePubkeyList> optionalExternalSigs) noexcept {
     Proto::SigningOutput output;
     auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input, false, optionalExternalSigs);
     if (!result) {

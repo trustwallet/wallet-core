@@ -22,7 +22,7 @@ HashPubkeyList TransactionHelper::preImageHashes(TWCoinType coinType, const Data
 }
 
 Data TransactionHelper::compileWithSignatures(TWCoinType coinType, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<Data>& publicKeys) {
-    Data txOutput;
+    // input parameter conversion
     const auto publicKeyType = ::publicKeyType(coinType);
     std::vector<PublicKey> pubs;
     for (auto& p: publicKeys) {
@@ -31,6 +31,8 @@ Data TransactionHelper::compileWithSignatures(TWCoinType coinType, const Data& t
         }
         pubs.push_back(PublicKey(p, publicKeyType));
     }
+
+    Data txOutput;
     anyCoinCompileWithSignatures(coinType, txInputData, signatures, pubs, txOutput);
     return txOutput;
 }

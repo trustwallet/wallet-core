@@ -15,6 +15,8 @@
 
 namespace TW::Bitcoin {
 
+typedef std::vector<std::pair<Data, Data>> SignaturePubkeyList;
+
 class Signer {
   public:
     Signer() = delete;
@@ -23,7 +25,7 @@ class Signer {
     static Proto::TransactionPlan plan(const Proto::SigningInput& input) noexcept;
 
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input, std::optional<std::vector<std::pair<Data, Data>>> optionalExternalSigs = {}) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs = {}) noexcept;
 
     /// Collect pre-image hashes to be signed
     static HashPubkeyList preImageHashes(const Proto::SigningInput& input) noexcept;

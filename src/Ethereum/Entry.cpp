@@ -9,8 +9,6 @@
 #include "Address.h"
 #include "Signer.h"
 
-#include <cassert>
-
 using namespace TW::Ethereum;
 using namespace TW;
 using namespace std;
@@ -38,18 +36,20 @@ string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key
 
 HashPubkeyList Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
     auto input = Proto::SigningInput();
-    assert(input.ParseFromArray(txInputData.data(), (int)txInputData.size()));
-    const auto transaction = Signer::build(input);
-    const auto chainId = load(data(input.chain_id())); // retrieve chainId from input
-    // return preimage hash and dummy pubkeyhash (not available here, and only one signature anyways)
-    const auto preHash = transaction->preHash(chainId);
+    Data preHash;
+    if (input.ParseFromArray(txInputData.data(), (int)txInputData.size())) {
+        const auto transaction = Signer::build(input);
+        const auto chainId = load(data(input.chain_id())); // retrieve chainId from input
+        // return preimage hash and dummy pubkeyhash (not available here, and only one signature anyways)
+        preHash = transaction->preHash(chainId);
+    }
     return HashPubkeyList{std::make_pair(preHash, Data())};
 }
 
 void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
     auto input = Proto::SigningInput();
-    assert(input.ParseFromArray(txInputData.data(), (int)txInputData.size()));
-    if (signatures.size() == 1) {
+    if (input.ParseFromArray(txInputData.data(), (int)txInputData.size()) &&
+        (signatures.size() == 1)) {
         const auto output = Signer::compile(input, signatures[0]);
         const auto serializedOut = output.SerializeAsString();
         dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());

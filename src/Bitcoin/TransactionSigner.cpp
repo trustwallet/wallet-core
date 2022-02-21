@@ -21,7 +21,7 @@ TransactionPlan TransactionSigner<Transaction, TransactionBuilder>::plan(const S
 }
 
 template <typename Transaction, typename TransactionBuilder>
-Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, TransactionBuilder>::sign(const SigningInput& input, bool estimationMode, std::optional<std::vector<std::pair<Data, Data>>> optionalExternalSigs) {
+Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, TransactionBuilder>::sign(const SigningInput& input, bool estimationMode, std::optional<SignaturePubkeyList> optionalExternalSigs) {
     TransactionPlan plan;
     if (input.plan.has_value()) {
         plan = input.plan.value();

@@ -10,10 +10,12 @@
 #include "SigningInput.h"
 #include "Transaction.h"
 #include "TransactionInput.h"
+#include "Signer.h"
 #include "../proto/Bitcoin.pb.h"
 #include "../KeyPair.h"
 #include "../Result.h"
 #include "../PublicKey.h"
+#include "../CoinEntry.h"
 
 #include <vector>
 #include <optional>
@@ -48,10 +50,10 @@ private:
     SigningMode signingMode = SigningMode_Normal;
 
     /// For SigningMode_HashOnly, collect hashes (plus corresponding publickey hashes) here
-    std::vector<std::pair<Data, Data>> hashesForSigning;
+    HashPubkeyList hashesForSigning;
 
     /// For SigningMode_External, signatures are provided here
-    std::optional<std::vector<std::pair<Data, Data>>> externalSignatures;
+    std::optional<SignaturePubkeyList> externalSignatures;
 
 public:
     /// Initializes a transaction signer with signing input.
@@ -61,7 +63,7 @@ public:
         const TransactionPlan& plan,
         Transaction& transaction,
         SigningMode signingMode = SigningMode_Normal,
-        std::optional<std::vector<std::pair<Data, Data>>> externalSignatures = {}
+        std::optional<SignaturePubkeyList> externalSignatures = {}
     )
       : input(input), plan(plan), transaction(transaction), signingMode(signingMode), externalSignatures(externalSignatures) {}
 
@@ -74,7 +76,7 @@ public:
     // internal, public for testability and Decred
     static Data pushAll(const std::vector<Data>& results);
 
-    std::vector<std::pair<Data, Data>> getHashesForSigning() const { return hashesForSigning; }
+    HashPubkeyList getHashesForSigning() const { return hashesForSigning; }
 
 private:
     Result<void, Common::Proto::SigningError> sign(Script script, size_t index, const UTXO& utxo);

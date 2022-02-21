@@ -9,8 +9,6 @@
 #include "Address.h"
 #include "Signer.h"
 
-#include <cassert>
-
 using namespace TW::Binance;
 using namespace TW;
 using namespace std;
@@ -33,21 +31,24 @@ string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key
 
 HashPubkeyList Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
     auto input = Proto::SigningInput();
-    assert(input.ParseFromArray(txInputData.data(), (int)txInputData.size()));
-    const auto signer = Signer(input);
-    // return preimage hash and dummy pubkeyhash (only one signature anyways)
-    const auto preImageHash = signer.preImageHash();
+    Data preImageHash;
+    if (input.ParseFromArray(txInputData.data(), (int)txInputData.size())) {
+        const auto signer = Signer(input);
+        // return preimage hash and dummy pubkeyhash (only one signature anyways)
+        preImageHash = signer.preImageHash();
+    }
     return HashPubkeyList{std::make_pair(preImageHash, Data())};
 }
 
 void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
     auto input = Proto::SigningInput();
-    assert(input.ParseFromArray(txInputData.data(), (int)txInputData.size()));
-    const auto signer = Signer(input);
-    if (signatures.size() == 1 && publicKeys.size() == 1) {
-        const auto output = signer.compile(signatures[0], publicKeys[0]);
-        const auto serializedOut = output.SerializeAsString();
-        dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+    if (input.ParseFromArray(txInputData.data(), (int)txInputData.size())) {
+        const auto signer = Signer(input);
+        if (signatures.size() == 1 && publicKeys.size() == 1) {
+            const auto output = signer.compile(signatures[0], publicKeys[0]);
+            const auto serializedOut = output.SerializeAsString();
+            dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+        }
     }
 }
 
