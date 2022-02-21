@@ -10,7 +10,7 @@
 
 TW_EXTERN_C_BEGIN
 
-typedef const void TWString TW_VISIBILITY_DEFAULT;
+typedef const void TWString;
 
 /// Defines a resizable block of data.
 ///
