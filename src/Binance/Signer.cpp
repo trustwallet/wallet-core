@@ -68,8 +68,7 @@ Data Signer::sign() const {
     auto hash = preImageHash();
     auto key = PrivateKey(input.private_key());
     auto signature = key.sign(hash, TWCurveSECP256k1);
-    const auto sigD = Data(signature.begin(), signature.end() - 1);
-    return sigD;
+    return Data(signature.begin(), signature.end() - 1);
 }
 
 Data Signer::preImageHash() const {

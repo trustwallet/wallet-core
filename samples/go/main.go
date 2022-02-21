@@ -11,8 +11,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func tssSignBinanceDemo() {
-	fmt.Println("==> TSS Signing Binance Demo")
+func signExternalBinanceDemo() {
+	fmt.Println("==> Signing with External Signature - Binance Demo")
 
 	coin := core.CoinTypeBinance
 
@@ -40,9 +40,6 @@ func tssSignBinanceDemo() {
 
 	fmt.Println("final txOutput proto:  ", len(txOutput))
 	fmt.Println(hex.EncodeToString(txOutput))
-	//var output binance.SigningOutput
-	//_ = proto.Unmarshal(txOutput, &output)
-	//fmt.Println("output.encoded:  ", len(output.Encoded), hex.EncodeToString(output.Encoded))
 
 	fmt.Println("\n==> Double check signature validity (result should be true)")
 	verifyRes := core.PublicKeyVerify(publicKey, core.PublicKeyTypeSECP256k1, signature, hashes[0])
@@ -51,8 +48,8 @@ func tssSignBinanceDemo() {
 	fmt.Println("")
 }
 
-func tssSignEthereumDemo() {
-	fmt.Println("==> TSS Signing Ethereum Demo")
+func signExternalEthereumDemo() {
+	fmt.Println("==> Signing with External Signature - Ethereum Demo")
 
 	coin := core.CoinTypeEthereum
 
@@ -89,7 +86,6 @@ func tssSignEthereumDemo() {
 	txOutput := core.CompileWithSignatures(coin, txInputData2, [][]byte{signature}, [][]byte{publicKey})
 
 	fmt.Println("final txOutput proto:  ", len(txOutput))
-	//fmt.Println(hex.EncodeToString(txOutput))
 	var output ethereum.SigningOutput
 	_ = proto.Unmarshal(txOutput, &output)
 	fmt.Println("output.encoded:  ", len(output.Encoded), hex.EncodeToString(output.Encoded))
@@ -101,8 +97,8 @@ func tssSignEthereumDemo() {
 	fmt.Println("")
 }
 
-func tssSignBitcoinDemo() {
-	fmt.Println("==> TSS Signing Bitcoin Demo")
+func signExternalBitcoinDemo() {
+	fmt.Println("==> Signing with External Signature - Bitcoin Demo")
 
 	fmt.Println("\n==> Step 1: Prepare transaction input (protobuf)")
 
@@ -205,7 +201,6 @@ func tssSignBitcoinDemo() {
 		preImageHash := hashes[i]
 		pubkeyHash := hashes[i+1]
 		key := hex.EncodeToString(pubkeyHash) + "+" + hex.EncodeToString(preImageHash)
-		//fmt.Println("key", key)
 		sigInfo := signatureInfos[key]
 
 		signatureVec = append(signatureVec, sigInfo.signature)
@@ -218,7 +213,6 @@ func tssSignBitcoinDemo() {
 	txOutput := core.CompileWithSignatures(coin, txInputData, signatureVec, pubkeyVec)
 
 	fmt.Println("final txOutput proto:  ", len(txOutput))
-	//fmt.Println(hex.EncodeToString(txOutput))
 	var output bitcoin.SigningOutput
 	_ = proto.Unmarshal(txOutput, &output)
 	fmt.Println("output.encoded:  ", len(output.Encoded), hex.EncodeToString(output.Encoded))
@@ -227,9 +221,9 @@ func tssSignBitcoinDemo() {
 }
 
 func main() {
-	tssSignBinanceDemo()
-	tssSignEthereumDemo()
-	tssSignBitcoinDemo()
+	signExternalBinanceDemo()
+	signExternalEthereumDemo()
+	signExternalBitcoinDemo()
 
 	/*
 		fmt.Println("==> calling wallet core from go")
