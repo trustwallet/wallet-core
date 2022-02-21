@@ -40,8 +40,12 @@ public:
     // It is optional, only UTXO chains need it, default impl. leaves empty result.
     virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const { return; }
 
+    // Optional method for obtaining hash(es) for signing, needed for external signing. Hashes are linked to the associated pubkey/pubkeyhash.
     virtual HashPubkeyList preImageHashes(TWCoinType coin, const Data& txInputData) const { return HashPubkeyList(); }
+    // Optional method for compiling a transaction with externally-supplied signatures & pubkeys.
     virtual void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {}
+    // Optional helper to prepare a SigningInput from simple parameters.
+    // Not suitable for UTXO chains. Some parameters, like chain-specific fee/gas paraemters, may need to be set in the SigningInput.
     virtual Data buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const { return Data(); }
 };
 
