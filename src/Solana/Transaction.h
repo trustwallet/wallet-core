@@ -170,7 +170,7 @@ class Message {
     // This constructor creates a default single-signer Transfer message
     Message(Address from, Address to, uint64_t value, Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
-        MessageHeader header = {1, 0, 2};
+        MessageHeader header = {1, 0, 1};
         this->header = header;
         auto programId = Address("11111111111111111111111111111111");
         std::vector<Address> accountKeys = {from, to, programId};

@@ -20,4 +20,15 @@ struct TWSolanaSigner;
 TW_EXPORT_STATIC_METHOD
 TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput input);
 
+/// Build a message to be signed.
+TW_EXPORT_STATIC_METHOD
+TWData* _Nonnull TWSolanaSignerMessage(TW_Solana_Proto_SigningInput data,
+                                       TWData* _Nonnull publicKey);
+
+/// Build a transaction to be broadcasted.
+TW_EXPORT_STATIC_METHOD
+TWString* _Nonnull TWSolanaSignerTransaction(TW_Solana_Proto_SigningInput data,
+                                             TWData* _Nonnull publicKey,
+                                             TWData* _Nonnull signature);
+
 TW_EXTERN_C_END
