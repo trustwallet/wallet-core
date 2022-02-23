@@ -37,6 +37,20 @@ message OperationChangeTrust {
     int64 valid_before = 2;
 }
 
+message OperationCreateClaimableBalance {
+    // Optional, can be left empty for native asset
+    Asset asset = 1;
+
+    // Amount (*10^7)
+    int64 amount = 2;
+
+    string claimant = 3;
+}
+
+message OperationClaimClaimableBalance {
+    string balance_id = 1;
+}
+
 message MemoVoid {
 }
 
@@ -69,6 +83,8 @@ message SigningInput {
         OperationCreateAccount op_create_account = 6;
         OperationPayment op_payment = 7;
         OperationChangeTrust op_change_trust = 8;
+        OperationCreateClaimableBalance op_create_claimable_balance = 14;
+        OperationCreateClaimableBalance op_claim_claimable_balance = 15;
     }
 
     oneof memo_type_oneof {
