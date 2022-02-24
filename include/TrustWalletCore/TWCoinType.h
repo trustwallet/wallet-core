@@ -80,6 +80,7 @@ enum TWCoinType {
     TWCoinTypePolkadot = 354,
     TWCoinTypeFilecoin = 461,
     TWCoinTypeElrond = 508,
+    TWCoinTypeXDCNetwork = 550,
     TWCoinTypeBandChain = 494,
     TWCoinTypeSmartChainLegacy = 10000714,
     TWCoinTypeSmartChain = 20000714,

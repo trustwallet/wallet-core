@@ -25,6 +25,7 @@
 #include "Nano/Address.h"
 #include "Polkadot/Address.h"
 #include "Ronin/Address.h"
+#include "XDCNetwork/Address.h"
 #include "Zcash/TAddress.h"
 #include "Zilliqa/Address.h"
 
@@ -137,7 +138,10 @@ class AnyAddress {
             auto addr = Nano::Address(string);
             return {addr.bytes.begin(), addr.bytes.end()};
         }
-
+        case TWCoinTypeXDCNetwork: {
+            const auto addr = XDCNetwork::Address(string);
+            return {addr.bytes.begin(), addr.bytes.end()};
+        }
         case TWCoinTypeZilliqa: {
             Zilliqa::Address addr;
             if (!Zilliqa::Address::decode(string, addr)) {
