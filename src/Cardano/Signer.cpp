@@ -32,8 +32,12 @@ Signer::Signer(const Proto::SigningInput& input) : input(input) {
 
 Proto::SigningOutput Signer::sign() {
     // plan if needed
-    // currently there is no way to specify plan from outside, TODO
-    _plan = plan();
+    if (input.has_plan()) {
+        _plan = TransactionPlan::fromProto(input.plan());
+    } else {
+        // no plan supplied, plan it
+        _plan = plan();
+    }
 
     return signWithPlan();
 }
@@ -88,8 +92,9 @@ Proto::SigningOutput Signer::signWithPlan() {
     }
 
     const auto encoded = tx.encode();
-
     ret.set_encoded(string(encoded.begin(), encoded.end()));
+    const auto txid = tx.getId();
+    ret.set_tx_id(string(txid.begin(), txid.end()));
     ret.set_error(Common::Proto::OK);
 
     return ret;
@@ -203,7 +208,7 @@ TransactionPlan Signer::plan() const {
     }
     assert(plan.amount + plan.fee <= plan.availableAmount);
 
-    plan.change = plan.availableAmount - (plan.amount - plan.fee);
+    plan.change = plan.availableAmount - (plan.amount + plan.fee);
 
     return plan;
 }

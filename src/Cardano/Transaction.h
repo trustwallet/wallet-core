@@ -20,7 +20,7 @@ typedef uint64_t Amount; // TODO proper type
 
 class OutPoint {
 public:
-    std::string txHash;
+    Data txHash;
     uint64_t outputIndex;
 
     static OutPoint fromProto(const Proto::OutPoint& proto);
@@ -49,6 +49,8 @@ public:
     Amount fee = 0;
     Amount change = 0;
     Common::Proto::SigningError error = Common::Proto::SigningError::OK;
+
+    static TransactionPlan fromProto(const Proto::TransactionPlan& proto);
 };
 
 class Transaction {
@@ -60,6 +62,9 @@ public:
 
     // Encode into CBOR binary format
     Data encode() const;
+
+    // Derive Transaction ID from hashed encoded data
+    Data getId() const;
 };
 
 } // namespace TW::Cardano

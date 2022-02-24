@@ -6,7 +6,7 @@ option java_package = "wallet.core.jni.proto";
 import "Common.proto";
 
 message OutPoint {
-    string tx_hash = 1;
+    bytes tx_hash = 1;
     uint64 output_index = 2;
 }
 
@@ -34,7 +34,7 @@ message Transfer {
 
 message TransactionPlan {
     uint64 amount = 1;
-    uint64 availableAmount = 2;
+    uint64 available_amount = 2;
     uint64 fee = 3;
     uint64 change = 4;
     repeated TxInput utxos = 5;
@@ -51,15 +51,19 @@ message SigningInput {
     // Later this can be made oneof if more message types are supported
     Transfer transfer_message = 3;
 
-    // TODO plan as additional input
-
     uint64 ttl = 4;
+
+    // Optional plan
+    TransactionPlan plan = 5;
 }
 
 // Transaction signing output
 message SigningOutput {
     bytes encoded = 1;
 
+    // TxID, derived from transaction data, also needed for submission
+    bytes tx_id = 2;
+
     // Optional error
-    Common.Proto.SigningError error = 2;
+    Common.Proto.SigningError error = 3;
 }
