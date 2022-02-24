@@ -47,7 +47,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     let expectedResult = "0x3E6FFC80745E6669135a76F4A7ce6BCF02436e04"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .cardano:
-                    let expectedResult = "addr1snpa4z7ntyfszv7ckquprdw75w4qjqh0qmya9jtkpxxlzxghlqyvv7l0yjamh8fxraw06p3ua8sj2g2gv98v4849s43t9g2999kquuu5egnprk"
+                    let expectedResult = "addr1qyr8jjfnypp95eq74aqzn7ss687ehxclgj7mu6gratmg3mul2040vt35dypp042awzsjk5xm3zr3zm5qh7454uwdv08s84ray2"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .cosmos:
                     let expectedResult = "cosmos142j9u5eaduzd7faumygud6ruhdwme98qsy2ekn"
