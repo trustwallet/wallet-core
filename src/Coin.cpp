@@ -89,7 +89,7 @@ Oasis::Entry oasisDP;
 Polkadot::Entry polkadotDP;
 Ripple::Entry rippleDP;
 Ronin::Entry roninDP;
-XDCNetwork::Entry XDCDP;
+XDCNetwork::Entry XDCNetworkDP;
 Solana::Entry solanaDP;
 Stellar::Entry stellarDP;
 Tezos::Entry tezosDP;
@@ -181,7 +181,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeFantom: entry = &ethereumDP; break;
         case TWCoinTypeCelo: entry = &ethereumDP; break;
         case TWCoinTypeRonin: entry = &roninDP; break;
-        case TWCoinTypeXDCNetwork: entry = &XDCDP; break;
+        case TWCoinTypeXDCNetwork: entry = &XDCNetworkDP; break;
         case TWCoinTypeCryptoOrg: entry = &cosmosDP; break;
         case TWCoinTypeOsmosis: entry = &cosmosDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify

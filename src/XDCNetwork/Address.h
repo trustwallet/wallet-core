@@ -1,4 +1,4 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,26 +6,38 @@
 
 #pragma once
 
+#include "../Data.h"
 #include "../PublicKey.h"
-#include "../Ethereum/Address.h"
-#include <cstdint>
-#include <vector>
+
+#include <string>
 
 namespace TW::XDCNetwork {
 
-class Address: public Ethereum::Address {
+class Address {
   public:
-    /// Determines whether a string makes a valid  address.
+    // TODO: Complete class definition
+
+    /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
 
-    /// Initializes an address with a string representation.
+    /// Initializes a XDCNetwork address with a string representation.
     explicit Address(const std::string& string);
 
-    /// Initializes an address with a public key.
-    explicit Address(const PublicKey& publicKey): Ethereum::Address(publicKey) {}
+    /// Initializes a XDCNetwork address with a public key.
+    explicit Address(const PublicKey& publicKey);
 
     /// Returns a string representation of the address.
     std::string string() const;
 };
 
+inline bool operator==(const Address& lhs, const Address& rhs) {
+    // TODO: Complete equality operator
+    return true;
+}
+
 } // namespace TW::XDCNetwork
+
+/// Wrapper for C interface.
+struct TWXDCNetworkAddress {
+    TW::XDCNetwork::Address impl;
+};

@@ -1,37 +1,31 @@
-// Copyright © 2017-2022 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
-#include "Ethereum/Address.h"
-#include "../Hash.h"
-#include "../HexCoding.h"
 
-const std::string prefix = "xdc:";
 using namespace TW::XDCNetwork;
 
 bool Address::isValid(const std::string& string) {
-    // check prefix
-    if (string.compare(0, prefix.length(), prefix) != 0) {
-        return false;
-    }
-
-    const auto suffix = string.substr(prefix.length());
-    const auto data = parse_hex(suffix);
-    return Ethereum::Address::isValid(data);
+    // TODO: Finalize implementation
+    return false;
 }
 
 Address::Address(const std::string& string) {
+    // TODO: Finalize implementation
+
     if (!isValid(string)) {
-        throw std::invalid_argument("Invalid address data");
+        throw std::invalid_argument("Invalid address string");
     }
-    const auto suffix = string.substr(prefix.length());
-    const auto data = parse_hex(suffix);
-    std::copy(data.begin(), data.end(), bytes.begin());
+}
+
+Address::Address(const PublicKey& publicKey) {
+    // TODO: Finalize implementation
 }
 
 std::string Address::string() const {
-    return prefix + hex(bytes);
+    // TODO: Finalize implementation
+    return "TODO";
 }
