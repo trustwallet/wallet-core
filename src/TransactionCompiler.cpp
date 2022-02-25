@@ -4,24 +4,24 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "TransactionHelper.h"
+#include "TransactionCompiler.h"
 
 #include "Coin.h"
 
 using namespace TW;
 
 
-Data TransactionHelper::buildInput(TWCoinType coinType, const std::string& from, const std::string& to, const std::string& amount, const std::string& asset, const std::string& memo, const std::string& chainId) {
+Data TransactionCompiler::buildInput(TWCoinType coinType, const std::string& from, const std::string& to, const std::string& amount, const std::string& asset, const std::string& memo, const std::string& chainId) {
     // parse amount
     uint256_t amount256 { amount };
     return anyCoinBuildTransactionInput(coinType, from, to, amount256, asset, memo, chainId);
 }
 
-HashPubkeyList TransactionHelper::preImageHashes(TWCoinType coinType, const Data& txInputData) {
+HashPubkeyList TransactionCompiler::preImageHashes(TWCoinType coinType, const Data& txInputData) {
     return anyCoinPreImageHashes(coinType, txInputData);
 }
 
-Data TransactionHelper::compileWithSignatures(TWCoinType coinType, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<Data>& publicKeys) {
+Data TransactionCompiler::compileWithSignatures(TWCoinType coinType, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<Data>& publicKeys) {
     // input parameter conversion
     const auto publicKeyType = ::publicKeyType(coinType);
     std::vector<PublicKey> pubs;

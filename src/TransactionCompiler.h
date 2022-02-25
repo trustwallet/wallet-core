@@ -16,7 +16,7 @@
 namespace TW {
 
 /// Non-core transaction utility methods, like building a transaction using an external signature
-class TransactionHelper {
+class TransactionCompiler {
 public:
     /// Build a coin-specific SigningInput protobuf transaction input, from simple transaction parameters
     static Data buildInput(TWCoinType coinType, const std::string& from, const std::string& to, const std::string& amount, const std::string& asset, const std::string& memo, const std::string& chainId);

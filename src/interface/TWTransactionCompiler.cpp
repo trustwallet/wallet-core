@@ -4,9 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWTransactionHelper.h>
+#include <TrustWalletCore/TWTransactionCompiler.h>
 
-#include "TransactionHelper.h"
+#include "TransactionCompiler.h"
 #include "Data.h"
 #include "uint256.h"
 
@@ -15,10 +15,10 @@
 using namespace TW;
 
 
-TWData *_Nonnull TWTransactionHelperBuildInput(enum TWCoinType coinType, TWString *_Nonnull from, TWString *_Nonnull to, TWString *_Nonnull amount, TWString *_Nonnull asset, TWString *_Nonnull memo, TWString *_Nonnull chainId) {
+TWData *_Nonnull TWTransactionCompilerBuildInput(enum TWCoinType coinType, TWString *_Nonnull from, TWString *_Nonnull to, TWString *_Nonnull amount, TWString *_Nonnull asset, TWString *_Nonnull memo, TWString *_Nonnull chainId) {
     Data result;
     try {
-        result = TransactionHelper::buildInput(
+        result = TransactionCompiler::buildInput(
             coinType,
             std::string(TWStringUTF8Bytes(from)),
             std::string(TWStringUTF8Bytes(to)),
@@ -59,20 +59,20 @@ std::vector<Data> createFromTWDataVector(const struct TWDataVector* _Nonnull dat
     return ret;
 }
 
-struct TWDataVector *_Nonnull TWTransactionHelperPreImageHashes(enum TWCoinType coinType, TWData *_Nonnull txInputData) {
+struct TWDataVector *_Nonnull TWTransactionCompilerPreImageHashes(enum TWCoinType coinType, TWData *_Nonnull txInputData) {
     HashPubkeyList result;
     try {
         assert(txInputData != nullptr);
         const Data inputData = data(TWDataBytes(txInputData), TWDataSize(txInputData));
 
-        result = TransactionHelper::preImageHashes(coinType, inputData);
+        result = TransactionCompiler::preImageHashes(coinType, inputData);
     } catch (...) {
         // return empty
     }
     return createFromVector(result);
 }
 
-TWData *_Nonnull TWTransactionHelperCompileWithSignatures(enum TWCoinType coinType, TWData *_Nonnull txInputData, const struct TWDataVector *_Nonnull signatures, const struct TWDataVector *_Nonnull publicKeys) {
+TWData *_Nonnull TWTransactionCompilerCompileWithSignatures(enum TWCoinType coinType, TWData *_Nonnull txInputData, const struct TWDataVector *_Nonnull signatures, const struct TWDataVector *_Nonnull publicKeys) {
     Data result;
     try {
         assert(txInputData != nullptr);
@@ -82,7 +82,7 @@ TWData *_Nonnull TWTransactionHelperCompileWithSignatures(enum TWCoinType coinTy
         assert(publicKeys != nullptr);
         const auto publicKeysVec = createFromTWDataVector(publicKeys);
 
-        result  = TransactionHelper::compileWithSignatures(coinType, inputData, signaturesVec, publicKeysVec);
+        result  = TransactionCompiler::compileWithSignatures(coinType, inputData, signaturesVec, publicKeysVec);
     } catch (...) {
         // return empty
     }

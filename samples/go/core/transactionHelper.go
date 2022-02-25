@@ -2,7 +2,7 @@ package core
 
 // #cgo CFLAGS: -I../../../include
 // #cgo LDFLAGS: -L../../../build -L../../../build/trezor-crypto -lTrustWalletCore -lprotobuf -lTrezorCrypto -lstdc++ -lm
-// #include <TrustWalletCore/TWTransactionHelper.h>
+// #include <TrustWalletCore/TWTransactionCompiler.h>
 import "C"
 import "tw/types"
 
@@ -20,7 +20,7 @@ func BuildInput(c CoinType, from, to string, amount string, asset string, memo s
 	chainIdStr := types.TWStringCreateWithGoString(chainId)
 	defer C.TWStringDelete(chainIdStr)
 
-	result := C.TWTransactionHelperBuildInput(C.enum_TWCoinType(c), fromStr, toStr, amountStr, assetStr, memoStr, chainIdStr)
+	result := C.TWTransactionCompilerBuildInput(C.enum_TWCoinType(c), fromStr, toStr, amountStr, assetStr, memoStr, chainIdStr)
 	defer C.TWDataDelete(result)
 	return types.TWDataGoBytes(result)
 }
@@ -29,7 +29,7 @@ func PreImageHashes(c CoinType, txInputData []byte) [][]byte {
 	input := types.TWDataCreateWithGoBytes(txInputData)
 	defer C.TWDataDelete(input)
 
-	result := C.TWTransactionHelperPreImageHashes(C.enum_TWCoinType(c), input)
+	result := C.TWTransactionCompilerPreImageHashes(C.enum_TWCoinType(c), input)
 	defer C.TWDataVectorDelete(result)
 	return TWDataVectorGoBytes(result)
 }
@@ -43,7 +43,7 @@ func CompileWithSignatures(c CoinType, txInputData []byte, signatures [][]byte, 
 	pubkeyhashes := TWDataVectorCreateWithGoBytes(publicKeyHashes)
 	defer C.TWDataVectorDelete(pubkeyhashes)
 
-	result := C.TWTransactionHelperCompileWithSignatures(C.enum_TWCoinType(c), input, sigs, pubkeyhashes)
+	result := C.TWTransactionCompilerCompileWithSignatures(C.enum_TWCoinType(c), input, sigs, pubkeyhashes)
 	defer C.TWDataDelete(result)
 	return types.TWDataGoBytes(result)
 }

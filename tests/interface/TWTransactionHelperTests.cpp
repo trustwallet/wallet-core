@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include <TrustWalletCore/TWCoinType.h>
-#include <TrustWalletCore/TWTransactionHelper.h>
+#include <TrustWalletCore/TWTransactionCompiler.h>
 #include <TrustWalletCore/TWData.h>
 #include "proto/Binance.pb.h"
 #include "proto/Bitcoin.pb.h"
@@ -30,10 +30,10 @@
 
 using namespace TW;
 
-TEST(TWTransactionHelper, ExternalSignatureSignBinance) {
+TEST(TWTransactionCompiler, ExternalSignatureSignBinance) {
     /// Step 1: Prepare transaction input (protobuf)
     const auto coin = TWCoinTypeBinance;
-    const auto txInputData = WRAPD(TWTransactionHelperBuildInput(
+    const auto txInputData = WRAPD(TWTransactionCompilerBuildInput(
         coin,
         STRING("bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2").get(),  // from
         STRING("bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5").get(),  // to
@@ -55,7 +55,7 @@ TEST(TWTransactionHelper, ExternalSignatureSignBinance) {
     }
 
     /// Step 2: Obtain preimage hash
-    const auto preImageHashes = WRAP(TWDataVector, TWTransactionHelperPreImageHashes(coin, txInputData.get()));
+    const auto preImageHashes = WRAP(TWDataVector, TWTransactionCompilerPreImageHashes(coin, txInputData.get()));
 
     ASSERT_EQ(TWDataVectorSize(preImageHashes.get()), 1*2);
     auto preImageHash = WRAPD(TWDataVectorGet(preImageHashes.get(), 0));
@@ -73,7 +73,7 @@ TEST(TWTransactionHelper, ExternalSignatureSignBinance) {
     }
 
     /// Step 3: Compile transaction info
-    const auto outputData = WRAPD(TWTransactionHelperCompileWithSignatures(
+    const auto outputData = WRAPD(TWTransactionCompilerCompileWithSignatures(
         coin,
         txInputData.get(),
         WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&signature)).get(),
@@ -102,10 +102,10 @@ TEST(TWTransactionHelper, ExternalSignatureSignBinance) {
     }
 }
 
-TEST(TWTransactionHelper, ExternalSignatureSignEthereum) {
+TEST(TWTransactionCompiler, ExternalSignatureSignEthereum) {
     /// Step 1: Prepare transaction input (protobuf)
     const auto coin = TWCoinTypeEthereum;
-    const auto txInputData0 = WRAPD(TWTransactionHelperBuildInput(
+    const auto txInputData0 = WRAPD(TWTransactionCompilerBuildInput(
         coin,
         STRING("0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F").get(),  // from
         STRING("0x3535353535353535353535353535353535353535").get(),  // to
@@ -139,7 +139,7 @@ TEST(TWTransactionHelper, ExternalSignatureSignEthereum) {
     EXPECT_EQ((int)TWDataSize(txInputData.get()), 75);
 
     /// Step 2: Obtain preimage hash
-    const auto preImageHashes = WRAP(TWDataVector, TWTransactionHelperPreImageHashes(coin, txInputData.get()));
+    const auto preImageHashes = WRAP(TWDataVector, TWTransactionCompilerPreImageHashes(coin, txInputData.get()));
 
     ASSERT_EQ(TWDataVectorSize(preImageHashes.get()), 1*2);
     auto preImageHash = WRAPD(TWDataVectorGet(preImageHashes.get(), 0));
@@ -157,7 +157,7 @@ TEST(TWTransactionHelper, ExternalSignatureSignEthereum) {
     }
 
     /// Step 3: Compile transaction info
-    const auto outputData = WRAPD(TWTransactionHelperCompileWithSignatures(
+    const auto outputData = WRAPD(TWTransactionCompilerCompileWithSignatures(
         coin,
         txInputData.get(),
         WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&signature)).get(),
@@ -192,7 +192,7 @@ Data dataFromTWData(std::shared_ptr<TWData> data) {
     return TW::data(TWDataBytes(data.get()), TWDataSize(data.get()));
 }
 
-TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
+TEST(TWTransactionCompiler, ExternalSignatureSignBitcoin) {
     // Test external signining with a Bircoin transaction with 3 input UTXOs, all used, but only using 2 public keys.
     // Three signatures are neeeded.  This illustrates that order of UTXOs/hashes is not always the same.
 
@@ -323,7 +323,7 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
     EXPECT_EQ((int)TWDataSize(txInputData.get()), 692);
 
     /// Step 2: Obtain preimage hashes
-    const auto preImageHashes = WRAP(TWDataVector, TWTransactionHelperPreImageHashes(coin, txInputData.get()));
+    const auto preImageHashes = WRAP(TWDataVector, TWTransactionCompilerPreImageHashes(coin, txInputData.get()));
 
     ASSERT_EQ(TWDataVectorSize(preImageHashes.get()), 3*2);
     std::vector<std::pair<Data, Data>> hashes;
@@ -362,7 +362,7 @@ TEST(TWTransactionHelper, ExternalSignatureSignBitcoin) {
     }
 
     /// Step 3: Compile transaction info
-    const auto outputData = WRAPD(TWTransactionHelperCompileWithSignatures(
+    const auto outputData = WRAPD(TWTransactionCompilerCompileWithSignatures(
         coin, txInputData.get(), signatureVec.get(), pubkeyVec.get()
     ));
 
