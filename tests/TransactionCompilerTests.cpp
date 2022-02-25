@@ -26,7 +26,7 @@
 
 using namespace TW;
 
-TEST(TransactionCompiler, ExternalSignatureSignBinance) {
+TEST(TransactionCompiler, BinanceCompileWithSignatures) {
     /// Step 1: Prepare transaction input (protobuf)
     const auto coin = TWCoinTypeBinance;
     const auto txInputData = anyCoinBuildTransactionInput(
@@ -92,85 +92,7 @@ TEST(TransactionCompiler, ExternalSignatureSignBinance) {
     }
 }
 
-TEST(TransactionCompiler, ExternalSignatureSignEthereum) {
-    /// Step 1: Prepare transaction input (protobuf)
-    const auto coin = TWCoinTypeEthereum;
-    const auto txInputData0 = anyCoinBuildTransactionInput(
-        coin,
-        "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F",  // from
-        "0x3535353535353535353535353535353535353535",  // to
-        load(parse_hex("0de0b6b3a7640000")), // amount 1000000000000000000
-        "ETH",  // asset
-        "",  // memo
-        ""  // chainId
-    );
-
-    // Check, by parsing
-    EXPECT_EQ((int)txInputData0.size(), 61);
-    Ethereum::Proto::SigningInput input;
-    ASSERT_TRUE(input.ParseFromArray(txInputData0.data(), (int)txInputData0.size()));
-    EXPECT_EQ(hex(input.chain_id()), "01");
-    EXPECT_EQ(input.to_address(), "0x3535353535353535353535353535353535353535");
-    ASSERT_TRUE(input.transaction().has_transfer());
-    EXPECT_EQ(hex(input.transaction().transfer().amount()), "0de0b6b3a7640000");
-
-    // Set a few other values
-    const auto nonce = store(uint256_t(11));
-    const auto gasPrice = store(uint256_t(20000000000));
-    const auto gasLimit = store(uint256_t(21000));
-    input.set_nonce(nonce.data(), nonce.size());
-    input.set_gas_price(gasPrice.data(), gasPrice.size());
-    input.set_gas_limit(gasLimit.data(), gasLimit.size());
-    input.set_tx_mode(Ethereum::Proto::Legacy);
-
-    // Serialize back, this shows how to serialize SigningInput protobuf to byte array
-    const auto txInputData = data(input.SerializeAsString());
-    EXPECT_EQ((int)txInputData.size(), 75);
-
-    /// Step 2: Obtain preimage hash
-    const auto preImageHashes = anyCoinPreImageHashes(coin, txInputData);
-
-    ASSERT_EQ(preImageHashes.size(), 1);
-    auto preImageHash = std::get<0>(preImageHashes[0]);
-    EXPECT_EQ(hex(preImageHash), "15e180a6274b2f6a572b9b51823fce25ef39576d10188ecdcd7de44526c47217");
-
-    // Simulate signature, normally obtained from signature server
-    const PublicKey publicKey = PublicKey(parse_hex("044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a"), TWPublicKeyTypeSECP256k1Extended);
-    const auto signature = parse_hex("360a84fb41ad07f07c845fedc34cde728421803ebbaae392fc39c116b29fc07b53bd9d1376e15a191d844db458893b928f3efbfee90c9febf51ab84c9796677900");
-
-    // Verify signature (pubkey & hash & signature)
-    {
-        EXPECT_TRUE(publicKey.verify(signature, preImageHash));
-    }
-
-    /// Step 3: Compile transaction info
-    Data outputData;
-    anyCoinCompileWithSignatures(coin, txInputData, {signature}, {publicKey}, outputData);
-
-    const auto ExpectedTx = "f86c0b8504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a0360a84fb41ad07f07c845fedc34cde728421803ebbaae392fc39c116b29fc07ba053bd9d1376e15a191d844db458893b928f3efbfee90c9febf51ab84c97966779";
-    {
-        EXPECT_EQ(outputData.size(), 183);
-        Ethereum::Proto::SigningOutput output;
-        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
-
-        EXPECT_EQ(output.encoded().size(), 110);
-        EXPECT_EQ(hex(output.encoded()), ExpectedTx);
-    }
-
-    { // Double check: check if simple signature process gives the same result. Note that private keys were not used anywhere up to this point.
-        Ethereum::Proto::SigningInput input;
-        ASSERT_TRUE(input.ParseFromArray(txInputData.data(), (int)txInputData.size()));
-        auto key = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
-        input.set_private_key(key.data(), key.size());
-
-        Ethereum::Proto::SigningOutput output;
-        ANY_SIGN(input, coin);
-
-        ASSERT_EQ(hex(output.encoded()), ExpectedTx);
-    }
-}
-
-TEST(TransactionCompiler, ExternalSignatureSignBitcoin) {
+TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
     // Test external signining with a Bircoin transaction with 3 input UTXOs, all used, but only using 2 public keys.
     // Three signatures are neeeded.  This illustrates that order of UTXOs/hashes is not always the same.
 
@@ -363,4 +285,117 @@ TEST(TransactionCompiler, ExternalSignatureSignBitcoin) {
 
         ASSERT_EQ(hex(output.encoded()), ExpectedTx);
     }
+}
+
+TEST(TransactionCompiler, EthereumCompileWithSignatures) {
+    /// Step 1: Prepare transaction input (protobuf)
+    const auto coin = TWCoinTypeEthereum;
+    const auto txInputData0 = anyCoinBuildTransactionInput(
+        coin,
+        "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F",  // from
+        "0x3535353535353535353535353535353535353535",  // to
+        load(parse_hex("0de0b6b3a7640000")), // amount 1000000000000000000
+        "ETH",  // asset
+        "",  // memo
+        ""  // chainId
+    );
+
+    // Check, by parsing
+    EXPECT_EQ((int)txInputData0.size(), 61);
+    Ethereum::Proto::SigningInput input;
+    ASSERT_TRUE(input.ParseFromArray(txInputData0.data(), (int)txInputData0.size()));
+    EXPECT_EQ(hex(input.chain_id()), "01");
+    EXPECT_EQ(input.to_address(), "0x3535353535353535353535353535353535353535");
+    ASSERT_TRUE(input.transaction().has_transfer());
+    EXPECT_EQ(hex(input.transaction().transfer().amount()), "0de0b6b3a7640000");
+
+    // Set a few other values
+    const auto nonce = store(uint256_t(11));
+    const auto gasPrice = store(uint256_t(20000000000));
+    const auto gasLimit = store(uint256_t(21000));
+    input.set_nonce(nonce.data(), nonce.size());
+    input.set_gas_price(gasPrice.data(), gasPrice.size());
+    input.set_gas_limit(gasLimit.data(), gasLimit.size());
+    input.set_tx_mode(Ethereum::Proto::Legacy);
+
+    // Serialize back, this shows how to serialize SigningInput protobuf to byte array
+    const auto txInputData = data(input.SerializeAsString());
+    EXPECT_EQ((int)txInputData.size(), 75);
+
+    /// Step 2: Obtain preimage hash
+    const auto preImageHashes = anyCoinPreImageHashes(coin, txInputData);
+
+    ASSERT_EQ(preImageHashes.size(), 1);
+    auto preImageHash = std::get<0>(preImageHashes[0]);
+    EXPECT_EQ(hex(preImageHash), "15e180a6274b2f6a572b9b51823fce25ef39576d10188ecdcd7de44526c47217");
+
+    // Simulate signature, normally obtained from signature server
+    const PublicKey publicKey = PublicKey(parse_hex("044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a"), TWPublicKeyTypeSECP256k1Extended);
+    const auto signature = parse_hex("360a84fb41ad07f07c845fedc34cde728421803ebbaae392fc39c116b29fc07b53bd9d1376e15a191d844db458893b928f3efbfee90c9febf51ab84c9796677900");
+
+    // Verify signature (pubkey & hash & signature)
+    {
+        EXPECT_TRUE(publicKey.verify(signature, preImageHash));
+    }
+
+    /// Step 3: Compile transaction info
+    Data outputData;
+    anyCoinCompileWithSignatures(coin, txInputData, {signature}, {publicKey}, outputData);
+
+    const auto ExpectedTx = "f86c0b8504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a0360a84fb41ad07f07c845fedc34cde728421803ebbaae392fc39c116b29fc07ba053bd9d1376e15a191d844db458893b928f3efbfee90c9febf51ab84c97966779";
+    {
+        EXPECT_EQ(outputData.size(), 183);
+        Ethereum::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+
+        EXPECT_EQ(output.encoded().size(), 110);
+        EXPECT_EQ(hex(output.encoded()), ExpectedTx);
+    }
+
+    { // Double check: check if simple signature process gives the same result. Note that private keys were not used anywhere up to this point.
+        Ethereum::Proto::SigningInput input;
+        ASSERT_TRUE(input.ParseFromArray(txInputData.data(), (int)txInputData.size()));
+        auto key = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
+        input.set_private_key(key.data(), key.size());
+
+        Ethereum::Proto::SigningOutput output;
+        ANY_SIGN(input, coin);
+
+        ASSERT_EQ(hex(output.encoded()), ExpectedTx);
+    }
+}
+
+TEST(TransactionCompiler, EthereumBuildTransactionInput) {
+    const auto coin = TWCoinTypeEthereum;
+    const auto txInputData0 = anyCoinBuildTransactionInput(
+        coin,
+        "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F",  // from
+        "0x3535353535353535353535353535353535353535",  // to
+        load(parse_hex("0de0b6b3a7640000")), // amount 1000000000000000000
+        "ETH",  // asset
+        "Memo",  // memo
+        "05"  // chainId
+    );
+
+    // Check, by parsing
+    EXPECT_EQ((int)txInputData0.size(), 61);
+    Ethereum::Proto::SigningInput input;
+    ASSERT_TRUE(input.ParseFromArray(txInputData0.data(), (int)txInputData0.size()));
+    EXPECT_EQ(hex(input.chain_id()), "05");
+    EXPECT_EQ(input.to_address(), "0x3535353535353535353535353535353535353535");
+    ASSERT_TRUE(input.transaction().has_transfer());
+    EXPECT_EQ(hex(input.transaction().transfer().amount()), "0de0b6b3a7640000");
+}
+
+TEST(TransactionCompiler, EthereumBuildTransactionInputInvalidAddress) {
+    const auto coin = TWCoinTypeEthereum;
+    EXPECT_EXCEPTION(anyCoinBuildTransactionInput(
+        coin,
+        "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F",  // from
+        "__INVALID_ADDRESS__",  // to
+        load(parse_hex("0de0b6b3a7640000")), // amount 1000000000000000000
+        "ETH",  // asset
+        "",  // memo
+        ""  // chainId
+    ), "Invalid to address");
 }
