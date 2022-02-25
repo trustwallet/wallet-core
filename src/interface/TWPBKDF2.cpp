@@ -12,39 +12,37 @@
 
 using namespace TW;
 
-TWData* _Nullable TWPBKDF2Sha256Hmac(TWData* _Nonnull password, TWData* _Nonnull salt,
+TWData* _Nullable TWPBKDF2HmacSha256(TWData* _Nonnull password, TWData* _Nonnull salt,
                                      uint32_t iterations, uint32_t dkLen) {
 
-    PBKDF2_HMAC_SHA256_CTX ctx;
     Data key(dkLen);
-
-    pbkdf2_hmac_sha256_Init(&ctx, TWDataBytes(password), static_cast<int>(TWDataSize(password)),
-                            TWDataBytes(salt), static_cast<int>(TWDataSize(salt)), 1);
-
-    for (int i = 0; i < iterations; i += 1) {
-        pbkdf2_hmac_sha256_Update(&ctx, 1);
-    }
-
-    pbkdf2_hmac_sha256_Final(&ctx, key.data());
-    memzero(&ctx, sizeof(ctx));
-
+    int passLen = static_cast<int>(TWDataSize(password));
+    int saltLen = static_cast<int>(TWDataSize(salt));
+    pbkdf2_hmac_sha256(
+        TWDataBytes(password), 
+        passLen, 
+        TWDataBytes(salt), 
+        saltLen,
+        iterations, 
+        key.data(), 
+        dkLen
+    );
     return TWDataCreateWithData(&key);
 }
 
-TWData* _Nullable TWPBKDF2Sha512Hmac(TWData* _Nonnull password, TWData* _Nonnull salt,
+TWData* _Nullable TWPBKDF2HmacSha512(TWData* _Nonnull password, TWData* _Nonnull salt,
                                      uint32_t iterations, uint32_t dkLen) {
-    PBKDF2_HMAC_SHA512_CTX ctx;
     Data key(dkLen);
-
-    pbkdf2_hmac_sha512_Init(&ctx, TWDataBytes(password), static_cast<int>(TWDataSize(password)),
-                            TWDataBytes(salt), static_cast<int>(TWDataSize(salt)), 1);
-
-    for (int i = 0; i < iterations; i += 1) {
-        pbkdf2_hmac_sha512_Update(&ctx, 1);
-    }
-
-    pbkdf2_hmac_sha512_Final(&ctx, key.data());
-    memzero(&ctx, sizeof(ctx));
-
+    int passLen = static_cast<int>(TWDataSize(password));
+    int saltLen = static_cast<int>(TWDataSize(salt));
+    pbkdf2_hmac_sha512(
+        TWDataBytes(password), 
+        passLen, 
+        TWDataBytes(salt), 
+        saltLen,
+        iterations, 
+        key.data(), 
+        dkLen
+    );
     return TWDataCreateWithData(&key);
 }

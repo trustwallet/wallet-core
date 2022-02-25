@@ -21,7 +21,7 @@ struct TWPBKDF2;
 /// \param iterations is the number of iterations desired
 /// \param dkLen is the desired bit-length of the derived key
 TW_EXPORT_STATIC_METHOD
-TWData *_Nullable TWPBKDF2Sha256Hmac(TWData *_Nonnull password, TWData *_Nonnull salt, uint32_t iterations, uint32_t dkLen);
+TWData *_Nullable TWPBKDF2HmacSha256(TWData *_Nonnull password, TWData *_Nonnull salt, uint32_t iterations, uint32_t dkLen);
 
 /// Derives a key from a password and a salt using PBKDF2 + Sha512.
 ///
@@ -30,6 +30,6 @@ TWData *_Nullable TWPBKDF2Sha256Hmac(TWData *_Nonnull password, TWData *_Nonnull
 /// \param iterations is the number of iterations desired
 /// \param dkLen is the desired bit-length of the derived key
 TW_EXPORT_STATIC_METHOD
-TWData *_Nullable TWPBKDF2Sha512Hmac(TWData *_Nonnull password, TWData *_Nonnull salt, uint32_t iterations, uint32_t dkLen);
+TWData *_Nullable TWPBKDF2HmacSha512(TWData *_Nonnull password, TWData *_Nonnull salt, uint32_t iterations, uint32_t dkLen);
 
 TW_EXTERN_C_END
