@@ -34,6 +34,8 @@ class Signer {
 
     /// Signs the given transaction.
     static Signature sign(const PrivateKey& privateKey, const uint256_t& chainID, std::shared_ptr<TransactionBase> transaction) noexcept;
+    /// Compiles a Proto::SigningInput transaction, with external signature
+    static Proto::SigningOutput compile(const Proto::SigningInput& input, const Data& signature) noexcept;
 
   public:
     /// build Transaction from signing input
@@ -46,7 +48,11 @@ class Signer {
 
     /// Break up the signature into the R, S, and V values.
     /// @returns the r, s, and v values of the transaction signature
-    static Signature signatureDataToStruct(const Data& signature) noexcept;
+    static Signature signatureDataToStruct(const Data& signature, bool includeEip155, const uint256_t& chainID) noexcept;
+
+    /// Break up the signature into the R, S, and V values, with no replay protection.
+    /// @returns the r, s, and v values of the transaction signature
+    static Signature signatureDataToStructSimple(const Data& signature) noexcept;
 
     /// Break up the signature into the R, S, and V values, and include chainID in V for replay protection (Eip155)
     /// @returns the r, s, and v values of the transaction signature

@@ -11,6 +11,8 @@
 #include "DerivationPath.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
+#include "uint256.h"
+#include "CoinEntry.h"
 
 #include <TrustWalletCore/TWBlockchain.h>
 #include <TrustWalletCore/TWCoinType.h>
@@ -87,6 +89,12 @@ std::string anySignJSON(TWCoinType coinType, const std::string& json, const Data
 bool supportsJSONSigning(TWCoinType coinType);
 
 void anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut);
+
+HashPubkeyList anyCoinPreImageHashes(TWCoinType coinType, const Data& txInputData);
+
+void anyCoinCompileWithSignatures(TWCoinType coinType, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& txOutputOut);
+
+Data anyCoinBuildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId);
 
 // Return coins handled by the same dispatcher as the given coin (mostly for testing)
 const std::vector<TWCoinType> getSimilarCoinTypes(TWCoinType coinType);

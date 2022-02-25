@@ -195,3 +195,15 @@ TEST(SegwitAddress, fromRaw) {
         EXPECT_FALSE(addr.second);
     }
 }
+
+TEST(SegwitAddress, Equals) {
+    const auto dec1 = SegwitAddress::decode("bc1qpjult34k9spjfym8hss2jrwjgf0xjf40ze0pp8");
+    EXPECT_TRUE(std::get<2>(dec1));
+    const auto addr1 = std::get<0>(dec1);
+    const auto dec2 = SegwitAddress::decode("bc1qm9jzmujvdqjj6y28hptk859zs3yyv78hpqqjfj");
+    EXPECT_TRUE(std::get<2>(dec2));
+    const auto addr2 = std::get<0>(dec2);
+
+    ASSERT_TRUE(addr1 == addr1);
+    ASSERT_FALSE(addr1 == addr2);
+}
