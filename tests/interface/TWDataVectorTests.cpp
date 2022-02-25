@@ -63,3 +63,21 @@ TEST(TWDataVector, Add) {
     const auto readElem2 = WRAPD(TWDataVectorGet(vec.get(), 1));
     EXPECT_EQ(hex(*static_cast<const Data*>(readElem2.get())), "0202");
 }
+
+TEST(TWDataVector, Get) {
+    const auto elem1d = parse_hex("deadbeef");
+    const auto elem1 = WRAPD(TWDataCreateWithBytes(elem1d.data(), elem1d.size()));
+    const auto vec = WRAP(TWDataVector, TWDataVectorCreateWithData(elem1.get()));
+
+    ASSERT_TRUE(vec.get() != nullptr);
+    ASSERT_EQ(TWDataVectorSize(vec.get()), 1);
+
+    {   // Get element
+        const auto readElem1 = WRAPD(TWDataVectorGet(vec.get(), 0));
+        EXPECT_EQ(hex(*static_cast<const Data*>(readElem1.get())), "deadbeef");
+    }
+    {   // Get with bad index
+        const auto readElem = TWDataVectorGet(vec.get(), 666);
+        EXPECT_EQ(readElem, nullptr);
+    }
+}

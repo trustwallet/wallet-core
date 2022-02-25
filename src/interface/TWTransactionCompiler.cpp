@@ -27,9 +27,7 @@ TWData *_Nonnull TWTransactionCompilerBuildInput(enum TWCoinType coinType, TWStr
             std::string(TWStringUTF8Bytes(memo)),
             std::string(TWStringUTF8Bytes(chainId))
         );
-    } catch (...) {
-        // return empty
-    }
+    } catch (...) {} // return empty
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
@@ -66,9 +64,7 @@ struct TWDataVector *_Nonnull TWTransactionCompilerPreImageHashes(enum TWCoinTyp
         const Data inputData = data(TWDataBytes(txInputData), TWDataSize(txInputData));
 
         result = TransactionCompiler::preImageHashes(coinType, inputData);
-    } catch (...) {
-        // return empty
-    }
+    } catch (...) {} // return empty
     return createFromVector(result);
 }
 
@@ -83,8 +79,6 @@ TWData *_Nonnull TWTransactionCompilerCompileWithSignatures(enum TWCoinType coin
         const auto publicKeysVec = createFromTWDataVector(publicKeys);
 
         result  = TransactionCompiler::compileWithSignatures(coinType, inputData, signaturesVec, publicKeysVec);
-    } catch (...) {
-        // return empty
-    }
+    } catch (...) {} // return empty
     return TWDataCreateWithBytes(result.data(), result.size());
 }
