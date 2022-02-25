@@ -41,6 +41,7 @@
 #include "Ontology/Entry.h"
 #include "Polkadot/Entry.h"
 #include "Ripple/Entry.h"
+#include "Ronin/Entry.h"
 #include "Solana/Entry.h"
 #include "Stellar/Entry.h"
 #include "THORChain/Entry.h"
@@ -86,6 +87,7 @@ Ontology::Entry ontologyDP;
 Oasis::Entry oasisDP;
 Polkadot::Entry polkadotDP;
 Ripple::Entry rippleDP;
+Ronin::Entry roninDP;
 Solana::Entry solanaDP;
 Stellar::Entry stellarDP;
 Tezos::Entry tezosDP;
@@ -176,7 +178,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeXDai: entry = &ethereumDP; break;
         case TWCoinTypeFantom: entry = &ethereumDP; break;
         case TWCoinTypeCelo: entry = &ethereumDP; break;
-        case TWCoinTypeRonin: entry = &ethereumDP; break;
+        case TWCoinTypeRonin: entry = &roninDP; break;
         case TWCoinTypeCryptoOrg: entry = &cosmosDP; break;
         case TWCoinTypeOsmosis: entry = &cosmosDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify

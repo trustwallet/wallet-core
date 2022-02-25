@@ -16,12 +16,15 @@
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWBase58.h>
 #include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWSegwitAddress.h>
 #include <proto/Stellar.pb.h>
 
 #include "HexCoding.h"
 
 #include <gtest/gtest.h>
 #include <thread>
+
+using namespace TW;
 
 const auto wordsStr = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
 const auto words = STRING(wordsStr);
@@ -424,4 +427,58 @@ TEST(HDWallet, GetDerivedKey) {
     const auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetDerivedKey(wallet.get(), TWCoinTypeBitcoin, 0, 0, 0));
     const auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
     assertHexEqual(privateKeyData, "1901b5994f075af71397f65bd68a9fff8d3025d65f5a2c731cf90f5e259d6aac");
+}
+
+TEST(TWHDWallet, Derive_XpubPub_vs_PrivPub) {
+    // Test different routes for deriving address from mnemonic, result should be the same:
+    // - Direct: mnemonic -> seed -> privateKey -> publicKey -> address
+    // - Extended Public: mnemonic -> seed -> zpub -> publicKey -> address
+
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
+    const auto coin = TWCoinTypeBitcoin;
+    const auto derivPath1 = STRING("m/84'/0'/0'/0/0");
+    const auto derivPath2 = STRING("m/84'/0'/0'/0/2");
+    const auto expectedPublicKey1 = "02df9ef2a7a5552765178b181e1e1afdefc7849985c7dfe9647706dd4fa40df6ac";
+    const auto expectedPublicKey2 = "031e1f64d2f6768dccb6814545b2e2d58e26ad5f91b7cbaffe881ed572c65060db";
+    const auto expectedAddress1 = "bc1qpsp72plnsqe6e2dvtsetxtww2cz36ztmfxghpd";
+    const auto expectedAddress2 = "bc1q7zddsunzaftf4zlsg9exhzlkvc5374a6v32jf6";
+
+    // -> privateKey -> publicKey
+    {
+        const auto privateKey1 = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), coin, derivPath1.get()));
+        const auto publicKey1 = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey1.get(), true));
+        const auto publicKey1Data = WRAPD(TWPublicKeyData(publicKey1.get()));
+        EXPECT_EQ(hex(TW::data(TWDataBytes(publicKey1Data.get()), TWDataSize(publicKey1Data.get()))), expectedPublicKey1);
+        const auto address1 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPBitcoin, publicKey1.get()));
+        EXPECT_EQ(std::string(TWStringUTF8Bytes(WRAPS(TWSegwitAddressDescription(address1.get())).get())), expectedAddress1);
+    }
+    {
+        const auto privateKey2 = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), coin, derivPath2.get()));
+        const auto publicKey2 = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey2.get(), true));
+        const auto publicKey2Data = WRAPD(TWPublicKeyData(publicKey2.get()));
+        EXPECT_EQ(hex(TW::data(TWDataBytes(publicKey2Data.get()), TWDataSize(publicKey2Data.get()))), expectedPublicKey2);
+        const auto address2 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPBitcoin, publicKey2.get()));
+        EXPECT_EQ(std::string(TWStringUTF8Bytes(WRAPS(TWSegwitAddressDescription(address2.get())).get())), expectedAddress2);
+    }
+
+    // zpub -> publicKey
+    const auto zpub = WRAPS(TWHDWalletGetExtendedPublicKey(wallet.get(), TWPurposeBIP84, coin, TWHDVersionZPUB));
+    EXPECT_EQ(std::string(TWStringUTF8Bytes(zpub.get())), "zpub6rNUNtxSa9Gxvm4Bdxf1MPMwrvkzwDx6vP96Hkzw3jiQKdg3fhXBStxjn12YixQB8h88B3RMSRscRstf9AEVaYr3MAqVBEWBDuEJU4PGaT9");
+
+    {
+        const auto publicKey1 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(zpub.get(), coin, derivPath1.get()));
+        EXPECT_NE(publicKey1.get(), nullptr);
+        const auto publicKey1Data = WRAPD(TWPublicKeyData(publicKey1.get()));
+        EXPECT_EQ(hex(TW::data(TWDataBytes(publicKey1Data.get()), TWDataSize(publicKey1Data.get()))), expectedPublicKey1);
+        const auto address1 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPBitcoin, publicKey1.get()));
+        EXPECT_EQ(std::string(TWStringUTF8Bytes(WRAPS(TWSegwitAddressDescription(address1.get())).get())), expectedAddress1);
+    }
+    {
+        const auto publicKey2 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(zpub.get(), coin, derivPath2.get()));
+        EXPECT_NE(publicKey2.get(), nullptr);
+        const auto publicKey2Data = WRAPD(TWPublicKeyData(publicKey2.get()));
+        EXPECT_EQ(hex(TW::data(TWDataBytes(publicKey2Data.get()), TWDataSize(publicKey2Data.get()))), expectedPublicKey2);
+        const auto address2 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPBitcoin, publicKey2.get()));
+        EXPECT_EQ(std::string(TWStringUTF8Bytes(WRAPS(TWSegwitAddressDescription(address2.get())).get())), expectedAddress2);
+    }
 }
