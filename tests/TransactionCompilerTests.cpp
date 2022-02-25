@@ -7,6 +7,7 @@
 #include <TrustWalletCore/TWCoinType.h>
 #include "TransactionCompiler.h"
 #include "Coin.h"
+#include "proto/Common.pb.h"
 #include "proto/Binance.pb.h"
 #include "proto/Bitcoin.pb.h"
 #include "proto/Ethereum.pb.h"
@@ -29,11 +30,11 @@ using namespace TW;
 TEST(TransactionCompiler, BinanceCompileWithSignatures) {
     /// Step 1: Prepare transaction input (protobuf)
     const auto coin = TWCoinTypeBinance;
-    const auto txInputData = anyCoinBuildTransactionInput(
+    const auto txInputData = TransactionCompiler::buildInput(
         coin,
         "bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2",  // from
         "bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5",  // to
-        1,  // amount
+        "1",  // amount
         "BNB",  // asset
         "",  // memo
         ""  // chainId
@@ -51,14 +52,15 @@ TEST(TransactionCompiler, BinanceCompileWithSignatures) {
     }
 
     /// Step 2: Obtain preimage hash
-    const auto preImageHashes = anyCoinPreImageHashes(coin, txInputData);
+    const auto preImageHashes = TransactionCompiler::preImageHashes(coin, txInputData);
 
     ASSERT_EQ(preImageHashes.size(), 1);
     auto preImageHash = std::get<0>(preImageHashes[0]);
     EXPECT_EQ(hex(preImageHash), "3f3fece9059e714d303a9a1496ddade8f2c38fa78fc4cc2e505c5dbb0ea678d1");
 
     // Simulate signature, normally obtained from signature server
-    const PublicKey publicKey = PublicKey(parse_hex("026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502"), TWPublicKeyTypeSECP256k1);
+    const auto publicKeyData = parse_hex("026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502");
+    const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeSECP256k1);
     const auto signature = parse_hex("1b1181faec30b60a2ddaa2804c253cf264c69180ec31814929b5de62088c0c5a45e8a816d1208fc5366bb8b041781a6771248550d04094c3d7a504f9e8310679");
 
     // Verify signature (pubkey & hash & signature)
@@ -67,8 +69,7 @@ TEST(TransactionCompiler, BinanceCompileWithSignatures) {
     }
 
     /// Step 3: Compile transaction info
-    Data outputData;
-    anyCoinCompileWithSignatures(coin, txInputData, {signature}, {publicKey}, outputData);
+    const Data outputData = TransactionCompiler::compileWithSignatures(coin, txInputData, {signature}, {publicKeyData});
 
     const auto ExpectedTx = "b801f0625dee0a462a2c87fa0a1f0a1440c2979694bbc961023d1d27be6fc4d21a9febe612070a03424e421001121f0a14bffe47abfaede50419c577f1074fee6dd1535cd112070a03424e421001126a0a26eb5ae98721026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e50212401b1181faec30b60a2ddaa2804c253cf264c69180ec31814929b5de62088c0c5a45e8a816d1208fc5366bb8b041781a6771248550d04094c3d7a504f9e8310679";
     {
@@ -222,7 +223,7 @@ TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
     EXPECT_EQ((int)txInputData.size(), 692);
 
     /// Step 2: Obtain preimage hashes
-    const auto preImageHashes = anyCoinPreImageHashes(coin, txInputData);
+    const auto preImageHashes = TransactionCompiler::preImageHashes(coin, txInputData);
 
     ASSERT_EQ(preImageHashes.size(), 3);
     EXPECT_EQ(hex(std::get<0>(preImageHashes[0])), "505f527f00e15fcc5a2d2416c9970beb57dfdfaca99e572a01f143b24dd8fab6");
@@ -234,7 +235,7 @@ TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
 
     // Simulate signatures, normally obtained from signature server.
     std::vector<Data> signatureVec;
-    std::vector<PublicKey> pubkeyVec;
+    std::vector<Data> pubkeyVec;
     for (const auto& h: preImageHashes) {
         const auto& preImageHash = std::get<0>(h);
         const auto& pubkeyhash = std::get<1>(h);
@@ -248,15 +249,14 @@ TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
         const auto signature = sigInfo.signature;
 
         signatureVec.push_back(signature);
-        pubkeyVec.push_back(publicKey);
+        pubkeyVec.push_back(publicKeyData);
 
         // Verify signature (pubkey & hash & signature)
         EXPECT_TRUE(publicKey.verifyAsDER(signature, preImageHash));
     }
 
     /// Step 3: Compile transaction info
-    Data outputData;
-    anyCoinCompileWithSignatures(coin, txInputData, signatureVec, pubkeyVec, outputData);
+    const Data outputData = TransactionCompiler::compileWithSignatures(coin, txInputData, signatureVec, pubkeyVec);
 
     const auto ExpectedTx = "010000000001036021efcf7555f90627364339fc921139dd40a06ccb2cb2a2a4f8f4ea7a2dc74d0000000000ffffffffd6892a5aa54e3b8fe430efd23f49a8950733aaa9d7c915d9989179f48dd1905e0100000000ffffffff07c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa80000000000ffffffff02804f1200000000001600145360df8231ac5965147c9d90ca930a2aafb05232cb92040000000000160014bd92088bb7e82d611a9b94fbb74a0908152b784f02473044022041294880caa09bb1b653775310fcdd1458da6b8e7d7fae34e37966414fe115820220646397c9d2513edc5974ecc336e9b287de0cdf071c366f3b3dc3ff309213e4e401210217142f69535e4dad0dc7060df645c55a174cc1bfa5b9eb2e59aad2ae96072dfc0247304402201857bc6e6e48b46046a4bd204136fc77e24c240943fb5a1f0e86387aae59b34902200a7f31478784e51c49f46ef072745a4f263d7efdbc9c6784aa2571ff4f6f2a400121024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382024730440220764e3d5b3971c4b3e70b23fb700a7462a6fe519d9830e863a1f8388c402ad0b102207e777f7972c636961f92375a2774af3b7a2a04190251bbcb31d19c70927952dc0121024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb49338200000000";
     {
@@ -285,16 +285,41 @@ TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
 
         ASSERT_EQ(hex(output.encoded()), ExpectedTx);
     }
+
+    {   // Negative: not enough signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(coin, txInputData, {signatureVec[0]}, pubkeyVec);
+        EXPECT_EQ(outputData.size(), 2);
+        Bitcoin::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_signing);
+    }
+    {   // Negative: invalid public key
+        const auto publicKeyBlake = parse_hex("b689ab808542e13f3d2ec56fe1efe43a1660dcadc73ce489fde7df98dd8ce5d9");
+        EXPECT_EXCEPTION(TransactionCompiler::compileWithSignatures(coin, txInputData, signatureVec,
+            {pubkeyVec[0], pubkeyVec[1], publicKeyBlake}), "Invalid public key");
+    }
+    {   // Negative: wrong signature (formally valid)
+        const Data outputData = TransactionCompiler::compileWithSignatures(coin, txInputData,
+            {parse_hex("415502201857bc6e6e48b46046a4bd204136fc77e24c240943fb5a1f0e86387aae59b34902200a7f31478784e51c49f46ef072745a4f263d7efdbc9c6784aa2571ff4f6f3b51"),
+            signatureVec[1], signatureVec[2]},
+            pubkeyVec);
+        EXPECT_EQ(outputData.size(), 2);
+        Bitcoin::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_signing);
+    }
 }
 
 TEST(TransactionCompiler, EthereumCompileWithSignatures) {
     /// Step 1: Prepare transaction input (protobuf)
     const auto coin = TWCoinTypeEthereum;
-    const auto txInputData0 = anyCoinBuildTransactionInput(
+    const auto txInputData0 = TransactionCompiler::buildInput(
         coin,
         "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F",  // from
         "0x3535353535353535353535353535353535353535",  // to
-        load(parse_hex("0de0b6b3a7640000")), // amount 1000000000000000000
+        "1000000000000000000", // amount
         "ETH",  // asset
         "",  // memo
         ""  // chainId
@@ -323,14 +348,15 @@ TEST(TransactionCompiler, EthereumCompileWithSignatures) {
     EXPECT_EQ((int)txInputData.size(), 75);
 
     /// Step 2: Obtain preimage hash
-    const auto preImageHashes = anyCoinPreImageHashes(coin, txInputData);
+    const auto preImageHashes = TransactionCompiler::preImageHashes(coin, txInputData);
 
     ASSERT_EQ(preImageHashes.size(), 1);
     auto preImageHash = std::get<0>(preImageHashes[0]);
     EXPECT_EQ(hex(preImageHash), "15e180a6274b2f6a572b9b51823fce25ef39576d10188ecdcd7de44526c47217");
 
     // Simulate signature, normally obtained from signature server
-    const PublicKey publicKey = PublicKey(parse_hex("044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a"), TWPublicKeyTypeSECP256k1Extended);
+    const Data publicKeyData = parse_hex("044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a");
+    const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeSECP256k1Extended);
     const auto signature = parse_hex("360a84fb41ad07f07c845fedc34cde728421803ebbaae392fc39c116b29fc07b53bd9d1376e15a191d844db458893b928f3efbfee90c9febf51ab84c9796677900");
 
     // Verify signature (pubkey & hash & signature)
@@ -339,8 +365,7 @@ TEST(TransactionCompiler, EthereumCompileWithSignatures) {
     }
 
     /// Step 3: Compile transaction info
-    Data outputData;
-    anyCoinCompileWithSignatures(coin, txInputData, {signature}, {publicKey}, outputData);
+    const Data outputData = TransactionCompiler::compileWithSignatures(coin, txInputData, {signature}, {publicKeyData});
 
     const auto ExpectedTx = "f86c0b8504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a0360a84fb41ad07f07c845fedc34cde728421803ebbaae392fc39c116b29fc07ba053bd9d1376e15a191d844db458893b928f3efbfee90c9febf51ab84c97966779";
     {
@@ -367,11 +392,11 @@ TEST(TransactionCompiler, EthereumCompileWithSignatures) {
 
 TEST(TransactionCompiler, EthereumBuildTransactionInput) {
     const auto coin = TWCoinTypeEthereum;
-    const auto txInputData0 = anyCoinBuildTransactionInput(
+    const auto txInputData0 = TransactionCompiler::buildInput(
         coin,
         "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F",  // from
         "0x3535353535353535353535353535353535353535",  // to
-        load(parse_hex("0de0b6b3a7640000")), // amount 1000000000000000000
+        "1000000000000000000", // amount
         "ETH",  // asset
         "Memo",  // memo
         "05"  // chainId
@@ -389,11 +414,11 @@ TEST(TransactionCompiler, EthereumBuildTransactionInput) {
 
 TEST(TransactionCompiler, EthereumBuildTransactionInputInvalidAddress) {
     const auto coin = TWCoinTypeEthereum;
-    EXPECT_EXCEPTION(anyCoinBuildTransactionInput(
+    EXPECT_EXCEPTION(TransactionCompiler::buildInput(
         coin,
         "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F",  // from
         "__INVALID_ADDRESS__",  // to
-        load(parse_hex("0de0b6b3a7640000")), // amount 1000000000000000000
+        "1000000000000000000", // amount
         "ETH",  // asset
         "",  // memo
         ""  // chainId
