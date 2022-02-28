@@ -19,17 +19,6 @@ using namespace TW;
 using namespace std;
 
 
-Signer::Signer(const Proto::SigningInput& input) : input(input) {
-    // derive sender address
-    const auto privateKeyData = data(input.private_key());
-    if (PrivateKey::isValid(privateKeyData)) {
-        const auto privateKey = PrivateKey(privateKeyData);
-        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Extended);
-        const auto address = AddressV3(publicKey);
-        senderAddress = address.data();
-    }
-}
-
 Proto::SigningOutput Signer::sign() {
     // plan if needed
     if (input.has_plan()) {
@@ -42,7 +31,7 @@ Proto::SigningOutput Signer::sign() {
     return signWithPlan();
 }
 
-Common::Proto::SigningError Signer::buildTransaction(Transaction& tx, const Proto::SigningInput& input, const TransactionPlan& plan, const Data& senderAddress) {
+Common::Proto::SigningError Signer::buildTransaction(Transaction& tx, const Proto::SigningInput& input, const TransactionPlan& plan) {
     tx = Transaction();
     for (const auto& i: plan.utxos) {
         tx.inputs.push_back(OutPoint{i.txHash, i.outputIndex});
@@ -59,14 +48,12 @@ Common::Proto::SigningError Signer::buildTransaction(Transaction& tx, const Prot
     });
     // Change
     if (plan.change > 0) {
-        if (senderAddress.size() == 0) {
-            if (input.private_key().length() == 0) {
-                return Common::Proto::Error_missing_private_key;
-            }
+        if (!AddressV3::isValid(input.transfer_message().change_address())) {
             return Common::Proto::Error_invalid_address;
         }
+        const auto changeAddress = AddressV3(input.transfer_message().change_address());
         tx.outputs.push_back(TxOutput{
-            senderAddress,
+            changeAddress.data(),
             plan.change
         });
     }
@@ -85,7 +72,7 @@ Proto::SigningOutput Signer::signWithPlan() {
     }
 
     Transaction tx;
-    const auto buildRet = buildTransaction(tx, input, _plan, senderAddress);
+    const auto buildRet = buildTransaction(tx, input, _plan);
     if (buildRet != Common::Proto::OK) {
         ret.set_error(buildRet);
         return ret;
@@ -134,7 +121,7 @@ TransactionPlan simplePlan(const vector<TxInput>& inputs, Amount amount) {
 }
 
 // Estimates size of transaction in bytes.
-uint64_t estimateTxSize(const Proto::SigningInput& input, Amount amount, const Data& senderAddress) {
+uint64_t estimateTxSize(const Proto::SigningInput& input, Amount amount) {
     auto inputs = vector<TxInput>();
     for (auto i = 0; i < input.utxos_size(); ++i) {
         inputs.push_back(TxInput::fromProto(input.utxos(i)));
@@ -142,7 +129,7 @@ uint64_t estimateTxSize(const Proto::SigningInput& input, Amount amount, const D
     const auto _simplePlan = simplePlan(inputs, amount);
 
     Transaction simpleTx;
-    Signer::buildTransaction(simpleTx, input, _simplePlan, senderAddress);
+    Signer::buildTransaction(simpleTx, input, _simplePlan);
 
     auto encodedSize = simpleTx.encode().size();
     const auto extra = 11;
@@ -157,8 +144,8 @@ Amount txFeeFunction(uint64_t txSizeInBytes) {
     return fee;
 }
 
-Amount Signer::estimateFee(const Proto::SigningInput& input, Amount amount, const Data& senderAddress) {
-    return txFeeFunction(estimateTxSize(input, amount, senderAddress));
+Amount Signer::estimateFee(const Proto::SigningInput& input, Amount amount) {
+    return txFeeFunction(estimateTxSize(input, amount));
 }
 
 TransactionPlan Signer::plan() const {
@@ -200,7 +187,7 @@ TransactionPlan Signer::plan() const {
     }
     assert(plan.amount <= plan.availableAmount);
 
-    plan.fee = estimateFee(input, plan.amount, senderAddress);
+    plan.fee = estimateFee(input, plan.amount);
 
     if (plan.amount + plan.fee > plan.availableAmount) {
         plan.error = Common::Proto::Error_low_balance;

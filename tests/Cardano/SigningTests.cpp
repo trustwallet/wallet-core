@@ -70,8 +70,9 @@ Proto::SigningInput createSampleInput() {
     utxo2->set_amount(6500000);
 
     const auto privateKeyData = parse_hex("484d5bc3375435c9a0b0d121e86d6eba7d55929a263530d75bb1cb1d098bc653f75e5127219208a9d28ca6fecd95530b97470957f72be0648b2c99e2a29cc841fa49248845144b2dbccf6e85c172cd44099f5977e7126209e7c3e4b1fba4a264f0607785e71ace08560b30e3ffaab13f46418493f223e1407c0e6358108bc65351b30406485ad396ac0a390f6d718413fc5256069a36dd7bc2670fc49597d83556a8d4c88d10db7883dad1e70e03bbfbdff3545d33eb4cf2ea8f044a29462cde");
-    input.set_private_key(privateKeyData.data(), privateKeyData.size());
-    input.mutable_transfer_message()->set_to_address("addr1q9068st87h22h3l6w6t5evnlm067rag94llqya2hkjrsd3wvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qpmxzjt");
+    input.add_private_key(privateKeyData.data(), privateKeyData.size());
+    input.mutable_transfer_message()->set_to_address("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23");
+    input.mutable_transfer_message()->set_change_address("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5");
     input.mutable_transfer_message()->set_amount(7000000);
     input.set_ttl(53333333);
     return input;
@@ -122,9 +123,9 @@ TEST(CardanoSigning, Sign1) {
     EXPECT_EQ(output.error(), Common::Proto::OK);
 
     const auto encoded = data(output.encoded());
-    EXPECT_EQ(hex(encoded), "a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767010182825839015fa3c167f5d4abc7fa76974cb27fdbf5e1f505affe027557b48706c5cc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a34681a006acfc082583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a000cbbcf021a00028671031a032dcd55");
+    EXPECT_EQ(hex(encoded), "a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a006acfc082583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a000cbbcf021a00028671031a032dcd55");
     const auto txid = data(output.tx_id());
-    EXPECT_EQ(hex(txid), "8ceab53a40d515cc2ced5065613314e6032f548642f00d6521ff6728e091930b");
+    EXPECT_EQ(hex(txid), "8b9f26b3d1fa9f971379a72c2d577abc73ca425f5dcb1f2b8ea436a09b6f0f87");
 }
 
 TEST(CardanoSigning, SignMessageWithKey) {

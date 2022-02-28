@@ -28,8 +28,11 @@ message Transfer {
     // Destination address as string
     string to_address = 1;
 
+    // Change address
+    string change_address = 2;
+
     // TODO check correct type
-    uint64 amount = 2;
+    uint64 amount = 3;
 }
 
 message TransactionPlan {
@@ -45,8 +48,8 @@ message TransactionPlan {
 message SigningInput {
     repeated TxInput utxos = 1;
 
-    // Private key bytes (double extended)
-    bytes private_key = 2;
+    // Available private keys (double extended keys); each UTXO should be covered
+    repeated bytes private_key = 2;
 
     // Later this can be made oneof if more message types are supported
     Transfer transfer_message = 3;
