@@ -70,6 +70,12 @@ Encode Encode::tag(uint64_t value, const Encode& elem) {
     return e;
 }
 
+Encode Encode::null() {
+    Encode e;
+    e.appendValue(Decode::MT_special, 0x16);
+    return e;
+}
+
 Encode Encode::indefArray() {
     Encode e;
     e.appendIndefinite(Decode::MT_array);
@@ -443,7 +449,11 @@ string Decode::dumpToStringInternal() const {
             if (typeDesc.isIndefiniteValue) {
                 // skip break command
             } else {
-                s << "spec " << typeDesc.value;
+                if (typeDesc.value == 0x16) {
+                    s << "null";
+                } else {
+                    s << "spec " << typeDesc.value;
+                }
             }
             break;
     }
