@@ -251,6 +251,24 @@ void TW::anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
     dispatcher->plan(coinType, dataIn, dataOut);
 }
 
+HashPubkeyList TW::anyCoinPreImageHashes(TWCoinType coinType, const Data& txInputData) {
+    auto* dispatcher = coinDispatcher(coinType);
+    assert(dispatcher != nullptr);
+    return dispatcher->preImageHashes(coinType, txInputData);
+}
+
+void TW::anyCoinCompileWithSignatures(TWCoinType coinType, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& txOutputOut) {
+    auto* dispatcher = coinDispatcher(coinType);
+    assert(dispatcher != nullptr);
+    dispatcher->compile(coinType, txInputData, signatures, publicKeys, txOutputOut);
+}
+
+Data TW::anyCoinBuildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) {
+    auto* dispatcher = coinDispatcher(coinType);
+    assert(dispatcher != nullptr);
+    return dispatcher->buildTransactionInput(coinType, from, to, amount, asset, memo, chainId);
+}
+
 // Coin info accessors
 
 extern const CoinInfo getCoinInfo(TWCoinType coin); // in generated CoinInfoData.cpp file

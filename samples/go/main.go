@@ -9,6 +9,7 @@ import (
 	"tw/protos/bitcoin"
 	"tw/protos/common"
 	"tw/protos/ethereum"
+	"tw/sample"
 )
 
 func main() {
@@ -48,6 +49,8 @@ func main() {
 	btcTxn := createBtcTransaction(bw)
 	fmt.Println("\nBitcoin signed tx:")
 	fmt.Println("\t", btcTxn)
+
+	sample.ExternalSigningDemo()
 }
 
 func createEthTransaction(ew *core.Wallet) string {
@@ -83,7 +86,7 @@ func createEthTransaction(ew *core.Wallet) string {
 }
 
 func createBtcTransaction(bw *core.Wallet) string {
-	lockScript := core.BitcoinLockScriptForAddress(bw.Address, bw.CoinType)
+	lockScript := core.BitcoinScriptLockScriptForAddress(bw.Address, bw.CoinType)
 	fmt.Println("\nBitcoin address lock script:")
 	fmt.Println("\t", hex.EncodeToString(lockScript))
 

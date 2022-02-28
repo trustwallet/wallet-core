@@ -49,7 +49,41 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     return hex(output.encoded());
 }
 
-Signature Signer::signatureDataToStruct(const Data& signature) noexcept {
+Proto::SigningOutput Signer::compile(const Proto::SigningInput& input, const Data& signature) noexcept {
+    try {
+        uint256_t chainID = load(input.chain_id());
+        auto transaction = Signer::build(input);
+
+        // prepare Signature
+        const Signature sigStruct = signatureDataToStruct(signature, transaction->usesReplayProtection(), chainID);
+
+        auto output = Proto::SigningOutput();
+
+        auto encoded = transaction->encoded(sigStruct, chainID);
+        output.set_encoded(encoded.data(), encoded.size());
+
+        auto v = store(sigStruct.v, 1);
+        output.set_v(v.data(), v.size());
+        auto r = store(sigStruct.r, 32);
+        output.set_r(r.data(), r.size());
+        auto s = store(sigStruct.s, 32);
+        output.set_s(s.data(), s.size());
+
+        output.set_data(transaction->payload.data(), transaction->payload.size());
+        return output;
+    } catch (std::exception&) {
+        return Proto::SigningOutput();
+    }
+}
+
+Signature Signer::signatureDataToStruct(const Data& signature, bool includeEip155, const uint256_t& chainID) noexcept {
+    if (!includeEip155) {
+        return signatureDataToStructSimple(signature);
+    }
+    return signatureDataToStructWithEip155(chainID, signature);
+}
+
+Signature Signer::signatureDataToStructSimple(const Data& signature) noexcept {
     boost::multiprecision::uint256_t r, s, v;
     import_bits(r, signature.begin(), signature.begin() + 32);
     import_bits(s, signature.begin() + 32, signature.begin() + 64);
@@ -58,7 +92,7 @@ Signature Signer::signatureDataToStruct(const Data& signature) noexcept {
 }
 
 Signature Signer::signatureDataToStructWithEip155(const uint256_t& chainID, const Data& signature) noexcept {
-    Signature rsv = signatureDataToStruct(signature);
+    Signature rsv = signatureDataToStructSimple(signature);
     // Embed chainID in V param, for replay protection, legacy (EIP155)
     if (chainID != 0) {
         rsv.v += 35 + chainID + chainID;
@@ -70,10 +104,7 @@ Signature Signer::signatureDataToStructWithEip155(const uint256_t& chainID, cons
 
 Signature Signer::sign(const PrivateKey& privateKey, const Data& hash, bool includeEip155, const uint256_t& chainID) noexcept {
     auto signature = privateKey.sign(hash, TWCurveSECP256k1);
-    if (!includeEip155) {
-        return signatureDataToStruct(signature);
-    }
-    return signatureDataToStructWithEip155(chainID, signature);
+    return signatureDataToStruct(signature, includeEip155, chainID);
 }
 
 // May throw

@@ -14,6 +14,9 @@
 #endif
 #endif
 
+// Marker for default visibility
+#define TW_VISIBILITY_DEFAULT __attribute__((visibility("default")))
+
 // Marker for exported classes
 #define TW_EXPORT_CLASS
 
