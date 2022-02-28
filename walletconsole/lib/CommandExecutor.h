@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,6 +10,7 @@
 #include "Keys.h"
 #include "Coins.h"
 #include "Address.h"
+#include "Util.h"
 
 #include "Data.h"
 
@@ -29,6 +30,7 @@ protected:
     Buffer _buffer;
     Keys _keys;
     Address _address;
+    Util _util;
     string _activeCoin;
 
 public:

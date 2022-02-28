@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -37,9 +37,12 @@ void convertFromBase64Url(string& b) {
     size_t n = b.length();
     char* start = b.data();
     char* end = start + n;
-    for(auto p = start; p < end; ++p) {
-        if (*p == '-') { *p = '+'; }
-        else if (*p == '_') { *p = '/'; }
+    for (auto* p = start; p < end; ++p) {
+        if (*p == '-') {
+            *p = '+';
+        } else if (*p == '_') {
+            *p = '/';
+        }
     }
 }
 
@@ -50,9 +53,12 @@ void convertToBase64Url(string& b) {
     size_t n = b.length();
     char* start = b.data();
     char* end = start + n;
-    for(auto p = start; p < end; ++p) {
-        if (*p == '+') { *p = '-'; }
-        else if (*p == '/') { *p = '_'; }
+    for (auto* p = start; p < end; ++p) {
+        if (*p == '+') {
+            *p = '-';
+        } else if (*p == '/') {
+            *p = '_';
+        }
     }
 }
 

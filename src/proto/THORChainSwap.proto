@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package TW.THORChainSwap.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Bitcoin.proto";
+import "Ethereum.proto";
+import "Binance.proto";
+
+// Supported blockchains
+enum Chain {
+    THOR = 0;
+    BTC = 1;
+    ETH = 2;
+    BNB = 3;
+}
+
+// Predefined error codes
+enum ErrorCode {
+    OK = 0; // OK
+    Error_general = 1;
+    Error_Input_proto_deserialization = 2;
+    Error_Unsupported_from_chain = 13;
+    Error_Unsupported_to_chain = 14;
+    Error_Invalid_from_address = 15;
+    Error_Invalid_to_address = 16;
+    Error_Invalid_vault_address = 21;
+    Error_Invalid_router_address = 22;
+}
+
+// An error code + a free text
+message Error {
+    ErrorCode code = 1;
+    string message = 2;
+}
+
+// Represents an asset.  Examples: BNB.BNB, RUNE.RUNE, BNB.RUNE-67C
+message Asset {
+    Chain chain = 1;
+    string symbol = 2;
+    string token_id = 3;
+}
+
+// Input for a swap between source and destination chains; for creating a TX on the source chain.
+message SwapInput {
+    // Source chain
+    Chain from_chain = 1;
+
+    // Source address, on source chain
+    string from_address = 2;
+
+    // Destination chain+asset, on destination chain
+    Asset to_asset = 3;
+
+    // Destination address, on destination chain
+    string to_address = 4;
+
+    // ThorChainSwap vault, on the source chain. Should be queried afresh, as it may change
+    string vault_address = 5;
+
+    // ThorChain router, only in case of Ethereum source network
+    string router_address = 6;
+
+    // The source amount, integer as string, in the smallest native unit of the chain
+    string from_amount = 7;
+
+    // The minimum accepted destination amount.  Actual destination amount will depend on current rates, limit amount can be used to prevent using very unfavorable rates.
+    string to_amount_limit = 8;
+}
+
+message SwapOutput {
+    Chain from_chain = 1;
+    Chain to_chain = 2;
+
+    // Error code, filled in case of error, OK&"" on success
+    Error error = 3;
+
+    // Prepared unsigned transaction input, on the source chain, to THOR.  Some fields must be completed, and it has to be signed.
+    oneof signing_input_oneof {
+        Bitcoin.Proto.SigningInput bitcoin = 4;
+        Ethereum.Proto.SigningInput ethereum = 5;
+        Binance.Proto.SigningInput binance = 6;
+    }
+}

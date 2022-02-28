@@ -1,5 +1,8 @@
 <%  method = locals[:method] -%>
 <%  arguments = locals[:arguments] || ['rawValue'] + SwiftHelper.arguments(method.parameters.drop(1)) -%>
+<%  if method.discardable_result -%>
+    @discardableResult
+<%  end -%>
     public func <%= SwiftHelper.format_name(method.name) %>(<%= SwiftHelper.parameters(method.parameters.drop(1)) %>) -> <%= SwiftHelper.type(method.return_type) %> {
 <%= render('swift/parameter_access.erb', { parameters: method.parameters.drop(1) }) -%>
 <%= render('swift/method_forward.erb', { method: method, arguments: arguments }) -%>

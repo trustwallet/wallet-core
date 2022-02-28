@@ -38,12 +38,12 @@ $PROTOC --version
 
 # Clean
 rm -rf swift/Sources/Generated
-rm -rf jni/java
+rm -rf jni/java/wallet/core/jni
 rm -rf jni/cpp/generated
 
 mkdir -p swift/Sources/Generated/Protobuf swift/Sources/Generated/Enums
 
-# Generate coins info from coins.json
+# Generate coins info from registry.json
 codegen/bin/coins
 
 # Generate interface code
@@ -56,7 +56,7 @@ else
     "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=jni/java src/proto/*.proto
 fi
 
-# Generate internal Protobuf files
+# Generate internal message protocol Protobuf files
 "$PROTOC" -I=$PREFIX/include -I=src/Tron/Protobuf --cpp_out=src/Tron/Protobuf src/Tron/Protobuf/*.proto
 "$PROTOC" -I=$PREFIX/include -I=src/Zilliqa/Protobuf --cpp_out=src/Zilliqa/Protobuf src/Zilliqa/Protobuf/*.proto
 "$PROTOC" -I=$PREFIX/include -I=src/Cosmos/Protobuf --cpp_out=src/Cosmos/Protobuf src/Cosmos/Protobuf/*.proto

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,28 +11,45 @@
 #include <gtest/gtest.h>
 
 auto key = DATA("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4");
+auto key2 = DATA("bbc82a01ebdb14698faee4a9e5038de72c995a9f6bcdb21903d62408b0c5ca96");
 
-TEST(TWAES, CBCEncrypt) {
+TEST(TWAES, CBCEncryptZeroPadding) {
 	auto iv = DATA("000102030405060708090A0B0C0D0E0F");
     auto data = DATA("6bc1bee22e409f96e93d7e117393172a");
 
-    auto encryptResult = WRAPD(TWAESCBCEncrypt(key.get(), data.get(), iv.get()));
+    auto encryptResult = WRAPD(TWAESEncryptCBC(key.get(), data.get(), iv.get(), TWAESPaddingModeZero));
     assertHexEqual(encryptResult, "f58c4c04d6e5f1ba779eabfb5f7bfbd6");
 }
 
-TEST(TWAES, CBCDecrypt) {
+TEST(TWAES, CBCDecryptZeroPadding) {
 	auto iv = DATA("000102030405060708090A0B0C0D0E0F");
     auto cipher = DATA("f58c4c04d6e5f1ba779eabfb5f7bfbd6");
 
-    auto decryptResult = WRAPD(TWAESCBCDecrypt(key.get(), cipher.get(), iv.get()));
+    auto decryptResult = WRAPD(TWAESDecryptCBC(key.get(), cipher.get(), iv.get(), TWAESPaddingModeZero));
     assertHexEqual(decryptResult, "6bc1bee22e409f96e93d7e117393172a");
+}
+
+TEST(TWAES, CBCEncryptPKCS7Padding) {
+	auto iv = DATA("37f8687086d31852979e228f4a97925b");
+    auto data = DATA("7b226a736f6e727063223a22322e30222c226964223a313535343334333833343735323434362c226572726f72223a7b22636f6465223a2d33323030302c226d657373616765223a2253657373696f6e2052656a6563746564227d7d");
+
+    auto encryptResult = WRAPD(TWAESEncryptCBC(key2.get(), data.get(), iv.get(), TWAESPaddingModePKCS7));
+    assertHexEqual(encryptResult, "23c75d1b3228742ddb12eeef5a5016e37a8980a77fabc6dd01e6a355d88851c611d37e0d17a2f9c30f659da6d42ba77aca9b84bd6a95e3924f47d9093fbf16e0fb55b165ec193489645b4f7d2573959305c8fa70f88fe5affc43e3084a5878d1");
+}
+
+TEST(TWAES, CBCDecryptPKCS7Padding) {
+	auto iv = DATA("debb62725b21c7577e4e498e10f096c7");
+    auto cipher = DATA("e7df9810ce66defcc03023ee945f5958c1d4697bf97945daeab5059c2bc6262642cbca82982ac690e77e16671770c200f348f743a7c6e5df5c74eb892ef9b45a9b5ddf0f08fa60c49e5b694688d1b0b521b43975e65b4e8d557a83f4d1aab0af");
+
+    auto decryptResult = WRAPD(TWAESDecryptCBC(key2.get(), cipher.get(), iv.get(), TWAESPaddingModePKCS7));
+    assertHexEqual(decryptResult, "7b226a736f6e727063223a22322e30222c226964223a313535343334333833343735323434362c226572726f72223a7b22636f6465223a2d33323030302c226d657373616765223a2253657373696f6e2052656a6563746564227d7d");
 }
 
 TEST(TWAES, CTREncrypt) {
 	auto iv = DATA("f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff");
     auto data = DATA("6bc1bee22e409f96e93d7e117393172a");
 
-    auto encryptResult = WRAPD(TWAESCTREncrypt(key.get(), data.get(), iv.get()));
+    auto encryptResult = WRAPD(TWAESEncryptCTR(key.get(), data.get(), iv.get()));
     assertHexEqual(encryptResult, "601ec313775789a5b7a7f504bbf3d228");
 }
 
@@ -40,42 +57,6 @@ TEST(TWAES, CTRDecrypt) {
 	auto iv = DATA("f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff");
     auto cipher = DATA("601ec313775789a5b7a7f504bbf3d228");
 
-    auto decryptResult = WRAPD(TWAESCTRDecrypt(key.get(), cipher.get(), iv.get()));
+    auto decryptResult = WRAPD(TWAESDecryptCTR(key.get(), cipher.get(), iv.get()));
     assertHexEqual(decryptResult, "6bc1bee22e409f96e93d7e117393172a");
-}
-
-TEST(TWAES, CBCEncryptMultipleBlocks) {
-    auto key = DATA("e1094a016e6029eabc6f9e3c3cd9afb8");
-    auto iv = DATA("884b972d70acece4ecf9b790ffce177e");
-    auto data = DATA("726970706c652073636973736f7273206b69636b206d616d6d616c206869726520636f6c756d6e206f616b20616761696e2073756e206f66666572207765616c746820746f6d6f72726f77207761676f6e207475726e20666174616c00");
-
-    auto result = WRAPD(TWAESCBCEncrypt(key.get(), data.get(), iv.get()));
-    assertHexEqual(result, "30e3ce939cdc80df375aaf6c2cdc7bc265f4eea20c90ab4825c5fc4b5c4517395ea1c28559bf0832a07f9a7fb8fc58786683a48aa8319be215a6b4a597eeaa443973b76401fe959c1bcb4991c9ee20b54c0244f8f43f0f0adcbb50e9ea913bf0");
-}
-
-TEST(TWAES, CBCDecryptMultipleBlocks) {
-    auto key = DATA("fac192ceb5fd772906bea3e118a69e8b");
-    auto iv = DATA("83dbcc02d8ccb40e466191a123791e0e");
-    auto data = DATA("d172bf743a674da9cdad04534d56926ef8358534d458fffccd4e6ad2fbde479c");
-
-    auto decryptResult = WRAPD(TWAESCBCDecrypt(key.get(), data.get(), iv.get()));
-    assertHexEqual(decryptResult, "d4ade7189ee99ba50399e60a27c9e0fd02cfd1cfa2d15e7491329f361645d2a4");
-}
-
-TEST(TWAES, CTRDecryptMultipleBlocks) {
-    auto key = DATA("fac192ceb5fd772906bea3e118a69e8b");
-    auto iv = DATA("83dbcc02d8ccb40e466191a123791e0e");
-    auto data = DATA("d172bf743a674da9cdad04534d56926ef8358534d458fffccd4e6ad2fbde479c");
-
-    auto decryptResult = WRAPD(TWAESCTRDecrypt(key.get(), data.get(), iv.get()));
-    assertHexEqual(decryptResult, "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d");
-}
-
-TEST(TWAES, CTREncryptMultipleBlocks) {
-    auto key = DATA("e1094a016e6029eabc6f9e3c3cd9afb8");
-    auto iv = DATA("884b972d70acece4ecf9b790ffce177e");
-    auto data = DATA("726970706c652073636973736f7273206b69636b206d616d6d616c206869726520636f6c756d6e206f616b20616761696e2073756e206f66666572207765616c746820746f6d6f72726f77207761676f6e207475726e20666174616c00");
-
-    auto result = WRAPD(TWAESCTREncrypt(key.get(), data.get(), iv.get()));
-    assertHexEqual(result, "76b0a3ae037e7d6a50236c4c3ba7560edde4a8a951bf97bc10709e74d8e926c0431866b0ba9852d95bb0bbf41d109f1f3cf2f0af818f96d4f4109a1e3e5b224e3efd57288906a48d47b0006ccedcf96fde7362dedca952dda7cbdd359d");
 }

@@ -1,4 +1,4 @@
-# Helper for creating/updating CoinType unit tests, based on the coins.json file
+# Helper for creating/updating CoinType unit tests, based on the registry.json file
 
 require 'erb'
 require 'fileutils'
@@ -34,11 +34,29 @@ class CoinTestGen
     name
   end
 
-  def self.coin_type(path)
-    path.split('/')[2].chomp("'")
+  # Explorer urls
+  def explorer_tx_url(c)
+    path = c['explorer']['url'].to_s + c['explorer']['txPath'].to_s
+  end
+  def explorer_account_url(c)
+    path = c['explorer']['url'].to_s + c['explorer']['accountPath'].to_s
+  end
+  def explorer_sample_tx(c)
+    if c['explorer']['sampleTx'].nil?
+      "t123"
+    else
+      c['explorer']['sampleTx']
+    end
+  end
+  def explorer_sample_account(c)
+    if c['explorer']['sampleAccount'].nil?
+      "a12"
+    else
+      c['explorer']['sampleAccount']
+    end
   end
 
-  def generate_coin_test_file(coin)
+  def generate_coin_test_file(coin, templateFile)
     path = File.expand_path(templateFile, File.join(File.dirname(__FILE__), '..', 'lib', 'templates'))
     template = ERB.new(File.read(path), nil, '-')
     result = template.result(binding)

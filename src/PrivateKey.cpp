@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,6 +9,7 @@
 #include "PublicKey.h"
 
 #include <TrezorCrypto/bignum.h>
+#include <TrezorCrypto/curves.h>
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/ed25519-donna/ed25519-blake2b.h>
 #include <TrezorCrypto/memzero.h>
@@ -18,7 +19,25 @@
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sodium/keypair.h>
 
+#include <iterator>
+
 using namespace TW;
+
+bool PrivateKey::isValid(const Data& data) {
+    // Check length.  Extended key needs 3*32 bytes.
+    if (data.size() != size && data.size() != extendedSize) {
+        return false;
+    }
+
+    // Check for zero address
+    for (size_t i = 0; i < size; ++i) {
+        if (data[i] != 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
 
 bool PrivateKey::isValid(const Data& data, TWCurve curve)
 {
@@ -39,7 +58,10 @@ bool PrivateKey::isValid(const Data& data, TWCurve curve)
         break;
     case TWCurveED25519:
     case TWCurveED25519Blake2bNano:
+    case TWCurveED25519Extended:
     case TWCurveCurve25519:
+    case TWCurveNone:
+    default:
         break;
     }
 
@@ -55,8 +77,29 @@ bool PrivateKey::isValid(const Data& data, TWCurve curve)
     return true;
 }
 
-PrivateKey::~PrivateKey() {
-    std::fill(bytes.begin(), bytes.end(), 0);
+PrivateKey::PrivateKey(const Data& data) {
+    if (!isValid(data)) {
+        throw std::invalid_argument("Invalid private key data");
+    }
+    if (data.size() == extendedSize) {
+        // special extended case
+        *this = PrivateKey(
+            TW::data(data.data(), 32),
+            TW::data(data.data() + 32, 32),
+            TW::data(data.data() + 64, 32));
+    } else {
+        // default case
+        bytes = data;
+    }
+}
+
+PrivateKey::PrivateKey(const Data& data, const Data& ext, const Data& chainCode) {
+    if (!isValid(data) || !isValid(ext) || !isValid(chainCode)) {
+        throw std::invalid_argument("Invalid private key or extended key data");
+    }
+    bytes = data;
+    extensionBytes = ext;
+    chainCodeBytes = chainCode;
 }
 
 PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
@@ -86,6 +129,16 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
         result.resize(PublicKey::ed25519Size);
         ed25519_publickey_blake2b(bytes.data(), result.data());
         break;
+    case TWPublicKeyTypeED25519Extended:
+        // must be extended key
+        if (bytes.size() + extensionBytes.size() + chainCodeBytes.size() != extendedSize) {
+            throw std::invalid_argument("Invalid extended key");
+        }
+        result.resize(PublicKey::ed25519ExtendedSize);
+        ed25519_publickey_ext(bytes.data(), extensionBytes.data(), result.data());
+        // append chainCode to the end of the public key
+        std::copy(chainCodeBytes.begin(), chainCodeBytes.end(), result.begin() + 32);
+        break;
     case TWPublicKeyTypeCURVE25519:
         result.resize(PublicKey::ed25519Size);
         PublicKey ed25519PublicKey = getPublicKey(TWPublicKeyTypeED25519);
@@ -95,25 +148,59 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
     return PublicKey(result, type);
 }
 
+Data PrivateKey::getSharedKey(const PublicKey& pubKey, TWCurve curve) const {
+    if (curve != TWCurveSECP256k1) {
+        return {};
+    }
+
+    Data result(PublicKey::secp256k1ExtendedSize);
+    bool success = ecdh_multiply(&secp256k1, bytes.data(),
+                                 pubKey.bytes.data(), result.data()) == 0;
+
+    if (success) {
+        PublicKey sharedKey(result, TWPublicKeyTypeSECP256k1Extended);
+        auto hash = Hash::sha256(sharedKey.compressed().bytes);
+        return hash;
+    }
+
+    return {};
+}
+
+int ecdsa_sign_digest_checked(const ecdsa_curve *curve, const uint8_t *priv_key, const uint8_t *digest, size_t digest_size, uint8_t *sig, uint8_t *pby, int (*is_canonical)(uint8_t by, uint8_t sig[64])) {
+    if (digest_size < 32) {
+        return -1;
+    }
+    assert(digest_size >= 32);
+    return ecdsa_sign_digest(curve, priv_key, digest, sig, pby, is_canonical);
+}
+
 Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
     Data result;
-    bool success = true;
+    bool success = false;
     switch (curve) {
     case TWCurveSECP256k1: {
         result.resize(65);
-        success = ecdsa_sign_digest(&secp256k1, bytes.data(), digest.data(), result.data(),
+        success = ecdsa_sign_digest_checked(&secp256k1, bytes.data(), digest.data(), digest.size(), result.data(),
                                     result.data() + 64, nullptr) == 0;
     } break;
     case TWCurveED25519: {
         result.resize(64);
         const auto publicKey = getPublicKey(TWPublicKeyTypeED25519);
         ed25519_sign(digest.data(), digest.size(), bytes.data(), publicKey.bytes.data(), result.data());
+        success = true;
     } break;
     case TWCurveED25519Blake2bNano: {
         result.resize(64);
         const auto publicKey = getPublicKey(TWPublicKeyTypeED25519Blake2b);
         ed25519_sign_blake2b(digest.data(), digest.size(), bytes.data(),
                              publicKey.bytes.data(), result.data());
+        success = true;
+    } break;
+    case TWCurveED25519Extended: {
+        result.resize(64);
+        const auto publicKey = getPublicKey(TWPublicKeyTypeED25519Extended);
+        ed25519_sign_ext(digest.data(), digest.size(), bytes.data(), extensionBytes.data(), publicKey.bytes.data(), result.data());
+        success = true;
     } break;
     case TWCurveCurve25519: {
         result.resize(64);
@@ -123,12 +210,16 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
         const auto sign_bit = publicKey.bytes[31] & 0x80;
         result[63] = result[63] & 127;
         result[63] |= sign_bit;
+        success = true;
     } break;
     case TWCurveNIST256p1: {
         result.resize(65);
-        success = ecdsa_sign_digest(&nist256p1, bytes.data(), digest.data(), result.data(),
+        success = ecdsa_sign_digest_checked(&nist256p1, bytes.data(), digest.data(), digest.size(), result.data(),
                                     result.data() + 64, nullptr) == 0;
     } break;
+    case TWCurveNone:
+    default: 
+        break;
     }
 
     if (!success) {
@@ -143,18 +234,22 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve, int(*canonicalChecker)(
     switch (curve) {
     case TWCurveSECP256k1: {
         result.resize(65);
-        success = ecdsa_sign_digest(&secp256k1, bytes.data(), digest.data(), result.data() + 1,
+        success = ecdsa_sign_digest_checked(&secp256k1, bytes.data(), digest.data(), digest.size(), result.data() + 1,
                                     result.data(), canonicalChecker) == 0;
     } break;
     case TWCurveED25519: // not supported
     case TWCurveED25519Blake2bNano: // not supported
+    case TWCurveED25519Extended: // not supported
     case TWCurveCurve25519:         // not supported
         break;
     case TWCurveNIST256p1: {
         result.resize(65);
-        success = ecdsa_sign_digest(&nist256p1, bytes.data(), digest.data(), result.data() + 1,
+        success = ecdsa_sign_digest_checked(&nist256p1, bytes.data(), digest.data(), digest.size(), result.data() + 1,
                                     result.data(), canonicalChecker) == 0;
     } break;
+    case TWCurveNone:
+    default:
+        break;
     }
 
     if (!success) {
@@ -174,7 +269,7 @@ Data PrivateKey::signAsDER(const Data& digest, TWCurve curve) const {
         return {};
     }
 
-    std::array<uint8_t, 72> resultBytes;
+    Data resultBytes(72);
     size_t size = ecdsa_sig_to_der(sig.data(), resultBytes.data());
 
     auto result = Data{};
@@ -193,12 +288,22 @@ Data PrivateKey::signSchnorr(const Data& message, TWCurve curve) const {
     case TWCurveNIST256p1:
     case TWCurveED25519:
     case TWCurveED25519Blake2bNano:
-    case TWCurveCurve25519: {
+    case TWCurveED25519Extended:
+    case TWCurveCurve25519:
+    case TWCurveNone:
+    default:
         // not support
-    } break;
+        break;
     }
+
     if (!success) {
         return {};
     }
     return sig;
+}
+
+void PrivateKey::cleanup() {
+    std::fill(bytes.begin(), bytes.end(), 0);
+    std::fill(extensionBytes.begin(), extensionBytes.end(), 0);
+    std::fill(chainCodeBytes.begin(), chainCodeBytes.end(), 0);
 }

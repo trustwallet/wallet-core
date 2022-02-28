@@ -1,10 +1,11 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #pragma once
+
 #include "TWBase.h"
 
 TW_EXTERN_C_BEGIN
@@ -19,6 +20,7 @@ enum TWPurpose {
     TWPurposeBIP44 = 44,
     TWPurposeBIP49 = 49, // Derivation scheme for P2WPKH-nested-in-P2SH
     TWPurposeBIP84 = 84, // Derivation scheme for P2WPKH
+    TWPurposeBIP1852 = 1852, // Derivation scheme used by Cardano-Shelley
 };
 
 TW_EXTERN_C_END

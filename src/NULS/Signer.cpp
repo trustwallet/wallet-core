@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -15,7 +15,18 @@
 using namespace TW;
 using namespace TW::NULS;
 
-Signer::Signer(Proto::SigningInput& input) : input(input) {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    auto output = Proto::SigningOutput();
+    try {
+        auto signer = Signer(input);
+        auto data = signer.sign();
+        output.set_encoded(data.data(), data.size());
+    }
+    catch(...) {}
+    return output;
+}
+
+Signer::Signer(const Proto::SigningInput& input) : input(input) {
     Proto::TransactionCoinFrom coinFrom;
     coinFrom.set_from_address(input.from());
     coinFrom.set_assets_chainid(input.chain_id());
@@ -55,7 +66,7 @@ Data Signer::sign() const {
         throw std::invalid_argument("User account balance not sufficient");
     }
 
-    Proto::TransactionCoinFrom& coinFrom = (Proto::TransactionCoinFrom&)tx.input();
+    auto& coinFrom = (Proto::TransactionCoinFrom&)tx.input();
     Data amount;
     amount = store(fromAmount);
     std::reverse(amount.begin(), amount.end());
@@ -64,7 +75,7 @@ Data Signer::sign() const {
     amountStr.append(static_cast<unsigned long>(amount.capacity() - amount.size()), '\0');
     coinFrom.set_id_amount(amountStr);
 
-    Proto::TransactionCoinTo& coinTo = (Proto::TransactionCoinTo&)tx.output();
+    auto& coinTo = (Proto::TransactionCoinTo&)tx.output();
     Data amountTo;
     amountTo = store(txAmount);
     std::reverse(amountTo.begin(), amountTo.end());
@@ -103,11 +114,6 @@ Data Signer::sign() const {
     std::copy(transactionSignature.begin(), transactionSignature.end(), std::back_inserter(dataRet));
 
     return dataRet;
-}
-
-Data Signer::sign(Proto::SigningInput& input) const {
-    Signer signer = Signer(input);
-    return signer.sign();
 }
 
 Data Signer::buildUnsignedTx() const {

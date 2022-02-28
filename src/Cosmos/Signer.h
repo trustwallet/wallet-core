@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,45 +6,29 @@
 
 #pragma once
 
-#include "../proto/Cosmos.pb.h"
 #include "../Data.h"
 #include "../PublicKey.h"
-#include <nlohmann/json.hpp>
-#include <stdint.h>
-#include <vector>
+#include "../proto/Cosmos.pb.h"
 
 namespace TW::Cosmos {
 
 /// Helper class that performs Cosmos transaction signing.
 class Signer {
-public:
-    Proto::SigningInput input;
+  public:
+    /// Signs a Proto::SigningInput transaction
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 
-    /// Initializes a transaction signer.
-    Signer(Proto::SigningInput&& input);
+    std::string encodeTransaction(const Proto::SigningInput& input, const Data& signature, const PublicKey& publicKey) const;
+    std::string signaturePreimage(const Proto::SigningInput& input, const Data& publicKey) const;
+    
+    /// Signs a Proto::SigningInput transaction, using Json serialization
+    static Proto::SigningOutput signJsonSerialized(const Proto::SigningInput& input) noexcept;
 
-    /// Signs the transaction.
-    ///
-    /// \returns the transaction signature or an empty vector if there is an error.
-    Data sign() const;
+    /// Signs a Proto::SigningInput transaction, using binary Protobuf serialization
+    static Proto::SigningOutput signProtobuf(const Proto::SigningInput& input) noexcept;
 
-    /// Builds the signed transaction.
-    ///
-    /// \returns the signed transaction.
-    Proto::SigningOutput build() const;
-
-    std::string encodeTransaction(const Data& signature, const PublicKey& publicKey) const;
-
-    std::string signaturePreimage(const Data& publicKey) const;
-
-private:
-    nlohmann::json buildTransactionJSON(const Data& signature) const;
-    std::string buildTransaction() const;
+    /// Signs a json Proto::SigningInput with private key
+    static std::string signJSON(const std::string& json, const Data& key);
 };
 
-} // namespace
-
-/// Wrapper for C interface.
-struct TWCosmosSigner {
-    TW::Cosmos::Signer impl;
-};
+} // namespace TW::Cosmos

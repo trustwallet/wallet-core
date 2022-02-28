@@ -1,0 +1,88 @@
+{
+    "cb3c28c7": {
+        "inputs": [{
+            "internalType": "contract IERC20",
+            "name": "src",
+            "type": "address"
+        }, {
+            "internalType": "uint256",
+            "name": "srcAmount",
+            "type": "uint256"
+        }, {
+            "internalType": "contract IERC20",
+            "name": "dest",
+            "type": "address"
+        }, {
+            "internalType": "address payable",
+            "name": "destAddress",
+            "type": "address"
+        }, {
+            "internalType": "uint256",
+            "name": "maxDestAmount",
+            "type": "uint256"
+        }, {
+            "internalType": "uint256",
+            "name": "minConversionRate",
+            "type": "uint256"
+        }, {
+            "internalType": "address payable",
+            "name": "platformWallet",
+            "type": "address"
+        }],
+        "name": "trade",
+        "outputs": [{
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+        }],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    "ae591d54": {
+        "inputs": [{
+            "internalType": "contract IERC20",
+            "name": "src",
+            "type": "address"
+        }, {
+            "internalType": "uint256",
+            "name": "srcAmount",
+            "type": "uint256"
+        }, {
+            "internalType": "contract IERC20",
+            "name": "dest",
+            "type": "address"
+        }, {
+            "internalType": "address payable",
+            "name": "destAddress",
+            "type": "address"
+        }, {
+            "internalType": "uint256",
+            "name": "maxDestAmount",
+            "type": "uint256"
+        }, {
+            "internalType": "uint256",
+            "name": "minConversionRate",
+            "type": "uint256"
+        }, {
+            "internalType": "address payable",
+            "name": "platformWallet",
+            "type": "address"
+        }, {
+            "internalType": "uint256",
+            "name": "platformFeeBps",
+            "type": "uint256"
+        }, {
+            "internalType": "bytes",
+            "name": "hint",
+            "type": "bytes"
+        }],
+        "name": "tradeWithHintAndFee",
+        "outputs": [{
+            "internalType": "uint256",
+            "name": "destAmount",
+            "type": "uint256"
+        }],
+        "stateMutability": "payable",
+        "type": "function"
+    }
+}

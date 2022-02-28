@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -70,7 +70,7 @@ Data forgePublicKey(PublicKey publicKey) {
 // Forge the given zarith hash into a hex encoded string.
 Data forgeZarith(uint64_t input) {
     Data forged = Data();
-    while (input > 0x80) {
+    while (input >= 0x80) {
         forged.push_back(static_cast<byte>((input & 0xff) | 0x80));
         input >>= 7;
     }
@@ -97,7 +97,7 @@ Data forgeOperation(const Operation& operation) {
         } else {
             throw std::invalid_argument("unsupported public key type");
         }
-        auto publicKey = PublicKey(operation.reveal_operation_data().public_key(), type);
+        auto publicKey = PublicKey(data(operation.reveal_operation_data().public_key()), type);
         auto forgedPublicKey = forgePublicKey(publicKey);
         
         forged.push_back(Operation_OperationKind_REVEAL);

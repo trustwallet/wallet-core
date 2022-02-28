@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -15,8 +15,10 @@
 
 TEST(TWPOANetworkCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypePOANetwork));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypePOANetwork, txId));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("t123"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypePOANetwork, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("a12"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypePOANetwork, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypePOANetwork));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypePOANetwork));
 
@@ -25,7 +27,8 @@ TEST(TWPOANetworkCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypePOANetwork));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypePOANetwork));
     assertStringsEqual(symbol, "POA");
-    assertStringsEqual(txUrl, "https://poaexplorer.com/txid/search/123");
+    assertStringsEqual(txUrl, "https://blockscout.com/poa/core/tx/t123");
+    assertStringsEqual(accUrl, "https://blockscout.com/poa/core/address/a12");
     assertStringsEqual(id, "poa");
     assertStringsEqual(name, "POA Network");
 }

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -26,6 +26,15 @@ TEST(TWHRP, StringForHRP) {
     ASSERT_STREQ(stringForHRP(TWHRPViacoin), "via");
     ASSERT_STREQ(stringForHRP(TWHRPTerra), "terra");
     ASSERT_STREQ(stringForHRP(TWHRPMonacoin), "mona");
+    ASSERT_STREQ(stringForHRP(TWHRPKava), "kava");
+    ASSERT_STREQ(stringForHRP(TWHRPBandChain), "band");
+    ASSERT_STREQ(stringForHRP(TWHRPBluzelle), "bluzelle");
+    ASSERT_STREQ(stringForHRP(TWHRPCardano), "addr");
+    ASSERT_STREQ(stringForHRP(TWHRPElrond), "erd");
+    ASSERT_STREQ(stringForHRP(TWHRPOasis), "oasis");
+    ASSERT_STREQ(stringForHRP(TWHRPTHORChain), "thor");
+    ASSERT_STREQ(stringForHRP(TWHRPCryptoOrg), "cro");
+    ASSERT_STREQ(stringForHRP(TWHRPOsmosis), "osmo");
 }
 
 TEST(TWHRP, HRPForString) {
@@ -43,6 +52,16 @@ TEST(TWHRP, HRPForString) {
     ASSERT_EQ(hrpForString("via"), TWHRPViacoin);
     ASSERT_EQ(hrpForString("terra"), TWHRPTerra);
     ASSERT_EQ(hrpForString("mona"), TWHRPMonacoin);
+    ASSERT_EQ(hrpForString("kava"), TWHRPKava);
+    ASSERT_EQ(hrpForString("band"), TWHRPBandChain);
+    ASSERT_EQ(hrpForString("addr"), TWHRPCardano);
+    ASSERT_EQ(hrpForString("erd"), TWHRPElrond);
+    ASSERT_EQ(hrpForString("oasis"), TWHRPOasis);
+    ASSERT_EQ(hrpForString("thor"), TWHRPTHORChain);
+    ASSERT_EQ(hrpForString("bluzelle"), TWHRPBluzelle);
+    ASSERT_EQ(hrpForString("cro"), TWHRPCryptoOrg);
+    ASSERT_EQ(hrpForString("osmo"), TWHRPOsmosis);
+    ASSERT_EQ(hrpForString("ecash"), TWHRPECash);
 }
 
 TEST(TWHPR, HPRByCoinType) {
@@ -59,9 +78,18 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPZilliqa, TWCoinTypeHRP(TWCoinTypeZilliqa));
     ASSERT_EQ(TWHRPTerra, TWCoinTypeHRP(TWCoinTypeTerra));
     ASSERT_EQ(TWHRPMonacoin, TWCoinTypeHRP(TWCoinTypeMonacoin));
+    ASSERT_EQ(TWHRPKava, TWCoinTypeHRP(TWCoinTypeKava));
+    ASSERT_EQ(TWHRPBandChain, TWCoinTypeHRP(TWCoinTypeBandChain));
+    ASSERT_EQ(TWHRPBluzelle, TWCoinTypeHRP(TWCoinTypeBluzelle));
+    ASSERT_EQ(TWHRPCardano, TWCoinTypeHRP(TWCoinTypeCardano));
+    ASSERT_EQ(TWHRPElrond, TWCoinTypeHRP(TWCoinTypeElrond));
+    ASSERT_EQ(TWHRPOasis, TWCoinTypeHRP(TWCoinTypeOasis));
+    ASSERT_EQ(TWHRPTHORChain, TWCoinTypeHRP(TWCoinTypeTHORChain));
+    ASSERT_EQ(TWHRPCryptoOrg, TWCoinTypeHRP(TWCoinTypeCryptoOrg));
+    ASSERT_EQ(TWHRPOsmosis, TWCoinTypeHRP(TWCoinTypeOsmosis));
+    ASSERT_EQ(TWHRPECash, TWCoinTypeHRP(TWCoinTypeECash));
 
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeAion));
-    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeBravoCoin));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeCallisto));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeDash));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeDecred));
@@ -79,7 +107,6 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypePOANetwork));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeXRP));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeStellar));
-    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeTON));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeTezos));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeTheta));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeThunderToken));
@@ -88,8 +115,9 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeVeChain));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeWanchain));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeZcash));
-    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeZcoin));
+    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeFiro));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeZelcash));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeRavencoin));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeWaves));
+    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeNEO));
 }

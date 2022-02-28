@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,7 +11,10 @@
 
 namespace TW::Algorand {
 
-static inline void encodeString(std::string string, Data &data) {
+#pragma GCC diagnostic ignored "-Wtautological-constant-out-of-range-compare"
+#pragma GCC diagnostic ignored "-Wunused-function"
+
+static inline void encodeString(std::string string, Data& data) {
     // encode string header
     auto bytes = Data(string.begin(), string.end());
     if (bytes.size() < 0x20) {
@@ -25,7 +28,7 @@ static inline void encodeString(std::string string, Data &data) {
         // str 16
         data.push_back(static_cast<uint8_t>(0xda));
         encode16BE(static_cast<uint16_t>(bytes.size()), data);
-    } else if (bytes.size() < 0x100000000) {
+    } else if (bytes.size() < 0x100000000) { // depending on size_t size on platform, may be always true 
         // str 32
         data.push_back(static_cast<uint8_t>(0xdb));
         encode32BE(static_cast<uint32_t>(bytes.size()), data);
@@ -36,7 +39,7 @@ static inline void encodeString(std::string string, Data &data) {
     append(data, bytes);
 }
 
-static inline void encodeNumber(uint64_t number, Data &data) {
+static inline void encodeNumber(uint64_t number, Data& data) {
     if (number < 0x80) {
         // positive fixint
         data.push_back(static_cast<uint8_t>(number));
@@ -59,7 +62,7 @@ static inline void encodeNumber(uint64_t number, Data &data) {
     }
 }
 
-static inline void encodeBytes(const Data &bytes, Data &data) {
+static inline void encodeBytes(const Data& bytes, Data& data) {
     auto size = bytes.size();
     if (size < 0x100) {
         // bin 8

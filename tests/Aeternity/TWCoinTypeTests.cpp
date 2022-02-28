@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -15,8 +15,10 @@
 
 TEST(TWAeternityCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAeternity));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAeternity, txId));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("t123"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAeternity, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("a12"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeAeternity, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAeternity));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAeternity));
 
@@ -25,7 +27,8 @@ TEST(TWAeternityCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeAeternity));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeAeternity));
     assertStringsEqual(symbol, "AE");
-    assertStringsEqual(txUrl, "https://explorer.aepps.com/#/tx/123");
+    assertStringsEqual(txUrl, "https://explorer.aepps.com/transactions/t123");
+    assertStringsEqual(accUrl, "https://explorer.aepps.com/account/transactions/a12");
     assertStringsEqual(id, "aeternity");
     assertStringsEqual(name, "Aeternity");
 }

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -26,11 +26,11 @@ Data Transaction::encode() {
     append(encoded, encodeSafeZero(nonce));
     append(encoded, Ethereum::RLP::encode(payload));
 
-    const Data &raw = Ethereum::RLP::encodeList(encoded);
+    const Data& raw = Ethereum::RLP::encodeList(encoded);
     return raw;
 }
 
-TW::Data Transaction::buildTag(const std::string &address) {
+TW::Data Transaction::buildTag(const std::string& address) {
     auto payload = address.substr(Identifiers::prefixTransaction.size(), address.size());
 
     auto data = Data();
@@ -43,7 +43,6 @@ TW::Data Transaction::buildTag(const std::string &address) {
 TW::Data Transaction::encodeSafeZero(uint256_t value) {
     if (value == 0) {
         return Ethereum::RLP::encode(Data{0});
-    } else {
-        return Ethereum::RLP::encode(value);
     }
+    return Ethereum::RLP::encode(value);
 }

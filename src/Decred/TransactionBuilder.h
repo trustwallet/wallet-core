@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,7 +9,6 @@
 #include "Transaction.h"
 #include "../Bitcoin/TransactionPlan.h"
 #include "../Bitcoin/TransactionBuilder.h"
-#include "../Bitcoin/UnspentSelector.h"
 #include "../proto/Bitcoin.pb.h"
 #include "../proto/Decred.pb.h"
 
@@ -29,7 +28,7 @@ struct TransactionBuilder {
     static Transaction build(const Bitcoin::TransactionPlan& plan, const std::string& toAddress,
                              const std::string& changeAddress) {
         auto coin = TWCoinTypeDecred;                                 
-        auto lockingScriptTo = Bitcoin::Script::buildForAddress(toAddress, coin);
+        auto lockingScriptTo = Bitcoin::Script::lockScriptForAddress(toAddress, coin);
         if (lockingScriptTo.empty()) {
             return {};
         }
@@ -38,7 +37,7 @@ struct TransactionBuilder {
         tx.outputs.emplace_back(TransactionOutput(plan.amount, /* version: */ 0, lockingScriptTo));
 
         if (plan.change > 0) {
-            auto lockingScriptChange = Bitcoin::Script::buildForAddress(changeAddress, coin);
+            auto lockingScriptChange = Bitcoin::Script::lockScriptForAddress(changeAddress, coin);
             tx.outputs.emplace_back(
                 TransactionOutput(plan.change, /* version: */ 0, lockingScriptChange));
         }
@@ -46,9 +45,8 @@ struct TransactionBuilder {
         const auto emptyScript = Bitcoin::Script();
         for (auto& utxo : plan.utxos) {
             auto input = TransactionInput();
-            input.previousOutput = utxo.out_point();
-            input.sequence = utxo.out_point().sequence();
-            input.sequence = utxo.out_point().sequence();
+            input.previousOutput = utxo.outPoint;
+            input.sequence = utxo.outPoint.sequence;
             tx.inputs.push_back(std::move(input));
         }
 

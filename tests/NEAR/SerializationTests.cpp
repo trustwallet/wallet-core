@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -23,7 +23,7 @@ TEST(NEARSerialization, SerializeTransferTransaction) {
     input.set_receiver_id("whatever.near");
 
     input.add_actions();
-    auto &transfer = *input.mutable_actions(0)->mutable_transfer();
+    auto& transfer = *input.mutable_actions(0)->mutable_transfer();
     Data deposit(16, 0);
     deposit[0] = 1;
     transfer.set_deposit(deposit.data(), deposit.size());

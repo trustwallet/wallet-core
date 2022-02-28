@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -18,12 +18,12 @@ public:
 
     static const std::string hrp; // HRP_IOTEX
 
-    static bool isValid(const std::string addr) { return Bech32Address::isValid(addr, hrp); }
+    static bool isValid(const std::string& addr) { return Bech32Address::isValid(addr, hrp); }
 
     Address() : Bech32Address(hrp) {}
 
     /// Initializes an address with a key hash.
-    Address(Data keyHash) : Bech32Address(hrp, keyHash) {
+    Address(const Data& keyHash) : Bech32Address(hrp, keyHash) {
         if (getKeyHash().size() != Address::size) {
             throw std::invalid_argument("invalid address data");
         }
@@ -42,8 +42,3 @@ public:
 };
 
 } // namespace TW::IoTeX
-
-/// Wrapper for C interface
-struct TWIoTeXAddress {
-    TW::IoTeX::Address impl;
-};

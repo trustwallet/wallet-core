@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -23,9 +23,10 @@ TEST(NEARSigner, SignTx) {
     input.set_receiver_id("whatever.near");
 
     input.add_actions();
-    auto &transfer = *input.mutable_actions(0)->mutable_transfer();
+    auto& transfer = *input.mutable_actions(0)->mutable_transfer();
     Data deposit(16, 0);
     deposit[0] = 1;
+    // uint128_t / little endian byte order
     transfer.set_deposit(deposit.data(), deposit.size());
 
     auto blockHash = Base58::bitcoin.decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");

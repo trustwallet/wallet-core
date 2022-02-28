@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -27,8 +27,9 @@ enum TWCoinType {
     TWCoinTypeBinance = 714,
     TWCoinTypeBitcoin = 0,
     TWCoinTypeBitcoinCash = 145,
-    TWCoinTypeBravoCoin = 282,
+    TWCoinTypeBitcoinGold = 156,
     TWCoinTypeCallisto = 820,
+    TWCoinTypeCardano = 1815, // Note: Cardano Shelley testnet uses purpose 1852 (not 44) 1852/1815
     TWCoinTypeCosmos = 118,
     TWCoinTypeDash = 5,
     TWCoinTypeDecred = 42,
@@ -42,6 +43,7 @@ enum TWCoinType {
     TWCoinTypeGroestlcoin = 17,
     TWCoinTypeICON = 74,
     TWCoinTypeIoTeX = 304,
+    TWCoinTypeKava = 459,
     TWCoinTypeKin = 2017,
     TWCoinTypeLitecoin = 2,
     TWCoinTypeMonacoin = 22,
@@ -56,7 +58,6 @@ enum TWCoinType {
     TWCoinTypeXRP = 144,
     TWCoinTypeSolana = 501,
     TWCoinTypeStellar = 148,
-    TWCoinTypeTON = 396,
     TWCoinTypeTezos = 1729,
     TWCoinTypeTheta = 500,
     TWCoinTypeThunderToken = 1001,
@@ -67,7 +68,7 @@ enum TWCoinType {
     TWCoinTypeViacoin = 14,
     TWCoinTypeWanchain = 5718350,
     TWCoinTypeZcash = 133,
-    TWCoinTypeZcoin = 136,
+    TWCoinTypeFiro = 136,
     TWCoinTypeZilliqa = 313,
     TWCoinTypeZelcash = 19167,
     TWCoinTypeRavencoin = 175,
@@ -75,8 +76,28 @@ enum TWCoinType {
     TWCoinTypeTerra = 330,
     TWCoinTypeHarmony = 1023,
     TWCoinTypeAlgorand = 283,
-    TWCoinTypePolkadot = 354,
     TWCoinTypeKusama = 434,
+    TWCoinTypePolkadot = 354,
+    TWCoinTypeFilecoin = 461,
+    TWCoinTypeElrond = 508,
+    TWCoinTypeBandChain = 494,
+    TWCoinTypeSmartChainLegacy = 10000714,
+    TWCoinTypeSmartChain = 20000714,
+    TWCoinTypeOasis = 474,
+    TWCoinTypePolygon = 966,
+    TWCoinTypeTHORChain = 931,
+    TWCoinTypeBluzelle = 483,
+    TWCoinTypeOptimism = 10000070,
+    TWCoinTypeArbitrum = 10042221,
+    TWCoinTypeECOChain = 10000553,
+    TWCoinTypeAvalancheCChain = 10009000,
+    TWCoinTypeXDai = 10000100,
+    TWCoinTypeFantom = 10000250,
+    TWCoinTypeCryptoOrg = 394,
+    TWCoinTypeCelo = 52752,
+    TWCoinTypeRonin = 10002020,
+    TWCoinTypeOsmosis = 10000118,
+    TWCoinTypeECash = 899,
 };
 
 /// Returns the blockchain for a coin type.
@@ -101,21 +122,21 @@ enum TWHDVersion TWCoinTypeXprvVersion(enum TWCoinType coin);
 
 /// Validates an address string.
 TW_EXPORT_METHOD
-bool TWCoinTypeValidate(enum TWCoinType coin, TWString *_Nonnull address);
+bool TWCoinTypeValidate(enum TWCoinType coin, TWString* _Nonnull address);
 
 /// Returns the default derivation path for a particular coin.
 TW_EXPORT_METHOD
-TWString *_Nonnull TWCoinTypeDerivationPath(enum TWCoinType coin);
+TWString* _Nonnull TWCoinTypeDerivationPath(enum TWCoinType coin);
 
 /// Derives the address for a particular coin from the private key.
 TW_EXPORT_METHOD
-TWString *_Nonnull TWCoinTypeDeriveAddress(enum TWCoinType coin,
-                                           struct TWPrivateKey *_Nonnull privateKey);
+TWString* _Nonnull TWCoinTypeDeriveAddress(enum TWCoinType coin,
+                                           struct TWPrivateKey* _Nonnull privateKey);
 
 /// Derives the address for a particular coin from the public key.
 TW_EXPORT_METHOD
-TWString *_Nonnull TWCoinTypeDeriveAddressFromPublicKey(enum TWCoinType coin,
-                                                        struct TWPublicKey *_Nonnull publicKey);
+TWString* _Nonnull TWCoinTypeDeriveAddressFromPublicKey(enum TWCoinType coin,
+                                                        struct TWPublicKey* _Nonnull publicKey);
 
 /// HRP for this coin type
 TW_EXPORT_PROPERTY
@@ -132,5 +153,9 @@ uint8_t TWCoinTypeP2shPrefix(enum TWCoinType coin);
 /// Static prefix for this coin type
 TW_EXPORT_PROPERTY
 uint8_t TWCoinTypeStaticPrefix(enum TWCoinType coin);
+
+/// SLIP-0044 id for this coin type
+TW_EXPORT_PROPERTY
+uint32_t TWCoinTypeSlip44Id(enum TWCoinType coin);
 
 TW_EXTERN_C_END

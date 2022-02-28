@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <optional>
 
 #include "Address.h"
 #include "../uint256.h"
@@ -106,40 +107,47 @@ class CreateValidator {
     uint256_t maxTotalDelegation;
     uint256_t amount;
     vector<vector<uint8_t>> slotPubKeys;
+    vector<vector<uint8_t>> slotKeySigs;
 
     CreateValidator(Address validatorAddress, Description description,
                     CommissionRate commissionRates, uint256_t minSelfDelegation,
                     uint256_t maxTotalDelegation, vector<vector<uint8_t>> slotPubKeys,
-                    uint256_t amount)
+                    vector<vector<uint8_t>> slotKeySigs,uint256_t amount)
         : validatorAddress(move(validatorAddress))
         , description(move(description))
         , commissionRates(move(commissionRates))
         , minSelfDelegation(move(minSelfDelegation))
         , maxTotalDelegation(move(maxTotalDelegation))
         , amount(move(amount))
-        , slotPubKeys(move(slotPubKeys)) {}
+        , slotPubKeys(move(slotPubKeys))
+        , slotKeySigs(move(slotKeySigs)) {}
 };
 
 class EditValidator {
   public:
     Address validatorAddress;
     Description description;
-    Decimal *commissionRate;
+    std::optional<Decimal> commissionRate;
     uint256_t minSelfDelegation;
     uint256_t maxTotalDelegation;
     vector<uint8_t> slotKeyToRemove;
     vector<uint8_t> slotKeyToAdd;
+    vector<uint8_t> slotKeyToAddSig;
+    uint256_t        active;
 
-    EditValidator(Address validatorAddress, Description description, Decimal *commissionRate,
+    EditValidator(Address validatorAddress, Description description, std::optional<Decimal>& commissionRate,
                   uint256_t minSelfDelegation, uint256_t maxTotalDelegation,
-                  vector<uint8_t> slotKeyToRemove, vector<uint8_t> slotKeyToAdd)
+                  vector<uint8_t> slotKeyToRemove, vector<uint8_t> slotKeyToAdd,
+                  vector<uint8_t> slotKeyToAddSig, uint256_t  active)
         : validatorAddress(move(validatorAddress))
         , description(move(description))
         , commissionRate(move(commissionRate))
         , minSelfDelegation(move(minSelfDelegation))
         , maxTotalDelegation(move(maxTotalDelegation))
         , slotKeyToRemove(move(slotKeyToRemove))
-        , slotKeyToAdd(move(slotKeyToAdd)) {}
+        , slotKeyToAdd(move(slotKeyToAdd))
+        , slotKeyToAddSig(move(slotKeyToAddSig))
+        , active(move(active)){}
 };
 
 class Delegate {

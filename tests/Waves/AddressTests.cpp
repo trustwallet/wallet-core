@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -75,9 +75,9 @@ TEST(WavesAddress, Derive) {
         "ill special axis adjust pull useful craft peace flee physical";
     const auto wallet = HDWallet(mnemonic, "");
     const auto address1 = TW::deriveAddress(
-        TWCoinTypeWaves, wallet.getKey(DerivationPath("m/44'/5741564'/0'/0'/0'")));
+        TWCoinTypeWaves, wallet.getKey(TWCoinTypeWaves, DerivationPath("m/44'/5741564'/0'/0'/0'")));
     const auto address2 = TW::deriveAddress(
-        TWCoinTypeWaves, wallet.getKey(DerivationPath("m/44'/5741564'/0'/0'/1'")));
+        TWCoinTypeWaves, wallet.getKey(TWCoinTypeWaves, DerivationPath("m/44'/5741564'/0'/0'/1'")));
 
     ASSERT_EQ(address1, "3PQupTC1yRiHneotFt79LF2pkN6GrGMwEy3");
     ASSERT_EQ(address2, "3PEXw52bkS9XuLhttWoKyykZjXqEY8zeLxf");

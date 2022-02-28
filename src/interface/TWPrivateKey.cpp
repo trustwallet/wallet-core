@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -17,7 +17,7 @@
 using namespace TW;
 
 struct TWPrivateKey *TWPrivateKeyCreate() {
-    std::array<uint8_t, PrivateKey::size> bytes = {0};
+    Data bytes(PrivateKey::size);
     random_buffer(bytes.data(), PrivateKey::size);
     if (!PrivateKey::isValid(bytes)) {
         // Under no circumstance return an invalid private key. We'd rather
@@ -31,18 +31,12 @@ struct TWPrivateKey *TWPrivateKeyCreate() {
 }
 
 struct TWPrivateKey *_Nullable TWPrivateKeyCreateWithData(TWData *_Nonnull data) {
-    // Check length
-    if (TWDataSize(data) != TWPrivateKeySize) {
-        return nullptr;
-    }
-
-    std::array<uint8_t, PrivateKey::size> bytes;
-    TWDataCopyBytes(data, 0, TWPrivateKeySize, bytes.data());
-
+    auto dataSize = TWDataSize(data);
+    Data bytes(dataSize);
+    TWDataCopyBytes(data, 0, dataSize, bytes.data());
     if (!PrivateKey::isValid(bytes)) {
         return nullptr;
     }
-
    return new TWPrivateKey{ PrivateKey(std::move(bytes)) };
 }
 
@@ -57,19 +51,14 @@ void TWPrivateKeyDelete(struct TWPrivateKey *_Nonnull pk) {
 }
 
 bool TWPrivateKeyIsValid(TWData *_Nonnull data, enum TWCurve curve) {
-    // Check length
-    if (TWDataSize(data) != TWPrivateKeySize) {
-        return false;
-    }
-
-    std::vector<uint8_t> bytes(TWPrivateKeySize);
-    TWDataCopyBytes(data, 0, TWPrivateKeySize, bytes.data());
-
+    auto dataSize = TWDataSize(data);
+    std::vector<uint8_t> bytes(dataSize);
+    TWDataCopyBytes(data, 0, dataSize, bytes.data());
     return PrivateKey::isValid(bytes, curve);
 }
 
 TWData *TWPrivateKeyData(struct TWPrivateKey *_Nonnull pk) {
-    return TWDataCreateWithBytes(pk->impl.bytes.data(), TWPrivateKeySize);
+    return TWDataCreateWithBytes(pk->impl.bytes.data(), pk->impl.bytes.size());
 }
 
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyNist256p1(struct TWPrivateKey *_Nonnull pk) {
@@ -92,12 +81,25 @@ struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519Blake2b(struct TWPri
     return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeED25519Blake2b) };
 }
 
+struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519Extended(struct TWPrivateKey *_Nonnull pk) {
+    return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeED25519Extended) };
+}
+
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivateKey *_Nonnull pk) {
     return new TWPublicKey{pk->impl.getPublicKey(TWPublicKeyTypeCURVE25519)};
 }
 
+TWData *_Nullable TWPrivateKeyGetSharedKey(const struct TWPrivateKey *_Nonnull pk, const struct TWPublicKey *_Nonnull publicKey, enum TWCurve curve) {
+    auto result = pk->impl.getSharedKey(publicKey->impl, curve);
+    if (result.empty()) {
+        return nullptr;
+    } else {
+        return TWDataCreateWithBytes(result.data(), result.size());
+    }
+}
+
 TWData *TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest, enum TWCurve curve) {
-    auto& d = *reinterpret_cast<const Data*>(digest);
+    const auto& d = *reinterpret_cast<const Data*>(digest);
     auto result = pk->impl.sign(d, curve);
     if (result.empty()) {
         return nullptr;
@@ -117,7 +119,7 @@ TWData *TWPrivateKeySignAsDER(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull
 }
 
 TWData *TWPrivateKeySignSchnorr(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull message, enum TWCurve curve) {
-    auto& msg = *reinterpret_cast<const Data*>(message);
+    const auto& msg = *reinterpret_cast<const Data*>(message);
     auto result = pk->impl.signSchnorr(msg, curve);
 
     if (result.empty()) {

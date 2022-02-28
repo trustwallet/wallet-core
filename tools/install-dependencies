@@ -15,8 +15,8 @@ export LD_LIBRARY_PATH="$PREFIX/lib"
 export LD_RUN_PATH="$PREFIX/lib"
 
 # Download Google Test
-export GTEST_VERSION=1.8.1
-GTEST_DIR="$ROOT/build/gtest/staging"
+export GTEST_VERSION=1.11.0
+GTEST_DIR="$ROOT/build/local/src/gtest"
 mkdir -p "$GTEST_DIR"
 cd "$GTEST_DIR"
 if [ ! -f release-$GTEST_VERSION.tar.gz ]; then
@@ -27,16 +27,17 @@ tar xzf release-$GTEST_VERSION.tar.gz
 # Build gtest
 cd googletest-release-$GTEST_VERSION
 cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -H.
-make
+make -j4
 make install
+make clean
 
 # Download Check
-export CHECK_VERSION=0.12.0
-CHECK_DIR="$ROOT/build/check/staging"
+export CHECK_VERSION=0.15.2
+CHECK_DIR="$ROOT/build/local/src/check"
 mkdir -p "$CHECK_DIR"
 cd "$CHECK_DIR"
 if [ ! -f check-$CHECK_VERSION.tar.gz ]; then
-    curl -fSsOL https://github.com/libcheck/check/releases/download/0.12.0/check-$CHECK_VERSION.tar.gz
+    curl -fSsOL https://github.com/libcheck/check/releases/download/$CHECK_VERSION/check-$CHECK_VERSION.tar.gz
 fi
 tar xzf check-$CHECK_VERSION.tar.gz
 
@@ -45,10 +46,11 @@ cd check-$CHECK_VERSION
 ./configure --prefix="$PREFIX"
 make -j4
 make install
+make clean
 
 # Download Nlohmann JSON
-export JSON_VERSION=3.5.0
-JSON_DIR="$ROOT/build/json/staging"
+export JSON_VERSION=3.10.2
+JSON_DIR="$ROOT/build/local/json"
 mkdir -p "$JSON_DIR"
 cd "$JSON_DIR"
 if [ ! -f include.zip ]; then
@@ -57,8 +59,8 @@ fi
 unzip -d "$PREFIX" -o include.zip
 
 # Download Protobuf sources
-export PROTOBUF_VERSION=3.9.0
-PROTOBUF_DIR="$ROOT/build/protobuf/staging"
+export PROTOBUF_VERSION=3.19.2
+PROTOBUF_DIR="$ROOT/build/local/src/protobuf"
 mkdir -p "$PROTOBUF_DIR"
 cd "$PROTOBUF_DIR"
 if [ ! -f protobuf-java-$PROTOBUF_VERSION.tar.gz ]; then
@@ -71,12 +73,14 @@ cd protobuf-$PROTOBUF_VERSION
 ./configure --prefix="$PREFIX"
 make -j4
 make install
+# after install, cleanup to save space (docker)
+make clean
 "$PREFIX/bin/protoc" --version
 
-if [ -x "$(command -v swift)" ]; then
+if [[ -x "$(command -v swift)" && `uname` == "Darwin" ]]; then
     # Download Swift Protobuf sources
-    export SWIFT_PROTOBUF_VERSION=1.7.0
-    SWIFT_PROTOBUF_DIR="$ROOT/build/swift-protobuf/staging"
+    export SWIFT_PROTOBUF_VERSION=1.18.0
+    SWIFT_PROTOBUF_DIR="$ROOT/build/local/src/swift-protobuf"
     mkdir -p "$SWIFT_PROTOBUF_DIR"
     cd "$SWIFT_PROTOBUF_DIR"
     if [ ! -f $SWIFT_PROTOBUF_VERSION.tar.gz ]; then
@@ -94,7 +98,8 @@ fi
 # Protobuf plugins
 cd "$ROOT/protobuf-plugin"
 cmake -H. -Bbuild -DCMAKE_INSTALL_PREFIX=$PREFIX
-make -Cbuild
+make -Cbuild -j12
 make -Cbuild install
+rm -rf build
 
 cd "$ROOT"

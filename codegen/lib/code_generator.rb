@@ -72,7 +72,7 @@ class CodeGenerator
     render_template(header: 'swift/header.erb', template: 'swift.erb', output_subfolder: 'swift/Sources/Generated', extension: 'swift')
 
     framework_header = render('swift/TrustWalletCore.h.erb')
-    framework_header_path = File.expand_path(File.join(output_folder, 'swift/Sources/Generated', 'TrustWalletCore.h'))
+    framework_header_path = File.expand_path(File.join(output_folder, 'swift/Sources/Generated', 'WalletCore.h'))
     File.write(framework_header_path, framework_header)
   end
 
@@ -86,14 +86,6 @@ class CodeGenerator
 
   def render_jni_c
     render_template(header: 'jni/header.erb', template: 'jni_c.erb', output_subfolder: 'jni/cpp/generated', extension: 'c')
-  end
-
-  def render_js
-    render_template(header: 'js/header.erb', template: 'js.erb', output_subfolder: 'js/js/generated', extension: 'ts')
-
-    index_ts = render('js/index.ts.erb')
-    index_ts_path = File.expand_path(File.join(output_folder, 'js/lib/', 'index.ts'))
-    File.write(index_ts_path, index_ts)
   end
 
   def render(file, locals = {})
@@ -110,8 +102,7 @@ class CodeGenerator
   end
 
   def should_return_string(method)
-    return false if method.parameters.empty?
-
+    # Note: method with no parameters can also return string
     method.return_type.name == :string
   end
 

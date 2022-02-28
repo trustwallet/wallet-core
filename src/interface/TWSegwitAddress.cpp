@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -20,12 +20,12 @@ bool TWSegwitAddressEqual(struct TWSegwitAddress *_Nonnull lhs, struct TWSegwitA
 }
 
 bool TWSegwitAddressIsValidString(TWString *_Nonnull string) {
-    auto s = reinterpret_cast<const std::string*>(string);
+    auto* s = reinterpret_cast<const std::string*>(string);
     return SegwitAddress::isValid(*s);
 }
 
 struct TWSegwitAddress *_Nullable TWSegwitAddressCreateWithString(TWString *_Nonnull string) {
-    auto s = reinterpret_cast<const std::string*>(string);
+    auto* s = reinterpret_cast<const std::string*>(string);
     auto dec = SegwitAddress::decode(*s);
     if (!std::get<2>(dec)) {
         return nullptr;
@@ -35,7 +35,7 @@ struct TWSegwitAddress *_Nullable TWSegwitAddressCreateWithString(TWString *_Non
 }
 
 struct TWSegwitAddress *_Nonnull TWSegwitAddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey *_Nonnull publicKey) {
-    const auto address = SegwitAddress(publicKey->impl, 0, stringForHRP(hrp));
+    const auto address = SegwitAddress(publicKey->impl, stringForHRP(hrp));
     return new TWSegwitAddress{ std::move(address) };
 }
 
@@ -50,6 +50,10 @@ TWString *_Nonnull TWSegwitAddressDescription(struct TWSegwitAddress *_Nonnull a
 
 enum TWHRP TWSegwitAddressHRP(struct TWSegwitAddress *_Nonnull address) {
     return hrpForString(address->impl.hrp.c_str());
+}
+
+int TWSegwitAddressWitnessVersion(struct TWSegwitAddress *_Nonnull address) {
+    return address->impl.witnessVersion;
 }
 
 TWData *_Nonnull TWSegwitAddressWitnessProgram(struct TWSegwitAddress *_Nonnull address) {

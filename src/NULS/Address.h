@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -26,7 +26,7 @@ class Address : public Base58Address<24> {
     /// Initializes an address from a string representation.
     explicit Address(const std::string& string);
 
-    explicit Address(const TW::PublicKey& publicKey, bool isMainnet);
+    explicit Address(const TW::PublicKey& publicKey, bool isMainnet = true);
 
     /// Initializes an address with a collection of bytes.
     explicit Address(const Data& data) : TW::Base58Address<24>(data) {}
@@ -52,8 +52,3 @@ static inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::NULS
-
-/// Wrapper for C interface.
-struct TWNULSAddress {
-    TW::NULS::Address impl;
-};

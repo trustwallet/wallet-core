@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -33,7 +33,7 @@ public:
     bool findCoin(const string& coin, Coin& coin_out) const;
     void init();
 protected:
-    void scanCoinRange(int from, int to);
+    void scanCoins();
     int findCoinId(const string& coin) const;
     static int pubKeyTypeFromCurve(int cc);
     ostream& _out;

@@ -1,0 +1,75 @@
+name: Linux SampleApp CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update && sudo apt-get install ninja-build llvm-11 libboost-all-dev clang-11 --fix-missing
+    - name: Cache internal dependencies
+      id: internal_cache
+      uses: actions/cache@v1.1.2
+      with:
+        path: build/local
+        key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
+    - name: Install internal dependencies
+      run: |
+        tools/install-dependencies
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+      if: steps.internal_cache.outputs.cache-hit != 'true'
+    - name: Code generation
+      run: |
+        tools/generate-files
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+    - name: CMake
+      run: |
+        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+    - name: Build
+      run: |
+        make -Cbuild -j12 TrustWalletCore
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+        CK_TIMEOUT_MULTIPLIER: 4
+    - name: Build and run C++ sample app
+      run: |
+        cd samples/cpp
+        cmake . -DWALLET_CORE=../../ -DCMAKE_BUILD_TYPE=Debug
+        make
+        ./sample
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+    - name: Install Go
+      env:
+        GO_VERSION: 1.16.12
+        GO_ARCH: amd64
+      run: |
+        curl -O -L "https://golang.org/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"
+        tar -xf "go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"
+        sudo chown -R root:root ./go
+        sudo mv -v go /usr/local
+    - name: Build and run GoLang sample app
+      run: |
+        cd samples/go
+        go version
+        go build -o main
+        ./main
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++

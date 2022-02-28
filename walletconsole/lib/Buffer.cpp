@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -21,7 +21,7 @@ using namespace std;
 void Buffer::addResult(const string& val) {
     if (val.length() == 0) { return; }
     _last = SavedValue(val);
-    _prev.push_back(SavedValue(val));
+    _prev.emplace_back(SavedValue(val));
 }
 
 bool Buffer::prepareInput(const string& in, string& in_out) {

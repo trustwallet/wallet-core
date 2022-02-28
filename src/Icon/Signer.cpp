@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -71,6 +71,11 @@ std::string Signer::encode(const Data& signature) const noexcept {
     json["version"] = "0x3";
     json["signature"] = Base64::encode(signature);
     return json.dump();
+}
+
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    auto signer = Signer(input);
+    return signer.sign();
 }
 
 Proto::SigningOutput Signer::sign() const noexcept {

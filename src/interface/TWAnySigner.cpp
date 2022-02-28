@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,35 +6,30 @@
 
 #include <TrustWalletCore/TWAnySigner.h>
 
-#include "Any/Signer.h"
+#include "Coin.h"
 
 using namespace TW;
-using namespace TW::Any;
 
-TW_Any_Proto_SigningOutput TWAnySignerSign(TW_Any_Proto_SigningInput data)
-{
-    Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
-
-    auto signer = new TWAnySigner{ Signer(input) };
-    Proto::SigningOutput output = signer->impl.sign();
-
-    auto serialized = output.SerializeAsString();
-    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
+    const Data& dataIn = *(reinterpret_cast<const Data*>(data));
+    Data dataOut;
+    TW::anyCoinSign(coin, dataIn, dataOut);
+    return TWDataCreateWithBytes(dataOut.data(), dataOut.size());
 }
 
-bool TWAnySignerIsSignEnabled(enum TWCoinType coinType)
-{
-    Proto::SigningInput input;
-    input.set_coin_type(coinType);
-    input.set_private_key("0000000000000000000000000000000000000000000000000000000000000001");
-    input.set_transaction("<invalid json>");
+TWString *_Nonnull TWAnySignerSignJSON(TWString *_Nonnull json, TWData *_Nonnull key, enum TWCoinType coin) {
+    const Data& keyData = *(reinterpret_cast<const Data*>(key));
+    const std::string& jsonString = *(reinterpret_cast<const std::string*>(json));
+    auto result = TW::anySignJSON(coin, jsonString, keyData);
+    return TWStringCreateWithUTF8Bytes(result.c_str());
+}
+extern bool TWAnySignerSupportsJSON(enum TWCoinType coin) {
+    return TW::supportsJSONSigning(coin);
+}
 
-    auto signer = new TWAnySigner{ Signer(input) };
-    Proto::SigningOutput output = signer->impl.sign();
-
-    // If the coin is not supported, the error code is SignerErrorCodeNotSupported.
-    // If the sign method return an SignerErrorCodeInvalidJson, it means the coin is
-    // supported but couldn't parse the transaction (which is invalid by default)
-    return output.error().code() == SignerErrorCodeInvalidJson;
+TWData* _Nonnull TWAnySignerPlan(TWData* _Nonnull data, enum TWCoinType coin) {
+    const Data& dataIn = *(reinterpret_cast<const Data*>(data));
+    Data dataOut;
+    TW::anyCoinPlan(coin, dataIn, dataOut);
+    return TWDataCreateWithBytes(dataOut.data(), dataOut.size());
 }

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -15,6 +15,17 @@
 
 using namespace TW;
 using namespace TW::Aeternity;
+
+Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
+    auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    std::string sender_id = input.from_address();
+    std::string recipient_id = input.to_address();
+    std::string payload = input.payload();
+
+    auto tx = Transaction(sender_id, recipient_id, load(input.amount()), load(input.fee()), payload, input.ttl(), input.nonce());
+
+    return Signer::sign(privateKey, tx);
+}
 
 /// implementation copied from
 /// https://github.com/aeternity/aepp-sdk-go/blob/07aa8a77e5/aeternity/helpers.go#L367
@@ -37,7 +48,7 @@ Proto::SigningOutput Signer::sign(const TW::PrivateKey &privateKey, Transaction 
     return createProtoOutput(signature, signedEncodedTx);
 }
 
-Data Signer::buildRlpTxRaw(Data &txRaw, Data &sigRaw) {
+Data Signer::buildRlpTxRaw(Data& txRaw, Data& sigRaw) {
     auto rlpTxRaw = Data();
     auto signaturesList = Data();
     append(signaturesList, Ethereum::RLP::encode(sigRaw));
@@ -50,7 +61,7 @@ Data Signer::buildRlpTxRaw(Data &txRaw, Data &sigRaw) {
     return Ethereum::RLP::encodeList(rlpTxRaw);
 }
 
-Data Signer::buildMessageToSign(Data &txRaw) {
+Data Signer::buildMessageToSign(Data& txRaw) {
     auto data = Data();
     Data bytes(Identifiers::networkId.begin(), Identifiers::networkId.end());
     append(data, bytes);
@@ -58,7 +69,7 @@ Data Signer::buildMessageToSign(Data &txRaw) {
     return data;
 }
 
-Proto::SigningOutput Signer::createProtoOutput(std::string &signature, const std::string &signedTx) {
+Proto::SigningOutput Signer::createProtoOutput(std::string& signature, const std::string& signedTx) {
     auto output = Proto::SigningOutput();
 
     output.set_signature(signature);
@@ -66,7 +77,7 @@ Proto::SigningOutput Signer::createProtoOutput(std::string &signature, const std
     return output;
 }
 
-std::string Signer::encodeBase64WithChecksum(const std::string &prefix, const TW::Data &rawTx) {
+std::string Signer::encodeBase64WithChecksum(const std::string& prefix, const TW::Data& rawTx) {
     auto checksum = Hash::sha256(Hash::sha256(rawTx));
     std::vector<unsigned char> checksumPart(checksum.begin(), checksum.begin() + checkSumSize);
 

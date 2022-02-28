@@ -1,7 +1,9 @@
-FROM ubuntu:18.04 as base
+FROM ubuntu:20.04
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install some basics
-RUN apt-get update -y \
+RUN apt-get update \
     && apt-get install -y \
         wget \
         curl \
@@ -19,7 +21,7 @@ RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc | apt-key 
     && apt-add-repository -y ppa:mhier/libboost-latest
 
 # Install required packages for dev
-RUN apt-get update -y \
+RUN apt-get update \
     && apt-get install -y \
         build-essential \
         libtool autoconf pkg-config \
@@ -45,10 +47,26 @@ RUN git clean -xdf
 # Install dependencies
 RUN tools/install-dependencies
 
-# Build: generate, cmake, and make
+# Build: generate, cmake, and make lib
 RUN tools/generate-files \
     && cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug \
-    && make -Cbuild -j12
+    && make -Cbuild -j12 TrustWalletCore
+
+# Build unit tester
+RUN make -Cbuild -j12 tests
+
+# Download and Install Go
+ENV GO_VERSION=1.16.12
+ENV GO_ARCH=amd64
+RUN wget "https://golang.org/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" \
+    && tar -xf "go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" \
+    && chown -R root:root ./go \
+    && mv -v ./go /usr/local \
+    && ls /usr/local/go \
+    && /usr/local/go/bin/go version \
+    && rm "go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"
+
+# Building GoLang sample app:  cd samples/go && /usr/local/go/bin/go build -o main && ./main
 
 FROM base AS prod
 COPY --from=builder /wallet-core/build/libTrustWalletCore.a /usr/local/lib

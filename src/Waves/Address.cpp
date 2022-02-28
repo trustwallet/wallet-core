@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,6 +12,7 @@
 
 #include <HexCoding.h>
 #include <cassert>
+#include <cstring>
 #include <stdexcept>
 
 using namespace TW;
@@ -22,7 +23,7 @@ Data Address::secureHash(const T &data) {
     return Hash::keccak256(Hash::blake2b(data, 32));
 }
 
-bool Address::isValid(const Data &decoded) {
+bool Address::isValid(const Data& decoded) {
     if (decoded.size() != Address::size) {
         return false;
     }
@@ -44,12 +45,12 @@ bool Address::isValid(const Data &decoded) {
     return std::memcmp(data_checksum.data(), calculated_checksum.data(), 4) == 0;
 }
 
-bool Address::isValid(const std::string &string) {
+bool Address::isValid(const std::string& string) {
     const auto decoded = Base58::bitcoin.decode(string);
     return isValid(decoded);
 }
 
-Address::Address(const std::string &string) {
+Address::Address(const std::string& string) {
     const auto decoded = Base58::bitcoin.decode(string);
     if (!isValid(string)) {
         throw std::invalid_argument("Invalid address key data");
@@ -57,7 +58,7 @@ Address::Address(const std::string &string) {
     std::copy(decoded.begin(), decoded.end(), bytes.begin());
 }
 
-Address::Address(const Data &data) {
+Address::Address(const Data& data) {
     if (!isValid(data)) {
         throw std::invalid_argument("Invalid address data");
     }

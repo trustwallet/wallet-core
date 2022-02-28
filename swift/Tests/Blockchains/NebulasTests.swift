@@ -1,18 +1,18 @@
-// Copyright © 2019 Trust Wallet.
+// Copyright © 2019-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 import XCTest
-import TrustWalletCore
+import WalletCore
 
 class NebulasTests: XCTestCase {
 
     func testAddressFromPublicKey() {
         let privateKey = PrivateKey(data: Data(hexString: "d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b")!)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
-        let address = NebulasAddress(publicKey: publicKey)
+        let address = AnyAddress(publicKey: publicKey, coin: .nebulas)
 
         XCTAssertEqual(address.description, "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY")
     }
@@ -30,7 +30,7 @@ class NebulasTests: XCTestCase {
             $0.timestamp = Data(hexString: "5cfc84ca")!   //1560052938
             $0.privateKey = PrivateKey(data: Data(hexString: "d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b")!)!.data
         }
-        let output = NebulasSigner.sign(input: input)
+        let output: NebulasSigningOutput = AnySigner.sign(input: input, coin: .nebulas)
         XCTAssertEqual(output.algorithm, 1)
         //swiftlint:disable:next line_length
         XCTAssertEqual(output.signature.hexString, "f53f4a9141ff8e462b094138eccd8c3a5d7865f9e9ab509626c78460a9e0b0fc35f7ed5ba1795ceb81a5e46b7580a6f7fb431d44fdba92515399cf6a8e47e71500")

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,10 +6,13 @@
 
 #pragma once
 
-#include "ABI/ParamBase.h"
-#include "ABI/ParamNumber.h"
-#include "ABI/Parameters.h"
 #include "ABI/Array.h"
 #include "ABI/Bytes.h"
-#include "ABI/ParamAddress.h"
 #include "ABI/Function.h"
+#include "ABI/ParamAddress.h"
+#include "ABI/ParamBase.h"
+#include "ABI/Parameters.h"
+#include "ABI/ParamFactory.h"
+#include "ABI/ParamNumber.h"
+#include "ABI/ParamStruct.h"
+#include "ABI/Tuple.h"

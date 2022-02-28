@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,7 +10,6 @@
 #include "Coins.h"
 #include "Util.h"
 #include "Address.h"
-#include "TonCoin.h"
 
 #include "Base64.h"
 #include "HexCoding.h"
@@ -32,7 +31,8 @@ CommandExecutor::CommandExecutor(ostream& out)
     _coins(out), 
     _buffer(out),
     _keys(out, _coins),
-    _address(out, _coins, _keys)
+    _address(out, _coins, _keys),
+    _util(out)
 {
 }
 
@@ -62,6 +62,7 @@ void CommandExecutor::help() const {
     _out << "  dumpSeed                Dump the seed of the current mnemonic (secret!)" << endl;
     _out << "  dumpMnemonic            Dump the current mnemonic (secret!)" << endl;
     _out << "  dumpDP                  Dump the default derivation path of the current coin (ex.: m/84'/0'/0'/0/0)" << endl;
+    _out << "  dumpXpub                Dump the XPUB of the current mnemonic" << endl;
     _out << "  priDP [<derivPath>]     Derive a new private key for the coin, from the current mnemonic and given derivation path." << endl;
     _out << "                          If derivation path is missing, the default one is used (see dumpDP)." << endl;
     _out << "Addresses:" << endl;
@@ -70,8 +71,8 @@ void CommandExecutor::help() const {
     _out << "  addr <addr>             Check string <coin> address" << endl;
     _out << "  addrDefault             Derive default address, for current coin, fom current mnemonic; see dumpDP" << endl;
     _out << "  addrDP <derivPath>      Derive a new address with the given derivation path (using current coin and mnemonic)" << endl;
+    _out << "  addrXpub <xpub> <index> Derive a new address from the given XPUB and address index (using current coin)" << endl;
     _out << "Coin-specific methods:" << endl;
-    _out << "  tonInitMsg <priKey>     Build TON account initialization message." << endl;
     _out << "Transformations:" << endl;
     _out << "  hex <inp>               Encode given string to hex" << endl;
     _out << "  base64Encode <inp>      Encode given hex data to Base64" << endl;
@@ -116,7 +117,7 @@ bool CommandExecutor::executeOne(const string& cmd, const vector<string>& params
     if (cmd == "coins") { _coins.coins(); return false; }
     if (cmd == "coin") { if (!checkMinParams(params, 1)) { return false; } setCoin(params[1], true); return false; }
 
-    if (cmd == "newkey") { return _keys.newKey(res); }
+    if (cmd == "newkey") { return _keys.newKey(_activeCoin, res); }
     if (cmd == "pubpri") { if (!checkMinParams(params, 1)) { return false; } return _keys.pubPri(_activeCoin, params[1], res); }
     if (cmd == "pripub") { if (!checkMinParams(params, 1)) { return false; } return _keys.priPub(params[1], res); }
     if (cmd == "setmnemonic" || cmd == "setmenmonic") { if (!checkMinParams(params, 1)) { return false; } _keys.setMnemonic(params); return false; }
@@ -124,22 +125,22 @@ bool CommandExecutor::executeOne(const string& cmd, const vector<string>& params
     if (cmd == "dumpseed") { return _keys.dumpSeed(res); }
     if (cmd == "dumpmnemonic" || cmd == "dumpmenmonic") { return _keys.dumpMnemonic(res); }
     if (cmd == "dumpdp") { return _keys.dumpDP(_activeCoin, res); }
+    if (cmd == "dumpxpub") { return _keys.dumpXpub(_activeCoin, res); }
     if (cmd == "pridp") { string dp; if (params.size() >= 2) dp = params[1]; return _keys.priDP(_activeCoin, dp, res); }
 
     if (cmd == "addrpub") { if (!checkMinParams(params, 1)) { return false; } return _address.addrPub(_activeCoin, params[1], res); }
     if (cmd == "addrpri") { if (!checkMinParams(params, 1)) { return false; } return _address.addrPri(_activeCoin, params[1], res); }
     if (cmd == "addr") { if (!checkMinParams(params, 1)) { return false; } return _address.addr(_activeCoin, params[1], res); }
     if (cmd == "addrdefault") { return _address.addrDefault(_activeCoin, res); }
-    if (cmd == "addrdp") { if (!checkMinParams(params, 1)) { return false; } return _address.addrDP(_activeCoin, params[1], res); }
-
-    if (cmd == "toninitmsg") { if (!checkMinParams(params, 1)) { return false; } setCoin("ton", false); return TonCoin::tonInitMsg(params[1], res); }
+    if (cmd == "addrdp") { if (!checkMinParams(params, 1)) { return false; } return _address.deriveFromPath(_activeCoin, params[1], res); }
+    if (cmd == "addrxpub") { if (!checkMinParams(params, 2)) { return false; } return _address.deriveFromXpubIndex(_activeCoin, params[1], params[2], res); }
 
     if (cmd == "hex") { if (!checkMinParams(params, 1)) { return false; } return Util::hex(params[1], res); }
-    if (cmd == "base64encode") { if (!checkMinParams(params, 1)) { return false; } return Util::base64Encode(params[1], res); }
-    if (cmd == "base64decode") { if (!checkMinParams(params, 1)) { return false; } return Util::base64Decode(params[1], res); }
+    if (cmd == "base64encode") { if (!checkMinParams(params, 1)) { return false; } return _util.base64Encode(params[1], res); }
+    if (cmd == "base64decode") { if (!checkMinParams(params, 1)) { return false; } return _util.base64Decode(params[1], res); }
     
-    if (cmd == "filew") { if (!checkMinParams(params, 2)) { return false; } return Util::fileW(params[1], params[2], res, _out); }
-    if (cmd == "filer") { if (!checkMinParams(params, 1)) { return false; } return Util::fileR(params[1], res, _out); }
+    if (cmd == "filew") { if (!checkMinParams(params, 2)) { return false; } return _util.fileW(params[1], params[2], res); }
+    if (cmd == "filer") { if (!checkMinParams(params, 1)) { return false; } return _util.fileR(params[1], res); }
 
     // fallback
     _out << "Unknown command:  " << cmd << endl << "Type 'help' for list of commands." << endl;
@@ -202,12 +203,11 @@ bool CommandExecutor::setCoin(const string& coin, bool force) {
     if (!_coins.findCoin(coin, c)) {
         return false;
     }
-    if (_activeCoin == c.id && !force) {
-        // already on that coin
-        return true;
+    if (_activeCoin != c.id || force) {
+        // need to change
+        _activeCoin = c.id;
+        _out << "Set active coin to: " << c.id << "    Use 'coin' to change.  (name: '" << c.name << "'  symbol: " << c.symbol << "  numericalid: " << c.c << ")" << endl;
     }
-    _activeCoin = c.id;
-    _out << "Set active coin to: " << c.id << "    Use 'coin' to change.  (name: '" << c.name << "'  symbol: " << c.symbol << "  numericalid: " << c.c << ")" << endl;
     return true;
 }
 

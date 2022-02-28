@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,7 +8,7 @@
 
 #include "../PublicKey.h"
 
-#include <TrustWalletCore/TWIconAddressType.h>
+#include "AddressType.h"
 
 #include <array>
 #include <cstdint>
@@ -26,7 +26,7 @@ class Address {
     std::array<uint8_t, size> bytes;
 
     /// Address type.
-    TWIconAddressType type;
+    enum AddressType type;
 
     /// Determines whether a collection of bytes makes a valid  address.
     static bool isValid(const std::vector<uint8_t>& data) { return data.size() == size; }
@@ -37,23 +37,15 @@ class Address {
     /// Initializes an address with a string representation.
     explicit Address(const std::string& string);
 
-    /// Initializes an address with a collection of bytes.
-    Address(const std::vector<uint8_t>& data, TWIconAddressType type);
-
     /// Initializes an address with a public key.
-    Address(const PublicKey& publicKey, TWIconAddressType type);
+    Address(const PublicKey& publicKey, enum AddressType type);
 
     /// Returns a string representation of the address.
     std::string string() const;
 };
 
-inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs.bytes == rhs.bytes;
+inline bool operator==(const class Address& lhs, const class Address& rhs) {
+    return lhs.bytes == rhs.bytes && lhs.type == rhs.type;
 }
 
 } // namespace TW::Icon
-
-/// Wrapper for C interface.
-struct TWIconAddress {
-    TW::Icon::Address impl;
-};

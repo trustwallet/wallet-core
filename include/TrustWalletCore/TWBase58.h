@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,9 +13,7 @@
 TW_EXTERN_C_BEGIN
 
 TW_EXPORT_STRUCT
-struct TWBase58 {
-    uint8_t unused; // C doesn't allow zero-sized struct
-};
+struct TWBase58;
 
 /// Encodes data as a Base58 string, including the checksum.
 TW_EXPORT_STATIC_METHOD

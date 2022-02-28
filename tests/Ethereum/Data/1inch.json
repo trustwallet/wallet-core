@@ -1,0 +1,65 @@
+{
+    "7c025200": {
+        "inputs": [
+            {
+                "name": "caller",
+                "type": "address"
+            },
+            {
+                "components": [
+                    {
+                        "name": "srcToken",
+                        "type": "address"
+                    },
+                    {
+                        "name": "dstToken",
+                        "type": "address"
+                    },
+                    {
+                        "name": "srcReceiver",
+                        "type": "address"
+                    },
+                    {
+                        "name": "dstReceiver",
+                        "type": "address"
+                    },
+                    {
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "minReturnAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "flags",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "permit",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "desc",
+                "type": "tuple"
+            },
+            {
+                "name": "data",
+                "type": "bytes"
+            }
+        ],
+        "name": "swap",
+        "outputs": [
+            {
+                "name": "returnAmount",
+                "type": "uint256"
+            },
+            {
+                "name": "gasLeft",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "payable",
+        "type": "function"
+    }
+}

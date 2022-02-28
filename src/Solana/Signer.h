@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,6 +10,7 @@
 #include "../Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
+#include "../proto/Solana.pb.h"
 
 namespace TW::Solana {
 
@@ -17,15 +18,16 @@ namespace TW::Solana {
 class Signer {
   public:
     /// Signs the given transaction.
-    static void sign(const std::vector<PrivateKey> &privateKeys, Transaction &transaction);
-    static void signUpdateBlockhash(const std::vector<PrivateKey> &privateKeys,
-                                    Transaction &transaction, Solana::Hash &recentBlockhash);
-    static Data signRawMessage(const std::vector<PrivateKey> &privateKeys, const Data messageData);
+    static void sign(const std::vector<PrivateKey>& privateKeys, Transaction& transaction);
+
+    /// Signs a json Proto::SigningInput with private key
+    static std::string signJSON(const std::string& json, const Data& key);
+
+    static void signUpdateBlockhash(const std::vector<PrivateKey>& privateKeys,
+                                    Transaction& transaction, Solana::Hash& recentBlockhash);
+    static Data signRawMessage(const std::vector<PrivateKey>& privateKeys, const Data messageData);
+
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 };
 
 } // namespace TW::Solana
-
-/// Wrapper for C interface.
-struct TWSolanaSigner {
-    TW::Solana::Signer impl;
-};

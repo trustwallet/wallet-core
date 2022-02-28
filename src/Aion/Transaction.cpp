@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -18,8 +18,7 @@ Data Transaction::encode() const noexcept {
     append(encoded, Ethereum::RLP::encode(to.bytes));
     append(encoded, Ethereum::RLP::encode(amount));
     append(encoded, Ethereum::RLP::encode(payload));
-    append(encoded,
-           Ethereum::RLP::encode(uint128_t(155157377101))); // Huge timestamp
+    append(encoded, Ethereum::RLP::encode(timestamp));
     append(encoded, RLP::encodeLong(gasLimit));
     append(encoded, RLP::encodeLong(gasPrice));
     append(encoded, RLP::encodeLong(uint128_t(1))); // Aion transaction type

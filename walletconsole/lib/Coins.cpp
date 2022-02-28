@@ -1,5 +1,5 @@
 
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -60,16 +60,15 @@ bool Coins::findCoin(const string& coin, Coin& coin_out) const {
 void Coins::init() {
     // not very nice method: try each ID number, and record the ones that are valid coins
     _out << "Loading coins ... ";
-    scanCoinRange(0, 65536);
-    scanCoinRange(5700000, 5800000);
+    scanCoins();
     _out << _coinsById.size() << " coins loaded." << endl;
 }
 
-void Coins::scanCoinRange(int from, int to) {
-    for (int i = from; i < to; ++i) {
-        TWCoinType c = (TWCoinType)i;
+void Coins::scanCoins() {
+    const auto coins = TW::getCoinTypes();
+    for (auto c: coins) {
         auto symbolTw = WRAPS(TWCoinTypeConfigurationGetSymbol(c));
-        if (TWStringSize(symbolTw.get()) == 0) { continue; }
+        assert(TWStringSize(symbolTw.get()) != 0);
         string id = TWStringUTF8Bytes(WRAPS(TWCoinTypeConfigurationGetID(c)).get());
         Util::toLower(id);
         string symbol = TWStringUTF8Bytes(symbolTw.get());
@@ -77,7 +76,7 @@ void Coins::scanCoinRange(int from, int to) {
         string name = TWStringUTF8Bytes(WRAPS(TWCoinTypeConfigurationGetName(c)).get());
         Util::toLower(name);
         int curve = (int)TWCoinTypeCurve(c);
-        int pubKeyType = pubKeyTypeFromCurve(curve);
+        int pubKeyType = (int)TW::publicKeyType(c);
         string derivPath = TW::derivationPath(c).string();
         Coin coin = Coin{c, id, name, symbol, curve, pubKeyType, derivPath};
         _coinsByNum[c] = coin;
@@ -85,19 +84,6 @@ void Coins::scanCoinRange(int from, int to) {
         _coinsByName[name] = coin;
         _coinsBySymbol[symbol] = coin;
     }
-}
-
-int Coins::pubKeyTypeFromCurve(int cc) {
-    TWCurve c = (TWCurve)cc;
-    TWPublicKeyType t;
-    switch (c) {
-        case TWCurveSECP256k1: t = TWPublicKeyTypeSECP256k1; break;
-        case TWCurveED25519: t = TWPublicKeyTypeED25519; break;
-        case TWCurveED25519Blake2bNano: t = TWPublicKeyTypeED25519Blake2b; break;
-        case TWCurveCurve25519: t = TWPublicKeyTypeCURVE25519; break;
-        case TWCurveNIST256p1: t = TWPublicKeyTypeNIST256p1; break;
-    }
-    return (int)t;
 }
 
 } // namespace TW::WalletConsole

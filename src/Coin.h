@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -19,12 +19,18 @@
 #include <TrustWalletCore/TWPurpose.h>
 
 #include <string>
-#include <set>
+#include <vector>
 
 namespace TW {
 
+// Return the set of supported coin types.
+std::vector<TWCoinType> getCoinTypes();
+
 /// Validates an address for a particular coin.
 bool validateAddress(TWCoinType coin, const std::string& address);
+
+/// Validates and normalizes an address for a particular coin.
+std::string normalizeAddress(TWCoinType coin, const std::string& address);
 
 /// Returns the blockchain for a coin type.
 TWBlockchain blockchain(TWCoinType coin);
@@ -50,7 +56,7 @@ enum TWPublicKeyType publicKeyType(TWCoinType coin);
 /// Derives the address for a particular coin from the private key.
 std::string deriveAddress(TWCoinType coin, const PrivateKey& privateKey);
 
-/// Derives the address for a particular coin from the private key.
+/// Derives the address for a particular coin from the public key.
 std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey);
 
 /// Hasher for deriving the public key hash.
@@ -70,5 +76,43 @@ byte p2shPrefix(TWCoinType coin);
 
 /// Returns human readable part for a coin type.
 enum TWHRP hrp(TWCoinType coin);
+
+// Note: use output parameter to avoid unneeded copies
+void anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut);
+
+uint32_t slip44Id(TWCoinType coin);
+
+std::string anySignJSON(TWCoinType coinType, const std::string& json, const Data& key);
+
+bool supportsJSONSigning(TWCoinType coinType);
+
+void anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut);
+
+// Return coins handled by the same dispatcher as the given coin (mostly for testing)
+const std::vector<TWCoinType> getSimilarCoinTypes(TWCoinType coinType);
+
+// Contains only simple types.
+struct CoinInfo {
+    const char* id;
+    const char* name;
+    TWBlockchain blockchain;
+    TWPurpose purpose;
+    TWCurve curve;
+    TWHDVersion xpubVersion;
+    TWHDVersion xprvVersion;
+    const char* derivationPath;
+    TWPublicKeyType publicKeyType;
+    byte staticPrefix;
+    byte p2pkhPrefix;
+    byte p2shPrefix;
+    TWHRP hrp;
+    Hash::Hasher publicKeyHasher;
+    Hash::Hasher base58Hasher;
+    const char* symbol;
+    int decimals;
+    const char* explorerTransactionUrl;
+    const char* explorerAccountUrl;
+    uint32_t slip44;
+};
 
 } // namespace TW

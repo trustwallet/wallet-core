@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -15,8 +15,10 @@
 
 TEST(TWAlgorandCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAlgorand));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAlgorand, txId));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("CR7POXFTYDLC7TV3IXHA7AZKWABUJC52BACLHJQNXAKZJGRPQY3A"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAlgorand, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("J4AEINCSSLDA7LNBNWM4ZXFCTLTOZT5LG3F5BLMFPJYGFWVCMU37EZI2AM"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeAlgorand, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAlgorand));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAlgorand));
 
@@ -25,7 +27,8 @@ TEST(TWAlgorandCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeAlgorand));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeAlgorand));
     assertStringsEqual(symbol, "ALGO");
-    assertStringsEqual(txUrl, "https://algoexplorer.io/tx/123");
+    assertStringsEqual(txUrl, "https://algoexplorer.io/tx/CR7POXFTYDLC7TV3IXHA7AZKWABUJC52BACLHJQNXAKZJGRPQY3A");
+    assertStringsEqual(accUrl, "https://algoexplorer.io/address/J4AEINCSSLDA7LNBNWM4ZXFCTLTOZT5LG3F5BLMFPJYGFWVCMU37EZI2AM");
     assertStringsEqual(id, "algorand");
     assertStringsEqual(name, "Algorand");
 }

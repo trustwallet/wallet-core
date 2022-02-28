@@ -3,10 +3,12 @@ package com.trustwallet.core.app.blockchains.aeternity
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.toHexByteArray
 import com.trustwallet.core.app.utils.toHexBytesInByteString
-import junit.framework.Assert.assertEquals
+import org.junit.Assert.assertEquals
 import org.junit.Test
-import wallet.core.jni.AeternitySigner
+import wallet.core.java.AnySigner
+import wallet.core.jni.CoinType.AETERNITY
 import wallet.core.jni.proto.Aeternity
+import wallet.core.jni.proto.Aeternity.SigningOutput
 
 class TestAeternitySigner {
 
@@ -27,7 +29,7 @@ class TestAeternitySigner {
             .setPrivateKey("4646464646464646464646464646464646464646464646464646464646464646".toHexBytesInByteString())
             .build()
 
-        val output: Aeternity.SigningOutput = AeternitySigner.sign(signingInput)
+        val output = AnySigner.sign(signingInput, AETERNITY, SigningOutput.parser())
 
         assertEquals(
             output.encoded,

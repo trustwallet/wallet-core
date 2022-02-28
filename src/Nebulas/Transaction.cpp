@@ -1,7 +1,7 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -45,7 +45,7 @@ std::string htmlescape(const std::string& str) {
 }
 
 Proto::Data* Transaction::newPayloadData(const std::string& payload){
-    auto data = new Proto::Data();
+    auto* data = new Proto::Data();
     data->set_type(Transaction::TxPayloadBinaryType);
 
     nlohmann::json payloadData;
@@ -69,7 +69,7 @@ void Transaction::serializeToRaw(){
     }
 
     auto tx = Proto::RawTransaction();
-    auto data = newPayloadData(payload);
+    auto* data = newPayloadData(payload);
 
     auto value = Data();
     auto gas_price = Data();
@@ -91,6 +91,6 @@ void Transaction::serializeToRaw(){
     tx.set_alg((uint32_t)algorithm);
     tx.set_sign(reinterpret_cast<const char *>(signature.data()),signature.size());
 
-    raw.resize(tx.ByteSize());
+    raw.resize(tx.ByteSizeLong());
     tx.SerializeToArray(raw.data(),(int)raw.size());
 }

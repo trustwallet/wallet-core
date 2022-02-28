@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -20,15 +20,6 @@ bool TWHDVersionIsPublic(enum TWHDVersion version) {
     case TWHDVersionDGUB:
         return true;
 
-    case TWHDVersionXPRV:
-    case TWHDVersionYPRV:
-    case TWHDVersionZPRV:
-    case TWHDVersionLTPV:
-    case TWHDVersionMTPV:
-    case TWHDVersionDPRV:
-    case TWHDVersionDGPV:
-        return false;
-
     case TWHDVersionNone:
     default:
         return false;
@@ -36,8 +27,20 @@ bool TWHDVersionIsPublic(enum TWHDVersion version) {
 }
 
 bool TWHDVersionIsPrivate(enum TWHDVersion version) {
-    if (version == TWHDVersionNone) return false;
-    return !TWHDVersionIsPublic(version);
+    switch (version) {
+    case TWHDVersionXPRV:
+    case TWHDVersionYPRV:
+    case TWHDVersionZPRV:
+    case TWHDVersionLTPV:
+    case TWHDVersionMTPV:
+    case TWHDVersionDPRV:
+    case TWHDVersionDGPV:
+        return true;
+
+    case TWHDVersionNone:
+    default:
+        return false;
+    }
 }
 
 #pragma clang diagnostic pop

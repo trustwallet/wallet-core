@@ -17,7 +17,7 @@ class ISerializable {
     virtual ~ISerializable() {}
     virtual int64_t size() const = 0;
     virtual Data serialize() const = 0;
-    virtual void deserialize(const Data &data, int initial_pos = 0) = 0;
+    virtual void deserialize(const Data& data, int initial_pos = 0) = 0;
 };
 
 } // namespace TW::NEO

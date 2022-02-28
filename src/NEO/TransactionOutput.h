@@ -22,7 +22,7 @@ class TransactionOutput : public Serializable {
     static const size_t scriptHashSize = 20;
 
     uint256_t assetId;
-    int64_t value;
+    int64_t value = 0;
     uint256_t scriptHash;
 
     virtual ~TransactionOutput() {}
@@ -31,7 +31,7 @@ class TransactionOutput : public Serializable {
         return store(assetId).size() + valueSize + store(scriptHash).size();
     }
 
-    void deserialize(const Data &data, int initial_pos = 0) override {
+    void deserialize(const Data& data, int initial_pos = 0) override {
         assetId = load(readBytes(data, assetIdSize, initial_pos));
         value = decode64LE(data.data() + initial_pos + assetIdSize);
         scriptHash = load(readBytes(data, scriptHashSize, initial_pos + assetIdSize + valueSize));

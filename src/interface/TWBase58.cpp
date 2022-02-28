@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,7 +13,7 @@
 using namespace TW;
 
 TWString *_Nonnull TWBase58Encode(TWData *_Nonnull data) {
-    auto& d = *reinterpret_cast<const Data*>(data);
+    const auto& d = *reinterpret_cast<const Data*>(data);
     const auto str = Base58::bitcoin.encodeCheck(d);
     return TWStringCreateWithUTF8Bytes(str.c_str());
 }

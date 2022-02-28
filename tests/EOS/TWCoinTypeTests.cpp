@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -15,8 +15,10 @@
 
 TEST(TWEOSCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEOS));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEOS, txId));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("t123"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEOS, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("a12"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeEOS, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEOS));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEOS));
 
@@ -25,7 +27,8 @@ TEST(TWEOSCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeEOS));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeEOS));
     assertStringsEqual(symbol, "EOS");
-    assertStringsEqual(txUrl, "https://bloks.io/transaction/123");
+    assertStringsEqual(txUrl, "https://bloks.io/transaction/t123");
+    assertStringsEqual(accUrl, "https://bloks.io/account/a12");
     assertStringsEqual(id, "eos");
     assertStringsEqual(name, "EOS");
 }

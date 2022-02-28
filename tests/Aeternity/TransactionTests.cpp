@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,7 +9,6 @@
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "../interface/TWTestUtilities.h"
-#include <TrustWalletCore/TWPKCS8.h>
 
 #include "HexCoding.h"
 #include <Aeternity/Signer.h>

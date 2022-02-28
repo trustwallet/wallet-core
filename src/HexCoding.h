@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,6 +7,8 @@
 #pragma once
 
 #include "Data.h"
+
+#include <boost/algorithm/hex.hpp>
 
 #include <array>
 #include <string>
@@ -42,6 +44,12 @@ inline std::string hex(const T& collection) {
     return hex(std::begin(collection), std::end(collection));
 }
 
+/// same as hex, with 0x prefix
+template <typename T>
+inline std::string hexEncoded(const T& collection) {
+    return hex(std::begin(collection), std::end(collection)).insert(0, "0x");
+}
+
 /// Converts a `uint64_t` value to a hexadecimal string.
 inline std::string hex(uint64_t value) {
     auto bytes = reinterpret_cast<const uint8_t*>(&value);
@@ -61,39 +69,28 @@ inline Data parse_hex(const Iter begin, const Iter end) {
     if (end - begin >= 2 && *begin == '0' && *(begin + 1) == 'x') {
         it += 2;
     }
-
-    Data result;
-    result.reserve(((end - begin) + 1) / 2);
-
-    while (it != end) {
-        auto high = value(*it);
-        if (!std::get<1>(high)) {
-            return {};
-        }
-        it += 1;
-
-        if (it == end) {
-            result.push_back(std::get<0>(high));
-            break;
-        }
-
-        auto low = value(*it);
-        if (!std::get<1>(low)) {
-            return {};
-        }
-        it += 1;
-
-        result.push_back(static_cast<uint8_t>((std::get<0>(high) << 4) | std::get<0>(low)));
+    try {
+        std::string temp;
+        boost::algorithm::unhex(it, end, std::back_inserter(temp));
+        return Data(temp.begin(), temp.end());
+    } catch (...) {
+        return {};
     }
-
-    return result;
 }
 
 /// Parses a string of hexadecimal values.
 ///
 /// \returns the array or parsed bytes or an empty array if the string is not
 /// valid hexadecimal.
-inline Data parse_hex(const std::string& string) {
+inline Data parse_hex(const std::string& string, bool padLeft = false) {
+    if (string.size() % 2 != 0 && padLeft) {
+        std::string temp = string;
+        if (temp.compare(0, 2, "0x") == 0) {
+            temp.erase(0, 2);
+        }
+        temp.insert(0, 1, '0');
+        return parse_hex(temp.begin(), temp.end());
+    }
     return parse_hex(string.begin(), string.end());
 }
 

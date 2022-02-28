@@ -1,15 +1,15 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-import TrustWalletCore
+import WalletCore
 import XCTest
 
 class DerivationPathTests: XCTestCase {
     func testInitWithIndices() {
-        let path = DerivationPath(purpose: .bip44, coinType: .ethereum, account: 0, change: 0, address: 0)
+        let path = DerivationPath(purpose: .bip44, coin: CoinType.ethereum.slip44Id, account: 0, change: 0, address: 0)
         XCTAssertEqual(path.indices[0], DerivationPath.Index(44, hardened: true))
         XCTAssertEqual(path.indices[1], DerivationPath.Index(60, hardened: true))
         XCTAssertEqual(path.indices[2], DerivationPath.Index(0, hardened: true))
@@ -28,7 +28,7 @@ class DerivationPathTests: XCTestCase {
         XCTAssertEqual(path?.indices[4], DerivationPath.Index(0, hardened: false))
 
         XCTAssertEqual(path?.purpose, Purpose(rawValue: 44)!)
-        XCTAssertEqual(path?.coinType, CoinType(rawValue: 60)!)
+        XCTAssertEqual(path?.coinType, 60)
         XCTAssertEqual(path?.account, 0)
         XCTAssertEqual(path?.change, 0)
         XCTAssertEqual(path?.address, 0)

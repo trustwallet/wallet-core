@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -22,7 +22,7 @@ bool Address::isValid(const std::string& string) {
         return false;
     }
     // compute public key hash
-    auto hash = Hash::sha512_256(decoded.data(), decoded.data() + decoded.size() - checksumSize);
+    auto hash = Hash::sha512_256(decoded.data(), decoded.size() - checksumSize);
     // last 4 bytes are checksum
     std::array<byte, checksumSize> checksum;
     std::copy(hash.end() - checksumSize, hash.end(), checksum.data());

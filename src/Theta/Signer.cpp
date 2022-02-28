@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,6 +12,30 @@
 using namespace TW;
 using namespace TW::Theta;
 using RLP = Ethereum::RLP;
+
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    auto pkFrom = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto from = Ethereum::Address(pkFrom.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
+
+    auto transaction = Transaction(
+        /* from: */ from,
+        /* to: */ Ethereum::Address(input.to_address()),
+        /* thetaAmount: */ load(input.theta_amount()),
+        /* tfuelAmount: */ load(input.tfuel_amount()),
+        /* sequence: */ input.sequence(),
+        /* feeAmount: */ load(input.fee()));
+
+    auto signer = Signer(input.chain_id());
+    auto signature = signer.sign(pkFrom, transaction);
+
+    auto output = Proto::SigningOutput();
+
+    transaction.setSignature(from, signature);
+    auto encoded = transaction.encode();
+    output.set_encoded(encoded.data(), encoded.size());
+    output.set_signature(signature.data(), signature.size());
+    return output;
+}
 
 Data Signer::encode(const Transaction& transaction) noexcept {
     const uint64_t nonce = 0;

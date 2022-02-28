@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -15,8 +15,10 @@
 
 TEST(TWNULSCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNULS));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNULS, txId));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("t123"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNULS, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("a12"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeNULS, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNULS));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNULS));
 
@@ -25,7 +27,8 @@ TEST(TWNULSCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeNULS));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeNULS));
     assertStringsEqual(symbol, "NULS");
-    assertStringsEqual(txUrl, "https://nulscan.io/123");
+    assertStringsEqual(txUrl, "https://nulscan.io/transaction/info?hash=t123");
+    assertStringsEqual(accUrl, "https://nulscan.io/address/info?address=a12");
     assertStringsEqual(id, "nuls");
     assertStringsEqual(name, "NULS");
 }

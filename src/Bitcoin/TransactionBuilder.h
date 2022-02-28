@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,12 +6,14 @@
 
 #pragma once
 
+#include "SigningInput.h"
 #include "Transaction.h"
 #include "TransactionPlan.h"
-#include "UnspentSelector.h"
+#include "InputSelector.h"
 #include "../proto/Bitcoin.pb.h"
 #include <TrustWalletCore/TWCoinType.h>
 
+#include <optional>
 #include <algorithm>
 #include <iostream>
 
@@ -20,98 +22,44 @@ namespace TW::Bitcoin {
 class TransactionBuilder {
 public:
     /// Plans a transaction by selecting UTXOs and calculating fees.
-    static TransactionPlan plan(const Bitcoin::Proto::SigningInput& input) {
-        auto plan = TransactionPlan();
-        plan.amount = getTotalAmountFromInput(input);
-        auto dest_output_count = 1 + input.extra_outputs_size();
-        bool useMaxAmount = input.use_max_amount();
-        if (useMaxAmount && dest_output_count > 1) {
-            // MaxAmount is not compatible with multiple outputs (not possible to know how to distribute max available amount)
-            useMaxAmount = false;
-        }
-        auto output_size = dest_output_count + 1;   // output(s) + change
-        auto calculator =
-            UnspentCalculator::getCalculator(static_cast<TWCoinType>(input.coin_type()));
-        auto unspentSelector = UnspentSelector(calculator);
-        if (useMaxAmount && UnspentSelector::sum(input.utxo()) == plan.amount) {
-            assert(dest_output_count == 1);
-            output_size = 1;
-            Amount newAmount = 0;
-            auto input_size = 0;
+    static TransactionPlan plan(const SigningInput& input);
 
-            for (auto utxo : input.utxo()) {
-                if (utxo.amount() >
-                    unspentSelector.calculator.calculateSingleInput(input.byte_fee())) {
-                    input_size++;
-                    newAmount += utxo.amount();
-                }
-            }
-
-            plan.amount = newAmount - unspentSelector.calculator.calculate(input_size, output_size,
-                                                                           input.byte_fee());
-            plan.amount = std::max(Amount(0), plan.amount);
-        }
-
-        bool useMaxUtxo = input.use_max_utxo();
-        if (useMaxUtxo) {
-            plan.utxos = unspentSelector.selectAll(input.utxo(), plan.amount, input.byte_fee());
-        } else {
-            plan.utxos = unspentSelector.select(input.utxo(), plan.amount, input.byte_fee(),
-                                                output_size);
-        }
-
-        plan.fee =
-            unspentSelector.calculator.calculate(plan.utxos.size(), output_size, input.byte_fee());
-
-        plan.availableAmount = UnspentSelector::sum(plan.utxos);
-
-        if (plan.amount > plan.availableAmount - plan.fee) {
-            plan.amount = std::max(Amount(0), plan.availableAmount - plan.fee);
-        }
-
-        plan.change = plan.availableAmount - plan.amount - plan.fee;
-
-        return plan;
-    }
-
-    /// Builds a transaction by selecting UTXOs and calculating fees.
+    /// Builds a transaction with the selected input UTXOs, and one main output and an optional change output.
     template <typename Transaction>
-    static Transaction build(const TransactionPlan& plan, 
-        const std::vector<std::pair<std::string, int64_t>>& outputs,
-        const std::string& changeAddress, enum TWCoinType coin) 
-    {
+    static Transaction build(const TransactionPlan& plan, const std::string& toAddress,
+                             const std::string& changeAddress, enum TWCoinType coin, uint32_t lockTime) {
         Transaction tx;
-        for (auto i = 0; i < outputs.size(); ++i) {
-            auto lockingScriptTo = Script::buildForAddress(std::get<0>(outputs[i]), coin);
-            if (lockingScriptTo.empty()) {
-                std::cerr << "build locking script: " << coin << ", invalid output address:" << std::get<0>(outputs[i]) << std::endl;
-                return {};
-            }
+        tx.lockTime = lockTime;
 
-            tx.outputs.push_back(TransactionOutput(std::get<1>(outputs[i]), lockingScriptTo));
-        }
+        auto outputTo = prepareOutputWithScript(toAddress, plan.amount, coin);
+        if (!outputTo.has_value()) { return {}; }
+        tx.outputs.push_back(outputTo.value());
 
         if (plan.change > 0) {
-            auto lockingScriptChange = Script::buildForAddress(changeAddress, coin);
-            tx.outputs.push_back(TransactionOutput(plan.change, lockingScriptChange));
+            auto outputChange = prepareOutputWithScript(changeAddress, plan.change, coin);
+            if (!outputChange.has_value()) { return {}; }
+            tx.outputs.push_back(outputChange.value());
         }
 
         const auto emptyScript = Script();
         for (auto& utxo : plan.utxos) {
-            tx.inputs.emplace_back(utxo.out_point(), emptyScript, utxo.out_point().sequence());
+            tx.inputs.emplace_back(utxo.outPoint, emptyScript, utxo.outPoint.sequence);
+        }
+
+        // Optional OP_RETURN output
+        if (plan.outputOpReturn.size() > 0) {
+            auto lockingScriptOpReturn = Script::buildOpReturnScript(plan.outputOpReturn);
+            tx.outputs.push_back(TransactionOutput(0, lockingScriptOpReturn));
         }
 
         return tx;
     }
 
-private:
-    static int64_t getTotalAmountFromInput(const Bitcoin::Proto::SigningInput& input) {
-        int64_t sum = input.amount();
-        for (auto i = 0; i < input.extra_outputs_size(); ++i) {
-            sum += input.extra_outputs(i).amount();
-        }
-        return sum;
-    }
+    /// Prepares a TransactionOutput with given address and amount, prepares script for it
+    static std::optional<TransactionOutput> prepareOutputWithScript(std::string address, Amount amount, enum TWCoinType coin);
+
+    /// The maximum number of UTXOs to consider.  UTXOs above this limit are cut off because it cak take very long.
+    static const size_t MaxUtxosHardLimit;
 };
 
 } // namespace TW::Bitcoin

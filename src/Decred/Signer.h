@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -26,53 +26,56 @@ namespace TW::Decred {
 
 /// Helper class that performs Decred transaction signing.
 class Signer {
+  public:
+    /// Returns a transaction plan (utxo selection, fee estimation)
+    static Bitcoin::Proto::TransactionPlan plan(const Bitcoin::Proto::SigningInput& input) noexcept;
+
+    /// Signs a Proto::SigningInput transaction
+    static Proto::SigningOutput sign(const Bitcoin::Proto::SigningInput& input) noexcept;
   private:
     /// Private key and redeem script provider for signing.
     Bitcoin::Proto::SigningInput input;
 
   public:
     /// Transaction plan.
-    Bitcoin::TransactionPlan plan;
+    Bitcoin::TransactionPlan txPlan;
 
     /// Transaction being signed.
     Transaction transaction;
 
   private:
     /// List of signed inputs.
-    std::vector<TransactionInput> signedInputs;
+    Bitcoin::TransactionInputs<TransactionInput> signedInputs;
 
   public:
     /// Initializes a transaction signer.
     Signer() = default;
 
     /// Initializes a transaction signer with signing input.
-    explicit Signer(Bitcoin::Proto::SigningInput&& input) 
-      : input(input), plan(TransactionBuilder::plan(input)) {
-        transaction = TransactionBuilder::build(plan, input.to_address(), input.change_address());
-    }
-
-    /// Initializes a transaction signer with signing input, a transaction, and
-    /// a hash type.
-    Signer(Bitcoin::Proto::SigningInput&& input, const Bitcoin::TransactionPlan& plan)
-        : input(input), plan(plan) {
-        transaction = TransactionBuilder::build(plan, input.to_address(), input.change_address());
+    explicit Signer(const Bitcoin::Proto::SigningInput& input) 
+      : input(input) {
+        if (input.has_plan()) {
+          txPlan = Bitcoin::TransactionPlan(input.plan());
+        } else {
+          txPlan = TransactionBuilder::plan(input);
+        }
+        transaction = TransactionBuilder::build(txPlan, input.to_address(), input.change_address());
     }
 
     /// Signs the transaction.
     ///
     /// \returns the signed transaction or an error.
-    Result<Transaction> sign();
+    Result<Transaction, Common::Proto::SigningError> sign();
 
     /// Signs a particular input.
     ///
     /// \returns the signed transaction script.
-    Result<Bitcoin::Script> sign(Bitcoin::Script script, size_t index);
+    Result<Bitcoin::Script, Common::Proto::SigningError> sign(Bitcoin::Script script, size_t index);
 
   private:
-    Result<std::vector<Data>> signStep(Bitcoin::Script script, size_t index);
+    Result<std::vector<Data>, Common::Proto::SigningError> signStep(Bitcoin::Script script, size_t index);
     Data createSignature(const Transaction& transaction, const Bitcoin::Script& script,
                          const Data& key, size_t index);
-    Data pushAll(const std::vector<Data>& results);
 
     /// Returns the private key for the given public key hash.
     Data keyForPublicKeyHash(const Data& hash) const;
@@ -82,8 +85,3 @@ class Signer {
 };
 
 } // namespace TW::Decred
-
-/// Wrapper for C interface.
-struct TWDecredSigner {
-    TW::Decred::Signer impl;
-};

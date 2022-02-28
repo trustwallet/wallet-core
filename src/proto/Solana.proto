@@ -4,43 +4,99 @@ package TW.Solana.Proto;
 option java_package = "wallet.core.jni.proto";
 
 message Transfer {
-    bytes private_key = 1;
-    string recipient = 2;
-    uint64 value = 3;
+    string recipient = 1;
+    uint64 value = 2;
+    string memo = 3;  // optional
+    repeated string references = 4; // optional referenced public keys
 }
 
-message Stake {
-    bytes from_private_key = 1;
-    bytes stake_private_key = 2;
-    string vote_pubkey = 3;
-    uint64 value = 4;
+// Create and initialize a stake account, and delegate amount to it.
+// Recommendation behavior is to not specify a stake account, and a new unique account will be created each time.
+// Optionally a stake account pubkey can be specified, but it should not exist on chain.
+message DelegateStake {
+    string validator_pubkey = 1;
+    uint64 value = 2;
+    string stake_account = 3;
 }
 
+// Deactivate staking on stake account
 message DeactivateStake {
-    // The stake account private key
-    bytes private_key = 1;
-    string vote_pubkey = 2;
+    string stake_account = 1;
 }
 
+// Deactivate staking on multiple stake account
+message DeactivateAllStake {
+    repeated string stake_accounts = 1;
+}
+
+// Withdraw amount from stake account
 message WithdrawStake {
-    // The stake account private key
-    bytes private_key = 1;
-    string recipient = 2;
-    uint64 value = 3;
+    string stake_account = 1;
+    uint64 value = 2;
+}
+
+// Techinical structure to group a staking account and an amount
+message StakeAccountValue {
+    string stake_account = 1;
+    uint64 value = 2;
+}
+
+// Withdraw amounts from stake accounts
+message WithdrawAllStake {
+    repeated StakeAccountValue stake_accounts = 1;
+}
+
+// Create a token account under a main account for a token type
+message CreateTokenAccount {
+    // main account -- can be same as signer, or other main account (if done on some other account's behalf)
+    string main_address = 1;
+    string token_mint_address = 2;
+    string token_address = 3;
+}
+
+// Transfer tokens
+message TokenTransfer {
+    string token_mint_address = 1;
+    string sender_token_address = 2;
+    string recipient_token_address = 3;
+    uint64 amount = 4;
+    uint32 decimals = 5; // Note: 8-bit value
+    string memo = 6;  // optional
+    repeated string references = 7; // optional referenced public keys
+}
+
+// CreateTokenAccount and TokenTransfer combined
+message CreateAndTransferToken {
+    // main account -- can be same as signer, or other main account (if done on some other account's behalf)
+    string recipient_main_address = 1;
+    string token_mint_address = 2;
+    // Token address for the recipient, will be created first
+    string recipient_token_address = 3;
+    string sender_token_address = 4;
+    uint64 amount = 5;
+    uint32 decimals = 6; // Note: 8-bit value
+    string memo = 7;  // optional
+    repeated string references = 8; // optional referenced public keys
 }
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
+    bytes private_key = 1;
+    string recent_blockhash = 2;
     oneof transaction_type {
-        Transfer transfer_transaction = 1;
-        Stake stake_transaction = 2;
-        DeactivateStake deactivate_stake_transaction = 3;
-        WithdrawStake withdraw_transaction = 4;
+        Transfer transfer_transaction = 3;
+        DelegateStake delegate_stake_transaction = 4;
+        DeactivateStake deactivate_stake_transaction = 5;
+        DeactivateAllStake deactivate_all_stake_transaction = 6;
+        WithdrawStake withdraw_transaction = 7;
+        WithdrawAllStake withdraw_all_transaction = 8;
+        CreateTokenAccount create_token_account_transaction = 9;
+        TokenTransfer token_transfer_transaction = 10;
+        CreateAndTransferToken create_and_transfer_token_transaction = 11;
     }
-    string recent_blockhash = 5;
 }
 
 // Transaction signing output.
 message SigningOutput {
-    bytes encoded = 1;
+    string encoded = 1;
 }

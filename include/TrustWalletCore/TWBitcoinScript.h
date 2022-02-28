@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,6 +10,7 @@
 #include "TWData.h"
 #include "TWPublicKey.h"
 #include "TWCoinType.h"
+#include "TWBitcoinSigHashType.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -48,6 +49,10 @@ bool TWBitcoinScriptIsPayToScriptHash(const struct TWBitcoinScript *_Nonnull scr
 /// Determines whether this is a pay-to-witness-script-hash (P2WSH) script.
 TW_EXPORT_PROPERTY
 bool TWBitcoinScriptIsPayToWitnessScriptHash(const struct TWBitcoinScript *_Nonnull script);
+
+/// Determines whether this is a pay-to-witness-public-key-hash (P2WPKH) script.
+TW_EXPORT_PROPERTY
+bool TWBitcoinScriptIsPayToWitnessPublicKeyHash(const struct TWBitcoinScript *_Nonnull script);
 
 /// Determines whether this is a witness programm script.
 TW_EXPORT_PROPERTY
@@ -90,6 +95,10 @@ TWData *_Nullable TWBitcoinScriptMatchPayToWitnessScriptHash(const struct TWBitc
 TW_EXPORT_METHOD
 TWData *_Nonnull TWBitcoinScriptEncode(const struct TWBitcoinScript *_Nonnull script);
 
+/// Builds a standard 'pay to public key' script.
+TW_EXPORT_STATIC_METHOD
+struct TWBitcoinScript *_Nonnull TWBitcoinScriptBuildPayToPublicKey(TWData *_Nonnull pubkey);
+
 /// Builds a standard 'pay to public key hash' script.
 TW_EXPORT_STATIC_METHOD
 struct TWBitcoinScript *_Nonnull TWBitcoinScriptBuildPayToPublicKeyHash(TWData *_Nonnull hash);
@@ -106,8 +115,12 @@ struct TWBitcoinScript *_Nonnull TWBitcoinScriptBuildPayToWitnessPubkeyHash(TWDa
 TW_EXPORT_STATIC_METHOD
 struct TWBitcoinScript *_Nonnull TWBitcoinScriptBuildPayToWitnessScriptHash(TWData *_Nonnull scriptHash);
 
-/// Builds a pay-to-public-key-hash (P2PKH) script appropriate for the given address.
+/// Builds a appropriate lock script for the given address.
 TW_EXPORT_STATIC_METHOD
-struct TWBitcoinScript *_Nonnull TWBitcoinScriptBuildForAddress(TWString *_Nonnull address, enum TWCoinType coin);
+struct TWBitcoinScript *_Nonnull TWBitcoinScriptLockScriptForAddress(TWString *_Nonnull address, enum TWCoinType coin);
+
+// Return the default HashType for the given coin, such as TWBitcoinSigHashTypeAll.
+TW_EXPORT_STATIC_METHOD
+uint32_t TWBitcoinScriptHashTypeForCoin(enum TWCoinType coinType);
 
 TW_EXTERN_C_END

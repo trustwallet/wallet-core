@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -38,7 +38,7 @@ struct TWBitcoinAddress *_Nullable TWBitcoinAddressCreateWithString(TWString *_N
 }
 
 struct TWBitcoinAddress *_Nullable TWBitcoinAddressCreateWithData(TWData *_Nonnull data) {
-    auto& d = *reinterpret_cast<const TW::Data*>(data);
+    const auto& d = *reinterpret_cast<const TW::Data*>(data);
     try {
         return new TWBitcoinAddress{ Address(d) };
     } catch (...) {

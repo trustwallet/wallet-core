@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -19,7 +19,7 @@ class Clause {
     uint256_t value;
     Data data;
 
-    Clause(Ethereum::Address to, uint256_t value, Data data = {})
+    Clause(Ethereum::Address to, uint256_t value, const Data& data = {})
         : to(std::move(to)), value(std::move(value)), data(std::move(data)) {}
 
     /// Decodes from a proto representation.

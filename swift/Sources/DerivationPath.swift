@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,7 +8,7 @@ import Foundation
 
 /// Represents a hierarchical determinisic derivation path.
 public struct DerivationPath: Codable, Hashable, CustomStringConvertible {
-    let indexCount = 5
+    var indexCount = 5
 
     /// List of indices in the derivation path.
     public private(set) var indices = [Index]()
@@ -24,12 +24,12 @@ public struct DerivationPath: Codable, Hashable, CustomStringConvertible {
     }
 
     /// Coin type distinguishes between main net, test net, and forks.
-    public var coinType: CoinType {
+    public var coinType: UInt32 {
         get {
-            return CoinType(rawValue: indices[1].value)!
+            return indices[1].value
         }
         set {
-            indices[1] = Index(newValue.rawValue, hardened: true)
+            indices[1] = Index(newValue, hardened: true)
         }
     }
 
@@ -69,10 +69,10 @@ public struct DerivationPath: Codable, Hashable, CustomStringConvertible {
     }
 
     /// Creates a `DerivationPath` by components.
-    public init(purpose: Purpose, coinType: CoinType, account: UInt32 = 0, change: UInt32 = 0, address: UInt32 = 0) {
+    public init(purpose: Purpose, coin: UInt32, account: UInt32 = 0, change: UInt32 = 0, address: UInt32 = 0) {
         self.indices = [Index](repeating: Index(0), count: indexCount)
         self.purpose = purpose
-        self.coinType = coinType
+        self.coinType = coin
         self.account = account
         self.change = change
         self.address = address

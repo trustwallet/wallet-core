@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,24 +8,42 @@
 
 #include "../Coin.h"
 #include "../HDWallet.h"
+#include "../Mnemonic.h"
 
 using namespace TW;
 
-bool TWHDWalletIsValid(TWString *_Nonnull mnemonic) {
-    return HDWallet::isValid(TWStringUTF8Bytes(mnemonic));
+
+struct TWHDWallet *_Nullable TWHDWalletCreate(int strength, TWString *_Nonnull passphrase) {
+    try {
+        return new TWHDWallet{ HDWallet(strength, TWStringUTF8Bytes(passphrase)) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
-struct TWHDWallet *_Nonnull TWHDWalletCreate(int strength, TWString *_Nonnull passphrase) {
-    return new TWHDWallet{ HDWallet(strength, TWStringUTF8Bytes(passphrase)) };
+struct TWHDWallet *_Nullable TWHDWalletCreateWithMnemonic(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase) {
+    try {
+        return new TWHDWallet{ HDWallet(TWStringUTF8Bytes(mnemonic), TWStringUTF8Bytes(passphrase)) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
-struct TWHDWallet *_Nonnull TWHDWalletCreateWithMnemonic(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase) {
-    return new TWHDWallet{ HDWallet(TWStringUTF8Bytes(mnemonic), TWStringUTF8Bytes(passphrase)) };
+struct TWHDWallet *_Nullable TWHDWalletCreateWithMnemonicCheck(TWString *_Nonnull mnemonic, TWString *_Nonnull passphrase, bool check) {
+    try {
+        return new TWHDWallet{ HDWallet(TWStringUTF8Bytes(mnemonic), TWStringUTF8Bytes(passphrase), check) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
-struct TWHDWallet *_Nonnull TWHDWalletCreateWithData(TWData *_Nonnull data, TWString *_Nonnull passphrase) {
-    auto *d = reinterpret_cast<const Data*>(data);
-    return new TWHDWallet{ HDWallet(*d, TWStringUTF8Bytes(passphrase)) };
+struct TWHDWallet *_Nullable TWHDWalletCreateWithEntropy(TWData *_Nonnull entropy, TWString *_Nonnull passphrase) {
+    try {
+        auto* d = reinterpret_cast<const Data*>(entropy);
+        return new TWHDWallet{ HDWallet(*d, TWStringUTF8Bytes(passphrase)) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 void TWHDWalletDelete(struct TWHDWallet *wallet) {
@@ -33,26 +51,42 @@ void TWHDWalletDelete(struct TWHDWallet *wallet) {
 }
 
 TWData *_Nonnull TWHDWalletSeed(struct TWHDWallet *_Nonnull wallet) {
-    return TWDataCreateWithBytes(wallet->impl.seed.data(), HDWallet::seedSize);
+    return TWDataCreateWithBytes(wallet->impl.getSeed().data(), HDWallet::seedSize);
 }
 
 TWString *_Nonnull TWHDWalletMnemonic(struct TWHDWallet *_Nonnull wallet){
-    return TWStringCreateWithUTF8Bytes(wallet->impl.mnemonic.c_str());
+    return TWStringCreateWithUTF8Bytes(wallet->impl.getMnemonic().c_str());
+}
+
+TWData *_Nonnull TWHDWalletEntropy(struct TWHDWallet *_Nonnull wallet) {
+    return TWDataCreateWithBytes(wallet->impl.getEntropy().data(), wallet->impl.getEntropy().size());
+}
+
+struct TWPrivateKey *_Nonnull TWHDWalletGetMasterKey(struct TWHDWallet *_Nonnull wallet, TWCurve curve) {
+    return new TWPrivateKey{ wallet->impl.getMasterKey(curve) };
 }
 
 struct TWPrivateKey *_Nonnull TWHDWalletGetKeyForCoin(struct TWHDWallet *wallet, TWCoinType coin) {
     auto derivationPath = TW::derivationPath(coin);
-    return new TWPrivateKey{ wallet->impl.getKey(derivationPath) };
+    return new TWPrivateKey{ wallet->impl.getKey(coin, derivationPath) };
 }
 
-struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull wallet, TWString *_Nonnull derivationPath) {
+TWString *_Nonnull TWHDWalletGetAddressForCoin(struct TWHDWallet *wallet, TWCoinType coin) {
+    auto derivationPath = TW::derivationPath(coin);
+    PrivateKey privateKey = wallet->impl.getKey(coin, derivationPath);
+    std::string address = deriveAddress(coin, privateKey);
+    return TWStringCreateWithUTF8Bytes(address.c_str());
+}
+
+struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, TWString *_Nonnull derivationPath) {
     auto& s = *reinterpret_cast<const std::string*>(derivationPath);
-    return new TWPrivateKey{ wallet->impl.getKey( TW::DerivationPath(s)) };
+    const auto path = DerivationPath(s);
+    return new TWPrivateKey{ wallet->impl.getKey(coin, path) };
 }
 
-struct TWPrivateKey *_Nonnull TWHDWalletGetKeyBIP44(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) {
-    const auto derivationPath = DerivationPath(TW::purpose(coin), coin, account, change, address);
-    return new TWPrivateKey{ wallet->impl.getKey(derivationPath) };
+struct TWPrivateKey *_Nonnull TWHDWalletGetDerivedKey(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) {
+    const auto derivationPath = DerivationPath(TW::purpose(coin), TW::slip44Id(coin), account, change, address);
+    return new TWPrivateKey{ wallet->impl.getKey(coin, derivationPath) };
 }
 
 TWString *_Nonnull TWHDWalletGetExtendedPrivateKey(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, TWHDVersion version) {
@@ -63,9 +97,9 @@ TWString *_Nonnull TWHDWalletGetExtendedPublicKey(struct TWHDWallet *wallet, TWP
     return new std::string(wallet->impl.getExtendedPublicKey(purpose, coin, version));
 }
 
-TWPublicKey *TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, TWString *_Nonnull derivationPath) {
+TWPublicKey *TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, enum TWCoinType coin, TWString *_Nonnull derivationPath) {
     const auto derivationPathObject = DerivationPath(*reinterpret_cast<const std::string*>(derivationPath));
-    auto publicKey = HDWallet::getPublicKeyFromExtended(*reinterpret_cast<const std::string*>(extended), derivationPathObject);
+    auto publicKey = HDWallet::getPublicKeyFromExtended(*reinterpret_cast<const std::string*>(extended), coin, derivationPathObject);
     if (!publicKey) {
         return nullptr;
     }

@@ -1,0 +1,212 @@
+name: WalletCoreCommon
+options:
+  bundleIdPrefix: com.trustwallet
+  createIntermediateGroups: true
+  platform: [iOS, macOS]
+  deploymentTarget:
+    iOS: 12.0
+    macOS: 10.14
+settings:
+  base:
+    ENABLE_BITCODE: YES
+    HEADER_SEARCH_PATHS: $(SRCROOT)/wallet-core ${SRCROOT}/trezor-crypto/crypto
+    SYSTEM_HEADER_SEARCH_PATHS: ${SRCROOT}/include ${SRCROOT}/../build/local/include ${SRCROOT}/trezor-crypto/include $(SRCROOT)/protobuf /usr/local/include /opt/homebrew/include
+    CLANG_CXX_LANGUAGE_STANDARD: c++17
+    GCC_WARN_64_TO_32_BIT_CONVERSION: NO
+
+targets:
+  WalletCoreCommon:
+    type: framework.static
+    platform: [iOS, macOS]
+    deploymentTarget: 
+      iOS: 12.0
+      macOS: 10.14
+    groups:
+      - ${platform}
+    sources:
+      - path: include
+        headerVisibility: public
+        excludes:
+          - "TrustWalletCore/TW*Proto.h"
+      - path: wallet-core
+        headerVisibility: project
+        excludes:
+        - ".vscode"
+        - "proto/*.proto"
+        - "Tron/Protobuf/*.proto"
+        - "Zilliqa/Protobuf/*.proto"
+    dependencies:
+      - target: trezor-crypto_${platform}
+        link: true
+      - target: protobuf_${platform}
+        link: true
+      - sdk: libc++.tbd
+    settings:
+      SKIP_INSTALL: false
+      SUPPORTS_MACCATALYST: true
+      INFOPLIST_FILE: 'Info.plist'
+      CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION: YES_ERROR
+      CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER: $(inherited) false
+      OTHER_CFLAGS: $(inherited) -Wno-comma
+
+  trezor-crypto:
+    type: library.static
+    platform: [iOS, macOS]
+    deploymentTarget:
+      iOS: 12.0
+      macOS: 10.14
+    sources:
+      - trezor-crypto/crypto/bignum.c
+      - trezor-crypto/crypto/ecdsa.c
+      - trezor-crypto/crypto/curves.c
+      - trezor-crypto/crypto/secp256k1.c
+      - trezor-crypto/crypto/rand.c
+      - trezor-crypto/crypto/hmac.c
+      - trezor-crypto/crypto/bip32.c
+      - trezor-crypto/crypto/bip39.c
+      - trezor-crypto/crypto/pbkdf2.c
+      - trezor-crypto/crypto/base58.c
+      - trezor-crypto/crypto/base32.c
+      - trezor-crypto/crypto/address.c
+      - trezor-crypto/crypto/script.c
+      - trezor-crypto/crypto/ripemd160.c
+      - trezor-crypto/crypto/sha2.c
+      - trezor-crypto/crypto/sha3.c
+      - trezor-crypto/crypto/hasher.c
+      - trezor-crypto/crypto/aes/aescrypt.c
+      - trezor-crypto/crypto/aes/aeskey.c
+      - trezor-crypto/crypto/aes/aestab.c
+      - trezor-crypto/crypto/aes/aes_modes.c
+      - trezor-crypto/crypto/ed25519-donna/curve25519-donna-32bit.c
+      - trezor-crypto/crypto/ed25519-donna/curve25519-donna-helpers.c
+      - trezor-crypto/crypto/ed25519-donna/modm-donna-32bit.c
+      - trezor-crypto/crypto/ed25519-donna/ed25519-donna-basepoint-table.c
+      - trezor-crypto/crypto/ed25519-donna/ed25519-donna-32bit-tables.c
+      - trezor-crypto/crypto/ed25519-donna/ed25519-donna-impl-base.c
+      - trezor-crypto/crypto/ed25519-donna/ed25519.c
+      - trezor-crypto/crypto/ed25519-donna/curve25519-donna-scalarmult-base.c
+      - trezor-crypto/crypto/ed25519-donna/ed25519-blake2b.c
+      - trezor-crypto/crypto/ed25519-donna/ed25519-sha3.c
+      - trezor-crypto/crypto/ed25519-donna/ed25519-keccak.c
+      - trezor-crypto/crypto/monero/base58.c
+      - trezor-crypto/crypto/monero/serialize.c
+      - trezor-crypto/crypto/monero/range_proof.c
+      - trezor-crypto/crypto/blake256.c
+      - trezor-crypto/crypto/blake2b.c
+      - trezor-crypto/crypto/blake2s.c
+      - trezor-crypto/crypto/chacha_drbg.c
+      - trezor-crypto/crypto/chacha20poly1305/chacha20poly1305.c
+      - trezor-crypto/crypto/chacha20poly1305/chacha_merged.c
+      - trezor-crypto/crypto/chacha20poly1305/poly1305-donna.c
+      - trezor-crypto/crypto/chacha20poly1305/rfc7539.c
+      - trezor-crypto/crypto/rc4.c
+      - trezor-crypto/crypto/nano.c
+      - trezor-crypto/crypto/nem.c
+      - trezor-crypto/crypto/cash_addr.c
+      - trezor-crypto/crypto/memzero.c
+      - trezor-crypto/crypto/scrypt.c
+      - trezor-crypto/crypto/nist256p1.c
+      - trezor-crypto/crypto/groestl.c
+      - trezor-crypto/crypto/hmac_drbg.c
+      - trezor-crypto/crypto/rfc6979.c
+      - trezor-crypto/crypto/schnorr.c
+      - trezor-crypto/crypto/shamir.c
+      - trezor-crypto/crypto/sodium/private/fe_25_5/fe.c
+      - trezor-crypto/crypto/sodium/private/ed25519_ref10.c
+      - trezor-crypto/crypto/sodium/private/ed25519_ref10_fe_25_5.c
+      - trezor-crypto/crypto/sodium/keypair.c
+
+  protobuf:
+    type: library.static
+    platform: [iOS, macOS]
+    deploymentTarget:
+      iOS: 12.0
+      macOS: 10.14
+    sources:
+      - protobuf/google/protobuf/any.cc
+      - protobuf/google/protobuf/any.pb.cc
+      - protobuf/google/protobuf/any_lite.cc
+      - protobuf/google/protobuf/api.pb.cc
+      - protobuf/google/protobuf/arena.cc
+      - protobuf/google/protobuf/arenastring.cc
+      - protobuf/google/protobuf/compiler/importer.cc
+      - protobuf/google/protobuf/compiler/parser.cc
+      - protobuf/google/protobuf/descriptor.cc
+      - protobuf/google/protobuf/descriptor.pb.cc
+      - protobuf/google/protobuf/descriptor_database.cc
+      - protobuf/google/protobuf/duration.pb.cc
+      - protobuf/google/protobuf/dynamic_message.cc
+      - protobuf/google/protobuf/empty.pb.cc
+      - protobuf/google/protobuf/extension_set.cc
+      - protobuf/google/protobuf/extension_set_heavy.cc
+      - protobuf/google/protobuf/field_mask.pb.cc
+      - protobuf/google/protobuf/generated_enum_util.cc
+      - protobuf/google/protobuf/generated_message_bases.cc
+      - protobuf/google/protobuf/generated_message_reflection.cc
+      - protobuf/google/protobuf/generated_message_table_driven.cc
+      - protobuf/google/protobuf/generated_message_table_driven_lite.cc
+      - protobuf/google/protobuf/generated_message_tctable_full.cc
+      - protobuf/google/protobuf/generated_message_tctable_lite.cc
+      - protobuf/google/protobuf/generated_message_util.cc
+      - protobuf/google/protobuf/implicit_weak_message.cc
+      - protobuf/google/protobuf/inlined_string_field.cc
+      - protobuf/google/protobuf/io/coded_stream.cc
+      - protobuf/google/protobuf/io/gzip_stream.cc
+      - protobuf/google/protobuf/io/io_win32.cc
+      - protobuf/google/protobuf/io/printer.cc
+      - protobuf/google/protobuf/io/strtod.cc
+      - protobuf/google/protobuf/io/tokenizer.cc
+      - protobuf/google/protobuf/io/zero_copy_stream.cc
+      - protobuf/google/protobuf/io/zero_copy_stream_impl.cc
+      - protobuf/google/protobuf/io/zero_copy_stream_impl_lite.cc
+      - protobuf/google/protobuf/map.cc
+      - protobuf/google/protobuf/map_field.cc
+      - protobuf/google/protobuf/message.cc
+      - protobuf/google/protobuf/message_lite.cc
+      - protobuf/google/protobuf/parse_context.cc
+      - protobuf/google/protobuf/reflection_ops.cc
+      - protobuf/google/protobuf/repeated_field.cc
+      - protobuf/google/protobuf/repeated_ptr_field.cc
+      - protobuf/google/protobuf/service.cc
+      - protobuf/google/protobuf/source_context.pb.cc
+      - protobuf/google/protobuf/struct.pb.cc
+      - protobuf/google/protobuf/stubs/bytestream.cc
+      - protobuf/google/protobuf/stubs/common.cc
+      - protobuf/google/protobuf/stubs/int128.cc
+      - protobuf/google/protobuf/stubs/status.cc
+      - protobuf/google/protobuf/stubs/statusor.cc
+      - protobuf/google/protobuf/stubs/stringpiece.cc
+      - protobuf/google/protobuf/stubs/stringprintf.cc
+      - protobuf/google/protobuf/stubs/structurally_valid.cc
+      - protobuf/google/protobuf/stubs/strutil.cc
+      - protobuf/google/protobuf/stubs/substitute.cc
+      - protobuf/google/protobuf/stubs/time.cc
+      - protobuf/google/protobuf/text_format.cc
+      - protobuf/google/protobuf/timestamp.pb.cc
+      - protobuf/google/protobuf/type.pb.cc
+      - protobuf/google/protobuf/unknown_field_set.cc
+      - protobuf/google/protobuf/util/delimited_message_util.cc
+      - protobuf/google/protobuf/util/field_comparator.cc
+      - protobuf/google/protobuf/util/field_mask_util.cc
+      - protobuf/google/protobuf/util/internal/datapiece.cc
+      - protobuf/google/protobuf/util/internal/default_value_objectwriter.cc
+      - protobuf/google/protobuf/util/internal/error_listener.cc
+      - protobuf/google/protobuf/util/internal/field_mask_utility.cc
+      - protobuf/google/protobuf/util/internal/json_escaping.cc
+      - protobuf/google/protobuf/util/internal/json_objectwriter.cc
+      - protobuf/google/protobuf/util/internal/json_stream_parser.cc
+      - protobuf/google/protobuf/util/internal/object_writer.cc
+      - protobuf/google/protobuf/util/internal/proto_writer.cc
+      - protobuf/google/protobuf/util/internal/protostream_objectsource.cc
+      - protobuf/google/protobuf/util/internal/protostream_objectwriter.cc
+      - protobuf/google/protobuf/util/internal/type_info.cc
+      - protobuf/google/protobuf/util/internal/utility.cc
+      - protobuf/google/protobuf/util/json_util.cc
+      - protobuf/google/protobuf/util/message_differencer.cc
+      - protobuf/google/protobuf/util/time_util.cc
+      - protobuf/google/protobuf/util/type_resolver_util.cc
+      - protobuf/google/protobuf/wire_format.cc
+      - protobuf/google/protobuf/wire_format_lite.cc
+      - protobuf/google/protobuf/wrappers.pb.cc
+    settings:
+      OTHER_CFLAGS: $(inherited) -DHAVE_PTHREAD=1 -Wno-comma -Wno-unreachable-code

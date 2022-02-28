@@ -15,6 +15,7 @@ using string = std::string;
 using json = nlohmann::json;
 
 extern const string TYPE_PREFIX_MSG_SEND;
+extern const string TYPE_PREFIX_MSG_TRANSFER;
 extern const string TYPE_PREFIX_MSG_DELEGATE;
 extern const string TYPE_PREFIX_MSG_UNDELEGATE;
 extern const string TYPE_PREFIX_MSG_REDELEGATE;
@@ -28,5 +29,6 @@ json signaturePreimageJSON(const Proto::SigningInput& input);
 json transactionJSON(const Proto::SigningInput& input, const PublicKey& publicKey, const Data& signature);
 
 std::string buildJsonTxRaw(const Proto::SigningInput& input, const PublicKey& publicKey, const Data& signature);
+json transactionJSON(const Proto::SigningInput& input, const Data& signature);
 
 } // namespace

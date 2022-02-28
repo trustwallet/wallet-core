@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -32,7 +32,9 @@ public:
     /// Derive a default address, using default coin and current mnemonic
     bool addrDefault(const string& coinid, string& res);
     /// Derive a new address with the given derivation path
-    bool addrDP(const string& coinid, const string& derivPath, string& res);
+    bool deriveFromPath(const string& coinid, const string& derivPath, string& res);
+    /// Derive a new address from XPUB and index
+    bool deriveFromXpubIndex(const string& coinid, const string& xpub, const string& accountIndex, string& res);
 };
 
 } // namespace TW::WalletConsole

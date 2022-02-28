@@ -1,11 +1,13 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #include "JsonSerialization.h"
-
+#include "ProtobufSerialization.h"
+#include "../Cosmos/Address.h"
+#include "../proto/Cosmos.pb.h"
 #include "Base64.h"
 #include "PrivateKey.h"
 
@@ -24,7 +26,9 @@ const string TYPE_PREFIX_MSG_REDELEGATE = "cosmos-sdk/MsgBeginRedelegate";
 const string TYPE_PREFIX_MSG_WITHDRAW_REWARD = "cosmos-sdk/MsgWithdrawDelegationReward";
 const string TYPE_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 
+/// TODO:<@FitzLu> looks like the following two consts are conflict, maybe we can share them.
 const string TYPE_PREFIX_MSG_EXECUTE_CONTRACT = "wasm/MsgExecuteContract"; //from terra
+const string TYPE_PREFIX_WASM_MSG_EXECUTE = "wasm/MsgExecuteContract";
 
 static string broadcastMode(Proto::BroadcastMode mode) {
     switch (mode) {
@@ -45,7 +49,9 @@ static json broadcastJSON(json& j, Proto::BroadcastMode mode) {
 
 static json amountJSON(const Proto::Amount& amount) {
     return {
+        /// TODO:<@ackratos> trustwallet uses string type, we need to check if we should keep same with them.
         {"amount", amount.amount()},
+        // {"amount", std::to_string(amount.amount())},
         {"denom", amount.denom()}
     };
 }
@@ -136,6 +142,9 @@ static json messageWithdrawReward(const Proto::Message_WithdrawDelegationReward&
     };
 }
 
+
+/// TODO:<@FitzLu> the following two functions shares same codes,
+/// should we consider to refactor them?
 // https://docs.terra.money/Tutorials/Smart-contracts/Manage-CW20-tokens.html#interacting-with-cw20-contract
 static json messageExecuteContract(const Proto::Message_ExecuteContract& message) {
     auto typePrefix = message.type_prefix().empty() ? TYPE_PREFIX_MSG_EXECUTE_CONTRACT : message.type_prefix();
@@ -151,12 +160,27 @@ static json messageExecuteContract(const Proto::Message_ExecuteContract& message
     };
 }
 
+json messageWasmTerraTransfer(const Proto::Message_WasmTerraExecuteContractTransfer& msg) {
+    return {
+        {"type", TYPE_PREFIX_WASM_MSG_EXECUTE},
+        {"value",
+            {
+                {"sender", msg.sender_address()},
+                {"contract", msg.contract_address()},
+                {"execute_msg", wasmTerraExecuteTransferPayload(msg)},
+                {"coins", json::array()}  // used in case you are sending native tokens along with this message
+            }
+        }
+    };
+}
+
 static json messageRawJSON(const Proto::Message_RawJSON& message) {
     return {
         {"type", message.type()},
         {"value", json::parse(message.value())},
     };
 }
+
 static json messagesJSON(const Proto::SigningInput& input) {
     json j = json::array();
     for (auto& msg : input.messages()) {
@@ -173,7 +197,13 @@ static json messagesJSON(const Proto::SigningInput& input) {
         } else if (msg.has_raw_json_message()) {
             j.push_back(messageRawJSON(msg.raw_json_message()));
         } else if (msg.has_execute_contract_message()) {
+            /// TODO:<@FitzLu> check if msg.has_execute_contract_message() and msg.has_wasm_terra_execute_contract_transfer_message() can share same codes
             j.push_back(messageExecuteContract(msg.execute_contract_message()));
+        } else if (msg.has_transfer_tokens_message()) {
+            assert(false); // not suppored, use protobuf serialization
+            return json::array();
+        } else if ((msg.has_wasm_terra_execute_contract_transfer_message())) {
+            j.push_back(messageWasmTerraTransfer(msg.wasm_terra_execute_contract_transfer_message()));
         }
     }
     return j;
@@ -200,6 +230,7 @@ json signaturePreimageJSON(const Proto::SigningInput& input) {
     };
 }
 
+
 json transactionJSON(const Proto::SigningInput& input, const PublicKey& publicKey, const Data& signature) {
     json tx = {
         {"fee", feeJSON(input.fee())},
@@ -210,6 +241,13 @@ json transactionJSON(const Proto::SigningInput& input, const PublicKey& publicKe
         })}
     };
     return broadcastJSON(tx, input.mode());
+}
+
+json transactionJSON(const Proto::SigningInput& input, const Data& signature) {
+    auto privateKey = PrivateKey(input.private_key());
+    auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+
+    return transactionJSON(input, publicKey, signature);
 }
 
 std::string buildJsonTxRaw(const Proto::SigningInput& input, const PublicKey& publicKey, const Data& signature) {

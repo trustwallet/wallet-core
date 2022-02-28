@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,34 +8,62 @@
 
 #include "TransactionInput.h"
 #include "TransactionOutput.h"
+#include "../Bitcoin/SigHashType.h"
+#include "../Bitcoin/SignatureBuilder.h"
 
 #include "../BinaryCoding.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
 
-#include <TrustWalletCore/TWBitcoinOpCodes.h>
+#include "Bitcoin/OpCodes.h"
 
 using namespace TW;
 using namespace TW::Decred;
 
-Result<Transaction> Signer::sign() {
-    signedInputs.clear();
-    std::copy(std::begin(transaction.inputs), std::end(transaction.inputs),
-              std::back_inserter(signedInputs));
+Bitcoin::Proto::TransactionPlan Signer::plan(const Bitcoin::Proto::SigningInput& input) noexcept {
+    auto signer = Signer(std::move(input));
+    return signer.txPlan.proto();
+}
 
-    const bool hashSingle =
-        ((input.hash_type() & ~TWBitcoinSigHashTypeAnyoneCanPay) == TWBitcoinSigHashTypeSingle);
-    for (auto i = 0; i < plan.utxos.size(); i += 1) {
-        auto& utxo = plan.utxos[i];
+Proto::SigningOutput Signer::sign(const Bitcoin::Proto::SigningInput& input) noexcept {
+    auto signer = Signer(std::move(input));
+    auto result = signer.sign();
+    auto output = Proto::SigningOutput();
+    if (!result) {
+        output.set_error(result.error());
+        return output;
+    }
+
+    const auto& tx = result.payload();
+    *output.mutable_transaction() = tx.proto();
+
+    Data encoded;
+    tx.encode(encoded);
+    output.set_encoded(encoded.data(), encoded.size());
+
+    auto txHash = Hash::blake256(encoded);
+    output.set_transaction_id(hex(txHash));
+    return output;
+}
+
+Result<Transaction, Common::Proto::SigningError> Signer::sign() {
+    if (txPlan.utxos.size() == 0 || transaction.inputs.size() == 0) {
+        return Result<Transaction, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_input_utxos);
+    }
+
+    signedInputs = transaction.inputs;
+
+    const auto hashSingle = Bitcoin::hashTypeIsSingle(static_cast<enum TWBitcoinSigHashType>(input.hash_type()));
+    for (auto i = 0; i < txPlan.utxos.size(); i += 1) {
+        auto& utxo = txPlan.utxos[i];
 
         // Only sign TWBitcoinSigHashTypeSingle if there's a corresponding output
         if (hashSingle && i >= transaction.outputs.size()) {
             continue;
         }
-        auto script = Bitcoin::Script(utxo.script().begin(), utxo.script().end());
-        auto result = sign(script, i);
+        auto result = sign(utxo.script, i);
         if (!result) {
-            return Result<Transaction>::failure(result.error());
+            return Result<Transaction, Common::Proto::SigningError>::failure(result.error());
         }
         signedInputs[i].script = result.payload();
     }
@@ -43,10 +71,12 @@ Result<Transaction> Signer::sign() {
     Transaction tx(transaction);
     tx.inputs = move(signedInputs);
     tx.outputs = transaction.outputs;
-    return Result<Transaction>::success(std::move(tx));
+    return Result<Transaction, Common::Proto::SigningError>::success(std::move(tx));
 }
 
-Result<Bitcoin::Script> Signer::sign(Bitcoin::Script script, size_t index) {
+Result<Bitcoin::Script, Common::Proto::SigningError> Signer::sign(Bitcoin::Script script, size_t index) {
+    assert(index < transaction.inputs.size());
+
     Bitcoin::Script redeemScript;
     std::vector<Data> results;
 
@@ -54,7 +84,7 @@ Result<Bitcoin::Script> Signer::sign(Bitcoin::Script script, size_t index) {
     if (result) {
         results = result.payload();
     } else {
-        return Result<Bitcoin::Script>::failure(result.error());
+        return Result<Bitcoin::Script, Common::Proto::SigningError>::failure(result.error());
     }
     auto txin = transaction.inputs[index];
 
@@ -62,7 +92,7 @@ Result<Bitcoin::Script> Signer::sign(Bitcoin::Script script, size_t index) {
         script = Bitcoin::Script(results.front().begin(), results.front().end());
         auto result = signStep(script, index);
         if (!result) {
-            return Result<Bitcoin::Script>::failure(result.error());
+            return Result<Bitcoin::Script, Common::Proto::SigningError>::failure(result.error());
         }
         results = result.payload();
         results.push_back(script.bytes);
@@ -70,10 +100,10 @@ Result<Bitcoin::Script> Signer::sign(Bitcoin::Script script, size_t index) {
         results.push_back(redeemScript.bytes);
     }
 
-    return Result<Bitcoin::Script>::success(Bitcoin::Script(pushAll(results)));
+    return Result<Bitcoin::Script, Common::Proto::SigningError>::success(Bitcoin::Script(Bitcoin::SignatureBuilder<Bitcoin::Transaction>::pushAll(results)));
 }
 
-Result<std::vector<Data>> Signer::signStep(Bitcoin::Script script, size_t index) {
+Result<std::vector<Data>, Common::Proto::SigningError> Signer::signStep(Bitcoin::Script script, size_t index) {
     Transaction transactionToSign(transaction);
     transactionToSign.inputs = signedInputs;
     transactionToSign.outputs = transaction.outputs;
@@ -82,40 +112,40 @@ Result<std::vector<Data>> Signer::signStep(Bitcoin::Script script, size_t index)
     std::vector<Data> keys;
     int required;
 
-    if (script.matchPayToPubkey(data)) {
+    if (script.matchPayToPublicKey(data)) {
         auto keyHash = TW::Hash::ripemd(TW::Hash::blake256(data));
         auto key = keyForPublicKeyHash(keyHash);
         if (key.empty()) {
             // Error: Missing key
-            return Result<std::vector<Data>>::failure("Missing private key.");
+            return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
         }
         auto signature = createSignature(transactionToSign, script, key, index);
         if (signature.empty()) {
             // Error: Failed to sign
-            return Result<std::vector<Data>>::failure("Failed to sign.");
+            return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
         }
-        return Result<std::vector<Data>>::success({signature});
-    } else if (script.matchPayToPubkeyHash(data)) {
+        return Result<std::vector<Data>, Common::Proto::SigningError>::success({signature});
+    } else if (script.matchPayToPublicKeyHash(data)) {
         auto key = keyForPublicKeyHash(data);
         if (key.empty()) {
             // Error: Missing keyxs
-            return Result<std::vector<Data>>::failure("Missing private key.");
+            return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
         }
 
         auto pubkey = PrivateKey(key).getPublicKey(TWPublicKeyTypeSECP256k1);
         auto signature = createSignature(transactionToSign, script, key, index);
         if (signature.empty()) {
             // Error: Failed to sign
-            return Result<std::vector<Data>>::failure("Failed to sign.");
+            return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
         }
-        return Result<std::vector<Data>>::success({signature, pubkey.bytes});
+        return Result<std::vector<Data>, Common::Proto::SigningError>::success({signature, pubkey.bytes});
     } else if (script.matchPayToScriptHash(data)) {
         auto redeemScript = scriptForScriptHash(data);
         if (redeemScript.empty()) {
             // Error: Missing redeem script
-            return Result<std::vector<Data>>::failure("Missing redeem script.");
+            return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_script_redeem);
         }
-        return Result<std::vector<Data>>::success({redeemScript});
+        return Result<std::vector<Data>, Common::Proto::SigningError>::success({redeemScript});
     } else if (script.matchMultisig(keys, required)) {
         auto results = std::vector<Data>{{}};
         for (auto& pubKey : keys) {
@@ -126,20 +156,20 @@ Result<std::vector<Data>> Signer::signStep(Bitcoin::Script script, size_t index)
             auto key = keyForPublicKeyHash(keyHash);
             if (key.empty()) {
                 // Error: missing key
-                return Result<std::vector<Data>>::failure("Missing private key.");
+                return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
             }
             auto signature = createSignature(transactionToSign, script, key, index);
             if (signature.empty()) {
                 // Error: Failed to sign
-                return Result<std::vector<Data>>::failure("Failed to sign.");
+                return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
             }
             results.push_back(signature);
         }
         results.resize(required + 1);
-        return Result<std::vector<Data>>::success(std::move(results));
+        return Result<std::vector<Data>, Common::Proto::SigningError>::success(std::move(results));
     } else {
         // Error: Invalid output script
-        return Result<std::vector<Data>>::failure("Invalid output script.");
+        return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_script_output);
     }
 }
 
@@ -154,30 +184,6 @@ Data Signer::createSignature(const Transaction& transaction, const Bitcoin::Scri
     signature.push_back(static_cast<uint8_t>(input.hash_type()));
 
     return signature;
-}
-
-Data Signer::pushAll(const std::vector<Data>& results) {
-    auto data = Data{};
-    for (auto& result : results) {
-        if (result.empty()) {
-            data.push_back(OP_0);
-        } else if (result.size() == 1 && result[0] >= 1 && result[0] <= 16) {
-            data.push_back(Bitcoin::Script::encodeNumber(result[0]));
-        } else if (result.size() < OP_PUSHDATA1) {
-            data.push_back(static_cast<uint8_t>(result.size()));
-        } else if (result.size() <= 0xff) {
-            data.push_back(OP_PUSHDATA1);
-            data.push_back(static_cast<uint8_t>(result.size()));
-        } else if (result.size() <= 0xffff) {
-            data.push_back(OP_PUSHDATA2);
-            encode16LE(static_cast<uint16_t>(result.size()), data);
-        } else {
-            data.push_back(OP_PUSHDATA4);
-            encode32LE(static_cast<uint32_t>(result.size()), data);
-        }
-        std::copy(begin(result), end(result), back_inserter(data));
-    }
-    return data;
 }
 
 Data Signer::keyForPublicKeyHash(const Data& hash) const {

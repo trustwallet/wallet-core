@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -71,11 +71,11 @@ TEST(Forging, ForgeZarithOneHundredFifty) {
 }
 
 TEST(Forging, ForgeZarithLarge) {
-    auto expected = "82fc43";
+    auto expected = "bbd08001";
   
-    auto output = forgeZarith(1113602);
+    auto output = forgeZarith(2107451);
   
-    ASSERT_EQ(output, parse_hex(expected));
+    ASSERT_EQ(hex(output), expected);
 }
 
 TEST(Forging, forge_tz1) {

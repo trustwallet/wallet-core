@@ -1,0 +1,73 @@
+#!/bin/bash
+#
+# This script builds the sample applications.
+
+set -e
+
+if [ -z $1 ] 
+then 
+    echo "No platform argument given, use all|linux|ios|android"
+    set $1 'linux'
+fi
+
+if [ ! "$1" = "linux" ] && [ ! "$1" = "ios" ] && [ ! "$1" = "android" ] && [ ! "$1" = "all" ]
+then
+    echo "Wrong platform argument given, use all|linux|ios|android"
+    set $1 'linux'
+fi
+
+echo "Platform argument: "$1
+
+build_cpp() {
+    pushd samples/cpp
+    echo "Building CPP sample app:"`pwd`
+    cmake . -DWALLET_CORE=../../
+    make
+    echo "Building CPP sample app: done"
+    popd
+}
+
+build_ios() {
+    pushd samples/osx/cocoapods
+    echo "Building OSX sample app:"`pwd`
+    pod repo update
+    pod install
+    echo "Building OSX sample app: done"
+    popd
+}
+
+build_android() {
+    pushd samples/android
+    echo "Building Android sample app:"`pwd`
+    ./gradlew assembleDebug
+    echo "Building Android sample app: done"
+    popd
+}
+
+build_go() {
+    pushd samples/go
+    echo "Building GO sample app:"`pwd`
+    go build -o main
+    echo "Building GO sample app: done"
+    popd
+}
+
+if [ "$1" = "linux" ]; then
+    build_cpp
+    build_go
+fi
+
+if [ "$1" = "ios" ]; then
+    build_ios
+fi
+
+if [ "$1" = "android" ]; then
+    build_android
+fi
+
+if [ "$1" = "all" ]; then
+    build_cpp
+    build_go
+    build_ios
+    build_android
+fi

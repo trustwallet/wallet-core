@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,12 +12,18 @@
 using namespace TW;
 using namespace TW::Keystore;
 
+ScryptParameters ScryptParameters::Minimal = ScryptParameters(Data(), minimalN, defaultR, minimalP, defaultDesiredKeyLength);
+ScryptParameters ScryptParameters::Weak = ScryptParameters(Data(), weakN, defaultR, weakP, defaultDesiredKeyLength);
+ScryptParameters ScryptParameters::Standard = ScryptParameters(Data(), standardN, defaultR, standardP, defaultDesiredKeyLength);
+
 ScryptParameters::ScryptParameters() : salt(32) {
     random_buffer(salt.data(), salt.size());
 }
 
+#pragma GCC diagnostic ignored "-Wtautological-constant-out-of-range-compare"
+
 std::optional<ScryptValidationError> ScryptParameters::validate() const {
-    if (desiredKeyLength > ((static_cast<uint64_t>(1) << 32) - 1) * 32) {
+    if (desiredKeyLength > ((1ULL << 32) - 1) * 32) { // depending on size_t size on platform, may be always false 
         return ScryptValidationError::desiredKeyLengthTooLarge;
     }
     if (static_cast<uint64_t>(r) * static_cast<uint64_t>(p) >= (1 << 30)) {

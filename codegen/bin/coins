@@ -8,25 +8,34 @@ require 'json'
 def self.format_name(n)
   formatted = n
   formatted = formatted.sub(/^([a-z]+)/, &:upcase)
-  formatted = formatted.sub(/\s/, '')
+  formatted = formatted.gsub(/-/, ' ')
+  formatted = formatted.gsub(/\./, ' ')
+  formatted = formatted.gsub(/\s/, '')
   formatted
 end
 
-def self.coin_type(path)
-  path.split('/')[2].chomp("'")
+def self.coin_name(coin)
+  coin['displayName'] || coin['name']
 end
 
 def self.coin_img(coin)
   "<img src=\"https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/#{coin}/info/logo.png\" width=\"32\" />"
 end
 
-json_string = File.read('coins.json')
-coins = JSON.parse(json_string).sort_by { |x| x['name'] }
-coins_md = coins.sort_by { |x| Integer(coin_type(x['derivationPath'])) }
+# Explorer urls
+def self.explorer_tx_url(c)
+  path = c['explorer']['url'].to_s + c['explorer']['txPath'].to_s
+end
+def self.explorer_account_url(c)
+  path = c['explorer']['url'].to_s + c['explorer']['accountPath'].to_s
+end
+
+json_string = File.read('registry.json')
+coins = JSON.parse(json_string).sort_by { |x| x['coinId'] }
 
 erbs = [
-  {'template' => 'coins.cpp.erb', 'folder' => 'src/Generated', 'file' => 'Coins.cpp'},
-  {'template' => 'coins.md.erb', 'folder' => 'docs', 'file' => 'coins.md'},
+  {'template' => 'CoinInfoData.cpp.erb', 'folder' => 'src/Generated', 'file' => 'CoinInfoData.cpp'},
+  {'template' => 'registry.md.erb', 'folder' => 'docs', 'file' => 'registry.md'},
   {'template' => 'hrp.cpp.erb', 'folder' => 'src/Generated', 'file' => 'TWHRP.cpp'},
   {'template' => 'hrp.h.erb', 'folder' => 'include/TrustWalletCore', 'file' => 'TWHRP.h'}
 ]

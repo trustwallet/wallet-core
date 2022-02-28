@@ -1,0 +1,72 @@
+#!/bin/bash
+
+set -e
+
+# load release library code
+base_dir=$(dirname $0)
+source ${base_dir}/library
+
+# version to release
+version=$(wc_read_version $1)
+echo "release version ${version}"
+release_url=$(wc_release_url ${version})
+echo "release_url url is $release_url"
+
+pushd ${base_dir}/../swift/build
+
+# archive xcframeworks
+core_zip_filename="WalletCore.xcframework.zip"
+protobuf_zip_filename="SwiftProtobuf.xcframework.zip"
+
+rm -rf ${core_zip_filename} ${protobuf_zip_filename}
+
+zip -r ${core_zip_filename} WalletCore.xcframework
+core_hash=$(/usr/bin/shasum -a 256 ${core_zip_filename} | awk '{printf $1}')
+
+zip -r ${protobuf_zip_filename} SwiftProtobuf.xcframework
+protobuf_hash=$(/usr/bin/shasum -a 256 ${protobuf_zip_filename} | awk '{printf $1}')
+
+# upload to release
+core_download_url=$(wc_upload_asset ${release_url} ${core_zip_filename})
+echo "wallet core url is: ${core_download_url}"
+
+protobuf_download_url=$(wc_upload_asset ${release_url} ${protobuf_zip_filename})
+echo "swift protobuf url is: ${protobuf_download_url}"
+
+# create Package.swift
+
+package_swift="Package.swift"
+cat > $package_swift <<EOF
+// swift-tools-version:5.3
+import PackageDescription
+
+let package = Package(
+    name: "WalletCore",
+    platforms: [.iOS(.v13)],
+    products: [
+        .library(name: "WalletCore", targets: ["WalletCore"]),
+        .library(name: "SwiftProtobuf", targets: ["SwiftProtobuf"])
+    ],
+    dependencies: [],
+    targets: [
+        .binaryTarget(
+            name: "WalletCore",
+            url: ${core_download_url},
+            checksum: "${core_hash}"
+        ),
+        .binaryTarget(
+            name: "SwiftProtobuf",
+            url: ${protobuf_download_url},
+            checksum: "${protobuf_hash}"
+        )
+    ]
+)
+EOF
+
+echo "${package_swift} generated."
+cat $package_swift
+
+package_swift_download_url=$(wc_upload_asset ${release_url} ${package_swift})
+echo "${package_swift} url is: ${package_swift_download_url}"
+
+popd

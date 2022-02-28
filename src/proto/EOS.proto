@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.EOS.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 enum KeyType {
     LEGACY = 0;
     MODERNK1 = 1;
@@ -53,4 +55,7 @@ message SigningInput {
 message SigningOutput {
     // JSON of the packed transaction.
     string json_encoded = 1;
+
+    // Optional error
+    Common.Proto.SigningError error = 2;
 }

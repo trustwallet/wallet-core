@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,10 +11,10 @@
 
 TW_EXTERN_C_BEGIN
 
-/// Converts a TWData to a Java byte array.
+/// Converts a TWData (will be deleted within this call) to a Java byte array.
 jbyteArray TWDataJByteArray(TWData *data, JNIEnv *env);
 
-/// Converts a Java byte array to a TWData.
+/// Converts a Java byte array to a TWData, caller must delete it after use.
 TWData * TWDataCreateWithJByteArray(JNIEnv *env, jbyteArray array);
 
 TW_EXTERN_C_END

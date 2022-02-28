@@ -1,0 +1,7 @@
+platform :osx, '10.14'
+
+target 'WalletCoreExample' do
+  use_frameworks!
+  pod 'TrustWalletCore'
+end
+

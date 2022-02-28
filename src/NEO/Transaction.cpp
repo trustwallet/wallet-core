@@ -21,7 +21,7 @@ int64_t Transaction::size() const {
     return serialize().size();
 }
 
-void Transaction::deserialize(const Data &data, int initial_pos) {
+void Transaction::deserialize(const Data& data, int initial_pos) {
     type = (TransactionType) data[initial_pos++];
     version = data[initial_pos++];
     initial_pos = deserializeExclusiveData(data, initial_pos);
@@ -33,7 +33,7 @@ void Transaction::deserialize(const Data &data, int initial_pos) {
     Serializable::deserialize<TransactionOutput>(outputs, data, initial_pos);
 }
 
-Transaction * Transaction::deserializeFrom(const Data &data, int initial_pos) {
+Transaction * Transaction::deserializeFrom(const Data& data, int initial_pos) {
     Transaction * resp = nullptr;
     switch ((TransactionType) data[initial_pos]) {
         case TransactionType::TT_MinerTransaction:
@@ -59,8 +59,8 @@ Data Transaction::serialize() const {
     if(witnesses.size())
 	 {
 		resp.push_back((byte) witnesses.size());
-		for (int i = 0; i < witnesses.size(); i++)
-		  append(resp, witnesses[i].serialize());
+		for (const auto& witnesse : witnesses)
+		  append(resp, witnesse.serialize());
 	 }
 
     return resp;

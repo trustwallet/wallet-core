@@ -108,6 +108,11 @@ class Parser
     func
   end
 
+  def parse_discardable_result
+    @buffer.skip(/\s*/)
+    @buffer.scan(/TW_METHOD_DISCARDABLE_RESULT(\s*)/) != nil
+  end
+
   def handle_class
     @buffer.skip(/\s*/)
     report_error 'Invalid type name' if @buffer.scan(/struct TW(\w+)\s*;/).nil?
@@ -165,7 +170,9 @@ class Parser
 
   def handle_method
     report_error 'Method found before class/struct definition' if @entity.nil?
+    discardable = parse_discardable_result
     method = parse_func
+    method.discardable_result = discardable
 
     # Remove prefix
     unless method.name.start_with? "TW#{@entity.name}"
@@ -225,8 +232,10 @@ class Parser
 
   def handle_static_method
     report_error 'Method found before class/struct definition' if @entity.nil?
+    discardable = parse_discardable_result
     method = parse_func
     method.static = true
+    method.discardable_result = discardable
 
     # Remove prefix
     unless method.name.start_with? "TW#{@entity.name}"

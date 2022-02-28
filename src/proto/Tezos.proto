@@ -13,7 +13,7 @@ message SigningInput {
 // Transaction signing output.
 // Next field: 2
 message SigningOutput {
-  bytes signed_bytes = 1;
+  bytes encoded = 1;
 }
 
 // A list of operations and a branch.

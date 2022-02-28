@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,7 +13,7 @@
 using namespace TW::Aeternity;
 
 /// Determines whether a string makes a valid address.
-bool Address::isValid(const std::string &string) {
+bool Address::isValid(const std::string& string) {
     if (string.empty()) {
         return false;
     }
@@ -34,7 +34,7 @@ Address::Address(const PublicKey &publicKey) {
 }
 
 /// Initializes an address from a string representation.
-Address::Address(const std::string &string) {
+Address::Address(const std::string& string) {
     if (!isValid(string)) {
         throw std::invalid_argument("Invalid address");
     }
@@ -43,16 +43,16 @@ Address::Address(const std::string &string) {
     bytes = Base58::bitcoin.decodeCheck(payload);
 }
 
-/// Returns a string representation of the Bravo address.
+/// Returns a string representation of the Aeternity address.
 std::string Address::string() const {
     return Identifiers::prefixAccountPubkey + Base58::bitcoin.encodeCheck(bytes);
 }
 
-bool Address::checkType(const std::string &type) {
+bool Address::checkType(const std::string& type) {
     return type == Identifiers::prefixAccountPubkey;
 }
 
-bool Address::checkPayload(const std::string &payload) {
+bool Address::checkPayload(const std::string& payload) {
     unsigned long base58 = Base58::bitcoin.decodeCheck(payload).size();
     return base58 == size;
 }

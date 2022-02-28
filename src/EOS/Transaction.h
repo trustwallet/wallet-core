@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -25,7 +25,7 @@ public:
     static const size_t DataSize = 65;
     static const size_t ChecksumSize = 4;
 
-    Signature(Data sig, Type type);
+    Signature(const Data& sig, Type type);
     virtual ~Signature() { }
     void serialize(Data& os) const noexcept;
     std::string string() const noexcept;
@@ -36,7 +36,7 @@ public:
     uint16_t type;
     Data buffer;
 
-    Extension(uint16_t type, Data buffer) : type(type), buffer(buffer) { }
+    Extension(uint16_t type, const Data& buffer) : type(type), buffer(buffer) { }
     virtual ~Extension() { }
     void serialize(Data& os) const noexcept;
     nlohmann::json serialize() const noexcept;

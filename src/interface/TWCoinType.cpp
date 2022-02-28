@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -63,4 +63,8 @@ uint8_t TWCoinTypeP2shPrefix(enum TWCoinType coin) {
 
 uint8_t TWCoinTypeStaticPrefix(enum TWCoinType coin) {
     return TW::staticPrefix(coin);
+}
+
+uint32_t TWCoinTypeSlip44Id(enum TWCoinType coin) {
+    return TW::slip44Id(coin);
 }

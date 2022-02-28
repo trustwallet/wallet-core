@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -37,6 +37,9 @@
 
 // Marker for exported static properties
 #define TW_EXPORT_STATIC_PROPERTY extern
+
+// Marker for discardable result (static) method
+#define TW_METHOD_DISCARDABLE_RESULT
 
 // Marker for Protobuf types to be serialized across the interface
 #define PROTO(x) TWData *

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -31,7 +31,7 @@ bool Address::addrPub(const string& coinid, const string& pubkey_in, string& res
         _out << "Error: could not parse public key data" << endl;
         return false; 
     }
-    TWCoinType ctype = (TWCoinType)coin.c;
+    auto ctype = (TWCoinType)coin.c;
     PublicKey pubKey = PublicKey(pubDat, (TWPublicKeyType)coin.pubKeyType);
     res = TW::deriveAddress(ctype, pubKey);
     return true;
@@ -47,7 +47,7 @@ bool Address::addrPri(const string& coinid, const string& prikey_in, string& res
         _out << "Error: could not parse private key data" << endl;
         return false; 
     }
-    TWCoinType ctype = (TWCoinType)coin.c;
+    auto ctype = (TWCoinType)coin.c;
     PrivateKey priKey = PrivateKey(priDat);
     res = TW::deriveAddress(ctype, priKey);
     return true;
@@ -56,7 +56,7 @@ bool Address::addrPri(const string& coinid, const string& prikey_in, string& res
 bool Address::addr(const string& coinid, const string& addrStr, string& res) {
     Coin coin;
     if (!_coins.findCoin(coinid, coin)) { return false; }
-    TWCoinType ctype = (TWCoinType)coin.c;
+    auto ctype = (TWCoinType)coin.c;
     if (!TW::validateAddress(ctype, addrStr)) {
         _out << "Address is not a valid " << coin.name << " address! " << addrStr << endl;
         return false;
@@ -68,12 +68,9 @@ bool Address::addr(const string& coinid, const string& addrStr, string& res) {
 bool Address::addrDefault(const string& coinid, string& res) {
     Coin coin;
     if (!_coins.findCoin(coinid, coin)) { return false; }
-    TWCoinType ctype = (TWCoinType)coin.c;
+    auto ctype = (TWCoinType)coin.c;
     string mnemo = _keys.getMnemo();
-    if (mnemo.length() == 0) {
-        _out << "Error: no mnemonic set." << endl;
-        return false;
-    }
+    assert(mnemo.length() > 0); // a mnemonic is always set
     HDWallet wallet(mnemo, "");
 
     string addr = wallet.deriveAddress(ctype);
@@ -82,23 +79,38 @@ bool Address::addrDefault(const string& coinid, string& res) {
     return true;
 }
 
-bool Address::addrDP(const string& coinid, const string& derivPath, string& res) {
+bool Address::deriveFromPath(const string& coinid, const string& derivPath, string& res) {
+    Coin coin;
+    if (!_coins.findCoin(coinid, coin)) { return false; }
+    auto ctype = (TWCoinType)coin.c;
+
     DerivationPath dp(derivPath);
     // get the private key
     string mnemo = _keys.getMnemo();
-    if (mnemo.length() == 0) {
-        _out << "Error: no mnemonic set." << endl;
-        return false;
-    }
+    assert(mnemo.length() > 0); // a mnemonic is always set
     HDWallet wallet(mnemo, "");
-    PrivateKey priKey = wallet.getKey(dp);
-
-    Coin coin;
-    if (!_coins.findCoin(coinid, coin)) { return false; }
-    TWCoinType ctype = (TWCoinType)coin.c;
+    PrivateKey priKey = wallet.getKey(ctype, dp);
 
     // derive address
     res = TW::deriveAddress(ctype, priKey);
+    return true;
+}
+
+bool Address::deriveFromXpubIndex(const string& coinid, const string& xpub, const string& accountIndex, string& res) {
+    Coin coin;
+    if (!_coins.findCoin(coinid, coin)) { return false; }
+    auto ctype = (TWCoinType)coin.c;
+
+    int index = std::stoi(accountIndex);
+
+    // Derivation path: use default, but only elements 4&5 (change&address) are used
+    DerivationPath dp(coin.derivPath);
+    dp.setChange(0);
+    dp.setAddress(index);
+
+    const auto publicKey = HDWallet::getPublicKeyFromExtended(xpub, ctype, dp);
+    if (!publicKey) { return false; }
+    res = TW::deriveAddress(ctype, publicKey.value());
     return true;
 }
 

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -22,18 +22,20 @@ class Transaction {
     uint128_t gasLimit;
     Address to;
     uint128_t amount;
+    uint128_t timestamp;
     std::vector<uint8_t> payload;
 
     /// Transaction signature.
     std::vector<uint8_t> signature;
 
     Transaction(uint128_t nonce, uint128_t gasPrice, uint128_t gasLimit, Address to,
-                uint128_t amount, Data payload)
+                uint128_t amount, uint128_t timestamp, const Data& payload)
         : nonce(std::move(nonce))
         , gasPrice(std::move(gasPrice))
         , gasLimit(std::move(gasLimit))
         , to(std::move(to))
         , amount(std::move(amount))
+        , timestamp(std::move(timestamp))
         , payload(std::move(payload)) {}
 
   public:

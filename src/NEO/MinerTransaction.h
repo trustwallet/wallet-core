@@ -15,7 +15,7 @@ class MinerTransaction : public Transaction {
   public:
     uint32_t nonce;
 
-     virtual int deserializeExclusiveData(const Data &data, int initial_pos = 0) {
+     virtual int deserializeExclusiveData(const Data& data, int initial_pos = 0) {
         nonce = decode32LE(data.data() + initial_pos);
         return initial_pos + 4;
     }

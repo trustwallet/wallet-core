@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -25,7 +25,7 @@ private:
     
 public:
     Keys(ostream& out, const Coins& coins);
-    bool newKey(string& res);
+    bool newKey(const string& coinid, string& res);
     /// Public key from private key, ED25519
     bool pubPri(const string& coinid, const string& p, string& res);
     bool priPub(const string& p, string& res);
@@ -40,6 +40,8 @@ public:
     bool dumpMnemonic(string& res);
     /// Dump default derivation path of coin
     bool dumpDP(const string& coinid, string& res);
+    /// Dump XPUB of current mnemonic
+    bool dumpXpub(const string& coinid, string& res);
     /// Derive a private key from the mnemonic with derivation path
     bool priDP(const string& coinid, const string& dp, string& res);
 };

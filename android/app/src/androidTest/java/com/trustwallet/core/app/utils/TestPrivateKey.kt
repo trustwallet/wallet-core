@@ -1,14 +1,16 @@
 package com.trustwallet.core.app.utils
 
+import com.trustwallet.core.app.utils.toHexBytes
 import org.junit.Assert.*
 import org.junit.Test
 import wallet.core.jni.Curve
 import wallet.core.jni.Hash
 import wallet.core.jni.PrivateKey
-
+import wallet.core.jni.PublicKey
+import wallet.core.jni.PublicKeyType
 
 class TestPrivateKey {
-    private val validPrivateKeyData = Numeric.hexStringToByteArray("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5")
+    private val validPrivateKeyData = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5".toHexBytes()
 
     init {
         System.loadLibrary("TrustWalletCore")
@@ -65,27 +67,61 @@ class TestPrivateKey {
     }
 
     @Test
-    fun testPublicKeyCompressed() {
-        var privateKey: PrivateKey? = null
-        try {
-            privateKey = PrivateKey(validPrivateKeyData)
-        } catch (ex: Exception) {
+    fun testGetSharedKey() {
+        val privateKeyData = "9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0".toHexBytes()
+        val privateKey = PrivateKey(privateKeyData)
+        
+        val publicKeyData = "02a18a98316b5f52596e75bfa5ca9fa9912edd0c989b86b73d41bb64c9c6adb992".toHexBytes()
+        val publicKey = PublicKey(publicKeyData, PublicKeyType.SECP256K1)
 
-        }
-        val publicKey = privateKey?.getPublicKeySecp256k1(true)
-        val valid = arrayOf(0x03, 0x99, 0xc6, 0xf5, 0x1a, 0xd6, 0xf9, 0x8c, 0x9c, 0x58, 0x3f, 0x8e, 0x92, 0xbb, 0x77, 0x58, 0xab, 0x2c, 0xa9, 0xa0, 0x41, 0x10, 0xc0, 0xa1, 0x12, 0x6e, 0xc4, 0x3e, 0x54, 0x53, 0xd1, 0x96, 0xc1)
-                .map { it.toByte() }
-                .toByteArray()
-        assertEquals(Numeric.toHexString(valid), Numeric.toHexString(publicKey?.data()))
+        val derivedData = privateKey.getSharedKey(publicKey, Curve.SECP256K1)
+        assertNotNull(derivedData)
+
+        assertEquals(derivedData?.toHex(), "0xef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a")
     }
 
     @Test
-    fun testSign() {
-        val validSign = arrayOf(0x87, 0x20, 0xa4, 0x6b, 0x5b, 0x39, 0x63, 0x79, 0x0d, 0x94, 0xbc, 0xc6, 0x1a, 0xd5, 0x7c, 0xa0, 0x2f, 0xd1, 0x53, 0x58, 0x43, 0x15, 0xbf, 0xa1, 0x61, 0xed, 0x34, 0x55, 0xe3, 0x36, 0xba, 0x62, 0x4d, 0x68, 0xdf, 0x01, 0x0e, 0xd9, 0x34, 0xb8, 0x79, 0x2c, 0x5b, 0x6a, 0x57, 0xba, 0x86, 0xc3, 0xda, 0x31, 0xd0, 0x39, 0xf9, 0x61, 0x2b, 0x44, 0xd1, 0xbf, 0x05, 0x41, 0x32, 0x25, 0x4d, 0xe9, 0x01)
-                .map { it.toByte() }
-                .toByteArray()
-        val data = Hash.keccak256("hello".toByteArray())
-        val sign = PrivateKey(validPrivateKeyData).sign(data, Curve.SECP256K1)
-        assertEquals(Numeric.toHexString(sign), Numeric.toHexString(validSign))
+    fun testGetSharedKeyWycherproof() {
+        val privateKeyData = "f4b7ff7cccc98813a69fae3df222bfe3f4e28f764bf91b4a10d8096ce446b254".toHexBytes()
+        val privateKey = PrivateKey(privateKeyData)
+        
+        val publicKeyData = "02d8096af8a11e0b80037e1ee68246b5dcbb0aeb1cf1244fd767db80f3fa27da2b".toHexBytes()
+        val publicKey = PublicKey(publicKeyData, PublicKeyType.SECP256K1)
+
+        val derivedData = privateKey.getSharedKey(publicKey, Curve.SECP256K1)
+        assertNotNull(derivedData)
+
+        assertEquals(derivedData?.toHex(), "0x81165066322732362ca5d3f0991d7f1f7d0aad7ea533276496785d369e35159a")
     }
+
+    @Test
+    fun testGetSharedKeyBidirectional() {
+        val privateKeyData1 = "9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0".toHexBytes()
+        val privateKey1 = PrivateKey(privateKeyData1)
+        val publicKey1 = privateKey1.getPublicKeySecp256k1(true)
+        
+        val privateKeyData2 = "ef2cf705af8714b35c0855030f358f2bee356ff3579cea2607b2025d80133c3a".toHexBytes()
+        val privateKey2 = PrivateKey(privateKeyData2)
+        val publicKey2 = privateKey2.getPublicKeySecp256k1(true)
+
+        val derivedData1 = privateKey1.getSharedKey(publicKey2, Curve.SECP256K1)
+        assertNotNull(derivedData1)
+
+        val derivedData2 = privateKey2.getSharedKey(publicKey1, Curve.SECP256K1)
+        assertNotNull(derivedData2)
+
+        assertEquals(derivedData1?.toHex(), derivedData2?.toHex())
+    }
+
+    @Test
+    fun testGetSharedKeyError() {
+        val privateKeyData = "9cd3b16e10bd574fed3743d8e0de0b7b4e6c69f3245ab5a168ef010d22bfefa0".toHexBytes()
+        val privateKey = PrivateKey(privateKeyData)
+        
+        val publicKeyData = "02a18a98316b5f52596e75bfa5ca9fa9912edd0c989b86b73d41bb64c9c6adb992".toHexBytes()
+        val publicKey = PublicKey(publicKeyData, PublicKeyType.SECP256K1)
+
+        val derivedData = privateKey.getSharedKey(publicKey, Curve.ED25519)
+        assertNull(derivedData)
+    }    
 }

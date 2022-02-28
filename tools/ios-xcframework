@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+# This script builds dynamic WalletCore and SwiftProtobuf xcframework for SPM and CocoaPods
+#
+
+set -e
+
+pushd swift
+fastlane ios xcframework
+popd

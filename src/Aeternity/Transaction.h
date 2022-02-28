@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -31,11 +31,11 @@ class Transaction {
     uint64_t nonce;
 
     Transaction(
-        std::string &sender_id,
-        std::string &recipientId,
+        std::string& sender_id,
+        std::string& recipientId,
         uint256_t amount,
         uint256_t fee,
-        std::string &payload,
+        std::string& payload,
         uint64_t ttl,
         uint64_t nonce
     )
@@ -51,7 +51,7 @@ class Transaction {
 
     //// buildIDTag assemble an id() object
     //// see https://github.com/aeternity/protocol/blob/epoch-v0.22.0/serializations.md#the-id-type
-    static Data buildTag(const std::string &address);
+    static Data buildTag(const std::string& address);
 
     /// Awternity network does not accept zero int values as rlp param,
     /// instead empty byte array should be encoded

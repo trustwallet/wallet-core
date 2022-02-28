@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,7 +11,7 @@ import com.trustwallet.core.app.utils.Numeric
 import com.trustwallet.core.app.utils.toHexByteArray
 import com.trustwallet.core.app.utils.toHexBytes
 import com.trustwallet.core.app.utils.toHexBytesInByteString
-import junit.framework.Assert.assertEquals
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.<%= format_name(coin) %>Signer
 import wallet.core.jni.proto.<%= format_name(coin) %>
@@ -26,8 +26,8 @@ class Test<%= format_name(coin) %>Signer {
     fun <%= format_name(coin) %>TransactionSigning() {
         // TODO: Finalize implementation
 
-        //val transaction = <%= format_name(coin) %>.TransactionPay.newBuilder()
-        //    .setToAddress("...")
+        //val transfer = <%= format_name(coin) %>.TransferMessage.newBuilder()
+        //    .setTo("...")
         //    .setAmount(...)
         //    ...
         //    .build()

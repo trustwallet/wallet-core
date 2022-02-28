@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -122,7 +122,7 @@ protocol::VoteWitnessContract to_internal(const Proto::VoteWitnessContract& vote
     internal.set_support(voteContract.support());
     for(int i = 0; i < voteContract.votes_size(); i++) {
         auto voteAddress = Base58::bitcoin.decodeCheck(voteContract.votes(i).vote_address());
-        auto vote = internal.add_votes();
+        auto* vote = internal.add_votes();
 
         vote->set_vote_address(voteAddress.data(), voteAddress.size());
         vote->set_vote_count(voteContract.votes(i).vote_count());
@@ -157,8 +157,8 @@ protocol::TriggerSmartContract to_internal(const Proto::TriggerSmartContract& tr
 
 protocol::TriggerSmartContract to_internal(const Proto::TransferTRC20Contract& transferTrc20Contract) {
     auto toAddress = Base58::bitcoin.decodeCheck(transferTrc20Contract.to_address());
-    Data amount;
-    encode64BE(transferTrc20Contract.amount(), amount);
+    // amount is 256 bits, big endian
+    Data amount = data(transferTrc20Contract.amount());
 
     // Encode smart contract call parameters
     auto contract_params = parse_hex(TRANSFER_TOKEN_FUNCTION);

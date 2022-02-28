@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+# This script lints all of the C++ code with cppcheck.
+
+set -e
+
+find src \( -name "*.cpp" -o -name "*.h" \) -not -path "./src/proto/*" -not -path "./src/Tron/Protobuf/*" -exec cppcheck --force --quiet --enable=all '{}' \;

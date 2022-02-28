@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -20,7 +20,7 @@ struct TWBitcoinAddress;
 
 /// Compares two addresses for equality.
 TW_EXPORT_STATIC_METHOD
-    bool TWBitcoinAddressEqual(struct TWBitcoinAddress *_Nonnull lhs, struct TWBitcoinAddress *_Nonnull rhs);
+bool TWBitcoinAddressEqual(struct TWBitcoinAddress *_Nonnull lhs, struct TWBitcoinAddress *_Nonnull rhs);
 
 /// Determines if the data is a valid Bitcoin address.
 TW_EXPORT_STATIC_METHOD

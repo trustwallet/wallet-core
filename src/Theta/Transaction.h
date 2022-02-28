@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -24,7 +24,7 @@ class TxInput {
 
     TxInput(Ethereum::Address address, Coins coins, uint64_t sequence)
         : address(std::move(address)), coins(std::move(coins)), sequence(sequence) {}
-    TxInput(Ethereum::Address address, Coins coins, uint64_t sequence, Data signature)
+    TxInput(Ethereum::Address address, Coins coins, uint64_t sequence, const Data& signature)
         : address(std::move(address)), coins(std::move(coins)), sequence(sequence), signature(std::move(signature)) {}
 };
 

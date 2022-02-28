@@ -23,13 +23,13 @@ class Address : public TW::Base58Address<AddressSize> {
     static const byte version = 0x17;
 
     /// Determines whether a string makes a valid NEO address.
-    static bool isValid(const std::string &string);
+    static bool isValid(const std::string& string);
 
     /// Initializes a NEO address with a string representation.
-    explicit Address(const std::string &string) : TW::Base58Address<AddressSize>(string) {}
+    explicit Address(const std::string& string) : TW::Base58Address<AddressSize>(string) {}
 
     /// Initializes a NEO address with a collection of bytes.
-    explicit Address(const Data &data) : TW::Base58Address<AddressSize>(data) {}
+    explicit Address(const Data& data) : TW::Base58Address<AddressSize>(data) {}
 
     /// Initializes an address with a collection of public key.
     explicit Address(uint8_t m, const std::vector<Data>& publicKeys);
@@ -40,7 +40,7 @@ class Address : public TW::Base58Address<AddressSize> {
     /// Initializes a NEO address without a public key.
     explicit Address();
 
-    Data toScriptHash(const Data &data) const;
+    Data toScriptHash(const Data& data) const;
 
     Data toScriptHash() const;
 };

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,8 +12,8 @@
 using namespace TW;
 
 DerivationPath::DerivationPath(const std::string& string) {
-    auto it = string.data();
-    const auto end = string.data() + string.size();
+    const auto* it = string.data();
+    const auto* end = string.data() + string.size();
 
     if (it != end && *it == 'm') {
         ++it;
@@ -24,7 +24,7 @@ DerivationPath::DerivationPath(const std::string& string) {
 
     while (it != end) {
         uint32_t value;
-        if (std::sscanf(it, "%d", &value) != 1) {
+        if (std::sscanf(it, "%ud", &value) != 1) {
             throw std::invalid_argument("Invalid component");
         }
         while (it != end && isdigit(*it)) {

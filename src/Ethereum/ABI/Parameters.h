@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -24,7 +24,7 @@ public:
     ParamSet() = default;
     ParamSet(const std::shared_ptr<ParamBase>& param1) { addParam(param1); }
     ParamSet(const std::vector<std::shared_ptr<ParamBase>>& params) { addParams(params); }
-    ~ParamSet();
+    virtual ~ParamSet();
 
     /// Returns the index of the parameter
     int addParam(const std::shared_ptr<ParamBase>& param);
@@ -35,10 +35,14 @@ public:
     std::vector<std::shared_ptr<ParamBase>> const& getParams() const { return _params; }
     /// Return the function type signature, of the form "baz(int32,uint256)"
     std::string getType() const;
+    bool isDynamic() const;
     size_t getSize() const;
-    size_t getHeadSize() const;
     virtual void encode(Data& data) const;
     virtual bool decode(const Data& encoded, size_t& offset_inout);
+    Data encodeHashes() const;
+
+private:
+    size_t getHeadSize() const;
 };
 
 /// Collection of different parameters, dynamic length, "(<par1>,<par2>,...)".
@@ -59,6 +63,8 @@ public:
     virtual size_t getCount() const { return _params.getCount(); }
     virtual void encode(Data& data) const { _params.encode(data); }
     virtual bool decode(const Data& encoded, size_t& offset_inout) { return _params.decode(encoded, offset_inout); }
+    virtual bool setValueJson(const std::string& value) { return false; }
+    virtual Data hashStruct() const;
 };
 
 } // namespace TW::Ethereum::ABI

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -29,11 +29,14 @@ public:
     std::string getFirstType() const;
     std::shared_ptr<ParamBase> getParam(int paramIndex) { return _params.getParamUnsafe(paramIndex); }
     virtual std::string getType() const { return getFirstType() + "[]"; }
-    virtual size_t getSize() const { return _params.getSize(); }
+    virtual size_t getSize() const;
     virtual bool isDynamic() const { return true; }
     virtual size_t getCount() const { return _params.getCount(); }
     virtual void encode(Data& data) const;
     virtual bool decode(const Data& encoded, size_t& offset_inout);
+    virtual bool setValueJson(const std::string& value);
+    virtual Data hashStruct() const;
+    virtual std::string getExtraTypes(std::vector<std::string>& ignoreList) const;
 };
 
 } // namespace TW::Ethereum::ABI

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -21,26 +21,12 @@ std::string Ethereum::checksumed(const Address& address, enum ChecksumType type)
     for (auto i = 0; i < std::min(addressString.size(), hash.size()); i += 1) {
         const auto a = addressString[i];
         const auto h = hash[i];
-        if (a >= '0' && a <= 9) {
+        if (a >= '0' && a <= '9') {
             string.push_back(a);
         } else if ((h >= '8' && h <= '9') || (h >= 'a' && h <= 'f')) {
-            switch (type) {
-            case eip55:
-                string.push_back(static_cast<char>(toupper(a)));
-                break;
-            case wanchain:
-                string.push_back(static_cast<char>(tolower(a)));
-                break;
-            }
+            string.push_back(static_cast<char>(toupper(a)));
         } else {
-            switch (type) {
-            case eip55:
-                string.push_back(static_cast<char>(tolower(a)));
-                break;
-            case wanchain:
-                string.push_back(static_cast<char>(toupper(a)));
-                break;
-            }
+            string.push_back(static_cast<char>(tolower(a)));
         }
     }
 

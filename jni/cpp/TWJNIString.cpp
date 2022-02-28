@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,7 +9,9 @@
 #include "TWJNIString.h"
 
 jstring _Nonnull TWStringJString(TWString *_Nonnull string, JNIEnv *env) {
-    return env->NewStringUTF(TWStringUTF8Bytes(string));
+    jstring result = env->NewStringUTF(TWStringUTF8Bytes(string));
+    TWStringDelete(string);
+    return result;
 }
 
 TWString *_Nonnull TWStringCreateWithJString(JNIEnv *env, jstring _Nonnull string) {

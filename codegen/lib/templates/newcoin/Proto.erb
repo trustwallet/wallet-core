@@ -1,0 +1,32 @@
+// Copyright © 2017-2021 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+syntax = "proto3";
+
+package TW.<%= name %>.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// TODO: typical balance transfer, add more fields needed to sign
+message TransferMessage {
+    int64 amount = 1;
+    int64 fee = 2;
+    string to = 3;
+}
+
+// TODO: Input data necessary to create a signed transaction.
+message SigningInput {
+    bytes private_key = 1;
+
+    oneof message_oneof {
+        TransferMessage transfer = 2;
+    }
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+}

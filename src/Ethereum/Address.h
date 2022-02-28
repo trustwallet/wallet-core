@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -40,6 +40,8 @@ class Address {
 
     /// Returns a string representation of the address.
     std::string string() const;
+  protected:
+    Address() = default;
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
@@ -47,8 +49,3 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::Ethereum
-
-/// Wrapper for C interface.
-struct TWEthereumAddress {
-    TW::Ethereum::Address impl;
-};

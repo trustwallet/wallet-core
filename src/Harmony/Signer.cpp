@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,12 +7,14 @@
 #include "Signer.h"
 #include "../Ethereum/RLP.h"
 #include "../HexCoding.h"
+#include <google/protobuf/util/json_util.h>
+
 
 using namespace TW;
 using namespace TW::Harmony;
 
 std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chainID,
-                                                           const Data &signature) noexcept {
+                                                           const Data& signature) noexcept {
     auto r = load(Data(signature.begin(), signature.begin() + 32));
     auto s = load(Data(signature.begin() + 32, signature.begin() + 64));
     auto v = load(Data(signature.begin() + 64, signature.begin() + 65));
@@ -21,18 +23,18 @@ std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chai
 }
 
 std::tuple<uint256_t, uint256_t, uint256_t>
-Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data &hash) noexcept {
+Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data& hash) noexcept {
     auto signature = privateKey.sign(hash, TWCurveSECP256k1);
     return values(chainID, signature);
 }
 
 template <typename T>
-Proto::SigningOutput Signer::prepareOutput(const Data &encoded, const T &transaction) noexcept {
+Proto::SigningOutput Signer::prepareOutput(const Data& encoded, const T &transaction) noexcept {
     auto protoOutput = Proto::SigningOutput();
 
-    auto v = store(transaction.v);
-    auto r = store(transaction.r);
-    auto s = store(transaction.s);
+    auto v = store(transaction.v, 1);
+    auto r = store(transaction.r, 32);
+    auto s = store(transaction.s, 32);
 
     protoOutput.set_encoded(encoded.data(), encoded.size());
     protoOutput.set_v(v.data(), v.size());
@@ -65,6 +67,13 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
         }
     }
     return Proto::SigningOutput();
+}
+
+std::string Signer::signJSON(const std::string& json, const Data& key) {
+    auto input = Proto::SigningInput();
+    google::protobuf::util::JsonStringToMessage(json, &input);
+    input.set_private_key(key.data(), key.size());
+    return hex(Signer::sign(input).encoded());
 }
 
 Proto::SigningOutput Signer::signTransaction(const Proto::SigningInput &input) noexcept {
@@ -140,7 +149,11 @@ Proto::SigningOutput Signer::signCreateValidator(const Proto::SigningInput &inpu
     auto commissionRates = CommissionRate(rate, maxRate, maxChangeRate);
     std::vector<Data> slotPubKeys;
     for (auto pk : input.staking_message().create_validator_message().slot_pub_keys()) {
-        slotPubKeys.push_back(Data(pk.begin(), pk.end()));
+        slotPubKeys.emplace_back(Data(pk.begin(), pk.end()));
+    }
+    std::vector<Data> slotKeySigs;
+    for (auto sig : input.staking_message().create_validator_message().slot_key_sigs()) {
+        slotKeySigs.emplace_back(Data(sig.begin(), sig.end()));
     }
     Address validatorAddr;
     if (!Address::decode(input.staking_message().create_validator_message().validator_address(),
@@ -157,6 +170,7 @@ Proto::SigningOutput Signer::signCreateValidator(const Proto::SigningInput &inpu
         /* MaxTotalDelegation */
         load(input.staking_message().create_validator_message().max_total_delegation()),
         /* PubKey */ slotPubKeys,
+        /* BlsSig */ slotKeySigs,
         /* Amount */ load(input.staking_message().create_validator_message().amount()));
 
     auto stakingTx = Staking<CreateValidator>(
@@ -183,14 +197,13 @@ Proto::SigningOutput Signer::signEditValidator(const Proto::SigningInput &input)
         input.staking_message().edit_validator_message().description().security_contact(),
         /* details */ input.staking_message().edit_validator_message().description().details());
 
-    Decimal *commissionRate = nullptr;
+    std::optional<Decimal> commissionRate;
 
     if (input.staking_message().edit_validator_message().has_commission_rate()) {
-        Decimal decimal = Decimal(
+        commissionRate = Decimal(
             /* value */ load(
                 input.staking_message().edit_validator_message().commission_rate().value()),
             load(input.staking_message().edit_validator_message().commission_rate().precision()));
-        commissionRate = &decimal;
     }
 
     Address validatorAddr;
@@ -210,9 +223,14 @@ Proto::SigningOutput Signer::signEditValidator(const Proto::SigningInput &input)
         /* SlotKeyToRemove */
         Data(input.staking_message().edit_validator_message().slot_key_to_remove().begin(),
              input.staking_message().edit_validator_message().slot_key_to_remove().end()),
-        /* SlotKeyToRemove */
+        /* SlotKeyToAdd */
         Data(input.staking_message().edit_validator_message().slot_key_to_add().begin(),
-             input.staking_message().edit_validator_message().slot_key_to_add().end()));
+             input.staking_message().edit_validator_message().slot_key_to_add().end()),
+        /* SlotKeyToAddSig */
+        Data(input.staking_message().edit_validator_message().slot_key_to_add_sig().begin(),
+             input.staking_message().edit_validator_message().slot_key_to_add_sig().end()),
+        /* Active */
+        load(input.staking_message().edit_validator_message().active()));
 
     auto stakingTx = Staking<EditValidator>(
         DirectiveEditValidator, editValidator, load(input.staking_message().nonce()),
@@ -311,7 +329,7 @@ Proto::SigningOutput Signer::signCollectRewards(const Proto::SigningInput &input
 }
 
 template <typename T>
-void Signer::sign(const PrivateKey &privateKey, const Data &hash, T &transaction) const noexcept {
+void Signer::sign(const PrivateKey &privateKey, const Data& hash, T &transaction) const noexcept {
     auto tuple = sign(chainID, privateKey, hash);
     transaction.r = std::get<0>(tuple);
     transaction.s = std::get<1>(tuple);
@@ -404,6 +422,12 @@ Data Signer::rlpNoHashDirective(const Staking<CreateValidator> &transaction) con
     }
     append(encoded, RLP::encodeList(slotPubKeysEncoded));
 
+    auto slotBlsSigsEncoded = Data();
+    for (auto sig : transaction.stakeMsg.slotKeySigs) {
+        append(slotBlsSigsEncoded, RLP::encode(sig));
+    }
+    append(encoded, RLP::encodeList(slotBlsSigsEncoded));
+
     append(encoded, RLP::encode(transaction.stakeMsg.amount));
 
     return RLP::encodeList(encoded);
@@ -424,8 +448,9 @@ Data Signer::rlpNoHashDirective(const Staking<EditValidator> &transaction) const
     append(encoded, RLP::encodeList(descriptionEncoded));
 
     auto decEncoded = Data();
-    if (transaction.stakeMsg.commissionRate != nullptr) {
-        append(decEncoded, RLP::encode(transaction.stakeMsg.commissionRate->value));
+    if (transaction.stakeMsg.commissionRate.has_value()) {
+        // Note: std::optional.value() is not available in XCode with target < iOS 12; using '*'
+        append(decEncoded, RLP::encode((*transaction.stakeMsg.commissionRate).value));
     }
     append(encoded, RLP::encodeList(decEncoded));
 
@@ -434,6 +459,9 @@ Data Signer::rlpNoHashDirective(const Staking<EditValidator> &transaction) const
 
     append(encoded, RLP::encode(transaction.stakeMsg.slotKeyToRemove));
     append(encoded, RLP::encode(transaction.stakeMsg.slotKeyToAdd));
+    append(encoded, RLP::encode(transaction.stakeMsg.slotKeyToAddSig));
+
+    append(encoded, RLP::encode(transaction.stakeMsg.active));
 
     return RLP::encodeList(encoded);
 }

@@ -4,8 +4,10 @@ import com.trustwallet.core.app.utils.Numeric
 import com.trustwallet.core.app.utils.toHexBytesInByteString
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import wallet.core.jni.OntologySigner
+import wallet.core.java.AnySigner
+import wallet.core.jni.CoinType.ONTOLOGY
 import wallet.core.jni.proto.Ontology
+import wallet.core.jni.proto.Ontology.SigningOutput
 
 class TestOntologySigning {
     init {
@@ -22,7 +24,8 @@ class TestOntologySigning {
             nonce = 3486522027.toInt()
         }.build()
 
-        val result = OntologySigner.sign(input).encoded.toByteArray()
+        val output = AnySigner.sign(input, ONTOLOGY, SigningOutput.parser())
+        val result = output.encoded.toByteArray()
         val hex = Numeric.toHexString(result, 0, result.size, false)
 
         assertEquals(
@@ -41,7 +44,8 @@ class TestOntologySigning {
             nonce = 3959576200.toInt()
         }.build()
 
-        val result = OntologySigner.sign(input).encoded.toByteArray()
+        val output = AnySigner.sign(input, ONTOLOGY, SigningOutput.parser())
+        val result = output.encoded.toByteArray()
         val hex = Numeric.toHexString(result, 0, result.size, false)
 
         assertEquals(
@@ -65,7 +69,8 @@ class TestOntologySigning {
             nonce = 2338116610.toInt()
         }.build()
 
-        val result = OntologySigner.sign(input).encoded.toByteArray()
+        val output = AnySigner.sign(input, ONTOLOGY, SigningOutput.parser())
+        val result = output.encoded.toByteArray()
         val hex = Numeric.toHexString(result, 0, result.size, false)
 
         assertEquals(
@@ -88,7 +93,8 @@ class TestOntologySigning {
             nonce = 2827104669.toInt()
         }.build()
 
-        val result = OntologySigner.sign(input).encoded.toByteArray()
+        val output = AnySigner.sign(input, ONTOLOGY, SigningOutput.parser())
+        val result = output.encoded.toByteArray()
         val hex = Numeric.toHexString(result, 0, result.size, false)
 
         assertEquals(

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -27,7 +27,7 @@ TWData *_Nonnull TWDataCreateWithSize(size_t size);
 /// Creates a block of data by copying another block of data.
 TWData *_Nonnull TWDataCreateWithData(TWData *_Nonnull data);
 
-/// Creates a block of data from a hexadecimal string.
+/// Creates a block of data from a hexadecimal string.  Odd length is invalid (intended grouping to bytes is not obvious).
 TWData *_Nullable TWDataCreateWithHexString(const TWString *_Nonnull hex);
 
 /// Returns the size in bytes.

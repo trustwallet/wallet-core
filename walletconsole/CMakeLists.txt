@@ -11,3 +11,5 @@ set_target_properties(walletconsole
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON
 )
+
+INSTALL(TARGETS walletconsole DESTINATION ${CMAKE_INSTALL_BINDIR})

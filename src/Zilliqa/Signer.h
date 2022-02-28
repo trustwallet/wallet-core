@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "Address.h"
 #include "../Data.h"
 #include "../PrivateKey.h"
 #include "../proto/Zilliqa.pb.h"
@@ -17,16 +18,14 @@ class Signer {
   public:
     Signer() = delete;
 
-    /// compute preImage from signing input.
-    static Data getPreImage(const Proto::SigningInput& input) noexcept;
+    /// Signs the given signing input
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 
-    /// Signs the given transaction preImage.
-    static Proto::SigningOutput sign(const Data& preImage, const PrivateKey& key) noexcept;
+    /// Signs a json Proto::SigningInput with private key
+    static std::string signJSON(const std::string& json, const Data& key);
+
+    /// compute preImage and decode address from signing input.
+    static Data getPreImage(const Proto::SigningInput& input, Address& address) noexcept;
 };
 
 } // namespace TW::Zilliqa
-
-/// Wrapper for C interface.
-struct TWZilliqaSigner {
-    TW::Zilliqa::Signer impl;
-};

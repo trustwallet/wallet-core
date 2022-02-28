@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,6 +8,7 @@
 
 #include "Amount.h"
 #include "Script.h"
+#include "../Data.h"
 
 #include <memory>
 
@@ -29,7 +30,7 @@ struct TransactionOutput {
     TransactionOutput(Amount value, Script script) : value(value), script(std::move(script)) {}
 
     /// Encodes the output into the provided buffer.
-    void encode(std::vector<uint8_t>& data) const;
+    void encode(Data& data) const;
 };
 
 } // namespace TW::Bitcoin

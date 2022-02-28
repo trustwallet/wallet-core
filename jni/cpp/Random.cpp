@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -35,7 +35,7 @@ void random_buffer(uint8_t *buf, size_t len) {
     jobject random = env->NewObject(secureRandomClass, constructor);
 
     //byte array[] = new byte[len];
-    jbyteArray array = env->NewByteArray(len);
+    jbyteArray array = env->NewByteArray(static_cast<jsize>(len));
 
     //random.nextBytes(bytes);
     jmethodID nextBytes = env->GetMethodID(secureRandomClass, "nextBytes", "([B)V");

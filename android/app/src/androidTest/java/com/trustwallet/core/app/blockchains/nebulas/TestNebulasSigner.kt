@@ -5,9 +5,11 @@ import com.trustwallet.core.app.utils.toHex
 import com.trustwallet.core.app.utils.toHexByteArray
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import wallet.core.jni.CoinType.NEBULAS
 import wallet.core.jni.PrivateKey
-import wallet.core.jni.NebulasSigner
+import wallet.core.java.AnySigner
 import wallet.core.jni.proto.Nebulas
+import wallet.core.jni.proto.Nebulas.SigningOutput
 
 class TestNebulasSigner {
 
@@ -31,7 +33,7 @@ class TestNebulasSigner {
             privateKey = ByteString.copyFrom(PrivateKey("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b".toHexByteArray()).data())
         }
 
-        val output: Nebulas.SigningOutput = NebulasSigner.sign(signingInput.build())
+        val output = AnySigner.sign(signingInput.build(), NEBULAS, SigningOutput.parser())
 
         assertEquals(output.algorithm, 1)
         assertEquals(output.signature.toByteArray().toHex(), 

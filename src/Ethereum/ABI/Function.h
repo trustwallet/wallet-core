@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -18,7 +18,7 @@
 namespace TW::Ethereum::ABI {
 
 /// Non-generic version of Function, templated version is impossible to pass around to and back over C interface
-/// (void* looses the temaplate parameters).
+/// (void* looses the template parameters).
 class Function {
 public:
     std::string name;
@@ -26,7 +26,7 @@ public:
     ParamSet _outParams;
 
     Function(std::string name) : name(std::move(name)) {}
-    Function(std::string name, std::vector<std::shared_ptr<ParamBase>> inParams)
+    Function(std::string name, const std::vector<std::shared_ptr<ParamBase>>& inParams)
         : name(std::move(name)), _inParams(ParamSet(inParams)) {}
     virtual ~Function() {}
     /// Add an input parameter. Returns the index of the parameter.

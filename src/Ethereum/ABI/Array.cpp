@@ -1,14 +1,21 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Array.h"
+#include "ParamFactory.h"
+#include "ValueEncoder.h"
+#include <Hash.h>
+
+#include <nlohmann/json.hpp>
 
 #include <cassert>
 
 using namespace TW::Ethereum::ABI;
+using namespace TW;
+using json = nlohmann::json;
 
 int ParamArray::addParam(const std::shared_ptr<ParamBase>& param) {
     assert(param != nullptr);
@@ -26,58 +33,89 @@ std::string ParamArray::getFirstType() const {
     return _params.getParamUnsafe(0)->getType();
 }
 
+size_t ParamArray::getSize() const
+{
+    return 32 + _params.getSize();
+}
+
 void ParamArray::encode(Data& data) const {
     size_t n = _params.getCount();
-    ABI::encode(uint256_t(n), data);
-
-    size_t headSize = 0;
-    for (auto i = 0; i < n; ++i) {
-        auto p = _params.getParamUnsafe(i);
-        if (p->isDynamic()) {
-            headSize += 32;
-        } else {
-            headSize += p->getSize();
-        }
-    }
-
-    size_t dynamicOffset = 0;
-    for (auto i = 0; i < n; ++i) {
-        auto p = _params.getParamUnsafe(i);
-        if (p->isDynamic()) {
-            ABI::encode(uint256_t(headSize + dynamicOffset), data);
-            dynamicOffset += p->getSize();
-        } else {
-            p->encode(data);
-        }
-    }
-
-    for (auto i = 0; i < n; ++i) {
-        auto p = _params.getParamUnsafe(i);
-        if (p->isDynamic()) {
-            p->encode(data);
-        }
-    }
+    ValueEncoder::encodeUInt256(uint256_t(n), data);
+    _params.encode(data);
 }
 
 bool ParamArray::decode(const Data& encoded, size_t& offset_inout) {
     size_t origOffset = offset_inout;
     // read length
     uint256_t len256;
-    if (!ABI::decode(encoded, len256, offset_inout)) { return false; }
-    // check if length is in the size_t range
-    size_t len = static_cast<size_t>(len256);
-    if (len256 != static_cast<uint256_t>(len)) { return false; }
-    // read values
-    auto n = _params.getCount();
-    if (n != len) {
-        // Element number mismatch: the proto has to have exact same number of values as in the encoded form
-        // Note: this could be handles in a smarter way, and create more elements as needed
+    if (!ABI::decode(encoded, len256, offset_inout)) {
         return false;
     }
-    for (auto i = 0; i < n; ++i) {
-        if (!_params.getParamUnsafe(i)->decode(encoded, offset_inout)) { return false; }
+    // check if length is in the size_t range
+    auto len = static_cast<size_t>(len256);
+    if (len256 != uint256_t(len)) {
+        return false;
     }
+    // check number of values
+    auto n = _params.getCount();
+    if (n == 0 || n > len) {
+        // Encoded length is less than params count, unsafe to continue decoding
+        return false;
+    }
+    if (n < len) {
+        // pad with first type
+        auto first = _params.getParamUnsafe(0);
+        for (size_t i = 0; i < len - n; i++) {
+            _params.addParam(ParamFactory::make(first->getType()));
+        }
+    }
+
+    // read values
+    auto res = _params.decode(encoded, offset_inout);
+
     // padding
-    offset_inout = origOffset + Util::paddedTo32(offset_inout - origOffset);
+    offset_inout = origOffset + ValueEncoder::paddedTo32(offset_inout - origOffset);
+    return res;
+}
+
+bool ParamArray::setValueJson(const std::string& value) {
+    if (_params.getCount() < 1) {
+        // no single element
+        return false;
+    }
+    auto valuesJson = json::parse(value, nullptr, false);
+    if (valuesJson.is_discarded()) {
+        return false;
+    }
+    if (!valuesJson.is_array()) {
+        return false;
+    }
+    // make sure enough elements are in the array
+    while (_params.getCount() < valuesJson.size()) {
+        addParam(ParamFactory::make(getFirstType()));
+    }
+    int cnt = 0;
+    for (const auto& e: valuesJson) {
+        std::string eString = e.is_string() ? e.get<std::string>() : e.dump();
+        _params.getParamUnsafe(cnt)->setValueJson(eString);
+        ++cnt;
+    }
     return true;
+}
+
+Data ParamArray::hashStruct() const {
+    Data hash(32);
+    Data hashes = _params.encodeHashes();
+    if (hashes.size() > 0) {
+        hash = Hash::keccak256(hashes);
+    }
+    return hash;
+}
+
+std::string ParamArray::getExtraTypes(std::vector<std::string>& ignoreList) const {
+    std::shared_ptr<ParamBase> p;
+    if (!_params.getParam(0, p)) {
+        return "";
+    }
+    return p->getExtraTypes(ignoreList);
 }

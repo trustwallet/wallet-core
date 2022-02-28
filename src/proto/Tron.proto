@@ -38,8 +38,8 @@ message TransferTRC20Contract {
     // Recipient address.
     string to_address = 3;
 
-    // Amount to send.
-    int64 amount = 4;
+    // Amount to send, uint256, big-endian.
+    bytes amount = 4;
 }
 
 message FreezeBalanceContract {

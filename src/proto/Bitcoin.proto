@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.Bitcoin.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 message Transaction {
     // Transaction data format version.
     sint32 version = 1;
@@ -50,9 +52,15 @@ message TransactionOutput {
     bytes script = 2;
 }
 
+// An unspent transaction output, that can serve as input to a transaction
 message UnspentTransaction {
+    // The unspent output
     OutPoint out_point = 1;
+
+    // Script for claiming this UTXO
     bytes script = 2;
+
+    // Amount of the UTXO
     int64 amount = 3;
 }
 
@@ -70,7 +78,9 @@ message SigningInput {
     // Hash type to use when signing.
     uint32 hash_type = 1;
 
-    // Amount to send.
+    // Amount to send.  Transaction created will have this amount in its output, 
+    // except when use_max_amount is set, in that case this amount is not relevant, maximum possible amount will be used (max avail less fee).
+    // If amount is equal or more than the available amount, also max amount will be used.
     int64 amount = 2;
 
     // Transaction fee per byte.
@@ -83,25 +93,40 @@ message SigningInput {
     string change_address = 5;
 
     // Available private keys.
-    repeated bytes private_key = 10;
+    repeated bytes private_key = 6;
 
     // Available redeem scripts indexed by script hash.
-    map<string, bytes> scripts = 11;
+    map<string, bytes> scripts = 7;
 
     // Available unspent transaction outputs.
-    repeated UnspentTransaction utxo = 12;
+    repeated UnspentTransaction utxo = 8;
 
     // If sending max amount.
-    bool use_max_amount = 13;
+    bool use_max_amount = 9;
 
-    // Coin type (forks).
-    uint32 coin_type = 14;
+    uint32 coin_type = 10;
+
+    // Optional transaction plan
+    TransactionPlan plan = 11;
+
+    // Optional lockTime, default value 0 means no time locking.
+    // If all inputs have final (`0xffffffff`) sequence numbers then `lockTime` is irrelevant.
+    // Otherwise, the transaction may not be added to a block until after `lockTime`.
+    //  value  < 500000000 : Block number at which this transaction is unlocked
+    //  value >= 500000000 : UNIX timestamp at which this transaction is unlocked
+    uint32 lock_time = 12;
+
+    // Optional zero-amount, OP_RETURN output
+    bytes output_op_return = 13;
     
     // Optional additional destination addresses, additional to first to_address output
-    repeated OutputAddress extra_outputs = 15;
+    repeated OutputAddress extra_outputs = 14;
 
     // If use max utxo.
-    bool use_max_utxo = 16;
+    bool use_max_utxo = 15;
+
+    // If disable dust filter.
+    bool disable_dust_filter = 16;
 }
 
 // Describes a preliminary transaction plan.
@@ -120,6 +145,15 @@ message TransactionPlan {
 
     // Selected unspent transaction outputs.
     repeated UnspentTransaction utxos = 5;
+
+    // Zcash branch id
+    bytes branch_id = 6;
+
+    // Optional error
+    Common.Proto.SigningError error = 7;
+
+    // Optional zero-amount, OP_RETURN output
+    bytes output_op_return = 8;
 };
 
 // Transaction signing output.
@@ -130,12 +164,9 @@ message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 2;
 
-    // Total transaction fees.
-    int64 fee = 3;
-
-    // Maximum spendable amount.
-    int64 max_amount = 4;
-
     // Transaction id
-    string transaction_id = 5;
+    string transaction_id = 3;
+
+    // Optional error
+    Common.Proto.SigningError error = 4;
 }

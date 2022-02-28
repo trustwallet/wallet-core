@@ -1,0 +1,20 @@
+{
+    "ec37a4a0": {
+        "constant": false,
+        "inputs": [{
+            "name": "name",
+            "type": "string"
+        }, {
+            "name": "age",
+            "type": "uint"
+        }, {
+            "name": "height",
+            "type": "int32"
+        }],
+        "name": "setName",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+}

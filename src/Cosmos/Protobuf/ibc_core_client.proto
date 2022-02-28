@@ -1,0 +1,14 @@
+syntax = "proto3";
+package ibc.core.client.v1;
+
+// Src: https://github.com/cosmos/ibc-go/blob/main/proto/ibc/core/client/v1/client.proto
+
+// Height is a monotonically increasing data type
+// that can be compared against another Height for the purposes of updating and
+// freezing clients
+message Height {
+    // the revision that the client is currently on
+    uint64 revision_number = 1;
+    // the height within the given revision
+    uint64 revision_height = 2;
+}

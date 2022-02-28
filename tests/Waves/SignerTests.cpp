@@ -1,8 +1,9 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
+
 #include "HexCoding.h"
 #include "PublicKey.h"
 #include "Waves/Signer.h"
@@ -26,7 +27,7 @@ TEST(WavesSigner, SignTransaction) {
     input.set_timestamp(int64_t(1526641218066));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     
-    auto &message = *input.mutable_transfer_message();
+    auto& message = *input.mutable_transfer_message();
     message.set_amount(int64_t(100000000));
     message.set_asset(Transaction::WAVES);
     message.set_fee(int64_t(100000000));

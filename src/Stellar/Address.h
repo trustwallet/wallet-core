@@ -47,8 +47,3 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::Stellar
-
-/// Wrapper for C interface.
-struct TWStellarAddress {
-    TW::Stellar::Address impl;
-};

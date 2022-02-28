@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -30,7 +30,7 @@ static void writeU128(Data& data, const std::string& numberData) {
     data.insert(std::end(data), std::begin(numberData), std::end(numberData));
 }
 
-template <class T> static void writeRawBuffer(Data &data, const T& buf) {
+template <class T> static void writeRawBuffer(Data& data, const T& buf) {
     data.insert(std::end(data), std::begin(buf), std::end(buf));
 }
 
