@@ -181,6 +181,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeRonin: entry = &roninDP; break;
         case TWCoinTypeCryptoOrg: entry = &cosmosDP; break;
         case TWCoinTypeOsmosis: entry = &cosmosDP; break;
+        case TWCoinTypeCronosChain: entry = &ethereumDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;
