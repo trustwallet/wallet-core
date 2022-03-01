@@ -22,10 +22,10 @@ using namespace std;
 
 TEST(CardanoSigning, selectInputsSimple) {
     const auto inputs = std::vector<TxInput>({
-        TxInput{{parse_hex("0001"), 0}, 700},
-        TxInput{{parse_hex("0002"), 1}, 900},
-        TxInput{{parse_hex("0003"), 2}, 300},
-        TxInput{{parse_hex("0004"), 3}, 600},
+        TxInput{{parse_hex("0001"), 0}, "ad01", 700},
+        TxInput{{parse_hex("0002"), 1}, "ad02", 900},
+        TxInput{{parse_hex("0003"), 2}, "ad03", 300},
+        TxInput{{parse_hex("0004"), 3}, "ad04", 600},
     });
 
     {   // 2
@@ -56,30 +56,32 @@ TEST(CardanoSigning, selectInputsSimple) {
     }
 }
 
-Proto::SigningInput createSampleInput() {
+Proto::SigningInput createSampleInput(uint amount) {
     Proto::SigningInput input;
     auto* utxo1 = input.add_utxos();
     const auto txHash1 = parse_hex("f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767");
     utxo1->mutable_out_point()->set_tx_hash(std::string(txHash1.begin(), txHash1.end()));
     utxo1->mutable_out_point()->set_output_index(1);
+    utxo1->set_address("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23");
     utxo1->set_amount(1500000);
     auto* utxo2 = input.add_utxos();
     const auto txHash2 = parse_hex("554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0");
     utxo2->mutable_out_point()->set_tx_hash(std::string(txHash2.begin(), txHash2.end()));
     utxo2->mutable_out_point()->set_output_index(0);
+    utxo2->set_address("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23");
     utxo2->set_amount(6500000);
 
-    const auto privateKeyData = parse_hex("484d5bc3375435c9a0b0d121e86d6eba7d55929a263530d75bb1cb1d098bc653f75e5127219208a9d28ca6fecd95530b97470957f72be0648b2c99e2a29cc841fa49248845144b2dbccf6e85c172cd44099f5977e7126209e7c3e4b1fba4a264f0607785e71ace08560b30e3ffaab13f46418493f223e1407c0e6358108bc65351b30406485ad396ac0a390f6d718413fc5256069a36dd7bc2670fc49597d83556a8d4c88d10db7883dad1e70e03bbfbdff3545d33eb4cf2ea8f044a29462cde");
+    const auto privateKeyData = parse_hex("089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448a3566990b7785bd48c330875b1e0d03caaed0e67cecc42075dce1c7a13b1c49240508848ac82f603391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf1290dbd508e5ec71afaea98da2df1533c22ef02a26bb87b31907d0b2738fb7785b38d53aa68fc01230784c9209b2b2a2faf28491b3b1f1d221e63e704bbd0403c4154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e");
     input.add_private_key(privateKeyData.data(), privateKeyData.size());
-    input.mutable_transfer_message()->set_to_address("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23");
-    input.mutable_transfer_message()->set_change_address("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5");
-    input.mutable_transfer_message()->set_amount(7000000);
+    input.mutable_transfer_message()->set_to_address("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5");
+    input.mutable_transfer_message()->set_change_address("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23");
+    input.mutable_transfer_message()->set_amount(amount);
     input.set_ttl(53333333);
     return input;
 }
 
 TEST(CardanoSigning, Plan) {
-    auto input = createSampleInput();
+    auto input = createSampleInput(7000000);
 
     {
         auto signer = Signer(input);
@@ -87,8 +89,8 @@ TEST(CardanoSigning, Plan) {
         EXPECT_EQ(plan.utxos.size(), 2);
         EXPECT_EQ(plan.availableAmount, 8000000);
         EXPECT_EQ(plan.amount, 7000000);
-        EXPECT_EQ(plan.fee, 165489);
-        EXPECT_EQ(plan.change, 834511);
+        EXPECT_EQ(plan.fee, 170147);
+        EXPECT_EQ(plan.change, 829853);
         EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
         EXPECT_EQ(plan.error, Common::Proto::OK);
     }
@@ -99,7 +101,7 @@ TEST(CardanoSigning, Plan) {
         EXPECT_EQ(plan.utxos.size(), 1);
         EXPECT_EQ(plan.availableAmount, 6500000);
         EXPECT_EQ(plan.amount, 1);
-        EXPECT_EQ(plan.fee, 163731);
+        EXPECT_EQ(plan.fee, 168390);
         EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
     }
     {   // small target amount
@@ -109,13 +111,13 @@ TEST(CardanoSigning, Plan) {
         EXPECT_EQ(plan.utxos.size(), 1);
         EXPECT_EQ(plan.availableAmount, 6500000);
         EXPECT_EQ(plan.amount, 2000000);
-        EXPECT_EQ(plan.fee, 163907);
+        EXPECT_EQ(plan.fee, 168565);
         EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
     }
 }
 
 TEST(CardanoSigning, Sign1) {
-    const auto input = createSampleInput();
+    const auto input = createSampleInput(7000000);
 
     auto signer = Signer(input);
     const auto output = signer.sign();
@@ -123,9 +125,63 @@ TEST(CardanoSigning, Sign1) {
     EXPECT_EQ(output.error(), Common::Proto::OK);
 
     const auto encoded = data(output.encoded());
-    EXPECT_EQ(hex(encoded), "a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a006acfc082583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a000cbbcf021a00028671031a032dcd55");
+    EXPECT_EQ(hex(encoded), "83a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a006acfc082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a000ca99d021a000298a3031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058403c1cbde706d10550f5f966a5071e9e01e18f7b555626ed7616a214bd951d29d0ff0458edf5c555eefe4d4280302160149fc6e7e56a4298a368b7ab357643190df6");
     const auto txid = data(output.tx_id());
-    EXPECT_EQ(hex(txid), "8b9f26b3d1fa9f971379a72c2d577abc73ca425f5dcb1f2b8ea436a09b6f0f87");
+    EXPECT_EQ(hex(txid), "efcf8ec01fb8cd32bc5289c609c470b473cc79bc60b0667e1d68dc3962df1082");
+
+    {
+        const auto decode = Cbor::Decode(encoded);
+        ASSERT_TRUE(decode.isValid());
+        EXPECT_EQ(decode.dumpToString(), "[{0: [[h\"554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0\", 0], [h\"f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767\", 1]], 1: [[h\"01558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd5\", 7000000], [h\"01df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\", 829853]], 2: 170147, 3: 53333333}, {0: [[h\"6d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df290\", h\"3c1cbde706d10550f5f966a5071e9e01e18f7b555626ed7616a214bd951d29d0ff0458edf5c555eefe4d4280302160149fc6e7e56a4298a368b7ab357643190d\"]]}, null]");
+        EXPECT_EQ(decode.getArrayElements().size(), 3);
+    }
+}
+
+TEST(CardanoSigning, PlanAndSign1) {
+    uint amount = 6000000;
+    auto input = createSampleInput(amount);
+
+    {
+        // run plan and check result
+        auto signer = Signer(input);
+        const auto plan = signer.plan();
+
+        EXPECT_EQ(plan.availableAmount, 8000000);
+        EXPECT_EQ(plan.amount, amount);
+        EXPECT_EQ(plan.fee, 168565);
+        EXPECT_EQ(plan.change, 1831435);
+        ASSERT_EQ(plan.utxos.size(), 2);
+        EXPECT_EQ(plan.utxos[0].amount, 6500000);
+        EXPECT_EQ(plan.utxos[1].amount, 1500000);
+
+        // perform sign with default plan
+        const auto output = signer.sign();
+
+        EXPECT_EQ(output.error(), Common::Proto::OK);
+
+        const auto encoded = data(output.encoded());
+        EXPECT_EQ(hex(encoded), "83a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a005b8d8082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a001bf20b021a00029275031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df290584064adab30f5a1db25db990819774c4ec6388e0bfaa6708ff27db1ac8a94fe8e4b769b2e2ef8b87d95896f04a0b97907f7dc7cc83cde85aea452084c1263625306f6");
+        const auto txid = data(output.tx_id());
+        EXPECT_EQ(hex(txid), "1cf53d225708b2cca137b25ae8c8a56fc2d599ed8418993322a3569468fd7c09");
+    }
+
+    // set different plan, with one input only
+    input.mutable_plan()->set_amount(amount);
+    input.mutable_plan()->set_available_amount(6500000);
+    input.mutable_plan()->set_fee(165489);
+    input.mutable_plan()->set_change(17191988);
+    *(input.mutable_plan()->add_utxos()) = input.utxos(0);
+    input.mutable_plan()->set_error(Common::Proto::OK);
+
+    auto signer = Signer(input);
+    const auto output = signer.sign();
+
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+
+    const auto encoded = data(output.encoded());
+    EXPECT_EQ(hex(encoded), "83a40081825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a005b8d8082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a01065434021a00028671031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058408311a058035d75545a47b844fea401aa9c23e99fe7bc8136b554396eef135d4cd93062c5df38e613185c21bb1c98b881d1e0fd1024d3539b163c8e14d1a6e40df6");
+    const auto txid = data(output.tx_id());
+    EXPECT_EQ(hex(txid), "e319c0bfc99cdb79d64f00b7e8fb8bfbf29fa70554c84f101e92b7dfed172448");
 }
 
 TEST(CardanoSigning, SignMessageWithKey) {

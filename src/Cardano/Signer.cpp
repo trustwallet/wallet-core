@@ -8,6 +8,7 @@
 #include "AddressV3.h"
 
 #include "PrivateKey.h"
+#include "Cbor.h"
 
 #include <vector>
 #include <cassert>
@@ -31,7 +32,7 @@ Proto::SigningOutput Signer::sign() {
     return signWithPlan();
 }
 
-Common::Proto::SigningError Signer::buildTransaction(Transaction& tx, const Proto::SigningInput& input, const TransactionPlan& plan) {
+Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const Proto::SigningInput& input, const TransactionPlan& plan) {
     tx = Transaction();
     for (const auto& i: plan.utxos) {
         tx.inputs.push_back(OutPoint{i.txHash, i.outputIndex});
@@ -63,6 +64,68 @@ Common::Proto::SigningError Signer::buildTransaction(Transaction& tx, const Prot
     return Common::Proto::OK;
 }
 
+Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Data, Data>>& signatures, const Proto::SigningInput& input, const TransactionPlan& plan, const Data& txId) {
+    signatures.clear();
+    // Private keys and corresponding addresses
+    std::map<std::string, Data> privateKeys;
+    for (auto i = 0; i < input.private_key_size(); ++i) {
+        const auto privateKeyData = data(input.private_key(i));
+        if (!PrivateKey::isValid(privateKeyData)) {
+            return Common::Proto::Error_invalid_private_key;
+        }
+        const auto privateKey = PrivateKey(privateKeyData);
+        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Extended);
+        const auto address = AddressV3(publicKey);
+        privateKeys[address.string()] = privateKeyData;
+    }
+
+    // collect every unique input UTXO address
+    std::vector<std::string> addresses;
+    for (auto& u: plan.utxos) {
+        if (!AddressV3::isValid(u.address)) {
+            return Common::Proto::Error_invalid_address;
+        }
+        if (std::find(addresses.begin(), addresses.end(), u.address) == addresses.end()) {
+            addresses.push_back(u.address);
+        }
+    }
+
+    // create signature for each address
+    for (auto& a: addresses) {
+        const auto privKeyFind = privateKeys.find(a);
+        if (privKeyFind == privateKeys.end()) {
+            return Common::Proto::Error_missing_private_key;
+        }
+        const auto privateKeyData = privKeyFind->second;
+        const auto privateKey = PrivateKey(privateKeyData);
+        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Extended);
+        const auto signature = privateKey.sign(txId, TWCurveED25519Extended);
+        // public key (first 32 bytes) and signature (64 bytes)
+        signatures.push_back(std::make_pair(subData(publicKey.bytes, 0, 32), signature));
+    }
+
+    return Common::Proto::OK;
+}
+
+Cbor::Encode cborizeSignatures(const std::vector<std::pair<Data, Data>>& signatures) {
+    // signatures as Cbor
+    std::vector<Cbor::Encode> sigsCbor;
+    for (auto& s: signatures) {
+        sigsCbor.push_back(Cbor::Encode::array({
+            Cbor::Encode::bytes(s.first),
+            Cbor::Encode::bytes(s.second)
+        }));
+    }
+
+    // Cbor-encode txAux & signatures
+    return Cbor::Encode::map({
+        std::make_pair(
+            Cbor::Encode::uint(0),
+            Cbor::Encode::array(sigsCbor)
+        )
+    });
+}
+
 Proto::SigningOutput Signer::signWithPlan() {
     auto ret = Proto::SigningOutput();
     if (_plan.error != Common::Proto::OK) {
@@ -71,20 +134,51 @@ Proto::SigningOutput Signer::signWithPlan() {
         return ret;
     }
 
-    Transaction tx;
-    const auto buildRet = buildTransaction(tx, input, _plan);
+    Data encoded;
+    Data txId;
+    const auto buildRet = encodeTransaction(encoded, txId, input, _plan);
     if (buildRet != Common::Proto::OK) {
         ret.set_error(buildRet);
         return ret;
     }
 
-    const auto encoded = tx.encode();
     ret.set_encoded(string(encoded.begin(), encoded.end()));
-    const auto txid = tx.getId();
-    ret.set_tx_id(string(txid.begin(), txid.end()));
+    ret.set_tx_id(string(txId.begin(), txId.end()));
     ret.set_error(Common::Proto::OK);
 
     return ret;
+}
+
+Common::Proto::SigningError Signer::encodeTransaction(Data& encoded, Data& txId, const Proto::SigningInput& input, const TransactionPlan& plan) {
+    if (plan.error != Common::Proto::OK) {
+        return plan.error;
+    }
+
+    Transaction txAux;
+    const auto buildRet = buildTransactionAux(txAux, input, plan);
+    if (buildRet != Common::Proto::OK) {
+        return buildRet;
+    }
+    txId = txAux.getId();
+
+    std::vector<std::pair<Data, Data>> signatures;
+    const auto sigError = assembleSignatures(signatures, input, plan, txId);
+    if (sigError != Common::Proto::OK) {
+        return sigError;
+    }
+    const auto sigsCbor = cborizeSignatures(signatures);
+
+    // Cbor-encode txAux & signatures
+    const auto cbor = Cbor::Encode::array({
+        // txaux
+        Cbor::Encode::fromRaw(txAux.encode()),
+        // signatures
+        sigsCbor,
+        // aux data
+        Cbor::Encode::null(),
+    });
+    encoded = cbor.encoded();
+    return Common::Proto::OK;
 }
 
 // Select a subset of inputs, to cover desired amount. Simple algorithm: pick largest ones
@@ -128,10 +222,11 @@ uint64_t estimateTxSize(const Proto::SigningInput& input, Amount amount) {
     }
     const auto _simplePlan = simplePlan(inputs, amount);
 
-    Transaction simpleTx;
-    Signer::buildTransaction(simpleTx, input, _simplePlan);
+    Data encoded;
+    Data txId;
+    Signer::encodeTransaction(encoded, txId, input, _simplePlan);
 
-    auto encodedSize = simpleTx.encode().size();
+    auto encodedSize = encoded.size();
     const auto extra = 11;
     return encodedSize + extra;
 }
@@ -140,7 +235,7 @@ Amount txFeeFunction(uint64_t txSizeInBytes) {
     const auto a = 155381;
     const double b = 43.946;
 
-    const Amount fee = (Amount)(ceil(a + txSizeInBytes * b));
+    const Amount fee = (Amount)(ceil((double)a + (double)txSizeInBytes * b));
     return fee;
 }
 

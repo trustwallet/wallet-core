@@ -28,6 +28,8 @@ public:
 
 class TxInput: public OutPoint {
 public:
+    std::string address;
+
     /// ADA amount
     Amount amount;
 

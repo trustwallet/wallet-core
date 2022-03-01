@@ -27,10 +27,14 @@ public:
     Proto::SigningOutput signWithPlan();
     // Create plan from signing input
     TransactionPlan plan() const;
-    // Build output transaction object, using input and plan
-    static Common::Proto::SigningError buildTransaction(Transaction& tx, const Proto::SigningInput& input, const TransactionPlan& plan);
+    // Build encoded transaction
+    static Common::Proto::SigningError encodeTransaction(Data& encoded, Data& txId, const Proto::SigningInput& input, const TransactionPlan& plan);
+    // Build aux transaction object, using input and plan
+    static Common::Proto::SigningError buildTransactionAux(Transaction& tx, const Proto::SigningInput& input, const TransactionPlan& plan);
     static Amount estimateFee(const Proto::SigningInput& input, Amount amount);
     static std::vector<TxInput> selectInputsSimple(const std::vector<TxInput>& inputs, Amount amount);
+    // Build list of public keys + signature
+    static Common::Proto::SigningError assembleSignatures(std::vector<std::pair<Data, Data>>& signatures, const Proto::SigningInput& input, const TransactionPlan& plan, const Data& txId);
 };
 
 } // namespace TW::Cardano

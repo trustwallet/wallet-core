@@ -324,7 +324,7 @@ TEST(Coin, ValidateAddressBluzelle) {
 
 TEST(Coin, ValidateAddresCardano) {
     // valid V3 address
-    EXPECT_TRUE(validateAddress(TWCoinTypeCardano, "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeCardano, "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"));
     // valid V2 address
     EXPECT_TRUE(validateAddress(TWCoinTypeCardano, "Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W"));
     // valid V1 address

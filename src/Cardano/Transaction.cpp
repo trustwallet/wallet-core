@@ -23,6 +23,7 @@ TxInput TxInput::fromProto(const Cardano::Proto::TxInput& proto) {
     auto ret = TxInput();
     ret.txHash = data(proto.out_point().tx_hash());
     ret.outputIndex = proto.out_point().output_index();
+    ret.address = proto.address();
     ret.amount = proto.amount();
     return ret;
 }
