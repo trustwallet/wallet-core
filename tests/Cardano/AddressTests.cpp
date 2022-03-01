@@ -172,13 +172,13 @@ TEST(CardanoAddress, MnemonicToAddressV2) {
             PrivateKey privKey1 = wallet.getKey(TWCoinTypeCardano, DerivationPath("m/1852'/1815'/0'/0/1"));
             PublicKey pubKey1 = privKey1.getPublicKey(TWPublicKeyTypeED25519Extended);
             auto addr1 = AddressV3(pubKey1);
-            EXPECT_EQ("addr1q9068st87h22h3l6w6t5evnlm067rag94llqya2hkjrsd300fu2wh4hsadgy7wgwqlhdklzj4xqqxrk8ctpthcm8c7cslx7wl8", addr1.string());
+            EXPECT_EQ("addr1q9068st87h22h3l6w6t5evnlm067rag94llqya2hkjrsd3wvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qpmxzjt", addr1.string());
         }
         {
             PrivateKey privKey1 = wallet.getKey(TWCoinTypeCardano, DerivationPath("m/1852'/1815'/0'/0/2"));
             PublicKey pubKey1 = privKey1.getPublicKey(TWPublicKeyTypeED25519Extended);
             auto addr1 = AddressV3(pubKey1);
-            EXPECT_EQ("addr1qxteqxsgxrs4he9d28lh70qu7qfz7saj6dmxwsqyle2yp3rl5jdmdl4r6clfdpzkndy5gy3ps5rp5n4xfmmjc6hw0fjsrs6sga", addr1.string());
+            EXPECT_EQ("addr1qxteqxsgxrs4he9d28lh70qu7qfz7saj6dmxwsqyle2yp3xvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35quehtx3", addr1.string());
         }
     }
     {

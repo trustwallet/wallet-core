@@ -108,6 +108,7 @@ PrivateKey HDWallet::getMasterKeyExtension(TWCurve curve) const {
 DerivationPath HDWallet::cardanoStakingDerivationPath(const DerivationPath& path) {
     DerivationPath stakingPath = path;
     stakingPath.indices[3].value = 2;
+    stakingPath.indices[4].value = 0;
     return stakingPath;
 }
 
