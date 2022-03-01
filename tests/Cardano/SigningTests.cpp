@@ -20,7 +20,7 @@ using namespace TW;
 using namespace std;
 
 
-TEST(CardanoSigning, selectInputsSimple) {
+TEST(CardanoSigning, SelectInputsSimple) {
     const auto inputs = std::vector<TxInput>({
         TxInput{{parse_hex("0001"), 0}, "ad01", 700},
         TxInput{{parse_hex("0002"), 1}, "ad02", 900},
@@ -116,7 +116,7 @@ TEST(CardanoSigning, Plan) {
     }
 }
 
-TEST(CardanoSigning, Sign1) {
+TEST(CardanoSigning, SignTransfer1) {
     const auto input = createSampleInput(7000000);
 
     auto signer = Signer(input);
@@ -137,7 +137,7 @@ TEST(CardanoSigning, Sign1) {
     }
 }
 
-TEST(CardanoSigning, PlanAndSign1) {
+TEST(CardanoSigning, PlanAndSignTransfer1) {
     uint amount = 6000000;
     auto input = createSampleInput(amount);
 
@@ -182,6 +182,64 @@ TEST(CardanoSigning, PlanAndSign1) {
     EXPECT_EQ(hex(encoded), "83a40081825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a005b8d8082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a01065434021a00028671031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058408311a058035d75545a47b844fea401aa9c23e99fe7bc8136b554396eef135d4cd93062c5df38e613185c21bb1c98b881d1e0fd1024d3539b163c8e14d1a6e40df6");
     const auto txid = data(output.tx_id());
     EXPECT_EQ(hex(txid), "e319c0bfc99cdb79d64f00b7e8fb8bfbf29fa70554c84f101e92b7dfed172448");
+}
+
+TEST(CardanoSigning, SignTransfer_0db1ea) {
+    const auto amount = 1100000;
+    const auto ownAddress = "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23";
+
+    Proto::SigningInput input;
+    auto* utxo1 = input.add_utxos();
+    const auto txHash1 = parse_hex("81b935447bb994567f041d181b628a0afbcd747d0199c9ff4cd895686bbee8c6");
+    utxo1->mutable_out_point()->set_tx_hash(std::string(txHash1.begin(), txHash1.end()));
+    utxo1->mutable_out_point()->set_output_index(0);
+    utxo1->set_address(ownAddress);
+    utxo1->set_amount(1000000);
+    auto* utxo2 = input.add_utxos();
+    const auto txHash2 = parse_hex("3a9068a273cc2af59b45593b78973841d972d01802abe992c55dbeecdffc561b");
+    utxo2->mutable_out_point()->set_tx_hash(std::string(txHash2.begin(), txHash2.end()));
+    utxo2->mutable_out_point()->set_output_index(0);
+    utxo2->set_address(ownAddress);
+    utxo2->set_amount(1800000);
+
+    const auto privateKeyData1 = parse_hex("089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448a3566990b7785bd48c330875b1e0d03caaed0e67cecc42075dce1c7a13b1c49240508848ac82f603391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf1290dbd508e5ec71afaea98da2df1533c22ef02a26bb87b31907d0b2738fb7785b38d53aa68fc01230784c9209b2b2a2faf28491b3b1f1d221e63e704bbd0403c4154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e");
+    input.add_private_key(privateKeyData1.data(), privateKeyData1.size());
+    input.mutable_transfer_message()->set_to_address("addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq");
+    input.mutable_transfer_message()->set_change_address(ownAddress);
+    input.mutable_transfer_message()->set_amount(amount);
+    input.set_ttl(54675589);
+
+    {
+        // run plan and check result
+        auto signer = Signer(input);
+        const auto plan = signer.plan();
+
+        EXPECT_EQ(plan.availableAmount, 1800000);
+        EXPECT_EQ(plan.amount, amount);
+        EXPECT_EQ(plan.fee, 168565);
+        EXPECT_EQ(plan.change, 531435);
+        EXPECT_EQ(plan.utxos.size(), 1);
+    }
+
+    // set plan (2 inputs)
+    input.mutable_plan()->set_amount(amount);
+    input.mutable_plan()->set_available_amount(2800000);
+    input.mutable_plan()->set_fee(170147);
+    input.mutable_plan()->set_change(1529853);
+    *(input.mutable_plan()->add_utxos()) = input.utxos(0);
+    *(input.mutable_plan()->add_utxos()) = input.utxos(1);
+    input.mutable_plan()->set_error(Common::Proto::OK);
+
+    auto signer = Signer(input);
+    const auto output = signer.sign();
+
+    // https://cardanoscan.io/transaction/0db1ea8c5c5828bbd027fcef3da02a63b86899db670ad7bb0630cefbe35944fa
+    // curl -d '{"txHash":"0db1ea..44fa","txBody":"83a400..06f6"}' -H "Content-Type: application/json" https://<cardano-node>/api/txs/submit
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+    const auto encoded = data(output.encoded());
+    EXPECT_EQ(hex(encoded), "83a4008282582081b935447bb994567f041d181b628a0afbcd747d0199c9ff4cd895686bbee8c6008258203a9068a273cc2af59b45593b78973841d972d01802abe992c55dbeecdffc561b000182825839018d98bea0414243dc84070f96265577e7e6cf702d62e871016885034ecc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a34681a0010c8e082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a001757fd021a000298a3031a03424885a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058406300b52aaff1e26067a3e0a48ae26f4f068765f46f934fabeab872c1d25535fc94893ec72feacd787f0174fbabd8933727d9a2b319b406e7a855843b0c051806f6");
+    const auto txid = data(output.tx_id());
+    EXPECT_EQ(hex(txid), "0db1ea8c5c5828bbd027fcef3da02a63b86899db670ad7bb0630cefbe35944fa");
 }
 
 TEST(CardanoSigning, SignMessageWithKey) {
