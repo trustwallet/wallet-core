@@ -18,6 +18,8 @@ namespace TW {
 
 class FullSS58Address {
   public:
+    static const size_t expectPublicKeySize = 32;
+
     /// Number of bytes in an address.
     static const size_t simpleFormatSize = 33;
     static const size_t fullFormatSize = 34;
@@ -114,7 +116,20 @@ class FullSS58Address {
 
     /// Returns public key bytes
     Data keyBytes() const {
-        return Data(bytes.begin() + 1, bytes.end());
+        Data bz;
+        if (bytes.size() == simpleFormatSize) {
+            bz = Data(bytes.begin() + 1, bytes.end());
+        } else if (bytes.size() == fullFormatSize) {
+            bz =  Data(bytes.begin() + 2, bytes.end());
+        } else {
+            throw std::length_error("invalid address bytes length");
+        }
+
+        if (bz.size() != expectPublicKeySize) {
+            throw std::length_error("invalid public key bytes length");
+        }
+
+        return bz;
     }
 };
 

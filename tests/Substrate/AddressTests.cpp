@@ -33,3 +33,14 @@ TEST(SubstrateAddress, FromString) {
     auto addressParallel = Address("p8EGHjWt7e1MYoD7V6WXvbPZWK9GSJiiK85kv2R7Ur7FisPUL", 172);
     ASSERT_EQ(addressParallel.string(), "p8EGHjWt7e1MYoD7V6WXvbPZWK9GSJiiK85kv2R7Ur7FisPUL");
 }
+
+TEST(SubstrateAddress, Keybytes) {
+    auto pubKeyBytes = parse_hex("0x92fd9c237030356e26cfcc4568dc71055d5ec92dfe0ff903767e00611971bad3");
+    auto publicKey = PublicKey(pubKeyBytes, TWPublicKeyTypeED25519);
+
+    auto addressAstar = Address(publicKey, 5);
+    ASSERT_EQ(addressAstar.keyBytes(), pubKeyBytes);
+
+    auto addressParallel = Address(publicKey, 172);
+    ASSERT_EQ(addressParallel.keyBytes(), pubKeyBytes);
+}
