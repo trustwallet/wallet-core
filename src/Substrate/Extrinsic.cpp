@@ -3,7 +3,6 @@
 //
 
 #include "Extrinsic.h"
-#include <TrustWalletCore/TWSS58AddressType.h>
 #include <map>
 
 using namespace TW;
@@ -12,8 +11,6 @@ using namespace TW::Substrate;
 static constexpr uint8_t signedBit = 0x80;
 static constexpr uint8_t sigTypeEd25519 = 0x00;
 static constexpr uint8_t extrinsicFormat = 4;
-static constexpr uint32_t multiAddrSpecVersion = 28;
-static constexpr uint32_t multiAddrSpecVersionKsm = 2028;
 
 // max uint8
 static constexpr byte maxByte = 255;
@@ -34,9 +31,8 @@ Data Extrinsic::encodeCall(const Proto::SigningInput& input) {
     if (input.network() > maxByte) {
         throw std::invalid_argument("method index too large");
     }
-    auto network = TWSS58AddressType(byte(input.network()));
     if (input.has_balance_call()) {
-        data = encodeBalanceCall(input.balance_call(), network, input.spec_version(), input.multi_address());
+        data = encodeBalanceCall(input.balance_call(), input.network(), input.spec_version(), input.multi_address());
     }
 
     return data;
@@ -86,11 +82,11 @@ bool Extrinsic::encodeRawAccount(bool enableMultiAddress) {
     return !enableMultiAddress;
 }
 
-Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance, byte network, uint32_t specVersion, bool enableMultiAddress) {
+Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance, int32_t network, uint32_t specVersion, bool enableMultiAddress) {
     Data data;
     if (balance.has_transfer()) {
         auto transfer = balance.transfer();
-        auto address = SS58Address(transfer.to_address(), network);
+        auto address = FullSS58Address(transfer.to_address(), network);
         auto value = load(transfer.value());
         // call index
         append(data, encodeCallIndex(balance.transfer().module_index(), balance.transfer().method_index()));
@@ -104,7 +100,7 @@ Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance, byte network, u
         auto batchTransfer = balance.batchtransfer().transfers();
         for (auto transfer : batchTransfer) {
             Data itemData;
-            auto address = SS58Address(transfer.to_address(), network);
+            auto address = FullSS58Address(transfer.to_address(), network);
             auto value = load(transfer.value());
             // index
             append(itemData, encodeCallIndex(transfer.module_index(), transfer.method_index()));

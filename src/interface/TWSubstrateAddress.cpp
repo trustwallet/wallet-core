@@ -14,12 +14,12 @@ bool TWSubstrateAddressEqual(struct TWSubstrateAddress *_Nonnull lhs, struct TWS
     return lhs->impl == rhs->impl;
 }
 
-bool TWSubstrateAddressIsValidString(TWString *_Nonnull string, uint8_t network) {
+bool TWSubstrateAddressIsValidString(TWString *_Nonnull string, int32_t network) {
     auto s = reinterpret_cast<const std::string*>(string);
     return Address::isValid(*s, network);
 }
 
-struct TWSubstrateAddress *_Nullable TWSubstrateAddressCreateWithString(TWString *_Nonnull string, uint8_t network) {
+struct TWSubstrateAddress *_Nullable TWSubstrateAddressCreateWithString(TWString *_Nonnull string, int32_t network) {
     auto s = reinterpret_cast<const std::string*>(string);
     try {
         const auto address = Address(*s, network);
@@ -29,7 +29,7 @@ struct TWSubstrateAddress *_Nullable TWSubstrateAddressCreateWithString(TWString
     }
 }
 
-struct TWSubstrateAddress *_Nonnull TWSubstrateAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, uint8_t network) {
+struct TWSubstrateAddress *_Nonnull TWSubstrateAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, int32_t network) {
     return new TWSubstrateAddress{ Address(publicKey->impl, network) };
 }
 
