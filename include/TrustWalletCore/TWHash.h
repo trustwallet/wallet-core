@@ -56,6 +56,9 @@ TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWHashBlake2b(TWData *_Nonnull data, size_t size);
 
 TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWHashBlake2bPersonal(TWData *_Nonnull data, TWData * _Nonnull personal, size_t outlen);
+
+TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWHashGroestl512(TWData *_Nonnull data);
 
 TW_EXPORT_STATIC_METHOD
