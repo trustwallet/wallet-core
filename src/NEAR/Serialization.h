@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include "../proto/NEAR.pb.h"
 #include "../Data.h"
+#include "../proto/NEAR.pb.h"
 
 namespace TW::NEAR {
 
 Data transactionData(const Proto::SigningInput& input);
 Data signedTransactionData(const Data& transactionData, const Data& signatureData);
-
-} // namespace
+Data transactionDataWithPublicKey(const Proto::SigningInput& input, const Data& publicKey);
+} // namespace TW::NEAR

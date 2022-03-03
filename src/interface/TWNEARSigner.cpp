@@ -6,6 +6,7 @@
 
 #include <TrustWalletCore/TWNEARSigner.h>
 
+#include "../NEAR/Serialization.h"
 #include "../NEAR/Signer.h"
 #include "../proto/NEAR.pb.h"
 
@@ -19,5 +20,36 @@ TW_NEAR_Proto_SigningOutput TWNEARSignerSign(TW_NEAR_Proto_SigningInput data) {
     Proto::SigningOutput output = Signer::sign(std::move(input));
 
     auto serialized = output.SerializeAsString();
-    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serialized.data()),
+                                 serialized.size());
+}
+
+TWData* _Nonnull TWNEARSignerMessage(TW_NEAR_Proto_SigningInput data, TWData* _Nonnull publicKey) {
+    try {
+        Proto::SigningInput input;
+        input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
+        auto transaction = TW::NEAR::transactionDataWithPublicKey(
+            std::move(input), TW::data(TWDataBytes(publicKey), TWDataSize(publicKey)));
+        return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(transaction.data()),
+                                     transaction.size());
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << '\n';
+        throw e;
+    }
+}
+
+TWData* _Nonnull TWNEARSignerTransaction(TW_NEAR_Proto_SigningInput data,
+                                         TWData* _Nonnull signature, TWData* _Nonnull publicKey) {
+    Proto::SigningInput input;
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
+    auto transaction = TW::NEAR::transactionDataWithPublicKey(
+        std::move(input), TW::data(TWDataBytes(publicKey), TWDataSize(publicKey)));
+
+    Data signatureData = TW::data(TWDataBytes(signature), TWDataSize(signature));
+    auto signedTransaction = signedTransactionData(transaction, signatureData);
+    auto output = Proto::SigningOutput();
+    output.set_signed_transaction(signedTransaction.data(), signedTransaction.size());
+    auto serialized = output.SerializeAsString();
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serialized.data()),
+                                 serialized.size());
 }

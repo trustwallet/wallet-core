@@ -13,7 +13,6 @@ using namespace TW;
 using namespace TW::NEAR;
 using namespace TW::NEAR::Proto;
 
-
 static void writeU8(Data& data, uint8_t number) {
     data.push_back(number);
 }
@@ -30,7 +29,8 @@ static void writeU128(Data& data, const std::string& numberData) {
     data.insert(std::end(data), std::begin(numberData), std::end(numberData));
 }
 
-template <class T> static void writeRawBuffer(Data &data, const T& buf) {
+template <class T>
+static void writeRawBuffer(Data& data, const T& buf) {
     data.insert(std::end(data), std::begin(buf), std::end(buf));
 }
 
@@ -52,11 +52,11 @@ static void writeTransfer(Data& data, const Proto::Transfer& transfer) {
 static void writeAction(Data& data, const Proto::Action& action) {
     writeU8(data, action.payload_case() - Proto::Action::kCreateAccount);
     switch (action.payload_case()) {
-        case Proto::Action::kTransfer:
-            writeTransfer(data, action.transfer());
-            return;
-        default:
-            return;
+    case Proto::Action::kTransfer:
+        writeTransfer(data, action.transfer());
+        return;
+    default:
+        return;
     }
 }
 
@@ -66,6 +66,25 @@ Data TW::NEAR::transactionData(const Proto::SigningInput& input) {
     auto key = PrivateKey(input.private_key());
     auto public_key = key.getPublicKey(TWPublicKeyTypeED25519);
     auto public_key_proto = Proto::PublicKey();
+    public_key_proto.set_data(public_key.bytes.data(), public_key.bytes.size());
+    writePublicKey(data, public_key_proto);
+    writeU64(data, input.nonce());
+    writeString(data, input.receiver_id());
+    const auto& block_hash = input.block_hash();
+    writeRawBuffer(data, block_hash);
+    writeU32(data, input.actions_size());
+    for (const auto& action : input.actions()) {
+        writeAction(data, action);
+    }
+    return data;
+}
+
+Data TW::NEAR::transactionDataWithPublicKey(const Proto::SigningInput& input,
+                                            const Data& publicKey) {
+    Data data;
+    writeString(data, input.signer_id());
+    auto public_key_proto = Proto::PublicKey();
+    auto public_key = PublicKey(publicKey, TWPublicKeyTypeED25519);
     public_key_proto.set_data(public_key.bytes.data(), public_key.bytes.size());
     writePublicKey(data, public_key_proto);
     writeU64(data, input.nonce());
