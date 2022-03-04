@@ -27,7 +27,7 @@ TWData* _Nonnull TWSolanaSignerMessage(TW_Solana_Proto_SigningInput data,
 
 /// Build a transaction to be broadcasted.
 TW_EXPORT_STATIC_METHOD
-TWString* _Nonnull TWSolanaSignerTransaction(TW_Solana_Proto_SigningInput data,
+TWData* _Nonnull TWSolanaSignerTransaction(TW_Solana_Proto_SigningInput data,
                                              TWData* _Nonnull publicKey,
                                              TWData* _Nonnull signature);
 

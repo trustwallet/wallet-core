@@ -104,7 +104,7 @@ TWData* _Nonnull TWSolanaSignerMessage(TW_Solana_Proto_SigningInput data,
                                  transaction.messageData().size());
 }
 
-TWString* _Nonnull TWSolanaSignerTransaction(TW_Solana_Proto_SigningInput data,
+TWData* _Nonnull TWSolanaSignerTransaction(TW_Solana_Proto_SigningInput data,
                                              TWData* _Nonnull publicKey,
                                              TWData* _Nonnull signature) {
     Proto::SigningInput input;
@@ -139,5 +139,5 @@ TWString* _Nonnull TWSolanaSignerTransaction(TW_Solana_Proto_SigningInput data,
 
     auto encodedTx = transaction.serialize();
 
-    return TWStringCreateWithUTF8Bytes(Base64::encode(encodedTx).c_str());
+    return TWDataCreateWithBytes(encodedTx.data(), encodedTx.size());
 }
