@@ -1893,5 +1893,29 @@
       "clientPublic": "https://evm-cronos.crypto.org",
       "clientDocs": "https://eth.wiki/json-rpc/API"
     }
+  },
+  {
+    "id": "smartbch",
+    "name": "Smart Bitcoin Cash",
+    "coinId": 10000145,
+    "symbol": "BCH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://www.smartscan.cash",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x6413466b455b17d03c7a8ce2d7f99fec34bcd338628bdd2d0580a21e3197a4d9",
+      "sampleAccount": "0xFeEc227410E1DF9f3b4e6e2E284DC83051ae468F"
+    },
+    "info": {
+      "url": "https://smartbch.org/",
+      "source": "https://github.com/smartbch/smartbch",
+      "rpc": "https://smartbch.fountainhead.cash/mainnet",
+      "documentation": "https://github.com/smartbch/docs/blob/main/developers-guide/jsonrpc.md"
+    }
   }
 ]
