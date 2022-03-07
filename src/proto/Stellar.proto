@@ -37,6 +37,11 @@ message OperationChangeTrust {
     int64 valid_before = 2;
 }
 
+message Claimant {
+    string acount = 1;
+    string predicate = 2;
+}
+
 message OperationCreateClaimableBalance {
     // Optional, can be left empty for native asset
     Asset asset = 1;
@@ -44,7 +49,7 @@ message OperationCreateClaimableBalance {
     // Amount (*10^7)
     int64 amount = 2;
 
-    string claimant = 3;
+    repeated Claimant claimants = 3;
 }
 
 message OperationClaimClaimableBalance {
