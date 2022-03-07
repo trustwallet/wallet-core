@@ -81,7 +81,7 @@ int64_t estimateSegwitFee(const FeeCalculator& feeCalculator, const TransactionP
 
 int extraOutputCount(const SigningInput& input) {
     int count = int(input.outputOpReturn.size() > 0);
-    return count;
+    return count + input.extraOutputs.size();
 }
 
 TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
@@ -91,7 +91,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
     }
 
     bool maxAmount = input.useMaxAmount;
-    if (input.amount == 0 && !maxAmount) {
+    if (input.totalAmount == 0 && !maxAmount) {
         plan.error = Common::Proto::Error_zero_amount_requested;
     } else if (input.utxos.empty()) {
         plan.error = Common::Proto::Error_missing_input_utxos;
@@ -101,11 +101,11 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
         auto inputSum = InputSelector<UTXO>::sum(input.utxos);
 
         // select UTXOs
-        plan.amount = input.amount;
+        plan.amount = input.totalAmount;
 
         // if amount requested is the same or more than available amount, it cannot be satisifed, but
         // treat this case as MaxAmount, and send maximum available (which will be less)
-        if (!maxAmount && input.amount >= inputSum) {
+        if (!maxAmount && input.totalAmount >= inputSum) {
             maxAmount = true;
         }
 
@@ -148,8 +148,8 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
             // Compute fee.
             // must preliminary set change so that there is a second output
             if (!maxAmount) {
-                assert(input.amount <= plan.availableAmount);
-                plan.amount = input.amount;
+                assert(input.totalAmount <= plan.availableAmount);
+                plan.amount = input.totalAmount;
                 plan.fee = 0;
                 plan.change = plan.availableAmount - plan.amount;
             } else {

@@ -26,17 +26,16 @@ public:
 
     /// Builds a transaction with the selected input UTXOs, and one main output and an optional change output.
     template <typename Transaction>
-    static Transaction build(const TransactionPlan& plan, const std::string& toAddress,
-                             const std::string& changeAddress, enum TWCoinType coin, uint32_t lockTime) {
+    static Transaction build(const TransactionPlan& plan, const SigningInput& input) {
         Transaction tx;
-        tx.lockTime = lockTime;
+        tx.lockTime = input.lockTime;
 
-        auto outputTo = prepareOutputWithScript(toAddress, plan.amount, coin);
+        auto outputTo = prepareOutputWithScript(input.toAddress, input.amount, input.coinType);
         if (!outputTo.has_value()) { return {}; }
         tx.outputs.push_back(outputTo.value());
 
         if (plan.change > 0) {
-            auto outputChange = prepareOutputWithScript(changeAddress, plan.change, coin);
+            auto outputChange = prepareOutputWithScript(input.changeAddress, plan.change, input.coinType);
             if (!outputChange.has_value()) { return {}; }
             tx.outputs.push_back(outputChange.value());
         }
@@ -52,6 +51,13 @@ public:
             tx.outputs.push_back(TransactionOutput(0, lockingScriptOpReturn));
         }
 
+        // extra outputs
+        for (auto& o : input.extraOutputs) {
+            auto output = prepareOutputWithScript(o.first, o.second, input.coinType);
+            if (!output.has_value()) { return {}; }
+            tx.outputs.push_back(output.value());
+        }
+        
         return tx;
     }
 

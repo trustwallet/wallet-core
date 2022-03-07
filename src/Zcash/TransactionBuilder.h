@@ -25,11 +25,9 @@ struct TransactionBuilder {
 
     /// Builds a transaction by selecting UTXOs and calculating fees.
     template <typename Transaction>
-    static Transaction build(const Bitcoin::TransactionPlan& plan, const std::string& toAddress,
-                             const std::string& changeAddress, enum TWCoinType coin, uint32_t lockTime) {
-        coin = TWCoinTypeZcash;
+    static Transaction build(const Bitcoin::TransactionPlan& plan, const Bitcoin::SigningInput& input) {
         Transaction tx =
-            Bitcoin::TransactionBuilder::build<Transaction>(plan, toAddress, changeAddress, coin, lockTime);
+            Bitcoin::TransactionBuilder::build<Transaction>(plan, input);
         // if not set, always use latest consensus branch id
         if (plan.branchId.empty()) {
             std::copy(BlossomBranchID.begin(), BlossomBranchID.end(), tx.branchId.begin());

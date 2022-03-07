@@ -28,7 +28,7 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
     } else {
         plan = TransactionBuilder::plan(input);
     }
-    auto transaction = TransactionBuilder::template build<Transaction>(plan, input.toAddress, input.changeAddress, input.coinType, input.lockTime);
+    auto transaction = TransactionBuilder::template build<Transaction>(plan, input);
     SigningMode signingMode =
         estimationMode ? SigningMode_SizeEstimationOnly :
         optionalExternalSigs.has_value() ? SigningMode_External : SigningMode_Normal;
@@ -44,7 +44,7 @@ HashPubkeyList TransactionSigner<Transaction, TransactionBuilder>::preImageHashe
     } else {
         plan = TransactionBuilder::plan(input);
     }
-    auto transaction = TransactionBuilder::template build<Transaction>(plan, input.toAddress, input.changeAddress, input.coinType, input.lockTime);
+    auto transaction = TransactionBuilder::template build<Transaction>(plan, input);
     SignatureBuilder<Transaction> signer(std::move(input), plan, transaction, SigningMode_HashOnly);
     signer.sign();
     return signer.getHashesForSigning();
