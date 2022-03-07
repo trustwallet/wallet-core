@@ -46,6 +46,6 @@ TEST(PolkadotAddress, FromPublicKey) {
 }
 
 TEST(PolkadotAddress, FromString) {
-    auto address = Address("15KRsCq9LLNmCxNFhGk55s5bEyazKefunDxUH24GFZwsTxyu");
-    ASSERT_EQ(address.string(), "15KRsCq9LLNmCxNFhGk55s5bEyazKefunDxUH24GFZwsTxyu");
+        auto address = Address("15KRsCq9LLNmCxNFhGk55s5bEyazKefunDxUH24GFZwsTxyu");
+        ASSERT_EQ(address.string(), "15KRsCq9LLNmCxNFhGk55s5bEyazKefunDxUH24GFZwsTxyu");
 }
