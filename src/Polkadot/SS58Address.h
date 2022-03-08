@@ -22,9 +22,10 @@ class SS58Address {
   public:
     static const size_t checksumSize = 2;
 
-    // networks 0 -- 63 are encoded in one byte
+    // networks 0 -- 63 are encoded in one byte (0b00LLLLLL)
     static const byte networkSimpleLimit = 0x40;
-    // networks 64 -- 16383 are encoded in 2 bytes, with first byte between 64 and 127
+    // networks 64 -- 16383 are encoded in 2 bytes: network 0b00HHHHHH_MMLLLLLL is encoded as 0b01LLLLLL, 0bHHHHHHMM (first byte between 64 and 127)
+    // https://docs.substrate.io/v3/advanced/ss58/#address-type
     static const byte networkFullLimit = 0x80;
 
     /// Address data consisting of one or more network byte(s) followed by the public key.
@@ -114,7 +115,7 @@ class SS58Address {
         }
         if (data.size() >= 2 && data[0] >= networkSimpleLimit && data[0] < networkFullLimit) { // 64 -- 127
             networkSize = 2;
-            network = ((uint32_t)(data[0] & 0b00111111) << 8) + (uint32_t)data[1];
+            network = ((uint32_t)data[1] << 6) | (uint32_t)(data[0] & 0b00111111);
             return true;
         }
         return false;
@@ -128,8 +129,8 @@ class SS58Address {
         }
         if (network < 0x4000) { // 64 -- 16383
             // Full address/address/network identifier.
-            byte byte0 = networkSimpleLimit + (byte)((network & 0b0011111100000000) >> 8);
-            byte byte1 = (byte)(network & 0b0000000011111111);
+            byte byte0 = networkSimpleLimit + (byte)(network & 0b0000000000111111);
+            byte byte1 = (network & 0b0011111111000000) >> 6;
             data = {byte0, byte1};
             return true;
         }
