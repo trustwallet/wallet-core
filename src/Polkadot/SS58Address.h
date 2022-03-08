@@ -22,6 +22,11 @@ class SS58Address {
   public:
     static const size_t checksumSize = 2;
 
+    // networks 0 -- 63 are encoded in one byte
+    static const byte networkSimpleLimit = 0x40;
+    // networks 64 -- 16383 are encoded in 2 bytes, with first byte between 64 and 127
+    static const byte networkFullLimit = 0x80;
+
     /// Address data consisting of one or more network byte(s) followed by the public key.
     Data bytes;
 
@@ -102,28 +107,28 @@ class SS58Address {
     static bool decodeNetwork(const Data& data, byte& networkSize, uint64_t& network) {
         networkSize = 0;
         network = 0;
-        if (data.size() >= 1 && data[0] < 0x40) { // 0 -- 63
+        if (data.size() >= 1 && data[0] < networkSimpleLimit) { // 0 -- 63
             networkSize = 1;
             network = data[0];
             return true;
         }
-        if (data.size() >= 2 && data[0] >= 0x40 && data[0] < 0x80) { // 64 -- 127
+        if (data.size() >= 2 && data[0] >= networkSimpleLimit && data[0] < networkFullLimit) { // 64 -- 127
             networkSize = 2;
-            network = ((data[0] & 0b00111111) << 8) + data[1];
+            network = ((uint64_t)(data[0] & 0b00111111) << 8) + (uint64_t)data[1];
             return true;
         }
         return false;
     }
 
     static bool encodeNetwork(uint64_t network, Data& data) {
-        if (network < 0x40) { // 0 -- 63
+        if (network < networkSimpleLimit) { // 0 -- 63
             // Simple account/address/network
             data = {(byte)network};
             return true;
         }
         if (network < 0x4000) { // 64 -- 16383
             // Full address/address/network identifier.
-            byte byte0 = 0b01000000 | (byte)((network & 0b0011111100000000) >> 8);
+            byte byte0 = networkSimpleLimit + (byte)((network & 0b0011111100000000) >> 8);
             byte byte1 = (byte)(network & 0b0000000011111111);
             data = {byte0, byte1};
             return true;
