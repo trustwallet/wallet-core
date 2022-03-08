@@ -31,10 +31,10 @@ class SS58Address {
     Data bytes;
 
     /// Determines whether a string makes a valid address
-    static bool isValid(const std::string& string, uint64_t network) {
+    static bool isValid(const std::string& string, uint32_t network) {
         const auto decoded = Base58::bitcoin.decode(string);
         byte decodedNetworkSize = 0;
-        uint64_t decodedNetwork = 0;
+        uint32_t decodedNetwork = 0;
         if (!decodeNetwork(decoded, decodedNetworkSize, decodedNetwork)) {
             return false;
         }
@@ -67,7 +67,7 @@ class SS58Address {
     SS58Address() = default;
 
     /// Initializes an address with a string representation.
-    SS58Address(const std::string& string, uint64_t network) {
+    SS58Address(const std::string& string, uint32_t network) {
         if (!isValid(string, network)) {
             throw std::invalid_argument("Invalid address string");
         }
@@ -77,7 +77,7 @@ class SS58Address {
     }
 
     /// Initializes an address with a public key and network.
-    SS58Address(const PublicKey& publicKey, int32_t network) {
+    SS58Address(const PublicKey& publicKey, uint32_t network) {
         if (publicKey.type != TWPublicKeyTypeED25519) {
             throw std::invalid_argument("SS58Address expects an ed25519 public key.");
         }
@@ -98,13 +98,13 @@ class SS58Address {
     /// Returns public key bytes
     Data keyBytes() const {
         byte networkSize;
-        uint64_t networkTemp;
+        uint32_t networkTemp;
         decodeNetwork(bytes, networkSize, networkTemp);
         return Data(bytes.begin() + networkSize, bytes.end());
     }
 
     // Return true and the network size (1 or 2) and network if input is valid
-    static bool decodeNetwork(const Data& data, byte& networkSize, uint64_t& network) {
+    static bool decodeNetwork(const Data& data, byte& networkSize, uint32_t& network) {
         networkSize = 0;
         network = 0;
         if (data.size() >= 1 && data[0] < networkSimpleLimit) { // 0 -- 63
@@ -114,13 +114,13 @@ class SS58Address {
         }
         if (data.size() >= 2 && data[0] >= networkSimpleLimit && data[0] < networkFullLimit) { // 64 -- 127
             networkSize = 2;
-            network = ((uint64_t)(data[0] & 0b00111111) << 8) + (uint64_t)data[1];
+            network = ((uint32_t)(data[0] & 0b00111111) << 8) + (uint32_t)data[1];
             return true;
         }
         return false;
     }
 
-    static bool encodeNetwork(uint64_t network, Data& data) {
+    static bool encodeNetwork(uint32_t network, Data& data) {
         if (network < networkSimpleLimit) { // 0 -- 63
             // Simple account/address/network
             data = {(byte)network};

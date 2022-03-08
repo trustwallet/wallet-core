@@ -66,7 +66,7 @@ TEST(SS58Address, FromStringInvalid) {
     EXPECT_EXCEPTION(SS58Address("VNpyemgLHFKxYhWKzSKM5SoGYyAqtBSdyRaQ3DcNEsT9jpVnx", 130), "Invalid address string");
 }
 
-std::map<uint64_t, std::string> networkData = {
+std::map<uint32_t, std::string> networkData = {
     {0, "00"},
     {3, "03"},
     {11, "0b"},
@@ -84,7 +84,7 @@ std::map<uint64_t, std::string> networkData = {
 
 TEST(SS58Address, DecodeNetwork) {
     byte networkSize = 0;
-    uint64_t network = 0;
+    uint32_t network = 0;
     for (auto& d: networkData) {
         std::string input = d.second + std::string("000102030405");
         EXPECT_TRUE(SS58Address::decodeNetwork(parse_hex(input), networkSize, network));
