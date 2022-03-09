@@ -30,7 +30,11 @@ public:
         Transaction tx;
         tx.lockTime = input.lockTime;
 
-        auto outputTo = prepareOutputWithScript(input.toAddress, input.amount, input.coinType);
+        auto outputToAmount = input.amount;
+        if (plan.useMaxAmount) {
+            outputToAmount = plan.amount;
+        }
+        auto outputTo = prepareOutputWithScript(input.toAddress, outputToAmount, input.coinType);
         if (!outputTo.has_value()) { return {}; }
         tx.outputs.push_back(outputTo.value());
 

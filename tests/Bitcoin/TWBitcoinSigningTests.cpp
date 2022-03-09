@@ -41,6 +41,7 @@ SigningInput buildInputP2PKH(bool omitKey = false) {
     // Setup input
     SigningInput input;
     input.hashType = hashTypeForCoin(TWCoinTypeBitcoin);
+    input.amount = 335'790'000;
     input.totalAmount = 335'790'000;
     input.byteFee = 1;
     input.toAddress = "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx";
@@ -171,6 +172,7 @@ TEST(BitcoinSigning, SignP2WPKH_Bip143) {
     SigningInput input;
     input.hashType = TWBitcoinSigHashTypeAll;
     const auto amount = 112340000; // 0x06B22C20
+    input.amount = amount;
     input.totalAmount = amount;
     input.byteFee = 20; // not relevant
     input.toAddress = "1Cu32FVupVCgHkMMRJdYJugxwo2Aprgk7H";
@@ -257,6 +259,7 @@ SigningInput buildInputP2WPKH(int64_t amount, TWBitcoinSigHashType hashType, int
     // Setup input
     SigningInput input;
     input.hashType = hashType;
+    input.amount = amount;
     input.totalAmount = amount;
     input.useMaxAmount = useMaxAmount;
     input.byteFee = 1;
@@ -420,7 +423,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashAnyoneCanPay_TwoInput) {
 
 TEST(BitcoinSigning, SignP2WPKH_MaxAmount) {
     auto input = buildInputP2WPKH(1'000, TWBitcoinSigHashTypeAll, 625'000'000, 600'000'000, true);
-
+    input.totalAmount = 1224999773;
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
@@ -476,6 +479,7 @@ TEST(BitcoinSigning, EncodeP2WSH) {
 SigningInput buildInputP2WSH(enum TWBitcoinSigHashType hashType, bool omitScript = false, bool omitKeys = false) {
     SigningInput input;
     input.hashType = hashType;
+    input.amount = 1000;
     input.totalAmount = 1000;
     input.byteFee = 1;
     input.toAddress = "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx";
@@ -743,6 +747,7 @@ SigningInput buildInputP2SH_P2WPKH(bool omitScript = false, bool omitKeys = fals
     // Setup input
     SigningInput input;
     input.hashType = hashTypeForCoin(TWCoinTypeBitcoin);
+    input.amount = 200'000'000;
     input.totalAmount = 200'000'000;
     input.byteFee = 1;
     input.toAddress = "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx";
@@ -903,6 +908,7 @@ TEST(BitcoinSigning, EncodeP2SH_P2WSH) {
 TEST(BitcoinSigning, SignP2SH_P2WSH) {
     // Setup signing input
     SigningInput input;
+    input.amount = 900000000;
     input.totalAmount = 900000000;
     input.hashType = (TWBitcoinSigHashType)0;
     input.toAddress = "16AQVuBMt818u2HBcbxztAZTT2VTDKupPS";
@@ -994,6 +1000,7 @@ TEST(BitcoinSigning, Sign_NegativeNoUtxos) {
     // Setup input
     SigningInput input;
     input.hashType = TWBitcoinSigHashTypeAll;
+    input.amount = 335'790'000;
     input.totalAmount = 335'790'000;
     input.byteFee = 1;
     input.toAddress = "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx";
@@ -1029,6 +1036,7 @@ TEST(BitcoinSigning, Sign_NegativeInvalidAddress) {
     // Setup input
     SigningInput input;
     input.hashType = TWBitcoinSigHashTypeAll;
+    input.amount = 335'790'000;
     input.totalAmount = 335'790'000;
     input.byteFee = 1;
     input.toAddress = "THIS-IS-NOT-A-BITCOIN-ADDRESS";
@@ -1103,6 +1111,7 @@ TEST(BitcoinSigning, Plan_10input_MaxAmount) {
     input.coinType = TWCoinTypeBitcoin;
     input.hashType = hashTypeForCoin(TWCoinTypeBitcoin);
     input.useMaxAmount = true;
+    input.amount = 2'000'000;
     input.totalAmount = 2'000'000;
     input.byteFee = 1;
     input.toAddress = "bc1qauwlpmzamwlf9tah6z4w0t8sunh6pnyyjgk0ne";
@@ -1142,6 +1151,7 @@ TEST(BitcoinSigning, Sign_LitecoinReal_a85f) {
     SigningInput input;
     input.coinType = coin;
     input.hashType = hashTypeForCoin(coin);
+    input.amount = 3'899'774;
     input.totalAmount = 3'899'774;
     input.useMaxAmount = true;
     input.byteFee = 1;
@@ -1211,6 +1221,7 @@ TEST(BitcoinSigning, PlanAndSign_LitecoinReal_8435) {
     SigningInput input;
     input.coinType = coin;
     input.hashType = hashTypeForCoin(coin);
+    input.amount = 1'200'000;
     input.totalAmount = 1'200'000;
     input.useMaxAmount = false;
     input.byteFee = 1;
@@ -1302,6 +1313,7 @@ TEST(BitcoinSigning, Sign_ManyUtxos_400) {
     input.coinType = TWCoinTypeBitcoin;
     input.hashType = hashTypeForCoin(TWCoinTypeBitcoin);
     input.useMaxAmount = false;
+    input.amount = 300'000;
     input.totalAmount = 300'000;
     input.byteFee = 1;
     input.toAddress = "bc1qauwlpmzamwlf9tah6z4w0t8sunh6pnyyjgk0ne";
@@ -1371,6 +1383,7 @@ TEST(BitcoinSigning, Sign_ManyUtxos_2000) {
     input.coinType = TWCoinTypeBitcoin;
     input.hashType = hashTypeForCoin(TWCoinTypeBitcoin);
     input.useMaxAmount = false;
+    input.amount = 2'000'000;
     input.totalAmount = 2'000'000;
     input.byteFee = 1;
     input.toAddress = "bc1qauwlpmzamwlf9tah6z4w0t8sunh6pnyyjgk0ne";
@@ -1516,6 +1529,7 @@ TEST(BitcoinSigning, RedeemExtendedPubkeyUTXO) {
     SigningInput input;
     input.coinType = TWCoinTypeBitcoin;
     input.hashType = hashTypeForCoin(TWCoinTypeBitcoin);
+    input.amount = 26972;
     input.totalAmount = 26972;
     input.useMaxAmount = true;
     input.byteFee = 1;
@@ -1705,6 +1719,7 @@ TEST(BitcoinSigning, Sign_OpReturn_THORChainSwap) {
     SigningInput input;
     input.coinType = TWCoinTypeBitcoin;
     input.hashType = hashTypeForCoin(TWCoinTypeBitcoin);
+    input.amount = toAmount;
     input.totalAmount = toAmount;
     input.byteFee = byteFee;
     input.toAddress = toAddress;

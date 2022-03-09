@@ -169,6 +169,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
             } else {
                 // max available amount
                 plan.amount = std::max(Amount(0), plan.availableAmount - plan.fee);
+                plan.useMaxAmount = true;
             }
             assert(plan.amount >= 0 && plan.amount <= plan.availableAmount);
 
