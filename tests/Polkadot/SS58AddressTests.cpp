@@ -115,12 +115,18 @@ TEST(SS58Address, DecodeNetwork) {
         }
     }
 
+    // 1. byte from invalid range
     EXPECT_FALSE(SS58Address::decodeNetwork(parse_hex("ab" "000102030405"), networkSize, network));
-
-    EXPECT_TRUE(SS58Address::decodeNetwork(parse_hex("4000" "000102030405"), networkSize, network));
-    EXPECT_EQ(networkSize, 2);
-    EXPECT_EQ(network, 0);
     EXPECT_FALSE(SS58Address::decodeNetwork(parse_hex("8000" "000102030405"), networkSize, network));
+
+    // 2-byte, but decoded network is < 64
+    EXPECT_FALSE(SS58Address::decodeNetwork(parse_hex("4000" "000102030405"), networkSize, network));
+    EXPECT_FALSE(SS58Address::decodeNetwork(parse_hex("4040" "000102030405"), networkSize, network));
+    EXPECT_FALSE(SS58Address::decodeNetwork(parse_hex("4080" "000102030405"), networkSize, network));
+    EXPECT_FALSE(SS58Address::decodeNetwork(parse_hex("4100" "000102030405"), networkSize, network));
+    EXPECT_FALSE(SS58Address::decodeNetwork(parse_hex("4200" "000102030405"), networkSize, network));
+    EXPECT_FALSE(SS58Address::decodeNetwork(parse_hex("4400" "000102030405"), networkSize, network));
+    EXPECT_FALSE(SS58Address::decodeNetwork(parse_hex("4800" "000102030405"), networkSize, network));
 }
 
 TEST(SS58Address, EncodeNetwork) {
@@ -129,4 +135,8 @@ TEST(SS58Address, EncodeNetwork) {
         EXPECT_TRUE(SS58Address::encodeNetwork(d.first, data));
         EXPECT_EQ(hex(data), d.second);
     }
+
+    // network > 16383
+    EXPECT_FALSE(SS58Address::encodeNetwork(0x4000, data));
+    EXPECT_FALSE(SS58Address::encodeNetwork(0x8000, data));
 }
