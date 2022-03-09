@@ -21,11 +21,11 @@ class SS58Address {
   public:
     static const size_t checksumSize = 2;
 
-    // networks 0 -- 63 are encoded in one byte (0b00LLLLLL)
+    // networks 0 -- 63 are encoded in one byte (00aaaaaa)
     static const byte networkSimpleLimit = 0x40;
-    // networks 64 -- 16383 are encoded in 2 bytes: network 0b00HHHHHH_MMLLLLLL is encoded as 0b01LLLLLL, 0bHHHHHHMM (first byte between 64 and 127)
+    // networks 64 -- 16383 are encoded in 2 bytes: network 00cccccc_aaaaaabb is encoded as 01aaaaaa, bbcccccc (first byte between 64 and 127)
+    // see: https://github.com/paritytech/substrate/blob/master/primitives/core/src/crypto.rs
     // https://docs.substrate.io/v3/advanced/ss58/#address-type
-    // https://github.com/paritytech/substrate/blob/master/primitives/core/src/crypto.rs
     static const byte networkFullLimit = 0x80;
 
     /// Address data consisting of one or more network byte(s) followed by the public key.

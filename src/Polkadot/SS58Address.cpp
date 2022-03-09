@@ -91,7 +91,7 @@ bool SS58Address::decodeNetwork(const Data& data, byte& networkSize, uint32_t& n
     // src https://github.com/paritytech/substrate/blob/master/primitives/core/src/crypto.rs
     if (data.size() >= 2 && data[0] >= networkSimpleLimit && data[0] < networkFullLimit) { // 64 -- 127
         networkSize = 2;
-        byte lower = (data[0] << 2) | (data[1] >> 6);
+        byte lower = (byte)(data[0] << 2) | (byte)(data[1] >> 6);
         byte upper = data[1] & 0b00111111;
         network = ((uint32_t)upper << 8) + lower;
         return true;
@@ -108,7 +108,7 @@ bool SS58Address::encodeNetwork(uint32_t network, Data& data) {
     if (network < 0x4000) { // 64 -- 16383
         // Full address/address/network identifier.
         byte first = networkSimpleLimit + (byte)((network & 0b0000000011111100) >> 2);
-        byte second = (byte)(network >> 8) | ((byte)(network & 0b0000000000000011) << 6);
+        byte second = (byte)(network >> 8) | (byte)((byte)(network & 0b0000000000000011) << 6);
         data = {first, second};
         return true;
     }
