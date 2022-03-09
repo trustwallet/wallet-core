@@ -17,20 +17,24 @@ using namespace TW;
 TEST(SS58Address, IsValid) {
     EXPECT_TRUE(SS58Address::isValid("15KRsCq9LLNmCxNFhGk55s5bEyazKefunDxUH24GFZwsTxyu", 0));
     
-    EXPECT_TRUE(SS58Address::isValid("pZyNURUa8o5156MVAmsW41tB94LAJU1Abnkgnkm3AJifXUkiD", 172));
-    EXPECT_FALSE(SS58Address::isValid("pZyNURUa8o5156MVAmsW41tB94LAJU1Abnkgnkm3AJifXUkiD", 171));
-
     EXPECT_TRUE(SS58Address::isValid("ZG2d3dH5zfqNchsqReS6x4nBJuJCW7Z6Fh5eLvdA3ZXGkPd", 5));
     EXPECT_FALSE(SS58Address::isValid("ZG2d3dH5zfqNchsqReS6x4nBJuJCW7Z6Fh5eLvdA3ZXGkPd", 6));
-
-    EXPECT_TRUE(SS58Address::isValid("VJEmJt3RjZwj7Woiempsz5M31ErGMf1g2kJuzvAnPa7oJsXQC", 4096));
-    EXPECT_FALSE(SS58Address::isValid("VJEmJt3RjZwj7Woiempsz5M31ErGMf1g2kJuzvAnPa7oJsXQC", 64));
 
     EXPECT_TRUE(SS58Address::isValid("Fu3r514w83euSVV7q1MyFGWErUR2xDzXS2goHzimUn4S12D", 2));
     EXPECT_FALSE(SS58Address::isValid("Fu3r514w83euSVV7q1MyFGWErUR2xDzXS2goHzimUn4S12D", 5));
 
-    EXPECT_TRUE(SS58Address::isValid("hJJWt4tUJdYwV4Hrm9uogFgHMomqeXWCzdqXvnHCmb9pt9RF7", 8219));
-    EXPECT_FALSE(SS58Address::isValid("hJJWt4tUJdYwV4Hrm9uogFgHMomqeXWCzdqXvnHCmb9pt9RF7", 322));
+    EXPECT_TRUE(SS58Address::isValid("cEYtw6AVMB27hFUs4gVukajLM7GqxwxUfJkbPY3rNToHMcCgb", 64));
+    EXPECT_FALSE(SS58Address::isValid("cEYtw6AVMB27hFUs4gVukajLM7GqxwxUfJkbPY3rNToHMcCgb", 65));
+    EXPECT_FALSE(SS58Address::isValid("JCViCkwMdGWKpf7Wogb8EFtDmaYTEZGEg6ah4svUPGnnpc7A", 64));    
+
+    EXPECT_TRUE(SS58Address::isValid("p8EGHjWt7e1MYoD7V6WXvbPZWK9GSJiiK85kv2R7Ur7FisPUL", 172));
+    EXPECT_FALSE(SS58Address::isValid("p8EGHjWt7e1MYoD7V6WXvbPZWK9GSJiiK85kv2R7Ur7FisPUL", 171));
+
+    EXPECT_TRUE(SS58Address::isValid("VDSyeURSP7ykE1zJPJGeqx6GcDZQF2DT3hAKhPMuwM5FuN9HE", 4096));
+    EXPECT_FALSE(SS58Address::isValid("VDSyeURSP7ykE1zJPJGeqx6GcDZQF2DT3hAKhPMuwM5FuN9HE", 64));
+
+    EXPECT_TRUE(SS58Address::isValid("YDTv3GdhXPP3pQMqQtntGVg5hMno4jqanfYUgMPX2rLGJBKX6", 8219));
+    EXPECT_FALSE(SS58Address::isValid("YDTv3GdhXPP3pQMqQtntGVg5hMno4jqanfYUgMPX2rLGJBKX6", 322));
 }
 
 const auto pubkeyString1 = "92fd9c237030356e26cfcc4568dc71055d5ec92dfe0ff903767e00611971bad3";
@@ -38,15 +42,15 @@ const auto pubkeyString1 = "92fd9c237030356e26cfcc4568dc71055d5ec92dfe0ff903767e
 TEST(SS58Address, FromPublicKey) {
     auto publicKey = PublicKey(parse_hex(pubkeyString1), TWPublicKeyTypeED25519);
     auto addressPolkadot = SS58Address(publicKey, 0);
-    ASSERT_EQ(addressPolkadot.string(), "14KjL5vGAYJCbKgZJmFKDSjewtBpvaxx9YvRZvi7qmb5s8CC");
+    EXPECT_EQ(addressPolkadot.string(), "14KjL5vGAYJCbKgZJmFKDSjewtBpvaxx9YvRZvi7qmb5s8CC");
     EXPECT_EQ(hex(addressPolkadot.keyBytes()), pubkeyString1);
 
     auto addressAstar = SS58Address(publicKey, 5);
-    ASSERT_EQ(addressAstar.string(), "ZG2d3dH5zfqNchsqReS6x4nBJuJCW7Z6Fh5eLvdA3ZXGkPd");
+    EXPECT_EQ(addressAstar.string(), "ZG2d3dH5zfqNchsqReS6x4nBJuJCW7Z6Fh5eLvdA3ZXGkPd");
     EXPECT_EQ(hex(addressAstar.keyBytes()), pubkeyString1);
 
     auto addressParallel = SS58Address(publicKey, 172);
-    ASSERT_EQ(addressParallel.string(), "pZyNURUa8o5156MVAmsW41tB94LAJU1Abnkgnkm3AJifXUkiD");
+    EXPECT_EQ(addressParallel.string(), "p8EGHjWt7e1MYoD7V6WXvbPZWK9GSJiiK85kv2R7Ur7FisPUL");
     EXPECT_EQ(hex(addressParallel.keyBytes()), pubkeyString1);
 }
 
@@ -57,14 +61,14 @@ TEST(SS58Address, FromPublicKeyInvalid) {
 
 TEST(SS58Address, FromString) {
     auto addressKusama = SS58Address("Fu3r514w83euSVV7q1MyFGWErUR2xDzXS2goHzimUn4S12D", 2);
-    ASSERT_EQ(addressKusama.string(), "Fu3r514w83euSVV7q1MyFGWErUR2xDzXS2goHzimUn4S12D");
+    EXPECT_EQ(addressKusama.string(), "Fu3r514w83euSVV7q1MyFGWErUR2xDzXS2goHzimUn4S12D");
 
-    auto addressParallel = SS58Address("pZyNURUa8o5156MVAmsW41tB94LAJU1Abnkgnkm3AJifXUkiD", 172);
-    ASSERT_EQ(addressParallel.string(), "pZyNURUa8o5156MVAmsW41tB94LAJU1Abnkgnkm3AJifXUkiD");
+    auto addressParallel = SS58Address("p8EGHjWt7e1MYoD7V6WXvbPZWK9GSJiiK85kv2R7Ur7FisPUL", 172);
+    EXPECT_EQ(addressParallel.string(), "p8EGHjWt7e1MYoD7V6WXvbPZWK9GSJiiK85kv2R7Ur7FisPUL");
 }
 
 TEST(SS58Address, FromStringInvalid) {
-    EXPECT_EXCEPTION(SS58Address("VNpyemgLHFKxYhWKzSKM5SoGYyAqtBSdyRaQ3DcNEsT9jpVnx", 130), "Invalid address string");
+    EXPECT_EXCEPTION(SS58Address("p8EGHjWt7e1MYoD7V6WXvbPZWK9GSJiiK85kv2R7Ur7FisPUL", 130), "Invalid address string");
 }
 
 std::map<uint32_t, std::string> networkData = {
@@ -80,20 +84,20 @@ std::map<uint32_t, std::string> networkData = {
     {0x23, "23"},
     {0x30, "30"},
     {0x3f, "3f"},
-    {0x40, "4001"},
-    {0x41, "4101"},
-    {0x80, "4002"},
-    {0x0100, "4004"},
-    {0x0123, "6304"},
-    {0x0200, "4008"},
-    {0x0300, "400c"},
-    {0x0400, "4010"},
-    {0x0800, "4020"},
-    {0x0fff, "7f3f"},
-    {0x1000, "4040"},
-    {0x1003, "4340"},
-    {0x2000, "4080"},
-    {0x3000, "40c0"},
+    {0x40, "5000"},
+    {0x41, "5040"},
+    {0x80, "6000"},
+    {0x0100, "4001"},
+    {0x0123, "48c1"},
+    {0x0200, "4002"},
+    {0x0300, "4003"},
+    {0x0400, "4004"},
+    {0x0800, "4008"},
+    {0x0fff, "7fcf"},
+    {0x1000, "4010"},
+    {0x1003, "40d0"},
+    {0x2000, "4020"},
+    {0x3000, "4030"},
     {0x3fff, "7fff"},
 };
 
