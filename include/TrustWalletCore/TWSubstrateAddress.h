@@ -25,15 +25,15 @@ bool TWSubstrateAddressEqual(struct TWSubstrateAddress *_Nonnull lhs, struct TWS
 
 /// Determines if the string is a valid Substrate address.
 TW_EXPORT_STATIC_METHOD
-bool TWSubstrateAddressIsValidString(TWString *_Nonnull string, uint8_t network);
+bool TWSubstrateAddressIsValidString(TWString *_Nonnull string, int32_t network);
 
 /// Creates an address from a string representaion.
 TW_EXPORT_STATIC_METHOD
-struct TWSubstrateAddress *_Nullable TWSubstrateAddressCreateWithString(TWString *_Nonnull string, uint8_t network);
+struct TWSubstrateAddress *_Nullable TWSubstrateAddressCreateWithString(TWString *_Nonnull string, int32_t network);
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWSubstrateAddress *_Nonnull TWSubstrateAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, uint8_t network);
+struct TWSubstrateAddress *_Nonnull TWSubstrateAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, int32_t network);
 
 /// Delete address object
 TW_EXPORT_METHOD

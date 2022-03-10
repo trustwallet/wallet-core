@@ -29,7 +29,7 @@ class Extrinsic {
     // encoded Call data
     Data call;
     // network
-    byte network;
+    int32_t network;
     // enable multi-address
     bool multiAddress;
 
@@ -39,15 +39,15 @@ class Extrinsic {
     , nonce(input.nonce())
     , specVersion(input.spec_version())
     , version(input.transaction_version())
-    , multiAddress (input.multi_address())
-    , tip(load(input.tip())) {
+    , tip(load(input.tip()))
+    , multiAddress (input.multi_address()) {
         if (input.has_era()) {
             era = encodeEra(input.era().block_number(), input.era().period());
         } else {
             // immortal era
             era = encodeCompact(0);
         }
-        network = byte(input.network());
+        network = input.network();
         call = encodeCall(input);
     }
 
@@ -59,7 +59,7 @@ class Extrinsic {
 
   protected:
     static bool encodeRawAccount(bool enableMultiAddress);
-    static Data encodeBalanceCall(const Proto::Balance& balance, byte network, uint32_t specVersion, bool enableMultiAddress);
+    static Data encodeBalanceCall(const Proto::Balance& balance, int32_t network, uint32_t specVersion, bool enableMultiAddress);
     static Data encodeBatchCall(const std::vector<Data>& calls, int32_t moduleIndex, int32_t methodIndex);
     Data encodeEraNonceTip() const;
 };
