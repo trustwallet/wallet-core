@@ -7,6 +7,7 @@
 #pragma once
 
 #include "../CoinEntry.h"
+#include "../proto/NEAR.pb.h"
 
 namespace TW::NEAR {
 
@@ -19,6 +20,9 @@ public:
     virtual std::string normalizeAddress(TWCoinType coin, const std::string& address) const;
     virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
+
+    virtual HashPubkeyList preImageHashes(TWCoinType coin, const Data& txInputData) const;
+    virtual void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const;
 };
 
 } // namespace TW::NEAR

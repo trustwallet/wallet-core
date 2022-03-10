@@ -82,6 +82,7 @@ message SigningInput {
     repeated Action actions = 5;
 
     bytes private_key = 6;
+    bytes public_key = 7;
 }
 
 // Transaction signing output.

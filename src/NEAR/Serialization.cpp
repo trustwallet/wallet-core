@@ -79,13 +79,11 @@ Data TW::NEAR::transactionData(const Proto::SigningInput& input) {
     return data;
 }
 
-Data TW::NEAR::transactionDataWithPublicKey(const Proto::SigningInput& input,
-                                            const Data& publicKey) {
+Data TW::NEAR::transactionDataWithPublicKey(const Proto::SigningInput& input) {
     Data data;
     writeString(data, input.signer_id());
     auto public_key_proto = Proto::PublicKey();
-    auto public_key = PublicKey(publicKey, TWPublicKeyTypeED25519);
-    public_key_proto.set_data(public_key.bytes.data(), public_key.bytes.size());
+    public_key_proto.set_data(input.public_key().data(), input.public_key().size());
     writePublicKey(data, public_key_proto);
     writeU64(data, input.nonce());
     writeString(data, input.receiver_id());
