@@ -37,9 +37,20 @@ message OperationChangeTrust {
     int64 valid_before = 2;
 }
 
+enum ClaimPredicate {
+    Claim_predicate_unconditional = 0;
+    /* TODO encoding
+    Claim_predicate_and = 1;
+	Claim_predicate_or = 2;
+	Claim_predicate_not = 3;
+	Claim_predicate_before_absolute_time = 4;
+	Claim_predicate_before_relative_time = 5;
+    */
+}
+
 message Claimant {
-    string acount = 1;
-    string predicate = 2;
+    string account = 1;
+    ClaimPredicate predicate = 2;
 }
 
 message OperationCreateClaimableBalance {
@@ -53,7 +64,7 @@ message OperationCreateClaimableBalance {
 }
 
 message OperationClaimClaimableBalance {
-    string balance_id = 1;
+    bytes balance_id = 1;
 }
 
 message MemoVoid {
@@ -89,7 +100,7 @@ message SigningInput {
         OperationPayment op_payment = 7;
         OperationChangeTrust op_change_trust = 8;
         OperationCreateClaimableBalance op_create_claimable_balance = 14;
-        OperationCreateClaimableBalance op_claim_claimable_balance = 15;
+        OperationClaimClaimableBalance op_claim_claimable_balance = 15;
     }
 
     oneof memo_type_oneof {

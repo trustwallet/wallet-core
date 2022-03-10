@@ -112,6 +112,30 @@ Data Signer::encode(const Proto::SigningInput& input) const {
             encodeAsset(input.op_change_trust().asset(), data);
             encode64BE(0x7fffffffffffffff, data); // limit MAX
             break;
+
+        case Proto::SigningInput::kOpCreateClaimableBalance:
+            {
+                encodeAsset(input.op_create_claimable_balance().asset(), data);
+                encode64BE(input.op_create_claimable_balance().amount(), data);
+                auto nClaimants = input.op_create_claimable_balance().claimants_size();
+                encode32BE(nClaimants, data);
+                for (auto i = 0; i < nClaimants; ++i) {
+                    encodeAddress(Address(input.op_create_claimable_balance().claimants(i).account()), data);
+                    // Predicate
+                    // TODO encoding of other predicate types, arguments
+                    encode32BE((uint32_t)input.op_create_claimable_balance().claimants(i).predicate(), data);
+                }
+            }
+            break;
+
+        case Proto::SigningInput::kOpClaimClaimableBalance:
+            {
+                const auto ClaimableBalanceIdTypeClaimableBalanceIdTypeV0 = 0;
+                encode32BE((uint32_t)ClaimableBalanceIdTypeClaimableBalanceIdTypeV0, data);
+                const auto balanceId = input.op_claim_claimable_balance().balance_id();
+                data.insert(data.end(), balanceId.begin(), balanceId.end());
+            }
+            break;
     }
 
     encode32BE(0, data); // Ext

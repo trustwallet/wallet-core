@@ -130,3 +130,49 @@ TEST(TWAnySingerStellar, Sign_Change_Trust_2) {
 
     EXPECT_EQ(output.signature(), "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAnEAH/8MgAAAADAAAAAQAAAAAAAAAAAAAAAGApkAAAAAAAAAAAAQAAAAAAAAAGAAAAAVVTRAAAAAAA6KYahh5gr2D4B3PgY0blxyy+Wdyt2jdgjVjvQlEdn9x//////////wAAAAAAAAABd9ORdQAAAEDMZtN05ZsZB4OKOZSFkQvuRqDIvMME3PYMTAGJPQlO6Ee0nOtaRn2q0uf0IhETSSfqcsK5asAZzNj07tG0SPwM");
 }
+
+TEST(TWAnySingerStellar, Sign_Create_Claimable_Balance) {
+    auto key = parse_hex("3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9");
+    PrivateKey privKey = PrivateKey(key);
+    PublicKey pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519);
+    Address addr = Address(pubKey);
+    EXPECT_EQ(addr.string(), "GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
+
+    Proto::SigningInput input;
+    input.set_passphrase(TWStellarPassphrase_Stellar);
+    input.set_account("GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
+    input.set_fee(10000);
+    input.set_sequence(144098454883270659);
+    input.mutable_op_create_claimable_balance()->set_amount(10000000);
+    input.mutable_op_create_claimable_balance()->add_claimants();
+    input.mutable_op_create_claimable_balance()->mutable_claimants(0)->set_account("GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52");
+    input.mutable_op_create_claimable_balance()->mutable_claimants(0)->set_predicate(Proto::Claim_predicate_unconditional);
+    input.set_private_key(key.data(), key.size());
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeStellar);
+
+    EXPECT_EQ(output.signature(), "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAnEAH/8MgAAAADAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAACYloAAAAABAAAAAMWAtjF6DrOb9/zU+jwZ/atLiburv2EJXuRQWvbs7XquAAAAAAAAAAAAAAABd9ORdQAAAEBzcruFa1ShZE66CLgLgxW/Z7zANPk+Z5fxtpXv03kyVMPU6ryf4qgHq+OFAvTmtI9O4JiU6xLGaOb0LzqqTb4N");
+}
+
+TEST(TWAnySingerStellar, Sign_Claim_Claimable_Balance) {
+    auto key = parse_hex("3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9");
+    PrivateKey privKey = PrivateKey(key);
+    PublicKey pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519);
+    Address addr = Address(pubKey);
+    EXPECT_EQ(addr.string(), "GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
+
+    Proto::SigningInput input;
+    input.set_passphrase(TWStellarPassphrase_Stellar);
+    input.set_account("GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
+    input.set_fee(10000);
+    input.set_sequence(144098454883270659);
+    const Data balanceIdHash = parse_hex("01020304");
+    input.mutable_op_claim_claimable_balance()->set_balance_id(balanceIdHash.data(), balanceIdHash.size());
+    input.set_private_key(key.data(), key.size());
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeStellar);
+
+    EXPECT_EQ(output.signature(), "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAnEAH/8MgAAAADAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAQIDBAAAAAAAAAABd9ORdQAAAEBePgNeEKaJuPUtAL+2xR5DFRqA1L4XzjXAMBmrTG56RztBXnVHU7jA5/hVT552UVi6zQlbysCfHu4xUb1BvFYO");
+}
