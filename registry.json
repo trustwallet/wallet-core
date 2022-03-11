@@ -1917,5 +1917,30 @@
       "rpc": "https://smartbch.fountainhead.cash/mainnet",
       "documentation": "https://github.com/smartbch/docs/blob/main/developers-guide/jsonrpc.md"
     }
+  },
+  {
+    "id": "conflux",
+    "name": "Conflux eSpace",
+    "coinId": 503,
+    "slip44": 503,
+    "symbol": "CFX",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/503'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://evm.confluxscan.net",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x702ba9ba3c283c17df5d96b16505833ef5e25d3a5bba2eed8b69a3ac0482ae98",
+      "sampleAccount": "0x3eecaa466e87a46b737aeedfe951bcc8403a4e1e"
+    },
+    "info": {
+      "url": "https://confluxnetwork.org/",
+      "source": "https://github.com/Conflux-Chain/conflux-rust",
+      "rpc": "https://evm.confluxrpc.com",
+      "documentation": "https://developer.confluxnetwork.org/"
+    }
   }
 ]
