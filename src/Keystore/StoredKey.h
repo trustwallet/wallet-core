@@ -82,7 +82,7 @@ public:
         TWCoinType coin, 
         const DerivationPath& derivationPath,
         const std::string& publicKey,
-        const std::string& extetndedPublicKey
+        const std::string& extendedPublicKey
     );
 
     /// Remove the account for a specific coin

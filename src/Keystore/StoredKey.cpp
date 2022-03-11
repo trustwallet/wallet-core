@@ -75,8 +75,10 @@ StoredKey StoredKey::createWithPrivateKeyAddDefaultAddress(const std::string& na
     StoredKey key = createWithPrivateKey(name, password, privateKeyData);
 
     const auto derivationPath = TW::derivationPath(coin);
-    const auto address = TW::deriveAddress(coin, PrivateKey(privateKeyData));
-    key.accounts.emplace_back(address, coin, derivationPath, "", "");
+    const auto pubKeyType = TW::publicKeyType(coin);
+    const auto pubKey = PrivateKey(privateKeyData).getPublicKey(pubKeyType);
+    const auto address = TW::deriveAddress(coin, pubKey);
+    key.accounts.emplace_back(address, coin, derivationPath, hex(pubKey.bytes), "");
 
     return key;
 }
@@ -142,9 +144,9 @@ void StoredKey::addAccount(
     TWCoinType coin, 
     const DerivationPath& derivationPath, 
     const std::string& publicKey,
-    const std::string& extetndedPublicKey
+    const std::string& extendedPublicKey
 ) {
-    accounts.emplace_back(address, coin, derivationPath, publicKey, extetndedPublicKey);
+    accounts.emplace_back(address, coin, derivationPath, publicKey, extendedPublicKey);
 }
 
 void StoredKey::removeAccount(TWCoinType coin) {
