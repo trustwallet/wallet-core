@@ -15,7 +15,7 @@
 TW_EXTERN_C_BEGIN
 
 /// Non-core transaction utility methods, like building a transaction using an external signature.
-TW_EXPORT_CLASS
+TW_EXPORT_STRUCT
 struct TWTransactionCompiler;
 
 /// Build a coin-specific SigningInput protobuf transaction input, from simple transaction parameters
