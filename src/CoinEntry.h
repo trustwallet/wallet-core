@@ -41,7 +41,7 @@ public:
     virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const { return; }
 
     // Optional method for obtaining hash(es) for signing, needed for external signing. Hashes are linked to the associated pubkey/pubkeyhash.
-    virtual HashPubkeyList preImageHashes(TWCoinType coin, const Data& txInputData) const { return HashPubkeyList(); }
+    virtual Data preImageHashes(TWCoinType coin, const Data& txInputData) const { return Data(); }
     // Optional method for compiling a transaction with externally-supplied signatures & pubkeys.
     virtual void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {}
     // Optional helper to prepare a SigningInput from simple parameters.

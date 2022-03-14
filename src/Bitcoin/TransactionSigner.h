@@ -33,7 +33,7 @@ public:
     static Result<Transaction, Common::Proto::SigningError> sign(const SigningInput& input, bool estimationMode = false, std::optional<SignaturePubkeyList> optionalExternalSigs = {});
 
     /// Collect pre-image hashes to be signed
-    static HashPubkeyList preImageHashes(const SigningInput& input);
+    static Result<HashPubkeyList, Common::Proto::SigningError> preImageHashes(const SigningInput& input);
 };
 
 } // namespace TW::Bitcoin

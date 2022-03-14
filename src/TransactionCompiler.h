@@ -22,7 +22,7 @@ public:
     static Data buildInput(TWCoinType coinType, const std::string& from, const std::string& to, const std::string& amount, const std::string& asset, const std::string& memo, const std::string& chainId);
 
     /// Obtain pre-signing hash of a transaction.
-    static HashPubkeyList preImageHashes(TWCoinType coinType, const Data& txInputData);
+    static Data preImageHashes(TWCoinType coinType, const Data& txInputData);
 
     /// Compile a complete transation with an external signature, put together from transaction input and provided public key and signature
     static Data compileWithSignatures(TWCoinType coinType, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<Data>& publicKeys);

@@ -81,7 +81,7 @@ int64_t estimateSegwitFee(const FeeCalculator& feeCalculator, const TransactionP
 
 int extraOutputCount(const SigningInput& input) {
     int count = int(input.outputOpReturn.size() > 0);
-    return count + input.extraOutputs.size();
+    return count + int(input.extraOutputs.size());
 }
 
 TransactionPlan TransactionBuilder::plan(const SigningInput& input) {

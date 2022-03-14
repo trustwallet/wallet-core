@@ -6,6 +6,7 @@
 
 #include "Entry.h"
 
+#include "../proto/TransactionCompiler.pb.h"
 #include "Address.h"
 #include "Signer.h"
 
@@ -29,15 +30,21 @@ string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key
     return Signer::signJSON(json, key);
 }
 
-HashPubkeyList Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
+Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
     auto input = Proto::SigningInput();
-    Data preImageHash;
+    auto output = TxCompiler::Proto::PreSigningOutput();
     if (input.ParseFromArray(txInputData.data(), (int)txInputData.size())) {
         const auto signer = Signer(input);
         // return preimage hash and dummy pubkeyhash (only one signature anyways)
-        preImageHash = signer.preImageHash();
+        auto preImageHash = signer.preImageHash();
+        auto preImage = signer.signaturePreimage();
+        output.set_datahash(preImageHash.data(), preImageHash.size());
+        output.set_data(preImage.data(), preImage.size());
+    } else {
+        output.set_errorcode(-1);
+        output.set_error("invalid input data");
     }
-    return HashPubkeyList{std::make_pair(preImageHash, Data())};
+    return TW::data(output.SerializeAsString());
 }
 
 void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {

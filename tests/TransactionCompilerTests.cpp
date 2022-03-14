@@ -54,8 +54,8 @@ TEST(TransactionCompiler, BinanceCompileWithSignatures) {
     /// Step 2: Obtain preimage hash
     const auto preImageHashes = TransactionCompiler::preImageHashes(coin, txInputData);
 
-    ASSERT_EQ(preImageHashes.size(), 1);
-    auto preImageHash = std::get<0>(preImageHashes[0]);
+    ASSERT_GT(preImageHashes.size(), 0);
+    auto preImageHash = preImageHashes;
     EXPECT_EQ(hex(preImageHash), "3f3fece9059e714d303a9a1496ddade8f2c38fa78fc4cc2e505c5dbb0ea678d1");
 
     // Simulate signature, normally obtained from signature server
@@ -224,21 +224,23 @@ TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
 
     /// Step 2: Obtain preimage hashes
     const auto preImageHashes = TransactionCompiler::preImageHashes(coin, txInputData);
+    TW::Bitcoin::Proto::PreSigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(preImageHashes.data(), (int)preImageHashes.size()));
 
-    ASSERT_EQ(preImageHashes.size(), 3);
-    EXPECT_EQ(hex(std::get<0>(preImageHashes[0])), "505f527f00e15fcc5a2d2416c9970beb57dfdfaca99e572a01f143b24dd8fab6");
-    EXPECT_EQ(hex(std::get<0>(preImageHashes[1])), "a296bead4172007be69b21971a790e076388666c162a9505698415f1b003ebd7");
-    EXPECT_EQ(hex(std::get<0>(preImageHashes[2])), "60ed6e9371e5ddc72fd88e46a12cb2f68516ebd307c0fd31b1b55cf767272101");
-    EXPECT_EQ(hex(std::get<1>(preImageHashes[0])), hex(inPubKeyHash1));
-    EXPECT_EQ(hex(std::get<1>(preImageHashes[1])), hex(inPubKeyHash0));
-    EXPECT_EQ(hex(std::get<1>(preImageHashes[2])), hex(inPubKeyHash0));
+    ASSERT_EQ(output.errorcode(), 0);
+    EXPECT_EQ(hex(output.hashpublickeys()[0].datahash()), "505f527f00e15fcc5a2d2416c9970beb57dfdfaca99e572a01f143b24dd8fab6");
+    EXPECT_EQ(hex(output.hashpublickeys()[1].datahash()), "a296bead4172007be69b21971a790e076388666c162a9505698415f1b003ebd7");
+    EXPECT_EQ(hex(output.hashpublickeys()[2].datahash()), "60ed6e9371e5ddc72fd88e46a12cb2f68516ebd307c0fd31b1b55cf767272101");
+    EXPECT_EQ(hex(output.hashpublickeys()[0].publickeyhash()), hex(inPubKeyHash1));
+    EXPECT_EQ(hex(output.hashpublickeys()[1].publickeyhash()), hex(inPubKeyHash0));
+    EXPECT_EQ(hex(output.hashpublickeys()[2].publickeyhash()), hex(inPubKeyHash0));
 
     // Simulate signatures, normally obtained from signature server.
     std::vector<Data> signatureVec;
     std::vector<Data> pubkeyVec;
-    for (const auto& h: preImageHashes) {
-        const auto& preImageHash = std::get<0>(h);
-        const auto& pubkeyhash = std::get<1>(h);
+    for (const auto& h: output.hashpublickeys()) {
+        const auto& preImageHash = h.datahash();
+        const auto& pubkeyhash = h.publickeyhash();
 
         const std::string key = hex(pubkeyhash) + "+" + hex(preImageHash);
         const auto sigInfoFind = signatureInfos.find(key);
@@ -252,7 +254,7 @@ TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
         pubkeyVec.push_back(publicKeyData);
 
         // Verify signature (pubkey & hash & signature)
-        EXPECT_TRUE(publicKey.verifyAsDER(signature, preImageHash));
+        EXPECT_TRUE(publicKey.verifyAsDER(signature, TW::Data(preImageHash.begin(), preImageHash.end())));
     }
 
     /// Step 3: Compile transaction info
@@ -351,7 +353,7 @@ TEST(TransactionCompiler, EthereumCompileWithSignatures) {
     const auto preImageHashes = TransactionCompiler::preImageHashes(coin, txInputData);
 
     ASSERT_EQ(preImageHashes.size(), 1);
-    auto preImageHash = std::get<0>(preImageHashes[0]);
+    auto preImageHash = preImageHashes;
     EXPECT_EQ(hex(preImageHash), "15e180a6274b2f6a572b9b51823fce25ef39576d10188ecdcd7de44526c47217");
 
     // Simulate signature, normally obtained from signature server

@@ -102,11 +102,12 @@ void Entry::plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
     planTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
-HashPubkeyList Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
+Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
     auto input = Proto::SigningInput();
-    auto ret = HashPubkeyList();
+    Data ret;
     if (input.ParseFromArray(txInputData.data(), (int)txInputData.size())) {
-        ret = Signer::preImageHashes(input);
+        auto result = Signer::preImageHashes(input).SerializeAsString();
+        ret.insert(ret.end(), result.begin(), result.end()); 
     }
     return ret;
 }
