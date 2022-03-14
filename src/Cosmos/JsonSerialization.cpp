@@ -26,8 +26,6 @@ const string TYPE_PREFIX_MSG_REDELEGATE = "cosmos-sdk/MsgBeginRedelegate";
 const string TYPE_PREFIX_MSG_WITHDRAW_REWARD = "cosmos-sdk/MsgWithdrawDelegationReward";
 const string TYPE_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 
-/// TODO:<@FitzLu> looks like the following two consts are conflict, maybe we can share them.
-const string TYPE_PREFIX_MSG_EXECUTE_CONTRACT = "wasm/MsgExecuteContract"; //from terra
 const string TYPE_PREFIX_WASM_MSG_EXECUTE = "wasm/MsgExecuteContract";
 
 static string broadcastMode(Proto::BroadcastMode mode) {
@@ -143,11 +141,13 @@ static json messageWithdrawReward(const Proto::Message_WithdrawDelegationReward&
 }
 
 
-/// TODO:<@FitzLu> the following two functions shares same codes,
-/// should we consider to refactor them?
+/// Resolved.
+/// Joye: TODO:<@FitzLu> the following two functions shares same codes, should we consider to refactor them?
+/// Fitz: no need, this method accept encoded execute message, see line 156. this method not only support
+/// token transfer, but also support all other types of contract call.
 // https://docs.terra.money/Tutorials/Smart-contracts/Manage-CW20-tokens.html#interacting-with-cw20-contract
 static json messageExecuteContract(const Proto::Message_ExecuteContract& message) {
-    auto typePrefix = message.type_prefix().empty() ? TYPE_PREFIX_MSG_EXECUTE_CONTRACT : message.type_prefix();
+    auto typePrefix = message.type_prefix().empty() ? TYPE_PREFIX_WASM_MSG_EXECUTE : message.type_prefix();
 
     return {
         {"type", typePrefix},
@@ -197,7 +197,6 @@ static json messagesJSON(const Proto::SigningInput& input) {
         } else if (msg.has_raw_json_message()) {
             j.push_back(messageRawJSON(msg.raw_json_message()));
         } else if (msg.has_execute_contract_message()) {
-            /// TODO:<@FitzLu> check if msg.has_execute_contract_message() and msg.has_wasm_terra_execute_contract_transfer_message() can share same codes
             j.push_back(messageExecuteContract(msg.execute_contract_message()));
         } else if (msg.has_transfer_tokens_message()) {
             assert(false); // not suppored, use protobuf serialization
