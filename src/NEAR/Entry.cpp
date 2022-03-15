@@ -8,6 +8,7 @@
 #include "Address.h"
 #include "Serialization.h"
 #include "Signer.h"
+#include "../proto/TransactionCompiler.pb.h"
 
 using namespace TW::NEAR;
 using namespace TW;
@@ -33,13 +34,20 @@ void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) con
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
-HashPubkeyList Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
+Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
     auto input = Proto::SigningInput();
+    auto output = TxCompiler::Proto::PreSigningOutput();
     Data transaction;
     if (input.ParseFromArray(txInputData.data(), (int)txInputData.size())) {
         transaction = TW::NEAR::transactionDataWithPublicKey(input);
+        auto hash = Hash::sha256(transaction);
+        output.set_data(transaction.data(), transaction.size());
+        output.set_datahash(hash.data(), hash.size());
+    } else {
+        output.set_errorcode(TxCompiler::Proto::Error_input_parse);
+        output.set_error("SigningInput parse failed");
     }
-    return HashPubkeyList{std::make_pair(transaction, Data())};
+    return TW::data(output.SerializeAsString());
 }
 
 void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures,

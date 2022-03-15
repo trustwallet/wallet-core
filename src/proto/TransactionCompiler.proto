@@ -3,6 +3,11 @@ syntax = "proto3";
 package TW.TxCompiler.Proto;
 option java_package = "wallet.core.jni.proto";
 
+enum PreSigningError {
+    OK = 0;
+    Error_input_parse = 1000;
+}
+
 /// Transaction pre-signing output
 message PreSigningOutput {
     /// Pre-image data hash that will be used for signing
