@@ -334,12 +334,6 @@ TEST(TWTransactionCompiler, ExternalSignatureSignBitcoin) {
     ASSERT_TRUE(preOutput.ParseFromArray(WRAPD(preImageHashes).get(), (int)TWDataSize(WRAPD(preImageHashes).get())));
     ASSERT_EQ(preOutput.hashpublickeys_size(), 3);
     auto hashes = preOutput.hashpublickeys();
-    // std::vector<std::pair<Data, Data>> hashes;
-    // for (auto& h : preOutput.hashpublickeys()) {
-    //     const auto preImageHash = dataFromTWData(WRAPD(TWDataVectorGet(preImageHashes.get(), i*2)));
-    //     const auto pubKeyHash = dataFromTWData(WRAPD(TWDataVectorGet(preImageHashes.get(), i*2+1)));
-    //     hashes.push_back(std::make_pair(preImageHash, pubKeyHash));
-    // }
     EXPECT_EQ(hex(hashes[0].datahash()), "505f527f00e15fcc5a2d2416c9970beb57dfdfaca99e572a01f143b24dd8fab6");
     EXPECT_EQ(hex(hashes[1].datahash()), "a296bead4172007be69b21971a790e076388666c162a9505698415f1b003ebd7");
     EXPECT_EQ(hex(hashes[2].datahash()), "60ed6e9371e5ddc72fd88e46a12cb2f68516ebd307c0fd31b1b55cf767272101");
