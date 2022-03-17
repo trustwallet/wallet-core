@@ -12,6 +12,7 @@ type CoinType uint32
 
 const (
 	CoinTypeBitcoin  CoinType = C.TWCoinTypeBitcoin
+	CoinTypeBinance  CoinType = C.TWCoinTypeBinance
 	CoinTypeEthereum CoinType = C.TWCoinTypeEthereum
 	CoinTypeTron     CoinType = C.TWCoinTypeTron
 )

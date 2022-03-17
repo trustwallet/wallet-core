@@ -54,7 +54,7 @@ end
 
 def insert_blockchain_type(coin)
     target_file = "include/TrustWalletCore/TWBlockchain.h"
-    line_number = File.readlines(target_file).count
+    line_number = File.readlines(target_file).count + 2 # add offset because of removed blockchain enum type
     target_line = "    TWBlockchain#{coin['blockchain']} = #{line_number - 17},\n"
     insert_target_line(target_file, target_line, "};\n")
 end

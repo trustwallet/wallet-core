@@ -12,6 +12,7 @@
 #include "Signer.h"
 
 using namespace TW::Bitcoin;
+using namespace TW;
 using namespace std;
 
 bool Entry::validateAddress(TWCoinType coin, const string& address, byte p2pkh, byte p2sh, const char* hrp) const {
@@ -99,4 +100,27 @@ void Entry::sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
 
 void Entry::plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
     planTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+}
+
+HashPubkeyList Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
+    auto input = Proto::SigningInput();
+    auto ret = HashPubkeyList();
+    if (input.ParseFromArray(txInputData.data(), (int)txInputData.size())) {
+        ret = Signer::preImageHashes(input);
+    }
+    return ret;
+}
+
+void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
+    auto input = Proto::SigningInput();
+    if (input.ParseFromArray(txInputData.data(), (int)txInputData.size())) {
+        HashPubkeyList externalSignatures;
+        auto n = std::min(signatures.size(), publicKeys.size());
+        for (auto i = 0; i < n; ++i) {
+            externalSignatures.push_back(std::make_pair(signatures[i], publicKeys[i].bytes));
+        }
+
+        auto serializedOut = Signer::sign(input, externalSignatures).SerializeAsString();
+        dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+    }
 }

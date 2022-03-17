@@ -7,7 +7,7 @@
 #include "Polkadot/Signer.h"
 #include "Polkadot/Extrinsic.h"
 #include "Polkadot/Address.h"
-#include "SS58Address.h"
+#include "Polkadot/SS58Address.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"

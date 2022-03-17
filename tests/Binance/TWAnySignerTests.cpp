@@ -8,6 +8,7 @@
 #include "Binance/Address.h"
 #include "proto/Binance.pb.h"
 #include <TrustWalletCore/TWAnySigner.h>
+#include "Coin.h"
 
 #include "../interface/TWTestUtilities.h"
 #include <gtest/gtest.h>
