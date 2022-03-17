@@ -39,7 +39,8 @@ message OperationChangeTrust {
 
 enum ClaimPredicate {
     Claim_predicate_unconditional = 0;
-    /* TODO encoding
+    /*
+     * Rest of predicates not currently supported
     Claim_predicate_and = 1;
 	Claim_predicate_or = 2;
 	Claim_predicate_not = 3;
