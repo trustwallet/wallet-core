@@ -131,7 +131,7 @@ TEST(TWAnySingerStellar, Sign_Change_Trust_2) {
     EXPECT_EQ(output.signature(), "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAnEAH/8MgAAAADAAAAAQAAAAAAAAAAAAAAAGApkAAAAAAAAAAAAQAAAAAAAAAGAAAAAVVTRAAAAAAA6KYahh5gr2D4B3PgY0blxyy+Wdyt2jdgjVjvQlEdn9x//////////wAAAAAAAAABd9ORdQAAAEDMZtN05ZsZB4OKOZSFkQvuRqDIvMME3PYMTAGJPQlO6Ee0nOtaRn2q0uf0IhETSSfqcsK5asAZzNj07tG0SPwM");
 }
 
-TEST(TWAnySingerStellar, Sign_Create_Claimable_Balance) {
+TEST(TWAnySingerStellar, Sign_Create_Claimable_Balance_1f1f84) {
     auto key = parse_hex("3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9");
     PrivateKey privKey = PrivateKey(key);
     PublicKey pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519);
@@ -142,17 +142,19 @@ TEST(TWAnySingerStellar, Sign_Create_Claimable_Balance) {
     input.set_passphrase(TWStellarPassphrase_Stellar);
     input.set_account("GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
     input.set_fee(10000);
-    input.set_sequence(144098454883270659);
-    input.mutable_op_create_claimable_balance()->set_amount(10000000);
+    input.set_sequence(144098454883270687);
+    input.mutable_op_create_claimable_balance()->set_amount(90000000);
     input.mutable_op_create_claimable_balance()->add_claimants();
-    input.mutable_op_create_claimable_balance()->mutable_claimants(0)->set_account("GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52");
+    input.mutable_op_create_claimable_balance()->mutable_claimants(0)->set_account("GC6CJDAY54D3O4RHEH33LUTBKDZGVOTR6NHBOTL4PIWI2CDKVRSZZJGJ");
     input.mutable_op_create_claimable_balance()->mutable_claimants(0)->set_predicate(Proto::Claim_predicate_unconditional);
     input.set_private_key(key.data(), key.size());
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeStellar);
 
-    EXPECT_EQ(output.signature(), "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAnEAH/8MgAAAADAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAACYloAAAAABAAAAAMWAtjF6DrOb9/zU+jwZ/atLiburv2EJXuRQWvbs7XquAAAAAAAAAAAAAAABd9ORdQAAAEBzcruFa1ShZE66CLgLgxW/Z7zANPk+Z5fxtpXv03kyVMPU6ryf4qgHq+OFAvTmtI9O4JiU6xLGaOb0LzqqTb4N");
+    // https://stellar.expert/explorer/public/tx/1f1f849ff2560901c91226f2fc866ef4ed1c67d672262c1f5829abe2348ac638
+    // curl -X POST -F "tx=AAAAAMpF..Bg==" "https://horizon.stellar.org/transactions"
+    EXPECT_EQ(output.signature(), "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAnEAH/8MgAAAAfAAAAAAAAAAAAAAABAAAAAAAAAA4AAAAAAAAAAAVdSoAAAAABAAAAAAAAAAC8JIwY7we3cich97XSYVDyarpx804XTXx6LI0IaqxlnAAAAAAAAAAAAAAAAXfTkXUAAABAgms/HPhEP/EYtVr5aWwhKJsn3pIVEZGFnTD2Xd/VPVsn8qogI7RYyjyBxSFPiLAljgGsPaUMfU3WFvyJCWNwBg==");
 }
 
 TEST(TWAnySingerStellar, Sign_Claim_Claimable_Balance) {
@@ -174,5 +176,5 @@ TEST(TWAnySingerStellar, Sign_Claim_Claimable_Balance) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeStellar);
 
-    EXPECT_EQ(output.signature(), "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAnEAH/8MgAAAADAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAQIDBAAAAAAAAAABd9ORdQAAAEBePgNeEKaJuPUtAL+2xR5DFRqA1L4XzjXAMBmrTG56RztBXnVHU7jA5/hVT552UVi6zQlbysCfHu4xUb1BvFYO");
+    EXPECT_EQ(output.signature(), "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAnEAH/8MgAAAADAAAAAAAAAAAAAAABAAAAAAAAAA8AAAAAAQIDBAAAAAAAAAABd9ORdQAAAECc5xxFBiUqU40Yp+auI6kKR0QsjHEp0EtT/8S5KsOanWw7FP0X1GcDJKpkR30PsYQ151PJIqACjC5L+e5bp78C");
 }

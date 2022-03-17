@@ -115,15 +115,16 @@ Data Signer::encode(const Proto::SigningInput& input) const {
 
         case Proto::SigningInput::kOpCreateClaimableBalance:
             {
+                const auto ClaimantTypeV0 = 0;
                 encodeAsset(input.op_create_claimable_balance().asset(), data);
                 encode64BE(input.op_create_claimable_balance().amount(), data);
                 auto nClaimants = input.op_create_claimable_balance().claimants_size();
-                encode32BE(nClaimants, data);
+                encode32BE((uint32_t)nClaimants, data);
                 for (auto i = 0; i < nClaimants; ++i) {
+                    encode32BE((uint32_t)ClaimantTypeV0, data);
                     encodeAddress(Address(input.op_create_claimable_balance().claimants(i).account()), data);
-                    // Predicate
-                    // TODO encoding of other predicate types, arguments
                     encode32BE((uint32_t)input.op_create_claimable_balance().claimants(i).predicate(), data);
+                    // Note: other predicates not supported, predicate-specific data would follow here
                 }
             }
             break;
@@ -151,6 +152,10 @@ uint32_t Signer::operationType(const Proto::SigningInput& input) {
             return 1;
         case Proto::SigningInput::kOpChangeTrust:
             return 6;
+        case Proto::SigningInput::kOpCreateClaimableBalance:
+            return 14;
+        case Proto::SigningInput::kOpClaimClaimableBalance:
+            return 15;
     }
 }
 
