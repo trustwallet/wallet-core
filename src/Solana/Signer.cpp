@@ -29,7 +29,7 @@ void Signer::sign(const std::vector<PrivateKey>& privateKeys, Transaction& trans
 }
 
 // Helper to convert protobuf-string-collection references to Address vector
-std::vector<Address> convertReferences(const google::protobuf::RepeatedPtrField<std::string>& references) {
+std::vector<Address> TW::Solana::convertReferences(const google::protobuf::RepeatedPtrField<std::string>& references) {
     std::vector<Address> ret;
     for (auto i = 0; i < references.size(); ++i) {
         if (Address::isValid(references[i])) {

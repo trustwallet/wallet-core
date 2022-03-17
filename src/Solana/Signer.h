@@ -30,4 +30,7 @@ class Signer {
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 };
 
+// Helper to convert protobuf-string-collection references to Address vector
+std::vector<Address> convertReferences(const google::protobuf::RepeatedPtrField<std::string>& references);
+
 } // namespace TW::Solana
