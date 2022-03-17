@@ -134,7 +134,9 @@ Data Signer::encode(const Proto::SigningInput& input) const {
                 const auto ClaimableBalanceIdTypeClaimableBalanceIdTypeV0 = 0;
                 encode32BE((uint32_t)ClaimableBalanceIdTypeClaimableBalanceIdTypeV0, data);
                 const auto balanceId = input.op_claim_claimable_balance().balance_id();
-                data.insert(data.end(), balanceId.begin(), balanceId.end());
+                if (balanceId.size() == 32) {
+                    data.insert(data.end(), balanceId.begin(), balanceId.end());
+                }
             }
             break;
     }

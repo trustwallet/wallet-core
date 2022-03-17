@@ -64,6 +64,7 @@ message OperationCreateClaimableBalance {
 }
 
 message OperationClaimClaimableBalance {
+    // 32-byte balance ID hash
     bytes balance_id = 1;
 }
 
