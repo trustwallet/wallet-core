@@ -63,7 +63,7 @@ TEST(TWTransactionCompiler, ExternalSignatureSignBinance) {
     auto preImageHash = dataFromTWData(preImageHashes);
 
     TxCompiler::Proto::PreSigningOutput output;
-    ASSERT_TRUE(output.ParseFromArray(preImageHash->data(), preImageHash->size()));
+    ASSERT_TRUE(output.ParseFromArray(preImageHash->data(), int(preImageHash->size())));
     ASSERT_EQ(output.errorcode(), 0);
     const auto preImageHashData = data(output.datahash());
 
@@ -160,7 +160,7 @@ TEST(TWTransactionCompiler, ExternalSignatureSignEthereum) {
     auto preImageHash = dataFromTWData(preImageHashes);
 
     TxCompiler::Proto::PreSigningOutput output;
-    ASSERT_TRUE(output.ParseFromArray(preImageHash->data(), preImageHash->size()));
+    ASSERT_TRUE(output.ParseFromArray(preImageHash->data(), int(preImageHash->size())));
     ASSERT_EQ(output.errorcode(), 0);
     const auto preImageHashData = data(output.datahash());
     EXPECT_EQ(hex(preImageHashData),
@@ -374,17 +374,14 @@ TEST(TWTransactionCompiler, ExternalSignatureSignBitcoin) {
 
     /// Step 2: Obtain preimage hashes
     const auto preImageHashes = TWTransactionCompilerPreImageHashes(coin, txInputData.get());
+    auto preImageHash = dataFromTWData(preImageHashes);
     Bitcoin::Proto::PreSigningOutput preOutput;
-    ASSERT_TRUE(preOutput.ParseFromArray(WRAPD(preImageHashes).get(),
-                                         (int)TWDataSize(WRAPD(preImageHashes).get())));
+    ASSERT_TRUE(preOutput.ParseFromArray(preImageHash->data(), (int)preImageHash->size()));
     ASSERT_EQ(preOutput.hashpublickeys_size(), 3);
     auto hashes = preOutput.hashpublickeys();
-    EXPECT_EQ(hex(hashes[0].datahash()),
-              "505f527f00e15fcc5a2d2416c9970beb57dfdfaca99e572a01f143b24dd8fab6");
-    EXPECT_EQ(hex(hashes[1].datahash()),
-              "a296bead4172007be69b21971a790e076388666c162a9505698415f1b003ebd7");
-    EXPECT_EQ(hex(hashes[2].datahash()),
-              "60ed6e9371e5ddc72fd88e46a12cb2f68516ebd307c0fd31b1b55cf767272101");
+    EXPECT_EQ(hex(hashes[0].datahash()), "505f527f00e15fcc5a2d2416c9970beb57dfdfaca99e572a01f143b24dd8fab6");
+    EXPECT_EQ(hex(hashes[1].datahash()), "a296bead4172007be69b21971a790e076388666c162a9505698415f1b003ebd7");
+    EXPECT_EQ(hex(hashes[2].datahash()), "60ed6e9371e5ddc72fd88e46a12cb2f68516ebd307c0fd31b1b55cf767272101");
     EXPECT_EQ(hex(hashes[0].publickeyhash()), hex(inPubKeyHash1));
     EXPECT_EQ(hex(hashes[1].publickeyhash()), hex(inPubKeyHash0));
     EXPECT_EQ(hex(hashes[2].publickeyhash()), hex(inPubKeyHash0));
@@ -404,16 +401,11 @@ TEST(TWTransactionCompiler, ExternalSignatureSignBitcoin) {
         const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeSECP256k1);
         const auto signature = sigInfo.signature;
 
-        TWDataVectorAdd(signatureVec.get(),
-                        WRAPD(TWDataCreateWithBytes(signature.data(), signature.size())).get());
-        TWDataVectorAdd(
-            pubkeyVec.get(),
-            WRAPD(TWDataCreateWithBytes(publicKeyData.data(), publicKeyData.size())).get());
-
+        TWDataVectorAdd(signatureVec.get(), WRAPD(TWDataCreateWithBytes(signature.data(), signature.size())).get());
+        TWDataVectorAdd(pubkeyVec.get(), WRAPD(TWDataCreateWithBytes(publicKeyData.data(), publicKeyData.size())).get());
         // Verify signature (pubkey & hash & signature)
         EXPECT_TRUE(publicKey.verifyAsDER(signature, preImageHash));
     }
-
     /// Step 3: Compile transaction info
     const auto outputData = WRAPD(TWTransactionCompilerCompileWithSignatures(
         coin, txInputData.get(), signatureVec.get(), pubkeyVec.get()));

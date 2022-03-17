@@ -68,3 +68,7 @@ uint8_t TWCoinTypeStaticPrefix(enum TWCoinType coin) {
 uint32_t TWCoinTypeSlip44Id(enum TWCoinType coin) {
     return TW::slip44Id(coin);
 }
+
+enum TWPublicKeyType TWCoinTypePublicKeyType(enum TWCoinType coin) {
+    return TW::publicKeyType(coin);
+}
