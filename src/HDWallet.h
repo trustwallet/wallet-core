@@ -80,11 +80,11 @@ class HDWallet {
     /// Derives the address for a coin.
     std::string deriveAddress(TWCoinType coin) const;
 
-    /// Returns the extended private key.
-    std::string getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const;
+    /// Returns the extended private key, derivation path used is "m/purpose'/coin'/account'".
+    std::string getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version, uint32_t account = 0) const;
 
-    /// Returns the extended public key.
-    std::string getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const;
+    /// Returns the extended public key, derivation path used is "m/purpose'/coin'/account'".
+    std::string getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version, uint32_t account = 0) const;
 
     /// Returns the BIP32 Root Key (private)
     std::string getRootKey(TWCoinType coin, TWHDVersion version) const;
