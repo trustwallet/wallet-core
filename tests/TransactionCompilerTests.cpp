@@ -11,6 +11,7 @@
 #include "proto/Common.pb.h"
 #include "proto/Ethereum.pb.h"
 #include "proto/Solana.pb.h"
+#include "proto/TransactionCompiler.pb.h"
 #include <TrustWalletCore/TWCoinType.h>
 
 #include "Bitcoin/Script.h"
@@ -55,11 +56,14 @@ TEST(TransactionCompiler, BinanceCompileWithSignatures) {
 
     /// Step 2: Obtain preimage hash
     const auto preImageHashes = TransactionCompiler::preImageHashes(coin, txInputData);
-
     ASSERT_GT(preImageHashes.size(), 0);
-    auto preImageHash = preImageHashes;
-    EXPECT_EQ(hex(preImageHash),
-              "3f3fece9059e714d303a9a1496ddade8f2c38fa78fc4cc2e505c5dbb0ea678d1");
+
+    TxCompiler::Proto::PreSigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(preImageHashes.data(), int(preImageHashes.size())));
+    ASSERT_EQ(output.errorcode(), 0);
+
+    auto preImageHash = data(output.datahash());
+    EXPECT_EQ(hex(preImageHash), "3f3fece9059e714d303a9a1496ddade8f2c38fa78fc4cc2e505c5dbb0ea678d1");
 
     // Simulate signature, normally obtained from signature server
     const auto publicKeyData =
@@ -411,11 +415,14 @@ TEST(TransactionCompiler, EthereumCompileWithSignatures) {
 
     /// Step 2: Obtain preimage hash
     const auto preImageHashes = TransactionCompiler::preImageHashes(coin, txInputData);
+    ASSERT_GT(preImageHashes.size(), 0);
 
-    ASSERT_EQ(preImageHashes.size(), 1);
-    auto preImageHash = preImageHashes;
-    EXPECT_EQ(hex(preImageHash),
-              "15e180a6274b2f6a572b9b51823fce25ef39576d10188ecdcd7de44526c47217");
+    TxCompiler::Proto::PreSigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(preImageHashes.data(), int(preImageHashes.size())));
+    ASSERT_EQ(output.errorcode(), 0);
+
+    auto preImageHash = data(output.datahash());
+    EXPECT_EQ(hex(preImageHash), "15e180a6274b2f6a572b9b51823fce25ef39576d10188ecdcd7de44526c47217");
 
     // Simulate signature, normally obtained from signature server
     const Data publicKeyData =
