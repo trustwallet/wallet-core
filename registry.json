@@ -1884,7 +1884,6 @@
     "publicKeyType": "ed25519",
     "p2pkhPrefix": 0,
     "p2shPrefix": 5,
-    "hrp": "",
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
     "xpub": "xpub",
