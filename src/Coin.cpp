@@ -29,6 +29,7 @@
 #include "Groestlcoin/Entry.h"
 #include "Harmony/Entry.h"
 #include "Icon/Entry.h"
+#include "IOST/Entry.h"
 #include "IoTeX/Entry.h"
 #include "Kusama/Entry.h"
 #include "NEAR/Entry.h"
@@ -75,6 +76,7 @@ FIO::Entry fioDP;
 Groestlcoin::Entry groestlcoinDP;
 Harmony::Entry harmonyDP;
 Icon::Entry iconDP;
+IOST::Entry iostDP;
 IoTeX::Entry iotexDP;
 Kusama::Entry kusamaDP;
 Nano::Entry nanoDP;
@@ -145,6 +147,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeGroestlcoin: entry = &groestlcoinDP; break;
         case TWCoinTypeHarmony: entry = &harmonyDP; break;
         case TWCoinTypeICON: entry = &iconDP; break;
+        case TWCoinTypeIOST: entry = &iostDP; break;
         case TWCoinTypeIoTeX: entry = &iotexDP; break;
         case TWCoinTypeKusama: entry = &kusamaDP; break;
         case TWCoinTypeNano: entry = &nanoDP; break;

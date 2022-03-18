@@ -1,25 +1,25 @@
 #include "Signer.h"
 #include "Account.h"
+#include "../BinaryCoding.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
-#include "../BinaryCoding.h"
 #include <boost/endian/conversion.hpp>
-#include <sstream>
+#include <google/protobuf/util/json_util.h>
 #include <iostream>
-
 #include <nlohmann/json.hpp>
+#include <sstream>
 
 using namespace TW;
 using namespace TW::IOST;
 
 class IOSTEncoder {
-public:
+  public:
     IOSTEncoder() = default;
     void WriteByte(uint8_t b) { buffer << b; }
     void WriteInt32(uint32_t i) {
         std::vector<uint8_t> data;
         encode32BE(i, data);
-        for (auto b: data) {
+        for (auto b : data) {
             buffer << b;
         }
     }
@@ -27,7 +27,7 @@ public:
     void WriteInt64(uint64_t i) {
         std::vector<uint8_t> data;
         encode64BE(i, data);
-        for (auto b: data) {
+        for (auto b : data) {
             buffer << b;
         }
     }
@@ -46,7 +46,7 @@ public:
 
     std::string AsString() { return buffer.str(); }
 
-private:
+  private:
     std::stringstream buffer;
 };
 
@@ -95,7 +95,7 @@ std::string encodeTransaction(const Proto::Transaction& t) {
     return se.AsString();
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) const noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto t = input.transaction_template();
 
     if (t.actions_size() == 0) {
@@ -122,7 +122,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) const noexce
 
     Account acc(input.account());
     auto pubkey = acc.publicActiveKey();
-    std::string pubkeyStr(pubkey.begin(), pubkey.end() - 1);
+    std::string pubkeyStr(pubkey.begin(), pubkey.end());
 
     t.add_publisher_sigs();
     auto sig = t.mutable_publisher_sigs(0);
@@ -137,7 +137,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) const noexce
     return protoOutput;
 }
 
-std::string Signer::buildUnsignedTx(const Proto::SigningInput &input, const Data &pubkey, uint8_t algorithm) noexcept {
+std::string Signer::buildUnsignedTx(const Proto::SigningInput& input, const Data& pubkey,
+                                    uint8_t algorithm) noexcept {
     auto t = input.transaction_template();
 
     if (t.actions_size() == 0) {
@@ -162,7 +163,7 @@ std::string Signer::buildUnsignedTx(const Proto::SigningInput &input, const Data
         action->set_data(data);
     }
 
-    std::string pubkeyStr(pubkey.begin(), pubkey.end() - 1);
+    std::string pubkeyStr(pubkey.begin(), pubkey.end());
 
     t.add_publisher_sigs();
     auto sig = t.mutable_publisher_sigs(0);
@@ -170,4 +171,50 @@ std::string Signer::buildUnsignedTx(const Proto::SigningInput &input, const Data
     sig->set_public_key(pubkeyStr);
 
     return encodeTransaction(t);
+}
+
+Proto::SigningOutput Signer::buildSignedTx(const Proto::SigningInput& input, const Data& pubkey,
+                                           uint8_t algorithm, const Data& signature) noexcept {
+    auto t = input.transaction_template();
+
+    if (t.actions_size() == 0) {
+        t.add_actions();
+        auto action = t.mutable_actions(0);
+        action->set_contract("token.iost");
+        action->set_action_name("transfer");
+
+        std::string token = "iost";
+        std::string src = input.account().name();
+        std::string dst = input.transfer_destination();
+        std::string amount = input.transfer_amount();
+        std::string memo = input.transfer_memo();
+
+        nlohmann::json j;
+        j.push_back(token);
+        j.push_back(src);
+        j.push_back(dst);
+        j.push_back(amount);
+        j.push_back(memo);
+        std::string data = j.dump();
+        action->set_data(data);
+    }
+
+    std::string pubkeyStr(pubkey.begin(), pubkey.end());
+
+    t.add_publisher_sigs();
+    auto sig = t.mutable_publisher_sigs(0);
+    sig->set_algorithm(Proto::Algorithm(algorithm));
+    sig->set_public_key(pubkeyStr);
+    std::string signatureStr(signature.begin(), signature.end());
+    sig->set_signature(signatureStr);
+
+    std::string transactionJson;
+    google::protobuf::util::JsonOptions jsonOptions;
+    jsonOptions.always_print_enums_as_ints = true;
+    jsonOptions.preserve_proto_field_names = true;
+    google::protobuf::util::MessageToJsonString(t, &transactionJson, jsonOptions);
+    Proto::SigningOutput protoOutput;
+    protoOutput.mutable_transaction()->CopyFrom(t);
+    protoOutput.set_encoded(transactionJson);
+    return protoOutput;
 }

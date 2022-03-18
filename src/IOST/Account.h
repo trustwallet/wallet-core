@@ -18,6 +18,7 @@ namespace TW::IOST {
     public:
         static bool isValid(const std::string& name);
         static std::string encodePubKey(const PublicKey& publicKey);
+        static std::string address(const std::string& string);
         Account(std::string name): name(std::move(name)) {}
         Account(const PublicKey& publicKey) {}
         Account(const Proto::AccountInfo& account);

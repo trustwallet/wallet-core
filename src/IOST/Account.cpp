@@ -53,3 +53,8 @@ Data Account::publicActiveKey() const {
 Data Account::publicOwnerKey() const {
     return PrivateKey(ownerKey).getPublicKey(TWPublicKeyTypeED25519).bytes;
 }
+
+std::string Account::address(const std::string& publickey) {
+    auto publicKeyData = TW::data(publickey);
+    return Base58::bitcoin.encode(publicKeyData);
+}

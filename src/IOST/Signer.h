@@ -6,13 +6,16 @@
 
 #pragma once
 
-#include "../proto/IOST.pb.h"
 #include "../PrivateKey.h"
+#include "../proto/IOST.pb.h"
 
 namespace TW::IOST {
-    class Signer {
-    public:
-        Proto::SigningOutput sign(const Proto::SigningInput& input) const noexcept;
-        static std::string buildUnsignedTx(const Proto::SigningInput& input, const Data &pubkey, uint8_t algorithm) noexcept;
-    };
+class Signer {
+  public:
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static std::string buildUnsignedTx(const Proto::SigningInput& input, const Data& pubkey,
+                                       uint8_t algorithm) noexcept;
+    static Proto::SigningOutput buildSignedTx(const Proto::SigningInput& input, const Data& pubkey,
+                                              uint8_t algorithm, const Data& signature) noexcept;
+};
 } // namespace TW::IOST

@@ -17,8 +17,9 @@
 #include "Cardano/AddressV3.h"
 #include "Cosmos/Address.h"
 #include "Decred/Address.h"
-#include "Ethereum/Address.h"
 #include "Elrond/Address.h"
+#include "Ethereum/Address.h"
+#include "IOST/Account.h"
 #include "Kusama/Address.h"
 #include "NEAR/Address.h"
 #include "NEO/Address.h"
@@ -179,6 +180,10 @@ class AnyAddress {
         case TWCoinTypeNEAR: {
             auto addr = NEAR::Address(string);
             return {addr.bytes.begin(), addr.bytes.end()};
+        }
+        case TWCoinTypeIOST: {
+            auto addr = IOST::Account::address(string);
+            return {addr.begin(), addr.end()};
         }
         default:
             break;

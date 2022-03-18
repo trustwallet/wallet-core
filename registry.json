@@ -1871,5 +1871,34 @@
       "rpc": "",
       "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
+  },
+  {
+    "id": "iost",
+    "name": "IOST",
+    "coinId": 291,
+    "symbol": "IOST",
+    "decimals": 2,
+    "blockchain": "IOST",
+    "derivationPath": "m/44'/899'/0'/0/0",
+    "curve": "ed25519",
+    "publicKeyType": "ed25519",
+    "p2pkhPrefix": 0,
+    "p2shPrefix": 5,
+    "hrp": "",
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "xpub": "xpub",
+    "xprv": "xprv",
+    "explorer": {
+      "url": "https://explorer.iost.io",
+      "txPath": "/block/",
+      "accountPath": "/account/"
+    },
+    "info": {
+      "url": "https://iost.io",
+      "source": "https://github.com/iost-official/go-iost",
+      "rpc": "",
+      "documentation": "https://developers.iost.io/docs/en/6-reference/API.html"
+    }
   }
 ]
