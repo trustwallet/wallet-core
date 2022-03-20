@@ -4,7 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "TrustWalletCore/TWString.h"
 #include <TrustWalletCore/TWAccount.h>
 
 #include "../Keystore/Account.h"
