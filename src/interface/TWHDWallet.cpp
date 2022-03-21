@@ -98,11 +98,11 @@ TWString *_Nonnull TWHDWalletGetExtendedPublicKey(struct TWHDWallet *wallet, TWP
 }
 
 TWString *_Nonnull TWHDWalletGetExtendedPrivateKeyAccount(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, TWHDVersion version, uint32_t account) {
-    return new std::string(wallet->impl.getExtendedPrivateKey(purpose, coin, version, account));
+    return new std::string(wallet->impl.getExtendedPrivateKeyAccount(purpose, coin, version, account));
 }
 
 TWString *_Nonnull TWHDWalletGetExtendedPublicKeyAccount(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, TWHDVersion version, uint32_t account) {
-    return new std::string(wallet->impl.getExtendedPublicKey(purpose, coin, version, account));
+    return new std::string(wallet->impl.getExtendedPublicKeyAccount(purpose, coin, version, account));
 }
 
 TWPublicKey *TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, enum TWCoinType coin, TWString *_Nonnull derivationPath) {
