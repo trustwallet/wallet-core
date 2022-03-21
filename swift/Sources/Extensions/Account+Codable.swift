@@ -29,6 +29,7 @@ extension Account: Codable {
         case coin
         case address
         case derivationPath
+        case publicKey
         case extendedPublicKey
     }
 
@@ -45,12 +46,14 @@ extension Account: Codable {
         let rawCoin           = try container.decode(UInt32.self, forKey: .coin)
         let address           = try container.decode(String.self, forKey: .address)
         let derivationPath    = try container.decode(String.self, forKey: .derivationPath)
+        let publicKey         = try container.decode(String.self, forKey: .publicKey)
         let extendedPublicKey = try container.decode(String.self, forKey: .extendedPublicKey)
 
         self.init(
             address: address,
             coin: CoinType(rawValue: rawCoin)!,
             derivationPath: derivationPath,
+            publicKey: publicKey,
             extendedPublicKey: extendedPublicKey
         )
     }
