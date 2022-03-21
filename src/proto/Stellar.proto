@@ -38,14 +38,15 @@ message OperationChangeTrust {
 }
 
 enum ClaimPredicate {
-    Claim_predicate_unconditional = 0;
+    Predicate_unconditional = 0;
     /*
      * Rest of predicates not currently supported
-    Claim_predicate_and = 1;
-	Claim_predicate_or = 2;
-	Claim_predicate_not = 3;
-	Claim_predicate_before_absolute_time = 4;
-	Claim_predicate_before_relative_time = 5;
+     * See https://github.com/stellar/stellar-protocol/blob/master/core/cap-0023.md for other types
+    Predicate_and = 1;
+	Predicate_or = 2;
+	Predicate_not = 3;
+	Predicate_before_absolute_time = 4;
+	Predicate_before_relative_time = 5;
     */
 }
 
