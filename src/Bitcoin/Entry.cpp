@@ -103,13 +103,10 @@ void Entry::plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
 }
 
 Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
-    auto input = Proto::SigningInput();
-    Data ret;
-    if (input.ParseFromArray(txInputData.data(), (int)txInputData.size())) {
-        auto result = Signer::preImageHashes(input).SerializeAsString();
-        ret.insert(ret.end(), result.begin(), result.end()); 
-    }
-    return ret;
+    return txCompilerTemplate<Proto::SigningInput, Proto::PreSigningOutput>(
+        txInputData, [](const auto& input, auto& output) { 
+            output = Signer::preImageHashes(input); 
+        });
 }
 
 void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {

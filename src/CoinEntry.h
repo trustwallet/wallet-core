@@ -11,6 +11,7 @@
 #include "Data.h"
 #include "PublicKey.h"
 #include "PrivateKey.h"
+#include "proto/Common.pb.h"
 #include "uint256.h"
 
 #include <string>
@@ -67,6 +68,26 @@ void planTemplate(const Data& dataIn, Data& dataOut) {
     input.ParseFromArray(dataIn.data(), (int)dataIn.size());
     auto serializedOut = Planner::plan(input).SerializeAsString();
     dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+}
+
+template <typename Input, typename Output>
+Data txCompilerTemplate(const Data& dataIn, std::function<void(const Input& input, Output& output)> fnHandler) {
+    auto input = Input();
+    auto output = Output();
+    if (!input.ParseFromArray(dataIn.data(), (int)dataIn.size())) {
+        output.set_errorcode(Common::Proto::Error_input_parse);
+        output.set_error("failed to parse input data");
+        return TW::data(output.SerializeAsString());;
+    }
+
+    try {
+        // each coin function handler
+        fnHandler(input, output);
+    } catch (const std::exception& e) {
+        output.set_errorcode(Common::Proto::Error_internal);
+        output.set_error(e.what());
+    }
+    return TW::data(output.SerializeAsString());
 }
 
 } // namespace TW

@@ -31,32 +31,29 @@ string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key
 }
 
 Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
-    auto input = Proto::SigningInput();
-    auto output = TxCompiler::Proto::PreSigningOutput();
-    if (input.ParseFromArray(txInputData.data(), (int)txInputData.size())) {
-        const auto signer = Signer(input);
-        // return preimage hash and dummy pubkeyhash (only one signature anyways)
-        auto preImageHash = signer.preImageHash();
-        auto preImage = signer.signaturePreimage();
-        output.set_datahash(preImageHash.data(), preImageHash.size());
-        output.set_data(preImage.data(), preImage.size());
-    } else {
-        output.set_errorcode(-1);
-        output.set_error("invalid input data");
-    }
-    return TW::data(output.SerializeAsString());
+    return txCompilerTemplate<Proto::SigningInput, TxCompiler::Proto::PreSigningOutput>(
+        txInputData, [](const auto& input, auto& output) {
+            const auto signer = Signer(input);
+
+            // return preimage hash and dummy pubkeyhash (only one signature anyways)
+            auto preImageHash = signer.preImageHash();
+            auto preImage = signer.signaturePreimage();
+            output.set_datahash(preImageHash.data(), preImageHash.size());
+            output.set_data(preImage.data(), preImage.size());
+        });
 }
 
 void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
-    auto input = Proto::SigningInput();
-    if (input.ParseFromArray(txInputData.data(), (int)txInputData.size())) {
-        const auto signer = Signer(input);
-        if (signatures.size() == 1 && publicKeys.size() == 1) {
-            const auto output = signer.compile(signatures[0], publicKeys[0]);
-            const auto serializedOut = output.SerializeAsString();
-            dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
-        }
-    }
+    dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
+        txInputData, [&](const auto& input, auto& output) {
+            const auto signer = Signer(input);
+            if (signatures.size() != 1 || publicKeys.size() != 1) {
+                output.set_errorcode(Common::Proto::Error_no_support_n2n);
+                output.set_error(Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
+                return;
+            }
+            output = signer.compile(signatures[0], publicKeys[0]);
+        });
 }
 
 Data Entry::buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const {

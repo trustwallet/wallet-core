@@ -50,15 +50,15 @@ Proto::PreSigningOutput Signer::preImageHashes(const Proto::SigningInput& input)
     Proto::PreSigningOutput output;
     auto result = TransactionSigner<Transaction, TransactionBuilder>::preImageHashes(input);
     if (!result) {
-        output.set_errorcode(-1);
+        output.set_errorcode(result.error());
         output.set_error(Common::Proto::SigningError_Name(result.error()));
         return output;
     }
 
     auto hashList = result.payload();
-    auto hashPubKeys = output.mutable_hashpublickeys();
+    auto* hashPubKeys = output.mutable_hashpublickeys();
     for (auto& h : hashList) {
-        auto hpk = hashPubKeys->Add();
+        auto* hpk = hashPubKeys->Add();
         hpk->set_datahash(h.first.data(), h.first.size());
         hpk->set_publickeyhash(h.second.data(), h.second.size());
     }

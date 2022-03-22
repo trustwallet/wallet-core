@@ -14,11 +14,14 @@ namespace TW::NEO {
 /// Note: do not put the implementation here (no matter how simple), to avoid having coin-specific includes in this file
 class Entry: public CoinEntry {
 public:
-    virtual const std::vector<TWCoinType> coinTypes() const { return {TWCoinTypeNEO}; }
-    virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;
-    virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
-    virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
-    virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
+    const std::vector<TWCoinType> coinTypes() const override { return {TWCoinTypeNEO}; }
+    bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const override;
+    std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const override;
+    void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const override;
+    void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const override;
+    
+    Data preImageHashes(TWCoinType coin, const Data& txInputData) const override;
+    void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const override;
 };
 
 } // namespace TW::NEO

@@ -10,6 +10,7 @@
 #include "proto/Bitcoin.pb.h"
 #include "proto/Common.pb.h"
 #include "proto/Ethereum.pb.h"
+#include "proto/NEO.pb.h"
 #include "proto/Solana.pb.h"
 #include "proto/TransactionCompiler.pb.h"
 #include <TrustWalletCore/TWCoinType.h>
@@ -562,5 +563,73 @@ TEST(TransactionCompiler, SolanaCompileWithSignatures) {
         ANY_SIGN(input, coin);
 
         ASSERT_EQ(output.encoded(), ExpectedTx);
+    }
+}
+
+TEST(TWTransactionCompiler, NEOCompileWithSignatures) {
+    const auto coin = TWCoinTypeNEO;
+    /// Step 1: Prepare transaction input (protobuf)
+    const std::string NEO_ASSET_ID = "9b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc5";
+    const std::string GAS_ASSET_ID = "e72d286979ee6cb1b7e65dfddfb2e384100b8d148e7758de42e4168b71792c60";
+
+    TW::NEO::Proto::SigningInput input;
+    auto privateKey = PrivateKey(parse_hex("F18B2F726000E86B4950EBEA7BFF151F69635951BC4A31C44F28EE6AF7AEC128"));
+    auto publicKey = privateKey.getPublicKey(::publicKeyType(coin));
+    input.set_gas_asset_id(GAS_ASSET_ID);
+    input.set_gas_change_address("AdtSLMBqACP4jv8tRWwyweXGpyGG46eMXV");
+
+    auto* utxo = input.add_inputs();
+    auto hash = parse_hex("9c85b39cd5677e2bfd6bf8a711e8da93a2f1d172b2a52c6ca87757a4bccc24de");
+    std::reverse(hash.begin(), hash.end());
+    utxo->set_prev_hash(hash.data(), hash.size());
+    utxo->set_prev_index(1);
+    utxo->set_asset_id(NEO_ASSET_ID);
+    utxo->set_value(89300000000); 
+
+    auto txOutput = input.add_outputs();
+    txOutput->set_asset_id(NEO_ASSET_ID);
+    txOutput->set_to_address("Ad9A1xPbuA5YBFr1XPznDwBwQzdckAjCev");
+    txOutput->set_change_address("AdtSLMBqACP4jv8tRWwyweXGpyGG46eMXV");
+    txOutput->set_amount(100000000);
+    
+    auto inputString = input.SerializeAsString();
+    auto inputData = TW::Data(inputString.begin(), inputString.end());
+
+    /// Step 2: Obtain preimage hash
+    const auto preImageHashData = TransactionCompiler::preImageHashes(coin, inputData);
+
+    auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
+    ASSERT_TRUE(preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
+    ASSERT_EQ(preSigningOutput.errorcode(), 0);
+
+    auto preImageHash = preSigningOutput.datahash();
+    EXPECT_EQ(hex(preImageHash), "7fd5629cfc7cb0f8f01f15fc6d8b37ed1240c4f818d0b397bac65266aa6466da");
+
+    // Simulate signature, normally obtained from signature server
+    const auto publicKeyData = publicKey.bytes;
+    const auto signature = parse_hex("5046619c8e20e1fdeec92ce95f3019f6e7cc057294eb16b2d5e55c105bf32eb27e1fc01c1858576228f1fef8c0945a8ad69688e52a4ed19f5b85f5eff7e961d7");
+
+    // Verify signature (pubkey & hash & signature)
+    EXPECT_TRUE(publicKey.verify(signature, TW::data(preImageHash)));
+
+    /// Step 3: Compile transaction info
+    const auto outputData = TransactionCompiler::compileWithSignatures(coin, inputData, {signature}, {publicKeyData});
+
+    NEO::Proto::SigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+
+    auto expectedTx = "800000019c85b39cd5677e2bfd6bf8a711e8da93a2f1d172b2a52c6ca87757a4bccc24de0100029b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc500e1f50500000000ea610aa6db39bd8c8556c9569d94b5e5a5d0ad199b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc500fcbbc414000000f2908c7efc0c9e43ffa7e79170ba37e501e1b4ac0141405046619c8e20e1fdeec92ce95f3019f6e7cc057294eb16b2d5e55c105bf32eb27e1fc01c1858576228f1fef8c0945a8ad69688e52a4ed19f5b85f5eff7e961d7232102a41c2aea8568864b106553729d32b1317ec463aa23e7a3521455d95992e17a7aac";
+    EXPECT_EQ(hex(output.encoded()), expectedTx);
+    
+    { // Double check: check if simple signature process gives the same result. Note that private
+      // keys were not used anywhere up to this point.
+        NEO::Proto::SigningInput input;
+        ASSERT_TRUE(input.ParseFromArray(inputData.data(), (int)inputData.size()));
+        input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+        NEO::Proto::SigningOutput output;
+        ANY_SIGN(input, coin);
+
+        ASSERT_EQ(hex(output.encoded()), expectedTx);
     }
 }
