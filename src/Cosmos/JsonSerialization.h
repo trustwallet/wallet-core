@@ -24,6 +24,6 @@ extern const string TYPE_PREFIX_PUBLIC_KEY;
 namespace TW::Cosmos {
 
 json signaturePreimageJSON(const Proto::SigningInput& input);
-json transactionJSON(const Proto::SigningInput& input, const Data& signature);
+json transactionJSON(const Proto::SigningInput& input, const Data& signature, bool includeSequence);
 
 } // namespace

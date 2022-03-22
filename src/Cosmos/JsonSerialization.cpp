@@ -184,14 +184,18 @@ static json messagesJSON(const Proto::SigningInput& input) {
     return j;
 }
 
-static json signatureJSON(const Data& signature, const Data& pubkey) {
-    return {
+static json signatureJSON(const Data& signature, const Data& pubkey, uint64_t sequence, bool includeSequence) {
+    json signatureJson = {
         {"pub_key", {
             {"type", TYPE_PREFIX_PUBLIC_KEY},
             {"value", Base64::encode(pubkey)}
         }},
         {"signature", Base64::encode(signature)}
     };
+    if (includeSequence) {
+        signatureJson["sequence"] = sequence;
+    }
+    return signatureJson;
 }
 
 json signaturePreimageJSON(const Proto::SigningInput& input) {
@@ -205,7 +209,7 @@ json signaturePreimageJSON(const Proto::SigningInput& input) {
     };
 }
 
-json transactionJSON(const Proto::SigningInput& input, const Data& signature) {
+json transactionJSON(const Proto::SigningInput& input, const Data& signature, bool includeSequence) {
     auto privateKey = PrivateKey(input.private_key());
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     json tx = {
@@ -213,7 +217,7 @@ json transactionJSON(const Proto::SigningInput& input, const Data& signature) {
         {"memo", input.memo()},
         {"msg", messagesJSON(input)},
         {"signatures", json::array({
-            signatureJSON(signature, Data(publicKey.bytes))
+            signatureJSON(signature, Data(publicKey.bytes), input.sequence(), includeSequence)
         })}
     };
     return broadcastJSON(tx, input.mode());
