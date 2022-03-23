@@ -32,8 +32,8 @@ class TestTHORChainSigner {
         val key =
             PrivateKey("7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e".toHexByteArray())
         val publicKey = key.getPublicKeySecp256k1(true)
-        val fromAddress = AnyAddress(publicKey, THORCHAIN).data()
-        val toAddress = AnyAddress("thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn", THORCHAIN).data()
+        val from = AnyAddress(publicKey, THORCHAIN).data()
+        val to = AnyAddress("thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn", THORCHAIN).data()
 
         val txAmount = Cosmos.Amount.newBuilder().apply {
             amount = 38000000
@@ -41,13 +41,13 @@ class TestTHORChainSigner {
         }.build()
 
         val sendCoinsMsg = Cosmos.Message.THORChainSend.newBuilder().apply {
-            fromAddress = ByteString.copyFrom(fromAddress)
-            toAddress = ByteString.copyFrom(toAddress)
+            fromAddress = ByteString.copyFrom(from)
+            toAddress = ByteString.copyFrom(to)
             addAllAmounts(listOf(txAmount))
         }.build()
 
         val message = Cosmos.Message.newBuilder().apply {
-            sendCoinsMessage = sendCoinsMsg
+            thorchainSendMessage = sendCoinsMsg
         }.build()
 
         val feeAmount = Cosmos.Amount.newBuilder().apply {
