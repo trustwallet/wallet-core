@@ -51,19 +51,19 @@ class TestTHORChainSigner {
         }.build()
 
         val feeAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 2500000
+            amount = 200
             denom = "rune"
         }.build()
 
         val cosmosFee = Cosmos.Fee.newBuilder().apply {
-            gas = 200000
+            gas = 2500000
             addAllAmounts(listOf(feeAmount))
         }.build()
 
         val signingInput = Cosmos.SigningInput.newBuilder().apply {
             signingMode = SigningMode.Protobuf
-            accountNumber = 593
             chainId = "thorchain-mainnet-v1"
+            accountNumber = 593
             sequence = 21
             memo = ""
             fee = cosmosFee
