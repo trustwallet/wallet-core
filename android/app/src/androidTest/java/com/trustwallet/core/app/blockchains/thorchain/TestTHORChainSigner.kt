@@ -31,8 +31,8 @@ class TestTHORChainSigner {
         val key =
             PrivateKey("7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e".toHexByteArray())
         val publicKey = key.getPublicKeySecp256k1(true)
-        val from = AnyAddress(publicKey, THORCHAIN).data()
-        val to = AnyAddress("thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn", THORCHAIN).data()
+        val fromAddress = AnyAddress(publicKey, THORCHAIN).data()
+        val toAddress = AnyAddress("thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn", THORCHAIN).data()
 
         val txAmount = Cosmos.Amount.newBuilder().apply {
             amount = 38000000
@@ -40,8 +40,8 @@ class TestTHORChainSigner {
         }.build()
 
         val sendCoinsMsg = Cosmos.Message.THORChainSend.newBuilder().apply {
-            fromAddress = from
-            toAddress = to
+            fromAddress = ByteString.copyFrom(fromAddress)
+            toAddress = ByteString.copyFrom(toAddress)
             addAllAmounts(listOf(txAmount))
         }.build()
 
@@ -72,7 +72,7 @@ class TestTHORChainSigner {
 
         val output = AnySigner.sign(signingInput, THORCHAIN, SigningOutput.parser())
 
-        assertEquals(output.serialized, "{\"mode\":\"BROADCAST_MODE_BLOCK",\"tx_bytes\": \"ClIKUAoOL3R5cGVzLk1zZ1NlbmQSPgoUFSLnZ9tusZcIsAOAKb+9YHvJvQ4SFMqGRZ+wBVHH30JUDF54aRksgzrbGhAKBHJ1bmUSCDM4MDAwMDAwEmYKUApGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQPtmX45bPQpL1/OWkK7pBWZzNXZbjExVKfJ6nBJ3jF8dxIECgIIARgVEhIKCwoEcnVuZRIDMjAwEKDLmAEaQKZtS3ATa26OOGvqdKm14ZbHeNfkPtIajXi5MkZ5XaX2SWOeX+YnCPZ9TxF9Jj5cVIo71m55xq4hVL3yDbRe89g=\"}")
+        assertEquals(output.serialized, "{\"mode\":\"BROADCAST_MODE_BLOCK\",\"tx_bytes\":\"ClIKUAoOL3R5cGVzLk1zZ1NlbmQSPgoUFSLnZ9tusZcIsAOAKb+9YHvJvQ4SFMqGRZ+wBVHH30JUDF54aRksgzrbGhAKBHJ1bmUSCDM4MDAwMDAwEmYKUApGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQPtmX45bPQpL1/OWkK7pBWZzNXZbjExVKfJ6nBJ3jF8dxIECgIIARgVEhIKCwoEcnVuZRIDMjAwEKDLmAEaQKZtS3ATa26OOGvqdKm14ZbHeNfkPtIajXi5MkZ5XaX2SWOeX+YnCPZ9TxF9Jj5cVIo71m55xq4hVL3yDbRe89g=\"}")
         assertEquals(output.error, "")
         assertEquals(output.json, "")
     }
