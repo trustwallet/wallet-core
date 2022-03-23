@@ -124,7 +124,6 @@ message Message {
         bytes from_address = 1;
         bytes to_address = 2;
         repeated Amount amounts = 3;
-        string type_prefix = 4;
     }
 
     message RawJSON {
