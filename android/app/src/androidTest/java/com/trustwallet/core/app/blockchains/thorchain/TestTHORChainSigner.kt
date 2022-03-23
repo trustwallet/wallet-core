@@ -31,16 +31,17 @@ class TestTHORChainSigner {
         val key =
             PrivateKey("7105512f0c020a1dd759e14b865ec0125f59ac31e34d7a2807a228ed50cb343e".toHexByteArray())
         val publicKey = key.getPublicKeySecp256k1(true)
-        val from = AnyAddress(publicKey, THORCHAIN).description()
+        val from = AnyAddress(publicKey, THORCHAIN).data()
+        val to = AnyAddress("thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn", THORCHAIN).data()
 
         val txAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 2000000
+            amount = 38000000
             denom = "rune"
         }.build()
 
-        val sendCoinsMsg = Cosmos.Message.Send.newBuilder().apply {
+        val sendCoinsMsg = Cosmos.Message.THORChainSend.newBuilder().apply {
             fromAddress = from
-            toAddress = "thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn"
+            toAddress = to
             addAllAmounts(listOf(txAmount))
         }.build()
 
@@ -49,7 +50,7 @@ class TestTHORChainSigner {
         }.build()
 
         val feeAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 2000000
+            amount = 2500000
             denom = "rune"
         }.build()
 
@@ -59,19 +60,20 @@ class TestTHORChainSigner {
         }.build()
 
         val signingInput = Cosmos.SigningInput.newBuilder().apply {
+            signingMode = SigningMode.Protobuf
             accountNumber = 593
-            chainId = "thorchain"
+            chainId = "thorchain-mainnet-v1"
+            sequence = 21
             memo = ""
-            sequence = 2
             fee = cosmosFee
             privateKey = ByteString.copyFrom(key.data())
             addAllMessages(listOf(message))
         }.build()
 
         val output = AnySigner.sign(signingInput, THORCHAIN, SigningOutput.parser())
-        val jsonPayload = output.json
 
-        val expectedJsonPayload = """{"mode":"block","tx":{"fee":{"amount":[{"amount":"2000000","denom":"rune"}],"gas":"200000"},"memo":"","msg":[{"type":"thorchain/MsgSend","value":{"amount":[{"amount":"2000000","denom":"rune"}],"from_address":"thor1z53wwe7md6cewz9sqwqzn0aavpaun0gw0exn2r","to_address":"thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A+2Zfjls9CkvX85aQrukFZnM1dluMTFUp8nqcEneMXx3"},"signature":"SsagpldYbikqjq0sw4IM8oo3l2FE4iPi1kPxJgQ6PhdT/RRmg4BEAq3weB+hTOp4SfFXI/r+wms7tKkZci6SbA=="}]}}"""
-        assertEquals(expectedJsonPayload, jsonPayload)
+        assertEquals(output.serialized, "{\"mode\":\"BROADCAST_MODE_BLOCK",\"tx_bytes\": \"ClIKUAoOL3R5cGVzLk1zZ1NlbmQSPgoUFSLnZ9tusZcIsAOAKb+9YHvJvQ4SFMqGRZ+wBVHH30JUDF54aRksgzrbGhAKBHJ1bmUSCDM4MDAwMDAwEmYKUApGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQPtmX45bPQpL1/OWkK7pBWZzNXZbjExVKfJ6nBJ3jF8dxIECgIIARgVEhIKCwoEcnVuZRIDMjAwEKDLmAEaQKZtS3ATa26OOGvqdKm14ZbHeNfkPtIajXi5MkZ5XaX2SWOeX+YnCPZ9TxF9Jj5cVIo71m55xq4hVL3yDbRe89g=\"}")
+        assertEquals(output.error, "")
+        assertEquals(output.json, "")
     }
 }
