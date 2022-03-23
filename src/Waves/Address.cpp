@@ -12,6 +12,7 @@
 
 #include <HexCoding.h>
 #include <cassert>
+#include <cstring>
 #include <stdexcept>
 
 using namespace TW;

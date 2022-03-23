@@ -32,8 +32,8 @@ private:
     /// Transaction being signed.
     Transaction transaction;
 
-    /// List of signed inputs.
-    TransactionInputs<TransactionInput> signedInputs;
+    /// Transaction being signed, with list of signed inputs
+    Transaction transactionToSign;
 
     bool estimationMode = false;
 

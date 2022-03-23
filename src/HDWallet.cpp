@@ -21,6 +21,7 @@
 #include <TrezorCrypto/curves.h>
 
 #include <array>
+#include <cstring>
 
 using namespace TW;
 

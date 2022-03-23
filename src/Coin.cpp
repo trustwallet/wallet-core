@@ -175,6 +175,9 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeAvalancheCChain: entry = &ethereumDP; break;
         case TWCoinTypeXDai: entry = &ethereumDP; break;
         case TWCoinTypeFantom: entry = &ethereumDP; break;
+        case TWCoinTypeCelo: entry = &ethereumDP; break;
+        case TWCoinTypeRonin: entry = &ethereumDP; break;
+        case TWCoinTypeCryptoOrg: entry = &cosmosDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;

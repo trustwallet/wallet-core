@@ -7,6 +7,7 @@
 #pragma once
 
 #include <cctype>
+#include <limits>
 
 #include "../Data.h"
 #include "../BinaryCoding.h"
@@ -16,7 +17,7 @@ namespace TW {
 Data readBytes(const Data& from, int max, int initial_pos = 0);
 Data readVarBytes(const Data& from, int initial_pos = 0, uint32_t* dataRead = nullptr);
 
-template<class T> T readVar(const TW::Data& from, int initial_pos = 0, const T& max = INT_MAX);
+template<class T> T readVar(const TW::Data& from, int initial_pos = 0, const T& max = std::numeric_limits<int>::max());
 template<> int64_t readVar(const TW::Data& from, int initial_pos, const int64_t& max);
 template<> uint64_t readVar(const TW::Data& from, int initial_pos, const uint64_t& max);
 

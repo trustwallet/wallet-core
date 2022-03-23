@@ -176,7 +176,12 @@ TEST(SolanaSigner, MultipleSignTransaction) {
     MessageHeader header = {2, 0, 1};
     std::vector<Address> accountKeys = {address0, address1, programId};
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
-    Message message(header, accountKeys, recentBlockhash, instructions);
+    Message message;
+    message.header = header;
+    message.accountKeys = accountKeys;
+    message.recentBlockhash = recentBlockhash;
+    message.instructions = instructions;
+    message.compileInstructions();
 
     auto transaction = Transaction(message);
 
@@ -263,7 +268,35 @@ TEST(SolanaSigner, SignRawMessage) {
     ASSERT_EQ(hex(rawTransaction), expectedHex);
 }
 
-TEST(SolanaSigner, SignDelegateStake) {
+TEST(SolanaSigner, SignDelegateStakeV2) {
+    const auto privateKeySigner =
+        PrivateKey(Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746"));
+    const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
+    auto signer = Address(publicKeySigner);
+    ASSERT_EQ(signer.string(), "zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
+
+    auto voteAddress = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
+    auto programId = Address("Stake11111111111111111111111111111111111111");
+    Solana::Hash recentBlockhash("11111111111111111111111111111111");
+    auto stakeAddress = StakeProgram::addressFromRecentBlockhash(signer, recentBlockhash, programId);
+
+    auto message = Message::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
+    auto transaction = Transaction(message);
+
+    std::vector<PrivateKey> signerKeys;
+    signerKeys.push_back(privateKeySigner);
+    Signer::sign(signerKeys, transaction);
+
+    std::vector<Signature> expectedSignatures;
+    Signature expectedSignature("58iogHzSJZmvTxi71W8k2yZXSPVfGAgtgqrk1RaBtfVFewU9yiJCkvSF1Hhjyax5DuexzR7ryWZDAWKQ73pyqvMs");
+    expectedSignatures.push_back(expectedSignature);
+    EXPECT_EQ(transaction.signatures, expectedSignatures);
+
+    auto expectedString = "j24mVM9Zgu5vDZhPLGGuCRXQnP9djNtxdHh4txN3S7dwJsNNL5fbhzGpPgSUAcLGoMVCfF9TuqTYfpfJnb4sJFe1ahM8yPL5HwuKL6py5AZJFi8SWx9fvaVB699dCPo1GT3JoEBLPCZ9o2jQtnwzLkzTYJnKv2axqhKWFE2sz6TBA5J39eZcjMFUYgyxz6Q5S4MWqYQCb8UET2NAEZoKcfy7j8N25WXL6Gj4j3hBZjpHQQNaGaNEprEqyma3ZuVhpGiCALSsuzVLX3wZVo4icXwe952deMFA4tH3BK1jcSQCgfmcKDJ9nd7bdrnUUs4BoMdF1uDZB5LxE2UH8QiqtYvaUcorF4SJ3gPxM5ykbyPsNK1cSYZF9NMpW2GofyC17eELwnHQTQB2kqphxJZu7BahvkwiDPPeeydiXAkBspJ3nc3PCBujv6WJw22ZHw5j6zAP8ZGnCW44pqtWD5qifF9tTKhySKdANNiWifs3tSCCPQqjfJXu14drNinR6VG8rJxS1qgmRYiRQUa7m1vtoaZFRN5qKUeAfoFKkAVaNnMdwgsNqNH4dqBodTCJFs1LkYwhgRZdZGbwXTn1j7vpR3DSnv4g72i2H556srzK53jdUmdv6yfxt516XDSshqZtHnKZ1tudxKjBXwsqT3imDiZFVka9wKWUAYMCi4XZ79CY6Xpsd9c18U2e9TCngQmgkTATFgrqysfraokNffgqWxvsPMugksbvbPjJs3iCzByvphkC9p7hCf6LwbeF8XnVB91EAgRDA4VLE1f9wkcq5zjy879YWJ4r516h3PQszTz1EaJXNAXdbk5Em7eyuuabGP1Q3nijFTL2yhMDsXpgrjAuEAABNxFMd4J1JRMaic615mHrhwociksrsfQK";
+    EXPECT_EQ(transaction.serialize(), expectedString);
+}
+
+TEST(SolanaSigner, SignDelegateStakeV1) {
     const auto privateKeySigner =
         PrivateKey(Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746"));
     const auto publicKeySigner = privateKeySigner.getPublicKey(TWPublicKeyTypeED25519);
@@ -275,7 +308,7 @@ TEST(SolanaSigner, SignDelegateStake) {
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
     auto stakeAddress = StakeProgram::addressFromValidatorSeed(signer, voteAddress, programId);
 
-    auto message = Message(signer, stakeAddress, voteAddress, 42, recentBlockhash);
+    auto message = Message::createStake(signer, stakeAddress, voteAddress, 42, recentBlockhash);
     auto transaction = Transaction(message);
 
     std::vector<PrivateKey> signerKeys;
@@ -283,23 +316,12 @@ TEST(SolanaSigner, SignDelegateStake) {
     Signer::sign(signerKeys, transaction);
 
     std::vector<Signature> expectedSignatures;
-    Signature expectedSignature(
-        "2GXRrZMMWTaY8ycwFTLFojAVZ1EepFqnVGW7b5bBuuKPiVrpaPXMAwyYsSmYc2okCa1MuJjNguu1emSJRtZxVdwt");
+    Signature expectedSignature("gDPbnakbktrASmnUwKGpmftvQRbcyAvxyAyVXq3oVLfAdTPDqY8hhLPHTgidEZGWcmiaXnEyKg2GQLkkAh3JYr3");
     expectedSignatures.push_back(expectedSignature);
-    ASSERT_EQ(transaction.signatures, expectedSignatures);
+    EXPECT_EQ(transaction.signatures, expectedSignatures);
 
-    auto expectedString =
-        "W1EAswaWK7mF4r9eZ2hHBZnfPnqLuNPiYkEMzFbwQsgSQu6XbSTL9AN92iyMbAMxPoRpt9ipUyztrmszAnm688N3k7"
-        "uhiKn2osm9nxi6YkGLfu31jHTSu7mn3RtmenV3qopfPDAM7jtGoYQFb7eFVbujUb6tbeQ9UqLJq1sJ7uMZ4wqecmQP"
-        "ouDmJnpmJk4CHMzLnPNTwyGmGio6sYAS3xKZ7DFXvjwGPuD8PyYHSfdPro1p3jy9igPZNAbQ6fgK7LL3sERKCUdvPy"
-        "7k14xgHbtsVy2mu54LY5c8F9sFst2uzQiTsXRTdjPFAyCVwB5pccNVotCrJ6Q2aKSC2D2knVH7LgWzSBMSreJG75xy"
-        "ATneu922wSzz7QJDieqhDtdePtSbPtoCdtPNmDfdaeDbHxVAxMios9F7RSRmH2dq86NfWDvF8TuEbYY7gPnygz6jGv"
-        "wfqSSoSnY8TnUhhceC7wJSMc8Hcf1kyfi8dqKm7rF57YjnrQoMmL5bWqJLKoJtdfFu24ceQN21k38U2tUMWJaBASWu"
-        "kgTJUbNSCemNPZt4P3cNbeB3L1wBj4GEYXVTbTFYKME5JscU5RsnkMJZZ1PgzU285SkncqNSgxkpZVhmenTXpuZv74"
-        "rXzariX8P4sprRgKUoj4b7Nu72Pya1zr7k45isMwgxtLnnnTK5k7mrZRDw3jBSBuukJBja93zaidm8HCQdwQsBt5CN"
-        "SgSXug1R2t6Sdm5tjJrsd1gyRv7udFbHCdbVEeatzULNSSGdwjwwJDy1DTC12ddBNHd8k5ic5TDwrWdfCxbDRoFYw8"
-        "49YNNUuyNAPz1jDCkLG9af6KFFLxfuR9pnF8jSyTcQAq95YiiD9sC3mAUoe8AkYfy929XzTEatP1vasMvo";
-    ASSERT_EQ(transaction.serialize(), expectedString);
+    auto expectedString = "TKPiN35HzeD3zdwxDFvnkgoqud7CZsda15JkBwM4nDpr623rM7MZsH6QvMMyKpiz7MeRNTrfyHkRLQSBT9Tbg2mgTdfrbhhqeF3Suu5ECphqn8DFYPoMnFzeg5u9gaqevfjhuizzeo2YDJF8aVGy1pez8gMbp5vHz1SuvQUgfcvFctggUMwNiJorSmmp3N6TzQSd38CZrA8ZLhaJjuwDwVMjmj18rGTV1gkX19L7byTFrus2vNvPeUa2AawwUnFpYMPgvCKkHTrpnjvypjoLof9yMUFQ5M1S3Ntv53KJyXwXq6ejJnBDtisnDcdMDNSZp3VeKz6XCr8XVM5xNVh3LX12V4kc3ueqkokYJLP1JmuhA3nNZA1G5KTNno93HUoBkEa1x5h3haoCSgmQC97LoJbJM6B6C2NbaDj2J6iiTaVQdin4He4Jpj575WDhNTqsLjzFUHPUHQF1CRnuss8UpVyMsa4kdVqCDQGeh5DKbkikgcB8GKPBuC91DRxGEqgoygNsu5nnQy4o3YAJnBBK6HsKxpdjbYD8wCUdLw8muhjpEqeBTPShEaogm9zfehidiCcnxbeoX3gmW8oH9gpWoX7GrkJgF6Wn7iWohmrzqzAjoBz8hpeY5nkkhHrf9iswVGMpakdLGy3YxkGJVpsW8KJACwEKXGLq8SVLtXSUHG8EP16zfYHxKjkCSs8PkdFsA5esxsxppPTVZivuEPqJ5og55aNmugdNDrAFYWdcH1Q4rm7BXN6oHECdz2yY4HFVWh9u592oqozt2gQKu3vmhcNFzzQe1xgs6zKSv38kSGTnipd7Hx2VL3qNAR6XBRiwAi226qSTzxi6R82p7cMB7TMy6fk5AZ3sXDSXFNJ9S5SSU1V63ruw75QMtVio";
+    EXPECT_EQ(transaction.serialize(), expectedString);
 }
 
 TEST(SolanaSigner, SignCreateTokenAccount) {
@@ -313,7 +335,7 @@ TEST(SolanaSigner, SignCreateTokenAccount) {
     auto tokenAddress = Address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
     Solana::Hash recentBlockhash("9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
 
-    auto message = Message(signer, TokenInstruction::CreateTokenAccount, signer, token, tokenAddress, recentBlockhash);
+    auto message = Message::createTokenCreateAccount(signer, TokenInstruction::CreateTokenAccount, signer, token, tokenAddress, recentBlockhash);
     auto transaction = Transaction(message);
 
     std::vector<PrivateKey> signerKeys;
@@ -343,7 +365,7 @@ TEST(SolanaSigner, SignCreateTokenAccountForOther) {
     auto tokenAddress = Address("67BrwFYt7qUnbAcYBVx7sQ4jeD2KWN1ohP6bMikmmQV3");
     Solana::Hash recentBlockhash("HmWyvrif3QfZJnDiRyrojmH9iLr7eMxxqiC9RJWFeunr");
 
-    auto message = Message(signer, TokenInstruction::CreateTokenAccount, otherMainAddress, token, tokenAddress, recentBlockhash);
+    auto message = Message::createTokenCreateAccount(signer, TokenInstruction::CreateTokenAccount, otherMainAddress, token, tokenAddress, recentBlockhash);
     auto transaction = Transaction(message);
 
     std::vector<PrivateKey> signerKeys;
@@ -370,7 +392,7 @@ TEST(SolanaSigner, SignTransferToken) {
     uint8_t decimals = 6;
     Solana::Hash recentBlockhash("CNaHfvqePgGYMvtYi9RuUdVxDYttr1zs4TWrTXYabxZi");
 
-    auto message = Message(signer, TokenInstruction::TokenTransfer, token,
+    auto message = Message::createTokenTransfer(signer, TokenInstruction::TokenTransfer, token,
         senderTokenAddress, recipientTokenAddress, amount, decimals, recentBlockhash);
     auto transaction = Transaction(message);
 

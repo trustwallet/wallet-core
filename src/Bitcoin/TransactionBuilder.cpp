@@ -16,6 +16,12 @@
 
 namespace TW::Bitcoin {
 
+
+// Above this number of UTXOs a simplified selection is used (optimization)
+static const auto SimpleModeLimit = 1000;
+// The maximum number of UTXOs to consider.  UTXOs above this limit are cut off because it cak take very long
+const size_t TransactionBuilder::MaxUtxosHardLimit = 3000;
+
 std::optional<TransactionOutput> TransactionBuilder::prepareOutputWithScript(std::string address, Amount amount, enum TWCoinType coin) {
     auto lockingScript = Script::lockScriptForAddress(address, coin);
     if (lockingScript.empty()) {
@@ -74,38 +80,53 @@ int64_t estimateSegwitFee(const FeeCalculator& feeCalculator, const TransactionP
 TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
     TransactionPlan plan;
 
-    const auto& feeCalculator = getFeeCalculator(static_cast<TWCoinType>(input.coinType));
-    auto unspentSelector = UnspentSelector(feeCalculator);
     bool maxAmount = input.useMaxAmount;
-
     if (input.amount == 0 && !maxAmount) {
         plan.error = Common::Proto::Error_zero_amount_requested;
     } else if (input.utxos.empty()) {
         plan.error = Common::Proto::Error_missing_input_utxos;
     } else {
+        const auto& feeCalculator = getFeeCalculator(static_cast<TWCoinType>(input.coinType));
+        auto inputSelector = InputSelector<UTXO>(input.utxos, feeCalculator);
+        auto inputSum = InputSelector<UTXO>::sum(input.utxos);
+
         // select UTXOs
         plan.amount = input.amount;
 
         // if amount requested is the same or more than available amount, it cannot be satisifed, but
         // treat this case as MaxAmount, and send maximum available (which will be less)
-        if (!maxAmount && input.amount >= UnspentSelector::sum(input.utxos)) {
+        if (!maxAmount && input.amount >= inputSum) {
             maxAmount = true;
         }
 
         auto output_size = 2;
+        UTXOs selectedInputs;
         if (!maxAmount) {
             output_size = 2; // output + change
-            plan.utxos = unspentSelector.select(input.utxos, plan.amount, input.byteFee, output_size);
+            if (input.utxos.size() <= SimpleModeLimit && input.utxos.size() <= MaxUtxosHardLimit) {
+                selectedInputs = inputSelector.select(plan.amount, input.byteFee, output_size);
+            } else {
+                selectedInputs = inputSelector.selectSimple(plan.amount, input.byteFee, output_size);
+            }
         } else {
             output_size = 1; // no change
-            plan.utxos = unspentSelector.selectMaxAmount(input.utxos, input.byteFee);
+            selectedInputs = inputSelector.selectMaxAmount(input.byteFee);
+        }
+        if (selectedInputs.size() <= MaxUtxosHardLimit) {
+            plan.utxos = selectedInputs;
+        } else {
+            // truncate to limit number of selected UTXOs
+            plan.utxos.clear();
+            for (auto i = 0; i < MaxUtxosHardLimit; ++i) {
+                plan.utxos.push_back(selectedInputs[i]);
+            }
         }
 
         if (plan.utxos.size() == 0) {
             plan.amount = 0;
             plan.error = Common::Proto::Error_not_enough_utxos;
         } else {
-            plan.availableAmount = UnspentSelector::sum(plan.utxos);
+            plan.availableAmount = InputSelector<UTXO>::sum(plan.utxos);
 
             // Compute fee.
             // must preliminary set change so that there is a second output

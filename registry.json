@@ -790,9 +790,9 @@
     "publicKeyType": "secp256k1",
     "hrp": "terra",
     "explorer": {
-      "url": "https://terra.stake.id",
-      "txPath": "/#/tx/",
-      "accountPath": "/#/address/"
+      "url": "https://finder.terra.money/tx",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
     },
     "info": {
       "url": "https://terra.money",
@@ -1770,6 +1770,81 @@
       "url": "https://fantom.foundation",
       "client": "https://github.com/openethereum/openethereum",
       "clientPublic": "https://rpc.ftm.tools",
+      "clientDocs": "https://eth.wiki/json-rpc/API"
+    }
+  },
+  {
+    "id": "cryptoorg",
+    "name": "CryptoOrg",
+    "displayName": "Crypto.org",
+    "coinId": 394,
+    "symbol": "CRO",
+    "decimals": 8,
+    "blockchain": "Cosmos",
+    "derivationPath": "m/44'/394'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "cro",
+    "explorer": {
+      "url": "https://crypto.org/explorer",
+      "txPath": "/tx/",
+      "accountPath": "/account/",
+      "sampleTx": "D87D2EB46B21466886EE149C1DEA3AE6C2E019C7D8C24FA1533A95439DDCE1E2",
+      "sampleAccount": "cro10wrflcdc4pys9vvgqm98yg7yv5ltj7d3xehent"
+    },
+    "info": {
+      "url": "https://crypto.org/",
+      "client": "https://github.com/crypto-org-chain/chain-main",
+      "clientPublic": "https://mainnet.crypto.org:1317/",
+      "clientDocs": "https://crypto.org/docs/resources/chain-integration.html#api-documentation"
+    }
+  },
+  {
+    "id": "celo",
+    "name": "Celo",
+    "coinId": 52752,
+    "symbol": "CELO",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/52752'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://explorer.celo.org",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xaf41ee58afe633dc7b179c15693cca40fe0372c1d7c70351620105d59d326693",
+      "sampleAccount": "0xFBFf95e2Fa7e4Ff3aeA34eFB05fB60F9968a6aaD"
+    },
+    "info": {
+      "url": "https://celo.org",
+      "client": "https://github.com/celo-org/celo-blockchain",
+      "clientPublic": "https://forno.celo.org",
+      "clientDocs": "https://eth.wiki/json-rpc/API"
+    }
+  },
+  {
+    "id": "ronin",
+    "name": "Ronin",
+    "coinId": 10002020,
+    "slip44": 60,
+    "symbol": "RON",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://explorer.roninchain.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xc09835aaf9c1cacea8ce322865583c791d3a4dfbd9a3b72f79539db88d3697ab",
+      "sampleAccount": "0xdc05ecd5fbdb64058d94f3182d66f44342b9adcb"
+    },
+    "info": {
+      "url": "https://whitepaper.axieinfinity.com/technology/ronin-ethereum-sidechain",
+      "client": "https://github.com/axieinfinity/ronin-smart-contracts",
+      "clientPublic": "https://api.roninchain.com/rpc",
       "clientDocs": "https://eth.wiki/json-rpc/API"
     }
   }

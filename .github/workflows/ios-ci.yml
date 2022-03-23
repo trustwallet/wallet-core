@@ -8,9 +8,12 @@ on:
 
 jobs:
   build:
-    runs-on: macos-10.15
+    runs-on: macos-11
     steps:
     - uses: actions/checkout@v2
+    - name: Select Xcode Version
+      run: |
+        sudo xcode-select -s '/Applications/Xcode_13.0.app'
     - name: Install system dependencies
       run: |
         brew install boost ninja xcodegen
