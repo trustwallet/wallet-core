@@ -13,9 +13,7 @@
 TW_EXTERN_C_BEGIN
 
 TW_EXPORT_STRUCT
-struct TWBase58 {
-    uint8_t unused; // C doesn't allow zero-sized struct
-};
+struct TWBase58;
 
 /// Encodes data as a Base58 string, including the checksum.
 TW_EXPORT_STATIC_METHOD

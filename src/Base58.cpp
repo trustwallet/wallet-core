@@ -10,6 +10,7 @@
 #include "Hash.h"
 
 #include <algorithm>
+#include <iterator>
 #include <cctype>
 #include <cassert>
 
@@ -75,7 +76,7 @@ Data Base58::decodeCheck(const char* begin, const char* end, Hash::Hasher hasher
 }
 
 Data Base58::decode(const char* begin, const char* end) const {
-    auto it = begin;
+    const auto* it = begin;
 
     // Skip leading spaces.
     it = std::find_if_not(it, end, [](char c) { return std::isspace(c);});

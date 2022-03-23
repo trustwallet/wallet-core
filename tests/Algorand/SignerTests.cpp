@@ -26,7 +26,7 @@ TEST(AlgorandSigner, EncodeNumbers) {
         std::make_tuple(14294967296ull, "cf00000003540be400"),
     };
 
-    for (auto &test : tests) {
+    for (auto& test : tests) {
         Data data;
         encodeNumber(std::get<0>(test), data);
         ASSERT_EQ(hex(data), std::get<1>(test));
@@ -43,7 +43,7 @@ TEST(AlgorandSigner, EncodeStrings) {
         )
     };
 
-    for (auto &test : tests) {
+    for (auto& test : tests) {
         Data data;
         Algorand::encodeString(std::get<0>(test), data);
         ASSERT_EQ(hex(data), std::get<1>(test));

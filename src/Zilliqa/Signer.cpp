@@ -32,14 +32,14 @@ static inline Data prependZero(Data& data) {
 }
 
 static inline ByteArray* byteArray(Data& amount) {
-    auto array = new ByteArray();
+    auto* array = new ByteArray();
     amount = prependZero(amount);
     array->set_data(amount.data(), amount.size());
     return array;
 }
 
 static inline ByteArray* byteArray(const void* data, size_t size) {
-    auto array = new ByteArray();
+    auto* array = new ByteArray();
     array->set_data(data, size);
     return array;
 }
@@ -79,7 +79,8 @@ Data Signer::getPreImage(const Proto::SigningInput& input, Address& address) noe
         }
         break;
     }
-    default: break;
+    default:
+        break;
     }
 
     internal.set_allocated_amount(byteArray(amount));

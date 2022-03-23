@@ -1,0 +1,28 @@
+syntax = "proto3";
+package ibc.applications.transfer.v1;
+
+// Src: https://github.com/cosmos/ibc-go/blob/main/proto/ibc/applications/transfer/v1/tx.proto
+
+import "coin.proto";
+import "ibc_core_client.proto";
+
+// MsgTransfer defines a msg to transfer fungible tokens (i.e Coins) between ICS20 enabled chains. See ICS Spec here:
+// https://github.com/cosmos/ibc/tree/master/spec/app/ics-020-fungible-token-transfer#data-structures
+message MsgTransfer {
+    // the port on which the packet will be sent
+    string source_port = 1;
+    // the channel by which the packet will be sent
+    string source_channel = 2;
+    // the tokens to be transferred
+    cosmos.base.v1beta1.Coin token = 3;
+    // the sender address
+    string sender = 4;
+    // the recipient address on the destination chain
+    string receiver = 5;
+    // Timeout height relative to the current block height.
+    // The timeout is disabled when set to 0.
+    ibc.core.client.v1.Height timeout_height = 6;
+    // Timeout timestamp (in nanoseconds) relative to the current block timestamp.
+    // The timeout is disabled when set to 0.
+    uint64 timeout_timestamp = 7;
+}

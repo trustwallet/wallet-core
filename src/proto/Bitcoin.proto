@@ -107,6 +107,9 @@ message SigningInput {
     //  value  < 500000000 : Block number at which this transaction is unlocked
     //  value >= 500000000 : UNIX timestamp at which this transaction is unlocked
     uint32 lock_time = 12;
+
+    // Optional zero-amount, OP_RETURN output
+    bytes output_op_return = 13;
 }
 
 // Describes a preliminary transaction plan.
@@ -131,6 +134,9 @@ message TransactionPlan {
 
     // Optional error
     Common.Proto.SigningError error = 7;
+
+    // Optional zero-amount, OP_RETURN output
+    bytes output_op_return = 8;
 };
 
 // Transaction signing output.

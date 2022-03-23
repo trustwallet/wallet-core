@@ -57,6 +57,8 @@ public:
     // Optional transaction plan
     std::optional<TransactionPlan> plan;
 
+    Data outputOpReturn;
+
     uint32_t lockTime = 0;
 
 public:

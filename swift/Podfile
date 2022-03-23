@@ -10,7 +10,6 @@ target 'WalletCore' do
   use_frameworks!
 
   pod 'SwiftProtobuf'
-  pod 'SwiftLint'
 
   target 'WalletCoreTests'
 end

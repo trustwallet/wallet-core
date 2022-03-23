@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -157,8 +157,7 @@ TEST(PublicKeyTests, IsValidWrongType) {
 }
 
 TEST(PublicKeyTests, Verify) {
-    const auto key = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
-    const auto privateKey = PrivateKey(key);
+    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
 
     const char* message = "Hello";
     const Data messageData = TW::data(message);
@@ -190,9 +189,32 @@ TEST(PublicKeyTests, Verify) {
     }
 }
 
+TEST(PublicKeyTests, VerifyAsDER) {
+    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+
+    const char* message = "Hello";
+    const Data messageData = TW::data(message);
+    const Data digest = Hash::sha256(messageData);
+
+    const auto signature = privateKey.signAsDER(digest, TWCurveSECP256k1);
+    EXPECT_EQ(signature.size(), 70);
+    EXPECT_EQ(hex(signature), "304402200f5d5a9e5fc4b82a625312f3be5d3e8ad017d882de86c72c92fcefa924e894c102202071772a14201a3a0debf381b5e8dea39fadb9bcabdc02ee71ab018f55bf717f");
+
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    EXPECT_EQ(hex(publicKey.bytes), "0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1");
+
+    EXPECT_TRUE(publicKey.verifyAsDER(signature, digest));
+
+    EXPECT_FALSE(publicKey.verify(signature, digest));
+
+    { // Negative: wrong key type
+        const auto publicKeyWrong = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1Extended);
+        EXPECT_FALSE(publicKeyWrong.verifyAsDER(signature, digest));
+    }
+}
+
 TEST(PublicKeyTests, VerifyEd25519Extended) {
-    const auto key = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
-    const auto privateKey = PrivateKey(key);
+    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
 
     const Data messageData = TW::data("Hello");
     const Data digest = Hash::sha256(messageData);
@@ -231,12 +253,36 @@ TEST(PublicKeyTests, VerifySchnorrWrongType) {
 }
 
 TEST(PublicKeyTests, Recover) {
-    const auto message = parse_hex("de4e9524586d6fce45667f9ff12f661e79870c4105fa0fb58af976619bb11432");
-    const auto signature = parse_hex("00000000000000000000000000000000000000000000000000000000000000020123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef80");
-    const auto publicKey = PublicKey::recover(signature, message);
-    EXPECT_EQ(publicKey.type, TWPublicKeyTypeSECP256k1Extended);
-    EXPECT_EQ(hex(publicKey.bytes), 
-        "0456d8089137b1fd0d890f8c7d4a04d0fd4520a30b19518ee87bd168ea12ed8090329274c4c6c0d9df04515776f2741eeffc30235d596065d718c3973e19711ad0");
+    {
+        const auto message = parse_hex("de4e9524586d6fce45667f9ff12f661e79870c4105fa0fb58af976619bb11432");
+        const auto signature = parse_hex("00000000000000000000000000000000000000000000000000000000000000020123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef80");
+        const auto publicKey = PublicKey::recover(signature, message);
+        EXPECT_EQ(publicKey.type, TWPublicKeyTypeSECP256k1Extended);
+        EXPECT_EQ(hex(publicKey.bytes),
+            "0456d8089137b1fd0d890f8c7d4a04d0fd4520a30b19518ee87bd168ea12ed8090329274c4c6c0d9df04515776f2741eeffc30235d596065d718c3973e19711ad0");
+    }
+
+    const auto privateKey = PrivateKey(parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904"));
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
+    EXPECT_EQ(hex(publicKey.bytes), "0463ade8ebc212b85e7e4278dc3dcb4f9cc18aab912ef5d302b5d1940e772e9e1a9213522efddad487bbd5dd7907e8e776f918e9a5e4cb51893724e9fe76792a4f");
+    {
+        const auto message = parse_hex("6468eb103d51c9a683b51818fdb73390151c9973831d2cfb4e9587ad54273155");
+        const auto signature = parse_hex("92c336138f7d0231fe9422bb30ee9ef10bf222761fe9e04442e3a11e88880c646487026011dae03dc281bc21c7d7ede5c2226d197befb813a4ecad686b559e5800");
+        const auto recovered = PublicKey::recover(signature, message);
+        EXPECT_EQ(hex(recovered.bytes), hex(publicKey.bytes));
+    }
+    { // same with v=27
+        const auto message = parse_hex("6468eb103d51c9a683b51818fdb73390151c9973831d2cfb4e9587ad54273155");
+        const auto signature = parse_hex("92c336138f7d0231fe9422bb30ee9ef10bf222761fe9e04442e3a11e88880c646487026011dae03dc281bc21c7d7ede5c2226d197befb813a4ecad686b559e581b");
+        const auto recovered = PublicKey::recover(signature, message);
+        EXPECT_EQ(hex(recovered.bytes), hex(publicKey.bytes));
+    }
+    { // same with v=35+2
+        const auto message = parse_hex("6468eb103d51c9a683b51818fdb73390151c9973831d2cfb4e9587ad54273155");
+        const auto signature = parse_hex("92c336138f7d0231fe9422bb30ee9ef10bf222761fe9e04442e3a11e88880c646487026011dae03dc281bc21c7d7ede5c2226d197befb813a4ecad686b559e5825");
+        const auto recovered = PublicKey::recover(signature, message);
+        EXPECT_EQ(hex(recovered.bytes), hex(publicKey.bytes));
+    }
 }
 
 TEST(PublicKeyTests, isValidED25519) {

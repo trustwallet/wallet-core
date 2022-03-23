@@ -1,0 +1,13 @@
+syntax = "proto3";
+package cosmos.bank.v1beta1;
+
+// Src: https://github.com/cosmos/cosmos-sdk/blob/master/proto/cosmos/bank/v1beta1/tx.proto
+
+import "coin.proto";
+
+// MsgSend represents a message to send coins from one account to another.
+message MsgSend {
+    string   from_address             = 1;
+    string   to_address               = 2;
+    repeated base.v1beta1.Coin amount = 3;
+}

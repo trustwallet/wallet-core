@@ -41,7 +41,8 @@ class CoinAddressDerivationTests {
         DASH -> assertEquals("XqHiz8EXYbTAtBEYs4pWTHh7ipEDQcNQeT", address)
         DIGIBYTE -> assertEquals("dgb1qtjgmerfqwdffyf8ghcrkgy52cghsqptynmyswu", address)
         ETHEREUM, SMARTCHAIN, POLYGON, OPTIMISM, ARBITRUM, ECOCHAIN, AVALANCHECCHAIN, XDAI,
-        FANTOM, RONIN -> assertEquals("0x8f348F300873Fd5DA36950B2aC75a26584584feE", address)
+        FANTOM, CELO, CRONOSCHAIN, SMARTBITCOINCASH -> assertEquals("0x8f348F300873Fd5DA36950B2aC75a26584584feE", address)
+        RONIN -> assertEquals("ronin:8f348f300873fd5da36950b2ac75a26584584fee", address)
         ETHEREUMCLASSIC -> assertEquals("0x078bA3228F3E6C08bEEac9A005de0b7e7089aD1c", address)
         GOCHAIN -> assertEquals("0x5940ce4A14210d4Ccd0ac206CE92F21828016aC2", address)
         GROESTLCOIN -> assertEquals("grs1qexwmshts5pdpeqglkl39zyl6693tmfwp0cue4j", address)
@@ -57,7 +58,7 @@ class CoinAddressDerivationTests {
         VECHAIN -> assertEquals("0x1a553275dF34195eAf23942CB7328AcF9d48c160", address)
         WANCHAIN -> assertEquals("0xD5ca90b928279FE5D06144136a25DeD90127aC15", address)
         ZCASH -> assertEquals("t1YYnByMzdGhQv3W3rnjHMrJs6HH4Y231gy", address)
-        ZCOIN -> assertEquals("aEd5XFChyXobvEics2ppAqgK3Bgusjxtik", address)
+        FIRO -> assertEquals("aEd5XFChyXobvEics2ppAqgK3Bgusjxtik", address)
         NIMIQ -> assertEquals("NQ76 7AVR EHDA N05U X7SY XB14 XJU7 8ERV GM6H", address)
         STELLAR -> assertEquals("GA3H6I4C5XUBYGVB66KXR27JV5KS3APSTKRUWOIXZ5MVWZKVTLXWKZ2P", address)
         AION -> assertEquals("0xa0629f34c9ea4757ad0b275628d4d02e3db6c9009ba2ceeba76a5b55fb2ca42e", address)
@@ -98,6 +99,7 @@ class CoinAddressDerivationTests {
         THORCHAIN -> assertEquals("thor1c8jd7ad9pcw4k3wkuqlkz4auv95mldr2kyhc65", address)
         BLUZELLE -> assertEquals("bluzelle1xccvees6ev4wm2r49rc6ptulsdxa8x8jfpmund", address)
         CRYPTOORG -> assertEquals("cro16fdf785ejm00jf9a24d23pzqzjh2h05klxjwu8", address)
-        CELO -> assertEquals("0xea1ac53e7Ccb5b47cdE341C118615Ef1862e3CF5", address)
+        OSMOSIS -> assertEquals("osmo142j9u5eaduzd7faumygud6ruhdwme98qclefqp", address)
+        ECASH -> assertEquals("ecash:qpelrdn7a0hcucjlf9ascz3lkxv7r3rffgzn6x5377", address)
     }
 }

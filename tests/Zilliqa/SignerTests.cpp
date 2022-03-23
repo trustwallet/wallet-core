@@ -28,8 +28,8 @@ TEST(ZilliqaSigner, PreImage) {
     auto toAddress = Address(parse_hex("0x9Ca91EB535Fb92Fda5094110FDaEB752eDb9B039"));
 
     auto input = Proto::SigningInput();
-    auto &tx = *input.mutable_transaction();
-    auto &transfer = *tx.mutable_transfer();
+    auto& tx = *input.mutable_transaction();
+    auto& transfer = *tx.mutable_transfer();
     transfer.set_amount(amountData.data(), amountData.size());
 
     input.set_version(65537);
@@ -60,8 +60,8 @@ TEST(ZilliqaSigner, Signing) {
     auto toAddress = Address(parse_hex("0x7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C"));
 
     auto input = Proto::SigningInput();
-    auto &tx = *input.mutable_transaction();
-    auto &transfer = *tx.mutable_transfer();
+    auto& tx = *input.mutable_transaction();
+    auto& transfer = *tx.mutable_transfer();
     transfer.set_amount(amountData.data(), amountData.size());
 
     input.set_version(65537);
@@ -92,8 +92,8 @@ TEST(ZilliqaSigner, SigningData) {
     auto jsonData = Data(json.begin(), json.end());
 
     auto input = Proto::SigningInput();
-    auto &tx = *input.mutable_transaction();
-    auto &raw = *tx.mutable_raw_transaction();
+    auto& tx = *input.mutable_transaction();
+    auto& raw = *tx.mutable_raw_transaction();
     raw.set_amount(amountData.data(), amountData.size());
     raw.set_data(jsonData.data(), jsonData.size());
 

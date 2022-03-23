@@ -29,7 +29,7 @@ TEST(TWAnySignerKusama, Sign) {
     input.set_transaction_version(2);
 
     auto balanceCall = input.mutable_balance_call();
-    auto &transfer = *balanceCall->mutable_transfer();
+    auto& transfer = *balanceCall->mutable_transfer();
     auto value = store(uint256_t(10000000000));
     transfer.set_to_address("CtwdfrhECFs3FpvCGoiE4hwRC4UsSiM8WL899HjRdQbfYZY");
     transfer.set_value(value.data(), value.size());

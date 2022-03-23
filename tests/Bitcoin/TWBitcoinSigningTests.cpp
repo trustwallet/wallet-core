@@ -5,12 +5,14 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Bitcoin/Address.h"
+#include "Bitcoin/SegwitAddress.h"
 #include "Bitcoin/OutPoint.h"
 #include "Bitcoin/Script.h"
 #include "Bitcoin/Transaction.h"
 #include "Bitcoin/TransactionBuilder.h"
 #include "Bitcoin/TransactionSigner.h"
 #include "Bitcoin/SigHashType.h"
+#include "Bitcoin/SegwitAddress.h"
 #include "Base58.h"
 #include "Hash.h"
 #include "HexCoding.h"
@@ -201,7 +203,7 @@ TEST(BitcoinSigning, SignP2WPKH_Bip143) {
     input.utxos.push_back(utxo0);
 
     UTXO utxo1;
-    auto utxo1Script = Script::buildPayToWitnessProgram(utxoPubkeyHash1);
+    auto utxo1Script = Script::buildPayToV0WitnessProgram(utxoPubkeyHash1);
     utxo1.script = utxo1Script;
     utxo1.amount = 600000000; // 0x23C34600 0046c323
     utxo1.outPoint = OutPoint(hash1, 1, UINT32_MAX);
@@ -1454,7 +1456,7 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
     auto pubkey = PrivateKey(privkey).getPublicKey(TWPublicKeyTypeSECP256k1);
     EXPECT_EQ(hex(pubkey.bytes), "036739829f2cfec79cfe6aaf1c22ecb7d4867dfd8ab4deb7121b36a00ab646caed");
 
-    auto utxo0Script = Script::lockScriptForAddress(ownAddress, coin); // buildPayToWitnessProgram()
+    auto utxo0Script = Script::lockScriptForAddress(ownAddress, coin); // buildPayToV0WitnessProgram()
     Data keyHashIn0;
     EXPECT_TRUE(utxo0Script.matchPayToWitnessPublicKeyHash(keyHashIn0));
     EXPECT_EQ(hex(keyHashIn0), "5c74be45eb45a3459050667529022d9df8a1ecff");
@@ -1548,4 +1550,211 @@ TEST(BitcoinSigning, RedeemExtendedPubkeyUTXO) {
     Data encoded;
     signedTx.encode(encoded);
     EXPECT_EQ(encoded.size(), 402);
+}
+
+TEST(BitcoinSigning, SignP2TR_5df51e) {
+    const auto privateKey = "13fcaabaf9e71ffaf915e242ec58a743d55f102cf836968e5bd4881135e0c52c";
+    const auto ownAddress = "bc1qpjult34k9spjfym8hss2jrwjgf0xjf40ze0pp8";
+    const auto toAddress = "bc1ptmsk7c2yut2xah4pgflpygh2s7fh0cpfkrza9cjj29awapv53mrslgd5cf"; // Taproot
+    const auto coin =  TWCoinTypeBitcoin;
+
+    // Setup input
+    SigningInput input;
+    input.hashType = hashTypeForCoin(coin);
+    input.amount = 1100;
+    input.useMaxAmount = false;
+    input.byteFee = 1;
+    input.toAddress = toAddress;
+    input.changeAddress = ownAddress;
+    input.coinType = coin;
+
+    auto utxoKey0 = PrivateKey(parse_hex(privateKey));
+    auto pubKey0 = utxoKey0.getPublicKey(TWPublicKeyTypeSECP256k1);
+    EXPECT_EQ(hex(pubKey0.bytes), "021e582a887bd94d648a9267143eb600449a8d59a0db0653740b1378067a6d0cee");
+    EXPECT_EQ(SegwitAddress(pubKey0, "bc").string(), ownAddress);
+    auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(pubKey0.bytes));
+    EXPECT_EQ(hex(utxoPubkeyHash), "0cb9f5c6b62c03249367bc20a90dd2425e6926af");
+    input.privateKeys.push_back(utxoKey0);
+
+    auto redeemScript = Script::lockScriptForAddress(input.toAddress, coin);
+    EXPECT_EQ(hex(redeemScript.bytes), "51205ee16f6144e2d46edea1427e1222ea879377e029b0c5d2e252517aee85948ec7");
+    auto scriptHash = Hash::ripemd(Hash::sha256(redeemScript.bytes));
+    EXPECT_EQ(hex(scriptHash), "e0a5001e7b394a1a6b2978cdcab272241280bf46");
+    input.scripts[hex(scriptHash)] = redeemScript;
+
+    UTXO utxo0;
+    auto utxo0Script = Script::lockScriptForAddress(ownAddress, coin);
+    EXPECT_EQ(hex(utxo0Script.bytes), "00140cb9f5c6b62c03249367bc20a90dd2425e6926af");
+    utxo0.script = utxo0Script;
+    utxo0.amount = 49429;
+    auto hash0 = parse_hex("c24bd72e3eaea797bd5c879480a0db90980297bc7085efda97df2bf7d31413fb");
+    std::reverse(hash0.begin(), hash0.end());
+    utxo0.outPoint = OutPoint(hash0, 1, UINT32_MAX);
+    input.utxos.push_back(utxo0);
+
+    {
+        // test plan (but do not reuse plan result)
+        auto plan = TransactionBuilder::plan(input);
+        EXPECT_TRUE(verifyPlan(plan, {49429}, 1100, 153));
+    }
+
+    // Sign
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
+
+    ASSERT_TRUE(result) << std::to_string(result.error());
+    auto signedTx = result.payload();
+
+    Data serialized;
+    signedTx.encode(serialized);
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{234, 125, 153}));
+    EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
+    // https://mempool.space/tx/5df51e13bfeb79f386e1e17237f06d1b5c87c5bfcaa907c0c1cfe51cd7ca446d
+    EXPECT_EQ(hex(serialized), // printed using prettyPrintTransaction
+        "01000000" // version
+        "0001" // marker & flag
+        "01" // inputs
+            "fb1314d3f72bdf97daef8570bc97029890dba08094875cbd97a7ae3e2ed74bc2"  "01000000"  "00"  ""  "ffffffff"
+        "02" // outputs
+            "4c04000000000000"  "22"  "51205ee16f6144e2d46edea1427e1222ea879377e029b0c5d2e252517aee85948ec7"
+            "30bc000000000000"  "16"  "00140cb9f5c6b62c03249367bc20a90dd2425e6926af"
+        // witness
+            "02"
+                "47"  "3044022021cea91157fdab33226e38ee7c1a686538fc323f5e28feb35775cf82ba8c62210220723743b150cea8ead877d8b8d059499779a5df69f9bdc755c9f968c56cfb528f01"
+                "21"  "021e582a887bd94d648a9267143eb600449a8d59a0db0653740b1378067a6d0cee"
+        "00000000" // nLockTime
+    );
+}
+
+TEST(BitcoinSigning, Build_OpReturn_THORChainSwap_eb4c) {
+    auto coin = TWCoinTypeBitcoin;
+    auto ownAddress = "bc1q7s0a2l4aguksehx8hf93hs9yggl6njxds6m02g";
+    auto toAddress = "bc1qxu5a8gtnjxw3xwdlmr2gl9d76h9fysu3zl656e";
+    auto utxoAmount = 342101;
+    auto toAmount = 300000;
+    int fee = 36888;
+
+    auto unsignedTx = Transaction(2, 0);
+
+    auto hash0 = parse_hex("30b82960291a39de3664ec4c844a815e3e680e29b4d3a919e450f0c119cf4e35");
+    std::reverse(hash0.begin(), hash0.end());
+    auto outpoint0 = TW::Bitcoin::OutPoint(hash0, 1);
+    unsignedTx.inputs.emplace_back(outpoint0, Script(), UINT32_MAX);
+
+    auto lockingScriptTo = Script::lockScriptForAddress(toAddress, coin);
+    unsignedTx.outputs.push_back(TransactionOutput(toAmount, lockingScriptTo));
+    // change
+    auto lockingScriptChange = Script::lockScriptForAddress(ownAddress, coin);
+    unsignedTx.outputs.push_back(TransactionOutput(utxoAmount - toAmount - fee, lockingScriptChange));
+    // memo OP_RETURN
+    Data memo = data("SWAP:THOR.RUNE:thor1tpercamkkxec0q0jk6ltdnlqvsw29guap8wmcl:");
+    auto lockingScriptOpReturn = Script::buildOpReturnScript(memo);
+    EXPECT_EQ(hex(lockingScriptOpReturn.bytes), "6a3b535741503a54484f522e52554e453a74686f72317470657263616d6b6b7865633071306a6b366c74646e6c7176737732396775617038776d636c3a");
+    unsignedTx.outputs.push_back(TransactionOutput(0, lockingScriptOpReturn));
+
+    Data unsignedData;
+    unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::Segwit);
+    EXPECT_EQ(unsignedData.size(), 186);
+    EXPECT_EQ(hex(unsignedData), // printed using prettyPrintTransaction
+        "02000000" // version
+        "0001" // marker & flag
+        "01" // inputs
+            "354ecf19c1f050e419a9d3b4290e683e5e814a844cec6436de391a296029b830"  "01000000"  "00"  ""  "ffffffff"
+        "03" // outputs
+            "e093040000000000"  "16"  "00143729d3a173919d1339bfd8d48f95bed5ca924391"
+            "5d14000000000000"  "16"  "0014f41fd57ebd472d0cdcc7ba4b1bc0a4423fa9c8cd"
+            "0000000000000000"  "3d"  "6a3b535741503a54484f522e52554e453a74686f72317470657263616d6b6b7865633071306a6b366c74646e6c7176737732396775617038776d636c3a"
+        // witness
+            "00"
+        "00000000" // nLockTime
+    );
+
+    // add signature
+    auto pubkey = parse_hex("0206121b83ebfddbb1997b50cb87b968190857269333e21e295142c8b88af9312a");
+    auto sig = parse_hex("3045022100876eba8f9324d3fbb00b9dad9a34a8166dd75127d4facda63484c19703e9c178022052495a6229cc465d5f0fcf3cde3b22a0f861e762d0bb10acde26a57598bfe7e701");
+
+    // add witness stack
+    unsignedTx.inputs[0].scriptWitness.push_back(sig);
+    unsignedTx.inputs[0].scriptWitness.push_back(pubkey);
+
+    unsignedData.clear();
+    unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::Segwit);
+    EXPECT_EQ(unsignedData.size(), 293);
+    // https://blockchair.com/bitcoin/transaction/eb4c1b064bfaf593d7cc6a5c73b75f932ffefe12a0478acf5a7e3145476683fc
+    EXPECT_EQ(hex(unsignedData),
+        "02000000000101354ecf19c1f050e419a9d3b4290e683e5e814a844cec6436de391a296029b8300100000000ffffffff03e0930400000000001600143729d3a1"
+        "73919d1339bfd8d48f95bed5ca9243915d14000000000000160014f41fd57ebd472d0cdcc7ba4b1bc0a4423fa9c8cd00000000000000003d6a3b535741503a54"
+        "484f522e52554e453a74686f72317470657263616d6b6b7865633071306a6b366c74646e6c7176737732396775617038776d636c3a02483045022100876eba8f"
+        "9324d3fbb00b9dad9a34a8166dd75127d4facda63484c19703e9c178022052495a6229cc465d5f0fcf3cde3b22a0f861e762d0bb10acde26a57598bfe7e70121"
+        "0206121b83ebfddbb1997b50cb87b968190857269333e21e295142c8b88af9312a00000000"
+    );
+}
+
+TEST(BitcoinSigning, Sign_OpReturn_THORChainSwap) {
+    PrivateKey privateKey = PrivateKey(parse_hex("6bd4096fa6f08bd3af2b437244ba0ca2d35045c5233b8d6796df37e61e974de5"));
+    PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    auto ownAddress = SegwitAddress(publicKey, "bc");
+    auto ownAddressString = ownAddress.string();
+    EXPECT_EQ(ownAddressString, "bc1q2gzg42w98ytatvmsgxfc8vrg6l24c25pydup9u");
+    auto toAddress = "bc1qxu5a8gtnjxw3xwdlmr2gl9d76h9fysu3zl656e";
+    auto utxoAmount = 342101;
+    auto toAmount = 300000;
+    int byteFee = 126;
+    Data memo = data("SWAP:THOR.RUNE:thor1tpercamkkxec0q0jk6ltdnlqvsw29guap8wmcl:");
+
+    SigningInput input;
+    input.coinType = TWCoinTypeBitcoin;
+    input.hashType = hashTypeForCoin(TWCoinTypeBitcoin);
+    input.amount = toAmount;
+    input.byteFee = byteFee;
+    input.toAddress = toAddress;
+    input.changeAddress = ownAddressString;
+
+    input.privateKeys.push_back(privateKey);
+    input.outputOpReturn = memo;
+
+    UTXO utxo;
+    auto utxoHash = parse_hex("30b82960291a39de3664ec4c844a815e3e680e29b4d3a919e450f0c119cf4e35");
+    std::reverse(utxoHash.begin(), utxoHash.end());
+    utxo.outPoint = OutPoint(utxoHash, 1, UINT32_MAX);
+    utxo.amount = utxoAmount;
+
+    auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(publicKey.bytes));
+    EXPECT_EQ(hex(utxoPubkeyHash), "52048aa9c53917d5b370419383b068d7d55c2a81");
+    auto utxoScript = Script::buildPayToWitnessPublicKeyHash(utxoPubkeyHash);
+    EXPECT_EQ(hex(utxoScript.bytes), "001452048aa9c53917d5b370419383b068d7d55c2a81");
+    utxo.script = utxoScript;
+    input.utxos.push_back(utxo);
+
+    {
+        // test plan (but do not reuse plan result)
+        auto plan = TransactionBuilder::plan(input);
+        EXPECT_TRUE(verifyPlan(plan, {342101}, 300000, 26586));
+        EXPECT_EQ(plan.outputOpReturn.size(), 59);
+    }
+
+    // Sign
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
+
+    ASSERT_TRUE(result) << std::to_string(result.error());
+    auto signedTx = result.payload();
+
+    Data serialized;
+    signedTx.encode(serialized);
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{293, 183, 211}));
+    EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
+    ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
+        "01000000" // version
+        "0001" // marker & flag
+        "01" // inputs
+            "354ecf19c1f050e419a9d3b4290e683e5e814a844cec6436de391a296029b830"  "01000000"  "00"  ""  "ffffffff"
+        "03" // outputs
+            "e093040000000000"  "16"  "00143729d3a173919d1339bfd8d48f95bed5ca924391"
+            "9b3c000000000000"  "16"  "001452048aa9c53917d5b370419383b068d7d55c2a81"
+            "0000000000000000"  "3d"  "6a3b535741503a54484f522e52554e453a74686f72317470657263616d6b6b7865633071306a6b366c74646e6c7176737732396775617038776d636c3a"
+        // witness
+            "02"
+                "48"  "3045022100ff6c0aaef512aa52f3036161bfbcef39046ac89eb9617fa461a0c9c43fe45eb3022055d208d3f81736e72e3ad8ef761dc79ac5dd3dc00721174bc69db416a74960e301"
+                "21"  "02c2e5c8b4927812fb37444a7862466ad23978a4ac626f8eaf93e1d1a60d6abb80"
+        "00000000" // nLockTime
+    );
 }

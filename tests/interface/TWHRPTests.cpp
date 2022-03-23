@@ -34,6 +34,7 @@ TEST(TWHRP, StringForHRP) {
     ASSERT_STREQ(stringForHRP(TWHRPOasis), "oasis");
     ASSERT_STREQ(stringForHRP(TWHRPTHORChain), "thor");
     ASSERT_STREQ(stringForHRP(TWHRPCryptoOrg), "cro");
+    ASSERT_STREQ(stringForHRP(TWHRPOsmosis), "osmo");
 }
 
 TEST(TWHRP, HRPForString) {
@@ -59,6 +60,8 @@ TEST(TWHRP, HRPForString) {
     ASSERT_EQ(hrpForString("thor"), TWHRPTHORChain);
     ASSERT_EQ(hrpForString("bluzelle"), TWHRPBluzelle);
     ASSERT_EQ(hrpForString("cro"), TWHRPCryptoOrg);
+    ASSERT_EQ(hrpForString("osmo"), TWHRPOsmosis);
+    ASSERT_EQ(hrpForString("ecash"), TWHRPECash);
 }
 
 TEST(TWHPR, HPRByCoinType) {
@@ -83,6 +86,8 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPOasis, TWCoinTypeHRP(TWCoinTypeOasis));
     ASSERT_EQ(TWHRPTHORChain, TWCoinTypeHRP(TWCoinTypeTHORChain));
     ASSERT_EQ(TWHRPCryptoOrg, TWCoinTypeHRP(TWCoinTypeCryptoOrg));
+    ASSERT_EQ(TWHRPOsmosis, TWCoinTypeHRP(TWCoinTypeOsmosis));
+    ASSERT_EQ(TWHRPECash, TWCoinTypeHRP(TWCoinTypeECash));
 
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeAion));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeCallisto));
@@ -110,7 +115,7 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeVeChain));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeWanchain));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeZcash));
-    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeZcoin));
+    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeFiro));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeZelcash));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeRavencoin));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeWaves));

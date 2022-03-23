@@ -7,6 +7,7 @@
 #include "Signer.h"
 #include "Address.h"
 #include "Serialization.h"
+#include "TransactionFactory.h"
 #include "../PublicKey.h"
 #include "HexCoding.h"
 
@@ -14,14 +15,18 @@
 
 using namespace TW;
 using namespace TW::Elrond;
+using namespace TW::Elrond::Proto;
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
+SigningOutput Signer::sign(const SigningInput &input) noexcept {
+    TransactionFactory factory;
+
+    auto transaction = factory.create(input);
     auto privateKey = PrivateKey(input.private_key());
-    auto signableAsString = serializeTransaction(input.transaction());
+    auto signableAsString = serializeTransaction(transaction);
     auto signableAsData = TW::data(signableAsString);
     auto signature = privateKey.sign(signableAsData, TWCurveED25519);
     auto encodedSignature = hex(signature);
-    auto encoded = serializeSignedTransaction(input.transaction(), encodedSignature);
+    auto encoded = serializeSignedTransaction(transaction, encodedSignature);
 
     auto protoOutput = Proto::SigningOutput();
     protoOutput.set_signature(encodedSignature);

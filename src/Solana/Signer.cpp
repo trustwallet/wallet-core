@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,6 +13,7 @@
 #include <google/protobuf/util/json_util.h>
 
 #include <algorithm>
+#include <optional>
 
 using namespace TW;
 using namespace TW::Solana;
@@ -25,6 +26,17 @@ void Signer::sign(const std::vector<PrivateKey>& privateKeys, Transaction& trans
         auto signature = Signature(privateKey.sign(message, TWCurveED25519));
         transaction.signatures[index] = signature;
     }
+}
+
+// Helper to convert protobuf-string-collection references to Address vector
+std::vector<Address> convertReferences(const google::protobuf::RepeatedPtrField<std::string>& references) {
+    std::vector<Address> ret;
+    for (auto i = 0; i < references.size(); ++i) {
+        if (Address::isValid(references[i])) {
+            ret.push_back(Address(references[i]));
+        }
+    }
+    return ret;
 }
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
@@ -42,7 +54,9 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                     /* from */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
                     /* to */ Address(protoMessage.recipient()),
                     /* value */ protoMessage.value(),
-                    /* recent_blockhash */ blockhash);
+                    /* recent_blockhash */ blockhash,
+                    /* memo */ protoMessage.memo(),
+                    convertReferences(protoMessage.references()));
                 signerKeys.push_back(key);
             }
             break;
@@ -90,7 +104,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
                 std::vector<Address> addresses;
                 for (auto i = 0; i < protoMessage.stake_accounts_size(); ++i) {
-                    addresses.push_back(Address(protoMessage.stake_accounts(i)));
+                    addresses.emplace_back(Address(protoMessage.stake_accounts(i)));
                 }
                 message = Message::createStakeDeactivateAll(userAddress, addresses, blockhash);
                 signerKeys.push_back(key);
@@ -134,7 +148,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto mainAddress = Address(protoMessage.main_address());
                 auto tokenMintAddress = Address(protoMessage.token_mint_address());
                 auto tokenAddress = Address(protoMessage.token_address());
-                message = Message::createTokenCreateAccount(userAddress, TokenInstruction::CreateTokenAccount, mainAddress, tokenMintAddress, tokenAddress, blockhash);
+                message = Message::createTokenCreateAccount(userAddress, mainAddress, tokenMintAddress, tokenAddress, blockhash);
                 signerKeys.push_back(key);
             }
             break;
@@ -148,7 +162,9 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto recipientTokenAddress = Address(protoMessage.recipient_token_address());
                 auto amount = protoMessage.amount();
                 auto decimals = static_cast<uint8_t>(protoMessage.decimals());
-                message = Message::createTokenTransfer(userAddress, TokenInstruction::TokenTransfer, tokenMintAddress, senderTokenAddress, recipientTokenAddress, amount, decimals, blockhash);
+                const auto memo = protoMessage.memo();
+                message = Message::createTokenTransfer(userAddress, tokenMintAddress, senderTokenAddress, recipientTokenAddress, amount, decimals, blockhash,
+                    memo, convertReferences(protoMessage.references()));
                 signerKeys.push_back(key);
             }
             break;
@@ -163,7 +179,9 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
                 auto senderTokenAddress = Address(protoMessage.sender_token_address());
                 auto amount = protoMessage.amount();
                 auto decimals = static_cast<uint8_t>(protoMessage.decimals());
-                message = Message::createTokenCreateAndTransfer(userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress, senderTokenAddress, amount, decimals, blockhash);
+                const auto memo = protoMessage.memo();
+                message = Message::createTokenCreateAndTransfer(userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress, senderTokenAddress, amount, decimals, blockhash,
+                    memo, convertReferences(protoMessage.references()));
                 signerKeys.push_back(key);                
             }
             break;

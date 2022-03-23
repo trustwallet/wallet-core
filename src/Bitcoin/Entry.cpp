@@ -12,6 +12,7 @@
 #include "Signer.h"
 
 using namespace TW::Bitcoin;
+using namespace TW;
 using namespace std;
 
 bool Entry::validateAddress(TWCoinType coin, const string& address, byte p2pkh, byte p2sh, const char* hrp) const {
@@ -28,13 +29,17 @@ bool Entry::validateAddress(TWCoinType coin, const string& address, byte p2pkh, 
                 || Address::isValid(address, {{p2pkh}, {p2sh}});
 
         case TWCoinTypeBitcoinCash:
-            return CashAddress::isValid(address)
+            return BitcoinCashAddress::isValid(address)
                 || Address::isValid(address, {{p2pkh}, {p2sh}});
+
+        case TWCoinTypeECash:
+            return ECashAddress::isValid(address)
+                   || Address::isValid(address, {{p2pkh}, {p2sh}});
 
         case TWCoinTypeDash:
         case TWCoinTypeDogecoin:
         case TWCoinTypeRavencoin:
-        case TWCoinTypeZcoin:
+        case TWCoinTypeFiro:
         default:
             return Address::isValid(address, {{p2pkh}, {p2sh}});
     }
@@ -44,8 +49,16 @@ string Entry::normalizeAddress(TWCoinType coin, const string& address) const {
     switch (coin) {
         case TWCoinTypeBitcoinCash:
             // normalized with bitcoincash: prefix
-            if (CashAddress::isValid(address)) {
-                return CashAddress(address).string();
+            if (BitcoinCashAddress::isValid(address)) {
+                return BitcoinCashAddress(address).string();
+            } else {
+                return std::string(address);
+            }
+
+        case TWCoinTypeECash:
+            // normalized with ecash: prefix
+            if (ECashAddress::isValid(address)) {
+                return ECashAddress(address).string();
             } else {
                 return std::string(address);
             }
@@ -64,17 +77,20 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, byte p2
         case TWCoinTypeLitecoin:
         case TWCoinTypeViacoin:
         case TWCoinTypeBitcoinGold:
-            return SegwitAddress(publicKey, 0, hrp).string();
+            return SegwitAddress(publicKey, hrp).string();
 
         case TWCoinTypeBitcoinCash:
-            return CashAddress(publicKey).string();
+            return BitcoinCashAddress(publicKey).string();
+
+        case TWCoinTypeECash:
+            return ECashAddress(publicKey).string();
 
         case TWCoinTypeDash:
         case TWCoinTypeDogecoin:
         case TWCoinTypeMonacoin:
         case TWCoinTypeQtum:
         case TWCoinTypeRavencoin:
-        case TWCoinTypeZcoin:
+        case TWCoinTypeFiro:
         default:
             return Address(publicKey, p2pkh).string();
     }
@@ -86,4 +102,27 @@ void Entry::sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
 
 void Entry::plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
     planTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+}
+
+HashPubkeyList Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
+    auto input = Proto::SigningInput();
+    auto ret = HashPubkeyList();
+    if (input.ParseFromArray(txInputData.data(), (int)txInputData.size())) {
+        ret = Signer::preImageHashes(input);
+    }
+    return ret;
+}
+
+void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
+    auto input = Proto::SigningInput();
+    if (input.ParseFromArray(txInputData.data(), (int)txInputData.size())) {
+        HashPubkeyList externalSignatures;
+        auto n = std::min(signatures.size(), publicKeys.size());
+        for (auto i = 0; i < n; ++i) {
+            externalSignatures.push_back(std::make_pair(signatures[i], publicKeys[i].bytes));
+        }
+
+        auto serializedOut = Signer::sign(input, externalSignatures).SerializeAsString();
+        dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+    }
 }

@@ -1,0 +1,27 @@
+syntax = "proto3";
+package blog;
+
+enum Type {
+  TYPE_UNSPECIFIED = 0;
+  IMAGES = 1;
+  NEWS = 2;
+};
+
+enum Review {
+  REVIEW_UNSPECIFIED = 0;
+  ACCEPTED = 1;
+  REJECTED = 2;
+};
+
+message Article {
+  string title = 1;
+  string description = 2;
+  uint64 created = 3;
+  uint64 updated = 4;
+  bool public = 5;
+  bool promoted = 6;
+  Type type = 7;
+  Review review = 8;
+  repeated string comments = 9;
+  repeated string backlinks = 10;
+};

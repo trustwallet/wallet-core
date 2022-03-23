@@ -21,7 +21,7 @@ using namespace std;
 void Buffer::addResult(const string& val) {
     if (val.length() == 0) { return; }
     _last = SavedValue(val);
-    _prev.push_back(SavedValue(val));
+    _prev.emplace_back(SavedValue(val));
 }
 
 bool Buffer::prepareInput(const string& in, string& in_out) {

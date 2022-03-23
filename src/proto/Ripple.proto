@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.Ripple.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     int64 amount = 1;
@@ -27,4 +29,7 @@ message SigningInput {
 // Transaction signing output.
 message SigningOutput {
     bytes encoded = 1;
+
+    // Optional error
+    Common.Proto.SigningError error = 2;
 }

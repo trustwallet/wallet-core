@@ -14,6 +14,7 @@
 #include "../src/HexCoding.h"
 
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 #include <fstream>
 
@@ -56,7 +57,7 @@ TEST(TWStoredKey, createWallet) {
     const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
     const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
     const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
-    const auto key = WRAP(TWStoredKey, TWStoredKeyCreate(name.get(), password.get()));
+    const auto key = WRAP(TWStoredKey, TWStoredKeyCreateLevel(name.get(), password.get(), TWStoredKeyEncryptionLevelDefault));
     const auto name2 = WRAPS(TWStoredKeyName(key.get()));
     EXPECT_EQ(string(TWStringUTF8Bytes(name2.get())), "name");
     const auto mnemonic = WRAPS(TWStoredKeyDecryptMnemonic(key.get(), password.get()));
@@ -117,11 +118,13 @@ TEST(TWStoredKey, addressAddRemove) {
     const auto addressAdd = "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny";
     const auto derivationPath = "m/84'/0'/0'/0/0";
     const auto extPubKeyAdd = "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn";
+    const auto pubKey = "02df6fc590ab3101bbe0bb5765cbaeab9b5dcfe09ac9315d707047cbd13bc7e006";
 
     TWStoredKeyAddAccount(key.get(),
         WRAPS(TWStringCreateWithUTF8Bytes(addressAdd)).get(),
         TWCoinTypeBitcoin,
         WRAPS(TWStringCreateWithUTF8Bytes(derivationPath)).get(),
+        WRAPS(TWStringCreateWithUTF8Bytes(pubKey)).get(),
         WRAPS(TWStringCreateWithUTF8Bytes(extPubKeyAdd)).get());
     EXPECT_EQ(TWStoredKeyAccountCount(key.get()), 1);
 
@@ -221,7 +224,41 @@ TEST(TWStoredKey, getWalletPasswordInvalid) {
     const auto invalidString = WRAPS(TWStringCreateWithUTF8Bytes("_THIS_IS_INVALID_PASSWORD_"));
     const auto passwordInvalid = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(invalidString.get())), TWStringSize(invalidString.get())));
     
-    auto key = WRAP(TWStoredKey, TWStoredKeyCreate (name.get(), password.get()));
+    auto key = WRAP(TWStoredKey, TWStoredKeyCreate(name.get(), password.get()));
     ASSERT_NE(WRAP(TWHDWallet, TWStoredKeyWallet(key.get(), password.get())).get(), nullptr);
     ASSERT_EQ(WRAP(TWHDWallet, TWStoredKeyWallet(key.get(), passwordInvalid.get())).get(), nullptr);
+}
+
+TEST(TWStoredKey, encryptionParameters) {
+    const auto key = createDefaultStoredKey();
+    const auto params = WRAPS(TWStoredKeyEncryptionParameters(key.get()));
+
+    nlohmann::json jsonParams = nlohmann::json::parse(string(TWStringUTF8Bytes(params.get())));
+
+    // compare some specific parameters
+    EXPECT_EQ(jsonParams["kdfparams"]["n"], 16384);
+    EXPECT_EQ(std::string(jsonParams["cipherparams"]["iv"]).length(), 32);
+
+    // compare all keys, except dynamic ones (like cipherparams/iv)
+    jsonParams["cipherparams"] = {};
+    jsonParams["ciphertext"] = "<ciphertext>";
+    jsonParams["kdfparams"]["salt"] = "<salt>";
+    jsonParams["mac"] = "<mac>";
+    const auto params2 = jsonParams.dump();
+    assertJSONEqual(params2, R"(
+        {
+            "cipher": "aes-128-ctr",
+            "cipherparams": null,
+            "ciphertext": "<ciphertext>",
+            "kdf": "scrypt",
+            "kdfparams": {
+                "dklen": 32,
+                "n": 16384,
+                "p": 4,
+                "r": 8,
+                "salt": "<salt>"
+            },
+            "mac": "<mac>"
+        }        
+    )");
 }

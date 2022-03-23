@@ -34,14 +34,14 @@ jobs:
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
-    - name: Prepare build with lint
+    - name: CMake (coverage/clang-tidy/clang-asan)
       if: github.ref == 'refs/heads/master'
       run: |
-        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCLANG_TIDY=ON -DCODE_COVERAGE=ON -DCLANG_ASAN=ON
+        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON -DCLANG_TIDY=ON -DCLANG_ASAN=ON
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
-    - name: Prepare build without lint
+    - name: CMake (coverage)
       if: github.ref != 'refs/heads/master'
       run: |
         cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON

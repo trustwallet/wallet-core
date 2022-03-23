@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,6 +13,8 @@
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sodium/keypair.h>
 #include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
+
+#include <iterator>
 
 namespace TW {
 
@@ -153,6 +155,24 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
     }
 }
 
+bool PublicKey::verifyAsDER(const Data& signature, const Data& message) const {
+    switch (type) {
+    case TWPublicKeyTypeSECP256k1:
+    case TWPublicKeyTypeSECP256k1Extended:
+        {
+            Data sig(64);
+            int ret = ecdsa_sig_from_der(signature.data(), signature.size(), sig.data());
+            if (ret) {
+                return false;
+            }
+            return ecdsa_verify_digest(&secp256k1, bytes.data(), sig.data(), message.data()) == 0;
+        }
+
+    default:
+        return false;
+    }
+}
+
 bool PublicKey::verifySchnorr(const Data& signature, const Data& message) const {
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
@@ -185,8 +205,9 @@ PublicKey PublicKey::recover(const Data& signature, const Data& message) {
         throw std::invalid_argument("signature too short");
     }
     auto v = signature[64];
+    // handle EIP155 Eth encoding of V, of the form 27+v, or 35+chainID*2+v
     if (v >= 27) {
-        v -= 27;
+        v = !(v & 0x01);
     }
     TW::Data result(65);
     if (ecdsa_recover_pub_from_sig(&secp256k1, result.data(), signature.data(), message.data(), v) != 0) {

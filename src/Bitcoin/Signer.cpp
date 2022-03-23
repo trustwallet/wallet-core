@@ -19,9 +19,9 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
     return plan.proto();
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput &input, std::optional<SignaturePubkeyList> optionalExternalSigs) noexcept {
     Proto::SigningOutput output;
-    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input);
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input, false, optionalExternalSigs);
     if (!result) {
         output.set_error(result.error());
         return output;
@@ -43,4 +43,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     std::reverse(txHash.begin(), txHash.end());
     output.set_transaction_id(hex(txHash));
     return output;
+}
+
+HashPubkeyList Signer::preImageHashes(const Proto::SigningInput& input) noexcept {
+    return TransactionSigner<Transaction, TransactionBuilder>::preImageHashes(input);
 }

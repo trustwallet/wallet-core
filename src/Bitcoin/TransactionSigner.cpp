@@ -21,7 +21,7 @@ TransactionPlan TransactionSigner<Transaction, TransactionBuilder>::plan(const S
 }
 
 template <typename Transaction, typename TransactionBuilder>
-Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, TransactionBuilder>::sign(const SigningInput& input, bool estimationMode) {
+Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, TransactionBuilder>::sign(const SigningInput& input, bool estimationMode, std::optional<SignaturePubkeyList> optionalExternalSigs) {
     TransactionPlan plan;
     if (input.plan.has_value()) {
         plan = input.plan.value();
@@ -29,8 +29,25 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
         plan = TransactionBuilder::plan(input);
     }
     auto transaction = TransactionBuilder::template build<Transaction>(plan, input.toAddress, input.changeAddress, input.coinType, input.lockTime);
-    SignatureBuilder<Transaction> signer(std::move(input), plan, transaction, estimationMode);
+    SigningMode signingMode =
+        estimationMode ? SigningMode_SizeEstimationOnly :
+        optionalExternalSigs.has_value() ? SigningMode_External : SigningMode_Normal;
+    SignatureBuilder<Transaction> signer(std::move(input), plan, transaction, signingMode, optionalExternalSigs);
     return signer.sign();
+}
+
+template <typename Transaction, typename TransactionBuilder>
+HashPubkeyList TransactionSigner<Transaction, TransactionBuilder>::preImageHashes(const SigningInput& input) {
+    TransactionPlan plan;
+    if (input.plan.has_value()) {
+        plan = input.plan.value();
+    } else {
+        plan = TransactionBuilder::plan(input);
+    }
+    auto transaction = TransactionBuilder::template build<Transaction>(plan, input.toAddress, input.changeAddress, input.coinType, input.lockTime);
+    SignatureBuilder<Transaction> signer(std::move(input), plan, transaction, SigningMode_HashOnly);
+    signer.sign();
+    return signer.getHashesForSigning();
 }
 
 // Explicitly instantiate a Signers for compatible transactions.

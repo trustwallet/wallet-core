@@ -32,6 +32,13 @@ TEST(AnyAddress, Data) {
         auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
         assertHexEqual(keyHash, "4e5b2e1dc63f6b91cb6cd759936495434c7e972f");
     }
+    // smartBCH
+    {
+        auto string = STRING("0x4E5B2e1dc63F6b91cb6Cd759936495434C7e972F");
+        auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeSmartBitcoinCash));
+        auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
+        assertHexEqual(keyHash, "4e5b2e1dc63f6b91cb6cd759936495434c7e972f");
+    }
     // bnb address key hash
     {
         auto string = STRING("bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5");
@@ -53,7 +60,7 @@ TEST(AnyAddress, Data) {
         auto witness = WRAPD(TWAnyAddressData(addr.get()));
         assertHexEqual(witness, "751e76e8199196d454941c45d1b3a323f1433bd6751e76e8199196d454941c45d1b3a323f1433bd6");
     }
-    // cashaddr
+    // bitcoincashaddr
     {
         auto string = STRING("bitcoincash:qzxf0wl63ahx6jsxu8uuldcw7n5aatwppvnteraqaw");
         auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeBitcoinCash));
@@ -139,5 +146,12 @@ TEST(AnyAddress, Data) {
         auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeNEAR));
         auto pubkey = WRAPD(TWAnyAddressData(addr.get()));
         assertHexEqual(pubkey, "3b83b07cab54824a59c3d3f2e203a7cd913b7fcdc4439595983e2402c2cf791d");
+    }
+    // ecashaddr
+    {
+        auto string = STRING("ecash:qzxf0wl63ahx6jsxu8uuldcw7n5aatwppv2xdgx6me");
+        auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeECash));
+        auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
+        assertHexEqual(keyHash, "8c97bbfa8f6e6d4a06e1f9cfb70ef4e9deadc10b");
     }
 }

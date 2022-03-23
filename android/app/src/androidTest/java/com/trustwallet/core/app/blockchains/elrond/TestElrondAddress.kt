@@ -18,9 +18,9 @@ class TestElrondAddress {
         System.loadLibrary("TrustWalletCore")
     }
 
-    private val aliceBech32 = "erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz"
-    private var aliceSeedHex = "1a927e2af5306a9bb2ea777f73e06ecc0ac9aaa72fb4ea3fecf659451394cccf"
-    private var alicePubKeyHex = "0xfd691bb5e85d102687d81079dffce842d4dc328276d2d4c60d8fd1c3433c3293"
+    private var aliceBech32 = "erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th"
+    private var alicePubKeyHex = "0x0139472eff6886771a982f3083da5d421f24c29181e63888228dc81ca60d69e1"
+    private var aliceSeedHex = "0x413f42575f7f26fad3317a778771212fdb80245850981e48b58a4f25e344e8f9"
 
     @Test
     fun testAddressFromPrivateKey() {

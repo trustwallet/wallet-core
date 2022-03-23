@@ -21,7 +21,7 @@ TEST(TWAnySignerAlgorand, Sign) {
     auto genesisHash = Base64::decode("wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=");
     
     Proto::SigningInput input;
-    auto &transaction = *input.mutable_transfer();
+    auto& transaction = *input.mutable_transfer();
     transaction.set_to_address("CRLADAHJZEW2GFY2UPEHENLOGCUOU74WYSTUXQLVLJUJFHEUZOHYZNWYR4");
     transaction.set_amount(1000000000000ull);
     input.set_first_round(1937767ull);

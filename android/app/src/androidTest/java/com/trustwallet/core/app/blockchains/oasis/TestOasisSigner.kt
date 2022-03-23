@@ -8,16 +8,12 @@ package com.trustwallet.core.app.blockchains.oasis
 
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.Numeric
-import com.trustwallet.core.app.utils.toHexByteArray
-import com.trustwallet.core.app.utils.toHexBytes
-import com.trustwallet.core.app.utils.toHexBytesInByteString
-import junit.framework.Assert.assertEquals
 import org.junit.Test
+import org.junit.Assert.assertEquals
 import wallet.core.java.AnySigner
 import wallet.core.jni.CoinType.OASIS
 import wallet.core.jni.proto.Oasis
 import wallet.core.jni.proto.Oasis.SigningOutput
-import java.math.BigInteger
 
 class TestOasisSigner {
 

@@ -25,10 +25,14 @@ struct TWStoredKey* _Nullable TWStoredKeyLoad(TWString* _Nonnull path) {
     }
 }
 
-struct TWStoredKey* _Nonnull TWStoredKeyCreate(TWString* _Nonnull name, TWData* _Nonnull password) {
+struct TWStoredKey* _Nonnull TWStoredKeyCreateLevel(TWString* _Nonnull name, TWData* _Nonnull password, enum TWStoredKeyEncryptionLevel encryptionLevel) {
     const auto& nameString = *reinterpret_cast<const std::string*>(name);
     const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
-    return new TWStoredKey{ StoredKey::createWithMnemonicRandom(nameString, passwordData) };
+    return new TWStoredKey{ StoredKey::createWithMnemonicRandom(nameString, passwordData, encryptionLevel) };
+}
+
+struct TWStoredKey* _Nonnull TWStoredKeyCreate(TWString* _Nonnull name, TWData* _Nonnull password) {
+    return TWStoredKeyCreateLevel(name, password, TWStoredKeyEncryptionLevelDefault);
 }
 
 struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKey(TWData* _Nonnull privateKey, TWString* _Nonnull name, TWData* _Nonnull password, enum TWCoinType coin) {
@@ -108,11 +112,12 @@ void TWStoredKeyRemoveAccountForCoin(struct TWStoredKey* _Nonnull key, enum TWCo
     key->impl.removeAccount(coin);
 }
 
-void TWStoredKeyAddAccount(struct TWStoredKey* _Nonnull key, TWString* _Nonnull address, enum TWCoinType coin, TWString* _Nonnull derivationPath, TWString* _Nonnull extetndedPublicKey) {
+void TWStoredKeyAddAccount(struct TWStoredKey* _Nonnull key, TWString* _Nonnull address, enum TWCoinType coin, TWString* _Nonnull derivationPath, TWString* _Nonnull publicKey, TWString* _Nonnull extendedPublicKey) {
     const auto& addressString = *reinterpret_cast<const std::string*>(address);
-    const auto& extetndedPublicKeyString = *reinterpret_cast<const std::string*>(extetndedPublicKey);
+    const auto& publicKeyString = *reinterpret_cast<const std::string*>(publicKey);
+    const auto& extendedPublicKeyString = *reinterpret_cast<const std::string*>(extendedPublicKey);
     const auto dp = TW::DerivationPath(*reinterpret_cast<const std::string*>(derivationPath));
-    key->impl.addAccount(addressString, coin, dp, extetndedPublicKeyString);
+    key->impl.addAccount(addressString, coin, dp, publicKeyString, extendedPublicKeyString);
 }
 
 bool TWStoredKeyStore(struct TWStoredKey* _Nonnull key, TWString* _Nonnull path) {
@@ -177,4 +182,12 @@ bool TWStoredKeyFixAddresses(struct TWStoredKey* _Nonnull key, TWData* _Nonnull 
     } catch (...) {
         return false;
     }
+}
+
+TWString* _Nullable TWStoredKeyEncryptionParameters(struct TWStoredKey* _Nonnull key) {
+    if (!key->impl.id) {
+        return nullptr;
+    }
+    const std::string params = key->impl.payload.json().dump();
+    return TWStringCreateWithUTF8Bytes(params.c_str());
 }

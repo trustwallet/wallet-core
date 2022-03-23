@@ -8,10 +8,15 @@
 
 namespace TW {
 
-Data subData(const Data& data, size_t index, size_t length) {
+Data subData(const Data& data, size_t startIndex, size_t length) {
     size_t subLength = length;
-    if (index + subLength > data.size()) { subLength = data.size() - index; } // guard against over-length
-    return TW::data(data.data() + index, subLength);
+    if (startIndex + subLength > data.size()) { subLength = data.size() - startIndex; } // guard against over-length
+    return TW::data(data.data() + startIndex, subLength);
+}
+
+Data subData(const Data& data, size_t startIndex) {
+    size_t subLength = data.size() - startIndex;
+    return TW::data(data.data() + startIndex, subLength);
 }
 
 } // namespace TW

@@ -45,7 +45,7 @@ std::string htmlescape(const std::string& str) {
 }
 
 Proto::Data* Transaction::newPayloadData(const std::string& payload){
-    auto data = new Proto::Data();
+    auto* data = new Proto::Data();
     data->set_type(Transaction::TxPayloadBinaryType);
 
     nlohmann::json payloadData;
@@ -69,7 +69,7 @@ void Transaction::serializeToRaw(){
     }
 
     auto tx = Proto::RawTransaction();
-    auto data = newPayloadData(payload);
+    auto* data = newPayloadData(payload);
 
     auto value = Data();
     auto gas_price = Data();

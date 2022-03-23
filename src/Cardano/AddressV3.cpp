@@ -165,13 +165,7 @@ AddressV3::AddressV3(const Data& data) {
     std::copy(data.begin() + index, data.begin() + index + len2, groupKey.begin());
 }
 
-AddressV3::AddressV3(const AddressV3& other) :
-    discrimination(other.discrimination),
-    kind(other.kind),
-    key1(other.key1),
-    groupKey(other.groupKey),
-    legacyAddressV2(other.legacyAddressV2)
-{}
+AddressV3::AddressV3(const AddressV3& other) = default;
 
 void AddressV3::operator=(const AddressV3& other)
 {

@@ -1,0 +1,11 @@
+syntax = "proto3";
+package cosmos.distribution.v1beta1;
+
+// Src: https://github.com/cosmos/cosmos-sdk/blob/master/proto/cosmos/distribution/v1beta1/tx.proto
+
+// MsgWithdrawDelegatorReward represents delegation withdrawal to a delegator
+// from a single validator.
+message MsgWithdrawDelegatorReward {
+  string delegator_address = 1;
+  string validator_address = 2;
+}

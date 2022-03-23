@@ -7,6 +7,7 @@
 #include "TransactionBuilder.h"
 #include "Script.h"
 #include "TransactionSigner.h"
+#include "SignatureBuilder.h"
 
 #include "../Coin.h"
 #include "../proto/Bitcoin.pb.h"
@@ -48,7 +49,7 @@ int64_t estimateSegwitFee(const FeeCalculator& feeCalculator, const TransactionP
     auto inputWithPlan = std::move(input);
     inputWithPlan.plan = plan;
 
-    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(inputWithPlan, true);
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(inputWithPlan, SigningMode_SizeEstimationOnly);
     if (!result) {
         // signing failed; return default simple estimate
         return estimateSimpleFee(feeCalculator, plan, outputSize, input.byteFee);
@@ -77,8 +78,16 @@ int64_t estimateSegwitFee(const FeeCalculator& feeCalculator, const TransactionP
     return fee;
 }
 
+int extraOutputCount(const SigningInput& input) {
+    int count = int(input.outputOpReturn.size() > 0);
+    return count;
+}
+
 TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
     TransactionPlan plan;
+    if (input.outputOpReturn.size() > 0) {
+        plan.outputOpReturn = input.outputOpReturn;
+    }
 
     bool maxAmount = input.useMaxAmount;
     if (input.amount == 0 && !maxAmount) {
@@ -99,17 +108,18 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
             maxAmount = true;
         }
 
+        auto extraOutputs = extraOutputCount(input);
         auto output_size = 2;
         UTXOs selectedInputs;
         if (!maxAmount) {
-            output_size = 2; // output + change
+            output_size = 2 + extraOutputs; // output + change
             if (input.utxos.size() <= SimpleModeLimit && input.utxos.size() <= MaxUtxosHardLimit) {
                 selectedInputs = inputSelector.select(plan.amount, input.byteFee, output_size);
             } else {
                 selectedInputs = inputSelector.selectSimple(plan.amount, input.byteFee, output_size);
             }
         } else {
-            output_size = 1; // no change
+            output_size = 1 + extraOutputs; // output, no change
             selectedInputs = inputSelector.selectMaxAmount(input.byteFee);
         }
         if (selectedInputs.size() <= MaxUtxosHardLimit) {

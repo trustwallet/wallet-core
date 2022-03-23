@@ -36,8 +36,11 @@ inline void append(Data& data, const byte suffix) {
     data.push_back(suffix);
 }
 
-/// Return a part (subdata) of the requested size of the input data.
-Data subData(const Data& data, size_t index, size_t length);
+/// Return a part (subdata) from the requested start position and size of the input data.
+Data subData(const Data& data, size_t startIndex, size_t length);
+
+/// Return the tail part (subdata) from the requested start position of the input data.
+Data subData(const Data& data, size_t startIndex);
 
 /// Determines if a byte array has a specific prefix.
 template <typename T>
