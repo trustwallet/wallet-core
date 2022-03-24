@@ -479,8 +479,10 @@ TEST(TWTransactionCompiler, ExternalSignatureSignSolana) {
         preSigningOutput.ParseFromArray(preImageHashData->data(), preImageHashData->size()));
     ASSERT_EQ(preSigningOutput.errorcode(), 0);
 
-    ASSERT_EQ(preSigningOutput.hashpublickeys_size(), 1);
-    auto preImageHash = preSigningOutput.hashpublickeys(0).datahash();
+    ASSERT_EQ(preSigningOutput.signers_size(), 1);
+    auto signer = preSigningOutput.signers(0);
+    EXPECT_EQ(signer, sender);
+    auto preImageHash = preSigningOutput.data();
     EXPECT_EQ(hex(preImageHash),
               "010001030d044a62d0a4dfe5a037a15b59fa4d4d0d3ab81103a2c10a6da08a4d058611c024c255a8bc3e"
               "8496217a2cd2a1894b9b9dcace04fcd9c0d599acdaaea40a1b6100000000000000000000000000000000"

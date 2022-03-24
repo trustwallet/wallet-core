@@ -3,12 +3,6 @@ syntax = "proto3";
 package TW.Solana.Proto;
 option java_package = "wallet.core.jni.proto";
 
-enum SigningError {
-    OK = 0; // OK
-    Error_invalid_argument = 1;
-    Error_internal = 2;
-}
-
 message Transfer {
     string recipient = 1;
     uint64 value = 2;
@@ -120,24 +114,20 @@ message SigningInput {
 // Transaction signing output.
 message SigningOutput {
     string encoded = 1;
-}
-
-message HashPublicKey {
-    /// Pre-image data hash that will be used for signing
-    bytes dataHash = 1;
-
-    /// public key hash used for signing
-    bytes publicKeyHash = 2;
+    /// error code, 0 is ok, other codes will be treated as errors
+    int32 errorCode = 2;
+    /// error code description
+    string error = 3;
 }
 
 /// Transaction pre-signing output
 message PreSigningOutput {
-    /// hash, public key list
-    repeated HashPublicKey hashPublicKeys = 1;
-
+    /// signer list
+    repeated bytes signers = 1;
+    /// Pre-image data. There is no hashing for Solana presign image
+    bytes data = 2;
     /// error code, 0 is ok, other codes will be treated as errors
-    int32 errorCode = 2;
-
+    int32 errorCode = 3;
     /// error code description
-    string error = 3;
+    string error = 4;
 }

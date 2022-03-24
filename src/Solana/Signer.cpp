@@ -29,7 +29,7 @@ void Signer::sign(const std::vector<PrivateKey>& privateKeys, Transaction& trans
 }
 
 // Helper to convert protobuf-string-collection references to Address vector
-std::vector<Address> TW::Solana::convertReferences(const google::protobuf::RepeatedPtrField<std::string>& references) {
+std::vector<Address> convertReferences(const google::protobuf::RepeatedPtrField<std::string>& references) {
     std::vector<Address> ret;
     for (auto i = 0; i < references.size(); ++i) {
         if (Address::isValid(references[i])) {
@@ -231,3 +231,159 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     input.set_private_key(key.data(), key.size());
     return Signer::sign(input).encoded();
 }
+
+TW::Data Signer::preImageHash() const {
+    TW::Data preImageHash;
+    switch (input.transaction_type_case()) {
+    case Proto::SigningInput::TransactionTypeCase::kTransferTransaction: {
+        auto transferTransaction = input.transfer_transaction();
+        auto recentBlockhash = Hash(input.recent_blockhash());
+        auto from = input.sender();
+        auto message = Message::createTransfer(
+            /* from */ Address(from),
+            /* to */ Address(transferTransaction.recipient()),
+            /* value */ transferTransaction.value(),
+            /* recent_blockhash */ recentBlockhash,
+            /* memo */ transferTransaction.memo(),
+            /* references */ convertReferences(transferTransaction.references()),
+            /* nonce_account */ input.nonce_account());
+        auto transaction = Transaction(message);
+        preImageHash = transaction.messageData();
+    } break;
+    case Proto::SigningInput::TransactionTypeCase::kCreateNonceAccount: {
+        auto createNonceAccountTransaction = input.create_nonce_account();
+        auto recentBlockhash = Hash(input.recent_blockhash());
+        auto from = input.sender();
+        auto nonceAccount = createNonceAccountTransaction.nonce_account();
+        auto message = Message::createNonceAccount(
+            /* owner */ Address(from),
+            /* new nonce_account */ Address(createNonceAccountTransaction.nonce_account()),
+            /* rent */ createNonceAccountTransaction.rent(),
+            /* recent_blockhash */ recentBlockhash,
+            /* nonce_account */ input.nonce_account());
+        auto transaction = Transaction(message);
+        preImageHash = transaction.messageData();
+    } break;
+    case Proto::SigningInput::TransactionTypeCase::kWithdrawNonceAccount: {
+        auto withdrawNonceAccountTransaction = input.withdraw_nonce_account();
+        auto recentBlockhash = Hash(input.recent_blockhash());
+        auto owner = input.sender();
+        auto message = Message::createWithdrawNonceAccount(
+            /* owner */ Address(owner),
+            /* sender */ Address(withdrawNonceAccountTransaction.nonce_account()),
+            /* recipient */ Address(withdrawNonceAccountTransaction.recipient()),
+            /* value */ withdrawNonceAccountTransaction.value(),
+            /* recent_blockhash */ recentBlockhash,
+            /* nonce_account */ input.nonce_account());
+        auto transaction = Transaction(message);
+        preImageHash = transaction.messageData();
+    } break;
+    default:
+        if (input.transaction_type_case() ==
+            Proto::SigningInput::TransactionTypeCase::TRANSACTION_TYPE_NOT_SET) {
+            throw std::invalid_argument("transaction type not set");
+        }
+    }
+    return preImageHash;
+};
+
+std::vector<std::string> Signer::signers() const {
+    std::vector<std::string> signers;
+    switch (input.transaction_type_case()) {
+    case Proto::SigningInput::TransactionTypeCase::kTransferTransaction: {
+        auto from = input.sender();
+        signers.push_back(from);
+    } break;
+    case Proto::SigningInput::TransactionTypeCase::kCreateNonceAccount: {
+        auto from = input.sender();
+        auto createNonceAccountTransaction = input.create_nonce_account();
+        auto nonceAccount = createNonceAccountTransaction.nonce_account();
+        signers.push_back(from);
+        signers.push_back(nonceAccount);
+    } break;
+    case Proto::SigningInput::TransactionTypeCase::kWithdrawNonceAccount: {
+        auto owner = input.sender();
+        signers.push_back(owner);
+    } break;
+    default:
+        if (input.transaction_type_case() ==
+            Proto::SigningInput::TransactionTypeCase::TRANSACTION_TYPE_NOT_SET) {
+            throw std::invalid_argument("transaction type not set");
+        }
+    }
+    return signers;
+};
+
+Proto::SigningOutput Signer::compile(const std::vector<Data>& signatures,
+                                     const std::vector<PublicKey>& publicKeys) const {
+    auto output = Proto::SigningOutput();
+    Message message;
+    switch (input.transaction_type_case()) {
+    case Proto::SigningInput::TransactionTypeCase::kTransferTransaction: {
+        if (signatures.size() < 1) {
+            throw std::invalid_argument("too few signatures");
+        }
+        auto transferTransaction = input.transfer_transaction();
+        auto recentBlockhash = Hash(input.recent_blockhash());
+        message = Message::createTransfer(
+            /* from */ Address(input.sender()),
+            /* to */ Address(transferTransaction.recipient()),
+            /* value */ transferTransaction.value(),
+            /* recent_blockhash */ recentBlockhash,
+            /* memo */ transferTransaction.memo(),
+            /* references */ convertReferences(transferTransaction.references()),
+            /* nonce_account */ input.nonce_account());
+    } break;
+    case Proto::SigningInput::TransactionTypeCase::kCreateNonceAccount: {
+        if (signatures.size() < 2) {
+            throw std::invalid_argument("too few signatures");
+        }
+        auto createNonceAccountTransaction = input.create_nonce_account();
+        auto recentBlockhash = Hash(input.recent_blockhash());
+        auto from = input.sender();
+        auto nonceAccount = createNonceAccountTransaction.nonce_account();
+        message = Message::createNonceAccount(
+            /* owner */ Address(from),
+            /* nonce_account */ Address(createNonceAccountTransaction.nonce_account()),
+            /* rent */ createNonceAccountTransaction.rent(),
+            /* recent_blockhash */ recentBlockhash,
+            /* nonce_account */ input.nonce_account());
+    } break;
+    case Proto::SigningInput::TransactionTypeCase::kWithdrawNonceAccount: {
+        if (signatures.size() < 1) {
+            throw std::invalid_argument("too few signatures");
+        }
+        auto withdrawNonceAccountTransaction = input.withdraw_nonce_account();
+        auto recentBlockhash = Hash(input.recent_blockhash());
+        message = Message::createWithdrawNonceAccount(
+            /* owner */ Address(input.sender()),
+            /* sender */ Address(withdrawNonceAccountTransaction.nonce_account()),
+            /* recipient */ Address(withdrawNonceAccountTransaction.recipient()),
+            /* value */ withdrawNonceAccountTransaction.value(),
+            /* recent_blockhash */ recentBlockhash,
+            /* nonce_account */ input.nonce_account());
+    } break;
+    default:
+        if (input.transaction_type_case() ==
+            Proto::SigningInput::TransactionTypeCase::TRANSACTION_TYPE_NOT_SET) {
+            throw std::invalid_argument("transaction type not set");
+        }
+    }
+    auto transaction = Transaction(message);
+    auto preImageHash = transaction.messageData();
+    if (publicKeys.size() != signatures.size()) {
+        throw std::invalid_argument(
+            "the number of public keys and the number of signatures not aligned");
+    }
+    for (int i = 0; i < signatures.size(); i++) {
+        if (!publicKeys[i].verify(signatures[i], preImageHash)) {
+            throw std::invalid_argument("invalid signature at " + std::to_string(i));
+        }
+        auto addressIdx = transaction.getAccountIndex(Address(publicKeys[i]));
+        transaction.signatures[addressIdx] = Signature(signatures[i]);
+    }
+    // construst the output
+    auto encoded = transaction.serialize();
+    output.set_encoded(encoded);
+    return output;
+};
