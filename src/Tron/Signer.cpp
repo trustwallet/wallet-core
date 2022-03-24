@@ -8,14 +8,14 @@
 
 #include "Protobuf/TronInternal.pb.h"
 
+#include "Serialization.h"
 #include "../Base58.h"
 #include "../BinaryCoding.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
-#include "Serialization.h"
 
-#include <chrono>
 #include <cassert>
+#include <chrono>
 
 using namespace TW;
 using namespace TW::Tron;
@@ -316,13 +316,6 @@ Data serialize(const protocol::Transaction& tx) noexcept {
     return Data(serialized.begin(), serialized.end());
 }
 
-Data Signer::buildAndSerializeTx(const Proto::SigningInput& input) noexcept {
-    auto output = Proto::SigningOutput();
-    auto tx = buildTransaction(input);
-
-    return serialize(tx);
-}
-
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto output = Proto::SigningOutput();
     auto tx = buildTransaction(input);
@@ -335,8 +328,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
             ? now
             : input.transaction().timestamp();
     const uint64_t expiration = input.transaction().expiration() == 0
-            ? timestamp + 10 * 60 * 60 * 1000 // 10 hours
-            : input.transaction().expiration();
+                                    ? timestamp + 10 * 60 * 60 * 1000 // 10 hours
+                                    : input.transaction().expiration();
 
     tx.mutable_raw_data()->set_timestamp(timestamp);
     tx.mutable_raw_data()->set_expiration(expiration);
@@ -358,81 +351,20 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return output;
 }
 
-json Signer::encodeTransactionToJson(const Proto::SigningInput& input) noexcept {
-    json rawData;
-    json contractJson;
+Proto::SigningOutput Signer::compile(const Data& signature) const {
+    Proto::SigningOutput output;
+    auto preImage = signaturePreimage();
+    auto hash = Hash::sha256(preImage);
+    auto transaction = buildTransaction(input);
+    const auto json = transactionJSON(transaction, hash, signature).dump();
+    output.set_json(json.data(), json.size());
+    output.set_ref_block_bytes(transaction.raw_data().ref_block_bytes());
+    output.set_ref_block_hash(transaction.raw_data().ref_block_hash());
+    output.set_id(hash.data(), hash.size());
+    output.set_signature(signature.data(), signature.size());
+    return output;
+}
 
-    auto tx = protocol::Transaction();
-    if (input.transaction().has_transfer()) {
-        auto contract = tx.mutable_raw_data()->add_contract();
-        contract->set_type(protocol::Transaction_Contract_ContractType_TransferContract);
-        auto transfer = to_internal(input.transaction().transfer());
-        google::protobuf::Any any;
-        any.PackFrom(transfer);
-        *contract->mutable_parameter() = any;
-
-        json paramsValueJson;
-        paramsValueJson["amount"] = transfer.amount();
-        paramsValueJson["owner_address"] = hex(transfer.owner_address());
-        paramsValueJson["to_address"] = hex(transfer.to_address());
-
-        json contractParamsJson;
-        contractParamsJson["type_url"] = *any.mutable_type_url();
-        contractParamsJson["value"] = paramsValueJson;
-
-        contractJson["type"] = "TransferContract";
-        contractJson["parameter"] = contractParamsJson;
-
-    } else if (input.transaction().has_transfer_asset()) {
-        auto contract = tx.mutable_raw_data()->add_contract();
-        contract->set_type(protocol::Transaction_Contract_ContractType_TransferAssetContract);
-
-        auto transfer = to_internal(input.transaction().transfer_asset());
-        google::protobuf::Any any;
-        any.PackFrom(transfer);
-        *contract->mutable_parameter() = any;
-
-        json paramsValueJson;
-        paramsValueJson["amount"] = transfer.amount();
-        paramsValueJson["asset_name"] = hex(transfer.asset_name());
-        paramsValueJson["owner_address"] = hex(transfer.owner_address());
-        paramsValueJson["to_address"] = hex(transfer.to_address());
-
-        json contractParamsJson;
-        contractParamsJson["type_url"] = *any.mutable_type_url();
-        contractParamsJson["value"] = paramsValueJson;
-
-        contractJson["type"] = "TransferAssetContract";
-        contractJson["parameter"] = contractParamsJson;
-    } else if (input.transaction().has_trigger_smart_contract()) {
-        auto contract = tx.mutable_raw_data()->add_contract();
-        contract->set_type(protocol::Transaction_Contract_ContractType_TriggerSmartContract);
-
-        auto transfer = to_internal(input.transaction().trigger_smart_contract());
-        google::protobuf::Any any;
-        any.PackFrom(transfer);
-        *contract->mutable_parameter() = any;
-
-        json paramsValueJson;
-        paramsValueJson["owner_address"] = hex(transfer.owner_address());
-        paramsValueJson["contract_address"] = hex(transfer.contract_address());
-        paramsValueJson["data"] = hex(transfer.data());
-        paramsValueJson["call_value"] = transfer.call_value();
-        paramsValueJson["call_token_value"] = transfer.call_token_value();
-        paramsValueJson["token_id"] = transfer.token_id();
-
-        json contractParamsJson;
-        contractParamsJson["type_url"] = *any.mutable_type_url();
-        contractParamsJson["value"] = paramsValueJson;
-
-        contractJson["type"] = "TriggerSmartContract";
-        contractJson["parameter"] = contractParamsJson;
-    }
-    rawData["contract"] = json::array({contractJson});
-    rawData["expiration"] = input.transaction().expiration();
-    rawData["timestamp"] = input.transaction().timestamp();
-    rawData["fee_limit"] = input.transaction().fee_limit();
-    setBlockReferenceToJson(input.transaction(), rawData);
-
-    return rawData;
+Data Signer::signaturePreimage() const {
+    return serialize(buildTransaction(input));
 }
