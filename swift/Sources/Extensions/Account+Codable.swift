@@ -10,7 +10,8 @@ extension Account: Equatable {
     public static func == (lhs: Account, rhs: Account) -> Bool {
         return lhs.coin == rhs.coin &&
         lhs.address == rhs.address &&
-        lhs.derivationPath == rhs.address &&
+        lhs.derivationPath == rhs.derivationPath &&
+        lhs.publicKey == rhs.publicKey &&
         lhs.extendedPublicKey == rhs.extendedPublicKey
     }
 }
@@ -20,6 +21,7 @@ extension Account: Hashable {
         hasher.combine(coin)
         hasher.combine(address)
         hasher.combine(derivationPath)
+        hasher.combine(publicKey)
         hasher.combine(extendedPublicKey)
     }
 }
@@ -38,6 +40,7 @@ extension Account: Codable {
         try container.encode(coin.rawValue, forKey: .coin)
         try container.encode(address, forKey: .address)
         try container.encode(derivationPath, forKey: .derivationPath)
+        try container.encode(publicKey, forKey: .publicKey)
         try container.encode(extendedPublicKey, forKey: .extendedPublicKey)
     }
 
