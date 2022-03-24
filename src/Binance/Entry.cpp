@@ -35,9 +35,8 @@ Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
         txInputData, [](const auto& input, auto& output) {
             const auto signer = Signer(input);
 
-            // return preimage hash and dummy pubkeyhash (only one signature anyways)
-            auto preImageHash = signer.preImageHash();
             auto preImage = signer.signaturePreimage();
+            auto preImageHash = Hash::sha256(preImage);
             output.set_datahash(preImageHash.data(), preImageHash.size());
             output.set_data(preImage.data(), preImage.size());
         });

@@ -41,7 +41,6 @@ Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
         txInputData, [](const auto& input, auto& output) {
             const auto transaction = Signer::build(input);
             const auto chainId = load(data(input.chain_id())); // retrieve chainId from input
-            // return preimage hash and dummy pubkeyhash (not available here, and only one signature anyways)
             auto preHash = transaction->preHash(chainId);
             output.set_datahash(preHash.data(), preHash.size());
         });

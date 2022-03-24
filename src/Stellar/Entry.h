@@ -14,10 +14,13 @@ namespace TW::Stellar {
 /// Note: do not put the implementation here (no matter how simple), to avoid having coin-specific includes in this file
 class Entry: public CoinEntry {
 public:
-    virtual const std::vector<TWCoinType> coinTypes() const { return {TWCoinTypeStellar, TWCoinTypeKin}; }
-    virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;    
-    virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
-    virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
+    virtual const std::vector<TWCoinType> coinTypes() const override { return {TWCoinTypeStellar, TWCoinTypeKin}; }
+    virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const override;    
+    virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const override;
+    virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const override;
+
+    virtual Data preImageHashes(TWCoinType coin, const Data& txInputData) const override;
+    virtual void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const override;
 };
 
 } // namespace TW::Stellar

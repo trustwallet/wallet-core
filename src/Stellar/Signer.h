@@ -19,6 +19,7 @@ class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+
   public:
     const Proto::SigningInput& input;
 
@@ -28,6 +29,8 @@ class Signer {
     std::string sign() const noexcept;
 
     Data encode(const Proto::SigningInput& input) const;
+    Data signaturePreimage() const;
+    Proto::SigningOutput compile(const Data& sig) const;
 
   private:
     static uint32_t operationType(const Proto::SigningInput& input);

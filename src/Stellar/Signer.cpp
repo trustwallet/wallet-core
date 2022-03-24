@@ -30,10 +30,10 @@ std::string Signer::sign() const noexcept {
     auto encoded = encode(input);
 
     auto encodedWithHeaders = Data();
-    auto publicNetwork = input.passphrase(); // Header
+    auto publicNetwork = input.passphrase();
     auto passphrase = Hash::sha256(publicNetwork);
     encodedWithHeaders.insert(encodedWithHeaders.end(), passphrase.begin(), passphrase.end());
-    auto transactionType = Data{0, 0, 0, 2}; // Header
+    auto transactionType = Data{0, 0, 0, 2};
     encodedWithHeaders.insert(encodedWithHeaders.end(), transactionType.begin(),
                               transactionType.end());
     encodedWithHeaders.insert(encodedWithHeaders.end(), encoded.begin(), encoded.end());
@@ -122,6 +122,36 @@ Data Signer::encode(const Proto::SigningInput& input) const {
 
     encode32BE(0, data); // Ext
     return data;
+}
+
+Data Signer::signaturePreimage() const {
+    auto encoded = encode(input);
+
+    auto encodedWithHeaders = Data();
+    auto publicNetwork = input.passphrase(); // Header
+    auto passphrase = Hash::sha256(publicNetwork);
+    encodedWithHeaders.insert(encodedWithHeaders.end(), passphrase.begin(), passphrase.end());
+    auto transactionType = Data{0, 0, 0, 2}; // Header
+    encodedWithHeaders.insert(encodedWithHeaders.end(), transactionType.begin(),
+                              transactionType.end());
+    encodedWithHeaders.insert(encodedWithHeaders.end(), encoded.begin(), encoded.end());
+    return encodedWithHeaders;
+}
+
+Proto::SigningOutput Signer::compile(const Data& sig) const {
+    auto account = Address(input.account());
+    auto encoded = encode(input);
+
+    auto signature = Data();
+    signature.insert(signature.end(), encoded.begin(), encoded.end());
+    encode32BE(1, signature);
+    signature.insert(signature.end(), account.bytes.end() - 4, account.bytes.end());
+    encode32BE(static_cast<uint32_t>(sig.size()), signature);
+    signature.insert(signature.end(), sig.begin(), sig.end());
+
+    Proto::SigningOutput output;
+    output.set_signature(Base64::encode(signature));
+    return output;
 }
 
 uint32_t Signer::operationType(const Proto::SigningInput& input) {
