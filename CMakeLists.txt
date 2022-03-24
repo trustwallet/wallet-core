@@ -15,8 +15,8 @@ set(CMAKE_CXX_VISIBILITY_PRESET default)
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-set(BOOST_ROOT /opt/homebrew/Cellar/boost/1.76.0)
-set(BOOST_INCLUDE_DIR /opt/homebrew/Cellar/boost/1.76.0/include)
+set(BOOST_ROOT /opt/homebrew/Cellar/boost/1.78.0_1)
+set(BOOST_INCLUDE_DIR /opt/homebrew/Cellar/boost/1.78.0_1/include)
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.14" CACHE STRING "Minimum OS X deployment version" FORCE)
 
