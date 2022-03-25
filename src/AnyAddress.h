@@ -126,7 +126,8 @@ class AnyAddress {
         case TWCoinTypeAvalancheCChain:
         case TWCoinTypeFantom:
         case TWCoinTypeCelo:
-        case TWCoinTypeSmartBitcoinCash: {
+        case TWCoinTypeSmartBitcoinCash:
+        case TWCoinTypeKCC: {
             const auto addr = Ethereum::Address(string);
             return {addr.bytes.begin(), addr.bytes.end()};
         }
