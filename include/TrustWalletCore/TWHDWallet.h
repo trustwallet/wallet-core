@@ -81,13 +81,21 @@ struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull walle
 TW_EXPORT_METHOD
 struct TWPrivateKey *_Nonnull TWHDWalletGetDerivedKey(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, uint32_t account, uint32_t change, uint32_t address);
 
-/// Returns the extended private key.
+/// Returns the extended private key (for default 0 account).  Returned object needs to be deleted.
 TW_EXPORT_METHOD
 TWString *_Nonnull TWHDWalletGetExtendedPrivateKey(struct TWHDWallet *_Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, enum TWHDVersion version);
 
-/// Returns the exteded public key.  Returned object needs to be deleted.
+/// Returns the exteded public key (for default 0 account).  Returned object needs to be deleted.
 TW_EXPORT_METHOD
 TWString *_Nonnull TWHDWalletGetExtendedPublicKey(struct TWHDWallet *_Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, enum TWHDVersion version);
+
+/// Returns the extended private key, for custom account.  Returned object needs to be deleted.
+TW_EXPORT_METHOD
+TWString *_Nonnull TWHDWalletGetExtendedPrivateKeyAccount(struct TWHDWallet *_Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, enum TWHDVersion version, uint32_t account);
+
+/// Returns the exteded public key, for custom account.  Returned object needs to be deleted.
+TW_EXPORT_METHOD
+TWString *_Nonnull TWHDWalletGetExtendedPublicKeyAccount(struct TWHDWallet *_Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, enum TWHDVersion version, uint32_t account);
 
 /// Computes the public key from an exteded public key representation.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD

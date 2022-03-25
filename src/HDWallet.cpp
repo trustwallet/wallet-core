@@ -137,7 +137,7 @@ std::string HDWallet::deriveAddress(TWCoinType coin) const {
     return TW::deriveAddress(coin, getKey(coin, derivationPath));
 }
 
-std::string HDWallet::getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const {
+std::string HDWallet::getExtendedPrivateKeyAccount(TWPurpose purpose, TWCoinType coin, TWHDVersion version, uint32_t account) const {
     if (version == TWHDVersionNone) {
         return "";
     }
@@ -146,11 +146,11 @@ std::string HDWallet::getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, 
     auto derivationPath = TW::DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(coin, true)});
     auto node = getNode(*this, curve, derivationPath);
     auto fingerprintValue = fingerprint(&node, publicKeyHasher(coin));
-    hdnode_private_ckd(&node, 0x80000000);
+    hdnode_private_ckd(&node, account + 0x80000000);
     return serialize(&node, fingerprintValue, version, false, base58Hasher(coin));
 }
 
-std::string HDWallet::getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const {
+std::string HDWallet::getExtendedPublicKeyAccount(TWPurpose purpose, TWCoinType coin, TWHDVersion version, uint32_t account) const {
     if (version == TWHDVersionNone) {
         return "";
     }
@@ -159,7 +159,7 @@ std::string HDWallet::getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, T
     auto derivationPath = TW::DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(coin, true)});
     auto node = getNode(*this, curve, derivationPath);
     auto fingerprintValue = fingerprint(&node, publicKeyHasher(coin));
-    hdnode_private_ckd(&node, 0x80000000);
+    hdnode_private_ckd(&node, account + 0x80000000);
     hdnode_fill_public_key(&node);
     return serialize(&node, fingerprintValue, version, true, base58Hasher(coin));
 }
