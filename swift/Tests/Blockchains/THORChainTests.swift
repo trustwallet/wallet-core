@@ -96,6 +96,7 @@ class THORChainSignerTests: XCTestCase {
                             "type": "tendermint/PubKeySecp256k1",
                             "value": "A+2Zfjls9CkvX85aQrukFZnM1dluMTFUp8nqcEneMXx3"
                         },
+                        "sequence": 2,
                         "signature": "ZPhcYubhAd6iz/pBrtLfSJaK04ISnEo+jBFvFFzoToMJA9NGhhCFmsmXMQ1AtoJ6C1aylvUnck93A7ork8ZzEQ=="
                     }
                 ]

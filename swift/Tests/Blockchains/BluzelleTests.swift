@@ -76,7 +76,7 @@ class BluzelleSignerTests: XCTestCase {
         
         let expectedSignedJson =
         """
-        {"mode":"block","tx":{"fee":{"amount":[{"amount":"1000","denom":"ubnt"}],"gas":"500000"},"memo":"Testing","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"2","denom":"ubnt"}],"from_address":"bluzelle1hsk6jryyqjfhp5dhc55tc9jtckygx0epzzw0fm","to_address":"bluzelle1xccvees6ev4wm2r49rc6ptulsdxa8x8jfpmund"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"sequence":0,"signature":"2JcfVwq9N3UAk5Lfki7+CngqcefgjfH1q/8chtJMJvEHRe6PvuYKMv5pjeN0Z5Vk2BArJT3V3EHxbpbiY2eLWw=="}]}}
+        {"mode":"block","tx":{"fee":{"amount":[{"amount":"1000","denom":"ubnt"}],"gas":"500000"},"memo":"Testing","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"2","denom":"ubnt"}],"from_address":"bluzelle1hsk6jryyqjfhp5dhc55tc9jtckygx0epzzw0fm","to_address":"bluzelle1xccvees6ev4wm2r49rc6ptulsdxa8x8jfpmund"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"sequence":3,"signature":"2JcfVwq9N3UAk5Lfki7+CngqcefgjfH1q/8chtJMJvEHRe6PvuYKMv5pjeN0Z5Vk2BArJT3V3EHxbpbiY2eLWw=="}]}}
         """
 
         let actualSignedJson = AnySigner.signJSON(inputJson, key: privateKeyData, coin: .bluzelle)
