@@ -68,7 +68,7 @@ class TestBandChainSigner {
         val output = AnySigner.sign(signingInput, BANDCHAIN, SigningOutput.parser())
         val jsonPayload = output.json
 
-        val expectedJsonPayload = """{"mode":"block","tx":{"fee":{"amount":[{"amount":"200","denom":"uband"}],"gas":"200000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"1","denom":"uband"}],"from_address":"band1hsk6jryyqjfhp5dhc55tc9jtckygx0epw4d0hz","to_address":"band1jf9aaj9myrzsnmpdr7twecnaftzmku2mgms4n3"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"B1ZG7pUWW2mPxE7WzBt8SafZMtEtFWgUJePJ+Dj/q7cHxj4scGmopQUG4+AZcJbRQgjrMGM11Yhm3vXYQYtSDA=="}]}}"""
+        val expectedJsonPayload = """{"mode":"block","tx":{"fee":{"amount":[{"amount":"200","denom":"uband"}],"gas":"200000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"1","denom":"uband"}],"from_address":"band1hsk6jryyqjfhp5dhc55tc9jtckygx0epw4d0hz","to_address":"band1jf9aaj9myrzsnmpdr7twecnaftzmku2mgms4n3"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"sequence":8,"signature":"B1ZG7pUWW2mPxE7WzBt8SafZMtEtFWgUJePJ+Dj/q7cHxj4scGmopQUG4+AZcJbRQgjrMGM11Yhm3vXYQYtSDA=="}]}}"""
         assertEquals(expectedJsonPayload, jsonPayload)
 
     }
@@ -102,6 +102,6 @@ class TestBandChainSigner {
         val key = "c9b0a273831931aa4a5f8d1a570d5021dda91d3319bd3819becdaabfb7b44e3b".toHexByteArray()
         val result = AnySigner.signJSON(json, key, BANDCHAIN.value())
 
-        assertEquals(result, """{"mode":"block","tx":{"fee":{"amount":[{"amount":"5000","denom":"uband"}],"gas":"200000"},"memo":"Testing","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"995000","denom":"uband"}],"from_address":"band1jf9aaj9myrzsnmpdr7twecnaftzmku2mgms4n3","to_address":"band1pnndgfwsrff86263xzpc5cd3t6yfvgjyqc87jh"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A6EsukEXB53GhohQVeDpxtkeH8KQIayd/Co/ApYRYkTm"},"signature":"sw2YPxjQ5DiKjd2o70sQb44OSzMH2Pm4V+Z8ld1uYiNbMXWQBK8SH2tcKUIU3SwYZ1qvi2DbmxqHyONksJ0Rmg=="}]}}""")
+        assertEquals(result, """{"mode":"block","tx":{"fee":{"amount":[{"amount":"5000","denom":"uband"}],"gas":"200000"},"memo":"Testing","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"995000","denom":"uband"}],"from_address":"band1jf9aaj9myrzsnmpdr7twecnaftzmku2mgms4n3","to_address":"band1pnndgfwsrff86263xzpc5cd3t6yfvgjyqc87jh"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A6EsukEXB53GhohQVeDpxtkeH8KQIayd/Co/ApYRYkTm"},"sequence":0,"signature":"sw2YPxjQ5DiKjd2o70sQb44OSzMH2Pm4V+Z8ld1uYiNbMXWQBK8SH2tcKUIU3SwYZ1qvi2DbmxqHyONksJ0Rmg=="}]}}""")
     }
 }
