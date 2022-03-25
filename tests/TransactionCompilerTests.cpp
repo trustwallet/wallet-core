@@ -11,6 +11,7 @@
 #include "proto/Bitcoin.pb.h"
 #include "proto/Common.pb.h"
 #include "proto/Ethereum.pb.h"
+#include "proto/Theta.pb.h"
 #include "proto/NEO.pb.h"
 #include "proto/NULS.pb.h"
 #include "proto/Solana.pb.h"
@@ -647,7 +648,7 @@ TEST(TransactionCompiler, StellarCompileWithSignatures) {
     TW::Stellar::Proto::SigningInput input;
     auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
     auto publicKey = privateKey.getPublicKey(::publicKeyType(coin));
-    
+
     input.set_passphrase(TWStellarPassphrase_Stellar);
     input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
     input.set_fee(1000);
@@ -656,7 +657,7 @@ TEST(TransactionCompiler, StellarCompileWithSignatures) {
     input.mutable_op_payment()->set_amount(10000000);
     auto& memoText = *input.mutable_memo_text();
     memoText.set_text("Hello, world!");
-    
+
     auto inputString = input.SerializeAsString();
     auto inputData = TW::Data(inputString.begin(), inputString.end());
 
@@ -671,7 +672,7 @@ TEST(TransactionCompiler, StellarCompileWithSignatures) {
     EXPECT_EQ(hex(preImageHash), "1e8786a0162630b2393e0f6c51f16a2d7860715023cb19bf25cad14490b1f8f3");
 
     auto signature = parse_hex("5042574491827aaccbce1e2964c05098caba06194beb35e595aabfec9f788516a833f755f18144f4a2eedb3123d180f44e7c16037d00857c5c5b7033ebac2c01");
-    
+
     /// Step 3: Compile transaction info
     const auto outputData = TransactionCompiler::compileWithSignatures(coin, inputData, { signature }, {});
 
@@ -680,7 +681,7 @@ TEST(TransactionCompiler, StellarCompileWithSignatures) {
 
     const auto tx = "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAEAAAANSGVsbG8sIHdvcmxkIQAAAAAAAAEAAAAAAAAAAQAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAAAAAAJiWgAAAAAAAAAABGd9cogAAAEBQQldEkYJ6rMvOHilkwFCYyroGGUvrNeWVqr/sn3iFFqgz91XxgUT0ou7bMSPRgPROfBYDfQCFfFxbcDPrrCwB";
     EXPECT_EQ(output.signature(), tx);
-    
+
     { // Double check: check if simple signature process gives the same result. Note that private
       // keys were not used anywhere up to this point.
         TW::Stellar::Proto::SigningInput input;
@@ -767,5 +768,61 @@ TEST(TransactionCompiler, NULSCompileWithSignatures) {
         ANY_SIGN(input, coin);
 
         ASSERT_EQ(output.encoded(), ExpectedTx);
+    }
+}
+
+TEST(TransactionCompiler, ThetaCompileWithSignatures) {
+    const auto coin = TWCoinTypeTheta;
+    const auto pkFrom =
+        PrivateKey(parse_hex("0x93a90ea508331dfdf27fb79757d4250b4e84954927ba0073cd67454ac432c737"));
+    const auto publicKey = pkFrom.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
+    TW::Theta::Proto::SigningInput input;
+    input.set_chain_id("privatenet");
+    input.set_to_address("0x9F1233798E905E173560071255140b4A8aBd3Ec6");
+    auto amount = store(uint256_t(10));
+    input.set_theta_amount(amount.data(), amount.size());
+    auto tfuelAmount = store(uint256_t(20));
+    input.set_tfuel_amount(tfuelAmount.data(), tfuelAmount.size());
+    auto fee = store(uint256_t(1000000000000));
+    input.set_fee(fee.data(), fee.size());
+    input.set_sequence(1);
+    std::string pubkeyStr(publicKey.bytes.begin(), publicKey.bytes.end());
+    input.set_public_key(pubkeyStr);
+    auto inputString = input.SerializeAsString();
+    auto inputData = TW::Data(inputString.begin(), inputString.end());
+    /// Step 2: Obtain preimage hash
+    const auto preImageHashData = TransactionCompiler::preImageHashes(coin, inputData);
+
+    auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
+    ASSERT_TRUE(preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
+    ASSERT_EQ(preSigningOutput.errorcode(), 0);
+    EXPECT_EQ(hex(preSigningOutput.datahash()), "2dc419e9919e65f129453419dc72a6bee99b2281dfddf754807a5c212ae35678");
+
+    // Simulate signature, normally obtained from signature server
+    const auto publicKeyData = publicKey.bytes;
+    const auto signature = parse_hex("5190868498d587d074d57298f41853d0109d997f15ddf617f471eb8cbb7fff267cb8fe9134ccdef053ec7cabd18070325c9c436efe1abbacd14eb7561d3fc10501");
+
+    // Verify signature (pubkey & hash & signature)
+    EXPECT_TRUE(publicKey.verify(signature, TW::data(preSigningOutput.datahash())));
+
+    /// Step 3: Compile transaction info
+    const auto outputData = TransactionCompiler::compileWithSignatures(coin, inputData, {signature}, {publicKeyData});
+
+    Theta::Proto::SigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+
+    auto expectedTx = "02f887c78085e8d4a51000f863f861942e833968e5bb786ae419c4d13189fb081cc43babc70a85e8d4a5101401b8415190868498d587d074d57298f41853d0109d997f15ddf617f471eb8cbb7fff267cb8fe9134ccdef053ec7cabd18070325c9c436efe1abbacd14eb7561d3fc10501d9d8949f1233798e905e173560071255140b4a8abd3ec6c20a14";
+    EXPECT_EQ(hex(output.encoded()), expectedTx);
+
+    { // Double check: check if simple signature process gives the same result. Note that private
+        // keys were not used anywhere up to this point.
+        Theta::Proto::SigningInput input;
+        ASSERT_TRUE(input.ParseFromArray(inputData.data(), (int)inputData.size()));
+        input.set_private_key(pkFrom.bytes.data(), pkFrom.bytes.size());
+
+        Theta::Proto::SigningOutput output;
+        ANY_SIGN(input, coin);
+
+        ASSERT_EQ(hex(output.encoded()), expectedTx);
     }
 }

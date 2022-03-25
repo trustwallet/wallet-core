@@ -25,6 +25,9 @@ message SigningInput {
 
     /// Private key
     bytes private_key = 7;
+
+    /// Public key
+    bytes public_key = 8;
 }
 
 /// Transaction signing output
@@ -34,4 +37,10 @@ message SigningOutput {
 
     /// Signature
     bytes signature = 2;
+
+    /// error code, 0 is ok, other codes will be treated as errors
+    int32 errorCode = 3;
+
+    /// error code description
+    string error = 4;
 }
