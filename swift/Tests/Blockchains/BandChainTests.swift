@@ -92,6 +92,7 @@ class BandChainTests: XCTestCase {
           "type": "tendermint/PubKeySecp256k1",
           "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
         },
+        "sequence": 0,
         "signature": "C6X5J08I1kkebqxa9LiFRRSJsp8U9E/IulruGTtOvpcpn/kMwWAxbFTDzvrDV5SnTWDSlimTkeZq8OuwL7j9nQ=="
       }
     ]
@@ -169,6 +170,7 @@ class BandChainTests: XCTestCase {
           "type": "tendermint/PubKeySecp256k1",
           "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
         },
+        "sequence": 1,
         "signature": "My+OzXqBOImtuDOoqoO9YBdlAhl6weWZvtJfkm4KDZ8I/wnQHNFBa41ql1e2LYSk3jnR/14LZ6E3pY8YW3WU9w=="
       }
     ]
@@ -238,6 +240,7 @@ class BandChainTests: XCTestCase {
           "type": "tendermint/PubKeySecp256k1",
           "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
         },
+        "sequence": 2,
         "signature": "yV2ORYqs66hq9wECEqOgLoBx7OghdRCnN8MqZk5cY/40PAm1EGjFKkdNVLNTXuBrskcT0pP/AT0XfMyywvhkWg=="
       }
     ]
@@ -315,6 +318,7 @@ class BandChainTests: XCTestCase {
           "type": "tendermint/PubKeySecp256k1",
           "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
         },
+        "sequence": 3,
         "signature": "mdWnaIfRASZoCs0HKEk0dCL3S3ky1fbh1wp76M7Cov0D8fiByoxOfNknGgDwZecmwhZ4Gf66E+25B5hBCJpY/A=="
       }
     ]
@@ -324,7 +328,7 @@ class BandChainTests: XCTestCase {
         XCTAssertJSONEqual(expectedJSON, output.json)
     }
 
-    func testRedlegate() {
+    func testRedelegate() {
       // https://scan-wenchang-testnet2.bandchain.org/tx/92b351e9aa2f7faae6cd556db04737a1fff778ea0306e2dfb064ccec76a41b13
       let restakeMessage = CosmosMessage.BeginRedelegate.with {
             $0.delegatorAddress = "band1hln9scsl9yqup8nxyum06rmggql5m5zqzslg52"
@@ -394,6 +398,7 @@ class BandChainTests: XCTestCase {
           "type": "tendermint/PubKeySecp256k1",
           "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
         },
+        "sequence": 4,
         "signature": "Y+nCZxjvrXPs++VDLiJxDQmp/59Mdwv7OEhgaH4oObtZ7N9+ZVraAiAcxJO26bbcW3cptFf88jxGpWdp6XG9Tg=="
       }
     ]

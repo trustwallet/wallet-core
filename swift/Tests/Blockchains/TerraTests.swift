@@ -88,6 +88,7 @@ class TerraTests: XCTestCase {
                 "type": "tendermint/PubKeySecp256k1",
                 "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
             },
+            "sequence": 0,
             "signature": "KPdiVsKpY12JG/VKEJVa/FpMKclxlS0qNNG6VOAypj10R5vY5UX5IgRJET1zNYnH0wvcXxfNXV+s8jtwN2UXiQ=="
         }],
         "memo": ""
@@ -162,6 +163,7 @@ class TerraTests: XCTestCase {
                 "type": "tendermint/PubKeySecp256k1",
                 "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
             },
+            "sequence": 0,
             "signature": "KPdiVsKpY12JG/VKEJVa/FpMKclxlS0qNNG6VOAypj10R5vY5UX5IgRJET1zNYnH0wvcXxfNXV+s8jtwN2UXiQ=="
         }],
         "memo": ""
@@ -235,6 +237,7 @@ class TerraTests: XCTestCase {
                 "type": "tendermint/PubKeySecp256k1",
                 "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
             },
+            "sequence": 1,
             "signature": "F8UJxbkqa0j6dYTk8PymrudBKI3WYhZImRxMFCw0ecFCmPGgNTg7yfpKZo6K6JtnoJaP7bQ4db5e4wnhMCJyAQ=="
         }]
     }
@@ -299,6 +302,7 @@ class TerraTests: XCTestCase {
                 "type": "tendermint/PubKeySecp256k1",
                 "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
             },
+            "sequence": 2,
             "signature": "Kfwi1uJplzLucXDyQZsJI9v8lMFJFUBLD46+MpwBwYwPJgqPRzSOfyjRpmNou0G/Qe1hbsGEgqb85FQpsgLz+g=="
         }]
     }
@@ -371,6 +375,7 @@ class TerraTests: XCTestCase {
                 "type": "tendermint/PubKeySecp256k1",
                 "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
             },
+            "sequence": 3,
             "signature": "THf/RxsBr2EhHE2OMHLXfv+qSP9ORbvHgo4OSOS2P95xxGH73wW+t1zIl9cGlIVvcoChwaCg5/iEuvbgXUWpNw=="
         }]
     }
@@ -379,7 +384,7 @@ class TerraTests: XCTestCase {
         XCTAssertJSONEqual(expectedJSON, output.json)
     }
 
-    func testRedlegate() {
+    func testRedelegate() {
       // https://finder.terra.money/soju-0013/tx/36CE381BDF72AD7407EEE3859E3349F83B723BE9AD407E9D8C38DEE0C4434D29
       let restakeMessage = CosmosMessage.BeginRedelegate.with {
             $0.delegatorAddress = "terra1jf9aaj9myrzsnmpdr7twecnaftzmku2mhs2hfe"
@@ -445,6 +450,7 @@ class TerraTests: XCTestCase {
                 "type": "tendermint/PubKeySecp256k1",
                 "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
             },
+            "sequence": 4,
             "signature": "HyEpSz48dkebmBFvwh5xDiiZD0jUdOvzTD3ACMw0rOQ9F3JhK2cPaEx6/ZmYNIrdsPqMNkUnHcDYD1o4IztoEg=="
         }]
     }

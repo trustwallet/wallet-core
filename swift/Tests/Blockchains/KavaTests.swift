@@ -86,6 +86,7 @@ class KavaTests: XCTestCase {
                 "type": "tendermint/PubKeySecp256k1",
                 "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
             },
+            "sequence": 0,
             "signature": "vcZiNGhw2qmVClI8uQDJhwfFuEDYunZ9XW01FOuOjBcGCSdmK/IOwiD616+ARYtpLZsBX8p2Y+cqbHEascIjCg=="
         }],
         "memo": ""
@@ -158,6 +159,7 @@ class KavaTests: XCTestCase {
                 "type": "tendermint/PubKeySecp256k1",
                 "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
             },
+            "sequence": 1,
             "signature": "SmgctT4b8yt4/L2qOkW+Jy2SxMflIl6gOFfhKX/o+Cpqa6xCF6rqy0p3WSz0c/vnfZTWVG7rX+612xCVcJjQCg=="
         }]
     }
@@ -221,6 +223,7 @@ class KavaTests: XCTestCase {
                 "type": "tendermint/PubKeySecp256k1",
                 "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
             },
+            "sequence": 2,
             "signature": "xF4I6dKOjuKR7ii3i+Q754/R9IFHULwrkNG1zO8w0VoZBQhNWITg3jZJwpgDnAyl6C7we7BuLhutHaSIhvutEg=="
         }]
     }
@@ -292,6 +295,7 @@ class KavaTests: XCTestCase {
                 "type": "tendermint/PubKeySecp256k1",
                 "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
             },
+            "sequence": 3,
             "signature": "p6n0wv1L4YrK6Etmpp6cLjmUO3CNE1p6/LkZF73tastw4x0sW4Jg8b9R5x45EQMVbmNP87wZ4X/6VHUXluHstQ=="
         }]
     }
@@ -300,7 +304,7 @@ class KavaTests: XCTestCase {
         XCTAssertJSONEqual(expectedJSON, output.json)
     }
 
-    func testRedlegate() {
+    func testRedelegate() {
       // https://kava.mintscan.io/txs/ACBDAB9BBBBA9BE09F21F728334BBF3E1F14DFCBC0DB1C2175EAD07D4C1B6230
       let restakeMessage = CosmosMessage.BeginRedelegate.with {
             $0.delegatorAddress = "kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7"
@@ -364,6 +368,7 @@ class KavaTests: XCTestCase {
                 "type": "tendermint/PubKeySecp256k1",
                 "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
             },
+            "sequence": 4,
             "signature": "mDC0NuQJOJoYcbDE96D2kQy2RlodlGrhedKOX/2xAy0WrK2TzxDAYbV822xIhLtr2T67jpZfzDWNI0iRg2j/5Q=="
         }]
     }
