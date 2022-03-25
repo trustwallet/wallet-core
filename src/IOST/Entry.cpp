@@ -7,6 +7,7 @@
 #include "Entry.h"
 #include "Account.h"
 #include "Signer.h"
+#include "../proto/Common.pb.h"
 #include "../proto/TransactionCompiler.pb.h"
 
 using namespace TW::IOST;
@@ -36,14 +37,14 @@ Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
     auto output = TxCompiler::Proto::PreSigningOutput();
     Data transaction;
     if (!input.ParseFromArray(txInputData.data(), (int)txInputData.size())) {
-        output.set_errorcode(TxCompiler::Proto::Error_input_parse);
+        output.set_errorcode(Common::Proto::Error_input_parse);
         output.set_error("SigningInput parse failed");
         return TW::data(output.SerializeAsString());
     }
     auto publicKey = data((const byte*)input.public_key().data(), input.public_key().size());
     auto unsignedTx = Signer::buildUnsignedTx(input, publicKey, input.algorithm());
     auto hash = Hash::sha3_256(unsignedTx);
-    std::string hashStr(hash.begin(), hash.end() );
+    std::string hashStr(hash.begin(), hash.end());
     output.set_data(unsignedTx);
     output.set_datahash(hashStr);
     return TW::data(output.SerializeAsString());

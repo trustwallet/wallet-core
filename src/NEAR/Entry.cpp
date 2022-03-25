@@ -8,6 +8,7 @@
 #include "Address.h"
 #include "Serialization.h"
 #include "Signer.h"
+#include "../proto/Common.pb.h"
 #include "../proto/TransactionCompiler.pb.h"
 
 using namespace TW::NEAR;
@@ -44,7 +45,7 @@ Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
         output.set_data(transaction.data(), transaction.size());
         output.set_datahash(hash.data(), hash.size());
     } else {
-        output.set_errorcode(TxCompiler::Proto::Error_input_parse);
+        output.set_errorcode(Common::Proto::Error_input_parse);
         output.set_error("SigningInput parse failed");
     }
     return TW::data(output.SerializeAsString());

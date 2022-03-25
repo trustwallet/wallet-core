@@ -7,6 +7,7 @@
 #pragma once
 
 #include "../CoinEntry.h"
+#include "../proto/TransactionCompiler.pb.h"
 
 namespace TW::NULS {
 
@@ -18,6 +19,8 @@ public:
     virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;
     virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
+    virtual Data preImageHashes(TWCoinType coin, const Data& txInputData) const;
+    virtual void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const;
 };
 
 } // namespace TW::NULS
