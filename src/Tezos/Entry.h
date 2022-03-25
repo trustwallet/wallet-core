@@ -14,12 +14,15 @@ namespace TW::Tezos {
 /// Note: do not put the implementation here (no matter how simple), to avoid having coin-specific includes in this file
 class Entry: public CoinEntry {
 public:
-    virtual const std::vector<TWCoinType> coinTypes() const { return {TWCoinTypeTezos}; }
-    virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;    
-    virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
-    virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
-    virtual bool supportsJSONSigning() const { return true; }
-    virtual std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const;
+    virtual const std::vector<TWCoinType> coinTypes() const override { return {TWCoinTypeTezos}; }
+    virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const override;    
+    virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const override;
+    virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const override;
+    virtual bool supportsJSONSigning() const override { return true; }
+    virtual std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const override;
+
+    virtual Data preImageHashes(TWCoinType coin, const Data& txInputData) const override;
+    virtual void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const override;
 };
 
 } // namespace TW::Tezos

@@ -478,7 +478,7 @@ TEST(TWTransactionCompiler, ExternalSignatureSignSolana) {
 
     auto preSigningOutput = TW::Solana::Proto::PreSigningOutput();
     ASSERT_TRUE(
-        preSigningOutput.ParseFromArray(preImageHashData->data(), preImageHashData->size()));
+        preSigningOutput.ParseFromArray(preImageHashData->data(), (int)preImageHashData->size()));
     ASSERT_EQ(preSigningOutput.errorcode(), 0);
 
     ASSERT_EQ(preSigningOutput.signers_size(), 1);
@@ -565,7 +565,7 @@ TEST(TWTransactionCompiler, ExternalSignatureSignNULS) {
 
     auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
     ASSERT_TRUE(
-        preSigningOutput.ParseFromArray(preImageHashData->data(), preImageHashData->size()));
+        preSigningOutput.ParseFromArray(preImageHashData->data(), (int)preImageHashData->size()));
     ASSERT_EQ(preSigningOutput.errorcode(), 0);
 
     auto preImage = preSigningOutput.data();
