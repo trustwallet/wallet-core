@@ -21,7 +21,7 @@ Cosmos::Proto::SigningOutput Signer::sign(Cosmos::Proto::SigningInput& input) no
             input.mutable_messages(i)->mutable_send_coins_message()->set_type_prefix(TYPE_PREFIX_MSG_SEND);
         }
     }
-    return Cosmos::Signer::signWithSequence(input, true);
+    return Cosmos::Signer::sign(input);
 }
 
 std::string Signer::signJSON(const std::string& json, const Data& key) {

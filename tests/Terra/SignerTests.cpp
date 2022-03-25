@@ -92,6 +92,7 @@ TEST(TerraSigner, SignSendTx) {
                             "type": "tendermint/PubKeySecp256k1",
                             "value": "AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"
                         },
+                        "sequence": 2,
                         "signature": "ofdIsLJzkODcQwLG89eE2g4HOaUmfKPh/08t07ehKPUqRMl4rVonzo73mkOvqtrHWjdtB+6t6R8DGudPpb6bRg=="
                     }
                 ]
@@ -212,7 +213,7 @@ TEST(TerraSigner, SignWasmTransferTxJson_078E90) {
 
     auto output = Signer::sign(input);
 
-    // https://finder.terra.money/mainnet/tx/078E90458061611F6FD8B708882B55FF5C1FFB3FCE61322107A0A0DE39FC0F3E
+    // Originally https://finder.terra.money/mainnet/tx/078E90458061611F6FD8B708882B55FF5C1FFB3FCE61322107A0A0DE39FC0F3E
     // curl -H 'Content-Type: application/json' --data-binary '{"mode": "block","tx":{...}}' https://<lcd-node-url>/txs
     assertJSONEqual(output.json(), R"(
         {
@@ -249,6 +250,7 @@ TEST(TerraSigner, SignWasmTransferTxJson_078E90) {
                                         "type": "tendermint/PubKeySecp256k1",
                                         "value": "A3BmOsew+Ykpb+tc5Z+6SlDX6U4c4lbf8iUUWcos2awA"
                                     },
+                                "sequence": 2,
                                 "signature": "BjETdtbA97Wv1zvcsCV1tM+bdYKC8O3uGTk4mMRv6pBJB2y/Ds7qoS7s/zrkhYak1YChklQetHsI30XRXzGIkg=="
                             }
                         ]

@@ -15,11 +15,10 @@ namespace TW::Cosmos {
 class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept { return signWithSequence(input, false); }
-    static Proto::SigningOutput signWithSequence(const Proto::SigningInput& input, bool includeSequence) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 
     /// Signs a Proto::SigningInput transaction, using Json serialization
-    static Proto::SigningOutput signJsonSerialized(const Proto::SigningInput& input, bool includeSequence) noexcept;
+    static Proto::SigningOutput signJsonSerialized(const Proto::SigningInput& input) noexcept;
 
     /// Signs a Proto::SigningInput transaction, using binary Protobuf serialization
     static Proto::SigningOutput signProtobuf(const Proto::SigningInput& input) noexcept;

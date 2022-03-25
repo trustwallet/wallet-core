@@ -111,6 +111,7 @@ TEST(CryptoorgSigner, SignTx_DDCCE4) {
                             "type": "tendermint/PubKeySecp256k1",
                             "value": "A4gxsGFiPn6L5Z2IjHEISkXI0IkwfL9exV3GLB171Wvj"
                         },
+                        "sequence": 0,
                         "signature": "5+5rSFFg0FE9cTklQWQHNktBDJsz7UCnMSgF0t0+gYcrIhEWUyTtibXaHZQbKAAaciJ1BkHXYREjU55VswByVg=="
                     }
                 ]
@@ -119,7 +120,7 @@ TEST(CryptoorgSigner, SignTx_DDCCE4) {
     )");
     EXPECT_EQ(hex(output.signature()), "e7ee6b485160d0513d713925416407364b410c9b33ed40a7312805d2dd3e81872b2211165324ed89b5da1d941b28001a7222750641d7611123539e55b3007256");
 
-    /// https://crypto.org/explorer/tx/DDCCE4052040B05914CADEFE78C0A75BE363AE39504E7EF6B2EDB8A9072AD44B
+    /// Originally https://crypto.org/explorer/tx/DDCCE4052040B05914CADEFE78C0A75BE363AE39504E7EF6B2EDB8A9072AD44B
     /// curl -H 'Content-Type: application/json' --data-binary '{"mode":"block","tx":{"fee": ... }}' https://mainnet.crypto.org:1317/txs
 }
 
@@ -164,6 +165,7 @@ TEST(CryptoorgSigner, SignJson) {
                             "type": "tendermint/PubKeySecp256k1",
                             "value": "A4gxsGFiPn6L5Z2IjHEISkXI0IkwfL9exV3GLB171Wvj"
                         },
+                        "sequence": 0,
                         "signature": "5+5rSFFg0FE9cTklQWQHNktBDJsz7UCnMSgF0t0+gYcrIhEWUyTtibXaHZQbKAAaciJ1BkHXYREjU55VswByVg=="
                     }
                 ]

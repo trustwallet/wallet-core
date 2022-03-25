@@ -117,6 +117,7 @@ TEST(TWAnySignerCryptoorg, SignTx_Json_DDCCE4) {
                             "type": "tendermint/PubKeySecp256k1",
                             "value": "A4gxsGFiPn6L5Z2IjHEISkXI0IkwfL9exV3GLB171Wvj"
                         },
+                        "sequence": 0,
                         "signature": "5+5rSFFg0FE9cTklQWQHNktBDJsz7UCnMSgF0t0+gYcrIhEWUyTtibXaHZQbKAAaciJ1BkHXYREjU55VswByVg=="
                     }
                 ]
@@ -127,6 +128,6 @@ TEST(TWAnySignerCryptoorg, SignTx_Json_DDCCE4) {
     EXPECT_EQ(output.serialized(), "");
     EXPECT_EQ(output.error(), "");
 
-    /// https://crypto.org/explorer/tx/DDCCE4052040B05914CADEFE78C0A75BE363AE39504E7EF6B2EDB8A9072AD44B
+    /// Originally https://crypto.org/explorer/tx/DDCCE4052040B05914CADEFE78C0A75BE363AE39504E7EF6B2EDB8A9072AD44B
     /// curl -H 'Content-Type: application/json' --data-binary '{"mode":"block","tx":{"fee": ... }}' https://mainnet.crypto.org:1317/txs
 }

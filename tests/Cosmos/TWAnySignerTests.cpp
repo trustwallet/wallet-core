@@ -60,5 +60,46 @@ TEST(TWAnySignerCosmos, SignJSON) {
     auto result = WRAPS(TWAnySignerSignJSON(json.get(), key.get(), TWCoinTypeCosmos));
 
     ASSERT_TRUE(TWAnySignerSupportsJSON(TWCoinTypeCosmos));
-    assertStringsEqual(result, R"({"mode":"block","tx":{"fee":{"amount":[{"amount":"5000","denom":"uatom"}],"gas":"200000"},"memo":"Testing","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"995000","denom":"uatom"}],"from_address":"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575","to_address":"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A6EsukEXB53GhohQVeDpxtkeH8KQIayd/Co/ApYRYkTm"},"signature":"ULEpUqNzoAnYEx2x22F3ANAiPXquAU9+mqLWoAA/ZOUGTMsdb6vryzsW6AKX2Kqj1pGNdrTcQ58Z09JPyjpgEA=="}]}})");
+    assertJSONEqual(TWStringUTF8Bytes(result.get()), R"(
+        {
+            "mode": "block",
+            "tx": {
+                "fee": {
+                    "amount": [
+                        {
+                            "amount": "5000",
+                            "denom": "uatom"
+                        }
+                    ],
+                    "gas": "200000"
+                },
+                "memo": "Testing",
+                "msg": [
+                    {
+                        "type": "cosmos-sdk/MsgSend",
+                        "value": {
+                            "amount": [
+                                {
+                                    "amount": "995000",
+                                    "denom": "uatom"
+                                }
+                            ],
+                            "from_address": "cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575",
+                            "to_address": "cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0"
+                        }
+                    }
+                ],
+                "signatures": [
+                    {
+                        "pub_key": {
+                            "type": "tendermint/PubKeySecp256k1",
+                            "value": "A6EsukEXB53GhohQVeDpxtkeH8KQIayd/Co/ApYRYkTm"
+                        },
+                        "sequence": 0,
+                        "signature": "ULEpUqNzoAnYEx2x22F3ANAiPXquAU9+mqLWoAA/ZOUGTMsdb6vryzsW6AKX2Kqj1pGNdrTcQ58Z09JPyjpgEA=="
+                    }
+                ]
+            }
+        }
+    )");
 }
