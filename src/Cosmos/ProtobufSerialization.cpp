@@ -15,6 +15,7 @@
 #include "Protobuf/crypto_secp256k1_keys.pb.h"
 #include "Protobuf/ibc_applications_transfer_tx.pb.h"
 #include "Protobuf/terra_wasm_v1beta1_tx.pb.h"
+#include "Protobuf/thorchain_bank_tx.pb.h"
 
 #include "PrivateKey.h"
 #include "Data.h"
@@ -144,6 +145,20 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 const std::string payload = Cosmos::wasmTerraExecuteSendPayload(wasmExecute).dump();
                 msgExecute.set_execute_msg(payload);
                 any.PackFrom(msgExecute, ProtobufAnyNamespacePrefix);
+                return any;
+            }
+
+        case Proto::Message::kThorchainSendMessage:
+            {
+                assert(msg.has_thorchain_send_message());
+                const auto& send = msg.thorchain_send_message();
+                auto msgSend =types::MsgSend();
+                msgSend.set_from_address(send.from_address());
+                msgSend.set_to_address(send.to_address());
+                for (auto i = 0; i < send.amounts_size(); ++i) {
+                    *msgSend.add_amount() = convertCoin(send.amounts(i));
+                }
+                any.PackFrom(msgSend, ProtobufAnyNamespacePrefix);
                 return any;
             }
 
