@@ -112,6 +112,34 @@ Data Signer::encode(const Proto::SigningInput& input) const {
             encodeAsset(input.op_change_trust().asset(), data);
             encode64BE(0x7fffffffffffffff, data); // limit MAX
             break;
+
+        case Proto::SigningInput::kOpCreateClaimableBalance:
+            {
+                const auto ClaimantTypeV0 = 0;
+                encodeAsset(input.op_create_claimable_balance().asset(), data);
+                encode64BE(input.op_create_claimable_balance().amount(), data);
+                auto nClaimants = input.op_create_claimable_balance().claimants_size();
+                encode32BE((uint32_t)nClaimants, data);
+                for (auto i = 0; i < nClaimants; ++i) {
+                    encode32BE((uint32_t)ClaimantTypeV0, data);
+                    encodeAddress(Address(input.op_create_claimable_balance().claimants(i).account()), data);
+                    encode32BE((uint32_t)input.op_create_claimable_balance().claimants(i).predicate(), data);
+                    // Note: other predicates not supported, predicate-specific data would follow here
+                }
+            }
+            break;
+
+        case Proto::SigningInput::kOpClaimClaimableBalance:
+            {
+                const auto ClaimableBalanceIdTypeClaimableBalanceIdTypeV0 = 0;
+                encode32BE((uint32_t)ClaimableBalanceIdTypeClaimableBalanceIdTypeV0, data);
+                const auto balanceId = input.op_claim_claimable_balance().balance_id();
+                if (balanceId.size() != 32) {
+                    return Data();
+                }
+                data.insert(data.end(), balanceId.begin(), balanceId.end());
+            }
+            break;
     }
 
     encode32BE(0, data); // Ext
@@ -127,6 +155,10 @@ uint32_t Signer::operationType(const Proto::SigningInput& input) {
             return 1;
         case Proto::SigningInput::kOpChangeTrust:
             return 6;
+        case Proto::SigningInput::kOpCreateClaimableBalance:
+            return 14;
+        case Proto::SigningInput::kOpClaimClaimableBalance:
+            return 15;
     }
 }
 

@@ -40,6 +40,8 @@ class Address {
 
     /// Returns a string representation of the address.
     std::string string() const;
+  protected:
+    Address() = default;
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {

@@ -119,6 +119,13 @@ message Message {
         repeated string coin = 6;
     }
 
+    // thorchain/MsgSend
+    message THORChainSend {
+        bytes from_address = 1;
+        bytes to_address = 2;
+        repeated Amount amounts = 3;
+    }
+
     message RawJSON {
         string type = 1;
         string value = 2;
@@ -134,6 +141,7 @@ message Message {
         RawJSON raw_json_message = 7;
         WasmTerraExecuteContractTransfer wasm_terra_execute_contract_transfer_message = 8;
         WasmTerraExecuteContractSend wasm_terra_execute_contract_send_message = 9;
+        THORChainSend thorchain_send_message = 10;
     }
 }
 

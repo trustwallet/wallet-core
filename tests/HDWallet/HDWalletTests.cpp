@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -283,6 +283,116 @@ TEST(HDWallet, Bip39Vectors) {
             EXPECT_EQ(hex(wallet.getSeed()), seed);
             EXPECT_EQ(wallet.getRootKey(TWCoinTypeBitcoin, TWHDVersionXPRV), xprv);
         }
+    }
+}
+
+TEST(HDWallet, getExtendedPrivateKey) {
+    const HDWallet wallet = HDWallet(mnemonic1, "");
+    const auto purpose = TWPurposeBIP44;
+    const auto coin = TWCoinTypeBitcoin;
+    const auto hdVersion = TWHDVersionZPRV;
+    
+    // default
+    const auto extPubKey1 = wallet.getExtendedPrivateKey(purpose, coin, hdVersion);
+    EXPECT_EQ(extPubKey1, "zprvAcwsTZNaY1f7rfwsy5GseSDStYBrxwtsBZDkb3iyuQUs4NF6n58BuH7Xj54RuaSCWtU5CiQzuYQgFgqr1HokgKcVAeGeXokhJUAJeP3VmvY");
+
+    // explicitly specify default account=0
+    const auto extPubKey2 = wallet.getExtendedPrivateKeyAccount(purpose, coin, hdVersion, 0);
+    EXPECT_EQ(extPubKey2, "zprvAcwsTZNaY1f7rfwsy5GseSDStYBrxwtsBZDkb3iyuQUs4NF6n58BuH7Xj54RuaSCWtU5CiQzuYQgFgqr1HokgKcVAeGeXokhJUAJeP3VmvY");
+
+    // custom account=1
+    const auto extPubKey3 = wallet.getExtendedPrivateKeyAccount(purpose, coin, hdVersion, 1);
+    EXPECT_EQ(extPubKey3, "zprvAcwsTZNaY1f7sifgNNgdNa4P9mPtyg3zRVgwkx2qF9Sn7F255MzP6Zyumn6bgV5xuoS8ZrDvjzE7APcFSacXdzFYpGvyybb1bnAoh5nHxpn");
+}
+
+TEST(HDWallet, getExtendedPublicKey) {
+    const HDWallet wallet = HDWallet(mnemonic1, "");
+    const auto purpose = TWPurposeBIP44;
+    const auto coin = TWCoinTypeBitcoin;
+    const auto hdVersion = TWHDVersionZPUB;
+    
+    // default
+    const auto extPubKey1 = wallet.getExtendedPublicKey(purpose, coin, hdVersion);
+    EXPECT_EQ(extPubKey1, "zpub6qwDs4uUNPDR5A2M56ot1aABSa2MNQciYn9MPS8bTk1qwAaFKcSST5S1aLidvPp9twqpaumG7vikR2vHhBXjp5oGgHyMvWK3AtUkfeEgyns");
+
+    // explicitly specify default account=0
+    const auto extPubKey2 = wallet.getExtendedPublicKeyAccount(purpose, coin, hdVersion, 0);
+    EXPECT_EQ(extPubKey2, "zpub6qwDs4uUNPDR5A2M56ot1aABSa2MNQciYn9MPS8bTk1qwAaFKcSST5S1aLidvPp9twqpaumG7vikR2vHhBXjp5oGgHyMvWK3AtUkfeEgyns");
+
+    // custom account=1
+    const auto extPubKey3 = wallet.getExtendedPublicKeyAccount(purpose, coin, hdVersion, 1);
+    EXPECT_EQ(extPubKey3, "zpub6qwDs4uUNPDR6Ck9UQDdji17hoEPP8mqnicYZLSSoUykz3MDcuJdeNJPd3BozqEafeLZkegWqzAvkgA4JZZ5tTN2rDpGKfk54essyfx1eZP");
+}
+
+TEST(HDWallet, Derive_XpubPub_vs_PrivPub) {
+    // Test different routes for deriving address from mnemonic, result should be the same:
+    // - Direct: mnemonic -> seed -> privateKey -> publicKey -> address
+    // - Extended Public: mnemonic -> seed -> zpub -> publicKey -> address
+    // - Extended Private: mnemonic -> seed -> zpriv -> privateKey -> publicKey -> address
+
+    const HDWallet wallet = HDWallet(mnemonic1, "");
+    const auto coin = TWCoinTypeBitcoin;
+    const auto derivPath1 = DerivationPath("m/84'/0'/0'/0/0");
+    const auto derivPath2 = DerivationPath("m/84'/0'/0'/0/2");
+    const auto expectedPublicKey1 = "02df9ef2a7a5552765178b181e1e1afdefc7849985c7dfe9647706dd4fa40df6ac";
+    const auto expectedPublicKey2 = "031e1f64d2f6768dccb6814545b2e2d58e26ad5f91b7cbaffe881ed572c65060db";
+    const auto expectedAddress1 = "bc1qpsp72plnsqe6e2dvtsetxtww2cz36ztmfxghpd";
+    const auto expectedAddress2 = "bc1q7zddsunzaftf4zlsg9exhzlkvc5374a6v32jf6";
+
+    // -> privateKey -> publicKey
+    {
+        const auto privateKey1 = wallet.getKey(coin, derivPath1);
+        const auto publicKey1 = privateKey1.getPublicKey(TWPublicKeyTypeSECP256k1);
+        EXPECT_EQ(hex(publicKey1.bytes), expectedPublicKey1);
+        const auto address1 = Bitcoin::SegwitAddress(publicKey1, "bc");
+        EXPECT_EQ(address1.string(), expectedAddress1);
+    }
+    {
+        const auto privateKey2 = wallet.getKey(coin, derivPath2);
+        const auto publicKey2 = privateKey2.getPublicKey(TWPublicKeyTypeSECP256k1);
+        EXPECT_EQ(hex(publicKey2.bytes), expectedPublicKey2);
+        const auto address2 = Bitcoin::SegwitAddress(publicKey2, "bc");
+        EXPECT_EQ(address2.string(), expectedAddress2);
+    }
+
+    // zpub -> publicKey
+    const auto zpub = wallet.getExtendedPublicKey(TWPurposeBIP84, coin, TWHDVersionZPUB);
+    EXPECT_EQ(zpub, "zpub6rNUNtxSa9Gxvm4Bdxf1MPMwrvkzwDx6vP96Hkzw3jiQKdg3fhXBStxjn12YixQB8h88B3RMSRscRstf9AEVaYr3MAqVBEWBDuEJU4PGaT9");
+
+    {
+        const auto publicKey1 = wallet.getPublicKeyFromExtended(zpub, coin, derivPath1);
+        EXPECT_TRUE(publicKey1.has_value());
+        EXPECT_EQ(hex(publicKey1->bytes), expectedPublicKey1);
+        const auto address1 = Bitcoin::SegwitAddress(publicKey1.value(), "bc");
+        EXPECT_EQ(address1.string(), expectedAddress1);
+    }
+    {
+        const auto publicKey2 = wallet.getPublicKeyFromExtended(zpub, coin, derivPath2);
+        EXPECT_TRUE(publicKey2.has_value());
+        EXPECT_EQ(hex(publicKey2->bytes), expectedPublicKey2);
+        const auto address2 = Bitcoin::SegwitAddress(publicKey2.value(), "bc");
+        EXPECT_EQ(address2.string(), expectedAddress2);
+    }
+
+    // zpriv -> privateKey -> publicKey
+    const auto zpriv = wallet.getExtendedPrivateKey(TWPurposeBIP84, coin, TWHDVersionZPRV);
+    EXPECT_EQ(zpriv, "zprvAdP7yPRYjmifiGyiXw7zzFRDJtvWXmEFZADVVNbKVQBRSqLu8ACvu6eFvhrnnw4QwdTD8PUVa48MguwiPTiyfn85zWx9iA5MYy4Eufu5bas");
+
+    {
+        const auto privateKey1 = wallet.getPrivateKeyFromExtended(zpriv, coin, derivPath1);
+        EXPECT_TRUE(privateKey1.has_value());
+        const auto publicKey1 = privateKey1->getPublicKey(TWPublicKeyTypeSECP256k1);
+        EXPECT_EQ(hex(publicKey1.bytes), expectedPublicKey1);
+        const auto address1 = Bitcoin::SegwitAddress(publicKey1, "bc");
+        EXPECT_EQ(address1.string(), expectedAddress1);
+    }
+    {
+        const auto privateKey2 = wallet.getPrivateKeyFromExtended(zpriv, coin, derivPath2);
+        EXPECT_TRUE(privateKey2.has_value());
+        const auto publicKey2 = privateKey2->getPublicKey(TWPublicKeyTypeSECP256k1);
+        EXPECT_EQ(hex(publicKey2.bytes), expectedPublicKey2);
+        const auto address2 = Bitcoin::SegwitAddress(publicKey2, "bc");
+        EXPECT_EQ(address2.string(), expectedAddress2);
     }
 }
 

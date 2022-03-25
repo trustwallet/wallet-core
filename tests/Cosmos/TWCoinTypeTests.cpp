@@ -30,5 +30,5 @@ TEST(TWCosmosCoinType, TWCoinType) {
     assertStringsEqual(txUrl, "https://mintscan.io/cosmos/txs/541FA06FB37AC1BF61922143783DD76FECA361830F9876D0342536EE8A87A790");
     assertStringsEqual(accUrl, "https://mintscan.io/cosmos/account/cosmos1gu6y2a0ffteesyeyeesk23082c6998xyzmt9mz");
     assertStringsEqual(id, "cosmos");
-    assertStringsEqual(name, "Cosmos");
+    assertStringsEqual(name, "Cosmos Hub");
 }

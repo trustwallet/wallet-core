@@ -32,6 +32,13 @@ TEST(AnyAddress, Data) {
         auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
         assertHexEqual(keyHash, "4e5b2e1dc63f6b91cb6cd759936495434c7e972f");
     }
+    // smartBCH
+    {
+        auto string = STRING("0x4E5B2e1dc63F6b91cb6Cd759936495434C7e972F");
+        auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeSmartBitcoinCash));
+        auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
+        assertHexEqual(keyHash, "4e5b2e1dc63f6b91cb6cd759936495434c7e972f");
+    }
     // bnb address key hash
     {
         auto string = STRING("bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5");
