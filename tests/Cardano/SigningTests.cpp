@@ -60,13 +60,13 @@ Proto::SigningInput createSampleInput(uint amount) {
     Proto::SigningInput input;
     auto* utxo1 = input.add_utxos();
     const auto txHash1 = parse_hex("f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767");
-    utxo1->mutable_out_point()->set_tx_hash(std::string(txHash1.begin(), txHash1.end()));
+    utxo1->mutable_out_point()->set_tx_hash(txHash1.data(), txHash1.size());
     utxo1->mutable_out_point()->set_output_index(1);
     utxo1->set_address("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23");
     utxo1->set_amount(1500000);
     auto* utxo2 = input.add_utxos();
     const auto txHash2 = parse_hex("554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0");
-    utxo2->mutable_out_point()->set_tx_hash(std::string(txHash2.begin(), txHash2.end()));
+    utxo2->mutable_out_point()->set_tx_hash(txHash2.data(), txHash2.size());
     utxo2->mutable_out_point()->set_output_index(0);
     utxo2->set_address("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23");
     utxo2->set_amount(6500000);

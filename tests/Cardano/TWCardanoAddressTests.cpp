@@ -34,8 +34,4 @@ TEST(TWCardano, Address) {
     ASSERT_TRUE(TWAnyAddressEqual(address.get(), address2.get()));
 }
 
-TEST(TWCardano, SigningNotImplemented) {
-    // not implemented, returns empty data
-    auto result = WRAPD(TWAnySignerSign(WRAPD(TWDataCreateWithSize(0)).get(), TWCoinType::TWCoinTypeCardano));
-    EXPECT_EQ(TWDataSize(result.get()), 0);
-}
+// TODO add TWCardano signing test

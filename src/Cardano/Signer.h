@@ -17,6 +17,13 @@ namespace TW::Cardano {
 
 class Signer {
 public:
+    /// Signs a Proto::SigningInput transaction
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept {
+        Signer signer = Signer(input);
+        return signer.sign();
+    }
+
+public:
     Proto::SigningInput input;
     TransactionPlan _plan;
 
