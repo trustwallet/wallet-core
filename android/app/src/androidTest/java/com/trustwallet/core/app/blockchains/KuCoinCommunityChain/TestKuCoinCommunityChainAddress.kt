@@ -17,7 +17,7 @@ class TestKuCoinCommunityChainAddress {
     init {
         System.loadLibrary("TrustWalletCore")
     }
-1
+    
     @Test
     fun testAddress() {
         val key = PrivateKey("33b85056aabab539bcb68540735ecf054e38bc58b29b751530e2b54ecb4ca564".toHexByteArray())
