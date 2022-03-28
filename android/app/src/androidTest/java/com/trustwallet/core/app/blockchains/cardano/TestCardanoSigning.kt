@@ -6,11 +6,21 @@
 
 package com.trustwallet.core.app.blockchains.cardano
 
+import com.google.protobuf.ByteString
+import com.trustwallet.core.app.utils.Numeric
 import com.trustwallet.core.app.utils.toHex
+import com.trustwallet.core.app.utils.toHexBytes
 import com.trustwallet.core.app.utils.toHexByteArray
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import wallet.core.java.AnySigner
 import wallet.core.jni.*
+import wallet.core.jni.CoinType.CARDANO
+import wallet.core.jni.proto.Cardano
+import wallet.core.jni.proto.Cardano.SigningInput
+import wallet.core.jni.proto.Cardano.SigningOutput
+import wallet.core.jni.proto.Common.SigningError
+
 
 class TestCardanoSigning {
 
