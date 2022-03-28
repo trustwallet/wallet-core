@@ -17,6 +17,7 @@
 #include "proto/Solana.pb.h"
 #include "proto/Stellar.pb.h"
 #include "proto/Tezos.pb.h"
+#include "proto/NEAR.pb.h"
 #include "proto/TransactionCompiler.pb.h"
 
 #include <TrustWalletCore/TWAnySigner.h>
@@ -895,5 +896,63 @@ TEST(TransactionCompiler, TezosCompileWithSignatures) {
         ANY_SIGN(input, coin);
 
         ASSERT_EQ(hex(output.encoded()), tx);
+    }
+}
+
+TEST(TransactionCompiler, NEARCompileWithSignatures) {
+    auto privateKeyBytes = Base58::bitcoin.decode(
+        "3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
+    auto publicKey = Base58::bitcoin.decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
+    const auto coin = TWCoinTypeNEAR;
+    /// Step 1: Prepare transaction input (protobuf)
+    auto input = TW::NEAR::Proto::SigningInput();
+    input.set_signer_id("test.near");
+    input.set_receiver_id("whatever.near");
+    input.set_nonce(1);
+    auto blockHash = Base58::bitcoin.decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
+    input.set_block_hash(blockHash.data(), blockHash.size());
+    input.set_public_key(publicKey.data(), publicKey.size());
+
+    input.add_actions();
+    auto& transfer = *input.mutable_actions(0)->mutable_transfer();
+    Data deposit(16, 0);
+    deposit[0] = 1;
+    transfer.set_deposit(deposit.data(), deposit.size());
+    auto inputString = input.SerializeAsString();
+    auto inputData = TW::Data(inputString.begin(), inputString.end());
+    /// Step 2: Obtain preimage hash
+    const auto preImageHashesData = TransactionCompiler::preImageHashes(coin, inputData);
+    auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
+    preSigningOutput.ParseFromArray(preImageHashesData.data(), (int)preImageHashesData.size());
+    ASSERT_EQ(preSigningOutput.errorcode(), 0);
+    auto preImageHash = preSigningOutput.datahash();
+    EXPECT_EQ(hex(preImageHash),
+              "eea6e680f3ea51a7f667e9a801d0bfadf66e03d41ed54975b3c6006351461b32");
+    auto signature = parse_hex("969a83332186ee9755e4839325525806e189a3d2d2bb4b4760e94443e97e1c4f22d"
+                               "eeef0059a8e9713100eda6e19144da7e8a0ef7e539b20708ba1d8d021bd01");
+
+    /// Step 3: Compile transaction info
+    const auto outputData =
+        TransactionCompiler::compileWithSignatures(coin, inputData, {signature}, {publicKey});
+
+    TW::NEAR::Proto::SigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+
+    const auto tx = "09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341"
+                    "538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901d"
+                    "f296be6adc4cc4df34d040efa2435224b6986910e630c2fef60100000003010000000000000000"
+                    "0000000000000000969a83332186ee9755e4839325525806e189a3d2d2bb4b4760e94443e97e1c"
+                    "4f22deeef0059a8e9713100eda6e19144da7e8a0ef7e539b20708ba1d8d021bd01";
+    EXPECT_EQ(hex(output.signed_transaction()), tx);
+    { // Double check: check if simple signature process gives the same result. Note that private
+        // keys were not used anywhere up to this point.
+        TW::NEAR::Proto::SigningInput input;
+        ASSERT_TRUE(input.ParseFromArray(inputData.data(), (int)inputData.size()));
+        input.set_private_key(privateKeyBytes.data(), 32);
+
+        TW::NEAR::Proto::SigningOutput output;
+        ANY_SIGN(input, coin);
+
+        ASSERT_EQ(hex(output.signed_transaction()), tx);
     }
 }
