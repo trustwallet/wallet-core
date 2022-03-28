@@ -12,12 +12,6 @@
 using namespace TW::Cardano;
 using namespace TW;
 
-OutPoint OutPoint::fromProto(const Cardano::Proto::OutPoint& proto) {
-    auto ret = OutPoint();
-    ret.txHash = data(proto.tx_hash());
-    ret.outputIndex = proto.output_index();
-    return ret;
-}
 
 TxInput TxInput::fromProto(const Cardano::Proto::TxInput& proto) {
     auto ret = TxInput();

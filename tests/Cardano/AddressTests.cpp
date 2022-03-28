@@ -58,6 +58,7 @@ TEST(CardanoAddress, Validation) {
     ASSERT_FALSE(AddressV3::isValid("hasoiusaodiuhsaijnnsajnsaiussai"));
     // empty
     ASSERT_FALSE(AddressV3::isValid(""));
+    ASSERT_FALSE(AddressV3::isValid("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk2"));
 }
 
 TEST(CardanoAddress, FromStringV2) {

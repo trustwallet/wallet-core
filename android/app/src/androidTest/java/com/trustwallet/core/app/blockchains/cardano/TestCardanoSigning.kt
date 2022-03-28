@@ -30,10 +30,13 @@ class TestCardanoSigning {
 
     @Test
     fun testSignTransfer1() {
-        val input = Cardano.SigningInput.newBuilder()
+        val message = Cardano.transferMessage.newBuilder()
             .setToAddress("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5")
             .setChangeAddress("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23")
             .setAmount(7_000_000)
+            .build()
+        val input = Cardano.SigningInput.newBuilder()
+            .setTransferMessages(message)
             .setTtl(53333333)
 
         val privKey = (Numeric.hexStringToByteArray("089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448a3566990b7785bd48c330875b1e0d03caaed0e67cecc42075dce1c7a13b1c49240508848ac82f603391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf1290dbd508e5ec71afaea98da2df1533c22ef02a26bb87b31907d0b2738fb7785b38d53aa68fc01230784c9209b2b2a2faf28491b3b1f1d221e63e704bbd0403c4154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e"))
