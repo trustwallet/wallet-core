@@ -172,16 +172,6 @@ string AddressV3::string(const std::string& hrp) const {
     return Bech32::encode(hrp, bech, Bech32::ChecksumVariant::Bech32);
 }
 
-string AddressV3::stringBase32() const {
-    if (legacyAddressV2.has_value()) {
-        return legacyAddressV2->string();
-    }
-
-    const Data raw = data();
-    std::string base32 = Base32::encode(raw, "abcdefghijklmnopqrstuvwxyz23456789");
-    return base32;
-}
-
 Data AddressV3::data() const {
     const byte first = firstByte(networkId, kind);
     Data raw;

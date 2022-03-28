@@ -59,20 +59,24 @@ TEST(CardanoSigning, SelectInputsSimple) {
     }
 }
 
-Proto::SigningInput createSampleInput(uint amount) {
+Proto::SigningInput createSampleInput(uint amount, int utxoCount = 10) {
     Proto::SigningInput input;
-    auto* utxo1 = input.add_utxos();
-    const auto txHash1 = parse_hex("f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767");
-    utxo1->mutable_out_point()->set_tx_hash(txHash1.data(), txHash1.size());
-    utxo1->mutable_out_point()->set_output_index(1);
-    utxo1->set_address("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23");
-    utxo1->set_amount(1500000);
-    auto* utxo2 = input.add_utxos();
-    const auto txHash2 = parse_hex("554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0");
-    utxo2->mutable_out_point()->set_tx_hash(txHash2.data(), txHash2.size());
-    utxo2->mutable_out_point()->set_output_index(0);
-    utxo2->set_address("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23");
-    utxo2->set_amount(6500000);
+    if (utxoCount >= 1) {
+        auto* utxo1 = input.add_utxos();
+        const auto txHash1 = parse_hex("f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767");
+        utxo1->mutable_out_point()->set_tx_hash(txHash1.data(), txHash1.size());
+        utxo1->mutable_out_point()->set_output_index(1);
+        utxo1->set_address("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23");
+        utxo1->set_amount(1500000);
+    }
+    if (utxoCount >= 2) {
+        auto* utxo2 = input.add_utxos();
+        const auto txHash2 = parse_hex("554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0");
+        utxo2->mutable_out_point()->set_tx_hash(txHash2.data(), txHash2.size());
+        utxo2->mutable_out_point()->set_output_index(0);
+        utxo2->set_address("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23");
+        utxo2->set_amount(6500000);
+    }
 
     const auto privateKeyData = parse_hex("089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448a3566990b7785bd48c330875b1e0d03caaed0e67cecc42075dce1c7a13b1c49240508848ac82f603391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf1290dbd508e5ec71afaea98da2df1533c22ef02a26bb87b31907d0b2738fb7785b38d53aa68fc01230784c9209b2b2a2faf28491b3b1f1d221e63e704bbd0403c4154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e");
     input.add_private_key(privateKeyData.data(), privateKeyData.size());
@@ -116,6 +120,35 @@ TEST(CardanoSigning, Plan) {
         EXPECT_EQ(plan.amount, 2000000);
         EXPECT_EQ(plan.fee, 168565);
         EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
+    }
+}
+
+TEST(CardanoSigning, SignNegative) {
+    {   // plan with error
+        auto input = createSampleInput(7000000);
+        const auto error = Common::Proto::Error_invalid_memo;
+        input.mutable_plan()->set_error(error);
+        auto signer = Signer(input);
+        const auto output = signer.sign();
+        EXPECT_EQ(output.error(), error);
+    }
+    {   // zero requested amount
+        auto input = createSampleInput(0);
+        auto signer = Signer(input);
+        const auto output = signer.sign();
+        EXPECT_EQ(output.error(), Common::Proto::Error_zero_amount_requested);
+    }
+    {   // no utxo
+        auto input = createSampleInput(7000000, 0);
+        auto signer = Signer(input);
+        const auto output = signer.sign();
+        EXPECT_EQ(output.error(), Common::Proto::Error_missing_input_utxos);
+    }
+    {   // low balance
+        auto input = createSampleInput(7000000000);
+        auto signer = Signer(input);
+        const auto output = signer.sign();
+        EXPECT_EQ(output.error(), Common::Proto::Error_low_balance);
     }
 }
 
