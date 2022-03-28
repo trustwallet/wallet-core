@@ -30,7 +30,7 @@ class TestCardanoSigning {
 
     @Test
     fun testSignTransfer1() {
-        val message = Cardano.transferMessage.newBuilder()
+        val message = Cardano.TransferMessage.newBuilder()
             .setToAddress("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5")
             .setChangeAddress("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23")
             .setAmount(7_000_000)
