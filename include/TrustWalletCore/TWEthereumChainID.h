@@ -34,7 +34,7 @@ enum TWEthereumChainID {
     TWEthereumChainIDRonin = 2020,
     TWEthereumChainIDCronos = 25,
     TWEthereumChainIDSmartBitcoinCash = 10000,
-    TWEthereumChainIDKCC = 321,
+    TWEthereumChainIDKuCoinCommunityChain = 321,
 };
 
 TW_EXTERN_C_END

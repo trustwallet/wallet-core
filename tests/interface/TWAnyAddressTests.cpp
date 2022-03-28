@@ -39,10 +39,10 @@ TEST(AnyAddress, Data) {
         auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
         assertHexEqual(keyHash, "4e5b2e1dc63f6b91cb6cd759936495434c7e972f");
     }
-    // KCC
+    // KuCoin Community Chain
     {
         auto string = STRING("0x4E5B2e1dc63F6b91cb6Cd759936495434C7e972F");
-        auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeKCC));
+        auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeKuCoinCommunityChain));
         auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
         assertHexEqual(keyHash, "4e5b2e1dc63f6b91cb6cd759936495434c7e972f");
     }
