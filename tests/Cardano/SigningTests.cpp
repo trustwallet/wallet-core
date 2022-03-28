@@ -6,10 +6,13 @@
 
 #include "Cardano/Signer.h"
 #include "Cardano/AddressV3.h"
+#include "proto/Cardano.pb.h"
 
 #include "PrivateKey.h"
 #include "HexCoding.h"
 #include "Cbor.h"
+#include <TrustWalletCore/TWAnySigner.h>
+#include "../interface/TWTestUtilities.h"
 
 #include <gtest/gtest.h>
 #include <vector>
@@ -269,4 +272,18 @@ TEST(CardanoSigning, SignMessageWithKey) {
 
     const auto sampleRightSignature = "1096ddcfb2ad21a4c0d861ef3fabe18841e8de88105b0d8e36430d7992c588634ead4100c32b2800b31b65e014d54a8238bdda63118d829bf0bcf1b631e86f0e";
     EXPECT_EQ(hex(signature), sampleRightSignature);
+}
+
+TEST(CardanoSigning, AnySignTransfer1) {
+    const auto input = createSampleInput(7000000);
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeCardano);
+
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+
+    const auto encoded = data(output.encoded());
+    EXPECT_EQ(hex(encoded), "83a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a006acfc082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a000ca99d021a000298a3031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058403c1cbde706d10550f5f966a5071e9e01e18f7b555626ed7616a214bd951d29d0ff0458edf5c555eefe4d4280302160149fc6e7e56a4298a368b7ab357643190df6");
+    const auto txid = data(output.tx_id());
+    EXPECT_EQ(hex(txid), "efcf8ec01fb8cd32bc5289c609c470b473cc79bc60b0667e1d68dc3962df1082");
 }
