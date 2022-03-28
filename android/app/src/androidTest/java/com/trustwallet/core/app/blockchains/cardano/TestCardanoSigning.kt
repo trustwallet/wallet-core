@@ -51,7 +51,7 @@ class TestCardanoSigning {
             .setAddress("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23")
             .setAmount(1_500_000)
             .build()
-        input.addUtxo(utxo1)
+        input.addUtxos(utxo1)
         
         val outpoint2 = Cardano.OutPoint.newBuilder()
             .setTxHash(ByteString.copyFrom(Numeric.hexStringToByteArray("554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0")))
@@ -62,7 +62,7 @@ class TestCardanoSigning {
             .setAddress("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23")
             .setAmount(6_500_000)
             .build()
-        input.addUtxo(utxo2)
+        input.addUtxos(utxo2)
         
         val output = AnySigner.sign(input.build(), CARDANO, SigningOutput.parser())
         assertEquals(output.error, SigningError.OK)
