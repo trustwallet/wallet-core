@@ -232,10 +232,10 @@ uint64_t estimateTxSize(const Proto::SigningInput& input, Amount amount) {
 }
 
 Amount txFeeFunction(uint64_t txSizeInBytes) {
-    const auto a = 155381;
-    const double b = 43.946;
+    const double fixedTerm = 155381;
+    const double linearTerm = 43.946;
 
-    const Amount fee = (Amount)(ceil((double)a + (double)txSizeInBytes * b));
+    const Amount fee = (Amount)(ceil(fixedTerm + (double)txSizeInBytes * linearTerm));
     return fee;
 }
 

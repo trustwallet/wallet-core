@@ -61,14 +61,14 @@ bool AddressV3::isValid(const std::string& addr) {
 
 Data blakeHash(Data d) {
     assert(d.size() == 32);
-    return Hash::blake2b(d.data(), d.size(), 28);
+    return Hash::blake2b(d.data(), d.size(), AddressV3::HashSize);
 }
 
 AddressV3 AddressV3::createBase(NetworkId networkId, const TW::Data& spendingKeyHash, const TW::Data& stakingKeyHash) {
-    if (spendingKeyHash.size() != 28) {
+    if (spendingKeyHash.size() != HashSize) {
         throw std::invalid_argument("Wrong spending key hash size");
     }
-    if (stakingKeyHash.size() != 28) {
+    if (stakingKeyHash.size() != HashSize) {
         throw std::invalid_argument("Wrong spending key hash size");
     }
     auto addr = AddressV3();

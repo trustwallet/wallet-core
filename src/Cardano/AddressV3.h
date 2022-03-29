@@ -27,8 +27,10 @@ class AddressV3 {
         Kind_Base = 0,
     };
 
+    static const uint8_t HashSize = 28;
+
     // First byte header (kind, netowrkId) and 2 hashes
-    static const uint8_t EncodedSize = 1 + 2 * 28;
+    static const uint8_t EncodedSize = 1 + 2 * HashSize;
 
     NetworkId networkId;
 
