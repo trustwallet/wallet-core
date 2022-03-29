@@ -25,7 +25,7 @@ class Signer {
     std::string chainID;
     Proto::SigningInput input;
     /// Initializes a transaction signer.
-    explicit Signer(const Proto::SigningInput& input) : input(input), chainID(input.chain_id()) {}
+    explicit Signer(const Proto::SigningInput& input) : chainID(input.chain_id()), input(input) {}
     /// Initializes a signer with a chain identifier which could be `mainnet`, `testnet` or
     /// `privatenet`
     explicit Signer(std::string chainID) : chainID(std::move(chainID)) {}
