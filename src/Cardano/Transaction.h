@@ -16,7 +16,7 @@
 
 namespace TW::Cardano {
 
-typedef uint64_t Amount; // TODO proper type
+typedef uint64_t Amount;
 
 class OutPoint {
 public:

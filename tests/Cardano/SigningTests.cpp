@@ -59,7 +59,7 @@ TEST(CardanoSigning, SelectInputsSimple) {
     }
 }
 
-Proto::SigningInput createSampleInput(uint amount, int utxoCount = 10) {
+Proto::SigningInput createSampleInput(uint64_t amount, int utxoCount = 10) {
     Proto::SigningInput input;
     if (utxoCount >= 1) {
         auto* utxo1 = input.add_utxos();

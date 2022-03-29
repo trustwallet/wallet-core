@@ -15,14 +15,14 @@ message TxInput {
 
     string address = 2;
 
-    // ADA amount // TODO proper type
+    // ADA amount
     uint64 amount = 3;
 }
 
 message TxOutput {
     string address = 1;
     
-    // ADA amount // TODO proper type
+    // ADA amount
     uint64 amount = 2;
 }
 
@@ -33,7 +33,7 @@ message Transfer {
     // Change address
     string change_address = 2;
 
-    // TODO check correct type
+    // ADA amount to transfer
     uint64 amount = 3;
 }
 
