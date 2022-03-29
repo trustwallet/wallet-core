@@ -33,5 +33,3 @@ TEST(TWCardano, Address) {
 
     ASSERT_TRUE(TWAnyAddressEqual(address.get(), address2.get()));
 }
-
-// TODO add TWCardano signing test

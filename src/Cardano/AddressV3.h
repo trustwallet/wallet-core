@@ -67,8 +67,6 @@ class AddressV3 {
     std::string string() const;
     /// Returns the Bech string representation of the address, with given HRP.
     std::string string(const std::string& hrp) const;
-    /// Returns the internal Base32 string representation of the address.
-    std::string stringBase32() const;
 
     /// Check validity and parse elements of a string address.  Used internally by isValid and ctor.
     static bool parseAndCheckV3(const std::string& addr, NetworkId& networkId, Kind& kind, TW::Data& raw);
