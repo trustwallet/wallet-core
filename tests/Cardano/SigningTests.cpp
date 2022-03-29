@@ -83,6 +83,7 @@ Proto::SigningInput createSampleInput(uint64_t amount, int utxoCount = 10) {
     input.mutable_transfer_message()->set_to_address("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5");
     input.mutable_transfer_message()->set_change_address("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23");
     input.mutable_transfer_message()->set_amount(amount);
+    input.mutable_transfer_message()->set_use_max_amount(false);
     input.set_ttl(53333333);
     return input;
 }
@@ -120,35 +121,6 @@ TEST(CardanoSigning, Plan) {
         EXPECT_EQ(plan.amount, 2000000);
         EXPECT_EQ(plan.fee, 168565);
         EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
-    }
-}
-
-TEST(CardanoSigning, SignNegative) {
-    {   // plan with error
-        auto input = createSampleInput(7000000);
-        const auto error = Common::Proto::Error_invalid_memo;
-        input.mutable_plan()->set_error(error);
-        auto signer = Signer(input);
-        const auto output = signer.sign();
-        EXPECT_EQ(output.error(), error);
-    }
-    {   // zero requested amount
-        auto input = createSampleInput(0);
-        auto signer = Signer(input);
-        const auto output = signer.sign();
-        EXPECT_EQ(output.error(), Common::Proto::Error_zero_amount_requested);
-    }
-    {   // no utxo
-        auto input = createSampleInput(7000000, 0);
-        auto signer = Signer(input);
-        const auto output = signer.sign();
-        EXPECT_EQ(output.error(), Common::Proto::Error_missing_input_utxos);
-    }
-    {   // low balance
-        auto input = createSampleInput(7000000000);
-        auto signer = Signer(input);
-        const auto output = signer.sign();
-        EXPECT_EQ(output.error(), Common::Proto::Error_low_balance);
     }
 }
 
@@ -220,6 +192,65 @@ TEST(CardanoSigning, PlanAndSignTransfer1) {
     EXPECT_EQ(hex(txid), "e319c0bfc99cdb79d64f00b7e8fb8bfbf29fa70554c84f101e92b7dfed172448");
 }
 
+
+TEST(CardanoSigning, PlanAndSignMaxAmount) {
+    auto input = createSampleInput(7000000);
+    input.mutable_transfer_message()->set_use_max_amount(true);
+
+    {
+        // run plan and check result
+        auto signer = Signer(input);
+        const auto plan = signer.plan();
+
+        EXPECT_EQ(plan.availableAmount, 8000000);
+        EXPECT_EQ(plan.amount, 8000000 - 170147);
+        EXPECT_EQ(plan.fee, 170147);
+        EXPECT_EQ(plan.change, 0);
+        ASSERT_EQ(plan.utxos.size(), 2);
+        EXPECT_EQ(plan.utxos[0].amount, 1500000);
+        EXPECT_EQ(plan.utxos[1].amount, 6500000);
+    }
+
+    auto signer = Signer(input);
+    const auto output = signer.sign();
+
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+
+    const auto encoded = data(output.encoded());
+    EXPECT_EQ(hex(encoded), "83a40082825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000018182583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a0077795d021a000298a3031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058406594173f71e83ff34326376c4c03ca5abbecadd0de925bd13deaec98388f07006426b93ac34b1e1f2ad88ddd3bb658a7f2a2ddf72b04f2ccc2a9167917696304f6");
+    const auto txid = data(output.tx_id());
+    EXPECT_EQ(hex(txid), "6abeb64739837aaa2ae4ba261fa8573551e4840a09788b08d9274554a83011bd");
+}
+
+TEST(CardanoSigning, SignNegative) {
+    {   // plan with error
+        auto input = createSampleInput(7000000);
+        const auto error = Common::Proto::Error_invalid_memo;
+        input.mutable_plan()->set_error(error);
+        auto signer = Signer(input);
+        const auto output = signer.sign();
+        EXPECT_EQ(output.error(), error);
+    }
+    {   // zero requested amount
+        auto input = createSampleInput(0);
+        auto signer = Signer(input);
+        const auto output = signer.sign();
+        EXPECT_EQ(output.error(), Common::Proto::Error_zero_amount_requested);
+    }
+    {   // no utxo
+        auto input = createSampleInput(7000000, 0);
+        auto signer = Signer(input);
+        const auto output = signer.sign();
+        EXPECT_EQ(output.error(), Common::Proto::Error_missing_input_utxos);
+    }
+    {   // low balance
+        auto input = createSampleInput(7000000000);
+        auto signer = Signer(input);
+        const auto output = signer.sign();
+        EXPECT_EQ(output.error(), Common::Proto::Error_low_balance);
+    }
+}
+
 TEST(CardanoSigning, SignTransfer_0db1ea) {
     const auto amount = 1100000;
     const auto ownAddress = "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23";
@@ -243,6 +274,7 @@ TEST(CardanoSigning, SignTransfer_0db1ea) {
     input.mutable_transfer_message()->set_to_address("addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq");
     input.mutable_transfer_message()->set_change_address(ownAddress);
     input.mutable_transfer_message()->set_amount(amount);
+    input.mutable_transfer_message()->set_use_max_amount(false);
     input.set_ttl(54675589);
 
     {

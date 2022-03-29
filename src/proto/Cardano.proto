@@ -35,6 +35,9 @@ message Transfer {
 
     // ADA amount to transfer
     uint64 amount = 3;
+
+    // Set if max amount is requested (max possible from UTXOs/fee; amount is disregarded in this case)
+    bool use_max_amount = 4;
 }
 
 message TransactionPlan {

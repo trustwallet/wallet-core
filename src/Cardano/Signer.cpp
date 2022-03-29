@@ -246,23 +246,42 @@ Amount Signer::estimateFee(const Proto::SigningInput& input, Amount amount) {
 TransactionPlan Signer::plan() const {
     auto plan = TransactionPlan();
 
-    plan.amount = input.transfer_message().amount();
-    if (plan.amount == 0) {
+    bool maxAmount = input.transfer_message().use_max_amount();
+    if (input.transfer_message().amount() == 0 && !maxAmount) {
         plan.error = Common::Proto::Error_zero_amount_requested;
         return plan;
     }
-    assert(plan.amount > 0);
-
-    if (input.utxos_size() == 0) {
+    // Sum input UTXO amount
+    auto utxos = vector<TxInput>();
+    uint64_t inputSum = 0;
+    for (auto i = 0; i < input.utxos_size(); ++i) {
+        utxos.push_back(TxInput::fromProto(input.utxos(i)));
+        inputSum += input.utxos(i).amount();
+    }
+    if (inputSum == 0 || input.utxos_size() == 0) {
         plan.error = Common::Proto::Error_missing_input_utxos;
         return plan;
     }
-    auto utxos = vector<TxInput>();
-    for (auto i = 0; i < input.utxos_size(); ++i) {
-        utxos.push_back(TxInput::fromProto(input.utxos(i)));
+    assert(inputSum > 0);
+
+    // select UTXOs
+    plan.amount = input.transfer_message().amount();
+    assert(plan.amount > 0 || maxAmount);
+
+    // if amount requested is the same or more than available amount, it cannot be satisifed, but
+    // treat this case as MaxAmount, and send maximum available (which will be less)
+    if (!maxAmount && input.transfer_message().amount() >= inputSum) {
+        maxAmount = true;
     }
-    // select UTXOs, aim for 1.5x of target
-    plan.utxos = selectInputsSimple(utxos, plan.amount * 3 / 2 + 1);
+
+    // select UTXOs
+    if (!maxAmount) {
+        // aim for 1.5x of target
+        plan.utxos = selectInputsSimple(utxos, plan.amount * 3 / 2 + 1);
+    } else {
+        // maxAmount, select all
+        plan.utxos = utxos;
+    }
     assert(plan.utxos.size() > 0);
 
     // Sum availableAmount
@@ -284,13 +303,28 @@ TransactionPlan Signer::plan() const {
 
     plan.fee = estimateFee(input, plan.amount);
 
+    // adjust/compute amount
+    if (!maxAmount) {
+        // reduce amount if needed
+        plan.amount = std::max(Amount(0), std::min(plan.amount, plan.availableAmount - plan.fee));
+    } else {
+        // max available amount
+        plan.amount = std::max(Amount(0), plan.availableAmount - plan.fee);
+    }
+    assert(plan.amount >= 0 && plan.amount <= plan.availableAmount);
+
     if (plan.amount + plan.fee > plan.availableAmount) {
         plan.error = Common::Proto::Error_low_balance;
         return plan;
     }
     assert(plan.amount + plan.fee <= plan.availableAmount);
 
+    // compute change
     plan.change = plan.availableAmount - (plan.amount + plan.fee);
+
+    assert(plan.change >= 0 && plan.change <= plan.availableAmount);
+    assert(!maxAmount || plan.change == 0); // change is 0 in max amount case
+    assert(plan.amount + plan.change + plan.fee == plan.availableAmount);
 
     return plan;
 }
