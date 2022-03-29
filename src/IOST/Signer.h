@@ -12,10 +12,11 @@
 namespace TW::IOST {
 class Signer {
   public:
+    Proto::SigningInput input;
+    /// Initializes a transaction signer.
+    explicit Signer(const Proto::SigningInput& input) : input(input) {}
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
-    static std::string buildUnsignedTx(const Proto::SigningInput& input, const Data& pubkey,
-                                       uint8_t algorithm) noexcept;
-    static Proto::SigningOutput buildSignedTx(const Proto::SigningInput& input, const Data& pubkey,
-                                              uint8_t algorithm, const Data& signature) noexcept;
+    Proto::SigningOutput compile(const Data& signature, const PublicKey& publicKey) const;
+    Data signaturePreimage() const;
 };
 } // namespace TW::IOST

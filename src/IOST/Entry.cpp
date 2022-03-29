@@ -33,32 +33,27 @@ void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) con
 }
 
 Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
-    auto input = Proto::SigningInput();
-    auto output = TxCompiler::Proto::PreSigningOutput();
-    Data transaction;
-    if (!input.ParseFromArray(txInputData.data(), (int)txInputData.size())) {
-        output.set_errorcode(Common::Proto::Error_input_parse);
-        output.set_error("SigningInput parse failed");
-        return TW::data(output.SerializeAsString());
-    }
-    auto publicKey = data((const byte*)input.public_key().data(), input.public_key().size());
-    auto unsignedTx = Signer::buildUnsignedTx(input, publicKey, input.algorithm());
-    auto hash = Hash::sha3_256(unsignedTx);
-    std::string hashStr(hash.begin(), hash.end());
-    output.set_data(unsignedTx);
-    output.set_datahash(hashStr);
-    return TW::data(output.SerializeAsString());
+    return txCompilerTemplate<Proto::SigningInput, TxCompiler::Proto::PreSigningOutput>(
+        txInputData, [](const auto& input, auto& output) {
+            const auto signer = Signer(input);
+            auto preImage = signer.signaturePreimage();
+            auto preImageHash = Hash::sha3_256(preImage);
+            output.set_datahash(preImageHash.data(), preImageHash.size());
+            output.set_data(preImage.data(), preImage.size());
+        });
 }
 
 void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures,
                     const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
-    auto input = Proto::SigningInput();
-    if (input.ParseFromArray(txInputData.data(), (int)txInputData.size()) &&
-        (signatures.size() == 1)) {
-        auto publicKey = data((const byte*)input.public_key().data(), input.public_key().size());
-        auto output = Signer::buildSignedTx(input, publicKey, input.algorithm(), signatures[0]);
-        auto serializedOut = output.SerializeAsString();
-        dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
-        return;
-    }
+    dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
+        txInputData, [&](const auto& input, auto& output) {
+            const auto signer = Signer(input);
+            if (signatures.size() != 1 && publicKeys.size() != 1) {
+                output.set_errorcode(Common::Proto::Error_no_support_n2n);
+                output.set_error(
+                    Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
+                return;
+            }
+            output = signer.compile(signatures[0], publicKeys[0]);
+        });
 }

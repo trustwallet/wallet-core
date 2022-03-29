@@ -82,8 +82,6 @@ message SigningInput {
     string transfer_destination = 3;
     string transfer_amount = 4;
     string transfer_memo = 5;
-    bytes public_key = 6;
-    int32 algorithm = 7;
 }
 
 // Transaction signing output.
@@ -92,4 +90,8 @@ message SigningOutput {
     Transaction transaction = 1;
     // Signed and encoded transaction bytes.
     bytes encoded = 2;
+    /// error code, 0 is ok, other codes will be treated as errors
+    int32 errorCode = 3;
+    /// error code description
+    string error = 4;
 }
