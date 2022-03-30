@@ -11,6 +11,7 @@
 #include "proto/Common.pb.h"
 #include "proto/Ethereum.pb.h"
 #include "proto/Theta.pb.h"
+#include "proto/Cosmos.pb.h"
 #include "proto/NEO.pb.h"
 #include "proto/NULS.pb.h"
 #include "proto/Ripple.pb.h"
@@ -20,6 +21,7 @@
 #include "proto/NEAR.pb.h"
 #include "proto/IOST.pb.h"
 #include "proto/Tron.pb.h"
+#include "proto/VeChain.pb.h"
 #include "proto/TransactionCompiler.pb.h"
 
 #include <TrustWalletCore/TWAnySigner.h>
@@ -1164,4 +1166,115 @@ TEST(TransactionCompiler, RippleCompileWithSignatures) {
 
         ASSERT_EQ(hex(output.encoded()), ExpectedTx);
     }
+}
+
+TEST(TWTransactionCompiler, CosmosCompileWithSignatures) {
+    const auto coin = TWCoinTypeCosmos;
+    TW::Cosmos::Proto::SigningInput input;
+
+    PrivateKey privateKey = PrivateKey( parse_hex("8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    /// Step 1: Prepare transaction input (protobuf)
+    input.set_account_number(546179);
+    input.set_chain_id("cosmoshub-4");
+    input.set_memo("");
+    input.set_sequence(0);
+
+    PublicKey publicKey = privateKey.getPublicKey(TWCoinTypePublicKeyType(coin));
+    const auto pubKeyBz = publicKey.bytes;
+    input.set_public_key(pubKeyBz.data(), pubKeyBz.size());
+
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_send_coins_message();
+    message.set_from_address("cosmos1mky69cn8ektwy0845vec9upsdphktxt03gkwlx");
+    message.set_to_address("cosmos18s0hdnsllgcclweu9aymw4ngktr2k0rkygdzdp");
+    auto amountOfTx = message.add_amounts();
+    amountOfTx->set_denom("uatom");
+    amountOfTx->set_amount("400000");
+
+    auto& fee = *input.mutable_fee();
+    fee.set_gas(200000);
+    auto amountOfFee = fee.add_amounts();
+    amountOfFee->set_denom("uatom");
+    amountOfFee->set_amount("1000");
+
+    /// Step 2: Obtain protobuf preimage hash
+    input.set_signing_mode(TW::Cosmos::Proto::Protobuf);
+    auto protoInputString = input.SerializeAsString();
+    auto protoInputData = TW::Data(protoInputString.begin(), protoInputString.end());
+
+    const auto preImageHashData = TransactionCompiler::preImageHashes(coin, protoInputData);
+    auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
+    ASSERT_TRUE(preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
+    ASSERT_EQ(preSigningOutput.errorcode(), 0);
+    auto preImage = preSigningOutput.data();
+    auto preImageHash = preSigningOutput.datahash();
+    EXPECT_EQ(hex(preImage), "0a92010a8f010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e64126f0a2d636f736d6f73316d6b793639636e38656b74777930383435766563397570736470686b7478743033676b776c78122d636f736d6f733138733068646e736c6c6763636c7765753961796d77346e676b7472326b30726b7967647a64701a0f0a057561746f6d120634303030303012650a4e0a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a2102ecef5ce437a302c67f95468de4b31f36e911f467d7e6a52b41c1e13e1d56364912040a02080112130a0d0a057561746f6d12043130303010c09a0c1a0b636f736d6f736875622d342083ab21");
+    EXPECT_EQ(hex(preImageHash), "fa7990e1814c900efaedf1bdbedba22c22336675befe0ae39974130fc204f3de");
+
+    TW::Cosmos::Proto::SigningOutput output;
+    ANY_SIGN(input, coin);
+
+    assertJSONEqual(output.serialized(), "{\"tx_bytes\": \"CpIBCo8BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm8KLWNvc21vczFta3k2OWNuOGVrdHd5MDg0NXZlYzl1cHNkcGhrdHh0MDNna3dseBItY29zbW9zMThzMGhkbnNsbGdjY2x3ZXU5YXltdzRuZ2t0cjJrMHJreWdkemRwGg8KBXVhdG9tEgY0MDAwMDASZQpOCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAuzvXOQ3owLGf5VGjeSzHzbpEfRn1+alK0HB4T4dVjZJEgQKAggBEhMKDQoFdWF0b20SBDEwMDAQwJoMGkCvvVE6d29P30cO9/lnXyGunWMPxNY12NuqDcCnFkNM0H4CUQdl1Gc9+ogIJbro5nyzZzlv9rl2/GsZox/JXoCX\", \"mode\": \"BROADCAST_MODE_BLOCK\"}");
+    EXPECT_EQ(hex(output.signature()), "afbd513a776f4fdf470ef7f9675f21ae9d630fc4d635d8dbaa0dc0a716434cd07e02510765d4673dfa880825bae8e67cb367396ff6b976fc6b19a31fc95e8097");
+    ASSERT_TRUE(publicKey.verify(data(output.signature()), data(preImageHash.data())));
+    EXPECT_EQ(hex(output.serialized()), "7b226d6f6465223a2242524f4144434153545f4d4f44455f424c4f434b222c2274785f6279746573223a2243704942436f3842436877765932397a6257397a4c6d4a68626d7375646a46695a5852684d53354e633264545a57356b456d384b4c574e7663323176637a467461336b324f574e754f475672644864354d4467304e585a6c597a6c3163484e6b63476872644868304d444e6e61336473654249745932397a6257397a4d54687a4d47686b626e4e736247646a593278335a58553559586c74647a52755a327430636a4a724d484a726557646b656d52774767384b4258566864473974456759304d4441774d4441535a51704f436b594b4879396a62334e7462334d7559334a35634852764c6e4e6c593341794e545a724d53355164574a4c5a586b5349776f6841757a76584f51336f774c47663556476a65537a487a62704566526e312b616c4b30484234543464566a5a4a4567514b4167674245684d4b44516f466457463062323053424445774d444151774a6f4d476b437676564536643239503330634f392f6c6e587947756e574d50784e5931324e75714463436e466b4e4d304834435551646c314763392b6f67494a62726f356e797a5a7a6c7639726c322f47735a6f782f4a586f4358227d");
+
+    /// Step 3: Obtain json preimage hash
+    input.set_signing_mode(TW::Cosmos::Proto::JSON);
+    auto jsonInputString = input.SerializeAsString();
+    auto jsonInputData = TW::Data(jsonInputString.begin(), jsonInputString.end());
+
+    const auto jsonPreImageHashData = TransactionCompiler::preImageHashes(coin, jsonInputData);
+    auto jsonPreSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
+    ASSERT_TRUE(jsonPreSigningOutput.ParseFromArray(jsonPreImageHashData.data(), (int)jsonPreImageHashData.size()));
+    ASSERT_EQ(jsonPreSigningOutput.errorcode(), 0);
+    auto jsonPreImage = jsonPreSigningOutput.data();
+    auto jsonPreImageHash = jsonPreSigningOutput.datahash();
+    EXPECT_EQ(hex(jsonPreImage), "7b226163636f756e745f6e756d626572223a22353436313739222c22636861696e5f6964223a22636f736d6f736875622d34222c22666565223a7b22616d6f756e74223a5b7b22616d6f756e74223a2231303030222c2264656e6f6d223a227561746f6d227d5d2c22676173223a22323030303030227d2c226d656d6f223a22222c226d736773223a5b7b2274797065223a22636f736d6f732d73646b2f4d736753656e64222c2276616c7565223a7b22616d6f756e74223a5b7b22616d6f756e74223a22343030303030222c2264656e6f6d223a227561746f6d227d5d2c2266726f6d5f61646472657373223a22636f736d6f73316d6b793639636e38656b74777930383435766563397570736470686b7478743033676b776c78222c22746f5f61646472657373223a22636f736d6f733138733068646e736c6c6763636c7765753961796d77346e676b7472326b30726b7967647a6470227d7d5d2c2273657175656e6365223a2230227d");
+    EXPECT_EQ(hex(jsonPreImageHash), "0a31f6cd50f1a5c514929ba68a977e222a7df2dc11e8470e93118cc3545e6b37");
+}
+
+TEST(TWTransactionCompiler, VechainCompileWithSignatures) {
+    const auto coin = TWCoinTypeVeChain;
+
+    /// Step 1: Prepare transaction input (protobuf)
+    TW::VeChain::Proto::SigningInput input;
+    PrivateKey privateKey = PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    input.set_chain_tag(1);
+    input.set_block_ref(1);
+    input.set_expiration(1);
+    input.set_gas_price_coef(0);
+    input.set_gas(21000);
+    input.set_nonce(1);
+
+    auto& clause = *input.add_clauses();
+    auto amount = parse_hex("31303030"); // 1000
+    clause.set_to("0x3535353535353535353535353535353535353535");
+    clause.set_value(amount.data(), amount.size());
+
+    auto stringInput = input.SerializeAsString();
+    auto dataInput = TW::Data(stringInput.begin(), stringInput.end());
+
+    /// Step 2: Obtain preimage hash
+    const auto preImageHashData = TransactionCompiler::preImageHashes(coin, dataInput);
+    auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
+    ASSERT_TRUE(preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
+    ASSERT_EQ(preSigningOutput.errorcode(), 0);
+
+    auto preImage = preSigningOutput.data();
+    auto preImageHash = preSigningOutput.datahash();
+    EXPECT_EQ(hex(preImage), "e7010101dcdb943535353535353535353535353535353535353535843130303080808252088001c0");
+    EXPECT_EQ(hex(preImageHash), "a1b8ef3af3d8c74e97ac6cd732916a8f4c38c0905c8b70d2fa598edf1f62ea04");
+
+    /// Step 3: Sign
+    TW::VeChain::Proto::SigningOutput output;
+    ANY_SIGN(input, coin);
+    ASSERT_EQ(hex(output.encoded()), "f86a010101dcdb943535353535353535353535353535353535353535843130303080808252088001c0b841bf8edf9600e645b5abd677cb52f585e7f655d1361075d511b37f707a9f31da6702d28739933b264527a1d05b046f5b74044b88c30c3f5a09d616bd7a4af4901601");
+
+    /// Step 4: Verify signature
+    ASSERT_TRUE(privateKey.getPublicKey(TWCoinTypePublicKeyType(coin)).verify(data(output.signature()), data(preImageHash.data())));
 }

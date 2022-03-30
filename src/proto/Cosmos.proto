@@ -167,6 +167,8 @@ message SigningInput {
     repeated Message messages = 8;
 
     BroadcastMode mode = 9;
+
+    bytes public_key = 10;
 }
 
 // Transaction signing output.
@@ -183,6 +185,8 @@ message SigningOutput {
 
     // Set in case of error
     string error = 4;
+
+    int32 errorCode = 5;
 }
 
 // Signature
