@@ -42,7 +42,9 @@ Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
             const auto transaction = Signer::build(input);
             const auto chainId = load(data(input.chain_id())); // retrieve chainId from input
             auto preHash = transaction->preHash(chainId);
+            auto preImage = transaction->serialize(chainId);
             output.set_datahash(preHash.data(), preHash.size());
+            output.set_data(preImage.data(), preImage.size());
         });
 }
 
