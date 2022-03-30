@@ -1918,5 +1918,29 @@
       "rpc": "https://smartbch.fountainhead.cash/mainnet",
       "documentation": "https://github.com/smartbch/docs/blob/main/developers-guide/jsonrpc.md"
     }
+  },
+  {
+    "id": "kcc",
+    "name": "KuCoin Community Chain",
+    "coinId": 10000321,
+    "symbol": "KCS",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://explorer.kcc.io/en",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x2f0d79cd289a02f3181b68b9583a64c3809fe7387810b274275985c29d02c80d",
+      "sampleAccount": "0x4446fc4eb47f2f6586f9faab68b3498f86c07521"
+    },
+    "info": {
+      "url": "https://www.kcc.io/",
+      "source": "https://github.com/kcc-community/kcc",
+      "rpc": "https://rpc-mainnet.kcc.network",
+      "documentation": "https://docs.kcc.io/#/en-us/"
+    }
   }
 ]
