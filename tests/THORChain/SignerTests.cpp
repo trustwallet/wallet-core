@@ -192,7 +192,7 @@ TEST(THORChainSigner, SignTx_Json_Deprecated) {
                     }
                 ]
             }
-        }        
+        }
     )");
     EXPECT_EQ(hex(output.signature()), "e2b134d79fbd3df30f9b294c88fb84d0e482104f2f7e0a0c6c7d801537f2a94e2dd3d91135e1f57c057c738c90dc2c41fb4814072499accd22ca0037eb6eaff3");
 }
