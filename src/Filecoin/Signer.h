@@ -31,8 +31,3 @@ class Signer {
 };
 
 } // namespace TW::Filecoin
-
-/// Wrapper for C interface.
-struct TWFilecoinSigner {
-    TW::Filecoin::Signer impl;
-};

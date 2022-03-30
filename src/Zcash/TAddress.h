@@ -45,8 +45,3 @@ class TAddress : public TW::Base58Address<22> {
 };
 
 } // namespace TW::Zcash
-
-/// Wrapper for C interface.
-struct TWZcashTAddress {
-    TW::Zcash::TAddress impl;
-};

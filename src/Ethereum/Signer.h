@@ -60,8 +60,3 @@ class Signer {
 };
 
 } // namespace TW::Ethereum
-
-/// Wrapper for C interface.
-struct TWEthereumSigner {
-    TW::Ethereum::Signer impl;
-};

@@ -45,8 +45,3 @@ class TransactionInput {
 };
 
 } // namespace TW::Bitcoin
-
-/// Wrapper for C interface.
-struct TWBitcoinTransactionInput {
-    TW::Bitcoin::TransactionInput impl;
-};

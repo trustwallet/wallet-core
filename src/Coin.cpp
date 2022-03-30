@@ -48,7 +48,6 @@
 #include "Tezos/Entry.h"
 #include "Theta/Entry.h"
 #include "Tron/Entry.h"
-#include "TrustWalletCore/TWCoinType.h"
 #include "VeChain/Entry.h"
 #include "Waves/Entry.h"
 #include "Zcash/Entry.h"
