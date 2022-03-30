@@ -54,3 +54,64 @@ void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) const 
 
     transaction.signature = privateKey.signAsDER(half, TWCurveSECP256k1);
 }
+
+TW::Data Signer::preImage() const {
+    const int64_t tag = input.destination_tag();
+    if (tag > std::numeric_limits<uint32_t>::max() || tag < 0) {
+        throw std::invalid_argument("invalid memo");
+    }
+
+    auto transaction = Transaction(
+        /* amount */ input.amount(),
+        /* fee */ input.fee(),
+        /* flags */ input.flags(),
+        /* sequence */ input.sequence(),
+        /* last_ledger_sequence */ input.last_ledger_sequence(),
+        /* account */ Address(input.account()),
+        /* destination */ input.destination(),
+        /* destination_tag*/ tag);
+
+    transaction.flags |= fullyCanonical;
+    auto publicKey = Data(input.public_key().begin(), input.public_key().end());
+    transaction.pub_key = publicKey;
+
+    auto unsignedTx = transaction.getPreImage();
+    return unsignedTx;
+}
+
+Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& publicKey) const {
+    auto output = Proto::SigningOutput();
+    const int64_t tag = input.destination_tag();
+    if (tag > std::numeric_limits<uint32_t>::max() || tag < 0) {
+        output.set_error(Common::Proto::SigningError::Error_invalid_memo);
+        return output;
+    }
+
+    auto transaction = Transaction(
+        /* amount */ input.amount(),
+        /* fee */ input.fee(),
+        /* flags */ input.flags(),
+        /* sequence */ input.sequence(),
+        /* last_ledger_sequence */ input.last_ledger_sequence(),
+        /* account */ Address(input.account()),
+        /* destination */ input.destination(),
+        /* destination_tag*/ tag);
+
+    transaction.flags |= fullyCanonical;
+    auto pubKey = Data(input.public_key().begin(), input.public_key().end());
+    transaction.pub_key = pubKey;
+
+    auto unsignedTx = transaction.getPreImage();
+    auto hash = Hash::sha512(unsignedTx);
+    auto half = Data(hash.begin(), hash.begin() + 32);
+    if (!publicKey.verifyAsDER(signature, half)) {
+        output.set_error(Common::Proto::SigningError::Error_signing);
+        return output;
+    }
+
+    transaction.signature = signature;
+
+    auto encoded = transaction.serialize();
+    output.set_encoded(encoded.data(), encoded.size());
+    return output;
+}

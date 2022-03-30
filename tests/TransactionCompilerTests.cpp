@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Coin.h"
-#include "NULS/Address.h"
 #include "TransactionCompiler.h"
 #include "proto/Binance.pb.h"
 #include "proto/Bitcoin.pb.h"
@@ -14,6 +13,7 @@
 #include "proto/Theta.pb.h"
 #include "proto/NEO.pb.h"
 #include "proto/NULS.pb.h"
+#include "proto/Ripple.pb.h"
 #include "proto/Solana.pb.h"
 #include "proto/Stellar.pb.h"
 #include "proto/Tezos.pb.h"
@@ -30,6 +30,7 @@
 #include "Bitcoin/Script.h"
 #include "Bitcoin/SegwitAddress.h"
 
+#include "Base58.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
@@ -603,7 +604,7 @@ TEST(TransactionCompiler, NEOCompileWithSignatures) {
     txOutput->set_to_address("Ad9A1xPbuA5YBFr1XPznDwBwQzdckAjCev");
     txOutput->set_change_address("AdtSLMBqACP4jv8tRWwyweXGpyGG46eMXV");
     txOutput->set_amount(100000000);
-    
+
     auto inputString = input.SerializeAsString();
     auto inputData = TW::Data(inputString.begin(), inputString.end());
 
@@ -632,7 +633,7 @@ TEST(TransactionCompiler, NEOCompileWithSignatures) {
 
     auto expectedTx = "800000019c85b39cd5677e2bfd6bf8a711e8da93a2f1d172b2a52c6ca87757a4bccc24de0100029b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc500e1f50500000000ea610aa6db39bd8c8556c9569d94b5e5a5d0ad199b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc500fcbbc414000000f2908c7efc0c9e43ffa7e79170ba37e501e1b4ac0141405046619c8e20e1fdeec92ce95f3019f6e7cc057294eb16b2d5e55c105bf32eb27e1fc01c1858576228f1fef8c0945a8ad69688e52a4ed19f5b85f5eff7e961d7232102a41c2aea8568864b106553729d32b1317ec463aa23e7a3521455d95992e17a7aac";
     EXPECT_EQ(hex(output.encoded()), expectedTx);
-    
+
     { // Double check: check if simple signature process gives the same result. Note that private
       // keys were not used anywhere up to this point.
         NEO::Proto::SigningInput input;
@@ -650,14 +651,16 @@ TEST(TransactionCompiler, StellarCompileWithSignatures) {
     const auto coin = TWCoinTypeStellar;
     /// Step 1: Prepare transaction input (protobuf)
     TW::Stellar::Proto::SigningInput input;
-    auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
+    auto privateKey =
+        PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
     auto publicKey = privateKey.getPublicKey(::publicKeyType(coin));
 
     input.set_passphrase(TWStellarPassphrase_Stellar);
     input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
     input.set_fee(1000);
     input.set_sequence(2);
-    input.mutable_op_payment()->set_destination("GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52");
+    input.mutable_op_payment()->set_destination(
+        "GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52");
     input.mutable_op_payment()->set_amount(10000000);
     auto& memoText = *input.mutable_memo_text();
     memoText.set_text("Hello, world!");
@@ -669,7 +672,8 @@ TEST(TransactionCompiler, StellarCompileWithSignatures) {
     const auto preImageHashData = TransactionCompiler::preImageHashes(coin, inputData);
 
     auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
-    ASSERT_TRUE(preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
+    ASSERT_TRUE(
+        preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
     ASSERT_EQ(preSigningOutput.errorcode(), 0);
 
     auto preImageHash = preSigningOutput.datahash();
@@ -737,7 +741,6 @@ TEST(TransactionCompiler, NULSCompileWithSignatures) {
     const Data publicKeyData =
         parse_hex("033c87a3d9b812556b3034b6471cad5131a01e210c1d7ca06dd53b7d0aff0ee045");
     const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeSECP256k1);
-    auto address = TW::NULS::Address(publicKey, true);
     const auto signature =
         parse_hex("a5234269eab6fe8a1510dd0cb36070a03464b48856e1ef2681dbb79a5ec656f92961ac01d401a6f8"
                   "49acc958c6c9653f49282f5a0916df036ea8766918bac19500");
@@ -1096,5 +1099,69 @@ TEST(TransactionCompiler, TronCompileWithSignatures) {
         ANY_SIGN(input, coin);
 
         ASSERT_EQ(output.json(), tx);
+    }
+}
+
+TEST(TransactionCompiler, RippleCompileWithSignatures) {
+    const auto coin = TWCoinTypeXRP;
+    /// Step 1: Prepare transaction input (protobuf)
+    auto key = parse_hex("ba005cd605d8a02e3d5dfd04234cef3a3ee4f76bfbad2722d1fb5af8e12e6764");
+    auto input = TW::Ripple::Proto::SigningInput();
+    auto privateKey = TW::PrivateKey(key);
+    auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    input.set_amount(29000000);
+    input.set_fee(200000);
+    input.set_sequence(1);
+    input.set_account("rDpysuumkweqeC7XdNgYNtzL5GxbdsmrtF");
+    input.set_destination("rU893viamSnsfP3zjzM2KPxjqZjXSXK6VF");
+    input.set_public_key(publicKey.bytes.data(), publicKey.bytes.size());
+    auto inputString = input.SerializeAsString();
+    auto inputData = TW::Data(inputString.begin(), inputString.end());
+    /// Step 2: Obtain preimage hash
+    const auto preImageHashesData = TransactionCompiler::preImageHashes(coin, inputData);
+    auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
+    preSigningOutput.ParseFromArray(preImageHashesData.data(), (int)preImageHashesData.size());
+    auto preImage = preSigningOutput.data();
+    EXPECT_EQ(hex(preImage),
+              "5354580012000022800000002400000001614000000001ba8140684000000000030d407321026cc34b92"
+              "cefb3a4537b3edb0b6044c04af27c01583c577823ecc69a9a21119b681148400b6b6d08d5d495653d73e"
+              "da6804c249a5148883148132e4e20aecf29090ac428a9c43f230a829220d");
+    auto preImageHash = preSigningOutput.datahash();
+    EXPECT_EQ(hex(preImageHash),
+              "8624dbbd5da9ccc8f7a50faf8af8709837db72f51a50cac15a6cd28ce6107b3d");
+    // Simulate signature, normally obtained from signature server
+    const auto signature =
+        parse_hex("30440220067f20b3eebfc7107dd0bcc72337a236ac3be042c0469f2341d76694a17d4bb902204839"
+                  "3d7ee7dcb729783b33f5038939ddce1bb8337e66d752974626854556bbb6");
+    // Verify signature (pubkey & hash & signature)
+    EXPECT_TRUE(publicKey.verifyAsDER(signature, TW::data(preImageHash)));
+    /// Step 3: Compile transaction info
+    const Data outputData =
+        TransactionCompiler::compileWithSignatures(coin, inputData, {signature}, {publicKey.bytes});
+    const auto ExpectedTx = std::string(
+        "12000022800000002400000001614000000001ba8140684000000000030d407321026cc34b92cefb3a45"
+        "37b3edb0b6044c04af27c01583c577823ecc69a9a21119b6744630440220067f20b3eebfc7107dd0bcc7"
+        "2337a236ac3be042c0469f2341d76694a17d4bb9022048393d7ee7dcb729783b33f5038939ddce1bb833"
+        "7e66d752974626854556bbb681148400b6b6d08d5d495653d73eda6804c249a5148883148132e4e20aec"
+        "f29090ac428a9c43f230a829220d");
+    EXPECT_EQ(outputData.size(), 185);
+
+    TW::Ripple::Proto::SigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+
+    EXPECT_EQ(hex(output.encoded()), ExpectedTx);
+    EXPECT_EQ(output.encoded().size(), 182);
+    ASSERT_EQ(output.error(), TW::Common::Proto::SigningError::OK);
+
+    { // Double check: check if simple signature process gives the same result. Note that private
+      // keys were not used anywhere up to this point.
+        TW::Ripple::Proto::SigningInput input;
+        ASSERT_TRUE(input.ParseFromArray(inputData.data(), (int)inputData.size()));
+        input.set_private_key(key.data(), key.size());
+
+        TW::Ripple::Proto::SigningOutput output;
+        ANY_SIGN(input, coin);
+
+        ASSERT_EQ(hex(output.encoded()), ExpectedTx);
     }
 }
