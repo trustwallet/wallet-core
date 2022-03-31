@@ -38,7 +38,6 @@ bool AddressV3::parseAndCheckV3(const std::string& addr, NetworkId& networkId, K
         }
         kind = kindFromFirstByte(conv[0]);
         networkId = networkIdFromFirstByte(conv[0]);
-        //if ((kind == Kind_Base && conv.size() != EncodedSize) || ...) {
 
         raw = Data(conv.size() - 1);
         std::copy(conv.begin() + 1, conv.end(), raw.begin());
