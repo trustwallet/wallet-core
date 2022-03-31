@@ -16,7 +16,7 @@ struct TWAccount* _Nonnull TWAccountCreate(TWString* _Nonnull address, enum TWCo
                                            TWString* _Nonnull extendedPublicKey) {
     auto& addressString = *reinterpret_cast<const std::string*>(address);
     auto& derivationPathString = *reinterpret_cast<const std::string*>(derivationPath);
-    auto& publicKeyString = *reinterpret_cast<const std::string*>(derivationPath);
+    auto& publicKeyString = *reinterpret_cast<const std::string*>(publicKey);
     auto& extendedPublicKeyString = *reinterpret_cast<const std::string*>(extendedPublicKey);
     const auto dp = DerivationPath(derivationPathString);
     return new TWAccount{
