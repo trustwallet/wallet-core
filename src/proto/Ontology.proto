@@ -28,6 +28,9 @@ message SigningInput {
 
     uint32 nonce = 10;
 
+    // base58 encode address string (160-bit number)
+    string owner_address =11;
+
 }
 
 message TransactionInput {
@@ -56,4 +59,9 @@ message TransactionInput {
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
+
+    // Set in case of error
+    string error = 2;
+
+    int32 errorCode = 3;
 }

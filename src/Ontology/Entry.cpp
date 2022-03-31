@@ -8,9 +8,14 @@
 
 #include "Address.h"
 #include "Signer.h"
+#include "OntTxBuilder.h"
+#include "OngTxBuilder.h"
+#include "../proto/TransactionCompiler.pb.h"
 
 using namespace TW::Ontology;
+using namespace TW;
 using namespace std;
+
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
@@ -24,4 +29,43 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byt
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+}
+
+
+Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
+    return txCompilerTemplate<Proto::SigningInput, TxCompiler::Proto::PreSigningOutput>(
+        txInputData, [](const auto& input, auto& output) {
+            auto contract = std::string(input.contract().begin(), input.contract().end());
+            auto txInput = Signer::signInput2TxInput(input);
+            Data preImage, preImageHash; 
+
+            if (contract == "ONT") {
+                auto tx = OntTxBuilder::buildTransferTx(txInput);
+                preImage = tx.serializeUnsigned();
+                preImageHash = tx.txHash();
+            } else if (contract == "ONG") {
+                auto tx = OngTxBuilder::buildTransferTx(txInput);
+                preImage = tx.serializeUnsigned();
+                preImageHash = tx.txHash();
+            } else {
+                throw std::invalid_argument("invalid contract");
+            }
+
+            output.set_datahash(preImageHash.data(), preImageHash.size());
+            output.set_data(preImage.data(), preImage.size());
+        });
+}
+
+void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
+    dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
+        txInputData, [&](const auto& input, auto& output) {
+            if (signatures.size() != 1 || publicKeys.size() != 1) {
+                output.set_errorcode(Common::Proto::Error_no_support_n2n);
+                output.set_error(Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
+                return;
+            }
+
+            auto signedTx = Signer::encodeTransaction(input, signatures[0], publicKeys[0]);
+            output.set_encoded(signedTx.data(), signedTx.size());
+    });
 }

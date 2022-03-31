@@ -10,6 +10,7 @@
 #include "../Ontology/OngTxBuilder.h"
 #include "../Ontology/OntTxBuilder.h"
 
+
 #include "../Hash.h"
 
 #include <stdexcept>
@@ -31,6 +32,20 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     } catch (...) {
     }
     return output;
+}
+
+Proto::TransactionInput Signer::signInput2TxInput(const Proto::SigningInput& input) noexcept {
+    auto txInput = Proto::TransactionInput();
+    txInput.set_contract(input.contract());
+    txInput.set_method(input.method());
+    txInput.set_owner_address(input.owner_address());
+    txInput.set_to_address(input.to_address());
+    txInput.set_amount(input.amount());
+    txInput.set_gas_price(input.gas_price());
+    txInput.set_gas_limit(input.gas_limit());
+    txInput.set_nonce(input.nonce());
+
+    return txInput;
 }
 
 Signer::Signer(TW::PrivateKey priKey) : privateKey(std::move(priKey)) {
@@ -55,7 +70,7 @@ void Signer::sign(Transaction& tx) const {
     if (tx.sigVec.size() >= Transaction::sigVecLimit) {
         throw std::runtime_error("the number of transaction signatures should not be over 16.");
     }
-    auto signature = getPrivateKey().sign(Hash::sha256(tx.txHash()), TWCurveNIST256p1);
+    auto signature = getPrivateKey().sign(tx.txHash(), TWCurveNIST256p1);
     signature.pop_back();
     tx.sigVec.emplace_back(publicKey, signature, 1);
 }
@@ -64,7 +79,25 @@ void Signer::addSign(Transaction& tx) const {
     if (tx.sigVec.size() >= Transaction::sigVecLimit) {
         throw std::runtime_error("the number of transaction signatures should not be over 16.");
     }
-    auto signature = getPrivateKey().sign(Hash::sha256(tx.txHash()), TWCurveNIST256p1);
+    auto signature = getPrivateKey().sign(tx.txHash(), TWCurveNIST256p1);
     signature.pop_back();
     tx.sigVec.emplace_back(publicKey, signature, 1);
+}
+
+Data Signer::encodeTransaction(const Proto::SigningInput& input, const Data& signature, const PublicKey& publicKey) {
+    auto txInput = Signer::signInput2TxInput(input);
+    auto contract = std::string(input.contract().begin(), input.contract().end());
+    auto tx = Transaction();
+
+    if (contract == "ONT") {
+            tx = OntTxBuilder::buildTransferTx(txInput);
+    } else if (contract == "ONG") {
+            tx = OngTxBuilder::buildTransferTx(txInput);
+    } else {
+        throw std::invalid_argument("invalid contract");
+    }
+
+    tx.sigVec.emplace_back(publicKey.bytes, signature, 1);
+
+    return tx.serialize();
 }
