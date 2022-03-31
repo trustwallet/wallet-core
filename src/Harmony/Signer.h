@@ -97,8 +97,3 @@ class Signer {
 };
 
 } // namespace TW::Harmony
-
-/// Wrapper for C interface.
-struct TWHarmonySigner {
-    TW::Harmony::Signer impl;
-};

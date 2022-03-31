@@ -67,24 +67,6 @@ Data blake2b(const byte* data, size_t dataSize, size_t hsshSize, const Data& per
 /// Computes the Groestl 512 hash.
 Data groestl512(const byte* data, size_t size);
 
-/// Computes the XXHash hash.
-uint64_t xxhash(const byte* data, size_t size, uint64_t seed);
-
-/// Computes the XXHash hash with 64 encoding.
-Data xxhash64(const byte* data, size_t size, uint64_t seed);
-
-/// Computes the XXHash hash concatenated, xxhash64 with seed 0 and 1,
-Data xxhash64concat(const byte* data, size_t size);
-
-/// Computes the XXHash hash.
-uint64_t xxhash(const byte* data, const byte* end, uint64_t seed);
-
-/// Computes the XXHash hash with 64 encoding.
-Data xxhash64(const byte* data, const byte* end, uint64_t seed);
-
-/// Computes the XXHash hash concatenated, xxhash64 with seed 0 and 1,
-Data xxhash64concat(const byte* data, const byte* end);
-
 // Templated versions for any type with data() and size()
 
 /// Computes requested hash for data.
