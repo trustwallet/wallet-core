@@ -90,8 +90,3 @@ inline bool operator==(const AddressV3& lhs, const AddressV3& rhs) {
 }
 
 } // namespace TW::Cardano
-
-/// Wrapper for C interface.
-struct TWCardanoAddress {
-    TW::Cardano::AddressV3 impl;
-};
