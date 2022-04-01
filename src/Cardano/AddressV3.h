@@ -32,9 +32,9 @@ class AddressV3 {
     // First byte header (kind, netowrkId) and 2 hashes
     static const uint8_t EncodedSize = 1 + 2 * HashSize;
 
-    NetworkId networkId;
+    NetworkId networkId = Network_Production;
 
-    Kind kind;
+    Kind kind = Kind_Base;
 
     /// raw key/hash bytes
     Data bytes;
