@@ -51,7 +51,11 @@ bool AddressV3::isValid(const std::string& addr) {
     NetworkId networkId;
     Kind kind;
     Data key;
-    if (parseAndCheckV3(addr, networkId, kind, key)) {
+    return parseAndCheckV3(addr, networkId, kind, key);
+}
+
+bool AddressV3::isValidLegacy(const std::string& addr) {
+    if (isValid(addr)) {
         return true;
     }
     // not V3, try older
@@ -96,7 +100,7 @@ AddressV3 AddressV3::createBase(NetworkId networkId, const PublicKey& spendingKe
 
 AddressV3::AddressV3(const std::string& addr) {
     if (parseAndCheckV3(addr, networkId, kind, bytes)) {
-        // values stored
+    // values stored
         return;
     }
     // try legacy
@@ -172,6 +176,10 @@ string AddressV3::string(const std::string& hrp) const {
 }
 
 Data AddressV3::data() const {
+    if (legacyAddressV2.has_value()) {
+        return legacyAddressV2->getCborData();
+    }
+
     const byte first = firstByte(networkId, kind);
     Data raw;
     TW::append(raw, first);

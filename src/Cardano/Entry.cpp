@@ -18,7 +18,7 @@ using namespace std;
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
 bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
-    return AddressV3::isValid(address);
+    return AddressV3::isValidLegacy(address);
 }
 
 string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {

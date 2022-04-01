@@ -42,8 +42,11 @@ class AddressV3 {
     /// Used in case of legacy address (V2)
     std::optional<AddressV2> legacyAddressV2;
 
-    /// Determines whether a string makes a valid address.
+    /// Determines whether a string makes a valid address (V3).
     static bool isValid(const std::string& addr);
+
+    /// Determines whether a string makes a valid address, V3 or earlier legacy.
+    static bool isValidLegacy(const std::string& addr);
 
     /// Create a base address, given public key hashes
     static AddressV3 createBase(NetworkId networkId, const TW::Data& spendingKeyHash, const TW::Data& stakingKeyHash);

@@ -37,28 +37,28 @@ TEST(CardanoAddress, V3NetworkIdKind) {
 
 TEST(CardanoAddress, Validation) {
     // valid V3 address
-    ASSERT_TRUE(AddressV3::isValid("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"));
-    ASSERT_TRUE(AddressV3::isValid("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5"));
+    ASSERT_TRUE(AddressV3::isValidLegacy("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"));
+    ASSERT_TRUE(AddressV3::isValidLegacy("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5"));
 
     // valid V2 address
-    ASSERT_TRUE(AddressV3::isValid("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvx"));
-    ASSERT_TRUE(AddressV3::isValid("Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W"));
+    ASSERT_TRUE(AddressV3::isValidLegacy("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvx"));
+    ASSERT_TRUE(AddressV3::isValidLegacy("Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W"));
 
     // valid V1 address
-    ASSERT_TRUE(AddressV3::isValid("DdzFFzCqrhssmYoG5Eca1bKZFdGS8d6iag1mU4wbLeYcSPVvBNF2wRG8yhjzQqErbg63N6KJA4DHqha113tjKDpGEwS5x1dT2KfLSbSJ"));
-    ASSERT_TRUE(AddressV3::isValid("DdzFFzCqrht7HGoJ87gznLktJGywK1LbAJT2sbd4txmgS7FcYLMQFhawb18ojS9Hx55mrbsHPr7PTraKh14TSQbGBPJHbDZ9QVh6Z6Di"));
+    ASSERT_TRUE(AddressV3::isValidLegacy("DdzFFzCqrhssmYoG5Eca1bKZFdGS8d6iag1mU4wbLeYcSPVvBNF2wRG8yhjzQqErbg63N6KJA4DHqha113tjKDpGEwS5x1dT2KfLSbSJ"));
+    ASSERT_TRUE(AddressV3::isValidLegacy("DdzFFzCqrht7HGoJ87gznLktJGywK1LbAJT2sbd4txmgS7FcYLMQFhawb18ojS9Hx55mrbsHPr7PTraKh14TSQbGBPJHbDZ9QVh6Z6Di"));
 
     // invalid V3, length (cardano-crypto.js)
-    ASSERT_FALSE(AddressV3::isValid("addr1sna05l45z33zpkm8z44q8f0h57wxvm0c86e34wlmua7gtcrdgrdrzy8ny3walyfjanhe33nsyuh088qr5gepqaen6jsa9r94xvvd7fh6jc3e6x"));
+    ASSERT_FALSE(AddressV3::isValidLegacy("addr1sna05l45z33zpkm8z44q8f0h57wxvm0c86e34wlmua7gtcrdgrdrzy8ny3walyfjanhe33nsyuh088qr5gepqaen6jsa9r94xvvd7fh6jc3e6x"));
     // invalid checksum V3
-    ASSERT_FALSE(AddressV3::isValid("PREFIX1qvqsyqcyq5rqwzqfpg9scrgwpugpzysnzs23v9ccrydpk8qarc0jqxuzx4s"));
+    ASSERT_FALSE(AddressV3::isValidLegacy("PREFIX1qvqsyqcyq5rqwzqfpg9scrgwpugpzysnzs23v9ccrydpk8qarc0jqxuzx4s"));
     // invalid checksum V2
-    ASSERT_FALSE(AddressV3::isValid("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvm"));
+    ASSERT_FALSE(AddressV3::isValidLegacy("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvm"));
     // random
-    ASSERT_FALSE(AddressV3::isValid("hasoiusaodiuhsaijnnsajnsaiussai"));
+    ASSERT_FALSE(AddressV3::isValidLegacy("hasoiusaodiuhsaijnnsajnsaiussai"));
     // empty
-    ASSERT_FALSE(AddressV3::isValid(""));
-    ASSERT_FALSE(AddressV3::isValid("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk2"));
+    ASSERT_FALSE(AddressV3::isValidLegacy(""));
+    ASSERT_FALSE(AddressV3::isValidLegacy("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk2"));
 }
 
 TEST(CardanoAddress, FromStringV2) {

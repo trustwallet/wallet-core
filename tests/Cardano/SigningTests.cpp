@@ -310,16 +310,50 @@ TEST(CardanoSigning, SignTransfer_0db1ea) {
     EXPECT_EQ(hex(txid), "0db1ea8c5c5828bbd027fcef3da02a63b86899db670ad7bb0630cefbe35944fa");
 }
 
+TEST(CardanoSigning, SignTransferFromLegacy) {
+    Proto::SigningInput input;
+    auto* utxo1 = input.add_utxos();
+    const auto txHash1 = parse_hex("f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767");
+    utxo1->mutable_out_point()->set_tx_hash(txHash1.data(), txHash1.size());
+    utxo1->mutable_out_point()->set_output_index(1);
+    utxo1->set_address("Ae2tdPwUPEZMRgecV9jV2e9RdbrmnWu7YgRie4de16xLdkWhy6q7ypmRhgn");
+    utxo1->set_amount(1500000);
+    auto* utxo2 = input.add_utxos();
+    const auto txHash2 = parse_hex("554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0");
+    utxo2->mutable_out_point()->set_tx_hash(txHash2.data(), txHash2.size());
+    utxo2->mutable_out_point()->set_output_index(0);
+    utxo2->set_address("Ae2tdPwUPEZMRgecV9jV2e9RdbrmnWu7YgRie4de16xLdkWhy6q7ypmRhgn");
+    utxo2->set_amount(6500000);
+
+    const auto privateKeyData = parse_hex("c031e942f6bf2b2864700e7da20964ee6bb6d716345ce2e24d8c00e6500b574411111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111");
+    {
+        const auto privKey = PrivateKey(privateKeyData);
+        const auto pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519Extended);
+        const auto addr = AddressV2(pubKey);
+        EXPECT_EQ(addr.string(), "Ae2tdPwUPEZMRgecV9jV2e9RdbrmnWu7YgRie4de16xLdkWhy6q7ypmRhgn");
+    }
+    input.add_private_key(privateKeyData.data(), privateKeyData.size());
+    input.mutable_transfer_message()->set_to_address("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5");
+    input.mutable_transfer_message()->set_change_address("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23");
+    input.mutable_transfer_message()->set_amount(7000000);
+    input.mutable_transfer_message()->set_use_max_amount(false);
+    input.set_ttl(53333333);
+
+    auto signer = Signer(input);
+    const auto output = signer.sign();
+
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_address);
+    EXPECT_EQ(hex(output.encoded()), "");
+}
+
 TEST(CardanoSigning, SignTransferToLegacy) {
     const auto input = createSampleInput(7000000, 10, "Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvx");
 
     auto signer = Signer(input);
     const auto output = signer.sign();
 
-    EXPECT_EQ(output.error(), Common::Proto::OK);
-
-    const auto encoded = data(output.encoded());
-    EXPECT_EQ(hex(encoded), "83a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e7670101828241011a006acfc082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a000cb366021a00028eda031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df2905840a232010d2ee524c2dea9a1059fab97d0456fc269a4a47c93384d700280ec0670aaafe3d3707f6a4573251b915fd67e28d7da204918ac03b03675cdbf8e7e6e0cf6");
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_address);
+    EXPECT_EQ(hex(output.encoded()), "");
 }
 
 TEST(CardanoSigning, SignMessageWithKey) {
