@@ -57,15 +57,17 @@ std::vector<Data> createFromTWDataVector(const struct TWDataVector* _Nonnull dat
     return ret;
 }
 
-struct TWDataVector *_Nonnull TWTransactionCompilerPreImageHashes(enum TWCoinType coinType, TWData *_Nonnull txInputData) {
-    HashPubkeyList result;
+TWData *_Nonnull TWTransactionCompilerPreImageHashes(enum TWCoinType coinType, TWData *_Nonnull txInputData) {
+    Data result;
     try {
         assert(txInputData != nullptr);
         const Data inputData = data(TWDataBytes(txInputData), TWDataSize(txInputData));
 
         result = TransactionCompiler::preImageHashes(coinType, inputData);
-    } catch (...) {} // return empty
-    return createFromVector(result);
+    } catch (const std::exception& e) {
+        std::cerr << "TWTransactionCompilerPreImageHashes exception: " << e.what() << std::endl;
+    } // return empty
+    return TWDataCreateWithBytes(result.data(), result.size());
 }
 
 TWData *_Nonnull TWTransactionCompilerCompileWithSignatures(enum TWCoinType coinType, TWData *_Nonnull txInputData, const struct TWDataVector *_Nonnull signatures, const struct TWDataVector *_Nonnull publicKeys) {
@@ -79,6 +81,8 @@ TWData *_Nonnull TWTransactionCompilerCompileWithSignatures(enum TWCoinType coin
         const auto publicKeysVec = createFromTWDataVector(publicKeys);
 
         result  = TransactionCompiler::compileWithSignatures(coinType, inputData, signaturesVec, publicKeysVec);
-    } catch (...) {} // return empty
+    } catch (const std::exception& e) {
+        std::cerr << "TWTransactionCompilerCompileWithSignatures Exception: " << e.what() << std::endl;
+    } // return empty
     return TWDataCreateWithBytes(result.data(), result.size());
 }

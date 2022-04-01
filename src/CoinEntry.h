@@ -11,6 +11,7 @@
 #include "Data.h"
 #include "PublicKey.h"
 #include "PrivateKey.h"
+#include "proto/Common.pb.h"
 #include "uint256.h"
 
 #include <string>
@@ -41,7 +42,7 @@ public:
     virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const { return; }
 
     // Optional method for obtaining hash(es) for signing, needed for external signing. Hashes are linked to the associated pubkey/pubkeyhash.
-    virtual HashPubkeyList preImageHashes(TWCoinType coin, const Data& txInputData) const { return HashPubkeyList(); }
+    virtual Data preImageHashes(TWCoinType coin, const Data& txInputData) const { return Data(); }
     // Optional method for compiling a transaction with externally-supplied signatures & pubkeys.
     virtual void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {}
     // Optional helper to prepare a SigningInput from simple parameters.
@@ -67,6 +68,28 @@ void planTemplate(const Data& dataIn, Data& dataOut) {
     input.ParseFromArray(dataIn.data(), (int)dataIn.size());
     auto serializedOut = Planner::plan(input).SerializeAsString();
     dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+}
+
+// This template will be used for preImageHashes and compile in each coin's Entry.cpp.
+// It is a helper function to simplify exception handle.
+template <typename Input, typename Output>
+Data txCompilerTemplate(const Data& dataIn, std::function<void(const Input& input, Output& output)> fnHandler) {
+    auto input = Input();
+    auto output = Output();
+    if (!input.ParseFromArray(dataIn.data(), (int)dataIn.size())) {
+        output.set_errorcode(Common::Proto::Error_input_parse);
+        output.set_error("failed to parse input data");
+        return TW::data(output.SerializeAsString());;
+    }
+
+    try {
+        // each coin function handler
+        fnHandler(input, output);
+    } catch (const std::exception& e) {
+        output.set_errorcode(Common::Proto::Error_internal);
+        output.set_error(e.what());
+    }
+    return TW::data(output.SerializeAsString());
 }
 
 } // namespace TW

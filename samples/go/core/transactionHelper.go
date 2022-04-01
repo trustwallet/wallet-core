@@ -25,13 +25,13 @@ func BuildInput(c CoinType, from, to string, amount string, asset string, memo s
 	return types.TWDataGoBytes(result)
 }
 
-func PreImageHashes(c CoinType, txInputData []byte) [][]byte {
+func PreImageHashes(c CoinType, txInputData []byte) []byte {
 	input := types.TWDataCreateWithGoBytes(txInputData)
 	defer C.TWDataDelete(input)
 
 	result := C.TWTransactionCompilerPreImageHashes(C.enum_TWCoinType(c), input)
-	defer C.TWDataVectorDelete(result)
-	return TWDataVectorGoBytes(result)
+	defer C.TWDataDelete(result)
+	return types.TWDataGoBytes(result)
 }
 
 func CompileWithSignatures(c CoinType, txInputData []byte, signatures [][]byte, publicKeyHashes [][]byte) []byte {

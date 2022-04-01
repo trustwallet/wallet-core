@@ -90,7 +90,7 @@ bool supportsJSONSigning(TWCoinType coinType);
 
 void anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 
-HashPubkeyList anyCoinPreImageHashes(TWCoinType coinType, const Data& txInputData);
+Data anyCoinPreImageHashes(TWCoinType coinType, const Data& txInputData);
 
 void anyCoinCompileWithSignatures(TWCoinType coinType, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& txOutputOut);
 

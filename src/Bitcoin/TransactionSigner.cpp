@@ -37,7 +37,7 @@ Result<Transaction, Common::Proto::SigningError> TransactionSigner<Transaction, 
 }
 
 template <typename Transaction, typename TransactionBuilder>
-HashPubkeyList TransactionSigner<Transaction, TransactionBuilder>::preImageHashes(const SigningInput& input) {
+Result<HashPubkeyList, Common::Proto::SigningError> TransactionSigner<Transaction, TransactionBuilder>::preImageHashes(const SigningInput& input) {
     TransactionPlan plan;
     if (input.plan.has_value()) {
         plan = input.plan.value();
@@ -46,8 +46,11 @@ HashPubkeyList TransactionSigner<Transaction, TransactionBuilder>::preImageHashe
     }
     auto transaction = TransactionBuilder::template build<Transaction>(plan, input.toAddress, input.changeAddress, input.coinType, input.lockTime);
     SignatureBuilder<Transaction> signer(std::move(input), plan, transaction, SigningMode_HashOnly);
-    signer.sign();
-    return signer.getHashesForSigning();
+    auto signResult = signer.sign();
+    if (!signResult) {
+        return Result<HashPubkeyList, Common::Proto::SigningError>::failure(signResult.error());
+    }
+    return Result<HashPubkeyList, Common::Proto::SigningError>::success(signer.getHashesForSigning());
 }
 
 // Explicitly instantiate a Signers for compatible transactions.

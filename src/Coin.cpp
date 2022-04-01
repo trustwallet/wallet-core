@@ -253,7 +253,7 @@ void TW::anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
     dispatcher->plan(coinType, dataIn, dataOut);
 }
 
-HashPubkeyList TW::anyCoinPreImageHashes(TWCoinType coinType, const Data& txInputData) {
+Data TW::anyCoinPreImageHashes(TWCoinType coinType, const Data& txInputData) {
     auto* dispatcher = coinDispatcher(coinType);
     assert(dispatcher != nullptr);
     return dispatcher->preImageHashes(coinType, txInputData);

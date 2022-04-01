@@ -29,7 +29,7 @@ TWData *_Nonnull TWTransactionCompilerBuildInput(enum TWCoinType coinType, TWStr
 /// Obtain pre-signing hashes of a transaction. For each hash its corresponding publickKeyHash follows, so return is always even size.
 /// For chains with one signature only, the result contains 2 elements, but the second may be ignored.
 TW_EXPORT_STATIC_METHOD
-struct TWDataVector *_Nonnull TWTransactionCompilerPreImageHashes(enum TWCoinType coinType, TWData *_Nonnull txInputData);
+TWData *_Nonnull TWTransactionCompilerPreImageHashes(enum TWCoinType coinType, TWData *_Nonnull txInputData);
 
 /// Compile a complete transation with one or more external signatures, put together from transaction input and provided public keys and signatures.
 /// The signatures must match the hashes returned by TWTransactionCompilerPreImageHashes, in the same order.
