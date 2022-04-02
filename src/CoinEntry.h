@@ -41,7 +41,10 @@ public:
     // It is optional, only UTXO chains need it, default impl. leaves empty result.
     virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const { return; }
 
-    // Optional method for obtaining hash(es) for signing, needed for external signing. Hashes are linked to the associated pubkey/pubkeyhash.
+    // Optional method for obtaining hash(es) for signing, needed for external signing.
+    // It will return a proto object named `PreSigningOutput` which will include hash.
+    // We provide a default `PreSigningOutput` in TransactionCompiler.proto.
+    // For some special coins, such as bitcoin, we will create a custom `PreSigningOutput` object in its proto file.
     virtual Data preImageHashes(TWCoinType coin, const Data& txInputData) const { return Data(); }
     // Optional method for compiling a transaction with externally-supplied signatures & pubkeys.
     virtual void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {}
