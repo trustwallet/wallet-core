@@ -251,10 +251,15 @@ TransactionPlan Signer::plan() const {
         plan.error = Common::Proto::Error_zero_amount_requested;
         return plan;
     }
-    // Sum input UTXO amount
+    // Check input UTXOs, process, sum ADA amounts
     auto utxos = vector<TxInput>();
     uint64_t inputSum = 0;
     for (auto i = 0; i < input.utxos_size(); ++i) {
+        if (input.utxos(i).token_amount_size() > 0) {
+            // input UTXO with token amount
+            plan.error = Common::Proto::Error_invalid_utxo_amount;
+            return plan;
+        }
         utxos.push_back(TxInput::fromProto(input.utxos(i)));
         inputSum += input.utxos(i).amount();
     }

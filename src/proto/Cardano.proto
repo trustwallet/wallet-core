@@ -10,6 +10,12 @@ message OutPoint {
     uint64 output_index = 2;
 }
 
+message TokenAmount {
+    string policy_id = 1;
+    string asset_name = 2;
+    bytes amount = 3; // 256-bit number
+}
+
 message TxInput {
     OutPoint out_point = 1;
 
@@ -17,6 +23,9 @@ message TxInput {
 
     // ADA amount
     uint64 amount = 3;
+
+    // optional token amounts
+    repeated TokenAmount token_amount = 4;
 }
 
 message TxOutput {
