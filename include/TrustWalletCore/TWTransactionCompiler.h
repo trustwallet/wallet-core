@@ -26,8 +26,10 @@ struct TWTransactionCompiler;
 TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWTransactionCompilerBuildInput(enum TWCoinType coinType, TWString *_Nonnull from, TWString *_Nonnull to, TWString *_Nonnull amount, TWString *_Nonnull asset, TWString *_Nonnull memo, TWString *_Nonnull chainId);
 
-/// Obtain pre-signing hashes of a transaction. For each hash its corresponding publickKeyHash follows, so return is always even size.
-/// For chains with one signature only, the result contains 2 elements, but the second may be ignored.
+/// Obtain pre-signing hashes of a transaction. 
+/// It will return a proto object named `PreSigningOutput` which will include hash.
+/// We provide a default `PreSigningOutput` in TransactionCompiler.proto.
+/// For some special coins, such as bitcoin, we will create a custom `PreSigningOutput` object in its proto file.
 TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWTransactionCompilerPreImageHashes(enum TWCoinType coinType, TWData *_Nonnull txInputData);
 
