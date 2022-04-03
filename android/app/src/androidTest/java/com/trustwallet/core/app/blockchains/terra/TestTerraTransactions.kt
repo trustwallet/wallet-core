@@ -27,7 +27,7 @@ class TestTerraTransactions {
         val from = AnyAddress(publicKey, TERRA).description()
 
         val txAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 1000000
+            amount = "1000000"
             denom = "uluna"
         }.build()
 
@@ -43,7 +43,7 @@ class TestTerraTransactions {
         }.build()
 
         val feeAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 3000
+            amount = "3000"
             denom = "uluna"
         }.build()
 
@@ -89,7 +89,7 @@ class TestTerraTransactions {
         }.build()
 
         val feeAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 3000
+            amount = "3000"
             denom = "uluna"
         }.build()
 

@@ -27,7 +27,7 @@ class TestCosmosTransactions {
         val from = AnyAddress(publicKey, COSMOS).description()
 
         val txAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 1
+            amount = "1"
             denom = "muon"
         }.build()
 
@@ -42,7 +42,7 @@ class TestCosmosTransactions {
         }.build()
 
         val feeAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 200
+            amount = "200"
             denom = "muon"
         }.build()
 

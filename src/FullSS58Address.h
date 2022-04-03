@@ -90,12 +90,12 @@ class FullSS58Address {
         if (network < 64) {
             // Simple account/address/network
             bytes.resize(simpleFormatSize);
-            bytes[0] = (network);
+            bytes[0] = byte(network);
             std::copy(publicKey.bytes.begin(), publicKey.bytes.end(), bytes.begin() + 1);
         } else {
             // Full address/address/network identifier.
             byte byte0 = (network & 0b0000000011111100) >> 2 | 0b01000000;
-            byte byte1 = network >> 8 | (network & 0b0000000000000011) << 6;
+            byte byte1 = byte(network >> 8 | (network & 0b0000000000000011) << 6);
 
             bytes.resize(fullFormatSize);
             bytes[0] = byte0;

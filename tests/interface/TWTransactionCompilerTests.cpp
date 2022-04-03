@@ -653,7 +653,7 @@ TEST(TWTransactionCompiler, ExternalSignatureSignRipple) {
     auto preImageHashData = dataFromTWData(preImageHashTWData);
     auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
     ASSERT_TRUE(
-        preSigningOutput.ParseFromArray(preImageHashData->data(), preImageHashData->size()));
+        preSigningOutput.ParseFromArray(preImageHashData->data(), (int)preImageHashData->size()));
     ASSERT_EQ(preSigningOutput.errorcode(), 0);
     // preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size());
     auto preImage = preSigningOutput.data();

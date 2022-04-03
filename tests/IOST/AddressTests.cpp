@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "IOST/Account.h"
+#include "HDWallet.h"
 
 #include <gtest/gtest.h>
 
@@ -23,4 +24,10 @@ TEST(IOSTAddress, ValidateAccount) {
     ASSERT_FALSE(Account::isValid("12345xusong6"));
     ASSERT_FALSE(Account::isValid("bc1quvuarfksewfeuevuc6tn0kfyptgjvwsvrprk9d"));
     ASSERT_FALSE(Account::isValid("DJRFZNg8jkUtjcpo2zJd92FUAzwRjitw6f"));
+}
+
+TEST(IOSTAddress, FromPrivateKey) {
+    auto wallet = HDWallet("shoot island position soft burden budget tooth cruel issue economy destroy above", "");
+    auto address = wallet.deriveAddress(TWCoinTypeIOST);
+    ASSERT_EQ(address, "4av8w81EyzUgHonsVWqfs15WM4Vrpgox4BYYQWhNQDVu");
 }

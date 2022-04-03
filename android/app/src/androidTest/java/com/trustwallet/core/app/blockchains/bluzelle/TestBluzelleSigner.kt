@@ -36,7 +36,7 @@ class TestBluzelleSigner {
         val from = AnyAddress(publicKey, BLUZELLE).description()
 
         val txAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 1
+            amount = "1"
             denom = "ubnt"
         }.build()
 
@@ -51,7 +51,7 @@ class TestBluzelleSigner {
         }.build()
 
         val feeAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 1000
+            amount = "1000"
             denom = "ubnt"
         }.build()
 

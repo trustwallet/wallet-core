@@ -2,9 +2,9 @@ name: Linux CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -35,14 +35,14 @@ jobs:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
     - name: CMake (coverage/clang-tidy/clang-asan)
-      if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/main'
       run: |
         cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON -DCLANG_TIDY=ON -DCLANG_ASAN=ON
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
     - name: CMake (coverage)
-      if: github.ref != 'refs/heads/master'
+      if: github.ref != 'refs/heads/main'
       run: |
         cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON
       env:

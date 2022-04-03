@@ -3,7 +3,7 @@ name: Create Tag
 on:
   push:
     branches:
-      - ZT-55
+      - main
 
 jobs:
   build:

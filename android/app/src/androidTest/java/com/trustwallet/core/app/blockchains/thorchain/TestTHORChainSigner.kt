@@ -34,7 +34,7 @@ class TestTHORChainSigner {
         val from = AnyAddress(publicKey, THORCHAIN).description()
 
         val txAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 2000000
+            amount = "2000000"
             denom = "rune"
         }.build()
 
@@ -49,7 +49,7 @@ class TestTHORChainSigner {
         }.build()
 
         val feeAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 2000000
+            amount = "2000000"
             denom = "rune"
         }.build()
 

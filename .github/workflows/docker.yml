@@ -2,12 +2,12 @@ name: Docker CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths:
       - Dockerfile
       - tools/install-dependencies
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
     paths: 
       - Dockerfile
       - tools/install-dependencies

@@ -34,7 +34,7 @@ class CosmosSignerTests: XCTestCase {
             $0.fromAddress = fromAddress.description
             $0.toAddress = "cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573"
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 1
+                $0.amount = "1"
                 $0.denom = "muon"
             }]
         }
@@ -46,7 +46,7 @@ class CosmosSignerTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 200000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 200
+                $0.amount = "200"
                 $0.denom = "muon"
             }]
         }
@@ -73,7 +73,7 @@ class CosmosSignerTests: XCTestCase {
             $0.delegatorAddress = "cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02"
             $0.validatorAddress = "cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp"
             $0.amount = CosmosAmount.with {
-                $0.amount = 10
+                $0.amount = "10"
                 $0.denom = "muon"
             }
         }
@@ -85,7 +85,7 @@ class CosmosSignerTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 101721
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 1018
+                $0.amount = "1018"
                 $0.denom = "muon"
             }]
         }
@@ -130,7 +130,7 @@ class CosmosSignerTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.amounts = [CosmosAmount.with {
                 $0.denom = "uatom"
-                $0.amount = 1
+                $0.amount = "1"
             }]
             $0.gas = 220000
         }
@@ -163,7 +163,7 @@ class CosmosSignerTests: XCTestCase {
             $0.sender = fromAddress.description
             $0.receiver = "osmo18s0hdnsllgcclweu9aymw4ngktr2k0rkvn7jmn"
             $0.token = CosmosAmount.with {
-                $0.amount = 100000
+                $0.amount = "100000"
                 $0.denom = "uatom"
             }
             $0.timeoutHeight = CosmosHeight.with {
@@ -179,7 +179,7 @@ class CosmosSignerTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 500000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 12500
+                $0.amount = "12500"
                 $0.denom = "uatom"
             }]
         }

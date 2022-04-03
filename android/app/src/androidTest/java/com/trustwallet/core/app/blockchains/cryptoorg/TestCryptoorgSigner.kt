@@ -34,7 +34,7 @@ class TestCryptoorgSigner {
         val from = AnyAddress(publicKey, CRYPTOORG).description()
 
         val txAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 50000000
+            amount = "50000000"
             denom = "basecro"
         }.build()
 
@@ -49,7 +49,7 @@ class TestCryptoorgSigner {
         }.build()
 
         val feeAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 5000
+            amount = "5000"
             denom = "basecro"
         }.build()
 
