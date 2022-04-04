@@ -32,7 +32,7 @@ bool PublicKey::isValid(const Data& data, enum TWPublicKeyType type) {
     case TWPublicKeyTypeED25519Blake2b:
         return size == ed25519Size;
     case TWPublicKeyTypeED25519Extended:
-        return size == ed25519ExtendedSize;
+        return size == ed25519DoubleExtendedSize;
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeNIST256p1:
         return size == secp256k1Size && (data[0] == 0x02 || data[0] == 0x03);
@@ -75,7 +75,7 @@ PublicKey::PublicKey(const Data& data, enum TWPublicKeyType type) : type(type) {
         std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
         break;
     case TWPublicKeyTypeED25519Extended:
-        bytes.reserve(ed25519ExtendedSize);
+        bytes.reserve(ed25519DoubleExtendedSize);
         std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
     }
 }

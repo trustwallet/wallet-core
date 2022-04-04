@@ -1292,8 +1292,8 @@
     "publicKeyType": "ed25519Extended",
     "hrp": "addr",
     "explorer": {
-      "url": "https://shelleyexplorer.cardano.org",
-      "txPath": "/tx/",
+      "url": "https://cardanoscan.io",
+      "txPath": "/transaction/",
       "accountPath": "/address/",
       "sampleTx": "b7a6c5cadab0f64bdc89c77ee4a351463aba5c33f2cef6bbd6542a74a90a3af3",
       "sampleAccount": "addr1s3xuxwfetyfe7q9u3rfn6je9stlvcgmj8rezd87qjjegdtxm3y3f2mgtn87mrny9r77gm09h6ecslh3gmarrvrp9n4yzmdnecfxyu59jz29g8j"
