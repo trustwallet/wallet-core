@@ -22,6 +22,15 @@ TxInput TxInput::fromProto(const Cardano::Proto::TxInput& proto) {
     return ret;
 }
 
+Proto::TxInput TxInput::toProto() const {
+    Proto::TxInput txInput;
+    txInput.mutable_out_point()->set_tx_hash(txHash.data(), txHash.size());
+    txInput.mutable_out_point()->set_output_index(outputIndex);
+    txInput.set_address(address.data(), address.size());
+    txInput.set_amount(amount);
+    return txInput;
+}
+
 TransactionPlan TransactionPlan::fromProto(const Proto::TransactionPlan& proto) {
     auto ret = TransactionPlan();
     for (auto i = 0; i < proto.utxos_size(); ++i) {
@@ -33,6 +42,19 @@ TransactionPlan TransactionPlan::fromProto(const Proto::TransactionPlan& proto) 
     ret.change = proto.change();
     ret.error = proto.error();
     return ret;
+}
+
+Proto::TransactionPlan TransactionPlan::toProto() const {
+    Proto::TransactionPlan plan;
+    for (auto& u: utxos) {
+        *plan.add_utxos() = u.toProto();
+    }
+    plan.set_available_amount(availableAmount);
+    plan.set_amount(amount);
+    plan.set_fee(fee);
+    plan.set_change(change);
+    plan.set_error(error);
+    return plan;
 }
 
 Cbor::Encode cborizeInputs(const std::vector<OutPoint>& inputs) {

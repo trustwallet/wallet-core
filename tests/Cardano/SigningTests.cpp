@@ -94,7 +94,7 @@ TEST(CardanoSigning, Plan) {
 
     {
         auto signer = Signer(input);
-        const auto plan = signer.plan();
+        const auto plan = signer.doPlan();
         EXPECT_EQ(plan.utxos.size(), 2);
         EXPECT_EQ(plan.availableAmount, 8000000);
         EXPECT_EQ(plan.amount, 7000000);
@@ -106,7 +106,7 @@ TEST(CardanoSigning, Plan) {
     {   // very small target amount
         input.mutable_transfer_message()->set_amount(1);
         auto signer = Signer(input);
-        const auto plan = signer.plan();
+        const auto plan = signer.doPlan();
         EXPECT_EQ(plan.utxos.size(), 1);
         EXPECT_EQ(plan.availableAmount, 6500000);
         EXPECT_EQ(plan.amount, 1);
@@ -116,7 +116,7 @@ TEST(CardanoSigning, Plan) {
     {   // small target amount
         input.mutable_transfer_message()->set_amount(2000000);
         auto signer = Signer(input);
-        const auto plan = signer.plan();
+        const auto plan = signer.doPlan();
         EXPECT_EQ(plan.utxos.size(), 1);
         EXPECT_EQ(plan.availableAmount, 6500000);
         EXPECT_EQ(plan.amount, 2000000);
@@ -153,7 +153,7 @@ TEST(CardanoSigning, PlanAndSignTransfer1) {
     {
         // run plan and check result
         auto signer = Signer(input);
-        const auto plan = signer.plan();
+        const auto plan = signer.doPlan();
 
         EXPECT_EQ(plan.availableAmount, 8000000);
         EXPECT_EQ(plan.amount, amount);
@@ -201,7 +201,7 @@ TEST(CardanoSigning, PlanAndSignMaxAmount) {
     {
         // run plan and check result
         auto signer = Signer(input);
-        const auto plan = signer.plan();
+        const auto plan = signer.doPlan();
 
         EXPECT_EQ(plan.availableAmount, 8000000);
         EXPECT_EQ(plan.amount, 8000000 - 170147);
@@ -281,7 +281,7 @@ TEST(CardanoSigning, SignTransfer_0db1ea) {
     {
         // run plan and check result
         auto signer = Signer(input);
-        const auto plan = signer.plan();
+        const auto plan = signer.doPlan();
 
         EXPECT_EQ(plan.availableAmount, 1800000);
         EXPECT_EQ(plan.amount, amount);
@@ -427,4 +427,22 @@ TEST(CardanoSigning, AnySignTransfer1) {
     EXPECT_EQ(hex(encoded), "83a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a006acfc082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a000ca99d021a000298a3031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058403c1cbde706d10550f5f966a5071e9e01e18f7b555626ed7616a214bd951d29d0ff0458edf5c555eefe4d4280302160149fc6e7e56a4298a368b7ab357643190df6");
     const auto txid = data(output.tx_id());
     EXPECT_EQ(hex(txid), "efcf8ec01fb8cd32bc5289c609c470b473cc79bc60b0667e1d68dc3962df1082");
+}
+
+TEST(CardanoSigning, AnyPlan1) {
+    const auto input = createSampleInput(7000000);
+
+    Proto::TransactionPlan plan;
+    ANY_PLAN(input, plan, TWCoinTypeCardano);
+
+    EXPECT_EQ(plan.error(), Common::Proto::OK);
+    EXPECT_EQ(plan.amount(), 7000000);
+    EXPECT_EQ(plan.available_amount(), 8000000);
+    EXPECT_EQ(plan.fee(), 170147);
+    EXPECT_EQ(plan.change(), 829853);
+    ASSERT_EQ(plan.utxos_size(), 2);
+    EXPECT_EQ(plan.utxos(0).amount(), 6500000);
+    EXPECT_EQ(plan.utxos(1).amount(), 1500000);
+
+    EXPECT_EQ(hex(plan.SerializeAsString()), "08c09fab031080a4e80318a3b10a209dd3322a92010a220a20554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af01267616464723171383034336d356865656179646e76746d6d6b7975686536717635686176766873663064323671336a7967737370786c796670796b3679716b77307968747976747230666c656b6a3834753634617a38326375666d716e36357a6473796c7a6b323318a0dd8c032a93010a240a20f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76710011267616464723171383034336d356865656179646e76746d6d6b7975686536717635686176766873663064323671336a7967737370786c796670796b3679716b77307968747976747230666c656b6a3834753634617a38326375666d716e36357a6473796c7a6b323318e0c65b");
 }

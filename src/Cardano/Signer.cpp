@@ -26,7 +26,7 @@ Proto::SigningOutput Signer::sign() {
         _plan = TransactionPlan::fromProto(input.plan());
     } else {
         // no plan supplied, plan it
-        _plan = plan();
+        _plan = doPlan();
     }
 
     return signWithPlan();
@@ -243,7 +243,7 @@ Amount Signer::estimateFee(const Proto::SigningInput& input, Amount amount) {
     return txFeeFunction(estimateTxSize(input, amount));
 }
 
-TransactionPlan Signer::plan() const {
+TransactionPlan Signer::doPlan() const {
     auto plan = TransactionPlan();
 
     bool maxAmount = input.transfer_message().use_max_amount();

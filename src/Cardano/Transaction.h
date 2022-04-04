@@ -34,6 +34,7 @@ public:
     Amount amount;
 
     static TxInput fromProto(const Proto::TxInput& proto);
+    Proto::TxInput toProto() const;
 };
 
 class TxOutput {
@@ -53,6 +54,7 @@ public:
     Common::Proto::SigningError error = Common::Proto::SigningError::OK;
 
     static TransactionPlan fromProto(const Proto::TransactionPlan& proto);
+    Proto::TransactionPlan toProto() const;
 };
 
 class Transaction {

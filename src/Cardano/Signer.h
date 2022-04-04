@@ -33,7 +33,13 @@ public:
     // Sign using existing plan
     Proto::SigningOutput signWithPlan();
     // Create plan from signing input
-    TransactionPlan plan() const;
+    TransactionPlan doPlan() const;
+    /// Returns a transaction plan (utxo selection, fee estimation)
+    static Proto::TransactionPlan plan(const Proto::SigningInput& input) noexcept {
+        const auto signer = Signer(input);
+        const auto plan = signer.doPlan();
+        return plan.toProto();
+    }
     // Build encoded transaction
     static Common::Proto::SigningError encodeTransaction(Data& encoded, Data& txId, const Proto::SigningInput& input, const TransactionPlan& plan);
     // Build aux transaction object, using input and plan
