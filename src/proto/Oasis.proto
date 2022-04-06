@@ -34,4 +34,8 @@ message SigningInput {
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
+    /// error code, 0 is ok, other codes will be treated as errors
+    int32 errorCode = 6;
+    /// error code description
+    string error = 7;
 }

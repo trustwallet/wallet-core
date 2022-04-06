@@ -45,7 +45,7 @@ Cbor::Encode Transaction::encodeMessage() const {
     });
 }
 
-Data Transaction::serialize(Data& signature, PublicKey& publicKey) const {
+Data Transaction::serialize(const Data& signature, const PublicKey& publicKey) const {
     auto signedMessage = Cbor::Encode::map({
             { Cbor::Encode::string("untrusted_raw_value"), Cbor::Encode::bytes(encodeMessage().encoded()) },
             { Cbor::Encode::string("signature"), Cbor::Encode::map({
@@ -55,4 +55,11 @@ Data Transaction::serialize(Data& signature, PublicKey& publicKey) const {
             }
         });
     return signedMessage.encoded();
+}
+
+Data Transaction::signaturePreimage() const {
+    auto encodedMessage = encodeMessage().encoded();
+    Data dataToHash(context.begin(), context.end());
+    dataToHash.insert(dataToHash.end(), encodedMessage.begin(), encodedMessage.end());
+    return dataToHash;
 }

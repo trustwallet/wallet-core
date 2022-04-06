@@ -6,14 +6,13 @@
 
 #include <Oasis/Signer.h>
 
-#include "Signer.h"
 #include "Address.h"
+#include "Signer.h"
 
 #define TRANSFER_METHOD "staking.Transfer"
 
 using namespace TW;
 using namespace TW::Oasis;
-
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto output = Proto::SigningOutput();
@@ -24,6 +23,37 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 }
 
 Data Signer::build() const {
+    Transaction transaction = buildTransaction();
+
+    auto privateKey = PrivateKey(input.private_key());
+    auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+
+    auto signature = sign(transaction);
+    auto encoded = transaction.serialize(signature, publicKey);
+
+    return encoded;
+}
+
+Data Signer::sign(Transaction& tx) const {
+    auto privateKey = PrivateKey(input.private_key());
+
+    // The use of this context thing is explained here -->
+    // https://docs.oasis.dev/oasis-core/common-functionality/crypto#domain-separation
+    auto encodedMessage = tx.encodeMessage().encoded();
+    Data dataToHash(tx.context.begin(), tx.context.end());
+    dataToHash.insert(dataToHash.end(), encodedMessage.begin(), encodedMessage.end());
+    auto hash = Hash::sha512_256(dataToHash);
+
+    auto signature = privateKey.sign(hash, TWCurveED25519);
+    return Data(signature.begin(), signature.end());
+}
+
+Data Signer::signaturePreimage() const {
+    Transaction transaction = buildTransaction();
+    return transaction.signaturePreimage();
+}
+
+Transaction Signer::buildTransaction() const {
     // Create empty address var and check if value we want to load is valid
     Address address(input.transfer().to());
 
@@ -40,33 +70,20 @@ Data Signer::build() const {
     gasAmountStream >> gasAmount;
 
     Transaction transaction(
-        /* to */     address,
+        /* to */ address,
         /* method */ TRANSFER_METHOD,
         /* gasPrice */ input.transfer().gas_price(),
         /* gasAmount */ gasAmount,
         /* amount */ amount,
         /* nonce */ input.transfer().nonce(),
         /* context */ input.transfer().context());
-
-
-    auto privateKey = PrivateKey(input.private_key());
-    auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
-
-    auto signature = sign(transaction);
-    auto encoded = transaction.serialize(signature, publicKey);
-
-    return encoded;
+    return transaction;
 }
 
-Data Signer::sign(Transaction& tx) const {
-    auto privateKey = PrivateKey(input.private_key());
-
-    // The use of this context thing is explained here --> https://docs.oasis.dev/oasis-core/common-functionality/crypto#domain-separation
-    auto encodedMessage = tx.encodeMessage().encoded();
-    Data dataToHash(tx.context.begin(), tx.context.end());
-    dataToHash.insert(dataToHash.end(), encodedMessage.begin(), encodedMessage.end());
-    auto hash = Hash::sha512_256(dataToHash);
-
-    auto signature = privateKey.sign(hash, TWCurveED25519);
-    return Data(signature.begin(), signature.end());
+Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& publicKey) const {
+    Proto::SigningOutput output;
+    Transaction transaction = buildTransaction();
+    auto encoded = transaction.serialize(signature, publicKey);
+    output.set_encoded(encoded.data(), encoded.size());
+    return output;
 }

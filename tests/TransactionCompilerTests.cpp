@@ -24,6 +24,7 @@
 #include "proto/IOST.pb.h"
 #include "proto/Tron.pb.h"
 #include "proto/VeChain.pb.h"
+#include "proto/Oasis.pb.h"
 
 #include "proto/TransactionCompiler.pb.h"
 
@@ -1339,5 +1340,58 @@ TEST(TransactionCompiler, OntCompileWithSignatures) {
     {
         EXPECT_EQ(hex(ontOutput.encoded()), ontExpectedTx);
         EXPECT_EQ(hex(ongOutput.encoded()), ongExpectedTx);
+    }
+}
+
+
+TEST(TransactionCompiler, OasisCompileWithSignatures) {
+    const auto coin = TWCoinTypeOasis;
+    /// Step 1: Prepare transaction input (protobuf)
+    auto privateKey = PrivateKey(parse_hex("4f8b5676990b00e23d9904a92deb8d8f428ff289c8939926358f1d20537c21a0"));
+    auto publicKey = privateKey.getPublicKey(::publicKeyType(coin));
+
+    auto input = TW::Oasis::Proto::SigningInput();
+    auto& transfer = *input.mutable_transfer();
+    transfer.set_gas_price(0);
+    transfer.set_gas_amount("0");
+    transfer.set_nonce(0);
+    transfer.set_to("oasis1qrrnesqpgc6rfy2m50eew5d7klqfqk69avhv4ak5");
+    transfer.set_amount("10000000");
+    transfer.set_context("oasis-core/consensus: tx for chain a245619497e580dd3bc1aa3256c07f68b8dcc13f92da115eadc3b231b083d3c4");
+
+    auto inputString = input.SerializeAsString();
+    auto inputData = TW::Data(inputString.begin(), inputString.end());
+
+    /// Step 2: Obtain preimage hash
+    const auto preImageHashData = TransactionCompiler::preImageHashes(coin, inputData);
+
+    auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
+    ASSERT_TRUE(preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
+    ASSERT_EQ(preSigningOutput.errorcode(), 0);
+    auto preImageHash = preSigningOutput.datahash();
+    EXPECT_EQ(hex(preImageHash), "eaad67750581b04235194ff87265a0f909584362fb512e09b75d0e447022b374");
+
+    auto signature = parse_hex("e331ce731ed819106586152b13cd98ecf3248a880bdc71174ee3d83f6d5f3f8ee8fc34c19b22032f2f1e3e06d382720125d7a517fba9295c813228cc2b63170b");
+
+    /// Step 3: Compile transaction info
+    const auto outputData = TransactionCompiler::compileWithSignatures(coin, inputData, { signature }, {publicKey.bytes});
+
+    TW::Oasis::Proto::SigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+
+
+    const auto tx = "a273756e747275737465645f7261775f76616c7565585ea4656e6f6e636500666d6574686f64707374616b696e672e5472616e7366657263666565a2636761730066616d6f756e74410064626f6479a262746f5500c73cc001463434915ba3f39751beb7c0905b45eb66616d6f756e744400989680697369676e6174757265a26a7075626c69635f6b6579582093d8f8a455f50527976a8aa87ebde38d5606efa86cb985d3fb466aff37000e3b697369676e61747572655840e331ce731ed819106586152b13cd98ecf3248a880bdc71174ee3d83f6d5f3f8ee8fc34c19b22032f2f1e3e06d382720125d7a517fba9295c813228cc2b63170b";
+    EXPECT_EQ(hex(output.encoded()), tx);
+
+    { // Double check: check if simple signature process gives the same result. Note that private
+        // keys were not used anywhere up to this point.
+        TW::Oasis::Proto::SigningInput input;
+        ASSERT_TRUE(input.ParseFromArray(inputData.data(), (int)inputData.size()));
+        input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+        TW::Oasis::Proto::SigningOutput output;
+        ANY_SIGN(input, coin);
+
+        ASSERT_EQ(hex(output.encoded()), tx);
     }
 }

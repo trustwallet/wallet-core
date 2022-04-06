@@ -41,6 +41,9 @@ public:
     /// \returns the signed transaction data or an empty vector if there is an
     /// error.
     Data build() const;
+    Data signaturePreimage() const;
+    Proto::SigningOutput compile(const Data& signature, const PublicKey& publicKey) const;
+    Transaction buildTransaction() const;
 };
 
 } // namespace TW::Oasis

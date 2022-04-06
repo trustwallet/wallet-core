@@ -46,7 +46,10 @@ class Transaction {
     Cbor::Encode encodeMessage() const;
 
     // serialize returns the CBOR encoding of the SignedMessage.
-    Data serialize(Data& signature, PublicKey& publicKey) const;
+    Data serialize(const Data& signature, const PublicKey& publicKey) const;
+
+    // serialize transaction that can be signed
+    Data signaturePreimage() const;
 };
 
 } // namespace TW::Oasis
