@@ -176,38 +176,6 @@ TEST(TWHashTests, Groestl512) {
     }
 }
 
-TEST(TWHashTests, XXHash64) {
-    auto tests = {
-        make_tuple(string(""), string("99e9d85137db46ef"), 0),
-        make_tuple(brownFox, string("bc71da1f362d240b"), 0),
-        make_tuple(brownFoxDot, string("73ad51577033ad44"), 0),
-        make_tuple(string("123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF"), 
-            string("fd84b6962fcb8d09"), 0),
-        make_tuple(string("123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF"), 
-            string("7ea0f7af4b4f9cf4"), 1),
-    };
-    for (auto &test: tests) {
-        const auto inData = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(get<0>(test).c_str()), get<0>(test).length()));
-        const auto hash = WRAPD(TWHashXXHash64(inData.get(), get<2>(test)));
-        EXPECT_EQ(hex(data(TWDataBytes(hash.get()), TWDataSize(hash.get()))), get<1>(test));
-    }
-}
-
-TEST(TWHashTests, XXHash64Concat) {
-    auto tests = {
-        make_tuple(string(""), string("99e9d85137db46ef4bbea33613baafd5")),
-        make_tuple(brownFox, string("bc71da1f362d240bdbc6d2dab69150df")),
-        make_tuple(brownFoxDot, string("73ad51577033ad44269e8e5ef42d32d2")),
-        make_tuple(string("Balances"), string("c2261276cc9d1f8598ea4b6a74b15c2f")),
-        make_tuple(string("FreeBalance"), string("6482b9ade7bc6657aaca787ba1add3b4")),
-    };
-    for (auto &test: tests) {
-        const auto inData = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(get<0>(test).c_str()), get<0>(test).length()));
-        const auto hash = WRAPD(TWHashTwoXXHash64Concat(inData.get()));
-        EXPECT_EQ(hex(data(TWDataBytes(hash.get()), TWDataSize(hash.get()))), get<1>(test));
-    }
-}
-
 TEST(TWHashTests, SHA256SHA256) {
     auto tests = {
         make_tuple(string(""), string("5df6e0e2761359d30a8275058e299fcc0381534545f55cf43e41983f5d4c9456")),

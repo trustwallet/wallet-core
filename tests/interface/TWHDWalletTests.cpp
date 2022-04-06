@@ -312,6 +312,21 @@ TEST(HDWallet, ExtendedKeys) {
     assertStringsEqual(emptyPub, "");
 }
 
+TEST(HDWallet, ExtendedKeysCustomAccount) {
+    auto words = STRING("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about");
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
+
+    auto zprv0 = WRAPS(TWHDWalletGetExtendedPrivateKeyAccount(wallet.get(), TWPurposeBIP84, TWCoinTypeBitcoin, TWHDVersionZPRV, 0));
+    assertStringsEqual(zprv0, "zprvAdG4iTXWBoARxkkzNpNh8r6Qag3irQB8PzEMkAFeTRXxHpbF9z4QgEvBRmfvqWvGp42t42nvgGpNgYSJA9iefm1yYNZKEm7z6qUWCroSQnE");
+    auto zprv1 = WRAPS(TWHDWalletGetExtendedPrivateKeyAccount(wallet.get(), TWPurposeBIP84, TWCoinTypeBitcoin, TWHDVersionZPRV, 1));
+    assertStringsEqual(zprv1, "zprvAdG4iTXWBoAS2cCGuaGevCvH54GCunrvLJb2hoWCSuE3D9LS42XVg3c6sPm64w6VMq3w18vJf8nF3cBA2kUMkyWHsq6enWVXivzw42UrVHG");
+
+    auto zpub0 = WRAPS(TWHDWalletGetExtendedPublicKeyAccount(wallet.get(), TWPurposeBIP84, TWCoinTypeBitcoin, TWHDVersionZPUB, 0));
+    assertStringsEqual(zpub0, "zpub6rFR7y4Q2AijBEqTUquhVz398htDFrtymD9xYYfG1m4wAcvPhXNfE3EfH1r1ADqtfSdVCToUG868RvUUkgDKf31mGDtKsAYz2oz2AGutZYs");
+    auto zpub1 = WRAPS(TWHDWalletGetExtendedPublicKeyAccount(wallet.get(), TWPurposeBIP84, TWCoinTypeBitcoin, TWHDVersionZPUB, 1));
+    assertStringsEqual(zpub1, "zpub6rFR7y4Q2AijF6Gk1bofHLs1d66hKFamhXWdWBup1Em25wfabZqkDqvaieV63fDQFaYmaatCG7jVNUpUiM2hAMo6SAVHcrUpSnHDpNzucB7");
+}
+
 TEST(HDWallet, PublicKeyFromX) {
     auto xpub = STRING("xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj");
     auto xpubAddr2 = WRAP(TWPublicKey, TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeBitcoinCash, STRING("m/44'/145'/0'/0/2").get()));

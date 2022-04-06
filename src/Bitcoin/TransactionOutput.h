@@ -34,8 +34,3 @@ struct TransactionOutput {
 };
 
 } // namespace TW::Bitcoin
-
-/// Wrapper for C interface.
-struct TWBitcoinTransactionOutput {
-    TW::Bitcoin::TransactionOutput impl;
-};

@@ -59,12 +59,6 @@ TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWHashGroestl512(TWData *_Nonnull data);
 
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWHashXXHash64(TWData *_Nonnull data, uint64_t seed);
-
-TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWHashTwoXXHash64Concat(TWData *_Nonnull data);
-
-TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWHashSHA256SHA256(TWData *_Nonnull data);
 
 TW_EXPORT_STATIC_METHOD

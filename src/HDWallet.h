@@ -80,11 +80,17 @@ class HDWallet {
     /// Derives the address for a coin.
     std::string deriveAddress(TWCoinType coin) const;
 
-    /// Returns the extended private key.
-    std::string getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const;
+    /// Returns the extended private key for default 0 account; derivation path used is "m/purpose'/coin'/0'".
+    std::string getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const { return getExtendedPrivateKeyAccount(purpose, coin, version, 0); }
 
-    /// Returns the extended public key.
-    std::string getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const;
+    /// Returns the extended public key for default 0 account; derivation path used is "m/purpose'/coin'/0'".
+    std::string getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const { return getExtendedPublicKeyAccount(purpose, coin, version, 0); }
+
+    /// Returns the extended private key for a custom account; derivation path used is "m/purpose'/coin'/account'".
+    std::string getExtendedPrivateKeyAccount(TWPurpose purpose, TWCoinType coin, TWHDVersion version, uint32_t account) const;
+
+    /// Returns the extended public key for a custom account; derivation path used is "m/purpose'/coin'/account'".
+    std::string getExtendedPublicKeyAccount(TWPurpose purpose, TWCoinType coin, TWHDVersion version, uint32_t account) const;
 
     /// Returns the BIP32 Root Key (private)
     std::string getRootKey(TWCoinType coin, TWHDVersion version) const;
@@ -99,7 +105,7 @@ class HDWallet {
     // Private key type (later could be moved out of HDWallet)
     enum PrivateKeyType {
       PrivateKeyTypeDefault32 = 0, // 32-byte private key
-      PrivateKeyTypeExtended96 = 1, // 3*32-byte extended private key
+      PrivateKeyTypeDoubleExtended = 1, // used by Cardano
     };
     
     // obtain privateKeyType used by the coin/curve
@@ -107,6 +113,9 @@ class HDWallet {
 
   private:
     void updateSeedAndEntropy(bool check = true);
+
+    // For Cardano, derive 2nd, staking derivation path from the primary one
+    static DerivationPath cardanoStakingDerivationPath(const DerivationPath& path);
 };
 
 } // namespace TW
