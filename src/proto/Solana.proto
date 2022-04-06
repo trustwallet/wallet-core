@@ -80,8 +80,9 @@ message CreateAndTransferToken {
 }
 
 message CreateNonceAccount {
-    string nonce_account = 1;
+    string nonce_account = 1; // required for building pre-signing hash of a transaction
     uint64 rent = 2;
+    bytes nonce_account_private_key = 3;       // optional for building pre-signing hash of a transaction
 }
 
 message WithdrawNonceAccount {

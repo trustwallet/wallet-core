@@ -359,6 +359,10 @@ class Message {
                                   std::vector<Address> references = {},
                                   std::string nonceAccountStr = "") {
         std::vector<Instruction> instructions;
+        if (Address::isValid(nonceAccountStr)) {
+            instructions.push_back(
+                Instruction::advanceNonceAccount(from, Address(nonceAccountStr)));
+        }
         if (memo.length() > 0) {
             // Optional memo. Order: before transfer, as per documentation.
             instructions.push_back(Instruction::createMemo(memo));
@@ -368,10 +372,6 @@ class Message {
             AccountMeta(to, false, false),
         };
         appendReferences(accountMetas, references);
-        if (Address::isValid(nonceAccountStr)) {
-            instructions.push_back(
-                Instruction::advanceNonceAccount(from, Address(nonceAccountStr)));
-        }
         instructions.push_back(Instruction::createTransfer(accountMetas, value));
         return Message(recentBlockhash, instructions);
     }
@@ -505,10 +505,16 @@ class Message {
     // solana-program-library/associated-token-account/program/src/lib.rs
     static Message createTokenCreateAccount(const Address& signer, const Address& otherMainAccount,
                                             const Address& tokenMintAddress,
-                                            const Address& tokenAddress, Hash recentBlockhash) {
+                                            const Address& tokenAddress, Hash recentBlockhash,
+                                            std::string nonceAccountStr = "") {
         auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
         auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
         auto tokenProgramId = Address(TOKEN_PROGRAM_ID_ADDRESS);
+        std::vector<Instruction> instructions;
+        if (Address::isValid(nonceAccountStr)) {
+            instructions.push_back(
+                Instruction::advanceNonceAccount(signer, Address(nonceAccountStr)));
+        }
         auto instruction = Instruction::createTokenCreateAccount(std::vector<AccountMeta>{
             AccountMeta(signer, true, false), // fundingAddress,
             AccountMeta(tokenAddress, false, false),
@@ -518,7 +524,8 @@ class Message {
             AccountMeta(tokenProgramId, false, true),
             AccountMeta(sysvarRentId, false, true),
         });
-        return Message(recentBlockhash, {instruction});
+        instructions.push_back(instruction);
+        return Message(recentBlockhash, instructions);
     }
 
     // This constructor creates a transfer token message.
@@ -528,8 +535,13 @@ class Message {
                                        const Address& recipientTokenAddress, uint64_t amount,
                                        uint8_t decimals, Hash recentBlockhash,
                                        std::string memo = "",
-                                       std::vector<Address> references = {}) {
+                                       std::vector<Address> references = {},
+                                       std::string nonceAccountStr = "") {
         std::vector<Instruction> instructions;
+        if (Address::isValid(nonceAccountStr)) {
+            instructions.push_back(
+                Instruction::advanceNonceAccount(signer, Address(nonceAccountStr)));
+        }
         if (memo.length() > 0) {
             // Optional memo. Order: before transfer, as per documentation.
             instructions.push_back(Instruction::createMemo(memo));

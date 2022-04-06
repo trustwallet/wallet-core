@@ -411,3 +411,87 @@ TEST(SolanaSigner, SignTransferToken_3vZ67C) {
         "PGfKqEaH2zZXDMZLcU6LUKdBSzU1GJWJ1CJXtRYCxaCH7k8uok38WSadZfrZw3TGejiau7nSpan2GvbK26hQim24jRe2AupmcYJFrgsdaCt1Aqs5kpGjPqzgj9krgxTZwwob3xgC1NdHK5BcNwhxwRtrCphGEH7zUFpGFrFrHzgpf2KY8FvPiPELQyxzTBuyNtjLjMMreehSKShEjD9Xzp1QeC1pEF8JL6vUKzxMXuveoEYem8q8JiWszYzmTMfDk13JPgv7pXFGMqDV3yNGCLsWccBeSFKN4UKECre6x2QbUEiKGkHkMc4zQwwyD8tGmEMBAGm339qdANssEMNpDeJp2LxLDStSoWShHnotcrH7pUa94xCVvCPPaomF";
     EXPECT_EQ(transaction.serialize(), expectedString);
 }
+
+TEST(SolanaSigner, SignCreateNonceAccount) {
+    const auto privateKey =
+        PrivateKey(parse_hex("044014463e2ee3cc9c67a6f191dbac82288eb1d5c1111d21245bdc6a855082a1"));
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+    ASSERT_EQ(Data(publicKey.bytes.begin(), publicKey.bytes.end()),
+              Base58::bitcoin.decode("sp6VUqq1nDEuU83bU2hstmEYrJNipJYpwS7gZ7Jv7ZH"));
+    const auto nonceAccountPrivateKey =
+        PrivateKey(parse_hex("2a9737aca3cde2dc0b4f3ae3487e3a90000490cb39fbc979da32b974ff5d7490"));
+    const auto nonceAccountPublicKey = nonceAccountPrivateKey.getPublicKey(TWPublicKeyTypeED25519);
+    ASSERT_EQ(Data(nonceAccountPublicKey.bytes.begin(), nonceAccountPublicKey.bytes.end()),
+              Base58::bitcoin.decode("6vNrYDm6EHcvBALY7HywuDWpTSc6uGt3y2nf5MuG1TmJ"));
+
+    const auto from = Address(publicKey);
+    const auto nonceAccount = Address(nonceAccountPublicKey);
+    Solana::Hash recentBlockhash("mFmK2xFMhzJJaUN5cctfdCizE9dtgcSASSEDh1Yzmat");
+    uint64_t rent = 10000000;
+    auto message = Message::createNonceAccount(
+                    /* owner */ from,
+                    /* new nonce_account */ nonceAccount,
+                    /* rent */ rent,
+                    /* recent_blockhash */ recentBlockhash);
+    auto transaction = Transaction(message);
+    // auto transaction = Transaction(from, to, 42, recentBlockhash);
+
+    std::vector<PrivateKey> signerKeys;
+    signerKeys.push_back(privateKey);
+    signerKeys.push_back(nonceAccountPrivateKey);
+    Signer::sign(signerKeys, transaction);
+
+    std::vector<Signature> expectedSignatures;
+    Signature expectedSignature1(
+        "3dbiGHLsFqnwA1PXx7xmoikzv6v9g9BXvZts2126qyE163BypurkvgbDiF5RmrEZRiT2MG88v6xwyJTkhhDRuFc9");
+    expectedSignatures.push_back(expectedSignature1);
+    Signature expectedSignature2(
+        "jFq4PbbEM1fuPbq5CkUYgzs7a21g6rvFkfLJAUUGP5QMKYhHBE6nB1dqtwaJsABgyUvrR8QjT2Ej73cXNz7Vur1");
+    expectedSignatures.push_back(expectedSignature2);
+    ASSERT_EQ(transaction.signatures, expectedSignatures);
+
+    auto expectedString =
+        "3wu6xJSbb2NysVgi7pdfMgwVBT1knAdeCr9NR8EktJLoByzM4s9SMto2PPmrnbRqPtHwnpAKxXkC4vqyWY2dRBgdGG"
+        "CC1bep6qN5nSLVzpPYAWUSq5cd4gfYMAVriFYRRNHmYUnEq8vMn4vjiECmZoHrpabBj8HpXGqYBo87sbZa8ZPCxUcB"
+        "71hxXiHWZHj2rovx2kr75Uuv1buWXyW6M8uR4UNvQcPPvzVbwBG82RjDYTuancMSAxmrVNR8GLBQNhrCCYrZyte3EW"
+        "gEyMQxxfW8T3xNXqnbgdfvFJ3UjRBxXj3hrmv17xEivTjfs81aG2AAi24yiYrk8ep7eQqwDHVSArsrynnwVKVNUcCQ"
+        "CnSy7fuiuS7FweFX8DEN1K9BrfecHyWrF15fYzhkmWSs64aH6ZTYHWPv5znhFKYmAuopGwbsBEb2j5p8NS3iJZ2skb"
+        "2wi47n1rpLZfoCHWKxNiikkDUJTGQNcSDrGUMfeW5aGubJrCfecPKEo9Wo9kd36iSsxYPYSWNKrz2HTooa1rCRhqjX"
+        "D8dyX3bXGV8TK6W2sEgf4JkcDnNoWQLbindcP8XR";
+    ASSERT_EQ(transaction.serialize(), expectedString);
+}
+
+TEST(SolanaSigner, SignWithdrawNonceAccount) {
+    const auto privateKey =
+        PrivateKey(parse_hex("044014463e2ee3cc9c67a6f191dbac82288eb1d5c1111d21245bdc6a855082a1"));
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+    ASSERT_EQ(Data(publicKey.bytes.begin(), publicKey.bytes.end()),
+              Base58::bitcoin.decode("sp6VUqq1nDEuU83bU2hstmEYrJNipJYpwS7gZ7Jv7ZH"));
+
+    const auto from = Address(publicKey);
+    const auto nonceAccount = Address("6vNrYDm6EHcvBALY7HywuDWpTSc6uGt3y2nf5MuG1TmJ");
+    Solana::Hash recentBlockhash("5ccb7sRth3CP8fghmarFycr6VQX3NcfyDJsMFtmdkdU8");
+    auto to = Address("3UVYmECPPMZSCqWKfENfuoTv51fTDTWicX9xmBD2euKe");
+    uint64_t value = 10000000;
+    auto message =
+        Message::createWithdrawNonceAccount(from, nonceAccount, to, value, recentBlockhash);
+    auto transaction = Transaction(message);
+
+    std::vector<PrivateKey> signerKeys;
+    signerKeys.push_back(privateKey);
+    Signer::sign(signerKeys, transaction);
+
+    std::vector<Signature> expectedSignatures;
+    Signature expectedSignature(
+        "MxbTCAUmBLiESDLK1NiK5ab41mL2SpAPKSbvGdYQQD5eKgAJRdFEJ8MV9HqBhDQHdsS2LG3QMQQVJp51ekGu6KM");
+    expectedSignatures.push_back(expectedSignature);
+    ASSERT_EQ(transaction.signatures, expectedSignatures);
+
+    auto expectedString =
+        "7gdEdDymvtfPfVgVvCTPzafmZc1Z8Zu4uXgJDLm8KGpLyPHysxFGjtFzimZDmGtNhQCh22Ygv3ZtPZmSbANbafikR3"
+        "S1tvujatHW9gMo35jveq7TxwcGoNSqc7tnH85hkEZwnDryVaiKRvtCeH3dgFE9YqPHxiBuZT5eChHJvVNb9iTTdMsJ"
+        "XMusRtzeRV45CvrLKUvsAH7SSWHYW6bGow5TbEJie4buuz2rnbeVG5cxaZ6vyG2nJWHNuDPWZJTRi1MFEwHoxst3a5"
+        "jQPv9UrG9rNZFCw4uZizVcG6HEqHWgQBu8gVpYpzFCX5SrhjGPZpbK3YmHhUEMEpJx3Fn7jX7Kt4t3hhhrieXppoqK"
+        "NuqjeNVjfEf3Q8dJRfuVMLdXYbmitCVTPQzYKWBR6ERqWLYoAVqjoAS2pRUw1nrqi1HR";
+    ASSERT_EQ(transaction.serialize(), expectedString);
+}

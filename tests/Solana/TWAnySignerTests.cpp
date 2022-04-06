@@ -393,3 +393,63 @@ TEST(TWAnySignerSolana, SignJSON) {
     ASSERT_TRUE(TWAnySignerSupportsJSON(TWCoinTypeSolana));
     assertStringsEqual(result, expectedString1);
 }
+
+TEST(TWAnySignerSolana, SignCreateNonceAccount) {
+    const auto privateKeyData = parse_hex("044014463e2ee3cc9c67a6f191dbac82288eb1d5c1111d21245bdc6a855082a1");
+    const auto privateKey = PrivateKey(privateKeyData);
+    EXPECT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "sp6VUqq1nDEuU83bU2hstmEYrJNipJYpwS7gZ7Jv7ZH");
+    const auto nonceAccountPrivateKeyData = parse_hex("2a9737aca3cde2dc0b4f3ae3487e3a90000490cb39fbc979da32b974ff5d7490");
+    const auto nonceAccountPrivateKey = PrivateKey(nonceAccountPrivateKeyData);
+    EXPECT_EQ(Address(PrivateKey(nonceAccountPrivateKey).getPublicKey(TWPublicKeyTypeED25519)).string(), "6vNrYDm6EHcvBALY7HywuDWpTSc6uGt3y2nf5MuG1TmJ");
+    
+    auto input = Solana::Proto::SigningInput();
+    auto& message = *input.mutable_create_nonce_account();
+    auto nonceAccount = std::string("6vNrYDm6EHcvBALY7HywuDWpTSc6uGt3y2nf5MuG1TmJ");
+    auto sender = std::string("sp6VUqq1nDEuU83bU2hstmEYrJNipJYpwS7gZ7Jv7ZH");
+    uint64_t rent = 10000000;
+    input.set_private_key(privateKeyData.data(), privateKeyData.size());
+    input.set_recent_blockhash(std::string("mFmK2xFMhzJJaUN5cctfdCizE9dtgcSASSEDh1Yzmat"));
+    message.set_nonce_account_private_key(nonceAccountPrivateKeyData.data(), nonceAccountPrivateKeyData.size());
+    message.set_rent(rent);
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    auto expectedString =
+        "3wu6xJSbb2NysVgi7pdfMgwVBT1knAdeCr9NR8EktJLoByzM4s9SMto2PPmrnbRqPtHwnpAKxXkC4vqyWY2dRBgdGG"
+        "CC1bep6qN5nSLVzpPYAWUSq5cd4gfYMAVriFYRRNHmYUnEq8vMn4vjiECmZoHrpabBj8HpXGqYBo87sbZa8ZPCxUcB"
+        "71hxXiHWZHj2rovx2kr75Uuv1buWXyW6M8uR4UNvQcPPvzVbwBG82RjDYTuancMSAxmrVNR8GLBQNhrCCYrZyte3EW"
+        "gEyMQxxfW8T3xNXqnbgdfvFJ3UjRBxXj3hrmv17xEivTjfs81aG2AAi24yiYrk8ep7eQqwDHVSArsrynnwVKVNUcCQ"
+        "CnSy7fuiuS7FweFX8DEN1K9BrfecHyWrF15fYzhkmWSs64aH6ZTYHWPv5znhFKYmAuopGwbsBEb2j5p8NS3iJZ2skb"
+        "2wi47n1rpLZfoCHWKxNiikkDUJTGQNcSDrGUMfeW5aGubJrCfecPKEo9Wo9kd36iSsxYPYSWNKrz2HTooa1rCRhqjX"
+        "D8dyX3bXGV8TK6W2sEgf4JkcDnNoWQLbindcP8XR";
+    ASSERT_EQ(output.encoded(), expectedString);
+}
+
+TEST(TWAnySignerSolana, SignWithdrawNonceAccount) {
+    const auto privateKeyData = parse_hex("044014463e2ee3cc9c67a6f191dbac82288eb1d5c1111d21245bdc6a855082a1");
+    const auto privateKey = PrivateKey(privateKeyData);
+    EXPECT_EQ(Address(PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519)).string(), "sp6VUqq1nDEuU83bU2hstmEYrJNipJYpwS7gZ7Jv7ZH");
+
+    auto input = TW::Solana::Proto::SigningInput();
+    auto& message = *input.mutable_withdraw_nonce_account();
+    auto nonceAccount = std::string("6vNrYDm6EHcvBALY7HywuDWpTSc6uGt3y2nf5MuG1TmJ");
+    auto recipient = std::string("3UVYmECPPMZSCqWKfENfuoTv51fTDTWicX9xmBD2euKe");
+    uint64_t value = 10000000;
+    input.set_private_key(privateKeyData.data(), privateKeyData.size());
+    input.set_recent_blockhash(std::string("5ccb7sRth3CP8fghmarFycr6VQX3NcfyDJsMFtmdkdU8"));
+    message.set_nonce_account(nonceAccount);
+    message.set_recipient(recipient);
+    message.set_value(value);
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    auto expectedString =
+        "7gdEdDymvtfPfVgVvCTPzafmZc1Z8Zu4uXgJDLm8KGpLyPHysxFGjtFzimZDmGtNhQCh22Ygv3ZtPZmSbANbafikR3"
+        "S1tvujatHW9gMo35jveq7TxwcGoNSqc7tnH85hkEZwnDryVaiKRvtCeH3dgFE9YqPHxiBuZT5eChHJvVNb9iTTdMsJ"
+        "XMusRtzeRV45CvrLKUvsAH7SSWHYW6bGow5TbEJie4buuz2rnbeVG5cxaZ6vyG2nJWHNuDPWZJTRi1MFEwHoxst3a5"
+        "jQPv9UrG9rNZFCw4uZizVcG6HEqHWgQBu8gVpYpzFCX5SrhjGPZpbK3YmHhUEMEpJx3Fn7jX7Kt4t3hhhrieXppoqK"
+        "NuqjeNVjfEf3Q8dJRfuVMLdXYbmitCVTPQzYKWBR6ERqWLYoAVqjoAS2pRUw1nrqi1HR";
+    ASSERT_EQ(output.encoded(), expectedString);
+}

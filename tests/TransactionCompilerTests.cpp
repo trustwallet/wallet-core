@@ -9,19 +9,19 @@
 #include "proto/Binance.pb.h"
 #include "proto/Bitcoin.pb.h"
 #include "proto/Common.pb.h"
-#include "proto/Ethereum.pb.h"
-#include "proto/Theta.pb.h"
 #include "proto/Cosmos.pb.h"
+#include "proto/Ethereum.pb.h"
 #include "proto/NEO.pb.h"
 #include "proto/NULS.pb.h"
+#include "proto/Ontology.pb.h"
 #include "proto/Ripple.pb.h"
 #include "proto/Solana.pb.h"
-#include "proto/Ontology.pb.h"
+#include "proto/Theta.pb.h"
 
+#include "proto/IOST.pb.h"
+#include "proto/NEAR.pb.h"
 #include "proto/Stellar.pb.h"
 #include "proto/Tezos.pb.h"
-#include "proto/NEAR.pb.h"
-#include "proto/IOST.pb.h"
 #include "proto/Tron.pb.h"
 #include "proto/VeChain.pb.h"
 #include "proto/Oasis.pb.h"
@@ -81,7 +81,8 @@ TEST(TransactionCompiler, BinanceCompileWithSignatures) {
     ASSERT_EQ(output.errorcode(), 0);
 
     auto preImageHash = data(output.datahash());
-    EXPECT_EQ(hex(preImageHash), "3f3fece9059e714d303a9a1496ddade8f2c38fa78fc4cc2e505c5dbb0ea678d1");
+    EXPECT_EQ(hex(preImageHash),
+              "3f3fece9059e714d303a9a1496ddade8f2c38fa78fc4cc2e505c5dbb0ea678d1");
 
     // Simulate signature, normally obtained from signature server
     const auto publicKeyData =
@@ -440,7 +441,8 @@ TEST(TransactionCompiler, EthereumCompileWithSignatures) {
     ASSERT_EQ(output.errorcode(), 0);
 
     auto preImageHash = data(output.datahash());
-    EXPECT_EQ(hex(preImageHash), "15e180a6274b2f6a572b9b51823fce25ef39576d10188ecdcd7de44526c47217");
+    EXPECT_EQ(hex(preImageHash),
+              "15e180a6274b2f6a572b9b51823fce25ef39576d10188ecdcd7de44526c47217");
 
     // Simulate signature, normally obtained from signature server
     const Data publicKeyData =
@@ -521,7 +523,7 @@ TEST(TransactionCompiler, EthereumBuildTransactionInputInvalidAddress) {
         "Invalid to address");
 }
 
-TEST(TransactionCompiler, SolanaCompileWithSignatures) {
+TEST(TransactionCompiler, SolanaCompileTransferWithSignatures) {
     const auto coin = TWCoinTypeSolana;
     /// Step 1: Prepare transaction input (protobuf)
     auto input = TW::Solana::Proto::SigningInput();
@@ -585,14 +587,168 @@ TEST(TransactionCompiler, SolanaCompileWithSignatures) {
     }
 }
 
+TEST(TransactionCompiler, SolanaCompileCreateNonceAccountWithSignatures) {
+    const auto coin = TWCoinTypeSolana;
+    /// Step 1: Prepare transaction input (protobuf)
+    auto input = TW::Solana::Proto::SigningInput();
+    auto& message = *input.mutable_create_nonce_account();
+    auto nonceAccount = std::string("6vNrYDm6EHcvBALY7HywuDWpTSc6uGt3y2nf5MuG1TmJ");
+    auto sender = std::string("sp6VUqq1nDEuU83bU2hstmEYrJNipJYpwS7gZ7Jv7ZH");
+    uint64_t rent = 10000000;
+    input.set_sender(sender);
+    input.set_recent_blockhash(std::string("mFmK2xFMhzJJaUN5cctfdCizE9dtgcSASSEDh1Yzmat"));
+    message.set_nonce_account(nonceAccount);
+    message.set_rent(rent);
+    auto inputString = input.SerializeAsString();
+    auto inputData = TW::Data(inputString.begin(), inputString.end());
+    /// Step 2: Obtain preimage hash
+    const auto preImageHashesData = TransactionCompiler::preImageHashes(coin, inputData);
+    auto preSigningOutput = TW::Solana::Proto::PreSigningOutput();
+    preSigningOutput.ParseFromArray(preImageHashesData.data(), (int)preImageHashesData.size());
+    ASSERT_EQ(preSigningOutput.signers_size(), 2);
+    auto signer1 = preSigningOutput.signers(0);
+    EXPECT_EQ(signer1, sender);
+    auto signer2 = preSigningOutput.signers(1);
+    EXPECT_EQ(signer2, nonceAccount);
+    auto preImageHash = preSigningOutput.data();
+    EXPECT_EQ(
+        hex(preImageHash),
+        "020003050d044a62d0a4dfe5a037a15b59fa4d4d0d3ab81103a2c10a6da08a4d058611c057f6ed937bb447a670"
+        "0c9684d2e182b1a6661838a86cca7d0aac18be2e098b2106a7d517192c568ee08a845f73d29788cf035c3145b2"
+        "1ab344d8062ea940000006a7d517192c5c51218cc94c3d4af17f58daee089ba1fd44e3dbd98a00000000000000"
+        "00000000000000000000000000000000000000000000000000000000000b563fd13b46e844f12f54fa8a0e78c4"
+        "4d95dbae4953368b7135f1e0de111cb50204020001340000000080969800000000005000000000000000000000"
+        "0000000000000000000000000000000000000000000000000000000000040301020324060000000d044a62d0a4"
+        "dfe5a037a15b59fa4d4d0d3ab81103a2c10a6da08a4d058611c0");
+    // Simulate signature, normally obtained from signature server
+    const Data publicKeyData = Base58::bitcoin.decode(sender);
+    const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeED25519);
+    const Data nonceAccountPublicKeyData = Base58::bitcoin.decode(nonceAccount);
+    const PublicKey nonceAccountPublicKey =
+        PublicKey(nonceAccountPublicKeyData, TWPublicKeyTypeED25519);
+    const auto signature = Base58::bitcoin.decode(
+        "3dbiGHLsFqnwA1PXx7xmoikzv6v9g9BXvZts2126qyE163BypurkvgbDiF5RmrEZRiT2MG88v6xwyJTkhhDRuFc9");
+    const auto nonceAccountSignature = Base58::bitcoin.decode(
+        "jFq4PbbEM1fuPbq5CkUYgzs7a21g6rvFkfLJAUUGP5QMKYhHBE6nB1dqtwaJsABgyUvrR8QjT2Ej73cXNz7Vur1");
+    // Verify signature (pubkey & hash & signature)
+    EXPECT_TRUE(publicKey.verify(signature, TW::data(preImageHash)));
+    EXPECT_TRUE(nonceAccountPublicKey.verify(nonceAccountSignature, TW::data(preImageHash)));
+    /// Step 3: Compile transaction info
+    const Data outputData = TransactionCompiler::compileWithSignatures(
+        coin, inputData, {signature, nonceAccountSignature},
+        {publicKeyData, nonceAccountPublicKeyData});
+    const auto ExpectedTx =
+        "3wu6xJSbb2NysVgi7pdfMgwVBT1knAdeCr9NR8EktJLoByzM4s9SMto2PPmrnbRqPtHwnpAKxXkC4vqyWY2dRBgdGG"
+        "CC1bep6qN5nSLVzpPYAWUSq5cd4gfYMAVriFYRRNHmYUnEq8vMn4vjiECmZoHrpabBj8HpXGqYBo87sbZa8ZPCxUcB"
+        "71hxXiHWZHj2rovx2kr75Uuv1buWXyW6M8uR4UNvQcPPvzVbwBG82RjDYTuancMSAxmrVNR8GLBQNhrCCYrZyte3EW"
+        "gEyMQxxfW8T3xNXqnbgdfvFJ3UjRBxXj3hrmv17xEivTjfs81aG2AAi24yiYrk8ep7eQqwDHVSArsrynnwVKVNUcCQ"
+        "CnSy7fuiuS7FweFX8DEN1K9BrfecHyWrF15fYzhkmWSs64aH6ZTYHWPv5znhFKYmAuopGwbsBEb2j5p8NS3iJZ2skb"
+        "2wi47n1rpLZfoCHWKxNiikkDUJTGQNcSDrGUMfeW5aGubJrCfecPKEo9Wo9kd36iSsxYPYSWNKrz2HTooa1rCRhqjX"
+        "D8dyX3bXGV8TK6W2sEgf4JkcDnNoWQLbindcP8XR";
+    EXPECT_EQ(outputData.size(), 583);
+    Solana::Proto::SigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+
+    EXPECT_EQ(output.encoded(), ExpectedTx);
+    EXPECT_EQ(output.encoded().size(), 580);
+    { // Double check: check if simple signature process gives the same result. Note that private
+      // keys were not used anywhere up to this point.
+        Solana::Proto::SigningInput input;
+        ASSERT_TRUE(input.ParseFromArray(inputData.data(), (int)inputData.size()));
+        auto key = parse_hex("044014463e2ee3cc9c67a6f191dbac82288eb1d5c1111d21245bdc6a855082a1");
+        auto nonceAccountKey =
+            parse_hex("2a9737aca3cde2dc0b4f3ae3487e3a90000490cb39fbc979da32b974ff5d7490");
+        input.set_private_key(key.data(), key.size());
+        auto& message = *input.mutable_create_nonce_account();
+        message.set_nonce_account_private_key(nonceAccountKey.data(), nonceAccountKey.size());
+        message.set_rent(rent);
+
+        Solana::Proto::SigningOutput output;
+        ANY_SIGN(input, coin);
+
+        ASSERT_EQ(output.encoded(), ExpectedTx);
+    }
+}
+
+TEST(TransactionCompiler, SolanaCompileWithdrawNonceAccountWithSignatures) {
+    const auto coin = TWCoinTypeSolana;
+    /// Step 1: Prepare transaction input (protobuf)
+    auto input = TW::Solana::Proto::SigningInput();
+    auto& message = *input.mutable_withdraw_nonce_account();
+    auto nonceAccount = std::string("6vNrYDm6EHcvBALY7HywuDWpTSc6uGt3y2nf5MuG1TmJ");
+    auto sender = std::string("sp6VUqq1nDEuU83bU2hstmEYrJNipJYpwS7gZ7Jv7ZH");
+    auto recipient = std::string("3UVYmECPPMZSCqWKfENfuoTv51fTDTWicX9xmBD2euKe");
+    uint64_t value = 10000000;
+    input.set_sender(sender);
+    input.set_recent_blockhash(std::string("5ccb7sRth3CP8fghmarFycr6VQX3NcfyDJsMFtmdkdU8"));
+    message.set_nonce_account(nonceAccount);
+    message.set_recipient(recipient);
+    message.set_value(value);
+    auto inputString = input.SerializeAsString();
+    auto inputData = TW::Data(inputString.begin(), inputString.end());
+    /// Step 2: Obtain preimage hash
+    const auto preImageHashesData = TransactionCompiler::preImageHashes(coin, inputData);
+    auto preSigningOutput = TW::Solana::Proto::PreSigningOutput();
+    preSigningOutput.ParseFromArray(preImageHashesData.data(), (int)preImageHashesData.size());
+    ASSERT_EQ(preSigningOutput.signers_size(), 1);
+    auto signer = preSigningOutput.signers(0);
+    EXPECT_EQ(signer, sender);
+    auto preImageHash = preSigningOutput.data();
+    EXPECT_EQ(hex(preImageHash),
+              "010003060d044a62d0a4dfe5a037a15b59fa4d4d0d3ab81103a2c10a6da08a4d058611c057f6ed937bb4"
+              "47a6700c9684d2e182b1a6661838a86cca7d0aac18be2e098b2124c255a8bc3e8496217a2cd2a1894b9b"
+              "9dcace04fcd9c0d599acdaaea40a1b6106a7d517192c568ee08a845f73d29788cf035c3145b21ab344d8"
+              "062ea940000006a7d517192c5c51218cc94c3d4af17f58daee089ba1fd44e3dbd98a0000000000000000"
+              "00000000000000000000000000000000000000000000000000000000448e50d73f42e3163f5926922aad"
+              "d2bca6bdd91f97b3eb7b750e2cecfd810f6d01050501020304000c050000008096980000000000");
+    // Simulate signature, normally obtained from signature server
+    const Data publicKeyData = Base58::bitcoin.decode(sender);
+    const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeED25519);
+    const auto signature = Base58::bitcoin.decode(
+        "MxbTCAUmBLiESDLK1NiK5ab41mL2SpAPKSbvGdYQQD5eKgAJRdFEJ8MV9HqBhDQHdsS2LG3QMQQVJp51ekGu6KM");
+    // Verify signature (pubkey & hash & signature)
+    EXPECT_TRUE(publicKey.verify(signature, TW::data(preImageHash)));
+    /// Step 3: Compile transaction info
+    const Data outputData = TransactionCompiler::compileWithSignatures(
+        coin, inputData, {signature},
+        {publicKeyData});
+    const auto ExpectedTx =
+        "7gdEdDymvtfPfVgVvCTPzafmZc1Z8Zu4uXgJDLm8KGpLyPHysxFGjtFzimZDmGtNhQCh22Ygv3ZtPZmSbANbafikR3"
+        "S1tvujatHW9gMo35jveq7TxwcGoNSqc7tnH85hkEZwnDryVaiKRvtCeH3dgFE9YqPHxiBuZT5eChHJvVNb9iTTdMsJ"
+        "XMusRtzeRV45CvrLKUvsAH7SSWHYW6bGow5TbEJie4buuz2rnbeVG5cxaZ6vyG2nJWHNuDPWZJTRi1MFEwHoxst3a5"
+        "jQPv9UrG9rNZFCw4uZizVcG6HEqHWgQBu8gVpYpzFCX5SrhjGPZpbK3YmHhUEMEpJx3Fn7jX7Kt4t3hhhrieXppoqK"
+        "NuqjeNVjfEf3Q8dJRfuVMLdXYbmitCVTPQzYKWBR6ERqWLYoAVqjoAS2pRUw1nrqi1HR";
+    EXPECT_EQ(outputData.size(), 431);
+    Solana::Proto::SigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+
+    EXPECT_EQ(output.encoded(), ExpectedTx);
+    EXPECT_EQ(output.encoded().size(), 428);
+    { // Double check: check if simple signature process gives the same result. Note that private
+      // keys were not used anywhere up to this point.
+        Solana::Proto::SigningInput input;
+        ASSERT_TRUE(input.ParseFromArray(inputData.data(), (int)inputData.size()));
+        auto key = parse_hex("044014463e2ee3cc9c67a6f191dbac82288eb1d5c1111d21245bdc6a855082a1");
+        input.set_private_key(key.data(), key.size());
+
+        Solana::Proto::SigningOutput output;
+        ANY_SIGN(input, coin);
+
+        ASSERT_EQ(output.encoded(), ExpectedTx);
+    }
+}
+
 TEST(TransactionCompiler, NEOCompileWithSignatures) {
     const auto coin = TWCoinTypeNEO;
     /// Step 1: Prepare transaction input (protobuf)
-    const std::string NEO_ASSET_ID = "9b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc5";
-    const std::string GAS_ASSET_ID = "e72d286979ee6cb1b7e65dfddfb2e384100b8d148e7758de42e4168b71792c60";
+    const std::string NEO_ASSET_ID =
+        "9b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc5";
+    const std::string GAS_ASSET_ID =
+        "e72d286979ee6cb1b7e65dfddfb2e384100b8d148e7758de42e4168b71792c60";
 
     TW::NEO::Proto::SigningInput input;
-    auto privateKey = PrivateKey(parse_hex("F18B2F726000E86B4950EBEA7BFF151F69635951BC4A31C44F28EE6AF7AEC128"));
+    auto privateKey =
+        PrivateKey(parse_hex("F18B2F726000E86B4950EBEA7BFF151F69635951BC4A31C44F28EE6AF7AEC128"));
     auto publicKey = privateKey.getPublicKey(::publicKeyType(coin));
     input.set_gas_asset_id(GAS_ASSET_ID);
     input.set_gas_change_address("AdtSLMBqACP4jv8tRWwyweXGpyGG46eMXV");
@@ -603,7 +759,7 @@ TEST(TransactionCompiler, NEOCompileWithSignatures) {
     utxo->set_prev_hash(hash.data(), hash.size());
     utxo->set_prev_index(1);
     utxo->set_asset_id(NEO_ASSET_ID);
-    utxo->set_value(89300000000); 
+    utxo->set_value(89300000000);
 
     auto txOutput = input.add_outputs();
     txOutput->set_asset_id(NEO_ASSET_ID);
@@ -618,26 +774,37 @@ TEST(TransactionCompiler, NEOCompileWithSignatures) {
     const auto preImageHashData = TransactionCompiler::preImageHashes(coin, inputData);
 
     auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
-    ASSERT_TRUE(preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
+    ASSERT_TRUE(
+        preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
     ASSERT_EQ(preSigningOutput.errorcode(), 0);
 
     auto preImageHash = preSigningOutput.datahash();
-    EXPECT_EQ(hex(preImageHash), "7fd5629cfc7cb0f8f01f15fc6d8b37ed1240c4f818d0b397bac65266aa6466da");
+    EXPECT_EQ(hex(preImageHash),
+              "7fd5629cfc7cb0f8f01f15fc6d8b37ed1240c4f818d0b397bac65266aa6466da");
 
     // Simulate signature, normally obtained from signature server
     const auto publicKeyData = publicKey.bytes;
-    const auto signature = parse_hex("5046619c8e20e1fdeec92ce95f3019f6e7cc057294eb16b2d5e55c105bf32eb27e1fc01c1858576228f1fef8c0945a8ad69688e52a4ed19f5b85f5eff7e961d7");
+    const auto signature =
+        parse_hex("5046619c8e20e1fdeec92ce95f3019f6e7cc057294eb16b2d5e55c105bf32eb27e1fc01c18585762"
+                  "28f1fef8c0945a8ad69688e52a4ed19f5b85f5eff7e961d7");
 
     // Verify signature (pubkey & hash & signature)
     EXPECT_TRUE(publicKey.verify(signature, TW::data(preImageHash)));
 
     /// Step 3: Compile transaction info
-    const auto outputData = TransactionCompiler::compileWithSignatures(coin, inputData, {signature}, {publicKeyData});
+    const auto outputData =
+        TransactionCompiler::compileWithSignatures(coin, inputData, {signature}, {publicKeyData});
 
     NEO::Proto::SigningOutput output;
     ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
 
-    auto expectedTx = "800000019c85b39cd5677e2bfd6bf8a711e8da93a2f1d172b2a52c6ca87757a4bccc24de0100029b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc500e1f50500000000ea610aa6db39bd8c8556c9569d94b5e5a5d0ad199b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc500fcbbc414000000f2908c7efc0c9e43ffa7e79170ba37e501e1b4ac0141405046619c8e20e1fdeec92ce95f3019f6e7cc057294eb16b2d5e55c105bf32eb27e1fc01c1858576228f1fef8c0945a8ad69688e52a4ed19f5b85f5eff7e961d7232102a41c2aea8568864b106553729d32b1317ec463aa23e7a3521455d95992e17a7aac";
+    auto expectedTx =
+        "800000019c85b39cd5677e2bfd6bf8a711e8da93a2f1d172b2a52c6ca87757a4bccc24de0100029b7cffdaa674"
+        "beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc500e1f50500000000ea610aa6db39bd8c8556c9"
+        "569d94b5e5a5d0ad199b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc500fcbbc4"
+        "14000000f2908c7efc0c9e43ffa7e79170ba37e501e1b4ac0141405046619c8e20e1fdeec92ce95f3019f6e7cc"
+        "057294eb16b2d5e55c105bf32eb27e1fc01c1858576228f1fef8c0945a8ad69688e52a4ed19f5b85f5eff7e961"
+        "d7232102a41c2aea8568864b106553729d32b1317ec463aa23e7a3521455d95992e17a7aac";
     EXPECT_EQ(hex(output.encoded()), expectedTx);
 
     { // Double check: check if simple signature process gives the same result. Note that private
@@ -683,17 +850,24 @@ TEST(TransactionCompiler, StellarCompileWithSignatures) {
     ASSERT_EQ(preSigningOutput.errorcode(), 0);
 
     auto preImageHash = preSigningOutput.datahash();
-    EXPECT_EQ(hex(preImageHash), "1e8786a0162630b2393e0f6c51f16a2d7860715023cb19bf25cad14490b1f8f3");
+    EXPECT_EQ(hex(preImageHash),
+              "1e8786a0162630b2393e0f6c51f16a2d7860715023cb19bf25cad14490b1f8f3");
 
-    auto signature = parse_hex("5042574491827aaccbce1e2964c05098caba06194beb35e595aabfec9f788516a833f755f18144f4a2eedb3123d180f44e7c16037d00857c5c5b7033ebac2c01");
+    auto signature = parse_hex("5042574491827aaccbce1e2964c05098caba06194beb35e595aabfec9f788516a83"
+                               "3f755f18144f4a2eedb3123d180f44e7c16037d00857c5c5b7033ebac2c01");
 
     /// Step 3: Compile transaction info
-    const auto outputData = TransactionCompiler::compileWithSignatures(coin, inputData, { signature }, {});
+    const auto outputData =
+        TransactionCompiler::compileWithSignatures(coin, inputData, {signature}, {});
 
     TW::Stellar::Proto::SigningOutput output;
     ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
 
-    const auto tx = "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAEAAAANSGVsbG8sIHdvcmxkIQAAAAAAAAEAAAAAAAAAAQAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAAAAAAJiWgAAAAAAAAAABGd9cogAAAEBQQldEkYJ6rMvOHilkwFCYyroGGUvrNeWVqr/sn3iFFqgz91XxgUT0ou7bMSPRgPROfBYDfQCFfFxbcDPrrCwB";
+    const auto tx = "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/"
+                    "DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAEAAAANSGVsbG8sIHdvcmxkIQAAAAAAAAEAAAAAAAAA"
+                    "AQAAAADFgLYxeg6zm/"
+                    "f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAAAAAAJiWgAAAAAAAAAABGd9cogAAAEBQQldEkYJ6"
+                    "rMvOHilkwFCYyroGGUvrNeWVqr/sn3iFFqgz91XxgUT0ou7bMSPRgPROfBYDfQCFfFxbcDPrrCwB";
     EXPECT_EQ(output.signature(), tx);
 
     { // Double check: check if simple signature process gives the same result. Note that private
@@ -808,24 +982,32 @@ TEST(TransactionCompiler, ThetaCompileWithSignatures) {
     const auto preImageHashData = TransactionCompiler::preImageHashes(coin, inputData);
 
     auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
-    ASSERT_TRUE(preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
+    ASSERT_TRUE(
+        preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
     ASSERT_EQ(preSigningOutput.errorcode(), 0);
-    EXPECT_EQ(hex(preSigningOutput.datahash()), "2dc419e9919e65f129453419dc72a6bee99b2281dfddf754807a5c212ae35678");
+    EXPECT_EQ(hex(preSigningOutput.datahash()),
+              "2dc419e9919e65f129453419dc72a6bee99b2281dfddf754807a5c212ae35678");
 
     // Simulate signature, normally obtained from signature server
     const auto publicKeyData = publicKey.bytes;
-    const auto signature = parse_hex("5190868498d587d074d57298f41853d0109d997f15ddf617f471eb8cbb7fff267cb8fe9134ccdef053ec7cabd18070325c9c436efe1abbacd14eb7561d3fc10501");
+    const auto signature =
+        parse_hex("5190868498d587d074d57298f41853d0109d997f15ddf617f471eb8cbb7fff267cb8fe9134ccdef0"
+                  "53ec7cabd18070325c9c436efe1abbacd14eb7561d3fc10501");
 
     // Verify signature (pubkey & hash & signature)
     EXPECT_TRUE(publicKey.verify(signature, TW::data(preSigningOutput.datahash())));
 
     /// Step 3: Compile transaction info
-    const auto outputData = TransactionCompiler::compileWithSignatures(coin, inputData, {signature}, {publicKeyData});
+    const auto outputData =
+        TransactionCompiler::compileWithSignatures(coin, inputData, {signature}, {publicKeyData});
 
     Theta::Proto::SigningOutput output;
     ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
 
-    auto expectedTx = "02f887c78085e8d4a51000f863f861942e833968e5bb786ae419c4d13189fb081cc43babc70a85e8d4a5101401b8415190868498d587d074d57298f41853d0109d997f15ddf617f471eb8cbb7fff267cb8fe9134ccdef053ec7cabd18070325c9c436efe1abbacd14eb7561d3fc10501d9d8949f1233798e905e173560071255140b4a8abd3ec6c20a14";
+    auto expectedTx = "02f887c78085e8d4a51000f863f861942e833968e5bb786ae419c4d13189fb081cc43babc70a"
+                      "85e8d4a5101401b8415190868498d587d074d57298f41853d0109d997f15ddf617f471eb8cbb"
+                      "7fff267cb8fe9134ccdef053ec7cabd18070325c9c436efe1abbacd14eb7561d3fc10501d9d8"
+                      "949f1233798e905e173560071255140b4a8abd3ec6c20a14";
     EXPECT_EQ(hex(output.encoded()), expectedTx);
 
     { // Double check: check if simple signature process gives the same result. Note that private
@@ -845,7 +1027,8 @@ TEST(TransactionCompiler, TezosCompileWithSignatures) {
     const auto coin = TWCoinTypeTezos;
 
     /// Step 1: Prepare transaction input (protobuf)
-    auto privateKey = PrivateKey(parse_hex("2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f"));
+    auto privateKey =
+        PrivateKey(parse_hex("2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f"));
     auto publicKey = privateKey.getPublicKey(::publicKeyType(coin));
     auto revealKey = parse_hex("311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff95");
 
@@ -881,21 +1064,30 @@ TEST(TransactionCompiler, TezosCompileWithSignatures) {
     const auto preImageHashData = TransactionCompiler::preImageHashes(coin, inputData);
 
     auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
-    ASSERT_TRUE(preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
+    ASSERT_TRUE(
+        preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
     ASSERT_EQ(preSigningOutput.errorcode(), 0);
 
     auto preImageHash = preSigningOutput.datahash();
-    EXPECT_EQ(hex(preImageHash), "12e4f8b17ad3b316a5a56960db76c7d6505dbf2fff66106be75c8d6753daac0e");
+    EXPECT_EQ(hex(preImageHash),
+              "12e4f8b17ad3b316a5a56960db76c7d6505dbf2fff66106be75c8d6753daac0e");
 
-    auto signature = parse_hex("0217034271b815e5f0c0a881342838ce49d7b48cdf507c72b1568c69a10db70c98774cdad1a74df760763e25f760ff13afcbbf3a1f2c833a0beeb9576a579c05");
+    auto signature = parse_hex("0217034271b815e5f0c0a881342838ce49d7b48cdf507c72b1568c69a10db70c987"
+                               "74cdad1a74df760763e25f760ff13afcbbf3a1f2c833a0beeb9576a579c05");
 
     /// Step 3: Compile transaction info
-    const auto outputData = TransactionCompiler::compileWithSignatures(coin, inputData, { signature }, {});
+    const auto outputData =
+        TransactionCompiler::compileWithSignatures(coin, inputData, {signature}, {});
 
     TW::Tezos::Proto::SigningOutput output;
     ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
 
-    const auto tx = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016b0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff956c0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e810201000081faa75f741ef614b0e35fcc8c90dfa3b0b95721000217034271b815e5f0c0a881342838ce49d7b48cdf507c72b1568c69a10db70c98774cdad1a74df760763e25f760ff13afcbbf3a1f2c833a0beeb9576a579c05";
+    const auto tx =
+        "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016b0081faa75f741ef614b0e35f"
+        "cc8c90dfa3b0b95721f80992f001f44e810200311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10"
+        "906f511cff956c0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e810201000081faa75f74"
+        "1ef614b0e35fcc8c90dfa3b0b95721000217034271b815e5f0c0a881342838ce49d7b48cdf507c72b1568c69a1"
+        "0db70c98774cdad1a74df760763e25f760ff13afcbbf3a1f2c833a0beeb9576a579c05";
     EXPECT_EQ(hex(output.encoded()), tx);
 
     { // Double check: check if simple signature process gives the same result. Note that private
@@ -1016,8 +1208,8 @@ TEST(TransactionCompiler, IostCompileWithSignatures) {
     // Simulate signature, normally obtained from signature server
     const auto publicKeyData = publicKey.bytes;
     const auto signature =
-        parse_hex("1e5e2de66512658e9317fa56766678166abcf492d020863935723db2030f736710e13437cef0981fcc376eae45349759508767d407b6c9963712910ada2c3606"
-                  );
+        parse_hex("1e5e2de66512658e9317fa56766678166abcf492d020863935723db2030f736710e13437cef0981f"
+                  "cc376eae45349759508767d407b6c9963712910ada2c3606");
 
     // Verify signature (pubkey & hash & signature)
     EXPECT_TRUE(publicKey.verify(signature, TW::data(preSigningOutput.datahash())));
@@ -1028,7 +1220,19 @@ TEST(TransactionCompiler, IostCompileWithSignatures) {
 
     IOST::Proto::SigningOutput output;
     ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
-    const auto tx = "7b2274696d65223a2231363437343231353739393031353535303030222c2265787069726174696f6e223a2231363437343231383739393031353535303030222c226761735f726174696f223a312c226761735f6c696d6974223a3130303030302c22636861696e5f6964223a313032332c22616374696f6e73223a5b7b22636f6e7472616374223a22746f6b656e2e696f7374222c22616374696f6e5f6e616d65223a227472616e73666572222c2264617461223a225b5c22494f53545c222c5c226173746173746f6f6f5c222c5c22746573745f696f737465645c222c5c22302e3030315c222c5c22746573745c225d227d5d2c22616d6f756e745f6c696d6974223a5b7b22746f6b656e223a222a222c2276616c7565223a22756e6c696d69746564227d5d2c227075626c6973686572223a226173746173746f6f6f222c227075626c69736865725f73696773223a5b7b22616c676f726974686d223a322c227369676e6174757265223a22486c3474356d55535a593654462f7057646d5a34466d7138394a4c51494959354e58493973674d5063326351345451337a76435948387733627135464e4a645a5549646e31416532795a59334570454b3269773242673d3d222c227075626c69635f6b6579223a2234687a496d2b6d383234536f663866645641474545332b64667931554c7a69786e6f4c5047694a565879383d227d5d7d";
+    const auto tx =
+        "7b2274696d65223a2231363437343231353739393031353535303030222c2265787069726174696f6e223a2231"
+        "363437343231383739393031353535303030222c226761735f726174696f223a312c226761735f6c696d697422"
+        "3a3130303030302c22636861696e5f6964223a313032332c22616374696f6e73223a5b7b22636f6e7472616374"
+        "223a22746f6b656e2e696f7374222c22616374696f6e5f6e616d65223a227472616e73666572222c2264617461"
+        "223a225b5c22494f53545c222c5c226173746173746f6f6f5c222c5c22746573745f696f737465645c222c5c22"
+        "302e3030315c222c5c22746573745c225d227d5d2c22616d6f756e745f6c696d6974223a5b7b22746f6b656e22"
+        "3a222a222c2276616c7565223a22756e6c696d69746564227d5d2c227075626c6973686572223a226173746173"
+        "746f6f6f222c227075626c69736865725f73696773223a5b7b22616c676f726974686d223a322c227369676e61"
+        "74757265223a22486c3474356d55535a593654462f7057646d5a34466d7138394a4c51494959354e5849397367"
+        "4d5063326351345451337a76435948387733627135464e4a645a5549646e31416532795a59334570454b326977"
+        "3242673d3d222c227075626c69635f6b6579223a2234687a496d2b6d383234536f663866645641474545332b64"
+        "667931554c7a69786e6f4c5047694a565879383d227d5d7d";
     EXPECT_EQ(hex(output.encoded()), tx);
 
     { // Double check: check if simple signature process gives the same result. Note that private
@@ -1044,7 +1248,8 @@ TEST(TransactionCompiler, IostCompileWithSignatures) {
 }
 
 TEST(TransactionCompiler, TronCompileWithSignatures) {
-    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    const auto privateKey =
+        PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
     const auto coin = TWCoinTypeTron;
     /// Step 1: Prepare transaction input (protobuf)
@@ -1061,9 +1266,11 @@ TEST(TransactionCompiler, TronCompileWithSignatures) {
 
     auto& blockHeader = *transaction.mutable_block_header();
     blockHeader.set_timestamp(1541890116000);
-    const auto txTrieRoot = parse_hex("845ab51bf63c2c21ee71a4dc0ac3781619f07a7cd05e1e0bd8ba828979332ffa");
+    const auto txTrieRoot =
+        parse_hex("845ab51bf63c2c21ee71a4dc0ac3781619f07a7cd05e1e0bd8ba828979332ffa");
     blockHeader.set_tx_trie_root(txTrieRoot.data(), txTrieRoot.size());
-    const auto parentHash = parse_hex("00000000003cb800a7e69e9144e3d16f0cf33f33a95c7ce274097822c67243c1");
+    const auto parentHash =
+        parse_hex("00000000003cb800a7e69e9144e3d16f0cf33f33a95c7ce274097822c67243c1");
     blockHeader.set_parent_hash(parentHash.data(), parentHash.size());
     blockHeader.set_number(3979265);
     const auto witnessAddress = parse_hex("41b487cdc02de90f15ac89a68c82f44cbfe3d915ea");
@@ -1082,18 +1289,28 @@ TEST(TransactionCompiler, TronCompileWithSignatures) {
     auto preImageHash = preSigningOutput.datahash();
     EXPECT_EQ(hex(preImageHash),
               "546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb");
-    auto signature = parse_hex("77f5eabde31e739d34a66914540f1756981dc7d782c9656f5e14e53b59a15371603a183aa12124adeee7991bf55acc8e488a6ca04fb393b1a8ac16610eeafdfc00");
+    auto signature = parse_hex("77f5eabde31e739d34a66914540f1756981dc7d782c9656f5e14e53b59a15371603"
+                               "a183aa12124adeee7991bf55acc8e488a6ca04fb393b1a8ac16610eeafdfc00");
 
     // Verify signature (pubkey & hash & signature)
     EXPECT_TRUE(publicKey.verify(signature, TW::data(preSigningOutput.datahash())));
     /// Step 3: Compile transaction info
     const auto outputData =
-            TransactionCompiler::compileWithSignatures(coin, inputData, {signature}, {publicKey.bytes});
+        TransactionCompiler::compileWithSignatures(coin, inputData, {signature}, {publicKey.bytes});
 
     TW::Tron::Proto::SigningOutput output;
     ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
 
-    const auto tx = "{\"raw_data\":{\"contract\":[{\"parameter\":{\"type_url\":\"type.googleapis.com/protocol.TransferAssetContract\",\"value\":{\"amount\":4,\"asset_name\":\"31303030393539\",\"owner_address\":\"415cd0fb0ab3ce40f3051414c604b27756e69e43db\",\"to_address\":\"41521ea197907927725ef36d70f25f850d1659c7c7\"}},\"type\":\"TransferAssetContract\"}],\"expiration\":1541926116000,\"ref_block_bytes\":\"b801\",\"ref_block_hash\":\"0e2bc08d550f5f58\",\"timestamp\":1539295479000},\"signature\":[\"77f5eabde31e739d34a66914540f1756981dc7d782c9656f5e14e53b59a15371603a183aa12124adeee7991bf55acc8e488a6ca04fb393b1a8ac16610eeafdfc00\"],\"txID\":\"546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb\"}";
+    const auto tx =
+        "{\"raw_data\":{\"contract\":[{\"parameter\":{\"type_url\":\"type.googleapis.com/"
+        "protocol.TransferAssetContract\",\"value\":{\"amount\":4,\"asset_name\":"
+        "\"31303030393539\",\"owner_address\":\"415cd0fb0ab3ce40f3051414c604b27756e69e43db\",\"to_"
+        "address\":\"41521ea197907927725ef36d70f25f850d1659c7c7\"}},\"type\":"
+        "\"TransferAssetContract\"}],\"expiration\":1541926116000,\"ref_block_bytes\":\"b801\","
+        "\"ref_block_hash\":\"0e2bc08d550f5f58\",\"timestamp\":1539295479000},\"signature\":["
+        "\"77f5eabde31e739d34a66914540f1756981dc7d782c9656f5e14e53b59a15371603a183aa12124adeee7991b"
+        "f55acc8e488a6ca04fb393b1a8ac16610eeafdfc00\"],\"txID\":"
+        "\"546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb\"}";
     EXPECT_EQ(output.json(), tx);
     { // Double check: check if simple signature process gives the same result. Note that private
         // keys were not used anywhere up to this point.
@@ -1176,7 +1393,8 @@ TEST(TWTransactionCompiler, CosmosCompileWithSignatures) {
     const auto coin = TWCoinTypeCosmos;
     TW::Cosmos::Proto::SigningInput input;
 
-    PrivateKey privateKey = PrivateKey( parse_hex("8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af"));
+    PrivateKey privateKey =
+        PrivateKey(parse_hex("8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af"));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     /// Step 1: Prepare transaction input (protobuf)
@@ -1210,20 +1428,51 @@ TEST(TWTransactionCompiler, CosmosCompileWithSignatures) {
 
     const auto preImageHashData = TransactionCompiler::preImageHashes(coin, protoInputData);
     auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
-    ASSERT_TRUE(preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
+    ASSERT_TRUE(
+        preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
     ASSERT_EQ(preSigningOutput.errorcode(), 0);
     auto preImage = preSigningOutput.data();
     auto preImageHash = preSigningOutput.datahash();
-    EXPECT_EQ(hex(preImage), "0a92010a8f010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e64126f0a2d636f736d6f73316d6b793639636e38656b74777930383435766563397570736470686b7478743033676b776c78122d636f736d6f733138733068646e736c6c6763636c7765753961796d77346e676b7472326b30726b7967647a64701a0f0a057561746f6d120634303030303012650a4e0a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a2102ecef5ce437a302c67f95468de4b31f36e911f467d7e6a52b41c1e13e1d56364912040a02080112130a0d0a057561746f6d12043130303010c09a0c1a0b636f736d6f736875622d342083ab21");
-    EXPECT_EQ(hex(preImageHash), "fa7990e1814c900efaedf1bdbedba22c22336675befe0ae39974130fc204f3de");
+    EXPECT_EQ(
+        hex(preImage),
+        "0a92010a8f010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e64126f0a2d636f736d6f"
+        "73316d6b793639636e38656b74777930383435766563397570736470686b7478743033676b776c78122d636f73"
+        "6d6f733138733068646e736c6c6763636c7765753961796d77346e676b7472326b30726b7967647a64701a0f0a"
+        "057561746f6d120634303030303012650a4e0a460a1f2f636f736d6f732e63727970746f2e736563703235366b"
+        "312e5075624b657912230a2102ecef5ce437a302c67f95468de4b31f36e911f467d7e6a52b41c1e13e1d563649"
+        "12040a02080112130a0d0a057561746f6d12043130303010c09a0c1a0b636f736d6f736875622d342083ab21");
+    EXPECT_EQ(hex(preImageHash),
+              "fa7990e1814c900efaedf1bdbedba22c22336675befe0ae39974130fc204f3de");
 
     TW::Cosmos::Proto::SigningOutput output;
     ANY_SIGN(input, coin);
 
-    assertJSONEqual(output.serialized(), "{\"tx_bytes\": \"CpIBCo8BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm8KLWNvc21vczFta3k2OWNuOGVrdHd5MDg0NXZlYzl1cHNkcGhrdHh0MDNna3dseBItY29zbW9zMThzMGhkbnNsbGdjY2x3ZXU5YXltdzRuZ2t0cjJrMHJreWdkemRwGg8KBXVhdG9tEgY0MDAwMDASZQpOCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAuzvXOQ3owLGf5VGjeSzHzbpEfRn1+alK0HB4T4dVjZJEgQKAggBEhMKDQoFdWF0b20SBDEwMDAQwJoMGkCvvVE6d29P30cO9/lnXyGunWMPxNY12NuqDcCnFkNM0H4CUQdl1Gc9+ogIJbro5nyzZzlv9rl2/GsZox/JXoCX\", \"mode\": \"BROADCAST_MODE_BLOCK\"}");
-    EXPECT_EQ(hex(output.signature()), "afbd513a776f4fdf470ef7f9675f21ae9d630fc4d635d8dbaa0dc0a716434cd07e02510765d4673dfa880825bae8e67cb367396ff6b976fc6b19a31fc95e8097");
+    assertJSONEqual(
+        output.serialized(),
+        "{\"tx_bytes\": "
+        "\"CpIBCo8BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm8KLWNvc21vczFta3k2OWNuOGVrdHd5MDg0NXZl"
+        "Yzl1cHNkcGhrdHh0MDNna3dseBItY29zbW9zMThzMGhkbnNsbGdjY2x3ZXU5YXltdzRuZ2t0cjJrMHJreWdkemRwGg"
+        "8KBXVhdG9tEgY0MDAwMDASZQpOCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAuzvXOQ3owLG"
+        "f5VGjeSzHzbpEfRn1+alK0HB4T4dVjZJEgQKAggBEhMKDQoFdWF0b20SBDEwMDAQwJoMGkCvvVE6d29P30cO9/"
+        "lnXyGunWMPxNY12NuqDcCnFkNM0H4CUQdl1Gc9+ogIJbro5nyzZzlv9rl2/GsZox/JXoCX\", \"mode\": "
+        "\"BROADCAST_MODE_BLOCK\"}");
+    EXPECT_EQ(hex(output.signature()),
+              "afbd513a776f4fdf470ef7f9675f21ae9d630fc4d635d8dbaa0dc0a716434cd07e02510765d4673dfa88"
+              "0825bae8e67cb367396ff6b976fc6b19a31fc95e8097");
     ASSERT_TRUE(publicKey.verify(data(output.signature()), data(preImageHash.data())));
-    EXPECT_EQ(hex(output.serialized()), "7b226d6f6465223a2242524f4144434153545f4d4f44455f424c4f434b222c2274785f6279746573223a2243704942436f3842436877765932397a6257397a4c6d4a68626d7375646a46695a5852684d53354e633264545a57356b456d384b4c574e7663323176637a467461336b324f574e754f475672644864354d4467304e585a6c597a6c3163484e6b63476872644868304d444e6e61336473654249745932397a6257397a4d54687a4d47686b626e4e736247646a593278335a58553559586c74647a52755a327430636a4a724d484a726557646b656d52774767384b4258566864473974456759304d4441774d4441535a51704f436b594b4879396a62334e7462334d7559334a35634852764c6e4e6c593341794e545a724d53355164574a4c5a586b5349776f6841757a76584f51336f774c47663556476a65537a487a62704566526e312b616c4b30484234543464566a5a4a4567514b4167674245684d4b44516f466457463062323053424445774d444151774a6f4d476b437676564536643239503330634f392f6c6e587947756e574d50784e5931324e75714463436e466b4e4d304834435551646c314763392b6f67494a62726f356e797a5a7a6c7639726c322f47735a6f782f4a586f4358227d");
+    EXPECT_EQ(
+        hex(output.serialized()),
+        "7b226d6f6465223a2242524f4144434153545f4d4f44455f424c4f434b222c2274785f6279746573223a224370"
+        "4942436f3842436877765932397a6257397a4c6d4a68626d7375646a46695a5852684d53354e633264545a5735"
+        "6b456d384b4c574e7663323176637a467461336b324f574e754f475672644864354d4467304e585a6c597a6c31"
+        "63484e6b63476872644868304d444e6e61336473654249745932397a6257397a4d54687a4d47686b626e4e7362"
+        "47646a593278335a58553559586c74647a52755a327430636a4a724d484a726557646b656d52774767384b4258"
+        "566864473974456759304d4441774d4441535a51704f436b594b4879396a62334e7462334d7559334a35634852"
+        "764c6e4e6c593341794e545a724d53355164574a4c5a586b5349776f6841757a76584f51336f774c4766355647"
+        "6a65537a487a62704566526e312b616c4b30484234543464566a5a4a4567514b4167674245684d4b44516f4664"
+        "57463062323053424445774d444151774a6f4d476b437676564536643239503330634f392f6c6e587947756e57"
+        "4d50784e5931324e75714463436e466b4e4d304834435551646c314763392b6f67494a62726f356e797a5a7a6c"
+        "7639726c322f47735a6f782f4a586f4358227d");
 
     /// Step 3: Obtain json preimage hash
     input.set_signing_mode(TW::Cosmos::Proto::JSON);
@@ -1232,12 +1481,23 @@ TEST(TWTransactionCompiler, CosmosCompileWithSignatures) {
 
     const auto jsonPreImageHashData = TransactionCompiler::preImageHashes(coin, jsonInputData);
     auto jsonPreSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
-    ASSERT_TRUE(jsonPreSigningOutput.ParseFromArray(jsonPreImageHashData.data(), (int)jsonPreImageHashData.size()));
+    ASSERT_TRUE(jsonPreSigningOutput.ParseFromArray(jsonPreImageHashData.data(),
+                                                    (int)jsonPreImageHashData.size()));
     ASSERT_EQ(jsonPreSigningOutput.errorcode(), 0);
     auto jsonPreImage = jsonPreSigningOutput.data();
     auto jsonPreImageHash = jsonPreSigningOutput.datahash();
-    EXPECT_EQ(hex(jsonPreImage), "7b226163636f756e745f6e756d626572223a22353436313739222c22636861696e5f6964223a22636f736d6f736875622d34222c22666565223a7b22616d6f756e74223a5b7b22616d6f756e74223a2231303030222c2264656e6f6d223a227561746f6d227d5d2c22676173223a22323030303030227d2c226d656d6f223a22222c226d736773223a5b7b2274797065223a22636f736d6f732d73646b2f4d736753656e64222c2276616c7565223a7b22616d6f756e74223a5b7b22616d6f756e74223a22343030303030222c2264656e6f6d223a227561746f6d227d5d2c2266726f6d5f61646472657373223a22636f736d6f73316d6b793639636e38656b74777930383435766563397570736470686b7478743033676b776c78222c22746f5f61646472657373223a22636f736d6f733138733068646e736c6c6763636c7765753961796d77346e676b7472326b30726b7967647a6470227d7d5d2c2273657175656e6365223a2230227d");
-    EXPECT_EQ(hex(jsonPreImageHash), "0a31f6cd50f1a5c514929ba68a977e222a7df2dc11e8470e93118cc3545e6b37");
+    EXPECT_EQ(hex(jsonPreImage),
+              "7b226163636f756e745f6e756d626572223a22353436313739222c22636861696e5f6964223a22636f73"
+              "6d6f736875622d34222c22666565223a7b22616d6f756e74223a5b7b22616d6f756e74223a2231303030"
+              "222c2264656e6f6d223a227561746f6d227d5d2c22676173223a22323030303030227d2c226d656d6f22"
+              "3a22222c226d736773223a5b7b2274797065223a22636f736d6f732d73646b2f4d736753656e64222c22"
+              "76616c7565223a7b22616d6f756e74223a5b7b22616d6f756e74223a22343030303030222c2264656e6f"
+              "6d223a227561746f6d227d5d2c2266726f6d5f61646472657373223a22636f736d6f73316d6b79363963"
+              "6e38656b74777930383435766563397570736470686b7478743033676b776c78222c22746f5f61646472"
+              "657373223a22636f736d6f733138733068646e736c6c6763636c7765753961796d77346e676b7472326b"
+              "30726b7967647a6470227d7d5d2c2273657175656e6365223a2230227d");
+    EXPECT_EQ(hex(jsonPreImageHash),
+              "0a31f6cd50f1a5c514929ba68a977e222a7df2dc11e8470e93118cc3545e6b37");
 }
 
 TEST(TWTransactionCompiler, VechainCompileWithSignatures) {
@@ -1245,7 +1505,8 @@ TEST(TWTransactionCompiler, VechainCompileWithSignatures) {
 
     /// Step 1: Prepare transaction input (protobuf)
     TW::VeChain::Proto::SigningInput input;
-    PrivateKey privateKey = PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"));
+    PrivateKey privateKey =
+        PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     input.set_chain_tag(1);
@@ -1266,21 +1527,28 @@ TEST(TWTransactionCompiler, VechainCompileWithSignatures) {
     /// Step 2: Obtain preimage hash
     const auto preImageHashData = TransactionCompiler::preImageHashes(coin, dataInput);
     auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
-    ASSERT_TRUE(preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
+    ASSERT_TRUE(
+        preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
     ASSERT_EQ(preSigningOutput.errorcode(), 0);
 
     auto preImage = preSigningOutput.data();
     auto preImageHash = preSigningOutput.datahash();
-    EXPECT_EQ(hex(preImage), "e7010101dcdb943535353535353535353535353535353535353535843130303080808252088001c0");
-    EXPECT_EQ(hex(preImageHash), "a1b8ef3af3d8c74e97ac6cd732916a8f4c38c0905c8b70d2fa598edf1f62ea04");
+    EXPECT_EQ(hex(preImage),
+              "e7010101dcdb943535353535353535353535353535353535353535843130303080808252088001c0");
+    EXPECT_EQ(hex(preImageHash),
+              "a1b8ef3af3d8c74e97ac6cd732916a8f4c38c0905c8b70d2fa598edf1f62ea04");
 
     /// Step 3: Sign
     TW::VeChain::Proto::SigningOutput output;
     ANY_SIGN(input, coin);
-    ASSERT_EQ(hex(output.encoded()), "f86a010101dcdb943535353535353535353535353535353535353535843130303080808252088001c0b841bf8edf9600e645b5abd677cb52f585e7f655d1361075d511b37f707a9f31da6702d28739933b264527a1d05b046f5b74044b88c30c3f5a09d616bd7a4af4901601");
+    ASSERT_EQ(hex(output.encoded()),
+              "f86a010101dcdb943535353535353535353535353535353535353535843130303080808252088001c0b8"
+              "41bf8edf9600e645b5abd677cb52f585e7f655d1361075d511b37f707a9f31da6702d28739933b264527"
+              "a1d05b046f5b74044b88c30c3f5a09d616bd7a4af4901601");
 
     /// Step 4: Verify signature
-    ASSERT_TRUE(privateKey.getPublicKey(TWCoinTypePublicKeyType(coin)).verify(data(output.signature()), data(preImageHash.data())));
+    ASSERT_TRUE(privateKey.getPublicKey(TWCoinTypePublicKeyType(coin))
+                    .verify(data(output.signature()), data(preImageHash.data())));
 }
 
 TEST(TransactionCompiler, OntCompileWithSignatures) {
@@ -1311,15 +1579,22 @@ TEST(TransactionCompiler, OntCompileWithSignatures) {
     auto ongPreImageHash = ongPreOutput.datahash();
 
     {
-        EXPECT_EQ(hex(ontPreImageHash), "d3770eb50f1fcddc17ac9d59f1b7e69c4916dbbe4c484cc6ba27dd0792aeb943");
-        EXPECT_EQ(hex(ongPreImageHash), "788066583071cfd05a4a10e5b897b9b81d2363c16fd98128ddc81891535567af");
+        EXPECT_EQ(hex(ontPreImageHash),
+                  "d3770eb50f1fcddc17ac9d59f1b7e69c4916dbbe4c484cc6ba27dd0792aeb943");
+        EXPECT_EQ(hex(ongPreImageHash),
+                  "788066583071cfd05a4a10e5b897b9b81d2363c16fd98128ddc81891535567af");
     }
 
     // Simulate signature, normally obtained from signature server
-    const auto publicKeyData = parse_hex("038ea73c590f48c7d5a8ba544a928a0c8fb206aab60688793a054db9823602765a");
+    const auto publicKeyData =
+        parse_hex("038ea73c590f48c7d5a8ba544a928a0c8fb206aab60688793a054db9823602765a");
     const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeNIST256p1);
-    const auto ontSignature = parse_hex("b1678dfcda9b9b468d9a97a5b3021a680814180ca08cd17d9e3a9cf512b05a3b286fed9b8f635718c0aabddc9fc1acfbc48561577e35ef92ee97d7fa86e14f47");
-    const auto ongSignature = parse_hex("d90c4d76e9d07d3e5c00e4a8768ce09ca66be05cfb7f48ad02632b4f08fcaa6f4e3f6f52eb4278c1579065e54ea5e696b7711f071298576fa7050b21ae614bbe");
+    const auto ontSignature =
+        parse_hex("b1678dfcda9b9b468d9a97a5b3021a680814180ca08cd17d9e3a9cf512b05a3b286fed9b8f635718"
+                  "c0aabddc9fc1acfbc48561577e35ef92ee97d7fa86e14f47");
+    const auto ongSignature =
+        parse_hex("d90c4d76e9d07d3e5c00e4a8768ce09ca66be05cfb7f48ad02632b4f08fcaa6f4e3f6f52eb4278c1"
+                  "579065e54ea5e696b7711f071298576fa7050b21ae614bbe");
 
     // Verify signature (pubkey & hash & signature)
     {
@@ -1328,14 +1603,28 @@ TEST(TransactionCompiler, OntCompileWithSignatures) {
     }
 
     /// Compile transaction info
-    const Data ontOutputData = TransactionCompiler::compileWithSignatures(coin, ontTxInputData, {ontSignature}, {publicKeyData});
-    const Data ongOutputData = TransactionCompiler::compileWithSignatures(coin, ongTxInputData, {ongSignature}, {publicKeyData});
+    const Data ontOutputData = TransactionCompiler::compileWithSignatures(
+        coin, ontTxInputData, {ontSignature}, {publicKeyData});
+    const Data ongOutputData = TransactionCompiler::compileWithSignatures(
+        coin, ongTxInputData, {ongSignature}, {publicKeyData});
     auto ontOutput = Ontology::Proto::SigningOutput();
     auto ongOutput = Ontology::Proto::SigningOutput();
     ontOutput.ParseFromArray(ontOutputData.data(), ontOutputData.size());
     ongOutput.ParseFromArray(ongOutputData.data(), ongOutputData.size());
-    const auto ontExpectedTx = "00d101000000ac0d000000000000204e000000000000ca18ec37ac94f19588926a5302ded54cd909a76e7100c66b14ca18ec37ac94f19588926a5302ded54cd909a76e6a7cc8149e21dda3257e18eb033d9451dda1d9ac8bcfa4776a7cc8516a7cc86c51c1087472616e736665721400000000000000000000000000000000000000010068164f6e746f6c6f67792e4e61746976652e496e766f6b6500014140b1678dfcda9b9b468d9a97a5b3021a680814180ca08cd17d9e3a9cf512b05a3b286fed9b8f635718c0aabddc9fc1acfbc48561577e35ef92ee97d7fa86e14f472321038ea73c590f48c7d5a8ba544a928a0c8fb206aab60688793a054db9823602765aac";
-    const auto ongExpectedTx = "00d101000000ac0d000000000000204e000000000000ca18ec37ac94f19588926a5302ded54cd909a76e7100c66b14ca18ec37ac94f19588926a5302ded54cd909a76e6a7cc8149e21dda3257e18eb033d9451dda1d9ac8bcfa4776a7cc8516a7cc86c51c1087472616e736665721400000000000000000000000000000000000000020068164f6e746f6c6f67792e4e61746976652e496e766f6b6500014140d90c4d76e9d07d3e5c00e4a8768ce09ca66be05cfb7f48ad02632b4f08fcaa6f4e3f6f52eb4278c1579065e54ea5e696b7711f071298576fa7050b21ae614bbe2321038ea73c590f48c7d5a8ba544a928a0c8fb206aab60688793a054db9823602765aac";
+    const auto ontExpectedTx =
+        "00d101000000ac0d000000000000204e000000000000ca18ec37ac94f19588926a5302ded54cd909a76e7100c6"
+        "6b14ca18ec37ac94f19588926a5302ded54cd909a76e6a7cc8149e21dda3257e18eb033d9451dda1d9ac8bcfa4"
+        "776a7cc8516a7cc86c51c1087472616e736665721400000000000000000000000000000000000000010068164f"
+        "6e746f6c6f67792e4e61746976652e496e766f6b6500014140b1678dfcda9b9b468d9a97a5b3021a680814180c"
+        "a08cd17d9e3a9cf512b05a3b286fed9b8f635718c0aabddc9fc1acfbc48561577e35ef92ee97d7fa86e14f4723"
+        "21038ea73c590f48c7d5a8ba544a928a0c8fb206aab60688793a054db9823602765aac";
+    const auto ongExpectedTx =
+        "00d101000000ac0d000000000000204e000000000000ca18ec37ac94f19588926a5302ded54cd909a76e7100c6"
+        "6b14ca18ec37ac94f19588926a5302ded54cd909a76e6a7cc8149e21dda3257e18eb033d9451dda1d9ac8bcfa4"
+        "776a7cc8516a7cc86c51c1087472616e736665721400000000000000000000000000000000000000020068164f"
+        "6e746f6c6f67792e4e61746976652e496e766f6b6500014140d90c4d76e9d07d3e5c00e4a8768ce09ca66be05c"
+        "fb7f48ad02632b4f08fcaa6f4e3f6f52eb4278c1579065e54ea5e696b7711f071298576fa7050b21ae614bbe23"
+        "21038ea73c590f48c7d5a8ba544a928a0c8fb206aab60688793a054db9823602765aac";
 
     {
         EXPECT_EQ(hex(ontOutput.encoded()), ontExpectedTx);
