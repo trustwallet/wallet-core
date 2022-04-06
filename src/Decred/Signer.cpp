@@ -69,7 +69,7 @@ Result<Transaction, Common::Proto::SigningError> Signer::sign() {
     }
 
     Transaction tx(transaction);
-    tx.inputs = move(signedInputs);
+    tx.inputs = std::move(signedInputs);
     tx.outputs = transaction.outputs;
     return Result<Transaction, Common::Proto::SigningError>::success(std::move(tx));
 }

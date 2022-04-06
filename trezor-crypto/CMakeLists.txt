@@ -53,6 +53,7 @@ target_compile_options(TrezorCrypto
         -Wuninitialized
         -Wformat-security
         -Wno-missing-braces
+        -Wno-bitwise-instead-of-logical
         -Werror
 )
 
@@ -64,13 +65,18 @@ target_include_directories(TrezorCrypto
         src
 )
 
-if(NOT ANDROID AND NOT IOS_PLATFORM)
-    add_subdirectory(crypto/tests)
+if (EMSCRIPTEN)
+    message(STATUS "Skip building trezor-crypto/tests")
+else ()
+    if(NOT ANDROID AND NOT IOS_PLATFORM)
+        add_subdirectory(crypto/tests)
+    endif()
 endif()
 
-install(TARGETS TrezorCrypto
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        )
+install(
+    TARGETS TrezorCrypto
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
 
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

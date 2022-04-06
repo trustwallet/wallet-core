@@ -9,6 +9,7 @@ cmake-build-debug/
 .cquery_cache/
 .cxx/
 .cache/
+wasm-build/
 
 # Dependencies
 node_modules
