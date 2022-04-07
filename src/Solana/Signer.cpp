@@ -433,8 +433,9 @@ Proto::SigningOutput Signer::compile(const std::vector<Data>& signatures,
         auto mainAddress = Address(createTokenAccontTransaction.main_address());
         auto tokenMintAddress = Address(createTokenAccontTransaction.token_mint_address());
         auto tokenAddress = Address(createTokenAccontTransaction.token_address());
-        message = Message::createTokenCreateAccount(userAddress, mainAddress, tokenMintAddress,
-                                                    tokenAddress, recentBlockhash);
+        message =
+            Message::createTokenCreateAccount(userAddress, mainAddress, tokenMintAddress,
+                                              tokenAddress, recentBlockhash, input.nonce_account());
     } break;
     case Proto::SigningInput::TransactionTypeCase::kTokenTransferTransaction: {
         if (signatures.size() < 1) {
@@ -451,7 +452,7 @@ Proto::SigningOutput Signer::compile(const std::vector<Data>& signatures,
         message = Message::createTokenTransfer(
             userAddress, tokenMintAddress, senderTokenAddress, recipientTokenAddress, amount,
             decimals, recentBlockhash, memo,
-            convertReferences(tokenTransferTransaction.references()));
+            convertReferences(tokenTransferTransaction.references()), input.nonce_account());
     } break;
     default:
         if (input.transaction_type_case() ==
