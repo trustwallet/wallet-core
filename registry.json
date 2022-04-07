@@ -1846,7 +1846,7 @@
   },
   {
     "id": "ecash",
-    "name": "ECash",
+    "name": "eCash",
     "coinId": 899,
     "symbol": "XEC",
     "decimals": 2,
@@ -1869,7 +1869,7 @@
     "info": {
       "url": "https://e.cash",
       "source": "https://github.com/trezor/blockbook",
-      "rpc": "",
+      "rpc": "https://blockbook.fabien.cash:9197",
       "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
     }
   },
