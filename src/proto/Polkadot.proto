@@ -109,4 +109,9 @@ message SigningInput {
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
+
+    // Set in case of error
+    string error = 2;
+
+    int32 errorCode = 3;
 }

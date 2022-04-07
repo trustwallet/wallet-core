@@ -23,6 +23,7 @@ public:
 
     static Data signaturePreImage(const Proto::SigningInput &input);
     static Data encodeTransaction(const Proto::SigningInput &input, const Data &publicKey, const Data &signature);
+    static Data hash(const Data &payload);
 };
 
 } // namespace TW::Polkadot

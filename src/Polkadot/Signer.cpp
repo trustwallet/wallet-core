@@ -47,3 +47,12 @@ Data Signer::encodeTransaction(const Proto::SigningInput &input, const Data &pub
     auto encoded = extrinsic.encodeSignature(pbk, signature);
     return encoded;
 }
+
+Data Signer::hash(const Data &payload) {
+    // check if need to hash
+    if (payload.size() > hashTreshold) {
+        return Hash::blake2b(payload, 32);
+    }
+
+    return payload;
+}
