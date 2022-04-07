@@ -30,6 +30,13 @@ else()
     set(PREFIX "$ENV{PREFIX}")
 endif()
 
+# Configure CCache if available
+find_program(CCACHE_FOUND ccache)
+if(CCACHE_FOUND)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+endif(CCACHE_FOUND)
+
 include_directories(${PREFIX}/include)
 link_directories(${PREFIX}/lib)
 
@@ -45,15 +52,6 @@ add_library(TrustWalletCore ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
 
 target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf Boost::boost)
 target_compile_options(TrustWalletCore PRIVATE "-Wall")
-
-# add_link_options("SHELL: --bind")
-# add_link_options("SHELL: -s ASYNCIFY=1")
-# add_link_options("SHELL: -s NO_EXIT_RUNTIME=1")
-# add_link_options("SHELL: -s ALLOW_MEMORY_GROWTH=1")
-# add_link_options("SHELL: -s EXTRA_EXPORTED_RUNTIME_METHODS=['ccall','cwrap']")
-# add_link_options("SHELL: -s EXPORT_ALL=1")
-# add_link_options("SHELL: -s MODULARIZE=1")
-
 
 set_target_properties(TrustWalletCore
     PROPERTIES

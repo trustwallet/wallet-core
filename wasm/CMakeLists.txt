@@ -1,15 +1,21 @@
-# wasm
+# Copyright © 2017-2022 Trust Wallet.
+#
+# This file is part of Trust. The full Trust copyright notice, including
+# terms governing use, modification, and redistribution, is contained in the
+# file LICENSE at the root of the source code distribution tree.
 
 file(GLOB wasm_sources *.cpp)
-file(GLOB wasm_sources_head *.h)
-add_executable(wasm ${wasm_sources} ${wasm_sources_head})
-target_link_libraries(wasm TrustWalletCore)
-target_include_directories(wasm PRIVATE ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/trezor-crypto/include)
-target_compile_options(wasm PRIVATE "-Wall")
+file(GLOB wasm_headers *.h)
+set(TARGET_NAME wallet-core)
+add_executable(${TARGET_NAME} ${wasm_sources} ${wasm_headers})
 
-set_target_properties(wasm
+target_link_libraries(${TARGET_NAME} TrustWalletCore)
+target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/trezor-crypto/include)
+target_compile_options(${TARGET_NAME} PRIVATE "-Wall")
+
+set_target_properties(${TARGET_NAME}
         PROPERTIES
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON
 )
-set_target_properties(wasm PROPERTIES COMPILE_FLAGS "-s USE_BOOST_HEADERS=1" LINK_FLAGS "-s USE_BOOST_HEADERS=1")
+set_target_properties(${TARGET_NAME} PROPERTIES COMPILE_FLAGS "-s USE_BOOST_HEADERS=1" LINK_FLAGS "-s USE_BOOST_HEADERS=1 -lembind")

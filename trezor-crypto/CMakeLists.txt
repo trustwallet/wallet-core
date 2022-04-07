@@ -1,3 +1,9 @@
+# Copyright © 2017-2022 Trust Wallet.
+#
+# This file is part of Trust. The full Trust copyright notice, including
+# terms governing use, modification, and redistribution, is contained in the
+# file LICENSE at the root of the source code distribution tree.
+
 add_library(TrezorCrypto
     crypto/bignum.c crypto/ecdsa.c crypto/curves.c crypto/secp256k1.c crypto/rand.c crypto/hmac.c crypto/bip32.c crypto/bip39.c crypto/pbkdf2.c crypto/base58.c crypto/base32.c
     crypto/address.c

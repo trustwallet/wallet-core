@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+
+base_dir=$(cd `dirname $0`; pwd)
+src_dir=${base_dir}/..
+build_folder=${src_dir}/wasm-build
+
+pushd ${src_dir}
+
+# cmake
+emcmake cmake -B wasm-build
+
+# patch includes_CXX.rsp
+sed -i '' -e 's/-isystem.*//g' ${build_folder}/CMakeFiles/TrustWalletCore.dir/includes_CXX.rsp
+
+# make
+emmake make -C wasm-build
+
+popd
