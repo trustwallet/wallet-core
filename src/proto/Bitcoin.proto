@@ -156,19 +156,19 @@ message SigningOutput {
 
 message HashPublicKey {
     /// Pre-image data hash that will be used for signing
-    bytes dataHash = 1;
+    bytes data_hash = 1;
 
     /// public key hash used for signing
-    bytes publicKeyHash = 2;
+    bytes public_key_hash = 2;
 }
 
 /// Transaction pre-signing output
 message PreSigningOutput {
     /// hash, public key list
-    repeated HashPublicKey hashPublicKeys = 1;
+    repeated HashPublicKey hash_public_keys = 1;
 
     /// error code, 0 is ok, other codes will be treated as errors
-    int32 errorCode = 2;
+    int32 error_code = 2;
 
     /// error code description
     string error = 3;

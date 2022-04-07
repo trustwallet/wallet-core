@@ -58,9 +58,9 @@ TEST(TransactionCompiler, BinanceCompileWithSignatures) {
 
     TxCompiler::Proto::PreSigningOutput output;
     ASSERT_TRUE(output.ParseFromArray(preImageHashes.data(), int(preImageHashes.size())));
-    ASSERT_EQ(output.errorcode(), 0);
+    ASSERT_EQ(output.error_code(), 0);
 
-    auto preImageHash = data(output.datahash());
+    auto preImageHash = data(output.data_hash());
     EXPECT_EQ(hex(preImageHash), "3f3fece9059e714d303a9a1496ddade8f2c38fa78fc4cc2e505c5dbb0ea678d1");
 
     // Simulate signature, normally obtained from signature server
@@ -232,20 +232,20 @@ TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
     TW::Bitcoin::Proto::PreSigningOutput output;
     ASSERT_TRUE(output.ParseFromArray(preImageHashes.data(), (int)preImageHashes.size()));
 
-    ASSERT_EQ(output.errorcode(), 0);
-    EXPECT_EQ(hex(output.hashpublickeys()[0].datahash()), "505f527f00e15fcc5a2d2416c9970beb57dfdfaca99e572a01f143b24dd8fab6");
-    EXPECT_EQ(hex(output.hashpublickeys()[1].datahash()), "a296bead4172007be69b21971a790e076388666c162a9505698415f1b003ebd7");
-    EXPECT_EQ(hex(output.hashpublickeys()[2].datahash()), "60ed6e9371e5ddc72fd88e46a12cb2f68516ebd307c0fd31b1b55cf767272101");
-    EXPECT_EQ(hex(output.hashpublickeys()[0].publickeyhash()), hex(inPubKeyHash1));
-    EXPECT_EQ(hex(output.hashpublickeys()[1].publickeyhash()), hex(inPubKeyHash0));
-    EXPECT_EQ(hex(output.hashpublickeys()[2].publickeyhash()), hex(inPubKeyHash0));
+    ASSERT_EQ(output.error_code(), 0);
+    EXPECT_EQ(hex(output.hash_public_keys()[0].data_hash()), "505f527f00e15fcc5a2d2416c9970beb57dfdfaca99e572a01f143b24dd8fab6");
+    EXPECT_EQ(hex(output.hash_public_keys()[1].data_hash()), "a296bead4172007be69b21971a790e076388666c162a9505698415f1b003ebd7");
+    EXPECT_EQ(hex(output.hash_public_keys()[2].data_hash()), "60ed6e9371e5ddc72fd88e46a12cb2f68516ebd307c0fd31b1b55cf767272101");
+    EXPECT_EQ(hex(output.hash_public_keys()[0].public_key_hash()), hex(inPubKeyHash1));
+    EXPECT_EQ(hex(output.hash_public_keys()[1].public_key_hash()), hex(inPubKeyHash0));
+    EXPECT_EQ(hex(output.hash_public_keys()[2].public_key_hash()), hex(inPubKeyHash0));
 
     // Simulate signatures, normally obtained from signature server.
     std::vector<Data> signatureVec;
     std::vector<Data> pubkeyVec;
-    for (const auto& h: output.hashpublickeys()) {
-        const auto& preImageHash = h.datahash();
-        const auto& pubkeyhash = h.publickeyhash();
+    for (const auto& h: output.hash_public_keys()) {
+        const auto& preImageHash = h.data_hash();
+        const auto& pubkeyhash = h.public_key_hash();
 
         const std::string key = hex(pubkeyhash) + "+" + hex(preImageHash);
         const auto sigInfoFind = signatureInfos.find(key);
@@ -360,9 +360,9 @@ TEST(TransactionCompiler, EthereumCompileWithSignatures) {
 
     TxCompiler::Proto::PreSigningOutput output;
     ASSERT_TRUE(output.ParseFromArray(preImageHashes.data(), int(preImageHashes.size())));
-    ASSERT_EQ(output.errorcode(), 0);
+    ASSERT_EQ(output.error_code(), 0);
 
-    auto preImageHash = data(output.datahash());
+    auto preImageHash = data(output.data_hash());
     EXPECT_EQ(hex(preImageHash), "15e180a6274b2f6a572b9b51823fce25ef39576d10188ecdcd7de44526c47217");
 
     // Simulate signature, normally obtained from signature server
