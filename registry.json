@@ -1846,7 +1846,7 @@
   },
   {
     "id": "ecash",
-    "name": "ECash",
+    "name": "eCash",
     "coinId": 899,
     "symbol": "XEC",
     "decimals": 2,

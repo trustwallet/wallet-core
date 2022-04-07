@@ -30,5 +30,5 @@ TEST(TWECashCoinType, TWCoinType) {
     assertStringsEqual(txUrl, "https://explorer.bitcoinabc.org/tx/6bc767e69cfacffd954c9e5acd178d3140bf00d094b92c6f6052b517500c553b");
     assertStringsEqual(accUrl, "https://explorer.bitcoinabc.org/address/ecash:pqnqv9lt7e5vjyp0w88zf2af0l92l8rxdg2jj94l5j");
     assertStringsEqual(id, "ecash");
-    assertStringsEqual(name, "ECash");
+    assertStringsEqual(name, "eCash");
 }
