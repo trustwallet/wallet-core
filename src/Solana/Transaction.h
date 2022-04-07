@@ -664,8 +664,3 @@ class Transaction {
 };
 
 } // namespace TW::Solana
-
-/// Wrapper for C interface.
-struct TWSolanaTransaction {
-    TW::Solana::Transaction impl;
-};

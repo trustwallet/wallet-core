@@ -110,8 +110,3 @@ private:
 };
 
 } // namespace TW::Bitcoin
-
-/// Wrapper for C interface.
-struct TWBitcoinTransaction {
-    TW::Bitcoin::Transaction impl;
-};

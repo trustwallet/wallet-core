@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,7 +7,8 @@
 #include "Entry.h"
 
 #include "AddressV3.h"
-//#include "Signer.h"
+#include "Signer.h"
+#include "../proto/Cardano.pb.h"
 
 #include <cassert>
 
@@ -17,7 +18,7 @@ using namespace std;
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
 bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
-    return AddressV3::isValid(address);
+    return AddressV3::isValidLegacy(address);
 }
 
 string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
@@ -25,5 +26,9 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byt
 }
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    // not implemented yet
+    signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+}
+
+void Entry::plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
+    planTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }

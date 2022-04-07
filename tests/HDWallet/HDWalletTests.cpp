@@ -286,6 +286,44 @@ TEST(HDWallet, Bip39Vectors) {
     }
 }
 
+TEST(HDWallet, getExtendedPrivateKey) {
+    const HDWallet wallet = HDWallet(mnemonic1, "");
+    const auto purpose = TWPurposeBIP44;
+    const auto coin = TWCoinTypeBitcoin;
+    const auto hdVersion = TWHDVersionZPRV;
+    
+    // default
+    const auto extPubKey1 = wallet.getExtendedPrivateKey(purpose, coin, hdVersion);
+    EXPECT_EQ(extPubKey1, "zprvAcwsTZNaY1f7rfwsy5GseSDStYBrxwtsBZDkb3iyuQUs4NF6n58BuH7Xj54RuaSCWtU5CiQzuYQgFgqr1HokgKcVAeGeXokhJUAJeP3VmvY");
+
+    // explicitly specify default account=0
+    const auto extPubKey2 = wallet.getExtendedPrivateKeyAccount(purpose, coin, hdVersion, 0);
+    EXPECT_EQ(extPubKey2, "zprvAcwsTZNaY1f7rfwsy5GseSDStYBrxwtsBZDkb3iyuQUs4NF6n58BuH7Xj54RuaSCWtU5CiQzuYQgFgqr1HokgKcVAeGeXokhJUAJeP3VmvY");
+
+    // custom account=1
+    const auto extPubKey3 = wallet.getExtendedPrivateKeyAccount(purpose, coin, hdVersion, 1);
+    EXPECT_EQ(extPubKey3, "zprvAcwsTZNaY1f7sifgNNgdNa4P9mPtyg3zRVgwkx2qF9Sn7F255MzP6Zyumn6bgV5xuoS8ZrDvjzE7APcFSacXdzFYpGvyybb1bnAoh5nHxpn");
+}
+
+TEST(HDWallet, getExtendedPublicKey) {
+    const HDWallet wallet = HDWallet(mnemonic1, "");
+    const auto purpose = TWPurposeBIP44;
+    const auto coin = TWCoinTypeBitcoin;
+    const auto hdVersion = TWHDVersionZPUB;
+    
+    // default
+    const auto extPubKey1 = wallet.getExtendedPublicKey(purpose, coin, hdVersion);
+    EXPECT_EQ(extPubKey1, "zpub6qwDs4uUNPDR5A2M56ot1aABSa2MNQciYn9MPS8bTk1qwAaFKcSST5S1aLidvPp9twqpaumG7vikR2vHhBXjp5oGgHyMvWK3AtUkfeEgyns");
+
+    // explicitly specify default account=0
+    const auto extPubKey2 = wallet.getExtendedPublicKeyAccount(purpose, coin, hdVersion, 0);
+    EXPECT_EQ(extPubKey2, "zpub6qwDs4uUNPDR5A2M56ot1aABSa2MNQciYn9MPS8bTk1qwAaFKcSST5S1aLidvPp9twqpaumG7vikR2vHhBXjp5oGgHyMvWK3AtUkfeEgyns");
+
+    // custom account=1
+    const auto extPubKey3 = wallet.getExtendedPublicKeyAccount(purpose, coin, hdVersion, 1);
+    EXPECT_EQ(extPubKey3, "zpub6qwDs4uUNPDR6Ck9UQDdji17hoEPP8mqnicYZLSSoUykz3MDcuJdeNJPd3BozqEafeLZkegWqzAvkgA4JZZ5tTN2rDpGKfk54essyfx1eZP");
+}
+
 TEST(HDWallet, Derive_XpubPub_vs_PrivPub) {
     // Test different routes for deriving address from mnemonic, result should be the same:
     // - Direct: mnemonic -> seed -> privateKey -> publicKey -> address

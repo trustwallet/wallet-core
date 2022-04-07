@@ -49,7 +49,6 @@
 #include "Tezos/Entry.h"
 #include "Theta/Entry.h"
 #include "Tron/Entry.h"
-#include "TrustWalletCore/TWCoinType.h"
 #include "VeChain/Entry.h"
 #include "Waves/Entry.h"
 #include "Zcash/Entry.h"
@@ -184,6 +183,9 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeRonin: entry = &roninDP; break;
         case TWCoinTypeCryptoOrg: entry = &cosmosDP; break;
         case TWCoinTypeOsmosis: entry = &cosmosDP; break;
+        case TWCoinTypeCronosChain: entry = &ethereumDP; break;
+        case TWCoinTypeSmartBitcoinCash: entry = &ethereumDP; break;
+        case TWCoinTypeKuCoinCommunityChain: entry = &ethereumDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;

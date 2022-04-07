@@ -9,7 +9,6 @@
 #include "../Data.h"
 
 #include "BinaryCoding.h"
-#include "XXHash64.h"
 #include <TrezorCrypto/blake2b.h>
 #include <TrezorCrypto/ripemd160.h>
 #include <TrezorCrypto/sha2.h>
@@ -76,16 +75,6 @@ TWData* _Nonnull TWHashBlake2b(TWData* _Nonnull data, size_t outlen) {
 
 TWData* _Nonnull TWHashGroestl512(TWData* _Nonnull data) {
     const auto result = Hash::groestl512(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
-    return TWDataCreateWithBytes(result.data(), result.size());
-}
-
-TWData* _Nonnull TWHashXXHash64(TWData* _Nonnull data, uint64_t seed) {
-    const auto result = Hash::xxhash64(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data), seed);
-    return TWDataCreateWithBytes(result.data(), result.size());
-}
-
-TWData* _Nonnull TWHashTwoXXHash64Concat(TWData* _Nonnull data) {
-    const auto result = Hash::xxhash64concat(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 

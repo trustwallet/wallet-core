@@ -36,8 +36,3 @@ class Signer {
 };
 
 } // namespace TW::VeChain
-
-/// Wrapper for C interface.
-struct TWVeChainSigner {
-    TW::VeChain::Signer impl;
-};

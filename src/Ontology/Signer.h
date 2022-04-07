@@ -43,8 +43,3 @@ class Signer {
     void addSign(Transaction& tx) const;
 };
 } // namespace TW::Ontology
-
-/// Wrapper for C interface.
-struct TWOntologySigner {
-    TW::Ontology::Signer impl;
-};

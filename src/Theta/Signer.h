@@ -39,8 +39,3 @@ class Signer {
 };
 
 } // namespace TW::Theta
-
-/// Wrapper for C interface.
-struct TWThetaSigner {
-    TW::Theta::Signer impl;
-};

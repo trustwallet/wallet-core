@@ -331,6 +331,7 @@
   {
     "id": "cosmos",
     "name": "Cosmos",
+    "displayName": "Cosmos Hub",
     "coinId": 118,
     "symbol": "ATOM",
     "decimals": 6,
@@ -1291,8 +1292,8 @@
     "publicKeyType": "ed25519Extended",
     "hrp": "addr",
     "explorer": {
-      "url": "https://shelleyexplorer.cardano.org",
-      "txPath": "/tx/",
+      "url": "https://cardanoscan.io",
+      "txPath": "/transaction/",
       "accountPath": "/address/",
       "sampleTx": "b7a6c5cadab0f64bdc89c77ee4a351463aba5c33f2cef6bbd6542a74a90a3af3",
       "sampleAccount": "addr1s3xuxwfetyfe7q9u3rfn6je9stlvcgmj8rezd87qjjegdtxm3y3f2mgtn87mrny9r77gm09h6ecslh3gmarrvrp9n4yzmdnecfxyu59jz29g8j"
@@ -1898,6 +1899,76 @@
       "source": "https://github.com/iost-official/go-iost",
       "rpc": "",
       "documentation": "https://developers.iost.io/docs/en/6-reference/API.html"
+    }
+  },
+  {
+    "id": "cronos",
+    "name": "Cronos Chain",
+    "coinId": 10000025,
+    "symbol": "CRO",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://cronoscan.com",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://cronos.org",
+      "client": "https://github.com/crypto-org-chain/cronos",
+      "clientPublic": "https://evm-cronos.crypto.org",
+      "clientDocs": "https://eth.wiki/json-rpc/API"
+    }
+  },
+  {
+    "id": "smartbch",
+    "name": "Smart Bitcoin Cash",
+    "coinId": 10000145,
+    "symbol": "BCH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://www.smartscan.cash",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x6413466b455b17d03c7a8ce2d7f99fec34bcd338628bdd2d0580a21e3197a4d9",
+      "sampleAccount": "0xFeEc227410E1DF9f3b4e6e2E284DC83051ae468F"
+    },
+    "info": {
+      "url": "https://smartbch.org/",
+      "source": "https://github.com/smartbch/smartbch",
+      "rpc": "https://smartbch.fountainhead.cash/mainnet",
+      "documentation": "https://github.com/smartbch/docs/blob/main/developers-guide/jsonrpc.md"
+    }
+  },
+  {
+    "id": "kcc",
+    "name": "KuCoin Community Chain",
+    "coinId": 10000321,
+    "symbol": "KCS",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://explorer.kcc.io/en",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x2f0d79cd289a02f3181b68b9583a64c3809fe7387810b274275985c29d02c80d",
+      "sampleAccount": "0x4446fc4eb47f2f6586f9faab68b3498f86c07521"
+    },
+    "info": {
+      "url": "https://www.kcc.io/",
+      "source": "https://github.com/kcc-community/kcc",
+      "rpc": "https://rpc-mainnet.kcc.network",
+      "documentation": "https://docs.kcc.io/#/en-us/"
     }
   }
 ]

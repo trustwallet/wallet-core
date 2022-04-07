@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package TW.Cardano.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+message OutPoint {
+    bytes tx_hash = 1;
+    uint64 output_index = 2;
+}
+
+message TokenAmount {
+    string policy_id = 1;
+    string asset_name = 2;
+    bytes amount = 3; // 256-bit number
+}
+
+message TxInput {
+    OutPoint out_point = 1;
+
+    string address = 2;
+
+    // ADA amount
+    uint64 amount = 3;
+
+    // optional token amounts
+    repeated TokenAmount token_amount = 4;
+}
+
+message TxOutput {
+    string address = 1;
+    
+    // ADA amount
+    uint64 amount = 2;
+}
+
+message Transfer {
+    // Destination address as string
+    string to_address = 1;
+
+    // Change address
+    string change_address = 2;
+
+    // ADA amount to transfer
+    uint64 amount = 3;
+
+    // Set if max amount is requested (max possible from UTXOs/fee; amount is disregarded in this case)
+    bool use_max_amount = 4;
+}
+
+message TransactionPlan {
+    uint64 amount = 1;
+    uint64 available_amount = 2;
+    uint64 fee = 3;
+    uint64 change = 4;
+    repeated TxInput utxos = 5;
+    Common.Proto.SigningError error = 6;
+}
+
+// Input data necessary to create a signed transaction
+message SigningInput {
+    repeated TxInput utxos = 1;
+
+    // Available private keys (double extended keys); every input UTXO adress should be covered
+    repeated bytes private_key = 2;
+
+    // Later this can be made oneof if more message types are supported
+    Transfer transfer_message = 3;
+
+    uint64 ttl = 4;
+
+    // Optional plan
+    TransactionPlan plan = 5;
+}
+
+// Transaction signing output
+message SigningOutput {
+    bytes encoded = 1;
+
+    // TxID, derived from transaction data, also needed for submission
+    bytes tx_id = 2;
+
+    // Optional error
+    Common.Proto.SigningError error = 3;
+}

@@ -1,0 +1,14 @@
+syntax = "proto3";
+package types;
+
+// Src: https://gitlab.com/thorchain/thornode/-/blob/develop/proto/thorchain/v1/x/thorchain/types/msg_send.proto
+// Cosmos original: https://github.com/cosmos/cosmos-sdk/blob/master/proto/cosmos/bank/v1beta1/tx.proto
+
+import "coin.proto";
+
+// MsgSend represents a message to send coins from one account to another.
+message MsgSend {
+    bytes    from_address             = 1;
+    bytes    to_address               = 2;
+    repeated cosmos.base.v1beta1.Coin amount = 3;
+}

@@ -55,9 +55,9 @@ TEST(PrivateKey, InvalidSECP256k1) {
     }
 }
 
-string TestInvalidExtended(const Data& data, const Data& ext, const Data& chainCode) {
+string TestInvalidExtended(const Data& data, const Data& ext, const Data& chainCode, const Data& data2, const Data& ext2, const Data& chainCode2) {
     try {
-        auto privateKey = PrivateKey(data, ext, chainCode);
+        auto privateKey = PrivateKey(data, ext, chainCode, data2, ext2, chainCode2);
         return hex(privateKey.bytes);
     } catch (invalid_argument& ex) {
         // expected exception
@@ -70,7 +70,10 @@ TEST(PrivateKey, CreateExtendedInvalid) {
         string res = TestInvalidExtended(
             parse_hex("deadbeed"),
             parse_hex("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff"),
-            parse_hex("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4")
+            parse_hex("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4"),
+            parse_hex("1111111111111111111111111111111111111111111111111111111111111111"),
+            parse_hex("1111111111111111111111111111111111111111111111111111111111111111"),
+            parse_hex("1111111111111111111111111111111111111111111111111111111111111111")
         );
         EXPECT_EQ("EXCEPTION: Invalid private key or extended key data", res);
     }
@@ -78,7 +81,10 @@ TEST(PrivateKey, CreateExtendedInvalid) {
         string res = TestInvalidExtended(
             parse_hex("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"),
             parse_hex("deadbeed"),
-            parse_hex("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4")
+            parse_hex("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4"),
+            parse_hex("1111111111111111111111111111111111111111111111111111111111111111"),
+            parse_hex("1111111111111111111111111111111111111111111111111111111111111111"),
+            parse_hex("1111111111111111111111111111111111111111111111111111111111111111")
         );
         EXPECT_EQ("EXCEPTION: Invalid private key or extended key data", res);
     }
@@ -86,7 +92,21 @@ TEST(PrivateKey, CreateExtendedInvalid) {
         string res = TestInvalidExtended(
             parse_hex("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"),
             parse_hex("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff"),
-            parse_hex("deadbeed")
+            parse_hex("deadbeed"),
+            parse_hex("1111111111111111111111111111111111111111111111111111111111111111"),
+            parse_hex("1111111111111111111111111111111111111111111111111111111111111111"),
+            parse_hex("1111111111111111111111111111111111111111111111111111111111111111")
+        );
+        EXPECT_EQ("EXCEPTION: Invalid private key or extended key data", res);
+    }
+    {
+        string res = TestInvalidExtended(
+            parse_hex("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"),
+            parse_hex("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff"),
+            parse_hex("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4"),
+            parse_hex("deadbeed"),
+            parse_hex("1111111111111111111111111111111111111111111111111111111111111111"),
+            parse_hex("1111111111111111111111111111111111111111111111111111111111111111")
         );
         EXPECT_EQ("EXCEPTION: Invalid private key or extended key data", res);
     }
@@ -156,23 +176,39 @@ TEST(PrivateKey, PrivateKeyExtended) {
     auto publicKeyNonext = privateKeyNonext.getPublicKey(TWPublicKeyTypeED25519);
     EXPECT_EQ(32, publicKeyNonext.bytes.size());
 
-    // Extended keys: private key is 3x32 bytes, public key is 64 bytes
+    // Extended keys: private key is 2x3x32 bytes, public key is 2x64 bytes
     auto privateKeyExt = PrivateKey(parse_hex(
-        "b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71effbf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4"
+        "b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"
+        "309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff"
+        "bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4"
+        "639aadd8b6499ae39b78018b79255fbd8f585cbda9cbb9e907a72af86afb7a05"
+        "d41a57c2dec9a6a19d6bf3b1fa784f334f3a0048d25ccb7b78a7b44066f9ba7b"
+        "ed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a"
     ));
     EXPECT_EQ("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744", hex(privateKeyExt.bytes));
-    EXPECT_EQ("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff", hex(privateKeyExt.extensionBytes));
-    EXPECT_EQ("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4", hex(privateKeyExt.chainCodeBytes));
+    EXPECT_EQ("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff", hex(privateKeyExt.extension));
+    EXPECT_EQ("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4", hex(privateKeyExt.chainCode));
+    EXPECT_EQ("639aadd8b6499ae39b78018b79255fbd8f585cbda9cbb9e907a72af86afb7a05", hex(privateKeyExt.second));
+    EXPECT_EQ("d41a57c2dec9a6a19d6bf3b1fa784f334f3a0048d25ccb7b78a7b44066f9ba7b", hex(privateKeyExt.secondExtension));
+    EXPECT_EQ("ed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a", hex(privateKeyExt.secondChainCode));
     auto publicKeyExt = privateKeyExt.getPublicKey(TWPublicKeyTypeED25519Extended);
-    EXPECT_EQ(64, publicKeyExt.bytes.size());
+    EXPECT_EQ(2*64, publicKeyExt.bytes.size());
 
     // Try other constructor for extended key
-    auto privateKeyExtOne = PrivateKey(parse_hex(
-        "b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71effbf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4"
-    ));
-    EXPECT_EQ("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744", hex(privateKeyExtOne.bytes));
-    EXPECT_EQ("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff", hex(privateKeyExtOne.extensionBytes));
-    EXPECT_EQ("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4", hex(privateKeyExtOne.chainCodeBytes));
+    auto privateKeyExtOne = PrivateKey(
+        parse_hex("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"),
+        parse_hex("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff"),
+        parse_hex("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4"),
+        parse_hex("639aadd8b6499ae39b78018b79255fbd8f585cbda9cbb9e907a72af86afb7a05"),
+        parse_hex("d41a57c2dec9a6a19d6bf3b1fa784f334f3a0048d25ccb7b78a7b44066f9ba7b"),
+        parse_hex("ed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a")
+    );
+    EXPECT_EQ("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744", hex(privateKeyExt.bytes));
+    EXPECT_EQ("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff", hex(privateKeyExt.extension));
+    EXPECT_EQ("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4", hex(privateKeyExt.chainCode));
+    EXPECT_EQ("639aadd8b6499ae39b78018b79255fbd8f585cbda9cbb9e907a72af86afb7a05", hex(privateKeyExt.second));
+    EXPECT_EQ("d41a57c2dec9a6a19d6bf3b1fa784f334f3a0048d25ccb7b78a7b44066f9ba7b", hex(privateKeyExt.secondExtension));
+    EXPECT_EQ("ed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a", hex(privateKeyExt.secondChainCode));
 }
 
 TEST(PrivateKey, PrivateKeyExtendedError) {
@@ -278,6 +314,7 @@ TEST(PrivateKey, SignSECP256k1) {
 TEST(PrivateKey, SignExtended) {
     const auto privateKeyExt = PrivateKey(parse_hex(
         "b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71effbf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4"
+        "639aadd8b6499ae39b78018b79255fbd8f585cbda9cbb9e907a72af86afb7a05d41a57c2dec9a6a19d6bf3b1fa784f334f3a0048d25ccb7b78a7b44066f9ba7bed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a"
     ));
     Data messageData = TW::data("hello");
     Data hash = Hash::keccak256(messageData);

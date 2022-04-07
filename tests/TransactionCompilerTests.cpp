@@ -1609,8 +1609,8 @@ TEST(TransactionCompiler, OntCompileWithSignatures) {
         coin, ongTxInputData, {ongSignature}, {publicKeyData});
     auto ontOutput = Ontology::Proto::SigningOutput();
     auto ongOutput = Ontology::Proto::SigningOutput();
-    ontOutput.ParseFromArray(ontOutputData.data(), ontOutputData.size());
-    ongOutput.ParseFromArray(ongOutputData.data(), ongOutputData.size());
+    ontOutput.ParseFromArray(ontOutputData.data(), (int)ontOutputData.size());
+    ongOutput.ParseFromArray(ongOutputData.data(), (int)ongOutputData.size());
     const auto ontExpectedTx =
         "00d101000000ac0d000000000000204e000000000000ca18ec37ac94f19588926a5302ded54cd909a76e7100c6"
         "6b14ca18ec37ac94f19588926a5302ded54cd909a76e6a7cc8149e21dda3257e18eb033d9451dda1d9ac8bcfa4"

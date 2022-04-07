@@ -10,7 +10,8 @@ extension Account: Equatable {
     public static func == (lhs: Account, rhs: Account) -> Bool {
         return lhs.coin == rhs.coin &&
         lhs.address == rhs.address &&
-        lhs.derivationPath == rhs.address &&
+        lhs.derivationPath == rhs.derivationPath &&
+        lhs.publicKey == rhs.publicKey &&
         lhs.extendedPublicKey == rhs.extendedPublicKey
     }
 }
@@ -20,6 +21,7 @@ extension Account: Hashable {
         hasher.combine(coin)
         hasher.combine(address)
         hasher.combine(derivationPath)
+        hasher.combine(publicKey)
         hasher.combine(extendedPublicKey)
     }
 }
@@ -29,6 +31,7 @@ extension Account: Codable {
         case coin
         case address
         case derivationPath
+        case publicKey
         case extendedPublicKey
     }
 
@@ -37,6 +40,7 @@ extension Account: Codable {
         try container.encode(coin.rawValue, forKey: .coin)
         try container.encode(address, forKey: .address)
         try container.encode(derivationPath, forKey: .derivationPath)
+        try container.encode(publicKey, forKey: .publicKey)
         try container.encode(extendedPublicKey, forKey: .extendedPublicKey)
     }
 
@@ -45,12 +49,14 @@ extension Account: Codable {
         let rawCoin           = try container.decode(UInt32.self, forKey: .coin)
         let address           = try container.decode(String.self, forKey: .address)
         let derivationPath    = try container.decode(String.self, forKey: .derivationPath)
+        let publicKey         = try container.decode(String.self, forKey: .publicKey)
         let extendedPublicKey = try container.decode(String.self, forKey: .extendedPublicKey)
 
         self.init(
             address: address,
             coin: CoinType(rawValue: rawCoin)!,
             derivationPath: derivationPath,
+            publicKey: publicKey,
             extendedPublicKey: extendedPublicKey
         )
     }

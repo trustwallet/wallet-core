@@ -109,6 +109,15 @@ TEST(Cbor, EncTag) {
     EXPECT_EQ("d94321191234", hex(Encode::tag(0x4321, Encode::uint(0x1234)).encoded()));
 }
 
+TEST(Cbor, EncNull) {
+    {
+        Data cbor = Encode::null().encoded();
+        EXPECT_EQ("f6", hex(cbor));
+        EXPECT_TRUE(Decode(cbor).isValid());
+        EXPECT_EQ("null", Decode(cbor).dumpToString());
+    }
+}
+
 TEST(Cbor, EncInvalid) {
     Data invalid = parse_hex("5b99999999999999991234"); // invalid very looong string
     EXPECT_FALSE(Decode(invalid).isValid());

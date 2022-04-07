@@ -99,6 +99,9 @@ enum TWCoinType {
     TWCoinTypeOsmosis = 10000118,
     TWCoinTypeECash = 899,
     TWCoinTypeIOST = 291,
+    TWCoinTypeCronosChain = 10000025,
+    TWCoinTypeSmartBitcoinCash = 10000145,
+    TWCoinTypeKuCoinCommunityChain = 10000321,
 };
 
 /// Returns the blockchain for a coin type.
