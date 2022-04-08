@@ -13,8 +13,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install system dependencies
       run: |
-        # build-essential clang-11 libc++-dev libc++abi-dev ruby-full cmake
-        sudo apt-get update && sudo apt-get install ninja-build python3 --fix-missing
+        # build-essential clang-11 libc++-dev libc++abi-dev ruby-full cmake python3
+        sudo apt-get update && sudo apt-get install libboost-all-dev --fix-missing
     - name: Install emsdk
       run: |
         tools/install-wasm-dependencies
@@ -37,10 +37,15 @@ jobs:
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
-    - name: Build
+    - name: Build for Wasm
       run: |
         source emsdk/emsdk_env.sh
         tools/wasm-build
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
+    - name: Test
+      run: |
+        npm install && npm run build
+        npm run copy:wasm && npm run test
+      working-directory: wasm
