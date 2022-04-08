@@ -30,4 +30,8 @@ enum SigningError {
     Error_script_witness_program = 13; // [BTC] Unrecognized witness program
 
     Error_invalid_memo = 14; // e.g. [XRP] Invalid tag
+    Error_input_parse = 19; // e.g. Invalid input data
+    Error_no_support_n2n = 20; // e.g. Not support multi-input and multi-output transaction
+    Error_signatures_count = 21; // Incorrect count of signatures passed to compile
+    Error_invalid_params = 22; // Incorrect parameters
 }

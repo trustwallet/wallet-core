@@ -152,4 +152,26 @@ message SigningOutput {
 
     // Optional error
     Common.Proto.SigningError error = 4;
+    // error description
+    string error_message = 5;
+}
+
+message HashPublicKey {
+    /// Pre-image data hash that will be used for signing
+    bytes data_hash = 1;
+
+    /// public key hash used for signing
+    bytes public_key_hash = 2;
+}
+
+/// Transaction pre-signing output
+message PreSigningOutput {
+    /// hash, public key list
+    repeated HashPublicKey hash_public_keys = 1;
+
+    /// error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    /// error description
+    string error_message = 3;
 }

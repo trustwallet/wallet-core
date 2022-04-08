@@ -46,7 +46,7 @@ public:
     virtual bool supportsJSONSigning() const { return true; }
     virtual std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const;
 
-    virtual HashPubkeyList preImageHashes(TWCoinType coin, const Data& txInputData) const;
+    virtual Data preImageHashes(TWCoinType coin, const Data& txInputData) const;
     virtual void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const;
     virtual Data buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const;
 };

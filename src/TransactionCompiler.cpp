@@ -17,7 +17,7 @@ Data TransactionCompiler::buildInput(TWCoinType coinType, const std::string& fro
     return anyCoinBuildTransactionInput(coinType, from, to, amount256, asset, memo, chainId);
 }
 
-HashPubkeyList TransactionCompiler::preImageHashes(TWCoinType coinType, const Data& txInputData) {
+Data TransactionCompiler::preImageHashes(TWCoinType coinType, const Data& txInputData) {
     return anyCoinPreImageHashes(coinType, txInputData);
 }
 

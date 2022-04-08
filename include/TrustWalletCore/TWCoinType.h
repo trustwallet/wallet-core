@@ -161,4 +161,8 @@ uint8_t TWCoinTypeStaticPrefix(enum TWCoinType coin);
 TW_EXPORT_PROPERTY
 uint32_t TWCoinTypeSlip44Id(enum TWCoinType coin);
 
+/// public key type for this coin type
+TW_EXPORT_PROPERTY
+enum TWPublicKeyType TWCoinTypePublicKeyType(enum TWCoinType coin);
+
 TW_EXTERN_C_END
