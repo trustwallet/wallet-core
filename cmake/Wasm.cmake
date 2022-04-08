@@ -57,6 +57,7 @@ set_target_properties(TrustWalletCore
     PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
+    COMPILE_FLAGS "-s USE_BOOST_HEADERS=1"
 )
 
 target_include_directories(TrustWalletCore

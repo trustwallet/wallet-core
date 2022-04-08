@@ -8,6 +8,8 @@ build_folder=${src_dir}/wasm-build
 
 pushd ${src_dir}
 
+cp cmake/Wasm.cmake CMakeLists.txt
+
 # cmake
 emcmake cmake -B wasm-build
 

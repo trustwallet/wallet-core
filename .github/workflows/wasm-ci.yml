@@ -14,7 +14,7 @@ jobs:
     - name: Install system dependencies
       run: |
         # build-essential clang-11 libc++-dev libc++abi-dev ruby-full cmake
-        sudo apt-get update && sudo apt-get install ninja-build llvm-11 libboost-all-dev python3 --fix-missing
+        sudo apt-get update && sudo apt-get install ninja-build python3 --fix-missing
     - name: Install emsdk
       run: |
         tools/install-wasm-dependencies
@@ -40,7 +40,6 @@ jobs:
     - name: Build
       run: |
         source emsdk/emsdk_env.sh
-        cp cmake/Wasm.cmake CMakeLists.txt
         tools/wasm-build
       env:
         CC: /usr/bin/clang
