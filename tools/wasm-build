@@ -5,16 +5,18 @@ set -e
 base_dir=$(cd `dirname $0`; pwd)
 src_dir=${base_dir}/..
 build_folder=${src_dir}/wasm-build
-
+boost_dir=${EMSDK}/upstream/emscripten/system/include
 pushd ${src_dir}
 
 cp cmake/Wasm.cmake CMakeLists.txt
 
 # cmake
-emcmake cmake -B wasm-build
+emcmake cmake -B wasm-build -DBoost_INCLUDE_DIR=${boost_dir}
 
 # patch includes_CXX.rsp
-sed -i '' -e 's/-isystem.*//g' ${build_folder}/CMakeFiles/TrustWalletCore.dir/includes_CXX.rsp
+if [[ `uname` == "Darwin" ]]; then
+    sed -i '' -e 's/-isystem.*//g' ${build_folder}/CMakeFiles/TrustWalletCore.dir/includes_CXX.rsp
+fi
 
 # make
 emmake make -C wasm-build
