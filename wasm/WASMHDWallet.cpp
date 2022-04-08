@@ -16,7 +16,7 @@ using namespace emscripten;
 EMSCRIPTEN_BINDINGS(wallet_module) {
     enum_<HDWallet::PrivateKeyType>("PrivateKeyType")
         .value("PrivateKeyTypeDefault32", HDWallet::PrivateKeyType::PrivateKeyTypeDefault32)
-        .value("PrivateKeyTypeExtended96", HDWallet::PrivateKeyType::PrivateKeyTypeDoubleExtended);
+        .value("PrivateKeyTypeDoubleExtended", HDWallet::PrivateKeyType::PrivateKeyTypeDoubleExtended);
 
     class_<HDWallet>("HDWallet")
         .constructor<int, const std::string&>()

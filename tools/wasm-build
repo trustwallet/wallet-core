@@ -11,7 +11,7 @@ pushd ${src_dir}
 cp cmake/Wasm.cmake CMakeLists.txt
 
 # cmake
-emcmake cmake -B wasm-build -DBoost_INCLUDE_DIR=${boost_dir}
+emcmake cmake -Bwasm-build -DBoost_INCLUDE_DIR=${boost_dir}
 
 # patch includes_CXX.rsp
 if [[ `uname` == "Darwin" ]]; then
@@ -19,6 +19,6 @@ if [[ `uname` == "Darwin" ]]; then
 fi
 
 # make
-emmake make -C wasm-build
+emmake make -Cwasm-build
 
 popd

@@ -7,6 +7,7 @@
 file(GLOB wasm_sources *.cpp)
 file(GLOB wasm_headers *.h)
 set(TARGET_NAME wallet-core)
+set(CMAKE_EXECUTABLE_SUFFIX ".js")
 add_executable(${TARGET_NAME} ${wasm_sources} ${wasm_headers})
 
 target_link_libraries(${TARGET_NAME} TrustWalletCore)
@@ -18,4 +19,4 @@ set_target_properties(${TARGET_NAME}
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON
 )
-set_target_properties(${TARGET_NAME} PROPERTIES COMPILE_FLAGS "-s USE_BOOST_HEADERS=1" LINK_FLAGS "-lembind")
+set_target_properties(${TARGET_NAME} PROPERTIES COMPILE_FLAGS "-s USE_BOOST_HEADERS=1" LINK_FLAGS "--bind --no-entry")

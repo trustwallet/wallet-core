@@ -34,8 +34,8 @@ endif()
 # Configure CCache if available
 find_program(CCACHE_FOUND ccache)
 if(CCACHE_FOUND)
-        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-        set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif(CCACHE_FOUND)
 
 include_directories(${PREFIX}/include)
@@ -105,8 +105,8 @@ target_compile_options(TrustWalletCore PRIVATE "-Wall")
 
 set_target_properties(TrustWalletCore
     PROPERTIES
-        CXX_STANDARD 17
-        CXX_STANDARD_REQUIRED ON
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
 )
 
 # Define headers for this library. PUBLIC headers are used for compiling the
@@ -130,11 +130,14 @@ endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig.in ${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig @ONLY)
 
 install(TARGETS TrustWalletCore
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/WalletCore
-        FILES_MATCHING PATTERN "*.h")
+install(
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/ 
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/WalletCore
+    FILES_MATCHING PATTERN "*.h"
+)
 
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
