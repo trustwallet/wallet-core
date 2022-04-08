@@ -61,7 +61,7 @@ TEST(TWTransactionCompiler, ExternalSignatureSignBinance) {
 
     TxCompiler::Proto::PreSigningOutput output;
     ASSERT_TRUE(output.ParseFromArray(preImageHash->data(), int(preImageHash->size())));
-    ASSERT_EQ(output.error_code(), 0);
+    ASSERT_EQ(output.error(), 0);
     const auto preImageHashData = data(output.data_hash());
     
     EXPECT_EQ(hex(preImageHashData), "3f3fece9059e714d303a9a1496ddade8f2c38fa78fc4cc2e505c5dbb0ea678d1");
@@ -148,7 +148,7 @@ TEST(TWTransactionCompiler, ExternalSignatureSignEthereum) {
 
     TxCompiler::Proto::PreSigningOutput output;
     ASSERT_TRUE(output.ParseFromArray(preImageHash->data(), int(preImageHash->size())));
-    ASSERT_EQ(output.error_code(), 0);
+    ASSERT_EQ(output.error(), 0);
     const auto preImageHashData = data(output.data_hash());
     EXPECT_EQ(hex(preImageHashData), "15e180a6274b2f6a572b9b51823fce25ef39576d10188ecdcd7de44526c47217");
 

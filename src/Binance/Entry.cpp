@@ -46,13 +46,13 @@ void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<
     dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
         txInputData, [&](const auto& input, auto& output) {
             if (signatures.size() == 0 || publicKeys.size() == 0) {
-                output.set_error_code(Common::Proto::Error_invalid_params);
-                output.set_error("empty signatures or publickeys");
+                output.set_error(Common::Proto::Error_invalid_params);
+                output.set_error_message("empty signatures or publickeys");
                 return;
             }
             if (signatures.size() > 1 || publicKeys.size() > 1) {
-                output.set_error_code(Common::Proto::Error_no_support_n2n);
-                output.set_error(Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
+                output.set_error(Common::Proto::Error_no_support_n2n);
+                output.set_error_message(Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
                 return;
             }
             output = Signer(input).compile(signatures[0], publicKeys[0]);
@@ -83,16 +83,16 @@ Data Entry::buildTransactionInput(TWCoinType coinType, const std::string& from, 
     const auto toKeyhash = toAddress.getKeyHash();
 
     {
-        auto input = order.add_inputs();
+        auto* input = order.add_inputs();
         input->set_address(fromKeyhash.data(), fromKeyhash.size());
-        auto inputCoin = input->add_coins();
+        auto* inputCoin = input->add_coins();
         inputCoin->set_denom(asset);
         inputCoin->set_amount(static_cast<uint64_t>(amount));
     }
     {
-        auto output = order.add_outputs();
+        auto* output = order.add_outputs();
         output->set_address(toKeyhash.data(), toKeyhash.size());
-        auto outputCoin = output->add_coins();
+        auto* outputCoin = output->add_coins();
         outputCoin->set_denom(asset);
         outputCoin->set_amount(static_cast<uint64_t>(amount));
     }

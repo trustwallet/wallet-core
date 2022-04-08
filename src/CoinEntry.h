@@ -80,8 +80,8 @@ Data txCompilerTemplate(const Data& dataIn, std::function<void(const Input& inpu
     auto input = Input();
     auto output = Output();
     if (!input.ParseFromArray(dataIn.data(), (int)dataIn.size())) {
-        output.set_error_code(Common::Proto::Error_input_parse);
-        output.set_error("failed to parse input data");
+        output.set_error(Common::Proto::Error_input_parse);
+        output.set_error_message("failed to parse input data");
         return TW::data(output.SerializeAsString());;
     }
 
@@ -89,8 +89,8 @@ Data txCompilerTemplate(const Data& dataIn, std::function<void(const Input& inpu
         // each coin function handler
         fnHandler(input, output);
     } catch (const std::exception& e) {
-        output.set_error_code(Common::Proto::Error_internal);
-        output.set_error(e.what());
+        output.set_error(Common::Proto::Error_internal);
+        output.set_error_message(e.what());
     }
     return TW::data(output.SerializeAsString());
 }

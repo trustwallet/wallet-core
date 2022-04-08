@@ -51,8 +51,8 @@ Proto::PreSigningOutput Signer::preImageHashes(const Proto::SigningInput& input)
     Proto::PreSigningOutput output;
     auto result = TransactionSigner<Transaction, TransactionBuilder>::preImageHashes(input);
     if (!result) {
-        output.set_error_code(result.error());
-        output.set_error(Common::Proto::SigningError_Name(result.error()));
+        output.set_error(result.error());
+        output.set_error_message(Common::Proto::SigningError_Name(result.error()));
         return output;
     }
 
