@@ -295,11 +295,11 @@ TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
 
     {   // Negative: not enough signatures
         const Data outputData = TransactionCompiler::compileWithSignatures(coin, txInputData, {signatureVec[0]}, pubkeyVec);
-        EXPECT_EQ(outputData.size(), 2);
+        EXPECT_GT(outputData.size(), 1);
         Bitcoin::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(output.encoded().size(), 0);
-        EXPECT_EQ(output.error(), Common::Proto::Error_signing);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
     }
     {   // Negative: invalid public key
         const auto publicKeyBlake = parse_hex("b689ab808542e13f3d2ec56fe1efe43a1660dcadc73ce489fde7df98dd8ce5d9");
