@@ -56,11 +56,11 @@ TEST(TWTransactionCompiler, ExternalSignatureSignBinance) {
     }
 
     /// Step 2: Obtain preimage hash
-    const auto preImageHashes = TWTransactionCompilerPreImageHashes(coin, txInputData.get());
-    auto preImageHash = dataFromTWData(preImageHashes);
+    const auto preImageHashes = WRAPD(TWTransactionCompilerPreImageHashes(coin, txInputData.get()));
+    auto preImageHash = data(TWDataBytes(preImageHashes.get()), TWDataSize(preImageHashes.get()));
 
     TxCompiler::Proto::PreSigningOutput output;
-    ASSERT_TRUE(output.ParseFromArray(preImageHash->data(), int(preImageHash->size())));
+    ASSERT_TRUE(output.ParseFromArray(preImageHash.data(), int(preImageHash.size())));
     ASSERT_EQ(output.error(), 0);
     const auto preImageHashData = data(output.data_hash());
     
@@ -143,11 +143,11 @@ TEST(TWTransactionCompiler, ExternalSignatureSignEthereum) {
     EXPECT_EQ((int)TWDataSize(txInputData.get()), 75);
 
     /// Step 2: Obtain preimage hash
-    const auto preImageHashes = TWTransactionCompilerPreImageHashes(coin, txInputData.get());
-    auto preImageHash = dataFromTWData(preImageHashes);
+    const auto preImageHashes = WRAPD(TWTransactionCompilerPreImageHashes(coin, txInputData.get()));
+    auto preImageHash = data(TWDataBytes(preImageHashes.get()), TWDataSize(preImageHashes.get()));
 
     TxCompiler::Proto::PreSigningOutput output;
-    ASSERT_TRUE(output.ParseFromArray(preImageHash->data(), int(preImageHash->size())));
+    ASSERT_TRUE(output.ParseFromArray(preImageHash.data(), int(preImageHash.size())));
     ASSERT_EQ(output.error(), 0);
     const auto preImageHashData = data(output.data_hash());
     EXPECT_EQ(hex(preImageHashData), "15e180a6274b2f6a572b9b51823fce25ef39576d10188ecdcd7de44526c47217");
@@ -329,10 +329,10 @@ TEST(TWTransactionCompiler, ExternalSignatureSignBitcoin) {
     EXPECT_EQ((int)TWDataSize(txInputData.get()), 692);
 
     /// Step 2: Obtain preimage hashes
-    const auto preImageHashes = TWTransactionCompilerPreImageHashes(coin, txInputData.get());
-    auto preImageHash = dataFromTWData(preImageHashes);
+    const auto preImageHashes = WRAPD(TWTransactionCompilerPreImageHashes(coin, txInputData.get()));
+    auto preImageHash = data(TWDataBytes(preImageHashes.get()), TWDataSize(preImageHashes.get()));
     Bitcoin::Proto::PreSigningOutput preOutput;
-    ASSERT_TRUE(preOutput.ParseFromArray(preImageHash->data(), (int)preImageHash->size()));
+    ASSERT_TRUE(preOutput.ParseFromArray(preImageHash.data(), (int)preImageHash.size()));
     ASSERT_EQ(preOutput.hash_public_keys_size(), 3);
     auto hashes = preOutput.hash_public_keys();
     EXPECT_EQ(hex(hashes[0].data_hash()), "505f527f00e15fcc5a2d2416c9970beb57dfdfaca99e572a01f143b24dd8fab6");
