@@ -19,9 +19,9 @@ TransactionPlan Signer::plan(const SigningInput& input) noexcept {
     return plan.proto();
 }
 
-SigningOutput Signer::sign(const SigningInput& input) noexcept {
+SigningOutput Signer::sign(const SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs) noexcept {
     SigningOutput output;
-    auto result = Bitcoin::TransactionSigner<Transaction, TransactionBuilder>::sign(input);
+    auto result = Bitcoin::TransactionSigner<Transaction, TransactionBuilder>::sign(input, false, optionalExternalSigs);
     if (!result) {
         output.set_error(result.error());
     } else {
@@ -35,6 +35,25 @@ SigningOutput Signer::sign(const SigningInput& input) noexcept {
         auto txHash = Hash::sha256d(encoded.data(), encoded.size());
         std::reverse(txHash.begin(), txHash.end());
         output.set_transaction_id(hex(txHash));
+    }
+    return output;
+}
+
+PreSigningOutput Signer::preImageHashes(const SigningInput& input) noexcept {
+    PreSigningOutput output;
+    auto result = Bitcoin::TransactionSigner<Transaction, TransactionBuilder>::preImageHashes(input);
+    if (!result) {
+        output.set_errorcode(result.error());
+        output.set_error(Common::Proto::SigningError_Name(result.error()));
+        return output;
+    }
+
+    auto hashList = result.payload();
+    auto* hashPubKeys = output.mutable_hashpublickeys();
+    for (auto& h : hashList) {
+        auto* hpk = hashPubKeys->Add();
+        hpk->set_datahash(h.first.data(), h.first.size());
+        hpk->set_publickeyhash(h.second.data(), h.second.size());
     }
     return output;
 }

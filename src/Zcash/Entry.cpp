@@ -27,3 +27,24 @@ void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) con
 void Entry::plan(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     planTemplate<Signer, Bitcoin::Proto::SigningInput>(dataIn, dataOut);
 }
+
+TW::Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
+    return txCompilerTemplate<Bitcoin::Proto::SigningInput, Bitcoin::Proto::PreSigningOutput>(
+        txInputData, [](const auto& input, auto& output) { 
+            output = Signer::preImageHashes(input); 
+        });
+}
+
+void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
+    auto input = Bitcoin::Proto::SigningInput();
+    if (input.ParseFromArray(txInputData.data(), (int)txInputData.size())) {
+        HashPubkeyList externalSignatures;
+        auto n = std::min(signatures.size(), publicKeys.size());
+        for (auto i = 0; i < n; ++i) {
+            externalSignatures.push_back(std::make_pair(signatures[i], publicKeys[i].bytes));
+        }
+
+        auto serializedOut = Signer::sign(input, externalSignatures).SerializeAsString();
+        dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+    }
+}

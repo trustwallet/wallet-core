@@ -35,6 +35,14 @@
 
 #include "Bitcoin/Script.h"
 #include "Bitcoin/SegwitAddress.h"
+#include "Bitcoin/TransactionInput.h"
+#include "Bitcoin/TransactionPlan.h"
+#include "Bitcoin/TransactionSigner.h"
+#include "Groestlcoin/Signer.h"
+#include "Groestlcoin/Transaction.h"
+#include "Zcash/Signer.h"
+#include "Zcash/Transaction.h"
+#include "Zcash/TransactionBuilder.h"
 
 #include "Base58.h"
 #include "HexCoding.h"
@@ -42,6 +50,7 @@
 #include "PublicKey.h"
 #include "uint256.h"
 
+#include "Bitcoin/TxComparisonHelper.h"
 #include "interface/TWTestUtilities.h"
 #include <gtest/gtest.h>
 
@@ -394,6 +403,154 @@ TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(output.encoded().size(), 0);
         EXPECT_EQ(output.error(), Common::Proto::Error_signing);
+    }
+}
+
+TEST(TransactionCompiler, ZcashCompileWithSignatures) {
+    const auto coin = TWCoinTypeZcash;
+
+    // tx on mainnet
+    // https://explorer.zcha.in/transactions/387939ff8eb07dd264376eeef2e126394ab139802b1d80e92b21c1a2ae54fe92
+    const int64_t amount = 17615;
+    const int64_t fee = 10000;
+    const std::string toAddress = "t1biXYN8wJahR76SqZTe1LBzTLf3JAsmT93";
+
+    auto input = Bitcoin::Proto::SigningInput();
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    input.set_amount(amount);
+    input.set_byte_fee(1);
+    input.set_to_address(toAddress);
+    input.set_coin_type(TWCoinTypeZcash);
+
+    auto txHash0 = parse_hex("2381825cd9069a200944996257e25b9403ba3e296bbc1dd98b01019cc7028cde");
+    std::reverse(txHash0.begin(), txHash0.end());
+
+    auto utxo0 = input.add_utxo();
+    utxo0->mutable_out_point()->set_hash(txHash0.data(), txHash0.size());
+    utxo0->mutable_out_point()->set_index(0);
+    utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
+    utxo0->set_amount(27615);
+
+    // real key 1p "m/44'/133'/0'/0/14"
+    auto utxoKey0 = PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"));
+    auto utxoAddr0 = TW::deriveAddress(TWCoinTypeZcash, utxoKey0);
+    auto script0 = Bitcoin::Script::lockScriptForAddress(utxoAddr0, TWCoinTypeZcash);
+    utxo0->set_script(script0.bytes.data(), script0.bytes.size());
+    input.add_private_key(utxoKey0.bytes.data(), utxoKey0.bytes.size());
+
+    auto plan = Zcash::TransactionBuilder::plan(input);
+    plan.amount = amount;
+    plan.fee = fee;
+    plan.change = 0;
+
+    auto& protoPlan = *input.mutable_plan();
+    protoPlan = plan.proto();
+
+    // build preimage
+    const auto txInputData = data(input.SerializeAsString());
+    EXPECT_GT(txInputData.size(), 0);
+
+    const auto preImageHashes = TransactionCompiler::preImageHashes(coin, txInputData);
+    ASSERT_GT(preImageHashes.size(), 0);
+
+    Bitcoin::Proto::PreSigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(preImageHashes.data(), int(preImageHashes.size())));
+    ASSERT_EQ(output.errorcode(), 0);
+    ASSERT_EQ(output.hashpublickeys().size(), 1);
+
+    auto preImageHash = data(output.hashpublickeys()[0].datahash());
+    EXPECT_EQ(hex(preImageHash),
+              "1472faba6529ac6d88f87f6ab881e438c3c8a17482b4a82ef13212333868258a");
+
+    // compile
+    auto publicKey = utxoKey0.getPublicKey(TWPublicKeyTypeSECP256k1);
+    TW::Data signature = parse_hex("3045022100e6e5071811c08d0c2e81cb8682ee36a8c6b645f5c08747acd3e828de2a4d8a9602200b13b36a838c7e8af81f2d6e7e694ede28833a480cfbaaa68a47187655298a7f");
+    const Data outputData =
+        TransactionCompiler::compileWithSignatures(coin, txInputData, {signature}, {publicKey.bytes});
+    Bitcoin::Proto::SigningOutput signingOutput;
+    ASSERT_TRUE(signingOutput.ParseFromArray(outputData.data(), (int)outputData.size()));
+    ASSERT_EQ(hex(signingOutput.encoded()), "0400008085202f8901de8c02c79c01018bd91dbc6b293eba03945be25762994409209a06d95c828123000000006b483045022100e6e5071811c08d0c2e81cb8682ee36a8c6b645f5c08747acd3e828de2a4d8a9602200b13b36a838c7e8af81f2d6e7e694ede28833a480cfbaaa68a47187655298a7f0121024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ffffffff01cf440000000000001976a914c3bacb129d85288a3deb5890ca9b711f7f71392688ac00000000000000000000000000000000000000");
+
+    {
+        auto result = Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>::sign(input);
+        ASSERT_TRUE(result) << std::to_string(result.error());
+        auto signedTx = result.payload();
+        Data serialized;
+        signedTx.encode(serialized);
+        ASSERT_EQ(hex(serialized), hex(signingOutput.encoded()));
+    }
+}
+
+TEST(TransactionCompiler, GroestlcoinCompileWithSignatures) {
+    const auto coin = TWCoinTypeGroestlcoin;
+
+    Bitcoin::Proto::SigningInput input;
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    input.set_amount(2500);
+    input.set_byte_fee(1);
+    input.set_to_address("grs1qw4teyraux2s77nhjdwh9ar8rl9dt7zww8r6lne");
+    input.set_change_address("31inaRqambLsd9D7Ke4USZmGEVd3PHkh7P");
+
+    auto utxoKey0 = parse_hex("3c3385ddc6fd95ba7282051aeb440bc75820b8c10db5c83c052d7586e3e98e84");
+    input.add_private_key(utxoKey0.data(), utxoKey0.size());
+
+    auto utxo0 = input.add_utxo();
+    auto utxo0Script = Bitcoin::Script(parse_hex("76a91498af0aaca388a7e1024f505c033626d908e3b54a88ac"));
+    utxo0->set_script(utxo0Script.bytes.data(), utxo0Script.bytes.size());
+    utxo0->set_amount(5000);
+    auto hash0 = parse_hex("9568b09e6c6d940302ec555a877c9e5f799de8ee473e18d3a19ae14478cc4e8f");
+    utxo0->mutable_out_point()->set_hash(hash0.data(), hash0.size());
+    utxo0->mutable_out_point()->set_index(0);
+    utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    Bitcoin::Proto::TransactionPlan plan;
+    {
+        // try plan first
+        ANY_PLAN(input, plan, coin);
+        EXPECT_TRUE(verifyPlan(plan, {5000}, 2500, 221));
+    }
+
+    // Supply plan for signing, to match fee of previously-created real TX
+    *input.mutable_plan() = plan;
+    input.mutable_plan()->set_fee(226);
+    input.mutable_plan()->set_change(2274);
+
+    // build preimage
+    const auto txInputData = data(input.SerializeAsString());
+    EXPECT_GT(txInputData.size(), 0);
+
+    const auto preImageHashes = TransactionCompiler::preImageHashes(coin, txInputData);
+    ASSERT_GT(preImageHashes.size(), 0);
+
+    Bitcoin::Proto::PreSigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(preImageHashes.data(), int(preImageHashes.size())));
+    ASSERT_EQ(output.errorcode(), 0);
+    ASSERT_EQ(output.hashpublickeys().size(), 1);
+
+    auto preImageHash = data(output.hashpublickeys()[0].datahash());
+    EXPECT_EQ(hex(preImageHash),
+              "0fb3da786ad1028574f0b40ff1446515eb85cacccff3f3d0459e191b660597b3");
+
+    // compile
+    auto publicKey = PrivateKey(utxoKey0).getPublicKey(TWPublicKeyTypeSECP256k1);
+    TW::Data signature = parse_hex("304402202163ab98b028aa13563f0de00b785d6df81df5eac0b7c91d23f5be7ea674aa3702202bf6cd7055c6f8f697ce045b1a4f9b997cf6e5761a661d27696ac34064479d19");
+    const Data outputData =
+        TransactionCompiler::compileWithSignatures(coin, txInputData, {signature}, {publicKey.bytes});
+    Bitcoin::Proto::SigningOutput signingOutput;
+    ASSERT_TRUE(signingOutput.ParseFromArray(outputData.data(), (int)outputData.size()));
+    ASSERT_EQ(hex(signingOutput.encoded()),
+              "01000000019568b09e6c6d940302ec555a877c9e5f799de8ee473e18d3a19ae14478cc4e8f000000"
+              "006a47304402202163ab98b028aa13563f0de00b785d6df81df5eac0b7c91d23f5be7ea674aa3702"
+              "202bf6cd7055c6f8f697ce045b1a4f9b997cf6e5761a661d27696ac34064479d19012103b85cc59b"
+              "67c35851eb5060cfc3a759a482254553c5857075c9e247d74d412c91ffffffff02c4090000000000"
+              "001600147557920fbc32a1ef4ef26bae5e8ce3f95abf09cee20800000000000017a9140055b0c94d"
+              "f477ee6b9f75185dfc9aa8ce2e52e48700000000");
+
+    {
+        Bitcoin::Proto::SigningOutput output;
+        ANY_SIGN(input, coin);
+        std::cout << "Groestlcoin signature" << std::endl;
+        ASSERT_EQ(output.encoded(), signingOutput.encoded());
     }
 }
 
@@ -1731,7 +1888,7 @@ TEST(TransactionCompiler, PolkadotCompileWithSignatures) {
     /// Compile transaction info
     const Data outputData = TransactionCompiler::compileWithSignatures(coin, txInputData, {signature}, {publicKeyData});
     auto output = Ontology::Proto::SigningOutput();
-    output.ParseFromArray(outputData.data(), outputData.size());
+    output.ParseFromArray(outputData.data(), (int)outputData.size());
     const auto expectedTx = "390284d84accbb64934815506288fafbfc7d275e64aa4e3cd9c5392db6e83b13256bf300fb43727477caaa12542b9060856816d42eedef6ebf2e98e4f8dff4355fe384751925833c4a26b2fed1707aebe655cb3317504a61ee59697c086f7baa6ca06a099dfe00000500be4c21aa92dcba057e9b719ce1de970f774f064c09b13a3ea3009affb8cb5ec707000cdc0f21";
 
     {
