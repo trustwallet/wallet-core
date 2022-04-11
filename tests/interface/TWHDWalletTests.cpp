@@ -286,6 +286,17 @@ TEST(HDWallet, DeriveAvalancheCChain) {
     assertHexEqual(keyData, expectedETH);
 }
 
+TEST(HDWallet, DeriveCardano) {
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeCardano));
+    auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
+    EXPECT_EQ(TWDataSize(privateKeyData.get()), 192);
+    auto address = WRAPS(TWCoinTypeDeriveAddress(TWCoinTypeCardano, privateKey.get()));
+
+    assertHexEqual(privateKeyData, "f8a3b8ad30e62c369b939336c2035aba26d1ffad135e6f346f2a370517a14952e73d20aeadf906bc8b531900fb6c3ed4a05b16973c10ae24650b68b26fae4ee5d97418ba7f3b2707fae963041ff5f174195d1578da09478ad2d17a1ecc00cad478a8ca3be214870accd41f008d70e3b4b59b5981ca933d6d3f389ad317a14952166d8fd329ae3fab4712da739efc2ded9b3eef2b1a8e225dd3dddeb4f065a729b297d9fa76b8852eef235c25aac8f0ff6209ab7251f2a84c83b3b5f1161f7c59");
+    assertStringsEqual(address, "addr1q9zz5nj4rqdvteauvdtc834f2vtzyrdrrdmnwdyp4s6huuz5fp33p9cq4xwpqtgguaxknzurmglv58yn9wrv6angpvvq9u36ya");
+}
+
 TEST(HDWallet, ExtendedKeys) {
     auto words = STRING("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about");
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
