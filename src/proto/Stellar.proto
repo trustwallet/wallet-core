@@ -37,6 +37,32 @@ message OperationChangeTrust {
     int64 valid_before = 2;
 }
 
+enum ClaimPredicate {
+    Predicate_unconditional = 0;
+    // Rest of predicates not currently supported
+    // See https://github.com/stellar/stellar-protocol/blob/master/core/cap-0023.md
+}
+
+message Claimant {
+    string account = 1;
+    ClaimPredicate predicate = 2;
+}
+
+message OperationCreateClaimableBalance {
+    // Optional, can be left empty for native asset
+    Asset asset = 1;
+
+    // Amount (*10^7)
+    int64 amount = 2;
+
+    repeated Claimant claimants = 3;
+}
+
+message OperationClaimClaimableBalance {
+    // 32-byte balance ID hash
+    bytes balance_id = 1;
+}
+
 message MemoVoid {
 }
 
@@ -69,6 +95,8 @@ message SigningInput {
         OperationCreateAccount op_create_account = 6;
         OperationPayment op_payment = 7;
         OperationChangeTrust op_change_trust = 8;
+        OperationCreateClaimableBalance op_create_claimable_balance = 14;
+        OperationClaimClaimableBalance op_claim_claimable_balance = 15;
     }
 
     oneof memo_type_oneof {

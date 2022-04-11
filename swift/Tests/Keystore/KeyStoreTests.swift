@@ -217,27 +217,33 @@ class KeyStoreTests: XCTestCase {
                 "address": "bc1q4zehq85jqx9zzgzvzn9t64yjy66nunn3vehuv6",
                 "coin": 0,
                 "derivationPath": "m/84'/0'/0'/0/0",
-                "extendedPublicKey": "zpub6qMRMrwcEYaqjf8wSpNqtBfUee6MqpQjrZNKfj5a48EUFUx2yUmfkDJMdHwWvkg8SjdS3ua6dy9ofMrzrytTfdyy2pXg344yFwm2Ta9cm6Q"
+                "extendedPublicKey": "zpub6qMRMrwcEYaqjf8wSpNqtBfUee6MqpQjrZNKfj5a48EUFUx2yUmfkDJMdHwWvkg8SjdS3ua6dy9ofMrzrytTfdyy2pXg344yFwm2Ta9cm6Q",
+                "publicKey": "0334c47fa4eafef196f62eb53192a39bc36c5823ad4bd23db503170b9d3dbe80fd"
             }, {
                 "address": "0x33F44330cc4253cCd4ce4224186DB9baCe2190ea",
                 "coin": 60,
-                "derivationPath": "m/44'/60'/0'/0/0"
+                "derivationPath": "m/44'/60'/0'/0/0",
+                "publicKey": "04906ab3a756b952c1f2ad41daf0c82cc12fb155cd73919b904ffb2630866abfe3feae7169c3e322465d119f4b20465b2a98f8bcb9e19bf22d84ba04e277c1c6ee"
             }, {
                 "address": "bnb1njuczq3hgvupu2vnczrjz7rc8x4uxlmhjyq95z",
                 "coin": 714,
-                "derivationPath": "m/44'/714'/0'/0/0"
+                "derivationPath": "m/44'/714'/0'/0/0",
+                "publicKey": "03397cf6ee9ddfee746dc750e9b1abd9824ff8fec3e29bb09b3b2c330a88b605b8"
             }, {
                 "address": "0x5dEc7A9299360aEb44c83B8F730F2BF5Dd1688bC",
                 "coin": 10000714,
-                "derivationPath": "m/44'/714'/0'/0/0"
+                "derivationPath": "m/44'/714'/0'/0/0",
+                "publicKey": "04397cf6ee9ddfee746dc750e9b1abd9824ff8fec3e29bb09b3b2c330a88b605b81e46b99afe5dd84a5420b9e54f04b26aeb034f12849145a8163255875af1aef7"
             }, {
                 "address": "0x33F44330cc4253cCd4ce4224186DB9baCe2190ea",
                 "coin": 20000714,
-                "derivationPath": "m/44'/60'/0'/0/0"
+                "derivationPath": "m/44'/60'/0'/0/0",
+                "publicKey": "04906ab3a756b952c1f2ad41daf0c82cc12fb155cd73919b904ffb2630866abfe3feae7169c3e322465d119f4b20465b2a98f8bcb9e19bf22d84ba04e277c1c6ee"
             }, {
                 "address": "838f8aeba6bb083b5b6e22030fb051eaf1a8b6cd692d4ad533cba60c77e6b8f2",
                 "coin": 397,
-                "derivationPath": "m/44'/397'/0'"
+                "derivationPath": "m/44'/397'/0'",
+                "publicKey": "838f8aeba6bb083b5b6e22030fb051eaf1a8b6cd692d4ad533cba60c77e6b8f2"
             }],
             "crypto": {
                 "cipher": "aes-128-ctr",
@@ -264,6 +270,13 @@ class KeyStoreTests: XCTestCase {
 
         let password = "e28ddf66cec05c1fc09939a00628b230459202b2493fccac288038ef37815723"
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
+
+        // Fill public key if needed
+        let btcAccount = try keyStore.bnbWallet.getAccount(password: password, coin: .bitcoin)
+        XCTAssertEqual(btcAccount.publicKey, "0334c47fa4eafef196f62eb53192a39bc36c5823ad4bd23db503170b9d3dbe80fd")
+
+        // Fix all empty
+        _ = keyStore.bnbWallet.key.fixAddresses(password: Data(password.utf8))
         _ = try keyStore.addAccounts(wallet: keyStore.bnbWallet, coins: [.smartChainLegacy, .smartChain], password: password)
 
         // simulate migration code
@@ -339,6 +352,7 @@ class KeyStoreTests: XCTestCase {
 
         for account in accounts {
             XCTAssertFalse(account.address.isEmpty)
+            XCTAssertFalse(account.publicKey.isEmpty)
         }
 
         XCTAssertEqual(coins.count, wallet.accounts.count)

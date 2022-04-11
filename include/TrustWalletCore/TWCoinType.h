@@ -68,7 +68,7 @@ enum TWCoinType {
     TWCoinTypeViacoin = 14,
     TWCoinTypeWanchain = 5718350,
     TWCoinTypeZcash = 133,
-    TWCoinTypeZcoin = 136,
+    TWCoinTypeFiro = 136,
     TWCoinTypeZilliqa = 313,
     TWCoinTypeZelcash = 19167,
     TWCoinTypeRavencoin = 175,
@@ -98,6 +98,9 @@ enum TWCoinType {
     TWCoinTypeRonin = 10002020,
     TWCoinTypeOsmosis = 10000118,
     TWCoinTypeECash = 899,
+    TWCoinTypeCronosChain = 10000025,
+    TWCoinTypeSmartBitcoinCash = 10000145,
+    TWCoinTypeKuCoinCommunityChain = 10000321,
 };
 
 /// Returns the blockchain for a coin type.
@@ -157,5 +160,9 @@ uint8_t TWCoinTypeStaticPrefix(enum TWCoinType coin);
 /// SLIP-0044 id for this coin type
 TW_EXPORT_PROPERTY
 uint32_t TWCoinTypeSlip44Id(enum TWCoinType coin);
+
+/// public key type for this coin type
+TW_EXPORT_PROPERTY
+enum TWPublicKeyType TWCoinTypePublicKeyType(enum TWCoinType coin);
 
 TW_EXTERN_C_END

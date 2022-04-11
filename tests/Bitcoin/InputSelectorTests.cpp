@@ -485,11 +485,9 @@ TEST(BitcoinInputSelector, ManyUtxos_MaxAmount_5000) {
     const auto n = 5000;
     const auto byteFee = 10;
     std::vector<int64_t> values;
-    uint64_t valueSum = 0;
     for (int i = 0; i < n; ++i) {
         const uint64_t val = (i + 1) * 100;
         values.push_back(val);
-        valueSum += val;
     }
     auto utxos = buildTestUTXOs(values);
 

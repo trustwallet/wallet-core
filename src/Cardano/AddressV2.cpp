@@ -71,11 +71,11 @@ AddressV2::AddressV2(const std::string& string) {
 
 AddressV2::AddressV2(const PublicKey& publicKey) {
     // input is extended pubkey, 64-byte
-    if (publicKey.type != TWPublicKeyTypeED25519Extended) {
+    if (publicKey.type != TWPublicKeyTypeED25519Extended || publicKey.bytes.size() != PublicKey::ed25519DoubleExtendedSize) {
         throw std::invalid_argument("Invalid public key type");
     }
     type = 0; // public key
-    root = keyHash(publicKey.bytes);
+    root = keyHash(subData(publicKey.bytes, 0, 64));
     // address attributes: empty map for V2, for V1 encrypted derivation path
     Cbor::Encode emptyMap = Cbor::Encode::map({});
     attrs = emptyMap.encoded();

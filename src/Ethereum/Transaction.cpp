@@ -49,6 +49,10 @@ std::shared_ptr<TransactionNonTyped> TransactionNonTyped::buildERC1155Transfer(c
 }
 
 Data TransactionNonTyped::preHash(const uint256_t chainID) const {
+    return Hash::keccak256(serialize(chainID));
+}
+
+Data TransactionNonTyped::serialize(const uint256_t chainID) const {
     Data encoded;
     append(encoded, RLP::encode(nonce));
     append(encoded, RLP::encode(gasPrice));
@@ -59,7 +63,7 @@ Data TransactionNonTyped::preHash(const uint256_t chainID) const {
     append(encoded, RLP::encode(chainID));
     append(encoded, RLP::encode(0));
     append(encoded, RLP::encode(0));
-    return Hash::keccak256(RLP::encodeList(encoded));
+    return RLP::encodeList(encoded);
 }
 
 Data TransactionNonTyped::encoded(const Signature& signature, const uint256_t chainID) const {
@@ -121,6 +125,10 @@ Data TransactionNonTyped::buildERC1155TransferFromCall(const Data& from, const D
 }
 
 Data TransactionEip1559::preHash(const uint256_t chainID) const {
+    return Hash::keccak256(serialize(chainID));
+}
+
+Data TransactionEip1559::serialize(const uint256_t chainID) const {
     Data encoded;
     append(encoded, RLP::encode(chainID));
     append(encoded, RLP::encode(nonce));
@@ -135,7 +143,7 @@ Data TransactionEip1559::preHash(const uint256_t chainID) const {
     Data envelope;
     append(envelope, static_cast<uint8_t>(type));
     append(envelope, RLP::encodeList(encoded));
-    return Hash::keccak256(envelope);
+    return envelope;
 }
 
 Data TransactionEip1559::encoded(const Signature& signature, const uint256_t chainID) const {

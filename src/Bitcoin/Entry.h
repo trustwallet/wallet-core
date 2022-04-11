@@ -28,7 +28,7 @@ public:
             TWCoinTypeQtum,
             TWCoinTypeRavencoin,
             TWCoinTypeViacoin,
-            TWCoinTypeZcoin,
+            TWCoinTypeFiro,
         };
     }
     virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;
@@ -39,6 +39,10 @@ public:
     virtual std::string deriveAddress(TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
     virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
+
+    virtual Data preImageHashes(TWCoinType coin, const Data& txInputData) const;
+    virtual void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const;
+    // Note: buildTransactionInput is not implemented for Binance chain with UTXOs
 };
 
 } // namespace TW::Bitcoin

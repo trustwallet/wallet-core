@@ -36,8 +36,3 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::<%= format_name(coin) %>
-
-/// Wrapper for C interface.
-struct TW<%= format_name(coin) %>Address {
-    TW::<%= format_name(coin) %>::Address impl;
-};

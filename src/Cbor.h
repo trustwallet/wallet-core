@@ -41,6 +41,8 @@ public:
     static Encode map(const std::vector<std::pair<Encode, Encode>>& elems);
     /// encode a tag and following element
     static Encode tag(uint64_t value, const Encode& elem);
+    /// encode a null value (special)
+    static Encode null();
 
     /// Stateful building (for indefinite length)
     /// Start an indefinite-length array

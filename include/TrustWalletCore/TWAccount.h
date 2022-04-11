@@ -18,7 +18,7 @@ TW_EXPORT_CLASS
 struct TWAccount;
 
 TW_EXPORT_STATIC_METHOD
-struct TWAccount *_Nonnull TWAccountCreate(TWString *_Nonnull address, enum TWCoinType coin, enum TWDerivation derivation, TWString *_Nonnull derivationPath, TWString *_Nonnull extendedPublicKey);
+struct TWAccount *_Nonnull TWAccountCreate(TWString *_Nonnull address, enum TWCoinType coin, enum TWDerivation derivation, TWString *_Nonnull derivationPath, TWString *_Nonnull publicKey, TWString *_Nonnull extendedPublicKey);
 
 TW_EXPORT_METHOD
 void TWAccountDelete(struct TWAccount *_Nonnull account);
@@ -28,6 +28,9 @@ TWString *_Nonnull TWAccountAddress(struct TWAccount *_Nonnull account);
 
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWAccountDerivationPath(struct TWAccount *_Nonnull account);
+
+TW_EXPORT_PROPERTY
+TWString *_Nonnull TWAccountPublicKey(struct TWAccount *_Nonnull account);
 
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWAccountExtendedPublicKey(struct TWAccount *_Nonnull account);

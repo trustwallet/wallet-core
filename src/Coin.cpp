@@ -41,13 +41,13 @@
 #include "Ontology/Entry.h"
 #include "Polkadot/Entry.h"
 #include "Ripple/Entry.h"
+#include "Ronin/Entry.h"
 #include "Solana/Entry.h"
 #include "Stellar/Entry.h"
 #include "THORChain/Entry.h"
 #include "Tezos/Entry.h"
 #include "Theta/Entry.h"
 #include "Tron/Entry.h"
-#include "TrustWalletCore/TWCoinType.h"
 #include "VeChain/Entry.h"
 #include "Waves/Entry.h"
 #include "Zcash/Entry.h"
@@ -86,6 +86,7 @@ Ontology::Entry ontologyDP;
 Oasis::Entry oasisDP;
 Polkadot::Entry polkadotDP;
 Ripple::Entry rippleDP;
+Ronin::Entry roninDP;
 Solana::Entry solanaDP;
 Stellar::Entry stellarDP;
 Tezos::Entry tezosDP;
@@ -119,7 +120,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeQtum: entry = &bitcoinDP; break;
         case TWCoinTypeRavencoin: entry = &bitcoinDP; break;
         case TWCoinTypeViacoin: entry = &bitcoinDP; break;
-        case TWCoinTypeZcoin: entry = &bitcoinDP; break;
+        case TWCoinTypeFiro: entry = &bitcoinDP; break;
         case TWCoinTypeCardano: entry = &cardanoDP; break;
         case TWCoinTypeCosmos: entry = &cosmosDP; break;
         case TWCoinTypeKava: entry = &cosmosDP; break;
@@ -176,9 +177,12 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeXDai: entry = &ethereumDP; break;
         case TWCoinTypeFantom: entry = &ethereumDP; break;
         case TWCoinTypeCelo: entry = &ethereumDP; break;
-        case TWCoinTypeRonin: entry = &ethereumDP; break;
+        case TWCoinTypeRonin: entry = &roninDP; break;
         case TWCoinTypeCryptoOrg: entry = &cosmosDP; break;
         case TWCoinTypeOsmosis: entry = &cosmosDP; break;
+        case TWCoinTypeCronosChain: entry = &ethereumDP; break;
+        case TWCoinTypeSmartBitcoinCash: entry = &ethereumDP; break;
+        case TWCoinTypeKuCoinCommunityChain: entry = &ethereumDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;
@@ -267,6 +271,24 @@ void TW::anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
     auto* dispatcher = coinDispatcher(coinType);
     assert(dispatcher != nullptr);
     dispatcher->plan(coinType, dataIn, dataOut);
+}
+
+Data TW::anyCoinPreImageHashes(TWCoinType coinType, const Data& txInputData) {
+    auto* dispatcher = coinDispatcher(coinType);
+    assert(dispatcher != nullptr);
+    return dispatcher->preImageHashes(coinType, txInputData);
+}
+
+void TW::anyCoinCompileWithSignatures(TWCoinType coinType, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& txOutputOut) {
+    auto* dispatcher = coinDispatcher(coinType);
+    assert(dispatcher != nullptr);
+    dispatcher->compile(coinType, txInputData, signatures, publicKeys, txOutputOut);
+}
+
+Data TW::anyCoinBuildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) {
+    auto* dispatcher = coinDispatcher(coinType);
+    assert(dispatcher != nullptr);
+    return dispatcher->buildTransactionInput(coinType, from, to, amount, asset, memo, chainId);
 }
 
 // Coin info accessors

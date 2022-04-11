@@ -27,8 +27,8 @@ TEST(TWCardanoCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeCardano));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeCardano));
     assertStringsEqual(symbol, "ADA");
-    assertStringsEqual(txUrl, "https://shelleyexplorer.cardano.org/tx/b7a6c5cadab0f64bdc89c77ee4a351463aba5c33f2cef6bbd6542a74a90a3af3");
-    assertStringsEqual(accUrl, "https://shelleyexplorer.cardano.org/address/DdzFFzCqrhstpwKc8WMvPwwBb5oabcTW9zc5ykA37wJR4tYQucvsR9dXb2kEGNXkFJz2PtrpzfRiZkx8R1iNo8NYqdsukVmv7EAybFwC");
+    assertStringsEqual(txUrl, "https://cardanoscan.io/transaction/b7a6c5cadab0f64bdc89c77ee4a351463aba5c33f2cef6bbd6542a74a90a3af3");
+    assertStringsEqual(accUrl, "https://cardanoscan.io/address/DdzFFzCqrhstpwKc8WMvPwwBb5oabcTW9zc5ykA37wJR4tYQucvsR9dXb2kEGNXkFJz2PtrpzfRiZkx8R1iNo8NYqdsukVmv7EAybFwC");
     assertStringsEqual(id, "cardano");
     assertStringsEqual(name, "Cardano");
 }

@@ -7,6 +7,7 @@
 #include "StoredKey.h"
 
 #include "Coin.h"
+#include "HexCoding.h"
 #include "Mnemonic.h"
 #include "PrivateKey.h"
 
@@ -66,8 +67,10 @@ StoredKey StoredKey::createWithPrivateKeyAddDefaultAddress(const std::string& na
 
     StoredKey key = createWithPrivateKey(name, password, privateKeyData);
     const auto derivationPath = TW::derivationPath(coin);
+    const auto pubKeyType = TW::publicKeyType(coin);
+    const auto pubKey = PrivateKey(privateKeyData).getPublicKey(pubKeyType);
     const auto address = TW::deriveAddress(coin, PrivateKey(privateKeyData));
-    key.accounts.emplace_back(address, coin, TWDerivationDefault, derivationPath);
+    key.accounts.emplace_back(address, coin, TWDerivationDefault, derivationPath, hex(pubKey.bytes), "");
     return key;
 }
 
@@ -167,8 +170,10 @@ std::optional<const Account> StoredKey::account(TWCoinType coin, const HDWallet*
     const auto address = wallet->deriveAddress(coin);
     const auto version = TW::xpubVersion(coin);
     const auto extendedPublicKey = wallet->getExtendedPublicKey(derivationPath.purpose(), coin, version);
+    const auto pubKeyType = TW::publicKeyType(coin);
+    const auto pubKey = wallet->getKey(coin, derivationPath).getPublicKey(pubKeyType);
 
-    addAccount(address, coin, TWDerivationDefault, derivationPath, extendedPublicKey);
+    addAccount(address, coin, TWDerivationDefault, derivationPath, hex(pubKey.bytes), extendedPublicKey);
     return accounts.back();
 }
 
@@ -183,8 +188,10 @@ Account StoredKey::account(TWCoinType coin, TWDerivation derivation, const HDWal
     const auto address = wallet.deriveAddress(coin, derivation);
     const auto version = TW::xpubVersion(coin);
     const auto extendedPublicKey = wallet.getExtendedPublicKey(derivationPath.purpose(), coin, version);
+    const auto pubKeyType = TW::publicKeyType(coin);
+    const auto pubKey = wallet.getKey(coin, derivationPath).getPublicKey(pubKeyType);
 
-    addAccount(address, coin, derivation, derivationPath, extendedPublicKey);
+    addAccount(address, coin, derivation, derivationPath, hex(pubKey.bytes), extendedPublicKey);
     return accounts.back();
 }
 
@@ -201,12 +208,19 @@ std::optional<const Account> StoredKey::account(TWCoinType coin, TWDerivation de
     return std::nullopt;
 }
 
-void StoredKey::addAccount(const std::string& address, TWCoinType coin, TWDerivation derivation, const DerivationPath& derivationPath, const std::string& extetndedPublicKey) {
+void StoredKey::addAccount(
+    const std::string& address,
+    TWCoinType coin,
+    TWDerivation derivation,
+    const DerivationPath& derivationPath,
+    const std::string& publicKey,
+    const std::string& extendedPublicKey
+) {
     if (getAccount(coin, address).has_value()) {
         // address already present
         return;
     }
-    accounts.emplace_back(address, coin, derivation, derivationPath, extetndedPublicKey);
+    accounts.emplace_back(address, coin, derivation, derivationPath, publicKey, extendedPublicKey);
 }
 
 void StoredKey::removeAccount(TWCoinType coin) {
@@ -236,12 +250,17 @@ void StoredKey::fixAddresses(const Data& password) {
         case StoredKeyType::mnemonicPhrase: {
                 const auto wallet = this->wallet(password);
                 for (auto& account : accounts) {
-                    if (!account.address.empty() && TW::validateAddress(account.coin, account.address)) {
+                    if (!account.address.empty() && 
+                        !account.publicKey.empty() &&
+                        TW::validateAddress(account.coin, account.address)
+                    ) {
                         continue;
                     }
                     const auto& derivationPath = account.derivationPath;
                     const auto key = wallet.getKey(account.coin, derivationPath);
-                    account.address = TW::deriveAddress(account.coin, key);
+                    const auto pubKey = key.getPublicKey(TW::publicKeyType(account.coin));
+                    account.address = TW::deriveAddress(account.coin, pubKey);
+                    account.publicKey = hex(pubKey.bytes);
                 }
             }
             break;
@@ -249,10 +268,14 @@ void StoredKey::fixAddresses(const Data& password) {
         case StoredKeyType::privateKey: {
                 auto key = PrivateKey(payload.decrypt(password));
                 for (auto& account : accounts) {
-                    if (!account.address.empty() && TW::validateAddress(account.coin, account.address)) {
+                    if (!account.address.empty() &&
+                        !account.publicKey.empty() &&
+                         TW::validateAddress(account.coin, account.address)) {
                         continue;
                     }
-                    account.address = TW::deriveAddress(account.coin, key);
+                    const auto pubKey = key.getPublicKey(TW::publicKeyType(account.coin));
+                    account.address = TW::deriveAddress(account.coin, pubKey);
+                    account.publicKey = hex(pubKey.bytes);
                 }
             }
             break;
@@ -328,7 +351,7 @@ void StoredKey::loadJson(const nlohmann::json& json) {
             coin = json[CodingKeys::coin].get<TWCoinType>();
         }
         auto address = json[CodingKeys::address].get<std::string>();
-        accounts.emplace_back(address, coin, TWDerivationDefault, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(coin), 0, 0, 0));
+        accounts.emplace_back(address, coin, TWDerivationDefault, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(coin), 0, 0, 0), "", "");
     }
 }
 

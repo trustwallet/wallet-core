@@ -47,7 +47,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     let expectedResult = "0x3E6FFC80745E6669135a76F4A7ce6BCF02436e04"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .cardano:
-                    let expectedResult = "addr1snpa4z7ntyfszv7ckquprdw75w4qjqh0qmya9jtkpxxlzxghlqyvv7l0yjamh8fxraw06p3ua8sj2g2gv98v4849s43t9g2999kquuu5egnprk"
+                    let expectedResult = "addr1qyr8jjfnypp95eq74aqzn7ss687ehxclgj7mu6gratmg3mul2040vt35dypp042awzsjk5xm3zr3zm5qh7454uwdv08s84ray2"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .cosmos:
                     let expectedResult = "cosmos142j9u5eaduzd7faumygud6ruhdwme98qsy2ekn"
@@ -79,9 +79,14 @@ class CoinAddressDerivationTests: XCTestCase {
                      .avalancheCChain,
                      .xdai,
                      .fantom,
-                     .ronin,
-                     .celo:
+                     .celo,
+                     .cronosChain,
+                     .smartBitcoinCash,
+                     .kuCoinCommunityChain:
                     let expectedResult = "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .ronin:
+                    let expectedResult = "ronin:8f348f300873fd5da36950b2ac75a26584584fee"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ethereumClassic:
                     let expectedResult = "0x078bA3228F3E6C08bEEac9A005de0b7e7089aD1c"
@@ -197,7 +202,7 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .zcash:
                     let expectedResult = "t1YYnByMzdGhQv3W3rnjHMrJs6HH4Y231gy"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .zcoin:
+                case .firo:
                     let expectedResult = "aEd5XFChyXobvEics2ppAqgK3Bgusjxtik"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .zelcash:

@@ -7,6 +7,7 @@
 #include "TransactionBuilder.h"
 #include "Script.h"
 #include "TransactionSigner.h"
+#include "SignatureBuilder.h"
 
 #include "../Coin.h"
 #include "../proto/Bitcoin.pb.h"
@@ -48,7 +49,7 @@ int64_t estimateSegwitFee(const FeeCalculator& feeCalculator, const TransactionP
     auto inputWithPlan = std::move(input);
     inputWithPlan.plan = plan;
 
-    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(inputWithPlan, true);
+    auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(inputWithPlan, SigningMode_SizeEstimationOnly);
     if (!result) {
         // signing failed; return default simple estimate
         return estimateSimpleFee(feeCalculator, plan, outputSize, input.byteFee);

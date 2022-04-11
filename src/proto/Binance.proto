@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.Binance.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 message Transaction {
     // int64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
     // 0xF0625DEE                  // prefix
@@ -220,4 +222,10 @@ message SigningInput {
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
+
+    /// error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    /// error description
+    string error_message = 3;
 }

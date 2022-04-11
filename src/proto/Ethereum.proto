@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.Ethereum.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // Transaction (transfer, smart contract call, ...)
 message Transaction {
     // Native coin transfer transaction
@@ -127,4 +129,10 @@ message SigningOutput {
 
     // The payload part, supplied in the input or assembled from input parameters
     bytes data = 5;
+
+    /// error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 6;
+
+    /// error code description
+    string error_message = 7;
 }

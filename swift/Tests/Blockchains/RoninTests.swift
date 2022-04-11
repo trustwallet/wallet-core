@@ -22,11 +22,11 @@ class RoninTests: XCTestCase {
             $0.nonce = Data(hexString: "0x02")!
             $0.gasPrice = Data()
             $0.gasLimit = Data(hexString: "0xca98")! // 51,864
-            $0.toAddress = "0x97a9107c1793bc407d6f527b77e7fff4d812bece" // AXS
+            $0.toAddress = "ronin:97a9107c1793bc407d6f527b77e7fff4d812bece" // AXS
             $0.privateKey = keyData
             $0.transaction = EthereumTransaction.with {
                 $0.erc20Transfer = EthereumTransaction.ERC20Transfer.with {
-                    $0.to = "0x47331175b23C2f067204B506CA1501c26731C990"
+                    $0.to = "ronin:47331175b23c2f067204b506ca1501c26731c990"
                     $0.amount = Data(hexString: "0x016345785d8a0000")! // 0.1 AXS
                 }
             }

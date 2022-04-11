@@ -62,8 +62,6 @@ TWData* _Nonnull TWEthereumAbiEncodeTyped(TWString* _Nonnull messageJson) {
     Data data;
     try {
         data = ParamStruct::hashStructJson(TWStringUTF8Bytes(messageJson));
-    } catch (...) {
-        // return empty
-    }
+    } catch (...) {} // return empty
     return TWDataCreateWithBytes(data.data(), data.size());
 }
