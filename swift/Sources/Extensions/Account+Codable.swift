@@ -42,7 +42,7 @@ extension Account: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(coin.rawValue, forKey: .coin)
         try container.encode(address, forKey: .address)
-        try container.encode(derivation, forKey: .derivation)
+        try container.encode(derivation.rawValue, forKey: .derivation)
         try container.encode(derivationPath, forKey: .derivationPath)
         try container.encode(publicKey, forKey: .publicKey)
         try container.encode(extendedPublicKey, forKey: .extendedPublicKey)
@@ -52,7 +52,7 @@ extension Account: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let rawCoin           = try container.decode(UInt32.self, forKey: .coin)
         let address           = try container.decode(String.self, forKey: .address)
-        let derivation        = try container.decode(UInt32.self, forKey: .derivation)
+        let rawDerivation     = try container.decode(UInt32.self, forKey: .derivation)
         let derivationPath    = try container.decode(String.self, forKey: .derivationPath)
         let publicKey         = try container.decode(String.self, forKey: .publicKey)
         let extendedPublicKey = try container.decode(String.self, forKey: .extendedPublicKey)
@@ -60,7 +60,7 @@ extension Account: Codable {
         self.init(
             address: address,
             coin: CoinType(rawValue: rawCoin)!,
-            derivation: derivation,
+            derivation: Derivation(rawValue: rawDerivation)!,
             derivationPath: derivationPath,
             publicKey: publicKey,
             extendedPublicKey: extendedPublicKey
