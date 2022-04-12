@@ -27,6 +27,9 @@ TW_EXPORT_PROPERTY
 TWString *_Nonnull TWAccountAddress(struct TWAccount *_Nonnull account);
 
 TW_EXPORT_PROPERTY
+enum TWDerivation TWAccountDerivation(struct TWAccount *_Nonnull account);
+
+TW_EXPORT_PROPERTY
 TWString *_Nonnull TWAccountDerivationPath(struct TWAccount *_Nonnull account);
 
 TW_EXPORT_PROPERTY

@@ -33,6 +33,10 @@ TWString* _Nonnull TWAccountAddress(struct TWAccount* _Nonnull account) {
     return TWStringCreateWithUTF8Bytes(account->impl.address.c_str());
 }
 
+enum TWDerivation TWAccountDerivation(struct TWAccount* _Nonnull account) {
+    return account->impl.derivation;
+}
+
 TWString* _Nonnull TWAccountDerivationPath(struct TWAccount* _Nonnull account) {
     return TWStringCreateWithUTF8Bytes(account->impl.derivationPath.string().c_str());
 }

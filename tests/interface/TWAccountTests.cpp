@@ -30,6 +30,7 @@ TEST(TWAccount, Create) {
 
     assertStringsEqual(WRAPS(TWAccountAddress(account.get())), addressAdd);
     EXPECT_EQ(coin, TWAccountCoin(account.get()));
+    EXPECT_EQ(TWAccountDerivation(account.get()), TWDerivationDefault);
     assertStringsEqual(WRAPS(TWAccountDerivationPath(account.get())), derivationPath);
     assertStringsEqual(WRAPS(TWAccountExtendedPublicKey(account.get())), extPubKeyAdd);
     assertStringsEqual(WRAPS(TWAccountPublicKey(account.get())), pubKey);
