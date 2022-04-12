@@ -8,10 +8,13 @@ import "mocha";
 import { expect } from "chai";
 import * as WalletCore from "../dist/wallet-core";
 
-describe("Wallet Core HDWallet tests", () => {
-  it("test Ethereum address", () => {
-    var wallet = new WalletCore.HDWallet("ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal", "TREZOR", true);
-    var address = wallet.deriveAddress(WalletCore.TWCoinType.TWCoinTypeEthereum);
+describe("HDWallet", () => {
+
+  it("test deriving Ethereum address", () => {
+    var { HDWallet, CoinType } = WalletCore;
+
+    var wallet = new HDWallet("ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal", "TREZOR", true);
+    var address = wallet.deriveAddress(CoinType.Ethereum);
 
     expect(address).to.equal(
         "0x27Ef5cDBe01777D62438AfFeb695e33fC2335979"

@@ -9,7 +9,7 @@ import { expect } from "chai";
 import { Buffer } from "buffer";
 import { TW } from "../dist";
 
-describe("Wallet Core protobuf model tests", () => {
+describe("Protobuf model", () => {
   it("test Ethereum encoding SigningInput", () => {
     const input = TW.Ethereum.Proto.SigningInput.create({
       toAddress: "0x3535353535353535353535353535353535353535",
@@ -34,8 +34,8 @@ describe("Wallet Core protobuf model tests", () => {
     );
   });
 
-  it("test Bitcoin / Bitcoin SigningInput", () => {
+  it("test Bitcoin SigningInput / SigningOutput", () => {
     expect(TW.Bitcoin.Proto.SigningInput).not.null;
-    expect(TW.Binance.Proto.SigningInput).not.null;
+    expect(TW.Binance.Proto.SigningOutput).not.null;
   });
 });

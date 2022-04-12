@@ -4,8 +4,8 @@
 # terms governing use, modification, and redistribution, is contained in the
 # file LICENSE at the root of the source code distribution tree.
 
-file(GLOB wasm_sources *.cpp)
-file(GLOB wasm_headers *.h)
+file(GLOB wasm_sources src/*.cpp)
+file(GLOB wasm_headers src/*.h)
 set(TARGET_NAME wallet-core)
 set(CMAKE_EXECUTABLE_SUFFIX ".js")
 add_executable(${TARGET_NAME} ${wasm_sources} ${wasm_headers})

@@ -7,23 +7,16 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-#include "Data.h"
+#include <TrustWalletCore/TWPurpose.h>
+
 #include <emscripten/bind.h>
 
 using namespace emscripten;
-using namespace TW;
 
-Data gendata(const std::string& data) {
-    return TW::data(data);
-}
-
-std::string dataToStr(const Data& data) {
-    return std::string(data.begin(), data.end());
-}
-
-EMSCRIPTEN_BINDINGS(wallet_data_module) {
-    class_<Data>("Data");
-    function("gendata", &gendata);
-    function("strToData", &gendata);
-    function("dataToStr", &dataToStr);
+EMSCRIPTEN_BINDINGS(WASM_TWPurpose) {
+    enum_<TWPurpose>("Purpose")
+        .value("BIP44", TWPurpose::TWPurposeBIP44)
+        .value("BIP49", TWPurpose::TWPurposeBIP49)
+        .value("BIP84", TWPurpose::TWPurposeBIP84)
+        .value("BIP1852", TWPurpose::TWPurposeBIP1852);
 }
