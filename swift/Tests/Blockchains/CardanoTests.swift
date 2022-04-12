@@ -18,6 +18,14 @@ class CardanoTests: XCTestCase {
         XCTAssertEqual(address.description, addressFromString.description)
     }
 
+    func testDeriveAddressWallet() {
+        let wallet = HDWallet(mnemonic: "cost dash dress stove morning robust group affair stomach vacant route volume yellow salute laugh", passphrase: "")!
+        let privateKey = wallet.getKeyForCoin(coin: .cardano)
+        XCTAssertEqual(privateKey.data.hexString, "e8c8c5b2df13f3abed4e6b1609c808e08ff959d7e6fc3d849e3f2880550b574437aa559095324d78459b9bb2da069da32337e1cc5da78f48e1bd084670107f3110f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26fae0d152bb611cb9ff34e945e4ff627e6fba81da687a601a879759cd76530b5744424db69a75edd4780a5fbc05d1a3c84ac4166ff8e424808481dd8e77627ce5f5bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276")
+        let address = CoinType.cardano.deriveAddress(privateKey: privateKey)
+        XCTAssertEqual(address, "addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq")
+    }
+
     func testSignTransfer1() {
         var input = CardanoSigningInput.with {
             $0.transferMessage.toAddress = "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5"
