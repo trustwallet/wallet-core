@@ -10,7 +10,7 @@ extension Account: Equatable {
     public static func == (lhs: Account, rhs: Account) -> Bool {
         return lhs.coin == rhs.coin &&
         lhs.address == rhs.address &&
-        lhs.derivation = rhs.derivation &&
+        lhs.derivation == rhs.derivation &&
         lhs.derivationPath == rhs.derivationPath &&
         lhs.publicKey == rhs.publicKey &&
         lhs.extendedPublicKey == rhs.extendedPublicKey
