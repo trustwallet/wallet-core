@@ -52,7 +52,7 @@ extension Account: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let rawCoin           = try container.decode(UInt32.self, forKey: .coin)
         let address           = try container.decode(String.self, forKey: .address)
-        let derivation        = try container.decode(String.self, forKey: .derivation)
+        let derivation        = try container.decode(UInt32.self, forKey: .derivation)
         let derivationPath    = try container.decode(String.self, forKey: .derivationPath)
         let publicKey         = try container.decode(String.self, forKey: .publicKey)
         let extendedPublicKey = try container.decode(String.self, forKey: .extendedPublicKey)

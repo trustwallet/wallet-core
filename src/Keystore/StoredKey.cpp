@@ -149,8 +149,13 @@ std::optional<Account> StoredKey::getAccount(TWCoinType coin, TWDerivation deriv
 }
 
 Account StoredKey::fillAddressIfMissing(Account& account, const HDWallet* wallet) const {
-    if (account.address.length() == 0 && wallet != nullptr) {
+    if (account.address.empty() && wallet != nullptr) {
         account.address = wallet->deriveAddress(account.coin, account.derivation);
+    }
+    if (account.publicKey.empty() && wallet != nullptr) {
+        const auto pubKeyType = TW::publicKeyType(account.coin);
+        const auto pubKey = wallet->getKey(account.coin, account.derivationPath).getPublicKey(pubKeyType);
+        account.publicKey = hex(pubKey.bytes);
     }
     return account;
 }
@@ -259,7 +264,7 @@ void StoredKey::fixAddresses(const Data& password) {
                     const auto& derivationPath = account.derivationPath;
                     const auto key = wallet.getKey(account.coin, derivationPath);
                     const auto pubKey = key.getPublicKey(TW::publicKeyType(account.coin));
-                    account.address = TW::deriveAddress(account.coin, pubKey);
+                    account.address = TW::deriveAddress(account.coin, pubKey, account.derivation);
                     account.publicKey = hex(pubKey.bytes);
                 }
             }
@@ -270,11 +275,12 @@ void StoredKey::fixAddresses(const Data& password) {
                 for (auto& account : accounts) {
                     if (!account.address.empty() &&
                         !account.publicKey.empty() &&
-                         TW::validateAddress(account.coin, account.address)) {
+                        TW::validateAddress(account.coin, account.address)
+                    ) {
                         continue;
                     }
                     const auto pubKey = key.getPublicKey(TW::publicKeyType(account.coin));
-                    account.address = TW::deriveAddress(account.coin, pubKey);
+                    account.address = TW::deriveAddress(account.coin, pubKey, account.derivation);
                     account.publicKey = hex(pubKey.bytes);
                 }
             }
