@@ -26,14 +26,12 @@ class PrivateKey {
     Data bytes;
 
     /// Optional members for extended keys and second extended keys
-    Data key() const { return getSubKey(0, 32); }
-    Data extension() const { return getSubKey(32, 32); }
-    Data chainCode() const { return getSubKey(2*32, 32); }
-    Data secondKey() const { return getSubKey(3*32, 32); }
-    Data secondExtension() const { return getSubKey(4*32, 32); }
-    Data secondChainCode() const { return getSubKey(5*32, 32); }
-    // safe subdata utility
-    Data getSubKey(size_t index, size_t size) const;
+    Data key() const { return subData(bytes, 0, 32); }
+    Data extension() const { return subData(bytes, 32, 32); }
+    Data chainCode() const { return subData(bytes, 2*32, 32); }
+    Data secondKey() const { return subData(bytes, 3*32, 32); }
+    Data secondExtension() const { return subData(bytes, 4*32, 32); }
+    Data secondChainCode() const { return subData(bytes, 5*32, 32); }
 
     /// Determines if a collection of bytes makes a valid private key.
     static bool isValid(const Data& data);

@@ -24,12 +24,6 @@
 using namespace TW;
 
 
-Data PrivateKey::getSubKey(size_t index, size_t size) const {
-    index = std::min(index, bytes.size() - 1);
-    size = std::min(size, bytes.size() - index);
-    return subData(bytes, index, size);
-}
-
 bool PrivateKey::isValid(const Data& data) {
     // Check length
     if (data.size() != size && data.size() != doubleExtendedSize) {
