@@ -13,9 +13,9 @@ namespace TW::Wasm {
 
 auto TWStringToStd(TWString *_Nonnull string) -> std::string {
     auto* s = reinterpret_cast<const std::string*>(string);
-    std::string result = *s;
-    TWStringDelete(string);
-    return result;
+    // std::string result = *s;
+    // TWStringDelete(string);
+    return *s;
 }
 
 } // namespace TW::Wasm

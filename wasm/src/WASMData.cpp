@@ -17,9 +17,9 @@ auto DataToVal(const Data& data) -> val {
 
 auto TWDataToVal(TWData *_Nonnull data) -> val {
     auto* v = reinterpret_cast<const Data*>(data);
-    Data result = Data(v->begin(), v->end());
-    TWDataDelete(data);
-    return DataToVal(result);
+    // Data result = Data(v->begin(), v->end());
+    // TWDataDelete(data);
+    return DataToVal(*v);
 }
 
 } // namespace TW::Wasm
