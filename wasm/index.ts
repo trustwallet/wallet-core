@@ -5,5 +5,5 @@
 // file LICENSE at the root of the source code distribution tree.
 
 import { TW } from "./generated/core_proto";
-
-export { TW };
+import * as WalletCore from "./lib/wallet-core";
+export { TW, WalletCore };

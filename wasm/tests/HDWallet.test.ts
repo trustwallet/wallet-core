@@ -6,7 +6,7 @@
 
 import "mocha";
 import { expect } from "chai";
-import * as WalletCore from "../dist/wallet-core";
+import { WalletCore } from "../dist";
 
 describe("HDWallet", () => {
 
@@ -19,5 +19,7 @@ describe("HDWallet", () => {
     expect(address).to.equal(
         "0x27Ef5cDBe01777D62438AfFeb695e33fC2335979"
       );
+
+    wallet.delete();
   });
 });

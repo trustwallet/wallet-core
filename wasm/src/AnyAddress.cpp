@@ -10,8 +10,8 @@
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <emscripten/bind.h>
 
-#include "TWData.h"
-#include "TWString.h"
+#include "WASMData.h"
+#include "WASMString.h"
 
 using namespace emscripten;
 
@@ -40,7 +40,7 @@ class AnyAddress {
     }
 
     auto data() {
-        return TWDataToStd(TWAnyAddressData(address));
+        return TWDataToVal(TWAnyAddressData(address));
     }
 
   protected:

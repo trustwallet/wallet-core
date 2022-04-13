@@ -46,6 +46,6 @@ jobs:
         CXX: /usr/bin/clang++
     - name: Test
       run: |
-        npm install && npm run build
-        npm run copy:wasm && npm run test
+        npm install && npm run copy:wasm 
+        npm run build && npm run test
       working-directory: wasm

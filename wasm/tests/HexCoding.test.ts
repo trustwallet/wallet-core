@@ -6,21 +6,19 @@
 
 import "mocha";
 import { expect } from "chai";
-import * as WalletCore from "../dist/wallet-core";
+import { WalletCore } from "../dist";
 
 describe("HexCoding", () => {
   it("test encoding / decoding hex string", () => {
     var { HexCoding } = WalletCore;
 
+    var expected = new Uint8Array([0x52, 0x8]);
     var decoded = HexCoding.decode("0x5208");
 
-    expect(decoded.get(0)).to.equal(0x52);
-    expect(decoded.get(1)).to.equal(0x08);
+    expect(decoded).to.eql(expected);
 
-    decoded.push_back(0x01);
-
-    var encoded = HexCoding.encode(decoded);
-    expect(encoded).to.equal("0x520801");
-
+    var encoded = HexCoding.encode(expected);
+    
+    expect(encoded).to.equal("0x5208");
   });
 });

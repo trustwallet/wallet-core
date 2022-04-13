@@ -7,7 +7,7 @@
 import "mocha";
 import { expect } from "chai";
 import { Buffer } from "buffer";
-import { TW } from "../dist";
+import { TW, WalletCore } from "../dist";
 
 describe("Protobuf model", () => {
   it("test Ethereum encoding SigningInput", () => {
@@ -31,6 +31,15 @@ describe("Protobuf model", () => {
     const encoded = TW.Ethereum.Proto.SigningInput.encode(input).finish();
     expect(Buffer.from(encoded).toString("hex")).to.equal(
       "0a0101120109220504a817c8002a025208422a3078333533353335333533353335333533353335333533353335333533353335333533353335333533354a204646464646464646464646464646464646464646464646464646464646464646520c0a0a0a080de0b6b3a7640000"
+    );
+
+    const outputData = WalletCore.AnySigner.sign(
+      encoded,
+      WalletCore.CoinType.Ethereum
+    );
+    const output = TW.Ethereum.Proto.SigningOutput.decode(outputData);
+    expect(Buffer.from(output.encoded).toString("hex")).to.equal(
+      "f86c098504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a028ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276a067cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d83"
     );
   });
 

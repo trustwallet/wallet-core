@@ -10,8 +10,8 @@
     "codegen:js": "pbjs -t static-module '../src/proto/*.proto' --no-delimited --force-long -o generated/core_proto.js",
     "codegen:ts": "pbts -o generated/core_proto.d.ts generated/core_proto.js",
     "clean": "rm -rf dist generated && mkdir -p dist/generated generated",
-    "build": "npm run clean && npm run generate && cp generated/core_proto.d.ts generated/core_proto.js dist/generated && tsc --skipLibCheck",
-    "copy:wasm": "cp ../wasm-build/wasm/wallet-core.* dist/"
+    "build": "npm run clean && npm run generate && cp -R generated lib dist && tsc --skipLibCheck",
+    "copy:wasm": "mkdir -p lib && cp ../wasm-build/wasm/wallet-core.* lib"
   },
   "author": "",
   "license": "MIT",

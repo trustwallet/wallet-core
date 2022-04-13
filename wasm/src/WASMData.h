@@ -8,15 +8,15 @@
 #pragma once
 
 #include <TrustWalletCore/TWData.h>
+#include <emscripten/val.h>
 #include "Data.h"
+
+using namespace emscripten;
 
 namespace TW::Wasm {
 
-auto TWDataToStd(TWData *_Nonnull data) -> Data {
-    auto* v = reinterpret_cast<const Data*>(data);
-    Data result = Data(v->begin(), v->end());
-    TWDataDelete(data);
-    return result;
-}
+auto DataToVal(const Data& data) -> val;
+
+auto TWDataToVal(TWData *_Nonnull data) -> val;
 
 } // namespace TW::Wasm
