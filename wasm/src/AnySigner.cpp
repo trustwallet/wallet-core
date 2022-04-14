@@ -18,20 +18,26 @@ namespace TW::Wasm {
 class AnySigner {
   public:
     static auto sign(const std::string& string, TWCoinType coin) {
-        auto in = TW::data(string);
         Data out;
-        TW::anyCoinSign(coin, in, out);
+        TW::anyCoinSign(coin, TW::data(string), out);
         return DataToVal(out);
     }
 
     static auto supportsJSON(TWCoinType coin) {
         return TW::supportsJSONSigning(coin);
     }
+
+    static auto plan(const std::string& string, TWCoinType coin) {
+        Data out;
+        TW::anyCoinPlan(coin, TW::data(string), out);
+        return DataToVal(out);
+    }
 };
 
 EMSCRIPTEN_BINDINGS(WASM_TWAnyAddress) {
     class_<AnySigner>("AnySigner")
         .class_function("sign", &AnySigner::sign)
+        .class_function("plan", &AnySigner::plan)
         .class_function("supportsJSON", &AnySigner::supportsJSON);
 }
 

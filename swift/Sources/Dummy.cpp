@@ -4,4 +4,4 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-// Dummy C++ file to foce inclusion of the C++ STL when compiling.
+// Dummy C++ file to force inclusion of the C++ STL when compiling.

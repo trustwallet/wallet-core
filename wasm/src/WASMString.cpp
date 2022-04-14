@@ -5,18 +5,18 @@
 // file LICENSE at the root of the source code distribution tree.
 //
 
-#pragma once
-
-#include <TrustWalletCore/TWData.h>
-#include <emscripten/val.h>
-
-#include "Data.h"
+#include "WASMString.h"
+#include "Defer.h"
 
 namespace TW::Wasm {
 
-auto DataToVal(Data data) -> emscripten::val;
-
-/// Converts a TWData * to Uint8Array, deleting the TWData * when done.
-auto TWDataToVal(TWData *_Nonnull data) -> emscripten::val;
+auto TWStringToStd(TWString *_Nonnull string) -> std::string {
+    defer {
+        TWStringDelete(string);
+    };
+    auto* s = reinterpret_cast<const std::string*>(string);
+    auto result = *s;
+    return result;
+}
 
 } // namespace TW::Wasm

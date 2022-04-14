@@ -8,14 +8,11 @@
 #pragma once
 
 #include <TrustWalletCore/TWString.h>
+#include <string>
 
 namespace TW::Wasm {
 
-auto TWStringToStd(TWString *_Nonnull string) -> std::string {
-    auto* s = reinterpret_cast<const std::string*>(string);
-    // std::string result = *s;
-    // TWStringDelete(string);
-    return *s;
-}
+/// Converts a TWString * to std::string, deleting the TWString * when done.
+auto TWStringToStd(TWString *_Nonnull string) -> std::string;
 
 } // namespace TW::Wasm
