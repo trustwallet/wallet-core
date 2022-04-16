@@ -35,7 +35,7 @@ describe("Protobuf model", () => {
 
     const outputData = WalletCore.AnySigner.sign(
       encoded,
-      WalletCore.CoinType.Ethereum
+      WalletCore.CoinType.ethereum
     );
     const output = TW.Ethereum.Proto.SigningOutput.decode(outputData);
     expect(Buffer.from(output.encoded).toString("hex")).to.equal(

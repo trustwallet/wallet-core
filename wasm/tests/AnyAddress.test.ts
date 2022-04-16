@@ -13,7 +13,7 @@ describe("AnyAddress", () => {
 
     var { AnyAddress, HexCoding, CoinType} = WalletCore;
 
-    var address = new AnyAddress.create("7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q", CoinType.Solana);
+    var address = new AnyAddress.createWithString("7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q", CoinType.solana);
 
     expect(address.coin().value).to.equal(501);
     expect(address.description()).to.equal("7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q");

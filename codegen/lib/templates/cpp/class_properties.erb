@@ -1,0 +1,22 @@
+<%  entity.static_methods.each do |method| -%>
+<%    next unless method.name.start_with?('Create') -%>
+auto WASM<%= entity.name %>::<%= WasmCppHelper.function_name(entity: entity, function: method) %>(<%= WasmCppHelper.parameters(method.parameters) %>) -> WASM<%= entity.name %>* {
+<%=     render('cpp/parameter_access.erb', { parameters: method.parameters }) -%>
+    TW<%= entity.name %> *instance = TW<%= entity.name %><%= method.name %>(<%= WasmCppHelper.arguments(method.parameters).join(', ') %>);
+<%      if method.return_type.is_nullable -%>
+    if (instance == nullptr) {
+        return nullptr;
+    }
+<%      end -%>
+    return new WASM<%= entity.name %>(instance);
+}
+
+<%  end -%>
+
+<%# Properties -%>
+<%- entity.properties.each do |property| -%>
+auto WASM<%= entity.name %>::<%= WasmCppHelper.format_name(property.name) %>() {
+<%=     render('cpp/method_forward.erb', { method: property }) -%>
+}
+
+<%- end -%>
