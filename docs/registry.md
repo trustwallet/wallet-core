@@ -44,6 +44,7 @@ This list is generated from [./registry.json](../registry.json)
 | 461     | Filecoin         | FIL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/filecoin/info/logo.png" width="32" />     | <https://filecoin.io/>        |
 | 474     | Oasis            | ROSE   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/oasis/info/logo.png" width="32" />        | <https://oasisprotocol.org/>  |
 | 483     | Bluzelle         | BLZ    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bluzelle/info/logo.png" width="32" />     | <https://bluzelle.com>        |
+| 486     | Platon           | LAT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/platon/info/logo.png" width="32" />       | <https://www.platon.network/en> |
 | 494     | BandChain        | BAND   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/band/info/logo.png" width="32" />         | <https://bandprotocol.com/>   |
 | 500     | Theta            | THETA  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/theta/info/logo.png" width="32" />        | <https://www.thetatoken.org>  |
 | 501     | Solana           | SOL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png" width="32" />       | <https://solana.com>          |
