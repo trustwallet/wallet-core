@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-package com.trustwallet.core.app.blockchains.<%= format_name_lowercase(coin) %>
+package com.trustwallet.core.app.blockchains.bitcoindiamond
 
 import com.trustwallet.core.app.utils.toHex
 import com.trustwallet.core.app.utils.toHexByteArray
@@ -12,7 +12,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.*
 
-class Test<%= name %>Address {
+class TestBitcoinDiamondAddress {
 
     init {
         System.loadLibrary("TrustWalletCore")
@@ -20,14 +20,12 @@ class Test<%= name %>Address {
 
     @Test
     fun testAddress() {
-        // TODO: Check and finalize implementation
+        val key = PrivateKey("d2b9f2846d3adcead910ee0124a3ba7ae29e8a4729787d27f9bea1f532928eee".toHexByteArray())
+        val pubkey = key.getPublicKeySecp256k1(true);
+        val address = AnyAddress(pubkey, CoinType.BITCOINDIAMOND)
+        val expected = AnyAddress("1G15VvshDxwFTnahZZECJfFwEkq9fP79o8", CoinType.BITCOINDIAMOND)
 
-        val key = PrivateKey("__PRIVATE_KEY_DATA__".toHexByteArray())
-        val pubkey = key.publicKeyEd25519
-        val address = AnyAddress(pubkey, CoinType.<%= format_name_uppercase(coin) %>)
-        val expected = AnyAddress("__EXPECTED_RESULT_ADDRESS__", CoinType.<%= format_name_uppercase(coin) %>)
-
-        assertEquals(pubkey.data().toHex(), "0x__EXPECTED_PUBKEY_DATA__")
+        assertEquals(pubkey.data().toHex(), "0x02485a209514cc896f8ed736e205bc4c35bd5299ef3f9e84054475336b964c02a3")
         assertEquals(address.description(), expected.description())
     }
 }

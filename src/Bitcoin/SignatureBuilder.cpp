@@ -15,6 +15,7 @@
 #include "../Hash.h"
 #include "../HexCoding.h"
 
+#include "../BitcoinDiamond/Transaction.h"
 #include "../Groestlcoin/Transaction.h"
 #include "../Zcash/Transaction.h"
 #include "../Zcash/TransactionBuilder.h"
@@ -346,5 +347,6 @@ Data SignatureBuilder<Transaction>::scriptForScriptHash(const Data& hash) const 
 
 // Explicitly instantiate a Signers for compatible transactions.
 template class Bitcoin::SignatureBuilder<Bitcoin::Transaction>;
+template class Bitcoin::SignatureBuilder<BitcoinDiamond::Transaction>;
 template class Bitcoin::SignatureBuilder<Zcash::Transaction>;
 template class Bitcoin::SignatureBuilder<Groestlcoin::Transaction>;

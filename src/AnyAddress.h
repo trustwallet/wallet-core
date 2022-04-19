@@ -85,6 +85,7 @@ class AnyAddress {
             return {data.begin() + 1, data.end()};
         }
 
+        case TWCoinTypeBitcoinDiamond:
         case TWCoinTypeDash:
         case TWCoinTypeDogecoin:
         case TWCoinTypeMonacoin:

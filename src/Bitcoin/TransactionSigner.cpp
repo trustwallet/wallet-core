@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,6 +8,8 @@
 
 #include "SignatureBuilder.h"
 
+#include "../BitcoinDiamond/Transaction.h"
+#include "../BitcoinDiamond/TransactionBuilder.h"
 #include "../Groestlcoin/Transaction.h"
 #include "../Zcash/Transaction.h"
 #include "../Zcash/TransactionBuilder.h"
@@ -57,3 +59,4 @@ Result<HashPubkeyList, Common::Proto::SigningError> TransactionSigner<Transactio
 template class Bitcoin::TransactionSigner<Bitcoin::Transaction, TransactionBuilder>;
 template class Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>;
 template class Bitcoin::TransactionSigner<Groestlcoin::Transaction, TransactionBuilder>;
+template class Bitcoin::TransactionSigner<BitcoinDiamond::Transaction, BitcoinDiamond::TransactionBuilder>;
