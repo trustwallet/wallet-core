@@ -1942,5 +1942,29 @@
       "rpc": "https://rpc-mainnet.kcc.network",
       "documentation": "https://docs.kcc.io/#/en-us/"
     }
+  },
+  {
+    "id": "boba",
+    "name": "Boba",
+    "coinId": 10000288,
+    "symbol": "BOBAETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://blockexplorer.boba.network",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x31533707c3feb3b10f7deeea387ff8893f229253e65ca6b14d2400bf95b5d103",
+      "sampleAccount": "0x4F96F50eDB37a19216d87693E5dB241e31bD3735"
+    },
+    "info": {
+      "url": "https://boba.network/",
+      "source": "https://github.com/bobanetwork/boba",
+      "rpc": "https://mainnet.boba.network",
+      "documentation": "https://docs.boba.network/"
+    }
   }
 ]
