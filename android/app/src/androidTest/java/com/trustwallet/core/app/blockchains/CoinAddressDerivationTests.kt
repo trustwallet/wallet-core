@@ -41,7 +41,7 @@ class CoinAddressDerivationTests {
         DASH -> assertEquals("XqHiz8EXYbTAtBEYs4pWTHh7ipEDQcNQeT", address)
         DIGIBYTE -> assertEquals("dgb1qtjgmerfqwdffyf8ghcrkgy52cghsqptynmyswu", address)
         ETHEREUM, SMARTCHAIN, POLYGON, OPTIMISM, ARBITRUM, ECOCHAIN, AVALANCHECCHAIN, XDAI,
-        FANTOM, CELO, CRONOSCHAIN, SMARTBITCOINCASH, KUCOINCOMMUNITYCHAIN -> assertEquals("0x8f348F300873Fd5DA36950B2aC75a26584584feE", address)
+        FANTOM, CELO, CRONOSCHAIN, SMARTBITCOINCASH, KUCOINCOMMUNITYCHAIN, BOBA -> assertEquals("0x8f348F300873Fd5DA36950B2aC75a26584584feE", address)
         RONIN -> assertEquals("ronin:8f348f300873fd5da36950b2ac75a26584584fee", address)
         ETHEREUMCLASSIC -> assertEquals("0x078bA3228F3E6C08bEEac9A005de0b7e7089aD1c", address)
         GOCHAIN -> assertEquals("0x5940ce4A14210d4Ccd0ac206CE92F21828016aC2", address)
