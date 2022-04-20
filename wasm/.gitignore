@@ -1,4 +1,4 @@
 dist/
-generated
+generated/
 lib/wallet-core.js
 lib/wallet-core.wasm

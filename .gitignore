@@ -30,7 +30,6 @@ jni/java/wallet/core/proto
 swift/Sources/Generated
 swift/wallet-core/
 src/Generated
-wasm/src/generated
 include/TrustWalletCore/TWHRP.h
 include/TrustWalletCore/TW*Proto.h
 
