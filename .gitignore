@@ -35,9 +35,7 @@ include/TrustWalletCore/TWHRP.h
 include/TrustWalletCore/TW*Proto.h
 
 # Wasm
-wasm/generated
 wasm-build/
-dist/
 
 # Code coverage files
 coverage.info

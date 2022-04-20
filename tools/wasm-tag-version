@@ -1,0 +1,10 @@
+#!/bin/bash
+
+base_dir=$(cd `dirname $0`; pwd)
+src_dir=${base_dir}/..
+package_json=${src_dir}/wasm/package.json
+latest_tag=`git describe --long --tags | cut -f 1 -d "-"`
+if [[ -n ${latest_tag} ]]; then
+    new_package_version=$(jq --arg tag "${latest_tag}" '.version = $tag' ${package_json})
+    echo ${new_package_version} | jq . > ${package_json}
+fi
