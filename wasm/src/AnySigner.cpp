@@ -8,7 +8,7 @@
 #include <TrustWalletCore/TWAnySigner.h>
 #include <emscripten/bind.h>
 
-#include "WASMData.h"
+#include "WasmData.h"
 #include "Coin.h"
 
 using namespace emscripten;
@@ -34,7 +34,7 @@ class AnySigner {
     }
 };
 
-EMSCRIPTEN_BINDINGS(WASM_TWAnyAddress) {
+EMSCRIPTEN_BINDINGS(Wasm_TWAnyAddress) {
     class_<AnySigner>("AnySigner")
         .class_function("sign", &AnySigner::sign)
         .class_function("plan", &AnySigner::plan)

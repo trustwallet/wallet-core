@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 //
 
-#include "WASMData.h"
+#include "WasmData.h"
 #include "Defer.h"
 
 using namespace emscripten;

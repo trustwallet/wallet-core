@@ -7,7 +7,7 @@
 
 #include <emscripten/bind.h>
 
-#include "WASMData.h"
+#include "WasmData.h"
 #include "HexCoding.h"
 
 using namespace emscripten;
@@ -26,7 +26,7 @@ class HexCoding {
     }
 };
 
-EMSCRIPTEN_BINDINGS(WASM_HexCoding) {
+EMSCRIPTEN_BINDINGS(Wasm_HexCoding) {
     class_<HexCoding>("HexCoding")
         .class_function("decode", &HexCoding::parseHex)
         .class_function("encode", &HexCoding::hexEncoded);

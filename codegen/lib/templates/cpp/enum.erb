@@ -15,7 +15,7 @@ auto <%= entity.name %>Description(TW<%= entity.name %> value) -> std::string {
 }
 
 <% end -%>
-EMSCRIPTEN_BINDINGS(WASM_TW<%= entity.name %>) {
+EMSCRIPTEN_BINDINGS(Wasm_TW<%= entity.name %>) {
     enum_<TW<%= entity.name %>>("<%= entity.name %>")
 <%# Cases -%>
 <%  entity.cases.each do |c| -%>

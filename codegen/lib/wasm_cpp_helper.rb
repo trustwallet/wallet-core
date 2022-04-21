@@ -13,7 +13,7 @@ module WasmCppHelper
     # Transforms a method/property name to a cpp function name
     
     def self.class_name(entity:)
-      "WASM" + entity.name
+      "Wasm" + entity.name
     end
 
     def self.function_name(entity:, function:)
@@ -98,7 +98,7 @@ module WasmCppHelper
         if t.is_enum
           "TW#{t.name}"
         elsif t.is_struct || t.is_class
-          "WASM#{t.name}*"
+          "Wasm#{t.name}*"
         else
           t.name
         end

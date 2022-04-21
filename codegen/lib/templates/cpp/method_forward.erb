@@ -20,9 +20,9 @@
   # Method returns a class or struct
   elsif method.return_type.is_class || method.return_type.is_struct
     if method.return_type.is_nullable -%>
-    return WASM<%= method.return_type.name %>(<%= call %>);
+    return Wasm<%= method.return_type.name %>(<%= call %>);
 <%  else -%>
-    return WASM<%= method.return_type.name %>(<%= call %>);
+    return Wasm<%= method.return_type.name %>(<%= call %>);
 <%  end
   else -%>
     return <%= call %>;

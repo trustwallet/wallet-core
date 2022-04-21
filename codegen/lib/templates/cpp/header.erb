@@ -1,18 +1,18 @@
 #include <string>
 
-#include "../WASMString.h"
-#include "../WASMData.h"
+#include "../WasmString.h"
+#include "../WasmData.h"
 
 namespace TW::Wasm {
 
-class WASM<%= entity.name %> {
+class <%= WasmCppHelper.class_name(entity: entity) %> {
 <% if not entity.is_struct -%>
   public:
     TW<%= entity.name %> *instance;
   public:
-    WASM<%= entity.name %>(TW<%= entity.name %> *instance) : instance(instance) {}
+    <%= WasmCppHelper.class_name(entity: entity) %>(TW<%= entity.name %> *instance) : instance(instance) {}
 <%  unless entity.methods.select{ |x| x.name == "Delete" }.empty? -%>
-    ~WASM<%= entity.name %>() {
+    ~<%= WasmCppHelper.class_name(entity: entity) %>() {
         TW<%= entity.name %>Delete(instance);
     }
 <%  end -%>
@@ -26,7 +26,7 @@ class WASM<%= entity.name %> {
 <%# Properties -%>
 <%  entity.static_methods.each do |method| -%>
 <%    next unless method.name.start_with?('Create') -%>
-    static auto <%= WasmCppHelper.function_name(entity: entity, function: method) %>(<%= WasmCppHelper.parameters(method.parameters) %>) -> WASM<%= entity.name %>*;
+    static auto <%= WasmCppHelper.function_name(entity: entity, function: method) %>(<%= WasmCppHelper.parameters(method.parameters) %>) -> <%= WasmCppHelper.class_name(entity: entity) %>*;
 <%  end -%>
 <%- entity.properties.each do |property| -%>
     auto <%= WasmCppHelper.format_name(property.name) %>();
