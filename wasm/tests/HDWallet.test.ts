@@ -5,20 +5,18 @@
 // file LICENSE at the root of the source code distribution tree.
 
 import "mocha";
-import { expect } from "chai";
+import { assert } from "chai";
 import { WalletCore } from "../dist";
 
 describe("HDWallet", () => {
 
   it("test deriving Ethereum address", () => {
-    var { HDWallet, CoinType } = WalletCore;
+    const { HDWallet, CoinType } = WalletCore;
 
     var wallet = new HDWallet.createWithMnemonic("ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal", "TREZOR");
-    var address = wallet.getAddressForCoin(CoinType.ethereum);
+    const address = wallet.getAddressForCoin(CoinType.ethereum);
 
-    expect(address).to.equal(
-        "0x27Ef5cDBe01777D62438AfFeb695e33fC2335979"
-      );
+    assert.equal(address, "0x27Ef5cDBe01777D62438AfFeb695e33fC2335979");
 
     wallet.delete();
   });

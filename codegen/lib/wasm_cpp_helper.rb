@@ -6,8 +6,7 @@ module WasmCppHelper
       result = name
       match = /^([A-Z]+)/.match(name)
       result = name.sub(match[1], match[1].downcase) unless match.nil?
-  
-      result.sub(/_/, '')
+      result
     end
   
     # Transforms a method/property name to a cpp function name

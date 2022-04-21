@@ -5,20 +5,20 @@
 // file LICENSE at the root of the source code distribution tree.
 
 import "mocha";
-import { expect } from "chai";
+import { assert } from "chai";
 import { WalletCore } from "../dist";
 
 describe("HexCoding", () => {
   it("test encoding / decoding hex string", () => {
-    var { HexCoding } = WalletCore;
+    const { HexCoding } = WalletCore;
 
-    var expected = new Uint8Array([0x52, 0x8]);
-    var decoded = HexCoding.decode("0x5208");
+    const expected = new Uint8Array([0x52, 0x8]);
+    const decoded = HexCoding.decode("0x5208");
 
-    expect(decoded).to.eql(expected);
+    assert.deepEqual(decoded, expected);
 
-    var encoded = HexCoding.encode(expected);
-    
-    expect(encoded).to.equal("0x5208");
+    const encoded = HexCoding.encode(expected);
+
+    assert.equal(encoded, "0x5208");
   });
 });

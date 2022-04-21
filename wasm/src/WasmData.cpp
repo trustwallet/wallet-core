@@ -13,15 +13,17 @@ using namespace emscripten;
 namespace TW::Wasm {
 
 auto DataToVal(Data data) -> val {
-    return val(typed_memory_view(data.size(), data.data()));
+    auto view = val(typed_memory_view(data.size(), data.data()));
+    auto jsArray = val::global("Uint8Array").new_(data.size());
+    jsArray.call<void>("set", view);
+    return jsArray;
 }
 
-auto TWDataToVal(TWData *_Nonnull data) -> val {
+auto TWDataToVal(TWData* _Nonnull data) -> val {
     defer {
         TWDataDelete(data);
     };
     auto* v = reinterpret_cast<const Data*>(data);
-    Data result = *v;
     return DataToVal(*v);
 }
 

@@ -5,12 +5,12 @@
 // file LICENSE at the root of the source code distribution tree.
 
 import "mocha";
-import { expect } from "chai";
-import { TW, WalletCore } from "../dist";
+import { assert } from "chai";
+import { TW, WalletCore } from "../../dist";
 
 describe("Bitcoin", () => {
   it("test Bitcoin SigningInput / SigningOutput", () => {
-    expect(TW.Bitcoin.Proto.SigningInput).not.null;
-    expect(TW.Binance.Proto.SigningOutput).not.null;
+    assert.isNotNull(TW.Bitcoin.Proto.SigningInput);
+    assert.isNotNull(TW.Binance.Proto.SigningOutput);
   });
 });

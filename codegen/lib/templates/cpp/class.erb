@@ -24,7 +24,7 @@ EMSCRIPTEN_BINDINGS(Wasm_TW<%= entity.name %>) {
 <%  end -%>
 <%- entity.properties.each do |property| -%>
 <%  function_name = WasmCppHelper.format_name(property.name) -%>
-          .function("<%= function_name %>", &<%= WasmCppHelper.class_name(entity: entity) %>::<%= function_name %>)
+          .function("<%= function_name %>", &<%= WasmCppHelper.class_name(entity: entity) %>::<%= function_name %>, allow_raw_pointers())
 <%- end -%>
 <% entity.methods.each do |method| -%>
 <%  next if method.name == "Delete" -%>
