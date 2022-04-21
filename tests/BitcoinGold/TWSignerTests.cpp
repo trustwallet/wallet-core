@@ -64,7 +64,7 @@ TEST(TWBitcoinGoldSigner, SignTransaction) {
     Proto::TransactionPlan plan;
     {
         // try plan first
-        ANY_PLAN(input, plan, TWCoinTypeGroestlcoin);
+        ANY_PLAN(input, plan, TWCoinTypeBitcoinGold);
         EXPECT_TRUE(verifyPlan(plan, {99'000}, amount, 141));
     }
 
