@@ -1990,5 +1990,29 @@
       "rpc": "https://andromeda.metis.io/?owner=1088",
       "documentation": "https://docs.metis.io/"
     }
+  },
+  {
+    "id": "aurora",
+    "name": "Aurora",
+    "coinId": 1323161554,
+    "symbol": "AURORAETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://explorer.mainnet.aurora.dev",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x99deebdb70f8027037abb3d3d0f3c7523daee857d85e9056d2671593ff2f2f28",
+      "sampleAccount": "0x8707cdE20dd43E3dB1F74c28fcd509ef38B0bA51"
+    },
+    "info": {
+      "url": "https://aurora.dev/",
+      "source": "https://github.com/aurora-is-near/aurora-engine",
+      "rpc": "https://mainnet.aurora.dev/",
+      "documentation": "https://doc.aurora.dev/"
+    }
   }
 ]
