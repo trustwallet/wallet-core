@@ -1966,5 +1966,29 @@
       "rpc": "https://mainnet.boba.network",
       "documentation": "https://docs.boba.network/"
     }
+  },
+  {
+    "id": "metis",
+    "name": "Metis",
+    "coinId": 10001088,
+    "symbol": "METIS",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://andromeda-explorer.metis.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x422f2ebbede32d4434ad0cf0ae55d44a84e14d3d5725a760133255b42676d8ce",
+      "sampleAccount": "0xBe9E8Ec25866B21bA34e97b9393BCabBcB4A5C86"
+    },
+    "info": {
+      "url": "https://www.metis.io/",
+      "source": "https://github.com/MetisProtocol/mvm",
+      "rpc": "https://andromeda.metis.io/?owner=1088",
+      "documentation": "https://docs.metis.io/"
+    }
   }
 ]

@@ -36,6 +36,7 @@ enum TWEthereumChainID {
     TWEthereumChainIDSmartBitcoinCash = 10000,
     TWEthereumChainIDKuCoinCommunityChain = 321,
     TWEthereumChainIDBoba = 288,
+    TWEthereumChainIDMetis = 1088,
 };
 
 TW_EXTERN_C_END
