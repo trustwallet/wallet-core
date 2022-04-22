@@ -130,7 +130,8 @@ class AnyAddress {
         case TWCoinTypeSmartBitcoinCash:
         case TWCoinTypeKuCoinCommunityChain:
         case TWCoinTypePlaton:
-        case TWCoinTypeBoba: {
+        case TWCoinTypeBoba:
+        case TWCoinTypeMetis: {
             const auto addr = Ethereum::Address(string);
             return {addr.bytes.begin(), addr.bytes.end()};
         }
