@@ -7,8 +7,21 @@
 import "mocha";
 import { assert } from "chai";
 import { WalletCore } from "../dist";
+import { Buffer } from "buffer";
 
 describe("HDWallet", () => {
+
+  it("test creating 24 words", () => {
+    const { HDWallet, Mnemonic } = WalletCore;
+    
+    var wallet = new HDWallet.create(256, Buffer.from("password"));
+    const mnemonic = wallet.mnemonic();
+
+    assert.equal(mnemonic.split(" ").length, 24);
+    assert.isTrue(Mnemonic.isValid(mnemonic));
+
+    wallet.delete();
+  });
 
   it("test deriving Ethereum address", () => {
     const { HDWallet, CoinType } = WalletCore;

@@ -19,4 +19,4 @@ set_target_properties(${TARGET_NAME}
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON
 )
-set_target_properties(${TARGET_NAME} PROPERTIES COMPILE_FLAGS "-s USE_BOOST_HEADERS=1" LINK_FLAGS "--bind --no-entry -s ALLOW_MEMORY_GROWTH=1")
+set_target_properties(${TARGET_NAME} PROPERTIES COMPILE_FLAGS "-s USE_BOOST_HEADERS=1" LINK_FLAGS "--bind --no-entry --closure=1 -s ALLOW_MEMORY_GROWTH=1")
