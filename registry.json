@@ -9,11 +9,15 @@
     "derivation": [
       {
         "name": "segwit",
-        "path": "m/84'/0'/0'/0/0"
+        "path": "m/84'/0'/0'/0/0",
+        "xpub": "zpub",
+        "xprv": "zprv"
       },
       {
         "name": "legacy",
-        "path": "m/44'/0'/0'/0/0"
+        "path": "m/44'/0'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
       }
     ],
     "curve": "secp256k1",
@@ -23,8 +27,6 @@
     "hrp": "bc",
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
-    "xpub": "zpub",
-    "xprv": "zprv",
     "explorer": {
       "url": "https://blockchair.com",
       "txPath": "/bitcoin/transaction/",
@@ -48,11 +50,15 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "path": "m/84'/2'/0'/0/0"
+        "path": "m/84'/2'/0'/0/0",
+        "xpub": "zpub",
+        "xprv": "zprv"
       },
       {
         "name": "legacy",
-        "path": "m/44'/2'/0'/0/0"
+        "path": "m/44'/2'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
       }
     ],
     "curve": "secp256k1",
@@ -62,8 +68,6 @@
     "hrp": "ltc",
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
-    "xpub": "zpub",
-    "xprv": "zprv",
     "explorer": {
       "url": "https://blockchair.com",
       "txPath": "/litecoin/transaction/",
@@ -85,7 +89,9 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "path": "m/44'/3'/0'/0/0"
+        "path": "m/44'/3'/0'/0/0",
+        "xpub": "dgub",
+        "xprv": "dgpv"
       }
     ],
     "curve": "secp256k1",
@@ -94,8 +100,6 @@
     "p2shPrefix": 22,
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
-    "xpub": "dgub",
-    "xprv": "dgpv",
     "explorer": {
       "url": "https://blockchair.com",
       "txPath": "/dogecoin/transaction/",
@@ -117,7 +121,9 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "path": "m/44'/5'/0'/0/0"
+        "path": "m/44'/5'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
       }
     ],
     "curve": "secp256k1",
@@ -126,8 +132,6 @@
     "p2shPrefix": 16,
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
-    "xpub": "xpub",
-    "xprv": "xprv",
     "explorer": {
       "url": "https://blockchair.com",
       "txPath": "/dash/transaction/",
@@ -149,7 +153,9 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "path": "m/84'/14'/0'/0/0"
+        "path": "m/84'/14'/0'/0/0",
+        "xpub": "zpub",
+        "xprv": "zprv"
       }
     ],
     "curve": "secp256k1",
@@ -159,8 +165,6 @@
     "hrp": "via",
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
-    "xpub": "zpub",
-    "xprv": "zprv",
     "explorer": {
       "url": "https://explorer.viacoin.org",
       "txPath": "/tx/",
@@ -182,7 +186,9 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "path": "m/84'/17'/0'/0/0"
+        "path": "m/84'/17'/0'/0/0",
+        "xpub": "zpub",
+        "xprv": "zprv"
       }
     ],
     "curve": "secp256k1",
@@ -192,8 +198,6 @@
     "hrp": "grs",
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "groestl512d",
-    "xpub": "zpub",
-    "xprv": "zprv",
     "explorer": {
       "url": "https://blockchair.com",
       "txPath": "/groestlcoin/transaction/",
@@ -215,7 +219,9 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "path": "m/84'/20'/0'/0/0"
+        "path": "m/84'/20'/0'/0/0",
+        "xpub": "zpub",
+        "xprv": "zprv"
       }
     ],
     "curve": "secp256k1",
@@ -225,8 +231,6 @@
     "hrp": "dgb",
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
-    "xpub": "zpub",
-    "xprv": "zprv",
     "explorer": {
       "url": "https://digiexplorer.info",
       "txPath": "/tx/",
@@ -248,7 +252,9 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "path": "m/44'/22'/0'/0/0"
+        "path": "m/44'/22'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
       }
     ],
     "curve": "secp256k1",
@@ -258,8 +264,6 @@
     "hrp": "mona",
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
-    "xpub": "xpub",
-    "xprv": "xprv",
     "explorer": {
       "url": "https://blockbook.electrum-mona.org",
       "txPath": "/tx/",
@@ -281,7 +285,9 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "path": "m/44'/42'/0'/0/0"
+        "path": "m/44'/42'/0'/0/0",
+        "xpub": "dpub",
+        "xprv": "dprv"
       }
     ],
     "curve": "secp256k1",
@@ -291,8 +297,6 @@
     "p2shPrefix": 26,
     "publicKeyHasher": "blake256ripemd",
     "base58Hasher": "blake256d",
-    "xpub": "dpub",
-    "xprv": "dprv",
     "explorer": {
       "url": "https://dcrdata.decred.org",
       "txPath": "/tx/",
@@ -422,7 +426,9 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "path": "m/44'/133'/0'/0/0"
+        "path": "m/44'/133'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
       }
     ],
     "curve": "secp256k1",
@@ -432,8 +438,6 @@
     "p2shPrefix": 189,
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
-    "xpub": "xpub",
-    "xprv": "xprv",
     "explorer": {
       "url": "https://blockchair.com/zcash",
       "txPath": "/transaction/",
@@ -455,7 +459,9 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "path": "m/44'/136'/0'/0/0"
+        "path": "m/44'/136'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
       }
     ],
     "curve": "secp256k1",
@@ -464,8 +470,6 @@
     "p2shPrefix": 7,
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
-    "xpub": "xpub",
-    "xprv": "xprv",
     "explorer": {
       "url": "https://explorer.firo.org",
       "txPath": "/tx/",
@@ -515,7 +519,9 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "path": "m/44'/145'/0'/0/0"
+        "path": "m/44'/145'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
       }
     ],
     "curve": "secp256k1",
@@ -525,8 +531,6 @@
     "hrp": "bitcoincash",
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
-    "xpub": "xpub",
-    "xprv": "xprv",
     "explorer": {
       "url": "https://blockchair.com",
       "txPath": "/bitcoin-cash/transaction/",
@@ -574,7 +578,9 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "path": "m/84'/156'/0'/0/0"
+        "path": "m/84'/156'/0'/0/0",
+        "xpub": "zpub",
+        "xprv": "zprv"
       }
     ],
     "curve": "secp256k1",
@@ -584,8 +590,6 @@
     "hrp": "btg",
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
-    "xpub": "zpub",
-    "xprv": "zprv",
     "explorer": {
       "url": "https://explorer.bitcoingold.org/insight",
       "txPath": "/tx/",
@@ -636,7 +640,9 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "path": "m/44'/175'/0'/0/0"
+        "path": "m/44'/175'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
       }
     ],
     "curve": "secp256k1",
@@ -645,8 +651,6 @@
     "p2shPrefix": 122,
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
-    "xpub": "xpub",
-    "xprv": "xprv",
     "explorer": {
       "url": "https://ravencoin.network",
       "txPath": "/tx/",
@@ -1566,7 +1570,9 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "path": "m/44'/2301'/0'/0/0"
+        "path": "m/44'/2301'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
       }
     ],
     "curve": "secp256k1",
@@ -1576,8 +1582,6 @@
     "hrp": "qc",
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
-    "xpub": "xpub",
-    "xprv": "xprv",
     "explorer": {
       "url": "https://qtum.info",
       "txPath": "/tx/",
@@ -1678,7 +1682,9 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "path": "m/44'/19167'/0'/0/0"
+        "path": "m/44'/19167'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
       }
     ],
     "curve": "secp256k1",
@@ -1688,8 +1694,6 @@
     "p2shPrefix": 189,
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
-    "xpub": "xpub",
-    "xprv": "xprv",
     "explorer": {
       "url": "https://explorer.runonflux.io",
       "txPath": "/tx/",
@@ -2166,7 +2170,9 @@
     "blockchain": "Bitcoin",
     "derivation": [
       {
-        "path": "m/44'/899'/0'/0/0"
+        "path": "m/44'/899'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
       }
     ],
     "curve": "secp256k1",
@@ -2176,8 +2182,6 @@
     "hrp": "ecash",
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
-    "xpub": "xpub",
-    "xprv": "xprv",
     "explorer": {
       "url": "https://explorer.bitcoinabc.org",
       "txPath": "/tx/",

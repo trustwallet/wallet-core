@@ -44,11 +44,17 @@ TWPurpose purpose(TWCoinType coin);
 /// Returns the curve that should be used for a coin type.
 TWCurve curve(TWCoinType coin);
 
-/// Returns the xpub HD version that should be used for a coin type.
+/// Returns the default xpub HD version that should be used for a coin type.
 TWHDVersion xpubVersion(TWCoinType coin);
 
-/// Returns the xprv HD version that should be used for a coin type.
+/// Returns the default xprv HD version that should be used for a coin type.
 TWHDVersion xprvVersion(TWCoinType coin);
+
+/// Returns the xpub HD version for a TWDerivation.
+TWHDVersion xpubVersionDerivation(TWCoinType coin, TWDerivation derivation);
+
+/// Returns the xprv HD version for a TWDerivation.
+TWHDVersion xprvVersionDerivation(TWCoinType coin, TWDerivation derivation);
 
 /// Returns the default derivation path for a particular coin.
 DerivationPath derivationPath(TWCoinType coin);
@@ -117,6 +123,8 @@ struct Derivation {
     TWDerivation name = TWDerivationDefault;
     const char* path = "";
     const char* nameString = "";
+    TWHDVersion xpubVersion = TWHDVersionNone;
+    TWHDVersion xprvVersion = TWHDVersionNone;
 };
 
 // Contains only simple types.
@@ -126,8 +134,6 @@ struct CoinInfo {
     TWBlockchain blockchain;
     TWPurpose purpose;
     TWCurve curve;
-    TWHDVersion xpubVersion;
-    TWHDVersion xprvVersion;
     std::vector<Derivation> derivation;
     TWPublicKeyType publicKeyType;
     byte staticPrefix;

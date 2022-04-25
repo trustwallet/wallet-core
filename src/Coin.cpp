@@ -308,11 +308,19 @@ TWCurve TW::curve(TWCoinType coin) {
 }
 
 TWHDVersion TW::xpubVersion(TWCoinType coin) {
-    return getCoinInfo(coin).xpubVersion;
+    return getCoinInfo(coin).defaultDerivation().xpubVersion;
 }
 
 TWHDVersion TW::xprvVersion(TWCoinType coin) {
-    return getCoinInfo(coin).xprvVersion;
+    return getCoinInfo(coin).defaultDerivation().xprvVersion;
+}
+
+TWHDVersion TW::xpubVersionDerivation(TWCoinType coin, TWDerivation derivation) {
+    return getCoinInfo(coin).derivationByName(derivation).xpubVersion;
+}
+
+TWHDVersion TW::xprvVersionDerivation(TWCoinType coin, TWDerivation derivation) {
+    return getCoinInfo(coin).derivationByName(derivation).xprvVersion;
 }
 
 DerivationPath TW::derivationPath(TWCoinType coin) {

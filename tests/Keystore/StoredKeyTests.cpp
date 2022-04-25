@@ -494,6 +494,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         EXPECT_TRUE(btc1.has_value());
         EXPECT_EQ(btc1->address, expectedBtc1);
         EXPECT_EQ(btc1->derivationPath.string(), "m/84'/0'/0'/0/0");
+        EXPECT_EQ(btc1->extendedPublicKey, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
         EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedBtc1);
         EXPECT_EQ(key.account(coin)->address, expectedBtc1);
@@ -521,6 +522,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         
         EXPECT_EQ(btc2.address, expectedBtc2);
         EXPECT_EQ(btc2.derivationPath.string(), "m/44'/0'/0'/0/0");
+        EXPECT_EQ(btc2.extendedPublicKey, "xpub6CR52eaUuVb4kXAVyHC2i5ZuqJ37oWNPZFtjXaazFPXZD45DwWBYEBLdrF7fmCR9pgBuCA9Q57zZfyJjDUBDNtWkhWuGHNYKLgDHpqrHsxV");
         EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedBtc2);
         EXPECT_EQ(key.account(coin)->address, expectedBtc1);

@@ -191,7 +191,7 @@ Account StoredKey::account(TWCoinType coin, TWDerivation derivation, const HDWal
     // not found, add
     const auto derivationPath = TW::derivationPath(coin, derivation);
     const auto address = wallet.deriveAddress(coin, derivation);
-    const auto version = TW::xpubVersion(coin);
+    const auto version = TW::xpubVersionDerivation(coin, derivation);
     const auto extendedPublicKey = wallet.getExtendedPublicKey(derivationPath.purpose(), coin, version);
     const auto pubKeyType = TW::publicKeyType(coin);
     const auto pubKey = wallet.getKey(coin, derivationPath).getPublicKey(pubKeyType);
