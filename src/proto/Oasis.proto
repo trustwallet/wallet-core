@@ -9,6 +9,8 @@ syntax = "proto3";
 package TW.Oasis.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 message TransferMessage {
     string to = 1;
     uint64 gas_price = 2;
@@ -34,8 +36,10 @@ message SigningInput {
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
-    /// error code, 0 is ok, other codes will be treated as errors
-    int32 errorCode = 6;
-    /// error code description
-    string error = 7;
+    
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
 }

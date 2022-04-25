@@ -20,15 +20,18 @@ class PrivateKey {
     /// The number of bytes in a double extended key (used by Cardano)
     static const size_t doubleExtendedSize = 2 * 3 * 32;
 
-    /// The private key bytes.
+    /// The private key bytes:
+    /// - common case: 'size' bytes
+    /// - double extended case: 'doubleExtendedSize' bytes, key+extension+chainCode+second+secondExtension+secondChainCode
     Data bytes;
 
     /// Optional members for extended keys and second extended keys
-    Data extension;
-    Data chainCode;
-    Data second;
-    Data secondExtension;
-    Data secondChainCode;
+    Data key() const { return subData(bytes, 0, 32); }
+    Data extension() const { return subData(bytes, 32, 32); }
+    Data chainCode() const { return subData(bytes, 2*32, 32); }
+    Data secondKey() const { return subData(bytes, 3*32, 32); }
+    Data secondExtension() const { return subData(bytes, 4*32, 32); }
+    Data secondChainCode() const { return subData(bytes, 5*32, 32); }
 
     /// Determines if a collection of bytes makes a valid private key.
     static bool isValid(const Data& data);
@@ -39,7 +42,7 @@ class PrivateKey {
     /// Initializes a private key with an array of bytes.  Size must be exact (normally 32, or 192 for extended)
     explicit PrivateKey(const Data& data);
 
-    /// Initializes a private key from a string of bytes (convenience method).
+    /// Initializes a private key from a string of bytes.
     explicit PrivateKey(const std::string& data) : PrivateKey(TW::data(data)) {}
 
     /// Initializes a double extended private key with two extended keys

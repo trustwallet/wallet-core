@@ -11,6 +11,8 @@
 #include "proto/TransactionCompiler.pb.h"
 #include "Signer.h"
 
+#include "proto/TransactionCompiler.pb.h"
+
 using namespace TW::Ethereum;
 using namespace TW;
 using namespace std;
@@ -43,7 +45,7 @@ Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
             const auto chainId = load(data(input.chain_id())); // retrieve chainId from input
             auto preHash = transaction->preHash(chainId);
             auto preImage = transaction->serialize(chainId);
-            output.set_datahash(preHash.data(), preHash.size());
+            output.set_data_hash(preHash.data(), preHash.size());
             output.set_data(preImage.data(), preImage.size());
         });
 }
@@ -52,8 +54,8 @@ void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<
     dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
         txInputData, [&](const auto& input, auto& output) {
             if (signatures.size() != 1) {
-                output.set_errorcode(Common::Proto::Error_no_support_n2n);
-                output.set_error(Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
+                output.set_error(Common::Proto::Error_signatures_count);
+                output.set_error_message(Common::Proto::SigningError_Name(Common::Proto::Error_signatures_count));
                 return;
             }
             output = Signer::compile(input, signatures[0]);

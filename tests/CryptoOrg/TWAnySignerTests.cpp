@@ -52,7 +52,7 @@ TEST(TWAnySignerCryptoorg, SignTx_Proto_BCB213) {
     assertJSONEqual(output.serialized(), "{\"tx_bytes\": \"CpABCo0BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm0KKmNybzFjdHd0Y3dwZ2tza3k5ODhkaHRoNmpzbHh2ZXVtZ3UwZDQ1emdmMBIqY3JvMXhwYWh5NmM3d2xkeGFjdjZsZDk5aDQzNW1odmZuc3VwMjR2Y3VzGhMKB2Jhc2Vjcm8SCDUwMDAwMDAwEmkKUApGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQOIMbBhYj5+i+WdiIxxCEpFyNCJMHy/XsVdxiwde9Vr4xIECgIIARgCEhUKDwoHYmFzZWNybxIENTAwMBDAmgwaQAcxK9xk6r69gmz+1UWaCnYxNuXPXZdp59YcqKPJE5d6fp+IICTBOwd2rs8MiApcf8kNSrbZ6oECxcGQAdxF0SI=\", \"mode\": \"BROADCAST_MODE_BLOCK\"}");
     EXPECT_EQ(hex(output.signature()), "07312bdc64eabebd826cfed5459a0a763136e5cf5d9769e7d61ca8a3c913977a7e9f882024c13b0776aecf0c880a5c7fc90d4ab6d9ea8102c5c19001dc45d122");
     EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
+    EXPECT_EQ(output.error_message(), "");
 }
 
 TEST(TWAnySignerCryptoorg, SignTx_Json_DDCCE4) {
@@ -125,7 +125,7 @@ TEST(TWAnySignerCryptoorg, SignTx_Json_DDCCE4) {
     )");
     EXPECT_EQ(hex(output.signature()), "e7ee6b485160d0513d713925416407364b410c9b33ed40a7312805d2dd3e81872b2211165324ed89b5da1d941b28001a7222750641d7611123539e55b3007256");
     EXPECT_EQ(output.serialized(), "");
-    EXPECT_EQ(output.error(), "");
+    EXPECT_EQ(output.error_message(), "");
 
     /// https://crypto.org/explorer/tx/DDCCE4052040B05914CADEFE78C0A75BE363AE39504E7EF6B2EDB8A9072AD44B
     /// curl -H 'Content-Type: application/json' --data-binary '{"mode":"block","tx":{"fee": ... }}' https://mainnet.crypto.org:1317/txs

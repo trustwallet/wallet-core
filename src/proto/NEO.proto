@@ -40,6 +40,9 @@ message SigningOutput {
 
     // Optional error
     Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
 }
 
 // Describes a preliminary transaction output plan.

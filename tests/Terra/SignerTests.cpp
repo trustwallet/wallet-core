@@ -100,7 +100,6 @@ TEST(TerraSigner, SignSendTx) {
     )");
     EXPECT_EQ(hex(output.signature()), "a1f748b0b27390e0dc4302c6f3d784da0e0739a5267ca3e1ff4f2dd3b7a128f52a44c978ad5a27ce8ef79a43afaadac75a376d07eeade91f031ae74fa5be9b46");
     EXPECT_EQ(output.serialized(), "");
-    EXPECT_EQ(output.error(), "");
 }
 
 TEST(TerraSigner, SignWasmTransferTxProtobuf_9FF3F0) {
@@ -176,7 +175,6 @@ TEST(TerraSigner, SignWasmTransferTxProtobuf_9FF3F0) {
     )");
     EXPECT_EQ(hex(output.signature()), "1aa6b20430b3c7d87985770146a1a8a96f6188ca15edea899bcfe58c9c6da6391048ea016dd0cf88ca6620cd9cfac35496e7647ddb6c9a7c39e7ef25dfbad470");
     EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
 }
 
 TEST(TerraSigner, SignWasmTransferTxJson_078E90) {
@@ -256,7 +254,6 @@ TEST(TerraSigner, SignWasmTransferTxJson_078E90) {
         })");
     EXPECT_EQ(hex(output.signature()), "06311376d6c0f7b5afd73bdcb02575b4cf9b758282f0edee19393898c46fea9049076cbf0eceeaa12eecff3ae48586a4d580a192541eb47b08df45d15f318892");
     EXPECT_EQ(output.serialized(), "");
-    EXPECT_EQ(output.error(), "");
 }
 
 TEST(TerraSigner, SignWasmSendTxProtobuf) {
@@ -336,7 +333,6 @@ TEST(TerraSigner, SignWasmSendTxProtobuf) {
     )");
     EXPECT_EQ(hex(output.signature()), "be8d07229e459b32ab983a09331d98faa233bee739ef6e2cef058e97ad1609011621b72deee279967ee2f08c843d5b70580cc121e26c523fb8f8a5f38ed4ffe8");
     EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
 }
 
 TEST(TerraSigner, SignWasmTerraTransferPayload) {

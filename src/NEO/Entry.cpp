@@ -34,32 +34,28 @@ TW::Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
         txInputData, [](const auto& input, auto& output) {
             auto encoded = Signer::signaturePreimage(input);
             auto hash = TW::Hash::sha256(encoded);
-            output.set_datahash(hash.data(), hash.size());
+            output.set_data_hash(hash.data(), hash.size());
             output.set_data(encoded.data(), encoded.size());
         });
 }
 
 void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
-    Proto::SigningInput input;
-    Proto::SigningOutput output;
-    if (!input.ParseFromArray(txInputData.data(), (int)txInputData.size())) {
-        output.set_error(Common::Proto::Error_input_parse);
+    dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
+        txInputData, [&](const auto& input, auto& output) {
+            if (signatures.size() == 0 || publicKeys.size() == 0) {
+                output.set_error(Common::Proto::Error_invalid_params);
+                output.set_error_message("empty signatures or publickeys");
+                return;
+            }
 
-        auto result = output.SerializeAsString();
-        dataOut.insert(dataOut.end(), result.begin(), result.end());
-        return;
-    }
+            // We only support one-to-one transfer now.
+            if (signatures.size() != 1 || publicKeys.size() != 1) {
+                output.set_error(Common::Proto::Error_no_support_n2n);
+                output.set_error_message("signatures and publickeys size can only be one");
+                return;
+            }
 
-    // We only support one-to-one transfer now.
-    if (signatures.size() != 1 || publicKeys.size() != 1) {
-        output.set_error(Common::Proto::Error_no_support_n2n);
-        auto result = output.SerializeAsString();
-        dataOut.insert(dataOut.end(), result.begin(), result.end());
-        return;
-    }
-
-    auto encoded = Signer::encodeTransaction(input, publicKeys[0].bytes, signatures[0]);
-    output.set_encoded(encoded.data(), encoded.size());
-    auto result = output.SerializeAsString();
-    dataOut.insert(dataOut.end(), result.begin(), result.end());
+            auto encoded = Signer::encodeTransaction(input, publicKeys[0].bytes, signatures[0]);
+            output.set_encoded(encoded.data(), encoded.size());
+        });
 }

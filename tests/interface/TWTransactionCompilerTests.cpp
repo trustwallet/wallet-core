@@ -62,16 +62,15 @@ TEST(TWTransactionCompiler, ExternalSignatureSignBinance) {
     }
 
     /// Step 2: Obtain preimage hash
-    const auto preImageHashes = TWTransactionCompilerPreImageHashes(coin, txInputData.get());
-    auto preImageHash = dataFromTWData(preImageHashes);
+    const auto preImageHashes = WRAPD(TWTransactionCompilerPreImageHashes(coin, txInputData.get()));
+    auto preImageHash = data(TWDataBytes(preImageHashes.get()), TWDataSize(preImageHashes.get()));
 
     TxCompiler::Proto::PreSigningOutput output;
-    ASSERT_TRUE(output.ParseFromArray(preImageHash->data(), int(preImageHash->size())));
-    ASSERT_EQ(output.errorcode(), 0);
-    const auto preImageHashData = data(output.datahash());
-
-    EXPECT_EQ(hex(preImageHashData),
-              "3f3fece9059e714d303a9a1496ddade8f2c38fa78fc4cc2e505c5dbb0ea678d1");
+    ASSERT_TRUE(output.ParseFromArray(preImageHash.data(), int(preImageHash.size())));
+    ASSERT_EQ(output.error(), Common::Proto::OK);
+    const auto preImageHashData = data(output.data_hash());
+    
+    EXPECT_EQ(hex(preImageHashData), "3f3fece9059e714d303a9a1496ddade8f2c38fa78fc4cc2e505c5dbb0ea678d1");
 
     // Simulate signature, normally obtained from signature server
     const auto publicKeyData =
@@ -159,15 +158,14 @@ TEST(TWTransactionCompiler, ExternalSignatureSignEthereum) {
     EXPECT_EQ((int)TWDataSize(txInputData.get()), 75);
 
     /// Step 2: Obtain preimage hash
-    const auto preImageHashes = TWTransactionCompilerPreImageHashes(coin, txInputData.get());
-    auto preImageHash = dataFromTWData(preImageHashes);
+    const auto preImageHashes = WRAPD(TWTransactionCompilerPreImageHashes(coin, txInputData.get()));
+    auto preImageHash = data(TWDataBytes(preImageHashes.get()), TWDataSize(preImageHashes.get()));
 
     TxCompiler::Proto::PreSigningOutput output;
-    ASSERT_TRUE(output.ParseFromArray(preImageHash->data(), int(preImageHash->size())));
-    ASSERT_EQ(output.errorcode(), 0);
-    const auto preImageHashData = data(output.datahash());
-    EXPECT_EQ(hex(preImageHashData),
-              "15e180a6274b2f6a572b9b51823fce25ef39576d10188ecdcd7de44526c47217");
+    ASSERT_TRUE(output.ParseFromArray(preImageHash.data(), int(preImageHash.size())));
+    ASSERT_EQ(output.error(), Common::Proto::OK);
+    const auto preImageHashData = data(output.data_hash());
+    EXPECT_EQ(hex(preImageHashData), "15e180a6274b2f6a572b9b51823fce25ef39576d10188ecdcd7de44526c47217");
 
     // Simulate signature, normally obtained from signature server
     const auto publicKeyData =
@@ -376,28 +374,25 @@ TEST(TWTransactionCompiler, ExternalSignatureSignBitcoin) {
     EXPECT_EQ((int)TWDataSize(txInputData.get()), 692);
 
     /// Step 2: Obtain preimage hashes
-    const auto preImageHashes = TWTransactionCompilerPreImageHashes(coin, txInputData.get());
-    auto preImageHash = dataFromTWData(preImageHashes);
+    const auto preImageHashes = WRAPD(TWTransactionCompilerPreImageHashes(coin, txInputData.get()));
+    auto preImageHash = data(TWDataBytes(preImageHashes.get()), TWDataSize(preImageHashes.get()));
     Bitcoin::Proto::PreSigningOutput preOutput;
-    ASSERT_TRUE(preOutput.ParseFromArray(preImageHash->data(), (int)preImageHash->size()));
-    ASSERT_EQ(preOutput.hashpublickeys_size(), 3);
-    auto hashes = preOutput.hashpublickeys();
-    EXPECT_EQ(hex(hashes[0].datahash()),
-              "505f527f00e15fcc5a2d2416c9970beb57dfdfaca99e572a01f143b24dd8fab6");
-    EXPECT_EQ(hex(hashes[1].datahash()),
-              "a296bead4172007be69b21971a790e076388666c162a9505698415f1b003ebd7");
-    EXPECT_EQ(hex(hashes[2].datahash()),
-              "60ed6e9371e5ddc72fd88e46a12cb2f68516ebd307c0fd31b1b55cf767272101");
-    EXPECT_EQ(hex(hashes[0].publickeyhash()), hex(inPubKeyHash1));
-    EXPECT_EQ(hex(hashes[1].publickeyhash()), hex(inPubKeyHash0));
-    EXPECT_EQ(hex(hashes[2].publickeyhash()), hex(inPubKeyHash0));
+    ASSERT_TRUE(preOutput.ParseFromArray(preImageHash.data(), (int)preImageHash.size()));
+    ASSERT_EQ(preOutput.hash_public_keys_size(), 3);
+    auto hashes = preOutput.hash_public_keys();
+    EXPECT_EQ(hex(hashes[0].data_hash()), "505f527f00e15fcc5a2d2416c9970beb57dfdfaca99e572a01f143b24dd8fab6");
+    EXPECT_EQ(hex(hashes[1].data_hash()), "a296bead4172007be69b21971a790e076388666c162a9505698415f1b003ebd7");
+    EXPECT_EQ(hex(hashes[2].data_hash()), "60ed6e9371e5ddc72fd88e46a12cb2f68516ebd307c0fd31b1b55cf767272101");
+    EXPECT_EQ(hex(hashes[0].public_key_hash()), hex(inPubKeyHash1));
+    EXPECT_EQ(hex(hashes[1].public_key_hash()), hex(inPubKeyHash0));
+    EXPECT_EQ(hex(hashes[2].public_key_hash()), hex(inPubKeyHash0));
 
     // Simulate signatures, normally obtained from signature server.
     auto signatureVec = WRAP(TWDataVector, TWDataVectorCreate());
     auto pubkeyVec = WRAP(TWDataVector, TWDataVectorCreate());
-    for (const auto& h : hashes) {
-        const auto& preImageHash = TW::data(h.datahash());
-        const auto& pubkeyhash = h.publickeyhash();
+    for (const auto& h: hashes) {
+        const auto& preImageHash = TW::data(h.data_hash());
+        const auto& pubkeyhash = h.public_key_hash();
 
         const std::string key = hex(pubkeyhash) + "+" + hex(preImageHash);
         const auto sigInfoFind = signatureInfos.find(key);
@@ -407,11 +402,8 @@ TEST(TWTransactionCompiler, ExternalSignatureSignBitcoin) {
         const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeSECP256k1);
         const auto signature = sigInfo.signature;
 
-        TWDataVectorAdd(signatureVec.get(),
-                        WRAPD(TWDataCreateWithBytes(signature.data(), signature.size())).get());
-        TWDataVectorAdd(
-            pubkeyVec.get(),
-            WRAPD(TWDataCreateWithBytes(publicKeyData.data(), publicKeyData.size())).get());
+        TWDataVectorAdd(signatureVec.get(), WRAPD(TWDataCreateWithBytes(signature.data(), signature.size())).get());
+        TWDataVectorAdd(pubkeyVec.get(), WRAPD(TWDataCreateWithBytes(publicKeyData.data(), publicKeyData.size())).get());
         // Verify signature (pubkey & hash & signature)
         EXPECT_TRUE(publicKey.verifyAsDER(signature, preImageHash));
     }
@@ -480,13 +472,13 @@ TEST(TWTransactionCompiler, ExternalSignatureSignSolana) {
     const auto txInputData = WRAPD(TWDataCreateWithBytes(inputData.data(), inputData.size()));
 
     /// Step 2: Obtain preimage hash
-    const auto preImageHashes = TWTransactionCompilerPreImageHashes(coin, txInputData.get());
-    auto preImageHashData = dataFromTWData(preImageHashes);
+    const auto preImageHashes = WRAPD(TWTransactionCompilerPreImageHashes(coin, txInputData.get()));
+    auto preImageHashData = data(TWDataBytes(preImageHashes.get()), TWDataSize(preImageHashes.get()));
 
     auto preSigningOutput = TW::Solana::Proto::PreSigningOutput();
     ASSERT_TRUE(
-        preSigningOutput.ParseFromArray(preImageHashData->data(), (int)preImageHashData->size()));
-    ASSERT_EQ(preSigningOutput.errorcode(), 0);
+        preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
+    ASSERT_EQ(preSigningOutput.error(), Common::Proto::OK);
 
     ASSERT_EQ(preSigningOutput.signers_size(), 1);
     auto signer = preSigningOutput.signers(0);
@@ -567,16 +559,16 @@ TEST(TWTransactionCompiler, ExternalSignatureSignNULS) {
     const auto txInputData = WRAPD(TWDataCreateWithBytes(inputData.data(), inputData.size()));
 
     /// Step 2: Obtain preimage hash
-    const auto preImageHashes = TWTransactionCompilerPreImageHashes(coin, txInputData.get());
-    auto preImageHashData = dataFromTWData(preImageHashes);
+    const auto preImageHashes = WRAPD(TWTransactionCompilerPreImageHashes(coin, txInputData.get()));
+    auto preImageHashData = data(TWDataBytes(preImageHashes.get()), TWDataSize(preImageHashes.get()));
 
     auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
     ASSERT_TRUE(
-        preSigningOutput.ParseFromArray(preImageHashData->data(), (int)preImageHashData->size()));
-    ASSERT_EQ(preSigningOutput.errorcode(), 0);
+        preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
+    ASSERT_EQ(preSigningOutput.error(), Common::Proto::OK);
 
     auto preImage = preSigningOutput.data();
-    auto preImageHash = preSigningOutput.datahash();
+    auto preImageHash = preSigningOutput.data_hash();
     EXPECT_EQ(hex(preImage),
               "0200f885885d00008c01170100012c177a01a7afbe98e094007b99476534fb7926b701000100201d9a00"
               "000000000000000000000000000000000000000000000000000000000800000000000000000001170100"
@@ -648,20 +640,22 @@ TEST(TWTransactionCompiler, ExternalSignatureSignRipple) {
     auto inputString = input.SerializeAsString();
     auto inputData = TW::Data(inputString.begin(), inputString.end());
     const auto txInputData = WRAPD(TWDataCreateWithBytes(inputData.data(), inputData.size()));
+    
     /// Step 2: Obtain preimage hash
-    const auto preImageHashTWData = TWTransactionCompilerPreImageHashes(coin, txInputData.get());
-    auto preImageHashData = dataFromTWData(preImageHashTWData);
+    const auto preImageHashes = WRAPD(TWTransactionCompilerPreImageHashes(coin, txInputData.get()));
+    auto preImageHashData = data(TWDataBytes(preImageHashes.get()), TWDataSize(preImageHashes.get()));
+
     auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
     ASSERT_TRUE(
-        preSigningOutput.ParseFromArray(preImageHashData->data(), (int)preImageHashData->size()));
-    ASSERT_EQ(preSigningOutput.errorcode(), 0);
+        preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
+    ASSERT_EQ(preSigningOutput.error(), Common::Proto::OK);
     // preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size());
     auto preImage = preSigningOutput.data();
     EXPECT_EQ(hex(preImage),
               "5354580012000022800000002400000001614000000001ba8140684000000000030d407321026cc34b92"
               "cefb3a4537b3edb0b6044c04af27c01583c577823ecc69a9a21119b681148400b6b6d08d5d495653d73e"
               "da6804c249a5148883148132e4e20aecf29090ac428a9c43f230a829220d");
-    auto preImageHash = preSigningOutput.datahash();
+    auto preImageHash = preSigningOutput.data_hash();
     EXPECT_EQ(hex(preImageHash),
               "8624dbbd5da9ccc8f7a50faf8af8709837db72f51a50cac15a6cd28ce6107b3d");
     // Simulate signature, normally obtained from signature server

@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -103,6 +103,7 @@ enum TWCoinType {
     TWCoinTypeSmartBitcoinCash = 10000145,
     TWCoinTypeKuCoinCommunityChain = 10000321,
     TWCoinTypeBitcoinDiamond = 999,
+    TWCoinTypeBoba = 10000288,
     TWCoinTypeSyscoin = 57,
 };
 

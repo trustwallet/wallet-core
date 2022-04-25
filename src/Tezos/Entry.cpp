@@ -47,7 +47,7 @@ TW::Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
             append(watermarkedData, preImage);
             auto preImageHash = Hash::blake2b(watermarkedData, 32);
 
-            output.set_datahash(preImageHash.data(), preImageHash.size());
+            output.set_data_hash(preImageHash.data(), preImageHash.size());
             output.set_data(preImage.data(), preImage.size());
         });
 }
@@ -56,8 +56,8 @@ void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<
     dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
         txInputData, [&](const auto& input, auto& output) {
             if (signatures.size() != 1) {
-                output.set_errorcode(Common::Proto::Error_signatures_count);
-                output.set_error(Common::Proto::SigningError_Name(Common::Proto::Error_signatures_count));
+                output.set_error(Common::Proto::Error_signatures_count);
+                output.set_error_message(Common::Proto::SigningError_Name(Common::Proto::Error_signatures_count));
                 return;
             }
 

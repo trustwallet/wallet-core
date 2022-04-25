@@ -55,7 +55,7 @@ This list is generated from [./registry.json](../registry.json)
 | 820     | Callisto         | CLO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/callisto/info/logo.png" width="32" />     | <https://callisto.network>    |
 | 888     | NEO              | NEO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/neo/info/logo.png" width="32" />          | <https://neo.org>             |
 | 889     | TomoChain        | TOMO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/tomochain/info/logo.png" width="32" />    | <https://tomochain.com>       |
-| 899     | ECash            | XEC    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ecash/info/logo.png" width="32" />        | <https://e.cash>              |
+| 899     | eCash            | XEC    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ecash/info/logo.png" width="32" />        | <https://e.cash>              |
 | 931     | THORChain        | RUNE   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/thorchain/info/logo.png" width="32" />    | <https://thorchain.org>       |
 | 966     | Polygon          | MATIC  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygon/info/logo.png" width="32" />      | <https://polygon.technology>  |
 | 999     | Bitcoin Diamond  | BCD    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoindiamond/info/logo.png" width="32" /> | <https://www.bitcoindiamond.org> |
@@ -78,6 +78,7 @@ This list is generated from [./registry.json](../registry.json)
 | 10000118 | Osmosis          | OSMO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/osmosis/info/logo.png" width="32" />      | <https://osmosis.zone/>       |
 | 10000145 | Smart Bitcoin Cash | BCH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartbch/info/logo.png" width="32" />     | <https://smartbch.org/>       |
 | 10000250 | Fantom           | FTM    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/fantom/info/logo.png" width="32" />       | <https://fantom.foundation>   |
+| 10000288 | Boba             | BOBAETH | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/boba/info/logo.png" width="32" />         | <https://boba.network/>       |
 | 10000321 | KuCoin Community Chain | KCS    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/kcc/info/logo.png" width="32" />          | <https://www.kcc.io/>         |
 | 10000553 | Huobi ECO Chain  | HT     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/heco/info/logo.png" width="32" />         | <https://www.hecochain.com/en-us> |
 | 10002020 | Ronin            | RON    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ronin/info/logo.png" width="32" />        | <https://whitepaper.axieinfinity.com/technology/ronin-ethereum-sidechain> |

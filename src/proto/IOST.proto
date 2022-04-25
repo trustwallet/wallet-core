@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.IOST.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // The message defines transaction action struct.
 message Action {
     // contract name
@@ -90,8 +92,10 @@ message SigningOutput {
     Transaction transaction = 1;
     // Signed and encoded transaction bytes.
     bytes encoded = 2;
-    /// error code, 0 is ok, other codes will be treated as errors
-    int32 errorCode = 3;
-    /// error code description
-    string error = 4;
+    
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 3;
+
+    // error code description
+    string error_message = 4;
 }

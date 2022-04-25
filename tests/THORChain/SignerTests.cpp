@@ -92,7 +92,7 @@ TEST(THORChainSigner, SignTx_Protobuf_7E480F) {
     )");
     EXPECT_EQ(hex(output.signature()), "a66d4b70136b6e8e386bea74a9b5e196c778d7e43ed21a8d78b93246795da5f649639e5fe62708f67d4f117d263e5c548a3bd66e79c6ae2154bdf20db45ef3d8");
     EXPECT_EQ(output.json(), "");
-    EXPECT_EQ(output.error(), "");
+    EXPECT_EQ(output.error_message(), "");
 }
 
 TEST(THORChainSigner, SignTx_Json_Deprecated) {

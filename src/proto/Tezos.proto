@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.Tezos.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // Input data necessary to create a signed Tezos transaction.
 // Next field: 3
 message SigningInput {
@@ -15,11 +17,11 @@ message SigningInput {
 message SigningOutput {
   bytes encoded = 1;
 
-  /// error code, 0 is ok, other codes will be treated as errors
-  int32 errorCode = 2;
+  // error code, 0 is ok, other codes will be treated as errors
+  Common.Proto.SigningError error = 2;
 
-  /// error code description
-  string error = 3;
+  // error code description
+  string error_message = 3;
 }
 
 // A list of operations and a branch.

@@ -51,7 +51,7 @@ Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
                 throw std::invalid_argument("invalid contract");
             }
 
-            output.set_datahash(preImageHash.data(), preImageHash.size());
+            output.set_data_hash(preImageHash.data(), preImageHash.size());
             output.set_data(preImage.data(), preImage.size());
         });
 }
@@ -59,9 +59,14 @@ Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
 void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
     dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
         txInputData, [&](const auto& input, auto& output) {
+            if (signatures.size() == 0 || publicKeys.size() == 0) {
+                output.set_error(Common::Proto::Error_invalid_params);
+                output.set_error_message("empty signatures or publickeys");
+                return;
+            }
             if (signatures.size() != 1 || publicKeys.size() != 1) {
-                output.set_errorcode(Common::Proto::Error_no_support_n2n);
-                output.set_error(Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
+                output.set_error(Common::Proto::Error_no_support_n2n);
+                output.set_error_message(Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
                 return;
             }
 

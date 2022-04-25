@@ -77,7 +77,7 @@ TEST(THORChainSwap, SwapBtcEth) {
     // sign and encode resulting input
     Bitcoin::Proto::SigningOutput output;
     ANY_SIGN(tx, TWCoinTypeBitcoin);
-    EXPECT_EQ(output.error(), 0);
+    EXPECT_EQ(output.error(), Common::Proto::OK);
     EXPECT_EQ(hex(output.encoded()), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
@@ -131,7 +131,7 @@ TEST(THORChainSwap, SwapBtcBnb) {
     // sign and encode resulting input
     Bitcoin::Proto::SigningOutput output;
     ANY_SIGN(tx, TWCoinTypeBitcoin);
-    EXPECT_EQ(output.error(), 0);
+    EXPECT_EQ(output.error(), Common::Proto::OK);
     EXPECT_EQ(hex(output.encoded()), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag

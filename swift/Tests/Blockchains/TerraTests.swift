@@ -498,6 +498,6 @@ class TerraTests: XCTestCase {
 }
 """
         )
-        XCTAssertEqual(output.error, "")
+        XCTAssertEqual(output.errorMessage, "")
     }
 }

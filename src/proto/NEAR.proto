@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.NEAR.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 message PublicKey {
     uint32 key_type = 1;
     bytes data = 2;
@@ -90,9 +92,9 @@ message SigningOutput {
     // Signed transaction blob
     bytes signed_transaction = 1;
 
-    /// error code, 0 is ok, other codes will be treated as errors
-    int32 errorCode = 2;
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
 
-    /// error code description
-    string error = 3;
+    // error code description
+    string error_message = 3;
 }

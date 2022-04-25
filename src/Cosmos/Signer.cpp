@@ -51,8 +51,6 @@ Proto::SigningOutput Signer::signJsonSerialized(const Proto::SigningInput& input
     auto txJson = transactionJSON(input, signature);
     output.set_json(txJson.dump());
     output.set_signature(signature.data(), signature.size());
-    output.set_serialized("");
-    output.set_error("");
     return output;
 }
 
@@ -67,12 +65,11 @@ Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input) noex
         const string jsonSerialized = buildProtoTxJson(input, serializedTxRaw);
         output.set_serialized(jsonSerialized);
         output.set_signature(signature.data(), signature.size());
-        output.set_json("");
-        output.set_error("");
         return output;
     } catch (const std::exception& ex) {
         auto output = Proto::SigningOutput();
-        output.set_error(std::string("Error: ") + ex.what());
+        output.set_error(Common::Proto::Error_internal);
+        output.set_error_message(std::string("Error: ") + ex.what());
         return output;
     }
 }

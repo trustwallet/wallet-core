@@ -36,21 +36,27 @@ TW::Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
             output.set_data(preimage.data(), preimage.size());
             auto hash = Hash::sha512(preimage);
             auto preimageHash = Data(hash.begin(), hash.begin() + 32);
-            output.set_datahash(preimageHash.data(), preimageHash.size());
+            output.set_data_hash(preimageHash.data(), preimageHash.size());
         });
 }
 
 void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures,
                     const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
-    auto input = Proto::SigningInput();
-    auto output = Proto::SigningOutput();
-    if (!input.ParseFromArray(txInputData.data(), (int)txInputData.size())) {
-        output.set_error(TW::Common::Proto::Error_input_parse);
-    } else if (signatures.size() != 1 || publicKeys.size() != 1) {
-        output.set_error(Common::Proto::Error_no_support_n2n);
-    } else {
-        auto signer = Signer(input);
-        output = signer.compile(signatures[0], publicKeys[0]);
-    }
-    dataOut = TW::data(output.SerializeAsString());
+    dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
+        txInputData, [&](const auto& input, auto& output) {
+            if (signatures.size() == 0 || publicKeys.size() == 0) {
+                output.set_error(Common::Proto::Error_invalid_params);
+                output.set_error_message("empty signatures or publickeys");
+                return;
+            }
+
+            // We only support one-to-one transfer now.
+            if (signatures.size() != 1 || publicKeys.size() != 1) {
+                output.set_error(Common::Proto::Error_no_support_n2n);
+                output.set_error_message("signatures and publickeys size can only be one");
+                return;
+            }
+            auto signer = Signer(input);
+            output = signer.compile(signatures[0], publicKeys[0]);
+        });
 }

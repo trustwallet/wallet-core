@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/big"
 	"tw/core"
+	"tw/protos/binance"
 	"tw/protos/bitcoin"
 	"tw/protos/common"
 	"tw/protos/ethereum"
@@ -49,8 +50,10 @@ func SignExternalBinanceDemo() {
 	publicKey, _ := hex.DecodeString("026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502")
 	txOutput := core.CompileWithSignatures(coin, txInputData, [][]byte{signature}, [][]byte{publicKey})
 
+	var output binance.SigningOutput
+	proto.Unmarshal(txOutput, &output)
 	fmt.Println("final txOutput proto:  ", len(txOutput))
-	fmt.Println(hex.EncodeToString(txOutput))
+	fmt.Println("output.encoded:  ", len(output.Encoded), hex.EncodeToString(output.Encoded))
 
 	fmt.Println("\n==> Double check signature validity (result should be true)")
 	verifyRes := core.PublicKeyVerify(publicKey, core.PublicKeyTypeSECP256k1, signature, preSigningOutput.DataHash)

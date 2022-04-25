@@ -31,21 +31,6 @@ TWData *_Nonnull TWTransactionCompilerBuildInput(enum TWCoinType coinType, TWStr
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
-struct TWDataVector* _Nonnull createFromVector(const HashPubkeyList& dataVector) {
-    auto ret = TWDataVectorCreate();
-    for (auto& i: dataVector) {
-        const auto& hash = std::get<0>(i);
-        const auto& pubkeyhash = std::get<1>(i);
-        auto newElem1 = TWDataCreateWithBytes(hash.data(), hash.size());
-        TWDataVectorAdd(ret, newElem1);
-        TWDataDelete(newElem1);
-        auto newElem2 = TWDataCreateWithBytes(pubkeyhash.data(), pubkeyhash.size());
-        TWDataVectorAdd(ret, newElem2);
-        TWDataDelete(newElem2);
-    }
-    return ret;
-}
-
 std::vector<Data> createFromTWDataVector(const struct TWDataVector* _Nonnull dataVector) {
     std::vector<Data> ret;
     const auto n = TWDataVectorSize(dataVector);
@@ -64,9 +49,7 @@ TWData *_Nonnull TWTransactionCompilerPreImageHashes(enum TWCoinType coinType, T
         const Data inputData = data(TWDataBytes(txInputData), TWDataSize(txInputData));
 
         result = TransactionCompiler::preImageHashes(coinType, inputData);
-    } catch (const std::exception& e) {
-        std::cerr << "TWTransactionCompilerPreImageHashes exception: " << e.what() << std::endl;
-    } // return empty
+    } catch (...) {} // return empty
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 

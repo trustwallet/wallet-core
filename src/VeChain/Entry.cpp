@@ -39,7 +39,7 @@ Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
             auto unsignedTxBytes = Signer::buildUnsignedTx(input);
             auto imageHash = Hash::blake2b(unsignedTxBytes, 32);
             output.set_data(unsignedTxBytes.data(), unsignedTxBytes.size());
-            output.set_datahash(imageHash.data(), imageHash.size());
+            output.set_data_hash(imageHash.data(), imageHash.size());
         });
 }
 
@@ -47,8 +47,8 @@ void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<
     dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
         txInputData, [&](const auto& input, auto& output) {
             if (signatures.size() != 1) {
-                output.set_errorcode(Common::Proto::Error_no_support_n2n);
-                output.set_error(Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
+                output.set_error(Common::Proto::Error_no_support_n2n);
+                output.set_error_message(Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
                 return;
             }
 

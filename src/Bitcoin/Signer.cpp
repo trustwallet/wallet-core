@@ -12,6 +12,8 @@
 #include "TransactionBuilder.h"
 #include "TransactionSigner.h"
 
+#include "proto/Common.pb.h"
+
 using namespace TW;
 using namespace TW::Bitcoin;
 
@@ -50,17 +52,17 @@ Proto::PreSigningOutput Signer::preImageHashes(const Proto::SigningInput& input)
     Proto::PreSigningOutput output;
     auto result = TransactionSigner<Transaction, TransactionBuilder>::preImageHashes(input);
     if (!result) {
-        output.set_errorcode(result.error());
-        output.set_error(Common::Proto::SigningError_Name(result.error()));
+        output.set_error(result.error());
+        output.set_error_message(Common::Proto::SigningError_Name(result.error()));
         return output;
     }
 
     auto hashList = result.payload();
-    auto* hashPubKeys = output.mutable_hashpublickeys();
+    auto* hashPubKeys = output.mutable_hash_public_keys();
     for (auto& h : hashList) {
         auto* hpk = hashPubKeys->Add();
-        hpk->set_datahash(h.first.data(), h.first.size());
-        hpk->set_publickeyhash(h.second.data(), h.second.size());
+        hpk->set_data_hash(h.first.data(), h.first.size());
+        hpk->set_public_key_hash(h.second.data(), h.second.size());
     }
     return output;
 }

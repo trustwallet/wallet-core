@@ -189,6 +189,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeCronosChain: entry = &ethereumDP; break;
         case TWCoinTypeSmartBitcoinCash: entry = &ethereumDP; break;
         case TWCoinTypeKuCoinCommunityChain: entry = &ethereumDP; break;
+        case TWCoinTypeBoba: entry = &ethereumDP; break;
         case TWCoinTypeBitcoinDiamond: entry = &BitcoinDiamondDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 

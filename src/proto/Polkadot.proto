@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.Polkadot.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 enum Network {
     POLKADOT = 0;
     KUSAMA = 2;
@@ -110,8 +112,9 @@ message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
 
-    // Set in case of error
-    string error = 2;
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
 
-    int32 errorCode = 3;
+    // error code description
+    string error_message = 3;
 }

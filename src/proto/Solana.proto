@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.Solana.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 message Transfer {
     string recipient = 1;
     uint64 value = 2;
@@ -115,20 +117,25 @@ message SigningInput {
 // Transaction signing output.
 message SigningOutput {
     string encoded = 1;
-    /// error code, 0 is ok, other codes will be treated as errors
-    int32 errorCode = 2;
-    /// error code description
-    string error = 3;
+    
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error code description
+    string error_message = 3;
 }
 
 /// Transaction pre-signing output
 message PreSigningOutput {
     /// signer list
     repeated bytes signers = 1;
+
     /// Pre-image data. There is no hashing for Solana presign image
     bytes data = 2;
-    /// error code, 0 is ok, other codes will be treated as errors
-    int32 errorCode = 3;
-    /// error code description
-    string error = 4;
+    
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 3;
+
+    // error code description
+    string error_message = 4;
 }

@@ -95,7 +95,7 @@ TEST(TWTHORChainSwap, SwapBtcToEth) {
     {
         Bitcoin::Proto::SigningOutput output;
         ANY_SIGN(txInput, TWCoinTypeBitcoin);
-        EXPECT_EQ(output.error(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::OK);
         EXPECT_EQ(hex(output.encoded()), // printed using prettyPrintTransaction
             "01000000" // version
             "0001" // marker & flag
