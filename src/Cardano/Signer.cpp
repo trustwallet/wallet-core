@@ -268,6 +268,11 @@ TransactionPlan Signer::doPlan() const {
         return plan;
     }
     assert(inputSum > 0);
+    if (input.private_key_size() == 0) {
+        // private key is missing, size will be smaller, treat it as error
+        plan.error = Common::Proto::Error_missing_private_key;
+        return plan;
+    }
 
     // select UTXOs
     plan.amount = input.transfer_message().amount();

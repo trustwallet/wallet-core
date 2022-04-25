@@ -60,7 +60,10 @@ TEST(CardanoSigning, SelectInputsSimple) {
     }
 }
 
-Proto::SigningInput createSampleInput(uint64_t amount, int utxoCount = 10, const std::string& toAddress = "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5") {
+Proto::SigningInput createSampleInput(uint64_t amount, int utxoCount = 10, 
+    const std::string& toAddress = "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5",
+    bool omitPrivateKey = false
+) {
     Proto::SigningInput input;
     if (utxoCount >= 1) {
         auto* utxo1 = input.add_utxos();
@@ -79,8 +82,10 @@ Proto::SigningInput createSampleInput(uint64_t amount, int utxoCount = 10, const
         utxo2->set_amount(6500000);
     }
 
-    const auto privateKeyData = parse_hex("089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448a3566990b7785bd48c330875b1e0d03caaed0e67cecc42075dce1c7a13b1c49240508848ac82f603391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf1290dbd508e5ec71afaea98da2df1533c22ef02a26bb87b31907d0b2738fb7785b38d53aa68fc01230784c9209b2b2a2faf28491b3b1f1d221e63e704bbd0403c4154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e");
-    input.add_private_key(privateKeyData.data(), privateKeyData.size());
+    if (!omitPrivateKey) {
+        const auto privateKeyData = parse_hex("089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448a3566990b7785bd48c330875b1e0d03caaed0e67cecc42075dce1c7a13b1c49240508848ac82f603391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf1290dbd508e5ec71afaea98da2df1533c22ef02a26bb87b31907d0b2738fb7785b38d53aa68fc01230784c9209b2b2a2faf28491b3b1f1d221e63e704bbd0403c4154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e");
+        input.add_private_key(privateKeyData.data(), privateKeyData.size());
+    }
     input.mutable_transfer_message()->set_to_address(toAddress);
     input.mutable_transfer_message()->set_change_address("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23");
     input.mutable_transfer_message()->set_amount(amount);
@@ -123,6 +128,18 @@ TEST(CardanoSigning, Plan) {
         EXPECT_EQ(plan.fee, 168565);
         EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
     }
+}
+
+TEST(CardanoSigning, PlanNoPrivKey) {
+    auto input = createSampleInput(7000000, 10, "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5",
+        true);
+
+    auto signer = Signer(input);
+    const auto plan = signer.doPlan();
+    EXPECT_EQ(plan.error, Common::Proto::Error_missing_private_key);
+    EXPECT_EQ(plan.utxos.size(), 0);
+    EXPECT_EQ(plan.availableAmount, 0);
+    EXPECT_EQ(plan.amount, 0);
 }
 
 TEST(CardanoSigning, SignTransfer1) {
