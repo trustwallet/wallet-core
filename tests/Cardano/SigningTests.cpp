@@ -61,9 +61,11 @@ TEST(CardanoSigning, SelectInputsSimple) {
 }
 
 Proto::SigningInput createSampleInput(uint64_t amount, int utxoCount = 10, 
-    const std::string& toAddress = "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5",
-    bool omitPrivateKey = false
+    const std::string& alternateToAddress = "", bool omitPrivateKey = false
 ) {
+    const std::string toAddress = (alternateToAddress.length() > 0) ? alternateToAddress :
+        "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5";
+
     Proto::SigningInput input;
     if (utxoCount >= 1) {
         auto* utxo1 = input.add_utxos();
@@ -131,8 +133,7 @@ TEST(CardanoSigning, Plan) {
 }
 
 TEST(CardanoSigning, PlanNoPrivKey) {
-    auto input = createSampleInput(7000000, 10, "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5",
-        true);
+    auto input = createSampleInput(7000000, 10, "", true);
 
     auto signer = Signer(input);
     const auto plan = signer.doPlan();

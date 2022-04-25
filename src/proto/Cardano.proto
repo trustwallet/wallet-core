@@ -63,6 +63,7 @@ message SigningInput {
     repeated TxInput utxos = 1;
 
     // Available private keys (double extended keys); every input UTXO adress should be covered
+    // In case of Plan only, keys should be present, in correct number
     repeated bytes private_key = 2;
 
     // Later this can be made oneof if more message types are supported
