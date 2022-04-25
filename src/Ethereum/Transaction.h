@@ -37,6 +37,8 @@ public:
     virtual ~TransactionBase() {}
     // pre-sign hash of the tx, for signing
     virtual Data preHash(const uint256_t chainID) const = 0;
+    // pre-sign image of tx
+    virtual Data serialize(const uint256_t chainID) const = 0;
     // encoded tx (signed)
     virtual Data encoded(const Signature& signature, const uint256_t chainID) const = 0;
     // Signals wether this tx type uses Eip155-style replay protection in the signature
@@ -88,6 +90,7 @@ public:
     static Data buildERC1155TransferFromCall(const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data);
 
     virtual Data preHash(const uint256_t chainID) const;
+    virtual Data serialize(const uint256_t chainID) const;
     virtual Data encoded(const Signature& signature, const uint256_t chainID) const;
     virtual bool usesReplayProtection() const { return true; }
 
@@ -151,6 +154,7 @@ public:
         const Data& tokenContract, const Data& from, const Data& to, const uint256_t& tokenId, const uint256_t& value, const Data& data);
 
     virtual Data preHash(const uint256_t chainID) const;
+    virtual Data serialize(const uint256_t chainID) const;
     virtual Data encoded(const Signature& signature, const uint256_t chainID) const;
 
 public:

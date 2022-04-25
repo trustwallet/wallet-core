@@ -9,6 +9,8 @@
 #include "Address.h"
 #include "Signer.h"
 
+#include "proto/TransactionCompiler.pb.h"
+
 using namespace TW::Ethereum;
 using namespace TW;
 using namespace std;
@@ -34,26 +36,28 @@ string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key
     return Signer::signJSON(json, key);
 }
 
-HashPubkeyList Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
-    auto input = Proto::SigningInput();
-    Data preHash;
-    if (input.ParseFromArray(txInputData.data(), (int)txInputData.size())) {
-        const auto transaction = Signer::build(input);
-        const auto chainId = load(data(input.chain_id())); // retrieve chainId from input
-        // return preimage hash and dummy pubkeyhash (not available here, and only one signature anyways)
-        preHash = transaction->preHash(chainId);
-    }
-    return HashPubkeyList{std::make_pair(preHash, Data())};
+Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
+    return txCompilerTemplate<Proto::SigningInput, TxCompiler::Proto::PreSigningOutput>(
+        txInputData, [](const auto& input, auto& output) {
+            const auto transaction = Signer::build(input);
+            const auto chainId = load(data(input.chain_id())); // retrieve chainId from input
+            auto preHash = transaction->preHash(chainId);
+            auto preImage = transaction->serialize(chainId);
+            output.set_data_hash(preHash.data(), preHash.size());
+            output.set_data(preImage.data(), preImage.size());
+        });
 }
 
 void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
-    auto input = Proto::SigningInput();
-    if (input.ParseFromArray(txInputData.data(), (int)txInputData.size()) &&
-        (signatures.size() == 1)) {
-        const auto output = Signer::compile(input, signatures[0]);
-        const auto serializedOut = output.SerializeAsString();
-        dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
-    }
+    dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
+        txInputData, [&](const auto& input, auto& output) {
+            if (signatures.size() != 1) {
+                output.set_error(Common::Proto::Error_signatures_count);
+                output.set_error_message(Common::Proto::SigningError_Name(Common::Proto::Error_signatures_count));
+                return;
+            }
+            output = Signer::compile(input, signatures[0]);
+        });
 }
 
 Data Entry::buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const {

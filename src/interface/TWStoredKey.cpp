@@ -108,6 +108,18 @@ struct TWAccount* _Nullable TWStoredKeyAccountForCoin(struct TWStoredKey* _Nonnu
     }
 }
 
+struct TWAccount* _Nullable TWStoredKeyAccountForCoinDerivation(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWDerivation derivation, struct TWHDWallet* _Nullable wallet) {
+    try {
+        if (wallet == nullptr) {
+            return nullptr;
+        }
+        const auto account = key->impl.account(coin, derivation, wallet->impl);
+        return new TWAccount{ account };
+    } catch (...) {
+        return nullptr;
+    }
+}
+
 void TWStoredKeyRemoveAccountForCoin(struct TWStoredKey* _Nonnull key, enum TWCoinType coin) {
     key->impl.removeAccount(coin);
 }
@@ -117,7 +129,7 @@ void TWStoredKeyAddAccount(struct TWStoredKey* _Nonnull key, TWString* _Nonnull 
     const auto& publicKeyString = *reinterpret_cast<const std::string*>(publicKey);
     const auto& extendedPublicKeyString = *reinterpret_cast<const std::string*>(extendedPublicKey);
     const auto dp = TW::DerivationPath(*reinterpret_cast<const std::string*>(derivationPath));
-    key->impl.addAccount(addressString, coin, dp, publicKeyString, extendedPublicKeyString);
+    key->impl.addAccount(addressString, coin, TWDerivationDefault, dp, publicKeyString, extendedPublicKeyString); // TODO add version with arbitrary derivation
 }
 
 bool TWStoredKeyStore(struct TWStoredKey* _Nonnull key, TWString* _Nonnull path) {

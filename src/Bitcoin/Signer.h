@@ -28,7 +28,7 @@ class Signer {
     static Proto::SigningOutput sign(const Proto::SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs = {}) noexcept;
 
     /// Collect pre-image hashes to be signed
-    static HashPubkeyList preImageHashes(const Proto::SigningInput& input) noexcept;
+    static Proto::PreSigningOutput preImageHashes(const Proto::SigningInput& input) noexcept;
 };
 
 } // namespace TW::Bitcoin

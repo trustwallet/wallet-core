@@ -41,9 +41,9 @@ class Signer {
 
     TW::Data preImageHash() const;
     Proto::SigningOutput compile(const Data& signature, const PublicKey& publicKey) const;
+    std::string signaturePreimage() const;
 
   private:
-    std::string signaturePreimage() const;
     TW::Data encodeTransaction(const TW::Data& signature) const;
     TW::Data encodeOrder() const;
     TW::Data encodeSignature(const TW::Data& signature) const;

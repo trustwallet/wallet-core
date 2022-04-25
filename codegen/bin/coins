@@ -18,6 +18,24 @@ def self.coin_name(coin)
   coin['displayName'] || coin['name']
 end
 
+def self.derivation_path(coin)
+  coin['derivation'][0]['path']
+end
+
+def self.camel_case(id)
+  id[0].upcase + id[1..].downcase
+end
+
+def self.derivation_name(deriv)
+  return "" if deriv['name'].nil?
+  deriv['name'].downcase
+end
+
+def self.derivation_enum_name(deriv, coin)
+  return "TWDerivationDefault" if deriv['name'].nil?
+  "TWDerivation" + format_name(coin['name']) + camel_case(deriv['name'])
+end
+
 def self.coin_img(coin)
   "<img src=\"https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/#{coin}/info/logo.png\" width=\"32\" />"
 end
@@ -33,7 +51,11 @@ end
 json_string = File.read('registry.json')
 coins = JSON.parse(json_string).sort_by { |x| x['coinId'] }
 
+# used in some cases for numbering enum values
+enum_count = 0
+
 erbs = [
+  {'template' => 'TWDerivation.h.erb', 'folder' => 'include/TrustWalletCore', 'file' => 'TWDerivation.h'},
   {'template' => 'CoinInfoData.cpp.erb', 'folder' => 'src/Generated', 'file' => 'CoinInfoData.cpp'},
   {'template' => 'registry.md.erb', 'folder' => 'docs', 'file' => 'registry.md'},
   {'template' => 'hrp.cpp.erb', 'folder' => 'src/Generated', 'file' => 'TWHRP.cpp'},

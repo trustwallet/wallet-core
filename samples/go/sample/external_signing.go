@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"math/big"
 	"tw/core"
+	"tw/protos/binance"
 	"tw/protos/bitcoin"
+	"tw/protos/common"
 	"tw/protos/ethereum"
 
 	"google.golang.org/protobuf/proto"
@@ -37,7 +39,10 @@ func SignExternalBinanceDemo() {
 
 	fmt.Println("\n==> Step 2: Obtain preimage hash")
 	hashes := core.PreImageHashes(coin, txInputData)
-	fmt.Println("hash(es): ", len(hashes), hex.EncodeToString(hashes[0]))
+	fmt.Println("hash(es): ", len(hashes), hex.EncodeToString(hashes))
+
+	var preSigningOutput common.PreSigningOutput
+	proto.Unmarshal(hashes, &preSigningOutput)
 
 	fmt.Println("\n==> Step 3: Compile transaction info")
 	// Simulate signature, normally obtained from signature server
@@ -45,11 +50,13 @@ func SignExternalBinanceDemo() {
 	publicKey, _ := hex.DecodeString("026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502")
 	txOutput := core.CompileWithSignatures(coin, txInputData, [][]byte{signature}, [][]byte{publicKey})
 
+	var output binance.SigningOutput
+	proto.Unmarshal(txOutput, &output)
 	fmt.Println("final txOutput proto:  ", len(txOutput))
-	fmt.Println(hex.EncodeToString(txOutput))
+	fmt.Println("output.encoded:  ", len(output.Encoded), hex.EncodeToString(output.Encoded))
 
 	fmt.Println("\n==> Double check signature validity (result should be true)")
-	verifyRes := core.PublicKeyVerify(publicKey, core.PublicKeyTypeSECP256k1, signature, hashes[0])
+	verifyRes := core.PublicKeyVerify(publicKey, core.PublicKeyTypeSECP256k1, signature, preSigningOutput.DataHash)
 	fmt.Println(verifyRes)
 
 	fmt.Println("")
@@ -84,7 +91,10 @@ func SignExternalEthereumDemo() {
 
 	fmt.Println("\n==> Step 2: Obtain preimage hash")
 	hashes := core.PreImageHashes(coin, txInputData2)
-	fmt.Println("hash(es): ", len(hashes), hex.EncodeToString(hashes[0]))
+	fmt.Println("hash(es): ", len(hashes), hex.EncodeToString(hashes))
+
+	var preSigningOutput common.PreSigningOutput
+	proto.Unmarshal(hashes, &preSigningOutput)
 
 	fmt.Println("\n==> Step 3: Compile transaction info")
 	// Simulate signature, normally obtained from signature server
@@ -98,7 +108,7 @@ func SignExternalEthereumDemo() {
 	fmt.Println("output.encoded:  ", len(output.Encoded), hex.EncodeToString(output.Encoded))
 
 	fmt.Println("\n==> Double check signature validity (result should be true)")
-	verifyRes := core.PublicKeyVerify(publicKey, core.PublicKeyTypeSECP256k1Extended, signature, hashes[0])
+	verifyRes := core.PublicKeyVerify(publicKey, core.PublicKeyTypeSECP256k1Extended, signature, preSigningOutput.DataHash)
 	fmt.Println(verifyRes)
 
 	fmt.Println("")
@@ -129,11 +139,11 @@ func SignExternalBitcoinDemo() {
 
 	utxoInfos := [...]UtxoInfo{
 		// first
-		UtxoInfo{revUtxoHash0, inPubKey0, ownAddress, 600000, 0},
+		{revUtxoHash0, inPubKey0, ownAddress, 600000, 0},
 		// second UTXO, with same pubkey
-		UtxoInfo{revUtxoHash1, inPubKey0, ownAddress, 500000, 1},
+		{revUtxoHash1, inPubKey0, ownAddress, 500000, 1},
 		// third UTXO, with different pubkey
-		UtxoInfo{revUtxoHash2, inPubKey1, "bc1qveq6hmdvl9yrk7f6lct3s6yue9pqhwcuxedggg", 400000, 0},
+		{revUtxoHash2, inPubKey1, "bc1qveq6hmdvl9yrk7f6lct3s6yue9pqhwcuxedggg", 400000, 0},
 	}
 
 	// Signature infos, indexed by pubkeyhash+hash
@@ -145,9 +155,9 @@ func SignExternalBitcoinDemo() {
 	inSig1, _ := hex.DecodeString("3044022041294880caa09bb1b653775310fcdd1458da6b8e7d7fae34e37966414fe115820220646397c9d2513edc5974ecc336e9b287de0cdf071c366f3b3dc3ff309213e4e4")
 	inSig2, _ := hex.DecodeString("30440220764e3d5b3971c4b3e70b23fb700a7462a6fe519d9830e863a1f8388c402ad0b102207e777f7972c636961f92375a2774af3b7a2a04190251bbcb31d19c70927952dc")
 	signatureInfos := map[string]SignatureInfo{
-		hex.EncodeToString(inPubKeyHash0) + "+" + "a296bead4172007be69b21971a790e076388666c162a9505698415f1b003ebd7": SignatureInfo{inSig0, inPubKey0},
-		hex.EncodeToString(inPubKeyHash1) + "+" + "505f527f00e15fcc5a2d2416c9970beb57dfdfaca99e572a01f143b24dd8fab6": SignatureInfo{inSig1, inPubKey1},
-		hex.EncodeToString(inPubKeyHash0) + "+" + "60ed6e9371e5ddc72fd88e46a12cb2f68516ebd307c0fd31b1b55cf767272101": SignatureInfo{inSig2, inPubKey0},
+		hex.EncodeToString(inPubKeyHash0) + "+" + "a296bead4172007be69b21971a790e076388666c162a9505698415f1b003ebd7": {inSig0, inPubKey0},
+		hex.EncodeToString(inPubKeyHash1) + "+" + "505f527f00e15fcc5a2d2416c9970beb57dfdfaca99e572a01f143b24dd8fab6": {inSig1, inPubKey1},
+		hex.EncodeToString(inPubKeyHash0) + "+" + "60ed6e9371e5ddc72fd88e46a12cb2f68516ebd307c0fd31b1b55cf767272101": {inSig2, inPubKey0},
 	}
 
 	coin := core.CoinTypeBitcoin
@@ -194,19 +204,21 @@ func SignExternalBitcoinDemo() {
 
 	fmt.Println("\n==> Step 2: Obtain preimage hashes")
 	hashes := core.PreImageHashes(coin, txInputData)
-	lenHashes := len(hashes)
-	fmt.Println("hashes+pubkeyhashes: ", lenHashes)
-	for i := 0; i < lenHashes; i += 2 {
-		fmt.Println("    ", hex.EncodeToString(hashes[i]), hex.EncodeToString(hashes[i+1]))
+
+	var preSigningOutput bitcoin.PreSigningOutput
+	proto.Unmarshal(hashes, &preSigningOutput)
+	fmt.Println("hashes+pubkeyhashes: ", len(preSigningOutput.HashPublicKeys))
+	for _, h := range preSigningOutput.HashPublicKeys {
+		fmt.Println("    ", hex.EncodeToString(h.DataHash), hex.EncodeToString(h.PublicKeyHash))
 	}
 
 	fmt.Println("\n==> Step 3: Compile transaction info")
 	// Simulate signature, normally obtained from signature server
 	signatureVec := [][]byte{}
 	pubkeyVec := [][]byte{}
-	for i := 0; i < lenHashes; i += 2 {
-		preImageHash := hashes[i]
-		pubkeyHash := hashes[i+1]
+	for _, h := range preSigningOutput.HashPublicKeys {
+		preImageHash := h.DataHash
+		pubkeyHash := h.PublicKeyHash
 		key := hex.EncodeToString(pubkeyHash) + "+" + hex.EncodeToString(preImageHash)
 		sigInfo := signatureInfos[key]
 

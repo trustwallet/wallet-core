@@ -176,21 +176,23 @@ TEST(PrivateKey, PrivateKeyExtended) {
     auto publicKeyNonext = privateKeyNonext.getPublicKey(TWPublicKeyTypeED25519);
     EXPECT_EQ(32, publicKeyNonext.bytes.size());
 
-    // Extended keys: private key is 2x3x32 bytes, public key is 2x64 bytes
-    auto privateKeyExt = PrivateKey(parse_hex(
+    const auto fullkey = 
         "b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"
         "309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff"
         "bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4"
         "639aadd8b6499ae39b78018b79255fbd8f585cbda9cbb9e907a72af86afb7a05"
         "d41a57c2dec9a6a19d6bf3b1fa784f334f3a0048d25ccb7b78a7b44066f9ba7b"
-        "ed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a"
-    ));
-    EXPECT_EQ("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744", hex(privateKeyExt.bytes));
-    EXPECT_EQ("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff", hex(privateKeyExt.extension));
-    EXPECT_EQ("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4", hex(privateKeyExt.chainCode));
-    EXPECT_EQ("639aadd8b6499ae39b78018b79255fbd8f585cbda9cbb9e907a72af86afb7a05", hex(privateKeyExt.second));
-    EXPECT_EQ("d41a57c2dec9a6a19d6bf3b1fa784f334f3a0048d25ccb7b78a7b44066f9ba7b", hex(privateKeyExt.secondExtension));
-    EXPECT_EQ("ed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a", hex(privateKeyExt.secondChainCode));
+        "ed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a";
+    // Extended keys: private key is 2x3x32 bytes, public key is 2x64 bytes
+    auto privateKeyExt = PrivateKey(parse_hex(fullkey));
+    EXPECT_EQ(fullkey, hex(privateKeyExt.bytes));
+    EXPECT_EQ("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744", hex(privateKeyExt.key()));
+    EXPECT_EQ("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff", hex(privateKeyExt.extension()));
+    EXPECT_EQ("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4", hex(privateKeyExt.chainCode()));
+    EXPECT_EQ("639aadd8b6499ae39b78018b79255fbd8f585cbda9cbb9e907a72af86afb7a05", hex(privateKeyExt.secondKey()));
+    EXPECT_EQ("d41a57c2dec9a6a19d6bf3b1fa784f334f3a0048d25ccb7b78a7b44066f9ba7b", hex(privateKeyExt.secondExtension()));
+    EXPECT_EQ("ed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a", hex(privateKeyExt.secondChainCode()));
+
     auto publicKeyExt = privateKeyExt.getPublicKey(TWPublicKeyTypeED25519Extended);
     EXPECT_EQ(2*64, publicKeyExt.bytes.size());
 
@@ -203,12 +205,7 @@ TEST(PrivateKey, PrivateKeyExtended) {
         parse_hex("d41a57c2dec9a6a19d6bf3b1fa784f334f3a0048d25ccb7b78a7b44066f9ba7b"),
         parse_hex("ed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a")
     );
-    EXPECT_EQ("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744", hex(privateKeyExt.bytes));
-    EXPECT_EQ("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff", hex(privateKeyExt.extension));
-    EXPECT_EQ("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4", hex(privateKeyExt.chainCode));
-    EXPECT_EQ("639aadd8b6499ae39b78018b79255fbd8f585cbda9cbb9e907a72af86afb7a05", hex(privateKeyExt.second));
-    EXPECT_EQ("d41a57c2dec9a6a19d6bf3b1fa784f334f3a0048d25ccb7b78a7b44066f9ba7b", hex(privateKeyExt.secondExtension));
-    EXPECT_EQ("ed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a", hex(privateKeyExt.secondChainCode));
+    EXPECT_EQ(fullkey, hex(privateKeyExt.bytes));
 }
 
 TEST(PrivateKey, PrivateKeyExtendedError) {

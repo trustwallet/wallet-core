@@ -16,6 +16,7 @@
 #include <TrustWalletCore/TWCurve.h>
 #include <TrustWalletCore/TWHDVersion.h>
 #include <TrustWalletCore/TWPurpose.h>
+#include <TrustWalletCore/TWDerivation.h>
 
 #include <array>
 #include <optional>
@@ -74,11 +75,17 @@ class HDWallet {
     /// Returns the master private key extension (32 byte).
     PrivateKey getMasterKeyExtension(TWCurve curve) const;
 
+    /// Returns the private key with the given derivation.
+    PrivateKey getKey(const TWCoinType coin, TWDerivation derivation) const;
+
     /// Returns the private key at the given derivation path.
     PrivateKey getKey(const TWCoinType coin, const DerivationPath& derivationPath) const;
 
-    /// Derives the address for a coin.
+    /// Derives the address for a coin (default derivation).
     std::string deriveAddress(TWCoinType coin) const;
+
+    /// Derives the address for a coin with given derivation.
+    std::string deriveAddress(TWCoinType coin, TWDerivation derivation) const;
 
     /// Returns the extended private key for default 0 account; derivation path used is "m/purpose'/coin'/0'".
     std::string getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const { return getExtendedPrivateKeyAccount(purpose, coin, version, 0); }

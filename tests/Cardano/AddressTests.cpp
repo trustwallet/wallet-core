@@ -85,35 +85,13 @@ TEST(CardanoAddress, FromStringV3) {
 }
 
 TEST(CardanoAddress, MnemonicToAddressV3) {
-    // Test from cardano-crypto.js; Test wallet
-    const auto mnemonic = "cost dash dress stove morning robust group affair stomach vacant route volume yellow salute laugh";
-    const auto coin = TWCoinTypeCardano;
-    const auto derivPath = derivationPath(coin);
-
-    auto wallet = HDWallet(mnemonic, "");
-
-    {
-        const auto address = wallet.deriveAddress(coin);
-        EXPECT_EQ(address, "addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq");
-    }
-
-    {
-        const auto privateKey = wallet.getKey(coin, derivPath);
-        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Extended);
-
-        const auto address = AddressV3(publicKey);
-        EXPECT_EQ(address.string(), "addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq");
-        EXPECT_EQ(address.networkId, AddressV3::Network_Production);
-        EXPECT_EQ(address.kind, AddressV3::Kind_Base);
-        EXPECT_EQ(hex(address.bytes), "8d98bea0414243dc84070f96265577e7e6cf702d62e871016885034e" "cc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468");
-    }
-}
-
-TEST(CardanoAddress, MnemonicToAddressV2) {
     {
         // Test from cardano-crypto.js; Test wallet
-        auto mnemonic = "cost dash dress stove morning robust group affair stomach vacant route volume yellow salute laugh";
-        auto wallet = HDWallet(mnemonic, "");
+        const auto mnemonic = "cost dash dress stove morning robust group affair stomach vacant route volume yellow salute laugh";
+        const auto coin = TWCoinTypeCardano;
+        const auto derivPath = derivationPath(coin);
+
+        const auto wallet = HDWallet(mnemonic, "");
 
         // check entropy
         EXPECT_EQ("30a6f50aeb58ff7699b822d63e0ef27aeff17d9f", hex(wallet.getEntropy()));
@@ -133,13 +111,24 @@ TEST(CardanoAddress, MnemonicToAddressV2) {
             EXPECT_EQ("addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq", addr);
         }
         {
+            const auto privateKey = wallet.getKey(coin, derivPath);
+            EXPECT_EQ(hex(privateKey.bytes), "e8c8c5b2df13f3abed4e6b1609c808e08ff959d7e6fc3d849e3f2880550b574437aa559095324d78459b9bb2da069da32337e1cc5da78f48e1bd084670107f3110f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26fae0d152bb611cb9ff34e945e4ff627e6fba81da687a601a879759cd76530b5744424db69a75edd4780a5fbc05d1a3c84ac4166ff8e424808481dd8e77627ce5f5bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276");
+            const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Extended);
+
+            const auto address = AddressV3(publicKey);
+            EXPECT_EQ(address.string(), "addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq");
+            EXPECT_EQ(address.networkId, AddressV3::Network_Production);
+            EXPECT_EQ(address.kind, AddressV3::Kind_Base);
+            EXPECT_EQ(hex(address.bytes), "8d98bea0414243dc84070f96265577e7e6cf702d62e871016885034e" "cc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468");
+        }
+        {
             PrivateKey privateKey = wallet.getKey(TWCoinTypeCardano, DerivationPath("m/1852'/1815'/0'/0/0"));
-            EXPECT_EQ("e8c8c5b2df13f3abed4e6b1609c808e08ff959d7e6fc3d849e3f2880550b5744", hex(privateKey.bytes));
-            EXPECT_EQ("37aa559095324d78459b9bb2da069da32337e1cc5da78f48e1bd084670107f31", hex(privateKey.extension));
-            EXPECT_EQ("10f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26fa", hex(privateKey.chainCode));
-            EXPECT_EQ("e0d152bb611cb9ff34e945e4ff627e6fba81da687a601a879759cd76530b5744", hex(privateKey.second));
-            EXPECT_EQ("424db69a75edd4780a5fbc05d1a3c84ac4166ff8e424808481dd8e77627ce5f5", hex(privateKey.secondExtension));
-            EXPECT_EQ("bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276", hex(privateKey.secondChainCode));
+            EXPECT_EQ("e8c8c5b2df13f3abed4e6b1609c808e08ff959d7e6fc3d849e3f2880550b5744", hex(privateKey.key()));
+            EXPECT_EQ("37aa559095324d78459b9bb2da069da32337e1cc5da78f48e1bd084670107f31", hex(privateKey.extension()));
+            EXPECT_EQ("10f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26fa", hex(privateKey.chainCode()));
+            EXPECT_EQ("e0d152bb611cb9ff34e945e4ff627e6fba81da687a601a879759cd76530b5744", hex(privateKey.secondKey()));
+            EXPECT_EQ("424db69a75edd4780a5fbc05d1a3c84ac4166ff8e424808481dd8e77627ce5f5", hex(privateKey.secondExtension()));
+            EXPECT_EQ("bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276", hex(privateKey.secondChainCode()));
             PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Extended);
             EXPECT_EQ("fafa7eb4146220db67156a03a5f7a79c666df83eb31abbfbe77c85e06d40da3110f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26faf4b8d5201961e68f2e177ba594101f513ee70fe70a41324e8ea8eb787ffda6f4bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276", hex(publicKey.bytes));
             string addr = AddressV3(publicKey).string();
