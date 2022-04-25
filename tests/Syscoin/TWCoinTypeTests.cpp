@@ -23,7 +23,7 @@ TEST(TWSyscoinCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSyscoin));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSyscoin), 8);
-    ASSERT_EQ(TWBlockchainSyscoin, TWCoinTypeBlockchain(TWCoinTypeSyscoin));
+    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeSyscoin));
     ASSERT_EQ(0x5, TWCoinTypeP2shPrefix(TWCoinTypeSyscoin));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeSyscoin));
     assertStringsEqual(symbol, "SYS");

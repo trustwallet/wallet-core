@@ -48,7 +48,6 @@ enum TWBlockchain {
     TWBlockchainElrondNetwork = 34,
     TWBlockchainOasisNetwork = 35,
     TWBlockchainIOST = 36,
-    TWBlockchainSyscoin = 37,
 };
 
 TW_EXTERN_C_END
