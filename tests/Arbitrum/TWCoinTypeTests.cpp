@@ -1,8 +1,11 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
+//
+// This is a GENERATED FILE, changes made here MAY BE LOST.
+// Generated one-time (codegen/bin/cointests)
 //
 
 #include "../interface/TWTestUtilities.h"
@@ -21,7 +24,8 @@ TEST(TWArbitrumCoinType, TWCoinType) {
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeArbitrum), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeArbitrum));
-
+    ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeArbitrum));
+    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeArbitrum));
     assertStringsEqual(symbol, "ARETH");
     assertStringsEqual(txUrl, "https://arbiscan.io/tx/0xa1e319be22c08155e5904aa211fb87df5f4ade48de79c6578b1cf3dfda9e498c");
     assertStringsEqual(accUrl, "https://arbiscan.io/address/0xecf9ffa7f51e1194f89c25ad8c484f6bfd04e1ac");

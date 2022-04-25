@@ -59,7 +59,8 @@ class AnyAddress {
         case TWCoinTypeDigiByte:
         case TWCoinTypeGroestlcoin:
         case TWCoinTypeLitecoin:
-        case TWCoinTypeViacoin: {
+        case TWCoinTypeViacoin:
+        case TWCoinTypeSyscoin: {
             auto decoded = Bitcoin::SegwitAddress::decode(string);
             if (!std::get<2>(decoded)) {
                 break;

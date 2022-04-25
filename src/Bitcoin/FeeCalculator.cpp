@@ -58,6 +58,7 @@ FeeCalculator& getFeeCalculator(TWCoinType coinType, bool disableFilter) {
     case TWCoinTypeLitecoin:
     case TWCoinTypeViacoin:
     case TWCoinTypeGroestlcoin:
+    case TWCoinTypeSyscoin:
         if (disableFilter) {
             return segwitFeeCalculatorNoDustFilter;
         }
