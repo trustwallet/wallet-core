@@ -20,15 +20,22 @@ jobs:
     - name: Install emsdk
       run: tools/install-wasm-dependencies
 
-    - name: Download internal dependencies
-      run: tools/download-dependencies
+    - name: Cache internal dependencies
+      id: internal_cache
+      uses: actions/cache@v1.1.2
+      with:
+        path: build/local
+        key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
+
+    - name: Install internal dependencies
+      run: tools/install-dependencies
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
+      if: steps.internal_cache.outputs.cache-hit != 'true'
 
     - name: Code generation
-      run: |
-        tools/generate-files
+      run: tools/generate-files
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
