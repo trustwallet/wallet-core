@@ -2275,5 +2275,77 @@
       "rpc": "https://rpc-mainnet.kcc.network",
       "documentation": "https://docs.kcc.io/#/en-us/"
     }
+  },
+  {
+    "id": "boba",
+    "name": "Boba",
+    "coinId": 10000288,
+    "symbol": "BOBAETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://blockexplorer.boba.network",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x31533707c3feb3b10f7deeea387ff8893f229253e65ca6b14d2400bf95b5d103",
+      "sampleAccount": "0x4F96F50eDB37a19216d87693E5dB241e31bD3735"
+    },
+    "info": {
+      "url": "https://boba.network/",
+      "source": "https://github.com/bobanetwork/boba",
+      "rpc": "https://mainnet.boba.network",
+      "documentation": "https://docs.boba.network/"
+    }
+  },
+  {
+    "id": "metis",
+    "name": "Metis",
+    "coinId": 10001088,
+    "symbol": "METIS",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://andromeda-explorer.metis.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x422f2ebbede32d4434ad0cf0ae55d44a84e14d3d5725a760133255b42676d8ce",
+      "sampleAccount": "0xBe9E8Ec25866B21bA34e97b9393BCabBcB4A5C86"
+    },
+    "info": {
+      "url": "https://www.metis.io/",
+      "source": "https://github.com/MetisProtocol/mvm",
+      "rpc": "https://andromeda.metis.io/?owner=1088",
+      "documentation": "https://docs.metis.io/"
+    }
+  },
+  {
+    "id": "aurora",
+    "name": "Aurora",
+    "coinId": 1323161554,
+    "symbol": "AURORAETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://explorer.mainnet.aurora.dev",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x99deebdb70f8027037abb3d3d0f3c7523daee857d85e9056d2671593ff2f2f28",
+      "sampleAccount": "0x8707cdE20dd43E3dB1F74c28fcd509ef38B0bA51"
+    },
+    "info": {
+      "url": "https://aurora.dev/",
+      "source": "https://github.com/aurora-is-near/aurora-engine",
+      "rpc": "https://mainnet.aurora.dev/",
+      "documentation": "https://doc.aurora.dev/"
+    }
   }
 ]
