@@ -210,7 +210,7 @@ set_target_properties(
     LINK_FLAGS -no-undefined
 )
 
-target_compile_options(protobuf PRIVATE -DHAVE_PTHREAD=1 -Wno-inconsistent-missing-override -Wno-shorten-64-to-32)
+target_compile_options(protobuf PRIVATE -DHAVE_PTHREAD=1 -Wno-inconsistent-missing-override -Wno-shorten-64-to-32 -Wno-invalid-noreturn)
 
 install(TARGETS protobuf
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

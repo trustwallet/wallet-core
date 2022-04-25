@@ -11,32 +11,28 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
+
     - name: Install system dependencies
       run: |
         # build-essential clang-11 libc++-dev libc++abi-dev ruby-full cmake python3
         sudo apt-get update && sudo apt-get install libboost-all-dev --fix-missing
+
     - name: Install emsdk
-      run: |
-        tools/install-wasm-dependencies
-    - name: Cache internal dependencies
-      id: internal_cache
-      uses: actions/cache@v1.1.2
-      with:
-        path: build/local
-        key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
-    - name: Install internal dependencies
-      run: |
-        tools/install-dependencies
+      run: tools/install-wasm-dependencies
+
+    - name: Download internal dependencies
+      run: tools/download-dependencies
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
-      if: steps.internal_cache.outputs.cache-hit != 'true'
+
     - name: Code generation
       run: |
         tools/generate-files
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
+
     - name: Build for Wasm
       run: |
         source emsdk/emsdk_env.sh
@@ -44,6 +40,7 @@ jobs:
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
+
     - name: Test
       run: |
         npm install && npm run copy:wasm 

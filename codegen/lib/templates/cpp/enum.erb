@@ -9,8 +9,9 @@ namespace TW::Wasm {
 auto <%= entity.name %>Description(TW<%= entity.name %> value) -> std::string {
     switch (value) {
 <%      entity.cases.each do |c| -%>
-        case TW<%= entity.name %><%= c.name %>: return <%= c.string %>; break;
+        case TW<%= entity.name %><%= c.name %>: return <%= c.string %>;
 <%      end -%>
+        default: return "";
     }
 }
 
