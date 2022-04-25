@@ -7,6 +7,7 @@
 #pragma once
 
 #include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWDerivation.h>
 
 #include "Data.h"
 #include "PublicKey.h"
@@ -31,7 +32,12 @@ public:
     virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const = 0;
     // normalizeAddress is optional, it may leave this default, no-change implementation
     virtual std::string normalizeAddress(TWCoinType coin, const std::string& address) const { return address; }
+    // Address derivation, default derivation
     virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const = 0;
+    // Address derivation, by default invoking default
+    virtual std::string deriveAddress(TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const {
+        return deriveAddress(coin, publicKey, p2pkh, hrp);
+    }
     // Signing
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const = 0;
     virtual bool supportsJSONSigning() const { return false; }

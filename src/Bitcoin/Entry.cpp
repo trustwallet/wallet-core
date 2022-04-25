@@ -68,11 +68,22 @@ string Entry::normalizeAddress(TWCoinType coin, const string& address) const {
     }
 }
 
-string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, byte p2pkh, const char* hrp) const {
+string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey, byte p2pkh, const char* hrp) const {
     switch (coin) {
         case TWCoinTypeBitcoin:
-        case TWCoinTypeDigiByte:
         case TWCoinTypeLitecoin:
+            switch (derivation) {
+                case TWDerivationBitcoinLegacy:
+                case TWDerivationLitecoinLegacy:
+                    return Address(publicKey, 0).string();
+
+                case TWDerivationBitcoinSegwit:
+                case TWDerivationDefault:
+                default:
+                    return SegwitAddress(publicKey, hrp).string();
+            }
+
+        case TWCoinTypeDigiByte:
         case TWCoinTypeViacoin:
         case TWCoinTypeBitcoinGold:
             return SegwitAddress(publicKey, hrp).string();

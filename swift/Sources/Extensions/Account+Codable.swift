@@ -10,6 +10,7 @@ extension Account: Equatable {
     public static func == (lhs: Account, rhs: Account) -> Bool {
         return lhs.coin == rhs.coin &&
         lhs.address == rhs.address &&
+        lhs.derivation == rhs.derivation &&
         lhs.derivationPath == rhs.derivationPath &&
         lhs.publicKey == rhs.publicKey &&
         lhs.extendedPublicKey == rhs.extendedPublicKey
@@ -20,6 +21,7 @@ extension Account: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(coin)
         hasher.combine(address)
+        hasher.combine(derivation)
         hasher.combine(derivationPath)
         hasher.combine(publicKey)
         hasher.combine(extendedPublicKey)
@@ -30,6 +32,7 @@ extension Account: Codable {
     private enum CodingKeys: String, CodingKey {
         case coin
         case address
+        case derivation
         case derivationPath
         case publicKey
         case extendedPublicKey
@@ -39,6 +42,7 @@ extension Account: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(coin.rawValue, forKey: .coin)
         try container.encode(address, forKey: .address)
+        try container.encode(derivation.rawValue, forKey: .derivation)
         try container.encode(derivationPath, forKey: .derivationPath)
         try container.encode(publicKey, forKey: .publicKey)
         try container.encode(extendedPublicKey, forKey: .extendedPublicKey)
@@ -48,6 +52,7 @@ extension Account: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let rawCoin           = try container.decode(UInt32.self, forKey: .coin)
         let address           = try container.decode(String.self, forKey: .address)
+        let rawDerivation     = try container.decode(UInt32.self, forKey: .derivation)
         let derivationPath    = try container.decode(String.self, forKey: .derivationPath)
         let publicKey         = try container.decode(String.self, forKey: .publicKey)
         let extendedPublicKey = try container.decode(String.self, forKey: .extendedPublicKey)
@@ -55,6 +60,7 @@ extension Account: Codable {
         self.init(
             address: address,
             coin: CoinType(rawValue: rawCoin)!,
+            derivation: Derivation(rawValue: rawDerivation)!,
             derivationPath: derivationPath,
             publicKey: publicKey,
             extendedPublicKey: extendedPublicKey

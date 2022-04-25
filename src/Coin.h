@@ -19,6 +19,7 @@
 #include <TrustWalletCore/TWCurve.h>
 #include <TrustWalletCore/TWHDVersion.h>
 #include <TrustWalletCore/TWPurpose.h>
+#include <TrustWalletCore/TWDerivation.h>
 
 #include <string>
 #include <vector>
@@ -43,14 +44,26 @@ TWPurpose purpose(TWCoinType coin);
 /// Returns the curve that should be used for a coin type.
 TWCurve curve(TWCoinType coin);
 
-/// Returns the xpub HD version that should be used for a coin type.
+/// Returns the default xpub HD version that should be used for a coin type.
 TWHDVersion xpubVersion(TWCoinType coin);
 
-/// Returns the xprv HD version that should be used for a coin type.
+/// Returns the default xprv HD version that should be used for a coin type.
 TWHDVersion xprvVersion(TWCoinType coin);
+
+/// Returns the xpub HD version for a TWDerivation.
+TWHDVersion xpubVersionDerivation(TWCoinType coin, TWDerivation derivation);
+
+/// Returns the xprv HD version for a TWDerivation.
+TWHDVersion xprvVersionDerivation(TWCoinType coin, TWDerivation derivation);
 
 /// Returns the default derivation path for a particular coin.
 DerivationPath derivationPath(TWCoinType coin);
+
+/// Returns an alternative derivation path for a particular coin, TWDerivationDefault for default.
+DerivationPath derivationPath(TWCoinType coin, TWDerivation derivation);
+
+/// Returns the string name of a derivation for a particular coin.
+const char* derivationName(TWCoinType coin, TWDerivation derivation);
 
 /// Returns the public key type for a particular coin.
 enum TWPublicKeyType publicKeyType(TWCoinType coin);
@@ -58,8 +71,14 @@ enum TWPublicKeyType publicKeyType(TWCoinType coin);
 /// Derives the address for a particular coin from the private key.
 std::string deriveAddress(TWCoinType coin, const PrivateKey& privateKey);
 
+/// Derives the address for a particular coin from the private key, with given derivation.
+std::string deriveAddress(TWCoinType coin, const PrivateKey& privateKey, TWDerivation derivation);
+
 /// Derives the address for a particular coin from the public key.
 std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey);
+
+/// Derives the address for a particular coin from the public key, with given derivation.
+std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation);
 
 /// Hasher for deriving the public key hash.
 Hash::Hasher publicKeyHasher(TWCoinType coin);
@@ -99,6 +118,15 @@ Data anyCoinBuildTransactionInput(TWCoinType coinType, const std::string& from, 
 // Return coins handled by the same dispatcher as the given coin (mostly for testing)
 const std::vector<TWCoinType> getSimilarCoinTypes(TWCoinType coinType);
 
+// Describes a derivation: path + optional format + optional name
+struct Derivation {
+    TWDerivation name = TWDerivationDefault;
+    const char* path = "";
+    const char* nameString = "";
+    TWHDVersion xpubVersion = TWHDVersionNone;
+    TWHDVersion xprvVersion = TWHDVersionNone;
+};
+
 // Contains only simple types.
 struct CoinInfo {
     const char* id;
@@ -106,9 +134,7 @@ struct CoinInfo {
     TWBlockchain blockchain;
     TWPurpose purpose;
     TWCurve curve;
-    TWHDVersion xpubVersion;
-    TWHDVersion xprvVersion;
-    const char* derivationPath;
+    std::vector<Derivation> derivation;
     TWPublicKeyType publicKeyType;
     byte staticPrefix;
     byte p2pkhPrefix;
@@ -121,6 +147,12 @@ struct CoinInfo {
     const char* explorerTransactionUrl;
     const char* explorerAccountUrl;
     uint32_t slip44;
+
+    // returns default derivation
+    const Derivation defaultDerivation() const {
+        return (derivation.size() > 0) ? derivation[0] : Derivation();
+    }
+    const Derivation derivationByName(TWDerivation name) const;
 };
 
 } // namespace TW
