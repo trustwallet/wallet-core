@@ -50,7 +50,7 @@ function build_protobuf() {
     PROTOBUF_DIR="$ROOT/build/local/src/protobuf"
     cd ${PROTOBUF_DIR}/protobuf-$PROTOBUF_VERSION
 
-    $CMAKE cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -Dprotobuf_BUILD_TESTS=ON
+    ./configure --prefix="$PREFIX"
     $MAKE -j4
     $MAKE install
 

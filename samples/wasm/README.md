@@ -17,6 +17,7 @@
 ## Building and Running
 
 - run `tools/generate-files`
-- run `tools/wasm-build`
+- run `source emsdk/emsdk_env.sh`
+- run  `tools/wasm-build`
 - run `python3 -m http.server 8000`
 - open web browser and navigate to `http://127.0.0.1:8000/samples/wasm/wallet-core.html`
