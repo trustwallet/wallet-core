@@ -2283,7 +2283,11 @@
     "symbol": "BOBAETH",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/60'/0'/0/0",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -2307,7 +2311,11 @@
     "symbol": "METIS",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/60'/0'/0/0",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
@@ -2331,7 +2339,11 @@
     "symbol": "AURORAETH",
     "decimals": 18,
     "blockchain": "Ethereum",
-    "derivationPath": "m/44'/60'/0'/0/0",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
