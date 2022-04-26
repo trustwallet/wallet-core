@@ -2359,5 +2359,33 @@
       "rpc": "https://mainnet.aurora.dev/",
       "documentation": "https://doc.aurora.dev/"
     }
+  },
+  {
+    "id": "syscoinnevm",
+    "name": "Syscoin NEVM",
+    "coinId": 57,
+    "symbol": "SYS",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://explorer.syscoin.org/",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xec584319108fad9d5960b42f3ae9f593f78a3ff83e5b13f1b1436aac39b45ef6",
+      "sampleAccount": "0xd087fc159c508208b528e1a1f4dc720072cb34ae"
+    },
+    "info": {
+      "url": "https://syscoin.org/",
+      "source": "https://github.com/syscoin/syscoin",
+      "rpc": "https://rpc.syscoin.org",
+      "documentation": "https://docs.syscoin.org/"
+    }
   }
 ]
