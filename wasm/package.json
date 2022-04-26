@@ -13,8 +13,16 @@
     "build": "npm run clean && npm run generate && cp -R generated lib dist && tsc --skipLibCheck",
     "copy:wasm": "mkdir -p lib && cp ../wasm-build/wasm/wallet-core.* lib"
   },
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/trustwallet/wallet-core.git"
+  },
+  "author": "hewigovens",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/trustwallet/wallet-core/issues"
+  },
+  "homepage": "https://github.com/trustwallet/wallet-core#readme",
   "files": [
     "dist"
   ],
