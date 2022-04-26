@@ -132,15 +132,19 @@ TEST(CardanoSigning, Plan) {
     }
 }
 
-TEST(CardanoSigning, PlanNoPrivKey) {
+TEST(CardanoSigning, PlanMissingPrivateKey) {
     auto input = createSampleInput(7000000, 10, "", true);
 
     auto signer = Signer(input);
     const auto plan = signer.doPlan();
-    EXPECT_EQ(plan.error, Common::Proto::Error_missing_private_key);
-    EXPECT_EQ(plan.utxos.size(), 0);
-    EXPECT_EQ(plan.availableAmount, 0);
-    EXPECT_EQ(plan.amount, 0);
+
+    EXPECT_EQ(plan.utxos.size(), 2);
+    EXPECT_EQ(plan.availableAmount, 8000000);
+    EXPECT_EQ(plan.amount, 7000000);
+    EXPECT_EQ(plan.fee, 170147);
+    EXPECT_EQ(plan.change, 829853);
+    EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
+    EXPECT_EQ(plan.error, Common::Proto::OK);
 }
 
 TEST(CardanoSigning, SignTransfer1) {
