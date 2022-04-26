@@ -272,6 +272,12 @@ TEST(CardanoSigning, SignNegative) {
         const auto output = signer.sign();
         EXPECT_EQ(output.error(), Common::Proto::Error_low_balance);
     }
+    {   // missing private key
+        auto input = createSampleInput(7000000, 10, "", true);
+        auto signer = Signer(input);
+        const auto output = signer.sign();
+        EXPECT_EQ(output.error(), Common::Proto::Error_missing_private_key);
+    }
 }
 
 TEST(CardanoSigning, SignTransfer_0db1ea) {
