@@ -9,6 +9,7 @@
 
 #include "PrivateKey.h"
 #include "Cbor.h"
+#include "HexCoding.h"
 
 #include <vector>
 #include <cassert>
@@ -19,6 +20,8 @@ using namespace TW::Cardano;
 using namespace TW;
 using namespace std;
 
+
+static const Data placeholderPrivateKey = parse_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f");
 
 Proto::SigningOutput Signer::sign() {
     // plan if needed
@@ -64,7 +67,7 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
     return Common::Proto::OK;
 }
 
-Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Data, Data>>& signatures, const Proto::SigningInput& input, const TransactionPlan& plan, const Data& txId) {
+Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Data, Data>>& signatures, const Proto::SigningInput& input, const TransactionPlan& plan, const Data& txId, bool sizeEstimationOnly) {
     signatures.clear();
     // Private keys and corresponding addresses
     std::map<std::string, Data> privateKeys;
@@ -93,10 +96,17 @@ Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Dat
     // create signature for each address
     for (auto& a: addresses) {
         const auto privKeyFind = privateKeys.find(a);
-        if (privKeyFind == privateKeys.end()) {
-            return Common::Proto::Error_missing_private_key;
+        Data privateKeyData;
+        if (privKeyFind != privateKeys.end()) {
+            privateKeyData = privKeyFind->second;
+        } else {
+            // private key not found
+            if (sizeEstimationOnly) {
+                privateKeyData = placeholderPrivateKey;
+            } else {
+                return Common::Proto::Error_missing_private_key;
+            }
         }
-        const auto privateKeyData = privKeyFind->second;
         const auto privateKey = PrivateKey(privateKeyData);
         const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Extended);
         const auto signature = privateKey.sign(txId, TWCurveED25519Extended);
@@ -149,7 +159,7 @@ Proto::SigningOutput Signer::signWithPlan() {
     return ret;
 }
 
-Common::Proto::SigningError Signer::encodeTransaction(Data& encoded, Data& txId, const Proto::SigningInput& input, const TransactionPlan& plan) {
+Common::Proto::SigningError Signer::encodeTransaction(Data& encoded, Data& txId, const Proto::SigningInput& input, const TransactionPlan& plan, bool sizeEstimationOnly) {
     if (plan.error != Common::Proto::OK) {
         return plan.error;
     }
@@ -162,7 +172,7 @@ Common::Proto::SigningError Signer::encodeTransaction(Data& encoded, Data& txId,
     txId = txAux.getId();
 
     std::vector<std::pair<Data, Data>> signatures;
-    const auto sigError = assembleSignatures(signatures, input, plan, txId);
+    const auto sigError = assembleSignatures(signatures, input, plan, txId, sizeEstimationOnly);
     if (sigError != Common::Proto::OK) {
         return sigError;
     }
@@ -224,7 +234,10 @@ uint64_t estimateTxSize(const Proto::SigningInput& input, Amount amount) {
 
     Data encoded;
     Data txId;
-    Signer::encodeTransaction(encoded, txId, input, _simplePlan);
+    const auto encodeError = Signer::encodeTransaction(encoded, txId, input, _simplePlan, true);
+    if (encodeError != Common::Proto::OK) {
+        return 0;
+    }
 
     auto encodedSize = encoded.size();
     const auto extra = 11;

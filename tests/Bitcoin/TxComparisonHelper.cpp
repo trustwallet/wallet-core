@@ -42,18 +42,20 @@ UTXOs buildTestUTXOs(const std::vector<int64_t>& amounts) {
     return utxos;
 }
 
-SigningInput buildSigningInput(Amount amount, int byteFee, const UTXOs& utxos, bool useMaxAmount, enum TWCoinType coin) {
+SigningInput buildSigningInput(Amount amount, int byteFee, const UTXOs& utxos, bool useMaxAmount, enum TWCoinType coin, bool omitPrivateKey) {
     SigningInput input;
     input.amount = amount;
     input.byteFee = byteFee;
     input.useMaxAmount = useMaxAmount;
     input.coinType = coin;
     
-    auto utxoKey = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"));
-    auto pubKey = utxoKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-    auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
-    assert(hex(utxoPubkeyHash) == "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1");
-    input.privateKeys.push_back(utxoKey);
+    if (!omitPrivateKey) {
+        auto utxoKey = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"));
+        auto pubKey = utxoKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+        auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
+        assert(hex(utxoPubkeyHash) == "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1");
+        input.privateKeys.push_back(utxoKey);
+    }
 
     input.utxos = utxos;
     input.toAddress = "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx";
