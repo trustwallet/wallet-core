@@ -20,8 +20,6 @@
 
 namespace TW {
 
-typedef std::vector<std::pair<Data, Data>> HashPubkeyList;
-
 /// Interface for coin-specific entry, used to dispatch calls to coins
 /// Implement this for all coins.
 class CoinEntry {

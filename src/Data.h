@@ -16,6 +16,7 @@ namespace TW {
 using byte = std::uint8_t;
 using Data = std::vector<byte>;
 
+typedef std::vector<std::pair<Data, Data>> HashPubkeyList;
 typedef std::vector<std::pair<Data, Data>> SignaturePubkeyList;
 
 inline void pad_left(Data& data, const uint32_t size) {
