@@ -18,6 +18,7 @@
 #include "Algorand/Entry.h"
 #include "Binance/Entry.h"
 #include "Bitcoin/Entry.h"
+#include "BitcoinDiamond/Entry.h"
 #include "Cardano/Entry.h"
 #include "Cosmos/Entry.h"
 #include "Decred/Entry.h"
@@ -53,7 +54,6 @@
 #include "Waves/Entry.h"
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
-#include "BitcoinDiamond/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
