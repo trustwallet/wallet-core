@@ -4,11 +4,12 @@ Trust Wallet Core is an open source, cross-platform, mobile-focused library
 implementing low-level cryptographic wallet functionality for a high number of blockchains.
 It is a core part of the popular [Trust Wallet](https://trustwallet.com), and some other projects.
 Most of the code is C++ with a set of strict C interfaces, and idiomatic interfaces for supported languages:
-Swift for iOS and Java for Android.
+Swift for iOS and Java (Kotlin) for Android.
 
 ![iOS CI](https://github.com/trustwallet/wallet-core/workflows/iOS%20CI/badge.svg)
 ![Android CI](https://github.com/trustwallet/wallet-core/workflows/Android%20CI/badge.svg)
 ![Linux CI](https://github.com/trustwallet/wallet-core/workflows/Linux%20CI/badge.svg)
+![Wasm CI](https://github.com/trustwallet/wallet-core/workflows/Wasm%20CI/badge.svg)
 ![Docker CI](https://github.com/trustwallet/wallet-core/workflows/Docker%20CI/badge.svg)
 
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/trustwallet/wallet-core)
@@ -16,7 +17,6 @@ Swift for iOS and Java for Android.
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/trustwallet/wallet-core)
 ![SPM](https://img.shields.io/badge/SPM-ready-blue)
 ![Cocoapods](https://img.shields.io/cocoapods/v/TrustWalletCore.svg)
-![Cocoapods platforms](https://img.shields.io/cocoapods/p/TrustWalletCore.svg)
 
 # Documentation
 
@@ -24,7 +24,7 @@ For comprehensive documentation, see [developer.trustwallet.com](https://develop
 
 # Supported Blockchains
 
-Wallet Core supports more than **50** blockchains: Bitcoin, Ethereum, Binance Chain, and most major blockchain platforms.
+Wallet Core supports more than **60** blockchains: Bitcoin, Ethereum, BNB, Cosmos, Solana, and most major blockchain platforms.
 The full list is [here](docs/registry.md).
 
 # Building
@@ -51,12 +51,11 @@ dependencies {
     implementation 'com.trustwallet:wallet-core:x.y.z'
 }
 ```
-Replace x.y.z with latest version:  
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/trustwallet/wallet-core)
+Replace x.y.z with latest version: ![GitHub release (latest by date)](https://img.shields.io/github/v/release/trustwallet/wallet-core)
 
 ## iOS
 
-We currently support Swift Package Manager and CocoaPods.
+We currently support Swift Package Manager and CocoaPods (will discontinue in the future).
 
 ### SPM
 
@@ -89,9 +88,20 @@ Add this line to your Podfile and run `pod install`:
 pod 'TrustWalletCore'
 ```
 
+## NPM (beta)
+
+```js
+npm install @trustwallet/wallet-core
+```
+
+## Go (beta)
+
+Please check out the [Go integration sample](https://github.com/trustwallet/wallet-core/tree/master/samples/go).
+
+
 # Projects
 
-Projects using Trust Wallet Core.  Add yours too!
+Projects using Trust Wallet Core. Add yours too!
 
 [<img src="https://trustwallet.com/assets/images/trust_logotype.svg" alt="Trust Wallet"/>](https://trustwallet.com)
 
