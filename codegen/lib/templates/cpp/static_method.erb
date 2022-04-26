@@ -1,0 +1,6 @@
+<%  method = locals[:method] -%>
+<%  arguments = WasmCppHelper.arguments(method.parameters) -%>
+auto <%= WasmCppHelper.class_name(entity: entity) %>::<%= WasmCppHelper.function_name(entity: entity, function: method) %>(<%= WasmCppHelper.parameters(method.parameters) %>) {
+<%= render('cpp/parameter_access.erb', { parameters: method.parameters }) -%>
+<%= render('cpp/method_forward.erb', { method: method, arguments: arguments }) -%>
+}

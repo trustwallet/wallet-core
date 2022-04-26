@@ -6,7 +6,7 @@
 
 import Foundation
 
-/// Represents a hierarchical determinisic derivation path.
+/// Represents a hierarchical deterministic derivation path.
 public struct DerivationPath: Codable, Hashable, CustomStringConvertible {
     var indexCount = 5
 

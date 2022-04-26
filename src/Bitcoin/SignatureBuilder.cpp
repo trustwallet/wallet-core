@@ -110,7 +110,7 @@ Result<void, Common::Proto::SigningError> SignatureBuilder<Transaction>::sign(Sc
             return Result<void, Common::Proto::SigningError>::failure(result.error());
         }
         witnessStack = result.payload();
-        witnessStack.push_back(move(witnessScript.bytes));
+        witnessStack.push_back(std::move(witnessScript.bytes));
         results.clear();
     } else if (script.isWitnessProgram()) {
         // Error: Unrecognized witness program.

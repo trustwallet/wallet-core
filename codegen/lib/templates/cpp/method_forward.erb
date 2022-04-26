@@ -1,0 +1,29 @@
+<%
+  method = locals[:method]
+  arguments = locals[:arguments] || ['instance'] + WasmCppHelper.arguments(method.parameters.drop(1))
+  call = render('cpp/method_call.erb', { method: method, arguments: arguments })
+
+  # Method returns data
+  if should_return_data(method)
+    if method.return_type.is_nullable -%>
+    return TWDataToVal(<%= call %>);
+<%  else -%>
+    return TWDataToVal(<%= call %>);
+<%  end
+  # Method returns a string
+  elsif should_return_string(method)
+    if method.return_type.is_nullable -%>
+    return TWStringToStd(<%= call %>);
+<%  else -%>
+    return TWStringToStd(<%= call %>);
+<% end
+  # Method returns a class or struct
+  elsif method.return_type.is_class || method.return_type.is_struct
+    if method.return_type.is_nullable -%>
+    return new Wasm<%= method.return_type.name %>(<%= call %>);
+<%  else -%>
+    return new Wasm<%= method.return_type.name %>(<%= call %>);
+<%  end
+  else -%>
+    return <%= call %>;
+<%end -%>

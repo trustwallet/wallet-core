@@ -1,0 +1,8 @@
+<%  parameters = locals[:parameters] -%>
+<%  parameters.each do |param| -%>
+<%    if param.type.name == :data -%>
+    auto <%= param.name %>Data = TW::data(<%= param.name %>);
+<%    elsif param.type.name == :string -%>
+<%    elsif param.type.is_struct || param.type.is_class -%>
+<%    end -%>
+<%  end -%>

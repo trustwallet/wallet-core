@@ -1,3 +1,30 @@
+# Copyright © 2017-2022 Trust Wallet.
+#
+# This file is part of Trust. The full Trust copyright notice, including
+# terms governing use, modification, and redistribution, is contained in the
+# file LICENSE at the root of the source code distribution tree.
+
+set(TW_WARNING_FLAGS 
+    -W
+    -Wall
+    -Wextra
+    -Wimplicit-function-declaration
+    -Wredundant-decls
+    -Wstrict-prototypes
+    -Wundef
+    -Wshadow
+    -Wpointer-arith
+    -Wformat
+    -Wreturn-type
+    -Wsign-compare
+    -Wmultichar
+    -Wformat-nonliteral
+    -Winit-self
+    -Wuninitialized
+    -Wformat-security
+    -Wno-missing-braces
+)
+
 add_library(TrezorCrypto
     crypto/bignum.c crypto/ecdsa.c crypto/curves.c crypto/secp256k1.c crypto/rand.c crypto/hmac.c crypto/bip32.c crypto/bip39.c crypto/pbkdf2.c crypto/base58.c crypto/base32.c
     crypto/address.c
@@ -33,28 +60,16 @@ add_library(TrezorCrypto
     crypto/shamir.c
 )
 
-target_compile_options(TrezorCrypto
-    PRIVATE
-        -W
-        -Wall
-        -Wextra
-        -Wimplicit-function-declaration
-        -Wredundant-decls
-        -Wstrict-prototypes
-        -Wundef
-        -Wshadow
-        -Wpointer-arith
-        -Wformat
-        -Wreturn-type
-        -Wsign-compare
-        -Wmultichar
-        -Wformat-nonliteral
-        -Winit-self
-        -Wuninitialized
-        -Wformat-security
-        -Wno-missing-braces
-        -Werror
-)
+if (EMSCRIPTEN)
+    message(STATUS "Skip building trezor-crypto/tests")
+    set(TW_WARNING_FLAGS ${TW_WARNING_FLAGS} -Wno-bitwise-instead-of-logical)
+else ()
+    if(NOT ANDROID AND NOT IOS_PLATFORM)
+        add_subdirectory(crypto/tests)
+    endif()
+endif()
+
+target_compile_options(TrezorCrypto PRIVATE ${TW_WARNING_FLAGS} -Werror)
 
 target_include_directories(TrezorCrypto
     PUBLIC
@@ -64,13 +79,10 @@ target_include_directories(TrezorCrypto
         src
 )
 
-if(NOT ANDROID AND NOT IOS_PLATFORM)
-    add_subdirectory(crypto/tests)
-endif()
-
-install(TARGETS TrezorCrypto
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        )
+install(
+    TARGETS TrezorCrypto
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
 
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

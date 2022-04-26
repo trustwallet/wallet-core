@@ -37,7 +37,7 @@ struct TWStoredKey* _Nullable TWStoredKeyImportHDWallet(TWString* _Nonnull mnemo
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nullable TWStoredKeyImportJSON(TWData* _Nonnull json);
 
-/// Creates a new key, with given encrpytion strength level.  Returned object needs to be deleted.
+/// Creates a new key, with given encryption strength level.  Returned object needs to be deleted.
 TW_EXPORT_STATIC_METHOD
 struct TWStoredKey* _Nonnull TWStoredKeyCreateLevel(TWString* _Nonnull name, TWData* _Nonnull password, enum TWStoredKeyEncryptionLevel encryptionLevel);
 
@@ -48,7 +48,7 @@ struct TWStoredKey* _Nonnull TWStoredKeyCreate(TWString* _Nonnull name, TWData* 
 TW_EXPORT_METHOD
 void TWStoredKeyDelete(struct TWStoredKey* _Nonnull key);
 
-/// Stored key uniqie identifier.  Returned object needs to be deleted.
+/// Stored key unique identifier.  Returned object needs to be deleted.
 TW_EXPORT_PROPERTY
 TWString* _Nullable TWStoredKeyIdentifier(struct TWStoredKey* _Nonnull key);
 
@@ -100,7 +100,7 @@ TWString* _Nullable TWStoredKeyDecryptMnemonic(struct TWStoredKey* _Nonnull key,
 TW_EXPORT_METHOD
 struct TWPrivateKey* _Nullable TWStoredKeyPrivateKey(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWData* _Nonnull password);
 
-/// Dercrypts and returns the HD Wallet for mnemonic phrase keys.  Returned object needs to be deleted.
+/// Decrypts and returns the HD Wallet for mnemonic phrase keys.  Returned object needs to be deleted.
 TW_EXPORT_METHOD
 struct TWHDWallet* _Nullable TWStoredKeyWallet(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password);
 

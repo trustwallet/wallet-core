@@ -25,6 +25,7 @@
 #include "Nano/Address.h"
 #include "Polkadot/Address.h"
 #include "Ronin/Address.h"
+#include "Solana/Address.h"
 #include "Zcash/TAddress.h"
 #include "Zilliqa/Address.h"
 
@@ -185,6 +186,9 @@ class AnyAddress {
         case TWCoinTypeNEAR: {
             auto addr = NEAR::Address(string);
             return {addr.bytes.begin(), addr.bytes.end()};
+        }
+        case TWCoinTypeSolana: {
+            return Solana::Address(string).vector();
         }
         default:
             break;

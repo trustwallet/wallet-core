@@ -27,7 +27,7 @@ bool TWAnyAddressEqual(struct TWAnyAddress* _Nonnull lhs, struct TWAnyAddress* _
 TW_EXPORT_STATIC_METHOD
 bool TWAnyAddressIsValid(TWString* _Nonnull string, enum TWCoinType coin);
 
-/// Creates an address from a string representaion.
+/// Creates an address from a string representation.
 TW_EXPORT_STATIC_METHOD
 struct TWAnyAddress* _Nullable TWAnyAddressCreateWithString(TWString* _Nonnull string, enum TWCoinType coin);
 
