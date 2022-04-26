@@ -37,5 +37,5 @@ describe("StoredKey", () => {
     assert.equal(account.publicKey, "02df6fc590ab3101bbe0bb5765cbaeab9b5dcfe09ac9315d707047cbd13bc7e006");
 
     storedKey.delete();
-  });
+  }).timeout(5000);
 });
