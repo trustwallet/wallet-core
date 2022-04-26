@@ -20,6 +20,7 @@ options.swift = true
 options.java = true
 options.jni_h = true
 options.jni_c = true
+options.wasm_cpp = true
 
 OptionParser.new do |opts|
   opts.banner = 'Usage: codegen [options]'
@@ -41,6 +42,9 @@ OptionParser.new do |opts|
   end
   opts.on('-c', '--jnic', "Generate JNI code. Default: #{options.jni_c}") do |v|
     options.jni_c = v
+  end
+  opts.on('-w', '--wasm-cpp', "Generate cpp code for Wasm(Emscripten). Default: #{options.jni_c}") do |v|
+    options.wasm_cpp = v
   end
   opts.on_tail('-h', '--help', 'Show this message') do
     puts opts
@@ -72,4 +76,8 @@ if options.jni_h
 end
 if options.jni_c
   generator.render_jni_c
+end
+if options.wasm_cpp
+  generator.render_wasm_h
+  generator.render_wasm_cpp
 end

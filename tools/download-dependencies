@@ -1,0 +1,61 @@
+#!/bin/bash
+
+set -e
+
+ROOT="$PWD"
+PREFIX="${PREFIX:-$ROOT/build/local}"
+
+# Load dependencies version
+BASE_DIR=$(cd `dirname $0`; pwd)
+source ${BASE_DIR}/dependencies-version
+
+function download_gtest() {
+    echo "Downloading gtest..."
+    GTEST_DIR="$ROOT/build/local/src/gtest"
+    mkdir -p "$GTEST_DIR"
+    cd "$GTEST_DIR"
+    if [ ! -f release-$GTEST_VERSION.tar.gz ]; then
+        curl -fSsOL https://github.com/google/googletest/archive/release-$GTEST_VERSION.tar.gz
+    fi
+    tar xzf release-$GTEST_VERSION.tar.gz
+}
+
+function download_libcheck() {
+    echo "Downloading libcheck..."
+    CHECK_DIR="$ROOT/build/local/src/check"
+    mkdir -p "$CHECK_DIR"
+    cd "$CHECK_DIR"
+    if [ ! -f check-$CHECK_VERSION.tar.gz ]; then
+        curl -fSsOL https://github.com/libcheck/check/releases/download/$CHECK_VERSION/check-$CHECK_VERSION.tar.gz
+    fi
+    tar xzf check-$CHECK_VERSION.tar.gz
+}
+
+function download_nolhmann_json() {
+    echo "Downloading nolhmann_json..."
+    JSON_DIR="$ROOT/build/local/json"
+    mkdir -p "$JSON_DIR"
+    cd "$JSON_DIR"
+    if [ ! -f include.zip ]; then
+        curl -fSsOL https://github.com/nlohmann/json/releases/download/v$JSON_VERSION/include.zip
+    fi
+    unzip -qq -d "$PREFIX" -o include.zip
+}
+
+function download_protobuf() {
+    echo "Downloading protobuf..."
+    PROTOBUF_DIR="$ROOT/build/local/src/protobuf"
+    mkdir -p "$PROTOBUF_DIR"
+    cd "$PROTOBUF_DIR"
+    if [ ! -f protobuf-java-$PROTOBUF_VERSION.tar.gz ]; then
+        curl -fSsOL https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protobuf-java-$PROTOBUF_VERSION.tar.gz
+    fi
+    tar xzf protobuf-java-$PROTOBUF_VERSION.tar.gz
+}
+
+download_gtest
+download_libcheck
+download_nolhmann_json
+download_protobuf
+
+echo "done."

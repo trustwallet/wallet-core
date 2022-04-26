@@ -1,3 +1,9 @@
+# Copyright © 2017-2022 Trust Wallet.
+#
+# This file is part of Trust. The full Trust copyright notice, including
+# terms governing use, modification, and redistribution, is contained in the
+# file LICENSE at the root of the source code distribution tree.
+
 set(protobuf_SOURCE_DIR ${CMAKE_SOURCE_DIR}/build/local/src/protobuf/protobuf-3.19.2)
 set(protobuf_source_dir ${CMAKE_SOURCE_DIR}/build/local/src/protobuf/protobuf-3.19.2)
 
@@ -204,10 +210,10 @@ set_target_properties(
     LINK_FLAGS -no-undefined
 )
 
-target_compile_options(protobuf PRIVATE -DHAVE_PTHREAD=1 -Wno-inconsistent-missing-override -Wno-shorten-64-to-32)
+target_compile_options(protobuf PRIVATE -DHAVE_PTHREAD=1 -Wno-inconsistent-missing-override -Wno-shorten-64-to-32 -Wno-invalid-noreturn)
 
 install(TARGETS protobuf
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/protobuf
-        )
+)

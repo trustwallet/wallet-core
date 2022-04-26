@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+git clone https://github.com/emscripten-core/emsdk.git
+
+cd emsdk
+
+./emsdk install latest && ./emsdk activate latest
+
+curl -fSsOL https://github.com/emscripten-ports/boost/releases/download/boost-1.75.0/boost-headers-1.75.0.zip
+unzip boost-headers-1.75.0.zip -d upstream/emscripten/system/include

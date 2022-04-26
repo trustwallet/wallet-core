@@ -1,0 +1,5 @@
+<%
+  method = locals[:method]
+  arguments = locals[:arguments] || ['instance'] + WasmCppHelper.arguments(method.parameters.drop(1))
+-%>
+TW<%= entity.name %><%= method.name %>(<%= arguments.join(', ') %>)

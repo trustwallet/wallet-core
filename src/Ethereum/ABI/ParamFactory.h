@@ -14,6 +14,8 @@
 #include <string>
 #include <vector>
 
+#include "Wasm.h"
+
 namespace TW::Ethereum::ABI {
 
 /// Factory creates concrete ParamBase class from string type.
