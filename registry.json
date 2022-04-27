@@ -2359,5 +2359,33 @@
       "rpc": "https://mainnet.aurora.dev/",
       "documentation": "https://doc.aurora.dev/"
     }
+  },
+  {
+    "id": "vite",
+    "name": "Vite",
+    "coinId": 666666,
+    "symbol": "VITE",
+    "decimals": 18,
+    "blockchain": "Vite",
+    "derivation": [
+      {
+        "path": "m/44'/666666'"
+      }
+    ],
+    "curve": "ed25519Blake2bNano",
+    "publicKeyType": "ed25519Blake2b",
+    "explorer": {
+      "url": "https://vitescan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "589f311485bc5a91285c8d4f8f73186263770b9085134eef9ecfe73e4e6ca2ec",
+      "sampleAccount": "vite_163a57d7ca06e3a2d3bc7a9756c95d1ec0556d06638e48774c"
+    },
+    "info": {
+      "url": "https://www.vite.org",
+      "source": "https://github.com/vitelabs/vite.org",
+      "rpc": "https://buidl.vite.net/gvite/http",
+      "documentation": "https://docs.vite.org/"
+    }
   }
 ]

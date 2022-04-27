@@ -28,6 +28,7 @@
 #include "Solana/Address.h"
 #include "Zcash/TAddress.h"
 #include "Zilliqa/Address.h"
+#include "Vite/Address.h"
 
 #include <string>
 
@@ -189,6 +190,10 @@ class AnyAddress {
         }
         case TWCoinTypeSolana: {
             return Solana::Address(string).vector();
+        }
+        case TWCoinTypeVite: {
+            auto addr = Vite::Address(string);
+            return {addr.bytes.begin(), addr.bytes.end()};
         }
         default:
             break;

@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package TW.Vite.Proto;
+option java_package = "wallet.core.jni.proto";
+
+message SigningInput {
+    enum BlockType {
+        CreateContractRequest = 0;
+        TransferRequest = 1;
+        ReIssueRequest = 2;
+        Response = 3;
+        ResponseFail = 4;
+        RefundByContractRequest = 5;
+        GenesisResponse = 6;
+    }
+    BlockType blockType = 1; // enum
+    string previousHash = 2; // Hex hash without 0x prefix
+    uint64 height = 3; // Integer
+    string address = 4; // Vite address format
+    string data = 5; // Base64
+    string fee = 6; // Decimal bigint string
+    string vmLogHash = 7; // Hex hash without 0x prefix
+    string nonce = 8; // Base64
+    repeated string triggeredSendBlockList = 9; // List of hashes without 0x prefix
+    bytes privateKey = 10; // Raw bytes
+
+    message RequestBlock {
+        string toAddress = 1; // Vite address format
+        string amount = 2; // Decimal integer
+        string tokenId = 3; // "tti_ffffffffffffffffffffffff"
+    }
+
+    message SendBlock {
+        string sendBlockHash = 1; // Hex hash without 0x prefix
+    }
+
+    oneof block {
+        RequestBlock requestBlock = 11;
+        SendBlock sendBlock = 12;
+    }
+}
+
+message SigningOutput {
+    bytes encoded = 1;
+}
