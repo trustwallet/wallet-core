@@ -93,6 +93,10 @@ message WithdrawNonceAccount {
     uint64 value = 3;
 }
 
+message AdvanceNonceAccount {
+    string nonce_account = 1;
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     bytes private_key = 1;       // optional for building pre-signing hash of a transaction
@@ -109,6 +113,7 @@ message SigningInput {
         CreateAndTransferToken create_and_transfer_token_transaction = 11;
         CreateNonceAccount create_nonce_account = 12;
         WithdrawNonceAccount withdraw_nonce_account = 13;
+        AdvanceNonceAccount advance_nonce_account = 16;
     }
     string sender = 14;        // required for building pre-signing hash of a transaction
     string nonce_account = 15; // required for using durable transaction nonce

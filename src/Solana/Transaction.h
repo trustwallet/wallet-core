@@ -634,6 +634,17 @@ class Message {
         instructions.push_back(Instruction::withdrawNonceAccount(accountMetas, value));
         return Message(recentBlockhash, instructions);
     }
+
+    static Message advanceNonceAccount(const Address& authorizer,
+                                       const Address& nonceAccountAddress, Hash recentBlockhash) {
+        auto sysvarRecentBlockhashsId = Address(SYSVAR_RECENT_BLOCKHASHS_ADDRESS);
+        std::vector<AccountMeta> accountMetas = {AccountMeta(nonceAccountAddress, false, false),
+                                                 AccountMeta(sysvarRecentBlockhashsId, false, true),
+                                                 AccountMeta(authorizer, true, true)};
+        std::vector<Instruction> instructions;
+        instructions.push_back(Instruction::advanceNonceAccount(authorizer, nonceAccountAddress));
+        return Message(recentBlockhash, instructions);
+    }
 };
 
 class Transaction {
