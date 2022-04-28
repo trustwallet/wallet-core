@@ -26,6 +26,10 @@
 #include <TrezorCrypto/sha2.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // HMAC based Deterministic Random Bit Generator with SHA-256
 
 typedef struct _HMAC_DRBG_CTX {
@@ -39,5 +43,9 @@ void hmac_drbg_init(HMAC_DRBG_CTX *ctx, const uint8_t *buf, size_t len,
 void hmac_drbg_reseed(HMAC_DRBG_CTX *ctx, const uint8_t *buf, size_t len,
                       const uint8_t *addin, size_t addin_len);
 void hmac_drbg_generate(HMAC_DRBG_CTX *ctx, uint8_t *buf, size_t len);
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
 #endif

@@ -5,18 +5,16 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Key.h"
+#include "Random.h"
 
 namespace TW::Arweave {
 
 static const auto TargetLength = 4096 / 8;
 
 PrivateKey keyGenerateFromPrngSeed(const Data& rngSeed) {
-    // TODO dummy placeholder implementation
-    Data dummy;
-    while (dummy.size() < TargetLength) {
-        append(dummy, rngSeed);
-    }
-    const auto keyData = subData(dummy, 0, TargetLength);
+    // TODO dummy placeholder implementation, using directly output from the PRNG
+    RandomGenerator rng = RandomGenerator(rngSeed);
+    const auto keyData = rng.nextBytes(TargetLength);
     return PrivateKey(keyData);
 }
 
