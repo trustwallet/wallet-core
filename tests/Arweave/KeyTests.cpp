@@ -1,0 +1,26 @@
+// Copyright © 2017-2022 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+#include "Arweave/Key.h"
+#include "HexCoding.h"
+
+#include <TrezorCrypto/hmac_drbg.h>
+
+#include <gtest/gtest.h>
+
+using namespace TW::Arweave;
+using namespace TW;
+
+const auto Seed = "7d1fda7b2223009190fe30c9701ecf89feb0c775a2e4e3fcc19435e316c672075f807160ca538e8e0a62fd937c062d0ad5c02ab1e8a3b60fe70ab65cfd991576"; // 125  31 218 ...
+//const auto Key1 = "f5e1bb6bc4b9e265ce1dbd98ba928529f1426bbf4cb5dca03c5fcc23f5136842b985ff0f2dc9d7aa8152bfea346c11476212a6355073558dc51891edd5d9f9a23ef1035182c91f1b8cb1fd40663e27e78a8b3bf24a687fd50034afb164b430595f58b6da27164f4619786493e56ac1be42178b31317dbb0f42f8af325f0a0802906a449d1a63db8348fa1dc0aee3d4a22dcb5d841fe54ca969eea70abbca373889b5ccc98ce8d6fbbb3860a74c8363230718b7066575cc4b0e407025dddfe6a06bb7c70b1151588b32b4ff8a9e5228f050a402cf44688f4976d6a035223252a39f89a56711dcedc03baed24a6b09b6e540b766c5bc1c6188b57048cd3b92fa5546"; // 245 225 187 ...
+
+TEST(ArweaveKey, keyGenerateFromPrngSeed) {
+    {
+        const auto seed = parse_hex(Seed);   
+        const auto key = keyGenerateFromPrngSeed(seed);
+        EXPECT_EQ(hex(key), "7d1fda7b2223009190fe30c9701ecf89feb0c775a2e4e3fcc19435e316c672075f807160ca538e8e0a62fd937c062d0ad5c02ab1e8a3b60fe70ab65cfd9915767d1fda7b2223009190fe30c9701ecf89feb0c775a2e4e3fcc19435e316c672075f807160ca538e8e0a62fd937c062d0ad5c02ab1e8a3b60fe70ab65cfd9915767d1fda7b2223009190fe30c9701ecf89feb0c775a2e4e3fcc19435e316c672075f807160ca538e8e0a62fd937c062d0ad5c02ab1e8a3b60fe70ab65cfd9915767d1fda7b2223009190fe30c9701ecf89feb0c775a2e4e3fcc19435e316c672075f807160ca538e8e0a62fd937c062d0ad5c02ab1e8a3b60fe70ab65cfd9915767d1fda7b2223009190fe30c9701ecf89feb0c775a2e4e3fcc19435e316c672075f807160ca538e8e0a62fd937c062d0ad5c02ab1e8a3b60fe70ab65cfd9915767d1fda7b2223009190fe30c9701ecf89feb0c775a2e4e3fcc19435e316c672075f807160ca538e8e0a62fd937c062d0ad5c02ab1e8a3b60fe70ab65cfd9915767d1fda7b2223009190fe30c9701ecf89feb0c775a2e4e3fcc19435e316c672075f807160ca538e8e0a62fd937c062d0ad5c02ab1e8a3b60fe70ab65cfd9915767d1fda7b2223009190fe30c9701ecf89feb0c775a2e4e3fcc19435e316c672075f807160ca538e8e0a62fd937c062d0ad5c02ab1e8a3b60fe70ab65cfd991576");
+    }
+}
