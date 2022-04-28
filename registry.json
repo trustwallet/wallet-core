@@ -2359,5 +2359,33 @@
       "rpc": "https://mainnet.aurora.dev/",
       "documentation": "https://doc.aurora.dev/"
     }
+  },
+  {
+    "id": "arweave",
+    "name": "Arweave",
+    "coinId": 472,
+    "symbol": "AR",
+    "decimals": 12,
+    "blockchain": "Arweave",
+    "derivation": [
+      {
+        "path": "m/44'/472'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://viewblock.io/arweave",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "q25ogfUdgTMqONjljthuK_gbSFe3dyMPCKo5Wyt2KUk",
+      "sampleAccount": "AGxmSFXGyhLPeMm3CDrSNKk4EG6xYmt0vGhblnxXyoM"
+    },
+    "info": {
+      "url": "https://www.arweave.org",
+      "source": "https://github.com/ArweaveTeam/arweave",
+      "rpc": "https://arweave.net",
+      "documentation": " https://docs.arweave.org"
+    }
   }
 ]

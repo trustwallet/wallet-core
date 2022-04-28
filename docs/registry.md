@@ -42,6 +42,7 @@ This list is generated from [./registry.json](../registry.json)
 | 457     | Aeternity        | AE     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aeternity/info/logo.png" width="32" />    | <https://aeternity.com>       |
 | 459     | Kava             | KAVA   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/kava/info/logo.png" width="32" />         | <https://kava.io>             |
 | 461     | Filecoin         | FIL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/filecoin/info/logo.png" width="32" />     | <https://filecoin.io/>        |
+| 472     | Arweave          | AR     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/arweave/info/logo.png" width="32" />      | <https://www.arweave.org>     |
 | 474     | Oasis            | ROSE   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/oasis/info/logo.png" width="32" />        | <https://oasisprotocol.org/>  |
 | 483     | Bluzelle         | BLZ    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bluzelle/info/logo.png" width="32" />     | <https://bluzelle.com>        |
 | 494     | BandChain        | BAND   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/band/info/logo.png" width="32" />         | <https://bandprotocol.com/>   |
