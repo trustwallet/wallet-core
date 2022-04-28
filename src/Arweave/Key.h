@@ -7,13 +7,12 @@
 #pragma once
 
 #include "Data.h"
-//#include "PrivateKey.h"
+#include "PrivateKey.h"
 
 namespace TW::Arweave {
 
 /// Generate a private key deterministically, using pseudo-random generation with the given input seed.
 /// Typically seed should be 64 bits long, and key is 4096-bit RSA key.
-// TODO: return PrivateKey
-Data keyGenerateFromPrngSeed(const Data& rngSeed);
+PrivateKey keyGenerateFromPrngSeed(const Data& rngSeed);
 
 } // namespace

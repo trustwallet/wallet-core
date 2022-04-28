@@ -19,6 +19,8 @@ class PrivateKey {
     static const size_t size = 32;
     /// The number of bytes in a double extended key (used by Cardano)
     static const size_t doubleExtendedSize = 2 * 3 * 32;
+    /// The number of bytes in an RSA-4096 key (used by Arweave)
+    static const size_t rsaSize = 512;
 
     /// The private key bytes:
     /// - common case: 'size' bytes

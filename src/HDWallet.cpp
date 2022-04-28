@@ -12,6 +12,7 @@
 #include "Bitcoin/CashAddress.h"
 #include "Coin.h"
 #include "Mnemonic.h"
+#include "Arweave/Key.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWPublicKeyType.h>
@@ -143,6 +144,20 @@ PrivateKey HDWallet::getKey(TWCoinType coin, const DerivationPath& derivationPat
                 return PrivateKey(pkData, extData, chainCode, pkData2, extData2, chainCode2);
             }
 
+        case PrivateKeyTypeRsa4096: // special handling for Arweave
+            {
+                // Use 64-byte mnemonic as PRNG seed. This is the method from arweave-mnemonic-keys.
+                // Alternative is to perform derivation, and use node private key plus extension as PRNG seed.
+                Data rngSeed = data(seed.data(), seedSize);
+                /*
+                Data rngSeed = Data(node.private_key, node.private_key + PrivateKey::size);
+                append(rngSeed, Data(node.private_key_extension, node.private_key_extension + PrivateKey::size));
+                */
+                assert(rngSeed.size() == 64); // TODO robust handling of error
+                const auto key = Arweave::keyGenerateFromPrngSeed(rngSeed);
+                return key;
+            }
+
         case PrivateKeyTypeDefault32:
         default:
             // default path
@@ -245,9 +260,12 @@ std::optional<PrivateKey> HDWallet::getPrivateKeyFromExtended(const std::string&
 
 HDWallet::PrivateKeyType HDWallet::getPrivateKeyType(TWCurve curve) {
     switch (curve) {
-    case TWCurve::TWCurveED25519Extended:
-        // used by Cardano
+    case TWCurveED25519Extended: // used by Cardano
         return PrivateKeyTypeDoubleExtended;
+
+    case TWCurveRSA4096: // used by Arweave
+        return PrivateKeyTypeRsa4096;
+
     default:
         // default
         return PrivateKeyTypeDefault32;
@@ -320,7 +338,8 @@ HDNode getNode(const HDWallet& wallet, TWCurve curve, const DerivationPath& deri
             case HDWallet::PrivateKeyTypeDoubleExtended: // used by Cardano, special handling
                 hdnode_private_ckd_cardano(&node, index.derivationIndex());
                 break;
-           case HDWallet::PrivateKeyTypeDefault32:
+            case HDWallet::PrivateKeyTypeDefault32:
+            case HDWallet::PrivateKeyTypeRsa4096:
             default:
                 hdnode_private_ckd(&node, index.derivationIndex());
                 break;
@@ -349,6 +368,7 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve) {
 const char* curveName(TWCurve curve) {
     switch (curve) {
     case TWCurveSECP256k1:
+    case TWCurveRSA4096:
         return SECP256K1_NAME;
     case TWCurveED25519:
         return ED25519_NAME;

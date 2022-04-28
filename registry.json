@@ -2372,7 +2372,7 @@
         "path": "m/44'/472'/0'/0/0"
       }
     ],
-    "curve": "secp256k1",
+    "curve": "rsa4096",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
       "url": "https://viewblock.io/arweave",

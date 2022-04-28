@@ -26,7 +26,7 @@ using namespace TW;
 
 bool PrivateKey::isValid(const Data& data) {
     // Check length
-    if (data.size() != size && data.size() != doubleExtendedSize) {
+    if (data.size() != size && data.size() != doubleExtendedSize && data.size() != rsaSize) {
         return false;
     }
 
