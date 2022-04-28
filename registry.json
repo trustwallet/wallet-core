@@ -2363,7 +2363,7 @@
   {
     "id": "evmos",
     "name": "Evmos",
-    "coinId": 9001,
+    "coinId": 10009001,
     "symbol": "EVMOS",
     "decimals": 18,
     "blockchain": "Ethereum",

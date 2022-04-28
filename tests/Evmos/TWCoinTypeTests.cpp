@@ -8,7 +8,7 @@
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <gtest/gtest.h>
 
-TEST(TWCronosCoinType, TWCoinType) {
+TEST(TWEvmosCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEvmos));
     auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x24af42cf4977a96d62e3a82c3cd9b519c3e7c53dd83398b88f0cb435d867b422"));
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEvmos, txId.get()));
@@ -21,8 +21,8 @@ TEST(TWCronosCoinType, TWCoinType) {
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeEvmos));
 
     assertStringsEqual(symbol, "EVMOS");
-    assertStringsEqual(txUrl, "https://cronoscan.com/tx/0x24af42cf4977a96d62e3a82c3cd9b519c3e7c53dd83398b88f0cb435d867b422");
-    assertStringsEqual(accUrl, "https://cronoscan.com/address/0x30627903124Aa1e71384bc52e1cb96E4AB3252b6");
+    assertStringsEqual(txUrl, "https://evm.evmos.org/tx/0x24af42cf4977a96d62e3a82c3cd9b519c3e7c53dd83398b88f0cb435d867b422");
+    assertStringsEqual(accUrl, "https://evm.evmos.org/address/0x30627903124Aa1e71384bc52e1cb96E4AB3252b6");
     assertStringsEqual(id, "evmos");
     assertStringsEqual(name, "Evmos");
 }
