@@ -2359,5 +2359,33 @@
       "rpc": "https://mainnet.aurora.dev/",
       "documentation": "https://doc.aurora.dev/"
     }
+  },
+  {
+    "id": "evmos",
+    "name": "Evmos",
+    "coinId": 9001,
+    "symbol": "EVMOS",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://evm.evmos.org",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x24af42cf4977a96d62e3a82c3cd9b519c3e7c53dd83398b88f0cb435d867b422",
+      "sampleAccount": "0x30627903124Aa1e71384bc52e1cb96E4AB3252b6"
+    },
+    "info": {
+      "url": "https://evmos.org/",
+      "source": "https://github.com/tharsis/evmos",
+      "rpc": "https://eth.bd.evmos.org:8545",
+      "documentation": "https://docs.evmos.org/"
+    }
   }
 ]
