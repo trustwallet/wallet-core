@@ -333,6 +333,34 @@ TW::Data Signer::preImageHash() const {
         auto transaction = Transaction(message);
         preImageHash = transaction.messageData();
     } break;
+    case Proto::SigningInput::TransactionTypeCase::kCreateAndTransferTokenTransaction: {
+        auto createAndTransferTokenTransaction = input.create_and_transfer_token_transaction();
+        auto userAddress = Address(input.sender());
+        auto recipientMainAddress =
+            Address(createAndTransferTokenTransaction.recipient_main_address());
+        auto tokenMintAddress = Address(createAndTransferTokenTransaction.token_mint_address());
+        auto recipientTokenAddress =
+            Address(createAndTransferTokenTransaction.recipient_token_address());
+        auto senderTokenAddress = Address(createAndTransferTokenTransaction.sender_token_address());
+        auto amount = createAndTransferTokenTransaction.amount();
+        auto decimals = static_cast<uint8_t>(createAndTransferTokenTransaction.decimals());
+        const auto memo = createAndTransferTokenTransaction.memo();
+        auto message = Message::createTokenCreateAndTransfer(
+            userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress,
+            senderTokenAddress, amount, decimals, recentBlockhash, memo,
+            convertReferences(createAndTransferTokenTransaction.references()));
+        auto transaction = Transaction(message);
+        preImageHash = transaction.messageData();
+    } break;
+    case Proto::SigningInput::TransactionTypeCase::kAdvanceNonceAccount: {
+        auto advanceNonceAccountTransaction = input.advance_nonce_account();
+        auto userAddress = Address(input.sender());
+        auto nonceAccountAddress = Address(advanceNonceAccountTransaction.nonce_account());
+        auto message =
+            Message::advanceNonceAccount(userAddress, nonceAccountAddress, recentBlockhash);
+        auto transaction = Transaction(message);
+        preImageHash = transaction.messageData();
+    } break;
     default:
         if (input.transaction_type_case() ==
             Proto::SigningInput::TransactionTypeCase::TRANSACTION_TYPE_NOT_SET) {
@@ -345,9 +373,14 @@ TW::Data Signer::preImageHash() const {
 std::vector<std::string> Signer::signers() const {
     std::vector<std::string> signers;
     switch (input.transaction_type_case()) {
-    case Proto::SigningInput::TransactionTypeCase::kTransferTransaction: {
-        auto from = input.sender();
-        signers.push_back(from);
+    case Proto::SigningInput::TransactionTypeCase::kTransferTransaction:
+    case Proto::SigningInput::TransactionTypeCase::kWithdrawNonceAccount:
+    case Proto::SigningInput::TransactionTypeCase::kCreateTokenAccountTransaction:
+    case Proto::SigningInput::TransactionTypeCase::kTokenTransferTransaction:
+    case Proto::SigningInput::TransactionTypeCase::kCreateAndTransferTokenTransaction:
+    case Proto::SigningInput::TransactionTypeCase::kAdvanceNonceAccount: {
+        auto sender = input.sender();
+        signers.push_back(sender);
     } break;
     case Proto::SigningInput::TransactionTypeCase::kCreateNonceAccount: {
         auto from = input.sender();
@@ -355,18 +388,6 @@ std::vector<std::string> Signer::signers() const {
         auto nonceAccount = createNonceAccountTransaction.nonce_account();
         signers.push_back(from);
         signers.push_back(nonceAccount);
-    } break;
-    case Proto::SigningInput::TransactionTypeCase::kWithdrawNonceAccount: {
-        auto owner = input.sender();
-        signers.push_back(owner);
-    } break;
-    case Proto::SigningInput::TransactionTypeCase::kCreateTokenAccountTransaction: {
-        auto owner = input.sender();
-        signers.push_back(owner);
-    } break;
-    case Proto::SigningInput::TransactionTypeCase::kTokenTransferTransaction: {
-        auto owner = input.sender();
-        signers.push_back(owner);
     } break;
     default:
         if (input.transaction_type_case() ==
@@ -453,6 +474,32 @@ Proto::SigningOutput Signer::compile(const std::vector<Data>& signatures,
             userAddress, tokenMintAddress, senderTokenAddress, recipientTokenAddress, amount,
             decimals, recentBlockhash, memo,
             convertReferences(tokenTransferTransaction.references()), input.nonce_account());
+    } break;
+    case Proto::SigningInput::TransactionTypeCase::kCreateAndTransferTokenTransaction: {
+        auto createAndTransferTokenTransaction = input.create_and_transfer_token_transaction();
+        auto userAddress = Address(input.sender());
+        auto recipientMainAddress =
+            Address(createAndTransferTokenTransaction.recipient_main_address());
+        auto tokenMintAddress = Address(createAndTransferTokenTransaction.token_mint_address());
+        auto recipientTokenAddress =
+            Address(createAndTransferTokenTransaction.recipient_token_address());
+        auto senderTokenAddress = Address(createAndTransferTokenTransaction.sender_token_address());
+        auto amount = createAndTransferTokenTransaction.amount();
+        auto decimals = static_cast<uint8_t>(createAndTransferTokenTransaction.decimals());
+        const auto memo = createAndTransferTokenTransaction.memo();
+        message = Message::createTokenCreateAndTransfer(
+            userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress,
+            senderTokenAddress, amount, decimals, recentBlockhash, memo,
+            convertReferences(createAndTransferTokenTransaction.references()));
+    } break;
+    case Proto::SigningInput::TransactionTypeCase::kAdvanceNonceAccount: {
+        if (signatures.size() < 1) {
+            throw std::invalid_argument("too few signatures");
+        }
+        auto advanceNonceAccountTransaction = input.advance_nonce_account();
+        auto userAddress = Address(input.sender());
+        auto nonceAccountAddress = Address(advanceNonceAccountTransaction.nonce_account());
+        message = Message::advanceNonceAccount(userAddress, nonceAccountAddress, recentBlockhash);
     } break;
     default:
         if (input.transaction_type_case() ==
