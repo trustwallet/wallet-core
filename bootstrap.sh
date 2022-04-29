@@ -28,5 +28,5 @@ TESTS_ROOT="`(cd \"$ROOT/tests\" && pwd)`"
 build/tests/tests "$TESTS_ROOT"
 
 echo "#### Installing... ####"
-cp build/libTrustWalletCore.a build/libprotobuf.a build/trezor-crypto/libTrezorCrypto.a /usr/local/lib
-ln -s ${PWD}/include/TrustWalletCore /usr/local/include/TrustWalletCore
+sudo cp build/libTrustWalletCore.a build/libprotobuf.a build/trezor-crypto/libTrezorCrypto.a /usr/local/lib
+sudo ln -s ${PWD}/include/TrustWalletCore /usr/local/include/TrustWalletCore
