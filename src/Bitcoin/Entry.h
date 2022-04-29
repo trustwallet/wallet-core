@@ -28,6 +28,7 @@ public:
             TWCoinTypeQtum,
             TWCoinTypeRavencoin,
             TWCoinTypeViacoin,
+            TWCoinTypeVerge,
             TWCoinTypeFiro,
             TWCoinTypeSyscoin,
         };

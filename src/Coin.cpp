@@ -124,6 +124,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeQtum: entry = &bitcoinDP; break;
         case TWCoinTypeRavencoin: entry = &bitcoinDP; break;
         case TWCoinTypeViacoin: entry = &bitcoinDP; break;
+        case TWCoinTypeVerge: entry = &bitcoinDP; break;
         case TWCoinTypeFiro: entry = &bitcoinDP; break;
         case TWCoinTypeSyscoin: entry = &bitcoinDP; break;
         case TWCoinTypeCardano: entry = &cardanoDP; break;

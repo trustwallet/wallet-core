@@ -362,6 +362,37 @@
     }
   },
   {
+    "id": "verge",
+    "name": "Verge",
+    "coinId": 77,
+    "symbol": "XVG",
+    "decimals": 8,
+    "blockchain": "Bitcoin",
+    "derivationPath": "m/84'/77'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "p2pkhPrefix": 30,
+    "p2shPrefix": 33,
+    "hrp": "vg",
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "xpub": "zpub",
+    "xprv": "zprv",
+    "explorer": {
+      "url": "https://verge-blockchain.info",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "8c99979a2b25a46659bff35b238aab1c3158f736f215d99526429c7c96203581",
+      "sampleAccount": "DFre88gd87bAZQdnS7dbBLwT6GWiGFMQB6"
+    },
+    "info": {
+      "url": "https://vergecurrency.com",
+      "source": "https://github.com/vergecurrency/verge",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+    }
+  },
+  {
     "id": "cosmos",
     "name": "Cosmos",
     "displayName": "Cosmos Hub",
