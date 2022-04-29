@@ -2363,7 +2363,7 @@
   {
     "id": "syscoinnevm",
     "name": "Syscoin NEVM",
-    "coinId": 57,
+    "coinId": 10000057,
     "symbol": "SYS",
     "decimals": 18,
     "blockchain": "Ethereum",
@@ -2375,7 +2375,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
-      "url": "https://explorer.syscoin.org/",
+      "url": "https://explorer.syscoin.org",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0xec584319108fad9d5960b42f3ae9f593f78a3ff83e5b13f1b1436aac39b45ef6",
