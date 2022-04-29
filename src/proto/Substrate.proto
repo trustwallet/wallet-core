@@ -16,7 +16,7 @@ message Balance {
     int32 module_index = 1;
     int32 method_index = 2;
     string to_address = 3;
-    bytes value = 4; // big integer
+    bytes value = 4; // BigInteger
   }
   message BatchTransfer {
     int32 module_index = 1;
