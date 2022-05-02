@@ -187,6 +187,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeMetis: entry = &ethereumDP; break;
         case TWCoinTypeAurora: entry = &ethereumDP; break;
         case TWCoinTypeEvmos: entry = &ethereumDP; break;
+        case TWCoinTypeEvmosCosmos: entry = &cosmosDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;

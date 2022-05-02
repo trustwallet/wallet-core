@@ -2387,5 +2387,35 @@
       "rpc": "https://eth.bd.evmos.org:8545",
       "documentation": "https://docs.evmos.org/"
     }
+  },
+    {
+    "id": "evmoscosmos",
+    "name": "EvmosCosmos",
+    "displayName": "EvmosCosmos",
+    "coinId": 60,
+    "symbol": "EVMOS",
+    "decimals": 18,
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "evmos",
+    "explorer": {
+      "url": "https://mintscan.io/evmos",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "A16C211C83AD1E684DE46F694FAAC17D8465C864BD7385A81EC062CDE0638811",
+      "sampleAccount": "evmos17xpfvakm2amg962yls6f84z3kell8c5ljcjw34"
+    },
+    "info": {
+      "url": "https://evmos.org/",
+      "client": "https://github.com/tharsis/evmos",
+      "clientPublic": "https://api.evmos.org/",
+      "clientDocs": ""
+    }
   }
 ]

@@ -236,6 +236,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .ecash:
                     let expectedResult = "ecash:qpelrdn7a0hcucjlf9ascz3lkxv7r3rffgzn6x5377"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .evmosCosmos:
+                    let expectedResult = "evmos13u6g7vqgw074mgmf2ze2cadzvkz9snlwstd20d"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()
                 }

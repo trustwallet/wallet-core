@@ -13,6 +13,7 @@ This list is generated from [./registry.json](../registry.json)
 | 20      | DigiByte         | DGB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/digibyte/info/logo.png" width="32" />     | <https://www.digibyte.io>     |
 | 22      | Monacoin         | MONA   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/monacoin/info/logo.png" width="32" />     | <https://monacoin.org>        |
 | 42      | Decred           | DCR    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/decred/info/logo.png" width="32" />       | <https://decred.org>          |
+| 60      | EvmosCosmos      | EVMOS  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/evmoscosmos/info/logo.png" width="32" />  | <https://evmos.org/>          |
 | 60      | Ethereum         | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png" width="32" />     | <https://ethereum.org>        |
 | 61      | Ethereum Classic | ETC    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/classic/info/logo.png" width="32" />      | <https://ethereumclassic.org> |
 | 74      | ICON             | ICX    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/icon/info/logo.png" width="32" />         | <https://icon.foundation>     |
