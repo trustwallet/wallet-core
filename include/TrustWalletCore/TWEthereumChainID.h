@@ -38,6 +38,7 @@ enum TWEthereumChainID {
     TWEthereumChainIDBoba = 288,
     TWEthereumChainIDMetis = 1088,
     TWEthereumChainIDAurora = 1313161554,
+    TWEthereumChainIDMeter = 82,
 };
 
 TW_EXTERN_C_END
