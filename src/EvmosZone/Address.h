@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -34,7 +34,7 @@ public:
 
     static const Data getBytes(const PublicKey& publicKey) {
         const auto data = publicKey.hash({}, static_cast<Hash::HasherSimpleType>(Hash::keccak256), true);
-        std::vector<uint8_t> d(data.end() - Address::size, data.end());
+        auto d = subData(data, data.size() - Address::size, Address::size);
         return d;
     }
 

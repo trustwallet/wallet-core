@@ -19,6 +19,7 @@
 #include "Decred/Address.h"
 #include "Ethereum/Address.h"
 #include "Elrond/Address.h"
+#include "EvmosZone/Address.h"
 #include "Kusama/Address.h"
 #include "NEAR/Address.h"
 #include "NEO/Address.h"
@@ -190,6 +191,13 @@ class AnyAddress {
         }
         case TWCoinTypeSolana: {
             return Solana::Address(string).vector();
+        }
+        case TWCoinTypeEvmosZone: {
+            EvmosZone::Address addr;
+            if (!EvmosZone::Address::decode(string, addr)) {
+                break;
+            }
+            return addr.getKeyHash();
         }
         default:
             break;
