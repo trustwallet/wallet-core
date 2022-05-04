@@ -21,11 +21,3 @@ bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW
 string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char* hrp) const {
     return Address(coin, publicKey).string();
 }
-
-void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    signTemplate<TW::Cosmos::Signer, TW::Cosmos::Proto::SigningInput>(dataIn, dataOut);
-}
-
-string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const { 
-    return TW::Cosmos::Signer::signJSON(json, key);
-}
