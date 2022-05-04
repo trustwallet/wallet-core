@@ -1,4 +1,4 @@
-package com.trustwalval.core.app.blockchains.terra
+package com.trustwallet.core.app.blockchains.terra
 
 import android.util.Log
 import com.google.protobuf.ByteString
