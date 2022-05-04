@@ -15,5 +15,6 @@ message MsgExecuteContract {
     // ExecuteMsg json encoded message to be passed to the contract
     bytes execute_msg = 3;
     // Coins that are transferred to the contract on execution
-    repeated cosmos.base.v1beta1.Coin coins = 4;
+    // Gap in field numbering is intentional
+    repeated cosmos.base.v1beta1.Coin coins = 5;
 }

@@ -161,6 +161,20 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 any.PackFrom(msgSend, ProtobufAnyNamespacePrefix);
                 return any;
             }
+        case Proto::Message::kWasmTerraExecuteContractGeneric: {
+            assert(msg.has_wasm_terra_execute_contract_generic());
+                const auto& wasmExecute = msg.wasm_terra_execute_contract_generic();
+                auto msgExecute = terra::wasm::v1beta1::MsgExecuteContract();
+                msgExecute.set_sender(wasmExecute.sender_address());
+                msgExecute.set_contract(wasmExecute.contract_address());
+                msgExecute.set_execute_msg(wasmExecute.execute_msg());
+
+                for (auto i = 0; i < wasmExecute.coins_size(); ++i) {
+                    *msgExecute.add_coins() = convertCoin(wasmExecute.coins(i));
+                }
+                any.PackFrom(msgExecute, ProtobufAnyNamespacePrefix);
+                return any;
+        }
 
         default:
             throw std::invalid_argument(std::string("Message not supported ") + std::to_string(msg.message_oneof_case()));

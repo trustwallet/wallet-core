@@ -174,11 +174,11 @@ static json messagesJSON(const Proto::SigningInput& input) {
             j.push_back(messageRedelegate(msg.restake_message()));
         } else if (msg.has_raw_json_message()) {
             j.push_back(messageRawJSON(msg.raw_json_message()));
-        } else if (msg.has_transfer_tokens_message()) {
-            assert(false); // not suppored, use protobuf serialization
-            return json::array();
         } else if ((msg.has_wasm_terra_execute_contract_transfer_message())) {
             j.push_back(messageWasmTerraTransfer(msg.wasm_terra_execute_contract_transfer_message()));
+        } else if (msg.has_transfer_tokens_message() || msg.has_wasm_terra_execute_contract_generic()) {
+            assert(false); // not supported, use protobuf serialization
+            return json::array();
         }
     }
     return j;

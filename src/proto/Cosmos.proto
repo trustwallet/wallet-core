@@ -126,6 +126,22 @@ message Message {
         repeated Amount amounts = 3;
     }
 
+    // send within wasm/MsgExecuteContract, used by Terra
+    message WasmTerraExecuteContractGeneric {
+        // sender address
+        string sender_address = 1;
+
+        // token contract address
+        string contract_address = 2;
+
+        // execute_msg to be executed in the context of recipient contract
+        string execute_msg = 3;
+
+        // used in case you are sending native tokens along with this message
+        // Gap in field numbering is intentional
+        repeated Amount coins = 5;
+    }
+
     message RawJSON {
         string type = 1;
         string value = 2;
@@ -142,6 +158,8 @@ message Message {
         WasmTerraExecuteContractTransfer wasm_terra_execute_contract_transfer_message = 8;
         WasmTerraExecuteContractSend wasm_terra_execute_contract_send_message = 9;
         THORChainSend thorchain_send_message = 10;
+        WasmTerraExecuteContractGeneric wasm_terra_execute_contract_generic = 11;
+
     }
 }
 
