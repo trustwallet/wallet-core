@@ -1,4 +1,4 @@
-package com.trustwalval.core.app.blockchains.cosmos
+package com.trustwallet.core.app.blockchains.cosmos
 
 import android.util.Log
 import com.google.protobuf.ByteString

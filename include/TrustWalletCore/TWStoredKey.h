@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -80,7 +80,12 @@ struct TWAccount* _Nullable TWStoredKeyAccountForCoinDerivation(struct TWStoredK
 TW_EXPORT_METHOD
 void TWStoredKeyRemoveAccountForCoin(struct TWStoredKey* _Nonnull key, enum TWCoinType coin);
 
-/// Adds a new account.
+/// Adds a new account, using given derivation (usually TWDerivationDefault) and derivation path (usually matches path from derivation, but custom possible).
+TW_EXPORT_METHOD
+void TWStoredKeyAddAccountDerivation(struct TWStoredKey* _Nonnull key, TWString* _Nonnull address, enum TWCoinType coin, enum TWDerivation derivation, TWString* _Nonnull derivationPath, TWString* _Nonnull publicKey, TWString* _Nonnull extendedPublicKey);
+
+/// [Deprecated] Use TWStoredKeyAddAccountDerivation (with TWDerivationDefault) instead.
+/// Adds a new account, using given derivation path.
 TW_EXPORT_METHOD
 void TWStoredKeyAddAccount(struct TWStoredKey* _Nonnull key, TWString* _Nonnull address, enum TWCoinType coin, TWString* _Nonnull derivationPath, TWString* _Nonnull publicKey, TWString* _Nonnull extendedPublicKey);
 
