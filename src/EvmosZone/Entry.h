@@ -8,21 +8,15 @@
 
 #include "../CoinEntry.h"
 
-namespace TW::Cosmos {
+namespace TW::EvmosZone {
 
-/// Entry point for implementation of Cosmos coin.
+/// Entry point for implementation of EvmosZone coin.
 /// Note: do not put the implementation here (no matter how simple), to avoid having coin-specific includes in this file
 class Entry: public CoinEntry {
 public:
     virtual const std::vector<TWCoinType> coinTypes() const {
         return {
-            TWCoinTypeCosmos,
-            TWCoinTypeKava,
-            TWCoinTypeTerra,
-            TWCoinTypeBandChain,
-            TWCoinTypeBluzelle,
-            TWCoinTypeCryptoOrg,
-            TWCoinTypeOsmosis,
+            TWCoinTypeEvmosZone
         };
     }
     virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;

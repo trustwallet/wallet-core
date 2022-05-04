@@ -2389,16 +2389,16 @@
     }
   },
     {
-    "id": "evmoscosmos",
-    "name": "EvmosCosmos",
-    "displayName": "EvmosCosmos",
-    "coinId": 60,
+    "id": "evmoszone",
+    "name": "EvmosZone",
+    "displayName": "EvmosZone",
+    "coinId": 20009001,
     "symbol": "EVMOS",
     "decimals": 18,
     "blockchain": "Cosmos",
     "derivation": [
       {
-        "path": "m/44'/60'/0'/0"
+        "path": "m/44'/60'/0'/0/0"
       }
     ],
     "curve": "secp256k1",

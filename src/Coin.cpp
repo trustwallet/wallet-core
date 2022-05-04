@@ -24,6 +24,7 @@
 #include "EOS/Entry.h"
 #include "Elrond/Entry.h"
 #include "Ethereum/Entry.h"
+#include "EvmosZone/Entry.h"
 #include "FIO/Entry.h"
 #include "Filecoin/Entry.h"
 #include "Groestlcoin/Entry.h"
@@ -68,6 +69,7 @@ Cosmos::Entry cosmosDP;
 Elrond::Entry elrondDP;
 EOS::Entry eosDP;
 Ethereum::Entry ethereumDP;
+EvmosZone::Entry evmosZoneDP;
 Decred::Entry decredDP;
 Filecoin::Entry filecoinDP;
 FIO::Entry fioDP;
@@ -187,7 +189,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeMetis: entry = &ethereumDP; break;
         case TWCoinTypeAurora: entry = &ethereumDP; break;
         case TWCoinTypeEvmos: entry = &ethereumDP; break;
-        case TWCoinTypeEvmosCosmos: entry = &cosmosDP; break;
+        case TWCoinTypeEvmosZone: entry = &evmosZoneDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;

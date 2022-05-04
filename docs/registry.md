@@ -13,7 +13,6 @@ This list is generated from [./registry.json](../registry.json)
 | 20      | DigiByte         | DGB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/digibyte/info/logo.png" width="32" />     | <https://www.digibyte.io>     |
 | 22      | Monacoin         | MONA   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/monacoin/info/logo.png" width="32" />     | <https://monacoin.org>        |
 | 42      | Decred           | DCR    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/decred/info/logo.png" width="32" />       | <https://decred.org>          |
-| 60      | EvmosCosmos      | EVMOS  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/evmoscosmos/info/logo.png" width="32" />  | <https://evmos.org/>          |
 | 60      | Ethereum         | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png" width="32" />     | <https://ethereum.org>        |
 | 61      | Ethereum Classic | ETC    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/classic/info/logo.png" width="32" />      | <https://ethereumclassic.org> |
 | 74      | ICON             | ICX    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/icon/info/logo.png" width="32" />         | <https://icon.foundation>     |
@@ -85,4 +84,5 @@ This list is generated from [./registry.json](../registry.json)
 | 10009001 | Evmos            | EVMOS  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/evmos/info/logo.png" width="32" />        | <https://evmos.org/>          |
 | 10042221 | Arbitrum         | ARETH  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/arbitrum/info/logo.png" width="32" />     | <https://arbitrum.io>         |
 | 20000714 | Smart Chain      | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/info/logo.png" width="32" />   | <https://www.binance.org/en/smartChain> |
+| 20009001 | EvmosZone        | EVMOS  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/evmoszone/info/logo.png" width="32" />    | <https://evmos.org/>          |
 | 1323161554 | Aurora           | AURORAETH | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aurora/info/logo.png" width="32" />       | <https://aurora.dev/>         |
