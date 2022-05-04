@@ -2391,7 +2391,7 @@
     {
     "id": "evmoszone",
     "name": "EvmosZone",
-    "displayName": "EvmosZone",
+    "displayName": "Evmos Zone",
     "coinId": 20009001,
     "symbol": "EVMOS",
     "decimals": 18,

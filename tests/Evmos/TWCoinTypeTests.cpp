@@ -43,5 +43,5 @@ TEST(TWEvmosCoinType, TWCoinTypeEvmosZone) {
     assertStringsEqual(txUrl, "https://mintscan.io/evmos/txs/A16C211C83AD1E684DE46F694FAAC17D8465C864BD7385A81EC062CDE0638811");
     assertStringsEqual(accUrl, "https://mintscan.io/evmos/account/evmos17xpfvakm2amg962yls6f84z3kell8c5ljcjw34");
     assertStringsEqual(id, "evmoszone");
-    assertStringsEqual(name, "EvmosZone");
+    assertStringsEqual(name, "Evmos Zone");
 }
