@@ -138,6 +138,7 @@ message Message {
         string execute_msg = 3;
 
         // used in case you are sending native tokens along with this message
+        // Gap in field numbering is intentional
         repeated Amount coins = 5;
     }
 
