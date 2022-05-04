@@ -102,5 +102,6 @@ class CoinAddressDerivationTests {
         CRYPTOORG -> assertEquals("cro16fdf785ejm00jf9a24d23pzqzjh2h05klxjwu8", address)
         OSMOSIS -> assertEquals("osmo142j9u5eaduzd7faumygud6ruhdwme98qclefqp", address)
         ECASH -> assertEquals("ecash:qpelrdn7a0hcucjlf9ascz3lkxv7r3rffgzn6x5377", address)
+        EVMOSZONE -> assertEquals("evmos1mwspdc5y6lj0glm90j9sg7vmr5ksmqcnzhg0h9", address)
     }
 }
