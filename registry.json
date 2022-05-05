@@ -2389,9 +2389,9 @@
     }
   },
     {
-    "id": "evmoszone",
-    "name": "EvmosZone",
-    "displayName": "Evmos Zone",
+    "id": "nativeevmos",
+    "name": "NativeEvmos",
+    "displayName": "Native Evmos",
     "coinId": 20009001,
     "symbol": "EVMOS",
     "decimals": 18,
@@ -2402,7 +2402,7 @@
       }
     ],
     "curve": "secp256k1",
-    "publicKeyType": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
     "hrp": "evmos",
     "explorer": {
       "url": "https://mintscan.io/evmos",

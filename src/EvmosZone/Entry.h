@@ -17,7 +17,7 @@ class Entry: public Cosmos::Entry {
 public:
     virtual const std::vector<TWCoinType> coinTypes() const {
         return {
-            TWCoinTypeEvmosZone
+            TWCoinTypeNativeEvmos
         };
     }
     virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;

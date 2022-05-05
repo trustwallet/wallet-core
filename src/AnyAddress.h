@@ -192,7 +192,7 @@ class AnyAddress {
         case TWCoinTypeSolana: {
             return Solana::Address(string).vector();
         }
-        case TWCoinTypeEvmosZone: {
+        case TWCoinTypeNativeEvmos: {
             EvmosZone::Address addr;
             if (!EvmosZone::Address::decode(string, addr)) {
                 break;

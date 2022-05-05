@@ -18,7 +18,7 @@
 
 namespace TW::EvmosZone {
 
-/// A Bech32 Cosmos address.  Hrp has to be specified (e.g. "cosmos", "terra"...), hash is HASHER_SHA2_RIPEMD.
+/// A Bech32 Evmos address.
 class Address: public Bech32Address {
 public:
     /// Number of bytes in an address.
@@ -34,8 +34,7 @@ public:
 
     static const Data getBytes(const PublicKey& publicKey) {
         const auto data = publicKey.hash({}, static_cast<Hash::HasherSimpleType>(Hash::keccak256), true);
-        auto d = subData(data, data.size() - Address::size, Address::size);
-        return d;
+        return subData(data, data.size() - Address::size, Address::size);
     }
 
     /// Initializes an address with a public key, with prefix of the given coin.
