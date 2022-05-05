@@ -194,6 +194,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .viacoin:
                     let expectedResult = "via1qnmsgjd6cvfprnszdgmyg9kewtjfgqflz67wwhc"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .verge:
+                    let expectedResult = "DPb3Xz4vjB6QGLKDmrbprrtv4XzNqkADc2"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .wanchain:
                     let expectedResult = "0xD5ca90b928279FE5D06144136a25DeD90127aC15"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
