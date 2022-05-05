@@ -1,0 +1,20 @@
+approvals:
+  # check will fail if there are not at least 4 approvals in total
+  minimum: 4
+  groups:
+    - name: tss
+      minimum: 2
+      from:
+        - ackratos
+        - markzhou26
+        - liqunn
+        - deagle9413
+    - name: zts
+      minimum: 2
+      from:
+        - FitzLu
+        - w20089527
+        - Explorer0
+        - wcsiu
+        - austinast
+        - arhtur007
