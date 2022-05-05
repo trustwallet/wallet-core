@@ -16,7 +16,7 @@
 
 #include <string>
 
-namespace TW::EvmosZone {
+namespace TW::NativeEvmos {
 
 /// A Bech32 Evmos address.
 class Address: public Bech32Address {

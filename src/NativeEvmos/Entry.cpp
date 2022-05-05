@@ -9,7 +9,7 @@
 #include "Address.h"
 #include "../Cosmos/Signer.h"
 
-using namespace TW::EvmosZone;
+using namespace TW::NativeEvmos;
 using namespace std;
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.

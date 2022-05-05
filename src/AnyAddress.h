@@ -19,8 +19,8 @@
 #include "Decred/Address.h"
 #include "Ethereum/Address.h"
 #include "Elrond/Address.h"
-#include "EvmosZone/Address.h"
 #include "Kusama/Address.h"
+#include "NativeEvmos/Address.h"
 #include "NEAR/Address.h"
 #include "NEO/Address.h"
 #include "Nano/Address.h"
@@ -193,8 +193,8 @@ class AnyAddress {
             return Solana::Address(string).vector();
         }
         case TWCoinTypeNativeEvmos: {
-            EvmosZone::Address addr;
-            if (!EvmosZone::Address::decode(string, addr)) {
+            NativeEvmos::Address addr;
+            if (!NativeEvmos::Address::decode(string, addr)) {
                 break;
             }
             return addr.getKeyHash();
