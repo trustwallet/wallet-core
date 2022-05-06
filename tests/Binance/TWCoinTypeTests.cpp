@@ -30,5 +30,5 @@ TEST(TWBinanceCoinType, TWCoinType) {
     assertStringsEqual(txUrl, "https://explorer.binance.org/tx/A93625C9F9ABEA1A8E31585B30BBB16C34FAE0D172EB5B6B2F834AF077BF06BB");
     assertStringsEqual(accUrl, "https://explorer.binance.org/address/bnb1u7jm0cll5h3224y0tapwn6gf6pr49ytewx4gsz");
     assertStringsEqual(id, "binance");
-    assertStringsEqual(name, "BNB");
+    assertStringsEqual(name, "BNB Beacon Chain");
 }
