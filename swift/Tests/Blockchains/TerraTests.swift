@@ -521,7 +521,7 @@ class TerraTests: XCTestCase {
             let fee = CosmosFee.with {
                 $0.gas = 200000
                 $0.amounts = [CosmosAmount.with {
-                    $0.amount = 3000
+                    $0.amount = "3000"
                     $0.denom = "uluna"
                 }]
             }
@@ -547,7 +547,7 @@ class TerraTests: XCTestCase {
     }
     """
             )
-            XCTAssertEqual(output.error, "")
+            XCTAssertEqual(output.errorMessage, "")
         }
 
         func testSigningWasmTerraGenericWithCoins() {
@@ -562,7 +562,7 @@ class TerraTests: XCTestCase {
                 { "deposit_stable": {} }
                 """
                 $0.coins = [CosmosAmount.with {
-                    $0.amount = 1000
+                    $0.amount = "1000"
                     $0.denom = "uusd"
                 }]
             }
@@ -574,7 +574,7 @@ class TerraTests: XCTestCase {
             let fee = CosmosFee.with {
                 $0.gas = 600000
                 $0.amounts = [CosmosAmount.with {
-                    $0.amount = 7000
+                    $0.amount = "7000"
                     $0.denom = "uluna"
                 }]
             }
@@ -600,6 +600,6 @@ class TerraTests: XCTestCase {
     }
     """
             )
-            XCTAssertEqual(output.error, "")
+            XCTAssertEqual(output.errorMessage, "")
         }
     }

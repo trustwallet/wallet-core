@@ -131,7 +131,7 @@ class TestTerraTransactions {
         }.build()
 
         val feeAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 3000
+            amount = "3000"
             denom = "uluna"
         }.build()
 
@@ -165,7 +165,7 @@ class TestTerraTransactions {
         val from = AnyAddress(publicKey, TERRA).description()
 
         val coins = Cosmos.Amount.newBuilder().apply {
-            amount = 1000
+            amount = "1000"
             denom = "uusd"
         }.build()
 
@@ -181,7 +181,7 @@ class TestTerraTransactions {
         }.build()
 
         val feeAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 7000
+            amount = "7000"
             denom = "uluna"
         }.build()
 
@@ -204,6 +204,6 @@ class TestTerraTransactions {
         val output = AnySigner.sign(signingInput, TERRA, SigningOutput.parser())
 
         assertEquals(output.serialized, "{\"mode\":\"BROADCAST_MODE_BLOCK\",\"tx_bytes\":\"CrIBCq8BCiYvdGVycmEud2FzbS52MWJldGExLk1zZ0V4ZWN1dGVDb250cmFjdBKEAQosdGVycmExOHd1a3A4NGRxMjI3d3U0bWdoMGptNm45bmxuajZyczgycHA5d2YSLHRlcnJhMXNlcGZqN3MwYWVnNTk2N3V4bmZrNHRoemxlcnJza3RrcGVsbTVzGhh7ICJkZXBvc2l0X3N0YWJsZSI6IHt9IH0qDAoEdXVzZBIEMTAwMBJnClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiEDcGY6x7D5iSlv61zln7pKUNfpThziVt/yJRRZyizZrAASBAoCCAEYCRITCg0KBXVsdW5hEgQ3MDAwEMDPJBpAGyi7f1ioY8XV6pjFq1s86Om4++CIUnd3rLHif2iopCcYvX0mLkTlQ6NUERg8nWTYgXcj6fOTO/ptgPuAtv0NWg==\"}")
-        assertEquals(output.error, "")
+        assertEquals(output.errorMessage, "")
     }
 }
