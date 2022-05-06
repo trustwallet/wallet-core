@@ -72,6 +72,7 @@ class CoinAddressDerivationTests {
         DOGECOIN -> assertEquals("DJRFZNg8jkUtjcpo2zJd92FUAzwRjitw6f", address)
         KIN -> assertEquals("GBL3MT2ICHHM5OJ2QJ44CAHGDK6MLPINVXBKOKLHGBWQDVRWTWQ7U2EA", address)
         VIACOIN -> assertEquals("via1qnmsgjd6cvfprnszdgmyg9kewtjfgqflz67wwhc", address)
+        VERGE -> assertEquals("DPb3Xz4vjB6QGLKDmrbprrtv4XzNqkADc2", address)
         QTUM -> assertEquals("QhceuaTdeCZtcxmVc6yyEDEJ7Riu5gWFoF", address)
         NULS -> assertEquals("NULSd6HgU8MoRnNjBgvJpa9tqvGxYdv5ne4en", address)
         EOS -> assertEquals("EOS6hs8sRvGSzuQtq223zwJipMzqTJpXUVjyvHPvPwBSZWWrJTJkg", address)
