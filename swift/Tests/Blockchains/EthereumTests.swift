@@ -21,7 +21,7 @@ class EthereumTests: XCTestCase {
         XCTAssertFalse(AnyAddress.isValid(string: invalid, coin: .ethereum))
     }
 
-    func testSigner() {
+    func testSigner() throws {
         let input = EthereumSigningInput.with {
             $0.chainID = Data(hexString: "01")!
             $0.nonce = Data(hexString: "09")!
@@ -39,6 +39,7 @@ class EthereumTests: XCTestCase {
 
         let output: EthereumSigningOutput = AnySigner.sign(input: input, coin: .ethereum)
 
+        XCTAssertEqual(try input.serializedData().hexString, "0a0101120109220504a817c8002a025208422a3078333533353335333533353335333533353335333533353335333533353335333533353335333533354a204646464646464646464646464646464646464646464646464646464646464646520c0a0a0a080de0b6b3a7640000")
         XCTAssertEqual(output.encoded.hexString, "f86c098504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a028ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276a067cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d83")
     }
 

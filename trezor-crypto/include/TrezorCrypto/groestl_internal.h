@@ -116,6 +116,7 @@ typedef int64_t sph_s64;
 
 #endif
 
+#define SPH_LITTLE_ENDIAN 			 1 // [wallet-core]
 
 #if defined SPH_DETECT_LITTLE_ENDIAN && !defined SPH_LITTLE_ENDIAN
 #define SPH_LITTLE_ENDIAN     SPH_DETECT_LITTLE_ENDIAN

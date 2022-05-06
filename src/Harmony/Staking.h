@@ -37,14 +37,14 @@ class Staking {
 
     Staking(uint8_t directive, Directive stakeMsg, uint256_t nonce, uint256_t gasPrice,
             uint256_t gasLimit, uint256_t v, uint256_t r, uint256_t s)
-        : directive(move(directive))
-        , stakeMsg(move(stakeMsg))
-        , nonce(move(nonce))
-        , gasPrice(move(gasPrice))
-        , gasLimit(move(gasLimit))
-        , v(move(v))
-        , r(move(r))
-        , s(move(s)) {}
+        : directive(std::move(directive))
+        , stakeMsg(std::move(stakeMsg))
+        , nonce(std::move(nonce))
+        , gasPrice(std::move(gasPrice))
+        , gasLimit(std::move(gasLimit))
+        , v(std::move(v))
+        , r(std::move(r))
+        , s(std::move(s)) {}
 };
 
 enum Directive : uint8_t {
@@ -65,11 +65,11 @@ class Description {
 
     Description(string name, string identity, string website, string securityContact,
                 string details)
-        : name(move(name))
-        , identity(move(identity))
-        , website(move(website))
-        , securityContact(move(securityContact))
-        , details(move(details)) {}
+        : name(std::move(name))
+        , identity(std::move(identity))
+        , website(std::move(website))
+        , securityContact(std::move(securityContact))
+        , details(std::move(details)) {}
 };
 
 const uint256_t MAX_PRECISION = 18;
@@ -95,7 +95,7 @@ class CommissionRate {
     Decimal maxChangeRate;
 
     CommissionRate(Decimal rate, Decimal maxRate, Decimal maxChangeRate)
-        : rate(move(rate)), maxRate(move(maxRate)), maxChangeRate(move(maxChangeRate)) {}
+        : rate(std::move(rate)), maxRate(std::move(maxRate)), maxChangeRate(std::move(maxChangeRate)) {}
 };
 
 class CreateValidator {
@@ -113,14 +113,14 @@ class CreateValidator {
                     CommissionRate commissionRates, uint256_t minSelfDelegation,
                     uint256_t maxTotalDelegation, vector<vector<uint8_t>> slotPubKeys,
                     vector<vector<uint8_t>> slotKeySigs,uint256_t amount)
-        : validatorAddress(move(validatorAddress))
-        , description(move(description))
-        , commissionRates(move(commissionRates))
-        , minSelfDelegation(move(minSelfDelegation))
-        , maxTotalDelegation(move(maxTotalDelegation))
-        , amount(move(amount))
-        , slotPubKeys(move(slotPubKeys))
-        , slotKeySigs(move(slotKeySigs)) {}
+        : validatorAddress(std::move(validatorAddress))
+        , description(std::move(description))
+        , commissionRates(std::move(commissionRates))
+        , minSelfDelegation(std::move(minSelfDelegation))
+        , maxTotalDelegation(std::move(maxTotalDelegation))
+        , amount(std::move(amount))
+        , slotPubKeys(std::move(slotPubKeys))
+        , slotKeySigs(std::move(slotKeySigs)) {}
 };
 
 class EditValidator {
@@ -139,15 +139,15 @@ class EditValidator {
                   uint256_t minSelfDelegation, uint256_t maxTotalDelegation,
                   vector<uint8_t> slotKeyToRemove, vector<uint8_t> slotKeyToAdd,
                   vector<uint8_t> slotKeyToAddSig, uint256_t  active)
-        : validatorAddress(move(validatorAddress))
-        , description(move(description))
-        , commissionRate(move(commissionRate))
-        , minSelfDelegation(move(minSelfDelegation))
-        , maxTotalDelegation(move(maxTotalDelegation))
-        , slotKeyToRemove(move(slotKeyToRemove))
-        , slotKeyToAdd(move(slotKeyToAdd))
-        , slotKeyToAddSig(move(slotKeyToAddSig))
-        , active(move(active)){}
+        : validatorAddress(std::move(validatorAddress))
+        , description(std::move(description))
+        , commissionRate(std::move(commissionRate))
+        , minSelfDelegation(std::move(minSelfDelegation))
+        , maxTotalDelegation(std::move(maxTotalDelegation))
+        , slotKeyToRemove(std::move(slotKeyToRemove))
+        , slotKeyToAdd(std::move(slotKeyToAdd))
+        , slotKeyToAddSig(std::move(slotKeyToAddSig))
+        , active(std::move(active)){}
 };
 
 class Delegate {
@@ -157,9 +157,9 @@ class Delegate {
     uint256_t amount;
 
     Delegate(Address delegatorAddress, Address validatorAddress, uint256_t amount)
-        : delegatorAddress(move(delegatorAddress))
-        , validatorAddress(move(validatorAddress))
-        , amount(move(amount)) {}
+        : delegatorAddress(std::move(delegatorAddress))
+        , validatorAddress(std::move(validatorAddress))
+        , amount(std::move(amount)) {}
 };
 
 class Undelegate {
@@ -169,16 +169,16 @@ class Undelegate {
     uint256_t amount;
 
     Undelegate(Address delegatorAddress, Address validatorAddress, uint256_t amount)
-        : delegatorAddress(move(delegatorAddress))
-        , validatorAddress(move(validatorAddress))
-        , amount(move(amount)) {}
+        : delegatorAddress(std::move(delegatorAddress))
+        , validatorAddress(std::move(validatorAddress))
+        , amount(std::move(amount)) {}
 };
 
 class CollectRewards {
   public:
     Address delegatorAddress;
 
-    CollectRewards(Address delegatorAddress) : delegatorAddress(move(delegatorAddress)) {}
+    CollectRewards(Address delegatorAddress) : delegatorAddress(std::move(delegatorAddress)) {}
 };
 
 } // namespace TW::Harmony

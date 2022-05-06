@@ -11,7 +11,7 @@
 
 namespace TW::Encrypt {
 
-/// Determind needed padding size (used internally)
+/// Determined needed padding size (used internally)
 size_t paddingSize(size_t origSize, size_t blockSize, TWAESPaddingMode paddingMode);
 
 /// Encrypts a block of data using AES in Cipher Block Chaining (CBC) mode.

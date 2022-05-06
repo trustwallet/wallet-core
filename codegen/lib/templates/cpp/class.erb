@@ -1,0 +1,37 @@
+#include "<%= entity.name %>.h"
+
+namespace TW::Wasm {
+<%# Constructors -%>
+<%  entity.static_methods.each do |method| -%>
+<%    next if method.name.start_with?('Create') || method.name.start_with?('Init') -%>
+<%=  render('cpp/static_method.erb', { method: method }) -%>
+<%  end -%>
+<%# Properties -%>
+<%=  render('cpp/class_properties.erb') -%>
+
+<%# Methods -%>
+<% entity.methods.each do |method| -%>
+<%   next if method.name == "Delete" -%>
+<%=  render('cpp/method.erb', { method: method }) %>
+<% end -%>
+
+<%# EMSCRIPTEN_BINDINGS -%>
+EMSCRIPTEN_BINDINGS(Wasm_TW<%= entity.name %>) {
+    class_<<%= WasmCppHelper.class_name(entity: entity) %>>("<%= entity.name %>")
+<%  entity.static_methods.each do |method| -%>
+<%  function_name = WasmCppHelper.function_name(entity: entity, function: method) -%>
+          .class_function("<%= function_name %>", &<%= WasmCppHelper.class_name(entity: entity) %>::<%= function_name %>, allow_raw_pointers())
+<%  end -%>
+<%- entity.properties.each do |property| -%>
+<%  function_name = WasmCppHelper.format_name(property.name) -%>
+          .function("<%= function_name %>", &<%= WasmCppHelper.class_name(entity: entity) %>::<%= function_name %>, allow_raw_pointers())
+<%- end -%>
+<% entity.methods.each do |method| -%>
+<%  next if method.name == "Delete" -%>
+<%  function_name = WasmCppHelper.format_name(method.name) -%>
+          .function("<%= function_name %>", &<%= WasmCppHelper.class_name(entity: entity) %>::<%= function_name %>, allow_raw_pointers())
+<% end -%>
+    ;
+}
+
+} // namespace TW::Wasm

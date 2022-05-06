@@ -399,6 +399,31 @@ class KeyStoreTests: XCTestCase {
         }
     }
 
+    func testCreateMultiAccount() throws {
+        let mnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle"
+        let password = "password"
+        let keyStore = try KeyStore(keyDirectory: keyDirectory)
+        let wallet = try keyStore.import(mnemonic: mnemonic, name: "name", encryptPassword: password, coins: [.bitcoin, .solana])
+
+        _ = try keyStore.addAccounts(wallet: wallet, coins: [.bitcoin, .solana], password: password)
+
+        let btc1 = try wallet.getAccount(password: password, coin: .bitcoin, derivation: .default)
+        XCTAssertEqual(btc1.address, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny")
+        XCTAssertEqual(btc1.extendedPublicKey, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn")
+
+        let btc2 = try wallet.getAccount(password: password, coin: .bitcoin, derivation: .bitcoinLegacy)
+        XCTAssertEqual(btc2.address, "1NyRyFewhZcWMa9XCj3bBxSXPXyoSg8dKz")
+        XCTAssertEqual(btc2.extendedPublicKey, "xpub6CR52eaUuVb4kXAVyHC2i5ZuqJ37oWNPZFtjXaazFPXZD45DwWBYEBLdrF7fmCR9pgBuCA9Q57zZfyJjDUBDNtWkhWuGHNYKLgDHpqrHsxV")
+
+        let solana1 = try wallet.getAccount(password: password, coin: .solana, derivation: .default)
+        XCTAssertEqual(solana1.address, "HiipoCKL8hX2RVmJTz3vaLy34hS2zLhWWMkUWtw85TmZ")
+        XCTAssertEqual(solana1.derivationPath, "m/44'/501'/0'")
+
+        let solana2 = try wallet.getAccount(password: password, coin: .solana, derivation: .solanaSolana)
+        XCTAssertEqual(solana2.address, "CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C")
+        XCTAssertEqual(solana2.derivationPath, "m/44'/501'/0'/0'")
+    }
+
     func createTempDirURL() throws -> URL {
         let dir = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("keystore")
         try? fileManager.removeItem(at: dir)

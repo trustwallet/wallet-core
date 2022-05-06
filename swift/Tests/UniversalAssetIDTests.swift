@@ -29,7 +29,7 @@ class UniversalAssetIDTests: XCTestCase {
         XCTAssertEqual(busd.description, "c714_tBUSD-BD1")
     }
 
-    func testEqutable() {
+    func testEquatable() {
 
         XCTAssertEqual(
             UniversalAssetID(coin: .ethereum),
