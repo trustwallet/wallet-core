@@ -48,7 +48,7 @@ This list is generated from [./registry.json](../registry.json)
 | 500     | Theta            | THETA  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/theta/info/logo.png" width="32" />        | <https://www.thetatoken.org>  |
 | 501     | Solana           | SOL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png" width="32" />       | <https://solana.com>          |
 | 508     | Elrond           | eGLD   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/elrond/info/logo.png" width="32" />       | <https://elrond.com/>         |
-| 714     | BNB              | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png" width="32" />      | <https://binance.org>         |
+| 714     | BNB Beacon Chain | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png" width="32" />      | <https://binance.org>         |
 | 818     | VeChain          | VET    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/vechain/info/logo.png" width="32" />      | <https://vechain.org>         |
 | 820     | Callisto         | CLO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/callisto/info/logo.png" width="32" />     | <https://callisto.network>    |
 | 888     | NEO              | NEO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/neo/info/logo.png" width="32" />          | <https://neo.org>             |
@@ -82,5 +82,5 @@ This list is generated from [./registry.json](../registry.json)
 | 10002020 | Ronin            | RON    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ronin/info/logo.png" width="32" />        | <https://whitepaper.axieinfinity.com/technology/ronin-ethereum-sidechain> |
 | 10009000 | Avalanche C-Chain | AVAX   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/avalanchec/info/logo.png" width="32" />   | <https://www.avalabs.org/>    |
 | 10042221 | Arbitrum         | ARETH  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/arbitrum/info/logo.png" width="32" />     | <https://arbitrum.io>         |
-| 20000714 | Smart Chain      | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/info/logo.png" width="32" />   | <https://www.binance.org/en/smartChain> |
+| 20000714 | BNB Smart Chain  | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/info/logo.png" width="32" />   | <https://www.binance.org/en/smartChain> |
 | 1323161554 | Aurora           | AURORAETH | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aurora/info/logo.png" width="32" />       | <https://aurora.dev/>         |
