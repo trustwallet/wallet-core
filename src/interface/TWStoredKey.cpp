@@ -124,7 +124,7 @@ void TWStoredKeyRemoveAccountForCoin(struct TWStoredKey* _Nonnull key, enum TWCo
     key->impl.removeAccount(coin);
 }
 
-void TWStoredKeyRemoveAccountForCoinDerivationTWStoredKeyRemoveAccountForCoinDerivation(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, enum TWDerivation derivation) {
+void TWStoredKeyRemoveAccountForCoinDerivation(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, enum TWDerivation derivation) {
     key->impl.removeAccount(coin, derivation);
 }
 
