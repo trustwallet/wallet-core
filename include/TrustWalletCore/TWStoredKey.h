@@ -76,10 +76,6 @@ struct TWAccount* _Nullable TWStoredKeyAccountForCoin(struct TWStoredKey* _Nonnu
 TW_EXPORT_METHOD
 struct TWAccount* _Nullable TWStoredKeyAccountForCoinDerivation(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, enum TWDerivation derivation, struct TWHDWallet* _Nullable wallet);
 
-/// Remove the account for a specific coin
-TW_EXPORT_METHOD
-void TWStoredKeyRemoveAccountForCoin(struct TWStoredKey* _Nonnull key, enum TWCoinType coin);
-
 /// Adds a new account, using given derivation (usually TWDerivationDefault) and derivation path (usually matches path from derivation, but custom possible).
 TW_EXPORT_METHOD
 void TWStoredKeyAddAccountDerivation(struct TWStoredKey* _Nonnull key, TWString* _Nonnull address, enum TWCoinType coin, enum TWDerivation derivation, TWString* _Nonnull derivationPath, TWString* _Nonnull publicKey, TWString* _Nonnull extendedPublicKey);
@@ -88,6 +84,18 @@ void TWStoredKeyAddAccountDerivation(struct TWStoredKey* _Nonnull key, TWString*
 /// Adds a new account, using given derivation path.
 TW_EXPORT_METHOD
 void TWStoredKeyAddAccount(struct TWStoredKey* _Nonnull key, TWString* _Nonnull address, enum TWCoinType coin, TWString* _Nonnull derivationPath, TWString* _Nonnull publicKey, TWString* _Nonnull extendedPublicKey);
+
+/// Remove the account for a specific coin
+TW_EXPORT_METHOD
+void TWStoredKeyRemoveAccountForCoin(struct TWStoredKey* _Nonnull key, enum TWCoinType coin);
+
+/// Remove the account for a specific coin with the given derivation.
+TW_EXPORT_METHOD
+void TWStoredKeyRemoveAccountForCoinDerivation(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, enum TWDerivation derivation);
+
+/// Remove the account for a specific coin with the given derivation path.
+TW_EXPORT_METHOD
+void TWStoredKeyRemoveAccountForCoinDerivationPath(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull derivationPath);
 
 /// Saves the key to a file.
 TW_EXPORT_METHOD
