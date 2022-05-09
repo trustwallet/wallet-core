@@ -31,7 +31,7 @@ TEST(TWBinanceSmartChainCoinType, TWCoinType) {
     assertStringsEqual(txUrl, "https://bscscan.com/tx/0xb9ae2e808fe8e57171f303ad8f6e3fd17d949b0bfc7b4db6e8e30a71cc517d7e");
     assertStringsEqual(accUrl, "https://bscscan.com/address/0x35552c16704d214347f29Fa77f77DA6d75d7C752");
     assertStringsEqual(id, "smartchain");
-    assertStringsEqual(name, "Smart Chain");
+    assertStringsEqual(name, "BNB Smart Chain");
 }
 
 TEST(TWBinanceSmartChainLegacyCoinType, TWCoinType) {
