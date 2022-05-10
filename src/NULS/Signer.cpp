@@ -4,8 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrezorCrypto/ecdsa.h>
 #include "Signer.h"
+#include <TrezorCrypto/ecdsa.h>
 
 #include "Address.h"
 #include "BinaryCoding.h"
@@ -27,16 +27,18 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 }
 
 Signer::Signer(const Proto::SigningInput& input) : input(input) {
+    uint256_t txAmount = load(input.amount());
+    uint256_t balance = load(input.balance());
+
     Proto::TransactionCoinFrom coinFrom;
     coinFrom.set_from_address(input.from());
     coinFrom.set_assets_chainid(input.chain_id());
     coinFrom.set_assets_id(input.idassets_id());
-    //need to update with amount + fee
     coinFrom.set_id_amount(input.amount());
     coinFrom.set_nonce(input.nonce());
-    //default unlocked
+    // default unlocked
     coinFrom.set_locked(0);
-    *tx.mutable_input() = coinFrom;
+    *tx.add_input() = coinFrom;
 
     Proto::TransactionCoinTo coinTo;
     coinTo.set_to_address(input.to());
@@ -44,10 +46,55 @@ Signer::Signer(const Proto::SigningInput& input) : input(input) {
     coinTo.set_assets_chainid(input.chain_id());
     coinTo.set_assets_id(input.idassets_id());
     coinTo.set_lock_time(0);
-    *tx.mutable_output() = coinTo;
+    *tx.add_output() = coinTo;
+
+    tx.set_type(TX_TYPE);
+
+    TW::uint256_t fromNULSAmount;
+    // get mainnet chain id from address
+    auto from = Address(input.from());
+    if (input.chain_id() == from.chainID() && input.idassets_id() == 1) {
+        // asset is NULS
+        // update to add fee
+        uint32_t txSize =
+            CalculatorTransactionSize(1, 1, static_cast<uint32_t>(tx.remark().size()));
+        fromNULSAmount = txAmount;
+        uint256_t fee = (uint256_t)CalculatorTransactionFee(txSize);
+        fromNULSAmount += fee;
+        // update the amount with fee included
+        Data amountWithFee = store(fromNULSAmount);
+        std::string amountWithFeeStr;
+        amountWithFeeStr.insert(amountWithFeeStr.begin(), amountWithFee.begin(),
+                                amountWithFee.end());
+        tx.mutable_input(0)->set_id_amount(amountWithFeeStr);
+    } else {
+        // asset is not NULS
+        uint32_t txSize = CalculatorTransactionSize(
+            2, 1,
+            static_cast<uint32_t>(
+                tx.remark().size())); // 2 inputs, one for the asset, another for NULS fee
+        uint256_t fee = (uint256_t)CalculatorTransactionFee(txSize);
+        fromNULSAmount = fee;
+        Data feeData = store(fee);
+        std::string feeStr;
+        feeStr.insert(feeStr.begin(), feeData.begin(), feeData.end());
+        // add new input for fee
+        Proto::TransactionCoinFrom txFee;
+        txFee.set_from_address(input.from());
+        txFee.set_assets_chainid(from.chainID());
+        // network asset id 1 is NULS
+        txFee.set_assets_id(1);
+        txFee.set_id_amount(feeStr);
+        txFee.set_nonce(input.nonce());
+        // default unlocked
+        txFee.set_locked(0);
+        *tx.add_input() = txFee;
+    }
+    if (fromNULSAmount > balance) {
+        throw std::invalid_argument("User account balance not sufficient");
+    }
 
     tx.set_remark(input.remark());
-    tx.set_type(TX_TYPE);
     tx.set_timestamp(input.timestamp());
     tx.set_tx_data("");
 }
@@ -56,94 +103,6 @@ Data Signer::sign() const {
     if (input.private_key().empty()) {
         throw std::invalid_argument("Must have private key string");
     }
-
-    uint32_t txSize = CalculatorTransactionSize(1, 1, static_cast<uint32_t>(tx.remark().size()));
-    uint256_t fee = (uint256_t)CalculatorTransactionFee(txSize);
-    uint256_t txAmount = load(input.amount());
-    uint256_t balance = load(input.balance());
-    uint256_t fromAmount = txAmount + fee;
-    if (fromAmount > balance) {
-        throw std::invalid_argument("User account balance not sufficient");
-    }
-
-    auto& coinFrom = (Proto::TransactionCoinFrom&)tx.input();
-    Data amount;
-    amount = store(fromAmount);
-    std::reverse(amount.begin(), amount.end());
-    std::string amountStr;
-    amountStr.insert(amountStr.begin(), amount.begin(), amount.end());
-    amountStr.append(static_cast<unsigned long>(amount.capacity() - amount.size()), '\0');
-    coinFrom.set_id_amount(amountStr);
-
-    auto& coinTo = (Proto::TransactionCoinTo&)tx.output();
-    Data amountTo;
-    amountTo = store(txAmount);
-    std::reverse(amountTo.begin(), amountTo.end());
-    std::string amountToStr;
-    amountToStr.insert(amountToStr.begin(), amountTo.begin(), amountTo.end());
-    amountToStr.append(static_cast<unsigned long>(amountTo.capacity() - amountTo.size()), '\0');
-    coinTo.set_id_amount(amountToStr);
-
-    auto dataRet = Data();
-    // Transaction Type
-    encode16LE(static_cast<uint16_t>(tx.type()), dataRet);
-    // Timestamp
-    encode32LE(tx.timestamp(), dataRet);
-     // Remark
-    std::string remark = tx.remark();
-    serializerRemark(remark, dataRet);
-    // txData
-    encodeVarInt(0, dataRet);
-
-    //coinFrom and coinTo size
-    encodeVarInt(TRANSACTION_INPUT_SIZE + TRANSACTION_OUTPUT_SIZE, dataRet);
-
-    // CoinData Input
-    serializerInput(tx.input(), dataRet);
-
-    // CoinData Output
-    serializerOutput(tx.output(), dataRet);
-
-    // Calc transaction hash
-    Data txHash = calcTransactionDigest(dataRet);
-   
-    Data privKey = data(input.private_key());
-    auto priv = PrivateKey(privKey);
-    auto transactionSignature = makeTransactionSignature(priv, txHash);
-    encodeVarInt(transactionSignature.size(), dataRet);
-    std::copy(transactionSignature.begin(), transactionSignature.end(), std::back_inserter(dataRet));
-
-    return dataRet;
-}
-
-Data Signer::buildUnsignedTx() const {
-    uint32_t txSize = CalculatorTransactionSize(1, 1, static_cast<uint32_t>(tx.remark().size()));
-    uint256_t fee = (uint256_t)CalculatorTransactionFee(txSize);
-    uint256_t txAmount = load(input.amount());
-    uint256_t balance = load(input.balance());
-    uint256_t fromAmount = txAmount + fee;
-    if (fromAmount > balance) {
-        throw std::invalid_argument("User account balance not sufficient");
-    }
-
-    Proto::TransactionCoinFrom& coinFrom = (Proto::TransactionCoinFrom&)tx.input();
-    Data amount;
-    amount = store(fromAmount);
-    std::reverse(amount.begin(), amount.end());
-    std::string amountStr;
-    amountStr.insert(amountStr.begin(), amount.begin(), amount.end());
-    amountStr.append(static_cast<unsigned long>(amount.capacity() - amount.size()), '\0');
-    coinFrom.set_id_amount(amountStr);
-
-    Proto::TransactionCoinTo& coinTo = (Proto::TransactionCoinTo&)tx.output();
-    Data amountTo;
-    amountTo = store(txAmount);
-    std::reverse(amountTo.begin(), amountTo.end());
-    std::string amountToStr;
-    amountToStr.insert(amountToStr.begin(), amountTo.begin(), amountTo.end());
-    amountToStr.append(static_cast<unsigned long>(amountTo.capacity() - amountTo.size()), '\0');
-    coinTo.set_id_amount(amountToStr);
-
     auto dataRet = Data();
     // Transaction Type
     encode16LE(static_cast<uint16_t>(tx.type()), dataRet);
@@ -154,15 +113,34 @@ Data Signer::buildUnsignedTx() const {
     serializerRemark(remark, dataRet);
     // txData
     encodeVarInt(0, dataRet);
+    // coinData
+    serializerCoinData(tx, dataRet);
+    // Calc transaction hash
+    Data txHash = calcTransactionDigest(dataRet);
 
-    //coinFrom and coinTo size
-    encodeVarInt(TRANSACTION_INPUT_SIZE + TRANSACTION_OUTPUT_SIZE, dataRet);
+    Data privKey = data(input.private_key());
+    auto priv = PrivateKey(privKey);
+    auto transactionSignature = makeTransactionSignature(priv, txHash);
+    encodeVarInt(transactionSignature.size(), dataRet);
+    std::copy(transactionSignature.begin(), transactionSignature.end(),
+              std::back_inserter(dataRet));
 
-    // CoinData Input
-    serializerInput(tx.input(), dataRet);
+    return dataRet;
+}
 
-    // CoinData Output
-    serializerOutput(tx.output(), dataRet);
+Data Signer::buildUnsignedTx() const {
+    auto dataRet = Data();
+    // Transaction Type
+    encode16LE(static_cast<uint16_t>(tx.type()), dataRet);
+    // Timestamp
+    encode32LE(tx.timestamp(), dataRet);
+    // Remark
+    std::string remark = tx.remark();
+    serializerRemark(remark, dataRet);
+    // txData
+    encodeVarInt(0, dataRet);
+    // coinData
+    serializerCoinData(tx, dataRet);
 
     return dataRet;
 }

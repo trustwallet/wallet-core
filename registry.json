@@ -1796,7 +1796,9 @@
     "explorer": {
       "url": "https://nulscan.io",
       "txPath": "/transaction/info?hash=",
-      "accountPath": "/address/info?address="
+      "accountPath": "/address/info?address=",
+      "sampleTx": "303e0e42c28acc37ba952a1effd43daa1caec79928054f7abefb21c32e6fdc02",
+      "sampleAccount": "NULSd6HgdSjUZy7jKMZfvQ5QU6Z97oufGTGcF"
     },
     "info": {
       "url": "https://nuls.io",
