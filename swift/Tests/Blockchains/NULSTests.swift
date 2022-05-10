@@ -39,8 +39,8 @@ class NULSTests: XCTestCase {
 
     func testTokenSign() {
         let input = NULSSigningInput.with {
-            $0.privateKey = Data(hexString: "0x9ce21dad67e0f0af2599b41b515a7f7018059418bab892a7b68f283d489abc4b")!
-            $0.from = "NULSd6Hgj7ZoVgsPN9ybB4C1N2TbvkgLc8Z9H"
+            $0.privateKey = Data(hexString: "0x044014463e2ee3cc9c67a6f191dbac82288eb1d5c1111d21245bdc6a855082a1")!
+            $0.from = "NULSd6HgWabfcG6H7NDK2TJvtoU3wxY1YLKwJ"
             $0.to = "NULSd6Hgied7ym6qMEfVzZanMaa9qeqA6TZSe"
             $0.amount = Data(hexString: "0x989680")!
             $0.chainID = 9
