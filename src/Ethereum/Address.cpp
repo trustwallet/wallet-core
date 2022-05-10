@@ -35,7 +35,7 @@ Address::Address(const Data& data) {
 }
 
 Address::Address(const PublicKey& publicKey) {
-    if (publicKey.type != TWPublicKeyTypeSECP256k1Extended) {
+    if (publicKey.type != TWPublicKeyTypeSECP256k1Extended && publicKey.type != TWPublicKeyTypeNIST256p1Extended) {
         throw std::invalid_argument("Ethereum::Address needs an extended SECP256k1 public key.");
     }
     const auto data = publicKey.hash({}, static_cast<Hash::HasherSimpleType>(Hash::keccak256), true);

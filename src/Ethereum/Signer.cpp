@@ -103,8 +103,13 @@ Signature Signer::signatureDataToStructWithEip155(const uint256_t& chainID, cons
 }
 
 Signature Signer::sign(const PrivateKey& privateKey, const Data& hash, bool includeEip155, const uint256_t& chainID) noexcept {
-    auto signature = privateKey.sign(hash, TWCurveSECP256k1);
-    return signatureDataToStruct(signature, includeEip155, chainID);
+    if(chainID == 1012 || chainID == 1007 || chainID == 1002) {
+        auto signature = privateKey.sign(hash, TWCurveNIST256p1);
+        return signatureDataToStruct(signature, includeEip155, chainID);
+    } else {
+        auto signature = privateKey.sign(hash, TWCurveSECP256k1);
+        return signatureDataToStruct(signature, includeEip155, chainID);
+    }
 }
 
 // May throw

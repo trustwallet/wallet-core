@@ -2360,5 +2360,35 @@
       "rpc": "https://mainnet.aurora.dev/",
       "documentation": "https://doc.aurora.dev/"
     }
+  },
+  {
+    "id": "newchain",
+    "name": "NewChain",
+    "coinId": 1642,
+    "slip44": 1642,
+    "symbol": "NEW",
+    "decimals": 18,
+    "blockchain": "NewChain",
+    "derivation": [
+      {
+        "path": "m/44'/1642'/0'/0/0"
+      }
+    ],
+    "curve": "nist256p1",
+    "publicKeyType": "nist256p1Extended",
+    "explorer": {
+      "url": "https://explorer.newtonproject.org",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xb9ae2e808fe8e57171f303ad8f6e3fd17d949b0bfc7b4db6e8e30a71cc517d7e",
+      "sampleAccount": "0x35552c16704d214347f29Fa77f77DA6d75d7C752"
+    },
+    "info": {
+      "url": "https://www.newtonproject.org",
+      "client": "https://github.com/newtonproject/newchain",
+      "clientPublic": "https://global.rpc.mainnet.newtonproject.org",
+      "clientDocs": "https://eth.wiki/json-rpc/API"
+    }
   }
+
 ]
