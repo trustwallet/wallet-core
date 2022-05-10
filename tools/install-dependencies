@@ -6,6 +6,13 @@ ROOT="$PWD"
 PREFIX="${PREFIX:-$ROOT/build/local}"
 echo "PREFIX: $PREFIX"
 
+CMAKE=cmake
+MAKE=make
+
+# Load dependencies version
+BASE_DIR=$(cd `dirname $0`; pwd)
+source ${BASE_DIR}/dependencies-version
+
 # Setup up folders
 export PATH="$PREFIX/bin":$PATH
 export LDFLAGS="-L$PREFIX/lib"
@@ -14,72 +21,57 @@ export DYLD_LIBRARY_PATH="$PREFIX/lib"
 export LD_LIBRARY_PATH="$PREFIX/lib"
 export LD_RUN_PATH="$PREFIX/lib"
 
-# Download Google Test
-export GTEST_VERSION=1.11.0
-GTEST_DIR="$ROOT/build/local/src/gtest"
-mkdir -p "$GTEST_DIR"
-cd "$GTEST_DIR"
-if [ ! -f release-$GTEST_VERSION.tar.gz ]; then
-    curl -fSsOL https://github.com/google/googletest/archive/release-$GTEST_VERSION.tar.gz
-fi
-tar xzf release-$GTEST_VERSION.tar.gz
+function download_dependencies() {
+    ${BASE_DIR}/download-dependencies
+}
 
-# Build gtest
-cd googletest-release-$GTEST_VERSION
-cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -H.
-make -j4
-make install
-make clean
+function build_gtest() {
+    # Build gtest
+    GTEST_DIR="$ROOT/build/local/src/gtest"
+    cd ${GTEST_DIR}/googletest-release-$GTEST_VERSION
+    $CMAKE -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -H.
+    $MAKE -j4
+    $MAKE install
+    $MAKE clean
+}
 
-# Download Check
-export CHECK_VERSION=0.15.2
-CHECK_DIR="$ROOT/build/local/src/check"
-mkdir -p "$CHECK_DIR"
-cd "$CHECK_DIR"
-if [ ! -f check-$CHECK_VERSION.tar.gz ]; then
-    curl -fSsOL https://github.com/libcheck/check/releases/download/$CHECK_VERSION/check-$CHECK_VERSION.tar.gz
-fi
-tar xzf check-$CHECK_VERSION.tar.gz
+function build_libcheck() {
+    # Build Check
+    CHECK_DIR="$ROOT/build/local/src/check"
+    cd ${CHECK_DIR}/check-$CHECK_VERSION
+    $CMAKE -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -H.
+    $MAKE -j4
+    $MAKE install
+    $MAKE clean
+}
 
-# Build Check
-cd check-$CHECK_VERSION
-./configure --prefix="$PREFIX"
-make -j4
-make install
-make clean
+function build_protobuf() {
+    # Build Protobuf
+    PROTOBUF_DIR="$ROOT/build/local/src/protobuf"
+    cd ${PROTOBUF_DIR}/protobuf-$PROTOBUF_VERSION
 
-# Download Nlohmann JSON
-export JSON_VERSION=3.10.2
-JSON_DIR="$ROOT/build/local/json"
-mkdir -p "$JSON_DIR"
-cd "$JSON_DIR"
-if [ ! -f include.zip ]; then
-    curl -fSsOL https://github.com/nlohmann/json/releases/download/v$JSON_VERSION/include.zip
-fi
-unzip -d "$PREFIX" -o include.zip
+    ./configure --prefix="$PREFIX"
+    $MAKE -j4
+    $MAKE install
 
-# Download Protobuf sources
-export PROTOBUF_VERSION=3.19.2
-PROTOBUF_DIR="$ROOT/build/local/src/protobuf"
-mkdir -p "$PROTOBUF_DIR"
-cd "$PROTOBUF_DIR"
-if [ ! -f protobuf-java-$PROTOBUF_VERSION.tar.gz ]; then
-    curl -fSsOL https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protobuf-java-$PROTOBUF_VERSION.tar.gz
-fi
-tar xzf protobuf-java-$PROTOBUF_VERSION.tar.gz
+    # after install, cleanup to save space (docker)
+    make clean
+    "$PREFIX/bin/protoc" --version
 
-# Build Protobuf
-cd protobuf-$PROTOBUF_VERSION
-./configure --prefix="$PREFIX"
-make -j4
-make install
-# after install, cleanup to save space (docker)
-make clean
-"$PREFIX/bin/protoc" --version
+    # Protobuf plugins
+    cd "$ROOT/protobuf-plugin"
+    $CMAKE -H. -Bbuild -DCMAKE_INSTALL_PREFIX=$PREFIX
+    $MAKE -Cbuild -j12
+    $MAKE -Cbuild install
+    rm -rf build
 
-if [[ -x "$(command -v swift)" && `uname` == "Darwin" ]]; then
-    # Download Swift Protobuf sources
-    export SWIFT_PROTOBUF_VERSION=1.18.0
+    if [[ -x "$(command -v swift)" && `uname` == "Darwin" ]]; then
+        build_swift_plugin
+    fi
+}
+
+function build_swift_plugin() {
+     # Download Swift Protobuf sources
     SWIFT_PROTOBUF_DIR="$ROOT/build/local/src/swift-protobuf"
     mkdir -p "$SWIFT_PROTOBUF_DIR"
     cd "$SWIFT_PROTOBUF_DIR"
@@ -93,13 +85,12 @@ if [[ -x "$(command -v swift)" && `uname` == "Darwin" ]]; then
     swift build --static-swift-stdlib -c release
     cp -f "$SWIFT_PROTOBUF_DIR/swift-protobuf-$SWIFT_PROTOBUF_VERSION/.build/release/protoc-gen-swift" "$PREFIX/bin" | true
     $PREFIX/bin/protoc-gen-swift --version
-fi
+}
 
-# Protobuf plugins
-cd "$ROOT/protobuf-plugin"
-cmake -H. -Bbuild -DCMAKE_INSTALL_PREFIX=$PREFIX
-make -Cbuild -j12
-make -Cbuild install
-rm -rf build
+download_dependencies
+
+build_gtest
+build_libcheck
+build_protobuf
 
 cd "$ROOT"

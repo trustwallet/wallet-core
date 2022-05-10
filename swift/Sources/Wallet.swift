@@ -43,6 +43,22 @@ public final class Wallet: Hashable, Equatable {
         return account
     }
 
+    /// Returns the account for a specific coin and derivation.
+    ///
+    /// - Parameters:
+    ///   - password: wallet encryption password
+    ///   - coin: coin type
+    ///   - derivation: derivation, a specific or default
+    /// - Returns: the account
+    /// - Throws: `KeyStore.Error.invalidPassword` if the password is incorrect.
+    public func getAccount(password: String, coin: CoinType, derivation: Derivation) throws -> Account {
+        let wallet = key.wallet(password: Data(password.utf8))
+        guard let account = key.accountForCoinDerivation(coin: coin, derivation: derivation, wallet: wallet) else {
+            throw KeyStore.Error.invalidPassword
+        }
+        return account
+    }
+
     /// Returns the accounts for a specific coins.
     ///
     /// - Parameters:

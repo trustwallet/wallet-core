@@ -1,0 +1,41 @@
+{
+  "name": "@trustwallet/wallet-core",
+  "version": "1.0.0",
+  "description": "wallet core wasm and protobuf models",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "mocha -r ts-node/register tests/*.test.ts tests/**/*.test.ts",
+    "generate": "npm run codegen:js && npm run codegen:ts",
+    "codegen:js": "pbjs -t static-module '../src/proto/*.proto' --no-delimited --force-long -o generated/core_proto.js",
+    "codegen:ts": "pbts -o generated/core_proto.d.ts generated/core_proto.js",
+    "clean": "rm -rf dist generated && mkdir -p dist/generated generated",
+    "build": "npm run clean && npm run generate && cp -R generated lib dist && tsc --skipLibCheck",
+    "copy:wasm": "mkdir -p lib && cp ../wasm-build/wasm/wallet-core.* lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/trustwallet/wallet-core.git"
+  },
+  "author": "hewigovens",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/trustwallet/wallet-core/issues"
+  },
+  "homepage": "https://github.com/trustwallet/wallet-core#readme",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "protobufjs": "^6.11.2"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.0",
+    "@types/mocha": "^9.1.0",
+    "buffer": "^6.0.3",
+    "chai": "^4.3.6",
+    "mocha": "^9.2.2",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3"
+  }
+}

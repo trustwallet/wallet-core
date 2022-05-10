@@ -106,6 +106,8 @@ enum TWCoinType {
     TWCoinTypeBoba = 10000288,
     TWCoinTypeSyscoin = 57,
     TWCoinTypeVerge = 77,
+    TWCoinTypeMetis = 1001088,
+    TWCoinTypeAurora = 1323161554,
 };
 
 /// Returns the blockchain for a coin type.

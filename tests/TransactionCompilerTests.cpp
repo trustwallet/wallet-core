@@ -293,8 +293,8 @@ TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
     const auto preImageHashes = TransactionCompiler::preImageHashes(coin, txInputData);
     TW::Bitcoin::Proto::PreSigningOutput output;
     ASSERT_TRUE(output.ParseFromArray(preImageHashes.data(), (int)preImageHashes.size()));
-
     ASSERT_EQ(output.error(), Common::Proto::OK);
+
     EXPECT_EQ(hex(output.hash_public_keys()[0].data_hash()), "505f527f00e15fcc5a2d2416c9970beb57dfdfaca99e572a01f143b24dd8fab6");
     EXPECT_EQ(hex(output.hash_public_keys()[1].data_hash()), "a296bead4172007be69b21971a790e076388666c162a9505698415f1b003ebd7");
     EXPECT_EQ(hex(output.hash_public_keys()[2].data_hash()), "60ed6e9371e5ddc72fd88e46a12cb2f68516ebd307c0fd31b1b55cf767272101");
@@ -373,6 +373,7 @@ TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
     {   // Negative: not enough signatures
         const Data outputData = TransactionCompiler::compileWithSignatures(coin, txInputData, {signatureVec[0]}, pubkeyVec);
         EXPECT_GT(outputData.size(), 1);
+
         Bitcoin::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(output.encoded().size(), 0);
@@ -394,6 +395,7 @@ TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
              signatureVec[1], signatureVec[2]},
             pubkeyVec);
         EXPECT_EQ(outputData.size(), 2);
+
         Bitcoin::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(output.encoded().size(), 0);

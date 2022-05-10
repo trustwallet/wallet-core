@@ -1,0 +1,32 @@
+<%  has_string = entity.cases.all? { |c| !c.string.nil? } -%>
+<%  if has_string -%>
+#include <string>
+
+<% end -%>
+namespace TW::Wasm {
+
+<%  if has_string -%>
+auto <%= entity.name %>Description(TW<%= entity.name %> value) -> std::string {
+    switch (value) {
+<%      entity.cases.each do |c| -%>
+        case TW<%= entity.name %><%= c.name %>: return <%= c.string %>;
+<%      end -%>
+        default: return "";
+    }
+}
+
+<% end -%>
+EMSCRIPTEN_BINDINGS(Wasm_TW<%= entity.name %>) {
+    enum_<TW<%= entity.name %>>("<%= entity.name %>")
+<%# Cases -%>
+<%  entity.cases.each do |c| -%>
+        .value("<%= WasmCppHelper.format_name(c.name) %>", TW<%= entity.name %>::TW<%= entity.name %><%= c.name %>)
+<%  end -%>
+    ;
+<%# Description -%>
+<%  if has_string -%>
+    function("<%= entity.name %>Description", &<%= entity.name %>Description);
+<%  end -%>
+}
+
+} // namespace TW::Wasm

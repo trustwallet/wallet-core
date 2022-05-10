@@ -20,5 +20,5 @@ jobs:
         stale-pr-message: 'This pull request has been automatically marked as stale because it has not had recent activity. It will be closed if no further activity occurs.'
         stale-issue-label: 'no-issue-activity'
         stale-pr-label: 'no-pr-activity'
-        exempt-pr-labels: 'good first issue,bounty,priority: high'
+        exempt-pr-labels: 'good-first-issue,bounty,priority-high'
         days-before-stale: 14

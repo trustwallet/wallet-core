@@ -26,6 +26,7 @@
 #include "Nano/Address.h"
 #include "Polkadot/Address.h"
 #include "Ronin/Address.h"
+#include "Solana/Address.h"
 #include "Zcash/TAddress.h"
 #include "Zilliqa/Address.h"
 
@@ -133,7 +134,9 @@ class AnyAddress {
         case TWCoinTypeCronosChain:
         case TWCoinTypeSmartBitcoinCash:
         case TWCoinTypeKuCoinCommunityChain:
-        case TWCoinTypeBoba: {
+        case TWCoinTypeBoba:
+        case TWCoinTypeMetis:
+        case TWCoinTypeAurora: {
             const auto addr = Ethereum::Address(string);
             return {addr.bytes.begin(), addr.bytes.end()};
         }
@@ -191,6 +194,9 @@ class AnyAddress {
         case TWCoinTypeIOST: {
             auto addr = IOST::Account::address(string);
             return {addr.begin(), addr.end()};
+        }
+        case TWCoinTypeSolana: {
+            return Solana::Address(string).vector();
         }
         default:
             break;

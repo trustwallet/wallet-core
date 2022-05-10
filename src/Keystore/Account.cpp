@@ -15,6 +15,7 @@ using namespace TW::Keystore;
 
 namespace CodingKeys {
     static const auto address = "address";
+    static const auto derivation = "derivation";
     static const auto derivationPath = "derivationPath";
     static const auto extendedPublicKey = "extendedPublicKey";
     static const auto indices = "indices";
@@ -25,6 +26,10 @@ namespace CodingKeys {
 } // namespace CodingKeys
 
 Account::Account(const nlohmann::json& json) {
+    if (json.find(CodingKeys::derivation) != json.end()) {
+        derivation = TWDerivation(json[CodingKeys::derivation].get<uint32_t>());
+    }
+
     if (json[CodingKeys::derivationPath].is_object()) {
         const auto indices = json[CodingKeys::derivationPath][CodingKeys::indices];
         for (auto& indexJSON : indices) {
@@ -62,6 +67,9 @@ Account::Account(const nlohmann::json& json) {
 nlohmann::json Account::json() const {
     nlohmann::json j;
     j[CodingKeys::address] = address;
+    if (derivation != TWDerivationDefault) {
+        j[CodingKeys::derivation] = static_cast<int>(derivation);
+    }
     j[CodingKeys::derivationPath] = derivationPath.string();
     j[CodingKeys::coin] = coin;
     if (!extendedPublicKey.empty()) {

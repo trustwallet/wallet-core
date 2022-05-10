@@ -12,10 +12,12 @@
 #include "../HDWallet.h"
 
 #include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWDerivation.h>
 #include <nlohmann/json.hpp>
 
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace TW::Keystore {
 
@@ -38,7 +40,7 @@ public:
     /// Encrypted payload.
     EncryptedPayload payload;
 
-    /// Active accounts.
+    /// Active accounts.  Address should be unique.
     std::vector<Account> accounts;
 
     /// Create a new StoredKey, with the given name, mnemonic and password.
@@ -69,30 +71,49 @@ public:
     /// @throws std::invalid_argument if this key is of a type other than `mnemonicPhrase`.
     const HDWallet wallet(const Data& password) const;
 
-    /// Returns the account for a specific coin, creating it if necessary and
-    /// the provided wallet is not `nullptr`.
+    /// Returns all the accounts for a specific coin: 0, 1, or more.
+    std::vector<Account> getAccounts(TWCoinType coin) const;
+
+    /// If found, returns the account for a specific coin. In case of muliple accounts, the default derivation is returned, or the first one is returned.
+    /// If none exists, and wallet is not null, an account is created (with default derivation).
     std::optional<const Account> account(TWCoinType coin, const HDWallet* wallet);
 
+    /// If found, returns the account for a specific coin and derivation.  In case of muliple accounts, the first one is returned.
+    /// If none exists, an account is created.
+    Account account(TWCoinType coin, TWDerivation derivation, const HDWallet& wallet);
+
     /// Returns the account for a specific coin if it exists.
+    /// In case of muliple accounts, the default derivation is returned, or the first one is returned.
     std::optional<const Account> account(TWCoinType coin) const;
     
-    /// Add an account
+    /// Returns the account for a specific coin and derivation, if it exists.
+    std::optional<const Account> account(TWCoinType coin, TWDerivation derivation, const HDWallet& wallet) const;
+
+    /// Add an account with aribitrary address/derivation path.  Discouraged, use account() versions.
+    /// Address must be unique (for a coin).
     void addAccount(
-        const std::string& address, 
-        TWCoinType coin, 
+        const std::string& address,
+        TWCoinType coin,
+        TWDerivation derivation,
         const DerivationPath& derivationPath,
         const std::string& publicKey,
         const std::string& extendedPublicKey
     );
 
-    /// Remove the account for a specific coin
+    /// Remove the account(s) for a specific coin
     void removeAccount(TWCoinType coin);
-    
-    /// Returns the private key for a specific coin, creating an account if necessary.
+
+    /// Returns the private key for a specific coin, using default derivation, creating an account if necessary.
     ///
     /// @throws std::invalid_argument if this key is of a type other than
     /// `mnemonicPhrase` and a coin other than the default is requested.
     const PrivateKey privateKey(TWCoinType coin, const Data& password);
+
+    /// Returns the private key for a specific coin, creating an account if necessary.
+    ///
+    /// @throws std::invalid_argument if this key is of a type other than
+    /// `mnemonicPhrase` and a coin other than the default is requested.
+    const PrivateKey privateKey(TWCoinType coin, TWDerivation derivation, const Data& password);
 
     /// Loads and decrypts a stored key from a file.
     ///
@@ -126,6 +147,23 @@ private:
     /// This constructor will encrypt the provided data with default encryption
     /// parameters.
     StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel);
+
+    /// Find default account for coin, if exists.  If multiple exist, default is returned.
+    /// Optional wallet is needed to derive default address
+    std::optional<Account> getDefaultAccount(TWCoinType coin, const HDWallet* wallet) const;
+
+    /// Find account for coin, if exists.  If multiple exist, default is returned, or any.
+    /// Optional wallet is needed to derive default address
+    std::optional<Account> getDefaultAccountOrAny(TWCoinType coin, const HDWallet* wallet) const;
+
+    /// Find account by coin+address (should be one, if multiple, first is returned)
+    std::optional<Account> getAccount(TWCoinType coin, const std::string& address) const;
+
+    /// Find account by coin+derivation (should be one, if multiple, first is returned)
+    std::optional<Account> getAccount(TWCoinType coin, TWDerivation derivation, const HDWallet& wallet) const;
+
+    /// Re-derive account address if missing
+    Account fillAddressIfMissing(Account& account, const HDWallet* wallet) const;
 };
 
 } // namespace TW::Keystore

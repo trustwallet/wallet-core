@@ -121,6 +121,19 @@ TEST(TransactionPlan, OneFitsExactlyHighFee) {
     EXPECT_EQ(feeCalculator.calculate(1, 2, byteFee), 1740);
 }
 
+TEST(TransactionPlan, OneMissingPrivateKey) {
+    auto utxos = buildTestUTXOs({100'000});
+    auto byteFee = 1;
+    auto sigingInput = buildSigningInput(50'000, byteFee, utxos, false, TWCoinTypeBitcoin, true);
+
+    auto txPlan = TransactionBuilder::plan(sigingInput);
+
+    EXPECT_TRUE(verifyPlan(txPlan, {100'000}, 50'000, 147));
+
+    auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
+    EXPECT_EQ(feeCalculator.calculate(1, 2, byteFee), 174);
+}
+
 TEST(TransactionPlan, TwoFirstEnough) {
     auto utxos = buildTestUTXOs({20'000, 80'000});
     auto sigingInput = buildSigningInput(15'000, 1, utxos);
