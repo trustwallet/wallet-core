@@ -124,6 +124,15 @@ void TWStoredKeyRemoveAccountForCoin(struct TWStoredKey* _Nonnull key, enum TWCo
     key->impl.removeAccount(coin);
 }
 
+void TWStoredKeyRemoveAccountForCoinDerivation(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, enum TWDerivation derivation) {
+    key->impl.removeAccount(coin, derivation);
+}
+
+void TWStoredKeyRemoveAccountForCoinDerivationPath(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull derivationPath) {
+    const auto dp = TW::DerivationPath(*reinterpret_cast<const std::string*>(derivationPath));
+    key->impl.removeAccount(coin, dp);
+}
+
 void TWStoredKeyAddAccountDerivation(struct TWStoredKey* _Nonnull key, TWString* _Nonnull address, enum TWCoinType coin, enum TWDerivation derivation, TWString* _Nonnull derivationPath, TWString* _Nonnull publicKey, TWString* _Nonnull extendedPublicKey) {
     const auto& addressString = *reinterpret_cast<const std::string*>(address);
     const auto& publicKeyString = *reinterpret_cast<const std::string*>(publicKey);

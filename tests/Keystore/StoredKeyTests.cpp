@@ -198,6 +198,55 @@ TEST(StoredKey, AddRemoveAccount) {
     EXPECT_EQ(key.accounts.size(), 0);
 }
 
+TEST(StoredKey, AddRemoveAccountDerivation) {
+    auto key = StoredKey::createWithMnemonic("name", Data(), mnemonic, TWStoredKeyEncryptionLevelDefault);
+    EXPECT_EQ(key.accounts.size(), 0);
+
+    const auto derivationPath = DerivationPath("m/84'/0'/0'/0/0");
+    {
+        key.addAccount("bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny", coinTypeBc, TWDerivationDefault, derivationPath, "", "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
+        EXPECT_EQ(key.accounts.size(), 1);
+    }
+    {
+        key.addAccount("1NyRyFewhZcWMa9XCj3bBxSXPXyoSg8dKz", coinTypeBc, TWDerivationBitcoinLegacy, derivationPath, "", "xpub6CR52eaUuVb4kXAVyHC2i5ZuqJ37oWNPZFtjXaazFPXZD45DwWBYEBLdrF7fmCR9pgBuCA9Q57zZfyJjDUBDNtWkhWuGHNYKLgDHpqrHsxV");
+        EXPECT_EQ(key.accounts.size(), 2);
+    }
+
+    key.removeAccount(coinTypeBc, TWDerivationDefault);
+    EXPECT_EQ(key.accounts.size(), 1);
+    key.removeAccount(coinTypeBc, TWDerivationDefault); // try 2nd time
+    EXPECT_EQ(key.accounts.size(), 1);
+    key.removeAccount(coinTypeBc, TWDerivationBitcoinLegacy);
+    EXPECT_EQ(key.accounts.size(), 0);
+    key.removeAccount(coinTypeBc, TWDerivationBitcoinLegacy); // try 2nd time
+    EXPECT_EQ(key.accounts.size(), 0);
+}
+
+TEST(StoredKey, AddRemoveAccountDerivationPath) {
+    auto key = StoredKey::createWithMnemonic("name", Data(), mnemonic, TWStoredKeyEncryptionLevelDefault);
+    EXPECT_EQ(key.accounts.size(), 0);
+
+    const auto derivationPath0 = DerivationPath("m/84'/0'/0'/0/0");
+    {
+        key.addAccount("bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny", coinTypeBc, TWDerivationDefault, derivationPath0, "", "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
+        EXPECT_EQ(key.accounts.size(), 1);
+    }
+    const auto derivationPath1 = DerivationPath("m/84'/0'/0'/1/0");
+    {
+        key.addAccount("bc1qumuzptwdr6jlsqum8jnzz80rdg8nx6x29m2qpu", coinTypeBc, TWDerivationDefault, derivationPath1, "", "zpub6rxtad3SPT1C5GUDjPiKQ5oJN5DBeMbdUR7LrdYt12VbU7TBSpGUkdLvfVYGuj1N5edkDoZ3bu1fdN1HprQYfCBdsSH5CaAAygHGsanwtTe");
+        EXPECT_EQ(key.accounts.size(), 2);
+    }
+
+    key.removeAccount(coinTypeBc, derivationPath0);
+    EXPECT_EQ(key.accounts.size(), 1);
+    key.removeAccount(coinTypeBc, derivationPath0); // try 2nd time
+    EXPECT_EQ(key.accounts.size(), 1);
+    key.removeAccount(coinTypeBc, derivationPath1);
+    EXPECT_EQ(key.accounts.size(), 0);
+    key.removeAccount(coinTypeBc, derivationPath1); // try 2nd time
+    EXPECT_EQ(key.accounts.size(), 0);
+}
+
 TEST(StoredKey, FixAddress) {
     {
         auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWStoredKeyEncryptionLevelDefault);
