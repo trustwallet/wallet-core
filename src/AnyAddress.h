@@ -198,6 +198,7 @@ class AnyAddress {
         }
         case TWCoinTypeSolana: {
             return Solana::Address(string).vector();
+        }
         case TWCoinTypeNULS: {
             auto addr = NULS::Address(string);
             return {addr.bytes.begin(), addr.bytes.end()};
