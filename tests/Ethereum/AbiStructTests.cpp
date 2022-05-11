@@ -484,8 +484,7 @@ TEST(EthereumAbiStruct, hashStructJson) {
     }
 }
 
-TEST(EthereumAbiStruct, hashStruct_objectArray) {
-    // https://github.com/WalletConnect/walletconnect-example-dapp/blob/master/src/helpers/eip712.ts
+TEST(EthereumAbiStruct, hashStruct_emptyValue) {
     auto path = TESTS_ROOT + "/Ethereum/Data/eip712_emptyValue.json";
     auto typeData = load_file(path);
     auto hash = ParamStruct::hashStructJson(typeData);
