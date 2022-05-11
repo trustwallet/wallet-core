@@ -11,7 +11,7 @@ message OutPoint {
 }
 
 message TokenAmount {
-    string policy_id = 1;
+    string policy_id = 1; // as hex string
     string asset_name = 2;
     bytes amount = 3; // 256-bit number
 }
@@ -33,6 +33,9 @@ message TxOutput {
     
     // ADA amount
     uint64 amount = 2;
+
+    // optional token amounts
+    repeated TokenAmount token_amount = 3;
 }
 
 message Transfer {
@@ -47,6 +50,9 @@ message Transfer {
 
     // Set if max amount is requested (max possible from UTXOs/fee; amount is disregarded in this case)
     bool use_max_amount = 4;
+
+    // Optional token(s) to be transferred
+    repeated TokenAmount token_amount = 5;
 }
 
 message TransactionPlan {
