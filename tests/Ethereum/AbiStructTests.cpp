@@ -490,6 +490,11 @@ TEST(EthereumAbiStruct, hashStruct_emptyValue) {
     auto hash = ParamStruct::hashStructJson(typeData);
     EXPECT_EQ(hex(hash), "bc9d33285c5e42b00571f5deaf9636d2e498a6fa50e0d1be81095bded070117a");
 
+    // sign the hash
+    const auto rsv = Signer::sign(privateKeyOilTimes12, hash, true, 0);
+    EXPECT_EQ(hex(store(rsv.r)), "5df6cb46d874bc0acc519695f393008a837ca9d2e316836b669b8f0de7673638");
+    EXPECT_EQ(hex(store(rsv.s)), "54cc0bcc0ad657f9222f7e7be3fbe0ec4a8edb9385c39d578dfac8d38727af12");
+    EXPECT_EQ(hex(store(rsv.v)), "1c");
 }
 
 TEST(EthereumAbiStruct, hashStruct_walletConnect) {
