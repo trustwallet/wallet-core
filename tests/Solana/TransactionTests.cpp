@@ -449,3 +449,107 @@ TEST(SolanaTransaction, WithdrawNonceAccountWithDurableNonce) {
         "FRoxVKJugskV91cyjKX1TeW4iosedQbiXdy";
     EXPECT_EQ(transaction.serialize(), expectedString);
 }
+
+TEST(SolanaTransaction, CreateTokenAccountAndTransfer) {
+    auto signer = Address("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+    auto token = Address("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
+    auto senderTokenAddress = Address("5sS5Z8GAdVHqZKRqEvpDauHvvLgbDveiyfi81uh25mrf");
+    auto recipientMainAddress = Address("3WUX9wASxyScbA7brDipioKfXS1XEYkQ4vo3Kej9bKei");
+    auto recipientTokenAddress = Address("BwTAyrCEdkjNyGSGVNSSGh6phn8KQaLN638Evj7PVQfJ");
+    uint64_t amount = 4000;
+    uint8_t decimals = 6;
+    Solana::Hash recentBlockhash("AfzzEC8NVXoxKoHdjXLDVzqwqvvZmgPuqyJqjuHiPY1D");
+    auto message = Message::createTokenCreateAndTransfer(signer, recipientMainAddress, token,
+                                                         recipientTokenAddress, senderTokenAddress,
+                                                         amount, decimals, recentBlockhash);
+    EXPECT_EQ(message.header.numRequiredSignatures, 1);
+    EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
+    EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 6);
+    ASSERT_EQ(message.accountKeys.size(), 9);
+    ASSERT_EQ(message.instructions.size(), 2);
+    EXPECT_EQ(message.instructions[0].programId.string(),
+              "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
+    ASSERT_EQ(message.instructions[0].accounts.size(), 7);
+    EXPECT_EQ(message.instructions[1].programId.string(),
+              "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+    ASSERT_EQ(message.instructions[1].accounts.size(), 4);
+    auto transaction = Transaction(message);
+    transaction.signatures.clear();
+    transaction.signatures.push_back(Signature(
+        "pL1m11UEDWn3jMkrNMqLeGwNpKzmhQzJiYaCocgPy7vXKA1tnvEjJbuVq9hTeM9kqMAmxhRpwRY157jDgkRdUZw"));
+    auto expectedString =
+        "2qkvFTcMk9kPaHtd7idJ1gJc4zTkuYDUJsC67kXvHjv3zwEyUx92QyhhSeBjL6h3Zaisj2nvTWid2UD1N9hbg9Ty7v"
+        "SHLc7mcFVvy3yJmN9tz99iLKsf15rEeKUk3crXWLtKZEpcXJurN7vrxKwjQJnVob2RjyxwVfho1oNZ72BHvqToRM1W"
+        "2KbcYhxK4d9zB4QY5tR2dzgCHWqAjf9Yov3y9mPBYCQBtw2GewrVMDbg5TK81E9BaWer3BcEafc3NCnRfcFEp7ZUXs"
+        "GAgJYx32uUoJPP8ByTqBsp2JWgHyZhoz1WUUYRqWKZthzotErVetjSik4h5GcXk9Nb6kzqEf4nKEZ22eyrP5dv3eZM"
+        "uGUUpMYUT9uF16T72s4TTwqiWDPFkidD33tACx74JKGoDraHEvEeAPrv6iUmC675kMuAV4EtVspVc5SnKXgRWRxb4d"
+        "cH3k7K4ckjSxYZwg8UhTXUgPxA936jBr2HeQuPLmNVn2muA1HfL2DnyrobUP9vHpbL3HHgM2fckeXy8LAcjnoE9TTa"
+        "AKX32wo5xoMj9wJmmtcU6YbXN4KgZ";
+    EXPECT_EQ(transaction.serialize(), expectedString);
+}
+
+TEST(SolanaTransaction, CreateTokenAccountAndTransferWithDurableNonce) {
+    auto signer = Address("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+    auto token = Address("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
+    auto senderTokenAddress = Address("5sS5Z8GAdVHqZKRqEvpDauHvvLgbDveiyfi81uh25mrf");
+    auto recipientMainAddress = Address("3UVYmECPPMZSCqWKfENfuoTv51fTDTWicX9xmBD2euKe");
+    auto recipientTokenAddress = Address("93hbN3brRjZqRQTT9Xx6rAHVDFZFWD9ragFDXvDbTEjr");
+    auto nonceAccount = "6vNrYDm6EHcvBALY7HywuDWpTSc6uGt3y2nf5MuG1TmJ";
+    uint64_t amount = 4000;
+    uint8_t decimals = 6;
+    Solana::Hash recentBlockhash("AaYfEmGQpfJWypZ8MNmBHTep1dwCHVYDRHuZ3gVFiJpY");
+    auto message = Message::createTokenCreateAndTransfer(
+        signer, recipientMainAddress, token, recipientTokenAddress, senderTokenAddress, amount,
+        decimals, recentBlockhash, "", {}, nonceAccount);
+    EXPECT_EQ(message.header.numRequiredSignatures, 1);
+    EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
+    EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 7);
+    ASSERT_EQ(message.accountKeys.size(), 11);
+    ASSERT_EQ(message.instructions.size(), 3);
+    EXPECT_EQ(message.instructions[0].programId.string(), "11111111111111111111111111111111");
+    ASSERT_EQ(message.instructions[0].accounts.size(), 3);
+    EXPECT_EQ(message.instructions[1].programId.string(),
+              "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
+    ASSERT_EQ(message.instructions[1].accounts.size(), 7);
+    EXPECT_EQ(message.instructions[2].programId.string(),
+              "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+    ASSERT_EQ(message.instructions[2].accounts.size(), 4);
+    auto transaction = Transaction(message);
+    transaction.signatures.clear();
+    transaction.signatures.push_back(Signature(
+        "Gw1REivWi3j3cm17evPbxcdoJ1YY1jC7xcQERcmAWCtLx8WKsFoDDWTun4WYfUqSzEfuKjxiYKPvv2eAJWs7N1b"));
+    auto expectedString =
+        "388uZws6GfA9aiH1LPsYBijGBEfLEgqe6q5NWVYhsmjXjrgZB4cScGuvja6nBL3i6qg6HA4a8ptW6aHsNKVdcBWKhj"
+        "ZjaTPH5heEThzwEsMDfnH2PWAUbqfiFgMZQRCkhyCj57hGUR7hBFPELfz3DBw5qMz1tnP9gU6KTqHUomu5UaadLHb2"
+        "v5mbgTRcsMm3yDp2tzMwrp53VqvFNmHSau4ot4kdNL1jqEJC68Fj4ku6fMQaFSPyAeLQRF45ofYsFCa65fmtb4gBpq"
+        "WUdqWLv5Dy6xQUQUDsin8qpEVds6unXw5f63UjZeD7XQdC6Vz5aq3e6P9ug8L41xc1rbuRU3Kp4arUKyqTsHMQ2dxM"
+        "hPwEJLkHd4mFqqUWpYFTdfLFaNGU22hEkvP1esHUzaaGDmzAozbS96oaFw2jbHRRJtL8VjoA1aokGFFThM6M6mExuy"
+        "8GhUXdGjxDFU83Dan1URmHMGBRC4J9RMZip9s1sktJw9Rj5Std9KVT8T7m4MxTVTx4QoBw6KAf6PgNHyHPtZSc7kzo"
+        "CxDYNo2Myxvy8D95zk9YMp1MxeZXTDQ2aJuhWvfHhhrwgcQasAxRzbnJ9oehebVUNEcZEFsfnCgYuUmxWUemoKZnE1"
+        "bNMCvERVkT5fKQ36e1rt5vTC2iES9jzr3hDC1Pk1";
+    EXPECT_EQ(transaction.serialize(), expectedString);
+}
+
+TEST(SolanaTransaction, AdvanceNonceAccount) {
+    auto authorizer = Address("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+    auto nonceAccountAddress = Address("6vNrYDm6EHcvBALY7HywuDWpTSc6uGt3y2nf5MuG1TmJ");
+    Solana::Hash recentBlockhash("4KQLRUfd7GEVXxAeDqwtuGTdwKd9zMfPycyAG3wJsdck");
+    auto message = Message::advanceNonceAccount(authorizer, nonceAccountAddress, recentBlockhash);
+    EXPECT_EQ(message.header.numRequiredSignatures, 1);
+    EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
+    EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 2);
+    ASSERT_EQ(message.accountKeys.size(), 4);
+    ASSERT_EQ(message.instructions.size(), 1);
+    EXPECT_EQ(message.instructions[0].programId.string(), "11111111111111111111111111111111");
+    ASSERT_EQ(message.instructions[0].accounts.size(), 3);
+    auto transaction = Transaction(message);
+    transaction.signatures.clear();
+    transaction.signatures.push_back(Signature("2gwuvwJ3mdEsjA8Gid6FXYuSwa2AAyFY6Btw8ifwSc2SPsfKBnD"
+                                               "859C5mX4tLy6zQFHhKxSMMsW49o3dbJNiXDMo"));
+    auto expectedString =
+        "7YPgNzjCnUd2zBb6ZC6bf1YaoLjhJPHixLUdTjqMjq1YdzADJCx2wsTTBFFrqDKSHXEL6ntRq8NVJTQMGzGH5AQRKw"
+        "tKtutehxesmtzkZCPY9ADZ4ijFyveLmTt7kjZXX7ZWVoUmKAqiaYsPTex728uMBSRJpV4zRw2yKGdQRHTKy2QFEb9a"
+        "cwLjmrbEgoyzPCarxjPhw21QZnNcy8RiYJB2mzZ9nvhrD5d2jB5TtdiroQPgTSdKFzkNEd7hJUKpqUppjDFcNHGK73"
+        "FE9pCP2dKxCLH8Wfaez8bLtopjmWun9cbikxo7LZsarYzMXvxwZmerRd1";
+    EXPECT_EQ(transaction.serialize(), expectedString);
+}

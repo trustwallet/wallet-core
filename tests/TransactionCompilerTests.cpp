@@ -2305,3 +2305,142 @@ TEST(TransactionCompiler, NULSTokenCompileWithSignatures) {
         ASSERT_EQ(output.encoded(), ExpectedTx);
     }
 }
+
+TEST(TransactionCompiler, SolanaCompileCreateTokenAccountAndTransferWithSignatures) {
+    const auto coin = TWCoinTypeSolana;
+    /// Step 1: Prepare transaction input (protobuf)
+    auto input = TW::Solana::Proto::SigningInput();
+    auto& message = *input.mutable_create_and_transfer_token_transaction();
+    auto sender = std::string("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+    auto token = std::string("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
+    auto senderTokenAddress = std::string("5sS5Z8GAdVHqZKRqEvpDauHvvLgbDveiyfi81uh25mrf");
+    auto recipientMainAddress = std::string("3WUX9wASxyScbA7brDipioKfXS1XEYkQ4vo3Kej9bKei");
+    auto recipientTokenAddress = std::string("BwTAyrCEdkjNyGSGVNSSGh6phn8KQaLN638Evj7PVQfJ");
+    uint64_t amount = 4000;
+    uint8_t decimals = 6;
+    input.set_sender(sender);
+    input.set_recent_blockhash(std::string("AfzzEC8NVXoxKoHdjXLDVzqwqvvZmgPuqyJqjuHiPY1D"));
+    message.set_recipient_main_address(recipientMainAddress);
+    message.set_token_mint_address(token);
+    message.set_recipient_token_address(recipientTokenAddress);
+    message.set_sender_token_address(senderTokenAddress);
+    message.set_amount(amount);
+    message.set_decimals(decimals);
+    auto inputString = input.SerializeAsString();
+    auto inputData = TW::Data(inputString.begin(), inputString.end());
+    /// Step 2: Obtain preimage hash
+    const auto preImageHashesData = TransactionCompiler::preImageHashes(coin, inputData);
+    auto preSigningOutput = TW::Solana::Proto::PreSigningOutput();
+    preSigningOutput.ParseFromArray(preImageHashesData.data(), (int)preImageHashesData.size());
+    ASSERT_EQ(preSigningOutput.signers_size(), 1);
+    auto signer = preSigningOutput.signers(0);
+    EXPECT_EQ(signer, sender);
+    auto preImageHash = preSigningOutput.data();
+    EXPECT_EQ(
+        hex(preImageHash),
+        "0100060994c3890fa8d4bc04ab2a676d2cafea5cdc899ecd95a9cbe593e9df258759685aa287d36838b4ef65c2"
+        "c460d1a52498453c259cd6a35ca91064aaead28187ca69485a24ffb4070461bb6d7f1c8b758c6b2dc90029d551"
+        "b5fd4eacd82d65e302202544558bb05c2698f88852a7925c5c0ee5ea8711ddb3fe1262150283eee811633b442c"
+        "b3912157f13a933d0134282d032b5ffecd01a2dbf1b7790608df002ea700000000000000000000000000000000"
+        "0000000000000000000000000000000006ddf6e1d765a193d9cbe146ceeb79ac1cb485ed5f5b37913a8cf5857e"
+        "ff00a906a7d517192c5c51218cc94c3d4af17f58daee089ba1fd44e3dbd98a000000008c97258f4e2489f1bb3d"
+        "1029148e0d830b5a1399daff1084048e7bd8dbe9f8598fb6d19edbbae20ebbc767fba1da4d4b40a4b97479fe52"
+        "6a82325cba7cee506802080700010304050607000604020401000a0ca00f00000000000006");
+    // Simulate signature, normally obtained from signature server
+    const Data publicKeyData = Base58::bitcoin.decode(sender);
+    const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeED25519);
+    const auto signature = Base58::bitcoin.decode(
+        "pL1m11UEDWn3jMkrNMqLeGwNpKzmhQzJiYaCocgPy7vXKA1tnvEjJbuVq9hTeM9kqMAmxhRpwRY157jDgkRdUZw");
+    // Verify signature (pubkey & hash & signature)
+    EXPECT_TRUE(publicKey.verify(signature, TW::data(preImageHash)));
+    /// Step 3: Compile transaction info
+    const Data outputData =
+        TransactionCompiler::compileWithSignatures(coin, inputData, {signature}, {publicKeyData});
+    const auto ExpectedTx =
+        "2qkvFTcMk9kPaHtd7idJ1gJc4zTkuYDUJsC67kXvHjv3zwEyUx92QyhhSeBjL6h3Zaisj2nvTWid2UD1N9hbg9Ty7v"
+        "SHLc7mcFVvy3yJmN9tz99iLKsf15rEeKUk3crXWLtKZEpcXJurN7vrxKwjQJnVob2RjyxwVfho1oNZ72BHvqToRM1W"
+        "2KbcYhxK4d9zB4QY5tR2dzgCHWqAjf9Yov3y9mPBYCQBtw2GewrVMDbg5TK81E9BaWer3BcEafc3NCnRfcFEp7ZUXs"
+        "GAgJYx32uUoJPP8ByTqBsp2JWgHyZhoz1WUUYRqWKZthzotErVetjSik4h5GcXk9Nb6kzqEf4nKEZ22eyrP5dv3eZM"
+        "uGUUpMYUT9uF16T72s4TTwqiWDPFkidD33tACx74JKGoDraHEvEeAPrv6iUmC675kMuAV4EtVspVc5SnKXgRWRxb4d"
+        "cH3k7K4ckjSxYZwg8UhTXUgPxA936jBr2HeQuPLmNVn2muA1HfL2DnyrobUP9vHpbL3HHgM2fckeXy8LAcjnoE9TTa"
+        "AKX32wo5xoMj9wJmmtcU6YbXN4KgZ";
+    EXPECT_EQ(outputData.size(), 572);
+    Solana::Proto::SigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+
+    EXPECT_EQ(output.encoded(), ExpectedTx);
+    EXPECT_EQ(output.encoded().size(), 569);
+    { // Double check: check if simple signature process gives the same result. Note that private
+      // keys were not used anywhere up to this point.
+        Solana::Proto::SigningInput input;
+        ASSERT_TRUE(input.ParseFromArray(inputData.data(), (int)inputData.size()));
+        auto key = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+        input.set_private_key(key.data(), key.size());
+
+        Solana::Proto::SigningOutput output;
+        ANY_SIGN(input, coin);
+
+        ASSERT_EQ(output.encoded(), ExpectedTx);
+    }
+}
+
+TEST(TransactionCompiler, SolanaCompileAdvanceNonceAccountWithSignatures) {
+    const auto coin = TWCoinTypeSolana;
+    /// Step 1: Prepare transaction input (protobuf)
+    auto sender = std::string("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+    auto input = TW::Solana::Proto::SigningInput();
+    auto& message = *input.mutable_advance_nonce_account();
+    auto nonceAccount = std::string("6vNrYDm6EHcvBALY7HywuDWpTSc6uGt3y2nf5MuG1TmJ");
+    input.set_sender(sender);
+    input.set_recent_blockhash(std::string("4KQLRUfd7GEVXxAeDqwtuGTdwKd9zMfPycyAG3wJsdck"));
+    message.set_nonce_account(nonceAccount);
+    auto inputString = input.SerializeAsString();
+    auto inputData = TW::Data(inputString.begin(), inputString.end());
+    /// Step 2: Obtain preimage hash
+    const auto preImageHashesData = TransactionCompiler::preImageHashes(coin, inputData);
+    auto preSigningOutput = TW::Solana::Proto::PreSigningOutput();
+    preSigningOutput.ParseFromArray(preImageHashesData.data(), (int)preImageHashesData.size());
+    ASSERT_EQ(preSigningOutput.signers_size(), 1);
+    auto signer = preSigningOutput.signers(0);
+    EXPECT_EQ(signer, sender);
+    auto preImageHash = preSigningOutput.data();
+    EXPECT_EQ(
+        hex(preImageHash),
+        "0100020494c3890fa8d4bc04ab2a676d2cafea5cdc899ecd95a9cbe593e9df258759685a57f6ed937bb447a670"
+        "0c9684d2e182b1a6661838a86cca7d0aac18be2e098b2106a7d517192c568ee08a845f73d29788cf035c3145b2"
+        "1ab344d8062ea940000000000000000000000000000000000000000000000000000000000000000000003149e6"
+        "70959884ea98bb33bca21c9505f1fc17b1d51ca59555a5d58c93f0f9c90103030102000404000000");
+    // Simulate signature, normally obtained from signature server
+    const Data publicKeyData = Base58::bitcoin.decode(sender);
+    const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeED25519);
+    const auto signature = Base58::bitcoin.decode(
+        "2gwuvwJ3mdEsjA8Gid6FXYuSwa2AAyFY6Btw8ifwSc2SPsfKBnD859C5mX4tLy6zQFHhKxSMMsW49o3dbJNiXDMo");
+    // Verify signature (pubkey & hash & signature)
+    EXPECT_TRUE(publicKey.verify(signature, TW::data(preImageHash)));
+    /// Step 3: Compile transaction info
+    const Data outputData =
+        TransactionCompiler::compileWithSignatures(coin, inputData, {signature}, {publicKeyData});
+    const auto ExpectedTx =
+        "7YPgNzjCnUd2zBb6ZC6bf1YaoLjhJPHixLUdTjqMjq1YdzADJCx2wsTTBFFrqDKSHXEL6ntRq8NVJTQMGzGH5AQRKw"
+        "tKtutehxesmtzkZCPY9ADZ4ijFyveLmTt7kjZXX7ZWVoUmKAqiaYsPTex728uMBSRJpV4zRw2yKGdQRHTKy2QFEb9a"
+        "cwLjmrbEgoyzPCarxjPhw21QZnNcy8RiYJB2mzZ9nvhrD5d2jB5TtdiroQPgTSdKFzkNEd7hJUKpqUppjDFcNHGK73"
+        "FE9pCP2dKxCLH8Wfaez8bLtopjmWun9cbikxo7LZsarYzMXvxwZmerRd1";
+    EXPECT_EQ(outputData.size(), 330);
+    Solana::Proto::SigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+
+    EXPECT_EQ(output.encoded(), ExpectedTx);
+    EXPECT_EQ(output.encoded().size(), 327);
+    { // Double check: check if simple signature process gives the same result. Note that private
+      // keys were not used anywhere up to this point.
+        Solana::Proto::SigningInput input;
+        ASSERT_TRUE(input.ParseFromArray(inputData.data(), (int)inputData.size()));
+        auto key = Base58::bitcoin.decode("9YtuoD4sH4h88CVM8DSnkfoAaLY7YeGC2TarDJ8eyMS5");
+        input.set_private_key(key.data(), key.size());
+
+        Solana::Proto::SigningOutput output;
+        ANY_SIGN(input, coin);
+
+        ASSERT_EQ(output.encoded(), ExpectedTx);
+    }
+}
