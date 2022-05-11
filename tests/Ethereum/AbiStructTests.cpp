@@ -484,6 +484,15 @@ TEST(EthereumAbiStruct, hashStructJson) {
     }
 }
 
+TEST(EthereumAbiStruct, hashStruct_objectArray) {
+    // https://github.com/WalletConnect/walletconnect-example-dapp/blob/master/src/helpers/eip712.ts
+    auto path = TESTS_ROOT + "/Ethereum/Data/eip712_emptyValue.json";
+    auto typeData = load_file(path);
+    auto hash = ParamStruct::hashStructJson(typeData);
+    EXPECT_EQ(hex(hash), "bc9d33285c5e42b00571f5deaf9636d2e498a6fa50e0d1be81095bded070117a");
+
+}
+
 TEST(EthereumAbiStruct, hashStruct_walletConnect) {
     // https://github.com/WalletConnect/walletconnect-example-dapp/blob/master/src/helpers/eip712.ts
     auto path = TESTS_ROOT + "/Ethereum/Data/eip712_walletconnect.json";

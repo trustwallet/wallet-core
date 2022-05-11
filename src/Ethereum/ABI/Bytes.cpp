@@ -125,6 +125,8 @@ Data ParamString::hashStruct() const {
     Data encoded = data(_str);
     if (encoded.size() > 0) {
         hash = Hash::keccak256(encoded);
+    } else {
+        return Hash::keccak256(std::vector<byte>());
     }
     return hash;
 }
