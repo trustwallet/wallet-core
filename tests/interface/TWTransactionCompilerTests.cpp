@@ -701,3 +701,97 @@ TEST(TWTransactionCompiler, ExternalSignatureSignRipple) {
         ASSERT_EQ(hex(output.encoded()), ExpectedTx);
     }
 }
+
+TEST(TWTransactionCompiler, ExternalSignatureSignNULSToken) {
+    const auto coin = TWCoinTypeNULS;
+    /// Step 1: Prepare transaction input (protobuf)
+    auto input = TW::NULS::Proto::SigningInput();
+    auto from = std::string("NULSd6HgWabfcG6H7NDK2TJvtoU3wxY1YLKwJ");
+    auto to = std::string("NULSd6Hgied7ym6qMEfVzZanMaa9qeqA6TZSe");
+    uint32_t chainId = 9;
+    uint32_t idassetsId = 1;
+    auto amount = TW::store((TW::uint256_t)10000000);
+    auto amountStr = std::string(amount.begin(), amount.end());
+    auto nonce = std::string("0000000000000000");
+    input.set_from(from);
+    input.set_to(to);
+    input.set_amount(amountStr);
+    input.set_chain_id(chainId);
+    input.set_idassets_id(idassetsId);
+    input.set_nonce(nonce);
+    input.set_balance("100000000");
+    input.set_timestamp((uint32_t)1569228280);
+    auto inputString = input.SerializeAsString();
+    auto inputData = TW::Data(inputString.begin(), inputString.end());
+    const auto txInputData = WRAPD(TWDataCreateWithBytes(inputData.data(), inputData.size()));
+
+    /// Step 2: Obtain preimage hash
+    const auto preImageHashes = WRAPD(TWTransactionCompilerPreImageHashes(coin, txInputData.get()));
+    auto preImageHashData =
+        data(TWDataBytes(preImageHashes.get()), TWDataSize(preImageHashes.get()));
+
+    auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
+    ASSERT_TRUE(
+        preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
+    ASSERT_EQ(preSigningOutput.error(), Common::Proto::OK);
+
+    auto preImage = preSigningOutput.data();
+    auto preImageHash = preSigningOutput.data_hash();
+    EXPECT_EQ(
+        hex(preImage),
+        "0200f885885d0000d202170100012c177a01a7afbe98e094007b99476534fb7926b70900010080969800000000"
+        "0000000000000000000000000000000000000000000000000008000000000000000000170100012c177a01a7af"
+        "be98e094007b99476534fb7926b701000100a08601000000000000000000000000000000000000000000000000"
+        "0000000000080000000000000000000117010001f05e7878971f3374515eabb6f16d75219d8873120900010080"
+        "969800000000000000000000000000000000000000000000000000000000000000000000000000");
+    EXPECT_EQ(hex(preImageHash),
+              "9040642ce845b320453b2ccd6f80efc38fdf61ec8f0c12e0c16f6244ec2e0496");
+    // Simulate signature, normally obtained from signature server
+    const Data publicKeyData =
+        parse_hex("033c87a3d9b812556b3034b6471cad5131a01e210c1d7ca06dd53b7d0aff0ee045");
+    const PublicKey publicKey = PublicKey(publicKeyData, TWPublicKeyTypeSECP256k1);
+    const auto signature =
+        parse_hex("5ddea604c6cdfcf6cbe32f5873937641676ee5f9aee3c40aa9857c59aefedff25b77429cf62307d4"
+                  "3a6a79b4c106123e6232e3981032573770fe2726bf9fc07c00");
+    // Verify signature (pubkey & hash & signature)
+    EXPECT_TRUE(publicKey.verify(signature, TW::data(preImageHash)));
+
+    /// Step 3: Compile transaction info
+    const auto outputData = WRAPD(TWTransactionCompilerCompileWithSignatures(
+        coin, txInputData.get(),
+        WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&signature)).get(),
+        WRAP(TWDataVector, TWDataVectorCreateWithData((TWData*)&publicKeyData)).get()));
+
+    const auto ExpectedEncoded = parse_hex(
+        "0200f885885d0000d202170100012c177a01a7afbe98e094007b99476534fb7926b70900010080969800000000"
+        "0000000000000000000000000000000000000000000000000008000000000000000000170100012c177a01a7af"
+        "be98e094007b99476534fb7926b701000100a08601000000000000000000000000000000000000000000000000"
+        "0000000000080000000000000000000117010001f05e7878971f3374515eabb6f16d75219d8873120900010080"
+        "9698000000000000000000000000000000000000000000000000000000000000000000000000006921033c87a3"
+        "d9b812556b3034b6471cad5131a01e210c1d7ca06dd53b7d0aff0ee04546304402205ddea604c6cdfcf6cbe32f"
+        "5873937641676ee5f9aee3c40aa9857c59aefedff202205b77429cf62307d43a6a79b4c106123e6232e3981032"
+        "573770fe2726bf9fc07c");
+    const auto ExpectedTx = std::string(ExpectedEncoded.begin(), ExpectedEncoded.end());
+    {
+        EXPECT_EQ(TWDataSize(outputData.get()), 328);
+        NULS::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(TWDataBytes(outputData.get()),
+                                          (int)TWDataSize(outputData.get())));
+        EXPECT_EQ(output.encoded(), ExpectedTx);
+        EXPECT_EQ(output.encoded().size(), 325);
+    }
+
+    { // Double check: check if simple signature process gives the same result. Note that private
+      // keys were not used anywhere up to this point.
+        NULS::Proto::SigningInput input;
+        ASSERT_TRUE(input.ParseFromArray(TWDataBytes(txInputData.get()),
+                                         (int)TWDataSize(txInputData.get())));
+        auto key = parse_hex("044014463e2ee3cc9c67a6f191dbac82288eb1d5c1111d21245bdc6a855082a1");
+        input.set_private_key(key.data(), key.size());
+
+        NULS::Proto::SigningOutput output;
+        ANY_SIGN(input, coin);
+
+        ASSERT_EQ(output.encoded(), ExpectedTx);
+    }
+}

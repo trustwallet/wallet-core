@@ -5,18 +5,19 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "HexCoding.h"
+#include "NULS/Signer.h"
+#include "PrivateKey.h"
+#include "PublicKey.h"
 #include "proto/NULS.pb.h"
-#include <TrustWalletCore/TWAnySigner.h>
-#include "uint256.h"
 
-#include "../interface/TWTestUtilities.h"
 #include <gtest/gtest.h>
 
 using namespace TW;
 using namespace TW::NULS;
 
-TEST(TWAnySignerNULS, Sign) {
-    auto privateKey = parse_hex("0x9ce21dad67e0f0af2599b41b515a7f7018059418bab892a7b68f283d489abc4b");
+TEST(NULSSigner, Sign) {
+    auto privateKey =
+        parse_hex("0x9ce21dad67e0f0af2599b41b515a7f7018059418bab892a7b68f283d489abc4b");
     auto amount = store(uint256_t(10000000));
     auto balance = store(uint256_t(100000000));
     std::string nonce = "0000000000000000";
@@ -33,7 +34,7 @@ TEST(TWAnySignerNULS, Sign) {
     input.set_nonce(nonce.data(), nonce.size());
 
     Proto::SigningOutput output;
-    ANY_SIGN(input, TWCoinTypeNULS);
+    output = Signer::sign(input);
 
     EXPECT_EQ(
         hex(output.encoded()),
@@ -45,7 +46,7 @@ TEST(TWAnySignerNULS, Sign) {
         "fcb8762b5944b3aba033fa1a287ccb098150035dd8b66f52dc58d3d0843a");
 }
 
-TEST(TWAnySignerNULS, SignToken) {
+TEST(NULSSigner, SignToken) {
     auto privateKey =
         parse_hex("0x9ce21dad67e0f0af2599b41b515a7f7018059418bab892a7b68f283d489abc4b");
     auto amount = store(uint256_t(10000000));
@@ -64,7 +65,7 @@ TEST(TWAnySignerNULS, SignToken) {
     input.set_nonce(nonce.data(), nonce.size());
 
     Proto::SigningOutput output;
-    ANY_SIGN(input, TWCoinTypeNULS);
+    output = Signer::sign(input);
 
     EXPECT_EQ(hex(output.encoded()),
               "0200f885885d0000d20217010001f7ec6473df12e751d64cf20a8baa7edd50810f810900010080969800"

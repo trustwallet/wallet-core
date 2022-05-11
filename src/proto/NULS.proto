@@ -39,9 +39,9 @@ message Transaction {
     string  remark = 3;
     bytes   tx_data = 4;
     //CoinFrom
-    TransactionCoinFrom input = 5;
+    repeated TransactionCoinFrom input = 5;
     //CoinTo
-    TransactionCoinTo output = 6;
+    repeated TransactionCoinTo output = 6;
 
     Signature tx_sigs = 7;
     uint32 hash = 8;
@@ -58,7 +58,7 @@ message SigningInput {
     //The last 8 bytes of latest transaction hash 
     bytes nonce = 7;
     string remark = 8;
-    // Account balance 
+    // Account balance (NULS)
     bytes  balance = 9;
     // time, accurate to the second
     uint32 timestamp = 10;

@@ -23,6 +23,7 @@
 #include "Kusama/Address.h"
 #include "NEAR/Address.h"
 #include "NEO/Address.h"
+#include "NULS/Address.h"
 #include "Nano/Address.h"
 #include "Polkadot/Address.h"
 #include "Ronin/Address.h"
@@ -197,6 +198,10 @@ class AnyAddress {
         }
         case TWCoinTypeSolana: {
             return Solana::Address(string).vector();
+        }
+        case TWCoinTypeNULS: {
+            auto addr = NULS::Address(string);
+            return {addr.bytes.begin(), addr.bytes.end()};
         }
         default:
             break;
