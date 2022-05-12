@@ -104,6 +104,9 @@ bool ParamArray::setValueJson(const std::string& value) {
 }
 
 Data ParamArray::hashStruct() const {
+    if (empty) {
+       return Hash::keccak256(std::vector<byte>()); 
+    }
     Data hash(32);
     Data hashes = _params.encodeHashes();
     if (hashes.size() > 0) {
