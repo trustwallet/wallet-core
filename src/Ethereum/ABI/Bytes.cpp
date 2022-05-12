@@ -123,10 +123,7 @@ bool ParamString::decodeString(const Data& encoded, std::string& decoded, size_t
 Data ParamString::hashStruct() const {
     Data hash(32);
     Data encoded = data(_str);
-    if (encoded.size() > 0) {
-        hash = Hash::keccak256(encoded);
-    } else {
-        return Hash::keccak256(std::vector<byte>());
-    }
+    hash = Hash::keccak256(encoded);
+  
     return hash;
 }
