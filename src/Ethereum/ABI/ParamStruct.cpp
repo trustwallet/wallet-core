@@ -221,15 +221,29 @@ std::shared_ptr<ParamStruct> ParamStruct::makeStruct(const std::string& structTy
                     throw std::invalid_argument("Value must be array for type " + type);
                 }
                 std::vector<std::shared_ptr<ParamBase>> paramsArray;
-                for (const auto& e: value) {
-                    auto subStruct = makeStruct(arrayType, e.dump(), typesJson);
+                bool empty = false;
+                if (value.size() == 0) {
+                    auto subStruct = makeStruct(arrayType, "{}", typesJson);
                     if (!subStruct) {
-                        throw std::invalid_argument("Could not process array sub-struct " + arrayType + " " + e.dump());
+                        throw std::invalid_argument("Could not process array sub-struct " + arrayType + " " + "{}");
                     }
                     assert(subStruct);
                     paramsArray.push_back(subStruct);
+                    empty = true; 
                 }
-                params.push_back(std::make_shared<ParamNamed>(name, std::make_shared<ParamArray>(paramsArray)));
+                else {
+                    for (const auto& e: value) {
+                        auto subStruct = makeStruct(arrayType, e.dump(), typesJson);
+                        if (!subStruct) {
+                            throw std::invalid_argument("Could not process array sub-struct " + arrayType + " " + e.dump());
+                        }
+                        assert(subStruct);
+                        paramsArray.push_back(subStruct);
+                    }
+                }
+                auto tmp = std::make_shared<ParamArray>(paramsArray);
+                tmp->setEmpty(empty);
+                params.push_back(std::make_shared<ParamNamed>(name, tmp));
             } else {
                 // try if sub struct
                 auto subTypeInfo = findType(type, types);

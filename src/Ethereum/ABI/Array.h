@@ -17,6 +17,7 @@ class ParamArray: public ParamCollection
 {
 private:
     ParamSet _params;
+    bool empty = false;
 
 public:
     ParamArray() = default;
@@ -37,6 +38,7 @@ public:
     virtual bool setValueJson(const std::string& value);
     virtual Data hashStruct() const;
     virtual std::string getExtraTypes(std::vector<std::string>& ignoreList) const;
+    void setEmpty(bool b) { empty = b; };
 };
 
 } // namespace TW::Ethereum::ABI
