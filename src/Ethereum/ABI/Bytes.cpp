@@ -124,6 +124,5 @@ Data ParamString::hashStruct() const {
     Data hash(32);
     Data encoded = data(_str);
     hash = Hash::keccak256(encoded);
-  
     return hash;
 }
