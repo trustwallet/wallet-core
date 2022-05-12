@@ -29,7 +29,8 @@ void Signer::sign(const std::vector<PrivateKey>& privateKeys, Transaction& trans
 }
 
 // Helper to convert protobuf-string-collection references to Address vector
-std::vector<Address> convertReferences(const google::protobuf::RepeatedPtrField<std::string>& references) {
+std::vector<Address>
+convertReferences(const google::protobuf::RepeatedPtrField<std::string>& references) {
     std::vector<Address> ret;
     for (auto i = 0; i < references.size(); ++i) {
         if (Address::isValid(references[i])) {
@@ -47,176 +48,168 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     std::vector<PrivateKey> signerKeys;
 
     switch (input.transaction_type_case()) {
-        case Proto::SigningInput::TransactionTypeCase::kTransferTransaction:
-            {
-                auto protoMessage = input.transfer_transaction();
-                message = Message::createTransfer(
-                    /* from */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
-                    /* to */ Address(protoMessage.recipient()),
-                    /* value */ protoMessage.value(),
-                    /* recent_blockhash */ blockhash,
-                    /* memo */ protoMessage.memo(),
-                    convertReferences(protoMessage.references()));
-                signerKeys.push_back(key);
-            }
-            break;
+    case Proto::SigningInput::TransactionTypeCase::kTransferTransaction: {
+        auto protoMessage = input.transfer_transaction();
+        message = Message::createTransfer(
+            /* from */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
+            /* to */ Address(protoMessage.recipient()),
+            /* value */ protoMessage.value(),
+            /* recent_blockhash */ blockhash,
+            /* memo */ protoMessage.memo(), convertReferences(protoMessage.references()));
+        signerKeys.push_back(key);
+    } break;
 
-        case Proto::SigningInput::TransactionTypeCase::kDelegateStakeTransaction:
-            {
-                auto protoMessage = input.delegate_stake_transaction();
-                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
-                auto validatorAddress = Address(protoMessage.validator_pubkey());
-                auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
-                std::optional<Address> stakeAddress;
-                if (protoMessage.stake_account().size() == 0) {
-                    // no stake address specified, generate a new unique
-                    stakeAddress = StakeProgram::addressFromRecentBlockhash(userAddress, blockhash, stakeProgramId);
-                } else {
-                    // stake address specified, use it
-                    stakeAddress = Address(protoMessage.stake_account());
-                }
-                message = Message::createStake(
-                    /* signer */ userAddress,
-                    /* stakeAddress */ stakeAddress.value(),
-                    /* voteAddress */ validatorAddress,
-                    /* value */ protoMessage.value(),
-                    /* recent_blockhash */ blockhash);
-                signerKeys.push_back(key);
-            }
-            break;
+    case Proto::SigningInput::TransactionTypeCase::kDelegateStakeTransaction: {
+        auto protoMessage = input.delegate_stake_transaction();
+        auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+        auto validatorAddress = Address(protoMessage.validator_pubkey());
+        auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
+        std::optional<Address> stakeAddress;
+        if (protoMessage.stake_account().size() == 0) {
+            // no stake address specified, generate a new unique
+            stakeAddress =
+                StakeProgram::addressFromRecentBlockhash(userAddress, blockhash, stakeProgramId);
+        } else {
+            // stake address specified, use it
+            stakeAddress = Address(protoMessage.stake_account());
+        }
+        message = Message::createStake(
+            /* signer */ userAddress,
+            /* stakeAddress */ stakeAddress.value(),
+            /* voteAddress */ validatorAddress,
+            /* value */ protoMessage.value(),
+            /* recent_blockhash */ blockhash);
+        signerKeys.push_back(key);
+    } break;
 
-        case Proto::SigningInput::TransactionTypeCase::kDeactivateStakeTransaction:
-            {
-                auto protoMessage = input.deactivate_stake_transaction();
-                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
-                auto stakeAddress = Address(protoMessage.stake_account());
-                message = Message::createStakeDeactivate(
-                    /* signer */ userAddress,
-                    /* stakeAddress */ stakeAddress,
-                    /* recent_blockhash */ blockhash);
-                signerKeys.push_back(key);
-            }
-            break;
+    case Proto::SigningInput::TransactionTypeCase::kDeactivateStakeTransaction: {
+        auto protoMessage = input.deactivate_stake_transaction();
+        auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+        auto stakeAddress = Address(protoMessage.stake_account());
+        message = Message::createStakeDeactivate(
+            /* signer */ userAddress,
+            /* stakeAddress */ stakeAddress,
+            /* recent_blockhash */ blockhash);
+        signerKeys.push_back(key);
+    } break;
 
-        case Proto::SigningInput::TransactionTypeCase::kDeactivateAllStakeTransaction:
-            {
-                auto protoMessage = input.deactivate_all_stake_transaction();
-                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
-                std::vector<Address> addresses;
-                for (auto i = 0; i < protoMessage.stake_accounts_size(); ++i) {
-                    addresses.emplace_back(Address(protoMessage.stake_accounts(i)));
-                }
-                message = Message::createStakeDeactivateAll(userAddress, addresses, blockhash);
-                signerKeys.push_back(key);
-            }
-            break;
+    case Proto::SigningInput::TransactionTypeCase::kDeactivateAllStakeTransaction: {
+        auto protoMessage = input.deactivate_all_stake_transaction();
+        auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+        std::vector<Address> addresses;
+        for (auto i = 0; i < protoMessage.stake_accounts_size(); ++i) {
+            addresses.emplace_back(Address(protoMessage.stake_accounts(i)));
+        }
+        message = Message::createStakeDeactivateAll(userAddress, addresses, blockhash);
+        signerKeys.push_back(key);
+    } break;
 
-        case Proto::SigningInput::TransactionTypeCase::kWithdrawTransaction:
-            {
-                auto protoMessage = input.withdraw_transaction();
-                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
-                auto stakeAddress = Address(protoMessage.stake_account());
-                message = Message::createStakeWithdraw(
-                    /* signer */ userAddress,
-                    /* stakeAddress */ stakeAddress,
-                    /* value */ protoMessage.value(),
-                    /* recent_blockhash */ blockhash);
-                signerKeys.push_back(key);
-            }
-            break;
+    case Proto::SigningInput::TransactionTypeCase::kWithdrawTransaction: {
+        auto protoMessage = input.withdraw_transaction();
+        auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+        auto stakeAddress = Address(protoMessage.stake_account());
+        message = Message::createStakeWithdraw(
+            /* signer */ userAddress,
+            /* stakeAddress */ stakeAddress,
+            /* value */ protoMessage.value(),
+            /* recent_blockhash */ blockhash);
+        signerKeys.push_back(key);
+    } break;
 
-        case Proto::SigningInput::TransactionTypeCase::kWithdrawAllTransaction:
-            {
-                auto protoMessage = input.withdraw_all_transaction();
-                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
-                std::vector<std::pair<Address, uint64_t>> stakes;
-                for (auto i = 0; i < protoMessage.stake_accounts_size(); ++i) {
-                    stakes.push_back(std::make_pair<Address, uint64_t>(
-                        Address(protoMessage.stake_accounts(i).stake_account()),
-                        protoMessage.stake_accounts(i).value()
-                    ));
-                }
-                message = Message::createStakeWithdrawAll(userAddress, stakes, blockhash);
-                signerKeys.push_back(key);
-            }
-            break;
+    case Proto::SigningInput::TransactionTypeCase::kWithdrawAllTransaction: {
+        auto protoMessage = input.withdraw_all_transaction();
+        auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+        std::vector<std::pair<Address, uint64_t>> stakes;
+        for (auto i = 0; i < protoMessage.stake_accounts_size(); ++i) {
+            stakes.push_back(std::make_pair<Address, uint64_t>(
+                Address(protoMessage.stake_accounts(i).stake_account()),
+                protoMessage.stake_accounts(i).value()));
+        }
+        message = Message::createStakeWithdrawAll(userAddress, stakes, blockhash);
+        signerKeys.push_back(key);
+    } break;
 
-        case Proto::SigningInput::TransactionTypeCase::kCreateTokenAccountTransaction:
-            {
-                auto protoMessage = input.create_token_account_transaction();
-                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
-                auto mainAddress = Address(protoMessage.main_address());
-                auto tokenMintAddress = Address(protoMessage.token_mint_address());
-                auto tokenAddress = Address(protoMessage.token_address());
-                message = Message::createTokenCreateAccount(userAddress, mainAddress, tokenMintAddress, tokenAddress, blockhash);
-                signerKeys.push_back(key);
-            }
-            break;
+    case Proto::SigningInput::TransactionTypeCase::kCreateTokenAccountTransaction: {
+        auto protoMessage = input.create_token_account_transaction();
+        auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+        auto mainAddress = Address(protoMessage.main_address());
+        auto tokenMintAddress = Address(protoMessage.token_mint_address());
+        auto tokenAddress = Address(protoMessage.token_address());
+        message = Message::createTokenCreateAccount(userAddress, mainAddress, tokenMintAddress,
+                                                    tokenAddress, blockhash, input.nonce_account());
+        signerKeys.push_back(key);
+    } break;
 
-        case Proto::SigningInput::TransactionTypeCase::kTokenTransferTransaction:
-            {
-                auto protoMessage = input.token_transfer_transaction();
-                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
-                auto tokenMintAddress = Address(protoMessage.token_mint_address());
-                auto senderTokenAddress = Address(protoMessage.sender_token_address());
-                auto recipientTokenAddress = Address(protoMessage.recipient_token_address());
-                auto amount = protoMessage.amount();
-                auto decimals = static_cast<uint8_t>(protoMessage.decimals());
-                const auto memo = protoMessage.memo();
-                message = Message::createTokenTransfer(userAddress, tokenMintAddress, senderTokenAddress, recipientTokenAddress, amount, decimals, blockhash,
-                    memo, convertReferences(protoMessage.references()));
-                signerKeys.push_back(key);
-            }
-            break;
+    case Proto::SigningInput::TransactionTypeCase::kTokenTransferTransaction: {
+        auto protoMessage = input.token_transfer_transaction();
+        auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+        auto tokenMintAddress = Address(protoMessage.token_mint_address());
+        auto senderTokenAddress = Address(protoMessage.sender_token_address());
+        auto recipientTokenAddress = Address(protoMessage.recipient_token_address());
+        auto amount = protoMessage.amount();
+        auto decimals = static_cast<uint8_t>(protoMessage.decimals());
+        const auto memo = protoMessage.memo();
+        message = Message::createTokenTransfer(userAddress, tokenMintAddress, senderTokenAddress,
+                                               recipientTokenAddress, amount, decimals, blockhash,
+                                               memo, convertReferences(protoMessage.references()),
+                                               input.nonce_account());
+        signerKeys.push_back(key);
+    } break;
 
-        case Proto::SigningInput::TransactionTypeCase::kCreateAndTransferTokenTransaction:
-            {
-                auto protoMessage = input.create_and_transfer_token_transaction();
-                auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
-                auto recipientMainAddress = Address(protoMessage.recipient_main_address());
-                auto tokenMintAddress = Address(protoMessage.token_mint_address());
-                auto recipientTokenAddress = Address(protoMessage.recipient_token_address());
-                auto senderTokenAddress = Address(protoMessage.sender_token_address());
-                auto amount = protoMessage.amount();
-                auto decimals = static_cast<uint8_t>(protoMessage.decimals());
-                const auto memo = protoMessage.memo();
-                message = Message::createTokenCreateAndTransfer(userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress, senderTokenAddress, amount, decimals, blockhash,
-                    memo, convertReferences(protoMessage.references()));
-                signerKeys.push_back(key);                
-            }
-            break;
+    case Proto::SigningInput::TransactionTypeCase::kCreateAndTransferTokenTransaction: {
+        auto protoMessage = input.create_and_transfer_token_transaction();
+        auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+        auto recipientMainAddress = Address(protoMessage.recipient_main_address());
+        auto tokenMintAddress = Address(protoMessage.token_mint_address());
+        auto recipientTokenAddress = Address(protoMessage.recipient_token_address());
+        auto senderTokenAddress = Address(protoMessage.sender_token_address());
+        auto amount = protoMessage.amount();
+        auto decimals = static_cast<uint8_t>(protoMessage.decimals());
+        const auto memo = protoMessage.memo();
+        message = Message::createTokenCreateAndTransfer(
+            userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress,
+            senderTokenAddress, amount, decimals, blockhash, memo,
+            convertReferences(protoMessage.references()), input.nonce_account());
+        signerKeys.push_back(key);
+    } break;
 
-        case Proto::SigningInput::TransactionTypeCase::kCreateNonceAccount:
-            {
-                auto createNonceAccountTransaction = input.create_nonce_account();
-                auto nonceAccountKey = PrivateKey(Data(createNonceAccountTransaction.nonce_account_private_key().begin(), createNonceAccountTransaction.nonce_account_private_key().end()));
-                message = Message::createNonceAccount(
-                    /* owner */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
-                    /* new nonce_account */ Address(nonceAccountKey.getPublicKey(TWPublicKeyTypeED25519)),
-                    /* rent */ createNonceAccountTransaction.rent(),
-                    /* recent_blockhash */ blockhash,
-                    /* nonce_account */ input.nonce_account());
-                signerKeys.push_back(key);
-                signerKeys.push_back(nonceAccountKey);
-            }
-            break;
+    case Proto::SigningInput::TransactionTypeCase::kCreateNonceAccount: {
+        auto createNonceAccountTransaction = input.create_nonce_account();
+        auto nonceAccountKey =
+            PrivateKey(Data(createNonceAccountTransaction.nonce_account_private_key().begin(),
+                            createNonceAccountTransaction.nonce_account_private_key().end()));
+        message = Message::createNonceAccount(
+            /* owner */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
+            /* new nonce_account */ Address(nonceAccountKey.getPublicKey(TWPublicKeyTypeED25519)),
+            /* rent */ createNonceAccountTransaction.rent(),
+            /* recent_blockhash */ blockhash,
+            /* nonce_account */ input.nonce_account());
+        signerKeys.push_back(key);
+        signerKeys.push_back(nonceAccountKey);
+    } break;
 
-        case Proto::SigningInput::TransactionTypeCase::kWithdrawNonceAccount:
-            {
-                auto withdrawNonceAccountTransaction = input.withdraw_nonce_account();
-                message = Message::createWithdrawNonceAccount(
-                    /* owner */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
-                    /* sender */ Address(withdrawNonceAccountTransaction.nonce_account()),
-                    /* recipient */ Address(withdrawNonceAccountTransaction.recipient()),
-                    /* value */ withdrawNonceAccountTransaction.value(),
-                    /* recent_blockhash */ blockhash,
-                    /* nonce_account */ input.nonce_account());
-                signerKeys.push_back(key);
-            }
-            break;
+    case Proto::SigningInput::TransactionTypeCase::kWithdrawNonceAccount: {
+        auto withdrawNonceAccountTransaction = input.withdraw_nonce_account();
+        message = Message::createWithdrawNonceAccount(
+            /* owner */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
+            /* sender */ Address(withdrawNonceAccountTransaction.nonce_account()),
+            /* recipient */ Address(withdrawNonceAccountTransaction.recipient()),
+            /* value */ withdrawNonceAccountTransaction.value(),
+            /* recent_blockhash */ blockhash,
+            /* nonce_account */ input.nonce_account());
+        signerKeys.push_back(key);
+    } break;
+    case Proto::SigningInput::TransactionTypeCase::kAdvanceNonceAccount: {
+        auto advanceNonceAccountTransaction = input.advance_nonce_account();
+        auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+        auto nonceAccountAddress = Address(advanceNonceAccountTransaction.nonce_account());
+        message = Message::advanceNonceAccount(userAddress, nonceAccountAddress, blockhash);
+        signerKeys.push_back(key);
+    } break;
 
-        default:
-            assert(input.transaction_type_case() != Proto::SigningInput::TransactionTypeCase::TRANSACTION_TYPE_NOT_SET);
+    default:
+        assert(input.transaction_type_case() !=
+               Proto::SigningInput::TransactionTypeCase::TRANSACTION_TYPE_NOT_SET);
     }
     auto transaction = Transaction(message);
 
@@ -348,7 +341,8 @@ TW::Data Signer::preImageHash() const {
         auto message = Message::createTokenCreateAndTransfer(
             userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress,
             senderTokenAddress, amount, decimals, recentBlockhash, memo,
-            convertReferences(createAndTransferTokenTransaction.references()));
+            convertReferences(createAndTransferTokenTransaction.references()),
+            input.nonce_account());
         auto transaction = Transaction(message);
         preImageHash = transaction.messageData();
     } break;
@@ -490,7 +484,8 @@ Proto::SigningOutput Signer::compile(const std::vector<Data>& signatures,
         message = Message::createTokenCreateAndTransfer(
             userAddress, recipientMainAddress, tokenMintAddress, recipientTokenAddress,
             senderTokenAddress, amount, decimals, recentBlockhash, memo,
-            convertReferences(createAndTransferTokenTransaction.references()));
+            convertReferences(createAndTransferTokenTransaction.references()),
+            input.nonce_account());
     } break;
     case Proto::SigningInput::TransactionTypeCase::kAdvanceNonceAccount: {
         if (signatures.size() < 1) {

@@ -534,8 +534,7 @@ class Message {
                                        const Address& senderTokenAddress,
                                        const Address& recipientTokenAddress, uint64_t amount,
                                        uint8_t decimals, Hash recentBlockhash,
-                                       std::string memo = "",
-                                       std::vector<Address> references = {},
+                                       std::string memo = "", std::vector<Address> references = {},
                                        std::string nonceAccountStr = "") {
         std::vector<Instruction> instructions;
         if (Address::isValid(nonceAccountStr)) {
@@ -563,11 +562,15 @@ class Message {
         const Address& signer, const Address& recipientMainAddress, const Address& tokenMintAddress,
         const Address& recipientTokenAddress, const Address& senderTokenAddress, uint64_t amount,
         uint8_t decimals, Hash recentBlockhash, std::string memo = "",
-        std::vector<Address> references = {}) {
+        std::vector<Address> references = {}, std::string nonceAccountStr = "") {
         const auto sysvarRentId = Address(SYSVAR_RENT_ID_ADDRESS);
         const auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
         const auto tokenProgramId = Address(TOKEN_PROGRAM_ID_ADDRESS);
         std::vector<Instruction> instructions;
+        if (Address::isValid(nonceAccountStr)) {
+            instructions.push_back(
+                Instruction::advanceNonceAccount(signer, Address(nonceAccountStr)));
+        }
         instructions.push_back(Instruction::createTokenCreateAccount(std::vector<AccountMeta>{
             AccountMeta(signer, true, false), // fundingAddress,
             AccountMeta(recipientTokenAddress, false, false),
