@@ -16,10 +16,9 @@ using json = nlohmann::json;
 namespace TW::Ethereum::ABI {
 
 static void fillArray(ParamSet& paramSet, const string& type) {
-    auto param = make_shared<ParamArray>();
     auto baseType = string(type.begin(), type.end() - 2);
     auto value = ParamFactory::make(baseType);
-    param->addParam(value);
+    auto param = make_shared<ParamArray>(value);
     paramSet.addParam(param);
 }
 

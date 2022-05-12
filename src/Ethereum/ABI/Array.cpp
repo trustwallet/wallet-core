@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -29,8 +29,13 @@ void ParamArray::addParams(const std::vector<std::shared_ptr<ParamBase>>& params
 }
 
 std::string ParamArray::getFirstType() const {
-    if (_params.getCount() == 0) { return "empty"; }
-    return _params.getParamUnsafe(0)->getType();
+    if (_params.getCount() >= 1) {
+        return _params.getParamUnsafe(0)->getType();
+    }
+    if (_proto != nullptr) {
+        return _proto->getType();
+    }
+    return "__empty__";
 }
 
 size_t ParamArray::getSize() const
@@ -104,8 +109,8 @@ bool ParamArray::setValueJson(const std::string& value) {
 }
 
 Data ParamArray::hashStruct() const {
-    if (empty) {
-       return Hash::keccak256(std::vector<byte>()); 
+    if (_params.getCount() == 0) {
+       return Hash::keccak256(Data()); 
     }
     Data hash(32);
     Data hashes = _params.encodeHashes();
@@ -116,9 +121,11 @@ Data ParamArray::hashStruct() const {
 }
 
 std::string ParamArray::getExtraTypes(std::vector<std::string>& ignoreList) const {
-    std::shared_ptr<ParamBase> p;
-    if (!_params.getParam(0, p)) {
-        return "";
+    if (_params.getCount() >= 1) {
+        return _params.getParamUnsafe(0)->getExtraTypes(ignoreList);
     }
-    return p->getExtraTypes(ignoreList);
+    if (_proto != nullptr) {
+        return _proto->getExtraTypes(ignoreList);
+    }
+    return "";
 }

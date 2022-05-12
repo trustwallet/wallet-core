@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,11 +13,13 @@
 namespace TW::Ethereum::ABI {
 
 /// Dynamic array of the same types, "<type>[]"
+/// Normally has at least one element.  Empty array can have prototype set so its type is known.
+/// Empty with no prototype is possible, but should be avoided.
 class ParamArray: public ParamCollection
 {
 private:
     ParamSet _params;
-    bool empty = false;
+    std::shared_ptr<ParamBase> _proto; // an optional prototype element, determines the array type, useful in empty array case
 
 public:
     ParamArray() = default;
@@ -28,6 +30,7 @@ public:
     int addParam(const std::shared_ptr<ParamBase>& param);
     void addParams(const std::vector<std::shared_ptr<ParamBase>>& params);
     std::string getFirstType() const;
+    void setProto(const std::shared_ptr<ParamBase>& proto) { _proto = proto; }
     std::shared_ptr<ParamBase> getParam(int paramIndex) { return _params.getParamUnsafe(paramIndex); }
     virtual std::string getType() const { return getFirstType() + "[]"; }
     virtual size_t getSize() const;
@@ -38,7 +41,6 @@ public:
     virtual bool setValueJson(const std::string& value);
     virtual Data hashStruct() const;
     virtual std::string getExtraTypes(std::vector<std::string>& ignoreList) const;
-    void setEmpty(bool b) { empty = b; };
 };
 
 } // namespace TW::Ethereum::ABI

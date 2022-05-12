@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -221,17 +221,17 @@ std::shared_ptr<ParamStruct> ParamStruct::makeStruct(const std::string& structTy
                     throw std::invalid_argument("Value must be array for type " + type);
                 }
                 std::vector<std::shared_ptr<ParamBase>> paramsArray;
-                bool empty = false;
                 if (value.size() == 0) {
+                    // empty array
                     auto subStruct = makeStruct(arrayType, "{}", typesJson);
                     if (!subStruct) {
                         throw std::invalid_argument("Could not process array sub-struct " + arrayType + " " + "{}");
                     }
                     assert(subStruct);
-                    paramsArray.push_back(subStruct);
-                    empty = true; 
-                }
-                else {
+                    auto tmp = std::make_shared<ParamArray>(paramsArray);
+                    tmp->setProto(subStruct);
+                    params.push_back(std::make_shared<ParamNamed>(name, tmp));
+                } else {
                     for (const auto& e: value) {
                         auto subStruct = makeStruct(arrayType, e.dump(), typesJson);
                         if (!subStruct) {
@@ -240,10 +240,8 @@ std::shared_ptr<ParamStruct> ParamStruct::makeStruct(const std::string& structTy
                         assert(subStruct);
                         paramsArray.push_back(subStruct);
                     }
+                    params.push_back(std::make_shared<ParamNamed>(name, std::make_shared<ParamArray>(paramsArray)));
                 }
-                auto tmp = std::make_shared<ParamArray>(paramsArray);
-                tmp->setEmpty(empty);
-                params.push_back(std::make_shared<ParamNamed>(name, tmp));
             } else {
                 // try if sub struct
                 auto subTypeInfo = findType(type, types);

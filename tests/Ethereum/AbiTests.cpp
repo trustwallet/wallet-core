@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -34,11 +34,23 @@ TEST(EthereumAbi, ParamTypeNames) {
     EXPECT_EQ("address", ParamAddress().getType());
     EXPECT_EQ("bytes", ParamByteArray().getType());
     EXPECT_EQ("bytes168", ParamByteArrayFix(168).getType());
-    // ParamArray: needs a child parameter to obtain type
-    auto paramArray = ParamArray();
-    EXPECT_EQ("empty[]", paramArray.getType());
-    paramArray.addParam(std::make_shared<ParamBool>());
-    EXPECT_EQ("bool[]", paramArray.getType());
+    {
+        // ParamArray, non-empty
+        auto paramArray = ParamArray();
+        paramArray.addParam(std::make_shared<ParamBool>());
+        EXPECT_EQ("bool[]", paramArray.getType());
+    }
+    {
+        // ParamArray, empty with prototype
+        auto paramArray = ParamArray();
+        paramArray.setProto(std::make_shared<ParamBool>());
+        EXPECT_EQ("bool[]", paramArray.getType());
+    }
+    {
+        // ParamArray, empty, no prototype
+        auto paramArray = ParamArray();
+        EXPECT_EQ("__empty__[]", paramArray.getType());
+    }
     EXPECT_EQ("()", ParamTuple().getType());
 }
 
@@ -496,6 +508,22 @@ TEST(EthereumAbi, ParamArrayByte) {
         EXPECT_EQ(49, (std::dynamic_pointer_cast<ParamUInt8>(param.getVal()[0]))->getVal());
         EXPECT_EQ(51, (std::dynamic_pointer_cast<ParamUInt8>(param.getVal()[2]))->getVal());
     }
+}
+
+TEST(EthereumAbi, ParamArrayEmpty) {
+    auto param = ParamArray();
+    param.setProto(std::make_shared<ParamUInt8>(0));
+
+    EXPECT_EQ(0, param.getCount());
+    Data encoded;
+    param.encode(encoded);
+    EXPECT_EQ(32, encoded.size());
+    EXPECT_EQ(32, param.getSize());
+    EXPECT_EQ(
+        "0000000000000000000000000000000000000000000000000000000000000000",
+        hex(encoded));
+    EXPECT_EQ("uint8[]", param.getType());
+    EXPECT_EQ("c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470", hex(param.hashStruct()));
 }
 
 TEST(EthereumAbi, ParamArrayAddress) {
