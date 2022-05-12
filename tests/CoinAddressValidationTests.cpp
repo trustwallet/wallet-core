@@ -402,4 +402,9 @@ TEST(Coin, ValidateAddressECash) {
     ASSERT_EQ(normalizeAddress(TWCoinTypeECash, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"), "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2");
 }
 
+TEST(Coin, ValidateAddressIOST) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeIOST, "2QNt4yU73VfwLyGdKj5yirtRJn5Zy7pB3KAGyUiTSfmP"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeIOST,"nil"));
+}
+
 } // namespace TW

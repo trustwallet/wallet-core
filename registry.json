@@ -2360,5 +2360,31 @@
       "rpc": "https://mainnet.aurora.dev/",
       "documentation": "https://doc.aurora.dev/"
     }
+  },
+  {
+    "id": "iost",
+    "name": "IOST",
+    "coinId": 291,
+    "symbol": "IOST",
+    "decimals": 8,
+    "blockchain": "IOST",
+    "derivation": [
+      {
+        "path": "m/44'/291'/0'/0/0"
+      }
+    ],
+    "curve": "ed25519",
+    "publicKeyType": "ed25519",
+    "explorer": {
+      "url": "https://www.iostabc.com/",
+      "txPath": "/tx/",
+      "accountPath": "/accounts/"
+    },
+    "info": {
+      "url": "https://iost.io/",
+      "source": "https://github.com/iost-official/go-iost",
+      "rpc": "http://127.0.0.1:30001/",
+      "documentation": "https://developers.iost.io/"
+    }
   }
 ]

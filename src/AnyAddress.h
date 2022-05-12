@@ -28,7 +28,7 @@
 #include "Solana/Address.h"
 #include "Zcash/TAddress.h"
 #include "Zilliqa/Address.h"
-
+#include "IOST/Address.h"
 #include <string>
 
 namespace TW {
@@ -189,6 +189,10 @@ class AnyAddress {
         }
         case TWCoinTypeSolana: {
             return Solana::Address(string).vector();
+        }
+        case TWCoinTypeIOST: {
+            auto addr = IOST::Address(string);
+            return {addr.bytes.begin(), addr.bytes.end()};
         }
         default:
             break;
