@@ -51,6 +51,7 @@ TEST(TWAnySignerNULS, SignToken) {
     auto amount = store(uint256_t(10000000));
     auto balance = store(uint256_t(100000000));
     std::string nonce = "0000000000000000";
+    std::string asset_nonce = "0000000000000000";
     Proto::SigningInput input;
 
     input.set_from("NULSd6Hgj7ZoVgsPN9ybB4C1N2TbvkgLc8Z9H");
@@ -62,6 +63,7 @@ TEST(TWAnySignerNULS, SignToken) {
     input.set_balance(balance.data(), balance.size());
     input.set_timestamp(1569228280);
     input.set_nonce(nonce.data(), nonce.size());
+    input.set_asset_nonce(asset_nonce.data(), asset_nonce.size());
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeNULS);

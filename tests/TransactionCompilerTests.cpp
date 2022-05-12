@@ -1381,6 +1381,8 @@ TEST(TransactionCompiler, NULSCompileWithSignatures) {
     uint32_t idassetsId = 1;
     auto amount = TW::store((TW::uint256_t)10000000);
     auto amountStr = std::string(amount.begin(), amount.end());
+    auto balance = TW::store((TW::uint256_t)100000000);
+    auto balanceStr = std::string(balance.begin(), balance.end());
     auto nonce = std::string("0000000000000000");
     input.set_from(from);
     input.set_to(to);
@@ -1388,7 +1390,7 @@ TEST(TransactionCompiler, NULSCompileWithSignatures) {
     input.set_chain_id(chainId);
     input.set_idassets_id(idassetsId);
     input.set_nonce(nonce);
-    input.set_balance("100000000");
+    input.set_balance(balanceStr);
     input.set_timestamp((uint32_t)1569228280);
     auto inputString = input.SerializeAsString();
     auto inputData = TW::Data(inputString.begin(), inputString.end());
@@ -2237,14 +2239,18 @@ TEST(TransactionCompiler, NULSTokenCompileWithSignatures) {
     uint32_t idassetsId = 1;
     auto amount = TW::store((TW::uint256_t)10000000);
     auto amountStr = std::string(amount.begin(), amount.end());
+    auto balance = TW::store((TW::uint256_t)100000000);
+    auto balanceStr = std::string(balance.begin(), balance.end());
     auto nonce = std::string("0000000000000000");
+    auto asset_nonce = std::string("0000000000000000");
     input.set_from(from);
     input.set_to(to);
     input.set_amount(amountStr);
     input.set_chain_id(chainId);
     input.set_idassets_id(idassetsId);
-    input.set_nonce(nonce);
-    input.set_balance("100000000");
+    input.set_nonce(nonce.data(), nonce.size());
+    input.set_asset_nonce(asset_nonce.data(), asset_nonce.size());
+    input.set_balance(balanceStr);
     input.set_timestamp((uint32_t)1569228280);
     auto inputString = input.SerializeAsString();
     auto inputData = TW::Data(inputString.begin(), inputString.end());
