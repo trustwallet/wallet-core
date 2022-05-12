@@ -49,6 +49,7 @@ class NULSTests: XCTestCase {
             $0.remark = ""
             $0.balance = Data(hexString: "0x05f5e100")!
             $0.timestamp = 1569228280
+            $0.assetNonce = "0000000000000000".data(using: .utf8)!
         }
 
         let output: NULSSigningOutput = AnySigner.sign(input: input, coin: .nuls)
