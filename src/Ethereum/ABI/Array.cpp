@@ -20,7 +20,7 @@ using json = nlohmann::json;
 int ParamArray::addParam(const std::shared_ptr<ParamBase>& param) {
     assert(param != nullptr);
     if (param == nullptr) { return -1; }
-    if (_params.getCount() >= 1 && param->getType() != getFirstType()) { return -2; } // do not add different types
+    if (_params.getCount() >= 1 && param->getType() != getProtoType()) { return -2; } // do not add different types
     return _params.addParam(param);
 }
 
@@ -28,14 +28,16 @@ void ParamArray::addParams(const std::vector<std::shared_ptr<ParamBase>>& params
     for (auto p: params) { addParam(p); }
 }
 
-std::string ParamArray::getFirstType() const {
+std::shared_ptr<ParamBase> ParamArray::getProtoElem() const {
     if (_params.getCount() >= 1) {
-        return _params.getParamUnsafe(0)->getType();
+        return _params.getParamUnsafe(0);
     }
-    if (_proto != nullptr) {
-        return _proto->getType();
-    }
-    return "__empty__";
+    return _proto;
+}
+
+std::string ParamArray::getProtoType() const {
+    const auto proto = getProtoElem();
+    return (proto != nullptr) ? proto->getType() : "__empty__";
 }
 
 size_t ParamArray::getSize() const
@@ -97,7 +99,7 @@ bool ParamArray::setValueJson(const std::string& value) {
     }
     // make sure enough elements are in the array
     while (_params.getCount() < valuesJson.size()) {
-        addParam(ParamFactory::make(getFirstType()));
+        addParam(ParamFactory::make(getProtoType()));
     }
     int cnt = 0;
     for (const auto& e: valuesJson) {
@@ -121,11 +123,6 @@ Data ParamArray::hashStruct() const {
 }
 
 std::string ParamArray::getExtraTypes(std::vector<std::string>& ignoreList) const {
-    if (_params.getCount() >= 1) {
-        return _params.getParamUnsafe(0)->getExtraTypes(ignoreList);
-    }
-    if (_proto != nullptr) {
-        return _proto->getExtraTypes(ignoreList);
-    }
-    return "";
+    const auto& proto = getProtoElem();
+    return (proto != nullptr) ? proto->getExtraTypes(ignoreList) : "";
 }

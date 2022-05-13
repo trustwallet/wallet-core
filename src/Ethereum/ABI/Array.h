@@ -21,6 +21,10 @@ private:
     ParamSet _params;
     std::shared_ptr<ParamBase> _proto; // an optional prototype element, determines the array type, useful in empty array case
 
+private:
+    std::shared_ptr<ParamBase> getProtoElem() const; // the first element if exists, otherwise the proto element
+    std::string getProtoType() const;
+
 public:
     ParamArray() = default;
     ParamArray(const std::shared_ptr<ParamBase>& param1) : ParamCollection() { addParam(param1); }
@@ -29,10 +33,9 @@ public:
     std::vector<std::shared_ptr<ParamBase>> const& getVal() const { return _params.getParams(); }
     int addParam(const std::shared_ptr<ParamBase>& param);
     void addParams(const std::vector<std::shared_ptr<ParamBase>>& params);
-    std::string getFirstType() const;
     void setProto(const std::shared_ptr<ParamBase>& proto) { _proto = proto; }
     std::shared_ptr<ParamBase> getParam(int paramIndex) { return _params.getParamUnsafe(paramIndex); }
-    virtual std::string getType() const { return getFirstType() + "[]"; }
+    virtual std::string getType() const { return getProtoType() + "[]"; }
     virtual size_t getSize() const;
     virtual bool isDynamic() const { return true; }
     virtual size_t getCount() const { return _params.getCount(); }
