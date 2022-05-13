@@ -55,7 +55,7 @@ TEST(TerraSigner, SignSendTx) {
     auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(input);
+    auto output = Signer::sign(input, TWCoinTypeTerra);
 
     assertJSONEqual(output.json(), R"(
         {
@@ -164,7 +164,7 @@ TEST(TerraSigner, SignWasmTransferTxProtobuf_9FF3F0) {
     auto privateKey = parse_hex("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(input);
+    auto output = Signer::sign(input, TWCoinTypeTerra);
 
     // https://finder.terra.money/mainnet/tx/9FF3F0A16879254C22EB90D8B4D6195467FE5014381FD36BD3C23CA6698FE94B
     // curl -H 'Content-Type: application/json' --data-binary '{"mode": "BROADCAST_MODE_BLOCK","tx_bytes": "CogCCo..wld8"})' https://<lcd-node-url>/cosmos/tx/v1beta1/txs
@@ -210,7 +210,7 @@ TEST(TerraSigner, SignWasmTransferTxJson_078E90) {
     auto privateKey = parse_hex("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(input);
+    auto output = Signer::sign(input, TWCoinTypeTerra);
 
     // https://finder.terra.money/mainnet/tx/078E90458061611F6FD8B708882B55FF5C1FFB3FCE61322107A0A0DE39FC0F3E
     // curl -H 'Content-Type: application/json' --data-binary '{"mode": "block","tx":{...}}' https://<lcd-node-url>/txs
@@ -289,7 +289,7 @@ TEST(TerraSigner, SignWasmGeneric_EC4F85) {
     auto privateKey = parse_hex("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(input);
+    auto output = Signer::sign(input, TWCoinTypeTerra);
 
     // https://finder.terra.money/mainnet/tx/EC4F8532847E4D6AF016E6F6D3F027AE7FB6FF0B533C5132B01382D83B214A6F
     // curl -H 'Content-Type: application/json' --data-binary '{"mode": "BROADCAST_MODE_BLOCK","tx_bytes": "Cu4BC...iVt"})' https://<lcd-node-url>/cosmos/tx/v1beta1/txs
@@ -340,7 +340,7 @@ TEST(TerraSigner, SignWasmGenericWithCoins_6651FC) {
     auto privateKey = parse_hex("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(input);
+    auto output = Signer::sign(input, TWCoinTypeTerra);
 
     // https://finder.terra.money/mainnet/tx/6651FCE0EE5C6D6ACB655CC49A6FD5E939FB082862854616EA0642475BCDD0C9
     // curl -H 'Content-Type: application/json' --data-binary '{"mode": "BROADCAST_MODE_BLOCK","tx_bytes": "CrIBCq8B.....0NWg=="})' https://<lcd-node-url>/cosmos/tx/v1beta1/txs
@@ -421,7 +421,7 @@ TEST(TerraSigner, SignWasmSendTxProtobuf) {
     auto privateKey = parse_hex("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(input);
+    auto output = Signer::sign(input, TWCoinTypeTerra);
 
     // https://finder.terra.money/mainnet/tx/9FF3F0A16879254C22EB90D8B4D6195467FE5014381FD36BD3C23CA6698FE94B
     // curl -H 'Content-Type: application/json' --data-binary '{"mode": "BROADCAST_MODE_BLOCK","tx_bytes": "CogCCo..wld8"})' https://<lcd-node-url>/cosmos/tx/v1beta1/txs
