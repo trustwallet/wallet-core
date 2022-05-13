@@ -497,6 +497,19 @@ TEST(EthereumAbiStruct, hashStruct_emptyString) {
     EXPECT_EQ(hex(store(rsv.v)), "1c");
 }
 
+TEST(EthereumAbiStruct, hashStruct_emptyArray) {
+    auto path = TESTS_ROOT + "/Ethereum/Data/eip712_emptyArray.json";
+    auto typeData = load_file(path);
+    auto hash = ParamStruct::hashStructJson(typeData);
+    EXPECT_EQ(hex(hash), "9f1a1bc718e966d683c544aef6fd0b73c85a1d6244af9b64bb8f4a6fa6716086");
+
+    // sign the hash
+    const auto rsv = Signer::sign(privateKeyOilTimes12, hash, true, 0);
+    EXPECT_EQ(hex(store(rsv.r)), "de47efd592493f7189d44f071424ecb24b50d80750d3bd2bb6fc80451c13a52f");
+    EXPECT_EQ(hex(store(rsv.s)), "202b8a2be1ef3c466853e8cd5275a6af15b11e7e1cc0ae4a7e249bc9bad591eb");
+    EXPECT_EQ(hex(store(rsv.v)), "1c");
+}
+
 TEST(EthereumAbiStruct, hashStruct_walletConnect) {
     // https://github.com/WalletConnect/walletconnect-example-dapp/blob/master/src/helpers/eip712.ts
     auto path = TESTS_ROOT + "/Ethereum/Data/eip712_walletconnect.json";
