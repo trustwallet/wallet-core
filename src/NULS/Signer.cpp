@@ -21,24 +21,13 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto signer = Signer(input);
         auto data = signer.sign();
         output.set_encoded(data.data(), data.size());
+    } catch (...) {
     }
-    catch(...) {}
     return output;
 }
 
 Signer::Signer(const Proto::SigningInput& input) : input(input) {
-    uint256_t txAmount = load(input.amount());
     uint256_t balance = load(input.balance());
-
-    Proto::TransactionCoinFrom coinFrom;
-    coinFrom.set_from_address(input.from());
-    coinFrom.set_assets_chainid(input.chain_id());
-    coinFrom.set_assets_id(input.idassets_id());
-    coinFrom.set_id_amount(input.amount());
-    coinFrom.set_nonce(input.nonce());
-    // default unlocked
-    coinFrom.set_locked(0);
-    *tx.add_input() = coinFrom;
 
     Proto::TransactionCoinTo coinTo;
     coinTo.set_to_address(input.to());
@@ -55,20 +44,40 @@ Signer::Signer(const Proto::SigningInput& input) : input(input) {
     auto from = Address(input.from());
     if (input.chain_id() == from.chainID() && input.idassets_id() == 1) {
         // asset is NULS
-        // update to add fee
+        uint256_t txAmount = load(input.amount());
         uint32_t txSize =
             CalculatorTransactionSize(1, 1, static_cast<uint32_t>(tx.remark().size()));
-        fromNULSAmount = txAmount;
         uint256_t fee = (uint256_t)CalculatorTransactionFee(txSize);
-        fromNULSAmount += fee;
+        fromNULSAmount = txAmount + fee;
         // update the amount with fee included
         Data amountWithFee = store(fromNULSAmount);
         std::string amountWithFeeStr;
         amountWithFeeStr.insert(amountWithFeeStr.begin(), amountWithFee.begin(),
                                 amountWithFee.end());
-        tx.mutable_input(0)->set_id_amount(amountWithFeeStr);
+        Proto::TransactionCoinFrom coinFrom;
+        coinFrom.set_from_address(input.from());
+        coinFrom.set_assets_chainid(input.chain_id());
+        coinFrom.set_assets_id(input.idassets_id());
+        coinFrom.set_id_amount(amountWithFeeStr);
+        coinFrom.set_nonce(input.nonce());
+        // default unlocked
+        coinFrom.set_locked(0);
+        *tx.add_input() = coinFrom;
     } else {
         // asset is not NULS
+        // coinFrom
+        // asset
+        Proto::TransactionCoinFrom asset;
+        asset.set_from_address(input.from());
+        asset.set_assets_chainid(input.chain_id());
+        asset.set_assets_id(input.idassets_id());
+        asset.set_id_amount(input.amount());
+        asset.set_nonce(input.asset_nonce());
+        // default unlocked
+        asset.set_locked(0);
+        *tx.add_input() = asset;
+
+        // fee
         uint32_t txSize = CalculatorTransactionSize(
             2, 1,
             static_cast<uint32_t>(
@@ -162,13 +171,16 @@ Data Signer::buildSignedTx(Data pubkey, Data sigBytes) const {
 
     Data signedTxBytes = unsignedTxBytes;
     encodeVarInt(transactionSignature.size(), signedTxBytes);
-    std::copy(transactionSignature.begin(), transactionSignature.end(), std::back_inserter(signedTxBytes));
+    std::copy(transactionSignature.begin(), transactionSignature.end(),
+              std::back_inserter(signedTxBytes));
     return signedTxBytes;
 }
 
-uint32_t Signer::CalculatorTransactionSize(uint32_t inputCount, uint32_t outputCount, uint32_t remarkSize) const {
-    uint32_t size = TRANSACTION_FIX_SIZE + TRANSACTION_SIG_MAX_SIZE + TRANSACTION_INPUT_SIZE * inputCount +
-                        TRANSACTION_OUTPUT_SIZE * outputCount + remarkSize;
+uint32_t Signer::CalculatorTransactionSize(uint32_t inputCount, uint32_t outputCount,
+                                           uint32_t remarkSize) const {
+    uint32_t size = TRANSACTION_FIX_SIZE + TRANSACTION_SIG_MAX_SIZE +
+                    TRANSACTION_INPUT_SIZE * inputCount + TRANSACTION_OUTPUT_SIZE * outputCount +
+                    remarkSize;
     return size;
 }
 

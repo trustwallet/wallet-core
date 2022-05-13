@@ -52,6 +52,7 @@ class TestNULSSigner {
             .setRemark("")
             .setBalance(ByteString.copyFrom("0x05f5e100".toHexByteArray()))
             .setTimestamp(0x5d8885f8)
+            .setAssetNonce(ByteString.copyFrom("0000000000000000".toByteArray()))
             .build()
 
         val output = AnySigner.sign(signingInput, CoinType.NULS, SigningOutput.parser())

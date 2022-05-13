@@ -55,13 +55,15 @@ message SigningInput {
     bytes  amount = 4;
     uint32 chain_id = 5;
     uint32 idassets_id = 6;
-    //The last 8 bytes of latest transaction hash 
+    //The last 8 bytes of latest transaction hash, NULS chain nonce
     bytes nonce = 7;
     string remark = 8;
     // Account balance (NULS)
     bytes  balance = 9;
     // time, accurate to the second
     uint32 timestamp = 10;
+    // asset chain nonce, optional, it is for token transfer
+    bytes asset_nonce = 11;
 }
 
 message SigningOutput {
