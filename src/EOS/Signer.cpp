@@ -92,7 +92,7 @@ TW::Data Signer::hash(const Transaction& transaction) const noexcept {
     return Hash::sha256(serializeTx(transaction));
 }
 
-TW::Data Signer:: serializeTx(const Transaction& transaction) const noexcept {
+TW::Data Signer::serializeTx(const Transaction& transaction) const noexcept {
     Data hashInput(chainID);
     transaction.serialize(hashInput);
 
@@ -111,4 +111,62 @@ int Signer::isCanonical(uint8_t by, uint8_t sig[64]) {
         && !(sig[0] == 0 && !(sig[1] & 0x80))
         && !(sig[32] & 0x80)
         && !(sig[32] == 0 && !(sig[33] & 0x80));
+}
+
+Data Signer::buildUnsignedTx(const Proto::SigningInput& input) noexcept {
+    // create an asset object
+    auto assetData = input.asset();
+    auto asset = Asset(assetData.amount(), static_cast<uint8_t>(assetData.decimals()),
+                       assetData.symbol());
+
+    // create a transfer action
+    auto action = TransferAction(input.currency(), input.sender(), input.recipient(), asset,
+                                 input.memo());
+
+    // create a Transaction and add the transfer action
+    auto tx = Transaction(Data(input.reference_block_id().begin(), input.reference_block_id().end()),
+                          input.reference_block_time());
+    tx.actions.push_back(action);
+
+    return serializeTx(tx);
+}
+
+std::string Signer::buildSignedTx(const Proto::SigningInput& input, const Data& signature) noexcept {
+    // create an asset object
+    auto assetData = input.asset();
+    auto asset = Asset(assetData.amount(), static_cast<uint8_t>(assetData.decimals()),
+                       assetData.symbol());
+
+    // create a transfer action
+    auto action = TransferAction(input.currency(), input.sender(), input.recipient(), asset,
+                                 input.memo());
+
+    // create a Transaction and add the transfer action
+    auto tx = Transaction(Data(input.reference_block_id().begin(), input.reference_block_id().end()),
+                          input.reference_block_time());
+    tx.actions.push_back(action);
+
+
+    // get key type
+    EOS::Type type = Type::Legacy;
+    switch (input.private_key_type()) {
+    case Proto::KeyType::LEGACY:
+        type = Type::Legacy;
+        break;
+
+    case Proto::KeyType::MODERNK1:
+        type = Type::ModernK1;
+        break;
+
+    case Proto::KeyType::MODERNR1:
+        type = Type::ModernR1;
+        break;
+    default:
+        break;
+    }
+
+    tx.signatures.emplace_back(Signature(signature, type));
+    PackedTransaction ptx{tx, CompressionType::None};
+    auto stx = ptx.serialize().dump();
+    return stx;
 }
