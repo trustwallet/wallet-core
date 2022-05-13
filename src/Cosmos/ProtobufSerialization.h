@@ -12,11 +12,13 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
+#include <TrustWalletCore/TWCoinType.h>
+
 namespace TW::Cosmos {
 
 std::string buildProtoTxBody(const Proto::SigningInput& input);
 
-std::string buildAuthInfo(const Proto::SigningInput& input);
+std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin);
 
 Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo);
 

@@ -23,9 +23,12 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byt
 }
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+    auto input = Proto::SigningInput();
+    input.ParseFromArray(dataIn.data(), (int)dataIn.size());
+    auto serializedOut = Signer::sign(input, coin).SerializeAsString();
+    dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
 }
 
 string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const { 
-    return Signer::signJSON(json, key);
+    return Signer::signJSON(json, key, coin);
 }
