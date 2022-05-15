@@ -52,7 +52,11 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
         plan.outputTokens
     });
     // Change
-    if (plan.change > 0) {
+    bool hasChangeToken = false;
+    for (const auto& t: plan.changeTokens.bundle) {
+        if (t.second.amount > 0) { hasChangeToken = true; }
+    }
+    if (plan.change > 0 || hasChangeToken) {
         if (!AddressV3::isValid(input.transfer_message().change_address())) {
             return Common::Proto::Error_invalid_address;
         }
@@ -249,28 +253,51 @@ vector<TxInput> Signer::selectInputsWithTokens(const vector<TxInput>& inputs, Am
     return selected;
 }
 
+const auto PlaceholderFee = 170000;
+
 // Create a simple plan, used for estimation
-TransactionPlan simplePlan(const vector<TxInput>& inputs, Amount amount, const TokenBundle& requestedTokens) {
+TransactionPlan simplePlan(Amount amount, const TokenBundle& requestedTokens, const vector<TxInput>& selectedInputs, bool maxAmount) {
     TransactionPlan plan;
     plan.amount = amount;
-    plan.utxos = Signer::selectInputsWithTokens(inputs, amount, requestedTokens);
+    plan.utxos = selectedInputs;
     // Sum availableAmount
     plan.availableAmount = 0;
     for (auto& u: plan.utxos) {
         plan.availableAmount += u.amount;
+        for (auto iter = u.tokenBundle.bundle.begin(); iter != u.tokenBundle.bundle.end(); ++iter) {
+            plan.availableTokens.add(iter->second);
+        }
     }
-    plan.fee = 100000; // placeholder value
-    plan.change = plan.availableAmount - plan.amount;
+    plan.fee = PlaceholderFee; // placeholder value
+    // adjust/compute output amount
+    if (!maxAmount) {
+        // reduce amount if needed
+        plan.amount = max(Amount(0), min(plan.amount, plan.availableAmount - plan.fee));
+    } else {
+        // max available amount
+        plan.amount = max(Amount(0), plan.availableAmount - plan.fee);
+    }
+
+    plan.outputTokens = requestedTokens;
+    // compute change
+    plan.change = plan.availableAmount - (plan.amount + plan.fee);
+    for (auto iter = plan.availableTokens.bundle.begin(); iter != plan.availableTokens.bundle.end(); ++iter) {
+        const auto key = iter->second.key();
+        const auto changeAmount = iter->second.amount - plan.outputTokens.amount(key);
+        assert(changeAmount >= 0);
+        plan.changeTokens.bundle[key] = iter->second;
+        plan.changeTokens.bundle[key].amount = changeAmount;
+    }
     return plan;
 }
 
 // Estimates size of transaction in bytes.
-uint64_t estimateTxSize(const Proto::SigningInput& input, Amount amount, const TokenBundle& requestedTokens) {
+uint64_t estimateTxSize(const Proto::SigningInput& input, Amount amount, const TokenBundle& requestedTokens, const vector<TxInput>& selectedInputs) {
     auto inputs = vector<TxInput>();
     for (auto i = 0; i < input.utxos_size(); ++i) {
         inputs.push_back(TxInput::fromProto(input.utxos(i)));
     }
-    const auto _simplePlan = simplePlan(inputs, amount, requestedTokens);
+    const auto _simplePlan = simplePlan(amount, requestedTokens, selectedInputs, input.transfer_message().use_max_amount());
 
     Data encoded;
     Data txId;
@@ -292,8 +319,8 @@ Amount txFeeFunction(uint64_t txSizeInBytes) {
     return fee;
 }
 
-Amount Signer::estimateFee(const Proto::SigningInput& input, Amount amount, const TokenBundle& requestedTokens) {
-    return txFeeFunction(estimateTxSize(input, amount, requestedTokens));
+Amount Signer::estimateFee(const Proto::SigningInput& input, Amount amount, const TokenBundle& requestedTokens, const vector<TxInput> selectedInputs) {
+    return txFeeFunction(estimateTxSize(input, amount, requestedTokens, selectedInputs));
 }
 
 TransactionPlan Signer::doPlan() const {
@@ -307,7 +334,6 @@ TransactionPlan Signer::doPlan() const {
     // Check input UTXOs, process, sum ADA and token amounts
     auto utxos = vector<TxInput>();
     uint64_t inputSum = 0;
-    //TokenBundle inputTokens;
     for (auto i = 0; i < input.utxos_size(); ++i) {
         const auto& utxo = input.utxos(i);
         utxos.push_back(TxInput::fromProto(utxo));
@@ -326,7 +352,7 @@ TransactionPlan Signer::doPlan() const {
         const auto token = TokenAmount::fromProto(input.transfer_message().token_amount(i));
         requestedTokens.add(token);
     }
-    assert(plan.amount > 0 || maxAmount || requestedTokens.size() > 0);
+    assert(plan.amount > 0 || maxAmount);
     if (requestedTokens.size() > 1) {
         // We support transfer of only one coin (for simplicity; inputs may contain more coints which are preserved)
         plan.error = Common::Proto::Error_invalid_requested_token_amount;
@@ -342,7 +368,7 @@ TransactionPlan Signer::doPlan() const {
     // select UTXOs
     if (!maxAmount) {
         // aim for 1.5x of target
-        plan.utxos = selectInputsWithTokens(utxos, plan.amount * 3 / 2 + 1, requestedTokens);
+        plan.utxos = selectInputsWithTokens(utxos, plan.amount * 3 / 2 + PlaceholderFee, requestedTokens);
     } else {
         // maxAmount, select all
         plan.utxos = utxos;
@@ -377,7 +403,7 @@ TransactionPlan Signer::doPlan() const {
         }
     }
 
-    plan.fee = estimateFee(input, plan.amount, requestedTokens);
+    plan.fee = estimateFee(input, plan.amount, requestedTokens, plan.utxos);
 
     // adjust/compute output amount
     if (!maxAmount) {

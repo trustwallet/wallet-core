@@ -8,6 +8,7 @@
 
 #include "Cbor.h"
 #include "Hash.h"
+#include "HexCoding.h"
 
 using namespace TW::Cardano;
 using namespace TW;
@@ -60,26 +61,44 @@ bool TW::Cardano::operator==(const TxInput& i1, const TxInput& i2) { return i1.o
 
 TransactionPlan TransactionPlan::fromProto(const Proto::TransactionPlan& proto) {
     auto ret = TransactionPlan();
-    for (auto i = 0; i < proto.utxos_size(); ++i) {
-        ret.utxos.push_back(TxInput::fromProto(proto.utxos(i)));
-    }
     ret.availableAmount = proto.available_amount();
     ret.amount = proto.amount();
     ret.fee = proto.fee();
     ret.change = proto.change();
+    for (auto i = 0; i < proto.available_tokens_size(); ++i) {
+        ret.availableTokens.add(TokenAmount::fromProto(proto.available_tokens(i)));
+    }
+    for (auto i = 0; i < proto.output_tokens_size(); ++i) {
+        ret.outputTokens.add(TokenAmount::fromProto(proto.output_tokens(i)));
+    }
+    for (auto i = 0; i < proto.change_tokens_size(); ++i) {
+        ret.changeTokens.add(TokenAmount::fromProto(proto.change_tokens(i)));
+    }
+    for (auto i = 0; i < proto.utxos_size(); ++i) {
+        ret.utxos.push_back(TxInput::fromProto(proto.utxos(i)));
+    }
     ret.error = proto.error();
     return ret;
 }
 
 Proto::TransactionPlan TransactionPlan::toProto() const {
     Proto::TransactionPlan plan;
-    for (auto& u: utxos) {
-        *plan.add_utxos() = u.toProto();
-    }
     plan.set_available_amount(availableAmount);
     plan.set_amount(amount);
     plan.set_fee(fee);
     plan.set_change(change);
+    for (const auto& t: availableTokens.bundle) {
+        *plan.add_available_tokens() = t.second.toProto();
+    }
+    for (const auto& t: outputTokens.bundle) {
+        *plan.add_output_tokens() = t.second.toProto();
+    }
+    for (const auto& t: changeTokens.bundle) {
+        *plan.add_change_tokens() = t.second.toProto();
+    }
+    for (const auto& u: utxos) {
+        *plan.add_utxos() = u.toProto();
+    }
     plan.set_error(error);
     return plan;
 }
@@ -109,7 +128,7 @@ Cbor::Encode cborizeOutputAmounts(const Amount& amount, const TokenBundle& token
     std::vector<pair<Cbor::Encode, Cbor::Encode>> tokensMap;
     for (auto iter = tokenBundle.bundle.begin(); iter != tokenBundle.bundle.end(); ++iter) {
         tokensMap.push_back(make_pair(
-            Cbor::Encode::bytes(data(iter->second.policyId)),
+            Cbor::Encode::bytes(parse_hex(iter->second.policyId)),
             Cbor::Encode::map({make_pair(
                 Cbor::Encode::bytes(data(iter->second.assetName)),
                 Cbor::Encode::uint(uint64_t(iter->second.amount)) // 64 bits

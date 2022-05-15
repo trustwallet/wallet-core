@@ -11,7 +11,7 @@ message OutPoint {
 }
 
 message TokenAmount {
-    string policy_id = 1; // as hex string
+    string policy_id = 1; // as hex string (28x2 digits)
     string asset_name = 2;
     bytes amount = 3; // 256-bit number
 }
@@ -56,12 +56,30 @@ message Transfer {
 }
 
 message TransactionPlan {
-    uint64 amount = 1;
-    uint64 available_amount = 2;
+    // total coins in the utxos
+    uint64 available_amount = 1;
+
+    // coins in the output UTXO
+    uint64 amount = 2;
+
+    // coin amount deducted as fee
     uint64 fee = 3;
+
+    // coins in the change UTXO
     uint64 change = 4;
-    repeated TxInput utxos = 5;
-    Common.Proto.SigningError error = 6;
+
+    // total tokens in the utxos (optional)
+    repeated TokenAmount available_tokens = 5;
+
+    // tokens in the output (optional)
+    repeated TokenAmount output_tokens = 6;
+
+    // tokens in the change (optional)
+    repeated TokenAmount change_tokens = 7;
+
+    repeated TxInput utxos = 8;
+    
+    Common.Proto.SigningError error = 9;
 }
 
 // Input data necessary to create a signed transaction
