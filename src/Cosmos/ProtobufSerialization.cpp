@@ -233,7 +233,7 @@ std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin) {
     return authInfo.SerializeAsString();
 }
 
-Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo) {
+Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, TWCoinType coin) {
     // SignDoc Preimage
     auto signDoc = cosmos::SignDoc();
     signDoc.set_body_bytes(serializedTxBody);
@@ -242,7 +242,17 @@ Data buildSignature(const Proto::SigningInput& input, const std::string& seriali
     signDoc.set_account_number(input.account_number());
     const auto serializedSignDoc = signDoc.SerializeAsString();
 
-    auto hashToSign = Hash::sha256(serializedSignDoc);
+    Data hashToSign;
+    switch(coin) {
+        case TWCoinTypeNativeEvmos: {
+            hashToSign = Hash::keccak256(serializedSignDoc);
+            break;
+        }
+        default: {
+            hashToSign = Hash::sha256(serializedSignDoc);
+        }
+    }
+
     const auto privateKey = PrivateKey(input.private_key());
     auto signedHash = privateKey.sign(hashToSign, TWCurveSECP256k1);
     auto signature = Data(signedHash.begin(), signedHash.end() - 1);

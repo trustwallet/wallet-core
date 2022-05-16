@@ -11,7 +11,6 @@
 
 #include "PrivateKey.h"
 #include "Data.h"
-
 #include <google/protobuf/util/json_util.h>
 
 using namespace TW;
@@ -48,7 +47,7 @@ Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input, TWCo
     try {
         const auto serializedTxBody = buildProtoTxBody(input);
         const auto serializedAuthInfo = buildAuthInfo(input, coin);
-        const auto signature = buildSignature(input, serializedTxBody, serializedAuthInfo);
+        const auto signature = buildSignature(input, serializedTxBody, serializedAuthInfo, coin);
         auto serializedTxRaw = buildProtoTxRaw(input, serializedTxBody, serializedAuthInfo, signature);
 
         auto output = Proto::SigningOutput();

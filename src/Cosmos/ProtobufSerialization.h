@@ -20,7 +20,7 @@ std::string buildProtoTxBody(const Proto::SigningInput& input);
 
 std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin);
 
-Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo);
+Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, TWCoinType coin);
 
 std::string buildProtoTxRaw(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, const Data& signature);
 
