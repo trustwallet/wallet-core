@@ -2415,7 +2415,7 @@
     "info": {
       "url": "https://evmos.org/",
       "client": "https://github.com/tharsis/evmos",
-      "clientPublic": "https://api.evmos.org/",
+      "clientPublic": "https://rest.bd.evmos.org:1317",
       "clientDocs": ""
     }
   }
