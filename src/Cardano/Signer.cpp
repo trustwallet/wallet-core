@@ -269,16 +269,17 @@ TransactionPlan simplePlan(Amount amount, const TokenBundle& requestedTokens, co
         }
     }
     plan.fee = PlaceholderFee; // placeholder value
-    // adjust/compute output amount
+    // adjust/compute output amount and output tokens
     if (!maxAmount) {
         // reduce amount if needed
         plan.amount = max(Amount(0), min(plan.amount, plan.availableAmount - plan.fee));
+        plan.outputTokens = requestedTokens;
     } else {
         // max available amount
         plan.amount = max(Amount(0), plan.availableAmount - plan.fee);
+        plan.outputTokens = plan.availableTokens; // use all
     }
 
-    plan.outputTokens = requestedTokens;
     // compute change
     plan.change = plan.availableAmount - (plan.amount + plan.fee);
     for (auto iter = plan.availableTokens.bundle.begin(); iter != plan.availableTokens.bundle.end(); ++iter) {
@@ -422,7 +423,11 @@ TransactionPlan Signer::doPlan() const {
     assert(plan.amount + plan.fee <= plan.availableAmount);
 
     // compute output token amounts
-    plan.outputTokens = requestedTokens;
+    if (!maxAmount) {
+        plan.outputTokens = requestedTokens;
+    } else {
+        plan.outputTokens = plan.availableTokens; // send all
+    }
 
     // compute change
     plan.change = plan.availableAmount - (plan.amount + plan.fee);

@@ -547,12 +547,11 @@ TEST(CardanoSigning, SignTransferTokenMaxAmount_620b71) {
     input.add_private_key(privateKeyData.data(), privateKeyData.size());
     input.mutable_transfer_message()->set_to_address("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5");
     input.mutable_transfer_message()->set_change_address(ownAddress1);
-    input.mutable_transfer_message()->set_amount(0); // doesn't matter, max amount
+    input.mutable_transfer_message()->set_amount(666); // doesn't matter, max is used
     auto* toToken = input.mutable_transfer_message()->add_token_amount();
     toToken->set_policy_id(sundaeTokenPolicy);
     toToken->set_asset_name("SUNDAE");
-    const auto toTokenAmount = store(uint256_t(20000000));  // TODO this should not matter!
-    toToken->set_amount(toTokenAmount.data(), toTokenAmount.size());
+    const auto toTokenAmount = store(uint256_t(666));  // doesn't matter, max is used
     input.mutable_transfer_message()->set_use_max_amount(true);
     input.set_ttl(61085916);
 
