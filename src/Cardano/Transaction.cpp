@@ -91,14 +91,20 @@ uint64_t TokenBundle::minAdaAmount() const {
         return MinUtxoValue;
     }
 
-    set<string> assetNames;
-    for (const auto& t: bundle) { if (t.second.assetName.length() > 0) { assetNames.emplace(t.second.assetName); }}
-    auto numAssets = uint64_t(assetNames.size());
-    set<string> policyIds;
-    for (const auto& t: bundle) { policyIds.emplace(t.second.policyId); }
-    auto numPids = uint64_t(policyIds.size());
+    unordered_set<string> policyIdRegistry;
+    unordered_set<string> assetNameRegistry;
+    uint64_t numPids = 0;
+    uint64_t numAssets = 0;
     uint64_t sumAssetNameLengths = 0;
-    for (const auto& a: assetNames) { sumAssetNameLengths += a.length(); }
+    for (const auto& t: bundle) {
+        policyIdRegistry.emplace(t.second.policyId);
+        if (t.second.assetName.length() > 0) {
+            assetNameRegistry.emplace(t.second.assetName);
+        }
+    }
+    numPids = uint64_t(policyIdRegistry.size());
+    numAssets = uint64_t(assetNameRegistry.size());
+    for_each(assetNameRegistry.begin(), assetNameRegistry.end(), [&sumAssetNameLengths](string a){ sumAssetNameLengths += a.length(); });
     return minAdaAmountHelper(numPids, numAssets, sumAssetNameLengths);
 }
 
