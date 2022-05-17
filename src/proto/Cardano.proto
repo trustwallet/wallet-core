@@ -51,9 +51,11 @@ message Transfer {
     string change_address = 2;
 
     // Requested ADA amount to be transferred. Output can be different only in use_max_amount case.
+    // Note that Cardano has a minimum amount per UTXO, see TWCardanoMinAdaAmount.
     uint64 amount = 3;
 
     // Optional token(s) to be transferred
+    // Currently only one token type to be transferred per transaction is supported
     TokenBundle token_amount = 4;
 
     // Request max amount option. If set, tx will send all possible amounts from all inputs, including all tokens; there will be no change; requested amount and token_amount is disregarded in this case.
