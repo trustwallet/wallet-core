@@ -393,7 +393,14 @@ TransactionPlan Signer::doPlan() const {
         }
     }
 
-    plan.fee = estimateFee(input, plan.amount, requestedTokens, plan.utxos);
+    // compute fee
+    if (input.transfer_message().force_fee() == 0) {
+        plan.fee = estimateFee(input, plan.amount, requestedTokens, plan.utxos);
+    } else {
+        // fee provided, use it (capped)
+        plan.fee = max(Amount(0), min(plan.availableAmount - plan.amount, input.transfer_message().force_fee()));
+    }
+    assert(plan.fee >= 0 && plan.fee < plan.availableAmount);
 
     // adjust/compute output amount
     if (!maxAmount) {

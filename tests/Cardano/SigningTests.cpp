@@ -134,6 +134,81 @@ TEST(CardanoSigning, Plan) {
         EXPECT_EQ(plan.fee, 168565);
         EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
     }
+    {   // small target amount requested, but max amount
+        input.mutable_transfer_message()->set_amount(2000000);
+        input.mutable_transfer_message()->set_use_max_amount(true);
+        auto signer = Signer(input);
+        const auto plan = signer.doPlan();
+        EXPECT_EQ(plan.utxos.size(), 2);
+        EXPECT_EQ(plan.availableAmount, 8000000);
+        EXPECT_EQ(plan.amount, 7832709);
+        EXPECT_EQ(plan.fee, 167291);
+        EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
+    }
+}
+
+TEST(CardanoSigning, PlanForceFee) {
+    auto requestedAmount = 6500000;
+    auto availableAmount = 8000000;
+    auto input = createSampleInput(requestedAmount);
+
+    {
+        auto fee = 170147;
+        input.mutable_transfer_message()->set_force_fee(fee);
+        auto signer = Signer(input);
+        const auto plan = signer.doPlan();
+        EXPECT_EQ(plan.availableAmount, availableAmount);
+        EXPECT_EQ(plan.amount, requestedAmount);
+        EXPECT_EQ(plan.fee, fee);
+        EXPECT_EQ(plan.change, availableAmount - requestedAmount - fee);
+        EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
+        EXPECT_EQ(plan.error, Common::Proto::OK);
+    }
+    {   // tiny fee
+        auto fee = 100;
+        input.mutable_transfer_message()->set_force_fee(fee);
+        auto signer = Signer(input);
+        const auto plan = signer.doPlan();
+        EXPECT_EQ(plan.availableAmount, availableAmount);
+        EXPECT_EQ(plan.amount, requestedAmount);
+        EXPECT_EQ(plan.fee, fee);
+        EXPECT_EQ(plan.change, availableAmount - requestedAmount - fee);
+        EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
+    }
+    {   // large fee
+        auto fee = 1200000;
+        input.mutable_transfer_message()->set_force_fee(fee);
+        auto signer = Signer(input);
+        const auto plan = signer.doPlan();
+        EXPECT_EQ(plan.availableAmount, availableAmount);
+        EXPECT_EQ(plan.amount, requestedAmount);
+        EXPECT_EQ(plan.fee, fee);
+        EXPECT_EQ(plan.change, availableAmount - requestedAmount - fee);
+        EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
+    }
+    {   // very large fee, larger than possible, truncated
+        auto fee = 3000000;
+        input.mutable_transfer_message()->set_force_fee(fee);
+        auto signer = Signer(input);
+        const auto plan = signer.doPlan();
+        EXPECT_EQ(plan.availableAmount, availableAmount);
+        EXPECT_EQ(plan.amount, requestedAmount);
+        EXPECT_EQ(plan.fee, 1500000);
+        EXPECT_EQ(plan.change, 0);
+        EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
+    }
+    {   // force fee and max amount: fee is used, amount is max, change 0
+        auto fee = 160000;
+        input.mutable_transfer_message()->set_force_fee(fee);
+        input.mutable_transfer_message()->set_use_max_amount(true);
+        auto signer = Signer(input);
+        const auto plan = signer.doPlan();
+        EXPECT_EQ(plan.availableAmount, availableAmount);
+        EXPECT_EQ(plan.amount, 7840000);
+        EXPECT_EQ(plan.fee, fee);
+        EXPECT_EQ(plan.change, 0);
+        EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
+    }
 }
 
 TEST(CardanoSigning, PlanMissingPrivateKey) {
@@ -306,7 +381,9 @@ TEST(CardanoSigning, SignTransfer_0db1ea) {
     input.mutable_transfer_message()->set_to_address("addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq");
     input.mutable_transfer_message()->set_change_address(ownAddress1);
     input.mutable_transfer_message()->set_amount(amount);
+    auto fee = 170147;
     input.mutable_transfer_message()->set_use_max_amount(false);
+    input.mutable_transfer_message()->set_force_fee(fee); // use force fee feature here
     input.set_ttl(54675589);
 
     {
@@ -316,16 +393,16 @@ TEST(CardanoSigning, SignTransfer_0db1ea) {
 
         EXPECT_EQ(plan.availableAmount, 2800000);
         EXPECT_EQ(plan.amount, amount);
-        EXPECT_EQ(plan.fee, 170147);
-        EXPECT_EQ(plan.change, 2800000 - amount - 170147);
+        EXPECT_EQ(plan.fee, fee);
+        EXPECT_EQ(plan.change, 2800000 - amount - fee);
         EXPECT_EQ(plan.utxos.size(), 2);
     }
 
     // set plan with specific fee, to match the real transaction
     input.mutable_plan()->set_amount(amount);
     input.mutable_plan()->set_available_amount(2800000);
-    input.mutable_plan()->set_fee(170147);
-    input.mutable_plan()->set_change(2800000 - amount - 170147);
+    input.mutable_plan()->set_fee(fee);
+    input.mutable_plan()->set_change(2800000 - amount - fee);
     *(input.mutable_plan()->add_utxos()) = input.utxos(0);
     *(input.mutable_plan()->add_utxos()) = input.utxos(1);
     input.mutable_plan()->set_error(Common::Proto::OK);

@@ -45,14 +45,18 @@ message Transfer {
     // Change address
     string change_address = 2;
 
-    // ADA amount to transfer
+    // Requested ADA amount to be transferred. Output can be different only in use_max_amount case.
     uint64 amount = 3;
 
-    // Set if max amount is requested (max possible from UTXOs/fee; amount is disregarded in this case)
-    bool use_max_amount = 4;
-
     // Optional token(s) to be transferred
-    repeated TokenAmount token_amount = 5;
+    repeated TokenAmount token_amount = 4;
+
+    // Request max amount option. If set, tx will send all possible amounts from all inputs, including all tokens; there will be no change; requested amount and token_amount is disregarded in this case.
+    bool use_max_amount = 5;
+
+    // Optional fee overriding. If left to 0, optimal fee will be calculated. If set, exactly this value will be used as fee.
+    // Use it with care, it may result in underfunded or wasteful fee.
+    uint64 force_fee = 6;
 }
 
 message TransactionPlan {
