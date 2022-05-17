@@ -10,7 +10,9 @@
 #include "XAddress.h"
 #include "Signer.h"
 #include "../proto/TransactionCompiler.pb.h"
+#include <TrezorCrypto/ecdsa.h>
 
+using namespace TW;
 using namespace TW::Ripple;
 using namespace std;
 
@@ -56,7 +58,18 @@ void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<
                 output.set_error_message("signatures and publickeys size can only be one");
                 return;
             }
+
+            //DER format signature
+            std::vector<uint8_t> signVec;
+            auto signature = TWDataCreateWithBytes(signatures[0].data(), signatures[0].size());
+            auto rawSign = TWDataBytes(signature);
+            signVec.assign(rawSign, rawSign + static_cast<int>(TWDataSize(signature)));
+            std::array<uint8_t, 72> sigBytes;
+            size_t size = ecdsa_sig_to_der(signVec.data(), sigBytes.data());
+            auto sig = Data{};
+            std::copy(sigBytes.begin(), sigBytes.begin() + size, std::back_inserter(sig));
+
             auto signer = Signer(input);
-            output = signer.compile(signatures[0], publicKeys[0]);
+            output = signer.compile(sig, publicKeys[0]);
         });
 }

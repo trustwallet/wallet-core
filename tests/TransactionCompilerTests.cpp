@@ -1843,11 +1843,9 @@ TEST(TransactionCompiler, RippleCompileWithSignatures) {
     EXPECT_EQ(hex(preImageHash),
               "8624dbbd5da9ccc8f7a50faf8af8709837db72f51a50cac15a6cd28ce6107b3d");
     // Simulate signature, normally obtained from signature server
-    const auto signature =
-        parse_hex("30440220067f20b3eebfc7107dd0bcc72337a236ac3be042c0469f2341d76694a17d4bb902204839"
-                  "3d7ee7dcb729783b33f5038939ddce1bb8337e66d752974626854556bbb6");
+    const auto signature = privateKey.sign(parse_hex("8624dbbd5da9ccc8f7a50faf8af8709837db72f51a50cac15a6cd28ce6107b3d"), TWCurveSECP256k1);
     // Verify signature (pubkey & hash & signature)
-    EXPECT_TRUE(publicKey.verifyAsDER(signature, TW::data(preImageHash)));
+    EXPECT_TRUE(publicKey.verify(signature, TW::data(preImageHash)));
     /// Step 3: Compile transaction info
     const Data outputData =
         TransactionCompiler::compileWithSignatures(coin, inputData, {signature}, {publicKey.bytes});
