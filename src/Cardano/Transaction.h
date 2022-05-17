@@ -41,24 +41,18 @@ public:
     TokenBundle() = default;
     TokenBundle(const std::vector<TokenAmount>& tokens) { for (const auto& t: tokens) { add(t); } }
 
-    void add(const TokenAmount& ta) {
-        const auto key = ta.key();
-        if (bundle.find(key) == bundle.end()) {
-            bundle[key] = ta;
-        } else {
-            auto entry = bundle[key];
-            entry.amount += ta.amount;
-            bundle[key] = entry;
-        }
-    }
-    uint256_t amount(const std::string& key) const {
-        const auto& findkey = bundle.find(key);
-        if (findkey == bundle.end()) {
-            return 0;
-        }
-        return findkey->second.amount;
-    }
+    static TokenBundle fromProto(const Proto::TokenBundle& proto);
+    Proto::TokenBundle toProto() const;
+
+    void add(const TokenAmount& ta);
+    uint256_t getAmount(const std::string& key) const;
     size_t size() const { return bundle.size(); }
+
+    // The minimum ADA amount needed for an ADA-only UTXO
+    static const uint64_t MinUtxoValue;
+    // The minimum ADA amount needed for a UTXO with this token bundle.  See https://docs.cardano.org/native-tokens/minimum-ada-value-requirement
+    uint64_t minAdaAmount() const;
+    static uint64_t minAdaAmountHelper(uint64_t numPids, uint64_t numAssets, uint64_t sumAssetNameLengths);
 };
 
 class OutPoint {
@@ -100,12 +94,6 @@ public:
     TxOutput() = default;
     TxOutput(const Data& address, Amount amount) : address(address), amount(amount) {}
     TxOutput(const Data& address, Amount amount, const TokenBundle& tokenBundle) : address(address), amount(amount), tokenBundle(tokenBundle) {}
-
-    // The minimum ADA amount needed for an ADA-only UTXO
-    static const uint64_t MinUtxoValue;
-    // The minimum ADA amount needed for this UTXO.  See https://docs.cardano.org/native-tokens/minimum-ada-value-requirement
-    uint64_t minAdaAmount() const;
-    static uint64_t minAdaAmountHelper(uint64_t numPids, uint64_t numAssets, uint64_t sumAssetNameLengths);
 };
 
 class TransactionPlan {

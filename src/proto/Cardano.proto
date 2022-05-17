@@ -38,6 +38,11 @@ message TxOutput {
     repeated TokenAmount token_amount = 3;
 }
 
+// Collection of tokens with amount
+message TokenBundle {
+    repeated TokenAmount token = 1;
+}
+
 message Transfer {
     // Destination address as string
     string to_address = 1;
@@ -49,7 +54,7 @@ message Transfer {
     uint64 amount = 3;
 
     // Optional token(s) to be transferred
-    repeated TokenAmount token_amount = 4;
+    TokenBundle token_amount = 4;
 
     // Request max amount option. If set, tx will send all possible amounts from all inputs, including all tokens; there will be no change; requested amount and token_amount is disregarded in this case.
     bool use_max_amount = 5;

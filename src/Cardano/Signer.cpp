@@ -209,14 +209,14 @@ vector<TxInput> selectInputsSimpleNative(const vector<TxInput>& inputs, Amount a
 void selectInputsSimpleToken(const vector<TxInput>& inputs, string key, uint256_t amount, vector<TxInput>& selectedInputs) {
     uint256_t selectedAmount = 0;
     for (const auto& si: selectedInputs) {
-        selectedAmount += si.tokenBundle.amount(key);
+        selectedAmount += si.tokenBundle.getAmount(key);
     }
     if (selectedAmount >= amount) {
         return; // already covered
     }
     auto ii = vector<TxInput>(inputs);
     sort(ii.begin(), ii.end(), [key](TxInput t1, TxInput t2) {
-        return t1.tokenBundle.amount(key) > t2.tokenBundle.amount(key);
+        return t1.tokenBundle.getAmount(key) > t2.tokenBundle.getAmount(key);
     });
     for (const auto& i: ii) {
         if (distance(selectedInputs.begin(), find(selectedInputs.begin(), selectedInputs.end(), i)) < selectedInputs.size()) {
@@ -273,7 +273,7 @@ TransactionPlan simplePlan(Amount amount, const TokenBundle& requestedTokens, co
     plan.change = plan.availableAmount - (plan.amount + plan.fee);
     for (auto iter = plan.availableTokens.bundle.begin(); iter != plan.availableTokens.bundle.end(); ++iter) {
         const auto key = iter->second.key();
-        const auto changeAmount = iter->second.amount - plan.outputTokens.amount(key);
+        const auto changeAmount = iter->second.amount - plan.outputTokens.getAmount(key);
         assert(changeAmount >= 0);
         plan.changeTokens.bundle[key] = iter->second;
         plan.changeTokens.bundle[key].amount = changeAmount;
@@ -317,7 +317,7 @@ TransactionPlan Signer::doPlan() const {
     auto plan = TransactionPlan();
 
     bool maxAmount = input.transfer_message().use_max_amount();
-    if (input.transfer_message().amount() == 0 && !maxAmount && input.transfer_message().token_amount_size() == 0) {
+    if (input.transfer_message().amount() == 0 && !maxAmount && input.transfer_message().token_amount().token_size() == 0) {
         plan.error = Common::Proto::Error_zero_amount_requested;
         return plan;
     }
@@ -338,8 +338,8 @@ TransactionPlan Signer::doPlan() const {
     // Amounts requested
     plan.amount = input.transfer_message().amount();
     TokenBundle requestedTokens;
-    for (auto i = 0; i < input.transfer_message().token_amount_size(); ++i) {
-        const auto token = TokenAmount::fromProto(input.transfer_message().token_amount(i));
+    for (auto i = 0; i < input.transfer_message().token_amount().token_size(); ++i) {
+        const auto token = TokenAmount::fromProto(input.transfer_message().token_amount().token(i));
         requestedTokens.add(token);
     }
     assert(plan.amount > 0 || maxAmount);
@@ -387,7 +387,7 @@ TransactionPlan Signer::doPlan() const {
     assert(plan.amount <= plan.availableAmount);
     // check that there are enough tokens in the inputs
     for (auto iter = requestedTokens.bundle.begin(); iter != requestedTokens.bundle.end(); ++iter) {
-        if (iter->second.amount > plan.availableTokens.amount(iter->second.key())) {
+        if (iter->second.amount > plan.availableTokens.getAmount(iter->second.key())) {
             plan.error = Common::Proto::Error_low_balance;
             return plan;
         }
@@ -429,10 +429,11 @@ TransactionPlan Signer::doPlan() const {
     plan.change = plan.availableAmount - (plan.amount + plan.fee);
     for (auto iter = plan.availableTokens.bundle.begin(); iter != plan.availableTokens.bundle.end(); ++iter) {
         const auto key = iter->second.key();
-        const auto changeAmount = iter->second.amount - plan.outputTokens.amount(key);
-        assert(changeAmount >= 0);
-        plan.changeTokens.bundle[key] = iter->second;
-        plan.changeTokens.bundle[key].amount = changeAmount;
+        const auto changeAmount = iter->second.amount - plan.outputTokens.getAmount(key);
+        if (changeAmount > 0) { // omit 0-amount tokens
+            plan.changeTokens.bundle[key] = iter->second;
+            plan.changeTokens.bundle[key].amount = changeAmount;
+        }
     }
 
     assert(plan.change >= 0 && plan.change <= plan.availableAmount);
