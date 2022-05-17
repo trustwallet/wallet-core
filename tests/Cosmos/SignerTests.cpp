@@ -52,7 +52,7 @@ TEST(CosmosSigner, SignTxProtobuf) {
     auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(input);
+    auto output = Signer::sign(input, TWCoinTypeCosmos);
 
     assertJSONEqual(output.serialized(), "{\"tx_bytes\": \"CowBCokBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmkKLWNvc21vczFoc2s2anJ5eXFqZmhwNWRoYzU1dGM5anRja3lneDBlcGg2ZGQwMhItY29zbW9zMXp0NTBhenVwYW5xbGZhbTVhZmh2M2hleHd5dXRudWtlaDRjNTczGgkKBG11b24SATESZQpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3FEgQKAggBGAgSEQoLCgRtdW9uEgMyMDAQwJoMGkD54fQAFlekIAnE62hZYl0uQelh/HLv0oQpCciY5Dn8H1SZFuTsrGdu41PH1Uxa4woptCELi/8Ov9yzdeEFAC9H\", \"mode\": \"BROADCAST_MODE_BLOCK\"}");
     EXPECT_EQ(hex(output.signature()), "f9e1f4001657a42009c4eb6859625d2e41e961fc72efd2842909c898e439fc1f549916e4ecac676ee353c7d54c5ae30a29b4210b8bff0ebfdcb375e105002f47");
@@ -80,7 +80,7 @@ TEST(CosmosSigner, SignProtobuf_ErrorMissingMessage) {
     auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(input);
+    auto output = Signer::sign(input, TWCoinTypeCosmos);
 
     EXPECT_EQ(output.error(), "Error: No message found");
     EXPECT_EQ(output.serialized(), "");
@@ -121,7 +121,7 @@ TEST(CosmosSigner, SignTxJson) {
     auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(input);
+    auto output = Signer::sign(input, TWCoinTypeCosmos);
 
     // the sample tx on testnet
     // https://hubble.figment.network/chains/gaia-13003/blocks/142933/transactions/3A9206598C3D2E75A5EC074FD33EA53EB18EC729357F0965971C1C51F812AEA3?format=json
@@ -162,13 +162,13 @@ TEST(CosmosSigner, SignTxJson_WithMode) {
     input.set_private_key(privateKey.data(), privateKey.size());
 
     {
-        auto output = Signer::sign(input);
+        auto output = Signer::sign(input, TWCoinTypeCosmos);
         EXPECT_EQ(R"({"mode":"async","tx":{"fee":{"amount":[{"amount":"200","denom":"muon"}],"gas":"200000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"1","denom":"muon"}],"from_address":"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02","to_address":"cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"/D74mdIGyIB3/sQvIboLTfS9P9EV/fYGrgHZE2/vNj9X6eM6e57G3atljNB+PABnRw3pTk51uXmhCFop8O/ZJg=="}]}})", output.json());
         EXPECT_EQ(output.error(), "");
     }
     input.set_mode(Proto::BroadcastMode::SYNC);
     {
-        auto output = Signer::sign(input);
+        auto output = Signer::sign(input, TWCoinTypeCosmos);
         EXPECT_EQ(R"({"mode":"sync","tx":{"fee":{"amount":[{"amount":"200","denom":"muon"}],"gas":"200000"},"memo":"","msg":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"1","denom":"muon"}],"from_address":"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02","to_address":"cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"/D74mdIGyIB3/sQvIboLTfS9P9EV/fYGrgHZE2/vNj9X6eM6e57G3atljNB+PABnRw3pTk51uXmhCFop8O/ZJg=="}]}})", output.json());
         EXPECT_EQ(output.error(), "");
     }
@@ -207,7 +207,7 @@ TEST(CosmosSigner, SignIbcTransferProtobuf_817101) {
     EXPECT_EQ(Cosmos::Address(TWCoinTypeCosmos, PrivateKey(privateKey).getPublicKey(TWPublicKeyTypeSECP256k1)).string(), "cosmos1mky69cn8ektwy0845vec9upsdphktxt03gkwlx");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(input);
+    auto output = Signer::sign(input, TWCoinTypeCosmos);
 
     // real-world tx: https://www.mintscan.io/cosmos/txs/817101F3D96314AD028733248B28BAFAD535024D7D2C8875D3FE31DC159F096B
     // curl -H 'Content-Type: application/json' --data-binary '{"tx_bytes": "Cr4BCr...1yKOU=", "mode": "BROADCAST_MODE_BLOCK"}' https://api.cosmos.network/cosmos/tx/v1beta1/txs 

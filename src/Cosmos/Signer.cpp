@@ -11,20 +11,19 @@
 
 #include "PrivateKey.h"
 #include "Data.h"
-
 #include <google/protobuf/util/json_util.h>
 
 using namespace TW;
 using namespace TW::Cosmos;
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, TWCoinType coin) noexcept {
     switch (input.signing_mode()) {
         case Proto::JSON:
             return signJsonSerialized(input);
         
         case Proto::Protobuf:
         default:
-            return signProtobuf(input);
+            return signProtobuf(input, coin);
     }
 }
 
@@ -44,11 +43,11 @@ Proto::SigningOutput Signer::signJsonSerialized(const Proto::SigningInput& input
     return output;
 }
 
-Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input, TWCoinType coin) noexcept {
     try {
         const auto serializedTxBody = buildProtoTxBody(input);
-        const auto serializedAuthInfo = buildAuthInfo(input);
-        const auto signature = buildSignature(input, serializedTxBody, serializedAuthInfo);
+        const auto serializedAuthInfo = buildAuthInfo(input, coin);
+        const auto signature = buildSignature(input, serializedTxBody, serializedAuthInfo, coin);
         auto serializedTxRaw = buildProtoTxRaw(input, serializedTxBody, serializedAuthInfo, signature);
 
         auto output = Proto::SigningOutput();
@@ -65,10 +64,10 @@ Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input) noex
     }
 }
 
-std::string Signer::signJSON(const std::string& json, const Data& key) {
+std::string Signer::signJSON(const std::string& json, const Data& key, TWCoinType coin) {
     auto input = Proto::SigningInput();
     google::protobuf::util::JsonStringToMessage(json, &input);
     input.set_private_key(key.data(), key.size());
-    auto output = Signer::sign(input);
+    auto output = Signer::sign(input, coin);
     return output.json();
 }

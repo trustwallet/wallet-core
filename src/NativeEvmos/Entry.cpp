@@ -7,9 +7,9 @@
 #include "Entry.h"
 
 #include "Address.h"
-#include "Signer.h"
+#include "../Cosmos/Signer.h"
 
-using namespace TW::Cosmos;
+using namespace TW::NativeEvmos;
 using namespace std;
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
@@ -20,15 +20,4 @@ bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW
 
 string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char* hrp) const {
     return Address(coin, publicKey).string();
-}
-
-void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    auto input = Proto::SigningInput();
-    input.ParseFromArray(dataIn.data(), (int)dataIn.size());
-    auto serializedOut = Signer::sign(input, coin).SerializeAsString();
-    dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
-}
-
-string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const { 
-    return Signer::signJSON(json, key, coin);
 }

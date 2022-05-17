@@ -1,0 +1,9 @@
+syntax = "proto3";
+package ethermint.crypto.v1.ethsecp256k1;
+
+// PubKey defines a type alias for an ecdsa.PublicKey that implements
+// Tendermint's PubKey interface. It represents the 33-byte compressed public
+// key format.
+message PubKey {
+  bytes key = 1;
+}

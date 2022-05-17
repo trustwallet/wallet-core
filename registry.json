@@ -2360,5 +2360,63 @@
       "rpc": "https://mainnet.aurora.dev/",
       "documentation": "https://doc.aurora.dev/"
     }
+  },
+  {
+    "id": "evmos",
+    "name": "Evmos",
+    "coinId": 10009001,
+    "symbol": "EVMOS",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://evm.evmos.org",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x24af42cf4977a96d62e3a82c3cd9b519c3e7c53dd83398b88f0cb435d867b422",
+      "sampleAccount": "0x30627903124Aa1e71384bc52e1cb96E4AB3252b6"
+    },
+    "info": {
+      "url": "https://evmos.org/",
+      "source": "https://github.com/tharsis/evmos",
+      "rpc": "https://eth.bd.evmos.org:8545",
+      "documentation": "https://docs.evmos.org/"
+    }
+  },
+    {
+    "id": "nativeevmos",
+    "name": "NativeEvmos",
+    "displayName": "Native Evmos",
+    "coinId": 20009001,
+    "symbol": "EVMOS",
+    "decimals": 18,
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "hrp": "evmos",
+    "explorer": {
+      "url": "https://mintscan.io/evmos",
+      "txPath": "/txs/",
+      "accountPath": "/account/",
+      "sampleTx": "A16C211C83AD1E684DE46F694FAAC17D8465C864BD7385A81EC062CDE0638811",
+      "sampleAccount": "evmos17xpfvakm2amg962yls6f84z3kell8c5ljcjw34"
+    },
+    "info": {
+      "url": "https://evmos.org/",
+      "client": "https://github.com/tharsis/evmos",
+      "clientPublic": "https://rest.bd.evmos.org:1317",
+      "clientDocs": ""
+    }
   }
 ]

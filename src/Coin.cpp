@@ -31,6 +31,7 @@
 #include "Icon/Entry.h"
 #include "IoTeX/Entry.h"
 #include "Kusama/Entry.h"
+#include "NativeEvmos/Entry.h"
 #include "NEAR/Entry.h"
 #include "NEO/Entry.h"
 #include "NULS/Entry.h"
@@ -68,6 +69,7 @@ Cosmos::Entry cosmosDP;
 Elrond::Entry elrondDP;
 EOS::Entry eosDP;
 Ethereum::Entry ethereumDP;
+NativeEvmos::Entry nativeEvmosDP;
 Decred::Entry decredDP;
 Filecoin::Entry filecoinDP;
 FIO::Entry fioDP;
@@ -186,6 +188,8 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeBoba: entry = &ethereumDP; break;
         case TWCoinTypeMetis: entry = &ethereumDP; break;
         case TWCoinTypeAurora: entry = &ethereumDP; break;
+        case TWCoinTypeEvmos: entry = &ethereumDP; break;
+        case TWCoinTypeNativeEvmos: entry = &nativeEvmosDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;

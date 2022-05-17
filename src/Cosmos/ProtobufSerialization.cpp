@@ -16,6 +16,7 @@
 #include "Protobuf/ibc_applications_transfer_tx.pb.h"
 #include "Protobuf/terra_wasm_v1beta1_tx.pb.h"
 #include "Protobuf/thorchain_bank_tx.pb.h"
+#include "Protobuf/ethermint_keys.pb.h"
 
 #include "PrivateKey.h"
 #include "Data.h"
@@ -197,21 +198,34 @@ std::string buildProtoTxBody(const Proto::SigningInput& input) {
     return txBody.SerializeAsString();
 }
 
-std::string buildAuthInfo(const Proto::SigningInput& input) {
+std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin) {
     // AuthInfo
     const auto privateKey = PrivateKey(input.private_key());
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto authInfo = cosmos::AuthInfo();
     auto* signerInfo = authInfo.add_signer_infos();
-    auto pubKey = cosmos::crypto::secp256k1::PubKey();
-    pubKey.set_key(publicKey.bytes.data(), publicKey.bytes.size());
-    signerInfo->mutable_public_key()->PackFrom(pubKey, ProtobufAnyNamespacePrefix);
+
     signerInfo->mutable_mode_info()->mutable_single()->set_mode(cosmos::signing::v1beta1::SIGN_MODE_DIRECT);
     signerInfo->set_sequence(input.sequence());
+    switch(coin) {
+        case TWCoinTypeNativeEvmos: {
+            auto pubKey = ethermint::crypto::v1::ethsecp256k1::PubKey();
+            pubKey.set_key(publicKey.bytes.data(), publicKey.bytes.size());
+            signerInfo->mutable_public_key()->PackFrom(pubKey, ProtobufAnyNamespacePrefix);
+            break;
+        }
+        default: {
+            auto pubKey = cosmos::crypto::secp256k1::PubKey();
+            pubKey.set_key(publicKey.bytes.data(), publicKey.bytes.size());
+            signerInfo->mutable_public_key()->PackFrom(pubKey, ProtobufAnyNamespacePrefix);
+        }
+    }
+
     auto* fee = authInfo.mutable_fee();
     for (auto i = 0; i < input.fee().amounts_size(); ++i) {
         *fee->add_amount() = convertCoin(input.fee().amounts(i));
     }
+
     fee->set_gas_limit(input.fee().gas());
     fee->set_payer("");
     fee->set_granter("");
@@ -219,7 +233,7 @@ std::string buildAuthInfo(const Proto::SigningInput& input) {
     return authInfo.SerializeAsString();
 }
 
-Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo) {
+Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, TWCoinType coin) {
     // SignDoc Preimage
     auto signDoc = cosmos::SignDoc();
     signDoc.set_body_bytes(serializedTxBody);
@@ -228,7 +242,17 @@ Data buildSignature(const Proto::SigningInput& input, const std::string& seriali
     signDoc.set_account_number(input.account_number());
     const auto serializedSignDoc = signDoc.SerializeAsString();
 
-    auto hashToSign = Hash::sha256(serializedSignDoc);
+    Data hashToSign;
+    switch(coin) {
+        case TWCoinTypeNativeEvmos: {
+            hashToSign = Hash::keccak256(serializedSignDoc);
+            break;
+        }
+        default: {
+            hashToSign = Hash::sha256(serializedSignDoc);
+        }
+    }
+
     const auto privateKey = PrivateKey(input.private_key());
     auto signedHash = privateKey.sign(hashToSign, TWCurveSECP256k1);
     auto signature = Data(signedHash.begin(), signedHash.end() - 1);
