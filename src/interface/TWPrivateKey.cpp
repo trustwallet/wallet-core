@@ -65,6 +65,14 @@ struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyNist256p1(struct TWPrivateK
     return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeNIST256p1) };
 }
 
+struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyNist256p1Extended(struct TWPrivateKey *_Nonnull pk) {
+    return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeNIST256p1Extended) };
+}
+
+struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeySecp256k1Extended(struct TWPrivateKey *_Nonnull pk) {
+    return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeSECP256k1Extended) };
+}
+
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeySecp256k1(struct TWPrivateKey *_Nonnull pk, bool compressed) {
     if (compressed)  {
         return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeSECP256k1) };

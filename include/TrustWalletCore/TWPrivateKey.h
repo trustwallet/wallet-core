@@ -44,6 +44,13 @@ struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeySecp256k1(struct TWPrivateK
 TW_EXPORT_METHOD
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyNist256p1(struct TWPrivateKey *_Nonnull pk);
 
+TW_EXPORT_METHOD
+struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeySecp256k1Extended(struct TWPrivateKey *_Nonnull pk);
+
+/// Returns the public key associated with this private key.
+TW_EXPORT_METHOD
+struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyNist256p1Extended(struct TWPrivateKey *_Nonnull pk);
+
 /// Returns the public key associated with this private key.
 TW_EXPORT_METHOD
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519(struct TWPrivateKey *_Nonnull pk);
