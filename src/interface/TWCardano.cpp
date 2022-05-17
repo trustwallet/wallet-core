@@ -12,7 +12,7 @@
 using namespace TW::Cardano;
 using namespace TW;
 
-uint64_t TWCardanoMinAdaAmount(TW_Cardano_Proto_TokenBundle tokenBundle) {
+uint64_t TWCardanoMinAdaAmount(TWData *_Nonnull tokenBundle) {
     const Data* bundleData = static_cast<const Data*>(tokenBundle);
     Proto::TokenBundle bundleProto;
     if (bundleData && bundleProto.ParseFromArray(bundleData->data(), (int)bundleData->size())) {

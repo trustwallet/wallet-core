@@ -7,7 +7,7 @@
 #pragma once
 
 #include "TWBase.h"
-#include "TWCardanoProto.h"
+#include "TWData.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -15,7 +15,8 @@ TW_EXPORT_STRUCT
 struct TWCardano;
 
 // The minimum ADA amount needed for a UTXO.  See https://docs.cardano.org/native-tokens/minimum-ada-value-requirement
+// Input is serialized TokenBundle protobuf object.
 TW_EXPORT_STATIC_METHOD
-uint64_t TWCardanoMinAdaAmount(TW_Cardano_Proto_TokenBundle tokenBundle) TW_VISIBILITY_DEFAULT;
+uint64_t TWCardanoMinAdaAmount(TWData *_Nonnull tokenBundle) TW_VISIBILITY_DEFAULT;
 
 TW_EXTERN_C_END
