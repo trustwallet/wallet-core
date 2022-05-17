@@ -59,6 +59,8 @@ public:
     Data txHash;
     uint64_t outputIndex;
 
+    OutPoint() = default;
+    OutPoint(const Data& txHash, uint64_t outputIndex) : txHash(txHash), outputIndex(outputIndex) {}
     static OutPoint fromProto(const Proto::OutPoint& proto);
 };
 
@@ -87,6 +89,10 @@ public:
 
     /// Token amounts (optional)
     TokenBundle tokenBundle;
+
+    TxOutput() = default;
+    TxOutput(const Data& address, Amount amount) : address(address), amount(amount) {}
+    TxOutput(const Data& address, Amount amount, const TokenBundle& tokenBundle) : address(address), amount(amount), tokenBundle(tokenBundle) {}
 };
 
 class TransactionPlan {

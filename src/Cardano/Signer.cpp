@@ -38,7 +38,7 @@ Proto::SigningOutput Signer::sign() {
 Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const Proto::SigningInput& input, const TransactionPlan& plan) {
     tx = Transaction();
     for (const auto& i: plan.utxos) {
-        tx.inputs.push_back(OutPoint{i.txHash, i.outputIndex});
+        tx.inputs.emplace_back(i.txHash, i.outputIndex);
     }
 
     // Spending output
@@ -46,26 +46,15 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
         return Common::Proto::Error_invalid_address;
     }
     const auto toAddress = AddressV3(input.transfer_message().to_address());
-    tx.outputs.push_back(TxOutput{
-        toAddress.data(),
-        plan.amount,
-        plan.outputTokens
-    });
+    tx.outputs.emplace_back(toAddress.data(), plan.amount, plan.outputTokens);
     // Change
-    bool hasChangeToken = false;
-    for (const auto& t: plan.changeTokens.bundle) {
-        if (t.second.amount > 0) { hasChangeToken = true; }
-    }
+    bool hasChangeToken = any_of(plan.changeTokens.bundle.begin(), plan.changeTokens.bundle.end(), [](auto&& t) { return t.second.amount > 0; });
     if (plan.change > 0 || hasChangeToken) {
         if (!AddressV3::isValid(input.transfer_message().change_address())) {
             return Common::Proto::Error_invalid_address;
         }
         const auto changeAddress = AddressV3(input.transfer_message().change_address());
-        tx.outputs.push_back(TxOutput{
-            changeAddress.data(),
-            plan.change,
-            plan.changeTokens
-        });
+        tx.outputs.emplace_back(changeAddress.data(), plan.change, plan.changeTokens);
     }
     tx.fee = plan.fee;
     tx.ttl = input.ttl();
@@ -117,7 +106,7 @@ Common::Proto::SigningError Signer::assembleSignatures(vector<pair<Data, Data>>&
         const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Extended);
         const auto signature = privateKey.sign(txId, TWCurveED25519Extended);
         // public key (first 32 bytes) and signature (64 bytes)
-        signatures.push_back(make_pair(subData(publicKey.bytes, 0, 32), signature));
+        signatures.emplace_back(subData(publicKey.bytes, 0, 32), signature);
     }
 
     return Common::Proto::OK;
@@ -127,7 +116,7 @@ Cbor::Encode cborizeSignatures(const vector<pair<Data, Data>>& signatures) {
     // signatures as Cbor
     vector<Cbor::Encode> sigsCbor;
     for (auto& s: signatures) {
-        sigsCbor.push_back(Cbor::Encode::array({
+        sigsCbor.emplace_back(Cbor::Encode::array({
             Cbor::Encode::bytes(s.first),
             Cbor::Encode::bytes(s.second)
         }));
@@ -296,7 +285,7 @@ TransactionPlan simplePlan(Amount amount, const TokenBundle& requestedTokens, co
 uint64_t estimateTxSize(const Proto::SigningInput& input, Amount amount, const TokenBundle& requestedTokens, const vector<TxInput>& selectedInputs) {
     auto inputs = vector<TxInput>();
     for (auto i = 0; i < input.utxos_size(); ++i) {
-        inputs.push_back(TxInput::fromProto(input.utxos(i)));
+        inputs.emplace_back(TxInput::fromProto(input.utxos(i)));
     }
     const auto _simplePlan = simplePlan(amount, requestedTokens, selectedInputs, input.transfer_message().use_max_amount());
 
@@ -337,7 +326,7 @@ TransactionPlan Signer::doPlan() const {
     uint64_t inputSum = 0;
     for (auto i = 0; i < input.utxos_size(); ++i) {
         const auto& utxo = input.utxos(i);
-        utxos.push_back(TxInput::fromProto(utxo));
+        utxos.emplace_back(TxInput::fromProto(utxo));
         inputSum += utxo.amount();
     }
     if (inputSum == 0 || input.utxos_size() == 0) {

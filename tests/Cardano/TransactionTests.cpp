@@ -20,16 +20,16 @@ using namespace std;
 
 Transaction createTx() {
     Transaction tx;
-    tx.inputs.push_back(OutPoint{parse_hex("f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767"), 1});
-    tx.inputs.push_back(OutPoint{parse_hex("554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0"), 0});
-    tx.outputs.push_back(TxOutput{
+    tx.inputs.emplace_back(parse_hex("f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767"), 1);
+    tx.inputs.emplace_back(parse_hex("554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0"), 0);
+    tx.outputs.emplace_back(
         AddressV3("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23").data(),
         2000000
-    });
-    tx.outputs.push_back(TxOutput{
+    );
+    tx.outputs.emplace_back(
         AddressV3("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5").data(),
         16749189
-    });
+    );
     tx.fee = 165555;
     tx.ttl = 53333345;
     return tx;
