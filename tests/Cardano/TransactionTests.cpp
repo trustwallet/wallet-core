@@ -55,3 +55,46 @@ TEST(CardanoTransaction, GetId) {
     const auto txid = tx.getId();
     EXPECT_EQ(hex(txid), "cc262713a3e15a0fa245b062f33ffc6c2aa5a64c3ae7bfa793414069914e1bbf");
 }
+
+TEST(CardanoTransaction, minAdaAmount) {
+    const auto address = parse_hex("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23");
+    const auto policyId = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77";
+
+    {   // ADA only
+        const auto tx = TxOutput(address, 2000000);
+        EXPECT_EQ(tx.minAdaAmount(), 1000000);
+    }
+    {   // 1 policyId, 1 6-char asset name
+        const auto ta = TokenAmount(policyId, "012345", 0);
+        const auto tx = TxOutput(address, 2000000, TokenBundle({ta}));
+        EXPECT_EQ(tx.minAdaAmount(), 1444443);
+    }
+    {   // 2 policyId, 2 4-char asset names
+        auto tb = TokenBundle();
+        tb.add(TokenAmount("012345678901234567890POLICY1", "TOK1", 20));
+        tb.add(TokenAmount("012345678901234567890POLICY2", "TOK2", 20));
+        const auto tx = TxOutput(address, 2000000, TokenBundle(tb));
+        EXPECT_EQ(tx.minAdaAmount(), 1629628);
+    }
+    {   // 10 policyId, 10 6-char asset names
+        auto tb = TokenBundle();
+        for (auto i = 0; i < 10; ++i) {
+            string policyId1 =  + "012345678901234567890123456" + std::to_string(i);
+            string name = "ASSET" + std::to_string(i);
+            tb.add(TokenAmount(policyId1, name, 0));
+        }
+        const auto tx = TxOutput(address, 2000000, TokenBundle(tb));
+        EXPECT_EQ(tx.minAdaAmount(), 3370367);
+    }
+
+    EXPECT_EQ(TxOutput::minAdaAmountHelper(0, 0, 0), 1000000); // ADA only
+    EXPECT_EQ(TxOutput::minAdaAmountHelper(1, 0, 0), 1370369); // 1 policyId, no asset name
+    EXPECT_EQ(TxOutput::minAdaAmountHelper(1, 1, 1), 1444443); // 1 policyId, 1 1-char asset name
+    EXPECT_EQ(TxOutput::minAdaAmountHelper(1, 1, 6), 1444443); // 1 policyId, 1 6-char asset name
+    EXPECT_EQ(TxOutput::minAdaAmountHelper(1, 1, 32), 1555554); // 1 policyId, 1 32-char asset name
+    EXPECT_EQ(TxOutput::minAdaAmountHelper(1, 110, 110*32), 23777754); // 1 policyId, 110 32-char asset name
+    EXPECT_EQ(TxOutput::minAdaAmountHelper(2, 2, 8), 1629628); // 2 policyId, 2 4-char asset names
+    EXPECT_EQ(TxOutput::minAdaAmountHelper(3, 5, 20), 1999998); // 3 policyId, 5 4-char asset names
+    EXPECT_EQ(TxOutput::minAdaAmountHelper(10, 10, 10*6), 3370367); // 10 policyId, 10 6-char asset names
+    EXPECT_EQ(TxOutput::minAdaAmountHelper(60, 60, 60*32), 21222201); // 60 policyId, 60 32-char asset names
+}

@@ -59,6 +59,41 @@ Proto::TxInput TxInput::toProto() const {
 
 bool TW::Cardano::operator==(const TxInput& i1, const TxInput& i2) { return i1.outputIndex == i2.outputIndex && i1.txHash == i2.txHash; }
 
+uint64_t roundupBytesToWords(uint64_t b) { return ((b + 7) / 8); }
+
+const uint64_t TxOutput::MinUtxoValue = 1000000;
+
+uint64_t TxOutput::minAdaAmountHelper(uint64_t numPids, uint64_t numAssets, uint64_t sumAssetNameLengths) {
+    if (numPids == 0) {
+        return MinUtxoValue;
+    }
+
+    static const uint64_t coinSize = 0;
+    static const uint64_t utxoEntrySizeWithoutVal = 27;
+    static const uint64_t adaOnlyUTxOSize = utxoEntrySizeWithoutVal + coinSize; // 27
+    static const uint64_t pidSize = 28;
+
+    uint64_t sizeB = 6 + roundupBytesToWords((numAssets * 12) + sumAssetNameLengths + (numPids * pidSize));
+    return max(MinUtxoValue, (MinUtxoValue / adaOnlyUTxOSize) * (utxoEntrySizeWithoutVal + sizeB));
+}
+
+uint64_t TxOutput::minAdaAmount() const {
+    if (tokenBundle.size() == 0) {
+        // ADA only
+        return MinUtxoValue;
+    }
+
+    set<string> assetNames;
+    for (const auto& t: tokenBundle.bundle) { if (t.second.assetName.length() > 0) { assetNames.emplace(t.second.assetName); }}
+    auto numAssets = uint64_t(assetNames.size());
+    set<string> policyIds;
+    for (const auto& t: tokenBundle.bundle) { policyIds.emplace(t.second.policyId); }
+    auto numPids = uint64_t(policyIds.size());
+    uint64_t sumAssetNameLengths = 0;
+    for (const auto& a: assetNames) { sumAssetNameLengths += a.length(); }
+    return minAdaAmountHelper(numPids, numAssets, sumAssetNameLengths);
+}
+
 TransactionPlan TransactionPlan::fromProto(const Proto::TransactionPlan& proto) {
     auto ret = TransactionPlan();
     ret.availableAmount = proto.available_amount();

@@ -26,6 +26,9 @@ public:
     std::string assetName;
     uint256_t amount;
 
+    TokenAmount() = default;
+    TokenAmount(const std::string& policyId, const std::string& assetName, uint256_t amount) : policyId(policyId), assetName(assetName), amount(amount) {}
+
     static TokenAmount fromProto(const Proto::TokenAmount& proto);
     Proto::TokenAmount toProto() const;
     std::string key() const { return policyId + "_" + assetName; }
@@ -34,6 +37,10 @@ public:
 class TokenBundle {
 public:
     std::map<std::string, TokenAmount> bundle;
+
+    TokenBundle() = default;
+    TokenBundle(const std::vector<TokenAmount>& tokens) { for (const auto& t: tokens) { add(t); } }
+
     void add(const TokenAmount& ta) {
         const auto key = ta.key();
         if (bundle.find(key) == bundle.end()) {
@@ -93,6 +100,12 @@ public:
     TxOutput() = default;
     TxOutput(const Data& address, Amount amount) : address(address), amount(amount) {}
     TxOutput(const Data& address, Amount amount, const TokenBundle& tokenBundle) : address(address), amount(amount), tokenBundle(tokenBundle) {}
+
+    // The minimum ADA amount needed for an ADA-only UTXO
+    static const uint64_t MinUtxoValue;
+    // The minimum ADA amount needed for this UTXO.  See https://docs.cardano.org/native-tokens/minimum-ada-value-requirement
+    uint64_t minAdaAmount() const;
+    static uint64_t minAdaAmountHelper(uint64_t numPids, uint64_t numAssets, uint64_t sumAssetNameLengths);
 };
 
 class TransactionPlan {
