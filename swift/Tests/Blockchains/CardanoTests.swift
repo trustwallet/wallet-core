@@ -62,4 +62,59 @@ class CardanoTests: XCTestCase {
         let txid = output.txID
         XCTAssertEqual(txid.hexString, "efcf8ec01fb8cd32bc5289c609c470b473cc79bc60b0667e1d68dc3962df1082")
     }
+
+    func testSignTransferToken1() {
+        var input = CardanoSigningInput.with {
+            $0.transferMessage.toAddress = "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5"
+            $0.transferMessage.changeAddress = "addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq"
+            $0.transferMessage.amount = 1500000
+            $0.ttl = 53333333
+        }
+        input.privateKey.append(Data(hexString: "089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448a3566990b7785bd48c330875b1e0d03caaed0e67cecc42075dce1c7a13b1c49240508848ac82f603391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf1290dbd508e5ec71afaea98da2df1533c22ef02a26bb87b31907d0b2738fb7785b38d53aa68fc01230784c9209b2b2a2faf28491b3b1f1d221e63e704bbd0403c4154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e")!)
+
+        let utxo1 = CardanoTxInput.with {
+            $0.outPoint.txHash = Data(hexString: "f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767")!
+            $0.outPoint.outputIndex = 1
+            $0.address = "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"
+            $0.amount = 8051373
+        }
+        let token3 = CardanoTokenAmount.with {
+            $0.policyId = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77"
+            $0.assetName = "CUBY"
+            $0.amount = 3000000
+        }
+        utxo1.tokenAmount.append(token3)
+        input.utxos.append(utxo1)
+
+        let utxo2 = CardanoTxInput.with {
+            $0.outPoint.txHash = Data(hexString: "f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767")!
+            $0.outPoint.outputIndex = 2
+            $0.address = "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"
+            $0.amount = 2000000
+        }
+        let token1 = CardanoTokenAmount.with {
+            $0.policyId = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77"
+            $0.assetName = "SUNDAE"
+            $0.amount = 80996569
+        }
+        utxo2.tokenAmount.append(token1)
+        let token2 = CardanoTokenAmount.with {
+            $0.policyId = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77"
+            $0.assetName = "CUBY"
+            $0.amount = 2000000
+        }
+        utxo2.tokenAmount.append(token2)
+        input.utxos.append(utxo2)
+
+        // Sign
+        let output: CardanoSigningOutput = AnySigner.sign(input: input, coin: .cardano)
+        XCTAssertEqual(output.error, TW_Common_Proto_SigningError.ok)
+
+        let encoded = output.encoded
+        XCTAssertEqual(encoded.hexString,
+            "83a40082825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76702018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd5821a00160a5ba1581c9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77a14653554e4441451a01312d00825839018d98bea0414243dc84070f96265577e7e6cf702d62e871016885034ecc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468821a0080a5b2a2581c9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77a144435542591a004c4b40581c9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77a14653554e4441451a03a2bbd9021a0002af20031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df2905840e920b1ffa6acbcc7eb87f9a6087d343625e81497c505d700e5e081d5b754d8490917d310a5025eed34cfd9fe08fe2ac603add5846a0c5f30eeec852d69b75c05f6")
+
+        let txid = output.txID
+        XCTAssertEqual(txid.hexString, "e628cf0296d34aaf72c373988ffaefcad8c85ee111fb42798f2ee6f969b4a702")
+    }
 }
