@@ -72,36 +72,36 @@ class CardanoTests: XCTestCase {
         }
         input.privateKey.append(Data(hexString: "089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448a3566990b7785bd48c330875b1e0d03caaed0e67cecc42075dce1c7a13b1c49240508848ac82f603391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf1290dbd508e5ec71afaea98da2df1533c22ef02a26bb87b31907d0b2738fb7785b38d53aa68fc01230784c9209b2b2a2faf28491b3b1f1d221e63e704bbd0403c4154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e")!)
 
-        let utxo1 = CardanoTxInput.with {
+        var utxo1 = CardanoTxInput.with {
             $0.outPoint.txHash = Data(hexString: "f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767")!
             $0.outPoint.outputIndex = 1
             $0.address = "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"
             $0.amount = 8051373
         }
         let token3 = CardanoTokenAmount.with {
-            $0.policyId = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77"
+            $0.policyID = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77"
             $0.assetName = "CUBY"
-            $0.amount = 3000000
+            $0.amount = Data(hexString: "2dc6c0")! // 3000000
         }
         utxo1.tokenAmount.append(token3)
         input.utxos.append(utxo1)
 
-        let utxo2 = CardanoTxInput.with {
+        var utxo2 = CardanoTxInput.with {
             $0.outPoint.txHash = Data(hexString: "f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767")!
             $0.outPoint.outputIndex = 2
             $0.address = "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"
             $0.amount = 2000000
         }
         let token1 = CardanoTokenAmount.with {
-            $0.policyId = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77"
+            $0.policyID = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77"
             $0.assetName = "SUNDAE"
-            $0.amount = 80996569
+            $0.amount = Data(hexString: "04d3e8d9")! // 80996569
         }
         utxo2.tokenAmount.append(token1)
         let token2 = CardanoTokenAmount.with {
-            $0.policyId = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77"
+            $0.policyID = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77"
             $0.assetName = "CUBY"
-            $0.amount = 2000000
+            $0.amount = Data(hexString: "1e8480")! // 2000000
         }
         utxo2.tokenAmount.append(token2)
         input.utxos.append(utxo2)
