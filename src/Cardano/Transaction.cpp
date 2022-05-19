@@ -190,11 +190,6 @@ Cbor::Encode cborizeInputs(const std::vector<OutPoint>& inputs) {
     return Cbor::Encode::array(ii);
 }
 
-Cbor::Encode cborizeTokenAmount(const TokenAmount& tokenAmount) {
-    return Cbor::Encode::array({
-    });
-}
-
 Cbor::Encode cborizeOutputAmounts(const Amount& amount, const TokenBundle& tokenBundle) {
     if (tokenBundle.size() == 0) {
         // native amount only
