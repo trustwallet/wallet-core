@@ -15,6 +15,7 @@
 #include <cassert>
 #include <cmath>
 #include <algorithm>
+#include <numeric>
 
 using namespace TW::Cardano;
 using namespace TW;
