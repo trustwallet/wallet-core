@@ -110,8 +110,8 @@ TEST(CardanoSigning, Plan) {
         EXPECT_EQ(plan.utxos.size(), 2);
         EXPECT_EQ(plan.availableAmount, 8000000);
         EXPECT_EQ(plan.amount, 7000000);
-        EXPECT_EQ(plan.fee, 170147);
-        EXPECT_EQ(plan.change, 829853);
+        EXPECT_EQ(plan.fee, 170196);
+        EXPECT_EQ(plan.change, 829804);
         EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
         EXPECT_EQ(plan.error, Common::Proto::OK);
     }
@@ -122,7 +122,7 @@ TEST(CardanoSigning, Plan) {
         EXPECT_EQ(plan.utxos.size(), 1);
         EXPECT_EQ(plan.availableAmount, 6500000);
         EXPECT_EQ(plan.amount, 1);
-        EXPECT_EQ(plan.fee, 168390);
+        EXPECT_EQ(plan.fee, 168435);
         EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
     }
     {   // small target amount
@@ -132,7 +132,7 @@ TEST(CardanoSigning, Plan) {
         EXPECT_EQ(plan.utxos.size(), 1);
         EXPECT_EQ(plan.availableAmount, 6500000);
         EXPECT_EQ(plan.amount, 2000000);
-        EXPECT_EQ(plan.fee, 168565);
+        EXPECT_EQ(plan.fee, 168611);
         EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
     }
     {   // small target amount requested, but max amount
@@ -142,8 +142,8 @@ TEST(CardanoSigning, Plan) {
         const auto plan = signer.doPlan();
         EXPECT_EQ(plan.utxos.size(), 2);
         EXPECT_EQ(plan.availableAmount, 8000000);
-        EXPECT_EQ(plan.amount, 7832709);
-        EXPECT_EQ(plan.fee, 167291);
+        EXPECT_EQ(plan.amount, 7832667);
+        EXPECT_EQ(plan.fee, 167333);
         EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
     }
 }
@@ -221,8 +221,8 @@ TEST(CardanoSigning, PlanMissingPrivateKey) {
     EXPECT_EQ(plan.utxos.size(), 2);
     EXPECT_EQ(plan.availableAmount, 8000000);
     EXPECT_EQ(plan.amount, 7000000);
-    EXPECT_EQ(plan.fee, 170147);
-    EXPECT_EQ(plan.change, 829853);
+    EXPECT_EQ(plan.fee, 170196);
+    EXPECT_EQ(plan.change, 829804);
     EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
     EXPECT_EQ(plan.error, Common::Proto::OK);
 }
@@ -236,14 +236,14 @@ TEST(CardanoSigning, SignTransfer1) {
     EXPECT_EQ(output.error(), Common::Proto::OK);
 
     const auto encoded = data(output.encoded());
-    EXPECT_EQ(hex(encoded), "83a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a006acfc082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a000ca99d021a000298a3031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058403c1cbde706d10550f5f966a5071e9e01e18f7b555626ed7616a214bd951d29d0ff0458edf5c555eefe4d4280302160149fc6e7e56a4298a368b7ab357643190df6");
+    EXPECT_EQ(hex(encoded), "83a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a006acfc082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a000ca96c021a000298d4031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058407cf591599852b5f5e007fdc241062405c47e519266c0d884b0767c1d4f5eacce00db035998e53ed10ca4ba5ce4aac8693798089717ce6cf4415f345cc764200ef6");
     const auto txid = data(output.tx_id());
-    EXPECT_EQ(hex(txid), "efcf8ec01fb8cd32bc5289c609c470b473cc79bc60b0667e1d68dc3962df1082");
+    EXPECT_EQ(hex(txid), "9b5b15e133cd73ccaa85307d2986aebc846505118a2eb4e6111e6b4b67d1f389");
 
     {
         const auto decode = Cbor::Decode(encoded);
         ASSERT_TRUE(decode.isValid());
-        EXPECT_EQ(decode.dumpToString(), "[{0: [[h\"554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0\", 0], [h\"f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767\", 1]], 1: [[h\"01558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd5\", 7000000], [h\"01df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\", 829853]], 2: 170147, 3: 53333333}, {0: [[h\"6d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df290\", h\"3c1cbde706d10550f5f966a5071e9e01e18f7b555626ed7616a214bd951d29d0ff0458edf5c555eefe4d4280302160149fc6e7e56a4298a368b7ab357643190d\"]]}, null]");
+        EXPECT_EQ(decode.dumpToString(), "[{0: [[h\"554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0\", 0], [h\"f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767\", 1]], 1: [[h\"01558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd5\", 7000000], [h\"01df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\", 829804]], 2: 170196, 3: 53333333}, {0: [[h\"6d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df290\", h\"7cf591599852b5f5e007fdc241062405c47e519266c0d884b0767c1d4f5eacce00db035998e53ed10ca4ba5ce4aac8693798089717ce6cf4415f345cc764200e\"]]}, null]");
         EXPECT_EQ(decode.getArrayElements().size(), 3);
     }
 }
@@ -259,8 +259,8 @@ TEST(CardanoSigning, PlanAndSignTransfer1) {
 
         EXPECT_EQ(plan.availableAmount, 8000000);
         EXPECT_EQ(plan.amount, amount);
-        EXPECT_EQ(plan.fee, 170147);
-        EXPECT_EQ(plan.change, 8000000 - amount - 170147);
+        EXPECT_EQ(plan.fee, 170196);
+        EXPECT_EQ(plan.change, 8000000 - amount - 170196);
         ASSERT_EQ(plan.utxos.size(), 2);
         EXPECT_EQ(plan.utxos[0].amount, 6500000);
         EXPECT_EQ(plan.utxos[1].amount, 1500000);
@@ -271,9 +271,9 @@ TEST(CardanoSigning, PlanAndSignTransfer1) {
         EXPECT_EQ(output.error(), Common::Proto::OK);
 
         const auto encoded = data(output.encoded());
-        EXPECT_EQ(hex(encoded), "83a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a005b8d8082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a001bebdd021a000298a3031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df2905840a188da8e452edcc7fbdbb02ee8a5508875344b0f1964fcf0a87513f8cba0c70bf159dd4a79f04b0224ce17ec0c8f6e0757aa61c4c81083ad694470293eec7c0df6");
+        EXPECT_EQ(hex(encoded), "83a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a005b8d8082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a001bebac021a000298d4031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058404abc749ffaffcf2f87970e4f1983c5e44b352ee1515b60017fc65e581d42b3a6ed146d5eb35d04a770460b0541a25afd5aedfd027fdaded82686f43454196a0cf6");
         const auto txid = data(output.tx_id());
-        EXPECT_EQ(hex(txid), "7af1f763cced850f6275e14a12c124a3a74067f980784748b380312c7974afdb");
+        EXPECT_EQ(hex(txid), "3852f809245d7000ad0c5ccb1357e5d333b0dd25158924581e4c7049ec68c564");
     }
 
     // set different plan, with one input only
@@ -306,8 +306,8 @@ TEST(CardanoSigning, PlanAndSignMaxAmount) {
         const auto plan = signer.doPlan();
 
         EXPECT_EQ(plan.availableAmount, 8000000);
-        EXPECT_EQ(plan.amount, 8000000 - 167291);
-        EXPECT_EQ(plan.fee, 167291);
+        EXPECT_EQ(plan.amount, 8000000 - 167333);
+        EXPECT_EQ(plan.fee, 167333);
         EXPECT_EQ(plan.change, 0);
         ASSERT_EQ(plan.utxos.size(), 2);
         EXPECT_EQ(plan.utxos[0].amount, 1500000);
@@ -320,9 +320,9 @@ TEST(CardanoSigning, PlanAndSignMaxAmount) {
     EXPECT_EQ(output.error(), Common::Proto::OK);
 
     const auto encoded = data(output.encoded());
-    EXPECT_EQ(hex(encoded), "83a40082825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000018182583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a00778485021a00028d7b031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058407f9e06e600659940d78cfd39e85098a92a73f77b52e3d04cbf936d7bd6f604905903dd1576d5e51ae681d210a9ec7db46d2619891a87cb21bc53ece049e12404f6");
+    EXPECT_EQ(hex(encoded), "83a40082825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000018182583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a0077845b021a00028da5031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058403e64473e08adc863953c0e9f820b658dda0b8a423d6172fdccff73fcd5559956c9df8ed93ff67405331d368a0c11fd18c69781046384946582e1555e9e8ec70bf6");
     const auto txid = data(output.tx_id());
-    EXPECT_EQ(hex(txid), "98c9eac7929c1e96334ead50019d6e2d4a0d991818eb468225fb9220c121f8e3");
+    EXPECT_EQ(hex(txid), "ca0f1e12f20c95011da7d686d206a1eb98df94accd74c4df4ef403c5ce836057");
 }
 
 TEST(CardanoSigning, SignNegative) {
@@ -527,8 +527,8 @@ TEST(CardanoSigning, SignTransferToken) {
 
         EXPECT_EQ(plan.availableAmount, 10051373);
         EXPECT_EQ(plan.amount, 1444443);
-        EXPECT_EQ(plan.fee, 175904);
-        EXPECT_EQ(plan.change, 8431026);
+        EXPECT_EQ(plan.fee, 175966);
+        EXPECT_EQ(plan.change, 8430964);
         EXPECT_EQ(plan.utxos.size(), 2);
         EXPECT_EQ(plan.availableTokens.size(), 2);
         EXPECT_EQ(plan.availableTokens.getAmount("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77_CUBY"), 5000000);
@@ -546,16 +546,16 @@ TEST(CardanoSigning, SignTransferToken) {
 
     EXPECT_EQ(output.error(), Common::Proto::OK);
     const auto encoded = data(output.encoded());
-    EXPECT_EQ(hex(encoded), "83a40082825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76702018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd5821a00160a5ba1581c9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77a14653554e4441451a01312d00825839018d98bea0414243dc84070f96265577e7e6cf702d62e871016885034ecc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468821a0080a5b2a2581c9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77a144435542591a004c4b40581c9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77a14653554e4441451a03a2bbd9021a0002af20031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df2905840e920b1ffa6acbcc7eb87f9a6087d343625e81497c505d700e5e081d5b754d8490917d310a5025eed34cfd9fe08fe2ac603add5846a0c5f30eeec852d69b75c05f6");
+    EXPECT_EQ(hex(encoded), "83a40082825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76702018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd5821a00160a5ba1581c9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77a14653554e4441451a01312d00825839018d98bea0414243dc84070f96265577e7e6cf702d62e871016885034ecc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468821a0080a574a2581c9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77a144435542591a004c4b40581c9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77a14653554e4441451a03a2bbd9021a0002af5e031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df290584000feb412442f8851faa59742eb2c37f3994b0d143a424367143490cf828246991e504fa8eac61c403bfa7634bd1f0adc44f3f54f6a474856701e2cbb15fb5b04f6");
     const auto txid = data(output.tx_id());
-    EXPECT_EQ(hex(txid), "e628cf0296d34aaf72c373988ffaefcad8c85ee111fb42798f2ee6f969b4a702");
+    EXPECT_EQ(hex(txid), "dacb3a0c5b3b7fa36b49f25a0a59b941ab8a21f0db5770e9e6982ff120122649");
 
     {
         // also test proto toProto / fromProto
         const Proto::TransactionPlan planProto = Signer::plan(input);
         const auto plan2 = TransactionPlan::fromProto(planProto);
         EXPECT_EQ(plan2.amount, 1444443);
-        EXPECT_EQ(plan2.change, 8431026);
+        EXPECT_EQ(plan2.change, 8430964);
     }
 }
 
@@ -606,9 +606,9 @@ TEST(CardanoSigning, SignTransferToken_1dd248) {
         const auto plan = signer.doPlan();
 
         EXPECT_EQ(plan.availableAmount, 11758890);
-        EXPECT_EQ(plan.amount, 11758890 - 9984788 - 174102);
-        EXPECT_EQ(plan.fee, 174102);
-        EXPECT_EQ(plan.change, 9984788);
+        EXPECT_EQ(plan.amount, 11758890 - 9984729 - 174161);
+        EXPECT_EQ(plan.fee, 174161);
+        EXPECT_EQ(plan.change, 9984729);
         EXPECT_EQ(plan.utxos.size(), 2);
         EXPECT_EQ(plan.availableTokens.size(), 1);
         EXPECT_EQ(plan.availableTokens.getAmount("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77_SUNDAE"), 20000000);
@@ -678,8 +678,8 @@ TEST(CardanoSigning, SignTransferTokenMaxAmount_620b71) {
         const auto plan = signer.doPlan();
 
         EXPECT_EQ(plan.availableAmount, 2170871);
-        EXPECT_EQ(plan.amount, 2170871 - 167686);
-        EXPECT_EQ(plan.fee, 167686);
+        EXPECT_EQ(plan.amount, 2170871 - 167730);
+        EXPECT_EQ(plan.fee, 167730);
         EXPECT_EQ(plan.change, 0);
         EXPECT_EQ(plan.utxos.size(), 1);
         EXPECT_EQ(plan.availableTokens.size(), 1);
@@ -771,9 +771,9 @@ TEST(CardanoSigning, AnySignTransfer1) {
     EXPECT_EQ(output.error(), Common::Proto::OK);
 
     const auto encoded = data(output.encoded());
-    EXPECT_EQ(hex(encoded), "83a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a006acfc082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a000ca99d021a000298a3031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058403c1cbde706d10550f5f966a5071e9e01e18f7b555626ed7616a214bd951d29d0ff0458edf5c555eefe4d4280302160149fc6e7e56a4298a368b7ab357643190df6");
+    EXPECT_EQ(hex(encoded), "83a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a006acfc082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a000ca96c021a000298d4031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058407cf591599852b5f5e007fdc241062405c47e519266c0d884b0767c1d4f5eacce00db035998e53ed10ca4ba5ce4aac8693798089717ce6cf4415f345cc764200ef6");
     const auto txid = data(output.tx_id());
-    EXPECT_EQ(hex(txid), "efcf8ec01fb8cd32bc5289c609c470b473cc79bc60b0667e1d68dc3962df1082");
+    EXPECT_EQ(hex(txid), "9b5b15e133cd73ccaa85307d2986aebc846505118a2eb4e6111e6b4b67d1f389");
 }
 
 TEST(CardanoSigning, AnyPlan1) {
@@ -785,13 +785,13 @@ TEST(CardanoSigning, AnyPlan1) {
     EXPECT_EQ(plan.error(), Common::Proto::OK);
     EXPECT_EQ(plan.amount(), 7000000);
     EXPECT_EQ(plan.available_amount(), 8000000);
-    EXPECT_EQ(plan.fee(), 170147);
-    EXPECT_EQ(plan.change(), 829853);
+    EXPECT_EQ(plan.fee(), 170196);
+    EXPECT_EQ(plan.change(), 829804);
     ASSERT_EQ(plan.utxos_size(), 2);
     EXPECT_EQ(plan.utxos(0).amount(), 6500000);
     EXPECT_EQ(plan.utxos(1).amount(), 1500000);
 
-    EXPECT_EQ(hex(plan.SerializeAsString()), "0880a4e80310c09fab0318a3b10a209dd3324292010a220a20554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af01267616464723171383034336d356865656179646e76746d6d6b7975686536717635686176766873663064323671336a7967737370786c796670796b3679716b77307968747976747230666c656b6a3834753634617a38326375666d716e36357a6473796c7a6b323318a0dd8c034293010a240a20f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76710011267616464723171383034336d356865656179646e76746d6d6b7975686536717635686176766873663064323671336a7967737370786c796670796b3679716b77307968747976747230666c656b6a3834753634617a38326375666d716e36357a6473796c7a6b323318e0c65b");
+    EXPECT_EQ(hex(plan.SerializeAsString()), "0880a4e80310c09fab0318d4b10a20ecd2324292010a220a20554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af01267616464723171383034336d356865656179646e76746d6d6b7975686536717635686176766873663064323671336a7967737370786c796670796b3679716b77307968747976747230666c656b6a3834753634617a38326375666d716e36357a6473796c7a6b323318a0dd8c034293010a240a20f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76710011267616464723171383034336d356865656179646e76746d6d6b7975686536717635686176766873663064323671336a7967737370786c796670796b3679716b77307968747976747230666c656b6a3834753634617a38326375666d716e36357a6473796c7a6b323318e0c65b");
 
     {
         // also test fromProto

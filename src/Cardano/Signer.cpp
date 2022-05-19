@@ -23,6 +23,8 @@ using namespace std;
 
 
 static const Data placeholderPrivateKey = parse_hex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f");
+static const auto PlaceholderFee = 170000;
+static const auto ExtraInputAmount = 500000;
 
 Proto::SigningOutput Signer::sign() {
     // plan if needed
@@ -239,8 +241,6 @@ vector<TxInput> Signer::selectInputsWithTokens(const vector<TxInput>& inputs, Am
     return selected;
 }
 
-const auto PlaceholderFee = 170000;
-
 // Create a simple plan, used for estimation
 TransactionPlan simplePlan(Amount amount, const TokenBundle& requestedTokens, const vector<TxInput>& selectedInputs, bool maxAmount) {
     TransactionPlan plan;
@@ -293,14 +293,13 @@ uint64_t estimateTxSize(const Proto::SigningInput& input, Amount amount, const T
         return 0;
     }
 
-    auto encodedSize = encoded.size();
-    const auto extra = 11;
-    return encodedSize + extra;
+    return encoded.size();
 }
 
+// Compute fee from tx size, with some over-estimation
 Amount txFeeFunction(uint64_t txSizeInBytes) {
-    const double fixedTerm = 155381;
-    const double linearTerm = 43.946;
+    const double fixedTerm = 155381 + 500;
+    const double linearTerm = 43.946 + 0.1;
 
     const Amount fee = (Amount)(ceil(fixedTerm + (double)txSizeInBytes * linearTerm));
     return fee;
@@ -354,8 +353,9 @@ TransactionPlan Signer::doPlan() const {
 
     // select UTXOs
     if (!maxAmount) {
-        // aim for 1.5x of target
-        plan.utxos = selectInputsWithTokens(utxos, plan.amount * 3 / 2 + PlaceholderFee, requestedTokens);
+        // aim for larger total input, enough for 4/3 of the target amount plus typical fee plus minimal ADA for change plus some extra
+        auto targetInputAmount = (plan.amount * 4) / 3 + PlaceholderFee + requestedTokens.minAdaAmount() + ExtraInputAmount;
+        plan.utxos = selectInputsWithTokens(utxos, targetInputAmount, requestedTokens);
     } else {
         // maxAmount, select all
         plan.utxos = utxos;
