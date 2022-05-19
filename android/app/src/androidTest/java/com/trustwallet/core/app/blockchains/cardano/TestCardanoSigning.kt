@@ -88,6 +88,13 @@ class TestCardanoSigning {
             .setAmount(ByteString.copyFrom(Numeric.hexStringToByteArray("01312d00"))) // 20000000
             .build()
         message.token.addTokenAmount(toToken)
+
+        // check min ADA amount, set it
+        val inputTokenAmountSerialized = message.build().toByteArray()
+        val minAdaAmount = Cardano.minAdaAmount(inputTokenAmountSerialized)
+        assertEquals(minAdaAmount, 1_444_443)
+        message.set_amount(minAdaAmount)
+
         val input = Cardano.SigningInput.newBuilder()
             .setTransferMessage(message.build())
             .setTtl(53333333)
@@ -138,9 +145,9 @@ class TestCardanoSigning {
 
         val encoded = output.encoded
         assertEquals(Numeric.toHexString(encoded.toByteArray()),
-            "0x83a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a006acfc082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a000ca99d021a000298a3031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058403c1cbde706d10550f5f966a5071e9e01e18f7b555626ed7616a214bd951d29d0ff0458edf5c555eefe4d4280302160149fc6e7e56a4298a368b7ab357643190df6");
+            "0x83a40082825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76702018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd5821a00160a5ba1581c9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77a14653554e4441451a01312d00825839018d98bea0414243dc84070f96265577e7e6cf702d62e871016885034ecc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468821a0080a5b2a2581c9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77a144435542591a004c4b40581c9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77a14653554e4441451a03a2bbd9021a0002af20031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df2905840e920b1ffa6acbcc7eb87f9a6087d343625e81497c505d700e5e081d5b754d8490917d310a5025eed34cfd9fe08fe2ac603add5846a0c5f30eeec852d69b75c05f6");
 
         val txid = output.txId
-        assertEquals(Numeric.toHexString(txid.toByteArray()), "0xefcf8ec01fb8cd32bc5289c609c470b473cc79bc60b0667e1d68dc3962df1082");
+        assertEquals(Numeric.toHexString(txid.toByteArray()), "0xe628cf0296d34aaf72c373988ffaefcad8c85ee111fb42798f2ee6f969b4a702");
     }
 }
