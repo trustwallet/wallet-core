@@ -87,7 +87,7 @@ class TestCardanoSigning {
             .setAssetName("SUNDAE")
             .setAmount(ByteString.copyFrom(Numeric.hexStringToByteArray("01312d00"))) // 20000000
             .build()
-        message.tokenAmount.token.addTokenAmount(toToken)
+        message.tokenAmount.addToken(toToken)
 
         val input = Cardano.SigningInput.newBuilder()
             .setTransferMessage(message.build())
