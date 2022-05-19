@@ -77,20 +77,23 @@ class TestCardanoSigning {
 
     @Test
     fun testSignTransferToken1() {
-        val message = Cardano.Transfer.newBuilder()
-            .setToAddress("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5")
-            .setChangeAddress("addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq")
-            .setAmount(1_444_443)
-            .setUseMaxAmount(false)
         val toToken = Cardano.TokenAmount.newBuilder()
             .setPolicyId("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77")
             .setAssetName("SUNDAE")
             .setAmount(ByteString.copyFrom(Numeric.hexStringToByteArray("01312d00"))) // 20000000
             .build()
-        message.tokenAmount.addTokenAmount(toToken)
-
+        val toTokenBundle = Cardano.TokenBundle.newBuilder()
+            .addToken(toToken)
+            .build()
+        val message = Cardano.Transfer.newBuilder()
+            .setToAddress("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5")
+            .setChangeAddress("addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq")
+            .setAmount(1_444_443)
+            .setUseMaxAmount(false)
+            .setTokenAmount(toTokenBundle)
+            .build()
         val input = Cardano.SigningInput.newBuilder()
-            .setTransferMessage(message.build())
+            .setTransferMessage(message)
             .setTtl(53333333)
 
         val privKey = (Numeric.hexStringToByteArray("089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448a3566990b7785bd48c330875b1e0d03caaed0e67cecc42075dce1c7a13b1c49240508848ac82f603391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf1290dbd508e5ec71afaea98da2df1533c22ef02a26bb87b31907d0b2738fb7785b38d53aa68fc01230784c9209b2b2a2faf28491b3b1f1d221e63e704bbd0403c4154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e"))
