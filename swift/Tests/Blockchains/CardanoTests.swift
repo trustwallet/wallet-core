@@ -63,11 +63,19 @@ class CardanoTests: XCTestCase {
         XCTAssertEqual(txid.hexString, "efcf8ec01fb8cd32bc5289c609c470b473cc79bc60b0667e1d68dc3962df1082")
     }
 
-    func testSignTransferToken1() {
+    public static func minAdaAmount(tokenBundle: Data) -> UInt64 {
+        let tokenBundleData = TWDataCreateWithNSData(tokenBundle)
+        defer {
+            TWDataDelete(tokenBundleData)
+        }
+        return TWCardanoMinAdaAmount(tokenBundleData)
+    }
+
+    func testSignTransferToken1() throws {
         var input = CardanoSigningInput.with {
             $0.transferMessage.toAddress = "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5"
             $0.transferMessage.changeAddress = "addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq"
-            $0.transferMessage.amount = 1500000
+            $0.transferMessage.amount = 1500000 // overwritten below
             $0.transferMessage.useMaxAmount = false
             $0.ttl = 53333333
         }
@@ -112,6 +120,12 @@ class CardanoTests: XCTestCase {
         }
         utxo2.tokenAmount.append(token2)
         input.utxos.append(utxo2)
+
+        // check min ADA amount, set it
+        let inputTokenAmountSerialized = try input.transferMessage.tokenAmount.serializedData()
+        let minAmount = try CardanoTests.minAdaAmount(tokenBundle: inputTokenAmountSerialized)
+        XCTAssertEqual(minAmount, 1444443)
+        input.transferMessage.amount = minAmount
 
         // Sign
         let output: CardanoSigningOutput = AnySigner.sign(input: input, coin: .cardano)

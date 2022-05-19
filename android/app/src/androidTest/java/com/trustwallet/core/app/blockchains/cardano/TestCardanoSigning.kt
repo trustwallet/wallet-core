@@ -80,20 +80,14 @@ class TestCardanoSigning {
         val message = Cardano.Transfer.newBuilder()
             .setToAddress("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5")
             .setChangeAddress("addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq")
-            .setAmount(1_500_000)
+            .setAmount(1_444_443)
             .setUseMaxAmount(false)
         val toToken = Cardano.TokenAmount.newBuilder()
-            .setPolicyID("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77")
+            .setPolicyId("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77")
             .setAssetName("SUNDAE")
             .setAmount(ByteString.copyFrom(Numeric.hexStringToByteArray("01312d00"))) // 20000000
             .build()
         message.token.addTokenAmount(toToken)
-
-        // check min ADA amount, set it
-        val inputTokenAmountSerialized = message.build().toByteArray()
-        val minAdaAmount = Cardano.minAdaAmount(inputTokenAmountSerialized)
-        assertEquals(minAdaAmount, 1_444_443)
-        message.set_amount(minAdaAmount)
 
         val input = Cardano.SigningInput.newBuilder()
             .setTransferMessage(message.build())
@@ -111,7 +105,7 @@ class TestCardanoSigning {
             .setAddress("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23")
             .setAmount(8_051_373)
         val token3 = Cardano.TokenAmount.newBuilder()
-            .setPolicyID("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77")
+            .setPolicyId("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77")
             .setAssetName("CUBY")
             .setAmount(ByteString.copyFrom(Numeric.hexStringToByteArray("2dc6c0"))) // 3000000
             .build()
@@ -127,13 +121,13 @@ class TestCardanoSigning {
             .setAddress("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23")
             .setAmount(6_500_000)
         val token1 = Cardano.TokenAmount.newBuilder()
-            .setPolicyID("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77")
+            .setPolicyId("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77")
             .setAssetName("SUNDAE")
             .setAmount(ByteString.copyFrom(Numeric.hexStringToByteArray("04d3e8d9"))) // 80996569
             .build()
         utxo2.addTokenAmount(token1)
         val token2 = Cardano.TokenAmount.newBuilder()
-            .setPolicyID("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77")
+            .setPolicyId("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77")
             .setAssetName("CUBY")
             .setAmount(ByteString.copyFrom(Numeric.hexStringToByteArray("1e8480"))) // 2000000
             .build()
