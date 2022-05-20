@@ -20,7 +20,7 @@
 
 <!--- The following points should be used to indicate the progress of your PR.  Put an `x` in all the boxes that apply right now, and come back over time and check them off as you make progress.  If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
 
-- [ ] Create draft pull request if necessary.
+- [ ] Create pull request as draft initially, unless its complete.
 - [ ] Add tests to cover changes as needed.
 - [ ] Update documentation as needed.
 - [ ] If there is a related Issue, mention it in the description.
