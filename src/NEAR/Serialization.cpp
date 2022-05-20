@@ -52,7 +52,7 @@ static void writeTransfer(Data& data, const Proto::Transfer& transfer) {
 static void writeFunctionCall(Data& data, const Proto::FunctionCall& functionCall) {
     writeString(data, functionCall.method_name());
     
-    writeU32(data, functionCall.args().size());
+    writeU32(data, static_cast<uint32_t>(functionCall.args().size()));
     writeRawBuffer(data, functionCall.args());
     
     writeU64(data, functionCall.gas());
