@@ -115,13 +115,4 @@ TEST(Coin, InitMultithread) {
     ASSERT_EQ(countThreadReady, numThread);
 }
 
-TEST(Coin, SupportedCoins) {
-    const auto coinTypes = TW::getCoinTypes();
-    for (auto c: coinTypes) {
-        const auto similarTypes = TW::getSimilarCoinTypes(c);
-        // For all coins, supported coins should include this coin as well
-        EXPECT_TRUE(std::find(similarTypes.begin(), similarTypes.end(), c) != similarTypes.end());
-    }
-}
-
 } // namespace TW
