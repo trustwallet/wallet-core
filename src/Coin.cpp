@@ -190,6 +190,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeAurora: entry = &ethereumDP; break;
         case TWCoinTypeEvmos: entry = &ethereumDP; break;
         case TWCoinTypeNativeEvmos: entry = &nativeEvmosDP; break;
+        case TWCoinTypePlatON: entry = &ethereumDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;
