@@ -49,11 +49,24 @@ static void writeTransfer(Data& data, const Proto::Transfer& transfer) {
     writeU128(data, transfer.deposit());
 }
 
+static void writeFunctionCall(Data& data, const Proto::FunctionCall& functionCall) {
+    writeString(data, functionCall.method_name());
+    
+    writeU32(data, static_cast<uint32_t>(functionCall.args().size()));
+    writeRawBuffer(data, functionCall.args());
+    
+    writeU64(data, functionCall.gas());
+    writeU128(data, functionCall.deposit());
+}
+
 static void writeAction(Data& data, const Proto::Action& action) {
     writeU8(data, action.payload_case() - Proto::Action::kCreateAccount);
     switch (action.payload_case()) {
         case Proto::Action::kTransfer:
             writeTransfer(data, action.transfer());
+            return;
+        case Proto::Action::kFunctionCall:
+            writeFunctionCall(data, action.function_call());
             return;
         default:
             return;
