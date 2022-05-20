@@ -31,13 +31,13 @@ TEST(CosmosStaking, Staking) {
     message.set_validator_address("cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp");
     auto& amountOfTx = *message.mutable_amount();
     amountOfTx.set_denom("muon");
-    amountOfTx.set_amount(10);
+    amountOfTx.set_amount("10");
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(101721);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("muon");
-    amountOfFee->set_amount(1018);
+    amountOfFee->set_amount("1018");
 
     auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
     input.set_private_key(privateKey.data(), privateKey.size());
@@ -71,13 +71,13 @@ TEST(CosmosStaking, Unstaking) {
     message.set_validator_address("cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp");
     auto& amountOfTx = *message.mutable_amount();
     amountOfTx.set_denom("muon");
-    amountOfTx.set_amount(10);
+    amountOfTx.set_amount("10");
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(101721);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("muon");
-    amountOfFee->set_amount(1018);
+    amountOfFee->set_amount("1018");
 
     auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
     input.set_private_key(privateKey.data(), privateKey.size());
@@ -113,13 +113,13 @@ TEST(CosmosStaking, Restaking) {
 
     auto& amountOfTx = *message.mutable_amount();
     amountOfTx.set_denom("muon");
-    amountOfTx.set_amount(10);
+    amountOfTx.set_amount("10");
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(101721);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("muon");
-    amountOfFee->set_amount(1018);
+    amountOfFee->set_amount("1018");
 
     auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
     input.set_private_key(privateKey.data(), privateKey.size());
@@ -156,7 +156,7 @@ TEST(CosmosStaking, Withdraw) {
     fee.set_gas(101721);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("muon");
-    amountOfFee->set_amount(1018);
+    amountOfFee->set_amount("1018");
 
     auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
     input.set_private_key(privateKey.data(), privateKey.size());

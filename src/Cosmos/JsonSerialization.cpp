@@ -47,7 +47,7 @@ static json broadcastJSON(json& j, Proto::BroadcastMode mode) {
 
 static json amountJSON(const Proto::Amount& amount) {
     return {
-        {"amount", std::to_string(amount.amount())},
+        {"amount", amount.amount()},
         {"denom", amount.denom()}
     };
 }

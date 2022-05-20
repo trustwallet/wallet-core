@@ -34,13 +34,13 @@ TEST(THORChainSigner, SignTx_Protobuf_7E480F) {
     message.set_to_address(std::string(toAddress.getKeyHash().begin(), toAddress.getKeyHash().end()));
     auto amountOfTx = message.add_amounts();
     amountOfTx->set_denom("rune");
-    amountOfTx->set_amount(38000000);
+    amountOfTx->set_amount("38000000");
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(2500000);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("rune");
-    amountOfFee->set_amount(200);
+    amountOfFee->set_amount("200");
 
     std::string json;
     google::protobuf::util::MessageToJsonString(input, &json);
@@ -105,13 +105,13 @@ TEST(THORChainSigner, SignTx_Json_Deprecated) {
     message.set_to_address("thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn");
     auto amountOfTx = message.add_amounts();
     amountOfTx->set_denom("rune");
-    amountOfTx->set_amount(50000000);
+    amountOfTx->set_amount("50000000");
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(2000000);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("rune");
-    amountOfFee->set_amount(200);
+    amountOfFee->set_amount("200");
 
     std::string json;
     google::protobuf::util::MessageToJsonString(input, &json);

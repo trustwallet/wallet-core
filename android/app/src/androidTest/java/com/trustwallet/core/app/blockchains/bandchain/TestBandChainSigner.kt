@@ -31,7 +31,7 @@ class TestBandChainSigner {
         val from = AnyAddress(publicKey, BANDCHAIN).description()
 
         val txAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 1
+            amount = "1"
             denom = "uband"
         }.build()
 
@@ -46,7 +46,7 @@ class TestBandChainSigner {
         }.build()
 
         val feeAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 200
+            amount = "200"
             denom = "uband"
         }.build()
 

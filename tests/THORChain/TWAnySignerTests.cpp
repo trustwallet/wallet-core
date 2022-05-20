@@ -33,13 +33,13 @@ TEST(THORChainTWAnySigner, SignTx) {
     message.set_to_address(toAddress);
     auto amountOfTx = message.add_amounts();
     amountOfTx->set_denom("rune");
-    amountOfTx->set_amount(10000000);
+    amountOfTx->set_amount("10000000");
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("rune");
-    amountOfFee->set_amount(2000000);
+    amountOfFee->set_amount("2000000");
 
     Cosmos::Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeTHORChain);

@@ -27,7 +27,7 @@ class BandChainTests: XCTestCase {
             $0.fromAddress = fromAddress
             $0.toAddress = "band1pnndgfwsrff86263xzpc5cd3t6yfvgjyqc87jh"
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 1000000
+                $0.amount = "1000000"
                 $0.denom = "uband"
             }]
         }
@@ -39,7 +39,7 @@ class BandChainTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 200000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 100
+                $0.amount = "100"
                 $0.denom = "uband"
             }]
         }
@@ -107,7 +107,7 @@ class BandChainTests: XCTestCase {
             $0.delegatorAddress = "band13nzgys7y9c693u0pq089an4pq6q87hf9kqgkrz"
             $0.validatorAddress = "bandvaloper13fwr8rmugu2mfuurfx4sfmyv05haw9sujnqzd8"
             $0.amount = CosmosAmount.with {
-                $0.amount = 1000000
+                $0.amount = "1000000"
                 $0.denom = "uband"
             }
         }
@@ -119,7 +119,7 @@ class BandChainTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 200000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 100
+                $0.amount = "100"
                 $0.denom = "uband"
             }]
         }
@@ -191,7 +191,7 @@ class BandChainTests: XCTestCase {
 
         let fee = CosmosFee.with {
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 100
+                $0.amount = "100"
                 $0.denom = "uband"
             }]
             $0.gas = 200000
@@ -253,7 +253,7 @@ class BandChainTests: XCTestCase {
             $0.delegatorAddress = "band13tug898kgtwprg7fevzzqgh45draa3cyffw3kp"
             $0.validatorAddress = "bandvaloper1jp633fleakzv4uxxvl707j9u2jj6j5x2rg7glv"
             $0.amount = CosmosAmount.with {
-                $0.amount = 500000
+                $0.amount = "500000"
                 $0.denom = "uband"
             }
         }
@@ -265,7 +265,7 @@ class BandChainTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 200000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 100
+                $0.amount = "100"
                 $0.denom = "uband"
             }]
         }
@@ -331,7 +331,7 @@ class BandChainTests: XCTestCase {
             $0.validatorSrcAddress = "bandvaloper1hln9scsl9yqup8nxyum06rmggql5m5zqwxmt3p"
             $0.validatorDstAddress = "bandvaloper1hydxm5h8v6tty2x623az65x3r39tl3paxyxtr0"
             $0.amount = CosmosAmount.with {
-                $0.amount = 500000
+                $0.amount = "500000"
                 $0.denom = "uband"
             }
         }
@@ -343,7 +343,7 @@ class BandChainTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 200000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 100
+                $0.amount = "100"
                 $0.denom = "uband"
             }]
         }

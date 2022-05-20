@@ -32,7 +32,7 @@ class THORChainSignerTests: XCTestCase {
             $0.fromAddress = fromAddress.description
             $0.toAddress = "thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn"
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 10000000
+                $0.amount = "10000000"
                 $0.denom = "rune"
             }]
         }
@@ -44,7 +44,7 @@ class THORChainSignerTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 200000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 2000000
+                $0.amount = "2000000"
                 $0.denom = "rune"
             }]
         }
@@ -114,7 +114,7 @@ class THORChainSignerTests: XCTestCase {
             $0.fromAddress = fromAddress.data
             $0.toAddress = AnyAddress(string: "thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn", coin: .thorchain)!.data
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 38000000
+                $0.amount = "38000000"
                 $0.denom = "rune"
             }]
         }
@@ -126,7 +126,7 @@ class THORChainSignerTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 2500000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 200
+                $0.amount = "200"
                 $0.denom = "rune"
             }]
         }

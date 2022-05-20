@@ -36,7 +36,7 @@ const auto ProtobufAnyNamespacePrefix = "";  // to override default 'type.google
 cosmos::base::v1beta1::Coin convertCoin(const Proto::Amount& amount) {
     cosmos::base::v1beta1::Coin coin;
     coin.set_denom(amount.denom());
-    coin.set_amount(std::to_string(amount.amount()));
+    coin.set_amount(amount.amount());
     return coin;
 }
 

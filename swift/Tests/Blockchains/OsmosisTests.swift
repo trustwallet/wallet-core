@@ -27,7 +27,7 @@ class OsmosisTests: XCTestCase {
             $0.fromAddress = fromAddress.description
             $0.toAddress = "osmo18s0hdnsllgcclweu9aymw4ngktr2k0rkvn7jmn"
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 100000 - 200
+                $0.amount = "99800"
                 $0.denom = "uosmo"
             }]
         }
@@ -39,7 +39,7 @@ class OsmosisTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 200000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 200
+                $0.amount = "200"
                 $0.denom = "uosmo"
             }]
         }

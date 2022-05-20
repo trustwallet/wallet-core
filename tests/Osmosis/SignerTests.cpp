@@ -36,13 +36,13 @@ TEST(OsmosisSigner, SignTransfer_81B4) {
     message.set_to_address(toAddress.string());
     auto amountOfTx = message.add_amounts();
     amountOfTx->set_denom("uosmo");
-    amountOfTx->set_amount(100000 - 200);
+    amountOfTx->set_amount("99800");
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("uosmo");
-    amountOfFee->set_amount(200);
+    amountOfFee->set_amount("200");
 
     auto privateKey = parse_hex("8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af");
     input.set_private_key(privateKey.data(), privateKey.size());
