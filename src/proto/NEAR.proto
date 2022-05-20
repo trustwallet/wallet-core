@@ -32,7 +32,7 @@ message DeployContract {
 }
 
 message FunctionCall {
-    bytes method_name = 1;
+    string method_name = 1;
     bytes args = 2;
     uint64 gas = 3;
     bytes deposit = 4; // uint128 / little endian byte order
