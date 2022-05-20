@@ -38,7 +38,7 @@ class EvmosTests: XCTestCase {
             $0.fromAddress = fromAddress.description
             $0.toAddress = "evmos10k9lrrruap9nu96mxwwye2f6a5wazeh33kq67z" // 1p
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 200000000000000 // 0.0002 Evmos
+                $0.amount = "200000000000000" // 0.0002 Evmos
                 $0.denom = "aevmos"
             }]
         }
@@ -50,7 +50,7 @@ class EvmosTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 140000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 1400000000000000
+                $0.amount = "1400000000000000"
                 $0.denom = "aevmos"
             }]
         }

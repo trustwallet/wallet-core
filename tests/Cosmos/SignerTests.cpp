@@ -36,13 +36,13 @@ TEST(CosmosSigner, SignTxProtobuf) {
     message.set_to_address(toAddress.string());
     auto amountOfTx = message.add_amounts();
     amountOfTx->set_denom("muon");
-    amountOfTx->set_amount(1);
+    amountOfTx->set_amount("1");
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("muon");
-    amountOfFee->set_amount(200);
+    amountOfFee->set_amount("200");
 
     std::string json;
     google::protobuf::util::MessageToJsonString(input, &json);
@@ -75,7 +75,7 @@ TEST(CosmosSigner, SignProtobuf_ErrorMissingMessage) {
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("muon");
-    amountOfFee->set_amount(200);
+    amountOfFee->set_amount("200");
 
     auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
     input.set_private_key(privateKey.data(), privateKey.size());
@@ -105,13 +105,13 @@ TEST(CosmosSigner, SignTxJson) {
     message.set_to_address(toAddress.string());
     auto amountOfTx = message.add_amounts();
     amountOfTx->set_denom("muon");
-    amountOfTx->set_amount(1);
+    amountOfTx->set_amount("1");
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("muon");
-    amountOfFee->set_amount(200);
+    amountOfFee->set_amount("200");
 
     std::string json;
     google::protobuf::util::MessageToJsonString(input, &json);
@@ -150,13 +150,13 @@ TEST(CosmosSigner, SignTxJson_WithMode) {
     message.set_to_address(toAddress.string());
     auto amountOfTx = message.add_amounts();
     amountOfTx->set_denom("muon");
-    amountOfTx->set_amount(1);
+    amountOfTx->set_amount("1");
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("muon");
-    amountOfFee->set_amount(200);
+    amountOfFee->set_amount("200");
 
     auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
     input.set_private_key(privateKey.data(), privateKey.size());
@@ -193,7 +193,7 @@ TEST(CosmosSigner, SignIbcTransferProtobuf_817101) {
     message.set_sender(fromAddress.string());
     message.set_receiver(toAddress.string());
     message.mutable_token()->set_denom("uatom");
-    message.mutable_token()->set_amount(100000); // 0.1 ATOM
+    message.mutable_token()->set_amount("100000"); // 0.1 ATOM
     message.mutable_timeout_height()->set_revision_number(1);
     message.mutable_timeout_height()->set_revision_height(8800000);
 
@@ -201,7 +201,7 @@ TEST(CosmosSigner, SignIbcTransferProtobuf_817101) {
     fee.set_gas(500000);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("uatom");
-    amountOfFee->set_amount(12500);
+    amountOfFee->set_amount("12500");
 
     auto privateKey = parse_hex("8bbec3772ddb4df68f3186440380c301af116d1422001c1877d6f5e4dba8c8af");
     EXPECT_EQ(Cosmos::Address(TWCoinTypeCosmos, PrivateKey(privateKey).getPublicKey(TWPublicKeyTypeSECP256k1)).string(), "cosmos1mky69cn8ektwy0845vec9upsdphktxt03gkwlx");

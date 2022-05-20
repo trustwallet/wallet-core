@@ -30,13 +30,13 @@ TEST(CryptoorgSigner, SignTx_DDCCE4) {
     message.set_to_address("cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus");
     auto amountOfTx = message.add_amounts();
     amountOfTx->set_denom("basecro");
-    amountOfTx->set_amount(100000000);
+    amountOfTx->set_amount("100000000");
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("basecro");
-    amountOfFee->set_amount(5000);
+    amountOfFee->set_amount("5000");
 
     std::string json;
     google::protobuf::util::MessageToJsonString(input, &json);

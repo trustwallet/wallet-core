@@ -43,7 +43,7 @@ class TerraTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 200000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 3000
+                $0.amount = "3000"
                 $0.denom = "uluna"
             }]
         }
@@ -107,7 +107,7 @@ class TerraTests: XCTestCase {
                 $0.fromAddress = fromAddress
                 $0.toAddress = "terra1hdp298kaz0eezpgl6scsykxljrje3667d233ms"
                 $0.amounts = [CosmosAmount.with {
-                    $0.amount = 1000000
+                    $0.amount = "1000000"
                     $0.denom = "uluna"
                 }]
                 $0.typePrefix = "bank/MsgSend"
@@ -117,7 +117,7 @@ class TerraTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 200000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 3000
+                $0.amount = "3000"
                 $0.denom = "uluna"
             }]
         }
@@ -177,7 +177,7 @@ class TerraTests: XCTestCase {
             $0.delegatorAddress = "terra1jf9aaj9myrzsnmpdr7twecnaftzmku2mhs2hfe"
             $0.validatorAddress = "terravaloper1pdx498r0hrc2fj36sjhs8vuhrz9hd2cw0yhqtk"
             $0.amount = CosmosAmount.with {
-                $0.amount = 1000000
+                $0.amount = "1000000"
                 $0.denom = "uluna"
             }
             $0.typePrefix = "staking/MsgDelegate"
@@ -190,7 +190,7 @@ class TerraTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 200000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 3000
+                $0.amount = "3000"
                 $0.denom = "uluna"
             }]
         }
@@ -257,7 +257,7 @@ class TerraTests: XCTestCase {
 
         let fee = CosmosFee.with {
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 3000
+                $0.amount = "3000"
                 $0.denom = "uluna"
             }]
             $0.gas = 200000
@@ -313,7 +313,7 @@ class TerraTests: XCTestCase {
             $0.delegatorAddress = "terra1jf9aaj9myrzsnmpdr7twecnaftzmku2mhs2hfe"
             $0.validatorAddress = "terravaloper1pdx498r0hrc2fj36sjhs8vuhrz9hd2cw0yhqtk"
             $0.amount = CosmosAmount.with {
-                $0.amount = 500000
+                $0.amount = "500000"
                 $0.denom = "uluna"
             }
             $0.typePrefix = "staking/MsgUndelegate"
@@ -326,7 +326,7 @@ class TerraTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 200000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 3000
+                $0.amount = "3000"
                 $0.denom = "uluna"
             }]
         }
@@ -386,7 +386,7 @@ class TerraTests: XCTestCase {
             $0.validatorSrcAddress = "terravaloper1pdx498r0hrc2fj36sjhs8vuhrz9hd2cw0yhqtk"
             $0.validatorDstAddress = "terravaloper1rhrptnx87ufpv62c7ngt9yqlz2hr77xr9nkcr9"
             $0.amount = CosmosAmount.with {
-                $0.amount = 500000
+                $0.amount = "500000"
                 $0.denom = "uluna"
             }
             $0.typePrefix = "staking/MsgBeginRedelegate"
@@ -399,7 +399,7 @@ class TerraTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 200000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 3000
+                $0.amount = "3000"
                 $0.denom = "uluna"
             }]
         }
@@ -472,7 +472,7 @@ class TerraTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 200000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 3000
+                $0.amount = "3000"
                 $0.denom = "uluna"
             }]
         }
@@ -521,7 +521,7 @@ class TerraTests: XCTestCase {
             let fee = CosmosFee.with {
                 $0.gas = 200000
                 $0.amounts = [CosmosAmount.with {
-                    $0.amount = 3000
+                    $0.amount = "3000"
                     $0.denom = "uluna"
                 }]
             }
@@ -562,7 +562,7 @@ class TerraTests: XCTestCase {
                 { "deposit_stable": {} }
                 """
                 $0.coins = [CosmosAmount.with {
-                    $0.amount = 1000
+                    $0.amount = "1000"
                     $0.denom = "uusd"
                 }]
             }
@@ -574,7 +574,7 @@ class TerraTests: XCTestCase {
             let fee = CosmosFee.with {
                 $0.gas = 600000
                 $0.amounts = [CosmosAmount.with {
-                    $0.amount = 7000
+                    $0.amount = "7000"
                     $0.denom = "uluna"
                 }]
             }

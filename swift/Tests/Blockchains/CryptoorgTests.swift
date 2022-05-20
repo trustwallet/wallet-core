@@ -28,7 +28,7 @@ class CryptoorgTests: XCTestCase {
             $0.fromAddress = fromAddress.description
             $0.toAddress = "cro1xpahy6c7wldxacv6ld99h435mhvfnsup24vcus"
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 50000000
+                $0.amount = "50000000"
                 $0.denom = "basecro"
             }]
         }
@@ -40,7 +40,7 @@ class CryptoorgTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 200000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 5000
+                $0.amount = "5000"
                 $0.denom = "basecro"
             }]
         }

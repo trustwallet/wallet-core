@@ -35,7 +35,7 @@ class TestOsmosisSigner {
         val from = AnyAddress(publicKey, OSMOSIS).description()
 
         val txAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 100000 - 200
+            amount = "99800"
             denom = "uosmo"
         }.build()
 
@@ -50,7 +50,7 @@ class TestOsmosisSigner {
         }.build()
 
         val feeAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 200
+            amount = "200"
             denom = "uosmo"
         }.build()
 

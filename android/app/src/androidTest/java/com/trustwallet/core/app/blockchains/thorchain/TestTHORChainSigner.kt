@@ -36,7 +36,7 @@ class TestTHORChainSigner {
         val to = AnyAddress("thor1e2ryt8asq4gu0h6z2sx9u7rfrykgxwkmr9upxn", THORCHAIN).data()
 
         val txAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 38000000
+            amount = "38000000"
             denom = "rune"
         }.build()
 
@@ -51,7 +51,7 @@ class TestTHORChainSigner {
         }.build()
 
         val feeAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 200
+            amount = "200"
             denom = "rune"
         }.build()
 

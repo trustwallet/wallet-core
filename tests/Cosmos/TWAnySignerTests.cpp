@@ -35,13 +35,13 @@ TEST(TWAnySignerCosmos, SignTx) {
     message.set_to_address(toAddress.string());
     auto amountOfTx = message.add_amounts();
     amountOfTx->set_denom("uatom");
-    amountOfTx->set_amount(400000);
+    amountOfTx->set_amount("400000");
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("uatom");
-    amountOfFee->set_amount(1000);
+    amountOfFee->set_amount("1000");
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeCosmos);

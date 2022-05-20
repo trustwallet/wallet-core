@@ -29,7 +29,7 @@ class KavaTests: XCTestCase {
             $0.fromAddress = fromAddress
             $0.toAddress = "kava1hdp298kaz0eezpgl6scsykxljrje3667hmlv0h"
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 1000000
+                $0.amount = "1000000"
                 $0.denom = "ukava"
             }]
         }
@@ -41,7 +41,7 @@ class KavaTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 200000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 100
+                $0.amount = "100"
                 $0.denom = "ukava"
             }]
         }
@@ -101,7 +101,7 @@ class KavaTests: XCTestCase {
             $0.delegatorAddress = "kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7"
             $0.validatorAddress = "kavavaloper17498ffqdj49zca4jm7mdf3eevq7uhcsgjvm0uk"
             $0.amount = CosmosAmount.with {
-                $0.amount = 1000000
+                $0.amount = "1000000"
                 $0.denom = "ukava"
             }
         }
@@ -113,7 +113,7 @@ class KavaTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 200000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 100
+                $0.amount = "100"
                 $0.denom = "ukava"
             }]
         }
@@ -179,7 +179,7 @@ class KavaTests: XCTestCase {
 
         let fee = CosmosFee.with {
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 100
+                $0.amount = "100"
                 $0.denom = "ukava"
             }]
             $0.gas = 200000
@@ -235,7 +235,7 @@ class KavaTests: XCTestCase {
             $0.delegatorAddress = "kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7"
             $0.validatorAddress = "kavavaloper17498ffqdj49zca4jm7mdf3eevq7uhcsgjvm0uk"
             $0.amount = CosmosAmount.with {
-                $0.amount = 500000
+                $0.amount = "500000"
                 $0.denom = "ukava"
             }
         }
@@ -247,7 +247,7 @@ class KavaTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 200000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 100
+                $0.amount = "100"
                 $0.denom = "ukava"
             }]
         }
@@ -307,7 +307,7 @@ class KavaTests: XCTestCase {
             $0.validatorSrcAddress = "kavavaloper17498ffqdj49zca4jm7mdf3eevq7uhcsgjvm0uk"
             $0.validatorDstAddress = "kavavaloper14fkp35j5nkvtztmxmsxh88jks6p3w8u7p76zs9"
             $0.amount = CosmosAmount.with {
-                $0.amount = 500000
+                $0.amount = "500000"
                 $0.denom = "ukava"
             }
         }
@@ -319,7 +319,7 @@ class KavaTests: XCTestCase {
         let fee = CosmosFee.with {
             $0.gas = 200000
             $0.amounts = [CosmosAmount.with {
-                $0.amount = 100
+                $0.amount = "100"
                 $0.denom = "ukava"
             }]
         }

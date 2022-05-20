@@ -5,7 +5,7 @@ option java_package = "wallet.core.jni.proto";
 
 message Amount {
     string denom = 1;
-    int64 amount = 2;
+    string amount = 2;
 }
 
 message Fee {

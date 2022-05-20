@@ -40,7 +40,7 @@ class TestKavaTransactions {
         }.build()
 
         val feeAmount = Cosmos.Amount.newBuilder().apply {
-            amount = 100
+            amount = "100"
             denom = "ukava"
         }.build()
 

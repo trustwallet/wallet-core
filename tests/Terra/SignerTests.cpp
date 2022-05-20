@@ -40,13 +40,13 @@ TEST(TerraSigner, SignSendTx) {
     message.set_to_address(toAddress.string());
     auto amountOfTx = message.add_amounts();
     amountOfTx->set_denom("luna");
-    amountOfTx->set_amount(1000000);
+    amountOfTx->set_amount("1000000");
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("luna");
-    amountOfFee->set_amount(200);
+    amountOfFee->set_amount("200");
 
     std::string json;
     google::protobuf::util::MessageToJsonString(input, &json);
@@ -129,7 +129,7 @@ TEST(TerraSigner, SignWasmTransferTxProtobuf_9FF3F0) {
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("uluna");
-    amountOfFee->set_amount(3000);
+    amountOfFee->set_amount("3000");
 
     std::string json;
     google::protobuf::util::MessageToJsonString(input, &json);
@@ -205,7 +205,7 @@ TEST(TerraSigner, SignWasmTransferTxJson_078E90) {
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("uluna");
-    amountOfFee->set_amount(3000);
+    amountOfFee->set_amount("3000");
 
     auto privateKey = parse_hex("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616");
     input.set_private_key(privateKey.data(), privateKey.size());
@@ -284,7 +284,7 @@ TEST(TerraSigner, SignWasmGeneric_EC4F85) {
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("uluna");
-    amountOfFee->set_amount(3000);
+    amountOfFee->set_amount("3000");
 
     auto privateKey = parse_hex("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616");
     input.set_private_key(privateKey.data(), privateKey.size());
@@ -329,13 +329,13 @@ TEST(TerraSigner, SignWasmGenericWithCoins_6651FC) {
 
     auto amount = message.add_coins();
     amount->set_denom("uusd");
-    amount->set_amount(1000);
+    amount->set_amount("1000");
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(600000);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("uluna");
-    amountOfFee->set_amount(7000);
+    amountOfFee->set_amount("7000");
 
     auto privateKey = parse_hex("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616");
     input.set_private_key(privateKey.data(), privateKey.size());
@@ -385,7 +385,7 @@ TEST(TerraSigner, SignWasmSendTxProtobuf) {
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("uluna");
-    amountOfFee->set_amount(3000);
+    amountOfFee->set_amount("3000");
 
     std::string json;
     google::protobuf::util::MessageToJsonString(input, &json);
