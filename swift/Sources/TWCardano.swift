@@ -6,7 +6,7 @@
 
 import Foundation
 
-public static func CardanoMinAdaAmount(tokenBundle: Data) -> UInt64 {
+public func CardanoMinAdaAmount(tokenBundle: Data) -> UInt64 {
     let tokenBundleData = TWDataCreateWithNSData(tokenBundle)
     defer {
         TWDataDelete(tokenBundleData)
