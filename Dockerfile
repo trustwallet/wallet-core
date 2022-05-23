@@ -57,7 +57,8 @@ RUN make -Cbuild -j12 tests
 
 # Download and Install Go
 ENV GO_VERSION=1.16.12
-ENV GO_ARCH=amd64
+ARG ARCH=amd64
+ENV GO_ARCH=${ARCH}
 RUN wget "https://golang.org/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" \
     && tar -xf "go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" \
     && chown -R root:root ./go \
