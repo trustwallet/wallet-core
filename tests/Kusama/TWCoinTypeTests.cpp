@@ -23,7 +23,7 @@ TEST(TWKusamaCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeKusama));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeKusama), 12);
-    ASSERT_EQ(TWBlockchainPolkadot, TWCoinTypeBlockchain(TWCoinTypeKusama));
+    ASSERT_EQ(TWBlockchainKusama, TWCoinTypeBlockchain(TWCoinTypeKusama));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeKusama));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeKusama));
     assertStringsEqual(symbol, "KSM");

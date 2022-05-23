@@ -23,7 +23,7 @@ TEST(TWTHORChainCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTHORChain));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTHORChain), 8);
-    ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeTHORChain));
+    ASSERT_EQ(TWBlockchainThorchain, TWCoinTypeBlockchain(TWCoinTypeTHORChain));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeTHORChain));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeTHORChain));
     assertStringsEqual(symbol, "RUNE");

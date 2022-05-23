@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -104,24 +104,6 @@ Zilliqa::Entry zilliqaDP;
 CoinEntry* coinDispatcher(TWCoinType coinType) {
     // switch is preferred instead of a data structure, due to initialization issues
     CoinEntry* entry = nullptr;
-
-    //// TEMP Exceptions, TODO remove
-    switch (coinType) {
-        case TWCoinTypeRonin: entry = &roninDP; break; // Ronin bc is Ethereum, there is no Ronin BC, but address is different (prefix)
-        case TWCoinTypeDecred: entry = &decredDP; break; // Bitcoin
-        case TWCoinTypeZcash: entry = &zcashDP; break; // Bitcoin
-        case TWCoinTypeGroestlcoin: entry = &groestlcoinDP; break; // Bitcoin
-        case TWCoinTypeZelcash: entry = &zcashDP; break; // Bitcoin
-        case TWCoinTypeKusama: entry = &kusamaDP; break; // Polkadot
-        case TWCoinTypeNativeEvmos: entry = &nativeEvmosDP; break; // Cosmos
-        case TWCoinTypeTHORChain: entry = &thorchainDP; break; // Cosmos
-        default: entry = nullptr; break;
-    }
-    if (entry != nullptr) {
-        return entry; // TODO temp
-    }
-    //// TEMP
-
     const auto blockchain = TW::blockchain(coinType);
     switch (blockchain) {
         // #coin-list#
@@ -158,6 +140,14 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainFilecoin: entry = &filecoinDP; break;
         case TWBlockchainElrondNetwork: entry = &elrondDP; break;
         case TWBlockchainOasisNetwork: entry = &oasisDP; break;
+        case TWBlockchainDecred: entry = &decredDP; break;
+        case TWBlockchainGroestlcoin: entry = &groestlcoinDP; break;
+        case TWBlockchainZcash: entry = &zcashDP; break;
+        case TWBlockchainZelcash: entry = &zcashDP; break;
+        case TWBlockchainNativeEvmos: entry = &nativeEvmosDP; break;
+        case TWBlockchainThorchain: entry = &thorchainDP; break;
+        case TWBlockchainRonin: entry = &roninDP; break;
+        case TWBlockchainKusama: entry = &kusamaDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;
