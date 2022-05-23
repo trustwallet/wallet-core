@@ -63,14 +63,6 @@ class CardanoTests: XCTestCase {
         XCTAssertEqual(txid.hexString, "9b5b15e133cd73ccaa85307d2986aebc846505118a2eb4e6111e6b4b67d1f389")
     }
 
-    public static func minAdaAmount(tokenBundle: Data) -> UInt64 {
-        let tokenBundleData = TWDataCreateWithNSData(tokenBundle)
-        defer {
-            TWDataDelete(tokenBundleData)
-        }
-        return TWCardanoMinAdaAmount(tokenBundleData)
-    }
-
     func testSignTransferToken1() throws {
         var input = CardanoSigningInput.with {
             $0.transferMessage.toAddress = "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5"
@@ -123,7 +115,7 @@ class CardanoTests: XCTestCase {
 
         // check min ADA amount, set it
         let inputTokenAmountSerialized = try input.transferMessage.tokenAmount.serializedData()
-        let minAmount = try CardanoTests.minAdaAmount(tokenBundle: inputTokenAmountSerialized)
+        let minAmount = try CardanoMinAdaAmount(tokenBundle: inputTokenAmountSerialized)
         XCTAssertEqual(minAmount, 1444443)
         input.transferMessage.amount = minAmount
 
