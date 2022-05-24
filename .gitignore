@@ -35,6 +35,7 @@ include/TrustWalletCore/TW*Proto.h
 include/TrustWalletCore/TWDerivation.h
 
 # Wasm
+emsdk/
 wasm-build/
 
 # Code coverage files
