@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -45,6 +45,13 @@ enum TWBlockchain {
     TWBlockchainFilecoin = 32,
     TWBlockchainElrondNetwork = 33,
     TWBlockchainOasisNetwork = 34,
+    TWBlockchainDecred = 35, // Bitcoin
+    TWBlockchainZcash = 36, // Bitcoin
+    TWBlockchainGroestlcoin = 37, // Bitcoin
+    TWBlockchainNativeEvmos = 38, // Cosmos
+    TWBlockchainThorchain = 39, // Cosmos
+    TWBlockchainRonin = 40, // Ethereum
+    TWBlockchainKusama = 41, // Polkadot
 };
 
 TW_EXTERN_C_END

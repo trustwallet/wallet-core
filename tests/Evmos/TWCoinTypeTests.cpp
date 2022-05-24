@@ -37,7 +37,7 @@ TEST(TWEvmosCoinType, TWCoinTypeNativeEvmos) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNativeEvmos));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNativeEvmos), 18);
-    ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeNativeEvmos));
+    ASSERT_EQ(TWBlockchainNativeEvmos, TWCoinTypeBlockchain(TWCoinTypeNativeEvmos));
 
     assertStringsEqual(symbol, "EVMOS");
     assertStringsEqual(txUrl, "https://mintscan.io/evmos/txs/A16C211C83AD1E684DE46F694FAAC17D8465C864BD7385A81EC062CDE0638811");

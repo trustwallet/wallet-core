@@ -23,7 +23,7 @@ TEST(TWDecredCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDecred));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDecred), 8);
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeDecred));
+    ASSERT_EQ(TWBlockchainDecred, TWCoinTypeBlockchain(TWCoinTypeDecred));
     ASSERT_EQ(0x1a, TWCoinTypeP2shPrefix(TWCoinTypeDecred));
     ASSERT_EQ(0x7, TWCoinTypeStaticPrefix(TWCoinTypeDecred));
     assertStringsEqual(symbol, "DCR");

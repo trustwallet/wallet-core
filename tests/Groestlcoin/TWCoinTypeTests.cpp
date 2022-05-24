@@ -23,7 +23,7 @@ TEST(TWGroestlcoinCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeGroestlcoin));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGroestlcoin), 8);
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeGroestlcoin));
+    ASSERT_EQ(TWBlockchainGroestlcoin, TWCoinTypeBlockchain(TWCoinTypeGroestlcoin));
     ASSERT_EQ(0x5, TWCoinTypeP2shPrefix(TWCoinTypeGroestlcoin));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeGroestlcoin));
     assertStringsEqual(symbol, "GRS");

@@ -23,7 +23,7 @@ TEST(TWZcashCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZcash));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZcash), 8);
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeZcash));
+    ASSERT_EQ(TWBlockchainZcash, TWCoinTypeBlockchain(TWCoinTypeZcash));
     ASSERT_EQ(0xbd, TWCoinTypeP2shPrefix(TWCoinTypeZcash));
     ASSERT_EQ(0x1c, TWCoinTypeStaticPrefix(TWCoinTypeZcash));
     assertStringsEqual(symbol, "ZEC");

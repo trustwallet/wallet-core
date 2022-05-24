@@ -183,7 +183,7 @@
     "coinId": 17,
     "symbol": "GRS",
     "decimals": 8,
-    "blockchain": "Bitcoin",
+    "blockchain": "Groestlcoin",
     "derivation": [
       {
         "path": "m/84'/17'/0'/0/0",
@@ -282,7 +282,7 @@
     "coinId": 42,
     "symbol": "DCR",
     "decimals": 8,
-    "blockchain": "Bitcoin",
+    "blockchain": "Decred",
     "derivation": [
       {
         "path": "m/44'/42'/0'/0/0",
@@ -423,7 +423,7 @@
     "coinId": 133,
     "symbol": "ZEC",
     "decimals": 8,
-    "blockchain": "Bitcoin",
+    "blockchain": "Zcash",
     "derivation": [
       {
         "path": "m/44'/133'/0'/0/0",
@@ -987,7 +987,7 @@
     "coinId": 434,
     "symbol": "KSM",
     "decimals": 12,
-    "blockchain": "Polkadot",
+    "blockchain": "Kusama",
     "derivation": [
       {
         "path": "m/44'/434'/0'/0'/0'"
@@ -1679,7 +1679,7 @@
     "coinId": 19167,
     "symbol": "FLUX",
     "decimals": 8,
-    "blockchain": "Bitcoin",
+    "blockchain": "Zcash",
     "derivation": [
       {
         "path": "m/44'/19167'/0'/0/0",
@@ -1854,7 +1854,7 @@
     "coinId": 931,
     "symbol": "RUNE",
     "decimals": 8,
-    "blockchain": "Cosmos",
+    "blockchain": "Thorchain",
     "derivation": [
       {
         "path": "m/44'/931'/0'/0/0"
@@ -2110,7 +2110,7 @@
     "slip44": 60,
     "symbol": "RON",
     "decimals": 18,
-    "blockchain": "Ethereum",
+    "blockchain": "Ronin",
     "derivation": [
       {
         "path": "m/44'/60'/0'/0/0"
@@ -2396,7 +2396,7 @@
     "coinId": 20009001,
     "symbol": "EVMOS",
     "decimals": 18,
-    "blockchain": "Cosmos",
+    "blockchain": "NativeEvmos",
     "derivation": [
       {
         "path": "m/44'/60'/0'/0/0"
