@@ -12,12 +12,16 @@
 2. Install [emsdk](https://emscripten.org/docs/getting_started/downloads.html)
 - - python3
 - - cmake
+- - run `tools/install-dependencies` if you just cloned this repo
 - - run `tools/install-wasm-dependencies`
 
 ## Building and Running
 
 - run `tools/generate-files`
-- run `source emsdk/emsdk_env.sh`
 - run  `tools/wasm-build`
 - run `python3 -m http.server 8000`
 - open web browser and navigate to `http://127.0.0.1:8000/samples/wasm/wallet-core.html`
+
+## React sample
+
+- https://github.com/robot-ux/wallet-core-example
