@@ -9,7 +9,6 @@
 #include "Data.h"
 #include "PublicKey.h"
 #include "Hash.h"
-#include <TrezorCrypto/hasher.h>
 
 #include <string>
 #include <memory>
