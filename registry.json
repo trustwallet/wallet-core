@@ -405,6 +405,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "cosmos",
+    "publicKeyHasher": "sha256ripemd",
     "explorer": {
       "url": "https://mintscan.io/cosmos",
       "txPath": "/txs/",
@@ -891,6 +892,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "terra",
+    "publicKeyHasher": "sha256ripemd",
     "explorer": {
       "url": "https://finder.terra.money/tx",
       "txPath": "/tx/",
@@ -1050,6 +1052,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "kava",
+    "publicKeyHasher": "sha256ripemd",
     "explorer": {
       "url": "https://mintscan.io/kava",
       "txPath": "/txs/",
@@ -1107,6 +1110,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "bluzelle",
+    "publicKeyHasher": "sha256ripemd",
     "explorer": {
       "url": "https://bigdipper.net.bluzelle.com",
       "txPath": "/transactions/",
@@ -1136,6 +1140,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "band",
+    "publicKeyHasher": "sha256ripemd",
     "explorer": {
       "url": "https://scan-wenchang-testnet2.bandchain.org/",
       "txPath": "/tx/",
@@ -2061,6 +2066,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "cro",
+    "publicKeyHasher": "sha256ripemd",
     "explorer": {
       "url": "https://crypto.org/explorer",
       "txPath": "/tx/",
@@ -2148,6 +2154,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "osmo",
+    "publicKeyHasher": "sha256ripemd",
     "explorer": {
       "url": "https://mintscan.io/osmosis",
       "txPath": "/txs/",
@@ -2396,7 +2403,7 @@
     "coinId": 20009001,
     "symbol": "EVMOS",
     "decimals": 18,
-    "blockchain": "NativeEvmos",
+    "blockchain": "Cosmos",
     "derivation": [
       {
         "path": "m/44'/60'/0'/0/0"
@@ -2405,6 +2412,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "hrp": "evmos",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://mintscan.io/evmos",
       "txPath": "/txs/",

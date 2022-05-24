@@ -48,10 +48,9 @@ enum TWBlockchain {
     TWBlockchainDecred = 35, // Bitcoin
     TWBlockchainZcash = 36, // Bitcoin
     TWBlockchainGroestlcoin = 37, // Bitcoin
-    TWBlockchainNativeEvmos = 38, // Cosmos
-    TWBlockchainThorchain = 39, // Cosmos
-    TWBlockchainRonin = 40, // Ethereum
-    TWBlockchainKusama = 41, // Polkadot
+    TWBlockchainThorchain = 38, // Cosmos
+    TWBlockchainRonin = 39, // Ethereum
+    TWBlockchainKusama = 40, // Polkadot
 };
 
 TW_EXTERN_C_END
