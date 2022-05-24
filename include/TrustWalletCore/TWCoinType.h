@@ -9,6 +9,7 @@
 #include "TWBase.h"
 #include "TWBlockchain.h"
 #include "TWCurve.h"
+#include "TWDerivation.h"
 #include "TWHDVersion.h"
 #include "TWHRP.h"
 #include "TWPrivateKey.h"
@@ -147,6 +148,12 @@ TWString* _Nonnull TWCoinTypeDeriveAddress(enum TWCoinType coin,
 TW_EXPORT_METHOD
 TWString* _Nonnull TWCoinTypeDeriveAddressFromPublicKey(enum TWCoinType coin,
                                                         struct TWPublicKey* _Nonnull publicKey);
+
+/// Derives the address for a particular coin from the public key with the derivation.
+TW_EXPORT_METHOD
+TWString* _Nonnull TWCoinTypeDeriveAddressFromDerivation(enum TWCoinType coin,
+                                                        struct TWPublicKey* _Nonnull publicKey,
+                                                        enum TWDerivation derivation);
 
 /// HRP for this coin type
 TW_EXPORT_PROPERTY
