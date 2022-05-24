@@ -1679,7 +1679,7 @@
     "coinId": 19167,
     "symbol": "FLUX",
     "decimals": 8,
-    "blockchain": "Zelcash",
+    "blockchain": "Zcash",
     "derivation": [
       {
         "path": "m/44'/19167'/0'/0/0",

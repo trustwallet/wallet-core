@@ -143,7 +143,6 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainDecred: entry = &decredDP; break;
         case TWBlockchainGroestlcoin: entry = &groestlcoinDP; break;
         case TWBlockchainZcash: entry = &zcashDP; break;
-        case TWBlockchainZelcash: entry = &zcashDP; break;
         case TWBlockchainNativeEvmos: entry = &nativeEvmosDP; break;
         case TWBlockchainThorchain: entry = &thorchainDP; break;
         case TWBlockchainRonin: entry = &roninDP; break;
