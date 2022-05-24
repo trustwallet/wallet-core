@@ -12,7 +12,7 @@
 2. Install [emsdk](https://emscripten.org/docs/getting_started/downloads.html)
 - - python3
 - - cmake
-- - run `tools/install-dependencies` if you just clone this repo
+- - run `tools/install-dependencies` if you just cloned this repo
 - - run `tools/install-wasm-dependencies`
 
 ## Building and Running
