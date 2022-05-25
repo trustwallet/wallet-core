@@ -64,19 +64,22 @@ class CardanoTests: XCTestCase {
     }
 
     func testSignTransferToken1() throws {
-        var input = CardanoSigningInput.with {
-            $0.transferMessage.toAddress = "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5"
-            $0.transferMessage.changeAddress = "addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq"
-            $0.transferMessage.amount = 1500000 // overwritten below
-            $0.transferMessage.useMaxAmount = false
-            $0.ttl = 53333333
-        }
         let toToken = CardanoTokenAmount.with {
             $0.policyID = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77"
             $0.assetName = "SUNDAE"
             $0.amount = Data(hexString: "01312d00")! // 20000000
         }
-        input.transferMessage.tokenAmount.token.append(toToken)
+        var toTokenBundle = CardanoTokenBundle();
+        toTokenBundle.token.append(toToken)
+
+        var input = CardanoSigningInput.with {
+            $0.transferMessage.toAddress = "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5"
+            $0.transferMessage.changeAddress = "addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq"
+            $0.transferMessage.amount = 1500000 // overwritten below
+            $0.transferMessage.useMaxAmount = false
+            $0.transferMessage.tokenAmount = toTokenBundle
+            $0.ttl = 53333333
+        }
         input.privateKey.append(Data(hexString: "089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448a3566990b7785bd48c330875b1e0d03caaed0e67cecc42075dce1c7a13b1c49240508848ac82f603391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf1290dbd508e5ec71afaea98da2df1533c22ef02a26bb87b31907d0b2738fb7785b38d53aa68fc01230784c9209b2b2a2faf28491b3b1f1d221e63e704bbd0403c4154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e")!)
 
         var utxo1 = CardanoTxInput.with {
