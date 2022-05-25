@@ -17,7 +17,7 @@ public func CardanoMinAdaAmount(tokenBundle: Data) -> UInt64 {
 }
  */
 
-fun CardanoMinAdaAmount(Cardano.TokenBundle: ByteArray): Long {
-    return 0
+fun CardanoMinAdaAmount(tokenBundleData: ByteArray): Long {
+    return Cardano.minAdaAmount(tokenBundleData);
 }
 
