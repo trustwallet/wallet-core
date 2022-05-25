@@ -2337,9 +2337,9 @@
     "id": "aurora",
     "name": "Aurora",
     "coinId": 1323161554,
-    "symbol": "AURORAETH",
+    "symbol": "ETH",
     "decimals": 18,
-    "blockchain": "Ethereum",
+    "blockchain": "Aurora",
     "derivation": [
       {
         "path": "m/44'/60'/0'/0/0"
@@ -2348,7 +2348,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
     "explorer": {
-      "url": "https://explorer.mainnet.aurora.dev",
+      "url": "https://aurorascan.dev",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x99deebdb70f8027037abb3d3d0f3c7523daee857d85e9056d2671593ff2f2f28",
