@@ -85,10 +85,15 @@ class TestCardanoSigning {
         val toTokenBundle = Cardano.TokenBundle.newBuilder()
             .addToken(toToken)
             .build()
+
+        // check min ADA amount, set it
+        val minAmount = jni.Cardano.minAdaAmount(toTokenBundle.toByteArray())
+        assertEquals(minAmount, 1_444_443)
+
         val message = Cardano.Transfer.newBuilder()
             .setToAddress("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5")
             .setChangeAddress("addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq")
-            .setAmount(1_444_443)
+            .setAmount(minAmount)
             .setUseMaxAmount(false)
             .setTokenAmount(toTokenBundle)
             .build()
@@ -114,7 +119,7 @@ class TestCardanoSigning {
             .build()
         utxo1.addTokenAmount(token3)
         input.addUtxos(utxo1.build())
-        
+
         val outpoint2 = Cardano.OutPoint.newBuilder()
             .setTxHash(ByteString.copyFrom(Numeric.hexStringToByteArray("f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767")))
             .setOutputIndex(2)
