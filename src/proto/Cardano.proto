@@ -11,7 +11,7 @@ message OutPoint {
 }
 
 message TokenAmount {
-    string policy_id = 1;
+    string policy_id = 1; // as hex string (28x2 digits)
     string asset_name = 2;
     bytes amount = 3; // 256-bit number
 }
@@ -33,6 +33,14 @@ message TxOutput {
     
     // ADA amount
     uint64 amount = 2;
+
+    // optional token amounts
+    repeated TokenAmount token_amount = 3;
+}
+
+// Collection of tokens with amount
+message TokenBundle {
+    repeated TokenAmount token = 1;
 }
 
 message Transfer {
@@ -42,20 +50,47 @@ message Transfer {
     // Change address
     string change_address = 2;
 
-    // ADA amount to transfer
+    // Requested ADA amount to be transferred. Output can be different only in use_max_amount case.
+    // Note that Cardano has a minimum amount per UTXO, see TWCardanoMinAdaAmount.
     uint64 amount = 3;
 
-    // Set if max amount is requested (max possible from UTXOs/fee; amount is disregarded in this case)
-    bool use_max_amount = 4;
+    // Optional token(s) to be transferred
+    // Currently only one token type to be transferred per transaction is supported
+    TokenBundle token_amount = 4;
+
+    // Request max amount option. If set, tx will send all possible amounts from all inputs, including all tokens; there will be no change; requested amount and token_amount is disregarded in this case.
+    bool use_max_amount = 5;
+
+    // Optional fee overriding. If left to 0, optimal fee will be calculated. If set, exactly this value will be used as fee.
+    // Use it with care, it may result in underfunded or wasteful fee.
+    uint64 force_fee = 6;
 }
 
 message TransactionPlan {
-    uint64 amount = 1;
-    uint64 available_amount = 2;
+    // total coins in the utxos
+    uint64 available_amount = 1;
+
+    // coins in the output UTXO
+    uint64 amount = 2;
+
+    // coin amount deducted as fee
     uint64 fee = 3;
+
+    // coins in the change UTXO
     uint64 change = 4;
-    repeated TxInput utxos = 5;
-    Common.Proto.SigningError error = 6;
+
+    // total tokens in the utxos (optional)
+    repeated TokenAmount available_tokens = 5;
+
+    // tokens in the output (optional)
+    repeated TokenAmount output_tokens = 6;
+
+    // tokens in the change (optional)
+    repeated TokenAmount change_tokens = 7;
+
+    repeated TxInput utxos = 8;
+    
+    Common.Proto.SigningError error = 9;
 }
 
 // Input data necessary to create a signed transaction
