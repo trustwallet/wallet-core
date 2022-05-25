@@ -183,7 +183,7 @@ class EthereumTests: XCTestCase {
         let path = "m/44'/60'/0'/0/1"
         let xpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .ethereum, version: .xpub)
 
-        XCTAssertEqual(xpub, "xpub6C7LtZJgtz1BKXG9mExKUxYvX7HSF38UMMmGbpqNQw3DfYwAw8E6sH7VSVxFipvEEm2afSqTjoRgcLmycXX4zfxCWJ4HY73a9KdgvfHEQGB")
+        XCTAssertEqual(xpub, "xpub6BsQe32jsVNkMfuhDz7ws3bK2gcQEtTSCuaXWSgY2KDzATRHNFbUs3KpnUBuyH186iaDDrP8MB2tpWRYsLJSs55P8oACqpTNe7jbomVE9Dp")
 
         let key = wallet.getKey(coin: .ethereum, derivationPath: path)
         let pubkey = key.getPublicKeySecp256k1(compressed: true)
@@ -205,7 +205,7 @@ class EthereumTests: XCTestCase {
         let ethXpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .ethereum, version: .xpub)
 
         XCTAssertEqual(btcXpub, "xpub6Cq43Vqyvb2DwXzjzNeMpPuxXRCN1WnmRCmYLPaaSv2XZXM2yCwUHpWEyB3zQ3FGCQsvY21gecMaQR7b2zhhgiHnjzDYpKCE2LACueaSMuR")
-        XCTAssertEqual(ethXpub, "xpub6Bgma7boPVudhExmB97iySvatGfnXkfBxYZYNTFYJvVzigUPk1X2iE8VhJPPxVuzjH8wBuTqRBMKCbwMYQNLrFCwYzMugYw4RM5VGNeVDpp")
+        XCTAssertEqual(ethXpub, "xpub6DS1UwU7cDWY3GxMC3UJnuLiJ7J8METHok4TjmxcyE9QXawED2eNqgnXWvU1XVjbT88SnPTkDbTC6XGnGGVKwewMRGrhFHktF6VWbtZTjRN")
 
         let ethAddress = wallet.getAddressForCoin(coin: .ethereum)
         let btcAddress = wallet.getAddressForCoin(coin: .bitcoin)
