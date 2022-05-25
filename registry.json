@@ -323,6 +323,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://etherscan.io",
       "txPath": "/tx/",
@@ -351,6 +352,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://blockscout.com/etc/mainnet",
       "txPath": "/tx/",
@@ -678,6 +680,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://blockscout.com",
       "txPath": "/poa/core/tx/",
@@ -919,6 +922,7 @@
     ],
     "curve": "ed25519",
     "publicKeyType": "ed25519",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://polkadot.subscan.io",
       "txPath": "/extrinsic/",
@@ -997,6 +1001,7 @@
     ],
     "curve": "ed25519",
     "publicKeyType": "ed25519",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://kusama.subscan.io",
       "txPath": "/extrinsic/",
@@ -1310,6 +1315,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://explorer2.callisto.network",
       "txPath": "/tx/",
@@ -1364,6 +1370,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://tomoscan.io",
       "txPath": "/tx/",
@@ -1390,6 +1397,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://scan.thundercore.com",
       "txPath": "/transactions/",
@@ -1639,6 +1647,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://explorer.gochain.io",
       "txPath": "/tx/",
@@ -1725,6 +1734,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://www.wanscan.org",
       "txPath": "/tx/",
@@ -1780,6 +1790,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://bscscan.com",
       "txPath": "/tx/",
@@ -1811,6 +1822,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://bscscan.com",
       "txPath": "/tx/",
@@ -1839,6 +1851,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://polygonscan.com",
       "txPath": "/tx/",
@@ -1898,6 +1911,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://optimistic.etherscan.io",
       "txPath": "/tx/",
@@ -1925,6 +1939,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://arbiscan.io",
       "txPath": "/tx/",
@@ -1953,6 +1968,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://hecoinfo.com",
       "txPath": "/tx/",
@@ -1979,6 +1995,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://cchain.explorer.avax.network",
       "txPath": "/tx/",
@@ -2008,6 +2025,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://blockscout.com/xdai/mainnet",
       "txPath": "/tx/",
@@ -2036,6 +2054,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://ftmscan.com",
       "txPath": "/tx/",
@@ -2095,6 +2114,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://explorer.celo.org",
       "txPath": "/tx/",
@@ -2124,6 +2144,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://explorer.roninchain.com",
       "txPath": "/tx/",
@@ -2216,6 +2237,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://cronoscan.com",
       "txPath": "/tx/",
@@ -2242,6 +2264,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://www.smartscan.cash",
       "txPath": "/tx/",
@@ -2270,6 +2293,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://explorer.kcc.io/en",
       "txPath": "/tx/",
@@ -2298,6 +2322,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://blockexplorer.boba.network",
       "txPath": "/tx/",
@@ -2326,6 +2351,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://andromeda-explorer.metis.io",
       "txPath": "/tx/",
@@ -2354,6 +2380,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://explorer.mainnet.aurora.dev",
       "txPath": "/tx/",
@@ -2382,6 +2409,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
+    "publicKeyHasher": "keccak256",
     "explorer": {
       "url": "https://evm.evmos.org",
       "txPath": "/tx/",
