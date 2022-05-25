@@ -1,7 +1,7 @@
 package com.trustwallet.core.app.helpers
 
 import wallet.core.jni.*
-import wallet.core.jni.Cardano
+//import wallet.core.jni.Cardano
 //import wallet.core.jni.CoinType.CARDANO
 import wallet.core.jni.proto.Cardano
 //import wallet.core.jni.proto.Cardano.SigningInput
