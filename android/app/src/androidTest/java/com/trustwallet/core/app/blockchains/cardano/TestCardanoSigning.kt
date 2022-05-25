@@ -87,7 +87,7 @@ class TestCardanoSigning {
             .build()
 
         // check min ADA amount, set it
-        val minAmount = jni.Cardano.minAdaAmount(toTokenBundle.toByteArray())
+        val minAmount = wallet.core.jni.Cardano.minAdaAmount(toTokenBundle.toByteArray())
         assertEquals(minAmount, 1_444_443)
 
         val message = Cardano.Transfer.newBuilder()
