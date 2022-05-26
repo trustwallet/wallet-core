@@ -13,35 +13,32 @@
 namespace TW::Hash {
 
 /// Enum selector for the supported hash functions
-enum HashFunc {
-    HashFunc_sha1 = 0, // SHA1
-    HashFunc_sha256, // SHA256
-    HashFunc_sha512, // SHA512
-    HashFunc_sha512_256, // SHA512/256
-    HashFunc_keccak256, // Keccak SHA256
-    HashFunc_keccak512, // Keccak SHA512
-    HashFunc_sha3_256, // version 3 SHA256
-    HashFunc_sha3_512, // version 3 SHA512
-    HashFunc_ripemd, // RIPEMD160
-    HashFunc_blake256, // Blake256
-    //HashFunc_blake2b, // Blake2b
-    HashFunc_groestl512, // Groestl 512
-    HashFunc_sha256d, // SHA256 hash of the SHA256 hash
-    HashFunc_sha256ripemd, // ripemd hash of the SHA256 hash
-    HashFunc_sha3_256ripemd, // ripemd hash of the SHA256 hash
-    HashFunc_blake256d, // Blake256 hash of the Blake256 hash
-    HashFunc_blake256ripemd, // ripemd hash of the Blake256 hash
-    HashFunc_groestl512d, // Groestl512 hash of the Groestl512 hash
+enum Hasher {
+    Hash_sha1 = 0, // SHA1
+    Hash_sha256, // SHA256
+    Hash_sha512, // SHA512
+    Hash_sha512_256, // SHA512/256
+    Hash_keccak256, // Keccak SHA256
+    Hash_keccak512, // Keccak SHA512
+    Hash_sha3_256, // version 3 SHA256
+    Hash_sha3_512, // version 3 SHA512
+    Hash_ripemd, // RIPEMD160
+    Hash_blake256, // Blake256
+    Hash_groestl512, // Groestl 512
+    Hash_sha256d, // SHA256 hash of the SHA256 hash
+    Hash_sha256ripemd, // ripemd hash of the SHA256 hash
+    Hash_sha3_256ripemd, // ripemd hash of the SHA256 hash
+    Hash_blake256d, // Blake256 hash of the Blake256 hash
+    Hash_blake256ripemd, // ripemd hash of the Blake256 hash
+    Hash_groestl512d, // Groestl512 hash of the Groestl512 hash
 };
 
 /// Hashing function.
 typedef TW::Data (*HasherSimpleType)(const TW::byte*, size_t);
-using Hasher = std::function<Data(const byte*, size_t)>;
+using HasherFuncT = std::function<Data(const byte*, size_t)>;
 
 /// Hash function (pointer type) from enum
-TW::Hash::HasherSimpleType functionPointerFromEnum(TW::Hash::HashFunc hasher);
-/// Hash function (pointer type) from enum
-inline Hasher functionFromEnum(HashFunc hasher) { return static_cast<Hasher>(functionPointerFromEnum(hasher)); }
+TW::Hash::HasherSimpleType functionPointerFromEnum(TW::Hash::Hasher hasher);
 
 // Digest size constants, duplicating constants from underlying lib 
 /// Number of bytes in a SHA1 hash.
@@ -94,13 +91,20 @@ Data blake2b(const byte* data, size_t dataSize, size_t hsshSize, const Data& per
 /// Computes the Groestl 512 hash.
 Data groestl512(const byte* data, size_t size);
 
-// Templated versions for any type with data() and size()
+/// Computes requested hash for data (hasher enum, bytes)
+inline Data hash(Hasher hasher, const byte* data, size_t dataSize) {
+    const auto func = functionPointerFromEnum(hasher);
+    return func(data, dataSize);
+}
 
-/// Computes requested hash for data.
+/// Computes requested hash for data (hasher enum)
 template <typename T>
 Data hash(Hasher hasher, const T& data) {
-    return hasher(reinterpret_cast<const byte*>(data.data()), data.size());
+    const auto func = functionPointerFromEnum(hasher);
+    return func(reinterpret_cast<const byte*>(data.data()), data.size());
 }
+
+// Templated versions for any type with data() and size()
 
 /// Computes the SHA1 hash.
 template <typename T>
