@@ -29,10 +29,10 @@ public:
     Address(const std::string& hrp, const Data& keyHash) : Bech32Address(hrp, keyHash) {}
 
     /// Initializes an address with a public key, with prefix of the given coin.
-    Address(TWCoinType coin, const PublicKey& publicKey) : Bech32Address(stringForHRP(TW::hrp(coin)), TW::publicKeyHasher(coin), publicKey) {}
+    Address(TWCoinType coin, const PublicKey& publicKey) : Bech32Address(stringForHRP(TW::hrp(coin)), TW::addressHasher(coin), publicKey) {}
 
     /// Initializes an address with a public key, with given prefix.
-    Address(const std::string& hrp, const PublicKey& publicKey, TWCoinType coin = TWCoinTypeCosmos) : Bech32Address(hrp, TW::publicKeyHasher(coin), publicKey) {}
+    Address(const std::string& hrp, const PublicKey& publicKey, TWCoinType coin = TWCoinTypeCosmos) : Bech32Address(hrp, TW::addressHasher(coin), publicKey) {}
 
     /// Determines whether a string makes a valid Bech32 address, and the HRP matches to the coin.
     static bool isValid(TWCoinType coin, const std::string& addr) {
