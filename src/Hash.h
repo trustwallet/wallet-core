@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -24,7 +24,6 @@ enum HashFunc {
     HashFunc_sha3_512, // version 3 SHA512
     HashFunc_ripemd, // RIPEMD160
     HashFunc_blake256, // Blake256
-    //HashFunc_blake2b, // Blake2b
     HashFunc_groestl512, // Groestl 512
     HashFunc_sha256d, // SHA256 hash of the SHA256 hash
     HashFunc_sha256ripemd, // ripemd hash of the SHA256 hash

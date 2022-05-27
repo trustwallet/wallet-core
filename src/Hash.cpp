@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -31,7 +31,6 @@ TW::Hash::HasherSimpleType Hash::functionPointerFromEnum(TW::Hash::HashFunc hash
         case Hash::HashFunc_sha3_512: return Hash::sha3_512;
         case Hash::HashFunc_ripemd: return Hash::ripemd;
         case Hash::HashFunc_blake256: return Hash::blake256;
-        //case Hash::HashFunc_blake2b: return static_cast<Hash::HasherSimpleType>(Hash::blake2b);
         case Hash::HashFunc_groestl512: return Hash::groestl512;
         case Hash::HashFunc_sha256d: return Hash::sha256d;
         case Hash::HashFunc_sha256ripemd: return Hash::sha256ripemd;
