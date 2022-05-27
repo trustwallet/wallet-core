@@ -31,7 +31,6 @@
 #include "Icon/Entry.h"
 #include "IoTeX/Entry.h"
 #include "Kusama/Entry.h"
-#include "NativeEvmos/Entry.h"
 #include "NEAR/Entry.h"
 #include "NEO/Entry.h"
 #include "NULS/Entry.h"
@@ -69,7 +68,6 @@ Cosmos::Entry cosmosDP;
 Elrond::Entry elrondDP;
 EOS::Entry eosDP;
 Ethereum::Entry ethereumDP;
-NativeEvmos::Entry nativeEvmosDP;
 Decred::Entry decredDP;
 Filecoin::Entry filecoinDP;
 FIO::Entry fioDP;
@@ -143,7 +141,6 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainDecred: entry = &decredDP; break;
         case TWBlockchainGroestlcoin: entry = &groestlcoinDP; break;
         case TWBlockchainZcash: entry = &zcashDP; break;
-        case TWBlockchainNativeEvmos: entry = &nativeEvmosDP; break;
         case TWBlockchainThorchain: entry = &thorchainDP; break;
         case TWBlockchainRonin: entry = &roninDP; break;
         case TWBlockchainKusama: entry = &kusamaDP; break;
@@ -320,11 +317,15 @@ enum TWHRP TW::hrp(TWCoinType coin) {
 }
 
 Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
-    return getCoinInfo(coin).publicKeyHasher;
+    return getCoinInfo(coin).publicKeyHasher();
 }
 
 Hash::Hasher TW::base58Hasher(TWCoinType coin) {
-    return getCoinInfo(coin).base58Hasher;
+    return getCoinInfo(coin).base58Hasher();
+}
+
+Hash::Hasher TW::addressHasher(TWCoinType coin) {
+    return getCoinInfo(coin).addressHasher();
 }
 
 uint32_t TW::slip44Id(TWCoinType coin) {

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,9 +12,35 @@
 
 namespace TW::Hash {
 
+/// Enum selector for the supported hash functions
+enum HashFunc {
+    HashFunc_sha1 = 0, // SHA1
+    HashFunc_sha256, // SHA256
+    HashFunc_sha512, // SHA512
+    HashFunc_sha512_256, // SHA512/256
+    HashFunc_keccak256, // Keccak SHA256
+    HashFunc_keccak512, // Keccak SHA512
+    HashFunc_sha3_256, // version 3 SHA256
+    HashFunc_sha3_512, // version 3 SHA512
+    HashFunc_ripemd, // RIPEMD160
+    HashFunc_blake256, // Blake256
+    HashFunc_groestl512, // Groestl 512
+    HashFunc_sha256d, // SHA256 hash of the SHA256 hash
+    HashFunc_sha256ripemd, // ripemd hash of the SHA256 hash
+    HashFunc_sha3_256ripemd, // ripemd hash of the SHA256 hash
+    HashFunc_blake256d, // Blake256 hash of the Blake256 hash
+    HashFunc_blake256ripemd, // ripemd hash of the Blake256 hash
+    HashFunc_groestl512d, // Groestl512 hash of the Groestl512 hash
+};
+
 /// Hashing function.
 typedef TW::Data (*HasherSimpleType)(const TW::byte*, size_t);
 using Hasher = std::function<Data(const byte*, size_t)>;
+
+/// Hash function (pointer type) from enum
+TW::Hash::HasherSimpleType functionPointerFromEnum(TW::Hash::HashFunc hasher);
+/// Hash function (pointer type) from enum
+inline Hasher functionFromEnum(HashFunc hasher) { return static_cast<Hasher>(functionPointerFromEnum(hasher)); }
 
 // Digest size constants, duplicating constants from underlying lib 
 /// Number of bytes in a SHA1 hash.

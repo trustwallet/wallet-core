@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -17,7 +17,7 @@
 
 namespace TW::Cosmos {
 
-/// A Bech32 Cosmos address.  Hrp has to be specified (e.g. "cosmos", "terra"...), hash is HASHER_SHA2_RIPEMD.
+/// A Bech32 Cosmos address.  Hrp has to be specified (e.g. "cosmos", "terra"...), hash is coin-specific (from config, usually sha256ripemd).
 class Address: public Bech32Address {
 public:
     Address() : Bech32Address("") {}
@@ -29,10 +29,10 @@ public:
     Address(const std::string& hrp, const Data& keyHash) : Bech32Address(hrp, keyHash) {}
 
     /// Initializes an address with a public key, with prefix of the given coin.
-    Address(TWCoinType coin, const PublicKey& publicKey) : Bech32Address(stringForHRP(TW::hrp(coin)), HASHER_SHA2_RIPEMD, publicKey) {}
+    Address(TWCoinType coin, const PublicKey& publicKey) : Bech32Address(stringForHRP(TW::hrp(coin)), TW::addressHasher(coin), publicKey) {}
 
     /// Initializes an address with a public key, with given prefix.
-    Address(const std::string& hrp, const PublicKey& publicKey) : Bech32Address(hrp, HASHER_SHA2_RIPEMD, publicKey) {}
+    Address(const std::string& hrp, const PublicKey& publicKey, TWCoinType coin = TWCoinTypeCosmos) : Bech32Address(hrp, TW::addressHasher(coin), publicKey) {}
 
     /// Determines whether a string makes a valid Bech32 address, and the HRP matches to the coin.
     static bool isValid(TWCoinType coin, const std::string& addr) {

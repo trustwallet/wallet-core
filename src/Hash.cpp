@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -18,6 +18,28 @@
 #include <string>
 
 using namespace TW;
+
+TW::Hash::HasherSimpleType Hash::functionPointerFromEnum(TW::Hash::HashFunc hasher) {
+    switch (hasher) {
+        case Hash::HashFunc_sha1: return Hash::sha1;
+        default: case Hash::HashFunc_sha256: return Hash::sha256;
+        case Hash::HashFunc_sha512: return Hash::sha512;
+        case Hash::HashFunc_sha512_256: return Hash::sha512_256;
+        case Hash::HashFunc_keccak256: return Hash::keccak256;
+        case Hash::HashFunc_keccak512: return Hash::keccak512;
+        case Hash::HashFunc_sha3_256: return Hash::sha3_256;
+        case Hash::HashFunc_sha3_512: return Hash::sha3_512;
+        case Hash::HashFunc_ripemd: return Hash::ripemd;
+        case Hash::HashFunc_blake256: return Hash::blake256;
+        case Hash::HashFunc_groestl512: return Hash::groestl512;
+        case Hash::HashFunc_sha256d: return Hash::sha256d;
+        case Hash::HashFunc_sha256ripemd: return Hash::sha256ripemd;
+        case Hash::HashFunc_sha3_256ripemd: return Hash::sha3_256ripemd;
+        case Hash::HashFunc_blake256d: return Hash::blake256d;
+        case Hash::HashFunc_blake256ripemd: return Hash::blake256ripemd;
+        case Hash::HashFunc_groestl512d: return Hash::groestl512d;
+    }
+}
 
 Data Hash::sha1(const byte* data, size_t size) {
     Data result(sha1Size);

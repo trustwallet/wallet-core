@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -27,8 +27,9 @@ static const CoinInfo defaultsForMissing = {
     0,
     0,
     TWHRPUnknown,
-    Hash::sha256ripemd,
-    Hash::sha256d,
+    Hash::HashFunc_sha256ripemd,
+    Hash::HashFunc_sha256d,
+    Hash::HashFunc_sha256ripemd,
     "?",
     2,
     "",
@@ -62,8 +63,9 @@ const CoinInfo getCoinInfo(TWCoinType coin) {
                 <% if coin['p2pkhPrefix'].nil? -%>0<% else -%><%= coin['p2pkhPrefix'] %><% end -%>,
                 <% if coin['p2shPrefix'].nil? -%>0<% else -%><%= coin['p2shPrefix'] %><% end -%>,
                 TWHRP<% if coin['hrp'].nil? -%>Unknown<% else -%><%= format_name(coin['name']) %><% end -%>,
-                Hash::<% if coin['publicKeyHasher'].nil? -%>sha256ripemd<% else -%><%= coin['publicKeyHasher'] %><% end -%>,
-                Hash::<% if coin['base58Hasher'].nil? -%>sha256d<% else -%><%= coin['base58Hasher'] %><% end -%>,
+                Hash::HashFunc_<% if coin['publicKeyHasher'].nil? -%>sha256ripemd<% else -%><%= coin['publicKeyHasher'] %><% end -%>,
+                Hash::HashFunc_<% if coin['base58Hasher'].nil? -%>sha256d<% else -%><%= coin['base58Hasher'] %><% end -%>,
+                Hash::HashFunc_<% if coin['addressHasher'].nil? -%>sha256ripemd<% else -%><%= coin['addressHasher'] %><% end -%>,
                 "<%= coin['symbol'] %>",
                 <%= coin['decimals'] %>,
                 "<%= explorer_tx_url(coin) %>",
