@@ -2337,7 +2337,7 @@
     "id": "aurora",
     "name": "Aurora",
     "coinId": 1323161554,
-    "symbol": "AURORAETH",
+    "symbol": "AETH",
     "decimals": 18,
     "blockchain": "Ethereum",
     "derivation": [
