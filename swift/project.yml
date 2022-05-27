@@ -44,6 +44,7 @@ targets:
     settings:
       SKIP_INSTALL: false
       SUPPORTS_MACCATALYST: true
+      DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
       BUILD_LIBRARY_FOR_DISTRIBUTION: true
       INFOPLIST_FILE: 'Info.plist'
       CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION: YES_ERROR
