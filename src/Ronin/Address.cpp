@@ -6,6 +6,7 @@
 
 #include "Address.h"
 #include "Ethereum/Address.h"
+#include "Ethereum/AddressChecksum.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
 
@@ -41,6 +42,9 @@ Address::Address(const std::string& string) {
     }
 }
 
+// Normalized: with ronin prefix, checksummed hex address, no 0x prefix
 std::string Address::string() const {
-    return prefix + hex(bytes);
+    std::string address = Ethereum::checksumed(*this, Ethereum::ChecksumType::eip55);
+    if (address.size() >= 2 && address.substr(0, 2) == "0x") { address = address.substr(2); } // skip 0x
+    return prefix + address;
 }
