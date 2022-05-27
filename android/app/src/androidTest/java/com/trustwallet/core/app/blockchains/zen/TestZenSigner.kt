@@ -14,7 +14,13 @@ import com.trustwallet.core.app.utils.toHexBytesInByteString
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.ZenSigner
-import wallet.core.jni.proto.Zen
+
+import wallet.core.java.AnySigner
+import wallet.core.jni.BitcoinScript
+import wallet.core.jni.BitcoinSigHashType
+import wallet.core.jni.CoinType
+import wallet.core.jni.proto.Bitcoin
+import wallet.core.jni.proto.Common.SigningError
 
 class TestZenSigner {
 
