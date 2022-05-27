@@ -157,6 +157,9 @@ message TransactionPlan {
 
     // bitcoin diamond preblockhash
     bytes preblockhash = 9;
+
+    // zen preblockheight
+    int64 preblockheight = 10;
 };
 
 // Transaction signing output.

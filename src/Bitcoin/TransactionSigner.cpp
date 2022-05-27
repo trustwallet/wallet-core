@@ -13,6 +13,7 @@
 #include "../Groestlcoin/Transaction.h"
 #include "../Zcash/Transaction.h"
 #include "../Zcash/TransactionBuilder.h"
+#include "../Zen/TransactionBuilder.h"
 
 using namespace TW;
 using namespace TW::Bitcoin;
@@ -58,5 +59,6 @@ Result<HashPubkeyList, Common::Proto::SigningError> TransactionSigner<Transactio
 // Explicitly instantiate a Signers for compatible transactions.
 template class Bitcoin::TransactionSigner<Bitcoin::Transaction, TransactionBuilder>;
 template class Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>;
+template class Bitcoin::TransactionSigner<Bitcoin::Transaction, Zen::TransactionBuilder>;
 template class Bitcoin::TransactionSigner<Groestlcoin::Transaction, TransactionBuilder>;
 template class Bitcoin::TransactionSigner<BitcoinDiamond::Transaction, BitcoinDiamond::TransactionBuilder>;

@@ -136,7 +136,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
     std::vector<Data> keys;
     int required;
 
-    if (script.matchPayToScriptHash(data)) {
+    if (script.matchPayToScriptHash(data) || script.matchPayToScriptHashReplay(data)) {
         auto redeemScript = scriptForScriptHash(data);
         if (redeemScript.empty()) {
             // Error: Missing redeem script
@@ -196,7 +196,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
         }
         return Result<std::vector<Data>, Common::Proto::SigningError>::success({signature});
     }
-    if (script.matchPayToPublicKeyHash(data)) {
+    if (script.matchPayToPublicKeyHash(data) || script.matchPayToPublicKeyHashReplay(data)) {
         // obtain public key
         auto pair = keyPairForPubKeyHash(data);
         Data pubkey;

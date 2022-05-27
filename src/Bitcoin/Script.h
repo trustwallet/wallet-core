@@ -41,6 +41,10 @@ class Script {
     /// Determines whether this is a pay-to-script-hash (P2SH) script.
     bool isPayToScriptHash() const;
 
+    /// Determines whether this is a pay-to-script-hash-replay (P2SH) script.
+    /// Only apply for zen
+    bool isPayToScriptHashReplay() const;
+
     /// Determines whether this is a pay-to-witness-script-hash (P2WSH) script.
     bool isPayToWitnessScriptHash() const;
 
@@ -56,8 +60,16 @@ class Script {
     /// Matches the script to a pay-to-public-key-hash (P2PKH).
     bool matchPayToPublicKeyHash(Data& keyHash) const;
 
+    /// Matches the script to a pay-to-public-key-hash-replay (P2PKH).
+    /// Only apply for zen
+    bool matchPayToPublicKeyHashReplay(Data& keyHash) const;
+
     /// Matches the script to a pay-to-script-hash (P2SH).
     bool matchPayToScriptHash(Data& scriptHash) const;
+
+    /// Matches the script to a pay-to-script-hash-replay (P2SH).
+    /// Only apply for zen
+    bool matchPayToScriptHashReplay(Data& scriptHash) const;
 
     /// Matches the script to a pay-to-witness-public-key-hash (P2WPKH).
     bool matchPayToWitnessPublicKeyHash(Data& keyHash) const;
@@ -74,8 +86,16 @@ class Script {
     /// Builds a pay-to-public-key-hash (P2PKH) script from a public key hash.
     static Script buildPayToPublicKeyHash(const Data& hash);
 
+    /// Builds a pay-to-public-key-hash-replay (P2PKH) script from a public key hash.
+    /// This will apply for zen
+    static Script buildPayToPublicKeyHashReplay(const Data& hash, const Data& blockHash, int64_t blockHeight);
+
     /// Builds a pay-to-script-hash (P2SH) script from a script hash.
     static Script buildPayToScriptHash(const Data& scriptHash);
+
+    /// Builds a pay-to-script-hash-replay (P2SH) script from a script hash.
+    /// This will apply for zen
+    static Script buildPayToScriptHashReplay(const Data& scriptHash, const Data& blockHash, int64_t blockHeight);
 
     /// Builds a pay-to-witness-public-key-hash (P2WPKH) script from a public
     /// key hash.
@@ -97,6 +117,10 @@ class Script {
     /// address.
     static Script lockScriptForAddress(const std::string& address, enum TWCoinType coin);
 
+    /// Builds a appropriate lock script for the given
+    /// address with blockhash and blockheight.
+    static Script lockScriptForAddress(const std::string& address, enum TWCoinType coin, const Data& blockHash, int64_t blockHeight);
+
     /// Encodes the script.
     void encode(Data& data) const;
 
@@ -107,6 +131,35 @@ class Script {
             return OP_0;
         }
         return OP_1 + uint8_t(n - 1);
+    }
+
+    /// Encodes an integer
+    static inline Data encodeNumber(int64_t n) {
+        Data result;
+        // check bitcoin Script::push_int64
+        if (n == -1 || (n >= 0 && n <= 16)) {
+            result.push_back(OP_1 + uint8_t(n - 1));
+            return result;
+        }
+        if (n == 0) {
+            result.push_back(OP_0);
+            return result;
+        }
+
+        const bool neg = n < 0;
+        uint64_t absvalue = neg ? -n : n;
+
+        while (absvalue) {
+            result.push_back(absvalue & 0xff);
+            absvalue >>= 8;
+        }
+
+        if (result.back() & 0x80) {
+            result.push_back(neg ? 0x80 : 0);
+        } else if (neg) {
+            result.back() |= 0x80;
+        }
+        return result;
     }
 
     /// Decodes a small integer

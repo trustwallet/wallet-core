@@ -492,6 +492,41 @@
     }
   },
   {
+    "id": "zen",
+    "name": "Zen",
+    "coinId": 121,
+    "symbol": "ZEN",
+    "decimals": 8,
+    "blockchain": "Bitcoin",
+    "derivation": [
+      {
+        "path": "m/44'/121'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "staticPrefix": 32,
+    "p2pkhPrefix": 137,
+    "p2shPrefix": 150,
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "explorer": {
+      "url": "https://explorer.horizen.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "b7f548640766fb024247accf4e01bec37d88d49c4900357edc84d49a09ff4430",
+      "sampleAccount": "znRchPtvEyJJUwGbCALqyjwHJb1Gx6z4H4j"
+    },
+    "info": {
+      "url": "https://www.horizen.io",
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+    }
+  },
+  {
     "id": "zcash",
     "name": "Zcash",
     "coinId": 133,
