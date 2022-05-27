@@ -883,8 +883,9 @@
   {
     "id": "terra",
     "name": "Terra",
+    "displayName": "Terra Classic",
     "coinId": 330,
-    "symbol": "LUNA",
+    "symbol": "LUNC",
     "decimals": 6,
     "blockchain": "Cosmos",
     "derivation": [
@@ -904,9 +905,10 @@
     "info": {
       "url": "https://terra.money",
       "source": "https://github.com/terra-project/core",
-      "rpc": "https://rpc.terra.dev",
+      "rpc": "https://classic.fcd.terra.dev",
       "documentation": "https://docs.terra.money"
-    }
+    },
+    "deprecated": true
   },
   {
     "id": "polkadot",
