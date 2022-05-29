@@ -35,7 +35,6 @@ enum Hasher {
 
 /// Hashing function.
 typedef TW::Data (*HasherSimpleType)(const TW::byte*, size_t);
-using HasherFuncT = std::function<Data(const byte*, size_t)>;
 
 /// Hash function (pointer type) from enum
 TW::Hash::HasherSimpleType functionPointerFromEnum(TW::Hash::Hasher hasher);
