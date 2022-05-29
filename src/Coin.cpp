@@ -324,6 +324,10 @@ Hash::Hasher TW::base58Hasher(TWCoinType coin) {
     return getCoinInfo(coin).base58Hasher;
 }
 
+Hash::Hasher TW::addressHasher(TWCoinType coin) {
+    return getCoinInfo(coin).addressHasher;
+}
+
 uint32_t TW::slip44Id(TWCoinType coin) {
     return getCoinInfo(coin).slip44;
 }

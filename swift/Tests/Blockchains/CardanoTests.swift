@@ -74,7 +74,7 @@ class CardanoTests: XCTestCase {
 
         // check min ADA amount, set it
         let inputTokenAmountSerialized = try toTokenBundle.serializedData()
-        let minAmount = try CardanoMinAdaAmount(tokenBundle: inputTokenAmountSerialized)
+        let minAmount = CardanoMinAdaAmount(tokenBundle: inputTokenAmountSerialized)
         XCTAssertEqual(minAmount, 1444443)
 
         var input = CardanoSigningInput.with {

@@ -14,46 +14,45 @@
 
 #include <gtest/gtest.h>
 
-const auto normalized1 = STRING("ronin:ec49280228b0d05aa8e8b756503254e1ee7835ab");
+const auto roninPrefixChecksummed = "ronin:EC49280228b0D05Aa8e8b756503254e1eE7835ab";
 
-TEST(RoninAnyAddress, ValidateRoninNonChecksummed) {
-    EXPECT_TRUE(TWAnyAddressIsValid(normalized1.get(), TWCoinTypeRonin));
+const auto tests = {
+    roninPrefixChecksummed,
+    "ronin:ec49280228b0d05aa8e8b756503254e1ee7835ab",
+    "0xEC49280228b0D05Aa8e8b756503254e1eE7835ab",
+    "ronin:0xEC49280228b0D05Aa8e8b756503254e1eE7835ab",
+};
 
-    auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(normalized1.get(), TWCoinTypeRonin));
-    auto string2 = WRAPS(TWAnyAddressDescription(addr.get()));
-    EXPECT_TRUE(TWStringEqual(string2.get(), normalized1.get()));
-
-    auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
-    assertHexEqual(keyHash, "ec49280228b0d05aa8e8b756503254e1ee7835ab");
+TEST(RoninAnyAddress, Validate) {
+    for (const auto& t: tests) {
+        EXPECT_TRUE(TWAnyAddressIsValid(STRING(t).get(), TWCoinTypeRonin));
+    }
 }
 
-TEST(RoninAnyAddress, ValidateRoninChecksummed) {
-    auto checksummed = STRING("ronin:EC49280228b0D05Aa8e8b756503254e1eE7835ab");
-    EXPECT_TRUE(TWAnyAddressIsValid(checksummed.get(), TWCoinTypeRonin));
+TEST(RoninAnyAddress, Normalize) {
+    for (const auto& t: tests) {
+        auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(STRING(t).get(), TWCoinTypeRonin));
+        auto string2 = WRAPS(TWAnyAddressDescription(addr.get()));
+        EXPECT_TRUE(TWStringEqual(string2.get(), STRING(roninPrefixChecksummed).get()));
 
-    auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(checksummed.get(), TWCoinTypeRonin));
-    auto string2 = WRAPS(TWAnyAddressDescription(addr.get()));
-    EXPECT_TRUE(TWStringEqual(string2.get(), normalized1.get()));
-
-    auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
-    assertHexEqual(keyHash, "ec49280228b0d05aa8e8b756503254e1ee7835ab");    
-}
-
-TEST(RoninAnyAddress, ValidateEthereum) {
-    auto ethereum = STRING("0xEC49280228b0D05Aa8e8b756503254e1eE7835ab");
-    EXPECT_TRUE(TWAnyAddressIsValid(ethereum.get(), TWCoinTypeRonin));
-
-    auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(ethereum.get(), TWCoinTypeRonin));
-    auto string2 = WRAPS(TWAnyAddressDescription(addr.get()));
-    EXPECT_TRUE(TWStringEqual(string2.get(), normalized1.get()));
-
-    auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
-    assertHexEqual(keyHash, "ec49280228b0d05aa8e8b756503254e1ee7835ab");
+        auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
+        assertHexEqual(keyHash, "ec49280228b0d05aa8e8b756503254e1ee7835ab");
+    }
 }
 
 TEST(RoninAnyAddress, Invalid) {
-    EXPECT_FALSE(TWAnyAddressIsValid(STRING("EC49280228b0D05Aa8e8b756503254e1eE7835ab").get(), TWCoinTypeRonin)); // no prefix
-    EXPECT_FALSE(TWAnyAddressIsValid(STRING("EC49280228b0D05Aa8e8b756503254e1eE7835").get(), TWCoinTypeRonin)); // too short
-    EXPECT_FALSE(TWAnyAddressIsValid(STRING("ronin:EC49280228b0D05Aa8e8b756503254e1eE7835").get(), TWCoinTypeRonin)); // too short
-    EXPECT_FALSE(TWAnyAddressIsValid(STRING("ronin:ec49280228b0d05aa8e8b756503254e1ee7835").get(), TWCoinTypeRonin)); // too short
+    const auto tests = {
+        "EC49280228b0D05Aa8e8b756503254e1eE7835ab", // no prefix
+        "ec49280228b0d05aa8e8b756503254e1ee7835ab", // no prefix
+        "roni:EC49280228b0D05Aa8e8b756503254e1eE7835ab", // wrong prefix
+        "ronin=EC49280228b0D05Aa8e8b756503254e1eE7835ab", // wrong prefix
+        "0xronin:EC49280228b0D05Aa8e8b756503254e1eE7835ab", // wrong prefix
+        "EC49280228b0D05Aa8e8b756503254e1eE7835", // too short
+        "ronin:EC49280228b0D05Aa8e8b756503254e1eE7835", // too short
+        "ronin:ec49280228b0d05aa8e8b756503254e1ee7835", // too short
+    };
+
+    for (const auto& t: tests) {
+        EXPECT_FALSE(TWAnyAddressIsValid(STRING(t).get(), TWCoinTypeRonin));
+    }
 }

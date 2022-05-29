@@ -80,11 +80,14 @@ std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey);
 /// Derives the address for a particular coin from the public key, with given derivation.
 std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation);
 
-/// Hasher for deriving the public key hash.
+/// Hasher for deriving the extended public key
 Hash::Hasher publicKeyHasher(TWCoinType coin);
 
-/// Hasher to use for base 58 checksums.
+/// Hasher to use for base 58 checksums in keys (extended private, public)
 Hash::Hasher base58Hasher(TWCoinType coin);
+
+/// Hasher used inside address generation (hash of public key)
+Hash::Hasher addressHasher(TWCoinType coin);
 
 /// Returns static prefix for a coin type.
 byte staticPrefix(TWCoinType coin);
@@ -139,6 +142,7 @@ struct CoinInfo {
     TWHRP hrp;
     Hash::Hasher publicKeyHasher;
     Hash::Hasher base58Hasher;
+    Hash::Hasher addressHasher;
     const char* symbol;
     int decimals;
     const char* explorerTransactionUrl;
