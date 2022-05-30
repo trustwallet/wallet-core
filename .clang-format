@@ -8,7 +8,6 @@ ConstructorInitializerAllOnOneLineOrOnePerLine: true
 IndentWidth: 4
 IndentAccessModifiers: false
 AccessModifierOffset: -4
-#AccessModifierOffset: -1
 PointerAlignment: Left
 IncludeCategories:
   - Regex:           '^"\.\./'
