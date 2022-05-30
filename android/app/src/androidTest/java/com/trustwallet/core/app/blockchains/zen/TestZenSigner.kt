@@ -43,7 +43,7 @@ class TestZenSigner {
         input.addPrivateKey(ByteString.copyFrom(utxoKey0))
 
         // build utxo
-        val txHash0 = (Numeric.hexStringToByteArray("62dea4b87fd66ca8e75a199c93131827ed40fb96cd8412e3476540abb5139ea3"))
+        val txHash0 = (Numeric.hexStringToByteArray("a39e13b5ab406547e31284cd96fb40ed271813939c195ae7a86cd67fb8a4de62"))
         val outpoint0 = Bitcoin.OutPoint.newBuilder()
             .setHash(ByteString.copyFrom(txHash0))
             .setIndex(0)
@@ -62,7 +62,7 @@ class TestZenSigner {
 
         input.plan = Bitcoin.TransactionPlan.newBuilder()
             .mergeFrom(plan)
-            .setPreblockhash(ByteString.copyFrom("0000000004561422697a29d424d925334db5ef2e80232306a1ad3fd35f72dc81".toHexBytes()))
+            .setPreblockhash(ByteString.copyFrom("81dc725fd33fada1062323802eefb54d3325d924d4297a6922145604000000000".toHexBytes()))
             .setPreblockheight(1147624)
             .build()
 
