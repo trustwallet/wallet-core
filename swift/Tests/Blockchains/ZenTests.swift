@@ -36,6 +36,7 @@ class ZenTests: XCTestCase {
         let plan = BitcoinTransactionPlan.with {
             $0.amount = 10000
             $0.fee = 226
+            $0.change = 7374
             $0.utxos = utxos
             $0.preblockhash = blockHash
             $0.preblockheight = blockHeight
