@@ -10,12 +10,12 @@
 
 namespace TW::Bitcoin {
 
-inline constexpr const double gDefaultBytesPerInput{148};
-inline constexpr const double gDefaultBytesPerOutput{34};
-inline constexpr const double gDefaultBytesBase{10};
-inline constexpr const double gSegwitBytesPerInput{101.25};
-inline constexpr const double gSegwitBytesPerOutput{31};
-inline constexpr const double gSegwitBytesBase{gDefaultBytesBase};
+inline constexpr double gDefaultBytesPerInput{148};
+inline constexpr double gDefaultBytesPerOutput{34};
+inline constexpr double gDefaultBytesBase{10};
+inline constexpr double gSegwitBytesPerInput{101.25};
+inline constexpr double gSegwitBytesPerOutput{31};
+inline constexpr double gSegwitBytesBase{gDefaultBytesBase};
 /// Interface for transaction fee calculator.
 class FeeCalculator {
   public:

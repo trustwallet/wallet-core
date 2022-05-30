@@ -12,9 +12,9 @@ using namespace TW;
 
 namespace TW::Bitcoin {
 
-constexpr const double gDecredBytesPerInput{166};
-constexpr const double gDecredBytesPerOutput{38};
-constexpr const double gDecredBytesBase{12};
+constexpr double gDecredBytesPerInput{166};
+constexpr double gDecredBytesPerOutput{38};
+constexpr double gDecredBytesBase{12};
 
 int64_t LinearFeeCalculator::calculate(int64_t inputs, int64_t outputs,
                                        int64_t byteFee) const noexcept {
