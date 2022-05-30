@@ -10,6 +10,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// [DEPRECATED] Deprecated after 2.9.2, use CoinType.ChainId to obtain chainID of a coin.
 /// Chain identifier for Ethereum-based blockchains.
 TW_EXPORT_ENUM(uint32_t)
 enum TWEthereumChainID {

@@ -28,6 +28,12 @@ Some typical special cases:
 Ex.: `10000118` for Osmosis, `118` for Cosmos; `20000714` for BNB Smart Chain.
 - Ethereum-clone chains with no own BIP-44 ID: use the `10000000 + chainID` as coinID.
 
+See also: `slip44` and `chainId`.
+
+**`slip44`**
+Optionally, SLIP-44 (BIP-44) coin ID can be specified here, in case it differs from `coinId`.  Most of the case the two are the same, so this can be omitted.
+Ex.: `60` for Optimism (coinID is `10000070`).
+
 **`symbol`**
 Symbol of the native coin.  Typically a short, upper-case-only string.
 Ex.: `BTC`, `ETH`.
@@ -122,6 +128,10 @@ Ex. `0` and `5` for Bitcoin.
 **`hrp`**
 Human Readable Prefix used to prefix an address, used to indicate type of address, to minimalize risk of accidental address mix-up across chains.
 Ex. `'bc'` for Bitcoin, `'cosmos'` for Cosmos.
+
+**`chainId`**
+Chain identifier, used by forks, e.g. in case of Ethereum (a decimal number), or Cosomos (a string ID).
+Ex.: `'1'` for Ethereum, `'61'` for Ethereum Classic.
 
 **`publicKeyHasher`**
 Hash method used in XPub derivation.

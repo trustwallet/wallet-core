@@ -21,6 +21,7 @@ TEST(TWEthereumCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeEthereum, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEthereum));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEthereum));
+    const auto chainId = WRAPS(TWCoinTypeChainId(TWCoinTypeEthereum));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEthereum), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeEthereum));
@@ -31,4 +32,5 @@ TEST(TWEthereumCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://etherscan.io/address/0x5bb497e8d9fe26e92dd1be01e32076c8e024d167");
     assertStringsEqual(id, "ethereum");
     assertStringsEqual(name, "Ethereum");
+    assertStringsEqual(chainId, "1");
 }

@@ -65,6 +65,10 @@ uint8_t TWCoinTypeStaticPrefix(enum TWCoinType coin) {
     return TW::staticPrefix(coin);
 }
 
+TWString* _Nonnull TWCoinTypeChainId(enum TWCoinType coin) {
+    return TWStringCreateWithUTF8Bytes(TW::chainId(coin));
+}
+
 uint32_t TWCoinTypeSlip44Id(enum TWCoinType coin) {
     return TW::slip44Id(coin);
 }
