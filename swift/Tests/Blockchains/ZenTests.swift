@@ -10,7 +10,7 @@ import XCTest
 class ZenTests: XCTestCase {
     func testAddress() {
         let key = PrivateKey(data: Data(hexString: "3a8e0a528f62f4ca2c77744c8a571def2845079b50105a9f7ef6b1b823def67a")!)!
-        let pubkey = key.getPublicKeyEd25519()
+        let pubkey = key.getPublicKeySecp256k1(compressed: true)
         let address = AnyAddress(publicKey: pubkey, coin: .zen)
         let addressFromString = AnyAddress(string: "znk19H1wcARcCa7TM6zgmJUbWoWWtZ8k5cg", coin: .zen)!
 
@@ -32,6 +32,15 @@ class ZenTests: XCTestCase {
             }
         ]
 
+        // Plan
+        let plan = BitcoinTransactionPlan.with {
+            $0.amount = 10000
+            $0.fee = 226
+            $0.utxos = utxos
+            $0.preblockhash = blockHash
+            $0.preblockheight = blockHeight
+        }
+
         let input = BitcoinSigningInput.with {
             $0.amount = 10000
             $0.toAddress = "zngBGZGKaaBamofSuFw5WMnvU2HQAtwGeb5"
@@ -39,16 +48,8 @@ class ZenTests: XCTestCase {
             $0.hashType = BitcoinScript.hashTypeForCoin(coinType: .zen)
             $0.coinType = CoinType.zen.rawValue
             $0.privateKey = [key.data]
-            $0.utxo = utxos
+            $0.plan = plan
         }
-
-        // Plan
-        var plan: BitcoinTransactionPlan = AnySigner.plan(input: input, coin: .zen)
-
-        XCTAssertEqual(plan.fee, 226)
-        
-        plan.preblockhash = blockHash
-        plan.preblockheight = blockHeight
 
         // Sign
         let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .zen)
