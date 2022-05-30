@@ -11,9 +11,9 @@
 namespace TW::Groestlcoin {
 
 struct Transaction : public Bitcoin::Transaction {
-    Transaction() : Bitcoin::Transaction(1, 0, Hash::Hash_sha256) {}
+    Transaction() : Bitcoin::Transaction(1, 0, Hash::HasherSha256) {}
     Transaction(int32_t version, uint32_t lockTime = 0) :
-        Bitcoin::Transaction(version, lockTime, Hash::Hash_sha256) {}
+        Bitcoin::Transaction(version, lockTime, Hash::HasherSha256) {}
 };
 
 } // namespace TW::Groestlcoin

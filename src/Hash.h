@@ -14,23 +14,23 @@ namespace TW::Hash {
 
 /// Enum selector for the supported hash functions
 enum Hasher {
-    Hash_sha1 = 0, // SHA1
-    Hash_sha256, // SHA256
-    Hash_sha512, // SHA512
-    Hash_sha512_256, // SHA512/256
-    Hash_keccak256, // Keccak SHA256
-    Hash_keccak512, // Keccak SHA512
-    Hash_sha3_256, // version 3 SHA256
-    Hash_sha3_512, // version 3 SHA512
-    Hash_ripemd, // RIPEMD160
-    Hash_blake256, // Blake256
-    Hash_groestl512, // Groestl 512
-    Hash_sha256d, // SHA256 hash of the SHA256 hash
-    Hash_sha256ripemd, // ripemd hash of the SHA256 hash
-    Hash_sha3_256ripemd, // ripemd hash of the SHA256 hash
-    Hash_blake256d, // Blake256 hash of the Blake256 hash
-    Hash_blake256ripemd, // ripemd hash of the Blake256 hash
-    Hash_groestl512d, // Groestl512 hash of the Groestl512 hash
+    HasherSha1 = 0, // SHA1
+    HasherSha256, // SHA256
+    HasherSha512, // SHA512
+    HasherSha512_256, // SHA512/256
+    HasherKeccak256, // Keccak SHA256
+    HasherKeccak512, // Keccak SHA512
+    HasherSha3_256, // version 3 SHA256
+    HasherSha3_512, // version 3 SHA512
+    HasherRipemd, // RIPEMD160
+    HasherBlake256, // Blake256
+    HasherGroestl512, // Groestl 512
+    HasherSha256d, // SHA256 hash of the SHA256 hash
+    HasherSha256ripemd, // ripemd hash of the SHA256 hash
+    HasherSha3_256ripemd, // ripemd hash of the SHA256 hash
+    HasherBlake256d, // Blake256 hash of the Blake256 hash
+    HasherBlake256ripemd, // ripemd hash of the Blake256 hash
+    HasherGroestl512d, // Groestl512 hash of the Groestl512 hash
 };
 
 /// Hashing function.

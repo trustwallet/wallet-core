@@ -59,7 +59,7 @@ Bech32Address::Bech32Address(const std::string& hrp, Hash::Hasher hasher, const 
 : hrp(hrp) {
     bool skipTypeByte = false;
     // Extended-key / keccak-hash skips first byte (Evmos)
-    if (publicKey.type == TWPublicKeyTypeSECP256k1Extended || hasher == Hash::Hash_keccak256) {
+    if (publicKey.type == TWPublicKeyTypeSECP256k1Extended || hasher == Hash::HasherKeccak256) {
         skipTypeByte = true;
     }
     const auto hash = publicKey.hash({}, hasher, skipTypeByte);
