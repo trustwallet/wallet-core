@@ -19,7 +19,7 @@ inline constexpr double gSegwitBytesBase{gDefaultBytesBase};
 
 /// Interface for transaction fee calculator.
 class FeeCalculator {
-  public:
+public:
     [[nodiscard]] virtual int64_t calculate(int64_t inputs, int64_t outputs,
                                             int64_t byteFee) const = 0;
     [[nodiscard]] virtual int64_t calculateSingleInput(int64_t byteFee) const = 0;
@@ -27,7 +27,7 @@ class FeeCalculator {
 
 /// Generic fee calculator with linear input and output size, and a fix size
 class LinearFeeCalculator : public FeeCalculator {
-  public:
+public:
     const double bytesPerInput;
     const double bytesPerOutput;
     const double bytesBase;
@@ -42,7 +42,7 @@ class LinearFeeCalculator : public FeeCalculator {
 
 /// Constant fee calculator
 class ConstantFeeCalculator : public FeeCalculator {
-  public:
+public:
     const int64_t fee;
     explicit constexpr ConstantFeeCalculator(int64_t fee) noexcept : fee(fee) {}
 
@@ -55,14 +55,14 @@ class ConstantFeeCalculator : public FeeCalculator {
 
 /// Default Bitcoin transaction fee calculator, non-segwit.
 class DefaultFeeCalculator : public LinearFeeCalculator {
-  public:
+public:
     constexpr DefaultFeeCalculator() noexcept
         : LinearFeeCalculator(gDefaultBytesPerInput, gDefaultBytesPerOutput, gDefaultBytesBase) {}
 };
 
 /// Bitcoin Segwit transaction fee calculator
 class SegwitFeeCalculator : public LinearFeeCalculator {
-  public:
+public:
     constexpr SegwitFeeCalculator() noexcept
         : LinearFeeCalculator(gSegwitBytesPerInput, gSegwitBytesPerOutput, gSegwitBytesBase) {}
 };
