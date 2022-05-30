@@ -62,7 +62,7 @@ class TestZenSigner {
 
         input.plan = Bitcoin.TransactionPlan.newBuilder()
             .mergeFrom(plan)
-            .setPreblockhash(ByteString.copyFrom("81dc725fd33fada1062323802eefb54d3325d924d4297a6922145604000000000".toHexBytes()))
+            .setPreblockhash(ByteString.copyFrom("81dc725fd33fada1062323802eefb54d3325d924d4297a692214560400000000".toHexBytes()))
             .setPreblockheight(1147624)
             .build()
 

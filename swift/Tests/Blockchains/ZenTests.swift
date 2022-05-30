@@ -39,6 +39,7 @@ class ZenTests: XCTestCase {
             $0.hashType = BitcoinScript.hashTypeForCoin(coinType: .zen)
             $0.coinType = CoinType.zen.rawValue
             $0.privateKey = [key.data]
+            $0.utxo = utxos
         }
 
         // Plan
