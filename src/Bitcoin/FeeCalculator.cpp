@@ -23,14 +23,15 @@ int64_t LinearFeeCalculator::calculateSingleInput(int64_t byteFee) const {
 
 class DecredFeeCalculator : public LinearFeeCalculator {
 public:
-    DecredFeeCalculator(): LinearFeeCalculator(166, 38, 12) {}
+    constexpr DecredFeeCalculator() noexcept: LinearFeeCalculator(166, 38, 12) {}
 };
 
-DefaultFeeCalculator defaultFeeCalculator;
-DecredFeeCalculator decredFeeCalculator;
-SegwitFeeCalculator segwitFeeCalculator;
+constexpr DefaultFeeCalculator defaultFeeCalculator{};
+constexpr DecredFeeCalculator decredFeeCalculator{};
+constexpr SegwitFeeCalculator segwitFeeCalculator{};
 
-FeeCalculator& getFeeCalculator(TWCoinType coinType) {
+
+const FeeCalculator& getFeeCalculator(TWCoinType coinType) {
     switch (coinType) {
     case TWCoinTypeDecred:
         return decredFeeCalculator;

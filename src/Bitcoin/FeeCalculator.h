@@ -10,49 +10,62 @@
 
 namespace TW::Bitcoin {
 
+inline constexpr const double gDefaultBytesPerInput{148};
+inline constexpr const double gDefaultBytesPerOutput{34};
+inline constexpr const double gDefaultBytesBase{10};
+inline constexpr const double gSegwitBytesPerInput{101.25};
+inline constexpr const double gSegwitBytesPerOutput{31};
+inline constexpr const double gSegwitBytesBase{gDefaultBytesBase};
 /// Interface for transaction fee calculator.
 class FeeCalculator {
-public:
-    virtual int64_t calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const = 0;
-    virtual int64_t calculateSingleInput(int64_t byteFee) const = 0;
+  public:
+    [[nodiscard]] virtual int64_t calculate(int64_t inputs, int64_t outputs,
+                                            int64_t byteFee) const = 0;
+    [[nodiscard]] virtual int64_t calculateSingleInput(int64_t byteFee) const = 0;
 };
 
 /// Generic fee calculator with linear input and output size, and a fix size
 class LinearFeeCalculator : public FeeCalculator {
-public:
+  public:
     const double bytesPerInput;
     const double bytesPerOutput;
     const double bytesBase;
-    LinearFeeCalculator(double bytesPerInput, double bytesPerOutput, double bytesBase)
-        :bytesPerInput(bytesPerInput), bytesPerOutput(bytesPerOutput), bytesBase(bytesBase) {}
+    explicit constexpr LinearFeeCalculator(double bytesPerInput, double bytesPerOutput,
+                                           double bytesBase) noexcept
+        : bytesPerInput(bytesPerInput), bytesPerOutput(bytesPerOutput), bytesBase(bytesBase) {}
 
-    virtual int64_t calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const override;
-    virtual int64_t calculateSingleInput(int64_t byteFee) const override;
+    [[nodiscard]] int64_t calculate(int64_t inputs, int64_t outputs,
+                                    int64_t byteFee) const override;
+    [[nodiscard]] int64_t calculateSingleInput(int64_t byteFee) const override;
 };
 
 /// Constant fee calculator
 class ConstantFeeCalculator : public FeeCalculator {
-public:
+  public:
     const int64_t fee;
-    ConstantFeeCalculator(int64_t fee) : fee(fee) {}
+    explicit constexpr ConstantFeeCalculator(int64_t fee) noexcept : fee(fee) {}
 
-    virtual int64_t calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const override { return fee; }
-    virtual int64_t calculateSingleInput(int64_t byteFee) const override { return 0; }
+    [[nodiscard]] int64_t calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const final {
+        return fee;
+    }
+    [[nodiscard]] int64_t calculateSingleInput(int64_t byteFee) const final { return 0; }
 };
 
 /// Default Bitcoin transaction fee calculator, non-segwit.
 class DefaultFeeCalculator : public LinearFeeCalculator {
-public:
-    DefaultFeeCalculator(): LinearFeeCalculator(148, 34, 10) {}
+  public:
+    constexpr DefaultFeeCalculator() noexcept
+        : LinearFeeCalculator(gDefaultBytesPerInput, gDefaultBytesPerOutput, gDefaultBytesBase) {}
 };
 
 /// Bitcoin Segwit transaction fee calculator
 class SegwitFeeCalculator : public LinearFeeCalculator {
-public:
-    SegwitFeeCalculator(): LinearFeeCalculator(101.25, 31, 10) {}
+  public:
+    constexpr SegwitFeeCalculator() noexcept
+        : LinearFeeCalculator(gSegwitBytesPerInput, gSegwitBytesPerOutput, gSegwitBytesBase) {}
 };
 
 /// Return the fee calculator for the given coin.
-FeeCalculator& getFeeCalculator(TWCoinType coinType);
+const FeeCalculator& getFeeCalculator(TWCoinType coinType);
 
 } // namespace TW::Bitcoin
