@@ -29,7 +29,7 @@ int64_t LinearFeeCalculator::calculateSingleInput(int64_t byteFee) const noexcep
 }
 
 class DecredFeeCalculator : public LinearFeeCalculator {
-  public:
+public:
     constexpr DecredFeeCalculator() noexcept
         : LinearFeeCalculator(gDecredBytesPerInput, gDecredBytesPerOutput, gDecredBytesBase) {}
 };
