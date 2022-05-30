@@ -80,7 +80,7 @@ class Base58Address {
         if (publicKey.type != TWPublicKeyTypeSECP256k1) {
             throw std::invalid_argument("Bitcoin::Address needs a compressed SECP256k1 public key.");
         }
-        const auto data = publicKey.hash(prefix, Hash::sha256ripemd);
+        const auto data = publicKey.hash(prefix, Hash::HasherSha256ripemd);
         std::copy(data.begin(), data.end(), bytes.begin());
     }
 

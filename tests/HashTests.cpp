@@ -67,29 +67,29 @@ TEST(HashTests, hmac256) {
 
 TEST(HashTests, allHashEnum) {
     const auto tests = {
-        make_tuple(Hash::HashFunc_sha1, "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12"),
-        make_tuple(Hash::HashFunc_sha256, "d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592"),
-        make_tuple(Hash::HashFunc_sha512, "07e547d9586f6a73f73fbac0435ed76951218fb7d0c8d788a309d785436bbb642e93a252a954f23912547d1e8a3b5ed6e1bfd7097821233fa0538f3db854fee6"),
-        make_tuple(Hash::HashFunc_sha512_256, "dd9d67b371519c339ed8dbd25af90e976a1eeefd4ad3d889005e532fc5bef04d"),
-        make_tuple(Hash::HashFunc_keccak256, "4d741b6f1eb29cb2a9b9911c82f56fa8d73b04959d3d9d222895df6c0b28aa15"),
-        make_tuple(Hash::HashFunc_keccak512, "d135bb84d0439dbac432247ee573a23ea7d3c9deb2a968eb31d47c4fb45f1ef4422d6c531b5b9bd6f449ebcc449ea94d0a8f05f62130fda612da53c79659f609"),
-        make_tuple(Hash::HashFunc_sha3_256, "69070dda01975c8c120c3aada1b282394e7f032fa9cf32f4cb2259a0897dfc04"),
-        make_tuple(Hash::HashFunc_sha3_512, "01dedd5de4ef14642445ba5f5b97c15e47b9ad931326e4b0727cd94cefc44fff23f07bf543139939b49128caf436dc1bdee54fcb24023a08d9403f9b4bf0d450"),
-        make_tuple(Hash::HashFunc_ripemd, "37f332f68db77bd9d7edd4969571ad671cf9dd3b"),
-        make_tuple(Hash::HashFunc_blake256, "7576698ee9cad30173080678e5965916adbb11cb5245d386bf1ffda1cb26c9d7"),
-        make_tuple(Hash::HashFunc_groestl512, "badc1f70ccd69e0cf3760c3f93884289da84ec13c70b3d12a53a7a8a4a513f99715d46288f55e1dbf926e6d084a0538e4eebfc91cf2b21452921ccde9131718d"),
-        make_tuple(Hash::HashFunc_sha256d, "6d37795021e544d82b41850edf7aabab9a0ebe274e54a519840c4666f35b3937"),
-        make_tuple(Hash::HashFunc_sha256ripemd, "0e3397b4abc7a382b3ea2365883c3c7ca5f07600"),
-        make_tuple(Hash::HashFunc_sha3_256ripemd, "e70a0c74dd1b0c0d5af3c7ccbbe4b488d1b474b5"),
-        make_tuple(Hash::HashFunc_blake256d, "4511ab8713d8d580cae73061345df903f603b99e7ec699ddae63c56eea200059"),
-        make_tuple(Hash::HashFunc_blake256ripemd, "b4b44de1e854f7f3c0520b654204163f75f704e5"),
-        make_tuple(Hash::HashFunc_groestl512d, "1209d229cfc9d7d6711369e2d7f369b0efc1459a9d407cbfc7daf4f54209347f2ee7e3e7522ba5d5ac4e7365445739919e23e2917baee10f23557f3d3fbc696d"),
+        make_tuple(Hash::HasherSha1, "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12"),
+        make_tuple(Hash::HasherSha256, "d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592"),
+        make_tuple(Hash::HasherSha512, "07e547d9586f6a73f73fbac0435ed76951218fb7d0c8d788a309d785436bbb642e93a252a954f23912547d1e8a3b5ed6e1bfd7097821233fa0538f3db854fee6"),
+        make_tuple(Hash::HasherSha512_256, "dd9d67b371519c339ed8dbd25af90e976a1eeefd4ad3d889005e532fc5bef04d"),
+        make_tuple(Hash::HasherKeccak256, "4d741b6f1eb29cb2a9b9911c82f56fa8d73b04959d3d9d222895df6c0b28aa15"),
+        make_tuple(Hash::HasherKeccak512, "d135bb84d0439dbac432247ee573a23ea7d3c9deb2a968eb31d47c4fb45f1ef4422d6c531b5b9bd6f449ebcc449ea94d0a8f05f62130fda612da53c79659f609"),
+        make_tuple(Hash::HasherSha3_256, "69070dda01975c8c120c3aada1b282394e7f032fa9cf32f4cb2259a0897dfc04"),
+        make_tuple(Hash::HasherSha3_512, "01dedd5de4ef14642445ba5f5b97c15e47b9ad931326e4b0727cd94cefc44fff23f07bf543139939b49128caf436dc1bdee54fcb24023a08d9403f9b4bf0d450"),
+        make_tuple(Hash::HasherRipemd, "37f332f68db77bd9d7edd4969571ad671cf9dd3b"),
+        make_tuple(Hash::HasherBlake256, "7576698ee9cad30173080678e5965916adbb11cb5245d386bf1ffda1cb26c9d7"),
+        make_tuple(Hash::HasherGroestl512, "badc1f70ccd69e0cf3760c3f93884289da84ec13c70b3d12a53a7a8a4a513f99715d46288f55e1dbf926e6d084a0538e4eebfc91cf2b21452921ccde9131718d"),
+        make_tuple(Hash::HasherSha256d, "6d37795021e544d82b41850edf7aabab9a0ebe274e54a519840c4666f35b3937"),
+        make_tuple(Hash::HasherSha256ripemd, "0e3397b4abc7a382b3ea2365883c3c7ca5f07600"),
+        make_tuple(Hash::HasherSha3_256ripemd, "e70a0c74dd1b0c0d5af3c7ccbbe4b488d1b474b5"),
+        make_tuple(Hash::HasherBlake256d, "4511ab8713d8d580cae73061345df903f603b99e7ec699ddae63c56eea200059"),
+        make_tuple(Hash::HasherBlake256ripemd, "b4b44de1e854f7f3c0520b654204163f75f704e5"),
+        make_tuple(Hash::HasherGroestl512d, "1209d229cfc9d7d6711369e2d7f369b0efc1459a9d407cbfc7daf4f54209347f2ee7e3e7522ba5d5ac4e7365445739919e23e2917baee10f23557f3d3fbc696d"),
     };
 
     for (auto& test: tests) {
         const auto hashFunc = get<0>(test);
         const auto expected = get<1>(test);
-        EXPECT_EQ(hex(Hash::hash(functionFromEnum(hashFunc), brownFox)), expected);
+        EXPECT_EQ(hex(Hash::hash(hashFunc, brownFox)), expected);
     }
 }
 

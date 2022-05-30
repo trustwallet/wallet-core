@@ -258,7 +258,7 @@ namespace {
 
 uint32_t fingerprint(HDNode *node, Hash::Hasher hasher) {
     hdnode_fill_public_key(node);
-    auto digest = hasher(node->public_key, 33);
+    auto digest = Hash::hash(hasher, node->public_key, 33);
     return ((uint32_t) digest[0] << 24) + (digest[1] << 16) + (digest[2] << 8) + digest[3];
 }
 

@@ -30,7 +30,7 @@ public:
     }
 
     /// Initializes an address with a public key.
-    Address(const PublicKey& publicKey) : Bech32Address(hrp, static_cast<Hash::HasherSimpleType>(Hash::keccak256), publicKey) {
+    Address(const PublicKey& publicKey) : Bech32Address(hrp, Hash::HasherKeccak256, publicKey) {
         if (publicKey.type != TWPublicKeyTypeSECP256k1Extended) {
             throw std::invalid_argument("address may only be an extended SECP256k1 public key");
         }      

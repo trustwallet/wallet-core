@@ -317,15 +317,15 @@ enum TWHRP TW::hrp(TWCoinType coin) {
 }
 
 Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
-    return getCoinInfo(coin).publicKeyHasher();
+    return getCoinInfo(coin).publicKeyHasher;
 }
 
 Hash::Hasher TW::base58Hasher(TWCoinType coin) {
-    return getCoinInfo(coin).base58Hasher();
+    return getCoinInfo(coin).base58Hasher;
 }
 
 Hash::Hasher TW::addressHasher(TWCoinType coin) {
-    return getCoinInfo(coin).addressHasher();
+    return getCoinInfo(coin).addressHasher;
 }
 
 uint32_t TW::slip44Id(TWCoinType coin) {

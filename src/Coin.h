@@ -140,9 +140,9 @@ struct CoinInfo {
     byte p2pkhPrefix;
     byte p2shPrefix;
     TWHRP hrp;
-    Hash::HashFunc publicKeyHasherFunc;
-    Hash::HashFunc base58HasherFunc;
-    Hash::HashFunc addressHasherFunc;
+    Hash::Hasher publicKeyHasher;
+    Hash::Hasher base58Hasher;
+    Hash::Hasher addressHasher;
     const char* symbol;
     int decimals;
     const char* explorerTransactionUrl;
@@ -154,9 +154,6 @@ struct CoinInfo {
         return (derivation.size() > 0) ? derivation[0] : Derivation();
     }
     const Derivation derivationByName(TWDerivation name) const;
-    Hash::Hasher publicKeyHasher() const { return Hash::functionFromEnum(publicKeyHasherFunc); }
-    Hash::Hasher base58Hasher() const { return Hash::functionFromEnum(base58HasherFunc); }
-    Hash::Hasher addressHasher() const { return Hash::functionFromEnum(addressHasherFunc); }
 };
 
 } // namespace TW

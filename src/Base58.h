@@ -34,12 +34,12 @@ class Base58 {
         : digits(digits), characterMap(characterMap) {}
 
     /// Decodes a base 58 string verifying the checksum, returns empty on failure.
-    Data decodeCheck(const std::string& string, Hash::Hasher hasher = Hash::sha256d) const {
+    Data decodeCheck(const std::string& string, Hash::Hasher hasher = Hash::HasherSha256d) const {
         return decodeCheck(string.data(), string.data() + string.size(), hasher);
     }
 
     /// Decodes a base 58 string verifying the checksum, returns empty on failure.
-    Data decodeCheck(const char* begin, const char* end, Hash::Hasher hasher = Hash::sha256d) const;
+    Data decodeCheck(const char* begin, const char* end, Hash::Hasher hasher = Hash::HasherSha256d) const;
 
     /// Decodes a base 58 string into `result`, returns `false` on failure.
     Data decode(const std::string& string) const {
@@ -51,12 +51,12 @@ class Base58 {
 
     /// Encodes data as a base 58 string with a checksum.
     template <typename T>
-    std::string encodeCheck(const T& data, Hash::Hasher hasher = Hash::sha256d) const {
+    std::string encodeCheck(const T& data, Hash::Hasher hasher = Hash::HasherSha256d) const {
         return encodeCheck(data.data(), data.data() + data.size(), hasher);
     }
 
     /// Encodes data as a base 58 string with a checksum.
-    std::string encodeCheck(const byte* pbegin, const byte* pend, Hash::Hasher hasher = Hash::sha256d) const;
+    std::string encodeCheck(const byte* pbegin, const byte* pend, Hash::Hasher hasher = Hash::HasherSha256d) const;
 
     /// Encodes data as a base 58 string.
     template <typename T>

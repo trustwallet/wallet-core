@@ -315,7 +315,7 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
         auto bitcoinAddress = address.legacyAddress();
         return lockScriptForAddress(bitcoinAddress.string(), TWCoinTypeBitcoinCash);
     } else if (Decred::Address::isValid(string)) {
-        auto bytes = Base58::bitcoin.decodeCheck(string, Hash::blake256d);
+        auto bytes = Base58::bitcoin.decodeCheck(string, Hash::HasherBlake256d);
         if (bytes[1] == TW::p2pkhPrefix(TWCoinTypeDecred)) {
             return buildPayToPublicKeyHash(Data(bytes.begin() + 2, bytes.end()));
         }
