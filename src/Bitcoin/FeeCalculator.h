@@ -16,6 +16,7 @@ inline constexpr double gDefaultBytesBase{10};
 inline constexpr double gSegwitBytesPerInput{101.25};
 inline constexpr double gSegwitBytesPerOutput{31};
 inline constexpr double gSegwitBytesBase{gDefaultBytesBase};
+
 /// Interface for transaction fee calculator.
 class FeeCalculator {
   public:
