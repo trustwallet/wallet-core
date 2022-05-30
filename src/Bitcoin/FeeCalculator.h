@@ -35,8 +35,8 @@ class LinearFeeCalculator : public FeeCalculator {
         : bytesPerInput(bytesPerInput), bytesPerOutput(bytesPerOutput), bytesBase(bytesBase) {}
 
     [[nodiscard]] int64_t calculate(int64_t inputs, int64_t outputs,
-                                    int64_t byteFee) const override;
-    [[nodiscard]] int64_t calculateSingleInput(int64_t byteFee) const override;
+                                    int64_t byteFee) const noexcept override;
+    [[nodiscard]] int64_t calculateSingleInput(int64_t byteFee) const noexcept override;
 };
 
 /// Constant fee calculator
@@ -45,10 +45,11 @@ class ConstantFeeCalculator : public FeeCalculator {
     const int64_t fee;
     explicit constexpr ConstantFeeCalculator(int64_t fee) noexcept : fee(fee) {}
 
-    [[nodiscard]] int64_t calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const final {
+    [[nodiscard]] int64_t calculate(int64_t inputs, int64_t outputs,
+                                    int64_t byteFee) const noexcept final {
         return fee;
     }
-    [[nodiscard]] int64_t calculateSingleInput(int64_t byteFee) const final { return 0; }
+    [[nodiscard]] int64_t calculateSingleInput(int64_t byteFee) const noexcept final { return 0; }
 };
 
 /// Default Bitcoin transaction fee calculator, non-segwit.
