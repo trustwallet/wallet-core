@@ -272,7 +272,8 @@ Script Script::buildPayToPublicKeyHashReplay(const Data& hash, const Data& block
 
     // blockheight
     auto blockHeightData = encodeNumber(blockHeight);
-    script.bytes.push_back(blockHeightData.size());
+    // blockHeight size will never beyond 1 byte size
+    script.bytes.push_back(static_cast<byte>(blockHeightData.size()));
     append(script.bytes, blockHeightData);
     script.bytes.push_back(OP_CHECKBLOCKATHEIGHT);
 
@@ -305,7 +306,8 @@ Script Script::buildPayToScriptHashReplay(const Data& scriptHash, const Data& bl
 
     // blockheight
     auto blockHeightData = encodeNumber(blockHeight);
-    script.bytes.push_back(blockHeightData.size());
+    // blockHeight size will never beyond 1 byte size
+    script.bytes.push_back(static_cast<byte>(blockHeightData.size()));
     append(script.bytes, blockHeightData);
     script.bytes.push_back(OP_CHECKBLOCKATHEIGHT);
 
