@@ -25,6 +25,7 @@ static const std::string stakingUnbond = "Staking.unbond";
 static const std::string stakingWithdrawUnbond = "Staking.withdraw_unbonded";
 static const std::string stakingNominate = "Staking.nominate";
 static const std::string stakingChill = "Staking.chill";
+static const std::string stakingChillAndUnbond = "Staking.chill_and_unbond";
 
 // Readable decoded call index can be found from https://polkascan.io
 static std::map<const std::string, Data> polkadotCallIndices = {
@@ -35,6 +36,7 @@ static std::map<const std::string, Data> polkadotCallIndices = {
     {stakingWithdrawUnbond, Data{0x07, 0x03}},
     {stakingNominate,       Data{0x07, 0x05}},
     {stakingChill,          Data{0x07, 0x06}},
+    {stakingChillAndUnbond, Data{0x07, 0x07}},
     {utilityBatch,          Data{0x1a, 0x02}},
 };
 
@@ -46,6 +48,7 @@ static std::map<const std::string, Data> kusamaCallIndices = {
     {stakingWithdrawUnbond, Data{0x06, 0x03}},
     {stakingNominate,       Data{0x06, 0x05}},
     {stakingChill,          Data{0x06, 0x06}},
+    {stakingChillAndUnbond, Data{0x06, 0x07}},
     {utilityBatch,          Data{0x18, 0x02}},
 };
 
@@ -206,6 +209,32 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressTy
         case Proto::Staking::kChill:
             // call index
             append(data, getCallIndex(network, stakingChill));
+            break;
+
+        case Proto::Staking::kChillAndUnbond:
+            {
+                // encode call1
+                Data call1;
+                {
+                    auto staking1 = Proto::Staking();
+                    staking1.chill();
+                    // recursive call
+                    call1 = encodeStakingCall(staking1, network, specVersion);
+                }
+
+                // encode call2
+                Data call2;
+                {
+                    auto staking2 = Proto::Staking();
+                    auto* unbond = staking2.mutable_unbond();
+                    unbond->set_value(staking.unbond().value());
+                    // recursive call
+                    call2 = encodeStakingCall(staking2, network, specVersion);
+                }
+
+                auto calls = std::vector<Data>{call1, call2};
+                data = encodeBatchCall(calls, network);
+            }
             break;
 
         default:
