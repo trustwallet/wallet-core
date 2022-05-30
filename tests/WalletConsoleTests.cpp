@@ -90,7 +90,7 @@ TEST(WalletConsole, coin) {
     }
     {
         auto pos = outputss.str().length();
-        cmd.executeLine("coin eth");
+        cmd.executeLine("coin ethereum");
         string res = outputss.str().substr(pos);
         EXPECT_TRUE(res.find("Set active coin to: ethereum") != string::npos);
     }
