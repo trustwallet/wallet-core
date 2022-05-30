@@ -20,11 +20,11 @@ class ZenTests: XCTestCase {
 
     func testSign() {
         let key = PrivateKey(data: Data(hexString: "3a8e0a528f62f4ca2c77744c8a571def2845079b50105a9f7ef6b1b823def67a")!)!
-        let blockHash = Data(hexString: "0000000004561422697a29d424d925334db5ef2e80232306a1ad3fd35f72dc81")!
+        let blockHash = Data(hexString: "81dc725fd33fada1062323802eefb54d3325d924d4297a692214560400000000")!
         let blockHeight = Int64(1147624)
         let utxos = [
             BitcoinUnspentTransaction.with {
-                $0.outPoint.hash = Data(hexString: "62dea4b87fd66ca8e75a199c93131827ed40fb96cd8412e3476540abb5139ea3")!
+                $0.outPoint.hash = Data(hexString: "a39e13b5ab406547e31284cd96fb40ed271813939c195ae7a86cd67fb8a4de62")!
                 $0.outPoint.index = 0
                 $0.outPoint.sequence = UINT32_MAX
                 $0.script = Data(hexString: "76a914cf83669620de8bbdf2cefcdc5b5113195603c56588ac2081dc725fd33fada1062323802eefb54d3325d924d4297a69221456040000000003e88211b4")!
