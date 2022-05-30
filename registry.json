@@ -1883,7 +1883,7 @@
     "displayName": "Optimistic Ethereum",
     "coinId": 10000070,
     "slip44": 60,
-    "symbol": "OETH",
+    "symbol": "ETH",
     "decimals": 18,
     "blockchain": "Ethereum",
     "derivation": [
@@ -1910,7 +1910,7 @@
     "name": "Arbitrum",
     "coinId": 10042221,
     "slip44": 60,
-    "symbol": "ARETH",
+    "symbol": "ETH",
     "decimals": 18,
     "blockchain": "Ethereum",
     "derivation": [
@@ -2337,7 +2337,7 @@
     "id": "aurora",
     "name": "Aurora",
     "coinId": 1323161554,
-    "symbol": "AETH",
+    "symbol": "ETH",
     "decimals": 18,
     "blockchain": "Ethereum",
     "derivation": [
