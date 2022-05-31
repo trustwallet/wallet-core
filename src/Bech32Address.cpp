@@ -55,20 +55,11 @@ bool Bech32Address::decode(const std::string& addr, Bech32Address& obj_out, cons
     return true;
 }
 
-// Return the function address for a function instance
-template<typename T, typename... U>
-size_t getFunctionAddress(std::function<T(U...)> f) {
-    typedef T(fnType)(U...);
-    fnType ** fnPointer = f.template target<fnType*>();
-    return (size_t) *fnPointer;
-}
-
 Bech32Address::Bech32Address(const std::string& hrp, Hash::Hasher hasher, const PublicKey& publicKey)
 : hrp(hrp) {
     bool skipTypeByte = false;
     // Extended-key / keccak-hash skips first byte (Evmos)
-    if (publicKey.type == TWPublicKeyTypeSECP256k1Extended ||
-        getFunctionAddress(hasher) == size_t(static_cast<Hash::HasherSimpleType>(Hash::keccak256))) {
+    if (publicKey.type == TWPublicKeyTypeSECP256k1Extended || hasher == Hash::HasherKeccak256) {
         skipTypeByte = true;
     }
     const auto hash = publicKey.hash({}, hasher, skipTypeByte);

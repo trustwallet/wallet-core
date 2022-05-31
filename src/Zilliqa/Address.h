@@ -26,7 +26,7 @@ public:
     Address(const Data& keyHash) : Bech32Address(hrp, keyHash) {}
 
     /// Initializes an address with a public key.
-    Address(const PublicKey& publicKey) : Bech32Address(hrp, static_cast<Hash::HasherSimpleType>(Hash::sha256), publicKey) {}
+    Address(const PublicKey& publicKey) : Bech32Address(hrp, Hash::HasherSha256, publicKey) {}
 
     std::string checksumed() const {
         return checksum(getKeyHash());

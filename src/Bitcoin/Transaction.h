@@ -53,7 +53,7 @@ public:
     // List of transaction outputs
     TransactionOutputs<TransactionOutput> outputs;
 
-    TW::Hash::Hasher hasher = TW::Hash::sha256d;
+    TW::Hash::Hasher hasher = TW::Hash::HasherSha256d;
 
     /// Used for diagnostics; store previously estimated virtual size (if any; size in bytes)
     int previousEstimatedVirtualSize = 0;
@@ -61,7 +61,7 @@ public:
 public:
     Transaction() = default;
 
-    Transaction(int32_t version, uint32_t lockTime = 0, TW::Hash::Hasher hasher = TW::Hash::sha256d)
+    Transaction(int32_t version, uint32_t lockTime = 0, TW::Hash::Hasher hasher = TW::Hash::HasherSha256d)
         : version(version), lockTime(lockTime), inputs(), outputs(), hasher(hasher) {}
 
     /// Whether the transaction is empty.

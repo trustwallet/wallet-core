@@ -12,25 +12,33 @@ using namespace TW;
 
 namespace TW::Bitcoin {
 
-int64_t LinearFeeCalculator::calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const {
-    const auto txsize = int64_t(std::ceil(bytesPerInput * (double)inputs + bytesPerOutput * (double)outputs + bytesBase));
+constexpr double gDecredBytesPerInput{166};
+constexpr double gDecredBytesPerOutput{38};
+constexpr double gDecredBytesBase{12};
+
+int64_t LinearFeeCalculator::calculate(int64_t inputs, int64_t outputs,
+                                       int64_t byteFee) const noexcept {
+    const auto txsize =
+        static_cast<int64_t>(std::ceil(bytesPerInput * static_cast<double>(inputs) +
+                                       bytesPerOutput * static_cast<double>(outputs) + bytesBase));
     return txsize * byteFee;
 }
 
-int64_t LinearFeeCalculator::calculateSingleInput(int64_t byteFee) const {
-    return int64_t(std::ceil(bytesPerInput)) * byteFee; // std::ceil(101.25) = 102
+int64_t LinearFeeCalculator::calculateSingleInput(int64_t byteFee) const noexcept {
+    return static_cast<int64_t>(std::ceil(bytesPerInput)) * byteFee; // std::ceil(101.25) = 102
 }
 
 class DecredFeeCalculator : public LinearFeeCalculator {
 public:
-    DecredFeeCalculator(): LinearFeeCalculator(166, 38, 12) {}
+    constexpr DecredFeeCalculator() noexcept
+        : LinearFeeCalculator(gDecredBytesPerInput, gDecredBytesPerOutput, gDecredBytesBase) {}
 };
 
-DefaultFeeCalculator defaultFeeCalculator;
-DecredFeeCalculator decredFeeCalculator;
-SegwitFeeCalculator segwitFeeCalculator;
+constexpr DefaultFeeCalculator defaultFeeCalculator{};
+constexpr DecredFeeCalculator decredFeeCalculator{};
+constexpr SegwitFeeCalculator segwitFeeCalculator{};
 
-FeeCalculator& getFeeCalculator(TWCoinType coinType) {
+const FeeCalculator& getFeeCalculator(TWCoinType coinType) {
     switch (coinType) {
     case TWCoinTypeDecred:
         return decredFeeCalculator;

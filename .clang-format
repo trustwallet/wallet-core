@@ -6,6 +6,8 @@ BreakConstructorInitializers: BeforeComma
 ColumnLimit: 100
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 IndentWidth: 4
+IndentAccessModifiers: false
+AccessModifierOffset: -4
 PointerAlignment: Left
 IncludeCategories:
   - Regex:           '^"\.\./'

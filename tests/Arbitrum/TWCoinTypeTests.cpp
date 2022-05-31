@@ -22,7 +22,7 @@ TEST(TWArbitrumCoinType, TWCoinType) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeArbitrum), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeArbitrum));
 
-    assertStringsEqual(symbol, "ARETH");
+    assertStringsEqual(symbol, "ETH");
     assertStringsEqual(txUrl, "https://arbiscan.io/tx/0xa1e319be22c08155e5904aa211fb87df5f4ade48de79c6578b1cf3dfda9e498c");
     assertStringsEqual(accUrl, "https://arbiscan.io/address/0xecf9ffa7f51e1194f89c25ad8c484f6bfd04e1ac");
     assertStringsEqual(id, "arbitrum");

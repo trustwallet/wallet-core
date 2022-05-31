@@ -32,7 +32,7 @@ TEST(BitcoinFeeCalculator, LinearFeeCalculator) {
 }
 
 TEST(BitcoinFeeCalculator, BitcoinCalculate) {
-    FeeCalculator& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
+    const FeeCalculator& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 174);
     EXPECT_EQ(feeCalculator.calculate(1, 1, 1), 143);
     EXPECT_EQ(feeCalculator.calculate(0, 2, 1), 72);
@@ -42,7 +42,7 @@ TEST(BitcoinFeeCalculator, BitcoinCalculate) {
 }
 
 TEST(BitcoinFeeCalculator, SegwitCalculate) {
-    FeeCalculator& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
+    const FeeCalculator& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 174);
     EXPECT_EQ(feeCalculator.calculate(1, 1, 1), 143);
     EXPECT_EQ(feeCalculator.calculate(0, 2, 1), 72);
@@ -69,7 +69,7 @@ TEST(BitcoinFeeCalculator, DefaultCalculateSingleInput) {
 }
 
 TEST(BitcoinFeeCalculator, DecredCalculate) {
-    FeeCalculator& feeCalculator = getFeeCalculator(TWCoinTypeDecred);
+    const FeeCalculator& feeCalculator = getFeeCalculator(TWCoinTypeDecred);
     EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 254);
     EXPECT_EQ(feeCalculator.calculate(0, 0, 1), 12);
     EXPECT_EQ(feeCalculator.calculate(1, 2, 10), 2540);
