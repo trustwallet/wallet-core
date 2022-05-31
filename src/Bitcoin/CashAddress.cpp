@@ -27,7 +27,7 @@ constexpr size_t maxDataSize{104};
 
 namespace details {
 
-inline std::string buildPrefix(const std::string& hrp, const std::string& string) {
+inline std::string buildPrefix(const std::string& hrp, const std::string& string) noexcept {
     auto withPrefix = string;
     if (string.size() < hrp.size() || !std::equal(hrp.begin(), hrp.end(), string.begin())) {
         withPrefix = hrp + ":" + string;
@@ -35,7 +35,7 @@ inline std::string buildPrefix(const std::string& hrp, const std::string& string
     return withPrefix;
 }
 
-inline void determinePrefix(TW::Data& data) {
+inline void determinePrefix(TW::Data& data) noexcept {
     auto& prefix = data.front();
     switch (static_cast<Version>(prefix)) {
     case Version::p2kh:
