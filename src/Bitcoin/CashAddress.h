@@ -7,22 +7,27 @@
 #pragma once
 
 #include "Address.h"
-#include "../PublicKey.h"
 #include "../Data.h"
+#include "../PublicKey.h"
+
+#include <TrustWalletCore/TWHRP.h>
 
 #include <cstdint>
 #include <string>
 
 namespace TW::Bitcoin {
 
+inline const std::string gBitcoinCashHrp{HRP_BITCOINCASH};
+inline const std::string gECashHrp{HRP_ECASH};
+
 class CashAddress {
-  public:
+public:
     /// Number of bytes in an address.
-    static const size_t size = 34;
+    static constexpr size_t size{34};
 
     /// Address data consisting of a prefix byte followed by the public key
     /// hash.
-    std::array<byte, size> bytes;
+    std::array<byte, size> bytes{};
 
     /// Cash address human-readable part
     const std::string hrp;
@@ -34,67 +39,44 @@ class CashAddress {
     }
 
     /// Determines whether a string makes a valid  address.
-    static bool isValid(const std::string& hrp, const std::string& string);
+    static bool isValid(const std::string& hrp, const std::string& string) noexcept;
 
     /// Initializes a  address with a string representation.
     explicit CashAddress(const std::string& hrp, const std::string& string);
 
-    /// Initializes a  address with a collection of bytes.
-    explicit CashAddress(const std::string& hrp, const Data& data);
-
     /// Initializes a  address with a public key.
-    explicit CashAddress(const std::string& hrp, const PublicKey& publicKey);
+    explicit CashAddress(std::string hrp, const PublicKey& publicKey);
 
     /// Returns a string representation of the address.
-    std::string string() const;
+    [[nodiscard]] std::string string() const noexcept;
 
     /// Returns the legacy address representation.
-    Address legacyAddress() const;
+    [[nodiscard]] Address legacyAddress() const noexcept;
 };
 
-inline bool operator==(const CashAddress& lhs, const CashAddress& rhs) {
-    return lhs.bytes == rhs.bytes;
-}
-
 class BitcoinCashAddress : public CashAddress {
-  public:
-    static const std::string hrp; // HRP_BITCOINCASH
-
+public:
     /// Initializes an address with a string representation.
-    explicit BitcoinCashAddress(const std::string& string)
-        : CashAddress(hrp, string) {}
-
-    /// Initializes an address with a collection of bytes.
-    explicit BitcoinCashAddress(const Data& data)
-        : CashAddress(hrp, data) {}
+    explicit BitcoinCashAddress(const std::string& string) : CashAddress(gBitcoinCashHrp, string) {}
 
     /// Initializes an address with a public key.
-    explicit BitcoinCashAddress(const PublicKey& publicKey)
-        : CashAddress(hrp, publicKey) {}
+    explicit BitcoinCashAddress(const PublicKey& publicKey) : CashAddress(gBitcoinCashHrp, publicKey) {}
 
-    static bool isValid(const std::string& string) {
-        return CashAddress::isValid(hrp, string);
+    static bool isValid(const std::string& string) noexcept {
+        return CashAddress::isValid(gBitcoinCashHrp, string);
     }
 };
 
 class ECashAddress : public CashAddress {
-  public:
-    static const std::string hrp; // HRP_ECASH
-
+public:
     /// Initializes an address with a string representation.
-    explicit ECashAddress(const std::string& string)
-        : CashAddress(hrp, string) {}
-
-    /// Initializes an address with a collection of bytes.
-    explicit ECashAddress(const Data& data)
-        : CashAddress(hrp, data) {}
+    explicit ECashAddress(const std::string& string) : CashAddress(gECashHrp, string) {}
 
     /// Initializes an address with a public key.
-    explicit ECashAddress(const PublicKey& publicKey)
-        : CashAddress(hrp, publicKey) {}
+    explicit ECashAddress(const PublicKey& publicKey) : CashAddress(gECashHrp, publicKey) {}
 
-    static bool isValid(const std::string& string) {
-        return CashAddress::isValid(hrp, string);
+    static bool isValid(const std::string& string) noexcept {
+        return CashAddress::isValid(gECashHrp, string);
     }
 };
 
