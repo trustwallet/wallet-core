@@ -155,7 +155,7 @@ class PolkadotTests: XCTestCase {
             $0.transactionVersion = 12
             $0.privateKey = key.data
             $0.stakingCall.chillAndUnbond = PolkadotStaking.ChillAndUnbond.with {
-                $0.value = Data(hexString: "0x1766444D00")! // 1 DOT
+                $0.value = Data(hexString: "0x1766444D00")! // 10.05 DOT
             }
         }
         let output: PolkadotSigningOutput = AnySigner.sign(input: input, coin: .polkadot)
