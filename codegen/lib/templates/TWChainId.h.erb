@@ -26,7 +26,7 @@ enum TWChainId {
 //enum TWChainId chainIdForString(const char *_Nonnull string);
 
 <% coins.select{ |coin| coin.has_key?('chainId') }.each do |coin| -%>
-static const char *_Nonnull TWChainId<%= camel_case(coin['id']) %> = "<%= coin['chainId'] %>";
+static const char *_Nonnull ChainId<%= camel_case(coin['id']) %> = "<%= coin['chainId'] %>";
 <% end -%>
 
 TW_EXTERN_C_END
