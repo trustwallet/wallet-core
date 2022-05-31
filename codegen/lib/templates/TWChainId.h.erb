@@ -1,0 +1,32 @@
+// Copyright © 2017-2022 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+//
+// This is a GENERATED FILE from \registry.json, changes made here WILL BE LOST.
+//
+
+#pragma once
+
+#include "TWBase.h"
+
+TW_EXTERN_C_BEGIN
+
+/// Chain identifiers for blockchains, for convenience. Recommended to use the dynamic CoinType.ChainId() instead.
+/// See also TWEthereumChainId.
+TW_EXPORT_ENUM(uint32_t)
+enum TWChainId {
+<% coins.select{ |coin| coin.has_key?('chainId') && coin['deprecated'] != true }.each do |coin| -%>
+    TWChainId<%= camel_case(coin['id']) %>,  // <%= coin['chainId'] %>
+<% end -%>
+};
+
+//const char *_Nullable stringForChainId(enum TWChainId hrp);
+//enum TWChainId chainIdForString(const char *_Nonnull string);
+
+<% coins.select{ |coin| coin.has_key?('chainId') && coin['deprecated'] != true }.each do |coin| -%>
+static const char *_Nonnull ChainId<%= camel_case(coin['id']) %> = "<%= coin['chainId'] %>";
+<% end -%>
+
+TW_EXTERN_C_END
