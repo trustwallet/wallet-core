@@ -17,7 +17,7 @@ TW_EXTERN_C_BEGIN
 /// See also TWChainId.
 TW_EXPORT_ENUM(uint32_t)
 enum TWEthereumChainId {
-<% coins.select{ |coin| coin['blockchain'] == 'Ethereum' }.each do |coin| -%>
+<% coins.select{ |coin| coin['blockchain'] == 'Ethereum' && coin['deprecated'] != true }.each do |coin| -%>
     TWEthereumChainId<%= camel_case(coin['id']) %> = <%= coin['chainId'] %>,
 <% end -%>
 };
