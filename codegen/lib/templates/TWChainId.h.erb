@@ -1,0 +1,31 @@
+// Copyright © 2017-2022 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+//
+// This is a GENERATED FILE from \registry.json, changes made here WILL BE LOST.
+//
+
+#pragma once
+
+#include "TWBase.h"
+
+TW_EXTERN_C_BEGIN
+
+/// Chain identifiers for blockchains, for convenience. Recommended to use the dynamic CoinType.ChainId() instead.
+/// See also TWEthereumChainId.
+<% coins.select{ |coin| coin.has_key?('chainId') }.each do |coin| -%>
+static const char *_Nonnull TWChainId<%= camel_case(coin['id']) %> = "<%= coin['chainId'] %>";
+<% end -%>
+
+/// Chain identifiers for Ethereum-based blockchains, for convenience. Recommended to use the dynamic CoinType.ChainId() instead.
+/// See also TWChainId.
+TW_EXPORT_ENUM(uint32_t)
+enum TWEthereumChainId {
+<% coins.select{ |coin| coin['blockchain'] == 'Ethereum' }.each do |coin| -%>
+    TWEthereumChainId<%= camel_case(coin['id']) %> = <%= coin['chainId'] %>,
+<% end -%>
+};
+
+TW_EXTERN_C_END
