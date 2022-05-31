@@ -93,7 +93,7 @@ class TestPolkadotSigner {
 
         val input = Polkadot.SigningInput.newBuilder().apply {
             genesisHash = genesisHashStr
-            blockHash = "0x35ba668bb19453e8da6334cadcef2a27c8d4141bfc8b49e78e853c3d73e1ecd0"
+            blockHash = "0x35ba668bb19453e8da6334cadcef2a27c8d4141bfc8b49e78e853c3d73e1ecd0".toHexBytesInByteString()
             nonce = 6
             specVersion = 9200
             network = Polkadot.Network.POLKADOT

@@ -22,6 +22,7 @@ namespace TW::Polkadot {
     auto privateKey = PrivateKey(parse_hex("0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115"));
     auto privateKeyIOS = PrivateKey(parse_hex("37932b086586a6675e66e562fe68bd3eeea4177d066619c602fe3efc290ada62"));
     auto privateKeyThrow2 = PrivateKey(parse_hex("70a794d4f1019c3ce002f33062f45029c4f930a56b3d20ec477f7668c6bbc37f"));
+    auto privateKeyPolkadot = PrivateKey(parse_hex("298fcced2b497ed48367261d8340f647b3fca2d9415d57c2e3c5ef90482a2266"));
     auto addressThrow2 = "14Ztd3KJDaB9xyJtRkREtSZDdhLSbm7UUKt8Z7AwSv7q85G2";
     auto toPublicKey = PublicKey(parse_hex("0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"), TWPublicKeyTypeED25519);
     auto genesisHash = parse_hex("91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3");
@@ -309,16 +310,15 @@ TEST(PolkadotSigner, SignUnbond_070957) {
     ASSERT_EQ(hex(output.encoded()), "b501849dca538b7a925b8ea979cc546464a3c5f81d2398a3a272f6f93bdf4803f2f783003a762d9dc3f2aba8922c4babf7e6622ca1d74da17ab3f152d8f29b0ffee53c7e5e150915912a9dfd98ef115d272e096543eef9f513207dd606eea97d023a64087503080007020300286bee");
 }
 
-TEST(PolkadotSigner, SignUnbondAndChill) {
-
-    auto key = parse_hex("298fcced2b497ed48367261d8340f647b3fca2d9415d57c2e3c5ef90482a2266");
+TEST(PolkadotSigner, SignChillAndUnbond) {
     auto blockHash = parse_hex("0x35ba668bb19453e8da6334cadcef2a27c8d4141bfc8b49e78e853c3d73e1ecd0");
     auto input = Proto::SigningInput();
+
     input.set_genesis_hash(genesisHash.data(), genesisHash.size());
     input.set_block_hash(blockHash.data(), blockHash.size());
     input.set_nonce(6);
     input.set_spec_version(9200);
-    input.set_private_key(key.data(), key.size());
+    input.set_private_key(privateKeyPolkadot.bytes.data(), privateKeyPolkadot.bytes.size());
     input.set_network(Proto::Network::POLKADOT);
     input.set_transaction_version(12);
 
