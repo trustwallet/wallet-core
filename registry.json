@@ -1903,7 +1903,7 @@
     "displayName": "Optimistic Ethereum",
     "coinId": 10000070,
     "slip44": 60,
-    "symbol": "OETH",
+    "symbol": "ETH",
     "decimals": 18,
     "blockchain": "Ethereum",
     "derivation": [
@@ -1931,7 +1931,7 @@
     "name": "Arbitrum",
     "coinId": 10042221,
     "slip44": 60,
-    "symbol": "ARETH",
+    "symbol": "ETH",
     "decimals": 18,
     "blockchain": "Ethereum",
     "derivation": [
@@ -2372,7 +2372,7 @@
     "id": "aurora",
     "name": "Aurora",
     "coinId": 1323161554,
-    "symbol": "AURORAETH",
+    "symbol": "ETH",
     "decimals": 18,
     "blockchain": "Ethereum",
     "derivation": [
@@ -2384,7 +2384,7 @@
     "publicKeyType": "secp256k1Extended",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://explorer.mainnet.aurora.dev",
+      "url": "https://aurorascan.dev",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x99deebdb70f8027037abb3d3d0f3c7523daee857d85e9056d2671593ff2f2f28",
