@@ -140,8 +140,7 @@ class PolkadotTests: XCTestCase {
 
     func testChillAndUnbond() {
         // real key in 1p test
-        let wallet = HDWallet.test
-        let key = wallet.getKey(coin: .polkadot, derivationPath: "m/44'/354'/0'")
+        let key = PrivateKey(data: Data(hexString: "298fcced2b497ed48367261d8340f647b3fca2d9415d57c2e3c5ef90482a2266")!)!
 
         let input = PolkadotSigningInput.with {
             $0.genesisHash = genesisHash
@@ -162,6 +161,6 @@ class PolkadotTests: XCTestCase {
         let output: PolkadotSigningOutput = AnySigner.sign(input: input, coin: .polkadot)
 
         // https://polkadot.subscan.io/extrinsic/10541383-2
-        XCTAssertEqual("0x" + output.encoded.hexString, "0xd1018400c5d44a43a22aacee52646c0cd299bce4927030133d1d3b6570dffdbd1f5acc49001b9b4f2f056ef7f91147a90adfe4f86ff21b9380e3806c6daea4c1f37f914516e98e041f0cc5a34f3975428cac20357cc0bb224c04aa79162575c8ba4d9bad07d50318001a02080706070207004d446617")
+        XCTAssertEqual("0x" + output.encoded.hexString, "0xd10184008361bd08ddca5fda28b5e2aa84dc2621de566e23e089e555a42194c3eaf2da7900c891ba102db672e378945d74cf7f399226a76b43cab502436971599255451597fc2599902e4b62c7ce85ecc3f653c693fef3232be620984b5bb5bcecbbd7b209d50318001a02080706070207004d446617")
     }
 }

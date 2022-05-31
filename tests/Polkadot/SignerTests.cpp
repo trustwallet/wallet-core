@@ -309,4 +309,27 @@ TEST(PolkadotSigner, SignUnbond_070957) {
     ASSERT_EQ(hex(output.encoded()), "b501849dca538b7a925b8ea979cc546464a3c5f81d2398a3a272f6f93bdf4803f2f783003a762d9dc3f2aba8922c4babf7e6622ca1d74da17ab3f152d8f29b0ffee53c7e5e150915912a9dfd98ef115d272e096543eef9f513207dd606eea97d023a64087503080007020300286bee");
 }
 
+TEST(PolkadotSigner, SignUnbondAndChill) {
+
+    auto key = parse_hex("298fcced2b497ed48367261d8340f647b3fca2d9415d57c2e3c5ef90482a2266");
+    auto blockHash = parse_hex("0x35ba668bb19453e8da6334cadcef2a27c8d4141bfc8b49e78e853c3d73e1ecd0");
+    auto input = Proto::SigningInput();
+    input.set_genesis_hash(genesisHash.data(), genesisHash.size());
+    input.set_block_hash(blockHash.data(), blockHash.size());
+    input.set_nonce(6);
+    input.set_spec_version(9200);
+    input.set_private_key(key.data(), key.size());
+    input.set_network(Proto::Network::POLKADOT);
+    input.set_transaction_version(12);
+
+    auto stakingCall = input.mutable_staking_call();
+    auto bondnom = stakingCall->mutable_bond_and_nominate();
+    auto value = store(uint256_t(100500000000)); // 1 DOT
+    bondnom->set_value(value.data(), value.size());
+
+    auto output = Signer::sign(input);
+    // https://polkadot.subscan.io/extrinsic/10541383-2
+    ASSERT_EQ(hex(output.encoded()), "d10184008361bd08ddca5fda28b5e2aa84dc2621de566e23e089e555a42194c3eaf2da7900c891ba102db672e378945d74cf7f399226a76b43cab502436971599255451597fc2599902e4b62c7ce85ecc3f653c693fef3232be620984b5bb5bcecbbd7b209d50318001a02080706070207004d446617");
+}
+
 } // namespace
