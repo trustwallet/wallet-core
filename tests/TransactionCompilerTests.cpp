@@ -38,7 +38,7 @@ TEST(TransactionCompiler, BinanceCompileWithSignatures) {
         "1",  // amount
         "BNB",  // asset
         "",  // memo
-        ""  // chainId
+        "Binance-Chain-Nile"  // testnet chainId
     );
 
     {

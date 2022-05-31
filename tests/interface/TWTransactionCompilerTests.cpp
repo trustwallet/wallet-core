@@ -41,7 +41,7 @@ TEST(TWTransactionCompiler, ExternalSignatureSignBinance) {
         STRING("1").get(),  // amount
         STRING("BNB").get(),  // asset
         STRING("").get(),  // memo
-        STRING("").get()  // chainId
+        STRING("Binance-Chain-Nile").get()  // testnet chainId
     ));
 
     {

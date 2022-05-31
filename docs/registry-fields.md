@@ -131,7 +131,12 @@ Ex. `'bc'` for Bitcoin, `'cosmos'` for Cosmos.
 
 **`chainId`**
 Chain identifier, used by forks, e.g. in case of Ethereum (a decimal number), or Cosomos (a string ID).
-Ex.: `'1'` for Ethereum, `'61'` for Ethereum Classic.
+Chain identifier, in case of Ethereum it's a constant decimal number;
+for Cosmos, it's a dynamic string network id (usually changes with network upgrades).
+
+Please note the chain id might not be always latest in registry.  In transaction building current value has to be supplied each time.
+
+Ex.: `'1'` for Ethereum, `'61'` for Ethereum Classic, `'osmosis-1'`for Osmosis.
 
 **`publicKeyHasher`**
 Hash method used in XPub derivation.

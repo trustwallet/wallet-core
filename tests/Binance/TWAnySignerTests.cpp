@@ -19,7 +19,7 @@ using namespace TW::Binance;
 
 Proto::SigningOutput SignTest() {
     auto input = Proto::SigningInput();
-    input.set_chain_id("Binance-Chain-Nile");
+    input.set_chain_id("Binance-Chain-Tigris");
     input.set_account_number(0);
     input.set_sequence(0);
     input.set_source(0);
@@ -61,7 +61,7 @@ Proto::SigningOutput SignTest() {
 
 TEST(TWAnySignerBinance, Sign) {
     Proto::SigningOutput output = SignTest();
-    ASSERT_EQ(hex(output.encoded()), "b801f0625dee0a462a2c87fa0a1f0a1440c2979694bbc961023d1d27be6fc4d21a9febe612070a03424e421001121f0a14bffe47abfaede50419c577f1074fee6dd1535cd112070a03424e421001126a0a26eb5ae98721026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e50212401b1181faec30b60a2ddaa2804c253cf264c69180ec31814929b5de62088c0c5a45e8a816d1208fc5366bb8b041781a6771248550d04094c3d7a504f9e8310679");
+    ASSERT_EQ(hex(output.encoded()), "b801f0625dee0a462a2c87fa0a1f0a1440c2979694bbc961023d1d27be6fc4d21a9febe612070a03424e421001121f0a14bffe47abfaede50419c577f1074fee6dd1535cd112070a03424e421001126a0a26eb5ae98721026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e50212409073e581e1ea4fdf11242fe30a732f96d20799c638354bcf7a242161ac015b9321fbbed93e85b0ef9b5de58fba74dff54ecb1e379ef26e1023be8996003f4899");
 }
 
 TEST(TWAnySignerBinance, SignJSON) {
@@ -77,7 +77,7 @@ TEST(TWAnySignerBinance, MultithreadedSigning) {
     auto f = [](int n) {
         for (int i = 0; i < n; i++) {
             Proto::SigningOutput output = SignTest();
-            ASSERT_EQ(hex(output.encoded()), "b801f0625dee0a462a2c87fa0a1f0a1440c2979694bbc961023d1d27be6fc4d21a9febe612070a03424e421001121f0a14bffe47abfaede50419c577f1074fee6dd1535cd112070a03424e421001126a0a26eb5ae98721026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e50212401b1181faec30b60a2ddaa2804c253cf264c69180ec31814929b5de62088c0c5a45e8a816d1208fc5366bb8b041781a6771248550d04094c3d7a504f9e8310679");
+            ASSERT_EQ(hex(output.encoded()), "b801f0625dee0a462a2c87fa0a1f0a1440c2979694bbc961023d1d27be6fc4d21a9febe612070a03424e421001121f0a14bffe47abfaede50419c577f1074fee6dd1535cd112070a03424e421001126a0a26eb5ae98721026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e50212409073e581e1ea4fdf11242fe30a732f96d20799c638354bcf7a242161ac015b9321fbbed93e85b0ef9b5de58fba74dff54ecb1e379ef26e1023be8996003f4899");
         }
     };
 

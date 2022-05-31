@@ -1266,7 +1266,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "bnb",
-    "chainId": "Binance-Chain-Nile",
+    "chainId": "Binance-Chain-Tigris",
     "explorer": {
       "url": "https://explorer.binance.org",
       "txPath": "/tx/",
@@ -1895,6 +1895,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "thor",
+    "chainId": "thorchain-mainnet-v1",
     "explorer": {
       "url": "https://viewblock.io/thorchain",
       "txPath": "/tx/",
@@ -2105,6 +2106,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "cro",
+    "chainId": "crypto-org-chain-mainnet-1",
     "addressHasher": "sha256ripemd",
     "explorer": {
       "url": "https://crypto.org/explorer",
@@ -2196,6 +2198,7 @@
     "curve": "secp256k1",
     "publicKeyType": "secp256k1",
     "hrp": "osmo",
+    "chainId": "osmosis-1",
     "addressHasher": "sha256ripemd",
     "explorer": {
       "url": "https://mintscan.io/osmosis",
