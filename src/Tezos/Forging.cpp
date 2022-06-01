@@ -143,7 +143,11 @@ Data forgeOperation(const Operation& operation) {
         append(forged, forgedAmount);
         append(forged, forgeBool(false));
         append(forged, forgedDestination);
-        append(forged, forgeBool(false));
+        if (operation.transaction_operation_data().encoded_parameter().empty()) {
+            append(forged, forgeBool(false));
+        } else {
+            append(forged, TW::data(operation.transaction_operation_data().encoded_parameter()));
+        }
         return forged;
     }
 

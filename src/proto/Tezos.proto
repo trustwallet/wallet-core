@@ -63,6 +63,7 @@ message Operation {
 message TransactionOperationData {
   string destination = 1;
   int64 amount = 2;
+  bytes encoded_parameter = 3;
 }
 
 // Reveal operation specific data.
