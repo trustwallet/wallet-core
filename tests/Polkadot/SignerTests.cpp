@@ -323,13 +323,13 @@ TEST(PolkadotSigner, SignChillAndUnbond) {
     input.set_transaction_version(12);
 
     auto era = input.mutable_era();
-    era->set_block_number(3540983);
+    era->set_block_number(10541373);
     era->set_period(64);
 
     auto stakingCall = input.mutable_staking_call();
-    auto bondnom = stakingCall->mutable_bond_and_nominate();
-    auto value = store(uint256_t(100500000000)); // 1 DOT
-    bondnom->set_value(value.data(), value.size());
+    auto chillBond = stakingCall->mutable_chill_and_unbond();
+    auto value = store(uint256_t(100500000000)); // 10.05 DOT
+    chillBond->set_value(value.data(), value.size());
 
     auto output = Signer::sign(input);
     // https://polkadot.subscan.io/extrinsic/10541383-2
