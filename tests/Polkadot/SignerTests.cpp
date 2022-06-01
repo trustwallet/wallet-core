@@ -322,6 +322,10 @@ TEST(PolkadotSigner, SignChillAndUnbond) {
     input.set_network(Proto::Network::POLKADOT);
     input.set_transaction_version(12);
 
+    auto era = input.mutable_era();
+    era->set_block_number(3540983);
+    era->set_period(64);
+
     auto stakingCall = input.mutable_staking_call();
     auto bondnom = stakingCall->mutable_bond_and_nominate();
     auto value = store(uint256_t(100500000000)); // 1 DOT

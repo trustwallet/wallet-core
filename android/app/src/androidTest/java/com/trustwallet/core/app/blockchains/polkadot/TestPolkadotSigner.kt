@@ -103,7 +103,7 @@ class TestPolkadotSigner {
             network = Polkadot.Network.POLKADOT
             transactionVersion = 12
             privateKey = "298fcced2b497ed48367261d8340f647b3fca2d9415d57c2e3c5ef90482a2266".toHexBytesInByteString()
-            era = era.build()
+            era = era
             stakingCall = Polkadot.Staking.newBuilder().apply {
                 chillAndUnbond = call.build()
             }.build()
