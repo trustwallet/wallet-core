@@ -8,8 +8,6 @@ android {
     defaultConfig {
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
         externalNativeBuild {
             cmake {
                 arguments "-DCMAKE_BUILD_TYPE=Release"
@@ -28,9 +26,19 @@ android {
         }
         debug {
             minifyEnabled false
-            // limit platforms built for testing
-            ndk {
-                abiFilters 'x86'
+            splits {
+                abi {
+                    // Enables building multiple APKs per ABI.
+                    enable true
+                    // By default all ABIs are included, so use reset() and include to specify that we only
+                    // want APKs for x86 and arm64-v8a.
+
+                    // Resets the list of ABIs that Gradle should create APKs for to none.
+                    reset()
+
+                    // Specifies a list of ABIs that Gradle should create APKs for.
+                    include "x86", "arm64-v8a"
+                }
             }
         }
     }
