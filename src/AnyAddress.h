@@ -29,6 +29,7 @@
 #include "Ronin/Address.h"
 #include "Solana/Address.h"
 #include "Zcash/TAddress.h"
+#include "Zen/Address.h"
 #include "Zilliqa/Address.h"
 
 #include <string>
@@ -108,6 +109,11 @@ class AnyAddress {
         case TWCoinTypeZcash:
         case TWCoinTypeZelcash: {
             auto addr = Zcash::TAddress(string);
+            return {addr.bytes.begin() + 2, addr.bytes.end()};
+        }
+
+        case TWCoinTypeZen: {
+            auto addr = Zen::Address(string);
             return {addr.bytes.begin() + 2, addr.bytes.end()};
         }
 

@@ -54,6 +54,7 @@
 #include "Waves/Entry.h"
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
+#include "Zen/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
@@ -101,6 +102,7 @@ Waves::Entry wavesDP;
 Zcash::Entry zcashDP;
 Zilliqa::Entry zilliqaDP;
 BitcoinDiamond::Entry BitcoinDiamondDP;
+Zen::Entry ZenDP;
 // end_of_coin_dipatcher_declarations_marker_do_not_modify
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
@@ -194,6 +196,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeBitcoinDiamond: entry = &BitcoinDiamondDP; break;
         case TWCoinTypeMetis: entry = &ethereumDP; break;
         case TWCoinTypeAurora: entry = &ethereumDP; break;
+        case TWCoinTypeZen: entry = &ZenDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;

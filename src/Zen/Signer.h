@@ -1,25 +1,29 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #pragma once
+
+#include "../Data.h"
 #include "../proto/Bitcoin.pb.h"
-#include "Data.h"
 
 #include <vector>
 #include <optional>
 #include <utility>
-namespace TW::Zcash {
+
+namespace TW::Zen {
 
 using SigningInput = Bitcoin::Proto::SigningInput;
 using SigningOutput = Bitcoin::Proto::SigningOutput;
 using TransactionPlan = Bitcoin::Proto::TransactionPlan;
 using PreSigningOutput = Bitcoin::Proto::PreSigningOutput;
 
+/// Helper class that performs Zen transaction signing.
 class Signer {
-  public:
+public:
+    /// Hide default constructor
     Signer() = delete;
 
     /// Returns a transaction plan (utxo selection, fee estimation)
@@ -32,4 +36,4 @@ class Signer {
     static PreSigningOutput preImageHashes(const SigningInput& input) noexcept;
 };
 
-} // namespace TW::Zcash
+} // namespace TW::Zen
