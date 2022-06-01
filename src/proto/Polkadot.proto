@@ -62,6 +62,10 @@ message Staking {
         repeated string nominators = 1;
     }
 
+    message ChillAndUnbond {
+        bytes value = 1;
+    }
+
     message Chill {}
 
     oneof message_oneof {
@@ -72,6 +76,7 @@ message Staking {
         WithdrawUnbonded withdraw_unbonded = 5;
         Nominate nominate = 6;
         Chill chill = 7;
+        ChillAndUnbond chill_and_unbond = 8;
     }
 }
 

@@ -208,6 +208,32 @@ Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressTy
             append(data, getCallIndex(network, stakingChill));
             break;
 
+        case Proto::Staking::kChillAndUnbond:
+            {
+                // encode call1
+                Data call1;
+                {
+                    auto staking1 = Proto::Staking();
+                    staking1.mutable_chill();
+                    // recursive call
+                    call1 = encodeStakingCall(staking1, network, specVersion);
+                }
+
+                // encode call2
+                Data call2;
+                {
+                    auto staking2 = Proto::Staking();
+                    auto* unbond = staking2.mutable_unbond();
+                    unbond->set_value(staking.chill_and_unbond().value());
+                    // recursive call
+                    call2 = encodeStakingCall(staking2, network, specVersion);
+                }
+
+                auto calls = std::vector<Data>{call1, call2};
+                data = encodeBatchCall(calls, network);
+            }
+            break;
+
         default:
             break;
     }
