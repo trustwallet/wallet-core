@@ -16,9 +16,10 @@ TW_EXTERN_C_BEGIN
 /// Chain identifiers for Ethereum-based blockchains, for convenience. Recommended to use the dynamic CoinType.ChainId() instead.
 /// See also TWChainId.
 TW_EXPORT_ENUM(uint32_t)
-enum TWEthereumChainId {
-<% coins.select{ |coin| coin['blockchain'] == 'Ethereum' && coin['deprecated'] != true }.each do |coin| -%>
-    TWEthereumChainId<%= camel_case(coin['id']) %> = <%= coin['chainId'] %>,
+enum TWEthereumChainID {
+<% chains = ['Ethereum', 'Ronin', 'Vechain'] -%>
+<% coins.select{ |coin| chains.include?(coin['blockchain']) && coin['deprecated'] != true }.each do |coin| -%>
+    TWEthereumChainID<%= camel_case(coin['id']) %> = <%= coin['chainId'] %>,
 <% end -%>
 };
 

@@ -60,8 +60,7 @@ erbs = [
   {'template' => 'registry.md.erb', 'folder' => 'docs', 'file' => 'registry.md'},
   {'template' => 'hrp.cpp.erb', 'folder' => 'src/Generated', 'file' => 'TWHRP.cpp'},
   {'template' => 'hrp.h.erb', 'folder' => 'include/TrustWalletCore', 'file' => 'TWHRP.h'},
-  {'template' => 'TWChainId.h.erb', 'folder' => 'include/TrustWalletCore', 'file' => 'TWChainId.h'},
-  {'template' => 'TWEthereumChainId.h.erb', 'folder' => 'include/TrustWalletCore', 'file' => 'TWEthereumChainId.h'}
+  {'template' => 'TWEthereumChainID.h.erb', 'folder' => 'include/TrustWalletCore', 'file' => 'TWEthereumChainID.h'}
 ]
 
 FileUtils.mkdir_p File.join('src', 'Generated')
