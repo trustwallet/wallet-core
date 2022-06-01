@@ -2457,7 +2457,7 @@
       "documentation": "https://docs.evmos.org/"
     }
   },
-    {
+  {
     "id": "nativeevmos",
     "name": "NativeEvmos",
     "displayName": "Native Evmos",
@@ -2486,6 +2486,36 @@
       "client": "https://github.com/tharsis/evmos",
       "clientPublic": "https://rest.bd.evmos.org:1317",
       "clientDocs": ""
+    }
+  },
+  {
+    "id": "platon",
+    "name": "PlatON",
+    "coinId": 486,
+    "symbol": "LAT",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/486'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "210425",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://scan.platon.network/",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x9edaf0f7d9c6629c31bbf0471fc07d696c73b566b93783f7e25d8d5d2b62fa4f",
+      "sampleAccount": "0x5bb497e8d9fe26e92dd1be01e32076c8e024d167"
+    },
+    "info": {
+      "url": "https://www.platon.network/",
+      "source": "https://github.com/PlatONnetwork/PlatON-Go",
+      "rpc": "https://openapi2.platon.network/rpc",
+      "documentation": "https://eth.wiki/json-rpc/API"
     }
   }
 ]

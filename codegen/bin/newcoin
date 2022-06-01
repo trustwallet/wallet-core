@@ -14,7 +14,7 @@ require 'entity_decl'
 require 'code_generator'
 require 'coin_test_gen'
 
-flag_comment = " // TODO remove if the blockchain already exists, or just remove this comment if not"
+$flag_comment = " // TODO remove if the blockchain already exists, or just remove this comment if not"
 
 # Transforms a coin name to a C++ name
 def self.format_name(coin)
@@ -57,18 +57,18 @@ end
 def insert_blockchain_type(coin)
     target_file = "include/TrustWalletCore/TWBlockchain.h"
     line_number = File.readlines(target_file).count + 2 # add offset because of removed blockchain enum type
-    target_line = "    TWBlockchain#{coin['blockchain']} = #{line_number - 17}, " + flag_comment + "\n"
+    target_line = "    TWBlockchain#{coin['blockchain']} = #{line_number - 17}, " + $flag_comment + "\n"
     insert_target_line(target_file, target_line, "};\n")
 end
 
 def insert_coin_entry(coin)
     target_file = "src/Coin.cpp"
     entryName = coin['blockchain']
-    target_line = "#include \"#{entryName}/Entry.h\"" + flag_comment + "\n"
+    target_line = "#include \"#{entryName}/Entry.h\"" + $flag_comment + "\n"
     insert_target_line(target_file, target_line, "// end_of_coin_includes_marker_do_not_modify\n")
-    target_line = "#{entryName}::Entry #{entryName}DP;" + flag_comment + "\n"
+    target_line = "#{entryName}::Entry #{entryName}DP;" + $flag_comment + "\n"
     insert_target_line(target_file, target_line, "// end_of_coin_dipatcher_declarations_marker_do_not_modify\n")
-    target_line = "        case TWCoinType#{entryName}: entry = &#{entryName}DP; break;" + flag_comment + "\n"
+    target_line = "        case TWCoinType#{entryName}: entry = &#{entryName}DP; break;" + $flag_comment + "\n"
     insert_target_line(target_file, target_line, "        // end_of_coin_dipatcher_switch_marker_do_not_modify\n")
 end
 
