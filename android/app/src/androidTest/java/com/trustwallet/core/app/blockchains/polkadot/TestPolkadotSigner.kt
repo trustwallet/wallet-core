@@ -90,6 +90,10 @@ class TestPolkadotSigner {
         val call = Polkadot.Staking.ChillAndUnbond.newBuilder().apply {
             value = "0x1766444D00".toHexBytesInByteString() // 10.05 DOT
         }
+        val era = Polkadot.Era.newBuilder().apply {
+            blockNumber = 10541373
+            period = 64
+        }
 
         val input = Polkadot.SigningInput.newBuilder().apply {
             genesisHash = genesisHashStr
@@ -99,6 +103,7 @@ class TestPolkadotSigner {
             network = Polkadot.Network.POLKADOT
             transactionVersion = 12
             privateKey = "298fcced2b497ed48367261d8340f647b3fca2d9415d57c2e3c5ef90482a2266".toHexBytesInByteString()
+            era = era.build()
             stakingCall = Polkadot.Staking.newBuilder().apply {
                 chillAndUnbond = call.build()
             }.build()
