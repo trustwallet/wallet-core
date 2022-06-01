@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -14,21 +14,28 @@
 
 
 TEST(TW<%= format_name(coin['name']) %>CoinType, TWCoinType) {
-    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinType<%= format_name(coin['name']) %>));
-    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("<%= explorer_sample_tx(coin) %>"));
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinType<%= format_name(coin['name']) %>, txId.get()));
-    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("<%= explorer_sample_account(coin) %>"));
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinType<%= format_name(coin['name']) %>, accId.get()));
-    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinType<%= format_name(coin['name']) %>));
-    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinType<%= format_name(coin['name']) %>));
+    const auto coin = TWCoinType<%= format_name(coin['name']) %>;
+    const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
+    const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
+    const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
+<% if !coin['chainId'].nil? -%>
+    const auto chainId = WRAPS(TWCoinTypeChainId(coin));
+<% end -%>
+    const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("<%= explorer_sample_tx(coin) %>"));
+    const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
+    const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("<%= explorer_sample_account(coin) %>"));
+    const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
 
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinType<%= format_name(coin['name']) %>), <%= coin['decimals'] %>);
-    ASSERT_EQ(TWBlockchain<%= coin['blockchain'] %>, TWCoinTypeBlockchain(TWCoinType<%= format_name(coin['name']) %>));
-    ASSERT_EQ(0x<%= to_hex(coin['p2shPrefix']) %>, TWCoinTypeP2shPrefix(TWCoinType<%= format_name(coin['name']) %>));
-    ASSERT_EQ(0x<%= to_hex(coin['staticPrefix']) %>, TWCoinTypeStaticPrefix(TWCoinType<%= format_name(coin['name']) %>));
-    assertStringsEqual(symbol, "<%= coin['symbol'] %>");
-    assertStringsEqual(txUrl, "<%= explorer_tx_url(coin) %><%= explorer_sample_tx(coin) %>");
-    assertStringsEqual(accUrl, "<%= explorer_account_url(coin) %><%= explorer_sample_account(coin) %>");
     assertStringsEqual(id, "<%= coin['id'] %>");
     assertStringsEqual(name, "<%= display_name(coin) %>");
+    assertStringsEqual(symbol, "<%= coin['symbol'] %>");
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), <%= coin['decimals'] %>);
+    ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchain<%= coin['blockchain'] %>);
+    ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x<%= to_hex(coin['p2shPrefix']) %>);
+    ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0x<%= to_hex(coin['staticPrefix']) %>);
+<% if !coin['chainId'].nil? -%>
+    assertStringsEqual(chainId, "<%= format_name(coin['chainId']) %>");
+<% end -%>
+    assertStringsEqual(txUrl, "<%= explorer_tx_url(coin) %><%= explorer_sample_tx(coin) %>");
+    assertStringsEqual(accUrl, "<%= explorer_account_url(coin) %><%= explorer_sample_account(coin) %>");
 }

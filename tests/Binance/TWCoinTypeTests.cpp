@@ -21,6 +21,7 @@ TEST(TWBinanceCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeBinance, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBinance));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBinance));
+    const auto chainId = WRAPS(TWCoinTypeChainId(TWCoinTypeBinance));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBinance), 8);
     ASSERT_EQ(TWBlockchainBinance, TWCoinTypeBlockchain(TWCoinTypeBinance));
@@ -31,4 +32,5 @@ TEST(TWBinanceCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://explorer.binance.org/address/bnb1u7jm0cll5h3224y0tapwn6gf6pr49ytewx4gsz");
     assertStringsEqual(id, "binance");
     assertStringsEqual(name, "BNB Beacon Chain");
+    assertStringsEqual(chainId, "Binance-Chain-Tigris");
 }

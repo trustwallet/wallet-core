@@ -316,6 +316,10 @@ enum TWHRP TW::hrp(TWCoinType coin) {
     return getCoinInfo(coin).hrp;
 }
 
+const char* TW::chainId(TWCoinType coin) {
+    return getCoinInfo(coin).chainId;
+}
+
 Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
     return getCoinInfo(coin).publicKeyHasher;
 }

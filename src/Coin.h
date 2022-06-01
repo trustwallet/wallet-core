@@ -101,6 +101,9 @@ byte p2shPrefix(TWCoinType coin);
 /// Returns human readable part for a coin type.
 enum TWHRP hrp(TWCoinType coin);
 
+/// Returns chain ID.
+const char* chainId(TWCoinType coin);
+
 // Note: use output parameter to avoid unneeded copies
 void anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 
@@ -140,6 +143,7 @@ struct CoinInfo {
     byte p2pkhPrefix;
     byte p2shPrefix;
     TWHRP hrp;
+    const char* chainId;
     Hash::Hasher publicKeyHasher;
     Hash::Hasher base58Hasher;
     Hash::Hasher addressHasher;
