@@ -68,5 +68,7 @@ public:
     void setReferenceBlock(const Data& referenceBlockId);
 
     static const int32_t ExpirySeconds = 30;
+    /// Get formatted date
+    static std::string formatDate(int32_t date);
 };
 } // namespace TW::EOS

@@ -99,14 +99,21 @@ void Transaction::serialize(Data& os) const noexcept{
     encodeCollection(transactionExtensions, os);
 }
 
-json Transaction::serialize() const {
-
-    // get a formatted date
-    char formattedDate[20];
-    time_t time = expiration;
-    if (strftime(formattedDate, 19, "%FT%T", std::gmtime(&time)) != 19) {
-        std::runtime_error("Error creating a formatted string!");
+/// Get formatted date
+std::string Transaction::formatDate(int32_t date) {
+    constexpr size_t DateSize = 19;
+    constexpr size_t BufferSize = DateSize + 1;
+    char formattedDate[BufferSize];
+    time_t time = static_cast<time_t>(date);
+    const auto t = strftime(formattedDate, BufferSize, "%FT%T", std::gmtime(&time));
+    if (t != DateSize) {
+        throw std::runtime_error("Error creating a formatted string!");
     }
+    return std::string(formattedDate, DateSize);
+}
+
+json Transaction::serialize() const {
+    const auto expirationDateFormatted = formatDate(expiration);
 
     // create a json array of signatures
     json sigs = json::array();
@@ -118,7 +125,7 @@ json Transaction::serialize() const {
     json obj;
     obj["ref_block_num"] = refBlockNumber;
     obj["ref_block_prefix"] = refBlockPrefix;
-    obj["expiration"] = std::string(formattedDate, 19);
+    obj["expiration"] = expirationDateFormatted;
     obj["max_net_usage_words"] = maxNetUsageWords;
     obj["max_cpu_usage_ms"] = maxCPUUsageInMS;
     obj["delay_sec"] = delaySeconds;
