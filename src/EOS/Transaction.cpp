@@ -13,7 +13,7 @@
 
 #include <ctime>
 #include <stdexcept>
-#include <cassert>
+//#include <cassert> TODO check
 
 using namespace TW;
 using namespace TW::EOS;
