@@ -101,11 +101,8 @@ void Transaction::serialize(Data& os) const noexcept{
 }
 
 json Transaction::serialize() const {
-
-    // get a formatted date
-    time_t time = expiration;
     std::stringstream buffer;
-    buffer << std::put_time(std::gmtime(&time), "%FT%T");
+    buffer << std::put_time(std::gmtime(reinterpret_cast<const time_t*>(&expiration)), "%FT%T");
     if (buffer.fail() || buffer.bad()) {
         throw std::runtime_error("Error creating a formatted string!");
     }
