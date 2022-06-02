@@ -106,6 +106,9 @@ json Transaction::serialize() const {
     time_t time = expiration;
     std::stringstream buffer;
     buffer << std::put_time(std::gmtime(&time), "%FT%T");
+    if (buffer.fail() || buffer.bad()) {
+        throw std::runtime_error("Error creating a formatted string!");
+    }
 
     // create a json array of signatures
     json sigs = json::array();
