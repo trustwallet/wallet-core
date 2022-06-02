@@ -13,6 +13,7 @@
 
 #include <ctime>
 #include <stdexcept>
+#include <cassert>
 
 using namespace TW;
 using namespace TW::EOS;
@@ -99,16 +100,14 @@ void Transaction::serialize(Data& os) const noexcept{
     encodeCollection(transactionExtensions, os);
 }
 
-/// Get formatted date
 std::string Transaction::formatDate(int32_t date) {
+    // format is "2022-06-02T08:53:20", always 19 characters long
     constexpr size_t DateSize = 19;
     constexpr size_t BufferSize = DateSize + 1;
     char formattedDate[BufferSize];
     time_t time = static_cast<time_t>(date);
-    const auto t = strftime(formattedDate, BufferSize, "%FT%T", std::gmtime(&time));
-    if (t != DateSize) {
-        throw std::runtime_error("Error creating a formatted string!");
-    }
+    const size_t t = strftime(formattedDate, BufferSize, "%FT%T", std::gmtime(&time));
+    assert(t == DateSize);
     return std::string(formattedDate, DateSize);
 }
 
