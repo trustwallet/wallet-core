@@ -12,6 +12,7 @@
 #include <TrezorCrypto/ripemd160.h>
 
 #include <ctime>
+#include <iomanip>
 #include <stdexcept>
 
 using namespace TW;
