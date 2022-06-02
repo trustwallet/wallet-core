@@ -138,6 +138,7 @@ class AnyAddress {
         case TWCoinTypeMetis:
         case TWCoinTypeAurora:
         case TWCoinTypeEvmos:
+        case TWCoinTypePlatON: 
             {
                 const auto addr = Ethereum::Address(string);
                 return {addr.bytes.begin(), addr.bytes.end()};
