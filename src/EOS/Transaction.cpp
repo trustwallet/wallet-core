@@ -106,9 +106,8 @@ std::string Transaction::formatDate(int32_t date) {
     constexpr size_t BufferSize = DateSize + 1;
     char formattedDate[BufferSize];
     time_t time = static_cast<time_t>(date);
-    const size_t t = strftime(formattedDate, BufferSize, "%FT%T", std::gmtime(&time));
-    assert(t == DateSize);
-    return std::string(formattedDate, DateSize);
+    const size_t len = strftime(formattedDate, BufferSize, "%FT%T", std::gmtime(&time));
+    return std::string(formattedDate, len);
 }
 
 json Transaction::serialize() const {
