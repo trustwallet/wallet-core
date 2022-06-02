@@ -105,7 +105,7 @@ json Transaction::serialize() const {
     char formattedDate[20];
     time_t time = expiration;
     if (strftime(formattedDate, 19, "%FT%T", std::gmtime(&time)) != 19) {
-        std::runtime_error("Error creating a formatted string!");
+        throw std::runtime_error("Error creating a formatted string!");
     }
 
     // create a json array of signatures
