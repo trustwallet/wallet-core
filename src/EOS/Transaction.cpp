@@ -103,10 +103,10 @@ void Transaction::serialize(Data& os) const noexcept{
 std::string Transaction::formatDate(int32_t date) {
     // format is "2022-06-02T08:53:20", always 19 characters long
     constexpr size_t DateSize = 19;
-    constexpr size_t BufferSize = DateSize + 1;
+    constexpr size_t BufferSize = DateSize + 2;
     char formattedDate[BufferSize];
     time_t time = static_cast<time_t>(date);
-    const size_t len = strftime(formattedDate, BufferSize, "%FT%T", std::gmtime(&time));
+    const size_t len = strftime(formattedDate, BufferSize - 1, "%FT%T", std::gmtime(&time));
     return std::string(formattedDate, len);
 }
 
