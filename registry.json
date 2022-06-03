@@ -2502,7 +2502,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
-    "chainId": 1285,
+    "chainId": "1285",
     "explorer": {
       "url": "https://moonriver.moonscan.io",
       "txPath": "/tx/",
@@ -2529,7 +2529,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
-    "chainId": 1284,
+    "chainId": "1284",
     "explorer": {
       "url": "https://moonscan.io",
       "txPath": "/tx/",
