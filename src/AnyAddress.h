@@ -108,7 +108,10 @@ public:
             return {addr.bytes.begin() + 2, addr.bytes.end()};
         }
 
-        case TWBlockchainEthereum: {
+        case TWBlockchainEthereum:
+        case TWBlockchainVechain:
+        case TWBlockchainTheta:
+        case TWBlockchainAion: {
             const auto addr = Ethereum::Address(string);
             return {addr.bytes.begin(), addr.bytes.end()};
         }
