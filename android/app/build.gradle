@@ -20,7 +20,7 @@ android {
             minifyEnabled false
             // limit platforms built for testing
             ndk {
-                abiFilters 'x86'
+                abiFilters 'x86', 'arm64-v8a'
             }
         }
     }
