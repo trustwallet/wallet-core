@@ -27,7 +27,7 @@
     "dist"
   ],
   "dependencies": {
-    "protobufjs": "^6.11.2"
+    "protobufjs": ">=6.11.3"
   },
   "devDependencies": {
     "@types/chai": "^4.3.0",
