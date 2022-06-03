@@ -3,11 +3,10 @@ apply plugin: 'maven-publish'
 group='com.github.trustwallet'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 32
     ndkVersion '23.1.7779620'
     defaultConfig {
         minSdkVersion 23
-        targetSdkVersion 29
         externalNativeBuild {
             cmake {
                 arguments "-DCMAKE_BUILD_TYPE=Release"
