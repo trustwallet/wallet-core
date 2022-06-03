@@ -7,7 +7,9 @@
 #pragma once
 
 #include <TrezorCrypto/cash_addr.h>
+#include <TrustWalletCore/TWBlockchain.h>
 
+#include "Coin.h"
 #include "Data.h"
 #include "HexCoding.h"
 
@@ -17,8 +19,8 @@
 #include "Cardano/AddressV3.h"
 #include "Cosmos/Address.h"
 #include "Decred/Address.h"
-#include "Ethereum/Address.h"
 #include "Elrond/Address.h"
+#include "Ethereum/Address.h"
 #include "Kusama/Address.h"
 #include "NEAR/Address.h"
 #include "NEO/Address.h"
@@ -34,35 +36,30 @@
 namespace TW {
 
 class AnyAddress {
-  public:
+public:
     static auto dataFromString(const std::string& string, TWCoinType coin) -> Data {
-        switch (coin) {
-        case TWCoinTypeBinance:
-        case TWCoinTypeCosmos:
-        case TWCoinTypeKava:
-        case TWCoinTypeTerra:
-        case TWCoinTypeBandChain:
-        case TWCoinTypeTHORChain:
-        case TWCoinTypeBluzelle:
-        case TWCoinTypeIoTeX:
-        case TWCoinTypeCryptoOrg:
-        case TWCoinTypeOsmosis:
-        case TWCoinTypeHarmony:
-        case TWCoinTypeNativeEvmos:
-            {
-                Cosmos::Address addr;
-                if (!Cosmos::Address::decode(string, addr)) {
-                    break;
-                }
-                return addr.getKeyHash();
+        const auto blockchain = TW::blockchain(coin);
+        switch (blockchain) {
+        case TWBlockchainBinance:
+        case TWBlockchainCosmos:
+        case TWBlockchainThorchain:
+        case TWBlockchainIoTeX:
+        case TWBlockchainHarmony: {
+            Cosmos::Address addr;
+            if (!Cosmos::Address::decode(string, addr)) {
+                break;
             }
+            return addr.getKeyHash();
+        }
 
-        case TWCoinTypeBitcoin:
-        case TWCoinTypeDigiByte:
-        case TWCoinTypeGroestlcoin:
-        case TWCoinTypeLitecoin:
-        case TWCoinTypeViacoin:
-            {
+        case TWBlockchainBitcoin:
+        case TWBlockchainGroestlcoin:
+            switch (coin) {
+            case TWCoinTypeBitcoin:
+            case TWCoinTypeDigiByte:
+            case TWCoinTypeGroestlcoin:
+            case TWCoinTypeLitecoin:
+            case TWCoinTypeViacoin: {
                 auto decoded = Bitcoin::SegwitAddress::decode(string);
                 if (!std::get<2>(decoded)) {
                     break;
@@ -70,89 +67,63 @@ class AnyAddress {
                 return std::get<0>(decoded).witnessProgram;
             }
 
-        case TWCoinTypeBitcoinCash: {
-            Data data;
-            auto addr = Bitcoin::BitcoinCashAddress(string);
-            data.resize(Bitcoin::Address::size);
-            size_t outlen = 0;
-            cash_data_to_addr(data.data(), &outlen, addr.bytes.data(), 34);
-            return {data.begin() + 1, data.end()};
-        }
+            case TWCoinTypeBitcoinCash: {
+                Data data(Bitcoin::Address::size);
+                auto addr = Bitcoin::BitcoinCashAddress(string);
+                size_t outlen = 0;
+                cash_data_to_addr(data.data(), &outlen, addr.bytes.data(), 34);
+                return {data.begin() + 1, data.end()};
+            }
 
-        case TWCoinTypeECash: {
-            Data data;
-            auto addr = Bitcoin::ECashAddress(string);
-            data.resize(Bitcoin::Address::size);
-            size_t outlen = 0;
-            cash_data_to_addr(data.data(), &outlen, addr.bytes.data(), 34);
-            return {data.begin() + 1, data.end()};
-        }
+            case TWCoinTypeECash: {
+                Data data(Bitcoin::Address::size);
+                auto addr = Bitcoin::ECashAddress(string);
+                size_t outlen = 0;
+                cash_data_to_addr(data.data(), &outlen, addr.bytes.data(), 34);
+                return {data.begin() + 1, data.end()};
+            }
 
-        case TWCoinTypeDash:
-        case TWCoinTypeDogecoin:
-        case TWCoinTypeMonacoin:
-        case TWCoinTypeQtum:
-        case TWCoinTypeRavencoin:
-        case TWCoinTypeFiro:
-            {
+            case TWCoinTypeDash:
+            case TWCoinTypeDogecoin:
+            case TWCoinTypeMonacoin:
+            case TWCoinTypeQtum:
+            case TWCoinTypeRavencoin:
+            case TWCoinTypeFiro: {
                 auto addr = Bitcoin::Address(string);
                 return {addr.bytes.begin() + 1, addr.bytes.end()};
             }
+            default:
+                break;
+            }
 
-        case TWCoinTypeDecred: {
+        case TWBlockchainDecred: {
             auto addr = Decred::Address(string);
             return {addr.bytes.begin() + 2, addr.bytes.end()};
         }
 
-        case TWCoinTypeZcash:
-        case TWCoinTypeZelcash: {
+        case TWBlockchainZcash: {
             auto addr = Zcash::TAddress(string);
             return {addr.bytes.begin() + 2, addr.bytes.end()};
         }
 
-        case TWCoinTypeCallisto:
-        case TWCoinTypeEthereum:
-        case TWCoinTypeEthereumClassic:
-        case TWCoinTypeGoChain:
-        case TWCoinTypePOANetwork:
-        case TWCoinTypeThunderToken:
-        case TWCoinTypeTomoChain:
-        case TWCoinTypeVeChain:
-        case TWCoinTypeTheta:
-        case TWCoinTypeWanchain:
-        case TWCoinTypeAion:
-        case TWCoinTypeSmartChainLegacy:
-        case TWCoinTypeSmartChain:
-        case TWCoinTypePolygon:
-        case TWCoinTypeOptimism:
-        case TWCoinTypeArbitrum:
-        case TWCoinTypeECOChain:
-        case TWCoinTypeXDai:
-        case TWCoinTypeAvalancheCChain:
-        case TWCoinTypeFantom:
-        case TWCoinTypeCelo:
-        case TWCoinTypeCronosChain:
-        case TWCoinTypeSmartBitcoinCash:
-        case TWCoinTypeKuCoinCommunityChain:
-        case TWCoinTypeBoba:
-        case TWCoinTypeMetis:
-        case TWCoinTypeAurora:
-        case TWCoinTypeEvmos:
-            {
-                const auto addr = Ethereum::Address(string);
-                return {addr.bytes.begin(), addr.bytes.end()};
-            }
+        case TWBlockchainEthereum:
+        case TWBlockchainVechain:
+        case TWBlockchainTheta:
+        case TWBlockchainAion: {
+            const auto addr = Ethereum::Address(string);
+            return {addr.bytes.begin(), addr.bytes.end()};
+        }
 
-        case TWCoinTypeRonin: {
+        case TWBlockchainRonin: {
             const auto addr = Ronin::Address(string);
             return {addr.bytes.begin(), addr.bytes.end()};
         }
-        case TWCoinTypeNano: {
+        case TWBlockchainNano: {
             auto addr = Nano::Address(string);
             return {addr.bytes.begin(), addr.bytes.end()};
         }
 
-        case TWCoinTypeZilliqa: {
+        case TWBlockchainZilliqa: {
             Zilliqa::Address addr;
             if (!Zilliqa::Address::decode(string, addr)) {
                 break;
@@ -162,27 +133,27 @@ class AnyAddress {
             return {str.begin(), str.end()};
         }
 
-        case TWCoinTypeKusama: {
+        case TWBlockchainKusama: {
             auto addr = Kusama::Address(string);
             return {addr.bytes.begin() + 1, addr.bytes.end()};
         }
 
-        case TWCoinTypePolkadot: {
+        case TWBlockchainPolkadot: {
             auto addr = Polkadot::Address(string);
             return {addr.bytes.begin() + 1, addr.bytes.end()};
         }
 
-        case TWCoinTypeCardano: {
+        case TWBlockchainCardano: {
             auto addr = Cardano::AddressV3(string);
             return addr.data();
         }
 
-        case TWCoinTypeNEO: {
+        case TWBlockchainNEO: {
             auto addr = NEO::Address(string);
             return {addr.bytes.begin(), addr.bytes.end()};
         }
 
-        case TWCoinTypeElrond: {
+        case TWBlockchainElrondNetwork: {
             Elrond::Address addr;
             if (!Elrond::Address::decode(string, addr)) {
                 break;
@@ -190,13 +161,15 @@ class AnyAddress {
             return addr.getKeyHash();
         }
 
-        case TWCoinTypeNEAR: {
+        case TWBlockchainNEAR: {
             auto addr = NEAR::Address(string);
             return {addr.bytes.begin(), addr.bytes.end()};
         }
-        case TWCoinTypeSolana: {
+
+        case TWBlockchainSolana: {
             return Solana::Address(string).vector();
         }
+
         default:
             break;
         }
