@@ -2491,7 +2491,6 @@
   {
     "id": "moonriver",
     "name": "Moonriver",
-    "displayName": "Moonriver",
     "coinId": 10001285,
     "symbol": "MOVR",
     "decimals": 18,
@@ -2513,7 +2512,34 @@
     },
     "info": {
       "url": "https://moonbeam.network/networks/moonriver",
-      "rpc": "https://moonriver.public.blastapi.io",
+      "rpc": "https://moonriver.public.blastapi.io"
+    }
+  },
+  {
+    "id": "moonbeam",
+    "name": "Moonbeam",
+    "coinId": 10001284,
+    "symbol": "GLMR",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": 1284,
+    "explorer": {
+      "url": "https://moonscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xb22a146c933e6e51affbfa5f712a266b5f5e92ae453cd2f252bcc3c36ff035a6",
+      "sampleAccount": "0x201bb4f276C765dF7225e5A4153E17edD23a67eC"
+    },
+    "info": {
+      "url": "https://moonbeam.network",
+      "rpc": "https://rpc.api.moonbeam.network",
       "documentation": "https://docs.moonbeam.network"
     }
   }
