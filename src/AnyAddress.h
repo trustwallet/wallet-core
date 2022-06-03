@@ -7,6 +7,7 @@
 #pragma once
 
 #include <TrezorCrypto/cash_addr.h>
+#include <TrustWalletCore/TWBlockchain.h>
 
 #include "Coin.h"
 #include "Data.h"
@@ -27,7 +28,6 @@
 #include "Polkadot/Address.h"
 #include "Ronin/Address.h"
 #include "Solana/Address.h"
-#include "TrustWalletCore/TWBlockchain.h"
 #include "Zcash/TAddress.h"
 #include "Zilliqa/Address.h"
 
@@ -68,18 +68,16 @@ public:
             }
 
             case TWCoinTypeBitcoinCash: {
-                Data data;
+                Data data(Bitcoin::Address::size);
                 auto addr = Bitcoin::BitcoinCashAddress(string);
-                data.resize(Bitcoin::Address::size);
                 size_t outlen = 0;
                 cash_data_to_addr(data.data(), &outlen, addr.bytes.data(), 34);
                 return {data.begin() + 1, data.end()};
             }
 
             case TWCoinTypeECash: {
-                Data data;
+                Data data(Bitcoin::Address::size);
                 auto addr = Bitcoin::ECashAddress(string);
-                data.resize(Bitcoin::Address::size);
                 size_t outlen = 0;
                 cash_data_to_addr(data.data(), &outlen, addr.bytes.data(), 34);
                 return {data.begin() + 1, data.end()};
