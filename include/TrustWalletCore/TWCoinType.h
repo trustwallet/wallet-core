@@ -106,6 +106,8 @@ enum TWCoinType {
     TWCoinTypeAurora = 1323161554,
     TWCoinTypeEvmos = 10009001,
     TWCoinTypeNativeEvmos = 20009001,
+    TWCoinTypeMoonriver = 10001285,
+    TWCoinTypeMoonbeam = 10001284,
 };
 
 /// Returns the blockchain for a coin type.
