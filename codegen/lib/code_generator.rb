@@ -97,6 +97,10 @@ class CodeGenerator
     render_template(header: 'copyright_header.erb', template: 'wasm_cpp.erb', output_subfolder: 'wasm/src/generated', extension: 'cpp')
   end
 
+  def render_ts_declaration
+    puts('Generating TS declaration')
+  end
+
   def render(file, locals = {})
     @locals = locals
     path = File.expand_path(file, File.join(File.dirname(__FILE__), 'templates'))
