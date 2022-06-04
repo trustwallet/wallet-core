@@ -16,7 +16,7 @@ target_compile_options(${TARGET_NAME} PRIVATE "-Wall")
 
 set_target_properties(${TARGET_NAME}
         PROPERTIES
-        CXX_STANDARD 20
+        CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON
 )
 set_target_properties(${TARGET_NAME} 

@@ -15,10 +15,9 @@
 #include "proto/Common.pb.h"
 #include "uint256.h"
 
-#include <concepts>
 #include <string>
-#include <utility>
 #include <vector>
+#include <utility>
 
 namespace TW {
 
@@ -28,28 +27,20 @@ typedef std::vector<std::pair<Data, Data>> HashPubkeyList;
 /// Implement this for all coins.
 class CoinEntry {
 public:
-    virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh,
-                                 TW::byte p2sh, const char* hrp) const = 0;
+    virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const = 0;
     // normalizeAddress is optional, it may leave this default, no-change implementation
-    virtual std::string normalizeAddress(TWCoinType coin, const std::string& address) const {
-        return address;
-    }
+    virtual std::string normalizeAddress(TWCoinType coin, const std::string& address) const { return address; }
     // Address derivation, default derivation
-    virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh,
-                                      const char* hrp) const = 0;
+    virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const = 0;
     // Address derivation, by default invoking default
-    virtual std::string deriveAddress(TWCoinType coin, TWDerivation derivation,
-                                      const PublicKey& publicKey, TW::byte p2pkh,
-                                      const char* hrp) const {
+    virtual std::string deriveAddress(TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const {
         return deriveAddress(coin, publicKey, p2pkh, hrp);
     }
     // Signing
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const = 0;
     virtual bool supportsJSONSigning() const { return false; }
     // It is optional, Signing JSON input with private key
-    virtual std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const {
-        return "";
-    }
+    virtual std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const { return ""; }
     // Planning, for UTXO chains, in preparation for signing
     // It is optional, only UTXO chains need it, default impl. leaves empty result.
     virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const { return; }
@@ -57,26 +48,17 @@ public:
     // Optional method for obtaining hash(es) for signing, needed for external signing.
     // It will return a proto object named `PreSigningOutput` which will include hash.
     // We provide a default `PreSigningOutput` in TransactionCompiler.proto.
-    // For some special coins, such as bitcoin, we will create a custom `PreSigningOutput` object in
-    // its proto file.
+    // For some special coins, such as bitcoin, we will create a custom `PreSigningOutput` object in its proto file.
     virtual Data preImageHashes(TWCoinType coin, const Data& txInputData) const { return Data(); }
     // Optional method for compiling a transaction with externally-supplied signatures & pubkeys.
-    virtual void compile(TWCoinType coin, const Data& txInputData,
-                         const std::vector<Data>& signatures,
-                         const std::vector<PublicKey>& publicKeys, Data& dataOut) const {}
+    virtual void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {}
     // Optional helper to prepare a SigningInput from simple parameters.
-    // Not suitable for UTXO chains. Some parameters, like chain-specific fee/gas paraemters, may
-    // need to be set in the SigningInput.
-    virtual Data buildTransactionInput(TWCoinType coinType, const std::string& from,
-                                       const std::string& to, const uint256_t& amount,
-                                       const std::string& asset, const std::string& memo,
-                                       const std::string& chainId) const {
-        return Data();
-    }
+    // Not suitable for UTXO chains. Some parameters, like chain-specific fee/gas paraemters, may need to be set in the SigningInput.
+    virtual Data buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const { return Data(); }
 };
 
-// In each coin's Entry.cpp the specific types of the coin are used, this template enforces the
-// Signer implement: static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+// In each coin's Entry.cpp the specific types of the coin are used, this template enforces the Signer implement:
+// static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 // Note: use output parameter to avoid unneeded copies
 template <typename Signer, typename Input>
 void signTemplate(const Data& dataIn, Data& dataOut) {
@@ -98,14 +80,13 @@ void planTemplate(const Data& dataIn, Data& dataOut) {
 // This template will be used for preImageHashes and compile in each coin's Entry.cpp.
 // It is a helper function to simplify exception handle.
 template <typename Input, typename Output, typename Func>
-requires requires(Func&& fnHandler, const Input& in, Output& out) { fnHandler(in, out); }
 Data txCompilerTemplate(const Data& dataIn, Func&& fnHandler) {
     auto input = Input();
     auto output = Output();
     if (!input.ParseFromArray(dataIn.data(), (int)dataIn.size())) {
         output.set_error(Common::Proto::Error_input_parse);
         output.set_error_message("failed to parse input data");
-        return TW::data(output.SerializeAsString());
+        return TW::data(output.SerializeAsString());;
     }
 
     try {

@@ -12,7 +12,7 @@ include(GNUInstallDirs)
 
 # Configure warnings
 set(TW_CXX_WARNINGS "-Wshorten-64-to-32")
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TW_CXX_WARNINGS}")
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
@@ -105,7 +105,7 @@ target_compile_options(TrustWalletCore PRIVATE "-Wall")
 
 set_target_properties(TrustWalletCore
     PROPERTIES
-    CXX_STANDARD 20
+    CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
 )
 
