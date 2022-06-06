@@ -155,7 +155,7 @@ message TransactionPlan {
     // Optional zero-amount, OP_RETURN output
     bytes output_op_return = 8;
 
-    // bitcoin diamond preblockhash
+    // zen & bitcoin diamond preblockhash
     bytes preblockhash = 9;
 
     // zen preblockheight
