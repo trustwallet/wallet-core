@@ -457,7 +457,22 @@ TEST(CardanoSigning, SignTransferFromLegacy) {
 }
 
 TEST(CardanoSigning, SignTransferToLegacy) {
-    const auto input = createSampleInput(7000000, 10, "Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvx");
+    const auto toAddressLegacy = "DdzFFzCqrhssmYoG5Eca1bKZFdGS8d6iag1mU4wbLeYcSPVvBNF2wRG8yhjzQqErbg63N6KJA4DHqha113tjKDpGEwS5x1dT2KfLSbSJ";
+    EXPECT_FALSE(AddressV3::isValid(toAddressLegacy)); // not V3
+    EXPECT_TRUE(AddressV3::isValidLegacy(toAddressLegacy));
+
+    const auto input = createSampleInput(7000000, 10, toAddressLegacy);
+
+    auto signer = Signer(input);
+    const auto output = signer.sign();
+
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+    EXPECT_EQ(hex(output.encoded()), "83a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282584c82d818584283581c6aebd89cf88271c3ee76339930d8956b03f018b2f4871522f88eb8f9a101581e581c692a37dae3bc63dfc3e1463f12011f26655ab1d1e0f4ed4b8fc63708001ad8a9555b1a006acfc082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a000ca627021a00029c19031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df2905840db9becdc733f4c08c0e7abc29b5cc6469f9339d32f565df8bf77455439ae1f949facc9b831754e74d3fbb42e99647eedd6c28de1461d18c315485f5d24b5b90af6");
+    EXPECT_EQ(hex(data(output.tx_id())), "f9b713e9987ec1377ac223f50d63c7a5e155915302de43f40d7b2627accabf69");
+}
+
+TEST(CardanoSigning, SignTransferToInvalid) {
+    const auto input = createSampleInput(7000000, 10, "__INVALID_ADDRESS__");
 
     auto signer = Signer(input);
     const auto output = signer.sign();
