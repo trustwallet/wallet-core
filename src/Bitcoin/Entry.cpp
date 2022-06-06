@@ -48,9 +48,8 @@ string Entry::normalizeAddress(TWCoinType coin, const string& address) const {
         // normalized with bitcoincash: prefix
         if (BitcoinCashAddress::isValid(address)) {
             return BitcoinCashAddress(address).string();
-        } else {
-            return {address};
         }
+        return address;
 
     case TWCoinTypeECash:
         // normalized with ecash: prefix
