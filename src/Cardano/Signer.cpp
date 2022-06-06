@@ -45,7 +45,7 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
     }
 
     // Spending output
-    if (!AddressV3::isValid(input.transfer_message().to_address())) {
+    if (!AddressV3::isValidLegacy(input.transfer_message().to_address())) {
         return Common::Proto::Error_invalid_address;
     }
     const auto toAddress = AddressV3(input.transfer_message().to_address());
@@ -53,7 +53,7 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
     // Change
     bool hasChangeToken = any_of(plan.changeTokens.bundle.begin(), plan.changeTokens.bundle.end(), [](auto&& t) { return t.second.amount > 0; });
     if (plan.change > 0 || hasChangeToken) {
-        if (!AddressV3::isValid(input.transfer_message().change_address())) {
+        if (!AddressV3::isValidLegacy(input.transfer_message().change_address())) {
             return Common::Proto::Error_invalid_address;
         }
         const auto changeAddress = AddressV3(input.transfer_message().change_address());
