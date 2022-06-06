@@ -55,9 +55,8 @@ string Entry::normalizeAddress(TWCoinType coin, const string& address) const {
         // normalized with ecash: prefix
         if (ECashAddress::isValid(address)) {
             return ECashAddress(address).string();
-        } else {
-            return {address};
         }
+        return address;
 
     default:
         // no change
