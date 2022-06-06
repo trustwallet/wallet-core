@@ -1,0 +1,145 @@
+// Copyright © 2017-2021 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+syntax = "proto3";
+
+package TW.Nervos.Proto;
+option java_package = "wallet.core.jni.proto";
+
+import "Common.proto";
+
+message Transaction {
+    // Transaction data format version.
+    sint32 version = 1;
+
+    // A list of cell deps.
+    repeated CellDep cell_deps = 2;
+
+    // A list of header deps.
+    repeated bytes header_deps = 3;
+
+    // A list of 1 or more cell inputs or sources for coins, in the form of cells.
+    repeated Cell input_cells = 4;
+
+    // A list of 1 or more cell inputs or sources for coins, in the form of outpoint.
+    repeated CellInput inputs = 5;
+
+    // A list of 1 or more cell outputs or destinations for coins
+    repeated CellOutput outputs = 6;
+
+    // A list of outputs data.
+    repeated bytes outputs_data = 7;
+
+    // A list of witness.
+    repeated bytes witnesses = 8;
+}
+
+// Nervos cell dep.
+message CellDep {
+    // Prevents the transaction to be mined before an absolute or relative time
+    string dep_type = 1;
+
+    // Reference to the previous transaction's output.
+    OutPoint out_point = 2;
+}
+
+// Nervos cell input.
+message CellInput {
+    // Reference to the previous transaction's output.
+    OutPoint previous_output = 1;
+
+    // Prevents the transaction to be mined before an absolute or relative time
+    uint64 since = 2;
+}
+
+// Nervos transaction out-point reference.
+message OutPoint {
+    // The hash of the referenced transaction.
+    bytes tx_hash = 1;
+
+    // The index of the specific output in the transaction.
+    uint32 index = 2;
+}
+
+// Nervos cell output.
+message CellOutput {
+    // Transaction amount.
+    uint64 capacity = 1;
+
+    // Lock script
+    Script lock = 2;
+
+    // Type script
+    Script type = 3;
+}
+
+// Nervos script
+message Script {
+    // Code hash
+    bytes code_hash = 1;
+
+    // Hash type
+    string hash_type = 2;
+
+    // args
+    bytes args = 3;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Amount to send.  Transaction created will have this amount in its output, 
+    // except when use_max_amount is set, in that case this amount is not relevant, maximum possible amount will be used (max avail less fee).
+    // If amount is equal or more than the available amount, also max amount will be used.
+    int64 amount = 1;
+
+    // Transaction fee per byte.
+    int64 byte_fee = 3;
+
+    // Recipient's address.
+    string to_address = 4;
+
+    // Change address.
+    string change_address = 5;
+
+    // Available private keys.
+    repeated bytes private_key = 6;
+
+    // Available unspent cell outputs.
+    repeated Cell cell = 7;
+
+    // If sending max amount.
+    bool use_max_amount = 8;
+}
+
+// An unspent cell output, that can serve as input to a transaction
+message Cell {
+    // The unspent output
+    OutPoint out_point = 1;
+
+    // Lock script
+    Script lock = 2;
+
+    // Type script
+    Script type = 3;
+
+    // Amount of the cell
+    uint64 capacity = 4;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Resulting transaction. Note that the amount may be different than the requested amount to account for fees and available funds.
+    Transaction transaction = 1;
+
+    // Transaction id
+    string transaction_id = 2;
+
+    // Optional error
+    Common.Proto.SigningError error = 3;
+
+    // error description
+    string error_message = 4;
+}
