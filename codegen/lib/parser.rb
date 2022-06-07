@@ -9,7 +9,7 @@ require 'type_decl'
 
 # C header parser
 class Parser
-  attr_reader :path, :entity
+  attr_reader :path, :entity, :entity_comment
 
   def initialize(path:, string: nil)
     @path = path
@@ -19,32 +19,40 @@ class Parser
 
   # Parses a C header file for class/struct declarations
   def parse
+    clear_comment
     until @buffer.eos?
-      break if @buffer.skip_until(/\n/).nil?
-
-      # Look for TW_EXPORT statements
       @buffer.skip(/\s*/)
-      next if @buffer.scan(/TW_EXPORT_[A-Z_]+/).nil?
 
-      # Handle statements
-      case @buffer[0]
-      when 'TW_EXPORT_CLASS'
-        handle_class
-      when 'TW_EXPORT_STRUCT'
-        handle_struct
-      when 'TW_EXPORT_ENUM'
-        handle_enum
-      when 'TW_EXPORT_FUNC'
-        handle_func
-      when 'TW_EXPORT_METHOD'
-        handle_method
-      when 'TW_EXPORT_PROPERTY'
-        handle_property
-      when 'TW_EXPORT_STATIC_METHOD'
-        handle_static_method
-      when 'TW_EXPORT_STATIC_PROPERTY'
-        handle_static_property
+      if !@buffer.scan(/\/\/\//).nil?
+        @entity_comment = @entity_comment + '///' + @buffer.scan_until(/(\r\n|\r|\n)/)
+        next
       end
+
+      
+      # Look for TW_EXPORT statements
+      if !@buffer.scan(/TW_EXPORT_[A-Z_]+/).nil?
+        # Handle statements
+        case @buffer[0]
+        when 'TW_EXPORT_CLASS'
+          handle_class
+        when 'TW_EXPORT_STRUCT'
+          handle_struct
+        when 'TW_EXPORT_ENUM'
+          handle_enum
+        when 'TW_EXPORT_FUNC'
+          handle_func
+        when 'TW_EXPORT_METHOD'
+          handle_method
+        when 'TW_EXPORT_PROPERTY'
+          handle_property
+        when 'TW_EXPORT_STATIC_METHOD'
+          handle_static_method
+        when 'TW_EXPORT_STATIC_PROPERTY'
+          handle_static_property
+        end
+      end
+
+      break if @buffer.skip_until(/\n/).nil?
     end
 
     @entity
@@ -80,7 +88,7 @@ class Parser
     @buffer.skip(/\s*/)
     scan_or_fail(/\w+/, 'Invalid function name')
 
-    func = FunctionDecl.new(name: @buffer[0], entity: @entity, is_method: true, return_type: return_type)
+    func = FunctionDecl.new(name: @buffer[0], entity: @entity, is_method: true, return_type: return_type, comment: @entity_comment)
     @buffer.skip(/\s*/)
 
     scan_or_fail(/\(/, 'Invalid function declaration. Expected (')
@@ -195,6 +203,8 @@ class Parser
     end
 
     @entity.methods << method
+
+    clear_comment
   end
 
   def handle_property
@@ -276,5 +286,9 @@ class Parser
 
   def current_line_number
     @buffer.string[0..@buffer.pos].count("\n") + 1
+  end
+
+  def clear_comment
+    @entity_comment = ''
   end
 end
