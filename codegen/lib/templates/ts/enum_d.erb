@@ -1,0 +1,12 @@
+export class <%= entity.name %> {
+    value: number;
+<%  entity.cases.each do |c| -%>
+    static <%= WasmCppHelper.format_name(c.name) %>: <%= entity.name %>;
+<%  end -%>
+}
+<%  has_string = entity.cases.all? { |c| !c.string.nil? } -%>
+<%  if has_string -%>
+
+declare function describe<%= entity.name %>(value: <%= entity.name %>): string;
+
+<%  end -%>

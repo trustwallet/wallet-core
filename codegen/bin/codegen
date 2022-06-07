@@ -21,7 +21,7 @@ options.java = true
 options.jni_h = true
 options.jni_c = true
 options.wasm_cpp = true
-options.ts_declaration = false
+options.ts_declaration = true
 
 OptionParser.new do |opts|
   opts.banner = 'Usage: codegen [options]'

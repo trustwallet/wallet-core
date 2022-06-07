@@ -14,7 +14,7 @@ describe("HDWallet", () => {
   it("test creating 24 words", () => {
     const { HDWallet, Mnemonic } = WalletCore;
 
-    var wallet = HDWallet.create(256, Buffer.from("password"));
+    var wallet = HDWallet.create(256, "password");
     const mnemonic = wallet.mnemonic();
 
     assert.equal(mnemonic.split(" ").length, 24);

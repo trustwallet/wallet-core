@@ -6,7 +6,7 @@
 namespace TW::Wasm {
 
 <%  if has_string -%>
-auto <%= entity.name %>Description(TW<%= entity.name %> value) -> std::string {
+auto describe<%= entity.name %>(TW<%= entity.name %> value) -> std::string {
     switch (value) {
 <%      entity.cases.each do |c| -%>
         case TW<%= entity.name %><%= c.name %>: return <%= c.string %>;
@@ -25,7 +25,7 @@ EMSCRIPTEN_BINDINGS(Wasm_TW<%= entity.name %>) {
     ;
 <%# Description -%>
 <%  if has_string -%>
-    function("<%= entity.name %>Description", &<%= entity.name %>Description);
+    function("describe<%= entity.name %>", describe<%= entity.name %>);
 <%  end -%>
 }
 
