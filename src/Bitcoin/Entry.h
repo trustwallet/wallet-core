@@ -20,6 +20,7 @@ public:
         return deriveAddress(coin, TWDerivationDefault, publicKey, p2pkh, hrp);
     }
     virtual std::string deriveAddress(TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
+    virtual Data addressToData(TWCoinType coin, const std::string& address) const;
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
     virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
 

@@ -11,6 +11,8 @@
 #include "SegwitAddress.h"
 #include "Signer.h"
 
+#include <TrezorCrypto/cash_addr.h>
+
 using namespace TW::Bitcoin;
 using namespace TW;
 using namespace std;
@@ -102,6 +104,55 @@ string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const Publ
         case TWCoinTypeFiro:
         default:
             return Address(publicKey, p2pkh).string();
+    }
+}
+
+Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
+    switch (coin) {
+        case TWCoinTypeBitcoin:
+        case TWCoinTypeDigiByte:
+        case TWCoinTypeGroestlcoin:
+        case TWCoinTypeLitecoin:
+        case TWCoinTypeViacoin:
+            {
+                const auto decoded = SegwitAddress::decode(address);
+                if (!std::get<2>(decoded)) {
+                    return Data();
+                }
+                return std::get<0>(decoded).witnessProgram;
+            }
+
+        case TWCoinTypeBitcoinCash:
+            {
+                const auto addr = BitcoinCashAddress(address);
+                Data data(Address::size);
+                size_t outlen = 0;
+                cash_data_to_addr(data.data(), &outlen, addr.bytes.data(), 34);
+                return {data.begin() + 1, data.end()};
+            }
+
+        case TWCoinTypeECash:
+            {
+                const auto addr = ECashAddress(address);
+                Data data(Address::size);
+                size_t outlen = 0;
+                cash_data_to_addr(data.data(), &outlen, addr.bytes.data(), 34);
+                return {data.begin() + 1, data.end()};
+            }
+
+        case TWCoinTypeDash:
+        case TWCoinTypeDogecoin:
+        case TWCoinTypeMonacoin:
+        case TWCoinTypeQtum:
+        case TWCoinTypeRavencoin:
+        case TWCoinTypeFiro:
+            {
+                const auto addr = Address(address);
+                return {addr.bytes.begin() + 1, addr.bytes.end()};
+            }
+
+        default:
+            return Data();
     }
 }
 
