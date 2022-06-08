@@ -15,93 +15,92 @@ using namespace TW::Bitcoin;
 using namespace TW;
 using namespace std;
 
-bool Entry::validateAddress(TWCoinType coin, const string& address, byte p2pkh, byte p2sh, const char* hrp) const {
+bool Entry::validateAddress(TWCoinType coin, const string& address, byte p2pkh, byte p2sh,
+                            const char* hrp) const {
     switch (coin) {
-        case TWCoinTypeBitcoin:
-        case TWCoinTypeDigiByte:
-        case TWCoinTypeLitecoin:
-        case TWCoinTypeMonacoin:
-        case TWCoinTypeQtum:
-        case TWCoinTypeViacoin:
-        case TWCoinTypeBitcoinGold:
-            return SegwitAddress::isValid(address, hrp)
-                || Address::isValid(address, {{p2pkh}, {p2sh}});
+    case TWCoinTypeBitcoin:
+    case TWCoinTypeDigiByte:
+    case TWCoinTypeLitecoin:
+    case TWCoinTypeMonacoin:
+    case TWCoinTypeQtum:
+    case TWCoinTypeViacoin:
+    case TWCoinTypeBitcoinGold:
+        return SegwitAddress::isValid(address, hrp) || Address::isValid(address, {{p2pkh}, {p2sh}});
 
-        case TWCoinTypeBitcoinCash:
-            return BitcoinCashAddress::isValid(address)
-                || Address::isValid(address, {{p2pkh}, {p2sh}});
+    case TWCoinTypeBitcoinCash:
+        return BitcoinCashAddress::isValid(address) || Address::isValid(address, {{p2pkh}, {p2sh}});
 
-        case TWCoinTypeECash:
-            return ECashAddress::isValid(address)
-                   || Address::isValid(address, {{p2pkh}, {p2sh}});
+    case TWCoinTypeECash:
+        return ECashAddress::isValid(address) || Address::isValid(address, {{p2pkh}, {p2sh}});
 
-        case TWCoinTypeDash:
-        case TWCoinTypeDogecoin:
-        case TWCoinTypeRavencoin:
-        case TWCoinTypeFiro:
-        default:
-            return Address::isValid(address, {{p2pkh}, {p2sh}});
+    case TWCoinTypeDash:
+    case TWCoinTypeDogecoin:
+    case TWCoinTypeRavencoin:
+    case TWCoinTypeFiro:
+    default:
+        return Address::isValid(address, {{p2pkh}, {p2sh}});
     }
 }
 
 string Entry::normalizeAddress(TWCoinType coin, const string& address) const {
     switch (coin) {
-        case TWCoinTypeBitcoinCash:
-            // normalized with bitcoincash: prefix
-            if (BitcoinCashAddress::isValid(address)) {
-                return BitcoinCashAddress(address).string();
-            } else {
-                return std::string(address);
-            }
+    case TWCoinTypeBitcoinCash:
+        // normalized with bitcoincash: prefix
+        if (BitcoinCashAddress::isValid(address)) {
+            return BitcoinCashAddress(address).string();
+        } else {
+            return std::string(address);
+        }
 
-        case TWCoinTypeECash:
-            // normalized with ecash: prefix
-            if (ECashAddress::isValid(address)) {
-                return ECashAddress(address).string();
-            } else {
-                return std::string(address);
-            }
+    case TWCoinTypeECash:
+        // normalized with ecash: prefix
+        if (ECashAddress::isValid(address)) {
+            return ECashAddress(address).string();
+        } else {
+            return std::string(address);
+        }
 
-        default:
-            // no change
-            return address;
+    default:
+        // no change
+        return address;
     }
 }
 
-string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey, byte p2pkh, const char* hrp) const {
+string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey,
+                            byte p2pkh, const char* hrp) const {
     switch (coin) {
-        case TWCoinTypeBitcoin:
-        case TWCoinTypeLitecoin:
-            switch (derivation) {
-                case TWDerivationBitcoinLegacy:
-                case TWDerivationLitecoinLegacy:
-                    return Address(publicKey, p2pkh).string();
-
-                case TWDerivationBitcoinSegwit:
-                case TWDerivationDefault:
-                default:
-                    return SegwitAddress(publicKey, hrp).string();
-            }
-
-        case TWCoinTypeDigiByte:
-        case TWCoinTypeViacoin:
-        case TWCoinTypeBitcoinGold:
-            return SegwitAddress(publicKey, hrp).string();
-
-        case TWCoinTypeBitcoinCash:
-            return BitcoinCashAddress(publicKey).string();
-
-        case TWCoinTypeECash:
-            return ECashAddress(publicKey).string();
-
-        case TWCoinTypeDash:
-        case TWCoinTypeDogecoin:
-        case TWCoinTypeMonacoin:
-        case TWCoinTypeQtum:
-        case TWCoinTypeRavencoin:
-        case TWCoinTypeFiro:
-        default:
+    case TWCoinTypeBitcoin:
+    case TWCoinTypeLitecoin:
+        switch (derivation) {
+        case TWDerivationBitcoinLegacy:
+        case TWDerivationLitecoinLegacy:
             return Address(publicKey, p2pkh).string();
+
+        case TWDerivationBitcoinSegwit:
+        case TWDerivationDefault:
+        default:
+            return SegwitAddress(publicKey, hrp).string();
+        }
+
+    case TWCoinTypeDigiByte:
+    case TWCoinTypeViacoin:
+    case TWCoinTypeBitcoinGold:
+        return SegwitAddress(publicKey, hrp).string();
+
+    case TWCoinTypeBitcoinCash:
+        return BitcoinCashAddress(publicKey).string();
+
+    case TWCoinTypeECash:
+        return ECashAddress(publicKey).string();
+
+    case TWCoinTypeDash:
+    case TWCoinTypeDogecoin:
+    case TWCoinTypeMonacoin:
+    case TWCoinTypeQtum:
+    case TWCoinTypeRavencoin:
+    case TWCoinTypeFiro:
+    default:
+        return Address(publicKey, p2pkh).string();
     }
 }
 
@@ -115,12 +114,12 @@ void Entry::plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
 
 Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
     return txCompilerTemplate<Proto::SigningInput, Proto::PreSigningOutput>(
-        txInputData, [](const auto& input, auto& output) {
-            output = Signer::preImageHashes(input);
-        });
+        txInputData,
+        [](const auto& input, auto& output) { output = Signer::preImageHashes(input); });
 }
 
-void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
+void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures,
+                    const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
     dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
         txInputData, [&](const auto& input, auto& output) {
             if (signatures.size() == 0 || publicKeys.size() == 0) {
