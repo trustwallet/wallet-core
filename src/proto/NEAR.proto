@@ -88,4 +88,5 @@ message SigningInput {
 message SigningOutput {
     // Signed transaction blob
     bytes signed_transaction = 1;
+    bytes hash = 2;
 }
