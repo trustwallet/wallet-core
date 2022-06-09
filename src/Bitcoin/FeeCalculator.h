@@ -68,6 +68,6 @@ public:
 };
 
 /// Return the fee calculator for the given coin.
-const FeeCalculator& getFeeCalculator(TWCoinType coinType);
+const FeeCalculator& getFeeCalculator(TWCoinType coinType) noexcept;
 
 } // namespace TW::Bitcoin

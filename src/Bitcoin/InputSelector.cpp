@@ -6,6 +6,7 @@
 
 #include "InputSelector.h"
 
+#include "NumericLiteral.h"
 #include "UTXO.h"
 
 #include <algorithm>
@@ -15,33 +16,27 @@ using namespace TW;
 using namespace TW::Bitcoin;
 
 template <typename TypeWithAmount>
-uint64_t InputSelector<TypeWithAmount>::sum(const std::vector<TypeWithAmount>& amounts) {
-    uint64_t sum = 0;
-    for (auto& i : amounts) {
-        sum += i.amount;
-    }
-    return sum;
+uint64_t InputSelector<TypeWithAmount>::sum(const std::vector<TypeWithAmount>& amounts) noexcept {
+    auto accumulateFunctor = [](std::size_t sum, auto&& cur) { return sum + cur.amount; };
+    return std::accumulate(begin(amounts), end(amounts), 0_uz, accumulateFunctor);
 }
 
 template <typename TypeWithAmount>
 std::vector<TypeWithAmount>
-InputSelector<TypeWithAmount>::filterOutDust(const std::vector<TypeWithAmount>& inputs,
-                                             int64_t byteFee) {
+InputSelector<TypeWithAmount>::filterOutDust(const std::vector<TypeWithAmount>& inputsIn,
+                                             int64_t byteFee) noexcept {
     auto inputFeeLimit = static_cast<uint64_t>(feeCalculator.calculateSingleInput(byteFee));
-    return filterThreshold(inputs, inputFeeLimit);
+    return filterThreshold(inputsIn, inputFeeLimit);
 }
 
 // Filters utxos that are dust
 template <typename TypeWithAmount>
 std::vector<TypeWithAmount>
-InputSelector<TypeWithAmount>::filterThreshold(const std::vector<TypeWithAmount>& inputs,
-                                               uint64_t minimumAmount) {
+InputSelector<TypeWithAmount>::filterThreshold(const std::vector<TypeWithAmount>& inputsIn,
+                                               uint64_t minimumAmount) noexcept {
     std::vector<TypeWithAmount> filtered;
-    for (auto& i : inputs) {
-        if (i.amount > minimumAmount) {
-            filtered.push_back(i);
-        }
-    }
+    auto copyFunctor = [minimumAmount](auto&& cur) { return cur.amount > minimumAmount; };
+    std::copy_if(begin(inputsIn), end(inputsIn), std::back_inserter(filtered), copyFunctor);
     return filtered;
 }
 
@@ -84,9 +79,7 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
     // Get all possible utxo selections up to a maximum size, sort by total amount, increasing
     std::vector<TypeWithAmount> sorted = inputs;
     std::sort(sorted.begin(), sorted.end(),
-              [](const TypeWithAmount& lhs, const TypeWithAmount& rhs) {
-                  return lhs.amount < rhs.amount;
-              });
+              [](auto&& lhs, auto&& rhs) { return lhs.amount < rhs.amount; });
 
     // Precompute maximum amount possible to obtain with given number of inputs
     const auto n = sorted.size();
@@ -200,7 +193,8 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(int64_t 
 }
 
 template <typename TypeWithAmount>
-std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectMaxAmount(int64_t byteFee) {
+std::vector<TypeWithAmount>
+InputSelector<TypeWithAmount>::selectMaxAmount(int64_t byteFee) noexcept {
     return filterOutDust(inputs, byteFee);
 }
 
