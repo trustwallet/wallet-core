@@ -106,6 +106,11 @@ string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const Publ
     }
 }
 
+template<typename CashAddress>
+inline Data cashAddressToData(const CashAddress&& addr) {
+    return subData(addr.getData(), 1);
+}
+
 Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
     switch (coin) {
         case TWCoinTypeBitcoin:
@@ -122,22 +127,10 @@ Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
             }
 
         case TWCoinTypeBitcoinCash:
-            {
-                const auto addr = BitcoinCashAddress(address);
-                Data data(Address::size);
-                size_t outlen = 0;
-                cash_data_to_addr(data.data(), &outlen, addr.bytes.data(), 34);
-                return {data.begin() + 1, data.end()};
-            }
+            return cashAddressToData(BitcoinCashAddress(address));
 
         case TWCoinTypeECash:
-            {
-                const auto addr = ECashAddress(address);
-                Data data(Address::size);
-                size_t outlen = 0;
-                cash_data_to_addr(data.data(), &outlen, addr.bytes.data(), 34);
-                return {data.begin() + 1, data.end()};
-            }
+            return cashAddressToData(ECashAddress(address));
 
         case TWCoinTypeDash:
         case TWCoinTypeDogecoin:

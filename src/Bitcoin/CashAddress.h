@@ -52,6 +52,8 @@ public:
 
     /// Returns the legacy address representation.
     [[nodiscard]] Address legacyAddress() const noexcept;
+
+    Data getData() const;
 };
 
 class BitcoinCashAddress : public CashAddress {
@@ -78,6 +80,6 @@ public:
     static bool isValid(const std::string& string) noexcept {
         return CashAddress::isValid(gECashHrp, string);
     }
-};
+};  
 
 } // namespace TW::Bitcoin
