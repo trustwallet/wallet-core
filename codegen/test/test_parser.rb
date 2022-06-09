@@ -63,7 +63,7 @@ class ParserTest < Test::Unit::TestCase
     assert_equal(method.return_type.name, :data)
     assert_equal(method.name, 'Encode')
     assert_equal(method.discardable_result, true)
-    assert_equal(method.comment, '// Encode function to Eth ABI binary\n')
+    assert_equal(method.comment, '// Encode function to Eth ABI binary\\n')
   end
 
   def test_init
