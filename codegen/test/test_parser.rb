@@ -58,7 +58,7 @@ class ParserTest < Test::Unit::TestCase
       TW_EXTERN_C_END
     ')
     parser.parse
-    assert_equal(parser.entity.name, 'TWEthereumAbiEncoder')
+    assert_equal(parser.entity.name, 'EthereumAbiEncoder')
     method = parser.entity.static_methods[0]
     assert_equal(method.return_type.name, :data)
     assert_equal(method.name, 'Encode')
