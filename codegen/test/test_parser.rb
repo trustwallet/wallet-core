@@ -58,11 +58,12 @@ class ParserTest < Test::Unit::TestCase
       TW_EXTERN_C_END
     ')
     parser.parse
+    assert_equal(parser.entity.name, 'TWEthereumAbiEncoder')
     method = parser.entity.static_methods[0]
     assert_equal(method.return_type.name, :data)
     assert_equal(method.name, 'Encode')
     assert_equal(method.discardable_result, true)
-    assert_equal(method.comment, '// Encode function to Eth ABI binary')
+    assert_equal(method.comment, '// Encode function to Eth ABI binary\n')
   end
 
   def test_init
