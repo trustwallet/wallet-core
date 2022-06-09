@@ -15,23 +15,21 @@ namespace TW::Bitcoin {
 /// includes in this file
 class Entry : public CoinEntry {
 public:
-    virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh,
-                                 TW::byte p2sh, const char* hrp) const;
-    virtual std::string normalizeAddress(TWCoinType coin, const std::string& address) const;
-    virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh,
-                                      const char* hrp) const {
+    bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh,
+                         const char* hrp) const final;
+    std::string normalizeAddress(TWCoinType coin, const std::string& address) const final;
+    std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh,
+                              const char* hrp) const final {
         return deriveAddress(coin, TWDerivationDefault, publicKey, p2pkh, hrp);
     }
-    virtual std::string deriveAddress(TWCoinType coin, TWDerivation derivation,
-                                      const PublicKey& publicKey, TW::byte p2pkh,
-                                      const char* hrp) const;
-    virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
-    virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
+    std::string deriveAddress(TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey,
+                              TW::byte p2pkh, const char* hrp) const final;
+    void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const final;
+    void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const final;
 
-    virtual Data preImageHashes(TWCoinType coin, const Data& txInputData) const;
-    virtual void compile(TWCoinType coin, const Data& txInputData,
-                         const std::vector<Data>& signatures,
-                         const std::vector<PublicKey>& publicKeys, Data& dataOut) const;
+    Data preImageHashes(TWCoinType coin, const Data& txInputData) const final;
+    void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures,
+                 const std::vector<PublicKey>& publicKeys, Data& dataOut) const final;
     // Note: buildTransactionInput is not implemented for Binance chain with UTXOs
 };
 
