@@ -28,9 +28,7 @@ public:
     /// Initializes an address with a public key.
     Address(const PublicKey& publicKey) : Bech32Address(hrp, Hash::HasherSha256ripemd, publicKey) {}
 
-    static bool decode(const std::string& addr, Address& obj_out) {
-        return Bech32Address::decode(addr, obj_out, hrp);
-    }
+    static bool decode(const std::string& addr, Address& obj_out);
 };
 
 } // namespace TW::Binance
