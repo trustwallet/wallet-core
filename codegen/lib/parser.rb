@@ -23,11 +23,16 @@ class Parser
     until @buffer.eos?
       @buffer.skip(/\s*/)
 
-      if !@buffer.scan(/\/\/\//).nil?
-        @entity_comment = @entity_comment + '///' + @buffer.scan_until(/(\r\n|\r|\n)/)
+      if !@buffer.scan(/\/\//).nil?
+        @entity_comment = @entity_comment + '//' + @buffer.scan_until(/(\r\n|\r|\n)/)
         next
       end
 
+      if !@buffer.scan(/TW_EXTERN_C_BEGIN/).nil?
+        # This is to ignore very first comments from the file
+        clear_comment
+        next
+      end
       
       # Look for TW_EXPORT statements
       if !@buffer.scan(/TW_EXPORT_[A-Z_]+/).nil?
@@ -50,6 +55,8 @@ class Parser
         when 'TW_EXPORT_STATIC_PROPERTY'
           handle_static_property
         end
+
+        clear_comment
       end
 
       break if @buffer.skip_until(/\n/).nil?
@@ -125,7 +132,7 @@ class Parser
     @buffer.skip(/\s*/)
     report_error 'Invalid type name' if @buffer.scan(/struct TW(\w+)\s*;/).nil?
     report_error 'Found more than one class/struct in the same file' unless @entity.nil?
-    @entity = EntityDecl.new(name: @buffer[1], is_struct: false)
+    @entity = EntityDecl.new(name: @buffer[1], is_struct: false, comment: @entity_comment)
     puts "Found a class #{@entity.name}"
   end
 
@@ -133,7 +140,7 @@ class Parser
     @buffer.skip(/\s*/)
     report_error 'Invalid type name at' if @buffer.scan(/struct TW(\w+)\s*\{?/).nil?
     report_error 'Found more than one class/struct in the same file' unless @entity.nil?
-    @entity = EntityDecl.new(name: @buffer[1], is_struct: true)
+    @entity = EntityDecl.new(name: @buffer[1], is_struct: true, comment: @entity_comment)
     puts "Found a struct #{@buffer[1]}"
   end
 
@@ -203,8 +210,6 @@ class Parser
     end
 
     @entity.methods << method
-
-    clear_comment
   end
 
   def handle_property
