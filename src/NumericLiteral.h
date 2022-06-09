@@ -6,9 +6,10 @@
 
 #pragma once
 
-#include <cstddef> // std::size_t
+#include <cstddef> //< std::size_t
+#include <cstdint> //< std::uint64_t
 
 // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p0330r8.html
-inline constexpr std::size_t operator"" _uz(unsigned long long int n) {
+inline constexpr std::size_t operator"" _uz(std::uint64_t n) {
     return n;
 }
