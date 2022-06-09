@@ -33,7 +33,7 @@ public:
                                              int64_t numOutputs = 2);
 
     /// Selects UTXOs for max amount; select all except those which would reduce output (dust).
-    /// Return indIces. One output and no change is assumed.
+    /// Return indices. One output and no change is assumed.
     std::vector<TypeWithAmount> selectMaxAmount(int64_t byteFee);
 
     /// Construct, using provided feeCalculator (see getFeeCalculator()).
