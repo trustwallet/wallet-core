@@ -172,9 +172,9 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(int64_t 
 
     // target value is larger that original, but not by a factor of 2 (optimized for large UTXO
     // cases)
-    const uint64_t increasedTargetValue =
-        static_cast<double>(targetValue) * 1.1 +
-        feeCalculator.calculate(inputs.size(), numOutputs, byteFee) + 1000;
+    const auto increasedTargetValue =
+        (uint64_t)((double)targetValue * 1.1 +
+                   feeCalculator.calculate(inputs.size(), numOutputs, byteFee) + 1000);
 
     const int64_t dustThreshold = feeCalculator.calculateSingleInput(byteFee);
 
