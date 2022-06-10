@@ -910,8 +910,7 @@
       "source": "https://github.com/terra-project/core",
       "rpc": "https://classic.fcd.terra.dev",
       "documentation": "https://docs.terra.money"
-    },
-    "deprecated": true
+    }
   },
   {
     "id": "terra20",
