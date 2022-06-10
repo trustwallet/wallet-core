@@ -53,7 +53,7 @@ slice(const std::vector<TypeWithAmount>& inputs, size_t sliceSize) {
         slices.emplace_back();
         slices[i].reserve(sliceSize);
         for (auto j = i; j < i + sliceSize; j++) {
-            slices[i].push_back(inputs[j]);
+            slices[i].emplace_back(inputs[j]);
         }
     }
     return slices;
@@ -73,7 +73,7 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
     }
     assert(inputs.size() >= 1);
 
-    // definitions for the following caluculation
+    // definitions for the following calculation
     const auto doubleTargetValue = targetValue * 2;
 
     // Get all possible utxo selections up to a maximum size, sort by total amount, increasing
@@ -83,20 +83,16 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
 
     // Precompute maximum amount possible to obtain with given number of inputs
     const auto n = sorted.size();
-    std::vector<uint64_t> maxWithXInputs = std::vector<uint64_t>();
-    maxWithXInputs.push_back(0);
+    std::vector<uint64_t> maxWithXInputs{0};
     int64_t maxSum = 0;
-    for (auto i = 0; i < n; ++i) {
-        maxSum += sorted[n - 1 - i].amount;
-        maxWithXInputs.push_back(maxSum);
-    }
+    std::for_each(rbegin(sorted), rend(sorted), [&maxSum, &maxWithXInputs](auto&& cur) {
+        maxSum += cur.amount;
+        maxWithXInputs.emplace_back(maxSum);
+    });
 
     // difference from 2x targetValue
     auto distFrom2x = [doubleTargetValue](int64_t val) -> int64_t {
-        if (val > doubleTargetValue) {
-            return val - doubleTargetValue;
-        }
-        return doubleTargetValue - val;
+        return val > doubleTargetValue ? val - doubleTargetValue : doubleTargetValue - val;
     };
 
     const int64_t dustThreshold = feeCalculator.calculateSingleInput(byteFee);
@@ -163,24 +159,23 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(int64_t 
     if (inputs.empty()) {
         return {};
     }
-    assert(inputs.size() >= 1);
 
-    // target value is larger that original, but not by a factor of 2 (optioized for large UTXO
+    // target value is larger that original, but not by a factor of 2 (optimized for large UTXO
     // cases)
-    const auto increasedTargetValue =
-        (uint64_t)((double)targetValue * 1.1 +
-                   feeCalculator.calculate(inputs.size(), numOutputs, byteFee) + 1000);
+    const uint64_t increasedTargetValue =
+        static_cast<double>(targetValue) * 1.1 +
+        feeCalculator.calculate(inputs.size(), numOutputs, byteFee) + 1000;
 
     const int64_t dustThreshold = feeCalculator.calculateSingleInput(byteFee);
 
     // Go through inputs in a single pass, in the order they appear, no optimization
     uint64_t sum = 0;
     std::vector<TypeWithAmount> selected;
-    for (auto& input : inputs) {
+    for (auto&& input : inputs) {
         if (input.amount <= dustThreshold) {
             continue; // skip dust
         }
-        selected.push_back(input);
+        selected.emplace_back(input);
         sum += input.amount;
         if (sum >= increasedTargetValue) {
             // we have enough
