@@ -64,12 +64,8 @@ template <typename TypeWithAmount>
 static inline std::vector<std::vector<TypeWithAmount>>
 slice(const std::vector<TypeWithAmount>& inputs, size_t sliceSize) {
     std::vector<std::vector<TypeWithAmount>> slices;
-    for (auto i = 0; i <= inputs.size() - sliceSize; ++i) {
-        slices.emplace_back();
-        slices[i].reserve(sliceSize);
-        for (auto j = i; j < i + sliceSize; j++) {
-            slices[i].emplace_back(inputs[j]);
-        }
+    for (auto it = begin(inputs); it <= end(inputs) - sliceSize; ++it) {
+        slices.emplace_back(it, it + sliceSize);
     }
     return slices;
 }
