@@ -7,6 +7,8 @@
 #include "InputSelector.h"
 
 #include "NumericLiteral.h"
+#include "SortHelpers.h"
+#include "TWAlgorithms.h"
 #include "UTXO.h"
 
 #include <algorithm>
@@ -89,10 +91,8 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
     const auto doubleTargetValue = targetValue * 2;
 
     // Get all possible utxo selections up to a maximum size, sort by total amount, increasing
-    std::vector<TypeWithAmount> sorted = inputs;
-    std::sort(sorted.begin(), sorted.end(),
-              [](auto&& lhs, auto&& rhs) { return lhs.amount < rhs.amount; });
-
+    const auto sortFunctor = [](auto&& l, auto&& r) noexcept { return l.amount < r.amount; };
+    const auto sorted = sortCopy(inputs, sortFunctor);
     const auto n = sorted.size();
     const auto maxWithXInputs = details::collectMaxWithXInputs<TypeWithAmount>(sorted);
 
@@ -115,13 +115,9 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
             continue;
         }
         auto slices = details::sliding(sorted, static_cast<size_t>(numInputs));
-
-        slices.erase(
-            std::remove_if(slices.begin(), slices.end(),
-                           [targetWithFeeAndDust](const std::vector<TypeWithAmount>& slice) {
-                               return sum(slice) < targetWithFeeAndDust;
-                           }),
-            slices.end());
+        erase_if(slices, [targetWithFeeAndDust](auto&& slice) {
+            return sum(slice) < targetWithFeeAndDust;
+        });
         if (!slices.empty()) {
             std::sort(slices.begin(), slices.end(),
                       [distFrom2x](const std::vector<TypeWithAmount>& lhs,
@@ -141,11 +137,7 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
             continue;
         }
         auto slices = details::sliding(sorted, static_cast<size_t>(numInputs));
-        slices.erase(std::remove_if(slices.begin(), slices.end(),
-                                    [targetWithFee](const std::vector<TypeWithAmount>& slice) {
-                                        return sum(slice) < targetWithFee;
-                                    }),
-                     slices.end());
+        erase_if(slices, [targetWithFee](auto&& slice) { return sum(slice) < targetWithFee; });
         if (!slices.empty()) {
             return filterOutDust(slices.front(), byteFee);
         }
