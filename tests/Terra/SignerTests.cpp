@@ -26,26 +26,26 @@ TEST(TerraSigner, SignSendTx) {
     input.set_account_number(1037);
     input.set_chain_id("phoenix-1");
     input.set_memo("");
-    input.set_sequence(2);
+    input.set_sequence(1);
 
     Address fromAddress;
     ASSERT_TRUE(Address::decode("terra1hsk6jryyqjfhp5dhc55tc9jtckygx0ep37hdd2", fromAddress));
     Address toAddress;
-    ASSERT_TRUE(Address::decode("terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf", toAddress));
+    ASSERT_TRUE(Address::decode("terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp", toAddress));
 
     auto msg = input.add_messages();
     auto& message = *msg->mutable_send_coins_message();
     message.set_from_address(fromAddress.string());
     message.set_to_address(toAddress.string());
     auto amountOfTx = message.add_amounts();
-    amountOfTx->set_denom("luna");
+    amountOfTx->set_denom("uluna");
     amountOfTx->set_amount("1000000");
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amounts();
-    amountOfFee->set_denom("luna");
-    amountOfFee->set_amount("200");
+    amountOfFee->set_denom("uluna");
+    amountOfFee->set_amount("30000");
 
     std::string json;
     google::protobuf::util::MessageToJsonString(input, &json);
@@ -57,21 +57,21 @@ TEST(TerraSigner, SignSendTx) {
             "fee": {
                 "amounts": [
                     {
-                        "denom": "luna",
-                        "amount": "200"
+                        "denom": "uluna",
+                        "amount": "30000"
                     }
                 ],
                 "gas": "200000"
             },
-            "sequence": "2",
+            "sequence": "1",
             "messages": [
                 {
                     "sendCoinsMessage": {
                         "fromAddress": "terra1hsk6jryyqjfhp5dhc55tc9jtckygx0ep37hdd2",
-                        "toAddress": "terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf",
+                        "toAddress": "terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp",
                         "amounts": [
                             {
-                                "denom": "luna",
+                                "denom": "uluna",
                                 "amount": "1000000"
                             }
                         ]
@@ -86,13 +86,14 @@ TEST(TerraSigner, SignSendTx) {
 
     auto output = Signer::sign(input, TWCoinTypeTerra20);
 
+    // similar tx: https://finder.terra.money/mainnet/tx/fbbe73ad2f0db3a13911dc424f8a34370dc4b7e8b66687f536797e68ee200ece
     assertJSONEqual(output.serialized(), R"(
         {
-            "tx_bytes": "CpABCo0BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm0KLHRlcnJhMWhzazZqcnl5cWpmaHA1ZGhjNTV0YzlqdGNreWd4MGVwMzdoZGQyEix0ZXJyYTE4d3VrcDg0ZHEyMjd3dTRtZ2gwam02bjlubG5qNnJzODJwcDl3ZhoPCgRsdW5hEgcxMDAwMDAwEmUKUApGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQJXKG7D830zVXu7qgALJ3RKyQI6qZZ8rnWhgdH/kfqdxRIECgIIARgCEhEKCwoEbHVuYRIDMjAwEMCaDBpAvLsL+GkWflOFE9XrLSmUTdF1MS/LkFxoPAAOcgz1mwd7BqNQgBg1j2GZvXYBbqZ5PlSwA78MDiyc/OdT7AHy3w==",
+            "tx_bytes": "CpEBCo4BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm4KLHRlcnJhMWhzazZqcnl5cWpmaHA1ZGhjNTV0YzlqdGNreWd4MGVwMzdoZGQyEix0ZXJyYTFqbGdhcXk5bnZuMmhmNXQyc3JhOXljejhzNzd3bmY5bDBrbWdjcBoQCgV1bHVuYRIHMTAwMDAwMBJoClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiECVyhuw/N9M1V7u6oACyd0SskCOqmWfK51oYHR/5H6ncUSBAoCCAEYARIUCg4KBXVsdW5hEgUzMDAwMBDAmgwaQPh0C3rjzdixIUiyPx3FlWAxzbKILNAcSRVeQnaTl1vsI5DEfYa2oYlUBLqyilcMCcU/iaJLhex30No2ak0Zn1Q=",
             "mode": "BROADCAST_MODE_BLOCK"
         }
     )");
-    EXPECT_EQ(hex(output.signature()), "bcbb0bf869167e538513d5eb2d29944dd175312fcb905c683c000e720cf59b077b06a3508018358f6199bd76016ea6793e54b003bf0c0e2c9cfce753ec01f2df");
+    EXPECT_EQ(hex(output.signature()), "f8740b7ae3cdd8b12148b23f1dc5956031cdb2882cd01c49155e427693975bec2390c47d86b6a1895404bab28a570c09c53f89a24b85ec77d0da366a4d199f54");
     EXPECT_EQ(output.error(), "");
     EXPECT_EQ(output.json(), "");
 }
