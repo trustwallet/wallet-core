@@ -19,6 +19,29 @@ using namespace TW::Bitcoin;
 
 namespace details {
 
+struct FeeCalculatorArgs {
+    int64_t inputs;
+    int64_t outputs;
+    int64_t byteFee;
+};
+
+std::optional<int64_t> calculateTargetFee(const std::vector<uint64_t>& maxWithXInputs,
+                                          const FeeCalculator& feeCalculator,
+                                          FeeCalculatorArgs feeCalculatorArgs, int64_t targetValue,
+                                          std::optional<int64_t> dust = std::nullopt) {
+    auto&& [numInputs, numOutputs, byteFee] = feeCalculatorArgs;
+    const auto fee = feeCalculator.calculate(numInputs, numOutputs, byteFee);
+    auto targetFee = targetValue + fee;
+    if (dust) {
+        targetFee += *dust;
+    }
+    if (maxWithXInputs[numInputs] < targetFee) {
+        // no way to satisfy with only numInputs inputs, skip
+        return std::nullopt;
+    }
+    return std::make_optional(targetFee);
+}
+
 // Precompute maximum amount possible to obtain with given number of inputs
 template <typename TypeWithAmount>
 static inline std::vector<uint64_t>
@@ -97,49 +120,62 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
     const auto maxWithXInputs = details::collectMaxWithXInputs<TypeWithAmount>(sorted);
 
     // difference from 2x targetValue
-    auto distFrom2x = [doubleTargetValue](int64_t val) -> int64_t {
+    auto distFrom2x = [doubleTargetValue](int64_t val) noexcept -> int64_t {
         return val > doubleTargetValue ? val - doubleTargetValue : doubleTargetValue - val;
     };
 
     const int64_t dustThreshold = feeCalculator.calculateSingleInput(byteFee);
 
+    auto sliceFunctor = [&sorted](int64_t numInputs, int64_t targetFee) {
+        auto slices = details::sliding(sorted, static_cast<size_t>(numInputs));
+        auto eraseFunctor = [targetFee](auto&& slice) noexcept { return sum(slice) < targetFee; };
+        erase_if(slices, eraseFunctor);
+        return slices;
+    };
+
+    auto filterOutDustFunctor = [&distFrom2x](auto&& slices, std::optional<int64_t> dustThreshold) {
+        if (dustThreshold.has_value()) {
+            const auto minFunctor = [&distFrom2x](auto&& lhs, auto&& rhs) noexcept {
+                return distFrom2x(sum(lhs)) < distFrom2x(sum(rhs));
+            };
+            const auto min = std::min_element(cbegin(slices), cend(slices), minFunctor);
+            return *min;
+        }
+        return slices.front();
+    };
+
+    auto selectFunctor =
+        [numOutputs, byteFee, &maxWithXInputs, targetValue, &sliceFunctor, &filterOutDustFunctor,
+         this](int64_t numInputs, std::optional<int64_t> dustThreshold =
+                                      std::nullopt) -> std::optional<std::vector<TypeWithAmount>> {
+        auto feeArgs = details::FeeCalculatorArgs{
+            .inputs = numInputs, .outputs = numOutputs, .byteFee = byteFee};
+        auto maybeTargetFee = details::calculateTargetFee(maxWithXInputs, feeCalculator, feeArgs,
+                                                          targetValue, dustThreshold);
+        if (maybeTargetFee) {
+            auto slices = sliceFunctor(numInputs, *maybeTargetFee);
+            if (!slices.empty()) {
+                return std::make_optional(
+                    filterOutDust(filterOutDustFunctor(slices, dustThreshold), byteFee));
+            }
+        }
+        return std::nullopt;
+    };
+
     // 1. Find a combination of the fewest inputs that is
     //    (1) bigger than what we need
     //    (2) closer to 2x the amount,
     //    (3) and does not produce dust change.
-    for (size_t numInputs = 1; numInputs <= n; ++numInputs) {
-        const auto fee = feeCalculator.calculate(numInputs, numOutputs, byteFee);
-        const auto targetWithFeeAndDust = targetValue + fee + dustThreshold;
-        if (maxWithXInputs[numInputs] < targetWithFeeAndDust) {
-            // no way to satisfy with only numInputs inputs, skip
-            continue;
-        }
-        auto slices = details::sliding(sorted, static_cast<size_t>(numInputs));
-        erase_if(slices, [targetWithFeeAndDust](auto&& slice) {
-            return sum(slice) < targetWithFeeAndDust;
-        });
-        if (!slices.empty()) {
-            std::sort(slices.begin(), slices.end(),
-                      [distFrom2x](const std::vector<TypeWithAmount>& lhs,
-                                   const std::vector<TypeWithAmount>& rhs) {
-                          return distFrom2x(sum(lhs)) < distFrom2x(sum(rhs));
-                      });
-            return filterOutDust(slices.front(), byteFee);
+    for (int64_t numInputs = 1; numInputs <= n; ++numInputs) {
+        if (auto selected = selectFunctor(numInputs, dustThreshold); selected) {
+            return *selected;
         }
     }
 
     // 2. If not, find a valid combination of outputs even if they produce dust change.
-    for (size_t numInputs = 1; numInputs <= n; ++numInputs) {
-        const auto fee = feeCalculator.calculate(numInputs, numOutputs, byteFee);
-        const auto targetWithFee = targetValue + fee;
-        if (maxWithXInputs[numInputs] < targetWithFee) {
-            // no way to satisfy with only numInputs inputs, skip
-            continue;
-        }
-        auto slices = details::sliding(sorted, static_cast<size_t>(numInputs));
-        erase_if(slices, [targetWithFee](auto&& slice) { return sum(slice) < targetWithFee; });
-        if (!slices.empty()) {
-            return filterOutDust(slices.front(), byteFee);
+    for (int64_t numInputs = 1; numInputs <= n; ++numInputs) {
+        if (auto selected = selectFunctor(numInputs); selected) {
+            return *selected;
         }
     }
 
