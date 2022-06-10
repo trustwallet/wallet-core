@@ -21,7 +21,7 @@ namespace details {
 template <typename TypeWithAmount>
 std::vector<uint64_t> collectMaxWithXInputs(const std::vector<TypeWithAmount>& sorted) {
     std::vector<uint64_t> maxWithXInputs{0};
-    maxWithXInputs.reserve(sorted.size());
+    maxWithXInputs.reserve(sorted.size() + 1);
     std::transform_inclusive_scan(crbegin(sorted), crend(sorted),
                                   std::back_inserter(maxWithXInputs), std::plus<>{},
                                   std::mem_fn(&TypeWithAmount::amount), std::uint64_t{});
