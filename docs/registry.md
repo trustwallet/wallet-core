@@ -81,6 +81,7 @@ This list is generated from [./registry.json](../registry.json)
 | 10001284 | Moonbeam         | GLMR   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/moonbeam/info/logo.png" width="32" />     | <https://moonbeam.network>    |
 | 10001285 | Moonriver        | MOVR   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/moonriver/info/logo.png" width="32" />    | <https://moonbeam.network/networks/moonriver> |
 | 10002020 | Ronin            | RON    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ronin/info/logo.png" width="32" />        | <https://whitepaper.axieinfinity.com/technology/ronin-ethereum-sidechain> |
+| 10008217 | Klaytn           | KLAY   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/klaytn/info/logo.png" width="32" />       | <https://klaytn.foundation>   |
 | 10009000 | Avalanche C-Chain | AVAX   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/avalanchec/info/logo.png" width="32" />   | <https://www.avalabs.org/>    |
 | 10009001 | Evmos            | EVMOS  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/evmos/info/logo.png" width="32" />        | <https://evmos.org/>          |
 | 10042221 | Arbitrum         | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/arbitrum/info/logo.png" width="32" />     | <https://arbitrum.io>         |
