@@ -13,7 +13,7 @@
 #include <gtest/gtest.h>
 
 
-TEST(TWTerraCoinType, TWCoinType2) {
+TEST(TWTerraCoinType, TWCoinType20) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTerra20));
     auto txId = WRAPS(TWStringCreateWithUTF8Bytes("D28D8AFC7CE89F2A22FA2DBF78D2C0A36E549BB830C4D9FA7459E3F723CA7182"));
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTerra20, txId.get()));

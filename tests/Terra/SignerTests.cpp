@@ -93,11 +93,11 @@ TEST(TerraSigner, SignSendTx) {
         }
     )");
     EXPECT_EQ(hex(output.signature()), "bcbb0bf869167e538513d5eb2d29944dd175312fcb905c683c000e720cf59b077b06a3508018358f6199bd76016ea6793e54b003bf0c0e2c9cfce753ec01f2df");
-    EXPECT_EQ(output.json(), "");
     EXPECT_EQ(output.error(), "");
+    EXPECT_EQ(output.json(), "");
 }
 
-TEST(TerraSigner, SignWasmTransferTxProtobuf) {
+TEST(TerraSigner, SignWasmTransferTx) {
     auto input = Proto::SigningInput();
     input.set_signing_mode(Proto::Protobuf);
     input.set_account_number(3407705);
@@ -263,7 +263,7 @@ TEST(TerraSigner, SignWasmGenericWithCoins) {
     EXPECT_EQ(output.json(), "");
 }
 
-TEST(TerraSigner, SignWasmSendTxProtobuf) {
+TEST(TerraSigner, SignWasmSendTx) {
     auto input = Proto::SigningInput();
     input.set_signing_mode(Proto::Protobuf);
     input.set_account_number(3407705);
