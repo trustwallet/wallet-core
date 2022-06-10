@@ -15,6 +15,22 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
+namespace details {
+
+// Precompute maximum amount possible to obtain with given number of inputs
+template <typename SortedCollection>
+std::vector<uint64_t> collectMaxWithXInputs(SortedCollection&& sorted) {
+    std::vector<uint64_t> maxWithXInputs{0};
+    int64_t maxSum = 0;
+    std::for_each(rbegin(sorted), rend(sorted), [&maxSum, &maxWithXInputs](auto&& cur) {
+        maxSum += cur.amount;
+        maxWithXInputs.emplace_back(maxSum);
+    });
+    return maxWithXInputs;
+}
+
+} // namespace details
+
 template <typename TypeWithAmount>
 uint64_t InputSelector<TypeWithAmount>::sum(const std::vector<TypeWithAmount>& amounts) noexcept {
     auto accumulateFunctor = [](std::size_t sum, auto&& cur) { return sum + cur.amount; };
@@ -81,14 +97,8 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
     std::sort(sorted.begin(), sorted.end(),
               [](auto&& lhs, auto&& rhs) { return lhs.amount < rhs.amount; });
 
-    // Precompute maximum amount possible to obtain with given number of inputs
     const auto n = sorted.size();
-    std::vector<uint64_t> maxWithXInputs{0};
-    int64_t maxSum = 0;
-    std::for_each(rbegin(sorted), rend(sorted), [&maxSum, &maxWithXInputs](auto&& cur) {
-        maxSum += cur.amount;
-        maxWithXInputs.emplace_back(maxSum);
-    });
+    const auto maxWithXInputs = details::collectMaxWithXInputs(sorted);
 
     // difference from 2x targetValue
     auto distFrom2x = [doubleTargetValue](int64_t val) -> int64_t {
