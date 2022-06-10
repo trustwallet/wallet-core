@@ -21,11 +21,9 @@ namespace details {
 template <typename TypeWithAmount>
 static inline std::vector<uint64_t>
 collectMaxWithXInputs(const std::vector<TypeWithAmount>& sorted) noexcept {
-    std::vector<uint64_t> maxWithXInputs{0};
-    maxWithXInputs.reserve(sorted.size() + 1);
-    std::transform_inclusive_scan(crbegin(sorted), crend(sorted),
-                                  std::back_inserter(maxWithXInputs), std::plus<>{},
-                                  std::mem_fn(&TypeWithAmount::amount), std::uint64_t{});
+    std::vector<uint64_t> maxWithXInputs(sorted.size() + 1);
+    std::transform_inclusive_scan(crbegin(sorted), crend(sorted), next(begin(maxWithXInputs)),
+                                  std::plus<>{}, std::mem_fn(&TypeWithAmount::amount), uint64_t{});
     return maxWithXInputs;
 }
 
@@ -38,7 +36,9 @@ template <typename TypeWithAmount>
 static inline std::vector<std::vector<TypeWithAmount>>
 sliding(const std::vector<TypeWithAmount>& inputs, size_t sliceSize) noexcept {
     std::vector<std::vector<TypeWithAmount>> slices;
-    for (auto it = begin(inputs); it <= end(inputs) - sliceSize; ++it) {
+    auto&& [from, to] = std::make_pair(cbegin(inputs), cend(inputs) - sliceSize);
+    slices.reserve(std::distance(from, to));
+    for (auto&& it = std::move(from); it <= to; ++it) {
         slices.emplace_back(it, it + sliceSize);
     }
     return slices;
@@ -49,7 +49,7 @@ sliding(const std::vector<TypeWithAmount>& inputs, size_t sliceSize) noexcept {
 template <typename TypeWithAmount>
 uint64_t InputSelector<TypeWithAmount>::sum(const std::vector<TypeWithAmount>& amounts) noexcept {
     auto accumulateFunctor = [](std::size_t sum, auto&& cur) { return sum + cur.amount; };
-    return std::accumulate(begin(amounts), end(amounts), 0_uz, accumulateFunctor);
+    return std::accumulate(cbegin(amounts), cend(amounts), 0_uz, accumulateFunctor);
 }
 
 template <typename TypeWithAmount>
@@ -67,7 +67,7 @@ InputSelector<TypeWithAmount>::filterThreshold(const std::vector<TypeWithAmount>
                                                uint64_t minimumAmount) noexcept {
     std::vector<TypeWithAmount> filtered;
     auto copyFunctor = [minimumAmount](auto&& cur) { return cur.amount > minimumAmount; };
-    std::copy_if(begin(inputsIn), end(inputsIn), std::back_inserter(filtered), copyFunctor);
+    std::copy_if(cbegin(inputsIn), cend(inputsIn), std::back_inserter(filtered), copyFunctor);
     return filtered;
 }
 
