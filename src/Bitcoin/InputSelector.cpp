@@ -19,13 +19,29 @@ namespace details {
 
 // Precompute maximum amount possible to obtain with given number of inputs
 template <typename TypeWithAmount>
-std::vector<uint64_t> collectMaxWithXInputs(const std::vector<TypeWithAmount>& sorted) {
+static inline std::vector<uint64_t>
+collectMaxWithXInputs(const std::vector<TypeWithAmount>& sorted) noexcept {
     std::vector<uint64_t> maxWithXInputs{0};
     maxWithXInputs.reserve(sorted.size() + 1);
     std::transform_inclusive_scan(crbegin(sorted), crend(sorted),
                                   std::back_inserter(maxWithXInputs), std::plus<>{},
                                   std::mem_fn(&TypeWithAmount::amount), std::uint64_t{});
     return maxWithXInputs;
+}
+
+// Slice Array
+// [0,1,2,3,4,5,6,7,8,9].eachSlices(3)
+// >
+// [[0, 1, 2], [1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [5, 6, 7], [6, 7, 8],
+// [7, 8, 9]]
+template <typename TypeWithAmount>
+static inline std::vector<std::vector<TypeWithAmount>>
+sliding(const std::vector<TypeWithAmount>& inputs, size_t sliceSize) noexcept {
+    std::vector<std::vector<TypeWithAmount>> slices;
+    for (auto it = begin(inputs); it <= end(inputs) - sliceSize; ++it) {
+        slices.emplace_back(it, it + sliceSize);
+    }
+    return slices;
 }
 
 } // namespace details
@@ -53,21 +69,6 @@ InputSelector<TypeWithAmount>::filterThreshold(const std::vector<TypeWithAmount>
     auto copyFunctor = [minimumAmount](auto&& cur) { return cur.amount > minimumAmount; };
     std::copy_if(begin(inputsIn), end(inputsIn), std::back_inserter(filtered), copyFunctor);
     return filtered;
-}
-
-// Slice Array
-// [0,1,2,3,4,5,6,7,8,9].eachSlices(3)
-// >
-// [[0, 1, 2], [1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [5, 6, 7], [6, 7, 8],
-// [7, 8, 9]]
-template <typename TypeWithAmount>
-static inline std::vector<std::vector<TypeWithAmount>>
-slice(const std::vector<TypeWithAmount>& inputs, size_t sliceSize) {
-    std::vector<std::vector<TypeWithAmount>> slices;
-    for (auto it = begin(inputs); it <= end(inputs) - sliceSize; ++it) {
-        slices.emplace_back(it, it + sliceSize);
-    }
-    return slices;
 }
 
 template <typename TypeWithAmount>
@@ -113,7 +114,7 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
             // no way to satisfy with only numInputs inputs, skip
             continue;
         }
-        auto slices = slice(sorted, static_cast<size_t>(numInputs));
+        auto slices = details::sliding(sorted, static_cast<size_t>(numInputs));
 
         slices.erase(
             std::remove_if(slices.begin(), slices.end(),
@@ -139,7 +140,7 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
             // no way to satisfy with only numInputs inputs, skip
             continue;
         }
-        auto slices = slice(sorted, static_cast<size_t>(numInputs));
+        auto slices = details::sliding(sorted, static_cast<size_t>(numInputs));
         slices.erase(std::remove_if(slices.begin(), slices.end(),
                                     [targetWithFee](const std::vector<TypeWithAmount>& slice) {
                                         return sum(slice) < targetWithFee;
