@@ -1,2 +1,13 @@
-Metrics/LineLength:
+AllCops:
+  NewCops: enable
+  Exclude:
+    - 'vendor/**/*'
+    - 'spec/fixtures/**/*'
+    - 'tmp/**/*'
+    - '.git/**/*'
+    - 'bin/*'
+  TargetRubyVersion: 2.6
+  SuggestExtensions: false
+  
+Layout/LineLength:
   Enabled: false
