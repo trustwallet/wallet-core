@@ -85,7 +85,7 @@ message Message {
         string type_prefix = 3;
     }
 
-    // transfer within wasm/MsgExecuteContract, used by Terra
+    // transfer within wasm/MsgExecuteContract, used by Terra Classic
     message WasmTerraExecuteContractTransfer {
         // sender address
         string sender_address = 1;
@@ -99,7 +99,7 @@ message Message {
         string recipient_address = 4;
     }
 
-    // send within wasm/MsgExecuteContract, used by Terra
+    // send within wasm/MsgExecuteContract, used by Terra Classic
     message WasmTerraExecuteContractSend {
         // sender address
         string sender_address = 1;
@@ -126,8 +126,58 @@ message Message {
         repeated Amount amounts = 3;
     }
 
-    // send within wasm/MsgExecuteContract, used by Terra
+    // execute within wasm/MsgExecuteContract, used by Terra Classic
     message WasmTerraExecuteContractGeneric {
+        // sender address
+        string sender_address = 1;
+
+        // token contract address
+        string contract_address = 2;
+
+        // execute_msg to be executed in the context of recipient contract
+        string execute_msg = 3;
+
+        // used in case you are sending native tokens along with this message
+        // Gap in field numbering is intentional
+        repeated Amount coins = 5;
+    }
+
+    // transfer within wasm/MsgExecuteContract
+    message WasmExecuteContractTransfer {
+        // sender address
+        string sender_address = 1;
+
+        // token contract address
+        string contract_address = 2;
+
+        // size is uint128, as bigint
+        bytes amount = 3;
+
+        string recipient_address = 4;
+    }
+
+    // send within wasm/MsgExecuteContract
+    message WasmExecuteContractSend {
+        // sender address
+        string sender_address = 1;
+
+        // token contract address
+        string contract_address = 2;
+
+        // size is uint128, as bigint
+        bytes amount = 3;
+
+        string recipient_contract_address = 4;
+
+        // execute_msg to be executed in the context of recipient contract
+        string msg = 5;
+
+        // used in case you are sending native tokens along with this message
+        repeated string coin = 6;
+    }
+
+    // execute within wasm/MsgExecuteContract
+    message WasmExecuteContractGeneric {
         // sender address
         string sender_address = 1;
 
@@ -159,7 +209,9 @@ message Message {
         WasmTerraExecuteContractSend wasm_terra_execute_contract_send_message = 9;
         THORChainSend thorchain_send_message = 10;
         WasmTerraExecuteContractGeneric wasm_terra_execute_contract_generic = 11;
-
+        WasmExecuteContractTransfer wasm_execute_contract_transfer_message = 12;
+        WasmExecuteContractSend wasm_execute_contract_send_message = 13;
+        WasmExecuteContractGeneric wasm_execute_contract_generic = 14;
     }
 }
 

@@ -13,7 +13,27 @@
 #include <gtest/gtest.h>
 
 
-TEST(TWTerraCoinType, TWCoinType) {
+TEST(TWTerraCoinType, TWCoinType2) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTerra20));
+    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("D28D8AFC7CE89F2A22FA2DBF78D2C0A36E549BB830C4D9FA7459E3F723CA7182"));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTerra20, txId.get()));
+    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("terra16t3gx5rqvz6ru37yzn3shuu20erv4ngmfr59zf"));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeTerra20, accId.get()));
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTerra20));
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTerra20));
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTerra20), 6);
+    ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeTerra20));
+    ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeTerra20));
+    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeTerra20));
+    assertStringsEqual(symbol, "LUNA");
+    assertStringsEqual(txUrl, "https://finder.terra.money/tx/tx/D28D8AFC7CE89F2A22FA2DBF78D2C0A36E549BB830C4D9FA7459E3F723CA7182");
+    assertStringsEqual(accUrl, "https://finder.terra.money/tx/address/terra16t3gx5rqvz6ru37yzn3shuu20erv4ngmfr59zf");
+    assertStringsEqual(id, "terra20");
+    assertStringsEqual(name, "Terra");
+}
+
+TEST(TWTerraCoinType, TWCoinTypeClassic) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTerra));
     auto txId = WRAPS(TWStringCreateWithUTF8Bytes("D28D8AFC7CE89F2A22FA2DBF78D2C0A36E549BB830C4D9FA7459E3F723CA7182"));
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTerra, txId.get()));

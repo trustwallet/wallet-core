@@ -26,6 +26,10 @@ std::string buildProtoTxRaw(const Proto::SigningInput& input, const std::string&
 
 std::string buildProtoTxJson(const Proto::SigningInput& input, const std::string& serializedTx);
 
+nlohmann::json wasmExecuteTransferPayload(const Proto::Message_WasmExecuteContractTransfer& msg);
+
+nlohmann::json wasmExecuteSendPayload(const Proto::Message_WasmExecuteContractSend& msg);
+
 nlohmann::json wasmTerraExecuteTransferPayload(const Proto::Message_WasmTerraExecuteContractTransfer& msg);
 
 nlohmann::json wasmTerraExecuteSendPayload(const Proto::Message_WasmTerraExecuteContractSend& msg);
