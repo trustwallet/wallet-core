@@ -18,14 +18,13 @@ using namespace TW::Bitcoin;
 namespace details {
 
 // Precompute maximum amount possible to obtain with given number of inputs
-template <typename SortedCollection>
-std::vector<uint64_t> collectMaxWithXInputs(SortedCollection&& sorted) {
+template <typename TypeWithAmount>
+std::vector<uint64_t> collectMaxWithXInputs(const std::vector<TypeWithAmount>& sorted) {
     std::vector<uint64_t> maxWithXInputs{0};
-    int64_t maxSum = 0;
-    std::for_each(rbegin(sorted), rend(sorted), [&maxSum, &maxWithXInputs](auto&& cur) {
-        maxSum += cur.amount;
-        maxWithXInputs.emplace_back(maxSum);
-    });
+    maxWithXInputs.reserve(sorted.size());
+    std::transform_inclusive_scan(crbegin(sorted), crend(sorted),
+                                  std::back_inserter(maxWithXInputs), std::plus<>{},
+                                  std::mem_fn(&TypeWithAmount::amount), std::uint64_t{});
     return maxWithXInputs;
 }
 
@@ -98,7 +97,7 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
               [](auto&& lhs, auto&& rhs) { return lhs.amount < rhs.amount; });
 
     const auto n = sorted.size();
-    const auto maxWithXInputs = details::collectMaxWithXInputs(sorted);
+    const auto maxWithXInputs = details::collectMaxWithXInputs<TypeWithAmount>(sorted);
 
     // difference from 2x targetValue
     auto distFrom2x = [doubleTargetValue](int64_t val) -> int64_t {
