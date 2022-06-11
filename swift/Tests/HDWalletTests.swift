@@ -387,9 +387,9 @@ class HDWalletTests: XCTestCase {
     }
 
     func testDeriveTerraV2() {
-        let coin = CoinType.terrav2
+        let coin = CoinType.terraV2
         let key = HDWallet.test.getKeyForCoin(coin: coin)
-        let address = CoinType.terrav2.deriveAddress(privateKey: key)
+        let address = CoinType.terraV2.deriveAddress(privateKey: key)
 
         XCTAssertEqual(address, "terra1jf9aaj9myrzsnmpdr7twecnaftzmku2mhs2hfe")
     }
