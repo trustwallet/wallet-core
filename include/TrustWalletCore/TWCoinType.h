@@ -74,7 +74,7 @@ enum TWCoinType {
     TWCoinTypeRavencoin = 175,
     TWCoinTypeWaves = 5741564,
     TWCoinTypeTerra = 330,
-    TWCoinTypeTerra20 = 10000330,
+    TWCoinTypeTerraV2 = 10000330,
     TWCoinTypeHarmony = 1023,
     TWCoinTypeAlgorand = 283,
     TWCoinTypeKusama = 434,
