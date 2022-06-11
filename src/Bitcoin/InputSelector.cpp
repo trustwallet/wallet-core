@@ -17,6 +17,10 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
+using MaybeDust = std::optional<int64_t>;
+using MaybeFee = std::optional<int64_t>;
+using Inputs = std::vector<uint64_t>;
+
 namespace details {
 
 struct FeeCalculatorArgs {
@@ -25,10 +29,28 @@ struct FeeCalculatorArgs {
     int64_t byteFee;
 };
 
-std::optional<int64_t> calculateTargetFee(const std::vector<uint64_t>& maxWithXInputs,
-                                          const FeeCalculator& feeCalculator,
-                                          FeeCalculatorArgs feeCalculatorArgs, int64_t targetValue,
-                                          std::optional<int64_t> dust = std::nullopt) {
+inline int64_t distFrom2x(int64_t doubleTargetValue, int64_t val) noexcept {
+    return val > doubleTargetValue ? val - doubleTargetValue : doubleTargetValue - val;
+}
+
+template <typename TypeWithAmount>
+inline std::vector<TypeWithAmount>
+selectOutDustElement(int64_t doubleTargetValue, MaybeDust dustThreshold,
+                     const std::vector<std::vector<TypeWithAmount>>& slices) noexcept {
+    if (dustThreshold.has_value()) {
+        const auto minFunctor = [doubleTargetValue](auto&& lhs, auto&& rhs) noexcept {
+            return details::distFrom2x(doubleTargetValue, InputSelector<TypeWithAmount>::sum(lhs)) <
+                   details::distFrom2x(doubleTargetValue, InputSelector<TypeWithAmount>::sum(rhs));
+        };
+        const auto min = std::min_element(cbegin(slices), cend(slices), minFunctor);
+        return *min;
+    }
+    return slices.front();
+}
+
+MaybeFee calculateTargetFee(const Inputs& maxWithXInputs, const FeeCalculator& feeCalculator,
+                            FeeCalculatorArgs feeCalculatorArgs, int64_t targetValue,
+                            MaybeDust dust = std::nullopt) noexcept {
     auto&& [numInputs, numOutputs, byteFee] = feeCalculatorArgs;
     const auto fee = feeCalculator.calculate(numInputs, numOutputs, byteFee);
     auto targetFee = targetValue + fee;
@@ -44,9 +66,8 @@ std::optional<int64_t> calculateTargetFee(const std::vector<uint64_t>& maxWithXI
 
 // Precompute maximum amount possible to obtain with given number of inputs
 template <typename TypeWithAmount>
-static inline std::vector<uint64_t>
-collectMaxWithXInputs(const std::vector<TypeWithAmount>& sorted) noexcept {
-    std::vector<uint64_t> maxWithXInputs(sorted.size() + 1);
+static inline Inputs collectMaxWithXInputs(const std::vector<TypeWithAmount>& sorted) noexcept {
+    Inputs maxWithXInputs(sorted.size() + 1);
     std::transform_inclusive_scan(crbegin(sorted), crend(sorted), next(begin(maxWithXInputs)),
                                   std::plus<>{}, std::mem_fn(&TypeWithAmount::amount), uint64_t{});
     return maxWithXInputs;
@@ -73,7 +94,7 @@ sliding(const std::vector<TypeWithAmount>& inputs, size_t sliceSize) noexcept {
 
 template <typename TypeWithAmount>
 uint64_t InputSelector<TypeWithAmount>::sum(const std::vector<TypeWithAmount>& amounts) noexcept {
-    auto accumulateFunctor = [](std::size_t sum, auto&& cur) { return sum + cur.amount; };
+    auto accumulateFunctor = [](std::size_t sum, auto&& cur) noexcept { return sum + cur.amount; };
     return std::accumulate(cbegin(amounts), cend(amounts), 0_uz, accumulateFunctor);
 }
 
@@ -91,7 +112,7 @@ std::vector<TypeWithAmount>
 InputSelector<TypeWithAmount>::filterThreshold(const std::vector<TypeWithAmount>& inputsIn,
                                                uint64_t minimumAmount) noexcept {
     std::vector<TypeWithAmount> filtered;
-    auto copyFunctor = [minimumAmount](auto&& cur) { return cur.amount > minimumAmount; };
+    auto copyFunctor = [minimumAmount](auto&& cur) noexcept { return cur.amount > minimumAmount; };
     std::copy_if(cbegin(inputsIn), cend(inputsIn), std::back_inserter(filtered), copyFunctor);
     return filtered;
 }
@@ -110,57 +131,42 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
     }
     assert(inputs.size() >= 1);
 
-    // definitions for the following calculation
-    const auto doubleTargetValue = targetValue * 2;
-
     // Get all possible utxo selections up to a maximum size, sort by total amount, increasing
     const auto sortFunctor = [](auto&& l, auto&& r) noexcept { return l.amount < r.amount; };
     const auto sorted = sortCopy(inputs, sortFunctor);
     const auto n = sorted.size();
     const auto maxWithXInputs = details::collectMaxWithXInputs<TypeWithAmount>(sorted);
 
-    // difference from 2x targetValue
-    auto distFrom2x = [doubleTargetValue](int64_t val) noexcept -> int64_t {
-        return val > doubleTargetValue ? val - doubleTargetValue : doubleTargetValue - val;
-    };
-
-    const int64_t dustThreshold = feeCalculator.calculateSingleInput(byteFee);
-
-    auto sliceFunctor = [&sorted](int64_t numInputs, int64_t targetFee) {
+    auto sliceFunctor = [&sorted](int64_t numInputs, int64_t targetFee) noexcept {
         auto slices = details::sliding(sorted, static_cast<size_t>(numInputs));
         auto eraseFunctor = [targetFee](auto&& slice) noexcept { return sum(slice) < targetFee; };
         erase_if(slices, eraseFunctor);
         return slices;
     };
 
-    auto filterOutDustFunctor = [&distFrom2x](auto&& slices, std::optional<int64_t> dustThreshold) {
-        if (dustThreshold.has_value()) {
-            const auto minFunctor = [&distFrom2x](auto&& lhs, auto&& rhs) noexcept {
-                return distFrom2x(sum(lhs)) < distFrom2x(sum(rhs));
-            };
-            const auto min = std::min_element(cbegin(slices), cend(slices), minFunctor);
-            return *min;
-        }
-        return slices.front();
-    };
-
+    // definitions for the following calculation
     auto selectFunctor =
-        [numOutputs, byteFee, &maxWithXInputs, targetValue, &sliceFunctor, &filterOutDustFunctor,
-         this](int64_t numInputs, std::optional<int64_t> dustThreshold =
-                                      std::nullopt) -> std::optional<std::vector<TypeWithAmount>> {
-        auto feeArgs = details::FeeCalculatorArgs{
-            .inputs = numInputs, .outputs = numOutputs, .byteFee = byteFee};
-        auto maybeTargetFee = details::calculateTargetFee(maxWithXInputs, feeCalculator, feeArgs,
-                                                          targetValue, dustThreshold);
-        if (maybeTargetFee) {
-            auto slices = sliceFunctor(numInputs, *maybeTargetFee);
-            if (!slices.empty()) {
-                return std::make_optional(
-                    filterOutDust(filterOutDustFunctor(slices, dustThreshold), byteFee));
+        [numOutputs, byteFee, &maxWithXInputs, targetValue, &sliceFunctor,
+         this](int64_t numInputs, MaybeDust dustThreshold = std::nullopt) noexcept
+        -> std::optional<std::vector<TypeWithAmount>> {
+            auto feeArgs = details::FeeCalculatorArgs{
+                .inputs = numInputs, .outputs = numOutputs, .byteFee = byteFee};
+            auto maybeTargetFee = details::calculateTargetFee(maxWithXInputs, feeCalculator,
+                                                              feeArgs, targetValue, dustThreshold);
+            if (maybeTargetFee) {
+                auto slices = sliceFunctor(numInputs, *maybeTargetFee);
+                if (!slices.empty()) {
+                    const auto doubleTargetValue = targetValue * 2;
+                    const auto filteredInputs = filterOutDust(
+                        details::selectOutDustElement(doubleTargetValue, dustThreshold, slices),
+                        byteFee);
+                    return std::make_optional(filteredInputs);
+                }
             }
-        }
-        return std::nullopt;
-    };
+            return std::nullopt;
+        };
+
+    const int64_t dustThreshold = feeCalculator.calculateSingleInput(byteFee);
 
     // 1. Find a combination of the fewest inputs that is
     //    (1) bigger than what we need
