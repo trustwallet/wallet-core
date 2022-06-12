@@ -12,7 +12,6 @@
 #include "CellInput.h"
 #include "CellOutput.h"
 #include "HeaderDep.h"
-#include "InputSelector.h"
 #include "Script.h"
 #include "SignatureVersion.h"
 #include "SigningInput.h"
@@ -34,7 +33,7 @@
 namespace TW::Nervos {
 
 struct Transaction {
-  public:
+public:
     /// Transaction data format version (note, this is signed)
     int32_t version = 0;
 
@@ -75,31 +74,31 @@ struct Transaction {
     Transaction(const Proto::Transaction& tx) {
         version = tx.version();
         for (auto cellDep : tx.cell_deps()) {
-            cellDeps.push_back(CellDep(cellDep));
+            cellDeps.emplace_back(cellDep);
         }
         for (auto headerDep : tx.header_deps()) {
             Data data;
-            std::copy(headerDep.begin(), headerDep.end(), std::back_inserter(data));
-            headerDeps.push_back(data);
+            data.insert(data.end(), headerDep.begin(), headerDep.end());
+            headerDeps.emplace_back(data);
         }
         for (auto inputCell : tx.input_cells()) {
-            inputCells.push_back(Cell(inputCell));
+            inputCells.emplace_back(inputCell);
         }
         for (auto input : tx.inputs()) {
-            inputs.push_back(CellInput(input));
+            inputs.emplace_back(input);
         }
         for (auto witness : tx.witnesses()) {
             Data data;
-            std::copy(witness.begin(), witness.end(), std::back_inserter(data));
-            outputsData.push_back(data);
+            data.insert(data.end(), witness.begin(), witness.end());
+            outputsData.emplace_back(data);
         }
         for (auto output : tx.outputs()) {
-            outputs.push_back(CellOutput(output));
+            outputs.emplace_back(output);
         }
         for (auto outputData : tx.outputs_data()) {
             Data data;
-            std::copy(outputData.begin(), outputData.end(), std::back_inserter(data));
-            outputsData.push_back(data);
+            data.insert(data.end(), outputData.begin(), outputData.end());
+            outputsData.emplace_back(data);
         }
     }
 
@@ -133,11 +132,12 @@ struct Transaction {
 
     uint64_t sizeWithoutInputs();
     uint64_t sizeOfSingleInputAndWitness();
+    uint64_t sizeOfSingleOutput(const Address& address);
     Data hash();
     Common::Proto::SigningError plan(const SigningInput& signingInput);
     Common::Proto::SigningError sign(const std::vector<PrivateKey>& privateKeys);
 
-  private:
+private:
     Common::Proto::SigningError signWitnesses(const PrivateKey& privateKey, const Data& txHash,
                                               Witnesses& witnesses);
 };

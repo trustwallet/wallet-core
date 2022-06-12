@@ -17,7 +17,7 @@ namespace TW::Nervos {
 
 /// Nervos transaction out-point reference.
 class OutPoint {
-  public:
+public:
     /// The hash of the referenced transaction.
     Data txHash;
 
@@ -29,13 +29,14 @@ class OutPoint {
     /// Initializes an out-point reference with hash, index.
     template <typename T>
     OutPoint(const T& h, uint32_t index) {
-        std::copy(std::begin(h), std::end(h), std::back_inserter(txHash));
+        txHash.insert(txHash.end(), h.begin(), h.end());
         this->index = index;
     }
 
     /// Initializes an out-point from a Protobuf out-point.
     OutPoint(const Proto::OutPoint& outPoint) {
-        std::copy(outPoint.tx_hash().begin(), outPoint.tx_hash().end(), std::back_inserter(txHash));
+        auto& outPointTxHash = outPoint.tx_hash();
+        txHash.insert(txHash.end(), outPointTxHash.begin(), outPointTxHash.end());
         index = outPoint.index();
     }
 

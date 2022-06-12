@@ -5,7 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Transaction.h"
-#include "CommonFunc.h"
+#include "Constants.h"
+#include "Serialization.h"
 #include "../BinaryCoding.h"
 #include "../HexCoding.h"
 
@@ -17,37 +18,46 @@
 using namespace TW;
 using namespace TW::Nervos;
 
-// Above this number of Cells a simplified selection is used (optimization)
-const auto SimpleModeLimit = 1000;
-
-// The maximum number of Cells to consider.  Cells above this limit are cut off because it cak take
-// very long
-const size_t MaxCellsHardLimit = 3000;
+const uint64_t transactionBaseSize = 72;
+const uint64_t cellDepSize = 37;
+const uint64_t headerDepSize = 32;
+const uint64_t singleInputAndWitnessBaseSize = 44;
+const uint64_t blankWitnessBytes = 65;
+const uint64_t uint32Size = 4;
+const int64_t minChangeValue = 6100000000;
 
 uint64_t Transaction::sizeWithoutInputs() {
-    uint64_t size = 0;
-    size += 68 + 4;
-    size += 37 * cellDeps.size();
-    size += 32 * headerDeps.size();
+    uint64_t size = transactionBaseSize;
+    size += cellDepSize * cellDeps.size();
+    size += headerDepSize * headerDeps.size();
     for (auto& output : outputs) {
         Data outputData1;
         output.encode(outputData1);
-        size += outputData1.size() + 4;
+        size += outputData1.size() + uint32Size;
     }
     for (auto& outputData : outputsData) {
-        size += 4 + outputData.size() + 4;
+        size += uint32Size + outputData.size() + uint32Size;
     }
     return size;
 }
 
 uint64_t Transaction::sizeOfSingleInputAndWitness() {
-    uint64_t size = 0;
-    size += 44;
+    uint64_t size = singleInputAndWitnessBaseSize;
     Witness witness;
-    witness.lock = Data(65, 0);
+    witness.lock = Data(blankWitnessBytes, 0);
     Data witnessData;
     witness.encode(witnessData);
-    size += 4 + witnessData.size() + 4;
+    size += uint32Size + witnessData.size() + uint32Size;
+    return size;
+}
+
+uint64_t Transaction::sizeOfSingleOutput(const Address& address) {
+    uint64_t size = 0;
+    auto output = CellOutput(0, Script(address), Script());
+    Data outputData1;
+    output.encode(outputData1);
+    size += outputData1.size() + uint32Size; // output
+    size += uint32Size + 0 + uint32Size;     // blank outputData
     return size;
 }
 
@@ -58,31 +68,31 @@ Data Transaction::hash() {
     // version
     Data versionData;
     encode32LE(version, versionData);
-    dataArray.push_back(versionData);
+    dataArray.emplace_back(versionData);
 
     // cell deps
     Data cellDepsData;
-    encode32LE((uint32_t)cellDeps.size(), cellDepsData);
+    encode32LE(uint32_t(cellDeps.size()), cellDepsData);
     for (auto& cellDep : cellDeps) {
         cellDep.encode(cellDepsData);
     }
-    dataArray.push_back(cellDepsData);
+    dataArray.emplace_back(cellDepsData);
 
     // header deps
     Data headerDepsData;
-    encode32LE((uint32_t)headerDeps.size(), headerDepsData);
+    encode32LE(uint32_t(headerDeps.size()), headerDepsData);
     for (auto& headerDep : headerDeps) {
-        std::copy(std::begin(headerDep), std::end(headerDep), std::back_inserter(headerDepsData));
+        headerDepsData.insert(headerDepsData.end(), headerDep.begin(), headerDep.end());
     }
-    dataArray.push_back(headerDepsData);
+    dataArray.emplace_back(headerDepsData);
 
     // inputs
     Data inputsData;
-    encode32LE((uint32_t)inputs.size(), inputsData);
+    encode32LE(uint32_t(inputs.size()), inputsData);
     for (auto& input : inputs) {
         input.encode(inputsData);
     }
-    dataArray.push_back(inputsData);
+    dataArray.emplace_back(inputsData);
 
     // outputs
     Data outputsData1;
@@ -90,26 +100,26 @@ Data Transaction::hash() {
     for (auto& output : outputs) {
         Data outputData1;
         output.encode(outputData1);
-        outputsData1Array.push_back(outputData1);
+        outputsData1Array.emplace_back(outputData1);
     }
-    CommonFunc::encodeDataArray(outputsData1Array, outputsData1);
-    dataArray.push_back(outputsData1);
+    Serialization::encodeDataArray(outputsData1Array, outputsData1);
+    dataArray.emplace_back(outputsData1);
 
     // outputs data
     Data outputsData2;
     std::vector<Data> outputsData2Array;
     for (auto& outputData : outputsData) {
         Data outputData2;
-        encode32LE((uint32_t)outputData.size(), outputData2);
-        std::copy(std::begin(outputData), std::end(outputData), std::back_inserter(outputData2));
-        outputsData2Array.push_back(outputData2);
+        encode32LE(uint32_t(outputData.size()), outputData2);
+        outputData2.insert(outputData2.end(), outputData.begin(), outputData.end());
+        outputsData2Array.emplace_back(outputData2);
     }
-    CommonFunc::encodeDataArray(outputsData2Array, outputsData2);
-    dataArray.push_back(outputsData2);
+    Serialization::encodeDataArray(outputsData2Array, outputsData2);
+    dataArray.emplace_back(outputsData2);
 
-    CommonFunc::encodeDataArray(dataArray, data);
+    Serialization::encodeDataArray(dataArray, data);
 
-    return TW::Hash::blake2b(data, 32, CommonFunc::getHashPersonalization());
+    return TW::Hash::blake2b(data, 32, Constants::getHashPersonalization());
 }
 
 Common::Proto::SigningError Transaction::plan(const SigningInput& signingInput) {
@@ -122,108 +132,60 @@ Common::Proto::SigningError Transaction::plan(const SigningInput& signingInput) 
         return Common::Proto::Error_missing_input_utxos;
     }
 
-    auto inputSelector = InputSelector(signingInput.cells);
-    auto inputSum = InputSelector::sum(signingInput.cells);
+    cellDeps.emplace_back(Constants::getSecp256k1CellDep());
 
-    // if amount requested is the same or more than available amount, it cannot be satisifed, but
-    // treat this case as MaxAmount, and send maximum available (which will be less)
-    if (!maxAmount && signingInput.amount > inputSum) {
-        return Common::Proto::Error_not_enough_utxos;
-    }
+    outputs.emplace_back(signingInput.amount, Script(Address(signingInput.toAddress)), Script());
+    outputsData.emplace_back();
 
-    cellDeps.push_back(CommonFunc::getSecp256k1CellDep());
-
-    outputs.push_back(
-        CellOutput(signingInput.amount, Script(Address(signingInput.toAddress)), Script()));
-    outputsData.push_back(Data());
-    Cells selectedInputs;
-    if (!maxAmount) {
-        // output + change
-        outputs.push_back(CellOutput(0, Script(Address(signingInput.changeAddress)), Script()));
-        outputsData.push_back(Data());
-        if (signingInput.cells.size() <= SimpleModeLimit &&
-            signingInput.cells.size() <= MaxCellsHardLimit) {
-            selectedInputs =
-                inputSelector.select(outputs[0].capacity, sizeWithoutInputs(),
-                                     sizeOfSingleInputAndWitness(), signingInput.byteFee);
-        } else {
-            selectedInputs =
-                inputSelector.selectSimple(outputs[0].capacity, sizeWithoutInputs(),
-                                           sizeOfSingleInputAndWitness(), signingInput.byteFee);
+    if (maxAmount) {
+        inputCells = signingInput.cells;
+        int64_t availableAmount = std::accumulate(
+            inputCells.begin(), inputCells.end(), int64_t(0),
+            [](const int64_t total, const Cell& cell) { return total + cell.capacity; });
+        int64_t fee = (sizeWithoutInputs() + inputCells.size() * sizeOfSingleInputAndWitness()) *
+                      signingInput.byteFee;
+        outputs[0].capacity = availableAmount - fee;
+    } else {
+        auto sorted = signingInput.cells;
+        std::sort(sorted.begin(), sorted.end(),
+                  [](const Cell& lhs, const Cell& rhs) { return lhs.capacity < rhs.capacity; });
+        int64_t targetValue = outputs[0].capacity + sizeWithoutInputs() * signingInput.byteFee;
+        int64_t feeForChangeOutput = sizeOfSingleOutput(Address(signingInput.changeAddress));
+        int64_t sum = 0;
+        bool gotEnough = false;
+        for (auto& cell : sorted) {
+            inputCells.emplace_back(std::move(cell));
+            sum += cell.capacity;
+            targetValue += sizeOfSingleInputAndWitness() * signingInput.byteFee;
+            if (sum >= targetValue) {
+                gotEnough = true;
+                int64_t changeValue = sum - targetValue - feeForChangeOutput;
+                if (changeValue >= minChangeValue) {
+                    // If change is enough, add it to the change address
+                    outputs.emplace_back(changeValue, Script(Address(signingInput.changeAddress)),
+                                         Script());
+                    outputsData.emplace_back();
+                } else {
+                    // If change is not enough, add it to the destination address
+                    outputs[0].capacity += sum - targetValue;
+                }
+                break;
+            }
         }
-    } else {
-        // output, no change
-        selectedInputs =
-            inputSelector.selectMaxAmount(sizeOfSingleInputAndWitness(), signingInput.byteFee);
-    }
-    if (selectedInputs.size() <= MaxCellsHardLimit) {
-        inputCells = selectedInputs;
-    } else {
-        // truncate to limit number of selected Cells
-        inputCells.clear();
-        for (auto i = 0; i < MaxCellsHardLimit; ++i) {
-            inputCells.push_back(selectedInputs[i]);
+        if (!gotEnough) {
+            return Common::Proto::Error_not_enough_utxos;
         }
-    }
-
-    if (inputCells.size() == 0) {
-        return Common::Proto::Error_not_enough_utxos;
-    }
-
-    int64_t availableAmount = InputSelector::sum(inputCells);
-
-    // Compute fee.
-    // must preliminary set change so that there is a second output
-    if (!maxAmount) {
-        if (signingInput.amount > availableAmount) {
-            return Common::Proto::Error_general;
-        }
-        outputs[0].capacity = signingInput.amount;
-    } else {
-        outputs[0].capacity = availableAmount;
-    }
-    int64_t fee = (sizeWithoutInputs() + inputCells.size() * sizeOfSingleInputAndWitness()) *
-                  signingInput.byteFee;
-    // If fee is larger then availableAmount (can happen in special maxAmount case), we reduce it
-    // (and hope it will go through)
-    fee = std::min(availableAmount, fee);
-    if (fee < 0 || fee > availableAmount) {
-        return Common::Proto::Error_general;
-    }
-
-    // adjust/compute amount
-    if (!maxAmount) {
-        // reduce amount if needed
-        outputs[0].capacity =
-            std::max(int64_t(0), std::min(outputs[0].capacity, availableAmount - fee));
-    } else {
-        // max available amount
-        outputs[0].capacity = std::max(int64_t(0), availableAmount - fee);
-    }
-
-    // compute change
-    if (!maxAmount) {
-        outputs[1].capacity = availableAmount - outputs[0].capacity - fee;
     }
 
     for (auto& cell : inputCells) {
         inputs.emplace_back(cell.outPoint, 0);
     }
 
-    if ((outputs[0].capacity < 0) || (outputs[0].capacity > availableAmount)) {
-        return Common::Proto::Error_general;
-    }
-    if (!maxAmount) {
-        if ((outputs[1].capacity < 0) || (outputs[1].capacity > availableAmount)) {
-            return Common::Proto::Error_general;
-        }
-    }
     return Common::Proto::OK;
 }
 
 Common::Proto::SigningError Transaction::sign(const std::vector<PrivateKey>& privateKeys) {
     const Data txHash = hash();
-    auto p2pkh = TW::p2pkhPrefix(TWCoinTypeNervos);
     const auto* hrp = stringForHRP(TW::hrp(TWCoinTypeNervos));
     std::vector<int> inputIndexToGroupNum;
     std::vector<Data> groupNumToLockHash;
@@ -239,31 +201,29 @@ Common::Proto::SigningError Transaction::sign(const std::vector<PrivateKey>& pri
             }
         }
         if (groupNum == -1) {
-            groupNum = (int)groupNumToLockHash.size();
-            groupNumToLockHash.push_back(lockHash);
-            groupNumToInputIndices.push_back(std::vector<int>());
+            groupNum = int(groupNumToLockHash.size());
+            groupNumToLockHash.emplace_back(lockHash);
+            groupNumToInputIndices.emplace_back();
         }
-        groupNumToInputIndices[groupNum].push_back(index);
-        inputIndexToGroupNum.push_back(groupNum);
+        groupNumToInputIndices[groupNum].emplace_back(index);
+        inputIndexToGroupNum.emplace_back(groupNum);
     }
-    int index = 0;
     for (auto groupNum = 0; groupNum < groupNumToLockHash.size(); groupNum++) {
-        while (index < groupNumToInputIndices[groupNum][0]) {
+        while (this->witnesses.size() < groupNumToInputIndices[groupNum][0]) {
             Witness emptyWitness;
             Data emptyWitnessData;
             emptyWitness.encode(emptyWitnessData);
-            witnesses.push_back(emptyWitnessData);
-            index++;
+            this->witnesses.emplace_back(emptyWitnessData);
         }
         Witnesses witnesses;
         for (auto i = 0; i < groupNumToInputIndices[groupNum].size(); i++) {
-            witnesses.push_back(Witness());
+            witnesses.emplace_back();
         }
-        auto& cell = inputCells[index];
-        const PrivateKey* privateKey = NULL;
+        auto& cell = inputCells[this->witnesses.size()];
+        const PrivateKey* privateKey = nullptr;
         for (auto& privateKey1 : privateKeys) {
             auto publicKey1 = privateKey1.getPublicKey(TWPublicKeyTypeSECP256k1);
-            auto address = Address(publicKey1, p2pkh, hrp);
+            auto address = Address(publicKey1, hrp);
             auto script = Script(address);
             if (script == cell.lock) {
                 privateKey = &privateKey1;
@@ -279,7 +239,7 @@ Common::Proto::SigningError Transaction::sign(const std::vector<PrivateKey>& pri
         }
         Data witnessData;
         witnesses[0].encode(witnessData);
-        this->witnesses.push_back(witnessData);
+        this->witnesses.emplace_back(witnessData);
     }
     return Common::Proto::OK;
 }
@@ -289,17 +249,16 @@ Common::Proto::SigningError Transaction::signWitnesses(const PrivateKey& private
     Data message;
     message.insert(message.end(), txHash.begin(), txHash.end());
 
-    witnesses[0].lock = Data(65, 0);
+    witnesses[0].lock = Data(blankWitnessBytes, 0);
 
     for (auto& witness : witnesses) {
         Data serializedWitness;
         witness.encode(serializedWitness);
         encode64LE(serializedWitness.size(), message);
-        std::copy(std::begin(serializedWitness), std::end(serializedWitness),
-                  std::back_inserter(message));
+        message.insert(message.end(), serializedWitness.begin(), serializedWitness.end());
     }
 
-    auto messageHash = TW::Hash::blake2b(message, 32, CommonFunc::getHashPersonalization());
+    auto messageHash = TW::Hash::blake2b(message, 32, Constants::getHashPersonalization());
     auto signature = privateKey.sign(messageHash, TWCurveSECP256k1);
     if (signature.empty()) {
         // Error: Failed to sign

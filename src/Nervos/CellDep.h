@@ -15,7 +15,7 @@ enum DepType { DepType_Code = 0, DepType_DepGroup = 1 };
 
 /// Nervos cell dep.
 class CellDep {
-  public:
+public:
     OutPoint outPoint;
     DepType depType;
 
@@ -23,11 +23,24 @@ class CellDep {
     CellDep(OutPoint outPoint, DepType depType) : outPoint(std::move(outPoint)), depType(depType) {}
 
     CellDep(const Proto::CellDep& cellDep) : outPoint(cellDep.out_point()) {
-        if (cellDep.dep_type() == "code") {
+        setDepTypeFromString(cellDep.dep_type());
+    }
+
+    void setDepTypeFromString(const std::string& string) {
+        if (string == "code") {
             depType = DepType_Code;
-        } else if (cellDep.dep_type() == "dep_group") {
+        } else if (string == "dep_group") {
             depType = DepType_DepGroup;
         }
+    }
+
+    std::string getDepTypeAsString() const {
+        if (depType == DepType_Code) {
+            return "code";
+        } else if (depType == DepType_DepGroup) {
+            return "dep_group";
+        }
+        return "";
     }
 
     /// Encodes the transaction into the provided buffer.
@@ -36,21 +49,12 @@ class CellDep {
     Proto::CellDep proto() const {
         auto cellDep = Proto::CellDep();
         *cellDep.mutable_out_point() = outPoint.proto();
-        if (depType == DepType_Code) {
-            cellDep.set_dep_type("code");
-        } else if (depType == DepType_DepGroup) {
-            cellDep.set_dep_type("dep_group");
-        }
+        cellDep.set_dep_type(getDepTypeAsString());
         return cellDep;
     }
 };
 
 /// A list of Cell Deps
-class CellDeps : public std::vector<CellDep> {
-  public:
-    CellDeps() = default;
-    CellDeps(const std::vector<CellDep>& vector) : std::vector<CellDep>(vector) {}
-    CellDeps(CellDep cellDep) : std::vector<CellDep>({cellDep}) {}
-};
+using CellDeps = std::vector<CellDep>;
 
 } // namespace TW::Nervos

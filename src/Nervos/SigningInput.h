@@ -20,7 +20,7 @@ namespace TW::Nervos {
 
 /// Input for signing, info of an unsigned transaction
 class SigningInput {
-  public:
+public:
     // Amount to send.  Transaction created will have this amount in its output,
     // except when use_max_amount is set, in that case this amount is not relevant, maximum possible
     // amount will be used (max avail less fee). If amount is equal or more than the available
@@ -45,7 +45,7 @@ class SigningInput {
     // If sending max amount
     bool useMaxAmount = false;
 
-  public:
+public:
     SigningInput() = default;
 
     SigningInput(const Proto::SigningInput& signingInput) {
@@ -54,10 +54,10 @@ class SigningInput {
         toAddress = signingInput.to_address();
         changeAddress = signingInput.change_address();
         for (auto& privateKey : signingInput.private_key()) {
-            privateKeys.emplace_back(PrivateKey(privateKey));
+            privateKeys.emplace_back(privateKey);
         }
         for (auto& cell : signingInput.cell()) {
-            cells.push_back(Cell(cell));
+            cells.emplace_back(cell);
         }
         useMaxAmount = signingInput.use_max_amount();
     }

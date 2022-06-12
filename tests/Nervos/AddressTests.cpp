@@ -17,11 +17,17 @@ using namespace TW::Nervos;
 TEST(NervosAddress, Valid) {
     ASSERT_TRUE(Address::isValid("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqwyk5x9e"
                                  "rg8furras980hksatlslfaktks7epf25"));
+    ASSERT_TRUE(Address::isValid("ckb1qyqvfdgvtjxswncx8mq2wl0dp6hlp7nmvhdqcecnt6"));
+    ASSERT_TRUE(Address::isValid("ckb1qjda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xw3394p3wg6"
+                                 "p60qclvpfmaa582lu860dja5h0fk0v"));
 }
 
 TEST(NervosAddress, Invalid) {
     ASSERT_FALSE(Address::isValid("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqwyk5x9"
                                   "erg8furras980hksatlslfaktks7epf26"));
+    ASSERT_FALSE(Address::isValid("ckb1qyqvfdgvtjxswncx8mq2wl0dp6hlp7nmvhdqcecnt7"));
+    ASSERT_FALSE(Address::isValid("ckb1qjda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xw3394p3wg"
+                                  "6p60qclvpfmaa582lu860dja5h0fk0w"));
 }
 
 TEST(NervosAddress, FromPrivateKey) {
@@ -42,8 +48,14 @@ TEST(NervosAddress, FromPublicKey) {
 }
 
 TEST(NervosAddress, FromString) {
-    auto address = Address("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqwyk5x9erg8fur"
-                           "ras980hksatlslfaktks7epf25");
-    ASSERT_EQ(address.string(), "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqwyk5x9er"
-                                "g8furras980hksatlslfaktks7epf25");
+    auto address1 = Address("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqwyk5x9erg8fu"
+                            "rras980hksatlslfaktks7epf25");
+    ASSERT_EQ(address1.string(), "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqwyk5x9e"
+                                 "rg8furras980hksatlslfaktks7epf25");
+    auto address2 = Address("ckb1qyqvfdgvtjxswncx8mq2wl0dp6hlp7nmvhdqcecnt6");
+    ASSERT_EQ(address2.string(), "ckb1qyqvfdgvtjxswncx8mq2wl0dp6hlp7nmvhdqcecnt6");
+    auto address3 = Address("ckb1qjda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xw3394p3wg6p60qc"
+                            "lvpfmaa582lu860dja5h0fk0v");
+    ASSERT_EQ(address3.string(), "ckb1qjda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xw3394p3wg6"
+                                 "p60qclvpfmaa582lu860dja5h0fk0v");
 }

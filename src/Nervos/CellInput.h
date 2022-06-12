@@ -13,7 +13,7 @@ namespace TW::Nervos {
 
 /// Nervos cell input.
 class CellInput {
-  public:
+public:
     /// Reference to the previous transaction's output.
     OutPoint previousOutput;
 
@@ -41,11 +41,6 @@ class CellInput {
 };
 
 /// A list of Cell Inputs
-class CellInputs : public std::vector<CellInput> {
-  public:
-    CellInputs() = default;
-    CellInputs(const std::vector<CellInput>& vector) : std::vector<CellInput>(vector) {}
-    CellInputs(CellInput cellInput) : std::vector<CellInput>({cellInput}) {}
-};
+using CellInputs = std::vector<CellInput>;
 
 } // namespace TW::Nervos

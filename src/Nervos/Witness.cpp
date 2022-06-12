@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Witness.h"
-#include "CommonFunc.h"
+#include "Serialization.h"
 #include "../BinaryCoding.h"
 
 using namespace TW;
@@ -17,11 +17,11 @@ void Witness::encode(Data& data) const {
     for (auto& data1 : std::vector<Data>({lock, inputType, outputType})) {
         Data data2;
         if (data1.size() > 0) {
-            encode32LE((uint32_t)data1.size(), data2);
-            std::copy(std::begin(data1), std::end(data1), std::back_inserter(data2));
+            encode32LE(uint32_t(data1.size()), data2);
+            data2.insert(data2.end(), data1.begin(), data1.end());
         }
-        dataArray.push_back(data2);
+        dataArray.emplace_back(data2);
     }
 
-    CommonFunc::encodeDataArray(dataArray, data);
+    Serialization::encodeDataArray(dataArray, data);
 }

@@ -16,14 +16,12 @@ namespace TW::Nervos {
 /// Note: do not put the implementation here (no matter how simple), to avoid having coin-specific
 /// includes in this file
 class Entry : public CoinEntry {
-  public:
-    virtual const std::vector<TWCoinType> coinTypes() const { return {TWCoinTypeNervos}; }
+public:
     virtual bool validateAddress(TWCoinType coin, const std::string& address, byte p2pkh, byte p2sh,
                                  const char* hrp) const;
     virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, byte p2pkh,
                                       const char* hrp) const;
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
-    virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
 };
 
 } // namespace TW::Nervos

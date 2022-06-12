@@ -5,8 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Script.h"
-
-#include "CommonFunc.h"
+#include "Constants.h"
+#include "Serialization.h"
 
 #include "../Bech32.h"
 #include "../BinaryCoding.h"
@@ -19,41 +19,24 @@
 using namespace TW;
 using namespace TW::Nervos;
 
-Script::Script(const Data& data) {
-    std::vector<Data> dataArray = CommonFunc::decodeDataArray(data);
-    int i = 0;
-    for (auto& element : dataArray[0]) {
-        codeHash[i++] = element;
-    }
-    hashType = (HashType)dataArray[1][0];
-    args = dataArray[2];
-}
-
 Data Script::hash() const {
     Data data;
     encode(data);
-    return TW::Hash::blake2b(data, 32, CommonFunc::getHashPersonalization());
+    return TW::Hash::blake2b(data, 32, Constants::getHashPersonalization());
 }
 
 bool Script::empty() const {
-    for (auto& element : codeHash) {
-        if (element != 0) {
-            return false;
-        }
-    }
-    return true;
+    return std::all_of(codeHash.begin(), codeHash.end(), [](byte element) { return element == 0; });
 }
 
 void Script::encode(Data& data) const {
+    Data hashTypeData(1);
+    Data argsData;
     if (empty()) {
         return;
     }
-    std::vector<Data> dataArray;
-    dataArray.push_back(codeHash);
-    dataArray.push_back(Data({(uint8_t)hashType}));
-    Data argsData;
-    encode32LE((uint32_t)args.size(), argsData);
-    std::copy(std::begin(args), std::end(args), std::back_inserter(argsData));
-    dataArray.push_back(argsData);
-    CommonFunc::encodeDataArray(dataArray, data);
+    hashTypeData[0] = hashType;
+    encode32LE(uint32_t(args.size()), argsData);
+    argsData.insert(argsData.end(), args.begin(), args.end());
+    Serialization::encodeDataArray(std::vector<Data>{codeHash, hashTypeData, argsData}, data);
 }

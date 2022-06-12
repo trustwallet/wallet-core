@@ -24,14 +24,12 @@ struct CellOutput {
     CellOutput() = default;
 
     /// Initializes a cell output with a capacity and scripts.
-    CellOutput(int64_t capacity, Script lock, Script type)
-        : capacity(capacity), lock(lock), type(type) {}
+    CellOutput(int64_t capacity, Script&& lock, Script&& type)
+        : capacity(capacity), lock(std::move(lock)), type(std::move(type)) {}
 
     /// Initializes a CellInput from a Protobuf CellInput.
     CellOutput(const Proto::CellOutput& cellOutput)
-        : lock(cellOutput.lock()), type(cellOutput.type()) {
-        capacity = cellOutput.capacity();
-    }
+        : capacity(cellOutput.capacity()), lock(cellOutput.lock()), type(cellOutput.type()) {}
 
     /// Encodes the output into the provided buffer.
     void encode(Data& data) const;
@@ -46,11 +44,6 @@ struct CellOutput {
 };
 
 /// A list of Cell Outputs
-class CellOutputs : public std::vector<CellOutput> {
-  public:
-    CellOutputs() = default;
-    CellOutputs(const std::vector<CellOutput>& vector) : std::vector<CellOutput>(vector) {}
-    CellOutputs(CellOutput cellOutput) : std::vector<CellOutput>({cellOutput}) {}
-};
+using CellOutputs = std::vector<CellOutput>;
 
 } // namespace TW::Nervos

@@ -7,7 +7,6 @@
 #include "Entry.h"
 
 #include "Address.h"
-#include "Planner.h"
 #include "Signer.h"
 
 using namespace TW;
@@ -16,18 +15,14 @@ using namespace std;
 
 bool Entry::validateAddress(TWCoinType coin, const string& address, byte p2pkh, byte p2sh,
                             const char* hrp) const {
-    return Address::isValid(address, p2pkh, p2sh, hrp);
+    return Address::isValid(address, hrp);
 }
 
 string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, byte p2pkh,
                             const char* hrp) const {
-    return Address(publicKey, p2pkh, hrp).string();
+    return Address(publicKey, hrp).string();
 }
 
 void Entry::sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
-}
-
-void Entry::plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
-    planTemplate<Planner, Proto::SigningInput>(dataIn, dataOut);
 }

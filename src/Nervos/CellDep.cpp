@@ -12,5 +12,5 @@ using namespace TW::Nervos;
 
 void CellDep::encode(Data& data) const {
     outPoint.encode(data);
-    data.push_back(depType);
+    data.emplace_back(depType);
 }

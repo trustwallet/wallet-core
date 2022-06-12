@@ -13,27 +13,19 @@
 namespace TW::Nervos {
 
 class Witness {
-  public:
+public:
     Data lock;
     Data inputType;
     Data outputType;
 
-  public:
+public:
     Witness() = default;
-
-    Witness(const Witness& witness)
-        : lock(witness.lock), inputType(witness.inputType), outputType(witness.outputType) {}
 
     /// Encodes the witness into the provided buffer.
     void encode(Data& data) const;
 };
 
 /// A list of Witness's
-class Witnesses : public std::vector<Witness> {
-  public:
-    Witnesses() = default;
-    Witnesses(const std::vector<Witness>& vector) : std::vector<Witness>(vector) {}
-    Witnesses(Witness witness) : std::vector<Witness>({witness}) {}
-};
+using Witnesses = std::vector<Witness>;
 
 } // namespace TW::Nervos

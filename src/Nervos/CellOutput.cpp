@@ -6,25 +6,17 @@
 
 #include "CellOutput.h"
 
-#include "CommonFunc.h"
+#include "Serialization.h"
 #include "../BinaryCoding.h"
 
 using namespace TW::Nervos;
 
 void CellOutput::encode(Data& data) const {
-    std::vector<Data> dataArray;
-
     Data capacityData;
-    encode64LE(capacity, capacityData);
-    dataArray.push_back(capacityData);
-
     Data lockData;
-    lock.encode(lockData);
-    dataArray.push_back(lockData);
-
     Data typeData;
+    encode64LE(capacity, capacityData);
+    lock.encode(lockData);
     type.encode(typeData);
-    dataArray.push_back(typeData);
-
-    CommonFunc::encodeDataArray(dataArray, data);
+    Serialization::encodeDataArray(std::vector<Data>{capacityData, lockData, typeData}, data);
 }

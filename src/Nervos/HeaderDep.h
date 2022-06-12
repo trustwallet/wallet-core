@@ -14,6 +14,6 @@ namespace TW::Nervos {
 using HeaderDep = Data;
 
 /// A list of header deps
-class HeaderDeps : public std::vector<HeaderDep> {};
+using HeaderDeps = std::vector<HeaderDep>;
 
 } // namespace TW::Nervos

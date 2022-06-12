@@ -11,6 +11,6 @@
 using namespace TW::Nervos;
 
 void OutPoint::encode(Data& data) const {
-    std::copy(std::begin(txHash), std::end(txHash), std::back_inserter(data));
+    data.insert(data.end(), txHash.begin(), txHash.end());
     encode32LE(index, data);
 }

@@ -11,7 +11,7 @@
 namespace TW::Nervos {
 
 class Signer {
-  public:
+public:
     Signer() = delete;
 
     /// Signs a Proto::SigningInput transaction

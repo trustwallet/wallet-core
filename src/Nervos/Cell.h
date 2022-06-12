@@ -15,17 +15,34 @@
 namespace TW::Nervos {
 
 class Cell {
-  public:
+public:
     OutPoint outPoint;
     Script lock;
     Script type;
     int64_t capacity;
 
-  public:
+public:
     Cell() = default;
 
+    // Copy constructor
     Cell(const Cell& cell)
         : outPoint(cell.outPoint), lock(cell.lock), type(cell.type), capacity(cell.capacity) {}
+
+    // Move constructor
+    Cell(Cell&& cell)
+        : outPoint(std::move(cell.outPoint))
+        , lock(std::move(cell.lock))
+        , type(std::move(cell.type))
+        , capacity(cell.capacity) {}
+
+    // Copy assignment operator
+    Cell& operator=(const Cell& cell) {
+        outPoint = cell.outPoint;
+        lock = cell.lock;
+        type = cell.type;
+        capacity = cell.capacity;
+        return *this;
+    }
 
     Cell(const Proto::Cell& cell)
         : outPoint(cell.out_point())
@@ -44,11 +61,6 @@ class Cell {
 };
 
 /// A list of Cell's
-class Cells : public std::vector<Cell> {
-  public:
-    Cells() = default;
-    Cells(const std::vector<Cell>& vector) : std::vector<Cell>(vector) {}
-    Cells(Cell cell) : std::vector<Cell>({cell}) {}
-};
+using Cells = std::vector<Cell>;
 
 } // namespace TW::Nervos
