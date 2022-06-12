@@ -29,12 +29,12 @@ struct FeeCalculatorArgs {
     int64_t byteFee;
 };
 
-inline int64_t distFrom2x(int64_t doubleTargetValue, int64_t val) noexcept {
+static inline int64_t distFrom2x(int64_t doubleTargetValue, int64_t val) noexcept {
     return val > doubleTargetValue ? val - doubleTargetValue : doubleTargetValue - val;
 }
 
 template <typename TypeWithAmount>
-inline std::vector<TypeWithAmount>
+static inline std::vector<TypeWithAmount>
 selectOutDustElement(int64_t doubleTargetValue, MaybeDust dustThreshold,
                      const std::vector<std::vector<TypeWithAmount>>& slices) noexcept {
     if (dustThreshold.has_value()) {
@@ -48,9 +48,9 @@ selectOutDustElement(int64_t doubleTargetValue, MaybeDust dustThreshold,
     return slices.front();
 }
 
-MaybeFee calculateTargetFee(const Inputs& maxWithXInputs, const FeeCalculator& feeCalculator,
-                            FeeCalculatorArgs feeCalculatorArgs, int64_t targetValue,
-                            MaybeDust dust = std::nullopt) noexcept {
+static MaybeFee calculateTargetFee(const Inputs& maxWithXInputs, const FeeCalculator& feeCalculator,
+                                   FeeCalculatorArgs feeCalculatorArgs, int64_t targetValue,
+                                   MaybeDust dust = std::nullopt) noexcept {
     auto&& [numInputs, numOutputs, byteFee] = feeCalculatorArgs;
     const auto fee = feeCalculator.calculate(numInputs, numOutputs, byteFee);
     auto targetFee = targetValue + fee;
@@ -144,7 +144,6 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
         return slices;
     };
 
-    // definitions for the following calculation
     auto selectFunctor =
         [numOutputs, byteFee, &maxWithXInputs, targetValue, &sliceFunctor,
          this](int64_t numInputs, MaybeDust dustThreshold = std::nullopt) noexcept
