@@ -2,11 +2,11 @@
 
 # Enum declaration.
 class EnumDecl
-  attr_reader :name
+  attr_reader :name, :comment
   attr_accessor :cases, :raw_type
   attr_accessor :methods, :properties, :static_methods, :static_properties
 
-  def initialize(name:, raw_type:)
+  def initialize(name:, raw_type:, comment:)
     @name = name
     @cases = []
     @raw_type = raw_type
@@ -14,6 +14,7 @@ class EnumDecl
     @properties = []
     @static_methods = []
     @static_properties = []
+    @comment = comment
   end
 
   def struct?

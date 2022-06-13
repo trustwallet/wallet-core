@@ -151,7 +151,7 @@ class Parser
 
     @buffer.skip(/\s*/)
     report_error 'Invalid enum' if @buffer.scan(/enum TW(\w+)\s*\{/).nil?
-    @entity = EnumDecl.new(name: @buffer[1], raw_type: TypeDecl.fromPrimitive(type))
+    @entity = EnumDecl.new(name: @buffer[1], raw_type: TypeDecl.fromPrimitive(type), comment: @entity_comment)
     incremental_value = 0
 
     until @buffer.eos?
