@@ -182,8 +182,6 @@ TEST(TerraSigner, SignWasmGeneric) {
 
     Address fromAddress;
     ASSERT_TRUE(Address::decode("terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf", fromAddress));
-    Address toAddress;
-    ASSERT_TRUE(Address::decode("terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp", toAddress));
     const auto tokenContractAddress = "terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76";
     const auto txMessage = R"({"transfer": { "amount": "250000", "recipient": "terra1d7048csap4wzcv5zm7z6tdqem2agyp9647vdyj" } })";
 
@@ -226,8 +224,6 @@ TEST(TerraSigner, SignWasmGenericWithCoins) {
 
     Address fromAddress;
     ASSERT_TRUE(Address::decode("terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf", fromAddress));
-    Address toAddress;
-    ASSERT_TRUE(Address::decode("terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp", toAddress));
     const auto tokenContractAddress = "terra1sepfj7s0aeg5967uxnfk4thzlerrsktkpelm5s";
     const auto txMessage = R"({ "deposit_stable": {} })";
 
