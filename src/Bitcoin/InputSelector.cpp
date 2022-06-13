@@ -14,27 +14,30 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
-
 template <typename TypeWithAmount>
 uint64_t InputSelector<TypeWithAmount>::sum(const std::vector<TypeWithAmount>& amounts) {
     uint64_t sum = 0;
-    for(auto& i: amounts) {
+    for (auto& i : amounts) {
         sum += i.amount;
     }
     return sum;
 }
 
 template <typename TypeWithAmount>
-std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::filterOutDust(const std::vector<TypeWithAmount>& inputs, int64_t byteFee) {
+std::vector<TypeWithAmount>
+InputSelector<TypeWithAmount>::filterOutDust(const std::vector<TypeWithAmount>& inputs,
+                                             int64_t byteFee) {
     auto inputFeeLimit = static_cast<uint64_t>(feeCalculator.calculateSingleInput(byteFee));
     return filterThreshold(inputs, inputFeeLimit);
 }
 
 // Filters utxos that are dust
 template <typename TypeWithAmount>
-std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::filterThreshold(const std::vector<TypeWithAmount>& inputs, uint64_t minimumAmount) {
+std::vector<TypeWithAmount>
+InputSelector<TypeWithAmount>::filterThreshold(const std::vector<TypeWithAmount>& inputs,
+                                               uint64_t minimumAmount) {
     std::vector<TypeWithAmount> filtered;
-    for (auto& i: inputs) {
+    for (auto& i : inputs) {
         if (i.amount > minimumAmount) {
             filtered.push_back(i);
         }
@@ -48,7 +51,8 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::filterThreshold(const
 // [[0, 1, 2], [1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [5, 6, 7], [6, 7, 8],
 // [7, 8, 9]]
 template <typename TypeWithAmount>
-static inline std::vector<std::vector<TypeWithAmount>> slice(const std::vector<TypeWithAmount>& inputs, size_t sliceSize) {
+static inline std::vector<std::vector<TypeWithAmount>>
+slice(const std::vector<TypeWithAmount>& inputs, size_t sliceSize) {
     std::vector<std::vector<TypeWithAmount>> slices;
     for (auto i = 0; i <= inputs.size() - sliceSize; ++i) {
         slices.emplace_back();
@@ -61,7 +65,8 @@ static inline std::vector<std::vector<TypeWithAmount>> slice(const std::vector<T
 }
 
 template <typename TypeWithAmount>
-std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int64_t numOutputs) {
+std::vector<TypeWithAmount>
+InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int64_t numOutputs) {
     // if target value is zero, no UTXOs are needed
     if (targetValue == 0) {
         return {};
@@ -79,9 +84,9 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::select(int64_t target
     // Get all possible utxo selections up to a maximum size, sort by total amount, increasing
     std::vector<TypeWithAmount> sorted = inputs;
     std::sort(sorted.begin(), sorted.end(),
-        [](const TypeWithAmount& lhs, const TypeWithAmount& rhs) {
-            return lhs.amount < rhs.amount;
-        });
+              [](const TypeWithAmount& lhs, const TypeWithAmount& rhs) {
+                  return lhs.amount < rhs.amount;
+              });
 
     // Precompute maximum amount possible to obtain with given number of inputs
     const auto n = sorted.size();
@@ -118,15 +123,16 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::select(int64_t target
 
         slices.erase(
             std::remove_if(slices.begin(), slices.end(),
-                [targetWithFeeAndDust](const std::vector<TypeWithAmount>& slice) {
-                    return sum(slice) < targetWithFeeAndDust;
-                }),
+                           [targetWithFeeAndDust](const std::vector<TypeWithAmount>& slice) {
+                               return sum(slice) < targetWithFeeAndDust;
+                           }),
             slices.end());
         if (!slices.empty()) {
             std::sort(slices.begin(), slices.end(),
-                [distFrom2x](const std::vector<TypeWithAmount>& lhs, const std::vector<TypeWithAmount>& rhs) {
-                    return distFrom2x(sum(lhs)) < distFrom2x(sum(rhs));
-                });
+                      [distFrom2x](const std::vector<TypeWithAmount>& lhs,
+                                   const std::vector<TypeWithAmount>& rhs) {
+                          return distFrom2x(sum(lhs)) < distFrom2x(sum(rhs));
+                      });
             return filterOutDust(slices.front(), byteFee);
         }
     }
@@ -140,12 +146,11 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::select(int64_t target
             continue;
         }
         auto slices = slice(sorted, static_cast<size_t>(numInputs));
-        slices.erase(
-            std::remove_if(slices.begin(), slices.end(),
-                [targetWithFee](const std::vector<TypeWithAmount>& slice) {
-                    return sum(slice) < targetWithFee;
-                }),
-            slices.end());
+        slices.erase(std::remove_if(slices.begin(), slices.end(),
+                                    [targetWithFee](const std::vector<TypeWithAmount>& slice) {
+                                        return sum(slice) < targetWithFee;
+                                    }),
+                     slices.end());
         if (!slices.empty()) {
             return filterOutDust(slices.front(), byteFee);
         }
@@ -155,7 +160,9 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::select(int64_t target
 }
 
 template <typename TypeWithAmount>
-std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(int64_t targetValue, int64_t byteFee, int64_t numOutputs) {
+std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(int64_t targetValue,
+                                                                        int64_t byteFee,
+                                                                        int64_t numOutputs) {
     // if target value is zero, no UTXOs are needed
     if (targetValue == 0) {
         return {};
@@ -165,15 +172,18 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(int64_t 
     }
     assert(inputs.size() >= 1);
 
-    // target value is larger that original, but not by a factor of 2 (optioized for large UTXO cases)
-    const auto increasedTargetValue = (uint64_t)((double)targetValue * 1.1 + feeCalculator.calculate(inputs.size(), numOutputs, byteFee) + 1000);
+    // target value is larger that original, but not by a factor of 2 (optioized for large UTXO
+    // cases)
+    const auto increasedTargetValue =
+        (uint64_t)((double)targetValue * 1.1 +
+                   feeCalculator.calculate(inputs.size(), numOutputs, byteFee) + 1000);
 
     const int64_t dustThreshold = feeCalculator.calculateSingleInput(byteFee);
 
     // Go through inputs in a single pass, in the order they appear, no optimization
     uint64_t sum = 0;
     std::vector<TypeWithAmount> selected;
-    for (auto& input: inputs) {
+    for (auto& input : inputs) {
         if (input.amount <= dustThreshold) {
             continue; // skip dust
         }

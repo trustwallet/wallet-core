@@ -79,8 +79,8 @@ void planTemplate(const Data& dataIn, Data& dataOut) {
 
 // This template will be used for preImageHashes and compile in each coin's Entry.cpp.
 // It is a helper function to simplify exception handle.
-template <typename Input, typename Output>
-Data txCompilerTemplate(const Data& dataIn, std::function<void(const Input& input, Output& output)> fnHandler) {
+template <typename Input, typename Output, typename Func>
+Data txCompilerTemplate(const Data& dataIn, Func&& fnHandler) {
     auto input = Input();
     auto output = Output();
     if (!input.ParseFromArray(dataIn.data(), (int)dataIn.size())) {

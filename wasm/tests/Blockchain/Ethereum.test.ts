@@ -17,7 +17,7 @@ describe("Ethereum", () => {
 
     assert.isTrue(PrivateKey.isValid(data, Curve.secp256k1));
 
-    const key = new PrivateKey.createWithData(data);
+    const key = PrivateKey.createWithData(data);
     const pubKey = key.getPublicKeySecp256k1(false);
 
     assert.equal(
@@ -25,7 +25,7 @@ describe("Ethereum", () => {
       "0x043182a24fdefe5711d735a434e983bf32a63fd99d214d63936b312643c325c6e33545c4aaff6b923544044d363d73668ec8724b7e62b54d17d49879405cf20648"
     );
 
-    const address = new AnyAddress.createWithPublicKey(pubKey, CoinType.smartChain);
+    const address = AnyAddress.createWithPublicKey(pubKey, CoinType.smartChain);
 
     assert.equal(address.description(), "0xf3d468DBb386aaD46E92FF222adDdf872C8CC064");
 
@@ -105,7 +105,7 @@ describe("Ethereum", () => {
 
     assert.equal(HexCoding.encode(hash), "0x1da44b586eb0729ff70a73c326926f6ed5a25f5b056e7f47fbc6e58d86871655");
 
-    var key = new PrivateKey.createWithData(HexCoding.decode("1fcb84974220eb76e619d7208e1446ae9c0f755e97fb220a8f61c7dc03a0dfce"));
+    var key = PrivateKey.createWithData(HexCoding.decode("1fcb84974220eb76e619d7208e1446ae9c0f755e97fb220a8f61c7dc03a0dfce"));
 
     const signature = key.sign(hash, Curve.secp256k1);
 
@@ -117,7 +117,7 @@ describe("Ethereum", () => {
   it("test signing EIP712 message", () => {
     const { EthereumAbi, HexCoding, Hash, PrivateKey, Curve } = WalletCore;
 
-    const key = new PrivateKey.createWithData(Hash.keccak256(Buffer.from("cow")));
+    const key = PrivateKey.createWithData(Hash.keccak256(Buffer.from("cow")));
     const message = {
       types: {
         EIP712Domain: [
