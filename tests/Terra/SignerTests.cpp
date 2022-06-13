@@ -47,39 +47,41 @@ TEST(TerraSigner, SignSendTx) {
     amountOfFee->set_denom("uluna");
     amountOfFee->set_amount("30000");
 
-    std::string json;
-    google::protobuf::util::MessageToJsonString(input, &json);
-    assertJSONEqual(json, R"(
-        {
-            "signingMode": "Protobuf",
-            "accountNumber": "1037",
-            "chainId": "phoenix-1",
-            "fee": {
-                "amounts": [
+    {
+        std::string json;
+        google::protobuf::util::MessageToJsonString(input, &json);
+        assertJSONEqual(json, R"(
+            {
+                "signingMode": "Protobuf",
+                "accountNumber": "1037",
+                "chainId": "phoenix-1",
+                "fee": {
+                    "amounts": [
+                        {
+                            "denom": "uluna",
+                            "amount": "30000"
+                        }
+                    ],
+                    "gas": "200000"
+                },
+                "sequence": "1",
+                "messages": [
                     {
-                        "denom": "uluna",
-                        "amount": "30000"
+                        "sendCoinsMessage": {
+                            "fromAddress": "terra1hsk6jryyqjfhp5dhc55tc9jtckygx0ep37hdd2",
+                            "toAddress": "terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp",
+                            "amounts": [
+                                {
+                                    "denom": "uluna",
+                                    "amount": "1000000"
+                                }
+                            ]
+                        }
                     }
-                ],
-                "gas": "200000"
-            },
-            "sequence": "1",
-            "messages": [
-                {
-                    "sendCoinsMessage": {
-                        "fromAddress": "terra1hsk6jryyqjfhp5dhc55tc9jtckygx0ep37hdd2",
-                        "toAddress": "terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp",
-                        "amounts": [
-                            {
-                                "denom": "uluna",
-                                "amount": "1000000"
-                            }
-                        ]
-                    }
-                }
-            ]
-        }
-    )");
+                ]
+            }
+        )");
+    }
 
     auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
     input.set_private_key(privateKey.data(), privateKey.size());
@@ -126,35 +128,37 @@ TEST(TerraSigner, SignWasmTransferTx) {
     amountOfFee->set_denom("uluna");
     amountOfFee->set_amount("3000");
 
-    std::string json;
-    google::protobuf::util::MessageToJsonString(input, &json);
-    assertJSONEqual(json, R"(
-        {
-            "signingMode": "Protobuf",
-            "accountNumber": "3407705",
-            "chainId": "phoenix-1",
-            "fee": {
-                "amounts": [
+    {
+        std::string json;
+        google::protobuf::util::MessageToJsonString(input, &json);
+        assertJSONEqual(json, R"(
+            {
+                "signingMode": "Protobuf",
+                "accountNumber": "3407705",
+                "chainId": "phoenix-1",
+                "fee": {
+                    "amounts": [
+                        {
+                            "denom": "uluna",
+                            "amount": "3000"
+                        }
+                    ],
+                    "gas": "200000"
+                },
+                "sequence": "3",
+                "messages": [
                     {
-                        "denom": "uluna",
-                        "amount": "3000"
+                        "wasmExecuteContractTransferMessage": {
+                            "senderAddress": "terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf",
+                            "contractAddress": "terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76",
+                            "amount": "A9CQ",
+                            "recipientAddress": "terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp"
+                        }
                     }
-                ],
-                "gas": "200000"
-            },
-            "sequence": "3",
-            "messages": [
-                {
-                    "wasmExecuteContractTransferMessage": {
-                        "senderAddress": "terra18wukp84dq227wu4mgh0jm6n9nlnj6rs82pp9wf",
-                        "contractAddress": "terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76",
-                        "amount": "A9CQ",
-                        "recipientAddress": "terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp"
-                    }
-                }
-            ]
-        }
-    )");
+                ]
+            }
+        )");
+    }
 
     auto privateKey = parse_hex("cf08ee8493e6f6a53f9721b9045576e80f371c0e36d08fdaf78b27a7afd8e616");
     input.set_private_key(privateKey.data(), privateKey.size());
