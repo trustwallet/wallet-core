@@ -74,7 +74,7 @@ class TestTerraTransactions {
         val publicKey = key.getPublicKeySecp256k1(true)
         val from = AnyAddress(publicKey, TERRAV2).description()
 
-        val wasmTransferMessage = Cosmos.Message.WasmTerraExecuteContractTransfer.newBuilder().apply {
+        val wasmTransferMessage = Cosmos.Message.WasmExecuteContractTransfer.newBuilder().apply {
             senderAddress = from
             contractAddress = "terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76"
             amount = ByteString.copyFrom("0x3D090".toHexByteArray()) // 250000
@@ -82,7 +82,7 @@ class TestTerraTransactions {
         }.build()
 
         val message = Cosmos.Message.newBuilder().apply {
-            wasmTerraExecuteContractTransferMessage = wasmTransferMessage
+            wasmExecuteContractTransferMessage = wasmTransferMessage
         }.build()
 
         val feeAmount = Cosmos.Amount.newBuilder().apply {
