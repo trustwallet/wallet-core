@@ -4,6 +4,7 @@ import java.util.HashSet;
 <%  less = entity.static_methods.detect{ |i| i.name == 'Less' } -%>
 <%  equal = entity.static_methods.detect{ |i| i.name == 'Equal' } -%>
 <%  if !less.nil? && !equal.nil? -%>
+<%= entity.comment %>
 public class <%= entity.name %> implements Comparable<<%= entity.name %>> {
 <%  else -%>
 public class <%= entity.name %> {
@@ -38,6 +39,7 @@ public class <%= entity.name %> {
 
 <%# Static property declarations -%>
 <%  entity.static_properties.each do |property| -%>
+    <%= property.comment %>
 <%    if should_return_data(property) -%>
     public static native byte[] <%= JavaHelper.format_name(property.name) %>(<%= JavaHelper.parameters(property.parameters) %>);
 <%    elsif should_return_string(property) -%>
@@ -48,6 +50,7 @@ public class <%= entity.name %> {
 <% end -%>
 <%# Static method declarations -%>
 <%  entity.static_methods.each do |method| -%>
+    <%= method.comment %>
 <%    next if method.name.start_with?('Create') -%>
 <%    if should_return_data(method) -%>
     public static native byte[] <%= JavaHelper.format_name(method.name) %>(<%= JavaHelper.parameters(method.parameters) %>);
@@ -59,6 +62,7 @@ public class <%= entity.name %> {
 <%  end -%>
 <%# Property declarations -%>
 <%  entity.properties.each do |property| -%>
+    <%= property.comment %>
 <%    if should_return_data(property) -%>
     public native byte[] <%= JavaHelper.format_name(property.name) %>(<%= JavaHelper.parameters(property.parameters.drop(1)) %>);
 <%    elsif should_return_string(property) -%>
@@ -69,6 +73,7 @@ public class <%= entity.name %> {
 <%  end -%>
 <%# Method declarations -%>
 <%  entity.methods.each do |method| -%>
+    <%= method.comment %>
 <%    next if method.name.start_with?('Delete') -%>
 <%    if should_return_data(method) -%>
     public native byte[] <%= JavaHelper.format_name(method.name) %>(<%= JavaHelper.parameters(method.parameters.drop(1)) %>);

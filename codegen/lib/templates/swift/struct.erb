@@ -1,7 +1,7 @@
 import Foundation
 
 <% protocols = SwiftHelper.protocol(entity) -%>
-    <%= entity.comment %>
+<%= entity.comment %>
 public struct <%= entity.name %><% unless protocols.empty? %>: <%= protocols.join(', ') %><% end %> {
 <%# Static properties -%>
 <% entity.static_properties.each do |property| -%>
