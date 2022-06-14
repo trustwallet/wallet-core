@@ -2542,5 +2542,33 @@
       "rpc": "https://rpc.api.moonbeam.network",
       "documentation": "https://docs.moonbeam.network"
     }
+  },
+  {
+    "id": "klaytn",
+    "name": "Klaytn",
+    "coinId": 10008217,
+    "symbol": "KLAY",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "8217",
+    "explorer": {
+      "url": "https://scope.klaytn.com",
+      "txPath": "/tx/",
+      "accountPath": "/account/",
+      "sampleTx": "0x93ea92687845fe7bb6cacd69c76a16a2a3c2bbb85a8a93ff0e032d0098d583d7",
+      "sampleAccount": "0x2ad9656bf5b82caf10847b431012e28e301e83ba"
+    },
+    "info": {
+      "url": "https://klaytn.foundation",
+      "rpc": "https://public-node-api.klaytnapi.com/v1/cypress",
+      "documentation": "https://docs.klaytn.foundation"
+    }
   }
 ]
