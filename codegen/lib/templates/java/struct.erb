@@ -2,8 +2,8 @@ import java.security.InvalidParameterException;
 
 <%  less = entity.static_methods.detect{ |i| i.name == 'Less' } -%>
 <%  equal = entity.static_methods.detect{ |i| i.name == 'Equal' } -%>
-<%  if !less.nil? && !equal.nil? -%>
 <%= entity.comment %>
+<%  if !less.nil? && !equal.nil? -%>
 public class <%= entity.name %> implements Comparable<<%= entity.name %>> {
 <%  else -%>
 public class <%= entity.name %> {

@@ -53,7 +53,6 @@ public class <%= entity.name %> {
 
 <%# Static method declarations -%>
 <%  entity.static_methods.each do |method| -%>
-    <%= method.comment %>
 <%    next if method.name.start_with?('Create') -%>
     <%= method.comment %>
 <%    if should_return_data(method) -%>
