@@ -51,12 +51,62 @@ static void writeTransfer(Data& data, const Proto::Transfer& transfer) {
 
 static void writeFunctionCall(Data& data, const Proto::FunctionCall& functionCall) {
     writeString(data, functionCall.method_name());
-    
+
     writeU32(data, static_cast<uint32_t>(functionCall.args().size()));
     writeRawBuffer(data, functionCall.args());
-    
+
     writeU64(data, functionCall.gas());
     writeU128(data, functionCall.deposit());
+}
+
+static void writeStake(Data& data, const Proto::Stake& stake) {
+    writeU128(data, stake.stake());
+    writePublicKey(data, stake.public_key());
+}
+
+static void writeFunctionCallPermission(Data& data, const Proto::FunctionCallPermission& functionCallPermission) {
+    if (functionCallPermission.allowance().empty()) {
+        writeU8(data, 0);
+    } else {
+        writeU8(data, 1);
+        writeU128(data, functionCallPermission.allowance());
+    }
+    writeString(data, functionCallPermission.receiver_id());
+    writeU32(data, static_cast<uint32_t>(functionCallPermission.method_names().size()));
+    for (auto& methodName : functionCallPermission.method_names()) {
+        writeString(data, methodName);
+    }
+}
+
+static void writeAccessKey(Data& data, const Proto::AccessKey& accessKey) {
+    writeU64(data, accessKey.nonce());
+    switch (accessKey.permission_case()) {
+        case Proto::AccessKey::kFunctionCall:
+            writeU8(data, 0);
+            writeFunctionCallPermission(data, accessKey.function_call());
+            break;
+        case Proto::AccessKey::kFullAccess:
+            writeU8(data, 1);
+            break;
+        case AccessKey::PERMISSION_NOT_SET:
+            break;
+        }
+}
+
+static void writeAddKey(Data& data, const Proto::AddKey& addKey) {
+    writePublicKey(data, addKey.public_key());
+    writeAccessKey(data, addKey.access_key());
+}
+
+static void writeDeleteKey(Data& data, const Proto::DeleteKey& deleteKey) {
+    writePublicKey(data, deleteKey.public_key());
+}
+
+static void writeCreateAccount(Data& data, const Proto::CreateAccount& createAccount) {
+}
+
+static void writeDeleteAccount(Data& data, const Proto::DeleteAccount& deleteAccount) {
+    writeString(data, deleteAccount.beneficiary_id());
 }
 
 static void writeAction(Data& data, const Proto::Action& action) {
@@ -68,6 +118,21 @@ static void writeAction(Data& data, const Proto::Action& action) {
         case Proto::Action::kFunctionCall:
             writeFunctionCall(data, action.function_call());
             return;
+        case Proto::Action::kStake:
+            writeStake(data, action.stake());
+            return;
+        case Proto::Action::kAddKey:
+            writeAddKey(data, action.add_key());
+            break;
+        case Proto::Action::kDeleteKey:
+            writeDeleteKey(data, action.delete_key());
+            break;
+        case Proto::Action::kCreateAccount:
+            writeCreateAccount(data, action.create_account());
+            break;
+        case Proto::Action::kDeleteAccount:
+            writeDeleteAccount(data, action.delete_account());
+            break;
         default:
             return;
     }
