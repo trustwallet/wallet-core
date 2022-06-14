@@ -33,4 +33,25 @@ public:
     }
 };
 
+/// Binance testnet address is a Bech32Address, with "tbnb" prefix and HASHER_SHA2_RIPEMD hash
+class TAddress: public Bech32Address {
+public:
+    static const std::string hrp; // HRP_BINANCE
+    static const std::string hrpValidator; // HRP_BINANCE
+
+    static bool isValid(const std::string& addr);
+
+    TAddress() : Bech32Address(hrp) {}
+
+    /// Initializes an address with a key hash.
+    TAddress(const Data& keyHash) : Bech32Address(hrp, keyHash) {}
+
+    /// Initializes an address with a public key.
+    TAddress(const PublicKey& publicKey) : Bech32Address(hrp, HASHER_SHA2_RIPEMD, publicKey) {}
+
+    static bool decode(const std::string& addr, TAddress& obj_out) {
+        return Bech32Address::decode(addr, obj_out, hrp);
+    }
+};
+
 } // namespace TW::Binance

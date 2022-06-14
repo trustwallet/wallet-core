@@ -34,6 +34,7 @@ class CoinAddressDerivationTests {
 
     private fun runDerivationChecks(coin: CoinType, address: String?) = when (coin) {
         BINANCE -> assertEquals("bnb12vtaxl9952zm6rwf7v8jerq74pvaf77fcmvzhw", address)
+        TBINANCE -> assertEquals("tbnb12vtaxl9952zm6rwf7v8jerq74pvaf77fkw9xhl", address)
         BITCOIN -> assertEquals("bc1quvuarfksewfeuevuc6tn0kfyptgjvwsvrprk9d", address)
         BITCOINDIAMOND -> assertEquals("1KaRW9xPPtCTZ9FdaTHduCPck4YvSeEWNn", address)
         BITCOINCASH -> assertEquals("bitcoincash:qpzl3jxkzgvfd9flnd26leud5duv795fnv7vuaha70", address)

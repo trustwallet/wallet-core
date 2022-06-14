@@ -15,11 +15,21 @@ using namespace TW;
 using namespace std;
 
 bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
-    return Address::isValid(address);
+   switch (coin) {
+   case TWCoinTypeTBinance:
+       return TAddress::isValid(address);
+   default:
+       return Address::isValid(address);
+   }
 }
 
 string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
-    return Address(publicKey).string();
+    switch (coin) {
+    case TWCoinTypeTBinance:
+        return TAddress(publicKey).string();
+    default:
+        return Address(publicKey).string();
+    }
 }
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {

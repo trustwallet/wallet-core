@@ -26,3 +26,19 @@ bool Address::isValid(const std::string& addr) {
     }
     return result;
 }
+
+const std::string TAddress::hrp = HRP_TBINANCE;
+const std::string TAddress::hrpValidator = "bva";
+
+bool TAddress::isValid(const std::string& addr) {
+    std::vector<std::string> hrps = {hrp, hrpValidator, "bnbp", "bvap", "bca", "bcap"};
+    bool result = false;
+    for (auto& hrp : hrps) {
+        result = Bech32Address::isValid(addr, hrp);
+        if (result) {
+            break;
+        }
+    }
+    return result;
+}
+

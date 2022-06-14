@@ -41,6 +41,7 @@ class AnyAddress {
     static auto dataFromString(const std::string& string, TWCoinType coin) -> Data {
         switch (coin) {
         case TWCoinTypeBinance:
+        case TWCoinTypeTBinance:
         case TWCoinTypeCosmos:
         case TWCoinTypeKava:
         case TWCoinTypeTerra:
@@ -69,6 +70,20 @@ class AnyAddress {
                 break;
             }
             return std::get<0>(decoded).witnessProgram;
+        }
+
+        case TWCoinTypeBitcoinGold: {
+            if (Bitcoin::SegwitAddress::isValid(string)) {
+                auto decoded = Bitcoin::SegwitAddress::decode(string);
+                if (!std::get<2>(decoded)) {
+                    break;
+                }
+                return std::get<0>(decoded).witnessProgram;
+            } else if (Bitcoin::Address::isValid(string)) {
+                auto addr = Bitcoin::Address(string);
+                return {addr.bytes.begin() + 1, addr.bytes.end()};
+            }
+            break;
         }
 
         case TWCoinTypeBitcoinCash: {

@@ -1386,10 +1386,41 @@
       "sampleAccount": "bnb1u7jm0cll5h3224y0tapwn6gf6pr49ytewx4gsz"
     },
     "info": {
-      "url": "https://binance.org",
-      "source": "https://github.com/binance-chain/node-binary",
+      "url": "https://www.bnbchain.org",
+      "source": "https://github.com/bnb-chain/node-binary",
       "rpc": "https://dex.binance.org",
-      "documentation": "https://docs.binance.org/api-reference/dex-api/paths.html"
+      "documentation": "https://docs.bnbchain.org/docs/beaconchain/develop/api-reference/dex-api/paths"
+    }
+  },
+  {
+    "id": "tbinance",
+    "name": "TBinance",
+    "displayName": "TBNB",
+    "coinId": 30000714,
+    "slip44": 714,
+    "symbol": "BNB",
+    "decimals": 8,
+    "blockchain": "Binance",
+    "derivation": [
+      {
+        "path": "m/44'/714'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "tbnb",
+    "explorer": {
+      "url": "https://testnet-explorer.binance.org",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "92E9DA1B6D603667E2DE83C0AC0C1D9E6D65405AD642DA794421C64A82A078D0",
+      "sampleAccount": "tbnb1c2cxgv3cklswxlvqr9anm6mlp6536qnd36txgr"
+    },
+    "info": {
+      "url": "https://www.bnbchain.org",
+      "source": "https://github.com/bnb-chain/node-binary",
+      "rpc": "https://testnet-dex.binance.org",
+      "documentation": "https://docs.bnbchain.org/docs/beaconchain/develop/api-reference/dex-api/paths-testnet"
     }
   },
   {
