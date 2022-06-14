@@ -4,9 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "TWAlgorithms.h"
+#include "algorithm/Erase.h"
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 #include <numeric> // std::iota
 
 using namespace TW;

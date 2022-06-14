@@ -4,9 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "SortHelpers.h"
+#include "algorithm/SortCopy.h"
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
 using namespace TW;
 
