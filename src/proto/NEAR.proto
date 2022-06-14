@@ -11,6 +11,7 @@ message PublicKey {
 message FunctionCallPermission {
     bytes allowance = 1; // uint128 / little endian byte order
     string receiver_id = 2;
+    repeated string method_names = 3;
 }
 
 message FullAccessPermission {
@@ -44,7 +45,7 @@ message Transfer {
 
 message Stake {
     bytes stake = 1; // uint128 / little endian byte order
-    string public_key = 2;
+    PublicKey public_key = 2;
 }
 
 message AddKey {
