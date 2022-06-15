@@ -1,4 +1,5 @@
 <%  method = locals[:method] -%>
+    <%= method.comment %>
 <%  arguments = locals[:arguments] || ['rawValue'] + SwiftHelper.arguments(method.parameters.drop(1)) -%>
 <%  if method.discardable_result -%>
     @discardableResult
