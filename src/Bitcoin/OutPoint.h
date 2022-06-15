@@ -45,12 +45,12 @@ struct OutPoint : equality_comparable<OutPoint> {
     /// Encodes the out-point into the provided buffer.
     void encode(Data& data) const noexcept;
 
-    constexpr friend bool operator<(const OutPoint& a, const OutPoint& b) noexcept {
+    friend bool operator<(const OutPoint& a, const OutPoint& b) noexcept {
         bool cmp = a.hash == b.hash;
         return !cmp || a.index < b.index;
     }
 
-    constexpr friend bool operator==(const OutPoint& a, const OutPoint& b) noexcept {
+    friend bool operator==(const OutPoint& a, const OutPoint& b) noexcept {
         bool cmp = a.hash == b.hash;
         return (cmp && a.index == b.index);
     }

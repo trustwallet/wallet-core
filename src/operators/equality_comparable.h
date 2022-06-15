@@ -17,7 +17,7 @@ namespace TW {
 
 template <class T, class B = operators::details::empty_base<T>>
 struct equality_comparable : B {
-    friend constexpr bool operator!=(const T& x, const T& y) { return !(x == y); }
+    friend bool operator!=(const T& x, const T& y) { return !(x == y); }
 };
 
 } // namespace TW
