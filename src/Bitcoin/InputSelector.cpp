@@ -7,9 +7,9 @@
 #include "InputSelector.h"
 
 #include "NumericLiteral.h"
-#include "algorithm/SortCopy.h"
-#include "algorithm/Erase.h"
 #include "UTXO.h"
+#include "algorithm/erase.h"
+#include "algorithm/sort_copy.h"
 
 #include <algorithm>
 #include <cassert>

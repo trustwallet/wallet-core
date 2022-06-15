@@ -4,14 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "algorithm/Erase.h"
+#include "algorithm/erase.h"
 
 #include "gtest/gtest.h"
 #include <numeric> // std::iota
 
 using namespace TW;
 
-TEST(TWAlgorithm, Erase) {
+TEST(Algorithm, Erase) {
     std::vector<char> cnt(10);
     std::iota(cnt.begin(), cnt.end(), '0');
     cnt.back() = '3';
@@ -20,7 +20,7 @@ TEST(TWAlgorithm, Erase) {
     ASSERT_EQ(nbElementsErased, 2);
 }
 
-TEST(TWAlgorithm, EraseIf) {
+TEST(Algorithm, EraseIf) {
     std::vector<char> cnt(10);
     std::iota(cnt.begin(), cnt.end(), '0');
     auto erased = erase_if(cnt, [](char x) { return (x - '0') % 2 == 0; });

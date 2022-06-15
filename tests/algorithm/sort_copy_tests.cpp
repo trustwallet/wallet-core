@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "algorithm/SortCopy.h"
+#include "algorithm/sort_copy.h"
 
 #include "gtest/gtest.h"
 
