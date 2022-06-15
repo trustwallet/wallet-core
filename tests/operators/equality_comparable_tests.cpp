@@ -12,9 +12,7 @@ using namespace TW;
 
 struct Amount : equality_comparable<Amount> {
     int value;
-    constexpr friend bool operator==(const Amount& lhs, const Amount& rhs) {
-        return lhs.value == rhs.value;
-    }
+    friend bool operator==(const Amount& lhs, const Amount& rhs) { return lhs.value == rhs.value; }
 };
 
 TEST(Operators, EqualityComparable) {
