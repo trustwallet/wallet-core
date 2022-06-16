@@ -1,0 +1,22 @@
+export class <%= entity.name %> {
+<%  entity.static_methods.each do |method| -%>
+<%    next if method.name.start_with?('Create') || method.name.start_with?('Init') -%>
+    static <%= WasmCppHelper.function_name(entity: entity, function: method) %>(<%= TsHelper.parameters(method.parameters) %>): <%= TsHelper.type(method.return_type) %>;
+<%  end -%>
+<%  entity.static_methods.each do |method| -%>
+<%    next unless method.name.start_with?('Create') -%>
+    static <%= WasmCppHelper.function_name(entity: entity, function: method) %>(<%= TsHelper.parameters(method.parameters) %>): <%= TsHelper.type(method.return_type) %>;
+<%  end -%>
+<%- entity.properties.each do |property| -%>
+    <%= WasmCppHelper.format_name(property.name) %>(): <%= TsHelper.type(property.return_type) %>;
+<%- end -%>
+<% entity.methods.each do |method| -%>
+<%   next if method.name == "Delete" -%>
+    <%= WasmCppHelper.format_name(method.name) %>(<%= TsHelper.parameters(method.parameters.drop(1)) %>): <%= TsHelper.type(method.return_type) %>;
+<% end -%>
+<% if not entity.is_struct -%>
+<%  unless entity.methods.select{ |x| x.name == "Delete" }.empty? -%>
+    delete(): void;
+<%  end -%>
+<% end -%>
+}

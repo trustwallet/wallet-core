@@ -21,5 +21,6 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto output = Proto::SigningOutput();
     auto signedTransaction = signedTransactionData(transaction, signature);
     output.set_signed_transaction(signedTransaction.data(), signedTransaction.size());
+    output.set_hash(hash.data(), hash.size());
     return output;
 }

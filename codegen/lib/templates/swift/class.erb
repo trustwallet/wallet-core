@@ -1,9 +1,11 @@
 import Foundation
 
 <% protocols = SwiftHelper.protocol(entity) -%>
+    <%= entity.comment %>
 public final class <%= entity.name %><% unless protocols.empty? %>: <%= protocols.join(', ') %><% end %> {
 <%# Static properties -%>
 <% entity.static_properties.each do |property| -%>
+    <%= property.comment %>
     public static var <%= SwiftHelper.format_name(property.name) %>: <%= SwiftHelper.type(property.return_type) %> {
         <%- if property.return_type.is_class || property.return_type.is_struct -%>
         return <%= SwiftHelper.type(property.return_type) %>(rawValue: TW<%= entity.name %><%= property.name %>())

@@ -15,7 +15,7 @@ describe("StoredKey", () => {
 
     const mnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
     const password = Buffer.from("password");
-    const storedKey = new StoredKey.importHDWallet(
+    const storedKey = StoredKey.importHDWallet(
       mnemonic,
       "test wallet",
       password,

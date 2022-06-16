@@ -8,9 +8,9 @@ module WasmCppHelper
       result = name.sub(match[1], match[1].downcase) unless match.nil?
       result
     end
-  
+
     # Transforms a method/property name to a cpp function name
-    
+
     def self.class_name(entity:)
       "Wasm" + entity.name
     end
@@ -18,14 +18,14 @@ module WasmCppHelper
     def self.function_name(entity:, function:)
       "#{format_name(function.name)}"
     end
-  
+
     def self.parameters(params)
       names = params.map do |param|
         "#{type(param.type)} #{param.name}"
       end
       names.join(', ')
     end
-  
+
     def self.arguments(params)
       params.map do |param|
         if param.type.name == :data
@@ -39,7 +39,7 @@ module WasmCppHelper
         end
       end
     end
-  
+
     def self.primitive_type(t)
       case t.name
       when :bool
@@ -62,7 +62,7 @@ module WasmCppHelper
         raise "Invalid type #{t.name}"
       end
     end
-  
+
     def self.type(t)
       case t.name
       when :void
@@ -103,7 +103,7 @@ module WasmCppHelper
         end
       end
     end
-  
+
     def self.compareMethod(entity)
       FunctionDecl.new(
         name: 'compareTo',
