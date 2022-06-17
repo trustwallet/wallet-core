@@ -12,7 +12,6 @@
 
 TW_EXTERN_C_BEGIN
 
-/// AES encryption/decryption methods.
 TW_EXPORT_STRUCT
 struct TWAES {
     uint8_t unused; // C doesn't allow zero-sized struct
