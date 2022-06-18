@@ -11,6 +11,7 @@
 #include <Hash.h>
 #include <HexCoding.h>
 
+#include <algorithm>
 #include <nlohmann/json.hpp>
 
 #include <cassert>
@@ -71,8 +72,23 @@ Data ParamSetNamed::encodeHashes() const {
 
 std::string ParamSetNamed::getExtraTypes(std::vector<std::string>& ignoreList) const {
     std::string types;
-    for (auto& p: _params) {
-        auto pType = p->_param->getType();
+
+    auto params = _params;
+    /// referenced struct type should be sorted by name see: https://eips.ethereum.org/EIPS/eip-712#definition-of-encodetype
+    std::stable_sort(params.begin(), params.end(), [](auto& a, auto& b) {
+        auto lhs = a->getType();
+        auto rhs = b->getType();
+        if (ParamFactory::isPrimitive(lhs)) {
+            return true;
+        }
+        if (ParamFactory::isPrimitive(rhs)) {
+            return true;
+        }
+        return lhs.compare(rhs) < 0;
+    });
+
+    for (auto& p: params) {
+        auto pType = p->_param->getType();        
         if (std::find(ignoreList.begin(), ignoreList.end(), pType) == ignoreList.end()) {
             types += p->getExtraTypes(ignoreList);
             ignoreList.push_back(pType);
@@ -160,7 +176,8 @@ Data ParamStruct::hashStructJson(const std::string& messageJson) {
             message["message"].dump(),
             message["types"].dump());
         if (messageStruct) {
-            TW::append(hashes, messageStruct->hashStruct());
+            const auto messageHash = messageStruct->hashStruct();
+            TW::append(hashes, messageHash);
             return Hash::keccak256(hashes);
         }
     }
