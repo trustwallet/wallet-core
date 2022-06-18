@@ -1,7 +1,7 @@
 extension <%= entity.name %> {
 <%# Properties -%>
 <%- entity.properties.each do |property| -%>
-    <%= property.comment %>
+
     public var <%= SwiftHelper.format_name(property.name) %>: <%= SwiftHelper.type(property.return_type) %> {
 <%=   render('swift/method_forward.erb', { method: property, arguments: ["TW#{entity.name}(rawValue: rawValue)"] }) -%>
     }
