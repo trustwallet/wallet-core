@@ -3,7 +3,6 @@ import java.util.HashSet;
 
 <%  less = entity.static_methods.detect{ |i| i.name == 'Less' } -%>
 <%  equal = entity.static_methods.detect{ |i| i.name == 'Equal' } -%>
-<%= entity.comment %>
 <%  if !less.nil? && !equal.nil? -%>
 public class <%= entity.name %> implements Comparable<<%= entity.name %>> {
 <%  else -%>
@@ -29,10 +28,8 @@ public class <%= entity.name %> {
 <%# Constructor declarations -%>
 <% entity.static_methods.each do |method| -%>
 <%   next unless method.name.start_with?('Create') -%>
-    <%= method.comment %>
     static native long native<%= method.name %>(<%= JavaHelper.parameters(method.parameters) %>);
 <% end -%>
-
 <%# Destructor declarations -%>
 <% entity.methods.each do |method| -%>
 <%   next unless method.name.start_with?('Delete') -%>
@@ -41,7 +38,6 @@ public class <%= entity.name %> {
 
 <%# Static property declarations -%>
 <%  entity.static_properties.each do |property| -%>
-    <%= property.comment %>
 <%    if should_return_data(property) -%>
     public static native byte[] <%= JavaHelper.format_name(property.name) %>(<%= JavaHelper.parameters(property.parameters) %>);
 <%    elsif should_return_string(property) -%>
@@ -50,11 +46,9 @@ public class <%= entity.name %> {
     public static native <%= JavaHelper.type(property.return_type) %> <%= JavaHelper.format_name(property.name) %>(<%= JavaHelper.parameters(property.parameters) %>);
 <%    end -%>
 <% end -%>
-
 <%# Static method declarations -%>
 <%  entity.static_methods.each do |method| -%>
 <%    next if method.name.start_with?('Create') -%>
-    <%= method.comment %>
 <%    if should_return_data(method) -%>
     public static native byte[] <%= JavaHelper.format_name(method.name) %>(<%= JavaHelper.parameters(method.parameters) %>);
 <%    elsif should_return_string(method) -%>
@@ -63,10 +57,8 @@ public class <%= entity.name %> {
     public static native <%= JavaHelper.type(method.return_type) %> <%= JavaHelper.format_name(method.name) %>(<%= JavaHelper.parameters(method.parameters) %>);
 <%    end -%>
 <%  end -%>
-
 <%# Property declarations -%>
 <%  entity.properties.each do |property| -%>
-    <%= property.comment %>
 <%    if should_return_data(property) -%>
     public native byte[] <%= JavaHelper.format_name(property.name) %>(<%= JavaHelper.parameters(property.parameters.drop(1)) %>);
 <%    elsif should_return_string(property) -%>
@@ -75,11 +67,9 @@ public class <%= entity.name %> {
     public native <%= JavaHelper.type(property.return_type) %> <%= JavaHelper.format_name(property.name) %>(<%= JavaHelper.parameters(property.parameters.drop(1)) %>);
 <%    end -%>
 <%  end -%>
-
 <%# Method declarations -%>
 <%  entity.methods.each do |method| -%>
 <%    next if method.name.start_with?('Delete') -%>
-    <%= method.comment %>
 <%    if should_return_data(method) -%>
     public native byte[] <%= JavaHelper.format_name(method.name) %>(<%= JavaHelper.parameters(method.parameters.drop(1)) %>);
 <%    elsif should_return_string(method) -%>
@@ -96,7 +86,6 @@ public class <%= entity.name %> {
 <%# Constructors -%>
 <%- entity.static_methods.each do |method| -%>
     <%- next unless method.name.start_with?('Create') -%>
-    <%= method.comment %>
     public <%= entity.name %>(<%= JavaHelper.parameters(method.parameters) %>) {
         nativeHandle = native<%= method.name %>(<%= JavaHelper.arguments(method.parameters) %>);
         if (nativeHandle == 0) {
