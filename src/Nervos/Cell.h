@@ -17,45 +17,56 @@ namespace TW::Nervos {
 class Cell {
 public:
     OutPoint outPoint;
+    uint64_t capacity;
     Script lock;
     Script type;
-    int64_t capacity;
+    Data data;
 
 public:
     Cell() = default;
 
     // Copy constructor
     Cell(const Cell& cell)
-        : outPoint(cell.outPoint), lock(cell.lock), type(cell.type), capacity(cell.capacity) {}
+        : outPoint(cell.outPoint)
+        , capacity(cell.capacity)
+        , lock(cell.lock)
+        , type(cell.type)
+        , data(cell.data) {}
 
     // Move constructor
     Cell(Cell&& cell)
         : outPoint(std::move(cell.outPoint))
+        , capacity(cell.capacity)
         , lock(std::move(cell.lock))
         , type(std::move(cell.type))
-        , capacity(cell.capacity) {}
+        , data(std::move(cell.data)) {}
 
     // Copy assignment operator
     Cell& operator=(const Cell& cell) {
         outPoint = cell.outPoint;
+        capacity = cell.capacity;
         lock = cell.lock;
         type = cell.type;
-        capacity = cell.capacity;
+        data = cell.data;
         return *this;
     }
 
     Cell(const Proto::Cell& cell)
         : outPoint(cell.out_point())
+        , capacity(cell.capacity())
         , lock(cell.lock())
-        , type(cell.type())
-        , capacity(cell.capacity()) {}
+        , type(cell.type()) {
+        auto& cellData = cell.data();
+        data.insert(data.end(), cellData.begin(), cellData.end());
+    }
 
     Proto::Cell proto() const {
         auto cell = Proto::Cell();
         *cell.mutable_out_point() = outPoint.proto();
+        cell.set_capacity(capacity);
         *cell.mutable_lock() = lock.proto();
         *cell.mutable_type() = type.proto();
-        cell.set_capacity(capacity);
+        cell.set_data(std::string(data.begin(), data.end()));
         return cell;
     }
 };

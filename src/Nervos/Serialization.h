@@ -8,6 +8,7 @@
 
 #include "../BinaryCoding.h"
 #include "../Data.h"
+#include "../uint256.h"
 #include <numeric>
 
 namespace TW::Nervos {
@@ -32,17 +33,16 @@ public:
         }
     }
 
-    static std::vector<Data> decodeDataArray(const Data& data) {
-        std::vector<Data> dataArray;
-        uint32_t headerLength = decode32LE(data.data() + 4);
-        uint32_t numElements = (headerLength - 4) / 4;
-        uint32_t previousOffset = headerLength;
-        for (int i = 0; i < numElements; i++) {
-            uint32_t nextOffset = decode32LE(data.data() + 8 + 4 * i);
-            dataArray.emplace_back(data.begin() + previousOffset, data.begin() + nextOffset);
-            previousOffset = nextOffset;
-        }
-        return dataArray;
+    static Data encodeUint256(uint256_t number, byte minLen = 0) {
+        auto data = store(number, minLen);
+        std::reverse(data.begin(), data.end());
+        return data;
+    }
+
+    static uint256_t decodeUint256(const Data& data, byte minLen = 0) {
+        auto data1 = Data(data);
+        std::reverse(data1.begin(), data1.end());
+        return load(data1);
     }
 };
 } // namespace TW::Nervos

@@ -33,6 +33,17 @@ public:
             DepType_DepGroup);
     }
 
+    static Data getSUDTCodeHash() {
+        return parse_hex("5e7a36a77e68eecc013dfa2fe6a23f3b6c344b04005808694ae6dd45eea4cfd5");
+    }
+
+    static CellDep getSUDTCellDep() {
+        return CellDep(
+            OutPoint(parse_hex("c7813f6a415144643970c2e88e0bb6ca6a8edc5dd7c1022746f628284a9936d5"),
+                     0),
+            DepType_Code);
+    }
+
     static std::string hashTypeToString(const HashType hashType) {
         if (hashType == HashType::Data0) {
             return "data";

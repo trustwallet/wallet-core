@@ -8,8 +8,10 @@
 
 #include "Cell.h"
 #include "Script.h"
+#include "Serialization.h"
 #include "../PrivateKey.h"
 #include "../proto/Nervos.pb.h"
+#include "../uint256.h"
 
 #include <map>
 #include <optional>
@@ -25,10 +27,10 @@ public:
     // except when use_max_amount is set, in that case this amount is not relevant, maximum possible
     // amount will be used (max avail less fee). If amount is equal or more than the available
     // amount, also max amount will be used.
-    int64_t amount = 0;
+    uint256_t amount = 0;
 
     // Transaction fee per byte
-    int64_t byteFee = 0;
+    uint64_t byteFee = 0;
 
     // Recipient's address
     std::string toAddress;
@@ -45,11 +47,18 @@ public:
     // If sending max amount
     bool useMaxAmount = false;
 
+    // SUDT (Simple User Defined Token) address, none for native token
+    Data sudtAddress;
+
 public:
     SigningInput() = default;
 
     SigningInput(const Proto::SigningInput& signingInput) {
-        amount = signingInput.amount();
+        auto signingInputAmount = signingInput.amount();
+        auto signingInputAmountData = Data();
+        signingInputAmountData.insert(signingInputAmountData.begin(), signingInputAmount.begin(),
+                                      signingInputAmount.end());
+        amount = Serialization::decodeUint256(signingInputAmountData);
         byteFee = signingInput.byte_fee();
         toAddress = signingInput.to_address();
         changeAddress = signingInput.change_address();
@@ -60,6 +69,9 @@ public:
             cells.emplace_back(cell);
         }
         useMaxAmount = signingInput.use_max_amount();
+        auto& signingInputSudtAddress = signingInput.sudt_address();
+        sudtAddress.insert(sudtAddress.end(), signingInputSudtAddress.begin(),
+                           signingInputSudtAddress.end());
     }
 };
 

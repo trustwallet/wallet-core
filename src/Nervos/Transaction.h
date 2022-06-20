@@ -138,6 +138,11 @@ public:
     Common::Proto::SigningError sign(const std::vector<PrivateKey>& privateKeys);
 
 private:
+    Common::Proto::SigningError planNativeTokenTransfer(const Cells& signingInputCells,
+                                                        const Address& changeAddress,
+                                                        uint64_t byteFee);
+    Common::Proto::SigningError planSudtTransfer(uint256_t amount, const Cells& signingInputCells,
+                                                 const Address& changeAddress, uint64_t byteFee);
     Common::Proto::SigningError signWitnesses(const PrivateKey& privateKey, const Data& txHash,
                                               Witnesses& witnesses);
 };

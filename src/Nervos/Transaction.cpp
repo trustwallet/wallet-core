@@ -14,6 +14,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <vector>
 
 using namespace TW;
 using namespace TW::Nervos;
@@ -24,7 +25,8 @@ const uint64_t headerDepSize = 32;
 const uint64_t singleInputAndWitnessBaseSize = 44;
 const uint64_t blankWitnessBytes = 65;
 const uint64_t uint32Size = 4;
-const int64_t minChangeValue = 6100000000;
+const uint64_t minCellCapacityForNativeToken = 6100000000;
+const uint64_t minCellCapacityForSUDT = 14400000000;
 
 uint64_t Transaction::sizeWithoutInputs() {
     uint64_t size = transactionBaseSize;
@@ -123,9 +125,7 @@ Data Transaction::hash() {
 }
 
 Common::Proto::SigningError Transaction::plan(const SigningInput& signingInput) {
-    bool maxAmount = signingInput.useMaxAmount;
-
-    if (signingInput.amount == 0 && !maxAmount) {
+    if (signingInput.amount == 0 && !signingInput.useMaxAmount) {
         return Common::Proto::Error_zero_amount_requested;
     }
     if (signingInput.cells.empty()) {
@@ -133,41 +133,87 @@ Common::Proto::SigningError Transaction::plan(const SigningInput& signingInput) 
     }
 
     cellDeps.emplace_back(Constants::getSecp256k1CellDep());
-
-    outputs.emplace_back(signingInput.amount, Script(Address(signingInput.toAddress)), Script());
     outputsData.emplace_back();
 
-    if (maxAmount) {
-        inputCells = signingInput.cells;
-        int64_t availableAmount = std::accumulate(
-            inputCells.begin(), inputCells.end(), int64_t(0),
-            [](const int64_t total, const Cell& cell) { return total + cell.capacity; });
-        int64_t fee = (sizeWithoutInputs() + inputCells.size() * sizeOfSingleInputAndWitness()) *
-                      signingInput.byteFee;
-        outputs[0].capacity = availableAmount - fee;
+    Common::Proto::SigningError result;
+    if (signingInput.sudtAddress.empty()) {
+        outputs.emplace_back(uint64_t(signingInput.useMaxAmount ? 0 : signingInput.amount),
+                             Script(Address(signingInput.toAddress)), Script());
+        result = planNativeTokenTransfer(signingInput.cells, Address(signingInput.changeAddress),
+                                         signingInput.byteFee);
     } else {
-        auto sorted = signingInput.cells;
+        cellDeps.emplace_back(Constants::getSUDTCellDep());
+        outputs.emplace_back(
+            minCellCapacityForSUDT, Script(Address(signingInput.toAddress)),
+            Script(Constants::getSUDTCodeHash(), HashType::Type1, signingInput.sudtAddress));
+        result = planSudtTransfer(signingInput.useMaxAmount ? 0 : signingInput.amount,
+                                  signingInput.cells, Address(signingInput.changeAddress),
+                                  signingInput.byteFee);
+    }
+    if (result != Common::Proto::OK) {
+        return result;
+    }
+
+    for (auto& cell : inputCells) {
+        inputs.emplace_back(cell.outPoint, 0);
+    }
+
+    return Common::Proto::OK;
+}
+
+Common::Proto::SigningError Transaction::planNativeTokenTransfer(const Cells& signingInputCells,
+                                                                 const Address& changeAddress,
+                                                                 uint64_t byteFee) {
+    uint64_t requiredAmount =
+        std::accumulate(outputs.begin(), outputs.end(), uint64_t(0),
+                        [](const uint64_t total, const CellOutput& cellOutput) {
+                            return total + cellOutput.capacity;
+                        });
+    if (requiredAmount == 0) {
+        // Transfer maximum available tokens
+        uint64_t availableAmount =
+            std::accumulate(signingInputCells.begin(), signingInputCells.end(), uint64_t(0),
+                            [&](const uint64_t total, const Cell& cell) {
+                                if (cell.type.empty()) {
+                                    inputCells.emplace_back(std::move(cell));
+                                    return total + cell.capacity;
+                                } else {
+                                    return total;
+                                }
+                            });
+        uint64_t fee =
+            (sizeWithoutInputs() + inputCells.size() * sizeOfSingleInputAndWitness()) * byteFee;
+        outputs[outputs.size() - 1].capacity += availableAmount - fee;
+    } else {
+        // Transfer exact number of tokens
+        auto sorted = signingInputCells;
         std::sort(sorted.begin(), sorted.end(),
                   [](const Cell& lhs, const Cell& rhs) { return lhs.capacity < rhs.capacity; });
-        int64_t targetValue = outputs[0].capacity + sizeWithoutInputs() * signingInput.byteFee;
-        int64_t feeForChangeOutput = sizeOfSingleOutput(Address(signingInput.changeAddress));
-        int64_t sum = 0;
+        uint64_t fee =
+            (sizeWithoutInputs() + inputCells.size() * sizeOfSingleInputAndWitness()) * byteFee;
+        uint64_t feeForChangeOutput = sizeOfSingleOutput(changeAddress);
+        uint64_t sum = std::accumulate(
+            inputCells.begin(), inputCells.end(), uint64_t(0),
+            [&](const uint64_t total, const Cell& cell) { return total + cell.capacity; });
         bool gotEnough = false;
         for (auto& cell : sorted) {
+            if (!cell.type.empty()) {
+                continue;
+            }
             inputCells.emplace_back(std::move(cell));
             sum += cell.capacity;
-            targetValue += sizeOfSingleInputAndWitness() * signingInput.byteFee;
-            if (sum >= targetValue) {
+            fee += sizeOfSingleInputAndWitness() * byteFee;
+            if (sum >= requiredAmount + fee) {
                 gotEnough = true;
-                int64_t changeValue = sum - targetValue - feeForChangeOutput;
-                if (changeValue >= minChangeValue) {
+                uint64_t remainingAmount = sum - requiredAmount - fee;
+                if (remainingAmount >= feeForChangeOutput + minCellCapacityForNativeToken) {
                     // If change is enough, add it to the change address
-                    outputs.emplace_back(changeValue, Script(Address(signingInput.changeAddress)),
-                                         Script());
+                    outputs.emplace_back(remainingAmount - feeForChangeOutput,
+                                         Script(changeAddress), Script());
                     outputsData.emplace_back();
                 } else {
                     // If change is not enough, add it to the destination address
-                    outputs[0].capacity += sum - targetValue;
+                    outputs[outputs.size() - 1].capacity += remainingAmount;
                 }
                 break;
             }
@@ -176,12 +222,66 @@ Common::Proto::SigningError Transaction::plan(const SigningInput& signingInput) 
             return Common::Proto::Error_not_enough_utxos;
         }
     }
-
-    for (auto& cell : inputCells) {
-        inputs.emplace_back(cell.outPoint, 0);
-    }
-
     return Common::Proto::OK;
+}
+
+Common::Proto::SigningError Transaction::planSudtTransfer(uint256_t amount,
+                                                          const Cells& signingInputCells,
+                                                          const Address& changeAddress,
+                                                          uint64_t byteFee) {
+    uint64_t availableNativeAmount = 0;
+    uint256_t availableSudtAmount = 0;
+    Cells sorted;
+    std::copy_if(signingInputCells.begin(), signingInputCells.end(), std::back_inserter(sorted),
+                 [&](const Cell& cell) { return cell.type == outputs[0].type; });
+    std::sort(sorted.begin(), sorted.end(), [&](const Cell& lhs, const Cell& rhs) {
+        return Serialization::decodeUint256(lhs.data) < Serialization::decodeUint256(rhs.data);
+    });
+    bool gotEnough = false;
+    for (auto& cell : sorted) {
+        availableSudtAmount += Serialization::decodeUint256(cell.data);
+        availableNativeAmount += cell.capacity;
+        inputCells.emplace_back(std::move(cell));
+        if (amount == 0) {
+            // Transfer maximum available tokens
+            gotEnough = true;
+        } else if (availableSudtAmount >= amount) {
+            // Transfer exact number of tokens
+            gotEnough = true;
+            uint256_t changeValue = availableSudtAmount - amount;
+            if (changeValue > 0) {
+                outputs.emplace_back(minCellCapacityForSUDT, Script(changeAddress),
+                                     Script(outputs[0].type));
+                outputsData.emplace_back(std::move(Serialization::encodeUint256(changeValue, 16)));
+            }
+            break;
+        }
+    }
+    if (!gotEnough) {
+        return Common::Proto::Error_not_enough_utxos;
+    }
+    outputsData[0] = Serialization::encodeUint256(amount == 0 ? availableSudtAmount : amount, 16);
+    uint64_t fee = (sizeWithoutInputs() + inputCells.size() * sizeOfSingleInputAndWitness() +
+                    sizeOfSingleOutput(changeAddress)) *
+                   byteFee;
+    uint64_t requiredNativeAmount =
+        minCellCapacityForSUDT * outputs.size() + minCellCapacityForNativeToken + fee;
+    if (availableNativeAmount >= requiredNativeAmount) {
+        outputs.emplace_back(availableNativeAmount - requiredNativeAmount +
+                                 minCellCapacityForNativeToken,
+                             Script(changeAddress), Script());
+        outputsData.emplace_back();
+        return Common::Proto::OK;
+    } else {
+        Cells remainingCells;
+        std::copy_if(signingInputCells.begin(), signingInputCells.end(),
+                     std::back_inserter(remainingCells), [&](const Cell& cell1) {
+                         return !std::any_of(
+                             inputCells.begin(), inputCells.end(),
+                             [&](const Cell& cell2) { return cell1.outPoint == cell2.outPoint; });
+                     });
+        return planNativeTokenTransfer(remainingCells, changeAddress, byteFee);
+    }
 }
 
 Common::Proto::SigningError Transaction::sign(const std::vector<PrivateKey>& privateKeys) {
@@ -207,19 +307,10 @@ Common::Proto::SigningError Transaction::sign(const std::vector<PrivateKey>& pri
         }
         groupNumToInputIndices[groupNum].emplace_back(index);
         inputIndexToGroupNum.emplace_back(groupNum);
+        witnesses.emplace_back();
     }
     for (auto groupNum = 0; groupNum < groupNumToLockHash.size(); groupNum++) {
-        while (this->witnesses.size() < groupNumToInputIndices[groupNum][0]) {
-            Witness emptyWitness;
-            Data emptyWitnessData;
-            emptyWitness.encode(emptyWitnessData);
-            this->witnesses.emplace_back(emptyWitnessData);
-        }
-        Witnesses witnesses;
-        for (auto i = 0; i < groupNumToInputIndices[groupNum].size(); i++) {
-            witnesses.emplace_back();
-        }
-        auto& cell = inputCells[this->witnesses.size()];
+        auto& cell = inputCells[groupNumToInputIndices[groupNum][0]];
         const PrivateKey* privateKey = nullptr;
         for (auto& privateKey1 : privateKeys) {
             auto publicKey1 = privateKey1.getPublicKey(TWPublicKeyTypeSECP256k1);
@@ -233,13 +324,14 @@ Common::Proto::SigningError Transaction::sign(const std::vector<PrivateKey>& pri
         if (!privateKey) {
             return Common::Proto::Error_missing_private_key;
         }
-        auto result = signWitnesses(*privateKey, txHash, witnesses);
+        Witnesses witnessesForThisGroup(groupNumToInputIndices[groupNum].size());
+        auto result = signWitnesses(*privateKey, txHash, witnessesForThisGroup);
         if (result != Common::Proto::OK) {
             return result;
         }
         Data witnessData;
-        witnesses[0].encode(witnessData);
-        this->witnesses.emplace_back(witnessData);
+        witnessesForThisGroup[0].encode(witnessData);
+        witnesses[groupNumToInputIndices[groupNum][0]] = witnessData;
     }
     return Common::Proto::OK;
 }

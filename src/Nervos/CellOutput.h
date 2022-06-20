@@ -16,7 +16,7 @@ namespace TW::Nervos {
 
 /// Nervos cell output.
 struct CellOutput {
-    int64_t capacity;
+    uint64_t capacity;
     Script lock;
     Script type;
 
@@ -24,7 +24,7 @@ struct CellOutput {
     CellOutput() = default;
 
     /// Initializes a cell output with a capacity and scripts.
-    CellOutput(int64_t capacity, Script&& lock, Script&& type)
+    CellOutput(uint64_t capacity, Script&& lock, Script&& type)
         : capacity(capacity), lock(std::move(lock)), type(std::move(type)) {}
 
     /// Initializes a CellInput from a Protobuf CellInput.

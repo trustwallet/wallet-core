@@ -12,8 +12,10 @@ using namespace TW;
 using namespace TW::Nervos;
 
 void Witness::encode(Data& data) const {
+    if ((lock.size() == 0) && (inputType.size() == 0) && (outputType.size() == 0)) {
+        return;
+    }
     std::vector<Data> dataArray;
-
     for (auto& data1 : std::vector<Data>({lock, inputType, outputType})) {
         Data data2;
         if (data1.size() > 0) {
@@ -22,6 +24,5 @@ void Witness::encode(Data& data) const {
         }
         dataArray.emplace_back(data2);
     }
-
     Serialization::encodeDataArray(dataArray, data);
 }

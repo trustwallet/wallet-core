@@ -93,25 +93,28 @@ message SigningInput {
     // Amount to send.  Transaction created will have this amount in its output, 
     // except when use_max_amount is set, in that case this amount is not relevant, maximum possible amount will be used (max avail less fee).
     // If amount is equal or more than the available amount, also max amount will be used.
-    int64 amount = 1;
+    bytes amount = 1;
 
     // Transaction fee per byte.
-    int64 byte_fee = 3;
+    uint64 byte_fee = 2;
 
     // Recipient's address.
-    string to_address = 4;
+    string to_address = 3;
 
     // Change address.
-    string change_address = 5;
+    string change_address = 4;
 
     // Available private keys.
-    repeated bytes private_key = 6;
+    repeated bytes private_key = 5;
 
     // Available unspent cell outputs.
-    repeated Cell cell = 7;
+    repeated Cell cell = 6;
 
     // If sending max amount.
-    bool use_max_amount = 8;
+    bool use_max_amount = 7;
+
+    // SUDT (Simple User Defined Token) address, none for native token
+    bytes sudt_address = 8;
 }
 
 // An unspent cell output, that can serve as input to a transaction
@@ -119,14 +122,17 @@ message Cell {
     // The unspent output
     OutPoint out_point = 1;
 
+    // Amount of the cell
+    uint64 capacity = 2;
+
     // Lock script
-    Script lock = 2;
+    Script lock = 3;
 
     // Type script
-    Script type = 3;
+    Script type = 4;
 
-    // Amount of the cell
-    uint64 capacity = 4;
+    // Data
+    bytes data = 5;
 }
 
 // Transaction signing output.
