@@ -33,17 +33,20 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byt
 }
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+    auto input = Proto::SigningInput();
+    input.ParseFromArray(dataIn.data(), (int)dataIn.size());
+    auto serializedOut = Signer::sign(input, coin == TWCoinTypeTBinance).SerializeAsString();
+    dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
 }
 
 string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const { 
-    return Signer::signJSON(json, key);
+    return Signer::signJSON(json, key, coin == TWCoinTypeTBinance);
 }
 
 Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
     return txCompilerTemplate<Proto::SigningInput, TxCompiler::Proto::PreSigningOutput>(
-        txInputData, [](const auto& input, auto& output) {
-            Signer signer(input);
+        txInputData, [=](const auto& input, auto& output) {
+            Signer signer(input, coin == TWCoinTypeTBinance);
 
             auto preImageHash = signer.preImageHash();
             auto preImage = signer.signaturePreimage();
@@ -65,13 +68,23 @@ void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<
                 output.set_error_message(Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
                 return;
             }
-            output = Signer(input).compile(signatures[0], publicKeys[0]);
+            output = Signer(input, coin == TWCoinTypeTBinance).compile(signatures[0], publicKeys[0]);
         });
 }
 
 Data Entry::buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const {
     auto input = Proto::SigningInput();
-    input.set_chain_id(chainId.length() > 0 ? chainId : "Binance-Chain-Nile");
+    std::string finalChainId = chainId;
+    if (finalChainId.length() == 0) {
+        if (coinType == TWCoinTypeTBinance) {
+            // testnet
+            finalChainId = "Binance-Chain-Ganges";
+        } else {
+            // mainnet
+            finalChainId = "Binance-Chain-Nile";
+        }
+    }
+    input.set_chain_id(finalChainId);
     input.set_account_number(0);
     input.set_sequence(0);
     input.set_source(0);
@@ -81,16 +94,33 @@ Data Entry::buildTransactionInput(TWCoinType coinType, const std::string& from, 
 
     auto& order = *input.mutable_send_order();
 
-    Address fromAddress;
-    if (!Address::decode(from, fromAddress)) {
-        throw std::invalid_argument("Invalid from address");
+    Data fromKeyhash;
+    Data toKeyhash;
+    if (coinType == TWCoinTypeTBinance) {
+        TAddress fromAddress;
+        if (!TAddress::decode(from, fromAddress)) {
+            throw std::invalid_argument("Invalid from address");
+        }
+        fromKeyhash = fromAddress.getKeyHash();
+
+        TAddress toAddress;
+        if (!TAddress::decode(to, toAddress)) {
+            throw std::invalid_argument("Invalid to address");
+        }
+        toKeyhash = toAddress.getKeyHash();
+    } else {
+        Address fromAddress;
+        if (!Address::decode(from, fromAddress)) {
+            throw std::invalid_argument("Invalid from address");
+        }
+        fromKeyhash = fromAddress.getKeyHash();
+
+        Address toAddress;
+        if (!Address::decode(to, toAddress)) {
+            throw std::invalid_argument("Invalid to address");
+        }
+        toKeyhash = toAddress.getKeyHash();
     }
-    const auto fromKeyhash = fromAddress.getKeyHash();
-    Address toAddress;
-    if (!Address::decode(to, toAddress)) {
-        throw std::invalid_argument("Invalid to address");
-    }
-    const auto toKeyhash = toAddress.getKeyHash();
 
     {
         auto* input = order.add_inputs();

@@ -19,14 +19,15 @@ namespace TW::Binance {
 class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input, bool testnet = false) noexcept;
     /// Signs a json Proto::SigningInput with private key
-    static std::string signJSON(const std::string& json, const Data& key);
+    static std::string signJSON(const std::string& json, const Data& key, bool testnet = false);
   public:
     Proto::SigningInput input;
+    bool testnet;
 
     /// Initializes a transaction signer.
-    explicit Signer(const Proto::SigningInput& input) : input(input) {}
+    explicit Signer(const Proto::SigningInput& input, bool testnet = false) : input(input), testnet(testnet) {}
 
     /// Builds a signed transaction.
     ///
