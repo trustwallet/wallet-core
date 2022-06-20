@@ -102,9 +102,6 @@ static void writeDeleteKey(Data& data, const Proto::DeleteKey& deleteKey) {
     writePublicKey(data, deleteKey.public_key());
 }
 
-static void writeCreateAccount(Data& data, const Proto::CreateAccount& createAccount) {
-}
-
 static void writeDeleteAccount(Data& data, const Proto::DeleteAccount& deleteAccount) {
     writeString(data, deleteAccount.beneficiary_id());
 }
@@ -123,16 +120,13 @@ static void writeAction(Data& data, const Proto::Action& action) {
             return;
         case Proto::Action::kAddKey:
             writeAddKey(data, action.add_key());
-            break;
+            return;
         case Proto::Action::kDeleteKey:
             writeDeleteKey(data, action.delete_key());
-            break;
-        case Proto::Action::kCreateAccount:
-            writeCreateAccount(data, action.create_account());
-            break;
+            return;
         case Proto::Action::kDeleteAccount:
             writeDeleteAccount(data, action.delete_account());
-            break;
+            return;
         default:
             return;
     }
