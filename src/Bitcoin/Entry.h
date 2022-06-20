@@ -24,6 +24,7 @@ public:
     }
     std::string deriveAddress(TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey,
                               TW::byte p2pkh, const char* hrp) const final;
+    Data addressToData(TWCoinType coin, const std::string& address) const;
     void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const final;
     void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const final;
 

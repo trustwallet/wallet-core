@@ -1,6 +1,6 @@
 <%# Include entity headers -%>
 <% require 'set' -%>
-<%  includes = SortedSet.new([entity.name]) -%>
+<%  includes = Set.new([entity.name]) -%>
 <%  (entity.static_methods + entity.methods).each do |method| -%>
 <%    includes << method.return_type.name if method.return_type.is_struct || method.return_type.is_class -%>
 <%    method.parameters.each do |param| -%>

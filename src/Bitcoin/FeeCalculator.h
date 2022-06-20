@@ -21,8 +21,8 @@ inline constexpr double gSegwitBytesBase{gDefaultBytesBase};
 class FeeCalculator {
 public:
     [[nodiscard]] virtual int64_t calculate(int64_t inputs, int64_t outputs,
-                                            int64_t byteFee) const = 0;
-    [[nodiscard]] virtual int64_t calculateSingleInput(int64_t byteFee) const = 0;
+                                            int64_t byteFee) const noexcept = 0;
+    [[nodiscard]] virtual int64_t calculateSingleInput(int64_t byteFee) const noexcept = 0;
 };
 
 /// Generic fee calculator with linear input and output size, and a fix size
@@ -68,6 +68,6 @@ public:
 };
 
 /// Return the fee calculator for the given coin.
-const FeeCalculator& getFeeCalculator(TWCoinType coinType);
+const FeeCalculator& getFeeCalculator(TWCoinType coinType) noexcept;
 
 } // namespace TW::Bitcoin

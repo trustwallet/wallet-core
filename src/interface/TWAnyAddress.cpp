@@ -9,7 +9,6 @@
 #include <TrustWalletCore/TWPublicKey.h>
 
 
-#include "../AnyAddress.h"
 #include "../Coin.h"
 
 using namespace TW;
@@ -56,7 +55,10 @@ enum TWCoinType TWAnyAddressCoin(struct TWAnyAddress* _Nonnull address) {
 }
 
 TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
-    auto& string = *reinterpret_cast<const std::string*>(address->address);
-    Data data = AnyAddress::dataFromString(string, address->coin);
+    const auto& string = *reinterpret_cast<const std::string*>(address->address);
+    Data data;
+    try {
+        data = TW::addressToData(address->coin, string);
+    } catch (...) {}
     return TWDataCreateWithBytes(data.data(), data.size());
 }

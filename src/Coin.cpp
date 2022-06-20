@@ -210,6 +210,12 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDer
     return dispatcher->deriveAddress(coin, derivation, publicKey, p2pkh, hrp);
 }
 
+Data TW::addressToData(TWCoinType coin, const std::string& address) {
+    const auto* dispatcher = coinDispatcher(coin);
+    assert(dispatcher != nullptr);
+    return dispatcher->addressToData(coin, address);
+}
+
 void TW::anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
     auto* dispatcher = coinDispatcher(coinType);
     assert(dispatcher != nullptr);

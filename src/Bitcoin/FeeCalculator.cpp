@@ -38,7 +38,7 @@ constexpr DefaultFeeCalculator defaultFeeCalculator{};
 constexpr DecredFeeCalculator decredFeeCalculator{};
 constexpr SegwitFeeCalculator segwitFeeCalculator{};
 
-const FeeCalculator& getFeeCalculator(TWCoinType coinType) {
+const FeeCalculator& getFeeCalculator(TWCoinType coinType) noexcept {
     switch (coinType) {
     case TWCoinTypeDecred:
         return decredFeeCalculator;

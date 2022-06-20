@@ -213,4 +213,12 @@ class EthereumAbiTests: XCTestCase {
         let hash = EthereumAbi.encodeTyped(messageJson: message)
         XCTAssertEqual(hash.hexString, "a85c2e2b118698e88db68a8105b794a8cc7cec074e89ef991cb4f5f533819cc2")
     }
+
+    func testEncodeSeaportMessage() throws {
+        let url = Bundle(for: EthereumAbiTests.self).url(forResource: "seaport_712", withExtension: "json")!
+        let json = try String(contentsOf: url)
+        let hash = EthereumAbi.encodeTyped(messageJson: json)
+
+        XCTAssertEqual(hash.hexString, "54140d99a864932cbc40fd8a2d1d1706c3923a79c183a3b151e929ac468064db")
+    }
 }

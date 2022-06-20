@@ -36,6 +36,9 @@ public:
     virtual std::string deriveAddress(TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const {
         return deriveAddress(coin, publicKey, p2pkh, hrp);
     }
+    // Return the binary representation of a string address, used by AnyAddress
+    // It is optional, if not defined, 'AnyAddress' interface will not support this coin.
+    virtual Data addressToData(TWCoinType coin, const std::string& address) const { return {}; }
     // Signing
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const = 0;
     virtual bool supportsJSONSigning() const { return false; }

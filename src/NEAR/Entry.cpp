@@ -10,6 +10,7 @@
 #include "Signer.h"
 
 using namespace TW::NEAR;
+using namespace TW;
 using namespace std;
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
@@ -24,6 +25,11 @@ string Entry::normalizeAddress(TWCoinType coin, const string& address) const {
 
 string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
     return Address(publicKey).string();
+}
+
+Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
+    const auto addr = Address(address);
+    return {addr.bytes.begin(), addr.bytes.end()};
 }
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
