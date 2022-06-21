@@ -117,6 +117,23 @@ std::shared_ptr<ParamNamed> ParamFactory::makeNamed(const std::string& name, con
     return std::make_shared<ParamNamed>(name, param);
 }
 
+bool ParamFactory::isPrimitive(const std::string& type) {
+    if (starts_with(type, "address")) {
+        return true;
+    } else if (starts_with(type, "uint")) {
+        return true;
+    } else if (starts_with(type, "int")) {
+        return true;
+    } else if (starts_with(type, "bool")) {
+        return true;
+    } else if (starts_with(type, "bytes")) {
+        return true;
+    } else if (starts_with(type, "string")) {
+        return true;
+    }
+    return false;
+}
+
 std::string ParamFactory::getValue(const std::shared_ptr<ParamBase>& param, const std::string& type) {
     std::string result = "";
     if (isArrayType(type)) {
