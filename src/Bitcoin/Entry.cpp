@@ -112,6 +112,7 @@ inline Data cashAddressToData(const CashAddress&& addr) {
 Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
     switch (coin) {
         case TWCoinTypeBitcoin:
+        case TWCoinTypeBitcoinGold:
         case TWCoinTypeDigiByte:
         case TWCoinTypeGroestlcoin:
         case TWCoinTypeLitecoin:
