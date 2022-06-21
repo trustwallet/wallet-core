@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -27,16 +27,16 @@ RUN apt-get update \
         libtool autoconf pkg-config \
         ninja-build \
         ruby-full \
-        clang-10 \
-        llvm-10 \
+        clang-14 \
+        llvm-14 \
         libc++-dev libc++abi-dev \
         cmake \        
         libboost1.74-dev \
         ccache \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ENV CC=/usr/bin/clang-10
-ENV CXX=/usr/bin/clang++-10
+ENV CC=/usr/bin/clang-14
+ENV CXX=/usr/bin/clang++-14
 
 # ↑ Setup build environment
 # ↓ Build and compile wallet core
