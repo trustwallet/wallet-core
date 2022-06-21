@@ -7,7 +7,6 @@
 #pragma once
 
 #include "algorithm/to_array.h"
-#include "operators/equality_comparable.h"
 #include "../Data.h"
 #include "../proto/Bitcoin.pb.h"
 
@@ -18,7 +17,7 @@
 namespace TW::Bitcoin {
 
 /// Bitcoin transaction out-point reference.
-struct OutPoint : equality_comparable<OutPoint> {
+struct OutPoint {
     /// The hash of the referenced transaction.
     std::array<byte, 32> hash;
 
@@ -44,16 +43,6 @@ struct OutPoint : equality_comparable<OutPoint> {
 
     /// Encodes the out-point into the provided buffer.
     void encode(Data& data) const noexcept;
-
-    friend bool operator<(const OutPoint& a, const OutPoint& b) noexcept {
-        bool cmp = a.hash == b.hash;
-        return !cmp || a.index < b.index;
-    }
-
-    friend bool operator==(const OutPoint& a, const OutPoint& b) noexcept {
-        bool cmp = a.hash == b.hash;
-        return (cmp && a.index == b.index);
-    }
 
     Proto::OutPoint proto() const {
         auto op = Proto::OutPoint();
