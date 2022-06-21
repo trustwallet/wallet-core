@@ -202,7 +202,7 @@ add_library(protobuf ${protobuf_SOURCE_FILES} ${protobuf_HEADER_FILES})
 set_target_properties(
     protobuf
     PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
     IMPORTED_CONFIGURATIONS Release
     INCLUDE_DIRECTORIES ${protobuf_source_dir}/src
