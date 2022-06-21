@@ -252,7 +252,7 @@ Common::Proto::SigningError Transaction::planSudtTransfer(uint256_t amount,
             if (changeValue > 0) {
                 outputs.emplace_back(minCellCapacityForSUDT, Script(changeAddress),
                                      Script(outputs[0].type));
-                outputsData.emplace_back(std::move(Serialization::encodeUint256(changeValue, 16)));
+                outputsData.emplace_back(Serialization::encodeUint256(changeValue, 16));
             }
             break;
         }
