@@ -69,7 +69,7 @@ else ()
     endif()
 endif()
 
-target_compile_options(TrezorCrypto PRIVATE ${TW_WARNING_FLAGS} -Werror)
+target_compile_options(TrezorCrypto PRIVATE ${TW_WARNING_FLAGS} -Werror PUBLIC -Wno-deprecated-volatile)
 
 target_include_directories(TrezorCrypto
     PUBLIC
