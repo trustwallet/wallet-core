@@ -4,6 +4,5 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-import { TW } from "./generated/core_proto";
-import * as WalletCore from "./lib/wallet-core";
-export { TW, WalletCore };
+export { TW } from "./generated/core_proto";
+export * as WalletCore from "./lib/wallet-core";

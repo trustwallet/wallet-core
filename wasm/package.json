@@ -5,13 +5,15 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "mocha -r ts-node/register tests/*.test.ts tests/**/*.test.ts",
+    "test": "mocha",
     "generate": "npm run codegen:js && npm run codegen:ts",
     "codegen:js": "pbjs -t static-module '../src/proto/*.proto' --no-delimited --force-long -o generated/core_proto.js",
+    "codegen:js-browser": "pbjs -t static-module '../src/proto/*.proto' -w closure --no-delimited --force-long -o ../samples/wasm/core_proto.js",
     "codegen:ts": "pbts -o generated/core_proto.d.ts generated/core_proto.js",
     "clean": "rm -rf dist generated && mkdir -p dist/generated generated",
-    "build": "npm run clean && npm run generate && cp -R generated lib dist && tsc --skipLibCheck",
-    "copy:wasm": "mkdir -p lib && cp ../wasm-build/wasm/wallet-core.* lib"
+    "build": "npm run clean && npm run generate && cp -R generated lib dist && tsc",
+    "copy:wasm": "mkdir -p lib && cp ../wasm-build/wasm/wallet-core.* lib",
+    "copy:wasm-sample": "cp ../wasm-build/wasm/wallet-core.* ../samples/wasm/"
   },
   "repository": {
     "type": "git",

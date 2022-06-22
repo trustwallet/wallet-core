@@ -1299,8 +1299,21 @@
         };
       };
     </script>
-    <script async type="text/javascript" src="../../wasm-build/wasm/wallet-core.js"></script>
+    <script async type="text/javascript" src="./wallet-core.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/dcodeIO/protobuf.js@6.11.3/dist/minimal/protobuf.js"></script>
+    <script type="text/javascript" src="./core_proto.js"></script>
+    <script>
+      Module.print("<== TW protobuf models loaded");
+      var TW = window.protobuf.roots.default.TW;
+      var input = TW.Ethereum.Proto.SigningInput.create({
+          toAddress: "0x6b175474e89094c44da98b954eedeac495271d0f",
+          txMode: TW.Ethereum.Proto.TransactionMode.Enveloped,
+          transaction: TW.Ethereum.Proto.Transaction.create({
+          erc20Transfer: TW.Ethereum.Proto.Transaction.ERC20Transfer.create({
+            to: "0x5322b34c88ed0691971bf52a7047448f0f4efc84",
+        }),
+      })});
+      Module.print("==> Ethereum.SigningInput ", JSON.stringify(input.toJSON()));
+    </script>
   </body>
 </html>
-
-
