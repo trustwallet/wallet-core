@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "algorithm/to_array.h"
 #include "../Data.h"
 #include "../proto/Bitcoin.pb.h"
 
@@ -16,8 +17,7 @@
 namespace TW::Bitcoin {
 
 /// Bitcoin transaction out-point reference.
-class OutPoint {
-public:
+struct OutPoint {
     /// The hash of the referenced transaction.
     std::array<byte, 32> hash;
 
@@ -28,38 +28,21 @@ public:
     /// TransactionInput.sequence)
     uint32_t sequence;
 
-    OutPoint() = default;
+    OutPoint() noexcept = default;
 
     /// Initializes an out-point reference with hash, index.
     template <typename T>
-    OutPoint(const T& h, uint32_t index, uint32_t sequence = 0) {
-        std::copy(std::begin(h), std::end(h), hash.begin());
-        this->index = index;
-        this->sequence = sequence;
-    }
+    OutPoint(const T& h, uint32_t index, uint32_t sequence = 0) noexcept
+        : hash(to_array<32, byte>(std::begin(h))), index(index), sequence(sequence) {}
 
     /// Initializes an out-point from a Protobuf out-point.
-    OutPoint(const Proto::OutPoint& other) {
+    OutPoint(const Proto::OutPoint& other) noexcept
+        : OutPoint(other.hash(), other.index(), other.sequence()) {
         assert(other.hash().size() == 32);
-        std::copy(other.hash().begin(), other.hash().end(), hash.begin());
-        index = other.index();
-        sequence = other.sequence();
     }
 
     /// Encodes the out-point into the provided buffer.
-    void encode(Data& data) const;
-
-    friend bool operator<(const OutPoint& a, const OutPoint& b) {
-        int cmp = std::memcmp(a.hash.data(), b.hash.data(), 32);
-        return cmp < 0 || (cmp == 0 && a.index < b.index);
-    }
-
-    friend bool operator==(const OutPoint& a, const OutPoint& b) {
-        int cmp = std::memcmp(a.hash.data(), b.hash.data(), 32);
-        return (cmp == 0 && a.index == b.index);
-    }
-
-    friend bool operator!=(const OutPoint& a, const OutPoint& b) { return !(a == b); }
+    void encode(Data& data) const noexcept;
 
     Proto::OutPoint proto() const {
         auto op = Proto::OutPoint();
