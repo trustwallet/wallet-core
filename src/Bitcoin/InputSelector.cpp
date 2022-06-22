@@ -11,7 +11,6 @@
 #include <algorithm>
 #include <optional>
 #include <cassert>
-#include <optional>
 
 using namespace TW;
 using namespace TW::Bitcoin;
