@@ -9,13 +9,11 @@
 #include "gtest/gtest.h"
 #include <numeric> // std::iota
 
-using namespace TW;
-
 TEST(Algorithm, Erase) {
     std::vector<char> cnt(10);
     std::iota(cnt.begin(), cnt.end(), '0');
     cnt.back() = '3';
-    std::size_t nbElementsErased = erase(cnt, '3');
+    std::size_t nbElementsErased = TW::erase(cnt, '3');
     ASSERT_EQ(cnt.size(), 8);
     ASSERT_EQ(nbElementsErased, 2);
 }
@@ -23,7 +21,7 @@ TEST(Algorithm, Erase) {
 TEST(Algorithm, EraseIf) {
     std::vector<char> cnt(10);
     std::iota(cnt.begin(), cnt.end(), '0');
-    auto erased = erase_if(cnt, [](char x) { return (x - '0') % 2 == 0; });
+    auto erased = TW::erase_if(cnt, [](char x) { return (x - '0') % 2 == 0; });
     ASSERT_EQ(cnt.size(), 5);
     ASSERT_EQ(erased, 5);
 }

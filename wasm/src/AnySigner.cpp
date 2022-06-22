@@ -34,7 +34,7 @@ class AnySigner {
     }
 };
 
-EMSCRIPTEN_BINDINGS(Wasm_TWAnyAddress) {
+EMSCRIPTEN_BINDINGS(Wasm_TWAnySigner) {
     class_<AnySigner>("AnySigner")
         .class_function("sign", &AnySigner::sign)
         .class_function("plan", &AnySigner::plan)
