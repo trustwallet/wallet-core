@@ -6,22 +6,16 @@
 
 #pragma once
 
-#include <array>       //< std::array
-#include <cstddef>     //< std::size_t
-#include <type_traits> //< std::is_same
+#include <algorithm> //< std::copy
+#include <array>     //< std::array
 
 namespace TW {
 
-template <typename T, typename Iter, std::size_t... Is>
-constexpr auto to_array(Iter& iter, std::index_sequence<Is...>) -> std::array<T, sizeof...(Is)> {
-    return {{((void)Is, T(*iter++))...}};
-}
-
-template <std::size_t N, typename U = void, typename Iter,
-          typename V = typename std::iterator_traits<Iter>::value_type,
-          typename T = std::conditional_t<std::is_same<U, void>{}, V, U>>
-constexpr auto to_array(Iter iter) -> std::array<T, N> {
-    return to_array<T>(iter, std::make_index_sequence<N>{});
+template <typename T, std::size_t N, typename Collection>
+constexpr std::array<T, N> to_array(Collection&& collection) {
+    std::array<T, N> out{};
+    std::copy(begin(collection), end(collection), out.begin());
+    return out;
 }
 
 } // namespace TW

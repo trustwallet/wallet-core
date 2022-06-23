@@ -12,12 +12,12 @@ using namespace TW;
 
 TEST(Algorithms, ToArray) {
     std::string str{"foo"};
-    auto value = TW::to_array<4, std::uint8_t>(begin(str));
+    auto value = TW::to_array<std::uint8_t, 4>(str);
     auto expected = std::array<std::uint8_t, 4>{"foo"};
     ASSERT_EQ(value, expected);
 
     std::vector<std::uint8_t> ints{0, 1, 2};
-    auto another_value = TW::to_array<3, std::uint8_t>(begin(ints));
+    auto another_value = TW::to_array<std::uint8_t, 3>(ints);
     auto expected_ints = std::array<std::uint8_t, 3>{0, 1, 2};
     ASSERT_EQ(another_value, expected_ints);
 }
