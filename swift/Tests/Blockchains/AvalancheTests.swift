@@ -18,4 +18,18 @@ class AvalancheTests: XCTestCase {
         XCTAssertEqual(address.description, addressETH.description)
         XCTAssertEqual(address.data.hexString, addressETH.data.hexString)
     }
+
+    func testXPub() {
+        let wallet = HDWallet(mnemonic: "liquid spider narrow follow black west cabbage intact stadium resource gentle raccoon", passphrase: "")!
+
+        let xpub1 = wallet.getExtendedPublicKey(purpose: .bip44, coin: .ethereum, version: .xpub)
+        let xpub2 = wallet.getExtendedPublicKey(purpose: .bip44, coin: .avalancheCChain, version: .xpub)
+
+        XCTAssertEqual(xpub1, xpub2)
+
+        let xpri1 = wallet.getExtendedPrivateKey(purpose: .bip44, coin: .ethereum, version: .xprv)
+        let xpri2 = wallet.getExtendedPrivateKey(purpose: .bip44, coin: .smartChain, version: .xprv)
+
+        XCTAssertEqual(xpri1, xpri2)
+    }
 }

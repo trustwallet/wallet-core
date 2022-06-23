@@ -166,26 +166,28 @@ std::string HDWallet::deriveAddress(TWCoinType coin, TWDerivation derivation) co
     return TW::deriveAddress(coin, getKey(coin, derivationPath), derivation);
 }
 
-std::string HDWallet::getExtendedPrivateKeyAccount(TWPurpose purpose, TWCoinType coin, TWHDVersion version, uint32_t account) const {
+std::string HDWallet::getExtendedPrivateKeyAccount(TWPurpose purpose, TWCoinType coin, TWDerivation derivation, TWHDVersion version, uint32_t account) const {
     if (version == TWHDVersionNone) {
         return "";
     }
     
     const auto curve = TWCoinTypeCurve(coin);
-    auto derivationPath = TW::DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(coin, true)});
+    const auto path = TW::derivationPath(coin, derivation);
+    auto derivationPath = DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(path.coin(), true)});
     auto node = getNode(*this, curve, derivationPath);
     auto fingerprintValue = fingerprint(&node, publicKeyHasher(coin));
     hdnode_private_ckd(&node, account + 0x80000000);
     return serialize(&node, fingerprintValue, version, false, base58Hasher(coin));
 }
 
-std::string HDWallet::getExtendedPublicKeyAccount(TWPurpose purpose, TWCoinType coin, TWHDVersion version, uint32_t account) const {
+std::string HDWallet::getExtendedPublicKeyAccount(TWPurpose purpose, TWCoinType coin, TWDerivation derivation, TWHDVersion version, uint32_t account) const {
     if (version == TWHDVersionNone) {
         return "";
     }
     
     const auto curve = TWCoinTypeCurve(coin);
-    auto derivationPath = TW::DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(coin, true)});
+    const auto path = TW::derivationPath(coin, derivation);
+    auto derivationPath = DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(path.coin(), true)});
     auto node = getNode(*this, curve, derivationPath);
     auto fingerprintValue = fingerprint(&node, publicKeyHasher(coin));
     hdnode_private_ckd(&node, account + 0x80000000);
