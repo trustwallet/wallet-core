@@ -317,7 +317,7 @@ TEST(HDWallet, getExtendedPublicKey) {
     EXPECT_EQ(extPubKey1, "zpub6qwDs4uUNPDR5A2M56ot1aABSa2MNQciYn9MPS8bTk1qwAaFKcSST5S1aLidvPp9twqpaumG7vikR2vHhBXjp5oGgHyMvWK3AtUkfeEgyns");
 
     // explicitly specify default account=0
-    const auto extPubKey2 = wallet.getExtendedPublicKeyAccount(purpose, coin, derivation, hdVersion,  0);
+    const auto extPubKey2 = wallet.getExtendedPublicKeyAccount(purpose, coin, derivation, hdVersion, 0);
     EXPECT_EQ(extPubKey2, "zpub6qwDs4uUNPDR5A2M56ot1aABSa2MNQciYn9MPS8bTk1qwAaFKcSST5S1aLidvPp9twqpaumG7vikR2vHhBXjp5oGgHyMvWK3AtUkfeEgyns");
 
     // custom account=1
