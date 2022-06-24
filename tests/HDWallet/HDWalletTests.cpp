@@ -297,11 +297,11 @@ TEST(HDWallet, getExtendedPrivateKey) {
     EXPECT_EQ(extPubKey1, "zprvAcwsTZNaY1f7rfwsy5GseSDStYBrxwtsBZDkb3iyuQUs4NF6n58BuH7Xj54RuaSCWtU5CiQzuYQgFgqr1HokgKcVAeGeXokhJUAJeP3VmvY");
 
     // explicitly specify default account=0
-    const auto extPubKey2 = wallet.getExtendedPrivateKeyAccount(purpose, coin, hdVersion, 0);
+    const auto extPubKey2 = wallet.getExtendedPrivateKeyAccount(purpose, coin, TWDerivationDefault, hdVersion, 0);
     EXPECT_EQ(extPubKey2, "zprvAcwsTZNaY1f7rfwsy5GseSDStYBrxwtsBZDkb3iyuQUs4NF6n58BuH7Xj54RuaSCWtU5CiQzuYQgFgqr1HokgKcVAeGeXokhJUAJeP3VmvY");
 
     // custom account=1
-    const auto extPubKey3 = wallet.getExtendedPrivateKeyAccount(purpose, coin, hdVersion, 1);
+    const auto extPubKey3 = wallet.getExtendedPrivateKeyAccount(purpose, coin, TWDerivationDefault, hdVersion, 1);
     EXPECT_EQ(extPubKey3, "zprvAcwsTZNaY1f7sifgNNgdNa4P9mPtyg3zRVgwkx2qF9Sn7F255MzP6Zyumn6bgV5xuoS8ZrDvjzE7APcFSacXdzFYpGvyybb1bnAoh5nHxpn");
 }
 
@@ -310,17 +310,18 @@ TEST(HDWallet, getExtendedPublicKey) {
     const auto purpose = TWPurposeBIP44;
     const auto coin = TWCoinTypeBitcoin;
     const auto hdVersion = TWHDVersionZPUB;
+    const auto derivation = TWDerivationDefault;
     
     // default
     const auto extPubKey1 = wallet.getExtendedPublicKey(purpose, coin, hdVersion);
     EXPECT_EQ(extPubKey1, "zpub6qwDs4uUNPDR5A2M56ot1aABSa2MNQciYn9MPS8bTk1qwAaFKcSST5S1aLidvPp9twqpaumG7vikR2vHhBXjp5oGgHyMvWK3AtUkfeEgyns");
 
     // explicitly specify default account=0
-    const auto extPubKey2 = wallet.getExtendedPublicKeyAccount(purpose, coin, hdVersion, 0);
+    const auto extPubKey2 = wallet.getExtendedPublicKeyAccount(purpose, coin, derivation, hdVersion, 0);
     EXPECT_EQ(extPubKey2, "zpub6qwDs4uUNPDR5A2M56ot1aABSa2MNQciYn9MPS8bTk1qwAaFKcSST5S1aLidvPp9twqpaumG7vikR2vHhBXjp5oGgHyMvWK3AtUkfeEgyns");
 
     // custom account=1
-    const auto extPubKey3 = wallet.getExtendedPublicKeyAccount(purpose, coin, hdVersion, 1);
+    const auto extPubKey3 = wallet.getExtendedPublicKeyAccount(purpose, coin, derivation, hdVersion, 1);
     EXPECT_EQ(extPubKey3, "zpub6qwDs4uUNPDR6Ck9UQDdji17hoEPP8mqnicYZLSSoUykz3MDcuJdeNJPd3BozqEafeLZkegWqzAvkgA4JZZ5tTN2rDpGKfk54essyfx1eZP");
 }
 
