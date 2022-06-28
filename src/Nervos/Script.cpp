@@ -22,10 +22,10 @@ using namespace TW::Nervos;
 Data Script::hash() const {
     Data data;
     encode(data);
-    return TW::Hash::blake2b(data, 32, Constants::getHashPersonalization());
+    return Hash::blake2b(data, 32, Constants::gHashPersonalization);
 }
 
-bool Script::empty() const {
+[[nodiscard]] bool Script::empty() const {
     return std::all_of(codeHash.begin(), codeHash.end(), [](byte element) { return element == 0; });
 }
 

@@ -16,8 +16,7 @@
 namespace TW::Nervos {
 
 /// Nervos transaction out-point reference.
-class OutPoint {
-public:
+struct OutPoint {
     /// The hash of the referenced transaction.
     Data txHash;
 
@@ -28,34 +27,19 @@ public:
 
     /// Initializes an out-point reference with hash, index.
     template <typename T>
-    OutPoint(const T& h, uint32_t index) {
-        txHash.insert(txHash.end(), h.begin(), h.end());
-        this->index = index;
-    }
+    OutPoint(const T& h, uint32_t index) : txHash(std::begin(h), std::end(h)), index(index) {}
 
     /// Initializes an out-point from a Protobuf out-point.
-    OutPoint(const Proto::OutPoint& outPoint) {
-        auto& outPointTxHash = outPoint.tx_hash();
-        txHash.insert(txHash.end(), outPointTxHash.begin(), outPointTxHash.end());
-        index = outPoint.index();
-    }
+    OutPoint(const Proto::OutPoint& outPoint)
+        : txHash(std::begin(outPoint.tx_hash()), std::end(outPoint.tx_hash()))
+        , index(outPoint.index()) {}
 
     /// Encodes the out-point into the provided buffer.
     void encode(Data& data) const;
 
-    friend bool operator<(const OutPoint& a, const OutPoint& b) {
-        if (a.txHash == b.txHash) {
-            return a.index < b.index;
-        } else {
-            return a.txHash < b.txHash;
-        }
+    friend bool operator==(const OutPoint& lhs, const OutPoint& rhs) {
+        return (lhs.txHash == rhs.txHash && lhs.index == rhs.index);
     }
-
-    friend bool operator==(const OutPoint& a, const OutPoint& b) {
-        return (a.txHash == b.txHash && a.index == b.index);
-    }
-
-    friend bool operator!=(const OutPoint& a, const OutPoint& b) { return !(a == b); }
 
     Proto::OutPoint proto() const {
         auto outPoint = Proto::OutPoint();

@@ -5,27 +5,28 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
+#include "Constants.h"
 
 #include "../Bech32.h"
 #include "../Coin.h"
 
 #include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWHRP.h>
 
 using namespace TW::Nervos;
 using namespace TW;
 
-bool Address::isValid(const std::string& string) noexcept {
-    return Address::isValid(string, stringForHRP(TW::hrp(TWCoinTypeNervos)));
+[[nodiscard]] bool Address::isValid(const std::string& string) noexcept {
+    return Address::isValid(string, HRP_NERVOS);
 }
 
-bool Address::isValid(const std::string& string, const char* hrp) noexcept {
+[[nodiscard]] bool Address::isValid(const std::string& string, const char* hrp) noexcept {
     return Address().decode(string, hrp);
 }
 
-Address::Address(const std::string& string)
-    : Address(string, stringForHRP(TW::hrp(TWCoinTypeNervos))) {}
+Address::Address(const std::string& string) noexcept : Address(string, HRP_NERVOS) {}
 
-Address::Address(const std::string& string, const char* hrp) {
+Address::Address(const std::string& string, const char* hrp) noexcept {
     if (!decode(string, hrp)) {
         throw std::invalid_argument("Invalid address string");
     }
@@ -81,7 +82,7 @@ bool Address::decode(const std::string& string, const char* hrp) noexcept {
         if (codeHashIndex != 0) {
             return false;
         }
-        codeHash = Constants::getSecp256k1CodeHash();
+        codeHash = Constants::gSecp256k1CodeHash;
         hashType = HashType::Type1;
         args = Data(decodedPayload.begin() + argsOffset, decodedPayload.end());
         break;
@@ -111,19 +112,17 @@ bool Address::decode(const std::string& string, const char* hrp) noexcept {
     return true;
 }
 
-Address::Address(const PublicKey& publicKey)
-    : Address(publicKey, stringForHRP(TW::hrp(TWCoinTypeNervos))) {}
+Address::Address(const PublicKey& publicKey) noexcept : Address(publicKey, HRP_NERVOS) {}
 
-Address::Address(const PublicKey& publicKey, const char* hrp) : hrp(hrp) {
+Address::Address(const PublicKey& publicKey, const char* hrp) noexcept : hrp(hrp) {
     if (publicKey.type != TWPublicKeyTypeSECP256k1) {
         throw std::invalid_argument("Nervos::Address needs a SECP256k1 public key.");
     }
     addressType = AddressType::FullVersion;
     codeHashIndex = -1;
-    codeHash = Constants::getSecp256k1CodeHash();
+    codeHash = Constants::gSecp256k1CodeHash;
     hashType = HashType::Type1;
-    Data publicKeyHash =
-        TW::Hash::blake2b(publicKey.bytes, 32, Constants::getHashPersonalization());
+    Data publicKeyHash = Hash::blake2b(publicKey.bytes, 32, Constants::gHashPersonalization);
     Data truncatedPublicKeyHash = Data(publicKeyHash.begin(), publicKeyHash.begin() + 20);
     args = truncatedPublicKeyHash;
 }

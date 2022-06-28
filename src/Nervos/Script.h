@@ -16,8 +16,7 @@
 
 namespace TW::Nervos {
 
-class Script {
-public:
+struct Script {
     Data codeHash;
     HashType hashType;
     Data args;
@@ -59,18 +58,32 @@ public:
         return *this;
     }
 
+    friend bool operator==(const Script& lhs, const Script& rhs) {
+        return (lhs.codeHash == rhs.codeHash) && (lhs.hashType == rhs.hashType) &&
+               (lhs.args == rhs.args);
+    }
+
+    friend bool operator!=(const Script& lhs, const Script& rhs) { return !(lhs == rhs); }
+
     /// Returns the script's script hash.
     Data hash() const;
 
     /// Whether the script is empty.
-    bool empty() const;
+    [[nodiscard]] bool empty() const;
 
     /// Initializes an script from a Protobuf script.
     Script(const Proto::Script& script) {
-        auto& scriptCodeHash = script.code_hash();
+        auto&& scriptCodeHash = script.code_hash();
         codeHash.insert(codeHash.end(), scriptCodeHash.begin(), scriptCodeHash.end());
-        hashType = Constants::stringToHashType(script.hash_type());
-        auto& scriptArgs = script.args();
+        auto&& hashTypeString = script.hash_type();
+        auto&& hashTypeRegistry = Constants::gHashTypeRegistry;
+        std::for_each(hashTypeRegistry.begin(), hashTypeRegistry.end(),
+                      [&](const std::pair<HashType, std::string>& p) {
+                          if (p.second == hashTypeString) {
+                              hashType = p.first;
+                          }
+                      });
+        auto&& scriptArgs = script.args();
         args.insert(args.end(), scriptArgs.begin(), scriptArgs.end());
     }
 
@@ -80,23 +93,10 @@ public:
     Proto::Script proto() const {
         auto script = Proto::Script();
         script.set_code_hash(std::string(codeHash.begin(), codeHash.end()));
-        script.set_hash_type(Constants::hashTypeToString(hashType));
+        script.set_hash_type(Constants::gHashTypeRegistry[hashType]);
         script.set_args(std::string(args.begin(), args.end()));
         return script;
     }
 };
 
-inline bool operator==(const Script& lhs, const Script& rhs) {
-    return (lhs.codeHash == rhs.codeHash) && (lhs.hashType == rhs.hashType) &&
-           (lhs.args == rhs.args);
-}
-inline bool operator!=(const Script& lhs, const Script& rhs) {
-    return !(lhs == rhs);
-}
-
 } // namespace TW::Nervos
-
-/// Wrapper for C interface.
-struct TWNervosScript {
-    TW::Nervos::Script impl;
-};

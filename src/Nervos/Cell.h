@@ -14,15 +14,13 @@
 
 namespace TW::Nervos {
 
-class Cell {
-public:
+struct Cell {
     OutPoint outPoint;
     uint64_t capacity;
     Script lock;
     Script type;
     Data data;
 
-public:
     Cell() = default;
 
     // Copy constructor
@@ -56,7 +54,7 @@ public:
         , capacity(cell.capacity())
         , lock(cell.lock())
         , type(cell.type()) {
-        auto& cellData = cell.data();
+        auto&& cellData = cell.data();
         data.insert(data.end(), cellData.begin(), cellData.end());
     }
 

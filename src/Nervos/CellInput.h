@@ -12,8 +12,7 @@
 namespace TW::Nervos {
 
 /// Nervos cell input.
-class CellInput {
-public:
+struct CellInput {
     /// Reference to the previous transaction's output.
     OutPoint previousOutput;
 

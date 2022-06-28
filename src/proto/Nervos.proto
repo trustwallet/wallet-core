@@ -11,6 +11,7 @@ option java_package = "wallet.core.jni.proto";
 
 import "Common.proto";
 
+// Nervos transaction
 message Transaction {
     // Transaction data format version.
     sint32 version = 1;
@@ -21,20 +22,38 @@ message Transaction {
     // A list of header deps.
     repeated bytes header_deps = 3;
 
-    // A list of 1 or more cell inputs or sources for coins, in the form of cells.
-    repeated Cell input_cells = 4;
+    // A list of 1 or more inputs to this transaction
+    repeated CellInput inputs = 4;
 
-    // A list of 1 or more cell inputs or sources for coins, in the form of outpoint.
-    repeated CellInput inputs = 5;
-
-    // A list of 1 or more cell outputs or destinations for coins
-    repeated CellOutput outputs = 6;
+    // A list of 1 or more outputs by this transaciton
+    repeated CellOutput outputs = 5;
 
     // A list of outputs data.
-    repeated bytes outputs_data = 7;
+    repeated bytes outputs_data = 6;
 
     // A list of witness.
-    repeated bytes witnesses = 8;
+    repeated bytes witnesses = 7;
+}
+
+// Nervos transaction plan
+message TransactionPlan {
+    // A list of cell deps.
+    repeated CellDep cell_deps = 1;
+
+    // A list of header deps.
+    repeated bytes header_deps = 2;
+
+    // A list of 1 or more selected cells for this transaction
+    repeated Cell selected_cells = 3;
+
+    // A list of 1 or more outputs by this transaciton
+    repeated CellOutput outputs = 4;
+
+    // A list of outputs data.
+    repeated bytes outputs_data = 5;
+
+    // Optional error
+    Common.Proto.SigningError error = 6;
 }
 
 // Nervos cell dep.
@@ -88,33 +107,49 @@ message Script {
     bytes args = 3;
 }
 
-// Input data necessary to create a signed transaction.
-message SigningInput {
-    // Amount to send.  Transaction created will have this amount in its output, 
-    // except when use_max_amount is set, in that case this amount is not relevant, maximum possible amount will be used (max avail less fee).
-    // If amount is equal or more than the available amount, also max amount will be used.
-    bytes amount = 1;
-
-    // Transaction fee per byte.
-    uint64 byte_fee = 2;
-
+message NativeTransfer {
     // Recipient's address.
-    string to_address = 3;
+    string to_address = 1;
 
     // Change address.
-    string change_address = 4;
+    string change_address = 2;
+}
 
-    // Available private keys.
-    repeated bytes private_key = 5;
+message SudtTransfer {
+    // Recipient's address.
+    string to_address = 1;
 
-    // Available unspent cell outputs.
-    repeated Cell cell = 6;
+    // Change address.
+    string change_address = 2;
+
+    // SUDT (Simple User Defined Token) address
+    bytes sudt_address = 3;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Amount to send.
+    bytes amount = 1;
 
     // If sending max amount.
-    bool use_max_amount = 7;
+    bool use_max_amount = 2;
 
-    // SUDT (Simple User Defined Token) address, none for native token
-    bytes sudt_address = 8;
+    // Transaction fee per byte.
+    uint64 byte_fee = 3;
+
+    // Available private keys.
+    repeated bytes private_key = 4;
+
+    // Available unspent cell outputs.
+    repeated Cell cell = 5;
+
+    // Optional transaction plan
+    TransactionPlan plan = 6;
+
+    oneof operation_oneof {
+        NativeTransfer native_transfer = 8;
+        SudtTransfer sudt_transfer = 9;
+    }
 }
 
 // An unspent cell output, that can serve as input to a transaction

@@ -16,7 +16,8 @@ void Witness::encode(Data& data) const {
         return;
     }
     std::vector<Data> dataArray;
-    for (auto& data1 : std::vector<Data>({lock, inputType, outputType})) {
+    dataArray.reserve(3);
+    for (auto&& data1 : std::vector<Data>({lock, inputType, outputType})) {
         Data data2;
         if (data1.size() > 0) {
             encode32LE(uint32_t(data1.size()), data2);

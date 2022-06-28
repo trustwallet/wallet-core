@@ -17,11 +17,12 @@ namespace TW::Nervos {
 /// includes in this file
 class Entry : public CoinEntry {
 public:
-    virtual bool validateAddress(TWCoinType coin, const std::string& address, byte p2pkh, byte p2sh,
-                                 const char* hrp) const;
-    virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, byte p2pkh,
-                                      const char* hrp) const;
-    virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
+    bool validateAddress(TWCoinType coin, const std::string& address, byte p2pkh, byte p2sh,
+                         const char* hrp) const final;
+    std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, byte p2pkh,
+                              const char* hrp) const final;
+    void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const final;
+    void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const final;
 };
 
 } // namespace TW::Nervos

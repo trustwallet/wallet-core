@@ -13,8 +13,7 @@
 
 namespace TW::Nervos {
 
-class Serialization {
-public:
+struct Serialization {
     static void encodeDataArray(const std::vector<Data>& dataArray, Data& data) {
         uint32_t dataLength = std::accumulate(dataArray.begin(), dataArray.end(), uint32_t(0),
                                               [](const uint32_t total, const Data& element) {
@@ -23,12 +22,12 @@ public:
         uint32_t headerLength = 4 + 4 * uint32_t(dataArray.size());
         uint32_t fullLength = headerLength + dataLength;
         encode32LE(fullLength, data);
-        uint32_t offset = headerLength;
-        for (auto& element : dataArray) {
-            encode32LE(offset, data);
-            offset += uint32_t(element.size());
-        }
-        for (auto& element : dataArray) {
+        std::accumulate(dataArray.begin(), dataArray.end(), headerLength,
+                        [&data](const uint32_t offset, const Data& element) {
+                            encode32LE(offset, data);
+                            return offset + uint32_t(element.size());
+                        });
+        for (auto&& element : dataArray) {
             data.insert(data.end(), element.begin(), element.end());
         }
     }

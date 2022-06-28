@@ -12,13 +12,11 @@
 
 namespace TW::Nervos {
 
-class Witness {
-public:
+struct Witness {
     Data lock;
     Data inputType;
     Data outputType;
 
-public:
     Witness() = default;
 
     /// Encodes the witness into the provided buffer.

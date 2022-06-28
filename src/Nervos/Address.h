@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "Constants.h"
 #include "../Data.h"
 #include "../PublicKey.h"
 
@@ -15,6 +14,8 @@
 using namespace TW;
 
 namespace TW::Nervos {
+
+enum HashType { Data0 = 0, Type1 = 1, Data1 = 2 };
 
 enum AddressType {
     FullVersion = 0,  // full version identifies the hash_type
@@ -33,16 +34,16 @@ public:
     Data args;
 
     /// Determines whether a string makes a valid address.
-    static bool isValid(const std::string& string) noexcept;
-    static bool isValid(const std::string& string, const char* hrp) noexcept;
+    [[nodiscard]] static bool isValid(const std::string& string) noexcept;
+    [[nodiscard]] static bool isValid(const std::string& string, const char* hrp) noexcept;
 
     /// Initializes a Nervos address with a string representation.
-    explicit Address(const std::string& string);
-    explicit Address(const std::string& string, const char* hrp);
+    explicit Address(const std::string& string) noexcept;
+    explicit Address(const std::string& string, const char* hrp) noexcept;
 
     /// Initializes a Nervos address with a public key.
-    explicit Address(const PublicKey& publicKey);
-    explicit Address(const PublicKey& publicKey, const char* hrp);
+    explicit Address(const PublicKey& publicKey) noexcept;
+    explicit Address(const PublicKey& publicKey, const char* hrp) noexcept;
 
     /// Returns a string representation of the address.
     std::string string() const;
@@ -60,8 +61,3 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::Nervos
-
-/// Wrapper for C interface.
-struct TWNervosAddress {
-    TW::Nervos::Address impl;
-};

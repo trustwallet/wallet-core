@@ -6,7 +6,9 @@
 
 #pragma once
 
-#include "Transaction.h"
+#include "CoinEntry.h"
+#include "Data.h"
+#include "../proto/Nervos.pb.h"
 
 namespace TW::Nervos {
 
@@ -14,36 +16,11 @@ class Signer {
 public:
     Signer() = delete;
 
+    /// Returns a transaction plan (utxo selection, fee estimation)
+    static Proto::TransactionPlan plan(const Proto::SigningInput& signingInputProto) noexcept;
+
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& signingInputProto) noexcept {
-        Proto::SigningOutput output;
-        Common::Proto::SigningError error;
-        auto signingInput = SigningInput(signingInputProto);
-        Transaction tx;
-
-        // Plan transaction
-        error = tx.plan(signingInput);
-        if (error != Common::Proto::OK) {
-            // planning failed
-            output.set_error(error);
-            return output;
-        }
-
-        // Sign transaction
-        error = tx.sign(signingInput.privateKeys);
-        if (error != Common::Proto::OK) {
-            // signing failed
-            output.set_error(error);
-            return output;
-        }
-
-        *output.mutable_transaction() = tx.proto();
-
-        auto txHash = tx.hash();
-        output.set_transaction_id(hex(txHash));
-
-        return output;
-    }
+    static Proto::SigningOutput sign(const Proto::SigningInput& signingInputProto) noexcept;
 };
 
 } // namespace TW::Nervos
