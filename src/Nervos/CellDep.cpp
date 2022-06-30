@@ -33,3 +33,7 @@ void CellDep::encode(Data& data) const {
     outPoint.encode(data);
     data.emplace_back(depType);
 }
+
+json CellDep::JSON() const {
+    return json{{"out_point", outPoint.JSON()}, {"dep_type", Constants::gDepTypeRegistry[depType]}};
+}

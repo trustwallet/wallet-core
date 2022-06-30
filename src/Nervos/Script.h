@@ -10,9 +10,12 @@
 #include "Constants.h"
 #include "../Data.h"
 #include "../proto/Nervos.pb.h"
+#include <nlohmann/json.hpp>
 
 #include <string>
 #include <vector>
+
+using json = nlohmann::json;
 
 namespace TW::Nervos {
 
@@ -89,6 +92,9 @@ struct Script {
 
     /// Encodes the script.
     void encode(Data& data) const;
+
+    /// Encodes the script into JSON format.
+    json JSON() const;
 
     Proto::Script proto() const {
         auto script = Proto::Script();

@@ -8,10 +8,13 @@
 
 #include "../Data.h"
 #include "../proto/Nervos.pb.h"
+#include <nlohmann/json.hpp>
 
 #include <algorithm>
 #include <array>
 #include <cstring>
+
+using json = nlohmann::json;
 
 namespace TW::Nervos {
 
@@ -36,6 +39,7 @@ struct OutPoint {
 
     /// Encodes the out-point into the provided buffer.
     void encode(Data& data) const;
+    json JSON() const;
 
     friend bool operator==(const OutPoint& lhs, const OutPoint& rhs) {
         return (lhs.txHash == rhs.txHash && lhs.index == rhs.index);

@@ -5,12 +5,19 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "CellInput.h"
+#include "Serialization.h"
 
 #include "../BinaryCoding.h"
+#include "../HexCoding.h"
 
 using namespace TW::Nervos;
 
 void CellInput::encode(Data& data) const {
     encode64LE(since, data);
     previousOutput.encode(data);
+}
+
+json CellInput::JSON() const {
+    return json{{"previous_output", previousOutput.JSON()},
+                {"since", Serialization::numberToHex(since)}};
 }

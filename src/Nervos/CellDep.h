@@ -8,6 +8,9 @@
 
 #include "OutPoint.h"
 #include "../proto/Nervos.pb.h"
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace TW::Nervos {
 
@@ -25,6 +28,7 @@ struct CellDep {
 
     /// Encodes the transaction into the provided buffer.
     void encode(Data& data) const;
+    json JSON() const;
 
     Proto::CellDep proto() const;
 };

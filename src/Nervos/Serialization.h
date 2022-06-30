@@ -8,8 +8,11 @@
 
 #include "../BinaryCoding.h"
 #include "../Data.h"
+#include "../HexCoding.h"
 #include "../uint256.h"
+
 #include <numeric>
+#include <string>
 
 namespace TW::Nervos {
 
@@ -42,6 +45,16 @@ struct Serialization {
         auto data1 = Data(data);
         std::reverse(data1.begin(), data1.end());
         return load(data1);
+    }
+
+    static std::string numberToHex(uint64_t number) {
+        auto str = hex(number);
+        str.erase(0, str.find_first_not_of('0'));
+        if (str.length() == 0) {
+            return "0x0";
+        } else {
+            return str.insert(0, "0x");
+        }
     }
 };
 } // namespace TW::Nervos

@@ -12,6 +12,7 @@
 
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWHRP.h>
+#include <nlohmann/json.hpp>
 
 #include <algorithm>
 #include <utility>
@@ -19,8 +20,9 @@
 
 using namespace TW;
 using namespace TW::Nervos;
+using json = nlohmann::json;
 
-Data Transaction::hash() {
+Data Transaction::hash() const {
     Data data;
     std::vector<Data> dataArray;
     dataArray.reserve(6);
@@ -82,6 +84,42 @@ Data Transaction::hash() {
     Serialization::encodeDataArray(dataArray, data);
 
     return Hash::blake2b(data, 32, Constants::gHashPersonalization);
+}
+
+json Transaction::JSON() const {
+    auto JSON = json();
+    JSON["version"] = "0x0";
+    auto cellDepsJSON = json::array();
+    for (auto&& cellDep : cellDeps) {
+        cellDepsJSON.push_back(cellDep.JSON());
+    }
+    JSON["cell_deps"] = cellDepsJSON;
+    auto headerDepsJSON = json::array();
+    for (auto&& headerDep : headerDeps) {
+        headerDepsJSON.push_back(hexEncoded(headerDep));
+    }
+    JSON["header_deps"] = headerDepsJSON;
+    auto inputsJSON = json::array();
+    for (auto&& input : inputs) {
+        inputsJSON.push_back(input.JSON());
+    }
+    JSON["inputs"] = inputsJSON;
+    auto outputsJSON = json::array();
+    for (auto&& output : outputs) {
+        outputsJSON.push_back(output.JSON());
+    }
+    JSON["outputs"] = outputsJSON;
+    auto outputsDataJSON = json::array();
+    for (auto&& outputData : outputsData) {
+        outputsDataJSON.push_back(hexEncoded(outputData));
+    }
+    JSON["outputs_data"] = outputsDataJSON;
+    auto witnessesJSON = json::array();
+    for (auto&& witness : witnesses) {
+        witnessesJSON.push_back(hexEncoded(witness));
+    }
+    JSON["witnesses"] = witnessesJSON;
+    return JSON;
 }
 
 void Transaction::build(const TransactionPlan& txPlan) {

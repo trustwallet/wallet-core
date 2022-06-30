@@ -46,8 +46,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& signingInput) noexc
         return output;
     }
 
-    *output.mutable_transaction() = tx.proto();
-    output.set_transaction_id(hex(tx.hash()));
+    output.set_transaction_json(tx.JSON().dump());
+    output.set_transaction_id(hexEncoded(tx.hash()));
     output.set_error(Common::Proto::OK);
 
     return output;

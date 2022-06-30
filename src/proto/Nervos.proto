@@ -11,30 +11,6 @@ option java_package = "wallet.core.jni.proto";
 
 import "Common.proto";
 
-// Nervos transaction
-message Transaction {
-    // Transaction data format version.
-    sint32 version = 1;
-
-    // A list of cell deps.
-    repeated CellDep cell_deps = 2;
-
-    // A list of header deps.
-    repeated bytes header_deps = 3;
-
-    // A list of 1 or more inputs to this transaction
-    repeated CellInput inputs = 4;
-
-    // A list of 1 or more outputs by this transaciton
-    repeated CellOutput outputs = 5;
-
-    // A list of outputs data.
-    repeated bytes outputs_data = 6;
-
-    // A list of witness.
-    repeated bytes witnesses = 7;
-}
-
 // Nervos transaction plan
 message TransactionPlan {
     // A list of cell deps.
@@ -63,15 +39,6 @@ message CellDep {
 
     // Reference to the previous transaction's output.
     OutPoint out_point = 2;
-}
-
-// Nervos cell input.
-message CellInput {
-    // Reference to the previous transaction's output.
-    OutPoint previous_output = 1;
-
-    // Prevents the transaction to be mined before an absolute or relative time
-    uint64 since = 2;
 }
 
 // Nervos transaction out-point reference.
@@ -173,14 +140,11 @@ message Cell {
 // Transaction signing output.
 message SigningOutput {
     // Resulting transaction. Note that the amount may be different than the requested amount to account for fees and available funds.
-    Transaction transaction = 1;
+    string transaction_json = 1;
 
     // Transaction id
     string transaction_id = 2;
 
     // Optional error
     Common.Proto.SigningError error = 3;
-
-    // error description
-    string error_message = 4;
 }

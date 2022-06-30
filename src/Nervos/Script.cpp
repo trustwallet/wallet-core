@@ -40,3 +40,13 @@ void Script::encode(Data& data) const {
     argsData.insert(argsData.end(), args.begin(), args.end());
     Serialization::encodeDataArray(std::vector<Data>{codeHash, hashTypeData, argsData}, data);
 }
+
+json Script::JSON() const {
+    if (empty()) {
+        return nullptr;
+    } else {
+        return json{{"code_hash", hexEncoded(codeHash)},
+                    {"hash_type", Constants::gHashTypeRegistry[hashType]},
+                    {"args", hexEncoded(args)}};
+    }
+}

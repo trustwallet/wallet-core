@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "CellOutput.h"
+#include "Serialization.h"
 
 #include "Serialization.h"
 #include "../BinaryCoding.h"
@@ -19,4 +20,11 @@ void CellOutput::encode(Data& data) const {
     lock.encode(lockData);
     type.encode(typeData);
     Serialization::encodeDataArray(std::vector<Data>{capacityData, lockData, typeData}, data);
+}
+
+json CellOutput::JSON() const {
+    auto JSON = json{{"capacity", Serialization::numberToHex(capacity)},
+                     {"lock", lock.JSON()},
+                     {"type", type.JSON()}};
+    return JSON;
 }

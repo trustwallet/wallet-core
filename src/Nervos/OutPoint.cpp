@@ -5,12 +5,19 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "OutPoint.h"
+#include "Serialization.h"
 
 #include "../BinaryCoding.h"
+#include "../HexCoding.h"
 
 using namespace TW::Nervos;
 
 void OutPoint::encode(Data& data) const {
     data.insert(data.end(), txHash.begin(), txHash.end());
     encode32LE(index, data);
+}
+
+json OutPoint::JSON() const {
+    return json{{"tx_hash", hexEncoded(txHash)},
+                {"index", Serialization::numberToHex(uint64_t(index))}};
 }

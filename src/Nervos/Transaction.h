@@ -24,7 +24,6 @@
 #include "../PrivateKey.h"
 #include "../PublicKey.h"
 #include "../Result.h"
-#include "../proto/Nervos.pb.h"
 
 #include <vector>
 
@@ -58,67 +57,8 @@ public:
 
     Transaction() = default;
 
-    /// Initializes a transaction from a Protobuf transaction.
-    Transaction(const Proto::Transaction& tx) {
-        version = tx.version();
-        cellDeps.reserve(tx.cell_deps_size());
-        for (auto&& cellDep : tx.cell_deps()) {
-            cellDeps.emplace_back(cellDep);
-        }
-        headerDeps.reserve(tx.header_deps_size());
-        for (auto&& headerDep : tx.header_deps()) {
-            Data data;
-            data.insert(data.end(), headerDep.begin(), headerDep.end());
-            headerDeps.emplace_back(data);
-        }
-        inputs.reserve(tx.inputs_size());
-        for (auto&& input : tx.inputs()) {
-            inputs.emplace_back(input);
-        }
-        outputs.reserve(tx.outputs_size());
-        for (auto&& output : tx.outputs()) {
-            outputs.emplace_back(output);
-        }
-        outputsData.reserve(tx.outputs_data_size());
-        for (auto&& outputData : tx.outputs_data()) {
-            Data data;
-            data.insert(data.end(), outputData.begin(), outputData.end());
-            outputsData.emplace_back(data);
-        }
-        witnesses.reserve(tx.witnesses_size());
-        for (auto&& witness : tx.witnesses()) {
-            Data data;
-            data.insert(data.end(), witness.begin(), witness.end());
-            witnesses.emplace_back(data);
-        }
-    }
-
-    /// Converts to Protobuf model
-    Proto::Transaction proto() const {
-        auto tx = Proto::Transaction();
-        tx.set_version(version);
-        for (auto&& cellDep : cellDeps) {
-            *tx.add_cell_deps() = cellDep.proto();
-        }
-        for (auto&& headerDep : headerDeps) {
-            tx.add_header_deps(headerDep.data(), headerDep.size());
-        }
-        for (auto&& input : inputs) {
-            *tx.add_inputs() = input.proto();
-        }
-        for (auto&& output : outputs) {
-            *tx.add_outputs() = output.proto();
-        }
-        for (auto&& outputData : outputsData) {
-            tx.add_outputs_data(outputData.data(), outputData.size());
-        }
-        for (auto&& witness : witnesses) {
-            tx.add_witnesses(witness.data(), witness.size());
-        }
-        return tx;
-    }
-
-    Data hash();
+    Data hash() const;
+    json JSON() const;
     void build(const TransactionPlan& txPlan);
     Common::Proto::SigningError sign(const std::vector<PrivateKey>& privateKeys);
 

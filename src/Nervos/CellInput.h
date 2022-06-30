@@ -7,7 +7,9 @@
 #pragma once
 
 #include "OutPoint.h"
-#include "../proto/Nervos.pb.h"
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace TW::Nervos {
 
@@ -23,20 +25,11 @@ struct CellInput {
     CellInput(OutPoint previousOutput, uint64_t since)
         : previousOutput(std::move(previousOutput)), since(since) {}
 
-    /// Initializes a CellInput from a Protobuf CellInput.
-    CellInput(const Proto::CellInput& cellInput) : previousOutput(cellInput.previous_output()) {
-        since = cellInput.since();
-    }
-
     /// Encodes the transaction into the provided buffer.
     void encode(Data& data) const;
 
-    Proto::CellInput proto() const {
-        auto cellInput = Proto::CellInput();
-        *cellInput.mutable_previous_output() = previousOutput.proto();
-        cellInput.set_since(since);
-        return cellInput;
-    }
+    /// Encodes the output into JSON format.
+    json JSON() const;
 };
 
 /// A list of Cell Inputs
