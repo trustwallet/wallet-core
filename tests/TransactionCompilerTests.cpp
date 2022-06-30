@@ -2357,8 +2357,44 @@ TEST(TransactionCompiler, OntCompileWithSignatures) {
         EXPECT_EQ(hex(ontOutput.encoded()), ontExpectedTx);
         EXPECT_EQ(hex(ongOutput.encoded()), ongExpectedTx);
     }
-}
 
+    // OEP4Token transfer test case
+    input.set_method("transfer");
+    input.set_contract("2f34b28eb98a1dd901d303f5294c87546fb37fe7");
+    input.set_owner_address("Aa8QcHJ8tbRXyjpG6FHo7TysjKXxkd1Yf2");
+    input.set_to_address("ARR6PsaBwRttzCmyxCMhL7NmFk1LqExD7L");
+    input.set_amount(1000);
+    input.set_gas_price(2500);
+    input.set_gas_limit(20000);
+    input.set_nonce(1);
+
+    auto oepTxInputData = data(input.SerializeAsString());
+    const auto oepPreImageHashes = TransactionCompiler::preImageHashes(coin, oepTxInputData);
+    auto oepPreOutput = TxCompiler::Proto::PreSigningOutput();
+    oepPreOutput.ParseFromArray(oepPreImageHashes.data(), (int)oepPreImageHashes.size());
+    auto oepPreImageHash = oepPreOutput.data_hash();
+    EXPECT_EQ(hex(oepPreImageHash),
+                  "5be4a3be92a49ce2af800c94c7c44eeb8cd345c25541f63e545edc06bd72c0ed");
+
+     const auto oepPublicKeyData =
+        parse_hex("03932a08085b4bd7adcf8915f805ab35ad51f58ebbd09783b01bb4c44e503444f9");
+    const PublicKey opePublicKey = PublicKey(oepPublicKeyData, TWPublicKeyTypeNIST256p1);
+    const auto oepSignature =
+        parse_hex("55aff2726c5e17dd6a6bbdaf5200442f4c9890a0cc044fb13d4a09918893dce261bb14eec2f578b590ed5c925f66bcfeddf794bee6a014c65e049f544953cb09");
+    EXPECT_TRUE(opePublicKey.verify(oepSignature, TW::data(oepPreImageHash)));
+    
+    const Data oepOutputData = TransactionCompiler::compileWithSignatures(
+        coin, oepTxInputData, {oepSignature}, {oepPublicKeyData});
+    auto oepOutput = Ontology::Proto::SigningOutput();
+    oepOutput.ParseFromArray(oepOutputData.data(), (int)oepOutputData.size());
+    const auto oepExpectedTx =
+        "00d101000000c409000000000000204e000000000000c9546dcef4038ce3b64e79d079b3c97a8931c7174d02e8"
+        "031469c329fbb30a490979ea1a6f0b6a3a91235f6bd714c9546dcef4038ce3b64e79d079b3c97a8931c71753c1"
+        "087472616e7366657267e77fb36f54874c29f503d301d91d8ab98eb2342f0001414055aff2726c5e17dd6a6bbd"
+        "af5200442f4c9890a0cc044fb13d4a09918893dce261bb14eec2f578b590ed5c925f66bcfeddf794bee6a014c6"
+        "5e049f544953cb09232103932a08085b4bd7adcf8915f805ab35ad51f58ebbd09783b01bb4c44e503444f9ac";
+    EXPECT_EQ(hex(oepOutput.encoded()), oepExpectedTx);
+}
 
 TEST(TransactionCompiler, OasisCompileWithSignatures) {
     const auto coin = TWCoinTypeOasis;

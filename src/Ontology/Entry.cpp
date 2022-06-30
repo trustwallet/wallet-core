@@ -10,6 +10,7 @@
 #include "Signer.h"
 #include "OntTxBuilder.h"
 #include "OngTxBuilder.h"
+#include "OepTxBuilder.h"
 #include "../proto/TransactionCompiler.pb.h"
 
 using namespace TW::Ontology;
@@ -48,7 +49,9 @@ Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
                 preImage = tx.serializeUnsigned();
                 preImageHash = tx.txHash();
             } else {
-                throw std::invalid_argument("invalid contract");
+                auto tx = OepTxBuilder::buildTransferTx(txInput);
+                preImage = tx.serializeUnsigned();
+                preImageHash = tx.txHash();
             }
 
             output.set_data_hash(preImageHash.data(), preImageHash.size());
