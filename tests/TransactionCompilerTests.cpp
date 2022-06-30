@@ -543,31 +543,33 @@ TEST(TransactionCompiler, BitcoinDiamondCompileWithSignatures) {
 TEST(TransactionCompiler, VergeCompileWithSignatures) {
     const auto coin = TWCoinTypeVerge;
     
-    const int64_t amount = 1500000000;
-    const int64_t fee = 2000000;
-    const std::string toAddress = "DQYMMpqPrnWYZaikKGTQqk5ydUaQw8nkdD";
+    // tx on mainnet
+    // https://verge-blockchain.info/tx/21314157b60ddacb842d2a749429c4112724b7a078adb9e77ba502ea2dd7c230
+
+    const int64_t amount = 9999995000000;
+    const int64_t fee = 120850;
+    const std::string toAddress = "DQZboqURLgrBzBz4Kfbs3yV6fZ3DrNFRjQ";
 
     auto input = Bitcoin::Proto::SigningInput();
     input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(amount);
     input.set_byte_fee(1);
     input.set_to_address(toAddress);
-    input.set_change_address("DAkEo5pNELZav7MRwBfEwHRG1aChgSUw6c");
+    input.set_change_address("DCUWt5ctZcPdPMYPV2o1xK1kqv7jNwxu4h");
     input.set_coin_type(coin);
+    input.set_time(1584059579);
 
-    auto txHash0 = parse_hex("a5a6e147da0f1b3f6dfd1081f91b0c6e31f030ae66c4be4cf4b0db0ac8b2407d");
+    auto txHash0 = parse_hex("ee839754c8e93d620cbec9a1c51e7b69016d00839741b03af2c039852d941212");
     std::reverse(txHash0.begin(), txHash0.end());
 
     auto utxo0 = input.add_utxo();
     utxo0->mutable_out_point()->set_hash(txHash0.data(), txHash0.size());
-    utxo0->mutable_out_point()->set_index(0);
-    utxo0->mutable_out_point()->set_sequence(4294967294);
-    utxo0->set_amount(2500000000);
+    utxo0->mutable_out_point()->set_index(1);
+    utxo0->mutable_out_point()->set_sequence(4294967295);
+    utxo0->set_amount(20000000000000);
 
-    auto utxoKey0 = PrivateKey(parse_hex("693dfe6f3ed717573eb10c24ebe5eb592fa3c239245cd499c487eb7b8ea7ed3a"));
-    auto script0 = Bitcoin::Script::lockScriptForAddress("DRyNFvJaybnF22UfMS6NR1Qav3mqxPj86E", coin);
-    ASSERT_EQ(hex(script0.bytes), "76a914e4839a523f120882d11eb3dda13a18e11fdcbd4a88ac");
-    utxo0->set_script(script0.bytes.data(), script0.bytes.size());
+    auto script0 = parse_hex("76a91479471b92b3c94b37544fff430556043d9acd53b188ac");
+    utxo0->set_script(script0.data(), script0.size());
 
     EXPECT_EQ(input.utxo_size(), 1);
 
@@ -577,7 +579,7 @@ TEST(TransactionCompiler, VergeCompileWithSignatures) {
 
     plan.set_amount(amount);
     plan.set_fee(fee);
-    plan.set_change(980000000);
+    plan.set_change(10000004879150);
 
     // Extend input with accepted plan
     *input.mutable_plan() = plan;
@@ -593,14 +595,14 @@ TEST(TransactionCompiler, VergeCompileWithSignatures) {
 
     ASSERT_EQ(output.error(), Common::Proto::OK);
     EXPECT_EQ(hex(output.hash_public_keys()[0].data_hash()),
-              "478148b37c457338b5682235820beef9782a86e9cba78876c9693fde14b9c28e");
+               "f7498449e2b8d33d4ff00c72b05c820e5262f43360d9f38455dcfd8f6425c9b2");
     
-    EXPECT_EQ(hex(output.hash_public_keys()[0].public_key_hash()), "e4839a523f120882d11eb3dda13a18e11fdcbd4a");
+    EXPECT_EQ(hex(output.hash_public_keys()[0].public_key_hash()), "79471b92b3c94b37544fff430556043d9acd53b1");
 
-    auto publicKeyHex = "0220ee0423797a856fdd2e85876a60bf10f8696e6ae83e744f498f2173237fe23d";
+    auto publicKeyHex = "02b2655122379a375a47e7a204a9dc4572cec5dbe4db4c51fea0c9fa03061fdb0b";
     auto publicKey = PublicKey(parse_hex(publicKeyHex), TWPublicKeyTypeSECP256k1);
     auto preImageHash = output.hash_public_keys()[0].data_hash();
-    auto signature = parse_hex("304402201b95a86afa0b4355bbbf7d38b3d8c31aee36e95730efedf903673c8fd6c778a502207c9e885a50e356c4a6101f41a3f36fb2a4a75feafe50684c456e51e6d3f544aa");
+    auto signature = parse_hex("3044022039e18d10ab4793d0564cfa675286d2ffd016b8f936c696fd3b72267b621dcd400220653d4761be6b12261629c4240033a08d9767a5f16851dc91a190c8a8d25ecbe0");
 
     // Verify signature (pubkey & hash & signature)
     EXPECT_TRUE(
@@ -617,56 +619,11 @@ TEST(TransactionCompiler, VergeCompileWithSignatures) {
         TransactionCompiler::compileWithSignatures(coin, txInputData, signatureVec, pubkeyVec);
 
     const auto ExpectedTx =
-        "01000000017d40b2c80adbb0f44cbec466ae30f0316e0c1bf98110fd6d3f1b0fda47e1a6a5000000006a47304402201b95a86afa0b4355bbbf7d38b3d8c31aee36e95730efedf903673c8fd6c778a502207c9e885a50e356c4a6101f41a3f36fb2a4a75feafe50684c456e51e6d3f544aa01210220ee0423797a856fdd2e85876a60bf10f8696e6ae83e744f498f2173237fe23dfeffffff02002f6859000000001976a914d4d05406c3ca73cf887911f80c852a1c0773615088ac009d693a000000001976a9143d7e143a8b3c8a4aa2f51104da380edeb6c3fc2088ac00000000";
+        "01000000bbd46a5e011212942d8539c0f23ab0419783006d01697b1ec5a1c9be0c623de9c8549783ee010000006a473044022039e18d10ab4793d0564cfa675286d2ffd016b8f936c696fd3b72267b621dcd400220653d4761be6b12261629c4240033a08d9767a5f16851dc91a190c8a8d25ecbe0012102b2655122379a375a47e7a204a9dc4572cec5dbe4db4c51fea0c9fa03061fdb0bffffffff02c054264e180900001976a914d50cce1f1449ac5630a0a731cbfcf7d7208a6e7d88ac2e13bd4e180900001976a91450751a6dc46f7068ac3c6350f6a85f7c20fd5e2988ac00000000";
     {
         Bitcoin::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(hex(output.encoded()), ExpectedTx);
-    }
-
-    { // Double check: check if simple signature process gives the same result. Note that private
-      // keys were not used anywhere up to this point.
-        Bitcoin::Proto::SigningInput input;
-        ASSERT_TRUE(input.ParseFromArray(txInputData.data(), (int)txInputData.size()));
-
-        auto key0 = parse_hex("693dfe6f3ed717573eb10c24ebe5eb592fa3c239245cd499c487eb7b8ea7ed3a");
-        EXPECT_EQ(hex(PrivateKey(key0).getPublicKey(TWPublicKeyTypeSECP256k1).bytes),
-                  publicKeyHex);
-        *input.add_private_key() = std::string(key0.begin(), key0.end());
-
-        Bitcoin::Proto::SigningOutput output;
-        ANY_SIGN(input, coin);
-
-        ASSERT_EQ(hex(output.encoded()), ExpectedTx);
-    }
-
-    { // Negative: not enough signatures
-        const Data outputData = TransactionCompiler::compileWithSignatures(
-            coin, txInputData, {}, pubkeyVec);
-        Bitcoin::Proto::SigningOutput output;
-        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
-        EXPECT_EQ(output.encoded().size(), 0);
-        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
-    }
-    { // Negative: invalid public key
-        const auto publicKeyBlake =
-            parse_hex("b689ab808542e13f3d2ec56fe1efe43a1660dcadc73ce489fde7df98dd8ce5d9");
-        EXPECT_EXCEPTION(
-            TransactionCompiler::compileWithSignatures(
-                coin, txInputData, signatureVec, {publicKeyBlake}),
-            "Invalid public key");
-    }
-    { // Negative: wrong signature (formally valid)
-        const Data outputData = TransactionCompiler::compileWithSignatures(
-            coin, txInputData,
-            {parse_hex("415502201857bc6e6e48b46046a4bd204136fc77e24c240943fb5a1f0e86387aae59b349022"
-                       "00a7f31478784e51c49f46ef072745a4f263d7efdbc9c6784aa2571ff4f6f3b51")
-                       },
-            pubkeyVec);
-        Bitcoin::Proto::SigningOutput output;
-        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
-        EXPECT_EQ(output.encoded().size(), 0);
-        EXPECT_EQ(output.error(), Common::Proto::Error_signing);
     }
 }
 
@@ -748,42 +705,47 @@ TEST(TransactionCompiler, ZcashCompileWithSignatures) {
 TEST(TransactionCompiler, ZenCompileWithSignatures) {
     const auto coin = TWCoinTypeZen;
 
-    const int64_t amount = 10000;
-    const std::string toAddress = "zngBGZGKaaBamofSuFw5WMnvU2HQAtwGeb5";
+    const int64_t amount = 200000;
+    const std::string toAddress = "znma8BydGx1p7SZ17g5JMMWXqSoRSE7BNdQ";
 
-    auto blockHash = parse_hex("0000000004561422697a29d424d925334db5ef2e80232306a1ad3fd35f72dc81");
+    auto blockHash = parse_hex("000000000396ef95695b498168964e1733aca9fe47bb4f9b2851dcd0ec0edad0");
     std::reverse(blockHash.begin(), blockHash.end());
-    auto blockHeight = 1147624;
+    auto blockHeight = 1163482;
+
+    auto sblockHash = parse_hex("0000000002906dc9ef21c60d08cd03d192cba94de66095c63082d8e7e9436d40");
+    std::reverse(sblockHash.begin(), sblockHash.end());
+    auto sblockHeight = 1163438;
 
     auto input = Bitcoin::Proto::SigningInput();
     input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(amount);
     input.set_byte_fee(1);
     input.set_to_address(toAddress);
-    input.set_change_address("znk19H1wcARcCa7TM6zgmJUbWoWWtZ8k5cg");
+    input.set_change_address("zncug4MEDrunR5WgdWfGB1t9Bjp8RCpKxA6");
     input.set_coin_type(coin);
+    input.set_lock_time(1163772);
 
-    auto txHash0 = parse_hex("62dea4b87fd66ca8e75a199c93131827ed40fb96cd8412e3476540abb5139ea3");
+    auto txHash0 = parse_hex("89f799d7aaf17dbc619f5c68aa5a5ae55ceec779f9009203a87359217405f8d8");
     std::reverse(txHash0.begin(), txHash0.end());
 
     auto utxo0 = input.add_utxo();
     utxo0->mutable_out_point()->set_hash(txHash0.data(), txHash0.size());
-    utxo0->mutable_out_point()->set_index(0);
-    utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
-    utxo0->set_amount(17600);
+    utxo0->mutable_out_point()->set_index(1);
+    utxo0->mutable_out_point()->set_sequence(4294967294);
+    utxo0->set_amount(1249057);
 
-    auto utxoKey0 = PrivateKey(parse_hex("3a8e0a528f62f4ca2c77744c8a571def2845079b50105a9f7ef6b1b823def67a"));
-    auto utxoAddr0 = TW::deriveAddress(coin, utxoKey0);
-    ASSERT_EQ(utxoAddr0, "znk19H1wcARcCa7TM6zgmJUbWoWWtZ8k5cg");
-    auto script0 = Bitcoin::Script::lockScriptForAddress(utxoAddr0, coin, blockHash, blockHeight);
-    ASSERT_EQ(hex(script0.bytes), "76a914cf83669620de8bbdf2cefcdc5b5113195603c56588ac2081dc725fd33fada1062323802eefb54d3325d924d4297a69221456040000000003e88211b4");
+    auto utxoAddr0 = "znj6M9EbCmU7UKN2zgAQ8j1GwUnr4QbZBYt";
+    // build utxo scriptPubKey
+    // check 89f799d7aaf17dbc619f5c68aa5a5ae55ceec779f9009203a87359217405f8d8,1
+    auto script0 = Bitcoin::Script::lockScriptForAddress(utxoAddr0, coin, sblockHash, sblockHeight);
     utxo0->set_script(script0.bytes.data(), script0.bytes.size());
-    input.add_private_key(utxoKey0.bytes.data(), utxoKey0.bytes.size());
 
     auto plan = Zen::TransactionBuilder::plan(input);
     ASSERT_EQ(plan.fee, 226);
     plan.preBlockHash = blockHash;
     plan.preBlockHeight = blockHeight;
+    plan.fee = 302;
+    plan.change = 1249057 - plan.amount - plan.fee;
 
     auto& protoPlan = *input.mutable_plan();
     protoPlan = plan.proto();
@@ -802,25 +764,17 @@ TEST(TransactionCompiler, ZenCompileWithSignatures) {
 
     auto preImageHash = data(output.hash_public_keys()[0].data_hash());
     EXPECT_EQ(hex(preImageHash),
-              "98e044d562595571a9269c62590bcdd697cbd1201c7786b843042129317391c7");
+              "882e2e61e740ff3d5889995679bf3dcda1b872e0d93be23c89a4fd4e3837f200");
 
     // compile
-    auto publicKey = utxoKey0.getPublicKey(TWPublicKeyTypeSECP256k1);
-    TW::Data signature = parse_hex("3044022014d687c0bee0b7b584db2eecbbf73b545ee255c42b8edf0944665df3fa882cfe02203bce2412d93c5a56cb4806ddd8297ff05f8fc121306e870bae33377a58a02f05");
+    auto publicKey = PublicKey(parse_hex("02806408d2f6d5095bb73e89f9edbe02fe81853f25c541d33da4422c6916c1d0e1"), TWPublicKeyTypeSECP256k1);
+    TW::Data signature = parse_hex("3045022100b27a4d10a4c5e758c4a379ccf7050eae6d8d4dacf5c65894d024de5ab947d4640220194ffccb29c95fe0ae3fb91a40276536494102891c6c5a9aee6063106fa55d30");
     const Data outputData =
         TransactionCompiler::compileWithSignatures(coin, txInputData, {signature}, {publicKey.bytes});
     Bitcoin::Proto::SigningOutput signingOutput;
     ASSERT_TRUE(signingOutput.ParseFromArray(outputData.data(), (int)outputData.size()));
-    ASSERT_EQ(hex(signingOutput.encoded()), "0100000001a39e13b5ab406547e31284cd96fb40ed271813939c195ae7a86cd67fb8a4de62000000006a473044022014d687c0bee0b7b584db2eecbbf73b545ee255c42b8edf0944665df3fa882cfe02203bce2412d93c5a56cb4806ddd8297ff05f8fc121306e870bae33377a58a02f05012102b4ac9056d20c52ac11b0d7e83715dd3eac851cfc9cb64b8546d9ea0d4bb3bdfeffffffff0210270000000000003f76a914a58d22659b1082d1fa8698fc51996b43281bfce788ac2081dc725fd33fada1062323802eefb54d3325d924d4297a69221456040000000003e88211b4ce1c0000000000003f76a914cf83669620de8bbdf2cefcdc5b5113195603c56588ac2081dc725fd33fada1062323802eefb54d3325d924d4297a69221456040000000003e88211b400000000");
-
-    {
-        auto result = Bitcoin::TransactionSigner<Bitcoin::Transaction, Zen::TransactionBuilder>::sign(input);
-        ASSERT_TRUE(result) << std::to_string(result.error());
-        auto signedTx = result.payload();
-        Data serialized;
-        signedTx.encode(serialized);
-        ASSERT_EQ(hex(serialized), hex(signingOutput.encoded()));
-    }
+    // txid: 0fc555f8e205e66576f760d99270eaa6d60480c0e816209b2058387b65c2a000
+    ASSERT_EQ(hex(signingOutput.encoded()), "0100000001d8f80574215973a8039200f979c7ee5ce55a5aaa685c9f61bc7df1aad799f789010000006b483045022100b27a4d10a4c5e758c4a379ccf7050eae6d8d4dacf5c65894d024de5ab947d4640220194ffccb29c95fe0ae3fb91a40276536494102891c6c5a9aee6063106fa55d30012102806408d2f6d5095bb73e89f9edbe02fe81853f25c541d33da4422c6916c1d0e1feffffff02400d0300000000003f76a914e0b858909b6b2c14996658085ed907abd880d32d88ac20d0da0eecd0dc51289b4fbb47fea9ac33174e966881495b6995ef96030000000003dac011b4b3001000000000003f76a91481b1b83b2ae8a4cddd72750dc5252c4bddd4e57e88ac20d0da0eecd0dc51289b4fbb47fea9ac33174e966881495b6995ef96030000000003dac011b4fcc11100");
 }
 
 TEST(TransactionCompiler, GroestlcoinCompileWithSignatures) {

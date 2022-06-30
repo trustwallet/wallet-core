@@ -40,7 +40,6 @@ bool Entry::validateAddress(TWCoinType coin, const string& address, byte p2pkh, 
         case TWCoinTypeDogecoin:
         case TWCoinTypeRavencoin:
         case TWCoinTypeFiro:
-        case TWCoinTypeVerge:
         default:
             return Address::isValid(address, {{p2pkh}, {p2sh}});
     }
@@ -103,7 +102,6 @@ string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const Publ
         case TWCoinTypeQtum:
         case TWCoinTypeRavencoin:
         case TWCoinTypeFiro:
-        case TWCoinTypeVerge:
         default:
             return Address(publicKey, p2pkh).string();
     }

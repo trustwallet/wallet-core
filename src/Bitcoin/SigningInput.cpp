@@ -33,6 +33,7 @@ SigningInput::SigningInput(const Proto::SigningInput& input) {
     }
     outputOpReturn = data(input.output_op_return());
     lockTime = input.lock_time();
+    time = input.time();
 
     totalAmount = amount;
     for (auto& output: input.extra_outputs()) {

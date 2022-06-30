@@ -66,6 +66,7 @@ public:
     Data outputOpReturn;
 
     uint32_t lockTime = 0;
+    uint32_t time = 0;
 
     // Besides to_address and change_addres,
     // we have other outputs that include address and value

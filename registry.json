@@ -431,7 +431,7 @@
     "name": "Verge",
     "coinId": 77,
     "symbol": "XVG",
-    "decimals": 8,
+    "decimals": 6,
     "blockchain": "Bitcoin",
     "derivation": [
       {

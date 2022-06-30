@@ -22,7 +22,7 @@ TEST(TWVergeCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeVerge));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeVerge));
 
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeVerge), 8);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeVerge), 6);
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeVerge));
     ASSERT_EQ(0x21, TWCoinTypeP2shPrefix(TWCoinTypeVerge));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeVerge));

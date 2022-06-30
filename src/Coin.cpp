@@ -51,6 +51,7 @@
 #include "Theta/Entry.h"
 #include "Tron/Entry.h"
 #include "VeChain/Entry.h"
+#include "Verge/Entry.h"
 #include "Waves/Entry.h"
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
@@ -98,6 +99,7 @@ Theta::Entry thetaDP;
 THORChain::Entry thorchainDP;
 Tron::Entry tronDP;
 VeChain::Entry vechainDP;
+Verge::Entry vergeDP;
 Waves::Entry wavesDP;
 Zcash::Entry zcashDP;
 Zilliqa::Entry zilliqaDP;
@@ -126,7 +128,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeQtum: entry = &bitcoinDP; break;
         case TWCoinTypeRavencoin: entry = &bitcoinDP; break;
         case TWCoinTypeViacoin: entry = &bitcoinDP; break;
-        case TWCoinTypeVerge: entry = &bitcoinDP; break;
+        case TWCoinTypeVerge: entry = &vergeDP; break;
         case TWCoinTypeFiro: entry = &bitcoinDP; break;
         case TWCoinTypeSyscoin: entry = &bitcoinDP; break;
         case TWCoinTypeCardano: entry = &cardanoDP; break;

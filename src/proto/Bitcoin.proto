@@ -127,6 +127,9 @@ message SigningInput {
 
     // If disable dust filter.
     bool disable_dust_filter = 16;
+
+    // transaction creation time that will be used for verge(xvg)
+    uint32 time = 17;
 }
 
 // Describes a preliminary transaction plan.

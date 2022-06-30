@@ -11,6 +11,8 @@
 #include "../BitcoinDiamond/Transaction.h"
 #include "../BitcoinDiamond/TransactionBuilder.h"
 #include "../Groestlcoin/Transaction.h"
+#include "../Verge/Transaction.h"
+#include "../Verge/TransactionBuilder.h"
 #include "../Zcash/Transaction.h"
 #include "../Zcash/TransactionBuilder.h"
 #include "../Zen/TransactionBuilder.h"
@@ -61,4 +63,5 @@ template class Bitcoin::TransactionSigner<Bitcoin::Transaction, TransactionBuild
 template class Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>;
 template class Bitcoin::TransactionSigner<Bitcoin::Transaction, Zen::TransactionBuilder>;
 template class Bitcoin::TransactionSigner<Groestlcoin::Transaction, TransactionBuilder>;
+template class Bitcoin::TransactionSigner<Verge::Transaction, Verge::TransactionBuilder>;
 template class Bitcoin::TransactionSigner<BitcoinDiamond::Transaction, BitcoinDiamond::TransactionBuilder>;
