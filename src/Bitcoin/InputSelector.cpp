@@ -172,7 +172,7 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(int64_t 
     }
     assert(inputs.size() >= 1);
 
-    // target value is larger that original, but not by a factor of 2 (optioized for large UTXO
+    // target value is larger that original, but not by a factor of 2 (optimized for large UTXO
     // cases)
     const auto increasedTargetValue =
         (uint64_t)((double)targetValue * 1.1 +
