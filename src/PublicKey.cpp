@@ -120,6 +120,8 @@ PublicKey PublicKey::extended() const {
     case TWPublicKeyTypeED25519Blake2b:
     case TWPublicKeyTypeED25519Extended:
         return *this;
+    default:
+        return *this;
     }
 }
 
@@ -140,7 +142,7 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
     case TWPublicKeyTypeED25519Extended:
         throw std::logic_error("Not yet implemented");
         // ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) == 0;
-    case TWPublicKeyTypeCURVE25519:
+    case TWPublicKeyTypeCURVE25519: {
         auto ed25519PublicKey = Data();
         ed25519PublicKey.resize(PublicKey::ed25519Size);
         curve25519_pk_to_ed25519(ed25519PublicKey.data(), bytes.data());
@@ -154,6 +156,9 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
         verifyBuffer[63] &= 127;
         return ed25519_sign_open(message.data(), message.size(), ed25519PublicKey.data(),
                                  verifyBuffer.data()) == 0;
+    }
+    default:
+        throw std::logic_error("Not yet implemented");
     }
 }
 

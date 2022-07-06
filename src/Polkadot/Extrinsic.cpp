@@ -42,12 +42,10 @@ static std::map<const std::string, Data> kusamaCallIndices = {
 };
 
 static Data getCallIndex(TWSS58AddressType network, const std::string& key) {
-    switch (network) {
-    case TWSS58AddressTypePolkadot:
+    if (network == TWSS58AddressTypePolkadot) {
         return polkadotCallIndices[key];
-    case TWSS58AddressTypeKusama:
-        return kusamaCallIndices[key];
     }
+    return kusamaCallIndices[key];
 }
 
 bool Extrinsic::encodeRawAccount(TWSS58AddressType network, uint32_t specVersion) {

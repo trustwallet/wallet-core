@@ -275,15 +275,12 @@ const PrivateKey StoredKey::privateKey(TWCoinType coin, const Data& password) {
 
 const PrivateKey StoredKey::privateKey(TWCoinType coin, TWDerivation derivation,
                                        const Data& password) {
-    switch (type) {
-    case StoredKeyType::mnemonicPhrase: {
+    if (type == StoredKeyType::mnemonicPhrase) {
         const auto wallet = this->wallet(password);
         const auto account = this->account(coin, &wallet);
         return wallet.getKey(coin, account->derivationPath);
     }
-    case StoredKeyType::privateKey:
-        return PrivateKey(payload.decrypt(password));
-    }
+    return PrivateKey(payload.decrypt(password));
 }
 
 void StoredKey::fixAddresses(const Data& password) {

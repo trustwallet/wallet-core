@@ -158,12 +158,10 @@ bool Transaction::hasWitness() const {
 Data Transaction::getSignatureHash(const Script& scriptCode, size_t index,
                                    enum TWBitcoinSigHashType hashType, uint64_t amount,
                                    enum SignatureVersion version) const {
-    switch (version) {
-    case BASE:
+    if (version == BASE) {
         return getSignatureHashBase(scriptCode, index, hashType);
-    case WITNESS_V0:
-        return getSignatureHashWitnessV0(scriptCode, index, hashType, amount);
     }
+    return getSignatureHashWitnessV0(scriptCode, index, hashType, amount);
 }
 
 /// Generates the signature hash for Witness version 0 scripts.
