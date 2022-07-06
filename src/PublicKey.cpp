@@ -9,10 +9,10 @@
 
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/ed25519-donna/ed25519-blake2b.h>
+#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 #include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sodium/keypair.h>
-#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 
 #include <iterator>
 
@@ -119,7 +119,7 @@ PublicKey PublicKey::extended() const {
     case TWPublicKeyTypeCURVE25519:
     case TWPublicKeyTypeED25519Blake2b:
     case TWPublicKeyTypeED25519Extended:
-       return *this;
+        return *this;
     }
 }
 
@@ -132,12 +132,14 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
     case TWPublicKeyTypeNIST256p1Extended:
         return ecdsa_verify_digest(&nist256p1, bytes.data(), signature.data(), message.data()) == 0;
     case TWPublicKeyTypeED25519:
-        return ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) == 0;
+        return ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) ==
+               0;
     case TWPublicKeyTypeED25519Blake2b:
-        return ed25519_sign_open_blake2b(message.data(), message.size(), bytes.data(), signature.data()) == 0;
+        return ed25519_sign_open_blake2b(message.data(), message.size(), bytes.data(),
+                                         signature.data()) == 0;
     case TWPublicKeyTypeED25519Extended:
         throw std::logic_error("Not yet implemented");
-        //ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) == 0;
+        // ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) == 0;
     case TWPublicKeyTypeCURVE25519:
         auto ed25519PublicKey = Data();
         ed25519PublicKey.resize(PublicKey::ed25519Size);
@@ -158,15 +160,14 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
 bool PublicKey::verifyAsDER(const Data& signature, const Data& message) const {
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
-    case TWPublicKeyTypeSECP256k1Extended:
-        {
-            Data sig(64);
-            int ret = ecdsa_sig_from_der(signature.data(), signature.size(), sig.data());
-            if (ret) {
-                return false;
-            }
-            return ecdsa_verify_digest(&secp256k1, bytes.data(), sig.data(), message.data()) == 0;
+    case TWPublicKeyTypeSECP256k1Extended: {
+        Data sig(64);
+        int ret = ecdsa_sig_from_der(signature.data(), signature.size(), sig.data());
+        if (ret) {
+            return false;
         }
+        return ecdsa_verify_digest(&secp256k1, bytes.data(), sig.data(), message.data()) == 0;
+    }
 
     default:
         return false;
@@ -177,7 +178,8 @@ bool PublicKey::verifySchnorr(const Data& signature, const Data& message) const 
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeSECP256k1Extended:
-        return zil_schnorr_verify(&secp256k1, bytes.data(), signature.data(), message.data(), static_cast<uint32_t>(message.size())) == 0;
+        return zil_schnorr_verify(&secp256k1, bytes.data(), signature.data(), message.data(),
+                                  static_cast<uint32_t>(message.size())) == 0;
     case TWPublicKeyTypeNIST256p1:
     case TWPublicKeyTypeNIST256p1Extended:
     case TWPublicKeyTypeED25519:
@@ -210,7 +212,8 @@ PublicKey PublicKey::recover(const Data& signature, const Data& message) {
         v = !(v & 0x01);
     }
     TW::Data result(65);
-    if (ecdsa_recover_pub_from_sig(&secp256k1, result.data(), signature.data(), message.data(), v) != 0) {
+    if (ecdsa_recover_pub_from_sig(&secp256k1, result.data(), signature.data(), message.data(),
+                                   v) != 0) {
         throw std::invalid_argument("recover failed");
     }
     return PublicKey(result, TWPublicKeyTypeSECP256k1Extended);
