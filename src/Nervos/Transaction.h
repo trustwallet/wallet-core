@@ -49,7 +49,7 @@ public:
     // List of outputs data
     std::vector<Data> outputsData;
 
-    // List of witnesses
+    // List of serialized witnesses
     std::vector<Data> witnesses;
 
     // List of cells selected for this transaction
@@ -65,6 +65,7 @@ public:
 private:
     std::vector<Data> m_groupNumToLockHash;
     std::vector<std::vector<int>> m_groupNumToInputIndices;
+    std::vector<Witnesses> m_groupNumToWitnesses;
 
     void formGroups();
     Common::Proto::SigningError signGroups(const std::vector<PrivateKey>& privateKeys);

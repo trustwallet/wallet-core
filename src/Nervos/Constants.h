@@ -43,6 +43,13 @@ inline CellDep gSUDTCellDep = CellDep(
     OutPoint(parse_hex("c7813f6a415144643970c2e88e0bb6ca6a8edc5dd7c1022746f628284a9936d5"), 0),
     DepType::Code);
 
+inline Data gDAOCodeHash =
+    parse_hex("82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e");
+
+inline CellDep gDAOCellDep = CellDep(
+    OutPoint(parse_hex("e2fb199810d49a4d8beec56718ba2593b665db9d52299a0f9e6e75416d73ff5c"), 2),
+    DepType::Code);
+
 inline std::unordered_map<HashType, std::string> gHashTypeRegistry{
     {HashType::Data0, "data"}, {HashType::Type1, "type"}, {HashType::Data1, "data1"}};
 

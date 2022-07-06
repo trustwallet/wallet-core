@@ -19,6 +19,10 @@ struct Witness {
 
     Witness() = default;
 
+    /// Initializes a witness with lock, inputType and outputType.
+    Witness(const Data& lock, const Data& inputType, const Data& outputType)
+        : lock(lock), inputType(inputType), outputType(outputType) {}
+
     /// Encodes the witness into the provided buffer.
     void encode(Data& data) const;
 };

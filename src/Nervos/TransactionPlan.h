@@ -98,16 +98,18 @@ public:
     void plan(const Proto::SigningInput& signingInput);
 
 private:
-    uint256_t m_amount;
-    bool m_useMaxAmount;
     uint64_t m_byteFee;
     Cells m_availableCells;
 
     void planNativeTransfer(const Proto::SigningInput& signingInput);
     void planSudtTransfer(const Proto::SigningInput& signingInput);
+    void planDaoDeposit(const Proto::SigningInput& signingInput);
+    void planDaoWithdrawPhase1(const Proto::SigningInput& signingInput);
+    void planDaoWithdrawPhase2(const Proto::SigningInput& signingInput);
     void selectMaximumCapacity();
     void selectRequiredCapacity(const Address& changeAddress);
-    void selectSudtTokens(const Address& changeAddress);
+    void selectSudtTokens(const bool useMaxAmount, const uint256_t amount,
+                          const Address& changeAddress);
     uint64_t sizeWithoutInputs();
     uint64_t sizeOfSingleInputAndWitness();
     uint64_t sizeOfSingleOutput(const Address& address);

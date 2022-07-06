@@ -23,20 +23,14 @@ using namespace TW::Nervos;
 void TransactionPlan::plan(const Proto::SigningInput& signingInput) {
     error = Common::Proto::OK;
 
-    m_useMaxAmount = signingInput.use_max_amount();
-    m_amount = Serialization::decodeUint256(data(signingInput.amount()));
     m_byteFee = signingInput.byte_fee();
-    for (auto&& cell : signingInput.cell()) {
-        m_availableCells.emplace_back(cell);
-    }
 
-    if ((m_amount == 0) && !m_useMaxAmount) {
-        error = Common::Proto::Error_zero_amount_requested;
-        return;
-    }
     if (signingInput.cell_size() == 0) {
         error = Common::Proto::Error_missing_input_utxos;
         return;
+    }
+    for (auto&& cell : signingInput.cell()) {
+        m_availableCells.emplace_back(cell);
     }
 
     switch (signingInput.operation_oneof_case()) {
@@ -48,6 +42,18 @@ void TransactionPlan::plan(const Proto::SigningInput& signingInput) {
         planSudtTransfer(signingInput);
         break;
     }
+    case Proto::SigningInput::kDaoDeposit: {
+        planDaoDeposit(signingInput);
+        break;
+    }
+    case Proto::SigningInput::kDaoWithdrawPhase1: {
+        planDaoWithdrawPhase1(signingInput);
+        break;
+    }
+    case Proto::SigningInput::kDaoWithdrawPhase2: {
+        planDaoWithdrawPhase2(signingInput);
+        break;
+    }
     default: {
         error = Common::Proto::Error_invalid_params;
     }
@@ -55,13 +61,21 @@ void TransactionPlan::plan(const Proto::SigningInput& signingInput) {
 }
 
 void TransactionPlan::planNativeTransfer(const Proto::SigningInput& signingInput) {
+    auto useMaxAmount = signingInput.native_transfer().use_max_amount();
+    auto amount =
+        uint64_t(Serialization::decodeUint256(data(signingInput.native_transfer().amount())));
+    if ((amount == 0) && !useMaxAmount) {
+        error = Common::Proto::Error_zero_amount_requested;
+        return;
+    }
+
     cellDeps.emplace_back(Constants::gSecp256k1CellDep);
 
-    outputs.emplace_back(uint64_t(m_amount),
-                         Script(Address(signingInput.native_transfer().to_address())), Script());
+    outputs.emplace_back(amount, Script(Address(signingInput.native_transfer().to_address())),
+                         Script());
     outputsData.emplace_back();
 
-    if (m_useMaxAmount) {
+    if (useMaxAmount) {
         selectMaximumCapacity();
     } else {
         auto changeAddress = Address(signingInput.native_transfer().change_address());
@@ -70,6 +84,13 @@ void TransactionPlan::planNativeTransfer(const Proto::SigningInput& signingInput
 }
 
 void TransactionPlan::planSudtTransfer(const Proto::SigningInput& signingInput) {
+    auto useMaxAmount = signingInput.sudt_transfer().use_max_amount();
+    auto amount = Serialization::decodeUint256(data(signingInput.sudt_transfer().amount()));
+    if ((amount == 0) && !useMaxAmount) {
+        error = Common::Proto::Error_zero_amount_requested;
+        return;
+    }
+
     cellDeps.emplace_back(Constants::gSecp256k1CellDep);
     cellDeps.emplace_back(Constants::gSUDTCellDep);
 
@@ -80,8 +101,62 @@ void TransactionPlan::planSudtTransfer(const Proto::SigningInput& signingInput) 
     outputsData.emplace_back();
 
     auto changeAddress = Address(signingInput.sudt_transfer().change_address());
-    selectSudtTokens(changeAddress);
+    selectSudtTokens(useMaxAmount, amount, changeAddress);
     selectRequiredCapacity(changeAddress);
+}
+
+void TransactionPlan::planDaoDeposit(const Proto::SigningInput& signingInput) {
+    auto amount = uint64_t(Serialization::decodeUint256(data(signingInput.dao_deposit().amount())));
+
+    cellDeps.emplace_back(Constants::gSecp256k1CellDep);
+    cellDeps.emplace_back(Constants::gDAOCellDep);
+
+    outputs.emplace_back(amount, Script(Address(signingInput.dao_deposit().to_address())),
+                         Script(Constants::gDAOCodeHash, HashType::Type1, Data()));
+    outputsData.emplace_back();
+    encode64LE(0, outputsData[outputsData.size() - 1]);
+
+    auto changeAddress = Address(signingInput.dao_deposit().change_address());
+    selectRequiredCapacity(changeAddress);
+}
+
+void TransactionPlan::planDaoWithdrawPhase1(const Proto::SigningInput& signingInput) {
+    cellDeps.emplace_back(Constants::gSecp256k1CellDep);
+    cellDeps.emplace_back(Constants::gDAOCellDep);
+
+    auto depositCell = Cell(signingInput.dao_withdraw_phase1().deposit_cell());
+    selectedCells.emplace_back(depositCell);
+    m_availableCells.erase(std::remove_if(
+        m_availableCells.begin(), m_availableCells.end(),
+        [&depositCell](const Cell& cell) { return cell.outPoint == depositCell.outPoint; }));
+
+    headerDeps.emplace_back(depositCell.blockHash);
+
+    outputs.emplace_back(depositCell.capacity, Script(depositCell.lock), Script(depositCell.type));
+    outputsData.emplace_back();
+    encode64LE(depositCell.blockNumber, outputsData[outputsData.size() - 1]);
+
+    auto changeAddress = Address(signingInput.dao_withdraw_phase1().change_address());
+    selectRequiredCapacity(changeAddress);
+}
+
+void TransactionPlan::planDaoWithdrawPhase2(const Proto::SigningInput& signingInput) {
+    cellDeps.emplace_back(Constants::gSecp256k1CellDep);
+    cellDeps.emplace_back(Constants::gDAOCellDep);
+
+    auto depositCell = Cell(signingInput.dao_withdraw_phase2().deposit_cell());
+    auto withdrawingCell = Cell(signingInput.dao_withdraw_phase2().withdrawing_cell());
+    selectedCells.emplace_back(withdrawingCell);
+    encode64LE(0, selectedCells[selectedCells.size() - 1].inputType);
+
+    headerDeps.emplace_back(depositCell.blockHash);
+    headerDeps.emplace_back(withdrawingCell.blockHash);
+
+    outputs.emplace_back(signingInput.dao_withdraw_phase2().amount(), Script(withdrawingCell.lock),
+                         Script());
+    outputsData.emplace_back();
+
+    outputs[0].capacity -= calculateFee();
 }
 
 void TransactionPlan::selectMaximumCapacity() {
@@ -141,7 +216,8 @@ void TransactionPlan::selectRequiredCapacity(const Address& changeAddress) {
     }
 }
 
-void TransactionPlan::selectSudtTokens(const Address& changeAddress) {
+void TransactionPlan::selectSudtTokens(const bool useMaxAmount, const uint256_t amount,
+                                       const Address& changeAddress) {
     uint256_t selectedSudtAmount = 0;
     sortAccordingToTypeAndData(outputs[0].type);
     bool gotEnough = false;
@@ -154,13 +230,13 @@ void TransactionPlan::selectSudtTokens(const Address& changeAddress) {
         selectedCells.emplace_back(*cell);
         selectedSudtAmount += Serialization::decodeUint256(cell->data);
         cell = m_availableCells.erase(cell);
-        if (m_useMaxAmount) {
+        if (useMaxAmount) {
             // Transfer maximum available tokens
             gotEnough = true;
-        } else if (selectedSudtAmount >= m_amount) {
+        } else if (selectedSudtAmount >= amount) {
             // Transfer exact number of tokens
             gotEnough = true;
-            uint256_t changeValue = selectedSudtAmount - m_amount;
+            uint256_t changeValue = selectedSudtAmount - amount;
             if (changeValue > 0) {
                 outputs.emplace_back(Constants::gMinCellCapacityForSUDT, Script(changeAddress),
                                      Script(outputs[0].type));
@@ -173,8 +249,7 @@ void TransactionPlan::selectSudtTokens(const Address& changeAddress) {
         error = Common::Proto::Error_not_enough_utxos;
         return;
     }
-    outputsData[0] =
-        Serialization::encodeUint256(m_useMaxAmount ? selectedSudtAmount : m_amount, 16);
+    outputsData[0] = Serialization::encodeUint256(useMaxAmount ? selectedSudtAmount : amount, 16);
 }
 
 uint64_t TransactionPlan::sizeWithoutInputs() {

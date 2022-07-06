@@ -129,7 +129,7 @@ void Transaction::build(const TransactionPlan& txPlan) {
     outputs = txPlan.outputs;
     outputsData = txPlan.outputsData;
     for (auto&& cell : selectedCells) {
-        inputs.emplace_back(cell.outPoint, 0);
+        inputs.emplace_back(cell.outPoint, cell.since);
     }
 }
 
@@ -155,8 +155,10 @@ void Transaction::formGroups() {
             groupNum = int(m_groupNumToLockHash.size());
             m_groupNumToLockHash.emplace_back(lockHash);
             m_groupNumToInputIndices.emplace_back();
+            m_groupNumToWitnesses.emplace_back();
         }
         m_groupNumToInputIndices[groupNum].emplace_back(index);
+        m_groupNumToWitnesses[groupNum].emplace_back(Data(), cell.inputType, cell.outputType);
         witnesses.emplace_back();
     }
 }
@@ -178,14 +180,11 @@ Common::Proto::SigningError Transaction::signGroups(const std::vector<PrivateKey
         if (!privateKey) {
             return Common::Proto::Error_missing_private_key;
         }
-        Witnesses witnessesForThisGroup(m_groupNumToInputIndices[groupNum].size());
-        auto result = signWitnesses(*privateKey, txHash, witnessesForThisGroup);
+        auto result = signWitnesses(*privateKey, txHash, m_groupNumToWitnesses[groupNum]);
         if (result != Common::Proto::OK) {
             return result;
         }
-        Data witnessData;
-        witnessesForThisGroup[0].encode(witnessData);
-        witnesses[m_groupNumToInputIndices[groupNum][0]] = witnessData;
+        m_groupNumToWitnesses[groupNum][0].encode(witnesses[m_groupNumToInputIndices[groupNum][0]]);
     }
     return Common::Proto::OK;
 }
