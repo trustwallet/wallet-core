@@ -28,17 +28,25 @@ static const std::string stakingChill = "Staking.chill";
 
 // Readable decoded call index can be found from https://polkascan.io
 static std::map<const std::string, Data> polkadotCallIndices = {
-    {balanceTransfer, Data{0x05, 0x00}},       {stakingBond, Data{0x07, 0x00}},
-    {stakingBondExtra, Data{0x07, 0x01}},      {stakingUnbond, Data{0x07, 0x02}},
-    {stakingWithdrawUnbond, Data{0x07, 0x03}}, {stakingNominate, Data{0x07, 0x05}},
-    {stakingChill, Data{0x07, 0x06}},          {utilityBatch, Data{0x1a, 0x02}},
+    {balanceTransfer, Data{0x05, 0x00}},
+    {stakingBond, Data{0x07, 0x00}},
+    {stakingBondExtra, Data{0x07, 0x01}},
+    {stakingUnbond, Data{0x07, 0x02}},
+    {stakingWithdrawUnbond, Data{0x07, 0x03}},
+    {stakingNominate, Data{0x07, 0x05}},
+    {stakingChill, Data{0x07, 0x06}},
+    {utilityBatch, Data{0x1a, 0x02}},
 };
 
 static std::map<const std::string, Data> kusamaCallIndices = {
-    {balanceTransfer, Data{0x04, 0x00}},       {stakingBond, Data{0x06, 0x00}},
-    {stakingBondExtra, Data{0x06, 0x01}},      {stakingUnbond, Data{0x06, 0x02}},
-    {stakingWithdrawUnbond, Data{0x06, 0x03}}, {stakingNominate, Data{0x06, 0x05}},
-    {stakingChill, Data{0x06, 0x06}},          {utilityBatch, Data{0x18, 0x02}},
+    {balanceTransfer, Data{0x04, 0x00}},
+    {stakingBond, Data{0x06, 0x00}},
+    {stakingBondExtra, Data{0x06, 0x01}},
+    {stakingUnbond, Data{0x06, 0x02}},
+    {stakingWithdrawUnbond, Data{0x06, 0x03}},
+    {stakingNominate, Data{0x06, 0x05}},
+    {stakingChill, Data{0x06, 0x06}},
+    {utilityBatch, Data{0x18, 0x02}},
 };
 
 static Data getCallIndex(TWSS58AddressType network, const std::string& key) {
@@ -79,8 +87,7 @@ Data Extrinsic::encodeCall(const Proto::SigningInput& input) {
     return data;
 }
 
-Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance, TWSS58AddressType network,
-                                  uint32_t specVersion) {
+Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance, TWSS58AddressType network, uint32_t specVersion) {
     Data data;
     auto transfer = balance.transfer();
     auto address = SS58Address(transfer.to_address(), network);
@@ -101,8 +108,7 @@ Data Extrinsic::encodeBatchCall(const std::vector<Data>& calls, TWSS58AddressTyp
     return data;
 }
 
-Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressType network,
-                                  uint32_t specVersion) {
+Data Extrinsic::encodeStakingCall(const Proto::Staking& staking, TWSS58AddressType network, uint32_t specVersion) {
     Data data;
     switch (staking.message_oneof_case()) {
     case Proto::Staking::kBond: {

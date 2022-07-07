@@ -47,7 +47,8 @@ bool PublicKey::isValid(const Data& data, enum TWPublicKeyType type) {
 /// Initializes a public key with a collection of bytes.
 ///
 /// @throws std::invalid_argument if the data is not a valid public key.
-PublicKey::PublicKey(const Data& data, enum TWPublicKeyType type) : type(type) {
+PublicKey::PublicKey(const Data& data, enum TWPublicKeyType type)
+    : type(type) {
     if (!isValid(data, type)) {
         throw std::invalid_argument("Invalid public key data");
     }
@@ -134,11 +135,9 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
     case TWPublicKeyTypeNIST256p1Extended:
         return ecdsa_verify_digest(&nist256p1, bytes.data(), signature.data(), message.data()) == 0;
     case TWPublicKeyTypeED25519:
-        return ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) ==
-               0;
+        return ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) == 0;
     case TWPublicKeyTypeED25519Blake2b:
-        return ed25519_sign_open_blake2b(message.data(), message.size(), bytes.data(),
-                                         signature.data()) == 0;
+        return ed25519_sign_open_blake2b(message.data(), message.size(), bytes.data(), signature.data()) == 0;
     case TWPublicKeyTypeED25519Extended:
         throw std::logic_error("Not yet implemented");
         // ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) == 0;
@@ -154,8 +153,7 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
         auto verifyBuffer = Data();
         append(verifyBuffer, signature);
         verifyBuffer[63] &= 127;
-        return ed25519_sign_open(message.data(), message.size(), ed25519PublicKey.data(),
-                                 verifyBuffer.data()) == 0;
+        return ed25519_sign_open(message.data(), message.size(), ed25519PublicKey.data(), verifyBuffer.data()) == 0;
     }
     default:
         throw std::logic_error("Not yet implemented");
@@ -183,8 +181,7 @@ bool PublicKey::verifySchnorr(const Data& signature, const Data& message) const 
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeSECP256k1Extended:
-        return zil_schnorr_verify(&secp256k1, bytes.data(), signature.data(), message.data(),
-                                  static_cast<uint32_t>(message.size())) == 0;
+        return zil_schnorr_verify(&secp256k1, bytes.data(), signature.data(), message.data(), static_cast<uint32_t>(message.size())) == 0;
     case TWPublicKeyTypeNIST256p1:
     case TWPublicKeyTypeNIST256p1Extended:
     case TWPublicKeyTypeED25519:
@@ -217,8 +214,7 @@ PublicKey PublicKey::recover(const Data& signature, const Data& message) {
         v = !(v & 0x01);
     }
     TW::Data result(65);
-    if (ecdsa_recover_pub_from_sig(&secp256k1, result.data(), signature.data(), message.data(),
-                                   v) != 0) {
+    if (ecdsa_recover_pub_from_sig(&secp256k1, result.data(), signature.data(), message.data(), v) != 0) {
         throw std::invalid_argument("recover failed");
     }
     return PublicKey(result, TWPublicKeyTypeSECP256k1Extended);

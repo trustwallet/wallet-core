@@ -151,8 +151,7 @@ void Transaction::encodeWitness(Data& data) const {
 }
 
 bool Transaction::hasWitness() const {
-    return std::any_of(inputs.begin(), inputs.end(),
-                       [](auto& input) { return !input.scriptWitness.empty(); });
+    return std::any_of(inputs.begin(), inputs.end(), [](auto& input) { return !input.scriptWitness.empty(); });
 }
 
 Data Transaction::getSignatureHash(const Script& scriptCode, size_t index,
