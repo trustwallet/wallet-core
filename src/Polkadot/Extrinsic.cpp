@@ -53,6 +53,7 @@ static Data getCallIndex(TWSS58AddressType network, const std::string& key) {
     if (network == TWSS58AddressTypePolkadot) {
         return polkadotCallIndices[key];
     }
+    // network == TWSS58AddressTypeKusama
     return kusamaCallIndices[key];
 }
 

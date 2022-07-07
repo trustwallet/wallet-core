@@ -256,6 +256,7 @@ const PrivateKey StoredKey::privateKey(TWCoinType coin, TWDerivation derivation,
         const auto account = this->account(coin, &wallet);
         return wallet.getKey(coin, account->derivationPath);
     }
+    // type == StoredKeyType::privateKey
     return PrivateKey(payload.decrypt(password));
 }
 

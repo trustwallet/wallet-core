@@ -160,6 +160,7 @@ Data Transaction::getSignatureHash(const Script& scriptCode, size_t index,
     if (version == BASE) {
         return getSignatureHashBase(scriptCode, index, hashType);
     }
+    // version == WITNESS_V0
     return getSignatureHashWitnessV0(scriptCode, index, hashType, amount);
 }
 
