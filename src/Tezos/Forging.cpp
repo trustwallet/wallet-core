@@ -47,6 +47,19 @@ Data forgePublicKeyHash(const std::string& publicKeyHash) {
     return forged;
 }
 
+// https://github.com/ecadlabs/taquito/blob/master/packages/taquito-local-forging/src/codec.ts#L19
+Data forgePrefix(std::array<byte, 3> prefix, const std::string& val) {
+    const auto decoded = Base58::bitcoin.decodeCheck(val);
+    if (!std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
+        throw std::invalid_argument("prefix not match");
+    }
+
+    const auto prefixSize = 3;
+    Data forged = Data();
+    forged.insert(forged.end(), decoded.begin() + prefixSize, decoded.end());
+    return forged;
+}
+
 // Forge the given public key into a hex encoded string.
 Data forgePublicKey(PublicKey publicKey) {
     std::string tag;
@@ -82,7 +95,7 @@ Data forgeZarith(uint64_t input) {
 Data forgeOperation(const Operation& operation) {
     auto forged = Data();
     auto source = Address(operation.source());
-    auto forgedSource = source.forge();
+    auto forgedSource = source.forgePKH(); //https://github.com/ecadlabs/taquito/blob/master/packages/taquito-local-forging/src/schema/operation.ts#L40
     auto forgedFee = forgeZarith(operation.fee());
     auto forgedCounter = forgeZarith(operation.counter());
     auto forgedGasLimit = forgeZarith(operation.gas_limit());
@@ -141,7 +154,7 @@ Data forgeOperation(const Operation& operation) {
         append(forged, forgedGasLimit);
         append(forged, forgedStorageLimit);
         append(forged, forgedAmount);
-        append(forged, forgeBool(false));
+//        append(forged, forgeBool(false)); // address type prefix, included in address.forge()
         append(forged, forgedDestination);
         if (operation.transaction_operation_data().encoded_parameter().empty()) {
             append(forged, forgeBool(false));

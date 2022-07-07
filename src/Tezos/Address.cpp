@@ -22,6 +22,8 @@ using namespace TW::Tezos;
 const std::array<byte, 3> tz1Prefix{6, 161, 159};
 const std::array<byte, 3> tz2Prefix{6, 161, 161};
 const std::array<byte, 3> tz3Prefix{6, 161, 164};
+const std::array<byte, 3> ktPrefix{2, 90, 121};
+const std::array<byte, 3> kt1Prefix{2, 90, 121};
 
 bool Address::isValid(const std::string& string) {
     const auto decoded = Base58::bitcoin.decodeCheck(string);
@@ -33,6 +35,12 @@ bool Address::isValid(const std::string& string) {
     if (std::equal(tz1Prefix.begin(), tz1Prefix.end(), decoded.begin()) ||
         std::equal(tz2Prefix.begin(), tz2Prefix.end(), decoded.begin()) ||
         std::equal(tz3Prefix.begin(), tz3Prefix.end(), decoded.begin())) {
+        return true;
+    }
+
+    // contract prefix
+    if (std::equal(ktPrefix.begin(), ktPrefix.end(), decoded.begin()) ||
+        std::equal(kt1Prefix.begin(), kt1Prefix.end(), decoded.begin())) {
         return true;
     }
 
@@ -70,7 +78,37 @@ std::string Address::deriveOriginatedAddress(const std::string& operationHash, i
     return Base58::bitcoin.encodeCheck(prefix);
 }
 
-Data Address::forge() const {
+Data Address::forgePKH() const {
     std::string s = string();
     return forgePublicKeyHash(s);
+}
+
+Data Address::forge() const {
+    // normal address
+    // https://github.com/ecadlabs/taquito/blob/master/packages/taquito-local-forging/src/codec.ts#L183
+    if (std::equal(tz1Prefix.begin(), tz1Prefix.end(), bytes.begin()) ||
+        std::equal(tz2Prefix.begin(), tz2Prefix.end(), bytes.begin()) ||
+        std::equal(tz3Prefix.begin(), tz3Prefix.end(), bytes.begin())) {
+        std::string s = string();
+        Data forgedPKH = forgePublicKeyHash(s);
+        Data forged = Data();
+        forged.insert(forged.end(), 0x00);
+        forged.insert(forged.end(), forgedPKH.begin(), forgedPKH.end());
+        return forged;
+    }
+
+    // contract address
+    // https://github.com/ecadlabs/taquito/blob/master/packages/taquito-local-forging/src/codec.ts#L183
+    if (std::equal(ktPrefix.begin(), ktPrefix.end(), bytes.begin()) ||
+        std::equal(kt1Prefix.begin(), kt1Prefix.end(), bytes.begin())) {
+        std::string s = string();
+        Data forgedPrefix = forgePrefix(kt1Prefix, s);
+        Data forged = Data();
+        forged.insert(forged.end(), 0x01);
+        forged.insert(forged.end(), forgedPrefix.begin(), forgedPrefix.end());
+        forged.insert(forged.end(), 0x00);
+        return forged;
+    }
+
+    throw std::invalid_argument("invalid address");
 }
