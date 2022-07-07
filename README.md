@@ -110,6 +110,7 @@ Projects using Trust Wallet Core. Add yours too!
 | [crypto.com](https://crypto.com)
 | [Alice](https://www.alicedapp.com/)
 | [Frontier](https://frontier.xyz/)
+| [Tokenary](https://tokenary.io/)
 
 # Community
 

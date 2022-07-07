@@ -14,37 +14,10 @@ namespace TW::Ethereum {
 /// Note: do not put the implementation here (no matter how simple), to avoid having coin-specific includes in this file
 class Entry: public CoinEntry {
 public:
-    virtual const std::vector<TWCoinType> coinTypes() const {
-        return {
-            TWCoinTypeCallisto,
-            TWCoinTypeEthereum,
-            TWCoinTypeEthereumClassic,
-            TWCoinTypeGoChain,
-            TWCoinTypePOANetwork,
-            TWCoinTypeThunderToken,
-            TWCoinTypeTomoChain,
-            TWCoinTypeSmartChainLegacy,
-            TWCoinTypeSmartChain,
-            TWCoinTypePolygon,
-            TWCoinTypeWanchain,
-            TWCoinTypeOptimism,
-            TWCoinTypeArbitrum,
-            TWCoinTypeECOChain,
-            TWCoinTypeAvalancheCChain,
-            TWCoinTypeXDai,
-            TWCoinTypeFantom,
-            TWCoinTypeCelo,
-            TWCoinTypeCronosChain,
-            TWCoinTypeSmartBitcoinCash,
-            TWCoinTypeKuCoinCommunityChain,
-            TWCoinTypeBoba,
-            TWCoinTypeMetis,
-            TWCoinTypeAurora,
-        };
-    }
     virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;
     virtual std::string normalizeAddress(TWCoinType coin, const std::string& address) const;
     virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
+    virtual Data addressToData(TWCoinType coin, const std::string& address) const;
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
     virtual bool supportsJSONSigning() const { return true; }
     virtual std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const;

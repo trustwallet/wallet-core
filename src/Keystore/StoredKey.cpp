@@ -234,6 +234,18 @@ void StoredKey::removeAccount(TWCoinType coin) {
     }), accounts.end());
 }
 
+void StoredKey::removeAccount(TWCoinType coin, TWDerivation derivation) {
+    accounts.erase(std::remove_if(accounts.begin(), accounts.end(), [coin, derivation](Account& account) -> bool {
+        return account.coin == coin && account.derivation == derivation;
+    }), accounts.end());
+}
+
+void StoredKey::removeAccount(TWCoinType coin, DerivationPath derivationPath) {
+    accounts.erase(std::remove_if(accounts.begin(), accounts.end(), [coin, derivationPath](Account& account) -> bool {
+        return account.coin == coin && account.derivationPath == derivationPath;
+    }), accounts.end());
+}
+
 const PrivateKey StoredKey::privateKey(TWCoinType coin, const Data& password) {
     return privateKey(coin, TWDerivationDefault, password);
 }

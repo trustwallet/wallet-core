@@ -8,6 +8,7 @@
 
 #include "../proto/TransactionCompiler.pb.h"
 #include "Address.h"
+#include "Coin.h"
 #include "Signer.h"
 
 using namespace TW::Binance;
@@ -30,6 +31,23 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byt
     default:
         return Address(publicKey).string();
     }
+}
+
+Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
+    if (coin == TWCoinTypeBinance) {
+        Address addr;
+        if (!Address::decode(address, addr)) {
+            return Data();
+        }
+        return addr.getKeyHash();
+    } else if (coin == TWCoinTypeTBinance) {
+        TAddress addr;
+        if (!TAddress::decode(address, addr)) {
+            return Data();
+        }
+        return addr.getKeyHash();
+    }
+    return Data();
 }
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
@@ -74,17 +92,7 @@ void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<
 
 Data Entry::buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const {
     auto input = Proto::SigningInput();
-    std::string finalChainId = chainId;
-    if (finalChainId.length() == 0) {
-        if (coinType == TWCoinTypeTBinance) {
-            // testnet
-            finalChainId = "Binance-Chain-Ganges";
-        } else {
-            // mainnet
-            finalChainId = "Binance-Chain-Nile";
-        }
-    }
-    input.set_chain_id(finalChainId);
+    input.set_chain_id(chainId);
     input.set_account_number(0);
     input.set_sequence(0);
     input.set_source(0);

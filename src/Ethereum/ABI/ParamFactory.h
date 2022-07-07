@@ -19,16 +19,18 @@
 namespace TW::Ethereum::ABI {
 
 /// Factory creates concrete ParamBase class from string type.
-class ParamFactory
-{
+class ParamFactory {
 public:
     /// Create a param of given type
     static std::shared_ptr<ParamBase> make(const std::string& type);
     /// Create a named param, with given name and type
     static std::shared_ptr<ParamNamed> makeNamed(const std::string& name, const std::string& type);
+    /// Check if given type is a primitive type
+    static bool isPrimitive(const std::string& type);
 
     static std::string getValue(const std::shared_ptr<ParamBase>& param, const std::string& type);
-    static std::vector<std::string> getArrayValue(const std::shared_ptr<ParamBase>& param, const std::string& type);
+    static std::vector<std::string> getArrayValue(const std::shared_ptr<ParamBase>& param,
+                                                  const std::string& type);
 };
 
 } // namespace TW::Ethereum::ABI

@@ -91,11 +91,15 @@ class CoinAddressDerivationTests: XCTestCase {
                      .kuCoinCommunityChain,
                      .boba,
                      .metis,
-                     .aurora:
+                     .aurora,
+                     .evmos,
+                     .moonriver,
+                     .moonbeam,
+                     .klaytn:
                     let expectedResult = "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ronin:
-                    let expectedResult = "ronin:8f348f300873fd5da36950b2ac75a26584584fee"
+                    let expectedResult = "ronin:8f348F300873Fd5DA36950B2aC75a26584584feE"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ethereumClassic:
                     let expectedResult = "0x078bA3228F3E6C08bEEac9A005de0b7e7089aD1c"
@@ -252,6 +256,8 @@ class CoinAddressDerivationTests: XCTestCase {
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .syscoin:
                     let expectedResult = "sys1qkl640se3mwpt666e3lyywnwh09e9jquvx9x8qj"
+                case .nativeEvmos:
+                    let expectedResult = "evmos13u6g7vqgw074mgmf2ze2cadzvkz9snlwstd20d"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()

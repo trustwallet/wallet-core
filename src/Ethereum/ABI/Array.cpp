@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -20,7 +20,7 @@ using json = nlohmann::json;
 int ParamArray::addParam(const std::shared_ptr<ParamBase>& param) {
     assert(param != nullptr);
     if (param == nullptr) { return -1; }
-    if (_params.getCount() >= 1 && param->getType() != getFirstType()) { return -2; } // do not add different types
+    if (_params.getCount() >= 1 && param->getType() != getProtoType()) { return -2; } // do not add different types
     return _params.addParam(param);
 }
 
@@ -28,9 +28,16 @@ void ParamArray::addParams(const std::vector<std::shared_ptr<ParamBase>>& params
     for (auto p: params) { addParam(p); }
 }
 
-std::string ParamArray::getFirstType() const {
-    if (_params.getCount() == 0) { return "empty"; }
-    return _params.getParamUnsafe(0)->getType();
+std::shared_ptr<ParamBase> ParamArray::getProtoElem() const {
+    if (_params.getCount() >= 1) {
+        return _params.getParamUnsafe(0);
+    }
+    return _proto;
+}
+
+std::string ParamArray::getProtoType() const {
+    const auto proto = getProtoElem();
+    return (proto != nullptr) ? proto->getType() : "__empty__";
 }
 
 size_t ParamArray::getSize() const
@@ -92,7 +99,7 @@ bool ParamArray::setValueJson(const std::string& value) {
     }
     // make sure enough elements are in the array
     while (_params.getCount() < valuesJson.size()) {
-        addParam(ParamFactory::make(getFirstType()));
+        addParam(ParamFactory::make(getProtoType()));
     }
     int cnt = 0;
     for (const auto& e: valuesJson) {
@@ -104,6 +111,9 @@ bool ParamArray::setValueJson(const std::string& value) {
 }
 
 Data ParamArray::hashStruct() const {
+    if (_params.getCount() == 0) {
+       return Hash::keccak256(Data()); 
+    }
     Data hash(32);
     Data hashes = _params.encodeHashes();
     if (hashes.size() > 0) {
@@ -113,9 +123,6 @@ Data ParamArray::hashStruct() const {
 }
 
 std::string ParamArray::getExtraTypes(std::vector<std::string>& ignoreList) const {
-    std::shared_ptr<ParamBase> p;
-    if (!_params.getParam(0, p)) {
-        return "";
-    }
-    return p->getExtraTypes(ignoreList);
+    const auto& proto = getProtoElem();
+    return (proto != nullptr) ? proto->getExtraTypes(ignoreList) : "";
 }

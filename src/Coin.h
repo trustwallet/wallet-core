@@ -80,11 +80,17 @@ std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey);
 /// Derives the address for a particular coin from the public key, with given derivation.
 std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation);
 
-/// Hasher for deriving the public key hash.
+/// Returns the binary representation of a string address
+Data addressToData(TWCoinType coin, const std::string& address);
+
+/// Hasher for deriving the extended public key
 Hash::Hasher publicKeyHasher(TWCoinType coin);
 
-/// Hasher to use for base 58 checksums.
+/// Hasher to use for base 58 checksums in keys (extended private, public)
 Hash::Hasher base58Hasher(TWCoinType coin);
+
+/// Hasher used inside address generation (hash of public key)
+Hash::Hasher addressHasher(TWCoinType coin);
 
 /// Returns static prefix for a coin type.
 byte staticPrefix(TWCoinType coin);
@@ -97,6 +103,9 @@ byte p2shPrefix(TWCoinType coin);
 
 /// Returns human readable part for a coin type.
 enum TWHRP hrp(TWCoinType coin);
+
+/// Returns chain ID.
+const char* chainId(TWCoinType coin);
 
 // Note: use output parameter to avoid unneeded copies
 void anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut);
@@ -114,9 +123,6 @@ Data anyCoinPreImageHashes(TWCoinType coinType, const Data& txInputData);
 void anyCoinCompileWithSignatures(TWCoinType coinType, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& txOutputOut);
 
 Data anyCoinBuildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId);
-
-// Return coins handled by the same dispatcher as the given coin (mostly for testing)
-const std::vector<TWCoinType> getSimilarCoinTypes(TWCoinType coinType);
 
 // Describes a derivation: path + optional format + optional name
 struct Derivation {
@@ -140,8 +146,10 @@ struct CoinInfo {
     byte p2pkhPrefix;
     byte p2shPrefix;
     TWHRP hrp;
+    const char* chainId;
     Hash::Hasher publicKeyHasher;
     Hash::Hasher base58Hasher;
+    Hash::Hasher addressHasher;
     const char* symbol;
     int decimals;
     const char* explorerTransactionUrl;

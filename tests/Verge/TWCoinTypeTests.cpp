@@ -23,7 +23,7 @@ TEST(TWVergeCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeVerge));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeVerge), 6);
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeVerge));
+    ASSERT_EQ(TWBlockchainVerge, TWCoinTypeBlockchain(TWCoinTypeVerge));
     ASSERT_EQ(0x21, TWCoinTypeP2shPrefix(TWCoinTypeVerge));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeVerge));
     assertStringsEqual(symbol, "XVG");

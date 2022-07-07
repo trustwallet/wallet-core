@@ -28,7 +28,7 @@ public:
 public:
     Transaction() = default;
 
-    Transaction(int32_t version, uint32_t time = 0, uint32_t lockTime = 0, TW::Hash::Hasher hasher = TW::Hash::sha256d)
+    Transaction(int32_t version, uint32_t time = 0, uint32_t lockTime = 0, TW::Hash::Hasher hasher = TW::Hash::HasherSha256d)
         : Bitcoin::Transaction(version, lockTime, hasher)
         , time(time) {}
 

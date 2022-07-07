@@ -23,19 +23,20 @@ extern const string TYPE_PREFIX_MSG_REDELEGATE;
 extern const string TYPE_PREFIX_MSG_WITHDRAW_REWARD;
 extern const string TYPE_PREFIX_PUBLIC_KEY;
 
+#include <TrustWalletCore/TWCoinType.h>
+
 namespace TW::Cosmos {
 
 std::string buildProtoTxBody(const Proto::SigningInput& input);
 
-std::string buildAuthInfo(const Proto::SigningInput& input);
-std::string buildAuthInfo(const Proto::SigningInput& input, const PublicKey& publicKey);
+std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin);
+std::string buildAuthInfo(const Proto::SigningInput& input, const PublicKey& publicKey, TWCoinType coin);
 
-std::string signaturePreimageProto(const Proto::SigningInput& input, const PublicKey& publicKey);
+std::string signaturePreimageProto(const Proto::SigningInput& input, const PublicKey& publicKey, TWCoinType coin);
 
-std::string buildProtoTxRaw(const Proto::SigningInput& input, const PublicKey& publicKey, const Data& signature);
-Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo);
-
+std::string buildProtoTxRaw(const Proto::SigningInput& input, const PublicKey& publicKey, const Data& signature, TWCoinType coin);
 std::string buildProtoTxRaw(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, const Data& signature);
+Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, TWCoinType coin);
 
 std::string buildProtoTxJson(const Proto::SigningInput& input, const std::string& serializedTx);
 

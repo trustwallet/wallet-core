@@ -26,10 +26,10 @@ public:
     Data preBlockHash;
 
 public:
-    Transaction() : Bitcoin::Transaction(CURRENT_VERSION, 0, static_cast<Hash::HasherSimpleType>(Hash::sha256)) {}
-    Transaction(const Data& blockHash, int32_t version = CURRENT_VERSION, uint32_t lockTime = 0) :
-        Bitcoin::Transaction(version, lockTime, static_cast<Hash::HasherSimpleType>(Hash::sha256)),
-        preBlockHash(blockHash) {}
+    Transaction() : Bitcoin::Transaction(CURRENT_VERSION, 0, TW::Hash::HasherSha256d) {}
+    Transaction(const Data& blockHash, int32_t version = CURRENT_VERSION, uint32_t lockTime = 0)
+        : Bitcoin::Transaction(version, lockTime, TW::Hash::HasherSha256d)
+        , preBlockHash(blockHash) {}
 
     Data getPreImage(const Bitcoin::Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType, uint64_t amount) const;
     

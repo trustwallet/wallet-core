@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,7 +8,7 @@
 
 #include "Data.h"
 #include "PublicKey.h"
-#include <TrezorCrypto/hasher.h>
+#include "Hash.h"
 
 #include <string>
 #include <memory>
@@ -45,7 +45,7 @@ public:
     Bech32Address(const std::string& hrp, const Data& keyHash) : hrp(std::move(hrp)), keyHash(std::move(keyHash)) {}
 
     /// Initialization from public key --> chain specific hash methods
-    Bech32Address(const std::string& hrp, HasherType hasher, const PublicKey& publicKey);
+    Bech32Address(const std::string& hrp, Hash::Hasher hasher, const PublicKey& publicKey);
 
     void setHrp(const std::string& hrp_in) { hrp = std::move(hrp_in); }
     void setKey(const Data& keyHash_in) { keyHash = std::move(keyHash_in); }

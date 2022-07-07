@@ -11,6 +11,7 @@
 
 using namespace TW;
 using namespace TW::Cosmos;
+using namespace TW;
 using namespace std;
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
@@ -23,19 +24,30 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byt
     return Address(coin, publicKey).string();
 }
 
+Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
+    Address addr;
+    if (!Address::decode(address, addr)) {
+        return Data();
+    }
+    return addr.getKeyHash();
+}
+
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+    auto input = Proto::SigningInput();
+    input.ParseFromArray(dataIn.data(), (int)dataIn.size());
+    auto serializedOut = Signer::sign(input, coin).SerializeAsString();
+    dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
 }
 
 string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const { 
-    return Signer::signJSON(json, key);
+    return Signer::signJSON(json, key, coin);
 }
 
 Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
     return txCompilerTemplate<Proto::SigningInput, TxCompiler::Proto::PreSigningOutput>(
-        txInputData, [](const auto& input, auto& output) {
+        txInputData, [&coin](const auto& input, auto& output) {
             auto pkVec = Data(input.public_key().begin(), input.public_key().end());
-            auto preimage = Signer().signaturePreimage(input, pkVec);
+            auto preimage = Signer().signaturePreimage(input, pkVec, coin);
             auto imageHash = Hash::sha256(preimage);
             output.set_data(preimage.data(), preimage.size());
             output.set_data_hash(imageHash.data(), imageHash.size());
@@ -51,7 +63,7 @@ void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<
                 return;
             }
 
-            auto signedTx = Signer().encodeTransaction(input, signatures[0], publicKeys[0]);
+            auto signedTx = Signer().encodeTransaction(input, signatures[0], publicKeys[0], coin);
             output.set_serialized(signedTx.data(), signedTx.size());
         });
 }

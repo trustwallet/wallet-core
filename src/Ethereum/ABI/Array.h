@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,10 +13,17 @@
 namespace TW::Ethereum::ABI {
 
 /// Dynamic array of the same types, "<type>[]"
+/// Normally has at least one element.  Empty array can have prototype set so its type is known.
+/// Empty with no prototype is possible, but should be avoided.
 class ParamArray: public ParamCollection
 {
 private:
     ParamSet _params;
+    std::shared_ptr<ParamBase> _proto; // an optional prototype element, determines the array type, useful in empty array case
+
+private:
+    std::shared_ptr<ParamBase> getProtoElem() const; // the first element if exists, otherwise the proto element
+    std::string getProtoType() const;
 
 public:
     ParamArray() = default;
@@ -26,9 +33,9 @@ public:
     std::vector<std::shared_ptr<ParamBase>> const& getVal() const { return _params.getParams(); }
     int addParam(const std::shared_ptr<ParamBase>& param);
     void addParams(const std::vector<std::shared_ptr<ParamBase>>& params);
-    std::string getFirstType() const;
+    void setProto(const std::shared_ptr<ParamBase>& proto) { _proto = proto; }
     std::shared_ptr<ParamBase> getParam(int paramIndex) { return _params.getParamUnsafe(paramIndex); }
-    virtual std::string getType() const { return getFirstType() + "[]"; }
+    virtual std::string getType() const { return getProtoType() + "[]"; }
     virtual size_t getSize() const;
     virtual bool isDynamic() const { return true; }
     virtual size_t getCount() const { return _params.getCount(); }

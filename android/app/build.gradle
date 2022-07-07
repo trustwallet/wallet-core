@@ -2,12 +2,11 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 32
     ndkVersion '23.1.7779620'
     defaultConfig {
         applicationId "com.trustwallet.core.app"
         minSdkVersion 23
-        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -21,7 +20,7 @@ android {
             minifyEnabled false
             // limit platforms built for testing
             ndk {
-                abiFilters 'x86'
+                abiFilters 'x86', 'arm64-v8a'
             }
         }
     }

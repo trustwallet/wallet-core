@@ -23,9 +23,8 @@ TEST(TWRoninCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeRonin));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeRonin), 18);
-    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeRonin));
-    ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeRonin));
-    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeRonin));
+    ASSERT_EQ(TWBlockchainRonin, TWCoinTypeBlockchain(TWCoinTypeRonin));
+
     assertStringsEqual(symbol, "RON");
     assertStringsEqual(txUrl, "https://explorer.roninchain.com/tx/0xc09835aaf9c1cacea8ce322865583c791d3a4dfbd9a3b72f79539db88d3697ab");
     assertStringsEqual(accUrl, "https://explorer.roninchain.com/address/0xdc05ecd5fbdb64058d94f3182d66f44342b9adcb");

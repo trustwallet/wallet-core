@@ -24,6 +24,11 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byt
     return Bitcoin::Address(publicKey, p2pkh).string();
 }
 
+TW::Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
+    const auto addr = Bitcoin::Address(address);
+    return {addr.bytes.begin() + 1, addr.bytes.end()};
+}
+
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Bitcoin::Proto::SigningInput>(dataIn, dataOut);
 }

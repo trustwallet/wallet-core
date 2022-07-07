@@ -484,6 +484,32 @@ TEST(EthereumAbiStruct, hashStructJson) {
     }
 }
 
+TEST(EthereumAbiStruct, hashStruct_emptyString) {
+    auto path = TESTS_ROOT + "/Ethereum/Data/eip712_emptyString.json";
+    auto typeData = load_file(path);
+    auto hash = ParamStruct::hashStructJson(typeData);
+    EXPECT_EQ(hex(hash), "bc9d33285c5e42b00571f5deaf9636d2e498a6fa50e0d1be81095bded070117a");
+
+    // sign the hash
+    const auto rsv = Signer::sign(privateKeyOilTimes12, hash, true, 0);
+    EXPECT_EQ(hex(store(rsv.r)), "5df6cb46d874bc0acc519695f393008a837ca9d2e316836b669b8f0de7673638");
+    EXPECT_EQ(hex(store(rsv.s)), "54cc0bcc0ad657f9222f7e7be3fbe0ec4a8edb9385c39d578dfac8d38727af12");
+    EXPECT_EQ(hex(store(rsv.v)), "1c");
+}
+
+TEST(EthereumAbiStruct, hashStruct_emptyArray) {
+    auto path = TESTS_ROOT + "/Ethereum/Data/eip712_emptyArray.json";
+    auto typeData = load_file(path);
+    auto hash = ParamStruct::hashStructJson(typeData);
+    EXPECT_EQ(hex(hash), "9f1a1bc718e966d683c544aef6fd0b73c85a1d6244af9b64bb8f4a6fa6716086");
+
+    // sign the hash
+    const auto rsv = Signer::sign(privateKeyOilTimes12, hash, true, 0);
+    EXPECT_EQ(hex(store(rsv.r)), "de47efd592493f7189d44f071424ecb24b50d80750d3bd2bb6fc80451c13a52f");
+    EXPECT_EQ(hex(store(rsv.s)), "202b8a2be1ef3c466853e8cd5275a6af15b11e7e1cc0ae4a7e249bc9bad591eb");
+    EXPECT_EQ(hex(store(rsv.v)), "1c");
+}
+
 TEST(EthereumAbiStruct, hashStruct_walletConnect) {
     // https://github.com/WalletConnect/walletconnect-example-dapp/blob/master/src/helpers/eip712.ts
     auto path = TESTS_ROOT + "/Ethereum/Data/eip712_walletconnect.json";

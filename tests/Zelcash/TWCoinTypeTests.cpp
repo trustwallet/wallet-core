@@ -23,7 +23,7 @@ TEST(TWZelcashCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZelcash));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZelcash), 8);
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeZelcash));
+    ASSERT_EQ(TWBlockchainZcash, TWCoinTypeBlockchain(TWCoinTypeZelcash));
     ASSERT_EQ(0xbd, TWCoinTypeP2shPrefix(TWCoinTypeZelcash));
     ASSERT_EQ(0x1c, TWCoinTypeStaticPrefix(TWCoinTypeZelcash));
     assertStringsEqual(symbol, "FLUX");

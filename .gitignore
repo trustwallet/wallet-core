@@ -33,8 +33,10 @@ src/Generated
 include/TrustWalletCore/TWHRP.h
 include/TrustWalletCore/TW*Proto.h
 include/TrustWalletCore/TWDerivation.h
+include/TrustWalletCore/TWEthereumChainID.h
 
 # Wasm
+emsdk/
 wasm-build/
 
 # Code coverage files

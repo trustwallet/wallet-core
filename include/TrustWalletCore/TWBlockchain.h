@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -39,15 +39,22 @@ enum TWBlockchain {
     TWBlockchainHarmony = 25,
     TWBlockchainNEAR = 26,
     TWBlockchainAlgorand = 27,
-    TWBlockchainTON = 28,
-    TWBlockchainNEO = 29,
-    TWBlockchainPolkadot = 30,
-    TWBlockchainKusama = 31,
-    TWBlockchainCardano = 32,
-    TWBlockchainFilecoin = 33,
-    TWBlockchainElrondNetwork = 34,
-    TWBlockchainOasisNetwork = 35,
-    TWBlockchainIOST = 36,
+    TWBlockchainIOST = 28,
+    TWBlockchainPolkadot = 29,
+    TWBlockchainCardano = 30,
+    TWBlockchainNEO = 31,
+    TWBlockchainFilecoin = 32,
+    TWBlockchainElrondNetwork = 33,
+    TWBlockchainOasisNetwork = 34,
+    TWBlockchainDecred = 35, // Bitcoin
+    TWBlockchainZcash = 36, // Bitcoin
+    TWBlockchainGroestlcoin = 37, // Bitcoin
+    TWBlockchainThorchain = 38, // Cosmos
+    TWBlockchainRonin = 39, // Ethereum
+    TWBlockchainKusama = 40, // Polkadot
+    TWBlockchainZen = 41, // Bitcoin
+    TWBlockchainBitcoinDiamond = 42, // Bitcoin
+    TWBlockchainVerge = 43, // Bitcoin
 };
 
 TW_EXTERN_C_END

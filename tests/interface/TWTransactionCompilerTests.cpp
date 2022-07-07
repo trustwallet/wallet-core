@@ -40,13 +40,13 @@ TEST(TWTransactionCompiler, ExternalSignatureSignBinance) {
     const auto coin = TWCoinTypeBinance;
     const auto txInputData = WRAPD(TWTransactionCompilerBuildInput(
         coin,
-        STRING("bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2").get(), // from
-        STRING("bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5").get(), // to
-        STRING("1").get(),                                          // amount
-        STRING("BNB").get(),                                        // asset
-        STRING("").get(),                                           // memo
-        STRING("").get()                                            // chainId
-        ));
+        STRING("bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2").get(),  // from
+        STRING("bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5").get(),  // to
+        STRING("1").get(),  // amount
+        STRING("BNB").get(),  // asset
+        STRING("").get(),  // memo
+        STRING("Binance-Chain-Nile").get()  // testnet chainId
+    ));
 
     {
         // Check, by parsing

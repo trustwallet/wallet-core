@@ -1,0 +1,5 @@
+<%  if entity.is_a?(EnumDecl) -%>
+<%=   render('ts/enum_d.erb') -%>
+<%  else -%>
+<%=   render('ts/class_d.erb') -%>
+<%  end -%>

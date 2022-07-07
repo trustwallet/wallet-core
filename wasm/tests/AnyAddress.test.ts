@@ -12,7 +12,7 @@ describe("AnyAddress", () => {
   it("test validating Solana address", () => {
     const { AnyAddress, HexCoding, CoinType } = WalletCore;
 
-    var address = new AnyAddress.createWithString(
+    var address = AnyAddress.createWithString(
       "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q",
       CoinType.solana
     );

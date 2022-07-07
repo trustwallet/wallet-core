@@ -19,7 +19,17 @@ bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte p2p
 }
 
 string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const {
-    return TW::Bitcoin::SegwitAddress(publicKey, hrp).string();
+    return deriveAddress(coin, TWDerivationDefault, publicKey, p2pkh, hrp);
+}
+
+string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey,
+                            byte p2pkh, const char* hrp) const {
+    switch (derivation) {
+    case TWDerivationBitcoinLegacy:
+        return Address(publicKey, p2pkh).string();
+    default:
+        return TW::Bitcoin::SegwitAddress(publicKey, hrp).string();
+    }
 }
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {

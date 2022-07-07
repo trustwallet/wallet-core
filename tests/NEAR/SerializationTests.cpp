@@ -40,4 +40,40 @@ TEST(NEARSerialization, SerializeTransferTransaction) {
     ASSERT_EQ(serializedHex, "09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef6010000000301000000000000000000000000000000");
 }
 
+TEST(NEARSerialization, SerializeFunctionCallTransaction) {
+    auto publicKey = Base58::bitcoin.decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
+
+    auto input = Proto::SigningInput();
+    input.set_signer_id("test.near");
+    input.set_nonce(1);
+    input.set_receiver_id("whatever.near");
+    
+    input.add_actions();
+    auto& functionCall = *input.mutable_actions(0)->mutable_function_call();
+    
+    functionCall.set_method_name("qqq");
+    functionCall.set_gas(1000);
+    
+    Data deposit(16, 0);
+    deposit[0] = 1;
+    functionCall.set_deposit(deposit.data(), deposit.size());
+    
+    Data args(3, 0);
+    args[0] = 1;
+    args[1] = 2;
+    args[2] = 3;
+    functionCall.set_args(args.data(), args.size());
+    
+    auto blockHash = Base58::bitcoin.decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
+    input.set_block_hash(blockHash.data(), blockHash.size());
+
+    auto privateKey = Base58::bitcoin.decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
+    input.set_private_key(privateKey.data(), 32);
+
+    auto serialized = transactionData(input);
+    auto serializedHex = hex(serialized);
+
+    ASSERT_EQ(serializedHex, "09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef601000000020300000071717103000000010203e80300000000000001000000000000000000000000000000");
+}
+
 }

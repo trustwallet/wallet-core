@@ -10,11 +10,19 @@
 
 namespace TW::Bitcoin {
 
+inline constexpr double gDefaultBytesPerInput{148};
+inline constexpr double gDefaultBytesPerOutput{34};
+inline constexpr double gDefaultBytesBase{10};
+inline constexpr double gSegwitBytesPerInput{101.25};
+inline constexpr double gSegwitBytesPerOutput{31};
+inline constexpr double gSegwitBytesBase{gDefaultBytesBase};
+
 /// Interface for transaction fee calculator.
 class FeeCalculator {
 public:
-    virtual int64_t calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const = 0;
-    virtual int64_t calculateSingleInput(int64_t byteFee) const = 0;
+    [[nodiscard]] virtual int64_t calculate(int64_t inputs, int64_t outputs,
+                                            int64_t byteFee) const noexcept = 0;
+    [[nodiscard]] virtual int64_t calculateSingleInput(int64_t byteFee) const noexcept = 0;
 };
 
 /// Generic fee calculator with linear input and output size, and a fix size
@@ -23,21 +31,26 @@ public:
     const double bytesPerInput;
     const double bytesPerOutput;
     const double bytesBase;
-    LinearFeeCalculator(double bytesPerInput, double bytesPerOutput, double bytesBase)
-        :bytesPerInput(bytesPerInput), bytesPerOutput(bytesPerOutput), bytesBase(bytesBase) {}
+    explicit constexpr LinearFeeCalculator(double bytesPerInput, double bytesPerOutput,
+                                           double bytesBase) noexcept
+        : bytesPerInput(bytesPerInput), bytesPerOutput(bytesPerOutput), bytesBase(bytesBase) {}
 
-    virtual int64_t calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const override;
-    virtual int64_t calculateSingleInput(int64_t byteFee) const override;
+    [[nodiscard]] int64_t calculate(int64_t inputs, int64_t outputs,
+                                    int64_t byteFee) const noexcept override;
+    [[nodiscard]] int64_t calculateSingleInput(int64_t byteFee) const noexcept override;
 };
 
 /// Constant fee calculator
 class ConstantFeeCalculator : public FeeCalculator {
 public:
     const int64_t fee;
-    ConstantFeeCalculator(int64_t fee) : fee(fee) {}
+    explicit constexpr ConstantFeeCalculator(int64_t fee) noexcept : fee(fee) {}
 
-    virtual int64_t calculate(int64_t inputs, int64_t outputs, int64_t byteFee) const override { return fee; }
-    virtual int64_t calculateSingleInput(int64_t byteFee) const override { return 0; }
+    [[nodiscard]] int64_t calculate(int64_t inputs, int64_t outputs,
+                                    int64_t byteFee) const noexcept final {
+        return fee;
+    }
+    [[nodiscard]] int64_t calculateSingleInput(int64_t byteFee) const noexcept final { return 0; }
 };
 
 /// Default Bitcoin transaction fee calculator, non-segwit.
@@ -47,9 +60,10 @@ private:
 
 public:
     DefaultFeeCalculator(bool disableFilter = false)
-        :LinearFeeCalculator(148, 34, 10), disableDustFilter(disableFilter) {}
+        : LinearFeeCalculator(gDefaultBytesPerInput, gDefaultBytesPerOutput, gDefaultBytesBase)
+        , disableDustFilter(disableFilter) {}
     
-    virtual int64_t calculateSingleInput(int64_t byteFee) const override {
+    [[nodiscard]] int64_t calculateSingleInput(int64_t byteFee) const noexcept override {
         if (disableDustFilter) { 
             return 0; 
         }
@@ -66,7 +80,7 @@ public:
     SegwitFeeCalculator(bool disableFilter = false)
         :LinearFeeCalculator(101.25, 31, 10), disableDustFilter(disableFilter) {}
 
-    virtual int64_t calculateSingleInput(int64_t byteFee) const override {
+    [[nodiscard]] int64_t calculateSingleInput(int64_t byteFee) const noexcept override {
         if (disableDustFilter) { 
             return 0; 
         }

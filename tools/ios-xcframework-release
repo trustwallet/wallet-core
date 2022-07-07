@@ -16,12 +16,18 @@ pushd ${base_dir}/../swift/build
 
 # archive xcframeworks
 core_zip_filename="WalletCore.xcframework.zip"
+core_dsyms_filename="WalletCore.xcframework.dSYM.zip"
 protobuf_zip_filename="SwiftProtobuf.xcframework.zip"
+protobuf_dsyms_filename="SwiftProtobuf.xcframework.dSYM.zip"
 
-rm -rf ${core_zip_filename} ${protobuf_zip_filename}
+rm -rf ${core_zip_filename} ${core_dsyms_filename} ${protobuf_zip_filename} ${protobuf_dsyms_filename}
+
+zip -r ${core_dsyms_filename} WalletCore.dSYMs
 
 zip -r ${core_zip_filename} WalletCore.xcframework
 core_hash=$(/usr/bin/shasum -a 256 ${core_zip_filename} | awk '{printf $1}')
+
+zip -r ${protobuf_dsyms_filename} SwiftProtobuf.dSYMs
 
 zip -r ${protobuf_zip_filename} SwiftProtobuf.xcframework
 protobuf_hash=$(/usr/bin/shasum -a 256 ${protobuf_zip_filename} | awk '{printf $1}')
@@ -68,5 +74,11 @@ cat $package_swift
 
 package_swift_download_url=$(wc_upload_asset ${release_url} ${package_swift})
 echo "${package_swift} url is: ${package_swift_download_url}"
+
+protobuf_dsyms_url=$(wc_upload_asset ${release_url} ${protobuf_dsyms_filename})
+echo "protobuf dsyms url is: ${protobuf_dsyms_url}"
+
+core_dsyms_url=$(wc_upload_asset ${release_url} ${core_dsyms_filename})
+echo "core dsyms url is: ${core_dsyms_url}"
 
 popd

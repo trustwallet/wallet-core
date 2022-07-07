@@ -23,7 +23,7 @@ TEST(TWBitcoinDiamondCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBitcoinDiamond));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBitcoinDiamond), 7);
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeBitcoinDiamond));
+    ASSERT_EQ(TWBlockchainBitcoinDiamond, TWCoinTypeBlockchain(TWCoinTypeBitcoinDiamond));
     ASSERT_EQ(0x5, TWCoinTypeP2shPrefix(TWCoinTypeBitcoinDiamond));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeBitcoinDiamond));
     assertStringsEqual(symbol, "BCD");

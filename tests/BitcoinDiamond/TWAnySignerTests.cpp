@@ -58,6 +58,7 @@ TEST(TWAnySignerBitcoinDiamond, Sign) {
         plan.set_fee(fee);
         plan.set_change(0);
         auto preBlockHash = parse_hex("4bfa9d92e1e99e72597e1e9162bdaaab624f1bb6faa83b2f46c6777caf8d6699");
+        std::reverse(preBlockHash.begin(), preBlockHash.end());
         plan.set_preblockhash(preBlockHash.data(), (int)preBlockHash.size());
     }
     
@@ -69,9 +70,5 @@ TEST(TWAnySignerBitcoinDiamond, Sign) {
         ASSERT_EQ(output.error(), Common::Proto::OK);
     }
     // Sign
-    ASSERT_EQ(hex(output.encoded()),
-        "0c000000"
-        "4bfa9d92e1e99e72597e1e9162bdaaab624f1bb6faa83b2f46c6777caf8d6699"
-        "01034f4667301711e8a69236a93476ed798f9c11aaae472da5b315191a0453461d000000006b483045022100da0146d41744f53d4af823d5901785014cbcad874941f72984d58a53f1bbeafa02207b4f77aa97bc3a08cf0ae5c6c36fe97d68496294286bbdaa9933e392fcb54fa0012102485a209514cc896f8ed736e205bc4c35bd5299ef3f9e84054475336b964c02a3ffffffff01cf440000000000001976a914b6adfbbf15c8f6fa53f1edb37054dce5c7c145c688ac00000000"
-    );
+    ASSERT_EQ(hex(output.encoded()), "0c00000099668daf7c77c6462f3ba8fab61b4f62abaabd62911e7e59729ee9e1929dfa4b01034f4667301711e8a69236a93476ed798f9c11aaae472da5b315191a0453461d000000006a473044022078e0d3a9e1eb270ab02c15f8fcf1d3bfc95a324839690b7de4f011a4266132ff02204679e8103c4d3f0bb5192a5f53cc273732fd0e8392ab3b00dc708fd24d0160b3012102485a209514cc896f8ed736e205bc4c35bd5299ef3f9e84054475336b964c02a3ffffffff01cf440000000000001976a914b6adfbbf15c8f6fa53f1edb37054dce5c7c145c688ac00000000");
 }

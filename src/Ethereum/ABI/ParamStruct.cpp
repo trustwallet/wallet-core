@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,6 +11,7 @@
 #include <Hash.h>
 #include <HexCoding.h>
 
+#include <algorithm>
 #include <nlohmann/json.hpp>
 
 #include <cassert>
@@ -71,8 +72,23 @@ Data ParamSetNamed::encodeHashes() const {
 
 std::string ParamSetNamed::getExtraTypes(std::vector<std::string>& ignoreList) const {
     std::string types;
-    for (auto& p: _params) {
-        auto pType = p->_param->getType();
+
+    auto params = _params;
+    /// referenced struct type should be sorted by name see: https://eips.ethereum.org/EIPS/eip-712#definition-of-encodetype
+    std::stable_sort(params.begin(), params.end(), [](auto& a, auto& b) {
+        auto lhs = a->getType();
+        auto rhs = b->getType();
+        if (ParamFactory::isPrimitive(lhs)) {
+            return true;
+        }
+        if (ParamFactory::isPrimitive(rhs)) {
+            return true;
+        }
+        return lhs.compare(rhs) < 0;
+    });
+
+    for (auto& p: params) {
+        auto pType = p->_param->getType();        
         if (std::find(ignoreList.begin(), ignoreList.end(), pType) == ignoreList.end()) {
             types += p->getExtraTypes(ignoreList);
             ignoreList.push_back(pType);
@@ -160,7 +176,8 @@ Data ParamStruct::hashStructJson(const std::string& messageJson) {
             message["message"].dump(),
             message["types"].dump());
         if (messageStruct) {
-            TW::append(hashes, messageStruct->hashStruct());
+            const auto messageHash = messageStruct->hashStruct();
+            TW::append(hashes, messageHash);
             return Hash::keccak256(hashes);
         }
     }
@@ -221,15 +238,27 @@ std::shared_ptr<ParamStruct> ParamStruct::makeStruct(const std::string& structTy
                     throw std::invalid_argument("Value must be array for type " + type);
                 }
                 std::vector<std::shared_ptr<ParamBase>> paramsArray;
-                for (const auto& e: value) {
-                    auto subStruct = makeStruct(arrayType, e.dump(), typesJson);
+                if (value.size() == 0) {
+                    // empty array
+                    auto subStruct = makeStruct(arrayType, "{}", typesJson);
                     if (!subStruct) {
-                        throw std::invalid_argument("Could not process array sub-struct " + arrayType + " " + e.dump());
+                        throw std::invalid_argument("Could not process array sub-struct " + arrayType + " " + "{}");
                     }
                     assert(subStruct);
-                    paramsArray.push_back(subStruct);
+                    auto tmp = std::make_shared<ParamArray>(paramsArray);
+                    tmp->setProto(subStruct);
+                    params.push_back(std::make_shared<ParamNamed>(name, tmp));
+                } else {
+                    for (const auto& e: value) {
+                        auto subStruct = makeStruct(arrayType, e.dump(), typesJson);
+                        if (!subStruct) {
+                            throw std::invalid_argument("Could not process array sub-struct " + arrayType + " " + e.dump());
+                        }
+                        assert(subStruct);
+                        paramsArray.push_back(subStruct);
+                    }
+                    params.push_back(std::make_shared<ParamNamed>(name, std::make_shared<ParamArray>(paramsArray)));
                 }
-                params.push_back(std::make_shared<ParamNamed>(name, std::make_shared<ParamArray>(paramsArray)));
             } else {
                 // try if sub struct
                 auto subTypeInfo = findType(type, types);

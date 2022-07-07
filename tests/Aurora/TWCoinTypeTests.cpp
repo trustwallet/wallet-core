@@ -26,9 +26,9 @@ TEST(TWAuroraCoinType, TWCoinType) {
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeAurora));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeAurora));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeAurora));
-    assertStringsEqual(symbol, "AURORAETH");
-    assertStringsEqual(txUrl, "https://explorer.mainnet.aurora.dev/tx/0x99deebdb70f8027037abb3d3d0f3c7523daee857d85e9056d2671593ff2f2f28");
-    assertStringsEqual(accUrl, "https://explorer.mainnet.aurora.dev/address/0x8707cdE20dd43E3dB1F74c28fcd509ef38B0bA51");
+    assertStringsEqual(symbol, "ETH");
+    assertStringsEqual(txUrl, "https://aurorascan.dev/tx/0x99deebdb70f8027037abb3d3d0f3c7523daee857d85e9056d2671593ff2f2f28");
+    assertStringsEqual(accUrl, "https://aurorascan.dev/address/0x8707cdE20dd43E3dB1F74c28fcd509ef38B0bA51");
     assertStringsEqual(id, "aurora");
     assertStringsEqual(name, "Aurora");
 }

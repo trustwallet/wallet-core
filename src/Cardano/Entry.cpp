@@ -13,6 +13,7 @@
 #include <cassert>
 
 using namespace TW::Cardano;
+using namespace TW;
 using namespace std;
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
@@ -23,6 +24,10 @@ bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW
 
 string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
     return AddressV3(publicKey).string();
+}
+
+Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
+    return AddressV3(address).data();
 }
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {

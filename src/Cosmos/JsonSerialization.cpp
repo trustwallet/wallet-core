@@ -47,9 +47,7 @@ static json broadcastJSON(json& j, Proto::BroadcastMode mode) {
 
 static json amountJSON(const Proto::Amount& amount) {
     return {
-        /// TODO:<@ackratos> trustwallet uses string type, we need to check if we should keep same with them.
         {"amount", amount.amount()},
-        // {"amount", std::to_string(amount.amount())},
         {"denom", amount.denom()}
     };
 }

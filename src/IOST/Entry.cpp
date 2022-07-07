@@ -28,6 +28,11 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byt
     return Account::encodePubKey(publicKey);
 }
 
+TW::Data Entry::addressToData(TWCoinType coin, const std::string& str) const {
+    auto addr = Account::address(str);
+    return {addr.begin(), addr.end()};
+}
+
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }

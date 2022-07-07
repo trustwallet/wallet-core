@@ -19,7 +19,7 @@ static const auto keyhashSize = Hash::ripemdSize;
 static const auto addressDataSize = keyhashSize + 2;
 
 bool Address::isValid(const std::string& string) noexcept {
-    const auto data = Base58::bitcoin.decodeCheck(string, Hash::blake256d);
+    const auto data = Base58::bitcoin.decodeCheck(string, Hash::HasherBlake256d);
     if (data.size() != addressDataSize) {
         return false;
     }
@@ -32,7 +32,7 @@ bool Address::isValid(const std::string& string) noexcept {
 }
 
 Address::Address(const std::string& string) {
-    const auto data = Base58::bitcoin.decodeCheck(string, Hash::blake256d);
+    const auto data = Base58::bitcoin.decodeCheck(string, Hash::HasherBlake256d);
     if (data.size() != addressDataSize) {
         throw std::invalid_argument("Invalid address string");
     }
@@ -51,5 +51,5 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    return Base58::bitcoin.encodeCheck(bytes, Hash::blake256d);
+    return Base58::bitcoin.encodeCheck(bytes, Hash::HasherBlake256d);
 }

@@ -21,6 +21,7 @@ options.java = true
 options.jni_h = true
 options.jni_c = true
 options.wasm_cpp = true
+options.ts_declaration = true
 
 OptionParser.new do |opts|
   opts.banner = 'Usage: codegen [options]'
@@ -43,8 +44,11 @@ OptionParser.new do |opts|
   opts.on('-c', '--jnic', "Generate JNI code. Default: #{options.jni_c}") do |v|
     options.jni_c = v
   end
-  opts.on('-w', '--wasm-cpp', "Generate cpp code for Wasm(Emscripten). Default: #{options.jni_c}") do |v|
+  opts.on('-w', '--wasm-cpp', "Generate cpp code for Wasm(Emscripten). Default: #{options.wasm_cpp}") do |v|
     options.wasm_cpp = v
+  end
+  opts.on('-t', '--typescript-declaration', "Generate typescript declaration file Default: #{options.ts_declaration}") do |v|
+    options.ts_declaration = v
   end
   opts.on_tail('-h', '--help', 'Show this message') do
     puts opts
@@ -80,4 +84,7 @@ end
 if options.wasm_cpp
   generator.render_wasm_h
   generator.render_wasm_cpp
+end
+if options.ts_declaration
+  generator.render_ts_declaration
 end

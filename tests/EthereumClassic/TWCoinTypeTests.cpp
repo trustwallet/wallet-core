@@ -21,6 +21,7 @@ TEST(TWEthereumClassicCoinType, TWCoinType) {
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeEthereumClassic, accId.get()));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEthereumClassic));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEthereumClassic));
+    const auto chainId = WRAPS(TWCoinTypeChainId(TWCoinTypeEthereumClassic));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEthereumClassic), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeEthereumClassic));
@@ -31,4 +32,5 @@ TEST(TWEthereumClassicCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://blockscout.com/etc/mainnet/address/0x9eab4b0fc468a7f5d46228bf5a76cb52370d068d");
     assertStringsEqual(id, "classic");
     assertStringsEqual(name, "Ethereum Classic");
+    assertStringsEqual(chainId, "61");
 }

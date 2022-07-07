@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -55,38 +55,16 @@ bool Bech32Address::decode(const std::string& addr, Bech32Address& obj_out, cons
     return true;
 }
 
-Bech32Address::Bech32Address(const std::string& hrp, HasherType hasher, const PublicKey& publicKey)
+Bech32Address::Bech32Address(const std::string& hrp, Hash::Hasher hasher, const PublicKey& publicKey)
 : hrp(hrp) {
-    switch (hasher) {
-        case HASHER_SHA2_RIPEMD:
-            {
-                auto key = Data(20);
-                ecdsa_get_pubkeyhash(publicKey.compressed().bytes.data(), HASHER_SHA2_RIPEMD, key.data());
-                setKey(key);
-            }
-            break;
-        
-        case HASHER_SHA2:
-            {
-                const auto hash = Hash::sha256(publicKey.bytes);
-                auto key = Data(20);
-                std::copy(hash.end() - 20, hash.end(), key.begin());
-                setKey(key);
-            }
-            break;
-
-        case HASHER_SHA3K:
-            {
-                const auto hash = publicKey.hash({}, static_cast<Hash::HasherSimpleType>(Hash::keccak256), true);
-                auto key = Data(20);
-                std::copy(hash.end() - 20, hash.end(), key.begin());
-                setKey(key);
-            }
-            break;
-
-        default:
-            throw std::invalid_argument("Invalid HasherType in Bech32Address");
+    bool skipTypeByte = false;
+    // Extended-key / keccak-hash skips first byte (Evmos)
+    if (publicKey.type == TWPublicKeyTypeSECP256k1Extended || hasher == Hash::HasherKeccak256) {
+        skipTypeByte = true;
     }
+    const auto hash = publicKey.hash({}, hasher, skipTypeByte);
+    auto key = subData(hash, hash.size() - 20, 20);
+    setKey(key);
 }
 
 std::string Bech32Address::string() const {

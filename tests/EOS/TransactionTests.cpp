@@ -105,3 +105,10 @@ TEST(EOSTransaction, Serialization) {
         );
     }
 }
+
+TEST(EOSTransaction, formatDate) {
+    EXPECT_EQ(Transaction::formatDate(1554209148), "2019-04-02T12:45:48");
+    EXPECT_EQ(Transaction::formatDate(1654160000), "2022-06-02T08:53:20");
+    EXPECT_EQ(Transaction::formatDate(0), "1970-01-01T00:00:00");
+    EXPECT_EQ(Transaction::formatDate(std::numeric_limits<int32_t>::max()), "2038-01-19T03:14:07");
+}

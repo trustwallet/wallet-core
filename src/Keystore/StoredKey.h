@@ -103,6 +103,12 @@ public:
     /// Remove the account(s) for a specific coin
     void removeAccount(TWCoinType coin);
 
+    /// Remove the account for a specific coin with the given derivation.
+    void removeAccount(TWCoinType coin, TWDerivation derivation);
+
+    /// Remove the account for a specific coin with the given derivation path.
+    void removeAccount(TWCoinType coin, DerivationPath derivationPath);
+
     /// Returns the private key for a specific coin, using default derivation, creating an account if necessary.
     ///
     /// @throws std::invalid_argument if this key is of a type other than

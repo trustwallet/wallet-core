@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,9 +12,32 @@
 
 namespace TW::Hash {
 
+/// Enum selector for the supported hash functions
+enum Hasher {
+    HasherSha1 = 0, // SHA1
+    HasherSha256, // SHA256
+    HasherSha512, // SHA512
+    HasherSha512_256, // SHA512/256
+    HasherKeccak256, // Keccak SHA256
+    HasherKeccak512, // Keccak SHA512
+    HasherSha3_256, // version 3 SHA256
+    HasherSha3_512, // version 3 SHA512
+    HasherRipemd, // RIPEMD160
+    HasherBlake256, // Blake256
+    HasherGroestl512, // Groestl 512
+    HasherSha256d, // SHA256 hash of the SHA256 hash
+    HasherSha256ripemd, // ripemd hash of the SHA256 hash
+    HasherSha3_256ripemd, // ripemd hash of the SHA256 hash
+    HasherBlake256d, // Blake256 hash of the Blake256 hash
+    HasherBlake256ripemd, // ripemd hash of the Blake256 hash
+    HasherGroestl512d, // Groestl512 hash of the Groestl512 hash
+};
+
 /// Hashing function.
 typedef TW::Data (*HasherSimpleType)(const TW::byte*, size_t);
-using Hasher = std::function<Data(const byte*, size_t)>;
+
+/// Hash function (pointer type) from enum
+TW::Hash::HasherSimpleType functionPointerFromEnum(TW::Hash::Hasher hasher);
 
 // Digest size constants, duplicating constants from underlying lib 
 /// Number of bytes in a SHA1 hash.
@@ -67,13 +90,20 @@ Data blake2b(const byte* data, size_t dataSize, size_t hsshSize, const Data& per
 /// Computes the Groestl 512 hash.
 Data groestl512(const byte* data, size_t size);
 
-// Templated versions for any type with data() and size()
+/// Computes requested hash for data (hasher enum, bytes)
+inline Data hash(Hasher hasher, const byte* data, size_t dataSize) {
+    const auto func = functionPointerFromEnum(hasher);
+    return func(data, dataSize);
+}
 
-/// Computes requested hash for data.
+/// Computes requested hash for data (hasher enum)
 template <typename T>
 Data hash(Hasher hasher, const T& data) {
-    return hasher(reinterpret_cast<const byte*>(data.data()), data.size());
+    const auto func = functionPointerFromEnum(hasher);
+    return func(reinterpret_cast<const byte*>(data.data()), data.size());
 }
+
+// Templated versions for any type with data() and size()
 
 /// Computes the SHA1 hash.
 template <typename T>

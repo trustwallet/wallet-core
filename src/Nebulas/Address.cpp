@@ -52,7 +52,7 @@ Address::Address(const PublicKey &publicKey) {
     }
     const auto data = publicKey.hash(
         {Address::AddressPrefix, Address::NormalType},
-        static_cast<Hash::HasherSimpleType>(Hash::sha3_256ripemd), false);
+        Hash::HasherSha3_256ripemd, false);
         
     std::copy(data.begin(), data.end(), bytes.begin());
     auto checksum = Hash::sha3_256(data);

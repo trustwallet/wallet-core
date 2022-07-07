@@ -84,4 +84,35 @@ class TestPolkadotSigner {
         val expected = "0x6103840036092fac541e0e5feda19e537c679b487566d7101141c203ac8322c27e5f076a00a8b1f859d788f11a958e98b731358f89cf3fdd41a667ea992522e8d4f46915f4c03a1896f2ac54bdc5f16e2ce8a2a3bf233d02aad8192332afd2113ed6688e0d0010001a02080700007120f76076bcb0efdf94c7219e116899d0163ea61cb428183d71324eb33b2bce0700e40b540201070508002c2a55b5ffdca266bd0207df97565b03255f70783ca1a349be5ed9f44589c36000d44533a4d21fd9d6f5d57c8cd05c61a6f23f9131cec8ae386b6b437db399ec3d"
         assertEquals(encoded, expected)
     }
+
+    @Test
+    fun PolkadotTransactionSignChillAndUnbond() {
+        val call = Polkadot.Staking.ChillAndUnbond.newBuilder().apply {
+            value = "0x1766444D00".toHexBytesInByteString() // 10.05 DOT
+        }
+
+        val input = Polkadot.SigningInput.newBuilder().apply {
+            genesisHash = genesisHashStr
+            blockHash = "0x35ba668bb19453e8da6334cadcef2a27c8d4141bfc8b49e78e853c3d73e1ecd0".toHexBytesInByteString()
+            nonce = 6
+            specVersion = 9200
+            network = Polkadot.Network.POLKADOT
+            transactionVersion = 12
+            privateKey = "298fcced2b497ed48367261d8340f647b3fca2d9415d57c2e3c5ef90482a2266".toHexBytesInByteString()
+            era = Polkadot.Era.newBuilder().apply {
+                blockNumber = 10541373
+                period = 64
+            }.build()
+            stakingCall = Polkadot.Staking.newBuilder().apply {
+                chillAndUnbond = call.build()
+            }.build()
+        }
+
+        val output = AnySigner.sign(input.build(), POLKADOT, SigningOutput.parser())
+        val encoded = Numeric.toHexString(output.encoded.toByteArray())
+
+        // https://polkadot.subscan.io/extrinsic/10541383-2
+        val expected = "0xd10184008361bd08ddca5fda28b5e2aa84dc2621de566e23e089e555a42194c3eaf2da7900c891ba102db672e378945d74cf7f399226a76b43cab502436971599255451597fc2599902e4b62c7ce85ecc3f653c693fef3232be620984b5bb5bcecbbd7b209d50318001a02080706070207004d446617"
+        assertEquals(encoded, expected)
+    }
 }
