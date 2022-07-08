@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -14,13 +14,13 @@
 
 
 TEST(TWMeterCoinType, TWCoinType) {
-    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeMeter));
-    auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x8ea268d5dbb40217c763b800a75fc063cf28b56f40f2bc69dc043f5c4bbdc144"));
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeMeter, txId.get()));
-    auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0xe5a273954d24eddf9ae9ea4cef2347d584cfa3dd"));
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeMeter, accId.get()));
-    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMeter));
-    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeMeter));
+    const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeMeter));
+    const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("0x8ea268d5dbb40217c763b800a75fc063cf28b56f40f2bc69dc043f5c4bbdc144"));
+    const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeMeter, txId.get()));
+    const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0xe5a273954d24eddf9ae9ea4cef2347d584cfa3dd"));
+    const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeMeter, accId.get()));
+    const auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMeter));
+    const auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeMeter));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMeter), 18);
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeMeter));
