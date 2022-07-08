@@ -2017,7 +2017,7 @@
     "chainId": "43114",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://cchain.explorer.avax.network",
+      "url": "https://snowtrace.io",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x9243890b844219accefd8798271052f5a056453ec18984a56e81c92921330d54",
