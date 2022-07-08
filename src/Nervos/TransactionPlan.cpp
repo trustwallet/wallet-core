@@ -194,7 +194,7 @@ void TransactionPlan::selectRequiredCapacity(const Address& changeAddress) {
         }
         selectedCells.emplace_back(cell);
         selectedCapacity += cell.capacity;
-        fee += sizeOfSingleInputAndWitness() * m_byteFee;
+        fee += sizeOfSingleInputAndWitness(cell.inputType, cell.outputType) * m_byteFee;
         if (selectedCapacity >= requiredCapacity + fee) {
             gotEnough = true;
             uint64_t remainingCapacity = selectedCapacity - requiredCapacity - fee;
@@ -269,10 +269,10 @@ uint64_t TransactionPlan::sizeWithoutInputs() {
     return size;
 }
 
-uint64_t TransactionPlan::sizeOfSingleInputAndWitness() {
+uint64_t TransactionPlan::sizeOfSingleInputAndWitness(const Data& inputType,
+                                                      const Data& outputType) {
     uint64_t size = Constants::gSingleInputAndWitnessBaseSize;
-    Witness witness;
-    witness.lock = Data(Constants::gBlankWitnessBytes, 0);
+    auto witness = Witness(Data(Constants::gBlankWitnessBytes, 0), inputType, outputType);
     Data witnessData;
     witness.encode(witnessData);
     size += Constants::gUint32Size + witnessData.size() + Constants::gUint32Size;
@@ -290,7 +290,12 @@ uint64_t TransactionPlan::sizeOfSingleOutput(const Address& address) {
 }
 
 uint64_t TransactionPlan::calculateFee() {
-    uint64_t size = sizeWithoutInputs() + selectedCells.size() * sizeOfSingleInputAndWitness();
+    uint64_t size = sizeWithoutInputs();
+    size += std::accumulate(selectedCells.begin(), selectedCells.end(), uint64_t(0),
+                            [&](const uint64_t total, const Cell& cell) {
+                                return total +
+                                       sizeOfSingleInputAndWitness(cell.inputType, cell.outputType);
+                            });
     return size * m_byteFee;
 }
 

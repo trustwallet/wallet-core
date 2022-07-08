@@ -791,3 +791,134 @@ TEST(NervosSigner, Sign_DAO_Withdraw_Phase1) {
         "d861c39db2aad04a36f9d174b6f167a9c98b85d2bccf537a163c44459d23467dfa86408f48dd5f01");
     ASSERT_EQ(tx.witnesses[1].size(), 0);
 }
+
+Proto::SigningInput getInput7() {
+    auto input = Proto::SigningInput();
+    auto& operation = *input.mutable_dao_withdraw_phase2();
+
+    auto& depositCell = *operation.mutable_deposit_cell();
+    depositCell.set_capacity(10200000000);
+    *depositCell.mutable_out_point() =
+        OutPoint(parse_hex("583d77a037e86155b7ab79ac59fc9bb01640e2427e859467ea10c4a6f222b683"), 0)
+            .proto();
+    *depositCell.mutable_lock() =
+        Script(Address("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqwyk5x9erg8furras9"
+                       "80hksatlslfaktks7epf25"))
+            .proto();
+    *depositCell.mutable_type() =
+        Script(parse_hex("82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e"),
+               HashType::Type1, Data())
+            .proto();
+    auto depositCellData = parse_hex("0000000000000000");
+    *depositCell.mutable_data() = std::string(depositCellData.begin(), depositCellData.end());
+    depositCell.set_block_number(7575466);
+    auto blockHashData1 =
+        parse_hex("3dfdb4b702a355a5593315016f8af0537d5a2f3292811b79420ded78a092be6a");
+    *depositCell.mutable_block_hash() = std::string(blockHashData1.begin(), blockHashData1.end());
+
+    auto& withdrawingCell = *operation.mutable_withdrawing_cell();
+    withdrawingCell.set_capacity(10200000000);
+    *withdrawingCell.mutable_out_point() =
+        OutPoint(parse_hex("b4e62bc5f5108275b0ef3da8f8cc3fb0172843c4a2a9cdfef3b04d6c65e9acca"), 0)
+            .proto();
+    *withdrawingCell.mutable_lock() =
+        Script(Address("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqwyk5x9erg8furras9"
+                       "80hksatlslfaktks7epf25"))
+            .proto();
+    *withdrawingCell.mutable_type() =
+        Script(parse_hex("82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e"),
+               HashType::Type1, Data())
+            .proto();
+    auto withdrawingCellData = parse_hex("aa97730000000000");
+    *withdrawingCell.mutable_data() =
+        std::string(withdrawingCellData.begin(), withdrawingCellData.end());
+    withdrawingCell.set_block_number(7575534);
+    auto blockHashData2 =
+        parse_hex("b070d5364afd47c23fe267077d454009d6f665f200a915e68af1616e46f4aa52");
+    *withdrawingCell.mutable_block_hash() =
+        std::string(blockHashData2.begin(), blockHashData2.end());
+    withdrawingCell.set_since(0x20037c0000001731);
+
+    operation.set_amount(10200000000);
+    input.set_byte_fee(1);
+
+    auto& cell1 = *input.add_cell();
+    cell1.set_capacity(10200000000);
+    *cell1.mutable_out_point() =
+        OutPoint(parse_hex("b4e62bc5f5108275b0ef3da8f8cc3fb0172843c4a2a9cdfef3b04d6c65e9acca"), 0)
+            .proto();
+    *cell1.mutable_lock() = Script(Address("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50x"
+                                           "wsqwyk5x9erg8furras980hksatlslfaktks7epf25"))
+                                .proto();
+    *cell1.mutable_type() =
+        Script(parse_hex("82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e"),
+               HashType::Type1, Data())
+            .proto();
+    auto cell1Data = parse_hex("aa97730000000000");
+    *cell1.mutable_data() = std::string(cell1Data.begin(), cell1Data.end());
+
+    auto privateKey1 =
+        parse_hex("8a2a726c44e46d1efaa0f9c2a8efed932f0e96d6050b914fde762ee285e61feb");
+    input.add_private_key(std::string(privateKey1.begin(), privateKey1.end()));
+
+    return input;
+}
+
+TEST(NervosSigner, Sign_DAO_Withdraw_Phase2) {
+    auto input = getInput7();
+
+    TransactionPlan txPlan;
+    txPlan.plan(input);
+    ASSERT_EQ(txPlan.error, Common::Proto::SigningError::OK);
+    Transaction tx;
+    tx.build(txPlan);
+    auto error = tx.sign(getPrivateKeys(input));
+
+    ASSERT_EQ(error, Common::Proto::SigningError::OK);
+
+    ASSERT_EQ(tx.hash(),
+              parse_hex("4fde13c93fc5d24ab7f660070aaa0b1725809d585f6258605e595cdbd856ea1c"));
+
+    ASSERT_EQ(tx.cellDeps.size(), 2);
+
+    ASSERT_EQ(tx.cellDeps[0].outPoint.txHash,
+              parse_hex("71a7ba8fc96349fea0ed3a5c47992e3b4084b031a42264a018e0072e8172e46c"));
+    ASSERT_EQ(tx.cellDeps[0].outPoint.index, 0);
+    ASSERT_EQ(tx.cellDeps[0].depType, DepType::DepGroup);
+
+    ASSERT_EQ(tx.cellDeps[1].outPoint.txHash,
+              parse_hex("e2fb199810d49a4d8beec56718ba2593b665db9d52299a0f9e6e75416d73ff5c"));
+    ASSERT_EQ(tx.cellDeps[1].outPoint.index, 2);
+    ASSERT_EQ(tx.cellDeps[1].depType, DepType::Code);
+
+    ASSERT_EQ(tx.headerDeps.size(), 2);
+    ASSERT_EQ(tx.headerDeps[0],
+              parse_hex("3dfdb4b702a355a5593315016f8af0537d5a2f3292811b79420ded78a092be6a"));
+    ASSERT_EQ(tx.headerDeps[1],
+              parse_hex("b070d5364afd47c23fe267077d454009d6f665f200a915e68af1616e46f4aa52"));
+
+    ASSERT_EQ(tx.inputs.size(), 1);
+
+    ASSERT_EQ(tx.inputs[0].previousOutput.txHash,
+              parse_hex("b4e62bc5f5108275b0ef3da8f8cc3fb0172843c4a2a9cdfef3b04d6c65e9acca"));
+    ASSERT_EQ(tx.inputs[0].previousOutput.index, 0);
+    ASSERT_EQ(tx.inputs[0].since, 0x20037c0000001731);
+
+    ASSERT_EQ(tx.outputs.size(), 1);
+    ASSERT_EQ(tx.outputsData.size(), 1);
+
+    ASSERT_EQ(tx.outputs[0].capacity, 10199999532);
+    ASSERT_EQ(tx.outputs[0].lock.codeHash,
+              parse_hex("9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"));
+    ASSERT_EQ(tx.outputs[0].lock.hashType, HashType::Type1);
+    ASSERT_EQ(tx.outputs[0].lock.args, parse_hex("c4b50c5c8d074f063ec0a77ded0eaff0fa7b65da"));
+    ASSERT_EQ(tx.outputs[0].type.codeHash.size(), 0);
+    ASSERT_EQ(tx.outputs[0].type.args.size(), 0);
+    ASSERT_EQ(tx.outputsData[0].size(), 0);
+
+    ASSERT_EQ(tx.witnesses.size(), 1);
+    ASSERT_EQ(hex(tx.witnesses[0]),
+              "6100000010000000550000006100000041000000743f86c5557f4e2d3327f4d17e7bad27209b29c1e9cd"
+              "bab42ab03f7094af917b4b203ddd7f2e87102e09ae579f2fe7f6adb7900b7386b58c1183ba0011b7c421"
+              "00080000000000000000000000");
+}

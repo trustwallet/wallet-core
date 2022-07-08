@@ -111,7 +111,7 @@ private:
     void selectSudtTokens(const bool useMaxAmount, const uint256_t amount,
                           const Address& changeAddress);
     uint64_t sizeWithoutInputs();
-    uint64_t sizeOfSingleInputAndWitness();
+    uint64_t sizeOfSingleInputAndWitness(const Data& inputType, const Data& outputType);
     uint64_t sizeOfSingleOutput(const Address& address);
     uint64_t calculateFee();
     void sortAccordingToCapacity();
