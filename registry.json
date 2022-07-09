@@ -2598,5 +2598,34 @@
       "rpc": "https://public-node-api.klaytnapi.com/v1/cypress",
       "documentation": "https://docs.klaytn.foundation"
     }
+  },
+  {
+    "id": "meter",
+    "name": "Meter",
+    "coinId": 18000,
+    "chainId": "82",
+    "symbol": "MTR",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://scan.meter.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x8ea268d5dbb40217c763b800a75fc063cf28b56f40f2bc69dc043f5c4bbdc144",
+      "sampleAccount": "0xe5a273954d24eddf9ae9ea4cef2347d584cfa3dd"
+    },
+    "info": {
+      "url": "https://meter.io/",
+      "source": "https://github.com/meterio/meter-pov",
+      "rpc": "https://rpc.meter.io",
+      "documentation": "https://docs.meter.io/"
+    }
   }
 ]
