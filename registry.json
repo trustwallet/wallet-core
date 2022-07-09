@@ -2044,7 +2044,7 @@
     "chainId": "43114",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://cchain.explorer.avax.network",
+      "url": "https://snowtrace.io",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x9243890b844219accefd8798271052f5a056453ec18984a56e81c92921330d54",
@@ -2302,6 +2302,34 @@
       "client": "https://github.com/crypto-org-chain/cronos",
       "clientPublic": "https://evm-cronos.crypto.org",
       "clientDocs": "https://eth.wiki/json-rpc/API"
+    }
+  },
+  {
+    "id": "kavaevm",
+    "name": "KavaEvm",
+    "coinId": 10002222,
+    "symbol": "KAVA",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "2222",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.kava.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://www.kava.io/",
+      "client": "https://github.com/Kava-Labs/kava",
+      "documentation": "https://docs.kava.io/docs/ethereum/overview/",
+      "rpc": "https://evm.kava.io"
     }
   },
   {
