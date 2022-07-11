@@ -34,23 +34,23 @@ public:
 
     /// Selects UTXOs for max amount; select all except those which would reduce output (dust).
     /// Return indices. One output and no change is assumed.
-    std::vector<TypeWithAmount> selectMaxAmount(int64_t byteFee);
+    std::vector<TypeWithAmount> selectMaxAmount(int64_t byteFee) noexcept;
 
     /// Construct, using provided feeCalculator (see getFeeCalculator()).
     explicit InputSelector(const std::vector<TypeWithAmount>& inputs,
-                           const FeeCalculator& feeCalculator)
+                           const FeeCalculator& feeCalculator) noexcept
         : inputs(inputs), feeCalculator(feeCalculator) {}
-    InputSelector(const std::vector<TypeWithAmount>& inputs)
+    explicit InputSelector(const std::vector<TypeWithAmount>& inputs) noexcept
         : InputSelector(inputs, getFeeCalculator(TWCoinTypeBitcoin)) {}
 
     /// Sum of input amounts
-    static uint64_t sum(const std::vector<TypeWithAmount>& amounts);
+    static uint64_t sum(const std::vector<TypeWithAmount>& amounts) noexcept;
     /// Filters out utxos that are dust
-    std::vector<TypeWithAmount> filterOutDust(const std::vector<TypeWithAmount>& inputs,
-                                              int64_t byteFee);
-    /// Filters out inputs below (or equal) a certain threshold limit
-    std::vector<TypeWithAmount> filterThreshold(const std::vector<TypeWithAmount>& inputs,
-                                                uint64_t minimumAmount);
+    inline std::vector<TypeWithAmount> filterOutDust(const std::vector<TypeWithAmount>& inputsIn,
+                                                     int64_t byteFee) noexcept;
+    /// Filters out inputsIn below (or equal) a certain threshold limit
+    inline std::vector<TypeWithAmount> filterThreshold(const std::vector<TypeWithAmount>& inputsIn,
+                                                       uint64_t minimumAmount) noexcept;
 
 private:
     const std::vector<TypeWithAmount> inputs;

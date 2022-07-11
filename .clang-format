@@ -3,7 +3,7 @@ AllowShortFunctionsOnASingleLine: Inline
 AlwaysBreakTemplateDeclarations: Yes
 BasedOnStyle: LLVM
 BreakConstructorInitializers: BeforeComma
-ColumnLimit: 100
+ColumnLimit: 0
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 IndentWidth: 4
 IndentAccessModifiers: false

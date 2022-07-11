@@ -12,19 +12,6 @@
 using namespace TW::VeChain;
 using namespace std;
 
-bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
-    return Ethereum::Address::isValid(address);
-}
-
-string Entry::normalizeAddress(TWCoinType coin, const string& address) const {
-    // normalized with EIP55 checksum
-    return Ethereum::Address(address).string();
-}
-
-string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
-    return Ethereum::Address(publicKey).string();
-}
-
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }

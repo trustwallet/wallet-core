@@ -10,6 +10,7 @@
 #include "Signer.h"
 
 using namespace TW::Polkadot;
+using namespace TW;
 using namespace std;
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
@@ -20,6 +21,11 @@ bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW
 
 string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
     return Address(publicKey).string();
+}
+
+Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
+    const auto addr = Address(address);
+    return {addr.bytes.begin() + 1, addr.bytes.end()};
 }
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {

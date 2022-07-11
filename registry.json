@@ -1354,7 +1354,7 @@
     "chainId": "820",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://explorer2.callisto.network",
+      "url": "https://explorer.callisto.network",
       "txPath": "/tx/",
       "accountPath": "/addr/"
     },
@@ -2046,7 +2046,7 @@
     "chainId": "43114",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://cchain.explorer.avax.network",
+      "url": "https://snowtrace.io",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x9243890b844219accefd8798271052f5a056453ec18984a56e81c92921330d54",
@@ -2304,6 +2304,34 @@
       "client": "https://github.com/crypto-org-chain/cronos",
       "clientPublic": "https://evm-cronos.crypto.org",
       "clientDocs": "https://eth.wiki/json-rpc/API"
+    }
+  },
+  {
+    "id": "kavaevm",
+    "name": "KavaEvm",
+    "coinId": 10002222,
+    "symbol": "KAVA",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "2222",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.kava.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://www.kava.io/",
+      "client": "https://github.com/Kava-Labs/kava",
+      "documentation": "https://docs.kava.io/docs/ethereum/overview/",
+      "rpc": "https://evm.kava.io"
     }
   },
   {
@@ -2570,6 +2598,63 @@
       "url": "https://moonbeam.network",
       "rpc": "https://rpc.api.moonbeam.network",
       "documentation": "https://docs.moonbeam.network"
+    }
+  },
+  {
+    "id": "klaytn",
+    "name": "Klaytn",
+    "coinId": 10008217,
+    "symbol": "KLAY",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "8217",
+    "explorer": {
+      "url": "https://scope.klaytn.com",
+      "txPath": "/tx/",
+      "accountPath": "/account/",
+      "sampleTx": "0x93ea92687845fe7bb6cacd69c76a16a2a3c2bbb85a8a93ff0e032d0098d583d7",
+      "sampleAccount": "0x2ad9656bf5b82caf10847b431012e28e301e83ba"
+    },
+    "info": {
+      "url": "https://klaytn.foundation",
+      "rpc": "https://public-node-api.klaytnapi.com/v1/cypress",
+      "documentation": "https://docs.klaytn.foundation"
+    }
+  },
+  {
+    "id": "meter",
+    "name": "Meter",
+    "coinId": 18000,
+    "chainId": "82",
+    "symbol": "MTR",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://scan.meter.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x8ea268d5dbb40217c763b800a75fc063cf28b56f40f2bc69dc043f5c4bbdc144",
+      "sampleAccount": "0xe5a273954d24eddf9ae9ea4cef2347d584cfa3dd"
+    },
+    "info": {
+      "url": "https://meter.io/",
+      "source": "https://github.com/meterio/meter-pov",
+      "rpc": "https://rpc.meter.io",
+      "documentation": "https://docs.meter.io/"
     }
   }
 ]

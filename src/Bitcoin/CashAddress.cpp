@@ -15,6 +15,7 @@
 #include <utility>
 
 using namespace TW::Bitcoin;
+using namespace TW;
 
 /// From https://github.com/bitcoincashorg/bitcoincash.org/blob/master/spec/cashaddr.md
 namespace {
@@ -102,4 +103,11 @@ Address CashAddress::legacyAddress() const noexcept {
     assert(outlen == 21 && "Invalid length");
     details::determinePrefix(result);
     return Address(result);
+}
+
+Data CashAddress::getData() const {
+    Data data(Address::size);
+    size_t outlen = 0;
+    cash_data_to_addr(data.data(), &outlen, bytes.data(), CashAddress::size);
+    return data;
 }
