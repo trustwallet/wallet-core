@@ -60,12 +60,12 @@ class TerraTests: XCTestCase {
         let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .terraV2)
 
         let expectedJSON: String =
-"""
-{
-    "tx_bytes": "CpEBCo4BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm4KLHRlcnJhMWhzazZqcnl5cWpmaHA1ZGhjNTV0YzlqdGNreWd4MGVwMzdoZGQyEix0ZXJyYTFqbGdhcXk5bnZuMmhmNXQyc3JhOXljejhzNzd3bmY5bDBrbWdjcBoQCgV1bHVuYRIHMTAwMDAwMBJoClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiECVyhuw/N9M1V7u6oACyd0SskCOqmWfK51oYHR/5H6ncUSBAoCCAEYARIUCg4KBXVsdW5hEgUzMDAwMBDAmgwaQPh0C3rjzdixIUiyPx3FlWAxzbKILNAcSRVeQnaTl1vsI5DEfYa2oYlUBLqyilcMCcU/iaJLhex30No2ak0Zn1Q=",
-    "mode": "BROADCAST_MODE_BLOCK"
-}
-"""
+        """
+        {
+            "tx_bytes": "CpEBCo4BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm4KLHRlcnJhMWhzazZqcnl5cWpmaHA1ZGhjNTV0YzlqdGNreWd4MGVwMzdoZGQyEix0ZXJyYTFqbGdhcXk5bnZuMmhmNXQyc3JhOXljejhzNzd3bmY5bDBrbWdjcBoQCgV1bHVuYRIHMTAwMDAwMBJoClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiECVyhuw/N9M1V7u6oACyd0SskCOqmWfK51oYHR/5H6ncUSBAoCCAEYARIUCg4KBXVsdW5hEgUzMDAwMBDAmgwaQPh0C3rjzdixIUiyPx3FlWAxzbKILNAcSRVeQnaTl1vsI5DEfYa2oYlUBLqyilcMCcU/iaJLhex30No2ak0Zn1Q=",
+            "mode": "BROADCAST_MODE_BLOCK"
+        }
+        """
         XCTAssertJSONEqual(expectedJSON, output.serialized)
         XCTAssertEqual(output.error, "")
     }
@@ -108,13 +108,110 @@ class TerraTests: XCTestCase {
         let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .terraV2)
 
         XCTAssertJSONEqual(output.serialized,
-"""
-{
-    "tx_bytes": "CuUBCuIBCiQvY29zbXdhc20ud2FzbS52MS5Nc2dFeGVjdXRlQ29udHJhY3QSuQEKLHRlcnJhMTh3dWtwODRkcTIyN3d1NG1naDBqbTZuOW5sbmo2cnM4MnBwOXdmEix0ZXJyYTE0ejU2bDBmcDJsc2Y4Nnp5M2h0eTJ6NDdlemtobnRodHI5eXE3NhpbeyJ0cmFuc2ZlciI6eyJhbW91bnQiOiIyNTAwMDAiLCJyZWNpcGllbnQiOiJ0ZXJyYTFqbGdhcXk5bnZuMmhmNXQyc3JhOXljejhzNzd3bmY5bDBrbWdjcCJ9fRJnClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiEDcGY6x7D5iSlv61zln7pKUNfpThziVt/yJRRZyizZrAASBAoCCAEYAxITCg0KBXVsdW5hEgQzMDAwEMCaDBpAiBGbQaj+jsXE6/FssD3fC77QOxpli9GqsPea+KoNyMIEgVj89Hii+oU1bAEQS4qV0SaE2V6RNy24uCcFTIRbcQ==",
-    "mode": "BROADCAST_MODE_BLOCK"
-}
-"""
+        """
+        {
+            "tx_bytes": "CuUBCuIBCiQvY29zbXdhc20ud2FzbS52MS5Nc2dFeGVjdXRlQ29udHJhY3QSuQEKLHRlcnJhMTh3dWtwODRkcTIyN3d1NG1naDBqbTZuOW5sbmo2cnM4MnBwOXdmEix0ZXJyYTE0ejU2bDBmcDJsc2Y4Nnp5M2h0eTJ6NDdlemtobnRodHI5eXE3NhpbeyJ0cmFuc2ZlciI6eyJhbW91bnQiOiIyNTAwMDAiLCJyZWNpcGllbnQiOiJ0ZXJyYTFqbGdhcXk5bnZuMmhmNXQyc3JhOXljejhzNzd3bmY5bDBrbWdjcCJ9fRJnClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiEDcGY6x7D5iSlv61zln7pKUNfpThziVt/yJRRZyizZrAASBAoCCAEYAxITCg0KBXVsdW5hEgQzMDAwEMCaDBpAiBGbQaj+jsXE6/FssD3fC77QOxpli9GqsPea+KoNyMIEgVj89Hii+oU1bAEQS4qV0SaE2V6RNy24uCcFTIRbcQ==",
+            "mode": "BROADCAST_MODE_BLOCK"
+        }
+        """
         )
         XCTAssertEqual(output.error, "")
     }
+
+    func testSignStakeTx() throws {
+
+        let stakeMessage = CosmosMessage.Delegate.with {
+            $0.delegatorAddress = "terra1ncfyexz3nrrdru37ahqpp4wen48v7p5nany478"
+            $0.validatorAddress = "terravaloper1ekq8xuypdxtf3nfmffmydnhny59pjuy0p8wpn7"
+            $0.amount = CosmosAmount.with {
+                $0.amount = "1000000" // 5 Luna
+                $0.denom = "uluna"
+            }
+        }
+
+        let message = CosmosMessage.with {
+            $0.stakeMessage = stakeMessage
+        }
+
+        let fee = CosmosFee.with {
+            $0.gas = 254682
+            $0.amounts = [CosmosAmount.with {
+                $0.amount = "38203"
+                $0.denom = "uluna"
+            }]
+        }
+
+        let input = CosmosSigningInput.with {
+            $0.signingMode = .protobuf;
+            $0.accountNumber = 127185
+            $0.chainID = "phoenix-1"
+            $0.sequence = 6
+            $0.messages = [message]
+            $0.fee = fee
+            $0.privateKey = privateKey1037.data // real key is terra: define...
+        }
+
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .terraV2)
+        let expected = """
+        {
+            "mode": "BROADCAST_MODE_BLOCK",
+            "tx_bytes": "Cp8BCpwBCiMvY29zbW9zLnN0YWtpbmcudjFiZXRhMS5Nc2dEZWxlZ2F0ZRJ1Cix0ZXJyYTFuY2Z5ZXh6M25ycmRydTM3YWhxcHA0d2VuNDh2N3A1bmFueTQ3OBIzdGVycmF2YWxvcGVyMWVrcTh4dXlwZHh0ZjNuZm1mZm15ZG5obnk1OXBqdXkwcDh3cG43GhAKBXVsdW5hEgcxMDAwMDAwEmgKUApGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQNd8YVWZSHWp4AjGe4G4aKOl7d3Lftf3RPKbwV1UYlo5BIECgIIARgGEhQKDgoFdWx1bmESBTM4MjAzENrFDxpAamKyAvWhWCv0nUKz7yiYETpkZETflDvfe1vmuFIy31g+s0u1cgLNo+7jBRXRuzYJXukigtwoLUrxY/C8rowiJw=="
+        }
+        """
+
+        // https://finder.terra.money/mainnet/tx/4441c65f24783b8f59b20b1b80ee43f1f4f6ff827597d87b6bbc94982b45be0c
+        XCTAssertJSONEqual(output.serialized, expected)
+        XCTAssertEqual(output.error, "")
+    }
+
+    func testSignClaimRewards() throws {
+        let delegator = "terra1ncfyexz3nrrdru37ahqpp4wen48v7p5nany478"
+        let validators = [
+            "terravaloper1ekq8xuypdxtf3nfmffmydnhny59pjuy0p8wpn7"
+        ]
+
+        let withdrawals = validators.map { validator in
+            CosmosMessage.WithdrawDelegationReward.with {
+                $0.delegatorAddress = delegator
+                $0.validatorAddress = validator
+            }
+        }.map { withdraw in
+            CosmosMessage.with {
+                $0.withdrawStakeRewardMessage = withdraw
+            }
+        }
+
+        let fee = CosmosFee.with {
+            $0.amounts = [CosmosAmount.with {
+                $0.amount = "29513"
+                $0.denom = "uluna"
+            }]
+            $0.gas = 196749
+        }
+
+        let input = CosmosSigningInput.with {
+            $0.signingMode = .protobuf;
+            $0.fee = fee
+            $0.accountNumber = 127185
+            $0.chainID = "phoenix-1"
+            $0.sequence = 5
+            $0.messages = withdrawals
+            $0.fee = fee
+            $0.privateKey = privateKey1037.data // real key is terra: define...
+        }
+
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .terraV2)
+
+        let expected = """
+        {
+            "mode": "BROADCAST_MODE_BLOCK",
+            "tx_bytes": "CqEBCp4BCjcvY29zbW9zLmRpc3RyaWJ1dGlvbi52MWJldGExLk1zZ1dpdGhkcmF3RGVsZWdhdG9yUmV3YXJkEmMKLHRlcnJhMW5jZnlleHozbnJyZHJ1MzdhaHFwcDR3ZW40OHY3cDVuYW55NDc4EjN0ZXJyYXZhbG9wZXIxZWtxOHh1eXBkeHRmM25mbWZmbXlkbmhueTU5cGp1eTBwOHdwbjcSaApQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohA13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjkEgQKAggBGAUSFAoOCgV1bHVuYRIFMjk1MTMQjYEMGkA/bh2va6RRZvkSLnej84dJgSSvbgcHgYDbkRt8wDge03W747BZcuBcg/U5EuE7zBqSJrKUTZl7oUCp//rYlJKV"
+        }
+        """
+
+        // https://finder.terra.money/mainnet/tx/0e62170ed5407992251d7e161f23c3467e1bea54c7f601953953bdabc7f0c30c
+        XCTAssertJSONEqual(output.serialized, expected)
+        XCTAssertEqual(output.error, "")
+    }
+
 }
