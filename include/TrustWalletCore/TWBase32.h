@@ -18,7 +18,7 @@ struct TWBase32;
 /**
  * @param string Encoded base32 input to be decoded
  * @param alphabet Decode with the given alphabet, if nullptr ALPHABET_RFC4648 is used by default
- * @return The decoded data
+ * @return The decoded data, can be null.
  * @note ALPHABET_RFC4648 doesn't support padding in the default alphabet
  * @details Decode a Base32 input with the given alphabet
  */
@@ -28,10 +28,29 @@ TWData* _Nullable TWBase32DecodeWithAlphabet(TWString* _Nonnull string, TWString
 /**
  * @param string Encoded input to be decoded
  * @return The decoded data
- * @note Call TWBase32DecodeWithAlphabet with nullable alphabet.
+ * @note Call TWBase32DecodeWithAlphabet with nullptr.
  * @details Decode a Base32 input with the default alphabet (ALPHABET_RFC4648)
  */
 TW_EXPORT_STATIC_METHOD
 TWData* _Nullable TWBase32Decode(TWString* _Nonnull string);
+
+/**
+ * @param data Data to be encoded (raw bytes)
+ * @param alphabet Encode with the given alphabet, if nullptr ALPHABET_RFC4648 is used by default
+ * @return The encoded data
+ * @note ALPHABET_RFC4648 doesn't support padding in the default alphabet
+ * @details Encode an input to Base32 with the given alphabet
+ */
+TW_EXPORT_STATIC_METHOD
+TWString *_Nonnull TWBase32EncodeWithAlphabet(TWData *_Nonnull data, TWString* _Nullable alphabet);
+
+/**
+ * @param data Data to be encoded (raw bytes)
+ * @return The encoded data
+ * @note Call TWBase32EncodeWithAlphabet with nullptr.
+ * @details Encode an input to Base32 with the default alphabet (ALPHABET_RFC4648)
+ */
+TW_EXPORT_STATIC_METHOD
+TWString *_Nonnull TWBase32Encode(TWData *_Nonnull data);
 
 TW_EXTERN_C_END
