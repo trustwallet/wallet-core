@@ -4,12 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "SegwitAddress.h"
 #include "Transaction.h"
+#include "SegwitAddress.h"
 #include "SigHashType.h"
 #include "../BinaryCoding.h"
-#include "../Hash.h"
 #include "../Data.h"
+#include "../Hash.h"
 
 #include "SignatureVersion.h"
 
@@ -36,8 +36,8 @@ Data Transaction::getPreImage(const Script& scriptCode, size_t index,
     }
 
     // Input nSequence (none/all, depending on flags)
-    if ((hashType & TWBitcoinSigHashTypeAnyoneCanPay) == 0 &&
-        !hashTypeIsSingle(hashType) && !hashTypeIsNone(hashType)) {
+    if ((hashType & TWBitcoinSigHashTypeAnyoneCanPay) == 0 && !hashTypeIsSingle(hashType) &&
+        !hashTypeIsNone(hashType)) {
         auto hashSequence = getSequenceHash();
         std::copy(std::begin(hashSequence), std::end(hashSequence), std::back_inserter(data));
     } else {
@@ -106,9 +106,15 @@ Data Transaction::getOutputsHash() const {
 void Transaction::encode(Data& data, enum SegwitFormatMode segwitFormat) const {
     bool useWitnessFormat = true;
     switch (segwitFormat) {
-        case NonSegwit: useWitnessFormat = false; break;
-        case IfHasWitness: useWitnessFormat = hasWitness(); break;
-        case Segwit: useWitnessFormat = true; break;
+    case NonSegwit:
+        useWitnessFormat = false;
+        break;
+    case IfHasWitness:
+        useWitnessFormat = hasWitness();
+        break;
+    case Segwit:
+        useWitnessFormat = true;
+        break;
     }
 
     encode32LE(version, data);
@@ -145,18 +151,17 @@ void Transaction::encodeWitness(Data& data) const {
 }
 
 bool Transaction::hasWitness() const {
-    return std::any_of(inputs.begin(), inputs.end(), [](auto& input) { return !input.scriptWitness.empty(); });    
+    return std::any_of(inputs.begin(), inputs.end(), [](auto& input) { return !input.scriptWitness.empty(); });
 }
 
 Data Transaction::getSignatureHash(const Script& scriptCode, size_t index,
                                    enum TWBitcoinSigHashType hashType, uint64_t amount,
                                    enum SignatureVersion version) const {
-    switch (version) {
-    case BASE:
+    if (version == BASE) {
         return getSignatureHashBase(scriptCode, index, hashType);
-    case WITNESS_V0:
-        return getSignatureHashWitnessV0(scriptCode, index, hashType, amount);
     }
+    // version == WITNESS_V0
+    return getSignatureHashWitnessV0(scriptCode, index, hashType, amount);
 }
 
 /// Generates the signature hash for Witness version 0 scripts.
