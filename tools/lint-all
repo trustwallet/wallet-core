@@ -4,4 +4,5 @@
 
 set -e
 
-find src \( -name "*.cpp" -o -name "*.h" \) -not -path "./src/proto/*" -not -path "./src/Tron/Protobuf/*" -exec clang-tidy-11 -quiet -p=build '{}' \;
+clang-tidy --version
+find src \( -name "*.cpp" -o -name "*.h" \) -not -path "./src/proto/*" -not -path "./src/Tron/Protobuf/*" -exec clang-tidy -quiet -p=build '{}' \;

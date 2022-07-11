@@ -9,6 +9,7 @@
 #include "../proto/Cosmos.pb.h"
 #include "Protobuf/coin.pb.h"
 #include "Protobuf/bank_tx.pb.h"
+#include "Protobuf/cosmwasm_wasm_v1_tx.pb.h"
 #include "Protobuf/distribution_tx.pb.h"
 #include "Protobuf/staking_tx.pb.h"
 #include "Protobuf/tx.pb.h"
@@ -162,6 +163,7 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 any.PackFrom(msgSend, ProtobufAnyNamespacePrefix);
                 return any;
             }
+
         case Proto::Message::kWasmTerraExecuteContractGeneric: {
             assert(msg.has_wasm_terra_execute_contract_generic());
                 const auto& wasmExecute = msg.wasm_terra_execute_contract_generic();
@@ -172,6 +174,47 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
 
                 for (auto i = 0; i < wasmExecute.coins_size(); ++i) {
                     *msgExecute.add_coins() = convertCoin(wasmExecute.coins(i));
+                }
+                any.PackFrom(msgExecute, ProtobufAnyNamespacePrefix);
+                return any;
+        }
+
+        case Proto::Message::kWasmExecuteContractTransferMessage:
+            {
+                assert(msg.has_wasm_execute_contract_transfer_message());
+                const auto& wasmExecute = msg.wasm_execute_contract_transfer_message();
+                auto msgExecute = cosmwasm::wasm::v1::MsgExecuteContract();
+                msgExecute.set_sender(wasmExecute.sender_address());
+                msgExecute.set_contract(wasmExecute.contract_address());
+                const std::string payload = Cosmos::wasmExecuteTransferPayload(wasmExecute).dump();
+                msgExecute.set_msg(payload);
+                any.PackFrom(msgExecute, ProtobufAnyNamespacePrefix);
+                return any;
+            }
+
+        case Proto::Message::kWasmExecuteContractSendMessage:
+            {
+                assert(msg.has_wasm_execute_contract_send_message());
+                const auto& wasmExecute = msg.wasm_execute_contract_send_message();
+                auto msgExecute = cosmwasm::wasm::v1::MsgExecuteContract();
+                msgExecute.set_sender(wasmExecute.sender_address());
+                msgExecute.set_contract(wasmExecute.contract_address());
+                const std::string payload = Cosmos::wasmExecuteSendPayload(wasmExecute).dump();
+                msgExecute.set_msg(payload);
+                any.PackFrom(msgExecute, ProtobufAnyNamespacePrefix);
+                return any;
+            }
+
+        case Proto::Message::kWasmExecuteContractGeneric: {
+            assert(msg.has_wasm_execute_contract_generic());
+                const auto& wasmExecute = msg.wasm_execute_contract_generic();
+                auto msgExecute = cosmwasm::wasm::v1::MsgExecuteContract();
+                msgExecute.set_sender(wasmExecute.sender_address());
+                msgExecute.set_contract(wasmExecute.contract_address());
+                msgExecute.set_msg(wasmExecute.execute_msg());
+
+                for (auto i = 0; i < wasmExecute.coins_size(); ++i) {
+                    *msgExecute.add_funds() = convertCoin(wasmExecute.coins(i));
                 }
                 any.PackFrom(msgExecute, ProtobufAnyNamespacePrefix);
                 return any;
@@ -285,6 +328,29 @@ std::string buildProtoTxJson(const Proto::SigningInput& input, const std::string
         {"mode", broadcastMode(input.mode())}
     };
     return jsonSerialized.dump();
+}
+
+json wasmExecuteTransferPayload(const Proto::Message_WasmExecuteContractTransfer& msg) {
+    return {
+        {"transfer",
+            {
+                {"amount", toString(load(data(msg.amount())))},
+                {"recipient", msg.recipient_address()}
+            }
+        }
+    };
+}
+
+json wasmExecuteSendPayload(const Proto::Message_WasmExecuteContractSend& msg) {
+    return {
+        {"send",
+            {
+                {"amount", toString(load(data(msg.amount())))},
+                {"contract", msg.recipient_contract_address()},
+                {"msg", msg.msg()}
+            }
+        }
+    };
 }
 
 json wasmTerraExecuteTransferPayload(const Proto::Message_WasmTerraExecuteContractTransfer& msg) {
