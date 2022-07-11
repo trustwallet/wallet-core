@@ -7,7 +7,6 @@
 #include <TrustWalletCore/TWBase32.h>
 
 #include "../Base32.h"
-#include <iostream>
 
 #include <string>
 
