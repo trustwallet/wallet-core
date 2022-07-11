@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -17,9 +17,10 @@ RUN apt-get update \
 # Add latest cmake/boost
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc | apt-key add - \
-    && apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main' \
-    && apt-add-repository -y ppa:mhier/libboost-latest
+    && apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
 
+
+RUN wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb && dpkg -i ./libssl1.1_1.1.0g-2ubuntu4_amd64.deb
 # Install required packages for dev
 RUN apt-get update \
     && apt-get install -y \
@@ -27,16 +28,16 @@ RUN apt-get update \
         libtool autoconf pkg-config \
         ninja-build \
         ruby-full \
-        clang-10 \
-        llvm-10 \
+        clang-14 \
+        llvm-14 \
         libc++-dev libc++abi-dev \
-        cmake \        
-        libboost1.74-dev \
+        cmake \
+        libboost-all-dev \
         ccache \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ENV CC=/usr/bin/clang-10
-ENV CXX=/usr/bin/clang++-10
+ENV CC=/usr/bin/clang-14
+ENV CXX=/usr/bin/clang++-14
 
 # ↑ Setup build environment
 # ↓ Build and compile wallet core

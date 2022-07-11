@@ -9,10 +9,10 @@
 
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/ed25519-donna/ed25519-blake2b.h>
+#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 #include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sodium/keypair.h>
-#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 
 #include <iterator>
 
@@ -47,7 +47,8 @@ bool PublicKey::isValid(const Data& data, enum TWPublicKeyType type) {
 /// Initializes a public key with a collection of bytes.
 ///
 /// @throws std::invalid_argument if the data is not a valid public key.
-PublicKey::PublicKey(const Data& data, enum TWPublicKeyType type) : type(type) {
+PublicKey::PublicKey(const Data& data, enum TWPublicKeyType type)
+    : type(type) {
     if (!isValid(data, type)) {
         throw std::invalid_argument("Invalid public key data");
     }
@@ -119,7 +120,9 @@ PublicKey PublicKey::extended() const {
     case TWPublicKeyTypeCURVE25519:
     case TWPublicKeyTypeED25519Blake2b:
     case TWPublicKeyTypeED25519Extended:
-       return *this;
+        return *this;
+    default:
+        return *this;
     }
 }
 
@@ -137,8 +140,8 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
         return ed25519_sign_open_blake2b(message.data(), message.size(), bytes.data(), signature.data()) == 0;
     case TWPublicKeyTypeED25519Extended:
         throw std::logic_error("Not yet implemented");
-        //ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) == 0;
-    case TWPublicKeyTypeCURVE25519:
+        // ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) == 0;
+    case TWPublicKeyTypeCURVE25519: {
         auto ed25519PublicKey = Data();
         ed25519PublicKey.resize(PublicKey::ed25519Size);
         curve25519_pk_to_ed25519(ed25519PublicKey.data(), bytes.data());
@@ -150,23 +153,24 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
         auto verifyBuffer = Data();
         append(verifyBuffer, signature);
         verifyBuffer[63] &= 127;
-        return ed25519_sign_open(message.data(), message.size(), ed25519PublicKey.data(),
-                                 verifyBuffer.data()) == 0;
+        return ed25519_sign_open(message.data(), message.size(), ed25519PublicKey.data(), verifyBuffer.data()) == 0;
+    }
+    default:
+        throw std::logic_error("Not yet implemented");
     }
 }
 
 bool PublicKey::verifyAsDER(const Data& signature, const Data& message) const {
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
-    case TWPublicKeyTypeSECP256k1Extended:
-        {
-            Data sig(64);
-            int ret = ecdsa_sig_from_der(signature.data(), signature.size(), sig.data());
-            if (ret) {
-                return false;
-            }
-            return ecdsa_verify_digest(&secp256k1, bytes.data(), sig.data(), message.data()) == 0;
+    case TWPublicKeyTypeSECP256k1Extended: {
+        Data sig(64);
+        int ret = ecdsa_sig_from_der(signature.data(), signature.size(), sig.data());
+        if (ret) {
+            return false;
         }
+        return ecdsa_verify_digest(&secp256k1, bytes.data(), sig.data(), message.data()) == 0;
+    }
 
     default:
         return false;
