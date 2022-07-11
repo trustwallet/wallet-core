@@ -901,17 +901,46 @@
     "hrp": "terra",
     "addressHasher": "sha256ripemd",
     "explorer": {
-      "url": "https://finder.terra.money/tx",
+      "url": "https://finder.terra.money/classic",
       "txPath": "/tx/",
       "accountPath": "/address/"
     },
     "info": {
       "url": "https://terra.money",
       "source": "https://github.com/terra-project/core",
-      "rpc": "https://classic.fcd.terra.dev",
+      "rpc": "https://columbus-fcd.terra.dev",
       "documentation": "https://docs.terra.money"
+    }
+  },
+  {
+    "id": "terrav2",
+    "name": "TerraV2",
+    "displayName": "Terra",
+    "coinId": 10000330,
+    "symbol": "LUNA",
+    "decimals": 6,
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/330'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "terra",
+    "chainId": "phoenix-1",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://finder.terra.money/mainnet",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
     },
-    "deprecated": true
+    "info": {
+      "url": "https://terra.money",
+      "source": "https://github.com/terra-project/core",
+      "rpc": "https://phoenix-lcd.terra.dev",
+      "documentation": "https://docs.terra.money"
+    }
   },
   {
     "id": "polkadot",

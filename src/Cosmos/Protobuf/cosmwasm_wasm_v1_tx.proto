@@ -1,0 +1,19 @@
+syntax = "proto3";
+package cosmwasm.wasm.v1;
+
+// Src: https://github.com/CosmWasm/wasmd/blob/main/proto/cosmwasm/wasm/v1/tx.proto
+
+import "coin.proto";
+
+// MsgExecuteContract submits the given message data to a smart contract
+message MsgExecuteContract {
+    // Sender is the that actor that signed the messages
+    string sender = 1;
+    // Contract is the address of the smart contract
+    string contract = 2;
+    // Msg json encoded message to be passed to the contract
+    bytes msg = 3;
+    // Funds coins that are transferred to the contract on execution
+    // Gap in field numbering is intentional!
+    repeated cosmos.base.v1beta1.Coin funds = 5;
+}
