@@ -9,6 +9,8 @@ cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 project(TrustWalletCore)
 
 include(GNUInstallDirs)
+include(cmake/StandardSettings.cmake)
+include(cmake/StaticAnalyzers.cmake)
 
 # Configure warnings
 set(TW_CXX_WARNINGS "-Wshorten-64-to-32")
@@ -64,17 +66,6 @@ option(CODE_COVERAGE "Enable coverage reporting" OFF)
 if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fprofile-arcs -ftest-coverage")
     set(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
-endif()
-
-option(CLANG_TIDY "Enable static code analysis with (clang-tidy)" OFF)
-if(CLANG_TIDY)
-    find_program(CLANG_TIDY_BIN NAMES clang-tidy-11)
-    if(CLANG_TIDY_BIN)
-        set(CMAKE_CXX_CLANG_TIDY clang-tidy-11;)
-        message("clang-tidy ${CMAKE_CXX_CLANG_TIDY} ${CLANG_TIDY_BIN}")
-    else()
-        message(FATAL_ERROR "Could not find clang-tidy")
-    endif()
 endif()
 
 option(CLANG_ASAN "Enable ASAN dynamic address sanitizer" OFF)
