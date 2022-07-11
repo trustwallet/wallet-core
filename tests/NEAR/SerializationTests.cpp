@@ -117,7 +117,7 @@ TEST(NEARSerialization, SerializeStakeTransaction2) {
     input.add_actions();
     auto& stake = *input.mutable_actions(0)->mutable_stake();
     // 2490000000000000000000000000
-    Data amount = {0, 0, 0, 250, 79, 63, 117, 121, 2, 174, 11, 8, 0, 0, 0, 0};
+    auto amount = parse_hex("000000fa4f3f757902ae0b0800000000"); // little endian
     stake.set_stake(amount.data(), amount.size());
 
     auto& pKey = *stake.mutable_public_key();
