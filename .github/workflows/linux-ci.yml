@@ -8,13 +8,13 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v2
     - name: Install system dependencies
       run: |
-        # build-essential clang-11 libc++-dev libc++abi-dev ruby-full cmake
-        sudo apt-get update && sudo apt-get install ninja-build lcov llvm-11 clang-tidy-11 libboost-all-dev --fix-missing
+        # build-essential clang-14 libc++-dev libc++abi-dev ruby-full cmake
+        sudo apt-get update && sudo apt-get install ninja-build lcov llvm-14 clang-tidy-14 libboost-all-dev --fix-missing
     - name: Cache internal dependencies
       id: internal_cache
       uses: actions/cache@v1.1.2

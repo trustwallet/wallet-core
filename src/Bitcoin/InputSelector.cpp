@@ -9,6 +9,7 @@
 #include "UTXO.h"
 
 #include <algorithm>
+#include <optional>
 #include <cassert>
 
 using namespace TW;
