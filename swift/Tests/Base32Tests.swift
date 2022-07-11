@@ -13,6 +13,7 @@ class Base32Tests: XCTestCase {
             return XCTFail();
         }
         let toCompare = String(data: decoded, encoding:.utf8);
+
         XCTAssertEqual(toCompare, "HelloWorld");
     }
     
@@ -21,6 +22,7 @@ class Base32Tests: XCTestCase {
             return XCTFail();
         }
         let toCompare = String(data: decoded, encoding:.utf8);
+
         XCTAssertEqual(toCompare, "7uoq6tp427uzv7fztkbsnn64iwotfrristwpryy");
     }
 }
