@@ -12,6 +12,7 @@
 
 #include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 
+#include <limits>
 #include <cassert>
 
 using namespace TW;
