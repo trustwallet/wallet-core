@@ -73,7 +73,7 @@ static void writeFunctionCallPermission(Data& data, const Proto::FunctionCallPer
     }
     writeString(data, functionCallPermission.receiver_id());
     writeU32(data, static_cast<uint32_t>(functionCallPermission.method_names().size()));
-    for (auto& methodName : functionCallPermission.method_names()) {
+    for (auto&& methodName : functionCallPermission.method_names()) {
         writeString(data, methodName);
     }
 }
