@@ -16,6 +16,7 @@
 #include <cmath>
 #include <algorithm>
 #include <numeric>
+#include <iostream>
 
 using namespace TW::Cardano;
 using namespace TW;
@@ -438,4 +439,34 @@ TransactionPlan Signer::doPlan() const {
     assert(plan.amount + plan.change + plan.fee == plan.availableAmount);
 
     return plan;
+}
+
+
+Data Signer::encodeTransactionWithSig(const Proto::SigningInput &input, const PublicKey &publicKey, const Data &signature) {
+    Transaction txAux;
+    auto buildRet = buildTx(txAux, input);
+    if (buildRet != Common::Proto::OK) {
+        throw Common::Proto::SigningError(buildRet);
+    }
+
+    vector<pair<Data, Data>> signatures;
+    signatures.emplace_back(subData(publicKey.bytes, 0, 32), signature);
+    const auto sigsCbor = cborizeSignatures(signatures);
+
+    // Cbor-encode txAux & signatures
+    const auto cbor = Cbor::Encode::array({
+        // txaux
+        Cbor::Encode::fromRaw(txAux.encode()),
+        // signatures
+        sigsCbor,
+        // aux data
+        Cbor::Encode::null(),
+    });
+
+    return cbor.encoded();
+}
+
+Common::Proto::SigningError Signer::buildTx(Transaction& tx, const Proto::SigningInput& input) {
+    auto plan = Signer(input).doPlan();
+    return buildTransactionAux(tx, input, plan);
 }

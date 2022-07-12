@@ -39,4 +39,7 @@ TWData *_Nonnull TWTransactionCompilerPreImageHashes(enum TWCoinType coinType, T
 TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWTransactionCompilerCompileWithSignatures(enum TWCoinType coinType, TWData *_Nonnull txInputData, const struct TWDataVector *_Nonnull signatures, const struct TWDataVector *_Nonnull publicKeys);
 
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWTransactionCompilerCompileWithSignaturesAndPubKeyType(enum TWCoinType coinType, TWData *_Nonnull txInputData, const struct TWDataVector *_Nonnull signatures, const struct TWDataVector *_Nonnull publicKeys, enum TWPublicKeyType pubKeyType);
+
 TW_EXTERN_C_END

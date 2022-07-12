@@ -29,6 +29,9 @@ public:
 
     /// Compile a complete transation with an external signature, put together from transaction input and provided public key and signature
     static Data compileWithSignatures(TWCoinType coinType, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<Data>& publicKeys);
+    
+    static Data compileWithSignaturesAndPubKeyType(TWCoinType coinType, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<Data>& publicKeys, TWPublicKeyType pubKeyType);
+
 };
 
 } // namespace TW

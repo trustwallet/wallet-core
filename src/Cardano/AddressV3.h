@@ -25,12 +25,15 @@ class AddressV3 {
 
     enum Kind: uint8_t {
         Kind_Base = 0,
+        Kind_Enterprise = 3,
     };
 
     static const uint8_t HashSize = 28;
 
     // First byte header (kind, netowrkId) and 2 hashes
     static const uint8_t EncodedSize = 1 + 2 * HashSize;
+
+    static const uint8_t NewEncodedSize = 29;
 
     NetworkId networkId = Network_Production;
 

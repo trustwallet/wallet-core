@@ -9,6 +9,7 @@
 #include "AddressV3.h"
 #include "Signer.h"
 #include "../proto/Cardano.pb.h"
+#include "../proto/TransactionCompiler.pb.h"
 
 #include <cassert>
 
@@ -36,4 +37,43 @@ void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) con
 
 void Entry::plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
     planTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+}
+
+TW::Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
+    return txCompilerTemplate<Proto::SigningInput, TxCompiler::Proto::PreSigningOutput>(
+        txInputData, [](const auto& input, auto& output) {
+            Transaction tx;
+            const auto buildRet = Signer::buildTx(tx, input);
+            if (buildRet != Common::Proto::OK) {
+                output.set_error(buildRet);
+                output.set_error_message(Common::Proto::SigningError_Name(buildRet));
+                return;
+            }
+            auto hash = tx.getId();
+            auto encoded = tx.encode();
+            output.set_data_hash(hash.data(), hash.size());
+            output.set_data(encoded.data(), encoded.size());
+        });
+}
+
+void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
+    dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
+        txInputData, [&](const auto& input, auto& output) {
+            if (signatures.size() == 0 || publicKeys.size() == 0) {
+                output.set_error(Common::Proto::Error_invalid_params);
+                output.set_error_message("empty signatures or publickeys");
+                return;
+            }
+
+            // We only support one-to-one transfer now.
+            if (signatures.size() != 1 || publicKeys.size() != 1) {
+                output.set_error(Common::Proto::Error_no_support_n2n);
+                output.set_error_message("signatures and publickeys size can only be one");
+                return;
+            }
+
+            auto encoded = Signer::encodeTransactionWithSig(input, publicKeys[0], signatures[0]);
+            output.set_encoded(encoded.data(), encoded.size());
+            return;
+        });
 }
