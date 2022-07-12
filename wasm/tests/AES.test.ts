@@ -6,8 +6,8 @@
 
 import "mocha";
 import { assert } from "chai";
-import { WalletCore } from "../dist";
 import { Buffer } from "buffer";
+import { WalletCore } from "../dist";
 
 describe("AES", () => {
   it("test decrypting", () => {
