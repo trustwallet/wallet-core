@@ -33,7 +33,7 @@ std::vector<Address> convertReferences(const google::protobuf::RepeatedPtrField<
     std::vector<Address> ret;
     for (auto i = 0; i < references.size(); ++i) {
         if (Address::isValid(references[i])) {
-            ret.push_back(Address(references[i]));
+            ret.emplace_back(references[i]);
         }
     }
     return ret;
@@ -43,7 +43,6 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto blockhash = Solana::Hash(input.recent_blockhash());
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     Message message;
-    std::string stakePubkey;
     std::vector<PrivateKey> signerKeys;
 
     switch (input.transaction_type_case()) {

@@ -42,7 +42,7 @@ struct Result {
     using Storage = typename std::aligned_storage<Size, Align>::type;
 
     /// Wether the operation succeeded.
-    bool success_;
+    bool success_{false};
     Storage storage_;
 
   public:
@@ -73,6 +73,7 @@ struct Result {
         } else {
             new (&storage_) E(other.get<E>());
         }
+        return *this;
     }
 
     Result(Result&& other) {
@@ -96,6 +97,7 @@ struct Result {
         } else {
             new (&storage_) E(std::move(other.get<E>()));
         }
+        return *this;
     }
 
     ~Result() {

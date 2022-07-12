@@ -27,7 +27,7 @@ template<class T>
 static std::vector<T> concat(const std::vector<T>& v1, const std::vector<T>& v2) {
     std::vector<T> v(v1);
     v.insert(v.end(), v2.begin(), v2.end());
-    return std::move(v);
+    return v;
 }
 
 } // namespace TW

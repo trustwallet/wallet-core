@@ -14,7 +14,7 @@ class Name {
 public:
     uint64_t value = 0;
 
-    Name() { }
+    Name() = default;
     Name(const std::string& str);
     uint64_t toSymbol(char c) const noexcept;
     std::string string() const noexcept;

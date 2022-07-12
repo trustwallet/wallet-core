@@ -63,7 +63,6 @@ void convertToBase64Url(string& b) {
 }
 
 Data decodeBase64Url(const string& val) {
-    Data bytes;
     try {
         return decode(val);
     } catch (const exception& ex) {

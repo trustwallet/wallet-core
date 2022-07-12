@@ -114,7 +114,7 @@ RLP::DecodedItem RLP::decode(const Data& input) {
     auto prefix = input[0];
     if (prefix <= 0x7f) {
         // 00--7f: a single byte whose value is in the [0x00, 0x7f] range, that byte is its own RLP encoding.
-        item.decoded.push_back(Data{input[0]});
+        item.decoded.emplace_back(Data{input[0]});
         item.remainder = subData(input, 1);
         return item;
     }

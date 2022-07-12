@@ -15,14 +15,14 @@ SigningInput::SigningInput(const Proto::SigningInput& input) {
     byteFee = input.byte_fee();
     toAddress = input.to_address();
     changeAddress = input.change_address();
-    for (auto& key: input.private_key()) {
-        privateKeys.emplace_back(PrivateKey(key));
+    for (auto&& key: input.private_key()) {
+        privateKeys.emplace_back(key);
     }
-    for (auto& script: input.scripts()) {
+    for (auto&& script: input.scripts()) {
         scripts[script.first] = Script(script.second.begin(), script.second.end());
     }
-    for (auto& u: input.utxo()) {
-        utxos.push_back(UTXO(u));
+    for (auto&& u: input.utxo()) {
+        utxos.emplace_back(u);
     }
     useMaxAmount = input.use_max_amount();
     coinType = static_cast<TWCoinType>(input.coin_type());

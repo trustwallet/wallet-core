@@ -314,7 +314,7 @@ vector<Decode> Decode::getCompoundElements(uint32_t countMultiplier, TW::byte ex
         if (idx + elemLen > length()) {
             throw std::invalid_argument("CBOR array data too short");
         }
-        elems.push_back(Decode(data, subStart + idx, elemLen));
+        elems.emplace_back(Decode(data, subStart + idx, elemLen));
         idx += elemLen;
     }
     return elems;
