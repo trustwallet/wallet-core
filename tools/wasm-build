@@ -14,7 +14,7 @@ boost_dir=${EMSDK}/upstream/emscripten/system/include
 pushd ${src_dir}
 
 # cmake
-cmake -Bwasm-build -DBoost_INCLUDE_DIR=${boost_dir} -DTrustWalletCore_USE_WASM=ON -DCMAKE_TOOLCHAIN_FILE=${EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake
+cmake -Bwasm-build -DBoost_INCLUDE_DIR=${boost_dir} -DTW_COMPILE_WASM=ON -DCMAKE_TOOLCHAIN_FILE=${EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake
 
 # make
 make -j8 -Cwasm-build

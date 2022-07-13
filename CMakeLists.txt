@@ -44,7 +44,7 @@ include_directories(${PREFIX}/include)
 link_directories(${PREFIX}/lib)
 
 add_subdirectory(trezor-crypto)
-if (${PROJECT_NAME}_USE_WASM)
+if (TW_COMPILE_WASM)
     message(STATUS "Wasm build enabled")
     add_subdirectory(wasm)
 endif()
