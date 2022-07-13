@@ -7,6 +7,7 @@
 #include "Address.h"
 
 #include <cstring>
+#include <climits>
 
 #include "../Base32.h"
 #include "../Data.h"
@@ -151,11 +152,11 @@ std::string Address::string() const {
         uint64_t id = 0;
         unsigned shift = 0;
         for (int i = 1; i < bytes.size(); i++) {
-            if (bytes[i] < 0x80) {
-                id |= bytes[i] << shift;
+            if (bytes[i] <= SCHAR_MAX) {
+                id |= static_cast<uint64_t>(bytes[i]) << shift;
                 break;
             } else {
-                id |= ((uint64_t)(bytes[i] & 0x7F)) << shift;
+                id |= static_cast<uint64_t>(bytes[i] & SCHAR_MAX) << shift;
                 shift += 7;
             }
         }

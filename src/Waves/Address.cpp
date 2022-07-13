@@ -40,8 +40,6 @@ bool Address::isValid(const Data& decoded) {
     const auto data_checksum = Data(decoded.end() - 4, decoded.end());
     const auto calculated_hash = secureHash(data);
     const auto calculated_checksum = Data(calculated_hash.begin(), calculated_hash.begin() + 4);
-    const auto h = hex(data);
-    const auto h2 = hex(calculated_hash);
     return std::memcmp(data_checksum.data(), calculated_checksum.data(), 4) == 0;
 }
 

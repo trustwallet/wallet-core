@@ -52,7 +52,7 @@ Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, siz
         break;
     case TWBitcoinSigHashTypeSingle:
         outputsToSign.clear();
-        std::copy(outputs.begin(), outputs.begin() + index + 1, outputsToSign.end());
+        std::copy(outputs.begin(), outputs.begin() + index + 1, std::back_inserter(outputsToSign));
         break;
     default:
         // Keep all outputs

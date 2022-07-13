@@ -29,7 +29,7 @@ Data TransactionCompiler::compileWithSignatures(TWCoinType coinType, const Data&
         if (!PublicKey::isValid(p, publicKeyType)) {
             throw std::invalid_argument("Invalid public key");
         }
-        pubs.push_back(PublicKey(p, publicKeyType));
+        pubs.emplace_back(p, publicKeyType);
     }
 
     Data txOutput;
