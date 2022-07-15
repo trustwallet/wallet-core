@@ -13,6 +13,7 @@
 #include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sodium/keypair.h>
+#include <TrezorCrypto/zilliqa.h>
 
 #include <iterator>
 

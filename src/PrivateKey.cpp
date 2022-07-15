@@ -15,7 +15,7 @@
 #include <TrezorCrypto/memzero.h>
 #include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/rand.h>
-#include <TrezorCrypto/schnorr.h>
+#include <TrezorCrypto/zilliqa.h>
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sodium/keypair.h>
 
@@ -134,14 +134,14 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
                 throw std::invalid_argument("Invalid extended key");
             }
             Data tempPub(64);
-            ed25519_publickey_ext(key().data(), extension().data(), tempPub.data());
+            ed25519_publickey_ext(extension().data(), tempPub.data());
             result = Data();
             append(result, subData(tempPub, 0, 32));
             // copy chainCode
             append(result, chainCode());
 
             // second key
-            ed25519_publickey_ext(secondKey().data(), secondExtension().data(), tempPub.data());
+            ed25519_publickey_ext(secondExtension().data(), tempPub.data());
             append(result, subData(tempPub, 0, 32));
             append(result, secondChainCode());
         }
@@ -193,28 +193,23 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
     } break;
     case TWCurveED25519: {
         result.resize(64);
-        const auto publicKey = getPublicKey(TWPublicKeyTypeED25519);
-        ed25519_sign(digest.data(), digest.size(), key().data(), publicKey.bytes.data(), result.data());
+        ed25519_sign(digest.data(), digest.size(), key().data(), result.data());
         success = true;
     } break;
     case TWCurveED25519Blake2bNano: {
         result.resize(64);
-        const auto publicKey = getPublicKey(TWPublicKeyTypeED25519Blake2b);
-        ed25519_sign_blake2b(digest.data(), digest.size(), key().data(),
-                             publicKey.bytes.data(), result.data());
+        ed25519_sign_blake2b(digest.data(), digest.size(), key().data(), result.data());
         success = true;
     } break;
     case TWCurveED25519Extended: {
         result.resize(64);
-        const auto publicKey = getPublicKey(TWPublicKeyTypeED25519Extended);
-        ed25519_sign_ext(digest.data(), digest.size(), key().data(), extension().data(), publicKey.bytes.data(), result.data());
+        ed25519_sign_ext(digest.data(), digest.size(), key().data(), extension().data(), result.data());
         success = true;
     } break;
     case TWCurveCurve25519: {
         result.resize(64);
         const auto publicKey = getPublicKey(TWPublicKeyTypeED25519);
-        ed25519_sign(digest.data(), digest.size(), key().data(), publicKey.bytes.data(),
-                     result.data());
+        ed25519_sign(digest.data(), digest.size(), key().data(), result.data());
         const auto sign_bit = publicKey.bytes[31] & 0x80;
         result[63] = result[63] & 127;
         result[63] |= sign_bit;

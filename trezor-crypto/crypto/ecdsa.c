@@ -36,7 +36,6 @@
 #include <TrezorCrypto/rand.h>
 #include <TrezorCrypto/rfc6979.h>
 #include <TrezorCrypto/secp256k1.h>
-#include <TrezorCrypto/schnorr.h>
 
 // Set cp2 = cp1
 void point_copy(const curve_point *cp1, curve_point *cp2) { *cp2 = *cp1; }
@@ -529,9 +528,12 @@ void point_multiply(const ecdsa_curve *curve, const bignum256 *k,
 
 // res = k * G
 // k must be a normalized number with 0 <= k < curve->order
-void scalar_multiply(const ecdsa_curve *curve, const bignum256 *k,
-                     curve_point *res) {
-  assert(bn_is_less(k, &curve->order));
+// returns 0 on success
+int scalar_multiply(const ecdsa_curve *curve, const bignum256 *k,
+                    curve_point *res) {
+  if (!bn_is_less(k, &curve->order)) {
+    return 1;
+  }
 
   int i = {0}, j = {0};
   CONFIDENTIAL bignum256 a;
@@ -559,7 +561,7 @@ void scalar_multiply(const ecdsa_curve *curve, const bignum256 *k,
   // special case 0*G:  just return zero. We don't care about constant time.
   if (!is_non_zero) {
     point_set_infinity(res);
-    return;
+    return 0;
   }
 
   // Now a = k + 2^256 (mod curve->order) and a is odd.
@@ -612,13 +614,15 @@ void scalar_multiply(const ecdsa_curve *curve, const bignum256 *k,
   jacobian_to_curve(&jres, res, prime);
   memzero(&a, sizeof(a));
   memzero(&jres, sizeof(jres));
+
+  return 0;
 }
 
 #else
 
-void scalar_multiply(const ecdsa_curve *curve, const bignum256 *k,
-                     curve_point *res) {
-  point_multiply(curve, k, &curve->G, res);
+int scalar_multiply(const ecdsa_curve *curve, const bignum256 *k,
+                    curve_point *res) {
+  return point_multiply(curve, k, &curve->G, res);
 }
 
 #endif
@@ -755,18 +759,29 @@ int ecdsa_sign_digest(const ecdsa_curve *curve, const uint8_t *priv_key,
   return -1;
 }
 
-void ecdsa_get_public_key33(const ecdsa_curve *curve, const uint8_t *priv_key,
-                            uint8_t *pub_key) {
+// returns 0 on success
+int ecdsa_get_public_key33(const ecdsa_curve *curve, const uint8_t *priv_key,
+                           uint8_t *pub_key) {
   curve_point R = {0};
   bignum256 k = {0};
 
   bn_read_be(priv_key, &k);
+  if (bn_is_zero(&k) || !bn_is_less(&k, &curve->order)) {
+    // Invalid private key.
+    memzero(pub_key, 33);
+    return -1;
+  }
+
   // compute k*G
-  scalar_multiply(curve, &k, &R);
+  if (scalar_multiply(curve, &k, &R) != 0) {
+    memzero(&k, sizeof(k));
+    return 1;
+  }
   pub_key[0] = 0x02 | (R.y.val[0] & 0x01);
   bn_write_be(&R.x, pub_key + 1);
   memzero(&R, sizeof(R));
   memzero(&k, sizeof(k));
+  return 0;
 }
 
 void ecdsa_get_public_key65(const ecdsa_curve *curve, const uint8_t *priv_key,
@@ -1196,57 +1211,4 @@ int ecdsa_sig_from_der(const uint8_t *der, size_t der_len, uint8_t sig[64]) {
   }
 
   return 0;
-}
-
-// [wallet-core]
-int zil_schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key, const uint8_t *msg, const uint32_t msg_len, uint8_t *sig)
-{
-	int i;
-	bignum256 k;
-
-	uint8_t hash[32];
-	sha256_Raw(msg, msg_len, hash);
-
-	rfc6979_state rng;
-	init_rfc6979(priv_key, hash, &rng);
-
-	for (i = 0; i < 10000; i++) {
-		// generate K deterministically
-		generate_k_rfc6979(&k, &rng);
-		// if k is too big or too small, we don't like it
-		if (bn_is_zero(&k) || !bn_is_less(&k, &curve->order)) {
-			continue;
-		}
-
-		schnorr_sign_pair sign;
-		if (schnorr_sign(curve, priv_key, &k, msg, msg_len, &sign) != 0) {
-			continue;
-		}
-
-		// we're done
-		memcpy(sig, sign.r, 32);
-		memcpy(sig + 32, sign.s, 32);
-
-		memzero(&k, sizeof(k));
-		memzero(&rng, sizeof(rng));
-		memzero(&sign, sizeof(sign));
-		return 0;
-	}
-
-	// Too many retries without a valid signature
-	// -> fail with an error
-	memzero(&k, sizeof(k));
-	memzero(&rng, sizeof(rng));
-	return -1;
-}
-
-// [wallet-core]
-int zil_schnorr_verify(const ecdsa_curve *curve, const uint8_t *pub_key, const uint8_t *sig, const uint8_t *msg, const uint32_t msg_len)
-{
-	schnorr_sign_pair sign;
-  
-	memcpy(sign.r, sig, 32);
-	memcpy(sign.s, sig + 32, 32);
-
-	return schnorr_verify(curve, pub_key, msg, msg_len, &sign);
 }

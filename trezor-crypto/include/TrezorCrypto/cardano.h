@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019 Anatolii Kurotych
+ * Copyright (c) 2013-2021 SatoshiLabs
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the "Software"),
@@ -20,33 +20,44 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __SCHNORR_H__
-#define __SCHNORR_H__
-
-#include <TrezorCrypto/ecdsa.h>
+#ifndef __CARDANO_H__
+#define __CARDANO_H__
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
 
-// result of sign operation
-typedef struct {
-  uint8_t r[32];
-  uint8_t s[32];
-} schnorr_sign_pair;
+#include <stdbool.h>
+#include <stdint.h>
+#include <TrezorCrypto/bip32.h>
+#include <TrezorCrypto/options.h>
 
-// sign/verify returns 0 if operation succeeded
+#if USE_CARDANO
 
-// k is a random from [1, ..., order-1]
-int schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key,
-                 const bignum256 *k, const uint8_t *msg, const uint32_t msg_len,
-                 schnorr_sign_pair *result);
-int schnorr_verify(const ecdsa_curve *curve, const uint8_t *pub_key,
-                   const uint8_t *msg, const uint32_t msg_len,
-                   const schnorr_sign_pair *sign);
+#define CARDANO_SECRET_LENGTH 96
+#define CARDANO_ICARUS_PBKDF2_ROUNDS 4096
+
+extern const curve_info ed25519_cardano_info;
+
+int hdnode_private_ckd_cardano(HDNode *inout, uint32_t i);
+
+int secret_from_entropy_cardano_icarus(
+    const uint8_t *pass, int pass_len, const uint8_t *entropy, int entropy_len,
+    uint8_t secret_out[CARDANO_SECRET_LENGTH],
+    void (*progress_callback)(uint32_t current, uint32_t total));
+int secret_from_seed_cardano_ledger(const uint8_t *seed, int seed_len,
+                                    uint8_t secret_out[CARDANO_SECRET_LENGTH]);
+int secret_from_seed_cardano_slip23(const uint8_t *seed, int seed_len,
+                                    uint8_t secret_out[CARDANO_SECRET_LENGTH]);
+
+int hdnode_from_secret_cardano(const uint8_t secret[CARDANO_SECRET_LENGTH],
+                               HDNode *out);
+
+#endif  // USE_CARDANO
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-#endif
+#endif  // __CARDANO_H__

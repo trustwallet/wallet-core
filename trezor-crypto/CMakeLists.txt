@@ -56,8 +56,9 @@ add_library(TrezorCrypto
     crypto/groestl.c
     crypto/hmac_drbg.c
     crypto/rfc6979.c
-    crypto/schnorr.c
     crypto/shamir.c
+    crypto/zilliqa.c
+    crypto/cardano.c
 )
 
 if (EMSCRIPTEN)

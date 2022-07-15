@@ -79,14 +79,6 @@ int hdnode_from_seed(const uint8_t *seed, int seed_len, const char *curve,
 
 int hdnode_private_ckd(HDNode *inout, uint32_t i);
 
-#if USE_CARDANO
-int hdnode_private_ckd_cardano(HDNode *inout, uint32_t i);
-int hdnode_from_seed_cardano(const uint8_t *seed, int seed_len, HDNode *out);
-int hdnode_from_entropy_cardano_icarus(const uint8_t *pass, int pass_len,
-                                       const uint8_t *seed, int seed_len,
-                                       HDNode *out);
-#endif
-
 int hdnode_public_ckd_cp(const ecdsa_curve *curve, const curve_point *parent,
                          const uint8_t *parent_chain_code, uint32_t i,
                          curve_point *child, uint8_t *child_chain_code);
@@ -101,13 +93,14 @@ void hdnode_public_ckd_address_optimized(const curve_point *pub,
                                          int addrsize, int addrformat);
 
 #if USE_BIP32_CACHE
+void bip32_cache_clear(void);
 int hdnode_private_ckd_cached(HDNode *inout, const uint32_t *i, size_t i_count,
                               uint32_t *fingerprint);
 #endif
 
 uint32_t hdnode_fingerprint(HDNode *node);
 
-void hdnode_fill_public_key(HDNode *node);
+int hdnode_fill_public_key(HDNode *node);
 
 #if USE_ETHEREUM
 int hdnode_get_ethereum_pubkeyhash(const HDNode *node, uint8_t *pubkeyhash);
@@ -151,9 +144,9 @@ int hdnode_deserialize_private(const char *str, uint32_t version,
                                const char *curve, HDNode *node,
                                uint32_t *fingerprint);
 
-void hdnode_get_address_raw(HDNode *node, uint32_t version, uint8_t *addr_raw);
-void hdnode_get_address(HDNode *node, uint32_t version, char *addr,
-                        int addrsize);
+int hdnode_get_address_raw(HDNode *node, uint32_t version, uint8_t *addr_raw);
+int hdnode_get_address(HDNode *node, uint32_t version, char *addr,
+                       int addrsize);
 
 const curve_info *get_curve_by_name(const char *curve_name);
 

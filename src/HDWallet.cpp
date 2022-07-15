@@ -16,10 +16,13 @@
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWPublicKeyType.h>
 
+#include <TrezorCrypto/options.h>
+
 #include <TrezorCrypto/bip32.h>
 #include <TrezorCrypto/bip39.h>
 #include <TrezorCrypto/curves.h>
 #include <TrezorCrypto/memzero.h>
+#include <TrezorCrypto/cardano.h>
 
 #include <array>
 #include <cstring>
@@ -335,10 +338,16 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve) {
     const auto privateKeyType = HDWallet::getPrivateKeyType(curve);
     auto node = HDNode();
     switch (privateKeyType) {
-        case HDWallet::PrivateKeyTypeDoubleExtended: // used by Cardano
+        // used by Cardano
+        case HDWallet::PrivateKeyTypeDoubleExtended: {
             // special handling for extended, use entropy (not seed)
-            hdnode_from_entropy_cardano_icarus((const uint8_t*)"", 0, wallet.getEntropy().data(), (int)wallet.getEntropy().size(), &node);
+            const auto entropy = wallet.getEntropy();
+            uint8_t cardano_secret[CARDANO_SECRET_LENGTH];
+            secret_from_entropy_cardano_icarus((const uint8_t *)"", 0, entropy.data(),
+                                     int(entropy.size()), cardano_secret, NULL);
+            hdnode_from_secret_cardano(cardano_secret, &node);
             break;
+        }
 
         case HDWallet::PrivateKeyTypeDefault32:
         default:
