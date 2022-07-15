@@ -28,3 +28,8 @@ option(TW_COMPILE_WASM "Target Wasm" OFF)
 # Coverage
 #
 option(TW_CODE_COVERAGE "Enable coverage reporting" OFF)
+
+#
+# Compiler warnings options
+#
+option(TW_WARNINGS_AS_ERRORS "Compiler Options as Error" OFF)
