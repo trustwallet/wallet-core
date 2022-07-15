@@ -13,12 +13,10 @@ build_folder=${src_dir}/wasm-build
 boost_dir=${EMSDK}/upstream/emscripten/system/include
 pushd ${src_dir}
 
-cp cmake/Wasm.cmake CMakeLists.txt
-
 # cmake
-emcmake cmake -Bwasm-build -DBoost_INCLUDE_DIR=${boost_dir}
+cmake -Bwasm-build -DBoost_INCLUDE_DIR=${boost_dir} -DTW_COMPILE_WASM=ON -DCMAKE_TOOLCHAIN_FILE=${EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake
 
 # make
-emmake make -Cwasm-build
+make -j8 -Cwasm-build
 
 popd

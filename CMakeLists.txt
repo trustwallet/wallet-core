@@ -44,6 +44,10 @@ include_directories(${PREFIX}/include)
 link_directories(${PREFIX}/lib)
 
 add_subdirectory(trezor-crypto)
+if (TW_COMPILE_WASM)
+    message(STATUS "Wasm build enabled")
+    add_subdirectory(wasm)
+endif()
 
 macro(find_host_package)
   set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
@@ -112,7 +116,7 @@ target_include_directories(TrustWalletCore
         ${CMAKE_CURRENT_SOURCE_DIR}/build/local/include
 )
 
-if(NOT ANDROID AND NOT IOS_PLATFORM)
+if(NOT ANDROID AND NOT IOS_PLATFORM AND NOT TW_COMPILE_WASM)
     add_subdirectory(tests)
     add_subdirectory(walletconsole/lib)
     add_subdirectory(walletconsole)

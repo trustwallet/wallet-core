@@ -37,7 +37,7 @@ jobs:
     - name: CMake (coverage/clang-tidy/clang-asan)
       if: github.ref == 'refs/heads/master'
       run: |
-        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON -DTrustWalletCore_ENABLE_CLANG_TIDY=ON -DCLANG_ASAN=ON
+        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON -DTW_ENABLE_CLANG_TIDY=ON -DCLANG_ASAN=ON
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
