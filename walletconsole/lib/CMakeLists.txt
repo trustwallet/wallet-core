@@ -11,9 +11,4 @@ add_library(walletconsolelib ${walletconsolelib_sources})
 target_link_libraries(walletconsolelib TrezorCrypto TrustWalletCore protobuf Boost::boost)
 target_include_directories(walletconsolelib PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 target_compile_options(walletconsolelib PRIVATE "-Wall")
-
-set_target_properties(walletconsolelib
-    PROPERTIES
-        CXX_STANDARD 20
-        CXX_STANDARD_REQUIRED ON
-)
+target_compile_features(walletconsolelib PRIVATE cxx_std_20)
