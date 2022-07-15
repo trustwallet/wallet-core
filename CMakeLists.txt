@@ -20,6 +20,7 @@ endif()
 
 include(GNUInstallDirs)
 include(cmake/StandardSettings.cmake)
+include(cmake/CompilerWarnings.cmake)
 include(cmake/StaticAnalyzers.cmake)
 
 add_library(${PROJECT_NAME}_INTERFACE INTERFACE)
@@ -27,6 +28,7 @@ target_compile_features(${PROJECT_NAME}_INTERFACE INTERFACE cxx_std_20)
 target_compile_options(${PROJECT_NAME}_INTERFACE INTERFACE -Wshorten-64-to-32 -Wall)
 target_include_directories(${PROJECT_NAME}_INTERFACE INTERFACE ${PREFIX}/include)
 target_link_directories(${PROJECT_NAME}_INTERFACE INTERFACE ${PREFIX}/lib)
+set_project_warnings(${PROJECT_NAME}_INTERFACE)
 
 # Configure CCache if available
 find_program(CCACHE_FOUND ccache)
