@@ -99,7 +99,7 @@ struct Script {
     Proto::Script proto() const {
         auto script = Proto::Script();
         script.set_code_hash(std::string(codeHash.begin(), codeHash.end()));
-        script.set_hash_type(Constants::gHashTypeRegistry[hashType]);
+        script.set_hash_type(Constants::gHashTypeRegistry.at(hashType));
         script.set_args(std::string(args.begin(), args.end()));
         return script;
     }

@@ -46,7 +46,7 @@ json Script::JSON() const {
         return nullptr;
     } else {
         return json{{"code_hash", hexEncoded(codeHash)},
-                    {"hash_type", Constants::gHashTypeRegistry[hashType]},
+                    {"hash_type", Constants::gHashTypeRegistry.at(hashType)},
                     {"args", hexEncoded(args)}};
     }
 }

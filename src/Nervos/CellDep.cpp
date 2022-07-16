@@ -25,7 +25,7 @@ CellDep::CellDep(const Proto::CellDep& cellDep) : outPoint(cellDep.out_point()) 
 Proto::CellDep CellDep::proto() const {
     auto cellDep = Proto::CellDep();
     *cellDep.mutable_out_point() = outPoint.proto();
-    cellDep.set_dep_type(Constants::gDepTypeRegistry[depType]);
+    cellDep.set_dep_type(Constants::gDepTypeRegistry.at(depType));
     return cellDep;
 }
 
@@ -35,5 +35,5 @@ void CellDep::encode(Data& data) const {
 }
 
 json CellDep::JSON() const {
-    return json{{"out_point", outPoint.JSON()}, {"dep_type", Constants::gDepTypeRegistry[depType]}};
+    return json{{"out_point", outPoint.JSON()}, {"dep_type", Constants::gDepTypeRegistry.at(depType)}};
 }
