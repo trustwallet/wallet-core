@@ -8,8 +8,8 @@
 
 #include "Base58.h"
 #include "BinaryCoding.h"
-#include "Bitcoin/SegwitAddress.h"
 #include "Bitcoin/CashAddress.h"
+#include "Bitcoin/SegwitAddress.h"
 #include "Coin.h"
 #include "Mnemonic.h"
 
@@ -20,9 +20,9 @@
 
 #include <TrezorCrypto/bip32.h>
 #include <TrezorCrypto/bip39.h>
+#include <TrezorCrypto/cardano.h>
 #include <TrezorCrypto/curves.h>
 #include <TrezorCrypto/memzero.h>
-#include <TrezorCrypto/cardano.h>
 
 #include <array>
 #include <cstring>
@@ -31,9 +31,9 @@ using namespace TW;
 
 namespace {
 
-uint32_t fingerprint(HDNode *node, Hash::Hasher hasher);
-std::string serialize(const HDNode *node, uint32_t fingerprint, uint32_t version, bool use_public, Hash::Hasher hasher);
-bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher, HDNode *node);
+uint32_t fingerprint(HDNode* node, Hash::Hasher hasher);
+std::string serialize(const HDNode* node, uint32_t fingerprint, uint32_t version, bool use_public, Hash::Hasher hasher);
+bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher, HDNode* node);
 HDNode getNode(const HDWallet& wallet, TWCurve curve, const DerivationPath& derivationPath);
 HDNode getMasterNode(const HDWallet& wallet, TWCurve curve);
 
@@ -125,32 +125,32 @@ PrivateKey HDWallet::getKey(TWCoinType coin, const DerivationPath& derivationPat
     const auto privateKeyType = getPrivateKeyType(curve);
     const auto node = getNode(*this, curve, derivationPath);
     switch (privateKeyType) {
-        case PrivateKeyTypeDoubleExtended: // special handling for Cardano
-            {
-                if (derivationPath.indices.size() < 4 || derivationPath.indices[3].value > 1) {
-                    // invalid derivation path
-                    return PrivateKey(Data(192));
-                }
-                const DerivationPath stakingPath = cardanoStakingDerivationPath(derivationPath);
+    case PrivateKeyTypeDoubleExtended: // special handling for Cardano
+    {
+        if (derivationPath.indices.size() < 4 || derivationPath.indices[3].value > 1) {
+            // invalid derivation path
+            return PrivateKey(Data(192));
+        }
+        const DerivationPath stakingPath = cardanoStakingDerivationPath(derivationPath);
 
-                auto pkData = Data(node.private_key, node.private_key + PrivateKey::size);
-                auto extData = Data(node.private_key_extension, node.private_key_extension + PrivateKey::size);
-                auto chainCode = Data(node.chain_code, node.chain_code + PrivateKey::size);
+        auto pkData = Data(node.private_key, node.private_key + PrivateKey::size);
+        auto extData = Data(node.private_key_extension, node.private_key_extension + PrivateKey::size);
+        auto chainCode = Data(node.chain_code, node.chain_code + PrivateKey::size);
 
-                // repeat with staking path
-                const auto node2 = getNode(*this, curve, stakingPath);
-                auto pkData2 = Data(node2.private_key, node2.private_key + PrivateKey::size);
-                auto extData2 = Data(node2.private_key_extension, node2.private_key_extension + PrivateKey::size);
-                auto chainCode2 = Data(node2.chain_code, node2.chain_code + PrivateKey::size);
+        // repeat with staking path
+        const auto node2 = getNode(*this, curve, stakingPath);
+        auto pkData2 = Data(node2.private_key, node2.private_key + PrivateKey::size);
+        auto extData2 = Data(node2.private_key_extension, node2.private_key_extension + PrivateKey::size);
+        auto chainCode2 = Data(node2.chain_code, node2.chain_code + PrivateKey::size);
 
-                return PrivateKey(pkData, extData, chainCode, pkData2, extData2, chainCode2);
-            }
+        return PrivateKey(pkData, extData, chainCode, pkData2, extData2, chainCode2);
+    }
 
-        case PrivateKeyTypeDefault32:
-        default:
-            // default path
-            auto data = Data(node.private_key, node.private_key + PrivateKey::size);
-            return PrivateKey(data);
+    case PrivateKeyTypeDefault32:
+    default:
+        // default path
+        auto data = Data(node.private_key, node.private_key + PrivateKey::size);
+        return PrivateKey(data);
     }
 }
 
@@ -173,7 +173,7 @@ std::string HDWallet::getExtendedPrivateKeyAccount(TWPurpose purpose, TWCoinType
     if (version == TWHDVersionNone) {
         return "";
     }
-    
+
     const auto curve = TWCoinTypeCurve(coin);
     const auto path = TW::derivationPath(coin, derivation);
     auto derivationPath = DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(path.coin(), true)});
@@ -187,7 +187,7 @@ std::string HDWallet::getExtendedPublicKeyAccount(TWPurpose purpose, TWCoinType 
     if (version == TWHDVersionNone) {
         return "";
     }
-    
+
     const auto curve = TWCoinTypeCurve(coin);
     const auto path = TW::derivationPath(coin, derivation);
     auto derivationPath = DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(path.coin(), true)});
@@ -261,13 +261,13 @@ HDWallet::PrivateKeyType HDWallet::getPrivateKeyType(TWCurve curve) {
 
 namespace {
 
-uint32_t fingerprint(HDNode *node, Hash::Hasher hasher) {
+uint32_t fingerprint(HDNode* node, Hash::Hasher hasher) {
     hdnode_fill_public_key(node);
     auto digest = Hash::hash(hasher, node->public_key, 33);
-    return ((uint32_t) digest[0] << 24) + (digest[1] << 16) + (digest[2] << 8) + digest[3];
+    return ((uint32_t)digest[0] << 24) + (digest[1] << 16) + (digest[2] << 8) + digest[3];
 }
 
-std::string serialize(const HDNode *node, uint32_t fingerprint, uint32_t version, bool use_public, Hash::Hasher hasher) {
+std::string serialize(const HDNode* node, uint32_t fingerprint, uint32_t version, bool use_public, Hash::Hasher hasher) {
     Data node_data;
     node_data.reserve(78);
 
@@ -322,13 +322,13 @@ HDNode getNode(const HDWallet& wallet, TWCurve curve, const DerivationPath& deri
     auto node = getMasterNode(wallet, curve);
     for (auto& index : derivationPath.indices) {
         switch (privateKeyType) {
-            case HDWallet::PrivateKeyTypeDoubleExtended: // used by Cardano, special handling
-                hdnode_private_ckd_cardano(&node, index.derivationIndex());
-                break;
-           case HDWallet::PrivateKeyTypeDefault32:
-            default:
-                hdnode_private_ckd(&node, index.derivationIndex());
-                break;
+        case HDWallet::PrivateKeyTypeDoubleExtended: // used by Cardano, special handling
+            hdnode_private_ckd_cardano(&node, index.derivationIndex());
+            break;
+        case HDWallet::PrivateKeyTypeDefault32:
+        default:
+            hdnode_private_ckd(&node, index.derivationIndex());
+            break;
         }
     }
     return node;
@@ -338,21 +338,19 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve) {
     const auto privateKeyType = HDWallet::getPrivateKeyType(curve);
     auto node = HDNode();
     switch (privateKeyType) {
-        // used by Cardano
-        case HDWallet::PrivateKeyTypeDoubleExtended: {
-            // special handling for extended, use entropy (not seed)
-            const auto entropy = wallet.getEntropy();
-            uint8_t cardano_secret[CARDANO_SECRET_LENGTH];
-            secret_from_entropy_cardano_icarus((const uint8_t *)"", 0, entropy.data(),
-                                     int(entropy.size()), cardano_secret, nullptr);
-            hdnode_from_secret_cardano(cardano_secret, &node);
-            break;
-        }
-
-        case HDWallet::PrivateKeyTypeDefault32:
-        default:
-            hdnode_from_seed(wallet.getSeed().data(), HDWallet::seedSize, curveName(curve), &node);
-            break;
+    // used by Cardano
+    case HDWallet::PrivateKeyTypeDoubleExtended: {
+        // special handling for extended, use entropy (not seed)
+        const auto entropy = wallet.getEntropy();
+        uint8_t cardano_secret[CARDANO_SECRET_LENGTH];
+        secret_from_entropy_cardano_icarus((const uint8_t*)"", 0, entropy.data(), int(entropy.size()), cardano_secret, nullptr);
+        hdnode_from_secret_cardano(cardano_secret, &node);
+        break;
+    }
+    case HDWallet::PrivateKeyTypeDefault32:
+    default:
+        hdnode_from_seed(wallet.getSeed().data(), HDWallet::seedSize, curveName(curve), &node);
+        break;
     }
     return node;
 }
