@@ -344,7 +344,7 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve) {
             const auto entropy = wallet.getEntropy();
             uint8_t cardano_secret[CARDANO_SECRET_LENGTH];
             secret_from_entropy_cardano_icarus((const uint8_t *)"", 0, entropy.data(),
-                                     int(entropy.size()), cardano_secret, NULL);
+                                     int(entropy.size()), cardano_secret, nullptr);
             hdnode_from_secret_cardano(cardano_secret, &node);
             break;
         }
