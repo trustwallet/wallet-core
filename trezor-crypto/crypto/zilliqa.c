@@ -36,7 +36,7 @@ int zil_schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key, const ui
 	sha256_Raw(msg, msg_len, hash);
 
 	rfc6979_state rng;
-	init_rfc6979(priv_key, hash, &rng);
+	init_rfc6979(priv_key, hash, curve, &rng);
 
 	for (i = 0; i < 10000; i++) {
 		// generate K deterministically

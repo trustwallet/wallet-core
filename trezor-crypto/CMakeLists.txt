@@ -26,7 +26,7 @@ set(TW_WARNING_FLAGS
 )
 
 add_library(TrezorCrypto
-    crypto/bignum.c crypto/ecdsa.c crypto/curves.c crypto/secp256k1.c crypto/rand.c crypto/hmac.c crypto/bip32.c crypto/bip39.c crypto/pbkdf2.c crypto/base58.c crypto/base32.c
+    crypto/bignum.c crypto/ecdsa.c crypto/curves.c crypto/secp256k1.c crypto/rand.c crypto/hmac.c crypto/bip32.c crypto/bip39.c crypto/slip39.c crypto/pbkdf2.c crypto/base58.c crypto/base32.c
     crypto/address.c
     crypto/script.c
     crypto/ripemd160.c

@@ -72,7 +72,6 @@
 #include <TrezorCrypto/sha2.h>
 #include <TrezorCrypto/sha3.h>
 #include <TrezorCrypto/shamir.h>
-#include <TrezorCrypto/zilliqa.h> // [wallet-core]
 #include <TrezorCrypto/slip39.h>
 #include <TrezorCrypto/slip39_wordlist.h>
 
@@ -2005,6 +2004,8 @@ START_TEST(test_bip32_optimized) {
 }
 END_TEST
 
+#if USE_BIP32_CACHE
+
 START_TEST(test_bip32_cache_1) {
   HDNode node1, node2;
   int i, r;
@@ -2116,6 +2117,7 @@ START_TEST(test_bip32_cache_2) {
   ck_assert_mem_eq(&(nodea[8]), &(nodeb[8]), sizeof(HDNode));
 }
 END_TEST
+#endif
 
 START_TEST(test_bip32_nist_seed) {
   HDNode node;
@@ -5279,8 +5281,10 @@ START_TEST(test_mnemonic) {
   a = vectors;
   b = vectors + 1;
   c = vectors + 2;
+  int buf_size = 308;
+  char buf[buf_size];
   while (*a && *b && *c) {
-    m = mnemonic_from_data(fromhex(*a), strlen(*a) / 2);
+    m = mnemonic_from_data(fromhex(*a), strlen(*a) / 2, buf, buf_size);
     ck_assert_str_eq(m, *b);
     mnemonic_to_seed(m, "TREZOR", seed, 0);
     ck_assert_mem_eq(seed, fromhex(*c), strlen(*c) / 2);
@@ -5292,6 +5296,7 @@ START_TEST(test_mnemonic) {
     a += 3;
     b += 3;
     c += 3;
+    memzero(buf, buf_size);
   }
 }
 END_TEST
@@ -7020,6 +7025,8 @@ START_TEST(test_ed25519_modl_sub) {
 }
 END_TEST
 
+#if USE_MONERO
+
 START_TEST(test_ge25519_double_scalarmult_vartime2) {
   char tests[][5][65] = {
       {"c537208ed4985e66e9f7a35c9a69448a732ba93960bbbd2823604f7ae9e3ed08",
@@ -7144,6 +7151,8 @@ START_TEST(test_ge25519_double_scalarmult_vartime2) {
 }
 END_TEST
 
+#endif
+
 static void test_bip32_ecdh_init_node(HDNode *node, const char *seed_str,
                                       const char *curve_name) {
   hdnode_from_seed((const uint8_t *)seed_str, strlen(seed_str), curve_name,
@@ -7242,6 +7251,8 @@ START_TEST(test_output_script) {
   }
 }
 END_TEST
+
+#if USE_ETHEREUM
 
 START_TEST(test_ethereum_pubkeyhash) {
   uint8_t pubkeyhash[20];
@@ -7403,6 +7414,8 @@ START_TEST(test_rsk_address) {
   }
 }
 END_TEST
+
+#endif
 
 #if USE_NEM
 // test vectors from
@@ -9040,6 +9053,7 @@ static int my_strncasecmp(const char *s1, const char *s2, size_t n) {
 }
 
 #include "test_check_cashaddr.h"
+#include "test_check_zilliqa.h" // [wallet-core]
 #if USE_SEGWIT
 #include "test_check_segwit.h"
 #endif
@@ -9404,12 +9418,6 @@ Suite *test_suite(void) {
   tcase_add_test(tc, test_xmr_varint);
   suite_add_tcase(s, tc);
 #endif
-
-  // [wallet-core]
-  tc = tcase_create("schnorr");
-  tcase_add_test(tc, test_schnorr_sign_verify);
-  tcase_add_test(tc, test_schnorr_fail_verify);
-  suite_add_tcase(s, tc);
 
   return s;
 }

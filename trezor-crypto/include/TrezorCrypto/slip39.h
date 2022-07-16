@@ -1,7 +1,7 @@
 /**
- * Copyright (c) 2013-2014 Tomas Dzetkulic
- * Copyright (c) 2013-2014 Pavol Rusnak
- * Copyright (c) 2015-2017 Jochen Hoenicke
+ * This file is part of the TREZOR project, https://trezor.io/
+ *
+ * Copyright (c) SatoshiLabs
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the "Software"),
@@ -22,20 +22,26 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __RFC6979_H__
-#define __RFC6979_H__
+#ifndef __SLIP39_H__
+#define __SLIP39_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stdbool.h>
 #include <stdint.h>
-#include "bignum.h"
-#include "ecdsa.h"
-#include "hmac_drbg.h"
 
-// rfc6979 pseudo random number generator state
-typedef HMAC_DRBG_CTX rfc6979_state;
+const char* get_word(uint16_t index);
 
-void init_rfc6979(const uint8_t *priv_key, const uint8_t *hash,
-                  const ecdsa_curve *curve, rfc6979_state *rng);
-void generate_rfc6979(uint8_t rnd[32], rfc6979_state *rng);
-void generate_k_rfc6979(bignum256 *k, rfc6979_state *rng);
+bool word_index(uint16_t* index, const char* word, uint8_t word_length);
+
+uint16_t slip39_word_completion_mask(uint16_t prefix);
+
+const char* button_sequence_to_word(uint16_t prefix);
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
 #endif

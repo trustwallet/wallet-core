@@ -1,3 +1,6 @@
+#include <TrezorCrypto/zilliqa.h>
+#include <TrezorCrypto/ecdsa.h>
+
 START_TEST(test_zil_schnorr_sign_verify) {
   static struct {
     const char *message;
@@ -86,7 +89,7 @@ START_TEST(test_zil_schnorr_sign_verify) {
     memcpy(priv_key, fromhex(test_cases[i].priv_key), 32);
     memcpy(&buf_raw, fromhex(test_cases[i].k_hex), 32);
     bn_read_be(buf_raw, &k);
-    schnorr_sign(curve, priv_key, &k, (const uint8_t *)test_cases[i].message,
+    zil_schnorr_sign_k(curve, priv_key, &k, (const uint8_t *)test_cases[i].message,
                  strlen(test_cases[i].message), &result);
 
     memcpy(&expected.s, fromhex(test_cases[i].s_hex), 32);
@@ -96,7 +99,7 @@ START_TEST(test_zil_schnorr_sign_verify) {
     ck_assert_mem_eq(&expected.s, &result.s, 32);
 
     ecdsa_get_public_key33(curve, priv_key, pub_key);
-    res = schnorr_verify(curve, pub_key, (const uint8_t *)test_cases[i].message,
+    res = zil_schnorr_verify_pair(curve, pub_key, (const uint8_t *)test_cases[i].message,
                        strlen(test_cases[i].message), &result);
     ck_assert_int_eq(res, 0);
   }
@@ -132,18 +135,18 @@ START_TEST(test_zil_schnorr_fail_verify) {
   memcpy(&buf_raw, fromhex(test_case.k_hex), 32);
   bn_read_be(buf_raw, &k);
 
-  schnorr_sign(curve, priv_key, &k, (const uint8_t *)test_case.message,
+  zil_schnorr_sign_k(curve, priv_key, &k, (const uint8_t *)test_case.message,
                strlen(test_case.message), &result);
   
   ecdsa_get_public_key33(curve, priv_key, pub_key);
 
   // Test result = 0 (OK)
-  res = schnorr_verify(curve, pub_key, (const uint8_t *)test_case.message,
+  res = zil_schnorr_verify_pair(curve, pub_key, (const uint8_t *)test_case.message,
                            strlen(test_case.message), &result);
   ck_assert_int_eq(res, 0);
 
   // Test result = 1 (empty message)
-  res = schnorr_verify(curve, pub_key, (const uint8_t *)test_case.message, 0,
+  res = zil_schnorr_verify_pair(curve, pub_key, (const uint8_t *)test_case.message, 0,
                        &result);
   ck_assert_int_eq(res, 1);
 
@@ -151,7 +154,7 @@ START_TEST(test_zil_schnorr_fail_verify) {
   bn_zero(&bn_temp);
   bn_write_be(&bn_temp, bad_result.r);
   memcpy(bad_result.s, result.s, 32);
-  res = schnorr_verify(curve, pub_key, (const uint8_t *)test_case.message,
+  res = zil_schnorr_verify_pair(curve, pub_key, (const uint8_t *)test_case.message,
                        strlen(test_case.message), &bad_result);
   ck_assert_int_eq(res, 2);
 
@@ -159,7 +162,7 @@ START_TEST(test_zil_schnorr_fail_verify) {
   memcpy(bad_result.r, result.r, 32);
   bn_zero(&bn_temp);
   bn_write_be(&bn_temp, bad_result.s);
-  res = schnorr_verify(curve, pub_key, (const uint8_t *)test_case.message,
+  res = zil_schnorr_verify_pair(curve, pub_key, (const uint8_t *)test_case.message,
                        strlen(test_case.message), &bad_result);
   ck_assert_int_eq(res, 3);
 
@@ -168,7 +171,7 @@ START_TEST(test_zil_schnorr_fail_verify) {
   bn_addi(&bn_temp, 1);
   bn_write_be(&bn_temp, bad_result.r);
   memcpy(bad_result.s, result.s, 32);
-  res = schnorr_verify(curve, pub_key, (const uint8_t *)test_case.message,
+  res = zil_schnorr_verify_pair(curve, pub_key, (const uint8_t *)test_case.message,
                        strlen(test_case.message), &bad_result);
   ck_assert_int_eq(res, 4);
 
@@ -177,7 +180,7 @@ START_TEST(test_zil_schnorr_fail_verify) {
   bn_copy(&curve->order, &bn_temp);
   bn_addi(&bn_temp, 1);
   bn_write_be(&bn_temp, bad_result.s);
-  res = schnorr_verify(curve, pub_key, (const uint8_t *)test_case.message,
+  res = zil_schnorr_verify_pair(curve, pub_key, (const uint8_t *)test_case.message,
                        strlen(test_case.message), &bad_result);
   ck_assert_int_eq(res, 5);
 
@@ -185,7 +188,7 @@ START_TEST(test_zil_schnorr_fail_verify) {
   bn_copy(&curve->order, &bn_temp);
   bn_write_be(&bn_temp, bad_result.r);
   memcpy(bad_result.s, result.s, 32);
-  res = schnorr_verify(curve, pub_key, (const uint8_t *)test_case.message,
+  res = zil_schnorr_verify_pair(curve, pub_key, (const uint8_t *)test_case.message,
                        strlen(test_case.message), &bad_result);
   ck_assert_int_eq(res, 6);
 
@@ -193,7 +196,7 @@ START_TEST(test_zil_schnorr_fail_verify) {
   memcpy(bad_result.r, result.r, 32);
   bn_copy(&curve->order, &bn_temp);
   bn_write_be(&bn_temp, bad_result.s);
-  res = schnorr_verify(curve, pub_key, (const uint8_t *)test_case.message,
+  res = zil_schnorr_verify_pair(curve, pub_key, (const uint8_t *)test_case.message,
                        strlen(test_case.message), &bad_result);
   ck_assert_int_eq(res, 7);
 
@@ -204,7 +207,7 @@ START_TEST(test_zil_schnorr_fail_verify) {
   memcpy(bad_result.r, result.r, 32);
   memcpy(bad_result.s, result.s, 32);
   test_case.message = "12";
-  res = schnorr_verify(curve, pub_key, (const uint8_t *)test_case.message,
+  res = zil_schnorr_verify_pair(curve, pub_key, (const uint8_t *)test_case.message,
                        strlen(test_case.message), &bad_result);
   ck_assert_int_eq(res, 10);
 }
