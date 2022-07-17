@@ -139,9 +139,10 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
         return ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) == 0;
     case TWPublicKeyTypeED25519Blake2b:
         return ed25519_sign_open_blake2b(message.data(), message.size(), bytes.data(), signature.data()) == 0;
-    case TWPublicKeyTypeED25519Extended:
-        throw std::logic_error("Not yet implemented");
-        // ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) == 0;
+    case TWPublicKeyTypeED25519Extended: {
+        const auto key = subData(bytes, 0, ed25519Size);
+        return ed25519_sign_open(message.data(), message.size(), key.data(), signature.data()) == 0;
+    }
     case TWPublicKeyTypeCURVE25519: {
         auto ed25519PublicKey = Data();
         ed25519PublicKey.resize(PublicKey::ed25519Size);

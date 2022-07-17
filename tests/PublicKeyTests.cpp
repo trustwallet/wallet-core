@@ -220,12 +220,9 @@ TEST(PublicKeyTests, VerifyEd25519Extended) {
     const auto message = TW::data("Hello");
     const auto digest = Hash::sha256(message);
     const auto signature = privateKey.sign(digest, TWCurveED25519Extended);
-    try {
-        publicKey.verify(signature, message);
-    } catch (const std::logic_error&) {
-        return; // OK, not implemented
-    }
-    FAIL() << "Missing expected exception";
+    const auto valid = publicKey.verify(signature, digest);
+
+    EXPECT_TRUE(valid);
 }
 
 TEST(PublicKeyTests, VerifySchnorr) {
