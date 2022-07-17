@@ -90,10 +90,10 @@ int hdnode_private_ckd_cardano(HDNode *inout, uint32_t index) {
     keysize = 64;
   }
 
-  static CONFIDENTIAL uint8_t data[1 + 64 + 4];
-  static CONFIDENTIAL uint8_t z[32 + 32];
-  static CONFIDENTIAL uint8_t priv_key[64];
-  static CONFIDENTIAL uint8_t res_key[64];
+  CONFIDENTIAL uint8_t data[1 + 64 + 4];
+  CONFIDENTIAL uint8_t z[32 + 32];
+  CONFIDENTIAL uint8_t priv_key[64];
+  CONFIDENTIAL uint8_t res_key[64];
 
   write_le(data + keysize + 1, index);
 
@@ -112,12 +112,12 @@ int hdnode_private_ckd_cardano(HDNode *inout, uint32_t index) {
     memcpy(data + 1, inout->public_key + 1, 32);
   }
 
-  static CONFIDENTIAL HMAC_SHA512_CTX ctx;
+  CONFIDENTIAL HMAC_SHA512_CTX ctx;
   hmac_sha512_Init(&ctx, inout->chain_code, 32);
   hmac_sha512_Update(&ctx, data, 1 + keysize + 4);
   hmac_sha512_Final(&ctx, z);
 
-  static CONFIDENTIAL uint8_t zl8[32];
+  CONFIDENTIAL uint8_t zl8[32];
   memzero(zl8, 32);
 
   /* get 8 * Zl */
@@ -177,8 +177,8 @@ int hdnode_from_secret_cardano(const uint8_t secret[CARDANO_SECRET_LENGTH],
 // SLIP-0023.
 int secret_from_seed_cardano_slip23(const uint8_t *seed, int seed_len,
                                     uint8_t secret_out[CARDANO_SECRET_LENGTH]) {
-  static CONFIDENTIAL uint8_t I[SHA512_DIGEST_LENGTH];
-  static CONFIDENTIAL HMAC_SHA512_CTX ctx;
+  CONFIDENTIAL uint8_t I[SHA512_DIGEST_LENGTH];
+  CONFIDENTIAL HMAC_SHA512_CTX ctx;
 
   hmac_sha512_Init(&ctx, (const uint8_t *)ED25519_CARDANO_NAME,
                    strlen(ED25519_CARDANO_NAME));
@@ -200,10 +200,10 @@ int secret_from_seed_cardano_slip23(const uint8_t *seed, int seed_len,
 // https://github.com/cardano-foundation/CIPs/blob/09d7d8ee1bd64f7e6b20b5a6cae088039dce00cb/CIP-0003/Ledger.md
 int secret_from_seed_cardano_ledger(const uint8_t *seed, int seed_len,
                                     uint8_t secret_out[CARDANO_SECRET_LENGTH]) {
-  static CONFIDENTIAL uint8_t chain_code[SHA256_DIGEST_LENGTH];
-  static CONFIDENTIAL uint8_t root_key[SHA512_DIGEST_LENGTH];
-  static CONFIDENTIAL HMAC_SHA256_CTX ctx;
-  static CONFIDENTIAL HMAC_SHA512_CTX sctx;
+  CONFIDENTIAL uint8_t chain_code[SHA256_DIGEST_LENGTH];
+  CONFIDENTIAL uint8_t root_key[SHA512_DIGEST_LENGTH];
+  CONFIDENTIAL HMAC_SHA256_CTX ctx;
+  CONFIDENTIAL HMAC_SHA512_CTX sctx;
 
   const uint8_t *intermediate_result = seed;
   int intermediate_result_len = seed_len;
@@ -260,8 +260,8 @@ int secret_from_entropy_cardano_icarus(
     const uint8_t *pass, int pass_len, const uint8_t *entropy, int entropy_len,
     uint8_t secret_out[CARDANO_SECRET_LENGTH],
     void (*progress_callback)(uint32_t, uint32_t)) {
-  static CONFIDENTIAL PBKDF2_HMAC_SHA512_CTX pctx;
-  static CONFIDENTIAL uint8_t digest[SHA512_DIGEST_LENGTH];
+  CONFIDENTIAL PBKDF2_HMAC_SHA512_CTX pctx;
+  CONFIDENTIAL uint8_t digest[SHA512_DIGEST_LENGTH];
   uint32_t progress = 0;
 
   // PASS 1: first 64 bytes

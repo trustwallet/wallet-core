@@ -213,19 +213,20 @@ TEST(PublicKeyTests, VerifyAsDER) {
     }
 }
 
-// TEST(PublicKeyTests, VerifyEd25519Extended) {
-//     const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+TEST(PublicKeyTests, VerifyEd25519Extended) {
+    const auto privateKey = PrivateKey(parse_hex("e8c8c5b2df13f3abed4e6b1609c808e08ff959d7e6fc3d849e3f2880550b574437aa559095324d78459b9bb2da069da32337e1cc5da78f48e1bd084670107f3110f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26fae0d152bb611cb9ff34e945e4ff627e6fba81da687a601a879759cd76530b5744424db69a75edd4780a5fbc05d1a3c84ac4166ff8e424808481dd8e77627ce5f5bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276"));
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Extended);
 
-//     const Data messageData = TW::data("Hello");
-//     const Data digest = Hash::sha256(messageData);
-
-//     try {
-//         privateKey.sign(digest, TWCurveED25519Extended);
-//     } catch (const std::invalid_argument&) {
-//         return; // OK, not implemented
-//     }
-//     FAIL() << "Missing expected exception";
-// }
+    const auto message = TW::data("Hello");
+    const auto digest = Hash::sha256(message);
+    const auto signature = privateKey.sign(digest, TWCurveED25519Extended);
+    try {
+        publicKey.verify(signature, message);
+    } catch (const std::logic_error&) {
+        return; // OK, not implemented
+    }
+    FAIL() << "Missing expected exception";
+}
 
 TEST(PublicKeyTests, VerifySchnorr) {
     const auto key = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));

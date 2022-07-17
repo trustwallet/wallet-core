@@ -125,8 +125,8 @@ class HDWallet {
   public:
     // Private key type (later could be moved out of HDWallet)
     enum PrivateKeyType {
-      PrivateKeyTypeDefault32 = 0, // 32-byte private key
-      PrivateKeyTypeDoubleExtended = 1, // used by Cardano
+      PrivateKeyTypeDefault32 = 0,      // 32 bytes private key.
+      PrivateKeyTypeDoubleExtended = 1, // 96 bytes private key. (used by coins like ADA)
     };
     
     // obtain privateKeyType used by the coin/curve
@@ -135,7 +135,7 @@ class HDWallet {
   private:
     void updateSeedAndEntropy(bool check = true);
 
-    // For Cardano, derive 2nd, staking derivation path from the primary one
+    // For Cardano, derive 2nd staking derivation path from the primary one
     static DerivationPath cardanoStakingDerivationPath(const DerivationPath& path);
 };
 
