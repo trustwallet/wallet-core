@@ -7,6 +7,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.14" CACHE STRING "Minimum OS X deployment version" FORCE)
 
 #
+# IDE Settings
+#
+set(TW_IDE_CLION "Enable if your IDE is CLion" OFF)
+set(TW_IDE_VSCODE "Enable if your IDE is VSCode" OFF)
+
+#
 # Static analyzers
 #
 # Currently supporting: Clang-Tidy, PVS-Studio.

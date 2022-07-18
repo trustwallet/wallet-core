@@ -1,9 +1,11 @@
 macro(target_enable_asan target)
     message("-- ASAN Enabled, Configuring...")
     target_compile_options(${target} PUBLIC
-            $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>>:-fsanitize=address -fno-omit-frame-pointer>)
+            $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>>:-fsanitize=address -fno-omit-frame-pointer>
+            $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:AppleClang>>:-fsanitize=address -fno-omit-frame-pointer>)
     target_link_options(${target} PUBLIC
-            $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>>:-fsanitize=address -fno-omit-frame-pointer>)
+            $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>>:-fsanitize=address -fno-omit-frame-pointer>
+            $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:AppleClang>>:-fsanitize=address -fno-omit-frame-pointer>)
 endmacro()
 
 macro(target_enable_coverage target)
@@ -12,10 +14,24 @@ macro(target_enable_coverage target)
     # The option is a synonym for -fprofile-arcs -ftest-coverage (when compiling) and -lgcov (when linking).
     # See the documentation for those options for more details.
     # https://gcc.gnu.org/onlinedocs/gcc-9.3.0/gcc/Instrumentation-Options.html
-    target_compile_options(${target} PUBLIC
-            $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>>:--coverage>)
-    target_link_options(${target} PUBLIC
-            $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>>:--coverage>)
+    if (TW_IDE_CLION)
+        message(STATUS "Code coverage for Clion ON")
+        target_compile_options(${target} PUBLIC
+                $<$<AND:$<PLATFORM_ID:Linux>,$<CXX_COMPILER_ID:Clang>>:-fprofile-instr-generate -fcoverage-mapping>
+                $<$<AND:$<PLATFORM_ID:Darwin>,$<CXX_COMPILER_ID:Clang>>:-fprofile-instr-generate -fcoverage-mapping>
+                $<$<AND:$<PLATFORM_ID:Darwin>,$<CXX_COMPILER_ID:AppleClang>>:-fprofile-instr-generate -fcoverage-mapping>)
+        target_link_options(${target} PUBLIC
+                $<$<AND:$<PLATFORM_ID:Linux>,$<CXX_COMPILER_ID:Clang>>:-fprofile-instr-generate -fcoverage-mapping>
+                $<$<AND:$<PLATFORM_ID:Darwin>,$<CXX_COMPILER_ID:Clang>>:-fprofile-instr-generate -fcoverage-mapping>
+                $<$<AND:$<PLATFORM_ID:Darwin>,$<CXX_COMPILER_ID:AppleClang>>:-fprofile-instr-generate -fcoverage-mapping>)
+    else ()
+        target_compile_options(${target} PUBLIC
+                $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>>:--coverage>
+                $<$<AND:$<PLATFORM_ID:Darwin>,$<CXX_COMPILER_ID:AppleClang>>:--coverage>)
+        target_link_options(${target} PUBLIC
+                $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>>:--coverage>
+                $<$<AND:$<PLATFORM_ID:Darwin>,$<CXX_COMPILER_ID:AppleClang>>:--coverage>)
+    endif ()
 endmacro()
 
 add_library(tw_error_settings INTERFACE)
@@ -64,7 +80,9 @@ target_compile_features(tw_defaults_features INTERFACE cxx_std_20)
 
 target_compile_options(tw_optimize_settings INTERFACE
         $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>>:-O0 -g>
+        $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:AppleClang>>:-O0 -g>
         $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang>>:-O2>
+        $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:AppleClang>>:-O2>
         )
 
 function(set_project_warnings project_name)
