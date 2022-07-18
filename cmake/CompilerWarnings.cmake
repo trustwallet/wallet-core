@@ -24,7 +24,7 @@ macro(target_enable_coverage target)
                 $<$<AND:$<PLATFORM_ID:Linux>,$<CXX_COMPILER_ID:Clang>>:-fprofile-instr-generate -fcoverage-mapping>
                 $<$<AND:$<PLATFORM_ID:Darwin>,$<CXX_COMPILER_ID:Clang>>:-fprofile-instr-generate -fcoverage-mapping>
                 $<$<AND:$<PLATFORM_ID:Darwin>,$<CXX_COMPILER_ID:AppleClang>>:-fprofile-instr-generate -fcoverage-mapping>)
-    else ()
+    else()
         target_compile_options(${target} PUBLIC
                 $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>>:--coverage>
                 $<$<AND:$<PLATFORM_ID:Darwin>,$<CXX_COMPILER_ID:AppleClang>>:--coverage>)
