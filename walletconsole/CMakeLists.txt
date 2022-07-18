@@ -9,7 +9,5 @@ file(GLOB walletconsole_sources *.cpp)
 add_executable(walletconsole ${walletconsole_sources})
 target_link_libraries(walletconsole walletconsolelib TrezorCrypto TrustWalletCore protobuf Boost::boost)
 target_include_directories(walletconsole PRIVATE ${CMAKE_SOURCE_DIR}/walletconsole/lib ${CMAKE_SOURCE_DIR}/src)
-target_compile_options(walletconsole PRIVATE "-Wall")
-target_compile_features(walletconsole PRIVATE cxx_std_20)
 
 INSTALL(TARGETS walletconsole DESTINATION ${CMAKE_INSTALL_BINDIR})
