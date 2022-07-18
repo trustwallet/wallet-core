@@ -33,3 +33,42 @@ option(TW_CODE_COVERAGE "Enable coverage reporting" OFF)
 # Compiler warnings options
 #
 option(TW_WARNINGS_AS_ERRORS "Compiler Options as Error" OFF)
+
+#
+# Compilation Speed options
+#
+option(TW_ENABLE_CCACHE "Enable the usage of Ccache, in order to speed up rebuild times." ON)
+
+if (TW_ENABLE_CCACHE)
+    find_program(CCACHE_FOUND ccache)
+    if (CCACHE_FOUND)
+        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+        set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+        message(STATUS "ccache activated")
+    endif ()
+endif ()
+
+#
+# Tests/Examples options
+#
+option(TW_UNIT_TESTS "Enable the unit tests of the project" ON)
+option(TW_BUILD_EXAMPLES "Enable the examples builds of the project" ON)
+
+if (ANDROID OR IOS_PLATFORM OR TW_COMPILE_WASM)
+    set(TW_UNIT_TESTS OFF)
+    set(TW_BUILD_EXAMPLES OFF)
+endif()
+
+if (TW_UNIT_TESTS)
+    message(STATUS "Native unit tests activated")
+else()
+    message(STATUS "Native unit tests skipped")
+endif()
+
+if (TW_BUILD_EXAMPLES)
+    message(STATUS "Native examples activated")
+else()
+    message(STATUS "Native examples skipped")
+endif()
+
+

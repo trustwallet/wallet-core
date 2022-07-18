@@ -10,13 +10,13 @@ project(TrustWalletCore)
 
 if (NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang"))
     message(FATAL_ERROR "You should use clang compiler")
-endif()
+endif ()
 
 if ("$ENV{PREFIX}" STREQUAL "")
     set(PREFIX "${CMAKE_SOURCE_DIR}/build/local")
-else()
+else ()
     set(PREFIX "$ENV{PREFIX}")
-endif()
+endif ()
 
 include(GNUInstallDirs)
 include(cmake/StandardSettings.cmake)
@@ -30,27 +30,20 @@ target_include_directories(${PROJECT_NAME}_INTERFACE INTERFACE ${PREFIX}/include
 target_link_directories(${PROJECT_NAME}_INTERFACE INTERFACE ${PREFIX}/lib)
 set_project_warnings(${PROJECT_NAME}_INTERFACE)
 
-# Configure CCache if available
-find_program(CCACHE_FOUND ccache)
-if(CCACHE_FOUND)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
-endif(CCACHE_FOUND)
-
 add_subdirectory(trezor-crypto)
 if (TW_COMPILE_WASM)
     message(STATUS "Wasm build enabled")
     add_subdirectory(wasm)
-endif()
+endif ()
 
 macro(find_host_package)
-  set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-  set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY NEVER)
-  set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE NEVER)
-  find_package(${ARGN})
-  set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY)
-  set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-  set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+    set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+    set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY NEVER)
+    set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE NEVER)
+    find_package(${ARGN})
+    set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY)
+    set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+    set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 endmacro(find_host_package)
 
 find_host_package(Boost REQUIRED)
@@ -61,42 +54,45 @@ include(ExternalProject)
 include(cmake/Protobuf.cmake)
 
 # Source files
-if(${ANDROID})
+if (${ANDROID})
     message("Configuring for JNI")
     file(GLOB_RECURSE sources src/*.c src/*.cc src/*.cpp src/*.h jni/cpp/*.c jni/cpp/*.cpp jni/cpp/*.h jni/cpp/*.c)
     add_library(TrustWalletCore SHARED ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
     find_library(log-lib log)
     target_link_libraries(TrustWalletCore PUBLIC ${PROJECT_NAME}_INTERFACE PRIVATE TrezorCrypto protobuf ${log-lib} Boost::boost)
-else()
+else ()
     message("Configuring standalone")
     file(GLOB_RECURSE sources src/*.c src/*.cc src/*.cpp src/*.h)
     add_library(TrustWalletCore ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
 
     target_link_libraries(TrustWalletCore PUBLIC ${PROJECT_NAME}_INTERFACE PRIVATE TrezorCrypto protobuf Boost::boost)
-endif()
+endif ()
 
-if(TW_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+if (TW_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_enable_coverage(TrustWalletCore)
-endif()
+endif ()
 
-if(TW_CLANG_ASAN)
+if (TW_CLANG_ASAN)
     target_enable_asan(TrustWalletCore)
-endif()
+endif ()
 
 # Define headers for this library. PUBLIC headers are used for compiling the
 # library, and will be added to consumers' build paths.
 target_include_directories(TrustWalletCore
-    PUBLIC
+        PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
-    PRIVATE
+        PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${CMAKE_CURRENT_SOURCE_DIR}/jni/cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/build/local/include
-)
+        )
 
-if(NOT ANDROID AND NOT IOS_PLATFORM AND NOT TW_COMPILE_WASM)
+if (TW_UNIT_TESTS)
     add_subdirectory(tests)
+endif ()
+
+if (TW_BUILD_EXAMPLES)
     add_subdirectory(walletconsole/lib)
     add_subdirectory(walletconsole)
 endif()
@@ -104,14 +100,14 @@ endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig.in ${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig @ONLY)
 
 install(TARGETS TrustWalletCore
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-)
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        )
 
 install(
-    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/ 
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/WalletCore
-    FILES_MATCHING PATTERN "*.h"
+        DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/WalletCore
+        FILES_MATCHING PATTERN "*.h"
 )
 
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
