@@ -98,15 +98,7 @@ if (TW_BUILD_EXAMPLES)
 endif()
 
 if (TW_ENABLE_PVS_STUDIO)
-    message(STATUS "PVS-Studio analyzer enabled - ${CMAKE_SOURCE_DIR}/tools/pvs-studio/config.cfg")
-    include(cmake/PVS-Studio.cmake)
-    pvs_studio_add_target(TARGET TrustWalletCore.analyze ALL
-            OUTPUT FORMAT json
-            ANALYZE TrustWalletCore
-            MODE GA:1,2
-            LOG target.err
-            CONFIG ${CMAKE_SOURCE_DIR}/tools/pvs-studio/config.cfg
-            )
+    tw_add_pvs_studio_target(TrustWalletCore)
 endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig.in ${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig @ONLY)

@@ -427,8 +427,6 @@ function (pvs_studio_add_target)
     list(APPEND PVS_STUDIO_ARGS --platform "${PVS_STUDIO_PLATFORM}"
             --preprocessor "${PVS_STUDIO_PREPROCESSOR}")
 
-    message(STATUS "args: ${PVS_STUDIO_ARGS}")
-
     if (NOT "${PVS_STUDIO_SUPPRESS_BASE}" STREQUAL "")
         pvs_studio_join_path(PVS_STUDIO_SUPPRESS_BASE "${CMAKE_CURRENT_SOURCE_DIR}" "${PVS_STUDIO_SUPPRESS_BASE}")
         list(APPEND PVS_STUDIO_ARGS --suppress-file "${PVS_STUDIO_SUPPRESS_BASE}")
