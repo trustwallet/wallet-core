@@ -6,7 +6,7 @@ macro(target_enable_asan target)
             $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>>:-fsanitize=address -fno-omit-frame-pointer>)
 endmacro()
 
-macro(target_enable_coverage)
+macro(target_enable_coverage target)
     message(STATUS "Code coverage ON")
     # This option is used to compile and link code instrumented for coverage analysis.
     # The option is a synonym for -fprofile-arcs -ftest-coverage (when compiling) and -lgcov (when linking).
