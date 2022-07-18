@@ -42,7 +42,7 @@ jobs:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
     - name: CMake (coverage)
-      #if: github.ref != 'refs/heads/master'
+      if: github.ref != 'refs/heads/master'
       run: |
         cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DTW_CODE_COVERAGE=ON
       env:
