@@ -1,3 +1,23 @@
+macro(target_enable_asan target)
+    message("-- ASAN Enabled, Configuring...")
+    target_compile_options(${target} PUBLIC
+            $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>>:-fsanitize=address -fno-omit-frame-pointer>)
+    target_link_options(${target} PUBLIC
+            $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>>:-fsanitize=address -fno-omit-frame-pointer>)
+endmacro()
+
+macro(target_enable_coverage)
+    message(STATUS "Code coverage ON")
+    # This option is used to compile and link code instrumented for coverage analysis.
+    # The option is a synonym for -fprofile-arcs -ftest-coverage (when compiling) and -lgcov (when linking).
+    # See the documentation for those options for more details.
+    # https://gcc.gnu.org/onlinedocs/gcc-9.3.0/gcc/Instrumentation-Options.html
+    target_compile_options(${target} PUBLIC
+            $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>>:--coverage>)
+    target_link_options(${target} PUBLIC
+            $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>>:--coverage>)
+endmacro()
+
 add_library(tw_error_settings INTERFACE)
 add_library(tw::error_settings ALIAS tw_error_settings)
 

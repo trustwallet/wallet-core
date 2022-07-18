@@ -60,19 +60,6 @@ include(ExternalProject)
 # Dependencies
 include(cmake/Protobuf.cmake)
 
-if(TW_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fprofile-arcs -ftest-coverage")
-    set(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
-endif()
-
-if(TW_CLANG_ASAN)
-    # https://clang.llvm.org/docs/AddressSanitizer.html
-    # https://github.com/trustwallet/wallet-core/issues/1170
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
-    set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
-    message("CLANG_ASAN on, ${CMAKE_CXX_FLAGS_DEBUG}")
-endif()
-
 # Source files
 if(${ANDROID})
     message("Configuring for JNI")
@@ -86,6 +73,14 @@ else()
     add_library(TrustWalletCore ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
 
     target_link_libraries(TrustWalletCore PUBLIC ${PROJECT_NAME}_INTERFACE PRIVATE TrezorCrypto protobuf Boost::boost)
+endif()
+
+if(TW_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_enable_coverage(TrustWalletCore)
+endif()
+
+if(TW_CLANG_ASAN)
+    target_enable_asan(TrustWalletCore)
 endif()
 
 # Define headers for this library. PUBLIC headers are used for compiling the
