@@ -75,7 +75,7 @@ Common::Proto::SigningError Signer::assembleSignatures(vector<pair<Data, Data>>&
             return Common::Proto::Error_invalid_private_key;
         }
         const auto privateKey = PrivateKey(privateKeyData);
-        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Extended);
+        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         const auto address = AddressV3(publicKey);
         privateKeys[address.string()] = privateKeyData;
     }
@@ -106,8 +106,8 @@ Common::Proto::SigningError Signer::assembleSignatures(vector<pair<Data, Data>>&
             }
         }
         const auto privateKey = PrivateKey(privateKeyData);
-        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Extended);
-        const auto signature = privateKey.sign(txId, TWCurveED25519Extended);
+        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
+        const auto signature = privateKey.sign(txId, TWCurveED25519ExtendedCardano);
         // public key (first 32 bytes) and signature (64 bytes)
         signatures.emplace_back(subData(publicKey.bytes, 0, 32), signature);
     }

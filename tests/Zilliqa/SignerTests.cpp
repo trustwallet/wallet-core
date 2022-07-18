@@ -45,7 +45,7 @@ TEST(ZilliqaSigner, PreImage) {
 
     ASSERT_EQ(hex(preImage.begin(), preImage.end()), "0881800410041a149ca91eb535fb92fda5094110fdaeb752edb9b03922230a21034ae47910d58b9bde819c3cffa8de4441955508db00aa2540db8e6bf6e99abc1b2a120a10000000000000000000000da475abf00032120a100000000000000000000000003b9aca003801");
 
-    ASSERT_TRUE(pubKey.verifySchnorr(Data(signature.begin(), signature.end()), preImage));
+    ASSERT_TRUE(pubKey.verifyZilliqa(Data(signature.begin(), signature.end()), preImage));
 }
 
 TEST(ZilliqaSigner, Signing) {

@@ -125,10 +125,10 @@ PrivateKey HDWallet::getKey(TWCoinType coin, const DerivationPath& derivationPat
     const auto privateKeyType = getPrivateKeyType(curve);
     auto node = getNode(*this, curve, derivationPath);
     switch (privateKeyType) {
-    case PrivateKeyTypeDoubleExtended: {
+    case PrivateKeyTypeCardano: {
         if (derivationPath.indices.size() < 4 || derivationPath.indices[3].value > 1) {
             // invalid derivation path
-            return PrivateKey(Data(192));
+            return PrivateKey(Data(PrivateKey::cardanoKeySize));
         }
         const DerivationPath stakingPath = cardanoStakingDerivationPath(derivationPath);
 
@@ -215,7 +215,7 @@ std::optional<PublicKey> HDWallet::getPublicKeyFromExtended(const std::string& e
     hdnode_fill_public_key(&node);
 
     // These public key type are not applicable.  Handled above, as node.curve->params is null
-    assert(curve != TWCurveED25519 && curve != TWCurveED25519Blake2bNano && curve != TWCurveED25519Extended && curve != TWCurveCurve25519);
+    assert(curve != TWCurveED25519 && curve != TWCurveED25519Blake2bNano && curve != TWCurveED25519ExtendedCardano && curve != TWCurveCurve25519);
     TWPublicKeyType keyType = TW::publicKeyType(coin);
     if (curve == TWCurveSECP256k1) {
         auto pubkey = PublicKey(Data(node.public_key, node.public_key + 33), TWPublicKeyTypeSECP256k1);
@@ -249,10 +249,10 @@ std::optional<PrivateKey> HDWallet::getPrivateKeyFromExtended(const std::string&
     return PrivateKey(Data(node.private_key, node.private_key + 32));
 }
 
-HDWallet::PrivateKeyType HDWallet::getPrivateKeyType(TWCurve curve) {
+PrivateKeyType HDWallet::getPrivateKeyType(TWCurve curve) {
     switch (curve) {
-    case TWCurve::TWCurveED25519Extended:
-        return PrivateKeyTypeDoubleExtended;
+    case TWCurve::TWCurveED25519ExtendedCardano:
+        return PrivateKeyTypeCardano;
     default:
         return PrivateKeyTypeDefault32;
     }
@@ -321,10 +321,10 @@ HDNode getNode(const HDWallet& wallet, TWCurve curve, const DerivationPath& deri
     auto node = getMasterNode(wallet, curve);
     for (auto& index : derivationPath.indices) {
         switch (privateKeyType) {
-        case HDWallet::PrivateKeyTypeDoubleExtended:
+        case PrivateKeyTypeCardano:
             hdnode_private_ckd_cardano(&node, index.derivationIndex());
             break;
-        case HDWallet::PrivateKeyTypeDefault32:
+        case PrivateKeyTypeDefault32:
         default:
             hdnode_private_ckd(&node, index.derivationIndex());
             break;
@@ -337,7 +337,7 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve) {
     const auto privateKeyType = HDWallet::getPrivateKeyType(curve);
     HDNode node;
     switch (privateKeyType) {
-    case HDWallet::PrivateKeyTypeDoubleExtended: {
+    case PrivateKeyTypeCardano: {
         // Derives the root Cardano HDNode from a passphrase and the entropy encoded in
         // a BIP-0039 mnemonic using the Icarus derivation (V2) scheme
         const auto entropy = wallet.getEntropy();
@@ -347,7 +347,7 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve) {
         memzero(secret, CARDANO_SECRET_LENGTH);
         break;
     }
-    case HDWallet::PrivateKeyTypeDefault32:
+    case PrivateKeyTypeDefault32:
     default:
         hdnode_from_seed(wallet.getSeed().data(), HDWallet::seedSize, curveName(curve), &node);
         break;
@@ -363,7 +363,7 @@ const char* curveName(TWCurve curve) {
         return ED25519_NAME;
     case TWCurveED25519Blake2bNano:
         return ED25519_BLAKE2B_NANO_NAME;
-    case TWCurveED25519Extended:
+    case TWCurveED25519ExtendedCardano:
         return ED25519_CARDANO_NAME;
     case TWCurveNIST256p1:
         return NIST256P1_NAME;

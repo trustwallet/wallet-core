@@ -123,12 +123,6 @@ class HDWallet {
     static std::optional<PrivateKey> getPrivateKeyFromExtended(const std::string& extended, TWCoinType coin, const DerivationPath& path);
 
   public:
-    // Private key type (later could be moved out of HDWallet)
-    enum PrivateKeyType {
-      PrivateKeyTypeDefault32 = 0,      // 32 bytes private key.
-      PrivateKeyTypeDoubleExtended = 1, // 96 bytes private key. (used by coins like ADA)
-    };
-    
     // obtain privateKeyType used by the coin/curve
     static PrivateKeyType getPrivateKeyType(TWCurve curve);
 
