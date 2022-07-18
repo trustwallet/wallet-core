@@ -9,8 +9,9 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET "10.14" CACHE STRING "Minimum OS X deployment ve
 #
 # Static analyzers
 #
-# Currently supporting: Clang-Tidy.
+# Currently supporting: Clang-Tidy, PVS-Studio.
 option(TW_ENABLE_CLANG_TIDY "Enable static analysis with Clang-Tidy." OFF)
+option(TW_ENABLE_PVS_STUDIO "Enable static analysis with PVS-Studio." OFF)
 
 #
 # Runtime analyzers
