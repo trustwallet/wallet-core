@@ -22,6 +22,23 @@ message TransactionOutput {
     string change_address = 4;
 }
 
+// Transaction
+message Transaction {
+    // nep5 token transfer transaction
+    message Nep5Transfer {
+        string asset_id = 1;
+        string from = 2;
+        string to = 3;
+
+        // Amount to send (256-bit number)
+        bytes amount = 4;
+    }
+
+    oneof transaction_oneof {
+        Nep5Transfer nep5Transfer = 1;
+    }
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     repeated TransactionInput inputs = 1;
@@ -31,6 +48,7 @@ message SigningInput {
     string gas_asset_id = 5;
     string gas_change_address = 6;
     TransactionPlan plan = 7;
+    Transaction transaction = 8;
 }
 
 // Transaction signing output.
@@ -59,6 +77,11 @@ message TransactionOutputPlan {
     string change_address = 6;
 };
 
+message TransactionAttributePlan {
+    int32 usage = 1;
+    bytes data = 2;
+}
+
 // Describes a preliminary transaction plan.
 message TransactionPlan {
     // Used assets
@@ -72,4 +95,7 @@ message TransactionPlan {
 
     // Optional error
     Common.Proto.SigningError error = 4;
+
+    // Attribute
+    repeated TransactionAttributePlan attributes = 5;
 };

@@ -99,6 +99,12 @@ TEST(Uint256, LoadEmpty) {
     EXPECT_EQ(load(parse_hex("0000")), uint256_t(0));
 }
 
+TEST(Uint256, encode256LE) {
+    Data d;
+    encode256LE(d, uint256_t(110000000));
+    EXPECT_EQ(hex(d), "80778e06");
+}
+
 TEST(Uint256, LoadWithOffset) {
     EXPECT_EQ(loadWithOffset(parse_hex("0000000000000000000000000000000000000000000000000000000000000003"), 0), uint256_t(3));
     EXPECT_EQ(loadWithOffset(parse_hex("abcdef0000000000000000000000000000000000000000000000000000000000000003"), 3), uint256_t(3));

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -15,12 +15,12 @@
 namespace TW::NEO {
 
 class Signer {
-  private:
+private:
     Data publicKey;
     TW::PrivateKey privateKey;
     Address address;
 
-  public:
+public:
     explicit Signer(const TW::PrivateKey& priKey);
     PrivateKey getPrivateKey() const;
     PublicKey getPublicKey() const;
@@ -32,13 +32,14 @@ class Signer {
     Data sign(const Data& data) const;
 
     static Data signaturePreimage(const Proto::SigningInput& input);
-    static Data encodeTransaction(const Proto::SigningInput& input, const Data& publicKey,
-                                  const Data& signature);
+    static Data encodeTransaction(const Proto::SigningInput& input,
+                                  const std::vector<PublicKey>& publicKeys,
+                                  const std::vector<Data>& signatures);
 
-  private:
-    static Transaction prepareUnsignedTransaction(const Proto::SigningInput& input,
-                                                  const Proto::TransactionPlan& plan,
-                                                  bool validate = true);
+private:
+    static std::shared_ptr<Transaction>
+    prepareUnsignedTransaction(const Proto::SigningInput& input, const Proto::TransactionPlan& plan,
+                               bool validate = true);
 };
 
 } // namespace TW::NEO

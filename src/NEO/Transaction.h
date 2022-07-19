@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include "../uint256.h"
+#include "CoinReference.h"
 #include "ISerializable.h"
 #include "Serializable.h"
-#include "TransactionType.h"
 #include "TransactionAttribute.h"
 #include "TransactionOutput.h"
-#include "CoinReference.h"
+#include "TransactionType.h"
 #include "Witness.h"
+#include "../uint256.h"
 
 namespace TW::NEO {
 
@@ -26,20 +26,24 @@ public:
     std::vector<TransactionOutput> outputs;
     std::vector<Witness> witnesses;
 
-    virtual ~Transaction() {}
+    Transaction(TransactionType t = TransactionType::TT_ContractTransaction, byte ver = 0) : type(t), version(ver) {}
+    ~Transaction() override = default;
+
     int64_t size() const override;
     void deserialize(const Data& data, int initial_pos = 0) override;
     Data serialize() const override;
 
-    bool operator==(const Transaction &other) const;
+    bool operator==(const Transaction& other) const;
 
-    virtual int deserializeExclusiveData(const Data& data, int initial_pos = 0) { return initial_pos; }
+    virtual int deserializeExclusiveData(const Data& data, int initial_pos = 0) {
+        return initial_pos;
+    }
     virtual Data serializeExclusiveData() const { return Data(); }
 
     Data getHash() const;
     uint256_t getHashUInt256() const;
 
-    static Transaction * deserializeFrom(const Data& data, int initial_pos = 0);
+    static Transaction* deserializeFrom(const Data& data, int initial_pos = 0);
 };
 
 } // namespace TW::NEO

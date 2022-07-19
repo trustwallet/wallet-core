@@ -32,6 +32,19 @@ string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const Publ
     }
 }
 
+TW::Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
+    const auto decoded = Bitcoin::SegwitAddress::decode(address);
+    if (!std::get<2>(decoded)) {
+        // check if it is a legacy address
+        if (Address::isValid(address)) {
+            const auto addr = Address(address);
+            return {addr.bytes.begin() + 1, addr.bytes.end()};
+        }
+        return {Data()};
+    }
+    return std::get<0>(decoded).witnessProgram;
+}
+
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Bitcoin::Proto::SigningInput>(dataIn, dataOut);
 }

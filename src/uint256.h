@@ -85,6 +85,14 @@ inline void encode256BE(Data& data, const uint256_t& value, uint32_t digit) {
     data.insert(data.end(), buff.begin(), buff.end());
 }
 
+// Append a uint256_t value as a little-endian byte array into the provided buffer, and limit
+// the array size by digit/8.
+// Noted: No padding with it.
+inline void encode256LE(Data& data, const uint256_t& value) {
+    Data bytes = store(value);
+    data.insert(data.end(), bytes.rbegin(), bytes.rend());
+}
+
 /// Return string representation of uint256_t
 inline std::string toString(uint256_t value) {
     return boost::lexical_cast<std::string>(value);

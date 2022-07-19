@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -54,14 +54,7 @@ void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<
                 return;
             }
 
-            // We only support one-to-one transfer now.
-            if (signatures.size() != 1 || publicKeys.size() != 1) {
-                output.set_error(Common::Proto::Error_no_support_n2n);
-                output.set_error_message("signatures and publickeys size can only be one");
-                return;
-            }
-
-            auto encoded = Signer::encodeTransaction(input, publicKeys[0].bytes, signatures[0]);
+            auto encoded = Signer::encodeTransaction(input, publicKeys, signatures);
             output.set_encoded(encoded.data(), encoded.size());
         });
 }

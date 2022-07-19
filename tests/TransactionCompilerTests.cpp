@@ -42,6 +42,8 @@
 #include "Decred/Signer.h"
 #include "Groestlcoin/Signer.h"
 #include "Groestlcoin/Transaction.h"
+#include "NEO/TransactionAttribute.h"
+#include "NEO/TransactionAttributeUsage.h"
 #include "Zcash/Signer.h"
 #include "Zcash/Transaction.h"
 #include "Zcash/TransactionBuilder.h"
@@ -1326,6 +1328,98 @@ TEST(TransactionCompiler, NEOCompileWithSignatures) {
 
         ASSERT_EQ(hex(output.encoded()), expectedTx);
     }
+}
+
+TEST(TransactionCompiler, NEONep5TokenCompileWithSignatures) {
+    // tx on mainnet
+    // https://neoscan.io/transaction/6368FC6127DD7FAA3B7548CA97162D5BE18D4B2FA0046A79853E5864318E19B8
+    
+    const auto coin = TWCoinTypeNEO;
+    /// Step 1: Prepare transaction input (protobuf)
+    const std::string ASSET_ID =
+        "f56c89be8bfcdec617e2402b5c3fd5b6d71b820d";
+    const std::string GAS_ASSET_ID =
+        "e72d286979ee6cb1b7e65dfddfb2e384100b8d148e7758de42e4168b71792c60";
+
+    TW::NEO::Proto::SigningInput input;
+    auto publicKey = PublicKey(parse_hex("030ab39b99d8675cd9bd90aaec37cba964297cc817078d33e508ab11f1d245c068"), ::publicKeyType(coin));
+    input.set_gas_asset_id(GAS_ASSET_ID);
+    input.set_gas_change_address("AJzoeKrj7RHMwSrPQDPdv61ciVEYpmhkjk");
+
+    auto* utxo = input.add_inputs();
+    auto hash = parse_hex("f231ee7b5097d912a22fe7cb6b7417490d2ddde200e3c57042be5abcdf6f974c");
+    utxo->set_prev_hash(hash.data(), hash.size());
+    utxo->set_prev_index(0);
+    utxo->set_asset_id(GAS_ASSET_ID);
+    utxo->set_value(7011673);
+
+    auto txOutput = input.add_outputs();
+    txOutput->set_asset_id(GAS_ASSET_ID);
+    txOutput->set_to_address("AJzoeKrj7RHMwSrPQDPdv61ciVEYpmhkjk");
+    txOutput->set_change_address("AJzoeKrj7RHMwSrPQDPdv61ciVEYpmhkjk");
+    txOutput->set_amount(6911673);
+
+    // set nep5 transfer
+    auto nep5Tx = input.mutable_transaction()->mutable_nep5transfer();
+    nep5Tx->set_asset_id(ASSET_ID);
+    nep5Tx->set_from("AJzoeKrj7RHMwSrPQDPdv61ciVEYpmhkjk");
+    nep5Tx->set_to("AeRsDBqPiGKZhzNtL2vWhXbXGccJLCGrbJ");
+    auto amount = store(110000000);
+    nep5Tx->set_amount(amount.data(), (int)amount.size());
+
+    input.set_fee(100000);
+
+    // Plan
+    NEO::Proto::TransactionPlan plan;
+    ANY_PLAN(input, plan, coin);
+
+    ASSERT_EQ(plan.error(), Common::Proto::OK);
+
+    auto attr = plan.add_attributes();
+    auto remark = parse_hex("f15508a6ea4e15e8");
+    attr->set_usage((int32_t)NEO::TransactionAttributeUsage::TAU_Remark);
+    attr->set_data(remark.data(), (int)remark.size());
+
+    attr = plan.add_attributes();
+    auto script = parse_hex("235a717ed7ed18a43de47499c3d05b8d4a4bcf3a");
+    attr->set_usage((int32_t)NEO::TransactionAttributeUsage::TAU_Script);
+    attr->set_data(script.data(), (int)script.size());
+
+    *input.mutable_plan() = plan;
+    
+    auto inputString = input.SerializeAsString();
+    auto inputData = TW::Data(inputString.begin(), inputString.end());
+
+    /// Step 2: Obtain preimage hash
+    const auto preImageHashData = TransactionCompiler::preImageHashes(coin, inputData);
+
+    auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
+    ASSERT_TRUE(
+        preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
+    ASSERT_EQ(preSigningOutput.error(), Common::Proto::OK);
+
+    auto preImageHash = preSigningOutput.data_hash();
+    EXPECT_EQ(hex(preImageHash),
+              "d301bc00e59a1c92741a31955714c76689f627dcb9d7ec176435f269a981159c");
+
+    // Simulate signature, normally obtained from signature server
+    const auto publicKeyData = publicKey.bytes;
+    const auto signature =
+        parse_hex("8b707d23f84d39ddaad7da100e2d8b657ef6c0858c6c09edc029f441f28e49ff6af994ba7ad180f90e12dd9d7828f8f28785ae5079ed9a52bb5ddd3bcce1b189");
+
+    // Verify signature (pubkey & hash & signature)
+    EXPECT_TRUE(publicKey.verify(signature, TW::data(preImageHash)));
+
+    /// Step 3: Compile transaction info
+    const auto outputData =
+        TransactionCompiler::compileWithSignatures(coin, inputData, {signature}, {publicKeyData});
+
+    NEO::Proto::SigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+
+    auto expectedTx =
+        "d101510480778e0614f88235a26e55cce0747ee827f39fd8167849672b14235a717ed7ed18a43de47499c3d05b8d4a4bcf3a53c1087472616e7366657267f56c89be8bfcdec617e2402b5c3fd5b6d71b820df166000000000000000002f008f15508a6ea4e15e820235a717ed7ed18a43de47499c3d05b8d4a4bcf3a014c976fdfbc5abe4270c5e300e2dd2d0d4917746bcbe72fa212d997507bee31f2000001e72d286979ee6cb1b7e65dfddfb2e384100b8d148e7758de42e4168b71792c60b976690000000000235a717ed7ed18a43de47499c3d05b8d4a4bcf3a0141408b707d23f84d39ddaad7da100e2d8b657ef6c0858c6c09edc029f441f28e49ff6af994ba7ad180f90e12dd9d7828f8f28785ae5079ed9a52bb5ddd3bcce1b1892321030ab39b99d8675cd9bd90aaec37cba964297cc817078d33e508ab11f1d245c068ac";
+    EXPECT_EQ(hex(output.encoded()), expectedTx);
 }
 
 TEST(TransactionCompiler, StellarCompileWithSignatures) {
