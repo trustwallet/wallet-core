@@ -22,7 +22,7 @@ include(GNUInstallDirs)
 include(cmake/StandardSettings.cmake)
 include(cmake/CompilerWarnings.cmake)
 include(cmake/StaticAnalyzers.cmake)
-include(cmake/Helpers.cmake)
+include(cmake/FindHostPackage.cmake)
 
 add_library(${PROJECT_NAME}_INTERFACE INTERFACE)
 target_include_directories(${PROJECT_NAME}_INTERFACE INTERFACE ${PREFIX}/include)
