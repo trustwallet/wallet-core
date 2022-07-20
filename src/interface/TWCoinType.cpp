@@ -39,7 +39,7 @@ TWString *_Nonnull TWCoinTypeDerivationPath(enum TWCoinType coin) {
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
 
-TWString* TWCoinTypeDerivationPathExplicit(enum TWCoinType coin, enum TWDerivation derivation) {
+TWString* TWCoinTypeDerivationPathWithDerivation(enum TWCoinType coin, enum TWDerivation derivation) {
     const auto path = TW::derivationPath(coin, derivation);
     const auto string = path.string();
     return TWStringCreateWithUTF8Bytes(string.c_str());

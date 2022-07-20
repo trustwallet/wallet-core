@@ -143,9 +143,9 @@ bool TWCoinTypeValidate(enum TWCoinType coin, TWString* _Nonnull address);
 TW_EXPORT_METHOD
 TWString* _Nonnull TWCoinTypeDerivationPath(enum TWCoinType coin);
 
-/// Returns the default derivation path for a particular coin with the explicit given derivation.
+/// Returns the derivation path for a particular coin with the explicit given derivation.
 TW_EXPORT_METHOD
-TWString* _Nonnull TWCoinTypeDerivationPathExplicit(enum TWCoinType coin, enum TWDerivation derivation);
+TWString* _Nonnull TWCoinTypeDerivationPathWithDerivation(enum TWCoinType coin, enum TWDerivation derivation);
 
 /// Derives the address for a particular coin from the private key.
 TW_EXPORT_METHOD

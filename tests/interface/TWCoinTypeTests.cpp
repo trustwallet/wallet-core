@@ -147,9 +147,16 @@ TEST(TWCoinType, TWCoinTypeDerivationPath) {
     TWStringDelete(res);
 }
 
-TEST(TWCoinType, TWCoinTypeDerivationPathExplicit) {
-    auto res = TWCoinTypeDerivationPathExplicit(TWCoinTypeBitcoin, TWDerivationBitcoinLegacy);
+TEST(TWCoinType, TWCoinTypeDerivationPathWithDerivation) {
+    auto res = TWCoinTypeDerivationPathWithDerivation(TWCoinTypeBitcoin, TWDerivationBitcoinLegacy);
     auto result = *reinterpret_cast<const std::string *>(res);
     ASSERT_EQ(result, "m/44'/0'/0'/0/0");
+    TWStringDelete(res);
+}
+
+TEST(TWCoinType, TWCoinTypeDerivationPathWithDerivationSolana) {
+    auto res = TWCoinTypeDerivationPathWithDerivation(TWCoinTypeSolana, TWDerivationSolanaSolana);
+    auto result = *reinterpret_cast<const std::string *>(res);
+    ASSERT_EQ(result, "m/44'/501'/0'/0'");
     TWStringDelete(res);
 }
