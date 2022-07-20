@@ -25,6 +25,9 @@ public:
     Cell(uint16_t bitLen, std::vector<uint8_t> data)
         : bitLen(bitLen), data(std::move(data)) {}
 
+    // Deserialize from BOC representation
+    static Cell deserialize(const Data& data);
+
     // Serialize to binary stream
     void serialize(Data& os) const;
 
