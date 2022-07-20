@@ -52,7 +52,7 @@ if (${ANDROID})
 else ()
     message("Configuring standalone")
     file(GLOB_RECURSE sources src/*.c src/*.cc src/*.cpp src/*.h)
-    add_library(TrustWalletCore ${sources} ${PROTO_SRCS} ${PROTO_HDRS} src/memory/memzero_wrapper.h)
+    add_library(TrustWalletCore ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
 
     target_link_libraries(TrustWalletCore PUBLIC ${PROJECT_NAME}_INTERFACE PRIVATE TrezorCrypto protobuf Boost::boost)
 endif ()
