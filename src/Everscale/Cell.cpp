@@ -1,5 +1,6 @@
 #include "Cell.h"
 
+#include <cassert>
 #include <map>
 
 #include <TrezorCrypto/sha2.h>
@@ -11,51 +12,91 @@ using namespace TW::Everscale;
 
 using CellHash = decltype(Cell::hash);
 
-void encodeCellData(const Cell& cell, Data& os) {
-    const auto len = 2 + (cell.bitLen + 7) / 8;
-    os.reserve(os.size() + len);
+constexpr static uint32_t BOC_MAGIC = 0xb5ee9c72;
 
-    const auto [d1, d2] = cell.getDescriptorBytes();
-    os.push_back(d1);
-    os.push_back(d2);
-    os.insert(os.end(), cell.data.begin(), cell.data.end());
-}
+class SerializationContext {
+public:
+    static SerializationContext build(const Cell& cell) {
+        SerializationContext ctx{};
+        fillContext(cell, ctx);
+        return ctx;
+    }
 
-struct TraverseContext {
-    uint16_t index;
+    void encode(Data& os) {
+        os.reserve(os.size() + serializedSize);
+
+        const auto cellCount = reversedCells.size();
+
+        encode32BE(BOC_MAGIC, os);
+        os.push_back(REF_SIZE);
+        os.push_back(OFFSET_SIZE);
+        encode16BE(static_cast<uint16_t>(cellCount), os);
+        encode16BE(1, os); // root count
+        encode16BE(0, os); // absent cell count
+        encode16BE(static_cast<uint16_t>(serializedSize), os);
+        encode16BE(0, os); // root cell index
+
+        for (auto i = cellCount - 1; i >= 0; --i) {
+            const auto& cell = *reversedCells[i];
+
+            // Write cell data
+            const auto [d1, d2] = cell.getDescriptorBytes();
+            os.push_back(d1);
+            os.push_back(d2);
+            os.insert(os.end(), cell.data.begin(), cell.data.end());
+
+            // Write cell references
+            for (const auto& child : cell.references) {
+                // Map cell hash to index (which must be presented)
+                const auto it = indices.find(child->hash);
+                assert(it != indices.end());
+
+                encode16BE(cellCount - it->second - 1, os);
+            }
+        }
+    }
+
+private:
+    constexpr static uint8_t REF_SIZE = 2;
+    constexpr static uint8_t OFFSET_SIZE = 2;
+
+    size_t serializedSize =
+        /*magic*/ sizeof(BOC_MAGIC) +
+        /*ref_size*/ 1 +
+        /*offset_size*/ 1 +
+        /*cell_count*/ REF_SIZE +
+        /*root_count*/ REF_SIZE +
+        /*absent_count*/ REF_SIZE +
+        /*data_size*/ OFFSET_SIZE +
+        /*root_cell_index*/ REF_SIZE;
+
+    uint16_t index = 0;
     std::map<CellHash, uint16_t> indices{};
     std::vector<const Cell*> reversedCells{};
+
+    static void fillContext(const Cell& cell, SerializationContext& ctx) {
+        if (ctx.indices.find(cell.hash) != ctx.indices.end()) {
+            return;
+        }
+
+        for (const auto& ref : cell.references) {
+            if (ref == nullptr) {
+                break;
+            }
+            fillContext(*ref, ctx);
+        }
+
+        ctx.indices.insert(std::make_pair(cell.hash, ctx.index++));
+        ctx.reversedCells.push_back(&cell);
+        ctx.serializedSize += cell.serializedSize();
+    }
 };
 
-void traverseCells(const std::shared_ptr<Cell>& cell, TraverseContext& ctx) {
-    if (ctx.indices.find(cell->hash) != ctx.indices.end()) {
-        return;
-    }
-
-    for (const auto& ref : cell->references) {
-        if (ref == nullptr) {
-            break;
-        }
-        traverseCells(ref, ctx);
-    }
-
-    ctx.indices.insert(std::make_tuple(cell->hash, ctx.index));
-}
-
 void Cell::serialize(Data& os) const {
-    constexpr uint8_t REF_SIZE = 2;
-    constexpr uint8_t OFFSET_SIZE = 2;
-
-    encode32BE(0xb5ee9c72, os); // magic
-    os.push_back(REF_SIZE);
-    os.push_back(OFFSET_SIZE);
-    encode16BE(0, os); // cell count
-    encode16BE(1, os); // root count
-    encode16BE(0, os); // absent cell count
-
-    encode16BE(0, os); // TODO: total data size
-
-    encode16BE(0, os); // root cell index
+    if (!finalized) {
+        throw std::runtime_error("cell was not finalized");
+    }
+    SerializationContext::build(*this).encode(os);
 }
 
 void Cell::finalize() {
