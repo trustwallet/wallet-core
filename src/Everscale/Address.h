@@ -9,13 +9,20 @@
 #include "../Data.h"
 #include "../PublicKey.h"
 
+#include <optional>
 #include <string>
 
 namespace TW::Everscale {
 
 class Address {
-  public:
-    // TODO: Complete class definition
+public:
+    /// Number of bytes in an address
+    static const size_t size = 32;
+
+    static const std::int32_t basechain_id = 0;
+
+    std::int32_t workchain_id;
+    std::array<byte, size> bytes;
 
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
@@ -28,11 +35,12 @@ class Address {
 
     /// Returns a string representation of the address.
     std::string string() const;
+private:
+    static std::optional<std::pair<int32_t, int32_t>> parseWorkchainId(const std::string& string);
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
-    // TODO: Complete equality operator
-    return true;
+    return lhs.workchain_id == rhs.workchain_id && lhs.bytes == rhs.bytes;
 }
 
 } // namespace TW::Everscale
