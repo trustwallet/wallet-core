@@ -14,18 +14,21 @@
 using namespace TW;
 using namespace TW::Everscale;
 
-//TEST(EverscaleAddress, Valid) {
-//    ASSERT_TRUE(Address::isValid("__ADD_VALID_ADDRESS_HERE__"));
-//
-//    // TODO: Add more tests
-//}
-//
-//TEST(EverscaleAddress, Invalid) {
-//    ASSERT_FALSE(Address::isValid("__ADD_INVALID_ADDRESS_HERE__"));
-//
-//    // TODO: Add more tests
-//}
-//
+TEST(EverscaleAddress, Valid) {
+    ASSERT_TRUE(Address::isValid("0:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a"));
+    ASSERT_TRUE(Address::isValid("83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a"));
+}
+
+TEST(EverscaleAddress, Invalid) {
+    ASSERT_FALSE(Address::isValid("83a0352908060fa87839195d8a763a8d9ab28f8fa41"));
+    ASSERT_ANY_THROW(Address::isValid("2147483648:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a"));
+}
+
+TEST(EverscaleAddress, FromString) {
+    auto address = Address("0:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a");
+    ASSERT_EQ(address.string(), "0:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a");
+}
+
 //TEST(EverscaleAddress, FromPrivateKey) {
 //    // TODO: Check public key type, finalize implementation
 //
@@ -42,7 +45,4 @@ using namespace TW::Everscale;
 //    ASSERT_EQ(address.string(), "__ADD_RESULTING_ADDRESS_HERE__");
 //}
 //
-//TEST(EverscaleAddress, FromString) {
-//    auto address = Address("__ADD_VALID_ADDRESS_HERE__");
-//    ASSERT_EQ(address.string(), "__ADD_SAME_VALID_ADDRESS_HERE__");
-//}
+
