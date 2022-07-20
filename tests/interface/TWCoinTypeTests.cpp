@@ -139,3 +139,24 @@ TEST(TWCoinType, TWPublicKeyType) {
     ASSERT_EQ(TWPublicKeyTypeCURVE25519, TWCoinTypePublicKeyType(TWCoinTypeWaves));
     ASSERT_EQ(TWPublicKeyTypeNIST256p1, TWCoinTypePublicKeyType(TWCoinTypeNEO));
 }
+
+TEST(TWCoinType, TWCoinTypeDerivationPath) {
+    auto res = TWCoinTypeDerivationPath(TWCoinTypeBitcoin);
+    auto result = *reinterpret_cast<const std::string *>(res);
+    ASSERT_EQ(result, "m/84'/0'/0'/0/0");
+    TWStringDelete(res);
+}
+
+TEST(TWCoinType, TWCoinTypeDerivationPathWithDerivation) {
+    auto res = TWCoinTypeDerivationPathWithDerivation(TWCoinTypeBitcoin, TWDerivationBitcoinLegacy);
+    auto result = *reinterpret_cast<const std::string *>(res);
+    ASSERT_EQ(result, "m/44'/0'/0'/0/0");
+    TWStringDelete(res);
+}
+
+TEST(TWCoinType, TWCoinTypeDerivationPathWithDerivationSolana) {
+    auto res = TWCoinTypeDerivationPathWithDerivation(TWCoinTypeSolana, TWDerivationSolanaSolana);
+    auto result = *reinterpret_cast<const std::string *>(res);
+    ASSERT_EQ(result, "m/44'/501'/0'/0'");
+    TWStringDelete(res);
+}
