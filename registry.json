@@ -2656,5 +2656,36 @@
       "rpc": "https://rpc.meter.io",
       "documentation": "https://docs.meter.io/"
     }
+  },
+  {
+    "id": "energyweb",
+    "name": "EnergyWebToken",
+    "displayName": "Energy Web Token",
+    "coinId": 246,
+    "symbol": "EWT",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "246",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.energyweb.org",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x17f8234973754e8f15048d56daceefc9bb9d2fa69c099596d30c569f29b618df",
+      "sampleAccount": "0x5bb497e8d9fe26e92dd1be01e32076c8e024d167"
+    },
+    "info": {
+      "url": "https://energyweb.org",
+      "source": "https://github.com/energywebfoundation/ewc-system-contracts",
+      "rpc": "https://rpc.energyweb.org/",
+      "documentation": "https://energy-web-foundation.gitbook.io/energy-web/how-tos-and-tutorials/running-a-local-node"
+    }
   }
 ]

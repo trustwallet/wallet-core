@@ -30,6 +30,7 @@ This list is generated from [./registry.json](../registry.json)
 | 195     | Tron             | TRX    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/tron/info/logo.png" width="32" />         | <https://tron.network>        |
 | 235     | FIO              | FIO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/fio/info/logo.png" width="32" />          | <https://fioprotocol.io>      |
 | 242     | Nimiq            | NIM    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nimiq/info/logo.png" width="32" />        | <https://nimiq.com>           |
+| 246     | Energy Web Token | EWT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/energyweb/info/logo.png" width="32" />    | <https://energyweb.org>       |
 | 283     | Algorand         | ALGO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/algorand/info/logo.png" width="32" />     | <https://www.algorand.com/>   |
 | 304     | IoTeX            | IOTX   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/iotex/info/logo.png" width="32" />        | <https://iotex.io>            |
 | 313     | Zilliqa          | ZIL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zilliqa/info/logo.png" width="32" />      | <https://zilliqa.com>         |
