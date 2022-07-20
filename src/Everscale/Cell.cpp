@@ -14,6 +14,102 @@ using CellHash = decltype(Cell::hash);
 
 constexpr static uint32_t BOC_MAGIC = 0xb5ee9c72;
 
+struct Reader {
+    const Data& buffer;
+    size_t offset = 0;
+
+    void require(size_t bytes) const {
+        if (offset + bytes >= buffer.size()) {
+            throw std::runtime_error("unexpected eof");
+        }
+    }
+
+    void advance(size_t bytes) {
+        offset += bytes;
+    }
+
+    inline const uint8_t* _Nonnull data() const {
+        return buffer.data() + offset;
+    }
+
+    inline uint32_t readNextU32() {
+        const auto* _Nonnull p = data();
+        advance(sizeof(uint32_t));
+        return decode32BE(p);
+    }
+
+    inline size_t readNextUint(uint8_t len) {
+        const auto* _Nonnull p = data();
+        advance(len);
+
+        switch (len) {
+        case 1:
+            return static_cast<size_t>(*p);
+        case 2:
+            return static_cast<size_t>(decode16BE(p));
+        case 3:
+            return static_cast<size_t>(p[2]) | (static_cast<size_t>(p[1]) << 8) | (static_cast<size_t>(p[0]) << 16);
+        case 4:
+            return static_cast<size_t>(decode32BE(p));
+        default:
+            // Unreachable in valid cells
+            return 0;
+        }
+    }
+};
+
+Cell Cell::deserialize(const Data& data) {
+    Reader reader{.buffer = data, .offset = 0};
+
+    // Parse header
+    reader.require(6);
+    // 1. Magic
+    if (reader.readNextU32() != BOC_MAGIC) {
+        throw std::runtime_error("unknown magic");
+    }
+    // 2. Flags
+    struct Flags {
+        uint8_t ref_size : 3;
+        uint8_t : 2; // unused
+        bool has_cache_bits : 1;
+        bool has_crc : 1;
+        bool index_included : 1;
+    };
+
+    static_assert(sizeof(Flags) == 1, "flags must be represented as 1 byte");
+    const auto flags = reinterpret_cast<const Flags*>(reader.data())[0];
+    const auto ref_size = flags.ref_size;
+    const auto offset_size = reader.data()[1];
+    reader.advance(2);
+
+    // 3. Counters and root index
+    reader.require(ref_size * 3 + offset_size + ref_size);
+    const auto cell_count = reader.readNextUint(ref_size);
+    const auto root_count = reader.readNextUint(ref_size);
+    if (root_count != 0) {
+        throw std::runtime_error("unsupported root count");
+    }
+    if (root_count > cell_count) {
+        throw std::runtime_error("root count is greater than cell count");
+    }
+    const auto absent_count = reader.readNextUint(ref_size);
+    if (absent_count > 0) {
+        throw std::runtime_error("absent cells are not supported");
+    }
+
+    reader.readNextUint(offset_size); // total cell size
+
+    const auto root_index = reader.readNextUint(ref_size);
+
+    // 4. Cell offsets (skip if specified)
+    if (flags.index_included) {
+        reader.advance(cell_count * offset_size);
+    }
+
+    // 5. Deserialize cells
+    // TODO:
+}
+
 class SerializationContext {
 public:
     static SerializationContext build(const Cell& cell) {
@@ -27,6 +123,7 @@ public:
 
         const auto cellCount = reversedCells.size();
 
+        // Write header
         encode32BE(BOC_MAGIC, os);
         os.push_back(REF_SIZE);
         os.push_back(OFFSET_SIZE);
@@ -36,6 +133,7 @@ public:
         encode16BE(static_cast<uint16_t>(serializedSize), os);
         encode16BE(0, os); // root cell index
 
+        // Write cells
         for (auto i = cellCount - 1; i >= 0; --i) {
             const auto& cell = *reversedCells[i];
 
@@ -57,9 +155,11 @@ public:
     }
 
 private:
+    // uint16_t will be enough for wallet transactions (e.g. 64k is the size of the whole elector)
     constexpr static uint8_t REF_SIZE = 2;
     constexpr static uint8_t OFFSET_SIZE = 2;
 
+    // NOTE: Initialized with header size
     size_t serializedSize =
         /*magic*/ sizeof(BOC_MAGIC) +
         /*ref_size*/ 1 +
@@ -72,7 +172,7 @@ private:
 
     uint16_t index = 0;
     std::map<CellHash, uint16_t> indices{};
-    std::vector<const Cell*> reversedCells{};
+    std::vector<const Cell* _Nonnull> reversedCells{};
 
     static void fillContext(const Cell& cell, SerializationContext& ctx) {
         if (ctx.indices.find(cell.hash) != ctx.indices.end()) {
