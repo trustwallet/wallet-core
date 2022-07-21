@@ -14,7 +14,11 @@ bool Address::isValid(const std::string& string) {
     if (!parsed_wc.has_value())
         return false;
 
-    auto [_, pos] = *parsed_wc;
+    auto [wc, pos] = *parsed_wc;
+
+    if (wc != basechain_id && wc != masterchain_id) {
+        return false;
+    }
 
     if (string.size() != pos + 64) {
         return false;
@@ -49,12 +53,12 @@ std::string Address::string() const {
     return string;
 }
 
-std::optional<std::pair<int32_t, int32_t>> Address::parseWorkchainId(const std::string& string) {
+std::optional<std::pair<int8_t, int32_t>> Address::parseWorkchainId(const std::string& string) {
     auto wc = basechain_id;
     auto pos = string.find(':');
     if (pos != std::string::npos) {
         auto tmp = string.substr(0, pos);
-        wc = static_cast<int32_t>(std::stoi(tmp));
+        wc = static_cast<int8_t>(std::stoi(tmp));
         ++pos;
     } else {
         pos = 0;
