@@ -27,6 +27,9 @@ TEST(EverscaleAddress, Invalid) {
 TEST(EverscaleAddress, FromString) {
     auto address = Address("0:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a");
     ASSERT_EQ(address.string(), "0:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a");
+
+    auto address_uppercase = Address("0:83A0352908060FA87839195D8A763A8D9AB28F8FA41468832B398A719CC6469A");
+    ASSERT_EQ(address.string(), "0:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a");
 }
 
 //TEST(EverscaleAddress, FromPrivateKey) {
