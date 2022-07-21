@@ -35,11 +35,16 @@ uint16_t computeBitLen(const Data& data) {
 }
 
 struct Reader {
-    const Data& buffer;
+    const uint8_t* _Nonnull buffer;
+    size_t bufferLen;
     size_t offset = 0;
 
+    explicit Reader(const uint8_t* _Nonnull buffer, size_t len) noexcept
+        : buffer(buffer), bufferLen(len) {
+    }
+
     void require(size_t bytes) const {
-        if (offset + bytes >= buffer.size()) {
+        if (offset + bytes > bufferLen) {
             throw std::runtime_error("unexpected eof");
         }
     }
@@ -49,7 +54,7 @@ struct Reader {
     }
 
     inline const uint8_t* _Nonnull data() const {
-        return buffer.data() + offset;
+        return buffer + offset;
     }
 
     inline uint32_t readNextU32() {
@@ -78,8 +83,8 @@ struct Reader {
     }
 };
 
-std::shared_ptr<Cell> Cell::deserialize(const Data& data) {
-    Reader reader{.buffer = data, .offset = 0};
+std::shared_ptr<Cell> Cell::deserialize(const uint8_t* _Nonnull data, size_t len) {
+    Reader reader(data, len);
 
     // Parse header
     reader.require(6);
@@ -106,7 +111,7 @@ std::shared_ptr<Cell> Cell::deserialize(const Data& data) {
     reader.require(refSize * 3 + offsetSize + refSize);
     const auto cellCount = reader.readNextUint(refSize);
     const auto rootCount = reader.readNextUint(refSize);
-    if (rootCount != 0) {
+    if (rootCount != 1) {
         throw std::runtime_error("unsupported root count");
     }
     if (rootCount > cellCount) {
@@ -127,7 +132,13 @@ std::shared_ptr<Cell> Cell::deserialize(const Data& data) {
     }
 
     // 5. Deserialize cells
-    std::map<size_t, std::shared_ptr<Cell>> doneCells{};
+    struct IntermediateCell {
+        uint16_t bitLength;
+        Data data;
+        std::vector<size_t> references;
+    };
+
+    std::map<size_t, IntermediateCell> intermediate{};
 
     for (size_t i = 0; i < cellCount; ++i) {
         struct Descriptor {
@@ -167,7 +178,8 @@ std::shared_ptr<Cell> Cell::deserialize(const Data& data) {
         std::memcpy(cellData.data(), reader.data(), byteLen);
         reader.advance(byteLen);
 
-        std::array<std::shared_ptr<Cell>, 4> references{};
+        std::vector<size_t> references{};
+        references.reserve(refSize * d1.refCount);
         reader.require(refSize * d1.refCount);
         for (size_t r = 0; r < d1.refCount; ++r) {
             const auto index = reader.readNextUint(refSize);
@@ -175,18 +187,37 @@ std::shared_ptr<Cell> Cell::deserialize(const Data& data) {
                 throw std::runtime_error("invalid child index");
             }
 
-            const auto child = doneCells.find(index);
+            references.push_back(index);
+        }
+
+        const auto bitLen = computeBitLen(cellData);
+        intermediate.emplace(
+            i,
+            IntermediateCell{
+                .bitLength = bitLen,
+                .data = std::move(cellData),
+                .references = std::move(references),
+            });
+    }
+
+    std::map<size_t, Cell::Ref> doneCells{};
+
+    size_t index = cellCount;
+    for (auto it = intermediate.rbegin(); it != intermediate.rend(); ++it, --index) {
+        auto& raw = it->second;
+
+        Cell::Refs references{};
+        for (size_t r = 0; r < raw.references.size(); ++r) {
+            const auto child = doneCells.find(raw.references[r]);
             if (child == doneCells.end()) {
                 throw std::runtime_error("child cell not found");
             }
             references[r] = child->second;
         }
 
-        const auto bitLen = computeBitLen(cellData);
-        auto cell = std::make_shared<Cell>(bitLen, cellData, d1.refCount, std::move(references));
-        cell->finalize();
-
-        doneCells.insert(std::make_pair(i, std::move(cell)));
+        doneCells.emplace(
+            index - 1,
+            std::make_shared<Cell>(raw.bitLength, std::move(raw.data), raw.references.size(), std::move(references)));
     }
 
     const auto root = doneCells.find(rootIndex);
