@@ -13,14 +13,16 @@ using namespace TW::Everscale;
 
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
-    // TODO: Check and finalize implementation
-
     auto protoOutput = Proto::SigningOutput();
-    Data encoded;
+
     // auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     // auto signature = privateKey.sign(payload, TWCurveED25519);
-    // encoded = encodeSignature(signature);
 
-    protoOutput.set_encoded(encoded.data(), encoded.size());
+    Data message;
+    int32_t wc = 0;
+
+    protoOutput.set_message(message.data(), message.size());
+    protoOutput.set_to(wc);
+
     return protoOutput;
 }
