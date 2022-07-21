@@ -34,9 +34,10 @@ public:
         : LinearFeeCalculator(gDecredBytesPerInput, gDecredBytesPerOutput, gDecredBytesBase) {}
 };
 
-constexpr DefaultFeeCalculator defaultFeeCalculator{};
-constexpr DecredFeeCalculator decredFeeCalculator{};
-constexpr SegwitFeeCalculator segwitFeeCalculator{};
+// note: c++20 seems not supported yet for constexpr destructor for swift build
+DefaultFeeCalculator defaultFeeCalculator{};
+DecredFeeCalculator decredFeeCalculator{};
+SegwitFeeCalculator segwitFeeCalculator{};
 
 const FeeCalculator& getFeeCalculator(TWCoinType coinType) noexcept {
     switch (coinType) {
