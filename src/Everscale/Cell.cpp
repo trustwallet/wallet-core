@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <map>
+#include <optional>
 
 #include <TrezorCrypto/sha2.h>
 
@@ -13,6 +14,25 @@ using namespace TW::Everscale;
 using CellHash = decltype(Cell::hash);
 
 constexpr static uint32_t BOC_MAGIC = 0xb5ee9c72;
+
+uint16_t computeBitLen(const Data& data) {
+    auto bitLength = static_cast<uint16_t>(data.size() * 8);
+    for (size_t i = data.size() - 1; i >= 0; ++i) {
+        if (data[i] == 0) {
+            bitLength -= 8;
+        } else {
+            auto skip = 1;
+            uint8_t mask = 1;
+            while ((data[i] & mask) == 0) {
+                skip += 1;
+                mask <<= 1;
+            }
+            bitLength -= skip;
+            break;
+        }
+    }
+    return bitLength;
+}
 
 struct Reader {
     const Data& buffer;
@@ -58,7 +78,7 @@ struct Reader {
     }
 };
 
-Cell Cell::deserialize(const Data& data) {
+std::shared_ptr<Cell> Cell::deserialize(const Data& data) {
     Reader reader{.buffer = data, .offset = 0};
 
     // Parse header
@@ -69,45 +89,111 @@ Cell Cell::deserialize(const Data& data) {
     }
     // 2. Flags
     struct Flags {
-        uint8_t ref_size : 3;
+        uint8_t refSize : 3;
         uint8_t : 2; // unused
-        bool has_cache_bits : 1;
-        bool has_crc : 1;
-        bool index_included : 1;
+        bool hasCacheBits : 1;
+        bool hasCrc : 1;
+        bool indexIncluded : 1;
     };
 
     static_assert(sizeof(Flags) == 1, "flags must be represented as 1 byte");
     const auto flags = reinterpret_cast<const Flags*>(reader.data())[0];
-    const auto ref_size = flags.ref_size;
-    const auto offset_size = reader.data()[1];
+    const auto refSize = flags.refSize;
+    const auto offsetSize = reader.data()[1];
     reader.advance(2);
 
     // 3. Counters and root index
-    reader.require(ref_size * 3 + offset_size + ref_size);
-    const auto cell_count = reader.readNextUint(ref_size);
-    const auto root_count = reader.readNextUint(ref_size);
-    if (root_count != 0) {
+    reader.require(refSize * 3 + offsetSize + refSize);
+    const auto cellCount = reader.readNextUint(refSize);
+    const auto rootCount = reader.readNextUint(refSize);
+    if (rootCount != 0) {
         throw std::runtime_error("unsupported root count");
     }
-    if (root_count > cell_count) {
+    if (rootCount > cellCount) {
         throw std::runtime_error("root count is greater than cell count");
     }
-    const auto absent_count = reader.readNextUint(ref_size);
+    const auto absent_count = reader.readNextUint(refSize);
     if (absent_count > 0) {
         throw std::runtime_error("absent cells are not supported");
     }
 
-    reader.readNextUint(offset_size); // total cell size
+    reader.readNextUint(offsetSize); // total cell size
 
-    const auto root_index = reader.readNextUint(ref_size);
+    const auto rootIndex = reader.readNextUint(refSize);
 
     // 4. Cell offsets (skip if specified)
-    if (flags.index_included) {
-        reader.advance(cell_count * offset_size);
+    if (flags.indexIncluded) {
+        reader.advance(cellCount * offsetSize);
     }
 
     // 5. Deserialize cells
-    // TODO:
+    std::map<size_t, std::shared_ptr<Cell>> doneCells{};
+
+    for (size_t i = 0; i < cellCount; ++i) {
+        struct Descriptor {
+            uint8_t refCount : 3;
+            bool exotic : 1;
+            bool storeHashes : 1;
+            uint8_t level : 3;
+        };
+
+        static_assert(sizeof(Descriptor) == 1, "cell descriptor must be represented as 1 byte");
+
+        reader.require(2);
+        const auto d1 = reinterpret_cast<const Descriptor*>(reader.data())[0];
+        if (d1.level != 0) {
+            throw std::runtime_error("non-zero level is not supported");
+        }
+        if (d1.exotic) {
+            throw std::runtime_error("exotic cells are not supported");
+        }
+        if (d1.refCount == 7 && d1.storeHashes) {
+            throw std::runtime_error("absent cells are not supported");
+        }
+        if (d1.refCount > 4) {
+            throw std::runtime_error("invalid ref count");
+        }
+        const auto d2 = reader.data()[1];
+        const auto byteLen = (d2 >> 1) + (d2 & 0b1);
+        reader.advance(2);
+
+        // Skip stored hashes
+        if (d1.storeHashes) {
+            reader.advance(sizeof(uint16_t) + Hash::sha256Size);
+        }
+
+        reader.require(byteLen);
+        Data cellData(byteLen);
+        std::memcpy(cellData.data(), reader.data(), byteLen);
+        reader.advance(byteLen);
+
+        std::array<std::shared_ptr<Cell>, 4> references{};
+        reader.require(refSize * d1.refCount);
+        for (size_t r = 0; r < d1.refCount; ++r) {
+            const auto index = reader.readNextUint(refSize);
+            if (index > cellCount || index < i) {
+                throw std::runtime_error("invalid child index");
+            }
+
+            const auto child = doneCells.find(index);
+            if (child == doneCells.end()) {
+                throw std::runtime_error("child cell not found");
+            }
+            references[r] = child->second;
+        }
+
+        const auto bitLen = computeBitLen(cellData);
+        auto cell = std::make_shared<Cell>(bitLen, cellData, d1.refCount, std::move(references));
+        cell->finalize();
+
+        doneCells.insert(std::make_pair(i, std::move(cell)));
+    }
+
+    const auto root = doneCells.find(rootIndex);
+    if (root == doneCells.end()) {
+        throw std::runtime_error("root cell not found");
+    }
+    return std::move(root->second);
 }
 
 class SerializationContext {
