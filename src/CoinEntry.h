@@ -27,6 +27,7 @@ typedef std::vector<std::pair<Data, Data>> HashPubkeyList;
 /// Implement this for all coins.
 class CoinEntry {
 public:
+    virtual ~CoinEntry() noexcept = default;
     virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const = 0;
     // normalizeAddress is optional, it may leave this default, no-change implementation
     virtual std::string normalizeAddress([[maybe_unused]] TWCoinType coin, const std::string& address) const { return address; }

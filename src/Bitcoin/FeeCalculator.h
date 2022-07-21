@@ -20,6 +20,7 @@ inline constexpr double gSegwitBytesBase{gDefaultBytesBase};
 /// Interface for transaction fee calculator.
 class FeeCalculator {
 public:
+    virtual ~FeeCalculator() noexcept = default;
     [[nodiscard]] virtual int64_t calculate(int64_t inputs, int64_t outputs,
                                             int64_t byteFee) const noexcept = 0;
     [[nodiscard]] virtual int64_t calculateSingleInput(int64_t byteFee) const noexcept = 0;
