@@ -78,7 +78,7 @@ bool verifySelectedUTXOs(const UTXOs& selected, const std::vector<int64_t>& expe
         std::cerr << "Wrong number of selected UTXOs, " << selected.size() << " vs. " << expectedAmounts.size() << std::endl;
     }
     int errorCount = 0;
-    for (auto i = 0; i < selected.size() && i < expectedAmounts.size(); ++i) {
+    for (auto i = 0ul; i < selected.size() && i < expectedAmounts.size(); ++i) {
         if (expectedAmounts[i] != selected[i].amount) {
             ret = false;
             ++errorCount;
@@ -104,7 +104,7 @@ bool verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmo
         std::cerr << "Mismatch in fee, act " << plan.fee << ", exp " << fee << std::endl;
     }
     int64_t sumExpectedUTXOs = 0;
-    for (auto i = 0; i < utxoAmounts.size(); ++i) {
+    for (auto i = 0ul; i < utxoAmounts.size(); ++i) {
         sumExpectedUTXOs += utxoAmounts[i];
     }
     if (plan.availableAmount != sumExpectedUTXOs) {
@@ -156,7 +156,7 @@ EncodedTxSize getEncodedTxSize(const Transaction& tx) {
         Data data;
         tx.encodeWitness(data);
         witnessSize = data.size();
-        assert(size.segwit - size.nonSegwit == 2 + witnessSize);
+        assert(size.segwit - size.nonSegwit == 2ul + witnessSize);
     }
     // compute virtual size: 3/4 of (smaller) non-segwit + 1/4 of segwit size
     uint64_t sum = size.nonSegwit * 3 + size.segwit; 

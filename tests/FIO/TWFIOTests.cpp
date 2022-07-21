@@ -26,7 +26,7 @@ TEST(TWFIO, Address) {
     ASSERT_NE(nullptr, privateKey.get());
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), false));
     ASSERT_NE(nullptr, publicKey.get());
-    ASSERT_EQ(65, publicKey.get()->impl.bytes.size());
+    ASSERT_EQ(65ul, publicKey.get()->impl.bytes.size());
     auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeFIO));
     auto addressString = WRAPS(TWAnyAddressDescription(address.get()));
     assertStringsEqual(addressString, "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf");

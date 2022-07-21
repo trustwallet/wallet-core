@@ -58,7 +58,7 @@ TEST(TWTHORChainSwap, SwapBtcToEth) {
     // invoke swap
     const auto outputTWData = WRAPD(TWTHORChainSwapBuildSwap(inputTWData.get()));
     const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
-    EXPECT_EQ(outputData.size(), 178);
+    EXPECT_EQ(outputData.size(), 178ul);
     // parse result in proto
     Proto::SwapOutput outputProto;
     EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
@@ -74,7 +74,7 @@ TEST(TWTHORChainSwap, SwapBtcToEth) {
     EXPECT_EQ(txInput.to_address(), "bc1q6m9u2qsu8mh8y7v8rr2ywavtj8g5arzlyhcej7");
     EXPECT_EQ(txInput.change_address(), "bc1qpjult34k9spjfym8hss2jrwjgf0xjf40ze0pp8");
     EXPECT_EQ(txInput.output_op_return(), "=:ETH.ETH:0xb9f5771c27664bf2282d98e09d7f50cec7cb01a7:140000000000000000");
-    EXPECT_EQ(txInput.coin_type(), 0);
+    EXPECT_EQ(txInput.coin_type(), 0ul);
 
     // sign tx input for signed full tx
     // set few fields before signing
@@ -138,7 +138,7 @@ TEST(TWTHORChainSwap, SwapEthBnb) {
     // invoke swap
     const auto outputTWData = WRAPD(TWTHORChainSwapBuildSwap(inputTWData.get()));
     const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
-    EXPECT_EQ(outputData.size(), 311);
+    EXPECT_EQ(outputData.size(), 311ul);
     // parse result in proto
     Proto::SwapOutput outputProto;
     EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
@@ -192,7 +192,7 @@ TEST(TWTHORChainSwap, SwapBnbBtc) {
     // invoke swap
     const auto outputTWData = WRAPD(TWTHORChainSwapBuildSwap(inputTWData.get()));
     const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
-    EXPECT_EQ(outputData.size(), 149);
+    EXPECT_EQ(outputData.size(), 149ul);
     // parse result in proto
     Proto::SwapOutput outputProto;
     EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
@@ -219,7 +219,7 @@ TEST(TWTHORChainSwap, NegativeInvalidInput) {
 
     const auto outputTWData = WRAPD(TWTHORChainSwapBuildSwap(inputTWData.get()));
     const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
-    EXPECT_EQ(outputData.size(), 39);
+    EXPECT_EQ(outputData.size(), 39ul);
     EXPECT_EQ(hex(outputData), "1a2508021221436f756c64206e6f7420646573657269616c697a6520696e7075742070726f746f");
     EXPECT_EQ(hex(data(std::string("Could not deserialize input proto"))), "436f756c64206e6f7420646573657269616c697a6520696e7075742070726f746f");
 }

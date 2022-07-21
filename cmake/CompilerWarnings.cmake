@@ -47,7 +47,7 @@ target_compile_options(
         tw_error_settings
         INTERFACE
         -Wall
-        #-Wextra # reasonable and standard
+        -Wextra # reasonable and standard
         -Wfatal-errors # short error report
         #-Wshadow # warn the user if a variable declaration shadows one from a
         -Wshorten-64-to-32

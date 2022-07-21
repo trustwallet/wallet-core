@@ -51,7 +51,7 @@ TEST(ParamsBuilder, pushInt) {
                                         "050000000010",
                                         "08ffffffffffffff00",
                                         "08ffffffffffffff0f"};
-    for (auto index = 0; index < numVector.size(); index++) {
+    for (auto index = 0ul; index < numVector.size(); index++) {
         auto builder = ParamsBuilder();
         builder.push(numVector[index]);
         EXPECT_EQ(codeVector[index], hex(builder.getBytes()));

@@ -148,8 +148,8 @@ bool Script::matchMultisig(std::vector<Data>& keys, int& required) const {
         return false;
     }
 
-    auto expectedCount = decodeNumber(opcode);
-    if (keys.size() != expectedCount || expectedCount < required) {
+    std::size_t expectedCount = decodeNumber(opcode);
+    if (keys.size() != expectedCount || expectedCount < static_cast<std::size_t>(required)) {
         return false;
     }
     if (it + 1 != bytes.size()) {

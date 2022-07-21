@@ -46,11 +46,11 @@ public:
     const int64_t fee;
     explicit constexpr ConstantFeeCalculator(int64_t fee) noexcept : fee(fee) {}
 
-    [[nodiscard]] int64_t calculate(int64_t inputs, int64_t outputs,
-                                    int64_t byteFee) const noexcept final {
+    [[nodiscard]] int64_t calculate([[maybe_unused]] int64_t inputs, [[maybe_unused]] int64_t outputs,
+                                    [[maybe_unused]] int64_t byteFee) const noexcept final {
         return fee;
     }
-    [[nodiscard]] int64_t calculateSingleInput(int64_t byteFee) const noexcept final { return 0; }
+    [[nodiscard]] int64_t calculateSingleInput([[maybe_unused]] int64_t byteFee) const noexcept final { return 0; }
 };
 
 /// Default Bitcoin transaction fee calculator, non-segwit.

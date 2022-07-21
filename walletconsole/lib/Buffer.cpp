@@ -43,7 +43,7 @@ bool Buffer::prepareInput(const string& in, string& in_out) {
         int n = std::stoi(in2.substr(1));
         // of the form #n
         int idx = n - 1;
-        if (idx < 0 || idx >= _prev.size()) {
+        if (idx < 0 || idx >= static_cast<int>(_prev.size())) {
             _out << "Requested " << in2 << ", but out of range of buffers (n=" << _prev.size() << ")." << endl;
             return false;
         }
@@ -58,7 +58,7 @@ bool Buffer::prepareInput(const string& in, string& in_out) {
 void Buffer::buffer() const {
     _out << "Last value:  " << _last.get() << endl;
     _out << _prev.size() << " previous values:" << endl;
-    for (int i = 0; i < _prev.size(); ++i) {
+    for (auto i = 0ul; i < _prev.size(); ++i) {
         _out << "  #" << i + 1 << "  " << _prev[i].get() << endl;
     }
 }

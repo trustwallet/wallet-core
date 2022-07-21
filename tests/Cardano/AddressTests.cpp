@@ -344,14 +344,14 @@ TEST(CardanoAddress, PrivateKeyExtended) {
         dummyKey, dummyKey, dummyKey
     );
     auto publicKeyExt = privateKeyExt.getPublicKey(TWPublicKeyTypeED25519Cardano);
-    ASSERT_EQ(128, publicKeyExt.bytes.size());
+    ASSERT_EQ(128ul, publicKeyExt.bytes.size());
 
     // Non-extended: both are 32 bytes.
     auto privateKeyNonext = PrivateKey(
         parse_hex("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744")
     );
     auto publicKeyNonext = privateKeyNonext.getPublicKey(TWPublicKeyTypeED25519);
-    ASSERT_EQ(32, publicKeyNonext.bytes.size());
+    ASSERT_EQ(32ul, publicKeyNonext.bytes.size());
 }
 
 TEST(CardanoAddress, FromStringNegativeInvalidString) {

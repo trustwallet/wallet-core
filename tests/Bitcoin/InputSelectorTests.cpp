@@ -432,7 +432,7 @@ TEST(BitcoinInputSelector, ManyUtxos_900) {
         valueSum += val;
     }
     const uint64_t requestedAmount = valueSum / 8;
-    EXPECT_EQ(requestedAmount, 5'068'125);
+    EXPECT_EQ(requestedAmount, 5'068'125ul);
     auto utxos = buildTestUTXOs(values);
 
     auto selector = InputSelector<UTXO>(utxos);
@@ -446,8 +446,8 @@ TEST(BitcoinInputSelector, ManyUtxos_900) {
         subset.push_back(val);
         subsetSum += val;
     }
-    EXPECT_EQ(subset.size(), 59);
-    EXPECT_EQ(subsetSum, 5'138'900);
+    EXPECT_EQ(subset.size(), 59ul);
+    EXPECT_EQ(subsetSum, 5'138'900ul);
     EXPECT_TRUE(verifySelectedUTXOs(selected, subset));
 }
 
@@ -462,7 +462,7 @@ TEST(BitcoinInputSelector, ManyUtxos_5000_simple) {
         valueSum += val;
     }
     const uint64_t requestedAmount = valueSum / 20;
-    EXPECT_EQ(requestedAmount, 62'512'500);
+    EXPECT_EQ(requestedAmount, 62'512'500ul);
     auto utxos = buildTestUTXOs(values);
 
     auto selector = InputSelector<UTXO>(utxos);
@@ -476,8 +476,8 @@ TEST(BitcoinInputSelector, ManyUtxos_5000_simple) {
         subset.push_back(val);
         subsetSum += val;
     }
-    EXPECT_EQ(subset.size(), 1205);
-    EXPECT_EQ(subsetSum, 73'866'500);
+    EXPECT_EQ(subset.size(), 1205ul);
+    EXPECT_EQ(subsetSum, 73'866'500ul);
     EXPECT_TRUE(verifySelectedUTXOs(selected, subset));
 }
 
@@ -502,7 +502,7 @@ TEST(BitcoinInputSelector, ManyUtxos_MaxAmount_5000) {
         subset.push_back(val);
         subsetSum += val;
     }
-    EXPECT_EQ(subset.size(), 4990);
-    EXPECT_EQ(subsetSum, 1'250'244'500);
+    EXPECT_EQ(subset.size(), 4990ul);
+    EXPECT_EQ(subsetSum, 1'250'244'500ul);
     EXPECT_TRUE(verifySelectedUTXOs(selected, subset));
 }

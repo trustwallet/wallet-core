@@ -15,7 +15,7 @@
 
 using namespace TW;
 
-std::string base58ToHex(const std::string& string, size_t prefixLength, uint8_t* prefix) {
+std::string base58ToHex(const std::string& string, size_t prefixLength) {
     const auto decoded = Base58::bitcoin.decodeCheck(string);
     if (decoded.size() < prefixLength) {
         return "";
@@ -40,7 +40,7 @@ PublicKey parsePublicKey(const std::string& publicKey) {
 PrivateKey parsePrivateKey(const std::string& privateKey) {
     const auto decoded = Base58::bitcoin.decodeCheck(privateKey);
     auto pk = Data();
-    auto prefix_size = 4;
+    auto prefix_size = 4ul;
 
     if (decoded.size() != 32 + prefix_size) {
         throw std::invalid_argument("Invalid Public Key");

@@ -24,7 +24,7 @@ TEST(FIOAddress, ValidateString) {
 
 TEST(FIOAddress, ValidateData) {
     Address address("FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o");
-    EXPECT_EQ(address.bytes.size(), 37);
+    EXPECT_EQ(address.bytes.size(), 37ul);
     Data addrData = TW::data(address.bytes.data(), address.bytes.size());
 
     EXPECT_EQ(Address::isValid(addrData), true);

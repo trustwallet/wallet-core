@@ -25,7 +25,7 @@ class TransactionAttribute : public Serializable {
     }
 
     void deserialize(const Data& data, int initial_pos = 0) override {
-        if (data.size() < initial_pos + 1) {
+        if (static_cast<int>(data.size()) < initial_pos + 1) {
             throw std::invalid_argument("Invalid data for deserialization");
         }
         usage = (TransactionAttributeUsage) data[initial_pos];

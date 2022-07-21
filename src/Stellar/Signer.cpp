@@ -176,7 +176,7 @@ void Signer::encodeAsset(const Proto::Asset& asset, Data& data) {
     }
     encode32BE(assetType, data);
     if (assetType > 0) {
-        for (auto i = 0; i < 4; ++i) {
+        for (auto i = 0ul; i < 4; ++i) {
             if (alphaUse.length() > i) {
                 data.push_back(alphaUse[i]);
             } else {

@@ -174,7 +174,7 @@ TEST(PrivateKey, PrivateKeyExtended) {
     ));
     EXPECT_EQ("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5", hex(privateKeyNonext.bytes));
     auto publicKeyNonext = privateKeyNonext.getPublicKey(TWPublicKeyTypeED25519);
-    EXPECT_EQ(32, publicKeyNonext.bytes.size());
+    EXPECT_EQ(32ul, publicKeyNonext.bytes.size());
 
     const auto fullkey = 
         "b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"
@@ -194,7 +194,7 @@ TEST(PrivateKey, PrivateKeyExtended) {
     EXPECT_EQ("ed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a", hex(privateKeyExt.secondChainCode()));
 
     auto publicKeyExt = privateKeyExt.getPublicKey(TWPublicKeyTypeED25519Cardano);
-    EXPECT_EQ(2*64, publicKeyExt.bytes.size());
+    EXPECT_EQ(2*64ul, publicKeyExt.bytes.size());
 
     // Try other constructor for extended key
     auto privateKeyExtOne = PrivateKey(
@@ -346,7 +346,7 @@ TEST(PrivateKey, SignNIST256p1) {
     );
 }
 
-int isCanonical(uint8_t by, uint8_t sig[64]) {
+int isCanonical([[maybe_unused]] uint8_t by, [[maybe_unused]] uint8_t sig[64]) {
     return 1;
 }
 
@@ -369,14 +369,14 @@ TEST(PrivateKey, SignShortDigest) {
     Data shortDigest = TW::data("12345");
     {
         Data actual = privateKey.sign(shortDigest, TWCurveSECP256k1);
-        EXPECT_EQ(actual.size(), 0);
+        EXPECT_EQ(actual.size(), 0ul);
     }
     {
         Data actual = privateKey.sign(shortDigest, TWCurveNIST256p1);
-        EXPECT_EQ(actual.size(), 0);
+        EXPECT_EQ(actual.size(), 0ul);
     }
     {
         Data actual = privateKey.sign(shortDigest, TWCurveSECP256k1, isCanonical);
-        EXPECT_EQ(actual.size(), 0);
+        EXPECT_EQ(actual.size(), 0ul);
     }
 }

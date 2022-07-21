@@ -23,7 +23,7 @@ TEST(TWCardano, AddressFromPublicKey) {
     ASSERT_NE(nullptr, privateKey.get());
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519Cardano(privateKey.get()));
     ASSERT_NE(nullptr, publicKey.get());
-    ASSERT_EQ(128, publicKey.get()->impl.bytes.size());
+    ASSERT_EQ(128ul, publicKey.get()->impl.bytes.size());
     auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeCardano));
     auto addressString = WRAPS(TWAnyAddressDescription(address.get()));
     assertStringsEqual(addressString, "addr1qx4z6twzknkkux0hhp0kq6hvdfutczp56g56y5em8r8mgvxalp7nkkk25vuspleke2zltaetmlwrfxv7t049cq9jmwjswmfw6t");
@@ -43,11 +43,11 @@ TEST(TWCardano, AddressFromWallet) {
     ));
     auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeCardano));
     auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
-    EXPECT_EQ(TWDataSize(privateKeyData.get()), 192);
+    EXPECT_EQ(TWDataSize(privateKeyData.get()), 192ul);
     
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519Cardano(privateKey.get()));
     auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
-    EXPECT_EQ(TWDataSize(publicKeyData.get()), 128);
+    EXPECT_EQ(TWDataSize(publicKeyData.get()), 128ul);
     assertHexEqual(publicKeyData, "fafa7eb4146220db67156a03a5f7a79c666df83eb31abbfbe77c85e06d40da3110f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26faf4b8d5201961e68f2e177ba594101f513ee70fe70a41324e8ea8eb787ffda6f4bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276");
 
     auto address = WRAPS(TWCoinTypeDeriveAddress(TWCoinTypeCardano, privateKey.get()));

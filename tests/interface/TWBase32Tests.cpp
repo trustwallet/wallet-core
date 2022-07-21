@@ -22,7 +22,7 @@ TEST(TWBase32, Decode) {
     auto result = WRAPD(TWBase32Decode(encodedInput.get()));
 
     ASSERT_NE(result, nullptr);
-    ASSERT_EQ(TWDataSize(result.get()), 10);
+    ASSERT_EQ(TWDataSize(result.get()), 10ul);
 
     auto data = *reinterpret_cast<const TW::Data*>(result.get());
     std::string str(data.begin(), data.end());
@@ -36,7 +36,7 @@ TEST(TWBase32, DecodeWithAlphabet) {
     auto result = WRAPD(TWBase32DecodeWithAlphabet(encodedInput.get(), filecoinAlphabet.get()));
 
     ASSERT_NE(result, nullptr);
-    ASSERT_EQ(TWDataSize(result.get()), 39);
+    ASSERT_EQ(TWDataSize(result.get()), 39ul);
 
     auto data = *reinterpret_cast<const TW::Data*>(result.get());
     std::string str(data.begin(), data.end());

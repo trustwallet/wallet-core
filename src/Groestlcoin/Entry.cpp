@@ -13,19 +13,19 @@
 using namespace TW::Groestlcoin;
 using namespace std;
 
-bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const {
+bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const {
     return TW::Bitcoin::SegwitAddress::isValid(address, hrp)
         || Address::isValid(address, {p2pkh, p2sh});
 }
 
-string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const {
+string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TW::byte p2pkh, const char* hrp) const {
     return TW::Bitcoin::SegwitAddress(publicKey, hrp).string();
 }
 
-void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Bitcoin::Proto::SigningInput>(dataIn, dataOut);
 }
 
-void Entry::plan(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+void Entry::plan([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     planTemplate<Signer, Bitcoin::Proto::SigningInput>(dataIn, dataOut);
 }

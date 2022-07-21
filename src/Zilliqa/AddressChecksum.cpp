@@ -23,7 +23,7 @@ std::string Zilliqa::checksum(const Data& bytes) {
     uint256_t v("0x" + hash);
 
     std::string string = "";
-    for (auto i = 0; i < addressString.size(); i += 1) {
+    for (auto i = 0ul; i < addressString.size(); i += 1) {
         const auto a = addressString[i];
         if (a >= '0' && a <= '9') {
             string.push_back(a);

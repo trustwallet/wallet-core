@@ -50,7 +50,7 @@ TEST(OntologyTransaction, validity) {
         "6e746f6c6f67792e4e61746976652e496e766f6b6500014140e03a09d85f56d2ceb5817a1f3a430bab9bf0f469"
         "da38afe4a5b33de258a06236d8e0a59d25918a49825455c99f91de9caf8071e38a589a530519705af9081eca23"
         "21031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486ac";
-    EXPECT_EQ(520, hex(tx.serialize()).length());
+    EXPECT_EQ(520ul, hex(tx.serialize()).length());
     EXPECT_EQ(hexTx.substr(0, 20), hex(tx.serialize()).substr(0, 20));
     auto signer2 = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464652")));
     signer2.addSign(tx);
@@ -59,7 +59,7 @@ TEST(OntologyTransaction, validity) {
         hex(result).find("21031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486ac");
     auto verifyPosition2 =
         hex(result).find("2103d9fd62df332403d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac");
-    EXPECT_EQ(450, verifyPosition1);
-    EXPECT_EQ(654, verifyPosition2);
-    EXPECT_EQ(724, hex(result).length());
+    EXPECT_EQ(450ul, verifyPosition1);
+    EXPECT_EQ(654ul, verifyPosition2);
+    EXPECT_EQ(724ul, hex(result).length());
 }

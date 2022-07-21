@@ -212,9 +212,9 @@ std::shared_ptr<ParamStruct> ParamStruct::makeStruct(const std::string& structTy
         std::vector<std::shared_ptr<ParamNamed>> params;
         const auto& typeParams = typeInfo->getParams();
         // iterate through the type; order is important and field order in the value json is not defined
-        for (int i = 0; i < typeParams.getCount(); ++i) {
-            auto name = typeParams.getParam(i)->getName();
-            auto type = typeParams.getParam(i)->getParam()->getType();
+        for (auto i = 0ul; i < typeParams.getCount(); ++i) {
+            auto name = typeParams.getParam(static_cast<int>(i))->getName();
+            auto type = typeParams.getParam(static_cast<int>(i))->getParam()->getType();
             // look for it in value (may throw)
             auto value = values[name];
             // first try simple params

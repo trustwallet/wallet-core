@@ -85,9 +85,9 @@ public:
     virtual size_t getSize() const { return _params.getCount(); }
     virtual bool isDynamic() const { return true; }
     virtual size_t getCount() const { return _params.getCount(); }
-    virtual void encode(Data& data) const {}
-    virtual bool decode(const Data& encoded, size_t& offset_inout) { return true; }
-    virtual bool setValueJson(const std::string& value) { return false; } // see makeStruct
+    virtual void encode([[maybe_unused]] Data& data) const {}
+    virtual bool decode([[maybe_unused]] const Data& encoded, [[maybe_unused]] size_t& offset_inout) { return true; }
+    virtual bool setValueJson([[maybe_unused]] const std::string& value) { return false; } // see makeStruct
     Data encodeHashes() const;
     virtual std::string getExtraTypes(std::vector<std::string>& ignoreList) const;
     std::shared_ptr<ParamNamed> findParamByName(const std::string& name) const { return _params.findParamByName(name); }

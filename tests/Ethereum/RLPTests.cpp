@@ -205,9 +205,9 @@ TEST(RLP, DecodeList) {
     {
         // long list, with 2-byte size
         const std::string elem = "0123";
-        const int n = 500;
+        const std::size_t n = 500;
         std::vector<std::string> longarr;
-        for (auto i = 0; i < n; ++i) longarr.push_back(elem);
+        for (auto i = 0ul; i < n; ++i) longarr.push_back(elem);
 
         const Data encoded = RLP::encodeList(longarr);
         ASSERT_EQ(hex(subData(encoded, 0, 20)), "f909c48430313233843031323384303132338430");
@@ -221,12 +221,12 @@ TEST(RLP, DecodeList) {
     {
         // long list, with 3-byte size
         const std::string elem = "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789";
-        const int n = 650;
+        const std::size_t n = 650;
         std::vector<std::string> longarr;
-        for (auto i = 0; i < n; ++i) longarr.push_back(elem);
+        for (auto i = 0ul; i < n; ++i) longarr.push_back(elem);
 
         const Data encoded = RLP::encodeList(longarr);
-        ASSERT_EQ(encoded.size(), 66304);
+        ASSERT_EQ(encoded.size(), 66304ul);
         ASSERT_EQ(hex(subData(encoded, 0, 30)), "fa0102fcb864303132333435363738393031323334353637383930313233");
 
         auto decoded = RLP::decode(encoded);

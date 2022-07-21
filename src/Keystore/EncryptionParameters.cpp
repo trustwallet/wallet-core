@@ -136,7 +136,7 @@ Data EncryptedPayload::decrypt(const Data& password) const {
         auto __attribute__((unused)) result = aes_decrypt_key(derivedKey.data(), 16, &ctx);
         assert(result != EXIT_FAILURE);
 
-        for (auto i = 0; i < encrypted.size(); i += 16) {
+        for (auto i = 0ul; i < encrypted.size(); i += 16) {
             aes_cbc_decrypt(encrypted.data() + i, decrypted.data() + i, 16, iv.data(), &ctx);
         }
     } else {

@@ -22,9 +22,9 @@ TEST(NEOTransaction, SerializeDeserializeEmpty) {
     auto transaction = Transaction();
     EXPECT_EQ(transaction, transaction);
 
-    EXPECT_EQ(0, transaction.attributes.size());
-    EXPECT_EQ(0, transaction.inInputs.size());
-    EXPECT_EQ(0, transaction.outputs.size());
+    EXPECT_EQ(0ul, transaction.attributes.size());
+    EXPECT_EQ(0ul, transaction.inInputs.size());
+    EXPECT_EQ(0ul, transaction.outputs.size());
     auto serialized = transaction.serialize();
     
     auto deserializedTransaction = Transaction();
@@ -246,5 +246,5 @@ TEST(NEOTransaction, SerializeSize) {
     EXPECT_EQ(hex(verSerialized), hex(serialized));
     EXPECT_EQ(verSerialized, serialized);
 
-    EXPECT_EQ(serialized.size(), transaction.size());
+    EXPECT_EQ(serialized.size(), static_cast<uint64_t>(transaction.size()));
 }

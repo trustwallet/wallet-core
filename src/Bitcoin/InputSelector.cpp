@@ -39,7 +39,7 @@ InputSelector<TypeWithAmount>::filterThreshold(const std::vector<TypeWithAmount>
                                                uint64_t minimumAmount) noexcept {
     std::vector<TypeWithAmount> filtered;
     for (auto& i : inputs) {
-        if (i.amount > minimumAmount) {
+        if (static_cast<uint64_t>(i.amount) > minimumAmount) {
             filtered.push_back(i);
         }
     }
@@ -55,7 +55,7 @@ template <typename TypeWithAmount>
 static inline std::vector<std::vector<TypeWithAmount>>
 slice(const std::vector<TypeWithAmount>& inputs, size_t sliceSize) {
     std::vector<std::vector<TypeWithAmount>> slices;
-    for (auto i = 0; i <= inputs.size() - sliceSize; ++i) {
+    for (auto i = 0ul; i <= inputs.size() - sliceSize; ++i) {
         slices.emplace_back();
         slices[i].reserve(sliceSize);
         for (auto j = i; j < i + sliceSize; j++) {
@@ -74,7 +74,7 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
     }
 
     // total values of utxos should be greater than targetValue
-    if (inputs.empty() || sum(inputs) < targetValue) {
+    if (inputs.empty() || sum(inputs) < static_cast<uint64_t>(targetValue)) {
         return {};
     }
     assert(inputs.size() >= 1);
@@ -94,7 +94,7 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
     std::vector<uint64_t> maxWithXInputs = std::vector<uint64_t>();
     maxWithXInputs.push_back(0);
     int64_t maxSum = 0;
-    for (auto i = 0; i < n; ++i) {
+    for (auto i = 0ul; i < n; ++i) {
         maxSum += sorted[n - 1 - i].amount;
         maxWithXInputs.push_back(maxSum);
     }
@@ -116,7 +116,7 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
     for (size_t numInputs = 1; numInputs <= n; ++numInputs) {
         const auto fee = feeCalculator.calculate(numInputs, numOutputs, byteFee);
         const auto targetWithFeeAndDust = targetValue + fee + dustThreshold;
-        if (maxWithXInputs[numInputs] < targetWithFeeAndDust) {
+        if (maxWithXInputs[numInputs] < static_cast<uint64_t>(targetWithFeeAndDust)) {
             // no way to satisfy with only numInputs inputs, skip
             continue;
         }
@@ -125,7 +125,7 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
         slices.erase(
             std::remove_if(slices.begin(), slices.end(),
                            [targetWithFeeAndDust](const std::vector<TypeWithAmount>& slice) {
-                               return sum(slice) < targetWithFeeAndDust;
+                               return sum(slice) < static_cast<uint64_t>(targetWithFeeAndDust);
                            }),
             slices.end());
         if (!slices.empty()) {
@@ -142,14 +142,14 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
     for (size_t numInputs = 1; numInputs <= n; ++numInputs) {
         const auto fee = feeCalculator.calculate(numInputs, numOutputs, byteFee);
         const auto targetWithFee = targetValue + fee;
-        if (maxWithXInputs[numInputs] < targetWithFee) {
+        if (maxWithXInputs[numInputs] < static_cast<uint64_t>(targetWithFee)) {
             // no way to satisfy with only numInputs inputs, skip
             continue;
         }
         auto slices = slice(sorted, static_cast<size_t>(numInputs));
         slices.erase(std::remove_if(slices.begin(), slices.end(),
                                     [targetWithFee](const std::vector<TypeWithAmount>& slice) {
-                                        return sum(slice) < targetWithFee;
+                                        return sum(slice) < static_cast<uint64_t>(targetWithFee);
                                     }),
                      slices.end());
         if (!slices.empty()) {

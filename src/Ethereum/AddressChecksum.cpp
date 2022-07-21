@@ -18,7 +18,7 @@ std::string Ethereum::checksumed(const Address& address) {
     const auto hash = hex(Hash::keccak256(addressString));
 
     std::string string = "0x";
-    for (auto i = 0; i < std::min(addressString.size(), hash.size()); i += 1) {
+    for (auto i = 0ul; i < std::min(addressString.size(), hash.size()); i += 1) {
         const auto a = addressString[i];
         const auto h = hash[i];
         if (a >= '0' && a <= '9') {

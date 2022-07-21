@@ -31,13 +31,13 @@ TEST(HDWallet, generate) {
         HDWallet wallet = HDWallet(128, passphrase);
         EXPECT_TRUE(Mnemonic::isValid(wallet.getMnemonic()));
         EXPECT_EQ(wallet.getPassphrase(), passphrase);
-        EXPECT_EQ(wallet.getEntropy().size(), 16);
+        EXPECT_EQ(wallet.getEntropy().size(), 16ul);
     }
     {
         HDWallet wallet = HDWallet(256, passphrase);
         EXPECT_TRUE(Mnemonic::isValid(wallet.getMnemonic()));
         EXPECT_EQ(wallet.getPassphrase(), passphrase);
-        EXPECT_EQ(wallet.getEntropy().size(), 32);
+        EXPECT_EQ(wallet.getEntropy().size(), 32ul);
     }
 }
 
@@ -67,37 +67,37 @@ TEST(HDWallet, createFromMnemonic) {
 TEST(HDWallet, entropyLength_createFromMnemonic) {
     {   // 12 words
         HDWallet wallet = HDWallet("oil oil oil oil oil oil oil oil oil oil oil oil", "");
-        EXPECT_EQ(wallet.getEntropy().size(), 16);
+        EXPECT_EQ(wallet.getEntropy().size(), 16ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "99d33a674ce99d33a674ce99d33a674c");
     }
     {   // 12 words, from https://github.com/trezor/python-mnemonic/blob/master/vectors.json
         HDWallet wallet = HDWallet("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about", "");
-        EXPECT_EQ(wallet.getEntropy().size(), 16);
+        EXPECT_EQ(wallet.getEntropy().size(), 16ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "00000000000000000000000000000000");
     }
     {   // 15 words
         HDWallet wallet = HDWallet("history step cheap card humble screen raise seek robot slot coral roof spoil wreck caution", "");
-        EXPECT_EQ(wallet.getEntropy().size(), 20);
+        EXPECT_EQ(wallet.getEntropy().size(), 20ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "6c3aac9b9146ef832c4e18bb3980c0dddd25fc49");
     }
     {   // 18 words
         HDWallet wallet = HDWallet("caught hockey split gun symbol code payment copy broccoli silly shed secret stove tell citizen staff photo high", "");
-        EXPECT_EQ(wallet.getEntropy().size(), 24);
+        EXPECT_EQ(wallet.getEntropy().size(), 24ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "246d8f48b3fdc65a2869801c791715614d6bbd8a56a0a3ad");
     }
     {   // 21 words
         HDWallet wallet = HDWallet("diary shine country alpha bridge coast loan hungry hip media sell crucial swarm share gospel lake visa coin dizzy physical basket", "");
-        EXPECT_EQ(wallet.getEntropy().size(), 28);
+        EXPECT_EQ(wallet.getEntropy().size(), 28ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "3d58bcc40381bc59a0c37a6bf14f0d9a3db78a5933e5f4a5ad00d1f1");
     }
     {   // 24 words
         HDWallet wallet = HDWallet("poet spider smile swift roof pilot subject save hand diet ice universe over brown inspire ugly wide economy symbol shove episode patient plug swamp", "");
-        EXPECT_EQ(wallet.getEntropy().size(), 32);
+        EXPECT_EQ(wallet.getEntropy().size(), 32ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "a73a3732edebbb49f5fdfe68c7b5c0f6e9de3a1d5760faa8c771e384bf4229b6");
     }
     {   // 24 words, from https://github.com/trezor/python-mnemonic/blob/master/vectors.json
         HDWallet wallet = HDWallet("letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic bless", "");
-        EXPECT_EQ(wallet.getEntropy().size(), 32);
+        EXPECT_EQ(wallet.getEntropy().size(), 32ul);
         EXPECT_EQ(hex(wallet.getEntropy()), "8080808080808080808080808080808080808080808080808080808080808080");
     }
 }

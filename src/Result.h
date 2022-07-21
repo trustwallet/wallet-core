@@ -152,7 +152,7 @@ struct Result<void, E> {
 
   public:
     /// Initializes a success result with a payload.
-    Result(Types::Success<void> payload) : success_(true), error_() {}
+    Result([[maybe_unused]] Types::Success<void> payload) : success_(true), error_() {}
 
     /// Initializes a failure result.
     Result(Types::Failure<E> error) : success_(false), error_(error.val) {}
