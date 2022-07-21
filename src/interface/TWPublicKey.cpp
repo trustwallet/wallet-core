@@ -60,10 +60,10 @@ bool TWPublicKeyVerifyAsDER(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull si
     return pk->impl.verifyAsDER(s, m);
 }
 
-bool TWPublicKeyVerifySchnorr(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull signature, TWData *_Nonnull message) {
+bool TWPublicKeyVerifyZilliqaSchnorr(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull signature, TWData *_Nonnull message) {
     const auto& s = *reinterpret_cast<const TW::Data *>(signature);
     const auto& m = *reinterpret_cast<const TW::Data *>(message);
-    return pk->impl.verifySchnorr(s, m);
+    return pk->impl.verifyZilliqa(s, m);
 }
 
 enum TWPublicKeyType TWPublicKeyKeyType(struct TWPublicKey *_Nonnull publicKey) {

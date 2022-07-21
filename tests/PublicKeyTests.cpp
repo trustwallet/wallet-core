@@ -214,17 +214,15 @@ TEST(PublicKeyTests, VerifyAsDER) {
 }
 
 TEST(PublicKeyTests, VerifyEd25519Extended) {
-    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const auto privateKey = PrivateKey(parse_hex("e8c8c5b2df13f3abed4e6b1609c808e08ff959d7e6fc3d849e3f2880550b574437aa559095324d78459b9bb2da069da32337e1cc5da78f48e1bd084670107f3110f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26fae0d152bb611cb9ff34e945e4ff627e6fba81da687a601a879759cd76530b5744424db69a75edd4780a5fbc05d1a3c84ac4166ff8e424808481dd8e77627ce5f5bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276"));
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
 
-    const Data messageData = TW::data("Hello");
-    const Data digest = Hash::sha256(messageData);
+    const auto message = TW::data("Hello");
+    const auto digest = Hash::sha256(message);
+    const auto signature = privateKey.sign(digest, TWCurveED25519ExtendedCardano);
+    const auto valid = publicKey.verify(signature, digest);
 
-    try {
-        privateKey.sign(digest, TWCurveED25519Extended);
-    } catch (const std::invalid_argument&) {
-        return; // OK, not implemented
-    }
-    FAIL() << "Missing expected exception";
+    EXPECT_TRUE(valid);
 }
 
 TEST(PublicKeyTests, VerifySchnorr) {
@@ -234,9 +232,9 @@ TEST(PublicKeyTests, VerifySchnorr) {
     const Data messageData = TW::data("hello schnorr");
     const Data digest = Hash::sha256(messageData);
 
-    const auto signature = privateKey.signSchnorr(digest, TWCurveSECP256k1);
+    const auto signature = privateKey.signZilliqa(digest);
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-    EXPECT_TRUE(publicKey.verifySchnorr(signature, digest));
+    EXPECT_TRUE(publicKey.verifyZilliqa(signature, digest));
     EXPECT_EQ(hex(signature), "b8118ccb99563fe014279c957b0a9d563c1666e00367e9896fe541765246964f64a53052513da4e6dc20fdaf69ef0d95b4ca51c87ad3478986cf053c2dd0b853");
 }
 
@@ -247,9 +245,9 @@ TEST(PublicKeyTests, VerifySchnorrWrongType) {
     const Data messageData = TW::data("hello schnorr");
     const Data digest = Hash::sha256(messageData);
 
-    const auto signature = privateKey.signSchnorr(digest, TWCurveSECP256k1);
+    const auto signature = privateKey.signZilliqa(digest);
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1);
-    EXPECT_FALSE(publicKey.verifySchnorr(signature, digest));
+    EXPECT_FALSE(publicKey.verifyZilliqa(signature, digest));
 }
 
 TEST(PublicKeyTests, Recover) {

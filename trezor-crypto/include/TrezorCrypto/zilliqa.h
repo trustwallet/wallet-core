@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016 Jochen Hoenicke
+ * Copyright (c) 2019 Anatolii Kurotych
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the "Software"),
@@ -20,23 +20,38 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <TrezorCrypto/curves.h>
-#include <TrezorCrypto/options.h>
+#ifndef __ZILLIQA_H__
+#define __ZILLIQA_H__
 
-const char SECP256K1_NAME[] = "secp256k1";
-const char SECP256K1_DECRED_NAME[] = "secp256k1-decred";
-const char SECP256K1_GROESTL_NAME[] = "secp256k1-groestl";
-const char SECP256K1_SMART_NAME[] = "secp256k1-smart";
-const char NIST256P1_NAME[] = "nist256p1";
-const char ED25519_NAME[] = "ed25519";
-const char ED25519_SEED_NAME[] = "ed25519 seed";
-#if USE_CARDANO
-const char ED25519_CARDANO_NAME[] = "ed25519 cardano seed";
-#endif
-const char ED25519_SHA3_NAME[] = "ed25519-sha3";
-#if USE_KECCAK
-const char ED25519_KECCAK_NAME[] = "ed25519-keccak";
-#endif
-const char CURVE25519_NAME[] = "curve25519";
+#include <TrezorCrypto/ecdsa.h>
 
-const char ED25519_BLAKE2B_NANO_NAME[] = "ed25519-blake2b-nano"; // [wallet-core]
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
+// result of sign operation
+typedef struct {
+  uint8_t r[32];
+  uint8_t s[32];
+} schnorr_sign_pair;
+
+// sign/verify returns 0 if operation succeeded
+
+int zil_schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key, 
+                const uint8_t *msg, const uint32_t msg_len, uint8_t *sig);
+int zil_schnorr_verify(const ecdsa_curve *curve, const uint8_t *pub_key, 
+                const uint8_t *sig, const uint8_t *msg, const uint32_t msg_len);
+
+// k is a random from [1, ..., order-1]
+int zil_schnorr_sign_k(const ecdsa_curve *curve, const uint8_t *priv_key,
+                 const bignum256 *k, const uint8_t *msg, const uint32_t msg_len,
+                 schnorr_sign_pair *result);
+int zil_schnorr_verify_pair(const ecdsa_curve *curve, const uint8_t *pub_key,
+                   const uint8_t *msg, const uint32_t msg_len,
+                   const schnorr_sign_pair *sign);
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
+
+#endif

@@ -21,14 +21,30 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
+#include <assert.h>
 
-#include <TrezorCrypto/rfc6979.h>
 #include <TrezorCrypto/hmac_drbg.h>
 #include <TrezorCrypto/memzero.h>
+#include <TrezorCrypto/rfc6979.h>
 
 void init_rfc6979(const uint8_t *priv_key, const uint8_t *hash,
-                  rfc6979_state *state) {
-  hmac_drbg_init(state, priv_key, 32, hash, 32);
+                  const ecdsa_curve *curve, rfc6979_state *state) {
+  if (curve) {
+    bignum256 hash_bn = {0};
+    bn_read_be(hash, &hash_bn);
+
+    // Make sure hash is partly reduced modulo order
+    assert(bn_bitcount(&curve->order) >= 256);
+    bn_mod(&hash_bn, &curve->order);
+
+    uint8_t hash_reduced[32] = {0};
+    bn_write_be(&hash_bn, hash_reduced);
+    memzero(&hash_bn, sizeof(hash_bn));
+    hmac_drbg_init(state, priv_key, 32, hash_reduced, 32);
+    memzero(hash_reduced, sizeof(hash_reduced));
+  } else {
+    hmac_drbg_init(state, priv_key, 32, hash, 32);
+  }
 }
 
 // generate next number from deterministic random number generator

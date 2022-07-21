@@ -99,7 +99,7 @@ TEST(TWCoinType, TWPublicKeyType) {
     ASSERT_EQ(TWPublicKeyTypeSECP256k1, TWCoinTypePublicKeyType(TWCoinTypeKava));
     ASSERT_EQ(TWPublicKeyTypeSECP256k1, TWCoinTypePublicKeyType(TWCoinTypeBandChain));
     ASSERT_EQ(TWPublicKeyTypeSECP256k1, TWCoinTypePublicKeyType(TWCoinTypeBluzelle));
-    ASSERT_EQ(TWPublicKeyTypeED25519Extended, TWCoinTypePublicKeyType(TWCoinTypeCardano));
+    ASSERT_EQ(TWPublicKeyTypeED25519Cardano, TWCoinTypePublicKeyType(TWCoinTypeCardano));
     ASSERT_EQ(TWPublicKeyTypeED25519, TWCoinTypePublicKeyType(TWCoinTypeElrond));
     ASSERT_EQ(TWPublicKeyTypeED25519, TWCoinTypePublicKeyType(TWCoinTypeOasis));
     ASSERT_EQ(TWPublicKeyTypeSECP256k1, TWCoinTypePublicKeyType(TWCoinTypeTHORChain));

@@ -57,12 +57,12 @@ TEST(OasisAddress, FromPublicKey) {
 
 TEST(OasisAddress, WrongPublicKeyType) {
     try {
-        auto publicKey = PublicKey(parse_hex("aba52c0dcb80c2fe96ed4c3741af40c573a0500c0d73acda22795c37cb0f1739"), TWPublicKeyTypeED25519Extended);
+        auto publicKey = PublicKey(parse_hex("aba52c0dcb80c2fe96ed4c3741af40c573a0500c0d73acda22795c37cb0f1739"), TWPublicKeyTypeED25519Cardano);
         auto address = Address(publicKey);
     } catch( std::invalid_argument& e1 ) {
         return;
     }
-    FAIL() << "TWPublicKeyTypeED25519Extended should generate an exception as it an invalid publicKey type";
+    FAIL() << "TWPublicKeyTypeED25519Cardano should generate an exception as it an invalid publicKey type";
 }
 
 TEST(OasisAddress, FromString) {

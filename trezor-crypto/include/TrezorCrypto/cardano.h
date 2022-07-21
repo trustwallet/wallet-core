@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016 Jochen Hoenicke
+ * Copyright (c) 2013-2021 SatoshiLabs
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the "Software"),
@@ -20,23 +20,44 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <TrezorCrypto/curves.h>
+#ifndef __CARDANO_H__
+#define __CARDANO_H__
+
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
+#include <stdbool.h>
+#include <stdint.h>
+#include <TrezorCrypto/bip32.h>
 #include <TrezorCrypto/options.h>
 
-const char SECP256K1_NAME[] = "secp256k1";
-const char SECP256K1_DECRED_NAME[] = "secp256k1-decred";
-const char SECP256K1_GROESTL_NAME[] = "secp256k1-groestl";
-const char SECP256K1_SMART_NAME[] = "secp256k1-smart";
-const char NIST256P1_NAME[] = "nist256p1";
-const char ED25519_NAME[] = "ed25519";
-const char ED25519_SEED_NAME[] = "ed25519 seed";
 #if USE_CARDANO
-const char ED25519_CARDANO_NAME[] = "ed25519 cardano seed";
-#endif
-const char ED25519_SHA3_NAME[] = "ed25519-sha3";
-#if USE_KECCAK
-const char ED25519_KECCAK_NAME[] = "ed25519-keccak";
-#endif
-const char CURVE25519_NAME[] = "curve25519";
 
-const char ED25519_BLAKE2B_NANO_NAME[] = "ed25519-blake2b-nano"; // [wallet-core]
+#define CARDANO_SECRET_LENGTH 96
+#define CARDANO_ICARUS_PBKDF2_ROUNDS 4096
+
+extern const curve_info ed25519_cardano_info;
+
+int hdnode_private_ckd_cardano(HDNode *inout, uint32_t i);
+
+int secret_from_entropy_cardano_icarus(
+    const uint8_t *pass, int pass_len, const uint8_t *entropy, int entropy_len,
+    uint8_t secret_out[CARDANO_SECRET_LENGTH],
+    void (*progress_callback)(uint32_t current, uint32_t total));
+int secret_from_seed_cardano_ledger(const uint8_t *seed, int seed_len,
+                                    uint8_t secret_out[CARDANO_SECRET_LENGTH]);
+int secret_from_seed_cardano_slip23(const uint8_t *seed, int seed_len,
+                                    uint8_t secret_out[CARDANO_SECRET_LENGTH]);
+
+int hdnode_from_secret_cardano(const uint8_t secret[CARDANO_SECRET_LENGTH],
+                               HDNode *out);
+
+#endif  // USE_CARDANO
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
+
+#endif  // __CARDANO_H__
