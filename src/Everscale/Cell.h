@@ -29,7 +29,7 @@ public:
         : bitLen(bitLen), data(std::move(data)), refCount(refCount), references(std::move(references)) {}
 
     // Deserialize from BOC representation
-    static std::shared_ptr<Cell> deserialize(const Data& data);
+    static std::shared_ptr<Cell> deserialize(const uint8_t* _Nonnull data, size_t len);
 
     // Serialize to binary stream
     void serialize(Data& os) const;
