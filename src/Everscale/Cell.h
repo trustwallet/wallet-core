@@ -13,20 +13,23 @@ namespace TW::Everscale {
 
 class Cell {
 public:
+    using Ref = std::shared_ptr<Cell>;
+    using Refs = std::array<Ref, 4>;
+
     bool finalized = false;
-    uint8_t refCount = 0;
     uint16_t bitLen = 0;
     std::vector<uint8_t> data{};
-    std::array<std::shared_ptr<Cell>, 4> references{};
+    uint8_t refCount = 0;
+    Refs references{};
 
     uint16_t depth = 0;
     std::array<uint8_t, Hash::sha256Size> hash{};
 
-    Cell(uint16_t bitLen, std::vector<uint8_t> data)
-        : bitLen(bitLen), data(std::move(data)) {}
+    Cell(uint16_t bitLen, std::vector<uint8_t> data, uint8_t refCount, Refs references)
+        : bitLen(bitLen), data(std::move(data)), refCount(refCount), references(std::move(references)) {}
 
     // Deserialize from BOC representation
-    static Cell deserialize(const Data& data);
+    static std::shared_ptr<Cell> deserialize(const Data& data);
 
     // Serialize to binary stream
     void serialize(Data& os) const;
