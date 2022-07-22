@@ -2683,7 +2683,7 @@
     "info": {
       "url": "https://www.okx.com/okc",
       "source": "https://github.com/okex/exchain",
-      "rpc": "https://exchaintmrpc.okex.org",
+      "rpc": "https://exchainrpc.okex.org",
       "documentation": "https://okc-docs.readthedocs.io/en/latest"
     }
   }
