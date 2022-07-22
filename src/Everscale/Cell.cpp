@@ -16,14 +16,14 @@ using CellHash = decltype(Cell::hash);
 constexpr static uint32_t BOC_MAGIC = 0xb5ee9c72;
 
 uint16_t computeBitLen(const Data& data, bool aligned) {
-    auto bitLength = static_cast<uint16_t>(data.size() * 8);
+    auto bitLen = static_cast<uint16_t>(data.size() * 8);
     if (aligned) {
-        return bitLength;
+        return bitLen;
     }
 
     for (size_t i = data.size() - 1; i >= 0; ++i) {
         if (data[i] == 0) {
-            bitLength -= 8;
+            bitLen -= 8;
         } else {
             auto skip = 1;
             uint8_t mask = 1;
@@ -31,11 +31,11 @@ uint16_t computeBitLen(const Data& data, bool aligned) {
                 skip += 1;
                 mask <<= 1;
             }
-            bitLength -= skip;
+            bitLen -= skip;
             break;
         }
     }
-    return bitLength;
+    return bitLen;
 }
 
 struct Reader {
@@ -137,7 +137,7 @@ std::shared_ptr<Cell> Cell::deserialize(const uint8_t* _Nonnull data, size_t len
 
     // 5. Deserialize cells
     struct IntermediateCell {
-        uint16_t bitLength;
+        uint16_t bitLen;
         Data data;
         std::vector<size_t> references;
     };
@@ -198,7 +198,7 @@ std::shared_ptr<Cell> Cell::deserialize(const uint8_t* _Nonnull data, size_t len
         intermediate.emplace(
             i,
             IntermediateCell{
-                .bitLength = bitLen,
+                .bitLen = bitLen,
                 .data = std::move(cellData),
                 .references = std::move(references),
             });
@@ -219,7 +219,7 @@ std::shared_ptr<Cell> Cell::deserialize(const uint8_t* _Nonnull data, size_t len
             references[r] = child->second;
         }
 
-        auto cell = std::make_shared<Cell>(raw.bitLength, std::move(raw.data), raw.references.size(), std::move(references));
+        auto cell = std::make_shared<Cell>(raw.bitLen, std::move(raw.data), raw.references.size(), std::move(references));
         cell->finalize();
         doneCells.emplace(index - 1, cell);
     }
@@ -337,7 +337,7 @@ void Cell::finalize() {
         return;
     }
 
-    if (bitLen > 1024 || refCount > 4) {
+    if (bitLen > Cell::MAX_BITS || refCount > Cell::MAX_REFS) {
         throw std::invalid_argument("invalid cell");
     }
 
@@ -386,43 +386,4 @@ void Cell::finalize() {
     // Done
     sha256_Final(&context, hash.data());
     finalized = true;
-}
-
-uint16_t Cell::findTag(Data& bitstring) {
-    auto length = bitstring.size() * 8;
-    for (auto x =  bitstring.rbegin(); x != bitstring.rend(); ++x) {
-        if (*x == 0) {
-            length -= 8;
-        } else {
-            auto skip = 1;
-            auto mask = 1;
-            while ((*x & mask) == 0) {
-                skip += 1;
-                mask <<= 1;
-            }
-            length -= skip;
-            break;
-        }
-    }
-    return length;
-}
-
-void Cell::appendTag(Data& appendedData, size_t bits) {
-    auto shift = bits % 8;
-    if (shift == 0 || appendedData.empty()) {
-        appendedData.resize(bits / 8);
-        appendedData.push_back(0x80);
-    } else {
-        appendedData.resize(1 + bits / 8);
-        auto lastByte = appendedData.back();
-        appendedData.pop_back();
-        if (shift != 7) {
-            lastByte >>= 7 - shift;
-        }
-        lastByte |= 1;
-        if (shift != 7) {
-            lastByte <<= 7 - shift;
-        }
-        appendedData.push_back(lastByte);
-    }
 }

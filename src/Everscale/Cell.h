@@ -13,8 +13,11 @@ namespace TW::Everscale {
 
 class Cell {
 public:
+    constexpr static uint16_t MAX_BITS = 1023;
+    constexpr static uint8_t MAX_REFS = 4;
+
     using Ref = std::shared_ptr<Cell>;
-    using Refs = std::array<Ref, 4>;
+    using Refs = std::array<Ref, MAX_REFS>;
 
     bool finalized = false;
     uint16_t bitLen = 0;
@@ -48,9 +51,6 @@ public:
     inline size_t serializedSize() const noexcept {
         return 2 + (bitLen + 7) / 8 + refCount * (2 + Hash::sha256Size);
     }
-
-    static uint16_t findTag(Data& bitstring);
-    static void appendTag(Data& appendedData, size_t bits);
 };
 
 } // namespace TW::Everscale
