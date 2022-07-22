@@ -48,6 +48,9 @@ public:
     inline size_t serializedSize() const noexcept {
         return 2 + (bitLen + 7) / 8 + refCount * (2 + Hash::sha256Size);
     }
+
+    static uint16_t findTag(Data& bitstring);
+    static void appendTag(Data& appendedData, size_t bits);
 };
 
 } // namespace TW::Everscale
