@@ -2667,7 +2667,7 @@
     "blockchain": "Ethereum",
     "derivation": [
       {
-        "path": "m/44'/996'/0'/0/0"
+        "path": "m/44'/60'/0'/0/0"
       }
     ],
     "curve": "secp256k1",
