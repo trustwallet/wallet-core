@@ -9,6 +9,7 @@ cmake-build-debug/
 .cquery_cache/
 .cxx/
 .cache/
+build_pvs_studio/
 
 # Dependencies
 node_modules

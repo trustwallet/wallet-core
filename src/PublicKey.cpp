@@ -13,6 +13,7 @@
 #include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sodium/keypair.h>
+#include <TrezorCrypto/zilliqa.h>
 
 #include <iterator>
 
@@ -31,8 +32,8 @@ bool PublicKey::isValid(const Data& data, enum TWPublicKeyType type) {
     case TWPublicKeyTypeCURVE25519:
     case TWPublicKeyTypeED25519Blake2b:
         return size == ed25519Size;
-    case TWPublicKeyTypeED25519Extended:
-        return size == ed25519DoubleExtendedSize;
+    case TWPublicKeyTypeED25519Cardano:
+        return size == cardanoKeySize;
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeNIST256p1:
         return size == secp256k1Size && (data[0] == 0x02 || data[0] == 0x03);
@@ -75,8 +76,8 @@ PublicKey::PublicKey(const Data& data, enum TWPublicKeyType type)
         assert(data.size() == ed25519Size); // ensured by isValid() above
         std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
         break;
-    case TWPublicKeyTypeED25519Extended:
-        bytes.reserve(ed25519DoubleExtendedSize);
+    case TWPublicKeyTypeED25519Cardano:
+        bytes.reserve(cardanoKeySize);
         std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
     }
 }
@@ -119,7 +120,7 @@ PublicKey PublicKey::extended() const {
     case TWPublicKeyTypeED25519:
     case TWPublicKeyTypeCURVE25519:
     case TWPublicKeyTypeED25519Blake2b:
-    case TWPublicKeyTypeED25519Extended:
+    case TWPublicKeyTypeED25519Cardano:
         return *this;
     default:
         return *this;
@@ -138,9 +139,10 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
         return ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) == 0;
     case TWPublicKeyTypeED25519Blake2b:
         return ed25519_sign_open_blake2b(message.data(), message.size(), bytes.data(), signature.data()) == 0;
-    case TWPublicKeyTypeED25519Extended:
-        throw std::logic_error("Not yet implemented");
-        // ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) == 0;
+    case TWPublicKeyTypeED25519Cardano: {
+        const auto key = subData(bytes, 0, ed25519Size);
+        return ed25519_sign_open(message.data(), message.size(), key.data(), signature.data()) == 0;
+    }
     case TWPublicKeyTypeCURVE25519: {
         auto ed25519PublicKey = Data();
         ed25519PublicKey.resize(PublicKey::ed25519Size);
@@ -177,7 +179,7 @@ bool PublicKey::verifyAsDER(const Data& signature, const Data& message) const {
     }
 }
 
-bool PublicKey::verifySchnorr(const Data& signature, const Data& message) const {
+bool PublicKey::verifyZilliqa(const Data& signature, const Data& message) const {
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeSECP256k1Extended:
@@ -186,7 +188,7 @@ bool PublicKey::verifySchnorr(const Data& signature, const Data& message) const 
     case TWPublicKeyTypeNIST256p1Extended:
     case TWPublicKeyTypeED25519:
     case TWPublicKeyTypeED25519Blake2b:
-    case TWPublicKeyTypeED25519Extended:
+    case TWPublicKeyTypeED25519Cardano:
     case TWPublicKeyTypeCURVE25519:
     default:
         return false;

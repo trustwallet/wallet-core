@@ -3,14 +3,16 @@ package com.trustwallet.core.app.blockchains
 import wallet.core.jni.CoinType
 import wallet.core.jni.Curve
 import wallet.core.jni.Purpose
+import wallet.core.jni.Derivation
+
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Test
+
 
 
 class TestCoinType {
     init {
-        System.loadLibrary("TrustWalletCore");
+        System.loadLibrary("TrustWalletCore")
     }
 
     @Test
@@ -42,5 +44,15 @@ class TestCoinType {
     @Test
     fun testCoinCurve() {
         assertEquals(Curve.SECP256K1, CoinType.BITCOIN.curve())
+    }
+
+    @Test
+    fun testDerivationPath() {
+        var res = CoinType.createFromValue(CoinType.BITCOIN.value()).derivationPath().toString()
+        assertEquals(res, "m/84'/0'/0'/0/0")
+        res = CoinType.createFromValue(CoinType.BITCOIN.value()).derivationPathWithDerivation(Derivation.BITCOINLEGACY).toString()
+        assertEquals(res, "m/44'/0'/0'/0/0")
+        res = CoinType.createFromValue(CoinType.SOLANA.value()).derivationPathWithDerivation(Derivation.SOLANASOLANA).toString()
+        assertEquals(res, "m/44'/501'/0'/0'")
     }
 }

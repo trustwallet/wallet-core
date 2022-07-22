@@ -13,16 +13,21 @@
 
 namespace TW {
 
+enum PrivateKeyType {
+    PrivateKeyTypeDefault32 = 0,      // 32 bytes private key.
+    PrivateKeyTypeCardano = 1,        // 96 bytes private key.
+};
+
 class PrivateKey {
   public:
     /// The number of bytes in a private key.
     static const size_t size = 32;
-    /// The number of bytes in a double extended key (used by Cardano)
-    static const size_t doubleExtendedSize = 2 * 3 * 32;
+    /// The number of bytes in a Cardano key (two extended ed25519 keys + chain code)
+    static const size_t cardanoKeySize = 2 * 3 * 32;
 
     /// The private key bytes:
     /// - common case: 'size' bytes
-    /// - double extended case: 'doubleExtendedSize' bytes, key+extension+chainCode+second+secondExtension+secondChainCode
+    /// - double extended case: 'cardanoKeySize' bytes, key+extension+chainCode+second+secondExtension+secondChainCode
     Data bytes;
 
     /// Optional members for extended keys and second extended keys
@@ -45,7 +50,7 @@ class PrivateKey {
     /// Initializes a private key from a string of bytes.
     explicit PrivateKey(const std::string& data) : PrivateKey(TW::data(data)) {}
 
-    /// Initializes a double extended private key with two extended keys
+    /// Initializes a Cardano style key
     explicit PrivateKey(
         const Data& bytes1, const Data& extension1, const Data& chainCode1,
         const Data& bytes2, const Data& extension2, const Data& chainCode2);
@@ -76,8 +81,8 @@ class PrivateKey {
     /// DER.
     Data signAsDER(const Data& digest, TWCurve curve) const;
 
-    /// Signs a digest using given ECDSA curve, returns schnorr signature
-    Data signSchnorr(const Data& message, TWCurve curve) const;
+    /// Signs a digest using given ECDSA curve, returns Zilliqa schnorr signature
+    Data signZilliqa(const Data& message) const;
 
     /// Cleanup contents (fill with 0s), called before destruction
     void cleanup();

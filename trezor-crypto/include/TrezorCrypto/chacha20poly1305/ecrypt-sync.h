@@ -90,11 +90,20 @@ void ECRYPT_keysetup(
  * IV setup. After having called ECRYPT_keysetup(), the user is
  * allowed to call ECRYPT_ivsetup() different times in order to
  * encrypt/decrypt different messages with the same key but different
- * IV's.
+ * IV's. ECRYPT_ivsetup() also sets block counter to zero.
  */
 void ECRYPT_ivsetup(
   ECRYPT_ctx* ctx,
   const u8* iv);
+
+/*
+ * Block counter setup. It is used only for special purposes,
+ * since block counter is usually initialized with ECRYPT_ivsetup.
+ * ECRYPT_ctrsetup has to be called after ECRYPT_ivsetup.
+ */
+void ECRYPT_ctrsetup(
+  ECRYPT_ctx* ctx,
+  const u8* ctr);
 
 /*
  * Encryption/decryption of arbitrary length messages.

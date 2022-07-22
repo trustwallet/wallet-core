@@ -1569,8 +1569,8 @@
         "path": "m/1852'/1815'/0'/0/0"
       }
     ],
-    "curve": "ed25519Extended",
-    "publicKeyType": "ed25519Extended",
+    "curve": "ed25519ExtendedCardano",
+    "publicKeyType": "ed25519Cardano",
     "hrp": "addr",
     "explorer": {
       "url": "https://cardanoscan.io",

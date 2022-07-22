@@ -48,23 +48,12 @@
 #include "nem.h"
 #endif
 #if USE_CARDANO
-#include <TrezorCrypto/pbkdf2.h>
+#include <TrezorCrypto/cardano.h>
 #endif
 #include <TrezorCrypto/memzero.h>
 
-#define CARDANO_MAX_NODE_DEPTH 1048576
-
 const curve_info ed25519_info = {
-    .bip32_name = "ed25519 seed",
-    .params = NULL,
-    .hasher_base58 = HASHER_SHA2D,
-    .hasher_sign = HASHER_SHA2D,
-    .hasher_pubkey = HASHER_SHA2_RIPEMD,
-    .hasher_script = HASHER_SHA2,
-};
-
-const curve_info ed25519_cardano_info = {
-    .bip32_name = "ed25519 cardano seed",
+    .bip32_name = ED25519_SEED_NAME,
     .params = NULL,
     .hasher_base58 = HASHER_SHA2D,
     .hasher_sign = HASHER_SHA2D,
@@ -215,10 +204,16 @@ uint32_t hdnode_fingerprint(HDNode *node) {
   return fingerprint;
 }
 
-int hdnode_private_ckd(HDNode *inout, uint32_t i) {
+int hdnode_private_ckd_bip32(HDNode *inout, uint32_t i) {
   CONFIDENTIAL uint8_t data[1 + 32 + 4];
   CONFIDENTIAL uint8_t I[32 + 32];
   CONFIDENTIAL bignum256 a, b;
+
+#if USE_CARDANO
+  if (inout->curve == &ed25519_cardano_info) {
+    return 0;
+  }
+#endif
 
   if (i & 0x80000000) {  // private derivation
     data[0] = 0;
@@ -227,7 +222,9 @@ int hdnode_private_ckd(HDNode *inout, uint32_t i) {
     if (!inout->curve->params) {
       return 0;
     }
-    hdnode_fill_public_key(inout);
+    if (hdnode_fill_public_key(inout) != 0) {
+      return 0;
+    }
     memcpy(data, inout->public_key, 33);
   }
   write_be(data + 33, i);
@@ -281,155 +278,16 @@ int hdnode_private_ckd(HDNode *inout, uint32_t i) {
   return 1;
 }
 
+int hdnode_private_ckd(HDNode *inout, uint32_t i) {
 #if USE_CARDANO
-static void scalar_multiply8(const uint8_t *src, int bytes, uint8_t *dst) {
-  uint8_t prev_acc = 0;
-  for (int i = 0; i < bytes; i++) {
-    dst[i] = (src[i] << 3) + (prev_acc & 0x7);
-    prev_acc = src[i] >> 5;
-  }
-  dst[bytes] = src[bytes - 1] >> 5;
-}
-
-static void scalar_add_256bits(const uint8_t *src1, const uint8_t *src2,
-                               uint8_t *dst) {
-  uint16_t r = 0;
-  for (int i = 0; i < 32; i++) {
-    r = r + (uint16_t)src1[i] + (uint16_t)src2[i];
-    dst[i] = r & 0xff;
-    r >>= 8;
-  }
-}
-
-int hdnode_private_ckd_cardano(HDNode *inout, uint32_t index) {
-  if (inout->depth >= CARDANO_MAX_NODE_DEPTH) {
-    return 0;
-  }
-
-  // checks for hardened/non-hardened derivation, keysize 32 means we are
-  // dealing with public key and thus non-h, keysize 64 is for private key
-  int keysize = 32;
-  if (index & 0x80000000) {
-    keysize = 64;
-  }
-
-  CONFIDENTIAL uint8_t data[1 + 64 + 4];
-  CONFIDENTIAL uint8_t z[32 + 32];
-  CONFIDENTIAL uint8_t priv_key[64];
-  CONFIDENTIAL uint8_t res_key[64];
-
-  write_le(data + keysize + 1, index);
-
-  memcpy(priv_key, inout->private_key, 32);
-  memcpy(priv_key + 32, inout->private_key_extension, 32);
-
-  if (keysize == 64) {  // private derivation
-    data[0] = 0;
-    memcpy(data + 1, inout->private_key, 32);
-    memcpy(data + 1 + 32, inout->private_key_extension, 32);
-  } else {  // public derivation
-    hdnode_fill_public_key(inout);
-    data[0] = 2;
-    memcpy(data + 1, inout->public_key + 1, 32);
-  }
-
-  CONFIDENTIAL HMAC_SHA512_CTX ctx;
-  hmac_sha512_Init(&ctx, inout->chain_code, 32);
-  hmac_sha512_Update(&ctx, data, 1 + keysize + 4);
-  hmac_sha512_Final(&ctx, z);
-
-  CONFIDENTIAL uint8_t zl8[32];
-  memzero(zl8, 32);
-
-  /* get 8 * Zl */
-  scalar_multiply8(z, 28, zl8);
-  /* Kl = 8*Zl + parent(K)l */
-  scalar_add_256bits(zl8, priv_key, res_key);
-
-  /* Kr = Zr + parent(K)r */
-  scalar_add_256bits(z + 32, priv_key + 32, res_key + 32);
-
-  memcpy(inout->private_key, res_key, 32);
-  memcpy(inout->private_key_extension, res_key + 32, 32);
-
-  if (keysize == 64) {
-    data[0] = 1;
-  } else {
-    data[0] = 3;
-  }
-  hmac_sha512_Init(&ctx, inout->chain_code, 32);
-  hmac_sha512_Update(&ctx, data, 1 + keysize + 4);
-  hmac_sha512_Final(&ctx, z);
-
-  memcpy(inout->chain_code, z + 32, 32);
-  inout->depth++;
-  inout->child_num = index;
-  memzero(inout->public_key, sizeof(inout->public_key));
-
-  // making sure to wipe our memory
-  memzero(z, sizeof(z));
-  memzero(data, sizeof(data));
-  memzero(priv_key, sizeof(priv_key));
-  memzero(res_key, sizeof(res_key));
-  return 1;
-}
-
-static int hdnode_from_secret_cardano(const uint8_t *k,
-                                      const uint8_t *chain_code, HDNode *out) {
-  memzero(out, sizeof(HDNode));
-  out->depth = 0;
-  out->child_num = 0;
-  out->curve = &ed25519_cardano_info;
-  memcpy(out->private_key, k, 32);
-  memcpy(out->private_key_extension, k + 32, 32);
-  memcpy(out->chain_code, chain_code, 32);
-
-  out->private_key[0] &= 0xf8;
-  out->private_key[31] &= 0x1f;
-  out->private_key[31] |= 0x40;
-
-  out->public_key[0] = 0;
-  hdnode_fill_public_key(out);
-
-  return 1;
-}
-
-// Derives the root Cardano HDNode from a master secret, aka seed, as defined in
-// SLIP-0023.
-int hdnode_from_seed_cardano(const uint8_t *seed, int seed_len, HDNode *out) {
-  CONFIDENTIAL uint8_t I[SHA512_DIGEST_LENGTH];
-  CONFIDENTIAL uint8_t k[SHA512_DIGEST_LENGTH];
-  CONFIDENTIAL HMAC_SHA512_CTX ctx;
-
-  hmac_sha512_Init(&ctx, (const uint8_t *)ED25519_CARDANO_NAME,
-                   strlen(ED25519_CARDANO_NAME));
-  hmac_sha512_Update(&ctx, seed, seed_len);
-  hmac_sha512_Final(&ctx, I);
-
-  sha512_Raw(I, 32, k);
-
-  int ret = hdnode_from_secret_cardano(k, I + 32, out);
-
-  memzero(I, sizeof(I));
-  memzero(k, sizeof(k));
-  memzero(&ctx, sizeof(ctx));
-  return ret;
-}
-
-// Derives the root Cardano HDNode from a passphrase and the entropy encoded in
-// a BIP-0039 mnemonic using the Icarus derivation scheme, aka V2 derivation
-// scheme.
-int hdnode_from_entropy_cardano_icarus(const uint8_t *pass, int pass_len,
-                                       const uint8_t *entropy, int entropy_len,
-                                       HDNode *out) {
-  CONFIDENTIAL uint8_t secret[96];
-  pbkdf2_hmac_sha512(pass, pass_len, entropy, entropy_len, 4096, secret, 96);
-
-  int ret = hdnode_from_secret_cardano(secret, secret + 64, out);
-  memzero(secret, sizeof(secret));
-  return ret;
-}
+  if (inout->curve == &ed25519_cardano_info) {
+    return hdnode_private_ckd_cardano(inout, i);
+  } else
 #endif
+  {
+    return hdnode_private_ckd_bip32(inout, i);
+  }
+}
 
 int hdnode_public_ckd_cp(const ecdsa_curve *curve, const curve_point *parent,
                          const uint8_t *parent_chain_code, uint32_t i,
@@ -530,6 +388,13 @@ CONFIDENTIAL struct {
   HDNode node;
 } private_ckd_cache[BIP32_CACHE_SIZE];
 
+void bip32_cache_clear(void) {
+  private_ckd_cache_root_set = false;
+  private_ckd_cache_index = 0;
+  memzero(&private_ckd_cache_root, sizeof(private_ckd_cache_root));
+  memzero(private_ckd_cache, sizeof(private_ckd_cache));
+}
+
 int hdnode_private_ckd_cached(HDNode *inout, const uint32_t *i, size_t i_count,
                               uint32_t *fingerprint) {
   if (i_count == 0) {
@@ -597,26 +462,34 @@ int hdnode_private_ckd_cached(HDNode *inout, const uint32_t *i, size_t i_count,
 }
 #endif
 
-void hdnode_get_address_raw(HDNode *node, uint32_t version, uint8_t *addr_raw) {
-  hdnode_fill_public_key(node);
+int hdnode_get_address_raw(HDNode *node, uint32_t version, uint8_t *addr_raw) {
+  if (hdnode_fill_public_key(node) != 0) {
+    return 1;
+  }
   ecdsa_get_address_raw(node->public_key, version, node->curve->hasher_pubkey,
                         addr_raw);
+  return 0;
 }
 
-void hdnode_get_address(HDNode *node, uint32_t version, char *addr,
-                        int addrsize) {
-  hdnode_fill_public_key(node);
+int hdnode_get_address(HDNode *node, uint32_t version, char *addr,
+                       int addrsize) {
+  if (hdnode_fill_public_key(node) != 0) {
+    return 1;
+  }
   ecdsa_get_address(node->public_key, version, node->curve->hasher_pubkey,
                     node->curve->hasher_base58, addr, addrsize);
+  return 0;
 }
 
-void hdnode_fill_public_key(HDNode *node) {
-  if (node->public_key[0] != 0) return;
+int hdnode_fill_public_key(HDNode *node) {
+  if (node->public_key[0] != 0) return 0;
 
 #if USE_BIP32_25519_CURVES
   if (node->curve->params) {
-    ecdsa_get_public_key33(node->curve->params, node->private_key,
-                           node->public_key);
+    if (ecdsa_get_public_key33(node->curve->params, node->private_key,
+                               node->public_key) != 0) {
+      return 1;
+    }
   } else {
     node->public_key[0] = 1;
     if (node->curve == &ed25519_info) {
@@ -631,16 +504,18 @@ void hdnode_fill_public_key(HDNode *node) {
       curve25519_scalarmult_basepoint(node->public_key + 1, node->private_key);
 #if USE_CARDANO
     } else if (node->curve == &ed25519_cardano_info) {
-      ed25519_publickey_ext(node->private_key, node->private_key_extension,
-                            node->public_key + 1);
+      ed25519_publickey_ext(node->private_key, node->public_key + 1);
 #endif
     }
   }
 #else
 
-  ecdsa_get_public_key33(node->curve->params, node->private_key,
-                         node->public_key);
+  if (ecdsa_get_public_key33(node->curve->params, node->private_key,
+                             node->public_key) != 0) {
+    return 1;
+  }
 #endif
+  return 0;
 }
 
 #if USE_ETHEREUM
@@ -649,7 +524,10 @@ int hdnode_get_ethereum_pubkeyhash(const HDNode *node, uint8_t *pubkeyhash) {
   SHA3_CTX ctx = {0};
 
   /* get uncompressed public key */
-  ecdsa_get_public_key65(node->curve->params, node->private_key, buf);
+  if (ecdsa_get_public_key65(node->curve->params, node->private_key, buf) !=
+      0) {
+    return 0;
+  }
 
   /* compute sha3 of x and y coordinate without 04 prefix */
   sha3_256_Init(&ctx);
@@ -669,7 +547,10 @@ int hdnode_get_nem_address(HDNode *node, uint8_t version, char *address) {
     return 0;
   }
 
-  hdnode_fill_public_key(node);
+  if (hdnode_fill_public_key(node) != 0) {
+    return 0;
+  }
+
   return nem_get_address(&node->public_key[1], version, address);
 }
 
@@ -778,17 +659,12 @@ int hdnode_sign(HDNode *node, const uint8_t *msg, uint32_t msg_len,
     return 1;  // signatures are not supported
   } else {
     if (node->curve == &ed25519_info) {
-      hdnode_fill_public_key(node);
-      ed25519_sign(msg, msg_len, node->private_key, node->public_key + 1, sig);
+      ed25519_sign(msg, msg_len, node->private_key, sig);
     } else if (node->curve == &ed25519_sha3_info) {
-      hdnode_fill_public_key(node);
-      ed25519_sign_sha3(msg, msg_len, node->private_key, node->public_key + 1,
-                        sig);
+      ed25519_sign_sha3(msg, msg_len, node->private_key, sig);
 #if USE_KECCAK
     } else if (node->curve == &ed25519_keccak_info) {
-      hdnode_fill_public_key(node);
-      ed25519_sign_keccak(msg, msg_len, node->private_key, node->public_key + 1,
-                          sig);
+      ed25519_sign_keccak(msg, msg_len, node->private_key, sig);
 #endif
     } else {
       return 1;  // unknown or unsupported curve

@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <algorithm> //< std::copy
-#include <array>     //< std::array
+#include <algorithm>
+#include <array>
 
 namespace TW {
 
