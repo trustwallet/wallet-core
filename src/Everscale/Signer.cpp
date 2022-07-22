@@ -4,8 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "BuilderData.h"
-
 #include "Signer.h"
 #include "Address.h"
 #include "../PublicKey.h"
@@ -19,8 +17,6 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
 
     // auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     // auto signature = privateKey.sign(payload, TWCurveED25519);
-
-    BuilderData builder;
 
     Data message;
     int32_t wc = 0;

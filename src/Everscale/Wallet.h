@@ -2,6 +2,8 @@
 
 #include <boost/integer.hpp>
 
+const uint32_t WALLET_ID = 0x4BA92D8A;
+
 class Wallet {
 public:
     // clang-format off
