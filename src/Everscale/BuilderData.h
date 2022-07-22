@@ -34,8 +34,6 @@ private:
     void appendWithoutShifting(const Data& data, std::size_t bits);
     void appendWithSliceShifting(const Data& data, std::size_t bits);
     void appendWithDoubleShifting(const Data& data, std::size_t bits);
-
-    static void appendTag(Data& appendedData, size_t bits);
 };
 
 } // namespace TW::Everscale

@@ -49,9 +49,15 @@ void BuilderData::appendReferenceCell(std::shared_ptr<Cell> child) {
 }
 
 Cell BuilderData::intoCell() {
-    appendTag(data, lengthInBits);
+    Cell::appendTag(data, lengthInBits);
 
-    Cell cell; // TODO: Construct Cell from BuilderData
+    auto refCount = references.size();
+    auto bitLength = Cell::findTag(data);
+
+    Cell::Refs refs;
+    std::copy_n(references.begin(), refCount, refs.begin());
+
+    Cell cell(bitLength, data, refCount, refs);
     cell.finalize();
     return cell;
 }
@@ -109,25 +115,5 @@ void BuilderData::appendWithDoubleShifting(const Data& appendedData, std::size_t
         lastByte >>= 8 - shift;
         lastByte <<= 8 - shift;
         data.push_back(lastByte);
-    }
-}
-
-void BuilderData::appendTag(Data& appendedData, size_t bits) {
-    auto shift = bits % 8;
-    if (shift == 0 || appendedData.empty()) {
-        appendedData.resize(bits / 8);
-        appendedData.push_back(0x80);
-    } else {
-        appendedData.resize(1 + bits / 8);
-        auto lastByte = appendedData.back();
-        appendedData.pop_back();
-        if (shift != 7) {
-            lastByte >>= 7 - shift;
-        }
-        lastByte |= 1;
-        if (shift != 7) {
-            lastByte <<= 7 - shift;
-        }
-        appendedData.push_back(lastByte);
     }
 }

@@ -387,3 +387,42 @@ void Cell::finalize() {
     sha256_Final(&context, hash.data());
     finalized = true;
 }
+
+uint16_t Cell::findTag(Data& bitstring) {
+    auto length = bitstring.size() * 8;
+    for (auto x =  bitstring.rbegin(); x != bitstring.rend(); ++x) {
+        if (*x == 0) {
+            length -= 8;
+        } else {
+            auto skip = 1;
+            auto mask = 1;
+            while ((*x & mask) == 0) {
+                skip += 1;
+                mask <<= 1;
+            }
+            length -= skip;
+            break;
+        }
+    }
+    return length;
+}
+
+void Cell::appendTag(Data& appendedData, size_t bits) {
+    auto shift = bits % 8;
+    if (shift == 0 || appendedData.empty()) {
+        appendedData.resize(bits / 8);
+        appendedData.push_back(0x80);
+    } else {
+        appendedData.resize(1 + bits / 8);
+        auto lastByte = appendedData.back();
+        appendedData.pop_back();
+        if (shift != 7) {
+            lastByte >>= 7 - shift;
+        }
+        lastByte |= 1;
+        if (shift != 7) {
+            lastByte <<= 7 - shift;
+        }
+        appendedData.push_back(lastByte);
+    }
+}
