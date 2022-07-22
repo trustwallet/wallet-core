@@ -12,6 +12,7 @@
 #include "Bitcoin/SegwitAddress.h"
 #include "Coin.h"
 #include "Mnemonic.h"
+#include "memory/memzero_wrapper.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWPublicKeyType.h>
@@ -22,7 +23,6 @@
 #include <TrezorCrypto/bip39.h>
 #include <TrezorCrypto/cardano.h>
 #include <TrezorCrypto/curves.h>
-#include <TrezorCrypto/memzero.h>
 
 #include <array>
 #include <cstring>
@@ -50,7 +50,7 @@ HDWallet::HDWallet(int strength, const std::string& passphrase)
         throw std::invalid_argument("Invalid strength");
     }
     mnemonic = mnemonic_chars;
-    memzero(buf, MnemonicBufLength);
+    TW::memzero(buf, MnemonicBufLength);
     updateSeedAndEntropy();
 }
 
@@ -71,7 +71,7 @@ HDWallet::HDWallet(const Data& entropy, const std::string& passphrase)
         throw std::invalid_argument("Invalid mnemonic data");
     }
     mnemonic = mnemonic_chars;
-    memzero(buf, MnemonicBufLength);
+    TW::memzero(buf, MnemonicBufLength);
     updateSeedAndEntropy();
 }
 
@@ -142,7 +142,7 @@ PrivateKey HDWallet::getKey(TWCoinType coin, const DerivationPath& derivationPat
         auto extData2 = Data(node2.private_key_extension, node2.private_key_extension + PrivateKey::size);
         auto chainCode2 = Data(node2.chain_code, node2.chain_code + PrivateKey::size);
 
-        memset(&node, 0, sizeof(HDNode));
+        TW::memzero(&node);
         return PrivateKey(pkData, extData, chainCode, pkData2, extData2, chainCode2);
     }
 
@@ -150,7 +150,7 @@ PrivateKey HDWallet::getKey(TWCoinType coin, const DerivationPath& derivationPat
     default:
         // default path
         auto data = Data(node.private_key, node.private_key + PrivateKey::size);
-        memset(&node, 0, sizeof(HDNode));
+        TW::memzero(&node);
         return PrivateKey(data);
     }
 }
@@ -286,7 +286,7 @@ std::string serialize(const HDNode* node, uint32_t fingerprint, uint32_t version
 }
 
 bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher, HDNode* node) {
-    memset(node, 0, sizeof(HDNode));
+    TW::memzero(node);
     const char* curveNameStr = curveName(curve);
     if (curveNameStr == nullptr || ::strlen(curveNameStr) == 0) {
         return false;
@@ -344,7 +344,7 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve) {
         uint8_t secret[CARDANO_SECRET_LENGTH];
         secret_from_entropy_cardano_icarus((const uint8_t*)"", 0, entropy.data(), int(entropy.size()), secret, nullptr);
         hdnode_from_secret_cardano(secret, &node);
-        memzero(secret, CARDANO_SECRET_LENGTH);
+        TW::memzero(secret, CARDANO_SECRET_LENGTH);
         break;
     }
     case PrivateKeyTypeDefault32:
