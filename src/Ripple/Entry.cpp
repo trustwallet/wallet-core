@@ -59,13 +59,9 @@ void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<
                 return;
             }
 
-            //DER format signature
-            std::vector<uint8_t> signVec;
-            auto signature = TWDataCreateWithBytes(signatures[0].data(), signatures[0].size());
-            auto rawSign = TWDataBytes(signature);
-            signVec.assign(rawSign, rawSign + static_cast<int>(TWDataSize(signature)));
+            // Ripple signature is special, so we have to convert to Der format
             std::array<uint8_t, 72> sigBytes;
-            size_t size = ecdsa_sig_to_der(signVec.data(), sigBytes.data());
+            size_t size = ecdsa_sig_to_der(signatures[0].data(), sigBytes.data());
             auto sig = Data{};
             std::copy(sigBytes.begin(), sigBytes.begin() + size, std::back_inserter(sig));
 
