@@ -21,10 +21,11 @@ class PublicKey {
     /// The number of bytes in a secp256k1 and nist256p1 public key.
     static const size_t secp256k1Size = 33;
 
-    /// The number of bytes in a ed25519 public key.
+    /// The number of bytes in an ed25519 public key.
     static const size_t ed25519Size = 32;
 
-    static const size_t ed25519DoubleExtendedSize = 2 * 2 * 32;
+    /// The number of bytes in a Cardano public key (two ed25519 public key + chain code).
+    static const size_t cardanoKeySize = 2 * 2 * 32;
 
     /// The number of bytes in a secp256k1 and nist256p1 extended public key.
     static const size_t secp256k1ExtendedSize = 65;
@@ -64,8 +65,8 @@ class PublicKey {
     /// Verifies a signature in DER format.
     bool verifyAsDER(const Data& signature, const Data& message) const;
 
-    /// Verifies a schnorr signature for the provided message.
-    bool verifySchnorr(const Data& signature, const Data& message) const;
+    /// Verifies a Zilliqa schnorr signature for the provided message.
+    bool verifyZilliqa(const Data& signature, const Data& message) const;
 
     /// Computes the public key hash.
     ///

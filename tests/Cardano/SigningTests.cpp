@@ -438,7 +438,7 @@ TEST(CardanoSigning, SignTransferFromLegacy) {
     const auto privateKeyData = parse_hex("c031e942f6bf2b2864700e7da20964ee6bb6d716345ce2e24d8c00e6500b574411111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111");
     {
         const auto privKey = PrivateKey(privateKeyData);
-        const auto pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519Extended);
+        const auto pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         const auto addr = AddressV2(pubKey);
         EXPECT_EQ(addr.string(), "Ae2tdPwUPEZMRgecV9jV2e9RdbrmnWu7YgRie4de16xLdkWhy6q7ypmRhgn");
     }
@@ -760,7 +760,7 @@ TEST(CardanoSigning, SignMessageWithKey) {
         "1111111111111111111111111111111111111111111111111111111111111111"
     ));
 
-    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Extended);
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
     EXPECT_EQ(hex(publicKey.bytes), 
         "e6f04522f875c1563682ca876ddb04c2e2e3ae718e3ff9f11c03dd9f9dccf698"
         "69272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000"
@@ -771,7 +771,7 @@ TEST(CardanoSigning, SignMessageWithKey) {
     const auto sampleMessageStr = "Hello world";
     const auto sampleMessage = data(sampleMessageStr);
 
-    const auto signature = privateKey.sign(sampleMessage, TWCurveED25519Extended);
+    const auto signature = privateKey.sign(sampleMessage, TWCurveED25519ExtendedCardano);
 
     const auto sampleRightSignature = "1096ddcfb2ad21a4c0d861ef3fabe18841e8de88105b0d8e36430d7992c588634ead4100c32b2800b31b65e014d54a8238bdda63118d829bf0bcf1b631e86f0e";
     EXPECT_EQ(hex(signature), sampleRightSignature);

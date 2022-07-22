@@ -71,7 +71,7 @@ AddressV2::AddressV2(const std::string& string) {
 
 AddressV2::AddressV2(const PublicKey& publicKey) {
     // input is extended pubkey, 64-byte
-    if (publicKey.type != TWPublicKeyTypeED25519Extended || publicKey.bytes.size() != PublicKey::ed25519DoubleExtendedSize) {
+    if (publicKey.type != TWPublicKeyTypeED25519Cardano || publicKey.bytes.size() != PublicKey::cardanoKeySize) {
         throw std::invalid_argument("Invalid public key type");
     }
     type = 0; // public key

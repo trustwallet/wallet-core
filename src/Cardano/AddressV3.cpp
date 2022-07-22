@@ -110,7 +110,7 @@ AddressV3::AddressV3(const std::string& addr) {
 
 AddressV3::AddressV3(const PublicKey& publicKey) {
     // input is double extended pubkey
-    if (publicKey.type != TWPublicKeyTypeED25519Extended || publicKey.bytes.size() != PublicKey::ed25519DoubleExtendedSize) {
+    if (publicKey.type != TWPublicKeyTypeED25519Cardano || publicKey.bytes.size() != PublicKey::cardanoKeySize) {
         throw std::invalid_argument("Invalid public key type");
     }
     kind = Kind_Base;

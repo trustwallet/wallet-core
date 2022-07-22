@@ -1,0 +1,25 @@
+#!/bin/bash
+#
+# This script generate a build folder with pvs studio enabled and run an analyze
+# You need to have ninja, pvs-studio-analyzer and llvm installed
+# If you are on macOS set CC/CXX to clang/clang++ from brew
+
+base_dir=$(
+  cd $(dirname $0)
+  pwd
+)
+src_dir=${base_dir}/..
+
+mkdir -p "${src_dir}"/build_pvs_studio
+cd "${src_dir}"/build_pvs_studio
+
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  cmake -GNinja -DTW_ENABLE_PVS_STUDIO=ON -DTW_IDE_VSCODE=ON -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ ../
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+  llvm_bin="$(brew --prefix)/opt/llvm/bin"
+  cmake -GNinja -DTW_ENABLE_PVS_STUDIO=ON -DTW_IDE_VSCODE=ON -DCMAKE_C_COMPILER=$llvm_bin/clang -DCMAKE_CXX_COMPILER=$llvm_bin/clang++ ../
+fi
+
+ninja TrustWalletCore.analyze
+
+cd -

@@ -27,13 +27,14 @@
 
 #include <stdint.h>
 #include "bignum.h"
+#include "ecdsa.h"
 #include "hmac_drbg.h"
 
 // rfc6979 pseudo random number generator state
 typedef HMAC_DRBG_CTX rfc6979_state;
 
 void init_rfc6979(const uint8_t *priv_key, const uint8_t *hash,
-                  rfc6979_state *rng);
+                  const ecdsa_curve *curve, rfc6979_state *rng);
 void generate_rfc6979(uint8_t rnd[32], rfc6979_state *rng);
 void generate_k_rfc6979(bignum256 *k, rfc6979_state *rng);
 

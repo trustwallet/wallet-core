@@ -21,9 +21,9 @@ TEST(ZilliqaSignature, Signing) {
 
     auto message = "hello schnorr";
     auto messageData = WRAPD(TWDataCreateWithBytes((uint8_t *)message, strnlen(message, 13)));
-    auto signatureData = WRAPD(TWPrivateKeySignSchnorr(privateKey.get(), messageData.get(), TWCurveSECP256k1));
+    auto signatureData = WRAPD(TWPrivateKeySignZilliqaSchnorr(privateKey.get(), messageData.get()));
     auto signature = data(TWDataBytes(signatureData.get()), TWDataSize(signatureData.get()));
 
-    ASSERT_TRUE(TWPublicKeyVerifySchnorr(pubKey.get(), signatureData.get(), messageData.get()));
+    ASSERT_TRUE(TWPublicKeyVerifyZilliqaSchnorr(pubKey.get(), signatureData.get(), messageData.get()));
     EXPECT_EQ(hex(signature), "d166b1ae7892c5ef541461dc12a50214d0681b63d8037cda29a3fe6af8bb973e4ea94624d85bc0010bdc1b38d05198328fae21254adc2bf5feaf2804d54dba55");
 }
