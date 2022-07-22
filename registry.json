@@ -1906,7 +1906,7 @@
     "info": {
       "url": "https://polygon.technology",
       "source": "https://github.com/maticnetwork/contracts",
-      "rpc": "https://rpc-mainnet.matic.network",
+      "rpc": "https://polygon-rpc.com",
       "documentation": "https://eth.wiki/json-rpc/API"
     }
   },
