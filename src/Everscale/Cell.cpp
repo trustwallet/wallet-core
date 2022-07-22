@@ -15,8 +15,12 @@ using CellHash = decltype(Cell::hash);
 
 constexpr static uint32_t BOC_MAGIC = 0xb5ee9c72;
 
-uint16_t computeBitLen(const Data& data) {
+uint16_t computeBitLen(const Data& data, bool aligned) {
     auto bitLength = static_cast<uint16_t>(data.size() * 8);
+    if (aligned) {
+        return bitLength;
+    }
+
     for (size_t i = data.size() - 1; i >= 0; ++i) {
         if (data[i] == 0) {
             bitLength -= 8;
@@ -190,7 +194,7 @@ std::shared_ptr<Cell> Cell::deserialize(const uint8_t* _Nonnull data, size_t len
             references.push_back(index);
         }
 
-        const auto bitLen = computeBitLen(cellData);
+        const auto bitLen = computeBitLen(cellData, (d2 & 0b1) == 0);
         intermediate.emplace(
             i,
             IntermediateCell{
@@ -215,9 +219,9 @@ std::shared_ptr<Cell> Cell::deserialize(const uint8_t* _Nonnull data, size_t len
             references[r] = child->second;
         }
 
-        doneCells.emplace(
-            index - 1,
-            std::make_shared<Cell>(raw.bitLength, std::move(raw.data), raw.references.size(), std::move(references)));
+        auto cell = std::make_shared<Cell>(raw.bitLength, std::move(raw.data), raw.references.size(), std::move(references));
+        cell->finalize();
+        doneCells.emplace(index - 1, cell);
     }
 
     const auto root = doneCells.find(rootIndex);
@@ -235,7 +239,7 @@ public:
         return ctx;
     }
 
-    void encode(Data& os) {
+    void encode(Data& os) const {
         os.reserve(os.size() + serializedSize);
 
         const auto cellCount = reversedCells.size();
@@ -251,7 +255,8 @@ public:
         encode16BE(0, os); // root cell index
 
         // Write cells
-        for (auto i = cellCount - 1; i >= 0; --i) {
+        size_t i = cellCount - 1;
+        while (true) {
             const auto& cell = *reversedCells[i];
 
             // Write cell data
@@ -262,11 +267,21 @@ public:
 
             // Write cell references
             for (const auto& child : cell.references) {
+                if (child == nullptr) {
+                    break;
+                }
+
                 // Map cell hash to index (which must be presented)
                 const auto it = indices.find(child->hash);
                 assert(it != indices.end());
 
                 encode16BE(cellCount - it->second - 1, os);
+            }
+
+            if (i == 0) {
+                break;
+            } else {
+                --i;
             }
         }
     }
@@ -313,7 +328,8 @@ void Cell::serialize(Data& os) const {
     if (!finalized) {
         throw std::runtime_error("cell was not finalized");
     }
-    SerializationContext::build(*this).encode(os);
+    const auto ctx = SerializationContext::build(*this);
+    ctx.encode(os);
 }
 
 void Cell::finalize() {
