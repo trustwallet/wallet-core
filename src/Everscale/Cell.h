@@ -25,6 +25,8 @@ public:
     uint16_t depth = 0;
     std::array<uint8_t, Hash::sha256Size> hash{};
 
+    Cell() = default;
+
     Cell(uint16_t bitLen, std::vector<uint8_t> data, uint8_t refCount, Refs references)
         : bitLen(bitLen), data(std::move(data)), refCount(refCount), references(std::move(references)) {}
 
