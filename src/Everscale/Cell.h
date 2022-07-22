@@ -39,7 +39,7 @@ public:
 
     inline std::pair<uint8_t, uint8_t> getDescriptorBytes() const noexcept {
         const uint8_t d1 = refCount;
-        const uint8_t d2 = static_cast<uint8_t>(bitLen >> 2) & ~uint8_t(1) + (bitLen % 8 != 0);
+        const uint8_t d2 = (static_cast<uint8_t>(bitLen >> 2) & 0b11111110) | (bitLen % 8 != 0);
         return std::pair<uint8_t, uint8_t>{d1, d2};
     }
 
