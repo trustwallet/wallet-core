@@ -19,10 +19,10 @@ public:
     /// Number of bytes in an address
     static const size_t size = 32;
 
-    static const std::int8_t basechain_id = 0;
-    static const std::int8_t masterchain_id = -1;
+    static const std::int8_t basechainId = 0;
+    static const std::int8_t masterchainId = -1;
 
-    std::int32_t workchain_id;
+    std::int32_t workchainId;
     std::array<byte, size> bytes;
 
     /// Determines whether a string makes a valid address.
@@ -41,7 +41,7 @@ private:
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs.workchain_id == rhs.workchain_id && lhs.bytes == rhs.bytes;
+    return lhs.workchainId == rhs.workchainId && lhs.bytes == rhs.bytes;
 }
 
 } // namespace TW::Everscale
