@@ -17,13 +17,10 @@ namespace TW::Everscale {
 class Address {
 public:
     /// Number of bytes in an address
-    static const size_t size = 32;
+    static const size_t size = Hash::sha256Size;
 
-    static const std::int8_t basechainId = 0;
-    static const std::int8_t masterchainId = -1;
-
-    std::int32_t workchainId;
-    std::array<byte, size> bytes;
+    std::int8_t wc;
+    std::array<byte, size> address;
 
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
@@ -31,17 +28,19 @@ public:
     /// Initializes a Everscale address with a string representation.
     explicit Address(const std::string& string);
 
-    /// Initializes a Everscale address with a public key.
-    explicit Address(const PublicKey& publicKey);
+    /// Initializes a Everscale address with a public key and workchain id.
+    explicit Address(const PublicKey& publicKey, int8_t workchainId);
 
     /// Returns a string representation of the address.
     std::string string() const;
 private:
+    static std::array<byte, size> computeContractAddress(const PublicKey& publicKey);
     static std::optional<std::pair<int8_t, int32_t>> parseWorkchainId(const std::string& string);
+
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs.workchainId == rhs.workchainId && lhs.bytes == rhs.bytes;
+    return lhs.wc == rhs.wc && lhs.address == rhs.address;
 }
 
 } // namespace TW::Everscale

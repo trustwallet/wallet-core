@@ -16,7 +16,7 @@
 using namespace TW;
 using namespace TW::Everscale;
 
-TEST(EverscaleCell, ComputeAddr) {
+TEST(EverscaleCell, computeContractAddress) {
     const auto seqno = 0;
     const auto walletId = WALLET_ID;
     const auto publicKey = PublicKey(parse_hex("7dbe83e9b223157e85bed2628430e2cdb531d5c99ab428618b7dd29b567a0369"), TWPublicKeyTypeED25519);

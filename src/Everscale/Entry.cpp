@@ -8,6 +8,7 @@
 
 #include "Address.h"
 #include "Signer.h"
+#include "WorkchainType.h"
 
 using namespace TW::Everscale;
 using namespace std;
@@ -23,7 +24,7 @@ string Entry::normalizeAddress(TWCoinType coin, const string& address) const {
 }
 
 string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
-    return Address(publicKey).string();
+    return Address(publicKey, WorkchainType::Basechain).string();
 }
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
