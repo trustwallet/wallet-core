@@ -80,8 +80,6 @@ void CellBuilder::appendWithoutShifting(const Data& appendedData, uint16_t bits)
     assert(bits % 8 == 0);
     assert(bitLen % 8 == 0);
 
-    printf("appendWithoutShifting. %d + %d\n", bitLen, bits);
-
     data.resize(bitLen / 8);
     data.insert(data.end(), appendedData.begin(), appendedData.end());
     bitLen += bits;
@@ -92,8 +90,6 @@ void CellBuilder::appendWithSliceShifting(const Data& appendedData, uint16_t bit
     assert(bits % 8 != 0);
     assert(bitLen % 8 == 0);
 
-    printf("appendWithSliceShifting. %d + %d\n", bitLen, bits);
-
     data.resize(bitLen / 8);
     data.insert(data.end(), appendedData.begin(), appendedData.end());
     bitLen += bits;
@@ -103,9 +99,6 @@ void CellBuilder::appendWithSliceShifting(const Data& appendedData, uint16_t bit
 }
 
 void CellBuilder::appendWithDoubleShifting(const Data& appendedData, uint16_t bits) {
-
-    printf("appendWithDoubleShifting. %d + %d\n", bitLen, bits);
-
     auto selfShift = bitLen % 8;
     data.resize(1 + bitLen / 8);
     bitLen += bits;

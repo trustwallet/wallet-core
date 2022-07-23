@@ -11,14 +11,15 @@ option java_package = "wallet.core.jni.proto";
 
 message Address {
     uint32 workchain_id = 1;
-    string hex = 2;
+    string address = 2;
 }
 
 message Transfer {
-    uint32 flags = 1;
-    bool bounce = 2;
-    Address destination = 3;
-    uint64 amount = 4;
+    bool bounce = 1;
+    uint32 flags = 2;
+    uint64 amount = 3;
+
+    Address destination = 4;
 }
 
 message Action {
