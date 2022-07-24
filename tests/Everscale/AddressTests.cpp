@@ -16,12 +16,11 @@ using namespace TW;
 using namespace TW::Everscale;
 
 TEST(EverscaleAddress, Valid) {
-    ASSERT_TRUE(Address::isValid("83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a"));
     ASSERT_TRUE(Address::isValid("0:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a"));
 }
 
 TEST(EverscaleAddress, Invalid) {
-    ASSERT_FALSE(Address::isValid("83a0352908060fa87839195d8a763a8d9ab28f8fa41"));
+    ASSERT_FALSE(Address::isValid("83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a"));
     ASSERT_FALSE(Address::isValid("1:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a"));
     ASSERT_FALSE(Address::isValid("-2:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a"));
 
