@@ -110,7 +110,7 @@ PrivateKey HDWallet::getKey(TWCoinType coin, TWDerivation derivation) const {
     return getKey(coin, path);
 }
 
-PrivateKey HDWallet::getCurveKey(TWCurve curve, const DerivationPath& derivationPath) const {
+PrivateKey HDWallet::getKeyByCurve(TWCurve curve, const DerivationPath& derivationPath) const {
     auto node = getNode(*this, curve, derivationPath);
     auto data = Data(node.private_key, node.private_key + PrivateKey::size);
     return PrivateKey(data);

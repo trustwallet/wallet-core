@@ -89,10 +89,10 @@ struct TWPrivateKey *_Nonnull TWHDWalletGetDerivedKey(struct TWHDWallet *_Nonnul
     return new TWPrivateKey{ wallet->impl.getKey(coin, derivationPath) };
 }
 
-struct TWPrivateKey *_Nonnull TWHDWalletGetCurveKey(struct TWHDWallet *_Nonnull wallet, enum TWCurve curve, TWString *_Nonnull derivationPath) {
+struct TWPrivateKey *_Nonnull TWHDWalletGetKeyByCurve(struct TWHDWallet *_Nonnull wallet, enum TWCurve curve, TWString *_Nonnull derivationPath) {
     auto& s = *reinterpret_cast<const std::string*>(derivationPath);
     const auto path = DerivationPath(s);
-    return new TWPrivateKey{ wallet->impl.getCurveKey(curve, path)};
+    return new TWPrivateKey{ wallet->impl.getKeyByCurve(curve, path)};
 }
 
 TWString *_Nonnull TWHDWalletGetExtendedPrivateKey(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, TWHDVersion version) {

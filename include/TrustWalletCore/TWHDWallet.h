@@ -78,7 +78,7 @@ struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull walle
 
 /// Generates the private key for the specified derivation path and curve. Returned object needs to be deleted.
 TW_EXPORT_METHOD
-struct TWPrivateKey *_Nonnull TWHDWalletGetCurveKey(struct TWHDWallet *_Nonnull wallet, enum TWCurve curve, TWString *_Nonnull derivationPath);
+struct TWPrivateKey *_Nonnull TWHDWalletGetKeyByCurve(struct TWHDWallet *_Nonnull wallet, enum TWCurve curve, TWString *_Nonnull derivationPath);
 
 /// Shortcut method to generate private key with the specified account/change/address (bip44 standard). Returned object needs to be deleted.
 ///
