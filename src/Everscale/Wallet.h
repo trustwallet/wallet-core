@@ -1,12 +1,19 @@
 #pragma once
 
 #include <boost/integer.hpp>
+#include <utility>
+
+#include "../PublicKey.h"
+
+#include "Address.h"
+#include "Cell.h"
 
 const uint32_t WALLET_ID = 0x4BA92D8A;
 
+namespace TW::Everscale {
+
 class Wallet {
 public:
-    // clang-format off
     static constexpr const uint8_t code[] = {
         0xB5, 0xEE, 0x9C, 0x72, 0x01, 0x01, 0x01, 0x01, 0x00, 0x71, 0x00,
         0x00, 0xDE, 0xFF, 0x00, 0x20, 0xDD, 0x20, 0x82, 0x01, 0x4C, 0x97,
@@ -21,5 +28,27 @@ public:
         0xE8, 0xD1, 0x01, 0xA4, 0xC8, 0xCB, 0x1F, 0xCB, 0x1F, 0xCB, 0xFF,
         0xC9, 0xED, 0x54,
     };
-    // clang-format on
 };
+
+class InitData {
+    uint32_t seqno;
+    uint32_t walletId;
+    PublicKey publicKey;
+
+public:
+    explicit InitData(PublicKey  publicKey) : seqno(0), walletId(WALLET_ID), publicKey(std::move(publicKey)) {}
+
+    [[nodiscard]] Cell::Ref intoCell() const;
+    [[nodiscard]] std::array<byte, Address::size> computeAddr() const;
+};
+
+class StateInit {
+    Cell::Ref code;
+    Cell::Ref data;
+public:
+    explicit StateInit(Cell::Ref code, Cell::Ref data) : code(std::move(code)), data(std::move(data)) {}
+
+    [[nodiscard]] Cell::Ref intoCell() const;
+};
+
+} // namespace TW::Everscale

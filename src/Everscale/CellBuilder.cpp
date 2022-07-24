@@ -19,6 +19,11 @@ void CellBuilder::appendBitOne() {
     appendRaw(appendedData, 1);
 }
 
+void CellBuilder::appendU8(uint8_t value) {
+    Data appendedData{value};
+    appendRaw(appendedData, 8);
+}
+
 void CellBuilder::appendU32(uint32_t value) {
     Data appendedData;
     encode32BE(value, appendedData);

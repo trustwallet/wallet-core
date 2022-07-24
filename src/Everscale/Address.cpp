@@ -48,34 +48,14 @@ Address::Address(const std::string& string) {
 
 Address::Address(const PublicKey& publicKey, int8_t workchainId) {
     wc = workchainId;
-    address = computeContractAddress(publicKey);
+
+    InitData initData(publicKey);
+    address = initData.computeAddr();
 }
 
 std::string Address::string() const {
     std::string string = std::to_string(wc) + ":" + hex(address);
     return string;
-}
-
-std::array<byte, Address::size> Address::computeContractAddress(const PublicKey& publicKey) {
-    CellBuilder dataBuilder;
-    dataBuilder.appendU32(0);
-    dataBuilder.appendU32(WALLET_ID);
-    dataBuilder.appendRaw(publicKey.bytes, 256);
-
-    const auto data = dataBuilder.intoCell();
-    const auto code = Cell::deserialize(Wallet::code, sizeof(Wallet::code));
-
-    CellBuilder stateInitBuilder;
-    stateInitBuilder.appendBitZero(); // split_depth
-    stateInitBuilder.appendBitZero(); // special
-    stateInitBuilder.appendBitOne();  // code
-    stateInitBuilder.appendReferenceCell(code);
-    stateInitBuilder.appendBitOne(); // data
-    stateInitBuilder.appendReferenceCell(data);
-    stateInitBuilder.appendBitZero(); // library
-
-    auto stateInit = stateInitBuilder.intoCell();
-    return stateInit->hash;
 }
 
 std::optional<std::pair<int8_t, int32_t>> Address::parseWorkchainId(const std::string& string) {

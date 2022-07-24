@@ -34,7 +34,6 @@ public:
     /// Returns a string representation of the address.
     std::string string() const;
 private:
-    static std::array<byte, size> computeContractAddress(const PublicKey& publicKey);
     static std::optional<std::pair<int8_t, int32_t>> parseWorkchainId(const std::string& string);
 
 };
