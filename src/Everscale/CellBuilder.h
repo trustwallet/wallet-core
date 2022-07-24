@@ -16,6 +16,7 @@ public:
 
     void appendBitZero();
     void appendBitOne();
+    void appendU8(uint8_t value);
     void appendU32(uint32_t value);
     void appendRaw(const Data& data, std::size_t bits);
     void appendReferenceCell(Cell::Ref child);

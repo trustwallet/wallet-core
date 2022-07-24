@@ -14,6 +14,11 @@ message Address {
     string address = 2;
 }
 
+message Deploy {
+    bool bounce = 1;
+    uint32 flags = 2;
+}
+
 message Transfer {
     bool bounce = 1;
     uint32 flags = 2;
@@ -24,7 +29,8 @@ message Transfer {
 
 message Action {
     oneof payload {
-        Transfer transfer = 1;
+        Deploy deploy = 1;
+        Transfer transfer = 2;
     }
 }
 
