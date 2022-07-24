@@ -87,7 +87,7 @@ std::optional<std::pair<int8_t, int32_t>> Address::parseWorkchainId(const std::s
         workchainId = static_cast<int8_t>(std::stoi(tmp));
         ++pos;
     } else {
-        pos = 0;
+        return {};
     }
 
     return std::make_pair(workchainId, pos);
