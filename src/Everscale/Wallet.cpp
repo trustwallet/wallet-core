@@ -4,22 +4,35 @@
 using namespace TW;
 using namespace TW::Everscale;
 
-std::array<byte, Address::size> InitData::computeAddr() const {
+Cell::Ref InitData::intoCell() const {
+    CellBuilder dataBuilder;
+    dataBuilder.appendU32(seqno_);
+    dataBuilder.appendU32(walletId_);
+    dataBuilder.appendRaw(publicKey_.bytes, 256);
+
+    return dataBuilder.intoCell();
+}
+
+Address::MsgAddressInt InitData::computeAddr(int8_t workchainId) const {
     const auto data = InitData::intoCell();
     const auto code = Cell::deserialize(Wallet::code, sizeof(Wallet::code));
 
     StateInit stateInit(code, data);
-    return stateInit.intoCell()->hash;
+    return std::make_pair(workchainId, stateInit.intoCell()->hash);
 }
 
-Cell::Ref InitData::intoCell() const {
-    CellBuilder dataBuilder;
-    dataBuilder.appendU32(seqno);
-    dataBuilder.appendU32(walletId);
-    dataBuilder.appendRaw(publicKey.bytes, 256);
+std::pair<Cell::CellHash, CellBuilder> InitData::makeTransferPayload(uint32_t expireAt, const Wallet::Gift& gift) const {
+    CellBuilder payload;
+    payload.appendU32(walletId_);
+    payload.appendU32(expireAt);
+    payload.appendU32(seqno_);
 
-    return dataBuilder.intoCell();
+    // TODO: Append internal message to payload
+
+    auto hash = payload.intoCell()->hash;
+    return std::make_pair(hash, payload);
 }
+
 
 Cell::Ref StateInit::intoCell() const {
     CellBuilder stateInitBuilder;
@@ -27,9 +40,9 @@ Cell::Ref StateInit::intoCell() const {
     stateInitBuilder.appendBitZero(); // split_depth
     stateInitBuilder.appendBitZero(); // special
     stateInitBuilder.appendBitOne();  // code
-    stateInitBuilder.appendReferenceCell(code);
+    stateInitBuilder.appendReferenceCell(code_);
     stateInitBuilder.appendBitOne(); // data
-    stateInitBuilder.appendReferenceCell(data);
+    stateInitBuilder.appendReferenceCell(data_);
     stateInitBuilder.appendBitZero(); // library
 
     return stateInitBuilder.intoCell();

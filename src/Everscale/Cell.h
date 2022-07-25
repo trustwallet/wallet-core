@@ -18,6 +18,7 @@ public:
 
     using Ref = std::shared_ptr<Cell>;
     using Refs = std::array<Ref, MAX_REFS>;
+    using CellHash = std::array<uint8_t, Hash::sha256Size>;
 
     bool finalized = false;
     uint16_t bitLen = 0;
@@ -26,7 +27,7 @@ public:
     Refs references{};
 
     uint16_t depth = 0;
-    std::array<uint8_t, Hash::sha256Size> hash{};
+    CellHash hash{};
 
     Cell() = default;
 

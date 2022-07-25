@@ -9,11 +9,10 @@
 namespace TW::Everscale {
 
 class CellBuilder {
-public:
     uint16_t bitLen = 0;
     std::vector<std::uint8_t> data{};
     std::vector<Cell::Ref> references{};
-
+public:
     void appendBitZero();
     void appendBitOne();
     void appendU8(uint8_t value);

@@ -19,8 +19,10 @@ public:
     /// Number of bytes in an address
     static const size_t size = Hash::sha256Size;
 
-    std::int8_t wc;
-    std::array<byte, size> address;
+    using MsgAddressInt = std::pair<int8_t, std::array<byte, Address::size>>;
+
+    std::int8_t wc_;
+    std::array<byte, size> address_;
 
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
@@ -39,7 +41,7 @@ private:
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs.wc == rhs.wc && lhs.address == rhs.address;
+    return lhs.wc_ == rhs.wc_ && lhs.address_ == rhs.address_;
 }
 
 } // namespace TW::Everscale

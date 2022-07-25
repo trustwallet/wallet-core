@@ -11,8 +11,6 @@
 using namespace TW;
 using namespace TW::Everscale;
 
-using CellHash = decltype(Cell::hash);
-
 constexpr static uint32_t BOC_MAGIC = 0xb5ee9c72;
 
 uint16_t computeBitLen(const Data& data, bool aligned) {
@@ -303,7 +301,7 @@ private:
         /*root_cell_index*/ REF_SIZE;
 
     uint16_t index = 0;
-    std::map<CellHash, uint16_t> indices{};
+    std::map<Cell::CellHash, uint16_t> indices{};
     std::vector<const Cell* _Nonnull> reversedCells{};
 
     static void fillContext(const Cell& cell, SerializationContext& ctx) {
