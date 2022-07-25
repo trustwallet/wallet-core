@@ -623,4 +623,27 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
     }
 }
 
+TEST(StoredKey, CreateWithMnemonicAlternativeDerivation) {
+    const auto coin = TWCoinTypeSolana;
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("name", password, mnemonic, coin);
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+
+    ASSERT_EQ(key.accounts.size(), 1);
+    EXPECT_EQ(key.accounts[0].coin, coin);
+    EXPECT_EQ(key.accounts[0].address, "HiipoCKL8hX2RVmJTz3vaLy34hS2zLhWWMkUWtw85TmZ");
+    EXPECT_EQ(key.accounts[0].publicKey, "f86b18399096c8134dd185f1e72dd7e26528772a2a998abfd81c5f8c547223d0");
+    EXPECT_EQ(hex(key.privateKey(coin, password).bytes), "d81b5c525979e487736b69cb84ed8331559de17294f38491b304555c26687e83");
+    EXPECT_EQ(hex(key.privateKey(coin, TWDerivationDefault, password).bytes), "d81b5c525979e487736b69cb84ed8331559de17294f38491b304555c26687e83");
+    ASSERT_EQ(key.accounts.size(), 1);
+
+    // alternative derivation, different keys
+    EXPECT_EQ(hex(key.privateKey(coin, TWDerivationSolanaSolana, password).bytes), "d49a5fa7f77593534c7afd2ba8dc8e9d8b007bc6ec65fe8df25ffe6fafc57151");
+
+    ASSERT_EQ(key.accounts.size(), 2);
+    EXPECT_EQ(key.accounts[1].coin, coin);
+    EXPECT_EQ(key.accounts[1].address, "CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C");
+    EXPECT_EQ(key.accounts[1].publicKey, "ad8f57924dce62f9040f93b4f6ce3c3d39afde7e29bcb4013dad59db7913c4c7");
+    EXPECT_EQ(hex(key.privateKey(coin, TWDerivationSolanaSolana, password).bytes), "d49a5fa7f77593534c7afd2ba8dc8e9d8b007bc6ec65fe8df25ffe6fafc57151");
+}
+
 } // namespace TW::Keystore
