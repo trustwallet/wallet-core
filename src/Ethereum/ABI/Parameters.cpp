@@ -34,20 +34,20 @@ void ParamSet::addParams(const std::vector<std::shared_ptr<ParamBase>>& params) 
     }
 }
 
-bool ParamSet::getParam(int paramIndex, std::shared_ptr<ParamBase>& param_out) const {
-    if (static_cast<std::size_t>(paramIndex) >= _params.size() || paramIndex < 0) {
+bool ParamSet::getParam(size_t paramIndex, std::shared_ptr<ParamBase>& param_out) const {
+    if (paramIndex >= _params.size() || paramIndex < 0) {
         return false;
     }
     param_out = _params[paramIndex];
     return true;
 }
 
-std::shared_ptr<ParamBase> ParamSet::getParamUnsafe(int paramIndex) const {
+std::shared_ptr<ParamBase> ParamSet::getParamUnsafe(size_t paramIndex) const {
     if (_params.size() == 0) {
         // zero parameter, nothing to return.  This may cause trouble (segfault)
         return nullptr;
     }
-    if (static_cast<std::size_t>(paramIndex) >= _params.size() || paramIndex < 0) {
+    if (paramIndex >= _params.size() || paramIndex < 0) {
         // invalid index, return the first instead of nullptr
         return _params[0];
     }
