@@ -7,6 +7,8 @@
 
 #include "Address.h"
 #include "Cell.h"
+#include "CellBuilder.h"
+#include "CellSlice.h"
 
 const uint32_t WALLET_ID = 0x4BA92D8A;
 
@@ -14,6 +16,13 @@ namespace TW::Everscale {
 
 class Wallet {
 public:
+    struct Gift {
+        bool bounce;
+        uint64_t amount;
+        Address::MsgAddressInt destination;
+        uint8_t flags;
+    };
+
     static constexpr const uint8_t code[] = {
         0xB5, 0xEE, 0x9C, 0x72, 0x01, 0x01, 0x01, 0x01, 0x00, 0x71, 0x00,
         0x00, 0xDE, 0xFF, 0x00, 0x20, 0xDD, 0x20, 0x82, 0x01, 0x4C, 0x97,
@@ -31,22 +40,24 @@ public:
 };
 
 class InitData {
-    uint32_t seqno;
-    uint32_t walletId;
-    PublicKey publicKey;
-
+    uint32_t seqno_;
+    uint32_t walletId_;
+    PublicKey publicKey_;
 public:
-    explicit InitData(PublicKey  publicKey) : seqno(0), walletId(WALLET_ID), publicKey(std::move(publicKey)) {}
+    explicit InitData(PublicKey  publicKey) : seqno_(0), walletId_(WALLET_ID), publicKey_(std::move(publicKey)) {}
+    explicit InitData(uint32_t seqno, PublicKey  publicKey) : seqno_(seqno), walletId_(WALLET_ID), publicKey_(std::move(publicKey)) {}
+    explicit InitData(CellSlice cs) : seqno_(cs.getNextU32()), walletId_(cs.getNextU32()), publicKey_(PublicKey(cs.getNextBytes(32), TWPublicKeyTypeED25519)) {}
 
     [[nodiscard]] Cell::Ref intoCell() const;
-    [[nodiscard]] std::array<byte, Address::size> computeAddr() const;
+    [[nodiscard]] Address::MsgAddressInt computeAddr(int8_t workchainId) const;
+    [[nodiscard]] std::pair<Cell::CellHash, CellBuilder> makeTransferPayload(uint32_t expireAt, const Wallet::Gift& gift) const;
 };
 
 class StateInit {
-    Cell::Ref code;
-    Cell::Ref data;
+    Cell::Ref code_;
+    Cell::Ref data_;
 public:
-    explicit StateInit(Cell::Ref code, Cell::Ref data) : code(std::move(code)), data(std::move(data)) {}
+    explicit StateInit(Cell::Ref code, Cell::Ref data) : code_(std::move(code)), data_(std::move(data)) {}
 
     [[nodiscard]] Cell::Ref intoCell() const;
 };

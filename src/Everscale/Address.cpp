@@ -38,23 +38,24 @@ Address::Address(const std::string& string) {
     }
 
     auto parsed = parseWorkchainId(string);
-    auto [workchainId, pos] = *parsed;
+    auto [wc, pos] = *parsed;
 
-    wc = workchainId;
+    wc_ = wc;
 
     const auto acc = parse_hex(string.substr(pos));
-    std::copy(std::begin(acc), std::end(acc), std::begin(address));
+    std::copy(std::begin(acc), std::end(acc), std::begin(address_));
 }
 
 Address::Address(const PublicKey& publicKey, int8_t workchainId) {
-    wc = workchainId;
-
     InitData initData(publicKey);
-    address = initData.computeAddr();
+    auto [wc, address] = initData.computeAddr(workchainId);
+
+    wc_ = wc;
+    address_ = address;
 }
 
 std::string Address::string() const {
-    std::string string = std::to_string(wc) + ":" + hex(address);
+    std::string string = std::to_string(wc_) + ":" + hex(address_);
     return string;
 }
 

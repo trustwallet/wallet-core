@@ -9,33 +9,24 @@ syntax = "proto3";
 package TW.Everscale.Proto;
 option java_package = "wallet.core.jni.proto";
 
-message Address {
-    uint32 workchain_id = 1;
-    string address = 2;
-}
-
-message Deploy {
-    bool bounce = 1;
-    uint32 flags = 2;
-}
-
 message Transfer {
     bool bounce = 1;
     uint32 flags = 2;
     uint64 amount = 3;
 
-    Address destination = 4;
-}
+    oneof destination {
+        bytes address = 4;
+    }
 
-message Action {
-    oneof payload {
-        Deploy deploy = 1;
-        Transfer transfer = 2;
+    oneof account_state {
+        bytes state_init = 5;
     }
 }
 
 message SigningInput {
-    repeated Action actions = 1;
+    oneof action_type {
+        Transfer transfer = 1;
+    }
 
     bytes private_key = 2;
 }
