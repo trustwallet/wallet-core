@@ -142,7 +142,7 @@ InputSelector<TypeWithAmount>::select(uint64_t targetValue, uint64_t byteFee, ui
     for (size_t numInputs = 1; numInputs <= n; ++numInputs) {
         const auto fee = feeCalculator.calculate(numInputs, numOutputs, byteFee);
         const auto targetWithFee = targetValue + fee;
-        if (maxWithXInputs[numInputs] < static_cast<uint64_t>(targetWithFee)) {
+        if (maxWithXInputs[numInputs] < targetWithFee) {
             // no way to satisfy with only numInputs inputs, skip
             continue;
         }
