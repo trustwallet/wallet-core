@@ -35,9 +35,7 @@ void InternalMessageHeader::writeTo(CellBuilder& builder) const {
     builder.appendRaw(Data{0x00}, 2);
 
     // addr dst
-    Data dst_addr;
-    dst_addr.reserve(32);
-    std::copy(dst_.second.begin(), dst_.second.end(), std::begin(dst_addr));
+    Data dst_addr(dst_.second.begin(), dst_.second.end());
 
     builder.appendBitZero();
     builder.appendi8(dst_.first);

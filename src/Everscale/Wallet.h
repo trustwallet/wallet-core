@@ -53,7 +53,7 @@ class InitData {
     uint32_t walletId_;
     PublicKey publicKey_;
 public:
-    explicit InitData(PublicKey  publicKey) : seqno_(0), walletId_(WALLET_ID), publicKey_(std::move(publicKey)) {}
+    explicit InitData(PublicKey publicKey) : seqno_(0), walletId_(WALLET_ID), publicKey_(std::move(publicKey)) {}
     explicit InitData(uint32_t seqno, PublicKey  publicKey) : seqno_(seqno), walletId_(WALLET_ID), publicKey_(std::move(publicKey)) {}
     explicit InitData(CellSlice cs) : seqno_(cs.getNextU32()), walletId_(cs.getNextU32()), publicKey_(PublicKey(cs.getNextBytes(32), TWPublicKeyTypeED25519)) {}
 

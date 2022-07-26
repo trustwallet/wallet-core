@@ -196,8 +196,21 @@ void CellBuilder::appendWithDoubleShifting(const Data& appendedData, uint16_t bi
     }
 }
 
-// encodeBigInt encodes a Filecoin BigInt to CBOR.
-void CellBuilder::encode128BE(uint128_t value, Data& data) {
-    data.reserve(16);
-    export_bits(value, std::back_inserter(data), 8);
+void CellBuilder::encode128BE(uint128_t val, Data& data) {
+    data.push_back(static_cast<uint8_t>((val >> 120)));
+    data.push_back(static_cast<uint8_t>((val >> 112)));
+    data.push_back(static_cast<uint8_t>((val >> 104)));
+    data.push_back(static_cast<uint8_t>((val >> 96)));
+    data.push_back(static_cast<uint8_t>((val >> 88)));
+    data.push_back(static_cast<uint8_t>((val >> 80)));
+    data.push_back(static_cast<uint8_t>((val >> 72)));
+    data.push_back(static_cast<uint8_t>((val >> 64)));
+    data.push_back(static_cast<uint8_t>((val >> 56)));
+    data.push_back(static_cast<uint8_t>((val >> 48)));
+    data.push_back(static_cast<uint8_t>((val >> 40)));
+    data.push_back(static_cast<uint8_t>((val >> 32)));
+    data.push_back(static_cast<uint8_t>((val >> 24)));
+    data.push_back(static_cast<uint8_t>((val >> 16)));
+    data.push_back(static_cast<uint8_t>((val >> 8)));
+    data.push_back(static_cast<uint8_t>(val));
 }
