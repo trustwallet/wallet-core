@@ -20,7 +20,7 @@ using namespace TW;
 using namespace TW::Cardano;
 using namespace std;
 
-bool AddressV3::checkLength([[maybe_unused]] NetworkId networkId, Kind kind, size_t length) {
+bool AddressV3::checkLength([[maybe_unused]] NetworkId networkId, Kind kind, size_t length) noexcept {
     switch (kind)
     {
     case Kind_Base:
@@ -36,7 +36,7 @@ bool AddressV3::checkLength([[maybe_unused]] NetworkId networkId, Kind kind, siz
     }
 }
 
-bool AddressV3::parseAndCheckV3(const Data& raw, NetworkId& networkId, Kind& kind, Data& bytes) {
+bool AddressV3::parseAndCheckV3(const Data& raw, NetworkId& networkId, Kind& kind, Data& bytes) noexcept {
     if (raw.size() < 1ul) {
         // too short, cannot extract kind and networkId
         return false;
@@ -47,17 +47,13 @@ bool AddressV3::parseAndCheckV3(const Data& raw, NetworkId& networkId, Kind& kin
         return false;
     }
 
-    bytes = Data(raw.size() - 1);
-    std::copy(raw.begin() + 1, raw.end(), bytes.begin());
+    bytes = Data();
+    std::copy(cbegin(raw) + 1, cend(raw), std::back_inserter(bytes));
 
-    if (!checkLength(networkId, kind, raw.size())) {
-        return false;
-    }
-
-    return true;
+    return checkLength(networkId, kind, raw.size());
 }
 
-bool AddressV3::parseAndCheckV3(const std::string& addr, NetworkId& networkId, Kind& kind, Data& bytes) {
+bool AddressV3::parseAndCheckV3(const std::string& addr, NetworkId& networkId, Kind& kind, Data& bytes) noexcept {
     try {
         auto bech = Bech32::decode(addr);
         if (std::get<1>(bech).size() == 0) {
@@ -76,8 +72,7 @@ bool AddressV3::parseAndCheckV3(const std::string& addr, NetworkId& networkId, K
         }
 
         // check prefix
-        const auto expectedHrp = getHrp(kind);
-        if (addr.substr(0, expectedHrp.length()) != expectedHrp) {
+        if (const auto expectedHrp = getHrp(kind); addr.substr(0, expectedHrp.length()) != expectedHrp) {
             return false;
         }
 
@@ -183,7 +178,7 @@ void AddressV3::operator=(const AddressV3& other)
     legacyAddressV2 = other.legacyAddressV2;
 }
 
-std::string AddressV3::getHrp(Kind kind) {
+std::string AddressV3::getHrp(Kind kind) noexcept {
     switch (kind) {
     case Kind_Base:
     case Kind_Enterprise:

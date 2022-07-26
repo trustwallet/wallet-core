@@ -85,13 +85,13 @@ class AddressV3 {
     std::string string(const std::string& hrp) const;
 
     /// Hrp of kind
-    static std::string getHrp(const Kind kind); 
+    static std::string getHrp(const Kind kind) noexcept; 
     /// Check whether data length is correct
-    static bool checkLength([[maybe_unused]] NetworkId networkId, Kind kind, size_t length);
+    static bool checkLength([[maybe_unused]] NetworkId networkId, Kind kind, size_t length) noexcept;
     /// Check validity of binary address.
-    static bool parseAndCheckV3(const TW::Data& raw, NetworkId& networkId, Kind& kind, TW::Data& bytes);
+    static bool parseAndCheckV3(const TW::Data& raw, NetworkId& networkId, Kind& kind, TW::Data& bytes) noexcept;
     /// Check validity and parse elements of a string address.  Used internally by isValid and ctor.
-    static bool parseAndCheckV3(const std::string& addr, NetworkId& networkId, Kind& kind, TW::Data& bytes);
+    static bool parseAndCheckV3(const std::string& addr, NetworkId& networkId, Kind& kind, TW::Data& bytes) noexcept;
 
     /// Return the binary data representation (keys appended, internal format)
     Data data() const;
