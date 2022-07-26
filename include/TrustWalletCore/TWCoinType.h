@@ -113,6 +113,7 @@ enum TWCoinType {
     TWCoinTypeKavaEvm = 10002222,
     TWCoinTypeKlaytn = 10008217,
     TWCoinTypeMeter = 18000,
+    TWCoinTypeOKXChain = 996,
 };
 
 /// Returns the blockchain for a coin type.

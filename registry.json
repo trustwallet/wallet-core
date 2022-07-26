@@ -2656,5 +2656,35 @@
       "rpc": "https://rpc.meter.io",
       "documentation": "https://docs.meter.io/"
     }
+  },
+  {
+    "id": "okc",
+    "name": "OKX Chain",
+    "coinId": 996,
+    "chainId": "66",
+    "symbol": "OKT",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://www.oklink.com/en/okc",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x46C3A947E8248570FBD28E4FE456CC8F80DFD90716533878FB67857B95FA3D37",
+      "sampleAccount": "0x074faafd0b20fad2efa115b8ed7e75993e580b85"
+    },
+    "info": {
+      "url": "https://www.okx.com/okc",
+      "source": "https://github.com/okex/exchain",
+      "rpc": "https://exchainrpc.okex.org",
+      "documentation": "https://okc-docs.readthedocs.io/en/latest"
+    }
   }
 ]
