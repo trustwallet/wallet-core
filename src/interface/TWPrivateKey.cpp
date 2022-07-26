@@ -17,8 +17,8 @@
 using namespace TW;
 
 struct TWPrivateKey *TWPrivateKeyCreate() {
-    Data bytes(PrivateKey::size);
-    random_buffer(bytes.data(), PrivateKey::size);
+    Data bytes(PrivateKey::_size);
+    random_buffer(bytes.data(), PrivateKey::_size);
     if (!PrivateKey::isValid(bytes)) {
         // Under no circumstance return an invalid private key. We'd rather
         // crash. This also captures cases where the random generator fails

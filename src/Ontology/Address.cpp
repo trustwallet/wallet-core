@@ -23,7 +23,7 @@ Address::Address(const PublicKey& publicKey) {
     builder.insert(builder.begin(), PUSH_BYTE_33);
     builder.push_back(CHECK_SIG);
     auto builderData = toScriptHash(builder);
-    std::copy(builderData.begin(), builderData.end(), data.begin());
+    std::copy(builderData.begin(), builderData.end(), _data.begin());
 }
 
 Address::Address(const std::string& b58Address) {
@@ -32,19 +32,19 @@ Address::Address(const std::string& b58Address) {
     }
     Data addressWithVersion(size + 1);
     base58_decode_check(b58Address.c_str(), HASHER_SHA2D, addressWithVersion.data(), size + 1);
-    std::copy(addressWithVersion.begin() + 1, addressWithVersion.end(), data.begin());
+    std::copy(addressWithVersion.begin() + 1, addressWithVersion.end(), _data.begin());
 }
 
 Address::Address(const std::vector<uint8_t>& bytes) {
     if (bytes.size() != size) {
         throw std::runtime_error("Invalid bytes data.");
     }
-    std::copy(bytes.begin(), bytes.end(), data.begin());
+    std::copy(bytes.begin(), bytes.end(), _data.begin());
 }
 
 Address::Address(uint8_t m, const std::vector<Data>& publicKeys) {
     auto builderData = toScriptHash(ParamsBuilder::fromMultiPubkey(m, publicKeys));
-    std::copy(builderData.begin(), builderData.end(), data.begin());
+    std::copy(builderData.begin(), builderData.end(), _data.begin());
 }
 
 Data Address::toScriptHash(const Data& data) {
@@ -64,7 +64,7 @@ bool Address::isValid(const std::string& b58Address) noexcept {
 std::string Address::string() const {
     std::vector<uint8_t> encodeData(size + 1);
     encodeData[0] = version;
-    std::copy(data.begin(), data.end(), encodeData.begin() + 1);
+    std::copy(_data.begin(), _data.end(), encodeData.begin() + 1);
     size_t b58StrSize = 34;
     std::string b58Str(b58StrSize, ' ');
     base58_encode_check(encodeData.data(), (int)encodeData.size(), HASHER_SHA2D, &b58Str[0],

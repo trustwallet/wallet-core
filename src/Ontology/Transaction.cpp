@@ -25,7 +25,7 @@ std::vector<uint8_t> Transaction::serializeUnsigned() {
     builder.pushBack(nonce);
     builder.pushBack(gasPrice);
     builder.pushBack(gasLimit);
-    builder.pushBack(Address(payer).data);
+    builder.pushBack(Address(payer)._data);
     if (!payload.empty()) {
         builder.pushVar(payload);
     }

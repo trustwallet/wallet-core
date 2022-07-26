@@ -25,12 +25,12 @@ using namespace TW;
 
 bool PrivateKey::isValid(const Data& data) {
     // Check length
-    if (data.size() != size && data.size() != cardanoKeySize) {
+    if (data.size() != _size && data.size() != cardanoKeySize) {
         return false;
     }
 
     // Check for zero address
-    for (size_t i = 0; i < size; ++i) {
+    for (size_t i = 0; i < _size; ++i) {
         if (data[i] != 0) {
             return true;
         }
@@ -94,8 +94,8 @@ PrivateKey::PrivateKey(const Data& data) {
 PrivateKey::PrivateKey(
     const Data& key1, const Data& extension1, const Data& chainCode1,
     const Data& key2, const Data& extension2, const Data& chainCode2) {
-    if (key1.size() != size || extension1.size() != size || chainCode1.size() != size ||
-        key2.size() != size || extension2.size() != size || chainCode2.size() != size) {
+    if (key1.size() != _size || extension1.size() != _size || chainCode1.size() != _size ||
+        key2.size() != _size || extension2.size() != _size || chainCode2.size() != _size) {
         throw std::invalid_argument("Invalid private key or extended key data");
     }
     bytes = key1;

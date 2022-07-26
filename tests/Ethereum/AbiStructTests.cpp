@@ -65,7 +65,7 @@ ParamStruct msgMailCow2Bob3("Mail", std::vector<std::shared_ptr<ParamNamed>>{
     std::make_shared<ParamNamed>("to", std::make_shared<ParamArray>(std::make_shared<ParamStruct>(msgPersonBob3))),
     std::make_shared<ParamNamed>("contents", std::make_shared<ParamString>("Hello, Bob!"))
 });
-ParamStruct msgEIP712Domain("EIP712Domain", std::vector<std::shared_ptr<ParamNamed>>{
+ParamStruct gMsgEIP712Domain("EIP712Domain", std::vector<std::shared_ptr<ParamNamed>>{
     std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Ether Mail")),
     std::make_shared<ParamNamed>("version", std::make_shared<ParamString>("1")),
     std::make_shared<ParamNamed>("chainId", std::make_shared<ParamUInt256>(1)),
@@ -86,7 +86,7 @@ TEST(EthereumAbiStruct, encodeTypes) {
 
     EXPECT_EQ(hex(msgMailCow1Bob1.hashStruct()), "c52c0ee5d84264471806290a3f2c4cecfc5490626bf912d01f240d7a274b371e");
 
-    EXPECT_EQ(hex(msgEIP712Domain.hashStruct()), "f2cee375fa42b42143804025fc449deafd50cc031ca257e0b194a650a912090f");
+    EXPECT_EQ(hex(gMsgEIP712Domain.hashStruct()), "f2cee375fa42b42143804025fc449deafd50cc031ca257e0b194a650a912090f");
 
     Address address = Address(privateKeyCow.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
     EXPECT_EQ(address.string(), "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826");
@@ -150,7 +150,7 @@ TEST(EthereumAbiStruct, encodeTypes_v3) {
 
     EXPECT_EQ(hex(msgMailCow1Bob1.hashStruct()), "c52c0ee5d84264471806290a3f2c4cecfc5490626bf912d01f240d7a274b371e");
 
-    EXPECT_EQ(hex(msgEIP712Domain.hashStruct()), "f2cee375fa42b42143804025fc449deafd50cc031ca257e0b194a650a912090f");
+    EXPECT_EQ(hex(gMsgEIP712Domain.hashStruct()), "f2cee375fa42b42143804025fc449deafd50cc031ca257e0b194a650a912090f");
 
     Address address = Address(privateKeyCow.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
     EXPECT_EQ(address.string(), "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826");
@@ -238,7 +238,7 @@ TEST(EthereumAbiStruct, encodeTypes_v4) {
 
     EXPECT_EQ(hex(msgMailCow2Bob3.hashStruct()), "eb4221181ff3f1a83ea7313993ca9218496e424604ba9492bb4052c03d5c3df8");
 
-    EXPECT_EQ(hex(msgEIP712Domain.hashStruct()), "f2cee375fa42b42143804025fc449deafd50cc031ca257e0b194a650a912090f");
+    EXPECT_EQ(hex(gMsgEIP712Domain.hashStruct()), "f2cee375fa42b42143804025fc449deafd50cc031ca257e0b194a650a912090f");
 
     Address address = Address(privateKeyCow.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
     EXPECT_EQ(address.string(), "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826");

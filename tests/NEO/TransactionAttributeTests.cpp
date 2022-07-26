@@ -21,31 +21,31 @@ TEST(NEOTransactionAttribute, Serialize) {
     auto transactionAttribute = TransactionAttribute();
     string data = "bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a";
     transactionAttribute.usage = TransactionAttributeUsage::TAU_ContractHash;
-    transactionAttribute.data = parse_hex(data);
+    transactionAttribute._data = parse_hex(data);
     EXPECT_EQ("00" + data, hex(transactionAttribute.serialize()));
 
     data = "bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4b";
     transactionAttribute.usage = TransactionAttributeUsage::TAU_Vote;
-    transactionAttribute.data = parse_hex(data);
+    transactionAttribute._data = parse_hex(data);
     EXPECT_EQ("30" + data, hex(transactionAttribute.serialize()));
 
     transactionAttribute.usage = TransactionAttributeUsage::TAU_ECDH02;
-    transactionAttribute.data = parse_hex(data);
+    transactionAttribute._data = parse_hex(data);
     EXPECT_EQ("02" + data, hex(transactionAttribute.serialize()));
 
     data = "bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af";
     transactionAttribute.usage = TransactionAttributeUsage::TAU_Script;
-    transactionAttribute.data = parse_hex(data);
+    transactionAttribute._data = parse_hex(data);
     EXPECT_EQ("20" + data, hex(transactionAttribute.serialize()));
 
     data = "bd";
     transactionAttribute.usage = TransactionAttributeUsage::TAU_DescriptionUrl;
-    transactionAttribute.data = parse_hex(data);
+    transactionAttribute._data = parse_hex(data);
     EXPECT_EQ("81" + data, hex(transactionAttribute.serialize()));
 
     data = "bdecbb623eee6f9ade28d5a8ff5fb3ea";
     transactionAttribute.usage = TransactionAttributeUsage::TAU_Remark;
-    transactionAttribute.data = parse_hex(data);
+    transactionAttribute._data = parse_hex(data);
     EXPECT_EQ("f0" + data, hex(transactionAttribute.serialize()));
 }
 
@@ -54,31 +54,31 @@ TEST(NEOTransactionAttribute, Deserialize) {
     string data = "bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a";
     transactionAttribute.deserialize(parse_hex("00" + data));
     EXPECT_EQ(TransactionAttributeUsage::TAU_ContractHash, transactionAttribute.usage);
-    EXPECT_EQ(data, hex(transactionAttribute.data));
+    EXPECT_EQ(data, hex(transactionAttribute._data));
 
     data = "bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4b";
     transactionAttribute.deserialize(parse_hex("30" + data));
     EXPECT_EQ(TransactionAttributeUsage::TAU_Vote, transactionAttribute.usage);
-    EXPECT_EQ(data, hex(transactionAttribute.data));
+    EXPECT_EQ(data, hex(transactionAttribute._data));
 
     transactionAttribute.deserialize(parse_hex("02" + data));
     EXPECT_EQ(TransactionAttributeUsage::TAU_ECDH02, transactionAttribute.usage);
-    EXPECT_EQ(data, hex(transactionAttribute.data));
+    EXPECT_EQ(data, hex(transactionAttribute._data));
 
     data = "bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af";
     transactionAttribute.deserialize(parse_hex("20" + data));
     EXPECT_EQ(TransactionAttributeUsage::TAU_Script, transactionAttribute.usage);
-    EXPECT_EQ(data, hex(transactionAttribute.data));
+    EXPECT_EQ(data, hex(transactionAttribute._data));
 
     data = "bd";
     transactionAttribute.deserialize(parse_hex("81" + data));
     EXPECT_EQ(TransactionAttributeUsage::TAU_DescriptionUrl, transactionAttribute.usage);
-    EXPECT_EQ(data, hex(transactionAttribute.data));
+    EXPECT_EQ(data, hex(transactionAttribute._data));
 
     data = "bdecbb623eee6f9ade28d5a8ff5fb3ea";
     transactionAttribute.deserialize(parse_hex("f0" + data));
     EXPECT_EQ(TransactionAttributeUsage::TAU_Remark, transactionAttribute.usage);
-    EXPECT_EQ(data, hex(transactionAttribute.data));
+    EXPECT_EQ(data, hex(transactionAttribute._data));
 
     EXPECT_THROW(transactionAttribute.deserialize(parse_hex("b1" + data)), std::invalid_argument);
 }

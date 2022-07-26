@@ -15,7 +15,7 @@
 using namespace TW::Encrypt;
 using namespace TW;
 
-const Data key = parse_hex("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4");
+const Data gKey = parse_hex("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4");
 
 inline void assertHexEqual(const Data& data, const char* expected) {
     EXPECT_EQ(hex(data), expected);
@@ -46,7 +46,7 @@ TEST(Encrypt, AESCBCEncrypt) {
 	auto iv = parse_hex("000102030405060708090A0B0C0D0E0F");
     auto data = parse_hex("6bc1bee22e409f96e93d7e117393172a");
 
-    auto encryptResult = AESCBCEncrypt(key, data, iv);
+    auto encryptResult = AESCBCEncrypt(gKey, data, iv);
     assertHexEqual(encryptResult, "f58c4c04d6e5f1ba779eabfb5f7bfbd6");
 }
 
@@ -70,7 +70,7 @@ TEST(Encrypt, AESCBCDecrypt) {
 	auto iv = parse_hex("000102030405060708090A0B0C0D0E0F");
     auto cipher = parse_hex("f58c4c04d6e5f1ba779eabfb5f7bfbd6");
 
-    auto decryptResult = AESCBCDecrypt(key, cipher, iv);
+    auto decryptResult = AESCBCDecrypt(gKey, cipher, iv);
     assertHexEqual(decryptResult, "6bc1bee22e409f96e93d7e117393172a");
 }
 
@@ -98,7 +98,7 @@ TEST(Encrypt, AESCTREncrypt) {
 	auto iv = parse_hex("f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff");
     auto data = parse_hex("6bc1bee22e409f96e93d7e117393172a");
 
-    auto encryptResult = AESCTREncrypt(key, data, iv);
+    auto encryptResult = AESCTREncrypt(gKey, data, iv);
     assertHexEqual(encryptResult, "601ec313775789a5b7a7f504bbf3d228");
 }
 
@@ -106,7 +106,7 @@ TEST(Encrypt, AESCTRDecrypt) {
 	auto iv = parse_hex("f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff");
     auto cipher = parse_hex("601ec313775789a5b7a7f504bbf3d228");
 
-    auto decryptResult = AESCTRDecrypt(key, cipher, iv);
+    auto decryptResult = AESCTRDecrypt(gKey, cipher, iv);
     assertHexEqual(decryptResult, "6bc1bee22e409f96e93d7e117393172a");
 }
 

@@ -213,9 +213,9 @@ std::pair<int, std::string> Swap::buildBinance([[maybe_unused]] Chain toChain, [
     {
         Binance::Address fromAddressBin;
         Binance::Address::decode(fromAddress, fromAddressBin);
-        auto input = order.add_inputs();
-        input->set_address(fromAddressBin.getKeyHash().data(), fromAddressBin.getKeyHash().size());
-        *input->add_coins() = token;
+        auto input_ = order.add_inputs();
+        input_->set_address(fromAddressBin.getKeyHash().data(), fromAddressBin.getKeyHash().size());
+        *input_->add_coins() = token;
     }
     {
         Binance::Address vaultAddressBin;

@@ -39,9 +39,9 @@ Proto::SigningOutput SignTest() {
     auto toKeyhash = toAddress.getKeyHash();
 
     {
-        auto input = order.add_inputs();
-        input->set_address(fromKeyhash.data(), fromKeyhash.size());
-        auto inputCoin = input->add_coins();
+        auto inputOrder = order.add_inputs();
+        inputOrder->set_address(fromKeyhash.data(), fromKeyhash.size());
+        auto inputCoin = inputOrder->add_coins();
         inputCoin->set_denom("BNB");
         inputCoin->set_amount(1);
     }

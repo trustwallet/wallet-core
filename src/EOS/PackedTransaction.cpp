@@ -10,7 +10,6 @@
 
 using namespace TW;
 using namespace TW::EOS;
-using json = nlohmann::json;
 
 PackedTransaction::PackedTransaction(const Transaction& transaction, CompressionType type) noexcept : compression(type) {
     transaction.serialize(packedTrx);

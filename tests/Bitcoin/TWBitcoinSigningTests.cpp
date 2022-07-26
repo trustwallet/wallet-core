@@ -332,11 +332,11 @@ TEST(BitcoinSigning, SignP2WPKH) {
 
     {
         // Non-segwit encoded, for comparison
-        Data serialized;
-        signedTx.encode(serialized, Transaction::SegwitFormatMode::NonSegwit);
+        Data serialized_;
+        signedTx.encode(serialized_, Transaction::SegwitFormatMode::NonSegwit);
         EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{195, 192, 193}));
-        EXPECT_EQ(serialized.size(), 192ul);
-        ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
+        EXPECT_EQ(serialized_.size(), 192ul);
+        ASSERT_EQ(hex(serialized_), // printed using prettyPrintTransaction
             "01000000" // version
             "01" // inputs
                 "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "49"  "483045022100c327babdd370f0fc5b24cf920736446bf7d9c5660e4a5f7df432386fd652fe280220269c4fc3690c1c248e50c8bf2435c20b4ef00f308b403575f4437f862a91c53a01"  "ffffffff"
@@ -1466,7 +1466,7 @@ TEST(BitcoinSigning, EncodeThreeOutput) {
 
     auto hashType = TWBitcoinSigHashType::TWBitcoinSigHashTypeAll;
     Data sighash = unsignedTx.getSignatureHash(redeemScript0, unsignedTx.inputs[0].previousOutput.index,
-        hashType, utxo0Amount, static_cast<SignatureVersion>(unsignedTx.version));
+        hashType, utxo0Amount, static_cast<SignatureVersion>(unsignedTx._version));
     auto sig = privkey.signAsDER(sighash);
     ASSERT_FALSE(sig.empty());
     sig.push_back(hashType);

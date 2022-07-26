@@ -39,13 +39,13 @@ class TxOutput {
 
 class Transaction {
   public:
-    Coins fee;
+    Coins _fee;
     std::vector<TxInput> inputs;
     std::vector<TxOutput> outputs;
 
     Transaction() = default;
     Transaction(Coins fee, std::vector<TxInput> inputs, std::vector<TxOutput> outputs)
-        : fee(std::move(fee)), inputs(std::move(inputs)), outputs(std::move(outputs)) {}
+        : _fee(std::move(fee)), inputs(std::move(inputs)), outputs(std::move(outputs)) {}
 
     Transaction(Ethereum::Address from, Ethereum::Address to,
                 uint256_t thetaAmount, uint256_t tfuelAmount, uint64_t sequence,

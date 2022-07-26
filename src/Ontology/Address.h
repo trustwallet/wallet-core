@@ -22,7 +22,7 @@ class Address {
     static const size_t size = 20;
     static const uint8_t version = 0x17;
 
-    std::array<uint8_t, size> data;
+    std::array<uint8_t, size> _data;
 
     /// Initializes an address with a public key.
     explicit Address(const PublicKey& publicKey);
@@ -44,7 +44,7 @@ class Address {
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs.data == rhs.data;
+    return lhs._data == rhs._data;
 }
 
 } // namespace TW::Ontology

@@ -17,7 +17,7 @@ namespace TW {
 class PrivateKey {
   public:
     /// The number of bytes in a private key.
-    static const size_t size = 32;
+    static const size_t _size = 32;
     /// The number of bytes in a Cardano key (two extended ed25519 keys + chain code)
     static const size_t cardanoKeySize = 2 * 3 * 32;
 
