@@ -37,6 +37,7 @@ TEST(CardanoAddress, V3NetworkIdKind) {
 
 TEST(CardanoAddress, Validation) {
     // valid V3 address
+    ASSERT_TRUE(AddressV3::isValidLegacy("addr1v9wa6entm75duchtu50mu6u6hkagdgqzaevt0cwryaw3pnca870vt"));
     ASSERT_TRUE(AddressV3::isValidLegacy("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"));
     ASSERT_TRUE(AddressV3::isValidLegacy("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5"));
 
