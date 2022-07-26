@@ -26,9 +26,9 @@ class TestNEARSigner {
             signerId = "test.near"
             nonce = 1
             receiverId = "whatever.near"
-            addActionsBuilder().apply {
+            addActions(NEAR.Action.newBuilder().apply {
                 transfer = transferAction
-            }
+            })
             blockHash = ByteString.copyFrom(Base58.decodeNoCheck("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM"))
             privateKey = ByteString.copyFrom(Base58.decodeNoCheck("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv").sliceArray(0..31))
         }.build()
