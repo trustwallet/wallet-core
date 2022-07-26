@@ -33,5 +33,4 @@ message SigningInput {
 
 message SigningOutput {
     bytes message = 1;
-    int32 to = 2;
 }
