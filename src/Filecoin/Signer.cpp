@@ -15,17 +15,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     // Load private key and transaction from Protobuf input.
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto pubkey = key.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
-    Address from_address(pubkey);
-    Address to_address(input.to());
-    Transaction transaction(
-        /* to */ to_address,
-        /* from */ from_address,
-        /* nonce */ input.nonce(),
-        /* value */ load(input.value()),
-        /* gasLimit */ input.gas_limit(),
-        /* gasFeeCap */ load(input.gas_fee_cap()),
-        /* gasPremium */ load(input.gas_premium())
-    );
+    auto transaction = Signer::buildTx(pubkey, input);
 
     // Sign transaction.
     auto signature = sign(key, transaction);
@@ -49,4 +39,35 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     input.set_private_key(key.data(), key.size());
     auto output = Signer::sign(input);
     return output.json();
+}
+
+TW::Data Signer::signaturePreimage(const Proto::SigningInput& input) noexcept {
+    auto pubkey = PublicKey(Data(input.public_key().begin(), input.public_key().end()), TWPublicKeyTypeSECP256k1Extended);
+    auto tx = Signer::buildTx(pubkey, input);
+    return tx.cid();
+}
+
+Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& publicKey, const Proto::SigningInput& input) noexcept {
+    auto tx = Signer::buildTx(publicKey, input);
+    const auto json = tx.serialize(signature);
+
+    // Return Protobuf output.
+    Proto::SigningOutput output;
+    output.set_json(json.data(), json.size());
+    return output;
+}
+
+Transaction Signer::buildTx(const PublicKey& publicKey, const Proto::SigningInput& input) noexcept {
+    Address from_address(publicKey);
+    Address to_address(input.to());
+    return {
+        Transaction(
+            /* to */ to_address,
+            /* from */ from_address,
+            /* nonce */ input.nonce(),
+            /* value */ load(input.value()),
+            /* gasLimit */ input.gas_limit(),
+            /* gasFeeCap */ load(input.gas_fee_cap()),
+            /* gasPremium */ load(input.gas_premium()))
+    };
 }

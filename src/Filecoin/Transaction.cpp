@@ -60,7 +60,7 @@ Data Transaction::cid() const {
     cid.insert(cid.end(), hash.begin(), hash.end());
     return cid;
 }
-std::string Transaction::serialize(Data& signature) const {
+std::string Transaction::serialize(const Data& signature) const {
     json tx = {
         {"Message", json{
                 {"To", to.string()},

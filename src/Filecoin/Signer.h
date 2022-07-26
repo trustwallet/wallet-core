@@ -28,6 +28,15 @@ class Signer {
 
     /// Signs the given transaction.
     static Data sign(const PrivateKey& privateKey, Transaction& transaction) noexcept;
+
+    /// Get transaction data to be signed
+    static TW::Data signaturePreimage(const Proto::SigningInput& input) noexcept;
+
+    /// build transaction with signature
+    static Proto::SigningOutput compile(const Data& signature, const PublicKey& publicKey, const Proto::SigningInput& input) noexcept;
+  
+  private:
+    static Transaction buildTx(const PublicKey& publicKey, const Proto::SigningInput& input) noexcept;
 };
 
 } // namespace TW::Filecoin

@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.Filecoin.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     // Private key of sender account.
@@ -25,9 +27,18 @@ message SigningInput {
 
     // Gas premium.
     bytes gas_premium = 7;
+
+    // Public key secp256k1 extended
+    bytes public_key = 8;
 }
 
 // Transaction signing output.
 message SigningOutput {
     string json = 1;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error description
+    string error_message = 3;
 }
