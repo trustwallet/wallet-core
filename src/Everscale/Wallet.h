@@ -39,6 +39,15 @@ public:
     };
 };
 
+class StateInit {
+    Cell::Ref code_;
+    Cell::Ref data_;
+public:
+    explicit StateInit(Cell::Ref code, Cell::Ref data) : code_(std::move(code)), data_(std::move(data)) {}
+
+    [[nodiscard]] Cell::Ref intoCell() const;
+};
+
 class InitData {
     uint32_t seqno_;
     uint32_t walletId_;
@@ -50,16 +59,8 @@ public:
 
     [[nodiscard]] Cell::Ref intoCell() const;
     [[nodiscard]] Address::MsgAddressInt computeAddr(int8_t workchainId) const;
+    [[nodiscard]] StateInit makeStateInit() const;
     [[nodiscard]] std::pair<Cell::CellHash, CellBuilder> makeTransferPayload(uint32_t expireAt, const Wallet::Gift& gift) const;
-};
-
-class StateInit {
-    Cell::Ref code_;
-    Cell::Ref data_;
-public:
-    explicit StateInit(Cell::Ref code, Cell::Ref data) : code_(std::move(code)), data_(std::move(data)) {}
-
-    [[nodiscard]] Cell::Ref intoCell() const;
 };
 
 } // namespace TW::Everscale

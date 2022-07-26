@@ -9,6 +9,24 @@
 using namespace TW;
 using namespace TW::Everscale;
 
+CellBuilder::CellBuilder(Data& appendedData, std::size_t bits) {
+    assert(bits < appendedData.size() * 8);
+    assert(bits < Cell::MAX_BITS);
+
+    auto dataShift = bits % 8;
+    if (dataShift == 0) {
+        appendedData.resize(bitLen / 8);
+    } else {
+        appendedData.resize(1 + bitLen / 8);
+        if (!appendedData.empty())
+            appendedData.back() = (appendedData.back() >> (8 - dataShift)) << (8 - dataShift);
+    }
+
+    data = appendedData;
+    bitLen = bits;
+    references = {};
+}
+
 void CellBuilder::appendBitZero() {
     Data appendedData{0x00};
     appendRaw(appendedData, 1);
@@ -16,6 +34,18 @@ void CellBuilder::appendBitZero() {
 
 void CellBuilder::appendBitOne() {
     Data appendedData{0xFF};
+    appendRaw(appendedData, 1);
+}
+
+void CellBuilder::appendBitBool(bool bit) {
+    auto getAppendedData = [](bool bit) {
+        if (bit) {
+            return Data{0xFF};
+        } else {
+            return Data{0x00};
+        }
+    };
+    auto appendedData = getAppendedData(bit);
     appendRaw(appendedData, 1);
 }
 
@@ -28,6 +58,23 @@ void CellBuilder::appendU32(uint32_t value) {
     Data appendedData;
     encode32BE(value, appendedData);
     appendRaw(appendedData, 32);
+}
+
+void CellBuilder::appendU64(uint64_t value) {
+    Data appendedData;
+    encode64BE(value, appendedData);
+    appendRaw(appendedData, 64);
+}
+
+void CellBuilder::appendU128(uint128_t value) {
+    Data appendedData;
+    encode128BE(value, appendedData);
+    appendRaw(appendedData, 128);
+}
+
+void CellBuilder::appendi8(int8_t value) {
+    Data appendedData{static_cast<uint8_t>(value)};
+    appendRaw(appendedData, 8);
 }
 
 void CellBuilder::appendRaw(const Data& appendedData, std::size_t bits) {
@@ -50,11 +97,30 @@ void CellBuilder::appendRaw(const Data& appendedData, std::size_t bits) {
     assert(data.size() * 8 <= Cell::MAX_BITS + 1);
 }
 
+void CellBuilder::prependRaw(Data& appendedData, std::size_t bits) {
+    if (bits != 0) {
+        auto buffer = CellBuilder(appendedData, bits);
+        buffer.appendRaw(data, bitLen);
+
+        data = buffer.data;
+        bitLen = buffer.bitLen;
+    }
+}
+
 void CellBuilder::appendReferenceCell(std::shared_ptr<Cell> child) {
     if (references.size() + 1 > Cell::MAX_REFS) {
         throw std::runtime_error("cell refs overflow");
     }
     references.push_back(std::move(child));
+}
+
+void CellBuilder::appendCellSlice(const CellSlice &other) {
+    Data appendedData(other.cell->data);
+    appendRaw(appendedData, other.dataOffset);
+
+    for (auto i = 0; i < other.refsOffset; i++) {
+        appendReferenceCell(other.cell->references[i]);
+    }
 }
 
 Cell::Ref CellBuilder::intoCell() {
@@ -128,4 +194,10 @@ void CellBuilder::appendWithDoubleShifting(const Data& appendedData, uint16_t bi
         data.resize(bitLen / 8 + 1);
         data.back() &= ~static_cast<uint8_t>(0xff >> (bitLen % 8));
     }
+}
+
+// encodeBigInt encodes a Filecoin BigInt to CBOR.
+void CellBuilder::encode128BE(uint128_t value, Data& data) {
+    data.reserve(16);
+    export_bits(value, std::back_inserter(data), 8);
 }
