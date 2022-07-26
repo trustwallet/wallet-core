@@ -67,19 +67,19 @@ slice(const std::vector<TypeWithAmount>& inputs, size_t sliceSize) {
 
 template <typename TypeWithAmount>
 std::vector<TypeWithAmount>
-InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int64_t numOutputs) {
+InputSelector<TypeWithAmount>::select(uint64_t targetValue, uint64_t byteFee, uint64_t numOutputs) {
     // if target value is zero, no UTXOs are needed
     if (targetValue == 0) {
         return {};
     }
 
     // total values of utxos should be greater than targetValue
-    if (inputs.empty() || sum(inputs) < static_cast<uint64_t>(targetValue)) {
+    if (inputs.empty() || sum(inputs) < targetValue) {
         return {};
     }
     assert(inputs.size() >= 1);
 
-    // definitions for the following caluculation
+    // definitions for the following calculation
     const auto doubleTargetValue = targetValue * 2;
 
     // Get all possible utxo selections up to a maximum size, sort by total amount, increasing
@@ -100,7 +100,7 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
     }
 
     // difference from 2x targetValue
-    auto distFrom2x = [doubleTargetValue](int64_t val) -> int64_t {
+    auto distFrom2x = [doubleTargetValue](uint64_t val) -> uint64_t {
         if (val > doubleTargetValue) {
             return val - doubleTargetValue;
         }
@@ -116,7 +116,7 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
     for (size_t numInputs = 1; numInputs <= n; ++numInputs) {
         const auto fee = feeCalculator.calculate(numInputs, numOutputs, byteFee);
         const auto targetWithFeeAndDust = targetValue + fee + dustThreshold;
-        if (maxWithXInputs[numInputs] < static_cast<uint64_t>(targetWithFeeAndDust)) {
+        if (maxWithXInputs[numInputs] < targetWithFeeAndDust) {
             // no way to satisfy with only numInputs inputs, skip
             continue;
         }
@@ -125,7 +125,7 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
         slices.erase(
             std::remove_if(slices.begin(), slices.end(),
                            [targetWithFeeAndDust](const std::vector<TypeWithAmount>& slice) {
-                               return sum(slice) < static_cast<uint64_t>(targetWithFeeAndDust);
+                               return sum(slice) < targetWithFeeAndDust;
                            }),
             slices.end());
         if (!slices.empty()) {
@@ -149,7 +149,7 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
         auto slices = slice(sorted, static_cast<size_t>(numInputs));
         slices.erase(std::remove_if(slices.begin(), slices.end(),
                                     [targetWithFee](const std::vector<TypeWithAmount>& slice) {
-                                        return sum(slice) < static_cast<uint64_t>(targetWithFee);
+                                        return sum(slice) < targetWithFee;
                                     }),
                      slices.end());
         if (!slices.empty()) {
