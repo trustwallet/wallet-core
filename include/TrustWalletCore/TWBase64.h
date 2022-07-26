@@ -26,7 +26,7 @@ TWData* _Nullable TWBase64Decode(TWString* _Nonnull string);
 /// Decode a Base64 input with the alphabet safe for URL-s and filenames (RFC4648 with '-', '_')
 ///
 /// \param string Encoded base64 input to be decoded
-/// \return The decoded data, can be null.
+/// \return The decoded data
 TW_EXPORT_STATIC_METHOD
 TWData* _Nullable TWBase64DecodeUrl(TWString* _Nonnull string);
 
