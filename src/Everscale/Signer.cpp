@@ -63,7 +63,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
                 const uint32_t expiredAt = static_cast<uint32_t>(duration_cast<seconds>(system_clock::now().time_since_epoch()).count());
                 auto [hash, payload] = initData.makeTransferPayload(expiredAt, gift);
 
-                auto dst = InitData(publicKey).computeAddr(0);
+                auto dst = InitData(publicKey).computeAddr(WorkchainType::Basechain);
                 Message::HeaderRef header = std::make_shared<ExternalInboundMessageHeader>(dst);
                 auto message = Message(header);
 
