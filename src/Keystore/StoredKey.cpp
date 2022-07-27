@@ -353,13 +353,13 @@ void StoredKey::loadJson(const nlohmann::json& json) {
         }
     }
 
-    if (accounts.empty() && json.count(CodingKeys::address) != 0 &&
-        json[CodingKeys::address].is_string()) {
+    if (accounts.empty() && json.count(CodingKeys::SK::address) != 0 &&
+        json[CodingKeys::SK::address].is_string()) {
         TWCoinType coin = TWCoinTypeEthereum;
-        if (json.count(CodingKeys::coin) != 0) {
-            coin = json[CodingKeys::coin].get<TWCoinType>();
+        if (json.count(CodingKeys::SK::coin) != 0) {
+            coin = json[CodingKeys::SK::coin].get<TWCoinType>();
         }
-        auto address = json[CodingKeys::address].get<std::string>();
+        auto address = json[CodingKeys::SK::address].get<std::string>();
         accounts.emplace_back(address, coin, TWDerivationDefault, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(coin), 0, 0, 0), "", "");
     }
 }

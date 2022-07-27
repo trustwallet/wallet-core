@@ -99,6 +99,19 @@ endif()
 
 if (TW_ENABLE_CLANG_TIDY)
     tw_add_clang_tidy_target(TrustWalletCore)
+    add_library(
+            target_no_static_code_analysis
+            OBJECT
+            ${PROTOBUF_SOURCE_FILES}
+    )
+
+    set_target_properties(
+            target_no_static_code_analysis
+            PROPERTIES
+            CXX_CLANG_TIDY ""
+    )
+    target_sources(TrustWalletCore PRIVATE
+            $<TARGET_OBJECTS:target_no_static_code_analysis>)
 endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig.in ${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig @ONLY)
