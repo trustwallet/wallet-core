@@ -122,10 +122,6 @@ class HDWallet {
     /// Computes the private key from an extended private key representation.
     static std::optional<PrivateKey> getPrivateKeyFromExtended(const std::string& extended, TWCoinType coin, const DerivationPath& path);
 
-  public:
-    // obtain privateKeyType used by the coin/curve
-    static PrivateKeyType getPrivateKeyType(TWCurve curve);
-
   private:
     void updateSeedAndEntropy(bool check = true);
 
