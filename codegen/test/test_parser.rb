@@ -44,22 +44,26 @@ class ParserTest < Test::Unit::TestCase
 
   def test_parse_method_discardable_result
     parser = Parser.new(path: '', string: '
+      // This is a sample file
       TW_EXTERN_C_BEGIN
       struct TWEthereumAbiFunction;
 
+      // Ethereuem ABI helpers
       TW_EXPORT_CLASS
       struct TWEthereumAbiEncoder;
-      /// Encode function to Eth ABI binary
+      // Encode function to Eth ABI binary
       TW_EXPORT_STATIC_METHOD
       TW_METHOD_DISCARDABLE_RESULT
       TWData*_Nonnull TWEthereumAbiEncoderEncode(struct TWEthereumAbiFunction *_Nonnull func_in);
       TW_EXTERN_C_END
     ')
     parser.parse
+    assert_equal(parser.entity.name, 'EthereumAbiEncoder')
     method = parser.entity.static_methods[0]
     assert_equal(method.return_type.name, :data)
     assert_equal(method.name, 'Encode')
     assert_equal(method.discardable_result, true)
+    assert_equal(method.comment, '// Encode function to Eth ABI binary' + "\n")
   end
 
   def test_init

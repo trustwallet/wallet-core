@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,9 +10,9 @@
 
 TW_EXTERN_C_BEGIN
 
-///  Registered HD version bytes
+/// Registered HD version bytes
 ///
-/// - SeeAlso: https://github.com/satoshilabs/slips/blob/master/slip-0132.md
+/// \see https://github.com/satoshilabs/slips/blob/master/slip-0132.md
 TW_EXPORT_ENUM(uint32_t)
 enum TWHDVersion {
     TWHDVersionNone = 0,

@@ -62,12 +62,12 @@ uint8_t varIntSize(uint64_t value);
 /// being encoded. It produces fewer bytes for smaller numbers as opposed to a
 /// fixed-size encoding.  Little endian byte order is used.
 ///
-/// @returns the number of bytes written.
+/// \returns the number of bytes written.
 uint8_t encodeVarInt(uint64_t size, std::vector<uint8_t>& data);
 
 /// Decodes an integer as a variable-length integer. See encodeVarInt().
 ///
-/// @returns a tuple with a success indicator and the decoded integer.
+/// \returns a tuple with a success indicator and the decoded integer.
 std::tuple<bool, uint64_t> decodeVarInt(const Data& in, size_t& indexInOut);
 
 /// Encodes a 16-bit big-endian value into the provided buffer.
@@ -109,7 +109,7 @@ uint64_t decode64BE(const uint8_t* _Nonnull src);
 void encodeString(const std::string& str, std::vector<uint8_t>& data);
 
 /// Decodes an ASCII string prefixed by its length (varInt) 
-/// @returns a tuple with a success indicator and the decoded string.
+/// \returns a tuple with a success indicator and the decoded string.
 std::tuple<bool, std::string> decodeString(const Data& in, size_t& indexInOut);
 
 } // namespace TW
