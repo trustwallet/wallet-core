@@ -87,7 +87,7 @@ class AddressV3 {
     /// Hrp of kind
     static std::string getHrp(const Kind kind) noexcept; 
     /// Check whether data length is correct
-    static bool checkLength([[maybe_unused]] NetworkId networkId, Kind kind, size_t length) noexcept;
+    static bool checkLength(Kind kind, size_t length) noexcept;
     /// Check validity of binary address.
     static bool parseAndCheckV3(const TW::Data& raw, NetworkId& networkId, Kind& kind, TW::Data& bytes) noexcept;
     /// Check validity and parse elements of a string address.  Used internally by isValid and ctor.

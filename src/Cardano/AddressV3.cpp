@@ -20,7 +20,7 @@ using namespace TW;
 using namespace TW::Cardano;
 using namespace std;
 
-bool AddressV3::checkLength([[maybe_unused]] NetworkId networkId, Kind kind, size_t length) noexcept {
+bool AddressV3::checkLength(Kind kind, size_t length) noexcept {
     switch (kind)
     {
     case Kind_Base:
@@ -50,7 +50,7 @@ bool AddressV3::parseAndCheckV3(const Data& raw, NetworkId& networkId, Kind& kin
     bytes = Data();
     std::copy(cbegin(raw) + 1, cend(raw), std::back_inserter(bytes));
 
-    return checkLength(networkId, kind, raw.size());
+    return checkLength(kind, raw.size());
 }
 
 bool AddressV3::parseAndCheckV3(const std::string& addr, NetworkId& networkId, Kind& kind, Data& bytes) noexcept {
