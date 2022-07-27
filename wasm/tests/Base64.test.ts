@@ -25,19 +25,19 @@ describe("Base64", () => {
         assert.equal(encoded, "SGVsbG9Xb3JsZA==");
     });
 
-    it("test decoding (URL-safe)", () => {
-        const {Base64} = WalletCore;
-
-        const decoded = Base64.decodeUrl("K1w_YWI=");
-
-        assert.equal(Buffer.from(decoded).toString(), "+\\?ab");
-    });
-
     it("test encoding (URL-safe)", () => {
         const {Base64} = WalletCore;
 
-        const encoded = Base64.encodeUrl(Buffer.from("+\\?ab"));
+        const encoded = Base64.encodeUrl(Buffer.from('==?='));
 
-        assert.equal(encoded, "K1w_YWI=");
+        assert.equal(encoded, 'PT0_PQ==');
+    });
+    
+    it("test decoding (URL-safe)", () => {
+        const {Base64} = WalletCore;
+        const decoded = Base64.decodeUrl('PT0_PQ==');
+
+        assert.equal(Buffer.from(decoded).toString(), '==?=');
     });
 });
+
