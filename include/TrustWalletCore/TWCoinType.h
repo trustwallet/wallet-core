@@ -14,6 +14,7 @@
 #include "TWPrivateKey.h"
 #include "TWPurpose.h"
 #include "TWString.h"
+#include "TWDerivation.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -112,6 +113,7 @@ enum TWCoinType {
     TWCoinTypeKavaEvm = 10002222,
     TWCoinTypeKlaytn = 10008217,
     TWCoinTypeMeter = 18000,
+    TWCoinTypeOKXChain = 996,
     TWCoinTypeEnergyWebToken = 246,
 };
 
@@ -142,6 +144,10 @@ bool TWCoinTypeValidate(enum TWCoinType coin, TWString* _Nonnull address);
 /// Returns the default derivation path for a particular coin.
 TW_EXPORT_METHOD
 TWString* _Nonnull TWCoinTypeDerivationPath(enum TWCoinType coin);
+
+/// Returns the derivation path for a particular coin with the explicit given derivation.
+TW_EXPORT_METHOD
+TWString* _Nonnull TWCoinTypeDerivationPathWithDerivation(enum TWCoinType coin, enum TWDerivation derivation);
 
 /// Derives the address for a particular coin from the private key.
 TW_EXPORT_METHOD

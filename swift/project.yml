@@ -126,7 +126,8 @@ targets:
       - trezor-crypto/crypto/groestl.c
       - trezor-crypto/crypto/hmac_drbg.c
       - trezor-crypto/crypto/rfc6979.c
-      - trezor-crypto/crypto/schnorr.c
+      - trezor-crypto/crypto/zilliqa.c
+      - trezor-crypto/crypto/cardano.c
       - trezor-crypto/crypto/shamir.c
       - trezor-crypto/crypto/sodium/private/fe_25_5/fe.c
       - trezor-crypto/crypto/sodium/private/ed25519_ref10.c

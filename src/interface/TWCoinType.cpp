@@ -39,6 +39,12 @@ TWString *_Nonnull TWCoinTypeDerivationPath(enum TWCoinType coin) {
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
 
+TWString* TWCoinTypeDerivationPathWithDerivation(enum TWCoinType coin, enum TWDerivation derivation) {
+    const auto path = TW::derivationPath(coin, derivation);
+    const auto string = path.string();
+    return TWStringCreateWithUTF8Bytes(string.c_str());
+}
+
 TWString *_Nonnull TWCoinTypeDeriveAddress(enum TWCoinType coin, struct TWPrivateKey *_Nonnull privateKey) {
     const auto string = TW::deriveAddress(coin, privateKey->impl);
     return TWStringCreateWithUTF8Bytes(string.c_str());

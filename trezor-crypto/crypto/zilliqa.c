@@ -20,7 +20,53 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <TrezorCrypto/schnorr.h>
+#include "string.h"
+
+#include <TrezorCrypto/zilliqa.h>
+#include <TrezorCrypto/ecdsa.h>
+#include <TrezorCrypto/rfc6979.h>
+#include <TrezorCrypto/memzero.h>
+
+int zil_schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key, const uint8_t *msg, const uint32_t msg_len, uint8_t *sig)
+{
+	int i;
+	bignum256 k;
+
+	uint8_t hash[32];
+	sha256_Raw(msg, msg_len, hash);
+
+	rfc6979_state rng;
+	init_rfc6979(priv_key, hash, curve, &rng);
+
+	for (i = 0; i < 10000; i++) {
+		// generate K deterministically
+		generate_k_rfc6979(&k, &rng);
+		// if k is too big or too small, we don't like it
+		if (bn_is_zero(&k) || !bn_is_less(&k, &curve->order)) {
+			continue;
+		}
+
+		schnorr_sign_pair sign;
+		if (zil_schnorr_sign_k(curve, priv_key, &k, msg, msg_len, &sign) != 0) {
+			continue;
+		}
+
+		// we're done
+		memcpy(sig, sign.r, 32);
+		memcpy(sig + 32, sign.s, 32);
+
+		memzero(&k, sizeof(k));
+		memzero(&rng, sizeof(rng));
+		memzero(&sign, sizeof(sign));
+		return 0;
+	}
+
+	// Too many retries without a valid signature
+	// -> fail with an error
+	memzero(&k, sizeof(k));
+	memzero(&rng, sizeof(rng));
+	return -1;
+}
 
 // r = H(Q, kpub, m)
 static void calc_r(const curve_point *Q, const uint8_t pub_key[33],
@@ -41,7 +87,7 @@ static void calc_r(const curve_point *Q, const uint8_t pub_key[33],
 }
 
 // Returns 0 if signing succeeded
-int schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key,
+int zil_schnorr_sign_k(const ecdsa_curve *curve, const uint8_t *priv_key,
                  const bignum256 *k, const uint8_t *msg, const uint32_t msg_len,
                  schnorr_sign_pair *result) {
   uint8_t pub_key[33];
@@ -89,8 +135,18 @@ int schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key,
   return 0;
 }
 
+int zil_schnorr_verify(const ecdsa_curve *curve, const uint8_t *pub_key, const uint8_t *sig, const uint8_t *msg, const uint32_t msg_len)
+{
+	schnorr_sign_pair sign;
+  
+	memcpy(sign.r, sig, 32);
+	memcpy(sign.s, sig + 32, 32);
+
+	return zil_schnorr_verify_pair(curve, pub_key, msg, msg_len, &sign);
+}
+
 // Returns 0 if verification succeeded
-int schnorr_verify(const ecdsa_curve *curve, const uint8_t *pub_key,
+int zil_schnorr_verify_pair(const ecdsa_curve *curve, const uint8_t *pub_key,
                    const uint8_t *msg, const uint32_t msg_len,
                    const schnorr_sign_pair *sign) {
   curve_point pub_key_point;

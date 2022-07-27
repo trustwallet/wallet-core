@@ -95,7 +95,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     const auto preImage = Signer::getPreImage(input, address);
     const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     const auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
-    const auto signature = key.signSchnorr(preImage, TWCurveSECP256k1);
+    const auto signature = key.signZilliqa(preImage);
     const auto transaction = input.transaction();
 
     // build json

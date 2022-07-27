@@ -16,15 +16,11 @@ typedef unsigned char curve25519_key[32];
 typedef unsigned char ed25519_cosi_signature[32];
 
 void ed25519_publickey(const ed25519_secret_key sk, ed25519_public_key pk);
-#if USE_CARDANO
-void ed25519_publickey_ext(const ed25519_secret_key sk, const ed25519_secret_key skext, ed25519_public_key pk);
-#endif
+void ed25519_publickey_ext(const ed25519_secret_key extsk, ed25519_public_key pk);
 
 int ed25519_sign_open(const unsigned char *m, size_t mlen, const ed25519_public_key pk, const ed25519_signature RS);
-void ed25519_sign(const unsigned char *m, size_t mlen, const ed25519_secret_key sk, const ed25519_public_key pk, ed25519_signature RS);
-#if USE_CARDANO
-void ed25519_sign_ext(const unsigned char *m, size_t mlen, const ed25519_secret_key sk, const ed25519_secret_key skext, const ed25519_public_key pk, ed25519_signature RS);
-#endif
+void ed25519_sign(const unsigned char *m, size_t mlen, const ed25519_secret_key sk, ed25519_signature RS);
+void ed25519_sign_ext(const unsigned char *m, size_t mlen, const ed25519_secret_key sk, const ed25519_secret_key skext, ed25519_signature RS);
 
 int ed25519_scalarmult(ed25519_public_key res, const ed25519_secret_key sk, const ed25519_public_key pk);
 

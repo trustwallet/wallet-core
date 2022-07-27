@@ -21,7 +21,6 @@
 
 #include <cassert>
 #include <fstream>
-#include <iostream>
 #include <sstream>
 #include <stdexcept>
 
@@ -253,8 +252,8 @@ const PrivateKey StoredKey::privateKey(TWCoinType coin, const Data& password) {
 const PrivateKey StoredKey::privateKey(TWCoinType coin, TWDerivation derivation, const Data& password) {
     if (type == StoredKeyType::mnemonicPhrase) {
         const auto wallet = this->wallet(password);
-        const auto account = this->account(coin, &wallet);
-        return wallet.getKey(coin, account->derivationPath);
+        const Account& account = this->account(coin, derivation, wallet);
+        return wallet.getKey(coin, account.derivationPath);
     }
     // type == StoredKeyType::privateKey
     return PrivateKey(payload.decrypt(password));
