@@ -36,18 +36,29 @@ TEST(CardanoAddress, V3NetworkIdKind) {
 TEST(CardanoAddress, Validation) {
     // valid V3 address
     ASSERT_TRUE(AddressV3::isValidLegacy("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"));
-    ASSERT_TRUE(AddressV3::isValidLegacy("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5"));
+
+    ASSERT_TRUE(AddressV3::isValid("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"));
+    ASSERT_TRUE(AddressV3::isValid("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5"));
+    ASSERT_TRUE(AddressV3::isValid("addr1vyuca7esanpgs4ke0um3ft6f4yaeuz3ftpfqx9nxpct2uyqu7dvlp")); // enterprise
+    ASSERT_TRUE(AddressV3::isValid("stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks")); // reward
+    ASSERT_TRUE(AddressV3::isValid("addr1sxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qmxapsy")); // kind 8
 
     // valid V2 address
     ASSERT_TRUE(AddressV3::isValidLegacy("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvx"));
     ASSERT_TRUE(AddressV3::isValidLegacy("Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W"));
 
+    ASSERT_FALSE(AddressV3::isValid("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvx"));
+
     // valid V1 address
     ASSERT_TRUE(AddressV3::isValidLegacy("DdzFFzCqrhssmYoG5Eca1bKZFdGS8d6iag1mU4wbLeYcSPVvBNF2wRG8yhjzQqErbg63N6KJA4DHqha113tjKDpGEwS5x1dT2KfLSbSJ"));
     ASSERT_TRUE(AddressV3::isValidLegacy("DdzFFzCqrht7HGoJ87gznLktJGywK1LbAJT2sbd4txmgS7FcYLMQFhawb18ojS9Hx55mrbsHPr7PTraKh14TSQbGBPJHbDZ9QVh6Z6Di"));
 
-    // invalid V3, length (cardano-crypto.js)
+    // invalid V3, invalid network
     ASSERT_FALSE(AddressV3::isValidLegacy("addr1sna05l45z33zpkm8z44q8f0h57wxvm0c86e34wlmua7gtcrdgrdrzy8ny3walyfjanhe33nsyuh088qr5gepqaen6jsa9r94xvvd7fh6jc3e6x"));
+    // invalid V3, invalid prefix
+    ASSERT_FALSE(AddressV3::isValidLegacy("prefix1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35q3hm7lv"));
+    // invalid V3, length
+    ASSERT_FALSE(AddressV3::isValidLegacy("addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32xsmpqws7"));
     // invalid checksum V3
     ASSERT_FALSE(AddressV3::isValidLegacy("PREFIX1qvqsyqcyq5rqwzqfpg9scrgwpugpzysnzs23v9ccrydpk8qarc0jqxuzx4s"));
     // invalid checksum V2
@@ -70,15 +81,34 @@ TEST(CardanoAddress, FromStringV2) {
     }
 }
 
-TEST(CardanoAddress, FromStringV3) {
+TEST(CardanoAddress, FromStringV3_Base) {
     {
-        // single addr
         auto address = AddressV3("addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq");
         EXPECT_EQ(address.string(), "addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq");
         EXPECT_EQ(address.string("addr"), "addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq");
         EXPECT_EQ(AddressV3::Network_Production, address.networkId);
         EXPECT_EQ(AddressV3::Kind_Base, address.kind);
         EXPECT_EQ("8d98bea0414243dc84070f96265577e7e6cf702d62e871016885034ecc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468", hex(address.bytes));
+    }
+}
+
+TEST(CardanoAddress, FromStringV3_Enterprise) {
+    {
+        auto address = AddressV3("addr1vyuca7esanpgs4ke0um3ft6f4yaeuz3ftpfqx9nxpct2uyqu7dvlp");
+        EXPECT_EQ(address.string(), "addr1vyuca7esanpgs4ke0um3ft6f4yaeuz3ftpfqx9nxpct2uyqu7dvlp");
+        EXPECT_EQ(AddressV3::Network_Production, address.networkId);
+        EXPECT_EQ(AddressV3::Kind_Enterprise, address.kind);
+        EXPECT_EQ("398efb30ecc28856d97f3714af49a93b9e0a2958520316660e16ae10", hex(address.bytes));
+    }
+}
+
+TEST(CardanoAddress, FromStringV3_Reward) {
+    {
+        auto address = AddressV3("stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks");
+        EXPECT_EQ(address.string(), "stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks");
+        EXPECT_EQ(AddressV3::Network_Production, address.networkId);
+        EXPECT_EQ(AddressV3::Kind_Reward, address.kind);
+        EXPECT_EQ("0a84430507e150f0a06109dc3a7b1956b7a0586ae9078a55ef0e0b03", hex(address.bytes));
     }
 }
 
@@ -223,7 +253,7 @@ TEST(CardanoAddress, KeyHashV2) {
     ASSERT_EQ("a1eda96a9952a56c983d9f49117f935af325e8a6c9d38496e945faa8", hex(hash));
 }
 
-TEST(CardanoAddress, FromDataV3) {
+TEST(CardanoAddress, FromDataV3_Base) {
     auto address0 = AddressV3("addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq");
     EXPECT_EQ(address0.string(), "addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq");
     EXPECT_EQ(hex(address0.data()), "018d98bea0414243dc84070f96265577e7e6cf702d62e871016885034ecc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468");
@@ -239,6 +269,39 @@ TEST(CardanoAddress, FromDataV3) {
             PublicKey(parse_hex("fafa7eb4146220db67156a03a5f7a79c666df83eb31abbfbe77c85e06d40da31"), TWPublicKeyTypeED25519),
             PublicKey(parse_hex("f4b8d5201961e68f2e177ba594101f513ee70fe70a41324e8ea8eb787ffda6f4"), TWPublicKeyTypeED25519));
         EXPECT_EQ(address.string(), "addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq");
+    }
+}
+
+TEST(CardanoAddress, FromDataV3_Enterprise) {
+    auto address = AddressV3(parse_hex("61398efb30ecc28856d97f3714af49a93b9e0a2958520316660e16ae10"));
+    EXPECT_EQ(address.string(), "addr1vyuca7esanpgs4ke0um3ft6f4yaeuz3ftpfqx9nxpct2uyqu7dvlp");
+    EXPECT_EQ(address.kind, AddressV3::Kind_Enterprise);
+    EXPECT_EQ(address.networkId, AddressV3::Network_Production);
+    EXPECT_EQ(hex(address.bytes), "398efb30ecc28856d97f3714af49a93b9e0a2958520316660e16ae10");
+}
+
+TEST(CardanoAddress, FromDataV3_Reward) {
+    auto address = AddressV3(parse_hex("e10a84430507e150f0a06109dc3a7b1956b7a0586ae9078a55ef0e0b03"));
+    EXPECT_EQ(address.string(), "stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks");
+    EXPECT_EQ(address.kind, AddressV3::Kind_Reward);
+    EXPECT_EQ(address.networkId, AddressV3::Network_Production);
+    EXPECT_EQ(hex(address.bytes), "0a84430507e150f0a06109dc3a7b1956b7a0586ae9078a55ef0e0b03");
+}
+
+TEST(CardanoAddress, FromDataV3_Invalid) {
+    {   // base, invalid length
+        auto address = AddressV3(parse_hex("018d98bea0414243dc84070f96265577e7e6cf702d62e871016885034ecc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a34"));
+        EXPECT_EQ(address.string(), "addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32xsmpqws7");
+        EXPECT_EQ(address.kind, AddressV3::Kind_Base);
+        EXPECT_EQ(address.networkId, AddressV3::Network_Production);
+        EXPECT_EQ(hex(address.bytes), "8d98bea0414243dc84070f96265577e7e6cf702d62e871016885034ecc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a34");
+    }
+    {   // kind = 8
+        auto address = AddressV3(parse_hex("818d98bea0414243dc84070f96265577e7e6cf702d62e871016885034ecc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468"));
+        EXPECT_EQ(address.string(), "addr1sxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qmxapsy");
+        EXPECT_EQ(address.kind, static_cast<AddressV3::Kind>(8));
+        EXPECT_EQ(address.networkId, AddressV3::Network_Production);
+        EXPECT_EQ(hex(address.bytes), "8d98bea0414243dc84070f96265577e7e6cf702d62e871016885034ecc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468");
     }
 }
 

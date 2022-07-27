@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -20,7 +20,40 @@ using namespace TW;
 using namespace TW::Cardano;
 using namespace std;
 
-bool AddressV3::parseAndCheckV3(const std::string& addr, NetworkId& networkId, Kind& kind, Data& raw) {
+bool AddressV3::checkLength(Kind kind, size_t length) noexcept {
+    switch (kind)
+    {
+    case Kind_Base:
+        return (length == EncodedSize2);
+
+    case Kind_Enterprise:
+    case Kind_Reward:
+        return (length == EncodedSize1);
+
+    default:
+        // accept other types as well
+        return true;
+    }
+}
+
+bool AddressV3::parseAndCheckV3(const Data& raw, NetworkId& networkId, Kind& kind, Data& bytes) noexcept {
+    if (raw.size() < 1ul) {
+        // too short, cannot extract kind and networkId
+        return false;
+    }
+    kind = kindFromFirstByte(raw[0]);
+    networkId = networkIdFromFirstByte(raw[0]);
+    if (networkId != Network_Production) {
+        return false;
+    }
+
+    bytes = Data();
+    std::copy(cbegin(raw) + 1, cend(raw), std::back_inserter(bytes));
+
+    return checkLength(kind, raw.size());
+}
+
+bool AddressV3::parseAndCheckV3(const std::string& addr, NetworkId& networkId, Kind& kind, Data& bytes) noexcept {
     try {
         auto bech = Bech32::decode(addr);
         if (std::get<1>(bech).size() == 0) {
@@ -33,14 +66,16 @@ bool AddressV3::parseAndCheckV3(const std::string& addr, NetworkId& networkId, K
         if (!success) {
             return false;
         }
-        if (conv.size() != EncodedSize) {
+
+        if (!parseAndCheckV3(conv, networkId, kind, bytes)) {
             return false;
         }
-        kind = kindFromFirstByte(conv[0]);
-        networkId = networkIdFromFirstByte(conv[0]);
 
-        raw = Data(conv.size() - 1);
-        std::copy(conv.begin() + 1, conv.end(), raw.begin());
+        // check prefix
+        if (const auto expectedHrp = getHrp(kind); !addr.starts_with(expectedHrp)) {
+            return false;
+        }
+
         return true;
     } catch (...) {
         return false;
@@ -100,7 +135,7 @@ AddressV3 AddressV3::createBase(NetworkId networkId, const PublicKey& spendingKe
 
 AddressV3::AddressV3(const std::string& addr) {
     if (parseAndCheckV3(addr, networkId, kind, bytes)) {
-    // values stored
+        // values stored
         return;
     }
     // try legacy
@@ -113,18 +148,11 @@ AddressV3::AddressV3(const PublicKey& publicKey) {
     if (publicKey.type != TWPublicKeyTypeED25519Cardano || publicKey.bytes.size() != PublicKey::cardanoKeySize) {
         throw std::invalid_argument("Invalid public key type");
     }
-    kind = Kind_Base;
-
     *this = createBase(Network_Production, PublicKey(subData(publicKey.bytes, 0, 32), TWPublicKeyTypeED25519), PublicKey(subData(publicKey.bytes, 64, 32), TWPublicKeyTypeED25519));
 }
 
 AddressV3::AddressV3(const Data& data) {
-    if (data.size() != EncodedSize) {
-        throw std::invalid_argument("Address data too short");
-    }
-    networkId = networkIdFromFirstByte(data[0]);
-    kind = kindFromFirstByte(data[0]);
-    bytes = subData(data, 1);
+    parseAndCheckV3(data, networkId, kind, bytes);
 }
 
 AddressV3::AddressV3(const AddressV3& other) = default;
@@ -150,14 +178,19 @@ void AddressV3::operator=(const AddressV3& other)
     legacyAddressV2 = other.legacyAddressV2;
 }
 
-string AddressV3::string() const {
-    std::string hrp;
+std::string AddressV3::getHrp(Kind kind) noexcept {
     switch (kind) {
-        case Kind_Base:
-            hrp = stringForHRP(TWHRPCardano); break;
-        default:
-            hrp = ""; break;
+    case Kind_Base:
+    case Kind_Enterprise:
+    default:
+        return stringForHRP(TWHRPCardano);
+    case Kind_Reward:
+        return "stake";
     }
+}
+
+string AddressV3::string() const {
+    const auto hrp = getHrp(kind);
     return string(hrp);
 }
 
