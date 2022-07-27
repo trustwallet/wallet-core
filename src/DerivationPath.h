@@ -112,7 +112,7 @@ struct DerivationPath {
 
     /// Creates a derivation path with a string description like `m/10/0/2'/3`
     ///
-    /// @throws std::invalid_argument if the string is not a valid derivation
+    /// \throws std::invalid_argument if the string is not a valid derivation
     /// path.
     explicit DerivationPath(const std::string& string);
 

@@ -2,16 +2,17 @@
 
 # Class or struct declaration
 class EntityDecl
-  attr_reader :name
+  attr_reader :name, :comment
   attr_accessor :is_struct, :methods, :properties, :static_methods, :static_properties
 
-  def initialize(name:, is_struct:)
+  def initialize(name:, is_struct:, comment:)
     @name = name
     @is_struct = is_struct
     @methods = []
     @properties = []
     @static_methods = []
     @static_properties = []
+    @comment = comment
   end
 
   def struct?
