@@ -8,6 +8,6 @@
 
 #include <TrustWalletCore/TWHRP.h>
 
-using namespace TW::IoTeX;
+using namespace TW;
 
-const std::string Address::hrp = HRP_IOTEX;
+const std::string IoTeX::Address::hrp = HRP_IOTEX;

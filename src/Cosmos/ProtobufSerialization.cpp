@@ -318,7 +318,7 @@ std::string buildProtoTxRaw(const std::string& serializedTxBody, const std::stri
     return txRaw.SerializeAsString();
 }
 
-static string broadcastMode(Proto::BroadcastMode mode) {
+static string broadcastModeProtobuf(Proto::BroadcastMode mode) {
     switch (mode) {
     case Proto::BroadcastMode::BLOCK:
         return "BROADCAST_MODE_BLOCK";
@@ -333,7 +333,7 @@ std::string buildProtoTxJson(const Proto::SigningInput& input, const std::string
     const string serializedBase64 = Base64::encode(TW::data(serializedTx)); 
     const json jsonSerialized = {
         {"tx_bytes", serializedBase64},
-        {"mode", broadcastMode(input.mode())}
+        {"mode", broadcastModeProtobuf(input.mode())}
     };
     return jsonSerialized.dump();
 }

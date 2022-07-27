@@ -65,6 +65,13 @@ if (TW_CLANG_ASAN)
     target_enable_asan(TrustWalletCore)
 endif ()
 
+set_target_properties(TrustWalletCore PROPERTIES UNITY_BUILD ON)
+
+file(GLOB_RECURSE PROTOBUF_SOURCE_FILES CONFIGURE_DEPENDS src/Cosmos/Protobuf/*.pb.cc src/proto/*.pb.cc)
+foreach(file ${PROTOBUF_SOURCE_FILES})
+    set_property(SOURCE ${file} PROPERTY SKIP_UNITY_BUILD_INCLUSION ON)
+endforeach()
+
 # Define headers for this library. PUBLIC headers are used for compiling the
 # library, and will be added to consumers' build paths.
 target_include_directories(TrustWalletCore

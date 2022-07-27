@@ -11,9 +11,8 @@
 #include <stdexcept>
 
 using namespace TW;
-using namespace TW::NEAR;
 
-bool Address::isValid(const std::string& string) {
+bool NEAR::Address::isValid(const std::string& string) {
     const auto data = Address::decodeLegacyAddress(string);
     if (data.has_value()) {
         return true;
@@ -23,7 +22,7 @@ bool Address::isValid(const std::string& string) {
 }
 
 /// Decode and verifies the key data from a base58 string.
-std::optional<Data> Address::decodeLegacyAddress(const std::string& string) {
+std::optional<Data> NEAR::Address::decodeLegacyAddress(const std::string& string) {
     const auto prefix = std::string("NEAR");
     if (string.substr(0, prefix.size()) != prefix) {
         return {};
@@ -34,7 +33,7 @@ std::optional<Data> Address::decodeLegacyAddress(const std::string& string) {
 }
 
 /// Initializes a NEAR address from a string representation.
-Address::Address(const std::string& string) {
+NEAR::Address::Address(const std::string& string) {
     const auto data = Address::decodeLegacyAddress(string);
     if (data.has_value()) {
         std::copy(std::begin(*data), std::end(*data), std::begin(bytes));
@@ -48,13 +47,13 @@ Address::Address(const std::string& string) {
 }
 
 /// Initializes a NEAR address from a public key.
-Address::Address(const PublicKey& publicKey) {
+NEAR::Address::Address(const PublicKey& publicKey) {
     // copy the raw, compressed key data
     auto data = publicKey.compressed().bytes;
     std::copy(std::begin(data), std::end(data), std::begin(bytes));
 }
 
 /// Returns a string representation of the NEAR address.
-std::string Address::string() const {
+std::string NEAR::Address::string() const {
     return hex(bytes);
 }

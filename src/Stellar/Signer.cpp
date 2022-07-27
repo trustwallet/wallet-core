@@ -14,16 +14,16 @@
 #include <TrustWalletCore/TWStellarMemoType.h>
 
 using namespace TW;
-using namespace TW::Stellar;
+using namespace TW;
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Stellar::Proto::SigningOutput Stellar::Signer::sign(const Proto::SigningInput& input) noexcept {
     auto signer = Signer(input);
     auto output = Proto::SigningOutput();
     output.set_signature(signer.sign());
     return output;
 }
 
-std::string Signer::sign() const noexcept {
+std::string Stellar::Signer::sign() const noexcept {
 
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto account = Address(input.account());
@@ -52,7 +52,7 @@ std::string Signer::sign() const noexcept {
     return Base64::encode(signature);
 }
 
-Data Signer::encode(const Proto::SigningInput& input) const {
+Data Stellar::Signer::encode(const Proto::SigningInput& input) const {
     //    Address account, uint32_t fee, uint64_t sequence, uint32_t memoType,
     //    Data memoData, Address destination, uint64_t amount;
     auto data = Data();
@@ -146,7 +146,7 @@ Data Signer::encode(const Proto::SigningInput& input) const {
     return data;
 }
 
-uint32_t Signer::operationType(const Proto::SigningInput& input) {
+uint32_t Stellar::Signer::operationType(const Proto::SigningInput& input) {
     switch (input.operation_oneof_case()) {
         case Proto::SigningInput::kOpCreateAccount:
         default:
@@ -162,12 +162,12 @@ uint32_t Signer::operationType(const Proto::SigningInput& input) {
     }
 }
 
-void Signer::encodeAddress(const Address& address, Data& data) {
+void Stellar::Signer::encodeAddress(const Address& address, Data& data) {
     encode32BE(0, data);
     data.insert(data.end(), address.bytes.begin(), address.bytes.end());
 }
 
-void Signer::encodeAsset(const Proto::Asset& asset, Data& data) {
+void Stellar::Signer::encodeAsset(const Stellar::Proto::Asset& asset, Data& data) {
     uint32_t assetType = 0; // native
     std::string alphaUse;
     if (asset.issuer().length() > 0 && Address::isValid(asset.issuer()) && asset.alphanum4().length() > 0) {
@@ -187,7 +187,7 @@ void Signer::encodeAsset(const Proto::Asset& asset, Data& data) {
     }
 }
 
-void Signer::pad(Data& data) const {
+void Stellar::Signer::pad(Data& data) const {
     int pad = 0;
     int mod = static_cast<int>(data.size() % 4);
     if (mod > 0) {

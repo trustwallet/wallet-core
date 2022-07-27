@@ -15,9 +15,8 @@
 #include <string>
 
 using namespace TW;
-using namespace TW::Tezos;
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Tezos::Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto operationList = Tezos::OperationList(input.operation_list().branch());
     for (Proto::Operation operation : input.operation_list().operations()) {
       operationList.addOperation(operation);
@@ -32,7 +31,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return output;
 }
 
-std::string Signer::signJSON(const std::string& json, const Data& key) {
+std::string Tezos::Signer::signJSON(const std::string& json, const Data& key) {
     auto input = Proto::SigningInput();
     google::protobuf::util::JsonStringToMessage(json, &input);
     input.set_private_key(key.data(), key.size());
@@ -40,12 +39,12 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     return hex(output.encoded());
 }
 
-Data Signer::signOperationList(const PrivateKey& privateKey, const OperationList& operationList) {
+Data Tezos::Signer::signOperationList(const PrivateKey& privateKey, const OperationList& operationList) {
     auto forged = operationList.forge(privateKey);
     return signData(privateKey, forged);
 }
 
-Data Signer::signData(const PrivateKey& privateKey, const Data& data) {
+Data Tezos::Signer::signData(const PrivateKey& privateKey, const Data& data) {
     Data watermarkedData = Data();
     watermarkedData.push_back(0x03);
     append(watermarkedData, data);

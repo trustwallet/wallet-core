@@ -16,9 +16,8 @@
 #include <string>
 
 using namespace TW;
-using namespace TW::Ontology;
 
-Address::Address(const PublicKey& publicKey) {
+Ontology::Address::Address(const PublicKey& publicKey) {
     std::vector<uint8_t> builder(publicKey.bytes);
     builder.insert(builder.begin(), PUSH_BYTE_33);
     builder.push_back(CHECK_SIG);
@@ -26,7 +25,7 @@ Address::Address(const PublicKey& publicKey) {
     std::copy(builderData.begin(), builderData.end(), data.begin());
 }
 
-Address::Address(const std::string& b58Address) {
+Ontology::Address::Address(const std::string& b58Address) {
     if (!Address::isValid(b58Address)) {
         throw std::runtime_error("Invalid base58 encode address.");
     }
@@ -35,23 +34,23 @@ Address::Address(const std::string& b58Address) {
     std::copy(addressWithVersion.begin() + 1, addressWithVersion.end(), data.begin());
 }
 
-Address::Address(const std::vector<uint8_t>& bytes) {
+Ontology::Address::Address(const std::vector<uint8_t>& bytes) {
     if (bytes.size() != size) {
         throw std::runtime_error("Invalid bytes data.");
     }
     std::copy(bytes.begin(), bytes.end(), data.begin());
 }
 
-Address::Address(uint8_t m, const std::vector<Data>& publicKeys) {
+Ontology::Address::Address(uint8_t m, const std::vector<Data>& publicKeys) {
     auto builderData = toScriptHash(ParamsBuilder::fromMultiPubkey(m, publicKeys));
     std::copy(builderData.begin(), builderData.end(), data.begin());
 }
 
-Data Address::toScriptHash(const Data& data) {
+Data Ontology::Address::toScriptHash(const Data& data) {
     return Hash::ripemd(Hash::sha256(data));
 }
 
-bool Address::isValid(const std::string& b58Address) noexcept {
+bool Ontology::Address::isValid(const std::string& b58Address) noexcept {
     if (b58Address.length() != 34) {
         return false;
     }
@@ -61,7 +60,7 @@ bool Address::isValid(const std::string& b58Address) noexcept {
     return len == size + 1;
 }
 
-std::string Address::string() const {
+std::string Ontology::Address::string() const {
     std::vector<uint8_t> encodeData(size + 1);
     encodeData[0] = version;
     std::copy(data.begin(), data.end(), encodeData.begin() + 1);

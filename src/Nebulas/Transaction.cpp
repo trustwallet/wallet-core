@@ -44,7 +44,7 @@ std::string htmlescape(const std::string& str) {
     return result;
 }
 
-Proto::Data* Transaction::newPayloadData(const std::string& payload){
+Nebulas::Proto::Data* Transaction::newPayloadData(const std::string& payload){
     auto* data = new Proto::Data();
     data->set_type(Transaction::TxPayloadBinaryType);
 

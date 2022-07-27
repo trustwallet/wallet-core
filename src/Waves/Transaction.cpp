@@ -11,31 +11,30 @@
 #include "../HexCoding.h"
 
 using namespace TW;
-using namespace TW::Waves;
 
 using json = nlohmann::json;
 
-const std::string Transaction::WAVES = "WAVES";
+const std::string Waves::Transaction::WAVES = "WAVES";
 
 Data serializeTransfer(int64_t amount, std::string asset, int64_t fee, std::string fee_asset, Address to, const Data& attachment, int64_t timestamp, const Data& pub_key) {
     auto data = Data();
     if (asset.empty()) {
-      asset = Transaction::WAVES;
+      asset = Waves::Transaction::WAVES;
     }
     if (fee_asset.empty()) {
-        fee_asset = Transaction::WAVES;
+        fee_asset = Waves::Transaction::WAVES;
     }
     data.resize(2);
-    data[0] = static_cast<byte>(TransactionType::transfer);
-    data[1] = static_cast<byte>(TransactionVersion::V2);
+    data[0] = static_cast<TW::byte>(TransactionType::transfer);
+    data[1] = static_cast<TW::byte>(TransactionVersion::V2);
     append(data, pub_key);
-    if (asset == Transaction::WAVES) {
+    if (asset == Waves::Transaction::WAVES) {
         data.push_back(static_cast<uint8_t>(0));
     } else {
         data.push_back(static_cast<uint8_t>(1));
         append(data, Base58::bitcoin.decode(asset));
     }
-    if (fee_asset == Transaction::WAVES) {
+    if (fee_asset == Waves::Transaction::WAVES) {
         data.push_back(static_cast<uint8_t>(0));
     } else {
         data.push_back(static_cast<uint8_t>(1));
@@ -53,8 +52,8 @@ Data serializeTransfer(int64_t amount, std::string asset, int64_t fee, std::stri
 Data serializeLease(int64_t amount, int64_t fee, Address to, int64_t timestamp, const Data& pub_key) {
     auto data = Data();
     data.resize(2);
-    data[0] = static_cast<byte>(TransactionType::lease);
-    data[1] = static_cast<byte>(TransactionVersion::V2);
+    data[0] = static_cast<TW::byte>(TransactionType::lease);
+    data[1] = static_cast<TW::byte>(TransactionVersion::V2);
     data.push_back(static_cast<uint8_t>(0));
     append(data, pub_key);
     append(data, Data(std::begin(to.bytes), std::end(to.bytes)));
@@ -68,8 +67,8 @@ Data serializeLease(int64_t amount, int64_t fee, Address to, int64_t timestamp, 
 Data serializeCancelLease(const Data& leaseId, int64_t fee, int64_t timestamp, const Data& pub_key) {
     auto data = Data();
     data.resize(2);
-    data[0] = static_cast<byte>(TransactionType::cancelLease);
-    data[1] = static_cast<byte>(TransactionVersion::V2);
+    data[0] = static_cast<TW::byte>(TransactionType::cancelLease);
+    data[1] = static_cast<TW::byte>(TransactionVersion::V2);
     data.push_back(static_cast<uint8_t>(87));
     append(data, pub_key);
     encode64BE(fee, data);
@@ -89,10 +88,10 @@ json jsonTransfer(const Data& signature, int64_t amount, const std::string& asse
     jsonTx["timestamp"] = timestamp;
     jsonTx["proofs"] = json::array({Base58::bitcoin.encode(signature)});
     jsonTx["recipient"] = Address(to).string();
-    if (asset != Transaction::WAVES) {
+    if (asset != Waves::Transaction::WAVES) {
         jsonTx["assetId"] = asset;
     }
-    if (fee_asset != Transaction::WAVES) {
+    if (fee_asset != Waves::Transaction::WAVES) {
         jsonTx["feeAssetId"] = fee_asset;
     }
     jsonTx["amount"] = amount;
@@ -131,7 +130,7 @@ json jsonCancelLease(const Data& signature, const Data& leaseId, int64_t fee, in
     return jsonTx;
 }
 
-Data Transaction::serializeToSign() const {
+Data Waves::Transaction::serializeToSign() const {
     if (pub_key.empty()) {
         throw std::invalid_argument("Public key can't be empty");
     }
@@ -162,7 +161,7 @@ Data Transaction::serializeToSign() const {
 
 
 
-json Transaction::buildJson(const Data& signature) const {
+json Waves::Transaction::buildJson(const Data& signature) const {
     if (input.has_transfer_message()) {
         auto message = input.transfer_message();
         auto attachment = Data(message.attachment().begin(), message.attachment().end());

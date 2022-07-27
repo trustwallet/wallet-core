@@ -11,9 +11,9 @@
 #include "../HexCoding.h"
 
 const std::string prefix = "ronin:";
-using namespace TW::Ronin;
+using namespace TW;
 
-bool Address::isValid(const std::string& string) {
+bool Ronin::Address::isValid(const std::string& string) {
     // check prefix
     if (string.compare(0, prefix.length(), prefix) == 0) {
         const auto suffix = string.substr(prefix.length());
@@ -27,7 +27,7 @@ bool Address::isValid(const std::string& string) {
     return false;
 }
 
-Address::Address(const std::string& string) {
+Ronin::Address::Address(const std::string& string) {
     // check prefix
     if (string.compare(0, prefix.length(), prefix) == 0) {
         const auto suffix = string.substr(prefix.length());
@@ -43,7 +43,7 @@ Address::Address(const std::string& string) {
 }
 
 // Normalized: with ronin prefix, checksummed hex address, no 0x prefix
-std::string Address::string() const {
+std::string Ronin::Address::string() const {
     std::string address = Ethereum::checksumed(*this);
     if (address.size() >= 2 && address.substr(0, 2) == "0x") { address = address.substr(2); } // skip 0x
     return prefix + address;

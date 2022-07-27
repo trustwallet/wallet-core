@@ -9,27 +9,27 @@
 #include "Address.h"
 #include "Signer.h"
 
-using namespace TW::NEO;
+//using namespace TW::NEO;
 using namespace TW;
 using namespace std;
 
-bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, [[maybe_unused]] const string& address, [[maybe_unused]] TW::byte p2pkh, [[maybe_unused]] TW::byte p2sh, [[maybe_unused]] const char* hrp) const {
+bool NEO::Entry::validateAddress([[maybe_unused]] TWCoinType coin, [[maybe_unused]] const string& address, [[maybe_unused]] TW::byte p2pkh, [[maybe_unused]] TW::byte p2sh, [[maybe_unused]] const char* hrp) const {
     return Address::isValid(address);
 }
 
-string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TW::byte p2pkh, [[maybe_unused]] const char* hrp) const {
+string NEO::Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TW::byte p2pkh, [[maybe_unused]] const char* hrp) const {
     return Address(publicKey).string();
 }
 
-Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
+Data NEO::Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
     const auto addr = Address(address);
     return {addr.bytes.begin(), addr.bytes.end()};
 }
 
-void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+void NEO::Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
-void Entry::plan([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+void NEO::Entry::plan([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     planTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }

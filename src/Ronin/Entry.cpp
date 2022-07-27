@@ -9,31 +9,30 @@
 #include "Address.h"
 #include "../Ethereum/Signer.h"
 
-using namespace TW::Ronin;
 using namespace TW;
 using namespace std;
 
-bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
+bool Ronin::Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
     return Address::isValid(address);
 }
 
-string Entry::normalizeAddress([[maybe_unused]] TWCoinType coin, const string& address) const {
+string Ronin::Entry::normalizeAddress([[maybe_unused]] TWCoinType coin, const string& address) const {
     return Address(address).string();
 }
 
-string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
+string Ronin::Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
     return Address(publicKey).string();
 }
 
-Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
+Data Ronin::Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
     const auto addr = Address(address);
     return {addr.bytes.begin(), addr.bytes.end()};
 }
 
-void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+void Ronin::Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Ethereum::Signer, Ethereum::Proto::SigningInput>(dataIn, dataOut);
 }
 
-string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json, const Data& key) const {
+string Ronin::Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json, const Data& key) const {
     return Ethereum::Signer::signJSON(json, key);
 }

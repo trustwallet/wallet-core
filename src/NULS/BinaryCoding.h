@@ -13,14 +13,13 @@
 #include "Address.h"
 
 using namespace TW;
-using namespace TW::NULS;
 
 static inline void serializerRemark(std::string& remark, Data& data) {
     encodeVarInt(remark.length(), data);
     std::copy(remark.begin(), remark.end(), std::back_inserter(data));
 }
 
-static inline void serializerInput(const Proto::TransactionCoinFrom& input, Data& data) {
+static inline void serializerInput(const NULS::Proto::TransactionCoinFrom& input, Data& data) {
     encodeVarInt(1, data);  //there is one coinFrom
     const auto& fromAddress = input.from_address();
     if (!NULS::Address::isValid(fromAddress)) {
@@ -38,7 +37,7 @@ static inline void serializerInput(const Proto::TransactionCoinFrom& input, Data
     data.push_back(static_cast<uint8_t>(input.locked()));
 }
 
-static inline void serializerOutput(const Proto::TransactionCoinTo& output, Data& data) {
+static inline void serializerOutput(const NULS::Proto::TransactionCoinTo& output, Data& data) {
     encodeVarInt(1, data); //there is one coinTo
 
     const auto& toAddress = output.to_address();

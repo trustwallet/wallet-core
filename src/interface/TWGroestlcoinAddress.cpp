@@ -11,7 +11,7 @@
 
 #include <cstring>
 
-using namespace TW::Groestlcoin;
+using namespace TW;
 
 bool TWGroestlcoinAddressEqual(struct TWGroestlcoinAddress *_Nonnull lhs, struct TWGroestlcoinAddress *_Nonnull rhs) {
     return lhs->impl.bytes == rhs->impl.bytes;
@@ -19,19 +19,19 @@ bool TWGroestlcoinAddressEqual(struct TWGroestlcoinAddress *_Nonnull lhs, struct
 
 bool TWGroestlcoinAddressIsValidString(TWString *_Nonnull string) {
     auto& s = *reinterpret_cast<const std::string*>(string);
-    return Address::isValid(s);
+    return Groestlcoin::Address::isValid(s);
 }
 
 struct TWGroestlcoinAddress *_Nullable TWGroestlcoinAddressCreateWithString(TWString *_Nonnull string) {
     auto& s = *reinterpret_cast<const std::string*>(string);
-    if (!Address::isValid(s)) {
+    if (!Groestlcoin::Address::isValid(s)) {
         return nullptr;
     }
-    return new TWGroestlcoinAddress{ Address(s) };
+    return new TWGroestlcoinAddress{ Groestlcoin::Address(s) };
 }
 
 struct TWGroestlcoinAddress *_Nonnull TWGroestlcoinAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, uint8_t prefix) {
-    return new TWGroestlcoinAddress{ Address(publicKey->impl, prefix) };
+    return new TWGroestlcoinAddress{ Groestlcoin::Address(publicKey->impl, prefix) };
 }
 
 void TWGroestlcoinAddressDelete(struct TWGroestlcoinAddress *_Nonnull address) {

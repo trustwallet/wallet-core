@@ -7,7 +7,6 @@
 #include "Transaction.h"
 
 using namespace TW;
-using namespace TW::Oasis;
 
 // encodeVaruint encodes a 256-bit number into a big endian encoding, omitting leading zeros.
 static Data encodeVaruint(const uint256_t& value) {
@@ -27,7 +26,7 @@ static Data encodeVaruint(const uint256_t& value) {
     return small;
 }
 
-Cbor::Encode Transaction::encodeMessage() const {
+Cbor::Encode Oasis::Transaction::encodeMessage() const {
 
     return Cbor::Encode::map({
         { Cbor::Encode::string("nonce"), Cbor::Encode::uint(nonce) },
@@ -45,7 +44,7 @@ Cbor::Encode Transaction::encodeMessage() const {
     });
 }
 
-Data Transaction::serialize(Data& signature, PublicKey& publicKey) const {
+Data Oasis::Transaction::serialize(Data& signature, PublicKey& publicKey) const {
     auto signedMessage = Cbor::Encode::map({
             { Cbor::Encode::string("untrusted_raw_value"), Cbor::Encode::bytes(encodeMessage().encoded()) },
             { Cbor::Encode::string("signature"), Cbor::Encode::map({

@@ -63,10 +63,10 @@ Data forgePublicKey(PublicKey publicKey) {
 Data forgeZarith(uint64_t input) {
     Data forged = Data();
     while (input >= 0x80) {
-        forged.push_back(static_cast<byte>((input & 0xff) | 0x80));
+        forged.push_back(static_cast<TW::byte>((input & 0xff) | 0x80));
         input >>= 7;
     }
-    forged.push_back(static_cast<byte>(input));
+    forged.push_back(static_cast<TW::byte>(input));
     return forged;
 }
 

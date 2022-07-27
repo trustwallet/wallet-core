@@ -16,14 +16,12 @@
 #include <cassert>
 #include <cmath>
 
-using namespace TW::Nimiq;
-
 static const char* BASE32_ALPHABET_NIMIQ = "0123456789ABCDEFGHJKLMNPQRSTUVXY";
 
 static int check_append(int, uint8_t);
 static inline int check_add(int, int);
 
-bool Address::isValid(const std::string& stringPadded) {
+bool Nimiq::Address::isValid(const std::string& stringPadded) {
     // Magic check
     if (stringPadded.substr(0, 2) != "NQ")
         return false;
@@ -63,7 +61,7 @@ bool Address::isValid(const std::string& stringPadded) {
     return true;
 }
 
-Address::Address(const std::string& stringPadded) {
+Nimiq::Address::Address(const std::string& stringPadded) {
     if (!isValid(stringPadded)) {
         throw std::invalid_argument("Invalid address data");
     }
@@ -85,20 +83,20 @@ Address::Address(const std::string& stringPadded) {
     std::copy(data.begin(), data.end(), bytes.data());
 }
 
-Address::Address(const std::vector<uint8_t>& data) {
+Nimiq::Address::Address(const std::vector<uint8_t>& data) {
     if (!isValid(data)) {
         throw std::invalid_argument("Invalid address data");
     }
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
-Address::Address(const PublicKey& publicKey) {
+Nimiq::Address::Address(const PublicKey& publicKey) {
     auto hash = std::array<uint8_t, 32>();
     blake2b(publicKey.bytes.data(), 32, hash.data(), hash.size());
     std::copy(hash.begin(), hash.begin() + Address::size, bytes.begin());
 }
 
-std::string Address::string() const {
+std::string Nimiq::Address::string() const {
     // Identifier code + blank checksum
     std::string string = "NQ00";
     // Checksum

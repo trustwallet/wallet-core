@@ -12,9 +12,8 @@
 #include "../PrivateKey.h"
 
 using namespace TW;
-using namespace TW::NULS;
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+NULS::Proto::SigningOutput NULS::Signer::sign(const NULS::Proto::SigningInput& input) noexcept {
     auto output = Proto::SigningOutput();
     try {
         auto signer = Signer(input);
@@ -25,8 +24,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return output;
 }
 
-Signer::Signer(const Proto::SigningInput& input) : input(input) {
-    Proto::TransactionCoinFrom coinFrom;
+NULS::Signer::Signer(const Proto::SigningInput& input) : input(input) {
+    NULS::Proto::TransactionCoinFrom coinFrom;
     coinFrom.set_from_address(input.from());
     coinFrom.set_assets_chainid(input.chain_id());
     coinFrom.set_assets_id(input.idassets_id());
@@ -51,7 +50,7 @@ Signer::Signer(const Proto::SigningInput& input) : input(input) {
     tx.set_tx_data("");
 }
 
-Data Signer::sign() const {
+Data NULS::Signer::sign() const {
     if (input.private_key().empty()) {
         throw std::invalid_argument("Must have private key string");
     }
@@ -115,13 +114,13 @@ Data Signer::sign() const {
     return dataRet;
 }
 
-uint32_t Signer::CalculatorTransactionSize(uint32_t inputCount, uint32_t outputCount, uint32_t remarkSize) const {
+uint32_t NULS::Signer::CalculatorTransactionSize(uint32_t inputCount, uint32_t outputCount, uint32_t remarkSize) const {
     uint32_t size = TRANSACTION_FIX_SIZE + TRANSACTION_SIG_MAX_SIZE + TRANSACTION_INPUT_SIZE * inputCount +
                         TRANSACTION_OUTPUT_SIZE * outputCount + remarkSize;
     return size;
 }
 
-uint64_t Signer::CalculatorTransactionFee(uint64_t size) const {
+uint64_t NULS::Signer::CalculatorTransactionFee(uint64_t size) const {
     uint64_t fee = (size / 1024) * MIN_PRICE_PRE_1024_BYTES;
     if (size % 1024 > 0) {
         fee += MIN_PRICE_PRE_1024_BYTES;

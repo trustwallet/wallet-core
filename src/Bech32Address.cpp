@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Bech32Address.h"
-#include "Bech32.h"
 #include "Data.h"
 #include <TrezorCrypto/ecdsa.h>
 

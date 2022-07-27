@@ -13,12 +13,11 @@
 #include <stdexcept>
 
 using namespace TW;
-using namespace TW::Decred;
 
 static const auto keyhashSize = Hash::ripemdSize;
 static const auto addressDataSize = keyhashSize + 2;
 
-bool Address::isValid(const std::string& string) noexcept {
+bool Decred::Address::isValid(const std::string& string) noexcept {
     const auto data = Base58::bitcoin.decodeCheck(string, Hash::HasherBlake256d);
     if (data.size() != addressDataSize) {
         return false;
@@ -31,7 +30,7 @@ bool Address::isValid(const std::string& string) noexcept {
             data[1] == TW::p2shPrefix(TWCoinTypeDecred));
 }
 
-Address::Address(const std::string& string) {
+Decred::Address::Address(const std::string& string) {
     const auto data = Base58::bitcoin.decodeCheck(string, Hash::HasherBlake256d);
     if (data.size() != addressDataSize) {
         throw std::invalid_argument("Invalid address string");
@@ -40,7 +39,7 @@ Address::Address(const std::string& string) {
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
-Address::Address(const PublicKey& publicKey) {
+Decred::Address::Address(const PublicKey& publicKey) {
     if (publicKey.type != TWPublicKeyTypeSECP256k1) {
         throw std::invalid_argument("Invalid publid key type");
     }
@@ -50,6 +49,6 @@ Address::Address(const PublicKey& publicKey) {
     bytes[1] = TW::p2pkhPrefix(TWCoinTypeDecred);
 }
 
-std::string Address::string() const {
+std::string Decred::Address::string() const {
     return Base58::bitcoin.encodeCheck(bytes, Hash::HasherBlake256d);
 }

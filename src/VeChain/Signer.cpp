@@ -9,9 +9,8 @@
 #include "../Hash.h"
 
 using namespace TW;
-using namespace TW::VeChain;
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+VeChain::Proto::SigningOutput VeChain::Signer::sign(const Proto::SigningInput& input) noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto transaction = Transaction();
     transaction.chainTag = static_cast<uint8_t>(input.chain_tag());
@@ -35,7 +34,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return protoOutput;
 }
 
-Data Signer::sign(const PrivateKey& privateKey, Transaction& transaction) noexcept {
+Data VeChain::Signer::sign(const PrivateKey& privateKey, Transaction& transaction) noexcept {
     auto encoded = transaction.encode();
     auto hash = Hash::blake2b(encoded, 32);
     auto signature = privateKey.sign(hash, TWCurveSECP256k1);

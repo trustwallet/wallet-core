@@ -11,9 +11,8 @@
 #include <boost/multiprecision/cpp_int.hpp>
 
 using namespace TW;
-using namespace TW::Aion;
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Aion::Proto::SigningOutput Aion::Signer::sign(const Proto::SigningInput& input) noexcept {
     using boost::multiprecision::uint128_t;
 
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
@@ -34,7 +33,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return output;
 }
 
-void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) noexcept {
+void Aion::Signer::sign(const PrivateKey& privateKey, Transaction& transaction) noexcept {
     auto encoded = transaction.encode();
     auto hashData = Hash::blake2b(encoded, 32);
     auto hashSignature = privateKey.sign(hashData, TWCurveED25519);

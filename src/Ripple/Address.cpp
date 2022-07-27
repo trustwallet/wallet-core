@@ -8,9 +8,9 @@
 #include "../Base58.h"
 #include <TrezorCrypto/ecdsa.h>
 
-using namespace TW::Ripple;
+using namespace TW;
 
-bool Address::isValid(const std::string& string) {
+bool Ripple::Address::isValid(const std::string& string) {
     const auto decoded = Base58::ripple.decodeCheck(string);
     if (decoded.size() != Address::size) {
         return false;
@@ -18,7 +18,7 @@ bool Address::isValid(const std::string& string) {
     return true;
 }
 
-Address::Address(const std::string& string) {
+Ripple::Address::Address(const std::string& string) {
     const auto decoded = Base58::ripple.decodeCheck(string);
     if (decoded.size() != Address::size) {
         throw std::invalid_argument("Invalid address string");
@@ -26,12 +26,12 @@ Address::Address(const std::string& string) {
     std::copy(decoded.begin(), decoded.end(), bytes.begin());
 }
 
-Address::Address(const PublicKey& publicKey) {
+Ripple::Address::Address(const PublicKey& publicKey) {
     /// see type prefix: https://developers.ripple.com/base58-encodings.html
     bytes[0] = 0x00;
     ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.data() + 1);
 }
 
-std::string Address::string() const {
+std::string Ripple::Address::string() const {
     return Base58::ripple.encodeCheck(bytes);
 }

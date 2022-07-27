@@ -4,8 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Aeternity/Address.cpp"
-#include "Aeternity/Transaction.cpp"
+#include "Aeternity/Address.h"
+#include "Aeternity/Transaction.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "../interface/TWTestUtilities.h"
@@ -23,9 +23,9 @@ TEST(AeternityTransaction, EncodeRlp) {
     uint64_t ttl = 82757;
     uint64_t nonce = 49;
 
-    auto tx = Transaction(sender_id, recipient_id, amount, fee, payload, ttl, nonce);
+    auto tx = TW::Aeternity::Transaction(sender_id, recipient_id, amount, fee, payload, ttl, nonce);
     auto encodedTx = tx.encode();
-    auto encodedTxHex = hex(encodedTx);
+    auto encodedTxHex = TW::hex(encodedTx);
 
     ASSERT_EQ(encodedTxHex, "f85f0c01a101cea7ade470c9f99d9d4e400880a86f1d49bb444b62f11a9ebb64bbcfeb73fef3a1011f13a3b08bf001400662a68b69d875f7803cec4c08647f6ed5d84c7897bd50a30a8612309ce5400083014345318b48656c6c6f20576f726c64");
 }
@@ -39,9 +39,9 @@ TEST(AeternityTransaction, EncodeRlpWithZeroAmount) {
     uint64_t ttl = 82757;
     uint64_t nonce = 49;
 
-    auto tx = Transaction(sender_id, recipient_id, amount, fee, payload, ttl, nonce);
+    auto tx = TW::Aeternity::Transaction(sender_id, recipient_id, amount, fee, payload, ttl, nonce);
     auto encodedTx = tx.encode();
-    auto encodedTxHex = hex(encodedTx);
+    auto encodedTxHex = TW::hex(encodedTx);
 
     ASSERT_EQ(encodedTxHex, "f85f0c01a101cea7ade470c9f99d9d4e400880a86f1d49bb444b62f11a9ebb64bbcfeb73fef3a1011f13a3b08bf001400662a68b69d875f7803cec4c08647f6ed5d84c7897bd50a3008612309ce5400083014345318b48656c6c6f20576f726c64");
 }
@@ -55,9 +55,9 @@ TEST(AeternityTransaction, EncodeRlpWithZeroTtl) {
     uint64_t ttl = 0;
     uint64_t nonce = 49;
 
-    auto tx = Transaction(sender_id, recipient_id, amount, fee, payload, ttl, nonce);
+    auto tx = TW::Aeternity::Transaction(sender_id, recipient_id, amount, fee, payload, ttl, nonce);
     auto encodedTx = tx.encode();
-    auto encodedTxHex = hex(encodedTx);
+    auto encodedTxHex = TW::hex(encodedTx);
 
     ASSERT_EQ(encodedTxHex, "f85c0c01a101cea7ade470c9f99d9d4e400880a86f1d49bb444b62f11a9ebb64bbcfeb73fef3a1011f13a3b08bf001400662a68b69d875f7803cec4c08647f6ed5d84c7897bd50a30a8612309ce5400000318b48656c6c6f20576f726c64");
 }

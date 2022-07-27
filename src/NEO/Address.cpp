@@ -13,14 +13,14 @@
 #include "Address.h"
 
 using namespace TW;
-using namespace TW::NEO;
+//using namespace TW::NEO;
 
-bool Address::isValid(const std::string& string) {
+bool NEO::Address::isValid(const std::string& string) {
     const auto decoded = Base58::bitcoin.decodeCheck(string);
     return !(decoded.size() != Address::size || decoded[0] != version);
 }
 
-Address::Address() {
+NEO::Address::Address() {
     Data keyHash;
     for (auto i = 0ul; i < Address::size; i++) {
         keyHash.push_back(0);
@@ -28,7 +28,7 @@ Address::Address() {
     std::copy(keyHash.data(), keyHash.data() + Address::size, bytes.begin());
 }
 
-Address::Address(const PublicKey& publicKey) {
+NEO::Address::Address(const PublicKey& publicKey) {
     auto publicKeyData = publicKey.bytes;
 
     auto pkdata = Data(publicKeyData.begin(), publicKeyData.end());
@@ -45,16 +45,16 @@ Address::Address(const PublicKey& publicKey) {
     std::copy(keyHash.data(), keyHash.data() + Address::size, bytes.begin());
 }
 
-Address::Address(uint8_t m, const std::vector<Data>& publicKeys) {
+NEO::Address::Address(uint8_t m, const std::vector<Data>& publicKeys) {
     auto builderData = toScriptHash(Ontology::ParamsBuilder::fromMultiPubkey(m, publicKeys));
     std::copy(builderData.begin(), builderData.end(), bytes.begin());
 }
 
-Data Address::toScriptHash(const Data& data) const {
+Data NEO::Address::toScriptHash(const Data& data) const {
     return Hash::ripemd(Hash::sha256(data));
 }
 
-Data Address::toScriptHash() const {
+Data NEO::Address::toScriptHash() const {
     byte buf[Hash::ripemdSize];
     Data data(buf, buf + Hash::ripemdSize);
     std::copy(bytes.begin() + 1, bytes.begin() + Hash::ripemdSize + 1, data.begin());

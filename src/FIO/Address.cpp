@@ -13,14 +13,13 @@
 #include <stdexcept>
 
 using namespace TW;
-using namespace TW::FIO;
 
-bool Address::isValid(const std::string& string) {
+bool FIO::Address::isValid(const std::string& string) {
     return decodeKeyData(string).has_value();
 }
 
 /// Determines whether the given byte vector is a valid keyBuffer
-bool Address::isValid(const Data& bytes) {
+bool FIO::Address::isValid(const Data& bytes) {
     if (bytes.size() != size) {
         return false;
     }
@@ -34,7 +33,7 @@ bool Address::isValid(const Data& bytes) {
 }
 
 /// Creates a checksum of PublicKeyDataSize bytes at the buffer
-uint32_t Address::createChecksum(const Data& bytes) {
+uint32_t FIO::Address::createChecksum(const Data& bytes) {
     // create checksum and compare
     uint8_t hash[RIPEMD160_DIGEST_LENGTH];
     RIPEMD160_CTX ctx;
@@ -50,7 +49,7 @@ uint32_t Address::createChecksum(const Data& bytes) {
 }
 
 /// Decode and verifies the key data from a base58 string.
-std::optional<Data> Address::decodeKeyData(const std::string& string) {
+std::optional<Data> FIO::Address::decodeKeyData(const std::string& string) {
     size_t prefixSize = prefix().size();
     if (string.substr(0, prefixSize) != prefix()) {
         return {};
@@ -69,7 +68,7 @@ std::optional<Data> Address::decodeKeyData(const std::string& string) {
 }
 
 /// Initializes a FIO address from a string representation.
-Address::Address(const std::string& string) {
+FIO::Address::Address(const std::string& string) {
     auto data = Address::decodeKeyData(string);
     if (!data.has_value()) {
         throw std::invalid_argument("Invalid address string!");
@@ -78,7 +77,7 @@ Address::Address(const std::string& string) {
 }
 
 /// Initializes a FIO address from a public key.
-Address::Address(const PublicKey& publicKey) {
+FIO::Address::Address(const PublicKey& publicKey) {
     // copy the raw, compressed key data
     Data data = publicKey.compressed().bytes;
 
@@ -92,11 +91,11 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 /// Returns a string representation of the FIO address.
-std::string Address::string() const {
+std::string FIO::Address::string() const {
     return prefix() + Base58::bitcoin.encode(bytes);
 }
 
-PublicKey Address::publicKey() const {
+PublicKey FIO::Address::publicKey() const {
     assert(bytes.size() >= PublicKey::secp256k1Size);
     const Data keyData = TW::data(bytes.data(), PublicKey::secp256k1Size);
     return PublicKey(keyData, TWPublicKeyTypeSECP256k1);

@@ -12,10 +12,8 @@
 #define TRANSFER_METHOD "staking.Transfer"
 
 using namespace TW;
-using namespace TW::Oasis;
 
-
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Oasis::Proto::SigningOutput Oasis::Signer::sign(const Proto::SigningInput& input) noexcept {
     auto output = Proto::SigningOutput();
     auto signer = Signer(input);
     auto encoded = signer.build();
@@ -23,7 +21,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return output;
 }
 
-Data Signer::build() const {
+Data Oasis::Signer::build() const {
     // Create empty address var and check if value we want to load is valid
     Address address(input.transfer().to());
 
@@ -58,7 +56,7 @@ Data Signer::build() const {
     return encoded;
 }
 
-Data Signer::sign(Transaction& tx) const {
+Data Oasis::Signer::sign(Transaction& tx) const {
     auto privateKey = PrivateKey(input.private_key());
 
     // The use of this context thing is explained here --> https://docs.oasis.dev/oasis-core/common-functionality/crypto#domain-separation

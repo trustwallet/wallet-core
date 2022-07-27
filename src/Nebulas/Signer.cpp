@@ -9,9 +9,8 @@
 #include "../HexCoding.h"
 
 using namespace TW;
-using namespace TW::Nebulas;
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Nebulas::Proto::SigningOutput Nebulas::Signer::sign(const Proto::SigningInput& input) noexcept {
     auto signer = Signer(load(input.chain_id()));
 
     auto tx = Transaction(Address(input.from_address()),
@@ -34,7 +33,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return output;
 }
 
-void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept {
+void Nebulas::Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept {
     transaction.hash = this->hash(transaction);
     transaction.chainID = chainID;
     transaction.algorithm = 1;
@@ -42,7 +41,7 @@ void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const 
     transaction.serializeToRaw();
 }
 
-Data Signer::hash(const Transaction &transaction) const noexcept {
+Data Nebulas::Signer::hash(const Transaction &transaction) const noexcept {
     auto encoded = Data();
     auto payload = Data();
     auto* data = Transaction::newPayloadData(transaction.payload);

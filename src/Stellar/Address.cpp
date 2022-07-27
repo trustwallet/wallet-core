@@ -15,9 +15,9 @@
 #include <array>
 #include <cassert>
 
-using namespace TW::Stellar;
+using namespace TW;
 
-bool Address::isValid(const std::string& string) {
+bool Stellar::Address::isValid(const std::string& string) {
     bool valid = false;
 
     if (string.length() != size) {
@@ -44,7 +44,7 @@ bool Address::isValid(const std::string& string) {
     return valid;
 }
 
-Address::Address(const std::string& string) {
+Stellar::Address::Address(const std::string& string) {
     // Ensure address is valid
     if (!isValid(string)) {
         throw std::invalid_argument("Invalid address data");
@@ -56,7 +56,7 @@ Address::Address(const std::string& string) {
     memzero(decoded.data(), decoded.size());
 }
 
-Address::Address(const PublicKey& publicKey) {
+Stellar::Address::Address(const PublicKey& publicKey) {
     if (publicKey.type != TWPublicKeyTypeED25519) {
         throw std::invalid_argument("Invalid public key type");
     }
@@ -64,7 +64,7 @@ Address::Address(const PublicKey& publicKey) {
     std::copy(publicKey.bytes.begin(), publicKey.bytes.end(), bytes.data());
 }
 
-std::string Address::string() const {
+std::string Stellar::Address::string() const {
     // version + key bytes + checksum
     constexpr uint8_t keylen = 1 + 32 + 2;
     std::array<uint8_t, keylen> bytes_full;

@@ -13,12 +13,11 @@
 #include <TrezorCrypto/sha3.h>
 
 using namespace TW;
-using namespace TW::Icon;
 
 static const std::string addressPrefix = "hx";
 static const std::string contractPrefix = "cx";
 
-bool Address::isValid(const std::string& string) {
+bool Icon::Address::isValid(const std::string& string) {
     if (string.size() != Address::size * 2 + 2) {
         return false;
     }
@@ -29,7 +28,7 @@ bool Address::isValid(const std::string& string) {
     return true;
 }
 
-Address::Address(const std::string& string) {
+Icon::Address::Address(const std::string& string) {
     if (!isValid(string)) {
         throw std::invalid_argument("Invalid address data");
     }
@@ -46,13 +45,13 @@ Address::Address(const std::string& string) {
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
-Address::Address(const PublicKey& publicKey, enum AddressType type) : type(type) {
+Icon::Address::Address(const PublicKey& publicKey, enum AddressType type) : type(type) {
     auto hash = std::array<uint8_t, Hash::sha256Size>();
     sha3_256(publicKey.bytes.data() + 1, publicKey.bytes.size() - 1, hash.data());
     std::copy(hash.end() - Address::size, hash.end(), bytes.begin());
 }
 
-std::string Address::string() const {
+std::string Icon::Address::string() const {
     switch (type) {
     case TypeAddress:
         return addressPrefix + hex(bytes);

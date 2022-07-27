@@ -12,12 +12,11 @@
 #include "../HexCoding.h"
 
 using namespace TW;
-using namespace TW::NULS;
 
-const std::string Address::prefix("NULSd");
-const std::array<byte, 2> Address::mainnetId = {0x01, 0x00};
+const std::string NULS::Address::prefix("NULSd");
+const std::array<TW::byte, 2> NULS::Address::mainnetId = {0x01, 0x00};
 
-bool Address::isValid(const std::string& string) {
+bool NULS::Address::isValid(const std::string& string) {
     if (string.empty()) {
         return false;
     }
@@ -40,7 +39,7 @@ bool Address::isValid(const std::string& string) {
     return decoded[23] == checkSum;
 }
 
-Address::Address(const TW::PublicKey& publicKey) {
+NULS::Address::Address(const TW::PublicKey& publicKey) {
     // Main-Net chainID
     bytes[0] = mainnetId[0];
     bytes[1] = mainnetId[1];
@@ -50,7 +49,7 @@ Address::Address(const TW::PublicKey& publicKey) {
     bytes[23] = checksum(bytes);
 }
 
-Address::Address(const std::string& string) {
+NULS::Address::Address(const std::string& string) {
     if (false == isValid(string)){
         throw std::invalid_argument("Invalid address string");
     }
@@ -59,19 +58,19 @@ Address::Address(const std::string& string) {
     std::copy(decoded.begin(), decoded.end(), bytes.begin());
 }
 
-uint16_t Address::chainID() const {
+uint16_t NULS::Address::chainID() const {
     return decode16LE(bytes.data());
 }
 
-uint8_t Address::type() const {
+uint8_t NULS::Address::type() const {
     return bytes[2];
 }
 
-std::string Address::string() const {
+std::string NULS::Address::string() const {
     return prefix + Base58::bitcoin.encode(bytes.begin(), bytes.end());
 }
 
-uint8_t Address::checksum(std::array<byte, size>& byteArray) const{
+uint8_t NULS::Address::checksum(std::array<byte, size>& byteArray) const{
     uint8_t checkSum = 0x00;
     for (int i = 0; i < 23; ++i) {
         checkSum ^= byteArray[i];

@@ -11,7 +11,7 @@
 
 #include <cassert>
 
-using namespace TW::Groestlcoin;
+namespace TW::Groestlcoin {
 
 bool Address::isValid(const std::string& string) {
     const auto decoded = Base58::bitcoin.decodeCheck(string, Hash::HasherGroestl512d);
@@ -60,3 +60,5 @@ Address::Address(const PublicKey& publicKey, uint8_t prefix) {
 std::string Address::string() const {
     return Base58::bitcoin.encodeCheck(bytes, Hash::HasherGroestl512d);
 }
+
+} // namespace TW::Groestlcoin

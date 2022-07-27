@@ -9,9 +9,8 @@
 #include "../Hash.h"
 
 using namespace TW;
-using namespace TW::Waves;
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Waves::Proto::SigningOutput Waves::Signer::sign(const Proto::SigningInput& input) noexcept {
     auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeCURVE25519);
     auto transaction = Transaction(input, publicKey.bytes);
@@ -24,7 +23,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return output;
 }
 
-Data Signer::sign(const PrivateKey &privateKey, Transaction &transaction) noexcept {
+Data Waves::Signer::sign(const PrivateKey &privateKey, Transaction &transaction) noexcept {
     try {
         auto bytesToSign = transaction.serializeToSign();
         auto signature = privateKey.sign(bytesToSign, TWCurveCurve25519);

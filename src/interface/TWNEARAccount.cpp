@@ -13,7 +13,6 @@
 #include <string>
 
 using namespace TW;
-using namespace TW::NEAR;
 
 struct TWNEARAccount {
     std::string description;
@@ -21,11 +20,11 @@ struct TWNEARAccount {
 
 struct TWNEARAccount *_Nullable TWNEARAccountCreateWithString(TWString *_Nonnull string) {
     const auto& account = *reinterpret_cast<const std::string*>(string);
-    if (Address::isValid(account)) {
-        const auto addr = Address(account);
+    if (NEAR::Address::isValid(account)) {
+        const auto addr = NEAR::Address(account);
         return new TWNEARAccount{addr.string()};
     }
-    if (Account::isValid(account)) {
+    if (NEAR::Account::isValid(account)) {
         return new TWNEARAccount{account};
     }
     return nullptr;

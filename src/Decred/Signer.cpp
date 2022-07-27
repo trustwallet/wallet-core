@@ -18,14 +18,13 @@
 #include "Bitcoin/OpCodes.h"
 
 using namespace TW;
-using namespace TW::Decred;
 
-Bitcoin::Proto::TransactionPlan Signer::plan(const Bitcoin::Proto::SigningInput& input) noexcept {
+Bitcoin::Proto::TransactionPlan Decred::Signer::plan(const Bitcoin::Proto::SigningInput& input) noexcept {
     auto signer = Signer(std::move(input));
     return signer.txPlan.proto();
 }
 
-Proto::SigningOutput Signer::sign(const Bitcoin::Proto::SigningInput& input) noexcept {
+Decred::Proto::SigningOutput Decred::Signer::sign(const Bitcoin::Proto::SigningInput& input) noexcept {
     auto signer = Signer(std::move(input));
     auto result = signer.sign();
     auto output = Proto::SigningOutput();
@@ -46,7 +45,7 @@ Proto::SigningOutput Signer::sign(const Bitcoin::Proto::SigningInput& input) noe
     return output;
 }
 
-Result<Transaction, Common::Proto::SigningError> Signer::sign() {
+Result<Decred::Transaction, Common::Proto::SigningError> Decred::Signer::sign() {
     if (txPlan.utxos.size() == 0 || transaction.inputs.size() == 0) {
         return Result<Transaction, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_input_utxos);
     }
@@ -74,7 +73,7 @@ Result<Transaction, Common::Proto::SigningError> Signer::sign() {
     return Result<Transaction, Common::Proto::SigningError>::success(std::move(tx));
 }
 
-Result<Bitcoin::Script, Common::Proto::SigningError> Signer::sign(Bitcoin::Script script, size_t index) {
+Result<Bitcoin::Script, Common::Proto::SigningError> Decred::Signer::sign(Bitcoin::Script script, size_t index) {
     assert(index < transaction.inputs.size());
 
     Bitcoin::Script redeemScript;
@@ -103,7 +102,7 @@ Result<Bitcoin::Script, Common::Proto::SigningError> Signer::sign(Bitcoin::Scrip
     return Result<Bitcoin::Script, Common::Proto::SigningError>::success(Bitcoin::Script(Bitcoin::SignatureBuilder<Bitcoin::Transaction>::pushAll(results)));
 }
 
-Result<std::vector<Data>, Common::Proto::SigningError> Signer::signStep(Bitcoin::Script script, size_t index) {
+Result<std::vector<Data>, Common::Proto::SigningError> Decred::Signer::signStep(Bitcoin::Script script, size_t index) {
     Transaction transactionToSign(transaction);
     transactionToSign.inputs = signedInputs;
     transactionToSign.outputs = transaction.outputs;
@@ -173,7 +172,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> Signer::signStep(Bitcoin:
     }
 }
 
-Data Signer::createSignature(const Transaction& transaction, const Bitcoin::Script& script,
+Data Decred::Signer::createSignature(const Transaction& transaction, const Bitcoin::Script& script,
                              const Data& key, size_t index) {
     auto sighash = transaction.computeSignatureHash(script, index, static_cast<TWBitcoinSigHashType>(input.hash_type()));
     auto pk = PrivateKey(key);
@@ -186,7 +185,7 @@ Data Signer::createSignature(const Transaction& transaction, const Bitcoin::Scri
     return signature;
 }
 
-Data Signer::keyForPublicKeyHash(const Data& hash) const {
+Data Decred::Signer::keyForPublicKeyHash(const Data& hash) const {
     for (auto& key : input.private_key()) {
         auto publicKey = PrivateKey(key).getPublicKey(TWPublicKeyTypeSECP256k1);
         auto keyHash = TW::Hash::ripemd(TW::Hash::blake256(publicKey.bytes));
@@ -197,7 +196,7 @@ Data Signer::keyForPublicKeyHash(const Data& hash) const {
     return {};
 }
 
-Data Signer::scriptForScriptHash(const Data& hash) const {
+Data Decred::Signer::scriptForScriptHash(const Data& hash) const {
     auto hashString = hex(hash.begin(), hash.end());
     auto it = input.scripts().find(hashString);
     if (it == input.scripts().end()) {

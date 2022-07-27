@@ -9,29 +9,28 @@
 #include "Address.h"
 #include "Signer.h"
 
-using namespace TW::NEAR;
 using namespace TW;
 using namespace std;
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
-bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
+bool NEAR::Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
     return Address::isValid(address);
 }
 
-string Entry::normalizeAddress([[maybe_unused]] TWCoinType coin, const string& address) const {
+string NEAR::Entry::normalizeAddress([[maybe_unused]] TWCoinType coin, const string& address) const {
     return Address(address).string();
 }
 
-string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
+string NEAR::Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
     return Address(publicKey).string();
 }
 
-Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
+Data NEAR::Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
     const auto addr = Address(address);
     return {addr.bytes.begin(), addr.bytes.end()};
 }
 
-void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+void NEAR::Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }

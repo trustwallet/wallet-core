@@ -9,10 +9,9 @@
 #include "../Ethereum/RLP.h"
 
 using namespace TW;
-using namespace TW::Aion;
 using boost::multiprecision::uint128_t;
 
-Data Transaction::encode() const noexcept {
+Data Aion::Transaction::encode() const noexcept {
     auto encoded = Data();
     append(encoded, Ethereum::RLP::encode(nonce));
     append(encoded, Ethereum::RLP::encode(to.bytes));

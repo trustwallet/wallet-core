@@ -10,8 +10,7 @@
 #include <Coin.h>
 #include <HexCoding.h>
 
-using namespace TW::Aeternity;
-
+namespace TW::Aeternity {
 /// Determines whether a string makes a valid address.
 bool Address::isValid(const std::string& string) {
     if (string.empty()) {
@@ -25,7 +24,7 @@ bool Address::isValid(const std::string& string) {
 }
 
 /// Initializes an address from a public key.
-Address::Address(const PublicKey &publicKey) {
+Address::Address(const PublicKey& publicKey) {
     if (publicKey.type != TWPublicKeyTypeED25519) {
         throw std::invalid_argument("Invalid public key type");
     }
@@ -56,3 +55,5 @@ bool Address::checkPayload(const std::string& payload) {
     unsigned long base58 = Base58::bitcoin.decodeCheck(payload).size();
     return base58 == size;
 }
+
+} // namespace TW::Aeternity
