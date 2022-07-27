@@ -26,7 +26,7 @@ static const string mnemonic1 = "edge defense waste choose enrich upon flee junk
 
 int countLines(const string& text) {
     int lines = 0;
-    for(int i = 0; i < text.length(); ++i)
+    for(auto i = 0ul; i < text.length(); ++i)
     {
         if (text[i] == '\n') ++lines;
     }

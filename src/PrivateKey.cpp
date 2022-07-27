@@ -256,7 +256,7 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve, int (*canonicalChecker)
     return result;
 }
 
-Data PrivateKey::signAsDER(const Data& digest, TWCurve curve) const {
+Data PrivateKey::signAsDER(const Data& digest) const {
     Data sig(64);
     bool success =
         ecdsa_sign_digest(&secp256k1, key().data(), digest.data(), sig.data(), nullptr, nullptr) == 0;

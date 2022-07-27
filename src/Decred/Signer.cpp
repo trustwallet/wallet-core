@@ -54,7 +54,7 @@ Result<Transaction, Common::Proto::SigningError> Signer::sign() {
     signedInputs = transaction.inputs;
 
     const auto hashSingle = Bitcoin::hashTypeIsSingle(static_cast<enum TWBitcoinSigHashType>(input.hash_type()));
-    for (auto i = 0; i < txPlan.utxos.size(); i += 1) {
+    for (auto i = 0ul; i < txPlan.utxos.size(); i += 1) {
         auto& utxo = txPlan.utxos[i];
 
         // Only sign TWBitcoinSigHashTypeSingle if there's a corresponding output
@@ -149,7 +149,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> Signer::signStep(Bitcoin:
     } else if (script.matchMultisig(keys, required)) {
         auto results = std::vector<Data>{{}};
         for (auto& pubKey : keys) {
-            if (results.size() >= required + 1) {
+            if (results.size() >= required + 1ul) {
                 break;
             }
             auto keyHash = TW::Hash::ripemd(TW::Hash::blake256(pubKey));
@@ -177,7 +177,7 @@ Data Signer::createSignature(const Transaction& transaction, const Bitcoin::Scri
                              const Data& key, size_t index) {
     auto sighash = transaction.computeSignatureHash(script, index, static_cast<TWBitcoinSigHashType>(input.hash_type()));
     auto pk = PrivateKey(key);
-    auto signature = pk.signAsDER(Data(begin(sighash), end(sighash)), TWCurveSECP256k1);
+    auto signature = pk.signAsDER(Data(begin(sighash), end(sighash)));
     if (script.empty()) {
         return {};
     }

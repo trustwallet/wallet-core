@@ -14,34 +14,34 @@ using namespace TW;
 
 TEST(DataTests, fromVector) {
     const Data data = {1, 2, 3};
-    EXPECT_EQ(data.size(), 3);
+    EXPECT_EQ(data.size(), 3ul);
     EXPECT_EQ(data[1], 2);
     EXPECT_EQ(hex(data), "010203");
 }
 
 TEST(DataTests, fromHex) {
     const Data data = parse_hex("01020304");
-    EXPECT_EQ(data.size(), 4);
+    EXPECT_EQ(data.size(), 4ul);
     EXPECT_EQ(hex(data), "01020304");
 }
 
 TEST(DataTests, fromString) {
     const Data data = TW::data(std::string("ABC"));
-    EXPECT_EQ(data.size(), 3);
+    EXPECT_EQ(data.size(), 3ul);
     EXPECT_EQ(hex(data), "414243");
 }
 
 TEST(DataTests, fromBytes) {
     const std::vector<TW::byte> vec = {1, 2, 3};
     const Data data = TW::data(vec.data(), vec.size());
-    EXPECT_EQ(data.size(), 3);
+    EXPECT_EQ(data.size(), 3ul);
     EXPECT_EQ(hex(data), "010203");
 }
 
 TEST(DataTests, padLeft) {
     Data data = parse_hex("01020304");
     pad_left(data, 10);
-    EXPECT_EQ(data.size(), 10);
+    EXPECT_EQ(data.size(), 10ul);
     EXPECT_EQ(hex(data), "00000000000001020304");
 }
 
@@ -49,20 +49,20 @@ TEST(DataTests, append) {
     Data data1 = parse_hex("01020304");
     const Data data2 = parse_hex("aeaf");
     append(data1, data2);
-    EXPECT_EQ(data1.size(), 6);
+    EXPECT_EQ(data1.size(), 6ul);
     EXPECT_EQ(hex(data1), "01020304aeaf");
 }
 
 TEST(DataTests, appendByte) {
     Data data1 = parse_hex("01020304");
     append(data1, 5);
-    EXPECT_EQ(data1.size(), 5);
+    EXPECT_EQ(data1.size(), 5ul);
     EXPECT_EQ(hex(data1), "0102030405");
 }
 
 TEST(DataTests, subData) {
     const Data data = parse_hex("0102030405060708090a");
-    EXPECT_EQ(data.size(), 10);
+    EXPECT_EQ(data.size(), 10ul);
 
     EXPECT_EQ(hex(subData(data, 2, 3)), "030405");
     EXPECT_EQ(hex(subData(data, 0, 10)), "0102030405060708090a");

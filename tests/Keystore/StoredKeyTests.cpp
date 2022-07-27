@@ -36,7 +36,7 @@ TEST(StoredKey, CreateWithMnemonic) {
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
     const Data& mnemo2Data = key.payload.decrypt(password);
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));
-    EXPECT_EQ(key.accounts.size(), 0);
+    EXPECT_EQ(key.accounts.size(), 0ul);
     EXPECT_EQ(key.wallet(password).getMnemonic(), string(mnemonic));
 
     const auto json = key.json();
@@ -62,7 +62,7 @@ TEST(StoredKey, CreateWithMnemonicRandom) {
     const Data& mnemo2Data = key.payload.decrypt(password);
     EXPECT_TRUE(mnemo2Data.size() >= 36);
     EXPECT_TRUE(Mnemonic::isValid(string(mnemo2Data.begin(), mnemo2Data.end())));
-    EXPECT_EQ(key.accounts.size(), 0);
+    EXPECT_EQ(key.accounts.size(), 0ul);
 }
 
 TEST(StoredKey, CreateWithMnemonicAddDefaultAddress) {
@@ -72,7 +72,7 @@ TEST(StoredKey, CreateWithMnemonicAddDefaultAddress) {
     const Data& mnemo2Data = key.payload.decrypt(password);
 
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));
-    EXPECT_EQ(key.accounts.size(), 1);
+    EXPECT_EQ(key.accounts.size(), 1ul);
     EXPECT_EQ(key.accounts[0].coin, coinTypeBc);
     EXPECT_EQ(key.accounts[0].address, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
     EXPECT_EQ(key.accounts[0].publicKey, "02df6fc590ab3101bbe0bb5765cbaeab9b5dcfe09ac9315d707047cbd13bc7e006");
@@ -84,7 +84,7 @@ TEST(StoredKey, CreateWithPrivateKeyAddDefaultAddress) {
     const auto privateKey = parse_hex("3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266");
     auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("name", password, coinTypeBc, privateKey);
     EXPECT_EQ(key.type, StoredKeyType::privateKey);
-    EXPECT_EQ(key.accounts.size(), 1);
+    EXPECT_EQ(key.accounts.size(), 1ul);
     EXPECT_EQ(key.accounts[0].coin, coinTypeBc);
     EXPECT_EQ(key.accounts[0].address, "bc1q375sq4kl2nv0mlmup3vm8znn4eqwu7mt6hkwhr");
     EXPECT_EQ(hex(key.privateKey(coinTypeBc, password).bytes), hex(privateKey));
@@ -108,46 +108,46 @@ TEST(StoredKey, CreateWithPrivateKeyAddDefaultAddressInvalid) {
 
 TEST(StoredKey, AccountGetCreate) {
     auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWStoredKeyEncryptionLevelDefault);
-    EXPECT_EQ(key.accounts.size(), 0);
+    EXPECT_EQ(key.accounts.size(), 0ul);
 
     // not exists
     EXPECT_FALSE(key.account(coinTypeBc).has_value());
-    EXPECT_EQ(key.accounts.size(), 0);
+    EXPECT_EQ(key.accounts.size(), 0ul);
 
     auto wallet = key.wallet(password);
     // not exists, wallet null, not create
     EXPECT_FALSE(key.account(coinTypeBc, nullptr).has_value());
-    EXPECT_EQ(key.accounts.size(), 0);
+    EXPECT_EQ(key.accounts.size(), 0ul);
 
     // not exists, wallet nonnull, create
     std::optional<Account> acc3 = key.account(coinTypeBc, &wallet);
     EXPECT_TRUE(acc3.has_value());
     EXPECT_EQ(acc3->coin, coinTypeBc); 
-    EXPECT_EQ(key.accounts.size(), 1);
+    EXPECT_EQ(key.accounts.size(), 1ul);
 
     // exists
     std::optional<Account> acc4 = key.account(coinTypeBc);
     EXPECT_TRUE(acc4.has_value());
     EXPECT_EQ(acc4->coin, coinTypeBc); 
-    EXPECT_EQ(key.accounts.size(), 1);
+    EXPECT_EQ(key.accounts.size(), 1ul);
 
     // exists, wallet nonnull, not create
     std::optional<Account> acc5 = key.account(coinTypeBc, &wallet);
     EXPECT_TRUE(acc5.has_value());
     EXPECT_EQ(acc5->coin, coinTypeBc); 
-    EXPECT_EQ(key.accounts.size(), 1);
+    EXPECT_EQ(key.accounts.size(), 1ul);
 
     // exists, wallet null, not create
     std::optional<Account> acc6 = key.account(coinTypeBc, nullptr);
     EXPECT_TRUE(acc6.has_value());
     EXPECT_EQ(acc6->coin, coinTypeBc); 
-    EXPECT_EQ(key.accounts.size(), 1);
+    EXPECT_EQ(key.accounts.size(), 1ul);
 }
 
 TEST(StoredKey, AccountGetDoesntChange) {
     auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWStoredKeyEncryptionLevelDefault);
     auto wallet = key.wallet(password);
-    EXPECT_EQ(key.accounts.size(), 0);
+    EXPECT_EQ(key.accounts.size(), 0ul);
 
     vector<TWCoinType> coins = {coinTypeBc, coinTypeEth, coinTypeBnb};
     // retrieve multiple accounts, which will be created
@@ -162,7 +162,7 @@ TEST(StoredKey, AccountGetDoesntChange) {
     }
 
     // Check again; make sure returned references don't change
-    for (auto i = 0; i < accounts.size(); ++i) {
+    for (auto i = 0ul; i < accounts.size(); ++i) {
         // check
         EXPECT_EQ(accounts[i].coin, coins[i]);
     }
@@ -170,24 +170,24 @@ TEST(StoredKey, AccountGetDoesntChange) {
 
 TEST(StoredKey, AddRemoveAccount) {
     auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWStoredKeyEncryptionLevelDefault);
-    EXPECT_EQ(key.accounts.size(), 0);
+    EXPECT_EQ(key.accounts.size(), 0ul);
 
     {
         const auto derivationPath = DerivationPath("m/84'/0'/0'/0/0");
         key.addAccount("bc1qaucw06s3agez8tyyk4zj9kt0q2934e3mcewdpf", coinTypeBc, TWDerivationDefault, derivationPath, "", "zpub6rxtad3SPT1C5GUDjPiKQ5oJN5DBeMbdUR7LrdYt12VbU7TBSpGUkdLvfVYGuj1N5edkDoZ3bu1fdN1HprQYfCBdsSH5CaAAygHGsanwtTe");
-        EXPECT_EQ(key.accounts.size(), 1);
+        EXPECT_EQ(key.accounts.size(), 1ul);
     }
     {
         const auto derivationPath = DerivationPath("m/714'/0'/0'/0/0");
         key.addAccount("bnb1utrnnjym7ustgw7pgyvtmnxay4qmt3ahh276nu", coinTypeBnb, TWDerivationDefault, derivationPath, "", "");
         key.addAccount("0x23b02dC8f67eD6cF8DCa47935791954286ffe7c9", coinTypeBsc, TWDerivationDefault, derivationPath, "", "");
-        EXPECT_EQ(key.accounts.size(), 3);
+        EXPECT_EQ(key.accounts.size(), 3ul);
     }
     {
         const auto derivationPath = DerivationPath("m/60'/0'/0'/0/0");
         key.addAccount("0xC0d97f61A84A0708225F15d54978D628Fe2C5E62", coinTypeEth, TWDerivationDefault, derivationPath, "", "");
         key.addAccount("0xC0d97f61A84A0708225F15d54978D628Fe2C5E62", coinTypeBscLegacy, TWDerivationDefault, derivationPath, "", "");
-        EXPECT_EQ(key.accounts.size(), 5);
+        EXPECT_EQ(key.accounts.size(), 5ul);
     }
 
     key.removeAccount(coinTypeBc);
@@ -195,56 +195,56 @@ TEST(StoredKey, AddRemoveAccount) {
     key.removeAccount(coinTypeBsc);
     key.removeAccount(coinTypeEth);
     key.removeAccount(coinTypeBscLegacy);
-    EXPECT_EQ(key.accounts.size(), 0);
+    EXPECT_EQ(key.accounts.size(), 0ul);
 }
 
 TEST(StoredKey, AddRemoveAccountDerivation) {
     auto key = StoredKey::createWithMnemonic("name", Data(), mnemonic, TWStoredKeyEncryptionLevelDefault);
-    EXPECT_EQ(key.accounts.size(), 0);
+    EXPECT_EQ(key.accounts.size(), 0ul);
 
     const auto derivationPath = DerivationPath("m/84'/0'/0'/0/0");
     {
         key.addAccount("bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny", coinTypeBc, TWDerivationDefault, derivationPath, "", "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
-        EXPECT_EQ(key.accounts.size(), 1);
+        EXPECT_EQ(key.accounts.size(), 1ul);
     }
     {
         key.addAccount("1NyRyFewhZcWMa9XCj3bBxSXPXyoSg8dKz", coinTypeBc, TWDerivationBitcoinLegacy, derivationPath, "", "xpub6CR52eaUuVb4kXAVyHC2i5ZuqJ37oWNPZFtjXaazFPXZD45DwWBYEBLdrF7fmCR9pgBuCA9Q57zZfyJjDUBDNtWkhWuGHNYKLgDHpqrHsxV");
-        EXPECT_EQ(key.accounts.size(), 2);
+        EXPECT_EQ(key.accounts.size(), 2ul);
     }
 
     key.removeAccount(coinTypeBc, TWDerivationDefault);
-    EXPECT_EQ(key.accounts.size(), 1);
+    EXPECT_EQ(key.accounts.size(), 1ul);
     key.removeAccount(coinTypeBc, TWDerivationDefault); // try 2nd time
-    EXPECT_EQ(key.accounts.size(), 1);
+    EXPECT_EQ(key.accounts.size(), 1ul);
     key.removeAccount(coinTypeBc, TWDerivationBitcoinLegacy);
-    EXPECT_EQ(key.accounts.size(), 0);
+    EXPECT_EQ(key.accounts.size(), 0ul);
     key.removeAccount(coinTypeBc, TWDerivationBitcoinLegacy); // try 2nd time
-    EXPECT_EQ(key.accounts.size(), 0);
+    EXPECT_EQ(key.accounts.size(), 0ul);
 }
 
 TEST(StoredKey, AddRemoveAccountDerivationPath) {
     auto key = StoredKey::createWithMnemonic("name", Data(), mnemonic, TWStoredKeyEncryptionLevelDefault);
-    EXPECT_EQ(key.accounts.size(), 0);
+    EXPECT_EQ(key.accounts.size(), 0ul);
 
     const auto derivationPath0 = DerivationPath("m/84'/0'/0'/0/0");
     {
         key.addAccount("bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny", coinTypeBc, TWDerivationDefault, derivationPath0, "", "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
-        EXPECT_EQ(key.accounts.size(), 1);
+        EXPECT_EQ(key.accounts.size(), 1ul);
     }
     const auto derivationPath1 = DerivationPath("m/84'/0'/0'/1/0");
     {
         key.addAccount("bc1qumuzptwdr6jlsqum8jnzz80rdg8nx6x29m2qpu", coinTypeBc, TWDerivationDefault, derivationPath1, "", "zpub6rxtad3SPT1C5GUDjPiKQ5oJN5DBeMbdUR7LrdYt12VbU7TBSpGUkdLvfVYGuj1N5edkDoZ3bu1fdN1HprQYfCBdsSH5CaAAygHGsanwtTe");
-        EXPECT_EQ(key.accounts.size(), 2);
+        EXPECT_EQ(key.accounts.size(), 2ul);
     }
 
     key.removeAccount(coinTypeBc, derivationPath0);
-    EXPECT_EQ(key.accounts.size(), 1);
+    EXPECT_EQ(key.accounts.size(), 1ul);
     key.removeAccount(coinTypeBc, derivationPath0); // try 2nd time
-    EXPECT_EQ(key.accounts.size(), 1);
+    EXPECT_EQ(key.accounts.size(), 1ul);
     key.removeAccount(coinTypeBc, derivationPath1);
-    EXPECT_EQ(key.accounts.size(), 0);
+    EXPECT_EQ(key.accounts.size(), 0ul);
     key.removeAccount(coinTypeBc, derivationPath1); // try 2nd time
-    EXPECT_EQ(key.accounts.size(), 0);
+    EXPECT_EQ(key.accounts.size(), 0ul);
 }
 
 TEST(StoredKey, FixAddress) {
@@ -298,8 +298,8 @@ TEST(StoredKey, LoadPBKDF2Key) {
 
     const auto& payload = key.payload;
     ASSERT_TRUE(payload.params.kdfParams.which() == 1);
-    EXPECT_EQ(boost::get<PBKDF2Parameters>(payload.params.kdfParams).desiredKeyLength, 32);
-    EXPECT_EQ(boost::get<PBKDF2Parameters>(payload.params.kdfParams).iterations, 262144);
+    EXPECT_EQ(boost::get<PBKDF2Parameters>(payload.params.kdfParams).desiredKeyLength, 32ul);
+    EXPECT_EQ(boost::get<PBKDF2Parameters>(payload.params.kdfParams).iterations, 262144ul);
     EXPECT_EQ(hex(boost::get<PBKDF2Parameters>(payload.params.kdfParams).salt), "ae3cd4e7013836a3df6bd7241b12db061dbe2c6785853cce422d148a624ce0bd");
 
     EXPECT_EQ(hex(payload.decrypt(TW::data("testpassword"))), "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d");
@@ -347,10 +347,10 @@ TEST(StoredKey, ReadWallet) {
     EXPECT_EQ(hex(header.params.cipherParams.iv), "83dbcc02d8ccb40e466191a123791e0e");
 
     ASSERT_TRUE(header.params.kdfParams.which() == 0);
-    EXPECT_EQ(boost::get<ScryptParameters>(header.params.kdfParams).desiredKeyLength, 32);
-    EXPECT_EQ(boost::get<ScryptParameters>(header.params.kdfParams).n, 262144);
-    EXPECT_EQ(boost::get<ScryptParameters>(header.params.kdfParams).p, 8);
-    EXPECT_EQ(boost::get<ScryptParameters>(header.params.kdfParams).r, 1);
+    EXPECT_EQ(boost::get<ScryptParameters>(header.params.kdfParams).desiredKeyLength, 32ul);
+    EXPECT_EQ(boost::get<ScryptParameters>(header.params.kdfParams).n, 262144ul);
+    EXPECT_EQ(boost::get<ScryptParameters>(header.params.kdfParams).p, 8ul);
+    EXPECT_EQ(boost::get<ScryptParameters>(header.params.kdfParams).r, 1ul);
     EXPECT_EQ(hex(boost::get<ScryptParameters>(header.params.kdfParams).salt), "ab0c7876052600dd703518d6fc3fe8984592145b591fc8fb5c6d43190334ba19");
 }
 
@@ -413,9 +413,9 @@ TEST(StoredKey, DecodingBitcoinAddress) {
     
 TEST(StoredKey, RemoveAccount) {
     auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/legacy-mnemonic.json");
-    EXPECT_EQ(key.accounts.size(), 2);
+    EXPECT_EQ(key.accounts.size(), 2ul);
     key.removeAccount(TWCoinTypeEthereum);
-    EXPECT_EQ(key.accounts.size(), 1);
+    EXPECT_EQ(key.accounts.size(), 1ul);
     EXPECT_EQ(key.accounts[0].coin, coinTypeBc);
 }
 
@@ -472,7 +472,7 @@ TEST(StoredKey, CreateMinimalEncryptionParameters) {
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
     const Data& mnemo2Data = key.payload.decrypt(password);
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));
-    EXPECT_EQ(key.accounts.size(), 0);
+    EXPECT_EQ(key.accounts.size(), 0ul);
     EXPECT_EQ(key.wallet(password).getMnemonic(), string(mnemonic));
 
     const auto json = key.json();
@@ -490,7 +490,7 @@ TEST(StoredKey, CreateWeakEncryptionParameters) {
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
     const Data& mnemo2Data = key.payload.decrypt(password);
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));
-    EXPECT_EQ(key.accounts.size(), 0);
+    EXPECT_EQ(key.accounts.size(), 0ul);
     EXPECT_EQ(key.wallet(password).getMnemonic(), string(mnemonic));
 
     const auto json = key.json();
@@ -508,7 +508,7 @@ TEST(StoredKey, CreateStandardEncryptionParameters) {
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
     const Data& mnemo2Data = key.payload.decrypt(password);
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));
-    EXPECT_EQ(key.accounts.size(), 0);
+    EXPECT_EQ(key.accounts.size(), 0ul);
     EXPECT_EQ(key.wallet(password).getMnemonic(), string(mnemonic));
 
     const auto json = key.json();
@@ -527,13 +527,13 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
     const Data& mnemo2Data = key.payload.decrypt(password);
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));
     EXPECT_EQ(key.wallet(password).getMnemonic(), string(mnemonic));
-    EXPECT_EQ(key.accounts.size(), 0);
+    EXPECT_EQ(key.accounts.size(), 0ul);
 
     const auto expectedBtc1 = "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny";
     const auto expectedBtc2 = "1NyRyFewhZcWMa9XCj3bBxSXPXyoSg8dKz";
     const auto expectedSol1 = "HiipoCKL8hX2RVmJTz3vaLy34hS2zLhWWMkUWtw85TmZ";
     const auto wallet = key.wallet(password);
-    int expectedAccounts = 0;
+    auto expectedAccounts = 0ul;
 
     { // Create default Bitcoin account
         const auto coin = TWCoinTypeBitcoin;
@@ -547,7 +547,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedBtc1);
         EXPECT_EQ(key.account(coin)->address, expectedBtc1);
-        EXPECT_EQ(key.getAccounts(coin).size(), 1);
+        EXPECT_EQ(key.getAccounts(coin).size(), 1ul);
         EXPECT_EQ(key.getAccounts(coin)[0].address, expectedBtc1);
     }
     { // Create default Solana account
@@ -561,7 +561,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         EXPECT_EQ(key.accounts.size(), ++expectedAccounts);
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedSol1);
         EXPECT_EQ(key.account(coin)->address, expectedSol1);
-        EXPECT_EQ(key.getAccounts(coin).size(), 1);
+        EXPECT_EQ(key.getAccounts(coin).size(), 1ul);
         EXPECT_EQ(key.getAccounts(coin)[0].address, expectedSol1);
     }
     { // Create alternative P2PK Bitcoin account (different address format)
@@ -576,7 +576,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedBtc2);
         EXPECT_EQ(key.account(coin)->address, expectedBtc1);
         EXPECT_EQ(key.account(coin, TWDerivationBitcoinLegacy, wallet).address, expectedBtc2);
-        EXPECT_EQ(key.getAccounts(coin).size(), 2);
+        EXPECT_EQ(key.getAccounts(coin).size(), 2ul);
         EXPECT_EQ(key.getAccounts(coin)[0].address, expectedBtc1);
         EXPECT_EQ(key.getAccounts(coin)[1].address, expectedBtc2);
     }
@@ -593,7 +593,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         // Now we have 2 Solana addresses, 1st is returned here
         EXPECT_EQ(key.account(coin)->address, expectedSol1);
         EXPECT_EQ(key.account(coin, TWDerivationSolanaSolana, wallet).address, expectedSol2);
-        EXPECT_EQ(key.getAccounts(coin).size(), 2);
+        EXPECT_EQ(key.getAccounts(coin).size(), 2ul);
         EXPECT_EQ(key.getAccounts(coin)[0].address, expectedSol1);
         EXPECT_EQ(key.getAccounts(coin)[1].address, expectedSol2);
     }
@@ -615,7 +615,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         EXPECT_EQ(key.accounts[expectedAccounts - 1].address, expectedBtc3);
         // Now we have 2 Bitcoin addresses, 1st is returned here
         EXPECT_EQ(key.account(coin)->address, expectedBtc1);
-        EXPECT_EQ(key.getAccounts(coin).size(), 3);
+        EXPECT_EQ(key.getAccounts(coin).size(), 3ul);
         EXPECT_EQ(key.getAccounts(coin)[0].address, expectedBtc1);
         EXPECT_EQ(key.getAccounts(coin)[1].address, expectedBtc2);
         EXPECT_EQ(key.getAccounts(coin)[2].address, expectedBtc3);
@@ -628,18 +628,18 @@ TEST(StoredKey, CreateWithMnemonicAlternativeDerivation) {
     auto key = StoredKey::createWithMnemonicAddDefaultAddress("name", password, mnemonic, coin);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
 
-    ASSERT_EQ(key.accounts.size(), 1);
+    ASSERT_EQ(key.accounts.size(), 1ul);
     EXPECT_EQ(key.accounts[0].coin, coin);
     EXPECT_EQ(key.accounts[0].address, "HiipoCKL8hX2RVmJTz3vaLy34hS2zLhWWMkUWtw85TmZ");
     EXPECT_EQ(key.accounts[0].publicKey, "f86b18399096c8134dd185f1e72dd7e26528772a2a998abfd81c5f8c547223d0");
     EXPECT_EQ(hex(key.privateKey(coin, password).bytes), "d81b5c525979e487736b69cb84ed8331559de17294f38491b304555c26687e83");
     EXPECT_EQ(hex(key.privateKey(coin, TWDerivationDefault, password).bytes), "d81b5c525979e487736b69cb84ed8331559de17294f38491b304555c26687e83");
-    ASSERT_EQ(key.accounts.size(), 1);
+    ASSERT_EQ(key.accounts.size(), 1ul);
 
     // alternative derivation, different keys
     EXPECT_EQ(hex(key.privateKey(coin, TWDerivationSolanaSolana, password).bytes), "d49a5fa7f77593534c7afd2ba8dc8e9d8b007bc6ec65fe8df25ffe6fafc57151");
 
-    ASSERT_EQ(key.accounts.size(), 2);
+    ASSERT_EQ(key.accounts.size(), 2ul);
     EXPECT_EQ(key.accounts[1].coin, coin);
     EXPECT_EQ(key.accounts[1].address, "CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C");
     EXPECT_EQ(key.accounts[1].publicKey, "ad8f57924dce62f9040f93b4f6ce3c3d39afde7e29bcb4013dad59db7913c4c7");

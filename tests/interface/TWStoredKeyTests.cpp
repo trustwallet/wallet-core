@@ -109,11 +109,11 @@ TEST(TWStoredKey, addressAddRemove) {
     const auto accountAddress = WRAPS(TWAccountAddress(accountCoin.get()));
     EXPECT_EQ(string(TWStringUTF8Bytes(accountAddress.get())), "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
 
-    EXPECT_EQ(TWStoredKeyAccountCount(key.get()), 1);
+    EXPECT_EQ(TWStoredKeyAccountCount(key.get()), 1ul);
     const auto accountIdx = WRAP(TWAccount, TWStoredKeyAccount(key.get(), 0));
 
     TWStoredKeyRemoveAccountForCoin(key.get(), coin);
-    EXPECT_EQ(TWStoredKeyAccountCount(key.get()), 0);
+    EXPECT_EQ(TWStoredKeyAccountCount(key.get()), 0ul);
 
     const auto addressAdd = "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny";
     const auto derivationPath = "m/84'/0'/0'/0/0";
@@ -126,7 +126,7 @@ TEST(TWStoredKey, addressAddRemove) {
         WRAPS(TWStringCreateWithUTF8Bytes(derivationPath)).get(),
         WRAPS(TWStringCreateWithUTF8Bytes(pubKey)).get(),
         WRAPS(TWStringCreateWithUTF8Bytes(extPubKeyAdd)).get());
-    EXPECT_EQ(TWStoredKeyAccountCount(key.get()), 1);
+    EXPECT_EQ(TWStoredKeyAccountCount(key.get()), 1ul);
 
     // invalid account index
     EXPECT_EQ(TWStoredKeyAccount(key.get(), 1001), nullptr);
@@ -144,17 +144,17 @@ TEST(TWStoredKey, addressAddRemoveDerivationPath) {
     const auto accountAddress = WRAPS(TWAccountAddress(accountCoin.get()));
     EXPECT_EQ(string(TWStringUTF8Bytes(accountAddress.get())), "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
 
-    EXPECT_EQ(TWStoredKeyAccountCount(key.get()), 1);
+    EXPECT_EQ(TWStoredKeyAccountCount(key.get()), 1ul);
     const auto accountIdx = WRAP(TWAccount, TWStoredKeyAccount(key.get(), 0));
 
     const auto derivationPath0 = "m/84'/0'/0'/0/0";
     const auto derivationPath1 = "m/84'/0'/0'/1/0";
 
     TWStoredKeyRemoveAccountForCoinDerivationPath(key.get(), coin, WRAPS(TWStringCreateWithUTF8Bytes(derivationPath1)).get());
-    EXPECT_EQ(TWStoredKeyAccountCount(key.get()), 1);
+    EXPECT_EQ(TWStoredKeyAccountCount(key.get()), 1ul);
 
     TWStoredKeyRemoveAccountForCoinDerivationPath(key.get(), coin, WRAPS(TWStringCreateWithUTF8Bytes(derivationPath0)).get());
-    EXPECT_EQ(TWStoredKeyAccountCount(key.get()), 0);
+    EXPECT_EQ(TWStoredKeyAccountCount(key.get()), 0ul);
 }
 
 TEST(TWStoredKey, addressAddDerivation) {
@@ -173,7 +173,7 @@ TEST(TWStoredKey, addressAddDerivation) {
     const auto accountAddress2 = WRAPS(TWAccountAddress(accountCoin2.get()));
     EXPECT_EQ(string(TWStringUTF8Bytes(accountAddress2.get())), "1NyRyFewhZcWMa9XCj3bBxSXPXyoSg8dKz");
 
-    EXPECT_EQ(TWStoredKeyAccountCount(key.get()), 2);
+    EXPECT_EQ(TWStoredKeyAccountCount(key.get()), 2ul);
 }
 
 TEST(TWStoredKey, exportJSON) {
@@ -202,7 +202,7 @@ TEST(TWStoredKey, storeAndImportJSON) {
     Data json(length);
     size_t idx = 0;
     // read the slow way, ifs.read gave some false warnings with codacy 
-    while (!ifs.eof() && idx < length) { char c = ifs.get(); json[idx++] = (uint8_t)c; }
+    while (!ifs.eof() && idx < static_cast<std::size_t>(length)) { char c = ifs.get(); json[idx++] = (uint8_t)c; }
 
     const auto key2 = WRAP(TWStoredKey, TWStoredKeyImportJSON(WRAPD(TWDataCreateWithData(&json)).get()));
     const auto name2 = WRAPS(TWStoredKeyName(key2.get()));
@@ -250,11 +250,11 @@ TEST(TWStoredKey, removeAccountForCoin) {
     ASSERT_NE(WRAP(TWAccount, TWStoredKeyAccountForCoin(key.get(), TWCoinTypeEthereum, wallet.get())).get(), nullptr);
     ASSERT_NE(WRAP(TWAccount, TWStoredKeyAccountForCoin(key.get(), TWCoinTypeBitcoin, wallet.get())).get(), nullptr);
     
-    ASSERT_EQ(TWStoredKeyAccountCount(key.get()), 2);
+    ASSERT_EQ(TWStoredKeyAccountCount(key.get()), 2ul);
     
     TWStoredKeyRemoveAccountForCoin(key.get(), TWCoinTypeBitcoin);
     
-    ASSERT_EQ(TWStoredKeyAccountCount(key.get()), 1);
+    ASSERT_EQ(TWStoredKeyAccountCount(key.get()), 1ul);
     
     ASSERT_NE(WRAP(TWAccount, TWStoredKeyAccountForCoin(key.get(), TWCoinTypeEthereum, nullptr)).get(), nullptr);
     ASSERT_EQ(WRAP(TWAccount, TWStoredKeyAccountForCoin(key.get(), TWCoinTypeBitcoin, nullptr)).get(), nullptr);
@@ -281,7 +281,7 @@ TEST(TWStoredKey, encryptionParameters) {
 
     // compare some specific parameters
     EXPECT_EQ(jsonParams["kdfparams"]["n"], 16384);
-    EXPECT_EQ(std::string(jsonParams["cipherparams"]["iv"]).length(), 32);
+    EXPECT_EQ(std::string(jsonParams["cipherparams"]["iv"]).length(), 32ul);
 
     // compare all keys, except dynamic ones (like cipherparams/iv)
     jsonParams["cipherparams"] = {};

@@ -48,7 +48,7 @@ Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input, TWCo
         const auto serializedTxBody = buildProtoTxBody(input);
         const auto serializedAuthInfo = buildAuthInfo(input, coin);
         const auto signature = buildSignature(input, serializedTxBody, serializedAuthInfo, coin);
-        auto serializedTxRaw = buildProtoTxRaw(input, serializedTxBody, serializedAuthInfo, signature);
+        auto serializedTxRaw = buildProtoTxRaw(serializedTxBody, serializedAuthInfo, signature);
 
         auto output = Proto::SigningOutput();
         const string jsonSerialized = buildProtoTxJson(input, serializedTxRaw);

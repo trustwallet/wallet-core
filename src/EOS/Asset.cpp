@@ -25,7 +25,7 @@ Asset::Asset(int64_t amount, uint8_t decimals, const std::string& symbol) {
         throw std::invalid_argument("Symbol size invalid!");
     }
 
-    for (int i = 0; i < symbol.size(); i++) {
+    for (std::size_t i = 0; i < symbol.size(); i++) {
         uint64_t c = symbol[i];
         if (c < 'A' || c > 'Z') {
             throw std::invalid_argument("Invalid symbol " + symbol + ".\n Symbol can only have upper case alphabets!");

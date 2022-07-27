@@ -79,7 +79,7 @@ class PrivateKey {
 
     /// Signs a digest using the given ECDSA curve. The result is encoded with
     /// DER.
-    Data signAsDER(const Data& digest, TWCurve curve) const;
+    Data signAsDER(const Data& digest) const;
 
     /// Signs a digest using given ECDSA curve, returns Zilliqa schnorr signature
     Data signZilliqa(const Data& message) const;

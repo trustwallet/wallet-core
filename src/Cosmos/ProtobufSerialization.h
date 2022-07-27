@@ -22,7 +22,7 @@ std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin);
 
 Data buildSignature(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, TWCoinType coin);
 
-std::string buildProtoTxRaw(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, const Data& signature);
+std::string buildProtoTxRaw(const std::string& serializedTxBody, const std::string& serializedAuthInfo, const Data& signature);
 
 std::string buildProtoTxJson(const Proto::SigningInput& input, const std::string& serializedTx);
 

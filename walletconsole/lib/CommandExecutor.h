@@ -46,7 +46,7 @@ protected:
     static string parseLine(const string& line, vector<string>& params);
     bool prepareInputs(const vector<string>& p_in, vector<string>& p_out);
     bool setCoin(const string& coin, bool force);
-    bool checkMinParams(const vector<string>& params, int n) const;
+    bool checkMinParams(const vector<string>& params, std::size_t n) const;
     void help() const;
 };
 

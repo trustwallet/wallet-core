@@ -32,10 +32,10 @@ TEST(DerivationPath, InitWithString) {
     ASSERT_EQ(path.indices[4], DerivationPathIndex(0, /* hardened: */false));
 
     ASSERT_EQ(path.purpose(), 44);
-    ASSERT_EQ(path.coin(), 60);
-    ASSERT_EQ(path.account(), 0);
-    ASSERT_EQ(path.change(), 0);
-    ASSERT_EQ(path.address(), 0);
+    ASSERT_EQ(path.coin(), 60ul);
+    ASSERT_EQ(path.account(), 0ul);
+    ASSERT_EQ(path.change(), 0ul);
+    ASSERT_EQ(path.address(), 0ul);
 }
 
 TEST(DerivationPath, InitInvalid) {
@@ -46,13 +46,13 @@ TEST(DerivationPath, InitInvalid) {
 TEST(DerivationPath, IndexOutOfBounds) {
     DerivationPath path;
 
-    EXPECT_EQ(path.indices.size(), 0);
+    EXPECT_EQ(path.indices.size(), 0ul);
 
     EXPECT_EQ(path.purpose(), TWPurposeBIP44);
     EXPECT_EQ(path.coin(), TWCoinTypeBitcoin);
-    EXPECT_EQ(path.account(), 0);
-    EXPECT_EQ(path.change(), 0);
-    EXPECT_EQ(path.address(), 0);
+    EXPECT_EQ(path.account(), 0ul);
+    EXPECT_EQ(path.change(), 0ul);
+    EXPECT_EQ(path.address(), 0ul);
 
     ASSERT_NO_THROW(path.setPurpose(TWPurposeBIP44));
     ASSERT_NO_THROW(path.setCoin(TWCoinTypeBitcoin));

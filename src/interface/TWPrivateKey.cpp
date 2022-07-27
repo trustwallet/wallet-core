@@ -108,9 +108,9 @@ TWData *TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull dige
     }
 }
 
-TWData *TWPrivateKeySignAsDER(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest, enum TWCurve curve) {
+TWData *TWPrivateKeySignAsDER(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest, [[maybe_unused]] enum TWCurve curve) {
     auto& d = *reinterpret_cast<const Data*>(digest);
-    auto result = pk->impl.signAsDER(d, curve);
+    auto result = pk->impl.signAsDER(d);
     if (result.empty()) {
         return nullptr;
     } else {

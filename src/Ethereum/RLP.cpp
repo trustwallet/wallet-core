@@ -83,7 +83,7 @@ uint64_t RLP::parseVarInt(size_t size, const Data& data, size_t index) {
         throw std::invalid_argument("multi-byte length must have no leading zero");
     }
     uint64_t val = 0;
-    for (auto i = 0; i < size; ++i) {
+    for (auto i = 0ul; i < size; ++i) {
         val = val << 8;
         val += data[index + i];
     }
@@ -135,7 +135,7 @@ RLP::DecodedItem RLP::decode(const Data& input) {
             throw std::invalid_argument("single byte below 128 must be encoded as itself");
         }
 
-        if (inputLen < (1 + strLen)) {
+        if (inputLen < (1ul + strLen)) {
             throw std::invalid_argument(std::string("invalid short string, length ") + std::to_string(strLen));
         }
         item.decoded.push_back(subData(input, 1, strLen));

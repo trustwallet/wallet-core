@@ -128,7 +128,7 @@ bool case_insensitive_equal(const std::string& s1, const std::string& s2) {
 }
 
 TEST(SegwitAddress, ValidChecksum) {
-    for (auto i = 0; i < sizeof(valid_checksum) / sizeof(valid_checksum[0]); ++i) {
+    for (auto i = 0ul; i < sizeof(valid_checksum) / sizeof(valid_checksum[0]); ++i) {
         auto dec = Bech32::decode(valid_checksum[i]);
         ASSERT_FALSE(std::get<0>(dec).empty());
 
@@ -140,7 +140,7 @@ TEST(SegwitAddress, ValidChecksum) {
 }
 
 TEST(SegwitAddress, InvalidChecksum) {
-    for (auto i = 0; i < sizeof(invalid_checksum) / sizeof(invalid_checksum[0]); ++i) {
+    for (auto i = 0ul; i < sizeof(invalid_checksum) / sizeof(invalid_checksum[0]); ++i) {
         auto dec = Bech32::decode(invalid_checksum[i]);
         EXPECT_TRUE(std::get<0>(dec).empty() && std::get<1>(dec).empty());
     }
@@ -151,7 +151,7 @@ TEST(SegwitAddress, ValidAddress) {
         auto dec = SegwitAddress::decode(td.address);
         EXPECT_TRUE(std::get<2>(dec)) << "Valid address could not be decoded " << td.address;
         EXPECT_TRUE(std::get<0>(dec).witnessProgram.size() > 0)  << "Empty decoded address data for " << td.address;
-        EXPECT_EQ(std::get<1>(dec).length(), 2); // hrp
+        EXPECT_EQ(std::get<1>(dec).length(), 2ul); // hrp
 
         // recode
         std::string recode = std::get<0>(dec).string();
@@ -164,14 +164,14 @@ TEST(SegwitAddress, ValidAddress) {
 }
 
 TEST(SegwitAddress, InvalidAddress) {
-    for (auto i = 0; i < invalid_address.size(); ++i) {
+    for (auto i = 0ul; i < invalid_address.size(); ++i) {
         auto dec = SegwitAddress::decode(invalid_address[i]);
         EXPECT_FALSE(std::get<2>(dec)) <<  "Invalid address reported as valid: " << invalid_address[i];
     }
 }
 
 TEST(SegwitAddress, InvalidAddressEncoding) {
-    for (auto i = 0; i < sizeof(invalid_address_enc) / sizeof(invalid_address_enc[0]); ++i) {
+    for (auto i = 0ul; i < sizeof(invalid_address_enc) / sizeof(invalid_address_enc[0]); ++i) {
         auto address = SegwitAddress(invalid_address_enc[i].hrp, invalid_address_enc[i].version, Data(invalid_address_enc[i].program_length, 0));
         std::string code = address.string();
         EXPECT_TRUE(code.empty());

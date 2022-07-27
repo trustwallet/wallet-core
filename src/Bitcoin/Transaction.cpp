@@ -185,7 +185,7 @@ Data Transaction::getSignatureHashBase(const Script& scriptCode, size_t index,
     auto serializedInputCount =
         (hashType & TWBitcoinSigHashTypeAnyoneCanPay) != 0 ? 1 : inputs.size();
     encodeVarInt(serializedInputCount, data);
-    for (auto subindex = 0; subindex < serializedInputCount; subindex += 1) {
+    for (auto subindex = 0ul; subindex < serializedInputCount; subindex += 1) {
         serializeInput(subindex, scriptCode, index, hashType, data);
     }
 
@@ -193,7 +193,7 @@ Data Transaction::getSignatureHashBase(const Script& scriptCode, size_t index,
     auto hashSingle = hashTypeIsSingle(hashType);
     auto serializedOutputCount = hashNone ? 0 : (hashSingle ? index + 1 : outputs.size());
     encodeVarInt(serializedOutputCount, data);
-    for (auto subindex = 0; subindex < serializedOutputCount; subindex += 1) {
+    for (auto subindex = 0ul; subindex < serializedOutputCount; subindex += 1) {
         if (hashSingle && subindex != index) {
             auto output = TransactionOutput(-1, {});
             output.encode(data);

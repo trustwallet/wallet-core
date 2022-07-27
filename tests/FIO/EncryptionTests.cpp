@@ -75,7 +75,7 @@ TEST(FIOEncryption, checkDecryptMessageTooShort) {
 
 Data randomBuffer(size_t size) {
     Data d(size);
-    for (auto i = 0; i < size; ++i) {
+    for (auto i = 0ul; i < size; ++i) {
         d[i] = (TW::byte)(256.0 * rand() / RAND_MAX);
     }
     return d;
@@ -116,21 +116,21 @@ TEST(FIOEncryption, getSharedSecret) {
         const PrivateKey privateKey(parse_hex("2bd806c97f0e00af1a1fc3328fa763a9269723c8db8fac4f93af71db186d6e90"));
         const PublicKey publicKey(parse_hex("024edfcf9dfe6c0b5c83d1ab3f78d1b39a46ebac6798e08e19761f5ed89ec83c10"), TWPublicKeyTypeSECP256k1);
         Data secret = Encryption::getSharedSecret(privateKey, publicKey);
-        EXPECT_EQ(secret.size(), 64);
+        EXPECT_EQ(secret.size(), 64ul);
         EXPECT_EQ(hex(secret), "a71b4ec5a9577926a1d2aa1d9d99327fd3b68f6a1ea597200a0d890bd3331df300a2d49fec0b2b3e6969ce9263c5d6cf47c191c1ef149373ecc9f0d98116b598");
     }
     {
         const PrivateKey privateKey(parse_hex("81b637d8fcd2c6da6359e6963113a1170de795e4b725b84d1e0b4cfd9ec58ce9"));
         const PublicKey publicKey(parse_hex("039997a497d964fc1a62885b05a51166a65a90df00492c8d7cf61d6accf54803be"), TWPublicKeyTypeSECP256k1);
         Data secret = Encryption::getSharedSecret(privateKey, publicKey);
-        EXPECT_EQ(secret.size(), 64);
+        EXPECT_EQ(secret.size(), 64ul);
         EXPECT_EQ(hex(secret), "a71b4ec5a9577926a1d2aa1d9d99327fd3b68f6a1ea597200a0d890bd3331df300a2d49fec0b2b3e6969ce9263c5d6cf47c191c1ef149373ecc9f0d98116b598");
     }
     {
         const PrivateKey privateKey(parse_hex("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"));
         const PublicKey publicKey(parse_hex("03a34b99f22c790c4e36b2b3c2c35a36db06226e41c692fc82b8b56ac1c540c5bd"), TWPublicKeyTypeSECP256k1);
         Data secret = Encryption::getSharedSecret(privateKey, publicKey);
-        EXPECT_EQ(secret.size(), 64);
+        EXPECT_EQ(secret.size(), 64ul);
         EXPECT_EQ(hex(secret), "3f0840df1912e24d85f39008a56550c31403e096fce7fa9d7886fab8e5c2ceb66b4139c8f4f4172fd9f455e76c2e8913a3d734f51a1951090ce9ec660671957d");
     }
 }

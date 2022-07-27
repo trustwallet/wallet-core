@@ -34,7 +34,7 @@ public:
     virtual bool isDynamic() const { return _params.isDynamic(); }
     virtual void encode(Data& data) const { return _params.encode(data); }
     virtual bool decode(const Data& encoded, size_t& offset_inout) { return _params.decode(encoded, offset_inout); }
-    virtual bool setValueJson(const std::string& value) { return false; }
+    virtual bool setValueJson([[maybe_unused]] const std::string& value) { return false; }
     virtual size_t getCount() const { return _params.getCount(); }
 };
 

@@ -62,7 +62,7 @@ Address TokenProgram::defaultTokenAddress(const Address& mainAddress, const Addr
  * Based on solana code, find_program_address()
  * https://github.com/solana-labs/solana/blob/master/sdk/program/src/pubkey.rs#L193
  */
-Address TokenProgram::findProgramAddress(const std::vector<TW::Data>& seeds, const Address& programId) {
+Address TokenProgram::findProgramAddress(const std::vector<TW::Data>& seeds, [[maybe_unused]] const Address& programId) {
     Address result(Data(32));
     // cycle through seeds for the rare case when result is not valid
     auto bumpSeed = Data{std::numeric_limits<std::uint8_t>::max()};

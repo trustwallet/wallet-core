@@ -22,24 +22,24 @@ inline void assertHexEqual(const Data& data, const char* expected) {
 }
 
 TEST(Encrypt, paddingSize) {
-    EXPECT_EQ(paddingSize(0, 16, TWAESPaddingModeZero), 0);
-    EXPECT_EQ(paddingSize(1, 16, TWAESPaddingModeZero), 15);
-    EXPECT_EQ(paddingSize(8, 16, TWAESPaddingModeZero), 8);
-    EXPECT_EQ(paddingSize(15, 16, TWAESPaddingModeZero), 1);
-    EXPECT_EQ(paddingSize(16, 16, TWAESPaddingModeZero), 0);
-    EXPECT_EQ(paddingSize(17, 16, TWAESPaddingModeZero), 15);
-    EXPECT_EQ(paddingSize(24, 16, TWAESPaddingModeZero), 8);
-    EXPECT_EQ(paddingSize(31, 16, TWAESPaddingModeZero), 1);
-    EXPECT_EQ(paddingSize(32, 16, TWAESPaddingModeZero), 0);
-    EXPECT_EQ(paddingSize(0, 16, TWAESPaddingModePKCS7), 16);
-    EXPECT_EQ(paddingSize(1, 16, TWAESPaddingModePKCS7), 15);
-    EXPECT_EQ(paddingSize(8, 16, TWAESPaddingModePKCS7), 8);
-    EXPECT_EQ(paddingSize(15, 16, TWAESPaddingModePKCS7), 1);
-    EXPECT_EQ(paddingSize(16, 16, TWAESPaddingModePKCS7), 16);
-    EXPECT_EQ(paddingSize(17, 16, TWAESPaddingModePKCS7), 15);
-    EXPECT_EQ(paddingSize(24, 16, TWAESPaddingModePKCS7), 8);
-    EXPECT_EQ(paddingSize(31, 16, TWAESPaddingModePKCS7), 1);
-    EXPECT_EQ(paddingSize(32, 16, TWAESPaddingModePKCS7), 16);
+    EXPECT_EQ(paddingSize(0, 16, TWAESPaddingModeZero), 0ul);
+    EXPECT_EQ(paddingSize(1, 16, TWAESPaddingModeZero), 15ul);
+    EXPECT_EQ(paddingSize(8, 16, TWAESPaddingModeZero), 8ul);
+    EXPECT_EQ(paddingSize(15, 16, TWAESPaddingModeZero), 1ul);
+    EXPECT_EQ(paddingSize(16, 16, TWAESPaddingModeZero), 0ul);
+    EXPECT_EQ(paddingSize(17, 16, TWAESPaddingModeZero), 15ul);
+    EXPECT_EQ(paddingSize(24, 16, TWAESPaddingModeZero), 8ul);
+    EXPECT_EQ(paddingSize(31, 16, TWAESPaddingModeZero), 1ul);
+    EXPECT_EQ(paddingSize(32, 16, TWAESPaddingModeZero), 0ul);
+    EXPECT_EQ(paddingSize(0, 16, TWAESPaddingModePKCS7), 16ul);
+    EXPECT_EQ(paddingSize(1, 16, TWAESPaddingModePKCS7), 15ul);
+    EXPECT_EQ(paddingSize(8, 16, TWAESPaddingModePKCS7), 8ul);
+    EXPECT_EQ(paddingSize(15, 16, TWAESPaddingModePKCS7), 1ul);
+    EXPECT_EQ(paddingSize(16, 16, TWAESPaddingModePKCS7), 16ul);
+    EXPECT_EQ(paddingSize(17, 16, TWAESPaddingModePKCS7), 15ul);
+    EXPECT_EQ(paddingSize(24, 16, TWAESPaddingModePKCS7), 8ul);
+    EXPECT_EQ(paddingSize(31, 16, TWAESPaddingModePKCS7), 1ul);
+    EXPECT_EQ(paddingSize(32, 16, TWAESPaddingModePKCS7), 16ul);
 }
 
 TEST(Encrypt, AESCBCEncrypt) {

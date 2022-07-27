@@ -310,7 +310,7 @@ Data buildSignature(const Proto::SigningInput& input, const std::string& seriali
     return signature;
 }
 
-std::string buildProtoTxRaw(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, const Data& signature) {
+std::string buildProtoTxRaw(const std::string& serializedTxBody, const std::string& serializedAuthInfo, const Data& signature) {
     auto txRaw = cosmos::TxRaw();
     txRaw.set_body_bytes(serializedTxBody);
     txRaw.set_auth_info_bytes(serializedAuthInfo);

@@ -55,7 +55,7 @@ Data forgePublicKey(PublicKey publicKey) {
     append(data, bytes);
 
     auto pk = Base58::bitcoin.encodeCheck(data);
-    auto decoded = "00" + base58ToHex(pk, 4, prefix.data());
+    auto decoded = "00" + base58ToHex(pk, 4);
     return parse_hex(decoded);
 }
 

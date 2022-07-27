@@ -39,7 +39,7 @@ InputSelector<TypeWithAmount>::filterThreshold(const std::vector<TypeWithAmount>
                                                uint64_t minimumAmount) noexcept {
     std::vector<TypeWithAmount> filtered;
     for (auto& i : inputs) {
-        if (i.amount > minimumAmount) {
+        if (static_cast<uint64_t>(i.amount) > minimumAmount) {
             filtered.push_back(i);
         }
     }
@@ -55,7 +55,7 @@ template <typename TypeWithAmount>
 static inline std::vector<std::vector<TypeWithAmount>>
 slice(const std::vector<TypeWithAmount>& inputs, size_t sliceSize) {
     std::vector<std::vector<TypeWithAmount>> slices;
-    for (auto i = 0; i <= inputs.size() - sliceSize; ++i) {
+    for (auto i = 0ul; i <= inputs.size() - sliceSize; ++i) {
         slices.emplace_back();
         slices[i].reserve(sliceSize);
         for (auto j = i; j < i + sliceSize; j++) {
@@ -67,7 +67,7 @@ slice(const std::vector<TypeWithAmount>& inputs, size_t sliceSize) {
 
 template <typename TypeWithAmount>
 std::vector<TypeWithAmount>
-InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int64_t numOutputs) {
+InputSelector<TypeWithAmount>::select(uint64_t targetValue, uint64_t byteFee, uint64_t numOutputs) {
     // if target value is zero, no UTXOs are needed
     if (targetValue == 0) {
         return {};
@@ -79,7 +79,7 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
     }
     assert(inputs.size() >= 1);
 
-    // definitions for the following caluculation
+    // definitions for the following calculation
     const auto doubleTargetValue = targetValue * 2;
 
     // Get all possible utxo selections up to a maximum size, sort by total amount, increasing
@@ -94,13 +94,13 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
     std::vector<uint64_t> maxWithXInputs = std::vector<uint64_t>();
     maxWithXInputs.push_back(0);
     int64_t maxSum = 0;
-    for (auto i = 0; i < n; ++i) {
+    for (auto i = 0ul; i < n; ++i) {
         maxSum += sorted[n - 1 - i].amount;
         maxWithXInputs.push_back(maxSum);
     }
 
     // difference from 2x targetValue
-    auto distFrom2x = [doubleTargetValue](int64_t val) -> int64_t {
+    auto distFrom2x = [doubleTargetValue](uint64_t val) -> uint64_t {
         if (val > doubleTargetValue) {
             return val - doubleTargetValue;
         }

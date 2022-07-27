@@ -40,10 +40,10 @@ TEST(RippleXAddress, FromString) {
     const auto address = XAddress(xAddress);
     const auto address2 = XAddress(xAddress2);
 
-    ASSERT_EQ(address.tag, 12345);
+    ASSERT_EQ(address.tag, 12345ul);
     ASSERT_EQ(address.string(), xAddress);
 
-    ASSERT_EQ(address2.tag, 0);
+    ASSERT_EQ(address2.tag, 0ul);
     ASSERT_EQ(address2.string(), xAddress2);
 }
 

@@ -10,7 +10,7 @@
 
 
 TW::Data TW::readBytes(const TW::Data& from, int max, int initial_pos) {
-    if (from.size() - initial_pos < max) {
+    if (from.size() - static_cast<std::size_t>(initial_pos) < static_cast<std::size_t>(max)) {
         throw std::invalid_argument("Data::Cannot read enough bytes!");
     }
     return TW::Data(from.begin() + initial_pos, from.begin() + initial_pos + max);

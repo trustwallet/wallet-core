@@ -115,7 +115,7 @@ std::tuple<Data, int, std::string> Swap::build(
     }
 }
 
-std::pair<int, std::string> Swap::buildBitcoin(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out) {
+std::pair<int, std::string> Swap::buildBitcoin([[maybe_unused]] Chain toChain, [[maybe_unused]] const std::string& toSymbol, [[maybe_unused]] const std::string& toTokenId, const std::string& fromAddress, [[maybe_unused]] const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out) {
     auto input = Bitcoin::Proto::SigningInput();
 
     // Following fields must be set afterwards, before signing ...
@@ -148,7 +148,7 @@ Data ethAddressStringToData(const std::string& asString) {
     return asData;
 }
 
-std::pair<int, std::string> Swap::buildEthereum(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, const std::string& routerAddress, uint64_t amount, const std::string& memo, Data& out) {
+std::pair<int, std::string> Swap::buildEthereum([[maybe_unused]] Chain toChain, [[maybe_unused]] const std::string& toSymbol, const std::string& toTokenId, [[maybe_unused]] const std::string& fromAddress, [[maybe_unused]] const std::string& toAddress, const std::string& vaultAddress, const std::string& routerAddress, uint64_t amount, const std::string& memo, Data& out) {
     auto input = Ethereum::Proto::SigningInput();
 
     // some sanity check / address conversion
@@ -192,7 +192,7 @@ std::pair<int, std::string> Swap::buildEthereum(Chain toChain, const std::string
     return std::make_pair<int, std::string>(0, "");
 }
 
-std::pair<int, std::string> Swap::buildBinance(Chain toChain, const std::string& toSymbol, const std::string& toTokenId, const std::string& fromAddress, const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out) {
+std::pair<int, std::string> Swap::buildBinance([[maybe_unused]] Chain toChain, [[maybe_unused]] const std::string& toSymbol, [[maybe_unused]] const std::string& toTokenId, const std::string& fromAddress, [[maybe_unused]] const std::string& toAddress, const std::string& vaultAddress, uint64_t amount, const std::string& memo, Data& out) {
     auto input = Binance::Proto::SigningInput();
 
     // Following fields must be set afterwards, before signing ...

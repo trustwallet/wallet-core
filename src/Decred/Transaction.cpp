@@ -86,7 +86,7 @@ Data Transaction::computePrefixHash(const std::vector<TransactionInput>& inputsT
 
     // Commit to the relevant transaction inputs.
     encodeVarInt(inputsToSign.size(), preimage);
-    for (auto i = 0; i < inputsToSign.size(); i += 1) {
+    for (auto i = 0ul; i < inputsToSign.size(); i += 1) {
         auto& input = inputsToSign[i];
         input.previousOutput.encode(preimage);
 
@@ -100,7 +100,7 @@ Data Transaction::computePrefixHash(const std::vector<TransactionInput>& inputsT
 
     // Commit to the relevant transaction outputs.
     encodeVarInt(outputsToSign.size(), preimage);
-    for (auto i = 0; i < outputsToSign.size(); i += 1) {
+    for (auto i = 0ul; i < outputsToSign.size(); i += 1) {
         auto& output = outputsToSign[i];
         auto value = output.value;
         auto pkScript = output.script;
@@ -133,7 +133,7 @@ Data Transaction::computeWitnessHash(const std::vector<TransactionInput>& inputs
 
     // Commit to the relevant transaction inputs.
     encodeVarInt(inputsToSign.size(), witnessBuf);
-    for (auto i = 0; i < inputsToSign.size(); i += 1) {
+    for (auto i = 0ul; i < inputsToSign.size(); i += 1) {
         if (i == signIndex) {
             signScript.encode(witnessBuf);
         } else {
