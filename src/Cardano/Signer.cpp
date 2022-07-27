@@ -75,7 +75,7 @@ Common::Proto::SigningError Signer::assembleSignatures(vector<pair<Data, Data>>&
             return Common::Proto::Error_invalid_private_key;
         }
         const auto privateKey = PrivateKey(privateKeyData);
-        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Extended);
+        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         const auto address = AddressV3(publicKey);
         privateKeys[address.string()] = privateKeyData;
     }
@@ -106,8 +106,8 @@ Common::Proto::SigningError Signer::assembleSignatures(vector<pair<Data, Data>>&
             }
         }
         const auto privateKey = PrivateKey(privateKeyData);
-        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Extended);
-        const auto signature = privateKey.sign(txId, TWCurveED25519Extended);
+        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
+        const auto signature = privateKey.sign(txId, TWCurveED25519ExtendedCardano);
         // public key (first 32 bytes) and signature (64 bytes)
         signatures.emplace_back(subData(publicKey.bytes, 0, 32), signature);
     }
@@ -210,7 +210,7 @@ vector<TxInput> selectInputsSimpleNative(const vector<TxInput>& inputs, Amount a
 
 // Select a subset of inputs, to cover desired token amount. Simple algorithm: pick largest ones.
 void selectInputsSimpleToken(const vector<TxInput>& inputs, string key, uint256_t amount, vector<TxInput>& selectedInputs) {
-    uint256_t selectedAmount = std::accumulate(selectedInputs.begin(), selectedInputs.end(), uint256_t(0), [key](uint256_t sum, const TxInput& si){ return si.tokenBundle.getAmount(key); });
+    uint256_t selectedAmount = std::accumulate(selectedInputs.begin(), selectedInputs.end(), uint256_t(0), [key]([[maybe_unused]] uint256_t sum, const TxInput& si){ return si.tokenBundle.getAmount(key); });
     if (selectedAmount >= amount) {
         return; // already covered
     }
@@ -218,7 +218,7 @@ void selectInputsSimpleToken(const vector<TxInput>& inputs, string key, uint256_
     auto ii = vector<TxInput>(inputs);
     std::sort(ii.begin(), ii.end(), [key](TxInput t1, TxInput t2) { return t1.tokenBundle.getAmount(key) > t2.tokenBundle.getAmount(key); });
     for (const auto& i: ii) {
-        if (distance(selectedInputs.begin(), find(selectedInputs.begin(), selectedInputs.end(), i)) < selectedInputs.size()) {
+        if (static_cast<std::size_t>(distance(selectedInputs.begin(), find(selectedInputs.begin(), selectedInputs.end(), i))) < selectedInputs.size()) {
             // already selected
             continue;
         }

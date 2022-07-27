@@ -81,8 +81,8 @@ struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519Blake2b(struct TWPri
     return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeED25519Blake2b) };
 }
 
-struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519Extended(struct TWPrivateKey *_Nonnull pk) {
-    return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeED25519Extended) };
+struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519Cardano(struct TWPrivateKey *_Nonnull pk) {
+    return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeED25519Cardano) };
 }
 
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivateKey *_Nonnull pk) {
@@ -108,9 +108,9 @@ TWData *TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull dige
     }
 }
 
-TWData *TWPrivateKeySignAsDER(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest, enum TWCurve curve) {
+TWData *TWPrivateKeySignAsDER(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest, [[maybe_unused]] enum TWCurve curve) {
     auto& d = *reinterpret_cast<const Data*>(digest);
-    auto result = pk->impl.signAsDER(d, curve);
+    auto result = pk->impl.signAsDER(d);
     if (result.empty()) {
         return nullptr;
     } else {
@@ -118,9 +118,9 @@ TWData *TWPrivateKeySignAsDER(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull
     }
 }
 
-TWData *TWPrivateKeySignSchnorr(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull message, enum TWCurve curve) {
+TWData *TWPrivateKeySignZilliqaSchnorr(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull message) {
     const auto& msg = *reinterpret_cast<const Data*>(message);
-    auto result = pk->impl.signSchnorr(msg, curve);
+    auto result = pk->impl.signZilliqa(msg);
 
     if (result.empty()) {
         return nullptr;

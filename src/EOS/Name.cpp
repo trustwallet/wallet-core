@@ -18,7 +18,7 @@ Name::Name(const std::string& str) {
         throw std::invalid_argument(str + ": size too long!");
     }
 
-    int i = 0;
+    std::size_t i = 0;
     while (i < std::min(size_t(12), str.size())) {
         value |= (toSymbol(str[i]) & 0x1f) << (64 - (5 * (i + 1)));
         i++;

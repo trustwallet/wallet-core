@@ -11,12 +11,6 @@
 
 namespace TW::Ethereum {
 
-/// Checksum types for Ethereum-based blockchains.
-enum ChecksumType {
-    eip55 = 0,
-    wanchain = 1,
-};
-
-std::string checksumed(const Address& address, enum ChecksumType type);
+std::string checksumed(const Address& address);
 
 } // namespace TW::Ethereum

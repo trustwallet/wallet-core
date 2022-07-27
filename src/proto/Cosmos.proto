@@ -197,6 +197,14 @@ message Message {
         string value = 2;
     }
 
+    // For signing an already serialized transaction. Account number and chain ID must be set outside.
+    message SignDirect {
+        // The prepared serialized TxBody
+        bytes body_bytes = 1;
+        // The prepared serialized AuthInfo
+        bytes auth_info_bytes = 2; 
+    }
+
     oneof message_oneof {
         Send send_coins_message = 1;
         Transfer transfer_tokens_message = 2;
@@ -212,6 +220,7 @@ message Message {
         WasmExecuteContractTransfer wasm_execute_contract_transfer_message = 12;
         WasmExecuteContractSend wasm_execute_contract_send_message = 13;
         WasmExecuteContractGeneric wasm_execute_contract_generic = 14;
+        SignDirect sign_direct_message = 15;
     }
 }
 
@@ -229,7 +238,7 @@ message SigningInput {
     string chain_id = 3;
     Fee fee = 4;
     string memo = 5;
-    uint64 sequence = 6; 
+    uint64 sequence = 6;
 
     bytes private_key = 7;
 

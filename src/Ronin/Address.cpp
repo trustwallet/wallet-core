@@ -44,7 +44,7 @@ Address::Address(const std::string& string) {
 
 // Normalized: with ronin prefix, checksummed hex address, no 0x prefix
 std::string Address::string() const {
-    std::string address = Ethereum::checksumed(*this, Ethereum::ChecksumType::eip55);
+    std::string address = Ethereum::checksumed(*this);
     if (address.size() >= 2 && address.substr(0, 2) == "0x") { address = address.substr(2); } // skip 0x
     return prefix + address;
 }

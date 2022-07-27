@@ -22,16 +22,16 @@ TEST(TWBitcoinScript, Create) {
     {
         auto script = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithData(data.get()));
         ASSERT_TRUE(script.get() != nullptr);
-        ASSERT_EQ(TWBitcoinScriptSize(script.get()), 23);
+        ASSERT_EQ(TWBitcoinScriptSize(script.get()), 23ul);
     }
     {
         auto script = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithBytes(TWDataBytes(data.get()), TWDataSize(data.get())));
         ASSERT_TRUE(script.get() != nullptr);
-        ASSERT_EQ(TWBitcoinScriptSize(script.get()), 23);
+        ASSERT_EQ(TWBitcoinScriptSize(script.get()), 23ul);
 
         auto scriptCopy = WRAP(TWBitcoinScript, TWBitcoinScriptCreateCopy(script.get()));
         ASSERT_TRUE(scriptCopy.get() != nullptr);
-        ASSERT_EQ(TWBitcoinScriptSize(scriptCopy.get()), 23);
+        ASSERT_EQ(TWBitcoinScriptSize(scriptCopy.get()), 23ul);
     }
 }
 

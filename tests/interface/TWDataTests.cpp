@@ -12,7 +12,7 @@
 TEST(TWData, CreateWithHexString) {
     {
         const auto data = WRAPD(TWDataCreateWithHexString(STRING("deadbeef").get()));
-        ASSERT_EQ(TWDataSize(data.get()), 4);
+        ASSERT_EQ(TWDataSize(data.get()), 4ul);
         EXPECT_EQ(TWDataBytes(data.get())[0], 0xde);
         EXPECT_EQ(TWDataBytes(data.get())[1], 0xad);
         EXPECT_EQ(TWDataBytes(data.get())[2], 0xbe);
@@ -22,7 +22,7 @@ TEST(TWData, CreateWithHexString) {
 
     {
         const auto data = WRAPD(TWDataCreateWithHexString(STRING("00").get()));
-        ASSERT_EQ(TWDataSize(data.get()), 1);
+        ASSERT_EQ(TWDataSize(data.get()), 1ul);
         EXPECT_EQ(TWDataBytes(data.get())[0], 0);
         assertHexEqual(data, "00");
     }
@@ -60,10 +60,10 @@ TEST(TWData, CreateWithBytes) {
 }
 
 TEST(TWData, CreateWithSize) {
-    int n = 12;
+    std::size_t n = 12;
     const auto data = WRAPD(TWDataCreateWithSize(n));
     ASSERT_EQ(TWDataSize(data.get()), n);
-    for (int i = 0; i < n; ++i) {
+    for (auto i = 0ul; i < n; ++i) {
         EXPECT_EQ(TWDataBytes(data.get())[i], 0);
     }
 }

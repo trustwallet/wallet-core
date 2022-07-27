@@ -124,7 +124,7 @@ TEST(SolanaTransaction, CreateTokenAccountTransaction) {
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
     EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 5);
-    ASSERT_EQ(message.accountKeys.size(), 7);
+    ASSERT_EQ(message.accountKeys.size(), 7ul);
     EXPECT_EQ(message.accountKeys[0].string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
     EXPECT_EQ(message.accountKeys[1].string(), "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
     EXPECT_EQ(message.accountKeys[2].string(), "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
@@ -133,9 +133,9 @@ TEST(SolanaTransaction, CreateTokenAccountTransaction) {
     EXPECT_EQ(message.accountKeys[5].string(), "SysvarRent111111111111111111111111111111111");
     EXPECT_EQ(message.accountKeys[6].string(), "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
     EXPECT_EQ(Base58::bitcoin.encode(message.recentBlockhash.bytes), "9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
-    ASSERT_EQ(message.instructions.size(), 1);
+    ASSERT_EQ(message.instructions.size(), 1ul);
     EXPECT_EQ(message.instructions[0].programId.string(), "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
-    ASSERT_EQ(message.instructions[0].accounts.size(), 7);
+    ASSERT_EQ(message.instructions[0].accounts.size(), 7ul);
     EXPECT_EQ(message.instructions[0].accounts[0].account.string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
     EXPECT_EQ(message.instructions[0].accounts[1].account.string(), "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
     EXPECT_EQ(message.instructions[0].accounts[2].account.string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
@@ -166,10 +166,10 @@ TEST(SolanaTransaction, TransferTokenTransaction_3vZ67C) {
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
     EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 2);
-    ASSERT_EQ(message.accountKeys.size(), 5);
-    ASSERT_EQ(message.instructions.size(), 1);
+    ASSERT_EQ(message.accountKeys.size(), 5ul);
+    ASSERT_EQ(message.instructions.size(), 1ul);
     EXPECT_EQ(message.instructions[0].programId.string(), "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
-    ASSERT_EQ(message.instructions[0].accounts.size(), 4);
+    ASSERT_EQ(message.instructions[0].accounts.size(), 4ul);
     auto transaction = Transaction(message);
     transaction.signatures.clear();
     Signature signature("3vZ67CGoRYkuT76TtpP2VrtTPBfnvG2xj6mUTvvux46qbnpThgQDgm27nC3yQVUZrABFjT9Qo7vA74tCjtV5P9Xg");

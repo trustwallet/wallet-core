@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -24,13 +24,24 @@ class AddressV3 {
     };
 
     enum Kind: uint8_t {
-        Kind_Base = 0,
+        Kind_Base = 0, // spending + staking key
+        //Kind_Base_Script_Key = 1,
+        //Kind_Base_Key_Script_Key = 2,
+        //Kind_Base_Script_Script_Key = 3,
+        //Kind_Pointer = 4,
+        //Kind_Pointer_Script = 5,
+        Kind_Enterprise = 6, // spending key
+        //Kind_Enterprise_Script = 7,
+        //Kind_Bootstrap = 8, // Byron
+        Kind_Reward = 14, // // staking key
+        //Kind_Reward_Script = 15,
     };
 
     static const uint8_t HashSize = 28;
 
     // First byte header (kind, netowrkId) and 2 hashes
-    static const uint8_t EncodedSize = 1 + 2 * HashSize;
+    static const uint8_t EncodedSize1 = 1 + HashSize;
+    static const uint8_t EncodedSize2 = 1 + 2 * HashSize;
 
     NetworkId networkId = Network_Production;
 
@@ -73,8 +84,14 @@ class AddressV3 {
     /// Returns the Bech string representation of the address, with given HRP.
     std::string string(const std::string& hrp) const;
 
+    /// Hrp of kind
+    static std::string getHrp(const Kind kind) noexcept; 
+    /// Check whether data length is correct
+    static bool checkLength(Kind kind, size_t length) noexcept;
+    /// Check validity of binary address.
+    static bool parseAndCheckV3(const TW::Data& raw, NetworkId& networkId, Kind& kind, TW::Data& bytes) noexcept;
     /// Check validity and parse elements of a string address.  Used internally by isValid and ctor.
-    static bool parseAndCheckV3(const std::string& addr, NetworkId& networkId, Kind& kind, TW::Data& raw);
+    static bool parseAndCheckV3(const std::string& addr, NetworkId& networkId, Kind& kind, TW::Data& bytes) noexcept;
 
     /// Return the binary data representation (keys appended, internal format)
     Data data() const;

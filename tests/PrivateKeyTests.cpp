@@ -174,7 +174,7 @@ TEST(PrivateKey, PrivateKeyExtended) {
     ));
     EXPECT_EQ("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5", hex(privateKeyNonext.bytes));
     auto publicKeyNonext = privateKeyNonext.getPublicKey(TWPublicKeyTypeED25519);
-    EXPECT_EQ(32, publicKeyNonext.bytes.size());
+    EXPECT_EQ(32ul, publicKeyNonext.bytes.size());
 
     const auto fullkey = 
         "b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"
@@ -193,8 +193,8 @@ TEST(PrivateKey, PrivateKeyExtended) {
     EXPECT_EQ("d41a57c2dec9a6a19d6bf3b1fa784f334f3a0048d25ccb7b78a7b44066f9ba7b", hex(privateKeyExt.secondExtension()));
     EXPECT_EQ("ed7f28be986cbe06819165f2ee41b403678a098961013cf4a2f3e9ea61fb6c1a", hex(privateKeyExt.secondChainCode()));
 
-    auto publicKeyExt = privateKeyExt.getPublicKey(TWPublicKeyTypeED25519Extended);
-    EXPECT_EQ(2*64, publicKeyExt.bytes.size());
+    auto publicKeyExt = privateKeyExt.getPublicKey(TWPublicKeyTypeED25519Cardano);
+    EXPECT_EQ(2*64ul, publicKeyExt.bytes.size());
 
     // Try other constructor for extended key
     auto privateKeyExtOne = PrivateKey(
@@ -209,12 +209,12 @@ TEST(PrivateKey, PrivateKeyExtended) {
 }
 
 TEST(PrivateKey, PrivateKeyExtendedError) {
-    // TWPublicKeyTypeED25519Extended pubkey with non-extended private: error
+    // TWPublicKeyTypeED25519Cardano pubkey with non-extended private: error
     auto privateKeyNonext = PrivateKey(parse_hex(
         "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"
     ));
     try {
-        auto publicKeyError = privateKeyNonext.getPublicKey(TWPublicKeyTypeED25519Extended);
+        auto publicKeyError = privateKeyNonext.getPublicKey(TWPublicKeyTypeED25519Cardano);
     } catch (invalid_argument& ex) {
         // expected exception
         return;
@@ -315,7 +315,7 @@ TEST(PrivateKey, SignExtended) {
     ));
     Data messageData = TW::data("hello");
     Data hash = Hash::keccak256(messageData);
-    Data actual = privateKeyExt.sign(hash, TWCurveED25519Extended);
+    Data actual = privateKeyExt.sign(hash, TWCurveED25519ExtendedCardano);
 
     EXPECT_EQ(
         "375df53b6a4931dcf41e062b1c64288ed4ff3307f862d5c1b1c71964ce3b14c99422d0fdfeb2807e9900a26d491d5e8a874c24f98eec141ed694d7a433a90f08",
@@ -327,18 +327,10 @@ TEST(PrivateKey, SignSchnorr) {
     const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
     const Data messageData = TW::data("hello schnorr");
     const Data digest = Hash::sha256(messageData);
-    const auto signature = privateKey.signSchnorr(digest, TWCurveSECP256k1);
+    const auto signature = privateKey.signZilliqa(digest);
     EXPECT_EQ(hex(signature),
         "b8118ccb99563fe014279c957b0a9d563c1666e00367e9896fe541765246964f64a53052513da4e6dc20fdaf69ef0d95b4ca51c87ad3478986cf053c2dd0b853"
     );
-}
-
-TEST(PrivateKey, SignSchnorrWrongType) {
-    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
-    const Data messageData = TW::data("hello schnorr");
-    const Data digest = Hash::sha256(messageData);
-    const auto signature = privateKey.signSchnorr(digest, TWCurveNIST256p1);
-    EXPECT_EQ(signature.size(), 0);
 }
 
 TEST(PrivateKey, SignNIST256p1) {
@@ -354,7 +346,7 @@ TEST(PrivateKey, SignNIST256p1) {
     );
 }
 
-int isCanonical(uint8_t by, uint8_t sig[64]) {
+int isCanonical([[maybe_unused]] uint8_t by, [[maybe_unused]] uint8_t sig[64]) {
     return 1;
 }
 
@@ -377,14 +369,14 @@ TEST(PrivateKey, SignShortDigest) {
     Data shortDigest = TW::data("12345");
     {
         Data actual = privateKey.sign(shortDigest, TWCurveSECP256k1);
-        EXPECT_EQ(actual.size(), 0);
+        EXPECT_EQ(actual.size(), 0ul);
     }
     {
         Data actual = privateKey.sign(shortDigest, TWCurveNIST256p1);
-        EXPECT_EQ(actual.size(), 0);
+        EXPECT_EQ(actual.size(), 0ul);
     }
     {
         Data actual = privateKey.sign(shortDigest, TWCurveSECP256k1, isCanonical);
-        EXPECT_EQ(actual.size(), 0);
+        EXPECT_EQ(actual.size(), 0ul);
     }
 }

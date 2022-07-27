@@ -38,7 +38,7 @@ Result<Transaction, Common::Proto::SigningError> SignatureBuilder<Transaction>::
               std::back_inserter(transactionToSign.inputs));
 
     const auto hashSingle = hashTypeIsSingle(input.hashType);
-    for (auto i = 0; i < plan.utxos.size(); i++) {
+    for (auto i = 0ul; i < plan.utxos.size(); i++) {
         // Only sign TWBitcoinSigHashTypeSingle if there's a corresponding output
         if (hashSingle && i >= transaction.outputs.size()) {
             continue;
@@ -162,7 +162,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
     if (script.matchMultisig(keys, required)) {
         auto results = std::vector<Data>{{}}; // workaround CHECKMULTISIG bug
         for (auto& pubKey : keys) {
-            if (results.size() >= required + 1) {
+            if (results.size() >= required + 1ul) {
                 break;
             }
             auto keyHash = Hash::ripemd(Hash::sha256(pubKey));
@@ -286,7 +286,7 @@ Data SignatureBuilder<Transaction>::createSignature(
     const auto key = std::get<0>(pair.value());
     const auto pk = PrivateKey(key);
 
-    auto sig = pk.signAsDER(sighash, TWCurveSECP256k1);
+    auto sig = pk.signAsDER(sighash);
     if (!sig.empty()) {
         sig.push_back(static_cast<byte>(input.hashType));
     }

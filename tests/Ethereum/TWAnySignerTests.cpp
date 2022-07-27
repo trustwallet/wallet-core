@@ -314,7 +314,7 @@ TEST(TWAnySignerEthereum, PlanNotSupported) {
     auto inputData = input.SerializeAsString();
     auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));
     auto outputTWData = WRAPD(TWAnySignerPlan(inputTWData.get(), TWCoinTypeEthereum));
-    EXPECT_EQ(TWDataSize(outputTWData.get()), 0);
+    EXPECT_EQ(TWDataSize(outputTWData.get()), 0ul);
 }
 
 TEST(TWAnySignerEthereum, SignERC1559Transfer_1442) {

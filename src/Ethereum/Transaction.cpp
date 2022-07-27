@@ -66,7 +66,7 @@ Data TransactionNonTyped::serialize(const uint256_t chainID) const {
     return RLP::encodeList(encoded);
 }
 
-Data TransactionNonTyped::encoded(const Signature& signature, const uint256_t chainID) const {
+Data TransactionNonTyped::encoded(const Signature& signature, [[maybe_unused]] const uint256_t chainID) const {
     Data encoded;
     append(encoded, RLP::encode(nonce));
     append(encoded, RLP::encode(gasPrice));

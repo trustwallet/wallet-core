@@ -122,5 +122,5 @@ TEST(RippleTransaction, preImage) {
           /* account */     "81145b812c9d57731e27a2da8b1830195f88ef32a3b6"
           /* destination */ "8314b5f762798a53d543a014caf8b297cff8f2f937e8"
     );
-    ASSERT_EQ(unsignedTx.size(), 114);
+    ASSERT_EQ(unsignedTx.size(), 114ul);
 }

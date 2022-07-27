@@ -181,7 +181,7 @@ void Transaction::encode(Data& data) const {
 
 Data Transaction::getSignatureHash(const Bitcoin::Script& scriptCode, size_t index,
                                    enum TWBitcoinSigHashType hashType, uint64_t amount,
-                                   Bitcoin::SignatureVersion version) const {
+                                   [[maybe_unused]] Bitcoin::SignatureVersion version) const {
     Data personalization;
     personalization.reserve(16);
     std::copy(sigHashPersonalization.begin(), sigHashPersonalization.begin() + 12,

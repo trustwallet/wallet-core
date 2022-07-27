@@ -65,7 +65,7 @@ static inline Data makeTransactionSignature(PrivateKey& privateKey, Data& txHash
     Data transactionSignature = Data();
     encodeVarInt(pubKey.bytes.size(), transactionSignature);
     std::copy(pubKey.bytes.begin(), pubKey.bytes.end(), std::back_inserter(transactionSignature));
-    auto signature = privateKey.signAsDER(txHash, TWCurve::TWCurveSECP256k1);
+    auto signature = privateKey.signAsDER(txHash);
     encodeVarInt(signature.size(), transactionSignature);
     std::copy(signature.begin(), signature.end(), std::back_inserter(transactionSignature));
     return transactionSignature;

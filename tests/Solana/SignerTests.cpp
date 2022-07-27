@@ -45,13 +45,13 @@ TEST(SolanaSigner, CompiledInstruction) {
     auto compiledInstruction = CompiledInstruction(instruction, addresses);
 
     EXPECT_EQ(compiledInstruction.programIdIndex, 2);
-    ASSERT_EQ(compiledInstruction.accounts.size(), 5);
+    ASSERT_EQ(compiledInstruction.accounts.size(), 5ul);
     EXPECT_EQ(compiledInstruction.accounts[0], 1);
     EXPECT_EQ(compiledInstruction.accounts[1], 0);
     EXPECT_EQ(compiledInstruction.accounts[2], 2);
     EXPECT_EQ(compiledInstruction.accounts[3], 1);
     EXPECT_EQ(compiledInstruction.accounts[4], 0);
-    ASSERT_EQ(compiledInstruction.data.size(), 4);
+    ASSERT_EQ(compiledInstruction.data.size(), 4ul);
 }
 
 TEST(SolanaSigner, CompiledInstructionFindAccount) {

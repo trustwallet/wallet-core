@@ -65,7 +65,7 @@ bool Keys::pubPri(const string& coinid, const string& p, string& res) {
     }
 }
 
-bool Keys::priPub(const string& p, string& res) {
+bool Keys::priPub([[maybe_unused]] const string& p, [[maybe_unused]] string& res) {
     _out << "Not yet implemented! :)" << endl;
     return false;
 }
@@ -77,7 +77,7 @@ void Keys::setMnemonic(const vector<string>& param) {
     }
     // concatenate
     string mnem = "";
-    for (int i = 1; i < param.size(); ++i) {
+    for (auto i = 1ul; i < param.size(); ++i) {
         if (i > 1) mnem += " ";
         mnem += param[i]; 
     }

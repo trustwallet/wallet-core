@@ -33,7 +33,7 @@ public:
 
     bool operator==(const Transaction &other) const;
 
-    virtual int deserializeExclusiveData(const Data& data, int initial_pos = 0) { return initial_pos; }
+    virtual int deserializeExclusiveData([[maybe_unused]] const Data& data, int initial_pos = 0) { return initial_pos; }
     virtual Data serializeExclusiveData() const { return Data(); }
 
     Data getHash() const;

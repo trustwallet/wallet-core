@@ -46,8 +46,9 @@ bool TWPublicKeyVerify(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull signatu
 TW_EXPORT_METHOD
 bool TWPublicKeyVerifyAsDER(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull signature, TWData *_Nonnull message);
 
+/// Verify a Zilliqa schnorr signature with a signature and message.
 TW_EXPORT_METHOD
-bool TWPublicKeyVerifySchnorr(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull signature, TWData *_Nonnull message);
+bool TWPublicKeyVerifyZilliqaSchnorr(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull signature, TWData *_Nonnull message);
 
 TW_EXPORT_PROPERTY
 enum TWPublicKeyType TWPublicKeyKeyType(struct TWPublicKey *_Nonnull publicKey);

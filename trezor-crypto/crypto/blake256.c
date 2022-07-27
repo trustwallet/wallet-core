@@ -169,9 +169,8 @@ void blake256_Update( BLAKE256_CTX *S, const uint8_t *in, size_t inlen )
   {
     memcpy( ( void * ) ( S->buf + left ),   \
             ( void * ) in, ( size_t ) inlen );
-    S->buflen = left + ( int )inlen;
   }
-  else S->buflen = 0;
+  S->buflen = left + inlen;
 }
 
 

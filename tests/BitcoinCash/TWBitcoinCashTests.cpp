@@ -151,7 +151,7 @@ TEST(BitcoinCash, SignTransaction) {
     EXPECT_EQ(output.transaction().outputs_size(), 2);
     EXPECT_EQ(output.transaction().outputs(0).value(), amount);
     EXPECT_EQ(output.transaction().outputs(1).value(), 4325);
-    EXPECT_EQ(output.encoded().length(), 226);
+    EXPECT_EQ(output.encoded().length(), 226ul);
     ASSERT_EQ(hex(output.encoded()),
         "01000000"
         "01"

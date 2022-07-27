@@ -48,7 +48,7 @@ public:
         // Optional OP_RETURN output
         if (plan.outputOpReturn.size() > 0) {
             auto lockingScriptOpReturn = Script::buildOpReturnScript(plan.outputOpReturn);
-            tx.outputs.push_back(TransactionOutput(0, lockingScriptOpReturn));
+            tx.outputs.emplace_back(0, lockingScriptOpReturn);
         }
 
         return tx;

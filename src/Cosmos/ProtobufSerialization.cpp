@@ -226,6 +226,10 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
 }
 
 std::string buildProtoTxBody(const Proto::SigningInput& input) {
+    if (input.messages_size() >= 1 && input.messages(0).has_sign_direct_message()) {
+        return input.messages(0).sign_direct_message().body_bytes();
+    }
+
     if (input.messages_size() < 1) {
         throw std::invalid_argument("No message found");
     }
@@ -242,6 +246,10 @@ std::string buildProtoTxBody(const Proto::SigningInput& input) {
 }
 
 std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin) {
+    if (input.messages_size() >= 1 && input.messages(0).has_sign_direct_message()) {
+        return input.messages(0).sign_direct_message().auth_info_bytes();
+    }
+
     // AuthInfo
     const auto privateKey = PrivateKey(input.private_key());
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
@@ -302,7 +310,7 @@ Data buildSignature(const Proto::SigningInput& input, const std::string& seriali
     return signature;
 }
 
-std::string buildProtoTxRaw(const Proto::SigningInput& input, const std::string& serializedTxBody, const std::string& serializedAuthInfo, const Data& signature) {
+std::string buildProtoTxRaw(const std::string& serializedTxBody, const std::string& serializedAuthInfo, const Data& signature) {
     auto txRaw = cosmos::TxRaw();
     txRaw.set_body_bytes(serializedTxBody);
     txRaw.set_auth_info_bytes(serializedAuthInfo);

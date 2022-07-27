@@ -34,9 +34,9 @@ public:
         : LinearFeeCalculator(gDecredBytesPerInput, gDecredBytesPerOutput, gDecredBytesBase) {}
 };
 
-constexpr DefaultFeeCalculator defaultFeeCalculator{};
-constexpr DecredFeeCalculator decredFeeCalculator{};
-constexpr SegwitFeeCalculator segwitFeeCalculator{};
+static constexpr DefaultFeeCalculator defaultFeeCalculator{};
+static constexpr DecredFeeCalculator decredFeeCalculator{};
+static constexpr SegwitFeeCalculator segwitFeeCalculator{};
 
 const FeeCalculator& getFeeCalculator(TWCoinType coinType) noexcept {
     switch (coinType) {

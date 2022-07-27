@@ -241,9 +241,9 @@ TEST(FIONewFundsContent, deserialize) {
 TEST(FIOTransactionBuilder, expirySetDefault) {
     uint32_t expiry = 1579790000;
     EXPECT_EQ(TransactionBuilder::expirySetDefaultIfNeeded(expiry), false);
-    EXPECT_EQ(expiry, 1579790000);
+    EXPECT_EQ(expiry, 1579790000ul);
     expiry = 0;
-    EXPECT_EQ(expiry, 0);
+    EXPECT_EQ(expiry, 0ul);
     EXPECT_EQ(TransactionBuilder::expirySetDefaultIfNeeded(expiry), true);
     EXPECT_TRUE(expiry > 1579790000);
 }
@@ -350,7 +350,7 @@ TEST(FIOTransactionBuilder, encodeString) {
     {
         Data data;
         const string text = "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789";
-        EXPECT_EQ(text.length(), 130);
+        EXPECT_EQ(text.length(), 130ul);
         TW::FIO::encodeString(text, data);
         // length on 2 bytes
         EXPECT_EQ(hex(data), "8201" + hex(text));

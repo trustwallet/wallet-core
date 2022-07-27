@@ -285,8 +285,8 @@ class Message {
     void compileInstructions();
 
     static void appendReferences(std::vector<AccountMeta>& accountMetas, const std::vector<Address>& references) {
-        for (auto reference: references) {
-            accountMetas.push_back(AccountMeta(reference, false, true));
+        for (auto &&reference: references) {
+            accountMetas.emplace_back(reference, false, true);
         }
     }
 
@@ -317,6 +317,7 @@ class Message {
         auto sysvarStakeHistoryId = Address(SYSVAR_STAKE_HISTORY_ID_ADDRESS);
         auto stakeProgramId = Address(STAKE_PROGRAM_ID_ADDRESS);
         std::vector<Instruction> instructions;
+        instructions.reserve(3);
         // create_account_with_seed instruction
         Address seed = Address(data(recentBlockhash.bytes.data(), recentBlockhash.bytes.size()));
         auto createAccountInstruction = Instruction::createAccountWithSeed(std::vector<AccountMeta>{
@@ -452,7 +453,8 @@ class Message {
         const auto systemProgramId = Address(SYSTEM_PROGRAM_ID_ADDRESS);
         const auto tokenProgramId = Address(TOKEN_PROGRAM_ID_ADDRESS);
         std::vector<Instruction> instructions;
-        instructions.push_back(Instruction::createTokenCreateAccount(std::vector<AccountMeta>{
+        instructions.reserve(3);
+        instructions.emplace_back(Instruction::createTokenCreateAccount(std::vector<AccountMeta>{
             AccountMeta(signer, true, false), // fundingAddress,
             AccountMeta(recipientTokenAddress, false, false),
             AccountMeta(recipientMainAddress, false, true),
@@ -463,7 +465,7 @@ class Message {
         }));
         if (memo.length() > 0) {
             // Optional memo. Order: before transfer, as per documentation.
-            instructions.push_back(Instruction::createMemo(memo));
+            instructions.emplace_back(Instruction::createMemo(memo));
         }
         std::vector<AccountMeta> accountMetas = {
             AccountMeta(senderTokenAddress, false, false),
