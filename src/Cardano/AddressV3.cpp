@@ -72,7 +72,7 @@ bool AddressV3::parseAndCheckV3(const std::string& addr, NetworkId& networkId, K
         }
 
         // check prefix
-        if (const auto expectedHrp = getHrp(kind); addr.substr(0, expectedHrp.length()) != expectedHrp) {
+        if (const auto expectedHrp = getHrp(kind); !addr.starts_with(expectedHrp)) {
             return false;
         }
 
