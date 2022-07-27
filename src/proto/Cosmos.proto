@@ -197,7 +197,7 @@ message Message {
         string value = 2;
     }
 
-    // A serialized partial transaction, unsigned
+    // For signing an already serialized transaction. Account number and chain ID must be set outside.
     message SignDirect {
         // The prepared serialized TxBody
         bytes body_bytes = 1;
