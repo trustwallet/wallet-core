@@ -16,10 +16,12 @@ using json = nlohmann::json;
 
 const std::string Waves::Transaction::WAVES = "WAVES";
 
+namespace TW::Waves {
+
 Data serializeTransfer(int64_t amount, std::string asset, int64_t fee, std::string fee_asset, Address to, const Data& attachment, int64_t timestamp, const Data& pub_key) {
     auto data = Data();
     if (asset.empty()) {
-      asset = Waves::Transaction::WAVES;
+        asset = Waves::Transaction::WAVES;
     }
     if (fee_asset.empty()) {
         fee_asset = Waves::Transaction::WAVES;
@@ -45,7 +47,7 @@ Data serializeTransfer(int64_t amount, std::string asset, int64_t fee, std::stri
     encode64BE(fee, data);
     append(data, Data(std::begin(to.bytes), std::end(to.bytes)));
     encodeDynamicLengthBytes(attachment, data);
-    
+
     return data;
 }
 
@@ -60,7 +62,7 @@ Data serializeLease(int64_t amount, int64_t fee, Address to, int64_t timestamp, 
     encode64BE(amount, data);
     encode64BE(fee, data);
     encode64BE(timestamp, data);
-    
+
     return data;
 }
 
@@ -74,13 +76,13 @@ Data serializeCancelLease(const Data& leaseId, int64_t fee, int64_t timestamp, c
     encode64BE(fee, data);
     encode64BE(timestamp, data);
     append(data, leaseId);
-    
+
     return data;
 }
 
 json jsonTransfer(const Data& signature, int64_t amount, const std::string& asset, int64_t fee, const std::string& fee_asset, Address to, const Data& attachment, int64_t timestamp, const Data& pub_key) {
     json jsonTx;
-    
+
     jsonTx["type"] = TransactionType::transfer;
     jsonTx["version"] = TransactionVersion::V2;
     jsonTx["fee"] = fee;
@@ -96,13 +98,13 @@ json jsonTransfer(const Data& signature, int64_t amount, const std::string& asse
     }
     jsonTx["amount"] = amount;
     jsonTx["attachment"] = Base58::bitcoin.encode(attachment);
-    
+
     return jsonTx;
 }
 
 json jsonLease(const Data& signature, int64_t amount, int64_t fee, Address to, int64_t timestamp, const Data& pub_key) {
     json jsonTx;
-    
+
     jsonTx["type"] = TransactionType::lease;
     jsonTx["version"] = TransactionVersion::V2;
     jsonTx["fee"] = fee;
@@ -111,13 +113,13 @@ json jsonLease(const Data& signature, int64_t amount, int64_t fee, Address to, i
     jsonTx["proofs"] = json::array({Base58::bitcoin.encode(signature)});
     jsonTx["recipient"] = Address(to).string();
     jsonTx["amount"] = amount;
-    
+
     return jsonTx;
 }
 
 json jsonCancelLease(const Data& signature, const Data& leaseId, int64_t fee, int64_t timestamp, const Data& pub_key) {
     json jsonTx;
-    
+
     jsonTx["type"] = TransactionType::cancelLease;
     jsonTx["version"] = TransactionVersion::V2;
     jsonTx["fee"] = fee;
@@ -126,11 +128,11 @@ json jsonCancelLease(const Data& signature, const Data& leaseId, int64_t fee, in
     jsonTx["chainId"] = 87; // mainnet
     jsonTx["timestamp"] = timestamp;
     jsonTx["proofs"] = json::array({Base58::bitcoin.encode(signature)});
-    
+
     return jsonTx;
 }
 
-Data Waves::Transaction::serializeToSign() const {
+Data Transaction::serializeToSign() const {
     if (pub_key.empty()) {
         throw std::invalid_argument("Public key can't be empty");
     }
@@ -153,49 +155,44 @@ Data Waves::Transaction::serializeToSign() const {
         auto leaseId = Base58::bitcoin.decode(message.lease_id());
         return serializeCancelLease(leaseId, message.fee(), input.timestamp(), pub_key);
     }
-    
+
     return Data();
 }
 
-
-
-
-
-json Waves::Transaction::buildJson(const Data& signature) const {
+json Transaction::buildJson(const Data& signature) const {
     if (input.has_transfer_message()) {
         auto message = input.transfer_message();
         auto attachment = Data(message.attachment().begin(), message.attachment().end());
         return jsonTransfer(
-                            signature,
-                            message.amount(),
-                            message.asset(),
-                            message.fee(),
-                            message.fee_asset(),
-                            Address(message.to()),
-                            attachment,
-                            input.timestamp(),
-                            pub_key);
+            signature,
+            message.amount(),
+            message.asset(),
+            message.fee(),
+            message.fee_asset(),
+            Address(message.to()),
+            attachment,
+            input.timestamp(),
+            pub_key);
     } else if (input.has_lease_message()) {
         auto message = input.lease_message();
         return jsonLease(
-                            signature,
-                            message.amount(),
-                            message.fee(),
-                            Address(message.to()),
-                            input.timestamp(),
-                            pub_key);
+            signature,
+            message.amount(),
+            message.fee(),
+            Address(message.to()),
+            input.timestamp(),
+            pub_key);
     } else if (input.has_cancel_lease_message()) {
         auto message = input.cancel_lease_message();
         auto leaseId = Base58::bitcoin.decode(message.lease_id());
         return jsonCancelLease(
-                            signature,
-                            leaseId,
-                            message.fee(),
-                            input.timestamp(),
-                            pub_key);
+            signature,
+            leaseId,
+            message.fee(),
+            input.timestamp(),
+            pub_key);
     }
     return nullptr;
 }
 
-
-
+} // namespace TW::Waves
