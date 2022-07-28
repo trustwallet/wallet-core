@@ -69,9 +69,9 @@ TWData *_Nullable TWPrivateKeyGetSharedKey(const struct TWPrivateKey *_Nonnull p
 TW_EXPORT_METHOD
 TWData *_Nullable TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest, enum TWCurve curve);
 
-/// Signs a digest using ECDSA and given curve. The result is encoded with DER.
+/// Signs a digest using ECDSA. The result is encoded with DER.
 TW_EXPORT_METHOD
-TWData *_Nullable TWPrivateKeySignAsDER(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest, enum TWCurve curve);
+TWData*_Nullable TWPrivateKeySignAsDER(struct TWPrivateKey* pk, TWData* digest);
 
 /// Signs a digest using ECDSA and Zilliqa schnorr signature scheme.
 TW_EXPORT_METHOD
