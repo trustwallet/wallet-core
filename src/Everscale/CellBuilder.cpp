@@ -10,16 +10,15 @@ using namespace TW;
 using namespace TW::Everscale;
 
 CellBuilder::CellBuilder(Data& appendedData, std::size_t bits) {
-    assert(bits < appendedData.size() * 8);
+    assert(bits <= appendedData.size() * 8);
     assert(bits < Cell::MAX_BITS);
 
     auto dataShift = bits % 8;
     if (dataShift == 0) {
-        appendedData.resize(bitLen / 8);
+        appendedData.resize(bits / 8);
     } else {
-        appendedData.resize(1 + bitLen / 8);
-        if (!appendedData.empty())
-            appendedData.back() = (appendedData.back() >> (8 - dataShift)) << (8 - dataShift);
+        appendedData.resize(1 + bits / 8);
+        appendedData.back() = (appendedData.back() >> (8 - dataShift)) << (8 - dataShift);
     }
 
     data = appendedData;
@@ -67,14 +66,43 @@ void CellBuilder::appendU64(uint64_t value) {
 }
 
 void CellBuilder::appendU128(uint128_t value) {
-    Data appendedData;
-    encode128BE(value, appendedData);
-    appendRaw(appendedData, 128);
+    auto bits = 4;
+    auto bytes = 16 - clzU128(value) / 8;
+
+    appendBits(bytes, bits);
+
+    Data encodedValue;
+    encode128BE(value, encodedValue);
+
+    Data appendedData(encodedValue.begin() + (encodedValue.size() - bytes), encodedValue.end());
+    appendRaw(appendedData, bytes * 8);
 }
 
 void CellBuilder::appendi8(int8_t value) {
     Data appendedData{static_cast<uint8_t>(value)};
     appendRaw(appendedData, 8);
+}
+
+void CellBuilder::appendBits(uint64_t value, uint8_t bits) {
+    Data appendedData;
+
+    if (bits == 0) {
+        // Do nothing
+    } else if (bits >= 1 && bits <= 7) {
+        auto val = static_cast<uint8_t>(value) << (8 - bits);
+        appendedData.push_back(val);
+    } else if (bits >= 8 && bits <= 15) {
+        auto val = static_cast<uint16_t>(value) << (16 - bits);
+        encode16BE(val, appendedData);
+    } else if (bits >= 16 && bits <= 31) {
+        auto val = static_cast<uint32_t>(value) << (32 - bits);
+        encode32BE(val, appendedData);
+    } else if (bits >= 32 && bits <= 63) {
+        auto val = static_cast<uint64_t>(value) << (64 - bits);
+        encode64BE(val, appendedData);
+    }
+
+    appendRaw(appendedData, bits);
 }
 
 void CellBuilder::appendRaw(const Data& appendedData, std::size_t bits) {
@@ -112,6 +140,13 @@ void CellBuilder::appendReferenceCell(std::shared_ptr<Cell> child) {
         throw std::runtime_error("cell refs overflow");
     }
     references.push_back(std::move(child));
+}
+
+void CellBuilder::appendBuilder(const CellBuilder& builder) {
+    appendRaw(builder.data, builder.bitLen);
+    for (const auto & reference : builder.references) {
+        appendReferenceCell(reference);
+    }
 }
 
 void CellBuilder::appendCellSlice(const CellSlice &other) {
@@ -196,7 +231,22 @@ void CellBuilder::appendWithDoubleShifting(const Data& appendedData, uint16_t bi
     }
 }
 
-void CellBuilder::encode128BE(uint128_t val, Data& data) {
+uint32_t CellBuilder::clzU128(const uint128_t& u) {
+    uint64_t hi = static_cast<uint64_t>(u >> 64);
+    uint64_t lo = static_cast<uint64_t>(u);
+
+    int retval[3]={
+        __builtin_clzll(hi),
+        __builtin_clzll(lo)+64,
+        128
+    };
+
+    int idx = !hi + ((!lo)&(!hi));
+
+    return retval[idx];
+}
+
+void CellBuilder::encode128BE(const uint128_t& val, Data& data) {
     data.push_back(static_cast<uint8_t>((val >> 120)));
     data.push_back(static_cast<uint8_t>((val >> 112)));
     data.push_back(static_cast<uint8_t>((val >> 104)));

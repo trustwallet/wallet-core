@@ -6,6 +6,9 @@
 
 #include "Everscale/Signer.h"
 #include "Everscale/Address.h"
+#include "Everscale/Messages.h"
+
+#include "Base64.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
@@ -15,20 +18,18 @@
 using namespace TW;
 using namespace TW::Everscale;
 
-// TODO: Add tests
+TEST(EverscaleSigner, Deploy) {
+    auto key = PrivateKey(parse_hex("5b59e0372d19b6355c73fa8cc708fa3301ae2ec21bb6277e8b79d386ccb7846f"));
+    auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
 
-TEST(EverscaleSigner, Sign) {
-    // TODO: Finalize test implementation
+    auto bounce = false;
+    auto flags = 3;
+    auto amount = 1000000000;
+    auto expiredAt = 1659026078;
 
-    //auto key = PrivateKey(parse_hex("__PRIVKEY_DATA__"));
-    //auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
-    //auto from = Address(publicKey);
-    //auto to = Address("__TO_ADDRESS__");
-    //...
-    //auto transaction = Transaction(...)
-    //auto signature = Signer::sign(key, transaction);
-    //auto result = transaction.serialize(signature);
+    std::optional<Data> stateInit = {};
+    std::optional<Address::MsgAddressInt> destination = {};
 
-    //ASSERT_EQ(hex(serialized), "__RESULT__");
-    //ASSERT_EQ(...)
+    auto data = createSignedMessage(publicKey, key, bounce, flags, amount, expiredAt, destination, stateInit);
+    ASSERT_EQ(TW::Base64::encode(data), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYAIyIRhBmub4CthfowsK/+nfwhiZ3IQvYenZ/V6xgpkf/hCkNtlh1+9IxezU0xS9A0e1mZD9f1QzBKNMJzMGmqAKXUlsUxcV1PAAAAAAHA==");
 }

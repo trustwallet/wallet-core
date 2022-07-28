@@ -27,10 +27,12 @@ public:
     void appendU64(uint64_t value);
     void appendU128(uint128_t value);
     void appendi8(int8_t value);
+    void appendBits(uint64_t value, uint8_t bits);
     void appendRaw(const Data& data, std::size_t bits);
     void prependRaw(Data& appendedData, std::size_t bits);
     void appendReferenceCell(Cell::Ref child);
-    void appendCellSlice(const CellSlice &other);
+    void appendBuilder(const CellBuilder& builder);
+    void appendCellSlice(const CellSlice& other);
 
     Cell::Ref intoCell();
 
@@ -39,7 +41,8 @@ private:
     void appendWithSliceShifting(const Data& data, uint16_t  bits);
     void appendWithDoubleShifting(const Data& data, uint16_t bits);
 
-    void encode128BE(uint128_t value, Data& data);
+    uint32_t clzU128(const uint128_t& u);
+    void encode128BE(const uint128_t& value, Data& data);
 };
 
 } // namespace TW::Everscale

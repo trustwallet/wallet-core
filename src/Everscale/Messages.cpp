@@ -1,4 +1,5 @@
 #include "Messages.h"
+#include "WorkchainType.h"
 
 using namespace TW;
 using namespace TW::Everscale;
@@ -11,15 +12,16 @@ void ExternalInboundMessageHeader::writeTo(CellBuilder& builder) const {
     builder.appendRaw(Data{0x00}, 2);
 
     // addr dst
-    Data dst_addr;
-    dst_addr.reserve(32);
-    std::copy(dst_.second.begin(), dst_.second.end(), std::begin(dst_addr));
+    Data dstAddr(dst_.second.begin(), dst_.second.end());
+
+    Data prefix{0x80};
+    builder.appendRaw(prefix, 2);
 
     builder.appendBitZero();
     builder.appendi8(dst_.first);
-    builder.appendRaw(dst_addr, 256);
+    builder.appendRaw(dstAddr, 256);
 
-    // ihr fee
+    // fee
     builder.appendU128(importFee_);
 }
 
@@ -35,15 +37,18 @@ void InternalMessageHeader::writeTo(CellBuilder& builder) const {
     builder.appendRaw(Data{0x00}, 2);
 
     // addr dst
-    Data dst_addr(dst_.second.begin(), dst_.second.end());
+    Data dstAddr(dst_.second.begin(), dst_.second.end());
+
+    Data prefix{0x80};
+    builder.appendRaw(prefix, 2);
 
     builder.appendBitZero();
     builder.appendi8(dst_.first);
-    builder.appendRaw(dst_addr, 256);
+    builder.appendRaw(dstAddr, 256);
 
     // value
     builder.appendU128(value_);
-    builder.appendU32(0);
+    builder.appendBitZero();
 
     // fee
     builder.appendU128(ihrFee_);
@@ -60,15 +65,13 @@ Cell::Ref Message::intoCell() const {
     // write header
     header_->writeTo(builder);
 
-    CellBuilder initBuilder;
-    if (init_.has_value()) {
-        initBuilder.appendReferenceCell(init_.value().intoCell());
-    }
-
     // write StateInit
     if (init_.has_value()) {
+        auto initBuilder = init_.value().writeTo();
+
         builder.appendBitOne();
-        builder.appendReferenceCell(init_.value().intoCell());
+        builder.appendBitZero();
+        builder.appendBuilder(initBuilder);
     } else {
         builder.appendBitZero();
     }
@@ -82,4 +85,58 @@ Cell::Ref Message::intoCell() const {
     }
 
     return builder.intoCell();
+}
+
+Data TW::Everscale::createSignedMessage(PublicKey& publicKey, PrivateKey& key, bool bounce, uint32_t flags, uint64_t amount, uint32_t expiredAt,
+    std::optional<MsgAddressInt>& destination, std::optional<Data>& stateInit)
+{
+    auto getInitData = [&](){
+        if (stateInit.has_value()) {
+            auto cell = Cell::deserialize(stateInit.value().data(), stateInit.value().size());
+            auto cellSlice = CellSlice(cell.get());
+            return std::make_pair(InitData(cellSlice), true);
+        } else {
+            return std::make_pair(InitData(publicKey), false);
+        }
+    };
+
+    auto getDstAddress = [&](InitData& initData) {
+        if (!destination.has_value()) {
+            return initData.computeAddr(WorkchainType::Basechain);
+        } else {
+            return destination.value();
+        }
+    };
+
+    auto [initData, withInitState] = getInitData();
+
+    auto gift = Wallet::Gift {
+        .bounce = bounce,
+        .amount = amount,
+        .destination = getDstAddress(initData),
+        .flags =  static_cast<uint8_t>(flags),
+    };
+
+    auto payload = initData.makeTransferPayload(expiredAt, gift);
+
+    auto payloadCopy = payload;
+    auto payloadCell = payloadCopy.intoCell();
+
+    Data data(payloadCell->hash.begin(), payloadCell->hash.end());
+    auto signature = key.sign(data, TWCurveED25519);
+    payload.prependRaw(signature, signature.size() * 8);
+
+    auto header = std::make_shared<ExternalInboundMessageHeader>(InitData(publicKey).computeAddr(WorkchainType::Basechain));
+    auto message = Message(header);
+
+    if (withInitState) {
+        message.setStateInit(initData.makeStateInit());
+    }
+
+    auto cell = payload.intoCell();
+    auto body = CellSlice(cell.get());
+
+    message.setBody(body);
+
+    return message.intoCell()->data;
 }
