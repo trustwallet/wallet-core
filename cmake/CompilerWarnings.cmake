@@ -53,9 +53,7 @@ target_compile_options(
         -Wshorten-64-to-32
         # parent context
         -Wnon-virtual-dtor # warn the user if a class with virtual functions has a
-        -Werror
-        # non-virtual destructor. This helps catch hard to
-        # track down memory errors
+        # non-virtual destructor. This helps catch hard to track down memory errors
         -Wcast-align     # warn for potential performance problem casts
         #-Wunused         # warn on anything being unused
         -Woverloaded-virtual # warn if you overload (not override) a virtual
