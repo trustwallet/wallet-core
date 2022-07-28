@@ -62,7 +62,7 @@ void InternalMessageHeader::writeTo(CellBuilder& builder) const {
 Cell::Ref Message::intoCell() const {
     CellBuilder builder;
 
-    // write header
+    // write Header
     header_->writeTo(builder);
 
     // write StateInit
@@ -76,7 +76,7 @@ Cell::Ref Message::intoCell() const {
         builder.appendBitZero();
     }
 
-    // write body
+    // write Body
     if (body_.has_value()) {
         builder.appendBitZero();
         builder.appendCellSlice(body_.value());
