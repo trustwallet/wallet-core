@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -73,6 +73,15 @@ bool PrivateKey::isValid(const Data& data, TWCurve curve) {
     }
 
     return true;
+}
+
+TWPrivateKeyType PrivateKey::getType(TWCurve curve) noexcept {
+    switch (curve) {
+    case TWCurve::TWCurveED25519ExtendedCardano:
+        return TWPrivateKeyTypeCardano;
+    default:
+        return TWPrivateKeyTypeDefault;
+    }
 }
 
 PrivateKey::PrivateKey(const Data& data) {

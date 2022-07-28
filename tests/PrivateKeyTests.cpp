@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -165,6 +165,15 @@ TEST(PrivateKey, Cleanup) {
     delete privateKey;
 
     // Note: it would be good to check the memory area after deletion of the object, but this is not possible
+}
+
+TEST(PrivateKey, GetType) {
+    EXPECT_EQ(PrivateKey::getType(TWCurveSECP256k1), TWPrivateKeyTypeDefault);
+    EXPECT_EQ(PrivateKey::getType(TWCurveNIST256p1), TWPrivateKeyTypeDefault);
+    EXPECT_EQ(PrivateKey::getType(TWCurveED25519), TWPrivateKeyTypeDefault);
+    EXPECT_EQ(PrivateKey::getType(TWCurveCurve25519), TWPrivateKeyTypeDefault);
+
+    EXPECT_EQ(PrivateKey::getType(TWCurveED25519ExtendedCardano), TWPrivateKeyTypeCardano);
 }
 
 TEST(PrivateKey, PrivateKeyExtended) {
