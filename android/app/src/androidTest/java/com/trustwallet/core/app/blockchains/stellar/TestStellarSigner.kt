@@ -31,7 +31,6 @@ class TestStellarTransactionSigner {
             sequence = 2
             passphrase = StellarPassphrase.STELLAR.toString()
             opPayment = operation.build()
-            memoVoid = memoVoidBuilder.build()
             privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray()).data())
         }
 
