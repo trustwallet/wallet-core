@@ -13,13 +13,14 @@ message Transfer {
     bool bounce = 1;
     uint32 flags = 2;
     uint64 amount = 3;
+    uint32 expired_at = 4;
 
     oneof destination {
-        bytes address = 4;
+        bytes address = 5;
     }
 
     oneof account_state {
-        bytes state_init = 5;
+        bytes state_init = 6;
     }
 }
 

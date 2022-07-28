@@ -5,32 +5,35 @@
 using namespace TW;
 using namespace TW::Everscale;
 
-Cell::Ref InitData::intoCell() const {
-    CellBuilder dataBuilder;
+CellBuilder InitData::writeTo() const {
+    CellBuilder builder;
 
-    dataBuilder.appendU32(seqno_);
-    dataBuilder.appendU32(walletId_);
-    dataBuilder.appendRaw(publicKey_.bytes, 256);
+    builder.appendU32(seqno_);
+    builder.appendU32(walletId_);
+    builder.appendRaw(publicKey_.bytes, 256);
 
-    return dataBuilder.intoCell();
+    return builder;
 }
 
 Address::MsgAddressInt InitData::computeAddr(int8_t workchainId) const {
-    const auto data = this->intoCell();
+    auto builder = this->writeTo();
+    const auto data = builder.intoCell();
     const auto code = Cell::deserialize(Wallet::code, sizeof(Wallet::code));
 
     StateInit stateInit(code, data);
-    return std::make_pair(workchainId, stateInit.intoCell()->hash);
+    return std::make_pair(workchainId, stateInit.writeTo().intoCell()->hash);
 }
 
 StateInit InitData::makeStateInit() const {
-    const auto data = this->intoCell();
+    auto builder = this->writeTo();
+
+    const auto data = builder.intoCell();
     const auto code = Cell::deserialize(Wallet::code, sizeof(Wallet::code));
 
     return StateInit(code, data);
 }
 
-std::pair<Cell::CellHash, CellBuilder> InitData::makeTransferPayload(uint32_t expireAt, const Wallet::Gift& gift) const {
+CellBuilder InitData::makeTransferPayload(uint32_t expireAt, const Wallet::Gift& gift) const {
     CellBuilder payload;
 
     // insert prefix
@@ -46,20 +49,19 @@ std::pair<Cell::CellHash, CellBuilder> InitData::makeTransferPayload(uint32_t ex
     payload.appendU8(gift.flags);
     payload.appendReferenceCell(message.intoCell());
 
-    auto hash = payload.intoCell()->hash;
-    return std::make_pair(hash, payload);
+    return payload;
 }
 
-Cell::Ref StateInit::intoCell() const {
-    CellBuilder stateInitBuilder;
+CellBuilder StateInit::writeTo() const {
+    CellBuilder builder;
 
-    stateInitBuilder.appendBitZero(); // split_depth
-    stateInitBuilder.appendBitZero(); // special
-    stateInitBuilder.appendBitOne();  // code
-    stateInitBuilder.appendReferenceCell(code_);
-    stateInitBuilder.appendBitOne(); // data
-    stateInitBuilder.appendReferenceCell(data_);
-    stateInitBuilder.appendBitZero(); // library
+    builder.appendBitZero(); // split_depth
+    builder.appendBitZero(); // special
+    builder.appendBitOne();  // code
+    builder.appendReferenceCell(code_);
+    builder.appendBitOne(); // data
+    builder.appendReferenceCell(data_);
+    builder.appendBitZero(); // library
 
-    return stateInitBuilder.intoCell();
+    return builder;
 }

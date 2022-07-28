@@ -13,6 +13,8 @@
 #include "Wallet.h"
 #include "WorkchainType.h"
 
+#include "HexCoding.h"
+
 using namespace TW;
 using namespace TW::Everscale;
 using namespace std::chrono;
@@ -29,68 +31,28 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
                 auto bounce = input.transfer().bounce();
                 auto flags = input.transfer().flags();
                 auto amount = input.transfer().amount();
+                auto expiredAt = input.transfer().expired_at();
 
-                auto getInitData = [&](){
-                    if (input.transfer().has_state_init()) {
-                        auto data = TW::data(input.transfer().state_init());
-                        auto cell = Cell::deserialize(data.data(), data.size());
-                        auto cellSlice = CellSlice(cell.get());
-                        return std::make_pair(InitData(cellSlice), true);
-                    } else {
-                        return std::make_pair(InitData(publicKey), false);
-                    }
-                };
-
-                auto getDstAddress = [&](InitData& initData) {
-                    if (!input.transfer().has_address()) {
-                        return initData.computeAddr(WorkchainType::Basechain);
-                    } else {
-                        auto addr = Address(input.transfer().address());
-                        return std::make_pair(addr.wc_, addr.address_);
-                    }
-                };
-
-                auto [initData, withInitState] = getInitData();
-                auto destination = getDstAddress(initData);
-
-                auto gift = Wallet::Gift {
-                    .bounce = bounce,
-                    .amount = amount,
-                    .destination = destination,
-                    .flags =  static_cast<uint8_t>(flags),
-                };
-
-                const uint32_t expiredAt = static_cast<uint32_t>(duration_cast<seconds>(system_clock::now().time_since_epoch()).count());
-                auto [hash, payload] = initData.makeTransferPayload(expiredAt, gift);
-
-                auto dst = InitData(publicKey).computeAddr(WorkchainType::Basechain);
-                Message::HeaderRef header = std::make_shared<ExternalInboundMessageHeader>(dst);
-                auto message = Message(header);
-
-                if (withInitState) {
-                    message.setStateInit(initData.makeStateInit());
+                std::optional<MsgAddressInt> destination;
+                if (!input.transfer().has_address()) {
+                    auto addr = Address(input.transfer().address());
+                    destination = std::make_pair(addr.wc_, addr.address_);
                 }
 
-                Data data(hash.begin(), hash.end());
-                auto signature = key.sign(data, TWCurveED25519);
+                std::optional<Data> stateInit;
+                if (!input.transfer().has_state_init()) {
+                    auto data = TW::data(input.transfer().state_init());
+                    stateInit = data;
+                }
 
-                payload.prependRaw(signature, signature.size() * 8);
-
-                auto body = CellSlice(payload.intoCell().get());
-                message.setBody(body);
-
-                Data serializedMessage;
-                message.intoCell()->serialize(serializedMessage);
-
-                protoOutput.set_message(serializedMessage.data(), serializedMessage.size());
+               auto signedMessage = createSignedMessage(publicKey, key, bounce, flags, amount, expiredAt, destination, stateInit);
+               protoOutput.set_message(signedMessage.data(), signedMessage.size());
             }
             break;
 
         default:
             assert(input.action_type_case() != Proto::SigningInput::ActionTypeCase::ACTION_TYPE_NOT_SET);
-
     }
 
     return protoOutput;
 }
-
