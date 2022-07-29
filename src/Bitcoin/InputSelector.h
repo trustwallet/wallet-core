@@ -39,7 +39,7 @@ public:
     /// Construct, using provided feeCalculator (see getFeeCalculator()).
     explicit InputSelector(const std::vector<TypeWithAmount>& inputs,
                            const FeeCalculator& feeCalculator) noexcept
-        : inputs(inputs), feeCalculator(feeCalculator) {}
+        : _inputs(inputs), feeCalculator(feeCalculator) {}
     explicit InputSelector(const std::vector<TypeWithAmount>& inputs) noexcept
         : InputSelector(inputs, getFeeCalculator(TWCoinTypeBitcoin)) {}
 
@@ -53,7 +53,7 @@ public:
                                                        uint64_t minimumAmount) noexcept;
 
 private:
-    const std::vector<TypeWithAmount> inputs;
+    const std::vector<TypeWithAmount> _inputs;
     const FeeCalculator& feeCalculator;
 };
 

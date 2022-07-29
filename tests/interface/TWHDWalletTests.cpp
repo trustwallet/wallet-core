@@ -27,8 +27,8 @@
 using namespace TW;
 
 const auto wordsStr = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
-const auto words = STRING(wordsStr);
-const auto passphrase = STRING("TREZOR");
+const auto gWords = STRING(wordsStr);
+const auto gPassphrase = STRING("TREZOR");
 const auto seedHex = "7ae6f661157bda6492f6162701e570097fc726b6235011ea5ad09bf04986731ed4d92bc43cbdee047b60ea0dd1b1fa4274377c9bf5bd14ab1982c272d8076f29";
 const auto entropyHex = "ba5821e8c356c05ba5f025d9532fe0f21f65d594";
 
@@ -49,31 +49,31 @@ inline void assertEntropyEq(const std::shared_ptr<TWHDWallet>& wallet, const cha
 }
 
 TEST(HDWallet, CreateFromMnemonic) {
-    const auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    const auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     assertMnemonicEq(wallet, wordsStr);
     assertEntropyEq(wallet, entropyHex);
     assertSeedEq(wallet, seedHex);
 }
 
 TEST(HDWallet, CreateFromEntropy) {
-    const auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithEntropy(DATA(entropyHex).get(), passphrase.get()));
+    const auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithEntropy(DATA(entropyHex).get(), gPassphrase.get()));
     assertMnemonicEq(wallet, wordsStr);
     assertSeedEq(wallet, seedHex);
     assertEntropyEq(wallet, entropyHex);
 }
 
 TEST(HDWallet, Generate) {
-    const auto wallet = WRAP(TWHDWallet, TWHDWalletCreate(128, passphrase.get()));
+    const auto wallet = WRAP(TWHDWallet, TWHDWalletCreate(128, gPassphrase.get()));
     EXPECT_TRUE(TWMnemonicIsValid(WRAPS(TWHDWalletMnemonic(wallet.get())).get()));
 }
 
 TEST(HDWallet, SeedWithExtraSpaces) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     assertSeedEq(wallet, "7ae6f661157bda6492f6162701e570097fc726b6235011ea5ad09bf04986731ed4d92bc43cbdee047b60ea0dd1b1fa4274377c9bf5bd14ab1982c272d8076f29");
 }
 
 TEST(HDWallet, CreateFromMnemonicNoPassword) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), STRING("").get()));
     assertSeedEq(wallet, "354c22aedb9a37407adc61f657a6f00d10ed125efa360215f36c6919abd94d6dbc193a5f9c495e21ee74118661e327e84a5f5f11fa373ec33b80897d4697557d");
 }
 
@@ -88,7 +88,7 @@ TEST(HDWallet, CreateFromMnemonicInvalid) {
 }
 
 TEST(HDWallet, MasterPrivateKey) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), STRING("").get()));
     auto key1 = WRAP(TWPrivateKey, TWHDWalletGetMasterKey(wallet.get(), TWCurveSECP256k1));
     auto hexKey1 = WRAPD(TWPrivateKeyData(key1.get()));
 
@@ -102,7 +102,7 @@ TEST(HDWallet, MasterPrivateKey) {
 TEST(HDWallet, Derive) {
     const auto derivationPath = TW::derivationPath(TWCoinTypeEthereum);
 
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     auto key0 = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeEthereum));
 
     auto publicKey0 = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(key0.get(), false));
@@ -112,7 +112,7 @@ TEST(HDWallet, Derive) {
 }
 
 TEST(HDWallet, DeriveBitcoinNonextended) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeBitcoin));
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(key.get(), false));
     auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
@@ -122,7 +122,7 @@ TEST(HDWallet, DeriveBitcoinNonextended) {
 }
 
 TEST(HDWallet, DeriveBitcoinExtended) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeBitcoin));
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(key.get(), true));
     auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
@@ -134,13 +134,13 @@ TEST(HDWallet, DeriveBitcoinExtended) {
 }
 
 TEST(HDWallet, DeriveAddressBitcoin) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     auto address = WRAP(TWString, TWHDWalletGetAddressForCoin(wallet.get(), TWCoinTypeBitcoin));
     assertStringsEqual(address, "bc1qumwjg8danv2vm29lp5swdux4r60ezptzz7ce85");
 }
 
 TEST(HDWallet, DeriveEthereum) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeEthereum));
     auto key2 = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeSmartChain));
 
@@ -157,7 +157,7 @@ TEST(HDWallet, DeriveEthereum) {
 }
 
 TEST(HDWallet, DeriveAddressEthereum) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     auto address = WRAP(TWString, TWHDWalletGetAddressForCoin(wallet.get(), TWCoinTypeEthereum));
     assertStringsEqual(address, "0x27Ef5cDBe01777D62438AfFeb695e33fC2335979");
 }
@@ -179,7 +179,7 @@ TEST(HDWallet, DeriveCosmos) {
 }
 
 TEST(HDWallet, DeriveNimiq) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeNimiq));
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519(key.get()));
     auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
@@ -188,7 +188,7 @@ TEST(HDWallet, DeriveNimiq) {
 }
 
 TEST(HDWallet, DeriveTezos) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeTezos));
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519(key.get()));
     auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
@@ -197,7 +197,7 @@ TEST(HDWallet, DeriveTezos) {
 }
 
 TEST(HDWallet, DeriveDoge) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeDogecoin));
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(key.get(), true));
     auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
@@ -212,7 +212,7 @@ TEST(HDWallet, DeriveDoge) {
 }
 
 TEST(HDWallet, DeriveZilliqa) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeZilliqa));
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(key.get(), true));
     auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
@@ -244,7 +244,7 @@ TEST(HDWallet, DeriveFIO) {
 }
 
 TEST(HDWallet, DeriveAlgorand) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeAlgorand));
     auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
     auto address = WRAPS(TWCoinTypeDeriveAddress(TWCoinTypeAlgorand, privateKey.get()));
@@ -253,7 +253,7 @@ TEST(HDWallet, DeriveAlgorand) {
 }
 
 TEST(HDWallet, DeriveElrond) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeElrond));
     auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
     auto address = WRAPS(TWCoinTypeDeriveAddress(TWCoinTypeElrond, privateKey.get()));
@@ -263,7 +263,7 @@ TEST(HDWallet, DeriveElrond) {
 }
 
 TEST(HDWallet, DeriveBinance) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeBinance));
     auto key2 = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeSmartChain));
     auto keyData = WRAPD(TWPrivateKeyData(key.get()));
@@ -277,7 +277,7 @@ TEST(HDWallet, DeriveBinance) {
 }
 
 TEST(HDWallet, DeriveAvalancheCChain) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeAvalancheCChain));
     auto keyData = WRAPD(TWPrivateKeyData(key.get()));
 
@@ -287,7 +287,7 @@ TEST(HDWallet, DeriveAvalancheCChain) {
 }
 
 TEST(HDWallet, DeriveCardano) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeCardano));
     auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
     EXPECT_EQ(TWDataSize(privateKeyData.get()), 192ul);
@@ -449,7 +449,7 @@ TEST(HDWallet, MultipleThreads) {
 }
 
 TEST(HDWallet, GetDerivedKey) {
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), gPassphrase.get()));
     const auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetDerivedKey(wallet.get(), TWCoinTypeBitcoin, 0, 0, 0));
     const auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
     assertHexEqual(privateKeyData, "1901b5994f075af71397f65bd68a9fff8d3025d65f5a2c731cf90f5e259d6aac");
@@ -460,7 +460,7 @@ TEST(TWHDWallet, Derive_XpubPub_vs_PrivPub) {
     // - Direct: mnemonic -> seed -> privateKey -> publicKey -> address
     // - Extended Public: mnemonic -> seed -> zpub -> publicKey -> address
 
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), STRING("").get()));
     const auto coin = TWCoinTypeBitcoin;
     const auto derivPath1 = STRING("m/84'/0'/0'/0/0");
     const auto derivPath2 = STRING("m/84'/0'/0'/0/2");

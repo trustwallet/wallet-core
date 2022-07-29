@@ -19,7 +19,7 @@ TW::Data Encode::encoded() const {
     if (openIndefCount > 0) {
         throw invalid_argument("CBOR Unclosed indefinite length building");
     }
-    return data;
+    return _data;
 }
 
 Encode Encode::uint(uint64_t value) {
@@ -96,7 +96,7 @@ Encode Encode::closeIndefArray() {
         throw invalid_argument("CBOR Not inside indefinite-length array");
     }
     // add closing break command
-    TW::append(data, 0xFF);
+    TW::append(_data, 0xFF);
     // close counter
     --openIndefCount;
     return *this;
@@ -129,7 +129,7 @@ Encode Encode::appendValue(byte majorType, uint64_t value) {
         minorType = 27;
     }
     // add bytes
-    TW::append(data, (byte)((majorType << 5) | (minorType & 0x1F)));
+    TW::append(_data, (byte)((majorType << 5) | (minorType & 0x1F)));
     Data valBytes = Data(byteCount - 1);
     for (auto i = 0ul; i < valBytes.size(); ++i) {
         valBytes[valBytes.size() - 1 - i] = (byte)(value & 0xFF);
@@ -141,7 +141,7 @@ Encode Encode::appendValue(byte majorType, uint64_t value) {
 
 void Encode::appendIndefinite(byte majorType) {
     byte minorType = 31;
-    TW::append(data, (byte)((majorType << 5) | (minorType & 0x1F)));
+    TW::append(_data, (byte)((majorType << 5) | (minorType & 0x1F)));
 }
 
 

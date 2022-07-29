@@ -86,7 +86,7 @@ TEST(DecredSigner, SignP2PKH) {
 
     // Sign
     auto signer = Signer(std::move(input));
-    signer.transaction = redeemTx;
+    signer._transaction = redeemTx;
     signer.txPlan.amount = 100'000'000;
     const auto result = signer.sign();
 
@@ -193,7 +193,7 @@ TEST(DecredSigner, SignP2SH) {
 
     // Sign
     auto signer = Signer(std::move(input));
-    signer.transaction = redeemTx;
+    signer._transaction = redeemTx;
     signer.txPlan.amount = 100'000'000;
     const auto result = signer.sign();
 
@@ -273,7 +273,7 @@ TEST(DecredSigner, SignNegativeNoUtxo) {
 
     // Sign
     auto signer = Signer(std::move(input));
-    signer.transaction = redeemTx;
+    signer._transaction = redeemTx;
     signer.txPlan.amount = 100'000'000;
     const auto result = signer.sign();
 
@@ -342,7 +342,7 @@ TEST(DecredSigner, SignP2PKH_NoPlan) {
 
     // Sign
     auto signer = Signer(std::move(input));
-    signer.transaction = redeemTx;
+    signer._transaction = redeemTx;
     //signer.txPlan.utxos.push_back(*utxo0);
     //signer.txPlan.amount = 100'000'000;
     const auto result = signer.sign();

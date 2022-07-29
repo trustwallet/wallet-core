@@ -51,13 +51,13 @@ TEST(TWTHORChainSwap, SwapBtcToEth) {
     input.set_to_amount_limit("140000000000000000");
 
     // serialize input
-    const auto inputData = input.SerializeAsString();
-    EXPECT_EQ(hex(inputData), "0801122a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070381a0708021203455448222a3078623966353737316332373636346266323238326439386530396437663530636563376362303161372a2a62633171366d397532717375386d68387937763872723279776176746a38673561727a6c796863656a373a07313030303030304212313430303030303030303030303030303030");
-    const auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));
+    const auto inputData_ = input.SerializeAsString();
+    EXPECT_EQ(hex(inputData_), "0801122a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070381a0708021203455448222a3078623966353737316332373636346266323238326439386530396437663530636563376362303161372a2a62633171366d397532717375386d68387937763872723279776176746a38673561727a6c796863656a373a07313030303030304212313430303030303030303030303030303030");
+    const auto inputTWData_ = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData_.data(), inputData_.size()));
 
     // invoke swap
-    const auto outputTWData = WRAPD(TWTHORChainSwapBuildSwap(inputTWData.get()));
-    const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
+    const auto outputTWData_ = WRAPD(TWTHORChainSwapBuildSwap(inputTWData_.get()));
+    const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
     EXPECT_EQ(outputData.size(), 178ul);
     // parse result in proto
     Proto::SwapOutput outputProto;
@@ -131,13 +131,13 @@ TEST(TWTHORChainSwap, SwapEthBnb) {
     input.set_to_amount_limit("600003");
 
     // serialize input
-    const auto inputData = input.SerializeAsString();
-    EXPECT_EQ(hex(inputData), "0802122a3078623966353737316332373636346266323238326439386530396437663530636563376362303161371a0708031203424e42222a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372782a2a307831303931633444653661336346303943644130304162444165443432633763334236394338334543322a3078343241354564343536363530613039446331304542633633363141373438306644643631663237423a1135303030303030303030303030303030304206363030303033");
-    const auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));
+    const auto inputData_ = input.SerializeAsString();
+    EXPECT_EQ(hex(inputData_), "0802122a3078623966353737316332373636346266323238326439386530396437663530636563376362303161371a0708031203424e42222a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372782a2a307831303931633444653661336346303943644130304162444165443432633763334236394338334543322a3078343241354564343536363530613039446331304542633633363141373438306644643631663237423a1135303030303030303030303030303030304206363030303033");
+    const auto inputTWData_ = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData_.data(), inputData_.size()));
 
     // invoke swap
-    const auto outputTWData = WRAPD(TWTHORChainSwapBuildSwap(inputTWData.get()));
-    const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
+    const auto outputTWData_ = WRAPD(TWTHORChainSwapBuildSwap(inputTWData_.get()));
+    const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
     EXPECT_EQ(outputData.size(), 311ul);
     // parse result in proto
     Proto::SwapOutput outputProto;
@@ -185,13 +185,13 @@ TEST(TWTHORChainSwap, SwapBnbBtc) {
     input.set_to_amount_limit("10000000");
 
     // serialize input
-    const auto inputData = input.SerializeAsString();
-    EXPECT_EQ(hex(inputData), "0803122a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372781a0708011203425443222a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070382a2a626e62316e396573787577386361377473386c367736366b64683830307330396d7376756c36766c73653a08313030303030303042083130303030303030");
-    const auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));
+    const auto inputData_ = input.SerializeAsString();
+    EXPECT_EQ(hex(inputData_), "0803122a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372781a0708011203425443222a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070382a2a626e62316e396573787577386361377473386c367736366b64683830307330396d7376756c36766c73653a08313030303030303042083130303030303030");
+    const auto inputTWData_ = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData_.data(), inputData_.size()));
 
     // invoke swap
-    const auto outputTWData = WRAPD(TWTHORChainSwapBuildSwap(inputTWData.get()));
-    const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
+    const auto outputTWData_ = WRAPD(TWTHORChainSwapBuildSwap(inputTWData_.get()));
+    const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
     EXPECT_EQ(outputData.size(), 149ul);
     // parse result in proto
     Proto::SwapOutput outputProto;

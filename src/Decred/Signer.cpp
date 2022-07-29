@@ -47,18 +47,18 @@ Proto::SigningOutput Signer::sign(const Bitcoin::Proto::SigningInput& input) noe
 }
 
 Result<Transaction, Common::Proto::SigningError> Signer::sign() {
-    if (txPlan.utxos.size() == 0 || transaction.inputs.size() == 0) {
+    if (txPlan.utxos.size() == 0 || _transaction.inputs.size() == 0) {
         return Result<Transaction, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_input_utxos);
     }
 
-    signedInputs = transaction.inputs;
+    signedInputs = _transaction.inputs;
 
     const auto hashSingle = Bitcoin::hashTypeIsSingle(static_cast<enum TWBitcoinSigHashType>(input.hash_type()));
     for (auto i = 0ul; i < txPlan.utxos.size(); i += 1) {
         auto& utxo = txPlan.utxos[i];
 
         // Only sign TWBitcoinSigHashTypeSingle if there's a corresponding output
-        if (hashSingle && i >= transaction.outputs.size()) {
+        if (hashSingle && i >= _transaction.outputs.size()) {
             continue;
         }
         auto result = sign(utxo.script, i);
@@ -68,14 +68,14 @@ Result<Transaction, Common::Proto::SigningError> Signer::sign() {
         signedInputs[i].script = result.payload();
     }
 
-    Transaction tx(transaction);
+    Transaction tx(_transaction);
     tx.inputs = std::move(signedInputs);
-    tx.outputs = transaction.outputs;
+    tx.outputs = _transaction.outputs;
     return Result<Transaction, Common::Proto::SigningError>::success(std::move(tx));
 }
 
 Result<Bitcoin::Script, Common::Proto::SigningError> Signer::sign(Bitcoin::Script script, size_t index) {
-    assert(index < transaction.inputs.size());
+    assert(index < _transaction.inputs.size());
 
     Bitcoin::Script redeemScript;
     std::vector<Data> results;
@@ -86,15 +86,15 @@ Result<Bitcoin::Script, Common::Proto::SigningError> Signer::sign(Bitcoin::Scrip
     } else {
         return Result<Bitcoin::Script, Common::Proto::SigningError>::failure(result.error());
     }
-    auto txin = transaction.inputs[index];
+    auto txin = _transaction.inputs[index];
 
     if (script.isPayToScriptHash()) {
         script = Bitcoin::Script(results.front().begin(), results.front().end());
-        auto result = signStep(script, index);
-        if (!result) {
-            return Result<Bitcoin::Script, Common::Proto::SigningError>::failure(result.error());
+        auto result_ = signStep(script, index);
+        if (!result_) {
+            return Result<Bitcoin::Script, Common::Proto::SigningError>::failure(result_.error());
         }
-        results = result.payload();
+        results = result_.payload();
         results.push_back(script.bytes);
         redeemScript = script;
         results.push_back(redeemScript.bytes);
@@ -104,9 +104,9 @@ Result<Bitcoin::Script, Common::Proto::SigningError> Signer::sign(Bitcoin::Scrip
 }
 
 Result<std::vector<Data>, Common::Proto::SigningError> Signer::signStep(Bitcoin::Script script, size_t index) {
-    Transaction transactionToSign(transaction);
+    Transaction transactionToSign(_transaction);
     transactionToSign.inputs = signedInputs;
-    transactionToSign.outputs = transaction.outputs;
+    transactionToSign.outputs = _transaction.outputs;
 
     Data data;
     std::vector<Data> keys;

@@ -60,7 +60,7 @@ Transaction::Transaction(Ethereum::Address from, Ethereum::Address to,
     auto input = TxInput(std::move(from), coinsInput, sequence);
     auto output = TxOutput(std::move(to), coinsOutput);
 
-    this->fee = fee;
+    this->_fee = fee;
     this->inputs.push_back(input);
     this->outputs.push_back(output);
 }
@@ -70,7 +70,7 @@ Data Transaction::encode() const noexcept {
     uint16_t txType = 2; // TxSend
     append(encoded, RLP::encode(txType));
     auto encodedData = Data();
-    append(encodedData, ::encode(fee));
+    append(encodedData, ::encode(_fee));
     append(encodedData, ::encode(inputs));
     append(encodedData, ::encode(outputs));
     append(encoded, RLP::encodeList(encodedData));

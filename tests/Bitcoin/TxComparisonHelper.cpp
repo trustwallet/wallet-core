@@ -196,7 +196,7 @@ void prettyPrintScript(const Script& script) {
 
 void prettyPrintTransaction(const Transaction& tx, bool useWitnessFormat) {
     Data data;
-    encode32LE(tx.version, data);
+    encode32LE(tx._version, data);
     std::cout << "        \"" << hex(data) << "\" // version\n";
 
     if (useWitnessFormat) {

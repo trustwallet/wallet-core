@@ -25,12 +25,12 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
 std::string Signer::sign() const noexcept {
 
-    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    auto account = Address(input.account());
-    auto encoded = encode(input);
+    auto key = PrivateKey(Data(_input.private_key().begin(), _input.private_key().end()));
+    auto account = Address(_input.account());
+    auto encoded = encode(_input);
 
     auto encodedWithHeaders = Data();
-    auto publicNetwork = input.passphrase(); // Header
+    auto publicNetwork = _input.passphrase(); // Header
     auto passphrase = Hash::sha256(publicNetwork);
     encodedWithHeaders.insert(encodedWithHeaders.end(), passphrase.begin(), passphrase.end());
     auto transactionType = Data{0, 0, 0, 2}; // Header

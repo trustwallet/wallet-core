@@ -10,7 +10,6 @@
 
 using namespace TW;
 using namespace TW::EOS;
-using json = nlohmann::json;
 
 void PermissionLevel::serialize(Data& o) const {
     actor.serialize(o);

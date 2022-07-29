@@ -17,8 +17,8 @@
 using namespace TW;
 
 struct TWPrivateKey *TWPrivateKeyCreate() {
-    Data bytes(PrivateKey::size);
-    random_buffer(bytes.data(), PrivateKey::size);
+    Data bytes(PrivateKey::_size);
+    random_buffer(bytes.data(), PrivateKey::_size);
     if (!PrivateKey::isValid(bytes)) {
         // Under no circumstance return an invalid private key. We'd rather
         // crash. This also captures cases where the random generator fails
@@ -108,7 +108,7 @@ TWData *TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull dige
     }
 }
 
-TWData *TWPrivateKeySignAsDER(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest, [[maybe_unused]] enum TWCurve curve) {
+TWData* TWPrivateKeySignAsDER(struct TWPrivateKey* pk, TWData* digest) {
     auto& d = *reinterpret_cast<const Data*>(digest);
     auto result = pk->impl.signAsDER(d);
     if (result.empty()) {

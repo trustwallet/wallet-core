@@ -16,9 +16,9 @@ namespace TW::Bitcoin {
 using Amount = int64_t;
 
 /// One bitcoin in satoshis
-inline constexpr Amount coin = 100000000;
+inline constexpr Amount gCoin = 100000000;
 
 /// Maxximum valid amount in satoshis.
-inline constexpr Amount maxAmount = 21000000 * coin;
+inline constexpr Amount gMaxAmount = 21000000 * gCoin;
 
 } // namespace TW::Bitcoin

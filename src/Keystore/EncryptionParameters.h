@@ -82,7 +82,7 @@ public:
     Data encrypted;
 
     /// Message authentication code.
-    Data mac;
+    Data _mac;
 
     EncryptedPayload() = default;
 
@@ -90,7 +90,7 @@ public:
     EncryptedPayload(const EncryptionParameters& params, const Data& encrypted, const Data& mac)
         : params(std::move(params))
         , encrypted(std::move(encrypted))
-        , mac(std::move(mac)) {}
+        , _mac(std::move(mac)) {}
 
     /// Initializes by encrypting data with a password
     /// using standard values.

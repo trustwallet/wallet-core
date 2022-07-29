@@ -98,13 +98,13 @@ void HDWallet::updateSeedAndEntropy(bool check) {
 
 PrivateKey HDWallet::getMasterKey(TWCurve curve) const {
     auto node = getMasterNode(*this, curve);
-    auto data = Data(node.private_key, node.private_key + PrivateKey::size);
+    auto data = Data(node.private_key, node.private_key + PrivateKey::_size);
     return PrivateKey(data);
 }
 
 PrivateKey HDWallet::getMasterKeyExtension(TWCurve curve) const {
     auto node = getMasterNode(*this, curve);
-    auto data = Data(node.private_key_extension, node.private_key_extension + PrivateKey::size);
+    auto data = Data(node.private_key_extension, node.private_key_extension + PrivateKey::_size);
     return PrivateKey(data);
 }
 
@@ -132,15 +132,15 @@ PrivateKey HDWallet::getKey(TWCoinType coin, const DerivationPath& derivationPat
         }
         const DerivationPath stakingPath = cardanoStakingDerivationPath(derivationPath);
 
-        auto pkData = Data(node.private_key, node.private_key + PrivateKey::size);
-        auto extData = Data(node.private_key_extension, node.private_key_extension + PrivateKey::size);
-        auto chainCode = Data(node.chain_code, node.chain_code + PrivateKey::size);
+        auto pkData = Data(node.private_key, node.private_key + PrivateKey::_size);
+        auto extData = Data(node.private_key_extension, node.private_key_extension + PrivateKey::_size);
+        auto chainCode = Data(node.chain_code, node.chain_code + PrivateKey::_size);
 
         // repeat with staking path
         const auto node2 = getNode(*this, curve, stakingPath);
-        auto pkData2 = Data(node2.private_key, node2.private_key + PrivateKey::size);
-        auto extData2 = Data(node2.private_key_extension, node2.private_key_extension + PrivateKey::size);
-        auto chainCode2 = Data(node2.chain_code, node2.chain_code + PrivateKey::size);
+        auto pkData2 = Data(node2.private_key, node2.private_key + PrivateKey::_size);
+        auto extData2 = Data(node2.private_key_extension, node2.private_key_extension + PrivateKey::_size);
+        auto chainCode2 = Data(node2.chain_code, node2.chain_code + PrivateKey::_size);
 
         TW::memzero(&node);
         return PrivateKey(pkData, extData, chainCode, pkData2, extData2, chainCode2);
@@ -149,7 +149,7 @@ PrivateKey HDWallet::getKey(TWCoinType coin, const DerivationPath& derivationPat
     case TWPrivateKeyTypeDefault:
     default:
         // default path
-        auto data = Data(node.private_key, node.private_key + PrivateKey::size);
+        auto data = Data(node.private_key, node.private_key + PrivateKey::_size);
         TW::memzero(&node);
         return PrivateKey(data);
     }

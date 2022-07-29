@@ -89,7 +89,7 @@ TEST(TWPublicKeyTests, VerifyAsDER) {
     auto messageData = WRAPD(TWDataCreateWithBytes((const uint8_t*)message, strlen(message)));
     auto digest = WRAPD(TWHashKeccak256(messageData.get()));
 
-    auto signature = WRAPD(TWPrivateKeySignAsDER(privateKey.get(), digest.get(), TWCurveSECP256k1));
+    auto signature = WRAPD(TWPrivateKeySignAsDER(privateKey.get(), digest.get()));
 
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), false));
 

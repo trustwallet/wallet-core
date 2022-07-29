@@ -57,15 +57,15 @@ public:
 
 private:
     Encode() {}
-    Encode(const TW::Data& rawData) : data(rawData) {}
+    Encode(const TW::Data& rawData) : _data(rawData) {}
     /// Append types + value, on variable number of bytes (1..8). Return object to support chain syntax.
     Encode appendValue(byte majorType, uint64_t value);
-    inline Encode append(const TW::Data& data) { TW::append(this->data, data); return *this; }
+    inline Encode append(const TW::Data& data) { TW::append(_data, data); return *this; }
     void appendIndefinite(byte majorType);
 
 private:
     /// Encoded data is stored here, always well-formed, but my be partial.
-    TW::Data data;
+    TW::Data _data;
     /// number of currently open indefinite buildingds (0, 1, or more for nested)
     int openIndefCount = 0;
 };

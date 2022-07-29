@@ -42,7 +42,7 @@ private:
     TransactionPlan plan;
 
     /// Transaction being signed.
-    Transaction transaction;
+    Transaction _transaction;
 
     /// Transaction being signed, with list of signed inputs
     Transaction transactionToSign;
@@ -65,7 +65,7 @@ public:
         SigningMode signingMode = SigningMode_Normal,
         std::optional<SignaturePubkeyList> externalSignatures = {}
     )
-      : input(input), plan(plan), transaction(transaction), signingMode(signingMode), externalSignatures(externalSignatures) {}
+      : input(input), plan(plan), _transaction(transaction), signingMode(signingMode), externalSignatures(externalSignatures) {}
 
     /// Signs the transaction.
     ///
