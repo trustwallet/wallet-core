@@ -84,11 +84,11 @@ Result<void, Common::Proto::SigningError> SignatureBuilder<Transaction>::sign(Sc
 
     if (script.isPayToScriptHash()) {
         script = Script(results[0]);
-        auto result_ = signStep(script, index, utxo, signatureVersion);
-        if (!result_) {
-            return Result<void, Common::Proto::SigningError>::failure(result_.error());
+        auto signStepResult = signStep(script, index, utxo, signatureVersion);
+        if (!signStepResult) {
+            return Result<void, Common::Proto::SigningError>::failure(signStepResult.error());
         }
-        results = result_.payload();
+        results = signStepResult.payload();
         results.push_back(script.bytes);
         redeemScript = script;
     }
@@ -97,19 +97,19 @@ Result<void, Common::Proto::SigningError> SignatureBuilder<Transaction>::sign(Sc
     Data data;
     if (script.matchPayToWitnessPublicKeyHash(data)) {
         auto witnessScript = Script::buildPayToPublicKeyHash(results[0]);
-        auto result_ = signStep(witnessScript, index, utxo, WITNESS_V0);
-        if (!result_) {
-            return Result<void, Common::Proto::SigningError>::failure(result_.error());
+        auto _result = signStep(witnessScript, index, utxo, WITNESS_V0);
+        if (!_result) {
+            return Result<void, Common::Proto::SigningError>::failure(_result.error());
         }
-        witnessStack = result_.payload();
+        witnessStack = _result.payload();
         results.clear();
     } else if (script.matchPayToWitnessScriptHash(data)) {
         auto witnessScript = Script(results[0]);
-        auto result_ = signStep(witnessScript, index, utxo, WITNESS_V0);
-        if (!result_) {
-            return Result<void, Common::Proto::SigningError>::failure(result_.error());
+        auto _result = signStep(witnessScript, index, utxo, WITNESS_V0);
+        if (!_result) {
+            return Result<void, Common::Proto::SigningError>::failure(_result.error());
         }
-        witnessStack = result_.payload();
+        witnessStack = _result.payload();
         witnessStack.push_back(std::move(witnessScript.bytes));
         results.clear();
     } else if (script.isWitnessProgram()) {
@@ -204,12 +204,12 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
                 // estimation mode, key is missing: use placeholder for public key
                 pubkey = Data(PublicKey::secp256k1Size);
             } else if (signingMode == SigningMode_External) {
-                size_t index_ = hashesForSigning.size();
-                if (!externalSignatures.has_value() || externalSignatures.value().size() <= index_) {
+                size_t _index = hashesForSigning.size();
+                if (!externalSignatures.has_value() || externalSignatures.value().size() <= _index) {
                     // Error: no or not enough signatures provided
                     return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
                 }
-                pubkey = std::get<1>(externalSignatures.value()[index_]);
+                pubkey = std::get<1>(externalSignatures.value()[_index]);
             } else {
                 // Error: Missing keys
                 return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
@@ -257,16 +257,16 @@ Data SignatureBuilder<Transaction>::createSignature(
     if (signingMode == SigningMode_External) {
         // Use externally-provided signature
         // Store hash, only for counting
-        size_t index_ = hashesForSigning.size();
+        size_t _index = hashesForSigning.size();
         hashesForSigning.push_back(std::make_pair(sighash, publicKeyHash));
 
-        if (!externalSignatures.has_value() || externalSignatures.value().size() <= index_) {
+        if (!externalSignatures.has_value() || externalSignatures.value().size() <= _index) {
             // Error: no or not enough signatures provided
             return Data();
         }
 
-        Data externalSignature = std::get<0>(externalSignatures.value()[index_]);
-        const Data publicKey = std::get<1>(externalSignatures.value()[index_]);
+        Data externalSignature = std::get<0>(externalSignatures.value()[_index]);
+        const Data publicKey = std::get<1>(externalSignatures.value()[_index]);
 
         // Verify provided signature
         if (!PublicKey::isValid(publicKey, TWPublicKeyTypeSECP256k1)) {

@@ -220,7 +220,7 @@ TEST(NEOTransaction, SerializeDeserializeMiner) {
 
     string notMiner = "1000d11f7a2800000000";
     EXPECT_THROW(
-        std::unique_ptr<Transaction> deserializedTransaction_(Transaction::deserializeFrom(parse_hex(notMiner))),
+        std::unique_ptr<Transaction> _deserializedTransaction(Transaction::deserializeFrom(parse_hex(notMiner))),
         std::invalid_argument
     );
 }
