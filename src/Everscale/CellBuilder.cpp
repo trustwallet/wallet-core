@@ -151,9 +151,9 @@ void CellBuilder::appendBuilder(const CellBuilder& builder) {
 
 void CellBuilder::appendCellSlice(const CellSlice &other) {
     Data appendedData(other.cell->data);
-    appendRaw(appendedData, other.dataOffset);
+    appendRaw(appendedData, other.cell->bitLen);
 
-    for (auto i = 0; i < other.refsOffset; i++) {
+    for (auto i = 0; i < other.cell->refCount; i++) {
         appendReferenceCell(other.cell->references[i]);
     }
 }
