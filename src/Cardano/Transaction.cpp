@@ -67,6 +67,26 @@ uint256_t TokenBundle::getAmount(const std::string& key) const {
     return findkey->second.amount;
 }
 
+set<string> TokenBundle::getPolicyIds() const {
+    set<string> policyIds;
+    for (const auto& t: bundle) {
+        if (policyIds.find(t.second.policyId) == policyIds.end()) {
+            policyIds.emplace(t.second.policyId);
+        }
+    }
+    return policyIds;
+}
+
+vector<TokenAmount> TokenBundle::getByPolicyId(const string& policyId) const {
+    vector<TokenAmount> filtered;
+    for (const auto& t: bundle) {
+        if (t.second.policyId == policyId) {
+            filtered.push_back(t.second);
+        }
+    }
+    return filtered;
+}
+
 uint64_t roundupBytesToWords(uint64_t b) { return ((b + 7) / 8); }
 
 const uint64_t TokenBundle::MinUtxoValue = 1000000;
@@ -196,14 +216,21 @@ Cbor::Encode cborizeOutputAmounts(const Amount& amount, const TokenBundle& token
         return Cbor::Encode::uint(amount);
     }
     // native and token amounts
-    std::map<Cbor::Encode, Cbor::Encode> tokensMap;
-    for (auto iter = tokenBundle.bundle.begin(); iter != tokenBundle.bundle.end(); ++iter) {
+    // tokens: organized in two levels: by policyId and by assetName
+    const auto policyIds = tokenBundle.getPolicyIds();
+    map<Cbor::Encode, Cbor::Encode> tokensMap;
+    for (const auto& policy: policyIds) {
+        const auto& subTokens = tokenBundle.getByPolicyId(policy);
+        map<Cbor::Encode, Cbor::Encode> subTokensMap;
+        for (const auto& token: subTokens) {
+            subTokensMap.emplace(make_pair(
+                Cbor::Encode::bytes(data(token.assetName)),
+                Cbor::Encode::uint(uint64_t(token.amount)) // 64 bits
+            ));
+        }
         tokensMap.emplace(make_pair(
-            Cbor::Encode::bytes(parse_hex(iter->second.policyId)),
-            Cbor::Encode::map({make_pair(
-                Cbor::Encode::bytes(data(iter->second.assetName)),
-                Cbor::Encode::uint(uint64_t(iter->second.amount)) // 64 bits
-            )})
+            Cbor::Encode::bytes(parse_hex(policy)),
+            Cbor::Encode::map(subTokensMap)
         ));
     }
     return Cbor::Encode::array({
