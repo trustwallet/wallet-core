@@ -11,7 +11,8 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Harmony;
+
+namespace TW::Harmony::tests {
 
 TEST(HarmonyAddress, FromString) {
     Address sender;
@@ -42,3 +43,5 @@ TEST(HarmonyAddress, FromPrivateKey) {
     const auto address = Address(publicKey);
     ASSERT_EQ(address.string(), "one1a50tun737ulcvwy0yvve0pvu5skq0kjargvhwe");
 }
+
+} // namespace TW::Harmony::tests

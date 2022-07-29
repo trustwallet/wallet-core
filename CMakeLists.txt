@@ -94,7 +94,7 @@ if (TW_ENABLE_CLANG_TIDY)
     tw_add_clang_tidy_target(TrustWalletCore)
 endif ()
 
-if (NOT ANDROID)
+if (NOT ANDROID AND TW_UNITY_BUILD)
     set_target_properties(TrustWalletCore PROPERTIES UNITY_BUILD ON)
 
     file(GLOB_RECURSE PROTOBUF_SOURCE_FILES CONFIGURE_DEPENDS src/Cosmos/Protobuf/*.pb.cc src/proto/*.pb.cc)
