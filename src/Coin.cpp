@@ -52,7 +52,7 @@
 #include "Waves/Entry.h"
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
-#include "Everscale/Entry.h" // TODO remove if the blockchain already exists, or just remove this comment if not
+#include "Everscale/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
@@ -98,7 +98,7 @@ VeChain::Entry vechainDP;
 Waves::Entry wavesDP;
 Zcash::Entry zcashDP;
 Zilliqa::Entry zilliqaDP;
-Everscale::Entry EverscaleDP; // TODO remove if the blockchain already exists, or just remove this comment if not
+Everscale::Entry EverscaleDP;
 // end_of_coin_dipatcher_declarations_marker_do_not_modify
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
@@ -146,7 +146,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainThorchain: entry = &thorchainDP; break;
         case TWBlockchainRonin: entry = &roninDP; break;
         case TWBlockchainKusama: entry = &kusamaDP; break;
-        case TWCoinTypeEverscale: entry = &EverscaleDP; break; // TODO remove if the blockchain already exists, or just remove this comment if not
+        case TWCoinTypeEverscale: entry = &EverscaleDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;
