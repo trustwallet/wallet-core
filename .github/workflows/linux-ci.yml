@@ -53,9 +53,9 @@ jobs:
         cd build
         ninja tests 
         ninja TrezorCryptoTests
-        trezor-crypto/crypto/tests/TrezorCryptoTests
-        tests/tests tests --gtest_output=xml
         cd -
+        build/trezor-crypto/crypto/tests/TrezorCryptoTests
+        build/tests/tests tests --gtest_output=xml
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
