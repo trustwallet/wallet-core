@@ -11,8 +11,8 @@
 #include <vector>
 
 using namespace TW;
-using namespace TW::Filecoin;
 
+namespace TW::Filecoin::tests {
 // clang-format off
 
 struct address_test {
@@ -96,4 +96,6 @@ TEST(FilecoinAddress, FromString) {
         Address a(test.encoded);
         ASSERT_EQ(hex(a.bytes), test.hex) << "Address(" << test.encoded << ")";
     }
+}
+
 }

@@ -4,15 +4,16 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "HexCoding.h"
 #include "Algorand/Address.h"
-#include "PublicKey.h"
+#include "HexCoding.h"
 #include "PrivateKey.h"
+#include "PublicKey.h"
 #include <gtest/gtest.h>
 #include <vector>
 
 using namespace TW;
-using namespace TW::Algorand;
+
+namespace TW::Algorand::tests {
 
 TEST(AlgorandAddress, Validation) {
     // empty address
@@ -43,3 +44,5 @@ TEST(AlgorandAddress, FromString) {
     auto address = Address("PITDOF57RHOVLT37KM7DCXDCETLDL3OA5CBAN7LQ44Z36LGFC27IJ2IQ64");
     ASSERT_EQ(address.string(), "PITDOF57RHOVLT37KM7DCXDCETLDL3OA5CBAN7LQ44Z36LGFC27IJ2IQ64");
 }
+
+} // namespace TW::Algorand::tests

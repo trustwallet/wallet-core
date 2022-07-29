@@ -4,18 +4,18 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <gtest/gtest.h>
 #include "boost/format.hpp"
+#include <gtest/gtest.h>
 
-#include <TrustWalletCore/TWAnySigner.h>
-#include "HexCoding.h"
-#include "../interface/TWTestUtilities.h"
 #include "Elrond/Signer.h"
+#include "HexCoding.h"
 #include "TestAccounts.h"
+#include "../interface/TWTestUtilities.h"
+#include <TrustWalletCore/TWAnySigner.h>
 
 using namespace TW;
-using namespace TW::Elrond;
 
+namespace TW::Elrond::tests {
 
 TEST(TWAnySignerElrond, Sign) {
     auto input = Proto::SigningInput();
@@ -55,3 +55,5 @@ TEST(TWAnySignerElrond, SignJSON) {
     ASSERT_TRUE(TWAnySignerSupportsJSON(TWCoinTypeElrond));
     assertStringsEqual(encoded, expectedEncoded.c_str());
 }
+
+} // namespace TW::Elrond::tests

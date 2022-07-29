@@ -16,7 +16,8 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Decred;
+
+namespace TW::Decred::tests {
 
 TEST(DecredSigner, SignP2PKH) {
     const auto privateKey = PrivateKey(parse_hex("22a47fa09a223f2aa079edf85a7c2d4f8720ee63e502ee2869afab7de234b80c"));
@@ -25,7 +26,6 @@ TEST(DecredSigner, SignP2PKH) {
 
     const auto address = Address(publicKey);
     ASSERT_EQ(address.string(), "DsoPDLh462ULTy1QMSvBGLqGKQENerrdZDH");
-
 
     // For this example, create a fake transaction that represents what would
     // ordinarily be the real transaction that is being spent. It contains a
@@ -45,7 +45,6 @@ TEST(DecredSigner, SignP2PKH) {
 
     ASSERT_EQ(hex(originTx.hash()), "0ff6ff7c6774a56ccc51598b11724c9c441cadc52978ddb5f08f3511a0cc777a");
 
-
     // Setup input
     Bitcoin::Proto::SigningInput input;
     input.set_hash_type(TWBitcoinSigHashTypeAll);
@@ -64,8 +63,7 @@ TEST(DecredSigner, SignP2PKH) {
     utxo0->mutable_out_point()->set_hash(originTx.hash().data(), originTx.hash().size());
     utxo0->mutable_out_point()->set_index(0);
 
-
-	// Create the transaction to redeem the fake transaction.
+    // Create the transaction to redeem the fake transaction.
     auto redeemTx = Transaction();
 
     auto txIn = TransactionInput();
@@ -93,28 +91,28 @@ TEST(DecredSigner, SignP2PKH) {
     ASSERT_TRUE(result);
 
     const auto expectedSignature = "47304402201ac7bdf56a9d12f3bc09cf7b47cdfafc1348628f659e37b455d497cb6e7a748802202b3630eedee1bbc9248424e4a1b8671e14631a069f36ac8860dee0bb9ea1541f0121"
-        "02a673638cb9587cb68ea08dbef685c6f2d2a751a8b3c6f2a7e9a4999e6e4bfaf5";
+                                   "02a673638cb9587cb68ea08dbef685c6f2d2a751a8b3c6f2a7e9a4999e6e4bfaf5";
     EXPECT_EQ(hex(result.payload().inputs[0].script.bytes), expectedSignature);
 
     const auto expectedEncoded =
-        "0100" // Serialize type
-        "0000" // Version
-        "01"   // Inputs
-            "0ff6ff7c6774a56ccc51598b11724c9c441cadc52978ddb5f08f3511a0cc777a" // Hash
-            "00000000" // Index
-            "00" // Tree
-            "ffffffff" // Sequence
-        "01"   // Outputs
-            "0000000000000000" // Value
-            "0000" // Version
-            "00" // Script
-        "00000000" // Lock time
-        "00000000" // Expiry
+        "0100"                                                             // Serialize type
+        "0000"                                                             // Version
+        "01"                                                               // Inputs
+        "0ff6ff7c6774a56ccc51598b11724c9c441cadc52978ddb5f08f3511a0cc777a" // Hash
+        "00000000"                                                         // Index
+        "00"                                                               // Tree
+        "ffffffff"                                                         // Sequence
+        "01"                                                               // Outputs
+        "0000000000000000"                                                 // Value
+        "0000"                                                             // Version
+        "00"                                                               // Script
+        "00000000"                                                         // Lock time
+        "00000000"                                                         // Expiry
         "01"
-            "00e1f50500000000" // Value
-            "00000000" // Block height
-            "ffffffff" // Block index
-            "6a47304402201ac7bdf56a9d12f3bc09cf7b47cdfafc1348628f659e37b455d497cb6e7a748802202b3630eedee1bbc9248424e4a1b8671e14631a069f36ac8860dee0bb9ea1541f012102a673638cb9587cb68ea08dbef685c6f2d2a751a8b3c6f2a7e9a4999e6e4bfaf5";
+        "00e1f50500000000" // Value
+        "00000000"         // Block height
+        "ffffffff"         // Block index
+        "6a47304402201ac7bdf56a9d12f3bc09cf7b47cdfafc1348628f659e37b455d497cb6e7a748802202b3630eedee1bbc9248424e4a1b8671e14631a069f36ac8860dee0bb9ea1541f012102a673638cb9587cb68ea08dbef685c6f2d2a751a8b3c6f2a7e9a4999e6e4bfaf5";
     auto encoded = Data();
     result.payload().encode(encoded);
     EXPECT_EQ(hex(encoded), expectedEncoded);
@@ -127,7 +125,6 @@ TEST(DecredSigner, SignP2SH) {
 
     const auto address = Address(publicKey);
     ASSERT_EQ(address.string(), "DsoPDLh462ULTy1QMSvBGLqGKQENerrdZDH");
-
 
     // For this example, create a fake transaction that represents what would
     // ordinarily be the real transaction that is being spent. It contains a
@@ -146,7 +143,6 @@ TEST(DecredSigner, SignP2SH) {
     originTx.outputs.push_back(txOutOrigin);
 
     ASSERT_EQ(hex(originTx.hash()), "0ff6ff7c6774a56ccc51598b11724c9c441cadc52978ddb5f08f3511a0cc777a");
-
 
     // Setup input
     Bitcoin::Proto::SigningInput input;
@@ -179,7 +175,7 @@ TEST(DecredSigner, SignP2SH) {
     auto utxop0 = plan->add_utxos();
     *utxop0 = *utxo0;
 
-	// Create the transaction to redeem the fake transaction.
+    // Create the transaction to redeem the fake transaction.
     auto redeemTx = Transaction();
 
     auto txIn = TransactionInput();
@@ -189,7 +185,6 @@ TEST(DecredSigner, SignP2SH) {
 
     auto txOut = TransactionOutput();
     redeemTx.outputs.push_back(txOut);
-
 
     // Sign
     auto signer = Signer(std::move(input));
@@ -203,24 +198,24 @@ TEST(DecredSigner, SignP2SH) {
     EXPECT_EQ(hex(result.payload().inputs[0].script.bytes), expectedSignature);
 
     const auto expectedEncoded =
-        "0100" // Serialize type
-        "0000" // Version
-        "01"   // Inputs
-            "0ff6ff7c6774a56ccc51598b11724c9c441cadc52978ddb5f08f3511a0cc777a" // Hash
-            "00000000" // Index
-            "00" // Tree
-            "ffffffff" // Sequence
-        "01"   // Outputs
-            "0000000000000000" // Value
-            "0000" // Version
-            "00" // Script
-        "00000000" // Lock time
-        "00000000" // Expiry
+        "0100"                                                             // Serialize type
+        "0000"                                                             // Version
+        "01"                                                               // Inputs
+        "0ff6ff7c6774a56ccc51598b11724c9c441cadc52978ddb5f08f3511a0cc777a" // Hash
+        "00000000"                                                         // Index
+        "00"                                                               // Tree
+        "ffffffff"                                                         // Sequence
+        "01"                                                               // Outputs
+        "0000000000000000"                                                 // Value
+        "0000"                                                             // Version
+        "00"                                                               // Script
+        "00000000"                                                         // Lock time
+        "00000000"                                                         // Expiry
         "01"
-            "00e1f50500000000" // Value
-            "00000000" // Block height
-            "ffffffff" // Block index
-            "9e47304402201ac7bdf56a9d12f3bc09cf7b47cdfafc1348628f659e37b455d497cb6e7a748802202b3630eedee1bbc9248424e4a1b8671e14631a069f36ac8860dee0bb9ea1541f012102a673638cb9587cb68ea08dbef685c6f2d2a751a8b3c6f2a7e9a4999e6e4bfaf51976a914f5eba6730a4052ddeef0a93d93d24004f49db51e88ac1976a914f5eba6730a4052ddeef0a93d93d24004f49db51e88ac";
+        "00e1f50500000000" // Value
+        "00000000"         // Block height
+        "ffffffff"         // Block index
+        "9e47304402201ac7bdf56a9d12f3bc09cf7b47cdfafc1348628f659e37b455d497cb6e7a748802202b3630eedee1bbc9248424e4a1b8671e14631a069f36ac8860dee0bb9ea1541f012102a673638cb9587cb68ea08dbef685c6f2d2a751a8b3c6f2a7e9a4999e6e4bfaf51976a914f5eba6730a4052ddeef0a93d93d24004f49db51e88ac1976a914f5eba6730a4052ddeef0a93d93d24004f49db51e88ac";
     auto encoded = Data();
     result.payload().encode(encoded);
     EXPECT_EQ(hex(encoded), expectedEncoded);
@@ -260,7 +255,7 @@ TEST(DecredSigner, SignNegativeNoUtxo) {
     auto utxoKey0 = parse_hex("22a47fa09a223f2aa079edf85a7c2d4f8720ee63e502ee2869afab7de234b80c");
     input.add_private_key(utxoKey0.data(), utxoKey0.size());
 
-	// Create the transaction to redeem the fake transaction.
+    // Create the transaction to redeem the fake transaction.
     auto redeemTx = Transaction();
 
     auto txIn = TransactionInput();
@@ -289,7 +284,6 @@ TEST(DecredSigner, SignP2PKH_NoPlan) {
     const auto address = Address(publicKey);
     ASSERT_EQ(address.string(), "DsoPDLh462ULTy1QMSvBGLqGKQENerrdZDH");
 
-
     // For this example, create a fake transaction that represents what would
     // ordinarily be the real transaction that is being spent. It contains a
     // single output that pays to address in the amount of 1 DCR.
@@ -307,7 +301,6 @@ TEST(DecredSigner, SignP2PKH_NoPlan) {
     originTx.outputs.push_back(txOutOrigin);
 
     ASSERT_EQ(hex(originTx.hash()), "0ff6ff7c6774a56ccc51598b11724c9c441cadc52978ddb5f08f3511a0cc777a");
-
 
     // Setup input
     Bitcoin::Proto::SigningInput input;
@@ -327,8 +320,7 @@ TEST(DecredSigner, SignP2PKH_NoPlan) {
     utxo0->mutable_out_point()->set_hash(originTx.hash().data(), originTx.hash().size());
     utxo0->mutable_out_point()->set_index(0);
 
-
-	// Create the transaction to redeem the fake transaction.
+    // Create the transaction to redeem the fake transaction.
     auto redeemTx = Transaction();
 
     auto txIn = TransactionInput();
@@ -339,40 +331,39 @@ TEST(DecredSigner, SignP2PKH_NoPlan) {
     auto txOut = TransactionOutput();
     redeemTx.outputs.push_back(txOut);
 
-
     // Sign
     auto signer = Signer(std::move(input));
     signer._transaction = redeemTx;
-    //signer.txPlan.utxos.push_back(*utxo0);
-    //signer.txPlan.amount = 100'000'000;
+    // signer.txPlan.utxos.push_back(*utxo0);
+    // signer.txPlan.amount = 100'000'000;
     const auto result = signer.sign();
 
     ASSERT_TRUE(result);
     ASSERT_TRUE(result.payload().inputs.size() >= 1);
 
     const auto expectedSignature = "47304402201ac7bdf56a9d12f3bc09cf7b47cdfafc1348628f659e37b455d497cb6e7a748802202b3630eedee1bbc9248424e4a1b8671e14631a069f36ac8860dee0bb9ea1541f0121"
-        "02a673638cb9587cb68ea08dbef685c6f2d2a751a8b3c6f2a7e9a4999e6e4bfaf5";
+                                   "02a673638cb9587cb68ea08dbef685c6f2d2a751a8b3c6f2a7e9a4999e6e4bfaf5";
     EXPECT_EQ(hex(result.payload().inputs[0].script.bytes), expectedSignature);
 
     const auto expectedEncoded =
-        "0100" // Serialize type
-        "0000" // Version
-        "01"   // Inputs
-            "0ff6ff7c6774a56ccc51598b11724c9c441cadc52978ddb5f08f3511a0cc777a" // Hash
-            "00000000" // Index
-            "00" // Tree
-            "ffffffff" // Sequence
-        "01"   // Outputs
-            "0000000000000000" // Value
-            "0000" // Version
-            "00" // Script
-        "00000000" // Lock time
-        "00000000" // Expiry
+        "0100"                                                             // Serialize type
+        "0000"                                                             // Version
+        "01"                                                               // Inputs
+        "0ff6ff7c6774a56ccc51598b11724c9c441cadc52978ddb5f08f3511a0cc777a" // Hash
+        "00000000"                                                         // Index
+        "00"                                                               // Tree
+        "ffffffff"                                                         // Sequence
+        "01"                                                               // Outputs
+        "0000000000000000"                                                 // Value
+        "0000"                                                             // Version
+        "00"                                                               // Script
+        "00000000"                                                         // Lock time
+        "00000000"                                                         // Expiry
         "01"
-            "00e1f50500000000" // Value
-            "00000000" // Block height
-            "ffffffff" // Block index
-            "6a47304402201ac7bdf56a9d12f3bc09cf7b47cdfafc1348628f659e37b455d497cb6e7a748802202b3630eedee1bbc9248424e4a1b8671e14631a069f36ac8860dee0bb9ea1541f012102a673638cb9587cb68ea08dbef685c6f2d2a751a8b3c6f2a7e9a4999e6e4bfaf5";
+        "00e1f50500000000" // Value
+        "00000000"         // Block height
+        "ffffffff"         // Block index
+        "6a47304402201ac7bdf56a9d12f3bc09cf7b47cdfafc1348628f659e37b455d497cb6e7a748802202b3630eedee1bbc9248424e4a1b8671e14631a069f36ac8860dee0bb9ea1541f012102a673638cb9587cb68ea08dbef685c6f2d2a751a8b3c6f2a7e9a4999e6e4bfaf5";
     auto encoded = Data();
     result.payload().encode(encoded);
     EXPECT_EQ(hex(encoded), expectedEncoded);
@@ -427,3 +418,5 @@ TEST(DecredSigning, SignP2WPKH_NegativeAddressWrongType) {
 
     ASSERT_FALSE(result) << std::to_string(result.error());
 }
+
+} // namespace TW::Decred::tests

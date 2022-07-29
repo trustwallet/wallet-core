@@ -4,17 +4,18 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Base58.h"
+#include "HexCoding.h"
+#include "PrivateKey.h"
 #include "Solana/Address.h"
 #include "Solana/Program.h"
-#include "Base58.h"
-#include "PrivateKey.h"
-#include "HexCoding.h"
 
 #include <gtest/gtest.h>
 
 using namespace std;
 using namespace TW;
-using namespace TW::Solana;
+
+namespace TW::Solana::tests {
 
 TEST(SolanaAddress, FromPublicKey) {
     const auto addressString = "2gVkYWexTHR5Hb2aLeQN3tnngvWzisFKXDUPrgMHpdST";
@@ -51,9 +52,11 @@ TEST(SolanaAddress, isValidOnCurve) {
 TEST(SolanaAddress, defaultTokenAddress) {
     const Address serumToken = Address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
     EXPECT_EQ(Address("HBYC51YrGFAZ8rM7Sj8e9uqKggpSrDYrinQDZzvMtqQp").defaultTokenAddress(serumToken).string(),
-        "6X4X1Ae24mkoWeCEpktevySVG9jzeCufut5vtUW3wFrD");
+              "6X4X1Ae24mkoWeCEpktevySVG9jzeCufut5vtUW3wFrD");
     EXPECT_EQ(Address("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V").defaultTokenAddress(serumToken).string(),
-        "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+              "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
     EXPECT_EQ(Address("Eg5jqooyG6ySaXKbQUu4Lpvu2SqUPZrNkM4zXs9iUDLJ").defaultTokenAddress(serumToken).string(),
-        "ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf");
+              "ANVCrmRw7Ww7rTFfMbrjApSPXEEcZpBa6YEiBdf98pAf");
 }
+
+} // namespace TW::Solana::tests

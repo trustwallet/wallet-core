@@ -5,22 +5,23 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "FIO/Action.h"
+#include "FIO/NewFundsRequest.h"
 #include "FIO/Transaction.h"
 #include "FIO/TransactionBuilder.h"
-#include "FIO/NewFundsRequest.h"
 
-#include "HexCoding.h"
 #include "BinaryCoding.h"
+#include "HexCoding.h"
 
 #include <gtest/gtest.h>
 
-#include <nlohmann/json.hpp>
 #include <iostream>
+#include <nlohmann/json.hpp>
 
 using namespace TW;
 using namespace TW::FIO;
 using namespace std;
 
+namespace TW::FIO::tests {
 
 const Data chainId = parse_hex("4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77");
 // 5KEDWtAUJcFX6Vz38WXsAQAv2geNqT7UaZC8gYu9kTuryr3qkri FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf
@@ -50,7 +51,7 @@ TEST(FIOTransactionBuilder, RegisterFioAddress) {
     uint64_t fee = 5000000000;
 
     string t = TransactionBuilder::createRegisterFioAddress(addr6M, privKeyBA, "adam@fiotestnet",
-        chainParams, fee, "rewards@wallet", 1579784511);
+                                                            chainParams, fee, "rewards@wallet", 1579784511);
 
     EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"3f99295ec99b904215ff0000000001003056372503a85b0000c6eaa66498ba01102b2f46fca756b200000000a8ed3232650f6164616d4066696f746573746e65743546494f366d31664d645470526b52426e6564765973685843784c4669433573755255384b44667838787874587032686e7478706e6600f2052a01000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K19ugLriG3ApYgjJCRDsy21p9xgsjbDtqBuZrmAEix9XYzndR1kNbJ6fXCngMJMAhxUHfwHAsPnh58otXiJZkazaM1EkS5"]})", t);
 }
@@ -58,11 +59,8 @@ TEST(FIOTransactionBuilder, RegisterFioAddress) {
 TEST(FIOTransactionBuilder, AddPubAddress) {
     ChainParams chainParams{chainId, 11565, 4281229859};
 
-    string t = TransactionBuilder::createAddPubAddress(addr6M, privKeyBA, "adam@fiotestnet", {
-        {"BTC", "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"},
-        {"ETH", "0xce5cB6c92Da37bbBa91Bd40D4C9D4D724A3a8F51"},
-        {"BNB", "bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s"}},
-        chainParams, 0, "rewards@wallet", 1579729429);
+    string t = TransactionBuilder::createAddPubAddress(addr6M, privKeyBA, "adam@fiotestnet", {{"BTC", "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"}, {"ETH", "0xce5cB6c92Da37bbBa91Bd40D4C9D4D724A3a8F51"}, {"BNB", "bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s"}},
+                                                       chainParams, 0, "rewards@wallet", 1579729429);
 
     EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"15c2285e2d2d23622eff0000000001003056372503a85b0000c6eaa664523201102b2f46fca756b200000000a8ed3232c9010f6164616d4066696f746573746e65740303425443034254432a626331717679343037347267676b647232707a773576706e6e3632656730736d7a6c787770373064377603455448034554482a30786365356342366339324461333762624261393142643430443443394434443732344133613846353103424e4203424e422a626e6231747333646735346170776c76723968757076326e306a366534367135347a6e6e75736a6b39730000000000000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K3zimaMKU8cBhVRPw46KM2u7uQWaAKXrnoeYZ7MEbp6sVJcDQmQR2RtdavpUPwkAnYUkd8NqLun8H48tcxZBcTUgkiPGVJ"]})", t);
 }
@@ -74,7 +72,7 @@ TEST(FIOTransactionBuilder, Transfer) {
     uint64_t fee = 250000000;
 
     string t = TransactionBuilder::createTransfer(addr6M, privKeyBA, payee, amount,
-        chainParams, fee, "rewards@wallet", 1579790000);
+                                                  chainParams, fee, "rewards@wallet", 1579790000);
 
     EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"b0ae295e50c3400a6dee00000000010000980ad20ca85be0e1d195ba85e7cd01102b2f46fca756b200000000a8ed32325d3546494f37754d5a6f6565693548745841443234433479436b70575762663234626a597472524e6a57646d474358485a63637775694500ca9a3b0000000080b2e60e00000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K9VRCnvaTYN7vgcoVKVXgyJTdKUGV8hLXgFLoEbvqAcFxy7DXQ1rSnAfEuabi4ATkgmvnpaSBdVFN7TBtM1wrbZYqeJQw9"]})", t);
 }
@@ -84,7 +82,7 @@ TEST(FIOTransactionBuilder, RenewFioAddress) {
     uint64_t fee = 3000000000;
 
     string t = TransactionBuilder::createRenewFioAddress(addr6M, privKeyBA, "nick@fiotestnet",
-        chainParams, fee, "rewards@wallet", 1579785000);
+                                                         chainParams, fee, "rewards@wallet", 1579785000);
 
     EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff0000000001003056372503a85b80b1ba2919aea6ba01102b2f46fca756b200000000a8ed32322f0f6e69636b4066696f746573746e6574005ed0b200000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_Jxz7oCJ7Z4ECsxqb2utqBcyP3zPQCeQCBws9wWQjyptUKoWVk2AyCVEqtdMHJwqtLniio5Z7npMnaZB8E4pa2G75P9uGkb"]})", t);
 }
@@ -94,7 +92,7 @@ TEST(FIOTransactionBuilder, NewFundsRequest) {
         ChainParams chainParams{chainId, 18484, 3712870657};
         const Data iv = parse_hex("000102030405060708090a0b0c0d0e0f"); // use fixed iv for testability
         string t = TransactionBuilder::createNewFundsRequest(
-            Address("FIO5NMm9Vf3NjYFnhoc7yxTCrLW963KPUCzeMGv3SJ6zR3GMez4ub"), privKeyBA, 
+            Address("FIO5NMm9Vf3NjYFnhoc7yxTCrLW963KPUCzeMGv3SJ6zR3GMez4ub"), privKeyBA,
             "tag@fiotestnet", "FIO7iYHtDhs45smFgSqLyJ6Zi4D3YG8K5bZGyxmshLCDXXBPbbmJN", "dapixbp@fiotestnet", "14R4wEsGT58chmqo7nB65Dy4je6TiijDWc",
             "1", "BTC", "payment", "", "",
             chainParams, 800000000, "", 1583528215, iv);
@@ -103,19 +101,19 @@ TEST(FIOTransactionBuilder, NewFundsRequest) {
 
     ChainParams chainParams{chainId, 39881, 4279583376};
     uint64_t fee = 3000000000;
-    
+
     const Data iv = parse_hex("000102030405060708090a0b0c0d0e0f"); // use fixed iv for testability
     string t = TransactionBuilder::createNewFundsRequest(addr6M, privKeyBA,
-        "mario@fiotestnet", "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o", "alice@fiotestnet", "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v",
-        "5", "BTC", "Memo", "Hash", "https://trustwallet.com",
-        chainParams, fee, "rewards@wallet", 1579785000, iv);
+                                                         "mario@fiotestnet", "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o", "alice@fiotestnet", "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v",
+                                                         "5", "BTC", "Memo", "Hash", "https://trustwallet.com",
+                                                         chainParams, fee, "rewards@wallet", 1579785000, iv);
 
     EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff000000000100403ed4aa0ba85b00acba384dbdb89a01102b2f46fca756b200000000a8ed32328802106d6172696f4066696f746573746e657410616c6963654066696f746573746e6574c00141414543417751464267634943516f4c4441304f442f3575342f6b436b7042554c4a44682f546951334d31534f4e4938426668496c4e54766d39354249586d54396f616f7a55632f6c6c3942726e57426563464e767a76766f6d3751577a517250717241645035683433305732716b52355266416555446a704f514732364c347a6936767241553052764855474e382b685779736a6971506b2b7a455a444952534678426268796c69686d59334f4752342f5a46466358484967343241327834005ed0b2000000000c716466656a7a32613577706c0e726577617264734077616c6c657400","signatures":["SIG_K1_Kk79iVcQMpqpVgZwGTmC1rxgCTLy5BDFtHd8FvjRNm2FqNHR9dpeUmPTNqBKGMNG3BsPy4c5u26TuEDpS87SnyMpF43cZk"]})", t);
 }
 
 TEST(FIOTransaction, ActionRegisterFioAddressInternal) {
     RegisterFioAddressData radata("adam@fiotestnet", addr6M.string(),
-        5000000000, "rewards@wallet", "qdfejz2a5wpl");
+                                  5000000000, "rewards@wallet", "qdfejz2a5wpl");
     Data ser1;
     radata.serialize(ser1);
     EXPECT_EQ(
@@ -153,11 +151,8 @@ TEST(FIOTransaction, ActionRegisterFioAddressInternal) {
 }
 
 TEST(FIOTransaction, ActionAddPubAddressInternal) {
-    AddPubAddressData aadata("adam@fiotestnet", {
-        {"BTC", "BTC", "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"},
-        {"ETH", "ETH", "0xce5cB6c92Da37bbBa91Bd40D4C9D4D724A3a8F51"},
-        {"BNB", "BNB", "bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s"}},
-        0, "rewards@wallet", "qdfejz2a5wpl");
+    AddPubAddressData aadata("adam@fiotestnet", {{"BTC", "BTC", "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"}, {"ETH", "ETH", "0xce5cB6c92Da37bbBa91Bd40D4C9D4D724A3a8F51"}, {"BNB", "BNB", "bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s"}},
+                             0, "rewards@wallet", "qdfejz2a5wpl");
     Data ser1;
     aadata.serialize(ser1);
     EXPECT_EQ(
@@ -196,21 +191,21 @@ TEST(FIOTransaction, ActionAddPubAddressInternal) {
 
 TEST(FIONewFundsContent, serialize) {
     {
-        NewFundsContent newFunds {"bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v", "10", "BTC", "BTC", "Memo", "Hash", "https://trustwallet.com"};
+        NewFundsContent newFunds{"bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v", "10", "BTC", "BTC", "Memo", "Hash", "https://trustwallet.com"};
         Data ser;
         newFunds.serialize(ser);
         EXPECT_EQ(hex(ser), "2a626331717679343037347267676b647232707a773576706e6e3632656730736d7a6c78777037306437760231300342544303425443044d656d6f04486173681768747470733a2f2f747275737477616c6c65742e636f6d0000000000");
     }
     {
         // empty struct
-        NewFundsContent newFunds {"", "", "", "", "", "", ""};
+        NewFundsContent newFunds{"", "", "", "", "", "", ""};
         Data ser;
         newFunds.serialize(ser);
         EXPECT_EQ(hex(ser), "000000000000000000000000");
     }
     {
         // test from https://github.com/fioprotocol/fiojs/blob/master/src/tests/encryption-fio.test.ts
-        NewFundsContent newFunds {"purse.alice", "1", "", "fio.reqobt", "", "", ""};
+        NewFundsContent newFunds{"purse.alice", "1", "", "fio.reqobt", "", "", ""};
         Data ser;
         newFunds.serialize(ser);
         EXPECT_EQ(hex(ser), "0b70757273652e616c6963650131000a66696f2e7265716f62740000000000000000");
@@ -250,9 +245,8 @@ TEST(FIOTransactionBuilder, expirySetDefault) {
 
 // May throw nlohmann::json::type_error
 void createTxWithChainParam(const ChainParams& paramIn, ChainParams& paramOut) {
-    string tx = TransactionBuilder::createAddPubAddress(addr6M, privKeyBA, "adam@fiotestnet", {
-        {"BTC", "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"}},
-        paramIn, 0, "rewards@wallet", 1579729429);
+    string tx = TransactionBuilder::createAddPubAddress(addr6M, privKeyBA, "adam@fiotestnet", {{"BTC", "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"}},
+                                                        paramIn, 0, "rewards@wallet", 1579729429);
     // retrieve chain params from encoded tx; parse out packed tx
     try {
         nlohmann::json txJson = nlohmann::json::parse(tx);
@@ -356,3 +350,5 @@ TEST(FIOTransactionBuilder, encodeString) {
         EXPECT_EQ(hex(data), "8201" + hex(text));
     }
 }
+
+} // namespace TW::FIO::tests
