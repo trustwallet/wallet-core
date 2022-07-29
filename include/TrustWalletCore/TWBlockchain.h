@@ -51,7 +51,7 @@ enum TWBlockchain {
     TWBlockchainThorchain = 38, // Cosmos
     TWBlockchainRonin = 39, // Ethereum
     TWBlockchainKusama = 40, // Polkadot
-    TWBlockchainEverscale = 41,  // TODO remove if the blockchain already exists, or just remove this comment if not
+    TWBlockchainEverscale = 41,  // Everscale
 };
 
 TW_EXTERN_C_END
