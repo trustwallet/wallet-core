@@ -52,15 +52,15 @@ Encode Encode::array(const vector<Encode>& elems) {
     return e;
 }
 
-Encode Encode::map(const vector<std::pair<Encode, Encode>>& elems) {
-    Encode e;
+Encode Encode::map(const std::map<Encode, Encode>& elems) {
+    Encode enc;
     auto n = elems.size();
-    e.appendValue(Decode::MT_map, n);
-    for (auto i = 0ul; i < n; ++i) {
-        e.append(elems[i].first.encoded());
-        e.append(elems[i].second.encoded());
+    enc.appendValue(Decode::MT_map, n);
+    for (const auto& e: elems) {
+        enc.append(e.first.encoded());
+        enc.append(e.second.encoded());
     }
-    return e;
+    return enc;
 }
 
 Encode Encode::tag(uint64_t value, const Encode& elem) {
