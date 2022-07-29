@@ -14,8 +14,8 @@ void CellSlice::advance(uint16_t bits) {
 
 bool CellSlice::getNextBit() {
     require(1);
-    const auto q = dataOffset / 8;
-    const auto r = dataOffset % 8;
+    const uint16_t q = dataOffset / 8;
+    const uint16_t r = dataOffset % 8;
     const auto bit = ((cell->data[q] >> (7 - r)) & 1) != 0;
     ++dataOffset;
     return bit;
@@ -28,7 +28,7 @@ uint8_t CellSlice::getNextBits(uint16_t bits) {
     assert(bits <= 8);
     require(bits);
 
-    const uint32_t q = dataOffset / 8;
+    const size_t q = dataOffset / 8;
     const auto r = dataOffset % 8;
     const auto invR = 8 - r;
 
@@ -60,7 +60,7 @@ Data CellSlice::getNextBytes(uint8_t bytes) {
     Data result{};
     result.reserve(bytes);
 
-    const uint32_t q = dataOffset / 8;
+    const size_t q = dataOffset / 8;
     const auto r = dataOffset % 8;
     const auto invR = 8 - r;
 
@@ -74,7 +74,7 @@ Data CellSlice::getNextBytes(uint8_t bytes) {
     }
 
     for (size_t byte = q; byte < q + bytes; ++byte) {
-        auto bits =  static_cast<uint16_t>(static_cast<uint16_t>(cell->data[byte]) << 8);
+        auto bits = static_cast<uint16_t>(static_cast<uint16_t>(cell->data[byte]) << 8);
         if (byte + 1 < cell->data.size()) {
             bits |= static_cast<uint16_t>(cell->data[byte + 1]);
         }

@@ -169,7 +169,7 @@ Cell::Ref CellBuilder::intoCell() {
     auto refCount = references.size();
 
     Cell::Refs refs;
-    for (auto r = 0; r < refCount; ++r) {
+    for (size_t r = 0; r < refCount; ++r) {
         refs[r] = std::move(references[r]);
     }
 

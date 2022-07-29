@@ -59,7 +59,7 @@ std::string Address::string() const {
     return string;
 }
 
-std::optional<std::pair<int8_t, int32_t>> Address::parseWorkchainId(const std::string& string) {
+std::optional<std::pair<int8_t, uint32_t>> Address::parseWorkchainId(const std::string& string) {
     int8_t workchainId = WorkchainType::Basechain;
 
     auto pos = string.find(':');
