@@ -22,7 +22,7 @@ public:
     using MsgAddressInt = std::pair<int8_t, std::array<byte, Address::size>>;
 
     std::int8_t wc_;
-    std::array<byte, size> address_;
+    std::array<byte, size> address_{};
 
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
@@ -34,9 +34,9 @@ public:
     explicit Address(const PublicKey& publicKey, int8_t workchainId);
 
     /// Returns a string representation of the address.
-    std::string string() const;
+    [[nodiscard]] std::string string() const;
 private:
-    static std::optional<std::pair<int8_t, int32_t>> parseWorkchainId(const std::string& string);
+    static std::optional<std::pair<int8_t, uint32_t>> parseWorkchainId(const std::string& string);
 
 };
 
