@@ -28,7 +28,7 @@ const string TYPE_PREFIX_MSG_WITHDRAW_REWARD = "cosmos-sdk/MsgWithdrawDelegation
 const string TYPE_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 const string TYPE_PREFIX_WASM_MSG_EXECUTE = "wasm/MsgExecuteContract";
 
-static string broadcastMode(Proto::BroadcastMode mode) {
+static string jsonBroadcastMode(Proto::BroadcastMode mode) {
     switch (mode) {
     case Proto::BroadcastMode::BLOCK:
         return "block";
@@ -41,7 +41,7 @@ static string broadcastMode(Proto::BroadcastMode mode) {
 static json broadcastJSON(json& j, Proto::BroadcastMode mode) {
     return {
         {"tx", j},
-        {"mode", broadcastMode(mode)}
+        {"mode", jsonBroadcastMode(mode)}
     };
 }
 

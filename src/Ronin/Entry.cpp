@@ -9,9 +9,10 @@
 #include "Address.h"
 #include "../Ethereum/Signer.h"
 
-using namespace TW::Ronin;
 using namespace TW;
 using namespace std;
+
+namespace TW::Ronin {
 
 bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
     return Address::isValid(address);
@@ -37,3 +38,5 @@ void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::D
 string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json, const Data& key) const {
     return Ethereum::Signer::signJSON(json, key);
 }
+
+} // namespace TW::Ronin

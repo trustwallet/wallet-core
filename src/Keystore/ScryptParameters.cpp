@@ -44,16 +44,16 @@ std::optional<ScryptValidationError> ScryptParameters::validate() const {
 // -----------------
 
 namespace CodingKeys {
-static const auto salt = "salt";
-static const auto desiredKeyLength = "dklen";
+static const auto scryptSalt = "salt";
+static const auto scryptDesiredKeyLength = "dklen";
 static const auto n = "n";
 static const auto p = "p";
 static const auto r = "r";
 } // namespace CodingKeys
 
 ScryptParameters::ScryptParameters(const nlohmann::json& json) {
-    salt = parse_hex(json[CodingKeys::salt].get<std::string>());
-    desiredKeyLength = json[CodingKeys::desiredKeyLength];
+    salt = parse_hex(json[CodingKeys::scryptSalt].get<std::string>());
+    desiredKeyLength = json[CodingKeys::scryptDesiredKeyLength];
     if (json.count(CodingKeys::n) != 0)
         n = json[CodingKeys::n];
     if (json.count(CodingKeys::n) != 0)
@@ -65,8 +65,8 @@ ScryptParameters::ScryptParameters(const nlohmann::json& json) {
 /// Saves `this` as a JSON object.
 nlohmann::json ScryptParameters::json() const {
     nlohmann::json j;
-    j[CodingKeys::salt] = hex(salt);
-    j[CodingKeys::desiredKeyLength] = desiredKeyLength;
+    j[CodingKeys::scryptSalt] = hex(salt);
+    j[CodingKeys::scryptDesiredKeyLength] = desiredKeyLength;
     j[CodingKeys::n] = n;
     j[CodingKeys::p] = p;
     j[CodingKeys::r] = r;

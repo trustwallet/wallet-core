@@ -18,6 +18,8 @@
 
 using namespace TW::Nimiq;
 
+namespace TW::Nimiq {
+
 static const char* BASE32_ALPHABET_NIMIQ = "0123456789ABCDEFGHJKLMNPQRSTUVXY";
 
 static int check_append(int, uint8_t);
@@ -150,3 +152,5 @@ static inline int check_add(int check, int num) {
         ;
     return (check + num) % 97;
 }
+
+} // namespace TW::Nimiq

@@ -302,14 +302,14 @@ StoredKey StoredKey::createWithJson(const nlohmann::json& json) {
 }
 
 namespace CodingKeys {
-static const auto address = "address";
+static const auto storedAddress = "address";
 static const auto type = "type";
 static const auto name = "name";
 static const auto id = "id";
 static const auto crypto = "crypto";
 static const auto activeAccounts = "activeAccounts";
 static const auto version = "version";
-static const auto coin = "coin";
+static const auto storedCoin = "coin";
 } // namespace CodingKeys
 
 namespace UppercaseCodingKeys {
@@ -353,13 +353,13 @@ void StoredKey::loadJson(const nlohmann::json& json) {
         }
     }
 
-    if (accounts.empty() && json.count(CodingKeys::address) != 0 &&
-        json[CodingKeys::address].is_string()) {
+    if (accounts.empty() && json.count(CodingKeys::storedAddress) != 0 &&
+        json[CodingKeys::storedAddress].is_string()) {
         TWCoinType coin = TWCoinTypeEthereum;
-        if (json.count(CodingKeys::coin) != 0) {
-            coin = json[CodingKeys::coin].get<TWCoinType>();
+        if (json.count(CodingKeys::storedCoin) != 0) {
+            coin = json[CodingKeys::storedCoin].get<TWCoinType>();
         }
-        auto address = json[CodingKeys::address].get<std::string>();
+        auto address = json[CodingKeys::storedAddress].get<std::string>();
         accounts.emplace_back(address, coin, TWDerivationDefault, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(coin), 0, 0, 0), "", "");
     }
 }

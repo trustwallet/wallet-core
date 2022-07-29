@@ -94,6 +94,16 @@ if (TW_ENABLE_CLANG_TIDY)
     tw_add_clang_tidy_target(TrustWalletCore)
 endif ()
 
+if (NOT ANDROID)
+    set_target_properties(TrustWalletCore PROPERTIES UNITY_BUILD ON)
+
+    file(GLOB_RECURSE PROTOBUF_SOURCE_FILES CONFIGURE_DEPENDS src/Cosmos/Protobuf/*.pb.cc src/proto/*.pb.cc)
+    foreach(file ${PROTOBUF_SOURCE_FILES})
+        set_property(SOURCE ${file} PROPERTY SKIP_UNITY_BUILD_INCLUSION ON)
+    endforeach()
+    message(STATUS "Unity build activated")
+endif()
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig.in ${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig @ONLY)
 
 install(TARGETS TrustWalletCore

@@ -9,9 +9,10 @@
 #include "Address.h"
 #include "Signer.h"
 
-using namespace TW::Harmony;
 using namespace TW;
 using namespace std;
+
+namespace TW::Harmony {
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
@@ -38,3 +39,5 @@ void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::D
 string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json, const Data& key) const {
     return Signer::signJSON(json, key);
 }
+
+} // namespace TW::Harmony
