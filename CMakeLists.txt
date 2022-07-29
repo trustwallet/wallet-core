@@ -84,11 +84,15 @@ endif ()
 if (TW_BUILD_EXAMPLES)
     add_subdirectory(walletconsole/lib)
     add_subdirectory(walletconsole)
-endif()
+endif ()
 
 if (TW_ENABLE_PVS_STUDIO)
     tw_add_pvs_studio_target(TrustWalletCore)
-endif()
+endif ()
+
+if (TW_ENABLE_CLANG_TIDY)
+    tw_add_clang_tidy_target(TrustWalletCore)
+endif ()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig.in ${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig @ONLY)
 
