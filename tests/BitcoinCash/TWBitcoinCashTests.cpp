@@ -23,7 +23,8 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Bitcoin;
+
+namespace TW::Bitcoin::tests {
 
 TEST(BitcoinCash, Address) {
     EXPECT_TRUE(TWAnyAddressIsValid(STRING("pqx578nanz2h2estzmkr53zqdg6qt8xyqvwhn6qeyc").get(), TWCoinTypeBitcoinCash));
@@ -34,7 +35,7 @@ TEST(BitcoinCash, ValidAddress) {
     auto string = STRING("bitcoincash:qqa2qx0d8tegw32xk8u75ws055en4x3h2u0e6k46y4");
     auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeBitcoinCash));
     ASSERT_NE(address.get(), nullptr);
-    
+
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptLockScriptForAddress(string.get(), TWCoinTypeBitcoinCash));
     ASSERT_FALSE(TWBitcoinScriptSize(script.get()) == 0);
 }
@@ -93,9 +94,8 @@ TEST(BitcoinCash, LockScript) {
 
 TEST(BitcoinCash, ExtendedKeys) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(
-        STRING("ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal").get(),
-        STRING("TREZOR").get()
-    ));
+                                       STRING("ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal").get(),
+                                       STRING("TREZOR").get()));
 
     auto xprv = WRAPS(TWHDWalletGetExtendedPrivateKey(wallet.get(), TWPurposeBIP44, TWCoinTypeBitcoinCash, TWHDVersionXPRV));
     auto xpub = WRAPS(TWHDWalletGetExtendedPublicKey(wallet.get(), TWPurposeBIP44, TWCoinTypeBitcoinCash, TWHDVersionXPUB));
@@ -153,11 +153,18 @@ TEST(BitcoinCash, SignTransaction) {
     EXPECT_EQ(output.transaction().outputs(1).value(), 4325);
     EXPECT_EQ(output.encoded().length(), 226ul);
     ASSERT_EQ(hex(output.encoded()),
-        "01000000"
-        "01"
-            "e28c2b955293159898e34c6840d99bf4d390e2ee1c6f606939f18ee1e2000d05" "02000000" "6b483045022100b70d158b43cbcded60e6977e93f9a84966bc0cec6f2dfd1463d1223a90563f0d02207548d081069de570a494d0967ba388ff02641d91cadb060587ead95a98d4e3534121038eab72ec78e639d02758e7860cdec018b49498c307791f785aa3019622f4ea5b" "ffffffff"
-        "02"
-            "5802000000000000" "1976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
-            "e510000000000000" "1976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
-        "00000000");
+              "01000000"
+              "01"
+              "e28c2b955293159898e34c6840d99bf4d390e2ee1c6f606939f18ee1e2000d05"
+              "02000000"
+              "6b483045022100b70d158b43cbcded60e6977e93f9a84966bc0cec6f2dfd1463d1223a90563f0d02207548d081069de570a494d0967ba388ff02641d91cadb060587ead95a98d4e3534121038eab72ec78e639d02758e7860cdec018b49498c307791f785aa3019622f4ea5b"
+              "ffffffff"
+              "02"
+              "5802000000000000"
+              "1976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
+              "e510000000000000"
+              "1976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
+              "00000000");
 }
+
+} // namespace TW::Bitcoin::tests
