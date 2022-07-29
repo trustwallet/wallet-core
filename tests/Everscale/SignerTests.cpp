@@ -18,7 +18,7 @@
 using namespace TW;
 using namespace TW::Everscale;
 
-TEST(EverscaleSigner, DeployWallet) {
+TEST(EverscaleSigner, WithoutStateInit) {
     auto key = PrivateKey(parse_hex("5b59e0372d19b6355c73fa8cc708fa3301ae2ec21bb6277e8b79d386ccb7846f"));
     auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
 
@@ -32,4 +32,22 @@ TEST(EverscaleSigner, DeployWallet) {
 
     auto boc = createSignedMessage(publicKey, key, bounce, flags, amount, expiredAt, destination, stateInit);
     ASSERT_EQ(TW::Base64::encode(boc), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYAIyIRhBmub4CthfowsK/+nfwhiZ3IQvYenZ/V6xgpkf/hCkNtlh1+9IxezU0xS9A0e1mZD9f1QzBKNMJzMGmqAKXUlsUxcV1PAAAAAAHA==");
+}
+
+TEST(EverscaleSigner, WithStateInit) {
+    auto key = PrivateKey(parse_hex("5b59e0372d19b6355c73fa8cc708fa3301ae2ec21bb6277e8b79d386ccb7846f"));
+    auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
+
+    auto bounce = false;
+    auto flags = 3;
+    auto amount = 1000000000;
+    auto expiredAt = 1659026078;
+
+    auto dst_addr = Address("0:6dc497fb5cdb013fb1b807d8a2dbf7653d3e112cdb6ca95054bd2c74408d557d");
+    auto destination = std::make_optional(std::make_pair(dst_addr.wc_, dst_addr.address_));
+
+    auto stateInit = std::make_optional(TW::Base64::decode("te6ccgEBAQEAKgAAUAAAAi9LqS2K8drjTwv63I+aPTBLtMULU+zuEMSAmO8j5A00qizUXzU="));
+
+    auto boc = createSignedMessage(publicKey, key, bounce, flags, amount, expiredAt, destination, stateInit);
+    ASSERT_EQ(TW::Base64::encode(boc), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGC+o+gbLqcs2fFi5y5dyYccszRvGc4IBmWqCU/mWGub29BSl+RG2pv6zkYPUVwox/ExjTZfBXR9U+vUBKQ1VgBSXUlsUxcV1PAAABF4HA=");
 }

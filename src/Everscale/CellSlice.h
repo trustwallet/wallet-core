@@ -15,7 +15,7 @@ public:
     uint8_t refsOffset = 0;
 
     explicit CellSlice(const Cell* _Nonnull cell) noexcept
-        : cell(cell), dataOffset(cell->bitLen), refsOffset(cell->refCount) {}
+        : cell(cell) {}
 
     /// Checks and increases dataOffset
     void advance(uint16_t bits);
