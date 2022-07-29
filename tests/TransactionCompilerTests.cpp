@@ -99,7 +99,7 @@ TEST(TransactionCompiler, BinanceCompileWithSignatures) {
 }
 
 TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
-    // Test external signining with a Bircoin transaction with 3 signingInput UTXOs, all used, but only using 2 public keys.
+    // Test external signining with a Bircoin transaction with 3 input UTXOs, all used, but only using 2 public keys.
     // Three signatures are neeeded.  This illustrates that order of UTXOs/hashes is not always the same.
 
     const auto revUtxoHash0 = parse_hex("07c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa8");
@@ -158,7 +158,7 @@ TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
     const auto coin = TWCoinTypeBitcoin;
     const auto ownAddress = "bc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z00ppggv";
 
-    // Setup signingInput for Plan
+    // Setup input for Plan
     Bitcoin::Proto::SigningInput signingInput;
     signingInput.set_coin_type(coin);
     signingInput.set_hash_type(TWBitcoinSigHashTypeAll);
@@ -215,15 +215,15 @@ TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
     EXPECT_EQ(plan.fee(), 277);
     EXPECT_EQ(plan.change(), 299'723);
     ASSERT_EQ(plan.utxos_size(), 3);
-    // Note that UTXOs happen to be in reverse order compared to the signingInput
+    // Note that UTXOs happen to be in reverse order compared to the input
     EXPECT_EQ(hex(plan.utxos(0).out_point().hash()), hex(revUtxoHash2));
     EXPECT_EQ(hex(plan.utxos(1).out_point().hash()), hex(revUtxoHash1));
     EXPECT_EQ(hex(plan.utxos(2).out_point().hash()), hex(revUtxoHash0));
 
-    // Extend signingInput with accepted plan
+    // Extend input with accepted plan
     *signingInput.mutable_plan() = plan;
 
-    // Serialize signingInput
+    // Serialize input
     const auto txInputData = data(signingInput.SerializeAsString());
     EXPECT_EQ((int)txInputData.size(), 692);
 
@@ -320,7 +320,7 @@ TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
 }
 
 TEST(TransactionCompiler, EthereumCompileWithSignatures) {
-    /// Step 1: Prepare transaction signingInput (protobuf)
+    /// Step 1: Prepare transaction input (protobuf)
     const auto coin = TWCoinTypeEthereum;
     const auto txInputData0 = TransactionCompiler::buildInput(
         coin,
@@ -350,7 +350,7 @@ TEST(TransactionCompiler, EthereumCompileWithSignatures) {
     signingInput.set_gas_limit(gasLimit.data(), gasLimit.size());
     signingInput.set_tx_mode(Ethereum::Proto::Legacy);
 
-    // Serialize back, this shows how to serialize SigningInput protobuf to byte array
+    // Serialize back, this shows how to serialize input protobuf to byte array
     const auto txInputData = data(signingInput.SerializeAsString());
     EXPECT_EQ((int)txInputData.size(), 75);
 
