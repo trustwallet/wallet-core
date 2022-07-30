@@ -18,7 +18,7 @@ public:
     using uint128_t = boost::multiprecision::uint128_t;
 
     CellBuilder() = default;
-    CellBuilder(Data& appendedData, std::size_t bits);
+    CellBuilder(Data& appendedData, uint16_t bits);
 
     void appendBitZero();
     void appendBitOne();
@@ -29,8 +29,8 @@ public:
     void appendU128(uint128_t value);
     void appendi8(int8_t value);
     void appendBits(uint64_t value, uint8_t bits);
-    void appendRaw(const Data& appendedData, std::size_t bits);
-    void prependRaw(Data& appendedData, std::size_t bits);
+    void appendRaw(const Data& appendedData, uint16_t bits);
+    void prependRaw(Data& appendedData, uint16_t bits);
     void appendReferenceCell(Cell::Ref child);
     void appendBuilder(const CellBuilder& builder);
     void appendCellSlice(const CellSlice& other);
@@ -42,7 +42,7 @@ private:
     void appendWithSliceShifting(const Data& data, uint16_t  bits);
     void appendWithDoubleShifting(const Data& data, uint16_t bits);
 
-    uint32_t clzU128(const uint128_t& u);
+    static uint8_t clzU128(const uint128_t& u);
     static void encode128BE(const uint128_t& value, Data& data);
 };
 

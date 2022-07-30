@@ -9,12 +9,12 @@ import XCTest
 
 class EverscaleTests: XCTestCase {
     func testAddress() {
-        let key = PrivateKey(data: Data(hexString: "5b59e0372d19b6355c73fa8cc708fa3301ae2ec21bb6277e8b79d386ccb7846f")!)!
+        let key = PrivateKey(data: Data(hexString: "15d126cb1a84acdbcd1d9c3f6975968c2beb18cc43c95849d4b0226e1c8552aa")!)!
         let pubkey = key.getPublicKeyEd25519()
         let address = AnyAddress(publicKey: pubkey, coin: .everscale)
-        let addressFromString = AnyAddress(string: "0:269fee242eb410786abe1777a14785c8bbeb1e34100c7570e17698b36ad66fb0", coin: .everscale)!
+        let addressFromString = AnyAddress(string: "0:0c39661089f86ec5926ea7d4ee4223d634ba4ed6dcc2e80c7b6a8e6d59f79b04", coin: .everscale)!
 
-        XCTAssertEqual(pubkey.data.hexString, "e4925f9932df8d7fd0042efff3e2178a972028b644ded3a3b66f6d0577f82e78")
+        XCTAssertEqual(pubkey.data.hexString, "a0303f8fc89a3c2124f5dc6f3ab9a9cb246b7d1e24897eaf5e63eeee20085db0")
         XCTAssertEqual(address.description, addressFromString.description)
     }
 

@@ -124,7 +124,7 @@ Data TW::Everscale::createSignedMessage(PublicKey& publicKey, PrivateKey& key, b
 
     Data data(payloadCell->hash.begin(), payloadCell->hash.end());
     auto signature = key.sign(data, TWCurveED25519);
-    payload.prependRaw(signature, signature.size() * 8);
+    payload.prependRaw(signature, static_cast<uint16_t>(signature.size()) * 8);
 
     auto header = std::make_shared<ExternalInboundMessageHeader>(InitData(publicKey).computeAddr(WorkchainType::Basechain));
     auto message = Message(header);

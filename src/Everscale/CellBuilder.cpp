@@ -9,7 +9,7 @@
 using namespace TW;
 using namespace TW::Everscale;
 
-CellBuilder::CellBuilder(Data& appendedData, std::size_t bits) {
+CellBuilder::CellBuilder(Data& appendedData, uint16_t bits) {
     assert(bits <= appendedData.size() * 8);
     assert(bits < Cell::MAX_BITS);
 
@@ -18,7 +18,7 @@ CellBuilder::CellBuilder(Data& appendedData, std::size_t bits) {
         appendedData.resize(bits / 8);
     } else {
         appendedData.resize(1 + bits / 8);
-        appendedData.back() = (appendedData.back() >> (8 - dataShift)) << (8 - dataShift);
+        appendedData.back() = static_cast<uint8_t>((appendedData.back() >> (8 - dataShift)) << (8 - dataShift));
     }
 
     data = appendedData;
@@ -66,15 +66,17 @@ void CellBuilder::appendU64(uint64_t value) {
 }
 
 void CellBuilder::appendU128(uint128_t value) {
-    auto bits = 4;
-    auto bytes = 16 - clzU128(value) / 8;
+    uint8_t bits = 4;
+    uint16_t bytes = 16 - clzU128(value) / 8;
 
     appendBits(bytes, bits);
 
     Data encodedValue;
     encode128BE(value, encodedValue);
 
-    Data appendedData(encodedValue.begin() + (encodedValue.size() - bytes), encodedValue.end());
+    auto offset = static_cast<uint32_t>(encodedValue.size() - bytes);
+
+    Data appendedData(encodedValue.begin() + offset, encodedValue.end());
     appendRaw(appendedData, bytes * 8);
 }
 
@@ -89,23 +91,23 @@ void CellBuilder::appendBits(uint64_t value, uint8_t bits) {
     if (bits == 0) {
         // Do nothing
     } else if (bits >= 1 && bits <= 7) {
-        auto val = static_cast<uint8_t>(value) << (8 - bits);
+        auto val = static_cast<uint8_t>(value << (8 - bits));
         appendedData.push_back(val);
     } else if (bits >= 8 && bits <= 15) {
-        auto val = static_cast<uint16_t>(value) << (16 - bits);
+        auto val = static_cast<uint16_t>(value << (16 - bits));
         encode16BE(val, appendedData);
     } else if (bits >= 16 && bits <= 31) {
-        auto val = static_cast<uint32_t>(value) << (32 - bits);
+        auto val = static_cast<uint32_t>(value << (32 - bits));
         encode32BE(val, appendedData);
     } else if (bits >= 32 && bits <= 63) {
-        auto val = static_cast<uint64_t>(value) << (64 - bits);
+        auto val = static_cast<uint64_t>(value << (64 - bits));
         encode64BE(val, appendedData);
     }
 
     appendRaw(appendedData, bits);
 }
 
-void CellBuilder::appendRaw(const Data& appendedData, std::size_t bits) {
+void CellBuilder::appendRaw(const Data& appendedData, uint16_t bits) {
     if (appendedData.size() * 8 < bits) {
         throw std::invalid_argument("invalid builder data");
     } else if (bitLen + bits > Cell::MAX_BITS) {
@@ -125,7 +127,7 @@ void CellBuilder::appendRaw(const Data& appendedData, std::size_t bits) {
     assert(data.size() * 8 <= Cell::MAX_BITS + 1);
 }
 
-void CellBuilder::prependRaw(Data& appendedData, std::size_t bits) {
+void CellBuilder::prependRaw(Data& appendedData, uint16_t bits) {
     if (bits != 0) {
         auto buffer = CellBuilder(appendedData, bits);
         buffer.appendRaw(data, bitLen);
@@ -215,7 +217,7 @@ void CellBuilder::appendWithDoubleShifting(const Data& appendedData, uint16_t bi
 
     for (const auto x : appendedData) {
         // 00000000 000yyyyy -> 000yyyyy xxxxxxxx
-        y = (y << 8) | x;
+        y = static_cast<uint16_t>(y << 8) | x;
         // 000yyyyy xxxxxxxx -> 00000000 yyyyyxxx
         data.push_back(static_cast<uint8_t>(y >> selfShift));
     }
@@ -231,9 +233,9 @@ void CellBuilder::appendWithDoubleShifting(const Data& appendedData, uint16_t bi
     }
 }
 
-uint32_t CellBuilder::clzU128(const uint128_t& u) {
-    uint64_t hi = static_cast<uint64_t>(u >> 64);
-    uint64_t lo = static_cast<uint64_t>(u);
+uint8_t CellBuilder::clzU128(const uint128_t& u) {
+    auto hi = static_cast<uint64_t>(u >> 64);
+    auto lo = static_cast<uint64_t>(u);
 
     int retval[3]={
         __builtin_clzll(hi),
@@ -243,7 +245,7 @@ uint32_t CellBuilder::clzU128(const uint128_t& u) {
 
     int idx = !hi + ((!lo)&(!hi));
 
-    return retval[idx];
+    return static_cast<uint8_t>(retval[idx]);
 }
 
 void CellBuilder::encode128BE(const uint128_t& val, Data& data) {
