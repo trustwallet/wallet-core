@@ -240,7 +240,7 @@ public:
     void encode(Data& os) const {
         os.reserve(os.size() + serializedSize);
 
-        const auto cellCount = reversedCells.size();
+        const auto cellCount = static_cast<uint16_t>(reversedCells.size());
 
         // Write header
         encode32BE(BOC_MAGIC, os);
