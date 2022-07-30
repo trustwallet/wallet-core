@@ -7,21 +7,21 @@
 using namespace TW;
 using namespace TW::Everscale;
 
-void CellSlice::advance(uint16_t bits) {
+/*void CellSlice::advance(uint16_t bits) {
     require(bits);
     dataOffset += bits;
-}
+}*/
 
-bool CellSlice::getNextBit() {
+/*bool CellSlice::getNextBit() {
     require(1);
     const uint16_t q = dataOffset / 8;
     const uint16_t r = dataOffset % 8;
     const auto bit = ((cell->data[q] >> (7 - r)) & 1) != 0;
     ++dataOffset;
     return bit;
-}
+}*/
 
-uint8_t CellSlice::getNextBits(uint16_t bits) {
+/*uint8_t CellSlice::getNextBits(uint16_t bits) {
     if (bits == 0) {
         return 0;
     }
@@ -45,7 +45,7 @@ uint8_t CellSlice::getNextBits(uint16_t bits) {
         }
         return static_cast<uint8_t>(result >> (invR + 8 - bits));
     }
-}
+}*/
 
 uint32_t CellSlice::getNextU32() {
     const auto bytes = getNextBytes(sizeof(uint32_t));
@@ -83,7 +83,7 @@ Data CellSlice::getNextBytes(uint8_t bytes) {
     return result;
 }
 
-const Cell* _Nonnull CellSlice::getNextReferenceCell() {
+/*const Cell* _Nonnull CellSlice::getNextReferenceCell() {
     if (refsOffset > cell->refCount) {
         throw std::runtime_error("cell refs underflow");
     }
@@ -92,7 +92,7 @@ const Cell* _Nonnull CellSlice::getNextReferenceCell() {
         throw std::runtime_error("invalid cell reference");
     }
     return child;
-}
+}*/
 
 void CellSlice::require(uint16_t bits) const {
     if (dataOffset + bits > cell->bitLen) {

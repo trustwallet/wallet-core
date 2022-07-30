@@ -18,7 +18,7 @@ void ExternalInboundMessageHeader::writeTo(CellBuilder& builder) const {
     builder.appendRaw(prefix, 2);
 
     builder.appendBitZero();
-    builder.appendi8(dst_.first);
+    builder.appendI8(dst_.first);
     builder.appendRaw(dstAddr, 256);
 
     // fee
@@ -43,7 +43,7 @@ void InternalMessageHeader::writeTo(CellBuilder& builder) const {
     builder.appendRaw(prefix, 2);
 
     builder.appendBitZero();
-    builder.appendi8(dst_.first);
+    builder.appendI8(dst_.first);
     builder.appendRaw(dstAddr, 256);
 
     // value

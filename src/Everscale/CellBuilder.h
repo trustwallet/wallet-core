@@ -27,7 +27,7 @@ public:
     void appendU32(uint32_t value);
     void appendU64(uint64_t value);
     void appendU128(uint128_t value);
-    void appendi8(int8_t value);
+    void appendI8(int8_t value);
     void appendBits(uint64_t value, uint8_t bits);
     void appendRaw(const Data& appendedData, uint16_t bits);
     void prependRaw(Data& appendedData, uint16_t bits);

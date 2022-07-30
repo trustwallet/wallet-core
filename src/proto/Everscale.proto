@@ -16,7 +16,7 @@ message Transfer {
     uint32 expired_at = 4;
 
     oneof destination {
-        bytes address = 5;
+        string address = 5;
     }
 
     oneof account_state {
