@@ -28,7 +28,7 @@ class ExternalInboundMessageHeader: public CommonMsgInfo {
     uint128_t importFee_;
 
 public:
-    ExternalInboundMessageHeader(MsgAddressInt dst) : dst_(dst), importFee_(0) {}
+    explicit ExternalInboundMessageHeader(MsgAddressInt dst) : dst_(dst), importFee_(0) {}
 
     void writeTo(CellBuilder& builder) const override;
 };
@@ -70,7 +70,7 @@ private:
 public:
     using HeaderRef = std::shared_ptr<CommonMsgInfo>;
 
-    Message(HeaderRef header) : header_(header) {}
+    explicit Message(HeaderRef header) : header_(header) {}
 
     Cell::Ref intoCell() const;
     inline void setBody(CellSlice body) { body_ = body; }

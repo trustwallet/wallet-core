@@ -80,7 +80,7 @@ void CellBuilder::appendU128(uint128_t value) {
     appendRaw(appendedData, bytes * 8);
 }
 
-void CellBuilder::appendi8(int8_t value) {
+void CellBuilder::appendI8(int8_t value) {
     Data appendedData{static_cast<uint8_t>(value)};
     appendRaw(appendedData, 8);
 }

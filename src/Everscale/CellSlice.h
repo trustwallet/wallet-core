@@ -18,14 +18,18 @@ public:
         : cell(cell) {}
 
     /// Checks and increases dataOffset
-    void advance(uint16_t bits);
+    //void advance(uint16_t bits);
+
     /// Tries to read next bit
-    bool getNextBit();
+    //bool getNextBit();
+
     /// Tries to read next bits (at most 8)
-    uint8_t getNextBits(uint16_t bits);
+    //uint8_t getNextBits(uint16_t bits);
+
     uint32_t getNextU32();
     Data getNextBytes(uint8_t bytes);
-    const Cell* _Nonnull getNextReferenceCell();
+
+    //const Cell* _Nonnull getNextReferenceCell();
 
 private:
     void require(uint16_t bits) const;

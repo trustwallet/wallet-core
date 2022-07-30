@@ -29,13 +29,13 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
                 auto expiredAt = input.transfer().expired_at();
 
                 std::optional<MsgAddressInt> destination;
-                if (!input.transfer().has_address()) {
+                if (input.transfer().has_address()) {
                     auto addr = Address(input.transfer().address());
                     destination = std::make_pair(addr.wc_, addr.address_);
                 }
 
                 std::optional<Data> stateInit;
-                if (!input.transfer().has_state_init()) {
+                if (input.transfer().has_state_init()) {
                     auto data = TW::data(input.transfer().state_init());
                     stateInit = data;
                 }
