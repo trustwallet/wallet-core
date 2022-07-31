@@ -2686,5 +2686,34 @@
       "rpc": "https://exchainrpc.okex.org",
       "documentation": "https://okc-docs.readthedocs.io/en/latest"
     }
+  },
+  {
+    "id": "bittorent",
+    "name": "BitTorrent",
+    "coinId": 10000199,
+    "chainId": "199",
+    "symbol": "BTT",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://scan.bt.io/#",
+      "txPath": "/transaction/",
+      "accountPath": "/address/",
+      "sampleTx": "0xb5663bc773c2c833b7d19ddb67f6d90390e8917c0898f67cdd31d83527210b44",
+      "sampleAccount": "0x960f53196181a6a76ad20eecca5591215c6d0fa4"
+    },
+    "info": {
+      "url": "https://bt.io",
+      "source": "https://github.com/bttcprotocol/bttc",
+      "rpc": "https://rpc.bittorrentchain.io",
+      "documentation": "https://doc.bt.io/v1/doc/"
+    }
   }
 ]
