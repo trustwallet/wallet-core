@@ -2715,5 +2715,34 @@
       "rpc": "https://rpc.astar.network:8545",
       "documentation": "https://docs.astar.network"
     }
+  },
+  {
+    "id": "fuse",
+    "name": "Fuse",
+    "coinId": 10000122,
+    "chainId": "122",
+    "symbol": "FUSE",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://explorer.fuse.io/",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0xeb44220d390c0c6cfe43dc0f2b6f65935e274d0fe51dc61b90eb23e7144db391",
+      "sampleAccount": "0xF042E9e2ecE302948762095730Eb630a6d06e61D"
+    },
+    "info": {
+      "url": "https://fuse.io",
+      "source": "https://github.com/fuseio/fuse-network",
+      "rpc": "https://rpc.fuse.io",
+      "documentation": "https://docs.fuse.io"
+    }
   }
 ]
