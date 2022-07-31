@@ -129,3 +129,27 @@ TEST(EverscaleSigner, WithStateInit4) {
 
     ASSERT_EQ(TW::Base64::encode(Data(boc.begin(), boc.end())), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGA/zSxfc0nSJb7kigVwlIV+5/87mtezg4DFLGE9i8o+H0DmW4pcqwXYvqiiUsED9QXUcfnkOdpFrVP49UJ8MpAiXUlsUxcV1PAAAABIHA=");
 }
+
+TEST(EverscaleSigner, WithStateInit5) {
+    auto input = Proto::SigningInput();
+
+    auto& transfer = *input.mutable_transfer();
+    transfer.set_bounce(false);
+    transfer.set_flags(3);
+    transfer.set_amount(1000000000);
+    transfer.set_expired_at(1659026078);
+
+    auto dst = Address("0:ab91c8cec44aa6e3b2c31443202a63241394491f0e41215a30620b57ef28b69b");
+    transfer.set_address(dst.string().c_str(), dst.string().size());
+
+    auto stateInit = TW::Base64::decode("te6ccgEBAgEAkwAB1Sp4dzrWtYqjN0CV1Ufq3ItNiJxtJCruV7zPDzhTXVlCAAABglF+S+OVPDuda1rFUZugSuqj9W5FpsRONpIVdyveZ4ecKa6soQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAICwAQBFoAVPDuda1rFUZugSuqj9W5FpsRONpIVdyveZ4ecKa6soQBA=");
+    transfer.set_state_init(stateInit.data(), stateInit.size());
+
+    auto privateKey = parse_hex("5b59e0372d19b6355c73fa8cc708fa3301ae2ec21bb6277e8b79d386ccb7846f");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(std::move(input));
+    auto boc = output.message();
+
+    ASSERT_EQ(TW::Base64::encode(Data(boc.begin(), boc.end())), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGClW99vIA2kmq6/puWWJ4PdhyfoDZRXumfg1qcuBIyw9mST1OqcFJcsv/Ffe83E1TN35ASTprqCupGE3eUAf2A+taxVGxcV1PFTw7nQHA=");
+}
