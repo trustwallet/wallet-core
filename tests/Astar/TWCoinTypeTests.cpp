@@ -26,7 +26,7 @@ TEST(TWAstarCoinType, TWCoinType) {
 
     assertStringsEqual(id, "astar");
     assertStringsEqual(name, "Astar");
-    assertStringsEqual(symbol, "OKT");
+    assertStringsEqual(symbol, "ASTR");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
