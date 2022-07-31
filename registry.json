@@ -2686,5 +2686,34 @@
       "rpc": "https://exchainrpc.okex.org",
       "documentation": "https://okc-docs.readthedocs.io/en/latest"
     }
+  },
+  {
+    "id": "astar",
+    "name": "Astar",
+    "coinId": 810,
+    "chainId": "592",
+    "symbol": "OKT",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://astar.subscan.io",
+      "txPath": "/extrinsic/",
+      "accountPath": "/account/",
+      "sampleTx": "0xdc7cf434cfbb85ad57c133cd6da5fde6b5a080d5b322263f80dc48969913c708",
+      "sampleAccount": "0x470aC13c63329A99C2Bd474127B08Fd3513d52A5"
+    },
+    "info": {
+      "url": "https://astar.network",
+      "source": "https://github.com/AstarNetwork/Astar",
+      "rpc": "https://rpc.astar.network:8545",
+      "documentation": "https://docs.astar.network"
+    }
   }
 ]
