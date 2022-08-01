@@ -113,6 +113,12 @@ PrivateKey HDWallet::getKey(TWCoinType coin, TWDerivation derivation) const {
     return getKey(coin, path);
 }
 
+PrivateKey HDWallet::getKeyByCurve(TWCurve curve, const DerivationPath& derivationPath) const {
+    auto node = getNode(*this, curve, derivationPath);
+    auto data = Data(node.private_key, node.private_key + PrivateKey::size);
+    return PrivateKey(data);
+}
+
 DerivationPath HDWallet::cardanoStakingDerivationPath(const DerivationPath& path) {
     DerivationPath stakingPath = path;
     stakingPath.indices[3].value = 2;
