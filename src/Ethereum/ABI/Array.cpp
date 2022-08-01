@@ -138,7 +138,11 @@ void ParamArrayFix::encode(Data& data) const {
 }
 
 bool ParamArrayFix::decode([[maybe_unused]] const Data& encoded, [[maybe_unused]] size_t& offset_inout) {
-    return false;
+    std::size_t origOffset = offset_inout;
+    auto res = this->_params.decode(encoded, offset_inout);
+    // padding
+    offset_inout = origOffset + ValueEncoder::paddedTo32(offset_inout - origOffset);
+    return res;
 }
 
 bool ParamArrayFix::setValueJson([[maybe_unused]] const std::string& value) {
