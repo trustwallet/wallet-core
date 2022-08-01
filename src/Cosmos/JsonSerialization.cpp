@@ -13,12 +13,11 @@
 #include "PrivateKey.h"
 
 using namespace TW;
-using namespace TW::Cosmos;
+
+namespace TW::Cosmos::json {
 
 using json = nlohmann::json;
 using string = std::string;
-
-namespace TW::Cosmos {
 
 const string TYPE_PREFIX_MSG_SEND = "cosmos-sdk/MsgSend";
 const string TYPE_PREFIX_MSG_DELEGATE = "cosmos-sdk/MsgDelegate";
@@ -28,7 +27,7 @@ const string TYPE_PREFIX_MSG_WITHDRAW_REWARD = "cosmos-sdk/MsgWithdrawDelegation
 const string TYPE_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 const string TYPE_PREFIX_WASM_MSG_EXECUTE = "wasm/MsgExecuteContract";
 
-static string jsonBroadcastMode(Proto::BroadcastMode mode) {
+static string broadcastMode(Proto::BroadcastMode mode) {
     switch (mode) {
     case Proto::BroadcastMode::BLOCK:
         return "block";
@@ -41,7 +40,7 @@ static string jsonBroadcastMode(Proto::BroadcastMode mode) {
 static json broadcastJSON(json& j, Proto::BroadcastMode mode) {
     return {
         {"tx", j},
-        {"mode", jsonBroadcastMode(mode)}
+        {"mode", broadcastMode(mode)}
     };
 }
 
@@ -145,7 +144,7 @@ json messageWasmTerraTransfer(const Proto::Message_WasmTerraExecuteContractTrans
             {
                 {"sender", msg.sender_address()},
                 {"contract", msg.contract_address()},
-                {"execute_msg", wasmTerraExecuteTransferPayload(msg)},
+                {"execute_msg", protobuf::wasmTerraExecuteTransferPayload(msg)},
                 {"coins", json::array()}  // used in case you are sending native tokens along with this message
             }
         }
@@ -219,4 +218,4 @@ json transactionJSON(const Proto::SigningInput& input, const Data& signature) {
     return broadcastJSON(tx, input.mode());
 }
 
-} // namespace
+} // namespace TW::Cosmos

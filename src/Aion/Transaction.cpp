@@ -9,7 +9,6 @@
 #include "../Ethereum/RLP.h"
 
 using namespace TW;
-using namespace TW::Aion;
 using boost::multiprecision::uint128_t;
 
 namespace TW::Aion {
