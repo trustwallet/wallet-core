@@ -133,4 +133,30 @@ std::string ParamArray::getExtraTypes(std::vector<std::string>& ignoreList) cons
     return (proto != nullptr) ? proto->getExtraTypes(ignoreList) : "";
 }
 
+void ParamArrayFix::encode([[maybe_unused]] Data& data) const {}
+
+bool ParamArrayFix::decode([[maybe_unused]] const Data& encoded, [[maybe_unused]] size_t& offset_inout) {
+    return false;
+}
+
+bool ParamArrayFix::setValueJson([[maybe_unused]] const std::string& value) {
+    return false;
+}
+
+void ParamArrayFix::addParam(const std::shared_ptr<ParamBase>& param) {
+    if (param == nullptr) {
+        throw std::runtime_error("param can't be nullptr");
+    }
+    if (_params.getCount() >= 1 && param->getType() != _params.getParamUnsafe(0)->getType()) {
+        throw std::runtime_error("params need to be the same type");
+    } // do not add different types
+    _params.addParam(param);
+}
+
+void ParamArrayFix::addParams(const std::vector<std::shared_ptr<ParamBase>>& params) {
+    for (auto&& p : params) {
+        addParam(p);
+    }
+}
+
 } // namespace TW::Ethereum::ABI
