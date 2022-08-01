@@ -458,7 +458,7 @@ TEST(HDWallet, GetDerivedKey) {
 TEST(HDWallet, GetKeyByCurve) {
     const auto derivPath = STRING("m/44'/539'/0'/0/0");
 
-    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), STRING("").get()));
     const auto privateKey1 = WRAP(TWPrivateKey, TWHDWalletGetKeyByCurve(wallet.get(), TWCurveSECP256k1, derivPath.get()));
     const auto privateKeyData1 = WRAPD(TWPrivateKeyData(privateKey1.get()));
     assertHexEqual(privateKeyData1, "4fb8657d6464adcaa086d6758d7f0b6b6fc026c98dc1671fcc6460b5a74abc62");
