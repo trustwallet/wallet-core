@@ -158,9 +158,7 @@ Cell::Ref CellBuilder::intoCell() {
     auto refCount = references.size();
 
     Cell::Refs refs;
-    for (size_t r = 0; r < refCount; ++r) {
-        refs[r] = std::move(references[r]);
-    }
+    std::move(references.begin(), references.end(), refs.begin());
 
     auto cell = std::make_shared<Cell>(bitLen, std::move(data), refCount, std::move(refs));
     cell->finalize();
