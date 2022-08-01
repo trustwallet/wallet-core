@@ -4,16 +4,19 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include <charconv>
+#include <system_error>
+
 #include "Address.h"
-#include "CellBuilder.h"
 #include "HexCoding.h"
 #include "Wallet.h"
 #include "WorkchainType.h"
 
 using namespace TW;
-using namespace TW::Everscale;
 
-bool Address::isValid(const std::string& string) {
+namespace TW::Everscale {
+
+bool Address::isValid(const std::string& string) noexcept {
     auto parsed = parseWorkchainId(string);
     if (!parsed.has_value())
         return false;
@@ -40,36 +43,37 @@ Address::Address(const std::string& string) {
     auto parsed = parseWorkchainId(string);
     auto [wc, pos] = *parsed;
 
-    wc_ = wc;
+    _wc = wc;
 
     const auto acc = parse_hex(string.substr(pos));
-    std::copy(std::begin(acc), std::end(acc), std::begin(address_));
+    std::copy(begin(acc), end(acc), begin(_address));
 }
 
 Address::Address(const PublicKey& publicKey, int8_t workchainId) {
     InitData initData(publicKey);
     auto [wc, address] = initData.computeAddr(workchainId);
 
-    wc_ = wc;
-    address_ = address;
+    _wc = wc;
+    _address = address;
 }
 
 std::string Address::string() const {
-    std::string string = std::to_string(wc_) + ":" + hex(address_);
+    std::string string = std::to_string(_wc) + ":" + hex(_address);
     return string;
 }
 
-std::optional<std::pair<int8_t, uint32_t>> Address::parseWorkchainId(const std::string& string) {
-    int8_t workchainId = WorkchainType::Basechain;
-
-    auto pos = string.find(':');
-    if (pos != std::string::npos) {
+Address::MaybeWorkchainInfos Address::parseWorkchainId(const std::string& string) {
+    if (auto pos = string.find(':'); pos != std::string::npos) {
         auto tmp = string.substr(0, pos);
-        workchainId = static_cast<int8_t>(std::stoi(tmp));
-        ++pos;
-    } else {
-        return {};
+
+        int8_t workchainId = WorkchainType::Basechain;
+        auto [_, ec] { std::from_chars(tmp.data(), tmp.data() + tmp.size(), workchainId) };
+        if (ec == std::errc()) {
+            return std::make_pair(workchainId, pos + 1);
+        }
     }
 
-    return std::make_pair(workchainId, pos);
+    return {};
 }
+
+} // namespace TW::Everscale

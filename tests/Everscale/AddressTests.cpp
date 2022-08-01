@@ -13,7 +13,8 @@
 #include <vector>
 
 using namespace TW;
-using namespace TW::Everscale;
+
+namespace TW::Everscale {
 
 TEST(EverscaleAddress, Valid) {
     ASSERT_TRUE(Address::isValid("0:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a"));
@@ -23,8 +24,7 @@ TEST(EverscaleAddress, Invalid) {
     ASSERT_FALSE(Address::isValid("83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a"));
     ASSERT_FALSE(Address::isValid("1:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a"));
     ASSERT_FALSE(Address::isValid("-2:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a"));
-
-    ASSERT_ANY_THROW(Address::isValid("2147483648:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a"));
+    ASSERT_FALSE(Address::isValid("2147483648:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a"));
 }
 
 TEST(EverscaleAddress, FromString) {
@@ -45,4 +45,6 @@ TEST(EverscaleAddress, FromPublicKey) {
     auto publicKey = PublicKey(parse_hex("e4925f9932df8d7fd0042efff3e2178a972028b644ded3a3b66f6d0577f82e78"), TWPublicKeyTypeED25519);
     auto address = Address(publicKey, WorkchainType::Basechain);
     ASSERT_EQ(address.string(), "0:269fee242eb410786abe1777a14785c8bbeb1e34100c7570e17698b36ad66fb0");
+}
+
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <optional>
+#include <utility>
 
 #include "Address.h"
 #include "CellSlice.h"
@@ -24,37 +25,37 @@ public:
 inline CommonMsgInfo::~CommonMsgInfo() { }
 
 class ExternalInboundMessageHeader: public CommonMsgInfo {
-    MsgAddressInt dst_;
-    uint128_t importFee_;
+    MsgAddressInt _dst;
+    uint128_t _importFee;
 
 public:
-    explicit ExternalInboundMessageHeader(MsgAddressInt dst) : dst_(dst), importFee_(0) {}
+    explicit ExternalInboundMessageHeader(MsgAddressInt dst) : _dst(dst), _importFee(0) {}
 
     void writeTo(CellBuilder& builder) const override;
 };
 
 class InternalMessageHeader: public CommonMsgInfo {
-    bool ihrDisabled_;
-    bool bounce_;
-    bool bounced_;
-    MsgAddressInt dst_;
-    uint128_t value_;
-    uint128_t ihrFee_;
-    uint128_t fwdFee_;
-    uint64_t createdLt_;
-    uint32_t createdAt_;
+    bool _ihrDisabled;
+    bool _bounce;
+    bool _bounced;
+    MsgAddressInt _dst;
+    uint128_t _value;
+    uint128_t _ihrFee;
+    uint128_t _fwdFee;
+    uint64_t _createdLt;
+    uint32_t _createdAt;
 
 public:
     InternalMessageHeader(bool ihrDisabled, bool bounce, MsgAddressInt dst, uint64_t value) :
-        ihrDisabled_(ihrDisabled),
-        bounce_(bounce),
-        bounced_(false),
-        dst_(dst),
-        value_(static_cast<uint128_t>(value)),
-        ihrFee_(0),
-        fwdFee_(0),
-        createdLt_(0),
-        createdAt_(0)
+        _ihrDisabled(ihrDisabled),
+        _bounce(bounce),
+        _bounced(false),
+        _dst(dst),
+        _value(static_cast<uint128_t>(value)),
+        _ihrFee(0),
+        _fwdFee(0),
+        _createdLt(0),
+        _createdAt(0)
     {}
 
     void writeTo(CellBuilder& builder) const override;
@@ -62,19 +63,19 @@ public:
 
 class Message {
 private:
-    std::shared_ptr<CommonMsgInfo> header_;
+    std::shared_ptr<CommonMsgInfo> _header;
 
-    std::optional<StateInit> init_;
-    std::optional<CellSlice> body_;
+    std::optional<StateInit> _init;
+    std::optional<CellSlice> _body;
 
 public:
     using HeaderRef = std::shared_ptr<CommonMsgInfo>;
 
-    explicit Message(HeaderRef header) : header_(header) {}
+    explicit Message(HeaderRef header) : _header(std::move(header)) {}
 
     Cell::Ref intoCell() const;
-    inline void setBody(CellSlice body) { body_ = body; }
-    inline void setStateInit(StateInit stateInit) { init_ = stateInit; }
+    inline void setBody(CellSlice body) { _body = body; }
+    inline void setStateInit(StateInit stateInit) { _init = stateInit; }
 };
 
 

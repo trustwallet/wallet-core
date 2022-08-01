@@ -10,9 +10,10 @@
 #include "Signer.h"
 #include "WorkchainType.h"
 
-using namespace TW::Everscale;
 using namespace TW;
 using namespace std;
+
+namespace TW::Everscale {
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
@@ -31,3 +32,5 @@ string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& p
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
+
+} // namespace TW::Everscale

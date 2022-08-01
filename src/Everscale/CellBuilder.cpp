@@ -7,19 +7,15 @@
 #include "../BinaryCoding.h"
 
 using namespace TW;
-using namespace TW::Everscale;
+
+namespace TW::Everscale {
 
 CellBuilder::CellBuilder(Data& appendedData, uint16_t bits) {
     assert(bits <= appendedData.size() * 8);
     assert(bits < Cell::MAX_BITS);
+    assert(bits % 8 == 0);
 
-    auto dataShift = bits % 8;
-    if (dataShift == 0) {
-        appendedData.resize(bits / 8);
-    } else {
-        appendedData.resize(1 + bits / 8);
-        appendedData.back() = static_cast<uint8_t>((appendedData.back() >> (8 - dataShift)) << (8 - dataShift));
-    }
+    appendedData.resize(bits / 8);
 
     data = appendedData;
     bitLen = bits;
@@ -86,23 +82,12 @@ void CellBuilder::appendI8(int8_t value) {
 }
 
 void CellBuilder::appendBits(uint64_t value, uint8_t bits) {
+    assert(bits >= 1 && bits <= 7);
+
     Data appendedData;
 
-    if (bits == 0) {
-        // Do nothing
-    } else if (bits >= 1 && bits <= 7) {
-        auto val = static_cast<uint8_t>(value << (8 - bits));
-        appendedData.push_back(val);
-    } else if (bits >= 8 && bits <= 15) {
-        auto val = static_cast<uint16_t>(value << (16 - bits));
-        encode16BE(val, appendedData);
-    } else if (bits >= 16 && bits <= 31) {
-        auto val = static_cast<uint32_t>(value << (32 - bits));
-        encode32BE(val, appendedData);
-    } else if (bits >= 32 && bits <= 63) {
-        auto val = static_cast<uint64_t>(value << (64 - bits));
-        encode64BE(val, appendedData);
-    }
+    auto val = static_cast<uint8_t>(value << (8 - bits));
+    appendedData.push_back(val);
 
     appendRaw(appendedData, bits);
 }
@@ -138,10 +123,12 @@ void CellBuilder::prependRaw(Data& appendedData, uint16_t bits) {
 }
 
 void CellBuilder::appendReferenceCell(std::shared_ptr<Cell> child) {
-    if (references.size() + 1 > Cell::MAX_REFS) {
-        throw std::runtime_error("cell refs overflow");
+    if (child) {
+        if (references.size() + 1 > Cell::MAX_REFS) {
+            throw std::runtime_error("cell refs overflow");
+        }
+        references.emplace_back(std::move(child));
     }
-    references.push_back(std::move(child));
 }
 
 void CellBuilder::appendBuilder(const CellBuilder& builder) {
@@ -155,8 +142,8 @@ void CellBuilder::appendCellSlice(const CellSlice &other) {
     Data appendedData(other.cell->data);
     appendRaw(appendedData, other.cell->bitLen);
 
-    for (auto i = 0; i < other.cell->refCount; i++) {
-        appendReferenceCell(other.cell->references[i]);
+    for (const auto & cell : other.cell->references) {
+        appendReferenceCell(cell);
     }
 }
 
@@ -249,20 +236,22 @@ uint8_t CellBuilder::clzU128(const uint128_t& u) {
 }
 
 void CellBuilder::encode128BE(const uint128_t& val, Data& data) {
-    data.push_back(static_cast<uint8_t>((val >> 120)));
-    data.push_back(static_cast<uint8_t>((val >> 112)));
-    data.push_back(static_cast<uint8_t>((val >> 104)));
-    data.push_back(static_cast<uint8_t>((val >> 96)));
-    data.push_back(static_cast<uint8_t>((val >> 88)));
-    data.push_back(static_cast<uint8_t>((val >> 80)));
-    data.push_back(static_cast<uint8_t>((val >> 72)));
-    data.push_back(static_cast<uint8_t>((val >> 64)));
-    data.push_back(static_cast<uint8_t>((val >> 56)));
-    data.push_back(static_cast<uint8_t>((val >> 48)));
-    data.push_back(static_cast<uint8_t>((val >> 40)));
-    data.push_back(static_cast<uint8_t>((val >> 32)));
-    data.push_back(static_cast<uint8_t>((val >> 24)));
-    data.push_back(static_cast<uint8_t>((val >> 16)));
-    data.push_back(static_cast<uint8_t>((val >> 8)));
-    data.push_back(static_cast<uint8_t>(val));
+    data.emplace_back(static_cast<uint8_t>((val >> 120)));
+    data.emplace_back(static_cast<uint8_t>((val >> 112)));
+    data.emplace_back(static_cast<uint8_t>((val >> 104)));
+    data.emplace_back(static_cast<uint8_t>((val >> 96)));
+    data.emplace_back(static_cast<uint8_t>((val >> 88)));
+    data.emplace_back(static_cast<uint8_t>((val >> 80)));
+    data.emplace_back(static_cast<uint8_t>((val >> 72)));
+    data.emplace_back(static_cast<uint8_t>((val >> 64)));
+    data.emplace_back(static_cast<uint8_t>((val >> 56)));
+    data.emplace_back(static_cast<uint8_t>((val >> 48)));
+    data.emplace_back(static_cast<uint8_t>((val >> 40)));
+    data.emplace_back(static_cast<uint8_t>((val >> 32)));
+    data.emplace_back(static_cast<uint8_t>((val >> 24)));
+    data.emplace_back(static_cast<uint8_t>((val >> 16)));
+    data.emplace_back(static_cast<uint8_t>((val >> 8)));
+    data.emplace_back(static_cast<uint8_t>(val));
 }
+
+} // namespace TW::Everscale

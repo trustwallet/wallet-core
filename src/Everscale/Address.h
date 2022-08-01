@@ -20,12 +20,13 @@ public:
     static const size_t size = Hash::sha256Size;
 
     using MsgAddressInt = std::pair<int8_t, std::array<byte, Address::size>>;
+    using MaybeWorkchainInfos = std::optional<std::pair<int8_t, uint32_t>>;
 
-    std::int8_t wc_;
-    std::array<byte, size> address_{};
+    std::int8_t _wc;
+    std::array<byte, size> _address{};
 
     /// Determines whether a string makes a valid address.
-    static bool isValid(const std::string& string);
+    [[nodiscard]] static bool isValid(const std::string& string) noexcept;
 
     /// Initializes a Everscale address with a string representation.
     explicit Address(const std::string& string);
@@ -36,12 +37,12 @@ public:
     /// Returns a string representation of the address.
     [[nodiscard]] std::string string() const;
 private:
-    static std::optional<std::pair<int8_t, uint32_t>> parseWorkchainId(const std::string& string);
+    static MaybeWorkchainInfos parseWorkchainId(const std::string& string);
 
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs.wc_ == rhs.wc_ && lhs.address_ == rhs.address_;
+    return lhs._wc == rhs._wc && lhs._address == rhs._address;
 }
 
 } // namespace TW::Everscale

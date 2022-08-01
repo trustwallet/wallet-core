@@ -23,6 +23,7 @@ public:
         uint8_t flags;
     };
 
+    // WalletV3 contract https://github.com/tonlabs/ton-1/blob/master/crypto/smartcont/wallet3-code.fc
     static constexpr const uint8_t code[] = {
         0xB5, 0xEE, 0x9C, 0x72, 0x01, 0x01, 0x01, 0x01, 0x00, 0x71, 0x00,
         0x00, 0xDE, 0xFF, 0x00, 0x20, 0xDD, 0x20, 0x82, 0x01, 0x4C, 0x97,
@@ -40,22 +41,21 @@ public:
 };
 
 class StateInit {
-    Cell::Ref code_;
-    Cell::Ref data_;
+    Cell::Ref _code;
+    Cell::Ref _data;
 public:
-    explicit StateInit(Cell::Ref code, Cell::Ref data) : code_(std::move(code)), data_(std::move(data)) {}
+    explicit StateInit(Cell::Ref code, Cell::Ref data) : _code(std::move(code)), _data(std::move(data)) {}
 
     [[nodiscard]] CellBuilder writeTo() const;
 };
 
 class InitData {
-    uint32_t seqno_;
-    uint32_t walletId_;
-    PublicKey publicKey_;
+    uint32_t _seqno;
+    uint32_t _walletId;
+    PublicKey _publicKey;
 public:
-    explicit InitData(PublicKey publicKey) : seqno_(0), walletId_(WALLET_ID), publicKey_(std::move(publicKey)) {}
-    explicit InitData(uint32_t seqno, PublicKey  publicKey) : seqno_(seqno), walletId_(WALLET_ID), publicKey_(std::move(publicKey)) {}
-    explicit InitData(CellSlice cs) : seqno_(cs.getNextU32()), walletId_(cs.getNextU32()), publicKey_(PublicKey(cs.getNextBytes(32), TWPublicKeyTypeED25519)) {}
+    explicit InitData(PublicKey publicKey) : _seqno(0), _walletId(WALLET_ID), _publicKey(std::move(publicKey)) {}
+    explicit InitData(CellSlice cs) : _seqno(cs.getNextU32()), _walletId(cs.getNextU32()), _publicKey(PublicKey(cs.getNextBytes(32), TWPublicKeyTypeED25519)) {}
 
     [[nodiscard]] CellBuilder writeTo() const;
     [[nodiscard]] StateInit makeStateInit() const;
