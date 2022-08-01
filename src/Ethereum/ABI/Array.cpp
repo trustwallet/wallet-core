@@ -133,7 +133,9 @@ std::string ParamArray::getExtraTypes(std::vector<std::string>& ignoreList) cons
     return (proto != nullptr) ? proto->getExtraTypes(ignoreList) : "";
 }
 
-void ParamArrayFix::encode([[maybe_unused]] Data& data) const {}
+void ParamArrayFix::encode(Data& data) const {
+    this->_params.encode(data);
+}
 
 bool ParamArrayFix::decode([[maybe_unused]] const Data& encoded, [[maybe_unused]] size_t& offset_inout) {
     return false;
