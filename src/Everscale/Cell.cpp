@@ -142,7 +142,8 @@ std::shared_ptr<Cell> Cell::deserialize(const uint8_t* _Nonnull data, size_t len
         std::vector<size_t> references;
     };
 
-    std::map<size_t, IntermediateCell> intermediate{};
+    std::vector<IntermediateCell> intermediate{};
+    intermediate.reserve(cellCount);
 
     for (size_t i = 0; i < cellCount; ++i) {
         struct Descriptor {
@@ -195,8 +196,7 @@ std::shared_ptr<Cell> Cell::deserialize(const uint8_t* _Nonnull data, size_t len
         }
 
         const auto bitLen = computeBitLen(cellData, (d2 & 0b1) == 0);
-        intermediate.emplace(
-            i,
+        intermediate.emplace_back(
             IntermediateCell{
                 .bitLen = bitLen,
                 .data = std::move(cellData),
@@ -208,7 +208,7 @@ std::shared_ptr<Cell> Cell::deserialize(const uint8_t* _Nonnull data, size_t len
 
     size_t index = cellCount;
     for (auto it = intermediate.rbegin(); it != intermediate.rend(); ++it, --index) {
-        auto& raw = it->second;
+        auto& raw = *it;
 
         Cell::Refs references{};
         for (size_t r = 0; r < raw.references.size(); ++r) {
