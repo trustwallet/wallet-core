@@ -3,14 +3,15 @@
 #include "Wallet.h"
 
 using namespace TW;
-using namespace TW::Everscale;
+
+namespace TW::Everscale {
 
 CellBuilder InitData::writeTo() const {
     CellBuilder builder;
 
-    builder.appendU32(seqno_);
-    builder.appendU32(walletId_);
-    builder.appendRaw(publicKey_.bytes, 256);
+    builder.appendU32(_seqno);
+    builder.appendU32(_walletId);
+    builder.appendRaw(_publicKey.bytes, 256);
 
     return builder;
 }
@@ -37,9 +38,9 @@ CellBuilder InitData::makeTransferPayload(uint32_t expireAt, const Wallet::Gift&
     CellBuilder payload;
 
     // insert prefix
-    payload.appendU32(walletId_);
+    payload.appendU32(_walletId);
     payload.appendU32(expireAt);
-    payload.appendU32(seqno_);
+    payload.appendU32(_seqno);
 
     // create internal message
     Message::HeaderRef header = std::make_shared<InternalMessageHeader>(true, gift.bounce, gift.destination, gift.amount);
@@ -58,10 +59,12 @@ CellBuilder StateInit::writeTo() const {
     builder.appendBitZero(); // split_depth
     builder.appendBitZero(); // special
     builder.appendBitOne();  // code
-    builder.appendReferenceCell(code_);
+    builder.appendReferenceCell(_code);
     builder.appendBitOne(); // data
-    builder.appendReferenceCell(data_);
+    builder.appendReferenceCell(_data);
     builder.appendBitZero(); // library
 
     return builder;
+}
+
 }

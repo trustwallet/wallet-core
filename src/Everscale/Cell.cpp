@@ -3,13 +3,15 @@
 #include <cassert>
 #include <map>
 #include <optional>
+#include <unordered_map>
 
 #include <TrezorCrypto/sha2.h>
 
 #include "../BinaryCoding.h"
 
 using namespace TW;
-using namespace TW::Everscale;
+
+namespace TW::Everscale {
 
 constexpr static uint32_t BOC_MAGIC = 0xb5ee9c72;
 
@@ -202,7 +204,7 @@ std::shared_ptr<Cell> Cell::deserialize(const uint8_t* _Nonnull data, size_t len
             });
     }
 
-    std::map<size_t, Cell::Ref> doneCells{};
+    std::unordered_map<size_t, Cell::Ref> doneCells{};
 
     size_t index = cellCount;
     for (auto it = intermediate.rbegin(); it != intermediate.rend(); ++it, --index) {
@@ -317,7 +319,7 @@ private:
         }
 
         ctx.indices.insert(std::make_pair(cell.hash, ctx.index++));
-        ctx.reversedCells.push_back(&cell);
+        ctx.reversedCells.emplace_back(&cell);
         ctx.serializedSize += cell.serializedSize();
     }
 };
@@ -385,3 +387,5 @@ void Cell::finalize() {
     sha256_Final(&context, hash.data());
     finalized = true;
 }
+
+} // namespace TW::Everscale
