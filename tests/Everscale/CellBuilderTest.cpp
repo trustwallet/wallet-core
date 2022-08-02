@@ -30,7 +30,7 @@ TEST(EverscaleCell, ComputeContractAddress) {
     dataBuilder.appendRaw(publicKey.bytes, 256);
 
     const auto data = dataBuilder.intoCell();
-    const auto code = Cell::deserialize(Wallet::code, sizeof(Wallet::code));
+    const auto code = Cell::deserialize(Wallet::code.data(), Wallet::code.size());
 
     CellBuilder stateInitBuilder;
     stateInitBuilder.appendBitZero(); // split_depth

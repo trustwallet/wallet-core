@@ -24,7 +24,7 @@ TEST(EverscaleCell, DeserializeTransaction) {
 }
 
 TEST(EverscaleCell, DeserializeWallet) {
-    const auto cell = Cell::deserialize(Wallet::code, sizeof(Wallet::code));
+    const auto cell = Cell::deserialize(Wallet::code.data(), Wallet::code.size());
     ASSERT_EQ(hex(cell->hash), "84dafa449f98a6987789ba232358072bc0f76dc4524002a5d0918b9a75d2d599");
 }
 
@@ -39,7 +39,7 @@ TEST(EverscaleCell, SerializeTransaction) {
 }
 
 TEST(EverscaleCell, SerializeWallet) {
-    const auto cell = Cell::deserialize(Wallet::code, sizeof(Wallet::code));
+    const auto cell = Cell::deserialize(Wallet::code.data(), Wallet::code.size());
     Data data;
     cell->serialize(data);
 
