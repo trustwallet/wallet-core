@@ -48,7 +48,7 @@ module TsHelper
         wasm_src = File.expand_path(File.join(File.dirname(__FILE__), '../../wasm'))
         header = File.expand_path('copyright_header.erb', File.join(File.dirname(__FILE__), 'templates'))
 
-        combined = File.open("#{wasm_src}/lib/wallet-core.d.ts", 'w')
+        combined = File.open("#{wasm_src}/wallet-core.d.ts", 'w')
         # append header
         combined.write(File.read(header))
 
