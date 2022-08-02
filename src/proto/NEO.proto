@@ -32,10 +32,23 @@ message Transaction {
 
         // Amount to send (256-bit number)
         bytes amount = 4;
+
+        // determine if putting THROWIFNOT & RET instructions
+        bool script_with_ret = 5;
+    }
+
+    // Generic invocation transaction
+    message InvocationGeneric {
+        // gas to use
+        uint64 gas = 1;
+
+        // Contract call payload data
+        bytes script = 2;
     }
 
     oneof transaction_oneof {
-        Nep5Transfer nep5Transfer = 1;
+        Nep5Transfer nep5_transfer = 1;
+        InvocationGeneric invocation_generic = 2;
     }
 }
 

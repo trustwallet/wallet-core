@@ -160,10 +160,19 @@ std::shared_ptr<Transaction> Signer::prepareUnsignedTransaction(const Proto::Sig
         switch (input.transaction().transaction_oneof_case()) {
         case Proto::Transaction::kNep5Transfer: {
             auto t = std::make_shared<InvocationTransaction>();
-            auto nep5Tx = input.transaction().nep5transfer();
+            auto nep5Tx = input.transaction().nep5_transfer();
             t->script = Script::CreateNep5TransferScript(
                 parse_hex(nep5Tx.asset_id()), Address(nep5Tx.from()).toScriptHash(),
-                Address(nep5Tx.to()).toScriptHash(), load(nep5Tx.amount()));
+                Address(nep5Tx.to()).toScriptHash(), load(nep5Tx.amount()), nep5Tx.script_with_ret());
+
+            transaction = t;
+            break;
+        }
+        case Proto::Transaction::kInvocationGeneric: {
+            auto t = std::make_shared<InvocationTransaction>();
+            auto script = input.transaction().invocation_generic().script();
+            t->script = Data(script.begin(), script.end());
+            t->gas = input.transaction().invocation_generic().gas();
 
             transaction = t;
             break;

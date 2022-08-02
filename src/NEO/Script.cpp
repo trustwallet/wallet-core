@@ -44,7 +44,7 @@ void pushBytes(Data& data, const Data& value) {
 }
 
 Data Script::CreateNep5TransferScript(const Data& assetId, const Data& from, const Data& to,
-                                      uint256_t value) {
+                                      uint256_t value, bool withRet /*= false*/) {
     Data result;
 
     // handle value
@@ -73,8 +73,10 @@ Data Script::CreateNep5TransferScript(const Data& assetId, const Data& from, con
     result.push_back(APPCALL);
     result.insert(result.end(), assetId.begin(), assetId.end());
 
-    result.push_back(THROWIFNOT);
-    result.push_back(RET);
+    if (withRet) {
+        result.push_back(THROWIFNOT);
+        result.push_back(RET);
+    }
     return result;
 }
 
