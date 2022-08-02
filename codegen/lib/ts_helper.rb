@@ -63,5 +63,31 @@ module TsHelper
         end
         combined.close
         FileUtils.remove_dir("#{wasm_src}/lib/generated", true)
+
+        # generate WalletCore interface
+        
+        interface = "export interface WalletCore {\n"
+
+        combined = File.open("#{wasm_src}/wallet-core.d.ts", 'r')
+        all_lines = combined.read
+        combined.close
+
+        export_regex = /^export (class|namespace) (.*)\b/
+        declare_regex = /^declare function (.+?(?=\())/
+
+        all_lines.scan(export_regex).each do |match|
+          matched = match[1]
+          interface += "    #{matched}: typeof #{matched};\n"
+        end
+
+        all_lines.scan(declare_regex).each do |match|
+          matched = match[0]
+          interface += "    #{matched}: typeof #{matched};\n"
+        end
+        interface += "}\n"
+
+        File.open("#{wasm_src}/wallet-core.d.ts", 'a') do |file|
+          file << interface
+        end
       end
 end
