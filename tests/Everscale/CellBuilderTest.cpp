@@ -15,7 +15,6 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Everscale;
 
 namespace TW::Everscale {
 
