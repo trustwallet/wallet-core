@@ -21,10 +21,12 @@ TEST(EverscaleAddress, Valid) {
 }
 
 TEST(EverscaleAddress, Invalid) {
+    ASSERT_FALSE(Address::isValid("hello world"));
     ASSERT_FALSE(Address::isValid("83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a"));
     ASSERT_FALSE(Address::isValid("1:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a"));
     ASSERT_FALSE(Address::isValid("-2:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a"));
     ASSERT_FALSE(Address::isValid("2147483648:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469a"));
+    ASSERT_FALSE(Address::isValid("0:83a0352908060fa87839195d8a763a8d9ab28f8fa41468832b398a719cc6469ab"));
 }
 
 TEST(EverscaleAddress, FromString) {
