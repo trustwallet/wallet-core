@@ -13,24 +13,13 @@
 
 namespace TW::Bitcoin::tests {
 
-const auto PayToScriptHash = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithData(DATA("a914"
-                                                                                      "4733f37cf4db86fbc2efed2500b4f4e49f312023"
-                                                                                      "87")
-                                                                                     .get()));
-const auto PayToWitnessScriptHash = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithData(DATA("0020"
-                                                                                             "ff25429251b5a84f452230a3c75fd886b7fc5a7865ce4a7bb7a9d7c5be6da3db")
-                                                                                            .get()));
-const auto PayToWitnessPublicKeyHash = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithData(DATA("0014"
-                                                                                                "79091972186c449eb1ded22b78e40d009bdf0089")
-                                                                                               .get()));
-const auto PayToPublicKeySecp256k1 = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithData(DATA("21"
-                                                                                              "03c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432"
-                                                                                              "ac")
-                                                                                             .get()));
-const auto PayToPublicKeyHash = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithData(DATA("76a914"
-                                                                                         "79091972186c449eb1ded22b78e40d009bdf0089"
-                                                                                         "88ac")
-                                                                                        .get()));
+// clang-format off
+const auto PayToScriptHash = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithData(DATA("a914" "4733f37cf4db86fbc2efed2500b4f4e49f312023" "87").get()));
+const auto PayToWitnessScriptHash = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithData(DATA("0020" "ff25429251b5a84f452230a3c75fd886b7fc5a7865ce4a7bb7a9d7c5be6da3db").get()));
+const auto PayToWitnessPublicKeyHash = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithData(DATA("0014" "79091972186c449eb1ded22b78e40d009bdf0089").get()));
+const auto PayToPublicKeySecp256k1 = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithData(DATA("21" "03c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432" "ac").get()));
+const auto PayToPublicKeyHash = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithData(DATA("76a914" "79091972186c449eb1ded22b78e40d009bdf0089" "88ac").get()));
+// clang-format on
 
 TEST(TWBitcoinScript, Create) {
     auto data = DATA("a9144733f37cf4db86fbc2efed2500b4f4e49f31202387");

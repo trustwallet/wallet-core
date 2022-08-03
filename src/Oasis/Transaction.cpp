@@ -10,6 +10,8 @@ using namespace TW;
 
 namespace TW::Oasis {
 
+// clang-format off
+
 // encodeVaruint encodes a 256-bit number into a big endian encoding, omitting leading zeros.
 static Data encodeVaruint(const uint256_t& value) {
     Data data;
@@ -30,19 +32,34 @@ static Data encodeVaruint(const uint256_t& value) {
 
 Cbor::Encode Transaction::encodeMessage() const {
 
-    return Cbor::Encode::map({{Cbor::Encode::string("nonce"), Cbor::Encode::uint(nonce)},
-                              {Cbor::Encode::string("method"), Cbor::Encode::string(method)},
-                              {Cbor::Encode::string("fee"), Cbor::Encode::map({{Cbor::Encode::string("gas"), Cbor::Encode::uint(gasPrice)},
-                                                                               {Cbor::Encode::string("amount"), Cbor::Encode::bytes(encodeVaruint(gasAmount))}})},
-                              {Cbor::Encode::string("body"), Cbor::Encode::map({{Cbor::Encode::string("to"), Cbor::Encode::bytes(to.getKeyHash())},
-                                                                                {Cbor::Encode::string("amount"), Cbor::Encode::bytes(encodeVaruint(amount))}})}});
+    return Cbor::Encode::map({
+        { Cbor::Encode::string("nonce"), Cbor::Encode::uint(nonce) },
+        { Cbor::Encode::string("method"), Cbor::Encode::string(method) },
+        { Cbor::Encode::string("fee"), Cbor::Encode::map({
+                 { Cbor::Encode::string("gas"), Cbor::Encode::uint(gasPrice) },
+                 { Cbor::Encode::string("amount"), Cbor::Encode::bytes(encodeVaruint(gasAmount)) }
+             })
+        },
+        { Cbor::Encode::string("body"), Cbor::Encode::map({
+                  { Cbor::Encode::string("to"), Cbor::Encode::bytes(to.getKeyHash()) },
+                  { Cbor::Encode::string("amount"), Cbor::Encode::bytes(encodeVaruint(amount)) }
+              })
+        }
+    });
 }
 
 Data Transaction::serialize(Data& signature, PublicKey& publicKey) const {
-    auto signedMessage = Cbor::Encode::map({{Cbor::Encode::string("untrusted_raw_value"), Cbor::Encode::bytes(encodeMessage().encoded())},
-                                            {Cbor::Encode::string("signature"), Cbor::Encode::map({{Cbor::Encode::string("public_key"), Cbor::Encode::bytes(publicKey.bytes)},
-                                                                                                   {Cbor::Encode::string("signature"), Cbor::Encode::bytes(signature)}})}});
+    auto signedMessage = Cbor::Encode::map({
+            { Cbor::Encode::string("untrusted_raw_value"), Cbor::Encode::bytes(encodeMessage().encoded()) },
+            { Cbor::Encode::string("signature"), Cbor::Encode::map({
+                   { Cbor::Encode::string("public_key"), Cbor::Encode::bytes(publicKey.bytes) },
+                   { Cbor::Encode::string("signature"), Cbor::Encode::bytes(signature) }
+                })
+            }
+        });
     return signedMessage.encoded();
 }
+
+// clang-format on
 
 } // namespace TW::Oasis

@@ -79,41 +79,7 @@ TEST(TezosAddress, deriveOriginatedAddress) {
 }
 
 TEST(TezosAddress, PublicKeyInit) {
-    Data bytes{
-        1,
-        254,
-        21,
-        124,
-        200,
-        1,
-        23,
-        39,
-        147,
-        108,
-        89,
-        47,
-        133,
-        108,
-        144,
-        113,
-        211,
-        156,
-        244,
-        172,
-        218,
-        223,
-        166,
-        215,
-        100,
-        53,
-        228,
-        97,
-        156,
-        157,
-        197,
-        111,
-        99,
-    };
+    Data bytes = parse_hex("01fe157cc8011727936c592f856c9071d39cf4acdadfa6d76435e4619c9dc56f63");
     const auto publicKey = PublicKey(bytes, TWPublicKeyTypeED25519);
     auto address = Address(publicKey);
 

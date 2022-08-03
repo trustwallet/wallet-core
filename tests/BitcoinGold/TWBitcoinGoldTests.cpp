@@ -26,6 +26,7 @@ using namespace TW;
 
 namespace TW::Bitcoin::tests {
 
+// clang-format off
 TEST(TWBitcoinGoldScript, LockScriptTest) {
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptLockScriptForAddress(STRING("btg1q6572ulr0kmywle8a30lvagm9xsg9k9n5cmzfdj").get(), TWCoinTypeBitcoinGold));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
@@ -38,8 +39,9 @@ TEST(TWBitcoinGoldScript, LockScriptTest) {
 
 TEST(BitcoinGoldKey, ExtendedKeys) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(
-                                       STRING("shoot island position soft burden budget tooth cruel issue economy destroy above").get(),
-                                       STRING("TREZOR").get()));
+        STRING("shoot island position soft burden budget tooth cruel issue economy destroy above").get(),
+        STRING("TREZOR").get()
+    ));
 
     // .bip84
     auto zprv = WRAPS(TWHDWalletGetExtendedPrivateKey(wallet.get(), TWPurposeBIP84, TWCoinTypeBitcoinGold, TWHDVersionZPRV));
@@ -80,6 +82,7 @@ TEST(TWBitcoinGoldTxGeneration, TxGeneration) {
     input.add_private_key(utxoKey0.data(), utxoKey0.size());
     input.set_lock_time(0x00098971);
 
+
     auto scriptPub1 = Script(parse_hex("0014db746a75d9aae8995d135b1e19a04d7765242a8f"));
     auto scriptHash = std::vector<uint8_t>();
     scriptPub1.matchPayToWitnessPublicKeyHash(scriptHash);
@@ -109,29 +112,18 @@ TEST(TWBitcoinGoldTxGeneration, TxGeneration) {
     Data serialized;
     signedTx.encode(serialized);
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
-              "01000000"       // version
-              "0001"           // marker & flag
-              "01"             // inputs
-              "5727794fa2b94aa22a226e206130524201ede9b50e032526e713c848493a890f"
-              "00000000"
-              "00"
-              ""
-              "fdffffff"
-              "02" // outputs
-              "8813000000000000"
-              "16"
-              "0014db746a75d9aae8995d135b1e19a04d7765242a8f"
-              "fb12000000000000"
-              "16"
-              "0014ebae10950c8a35a506e0e265b928305233e802ab"
-              // witness
-              "02"
-              "47"
-              "304402202b371b7cae885463c06357d1fc6ca95ab155613f212711bc7fb115500654946d0220430af77cbbb30afe7d7dcaccb72a55da802ee0a2bfea790dfe7c4e1a4c53fd7d41"
-              "21"
-              "03e00b5dec8078d526fba090247bd92db6b67a4dd1953b788cea9b52de9471b8cf"
-              "71890900" // nLockTime
+        "01000000" // version
+        "0001" // marker & flag
+        "01" // inputs
+            "5727794fa2b94aa22a226e206130524201ede9b50e032526e713c848493a890f"  "00000000"  "00"  ""  "fdffffff"
+        "02" // outputs
+            "8813000000000000"  "16"  "0014db746a75d9aae8995d135b1e19a04d7765242a8f"
+            "fb12000000000000"  "16"  "0014ebae10950c8a35a506e0e265b928305233e802ab"
+        // witness
+            "02"  "47"  "304402202b371b7cae885463c06357d1fc6ca95ab155613f212711bc7fb115500654946d0220430af77cbbb30afe7d7dcaccb72a55da802ee0a2bfea790dfe7c4e1a4c53fd7d41"  "21"  "03e00b5dec8078d526fba090247bd92db6b67a4dd1953b788cea9b52de9471b8cf"
+        "71890900" // nLockTime
     );
 }
+// clang-format on
 
 } // namespace TW::Bitcoin::tests
