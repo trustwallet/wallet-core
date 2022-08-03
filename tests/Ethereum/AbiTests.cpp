@@ -969,15 +969,19 @@ TEST(EthereumAbi, DecodeParamsMixed) {
     append(encoded, parse_hex("48656c6c6f000000000000000000000000000000000000000000000000000000"));
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000004"));
     append(encoded, parse_hex("6461766500000000000000000000000000000000000000000000000000000000"));
+    // clang-format off
     auto p = Parameters(std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamUInt256>(),
         std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
             std::make_shared<ParamUInt256>(),
             std::make_shared<ParamUInt256>(),
-            std::make_shared<ParamUInt256>()}),
+            std::make_shared<ParamUInt256>()
+        }),
         std::make_shared<ParamBool>(),
         std::make_shared<ParamString>(),
-        std::make_shared<ParamByteArray>()});
+        std::make_shared<ParamByteArray>()
+    });
+    // clang-format on
     EXPECT_EQ("(uint256,uint256[],bool,string,bytes)", p.getType());
     size_t offset = 0;
     bool res = p.decode(encoded, offset);
