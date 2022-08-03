@@ -1012,13 +1012,17 @@ TEST(EthereumAbi, EncodeSignature) {
 }
 
 TEST(EthereumAbi, EncodeFunctionWithDynamicArgumentsCase1) {
+    // clang-format off
     auto func = Function("sam", std::vector<std::shared_ptr<ParamBase>>{
                                     std::make_shared<ParamByteArray>(Data{0x64, 0x61, 0x76, 0x65}),
                                     std::make_shared<ParamBool>(true),
                                     std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
                                         std::make_shared<ParamUInt256>(1),
                                         std::make_shared<ParamUInt256>(2),
-                                        std::make_shared<ParamUInt256>(3)})});
+                                        std::make_shared<ParamUInt256>(3)
+                                    })
+                                });
+    // clang-format on
     EXPECT_EQ("sam(bytes,bool,uint256[])", func.getType());
     Data encoded;
     func.encode(encoded);
