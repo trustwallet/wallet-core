@@ -29,7 +29,7 @@
 
 using namespace TW;
 
-namespace TW::Cosmos::protobuf {
+namespace TW::Cosmos::Protobuf {
 
 using json = nlohmann::json;
 using string = std::string;

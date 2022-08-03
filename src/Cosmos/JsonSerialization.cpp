@@ -14,7 +14,7 @@
 
 using namespace TW;
 
-namespace TW::Cosmos::json {
+namespace TW::Cosmos::Json {
 
 using json = nlohmann::json;
 using string = std::string;
@@ -144,7 +144,7 @@ json messageWasmTerraTransfer(const Proto::Message_WasmTerraExecuteContractTrans
             {
                 {"sender", msg.sender_address()},
                 {"contract", msg.contract_address()},
-                {"execute_msg", protobuf::wasmTerraExecuteTransferPayload(msg)},
+                {"execute_msg", Protobuf::wasmTerraExecuteTransferPayload(msg)},
                 {"coins", json::array()}  // used in case you are sending native tokens along with this message
             }
         }

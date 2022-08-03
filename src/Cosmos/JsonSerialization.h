@@ -18,7 +18,7 @@ extern const std::string TYPE_PREFIX_MSG_REDELEGATE;
 extern const std::string TYPE_PREFIX_MSG_WITHDRAW_REWARD;
 extern const std::string TYPE_PREFIX_PUBLIC_KEY;
 
-namespace TW::Cosmos::json {
+namespace TW::Cosmos::Json {
 
 using string = std::string;
 using json = nlohmann::json;

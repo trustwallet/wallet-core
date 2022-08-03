@@ -29,13 +29,13 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, TWCoinType c
 
 Proto::SigningOutput Signer::signJsonSerialized(const Proto::SigningInput& input) noexcept {
     auto key = PrivateKey(input.private_key());
-    auto preimage = json::signaturePreimageJSON(input).dump();
+    auto preimage = Json::signaturePreimageJSON(input).dump();
     auto hash = Hash::sha256(preimage);
     auto signedHash = key.sign(hash, TWCurveSECP256k1);
 
     auto output = Proto::SigningOutput();
     auto signature = Data(signedHash.begin(), signedHash.end() - 1);
-    auto txJson = json::transactionJSON(input, signature);
+    auto txJson = Json::transactionJSON(input, signature);
     output.set_json(txJson.dump());
     output.set_signature(signature.data(), signature.size());
     output.set_serialized("");
@@ -44,7 +44,7 @@ Proto::SigningOutput Signer::signJsonSerialized(const Proto::SigningInput& input
 }
 
 Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input, TWCoinType coin) noexcept {
-    using namespace protobuf;
+    using namespace Protobuf;
     try {
         const auto serializedTxBody = buildProtoTxBody(input);
         const auto serializedAuthInfo = buildAuthInfo(input, coin);

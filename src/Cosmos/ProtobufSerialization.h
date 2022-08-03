@@ -14,7 +14,7 @@
 
 #include <TrustWalletCore/TWCoinType.h>
 
-namespace TW::Cosmos::protobuf {
+namespace TW::Cosmos::Protobuf {
 
 std::string buildProtoTxBody(const Proto::SigningInput& input);
 
