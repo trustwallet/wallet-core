@@ -1,11 +1,12 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 #include "Script.h"
+
+#include "BinaryCoding.h"
 #include "OpCode.h"
-#include "../BinaryCoding.h"
 
 namespace TW::NEO {
 
@@ -24,25 +25,6 @@ Data Script::CreateInvocationScript(const Data& signature) {
     return result;
 }
 
-void pushBytes(Data& data, const Data& value) {
-    if (value.size() <= (size_t)PUSHBYTES75) {
-        data.push_back((byte)value.size());
-        data.insert(data.end(), value.begin(), value.end());
-    } else if (value.size() < 0x100) {
-        data.push_back(PUSHDATA1);
-        data.push_back((byte)value.size());
-        data.insert(data.end(), value.begin(), value.end());
-    } else if (value.size() < 0x10000) {
-        data.push_back(PUSHDATA2);
-        encode16LE((uint16_t)value.size(), data);
-        data.insert(data.end(), value.begin(), value.end());
-    } else {
-        data.push_back(PUSHDATA4);
-        encode32LE((uint32_t)value.size(), data);
-        data.insert(data.end(), value.begin(), value.end());
-    }
-}
-
 Data Script::CreateNep5TransferScript(const Data& assetId, const Data& from, const Data& to,
                                       uint256_t value, bool withRet /*= false*/) {
     Data result;
@@ -59,8 +41,8 @@ Data Script::CreateNep5TransferScript(const Data& assetId, const Data& from, con
         result.insert(result.end(), v.begin(), v.end());
     }
 
-    pushBytes(result, to);
-    pushBytes(result, from);
+    encodeBytes(result, to);
+    encodeBytes(result, from);
 
     // args length
     result.push_back(PUSH3);
@@ -68,7 +50,7 @@ Data Script::CreateNep5TransferScript(const Data& assetId, const Data& from, con
     result.push_back(PACK);
 
     std::string operation = "transfer";
-    pushBytes(result, {operation.begin(), operation.end()});
+    encodeBytes(result, {operation.begin(), operation.end()});
 
     result.push_back(APPCALL);
     result.insert(result.end(), assetId.begin(), assetId.end());
