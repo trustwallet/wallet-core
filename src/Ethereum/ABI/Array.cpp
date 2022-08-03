@@ -137,7 +137,7 @@ void ParamArrayFix::encode(Data& data) const {
     this->_params.encode(data);
 }
 
-bool ParamArrayFix::decode([[maybe_unused]] const Data& encoded, [[maybe_unused]] size_t& offset_inout) {
+bool ParamArrayFix::decode(const Data& encoded, size_t& offset_inout) {
     std::size_t origOffset = offset_inout;
     auto res = this->_params.decode(encoded, offset_inout);
     // padding
@@ -145,8 +145,25 @@ bool ParamArrayFix::decode([[maybe_unused]] const Data& encoded, [[maybe_unused]
     return res;
 }
 
-bool ParamArrayFix::setValueJson([[maybe_unused]] const std::string& value) {
-    return false;
+bool ParamArrayFix::setValueJson(const std::string& value) {
+    auto valuesJson = json::parse(value, nullptr, false);
+    if (valuesJson.is_discarded()) {
+        return false;
+    }
+    if (!valuesJson.is_array()) {
+        return false;
+    }
+    // make sure enough elements are in the array
+    if (_params.getCount() < valuesJson.size()) {
+        return false;
+    }
+    std::size_t idx = 0;
+    for (auto&& e : valuesJson) {
+        std::string eString = e.is_string() ? e.get<std::string>() : e.dump();
+        _params.getParamUnsafe(idx)->setValueJson(eString);
+        ++idx;
+    }
+    return true;
 }
 
 void ParamArrayFix::addParam(const std::shared_ptr<ParamBase>& param) {

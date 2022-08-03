@@ -61,9 +61,9 @@ public:
     size_t getSize() const final { return 32 + _params.getSize(); }
     bool isDynamic() const final { return false; }
     std::string getType() const final { return _params.getParamUnsafe(0)->getType() + "[" + std::to_string(_n) + "]"; }
-    void encode([[maybe_unused]] Data& data) const final;
-    bool decode([[maybe_unused]] const Data& encoded, size_t& offset_inout) final;
-    bool setValueJson([[maybe_unused]] const std::string& value) final;
+    void encode(Data& data) const final;
+    bool decode(const Data& encoded, size_t& offset_inout) final;
+    bool setValueJson(const std::string& value) final;
 
 private:
     void addParam(const std::shared_ptr<ParamBase>& param);
