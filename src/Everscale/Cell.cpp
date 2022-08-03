@@ -21,7 +21,7 @@ uint16_t computeBitLen(const Data& data, bool aligned) {
         return bitLen;
     }
 
-    for (size_t i = data.size() - 1; i >= 0; ++i) {
+    for (auto i = static_cast<int64_t>(data.size() - 1); i >= 0; --i) {
         if (data[i] == 0) {
             bitLen -= 8;
         } else {
@@ -61,12 +61,6 @@ struct Reader {
         return buffer + offset;
     }
 
-    inline uint32_t readNextU32() {
-        const auto* _Nonnull p = data();
-        advance(sizeof(uint32_t));
-        return decode32BE(p);
-    }
-
     inline size_t readNextUint(uint8_t len) {
         const auto* _Nonnull p = data();
         advance(len);
@@ -93,7 +87,7 @@ std::shared_ptr<Cell> Cell::deserialize(const uint8_t* _Nonnull data, size_t len
     // Parse header
     reader.require(6);
     // 1. Magic
-    if (reader.readNextU32() != BOC_MAGIC) {
+    if (reader.readNextUint(sizeof(BOC_MAGIC)) != BOC_MAGIC) {
         throw std::runtime_error("unknown magic");
     }
     // 2. Flags
@@ -188,7 +182,7 @@ std::shared_ptr<Cell> Cell::deserialize(const uint8_t* _Nonnull data, size_t len
         reader.require(refSize * d1.refCount);
         for (size_t r = 0; r < d1.refCount; ++r) {
             const auto index = reader.readNextUint(refSize);
-            if (index > cellCount || index < i) {
+            if (index > cellCount || index <= i) {
                 throw std::runtime_error("invalid child index");
             }
 
@@ -325,9 +319,7 @@ private:
 };
 
 void Cell::serialize(Data& os) const {
-    if (!finalized) {
-        throw std::runtime_error("cell was not finalized");
-    }
+    assert(finalized);
     const auto ctx = SerializationContext::build(*this);
     ctx.encode(os);
 }
@@ -362,7 +354,8 @@ void Cell::finalize() {
     sha256_Update(&context, &d2, 1);
 
     // Write data
-    sha256_Update(&context, data.data(), data.size());
+    const auto dataSize = std::min(data.size(), static_cast<size_t>((bitLen + 7) / 8));
+    sha256_Update(&context, data.data(), dataSize);
 
     // Write all children depths
     for (const auto& ref : references) {
