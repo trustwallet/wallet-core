@@ -47,27 +47,38 @@ public:
     virtual std::string getExtraTypes(std::vector<std::string>& ignoreList) const;
 };
 
-/// Fixed-size array of the same type e.g, "bytes<N>"
+/// Fixed-size array of the same type e.g, "type[4]"
 class ParamArrayFix final : public ParamCollection {
 public:
-    ParamArrayFix(std::size_t n, const std::vector<std::shared_ptr<ParamBase>>& params)
+    //! Public constants
+    static constexpr std::size_t paddingSize{32};
+
+    //! Public Definitions
+    using Params = std::vector<std::shared_ptr<ParamBase>>;
+
+    //! Public constructor
+    explicit ParamArrayFix(std::size_t n, const Params& params) noexcept(false)
         : ParamCollection(), _n(n) {
         if (params.size() != n) {
             throw std::runtime_error("params need to have the same size as N");
         }
         this->addParams(params);
     }
-    size_t getCount() const final { return _n; }
-    size_t getSize() const final { return 32 + _params.getSize(); }
-    bool isDynamic() const final { return false; }
-    std::string getType() const final { return _params.getParamUnsafe(0)->getType() + "[" + std::to_string(_n) + "]"; }
+
+    //! Public member methods
+    [[nodiscard]] std::size_t getCount() const final { return _n; }
+    [[nodiscard]] size_t getSize() const final { return paddingSize + _params.getSize(); }
+    [[nodiscard]] bool isDynamic() const final { return false; }
+    [[nodiscard]] std::string getType() const final { return _params.getParamUnsafe(0)->getType() + "[" + std::to_string(_n) + "]"; }
     void encode(Data& data) const final;
     bool decode(const Data& encoded, size_t& offset_inout) final;
     bool setValueJson(const std::string& value) final;
 
 private:
-    void addParam(const std::shared_ptr<ParamBase>& param);
-    void addParams(const std::vector<std::shared_ptr<ParamBase>>& params);
+    //! Private member functions
+    void addParams(const std::vector<std::shared_ptr<ParamBase>>& params) noexcept(false);
+
+    //! Private member fields
     size_t _n;
     ParamSet _params;
 };

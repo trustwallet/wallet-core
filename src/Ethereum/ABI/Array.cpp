@@ -147,17 +147,11 @@ bool ParamArrayFix::decode(const Data& encoded, size_t& offset_inout) {
 
 bool ParamArrayFix::setValueJson(const std::string& value) {
     auto valuesJson = json::parse(value, nullptr, false);
-    if (valuesJson.is_discarded()) {
+    if (valuesJson.is_discarded() || !valuesJson.is_array() || _params.getCount() < valuesJson.size()) {
         return false;
     }
-    if (!valuesJson.is_array()) {
-        return false;
-    }
-    // make sure enough elements are in the array
-    if (_params.getCount() < valuesJson.size()) {
-        return false;
-    }
-    std::size_t idx = 0;
+
+    std::size_t idx{0};
     for (auto&& e : valuesJson) {
         std::string eString = e.is_string() ? e.get<std::string>() : e.dump();
         _params.getParamUnsafe(idx)->setValueJson(eString);
@@ -166,20 +160,17 @@ bool ParamArrayFix::setValueJson(const std::string& value) {
     return true;
 }
 
-void ParamArrayFix::addParam(const std::shared_ptr<ParamBase>& param) {
-    if (param == nullptr) {
-        throw std::runtime_error("param can't be nullptr");
-    }
-    if (_params.getCount() >= 1 && param->getType() != _params.getParamUnsafe(0)->getType()) {
-        throw std::runtime_error("params need to be the same type");
-    } // do not add different types
-    _params.addParam(param);
-}
-
 void ParamArrayFix::addParams(const std::vector<std::shared_ptr<ParamBase>>& params) {
-    for (auto&& p : params) {
-        addParam(p);
-    }
+    auto addParamFunctor = [this](auto&& param) {
+        if (param == nullptr) {
+            throw std::runtime_error("param can't be nullptr");
+        }
+        if (_params.getCount() >= 1 && param->getType() != _params.getParamUnsafe(0)->getType()) {
+            throw std::runtime_error("params need to be the same type");
+        } // do not add different types
+        _params.addParam(param);
+    };
+    std::for_each(begin(params), end(params), addParamFunctor);
 }
 
 } // namespace TW::Ethereum::ABI
