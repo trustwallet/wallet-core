@@ -122,6 +122,10 @@ DerivationPath HDWallet::cardanoStakingDerivationPath(const DerivationPath& path
 
 PrivateKey HDWallet::getKey(TWCoinType coin, const DerivationPath& derivationPath) const {
     const auto curve = TWCoinTypeCurve(coin);
+    return getKeyByCurve(curve, derivationPath);
+}
+
+PrivateKey HDWallet::getKeyByCurve(TWCurve curve, const DerivationPath& derivationPath) const {
     const auto privateKeyType = PrivateKey::getType(curve);
     auto node = getNode(*this, curve, derivationPath);
     switch (privateKeyType) {

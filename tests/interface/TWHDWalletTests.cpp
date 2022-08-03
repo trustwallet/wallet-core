@@ -455,6 +455,19 @@ TEST(HDWallet, GetDerivedKey) {
     assertHexEqual(privateKeyData, "1901b5994f075af71397f65bd68a9fff8d3025d65f5a2c731cf90f5e259d6aac");
 }
 
+TEST(HDWallet, GetKeyByCurve) {
+    const auto derivPath = STRING("m/44'/539'/0'/0/0");
+
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(gWords.get(), STRING("").get()));
+    const auto privateKey1 = WRAP(TWPrivateKey, TWHDWalletGetKeyByCurve(wallet.get(), TWCurveSECP256k1, derivPath.get()));
+    const auto privateKeyData1 = WRAPD(TWPrivateKeyData(privateKey1.get()));
+    assertHexEqual(privateKeyData1, "4fb8657d6464adcaa086d6758d7f0b6b6fc026c98dc1671fcc6460b5a74abc62");
+
+    const auto privateKey2 = WRAP(TWPrivateKey, TWHDWalletGetKeyByCurve(wallet.get(), TWCurveNIST256p1, derivPath.get()));
+    const auto privateKeyData2 = WRAPD(TWPrivateKeyData(privateKey2.get()));
+    assertHexEqual(privateKeyData2, "a13df52d5a5b438bbf921bbf86276e4347fe8e2f2ed74feaaee12b77d6d26f86");
+}
+
 TEST(TWHDWallet, Derive_XpubPub_vs_PrivPub) {
     // Test different routes for deriving address from mnemonic, result should be the same:
     // - Direct: mnemonic -> seed -> privateKey -> publicKey -> address
