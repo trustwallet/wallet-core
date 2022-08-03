@@ -40,7 +40,6 @@ public:
     /// encode an array of elements (of different types)
     static Encode array(const std::vector<Encode>& elems);
     /// encode a map
-    //static Encode map(const std::vector<std::pair<Encode, Encode>>& elems);
     static Encode map(const std::map<Encode, Encode>& elems);
     /// encode a tag and following element
     static Encode tag(uint64_t value, const Encode& elem);

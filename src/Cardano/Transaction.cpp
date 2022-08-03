@@ -67,13 +67,11 @@ uint256_t TokenBundle::getAmount(const std::string& key) const {
     return findkey->second.amount;
 }
 
-set<string> TokenBundle::getPolicyIds() const {
-    set<string> policyIds;
-    for (const auto& t: bundle) {
-        if (policyIds.find(t.second.policyId) == policyIds.end()) {
-            policyIds.emplace(t.second.policyId);
-        }
-    }
+unordered_set<string> TokenBundle::getPolicyIds() const {
+    unordered_set<string> policyIds;
+    std::transform(bundle.cbegin(), bundle.cend(),
+                   std::inserter(policyIds, policyIds.begin()),
+                   [](auto&& cur){ return cur.second.policyId; });
     return policyIds;
 }
 
@@ -223,15 +221,15 @@ Cbor::Encode cborizeOutputAmounts(const Amount& amount, const TokenBundle& token
         const auto& subTokens = tokenBundle.getByPolicyId(policy);
         map<Cbor::Encode, Cbor::Encode> subTokensMap;
         for (const auto& token: subTokens) {
-            subTokensMap.emplace(make_pair(
+            subTokensMap.emplace(
                 Cbor::Encode::bytes(data(token.assetName)),
                 Cbor::Encode::uint(uint64_t(token.amount)) // 64 bits
-            ));
+            );
         }
-        tokensMap.emplace(make_pair(
+        tokensMap.emplace(
             Cbor::Encode::bytes(parse_hex(policy)),
             Cbor::Encode::map(subTokensMap)
-        ));
+        );
     }
     return Cbor::Encode::array({
         Cbor::Encode::uint(amount),
