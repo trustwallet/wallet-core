@@ -11,7 +11,8 @@
 #include <boost/multiprecision/cpp_int.hpp>
 
 using namespace TW;
-using namespace TW::Aion;
+
+namespace TW::Aion {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     using boost::multiprecision::uint128_t;
@@ -46,3 +47,5 @@ void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) noexce
 
     transaction.signature = result;
 }
+
+} // namespace TW::Aion

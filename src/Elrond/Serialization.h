@@ -10,12 +10,12 @@
 #include "Transaction.h"
 #include <nlohmann/json.hpp>
 
+namespace TW::Elrond {
+
 using string = std::string;
 using json = nlohmann::json;
-
-namespace TW::Elrond {
 
 string serializeTransaction(const Transaction& transaction);
 string serializeSignedTransaction(const Transaction& transaction, string encodedSignature);
 
-} // namespace
+} // namespace TW::Elrond

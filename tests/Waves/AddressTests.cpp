@@ -14,7 +14,8 @@
 
 using namespace std;
 using namespace TW;
-using namespace TW::Waves;
+
+namespace TW::Waves::tests {
 
 TEST(WavesAddress, SecureHash) {
     const auto secureHash =
@@ -82,3 +83,5 @@ TEST(WavesAddress, Derive) {
     ASSERT_EQ(address1, "3PQupTC1yRiHneotFt79LF2pkN6GrGMwEy3");
     ASSERT_EQ(address2, "3PEXw52bkS9XuLhttWoKyykZjXqEY8zeLxf");
 }
+
+} // namespace TW::Waves::tests

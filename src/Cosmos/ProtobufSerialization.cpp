@@ -28,10 +28,11 @@
 #include <google/protobuf/util/json_util.h>
 
 using namespace TW;
-using namespace TW::Cosmos;
 
-namespace TW::Cosmos {
+namespace TW::Cosmos::Protobuf {
 
+using json = nlohmann::json;
+using string = std::string;
 const auto ProtobufAnyNamespacePrefix = "";  // to override default 'type.googleapis.com'
 
 cosmos::base::v1beta1::Coin convertCoin(const Proto::Amount& amount) {
@@ -131,7 +132,7 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 auto msgExecute = terra::wasm::v1beta1::MsgExecuteContract();
                 msgExecute.set_sender(wasmExecute.sender_address());
                 msgExecute.set_contract(wasmExecute.contract_address());
-                const std::string payload = Cosmos::wasmTerraExecuteTransferPayload(wasmExecute).dump();
+                const std::string payload = wasmTerraExecuteTransferPayload(wasmExecute).dump();
                 msgExecute.set_execute_msg(payload);
                 any.PackFrom(msgExecute, ProtobufAnyNamespacePrefix);
                 return any;
@@ -144,7 +145,7 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 auto msgExecute = terra::wasm::v1beta1::MsgExecuteContract();
                 msgExecute.set_sender(wasmExecute.sender_address());
                 msgExecute.set_contract(wasmExecute.contract_address());
-                const std::string payload = Cosmos::wasmTerraExecuteSendPayload(wasmExecute).dump();
+                const std::string payload = wasmTerraExecuteSendPayload(wasmExecute).dump();
                 msgExecute.set_execute_msg(payload);
                 any.PackFrom(msgExecute, ProtobufAnyNamespacePrefix);
                 return any;
@@ -186,7 +187,7 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 auto msgExecute = cosmwasm::wasm::v1::MsgExecuteContract();
                 msgExecute.set_sender(wasmExecute.sender_address());
                 msgExecute.set_contract(wasmExecute.contract_address());
-                const std::string payload = Cosmos::wasmExecuteTransferPayload(wasmExecute).dump();
+                const std::string payload = wasmExecuteTransferPayload(wasmExecute).dump();
                 msgExecute.set_msg(payload);
                 any.PackFrom(msgExecute, ProtobufAnyNamespacePrefix);
                 return any;
@@ -199,7 +200,7 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 auto msgExecute = cosmwasm::wasm::v1::MsgExecuteContract();
                 msgExecute.set_sender(wasmExecute.sender_address());
                 msgExecute.set_contract(wasmExecute.contract_address());
-                const std::string payload = Cosmos::wasmExecuteSendPayload(wasmExecute).dump();
+                const std::string payload = wasmExecuteSendPayload(wasmExecute).dump();
                 msgExecute.set_msg(payload);
                 any.PackFrom(msgExecute, ProtobufAnyNamespacePrefix);
                 return any;

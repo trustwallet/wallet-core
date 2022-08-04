@@ -13,19 +13,26 @@
 
 #include <cassert>
 
-using namespace TW::Ethereum::ABI;
+namespace TW::Ethereum::ABI {
+
 using namespace TW;
 using json = nlohmann::json;
 
 int ParamArray::addParam(const std::shared_ptr<ParamBase>& param) {
     assert(param != nullptr);
-    if (param == nullptr) { return -1; }
-    if (_params.getCount() >= 1 && param->getType() != getProtoType()) { return -2; } // do not add different types
+    if (param == nullptr) {
+        return -1;
+    }
+    if (_params.getCount() >= 1 && param->getType() != getProtoType()) {
+        return -2;
+    } // do not add different types
     return _params.addParam(param);
 }
 
 void ParamArray::addParams(const std::vector<std::shared_ptr<ParamBase>>& params) {
-    for (auto p: params) { addParam(p); }
+    for (auto p : params) {
+        addParam(p);
+    }
 }
 
 std::shared_ptr<ParamBase> ParamArray::getProtoElem() const {
@@ -40,8 +47,7 @@ std::string ParamArray::getProtoType() const {
     return (proto != nullptr) ? proto->getType() : "__empty__";
 }
 
-size_t ParamArray::getSize() const
-{
+size_t ParamArray::getSize() const {
     return 32 + _params.getSize();
 }
 
@@ -102,7 +108,7 @@ bool ParamArray::setValueJson(const std::string& value) {
         addParam(ParamFactory::make(getProtoType()));
     }
     int cnt = 0;
-    for (const auto& e: valuesJson) {
+    for (const auto& e : valuesJson) {
         std::string eString = e.is_string() ? e.get<std::string>() : e.dump();
         _params.getParamUnsafe(cnt)->setValueJson(eString);
         ++cnt;
@@ -112,7 +118,7 @@ bool ParamArray::setValueJson(const std::string& value) {
 
 Data ParamArray::hashStruct() const {
     if (_params.getCount() == 0) {
-       return Hash::keccak256(Data()); 
+        return Hash::keccak256(Data());
     }
     Data hash(32);
     Data hashes = _params.encodeHashes();
@@ -126,3 +132,5 @@ std::string ParamArray::getExtraTypes(std::vector<std::string>& ignoreList) cons
     const auto& proto = getProtoElem();
     return (proto != nullptr) ? proto->getExtraTypes(ignoreList) : "";
 }
+
+} // namespace TW::Ethereum::ABI

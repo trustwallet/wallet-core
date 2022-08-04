@@ -4,15 +4,15 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWTHORChainSwap.h>
-#include "proto/THORChainSwap.pb.h"
-#include "proto/Ethereum.pb.h"
-#include "proto/Binance.pb.h"
-#include "Bitcoin/SegwitAddress.h"
 #include "Bitcoin/Script.h"
-#include <TrustWalletCore/TWCoinType.h>
-#include <TrustWalletCore/TWAnySigner.h>
+#include "Bitcoin/SegwitAddress.h"
 #include "PrivateKey.h"
+#include "proto/Binance.pb.h"
+#include "proto/Ethereum.pb.h"
+#include "proto/THORChainSwap.pb.h"
+#include <TrustWalletCore/TWAnySigner.h>
+#include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWTHORChainSwap.h>
 
 #include "HexCoding.h"
 #include "uint256.h"
@@ -20,9 +20,11 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW::THORChainSwap;
 using namespace TW;
 
+namespace TW::THORChainSwap::tests {
+
+// clang-format off
 const auto Address1Bnb = "bnb1us47wdhfx08ch97zdueh3x3u5murfrx30jecrx";
 const auto Address1Btc = "bc1qpjult34k9spjfym8hss2jrwjgf0xjf40ze0pp8";
 const auto Address1Eth = "0xb9f5771c27664bf2282d98e09d7f50cec7cb01a7";
@@ -68,7 +70,7 @@ TEST(TWTHORChainSwap, SwapBtcToEth) {
     EXPECT_EQ(outputProto.error().message(), "");
     EXPECT_TRUE(outputProto.has_bitcoin());
     Bitcoin::Proto::SigningInput txInput = outputProto.bitcoin();
-    
+
     // tx input: check some fields
     EXPECT_EQ(txInput.amount(), 1000000);
     EXPECT_EQ(txInput.to_address(), "bc1q6m9u2qsu8mh8y7v8rr2ywavtj8g5arzlyhcej7");
@@ -148,7 +150,7 @@ TEST(TWTHORChainSwap, SwapEthBnb) {
     EXPECT_EQ(outputProto.error().message(), "");
     EXPECT_TRUE(outputProto.has_ethereum());
     Ethereum::Proto::SigningInput txInput = outputProto.ethereum();
-    
+
     // sign tx input for signed full tx
     // set few fields before signing
     auto chainId = store(uint256_t(1));
@@ -202,7 +204,7 @@ TEST(TWTHORChainSwap, SwapBnbBtc) {
     EXPECT_EQ(outputProto.error().message(), "");
     EXPECT_TRUE(outputProto.has_binance());
     Binance::Proto::SigningInput txInput = outputProto.binance();
-    
+
     // set few fields before signing
     txInput.set_chain_id("Binance-Chain-Tigris");
     txInput.set_private_key(TestKey1Bnb.data(), TestKey1Bnb.size());
@@ -223,3 +225,6 @@ TEST(TWTHORChainSwap, NegativeInvalidInput) {
     EXPECT_EQ(hex(outputData), "1a2508021221436f756c64206e6f7420646573657269616c697a6520696e7075742070726f746f");
     EXPECT_EQ(hex(data(std::string("Could not deserialize input proto"))), "436f756c64206e6f7420646573657269616c697a6520696e7075742070726f746f");
 }
+// clang-format on
+
+} // namespace TW::ThorChainSwap::tests

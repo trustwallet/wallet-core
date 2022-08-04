@@ -6,11 +6,14 @@
 
 import "mocha";
 import { assert } from "chai";
-import { TW } from "../../dist";
+import { initWasm } from "../dist";
 
-describe("Bitcoin", () => {
-  it("test Bitcoin SigningInput / SigningOutput", () => {
-    assert.isNotNull(TW.Bitcoin.Proto.SigningInput);
-    assert.isNotNull(TW.Binance.Proto.SigningOutput);
-  });
+describe("Module", () => {
+  it("load test", (done) => {
+    initWasm().then((WalletCore) => {
+      assert.isDefined(WalletCore);
+      assert.isNotNull(WalletCore);
+      done();
+    });
+  }).timeout(5000);
 });

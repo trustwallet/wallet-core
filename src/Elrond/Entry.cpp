@@ -9,10 +9,10 @@
 #include "Address.h"
 #include "Signer.h"
 
-using namespace TW::Elrond;
 using namespace TW;
 using namespace std;
 
+namespace TW::Elrond {
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
 bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
@@ -38,3 +38,5 @@ void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::D
 string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json, const Data& key) const {
     return Signer::signJSON(json, key);
 }
+
+} // namespace TW::Elrond

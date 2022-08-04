@@ -4,16 +4,17 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Address.h"
 #include "../Base58.h"
 #include "../BinaryCoding.h"
-#include "Address.h"
 
 #include <TrezorCrypto/ripemd160.h>
 
 #include <stdexcept>
 
 using namespace TW;
-using namespace TW::FIO;
+
+namespace TW::FIO {
 
 bool Address::isValid(const std::string& string) {
     return decodeKeyData(string).has_value();
@@ -101,3 +102,5 @@ PublicKey Address::publicKey() const {
     const Data keyData = TW::data(bytes.data(), PublicKey::secp256k1Size);
     return PublicKey(keyData, TWPublicKeyTypeSECP256k1);
 }
+
+} // namespace TW::FIO

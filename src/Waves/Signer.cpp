@@ -9,7 +9,8 @@
 #include "../Hash.h"
 
 using namespace TW;
-using namespace TW::Waves;
+
+namespace TW::Waves {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
@@ -19,12 +20,12 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     Data signature = Signer::sign(privateKey, transaction);
 
     Proto::SigningOutput output = Proto::SigningOutput();
-    output.set_signature(reinterpret_cast<const char *>(signature.data()), signature.size());
+    output.set_signature(reinterpret_cast<const char*>(signature.data()), signature.size());
     output.set_json(transaction.buildJson(signature).dump());
     return output;
 }
 
-Data Signer::sign(const PrivateKey &privateKey, Transaction &transaction) noexcept {
+Data Signer::sign(const PrivateKey& privateKey, Transaction& transaction) noexcept {
     try {
         auto bytesToSign = transaction.serializeToSign();
         auto signature = privateKey.sign(bytesToSign, TWCurveCurve25519);
@@ -33,3 +34,5 @@ Data Signer::sign(const PrivateKey &privateKey, Transaction &transaction) noexce
         return Data();
     }
 }
+
+} // namespace TW::Waves

@@ -12,7 +12,8 @@
 #include "../PrivateKey.h"
 
 using namespace TW;
-using namespace TW::NULS;
+
+namespace TW::NULS {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto output = Proto::SigningOutput();
@@ -20,20 +21,21 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto signer = Signer(input);
         auto data = signer.sign();
         output.set_encoded(data.data(), data.size());
+    } catch (...) {
     }
-    catch(...) {}
     return output;
 }
 
-Signer::Signer(const Proto::SigningInput& input) : input(input) {
+Signer::Signer(const Proto::SigningInput& input)
+    : input(input) {
     Proto::TransactionCoinFrom coinFrom;
     coinFrom.set_from_address(input.from());
     coinFrom.set_assets_chainid(input.chain_id());
     coinFrom.set_assets_id(input.idassets_id());
-    //need to update with amount + fee
+    // need to update with amount + fee
     coinFrom.set_id_amount(input.amount());
     coinFrom.set_nonce(input.nonce());
-    //default unlocked
+    // default unlocked
     coinFrom.set_locked(0);
     *tx.mutable_input() = coinFrom;
 
@@ -88,13 +90,13 @@ Data Signer::sign() const {
     encode16LE(static_cast<uint16_t>(tx.type()), dataRet);
     // Timestamp
     encode32LE(tx.timestamp(), dataRet);
-     // Remark
+    // Remark
     std::string remark = tx.remark();
     serializerRemark(remark, dataRet);
     // txData
     encodeVarInt(0, dataRet);
 
-    //coinFrom and coinTo size
+    // coinFrom and coinTo size
     encodeVarInt(TRANSACTION_INPUT_SIZE + TRANSACTION_OUTPUT_SIZE, dataRet);
 
     // CoinData Input
@@ -105,7 +107,7 @@ Data Signer::sign() const {
 
     // Calc transaction hash
     Data txHash = calcTransactionDigest(dataRet);
-   
+
     Data privKey = data(input.private_key());
     auto priv = PrivateKey(privKey);
     auto transactionSignature = makeTransactionSignature(priv, txHash);
@@ -117,7 +119,7 @@ Data Signer::sign() const {
 
 uint32_t Signer::CalculatorTransactionSize(uint32_t inputCount, uint32_t outputCount, uint32_t remarkSize) const {
     uint32_t size = TRANSACTION_FIX_SIZE + TRANSACTION_SIG_MAX_SIZE + TRANSACTION_INPUT_SIZE * inputCount +
-                        TRANSACTION_OUTPUT_SIZE * outputCount + remarkSize;
+                    TRANSACTION_OUTPUT_SIZE * outputCount + remarkSize;
     return size;
 }
 
@@ -128,3 +130,5 @@ uint64_t Signer::CalculatorTransactionFee(uint64_t size) const {
     }
     return fee;
 }
+
+} // namespace TW::NULS

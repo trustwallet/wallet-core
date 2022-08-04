@@ -50,6 +50,5 @@ jobs:
 
     - name: Test
       run: |
-        npm install && npm run copy:wasm 
-        npm run build && npm run test
+        npm install && npm run build-and-test
       working-directory: wasm

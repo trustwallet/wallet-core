@@ -38,7 +38,7 @@ TEST(BinanceSmartChain, SignNativeTransfer) {
     // addr: 0xB9F5771C27664bF2282D98E09D7F50cEc7cB01a7  mnemonic: isolate dismiss ... cruel note
     auto privateKey = PrivateKey(parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904"));
     uint256_t chainID = 97;
-    auto signature = Signer::sign(privateKey, chainID, transaction);
+    auto signature = Ethereum::Signer::sign(privateKey, chainID, transaction);
 
     auto encoded = transaction->encoded(signature, chainID);
     ASSERT_EQ(hex(encoded), "f86c808504a817c8008252089431be00eb1fc8e14a696dbc72f746ec3e95f49683872386f26fc100008081e5a057806b486844c5d0b7b5ce34b289f4e8776aa1fe24a3311cef5053995c51050ca07697aa0695de27da817625df0e7e4c64b0ab22d9df30aec92299a7b380be8db7");
@@ -54,7 +54,7 @@ TEST(BinanceSmartChain, SignTokenTransfer) {
     func.encode(payloadFunction);
     EXPECT_EQ(hex(payloadFunction), "a9059cbb00000000000000000000000031be00eb1fc8e14a696dbc72f746ec3e95f49683000000000000000000000000000000000000000000000000002386f26fc10000");
 
-    auto input = Proto::SigningInput();
+    auto input = Ethereum::Proto::SigningInput();
     auto chainId = store(uint256_t(97));
     auto nonce = store(uint256_t(30));
     auto gasPrice = store(uint256_t(20000000000));

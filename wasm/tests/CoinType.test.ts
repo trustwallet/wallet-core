@@ -6,11 +6,12 @@
 
 import "mocha";
 import { assert } from "chai";
-import { WalletCore } from "../dist";
+import { initWasm } from "../dist";
 
 describe("CoinType", () => {
-  it("test raw value", () => {
-    const { CoinType } = WalletCore;
+
+  it("test raw value", async () => {
+    const { CoinType } = await initWasm();;
 
     assert.equal(CoinType.bitcoin.value, 0);
     assert.equal(CoinType.litecoin.value, 2);

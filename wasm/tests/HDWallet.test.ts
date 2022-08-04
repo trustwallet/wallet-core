@@ -6,13 +6,19 @@
 
 import "mocha";
 import { assert } from "chai";
-import { WalletCore } from "../dist";
+import { initWasm, WalletCore } from "../dist";
 import { Buffer } from "buffer";
 
 describe("HDWallet", () => {
 
+  let core: WalletCore;
+
+  before(async () => {
+    core = await initWasm();
+  });
+
   it("test creating 24 words", () => {
-    const { HDWallet, Mnemonic } = WalletCore;
+    const { HDWallet, Mnemonic } = core;
 
     var wallet = HDWallet.create(256, "password");
     const mnemonic = wallet.mnemonic();
@@ -24,7 +30,7 @@ describe("HDWallet", () => {
   });
 
   it("test deriving Ethereum address", () => {
-    const { HDWallet, CoinType } = WalletCore;
+    const { HDWallet, CoinType } = core;
 
     var wallet = HDWallet.createWithMnemonic("ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal", "TREZOR");
     const address = wallet.getAddressForCoin(CoinType.ethereum);

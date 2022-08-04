@@ -5,13 +5,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Nano/Signer.h"
 #include "HexCoding.h"
+#include "Nano/Signer.h"
 
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Nano;
+
+namespace TW::Nano::tests {
 
 const std::string kPrivateKey{"173c40e97fe2afcd24187e74f6b603cb949a5365e72fbdd065a6b165e2189e34"};
 const std::string kRepOfficial1{"xrb_3arg3asgtigae3xckabaaewkx3bzsh7nwz7jkmjos79ihyaxwphhm6qgjps4"};
@@ -205,3 +206,5 @@ TEST(NanoSigner, signInvalid7) {
 
     ASSERT_THROW(Signer signer(input), std::invalid_argument);
 }
+
+} // namespace TW::Nano::tests

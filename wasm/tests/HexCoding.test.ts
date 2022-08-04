@@ -6,11 +6,11 @@
 
 import "mocha";
 import { assert } from "chai";
-import { WalletCore } from "../dist";
+import { initWasm } from "../dist";
 
 describe("HexCoding", () => {
-  it("test encoding / decoding hex string", () => {
-    const { HexCoding } = WalletCore;
+  it("test encoding / decoding hex string", async () => {
+    const { HexCoding } = await initWasm();
 
     const expected = new Uint8Array([0x52, 0x8]);
     const decoded = HexCoding.decode("0x5208");

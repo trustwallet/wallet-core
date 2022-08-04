@@ -4,16 +4,17 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "../Ontology/ParamsBuilder.h"
-#include "../Base58.h"
-#include "../Hash.h"
-#include "../Data.h"
 #include "OpCode.h"
+#include "../Base58.h"
+#include "../Data.h"
+#include "../Hash.h"
+#include "../Ontology/ParamsBuilder.h"
 
 #include "Address.h"
 
 using namespace TW;
-using namespace TW::NEO;
+
+namespace TW::NEO {
 
 bool Address::isValid(const std::string& string) {
     const auto decoded = Base58::bitcoin.decodeCheck(string);
@@ -36,7 +37,7 @@ Address::Address(const PublicKey& publicKey) {
     pkdata.push_back(CHECKSIG);
 
     auto keyHash = Hash::ripemd(Hash::sha256(pkdata));
-    keyHash.insert(keyHash.begin(), (byte) Address::version);
+    keyHash.insert(keyHash.begin(), (byte)Address::version);
 
     if (keyHash.size() != Address::size) {
         throw std::invalid_argument("Invalid address key data");
@@ -60,3 +61,5 @@ Data Address::toScriptHash() const {
     std::copy(bytes.begin() + 1, bytes.begin() + Hash::ripemdSize + 1, data.begin());
     return data;
 }
+
+} // namespace TW::NEO

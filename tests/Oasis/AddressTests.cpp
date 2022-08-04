@@ -6,13 +6,14 @@
 
 #include "HexCoding.h"
 #include "Oasis/Address.h"
-#include "PublicKey.h"
 #include "PrivateKey.h"
+#include "PublicKey.h"
 #include <gtest/gtest.h>
 #include <vector>
 
 using namespace TW;
-using namespace TW::Oasis;
+
+namespace TW::Oasis::tests {
 
 TEST(OasisAddress, Valid) {
     ASSERT_TRUE(Address::isValid("oasis1qp0cnmkjl22gky6p6qeghjytt4v7dkxsrsmueweh"));
@@ -26,8 +27,8 @@ TEST(OasisAddress, Invalid) {
 TEST(OasisAddress, ForceInvalid) {
     try {
         auto addressString = "oasis1qp0cnmkjl22gky6p6qeghjytt4v7dkxsrsmuewehj";
-        auto address = Address( addressString );
-    } catch( std::invalid_argument& e1 ) {
+        auto address = Address(addressString);
+    } catch (std::invalid_argument& e1) {
         return;
     }
     FAIL() << "This test should generate an exception as it an invalid address";
@@ -36,8 +37,8 @@ TEST(OasisAddress, ForceInvalid) {
 TEST(OasisAddress, FromWrongData) {
     try {
         auto dataString = "asdadfasdfsdfwrwrsadasdasdsad";
-        auto address = Address( data( dataString ) );
-    } catch( std::invalid_argument& e1 ) {
+        auto address = Address(data(dataString));
+    } catch (std::invalid_argument& e1) {
         return;
     }
     FAIL() << "This test should generate an exception as it an invalid data";
@@ -59,7 +60,7 @@ TEST(OasisAddress, WrongPublicKeyType) {
     try {
         auto publicKey = PublicKey(parse_hex("aba52c0dcb80c2fe96ed4c3741af40c573a0500c0d73acda22795c37cb0f1739"), TWPublicKeyTypeED25519Cardano);
         auto address = Address(publicKey);
-    } catch( std::invalid_argument& e1 ) {
+    } catch (std::invalid_argument& e1) {
         return;
     }
     FAIL() << "TWPublicKeyTypeED25519Cardano should generate an exception as it an invalid publicKey type";
@@ -72,3 +73,5 @@ TEST(OasisAddress, FromString) {
 
     ASSERT_FALSE(Address::decode("oasis1hts399h023jqd7v6vgm6dxvcguwe4rgvqqgvq38ng", address));
 }
+
+} // namespace TW::Oasis::tests

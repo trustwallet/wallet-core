@@ -8,12 +8,12 @@
 #include "../Cosmos/Signer.h"
 #include "../proto/Cosmos.pb.h"
 
-#include <google/protobuf/util/json_util.h>
 #include <TrustWalletCore/TWCoinType.h>
+#include <google/protobuf/util/json_util.h>
 
 using namespace TW;
-using namespace TW::THORChain;
 
+namespace TW::THORChain {
 const std::string TYPE_PREFIX_MSG_SEND = "thorchain/MsgSend";
 
 Cosmos::Proto::SigningOutput Signer::sign(Cosmos::Proto::SigningInput& input) noexcept {
@@ -32,3 +32,5 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     auto output = Signer::sign(input);
     return output.json();
 }
+
+} // namespace TW::THORChain

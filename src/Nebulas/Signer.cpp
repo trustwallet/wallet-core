@@ -9,21 +9,21 @@
 #include "../HexCoding.h"
 
 using namespace TW;
-using namespace TW::Nebulas;
+
+namespace TW::Nebulas {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto signer = Signer(load(input.chain_id()));
 
     auto tx = Transaction(Address(input.from_address()),
-        load(input.nonce()),
-        load(input.gas_price()),
-        load(input.gas_limit()),
-        Address(input.to_address()),
-        load(input.amount()),
-        load(input.timestamp()),
-        input.payload()
-    );
-    
+                          load(input.nonce()),
+                          load(input.gas_price()),
+                          load(input.gas_limit()),
+                          Address(input.to_address()),
+                          load(input.amount()),
+                          load(input.timestamp()),
+                          input.payload());
+
     auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     signer.sign(privateKey, tx);
 
@@ -34,7 +34,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return output;
 }
 
-void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept {
+void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept {
     transaction.hash = this->hash(transaction);
     transaction.chainID = chainID;
     transaction.algorithm = 1;
@@ -42,12 +42,12 @@ void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const 
     transaction.serializeToRaw();
 }
 
-Data Signer::hash(const Transaction &transaction) const noexcept {
+Data Signer::hash(const Transaction& transaction) const noexcept {
     auto encoded = Data();
     auto payload = Data();
     auto* data = Transaction::newPayloadData(transaction.payload);
     payload.resize(data->ByteSizeLong());
-    data->SerializePartialToArray(payload.data(),(int)payload.size());
+    data->SerializePartialToArray(payload.data(), (int)payload.size());
     delete data;
 
     encoded.insert(encoded.end(), transaction.from.bytes.begin(), transaction.from.bytes.end());
@@ -61,3 +61,5 @@ Data Signer::hash(const Transaction &transaction) const noexcept {
     encode256BE(encoded, transaction.gasLimit, 128);
     return Hash::sha3_256(encoded);
 }
+
+} // namespace TW::Nebulas
