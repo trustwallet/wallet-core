@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -19,10 +19,13 @@ public:
     /// Number of bytes in an address
     static const size_t size = Hash::sha256Size;
 
+    /// Hex address length
+    static const size_t hexAddrLen = size * 2;
+
     using MsgAddressInt = std::pair<int8_t, std::array<byte, Address::size>>;
     using MaybeWorkchainInfos = std::optional<std::pair<int8_t, uint32_t>>;
 
-    std::int8_t _wc;
+    std::int8_t _workchainId;
     std::array<byte, size> _address{};
 
     /// Determines whether a string makes a valid address.
@@ -42,7 +45,7 @@ private:
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs._wc == rhs._wc && lhs._address == rhs._address;
+    return lhs._workchainId == rhs._workchainId && lhs._address == rhs._address;
 }
 
 } // namespace TW::Everscale

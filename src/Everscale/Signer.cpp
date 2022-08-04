@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,6 +9,8 @@
 #include "Signer.h"
 #include "Address.h"
 #include "Messages.h"
+
+#include "../Base64.h"
 
 using namespace TW;
 using namespace std::chrono;
@@ -31,7 +33,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         std::optional<MsgAddressInt> destination;
         if (input.transfer().has_address()) {
             auto addr = Address(input.transfer().address());
-            destination = std::make_pair(addr._wc, addr._address);
+            destination = std::make_pair(addr._workchainId, addr._address);
         }
 
         std::optional<Data> stateInit;
@@ -41,7 +43,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         }
 
         auto signedMessage = createSignedMessage(publicKey, key, bounce, flags, amount, expiredAt, destination, stateInit);
-        protoOutput.set_message(signedMessage.data(), signedMessage.size());
+        protoOutput.set_encoded(TW::Base64::encode(signedMessage));
     } break;
 
     default:

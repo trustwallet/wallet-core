@@ -29,9 +29,7 @@ TEST(TWAnySignerEverscale, SignMessage) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeEverscale);
 
-    auto boc = output.message();
-
-    ASSERT_EQ(Base64::encode(Data(boc.begin(), boc.end())), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYAIyIRhBmub4CthfowsK/+nfwhiZ3IQvYenZ/V6xgpkf/hCkNtlh1+9IxezU0xS9A0e1mZD9f1QzBKNMJzMGmqAKXUlsUxcV1PAAAAAAHA==");
+    ASSERT_EQ(output.encoded(), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYAIyIRhBmub4CthfowsK/+nfwhiZ3IQvYenZ/V6xgpkf/hCkNtlh1+9IxezU0xS9A0e1mZD9f1QzBKNMJzMGmqAKXUlsUxcV1PAAAAAAHA==");
 }
 
 }

@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -27,7 +27,7 @@ bool Address::isValid(const std::string& string) noexcept {
         return false;
     }
 
-    if (string.size() != pos + 64) {
+    if (string.size() != pos + hexAddrLen) {
         return false;
     }
 
@@ -41,9 +41,9 @@ Address::Address(const std::string& string) {
     }
 
     auto parsed = parseWorkchainId(string);
-    auto [wc, pos] = *parsed;
+    auto [workchainId, pos] = *parsed;
 
-    _wc = wc;
+    _workchainId = workchainId;
 
     const auto acc = parse_hex(string.substr(pos));
     std::copy(begin(acc), end(acc), begin(_address));
@@ -51,15 +51,15 @@ Address::Address(const std::string& string) {
 
 Address::Address(const PublicKey& publicKey, int8_t workchainId) {
     InitData initData(publicKey);
-    auto [wc, address] = initData.computeAddr(workchainId);
+    auto [_, address] = initData.computeAddr(workchainId);
 
-    _wc = wc;
+    _workchainId = workchainId;
     _address = address;
 }
 
 std::string Address::string() const {
-    std::string string = std::to_string(_wc) + ":" + hex(_address);
-    return string;
+    std::string address = std::to_string(_workchainId) + ":" + hex(_address);
+    return address;
 }
 
 Address::MaybeWorkchainInfos Address::parseWorkchainId(const std::string& string) {
