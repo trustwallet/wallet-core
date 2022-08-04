@@ -31,7 +31,7 @@ TEST(EverscaleSigner, WithoutStateInit) {
 
     auto output = Signer::sign(input);
 
-    ASSERT_EQ(output.encoded(), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYAIyIRhBmub4CthfowsK/+nfwhiZ3IQvYenZ/V6xgpkf/hCkNtlh1+9IxezU0xS9A0e1mZD9f1QzBKNMJzMGmqAKXUlsUxcV1PAAAAAAHA==");
+    ASSERT_EQ(output.encoded(), "te6ccgICAAIAAQAAANoAAAHfiABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYAIyIRhBmub4CthfowsK/+nfwhiZ3IQvYenZ/V6xgpkf/hCkNtlh1+9IxezU0xS9A0e1mZD9f1QzBKNMJzMGmqAKXUlsUxcV1PAAAAAAHAABAGhCABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYIdzWUAAAAAAAAAAAAAAAAAAA");
 }
 
 TEST(EverscaleSigner, WithStateInit1) {
@@ -54,7 +54,7 @@ TEST(EverscaleSigner, WithStateInit1) {
 
     auto output = Signer::sign(input);
 
-    ASSERT_EQ(output.encoded(), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGC+o+gbLqcs2fFi5y5dyYccszRvGc4IBmWqCU/mWGub29BSl+RG2pv6zkYPUVwox/ExjTZfBXR9U+vUBKQ1VgBSXUlsUxcV1PAAABF4HA=");
+    ASSERT_EQ(output.encoded(), "te6ccgICAAQAAQAAAboAAAPhiABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGC+o+gbLqcs2fFi5y5dyYccszRvGc4IBmWqCU/mWGub29BSl+RG2pv6zkYPUVwox/ExjTZfBXR9U+vUBKQ1VgBSXUlsUxcV1PAAABF4HAAAwACAAEAaEIANuJL/a5tgJ/Y3APsUW37sp6fCJZttlSoKl6WOiBGqr6h3NZQAAAAAAAAAAAAAAAAAAAAUAAAAi9LqS2K8drjTwv63I+aPTBLtMULU+zuEMSAmO8j5A00qizUXzUA3v8AIN0gggFMl7ohggEznLqxn3Gw7UTQ0x/THzHXC//jBOCk8mCDCNcYINMf0x/TH/gjE7vyY+1E0NMf0x/T/9FRMrryoVFEuvKiBPkBVBBV+RDyo/gAkyDXSpbTB9QC+wDo0QGkyMsfyx/L/8ntVA==");
 }
 
 TEST(EverscaleSigner, WithStateInit2) {
@@ -78,7 +78,7 @@ TEST(EverscaleSigner, WithStateInit2) {
     auto output = Signer::sign(input);
     auto boc = output.encoded();
 
-    ASSERT_EQ(output.encoded(), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGFRS7u+U3g33tkvU5mOIulqQY3bE292gaWV7+cPYFxLXr/KwApb9WXBy73l6ZjBMneTnpTaDu9oeTDxl5QLVfgyXUlsUxcV1PAAAAmwHA=");
+    ASSERT_EQ(output.encoded(), "te6ccgICAAQAAQAAAboAAAPhiABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGFRS7u+U3g33tkvU5mOIulqQY3bE292gaWV7+cPYFxLXr/KwApb9WXBy73l6ZjBMneTnpTaDu9oeTDxl5QLVfgyXUlsUxcV1PAAAAmwHAAAwACAAEAaEIAVcjkZ2IlU3HZYYohkBUxkgnKJI+HIJCtGDEFq/eUW02h3NZQAAAAAAAAAAAAAAAAAAAAUAAAATZLqS2Kc7K5TorVBJDDavbyxCCgDW/rqoGMkiZpeu4aVpmmWvEA3v8AIN0gggFMl7ohggEznLqxn3Gw7UTQ0x/THzHXC//jBOCk8mCDCNcYINMf0x/TH/gjE7vyY+1E0NMf0x/T/9FRMrryoVFEuvKiBPkBVBBV+RDyo/gAkyDXSpbTB9QC+wDo0QGkyMsfyx/L/8ntVA==");
 }
 
 TEST(EverscaleSigner, WithStateInit3) {
@@ -101,7 +101,7 @@ TEST(EverscaleSigner, WithStateInit3) {
 
     auto output = Signer::sign(input);
 
-    ASSERT_EQ(output.encoded(), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGfvqM+5hsqYZqAqU6ISgqIPWhSGBCFWjZA70I++alUCYqbAMl6Cd+/j9V9Ay28HwvehRNPQmdWydq2aZHQt1dByXUlsUxcV1PAAAAAIHA=");
+    ASSERT_EQ(output.encoded(), "te6ccgICAAQAAQAAAboAAAPhiABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGfvqM+5hsqYZqAqU6ISgqIPWhSGBCFWjZA70I++alUCYqbAMl6Cd+/j9V9Ay28HwvehRNPQmdWydq2aZHQt1dByXUlsUxcV1PAAAAAIHAAAwACAAEAaEIAVcjkZ2IlU3HZYYohkBUxkgnKJI+HIJCtGDEFq/eUW02h3NZQAAAAAAAAAAAAAAAAAAAAUAAAAAFLqS2KXxBKs/v1orUAXustiAzDcUQaU1+G6pNGNe9MHTMhL6cA3v8AIN0gggFMl7ohggEznLqxn3Gw7UTQ0x/THzHXC//jBOCk8mCDCNcYINMf0x/TH/gjE7vyY+1E0NMf0x/T/9FRMrryoVFEuvKiBPkBVBBV+RDyo/gAkyDXSpbTB9QC+wDo0QGkyMsfyx/L/8ntVA==");
 }
 
 TEST(EverscaleSigner, WithStateInit4) {
@@ -124,7 +124,7 @@ TEST(EverscaleSigner, WithStateInit4) {
 
     auto output = Signer::sign(input);
 
-    ASSERT_EQ(output.encoded(), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGA/zSxfc0nSJb7kigVwlIV+5/87mtezg4DFLGE9i8o+H0DmW4pcqwXYvqiiUsED9QXUcfnkOdpFrVP49UJ8MpAiXUlsUxcV1PAAAABIHA=");
+    ASSERT_EQ(output.encoded(), "te6ccgICAAQAAQAAAboAAAPhiABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGA/zSxfc0nSJb7kigVwlIV+5/87mtezg4DFLGE9i8o+H0DmW4pcqwXYvqiiUsED9QXUcfnkOdpFrVP49UJ8MpAiXUlsUxcV1PAAAABIHAAAwACAAEAaEIAVcjkZ2IlU3HZYYohkBUxkgnKJI+HIJCtGDEFq/eUW02h3NZQAAAAAAAAAAAAAAAAAAAAUAAAAAlLqS2K/tcFRfvWsRw2zYTUoXF4sEQQWx/uu+cyy+zwsarnBQkA3v8AIN0gggFMl7ohggEznLqxn3Gw7UTQ0x/THzHXC//jBOCk8mCDCNcYINMf0x/TH/gjE7vyY+1E0NMf0x/T/9FRMrryoVFEuvKiBPkBVBBV+RDyo/gAkyDXSpbTB9QC+wDo0QGkyMsfyx/L/8ntVA==");
 }
 
 }

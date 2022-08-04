@@ -63,11 +63,11 @@ struct Reader {
         offset += bytes;
     }
 
-    inline const uint8_t* _Nonnull data() const {
+    const uint8_t* _Nonnull data() const {
         return buffer + offset;
     }
 
-    inline size_t readNextUint(uint8_t len) {
+    size_t readNextUint(uint8_t len) {
         const auto* _Nonnull p = data();
         advance(len);
 
