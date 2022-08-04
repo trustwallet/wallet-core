@@ -38,5 +38,5 @@ npm run codegen:js-browser
 
 For modern javaScript sample, please check out:
 
--  React: https://github.com/robot-ux/wallet-core-example
+-  React: https://github.com/hewigovens/wallet-core-react
 -  Flutter: https://github.com/iampawan/Wallet-Core-Web/tree/dev

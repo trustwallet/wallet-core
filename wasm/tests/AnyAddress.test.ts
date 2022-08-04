@@ -6,11 +6,11 @@
 
 import "mocha";
 import { assert } from "chai";
-import { WalletCore } from "../dist";
+import { initWasm } from "../dist";
 
 describe("AnyAddress", () => {
-  it("test validating Solana address", () => {
-    const { AnyAddress, HexCoding, CoinType } = WalletCore;
+  it("test validating Solana address", async () => {
+    const { AnyAddress, HexCoding, CoinType } = await initWasm();
 
     var address = AnyAddress.createWithString(
       "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q",

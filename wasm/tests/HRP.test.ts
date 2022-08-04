@@ -6,11 +6,11 @@
 
 import "mocha";
 import { assert } from "chai";
-import { WalletCore } from "../dist";
+import { initWasm } from "../dist";
 
 describe("HRP", () => {
-  it("test string value", () => {
-    const { HRP, describeHRP } = WalletCore;
+  it("test string value", async () => {
+    const { HRP, describeHRP } = await initWasm();
 
     assert.equal(describeHRP(HRP.bitcoin), "bc");
     assert.equal(describeHRP(HRP.binance), "bnb");

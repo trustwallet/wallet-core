@@ -6,12 +6,12 @@
 
 import "mocha";
 import { assert } from "chai";
-import { WalletCore } from "../dist";
+import { initWasm } from "../dist";
 import { Buffer } from "buffer";
 
 describe("StoredKey", () => {
-  it("test importing mnemonic", () => {
-    const { StoredKey, CoinType } = WalletCore;
+  it("test importing mnemonic", async () => {
+    const { StoredKey, CoinType } = await initWasm();
 
     const mnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
     const password = Buffer.from("password");
