@@ -29,10 +29,9 @@ TEST(EverscaleSigner, WithoutStateInit) {
     auto privateKey = parse_hex("5b59e0372d19b6355c73fa8cc708fa3301ae2ec21bb6277e8b79d386ccb7846f");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(std::move(input));
-    auto boc = output.message();
+    auto output = Signer::sign(input);
 
-    ASSERT_EQ(TW::Base64::encode(Data(boc.begin(), boc.end())), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYAIyIRhBmub4CthfowsK/+nfwhiZ3IQvYenZ/V6xgpkf/hCkNtlh1+9IxezU0xS9A0e1mZD9f1QzBKNMJzMGmqAKXUlsUxcV1PAAAAAAHA==");
+    ASSERT_EQ(output.encoded(), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYAIyIRhBmub4CthfowsK/+nfwhiZ3IQvYenZ/V6xgpkf/hCkNtlh1+9IxezU0xS9A0e1mZD9f1QzBKNMJzMGmqAKXUlsUxcV1PAAAAAAHA==");
 }
 
 TEST(EverscaleSigner, WithStateInit1) {
@@ -53,10 +52,9 @@ TEST(EverscaleSigner, WithStateInit1) {
     auto privateKey = parse_hex("5b59e0372d19b6355c73fa8cc708fa3301ae2ec21bb6277e8b79d386ccb7846f");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(std::move(input));
-    auto boc = output.message();
+    auto output = Signer::sign(input);
 
-    ASSERT_EQ(TW::Base64::encode(Data(boc.begin(), boc.end())), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGC+o+gbLqcs2fFi5y5dyYccszRvGc4IBmWqCU/mWGub29BSl+RG2pv6zkYPUVwox/ExjTZfBXR9U+vUBKQ1VgBSXUlsUxcV1PAAABF4HA=");
+    ASSERT_EQ(output.encoded(), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGC+o+gbLqcs2fFi5y5dyYccszRvGc4IBmWqCU/mWGub29BSl+RG2pv6zkYPUVwox/ExjTZfBXR9U+vUBKQ1VgBSXUlsUxcV1PAAABF4HA=");
 }
 
 TEST(EverscaleSigner, WithStateInit2) {
@@ -77,10 +75,10 @@ TEST(EverscaleSigner, WithStateInit2) {
     auto privateKey = parse_hex("5b59e0372d19b6355c73fa8cc708fa3301ae2ec21bb6277e8b79d386ccb7846f");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(std::move(input));
-    auto boc = output.message();
+    auto output = Signer::sign(input);
+    auto boc = output.encoded();
 
-    ASSERT_EQ(TW::Base64::encode(Data(boc.begin(), boc.end())), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGFRS7u+U3g33tkvU5mOIulqQY3bE292gaWV7+cPYFxLXr/KwApb9WXBy73l6ZjBMneTnpTaDu9oeTDxl5QLVfgyXUlsUxcV1PAAAAmwHA=");
+    ASSERT_EQ(output.encoded(), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGFRS7u+U3g33tkvU5mOIulqQY3bE292gaWV7+cPYFxLXr/KwApb9WXBy73l6ZjBMneTnpTaDu9oeTDxl5QLVfgyXUlsUxcV1PAAAAmwHA=");
 }
 
 TEST(EverscaleSigner, WithStateInit3) {
@@ -101,10 +99,9 @@ TEST(EverscaleSigner, WithStateInit3) {
     auto privateKey = parse_hex("5b59e0372d19b6355c73fa8cc708fa3301ae2ec21bb6277e8b79d386ccb7846f");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(std::move(input));
-    auto boc = output.message();
+    auto output = Signer::sign(input);
 
-    ASSERT_EQ(TW::Base64::encode(Data(boc.begin(), boc.end())), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGfvqM+5hsqYZqAqU6ISgqIPWhSGBCFWjZA70I++alUCYqbAMl6Cd+/j9V9Ay28HwvehRNPQmdWydq2aZHQt1dByXUlsUxcV1PAAAAAIHA=");
+    ASSERT_EQ(output.encoded(), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGfvqM+5hsqYZqAqU6ISgqIPWhSGBCFWjZA70I++alUCYqbAMl6Cd+/j9V9Ay28HwvehRNPQmdWydq2aZHQt1dByXUlsUxcV1PAAAAAIHA=");
 }
 
 TEST(EverscaleSigner, WithStateInit4) {
@@ -125,10 +122,9 @@ TEST(EverscaleSigner, WithStateInit4) {
     auto privateKey = parse_hex("5b59e0372d19b6355c73fa8cc708fa3301ae2ec21bb6277e8b79d386ccb7846f");
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto output = Signer::sign(std::move(input));
-    auto boc = output.message();
+    auto output = Signer::sign(input);
 
-    ASSERT_EQ(TW::Base64::encode(Data(boc.begin(), boc.end())), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGA/zSxfc0nSJb7kigVwlIV+5/87mtezg4DFLGE9i8o+H0DmW4pcqwXYvqiiUsED9QXUcfnkOdpFrVP49UJ8MpAiXUlsUxcV1PAAAABIHA=");
+    ASSERT_EQ(output.encoded(), "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGA/zSxfc0nSJb7kigVwlIV+5/87mtezg4DFLGE9i8o+H0DmW4pcqwXYvqiiUsED9QXUcfnkOdpFrVP49UJ8MpAiXUlsUxcV1PAAAABIHA=");
 }
 
 }
