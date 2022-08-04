@@ -21,6 +21,6 @@ set_target_properties(${TARGET_NAME}
 )
 set_target_properties(${TARGET_NAME} 
         PROPERTIES 
-        COMPILE_FLAGS "-O3 -s USE_BOOST_HEADERS=1" 
-        LINK_FLAGS "--bind --no-entry --closure=1 -O3 -s ALLOW_MEMORY_GROWTH=1 -s ERROR_ON_UNDEFINED_SYMBOLS=1"
+        COMPILE_FLAGS "-O2 -sSTRICT -sUSE_BOOST_HEADERS=1" 
+        LINK_FLAGS "--bind --no-entry --closure 1 -O2 -sSTRICT -sASSERTIONS -sMODULARIZE=1 -sALLOW_MEMORY_GROWTH=1 -sDYNAMIC_EXECUTION=0"
 )

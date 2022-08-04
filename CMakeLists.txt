@@ -84,10 +84,24 @@ endif ()
 if (TW_BUILD_EXAMPLES)
     add_subdirectory(walletconsole/lib)
     add_subdirectory(walletconsole)
-endif()
+endif ()
 
 if (TW_ENABLE_PVS_STUDIO)
     tw_add_pvs_studio_target(TrustWalletCore)
+endif ()
+
+if (TW_ENABLE_CLANG_TIDY)
+    tw_add_clang_tidy_target(TrustWalletCore)
+endif ()
+
+if (NOT ANDROID AND TW_UNITY_BUILD)
+    set_target_properties(TrustWalletCore PROPERTIES UNITY_BUILD ON)
+
+    file(GLOB_RECURSE PROTOBUF_SOURCE_FILES CONFIGURE_DEPENDS src/Cosmos/Protobuf/*.pb.cc src/proto/*.pb.cc)
+    foreach(file ${PROTOBUF_SOURCE_FILES})
+        set_property(SOURCE ${file} PROPERTY SKIP_UNITY_BUILD_INCLUSION ON)
+    endforeach()
+    message(STATUS "Unity build activated")
 endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig.in ${CMAKE_CURRENT_SOURCE_DIR}/swift/cpp.xcconfig @ONLY)

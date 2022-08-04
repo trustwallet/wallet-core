@@ -15,7 +15,7 @@ TEST(TWBase64, Decode) {
     const auto encodedInput = STRING("Kyc/YWI=");
     auto result = WRAPD(TWBase64Decode(encodedInput.get()));
 
-    ASSERT_EQ(TWDataSize(result.get()), 5);
+    ASSERT_EQ(TWDataSize(result.get()), 5ul);
 
     auto data = *reinterpret_cast<const TW::Data*>(result.get());
     std::string str(data.begin(), data.end());
@@ -37,7 +37,7 @@ TEST(TWBase64, DecodeUrl) {
     const auto encodedInput = STRING("Kyc_YWI=");
     auto result = WRAPD(TWBase64DecodeUrl(encodedInput.get()));
 
-    ASSERT_EQ(TWDataSize(result.get()), 5);
+    ASSERT_EQ(TWDataSize(result.get()), 5ul);
 
     auto data = *reinterpret_cast<const TW::Data*>(result.get());
     std::string str(data.begin(), data.end());

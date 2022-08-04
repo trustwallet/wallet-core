@@ -397,4 +397,30 @@ TEST(HDWallet, Derive_XpubPub_vs_PrivPub) {
     }
 }
 
+TEST(HDWallet, getKeyByCurve) {
+    const auto derivPath = "m/44'/539'/0'/0/0";
+    HDWallet wallet = HDWallet(mnemonic1, "");
+    {
+        const auto privateKey = wallet.getKeyByCurve(TWCurveSECP256k1, DerivationPath(derivPath));
+        EXPECT_EQ(hex(privateKey.bytes), "4fb8657d6464adcaa086d6758d7f0b6b6fc026c98dc1671fcc6460b5a74abc62");
+    }
+    {
+        const auto privateKey = wallet.getKeyByCurve(TWCurveNIST256p1, DerivationPath(derivPath));
+        EXPECT_EQ(hex(privateKey.bytes), "a13df52d5a5b438bbf921bbf86276e4347fe8e2f2ed74feaaee12b77d6d26f86");
+    }
+}
+
+TEST(HDWallet, getKey) {
+    const auto derivPath = "m/44'/539'/0'/0/0";
+    HDWallet wallet = HDWallet(mnemonic1, "");
+    {
+        const auto privateKey = wallet.getKey(TWCoinTypeBitcoin, DerivationPath(derivPath));
+        EXPECT_EQ(hex(privateKey.bytes), "4fb8657d6464adcaa086d6758d7f0b6b6fc026c98dc1671fcc6460b5a74abc62");
+    }
+    {
+        const auto privateKey = wallet.getKey(TWCoinTypeNEO, DerivationPath(derivPath));
+        EXPECT_EQ(hex(privateKey.bytes), "a13df52d5a5b438bbf921bbf86276e4347fe8e2f2ed74feaaee12b77d6d26f86");
+    }
+}
+
 } // namespace

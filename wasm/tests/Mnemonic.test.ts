@@ -6,11 +6,18 @@
 
 import "mocha";
 import { assert } from "chai";
-import { WalletCore } from "../dist";
+import { initWasm, WalletCore } from "../dist";
 
 describe("Mnemonic", () => {
+
+  let core: WalletCore;
+
+  before(async () => {
+    core = await initWasm();
+  });
+
   it("test isValid", () => {
-    const { Mnemonic } = WalletCore;
+    const { Mnemonic } = core;
 
     assert.isTrue(
       Mnemonic.isValid(
@@ -25,7 +32,7 @@ describe("Mnemonic", () => {
   });
 
   it("test isValidWord", () => {
-    const { Mnemonic } = WalletCore;
+    const { Mnemonic } = core;
 
     assert.isTrue(Mnemonic.isValidWord("credit"));
 
@@ -35,7 +42,7 @@ describe("Mnemonic", () => {
   });
 
   it("test suggest", () => {
-    const { Mnemonic } = WalletCore;
+    const { Mnemonic } = core;
 
     assert.equal(Mnemonic.suggest("air"), "air airport");
     assert.equal(Mnemonic.suggest("rob"), "robot robust");

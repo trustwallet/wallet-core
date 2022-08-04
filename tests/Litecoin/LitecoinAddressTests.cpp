@@ -13,11 +13,12 @@
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWDerivation.h>
 
-#include <string>
 #include <gtest/gtest.h>
+#include <string>
 
 using namespace TW;
-using namespace TW::Bitcoin;
+
+namespace TW::Bitcoin::tests {
 
 TEST(LitecoinAddress, deriveAddress_legacy) {
     const auto pubKey = PublicKey(parse_hex("03b49081a4d7ad24b20e209bc6fe10491aadb5607777baf0509a036cce96025db0"), TWPublicKeyTypeSECP256k1);
@@ -36,3 +37,5 @@ TEST(LitecoinAddress, deriveAddress_segwit) {
     const auto address = SegwitAddress(pubKey, stringForHRP(TWCoinTypeHRP(TWCoinTypeLitecoin)));
     EXPECT_EQ(address.string(), addrStr);
 }
+
+} // namespace TW::Bitcoin::tests

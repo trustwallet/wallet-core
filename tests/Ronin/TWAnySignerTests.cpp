@@ -4,15 +4,18 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "HexCoding.h"
+#include "proto/Ethereum.pb.h"
+#include "uint256.h"
 #include "../interface/TWTestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
-#include "HexCoding.h"
-#include "uint256.h"
-#include "proto/Ethereum.pb.h"
 
 #include <gtest/gtest.h>
 
 using namespace TW;
+
+namespace TW::Ronin::tests {
+
 using namespace TW::Ethereum;
 
 TEST(TWAnySignerRonin, Sign) {
@@ -43,3 +46,5 @@ TEST(TWAnySignerRonin, Sign) {
 
     ASSERT_EQ(hex(output.encoded()), expected);
 }
+
+} // namespace TW::Ronin::tests

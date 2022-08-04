@@ -15,6 +15,8 @@
 
 #include <gtest/gtest.h>
 
+namespace TW::Litecoin::tests {
+
 TEST(Litecoin, LegacyAddress) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730").get()));
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true));
@@ -46,9 +48,8 @@ TEST(Litecoin, LockScriptForAddressM) {
 
 TEST(Litecoin, ExtendedKeys) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(
-        STRING("ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal").get(),
-        STRING("TREZOR").get()
-    ));
+                                       STRING("ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal").get(),
+                                       STRING("TREZOR").get()));
 
     // .bip44
     auto lptv = WRAPS(TWHDWalletGetExtendedPrivateKey(wallet.get(), TWPurposeBIP44, TWCoinTypeLitecoin, TWHDVersionLTPV));
@@ -99,3 +100,5 @@ TEST(Litecoin, LockScripts) {
     auto scriptData3 = WRAPD(TWBitcoinScriptData(script3.get()));
     assertHexEqual(scriptData3, "76a914e771c6695c5dd189ccc4ef00cd0f3db3096d79bd88ac");
 }
+
+} // namespace TW::Litecoin::tests

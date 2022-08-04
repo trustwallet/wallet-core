@@ -6,12 +6,15 @@
 
 #include "Cosmos/Address.h"
 #include "HexCoding.h"
-#include "PublicKey.h"
 #include "PrivateKey.h"
+#include "PublicKey.h"
 #include <gtest/gtest.h>
 #include <vector>
 
 using namespace TW;
+
+namespace TW::Osmosis::tests {
+
 using namespace TW::Cosmos;
 
 TEST(OsmosisAddress, Valid) {
@@ -43,3 +46,5 @@ TEST(OsmosisAddress, FromString) {
     EXPECT_EQ(address.string(), "osmo1mky69cn8ektwy0845vec9upsdphktxt0en97f5");
     EXPECT_EQ(hex(address.getKeyHash()), "dd89a2e267cd96e23cf5a33382f030686f65996f");
 }
+
+} // namespace TW::Osmosis::tests

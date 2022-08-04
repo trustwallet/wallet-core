@@ -11,34 +11,32 @@
 
 #include <cstring>
 
-using namespace TW::Groestlcoin;
-
-bool TWGroestlcoinAddressEqual(struct TWGroestlcoinAddress *_Nonnull lhs, struct TWGroestlcoinAddress *_Nonnull rhs) {
+bool TWGroestlcoinAddressEqual(struct TWGroestlcoinAddress* _Nonnull lhs, struct TWGroestlcoinAddress* _Nonnull rhs) {
     return lhs->impl.bytes == rhs->impl.bytes;
 }
 
-bool TWGroestlcoinAddressIsValidString(TWString *_Nonnull string) {
+bool TWGroestlcoinAddressIsValidString(TWString* _Nonnull string) {
     auto& s = *reinterpret_cast<const std::string*>(string);
-    return Address::isValid(s);
+    return TW::Groestlcoin::Address::isValid(s);
 }
 
-struct TWGroestlcoinAddress *_Nullable TWGroestlcoinAddressCreateWithString(TWString *_Nonnull string) {
+struct TWGroestlcoinAddress* _Nullable TWGroestlcoinAddressCreateWithString(TWString* _Nonnull string) {
     auto& s = *reinterpret_cast<const std::string*>(string);
-    if (!Address::isValid(s)) {
+    if (!TW::Groestlcoin::Address::isValid(s)) {
         return nullptr;
     }
-    return new TWGroestlcoinAddress{ Address(s) };
+    return new TWGroestlcoinAddress{TW::Groestlcoin::Address(s)};
 }
 
-struct TWGroestlcoinAddress *_Nonnull TWGroestlcoinAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, uint8_t prefix) {
-    return new TWGroestlcoinAddress{ Address(publicKey->impl, prefix) };
+struct TWGroestlcoinAddress* _Nonnull TWGroestlcoinAddressCreateWithPublicKey(struct TWPublicKey* _Nonnull publicKey, uint8_t prefix) {
+    return new TWGroestlcoinAddress{TW::Groestlcoin::Address(publicKey->impl, prefix)};
 }
 
-void TWGroestlcoinAddressDelete(struct TWGroestlcoinAddress *_Nonnull address) {
+void TWGroestlcoinAddressDelete(struct TWGroestlcoinAddress* _Nonnull address) {
     delete address;
 }
 
-TWString *_Nonnull TWGroestlcoinAddressDescription(struct TWGroestlcoinAddress *_Nonnull address) {
+TWString* _Nonnull TWGroestlcoinAddressDescription(struct TWGroestlcoinAddress* _Nonnull address) {
     const auto str = address->impl.string();
     return TWStringCreateWithUTF8Bytes(str.c_str());
 }

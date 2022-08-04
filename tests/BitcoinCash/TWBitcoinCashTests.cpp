@@ -23,8 +23,10 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Bitcoin;
 
+namespace TW::Bitcoin::tests {
+
+// clang-format off
 TEST(BitcoinCash, Address) {
     EXPECT_TRUE(TWAnyAddressIsValid(STRING("pqx578nanz2h2estzmkr53zqdg6qt8xyqvwhn6qeyc").get(), TWCoinTypeBitcoinCash));
     EXPECT_TRUE(TWAnyAddressIsValid(STRING("bitcoincash:pqx578nanz2h2estzmkr53zqdg6qt8xyqvwhn6qeyc").get(), TWCoinTypeBitcoinCash));
@@ -34,7 +36,7 @@ TEST(BitcoinCash, ValidAddress) {
     auto string = STRING("bitcoincash:qqa2qx0d8tegw32xk8u75ws055en4x3h2u0e6k46y4");
     auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeBitcoinCash));
     ASSERT_NE(address.get(), nullptr);
-    
+
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptLockScriptForAddress(string.get(), TWCoinTypeBitcoinCash));
     ASSERT_FALSE(TWBitcoinScriptSize(script.get()) == 0);
 }
@@ -161,3 +163,6 @@ TEST(BitcoinCash, SignTransaction) {
             "e510000000000000" "1976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
         "00000000");
 }
+// clang-format on
+
+} // namespace TW::Bitcoin::tests
