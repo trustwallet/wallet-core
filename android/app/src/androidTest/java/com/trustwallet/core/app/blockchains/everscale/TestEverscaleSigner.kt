@@ -39,7 +39,7 @@ class TestEverscaleSigner {
 
         val output = AnySigner.sign(signingInput, EVERSCALE, SigningOutput.parser())
 
-        val expectedString = "iABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYAIyIRhBmub4CthfowsK/+nfwhiZ3IQvYenZ/V6xgpkf/hCkNtlh1+9IxezU0xS9A0e1mZD9f1QzBKNMJzMGmqAKXUlsUxcV1PAAAAAAHA=="
+        val expectedString = "te6ccgICAAIAAQAAANoAAAHfiABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYAIyIRhBmub4CthfowsK/+nfwhiZ3IQvYenZ/V6xgpkf/hCkNtlh1+9IxezU0xS9A0e1mZD9f1QzBKNMJzMGmqAKXUlsUxcV1PAAAAAAHAABAGhCABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYIdzWUAAAAAAAAAAAAAAAAAAA"
         assertEquals(output.encoded, expectedString)
     }
 }

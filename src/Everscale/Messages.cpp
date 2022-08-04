@@ -144,7 +144,12 @@ Data createSignedMessage(PublicKey& publicKey, PrivateKey& key, bool bounce, uin
 
     message.setBody(body);
 
-    return message.intoCell()->data;
+    const auto messageCell = message.intoCell();
+
+    Data result{};
+    messageCell->serialize(result);
+
+    return result;
 }
 
 }
