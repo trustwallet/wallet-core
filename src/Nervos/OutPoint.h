@@ -14,8 +14,6 @@
 #include <array>
 #include <cstring>
 
-using json = nlohmann::json;
-
 namespace TW::Nervos {
 
 /// Nervos transaction out-point reference.
@@ -39,7 +37,7 @@ struct OutPoint {
 
     /// Encodes the out-point into the provided buffer.
     void encode(Data& data) const;
-    json JSON() const;
+    nlohmann::json json() const;
 
     friend bool operator==(const OutPoint& lhs, const OutPoint& rhs) {
         return (lhs.txHash == rhs.txHash && lhs.index == rhs.index);

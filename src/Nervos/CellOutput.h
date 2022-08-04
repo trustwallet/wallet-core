@@ -13,8 +13,6 @@
 
 #include <memory>
 
-using json = nlohmann::json;
-
 namespace TW::Nervos {
 
 /// Nervos cell output.
@@ -37,8 +35,8 @@ struct CellOutput {
     /// Encodes the output into the provided buffer.
     void encode(Data& data) const;
 
-    /// Encodes the output into JSON format.
-    json JSON() const;
+    /// Encodes the output into json format.
+    nlohmann::json json() const;
 
     Proto::CellOutput proto() const {
         auto cellOutput = Proto::CellOutput();

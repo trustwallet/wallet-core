@@ -22,9 +22,8 @@ void CellOutput::encode(Data& data) const {
     Serialization::encodeDataArray(std::vector<Data>{capacityData, lockData, typeData}, data);
 }
 
-json CellOutput::JSON() const {
-    auto JSON = json{{"capacity", Serialization::numberToHex(capacity)},
-                     {"lock", lock.JSON()},
-                     {"type", type.JSON()}};
-    return JSON;
+nlohmann::json CellOutput::json() const {
+    return nlohmann::json{{"capacity", Serialization::numberToHex(capacity)},
+                          {"lock", lock.json()},
+                          {"type", type.json()}};
 }

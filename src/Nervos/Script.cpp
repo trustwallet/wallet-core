@@ -41,12 +41,12 @@ void Script::encode(Data& data) const {
     Serialization::encodeDataArray(std::vector<Data>{codeHash, hashTypeData, argsData}, data);
 }
 
-json Script::JSON() const {
+nlohmann::json Script::json() const {
     if (empty()) {
         return nullptr;
     } else {
-        return json{{"code_hash", hexEncoded(codeHash)},
-                    {"hash_type", Constants::gHashTypeRegistry.at(hashType)},
-                    {"args", hexEncoded(args)}};
+        return nlohmann::json{{"code_hash", hexEncoded(codeHash)},
+                              {"hash_type", Constants::gHashTypeRegistry.at(hashType)},
+                              {"args", hexEncoded(args)}};
     }
 }

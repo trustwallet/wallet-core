@@ -17,7 +17,7 @@ void CellInput::encode(Data& data) const {
     previousOutput.encode(data);
 }
 
-json CellInput::JSON() const {
-    return json{{"previous_output", previousOutput.JSON()},
-                {"since", Serialization::numberToHex(since)}};
+nlohmann::json CellInput::json() const {
+    return nlohmann::json{{"previous_output", previousOutput.json()},
+                          {"since", Serialization::numberToHex(since)}};
 }

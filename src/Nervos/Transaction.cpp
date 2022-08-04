@@ -20,7 +20,6 @@
 
 using namespace TW;
 using namespace TW::Nervos;
-using json = nlohmann::json;
 
 Data Transaction::hash() const {
     Data data;
@@ -86,40 +85,40 @@ Data Transaction::hash() const {
     return Hash::blake2b(data, 32, Constants::gHashPersonalization);
 }
 
-json Transaction::JSON() const {
-    auto JSON = json();
-    JSON["version"] = "0x0";
-    auto cellDepsJSON = json::array();
+nlohmann::json Transaction::json() const {
+    auto json = nlohmann::json();
+    json["version"] = "0x0";
+    auto cellDepsJSON = nlohmann::json::array();
     for (auto&& cellDep : cellDeps) {
-        cellDepsJSON.push_back(cellDep.JSON());
+        cellDepsJSON.push_back(cellDep.json());
     }
-    JSON["cell_deps"] = cellDepsJSON;
-    auto headerDepsJSON = json::array();
+    json["cell_deps"] = cellDepsJSON;
+    auto headerDepsJSON = nlohmann::json::array();
     for (auto&& headerDep : headerDeps) {
         headerDepsJSON.push_back(hexEncoded(headerDep));
     }
-    JSON["header_deps"] = headerDepsJSON;
-    auto inputsJSON = json::array();
+    json["header_deps"] = headerDepsJSON;
+    auto inputsJSON = nlohmann::json::array();
     for (auto&& input : inputs) {
-        inputsJSON.push_back(input.JSON());
+        inputsJSON.push_back(input.json());
     }
-    JSON["inputs"] = inputsJSON;
-    auto outputsJSON = json::array();
+    json["inputs"] = inputsJSON;
+    auto outputsJSON = nlohmann::json::array();
     for (auto&& output : outputs) {
-        outputsJSON.push_back(output.JSON());
+        outputsJSON.push_back(output.json());
     }
-    JSON["outputs"] = outputsJSON;
-    auto outputsDataJSON = json::array();
+    json["outputs"] = outputsJSON;
+    auto outputsDataJSON = nlohmann::json::array();
     for (auto&& outputData : outputsData) {
         outputsDataJSON.push_back(hexEncoded(outputData));
     }
-    JSON["outputs_data"] = outputsDataJSON;
-    auto witnessesJSON = json::array();
+    json["outputs_data"] = outputsDataJSON;
+    auto witnessesJSON = nlohmann::json::array();
     for (auto&& witness : witnesses) {
         witnessesJSON.push_back(hexEncoded(witness));
     }
-    JSON["witnesses"] = witnessesJSON;
-    return JSON;
+    json["witnesses"] = witnessesJSON;
+    return json;
 }
 
 void Transaction::build(const TransactionPlan& txPlan) {

@@ -9,8 +9,6 @@
 #include "OutPoint.h"
 #include <nlohmann/json.hpp>
 
-using json = nlohmann::json;
-
 namespace TW::Nervos {
 
 /// Nervos cell input.
@@ -28,8 +26,8 @@ struct CellInput {
     /// Encodes the transaction into the provided buffer.
     void encode(Data& data) const;
 
-    /// Encodes the output into JSON format.
-    json JSON() const;
+    /// Encodes the output into json format.
+    nlohmann::json json() const;
 };
 
 /// A list of Cell Inputs

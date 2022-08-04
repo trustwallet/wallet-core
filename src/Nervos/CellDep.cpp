@@ -34,6 +34,6 @@ void CellDep::encode(Data& data) const {
     data.emplace_back(depType);
 }
 
-json CellDep::JSON() const {
-    return json{{"out_point", outPoint.JSON()}, {"dep_type", Constants::gDepTypeRegistry.at(depType)}};
+nlohmann::json CellDep::json() const {
+    return nlohmann::json{{"out_point", outPoint.json()}, {"dep_type", Constants::gDepTypeRegistry.at(depType)}};
 }

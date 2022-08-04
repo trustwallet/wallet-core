@@ -15,9 +15,11 @@ using namespace TW;
 
 namespace TW::Nervos {
 
-enum HashType { Data0 = 0,
-                Type1 = 1,
-                Data1 = 2 };
+enum HashType {
+    Data0 = 0,
+    Type1 = 1,
+    Data1 = 2
+};
 
 enum AddressType {
     FullVersion = 0,  // full version identifies the hash_type

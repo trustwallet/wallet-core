@@ -60,6 +60,7 @@ Proto::SigningInput getAnySignerInput1() {
 
 void checkAnySignerOutput1(Proto::SigningOutput& output) {
     ASSERT_EQ(output.error(), Common::Proto::OK);
+    // https://explorer.nervos.org/transaction/0xf2c32afde7e72011985583873bc16c0a3c01fc01fc161eb4b914fcf84c53cdf8
     ASSERT_EQ(output.transaction_id(),
               "0xf2c32afde7e72011985583873bc16c0a3c01fc01fc161eb4b914fcf84c53cdf8");
     ASSERT_EQ(
@@ -203,6 +204,7 @@ TEST(TWAnySignerNervos, Sign_Native_SendMaximum) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeNervos);
     ASSERT_EQ(output.error(), Common::Proto::OK);
+    // https://explorer.nervos.org/transaction/0x298f5e04b6900796614b89062eb96cec63c3b2c460d01058736a793b567bc5c8
     ASSERT_EQ(output.transaction_id(),
               "0x298f5e04b6900796614b89062eb96cec63c3b2c460d01058736a793b567bc5c8");
     ASSERT_EQ(
@@ -283,6 +285,7 @@ TEST(TWAnySignerNervos, Sign_SUDT_Simple) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeNervos);
     ASSERT_EQ(output.error(), Common::Proto::OK);
+    // https://explorer.nervos.org/transaction/0x9b15f2bea26b98201540d8e20e8b1c21d96dd77ad246520b405c6aabb7173371
     ASSERT_EQ(output.transaction_id(),
               "0x9b15f2bea26b98201540d8e20e8b1c21d96dd77ad246520b405c6aabb7173371");
     ASSERT_EQ(
@@ -371,6 +374,7 @@ TEST(TWAnySignerNervos, Sign_SUDT_SendMaximum) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeNervos);
     ASSERT_EQ(output.error(), Common::Proto::OK);
+    // https://explorer.nervos.org/transaction/0x09a45a15e48f985b554a0b6e5f0857913cc492ec061cc9b0b2befa4b24609a4a
     ASSERT_EQ(output.transaction_id(),
               "0x09a45a15e48f985b554a0b6e5f0857913cc492ec061cc9b0b2befa4b24609a4a");
     ASSERT_EQ(output.transaction_json(),
@@ -443,6 +447,7 @@ TEST(TWAnySignerNervos, Sign_DAO_Deposit) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeNervos);
     ASSERT_EQ(output.error(), Common::Proto::OK);
+    // https://explorer.nervos.org/transaction/0x583d77a037e86155b7ab79ac59fc9bb01640e2427e859467ea10c4a6f222b683
     ASSERT_EQ(output.transaction_id(),
               "0x583d77a037e86155b7ab79ac59fc9bb01640e2427e859467ea10c4a6f222b683");
     ASSERT_EQ(
@@ -534,6 +539,7 @@ TEST(TWAnySignerNervos, Sign_DAO_Withdraw_Phase1) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeNervos);
     ASSERT_EQ(output.error(), Common::Proto::OK);
+    // https://explorer.nervos.org/transaction/0xb4e62bc5f5108275b0ef3da8f8cc3fb0172843c4a2a9cdfef3b04d6c65e9acca
     ASSERT_EQ(output.transaction_id(),
               "0xb4e62bc5f5108275b0ef3da8f8cc3fb0172843c4a2a9cdfef3b04d6c65e9acca");
     ASSERT_EQ(output.transaction_json(),

@@ -58,7 +58,7 @@ public:
     Transaction() = default;
 
     Data hash() const;
-    json JSON() const;
+    nlohmann::json json() const;
     void build(const TransactionPlan& txPlan);
     Common::Proto::SigningError sign(const std::vector<PrivateKey>& privateKeys);
 

@@ -10,8 +10,6 @@
 #include "../proto/Nervos.pb.h"
 #include <nlohmann/json.hpp>
 
-using json = nlohmann::json;
-
 namespace TW::Nervos {
 
 enum DepType { Code = 0, DepGroup = 1 };
@@ -28,7 +26,7 @@ struct CellDep {
 
     /// Encodes the transaction into the provided buffer.
     void encode(Data& data) const;
-    json JSON() const;
+    nlohmann::json json() const;
 
     Proto::CellDep proto() const;
 };

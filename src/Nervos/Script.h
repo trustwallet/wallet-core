@@ -15,8 +15,6 @@
 #include <string>
 #include <vector>
 
-using json = nlohmann::json;
-
 namespace TW::Nervos {
 
 struct Script {
@@ -93,8 +91,8 @@ struct Script {
     /// Encodes the script.
     void encode(Data& data) const;
 
-    /// Encodes the script into JSON format.
-    json JSON() const;
+    /// Encodes the script into json format.
+    nlohmann::json json() const;
 
     Proto::Script proto() const {
         auto script = Proto::Script();

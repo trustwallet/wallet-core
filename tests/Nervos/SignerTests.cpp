@@ -68,6 +68,7 @@ Proto::SigningInput getInput1() {
 }
 
 void checkOutput1(Transaction& tx) {
+    // https://explorer.nervos.org/transaction/0xf2c32afde7e72011985583873bc16c0a3c01fc01fc161eb4b914fcf84c53cdf8
     ASSERT_EQ(tx.hash(),
               parse_hex("f2c32afde7e72011985583873bc16c0a3c01fc01fc161eb4b914fcf84c53cdf8"));
 
@@ -237,6 +238,7 @@ TEST(NervosSigner, Sign_Native_SendMaximum) {
 
     ASSERT_EQ(error, Common::Proto::SigningError::OK);
 
+    // https://explorer.nervos.org/transaction/0x298f5e04b6900796614b89062eb96cec63c3b2c460d01058736a793b567bc5c8
     ASSERT_EQ(tx.hash(),
               parse_hex("298f5e04b6900796614b89062eb96cec63c3b2c460d01058736a793b567bc5c8"));
 
@@ -346,6 +348,7 @@ TEST(NervosSigner, Sign_SUDT_Simple) {
 
     ASSERT_EQ(error, Common::Proto::SigningError::OK);
 
+    // https://explorer.nervos.org/transaction/0x9b15f2bea26b98201540d8e20e8b1c21d96dd77ad246520b405c6aabb7173371
     ASSERT_EQ(tx.hash(),
               parse_hex("9b15f2bea26b98201540d8e20e8b1c21d96dd77ad246520b405c6aabb7173371"));
 
@@ -484,6 +487,7 @@ TEST(NervosSigner, Sign_SUDT_SendMaximum) {
 
     ASSERT_EQ(error, Common::Proto::SigningError::OK);
 
+    // https://explorer.nervos.org/transaction/0x09a45a15e48f985b554a0b6e5f0857913cc492ec061cc9b0b2befa4b24609a4a
     ASSERT_EQ(tx.hash(),
               parse_hex("09a45a15e48f985b554a0b6e5f0857913cc492ec061cc9b0b2befa4b24609a4a"));
 
@@ -597,6 +601,7 @@ TEST(NervosSigner, Sign_DAO_Deposit) {
 
     ASSERT_EQ(error, Common::Proto::SigningError::OK);
 
+    // https://explorer.nervos.org/transaction/0x583d77a037e86155b7ab79ac59fc9bb01640e2427e859467ea10c4a6f222b683
     ASSERT_EQ(tx.hash(),
               parse_hex("583d77a037e86155b7ab79ac59fc9bb01640e2427e859467ea10c4a6f222b683"));
 
@@ -730,6 +735,7 @@ TEST(NervosSigner, Sign_DAO_Withdraw_Phase1) {
 
     ASSERT_EQ(error, Common::Proto::SigningError::OK);
 
+    // https://explorer.nervos.org/transaction/0xb4e62bc5f5108275b0ef3da8f8cc3fb0172843c4a2a9cdfef3b04d6c65e9acca
     ASSERT_EQ(tx.hash(),
               parse_hex("b4e62bc5f5108275b0ef3da8f8cc3fb0172843c4a2a9cdfef3b04d6c65e9acca"));
 

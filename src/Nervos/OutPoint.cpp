@@ -17,7 +17,7 @@ void OutPoint::encode(Data& data) const {
     encode32LE(index, data);
 }
 
-json OutPoint::JSON() const {
-    return json{{"tx_hash", hexEncoded(txHash)},
-                {"index", Serialization::numberToHex(uint64_t(index))}};
+nlohmann::json OutPoint::json() const {
+    return nlohmann::json{{"tx_hash", hexEncoded(txHash)},
+                          {"index", Serialization::numberToHex(uint64_t(index))}};
 }
