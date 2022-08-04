@@ -64,12 +64,11 @@ std::string Address::string() const {
 
 Address::MaybeWorkchainInfos Address::parseWorkchainId(const std::string& string) {
     if (auto pos = string.find(':'); pos != std::string::npos) {
-        auto tmp = string.substr(0, pos);
-
-        int8_t workchainId = WorkchainType::Basechain;
-        auto [_, ec] { std::from_chars(tmp.data(), tmp.data() + tmp.size(), workchainId) };
-        if (ec == std::errc()) {
+        try {
+            auto workchainId = static_cast<int8_t>(std::stoi(string.substr(0, pos)));
             return std::make_pair(workchainId, pos + 1);
+        } catch (...) {
+            // Do nothing and return empty value later
         }
     }
 
