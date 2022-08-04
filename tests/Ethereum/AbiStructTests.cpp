@@ -894,13 +894,13 @@ TEST(EthereumAbiStruct, ParamHashStruct) {
     }
     {
         using collection = std::vector<std::shared_ptr<ParamBase>>;
-        auto p = std::make_shared<ParamArrayFix>(3ul,  collection{std::make_shared<ParamBool>(), std::make_shared<ParamBool>(), std::make_shared<ParamBool>()});
+        auto p = std::make_shared<ParamArrayFix>(collection{std::make_shared<ParamBool>(), std::make_shared<ParamBool>(), std::make_shared<ParamBool>()});
         EXPECT_TRUE(p->setValueJson("[1,0,1]"));
         EXPECT_EQ(hex(p->hashStruct()), "000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001");
     }
     {
         using collection = std::vector<std::shared_ptr<ParamBase>>;
-        auto p = std::make_shared<ParamArrayFix>(3ul,  collection{std::make_shared<ParamUInt8>(), std::make_shared<ParamUInt8>(), std::make_shared<ParamUInt8>()});
+        auto p = std::make_shared<ParamArrayFix>(collection{std::make_shared<ParamUInt8>(), std::make_shared<ParamUInt8>(), std::make_shared<ParamUInt8>()});
         EXPECT_TRUE(p->setValueJson("[13,14,15]"));
         EXPECT_EQ(hex(p->hashStruct()), "000000000000000000000000000000000000000000000000000000000000000d000000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000000f");
 

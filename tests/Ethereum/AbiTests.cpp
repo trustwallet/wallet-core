@@ -527,7 +527,7 @@ TEST(EthereumAbi, ParamArrayEmpty) {
 
 TEST(EthereumAbi, ParamFixedArrayAddress) {
     {
-        auto param = ParamArrayFix(1, {std::make_shared<ParamAddress>(Data(parse_hex("f784682c82526e245f50975190ef0fff4e4fc077")))});
+        auto param = ParamArrayFix({std::make_shared<ParamAddress>(Data(parse_hex("f784682c82526e245f50975190ef0fff4e4fc077")))});
         EXPECT_EQ(param.getType(), "address[1]");
         EXPECT_EQ(param.getCount(), 1ul);
         EXPECT_EQ(param.getSize(), 64ul);
@@ -535,12 +535,13 @@ TEST(EthereumAbi, ParamFixedArrayAddress) {
         Data encoded;
         param.encode(encoded);
         EXPECT_EQ(hex(encoded), "000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc077");
+        EXPECT_EQ(hex(encoded).size(), param.getSize());
         std::size_t offset{0};
         EXPECT_TRUE(param.decode(encoded, offset));
     }
     {
-        auto param = ParamArrayFix(2, {std::make_shared<ParamAddress>(Data(parse_hex("f784682c82526e245f50975190ef0fff4e4fc077"))),
-                                       std::make_shared<ParamAddress>(Data(parse_hex("2e00cd222cb42b616d86d037cc494e8ab7f5c9a3")))});
+        auto param = ParamArrayFix({std::make_shared<ParamAddress>(Data(parse_hex("f784682c82526e245f50975190ef0fff4e4fc077"))),
+                                    std::make_shared<ParamAddress>(Data(parse_hex("2e00cd222cb42b616d86d037cc494e8ab7f5c9a3")))});
         EXPECT_EQ(param.getType(), "address[2]");
         EXPECT_EQ(param.getCount(), 2ul);
         Data encoded;
@@ -550,17 +551,12 @@ TEST(EthereumAbi, ParamFixedArrayAddress) {
         EXPECT_TRUE(param.decode(encoded, offset));
     }
     {
-        // N != param.size()
-        EXPECT_THROW(
-            ParamArrayFix(2, {std::make_shared<ParamAddress>(Data(parse_hex("f784682c82526e245f50975190ef0fff4e4fc077")))}),
-            std::runtime_error);
-
         // nullptr
-        EXPECT_THROW(ParamArrayFix(1, {nullptr}), std::runtime_error);
+        EXPECT_THROW(ParamArrayFix({nullptr}), std::runtime_error);
         // Should be the same type
         EXPECT_THROW(
-            ParamArrayFix(2, {std::make_shared<ParamAddress>(Data(parse_hex("f784682c82526e245f50975190ef0fff4e4fc077"))),
-                              std::make_shared<ParamString>("Foo")}),
+            ParamArrayFix({std::make_shared<ParamAddress>(Data(parse_hex("f784682c82526e245f50975190ef0fff4e4fc077"))),
+                           std::make_shared<ParamString>("Foo")}),
             std::runtime_error);
     }
 }

@@ -160,7 +160,7 @@ bool ParamArrayFix::setValueJson(const std::string& value) {
     return true;
 }
 
-void ParamArrayFix::addParams(const std::vector<std::shared_ptr<ParamBase>>& params) {
+void ParamArrayFix::addParams(const Params& params) {
     auto addParamFunctor = [this](auto&& param) {
         if (param == nullptr) {
             throw std::runtime_error("param can't be nullptr");

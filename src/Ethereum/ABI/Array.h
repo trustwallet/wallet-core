@@ -57,29 +57,25 @@ public:
     using Params = std::vector<std::shared_ptr<ParamBase>>;
 
     //! Public constructor
-    explicit ParamArrayFix(std::size_t n, const Params& params) noexcept(false)
-        : ParamCollection(), _n(n) {
-        if (params.size() != n) {
-            throw std::runtime_error("params need to have the same size as N");
-        }
+    explicit ParamArrayFix(const Params& params) noexcept(false)
+        : ParamCollection() {
         this->addParams(params);
     }
 
     //! Public member methods
-    [[nodiscard]] std::size_t getCount() const final { return _n; }
+    [[nodiscard]] std::size_t getCount() const final { return _params.getCount(); }
     [[nodiscard]] size_t getSize() const final { return paddingSize + _params.getSize(); }
     [[nodiscard]] bool isDynamic() const final { return false; }
-    [[nodiscard]] std::string getType() const final { return _params.getParamUnsafe(0)->getType() + "[" + std::to_string(_n) + "]"; }
+    [[nodiscard]] std::string getType() const final { return _params.getParamUnsafe(0)->getType() + "[" + std::to_string(_params.getCount()) + "]"; }
     void encode(Data& data) const final;
     bool decode(const Data& encoded, size_t& offset_inout) final;
     bool setValueJson(const std::string& value) final;
 
 private:
     //! Private member functions
-    void addParams(const std::vector<std::shared_ptr<ParamBase>>& params) noexcept(false);
+    void addParams(const Params& params) noexcept(false);
 
     //! Private member fields
-    size_t _n;
     ParamSet _params;
 };
 
