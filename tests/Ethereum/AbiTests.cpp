@@ -998,9 +998,12 @@ TEST(EthereumAbi, DecodeParamsMixed) {
 ///// Function encode & decode
 
 TEST(EthereumAbi, EncodeSignature) {
+    // clang-format off
     auto func = Function("baz", std::vector<std::shared_ptr<ParamBase>>{
-                                    std::make_shared<ParamUInt256>(69u),
-                                    std::make_shared<ParamBool>(true)});
+        std::make_shared<ParamUInt256>(69u),
+        std::make_shared<ParamBool>(true)
+    });
+    // clang-format on
     EXPECT_EQ("baz(uint256,bool)", func.getType());
     Data encoded;
     func.encode(encoded);
@@ -1014,14 +1017,14 @@ TEST(EthereumAbi, EncodeSignature) {
 TEST(EthereumAbi, EncodeFunctionWithDynamicArgumentsCase1) {
     // clang-format off
     auto func = Function("sam", std::vector<std::shared_ptr<ParamBase>>{
-                                    std::make_shared<ParamByteArray>(Data{0x64, 0x61, 0x76, 0x65}),
-                                    std::make_shared<ParamBool>(true),
-                                    std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
-                                        std::make_shared<ParamUInt256>(1),
-                                        std::make_shared<ParamUInt256>(2),
-                                        std::make_shared<ParamUInt256>(3)
-                                    })
-                                });
+        std::make_shared<ParamByteArray>(Data{0x64, 0x61, 0x76, 0x65}),
+        std::make_shared<ParamBool>(true),
+        std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
+            std::make_shared<ParamUInt256>(1),
+            std::make_shared<ParamUInt256>(2),
+            std::make_shared<ParamUInt256>(3)
+        })
+    });
     // clang-format on
     EXPECT_EQ("sam(bytes,bool,uint256[])", func.getType());
     Data encoded;
@@ -1041,13 +1044,16 @@ TEST(EthereumAbi, EncodeFunctionWithDynamicArgumentsCase1) {
 }
 
 TEST(EthereumAbi, EncodeFunctionWithDynamicArgumentsCase2) {
+    // clang-format off
     auto func = Function("f", std::vector<std::shared_ptr<ParamBase>>{
-                                  std::make_shared<ParamUInt256>(0x123),
-                                  std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
-                                      std::make_shared<ParamUInt32>(0x456),
-                                      std::make_shared<ParamUInt32>(0x789)}),
-                                  std::make_shared<ParamByteArrayFix>(10, std::vector<byte>{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30}),
-                                  std::make_shared<ParamString>("Hello, world!")});
+        std::make_shared<ParamUInt256>(0x123),
+        std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
+            std::make_shared<ParamUInt32>(0x456),
+            std::make_shared<ParamUInt32>(0x789)}),
+        std::make_shared<ParamByteArrayFix>(10, std::vector<byte>{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30}),
+        std::make_shared<ParamString>("Hello, world!")
+    });
+    // clamp-format on
     EXPECT_EQ("f(uint256,uint32[],bytes10,string)", func.getType());
     Data encoded;
     func.encode(encoded);
@@ -1069,9 +1075,12 @@ TEST(EthereumAbi, DecodeFunctionOutputCase1) {
     Data encoded;
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000045"));
 
+    // clang-format off
     auto func = Function("readout", std::vector<std::shared_ptr<ParamBase>>{
-                                        std::make_shared<ParamAddress>(parse_hex("f784682c82526e245f50975190ef0fff4e4fc077")),
-                                        std::make_shared<ParamUInt64>(1000)});
+        std::make_shared<ParamAddress>(parse_hex("f784682c82526e245f50975190ef0fff4e4fc077")),
+        std::make_shared<ParamUInt64>(1000)
+    });
+    // clang-format on
     func.addOutParam(std::make_shared<ParamUInt64>());
     EXPECT_EQ("readout(address,uint64)", func.getType());
 
@@ -1090,9 +1099,12 @@ TEST(EthereumAbi, DecodeFunctionOutputCase1) {
 }
 
 TEST(EthereumAbi, DecodeFunctionOutputCase2) {
+    // clang-format off
     auto func = Function("getAmountsOut", std::vector<std::shared_ptr<ParamBase>>{
-                                              std::make_shared<ParamUInt256>(100),
-                                              std::make_shared<ParamArray>(std::make_shared<ParamAddress>(parse_hex("000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc077")))});
+        std::make_shared<ParamUInt256>(100),
+        std::make_shared<ParamArray>(std::make_shared<ParamAddress>(parse_hex("000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc077")))
+    });
+    // clang-format on
     func.addOutParam(std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamUInt256>(66),
         std::make_shared<ParamUInt256>(67)}));
@@ -1122,8 +1134,11 @@ TEST(EthereumAbi, DecodeInputSignature) {
     append(encoded, parse_hex("72ed38b6"));
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000045"));
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000001"));
+    // clang-format off
     auto func = Function("baz", std::vector<std::shared_ptr<ParamBase>>{
-                                    std::make_shared<ParamUInt256>(), std::make_shared<ParamBool>()});
+        std::make_shared<ParamUInt256>(), std::make_shared<ParamBool>()
+    });
+    // clang-format on
     EXPECT_EQ("baz(uint256,bool)", func.getType());
     size_t offset = 0;
     bool res = func.decodeInput(encoded, offset);
@@ -1149,13 +1164,17 @@ TEST(EthereumAbi, DecodeFunctionInputWithDynamicArgumentsCase1) {
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000002"));
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000003"));
 
+    // clang-format off
     auto func = Function("sam", std::vector<std::shared_ptr<ParamBase>>{
-                                    std::make_shared<ParamByteArray>(Data{0x64, 0x61, 0x76, 0x65}),
-                                    std::make_shared<ParamBool>(true),
-                                    std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
-                                        std::make_shared<ParamUInt256>(1),
-                                        std::make_shared<ParamUInt256>(2),
-                                        std::make_shared<ParamUInt256>(3)})});
+        std::make_shared<ParamByteArray>(Data{0x64, 0x61, 0x76, 0x65}),
+        std::make_shared<ParamBool>(true),
+        std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
+            std::make_shared<ParamUInt256>(1),
+            std::make_shared<ParamUInt256>(2),
+            std::make_shared<ParamUInt256>(3)
+        })
+    });
+    // clang-format on
     EXPECT_EQ("sam(bytes,bool,uint256[])", func.getType());
 
     size_t offset = 0;
@@ -1188,13 +1207,16 @@ TEST(EthereumAbi, DecodeFunctionInputWithDynamicArgumentsCase2) {
     append(encoded, parse_hex("000000000000000000000000000000000000000000000000000000000000000d"));
     append(encoded, parse_hex("48656c6c6f2c20776f726c642100000000000000000000000000000000000000"));
 
+    // clang-format off
     auto func = Function("f", std::vector<std::shared_ptr<ParamBase>>{
-                                  std::make_shared<ParamUInt256>(0x123),
-                                  std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
-                                      std::make_shared<ParamUInt32>(0x456),
-                                      std::make_shared<ParamUInt32>(0x789)}),
-                                  std::make_shared<ParamByteArrayFix>(10, std::vector<byte>{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30}),
-                                  std::make_shared<ParamString>("Hello, world!")});
+        std::make_shared<ParamUInt256>(0x123),
+        std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
+            std::make_shared<ParamUInt32>(0x456),
+            std::make_shared<ParamUInt32>(0x789)}),
+        std::make_shared<ParamByteArrayFix>(10, std::vector<byte>{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30}),
+        std::make_shared<ParamString>("Hello, world!")
+    });
+    // clang-format on
     EXPECT_EQ("f(uint256,uint32[],bytes10,string)", func.getType());
 
     size_t offset = 0;
@@ -1240,13 +1262,16 @@ TEST(EthereumAbi, DecodeFunctionContractMulticall) {
         "000000000000000000000000000000000000000000000000000000000000000000");
     ASSERT_EQ(4 + 928ul, encoded.size());
 
+    // clang-format off
     auto func = Function("multicall", std::vector<std::shared_ptr<ParamBase>>{
-                                          std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
-                                              std::make_shared<ParamByteArray>(Data()),
-                                              std::make_shared<ParamByteArray>(Data()),
-                                              std::make_shared<ParamByteArray>(Data()),
-                                              std::make_shared<ParamByteArray>(Data())}),
-                                      });
+        std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
+            std::make_shared<ParamByteArray>(Data()),
+            std::make_shared<ParamByteArray>(Data()),
+            std::make_shared<ParamByteArray>(Data()),
+            std::make_shared<ParamByteArray>(Data())
+        }),
+    });
+    // clang-format on
     EXPECT_EQ("multicall(bytes[])", func.getType());
 
     size_t offset = 0;
