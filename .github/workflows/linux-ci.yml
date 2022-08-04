@@ -42,10 +42,7 @@ jobs:
         CXX: /usr/bin/clang++
     - name: Build and test
       run: |
-        cd build
-        ninja tests 
-        ninja TrezorCryptoTests
-        cd -
+        ninja -Cbuild tests TrezorCryptoTests
         build/trezor-crypto/crypto/tests/TrezorCryptoTests
         build/tests/tests tests --gtest_output=xml
       env:

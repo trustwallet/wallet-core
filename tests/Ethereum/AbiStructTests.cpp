@@ -29,36 +29,50 @@ std::string load_file(const std::string path) {
 }
 
 // https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
-
+// clang-format off
 ParamStruct msgPersonCow2("Person", std::vector<std::shared_ptr<ParamNamed>>{
-                                        std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Cow")),
-                                        std::make_shared<ParamNamed>("wallets", std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
-                                                                                    std::make_shared<ParamAddress>(parse_hex("CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826")),
-                                                                                    std::make_shared<ParamAddress>(parse_hex("DeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF"))}))});
+    std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Cow")),
+    std::make_shared<ParamNamed>("wallets", std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
+        std::make_shared<ParamAddress>(parse_hex("CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826")),
+        std::make_shared<ParamAddress>(parse_hex("DeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF"))
+    }))
+});
 ParamStruct msgPersonBob3("Person", std::vector<std::shared_ptr<ParamNamed>>{
-                                        std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Bob")),
-                                        std::make_shared<ParamNamed>("wallets", std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
-                                                                                    std::make_shared<ParamAddress>(parse_hex("bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB")),
-                                                                                    std::make_shared<ParamAddress>(parse_hex("B0BdaBea57B0BDABeA57b0bdABEA57b0BDabEa57")),
-                                                                                    std::make_shared<ParamAddress>(parse_hex("B0B0b0b0b0b0B000000000000000000000000000"))}))});
+    std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Bob")),
+    std::make_shared<ParamNamed>("wallets", std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
+        std::make_shared<ParamAddress>(parse_hex("bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB")),
+        std::make_shared<ParamAddress>(parse_hex("B0BdaBea57B0BDABeA57b0bdABEA57b0BDabEa57")),
+        std::make_shared<ParamAddress>(parse_hex("B0B0b0b0b0b0B000000000000000000000000000"))
+    }))
+});
 ParamStruct msgGroup("Group", std::vector<std::shared_ptr<ParamNamed>>{
-                                  std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("")),
-                                  std::make_shared<ParamNamed>("members", std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
-                                                                              std::make_shared<ParamStruct>(msgPersonCow2)}))});
+    std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("")),
+    std::make_shared<ParamNamed>("members", std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
+        std::make_shared<ParamStruct>(msgPersonCow2)
+    }))
+});
 ParamStruct msgMailCow1Bob1("Mail", std::vector<std::shared_ptr<ParamNamed>>{
-                                        std::make_shared<ParamNamed>("from", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{
-                                                                                                                         std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Cow")),
-                                                                                                                         std::make_shared<ParamNamed>("wallet", std::make_shared<ParamAddress>(parse_hex("CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826")))})),
-                                        std::make_shared<ParamNamed>("to", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Bob")), std::make_shared<ParamNamed>("wallet", std::make_shared<ParamAddress>(parse_hex("bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB")))})), std::make_shared<ParamNamed>("contents", std::make_shared<ParamString>("Hello, Bob!"))});
+    std::make_shared<ParamNamed>("from", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{
+        std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Cow")),
+        std::make_shared<ParamNamed>("wallet", std::make_shared<ParamAddress>(parse_hex("CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826")))
+    })),
+    std::make_shared<ParamNamed>("to", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{
+        std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Bob")),
+        std::make_shared<ParamNamed>("wallet", std::make_shared<ParamAddress>(parse_hex("bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB")))
+    })),
+    std::make_shared<ParamNamed>("contents", std::make_shared<ParamString>("Hello, Bob!"))
+});
 ParamStruct msgMailCow2Bob3("Mail", std::vector<std::shared_ptr<ParamNamed>>{
-                                        std::make_shared<ParamNamed>("from", std::make_shared<ParamStruct>(msgPersonCow2)),
-                                        std::make_shared<ParamNamed>("to", std::make_shared<ParamArray>(std::make_shared<ParamStruct>(msgPersonBob3))),
-                                        std::make_shared<ParamNamed>("contents", std::make_shared<ParamString>("Hello, Bob!"))});
+    std::make_shared<ParamNamed>("from", std::make_shared<ParamStruct>(msgPersonCow2)),
+    std::make_shared<ParamNamed>("to", std::make_shared<ParamArray>(std::make_shared<ParamStruct>(msgPersonBob3))),
+    std::make_shared<ParamNamed>("contents", std::make_shared<ParamString>("Hello, Bob!"))
+});
 ParamStruct gMsgEIP712Domain("EIP712Domain", std::vector<std::shared_ptr<ParamNamed>>{
-                                                 std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Ether Mail")),
-                                                 std::make_shared<ParamNamed>("version", std::make_shared<ParamString>("1")),
-                                                 std::make_shared<ParamNamed>("chainId", std::make_shared<ParamUInt256>(1)),
-                                                 std::make_shared<ParamNamed>("verifyingContract", std::make_shared<ParamAddress>(parse_hex("CcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC")))});
+    std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Ether Mail")),
+    std::make_shared<ParamNamed>("version", std::make_shared<ParamString>("1")),
+    std::make_shared<ParamNamed>("chainId", std::make_shared<ParamUInt256>(1)),
+    std::make_shared<ParamNamed>("verifyingContract", std::make_shared<ParamAddress>(parse_hex("CcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC")))
+});
 
 PrivateKey privateKeyCow = PrivateKey(Hash::keccak256(TW::data("cow")));
 PrivateKey privateKeyDragon = PrivateKey(Hash::keccak256(TW::data("dragon")));
@@ -292,23 +306,28 @@ TEST(EthereumAbiStruct, encodeTypes_v4_Json) {
 // See 'signedTypeData_v4 with recursive types' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
 TEST(EthereumAbiStruct, encodeTypes_v4Rec) {
     ParamStruct msgPersonRecursiveMother("Person", std::vector<std::shared_ptr<ParamNamed>>{
-                                                       std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Lyanna")),
-                                                       std::make_shared<ParamNamed>("mother", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{})),
-                                                       std::make_shared<ParamNamed>("father", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{
-                                                                                                                                          std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Rickard")),
-                                                                                                                                          std::make_shared<ParamNamed>("mother", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{})),
-                                                                                                                                          std::make_shared<ParamNamed>("father", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{}))}))});
+        std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Lyanna")),
+        std::make_shared<ParamNamed>("mother", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{})),
+        std::make_shared<ParamNamed>("father", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{
+            std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Rickard")),
+            std::make_shared<ParamNamed>("mother", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{})),
+            std::make_shared<ParamNamed>("father", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{}))
+        }))
+    });
     ParamStruct msgPersonRecursiveFather("Person", std::vector<std::shared_ptr<ParamNamed>>{
-                                                       std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Rhaegar")),
-                                                       std::make_shared<ParamNamed>("mother", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{})),
-                                                       std::make_shared<ParamNamed>("father", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{
-                                                                                                                                          std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Aeris II")),
-                                                                                                                                          std::make_shared<ParamNamed>("mother", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{})),
-                                                                                                                                          std::make_shared<ParamNamed>("father", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{}))}))});
+        std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Rhaegar")),
+        std::make_shared<ParamNamed>("mother", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{})),
+        std::make_shared<ParamNamed>("father", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{
+            std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Aeris II")),
+            std::make_shared<ParamNamed>("mother", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{})),
+            std::make_shared<ParamNamed>("father", std::make_shared<ParamStruct>("Person", std::vector<std::shared_ptr<ParamNamed>>{}))
+        }))
+    });
     ParamStruct msgPersonRecursive("Person", std::vector<std::shared_ptr<ParamNamed>>{
-                                                 std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Jon")),
-                                                 std::make_shared<ParamNamed>("mother", std::make_shared<ParamStruct>(msgPersonRecursiveMother)),
-                                                 std::make_shared<ParamNamed>("father", std::make_shared<ParamStruct>(msgPersonRecursiveFather))});
+        std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Jon")),
+        std::make_shared<ParamNamed>("mother", std::make_shared<ParamStruct>(msgPersonRecursiveMother)),
+        std::make_shared<ParamNamed>("father", std::make_shared<ParamStruct>(msgPersonRecursiveFather))
+    });
 
     EXPECT_EQ(msgPersonRecursive.encodeType(), "Person(string name,Person mother,Person father)");
 
@@ -339,10 +358,11 @@ TEST(EthereumAbiStruct, encodeTypes_v4Rec) {
     EXPECT_EQ(hex(msgPersonRecursive.hashStruct()), "fdc7b6d35bbd81f7fa78708604f57569a10edff2ca329c8011373f0667821a45");
 
     ParamStruct msgEIP712Domain("EIP712Domain", std::vector<std::shared_ptr<ParamNamed>>{
-                                                    std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Family Tree")),
-                                                    std::make_shared<ParamNamed>("version", std::make_shared<ParamString>("1")),
-                                                    std::make_shared<ParamNamed>("chainId", std::make_shared<ParamUInt256>(1)),
-                                                    std::make_shared<ParamNamed>("verifyingContract", std::make_shared<ParamAddress>(parse_hex("CcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC")))});
+        std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Family Tree")),
+        std::make_shared<ParamNamed>("version", std::make_shared<ParamString>("1")),
+        std::make_shared<ParamNamed>("chainId", std::make_shared<ParamUInt256>(1)),
+        std::make_shared<ParamNamed>("verifyingContract", std::make_shared<ParamAddress>(parse_hex("CcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC")))
+    });
 
     EXPECT_EQ(hex(msgEIP712Domain.hashStruct()), "facb2c1888f63a780c84c216bd9a81b516fc501a19bae1fc81d82df590bbdc60");
 
@@ -401,8 +421,9 @@ TEST(EthereumAbiStruct, encodeTypes_v4Rec_Json) {
 // See 'signedTypeData' in https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
 TEST(EthereumAbiStruct, encodeTypeCow1) {
     ParamStruct msgPersonCow1("Person", std::vector<std::shared_ptr<ParamNamed>>{
-                                            std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Cow")),
-                                            std::make_shared<ParamNamed>("wallet", std::make_shared<ParamAddress>(parse_hex("CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826")))});
+        std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Cow")),
+        std::make_shared<ParamNamed>("wallet", std::make_shared<ParamAddress>(parse_hex("CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826")))
+    });
 
     EXPECT_EQ(msgPersonCow1.encodeType(), "Person(string name,address wallet)");
 
@@ -554,10 +575,10 @@ TEST(EthereumAbiStruct, ParamFactoryMakeNamed) {
 TEST(EthereumAbiStruct, ParamStructMakeStruct) {
     {
         std::shared_ptr<ParamStruct> s = ParamStruct::makeStruct("Person",
-                                                                 R"(
+            R"(
                 {"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"}
             )",
-                                                                 R"({
+            R"({
                 "Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]
             })");
         ASSERT_NE(s.get(), nullptr);
@@ -568,10 +589,10 @@ TEST(EthereumAbiStruct, ParamStructMakeStruct) {
     }
     {
         std::shared_ptr<ParamStruct> s = ParamStruct::makeStruct("Person",
-                                                                 R"(
+            R"(
                 {"name": "Cow", "wallets": ["CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826", "DeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF"]}
             )",
-                                                                 R"({
+            R"({
                 "Person": [{"name": "name", "type": "string"}, {"name": "wallets", "type": "address[]"}]
             })");
         ASSERT_NE(s.get(), nullptr);
@@ -582,8 +603,8 @@ TEST(EthereumAbiStruct, ParamStructMakeStruct) {
     }
     {
         std::shared_ptr<ParamStruct> s = ParamStruct::makeStruct("Mail",
-                                                                 R"({"from": {"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"}, "to": {"name": "Bob", "wallet": "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"}, "contents": "Hello, Bob!"})",
-                                                                 R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}],"Mail": [{"name": "from", "type": "Person"},{"name": "to", "type": "Person"},{"name": "contents", "type": "string"}]})");
+            R"({"from": {"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"}, "to": {"name": "Bob", "wallet": "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"}, "contents": "Hello, Bob!"})",
+            R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}],"Mail": [{"name": "from", "type": "Person"},{"name": "to", "type": "Person"},{"name": "contents", "type": "string"}]})");
         ASSERT_NE(s.get(), nullptr);
         EXPECT_EQ(s->getType(), "Mail");
         ASSERT_EQ(s->getCount(), 3ul);
@@ -593,63 +614,63 @@ TEST(EthereumAbiStruct, ParamStructMakeStruct) {
 
     { // extra param
         std::shared_ptr<ParamStruct> s = ParamStruct::makeStruct("Person",
-                                                                 R"({"extra_param": "extra_value", "name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"})",
-                                                                 R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})");
+            R"({"extra_param": "extra_value", "name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"})",
+            R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})");
         ASSERT_NE(s.get(), nullptr);
         EXPECT_EQ(s->encodeType(), "Person(string name,address wallet)");
         EXPECT_EQ(hex(s->hashStruct()), "fc71e5fa27ff56c350aa531bc129ebdf613b772b6604664f5d8dbe21b85eb0c8");
     }
     { // empty array
         std::shared_ptr<ParamStruct> s = ParamStruct::makeStruct("Person",
-                                                                 R"({"extra_param": "extra_value", "name": "Cow", "wallets": []})",
-                                                                 R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallets", "type": "address[]"}]})");
+            R"({"extra_param": "extra_value", "name": "Cow", "wallets": []})",
+            R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallets", "type": "address[]"}]})");
         ASSERT_NE(s.get(), nullptr);
         EXPECT_EQ(s->encodeType(), "Person(string name,address[] wallets)");
     }
     { // missing param
         std::shared_ptr<ParamStruct> s = ParamStruct::makeStruct("Person",
-                                                                 R"({"wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"})",
-                                                                 R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})");
+            R"({"wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"})",
+            R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})");
         ASSERT_NE(s.get(), nullptr);
         EXPECT_EQ(s->encodeType(), "Person(string name,address wallet)");
     }
 
     {
         EXPECT_EXCEPTION(ParamStruct::makeStruct("Person",
-                                                 "NOT_A_JSON+/{\\",
-                                                 R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})"),
-                         "Could not parse value Json");
+            "NOT_A_JSON+/{\\",
+            R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})"),
+            "Could not parse value Json");
     }
     {
         EXPECT_EXCEPTION(ParamStruct::makeStruct("Person",
-                                                 "0",
-                                                 R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})"),
-                         "Expecting object");
+            "0",
+            R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})"),
+            "Expecting object");
     }
     {
         EXPECT_EXCEPTION(ParamStruct::makeStruct("Person",
-                                                 // params mixed up
-                                                 R"({"wallets": "Cow", "name": ["CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826", "DeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF"]})",
-                                                 R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallets", "type": "address[]"}]})"),
-                         "Could not set type for param wallets");
+            // params mixed up
+            R"({"wallets": "Cow", "name": ["CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826", "DeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF"]})",
+            R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallets", "type": "address[]"}]})"),
+            "Could not set type for param wallets");
     }
     {
         EXPECT_EXCEPTION(ParamStruct::makeStruct("Person",
-                                                 R"({"name": "Cow", "wallets": ["CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826", "DeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF"]})",
-                                                 R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallets", "type": "missingtype[]"}]})"),
-                         "Unknown struct array type missingtype");
+            R"({"name": "Cow", "wallets": ["CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826", "DeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF"]})",
+            R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallets", "type": "missingtype[]"}]})"),
+            "Unknown struct array type missingtype");
     }
     {
         EXPECT_EXCEPTION(ParamStruct::makeStruct("Person",
-                                                 R"({"name": "Cow", "wallets": "NOT_AN_ARRAY"})",
-                                                 R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallets", "type": "address[]"}]})"),
-                         "Could not set type for param wallets");
+            R"({"name": "Cow", "wallets": "NOT_AN_ARRAY"})",
+            R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallets", "type": "address[]"}]})"),
+            "Could not set type for param wallets");
     }
     {
         EXPECT_EXCEPTION(ParamStruct::makeStruct("Mail",
-                                                 R"({"from": {"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"}, "to": {"name": "Bob", "wallet": "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"}, "contents": "Hello, Bob!"})",
-                                                 R"({"Mail": [{"name": "from", "type": "Person"},{"name": "to", "type": "Person"},{"name": "contents", "type": "string"}]})"),
-                         "Unknown type Person");
+            R"({"from": {"name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"}, "to": {"name": "Bob", "wallet": "bBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"}, "contents": "Hello, Bob!"})",
+            R"({"Mail": [{"name": "from", "type": "Person"},{"name": "to", "type": "Person"},{"name": "contents", "type": "string"}]})"),
+            "Unknown type Person");
     }
 }
 
@@ -887,5 +908,5 @@ TEST(EthereumAbiStruct, ParamHashStruct) {
         EXPECT_EQ(hex(p->hashStruct()), "5c6090c0461491a2941743bda5c3658bf1ea53bbd3edcde54e16205e18b45792");
     }
 }
-
+// clang-format on
 } // namespace TW::Ethereum::tests
