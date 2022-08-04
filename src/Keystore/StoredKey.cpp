@@ -301,7 +301,7 @@ StoredKey StoredKey::createWithJson(const nlohmann::json& json) {
     return storedKey;
 }
 
-namespace CodingKeys {
+namespace CodingKeys::SK {
 static const auto address = "address";
 static const auto type = "type";
 static const auto name = "name";
@@ -322,23 +322,23 @@ static const auto mnemonic = "mnemonic";
 } // namespace TypeString
 
 void StoredKey::loadJson(const nlohmann::json& json) {
-    if (json.count(CodingKeys::type) != 0 &&
-        json[CodingKeys::type].get<std::string>() == TypeString::mnemonic) {
+    if (json.count(CodingKeys::SK::type) != 0 &&
+        json[CodingKeys::SK::type].get<std::string>() == TypeString::mnemonic) {
         type = StoredKeyType::mnemonicPhrase;
     } else {
         type = StoredKeyType::privateKey;
     }
 
-    if (json.count(CodingKeys::name) != 0) {
-        name = json[CodingKeys::name].get<std::string>();
+    if (json.count(CodingKeys::SK::name) != 0) {
+        name = json[CodingKeys::SK::name].get<std::string>();
     }
 
-    if (json.count(CodingKeys::id) != 0) {
-        id = json[CodingKeys::id].get<std::string>();
+    if (json.count(CodingKeys::SK::id) != 0) {
+        id = json[CodingKeys::SK::id].get<std::string>();
     }
 
-    if (json.count(CodingKeys::crypto) != 0) {
-        payload = EncryptedPayload(json[CodingKeys::crypto]);
+    if (json.count(CodingKeys::SK::crypto) != 0) {
+        payload = EncryptedPayload(json[CodingKeys::SK::crypto]);
     } else if (json.count(UppercaseCodingKeys::crypto) != 0) {
         // Workaround for myEtherWallet files
         payload = EncryptedPayload(json[UppercaseCodingKeys::crypto]);
@@ -346,49 +346,49 @@ void StoredKey::loadJson(const nlohmann::json& json) {
         throw DecryptionError::invalidKeyFile;
     }
 
-    if (json.count(CodingKeys::activeAccounts) != 0 &&
-        json[CodingKeys::activeAccounts].is_array()) {
-        for (auto& accountJSON : json[CodingKeys::activeAccounts]) {
+    if (json.count(CodingKeys::SK::activeAccounts) != 0 &&
+        json[CodingKeys::SK::activeAccounts].is_array()) {
+        for (auto& accountJSON : json[CodingKeys::SK::activeAccounts]) {
             accounts.emplace_back(accountJSON);
         }
     }
 
-    if (accounts.empty() && json.count(CodingKeys::address) != 0 &&
-        json[CodingKeys::address].is_string()) {
+    if (accounts.empty() && json.count(CodingKeys::SK::address) != 0 &&
+        json[CodingKeys::SK::address].is_string()) {
         TWCoinType coin = TWCoinTypeEthereum;
-        if (json.count(CodingKeys::coin) != 0) {
-            coin = json[CodingKeys::coin].get<TWCoinType>();
+        if (json.count(CodingKeys::SK::coin) != 0) {
+            coin = json[CodingKeys::SK::coin].get<TWCoinType>();
         }
-        auto address = json[CodingKeys::address].get<std::string>();
+        auto address = json[CodingKeys::SK::address].get<std::string>();
         accounts.emplace_back(address, coin, TWDerivationDefault, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(coin), 0, 0, 0), "", "");
     }
 }
 
 nlohmann::json StoredKey::json() const {
     nlohmann::json j;
-    j[CodingKeys::version] = 3;
+    j[CodingKeys::SK::version] = 3;
 
     switch (type) {
     case StoredKeyType::privateKey:
-        j[CodingKeys::type] = TypeString::privateKey;
+        j[CodingKeys::SK::type] = TypeString::privateKey;
         break;
     case StoredKeyType::mnemonicPhrase:
-        j[CodingKeys::type] = TypeString::mnemonic;
+        j[CodingKeys::SK::type] = TypeString::mnemonic;
         break;
     }
 
     if (id) {
-        j[CodingKeys::id] = *id;
+        j[CodingKeys::SK::id] = *id;
     }
 
-    j[CodingKeys::name] = name;
-    j[CodingKeys::crypto] = payload.json();
+    j[CodingKeys::SK::name] = name;
+    j[CodingKeys::SK::crypto] = payload.json();
 
     nlohmann::json accountsJSON = nlohmann::json::array();
     for (const auto& account : accounts) {
         accountsJSON.push_back(account.json());
     }
-    j[CodingKeys::activeAccounts] = accountsJSON;
+    j[CodingKeys::SK::activeAccounts] = accountsJSON;
 
     return j;
 }

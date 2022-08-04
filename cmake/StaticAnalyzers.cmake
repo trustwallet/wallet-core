@@ -1,11 +1,15 @@
 if (TW_ENABLE_CLANG_TIDY)
-    find_program(CLANGTIDY clang-tidy)
-    if (CLANGTIDY)
-        set(CMAKE_CXX_CLANG_TIDY ${CLANGTIDY} -extra-arg=-Wno-unknown-warning-option)
-        message("Clang-Tidy finished setting up.")
-    else ()
-        message(SEND_ERROR "Clang-Tidy requested but executable not found.")
-    endif ()
+    macro(tw_add_clang_tidy_target target)
+        find_program(CLANGTIDY clang-tidy)
+        if (CLANGTIDY)
+            set_property(
+                    TARGET ${target}
+                    PROPERTY CXX_CLANG_TIDY clang-tidy;-extra-arg=-Wno-unknown-warning-option)
+            message("Clang-Tidy finished setting up.")
+        else ()
+            message(SEND_ERROR "Clang-Tidy requested but executable not found.")
+        endif ()
+    endmacro()
 endif ()
 
 if (TW_ENABLE_PVS_STUDIO)

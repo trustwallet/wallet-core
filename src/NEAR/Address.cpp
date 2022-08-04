@@ -4,20 +4,21 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Address.h"
 #include "Base58.h"
 #include "HexCoding.h"
-#include "Address.h"
 
 #include <stdexcept>
 
 using namespace TW;
-using namespace TW::NEAR;
+
+namespace TW::NEAR {
 
 bool Address::isValid(const std::string& string) {
     const auto data = Address::decodeLegacyAddress(string);
     if (data.has_value()) {
         return true;
-    } 
+    }
     const auto parsed = parse_hex(string);
     return parsed.size() == PublicKey::ed25519Size;
 }
@@ -40,7 +41,7 @@ Address::Address(const std::string& string) {
         std::copy(std::begin(*data), std::end(*data), std::begin(bytes));
     } else {
         if (!Address::isValid(string)) {
-             throw std::invalid_argument("Invalid address string!");
+            throw std::invalid_argument("Invalid address string!");
         }
         const auto parsed = parse_hex(string);
         std::copy(std::begin(parsed), std::end(parsed), std::begin(bytes));
@@ -58,3 +59,5 @@ Address::Address(const PublicKey& publicKey) {
 std::string Address::string() const {
     return hex(bytes);
 }
+
+} // namespace TW::NEAR

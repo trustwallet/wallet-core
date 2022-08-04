@@ -13,6 +13,11 @@ option(TW_IDE_CLION "Enable if your IDE is CLion" OFF)
 option(TW_IDE_VSCODE "Enable if your IDE is VSCode" OFF)
 
 #
+# Build Settings
+#
+option(TW_UNITY_BUILD "Enable Unity build for TrustWalletCore and unit tests." OFF)
+
+#
 # Static analyzers
 #
 # Currently supporting: Clang-Tidy, PVS-Studio.

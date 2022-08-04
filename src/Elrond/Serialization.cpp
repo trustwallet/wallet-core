@@ -11,7 +11,7 @@
 
 using namespace TW;
 
-std::map<string, int> fields_order {
+std::map<std::string, int> fields_order{
     {"nonce", 1},
     {"value", 2},
     {"receiver", 3},
@@ -24,21 +24,21 @@ std::map<string, int> fields_order {
     {"chainID", 10},
     {"version", 11},
     {"options", 12},
-    {"signature", 13}
-};
+    {"signature", 13}};
 
 struct FieldsSorter {
-    bool operator() (const string& lhs, const string& rhs) const {
-        return fields_order[lhs] < fields_order[rhs]; 
+    bool operator()(const std::string& lhs, const std::string& rhs) const {
+        return fields_order[lhs] < fields_order[rhs];
     }
 };
 
-template<class Key, class T, class Compare, class Allocator>
+template <class Key, class T, class Compare, class Allocator>
 using sorted_map = std::map<Key, T, FieldsSorter, Allocator>;
 using sorted_json = nlohmann::basic_json<sorted_map>;
 
 sorted_json preparePayload(const Elrond::Transaction& transaction) {
-    sorted_json payload {
+    using namespace nlohmann;
+    sorted_json payload{
         {"nonce", json(transaction.nonce)},
         {"value", json(transaction.value)},
         {"receiver", json(transaction.receiver)},
@@ -69,13 +69,13 @@ sorted_json preparePayload(const Elrond::Transaction& transaction) {
     return payload;
 }
 
-string Elrond::serializeTransaction(const Elrond::Transaction& transaction) {
+std::string Elrond::serializeTransaction(const Elrond::Transaction& transaction) {
     sorted_json payload = preparePayload(transaction);
     return payload.dump();
 }
 
-string Elrond::serializeSignedTransaction(const Elrond::Transaction& transaction, string signature) {
+std::string Elrond::serializeSignedTransaction(const Elrond::Transaction& transaction, std::string signature) {
     sorted_json payload = preparePayload(transaction);
-    payload["signature"] = json(signature);
+    payload["signature"] = nlohmann::json(signature);
     return payload.dump();
 }

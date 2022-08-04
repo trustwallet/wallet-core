@@ -13,12 +13,11 @@
 #include "PrivateKey.h"
 
 using namespace TW;
-using namespace TW::Cosmos;
+
+namespace TW::Cosmos::Json {
 
 using json = nlohmann::json;
 using string = std::string;
-
-namespace TW::Cosmos {
 
 const string TYPE_PREFIX_MSG_SEND = "cosmos-sdk/MsgSend";
 const string TYPE_PREFIX_MSG_DELEGATE = "cosmos-sdk/MsgDelegate";
@@ -145,7 +144,7 @@ json messageWasmTerraTransfer(const Proto::Message_WasmTerraExecuteContractTrans
             {
                 {"sender", msg.sender_address()},
                 {"contract", msg.contract_address()},
-                {"execute_msg", wasmTerraExecuteTransferPayload(msg)},
+                {"execute_msg", Protobuf::wasmTerraExecuteTransferPayload(msg)},
                 {"coins", json::array()}  // used in case you are sending native tokens along with this message
             }
         }
@@ -219,4 +218,4 @@ json transactionJSON(const Proto::SigningInput& input, const Data& signature) {
     return broadcastJSON(tx, input.mode());
 }
 
-} // namespace
+} // namespace TW::Cosmos

@@ -15,6 +15,8 @@
 using namespace TW;
 using namespace TW::Icon;
 
+namespace TW::Icon {
+
 static const std::string addressPrefix = "hx";
 static const std::string contractPrefix = "cx";
 
@@ -46,7 +48,8 @@ Address::Address(const std::string& string) {
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
-Address::Address(const PublicKey& publicKey, enum AddressType type) : type(type) {
+Address::Address(const PublicKey& publicKey, enum AddressType type)
+    : type(type) {
     auto hash = std::array<uint8_t, Hash::sha256Size>();
     sha3_256(publicKey.bytes.data() + 1, publicKey.bytes.size() - 1, hash.data());
     std::copy(hash.end() - Address::size, hash.end(), bytes.begin());
@@ -62,3 +65,5 @@ std::string Address::string() const {
         return "";
     }
 }
+
+} // namespace TW::Icon

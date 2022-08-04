@@ -12,8 +12,6 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-using Data = TW::Data;
-
 namespace TW::EOS {
 
 class PermissionLevel {

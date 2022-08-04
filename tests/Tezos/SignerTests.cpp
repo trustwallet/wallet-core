@@ -4,17 +4,18 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Base58.h"
+#include "HexCoding.h"
+#include "PrivateKey.h"
 #include "Tezos/BinaryCoding.h"
 #include "Tezos/OperationList.h"
 #include "Tezos/Signer.h"
-#include "PrivateKey.h"
-#include "Base58.h"
-#include "HexCoding.h"
 
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Tezos;
+
+namespace TW::Tezos::tests {
 
 TEST(TezosSigner, SignString) {
     Data bytesToSign = parse_hex("ffaa");
@@ -23,7 +24,7 @@ TEST(TezosSigner, SignString) {
     append(expected, bytesToSign);
     append(expected, expectedSignature);
 
-    auto key = PrivateKey(parse_hex("0x2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f"));    
+    auto key = PrivateKey(parse_hex("0x2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f"));
     auto signedBytes = Signer().signData(key, bytesToSign);
 
     ASSERT_EQ(signedBytes, expected);
@@ -89,3 +90,5 @@ TEST(TezosSigner, SignOperationList) {
 
     ASSERT_EQ(hex(signedBytes.begin(), signedBytes.end()), expectedSignedBytes);
 }
+
+} // namespace TW::Tezos::tests

@@ -15,7 +15,8 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Stellar;
+
+namespace TW::Stellar::tests {
 
 TEST(TWAnySingerStellar, Sign_Payment) {
     auto key = parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722");
@@ -180,10 +181,12 @@ TEST(TWAnySingerStellar, Sign_Claim_Claimable_Balance_c1fb3c) {
     // curl -X POST -F "tx=AAAAAMpF..DQ==" "https://horizon.stellar.org/transactions"
     EXPECT_EQ(output.signature(), "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAnEAH/8MgAAAAhAAAAAAAAAAAAAAABAAAAAAAAAA8AAAAAnHt5S3sVDz5Mbc+iYGcrvgwkizYBKREukn4PfuL5+vgAAAAAAAAAAXfTkXUAAABAWL7dKkR1JuPZGFbDTRDgGBHW/vLPMWNRkAew+wPfGiCnZhpJJDcyX197EDDZMsJ7ungPUyhczRaeQOwZKx4DDQ==");
 
-    {   // negative test: hash wrong size
+    { // negative test: hash wrong size
         const Data invalidBalanceIdHash = parse_hex("010203");
         input.mutable_op_claim_claimable_balance()->set_balance_id(invalidBalanceIdHash.data(), invalidBalanceIdHash.size());
         ANY_SIGN(input, TWCoinTypeStellar);
         EXPECT_EQ(output.signature(), "AAAAAXfTkXUAAABAFCywEfLs3q5Tv9eZCIcjhkJR0s8J4Us9G5YjVKUSaMoUz/AadC8dM2oQSLhpC5wjrNBi7hevg7jlkPx5/4AJCQ==");
     }
 }
+
+} // namespace TW::Stellar::tests

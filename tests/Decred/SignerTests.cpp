@@ -16,8 +16,10 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Decred;
 
+namespace TW::Decred::tests {
+
+// clang-format off
 TEST(DecredSigner, SignP2PKH) {
     const auto privateKey = PrivateKey(parse_hex("22a47fa09a223f2aa079edf85a7c2d4f8720ee63e502ee2869afab7de234b80c"));
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
@@ -427,3 +429,6 @@ TEST(DecredSigning, SignP2WPKH_NegativeAddressWrongType) {
 
     ASSERT_FALSE(result) << std::to_string(result.error());
 }
+// clang-format on
+
+} // namespace TW::Decred::tests

@@ -5,8 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
-#include "Transaction.h"
 #include "Program.h"
+#include "Transaction.h"
 #include "../Base58.h"
 #include "../Base58Address.h"
 #include "../Hash.h"
@@ -16,7 +16,8 @@
 #include <cassert>
 
 using namespace TW;
-using namespace TW::Solana;
+
+namespace TW::Solana {
 
 bool Address::isValid(const std::string& string) {
     const auto data = Base58::bitcoin.decode(string);
@@ -58,3 +59,5 @@ Data Address::vector() const {
 Address Address::defaultTokenAddress(const Address& tokenMintAddress) {
     return TokenProgram::defaultTokenAddress(*this, tokenMintAddress);
 }
+
+} // namespace TW::Solana

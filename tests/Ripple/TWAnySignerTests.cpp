@@ -13,7 +13,8 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Ripple;
+
+namespace TW::Ripple::tests {
 
 TEST(TWAnySignerRipple, Sign) {
     auto key = parse_hex("ba005cd605d8a02e3d5dfd04234cef3a3ee4f76bfbad2722d1fb5af8e12e6764");
@@ -39,3 +40,5 @@ TEST(TWAnySignerRipple, Sign) {
     EXPECT_EQ(output.error(), Common::Proto::SigningError::Error_invalid_memo);
     EXPECT_EQ(output.encoded(), "");
 }
+
+} // namespace TW::Ripple::tests

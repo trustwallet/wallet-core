@@ -16,7 +16,8 @@
 #include <string>
 
 using namespace TW;
-using namespace TW::Ontology;
+
+namespace TW::Ontology {
 
 Address::Address(const PublicKey& publicKey) {
     std::vector<uint8_t> builder(publicKey.bytes);
@@ -71,3 +72,5 @@ std::string Address::string() const {
                         (int)b58StrSize + 1);
     return b58Str;
 }
+
+} // namespace TW::Ontology

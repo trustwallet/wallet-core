@@ -4,8 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Base64.h"
 #include "Signer.h"
+#include "Base64.h"
 #include "../BinaryCoding.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
@@ -14,8 +14,8 @@
 #include <TrustWalletCore/TWStellarMemoType.h>
 
 using namespace TW;
-using namespace TW::Stellar;
 
+namespace TW::Stellar {
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto signer = Signer(input);
     auto output = Proto::SigningOutput();
@@ -64,7 +64,7 @@ Data Signer::encode(const Proto::SigningInput& input) const {
     // Time bounds
     if (input.has_op_change_trust() && input.op_change_trust().valid_before() != 0) {
         encode32BE(1, data);
-        encode64BE(0, data); // from
+        encode64BE(0, data);                                      // from
         encode64BE(input.op_change_trust().valid_before(), data); // to
     } else {
         encode32BE(0, data); // missing
@@ -91,55 +91,51 @@ Data Signer::encode(const Proto::SigningInput& input) const {
     }
 
     // Operations
-    encode32BE(1, data);                      // Operation list size. Only 1 operation.
-    encode32BE(0, data);                      // Source equals account
+    encode32BE(1, data);                    // Operation list size. Only 1 operation.
+    encode32BE(0, data);                    // Source equals account
     encode32BE(operationType(input), data); // Operation type
 
     switch (input.operation_oneof_case()) {
-        case Proto::SigningInput::kOpCreateAccount:
-        default:
-            encodeAddress(Address(input.op_create_account().destination()), data);
-            encode64BE(input.op_create_account().amount(), data);
-            break;
+    case Proto::SigningInput::kOpCreateAccount:
+    default:
+        encodeAddress(Address(input.op_create_account().destination()), data);
+        encode64BE(input.op_create_account().amount(), data);
+        break;
 
-        case Proto::SigningInput::kOpPayment:
-            encodeAddress(Address(input.op_payment().destination()), data);
-            encodeAsset(input.op_payment().asset(), data);
-            encode64BE(input.op_payment().amount(), data);
-            break;
+    case Proto::SigningInput::kOpPayment:
+        encodeAddress(Address(input.op_payment().destination()), data);
+        encodeAsset(input.op_payment().asset(), data);
+        encode64BE(input.op_payment().amount(), data);
+        break;
 
-        case Proto::SigningInput::kOpChangeTrust:
-            encodeAsset(input.op_change_trust().asset(), data);
-            encode64BE(0x7fffffffffffffff, data); // limit MAX
-            break;
+    case Proto::SigningInput::kOpChangeTrust:
+        encodeAsset(input.op_change_trust().asset(), data);
+        encode64BE(0x7fffffffffffffff, data); // limit MAX
+        break;
 
-        case Proto::SigningInput::kOpCreateClaimableBalance:
-            {
-                const auto ClaimantTypeV0 = 0;
-                encodeAsset(input.op_create_claimable_balance().asset(), data);
-                encode64BE(input.op_create_claimable_balance().amount(), data);
-                auto nClaimants = input.op_create_claimable_balance().claimants_size();
-                encode32BE((uint32_t)nClaimants, data);
-                for (auto i = 0; i < nClaimants; ++i) {
-                    encode32BE((uint32_t)ClaimantTypeV0, data);
-                    encodeAddress(Address(input.op_create_claimable_balance().claimants(i).account()), data);
-                    encode32BE((uint32_t)input.op_create_claimable_balance().claimants(i).predicate(), data);
-                    // Note: other predicates not supported, predicate-specific data would follow here
-                }
-            }
-            break;
+    case Proto::SigningInput::kOpCreateClaimableBalance: {
+        const auto ClaimantTypeV0 = 0;
+        encodeAsset(input.op_create_claimable_balance().asset(), data);
+        encode64BE(input.op_create_claimable_balance().amount(), data);
+        auto nClaimants = input.op_create_claimable_balance().claimants_size();
+        encode32BE((uint32_t)nClaimants, data);
+        for (auto i = 0; i < nClaimants; ++i) {
+            encode32BE((uint32_t)ClaimantTypeV0, data);
+            encodeAddress(Address(input.op_create_claimable_balance().claimants(i).account()), data);
+            encode32BE((uint32_t)input.op_create_claimable_balance().claimants(i).predicate(), data);
+            // Note: other predicates not supported, predicate-specific data would follow here
+        }
+    } break;
 
-        case Proto::SigningInput::kOpClaimClaimableBalance:
-            {
-                const auto ClaimableBalanceIdTypeClaimableBalanceIdTypeV0 = 0;
-                encode32BE((uint32_t)ClaimableBalanceIdTypeClaimableBalanceIdTypeV0, data);
-                const auto balanceId = input.op_claim_claimable_balance().balance_id();
-                if (balanceId.size() != 32) {
-                    return Data();
-                }
-                data.insert(data.end(), balanceId.begin(), balanceId.end());
-            }
-            break;
+    case Proto::SigningInput::kOpClaimClaimableBalance: {
+        const auto ClaimableBalanceIdTypeClaimableBalanceIdTypeV0 = 0;
+        encode32BE((uint32_t)ClaimableBalanceIdTypeClaimableBalanceIdTypeV0, data);
+        const auto balanceId = input.op_claim_claimable_balance().balance_id();
+        if (balanceId.size() != 32) {
+            return Data();
+        }
+        data.insert(data.end(), balanceId.begin(), balanceId.end());
+    } break;
     }
 
     encode32BE(0, data); // Ext
@@ -148,17 +144,17 @@ Data Signer::encode(const Proto::SigningInput& input) const {
 
 uint32_t Signer::operationType(const Proto::SigningInput& input) {
     switch (input.operation_oneof_case()) {
-        case Proto::SigningInput::kOpCreateAccount:
-        default:
-            return 0;
-        case Proto::SigningInput::kOpPayment:
-            return 1;
-        case Proto::SigningInput::kOpChangeTrust:
-            return 6;
-        case Proto::SigningInput::kOpCreateClaimableBalance:
-            return 14;
-        case Proto::SigningInput::kOpClaimClaimableBalance:
-            return 15;
+    case Proto::SigningInput::kOpCreateAccount:
+    default:
+        return 0;
+    case Proto::SigningInput::kOpPayment:
+        return 1;
+    case Proto::SigningInput::kOpChangeTrust:
+        return 6;
+    case Proto::SigningInput::kOpCreateClaimableBalance:
+        return 14;
+    case Proto::SigningInput::kOpClaimClaimableBalance:
+        return 15;
     }
 }
 
@@ -197,3 +193,5 @@ void Signer::pad(Data& data) const {
         data.insert(data.end(), 0);
     }
 }
+
+} // namespace TW::Stellar

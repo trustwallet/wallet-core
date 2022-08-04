@@ -6,14 +6,14 @@
 
 #include <Oasis/Signer.h>
 
-#include "Signer.h"
 #include "Address.h"
+#include "Signer.h"
 
 #define TRANSFER_METHOD "staking.Transfer"
 
 using namespace TW;
-using namespace TW::Oasis;
 
+namespace TW::Oasis {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto output = Proto::SigningOutput();
@@ -40,14 +40,13 @@ Data Signer::build() const {
     gasAmountStream >> gasAmount;
 
     Transaction transaction(
-        /* to */     address,
+        /* to */ address,
         /* method */ TRANSFER_METHOD,
         /* gasPrice */ input.transfer().gas_price(),
         /* gasAmount */ gasAmount,
         /* amount */ amount,
         /* nonce */ input.transfer().nonce(),
         /* context */ input.transfer().context());
-
 
     auto privateKey = PrivateKey(input.private_key());
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
@@ -70,3 +69,5 @@ Data Signer::sign(Transaction& tx) const {
     auto signature = privateKey.sign(hash, TWCurveED25519);
     return Data(signature.begin(), signature.end());
 }
+
+} // namespace TW::Oasis

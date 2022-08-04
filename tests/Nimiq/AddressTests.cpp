@@ -12,7 +12,8 @@
 #include <vector>
 
 using namespace TW;
-using namespace TW::Nimiq;
+
+namespace TW::Nimiq::tests {
 
 TEST(NimiqAddress, IsValid) {
     // No address
@@ -35,18 +36,15 @@ TEST(NimiqAddress, String) {
     // Address to string
     ASSERT_EQ(
         Address(parse_hex("5b3e9e5f32b89abafc3708765dc8f00216cefbb1")).string(),
-        "NQ61 BCY9 UPRJ P2DB MY1P 11T5 TJ7G 08BC VXVH"
-    );
+        "NQ61 BCY9 UPRJ P2DB MY1P 11T5 TJ7G 08BC VXVH");
     // Without spaces
     ASSERT_EQ(
         Address("NQ862H8FYGU5RM77QSN9LYLHC56ACYYR0MLA").string(),
-        "NQ86 2H8F YGU5 RM77 QSN9 LYLH C56A CYYR 0MLA"
-    );
+        "NQ86 2H8F YGU5 RM77 QSN9 LYLH C56A CYYR 0MLA");
     // With spaces
     ASSERT_EQ(
         Address("NQ86 2H8F YGU5 RM77 QSN9 LYLH C56A CYYR 0MLA").string(),
-        "NQ86 2H8F YGU5 RM77 QSN9 LYLH C56A CYYR 0MLA"
-    );
+        "NQ86 2H8F YGU5 RM77 QSN9 LYLH C56A CYYR 0MLA");
 }
 
 TEST(NimiqAddress, FromPublicKey) {
@@ -55,3 +53,5 @@ TEST(NimiqAddress, FromPublicKey) {
     const auto address = Address(publicKey);
     ASSERT_EQ(address.string(), "NQ27 GBAY EVHP HK5X 6JHV JGFJ 5M3H BF4Y G7GD");
 }
+
+} // namespace TW::Nimiq::tests

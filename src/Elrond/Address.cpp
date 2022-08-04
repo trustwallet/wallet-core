@@ -8,10 +8,12 @@
 
 #include "Address.h"
 
-using namespace TW::Elrond;
+namespace TW::Elrond {
 
 const std::string Address::hrp = HRP_ELROND;
 
 bool Address::isValid(const std::string& string) {
     return Bech32Address::isValid(string, hrp);
 }
+
+} // namespace TW::Elrond
