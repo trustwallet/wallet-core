@@ -56,7 +56,7 @@ public:
 
     /// Create from raw content, must be valid CBOR data, may throw
     static Encode fromRaw(const TW::Data& rawData);
-    const TW::Data& getDataInternal() const { return _data; }
+    const Data& getDataInternal() const { return _data; }
 
 private:
     Encode() {}
