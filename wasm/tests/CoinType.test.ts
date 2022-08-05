@@ -6,12 +6,10 @@
 
 import "mocha";
 import { assert } from "chai";
-import { initWasm } from "../dist";
 
 describe("CoinType", () => {
-
-  it("test raw value", async () => {
-    const { CoinType } = await initWasm();;
+  it("test raw value", () => {
+    const { CoinType } = globalThis.core;
 
     assert.equal(CoinType.bitcoin.value, 0);
     assert.equal(CoinType.litecoin.value, 2);
@@ -20,6 +18,5 @@ describe("CoinType", () => {
     assert.equal(CoinType.binance.value, 714);
     assert.equal(CoinType.cosmos.value, 118);
     assert.equal(CoinType.solana.value, 501);
-
   });
 });

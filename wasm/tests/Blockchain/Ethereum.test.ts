@@ -7,18 +7,12 @@
 import "mocha";
 import { assert } from "chai";
 import { Buffer } from "buffer";
-import { TW, initWasm, WalletCore } from "../../dist";
+import { TW } from "../../dist";
 
 describe("Ethereum", () => {
 
-  let core: WalletCore;
-
-  before(async () => {
-    core = await initWasm();
-  });
-
   it("test address", () => {
-    const { PrivateKey, HexCoding, AnyAddress, CoinType, Curve } = core;
+    const { PrivateKey, HexCoding, AnyAddress, CoinType, Curve } = globalThis.core;
 
     const data = HexCoding.decode("727f677b390c151caf9c206fd77f77918f56904b5504243db9b21e51182c4c06");
 
@@ -42,7 +36,7 @@ describe("Ethereum", () => {
   });
 
   it("test signing transfer tx", () => {
-    const { HexCoding, AnySigner, CoinType } = core;
+    const { HexCoding, AnySigner, CoinType } = globalThis.core;;
     const input = TW.Ethereum.Proto.SigningInput.create({
       toAddress: "0x3535353535353535353535353535353535353535",
       chainId: Buffer.from("01", "hex"),
@@ -74,7 +68,7 @@ describe("Ethereum", () => {
   });
 
   it("test signing eip1559 erc20 transfer tx", () => {
-    const { HexCoding, AnySigner, CoinType } = core;
+    const { HexCoding, AnySigner, CoinType } = globalThis.core;;
 
     const input = TW.Ethereum.Proto.SigningInput.create({
       toAddress: "0x6b175474e89094c44da98b954eedeac495271d0f",
@@ -105,7 +99,7 @@ describe("Ethereum", () => {
   });
 
   it("test signing personal message", () => {
-    const { EthereumAbi, HexCoding, Hash, PrivateKey, Curve } = core;
+    const { HexCoding, Hash, PrivateKey, Curve } = globalThis.core;;
     const message = Buffer.from("Some data");
     const prefix = Buffer.from("\x19Ethereum Signed Message:\n" + message.length);
     const hash = Hash.keccak256(Buffer.concat([prefix, message]));
@@ -122,7 +116,7 @@ describe("Ethereum", () => {
   });
 
   it("test signing EIP712 message", () => {
-    const { EthereumAbi, HexCoding, Hash, PrivateKey, Curve } = core;
+    const { EthereumAbi, HexCoding, Hash, PrivateKey, Curve } = globalThis.core;;
 
     const key = PrivateKey.createWithData(Hash.keccak256(Buffer.from("cow")));
     const message = {
