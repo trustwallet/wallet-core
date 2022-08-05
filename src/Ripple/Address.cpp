@@ -10,6 +10,8 @@
 
 using namespace TW::Ripple;
 
+namespace TW::Ripple {
+
 bool Address::isValid(const std::string& string) {
     const auto decoded = Base58::ripple.decodeCheck(string);
     if (decoded.size() != Address::size) {
@@ -35,3 +37,5 @@ Address::Address(const PublicKey& publicKey) {
 std::string Address::string() const {
     return Base58::ripple.encodeCheck(bytes);
 }
+
+} // namespace TW::Ripple

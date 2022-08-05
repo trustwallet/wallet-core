@@ -24,34 +24,34 @@ extern std::string TESTS_ROOT;
 namespace TW {
 
 const auto mnemonic1 = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
-const auto passphrase = "passphrase";
+const auto gPassphrase = "passphrase";
 
 TEST(HDWallet, generate) {
     {
-        HDWallet wallet = HDWallet(128, passphrase);
+        HDWallet wallet = HDWallet(128, gPassphrase);
         EXPECT_TRUE(Mnemonic::isValid(wallet.getMnemonic()));
-        EXPECT_EQ(wallet.getPassphrase(), passphrase);
+        EXPECT_EQ(wallet.getPassphrase(), gPassphrase);
         EXPECT_EQ(wallet.getEntropy().size(), 16ul);
     }
     {
-        HDWallet wallet = HDWallet(256, passphrase);
+        HDWallet wallet = HDWallet(256, gPassphrase);
         EXPECT_TRUE(Mnemonic::isValid(wallet.getMnemonic()));
-        EXPECT_EQ(wallet.getPassphrase(), passphrase);
+        EXPECT_EQ(wallet.getPassphrase(), gPassphrase);
         EXPECT_EQ(wallet.getEntropy().size(), 32ul);
     }
 }
 
 TEST(HDWallet, generateInvalid) {
-    EXPECT_EXCEPTION(HDWallet(64, passphrase), "Invalid strength");
-    EXPECT_EXCEPTION(HDWallet(129, passphrase), "Invalid strength");
-    EXPECT_EXCEPTION(HDWallet(512, passphrase), "Invalid strength");
+    EXPECT_EXCEPTION(HDWallet(64, gPassphrase), "Invalid strength");
+    EXPECT_EXCEPTION(HDWallet(129, gPassphrase), "Invalid strength");
+    EXPECT_EXCEPTION(HDWallet(512, gPassphrase), "Invalid strength");
 }
 
 TEST(HDWallet, createFromMnemonic) {
     {
-        HDWallet wallet = HDWallet(mnemonic1, passphrase);
+        HDWallet wallet = HDWallet(mnemonic1, gPassphrase);
         EXPECT_EQ(wallet.getMnemonic(), mnemonic1);
-        EXPECT_EQ(wallet.getPassphrase(), passphrase);
+        EXPECT_EQ(wallet.getPassphrase(), gPassphrase);
         EXPECT_EQ(hex(wallet.getEntropy()), "ba5821e8c356c05ba5f025d9532fe0f21f65d594");
         EXPECT_EQ(hex(wallet.getSeed()), "143cd5fc27ae46eb423efebc41610473f5e24a80f2ca2e2fa7bf167e537f58f4c68310ae487fce82e25bad29bab2530cf77fd724a5ebfc05a45872773d7ee2d6");
     }
@@ -116,31 +116,31 @@ TEST(HDWallet, createFromSpanishMnemonic) {
 }
 
 TEST(HDWallet, createFromMnemonicInvalid) {
-    EXPECT_EXCEPTION(HDWallet("THIS IS AN INVALID MNEMONIC", passphrase), "Invalid mnemonic");
-    EXPECT_EXCEPTION(HDWallet("", passphrase), "Invalid mnemonic");
+    EXPECT_EXCEPTION(HDWallet("THIS IS AN INVALID MNEMONIC", gPassphrase), "Invalid mnemonic");
+    EXPECT_EXCEPTION(HDWallet("", gPassphrase), "Invalid mnemonic");
 
-    EXPECT_EXCEPTION(HDWallet("", passphrase, false), "Invalid mnemonic");
-    HDWallet walletUnchecked = HDWallet("THIS IS AN INVALID MNEMONIC", passphrase, false);
+    EXPECT_EXCEPTION(HDWallet("", gPassphrase, false), "Invalid mnemonic");
+    HDWallet walletUnchecked = HDWallet("THIS IS AN INVALID MNEMONIC", gPassphrase, false);
 }
 
 TEST(HDWallet, createFromEntropy) {
     {
-        HDWallet wallet = HDWallet(parse_hex("ba5821e8c356c05ba5f025d9532fe0f21f65d594"), passphrase);
+        HDWallet wallet = HDWallet(parse_hex("ba5821e8c356c05ba5f025d9532fe0f21f65d594"), gPassphrase);
         EXPECT_EQ(wallet.getMnemonic(), mnemonic1);
     }
 }
 
 TEST(HDWallet, createFromEntropyInvalid) {
-    EXPECT_EXCEPTION(HDWallet(parse_hex(""), passphrase), "Invalid mnemonic data");
-    EXPECT_EXCEPTION(HDWallet(parse_hex("123456"), passphrase), "Invalid mnemonic data");
+    EXPECT_EXCEPTION(HDWallet(parse_hex(""), gPassphrase), "Invalid mnemonic data");
+    EXPECT_EXCEPTION(HDWallet(parse_hex("123456"), gPassphrase), "Invalid mnemonic data");
 }
 
 TEST(HDWallet, recreateFromEntropy) {
     {
-        HDWallet wallet1 = HDWallet(mnemonic1, passphrase);
+        HDWallet wallet1 = HDWallet(mnemonic1, gPassphrase);
         EXPECT_EQ(wallet1.getMnemonic(), mnemonic1);
         EXPECT_EQ(hex(wallet1.getEntropy()), "ba5821e8c356c05ba5f025d9532fe0f21f65d594");
-        HDWallet wallet2 = HDWallet(wallet1.getEntropy(), passphrase);
+        HDWallet wallet2 = HDWallet(wallet1.getEntropy(), gPassphrase);
         EXPECT_EQ(wallet2.getMnemonic(), wallet1.getMnemonic());
         EXPECT_EQ(wallet2.getEntropy(), wallet1.getEntropy());
         EXPECT_EQ(wallet2.getSeed(), wallet1.getSeed());
@@ -394,6 +394,32 @@ TEST(HDWallet, Derive_XpubPub_vs_PrivPub) {
         EXPECT_EQ(hex(publicKey2.bytes), expectedPublicKey2);
         const auto address2 = Bitcoin::SegwitAddress(publicKey2, "bc");
         EXPECT_EQ(address2.string(), expectedAddress2);
+    }
+}
+
+TEST(HDWallet, getKeyByCurve) {
+    const auto derivPath = "m/44'/539'/0'/0/0";
+    HDWallet wallet = HDWallet(mnemonic1, "");
+    {
+        const auto privateKey = wallet.getKeyByCurve(TWCurveSECP256k1, DerivationPath(derivPath));
+        EXPECT_EQ(hex(privateKey.bytes), "4fb8657d6464adcaa086d6758d7f0b6b6fc026c98dc1671fcc6460b5a74abc62");
+    }
+    {
+        const auto privateKey = wallet.getKeyByCurve(TWCurveNIST256p1, DerivationPath(derivPath));
+        EXPECT_EQ(hex(privateKey.bytes), "a13df52d5a5b438bbf921bbf86276e4347fe8e2f2ed74feaaee12b77d6d26f86");
+    }
+}
+
+TEST(HDWallet, getKey) {
+    const auto derivPath = "m/44'/539'/0'/0/0";
+    HDWallet wallet = HDWallet(mnemonic1, "");
+    {
+        const auto privateKey = wallet.getKey(TWCoinTypeBitcoin, DerivationPath(derivPath));
+        EXPECT_EQ(hex(privateKey.bytes), "4fb8657d6464adcaa086d6758d7f0b6b6fc026c98dc1671fcc6460b5a74abc62");
+    }
+    {
+        const auto privateKey = wallet.getKey(TWCoinTypeNEO, DerivationPath(derivPath));
+        EXPECT_EQ(hex(privateKey.bytes), "a13df52d5a5b438bbf921bbf86276e4347fe8e2f2ed74feaaee12b77d6d26f86");
     }
 }
 

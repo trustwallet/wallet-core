@@ -63,14 +63,9 @@ void convertToBase64Url(string& b) {
 }
 
 Data decodeBase64Url(const string& val) {
-    try {
-        return decode(val);
-    } catch (const exception& ex) {
-        // 2nd try: Base64URL format (replaced by '-' and '_' by '+' and '/' )
-        string base64Url = val;
-        convertFromBase64Url(base64Url);
-        return decode(base64Url);
-    }
+    string base64Url = val;
+    convertFromBase64Url(base64Url);
+    return decode(base64Url);
 }
 
 string encodeBase64Url(const Data& val) {

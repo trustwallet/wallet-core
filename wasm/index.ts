@@ -4,5 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-export { TW } from "./generated/core_proto";
-export * as WalletCore from "./lib/wallet-core";
+import * as Loader from "./lib/wallet-core";
+import { TW } from "./generated/core_proto";
+import { WalletCore } from "./wallet-core";
+
+declare function load(): Promise<WalletCore>;
+
+export const initWasm: typeof load = Loader;
+export { TW, WalletCore };

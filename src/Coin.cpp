@@ -155,12 +155,12 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
     return entry;
 }
 
-const Derivation CoinInfo::derivationByName(TWDerivation name) const {
-    if (name == TWDerivationDefault && derivation.size() > 0) {
+const Derivation CoinInfo::derivationByName(TWDerivation nameIn) const {
+    if (nameIn == TWDerivationDefault && derivation.size() > 0) {
         return derivation[0];
     }
     for (auto deriv: derivation) {
-        if (deriv.name == name) {
+        if (deriv.name == nameIn) {
             return deriv;
         }
     }

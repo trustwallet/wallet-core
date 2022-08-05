@@ -6,15 +6,15 @@
 
 #pragma once
 
-#include "../proto/Cosmos.pb.h"
 #include "Data.h"
+#include "../proto/Cosmos.pb.h"
 
 #include <nlohmann/json.hpp>
 #include <string>
 
 #include <TrustWalletCore/TWCoinType.h>
 
-namespace TW::Cosmos {
+namespace TW::Cosmos::Protobuf {
 
 std::string buildProtoTxBody(const Proto::SigningInput& input);
 
@@ -34,4 +34,4 @@ nlohmann::json wasmTerraExecuteTransferPayload(const Proto::Message_WasmTerraExe
 
 nlohmann::json wasmTerraExecuteSendPayload(const Proto::Message_WasmTerraExecuteContractSend& msg);
 
-} // namespace
+} // namespace TW::Cosmos::protobuf

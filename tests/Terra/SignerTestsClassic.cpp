@@ -442,7 +442,7 @@ TEST(TerraClassicSigner, SignWasmTerraTransferPayload) {
     const auto amount = store(uint256_t(250000), 0);
     proto.set_amount(amount.data(), amount.size());
 
-    const auto payload = wasmTerraExecuteTransferPayload(proto);
+    const auto payload = Protobuf::wasmTerraExecuteTransferPayload(proto);
 
     assertJSONEqual(payload.dump(), R"(
         {

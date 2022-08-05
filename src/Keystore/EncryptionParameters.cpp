@@ -72,7 +72,7 @@ nlohmann::json EncryptionParameters::json() const {
 }
 
 EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const EncryptionParameters& params) :
-    params(std::move(params)), mac() {
+    params(std::move(params)), _mac() {
     auto scryptParams = boost::get<ScryptParameters>(params.kdfParams);
     auto derivedKey = Data(scryptParams.desiredKeyLength);
     scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
@@ -87,13 +87,13 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
         encrypted = Data(data.size());
         aes_ctr_encrypt(data.data(), encrypted.data(), static_cast<int>(data.size()), iv.data(), aes_ctr_cbuf_inc, &ctx);
 
-        mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
+        _mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
     }
 }
 
 EncryptedPayload::~EncryptedPayload() {
     std::fill(encrypted.begin(), encrypted.end(), 0);
-    std::fill(mac.begin(), mac.end(), 0);
+    std::fill(_mac.begin(), _mac.end(), 0);
 }
 
 Data EncryptedPayload::decrypt(const Data& password) const {
@@ -118,7 +118,7 @@ Data EncryptedPayload::decrypt(const Data& password) const {
         throw DecryptionError::unsupportedKDF;
     }
 
-    if (mac != this->mac) {
+    if (mac != _mac) {
         throw DecryptionError::invalidPassword;
     }
 
@@ -149,12 +149,12 @@ Data EncryptedPayload::decrypt(const Data& password) const {
 EncryptedPayload::EncryptedPayload(const nlohmann::json& json) {
     params = EncryptionParameters(json);
     encrypted = parse_hex(json[CodingKeys::encrypted].get<std::string>());
-    mac = parse_hex(json[CodingKeys::mac].get<std::string>());
+    _mac = parse_hex(json[CodingKeys::mac].get<std::string>());
 }
 
 nlohmann::json EncryptedPayload::json() const {
     nlohmann::json j = params.json();
     j[CodingKeys::encrypted] = hex(encrypted);
-    j[CodingKeys::mac] = hex(mac);
+    j[CodingKeys::mac] = hex(_mac);
     return j;
 }

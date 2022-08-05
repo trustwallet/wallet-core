@@ -9,8 +9,9 @@
 #include "Signer.h"
 #include "../proto/Cosmos.pb.h"
 
-using namespace TW::THORChain;
 using namespace std;
+
+namespace TW::THORChain {
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
@@ -24,3 +25,5 @@ void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::D
 string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json, const Data& key) const {
     return Signer::signJSON(json, key);
 }
+
+} // namespace TW::THORChain

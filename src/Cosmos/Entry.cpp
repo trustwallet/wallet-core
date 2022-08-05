@@ -9,9 +9,10 @@
 #include "Address.h"
 #include "Signer.h"
 
-using namespace TW::Cosmos;
 using namespace TW;
 using namespace std;
+
+namespace TW::Cosmos {
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
@@ -38,6 +39,8 @@ void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) con
     dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
 }
 
-string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const { 
+string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const {
     return Signer::signJSON(json, key, coin);
 }
+
+} // namespace TW::Cosmos

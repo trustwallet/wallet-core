@@ -92,9 +92,9 @@ Data Entry::buildTransactionInput([[maybe_unused]] TWCoinType coinType, const st
     const auto toKeyhash = toAddress.getKeyHash();
 
     {
-        auto* input = order.add_inputs();
-        input->set_address(fromKeyhash.data(), fromKeyhash.size());
-        auto* inputCoin = input->add_coins();
+        auto* sendOrderInputs = order.add_inputs();
+        sendOrderInputs->set_address(fromKeyhash.data(), fromKeyhash.size());
+        auto* inputCoin = sendOrderInputs->add_coins();
         inputCoin->set_denom(asset);
         inputCoin->set_amount(static_cast<uint64_t>(amount));
     }

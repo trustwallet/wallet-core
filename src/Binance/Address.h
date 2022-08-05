@@ -15,18 +15,18 @@ namespace TW::Binance {
 /// Binance address is a Bech32Address, with "bnb" prefix and sha256ripemd hash
 class Address: public Bech32Address {
 public:
-    static const std::string hrp; // HRP_BINANCE
+    static const std::string _hrp; // HRP_BINANCE
     static const std::string hrpValidator; // HRP_BINANCE
 
     static bool isValid(const std::string& addr);
 
-    Address() : Bech32Address(hrp) {}
+    Address() : Bech32Address(_hrp) {}
 
     /// Initializes an address with a key hash.
-    Address(const Data& keyHash) : Bech32Address(hrp, keyHash) {}
+    Address(const Data& keyHash) : Bech32Address(_hrp, keyHash) {}
 
     /// Initializes an address with a public key.
-    Address(const PublicKey& publicKey) : Bech32Address(hrp, Hash::HasherSha256ripemd, publicKey) {}
+    Address(const PublicKey& publicKey) : Bech32Address(_hrp, Hash::HasherSha256ripemd, publicKey) {}
 
     static bool decode(const std::string& addr, Address& obj_out);
 };

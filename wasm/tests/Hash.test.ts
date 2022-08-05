@@ -7,11 +7,18 @@
 import "mocha";
 import { assert } from "chai";
 import { Buffer } from "buffer";
-import { WalletCore } from "../dist";
+import { initWasm, WalletCore } from "../dist";
 
 describe("Hash", () => {
+
+  let core: WalletCore;
+
+  before(async () => {
+    core = await initWasm();
+  });
+
   it("test keccak256", () => {
-    const { Hash, HexCoding } = WalletCore;
+    const { Hash, HexCoding } = core;
 
     const sha3Hash = Hash.keccak256(Buffer.from("Test keccak-256"));
 
@@ -22,7 +29,7 @@ describe("Hash", () => {
   });
 
   it("test sha256", () => {
-    const { Hash, HexCoding } = WalletCore;
+    const { Hash, HexCoding } = core;
 
     const sha256Hash = Hash.sha256(Buffer.from("Test hash"));
     assert.equal(
@@ -32,7 +39,7 @@ describe("Hash", () => {
   });
 
   it("test sha512_256", () => {
-    const { Hash, HexCoding } = WalletCore;
+    const { Hash, HexCoding } = core;
 
     const hash = Hash.sha512_256(Buffer.from("hello"));
     assert.equal(

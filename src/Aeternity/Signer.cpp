@@ -14,9 +14,10 @@
 #include <Ethereum/RLP.h>
 
 using namespace TW;
-using namespace TW::Aeternity;
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
+namespace TW::Aeternity {
+
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     std::string sender_id = input.from_address();
     std::string recipient_id = input.to_address();
@@ -29,7 +30,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
 
 /// implementation copied from
 /// https://github.com/aeternity/aepp-sdk-go/blob/07aa8a77e5/aeternity/helpers.go#L367
-Proto::SigningOutput Signer::sign(const TW::PrivateKey &privateKey, Transaction &transaction) {
+Proto::SigningOutput Signer::sign(const TW::PrivateKey& privateKey, Transaction& transaction) {
     auto txRlp = transaction.encode();
 
     /// append networkId and txRaw
@@ -87,3 +88,5 @@ std::string Signer::encodeBase64WithChecksum(const std::string& prefix, const TW
 
     return prefix + TW::Base64::encode(data);
 }
+
+} // namespace TW::Aeternity

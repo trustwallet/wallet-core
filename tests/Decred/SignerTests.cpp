@@ -16,8 +16,10 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Decred;
 
+namespace TW::Decred::tests {
+
+// clang-format off
 TEST(DecredSigner, SignP2PKH) {
     const auto privateKey = PrivateKey(parse_hex("22a47fa09a223f2aa079edf85a7c2d4f8720ee63e502ee2869afab7de234b80c"));
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
@@ -86,7 +88,7 @@ TEST(DecredSigner, SignP2PKH) {
 
     // Sign
     auto signer = Signer(std::move(input));
-    signer.transaction = redeemTx;
+    signer._transaction = redeemTx;
     signer.txPlan.amount = 100'000'000;
     const auto result = signer.sign();
 
@@ -193,7 +195,7 @@ TEST(DecredSigner, SignP2SH) {
 
     // Sign
     auto signer = Signer(std::move(input));
-    signer.transaction = redeemTx;
+    signer._transaction = redeemTx;
     signer.txPlan.amount = 100'000'000;
     const auto result = signer.sign();
 
@@ -273,7 +275,7 @@ TEST(DecredSigner, SignNegativeNoUtxo) {
 
     // Sign
     auto signer = Signer(std::move(input));
-    signer.transaction = redeemTx;
+    signer._transaction = redeemTx;
     signer.txPlan.amount = 100'000'000;
     const auto result = signer.sign();
 
@@ -342,7 +344,7 @@ TEST(DecredSigner, SignP2PKH_NoPlan) {
 
     // Sign
     auto signer = Signer(std::move(input));
-    signer.transaction = redeemTx;
+    signer._transaction = redeemTx;
     //signer.txPlan.utxos.push_back(*utxo0);
     //signer.txPlan.amount = 100'000'000;
     const auto result = signer.sign();
@@ -427,3 +429,6 @@ TEST(DecredSigning, SignP2WPKH_NegativeAddressWrongType) {
 
     ASSERT_FALSE(result) << std::to_string(result.error());
 }
+// clang-format on
+
+} // namespace TW::Decred::tests

@@ -50,10 +50,10 @@ TEST(CosmosStaking, Staking) {
 
     { // Json-serialization, for coverage (to be removed later)
         input.set_signing_mode(Proto::JSON);
-        auto output = Signer::sign(input, TWCoinTypeCosmos);
-        ASSERT_EQ(hex(output.signature()), "c08bdf6c2b0b4428f37975e85d329f1cb19745b000994a743b5df81d57d573aa5f755349befcc848c1d1507818723b1288594bc91df685e89aff22e0303b4861");
-        EXPECT_EQ(output.error(), "");
-        EXPECT_EQ(hex(output.serialized()), "");
+        auto signingOutput = Signer::sign(input, TWCoinTypeCosmos);
+        ASSERT_EQ(hex(signingOutput.signature()), "c08bdf6c2b0b4428f37975e85d329f1cb19745b000994a743b5df81d57d573aa5f755349befcc848c1d1507818723b1288594bc91df685e89aff22e0303b4861");
+        EXPECT_EQ(signingOutput.error(), "");
+        EXPECT_EQ(hex(signingOutput.serialized()), "");
     }
 }
 
@@ -90,10 +90,10 @@ TEST(CosmosStaking, Unstaking) {
 
     { // Json-serialization, for coverage (to be removed later)
         input.set_signing_mode(Proto::JSON);
-        auto output = Signer::sign(input, TWCoinTypeCosmos);
-        ASSERT_EQ(hex(output.signature()), "8f85a9515a211881daebfb346c2beeca3ab5c2d406a9b3ad402cfddaa3d08e2b13378e13cfef8ecf1d6500fe85d0ce3e793034dd77aba90f216427807cbff79f");
-        EXPECT_EQ(output.error(), "");
-        EXPECT_EQ(hex(output.serialized()), "");
+        auto signingOutput = Signer::sign(input, TWCoinTypeCosmos);
+        ASSERT_EQ(hex(signingOutput.signature()), "8f85a9515a211881daebfb346c2beeca3ab5c2d406a9b3ad402cfddaa3d08e2b13378e13cfef8ecf1d6500fe85d0ce3e793034dd77aba90f216427807cbff79f");
+        EXPECT_EQ(signingOutput.error(), "");
+        EXPECT_EQ(hex(signingOutput.serialized()), "");
     }
 }
 
@@ -132,10 +132,10 @@ TEST(CosmosStaking, Restaking) {
 
     { // Json-serialization, for coverage (to be removed later)
         input.set_signing_mode(Proto::JSON);
-        auto output = Signer::sign(input, TWCoinTypeCosmos);
-        ASSERT_EQ(hex(output.signature()), "e64d3761bd25a28befcda80c0a0e208d024fdb0a2b89955170e65a5c5d454aba2ce81d57e01f0c126de5a59c2b58124c109560c9803d65a17a14b548dd6c50db");
-        EXPECT_EQ(output.error(), "");
-        EXPECT_EQ(hex(output.serialized()), "");
+        auto signingOutput = Signer::sign(input, TWCoinTypeCosmos);
+        ASSERT_EQ(hex(signingOutput.signature()), "e64d3761bd25a28befcda80c0a0e208d024fdb0a2b89955170e65a5c5d454aba2ce81d57e01f0c126de5a59c2b58124c109560c9803d65a17a14b548dd6c50db");
+        EXPECT_EQ(signingOutput.error(), "");
+        EXPECT_EQ(hex(signingOutput.serialized()), "");
     }
 }
 
@@ -169,9 +169,9 @@ TEST(CosmosStaking, Withdraw) {
 
     { // Json-serialization, for coverage (to be removed later)
         input.set_signing_mode(Proto::JSON);
-        auto output = Signer::sign(input, TWCoinTypeCosmos);
-        ASSERT_EQ(hex(output.signature()), "546f0d67356f6af94cfb5ab22b974e499c33123f2c2c292f4f0e64878e0e728f4643105fd771550beb3f2371f08880aaa38fa8f2334c103a779f1d82d2db98d6");
-        EXPECT_EQ(output.error(), "");
-        EXPECT_EQ(hex(output.serialized()), "");
+        auto signingOutput = Signer::sign(input, TWCoinTypeCosmos);
+        ASSERT_EQ(hex(signingOutput.signature()), "546f0d67356f6af94cfb5ab22b974e499c33123f2c2c292f4f0e64878e0e728f4643105fd771550beb3f2371f08880aaa38fa8f2334c103a779f1d82d2db98d6");
+        EXPECT_EQ(signingOutput.error(), "");
+        EXPECT_EQ(hex(signingOutput.serialized()), "");
     }
 }

@@ -6,24 +6,24 @@
 
 #pragma once
 
-#include "../proto/Cosmos.pb.h"
 #include "Data.h"
+#include "../proto/Cosmos.pb.h"
 #include <nlohmann/json.hpp>
+
+extern const std::string TYPE_PREFIX_MSG_SEND;
+extern const std::string TYPE_PREFIX_MSG_TRANSFER;
+extern const std::string TYPE_PREFIX_MSG_DELEGATE;
+extern const std::string TYPE_PREFIX_MSG_UNDELEGATE;
+extern const std::string TYPE_PREFIX_MSG_REDELEGATE;
+extern const std::string TYPE_PREFIX_MSG_WITHDRAW_REWARD;
+extern const std::string TYPE_PREFIX_PUBLIC_KEY;
+
+namespace TW::Cosmos::Json {
 
 using string = std::string;
 using json = nlohmann::json;
 
-extern const string TYPE_PREFIX_MSG_SEND;
-extern const string TYPE_PREFIX_MSG_TRANSFER;
-extern const string TYPE_PREFIX_MSG_DELEGATE;
-extern const string TYPE_PREFIX_MSG_UNDELEGATE;
-extern const string TYPE_PREFIX_MSG_REDELEGATE;
-extern const string TYPE_PREFIX_MSG_WITHDRAW_REWARD;
-extern const string TYPE_PREFIX_PUBLIC_KEY;
-
-namespace TW::Cosmos {
-
 json signaturePreimageJSON(const Proto::SigningInput& input);
 json transactionJSON(const Proto::SigningInput& input, const Data& signature);
 
-} // namespace
+} // namespace TW::Cosmos::json

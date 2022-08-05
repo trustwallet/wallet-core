@@ -4,27 +4,26 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWSolanaAddress.h>
 #include "Solana/Address.h"
+#include <TrustWalletCore/TWSolanaAddress.h>
 
-using namespace TW::Solana;
 using namespace TW;
 
 struct TWSolanaAddress* _Nullable TWSolanaAddressCreateWithString(TWString* _Nonnull string) {
     auto& str = *reinterpret_cast<const std::string*>(string);
-    return new TWSolanaAddress{Address(str)};
+    return new TWSolanaAddress{Solana::Address(str)};
 }
 
 void TWSolanaAddressDelete(struct TWSolanaAddress* _Nonnull address) {
     delete address;
 }
 
-TWString *_Nullable TWSolanaAddressDefaultTokenAddress(struct TWSolanaAddress* _Nonnull address, TWString* _Nonnull tokenMintAddress) {
+TWString* _Nullable TWSolanaAddressDefaultTokenAddress(struct TWSolanaAddress* _Nonnull address, TWString* _Nonnull tokenMintAddress) {
     try {
         if (address == nullptr || tokenMintAddress == nullptr) {
             return nullptr;
         }
-        Address tokenMint = Address(TWStringUTF8Bytes(tokenMintAddress));
+        Solana::Address tokenMint = Solana::Address(TWStringUTF8Bytes(tokenMintAddress));
         std::string defaultAddress = address->impl.defaultTokenAddress(tokenMint).string();
         return TWStringCreateWithUTF8Bytes(defaultAddress.c_str());
     } catch (...) {

@@ -20,9 +20,9 @@ class Signer {
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
   public:
-    const Proto::SigningInput& input;
+    const Proto::SigningInput& _input;
 
-    Signer(const Proto::SigningInput& input) : input(input) {}
+    Signer(const Proto::SigningInput& input) : _input(input) {}
 
     /// Signs the given transaction.
     std::string sign() const noexcept;

@@ -19,62 +19,62 @@ struct TWPrivateKey;
 static const size_t TWPrivateKeySize = 32;
 
 TW_EXPORT_STATIC_METHOD
-struct TWPrivateKey *_Nonnull TWPrivateKeyCreate(void);
+struct TWPrivateKey* _Nonnull TWPrivateKeyCreate(void);
 
 TW_EXPORT_STATIC_METHOD
-struct TWPrivateKey *_Nullable TWPrivateKeyCreateWithData(TWData *_Nonnull data);
+struct TWPrivateKey* _Nullable TWPrivateKeyCreateWithData(TWData* _Nonnull data);
 
 TW_EXPORT_STATIC_METHOD
-struct TWPrivateKey *_Nullable TWPrivateKeyCreateCopy(struct TWPrivateKey *_Nonnull key);
+struct TWPrivateKey* _Nullable TWPrivateKeyCreateCopy(struct TWPrivateKey* _Nonnull key);
 
 TW_EXPORT_METHOD
-void TWPrivateKeyDelete(struct TWPrivateKey *_Nonnull pk);
+void TWPrivateKeyDelete(struct TWPrivateKey* _Nonnull pk);
 
 TW_EXPORT_STATIC_METHOD
-bool TWPrivateKeyIsValid(TWData *_Nonnull data, enum TWCurve curve);
+bool TWPrivateKeyIsValid(TWData* _Nonnull data, enum TWCurve curve);
 
 TW_EXPORT_PROPERTY
-TWData *_Nonnull TWPrivateKeyData(struct TWPrivateKey *_Nonnull pk);
+TWData* _Nonnull TWPrivateKeyData(struct TWPrivateKey* _Nonnull pk);
 
 /// Returns the public key associated with this private key.
 TW_EXPORT_METHOD
-struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeySecp256k1(struct TWPrivateKey *_Nonnull pk, bool compressed);
+struct TWPublicKey* _Nonnull TWPrivateKeyGetPublicKeySecp256k1(struct TWPrivateKey* _Nonnull pk, bool compressed);
 
 /// Returns the public key associated with this private key.
 TW_EXPORT_METHOD
-struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyNist256p1(struct TWPrivateKey *_Nonnull pk);
+struct TWPublicKey* _Nonnull TWPrivateKeyGetPublicKeyNist256p1(struct TWPrivateKey* _Nonnull pk);
 
 /// Returns the public key associated with this private key.
 TW_EXPORT_METHOD
-struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519(struct TWPrivateKey *_Nonnull pk);
+struct TWPublicKey* _Nonnull TWPrivateKeyGetPublicKeyEd25519(struct TWPrivateKey* _Nonnull pk);
 
 /// Returns the public key associated with this private key.
 TW_EXPORT_METHOD
-struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519Blake2b(struct TWPrivateKey *_Nonnull pk);
+struct TWPublicKey* _Nonnull TWPrivateKeyGetPublicKeyEd25519Blake2b(struct TWPrivateKey* _Nonnull pk);
 
 /// Returns the Cardano style public key associated with this private key.
 TW_EXPORT_METHOD
-struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519Cardano(struct TWPrivateKey *_Nonnull pk);
+struct TWPublicKey* _Nonnull TWPrivateKeyGetPublicKeyEd25519Cardano(struct TWPrivateKey* _Nonnull pk);
 
 /// Returns the public key associated with this private key.
 TW_EXPORT_METHOD
-struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivateKey *_Nonnull pk);
+struct TWPublicKey* _Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivateKey* _Nonnull pk);
 
 /// Computes an EC Diffie-Hellman secret in constant time
 /// Supported curves: secp256k1
 TW_EXPORT_METHOD
-TWData *_Nullable TWPrivateKeyGetSharedKey(const struct TWPrivateKey *_Nonnull pk, const struct TWPublicKey *_Nonnull publicKey, enum TWCurve curve);
+TWData* _Nullable TWPrivateKeyGetSharedKey(const struct TWPrivateKey* _Nonnull pk, const struct TWPublicKey* _Nonnull publicKey, enum TWCurve curve);
 
 /// Signs a digest using ECDSA and given curve.
 TW_EXPORT_METHOD
-TWData *_Nullable TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest, enum TWCurve curve);
+TWData* _Nullable TWPrivateKeySign(struct TWPrivateKey* _Nonnull pk, TWData* _Nonnull digest, enum TWCurve curve);
 
-/// Signs a digest using ECDSA and given curve. The result is encoded with DER.
+/// Signs a digest using ECDSA. The result is encoded with DER.
 TW_EXPORT_METHOD
-TWData *_Nullable TWPrivateKeySignAsDER(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest, enum TWCurve curve);
+TWData* _Nullable TWPrivateKeySignAsDER(struct TWPrivateKey* _Nonnull pk, TWData* _Nonnull digest);
 
 /// Signs a digest using ECDSA and Zilliqa schnorr signature scheme.
 TW_EXPORT_METHOD
-TWData *_Nullable TWPrivateKeySignZilliqaSchnorr(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull message);
+TWData* _Nullable TWPrivateKeySignZilliqaSchnorr(struct TWPrivateKey* _Nonnull pk, TWData* _Nonnull message);
 
 TW_EXTERN_C_END

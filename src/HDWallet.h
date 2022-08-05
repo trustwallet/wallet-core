@@ -81,6 +81,9 @@ class HDWallet {
     /// Returns the private key at the given derivation path.
     PrivateKey getKey(const TWCoinType coin, const DerivationPath& derivationPath) const;
 
+    /// Returns the private key at the given derivation path and curve.
+    PrivateKey getKeyByCurve(TWCurve curve, const DerivationPath& derivationPath) const;
+
     /// Derives the address for a coin (default derivation).
     std::string deriveAddress(TWCoinType coin) const;
 
@@ -121,10 +124,6 @@ class HDWallet {
 
     /// Computes the private key from an extended private key representation.
     static std::optional<PrivateKey> getPrivateKeyFromExtended(const std::string& extended, TWCoinType coin, const DerivationPath& path);
-
-  public:
-    // obtain privateKeyType used by the coin/curve
-    static PrivateKeyType getPrivateKeyType(TWCurve curve);
 
   private:
     void updateSeedAndEntropy(bool check = true);

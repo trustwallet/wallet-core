@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,19 +9,15 @@
 #include "Data.h"
 #include "PublicKey.h"
 
+#include <TrustWalletCore/TWPrivateKeyType.h>
 #include <TrustWalletCore/TWCurve.h>
 
 namespace TW {
 
-enum PrivateKeyType {
-    PrivateKeyTypeDefault32 = 0,      // 32 bytes private key.
-    PrivateKeyTypeCardano = 1,        // 96 bytes private key.
-};
-
 class PrivateKey {
   public:
     /// The number of bytes in a private key.
-    static const size_t size = 32;
+    static const size_t _size = 32;
     /// The number of bytes in a Cardano key (two extended ed25519 keys + chain code)
     static const size_t cardanoKeySize = 2 * 3 * 32;
 
@@ -43,6 +39,9 @@ class PrivateKey {
 
     /// Determines if a collection of bytes and curve make a valid private key.
     static bool isValid(const Data& data, TWCurve curve);
+
+    // obtain private key type used by the curve/coin
+    static TWPrivateKeyType getType(TWCurve curve) noexcept;
 
     /// Initializes a private key with an array of bytes.  Size must be exact (normally 32, or 192 for extended)
     explicit PrivateKey(const Data& data);

@@ -59,7 +59,7 @@ TEST(ParamsBuilder, pushInt) {
 }
 
 TEST(ParamsBuilder, balanceInvokeCode) {
-    auto balanceParam = Address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD").data;
+    auto balanceParam = Address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD")._data;
     auto invokeCode = ParamsBuilder::buildNativeInvokeCode(Ont().contractAddress(), 0x00,
                                                            "balanceOf", balanceParam);
     auto hexInvokeCode =
@@ -69,8 +69,8 @@ TEST(ParamsBuilder, balanceInvokeCode) {
 }
 
 TEST(ParamsBuilder, transferInvokeCode) {
-    auto fromAddress = Address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD").data;
-    auto toAddress = Address("Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn").data;
+    auto fromAddress = Address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD")._data;
+    auto toAddress = Address("Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn")._data;
     uint64_t amount = 1;
     std::list<boost::any> transferParam{fromAddress, toAddress, amount};
     std::vector<boost::any> args{transferParam};

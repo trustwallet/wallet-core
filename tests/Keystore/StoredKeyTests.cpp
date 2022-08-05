@@ -23,8 +23,8 @@ namespace TW::Keystore {
 using namespace std;
 
 const auto passwordString = "password";
-const auto password = TW::data(string(passwordString));
-const auto mnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
+const auto gPassword = TW::data(string(passwordString));
+const auto gMnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
 const TWCoinType coinTypeBc = TWCoinTypeBitcoin;
 const TWCoinType coinTypeBnb = TWCoinTypeBinance;
 const TWCoinType coinTypeBsc = TWCoinTypeSmartChain;
@@ -32,12 +32,12 @@ const TWCoinType coinTypeEth = TWCoinTypeEthereum;
 const TWCoinType coinTypeBscLegacy = TWCoinTypeSmartChainLegacy;
 
 TEST(StoredKey, CreateWithMnemonic) {
-    auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWStoredKeyEncryptionLevelDefault);
+    auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelDefault);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
-    const Data& mnemo2Data = key.payload.decrypt(password);
-    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));
+    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
     EXPECT_EQ(key.accounts.size(), 0ul);
-    EXPECT_EQ(key.wallet(password).getMnemonic(), string(mnemonic));
+    EXPECT_EQ(key.wallet(gPassword).getMnemonic(), string(gMnemonic));
 
     const auto json = key.json();
     EXPECT_EQ(json["name"], "name");
@@ -47,7 +47,7 @@ TEST(StoredKey, CreateWithMnemonic) {
 
 TEST(StoredKey, CreateWithMnemonicInvalid) {
     try {
-        auto key = StoredKey::createWithMnemonic("name", password, "_THIS_IS_NOT_A_VALID_MNEMONIC_", TWStoredKeyEncryptionLevelDefault);
+        auto key = StoredKey::createWithMnemonic("name", gPassword, "_THIS_IS_NOT_A_VALID_MNEMONIC_", TWStoredKeyEncryptionLevelDefault);
     } catch (std::invalid_argument&) {
         // expedcted exception OK
         return;
@@ -56,38 +56,38 @@ TEST(StoredKey, CreateWithMnemonicInvalid) {
 }
 
 TEST(StoredKey, CreateWithMnemonicRandom) {
-    const auto key = StoredKey::createWithMnemonicRandom("name", password, TWStoredKeyEncryptionLevelDefault);
+    const auto key = StoredKey::createWithMnemonicRandom("name", gPassword, TWStoredKeyEncryptionLevelDefault);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
     // random mnemonic: check only length and validity
-    const Data& mnemo2Data = key.payload.decrypt(password);
+    const Data& mnemo2Data = key.payload.decrypt(gPassword);
     EXPECT_TRUE(mnemo2Data.size() >= 36);
     EXPECT_TRUE(Mnemonic::isValid(string(mnemo2Data.begin(), mnemo2Data.end())));
     EXPECT_EQ(key.accounts.size(), 0ul);
 }
 
 TEST(StoredKey, CreateWithMnemonicAddDefaultAddress) {
-    auto key = StoredKey::createWithMnemonicAddDefaultAddress("name", password, mnemonic, coinTypeBc);
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("name", gPassword, gMnemonic, coinTypeBc);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
 
-    const Data& mnemo2Data = key.payload.decrypt(password);
+    const Data& mnemo2Data = key.payload.decrypt(gPassword);
 
-    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
     EXPECT_EQ(key.accounts.size(), 1ul);
     EXPECT_EQ(key.accounts[0].coin, coinTypeBc);
     EXPECT_EQ(key.accounts[0].address, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
     EXPECT_EQ(key.accounts[0].publicKey, "02df6fc590ab3101bbe0bb5765cbaeab9b5dcfe09ac9315d707047cbd13bc7e006");
     EXPECT_EQ(key.accounts[0].extendedPublicKey, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
-    EXPECT_EQ(hex(key.privateKey(coinTypeBc, password).bytes), "d2568511baea8dc347f14c4e0479eb8ebe29eb5f664ed796e755896250ffd11f");
+    EXPECT_EQ(hex(key.privateKey(coinTypeBc, gPassword).bytes), "d2568511baea8dc347f14c4e0479eb8ebe29eb5f664ed796e755896250ffd11f");
 }
 
 TEST(StoredKey, CreateWithPrivateKeyAddDefaultAddress) {
     const auto privateKey = parse_hex("3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266");
-    auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("name", password, coinTypeBc, privateKey);
+    auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("name", gPassword, coinTypeBc, privateKey);
     EXPECT_EQ(key.type, StoredKeyType::privateKey);
     EXPECT_EQ(key.accounts.size(), 1ul);
     EXPECT_EQ(key.accounts[0].coin, coinTypeBc);
     EXPECT_EQ(key.accounts[0].address, "bc1q375sq4kl2nv0mlmup3vm8znn4eqwu7mt6hkwhr");
-    EXPECT_EQ(hex(key.privateKey(coinTypeBc, password).bytes), hex(privateKey));
+    EXPECT_EQ(hex(key.privateKey(coinTypeBc, gPassword).bytes), hex(privateKey));
 
     const auto json = key.json();
     EXPECT_EQ(json["name"], "name");
@@ -98,7 +98,7 @@ TEST(StoredKey, CreateWithPrivateKeyAddDefaultAddress) {
 TEST(StoredKey, CreateWithPrivateKeyAddDefaultAddressInvalid) {
     try {
         const auto privateKeyInvalid = parse_hex("0001020304");
-        auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("name", password, coinTypeBc, privateKeyInvalid);
+        auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("name", gPassword, coinTypeBc, privateKeyInvalid);
     } catch (std::invalid_argument&) {
         // expected exception ok
         return;
@@ -107,14 +107,14 @@ TEST(StoredKey, CreateWithPrivateKeyAddDefaultAddressInvalid) {
 }
 
 TEST(StoredKey, AccountGetCreate) {
-    auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWStoredKeyEncryptionLevelDefault);
+    auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelDefault);
     EXPECT_EQ(key.accounts.size(), 0ul);
 
     // not exists
     EXPECT_FALSE(key.account(coinTypeBc).has_value());
     EXPECT_EQ(key.accounts.size(), 0ul);
 
-    auto wallet = key.wallet(password);
+    auto wallet = key.wallet(gPassword);
     // not exists, wallet null, not create
     EXPECT_FALSE(key.account(coinTypeBc, nullptr).has_value());
     EXPECT_EQ(key.accounts.size(), 0ul);
@@ -145,8 +145,8 @@ TEST(StoredKey, AccountGetCreate) {
 }
 
 TEST(StoredKey, AccountGetDoesntChange) {
-    auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWStoredKeyEncryptionLevelDefault);
-    auto wallet = key.wallet(password);
+    auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelDefault);
+    auto wallet = key.wallet(gPassword);
     EXPECT_EQ(key.accounts.size(), 0ul);
 
     vector<TWCoinType> coins = {coinTypeBc, coinTypeEth, coinTypeBnb};
@@ -169,7 +169,7 @@ TEST(StoredKey, AccountGetDoesntChange) {
 }
 
 TEST(StoredKey, AddRemoveAccount) {
-    auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWStoredKeyEncryptionLevelDefault);
+    auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelDefault);
     EXPECT_EQ(key.accounts.size(), 0ul);
 
     {
@@ -199,7 +199,7 @@ TEST(StoredKey, AddRemoveAccount) {
 }
 
 TEST(StoredKey, AddRemoveAccountDerivation) {
-    auto key = StoredKey::createWithMnemonic("name", Data(), mnemonic, TWStoredKeyEncryptionLevelDefault);
+    auto key = StoredKey::createWithMnemonic("name", Data(), gMnemonic, TWStoredKeyEncryptionLevelDefault);
     EXPECT_EQ(key.accounts.size(), 0ul);
 
     const auto derivationPath = DerivationPath("m/84'/0'/0'/0/0");
@@ -223,7 +223,7 @@ TEST(StoredKey, AddRemoveAccountDerivation) {
 }
 
 TEST(StoredKey, AddRemoveAccountDerivationPath) {
-    auto key = StoredKey::createWithMnemonic("name", Data(), mnemonic, TWStoredKeyEncryptionLevelDefault);
+    auto key = StoredKey::createWithMnemonic("name", Data(), gMnemonic, TWStoredKeyEncryptionLevelDefault);
     EXPECT_EQ(key.accounts.size(), 0ul);
 
     const auto derivationPath0 = DerivationPath("m/84'/0'/0'/0/0");
@@ -249,21 +249,21 @@ TEST(StoredKey, AddRemoveAccountDerivationPath) {
 
 TEST(StoredKey, FixAddress) {
     {
-        auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWStoredKeyEncryptionLevelDefault);
-        key.fixAddresses(password);
+        auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelDefault);
+        key.fixAddresses(gPassword);
     }
     {
         const auto privateKey = parse_hex("3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266");
-        auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("name", password, coinTypeBc, privateKey);
-        key.fixAddresses(password);
+        auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("name", gPassword, coinTypeBc, privateKey);
+        key.fixAddresses(gPassword);
     }
 }
 
 TEST(StoredKey, WalletInvalid) {
     const auto privateKey = parse_hex("3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266");
-    auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("name", password, coinTypeBc, privateKey);
+    auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("name", gPassword, coinTypeBc, privateKey);
     try {
-        auto wallet = key.wallet(password);
+        auto wallet = key.wallet(gPassword);
     } catch (std::invalid_argument&) {
         // expected exception ok
         return;
@@ -310,7 +310,7 @@ TEST(StoredKey, LoadLegacyMnemonic) {
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
     EXPECT_EQ(key.id, "629aad29-0b22-488e-a0e7-b4219d4f311c");
 
-    const auto data = key.payload.decrypt(password);
+    const auto data = key.payload.decrypt(gPassword);
     const auto mnemonic = string(reinterpret_cast<const char*>(data.data()));
     EXPECT_EQ(mnemonic, "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn back");
 
@@ -343,7 +343,7 @@ TEST(StoredKey, ReadWallet) {
 
     EXPECT_EQ(header.params.cipher, "aes-128-ctr");
     EXPECT_EQ(hex(header.encrypted), "d172bf743a674da9cdad04534d56926ef8358534d458fffccd4e6ad2fbde479c");
-    EXPECT_EQ(hex(header.mac), "2103ac29920d71da29f15d75b4a16dbe95cfd7ff8faea1056c33131d846e3097");
+    EXPECT_EQ(hex(header._mac), "2103ac29920d71da29f15d75b4a16dbe95cfd7ff8faea1056c33131d846e3097");
     EXPECT_EQ(hex(header.params.cipherParams.iv), "83dbcc02d8ccb40e466191a123791e0e");
 
     ASSERT_TRUE(header.params.kdfParams.which() == 0);
@@ -361,7 +361,7 @@ TEST(StoredKey, ReadMyEtherWallet) {
 TEST(StoredKey, InvalidPassword) {
     const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/key.json");
 
-    ASSERT_THROW(key.payload.decrypt(password), DecryptionError);
+    ASSERT_THROW(key.payload.decrypt(gPassword), DecryptionError);
 }
 
 TEST(StoredKey, EmptyAccounts) {
@@ -379,16 +379,16 @@ TEST(StoredKey, Decrypt) {
 
 TEST(StoredKey, CreateWallet) {
     const auto privateKey = parse_hex("3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266");
-    const auto key = StoredKey::createWithPrivateKey("name", password, privateKey);
-    const auto decrypted = key.payload.decrypt(password);
+    const auto key = StoredKey::createWithPrivateKey("name", gPassword, privateKey);
+    const auto decrypted = key.payload.decrypt(gPassword);
 
     EXPECT_EQ(hex(decrypted), hex(privateKey));
 }
 
 TEST(StoredKey, CreateAccounts) {
     string mnemonicPhrase = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
-    auto key = StoredKey::createWithMnemonic("name", password, mnemonicPhrase, TWStoredKeyEncryptionLevelDefault);
-    const auto wallet = key.wallet(password);
+    auto key = StoredKey::createWithMnemonic("name", gPassword, mnemonicPhrase, TWStoredKeyEncryptionLevelDefault);
+    const auto wallet = key.wallet(gPassword);
     
     EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->address, "0x494f60cb6Ac2c8F5E1393aD9FdBdF4Ad589507F7");
     EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->publicKey, "04cc32a479080d83fdcf69966713f0aad1bc1dc3ecf873b034894e84259841bc1c9b122717803e68905220ff54952d3f5ea2ab2698ca31f843addf94ae73fae9fd");
@@ -423,14 +423,14 @@ TEST(StoredKey, MissingAddressFix) {
     auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/missing-address.json");
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
 
-    const auto wallet = key.wallet(password);
+    const auto wallet = key.wallet(gPassword);
     EXPECT_EQ(wallet.getMnemonic(), "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal");
     EXPECT_TRUE(Mnemonic::isValid(wallet.getMnemonic()));
 
     EXPECT_EQ(key.account(TWCoinTypeBitcoin)->address, "");
     EXPECT_EQ(key.account(TWCoinTypeEthereum)->address, "");
 
-    key.fixAddresses(password);
+    key.fixAddresses(gPassword);
 
     EXPECT_EQ(key.account(TWCoinTypeEthereum, nullptr)->address, "0xA3Dcd899C0f3832DFDFed9479a9d828c6A4EB2A7");
     EXPECT_EQ(key.account(TWCoinTypeEthereum, nullptr)->publicKey, "0448a9ffac8022f1c7eb5253746e24d11d9b6b2737c0aecd48335feabb95a179916b1f3a97bed6740a85a2d11c663d38566acfb08af48a47ce0c835c65c9b23d0d");
@@ -442,7 +442,7 @@ TEST(StoredKey, MissingAddressReadd) {
     auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/missing-address.json");
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
 
-    const auto wallet = key.wallet(password);
+    const auto wallet = key.wallet(gPassword);
     EXPECT_EQ(wallet.getMnemonic(), "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal");
     EXPECT_TRUE(Mnemonic::isValid(wallet.getMnemonic()));
 
@@ -468,12 +468,12 @@ TEST(StoredKey, EtherWalletAddressNo0x) {
 }
 
 TEST(StoredKey, CreateMinimalEncryptionParameters) {
-    const auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWStoredKeyEncryptionLevelMinimal);
+    const auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelMinimal);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
-    const Data& mnemo2Data = key.payload.decrypt(password);
-    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));
+    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
     EXPECT_EQ(key.accounts.size(), 0ul);
-    EXPECT_EQ(key.wallet(password).getMnemonic(), string(mnemonic));
+    EXPECT_EQ(key.wallet(gPassword).getMnemonic(), string(gMnemonic));
 
     const auto json = key.json();
 
@@ -482,16 +482,16 @@ TEST(StoredKey, CreateMinimalEncryptionParameters) {
 
     // load it back
     const auto key2 = StoredKey::createWithJson(json);
-    EXPECT_EQ(key2.wallet(password).getMnemonic(), string(mnemonic));
+    EXPECT_EQ(key2.wallet(gPassword).getMnemonic(), string(gMnemonic));
 }
 
 TEST(StoredKey, CreateWeakEncryptionParameters) {
-    const auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWStoredKeyEncryptionLevelWeak);
+    const auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelWeak);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
-    const Data& mnemo2Data = key.payload.decrypt(password);
-    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));
+    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
     EXPECT_EQ(key.accounts.size(), 0ul);
-    EXPECT_EQ(key.wallet(password).getMnemonic(), string(mnemonic));
+    EXPECT_EQ(key.wallet(gPassword).getMnemonic(), string(gMnemonic));
 
     const auto json = key.json();
 
@@ -500,16 +500,16 @@ TEST(StoredKey, CreateWeakEncryptionParameters) {
 
     // load it back
     const auto key2 = StoredKey::createWithJson(json);
-    EXPECT_EQ(key2.wallet(password).getMnemonic(), string(mnemonic));
+    EXPECT_EQ(key2.wallet(gPassword).getMnemonic(), string(gMnemonic));
 }
 
 TEST(StoredKey, CreateStandardEncryptionParameters) {
-    const auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWStoredKeyEncryptionLevelStandard);
+    const auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelStandard);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
-    const Data& mnemo2Data = key.payload.decrypt(password);
-    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));
+    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
     EXPECT_EQ(key.accounts.size(), 0ul);
-    EXPECT_EQ(key.wallet(password).getMnemonic(), string(mnemonic));
+    EXPECT_EQ(key.wallet(gPassword).getMnemonic(), string(gMnemonic));
 
     const auto json = key.json();
 
@@ -518,21 +518,21 @@ TEST(StoredKey, CreateStandardEncryptionParameters) {
 
     // load it back
     const auto key2 = StoredKey::createWithJson(json);
-    EXPECT_EQ(key2.wallet(password).getMnemonic(), string(mnemonic));
+    EXPECT_EQ(key2.wallet(gPassword).getMnemonic(), string(gMnemonic));
 }
 
 TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
-    auto key = StoredKey::createWithMnemonic("name", password, mnemonic, TWStoredKeyEncryptionLevelDefault);
+    auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelDefault);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
-    const Data& mnemo2Data = key.payload.decrypt(password);
-    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));
-    EXPECT_EQ(key.wallet(password).getMnemonic(), string(mnemonic));
+    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
+    EXPECT_EQ(key.wallet(gPassword).getMnemonic(), string(gMnemonic));
     EXPECT_EQ(key.accounts.size(), 0ul);
 
     const auto expectedBtc1 = "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny";
     const auto expectedBtc2 = "1NyRyFewhZcWMa9XCj3bBxSXPXyoSg8dKz";
     const auto expectedSol1 = "HiipoCKL8hX2RVmJTz3vaLy34hS2zLhWWMkUWtw85TmZ";
-    const auto wallet = key.wallet(password);
+    const auto wallet = key.wallet(gPassword);
     auto expectedAccounts = 0ul;
 
     { // Create default Bitcoin account
@@ -625,25 +625,25 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
 
 TEST(StoredKey, CreateWithMnemonicAlternativeDerivation) {
     const auto coin = TWCoinTypeSolana;
-    auto key = StoredKey::createWithMnemonicAddDefaultAddress("name", password, mnemonic, coin);
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("name", gPassword, gMnemonic, coin);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
 
     ASSERT_EQ(key.accounts.size(), 1ul);
     EXPECT_EQ(key.accounts[0].coin, coin);
     EXPECT_EQ(key.accounts[0].address, "HiipoCKL8hX2RVmJTz3vaLy34hS2zLhWWMkUWtw85TmZ");
     EXPECT_EQ(key.accounts[0].publicKey, "f86b18399096c8134dd185f1e72dd7e26528772a2a998abfd81c5f8c547223d0");
-    EXPECT_EQ(hex(key.privateKey(coin, password).bytes), "d81b5c525979e487736b69cb84ed8331559de17294f38491b304555c26687e83");
-    EXPECT_EQ(hex(key.privateKey(coin, TWDerivationDefault, password).bytes), "d81b5c525979e487736b69cb84ed8331559de17294f38491b304555c26687e83");
+    EXPECT_EQ(hex(key.privateKey(coin, gPassword).bytes), "d81b5c525979e487736b69cb84ed8331559de17294f38491b304555c26687e83");
+    EXPECT_EQ(hex(key.privateKey(coin, TWDerivationDefault, gPassword).bytes), "d81b5c525979e487736b69cb84ed8331559de17294f38491b304555c26687e83");
     ASSERT_EQ(key.accounts.size(), 1ul);
 
     // alternative derivation, different keys
-    EXPECT_EQ(hex(key.privateKey(coin, TWDerivationSolanaSolana, password).bytes), "d49a5fa7f77593534c7afd2ba8dc8e9d8b007bc6ec65fe8df25ffe6fafc57151");
+    EXPECT_EQ(hex(key.privateKey(coin, TWDerivationSolanaSolana, gPassword).bytes), "d49a5fa7f77593534c7afd2ba8dc8e9d8b007bc6ec65fe8df25ffe6fafc57151");
 
     ASSERT_EQ(key.accounts.size(), 2ul);
     EXPECT_EQ(key.accounts[1].coin, coin);
     EXPECT_EQ(key.accounts[1].address, "CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C");
     EXPECT_EQ(key.accounts[1].publicKey, "ad8f57924dce62f9040f93b4f6ce3c3d39afde7e29bcb4013dad59db7913c4c7");
-    EXPECT_EQ(hex(key.privateKey(coin, TWDerivationSolanaSolana, password).bytes), "d49a5fa7f77593534c7afd2ba8dc8e9d8b007bc6ec65fe8df25ffe6fafc57151");
+    EXPECT_EQ(hex(key.privateKey(coin, TWDerivationSolanaSolana, gPassword).bytes), "d49a5fa7f77593534c7afd2ba8dc8e9d8b007bc6ec65fe8df25ffe6fafc57151");
 }
 
 } // namespace TW::Keystore

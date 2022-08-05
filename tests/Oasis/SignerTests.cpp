@@ -4,16 +4,17 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Oasis/Signer.h"
-#include "Oasis/Address.h"
 #include "HexCoding.h"
+#include "Oasis/Address.h"
+#include "Oasis/Signer.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
 
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Oasis;
+
+namespace TW::Oasis::tests {
 
 TEST(OasisSigner, Sign) {
     auto input = Proto::SigningInput();
@@ -33,5 +34,7 @@ TEST(OasisSigner, Sign) {
 
     Proto::SigningOutput output = Signer::sign(input);
 
-    ASSERT_EQ(hex(output.encoded()),"a273756e747275737465645f7261775f76616c7565585ea4656e6f6e636500666d6574686f64707374616b696e672e5472616e7366657263666565a2636761730066616d6f756e74410064626f6479a262746f5500c73cc001463434915ba3f39751beb7c0905b45eb66616d6f756e744400989680697369676e6174757265a26a7075626c69635f6b6579582093d8f8a455f50527976a8aa87ebde38d5606efa86cb985d3fb466aff37000e3b697369676e61747572655840e331ce731ed819106586152b13cd98ecf3248a880bdc71174ee3d83f6d5f3f8ee8fc34c19b22032f2f1e3e06d382720125d7a517fba9295c813228cc2b63170b");
+    ASSERT_EQ(hex(output.encoded()), "a273756e747275737465645f7261775f76616c7565585ea4656e6f6e636500666d6574686f64707374616b696e672e5472616e7366657263666565a2636761730066616d6f756e74410064626f6479a262746f5500c73cc001463434915ba3f39751beb7c0905b45eb66616d6f756e744400989680697369676e6174757265a26a7075626c69635f6b6579582093d8f8a455f50527976a8aa87ebde38d5606efa86cb985d3fb466aff37000e3b697369676e61747572655840e331ce731ed819106586152b13cd98ecf3248a880bdc71174ee3d83f6d5f3f8ee8fc34c19b22032f2f1e3e06d382720125d7a517fba9295c813228cc2b63170b");
 }
+
+} // namespace TW::Oasis::tests
