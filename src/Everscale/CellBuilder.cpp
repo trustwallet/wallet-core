@@ -7,6 +7,7 @@
 #include "CellBuilder.h"
 #include "Cell.h"
 
+#include <bit>
 #include <cassert>
 #include <vector>
 
@@ -67,7 +68,7 @@ void CellBuilder::appendU64(uint64_t value) {
     appendRaw(appendedData, 64);
 }
 
-void CellBuilder::appendU128(uint128_t value) {
+void CellBuilder::appendU128(const uint128_t& value) {
     uint8_t bits = 4;
     uint16_t bytes = 16 - clzU128(value) / 8;
 
@@ -228,14 +229,13 @@ uint8_t CellBuilder::clzU128(const uint128_t& u) {
     auto hi = static_cast<uint64_t>(u >> 64);
     auto lo = static_cast<uint64_t>(u);
 
-    int retval[3] = {
-        __builtin_clzll(hi),
-        __builtin_clzll(lo) + 64,
-        128};
-
-    int idx = !hi + ((!lo) & (!hi));
-
-    return static_cast<uint8_t>(retval[idx]);
+    if (lo == 0 && hi == 0) {
+        return 128;
+    } else if (hi == 0) {
+        return static_cast<uint8_t>(std::countl_zero(lo) + 64);
+    } else {
+        return static_cast<uint8_t>(std::countl_zero(hi));
+    }
 }
 
 void CellBuilder::encode128BE(const uint128_t& val, Data& data) {

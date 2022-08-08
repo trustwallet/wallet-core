@@ -15,8 +15,30 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
+using boost::multiprecision::uint128_t;
 
 namespace TW::Everscale {
+
+void checkBuilder(const uint128_t& value, uint16_t bitLen, const std::string& hash) {
+    CellBuilder dataBuilder;
+    dataBuilder.appendU128(value);
+    const auto cell = dataBuilder.intoCell();
+    ASSERT_EQ(cell->bitLen, bitLen);
+    ASSERT_EQ(hex(cell->hash), hash);
+}
+
+TEST(EverscaleCell, BuilderVarUint16) {
+    const uint128_t oneEver{1'000'000'000u};
+
+    checkBuilder(0, 4, "5331fed036518120c7f345726537745c5929b8ea1fa37b99b2bb58f702671541");
+    checkBuilder(1, 12, "d46edee086ccbace01f45c13d26d49b68f74cd1b7616f4662e699c82c6ec728b");
+    checkBuilder(255, 12, "bd16b2d60c93163fbed832e91a5faec484715c48176857c57dcedf9f6e0f32f6");
+    checkBuilder(256, 20, "16559011ce6f0f7aaa765179e73ef293f39610f5baa3838a1dc8c52da95793b3");
+    checkBuilder(oneEver, 36, "e139b2d96d0bd76da98c3c23b0dc0481dcfe19562798fefbb7bf2e56d8ef37b5");
+    checkBuilder(10 * oneEver, 44, "8882fead71f2deb3aa7b8dbd15bbb42c651fcaae8da82e6d5cf8e49825eed12b");
+    checkBuilder(1000000 * oneEver, 60, "125f2f85da07f9d92148c067bc19aecbf4da65becdd6b51f17ae3a2aeb2c1bdd");
+    checkBuilder(1'000'000'000'000u * oneEver, 76, "39bcb314cdb31de5159764d9c28779de27be44210ffcc52a27aa01bff1d82bf7");
+}
 
 TEST(EverscaleCell, ComputeContractAddress) {
     const auto seqno = 0;
