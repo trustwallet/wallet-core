@@ -7,11 +7,10 @@
 import "mocha";
 import { assert } from "chai";
 import { Buffer } from "buffer";
-import { initWasm } from "../dist";
 
 describe("PBKDF2", () => {
-  it("test sha256 hmac", async () => {
-    const { PBKDF2, HexCoding } = await initWasm();
+  it("test sha256 hmac", () => {
+    const { PBKDF2, HexCoding } = globalThis.core;
 
     const password = Buffer.from("password");
     const salt = Buffer.from("salt");
