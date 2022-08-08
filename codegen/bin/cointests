@@ -12,7 +12,7 @@ require 'optparse'
 
 options = { :no_skip_existing => false }
 OptionParser.new do |opt|
-  opt.banner = "Usage: codegen/bin/cointests [--coin-id coinid] [--no-skip-existing]"
+  opt.banner = "Usage: codegen/bin/cointests [options]"
   opt.on('--coin-id <coin-id>') { |o| options[:coin_id] = o.downcase }
   opt.on('--no-skip-existing') { options[:no_skip_existing] = true }
 end.parse!

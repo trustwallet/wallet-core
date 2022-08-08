@@ -56,7 +56,7 @@ class CoinTestGen
     end
   end
 
-  def generate_coin_test_file(coin, templateFile, overwriteExisting = false)
+  def generate_coin_test_file(coin, templateFile, overwriteExisting = true)
     path = File.expand_path(templateFile, File.join(File.dirname(__FILE__), '..', 'lib', 'templates'))
     template = ERB.new(File.read(path), nil, '-')
     result = template.result(binding)
