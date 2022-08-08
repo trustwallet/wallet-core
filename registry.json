@@ -992,8 +992,9 @@
     },
     "info": {
       "url": "https://everscale.network/",
-      "source": "https://github.com/broxus/ton-wallet-api",
-      "documentation": "https://tonapi.broxus.com/ton/v3/swagger.yaml"
+      "source": "https://github.com/tonlabs/evernode-ds",
+      "rpc": "",
+      "documentation": "https://docs.everos.dev/evernode-platform/products/evercloud/get-started"
     }
   },
   {
