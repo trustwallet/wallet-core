@@ -4,11 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "HexCoding.h"
 #include "Everscale/Address.h"
 #include "Everscale/WorkchainType.h"
-#include "PublicKey.h"
+#include "HexCoding.h"
 #include "PrivateKey.h"
+#include "PublicKey.h"
 #include <gtest/gtest.h>
 #include <vector>
 
@@ -49,4 +49,4 @@ TEST(EverscaleAddress, FromPublicKey) {
     ASSERT_EQ(address.string(), "0:269fee242eb410786abe1777a14785c8bbeb1e34100c7570e17698b36ad66fb0");
 }
 
-}
+} // namespace TW::Everscale

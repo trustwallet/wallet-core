@@ -139,16 +139,16 @@ void CellBuilder::appendReferenceCell(std::shared_ptr<Cell> child) {
 
 void CellBuilder::appendBuilder(const CellBuilder& builder) {
     appendRaw(builder.data, builder.bitLen);
-    for (const auto & reference : builder.references) {
+    for (const auto& reference : builder.references) {
         appendReferenceCell(reference);
     }
 }
 
-void CellBuilder::appendCellSlice(const CellSlice &other) {
+void CellBuilder::appendCellSlice(const CellSlice& other) {
     Data appendedData(other.cell->data);
     appendRaw(appendedData, other.cell->bitLen);
 
-    for (const auto & cell : other.cell->references) {
+    for (const auto& cell : other.cell->references) {
         appendReferenceCell(cell);
     }
 }
@@ -228,13 +228,12 @@ uint8_t CellBuilder::clzU128(const uint128_t& u) {
     auto hi = static_cast<uint64_t>(u >> 64);
     auto lo = static_cast<uint64_t>(u);
 
-    int retval[3]={
+    int retval[3] = {
         __builtin_clzll(hi),
-        __builtin_clzll(lo)+64,
-        128
-    };
+        __builtin_clzll(lo) + 64,
+        128};
 
-    int idx = !hi + ((!lo)&(!hi));
+    int idx = !hi + ((!lo) & (!hi));
 
     return static_cast<uint8_t>(retval[idx]);
 }

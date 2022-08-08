@@ -95,7 +95,7 @@ Cell::Ref Message::intoCell() const {
 }
 
 Data createSignedMessage(PublicKey& publicKey, PrivateKey& key, bool bounce, uint32_t flags, uint64_t amount, uint32_t expiredAt,
-                                        std::optional<MsgAddressInt>& destination, std::optional<Data>& stateInit) {
+                         std::optional<MsgAddressInt>& destination, std::optional<Data>& stateInit) {
     auto getInitData = [](const PublicKey& publicKey, const std::optional<Data>& stateInit) {
         if (stateInit.has_value()) {
             auto cell = Cell::deserialize(stateInit.value().data(), stateInit.value().size());
@@ -152,4 +152,4 @@ Data createSignedMessage(PublicKey& publicKey, PrivateKey& key, bool bounce, uin
     return result;
 }
 
-}
+} // namespace TW::Everscale

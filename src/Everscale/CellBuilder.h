@@ -19,6 +19,7 @@ class CellBuilder {
     uint16_t bitLen = 0;
     std::vector<std::uint8_t> data{};
     std::vector<Cell::Ref> references{};
+
 public:
     using uint128_t = boost::multiprecision::uint128_t;
 
@@ -44,7 +45,7 @@ public:
 
 private:
     void appendWithoutShifting(const Data& data, uint16_t bits);
-    void appendWithSliceShifting(const Data& data, uint16_t  bits);
+    void appendWithSliceShifting(const Data& data, uint16_t bits);
     void appendWithDoubleShifting(const Data& data, uint16_t bits);
 
     static uint8_t clzU128(const uint128_t& u);

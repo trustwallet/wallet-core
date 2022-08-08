@@ -35,5 +35,4 @@ TEST(TWEverscaleCoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://everscan.io/accounts/0:d2bf59964a05dee84a0dd1ddc0ad83ba44d49719cf843d689dc8b726d0fb59d8");
 }
 
-
-}
+} // namespace TW::Everscale

@@ -4,10 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWAnySigner.h>
-#include "HexCoding.h"
 #include "Base64.h"
+#include "HexCoding.h"
 #include "proto/Everscale.pb.h"
+#include <TrustWalletCore/TWAnySigner.h>
 
 #include "../interface/TWTestUtilities.h"
 #include <gtest/gtest.h>
@@ -32,4 +32,4 @@ TEST(TWAnySignerEverscale, SignMessage) {
     ASSERT_EQ(output.encoded(), "te6ccgICAAIAAQAAANoAAAHfiABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYAIyIRhBmub4CthfowsK/+nfwhiZ3IQvYenZ/V6xgpkf/hCkNtlh1+9IxezU0xS9A0e1mZD9f1QzBKNMJzMGmqAKXUlsUxcV1PAAAAAAHAABAGhCABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYIdzWUAAAAAAAAAAAAAAAAAAA");
 }
 
-}
+} // namespace TW::Everscale

@@ -35,8 +35,10 @@ public:
 class StateInit {
     Cell::Ref _code;
     Cell::Ref _data;
+
 public:
-    explicit StateInit(Cell::Ref code, Cell::Ref data) : _code(std::move(code)), _data(std::move(data)) {}
+    explicit StateInit(Cell::Ref code, Cell::Ref data)
+        : _code(std::move(code)), _data(std::move(data)) {}
 
     [[nodiscard]] CellBuilder writeTo() const;
 };
@@ -45,9 +47,12 @@ class InitData {
     uint32_t _seqno;
     uint32_t _walletId;
     PublicKey _publicKey;
+
 public:
-    explicit InitData(PublicKey publicKey) : _seqno(0), _walletId(WALLET_ID), _publicKey(std::move(publicKey)) {}
-    explicit InitData(CellSlice cs) : _seqno(cs.getNextU32()), _walletId(cs.getNextU32()), _publicKey(PublicKey(cs.getNextBytes(32), TWPublicKeyTypeED25519)) {}
+    explicit InitData(PublicKey publicKey)
+        : _seqno(0), _walletId(WALLET_ID), _publicKey(std::move(publicKey)) {}
+    explicit InitData(CellSlice cs)
+        : _seqno(cs.getNextU32()), _walletId(cs.getNextU32()), _publicKey(PublicKey(cs.getNextBytes(32), TWPublicKeyTypeED25519)) {}
 
     [[nodiscard]] CellBuilder writeTo() const;
     [[nodiscard]] StateInit makeStateInit() const;

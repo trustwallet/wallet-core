@@ -39,9 +39,9 @@ public:
 
     /// Returns a string representation of the address.
     [[nodiscard]] std::string string() const;
+
 private:
     static MaybeWorkchainInfos parseWorkchainId(const std::string& string);
-
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {

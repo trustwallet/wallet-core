@@ -4,8 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <memory>
-
 #include "Signer.h"
 #include "Address.h"
 #include "Messages.h"
@@ -53,4 +51,4 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return protoOutput;
 }
 
-}
+} // namespace TW::Everscale

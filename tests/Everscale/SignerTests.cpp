@@ -4,9 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Everscale/Signer.h"
 #include "Everscale/Address.h"
 #include "Everscale/Messages.h"
+#include "Everscale/Signer.h"
 
 #include "Base64.h"
 #include "HexCoding.h"
@@ -127,4 +127,4 @@ TEST(EverscaleSigner, WithStateInit4) {
     ASSERT_EQ(output.encoded(), "te6ccgICAAQAAQAAAboAAAPhiABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGA/zSxfc0nSJb7kigVwlIV+5/87mtezg4DFLGE9i8o+H0DmW4pcqwXYvqiiUsED9QXUcfnkOdpFrVP49UJ8MpAiXUlsUxcV1PAAAABIHAAAwACAAEAaEIAVcjkZ2IlU3HZYYohkBUxkgnKJI+HIJCtGDEFq/eUW02h3NZQAAAAAAAAAAAAAAAAAAAAUAAAAAlLqS2K/tcFRfvWsRw2zYTUoXF4sEQQWx/uu+cyy+zwsarnBQkA3v8AIN0gggFMl7ohggEznLqxn3Gw7UTQ0x/THzHXC//jBOCk8mCDCNcYINMf0x/TH/gjE7vyY+1E0NMf0x/T/9FRMrryoVFEuvKiBPkBVBBV+RDyo/gAkyDXSpbTB9QC+wDo0QGkyMsfyx/L/8ntVA==");
 }
 
-}
+} // namespace TW::Everscale

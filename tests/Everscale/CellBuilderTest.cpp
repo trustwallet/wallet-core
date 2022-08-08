@@ -29,6 +29,13 @@ TEST(EverscaleCell, ComputeContractAddress) {
     dataBuilder.appendRaw(publicKey.bytes, 256);
 
     const auto data = dataBuilder.intoCell();
+
+    // Builder should be empty after `intoCell`
+    {
+        const auto emptyCell = dataBuilder.intoCell();
+        ASSERT_EQ(hex(emptyCell->hash), "96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7");
+    }
+
     const auto code = Cell::deserialize(Wallet::code.data(), Wallet::code.size());
 
     CellBuilder stateInitBuilder;
@@ -89,4 +96,4 @@ TEST(EverscaleCell, DataUnderflow) {
     ASSERT_ANY_THROW(slice.getNextBytes(100));
 }
 
-}
+} // namespace TW::Everscale

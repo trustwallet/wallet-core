@@ -350,28 +350,23 @@ void Cell::finalize() {
     }
 
     // Compute cell hash
-    // NOTE: raw context is used here to reduce allocations
-    SHA256_CTX context{};
-    sha256_Init(&context);
+    const auto dataSize = std::min(data.size(), static_cast<size_t>((bitLen + 7) / 8));
+
+    Data normalized{};
+    normalized.reserve(/* descriptor bytes */ 2 + dataSize + refCount * (sizeof(uint16_t) + Hash::sha256Size));
 
     // Write descriptor bytes
     const auto [d1, d2] = getDescriptorBytes();
-    sha256_Update(&context, &d1, 1);
-    sha256_Update(&context, &d2, 1);
-
-    // Write data
-    const auto dataSize = std::min(data.size(), static_cast<size_t>((bitLen + 7) / 8));
-    sha256_Update(&context, data.data(), dataSize);
+    normalized.push_back(d1);
+    normalized.push_back(d2);
+    std::copy(data.begin(), std::next(data.begin(), static_cast<ssize_t>(dataSize)), std::back_inserter(normalized));
 
     // Write all children depths
     for (const auto& ref : references) {
         if (ref == nullptr) {
             break;
         }
-        const auto depthHigh = static_cast<uint8_t>(ref->depth >> 8);
-        sha256_Update(&context, &depthHigh, 1);
-        const auto depthLow = static_cast<uint8_t>(ref->depth);
-        sha256_Update(&context, &depthLow, 1);
+        encode16BE(ref->depth, normalized);
     }
 
     // Write all children hashes
@@ -379,11 +374,14 @@ void Cell::finalize() {
         if (ref == nullptr) {
             break;
         }
-        sha256_Update(&context, ref->hash.data(), Hash::sha256Size);
+        std::copy(ref->hash.begin(), ref->hash.end(), std::back_inserter(normalized));
     }
 
     // Done
-    sha256_Final(&context, hash.data());
+    const auto computedHash = Hash::sha256(normalized);
+    assert(computedHash.size() == Hash::sha256Size);
+
+    std::copy(computedHash.begin(), computedHash.end(), hash.begin());
     finalized = true;
 }
 
