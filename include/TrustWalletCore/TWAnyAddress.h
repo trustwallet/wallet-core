@@ -35,9 +35,6 @@ struct TWAnyAddress* _Nullable TWAnyAddressCreateWithString(TWString* _Nonnull s
 TW_EXPORT_STATIC_METHOD
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKey(struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin);
 
-TW_EXPORT_METHOD
-void TWAnyAddressDelete(struct TWAnyAddress* _Nonnull address);
-
 /// Returns the address string representation.
 TW_EXPORT_PROPERTY
 TWString* _Nonnull TWAnyAddressDescription(struct TWAnyAddress* _Nonnull address);

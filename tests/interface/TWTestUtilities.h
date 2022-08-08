@@ -16,6 +16,7 @@
 #include <vector>
 
 #define WRAP(type, x) std::shared_ptr<type>(x, type##Delete)
+#define WRAPA(x) std::shared_ptr<TWAnyAddress>(x)
 #define WRAPD(x) std::shared_ptr<TWData>(x, TWDataDelete)
 #define WRAPS(x) std::shared_ptr<TWString>(x, TWStringDelete)
 #define STRING(x) std::shared_ptr<TWString>(TWStringCreateWithUTF8Bytes(x), TWStringDelete)

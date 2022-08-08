@@ -16,6 +16,10 @@ using namespace TW;
 struct TWAnyAddress {
     TWString* address;
     enum TWCoinType coin;
+
+    ~TWAnyAddress() {
+        TWStringDelete(address);
+    }
 };
 
 bool TWAnyAddressEqual(struct TWAnyAddress* _Nonnull lhs, struct TWAnyAddress* _Nonnull rhs) {
@@ -39,11 +43,6 @@ struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKey(
     struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin) {
     auto address = TW::deriveAddress(coin, publicKey->impl);
     return new TWAnyAddress{TWStringCreateWithUTF8Bytes(address.c_str()), coin};
-}
-
-void TWAnyAddressDelete(struct TWAnyAddress* _Nonnull address) {
-    TWStringDelete(address->address);
-    delete address;
 }
 
 TWString* _Nonnull TWAnyAddressDescription(struct TWAnyAddress* _Nonnull address) {
