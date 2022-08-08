@@ -40,9 +40,17 @@ enum TWHDVersion {
     TWHDVersionDGPV = 0x02fac398,
 };
 
+/// Determine if the HD Version is public
+///
+/// \param version HD version
+/// \return true if the version is public, false otherwise
 TW_EXPORT_PROPERTY
 bool TWHDVersionIsPublic(enum TWHDVersion version);
 
+/// Determine if the HD Version is private
+///
+/// \param version HD version
+/// \return true if the version is private, false otherwise
 TW_EXPORT_PROPERTY
 bool TWHDVersionIsPrivate(enum TWHDVersion version);
 
