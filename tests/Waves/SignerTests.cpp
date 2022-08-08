@@ -13,7 +13,8 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Waves;
+
+namespace TW::Waves::tests {
 
 TEST(WavesSigner, SignTransaction) {
     const auto privateKey =
@@ -26,7 +27,7 @@ TEST(WavesSigner, SignTransaction) {
     auto input = Proto::SigningInput();
     input.set_timestamp(int64_t(1526641218066));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-    
+
     auto& message = *input.mutable_transfer_message();
     message.set_amount(int64_t(100000000));
     message.set_asset(Transaction::WAVES);
@@ -35,9 +36,9 @@ TEST(WavesSigner, SignTransaction) {
     message.set_to(address.string());
     message.set_attachment("falafel");
     auto tx1 = Transaction(
-                           input,
-                           /* pub_key */
-                           parse_hex("559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d"));
+        input,
+        /* pub_key */
+        parse_hex("559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d"));
 
     auto signature = Signer::sign(privateKey, tx1);
 
@@ -59,3 +60,5 @@ TEST(WavesSigner, curve25519_pk_to_ed25519) {
     curve25519_pk_to_ed25519(r.data(), publicKeyCurve25519.data());
     EXPECT_EQ(hex(r), "ff84c4bfc095df25b01e48807715856d95af93d88c5b57f30cb0ce567ca4ce56");
 }
+
+} // namespace TW::Waves::tests
