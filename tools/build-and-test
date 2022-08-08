@@ -18,10 +18,12 @@ if [ -x "$(command -v clang-tidy)" ]; then
     tools/lint
 fi
 
-echo "#### Testing... ####"
+echo "#### Running trezor-crypto tests... ####"
 export CK_TIMEOUT_MULTIPLIER=4
 build/trezor-crypto/crypto/tests/TrezorCryptoTests
 
-ROOT="`dirname \"$0\"`"
+echo "#### Running unit tests... ####"
+ROOT="`dirname \"$0\"`/.."
 TESTS_ROOT="`(cd \"$ROOT/tests\" && pwd)`"
-build/tests/tests "$TESTS_ROOT"
+FILTER="*"
+build/tests/tests "$TESTS_ROOT" --gtest_filter="$FILTER"

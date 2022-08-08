@@ -5,8 +5,8 @@
 # Fail if any commands fails
 set -e
 
-echo "#### Initializing workspace ... ####"
+echo "#### Initializing workspace with dependencies ... ####"
 tools/install-dependencies
 
-echo "#### Building and running ... ####"
+echo "#### Building and running tests ... ####"
 tools/build-and-test
