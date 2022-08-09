@@ -138,16 +138,12 @@ void ParamArrayFix::encode(Data& data) const {
 }
 
 bool ParamArrayFix::decode(const Data& encoded, size_t& offset_inout) {
-    std::size_t origOffset = offset_inout;
-    auto res = this->_params.decode(encoded, offset_inout);
-    // padding
-    offset_inout = origOffset + ValueEncoder::paddedTo32(offset_inout - origOffset);
-    return res;
+    return this->_params.decode(encoded, offset_inout);
 }
 
 bool ParamArrayFix::setValueJson(const std::string& value) {
     auto valuesJson = json::parse(value, nullptr, false);
-    if (valuesJson.is_discarded() || !valuesJson.is_array() || _params.getCount() < valuesJson.size()) {
+    if (valuesJson.is_discarded() || !valuesJson.is_array() || _params.getCount() != valuesJson.size()) {
         return false;
     }
 

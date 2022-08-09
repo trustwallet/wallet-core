@@ -908,6 +908,7 @@ TEST(EthereumAbiStruct, ParamHashStruct) {
         EXPECT_FALSE(p->setValueJson("NotValidJson"));
         EXPECT_FALSE(p->setValueJson("{}"));
         EXPECT_FALSE(p->setValueJson("[1,2,3,4]"));
+        EXPECT_FALSE(p->setValueJson("[1,2]"));
     }
     {
         auto p = std::make_shared<ParamArray>(std::make_shared<ParamUInt8>());
