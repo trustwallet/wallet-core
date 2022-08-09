@@ -40,8 +40,6 @@ class Signer {
     Data hash() const;
     /// Get PreImage transaction data
     std::string signaturePreimage() const;
-
-
   protected:
     /// Converts to proto ActionCore from transaction input
     void toActionCore();

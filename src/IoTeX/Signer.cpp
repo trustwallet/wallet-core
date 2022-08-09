@@ -40,7 +40,8 @@ Proto::SigningOutput Signer::build() const {
     return output;
 }
 
-Proto::SigningOutput Signer::compile(const Proto::SigningInput& input, const Data& signature, const TW::PublicKey& pubKey) noexcept {
+Proto::SigningOutput Signer::compile(const Proto::SigningInput& input, const Data& signature,
+                                     const TW::PublicKey& pubKey) noexcept {
 
     auto signer = Signer(input);
 
