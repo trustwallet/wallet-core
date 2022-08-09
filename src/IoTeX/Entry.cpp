@@ -32,7 +32,7 @@ void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) con
 
 Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
     return txCompilerTemplate<Proto::SigningInput, TxCompiler::Proto::PreSigningOutput>(
-        txInputData, [=](const auto& input, auto& output) {
+        txInputData, [](const auto& input, auto& output) {
             Signer signer(input);
             auto signHash = signer.hash();
             auto preImage = signer.signaturePreimage();

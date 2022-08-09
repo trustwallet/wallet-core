@@ -42,15 +42,12 @@ Proto::SigningOutput Signer::build() const {
 
 Proto::SigningOutput Signer::compile(const Proto::SigningInput& input, const Data& signature,
                                      const TW::PublicKey& pubKey) noexcept {
-
     auto signer = Signer(input);
-
     auto signedAction = Proto::Action();
     signedAction.mutable_core()->MergeFrom(signer.action);
 
     signedAction.set_senderpubkey(pubKey.bytes.data(), pubKey.bytes.size());
     signedAction.set_signature(signature.data(), signature.size());
-
     // build output
     auto output = Proto::SigningOutput();
     auto serialized = signedAction.SerializeAsString();
