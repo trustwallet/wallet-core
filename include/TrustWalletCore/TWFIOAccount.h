@@ -19,7 +19,7 @@ struct TWFIOAccount;
 ///
 /// \param string Account name
 /// \note Must be deleted with \TWFIOAccountDelete
-/// \return Pointer to a non-null FIO Account
+/// \return Pointer to a nullable FIO Account
 TW_EXPORT_STATIC_METHOD
 struct TWFIOAccount *_Nullable TWFIOAccountCreateWithString(TWString *_Nonnull string);
 
