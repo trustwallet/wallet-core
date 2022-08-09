@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "mocha",
+    "test": "mocha --trace-warnings",
     "generate": "npm run codegen:js && npm run codegen:ts",
     "codegen:js": "pbjs -t static-module '../src/proto/*.proto' --no-delimited --force-long -o generated/core_proto.js",
     "codegen:js-browser": "pbjs -t static-module '../src/proto/*.proto' -w closure --no-delimited --force-long -o ../samples/wasm/core_proto.js",
