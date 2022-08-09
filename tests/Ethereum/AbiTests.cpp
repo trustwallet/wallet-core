@@ -530,12 +530,11 @@ TEST(EthereumAbi, ParamFixedArrayAddress) {
         auto param = ParamArrayFix({std::make_shared<ParamAddress>(Data(parse_hex("f784682c82526e245f50975190ef0fff4e4fc077")))});
         EXPECT_EQ(param.getType(), "address[1]");
         EXPECT_EQ(param.getCount(), 1ul);
-        EXPECT_EQ(param.getSize(), 64ul);
+        EXPECT_EQ(param.getSize(), 32ul);
         EXPECT_FALSE(param.isDynamic());
         Data encoded;
         param.encode(encoded);
         EXPECT_EQ(hex(encoded), "000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc077");
-        EXPECT_EQ(hex(encoded).size(), param.getSize());
         std::size_t offset{0};
         EXPECT_TRUE(param.decode(encoded, offset));
     }

@@ -50,9 +50,6 @@ public:
 /// Fixed-size array of the same type e.g, "type[4]"
 class ParamArrayFix final : public ParamCollection {
 public:
-    //! Public constants
-    static constexpr std::size_t paddingSize{32};
-
     //! Public Definitions
     using Params = std::vector<std::shared_ptr<ParamBase>>;
 
@@ -64,7 +61,7 @@ public:
 
     //! Public member methods
     [[nodiscard]] std::size_t getCount() const final { return _params.getCount(); }
-    [[nodiscard]] size_t getSize() const final { return paddingSize + _params.getSize(); }
+    [[nodiscard]] size_t getSize() const final { return _params.getSize(); }
     [[nodiscard]] bool isDynamic() const final { return false; }
     [[nodiscard]] std::string getType() const final { return _params.getParamUnsafe(0)->getType() + "[" + std::to_string(_params.getCount()) + "]"; }
     void encode(Data& data) const final;
