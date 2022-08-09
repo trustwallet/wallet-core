@@ -29,6 +29,7 @@
 #include "proto/VeChain.pb.h"
 #include "proto/Oasis.pb.h"
 #include "proto/Cardano.pb.h"
+#include "proto/IoTeX.pb.h"
 
 #include "proto/TransactionCompiler.pb.h"
 
@@ -2840,4 +2841,63 @@ TEST(TransactionCompiler, CardanoCompileWithSignaturesAndPubKeyType) {
 
     
     EXPECT_EQ(hex(output.encoded()), expectedTx);
+}
+
+TEST(TransactionCompiler, IoTeXCompileWithSignatures) {
+    const auto coin = TWCoinTypeIoTeX;
+    /// Step 1: Prepare transaction input (protobuf)
+    auto input = TW::IoTeX::Proto::SigningInput();
+    input.set_version(1);
+    input.set_nonce(123);
+    input.set_gaslimit(888);
+    input.set_gasprice("999");
+    auto tsf = input.mutable_transfer();
+    tsf->set_amount("456");
+    tsf->set_recipient("io187wzp08vnhjjpkydnr97qlh8kh0dpkkytfam8j");
+    auto text = parse_hex("68656c6c6f20776f726c6421"); // "hello world!"
+    tsf->set_payload(text.data(), text.size());
+
+    auto inputString = input.SerializeAsString();
+    auto inputData = TW::Data(inputString.begin(), inputString.end());
+
+    /// Step 2: Obtain preimage hash
+    const auto preImageHashData = TransactionCompiler::preImageHashes(coin, inputData);
+    auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
+    ASSERT_TRUE(
+        preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
+    ASSERT_EQ(preSigningOutput.error(), Common::Proto::OK);
+
+    auto preImage = data(preSigningOutput.data());
+    auto preImageHash = data(preSigningOutput.data_hash());
+
+    std::string expectedPreImage = "0801107b18f8062203393939523e0a033435361229696f313837777a703038766e686a6a706b79646e723937716c68386b683064706b6b797466616d386a1a0c68656c6c6f20776f726c6421";
+    std::string expectedPreImageHash = "0f17cd7f43bdbeff73dfe8f5cb0c0045f2990884e5050841de887cf22ca35b50";
+    ASSERT_EQ(hex(preImage), expectedPreImage);
+    ASSERT_EQ(hex(preImageHash), expectedPreImageHash);
+
+    const auto privateKey = PrivateKey(parse_hex("0806c458b262edd333a191e92f561aff338211ee3e18ab315a074a2d82aa343f"));
+    Data signature = parse_hex("555cc8af4181bf85c044c3201462eeeb95374f78aa48c67b87510ee63d5e502372e53082f03e9a11c1e351de539cedf85d8dff87de9d003cb9f92243541541a000");
+    const PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
+
+    // Verify signature (pubkey & hash & signature)
+    EXPECT_TRUE(publicKey.verify(signature, preImageHash));
+    /// Step 3: Compile transaction info
+    const Data outputData =
+        TransactionCompiler::compileWithSignatures(coin, inputData, {signature}, {publicKey.bytes});
+    const auto ExpectedTx =
+        "0a4c0801107b18f8062203393939523e0a033435361229696f313837777a703038766e686a6a706b79646e723937716c68386b683064706b6b797466616d386a1a0c68656c6c6f20776f726c64211241044e18306ae9ef4ec9d07bf6e705442d4d1a75e6cdf750330ca2d880f2cc54607c9c33deb9eae9c06e06e04fe9ce3d43962cc67d5aa34fbeb71270d4bad3d648d91a41555cc8af4181bf85c044c3201462eeeb95374f78aa48c67b87510ee63d5e502372e53082f03e9a11c1e351de539cedf85d8dff87de9d003cb9f92243541541a000";
+    TW::IoTeX::Proto::SigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+    EXPECT_EQ(hex(output.encoded()), ExpectedTx);
+    { // Double check: check if simple signature process gives the same result. Note that private
+      // keys were not used anywhere up to this point.
+        TW::IoTeX::Proto::SigningInput input;
+        ASSERT_TRUE(input.ParseFromArray(inputData.data(), (int)inputData.size()));
+        input.set_privatekey(privateKey.bytes.data(), privateKey.bytes.size());
+
+        TW::IoTeX::Proto::SigningOutput output;
+        ANY_SIGN(input, coin);
+
+        ASSERT_EQ(hex(output.encoded()), ExpectedTx);
+    }
 }
