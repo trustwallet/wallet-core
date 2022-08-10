@@ -26,5 +26,5 @@ describe("AnyAddress", () => {
     assert.equal(HexCoding.encode(data), "0x66c2f508c9c555cacc9fb26d88e88dd54e210bb5a8bce5687f60d7e75c4cd07f");
 
     address.delete();
-  });
+  }).timeout(5000);
 });
