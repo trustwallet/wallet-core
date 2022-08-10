@@ -142,6 +142,6 @@ generate_file("newcoin/AddressTests.kt.erb", "android/app/src/androidTest/java/c
 generate_file("newcoin/SignerTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "Test#{name}Signer.kt", coin)
 generate_file("newcoin/Tests.swift.erb", "swift/Tests/Blockchains", "#{name}Tests.swift", coin)
 
-coin_test_gen.generate_coin_test_file(coin, 'TWCoinTypeTests.cpp.erb')
+coin_test_gen.generate_coin_test_file(coin, 'TWCoinTypeTests.cpp.erb', true)
 
 puts "please tools/generate-files to generate Swift/Java/Protobuf files"
