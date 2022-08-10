@@ -55,8 +55,8 @@ public:
         return std::pair<uint8_t, uint8_t>{d1, d2};
     }
 
-    [[nodiscard]] inline size_t serializedSize() const noexcept {
-        return 2 + (bitLen + 7) / 8 + refCount * (2 + Hash::sha256Size);
+    [[nodiscard]] inline size_t serializedSize(uint8_t refSize) const noexcept {
+        return 2 + (bitLen + 7) / 8 + refCount * refSize;
     }
 };
 

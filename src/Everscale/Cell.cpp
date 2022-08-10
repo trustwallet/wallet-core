@@ -240,18 +240,18 @@ public:
     }
 
     void encode(Data& os) const {
-        os.reserve(os.size() + serializedSize);
+        os.reserve(os.size() + HEADER_SIZE + cellsSize);
 
-        const auto cellCount = static_cast<uint16_t>(reversedCells.size());
+        const auto cellCount = static_cast<ref_t>(reversedCells.size());
 
         // Write header
         encode32BE(BOC_MAGIC, os);
         os.push_back(REF_SIZE);
         os.push_back(OFFSET_SIZE);
-        encode16BE(static_cast<uint16_t>(cellCount), os);
+        encode16BE(static_cast<ref_t>(cellCount), os);
         encode16BE(1, os); // root count
         encode16BE(0, os); // absent cell count
-        encode16BE(static_cast<uint16_t>(serializedSize), os);
+        encode16BE(static_cast<offset_t>(cellsSize), os);
         encode16BE(0, os); // root cell index
 
         // Write cells
@@ -288,11 +288,12 @@ public:
 
 private:
     // uint16_t will be enough for wallet transactions (e.g. 64k is the size of the whole elector)
-    constexpr static uint8_t REF_SIZE = 2;
-    constexpr static uint8_t OFFSET_SIZE = 2;
+    using ref_t = uint16_t;
+    using offset_t = uint16_t;
 
-    // NOTE: Initialized with header size
-    size_t serializedSize =
+    constexpr static uint8_t REF_SIZE = sizeof(ref_t);
+    constexpr static uint8_t OFFSET_SIZE = sizeof(offset_t);
+    constexpr static size_t HEADER_SIZE =
         /*magic*/ sizeof(BOC_MAGIC) +
         /*ref_size*/ 1 +
         /*offset_size*/ 1 +
@@ -302,8 +303,9 @@ private:
         /*data_size*/ OFFSET_SIZE +
         /*root_cell_index*/ REF_SIZE;
 
-    uint16_t index = 0;
-    std::map<Cell::CellHash, uint16_t> indices{};
+    size_t cellsSize = 0;
+    ref_t index = 0;
+    std::map<Cell::CellHash, ref_t> indices{};
     std::vector<const Cell* _Nonnull> reversedCells{};
 
     static void fillContext(const Cell& cell, SerializationContext& ctx) {
@@ -320,7 +322,7 @@ private:
 
         ctx.indices.insert(std::make_pair(cell.hash, ctx.index++));
         ctx.reversedCells.emplace_back(&cell);
-        ctx.serializedSize += cell.serializedSize();
+        ctx.cellsSize += cell.serializedSize(REF_SIZE);
     }
 };
 

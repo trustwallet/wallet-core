@@ -33,8 +33,8 @@ class EverscaleTests: XCTestCase {
         let transfer = EverscaleTransfer.with {
             $0.bounce = false
             $0.flags = 3
-            $0.amount = 1000000000
-            $0.expiredAt = 1659026078
+            $0.amount = 500000000
+            $0.expiredAt = 1660261731
         }
 
         let input = EverscaleSigningInput.with {
@@ -44,7 +44,7 @@ class EverscaleTests: XCTestCase {
 
         let output: EverscaleSigningOutput = AnySigner.sign(input: input, coin: .everscale)
 
-        let expectedString = "te6ccgICAAIAAQAAANoAAAHfiABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYAIyIRhBmub4CthfowsK/+nfwhiZ3IQvYenZ/V6xgpkf/hCkNtlh1+9IxezU0xS9A0e1mZD9f1QzBKNMJzMGmqAKXUlsUxcV1PAAAAAAHAABAGhCABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYIdzWUAAAAAAAAAAAAAAAAAAA"
+        let expectedString = "te6ccgICAAQAAQAAAUoAAAPhiABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGTp6HO3zHcMkuRWEKShVeKcgHJt5kYQQy+Qn296nFFjD0XqbeVvMtTL3N7ud7Ad8aFTFWSgEKVN2n4NzfUBTugCXUlsUxesqxgAAAAAHAAAwACAAEAaEIAE0/3EhdaCDw1Xwu70KPC5F31jxoIBjq4cLtMWbVrN9gg7msoAAAAAAAAAAAAAAAAAAAAUAAAAABLqS2K5JJfmTLfjX/QBC7/8+IXipcgKLZE3tOjtm9tBXf4LngA3v8AIN0gggFMl7ohggEznLqxn3Gw7UTQ0x/THzHXC//jBOCk8mCDCNcYINMf0x/TH/gjE7vyY+1E0NMf0x/T/9FRMrryoVFEuvKiBPkBVBBV+RDyo/gAkyDXSpbTB9QC+wDo0QGkyMsfyx/L/8ntVA=="
 
         XCTAssertEqual(output.encoded, expectedString)
     }

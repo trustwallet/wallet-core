@@ -100,9 +100,9 @@ Data createSignedMessage(PublicKey& publicKey, PrivateKey& key, bool bounce, uin
         if (stateInit.has_value()) {
             auto cell = Cell::deserialize(stateInit.value().data(), stateInit.value().size());
             auto cellSlice = CellSlice(cell.get());
-            return std::make_pair(InitData(cellSlice), true);
+            return std::make_pair(InitData(cellSlice), false);
         } else {
-            return std::make_pair(InitData(publicKey), false);
+            return std::make_pair(InitData(publicKey), true);
         }
     };
 
