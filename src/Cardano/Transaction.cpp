@@ -67,6 +67,24 @@ uint256_t TokenBundle::getAmount(const std::string& key) const {
     return findkey->second.amount;
 }
 
+unordered_set<string> TokenBundle::getPolicyIds() const {
+    unordered_set<string> policyIds;
+    std::transform(bundle.cbegin(), bundle.cend(),
+                   std::inserter(policyIds, policyIds.begin()),
+                   [](auto&& cur){ return cur.second.policyId; });
+    return policyIds;
+}
+
+vector<TokenAmount> TokenBundle::getByPolicyId(const string& policyId) const {
+    vector<TokenAmount> filtered;
+    for (const auto& t: bundle) {
+        if (t.second.policyId == policyId) {
+            filtered.push_back(t.second);
+        }
+    }
+    return filtered;
+}
+
 uint64_t roundupBytesToWords(uint64_t b) { return ((b + 7) / 8); }
 
 const uint64_t TokenBundle::MinUtxoValue = 1000000;
@@ -127,8 +145,8 @@ Proto::TxInput TxInput::toProto() const {
     txInput.mutable_out_point()->set_output_index(outputIndex);
     txInput.set_address(address.data(), address.size());
     txInput.set_amount(amount);
-    for (auto iter = tokenBundle.bundle.begin(); iter != tokenBundle.bundle.end(); ++iter) {
-        *txInput.add_token_amount() = iter->second.toProto();
+    for (const auto& token: tokenBundle.bundle) {
+        *txInput.add_token_amount() = token.second.toProto();
     }
     return txInput;
 }
@@ -163,14 +181,14 @@ Proto::TransactionPlan TransactionPlan::toProto() const {
     plan.set_amount(amount);
     plan.set_fee(fee);
     plan.set_change(change);
-    for (const auto& t: availableTokens.bundle) {
-        *plan.add_available_tokens() = t.second.toProto();
+    for (const auto& token: availableTokens.bundle) {
+        *plan.add_available_tokens() = token.second.toProto();
     }
-    for (const auto& t: outputTokens.bundle) {
-        *plan.add_output_tokens() = t.second.toProto();
+    for (const auto& token: outputTokens.bundle) {
+        *plan.add_output_tokens() = token.second.toProto();
     }
-    for (const auto& t: changeTokens.bundle) {
-        *plan.add_change_tokens() = t.second.toProto();
+    for (const auto& token: changeTokens.bundle) {
+        *plan.add_change_tokens() = token.second.toProto();
     }
     for (const auto& u: utxos) {
         *plan.add_utxos() = u.toProto();
@@ -196,15 +214,22 @@ Cbor::Encode cborizeOutputAmounts(const Amount& amount, const TokenBundle& token
         return Cbor::Encode::uint(amount);
     }
     // native and token amounts
-    std::vector<pair<Cbor::Encode, Cbor::Encode>> tokensMap;
-    for (auto iter = tokenBundle.bundle.begin(); iter != tokenBundle.bundle.end(); ++iter) {
-        tokensMap.push_back(make_pair(
-            Cbor::Encode::bytes(parse_hex(iter->second.policyId)),
-            Cbor::Encode::map({make_pair(
-                Cbor::Encode::bytes(data(iter->second.assetName)),
-                Cbor::Encode::uint(uint64_t(iter->second.amount)) // 64 bits
-            )})
-        ));
+    // tokens: organized in two levels: by policyId and by assetName
+    const auto policyIds = tokenBundle.getPolicyIds();
+    map<Cbor::Encode, Cbor::Encode> tokensMap;
+    for (const auto& policy: policyIds) {
+        const auto& subTokens = tokenBundle.getByPolicyId(policy);
+        map<Cbor::Encode, Cbor::Encode> subTokensMap;
+        for (const auto& token: subTokens) {
+            subTokensMap.emplace(
+                Cbor::Encode::bytes(data(token.assetName)),
+                Cbor::Encode::uint(uint64_t(token.amount)) // 64 bits
+            );
+        }
+        tokensMap.emplace(
+            Cbor::Encode::bytes(parse_hex(policy)),
+            Cbor::Encode::map(subTokensMap)
+        );
     }
     return Cbor::Encode::array({
         Cbor::Encode::uint(amount),
