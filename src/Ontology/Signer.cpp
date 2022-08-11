@@ -9,6 +9,7 @@
 #include "SigData.h"
 #include "../Ontology/OngTxBuilder.h"
 #include "../Ontology/OntTxBuilder.h"
+#include "../Ontology/OepTxBuilder.h"
 
 
 #include "../Hash.h"
@@ -27,6 +28,9 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
             output.set_encoded(encoded.data(), encoded.size());
         } else if (contract == "ONG") {
             auto encoded = OngTxBuilder::build(input);
+            output.set_encoded(encoded.data(), encoded.size());
+        } else {
+            auto encoded = OepTxBuilder::build(input);
             output.set_encoded(encoded.data(), encoded.size());
         }
     } catch (...) {
@@ -94,7 +98,7 @@ Data Signer::encodeTransaction(const Proto::SigningInput& input, const Data& sig
     } else if (contract == "ONG") {
             tx = OngTxBuilder::buildTransferTx(txInput);
     } else {
-        throw std::invalid_argument("invalid contract");
+            tx = OepTxBuilder::buildTransferTx(txInput);
     }
 
     tx.sigVec.emplace_back(publicKey.bytes, signature, 1);

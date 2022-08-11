@@ -78,6 +78,8 @@ class ParamsBuilder {
     static std::vector<uint8_t> buildNativeInvokeCode(const std::vector<uint8_t>& contractAddress,
                                                       uint8_t version, const std::string& method,
                                                       const boost::any& params);
+
+    static std::vector<uint8_t> buildNeoVMInvokeCode(const std::vector<uint8_t>& contractAddress, const std::vector<boost::any>& params);
 };
 
 } // namespace TW::Ontology

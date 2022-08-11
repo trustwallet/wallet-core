@@ -6,7 +6,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - SwiftLint
     - SwiftProtobuf
 
 SPEC CHECKSUMS:

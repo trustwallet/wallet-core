@@ -12,6 +12,7 @@
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/nist256p1.h>
 
+#include <iostream>
 #include <list>
 #include <algorithm>
 
@@ -231,4 +232,15 @@ Data ParamsBuilder::buildNativeInvokeCode(const Data& contractAddress, uint8_t v
     std::string nativeInvoke = "Ontology.Native.Invoke";
     builder.push(Data(nativeInvoke.begin(), nativeInvoke.end()));
     return builder.getBytes();
+}
+
+Data ParamsBuilder::buildNeoVMInvokeCode(const Data& contractAddress, const std::vector<boost::any>& params) { 
+    ParamsBuilder builder;
+    for (const auto& item : params) {
+            ParamsBuilder::buildNeoVmParam(builder, item);
+    }
+    builder.pushBack(uint8_t(0x67));
+    auto args = builder.getBytes();
+    args.insert(args.end(), contractAddress.begin(), contractAddress.end());
+    return args;
 }
