@@ -94,7 +94,8 @@ message SigningInput {
     uint64 nonce = 2;
     uint64 gasLimit = 3;
     string gasPrice = 4;
-    bytes privateKey = 5;
+    uint32 chainID = 5;
+    bytes privateKey = 6;
     oneof action {
         Transfer transfer = 10;
         ContractCall call = 12;
@@ -131,6 +132,7 @@ message ActionCore {
   uint64 nonce = 2;
   uint64 gasLimit = 3;
   string gasPrice = 4;
+  uint32 chainID = 5;
   oneof action {
     Transfer transfer = 10;
     ContractCall execution = 12;
