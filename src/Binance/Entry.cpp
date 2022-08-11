@@ -36,18 +36,17 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byt
 Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
     if (coin == TWCoinTypeBinance) {
         Address addr;
-        if (!Address::decode(address, addr)) {
-            return Data();
+        if (Address::decode(address, addr)) {
+            return addr.getKeyHash();
         }
-        return addr.getKeyHash();
+        
     } else if (coin == TWCoinTypeTBinance) {
         TAddress addr;
-        if (!TAddress::decode(address, addr)) {
-            return Data();
+        if (TAddress::decode(address, addr)) {
+            return addr.getKeyHash();
         }
-        return addr.getKeyHash();
     }
-    return Data();
+    return {Data()};
 }
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {

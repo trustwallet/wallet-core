@@ -28,11 +28,18 @@ class Signer {
 
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
-    /// Computes the transaction hash.
-    Data getPreImage(Proto::SigningInput& input) const noexcept;
+    
   protected:
     /// Computes the transaction hash.
     Data hash(const Transaction& transaction) const noexcept;
+
+    /// Computes hash.
+    Data hash(const Data& preImage) const noexcept;
+
+    Transaction buildTransaction(const Proto::SigningInput& input) const noexcept;
+
+    /// Get transaction data.
+    Data getPreImage(const Transaction& transaction) const noexcept;
 };
 
 } // namespace TW::Nebulas

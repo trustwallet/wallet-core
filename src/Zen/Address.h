@@ -16,14 +16,15 @@
 namespace TW::Zen {
 
 class Address : public TW::Base58Address<22> {
-  public:
+public:
     static const byte staticPrefix = 0x20;
     static const byte p2pkh = 0x89; // p2pkhPrefix(TWCoinType::TWCoinTypeZcash);
-    static const byte p2sh = 0x96; // p2shPrefix(TWCoinType::TWCoinTypeZcash);
+    static const byte p2sh = 0x96;  // p2shPrefix(TWCoinType::TWCoinTypeZcash);
 
     /// Determines whether a string makes a valid ZCash address.
     static bool isValid(const std::string& string) {
-        return TW::Base58Address<size>::isValid(string, {{staticPrefix, p2pkh}, {staticPrefix, p2sh}});
+        return TW::Base58Address<size>::isValid(string,
+                                                {{staticPrefix, p2pkh}, {staticPrefix, p2sh}});
     }
 
     /// Determines whether a string makes a valid ZCash address, with possible prefixes.
@@ -38,9 +39,10 @@ class Address : public TW::Base58Address<22> {
     explicit Address(const Data& data) : TW::Base58Address<size>(data) {}
 
     /// Initializes a  address with a public key and a prefix (2nd byte).
-    Address(const PublicKey& publicKey, uint8_t prefix = p2pkh) : TW::Base58Address<size>(publicKey, {staticPrefix, prefix}) {}
+    Address(const PublicKey& publicKey, uint8_t prefix = p2pkh)
+        : TW::Base58Address<size>(publicKey, {staticPrefix, prefix}) {}
 
-  private:
+private:
     Address() = default;
 };
 

@@ -13,6 +13,7 @@
 #include "proto/Cosmos.pb.h"
 #include "proto/Decred.pb.h"
 #include "proto/Ethereum.pb.h"
+#include "proto/EOS.pb.h"
 #include "proto/Filecoin.pb.h"
 #include "proto/NEO.pb.h"
 #include "proto/NULS.pb.h"
@@ -131,6 +132,23 @@ TEST(TransactionCompiler, AlgorandCompileWithSignatures) {
         ASSERT_EQ(hex(output.encoded()), ExpectedTx);
     }
 
+    { // Negative: inconsistent signatures & publicKeys
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            TWCoinTypeAlgorand, txInputData, {signature, signature}, {publicKey.bytes});
+        Algorand::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
+    }
+
+    { // Negative: empty signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            TWCoinTypeAlgorand, txInputData, {}, {});
+        Algorand::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    }
 }
 
 TEST(TransactionCompiler, FilecoinCompileWithSignatures) {
@@ -195,6 +213,23 @@ TEST(TransactionCompiler, FilecoinCompileWithSignatures) {
         ASSERT_EQ(output.json(), ExpectedTx);
     }
 
+    { // Negative: inconsistent signatures & publicKeys
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, txInputData, {signature, signature}, {publicKey.bytes});
+        Filecoin::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.json().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
+    }
+
+    { // Negative: empty signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, txInputData, {}, {});
+        Filecoin::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.json().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    }
 }
 
 TEST(TransactionCompiler, BinanceCompileWithSignatures) {
@@ -273,6 +308,24 @@ TEST(TransactionCompiler, BinanceCompileWithSignatures) {
         ANY_SIGN(input, coin);
 
         ASSERT_EQ(hex(output.encoded()), ExpectedTx);
+    }
+
+    { // Negative: inconsistent signatures & publicKeys
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, txInputData, {signature, signature}, {publicKey.bytes});
+        Binance::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
+    }
+
+    { // Negative: empty signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, txInputData, {}, {});
+        Binance::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
     }
 }
 
@@ -635,7 +688,16 @@ TEST(TransactionCompiler, BitcoinDiamondCompileWithSignatures) {
 
     { // Negative: not enough signatures
         const Data outputData = TransactionCompiler::compileWithSignatures(
-            coin, txInputData, {}, pubkeyVec);
+            coin, txInputData, {signature, signature}, pubkeyVec);
+        Bitcoin::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    }
+    
+    { // Negative: empty signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, txInputData, {}, {});
         Bitcoin::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(output.encoded().size(), 0);
@@ -660,6 +722,77 @@ TEST(TransactionCompiler, BitcoinDiamondCompileWithSignatures) {
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(output.encoded().size(), 0);
         EXPECT_EQ(output.error(), Common::Proto::Error_signing);
+    }
+}
+
+TEST(TransactionCompiler, EOSCompileWithSignatures) {
+    /// Step 1: Prepare transaction input (protobuf)
+    const auto coin = TWCoinTypeEOS;
+    EOS::Proto::SigningInput input;
+    auto chainId = parse_hex("cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f");
+    auto refBlock = parse_hex("000067d6f6a7e7799a1f3d487439a679f8cf95f1c986f35c0d2fa320f51a7144");
+    auto key = parse_hex("559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd");
+
+    auto& asset = *input.mutable_asset();
+    asset.set_amount(300000);
+    asset.set_decimals(4);
+    asset.set_symbol("TKN");
+
+    input.set_chain_id(chainId.data(), chainId.size());
+    input.set_reference_block_id(refBlock.data(), refBlock.size());
+    input.set_reference_block_time(1554209118);
+    input.set_currency("token");
+    input.set_sender("token");
+    input.set_recipient("eosio");
+    input.set_memo("my second transfer");
+    input.set_private_key(key.data(), key.size());
+    input.set_private_key_type(EOS::Proto::KeyType::MODERNK1);
+
+    auto txInputData = data(input.SerializeAsString());
+    {
+        EOS::Proto::SigningOutput output;
+        ANY_SIGN(input, coin);
+
+        EXPECT_EQ(output.error(), Common::Proto::OK);
+        EXPECT_EQ(output.json_encoded(), R"({"compression":"none","packed_context_free_data":"","packed_trx":"6e67a35cd6679a1f3d4800000000010000000080a920cd000000572d3ccdcd010000000080a920cd00000000a8ed3232330000000080a920cd0000000000ea3055e09304000000000004544b4e00000000126d79207365636f6e64207472616e7366657200","signatures":["SIG_K1_K9RdLC7DEDWjTfR64GU8BtDHcAjzR1ntcT651JMcfHNTpdsvDrUwfyzF1FkvL9fxEi2UCtGJZ9zYoNbJoMF1fbU64cRiJ7"]})");
+    }
+
+    /// Step 2: Obtain preimage hash
+    const auto preImageHashes = TransactionCompiler::preImageHashes(coin, txInputData);
+    ASSERT_GT(preImageHashes.size(), 0);
+
+    TxCompiler::Proto::PreSigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(preImageHashes.data(), int(preImageHashes.size())));
+    ASSERT_EQ(output.error(), Common::Proto::OK);
+
+    auto preImageHash = data(output.data_hash());
+    EXPECT_EQ(hex(preImageHash), "14fc3299ee3e1113096bf1869dfa14c04a7ffdedd8ebdabf530683e4cfcd726c");
+
+    // Simulate signature, normally obtained from signature server
+    const PublicKey publicKey = PrivateKey(key).getPublicKey(TWPublicKeyTypeNIST256p1);
+    const auto signature = parse_hex("1f6c4efceb5a6dadab271fd7e2153d97d22690938475b23f017cf9ec29e20d25725e90e541e130daa83c38fc4c933725f05837422c3f4a51f8c1d07208c8fd5e0b");//data("SIG_K1_K9RdLC7DEDWjTfR64GU8BtDHcAjzR1ntcT651JMcfHNTpdsvDrUwfyzF1FkvL9fxEi2UCtGJZ9zYoNbJoMF1fbU64cRiJ7");
+
+    // Verify signature (pubkey & hash & signature)
+    // { EXPECT_TRUE(publicKey.verify(signature, preImageHash)); }
+
+    /// Step 3: Compile transaction info
+    const Data outputData =
+        TransactionCompiler::compileWithSignatures(coin, txInputData, {signature}, {publicKey.bytes});
+
+    const auto ExpectedTx = R"({"compression":"none","packed_context_free_data":"","packed_trx":"6e67a35cd6679a1f3d4800000000010000000080a920cd000000572d3ccdcd010000000080a920cd00000000a8ed3232330000000080a920cd0000000000ea3055e09304000000000004544b4e00000000126d79207365636f6e64207472616e7366657200","signatures":["SIG_K1_K9RdLC7DEDWjTfR64GU8BtDHcAjzR1ntcT651JMcfHNTpdsvDrUwfyzF1FkvL9fxEi2UCtGJZ9zYoNbJoMF1fbU64cRiJ7"]})";
+    {
+        EOS::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+
+        EXPECT_EQ(output.json_encoded(), ExpectedTx);
+    }
+
+    input.set_private_key_type(EOS::Proto::KeyType::LEGACY);
+    {
+        EOS::Proto::SigningOutput output;
+        ANY_SIGN(input, coin);
+        EXPECT_EQ(output.error(), Common::Proto::Error_internal);
+        EXPECT_TRUE(output.json_encoded().empty());
     }
 }
 
@@ -748,6 +881,24 @@ TEST(TransactionCompiler, VergeCompileWithSignatures) {
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(hex(output.encoded()), ExpectedTx);
     }
+
+    { // Negative: not enough signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, txInputData, {signature, signature}, pubkeyVec);
+        Bitcoin::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    }
+
+    { // Negative: empty signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, txInputData, {}, {});
+        Bitcoin::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    }
 }
 
 TEST(TransactionCompiler, ZcashCompileWithSignatures) {
@@ -816,12 +967,26 @@ TEST(TransactionCompiler, ZcashCompileWithSignatures) {
     ASSERT_EQ(hex(signingOutput.encoded()), "0400008085202f8901de8c02c79c01018bd91dbc6b293eba03945be25762994409209a06d95c828123000000006b483045022100e6e5071811c08d0c2e81cb8682ee36a8c6b645f5c08747acd3e828de2a4d8a9602200b13b36a838c7e8af81f2d6e7e694ede28833a480cfbaaa68a47187655298a7f0121024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ffffffff01cf440000000000001976a914c3bacb129d85288a3deb5890ca9b711f7f71392688ac00000000000000000000000000000000000000");
 
     {
-        auto result = Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>::sign(input);
-        ASSERT_TRUE(result) << std::to_string(result.error());
-        auto signedTx = result.payload();
-        Data serialized;
-        signedTx.encode(serialized);
-        ASSERT_EQ(hex(serialized), hex(signingOutput.encoded()));
+        auto result = Zcash::Signer::sign(input);
+        ASSERT_EQ(hex(result.encoded()), hex(signingOutput.encoded()));
+    }
+
+    { // Negative: inconsistent signatures & publicKeys
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, txInputData, {signature, signature}, {publicKey.bytes});
+        Bitcoin::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    }
+
+    { // Negative: empty signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, txInputData, {}, {});
+        Bitcoin::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
     }
 }
 
@@ -898,6 +1063,24 @@ TEST(TransactionCompiler, ZenCompileWithSignatures) {
     ASSERT_TRUE(signingOutput.ParseFromArray(outputData.data(), (int)outputData.size()));
     // txid: 0fc555f8e205e66576f760d99270eaa6d60480c0e816209b2058387b65c2a000
     ASSERT_EQ(hex(signingOutput.encoded()), "0100000001d8f80574215973a8039200f979c7ee5ce55a5aaa685c9f61bc7df1aad799f789010000006b483045022100b27a4d10a4c5e758c4a379ccf7050eae6d8d4dacf5c65894d024de5ab947d4640220194ffccb29c95fe0ae3fb91a40276536494102891c6c5a9aee6063106fa55d30012102806408d2f6d5095bb73e89f9edbe02fe81853f25c541d33da4422c6916c1d0e1feffffff02400d0300000000003f76a914e0b858909b6b2c14996658085ed907abd880d32d88ac20d0da0eecd0dc51289b4fbb47fea9ac33174e966881495b6995ef96030000000003dac011b4b3001000000000003f76a91481b1b83b2ae8a4cddd72750dc5252c4bddd4e57e88ac20d0da0eecd0dc51289b4fbb47fea9ac33174e966881495b6995ef96030000000003dac011b4fcc11100");
+
+    { // Negative: inconsistent signatures & publicKeys
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, txInputData, {signature, signature}, {publicKey.bytes});
+        Bitcoin::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    }
+
+    { // Negative: empty signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, txInputData, {}, {});
+        Bitcoin::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    }
 }
 
 TEST(TransactionCompiler, GroestlcoinCompileWithSignatures) {
@@ -970,6 +1153,23 @@ TEST(TransactionCompiler, GroestlcoinCompileWithSignatures) {
         ANY_SIGN(input, coin);
         ASSERT_EQ(output.encoded(), signingOutput.encoded());
     }
+
+     { // Negative: not enough signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, txInputData, {signature}, {publicKey.bytes, publicKey.bytes});
+        Bitcoin::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    }
+    { // Negative: empty signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, txInputData, {}, {});
+        Bitcoin::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    }
 }
 
 TEST(TransactionCompiler, DecredCompileWithSignatures) {
@@ -999,8 +1199,6 @@ TEST(TransactionCompiler, DecredCompileWithSignatures) {
     auto& outpoint = *utxo.mutable_out_point();
     outpoint.set_hash(hash.data(), hash.size());
     outpoint.set_index(0);
-
-    input.add_private_key(utxoKey.data(), utxoKey.size());
 
     auto& plan = *input.mutable_plan();
     plan.set_amount(amount);
@@ -1037,9 +1235,28 @@ TEST(TransactionCompiler, DecredCompileWithSignatures) {
               "0100000001fdbfe9dd703f306794a467f175be5bd9748a7925033ea1cf9889d7cf4dd1155000000000000000000002809698000000000000001976a914989b1aecabf1c24e213cc0f2d8a22ffee25dd4e188ac40b6c6010000000000001976a9142a194fc92e27fef9cc2b057bc9060c580cbb484888ac000000000000000001000000000000000000000000ffffffff6a47304402206ee887c9239e5fff0048674bdfff2a8cfbeec6cd4a3ccebcc12fac44b24cc5ac0220718f7c760818fde18bc5ba8457d43d5a145cc4cf13d2a5557cba9107e9f4558d0121026cc34b92cefb3a4537b3edb0b6044c04af27c01583c577823ecc69a9a21119b6");
 
     {
+        input.add_private_key(utxoKey.data(), utxoKey.size());
         Decred::Proto::SigningOutput output;
         ANY_SIGN(input, coin);
         ASSERT_EQ(output.encoded(), signingOutput.encoded());
+    }
+
+    { // Negative: inconsistent signatures & publicKeys
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, txInputData, {signature, signature}, {publicKey.bytes});
+        Decred::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    }
+
+    { // Negative: empty signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, txInputData, {}, {});
+        Decred::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
     }
 }
 
@@ -1129,6 +1346,15 @@ TEST(TransactionCompiler, EthereumCompileWithSignatures) {
         ANY_SIGN(input, coin);
 
         ASSERT_EQ(hex(output.encoded()), ExpectedTx);
+    }
+
+    { // Negative: empty signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, txInputData, {}, {});
+        Ethereum::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_signatures_count);
     }
 }
 
@@ -1463,6 +1689,15 @@ TEST(TransactionCompiler, NEOCompileWithSignatures) {
 
         ASSERT_EQ(hex(output.encoded()), expectedTx);
     }
+
+    { // Negative: empty signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, inputData, {}, {});
+        NEO::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    }
 }
 
 TEST(TransactionCompiler, NEONep5TokenCompileWithSignatures) {
@@ -1696,6 +1931,15 @@ TEST(TransactionCompiler, StellarCompileWithSignatures) {
 
         ASSERT_EQ(output.signature(), tx);
     }
+
+    { // Negative: inconsistent signatures & publicKeys
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, inputData, {signature, signature}, {});
+        Stellar::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.signature().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_signatures_count);
+    }
 }
 
 TEST(TransactionCompiler, NULSCompileWithSignatures) {
@@ -1773,6 +2017,15 @@ TEST(TransactionCompiler, NULSCompileWithSignatures) {
 
         ASSERT_EQ(output.encoded(), ExpectedTx);
     }
+
+    { // Negative: inconsistent signatures & publicKeys
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, inputData, {signature, signature}, {publicKeyData});
+        NULS::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
+    }
 }
 
 TEST(TransactionCompiler, ThetaCompileWithSignatures) {
@@ -1837,6 +2090,15 @@ TEST(TransactionCompiler, ThetaCompileWithSignatures) {
         ANY_SIGN(input, coin);
 
         ASSERT_EQ(hex(output.encoded()), expectedTx);
+    }
+
+    { // Negative: inconsistent signatures & publicKeys
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, inputData, {signature, signature}, {publicKeyData});
+        Theta::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
     }
 }
 
@@ -1918,6 +2180,15 @@ TEST(TransactionCompiler, TezosCompileWithSignatures) {
 
         ASSERT_EQ(hex(output.encoded()), tx);
     }
+
+    { // Negative: inconsistent signatures & publicKeys
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, inputData, {signature, signature}, {});
+        Tezos::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_signatures_count);
+    }
 }
 
 TEST(TransactionCompiler, NEARCompileWithSignatures) {
@@ -1975,6 +2246,15 @@ TEST(TransactionCompiler, NEARCompileWithSignatures) {
         ANY_SIGN(input, coin);
 
         ASSERT_EQ(hex(output.signed_transaction()), tx);
+    }
+
+    { // Negative: inconsistent signatures & publicKeys
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, inputData, {signature, signature}, {publicKey});
+        NEAR::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.signed_transaction().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
     }
 }
 
@@ -2062,6 +2342,34 @@ TEST(TransactionCompiler, IostCompileWithSignatures) {
 
         ASSERT_EQ(hex(output.encoded()), tx);
     }
+
+    { // Negative: inconsistent signatures & publicKeys
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, inputData, {signature, signature}, {publicKey.bytes});
+        IOST::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
+    }
+
+    { // Negative: invalid signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, inputData, {parse_hex("1e5e2de66512658e9317")}, {publicKey.bytes});
+        IOST::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_internal);
+        EXPECT_EQ(output.error_message(), "Invalid signature/hash/publickey combination");
+    }
+
+    { // Negative: empty signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, inputData, {}, {});
+        IOST::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    }
 }
 
 TEST(TransactionCompiler, TronCompileWithSignatures) {
@@ -2140,6 +2448,15 @@ TEST(TransactionCompiler, TronCompileWithSignatures) {
 
         ASSERT_EQ(output.json(), tx);
     }
+
+    { // Negative: inconsistent signatures & publicKeys
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, inputData, {signature, signature}, {publicKey.bytes});
+        Tron::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.json().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
+    }
 }
 
 TEST(TransactionCompiler, RippleCompileWithSignatures) {
@@ -2202,6 +2519,24 @@ TEST(TransactionCompiler, RippleCompileWithSignatures) {
 
         ASSERT_EQ(hex(output.encoded()), ExpectedTx);
     }
+
+    { // Negative: not enough signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, inputData, {signature, signature}, {publicKey.bytes});
+        Ripple::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
+    }
+
+    { // Negative: empty signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, inputData, {}, {});
+        Ripple::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    }
 }
 
 TEST(TWTransactionCompiler, CosmosCompileWithSignatures) {
@@ -2259,35 +2594,70 @@ TEST(TWTransactionCompiler, CosmosCompileWithSignatures) {
     EXPECT_EQ(hex(preImageHash),
               "fa7990e1814c900efaedf1bdbedba22c22336675befe0ae39974130fc204f3de");
 
-    TW::Cosmos::Proto::SigningOutput output;
-    ANY_SIGN(input, coin);
+    auto expectedTx = 
+            "7b226d6f6465223a2242524f4144434153545f4d4f44455f424c4f434b222c2274785f6279746573223a224370"
+            "4942436f3842436877765932397a6257397a4c6d4a68626d7375646a46695a5852684d53354e633264545a5735"
+            "6b456d384b4c574e7663323176637a467461336b324f574e754f475672644864354d4467304e585a6c597a6c31"
+            "63484e6b63476872644868304d444e6e61336473654249745932397a6257397a4d54687a4d47686b626e4e7362"
+            "47646a593278335a58553559586c74647a52755a327430636a4a724d484a726557646b656d52774767384b4258"
+            "566864473974456759304d4441774d4441535a51704f436b594b4879396a62334e7462334d7559334a35634852"
+            "764c6e4e6c593341794e545a724d53355164574a4c5a586b5349776f6841757a76584f51336f774c4766355647"
+            "6a65537a487a62704566526e312b616c4b30484234543464566a5a4a4567514b4167674245684d4b44516f4664"
+            "57463062323053424445774d444151774a6f4d476b437676564536643239503330634f392f6c6e587947756e57"
+            "4d50784e5931324e75714463436e466b4e4d304834435551646c314763392b6f67494a62726f356e797a5a7a6c"
+            "7639726c322f47735a6f782f4a586f4358227d";
+    Data signature;
 
-    assertJSONEqual(
-        output.serialized(),
-        "{\"tx_bytes\": "
-        "\"CpIBCo8BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm8KLWNvc21vczFta3k2OWNuOGVrdHd5MDg0NXZl"
-        "Yzl1cHNkcGhrdHh0MDNna3dseBItY29zbW9zMThzMGhkbnNsbGdjY2x3ZXU5YXltdzRuZ2t0cjJrMHJreWdkemRwGg"
-        "8KBXVhdG9tEgY0MDAwMDASZQpOCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAuzvXOQ3owLG"
-        "f5VGjeSzHzbpEfRn1+alK0HB4T4dVjZJEgQKAggBEhMKDQoFdWF0b20SBDEwMDAQwJoMGkCvvVE6d29P30cO9/"
-        "lnXyGunWMPxNY12NuqDcCnFkNM0H4CUQdl1Gc9+ogIJbro5nyzZzlv9rl2/GsZox/JXoCX\", \"mode\": "
-        "\"BROADCAST_MODE_BLOCK\"}");
-    EXPECT_EQ(hex(output.signature()),
-              "afbd513a776f4fdf470ef7f9675f21ae9d630fc4d635d8dbaa0dc0a716434cd07e02510765d4673dfa88"
-              "0825bae8e67cb367396ff6b976fc6b19a31fc95e8097");
-    ASSERT_TRUE(publicKey.verify(data(output.signature()), data(preImageHash.data())));
-    EXPECT_EQ(
-        hex(output.serialized()),
-        "7b226d6f6465223a2242524f4144434153545f4d4f44455f424c4f434b222c2274785f6279746573223a224370"
-        "4942436f3842436877765932397a6257397a4c6d4a68626d7375646a46695a5852684d53354e633264545a5735"
-        "6b456d384b4c574e7663323176637a467461336b324f574e754f475672644864354d4467304e585a6c597a6c31"
-        "63484e6b63476872644868304d444e6e61336473654249745932397a6257397a4d54687a4d47686b626e4e7362"
-        "47646a593278335a58553559586c74647a52755a327430636a4a724d484a726557646b656d52774767384b4258"
-        "566864473974456759304d4441774d4441535a51704f436b594b4879396a62334e7462334d7559334a35634852"
-        "764c6e4e6c593341794e545a724d53355164574a4c5a586b5349776f6841757a76584f51336f774c4766355647"
-        "6a65537a487a62704566526e312b616c4b30484234543464566a5a4a4567514b4167674245684d4b44516f4664"
-        "57463062323053424445774d444151774a6f4d476b437676564536643239503330634f392f6c6e587947756e57"
-        "4d50784e5931324e75714463436e466b4e4d304834435551646c314763392b6f67494a62726f356e797a5a7a6c"
-        "7639726c322f47735a6f782f4a586f4358227d");
+    {
+        TW::Cosmos::Proto::SigningOutput output;
+        ANY_SIGN(input, coin);
+
+        assertJSONEqual(
+            output.serialized(),
+            "{\"tx_bytes\": "
+            "\"CpIBCo8BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm8KLWNvc21vczFta3k2OWNuOGVrdHd5MDg0NXZl"
+            "Yzl1cHNkcGhrdHh0MDNna3dseBItY29zbW9zMThzMGhkbnNsbGdjY2x3ZXU5YXltdzRuZ2t0cjJrMHJreWdkemRwGg"
+            "8KBXVhdG9tEgY0MDAwMDASZQpOCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAuzvXOQ3owLG"
+            "f5VGjeSzHzbpEfRn1+alK0HB4T4dVjZJEgQKAggBEhMKDQoFdWF0b20SBDEwMDAQwJoMGkCvvVE6d29P30cO9/"
+            "lnXyGunWMPxNY12NuqDcCnFkNM0H4CUQdl1Gc9+ogIJbro5nyzZzlv9rl2/GsZox/JXoCX\", \"mode\": "
+            "\"BROADCAST_MODE_BLOCK\"}");
+
+        signature = data(output.signature());
+        EXPECT_EQ(hex(signature),
+                "afbd513a776f4fdf470ef7f9675f21ae9d630fc4d635d8dbaa0dc0a716434cd07e02510765d4673dfa88"
+                "0825bae8e67cb367396ff6b976fc6b19a31fc95e8097");
+        
+        ASSERT_TRUE(publicKey.verify(signature, data(preImageHash.data())));
+        EXPECT_EQ(hex(output.serialized()), expectedTx);
+    }
+
+    {
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, protoInputData, {signature}, {publicKey.bytes});
+        Cosmos::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        
+        EXPECT_EQ(output.error(), Common::Proto::OK);
+        EXPECT_EQ(hex(output.serialized()), expectedTx);
+    }
+
+    { // Negative: not enough signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, protoInputData, {signature, signature}, {publicKey.bytes});
+        Cosmos::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.serialized().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
+    }
+
+    { // Negative: empty signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, protoInputData, {}, {});
+        Cosmos::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.serialized().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
+    }
 
     /// Step 3: Obtain json preimage hash
     input.set_signing_mode(TW::Cosmos::Proto::JSON);
@@ -2313,6 +2683,22 @@ TEST(TWTransactionCompiler, CosmosCompileWithSignatures) {
               "30726b7967647a6470227d7d5d2c2273657175656e6365223a2230227d");
     EXPECT_EQ(hex(jsonPreImageHash),
               "0a31f6cd50f1a5c514929ba68a977e222a7df2dc11e8470e93118cc3545e6b37");
+    
+    signature = Base64::decode("tTyOrburrHEHa14qiw78e9StoZyyGmoku98IxYrWCmtN8Qo5mTeKa0BKKDfgG4LmmNdwYcrXtqQQ7F4dL3c26g==");
+    {
+        auto result = TW::anySignJSON(coin, jsonPreImage, privateKey.bytes);
+        EXPECT_EQ(result, "{\"mode\":\"block\",\"tx\":{\"fee\":{\"amount\":[],\"gas\":\"0\"},\"memo\":\"\",\"msg\":[],\"signatures\":[{\"pub_key\":{\"type\":\"tendermint/PubKeySecp256k1\",\"value\":\"AuzvXOQ3owLGf5VGjeSzHzbpEfRn1+alK0HB4T4dVjZJ\"},\"signature\":\"tTyOrburrHEHa14qiw78e9StoZyyGmoku98IxYrWCmtN8Qo5mTeKa0BKKDfgG4LmmNdwYcrXtqQQ7F4dL3c26g==\"}]}}");
+    }
+
+    {   // JSON
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, jsonInputData, {signature}, {publicKey.bytes});
+        Cosmos::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        
+        EXPECT_EQ(output.error(), Common::Proto::OK);
+        EXPECT_EQ(hex(output.serialized()), "7b226d6f6465223a22626c6f636b222c227478223a7b22666565223a7b22616d6f756e74223a5b7b22616d6f756e74223a2231303030222c2264656e6f6d223a227561746f6d227d5d2c22676173223a22323030303030227d2c226d656d6f223a22222c226d7367223a5b7b2274797065223a22636f736d6f732d73646b2f4d736753656e64222c2276616c7565223a7b22616d6f756e74223a5b7b22616d6f756e74223a22343030303030222c2264656e6f6d223a227561746f6d227d5d2c2266726f6d5f61646472657373223a22636f736d6f73316d6b793639636e38656b74777930383435766563397570736470686b7478743033676b776c78222c22746f5f61646472657373223a22636f736d6f733138733068646e736c6c6763636c7765753961796d77346e676b7472326b30726b7967647a6470227d7d5d2c227369676e617475726573223a5b7b227075625f6b6579223a7b2274797065223a2274656e6465726d696e742f5075624b6579536563703235366b31222c2276616c7565223a2241757a76584f51336f774c47663556476a65537a487a62704566526e312b616c4b30484234543464566a5a4a227d2c227369676e6174757265223a227454794f72627572724845486131347169773738653953746f5a7979476d6f6b7539384978597257436d744e38516f356d54654b6130424b4b44666747344c6d6d4e64775963725874715151374634644c33633236673d3d227d5d7d7d");
+    }
 }
 
 TEST(TWTransactionCompiler, VechainCompileWithSignatures) {
@@ -2323,6 +2709,7 @@ TEST(TWTransactionCompiler, VechainCompileWithSignatures) {
     PrivateKey privateKey =
         PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    auto publicKey = privateKey.getPublicKey(publicKeyType(coin));
 
     input.set_chain_tag(1);
     input.set_block_ref(1);
@@ -2361,9 +2748,28 @@ TEST(TWTransactionCompiler, VechainCompileWithSignatures) {
               "41bf8edf9600e645b5abd677cb52f585e7f655d1361075d511b37f707a9f31da6702d28739933b264527"
               "a1d05b046f5b74044b88c30c3f5a09d616bd7a4af4901601");
 
+    auto signature = data(output.signature());
     /// Step 4: Verify signature
-    ASSERT_TRUE(privateKey.getPublicKey(TWCoinTypePublicKeyType(coin))
-                    .verify(data(output.signature()), data(preImageHash.data())));
+    ASSERT_TRUE(publicKey.verify(signature, data(preImageHash.data())));
+
+    const Data outputData =
+        TransactionCompiler::compileWithSignatures(coin, dataInput, {signature}, {publicKey.bytes});
+    
+    TW::VeChain::Proto::SigningOutput output1;
+    ASSERT_TRUE(output1.ParseFromArray(outputData.data(), (int)outputData.size()));
+    ASSERT_EQ(hex(output1.encoded()),
+              "f86a010101dcdb943535353535353535353535353535353535353535843130303080808252088001c0b8"
+              "41bf8edf9600e645b5abd677cb52f585e7f655d1361075d511b37f707a9f31da6702d28739933b264527"
+              "a1d05b046f5b74044b88c30c3f5a09d616bd7a4af4901601");
+
+    { // Negative: more than one signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, dataInput, {signature, signature}, {publicKey.bytes});
+        VeChain::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
+    }
 }
 
 TEST(TransactionCompiler, OntCompileWithSignatures) {
@@ -2444,6 +2850,24 @@ TEST(TransactionCompiler, OntCompileWithSignatures) {
     {
         EXPECT_EQ(hex(ontOutput.encoded()), ontExpectedTx);
         EXPECT_EQ(hex(ongOutput.encoded()), ongExpectedTx);
+    }
+
+    { // Negative: inconsistent signatures & publicKeys
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, ontTxInputData, {ongSignature, ongSignature}, {publicKey.bytes});
+        Ontology::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
+    }
+
+    { // Negative: empty signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, ontTxInputData, {}, {});
+        Ontology::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
     }
 
     // OEP4Token transfer test case
@@ -2534,6 +2958,24 @@ TEST(TransactionCompiler, OasisCompileWithSignatures) {
 
         ASSERT_EQ(hex(output.encoded()), tx);
     }
+
+    { // Negative: inconsistent signatures & publicKeys
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, inputData, {signature, signature}, {publicKey.bytes});
+        Oasis::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
+    }
+
+    { // Negative: empty signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, inputData, {}, {});
+        Oasis::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    }
 }
 
 TEST(TransactionCompiler, PolkadotCompileWithSignatures) {
@@ -2587,6 +3029,24 @@ TEST(TransactionCompiler, PolkadotCompileWithSignatures) {
 
     {
         EXPECT_EQ(hex(output.encoded()), expectedTx);
+    }
+
+    { // Negative: inconsistent signatures & publicKeys
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, txInputData, {signature, signature}, {publicKey.bytes});
+        Ontology::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
+    }
+
+    { // Negative: empty signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, txInputData, {}, {});
+        Ontology::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
     }
 }
 
@@ -2884,6 +3344,24 @@ TEST(TransactionCompiler, CardanoCompileWithSignaturesAndPubKeyType) {
 
     
     EXPECT_EQ(hex(output.encoded()), expectedTx);
+
+    { // Negative: inconsistent signatures & publicKeys
+        const Data outputData = TransactionCompiler::compileWithSignaturesAndPubKeyType(
+            coin, inputData, {sig, sig}, {publicKeyData}, TWPublicKeyTypeED25519);
+        Cardano::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
+    }
+
+    { // Negative: empty signatures
+        const Data outputData = TransactionCompiler::compileWithSignaturesAndPubKeyType(
+            coin, inputData, {}, {}, TWPublicKeyTypeED25519);
+        Cardano::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    }
 }
 
 TEST(TransactionCompiler, HarmonyCompileWithSignatures) {
@@ -2961,5 +3439,23 @@ TEST(TransactionCompiler, HarmonyCompileWithSignatures) {
         ANY_SIGN(input, coin);
 
         ASSERT_EQ(hex(output.encoded()), ExpectedTx);
+    }
+
+    { // Negative: inconsistent signatures & publicKeys
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, inputData, {signature, signature}, {publicKey.bytes});
+        Harmony::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
+    }
+
+    { // Negative: empty signatures
+        const Data outputData = TransactionCompiler::compileWithSignatures(
+            coin, inputData, {}, {});
+        Harmony::Proto::SigningOutput output;
+        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
     }
 }

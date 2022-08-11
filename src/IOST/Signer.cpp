@@ -32,14 +32,14 @@ class IOSTEncoder {
         }
     }
 
-    void WriteString(std::string s) {
+    void WriteString(const std::string& s) {
         WriteInt32(static_cast<uint32_t>(s.size()));
         buffer << s;
     }
 
     void WriteStringSlice(const std::vector<std::string> v) {
         WriteInt32(static_cast<uint32_t>(v.size()));
-        for (std::string s : v) {
+        for (auto& s : v) {
             WriteString(s);
         }
     }
@@ -50,7 +50,7 @@ class IOSTEncoder {
     std::stringstream buffer;
 };
 
-std::string encodeTransaction(const Proto::Transaction& t) {
+std::string Signer::encodeTransaction(const Proto::Transaction& t) noexcept {
     IOSTEncoder se;
     se.WriteInt64(t.time());
     se.WriteInt64(t.expiration());
@@ -100,7 +100,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
     if (t.actions_size() == 0) {
         t.add_actions();
-        auto action = t.mutable_actions(0);
+        auto* action = t.mutable_actions(0);
         action->set_contract("token.iost");
         action->set_action_name("transfer");
 
@@ -125,7 +125,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     std::string pubkeyStr(pubkey.begin(), pubkey.end());
 
     t.add_publisher_sigs();
-    auto sig = t.mutable_publisher_sigs(0);
+    auto* sig = t.mutable_publisher_sigs(0);
     sig->set_algorithm(Proto::Algorithm::ED25519);
     sig->set_public_key(pubkeyStr);
     auto signature = acc.sign(Hash::sha3_256(encodeTransaction(t)), TWCurveED25519);
@@ -165,7 +165,7 @@ Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& pub
     std::string pubkeyStr(publicKey.bytes.begin(), publicKey.bytes.end());
 
     t.add_publisher_sigs();
-    auto sig = t.mutable_publisher_sigs(0);
+    auto* sig = t.mutable_publisher_sigs(0);
     sig->set_algorithm(Proto::Algorithm(Proto::ED25519));
     sig->set_public_key(pubkeyStr);
     std::string signatureStr(signature.begin(), signature.end());

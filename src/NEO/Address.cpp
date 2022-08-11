@@ -4,7 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "../Ontology/ParamsBuilder.h"
 #include "../Base58.h"
 #include "../Hash.h"
 #include "../Data.h"
@@ -43,11 +42,6 @@ Address::Address(const PublicKey& publicKey) {
     }
 
     std::copy(keyHash.data(), keyHash.data() + Address::size, bytes.begin());
-}
-
-Address::Address(uint8_t m, const std::vector<Data>& publicKeys) {
-    auto builderData = toScriptHash(Ontology::ParamsBuilder::fromMultiPubkey(m, publicKeys));
-    std::copy(builderData.begin(), builderData.end(), bytes.begin());
 }
 
 Data Address::toScriptHash(const Data& data) const {

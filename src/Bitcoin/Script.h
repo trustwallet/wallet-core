@@ -137,7 +137,7 @@ class Script {
     static inline Data encodeNumber(int64_t n) {
         Data result;
         // check bitcoin Script::push_int64
-        if (n == -1 || (n >= 0 && n <= 16)) {
+        if (n == -1 || (n >= 1 && n <= 16)) {
             result.push_back(OP_1 + uint8_t(n - 1));
             return result;
         }

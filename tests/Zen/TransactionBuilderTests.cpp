@@ -4,26 +4,25 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Zen/Signer.h"
-#include "Zen/Address.h"
-#include "Zen/TransactionBuilder.h"
-
+#include "Bitcoin/Transaction.h"
 #include "Bitcoin/TransactionPlan.h"
 #include "Bitcoin/TransactionSigner.h"
-#include "Coin.h"
+#include "Zen/Address.h"
+#include "Zen/Signer.h"
+#include "Zen/TransactionBuilder.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
-#include "proto/Bitcoin.pb.h"
-
-#include <TrustWalletCore/TWCoinType.h>
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Zen;
+#include <TrustWalletCore/TWBitcoinSigHashType.h>
+#include <TrustWalletCore/TWCoinType.h>
 
-TEST(ZenSigner, Sign) {
+using namespace TW;
+using namespace TW::Bitcoin;
+
+TEST(ZenTransactionBuilder, Build) {
     const int64_t amount = 10000;
     const std::string toAddress = "zngBGZGKaaBamofSuFw5WMnvU2HQAtwGeb5";
 
@@ -38,6 +37,13 @@ TEST(ZenSigner, Sign) {
     input.set_to_address(toAddress);
     input.set_change_address("znk19H1wcARcCa7TM6zgmJUbWoWWtZ8k5cg");
     input.set_coin_type(TWCoinTypeZen);
+
+    Data opScript = parse_hex("00010203");
+    input.set_output_op_return(std::string(opScript.begin(), opScript.end()));
+
+    auto eo = input.add_extra_outputs();
+    eo->set_to_address("znk19H1wcARcCa7TM6zgmJUbWoWWtZ8k5cg");
+    eo->set_amount(7000);
 
     auto txHash0 = parse_hex("62dea4b87fd66ca8e75a199c93131827ed40fb96cd8412e3476540abb5139ea3");
     std::reverse(txHash0.begin(), txHash0.end());
@@ -56,56 +62,34 @@ TEST(ZenSigner, Sign) {
     utxo0->set_script(script0.bytes.data(), script0.bytes.size());
     input.add_private_key(utxoKey0.bytes.data(), utxoKey0.bytes.size());
 
-    auto plan = Signer::plan(input);
-    ASSERT_EQ(plan.fee(), 226);
-    plan.set_preblockhash(blockHash.data(), (int)blockHash.size());
-    plan.set_preblockheight(blockHeight);
+    auto plan = Bitcoin::TransactionSigner<Bitcoin::Transaction, Zen::TransactionBuilder>::plan(input);
+    ASSERT_EQ(plan.fee, 294);
+    plan.preBlockHash = blockHash;
+    plan.preBlockHeight = blockHeight;
+    plan.useMaxAmount = true;
 
-    auto& protoPlan = *input.mutable_plan();
-    protoPlan = plan;
+    // plan1
+    auto result = Zen::TransactionBuilder::build<Bitcoin::Transaction>(plan, input);
+  
+    ASSERT_GT(result.outputs.size(), 0);
+    ASSERT_EQ(result.outputs[0].value, plan.amount);
 
-    // Sign
-    auto result = Bitcoin::TransactionSigner<Bitcoin::Transaction, TransactionBuilder>::sign(input);
-    ASSERT_TRUE(result) << std::to_string(result.error());
-    auto signedTx = result.payload();
-
-    Data serialized;
-    signedTx.encode(serialized);
-    ASSERT_EQ(hex(serialized),
-        "0100000001a39e13b5ab406547e31284cd96fb40ed271813939c195ae7a86cd67fb8a4de62000000006a473044022014d687c0bee0b7b584db2eecbbf73b545ee255c42b8edf0944665df3fa882cfe02203bce2412d93c5a56cb4806ddd8297ff05f8fc121306e870bae33377a58a02f05012102b4ac9056d20c52ac11b0d7e83715dd3eac851cfc9cb64b8546d9ea0d4bb3bdfeffffffff0210270000000000003f76a914a58d22659b1082d1fa8698fc51996b43281bfce788ac2081dc725fd33fada1062323802eefb54d3325d924d4297a69221456040000000003e88211b4ce1c0000000000003f76a914cf83669620de8bbdf2cefcdc5b5113195603c56588ac2081dc725fd33fada1062323802eefb54d3325d924d4297a69221456040000000003e88211b400000000"
-    );
+    // plan2
+    plan.useMaxAmount = false;
+    result = Zen::TransactionBuilder::build<Bitcoin::Transaction>(plan, input);
+  
+    ASSERT_EQ(result.outputs.size(), 4);
+    ASSERT_EQ(result.outputs[3].value, 7000);
 }
 
-TEST(ZenSigner, SignWithError) {
-    const int64_t amount = 10000;
-    const std::string toAddress = "zngBGZGKaaBamofSuFw5WMnvU2HQAtwGeb5";
-
+TEST(ZenTransactionBuilder, BuildScript) {
     auto blockHash = parse_hex("0000000004561422697a29d424d925334db5ef2e80232306a1ad3fd35f72dc81");
     std::reverse(blockHash.begin(), blockHash.end());
     auto blockHeight = 1147624;
 
-    auto input = Bitcoin::Proto::SigningInput();
-    input.set_hash_type(TWBitcoinSigHashTypeAll);
-    input.set_amount(amount);
-    input.set_byte_fee(1);
-    input.set_to_address(toAddress);
-    input.set_change_address("znk19H1wcARcCa7TM6zgmJUbWoWWtZ8k5cg");
-    input.set_coin_type(TWCoinTypeZen);
-
-    auto plan = Signer::plan(input);
-    plan.set_preblockhash(blockHash.data(), (int)blockHash.size());
-    plan.set_preblockheight(blockHeight);
-
-    auto& protoPlan = *input.mutable_plan();
-    protoPlan = plan;
-
-    // Sign
-    auto result = Zen::Signer::sign(input);
-
-    ASSERT_NE(result.error(), Common::Proto::OK);
-
-    // PreImageHash
-    auto preResult = Zen::Signer::preImageHashes(input);
-
-    ASSERT_NE(preResult.error(), Common::Proto::OK);
+    // invalid address
+    auto result = Zen::TransactionBuilder::prepareOutputWithScript(
+        "DRyNFvJaybnF22UfMS6NR1Qav3mqxPj86E",
+        10000, TWCoinTypeZen, blockHash, blockHeight);
+    ASSERT_FALSE(result.has_value());
 }

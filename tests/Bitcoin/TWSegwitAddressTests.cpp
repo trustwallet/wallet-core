@@ -6,6 +6,8 @@
 
 #include "../interface/TWTestUtilities.h"
 
+#include "Data.h"
+#include "HexCoding.h"
 #include <TrustWalletCore/TWSegwitAddress.h>
 #include <TrustWalletCore/TWPublicKey.h>
 
@@ -23,10 +25,16 @@ TEST(TWSegwitAddress, PublicKeyToAddress) {
     auto string = WRAPS(TWSegwitAddressDescription(address.get()));
 
     ASSERT_STREQ(address1, TWStringUTF8Bytes(string.get()));
+
+    auto str = STRING(address1);
+    auto addr = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithString(string.get()));
+    ASSERT_TRUE(TWSegwitAddressEqual(address.get(), addr.get()));
 }
 
 TEST(TWSegwitAddress, InitWithAddress) {
     auto string = STRING(address1);
+    ASSERT_TRUE(TWSegwitAddressIsValidString(string.get()));
+
     auto address = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithString(string.get()));
     auto description = WRAPS(TWSegwitAddressDescription(address.get()));
 
@@ -36,6 +44,9 @@ TEST(TWSegwitAddress, InitWithAddress) {
     ASSERT_EQ(0, TWSegwitAddressWitnessVersion(address.get()));
 
     ASSERT_EQ(TWHRPBitcoin, TWSegwitAddressHRP(address.get()));
+
+    auto witness = TWSegwitAddressWitnessProgram(address.get());
+    ASSERT_EQ(TW::hex(TW::data(TWDataBytes(witness), TWDataSize(witness))), "751e76e8199196d454941c45d1b3a323f1433bd6");
 }
 
 TEST(TWSegwitAddress, TaprootString) {

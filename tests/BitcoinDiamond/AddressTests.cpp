@@ -6,6 +6,7 @@
 
 #include <TrustWalletCore/TWCoinType.h>
 
+#include "Coin.h"
 #include "HexCoding.h"
 #include "HDWallet.h"
 #include "Bitcoin/Address.h"
@@ -31,6 +32,9 @@ TEST(BitcoinDiamondAddress, FromPublicKey) {
     auto wallet = HDWallet("shoot island position soft burden budget tooth cruel issue economy destroy above", "");
     auto addr = wallet.deriveAddress(TWCoinTypeBitcoinDiamond);
     EXPECT_EQ(addr, "1KaRW9xPPtCTZ9FdaTHduCPck4YvSeEWNn");
+
+    addr = wallet.deriveAddress(TWCoinTypeBitcoinDiamond, TWDerivationBitcoinSegwit);
+    EXPECT_EQ(addr, "bcd1q7jh5qukuy9fc2pjm89xnyvx5dtfyvru9evw30x");
 }
 
 TEST(BitcoinDiamondAddress, FromString) {
@@ -39,4 +43,16 @@ TEST(BitcoinDiamondAddress, FromString) {
 
     address = Address("3PaCtJcD7sxpCf3JNPLpMNnHnwJHoBeucF");
     ASSERT_EQ(address.string(), "3PaCtJcD7sxpCf3JNPLpMNnHnwJHoBeucF");
+}
+
+TEST(BitcoinDiamondAddress, AddressData) {
+    const auto publicKey = PublicKey(parse_hex("02485a209514cc896f8ed736e205bc4c35bd5299ef3f9e84054475336b964c02a3"), TWPublicKeyTypeSECP256k1);
+    auto address = TW::deriveAddress(TWCoinTypeBitcoinDiamond, publicKey, TWDerivationBitcoinSegwit);
+
+    auto data = TW::addressToData(TWCoinTypeBitcoinDiamond, "1G15VvshDxwFTnahZZECJfFwEkq9fP79o8");
+    ASSERT_EQ(hex(data), "a48da46386ce52cccad178de900c71f06130c310");
+    ASSERT_EQ(data, TW::addressToData(TWCoinTypeBitcoinDiamond, address));
+
+    data = TW::addressToData(TWCoinTypeBitcoinDiamond, "1G15VvshDxwFTnahZZECJfFwEkq9fP79"); // invalid address
+    ASSERT_EQ(data.size(), 0);
 }

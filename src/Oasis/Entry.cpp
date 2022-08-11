@@ -50,7 +50,7 @@ void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<
                 output.set_error_message("empty signatures or publickeys");
                 return;
             }
-            if (signatures.size() != 1 && publicKeys.size() != 1) {
+            if (signatures.size() != 1 || publicKeys.size() != 1) {
                 output.set_error(Common::Proto::Error_no_support_n2n);
                 output.set_error_message(
                     Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));

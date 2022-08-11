@@ -23,11 +23,17 @@ TEST(Groestlcoin, Address) {
     auto addressString = WRAPS(TWGroestlcoinAddressDescription(address.get()));
     assertStringsEqual(addressString, "Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM");
 
+    ASSERT_TRUE(TWGroestlcoinAddressIsValidString(addressString.get()));
+
     auto address2 = WRAP(TWGroestlcoinAddress, TWGroestlcoinAddressCreateWithString(STRING("Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM").get()));
     auto address2String = WRAPS(TWGroestlcoinAddressDescription(address2.get()));
     assertStringsEqual(address2String, "Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM");
 
     ASSERT_TRUE(TWGroestlcoinAddressEqual(address.get(), address2.get()));
+
+    // invalid address
+    auto address3 = WRAP(TWGroestlcoinAddress, TWGroestlcoinAddressCreateWithString(STRING("Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLo").get()));
+    ASSERT_EQ(address3, nullptr);
 }
 
 TEST(Groestlcoin, BuildForLegacyAddress) {

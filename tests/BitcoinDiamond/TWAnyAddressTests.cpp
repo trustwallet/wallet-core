@@ -26,4 +26,12 @@ TEST(TWBitcoinDiamond, Address) {
     EXPECT_TRUE(TWStringEqual(string.get(), string2.get()));
     keyHash = WRAPD(TWAnyAddressData(addr.get()));
     assertHexEqual(keyHash, "86af5c1d5e754fc8906ec3c5d26e0135e1cb7c85");
+
+    // segwit addrerss
+    string = STRING("bcd1q35t4g0ezx9cl5qzac4tl377n9492uztqjwf5wh");
+    addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeBitcoinDiamond));
+    string2 = WRAPS(TWAnyAddressDescription(addr.get()));
+    EXPECT_TRUE(TWStringEqual(string.get(), string2.get()));
+    keyHash = WRAPD(TWAnyAddressData(addr.get()));
+    assertHexEqual(keyHash, "8d17543f223171fa005dc557f8fbd32d4aae0960");
 }

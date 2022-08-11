@@ -32,6 +32,7 @@ Proto::SigningOutput Signer::sign(const Bitcoin::Proto::SigningInput& input, std
     auto output = Proto::SigningOutput();
     if (!result) {
         output.set_error(result.error());
+        output.set_error_message(Common::Proto::SigningError_Name(result.error()));
         return output;
     }
 

@@ -20,19 +20,9 @@ using namespace TW::EOS;
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     Proto::SigningOutput output;
     try {
-        // create an asset object
-        auto assetData = input.asset();
-        auto asset = Asset(assetData.amount(), static_cast<uint8_t>(assetData.decimals()),
-                           assetData.symbol());
-
-        // create a transfer action
-        auto action = TransferAction(input.currency(), input.sender(), input.recipient(), asset,
-                                     input.memo());
-
-        // create a Transaction and add the transfer action
-        auto tx = Transaction(Data(input.reference_block_id().begin(), input.reference_block_id().end()),
-                        input.reference_block_time());
-        tx.actions.push_back(action);
+        auto chainId = Data(input.chain_id().begin(), input.chain_id().end());
+        auto signer = Signer(chainId);
+        auto tx = signer.buildTx(input);
 
         // get key type
         EOS::Type type = Type::Legacy;
@@ -54,8 +44,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
         // sign the transaction with a Signer
         auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-        auto chainId = Data(input.chain_id().begin(), input.chain_id().end());
-        Signer(chainId).sign(key, type, tx);
+        signer.sign(key, type, tx);
 
         // Pack the transaction and add the json encoding to Signing outputput
         PackedTransaction ptx{tx, CompressionType::None};
@@ -113,39 +102,31 @@ int Signer::isCanonical(uint8_t by, uint8_t sig[64]) {
         && !(sig[32] == 0 && !(sig[33] & 0x80));
 }
 
-Data Signer::buildUnsignedTx(const Proto::SigningInput& input) noexcept {
+Transaction Signer::buildTx(const Proto::SigningInput& input) const {
     // create an asset object
     auto assetData = input.asset();
-    auto asset = Asset(assetData.amount(), static_cast<uint8_t>(assetData.decimals()),
-                       assetData.symbol());
+    auto asset =
+        Asset(assetData.amount(), static_cast<uint8_t>(assetData.decimals()), assetData.symbol());
 
     // create a transfer action
-    auto action = TransferAction(input.currency(), input.sender(), input.recipient(), asset,
-                                 input.memo());
+    auto action =
+        TransferAction(input.currency(), input.sender(), input.recipient(), asset, input.memo());
 
     // create a Transaction and add the transfer action
-    auto tx = Transaction(Data(input.reference_block_id().begin(), input.reference_block_id().end()),
-                          input.reference_block_time());
+    auto tx =
+        Transaction(Data(input.reference_block_id().begin(), input.reference_block_id().end()),
+                    input.reference_block_time());
     tx.actions.push_back(action);
+    return tx;
+}
 
+Data Signer::buildUnsignedTx(const Proto::SigningInput& input) noexcept {
+    auto tx = buildTx(input);
     return serializeTx(tx);
 }
 
 std::string Signer::buildSignedTx(const Proto::SigningInput& input, const Data& signature) noexcept {
-    // create an asset object
-    auto assetData = input.asset();
-    auto asset = Asset(assetData.amount(), static_cast<uint8_t>(assetData.decimals()),
-                       assetData.symbol());
-
-    // create a transfer action
-    auto action = TransferAction(input.currency(), input.sender(), input.recipient(), asset,
-                                 input.memo());
-
-    // create a Transaction and add the transfer action
-    auto tx = Transaction(Data(input.reference_block_id().begin(), input.reference_block_id().end()),
-                          input.reference_block_time());
-    tx.actions.push_back(action);
-
+    auto tx = buildTx(input);
 
     // get key type
     EOS::Type type = Type::Legacy;

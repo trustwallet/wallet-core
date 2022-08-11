@@ -139,3 +139,16 @@ TEST(TWCoinType, TWPublicKeyType) {
     ASSERT_EQ(TWPublicKeyTypeCURVE25519, TWCoinTypePublicKeyType(TWCoinTypeWaves));
     ASSERT_EQ(TWPublicKeyTypeNIST256p1, TWCoinTypePublicKeyType(TWCoinTypeNEO));
 }
+
+TEST(TWCoinType, ValidateAddress) {
+    ASSERT_TRUE(TWCoinTypeValidate(TWCoinTypeBitcoin, STRING("12dNaXQtN5Asn2YFwT1cvciCrJa525fAe4").get()));
+    ASSERT_TRUE(TWCoinTypeValidate(TWCoinTypeBitcoin, STRING("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4").get()));
+}
+
+TEST(TWCoinType, DeriveAddress) {
+    auto pkData = DATA("0279BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798");
+    auto publicKey = WRAP(TWPublicKey, TWPublicKeyCreateWithData(pkData.get(), TWPublicKeyTypeSECP256k1));
+
+    auto address = WRAPS(TWCoinTypeDeriveAddressFromDerivation(TWCoinTypeBitcoin, publicKey.get(), TWDerivationBitcoinSegwit));
+    assertStringsEqual(address, "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4");
+}

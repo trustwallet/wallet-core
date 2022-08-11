@@ -23,6 +23,7 @@ SigningOutput Signer::sign(const SigningInput& input, std::optional<SignaturePub
     auto result = Bitcoin::TransactionSigner<Bitcoin::Transaction, TransactionBuilder>::sign(input, false, optionalExternalSigs);
     if (!result) {
         output.set_error(result.error());
+        output.set_error_message(Common::Proto::SigningError_Name(result.error()));
     } else {
         const auto& tx = result.payload();
         *output.mutable_transaction() = tx.proto();
