@@ -2355,8 +2355,10 @@ TEST(TransactionCompiler, IostCompileWithSignatures) {
     }
 
     { // Negative: invalid signatures
+        const auto invalidSignature =
+            parse_hex("fb43727477caaa12542b9060856816d42eedef6ebf2e98e4f8dff4355fe384751925833c4a26b2fed1707aebe655cb3317504a61ee59697c086f7baa6ca06a09");
         const Data outputData = TransactionCompiler::compileWithSignatures(
-            coin, inputData, {parse_hex("1e5e2de66512658e9317")}, {publicKey.bytes});
+            coin, inputData, {invalidSignature}, {publicKey.bytes});
         IOST::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(output.encoded().size(), 0);
