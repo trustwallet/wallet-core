@@ -3604,22 +3604,4 @@ TEST(TransactionCompiler, IoTeXCompileWithSignatures) {
         EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
         EXPECT_EQ(output.error_message(), "signatures and publickeys size can only be one");
     }
-
-    { // Negative: inconsistent signatures & publicKeys
-        const Data outputData = TransactionCompiler::compileWithSignatures(
-            coin, inputData, {signature, signature}, {publicKey.bytes});
-        Harmony::Proto::SigningOutput output;
-        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
-        EXPECT_EQ(output.encoded().size(), 0);
-        EXPECT_EQ(output.error(), Common::Proto::Error_no_support_n2n);
-    }
-
-    { // Negative: empty signatures
-        const Data outputData = TransactionCompiler::compileWithSignatures(
-            coin, inputData, {}, {});
-        Harmony::Proto::SigningOutput output;
-        ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
-        EXPECT_EQ(output.encoded().size(), 0);
-        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
-    }
 }
