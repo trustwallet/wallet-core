@@ -3,6 +3,8 @@ syntax = "proto3";
 package TW.IoTeX.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 message Transfer {
     string amount  = 1;
     string recipient = 2;
@@ -92,7 +94,8 @@ message SigningInput {
     uint64 nonce = 2;
     uint64 gasLimit = 3;
     string gasPrice = 4;
-    bytes privateKey = 5;
+    uint32 chainID = 5;
+    bytes privateKey = 6;
     oneof action {
         Transfer transfer = 10;
         ContractCall call = 12;
@@ -116,6 +119,12 @@ message SigningOutput {
 
     // Signed Action hash
     bytes hash = 2;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 3;
+
+    // error code description
+    string error_message = 4;
 }
 
 message ActionCore {
@@ -123,6 +132,7 @@ message ActionCore {
   uint64 nonce = 2;
   uint64 gasLimit = 3;
   string gasPrice = 4;
+  uint32 chainID = 5;
   oneof action {
     Transfer transfer = 10;
     ContractCall execution = 12;
