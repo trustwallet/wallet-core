@@ -25,7 +25,7 @@ TEST(TWAnyAddressNervos, AddressFromPublicKey) {
     ASSERT_NE(nullptr, privateKey.get());
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true));
     ASSERT_NE(nullptr, publicKey.get());
-    ASSERT_EQ(33, publicKey.get()->impl.bytes.size());
+    ASSERT_EQ(33ul, publicKey.get()->impl.bytes.size());
     auto address =
         WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeNervos));
     auto addressString = WRAPS(TWAnyAddressDescription(address.get()));

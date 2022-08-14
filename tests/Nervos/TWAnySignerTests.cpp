@@ -19,8 +19,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Nervos;
+namespace TW::Nervos::tests {
 
 Proto::SigningInput getAnySignerInput1() {
     auto input = Proto::SigningInput();
@@ -142,17 +141,16 @@ TEST(TWAnySignerNervos, Sign_Native_Simple) {
     checkAnySignerOutput1(output);
 }
 
-// FIXME: this test is broken
-// TEST(TWAnySignerNervos, PlanAndSign_Native_Simple) {
-//      auto input = getAnySignerInput1();
-//      Proto::TransactionPlan txPlanProto;
-//      ANY_PLAN(input, txPlanProto, TWCoinTypeNervos);
-//      checkPlan1(txPlanProto);
-//      *input.mutable_plan() = txPlanProto;
-//      Proto::SigningOutput output;
-//      ANY_SIGN(input, TWCoinTypeNervos);
-//      checkAnySignerOutput1(output);
-// }
+TEST(TWAnySignerNervos, PlanAndSign_Native_Simple) {
+    auto input = getAnySignerInput1();
+    Proto::TransactionPlan txPlanProto;
+    ANY_PLAN(input, txPlanProto, TWCoinTypeNervos);
+    checkPlan1(txPlanProto);
+    *input.mutable_plan() = txPlanProto;
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeNervos);
+    checkAnySignerOutput1(output);
+}
 
 TEST(TWAnySignerNervos, Sign_NegativeMissingKey) {
     auto input = getAnySignerInput1();
@@ -665,3 +663,5 @@ TEST(TWAnySignerNervos, Sign_DAO_Withdraw_Phase2) {
         "b42ab03f7094af917b4b203ddd7f2e87102e09ae579f2fe7f6adb7900b7386b58c1183ba0011b7c42100080000"
         "000000000000000000\"]}");
 }
+
+} // namespace TW::Nervos::tests
