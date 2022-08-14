@@ -9,9 +9,9 @@
 #include "../Ethereum/RLP.h"
 #include "../Hash.h"
 
+using RLP = TW::Ethereum::RLP;
 
 namespace TW::Theta {
-using RLP = Ethereum::RLP;
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto pkFrom = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
