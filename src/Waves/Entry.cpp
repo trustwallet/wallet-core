@@ -9,7 +9,6 @@
 #include "Address.h"
 #include "Signer.h"
 
-using namespace TW::Waves;
 using namespace std;
 
 namespace TW::Waves {

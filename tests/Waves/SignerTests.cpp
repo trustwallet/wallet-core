@@ -13,7 +13,8 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Waves;
+
+namespace TW::Waves::tests {
 
 TEST(WavesSigner, SignTransaction) {
     const auto privateKey =
@@ -59,3 +60,5 @@ TEST(WavesSigner, curve25519_pk_to_ed25519) {
     curve25519_pk_to_ed25519(r.data(), publicKeyCurve25519.data());
     EXPECT_EQ(hex(r), "ff84c4bfc095df25b01e48807715856d95af93d88c5b57f30cb0ce567ca4ce56");
 }
+
+} // namespace TW::Waves::tests
