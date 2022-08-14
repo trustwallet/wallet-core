@@ -9,8 +9,7 @@
 #include "../Hash.h"
 #include "../PrivateKey.h"
 
-using namespace TW;
-using namespace TW::Polkadot;
+namespace TW::Polkadot {
 
 static constexpr size_t hashTreshold = 256;
 
@@ -30,3 +29,5 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     protoOutput.set_encoded(encoded.data(), encoded.size());
     return protoOutput;
 }
+
+} // namespace TW::Polkadot

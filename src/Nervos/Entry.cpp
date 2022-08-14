@@ -9,24 +9,25 @@
 #include "Address.h"
 #include "Signer.h"
 
-using namespace TW;
-using namespace TW::Nervos;
+namespace TW::Nervos {
 using namespace std;
 
-bool Entry::validateAddress(TWCoinType coin, const string& address, byte p2pkh, byte p2sh,
+bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& address, byte, byte,
                             const char* hrp) const {
     return Address::isValid(address, hrp);
 }
 
-string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, byte p2pkh,
+string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, byte,
                             const char* hrp) const {
     return Address(publicKey, hrp).string();
 }
 
-void Entry::sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
+void Entry::sign([[maybe_unused]] TWCoinType coin, const Data& dataIn, Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
-void Entry::plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
+void Entry::plan([[maybe_unused]] TWCoinType coin, const Data& dataIn, Data& dataOut) const {
     planTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
+
+} // namespace TW::Nervos

@@ -13,7 +13,7 @@
 #include <TrezorCrypto/ecdsa.h>
 #include <string>
 
-using namespace TW;
+namespace TW::Tezos {
 
 std::string base58ToHex(const std::string& string, size_t prefixLength) {
     const auto decoded = Base58::bitcoin.decodeCheck(string);
@@ -48,3 +48,5 @@ PrivateKey parsePrivateKey(const std::string& privateKey) {
     append(pk, Data(decoded.begin() + prefix_size, decoded.end()));
     return PrivateKey(pk);
 }
+
+} // namespace TW::Tezos

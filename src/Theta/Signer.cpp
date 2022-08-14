@@ -9,8 +9,8 @@
 #include "../Ethereum/RLP.h"
 #include "../Hash.h"
 
-using namespace TW;
-using namespace TW::Theta;
+
+namespace TW::Theta {
 using RLP = Ethereum::RLP;
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
@@ -66,3 +66,5 @@ Data Signer::sign(const PrivateKey& privateKey, const Transaction& transaction) 
     auto signature = privateKey.sign(hash, TWCurveSECP256k1);
     return signature;
 }
+
+} // namespace TW::Theta

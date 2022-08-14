@@ -13,8 +13,7 @@
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWHRP.h>
 
-using namespace TW::Nervos;
-using namespace TW;
+namespace TW::Nervos {
 
 [[nodiscard]] bool Address::isValid(const std::string& string) noexcept {
     return Address::isValid(string, HRP_NERVOS);
@@ -24,9 +23,9 @@ using namespace TW;
     return Address().decode(string, hrp);
 }
 
-Address::Address(const std::string& string) noexcept : Address(string, HRP_NERVOS) {}
+Address::Address(const std::string& string) : Address(string, HRP_NERVOS) {}
 
-Address::Address(const std::string& string, const char* hrp) noexcept {
+Address::Address(const std::string& string, const char* hrp) {
     if (!decode(string, hrp)) {
         throw std::invalid_argument("Invalid address string");
     }
@@ -112,9 +111,9 @@ bool Address::decode(const std::string& string, const char* hrp) noexcept {
     return true;
 }
 
-Address::Address(const PublicKey& publicKey) noexcept : Address(publicKey, HRP_NERVOS) {}
+Address::Address(const PublicKey& publicKey) : Address(publicKey, HRP_NERVOS) {}
 
-Address::Address(const PublicKey& publicKey, const char* hrp) noexcept : hrp(hrp) {
+Address::Address(const PublicKey& publicKey, const char* hrp) : hrp(hrp) {
     if (publicKey.type != TWPublicKeyTypeSECP256k1) {
         throw std::invalid_argument("Nervos::Address needs a SECP256k1 public key.");
     }
@@ -162,3 +161,5 @@ std::string Address::string() const {
     }
     return Bech32::encode(hrp, payload, checksumVariant);
 }
+
+} // namespace Nervos

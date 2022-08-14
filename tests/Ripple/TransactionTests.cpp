@@ -14,8 +14,8 @@
 #include <gtest/gtest.h>
 
 using namespace std;
-using namespace TW;
-using namespace TW::Ripple;
+
+namespace TW::Ripple::tests {
 
 TEST(RippleTransaction, serializeAmount) {
     /// From https://github.com/trezor/trezor-core/blob/master/tests/test_apps.ripple.serializer.py
@@ -124,3 +124,5 @@ TEST(RippleTransaction, preImage) {
     );
     ASSERT_EQ(unsignedTx.size(), 114ul);
 }
+
+} // namespace TW::Ripple::tests

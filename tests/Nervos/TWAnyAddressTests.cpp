@@ -56,11 +56,11 @@ TEST(TWAnyAddressNervos, AddressFromWallet) {
             STRING("").get()));
     auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeNervos));
     auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
-    EXPECT_EQ(TWDataSize(privateKeyData.get()), 32);
+    EXPECT_EQ(TWDataSize(privateKeyData.get()), 32ul);
 
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true));
     auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
-    EXPECT_EQ(TWDataSize(publicKeyData.get()), 33);
+    EXPECT_EQ(TWDataSize(publicKeyData.get()), 33ul);
     assertHexEqual(publicKeyData,
                    "026c9e4cbb95d4b3a123c1fc80795feacc38029683a1b3e16bccf49bba25fb2858");
 

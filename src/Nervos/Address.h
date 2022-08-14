@@ -11,8 +11,6 @@
 
 #include <string>
 
-using namespace TW;
-
 namespace TW::Nervos {
 
 enum HashType {
@@ -32,7 +30,7 @@ class Address {
 public:
     const char* hrp;
     AddressType addressType;
-    byte codeHashIndex;
+    TW::byte codeHashIndex;
     Data codeHash;
     HashType hashType;
     Data args;
@@ -42,12 +40,12 @@ public:
     [[nodiscard]] static bool isValid(const std::string& string, const char* hrp) noexcept;
 
     /// Initializes a Nervos address with a string representation.
-    explicit Address(const std::string& string) noexcept;
-    explicit Address(const std::string& string, const char* hrp) noexcept;
+    explicit Address(const std::string& string);
+    explicit Address(const std::string& string, const char* hrp);
 
     /// Initializes a Nervos address with a public key.
-    explicit Address(const PublicKey& publicKey) noexcept;
-    explicit Address(const PublicKey& publicKey, const char* hrp) noexcept;
+    explicit Address(const PublicKey& publicKey);
+    explicit Address(const PublicKey& publicKey, const char* hrp);
 
     /// Returns a string representation of the address.
     std::string string() const;

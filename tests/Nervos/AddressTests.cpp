@@ -11,8 +11,7 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-using namespace TW;
-using namespace TW::Nervos;
+namespace TW::Nervos::tests {
 
 TEST(NervosAddress, Valid) {
     ASSERT_TRUE(Address::isValid("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqwyk5x9e"
@@ -59,3 +58,5 @@ TEST(NervosAddress, FromString) {
     ASSERT_EQ(address3.string(), "ckb1qjda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xw3394p3wg6"
                                  "p60qclvpfmaa582lu860dja5h0fk0v");
 }
+
+} // namespace TW::Nervos::tests

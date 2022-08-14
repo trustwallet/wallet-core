@@ -19,8 +19,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Nervos;
+namespace TW::Nervos::tests {
 
 std::vector<PrivateKey> getPrivateKeys(Proto::SigningInput& input) {
     std::vector<PrivateKey> privateKeys;
@@ -72,44 +71,44 @@ void checkOutput1(Transaction& tx) {
     ASSERT_EQ(tx.hash(),
               parse_hex("f2c32afde7e72011985583873bc16c0a3c01fc01fc161eb4b914fcf84c53cdf8"));
 
-    ASSERT_EQ(tx.cellDeps.size(), 1);
+    ASSERT_EQ(tx.cellDeps.size(), 1ul);
 
     ASSERT_EQ(tx.cellDeps[0].outPoint.txHash,
               parse_hex("71a7ba8fc96349fea0ed3a5c47992e3b4084b031a42264a018e0072e8172e46c"));
-    ASSERT_EQ(tx.cellDeps[0].outPoint.index, 0);
+    ASSERT_EQ(tx.cellDeps[0].outPoint.index, 0ul);
     ASSERT_EQ(tx.cellDeps[0].depType, DepType::DepGroup);
 
-    ASSERT_EQ(tx.headerDeps.size(), 0);
+    ASSERT_EQ(tx.headerDeps.size(), 0ul);
 
-    ASSERT_EQ(tx.inputs.size(), 1);
+    ASSERT_EQ(tx.inputs.size(), 1ul);
 
     ASSERT_EQ(tx.inputs[0].previousOutput.txHash,
               parse_hex("71caea2d3ac9e3ea899643e3e67dd11eb587e7fe0d8c6e67255d0959fa0a1fa3"));
-    ASSERT_EQ(tx.inputs[0].previousOutput.index, 0);
-    ASSERT_EQ(tx.inputs[0].since, 0);
+    ASSERT_EQ(tx.inputs[0].previousOutput.index, 0ul);
+    ASSERT_EQ(tx.inputs[0].since, 0ul);
 
-    ASSERT_EQ(tx.outputs.size(), 2);
-    ASSERT_EQ(tx.outputsData.size(), 2);
+    ASSERT_EQ(tx.outputs.size(), 2ul);
+    ASSERT_EQ(tx.outputsData.size(), 2ul);
 
-    ASSERT_EQ(tx.outputs[0].capacity, 10000000000);
+    ASSERT_EQ(tx.outputs[0].capacity, 10000000000ul);
     ASSERT_EQ(tx.outputs[0].lock.codeHash,
               parse_hex("9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"));
     ASSERT_EQ(tx.outputs[0].lock.hashType, HashType::Type1);
     ASSERT_EQ(tx.outputs[0].lock.args, parse_hex("ab201f55b02f53b385f79b34dfad548e549b48fc"));
-    ASSERT_EQ(tx.outputs[0].type.codeHash.size(), 0);
-    ASSERT_EQ(tx.outputs[0].type.args.size(), 0);
-    ASSERT_EQ(tx.outputsData[0].size(), 0);
+    ASSERT_EQ(tx.outputs[0].type.codeHash.size(), 0ul);
+    ASSERT_EQ(tx.outputs[0].type.args.size(), 0ul);
+    ASSERT_EQ(tx.outputsData[0].size(), 0ul);
 
-    ASSERT_EQ(tx.outputs[1].capacity, 9999999536);
+    ASSERT_EQ(tx.outputs[1].capacity, 9999999536ul);
     ASSERT_EQ(tx.outputs[1].lock.codeHash,
               parse_hex("9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"));
     ASSERT_EQ(tx.outputs[1].lock.hashType, HashType::Type1);
     ASSERT_EQ(tx.outputs[1].lock.args, parse_hex("b0d65be39059d6489231b48f85ad706a560bbd8d"));
-    ASSERT_EQ(tx.outputs[1].type.codeHash.size(), 0);
-    ASSERT_EQ(tx.outputs[1].type.args.size(), 0);
-    ASSERT_EQ(tx.outputsData[1].size(), 0);
+    ASSERT_EQ(tx.outputs[1].type.codeHash.size(), 0ul);
+    ASSERT_EQ(tx.outputs[1].type.args.size(), 0ul);
+    ASSERT_EQ(tx.outputsData[1].size(), 0ul);
 
-    ASSERT_EQ(tx.witnesses.size(), 1);
+    ASSERT_EQ(tx.witnesses.size(), 1ul);
     ASSERT_EQ(
         hex(tx.witnesses[0]),
         "55000000100000005500000055000000410000002a9ef2ad7829e5ea0c7a32735d29a0cb2ec20434f6fd5bf6e2"
@@ -133,7 +132,7 @@ void checkPlan1(TransactionPlan& txPlan) {
     ASSERT_EQ(txPlan.selectedCells[0].outPoint.txHash,
               parse_hex("71caea2d3ac9e3ea899643e3e67dd11eb587e7fe0d8c6e67255d0959fa0a1fa3"));
     ASSERT_EQ(txPlan.selectedCells[0].outPoint.index, 0);
-    ASSERT_EQ(txPlan.selectedCells[0].capacity, 20000000000);
+    ASSERT_EQ(txPlan.selectedCells[0].capacity, 20000000000ul);
     ASSERT_EQ(txPlan.selectedCells[0].lock.codeHash,
               parse_hex("9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"));
     ASSERT_EQ(txPlan.selectedCells[0].lock.hashType, HashType::Type1);
@@ -146,7 +145,7 @@ void checkPlan1(TransactionPlan& txPlan) {
     ASSERT_EQ(txPlan.outputs.size(), 2);
     ASSERT_EQ(txPlan.outputsData.size(), 2);
 
-    ASSERT_EQ(txPlan.outputs[0].capacity, 10000000000);
+    ASSERT_EQ(txPlan.outputs[0].capacity, 10000000000ul);
     ASSERT_EQ(txPlan.outputs[0].lock.codeHash,
               parse_hex("9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"));
     ASSERT_EQ(txPlan.outputs[0].lock.hashType, HashType::Type1);
@@ -155,7 +154,7 @@ void checkPlan1(TransactionPlan& txPlan) {
     ASSERT_EQ(txPlan.outputs[0].type.args.size(), 0);
     ASSERT_EQ(txPlan.outputsData[0].size(), 0);
 
-    ASSERT_EQ(txPlan.outputs[1].capacity, 9999999536);
+    ASSERT_EQ(txPlan.outputs[1].capacity, 9999999536ul);
     ASSERT_EQ(txPlan.outputs[1].lock.codeHash,
               parse_hex("9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"));
     ASSERT_EQ(txPlan.outputs[1].lock.hashType, HashType::Type1);
@@ -256,12 +255,12 @@ TEST(NervosSigner, Sign_Native_SendMaximum) {
     ASSERT_EQ(tx.inputs[0].previousOutput.txHash,
               parse_hex("c75567c80dc9b97aaf4e5c23f4c7f37b077f2b33a50dd7abd952abfbd5beb247"));
     ASSERT_EQ(tx.inputs[0].previousOutput.index, 0);
-    ASSERT_EQ(tx.inputs[0].since, 0);
+    ASSERT_EQ(tx.inputs[0].since, 0ul);
 
     ASSERT_EQ(tx.outputs.size(), 1);
     ASSERT_EQ(tx.outputsData.size(), 1);
 
-    ASSERT_EQ(tx.outputs[0].capacity, 11410040265);
+    ASSERT_EQ(tx.outputs[0].capacity, 11410040265ul);
     ASSERT_EQ(tx.outputs[0].lock.codeHash,
               parse_hex("9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"));
     ASSERT_EQ(tx.outputs[0].lock.hashType, HashType::Type1);
@@ -371,22 +370,22 @@ TEST(NervosSigner, Sign_SUDT_Simple) {
     ASSERT_EQ(tx.inputs[0].previousOutput.txHash,
               parse_hex("e118bd11a73d381daf288381ce182d92b6cf2f52d25886bbda9e1a61525c7c4a"));
     ASSERT_EQ(tx.inputs[0].previousOutput.index, 0);
-    ASSERT_EQ(tx.inputs[0].since, 0);
+    ASSERT_EQ(tx.inputs[0].since, 0ul);
 
     ASSERT_EQ(tx.inputs[1].previousOutput.txHash,
               parse_hex("09a45a15e48f985b554a0b6e5f0857913cc492ec061cc9b0b2befa4b24609a4a"));
     ASSERT_EQ(tx.inputs[1].previousOutput.index, 1);
-    ASSERT_EQ(tx.inputs[1].since, 0);
+    ASSERT_EQ(tx.inputs[1].since, 0ul);
 
     ASSERT_EQ(tx.inputs[2].previousOutput.txHash,
               parse_hex("5b12911e7413e011f251c1fb5fae4e76fd5fcae4f0d4c6412dcc5b0bfcece823"));
     ASSERT_EQ(tx.inputs[2].previousOutput.index, 0);
-    ASSERT_EQ(tx.inputs[2].since, 0);
+    ASSERT_EQ(tx.inputs[2].since, 0ul);
 
     ASSERT_EQ(tx.outputs.size(), 3);
     ASSERT_EQ(tx.outputsData.size(), 3);
 
-    ASSERT_EQ(tx.outputs[0].capacity, 14400000000);
+    ASSERT_EQ(tx.outputs[0].capacity, 14400000000ul);
     ASSERT_EQ(tx.outputs[0].lock.codeHash,
               parse_hex("9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"));
     ASSERT_EQ(tx.outputs[0].lock.hashType, HashType::Type1);
@@ -398,7 +397,7 @@ TEST(NervosSigner, Sign_SUDT_Simple) {
               parse_hex("9657b32fcdc463e13ec9205914fd91c443822a949937ae94add9869e7f2e1de8"));
     ASSERT_EQ(hex(tx.outputsData[0]), "0080c6a47e8d03000000000000000000");
 
-    ASSERT_EQ(tx.outputs[1].capacity, 14400000000);
+    ASSERT_EQ(tx.outputs[1].capacity, 14400000000ul);
     ASSERT_EQ(tx.outputs[1].lock.codeHash,
               parse_hex("9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"));
     ASSERT_EQ(tx.outputs[1].lock.hashType, HashType::Type1);
@@ -410,7 +409,7 @@ TEST(NervosSigner, Sign_SUDT_Simple) {
               parse_hex("9657b32fcdc463e13ec9205914fd91c443822a949937ae94add9869e7f2e1de8"));
     ASSERT_EQ(hex(tx.outputsData[1]), "00601e253b6b4c000000000000000000");
 
-    ASSERT_EQ(tx.outputs[2].capacity, 8210023387);
+    ASSERT_EQ(tx.outputs[2].capacity, 8210023387ul);
     ASSERT_EQ(tx.outputs[2].lock.codeHash,
               parse_hex("9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"));
     ASSERT_EQ(tx.outputs[2].lock.hashType, HashType::Type1);
@@ -510,7 +509,7 @@ TEST(NervosSigner, Sign_SUDT_SendMaximum) {
     ASSERT_EQ(tx.inputs[0].previousOutput.txHash,
               parse_hex("378b6bd2f7fc2b1599ee55be7e8fa17fdd6e0d25e2e146d5f46006e0292d6564"));
     ASSERT_EQ(tx.inputs[0].previousOutput.index, 0);
-    ASSERT_EQ(tx.inputs[0].since, 0);
+    ASSERT_EQ(tx.inputs[0].since, 0ul);
 
     ASSERT_EQ(tx.inputs[1].previousOutput.txHash,
               parse_hex("430cb60ee816e2631d6d9605659c18fec8eb3de94526f5fd4ad51feaad6f1664"));
@@ -520,7 +519,7 @@ TEST(NervosSigner, Sign_SUDT_SendMaximum) {
     ASSERT_EQ(tx.outputs.size(), 2);
     ASSERT_EQ(tx.outputsData.size(), 2);
 
-    ASSERT_EQ(tx.outputs[0].capacity, 14400000000);
+    ASSERT_EQ(tx.outputs[0].capacity, 14400000000ul);
     ASSERT_EQ(tx.outputs[0].lock.codeHash,
               parse_hex("9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"));
     ASSERT_EQ(tx.outputs[0].lock.hashType, HashType::Type1);
@@ -532,7 +531,7 @@ TEST(NervosSigner, Sign_SUDT_SendMaximum) {
               parse_hex("9657b32fcdc463e13ec9205914fd91c443822a949937ae94add9869e7f2e1de8"));
     ASSERT_EQ(hex(tx.outputsData[0]), "00601e253b6b4c000000000000000000");
 
-    ASSERT_EQ(tx.outputs[1].capacity, 8210025567);
+    ASSERT_EQ(tx.outputs[1].capacity, 8210025567ul);
     ASSERT_EQ(tx.outputs[1].lock.codeHash,
               parse_hex("9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"));
     ASSERT_EQ(tx.outputs[1].lock.hashType, HashType::Type1);
@@ -634,7 +633,7 @@ TEST(NervosSigner, Sign_DAO_Deposit) {
     ASSERT_EQ(tx.outputs.size(), 2);
     ASSERT_EQ(tx.outputsData.size(), 2);
 
-    ASSERT_EQ(tx.outputs[0].capacity, 10200000000);
+    ASSERT_EQ(tx.outputs[0].capacity, 10200000000ul);
     ASSERT_EQ(tx.outputs[0].lock.codeHash,
               parse_hex("9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"));
     ASSERT_EQ(tx.outputs[0].lock.hashType, HashType::Type1);
@@ -645,7 +644,7 @@ TEST(NervosSigner, Sign_DAO_Deposit) {
     ASSERT_EQ(tx.outputs[0].type.args, parse_hex(""));
     ASSERT_EQ(hex(tx.outputsData[0]), "0000000000000000");
 
-    ASSERT_EQ(tx.outputs[1].capacity, 12410019377);
+    ASSERT_EQ(tx.outputs[1].capacity, 12410019377ul);
     ASSERT_EQ(tx.outputs[1].lock.codeHash,
               parse_hex("9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"));
     ASSERT_EQ(tx.outputs[1].lock.hashType, HashType::Type1);
@@ -770,7 +769,7 @@ TEST(NervosSigner, Sign_DAO_Withdraw_Phase1) {
     ASSERT_EQ(tx.outputs.size(), 2);
     ASSERT_EQ(tx.outputsData.size(), 2);
 
-    ASSERT_EQ(tx.outputs[0].capacity, 10200000000);
+    ASSERT_EQ(tx.outputs[0].capacity, 10200000000ul);
     ASSERT_EQ(tx.outputs[0].lock.codeHash,
               parse_hex("9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"));
     ASSERT_EQ(tx.outputs[0].lock.hashType, HashType::Type1);
@@ -781,7 +780,7 @@ TEST(NervosSigner, Sign_DAO_Withdraw_Phase1) {
     ASSERT_EQ(tx.outputs[0].type.args, parse_hex(""));
     ASSERT_EQ(hex(tx.outputsData[0]), "aa97730000000000");
 
-    ASSERT_EQ(tx.outputs[1].capacity, 12410018646);
+    ASSERT_EQ(tx.outputs[1].capacity, 12410018646ul);
     ASSERT_EQ(tx.outputs[1].lock.codeHash,
               parse_hex("9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"));
     ASSERT_EQ(tx.outputs[1].lock.hashType, HashType::Type1);
@@ -928,3 +927,5 @@ TEST(NervosSigner, Sign_DAO_Withdraw_Phase2) {
               "bab42ab03f7094af917b4b203ddd7f2e87102e09ae579f2fe7f6adb7900b7386b58c1183ba0011b7c421"
               "00080000000000000000000000");
 }
+
+} // namespace TW::Nervos::tests

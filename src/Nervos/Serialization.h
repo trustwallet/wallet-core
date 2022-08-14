@@ -41,7 +41,7 @@ struct Serialization {
         return data;
     }
 
-    static uint256_t decodeUint256(const Data& data, byte minLen = 0) {
+    static uint256_t decodeUint256(const Data& data) {
         auto data1 = Data(data);
         std::reverse(data1.begin(), data1.end());
         return load(data1);
