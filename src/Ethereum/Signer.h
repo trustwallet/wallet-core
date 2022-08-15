@@ -8,7 +8,7 @@
 
 #include "RLP.h"
 #include "Transaction.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
 #include "../proto/Ethereum.pb.h"

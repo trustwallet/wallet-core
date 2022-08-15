@@ -8,7 +8,7 @@
 #include "SegwitAddress.h"
 #include "SigHashType.h"
 #include "../BinaryCoding.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../Hash.h"
 
 #include "SignatureVersion.h"

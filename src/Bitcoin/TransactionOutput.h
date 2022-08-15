@@ -8,7 +8,7 @@
 
 #include "Amount.h"
 #include "Script.h"
-#include "../Data.h"
+#include "Data.h"
 
 #include <memory>
 

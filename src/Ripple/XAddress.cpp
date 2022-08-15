@@ -8,7 +8,7 @@
 
 #include "../Base58.h"
 #include  "../BinaryCoding.h"
-#include  "../Data.h"
+#include  "Data.h"
 #include <TrezorCrypto/ecdsa.h>
 
 using namespace TW;

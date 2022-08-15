@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "../Data.h"
+#include "Data.h"
 
 #include "OpCodes.h"
 #include <TrustWalletCore/TWCoinType.h>

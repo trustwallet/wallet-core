@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "Coins.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../Ethereum/Address.h"
 
 namespace TW::Theta {

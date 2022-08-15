@@ -42,6 +42,8 @@ include(ExternalProject)
 # Dependencies
 include(cmake/Protobuf.cmake)
 
+add_subdirectory(modules)
+
 # Source files
 if (${ANDROID})
     message("Configuring for JNI")
@@ -56,6 +58,8 @@ else ()
 
     target_link_libraries(TrustWalletCore PUBLIC ${PROJECT_NAME}_INTERFACE PRIVATE TrezorCrypto protobuf Boost::boost)
 endif ()
+
+target_link_libraries(TrustWalletCore PUBLIC tw::base)
 
 if (TW_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_enable_coverage(TrustWalletCore)

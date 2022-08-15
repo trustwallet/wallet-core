@@ -10,7 +10,7 @@
 #include "Transaction.h"
 #include "TransactionBuilder.h"
 #include "Signer.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../KeyPair.h"
 #include "../Result.h"
 #include "../proto/Bitcoin.pb.h"

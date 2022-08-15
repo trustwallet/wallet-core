@@ -9,7 +9,7 @@
 #include <string>
 
 #include "../Base58Address.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../PublicKey.h"
 
 namespace TW::NEO {

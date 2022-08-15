@@ -7,7 +7,7 @@
 #include "Address.h"
 #include "BinaryCoding.h"
 #include "../Base58.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../HexCoding.h"
 #include "../proto/Tezos.pb.h"
 

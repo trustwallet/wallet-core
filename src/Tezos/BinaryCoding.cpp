@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "../Base58.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../HexCoding.h"
 #include "../PublicKey.h"
 #include "../PrivateKey.h"

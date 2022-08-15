@@ -7,7 +7,7 @@
 #pragma once
 
 #include "OperationList.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../PrivateKey.h"
 #include "../proto/Tezos.pb.h"
 

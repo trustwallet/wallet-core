@@ -10,7 +10,7 @@
 #include "OptInAssetTransaction.h"
 #include "Transfer.h"
 
-#include "../Data.h"
+#include "Data.h"
 #include "../PrivateKey.h"
 
 namespace TW::Algorand {

@@ -7,7 +7,7 @@
 #include "Address.h"
 
 #include "../Base58.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../Hash.h"
 
 #include <HexCoding.h>

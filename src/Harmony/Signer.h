@@ -8,7 +8,7 @@
 
 #include "Staking.h"
 #include "Transaction.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
 #include "../proto/Harmony.pb.h"

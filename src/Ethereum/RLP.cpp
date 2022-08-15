@@ -6,7 +6,7 @@
 
 #include "RLP.h"
 
-#include "../Data.h"
+#include "Data.h"
 #include "../uint256.h"
 #include "../BinaryCoding.h"
 

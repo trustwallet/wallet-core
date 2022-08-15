@@ -14,7 +14,7 @@
 #include "../Coin.h"
 
 #include "../BinaryCoding.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../Decred/Address.h"
 #include "../Groestlcoin/Address.h"
 #include "../Hash.h"

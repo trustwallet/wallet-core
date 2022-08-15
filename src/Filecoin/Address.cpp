@@ -10,7 +10,7 @@
 #include <climits>
 
 #include "../Base32.h"
-#include "../Data.h"
+#include "Data.h"
 
 using namespace TW;
 using namespace TW::Filecoin;

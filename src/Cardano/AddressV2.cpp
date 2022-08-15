@@ -6,7 +6,7 @@
 
 #include "AddressV2.h"
 #include "../Cbor.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../Base58.h"
 #include "../Crc.h"
 #include "../HexCoding.h"

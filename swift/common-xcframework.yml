@@ -9,7 +9,7 @@ options:
 settings:
   base:
     ENABLE_BITCODE: YES
-    HEADER_SEARCH_PATHS: $(SRCROOT)/wallet-core ${SRCROOT}/trezor-crypto/crypto
+    HEADER_SEARCH_PATHS: $(SRCROOT)/wallet-core ${SRCROOT}/trezor-crypto/crypto $(SRCROOT)/wallet-core-modules/base
     SYSTEM_HEADER_SEARCH_PATHS: ${SRCROOT}/include ${SRCROOT}/../build/local/include ${SRCROOT}/trezor-crypto/include $(SRCROOT)/protobuf /usr/local/include /opt/homebrew/include
     CLANG_CXX_LANGUAGE_STANDARD: c++20
     GCC_WARN_64_TO_32_BIT_CONVERSION: NO
@@ -35,6 +35,12 @@ targets:
         - "proto/*.proto"
         - "Tron/Protobuf/*.proto"
         - "Zilliqa/Protobuf/*.proto"
+      - path: wallet-core-modules
+        headerVisibility: project
+        excludes:
+        - ".vscode"
+        - "*.txt"
+        - "base/tests/*"
     dependencies:
       - target: trezor-crypto_${platform}
         link: true

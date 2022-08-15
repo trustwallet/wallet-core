@@ -7,7 +7,7 @@
 #include "AddressV3.h"
 #include "AddressV2.h"
 #include <TrustWalletCore/TWCoinType.h>
-#include "../Data.h"
+#include "Data.h"
 #include "../Bech32.h"
 #include "../Base32.h"
 #include "../Crc.h"

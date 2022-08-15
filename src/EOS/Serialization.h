@@ -2,7 +2,7 @@
 
 #include <nlohmann/json.hpp>
 
-#include "../Data.h"
+#include "Data.h"
 #include "../BinaryCoding.h"
 
 #include <vector>

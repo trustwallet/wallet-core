@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "../Data.h"
+#include "Data.h"
 #include "../Ethereum/Address.h"
 #include "../proto/VeChain.pb.h"
 #include "../uint256.h"

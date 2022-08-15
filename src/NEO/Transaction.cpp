@@ -7,7 +7,7 @@
 #include <ctype.h>
 
 #include "../uint256.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../Hash.h"
 #include "Transaction.h"
 #include "MinerTransaction.h"

@@ -6,7 +6,7 @@
 
 #include "Function.h"
 
-#include "../../Data.h"
+#include "Data.h"
 
 #include <string>
 

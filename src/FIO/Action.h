@@ -7,7 +7,7 @@
 #pragma once
 
 #include "EOS/Name.h" // Name is reused
-#include "../Data.h"
+#include "Data.h"
 #include "../BinaryCoding.h"
 
 #include <string>

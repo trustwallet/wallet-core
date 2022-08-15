@@ -7,7 +7,7 @@
 #pragma once
 
 #include "../proto/NEAR.pb.h"
-#include "../Data.h"
+#include "Data.h"
 
 namespace TW::NEAR {
 

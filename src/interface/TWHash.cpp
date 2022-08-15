@@ -6,7 +6,7 @@
 
 #include <TrustWalletCore/TWHash.h>
 #include "../Hash.h"
-#include "../Data.h"
+#include "Data.h"
 
 #include "BinaryCoding.h"
 #include <TrezorCrypto/blake2b.h>

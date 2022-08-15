@@ -7,7 +7,7 @@
 #pragma once
 
 #include "algorithm/to_array.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../proto/Bitcoin.pb.h"
 
 #include <algorithm>
