@@ -76,7 +76,7 @@ struct TWStoredKey* _Nonnull TWStoredKeyCreateLevel(TWString* _Nonnull name, TWD
 /// \param password Non-null block of data, password of the stored key
 /// \note Returned object needs to be deleted with \TWStoredKeyDelete
 /// \return The stored key as a non-null pointer
-[[deprecated("Use TWStoredKeyCreateLevel.")]] TW_EXPORT_STATIC_METHOD struct TWStoredKey* _Nonnull TWStoredKeyCreate(TWString* _Nonnull name, TWData* _Nonnull password);
+TW_EXPORT_STATIC_METHOD struct TWStoredKey* _Nonnull TWStoredKeyCreate(TWString* _Nonnull name, TWData* _Nonnull password);
 
 /// Delete a stored key
 ///
@@ -166,7 +166,6 @@ void TWStoredKeyAddAccountDerivation(struct TWStoredKey* _Nonnull key, TWString*
 /// \param derivationPath HD bip44 derivation path of the given coin
 /// \param publicKey Non-null public key of the given coin/address
 /// \param extendedPublicKey Non-null extended public key of the given coin/address
-[[deprecated("Use TWStoredKeyAddAccountDerivation (with TWDerivationDefault) instead.")]]
 TW_EXPORT_METHOD
 void TWStoredKeyAddAccount(struct TWStoredKey* _Nonnull key, TWString* _Nonnull address, enum TWCoinType coin, TWString* _Nonnull derivationPath, TWString* _Nonnull publicKey, TWString* _Nonnull extendedPublicKey);
 
