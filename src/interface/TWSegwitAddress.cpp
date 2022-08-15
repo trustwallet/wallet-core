@@ -13,7 +13,6 @@
 #include <TrustWalletCore/TWPublicKey.h>
 
 using namespace TW;
-using namespace TW::Bitcoin;
 
 bool TWSegwitAddressEqual(struct TWSegwitAddress *_Nonnull lhs, struct TWSegwitAddress *_Nonnull rhs) {
    return lhs->impl == rhs->impl;
@@ -21,12 +20,12 @@ bool TWSegwitAddressEqual(struct TWSegwitAddress *_Nonnull lhs, struct TWSegwitA
 
 bool TWSegwitAddressIsValidString(TWString *_Nonnull string) {
     auto* s = reinterpret_cast<const std::string*>(string);
-    return SegwitAddress::isValid(*s);
+    return Bitcoin::SegwitAddress::isValid(*s);
 }
 
 struct TWSegwitAddress *_Nullable TWSegwitAddressCreateWithString(TWString *_Nonnull string) {
     auto* s = reinterpret_cast<const std::string*>(string);
-    auto dec = SegwitAddress::decode(*s);
+    auto dec = Bitcoin::SegwitAddress::decode(*s);
     if (!std::get<2>(dec)) {
         return nullptr;
     }
@@ -35,7 +34,7 @@ struct TWSegwitAddress *_Nullable TWSegwitAddressCreateWithString(TWString *_Non
 }
 
 struct TWSegwitAddress *_Nonnull TWSegwitAddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey *_Nonnull publicKey) {
-    const auto address = SegwitAddress(publicKey->impl, stringForHRP(hrp));
+    const auto address = Bitcoin::SegwitAddress(publicKey->impl, stringForHRP(hrp));
     return new TWSegwitAddress{ std::move(address) };
 }
 
