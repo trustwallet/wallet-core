@@ -11,7 +11,8 @@
 
 using namespace TW::Nervos;
 
-CellDep::CellDep(const Proto::CellDep& cellDep) : outPoint(cellDep.out_point()) {
+CellDep::CellDep(const Proto::CellDep& cellDep)
+    : outPoint(cellDep.out_point()) {
     auto&& depTypeString = cellDep.dep_type();
     auto&& depTypeRegistry = Constants::gDepTypeRegistry;
     std::for_each(depTypeRegistry.begin(), depTypeRegistry.end(),

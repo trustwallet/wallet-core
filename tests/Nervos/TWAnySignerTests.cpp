@@ -7,10 +7,7 @@
 #include "HexCoding.h"
 #include "Nervos/Address.h"
 #include "Nervos/Serialization.h"
-#include "Nervos/Signer.h"
-#include "Nervos/Transaction.h"
 #include "Nervos/TransactionPlan.h"
-#include "PrivateKey.h"
 #include "PublicKey.h"
 #include "proto/Nervos.pb.h"
 #include "uint256.h"
@@ -85,8 +82,8 @@ void checkPlan1(Proto::TransactionPlan& txPlanProto) {
 
     ASSERT_EQ(txPlanProto.cell_deps_size(), 1);
 
-    auto cellDep1 = txPlanProto.cell_deps(0);
-    auto cellDep1TxHash =
+    const auto cellDep1 = txPlanProto.cell_deps(0);
+    const auto cellDep1TxHash =
         parse_hex("71a7ba8fc96349fea0ed3a5c47992e3b4084b031a42264a018e0072e8172e46c");
     ASSERT_EQ(cellDep1.out_point().tx_hash(),
               std::string(cellDep1TxHash.begin(), cellDep1TxHash.end()));

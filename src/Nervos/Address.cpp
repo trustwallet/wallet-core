@@ -12,6 +12,7 @@
 
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWHRP.h>
+#include <cstddef>
 
 namespace TW::Nervos {
 
@@ -48,11 +49,11 @@ bool Address::decode(const std::string& string, const char* hrp) noexcept {
     addressType = AddressType(decodedPayload[0]);
     switch (addressType) {
     case AddressType::FullVersion: {
-        int codeHashOffset = 1;
-        int codeHashSize = 32;
-        int hashTypeOffset = codeHashOffset + codeHashSize;
-        int hashTypeSize = 1;
-        int argsOffset = hashTypeOffset + hashTypeSize;
+        size_t codeHashOffset = 1;
+        size_t codeHashSize = 32;
+        size_t hashTypeOffset = codeHashOffset + codeHashSize;
+        size_t hashTypeSize = 1;
+        size_t argsOffset = hashTypeOffset + hashTypeSize;
         if (decodedVariant != Bech32::ChecksumVariant::Bech32M) {
             return false;
         }
@@ -67,10 +68,10 @@ bool Address::decode(const std::string& string, const char* hrp) noexcept {
         break;
     }
     case AddressType::HashIdx: {
-        int codeHashIndexOffset = 1;
-        int codeHashIndexSize = 1;
-        int argsOffset = codeHashIndexOffset + codeHashIndexSize;
-        int argsSize = 20;
+        size_t codeHashIndexOffset = 1;
+        size_t codeHashIndexSize = 1;
+        size_t argsOffset = codeHashIndexOffset + codeHashIndexSize;
+        size_t argsSize = 20;
         if (decodedVariant != Bech32::ChecksumVariant::Bech32) {
             return false;
         }
@@ -88,9 +89,9 @@ bool Address::decode(const std::string& string, const char* hrp) noexcept {
     }
     case AddressType::DataCodeHash:
     case AddressType::TypeCodeHash: {
-        int codeHashOffset = 1;
-        int codeHashSize = 32;
-        int argsOffset = codeHashOffset + codeHashSize;
+        size_t codeHashOffset = 1;
+        size_t codeHashSize = 32;
+        size_t argsOffset = codeHashOffset + codeHashSize;
         if (decodedVariant != Bech32::ChecksumVariant::Bech32) {
             return false;
         }

@@ -18,7 +18,7 @@
 #include <vector>
 
 using namespace TW;
-using namespace TW::Nervos;
+namespace TW::Nervos {
 
 void TransactionPlan::plan(const Proto::SigningInput& signingInput) {
     error = Common::Proto::OK;
@@ -325,3 +325,5 @@ uint64_t TransactionPlan::getSelectedCapacity() {
         selectedCells.begin(), selectedCells.end(), uint64_t(0),
         [](const uint64_t total, const Cell& cell) { return total + cell.capacity; });
 }
+
+} // namespace TW::Nervos

@@ -12,6 +12,7 @@
 
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWHRP.h>
+#include <cstddef>
 #include <nlohmann/json.hpp>
 
 #include <algorithm>
@@ -138,14 +139,14 @@ Common::Proto::SigningError Transaction::sign(const std::vector<PrivateKey>& pri
 }
 
 void Transaction::formGroups() {
-    for (auto index = 0; index < selectedCells.size(); index++) {
+    for (size_t index = 0; index < selectedCells.size(); index++) {
         auto&& cell = selectedCells[index];
         auto lockHash = cell.lock.hash();
         int groupNum = -1;
-        for (auto groupNum1 = 0; groupNum1 < m_groupNumToLockHash.size(); groupNum1++) {
+        for (size_t groupNum1 = 0; groupNum1 < m_groupNumToLockHash.size(); groupNum1++) {
             if (lockHash == m_groupNumToLockHash[groupNum1]) {
                 // Group found. Add to existing group.
-                groupNum = groupNum1;
+                groupNum = int(groupNum1);
                 break;
             }
         }
@@ -164,7 +165,7 @@ void Transaction::formGroups() {
 
 Common::Proto::SigningError Transaction::signGroups(const std::vector<PrivateKey>& privateKeys) {
     const Data txHash = hash();
-    for (auto groupNum = 0; groupNum < m_groupNumToLockHash.size(); groupNum++) {
+    for (size_t groupNum = 0; groupNum < m_groupNumToLockHash.size(); groupNum++) {
         auto&& cell = selectedCells[m_groupNumToInputIndices[groupNum][0]];
         const PrivateKey* privateKey = nullptr;
         for (auto&& privateKey1 : privateKeys) {
