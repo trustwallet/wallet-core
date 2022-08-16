@@ -32,11 +32,11 @@ class EverscaleTests: XCTestCase {
 
         let transfer = EverscaleTransfer.with {
             $0.bounce = false
-            $0.behavior = EverscaleMessageBehavior.SimpleTransfer
-            $0.amount = 500000000
+            $0.behavior = EverscaleMessageBehavior.simpleTransfer
+            $0.amount = 100000000
             $0.expiredAt = 1680770631
             $0.to = "0:db18a67f4626f15ac0537a18445937f685f9b30184f0d7b28be4bdeb92d2fd90"
-            $0.encodedContentData = "te6ccgEBAQEAKgAAUAAAAAFLqS2KOWKN+7Y5OSiKhKisiw6t/h2ovvR3WbapyAtrdctwupw="
+            $0.encodedContractData = "te6ccgEBAQEAKgAAUAAAAAFLqS2KOWKN+7Y5OSiKhKisiw6t/h2ovvR3WbapyAtrdctwupw="
         }
 
         let input = EverscaleSigningInput.with {
