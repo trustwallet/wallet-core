@@ -19,13 +19,13 @@ void ExternalInboundMessageHeader::writeTo(CellBuilder& builder) const {
     builder.appendRaw(Data{0x00}, 2);
 
     // addr dst
-    Data dstAddr(_dst.second.begin(), _dst.second.end());
+    Data dstAddr(_dst.hash.begin(), _dst.hash.end());
 
     Data prefix{0x80};
     builder.appendRaw(prefix, 2);
 
     builder.appendBitZero();
-    builder.appendI8(_dst.first);
+    builder.appendI8(_dst.workchainId);
     builder.appendRaw(dstAddr, 256);
 
     // fee
@@ -44,13 +44,13 @@ void InternalMessageHeader::writeTo(CellBuilder& builder) const {
     builder.appendRaw(Data{0x00}, 2);
 
     // addr dst
-    Data dstAddr(_dst.second.begin(), _dst.second.end());
+    Data dstAddr(_dst.hash.begin(), _dst.hash.end());
 
     Data prefix{0x80};
     builder.appendRaw(prefix, 2);
 
     builder.appendBitZero();
-    builder.appendI8(_dst.first);
+    builder.appendI8(_dst.workchainId);
     builder.appendRaw(dstAddr, 256);
 
     // value
@@ -95,31 +95,22 @@ Cell::Ref Message::intoCell() const {
 }
 
 Data createSignedMessage(PublicKey& publicKey, PrivateKey& key, bool bounce, uint32_t flags, uint64_t amount, uint32_t expiredAt,
-                         std::optional<MsgAddressInt>& destination, std::optional<Data>& stateInit) {
-    auto getInitData = [](const PublicKey& publicKey, const std::optional<Data>& stateInit) {
-        if (stateInit.has_value()) {
-            auto cell = Cell::deserialize(stateInit.value().data(), stateInit.value().size());
-            auto cellSlice = CellSlice(cell.get());
-            return std::make_pair(InitData(cellSlice), false);
+                         Address to, const Cell::Ref& contractData) {
+    auto getInitData = [](const PublicKey& publicKey, const Cell::Ref& contractData) {
+        if (contractData != nullptr) {
+            auto cellSlice = CellSlice(contractData.get());
+            return std::make_pair(InitData(cellSlice), /* withInitState */ false);
         } else {
-            return std::make_pair(InitData(publicKey), true);
+            return std::make_pair(InitData(publicKey), /* withInitState */ true);
         }
     };
 
-    auto getDstAddress = [](const InitData& initData, const std::optional<MsgAddressInt>& destination) {
-        if (!destination.has_value()) {
-            return initData.computeAddr(WorkchainType::Basechain);
-        } else {
-            return destination.value();
-        }
-    };
-
-    auto [initData, withInitState] = getInitData(publicKey, stateInit);
+    auto [initData, withInitState] = getInitData(publicKey, contractData);
 
     auto gift = Wallet::Gift{
         .bounce = bounce,
         .amount = amount,
-        .destination = getDstAddress(initData, destination),
+        .to = to,
         .flags = static_cast<uint8_t>(flags),
     };
 

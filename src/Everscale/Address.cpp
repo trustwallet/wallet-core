@@ -16,6 +16,21 @@ using namespace TW;
 
 namespace TW::Everscale {
 
+using MaybeWorkchain = std::optional<std::pair<int8_t, std::string::size_type>>;
+
+MaybeWorkchain parseWorkchainId(const std::string& string) {
+    if (auto pos = string.find(':'); pos != std::string::npos) {
+        try {
+            auto workchainId = static_cast<int8_t>(std::stoi(string.substr(0, pos)));
+            return std::make_pair(workchainId, pos + 1);
+        } catch (...) {
+            // Do nothing and return empty value later
+        }
+    }
+
+    return {};
+}
+
 bool Address::isValid(const std::string& string) noexcept {
     auto parsed = parseWorkchainId(string);
     if (!parsed.has_value())
@@ -41,38 +56,21 @@ Address::Address(const std::string& string) {
     }
 
     auto parsed = parseWorkchainId(string);
-    auto [workchainId, pos] = *parsed;
+    auto [parsedWorkchainId, pos] = *parsed;
 
-    _workchainId = workchainId;
+    workchainId = parsedWorkchainId;
 
-    const auto acc = parse_hex(string.substr(pos));
-    std::copy(begin(acc), end(acc), begin(_address));
+    const auto parsedHash = parse_hex(string.substr(pos));
+    std::copy(begin(parsedHash), end(parsedHash), begin(hash));
 }
 
-Address::Address(const PublicKey& publicKey, int8_t workchainId) {
-    InitData initData(publicKey);
-    auto [_, address] = initData.computeAddr(workchainId);
-
-    _workchainId = workchainId;
-    _address = address;
+Address::Address(const PublicKey& publicKey, int8_t workchainId)
+    : Address(InitData(publicKey).computeAddr(workchainId)) {
 }
 
 std::string Address::string() const {
-    std::string address = std::to_string(_workchainId) + ":" + hex(_address);
+    std::string address = std::to_string(workchainId) + ":" + hex(hash);
     return address;
-}
-
-Address::MaybeWorkchainInfos Address::parseWorkchainId(const std::string& string) {
-    if (auto pos = string.find(':'); pos != std::string::npos) {
-        try {
-            auto workchainId = static_cast<int8_t>(std::stoi(string.substr(0, pos)));
-            return std::make_pair(workchainId, pos + 1);
-        } catch (...) {
-            // Do nothing and return empty value later
-        }
-    }
-
-    return {};
 }
 
 } // namespace TW::Everscale

@@ -22,23 +22,37 @@ namespace TW::Everscale {
 
 class Wallet {
 public:
+    enum MessageFlags : uint8_t {
+        // Sender wants to pay transfer fees separately
+        // (from account balance instead of message balance)
+        FeesFromAccountBalance = (1 << 0),
+
+        // If there are some errors during the action phase it should be ignored
+        IgnoreActionPhaseErrors = (1 << 1),
+
+        // Message will carry all the remaining balance
+        AttachAllBalance = (1 << 7),
+    };
+
     struct Gift {
         bool bounce;
         uint64_t amount;
-        Address::MsgAddressInt destination;
+        Address to;
         uint8_t flags;
     };
+
+    static constexpr uint8_t simpleTransferFlags =
+        MessageFlags::FeesFromAccountBalance | MessageFlags::IgnoreActionPhaseErrors;
+    static constexpr uint8_t sendAllBalanceFlags =
+        MessageFlags::AttachAllBalance | MessageFlags::IgnoreActionPhaseErrors;
 
     static const Data code;
 };
 
 class StateInit {
-    Cell::Ref _code;
-    Cell::Ref _data;
-
 public:
-    explicit StateInit(Cell::Ref code, Cell::Ref data)
-        : _code(std::move(code)), _data(std::move(data)) {}
+    Cell::Ref code;
+    Cell::Ref data;
 
     [[nodiscard]] CellBuilder writeTo() const;
 };
@@ -56,7 +70,7 @@ public:
 
     [[nodiscard]] CellBuilder writeTo() const;
     [[nodiscard]] StateInit makeStateInit() const;
-    [[nodiscard]] Address::MsgAddressInt computeAddr(int8_t workchainId) const;
+    [[nodiscard]] Address computeAddr(int8_t workchainId) const;
     [[nodiscard]] CellBuilder makeTransferPayload(uint32_t expireAt, const Wallet::Gift& gift) const;
 };
 

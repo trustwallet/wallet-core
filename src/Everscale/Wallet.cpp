@@ -27,22 +27,23 @@ CellBuilder InitData::writeTo() const {
     return builder;
 }
 
-Address::MsgAddressInt InitData::computeAddr(int8_t workchainId) const {
+Address InitData::computeAddr(int8_t workchainId) const {
     auto builder = this->writeTo();
-    const auto data = builder.intoCell();
-    const auto code = Cell::deserialize(Wallet::code.data(), Wallet::code.size());
 
-    StateInit stateInit(code, data);
-    return std::make_pair(workchainId, stateInit.writeTo().intoCell()->hash);
+    StateInit stateInit{
+        .code = Cell::deserialize(Wallet::code.data(), Wallet::code.size()),
+        .data = builder.intoCell(),
+    };
+    return Address(workchainId, stateInit.writeTo().intoCell()->hash);
 }
 
 StateInit InitData::makeStateInit() const {
     auto builder = this->writeTo();
 
-    const auto data = builder.intoCell();
-    const auto code = Cell::deserialize(Wallet::code.data(), Wallet::code.size());
-
-    return StateInit(code, data);
+    return StateInit{
+        .code = Cell::deserialize(Wallet::code.data(), Wallet::code.size()),
+        .data = builder.intoCell(),
+    };
 }
 
 CellBuilder InitData::makeTransferPayload(uint32_t expireAt, const Wallet::Gift& gift) const {
@@ -54,7 +55,7 @@ CellBuilder InitData::makeTransferPayload(uint32_t expireAt, const Wallet::Gift&
     payload.appendU32(_seqno);
 
     // create internal message
-    Message::HeaderRef header = std::make_shared<InternalMessageHeader>(true, gift.bounce, gift.destination, gift.amount);
+    Message::HeaderRef header = std::make_shared<InternalMessageHeader>(true, gift.bounce, gift.to, gift.amount);
     auto message = Message(header);
 
     // append it to the body
@@ -70,9 +71,9 @@ CellBuilder StateInit::writeTo() const {
     builder.appendBitZero(); // split_depth
     builder.appendBitZero(); // special
     builder.appendBitOne();  // code
-    builder.appendReferenceCell(_code);
+    builder.appendReferenceCell(code);
     builder.appendBitOne(); // data
-    builder.appendReferenceCell(_data);
+    builder.appendReferenceCell(data);
     builder.appendBitZero(); // library
 
     return builder;

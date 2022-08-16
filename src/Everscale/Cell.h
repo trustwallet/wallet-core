@@ -40,6 +40,9 @@ public:
     Cell(uint16_t bitLen, std::vector<uint8_t> data, uint8_t refCount, Refs references)
         : bitLen(bitLen), data(std::move(data)), refCount(refCount), references(std::move(references)) {}
 
+    // Deserialize from Base64
+    static std::shared_ptr<Cell> fromBase64(const std::string& encoded);
+
     // Deserialize from BOC representation
     static std::shared_ptr<Cell> deserialize(const uint8_t* _Nonnull data, size_t len);
 

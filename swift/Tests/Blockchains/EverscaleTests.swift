@@ -28,13 +28,15 @@ class EverscaleTests: XCTestCase {
     }
 
     func testSign() throws {
-        let privateKeyData = Data(hexString: "5b59e0372d19b6355c73fa8cc708fa3301ae2ec21bb6277e8b79d386ccb7846f")!
+        let privateKeyData = Data(hexString: "542bd4288352f1c6b270046f153d406aec054a0a06000ab9b36b5c6dd3050ad4")!
 
         let transfer = EverscaleTransfer.with {
             $0.bounce = false
-            $0.flags = 3
+            $0.behavior = EverscaleMessageBehavior.SimpleTransfer
             $0.amount = 500000000
-            $0.expiredAt = 1660261731
+            $0.expiredAt = 1680770631
+            $0.to = "0:db18a67f4626f15ac0537a18445937f685f9b30184f0d7b28be4bdeb92d2fd90"
+            $0.encodedContentData = "te6ccgEBAQEAKgAAUAAAAAFLqS2KOWKN+7Y5OSiKhKisiw6t/h2ovvR3WbapyAtrdctwupw="
         }
 
         let input = EverscaleSigningInput.with {
@@ -44,7 +46,8 @@ class EverscaleTests: XCTestCase {
 
         let output: EverscaleSigningOutput = AnySigner.sign(input: input, coin: .everscale)
 
-        let expectedString = "te6ccgICAAQAAQAAAUoAAAPhiABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGTp6HO3zHcMkuRWEKShVeKcgHJt5kYQQy+Qn296nFFjD0XqbeVvMtTL3N7ud7Ad8aFTFWSgEKVN2n4NzfUBTugCXUlsUxesqxgAAAAAHAAAwACAAEAaEIAE0/3EhdaCDw1Xwu70KPC5F31jxoIBjq4cLtMWbVrN9gg7msoAAAAAAAAAAAAAAAAAAAAUAAAAABLqS2K5JJfmTLfjX/QBC7/8+IXipcgKLZE3tOjtm9tBXf4LngA3v8AIN0gggFMl7ohggEznLqxn3Gw7UTQ0x/THzHXC//jBOCk8mCDCNcYINMf0x/TH/gjE7vyY+1E0NMf0x/T/9FRMrryoVFEuvKiBPkBVBBV+RDyo/gAkyDXSpbTB9QC+wDo0QGkyMsfyx/L/8ntVA=="
+        // Link to the message: https://everscan.io/messages/73807b0a3ca2d8564c023dccd5b9da222a270f68338c6fc2c064dda376a2c59d
+        let expectedString = "te6ccgICAAIAAQAAAKoAAAHfiAG+Ilaz1wTyTEauoymMGl6o+NGqhszIlHS8BXAmXniYrAImASIQKH2jIwoA65IGC6aua4gAA4fFo/Nuxgb3sIRELhZnSXIS7IsE2E4D+8hk3EWGVZX+ICqlN/ka9DvXduhaXUlsUyF0MjgAAAAIHAABAGhCAG2MUz+jE3itYCm9DCIsm/tC/NmAwnhr2UXyXvXJaX7IIC+vCAAAAAAAAAAAAAAAAAAA"
 
         XCTAssertEqual(output.encoded, expectedString)
     }

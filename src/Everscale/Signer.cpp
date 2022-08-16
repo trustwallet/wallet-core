@@ -21,31 +21,46 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
     auto protoOutput = Proto::SigningOutput();
 
-    switch (input.action_type_case()) {
-    case Proto::SigningInput::ActionTypeCase::kTransfer: {
-        auto bounce = input.transfer().bounce();
-        auto flags = input.transfer().flags();
-        auto amount = input.transfer().amount();
-        auto expiredAt = input.transfer().expired_at();
+    switch (input.action_oneof_case()) {
+    case Proto::SigningInput::ActionOneofCase::kTransfer: {
+        const auto& transfer = input.transfer();
 
-        std::optional<MsgAddressInt> destination;
-        if (input.transfer().has_address()) {
-            auto addr = Address(input.transfer().address());
-            destination = std::make_pair(addr._workchainId, addr._address);
+        uint8_t flags;
+        switch (transfer.behavior()) {
+        case Proto::MessageBehavior::SendAllBalance: {
+            flags = Wallet::sendAllBalanceFlags;
+            break;
+        }
+        default: {
+            flags = Wallet::simpleTransferFlags;
+            break;
+        }
         }
 
-        std::optional<Data> stateInit;
-        if (input.transfer().has_state_init()) {
-            auto data = TW::data(input.transfer().state_init());
-            stateInit = data;
+        Cell::Ref contractData{};
+        switch (transfer.account_state_oneof_case()) {
+        case Proto::Transfer::AccountStateOneofCase::kEncodedContractData: {
+            contractData = Cell::fromBase64(transfer.encoded_contract_data());
+            break;
+        }
+        default:
+            break;
         }
 
-        auto signedMessage = createSignedMessage(publicKey, key, bounce, flags, amount, expiredAt, destination, stateInit);
+        auto signedMessage = createSignedMessage(
+            publicKey,
+            key,
+            transfer.bounce(),
+            flags,
+            transfer.amount(),
+            transfer.expired_at(),
+            Address(transfer.to()),
+            contractData);
         protoOutput.set_encoded(TW::Base64::encode(signedMessage));
-    } break;
-
+        break;
+    }
     default:
-        assert(input.action_type_case() != Proto::SigningInput::ActionTypeCase::ACTION_TYPE_NOT_SET);
+        break;
     }
 
     return protoOutput;

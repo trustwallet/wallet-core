@@ -19,7 +19,6 @@
 namespace TW::Everscale {
 
 using uint128_t = CellBuilder::uint128_t;
-using MsgAddressInt = Address::MsgAddressInt;
 
 class CommonMsgInfo {
 public:
@@ -29,30 +28,31 @@ public:
 };
 
 class ExternalInboundMessageHeader : public CommonMsgInfo {
-    MsgAddressInt _dst{};
+    Address _dst;
     uint128_t _importFee{};
 
 public:
-    explicit ExternalInboundMessageHeader(MsgAddressInt dst)
-        : _dst(std::move(dst)) {}
+    explicit ExternalInboundMessageHeader(Address dst)
+        : _dst(dst) {}
 
     void writeTo(CellBuilder& builder) const override;
 };
 
 class InternalMessageHeader : public CommonMsgInfo {
-    bool _ihrDisabled{};
-    bool _bounce{};
+    bool _ihrDisabled;
+    bool _bounce;
+    Address _dst;
+    uint128_t _value;
+
     bool _bounced{};
-    MsgAddressInt _dst{};
-    uint128_t _value{};
     uint128_t _ihrFee{};
     uint128_t _fwdFee{};
     uint64_t _createdLt{};
     uint32_t _createdAt{};
 
 public:
-    InternalMessageHeader(bool ihrDisabled, bool bounce, MsgAddressInt dst, uint64_t value)
-        : _ihrDisabled(ihrDisabled), _bounce(bounce), _dst(std::move(dst)), _value(static_cast<uint128_t>(value)) {}
+    InternalMessageHeader(bool ihrDisabled, bool bounce, Address dst, uint64_t value)
+        : _ihrDisabled(ihrDisabled), _bounce(bounce), _dst(dst), _value(static_cast<uint128_t>(value)) {}
 
     void writeTo(CellBuilder& builder) const override;
 };
@@ -76,6 +76,6 @@ public:
 };
 
 Data createSignedMessage(PublicKey& publicKey, PrivateKey& key, bool bounce, uint32_t flags, uint64_t amount,
-                         uint32_t expiredAt, std::optional<MsgAddressInt>& destination, std::optional<Data>& stateInit);
+                         uint32_t expiredAt, Address destination, const Cell::Ref& contractData);
 
 } // namespace TW::Everscale

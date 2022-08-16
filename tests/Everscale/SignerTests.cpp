@@ -4,7 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Everscale/Address.h"
 #include "Everscale/Messages.h"
 #include "Everscale/Signer.h"
 
@@ -17,21 +16,27 @@ using namespace TW;
 
 namespace TW::Everscale {
 
-TEST(EverscaleSigner, Deploy) {
+TEST(EverscaleSigner, TransferWithDeploy) {
     auto input = Proto::SigningInput();
 
     auto& transfer = *input.mutable_transfer();
     transfer.set_bounce(false);
-    transfer.set_flags(3);
+    transfer.set_behavior(Proto::MessageBehavior::SimpleTransfer);
     transfer.set_amount(500000000);
-    transfer.set_expired_at(1660261731);
+    transfer.set_expired_at(1680770631);
+    transfer.set_to("0:db18a67f4626f15ac0537a18445937f685f9b30184f0d7b28be4bdeb92d2fd90");
 
-    auto privateKey = parse_hex("5b59e0372d19b6355c73fa8cc708fa3301ae2ec21bb6277e8b79d386ccb7846f");
+    // NOTE: There is `set_encoded_contract_data` because contract was not deployed yet
+
+    auto privateKey = parse_hex("542bd4288352f1c6b270046f153d406aec054a0a06000ab9b36b5c6dd3050ad4");
     input.set_private_key(privateKey.data(), privateKey.size());
 
     auto output = Signer::sign(input);
 
-    ASSERT_EQ(output.encoded(), "te6ccgICAAQAAQAAAUoAAAPhiABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYBGTp6HO3zHcMkuRWEKShVeKcgHJt5kYQQy+Qn296nFFjD0XqbeVvMtTL3N7ud7Ad8aFTFWSgEKVN2n4NzfUBTugCXUlsUxesqxgAAAAAHAAAwACAAEAaEIAE0/3EhdaCDw1Xwu70KPC5F31jxoIBjq4cLtMWbVrN9gg7msoAAAAAAAAAAAAAAAAAAAAUAAAAABLqS2K5JJfmTLfjX/QBC7/8+IXipcgKLZE3tOjtm9tBXf4LngA3v8AIN0gggFMl7ohggEznLqxn3Gw7UTQ0x/THzHXC//jBOCk8mCDCNcYINMf0x/TH/gjE7vyY+1E0NMf0x/T/9FRMrryoVFEuvKiBPkBVBBV+RDyo/gAkyDXSpbTB9QC+wDo0QGkyMsfyx/L/8ntVA==");
+    ASSERT_EQ(hex(Cell::fromBase64(output.encoded())->hash), "bfb18e56e9d00d783c7eb1726f08bf613dd0f01a110a130c0f8f91bb13390a39");
+
+    // Link to the message: https://everscan.io/messages/bfb18e56e9d00d783c7eb1726f08bf613dd0f01a110a130c0f8f91bb13390a39
+    ASSERT_EQ(output.encoded(), "te6ccgICAAQAAQAAAUoAAAPhiAG+Ilaz1wTyTEauoymMGl6o+NGqhszIlHS8BXAmXniYrBGMBTen55/RbfcIBoeCrPB1cxPMcHRx7xyBzJmdtewBPaTu/WuHgnqg09jQaxTEcii+Nuqm7p3b6iMq+/6598ggCXUlsUyF0MjgAAAAAHAAAwACAAEAaEIAbYxTP6MTeK1gKb0MIiyb+0L82YDCeGvZRfJe9clpfsgg7msoAAAAAAAAAAAAAAAAAAAAUAAAAABLqS2KOWKN+7Y5OSiKhKisiw6t/h2ovvR3WbapyAtrdctwupwA3v8AIN0gggFMl7ohggEznLqxn3Gw7UTQ0x/THzHXC//jBOCk8mCDCNcYINMf0x/TH/gjE7vyY+1E0NMf0x/T/9FRMrryoVFEuvKiBPkBVBBV+RDyo/gAkyDXSpbTB9QC+wDo0QGkyMsfyx/L/8ntVA==");
 }
 
 TEST(EverscaleSigner, Transfer1) {
@@ -39,92 +44,45 @@ TEST(EverscaleSigner, Transfer1) {
 
     auto& transfer = *input.mutable_transfer();
     transfer.set_bounce(false);
-    transfer.set_flags(3);
-    transfer.set_amount(1000000000);
-    transfer.set_expired_at(1659026078);
+    transfer.set_behavior(Proto::MessageBehavior::SimpleTransfer);
+    transfer.set_amount(100000000);
+    transfer.set_expired_at(1680770631);
+    transfer.set_to("0:db18a67f4626f15ac0537a18445937f685f9b30184f0d7b28be4bdeb92d2fd90");
 
-    auto dst = Address("0:6dc497fb5cdb013fb1b807d8a2dbf7653d3e112cdb6ca95054bd2c74408d557d");
-    transfer.set_address(dst.string().c_str(), dst.string().size());
+    transfer.set_encoded_contract_data("te6ccgEBAQEAKgAAUAAAAAFLqS2KOWKN+7Y5OSiKhKisiw6t/h2ovvR3WbapyAtrdctwupw=");
 
-    auto stateInit = TW::Base64::decode("te6ccgEBAQEAKgAAUAAAAi9LqS2K8drjTwv63I+aPTBLtMULU+zuEMSAmO8j5A00qizUXzU=");
-    transfer.set_state_init(stateInit.data(), stateInit.size());
-
-    auto privateKey = parse_hex("5b59e0372d19b6355c73fa8cc708fa3301ae2ec21bb6277e8b79d386ccb7846f");
+    auto privateKey = parse_hex("542bd4288352f1c6b270046f153d406aec054a0a06000ab9b36b5c6dd3050ad4");
     input.set_private_key(privateKey.data(), privateKey.size());
 
     auto output = Signer::sign(input);
 
-    ASSERT_EQ(output.encoded(), "te6ccgICAAIAAQAAAKoAAAHfiABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYAC+o+gbLqcs2fFi5y5dyYccszRvGc4IBmWqCU/mWGub29BSl+RG2pv6zkYPUVwox/ExjTZfBXR9U+vUBKQ1VgBSXUlsUxcV1PAAABF4HAABAGhCADbiS/2ubYCf2NwD7FFt+7KenwiWbbZUqCpeljogRqq+odzWUAAAAAAAAAAAAAAAAAAA");
+    ASSERT_EQ(hex(Cell::fromBase64(output.encoded())->hash), "73807b0a3ca2d8564c023dccd5b9da222a270f68338c6fc2c064dda376a2c59d");
+
+    // Link to the message: https://everscan.io/messages/73807b0a3ca2d8564c023dccd5b9da222a270f68338c6fc2c064dda376a2c59d
+    ASSERT_EQ(output.encoded(), "te6ccgICAAIAAQAAAKoAAAHfiAG+Ilaz1wTyTEauoymMGl6o+NGqhszIlHS8BXAmXniYrAImASIQKH2jIwoA65IGC6aua4gAA4fFo/Nuxgb3sIRELhZnSXIS7IsE2E4D+8hk3EWGVZX+ICqlN/ka9DvXduhaXUlsUyF0MjgAAAAIHAABAGhCAG2MUz+jE3itYCm9DCIsm/tC/NmAwnhr2UXyXvXJaX7IIC+vCAAAAAAAAAAAAAAAAAAA");
 }
 
 TEST(EverscaleSigner, Transfer2) {
     auto input = Proto::SigningInput();
 
     auto& transfer = *input.mutable_transfer();
-    transfer.set_bounce(false);
-    transfer.set_flags(3);
-    transfer.set_amount(1000000000);
-    transfer.set_expired_at(1659026078);
+    transfer.set_bounce(true);
+    transfer.set_behavior(Proto::MessageBehavior::SendAllBalance);
+    transfer.set_amount(200000000);
+    transfer.set_expired_at(1680770631);
+    transfer.set_to("0:df112b59eb82792623575194c60d2f547c68d54366644a3a5e02b8132f3c4c56");
 
-    auto dst = Address("0:ab91c8cec44aa6e3b2c31443202a63241394491f0e41215a30620b57ef28b69b");
-    transfer.set_address(dst.string().c_str(), dst.string().size());
+    transfer.set_encoded_contract_data("te6ccgEBAQEAKgAAUAAAAAJLqS2KOWKN+7Y5OSiKhKisiw6t/h2ovvR3WbapyAtrdctwupw=");
 
-    auto stateInit = TW::Base64::decode("te6ccgEBAQEAKgAAUAAAATZLqS2Kc7K5TorVBJDDavbyxCCgDW/rqoGMkiZpeu4aVpmmWvE=");
-    transfer.set_state_init(stateInit.data(), stateInit.size());
-
-    auto privateKey = parse_hex("5b59e0372d19b6355c73fa8cc708fa3301ae2ec21bb6277e8b79d386ccb7846f");
-    input.set_private_key(privateKey.data(), privateKey.size());
-
-    auto output = Signer::sign(input);
-    auto boc = output.encoded();
-
-    ASSERT_EQ(output.encoded(), "te6ccgICAAIAAQAAAKoAAAHfiABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYAFRS7u+U3g33tkvU5mOIulqQY3bE292gaWV7+cPYFxLXr/KwApb9WXBy73l6ZjBMneTnpTaDu9oeTDxl5QLVfgyXUlsUxcV1PAAAAmwHAABAGhCAFXI5GdiJVNx2WGKIZAVMZIJyiSPhyCQrRgxBav3lFtNodzWUAAAAAAAAAAAAAAAAAAA");
-}
-
-TEST(EverscaleSigner, Transfer3) {
-    auto input = Proto::SigningInput();
-
-    auto& transfer = *input.mutable_transfer();
-    transfer.set_bounce(false);
-    transfer.set_flags(3);
-    transfer.set_amount(800000000);
-    transfer.set_expired_at(1660261731);
-
-    auto dst = Address("0:ab91c8cec44aa6e3b2c31443202a63241394491f0e41215a30620b57ef28b69b");
-    transfer.set_address(dst.string().c_str(), dst.string().size());
-
-    auto stateInit = TW::Base64::decode("te6ccgEBAQEAKgAAUAAAAAFLqS2KMfSrLtRKmdm2qHVPEU4LUxtqAl+/Ym+ucHTFtP57Dxg=");
-    transfer.set_state_init(stateInit.data(), stateInit.size());
-
-    auto privateKey = parse_hex("5b59e0372d19b6355c73fa8cc708fa3301ae2ec21bb6277e8b79d386ccb7846f");
+    auto privateKey = parse_hex("542bd4288352f1c6b270046f153d406aec054a0a06000ab9b36b5c6dd3050ad4");
     input.set_private_key(privateKey.data(), privateKey.size());
 
     auto output = Signer::sign(input);
 
-    ASSERT_EQ(output.encoded(), "te6ccgICAAIAAQAAAKoAAAHfiABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYAE5ztlfTQRa3lf9wnyBo6oIaFqg9TK+bTYjIQQytdpDhCmzL1NlRG/F2LjxmAdhPqv6NMmc7gRkjrNO1ho645BiXUlsUxesqxgAAAAIHAABAGhCAFXI5GdiJVNx2WGKIZAVMZIJyiSPhyCQrRgxBav3lFtNoX14QAAAAAAAAAAAAAAAAAAA");
-}
+    ASSERT_EQ(hex(Cell::fromBase64(output.encoded())->hash), "e35616cfa88e115580f07c6b41ae3ded1902d2bab1efefb74f677b4aececef24");
 
-TEST(EverscaleSigner, Transfer4) {
-    auto input = Proto::SigningInput();
-
-    auto& transfer = *input.mutable_transfer();
-    transfer.set_bounce(false);
-    transfer.set_flags(3);
-    transfer.set_amount(500000000);
-    transfer.set_expired_at(1660261731);
-
-    auto dst = Address("0:ab91c8cec44aa6e3b2c31443202a63241394491f0e41215a30620b57ef28b69b");
-    transfer.set_address(dst.string().c_str(), dst.string().size());
-
-    auto stateInit = TW::Base64::decode("te6ccgEBAQEAKgAAUAAAAAFLqS2K5JJfmTLfjX/QBC7/8+IXipcgKLZE3tOjtm9tBXf4Lng=");
-    transfer.set_state_init(stateInit.data(), stateInit.size());
-
-    auto privateKey = parse_hex("5b59e0372d19b6355c73fa8cc708fa3301ae2ec21bb6277e8b79d386ccb7846f");
-    input.set_private_key(privateKey.data(), privateKey.size());
-
-    auto output = Signer::sign(input);
-
-    ASSERT_EQ(output.encoded(), "te6ccgICAAIAAQAAAKoAAAHfiABNP9xIXWgg8NV8Lu9CjwuRd9Y8aCAY6uHC7TFm1azfYAPe+XYmEUX0LtwyLBLK0ym7oUCCv4vnH8fiX65/43djaTtUGvv9WkulWXdTzq5PqIK+TdKgl1ljb/3ommv2r+BqXUlsUxesqxgAAAAIHAABAGhCAFXI5GdiJVNx2WGKIZAVMZIJyiSPhyCQrRgxBav3lFtNoO5rKAAAAAAAAAAAAAAAAAAA");
+    // Link to the message: https://everscan.io/messages/e35616cfa88e115580f07c6b41ae3ded1902d2bab1efefb74f677b4aececef24
+    ASSERT_EQ(output.encoded(), "te6ccgICAAIAAQAAAKoAAAHfiAG+Ilaz1wTyTEauoymMGl6o+NGqhszIlHS8BXAmXniYrANrT0ivIEpuMGjKoyS9J03Wbl24jowXvdzQdLD6L3USLETUyRGbbmbUfBcNtF1FwKtmIQd0lNR1qIX9K/eloMgaXUlsUyF0MjgAAAAUFAABAGhiAG+Ilaz1wTyTEauoymMGl6o+NGqhszIlHS8BXAmXniYrIF9eEAAAAAAAAAAAAAAAAAAA");
 }
 
 } // namespace TW::Everscale

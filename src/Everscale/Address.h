@@ -22,30 +22,30 @@ public:
     /// Hex address length
     static const size_t hexAddrLen = size * 2;
 
-    using MsgAddressInt = std::pair<int8_t, std::array<byte, Address::size>>;
-    using MaybeWorkchainInfos = std::optional<std::pair<int8_t, uint32_t>>;
-
-    std::int8_t _workchainId;
-    std::array<byte, size> _address{};
+    /// Workchain ID (-1 for masterchain, 0 for base workchain)
+    std::int8_t workchainId;
+    /// StateInit hash
+    std::array<byte, size> hash{};
 
     /// Determines whether a string makes a valid address.
     [[nodiscard]] static bool isValid(const std::string& string) noexcept;
 
-    /// Initializes a Everscale address with a string representation.
+    /// Initializes an Everscale address with a string representation.
     explicit Address(const std::string& string);
 
-    /// Initializes a Everscale address with a public key and workchain id.
+    /// Initializes an Everscale address with a public key and a workchain id.
     explicit Address(const PublicKey& publicKey, int8_t workchainId);
+
+    /// Initializes an Everscale address with its parts
+    explicit Address(int8_t workchainId, std::array<byte, size> hash)
+        : workchainId(workchainId), hash(hash) {}
 
     /// Returns a string representation of the address.
     [[nodiscard]] std::string string() const;
-
-private:
-    static MaybeWorkchainInfos parseWorkchainId(const std::string& string);
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs._workchainId == rhs._workchainId && lhs._address == rhs._address;
+    return lhs.workchainId == rhs.workchainId && lhs.hash == rhs.hash;
 }
 
 } // namespace TW::Everscale
