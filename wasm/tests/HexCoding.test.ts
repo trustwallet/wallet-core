@@ -6,11 +6,10 @@
 
 import "mocha";
 import { assert } from "chai";
-import { initWasm } from "../dist";
 
 describe("HexCoding", () => {
-  it("test encoding / decoding hex string", async () => {
-    const { HexCoding } = await initWasm();
+  it("test encoding / decoding hex string", () => {
+    const { HexCoding } = globalThis.core;
 
     const expected = new Uint8Array([0x52, 0x8]);
     const decoded = HexCoding.decode("0x5208");

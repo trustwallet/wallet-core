@@ -6,17 +6,11 @@
 
 import { assert } from "chai";
 import { Buffer } from "buffer";
-import { initWasm, WalletCore } from "../dist";
 
 describe("Base64", () => {
-  let core: WalletCore;
-
-  before(async () => {
-    core = await initWasm();
-  });
 
   it("test decoding", () => {
-    const { Base64 } = core;
+    const { Base64 } = globalThis.core;
 
     const decoded = Base64.decode("SGVsbG9Xb3JsZA==");
 
@@ -24,7 +18,7 @@ describe("Base64", () => {
   });
 
   it("test encoding", () => {
-    const { Base64 } = core;
+    const { Base64 } = globalThis.core;
 
     const encoded = Base64.encode(Buffer.from("HelloWorld"));
 
@@ -32,7 +26,7 @@ describe("Base64", () => {
   });
 
   it("test encoding (URL-safe)", () => {
-    const { Base64 } = core;
+    const { Base64 } = globalThis.core;
 
     const encoded = Base64.encodeUrl(Buffer.from("==?="));
 
@@ -40,7 +34,7 @@ describe("Base64", () => {
   });
 
   it("test decoding (URL-safe)", () => {
-    const { Base64 } = core;
+    const { Base64 } = globalThis.core;
     const decoded = Base64.decodeUrl("PT0_PQ==");
 
     assert.equal(Buffer.from(decoded).toString(), "==?=");

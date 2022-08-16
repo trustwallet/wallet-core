@@ -12,7 +12,7 @@
 #include <cassert>
 #include <stdexcept>
 
-using namespace TW::Tron;
+namespace TW::Tron {
 
 bool Address::isValid(const std::string& string) {
     const auto decoded = Base58::bitcoin.decodeCheck(string);
@@ -36,3 +36,5 @@ Address::Address(const PublicKey& publicKey) {
     bytes[0] = prefix;
     std::copy(keyhash.end() - size + 1, keyhash.end(), bytes.begin() + 1);
 }
+
+} // namespace TW::Tron

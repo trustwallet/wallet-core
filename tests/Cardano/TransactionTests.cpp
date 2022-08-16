@@ -96,6 +96,22 @@ TEST(CardanoTransaction, minAdaAmount) {
     EXPECT_EQ(TokenBundle::minAdaAmountHelper(60, 60, 60*32), 21222201ul); // 60 policyId, 60 32-char asset names
 }
 
+TEST(CardanoTransaction, getPolicyIDs) {
+    const auto policyId1 = "012345678901234567890POLICY1";
+    const auto policyId2 = "012345678901234567890POLICY2";
+    const auto tb = TokenBundle({
+        TokenAmount(policyId1, "TOK1", 10),
+        TokenAmount(policyId2, "TOK2", 20),
+        TokenAmount(policyId2, "TOK3", 30), // duplicate policyId
+    });
+    ASSERT_EQ(tb.getPolicyIds().size(), 2ul);
+    EXPECT_TRUE(tb.getPolicyIds().contains(policyId1));
+    EXPECT_TRUE(tb.getPolicyIds().contains(policyId2));
+
+    EXPECT_EQ(tb.getByPolicyId(policyId1).size(), 1ul);
+    EXPECT_EQ(tb.getByPolicyId(policyId2).size(), 2ul);
+}
+
 TEST(TWCardanoTransaction, minAdaAmount) {
     {   // ADA-only
         const auto bundleProto = TokenBundle().toProto();

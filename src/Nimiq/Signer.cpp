@@ -9,8 +9,7 @@
 
 #include <algorithm>
 
-using namespace TW;
-using namespace TW::Nimiq;
+namespace TW::Nimiq {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
@@ -39,3 +38,5 @@ void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) const 
     auto signature = privateKey.sign(preImage, TWCurveED25519);
     std::copy(signature.begin(), signature.end(), transaction.signature.begin());
 }
+
+} // namespace TW::Nimiq

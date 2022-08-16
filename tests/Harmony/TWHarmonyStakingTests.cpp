@@ -9,15 +9,14 @@
 #include "Harmony/Staking.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
+#include "../interface/TWTestUtilities.h"
 #include "proto/Harmony.pb.h"
 #include "uint256.h"
-#include "../interface/TWTestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 
 #include <gtest/gtest.h>
 
 using namespace TW;
-
 namespace TW::Harmony::tests {
 
 static auto TEST_ACCOUNT = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9";

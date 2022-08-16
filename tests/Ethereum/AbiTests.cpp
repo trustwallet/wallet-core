@@ -13,7 +13,6 @@
 using namespace TW;
 using namespace TW::Ethereum::ABI;
 
-
 ///// Parameter types
 
 TEST(EthereumAbi, ParamTypeNames) {
@@ -435,7 +434,7 @@ TEST(EthereumAbi, ParamByteArray) {
         EXPECT_EQ(2 * 32ul, param.getSize());
         EXPECT_EQ(
             "000000000000000000000000000000000000000000000000000000000000000a"
-            "3132333435363738393000000000000000000000000000000000000000000000", 
+            "3132333435363738393000000000000000000000000000000000000000000000",
             hex(encoded));
         EXPECT_EQ(2 * 32ul, encoded.size());
         EXPECT_EQ(2 * 32ul, param.getSize());
@@ -462,7 +461,7 @@ TEST(EthereumAbi, ParamByteArrayFix) {
         EXPECT_EQ(32ul, encoded.size());
         EXPECT_EQ(32ul, param.getSize());
         EXPECT_EQ(
-            "3132333435363738393000000000000000000000000000000000000000000000", 
+            "3132333435363738393000000000000000000000000000000000000000000000",
             hex(encoded));
         size_t offset = 0;
         EXPECT_TRUE(param.decode(encoded, offset));
@@ -526,6 +525,41 @@ TEST(EthereumAbi, ParamArrayEmpty) {
     EXPECT_EQ("c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470", hex(param.hashStruct()));
 }
 
+TEST(EthereumAbi, ParamFixedArrayAddress) {
+    {
+        auto param = ParamArrayFix({std::make_shared<ParamAddress>(Data(parse_hex("f784682c82526e245f50975190ef0fff4e4fc077")))});
+        EXPECT_EQ(param.getType(), "address[1]");
+        EXPECT_EQ(param.getCount(), 1ul);
+        EXPECT_EQ(param.getSize(), 32ul);
+        EXPECT_FALSE(param.isDynamic());
+        Data encoded;
+        param.encode(encoded);
+        EXPECT_EQ(hex(encoded), "000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc077");
+        std::size_t offset{0};
+        EXPECT_TRUE(param.decode(encoded, offset));
+    }
+    {
+        auto param = ParamArrayFix({std::make_shared<ParamAddress>(Data(parse_hex("f784682c82526e245f50975190ef0fff4e4fc077"))),
+                                    std::make_shared<ParamAddress>(Data(parse_hex("2e00cd222cb42b616d86d037cc494e8ab7f5c9a3")))});
+        EXPECT_EQ(param.getType(), "address[2]");
+        EXPECT_EQ(param.getCount(), 2ul);
+        Data encoded;
+        param.encode(encoded);
+        EXPECT_EQ(hex(encoded), "000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc0770000000000000000000000002e00cd222cb42b616d86d037cc494e8ab7f5c9a3");
+        std::size_t offset{0};
+        EXPECT_TRUE(param.decode(encoded, offset));
+    }
+    {
+        // nullptr
+        EXPECT_THROW(ParamArrayFix({nullptr}), std::runtime_error);
+        // Should be the same type
+        EXPECT_THROW(
+            ParamArrayFix({std::make_shared<ParamAddress>(Data(parse_hex("f784682c82526e245f50975190ef0fff4e4fc077"))),
+                           std::make_shared<ParamString>("Foo")}),
+            std::runtime_error);
+    }
+}
+
 TEST(EthereumAbi, ParamArrayAddress) {
     {
         auto param = ParamArray();
@@ -558,7 +592,7 @@ TEST(EthereumAbi, ParamArrayAddress) {
         EXPECT_EQ(2ul, param.getCount());
         EXPECT_EQ(2ul, param.getVal().size());
         EXPECT_EQ(
-            "2e00cd222cb42b616d86d037cc494e8ab7f5c9a3", 
+            "2e00cd222cb42b616d86d037cc494e8ab7f5c9a3",
             hex((std::dynamic_pointer_cast<ParamAddress>(param.getVal()[1]))->getData()));
     }
 }
@@ -585,7 +619,7 @@ TEST(EthereumAbi, ParamArrayBytesContract) {
     EXPECT_EQ(4ul, param.getCount());
     EXPECT_EQ(4ul, param.getVal().size());
 
-    EXPECT_EQ("bytes[]", param.getType());        
+    EXPECT_EQ("bytes[]", param.getType());
     EXPECT_TRUE(param.isDynamic());
 
     Data encoded;
@@ -607,7 +641,7 @@ TEST(EthereumAbi, ParamTupleStatic) {
         Data encoded;
         param.encode(encoded);
         EXPECT_EQ("0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000007b", hex(encoded));
-        {   // decode
+        { // decode
             size_t offset = 0;
             auto param2 = ParamTuple();
             param2.addParam(std::make_shared<ParamBool>());
@@ -652,7 +686,8 @@ TEST(EthereumAbi, ParamTupleDynamic) {
             "0000000000000000000000000000000000000000000000000000000000000014" // len
             "446f6e27742074727573742c2076657269667921000000000000000000000000"
             "000000000000000000000000000000000000000000000000000000000000000a" // len
-            "0001020304050607080900000000000000000000000000000000000000000000", hex(encoded));
+            "0001020304050607080900000000000000000000000000000000000000000000",
+            hex(encoded));
     }
 }
 
@@ -673,14 +708,14 @@ TEST(EthereumAbi, EncodeVectorByte) {
     p.encode(encoded);
     EXPECT_EQ(
         "000000000000000000000000000000000000000000000000000000000000000a"
-        "3132333435363738393000000000000000000000000000000000000000000000", hex(encoded));
+        "3132333435363738393000000000000000000000000000000000000000000000",
+        hex(encoded));
 }
 
 TEST(EthereumAbi, EncodeArrayByte) {
     auto p = ParamArray(std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamByteArray>(parse_hex("1011")),
-        std::make_shared<ParamByteArray>(parse_hex("102222"))
-    });
+        std::make_shared<ParamByteArray>(parse_hex("102222"))});
     EXPECT_EQ("bytes[]", p.getType());
     Data encoded;
     p.encode(encoded);
@@ -692,8 +727,7 @@ TEST(EthereumAbi, EncodeArrayByte) {
         "1011000000000000000000000000000000000000000000000000000000000000"
         "0000000000000000000000000000000000000000000000000000000000000003"
         "1022220000000000000000000000000000000000000000000000000000000000",
-        hex(encoded)
-    );
+        hex(encoded));
     EXPECT_EQ((1 + 2 + 2 * 2) * 32ul, encoded.size());
     EXPECT_EQ((1 + 2 + 2 * 2) * 32ul, p.getSize());
 }
@@ -814,8 +848,7 @@ TEST(EthereumAbi, DecodeArrayOfByteArray) {
         "0000000000000000000000000000000000000000000000000000000000000002"
         "1011000000000000000000000000000000000000000000000000000000000000"
         "0000000000000000000000000000000000000000000000000000000000000003"
-        "1022200000000000000000000000000000000000000000000000000000000000"
-    );
+        "1022200000000000000000000000000000000000000000000000000000000000");
     size_t offset = 0;
     Data decoded;
     auto param = ParamArray();
@@ -831,10 +864,10 @@ TEST(EthereumAbi, DecodeArrayOfByteArray) {
 ///// Parameters encode & decode
 
 TEST(EthereumAbi, EncodeParamsSimple) {
-    auto p = Parameters(std::vector<std::shared_ptr<ParamBase>>{ 
+    auto p = Parameters(std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamUInt256>(16u),
         std::make_shared<ParamUInt256>(17u),
-        std::make_shared<ParamBool>(true) });
+        std::make_shared<ParamBool>(true)});
     EXPECT_EQ("(uint256,uint256,bool)", p.getType());
     Data encoded;
     p.encode(encoded);
@@ -850,16 +883,14 @@ TEST(EthereumAbi, EncodeParamsSimple) {
 
 TEST(EthereumAbi, EncodeParamsMixed) {
     auto p = Parameters(std::vector<std::shared_ptr<ParamBase>>{
-        std::make_shared<ParamUInt256>(69u), 
+        std::make_shared<ParamUInt256>(69u),
         std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
             std::make_shared<ParamUInt256>(1),
             std::make_shared<ParamUInt256>(2),
-            std::make_shared<ParamUInt256>(3)
-        }),
+            std::make_shared<ParamUInt256>(3)}),
         std::make_shared<ParamBool>(true),
         std::make_shared<ParamString>("Hello"),
-        std::make_shared<ParamByteArray>(Data{0x64, 0x61, 0x76, 0x65})
-    });
+        std::make_shared<ParamByteArray>(Data{0x64, 0x61, 0x76, 0x65})});
     EXPECT_EQ("(uint256,uint256[],bool,string,bytes)", p.getType());
     Data encoded;
     p.encode(encoded);
@@ -907,8 +938,7 @@ TEST(EthereumAbi, DecodeParamsSimple) {
     auto p = Parameters(std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamUInt256>(0),
         std::make_shared<ParamUInt256>(0),
-        std::make_shared<ParamBool>(false)
-    });
+        std::make_shared<ParamBool>(false)});
     EXPECT_EQ("(uint256,uint256,bool)", p.getType());
     size_t offset = 0;
     bool res = p.decode(encoded, offset);
@@ -934,8 +964,9 @@ TEST(EthereumAbi, DecodeParamsMixed) {
     append(encoded, parse_hex("48656c6c6f000000000000000000000000000000000000000000000000000000"));
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000004"));
     append(encoded, parse_hex("6461766500000000000000000000000000000000000000000000000000000000"));
+    // clang-format off
     auto p = Parameters(std::vector<std::shared_ptr<ParamBase>>{
-        std::make_shared<ParamUInt256>(), 
+        std::make_shared<ParamUInt256>(),
         std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
             std::make_shared<ParamUInt256>(),
             std::make_shared<ParamUInt256>(),
@@ -945,6 +976,7 @@ TEST(EthereumAbi, DecodeParamsMixed) {
         std::make_shared<ParamString>(),
         std::make_shared<ParamByteArray>()
     });
+    // clang-format on
     EXPECT_EQ("(uint256,uint256[],bool,string,bytes)", p.getType());
     size_t offset = 0;
     bool res = p.decode(encoded, offset);
@@ -961,21 +993,24 @@ TEST(EthereumAbi, DecodeParamsMixed) {
 ///// Function encode & decode
 
 TEST(EthereumAbi, EncodeSignature) {
+    // clang-format off
     auto func = Function("baz", std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamUInt256>(69u),
         std::make_shared<ParamBool>(true)
     });
+    // clang-format on
     EXPECT_EQ("baz(uint256,bool)", func.getType());
     Data encoded;
     func.encode(encoded);
 
     EXPECT_EQ(encoded.size(), 32 * 2 + 4ul);
     EXPECT_EQ(hex(encoded.begin(), encoded.begin() + 4), "72ed38b6");
-    EXPECT_EQ(hex(encoded.begin() +   4, encoded.begin() + 36 ), "0000000000000000000000000000000000000000000000000000000000000045");
-    EXPECT_EQ(hex(encoded.begin() +  36, encoded.begin() + 68 ), "0000000000000000000000000000000000000000000000000000000000000001");
+    EXPECT_EQ(hex(encoded.begin() + 4, encoded.begin() + 36), "0000000000000000000000000000000000000000000000000000000000000045");
+    EXPECT_EQ(hex(encoded.begin() + 36, encoded.begin() + 68), "0000000000000000000000000000000000000000000000000000000000000001");
 }
 
 TEST(EthereumAbi, EncodeFunctionWithDynamicArgumentsCase1) {
+    // clang-format off
     auto func = Function("sam", std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamByteArray>(Data{0x64, 0x61, 0x76, 0x65}),
         std::make_shared<ParamBool>(true),
@@ -985,15 +1020,16 @@ TEST(EthereumAbi, EncodeFunctionWithDynamicArgumentsCase1) {
             std::make_shared<ParamUInt256>(3)
         })
     });
+    // clang-format on
     EXPECT_EQ("sam(bytes,bool,uint256[])", func.getType());
     Data encoded;
     func.encode(encoded);
 
     EXPECT_EQ(encoded.size(), 32 * 9 + 4ul);
-    EXPECT_EQ(hex(encoded.begin() +   0, encoded.begin() + 4  ), "a5643bf2");
-    EXPECT_EQ(hex(encoded.begin() +   4, encoded.begin() + 36 ), "0000000000000000000000000000000000000000000000000000000000000060");
-    EXPECT_EQ(hex(encoded.begin() +  36, encoded.begin() + 68 ), "0000000000000000000000000000000000000000000000000000000000000001");
-    EXPECT_EQ(hex(encoded.begin() +  68, encoded.begin() + 100), "00000000000000000000000000000000000000000000000000000000000000a0");
+    EXPECT_EQ(hex(encoded.begin() + 0, encoded.begin() + 4), "a5643bf2");
+    EXPECT_EQ(hex(encoded.begin() + 4, encoded.begin() + 36), "0000000000000000000000000000000000000000000000000000000000000060");
+    EXPECT_EQ(hex(encoded.begin() + 36, encoded.begin() + 68), "0000000000000000000000000000000000000000000000000000000000000001");
+    EXPECT_EQ(hex(encoded.begin() + 68, encoded.begin() + 100), "00000000000000000000000000000000000000000000000000000000000000a0");
     EXPECT_EQ(hex(encoded.begin() + 100, encoded.begin() + 132), "0000000000000000000000000000000000000000000000000000000000000004");
     EXPECT_EQ(hex(encoded.begin() + 132, encoded.begin() + 164), "6461766500000000000000000000000000000000000000000000000000000000");
     EXPECT_EQ(hex(encoded.begin() + 164, encoded.begin() + 196), "0000000000000000000000000000000000000000000000000000000000000003");
@@ -1003,24 +1039,25 @@ TEST(EthereumAbi, EncodeFunctionWithDynamicArgumentsCase1) {
 }
 
 TEST(EthereumAbi, EncodeFunctionWithDynamicArgumentsCase2) {
+    // clang-format off
     auto func = Function("f", std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamUInt256>(0x123),
         std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
             std::make_shared<ParamUInt32>(0x456),
-            std::make_shared<ParamUInt32>(0x789)
-        }),
+            std::make_shared<ParamUInt32>(0x789)}),
         std::make_shared<ParamByteArrayFix>(10, std::vector<byte>{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30}),
         std::make_shared<ParamString>("Hello, world!")
     });
+    // clamp-format on
     EXPECT_EQ("f(uint256,uint32[],bytes10,string)", func.getType());
     Data encoded;
     func.encode(encoded);
 
     EXPECT_EQ(encoded.size(), 32 * 9 + 4ul);
-    EXPECT_EQ(hex(encoded.begin() +   0, encoded.begin() + 4  ), "47b941bf");
-    EXPECT_EQ(hex(encoded.begin() +   4, encoded.begin() + 36 ), "0000000000000000000000000000000000000000000000000000000000000123");
-    EXPECT_EQ(hex(encoded.begin() +  36, encoded.begin() + 68 ), "0000000000000000000000000000000000000000000000000000000000000080");
-    EXPECT_EQ(hex(encoded.begin() +  68, encoded.begin() + 100), "3132333435363738393000000000000000000000000000000000000000000000");
+    EXPECT_EQ(hex(encoded.begin() + 0, encoded.begin() + 4), "47b941bf");
+    EXPECT_EQ(hex(encoded.begin() + 4, encoded.begin() + 36), "0000000000000000000000000000000000000000000000000000000000000123");
+    EXPECT_EQ(hex(encoded.begin() + 36, encoded.begin() + 68), "0000000000000000000000000000000000000000000000000000000000000080");
+    EXPECT_EQ(hex(encoded.begin() + 68, encoded.begin() + 100), "3132333435363738393000000000000000000000000000000000000000000000");
     EXPECT_EQ(hex(encoded.begin() + 100, encoded.begin() + 132), "00000000000000000000000000000000000000000000000000000000000000e0");
     EXPECT_EQ(hex(encoded.begin() + 132, encoded.begin() + 164), "0000000000000000000000000000000000000000000000000000000000000002");
     EXPECT_EQ(hex(encoded.begin() + 164, encoded.begin() + 196), "0000000000000000000000000000000000000000000000000000000000000456");
@@ -1033,10 +1070,12 @@ TEST(EthereumAbi, DecodeFunctionOutputCase1) {
     Data encoded;
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000045"));
 
+    // clang-format off
     auto func = Function("readout", std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamAddress>(parse_hex("f784682c82526e245f50975190ef0fff4e4fc077")),
         std::make_shared<ParamUInt64>(1000)
     });
+    // clang-format on
     func.addOutParam(std::make_shared<ParamUInt64>());
     EXPECT_EQ("readout(address,uint64)", func.getType());
 
@@ -1055,23 +1094,23 @@ TEST(EthereumAbi, DecodeFunctionOutputCase1) {
 }
 
 TEST(EthereumAbi, DecodeFunctionOutputCase2) {
+    // clang-format off
     auto func = Function("getAmountsOut", std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamUInt256>(100),
         std::make_shared<ParamArray>(std::make_shared<ParamAddress>(parse_hex("000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc077")))
     });
+    // clang-format on
     func.addOutParam(std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamUInt256>(66),
-        std::make_shared<ParamUInt256>(67)
-    }));
+        std::make_shared<ParamUInt256>(67)}));
     EXPECT_EQ("getAmountsOut(uint256,address[])", func.getType());
 
     Data encoded;
     append(encoded, parse_hex(
-        "0000000000000000000000000000000000000000000000000000000000000020"
-        "0000000000000000000000000000000000000000000000000000000000000002"
-        "0000000000000000000000000000000000000000000000000000000000000004"
-        "0000000000000000000000000000000000000000000000000000000000000005"
-    ));
+                        "0000000000000000000000000000000000000000000000000000000000000020"
+                        "0000000000000000000000000000000000000000000000000000000000000002"
+                        "0000000000000000000000000000000000000000000000000000000000000004"
+                        "0000000000000000000000000000000000000000000000000000000000000005"));
     size_t offset = 0;
     bool res = func.decodeOutput(encoded, offset);
     EXPECT_TRUE(res);
@@ -1090,9 +1129,11 @@ TEST(EthereumAbi, DecodeInputSignature) {
     append(encoded, parse_hex("72ed38b6"));
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000045"));
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000001"));
+    // clang-format off
     auto func = Function("baz", std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamUInt256>(), std::make_shared<ParamBool>()
     });
+    // clang-format on
     EXPECT_EQ("baz(uint256,bool)", func.getType());
     size_t offset = 0;
     bool res = func.decodeInput(encoded, offset);
@@ -1118,6 +1159,7 @@ TEST(EthereumAbi, DecodeFunctionInputWithDynamicArgumentsCase1) {
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000002"));
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000003"));
 
+    // clang-format off
     auto func = Function("sam", std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamByteArray>(Data{0x64, 0x61, 0x76, 0x65}),
         std::make_shared<ParamBool>(true),
@@ -1127,6 +1169,7 @@ TEST(EthereumAbi, DecodeFunctionInputWithDynamicArgumentsCase1) {
             std::make_shared<ParamUInt256>(3)
         })
     });
+    // clang-format on
     EXPECT_EQ("sam(bytes,bool,uint256[])", func.getType());
 
     size_t offset = 0;
@@ -1159,15 +1202,16 @@ TEST(EthereumAbi, DecodeFunctionInputWithDynamicArgumentsCase2) {
     append(encoded, parse_hex("000000000000000000000000000000000000000000000000000000000000000d"));
     append(encoded, parse_hex("48656c6c6f2c20776f726c642100000000000000000000000000000000000000"));
 
+    // clang-format off
     auto func = Function("f", std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamUInt256>(0x123),
         std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
             std::make_shared<ParamUInt32>(0x456),
-            std::make_shared<ParamUInt32>(0x789)
-        }),
+            std::make_shared<ParamUInt32>(0x789)}),
         std::make_shared<ParamByteArrayFix>(10, std::vector<byte>{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30}),
         std::make_shared<ParamString>("Hello, world!")
     });
+    // clang-format on
     EXPECT_EQ("f(uint256,uint32[],bytes10,string)", func.getType());
 
     size_t offset = 0;
@@ -1213,6 +1257,7 @@ TEST(EthereumAbi, DecodeFunctionContractMulticall) {
         "000000000000000000000000000000000000000000000000000000000000000000");
     ASSERT_EQ(4 + 928ul, encoded.size());
 
+    // clang-format off
     auto func = Function("multicall", std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
             std::make_shared<ParamByteArray>(Data()),
@@ -1221,6 +1266,7 @@ TEST(EthereumAbi, DecodeFunctionContractMulticall) {
             std::make_shared<ParamByteArray>(Data())
         }),
     });
+    // clang-format on
     EXPECT_EQ("multicall(bytes[])", func.getType());
 
     size_t offset = 0;
@@ -1297,12 +1343,12 @@ TEST(EthereumAbi, ParamFactoryGetArrayValue) {
         ASSERT_EQ(vals.size(), 1ul);
         EXPECT_EQ(vals[0], "0");
     }
-    {   // wrong type, not array
+    { // wrong type, not array
         auto pArray = std::make_shared<ParamArray>(std::make_shared<ParamUInt8>());
         const auto vals = ParamFactory::getArrayValue(pArray, "bool");
         EXPECT_EQ(vals.size(), 0ul);
     }
-    {   // wrong param, not array
+    { // wrong param, not array
         auto pArray = std::make_shared<ParamUInt8>();
         const auto vals = ParamFactory::getArrayValue(pArray, "uint8[]");
         EXPECT_EQ(vals.size(), 0ul);
@@ -1506,12 +1552,31 @@ TEST(EthereumAbi, ParamFactorySetGetValue) {
 
 TEST(EthereumAbi, ParamFactoryGetValue) {
     const std::vector<std::string> types = {
-        "uint8", "uint16", "uint32", "uint64", "uint128", "uint168", "uint256",
-        "int8", "int16", "int32", "int64", "int128", "int168", "int256",
-        "bool", "string", "bytes", "bytes168", "address",
-        "uint8[]", "address[]", "bool[]", "bytes[]",
+        "uint8",
+        "uint16",
+        "uint32",
+        "uint64",
+        "uint128",
+        "uint168",
+        "uint256",
+        "int8",
+        "int16",
+        "int32",
+        "int64",
+        "int128",
+        "int168",
+        "int256",
+        "bool",
+        "string",
+        "bytes",
+        "bytes168",
+        "address",
+        "uint8[]",
+        "address[]",
+        "bool[]",
+        "bytes[]",
     };
-    for (auto t: types) {
+    for (auto t : types) {
         std::shared_ptr<ParamBase> p = ParamFactory::make(t);
         EXPECT_EQ(t, p->getType());
 
@@ -1549,7 +1614,7 @@ TEST(EthereumAbi, ParamSetMethods) {
     {
         auto p = ParamSet(std::vector<std::shared_ptr<ParamBase>>{
             std::make_shared<ParamUInt256>(16u),
-            std::make_shared<ParamBool>(true) });
+            std::make_shared<ParamBool>(true)});
         EXPECT_EQ(p.getCount(), 2ul);
         EXPECT_EQ(p.addParam(std::shared_ptr<ParamString>(nullptr)), -1);
 
@@ -1572,7 +1637,7 @@ TEST(EthereumAbi, ParamSetMethods) {
 TEST(EthereumAbi, ParametersMethods) {
     auto p = Parameters(std::vector<std::shared_ptr<ParamBase>>{
         std::make_shared<ParamUInt256>(16u),
-        std::make_shared<ParamBool>(true) });
+        std::make_shared<ParamBool>(true)});
     EXPECT_TRUE(p.isDynamic());
     EXPECT_EQ(p.getCount(), 2ul);
     EXPECT_FALSE(p.setValueJson("value"));

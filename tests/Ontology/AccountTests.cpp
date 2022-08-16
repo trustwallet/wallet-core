@@ -13,7 +13,7 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology::tests {
 
 TEST(OntologyAccount, validity) {
     auto hexPrvKey = "4646464646464646464646464646464646464646464646464646464646464646";
@@ -24,3 +24,5 @@ TEST(OntologyAccount, validity) {
     EXPECT_EQ(hexPrvKey, hex(prvKey.bytes));
     EXPECT_EQ(hexPubKey, hex(pubKey.bytes));
 }
+
+} // namespace TW::Ontology::tests

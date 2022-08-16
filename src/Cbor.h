@@ -11,6 +11,8 @@
 #include <stdexcept>
 #include <string>
 #include <memory>
+#include <vector>
+#include <map>
 
 namespace TW::Cbor {
 
@@ -38,7 +40,7 @@ public:
     /// encode an array of elements (of different types)
     static Encode array(const std::vector<Encode>& elems);
     /// encode a map
-    static Encode map(const std::vector<std::pair<Encode, Encode>>& elems);
+    static Encode map(const std::map<Encode, Encode>& elems);
     /// encode a tag and following element
     static Encode tag(uint64_t value, const Encode& elem);
     /// encode a null value (special)
@@ -54,6 +56,7 @@ public:
 
     /// Create from raw content, must be valid CBOR data, may throw
     static Encode fromRaw(const TW::Data& rawData);
+    const Data& getDataInternal() const { return _data; }
 
 private:
     Encode() {}
@@ -69,6 +72,11 @@ private:
     /// number of currently open indefinite buildingds (0, 1, or more for nested)
     int openIndefCount = 0;
 };
+
+/// Comparator, needed for map keys
+inline bool operator<(const Encode& lhs, const Encode& rhs) {
+    return lhs.getDataInternal() < rhs.getDataInternal();
+}
 
 /// CBOR Decoder and container for data for decoding.  Contains reference to read-only CBOR data.
 /// See CborTests.cpp for usage.

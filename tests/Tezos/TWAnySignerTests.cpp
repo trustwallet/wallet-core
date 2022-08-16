@@ -12,7 +12,6 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-
 namespace TW::Tezos::tests {
 
 TEST(TWAnySignerTezos, Sign) {

@@ -4,21 +4,20 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Base64.h"
 #include "Coin.h"
-#include "Cosmos/Address.h"
-#include "Cosmos/ProtobufSerialization.h"
-#include "Cosmos/Signer.h"
 #include "HexCoding.h"
+#include "Base64.h"
 #include "proto/Cosmos.pb.h"
+#include "Cosmos/Address.h"
+#include "Cosmos/Signer.h"
+#include "Cosmos/ProtobufSerialization.h"
 #include "uint256.h"
 #include "../interface/TWTestUtilities.h"
 
-#include <google/protobuf/util/json_util.h>
 #include <gtest/gtest.h>
+#include <google/protobuf/util/json_util.h>
 
 using namespace TW;
-
 namespace TW::Cosmos::tests {
 
 TEST(TerraSigner, SignSendTx) {
@@ -362,4 +361,4 @@ TEST(TerraSigner, SignWasmTransferPayload) {
     )");
 }
 
-} // namespace TW::Cosmos::tests
+} // namespace TW::Terra

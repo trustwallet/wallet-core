@@ -27,7 +27,7 @@ TEST(WavesSigner, SignTransaction) {
     auto input = Proto::SigningInput();
     input.set_timestamp(int64_t(1526641218066));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-
+    
     auto& message = *input.mutable_transfer_message();
     message.set_amount(int64_t(100000000));
     message.set_asset(Transaction::WAVES);
@@ -36,9 +36,9 @@ TEST(WavesSigner, SignTransaction) {
     message.set_to(address.string());
     message.set_attachment("falafel");
     auto tx1 = Transaction(
-        input,
-        /* pub_key */
-        parse_hex("559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d"));
+                           input,
+                           /* pub_key */
+                           parse_hex("559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d"));
 
     auto signature = Signer::sign(privateKey, tx1);
 

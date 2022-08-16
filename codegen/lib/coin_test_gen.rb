@@ -56,7 +56,7 @@ class CoinTestGen
     end
   end
 
-  def generate_coin_test_file(coin, templateFile)
+  def generate_coin_test_file(coin, templateFile, overwriteExisting = true)
     path = File.expand_path(templateFile, File.join(File.dirname(__FILE__), '..', 'lib', 'templates'))
     template = ERB.new(File.read(path), nil, '-')
     result = template.result(binding)
@@ -65,7 +65,9 @@ class CoinTestGen
     file = 'TWCoinTypeTests.cpp'
     FileUtils.mkdir_p folder
     path = File.join(folder, file)
-    File.write(path, result)
-    puts "Generated file " + path
+    if not File.exist?(path) or overwriteExisting
+      File.write(path, result)
+      puts "Generated file " + path
+    end
   end
 end
