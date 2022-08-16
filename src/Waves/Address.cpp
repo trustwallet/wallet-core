@@ -15,8 +15,7 @@
 #include <cstring>
 #include <stdexcept>
 
-using namespace TW;
-using namespace TW::Waves;
+namespace TW::Waves {
 
 template <typename T>
 Data Address::secureHash(const T &data) {
@@ -82,3 +81,5 @@ Address::Address(const PublicKey &publicKey) {
 std::string Address::string() const {
     return Base58::bitcoin.encode(bytes);
 }
+
+} // namespace TW::Waves

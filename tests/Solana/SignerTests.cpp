@@ -13,7 +13,7 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Solana;
+namespace TW::Solana::tests {
 
 TEST(SolanaSigner, CompiledInstruction) {
     const auto privateKey0 =
@@ -59,10 +59,12 @@ TEST(SolanaSigner, CompiledInstructionFindAccount) {
     Address address2 = Address(parse_hex("0102030405060708090a0102030405060708090a0102030405060708090a0102"));
     Address address3 = Address(parse_hex("0102030405060708090a0102030405060708090a0102030405060708090a0103"));
     Address programId("11111111111111111111111111111111");
+    // clang-format off
     Instruction instruction(programId, std::vector<AccountMeta>{
         AccountMeta(address1, true, false),
         AccountMeta(address2, false, false),
     }, Data{1, 2, 3, 4});
+    // clang-format on
     std::vector<Address> addresses = {
         address1,
         address2,
@@ -393,7 +395,7 @@ TEST(SolanaSigner, SignTransferToken_3vZ67C) {
     Solana::Hash recentBlockhash("CNaHfvqePgGYMvtYi9RuUdVxDYttr1zs4TWrTXYabxZi");
 
     auto message = Message::createTokenTransfer(signer, token,
-        senderTokenAddress, recipientTokenAddress, amount, decimals, recentBlockhash);
+                                                senderTokenAddress, recipientTokenAddress, amount, decimals, recentBlockhash);
     auto transaction = Transaction(message);
 
     std::vector<PrivateKey> signerKeys;
@@ -411,3 +413,5 @@ TEST(SolanaSigner, SignTransferToken_3vZ67C) {
         "PGfKqEaH2zZXDMZLcU6LUKdBSzU1GJWJ1CJXtRYCxaCH7k8uok38WSadZfrZw3TGejiau7nSpan2GvbK26hQim24jRe2AupmcYJFrgsdaCt1Aqs5kpGjPqzgj9krgxTZwwob3xgC1NdHK5BcNwhxwRtrCphGEH7zUFpGFrFrHzgpf2KY8FvPiPELQyxzTBuyNtjLjMMreehSKShEjD9Xzp1QeC1pEF8JL6vUKzxMXuveoEYem8q8JiWszYzmTMfDk13JPgv7pXFGMqDV3yNGCLsWccBeSFKN4UKECre6x2QbUEiKGkHkMc4zQwwyD8tGmEMBAGm339qdANssEMNpDeJp2LxLDStSoWShHnotcrH7pUa94xCVvCPPaomF";
     EXPECT_EQ(transaction.serialize(), expectedString);
 }
+
+} // namespace TW::Solana::tests

@@ -17,14 +17,12 @@
 #include <string>
 #include <vector>
 
-using namespace TW::Ethereum::ABI;
-using namespace TW::Ethereum;
 using namespace TW;
-
+namespace EthAbi = TW::Ethereum::ABI;
 
 TWData* _Nonnull TWEthereumAbiEncode(struct TWEthereumAbiFunction* _Nonnull func_in) {
     assert(func_in != nullptr);
-    Function& function = func_in->impl;
+    EthAbi::Function& function = func_in->impl;
 
     Data encoded;
     function.encode(encoded);
@@ -34,7 +32,7 @@ TWData* _Nonnull TWEthereumAbiEncode(struct TWEthereumAbiFunction* _Nonnull func
 bool TWEthereumAbiDecodeOutput(struct TWEthereumAbiFunction* _Nonnull func_in,
                                TWData* _Nonnull encoded) {
     assert(func_in != nullptr);
-    Function& function = func_in->impl;
+    EthAbi::Function& function = func_in->impl;
     assert(encoded != nullptr);
     Data encData = data(TWDataBytes(encoded), TWDataSize(encoded));
 
@@ -45,9 +43,9 @@ bool TWEthereumAbiDecodeOutput(struct TWEthereumAbiFunction* _Nonnull func_in,
 TWString* _Nullable TWEthereumAbiDecodeCall(TWData* _Nonnull callData, TWString* _Nonnull abiString) {
     const Data& call = *(reinterpret_cast<const Data*>(callData));
     const auto& jsonString = *reinterpret_cast<const std::string*>(abiString);
-    try {     
+    try {
         auto abi = nlohmann::json::parse(jsonString);
-        auto string = decodeCall(call, abi);
+        auto string = EthAbi::decodeCall(call, abi);
         if (!string.has_value()) {
             return nullptr;
         }
@@ -61,7 +59,7 @@ TWString* _Nullable TWEthereumAbiDecodeCall(TWData* _Nonnull callData, TWString*
 TWData* _Nonnull TWEthereumAbiEncodeTyped(TWString* _Nonnull messageJson) {
     Data data;
     try {
-        data = ParamStruct::hashStructJson(TWStringUTF8Bytes(messageJson));
+        data = EthAbi::ParamStruct::hashStructJson(TWStringUTF8Bytes(messageJson));
     } catch (...) {} // return empty
     return TWDataCreateWithBytes(data.data(), data.size());
 }

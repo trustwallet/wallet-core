@@ -8,7 +8,7 @@
 
 #include "gtest/gtest.h"
 
-using namespace TW;
+namespace TW::operators::tests {
 
 struct Amount : equality_comparable<Amount> {
     int value;
@@ -19,3 +19,5 @@ TEST(Operators, EqualityComparable) {
     ASSERT_TRUE(Amount{.value = 1} != Amount{.value = 2});
     ASSERT_TRUE(Amount{.value = 1} == Amount{.value = 1});
 }
+
+} // namespace TW::operators::tests

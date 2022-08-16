@@ -12,8 +12,10 @@
 
 #include <string>
 
-using namespace TW;
+namespace TW::Tezos {
 
 PublicKey parsePublicKey(const std::string& publicKey);
 PrivateKey parsePrivateKey(const std::string& privateKey);
 std::string base58ToHex(const std::string& data, size_t prefixLength);
+
+} // namespace TW::Tezos
