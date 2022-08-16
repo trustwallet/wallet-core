@@ -2937,9 +2937,9 @@ TEST(TransactionCompiler, OasisCompileWithSignatures) {
     ASSERT_TRUE(preSigningOutput.ParseFromArray(preImageHashData.data(), (int)preImageHashData.size()));
     ASSERT_EQ(preSigningOutput.error(), Common::Proto::OK);
     auto preImageHash = preSigningOutput.data_hash();
-    EXPECT_EQ(hex(preImageHash), "eaad67750581b04235194ff87265a0f909584362fb512e09b75d0e447022b374");
+    EXPECT_EQ(hex(preImageHash), "373976e01fa0634a40ce8898a869f1056d862e3a0f26d8ae22ebeb5fdbcde9b3");
 
-    auto signature = parse_hex("e331ce731ed819106586152b13cd98ecf3248a880bdc71174ee3d83f6d5f3f8ee8fc34c19b22032f2f1e3e06d382720125d7a517fba9295c813228cc2b63170b");
+    auto signature = parse_hex("6e51c18c9b2015c9b49414b3307336597f51ff331873d214ce2db81c9651a34d99529ccaa294a39ccd01c6b0bc2c2239d87c624e5ba4840cf99ac8f9283e240c");
 
     /// Step 3: Compile transaction info
     const auto outputData = TransactionCompiler::compileWithSignatures(coin, inputData, { signature }, {publicKey.bytes});
@@ -2948,7 +2948,7 @@ TEST(TransactionCompiler, OasisCompileWithSignatures) {
     ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
 
 
-    const auto tx = "a273756e747275737465645f7261775f76616c7565585ea4656e6f6e636500666d6574686f64707374616b696e672e5472616e7366657263666565a2636761730066616d6f756e74410064626f6479a262746f5500c73cc001463434915ba3f39751beb7c0905b45eb66616d6f756e744400989680697369676e6174757265a26a7075626c69635f6b6579582093d8f8a455f50527976a8aa87ebde38d5606efa86cb985d3fb466aff37000e3b697369676e61747572655840e331ce731ed819106586152b13cd98ecf3248a880bdc71174ee3d83f6d5f3f8ee8fc34c19b22032f2f1e3e06d382720125d7a517fba9295c813228cc2b63170b";
+    const auto tx = "a2697369676e6174757265a2697369676e617475726558406e51c18c9b2015c9b49414b3307336597f51ff331873d214ce2db81c9651a34d99529ccaa294a39ccd01c6b0bc2c2239d87c624e5ba4840cf99ac8f9283e240c6a7075626c69635f6b6579582093d8f8a455f50527976a8aa87ebde38d5606efa86cb985d3fb466aff37000e3b73756e747275737465645f7261775f76616c7565585ea463666565a2636761730066616d6f756e74410064626f6479a262746f5500c73cc001463434915ba3f39751beb7c0905b45eb66616d6f756e744400989680656e6f6e636500666d6574686f64707374616b696e672e5472616e73666572";
     EXPECT_EQ(hex(output.encoded()), tx);
 
     { // Double check: check if simple signature process gives the same result. Note that private
@@ -3320,7 +3320,7 @@ TEST(TransactionCompiler, CardanoCompileWithSignaturesAndPubKeyType) {
 
     auto preOut = TxCompiler::Proto::PreSigningOutput();
     preOut.ParseFromArray(preImageHash.data(), (int)preImageHash.size());
-    EXPECT_EQ(hex(preOut.data_hash()),"b9e27329e670ce1d434b894348526f835d5bc53dad8b8d6d9bda58dd31e2bb5b");
+    EXPECT_EQ(hex(preOut.data_hash()),"3e5a7c1d1afbc7e3ca783daba1beb12010fc4ecc748722558697509212c9f186");
 
     // Simulate signature, normally obtained from signature server
     const auto publicKeyData = parse_hex("17c55d712152ccabf28215fe2d008d615f94796e098a97f1aa43d986ac3cb946");
@@ -3338,13 +3338,12 @@ TEST(TransactionCompiler, CardanoCompileWithSignaturesAndPubKeyType) {
         "825820d87f6e99c8d3a0fb22b1ea4de477f5a6d1f0e419450c2a194304371cada0ebb90001828258"
         "39018d98bea0414243dc84070f96265577e7e6cf702d62e871016885034ecc64bf258b8e330cf0cd"
         "d9fdb03e10b4e4ac08f5da1fdec6222a34681a001c3a9082581d61f6cf51aacb2e3ad96fa9f06f6e"
-        "292f8d1d47b2eb6fd39987684ba9f1821a002e0544a3581c122d15a15dc753d2b3ca9ee46c1c6ca4"
-        "1dda38d735942d9d259c785ba1495454546f6b656e2d311a002dc6c0581c122d15a15dc753d2b3ca"
-        "9ee46c1c6ca41dda38d735942d9d259c785ba1495454546f6b656e2d321a002dc6c0581c122d15a1"
-        "5dc753d2b3ca9ee46c1c6ca41dda38d735942d9d259c785ba1495454546f6b656e2d331a004c4b40"
-        "021a0002ab690300a1008182582017c55d712152ccabf28215fe2d008d615f94796e098a97f1aa43"
-        "d986ac3cb94658401096ddcfb2ad21a4c0d861ef3fabe18841e8de88105b0d8e36430d7992c58863"
-        "4ead4100c32b2800b31b65e014d54a8238bdda63118d829bf0bcf1b631e86f0ef6";
+        "292f8d1d47b2eb6fd39987684ba9f1821a002e0feea1581c122d15a15dc753d2b3ca9ee46c1c6ca4"
+        "1dda38d735942d9d259c785ba3495454546f6b656e2d311a002dc6c0495454546f6b656e2d321a00"
+        "2dc6c0495454546f6b656e2d331a004c4b40021a0002a0bf0300a1008182582017c55d712152ccab"
+        "f28215fe2d008d615f94796e098a97f1aa43d986ac3cb94658401096ddcfb2ad21a4c0d861ef3fab"
+        "e18841e8de88105b0d8e36430d7992c588634ead4100c32b2800b31b65e014d54a8238bdda63118d"
+        "829bf0bcf1b631e86f0ef6";
 
     
     EXPECT_EQ(hex(output.encoded()), expectedTx);
