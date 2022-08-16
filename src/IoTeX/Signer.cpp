@@ -11,7 +11,8 @@
 #include "PrivateKey.h"
 
 using namespace TW;
-using namespace TW::IoTeX;
+
+namespace TW::IoTeX {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto signer = Signer(input);
@@ -48,3 +49,5 @@ void Signer::toActionCore() {
     action.ParseFromString(input.SerializeAsString());
     action.DiscardUnknownFields();
 }
+
+} // namespace TW::IoTeX

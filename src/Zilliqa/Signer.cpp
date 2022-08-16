@@ -19,8 +19,9 @@
 #include <nlohmann/json.hpp>
 
 using namespace TW;
-using namespace TW::Zilliqa;
 using ByteArray = ZilliqaMessage::ByteArray;
+
+namespace TW::Zilliqa {
 
 static inline Data prependZero(Data& data) {
     if (data.size() < 16) {
@@ -137,3 +138,5 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     input.set_private_key(key.data(), key.size());
     return hex(Signer::sign(input).json());
 }
+
+} // namespace TW::Zilliqa

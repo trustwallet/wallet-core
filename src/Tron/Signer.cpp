@@ -8,18 +8,19 @@
 
 #include "Protobuf/TronInternal.pb.h"
 
+#include "Serialization.h"
 #include "../Base58.h"
 #include "../BinaryCoding.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
-#include "Serialization.h"
 
-#include <chrono>
 #include <cassert>
+#include <chrono>
 
 using namespace TW;
-using namespace TW::Tron;
 using namespace std::chrono;
+
+namespace TW::Tron {
 
 const std::string TRANSFER_TOKEN_FUNCTION = "0xa9059cbb";
 
@@ -106,7 +107,7 @@ protocol::VoteAssetContract to_internal(const Proto::VoteAssetContract& voteCont
     internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
     internal.set_support(voteContract.support());
     internal.set_count(voteContract.count());
-    for(int i = 0; i < voteContract.vote_address_size(); i++) {
+    for (int i = 0; i < voteContract.vote_address_size(); i++) {
         auto voteAddress = Base58::bitcoin.decodeCheck(voteContract.vote_address(i));
         internal.add_vote_address(voteAddress.data(), voteAddress.size());
     }
@@ -120,7 +121,7 @@ protocol::VoteWitnessContract to_internal(const Proto::VoteWitnessContract& vote
 
     internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
     internal.set_support(voteContract.support());
-    for(int i = 0; i < voteContract.votes_size(); i++) {
+    for (int i = 0; i < voteContract.votes_size(); i++) {
         auto voteAddress = Base58::bitcoin.decodeCheck(voteContract.votes(i).vote_address());
         auto* vote = internal.add_votes();
 
@@ -293,15 +294,15 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     }
 
     // Get default timestamp and expiration
-    const uint64_t now = duration_cast< milliseconds >(
-            system_clock::now().time_since_epoch()
-    ).count();
+    const uint64_t now = duration_cast<milliseconds>(
+                             system_clock::now().time_since_epoch())
+                             .count();
     const uint64_t timestamp = input.transaction().timestamp() == 0
-            ? now
-            : input.transaction().timestamp();
+                                   ? now
+                                   : input.transaction().timestamp();
     const uint64_t expiration = input.transaction().expiration() == 0
-            ? timestamp + 10 * 60 * 60 * 1000 // 10 hours
-            : input.transaction().expiration();
+                                    ? timestamp + 10 * 60 * 60 * 1000 // 10 hours
+                                    : input.transaction().expiration();
 
     internal.mutable_raw_data()->set_timestamp(timestamp);
     internal.mutable_raw_data()->set_expiration(expiration);
@@ -325,3 +326,5 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
     return output;
 }
+
+} // namespace TW::Tron

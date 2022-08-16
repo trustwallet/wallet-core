@@ -18,7 +18,8 @@
 #include "Bitcoin/OpCodes.h"
 
 using namespace TW;
-using namespace TW::Decred;
+
+namespace TW::Decred {
 
 Bitcoin::Proto::TransactionPlan Signer::plan(const Bitcoin::Proto::SigningInput& input) noexcept {
     auto signer = Signer(std::move(input));
@@ -206,3 +207,5 @@ Data Signer::scriptForScriptHash(const Data& hash) const {
     }
     return Data(it->second.begin(), it->second.end());
 }
+
+} // namespace TW::Decred

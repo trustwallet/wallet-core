@@ -7,13 +7,14 @@
 #include "Entry.h"
 
 #include "Address.h"
-#include "XAddress.h"
 #include "Signer.h"
+#include "XAddress.h"
 
-using namespace TW::Ripple;
 using namespace std;
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
+
+namespace TW::Ripple {
 
 bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
     return Address::isValid(address) || XAddress::isValid(address);
@@ -26,3 +27,5 @@ string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& p
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
+
+} // namespace TW::Ripple

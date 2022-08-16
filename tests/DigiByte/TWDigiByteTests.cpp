@@ -19,6 +19,9 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
+namespace TW::Bitcoin::tests {
+
+// clang-format off
 TEST(DigiByteTransaction, SignTransaction) {
     /*
         https://iancoleman.io/bip39/
@@ -82,7 +85,7 @@ TEST(DigiByteTransaction, SignTransaction) {
             "18053d0000000000""19"
             "76a91447825943ca6a936b177fdc7c9dc05251640169c288ac"
         "00000000"
-    ); 
+    );
 }
 
 TEST(DigiByteTransaction, SignP2WPKH) {
@@ -127,7 +130,7 @@ TEST(DigiByteTransaction, SignP2WPKH) {
 
 TEST(DigiByteTransaction, LockScripts) {
     // https://dgb2.trezor.io/tx/966b80caa754148158339a0fa70363996f15819599adf72de0eb3590c3bd63ea
-    
+
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptLockScriptForAddress(STRING("DBfCffUdSbhqKZhjuvrJ6AgvJofT4E2kp4").get(), TWCoinTypeDigiByte));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "76a91447825943ca6a936b177fdc7c9dc05251640169c288ac");
@@ -137,8 +140,11 @@ TEST(DigiByteTransaction, LockScripts) {
     assertHexEqual(scriptData2, "0014885534ab5dc680b68d95c0af49ec2acc2e9915c4");
 
     // https://dgb2.trezor.io/tx/965eb4afcd0aa6e3f4f8fc3513ca042f09e6e2235367fa006cbd1f546c293a2a
-    
+
     auto script3 = WRAP(TWBitcoinScript, TWBitcoinScriptLockScriptForAddress(STRING("SUngTA1vaC2E62mbnc81Mdos3TcvZHwsVo").get(), TWCoinTypeDigiByte));
     auto scriptData3 = WRAPD(TWBitcoinScriptData(script3.get()));
     assertHexEqual(scriptData3, "a91452356ed3d2d31eb8b263ace5d164e3cf3b37096687");
+}
+
+// clang-format on
 }
