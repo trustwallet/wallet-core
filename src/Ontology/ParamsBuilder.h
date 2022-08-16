@@ -16,14 +16,16 @@
 #include <string>
 #include <vector>
 
+#include "Address.h"
+
 namespace TW::Ontology {
 
 class ParamsBuilder {
 
-  private:
+private:
     std::vector<uint8_t> bytes;
 
-  public:
+public:
     static const size_t MAX_PK_SIZE = 16;
 
     std::vector<uint8_t> getBytes() { return bytes; }
@@ -78,6 +80,8 @@ class ParamsBuilder {
     static std::vector<uint8_t> buildNativeInvokeCode(const std::vector<uint8_t>& contractAddress,
                                                       uint8_t version, const std::string& method,
                                                       const boost::any& params);
+
+    static std::vector<uint8_t> buildOep4InvokeCode(const Address& contractAddress, const std::string& method, const boost::any& params);
 };
 
 } // namespace TW::Ontology

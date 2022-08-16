@@ -1,0 +1,105 @@
+#include "HexCoding.h"
+
+#include "Ontology/Oep4.h"
+#include "Ontology/Signer.h"
+#include <gtest/gtest.h>
+#include <string>
+
+using namespace TW;
+using namespace TW::Ontology;
+
+TEST(OntologyOep4, name) {
+    std::string wing_hex{"ff31ec74d01f7b7d45ed2add930f5d2239f7de33"};
+    auto wing_addr = Address(parse_hex(wing_hex.begin(), wing_hex.end()));
+    Oep4 wing(wing_addr);
+
+    uint32_t nonce = 0x1234;
+    auto tx = wing.name(nonce);
+    auto rawTx = hex(tx.serialize());
+    EXPECT_EQ("00d1341200000000000000000000000000000000000000000000000000000000000000000000000000001c00c1046e616d656733def739225d0f93dd2aed457d7b1fd074ec31ff0000", rawTx);
+}
+
+TEST(OntologyOep4, symbol) {
+    std::string wing_hex{"ff31ec74d01f7b7d45ed2add930f5d2239f7de33"};
+    auto wing_addr = Address(parse_hex(wing_hex.begin(), wing_hex.end()));
+    Oep4 wing(wing_addr);
+
+    uint32_t nonce = 0x1234;
+    auto tx = wing.symbol(nonce);
+    auto rawTx = hex(tx.serialize());
+    EXPECT_EQ("00d1341200000000000000000000000000000000000000000000000000000000000000000000000000001e00c10673796d626f6c6733def739225d0f93dd2aed457d7b1fd074ec31ff0000", rawTx);
+}
+
+TEST(OntologyOep4, decimals) {
+    std::string wing_hex{"ff31ec74d01f7b7d45ed2add930f5d2239f7de33"};
+    auto wing_addr = Address(parse_hex(wing_hex.begin(), wing_hex.end()));
+    Oep4 wing(wing_addr);
+
+    uint32_t nonce = 0x1234;
+    auto tx = wing.decimals(nonce);
+    auto rawTx = hex(tx.serialize());
+    EXPECT_EQ("00d1341200000000000000000000000000000000000000000000000000000000000000000000000000002000c108646563696d616c736733def739225d0f93dd2aed457d7b1fd074ec31ff0000", rawTx);
+}
+
+TEST(OntologyOep4, totalSupply) {
+    std::string wing_hex{"ff31ec74d01f7b7d45ed2add930f5d2239f7de33"};
+    auto wing_addr = Address(parse_hex(wing_hex.begin(), wing_hex.end()));
+    Oep4 wing(wing_addr);
+
+    uint32_t nonce = 0x1234;
+    auto tx = wing.totalSupply(nonce);
+    auto rawTx = hex(tx.serialize());
+    EXPECT_EQ("00d1341200000000000000000000000000000000000000000000000000000000000000000000000000002300c10b746f74616c537570706c796733def739225d0f93dd2aed457d7b1fd074ec31ff0000", rawTx);
+}
+
+TEST(OntologyOep4, balanceOf) {
+    std::string wing_hex{"ff31ec74d01f7b7d45ed2add930f5d2239f7de33"};
+    auto wing_addr = Address(parse_hex(wing_hex.begin(), wing_hex.end()));
+    Oep4 wing(wing_addr);
+    auto user = Address("AeaThtPwh5kAYnjHavzwmvxPd725nVTvbM");
+
+    uint32_t nonce = 0x1234;
+    auto tx = wing.balanceOf(user, nonce);
+    auto rawTx = hex(tx.serialize());
+    EXPECT_EQ("00d1341200000000000000000000000000000000000000000000000000000000000000000000000000003614fa2254ffaee3c3e1172e8e98f800e4105c74988e51c10962616c616e63654f666733def739225d0f93dd2aed457d7b1fd074ec31ff0000", rawTx);
+}
+
+TEST(OntologyOep4, addressHack) {
+    auto ownerbin = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
+    auto payerbin = parse_hex("4646464646464646464646464646464646464646464646464646464646464652");
+
+    PrivateKey owner(ownerbin);
+    PrivateKey payer(payerbin);
+
+    auto pubKey = owner.getPublicKey(TWPublicKeyTypeNIST256p1);
+    Address addr(pubKey);
+
+    EXPECT_EQ("AeicEjZyiXKgUeSBbYQHxsU1X3V5Buori5", addr.string());
+
+    auto payerpub_key = payer.getPublicKey(TWPublicKeyTypeNIST256p1);
+    Address payer_addr(payerpub_key);
+    EXPECT_EQ("APniYDGozkhUh8Tk7pe35aah2HGJ4fJfVd", payer_addr.string());
+}
+
+TEST(OntologyOep4, transfer) {
+    auto from = Signer(
+        PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464652")));
+
+    auto payer = Signer(
+        PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646")));
+
+    auto toAddress = Address("AVY6LfvxauVQAVHDV9hC3ZCv7cQqzfDotH");
+
+    uint32_t nonce = 0x1234;
+    uint64_t amount = 233;
+    uint64_t gasPrice = 2500;
+    uint64_t gasLimit = 50000;
+
+    std::string wing_hex{"ff31ec74d01f7b7d45ed2add930f5d2239f7de33"};
+    auto wing_addr = Address(parse_hex(wing_hex.begin(), wing_hex.end()));
+    Oep4 wing(wing_addr);
+
+    auto tx = wing.transfer(from, toAddress, amount, payer, gasPrice, gasLimit, nonce);
+    auto rawTx = hex(tx.serialize());
+    EXPECT_EQ("00d134120000c40900000000000050c3000000000000fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a4d02e9001496f688657b95be51c11a87b51adfda4ab69e9cbb1457e9d1a61f9aafa798b6c7fbeae35639681d7df653c1087472616e736665726733def739225d0f93dd2aed457d7b1fd074ec31ff00024140bd2923854d7b84b97a107bb3cddf18c8e3dddd2f36b41a1f5f5b23366484daa22871cfb819923fe01e9cb1e9ed16baa2b05c2feb76bcbe2ec125f72701c5e965232103d9fd62df332403d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac41406d638653597774ce45812ea2653250806b657b32b7c6ad3e027ddeba91e9a9da4bb5dacd23dafba868cb31bacb38b4a6ff2607682a426c1dc09b05a1e158d6cd2321031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486ac", rawTx);
+}

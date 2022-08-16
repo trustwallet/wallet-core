@@ -25,5 +25,6 @@ static const uint8_t TO_ALT_STACK{0x6B};
 static const uint8_t FROM_ALT_STACK{0x6C};
 static const uint8_t SWAP{0x7C};
 static const uint8_t HAS_KEY{0xC8};
+static const uint8_t APP_CALL{0x67};
 
 } // namespace TW::Ontology
