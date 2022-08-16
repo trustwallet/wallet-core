@@ -1,6 +1,6 @@
-add_library(tw_base INTERFACE)
-target_sources(tw_base INTERFACE Data.cpp)
-target_include_directories(tw_base INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+add_library(tw_base OBJECT)
+target_sources(tw_base PRIVATE Data.cpp)
+target_include_directories(tw_base PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 set_target_properties(tw_base PROPERTIES PUBLIC_HEADER Data.h)
 
 add_library(tw::base ALIAS tw_base)
