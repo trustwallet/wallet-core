@@ -101,7 +101,7 @@ endif ()
 if (NOT ANDROID AND TW_UNITY_BUILD)
     set_target_properties(TrustWalletCore PROPERTIES UNITY_BUILD ON)
 
-    file(GLOB_RECURSE PROTOBUF_SOURCE_FILES CONFIGURE_DEPENDS src/Cosmos/Protobuf/*.pb.cc src/proto/*.pb.cc)
+    file(GLOB_RECURSE PROTOBUF_SOURCE_FILES CONFIGURE_DEPENDS src/Cosmos/Protobuf/*.pb.cc src/proto/*.pb.cc modules/base/*.cpp)
     foreach(file ${PROTOBUF_SOURCE_FILES})
         set_property(SOURCE ${file} PROPERTY SKIP_UNITY_BUILD_INCLUSION ON)
     endforeach()
