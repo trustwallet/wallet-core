@@ -163,4 +163,4 @@ std::string Address::string() const {
     return Bech32::encode(hrp, payload, checksumVariant);
 }
 
-} // namespace Nervos
+} // namespace TW::Nervos
