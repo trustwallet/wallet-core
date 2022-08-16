@@ -18,7 +18,7 @@
 #include <google/protobuf/util/json_util.h>
 
 using namespace TW;
-using namespace TW::Cosmos;
+namespace TW::Cosmos::tests {
 
 TEST(TerraSigner, SignSendTx) {
     auto input = Proto::SigningInput();
@@ -360,3 +360,5 @@ TEST(TerraSigner, SignWasmTransferPayload) {
         }
     )");
 }
+
+} // namespace TW::Terra

@@ -12,7 +12,7 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Tezos;
+namespace TW::Tezos::tests {
 
 TEST(TWAnySignerTezos, Sign) {
     auto key = parse_hex("2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f");
@@ -58,3 +58,5 @@ TEST(TWAnySignerTezos, SignJSON) {
     ASSERT_TRUE(TWAnySignerSupportsJSON(TWCoinTypeTezos));
     assertStringsEqual(result, "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016b0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e6c0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e810201000081faa75f741ef614b0e35fcc8c90dfa3b0b957210001b86398d5b9be737dca8e4106ea18d70e69b75e92f892fb283546a99152b8d7794b919c0fbf1c31de386069a60014491c0e7505adef5781cead1cfe6608030b");
 }
+
+} // namespace TW::Tezos::tests
