@@ -993,7 +993,7 @@
     "info": {
       "url": "https://everscale.network/",
       "source": "https://github.com/tonlabs/evernode-ds",
-      "rpc": "",
+      "rpc": "https://evercloud.dev",
       "documentation": "https://docs.everos.dev/evernode-platform/products/evercloud/get-started"
     }
   },
