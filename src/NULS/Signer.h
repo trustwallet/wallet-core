@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,10 +6,10 @@
 #pragma once
 #include "../proto/NULS.pb.h"
 
-#include <stdint.h>
-#include <algorithm>
 #include "Data.h"
 #include "../uint256.h"
+#include <algorithm>
+#include <stdint.h>
 
 namespace TW::NULS {
 
@@ -18,6 +18,7 @@ class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+
   public:
     static const uint16_t TRANSACTION_FIX_SIZE = 11; //type size 2, time size 4, txData size 1, hash size 4
     static const uint16_t TRANSACTION_SIG_MAX_SIZE = 110;
@@ -44,7 +45,9 @@ class Signer {
 
     Data buildUnsignedTx() const;
 
-    Data buildSignedTx(Data pubkey, Data sigBytes) const;
+    Data buildSignedTx(const std::vector<Data> publicKeys,
+                       const std::vector<Data> signatures,
+                       const Data unsignedTxBytes) const;
 
 private:
     uint64_t CalculatorTransactionFee(uint64_t size) const;
