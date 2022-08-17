@@ -1,5 +1,8 @@
 syntax = "proto3";
 
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+
 package TW.Cosmos.Proto;
 option java_package = "wallet.core.jni.proto";
 
@@ -205,6 +208,30 @@ message Message {
         bytes auth_info_bytes = 2; 
     }
 
+    // Grant gives permissions to execute
+    // the provide method with expiration time.
+    message Grant {
+        google.protobuf.Any authorization = 1;
+        // time when the grant will expire and will be pruned. If null, then the grant
+        // doesn't have a time expiration (other conditions  in `authorization`
+        // may apply to invalidate the grant)
+        google.protobuf.Timestamp expiration = 2;
+    }
+
+    // cosmos-sdk/MsgGrant
+    message AuthGrant {
+        string granter = 1;
+        string grantee = 2;
+        Grant grant = 3;
+    }
+
+    // cosmos-sdk/MsgRevoke
+    message AuthRevoke {
+        string granter      = 1;
+        string grantee      = 2;
+        string msg_type_url = 3;
+    }
+
     oneof message_oneof {
         Send send_coins_message = 1;
         Transfer transfer_tokens_message = 2;
@@ -221,6 +248,8 @@ message Message {
         WasmExecuteContractSend wasm_execute_contract_send_message = 13;
         WasmExecuteContractGeneric wasm_execute_contract_generic = 14;
         SignDirect sign_direct_message = 15;
+        AuthGrant  auth_grant = 16;
+        AuthRevoke auth_revoke = 17;
     }
 }
 

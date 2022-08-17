@@ -4,12 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Base64.h"
 #include "Cosmos/Address.h"
+#include "Cosmos/Protobuf/authz_tx.pb.h"
 #include "Cosmos/Protobuf/bank_tx.pb.h"
 #include "Cosmos/Protobuf/tx.pb.h"
 #include "Data.h"
 #include "HexCoding.h"
-#include "Base64.h"
 
 #include "Protobuf/Article.pb.h"
 #include "../interface/TWTestUtilities.h"
@@ -22,7 +23,6 @@
 using namespace TW::Cosmos;
 using namespace TW;
 using json = nlohmann::json;
-
 
 TEST(CosmosProtobuf, SendMsg) {
     auto msgSend = cosmos::bank::v1beta1::MsgSend();
@@ -44,6 +44,23 @@ TEST(CosmosProtobuf, SendMsg) {
     std::string json;
     google::protobuf::util::MessageToJsonString(txBody, &json);
     assertJSONEqual(json, R"({"messages":[{"@type":"type.googleapis.com/cosmos.bank.v1beta1.MsgSend","amount":[{"amount":"1","denom":"muon"}],"fromAddress":"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02","toAddress":"cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573"}]})");
+}
+
+TEST(CosmosProtobuf, AuthGrant) {
+    auto msgGrant = cosmos::authz::v1beta1::MsgGrant();
+    msgGrant.set_granter("cosmos1tf0aw7dq4w3vppfqdglefs6wzyz5um2sf3x6jc");
+    msgGrant.set_grantee("cosmos1fs7lu28hx5m9akm7rp0c2422cn8r2f7gurujhf");
+    msgGrant.mutable_grant()->mutable_expiration()->set_seconds(1691445600);
+    msgGrant.mutable_grant()->mutable_authorization()->set_type_url("/cosmos.staking.v1beta1.StakeAuthorization");
+    auto txBody = cosmos::TxBody();
+    txBody.add_messages()->PackFrom(msgGrant);
+    txBody.set_memo("");
+    txBody.set_timeout_height(0);
+    std::string json;
+    google::protobuf::util::MessageToJsonString(txBody, &json);
+    std::cout << json << std::endl;
+    // TODO: https://github.com/cosmos/cosmos-sdk/blob/6f070623741fe0d6851d79ada41e6e2b1c67e236/proto/cosmos/staking/v1beta1/authz.proto for staking auth
+    // Verify that the serialized tx is equal to https://www.mintscan.io/cosmos/txs/2C0B5DE0E48FD166FC036F8F662C778F3A95AD270E3CEE24AE39CFE5B2A05A6F
 }
 
 TEST(CosmosProtobuf, DeterministicSerialization_Article) {
