@@ -8,6 +8,7 @@
 #include "Cosmos/Address.h"
 #include "Cosmos/Protobuf/authz_tx.pb.h"
 #include "Cosmos/Protobuf/bank_tx.pb.h"
+#include "Cosmos/Protobuf/staking_authz.pb.h"
 #include "Cosmos/Protobuf/tx.pb.h"
 #include "Data.h"
 #include "HexCoding.h"
@@ -47,11 +48,16 @@ TEST(CosmosProtobuf, SendMsg) {
 }
 
 TEST(CosmosProtobuf, AuthGrant) {
+    auto stakeAuthz = cosmos::staking::v1beta1::StakeAuthorization();
+    stakeAuthz.set_authorization_type(cosmos::staking::v1beta1::AUTHORIZATION_TYPE_DELEGATE);
+    stakeAuthz.mutable_allow_list()->add_address("cosmosvaloper1gjtvly9lel6zskvwtvlg5vhwpu9c9waw7sxzwx");
     auto msgGrant = cosmos::authz::v1beta1::MsgGrant();
     msgGrant.set_granter("cosmos1tf0aw7dq4w3vppfqdglefs6wzyz5um2sf3x6jc");
     msgGrant.set_grantee("cosmos1fs7lu28hx5m9akm7rp0c2422cn8r2f7gurujhf");
     msgGrant.mutable_grant()->mutable_expiration()->set_seconds(1691445600);
     msgGrant.mutable_grant()->mutable_authorization()->set_type_url("/cosmos.staking.v1beta1.StakeAuthorization");
+    //const auto ProtobufAnyNamespacePrefix = ""; // to override default 'type.googleapis.com'
+    msgGrant.mutable_grant()->mutable_authorization()->PackFrom(stakeAuthz);
     auto txBody = cosmos::TxBody();
     txBody.add_messages()->PackFrom(msgGrant);
     txBody.set_memo("");
