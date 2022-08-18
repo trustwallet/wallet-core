@@ -6,24 +6,24 @@
 
 #include "ProtobufSerialization.h"
 #include "JsonSerialization.h"
-#include "Protobuf/authz_tx.pb.h"
-#include "Protobuf/bank_tx.pb.h"
+#include "../proto/Cosmos.pb.h"
 #include "Protobuf/coin.pb.h"
+#include "Protobuf/bank_tx.pb.h"
 #include "Protobuf/cosmwasm_wasm_v1_tx.pb.h"
-#include "Protobuf/crypto_secp256k1_keys.pb.h"
+#include "Protobuf/authz_tx.pb.h"
 #include "Protobuf/distribution_tx.pb.h"
-#include "Protobuf/ethermint_keys.pb.h"
-#include "Protobuf/ibc_applications_transfer_tx.pb.h"
 #include "Protobuf/staking_tx.pb.h"
+#include "Protobuf/tx.pb.h"
+#include "Protobuf/crypto_secp256k1_keys.pb.h"
+#include "Protobuf/ibc_applications_transfer_tx.pb.h"
 #include "Protobuf/terra_wasm_v1beta1_tx.pb.h"
 #include "Protobuf/thorchain_bank_tx.pb.h"
-#include "Protobuf/tx.pb.h"
-#include "../proto/Cosmos.pb.h"
+#include "Protobuf/ethermint_keys.pb.h"
 
-#include "Base64.h"
+#include "PrivateKey.h"
 #include "Data.h"
 #include "Hash.h"
-#include "PrivateKey.h"
+#include "Base64.h"
 #include "uint256.h"
 
 #include <google/protobuf/util/json_util.h>
@@ -34,7 +34,7 @@ namespace TW::Cosmos::Protobuf {
 
 using json = nlohmann::json;
 using string = std::string;
-const auto ProtobufAnyNamespacePrefix = ""; // to override default 'type.googleapis.com'
+const auto ProtobufAnyNamespacePrefix = "";  // to override default 'type.googleapis.com'
 
 cosmos::base::v1beta1::Coin convertCoin(const Proto::Amount& amount) {
     cosmos::base::v1beta1::Coin coin;
@@ -47,7 +47,8 @@ cosmos::base::v1beta1::Coin convertCoin(const Proto::Amount& amount) {
 google::protobuf::Any convertMessage(const Proto::Message& msg) {
     google::protobuf::Any any;
     switch (msg.message_oneof_case()) {
-    case Proto::Message::kSendCoinsMessage: {
+    case Proto::Message::kSendCoinsMessage:
+    {
         assert(msg.has_send_coins_message());
         const auto& send = msg.send_coins_message();
         auto msgSend = cosmos::bank::v1beta1::MsgSend();
@@ -60,7 +61,8 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
         return any;
     }
 
-    case Proto::Message::kTransferTokensMessage: {
+    case Proto::Message::kTransferTokensMessage:
+    {
         assert(msg.has_transfer_tokens_message());
         const auto& transfer = msg.transfer_tokens_message();
         auto msgTransfer = ibc::applications::transfer::v1::MsgTransfer();
@@ -76,7 +78,8 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
         return any;
     }
 
-    case Proto::Message::kStakeMessage: {
+    case Proto::Message::kStakeMessage:
+    {
         assert(msg.has_stake_message());
         const auto& stake = msg.stake_message();
         auto msgDelegate = cosmos::staking::v1beta1::MsgDelegate();
@@ -87,7 +90,8 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
         return any;
     }
 
-    case Proto::Message::kUnstakeMessage: {
+    case Proto::Message::kUnstakeMessage:
+    {
         assert(msg.has_unstake_message());
         const auto& unstake = msg.unstake_message();
         auto msgUndelegate = cosmos::staking::v1beta1::MsgUndelegate();
@@ -98,7 +102,8 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
         return any;
     }
 
-    case Proto::Message::kRestakeMessage: {
+    case Proto::Message::kRestakeMessage:
+    {
         assert(msg.has_restake_message());
         const auto& restake = msg.restake_message();
         auto msgRedelegate = cosmos::staking::v1beta1::MsgBeginRedelegate();
@@ -110,7 +115,8 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
         return any;
     }
 
-    case Proto::Message::kWithdrawStakeRewardMessage: {
+    case Proto::Message::kWithdrawStakeRewardMessage:
+    {
         assert(msg.has_withdraw_stake_reward_message());
         const auto& withdraw = msg.withdraw_stake_reward_message();
         auto msgWithdraw = cosmos::distribution::v1beta1::MsgWithdrawDelegatorReward();
@@ -120,7 +126,8 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
         return any;
     }
 
-    case Proto::Message::kWasmTerraExecuteContractTransferMessage: {
+    case Proto::Message::kWasmTerraExecuteContractTransferMessage:
+    {
         assert(msg.has_wasm_terra_execute_contract_transfer_message());
         const auto& wasmExecute = msg.wasm_terra_execute_contract_transfer_message();
         auto msgExecute = terra::wasm::v1beta1::MsgExecuteContract();
@@ -132,7 +139,8 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
         return any;
     }
 
-    case Proto::Message::kWasmTerraExecuteContractSendMessage: {
+    case Proto::Message::kWasmTerraExecuteContractSendMessage:
+    {
         assert(msg.has_wasm_terra_execute_contract_send_message());
         const auto& wasmExecute = msg.wasm_terra_execute_contract_send_message();
         auto msgExecute = terra::wasm::v1beta1::MsgExecuteContract();
@@ -144,10 +152,11 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
         return any;
     }
 
-    case Proto::Message::kThorchainSendMessage: {
+    case Proto::Message::kThorchainSendMessage:
+    {
         assert(msg.has_thorchain_send_message());
         const auto& send = msg.thorchain_send_message();
-        auto msgSend = types::MsgSend();
+        auto msgSend =types::MsgSend();
         msgSend.set_from_address(send.from_address());
         msgSend.set_to_address(send.to_address());
         for (auto i = 0; i < send.amounts_size(); ++i) {
@@ -172,7 +181,8 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
         return any;
     }
 
-    case Proto::Message::kWasmExecuteContractTransferMessage: {
+    case Proto::Message::kWasmExecuteContractTransferMessage:
+    {
         assert(msg.has_wasm_execute_contract_transfer_message());
         const auto& wasmExecute = msg.wasm_execute_contract_transfer_message();
         auto msgExecute = cosmwasm::wasm::v1::MsgExecuteContract();
@@ -184,7 +194,8 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
         return any;
     }
 
-    case Proto::Message::kWasmExecuteContractSendMessage: {
+    case Proto::Message::kWasmExecuteContractSendMessage:
+    {
         assert(msg.has_wasm_execute_contract_send_message());
         const auto& wasmExecute = msg.wasm_execute_contract_send_message();
         auto msgExecute = cosmwasm::wasm::v1::MsgExecuteContract();
@@ -264,7 +275,7 @@ std::string buildAuthInfo(const Proto::SigningInput& input, TWCoinType coin) {
 
     signerInfo->mutable_mode_info()->mutable_single()->set_mode(cosmos::signing::v1beta1::SIGN_MODE_DIRECT);
     signerInfo->set_sequence(input.sequence());
-    switch (coin) {
+    switch(coin) {
     case TWCoinTypeNativeEvmos: {
         auto pubKey = ethermint::crypto::v1::ethsecp256k1::PubKey();
         pubKey.set_key(publicKey.bytes.data(), publicKey.bytes.size());
@@ -300,7 +311,7 @@ Data buildSignature(const Proto::SigningInput& input, const std::string& seriali
     const auto serializedSignDoc = signDoc.SerializeAsString();
 
     Data hashToSign;
-    switch (coin) {
+    switch(coin) {
     case TWCoinTypeNativeEvmos: {
         hashToSign = Hash::keccak256(serializedSignDoc);
         break;
@@ -331,8 +342,7 @@ static string broadcastMode(Proto::BroadcastMode mode) {
     case Proto::BroadcastMode::ASYNC:
         return "BROADCAST_MODE_ASYNC";
     case Proto::BroadcastMode::SYNC:
-    default:
-        return "BROADCAST_MODE_SYNC";
+    default: return "BROADCAST_MODE_SYNC";
     }
 }
 
@@ -340,38 +350,55 @@ std::string buildProtoTxJson(const Proto::SigningInput& input, const std::string
     const string serializedBase64 = Base64::encode(TW::data(serializedTx));
     const json jsonSerialized = {
         {"tx_bytes", serializedBase64},
-        {"mode", broadcastMode(input.mode())}};
+        {"mode", broadcastMode(input.mode())}
+    };
     return jsonSerialized.dump();
 }
 
 json wasmExecuteTransferPayload(const Proto::Message_WasmExecuteContractTransfer& msg) {
     return {
         {"transfer",
-         {{"amount", toString(load(data(msg.amount())))},
-          {"recipient", msg.recipient_address()}}}};
+         {
+             {"amount", toString(load(data(msg.amount())))},
+             {"recipient", msg.recipient_address()}
+         }
+        }
+    };
 }
 
 json wasmExecuteSendPayload(const Proto::Message_WasmExecuteContractSend& msg) {
     return {
         {"send",
-         {{"amount", toString(load(data(msg.amount())))},
-          {"contract", msg.recipient_contract_address()},
-          {"msg", msg.msg()}}}};
+         {
+             {"amount", toString(load(data(msg.amount())))},
+             {"contract", msg.recipient_contract_address()},
+             {"msg", msg.msg()}
+         }
+        }
+    };
 }
 
 json wasmTerraExecuteTransferPayload(const Proto::Message_WasmTerraExecuteContractTransfer& msg) {
     return {
         {"transfer",
-         {{"amount", toString(load(data(msg.amount())))},
-          {"recipient", msg.recipient_address()}}}};
+         {
+             {"amount", toString(load(data(msg.amount())))},
+             {"recipient", msg.recipient_address()}
+         }
+        }
+    };
 }
 
 json wasmTerraExecuteSendPayload(const Proto::Message_WasmTerraExecuteContractSend& msg) {
     return {
         {"send",
-         {{"amount", toString(load(data(msg.amount())))},
-          {"contract", msg.recipient_contract_address()},
-          {"msg", msg.msg()}}}};
+         {
+             {"amount", toString(load(data(msg.amount())))},
+             {"contract", msg.recipient_contract_address()},
+             {"msg", msg.msg()}
+         }
+        }
+    };
 }
 
-} // namespace TW::Cosmos::Protobuf
+} // namespace
