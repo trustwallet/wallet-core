@@ -138,16 +138,16 @@ TEST(TWAnySignerNervos, Sign_Native_Simple) {
     checkAnySignerOutput1(output);
 }
 
-// TEST(TWAnySignerNervos, PlanAndSign_Native_Simple) {
-//     auto input = getAnySignerInput1();
-//     Proto::TransactionPlan txPlanProto;
-//     ANY_PLAN(input, txPlanProto, TWCoinTypeNervos);
-//     checkPlan1(txPlanProto);
-//     *input.mutable_plan() = txPlanProto;
-//     Proto::SigningOutput output;
-//     ANY_SIGN(input, TWCoinTypeNervos);
-//     checkAnySignerOutput1(output);
-// }
+TEST(TWAnySignerNervos, PlanAndSign_Native_Simple) {
+    auto input = getAnySignerInput1();
+    Proto::TransactionPlan txPlanProto;
+    ANY_PLAN(input, txPlanProto, TWCoinTypeNervos);
+    checkPlan1(txPlanProto);
+    *input.mutable_plan() = txPlanProto;
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeNervos);
+    checkAnySignerOutput1(output);
+}
 
 TEST(TWAnySignerNervos, Sign_NegativeMissingKey) {
     auto input = getAnySignerInput1();
