@@ -33,8 +33,9 @@ MaybeWorkchain parseWorkchainId(const std::string& string) {
 
 bool Address::isValid(const std::string& string) noexcept {
     auto parsed = parseWorkchainId(string);
-    if (!parsed.has_value())
+    if (!parsed.has_value()) {
         return false;
+    }
 
     auto [workchainId, pos] = *parsed;
 
