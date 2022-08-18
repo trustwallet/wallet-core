@@ -59,7 +59,7 @@ else ()
     target_link_libraries(TrustWalletCore PUBLIC ${PROJECT_NAME}_INTERFACE PRIVATE TrezorCrypto protobuf Boost::boost)
 endif ()
 
-target_link_libraries(TrustWalletCore PUBLIC tw::base)
+target_link_libraries(TrustWalletCore PUBLIC TW::Base)
 
 if (TW_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_enable_coverage(TrustWalletCore)
