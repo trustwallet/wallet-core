@@ -236,7 +236,18 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 mtExp->set_nanos(authGrant.grant().expiration().nanos());
                 any.PackFrom(msgAuthGrant, ProtobufAnyNamespacePrefix);
                 return any;
-    }
+        }
+
+        case Proto::Message::kAuthRevoke: {
+            assert(msg.has_auth_revoke());
+            const auto& authRevoke = msg.auth_revoke();
+            auto msgAuthRevoke = cosmos::authz::v1beta1::MsgRevoke();
+            msgAuthRevoke.set_granter(authRevoke.granter());
+            msgAuthRevoke.set_grantee(authRevoke.grantee());
+            msgAuthRevoke.set_msg_type_url(authRevoke.msg_type_url());
+            any.PackFrom(msgAuthRevoke, ProtobufAnyNamespacePrefix);
+            return any;
+        }
 
         default:
             throw std::invalid_argument(std::string("Message not supported ") + std::to_string(msg.message_oneof_case()));
