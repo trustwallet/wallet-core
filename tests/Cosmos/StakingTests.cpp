@@ -4,18 +4,82 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Coin.h"
-#include "HexCoding.h"
 #include "Base64.h"
-#include "proto/Cosmos.pb.h"
+#include "Coin.h"
 #include "Cosmos/Address.h"
 #include "Cosmos/Signer.h"
+#include "HexCoding.h"
+#include "proto/Cosmos.pb.h"
 #include "../interface/TWTestUtilities.h"
 
 #include <gtest/gtest.h>
 
 using namespace TW;
 using namespace TW::Cosmos;
+
+TEST(CosmosStaking, CompoundingAuthz) {
+    auto input = Proto::SigningInput();
+    input.set_signing_mode(Proto::Protobuf);
+    input.set_account_number(1290826);
+    input.set_chain_id("cosmoshub-4");
+    input.set_memo("");
+    input.set_sequence(5);
+
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_auth_grant();
+    message.set_granter("cosmos13k0q0l7lg2kr32kvt7ly236ppldy8v9dzwh3gd");
+    message.set_grantee("cosmos1fs7lu28hx5m9akm7rp0c2422cn8r2f7gurujhf");
+    auto& auth = *message.mutable_grant()->mutable_authorization();
+    auth.set_type_url("/cosmos.staking.v1beta1.StakeAuthorization");
+    auth.set_value("EjYKNGNvc21vc3ZhbG9wZXIxZ2p0dmx5OWxlbDZ6c2t2d3R2bGc1dmh3cHU5Yzl3YXc3c3h6d3ggAQ==");
+    auto& expiration = *message.mutable_grant()->mutable_expiration();
+    expiration.set_seconds(1692309600);
+
+    auto& fee = *input.mutable_fee();
+    fee.set_gas(96681);
+    auto amountOfFee = fee.add_amounts();
+    amountOfFee->set_denom("uatom");
+    amountOfFee->set_amount("2418");
+
+    auto privateKey = parse_hex("c7764249cdf77f8f1d840fa8af431579e5e41cf1af937e1e23afa22f3f4f0ccc");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(input, TWCoinTypeCosmos);
+    // test doesn't pass yet
+}
+
+TEST(CosmosStaking, RevokeCompoundingAuthz) {
+    // Successfully broadcasted:  https://www.mintscan.io/cosmos/txs/E3218F634BB6A1BE256545EBE38275D5B02D41E88F504A43F97CD9CD2B624D44
+    auto input = Proto::SigningInput();
+    input.set_signing_mode(Proto::Protobuf);
+    input.set_account_number(1290826);
+    input.set_chain_id("cosmoshub-4");
+    input.set_memo("");
+    input.set_sequence(4);
+
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_auth_revoke();
+    message.set_grantee("cosmos1fs7lu28hx5m9akm7rp0c2422cn8r2f7gurujhf");
+    message.set_granter("cosmos13k0q0l7lg2kr32kvt7ly236ppldy8v9dzwh3gd");
+    message.set_msg_type_url("/cosmos.staking.v1beta1.MsgDelegate");
+
+    auto& fee = *input.mutable_fee();
+    fee.set_gas(87735);
+    auto amountOfFee = fee.add_amounts();
+    amountOfFee->set_denom("uatom");
+    amountOfFee->set_amount("2194");
+
+    auto privateKey = parse_hex("c7764249cdf77f8f1d840fa8af431579e5e41cf1af937e1e23afa22f3f4f0ccc");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(input, TWCoinTypeCosmos);
+    auto expected = R"(
+                {
+                    "mode":"BROADCAST_MODE_BLOCK",
+                    "tx_bytes":"CqoBCqcBCh8vY29zbW9zLmF1dGh6LnYxYmV0YTEuTXNnUmV2b2tlEoMBCi1jb3Ntb3MxM2swcTBsN2xnMmtyMzJrdnQ3bHkyMzZwcGxkeTh2OWR6d2gzZ2QSLWNvc21vczFmczdsdTI4aHg1bTlha203cnAwYzI0MjJjbjhyMmY3Z3VydWpoZhojL2Nvc21vcy5zdGFraW5nLnYxYmV0YTEuTXNnRGVsZWdhdGUSZwpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohA/fcQw1hCVUx904t+kCXTiiziaLIY8lyssu1ENfzaN1KEgQKAggBGAQSEwoNCgV1YXRvbRIEMjE5NBC3rQUaQI7K+W7MMBoD6FbFZxRBqs9VTjErztjWTy57+fvrLaTCIZ+eBs7CuaKqfUZdSN8otjubSHVTQID3k9DpPAX0yDo="
+                })"_json;
+    ASSERT_EQ(nlohmann::json::parse(output.serialized()), expected);
+}
 
 TEST(CosmosStaking, Staking) {
     auto input = Proto::SigningInput();
