@@ -13,7 +13,6 @@
 #include <memory>
 
 using namespace TW;
-using namespace TW::Ripple;
 
 bool TWRippleXAddressEqual(struct TWRippleXAddress *_Nonnull lhs, struct TWRippleXAddress *_Nonnull rhs) {
    return lhs->impl == rhs->impl;
@@ -21,13 +20,13 @@ bool TWRippleXAddressEqual(struct TWRippleXAddress *_Nonnull lhs, struct TWRippl
 
 bool TWRippleXAddressIsValidString(TWString *_Nonnull string) {
     auto* s = reinterpret_cast<const std::string*>(string);
-    return XAddress::isValid(*s);
+    return Ripple::XAddress::isValid(*s);
 }
 
 struct TWRippleXAddress *_Nullable TWRippleXAddressCreateWithString(TWString *_Nonnull string) {
     auto* s = reinterpret_cast<const std::string*>(string);
     try {
-        const auto address = XAddress(*s);
+        const auto address = Ripple::XAddress(*s);
         return new TWRippleXAddress{ std::move(address) };
     } catch (...) {
         return nullptr;
@@ -35,7 +34,7 @@ struct TWRippleXAddress *_Nullable TWRippleXAddressCreateWithString(TWString *_N
 }
 
 struct TWRippleXAddress *_Nonnull TWRippleXAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, const uint32_t tag) {
-    return new TWRippleXAddress{ XAddress(publicKey->impl, tag) };
+    return new TWRippleXAddress{ Ripple::XAddress(publicKey->impl, tag) };
 }
 
 void TWRippleXAddressDelete(struct TWRippleXAddress *_Nonnull address) {

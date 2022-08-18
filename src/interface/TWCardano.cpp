@@ -9,14 +9,13 @@
 #include "Cardano/Transaction.h"
 #include "proto/Cardano.pb.h"
 
-using namespace TW::Cardano;
 using namespace TW;
 
 uint64_t TWCardanoMinAdaAmount(TWData *_Nonnull tokenBundle) {
     const Data* bundleData = static_cast<const Data*>(tokenBundle);
-    Proto::TokenBundle bundleProto;
+    TW::Cardano::Proto::TokenBundle bundleProto;
     if (bundleData && bundleProto.ParseFromArray(bundleData->data(), (int)bundleData->size())) {
-        return TokenBundle::fromProto(bundleProto).minAdaAmount();
+        return TW::Cardano::TokenBundle::fromProto(bundleProto).minAdaAmount();
     }
     return 0;
 }

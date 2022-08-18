@@ -15,6 +15,7 @@
 
 #include <vector>
 #include <string>
+#include <set>
 
 namespace TW::Cardano {
 
@@ -31,6 +32,7 @@ public:
 
     static TokenAmount fromProto(const Proto::TokenAmount& proto);
     Proto::TokenAmount toProto() const;
+    /// Key used in TokenBundle
     std::string key() const { return policyId + "_" + assetName; }
 };
 
@@ -47,6 +49,10 @@ public:
     void add(const TokenAmount& ta);
     uint256_t getAmount(const std::string& key) const;
     size_t size() const { return bundle.size(); }
+    /// Get the unique policyIds, can be the same number as the elements, or less (in case a policyId appears more than once, with different asset names).
+    std::unordered_set<std::string> getPolicyIds() const;
+    /// Filter by policyIds
+    std::vector<TokenAmount> getByPolicyId(const std::string& policyId) const;
 
     // The minimum ADA amount needed for an ADA-only UTXO
     static const uint64_t MinUtxoValue;
