@@ -48,6 +48,7 @@ TEST(CosmosProtobuf, SendMsg) {
 }
 
 TEST(CosmosProtobuf, AuthGrant) {
+    // https://www.mintscan.io/cosmos/txs/2C0B5DE0E48FD166FC036F8F662C778F3A95AD270E3CEE24AE39CFE5B2A05A6F
     auto stakeAuthz = cosmos::staking::v1beta1::StakeAuthorization();
     stakeAuthz.set_authorization_type(cosmos::staking::v1beta1::AUTHORIZATION_TYPE_DELEGATE);
     stakeAuthz.mutable_allow_list()->add_address("cosmosvaloper1gjtvly9lel6zskvwtvlg5vhwpu9c9waw7sxzwx");
