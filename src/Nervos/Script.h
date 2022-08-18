@@ -23,7 +23,9 @@ struct Script {
     Data args;
 
     /// Initializes an empty script.
-    Script() = default;
+    Script() {
+        hashType = HashType::Data0;
+    }
 
     /// Copy constructor
     Script(const Script& script)
