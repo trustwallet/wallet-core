@@ -12,7 +12,15 @@
 
 namespace TW::Nervos {
 
-enum DepType { Code = 0, DepGroup = 1 };
+enum DepType {
+    Code = 0,
+    DepGroup = 1
+};
+
+static const char* DepTypeString[] {
+    "code",
+    "dep_group"
+};
 
 /// Nervos cell dep.
 struct CellDep {

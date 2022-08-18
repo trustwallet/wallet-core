@@ -14,19 +14,17 @@ using namespace TW::Nervos;
 CellDep::CellDep(const Proto::CellDep& cellDep)
     : outPoint(cellDep.out_point()) {
     auto&& depTypeString = cellDep.dep_type();
-    auto&& depTypeRegistry = Constants::gDepTypeRegistry;
-    std::for_each(depTypeRegistry.begin(), depTypeRegistry.end(),
-                  [&](const std::pair<DepType, std::string>& p) {
-                      if (p.second == depTypeString) {
-                          depType = p.first;
-                      }
-                  });
+    for (int i = 0; i < sizeof(DepTypeString) / sizeof(DepTypeString[0]); i++) {
+        if (depTypeString == DepTypeString[i]) {
+            depType = (DepType)i;
+        }
+    }
 }
 
 Proto::CellDep CellDep::proto() const {
     auto cellDep = Proto::CellDep();
     *cellDep.mutable_out_point() = outPoint.proto();
-    cellDep.set_dep_type(Constants::gDepTypeRegistry.at(depType));
+    cellDep.set_dep_type(DepTypeString[depType]);
     return cellDep;
 }
 
@@ -36,5 +34,5 @@ void CellDep::encode(Data& data) const {
 }
 
 nlohmann::json CellDep::json() const {
-    return nlohmann::json{{"out_point", outPoint.json()}, {"dep_type", Constants::gDepTypeRegistry.at(depType)}};
+    return nlohmann::json{{"out_point", outPoint.json()}, {"dep_type", DepTypeString[depType]}};
 }

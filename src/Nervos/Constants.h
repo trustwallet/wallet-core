@@ -50,10 +50,4 @@ static const CellDep gDAOCellDep = CellDep(
     OutPoint(parse_hex("e2fb199810d49a4d8beec56718ba2593b665db9d52299a0f9e6e75416d73ff5c"), 2),
     DepType::Code);
 
-static const std::unordered_map<HashType, std::string> gHashTypeRegistry{
-    {HashType::Data0, "data"}, {HashType::Type1, "type"}, {HashType::Data1, "data1"}};
-
-static const std::unordered_map<DepType, std::string> gDepTypeRegistry{{DepType::Code, "code"},
-                                                                       {DepType::DepGroup, "dep_group"}};
-
 } // namespace TW::Nervos::Constants

@@ -46,7 +46,7 @@ nlohmann::json Script::json() const {
         return nullptr;
     } else {
         return nlohmann::json{{"code_hash", hexEncoded(codeHash)},
-                              {"hash_type", Constants::gHashTypeRegistry.at(hashType)},
+                              {"hash_type", HashTypeString[hashType]},
                               {"args", hexEncoded(args)}};
     }
 }

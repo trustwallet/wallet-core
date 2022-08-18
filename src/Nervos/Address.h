@@ -19,6 +19,12 @@ enum HashType {
     Data1 = 2
 };
 
+static const char* HashTypeString[] {
+    "data",
+    "type",
+    "data1"
+};
+
 enum AddressType {
     FullVersion = 0,  // full version identifies the hash_type
     HashIdx = 1,      // short version for locks with popular codehash, deprecated
