@@ -90,30 +90,28 @@ struct LNInvoice InvoiceDecoder::decodeInvoice(const std::string& invstr) {
         }
         const auto tagValue5 = TW::subData(data5, idx, tagLen);
 
-        Data convPad;
-        Bech32::convertBits<5, 8, true>(convPad, tagValue5);
-        Data convUnpad;
-        Bech32::convertBits<5, 8, false>(convUnpad, tagValue5);
+        Data conv;
+        Bech32::convertBits<5, 8, false>(conv, tagValue5);
 
-        //std::cout << "TAG " << (int)tag << " LEN " << (int)tagLen << " " << (int)tagValue5.size() << " VAL " << hex(tagValue5) << "  " << (int)convPad.size() << " " << (int)convUnpad.size() << " " << hex(convPad) << "\n";
+        //std::cout << "TAG " << (int)tag << " LEN " << (int)tagLen << " " << (int)tagValue5.size() << " VAL " << hex(tagValue5) << "  " << (int)conv.size() << " " << hex(conv) << "\n";
 
         switch (tag) {
             case 1: // p payment hash
                 if (tagLen == 52) {
-                    inv.paymentHash = convUnpad;
+                    inv.paymentHash = conv;
                 }
                 break;
 
             case 3: // r routing
                 {
                     size_t cidx = 0;
-                    while (cidx < convUnpad.size()) {
+                    while (cidx < conv.size()) {
                         RoutingInfo ri;
-                        ri.pubkey = TW::subData(convUnpad, cidx, 33);
-                        ri.shortChannelId = TW::subData(convUnpad, cidx + 33, 8);
-                        ri.unparsedFeeBaseMsat = TW::subData(convUnpad, cidx + 33 + 8, 4);
-                        ri.unparsedFeePPM = TW::subData(convUnpad, cidx + 33 + 8 + 4, 4); // TODO
-                        ri.unparsedCltvExpiryDelta = TW::subData(convUnpad, cidx + 33 + 8 + 4 + 4, 2); // TODO
+                        ri.pubkey = TW::subData(conv, cidx, 33);
+                        ri.shortChannelId = TW::subData(conv, cidx + 33, 8);
+                        ri.unparsedFeeBaseMsat = TW::subData(conv, cidx + 33 + 8, 4);
+                        ri.unparsedFeePPM = TW::subData(conv, cidx + 33 + 8 + 4, 4); // TODO
+                        ri.unparsedCltvExpiryDelta = TW::subData(conv, cidx + 33 + 8 + 4 + 4, 2); // TODO
                         cidx += 51;
                         inv.routing.push_back(ri);
                     }
@@ -121,26 +119,26 @@ struct LNInvoice InvoiceDecoder::decodeInvoice(const std::string& invstr) {
                 break;
 
             case 5: // 9 features
-                inv.unparsedFeatures = convUnpad;
+                inv.unparsedFeatures = conv;
                 break;
 
             case 6: // x expiry
-                inv.unparsedExpiry = convUnpad;
+                inv.unparsedExpiry = conv;
                 break;
 
             case 13: // d description
-                inv.description = std::string(std::string(convUnpad.begin(), convUnpad.end()).c_str());
+                inv.description = std::string(std::string(conv.begin(), conv.end()).c_str());
                 break;
 
             case 16: // s secret
                 if (tagLen == 52) {
-                    inv.secret = convUnpad;
+                    inv.secret = conv;
                 }
                 break;
 
             case 19: // n payee nodeID
                 if (tagLen == 53) {
-                    inv.nodeId = convUnpad;
+                    inv.nodeId = conv;
                 }
                 break;
 
@@ -148,37 +146,17 @@ struct LNInvoice InvoiceDecoder::decodeInvoice(const std::string& invstr) {
                 if (tagValue5.size() == 1) {
                     inv.minFinalCltvExpiry = tagValue5[0];
                 } else if (tagValue5.size() == 2) {
-                    inv.minFinalCltvExpiry = decode16BE(convPad.data()) >> 6;
+                    inv.minFinalCltvExpiry = decode16BE(conv.data()) >> 6;
                 }
                 //std::cout << "minFinalCltvExpiry " << inv.minFinalCltvExpiry << "\n";
                 break;
 
             default:
-                std::cout << "TAG? " << (int)tag << " LEN " << (int)tagLen << " " << (int)tagValue5.size() << "\n";
+                //std::cout << "TAG? " << (int)tag << " LEN " << (int)tagLen << " " << (int)tagValue5.size() << "\n";
                 continue;
         }
         idx += tagLen;
     }
-
-    /**
-     * r (3): data_length variable. One or more entries containing extra routing information for a private route; there may be more than one r field
-        pubkey (264 bits) 33 bytes
-        short_channel_id (64 bits) 8 bytes
-        fee_base_msat (32 bits, big-endian) 4 bytes
-        fee_proportional_millionths (32 bits, big-endian) 4 bytes
-        cltv_expiry_delta (16 bits, big-endian) 2 bytes
-        */
-
-    /*
-    std::cout << "INVOICE \n";
-    std::cout << "network " << (int)inv.network << "\n";
-    std::cout << "amnt    " << inv.unparsedAmnt << "\n";
-    std::cout << "timest  " << inv.timestamp << "\n";
-    std::cout << "nodeId  " << hex(inv.nodeId) << "\n";
-    std::cout << "payHash " << hex(inv.paymentHash) << "\n";
-    std::cout << "secret  " << hex(inv.secret) << "\n";
-    std::cout << "desc    " << inv.description << "\n";
-    */
 
     return inv;
 }
@@ -201,13 +179,9 @@ void appendTag5(Data& data5, uint8_t tag, const Data& value5) {
     append(data5, value5);
 }
 
-void appendTag(Data& data5, uint8_t tag, const Data& value, bool pad = true) {
+void appendTag(Data& data5, uint8_t tag, const Data& value) {
     Data value5;
-    if (pad) {
-        Bech32::convertBits<8, 5, true>(value5, value);
-    } else {
-        Bech32::convertBits<8, 5, false>(value5, value);
-    }
+    Bech32::convertBits<8, 5, true>(value5, value);
     appendTag5(data5, tag, value5);
 }
 
