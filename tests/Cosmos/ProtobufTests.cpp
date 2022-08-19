@@ -8,7 +8,6 @@
 #include "Cosmos/Address.h"
 #include "Cosmos/Protobuf/authz_tx.pb.h"
 #include "Cosmos/Protobuf/bank_tx.pb.h"
-#include "Cosmos/Protobuf/staking_authz.pb.h"
 #include "Cosmos/Protobuf/tx.pb.h"
 #include "Data.h"
 #include "HexCoding.h"
