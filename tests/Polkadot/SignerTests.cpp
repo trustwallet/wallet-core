@@ -18,7 +18,7 @@
 #include <gtest/gtest.h>
 
 
-namespace TW::Polkadot {
+namespace TW::Polkadot::tests {
     auto privateKey = PrivateKey(parse_hex("0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115"));
     auto privateKeyIOS = PrivateKey(parse_hex("37932b086586a6675e66e562fe68bd3eeea4177d066619c602fe3efc290ada62"));
     auto privateKeyThrow2 = PrivateKey(parse_hex("70a794d4f1019c3ce002f33062f45029c4f930a56b3d20ec477f7668c6bbc37f"));
@@ -336,4 +336,4 @@ TEST(PolkadotSigner, SignChillAndUnbond) {
     ASSERT_EQ(hex(output.encoded()), "d10184008361bd08ddca5fda28b5e2aa84dc2621de566e23e089e555a42194c3eaf2da7900c891ba102db672e378945d74cf7f399226a76b43cab502436971599255451597fc2599902e4b62c7ce85ecc3f653c693fef3232be620984b5bb5bcecbbd7b209d50318001a02080706070207004d446617");
 }
 
-} // namespace
+} // namespace TW::Polkadot::tests
