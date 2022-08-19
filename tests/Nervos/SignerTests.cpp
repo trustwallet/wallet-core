@@ -108,9 +108,9 @@ void checkOutput1(Transaction& tx) {
     ASSERT_EQ(tx.outputs[1].type.args.size(), 0ul);
     ASSERT_EQ(tx.outputsData[1].size(), 0ul);
 
-    ASSERT_EQ(tx.witnesses.size(), 1ul);
+    ASSERT_EQ(tx.serializedWitnesses.size(), 1ul);
     ASSERT_EQ(
-        hex(tx.witnesses[0]),
+        hex(tx.serializedWitnesses[0]),
         "55000000100000005500000055000000410000002a9ef2ad7829e5ea0c7a32735d29a0cb2ec20434f6fd5bf6e2"
         "9cda56b28e08140156191cbbf80313d3c9cae4b74607acce7b28eb21d52ef058ed8491cdde70b700");
 }
@@ -269,9 +269,9 @@ TEST(NervosSigner, Sign_Native_SendMaximum) {
     ASSERT_EQ(tx.outputs[0].type.args.size(), 0ul);
     ASSERT_EQ(tx.outputsData[0].size(), 0ul);
 
-    ASSERT_EQ(tx.witnesses.size(), 1ul);
+    ASSERT_EQ(tx.serializedWitnesses.size(), 1ul);
     ASSERT_EQ(
-        hex(tx.witnesses[0]),
+        hex(tx.serializedWitnesses[0]),
         "5500000010000000550000005500000041000000daf6e65e5a1fe447a4feb7199886b6635c44738e04ea594576"
         "08fb1c447e068026529d57b02014ddc144622f886153df426853f22083f8891461eeb50b5ce97d01");
 }
@@ -418,16 +418,16 @@ TEST(NervosSigner, Sign_SUDT_Simple) {
     ASSERT_EQ(tx.outputs[2].type.args.size(), 0ul);
     ASSERT_EQ(tx.outputsData[2].size(), 0ul);
 
-    ASSERT_EQ(tx.witnesses.size(), 3ul);
+    ASSERT_EQ(tx.serializedWitnesses.size(), 3ul);
     ASSERT_EQ(
-        hex(tx.witnesses[0]),
+        hex(tx.serializedWitnesses[0]),
         "550000001000000055000000550000004100000035d55fd46316f248552eb6af7ac9589c9ec533c4e5b71896b0"
         "5cdf697e2d18551ceff54d7b860ebb2f4dd5f6c5bb4af1da15460a7621f5aa4bc7d5585a0504de00");
     ASSERT_EQ(
-        hex(tx.witnesses[1]),
+        hex(tx.serializedWitnesses[1]),
         "5500000010000000550000005500000041000000eaa4bf69126d3016ab786610f2f0668b2ef353915d623d0b01"
         "84fc25cec3dcad6dc08a1504a2d7dd9faced17b041d79d4c21f1977e57859713360f5e3609583501");
-    ASSERT_EQ(hex(tx.witnesses[2]), "");
+    ASSERT_EQ(hex(tx.serializedWitnesses[2]), "");
 }
 
 Proto::SigningInput getInput4() {
@@ -540,12 +540,12 @@ TEST(NervosSigner, Sign_SUDT_SendMaximum) {
     ASSERT_EQ(tx.outputs[1].type.args.size(), 0ul);
     ASSERT_EQ(tx.outputsData[1].size(), 0ul);
 
-    ASSERT_EQ(tx.witnesses.size(), 2ul);
+    ASSERT_EQ(tx.serializedWitnesses.size(), 2ul);
     ASSERT_EQ(
-        hex(tx.witnesses[0]),
+        hex(tx.serializedWitnesses[0]),
         "5500000010000000550000005500000041000000da7c908bdf2cb091b7ff9bb682b762d1323c5e1ecf9b2ce0eb"
         "edb9d55f6625c52ab14910ae401833112f2ea516ab11bc9ef691c3dff7886e3238c9348c3d73a701");
-    ASSERT_EQ(hex(tx.witnesses[1]), "");
+    ASSERT_EQ(hex(tx.serializedWitnesses[1]), "");
 }
 
 Proto::SigningInput getInput5() {
@@ -653,13 +653,13 @@ TEST(NervosSigner, Sign_DAO_Deposit) {
     ASSERT_EQ(tx.outputs[1].type.args.size(), 0ul);
     ASSERT_EQ(tx.outputsData[1].size(), 0ul);
 
-    ASSERT_EQ(tx.witnesses.size(), 2ul);
+    ASSERT_EQ(tx.serializedWitnesses.size(), 2ul);
     ASSERT_EQ(
-        hex(tx.witnesses[0]),
+        hex(tx.serializedWitnesses[0]),
         "5500000010000000550000005500000041000000305d09c7de3f34a4d53bc4e0031ee59c95b9abc4fc3ff5548e"
         "1a17ca726c069a232012c9c4be6ec4d4ffbe88613ca5e686e3e4b7d0b9bbd7038003e23ffdcdd601");
     ASSERT_EQ(
-        hex(tx.witnesses[1]),
+        hex(tx.serializedWitnesses[1]),
         "55000000100000005500000055000000410000007c514c77482dd1e1086f41a6d17364c9b5ed16364d61df6f7f"
         "d8540f8bf7c131275c877943786b1b72fbf4f9d817ee5dd554a689808b7919543c691b5068e5be01");
 }
@@ -789,12 +789,12 @@ TEST(NervosSigner, Sign_DAO_Withdraw_Phase1) {
     ASSERT_EQ(tx.outputs[1].type.args.size(), 0ul);
     ASSERT_EQ(tx.outputsData[1].size(), 0ul);
 
-    ASSERT_EQ(tx.witnesses.size(), 2ul);
+    ASSERT_EQ(tx.serializedWitnesses.size(), 2ul);
     ASSERT_EQ(
-        hex(tx.witnesses[0]),
+        hex(tx.serializedWitnesses[0]),
         "5500000010000000550000005500000041000000d5131c1a6b8eca11e2c280b72c5db09ea00bb788fd3262eace"
         "d861c39db2aad04a36f9d174b6f167a9c98b85d2bccf537a163c44459d23467dfa86408f48dd5f01");
-    ASSERT_EQ(tx.witnesses[1].size(), 0ul);
+    ASSERT_EQ(tx.serializedWitnesses[1].size(), 0ul);
 }
 
 Proto::SigningInput getInput7() {
@@ -921,8 +921,8 @@ TEST(NervosSigner, Sign_DAO_Withdraw_Phase2) {
     ASSERT_EQ(tx.outputs[0].type.args.size(), 0ul);
     ASSERT_EQ(tx.outputsData[0].size(), 0ul);
 
-    ASSERT_EQ(tx.witnesses.size(), 1ul);
-    ASSERT_EQ(hex(tx.witnesses[0]),
+    ASSERT_EQ(tx.serializedWitnesses.size(), 1ul);
+    ASSERT_EQ(hex(tx.serializedWitnesses[0]),
               "6100000010000000550000006100000041000000743f86c5557f4e2d3327f4d17e7bad27209b29c1e9cd"
               "bab42ab03f7094af917b4b203ddd7f2e87102e09ae579f2fe7f6adb7900b7386b58c1183ba0011b7c421"
               "00080000000000000000000000");

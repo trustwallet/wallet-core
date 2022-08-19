@@ -34,7 +34,7 @@ enum AddressType {
 
 class Address {
 public:
-    const char* hrp;
+    const char* _hrp;
     AddressType addressType;
     TW::byte codeHashIndex;
     Data codeHash;

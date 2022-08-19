@@ -115,8 +115,8 @@ nlohmann::json Transaction::json() const {
     }
     json["outputs_data"] = outputsDataJSON;
     auto witnessesJSON = nlohmann::json::array();
-    for (auto&& witness : witnesses) {
-        witnessesJSON.push_back(hexEncoded(witness));
+    for (auto&& serializedWitness : serializedWitnesses) {
+        witnessesJSON.push_back(hexEncoded(serializedWitness));
     }
     json["witnesses"] = witnessesJSON;
     return json;
@@ -159,7 +159,7 @@ void Transaction::formGroups() {
         }
         m_groupNumToInputIndices[groupNum].emplace_back(index);
         m_groupNumToWitnesses[groupNum].emplace_back(Data(), cell.inputType, cell.outputType);
-        witnesses.emplace_back();
+        serializedWitnesses.emplace_back();
     }
 }
 
@@ -184,7 +184,7 @@ Common::Proto::SigningError Transaction::signGroups(const std::vector<PrivateKey
         if (result != Common::Proto::OK) {
             return result;
         }
-        m_groupNumToWitnesses[groupNum][0].encode(witnesses[m_groupNumToInputIndices[groupNum][0]]);
+        m_groupNumToWitnesses[groupNum][0].encode(serializedWitnesses[m_groupNumToInputIndices[groupNum][0]]);
     }
     return Common::Proto::OK;
 }

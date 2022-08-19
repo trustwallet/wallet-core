@@ -50,7 +50,7 @@ public:
     std::vector<Data> outputsData;
 
     // List of serialized witnesses
-    std::vector<Data> witnesses;
+    std::vector<Data> serializedWitnesses;
 
     // List of cells selected for this transaction
     Cells selectedCells;

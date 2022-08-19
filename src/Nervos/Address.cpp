@@ -33,7 +33,7 @@ Address::Address(const std::string& string, const char* hrp) {
 }
 
 bool Address::decode(const std::string& string, const char* hrp) noexcept {
-    this->hrp = hrp;
+    _hrp = hrp;
     auto decoded = Bech32::decode(string);
     auto&& [decodedHrp, decodedData, decodedVariant] = decoded;
     if (decodedHrp.compare(hrp)) {
@@ -114,7 +114,7 @@ bool Address::decode(const std::string& string, const char* hrp) noexcept {
 
 Address::Address(const PublicKey& publicKey) : Address(publicKey, HRP_NERVOS) {}
 
-Address::Address(const PublicKey& publicKey, const char* hrp) : hrp(hrp) {
+Address::Address(const PublicKey& publicKey, const char* hrp) : _hrp(hrp) {
     if (publicKey.type != TWPublicKeyTypeSECP256k1) {
         throw std::invalid_argument("Nervos::Address needs a SECP256k1 public key.");
     }
@@ -160,7 +160,7 @@ std::string Address::string() const {
     if (!Bech32::convertBits<8, 5, true>(payload, data)) {
         return "";
     }
-    return Bech32::encode(hrp, payload, checksumVariant);
+    return Bech32::encode(_hrp, payload, checksumVariant);
 }
 
 } // namespace TW::Nervos
