@@ -14,7 +14,7 @@ using namespace TW::Nervos;
 CellDep::CellDep(const Proto::CellDep& cellDep)
     : outPoint(cellDep.out_point()) {
     auto&& depTypeString = cellDep.dep_type();
-    for (int i = 0; i < sizeof(DepTypeString) / sizeof(DepTypeString[0]); i++) {
+    for (int i = 0; i < (int)(sizeof(DepTypeString) / sizeof(DepTypeString[0])); i++) {
         if (depTypeString == DepTypeString[i]) {
             depType = (DepType)i;
         }

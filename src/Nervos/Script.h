@@ -79,7 +79,8 @@ struct Script {
         auto&& scriptCodeHash = script.code_hash();
         codeHash.insert(codeHash.end(), scriptCodeHash.begin(), scriptCodeHash.end());
         auto&& hashTypeString = script.hash_type();
-        for (int i = 0; i < sizeof(HashTypeString) / sizeof(HashTypeString[0]); i++) {
+        hashType = HashType::Data0;
+        for (int i = 0; i < (int)(sizeof(HashTypeString) / sizeof(HashTypeString[0])); i++) {
             if (hashTypeString == HashTypeString[i]) {
                 hashType = (HashType)i;
             }
