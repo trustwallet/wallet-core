@@ -1,8 +1,5 @@
 syntax = "proto3";
 
-import "google/protobuf/any.proto";
-import "google/protobuf/timestamp.proto";
-
 package TW.Cosmos.Proto;
 option java_package = "wallet.core.jni.proto";
 
@@ -206,16 +203,6 @@ message Message {
         bytes body_bytes = 1;
         // The prepared serialized AuthInfo
         bytes auth_info_bytes = 2; 
-    }
-
-    // Grant gives permissions to execute
-    // the provide method with expiration time.
-    message Grant {
-        google.protobuf.Any authorization = 1;
-        // time when the grant will expire and will be pruned. If null, then the grant
-        // doesn't have a time expiration (other conditions  in `authorization`
-        // may apply to invalidate the grant)
-        google.protobuf.Timestamp expiration = 2;
     }
 
     // StakeAuthorization defines authorization for delegate/undelegate/redelegate.
