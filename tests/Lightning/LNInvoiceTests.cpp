@@ -119,19 +119,7 @@ TEST(LNInvoice, AddRouting) {
     EXPECT_EQ(lnNorouting.length(), 316ul);
 
     auto inv = InvoiceDecoder::decodeInvoice(lnNorouting);
-    {
-        EXPECT_EQ(inv.network, Mainnet);
-        EXPECT_EQ(inv.unparsedAmnt, "10010n");
-        EXPECT_EQ(hex(inv.signature), "22f44d71ec328fc126c58b01ae8078e3ea7c91e41d31ed670fca0630df54f8e95145176390bb05429bd84159624dcece9bf825f3e7133d237b649dec36dba4c701");
-        EXPECT_EQ(inv.timestamp, 1650015715ull);
-        EXPECT_EQ(hex(inv.nodeId), "030245e125869603614f619ea3fc8921144de191fe9348c1aafc69fc87a8384e9f");
-        EXPECT_EQ(hex(inv.paymentHash), "3b7e9c8f71c0e3f739d2941734de8a2c2c5adb28beca4258b7cf3909aa313c27");
-        EXPECT_EQ(hex(inv.secret), "e19d1247614a8d62694018ebda5623f8dddd358d6c22fa6f10759eb8d3c7e60a");
-        EXPECT_EQ(inv.routing.size(), 0ul); // no routing hint
-        EXPECT_EQ(hex(inv.unparsedFeatures), "0820");
-        EXPECT_EQ(hex(inv.unparsedExpiry), "1518");
-        EXPECT_EQ(inv.minFinalCltvExpiry, 72);
-    }
+    EXPECT_EQ(hex(inv.nodeId), "030245e125869603614f619ea3fc8921144de191fe9348c1aafc69fc87a8384e9f");
 
     // add routing, and remove nodeId
     inv.nodeId = Data();
