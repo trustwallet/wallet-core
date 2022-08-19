@@ -47,31 +47,6 @@ TEST(CosmosProtobuf, SendMsg) {
     assertJSONEqual(json, R"({"messages":[{"@type":"type.googleapis.com/cosmos.bank.v1beta1.MsgSend","amount":[{"amount":"1","denom":"muon"}],"fromAddress":"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02","toAddress":"cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573"}]})");
 }
 
-TEST(CosmosProtobuf, AuthGrant) {
-    // https://www.mintscan.io/cosmos/txs/2C0B5DE0E48FD166FC036F8F662C778F3A95AD270E3CEE24AE39CFE5B2A05A6F
-    auto stakeAuthz = cosmos::staking::v1beta1::StakeAuthorization();
-
-    stakeAuthz.set_authorization_type(cosmos::staking::v1beta1::AUTHORIZATION_TYPE_DELEGATE);
-    stakeAuthz.mutable_allow_list()->add_address("cosmosvaloper1gjtvly9lel6zskvwtvlg5vhwpu9c9waw7sxzwx");
-    auto msgGrant = cosmos::authz::v1beta1::MsgGrant();
-    msgGrant.set_granter("cosmos1tf0aw7dq4w3vppfqdglefs6wzyz5um2sf3x6jc");
-    msgGrant.set_grantee("cosmos1fs7lu28hx5m9akm7rp0c2422cn8r2f7gurujhf");
-    msgGrant.mutable_grant()->mutable_expiration()->set_seconds(1691445600);
-    msgGrant.mutable_grant()->mutable_authorization()->set_type_url("/cosmos.staking.v1beta1.StakeAuthorization");
-    msgGrant.mutable_grant()->mutable_authorization()->PackFrom(stakeAuthz);
-    auto txBody = cosmos::TxBody();
-    txBody.add_messages()->PackFrom(msgGrant);
-    txBody.set_memo("");
-    txBody.set_timeout_height(0);
-    const auto serialized = data(txBody.SerializeAsString());
-    ASSERT_EQ(Base64::encode(serialized), "CpwCCjF0eXBlLmdvb2dsZWFwaXMuY29tL2Nvc21vcy5hdXRoei52MWJldGExLk1zZ0dyYW50EuYBCi1jb3Ntb3MxdGYwYXc3ZHE0dzN2cHBmcWRnbGVmczZ3enl6NXVtMnNmM3g2amMSLWNvc21vczFmczdsdTI4aHg1bTlha203cnAwYzI0MjJjbjhyMmY3Z3VydWpoZhqFAQp7Cj10eXBlLmdvb2dsZWFwaXMuY29tL2Nvc21vcy5zdGFraW5nLnYxYmV0YTEuU3Rha2VBdXRob3JpemF0aW9uEjoSNgo0Y29zbW9zdmFsb3BlcjFnanR2bHk5bGVsNnpza3Z3dHZsZzV2aHdwdTljOXdhdzdzeHp3eCABEgYI4NLFpgY=");
-    std::string json;
-    google::protobuf::util::MessageToJsonString(txBody, &json);
-    const auto expectedJson = R"({"messages":[{"@type":"type.googleapis.com/cosmos.authz.v1beta1.MsgGrant","granter":"cosmos1tf0aw7dq4w3vppfqdglefs6wzyz5um2sf3x6jc","grantee":"cosmos1fs7lu28hx5m9akm7rp0c2422cn8r2f7gurujhf","grant":{"authorization":{"@type":"type.googleapis.com/cosmos.staking.v1beta1.StakeAuthorization","allowList":{"address":["cosmosvaloper1gjtvly9lel6zskvwtvlg5vhwpu9c9waw7sxzwx"]},"authorizationType":"AUTHORIZATION_TYPE_DELEGATE"},"expiration":"2023-08-07T22:00:00Z"}}]})"_json;
-    nlohmann::json parsed_json = nlohmann::json::parse(json);
-    ASSERT_EQ(expectedJson, parsed_json);
-}
-
 TEST(CosmosProtobuf, DeterministicSerialization_Article) {
     // https://github.com/cosmos/cosmos-sdk/blob/master/docs/architecture/adr-027-deterministic-protobuf-serialization.md
     auto article = blog::Article();

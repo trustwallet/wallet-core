@@ -229,11 +229,10 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 msgAuthGrant.set_grantee(authGrant.grantee());
                 msgAuthGrant.set_granter(authGrant.granter());
                 auto* mtAuth = msgAuthGrant.mutable_grant()->mutable_authorization();
-                mtAuth->set_value(authGrant.grant().authorization().value());
-                mtAuth->set_type_url(authGrant.grant().authorization().type_url());
+                mtAuth->PackFrom(authGrant.grant_stake(), ProtobufAnyNamespacePrefix);
+                mtAuth->set_type_url("/cosmos.staking.v1beta1.StakeAuthorization");
                 auto* mtExp = msgAuthGrant.mutable_grant()->mutable_expiration();
-                mtExp->set_seconds(authGrant.grant().expiration().seconds());
-                mtExp->set_nanos(authGrant.grant().expiration().nanos());
+                mtExp->set_seconds(authGrant.expiration());
                 any.PackFrom(msgAuthGrant, ProtobufAnyNamespacePrefix);
                 return any;
         }
