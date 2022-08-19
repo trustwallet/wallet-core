@@ -229,7 +229,14 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 msgAuthGrant.set_grantee(authGrant.grantee());
                 msgAuthGrant.set_granter(authGrant.granter());
                 auto* mtAuth = msgAuthGrant.mutable_grant()->mutable_authorization();
-                mtAuth->PackFrom(authGrant.grant_stake(), ProtobufAnyNamespacePrefix);
+                // There is multiple grant possibilities, but we add support staking/compounding only for now.
+                switch (authGrant.grant_type_case()) {
+                case Proto::Message_AuthGrant::kGrantStake:
+                    mtAuth->PackFrom(authGrant.grant_stake(), ProtobufAnyNamespacePrefix);
+                    break;
+                case Proto::Message_AuthGrant::GRANT_TYPE_NOT_SET:
+                    break;
+                }
                 mtAuth->set_type_url(authGrant.type_url());
                 auto* mtExp = msgAuthGrant.mutable_grant()->mutable_expiration();
                 mtExp->set_seconds(authGrant.expiration());
