@@ -118,8 +118,8 @@ std::string Bech32::encode(const std::string& hrp, const Data& values, ChecksumV
 }
 
 /** Decode a Bech32 string. */
-std::tuple<std::string, Data, ChecksumVariant> Bech32::decode(const std::string& str) {
-    if (str.length() > 120 || str.length() < 2) {
+std::tuple<std::string, Data, ChecksumVariant> Bech32::decode(const std::string& str, size_t maxLength) {
+    if (str.length() > maxLength || str.length() < 2) {
         // too long or too short
         return std::make_tuple(std::string(), Data(), None);
     }

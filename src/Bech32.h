@@ -34,7 +34,7 @@ std::string encode(const std::string& hrp, const Data& values, ChecksumVariant v
 /// - data, or a pair or
 /// - ChecksumVariant used
 /// or empty values on failure.
-std::tuple<std::string, Data, ChecksumVariant> decode(const std::string& str);
+std::tuple<std::string, Data, ChecksumVariant> decode(const std::string& str, size_t maxLength = 120);
 
 /// Converts from one power-of-2 number base to another.
 template <int frombits, int tobits, bool pad>
@@ -52,8 +52,9 @@ inline bool convertBits(Data& out, const Data& in) {
         }
     }
     if (pad) {
-        if (bits)
+        if (bits > 0) {
             out.push_back((acc << (tobits - bits)) & maxv);
+        }
     } else if (bits >= frombits || ((acc << (tobits - bits)) & maxv)) {
         return false;
     }
