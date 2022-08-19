@@ -230,7 +230,7 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 msgAuthGrant.set_granter(authGrant.granter());
                 auto* mtAuth = msgAuthGrant.mutable_grant()->mutable_authorization();
                 mtAuth->PackFrom(authGrant.grant_stake(), ProtobufAnyNamespacePrefix);
-                mtAuth->set_type_url("/cosmos.staking.v1beta1.StakeAuthorization");
+                mtAuth->set_type_url(authGrant.type_url());
                 auto* mtExp = msgAuthGrant.mutable_grant()->mutable_expiration();
                 mtExp->set_seconds(authGrant.expiration());
                 any.PackFrom(msgAuthGrant, ProtobufAnyNamespacePrefix);

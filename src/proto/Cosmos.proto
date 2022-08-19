@@ -264,6 +264,7 @@ message Message {
             StakeAuthorization grant_stake = 3;
         }
         int64 expiration = 4;
+        string type_url = 5;
     }
 
     // cosmos-sdk/MsgRevoke

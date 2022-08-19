@@ -30,6 +30,7 @@ TEST(CosmosStaking, CompoundingAuthz) {
     auto& message = *msg->mutable_auth_grant();
     message.set_granter("cosmos13k0q0l7lg2kr32kvt7ly236ppldy8v9dzwh3gd");
     message.set_grantee("cosmos1fs7lu28hx5m9akm7rp0c2422cn8r2f7gurujhf");
+    message.set_type_url("/cosmos.staking.v1beta1.StakeAuthorization");
     auto& grant_stake = *message.mutable_grant_stake();
     grant_stake.mutable_allow_list()->add_address("cosmosvaloper1gjtvly9lel6zskvwtvlg5vhwpu9c9waw7sxzwx");
     grant_stake.set_authorization_type(TW::Cosmos::Proto::Message_AuthorizationType_AUTHORIZATION_TYPE_DELEGATE);
