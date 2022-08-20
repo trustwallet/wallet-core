@@ -6,7 +6,7 @@ if (localProps.exists()) {
     properties.load(localProps.newDataInputStream())
     println "Authenticating user: " + properties.getProperty("gpr.user")
 } else {
-    println "local.properties not found, please create it and set gpr.user and gpr.key (Create a read only token at https://github.com/settings/tokens)\n" +
+    println "local.properties not found, please create it next to build.gradle and set gpr.user and gpr.key (Create a GitHub package read only + non expiration token at https://github.com/settings/tokens)\n" +
             "Or set GITHUB_USER and GITHUB_TOKEN environment variables"
 }
 
