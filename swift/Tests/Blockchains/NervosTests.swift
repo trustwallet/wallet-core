@@ -28,6 +28,14 @@ class NervosTests: XCTestCase {
 
     func testSign() throws {
 
+        let string = "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqwyk5x9erg8furras980hksatlslfaktks7epf25"
+        let address = NervosAddress(string: string)!
+        let lockScript = NervosScript.with {
+            $0.codeHash = address.codeHash
+            $0.hashType = address.hashType
+            $0.args = address.args
+        }
+
         let input = NervosSigningInput.with {
             $0.nativeTransfer = NervosNativeTransfer.with {
                 $0.toAddress = "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdtyq04tvp02wectaumxn0664yw2jd53lqk4mxg3"
@@ -42,11 +50,7 @@ class NervosTests: XCTestCase {
                         $0.txHash = Data(hexString: "71caea2d3ac9e3ea899643e3e67dd11eb587e7fe0d8c6e67255d0959fa0a1fa3")!
                         $0.index = 1
                     }
-                    $0.lock = NervosScript.with {
-                        $0.codeHash = Data(hexString: "9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8")!
-                        $0.hashType = "type"
-                        $0.args = Data(hexString: "c4b50c5c8d074f063ec0a77ded0eaff0fa7b65da")!
-                    }
+                    $0.lock = lockScript
                 },
                 NervosCell.with {
                     $0.capacity = 20000000000
@@ -54,11 +58,7 @@ class NervosTests: XCTestCase {
                         $0.txHash = Data(hexString: "71caea2d3ac9e3ea899643e3e67dd11eb587e7fe0d8c6e67255d0959fa0a1fa3")!
                         $0.index = 0
                     }
-                    $0.lock = NervosScript.with {
-                        $0.codeHash = Data(hexString: "9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8")!
-                        $0.hashType = "type"
-                        $0.args = Data(hexString: "c4b50c5c8d074f063ec0a77ded0eaff0fa7b65da")!
-                    }
+                    $0.lock = lockScript
                 }
             ]
             $0.privateKey = [

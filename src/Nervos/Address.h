@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <TrustWalletCore/TWHRP.h>
+
 #include "../Data.h"
 #include "../PublicKey.h"
 
@@ -46,15 +48,17 @@ public:
     [[nodiscard]] static bool isValid(const std::string& string, const char* hrp) noexcept;
 
     /// Initializes a Nervos address with a string representation.
-    explicit Address(const std::string& string);
+    explicit Address(const std::string& string) : Address(string, HRP_NERVOS) {}
     explicit Address(const std::string& string, const char* hrp);
 
     /// Initializes a Nervos address with a public key.
-    explicit Address(const PublicKey& publicKey);
+    explicit Address(const PublicKey& publicKey) : Address(publicKey, HRP_NERVOS) {}
     explicit Address(const PublicKey& publicKey, const char* hrp);
 
     /// Returns a string representation of the address.
     std::string string() const;
+
+    std::string hashTypeString() const;
 
 private:
     Address() = default;
@@ -69,3 +73,8 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::Nervos
+
+/// Wrapper for C interface.
+struct TWNervosAddress {
+    TW::Nervos::Address impl;
+};
