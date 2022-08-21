@@ -40,7 +40,7 @@ class NervosTests: XCTestCase {
             $0.nativeTransfer = NervosNativeTransfer.with {
                 $0.toAddress = "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdtyq04tvp02wectaumxn0664yw2jd53lqk4mxg3"
                 $0.changeAddress = "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqds6ed78yze6eyfyvd537z66ur22c9mmrgz82ama"
-                $0.amount = Data(hexString: "00e40b54020000000000000000000000")! // 10000000000
+                $0.amount = 10000000000
             }
             $0.byteFee = 1
             $0.cell = [

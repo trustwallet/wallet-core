@@ -39,7 +39,7 @@ class TestNervosSigner {
             nativeTransfer = NativeTransfer.newBuilder().apply {
                 toAddress = "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdtyq04tvp02wectaumxn0664yw2jd53lqk4mxg3"
                 changeAddress = "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqds6ed78yze6eyfyvd537z66ur22c9mmrgz82ama"
-                amount = "00e40b54020000000000000000000000".toHexBytesInByteString()
+                amount = 10000000000
             }.build()
             addAllCell(listOf(
                 Cell.newBuilder().apply {

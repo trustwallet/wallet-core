@@ -62,8 +62,7 @@ void TransactionPlan::plan(const Proto::SigningInput& signingInput) {
 
 void TransactionPlan::planNativeTransfer(const Proto::SigningInput& signingInput) {
     auto useMaxAmount = signingInput.native_transfer().use_max_amount();
-    auto amount =
-        uint64_t(Serialization::decodeUint256(data(signingInput.native_transfer().amount())));
+    auto amount = signingInput.native_transfer().amount();
     if ((amount == 0) && !useMaxAmount) {
         error = Common::Proto::Error_zero_amount_requested;
         return;
@@ -85,7 +84,7 @@ void TransactionPlan::planNativeTransfer(const Proto::SigningInput& signingInput
 
 void TransactionPlan::planSudtTransfer(const Proto::SigningInput& signingInput) {
     auto useMaxAmount = signingInput.sudt_transfer().use_max_amount();
-    auto amount = Serialization::decodeUint256(data(signingInput.sudt_transfer().amount()));
+    uint256_t amount = uint256_t(signingInput.sudt_transfer().amount());
     if ((amount == 0) && !useMaxAmount) {
         error = Common::Proto::Error_zero_amount_requested;
         return;
@@ -106,7 +105,7 @@ void TransactionPlan::planSudtTransfer(const Proto::SigningInput& signingInput) 
 }
 
 void TransactionPlan::planDaoDeposit(const Proto::SigningInput& signingInput) {
-    auto amount = uint64_t(Serialization::decodeUint256(data(signingInput.dao_deposit().amount())));
+    auto amount = signingInput.dao_deposit().amount();
 
     cellDeps.emplace_back(Constants::gSecp256k1CellDep);
     cellDeps.emplace_back(Constants::gDAOCellDep);

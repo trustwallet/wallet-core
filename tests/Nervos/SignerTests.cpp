@@ -38,8 +38,7 @@ Proto::SigningInput getInput1() {
                              "wectaumxn0664yw2jd53lqk4mxg3");
     operation.set_change_address("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqds6ed78"
                                  "yze6eyfyvd537z66ur22c9mmrgz82ama");
-    auto amount = Serialization::encodeUint256(uint256_t(10000000000), 16);
-    *operation.mutable_amount() = std::string(amount.begin(), amount.end());
+    operation.set_amount(10000000000);
     input.set_byte_fee(1);
 
     auto& cell1 = *input.add_cell();
@@ -193,8 +192,7 @@ TEST(NervosSigner, Sign_NegativeMissingKey) {
 TEST(NervosSigner, Sign_NegativeNotEnoughUtxos) {
     auto input = getInput1();
     auto& operation = *input.mutable_native_transfer();
-    auto amount = Serialization::encodeUint256(uint256_t(1000000000000), 16);
-    *operation.mutable_amount() = std::string(amount.begin(), amount.end());
+    operation.set_amount(1000000000000);
     TransactionPlan txPlan;
     txPlan.plan(input);
     ASSERT_EQ(txPlan.error, Common::Proto::Error_not_enough_utxos);
@@ -284,8 +282,8 @@ Proto::SigningInput getInput3() {
                              "wectaumxn0664yw2jd53lqk4mxg3");
     operation.set_change_address("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqds6ed78"
                                  "yze6eyfyvd537z66ur22c9mmrgz82ama");
-    auto amount = Serialization::encodeUint256(uint256_t(1000000000000000), 16);
-    *operation.mutable_amount() = std::string(amount.begin(), amount.end());
+    uint256_t amount = 1000000000000000;
+    operation.set_amount(toString(amount));
     input.set_byte_fee(1);
     auto sudtAddress =
         parse_hex("9657b32fcdc463e13ec9205914fd91c443822a949937ae94add9869e7f2e1de8");
@@ -556,8 +554,8 @@ Proto::SigningInput getInput5() {
                              "urras980hksatlslfaktks7epf25");
     operation.set_change_address("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqwyk5x9e"
                                  "rg8furras980hksatlslfaktks7epf25");
-    auto amount = Serialization::encodeUint256(uint256_t(10200000000), 16);
-    *operation.mutable_amount() = std::string(amount.begin(), amount.end());
+
+    operation.set_amount(10200000000);
     input.set_byte_fee(1);
 
     auto& cell1 = *input.add_cell();

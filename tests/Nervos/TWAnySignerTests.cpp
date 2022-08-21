@@ -26,8 +26,7 @@ Proto::SigningInput getAnySignerInput1() {
                              "wectaumxn0664yw2jd53lqk4mxg3");
     operation.set_change_address("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqds6ed78"
                                  "yze6eyfyvd537z66ur22c9mmrgz82ama");
-    auto amount = Serialization::encodeUint256(uint256_t(10000000000), 16ul);
-    *operation.mutable_amount() = std::string(amount.begin(), amount.end());
+    operation.set_amount(10000000000);
     input.set_byte_fee(1);
 
     auto& cell1 = *input.add_cell();
@@ -155,17 +154,20 @@ TEST(TWAnySignerNervos, Sign_NegativeMissingKey) {
     auto privateKey = parse_hex("8a2a726c44e46d1efaa0f9c2a8efed932f0e96d6050b914fde762ee285e61fec");
     input.add_private_key(std::string(privateKey.begin(), privateKey.end()));
     Proto::SigningOutput output;
+
     ANY_SIGN(input, TWCoinTypeNervos);
+
     ASSERT_EQ(output.error(), Common::Proto::Error_missing_private_key);
 }
 
 TEST(TWAnySignerNervos, Sign_NegativeNotEnoughUtxos) {
     auto input = getAnySignerInput1();
     auto& operation = *input.mutable_native_transfer();
-    auto amount = Serialization::encodeUint256(uint256_t(1000000000000), 16);
-    *operation.mutable_amount() = std::string(amount.begin(), amount.end());
+    operation.set_amount(1000000000000);
     Proto::SigningOutput output;
+
     ANY_SIGN(input, TWCoinTypeNervos);
+
     ASSERT_EQ(output.error(), Common::Proto::Error_not_enough_utxos);
 }
 
@@ -225,8 +227,8 @@ Proto::SigningInput getAnySignerInput3() {
                              "wectaumxn0664yw2jd53lqk4mxg3");
     operation.set_change_address("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqds6ed78"
                                  "yze6eyfyvd537z66ur22c9mmrgz82ama");
-    auto amount = Serialization::encodeUint256(uint256_t(1000000000000000), 16);
-    *operation.mutable_amount() = std::string(amount.begin(), amount.end());
+    uint256_t amount = 1000000000000000;
+    operation.set_amount(toString(amount));
     input.set_byte_fee(1);
     auto sudtAddress =
         parse_hex("9657b32fcdc463e13ec9205914fd91c443822a949937ae94add9869e7f2e1de8");
@@ -406,8 +408,7 @@ Proto::SigningInput getAnySignerInput5() {
                              "urras980hksatlslfaktks7epf25");
     operation.set_change_address("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqwyk5x9e"
                                  "rg8furras980hksatlslfaktks7epf25");
-    auto amount = Serialization::encodeUint256(uint256_t(10200000000), 16);
-    *operation.mutable_amount() = std::string(amount.begin(), amount.end());
+    operation.set_amount(10200000000);
     input.set_byte_fee(1);
 
     auto& cell1 = *input.add_cell();

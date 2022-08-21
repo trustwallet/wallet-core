@@ -82,7 +82,7 @@ message NativeTransfer {
     string change_address = 2;
 
     // Amount to send.
-    bytes amount = 3;
+    uint64 amount = 3;
 
     // If sending max amount.
     bool use_max_amount = 4;
@@ -99,7 +99,7 @@ message SudtTransfer {
     bytes sudt_address = 3;
 
     // Amount to send.
-    bytes amount = 4;
+    string amount = 4;
 
     // If sending max amount.
     bool use_max_amount = 5;
@@ -113,7 +113,7 @@ message DaoDeposit {
     string change_address = 2;
 
     // Amount to deposit.
-    bytes amount = 3;
+    uint64 amount = 3;
 }
 
 message DaoWithdrawPhase1 {
