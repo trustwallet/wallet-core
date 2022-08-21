@@ -33,7 +33,7 @@ inline void assertHexEqual(const std::shared_ptr<TWData>& data, const char* expe
 inline void assertJSONEqual(const std::string& lhs, const char* expected) {
     auto lhsJson = nlohmann::json::parse(lhs);
     auto rhsJson = nlohmann::json::parse(std::string(expected));
-    ASSERT_EQ(lhsJson.dump(), rhsJson.dump());
+    ASSERT_EQ(lhsJson, rhsJson);
 }
 
 inline std::vector<uint8_t>* dataFromTWData(TWData* data) {
