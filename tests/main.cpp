@@ -20,6 +20,7 @@ int main(int argc, char** argv) {
     // root path
     path = path.parent_path().parent_path().parent_path();
     TESTS_ROOT = path.append("tests").string();
+    std::cout<<"TESTS_ROOT: "<<path<<std::endl;
     ::testing::InitGoogleTest(&argc, argv);
     int ret = RUN_ALL_TESTS();
     return ret;
