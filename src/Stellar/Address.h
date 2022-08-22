@@ -27,7 +27,7 @@ class Address {
   public:
     /// Address data consisting of a prefix byte followed by the public key
     /// hash.
-    std::array<byte, keySize> bytes;
+    std::array<TW::byte, keySize> bytes;
 
     /// Determines whether a string makes a valid  address.
     static bool isValid(const std::string& string);

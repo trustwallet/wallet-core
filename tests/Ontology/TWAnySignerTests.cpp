@@ -16,7 +16,8 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Ontology;
+
+namespace TW::Ontology::tests {
 
 TEST(TWAnySingerOntology, OntBalanceOf) {
     // curl  -H "Content-Type: application/json"  -X POST -d '{"Action":"sendrawtransaction",
@@ -252,3 +253,5 @@ TEST(TWAnySingerOntology, Oep4TokenTransfer) {
               "fd62df332403d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac",
               hex(output.encoded()));
 }
+
+} // namespace TW::Ontology::tests

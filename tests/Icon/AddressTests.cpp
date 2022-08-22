@@ -4,14 +4,15 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Icon/Address.h"
 #include "HexCoding.h"
+#include "Icon/Address.h"
 #include "PrivateKey.h"
 
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Icon;
+
+namespace TW::Icon::tests {
 
 TEST(IconAddress, Validation) {
     ASSERT_TRUE(Address::isValid("cx116f042497e5f34268b1b91e742680f84cf4e9f3"));
@@ -37,3 +38,5 @@ TEST(IconAddress, FromPrivateKey) {
 
     ASSERT_EQ(address.string(), "hx98c0832ca5bd8e8bf355ca9491888aa9725c2c48");
 }
+
+} // namespace TW::Icon::tests

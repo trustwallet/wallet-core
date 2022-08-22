@@ -6,14 +6,14 @@
 #include <map>
 
 using namespace TW;
-using namespace TW::Substrate;
+namespace TW::Substrate {
 
 static constexpr uint8_t signedBit = 0x80;
 static constexpr uint8_t sigTypeEd25519 = 0x00;
 static constexpr uint8_t extrinsicFormat = 4;
 
 // max uint8
-static constexpr byte maxByte = 255;
+static constexpr TW::byte maxByte = 255;
 
 static Data encodeCallIndex(int32_t moduleIndex, int32_t methodIndex) {
     if (moduleIndex > maxByte) {
@@ -23,7 +23,7 @@ static Data encodeCallIndex(int32_t moduleIndex, int32_t methodIndex) {
         throw std::invalid_argument("method index too large");
     }
 
-    return Data{byte(moduleIndex), byte(methodIndex)};
+    return Data{TW::byte(moduleIndex), TW::byte(methodIndex)};
 }
 
 Data Extrinsic::encodeCall(const Proto::SigningInput& input) {
@@ -82,7 +82,7 @@ bool Extrinsic::encodeRawAccount(bool enableMultiAddress) {
     return !enableMultiAddress;
 }
 
-Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance, int32_t network, uint32_t specVersion, bool enableMultiAddress) {
+Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance, int32_t network, [[maybe_unused]] uint32_t specVersion, bool enableMultiAddress) {
     Data data;
     if (balance.has_transfer()) {
         auto transfer = balance.transfer();
@@ -134,3 +134,5 @@ Data Extrinsic::encodeEraNonceTip() const {
     append(data, encodeCompact(tip));
     return data;
 }
+
+} // namespace TW::Substrate

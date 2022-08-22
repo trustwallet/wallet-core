@@ -93,7 +93,7 @@ std::pair<SegwitAddress, bool> SegwitAddress::fromRaw(const std::string& hrp, co
     if (data.size() == 0) {
         return resp;
     }
-    byte segwitVersion = data[0];
+    TW::byte segwitVersion = data[0];
     Data conv;
     if (!Bech32::convertBits<5, 8, false>(conv, Data(data.begin() + 1, data.end())) ||
         conv.size() < 2 || conv.size() > 40 || segwitVersion > 16 ||

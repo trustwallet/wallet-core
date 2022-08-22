@@ -10,7 +10,7 @@
 #include "SigData.h"
 
 using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology {
 
 Data SigData::serialize() {
     auto sigInfo = ParamsBuilder::fromSigs(sigs);
@@ -28,3 +28,5 @@ Data SigData::serialize() {
     builder.pushVar(verifyInfo);
     return builder.getBytes();
 }
+
+} // namespace TW::Ontology

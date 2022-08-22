@@ -6,25 +6,27 @@
 
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWAnySigner.h>
-#include <TrustWalletCore/TWBitcoinSigHashType.h>
 #include <TrustWalletCore/TWBitcoinScript.h>
+#include <TrustWalletCore/TWBitcoinSigHashType.h>
 #include <TrustWalletCore/TWHDWallet.h>
 #include <gtest/gtest.h>
 
-#include "Bitcoin/SegwitAddress.h"
-#include "proto/Bitcoin.pb.h"
 #include "Bitcoin/OutPoint.h"
 #include "Bitcoin/Script.h"
+#include "Bitcoin/SegwitAddress.h"
+#include "Bitcoin/SigHashType.h"
 #include "Bitcoin/Transaction.h"
 #include "Bitcoin/TransactionBuilder.h"
 #include "Bitcoin/TransactionSigner.h"
-#include "Bitcoin/SigHashType.h"
 #include "HexCoding.h"
+#include "proto/Bitcoin.pb.h"
 #include "../interface/TWTestUtilities.h"
 
 using namespace TW;
-using namespace TW::Bitcoin;
 
+namespace TW::Bitcoin::tests {
+
+// clang-format off
 TEST(TWBitcoinGoldScript, LockScriptTest) {
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptLockScriptForAddress(STRING("btg1q6572ulr0kmywle8a30lvagm9xsg9k9n5cmzfdj").get(), TWCoinTypeBitcoinGold));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
@@ -79,7 +81,7 @@ TEST(TWBitcoinGoldTxGeneration, TxGeneration) {
     auto utxoKey0 = parse_hex("cbe13a79b82ec7f8871b336a64fd8d531f598e7c9022e29c67e824cfd54af57f");
     input.add_private_key(utxoKey0.data(), utxoKey0.size());
     input.set_lock_time(0x00098971);
-    
+
 
     auto scriptPub1 = Script(parse_hex("0014db746a75d9aae8995d135b1e19a04d7765242a8f"));
     auto scriptHash = std::vector<uint8_t>();
@@ -94,7 +96,7 @@ TEST(TWBitcoinGoldTxGeneration, TxGeneration) {
     auto utxo0Script = parse_hex("0014d53cae7c6fb6c8efe4fd8bfecea36534105b1674");
     utxo0->set_script(utxo0Script.data(), utxo0Script.size());
     utxo0->set_amount(10000);
-                            
+
     auto hash0 = parse_hex("5727794fa2b94aa22a226e206130524201ede9b50e032526e713c848493a890f");
     utxo0->mutable_out_point()->set_hash(hash0.data(), hash0.size());
     utxo0->mutable_out_point()->set_index(0);
@@ -122,4 +124,6 @@ TEST(TWBitcoinGoldTxGeneration, TxGeneration) {
         "71890900" // nLockTime
     );
 }
-            
+// clang-format on
+
+} // namespace TW::Bitcoin::tests

@@ -13,9 +13,10 @@
 
 using namespace std;
 using namespace boost::algorithm;
-using json = nlohmann::json;
 
 namespace TW::Ethereum::ABI {
+
+using json = nlohmann::json;
 
 static int parseBitSize(const std::string& type) {
     int size = stoi(type);
@@ -195,7 +196,7 @@ std::vector<std::string> ParamFactory::getArrayValue(const std::shared_ptr<Param
     auto elemType = getArrayElemType(type);
     auto elems = array->getVal();
     std::vector<std::string> values(elems.size());
-    for (auto i = 0; i < elems.size(); ++i) {
+    for (auto i = 0ul; i < elems.size(); ++i) {
         values[i] = getValue(elems[i], elemType);
     }
     return values;

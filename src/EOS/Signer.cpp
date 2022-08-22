@@ -95,7 +95,7 @@ TW::Data Signer::serializeTx(const Transaction& transaction) const noexcept {
 }
 
 // canonical check for EOS
-int Signer::isCanonical(uint8_t by, uint8_t sig[64]) {
+int Signer::isCanonical([[maybe_unused]] uint8_t by, uint8_t sig[64]) {
     return !(sig[0] & 0x80) 
         && !(sig[0] == 0 && !(sig[1] & 0x80))
         && !(sig[32] & 0x80)

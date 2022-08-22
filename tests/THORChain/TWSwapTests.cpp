@@ -4,15 +4,15 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWTHORChainSwap.h>
-#include "proto/THORChainSwap.pb.h"
-#include "proto/Ethereum.pb.h"
-#include "proto/Binance.pb.h"
-#include "Bitcoin/SegwitAddress.h"
 #include "Bitcoin/Script.h"
-#include <TrustWalletCore/TWCoinType.h>
-#include <TrustWalletCore/TWAnySigner.h>
+#include "Bitcoin/SegwitAddress.h"
 #include "PrivateKey.h"
+#include "proto/Binance.pb.h"
+#include "proto/Ethereum.pb.h"
+#include "proto/THORChainSwap.pb.h"
+#include <TrustWalletCore/TWAnySigner.h>
+#include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWTHORChainSwap.h>
 
 #include "HexCoding.h"
 #include "uint256.h"
@@ -20,9 +20,11 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW::THORChainSwap;
 using namespace TW;
 
+namespace TW::THORChainSwap::tests {
+
+// clang-format off
 const auto Address1Bnb = "bnb1us47wdhfx08ch97zdueh3x3u5murfrx30jecrx";
 const auto Address1Btc = "bc1qpjult34k9spjfym8hss2jrwjgf0xjf40ze0pp8";
 const auto Address1Eth = "0xb9f5771c27664bf2282d98e09d7f50cec7cb01a7";
@@ -51,14 +53,14 @@ TEST(TWTHORChainSwap, SwapBtcToEth) {
     input.set_to_amount_limit("140000000000000000");
 
     // serialize input
-    const auto inputData = input.SerializeAsString();
-    EXPECT_EQ(hex(inputData), "0801122a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070381a0708021203455448222a3078623966353737316332373636346266323238326439386530396437663530636563376362303161372a2a62633171366d397532717375386d68387937763872723279776176746a38673561727a6c796863656a373a07313030303030304212313430303030303030303030303030303030");
-    const auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));
+    const auto inputData_ = input.SerializeAsString();
+    EXPECT_EQ(hex(inputData_), "0801122a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070381a0708021203455448222a3078623966353737316332373636346266323238326439386530396437663530636563376362303161372a2a62633171366d397532717375386d68387937763872723279776176746a38673561727a6c796863656a373a07313030303030304212313430303030303030303030303030303030");
+    const auto inputTWData_ = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData_.data(), inputData_.size()));
 
     // invoke swap
-    const auto outputTWData = WRAPD(TWTHORChainSwapBuildSwap(inputTWData.get()));
-    const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
-    EXPECT_EQ(outputData.size(), 178);
+    const auto outputTWData_ = WRAPD(TWTHORChainSwapBuildSwap(inputTWData_.get()));
+    const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
+    EXPECT_EQ(outputData.size(), 178ul);
     // parse result in proto
     Proto::SwapOutput outputProto;
     EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
@@ -68,13 +70,13 @@ TEST(TWTHORChainSwap, SwapBtcToEth) {
     EXPECT_EQ(outputProto.error().message(), "");
     EXPECT_TRUE(outputProto.has_bitcoin());
     Bitcoin::Proto::SigningInput txInput = outputProto.bitcoin();
-    
+
     // tx input: check some fields
     EXPECT_EQ(txInput.amount(), 1000000);
     EXPECT_EQ(txInput.to_address(), "bc1q6m9u2qsu8mh8y7v8rr2ywavtj8g5arzlyhcej7");
     EXPECT_EQ(txInput.change_address(), "bc1qpjult34k9spjfym8hss2jrwjgf0xjf40ze0pp8");
     EXPECT_EQ(txInput.output_op_return(), "=:ETH.ETH:0xb9f5771c27664bf2282d98e09d7f50cec7cb01a7:140000000000000000");
-    EXPECT_EQ(txInput.coin_type(), 0);
+    EXPECT_EQ(txInput.coin_type(), 0ul);
 
     // sign tx input for signed full tx
     // set few fields before signing
@@ -131,14 +133,14 @@ TEST(TWTHORChainSwap, SwapEthBnb) {
     input.set_to_amount_limit("600003");
 
     // serialize input
-    const auto inputData = input.SerializeAsString();
-    EXPECT_EQ(hex(inputData), "0802122a3078623966353737316332373636346266323238326439386530396437663530636563376362303161371a0708031203424e42222a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372782a2a307831303931633444653661336346303943644130304162444165443432633763334236394338334543322a3078343241354564343536363530613039446331304542633633363141373438306644643631663237423a1135303030303030303030303030303030304206363030303033");
-    const auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));
+    const auto inputData_ = input.SerializeAsString();
+    EXPECT_EQ(hex(inputData_), "0802122a3078623966353737316332373636346266323238326439386530396437663530636563376362303161371a0708031203424e42222a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372782a2a307831303931633444653661336346303943644130304162444165443432633763334236394338334543322a3078343241354564343536363530613039446331304542633633363141373438306644643631663237423a1135303030303030303030303030303030304206363030303033");
+    const auto inputTWData_ = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData_.data(), inputData_.size()));
 
     // invoke swap
-    const auto outputTWData = WRAPD(TWTHORChainSwapBuildSwap(inputTWData.get()));
-    const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
-    EXPECT_EQ(outputData.size(), 311);
+    const auto outputTWData_ = WRAPD(TWTHORChainSwapBuildSwap(inputTWData_.get()));
+    const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
+    EXPECT_EQ(outputData.size(), 311ul);
     // parse result in proto
     Proto::SwapOutput outputProto;
     EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
@@ -148,7 +150,7 @@ TEST(TWTHORChainSwap, SwapEthBnb) {
     EXPECT_EQ(outputProto.error().message(), "");
     EXPECT_TRUE(outputProto.has_ethereum());
     Ethereum::Proto::SigningInput txInput = outputProto.ethereum();
-    
+
     // sign tx input for signed full tx
     // set few fields before signing
     auto chainId = store(uint256_t(1));
@@ -185,14 +187,14 @@ TEST(TWTHORChainSwap, SwapBnbBtc) {
     input.set_to_amount_limit("10000000");
 
     // serialize input
-    const auto inputData = input.SerializeAsString();
-    EXPECT_EQ(hex(inputData), "0803122a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372781a0708011203425443222a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070382a2a626e62316e396573787577386361377473386c367736366b64683830307330396d7376756c36766c73653a08313030303030303042083130303030303030");
-    const auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));
+    const auto inputData_ = input.SerializeAsString();
+    EXPECT_EQ(hex(inputData_), "0803122a626e62317573343777646866783038636839377a6475656833783375356d757266727833306a656372781a0708011203425443222a62633171706a756c7433346b3973706a66796d38687373326a72776a676630786a6634307a65307070382a2a626e62316e396573787577386361377473386c367736366b64683830307330396d7376756c36766c73653a08313030303030303042083130303030303030");
+    const auto inputTWData_ = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData_.data(), inputData_.size()));
 
     // invoke swap
-    const auto outputTWData = WRAPD(TWTHORChainSwapBuildSwap(inputTWData.get()));
-    const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
-    EXPECT_EQ(outputData.size(), 149);
+    const auto outputTWData_ = WRAPD(TWTHORChainSwapBuildSwap(inputTWData_.get()));
+    const auto outputData = data(TWDataBytes(outputTWData_.get()), TWDataSize(outputTWData_.get()));
+    EXPECT_EQ(outputData.size(), 149ul);
     // parse result in proto
     Proto::SwapOutput outputProto;
     EXPECT_TRUE(outputProto.ParseFromArray(outputData.data(), static_cast<int>(outputData.size())));
@@ -202,7 +204,7 @@ TEST(TWTHORChainSwap, SwapBnbBtc) {
     EXPECT_EQ(outputProto.error().message(), "");
     EXPECT_TRUE(outputProto.has_binance());
     Binance::Proto::SigningInput txInput = outputProto.binance();
-    
+
     // set few fields before signing
     txInput.set_chain_id("Binance-Chain-Tigris");
     txInput.set_private_key(TestKey1Bnb.data(), TestKey1Bnb.size());
@@ -219,7 +221,10 @@ TEST(TWTHORChainSwap, NegativeInvalidInput) {
 
     const auto outputTWData = WRAPD(TWTHORChainSwapBuildSwap(inputTWData.get()));
     const auto outputData = data(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));
-    EXPECT_EQ(outputData.size(), 39);
+    EXPECT_EQ(outputData.size(), 39ul);
     EXPECT_EQ(hex(outputData), "1a2508021221436f756c64206e6f7420646573657269616c697a6520696e7075742070726f746f");
     EXPECT_EQ(hex(data(std::string("Could not deserialize input proto"))), "436f756c64206e6f7420646573657269616c697a6520696e7075742070726f746f");
 }
+// clang-format on
+
+} // namespace TW::ThorChainSwap::tests

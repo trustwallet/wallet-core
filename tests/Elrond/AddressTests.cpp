@@ -7,15 +7,15 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-#include "HexCoding.h"
-#include "PublicKey.h"
-#include "PrivateKey.h"
 #include "Elrond/Address.h"
+#include "HexCoding.h"
+#include "PrivateKey.h"
+#include "PublicKey.h"
 #include "TestAccounts.h"
 
 using namespace TW;
-using namespace TW::Elrond;
 
+namespace TW::Elrond::tests {
 
 TEST(ElrondAddress, Valid) {
     ASSERT_TRUE(Address::isValid(ALICE_BECH32));
@@ -35,7 +35,7 @@ TEST(ElrondAddress, FromString) {
     Address alice, bob, carol;
     ASSERT_TRUE(Address::decode(ALICE_BECH32, alice));
     ASSERT_TRUE(Address::decode(BOB_BECH32, bob));
-    
+
     ASSERT_EQ(ALICE_PUBKEY_HEX, hex(alice.getKeyHash()));
     ASSERT_EQ(BOB_PUBKEY_HEX, hex(bob.getKeyHash()));
 }
@@ -43,7 +43,7 @@ TEST(ElrondAddress, FromString) {
 TEST(ElrondAddress, FromData) {
     const auto alice = Address(parse_hex(ALICE_PUBKEY_HEX));
     const auto bob = Address(parse_hex(BOB_PUBKEY_HEX));
-    
+
     ASSERT_EQ(ALICE_BECH32, alice.string());
     ASSERT_EQ(BOB_BECH32, bob.string());
 }
@@ -65,3 +65,5 @@ TEST(ElrondAddress, FromPublicKey) {
     auto bob = PublicKey(parse_hex(BOB_PUBKEY_HEX), TWPublicKeyTypeED25519);
     ASSERT_EQ(BOB_BECH32, Address(bob).string());
 }
+
+} // namespace TW::Elrond::tests

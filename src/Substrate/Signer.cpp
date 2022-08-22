@@ -6,7 +6,7 @@
 #include "Extrinsic.h"
 
 using namespace TW;
-using namespace TW::Substrate;
+namespace TW::Substrate {
 
 static constexpr size_t hashTreshold = 256;
 
@@ -26,3 +26,5 @@ Data Signer::encodeTransaction(const Proto::SigningInput &input, const Data &pub
     auto encoded = extrinsic.encodeSignature(pbk, signature);
     return encoded;
 }
+
+} // namespace TW::Substrate

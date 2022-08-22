@@ -76,18 +76,18 @@ Bitcoin::Proto::PreSigningOutput Signer::preImageHashes(const Bitcoin::Proto::Si
 }
 
 Result<Transaction, Common::Proto::SigningError> Signer::sign() {
-    if (txPlan.utxos.size() == 0 || transaction.inputs.size() == 0) {
+    if (txPlan.utxos.size() == 0 || _transaction.inputs.size() == 0) {
         return Result<Transaction, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_input_utxos);
     }
 
-    signedInputs = transaction.inputs;
+    signedInputs = _transaction.inputs;
 
     const auto hashSingle = Bitcoin::hashTypeIsSingle(static_cast<enum TWBitcoinSigHashType>(input.hash_type()));
-    for (auto i = 0; i < txPlan.utxos.size(); i += 1) {
+    for (auto i = 0ul; i < txPlan.utxos.size(); i += 1) {
         auto& utxo = txPlan.utxos[i];
 
         // Only sign TWBitcoinSigHashTypeSingle if there's a corresponding output
-        if (hashSingle && i >= transaction.outputs.size()) {
+        if (hashSingle && i >= _transaction.outputs.size()) {
             continue;
         }
         auto result = sign(utxo.script, i);
@@ -97,14 +97,14 @@ Result<Transaction, Common::Proto::SigningError> Signer::sign() {
         signedInputs[i].script = result.payload();
     }
 
-    Transaction tx(transaction);
+    Transaction tx(_transaction);
     tx.inputs = std::move(signedInputs);
-    tx.outputs = transaction.outputs;
+    tx.outputs = _transaction.outputs;
     return Result<Transaction, Common::Proto::SigningError>::success(std::move(tx));
 }
 
 Result<Bitcoin::Script, Common::Proto::SigningError> Signer::sign(Bitcoin::Script script, size_t index) {
-    assert(index < transaction.inputs.size());
+    assert(index < _transaction.inputs.size());
 
     Bitcoin::Script redeemScript;
     std::vector<Data> results;
@@ -115,15 +115,15 @@ Result<Bitcoin::Script, Common::Proto::SigningError> Signer::sign(Bitcoin::Scrip
     } else {
         return Result<Bitcoin::Script, Common::Proto::SigningError>::failure(result.error());
     }
-    auto txin = transaction.inputs[index];
+    auto txin = _transaction.inputs[index];
 
     if (script.isPayToScriptHash()) {
         script = Bitcoin::Script(results.front().begin(), results.front().end());
-        auto result = signStep(script, index);
-        if (!result) {
-            return Result<Bitcoin::Script, Common::Proto::SigningError>::failure(result.error());
+        auto result_ = signStep(script, index);
+        if (!result_) {
+            return Result<Bitcoin::Script, Common::Proto::SigningError>::failure(result_.error());
         }
-        results = result.payload();
+        results = result_.payload();
         results.push_back(script.bytes);
         redeemScript = script;
         results.push_back(redeemScript.bytes);
@@ -133,9 +133,9 @@ Result<Bitcoin::Script, Common::Proto::SigningError> Signer::sign(Bitcoin::Scrip
 }
 
 Result<std::vector<Data>, Common::Proto::SigningError> Signer::signStep(Bitcoin::Script script, size_t index) {
-    Transaction transactionToSign(transaction);
+    Transaction transactionToSign(_transaction);
     transactionToSign.inputs = signedInputs;
-    transactionToSign.outputs = transaction.outputs;
+    transactionToSign.outputs = _transaction.outputs;
 
     Data data;
     std::vector<Data> keys;
@@ -162,12 +162,12 @@ Result<std::vector<Data>, Common::Proto::SigningError> Signer::signStep(Bitcoin:
                 // estimation mode, key is missing: use placeholder for public key
                 pubkey = Data(PublicKey::secp256k1Size);
             } else if (signingMode == SigningMode_External) {
-                size_t index = hashesForSigning.size();
-                if (!externalSignatures.has_value() || externalSignatures.value().size() <= index) {
+                size_t hashSize = hashesForSigning.size();
+                if (!externalSignatures.has_value() || externalSignatures.value().size() <= hashSize) {
                     // Error: no or not enough signatures provided
                     return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_signing);
                 }
-                pubkey = std::get<1>(externalSignatures.value()[index]);
+                pubkey = std::get<1>(externalSignatures.value()[hashSize]);
             } else {
                 // Error: Missing keyxs
                 return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_private_key);
@@ -192,7 +192,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> Signer::signStep(Bitcoin:
     } else if (script.matchMultisig(keys, required)) {
         auto results = std::vector<Data>{{}};
         for (auto& pubKey : keys) {
-            if (results.size() >= required + 1) {
+            if (results.size() >= required + 1ul) {
                 break;
             }
             auto keyHash = TW::Hash::ripemd(TW::Hash::blake256(pubKey));
@@ -229,16 +229,16 @@ Data Signer::createSignature(const Transaction& transaction, const Bitcoin::Scri
     if (signingMode == SigningMode_External) {
         // Use externally-provided signature
         // Store hash, only for counting
-        size_t index = hashesForSigning.size();
+        size_t hashSize = hashesForSigning.size();
         hashesForSigning.push_back(std::make_pair(sighash, publicKeyHash));
 
-        if (!externalSignatures.has_value() || externalSignatures.value().size() <= index) {
+        if (!externalSignatures.has_value() || externalSignatures.value().size() <= hashSize) {
             // Error: no or not enough signatures provided
             return Data();
         }
 
-        Data externalSignature = std::get<0>(externalSignatures.value()[index]);
-        const Data publicKey = std::get<1>(externalSignatures.value()[index]);
+        Data externalSignature = std::get<0>(externalSignatures.value()[hashSize]);
+        const Data publicKey = std::get<1>(externalSignatures.value()[hashSize]);
 
         // Verify provided signature
         if (!PublicKey::isValid(publicKey, TWPublicKeyTypeSECP256k1)) {
@@ -250,13 +250,13 @@ Data Signer::createSignature(const Transaction& transaction, const Bitcoin::Scri
             // Error: Signature does not match publickey+hash
             return Data();
         }
-        externalSignature.push_back(static_cast<byte>(input.hash_type()));
+        externalSignature.push_back(static_cast<TW::byte>(input.hash_type()));
 
         return externalSignature;
     }
 
     auto pk = PrivateKey(key);
-    auto signature = pk.signAsDER(Data(begin(sighash), end(sighash)), TWCurveSECP256k1);
+    auto signature = pk.signAsDER(Data(begin(sighash), end(sighash)));
     if (script.empty()) {
         return {};
     }

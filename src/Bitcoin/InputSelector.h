@@ -21,8 +21,8 @@ public:
     ///
     /// \returns the list of indices of selected inputs, or an empty list if there are insufficient
     /// funds.
-    std::vector<TypeWithAmount> select(int64_t targetValue, int64_t byteFee,
-                                       int64_t numOutputs = 2);
+    std::vector<TypeWithAmount> select(uint64_t targetValue, uint64_t byteFee,
+                                       uint64_t numOutputs = 2);
 
     /// Selects unspent transactions to use given a target transaction value;
     /// Simplified version suitable for large number of inputs
@@ -39,7 +39,7 @@ public:
     /// Construct, using provided feeCalculator (see getFeeCalculator()).
     explicit InputSelector(const std::vector<TypeWithAmount>& inputs,
                            const FeeCalculator& feeCalculator) noexcept
-        : inputs(inputs), feeCalculator(feeCalculator) {}
+        : _inputs(inputs), feeCalculator(feeCalculator) {}
     explicit InputSelector(const std::vector<TypeWithAmount>& inputs) noexcept
         : InputSelector(inputs, getFeeCalculator(TWCoinTypeBitcoin)) {}
 
@@ -53,7 +53,7 @@ public:
                                                        uint64_t minimumAmount) noexcept;
 
 private:
-    const std::vector<TypeWithAmount> inputs;
+    const std::vector<TypeWithAmount> _inputs;
     const FeeCalculator& feeCalculator;
 };
 

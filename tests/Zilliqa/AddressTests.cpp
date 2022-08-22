@@ -14,7 +14,8 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Zilliqa;
+
+namespace TW::Zilliqa {
 
 TEST(ZilliqaAddress, FromPrivateKey) {
     const auto privateKey =
@@ -58,3 +59,5 @@ TEST(ZilliqaAddress, Checksum) {
         "1a90C25307C3Cc71958A83fa213A2362D859CF33"
     );
 }
+
+} // namespace TW::Zilliqa 

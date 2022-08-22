@@ -10,32 +10,33 @@
 #include "Signer.h"
 #include "proto/TransactionCompiler.pb.h"
 
-using namespace TW::NEO;
 using namespace TW;
 using namespace std;
 
-bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const {
+namespace TW::NEO {
+
+bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, [[maybe_unused]] const string& address, [[maybe_unused]] TW::byte p2pkh, [[maybe_unused]] TW::byte p2sh, [[maybe_unused]] const char* hrp) const {
     return Address::isValid(address);
 }
 
-string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const {
+string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TW::byte p2pkh, [[maybe_unused]] const char* hrp) const {
     return Address(publicKey).string();
 }
 
-Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
+Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
     const auto addr = Address(address);
     return {addr.bytes.begin(), addr.bytes.end()};
 }
 
-void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
-void Entry::plan(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+void Entry::plan([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     planTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
-TW::Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
+TW::Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInputData) const {
     return txCompilerTemplate<Proto::SigningInput, TxCompiler::Proto::PreSigningOutput>(
         txInputData, [](const auto& input, auto& output) {
             auto encoded = Signer::signaturePreimage(input);
@@ -45,7 +46,7 @@ TW::Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
         });
 }
 
-void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
+void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
     dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
         txInputData, [&](const auto& input, auto& output) {
             if (signatures.size() == 0 || publicKeys.size() == 0) {
@@ -58,3 +59,5 @@ void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<
             output.set_encoded(encoded.data(), encoded.size());
         });
 }
+
+} // namespace TW::NEO

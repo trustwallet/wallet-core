@@ -50,7 +50,7 @@ TEST(EthereumAbiValueDecoder, decodeArray) {
             "0000000000000000000000000000000000000000000000000000000000000033"
         );
         auto res = ABI::ValueDecoder::decodeArray(input, "uint8[]");
-        EXPECT_EQ(3, res.size());
+        EXPECT_EQ(3ul, res.size());
         EXPECT_EQ("49", res[0]);
         EXPECT_EQ("50", res[1]);
         EXPECT_EQ("51", res[2]);
@@ -63,7 +63,7 @@ TEST(EthereumAbiValueDecoder, decodeArray) {
             "0000000000000000000000002e00cd222cb42b616d86d037cc494e8ab7f5c9a3"
         );
         auto res = ABI::ValueDecoder::decodeArray(input, "address[]");
-        EXPECT_EQ(2, res.size());
+        EXPECT_EQ(2ul, res.size());
         EXPECT_EQ("0xf784682c82526e245f50975190ef0fff4e4fc077", res[0]);
         EXPECT_EQ("0x2e00cd222cb42b616d86d037cc494e8ab7f5c9a3", res[1]);
     }
@@ -79,7 +79,7 @@ TEST(EthereumAbiValueDecoder, decodeArray) {
             "1022220000000000000000000000000000000000000000000000000000000000"
         );
         auto res = ABI::ValueDecoder::decodeArray(input, "bytes[]");
-        EXPECT_EQ(2, res.size());
+        EXPECT_EQ(2ul, res.size());
         EXPECT_EQ("0x1011", res[0]);
         EXPECT_EQ("0x102222", res[1]);
     }

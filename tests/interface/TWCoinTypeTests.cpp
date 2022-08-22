@@ -99,7 +99,7 @@ TEST(TWCoinType, TWPublicKeyType) {
     ASSERT_EQ(TWPublicKeyTypeSECP256k1, TWCoinTypePublicKeyType(TWCoinTypeKava));
     ASSERT_EQ(TWPublicKeyTypeSECP256k1, TWCoinTypePublicKeyType(TWCoinTypeBandChain));
     ASSERT_EQ(TWPublicKeyTypeSECP256k1, TWCoinTypePublicKeyType(TWCoinTypeBluzelle));
-    ASSERT_EQ(TWPublicKeyTypeED25519Extended, TWCoinTypePublicKeyType(TWCoinTypeCardano));
+    ASSERT_EQ(TWPublicKeyTypeED25519Cardano, TWCoinTypePublicKeyType(TWCoinTypeCardano));
     ASSERT_EQ(TWPublicKeyTypeED25519, TWCoinTypePublicKeyType(TWCoinTypeElrond));
     ASSERT_EQ(TWPublicKeyTypeED25519, TWCoinTypePublicKeyType(TWCoinTypeOasis));
     ASSERT_EQ(TWPublicKeyTypeSECP256k1, TWCoinTypePublicKeyType(TWCoinTypeTHORChain));
@@ -151,4 +151,25 @@ TEST(TWCoinType, DeriveAddress) {
 
     auto address = WRAPS(TWCoinTypeDeriveAddressFromDerivation(TWCoinTypeBitcoin, publicKey.get(), TWDerivationBitcoinSegwit));
     assertStringsEqual(address, "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4");
+}
+
+TEST(TWCoinType, TWCoinTypeDerivationPath) {
+    auto res = TWCoinTypeDerivationPath(TWCoinTypeBitcoin);
+    auto result = *reinterpret_cast<const std::string *>(res);
+    ASSERT_EQ(result, "m/84'/0'/0'/0/0");
+    TWStringDelete(res);
+}
+
+TEST(TWCoinType, TWCoinTypeDerivationPathWithDerivation) {
+    auto res = TWCoinTypeDerivationPathWithDerivation(TWCoinTypeBitcoin, TWDerivationBitcoinLegacy);
+    auto result = *reinterpret_cast<const std::string *>(res);
+    ASSERT_EQ(result, "m/44'/0'/0'/0/0");
+    TWStringDelete(res);
+}
+
+TEST(TWCoinType, TWCoinTypeDerivationPathWithDerivationSolana) {
+    auto res = TWCoinTypeDerivationPathWithDerivation(TWCoinTypeSolana, TWDerivationSolanaSolana);
+    auto result = *reinterpret_cast<const std::string *>(res);
+    ASSERT_EQ(result, "m/44'/501'/0'/0'");
+    TWStringDelete(res);
 }

@@ -5,14 +5,15 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Nano/Address.h"
 #include "HexCoding.h"
+#include "Nano/Address.h"
 
 #include <gtest/gtest.h>
 
 using namespace std;
 using namespace TW;
-using namespace TW::Nano;
+
+namespace TW::Nano::tests {
 
 TEST(NanoAddress, FromPublicKey) {
     {
@@ -53,3 +54,5 @@ TEST(NanoAddress, isValid) {
     ASSERT_FALSE(Address::isValid(faultyChecksumAddress));
     ASSERT_FALSE(Address::isValid(bitcoinAddress));
 }
+
+} // namespace TW::Nano::tests

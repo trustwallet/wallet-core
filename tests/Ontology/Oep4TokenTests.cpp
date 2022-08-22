@@ -15,7 +15,7 @@
 #include <iostream>
 
 using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology::Oep4Token {
 
 const std::string contractAddr = "2f34b28eb98a1dd901d303f5294c87546fb37fe7";
 
@@ -54,3 +54,5 @@ TEST(OntologyOep4Token, transfer) {
               "fd62df332403d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac",
               rawTx);
 }
+
+} // namespace TW::Ontology 

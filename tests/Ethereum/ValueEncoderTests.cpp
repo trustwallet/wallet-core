@@ -121,16 +121,16 @@ TEST(EthereumAbiValueEncoder, uint256FromInt256) {
 }
 
 TEST(EthereumAbiValueEncoder, pad32) {
-    EXPECT_EQ(64, ABI::ValueEncoder::paddedTo32(40));
-    EXPECT_EQ(32, ABI::ValueEncoder::paddedTo32(32));
-    EXPECT_EQ(64, ABI::ValueEncoder::paddedTo32(33));
-    EXPECT_EQ(64, ABI::ValueEncoder::paddedTo32(63));
-    EXPECT_EQ(64, ABI::ValueEncoder::paddedTo32(64));
-    EXPECT_EQ(96, ABI::ValueEncoder::paddedTo32(65));
-    EXPECT_EQ(24, ABI::ValueEncoder::padNeeded32(40));
-    EXPECT_EQ(0, ABI::ValueEncoder::padNeeded32(32));
-    EXPECT_EQ(31, ABI::ValueEncoder::padNeeded32(33));
-    EXPECT_EQ(1, ABI::ValueEncoder::padNeeded32(63));
-    EXPECT_EQ(0, ABI::ValueEncoder::padNeeded32(64));
-    EXPECT_EQ(31, ABI::ValueEncoder::padNeeded32(65));
+    EXPECT_EQ(64ul, ABI::ValueEncoder::paddedTo32(40));
+    EXPECT_EQ(32ul, ABI::ValueEncoder::paddedTo32(32));
+    EXPECT_EQ(64ul, ABI::ValueEncoder::paddedTo32(33));
+    EXPECT_EQ(64ul, ABI::ValueEncoder::paddedTo32(63));
+    EXPECT_EQ(64ul, ABI::ValueEncoder::paddedTo32(64));
+    EXPECT_EQ(96ul, ABI::ValueEncoder::paddedTo32(65));
+    EXPECT_EQ(24ul, ABI::ValueEncoder::padNeeded32(40));
+    EXPECT_EQ(0ul, ABI::ValueEncoder::padNeeded32(32));
+    EXPECT_EQ(31ul, ABI::ValueEncoder::padNeeded32(33));
+    EXPECT_EQ(1ul, ABI::ValueEncoder::padNeeded32(63));
+    EXPECT_EQ(0ul, ABI::ValueEncoder::padNeeded32(64));
+    EXPECT_EQ(31ul, ABI::ValueEncoder::padNeeded32(65));
 }

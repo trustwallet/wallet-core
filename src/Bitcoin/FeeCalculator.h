@@ -20,6 +20,7 @@ inline constexpr double gSegwitBytesBase{gDefaultBytesBase};
 /// Interface for transaction fee calculator.
 class FeeCalculator {
 public:
+    virtual ~FeeCalculator() noexcept = default;
     [[nodiscard]] virtual int64_t calculate(int64_t inputs, int64_t outputs,
                                             int64_t byteFee) const noexcept = 0;
     [[nodiscard]] virtual int64_t calculateSingleInput(int64_t byteFee) const noexcept = 0;
@@ -46,11 +47,11 @@ public:
     const int64_t fee;
     explicit constexpr ConstantFeeCalculator(int64_t fee) noexcept : fee(fee) {}
 
-    [[nodiscard]] int64_t calculate(int64_t inputs, int64_t outputs,
-                                    int64_t byteFee) const noexcept final {
+    [[nodiscard]] int64_t calculate([[maybe_unused]] int64_t inputs, [[maybe_unused]] int64_t outputs,
+                                    [[maybe_unused]] int64_t byteFee) const noexcept final {
         return fee;
     }
-    [[nodiscard]] int64_t calculateSingleInput(int64_t byteFee) const noexcept final { return 0; }
+    [[nodiscard]] int64_t calculateSingleInput([[maybe_unused]] int64_t byteFee) const noexcept final { return 0; }
 };
 
 /// Default Bitcoin transaction fee calculator, non-segwit.
@@ -59,7 +60,7 @@ private:
     bool disableDustFilter = false;
 
 public:
-    DefaultFeeCalculator(bool disableFilter = false)
+    constexpr DefaultFeeCalculator(bool disableFilter = false) noexcept
         : LinearFeeCalculator(gDefaultBytesPerInput, gDefaultBytesPerOutput, gDefaultBytesBase)
         , disableDustFilter(disableFilter) {}
     
@@ -77,7 +78,7 @@ private:
     bool disableDustFilter = false;
     
 public:
-    SegwitFeeCalculator(bool disableFilter = false)
+    constexpr SegwitFeeCalculator(bool disableFilter = false) noexcept
         :LinearFeeCalculator(101.25, 31, 10), disableDustFilter(disableFilter) {}
 
     [[nodiscard]] int64_t calculateSingleInput(int64_t byteFee) const noexcept override {
@@ -89,6 +90,6 @@ public:
 };
 
 /// Return the fee calculator for the given coin.
-FeeCalculator& getFeeCalculator(TWCoinType coinType, bool disableFilter = false);
+const FeeCalculator& getFeeCalculator(TWCoinType coinType, bool disableFilter = false) noexcept;
 
 } // namespace TW::Bitcoin

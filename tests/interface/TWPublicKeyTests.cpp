@@ -49,20 +49,20 @@ TEST(TWPublicKeyTests, CompressedExtended) {
     const auto privateKey = WRAP(TWPrivateKey, new TWPrivateKey{ key });
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true));
     EXPECT_EQ(TWPublicKeyKeyType(publicKey.get()), TWPublicKeyTypeSECP256k1);
-    EXPECT_EQ(publicKey.get()->impl.bytes.size(), 33);
+    EXPECT_EQ(publicKey.get()->impl.bytes.size(), 33ul);
     EXPECT_EQ(TWPublicKeyIsCompressed(publicKey.get()), true);
     EXPECT_TRUE(TWPublicKeyIsValid(publicKey.get(), TWPublicKeyTypeSECP256k1));
 
     auto extended = WRAP(TWPublicKey, TWPublicKeyUncompressed(publicKey.get()));
     EXPECT_EQ(TWPublicKeyKeyType(extended.get()), TWPublicKeyTypeSECP256k1Extended);
-    EXPECT_EQ(extended.get()->impl.bytes.size(), 65);
+    EXPECT_EQ(extended.get()->impl.bytes.size(), 65ul);
     EXPECT_EQ(TWPublicKeyIsCompressed(extended.get()), false);
     EXPECT_TRUE(TWPublicKeyIsValid(extended.get(), TWPublicKeyTypeSECP256k1Extended));
 
     auto compressed = WRAP(TWPublicKey, TWPublicKeyCompressed(extended.get()));
     //EXPECT_TRUE(compressed == publicKey.get());
     EXPECT_EQ(TWPublicKeyKeyType(compressed.get()), TWPublicKeyTypeSECP256k1);
-    EXPECT_EQ(compressed.get()->impl.bytes.size(), 33);
+    EXPECT_EQ(compressed.get()->impl.bytes.size(), 33ul);
     EXPECT_EQ(TWPublicKeyIsCompressed(compressed.get()), true);
     EXPECT_TRUE(TWPublicKeyIsValid(compressed.get(), TWPublicKeyTypeSECP256k1));
 }
@@ -89,7 +89,7 @@ TEST(TWPublicKeyTests, VerifyAsDER) {
     auto messageData = WRAPD(TWDataCreateWithBytes((const uint8_t*)message, strlen(message)));
     auto digest = WRAPD(TWHashKeccak256(messageData.get()));
 
-    auto signature = WRAPD(TWPrivateKeySignAsDER(privateKey.get(), digest.get(), TWCurveSECP256k1));
+    auto signature = WRAPD(TWPrivateKeySignAsDER(privateKey.get(), digest.get()));
 
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), false));
 

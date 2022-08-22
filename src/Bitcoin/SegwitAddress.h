@@ -26,7 +26,7 @@ class SegwitAddress {
     std::string hrp;
 
     /// Witness program version.
-    byte witnessVersion;
+    TW::byte witnessVersion;
 
     /// Witness program.
     Data witnessProgram;
@@ -40,7 +40,7 @@ class SegwitAddress {
 
     /// Initializes a Bech32 address with a human-readable part, a witness
     /// version, and a witness program.
-    SegwitAddress(std::string hrp, byte witver, Data witprog)
+    SegwitAddress(std::string hrp, TW::byte witver, Data witprog)
         : hrp(std::move(hrp)), witnessVersion(witver), witnessProgram(std::move(witprog)) {}
 
     /// Initializes a segwit-version-0 Bech32 address with a public key and a HRP prefix.

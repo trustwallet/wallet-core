@@ -20,7 +20,7 @@
 #include <sstream>
 
 using namespace TW;
-using namespace TW::Icon;
+namespace TW::Icon {
 
 std::string to_hex(int64_t i) {
     std::stringstream ss;
@@ -92,3 +92,5 @@ Proto::SigningOutput Signer::sign() const noexcept {
 
     return output;
 }
+
+} // namespace TW::Icon

@@ -9,6 +9,7 @@ cmake-build-debug/
 .cquery_cache/
 .cxx/
 .cache/
+build_pvs_studio/
 
 # Dependencies
 node_modules
@@ -29,7 +30,7 @@ jni/java/wallet/core/jni
 jni/java/wallet/core/proto
 swift/Sources/Generated
 swift/wallet-core/
-src/Generated
+src/Generated/*.cpp
 include/TrustWalletCore/TWHRP.h
 include/TrustWalletCore/TW*Proto.h
 include/TrustWalletCore/TWDerivation.h

@@ -71,7 +71,7 @@ void TWDataReplaceBytes(TWData *_Nonnull data, size_t start, size_t size, const 
 
 void TWDataAppendBytes(TWData *_Nonnull data, const uint8_t *_Nonnull bytes, size_t size) {
     auto* v = const_cast<Data*>(reinterpret_cast<const Data*>(data));
-    for (auto i = 0; i < size; i += 1)
+    for (auto i = 0ul; i < size; i += 1)
         v->push_back(bytes[i]);
 }
 

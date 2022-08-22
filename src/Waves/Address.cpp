@@ -15,8 +15,7 @@
 #include <cstring>
 #include <stdexcept>
 
-using namespace TW;
-using namespace TW::Waves;
+namespace TW::Waves {
 
 template <typename T>
 Data Address::secureHash(const T &data) {
@@ -40,8 +39,6 @@ bool Address::isValid(const Data& decoded) {
     const auto data_checksum = Data(decoded.end() - 4, decoded.end());
     const auto calculated_hash = secureHash(data);
     const auto calculated_checksum = Data(calculated_hash.begin(), calculated_hash.begin() + 4);
-    const auto h = hex(data);
-    const auto h2 = hex(calculated_hash);
     return std::memcmp(data_checksum.data(), calculated_checksum.data(), 4) == 0;
 }
 
@@ -84,3 +81,5 @@ Address::Address(const PublicKey &publicKey) {
 std::string Address::string() const {
     return Base58::bitcoin.encode(bytes);
 }
+
+} // namespace TW::Waves

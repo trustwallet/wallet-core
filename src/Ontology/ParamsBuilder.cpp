@@ -17,7 +17,7 @@
 #include <algorithm>
 
 using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology {
 
 void ParamsBuilder::buildNeoVmParam(ParamsBuilder& builder, const boost::any& param) {
     if (param.type() == typeid(std::string)) {
@@ -244,3 +244,5 @@ Data ParamsBuilder::buildNeoVMInvokeCode(const Data& contractAddress, const std:
     args.insert(args.end(), contractAddress.begin(), contractAddress.end());
     return args;
 }
+
+} // namespace TW::Ontology

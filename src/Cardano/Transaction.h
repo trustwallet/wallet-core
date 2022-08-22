@@ -49,7 +49,6 @@ public:
     void add(const TokenAmount& ta);
     uint256_t getAmount(const std::string& key) const;
     size_t size() const { return bundle.size(); }
-
     /// Get the unique policyIds, can be the same number as the elements, or less (in case a policyId appears more than once, with different asset names).
     std::unordered_set<std::string> getPolicyIds() const;
     /// Filter by policyIds

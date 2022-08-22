@@ -4,16 +4,17 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "boost/format.hpp"
 #include <gtest/gtest.h>
 #include <vector>
-#include "boost/format.hpp"
 
-#include "HexCoding.h"
 #include "Elrond/Serialization.h"
+#include "HexCoding.h"
 #include "TestAccounts.h"
 
 using namespace TW;
-using namespace TW::Elrond;
+
+namespace TW::Elrond::tests {
 
 TEST(ElrondSerialization, SignableString) {
     Transaction transaction;
@@ -58,3 +59,5 @@ TEST(ElrondSerialization, SignableStringWithoutData) {
     string jsonString = serializeTransaction(transaction);
     ASSERT_EQ(R"({"nonce":42,"value":"43","receiver":"abba","sender":"feed","gasPrice":0,"gasLimit":0,"chainID":"1","version":1})", jsonString);
 }
+
+} // namespace TW::Elrond::tests

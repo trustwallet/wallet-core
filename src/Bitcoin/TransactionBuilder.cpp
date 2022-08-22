@@ -105,7 +105,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
 
         // if amount requested is the same or more than available amount, it cannot be satisifed, but
         // treat this case as MaxAmount, and send maximum available (which will be less)
-        if (!maxAmount && input.totalAmount >= inputSum) {
+        if (!maxAmount && static_cast<uint64_t>(input.totalAmount) >= inputSum) {
             maxAmount = true;
         }
 
@@ -134,7 +134,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
         } else {
             // truncate to limit number of selected UTXOs
             plan.utxos.clear();
-            for (auto i = 0; i < MaxUtxosHardLimit; ++i) {
+            for (auto i = 0ul; i < MaxUtxosHardLimit; ++i) {
                 plan.utxos.push_back(selectedInputs[i]);
             }
         }

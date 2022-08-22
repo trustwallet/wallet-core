@@ -25,11 +25,11 @@ inline void encode256LE(Data& data, const uint256_t& value) {
 
 inline void encodeBytes(Data& data, const Data& value) {
     if (value.size() <= (size_t)PUSHBYTES75) {
-        data.push_back((byte)value.size());
+        data.push_back((TW::byte)value.size());
         data.insert(data.end(), value.begin(), value.end());
     } else if (value.size() < 0x100) {
         data.push_back(PUSHDATA1);
-        data.push_back((byte)value.size());
+        data.push_back((TW::byte)value.size());
         data.insert(data.end(), value.begin(), value.end());
     } else if (value.size() < 0x10000) {
         data.push_back(PUSHDATA2);

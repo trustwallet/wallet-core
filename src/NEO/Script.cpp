@@ -12,15 +12,15 @@ namespace TW::NEO {
 
 Data Script::CreateSignatureRedeemScript(const Data& publicKey) {
     Data result;
-    result.push_back((byte)PUSHBYTES21);
+    result.push_back((TW::byte)PUSHBYTES21);
     result.insert(result.end(), publicKey.begin(), publicKey.end());
-    result.push_back((byte)CHECKSIG);
+    result.push_back((TW::byte)CHECKSIG);
     return result;
 }
 
 Data Script::CreateInvocationScript(const Data& signature) {
     Data result;
-    result.push_back((byte)PUSHBYTES40);
+    result.push_back((TW::byte)PUSHBYTES40);
     result.insert(result.end(), signature.begin(), signature.end());
     return result;
 }
@@ -33,11 +33,11 @@ Data Script::CreateNep5TransferScript(const Data& assetId, const Data& from, con
     if (value == uint256_t(0)) {
         result.push_back(PUSH0);
     } else if (value >= uint256_t(1) && value <= uint256_t(16)) {
-        result.push_back(PUSH1 - 1 + (byte)value);
+        result.push_back(PUSH1 - 1 + (TW::byte)value);
     } else {
         Data v;
         encode256LE(v, value);
-        result.push_back((byte)v.size());
+        result.push_back((TW::byte)v.size());
         result.insert(result.end(), v.begin(), v.end());
     }
 

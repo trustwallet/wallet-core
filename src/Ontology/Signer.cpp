@@ -17,7 +17,7 @@
 #include <stdexcept>
 
 using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto contract = std::string(input.contract().begin(), input.contract().end());
@@ -105,3 +105,5 @@ Data Signer::encodeTransaction(const Proto::SigningInput& input, const Data& sig
 
     return tx.serialize();
 }
+
+} // namespace TW::Ontology

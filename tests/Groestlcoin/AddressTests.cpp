@@ -14,7 +14,7 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Groestlcoin;
+namespace TW::Groestlcoin {
 
 TEST(GroestlcoinAddress, FromPublicKey) {
     const auto publicKey = PublicKey(parse_hex("03b85cc59b67c35851eb5060cfc3a759a482254553c5857075c9e247d74d412c91"), TWPublicKeyTypeSECP256k1);
@@ -71,3 +71,5 @@ TEST(GroestlcoinAddress, AddressData) {
     addressData = TW::addressToData(TWCoinTypeGroestlcoin, address);
     EXPECT_EQ(hex(addressData), "98af0aaca388a7e1024f505c033626d908e3b54a");
 }
+
+} // namespace TW::Groestlcoin

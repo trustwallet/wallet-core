@@ -6,15 +6,18 @@
 
 #include "Cosmos/Address.h"
 #include "Cosmos/Signer.h"
-#include "proto/Cosmos.pb.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
+#include "proto/Cosmos.pb.h"
 #include "../interface/TWTestUtilities.h"
 
 #include <gtest/gtest.h>
 
 using namespace TW;
+
+namespace TW::Osmosis::tests {
+
 using namespace TW::Cosmos;
 
 TEST(OsmosisSigner, SignTransfer_81B4) {
@@ -56,3 +59,5 @@ TEST(OsmosisSigner, SignTransfer_81B4) {
     EXPECT_EQ(hex(output.signature()), "0c63ffcc779191511e25559864e79f21152de48a2f50658a1829f838f9a73fc6035eca8884c1e54385c984be51f5a2b5708cb50e9d8b38972d9aff222ead8563");
     EXPECT_EQ(output.error_message(), "");
 }
+
+} // namespace TW::Osmosis::tests

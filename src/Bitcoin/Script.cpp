@@ -176,8 +176,8 @@ bool Script::matchMultisig(std::vector<Data>& keys, int& required) const {
         return false;
     }
 
-    auto expectedCount = decodeNumber(opcode);
-    if (keys.size() != expectedCount || expectedCount < required) {
+    std::size_t expectedCount = decodeNumber(opcode);
+    if (keys.size() != expectedCount || expectedCount < static_cast<std::size_t>(required)) {
         return false;
     }
     if (it + 1 != bytes.size()) {
@@ -237,7 +237,7 @@ bool Script::getScriptOp(size_t& index, uint8_t& opcode, Data& operand) const {
 Script Script::buildPayToPublicKey(const Data& publicKey) {
     assert(publicKey.size() == PublicKey::secp256k1Size || publicKey.size() == PublicKey::secp256k1ExtendedSize);
     Script script;
-    script.bytes.push_back(static_cast<byte>(publicKey.size()));
+    script.bytes.push_back(static_cast<TW::byte>(publicKey.size()));
     append(script.bytes, publicKey);
     script.bytes.push_back(OP_CHECKSIG);
     return script;
@@ -273,7 +273,7 @@ Script Script::buildPayToPublicKeyHashReplay(const Data& hash, const Data& block
     // blockheight
     auto blockHeightData = encodeNumber(blockHeight);
     // blockHeight size will never beyond 1 byte size
-    script.bytes.push_back(static_cast<byte>(blockHeightData.size()));
+    script.bytes.push_back(static_cast<TW::byte>(blockHeightData.size()));
     append(script.bytes, blockHeightData);
     script.bytes.push_back(OP_CHECKBLOCKATHEIGHT);
 
@@ -307,7 +307,7 @@ Script Script::buildPayToScriptHashReplay(const Data& scriptHash, const Data& bl
     // blockheight
     auto blockHeightData = encodeNumber(blockHeight);
     // blockHeight size will never beyond 1 byte size
-    script.bytes.push_back(static_cast<byte>(blockHeightData.size()));
+    script.bytes.push_back(static_cast<TW::byte>(blockHeightData.size()));
     append(script.bytes, blockHeightData);
     script.bytes.push_back(OP_CHECKBLOCKATHEIGHT);
 
@@ -319,7 +319,7 @@ Script Script::buildPayToV0WitnessProgram(const Data& program) {
     assert(program.size() == 20 || program.size() == 32);
     Script script;
     script.bytes.push_back(OP_0);
-    script.bytes.push_back(static_cast<byte>(program.size()));
+    script.bytes.push_back(static_cast<TW::byte>(program.size()));
     append(script.bytes, program);
     assert(script.bytes.size() == 22 || script.bytes.size() == 34);
     return script;
@@ -339,7 +339,7 @@ Script Script::buildPayToV1WitnessProgram(const Data& publicKey) {
     assert(publicKey.size() == 32);
     Script script;
     script.bytes.push_back(OP_1);
-    script.bytes.push_back(static_cast<byte>(publicKey.size()));
+    script.bytes.push_back(static_cast<TW::byte>(publicKey.size()));
     append(script.bytes, publicKey);
     assert(script.bytes.size() == 34);
     return script;
@@ -350,7 +350,7 @@ Script Script::buildOpReturnScript(const Data& data) {
     Script script;
     script.bytes.push_back(OP_RETURN);
     size_t size = std::min(data.size(), MaxOpReturnLength);
-    script.bytes.push_back(static_cast<byte>(size));
+    script.bytes.push_back(static_cast<TW::byte>(size));
     script.bytes.insert(script.bytes.end(), data.begin(), data.begin() + size);
     return script;
 }
@@ -360,7 +360,7 @@ void Script::encode(Data& data) const {
     std::copy(std::begin(bytes), std::end(bytes), std::back_inserter(data));
 }
 
-bool isLtcP2sh(enum TWCoinType coin, byte start) {
+bool isLtcP2sh(enum TWCoinType coin, TW::byte start) {
     // For ltc, we need to support legacy p2sh which starts with 5.
     // Here we check prefix 5 and 50 in case of wallet-core changing its config value.
     // Ref: https://github.com/litecoin-project/litecoin/blob/0.21/src/chainparams.cpp#L128

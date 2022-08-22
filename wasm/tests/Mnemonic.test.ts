@@ -6,11 +6,11 @@
 
 import "mocha";
 import { assert } from "chai";
-import { WalletCore } from "../dist";
 
 describe("Mnemonic", () => {
+
   it("test isValid", () => {
-    const { Mnemonic } = WalletCore;
+    const { Mnemonic } = globalThis.core;
 
     assert.isTrue(
       Mnemonic.isValid(
@@ -25,7 +25,7 @@ describe("Mnemonic", () => {
   });
 
   it("test isValidWord", () => {
-    const { Mnemonic } = WalletCore;
+    const { Mnemonic } = globalThis.core;
 
     assert.isTrue(Mnemonic.isValidWord("credit"));
 
@@ -35,7 +35,7 @@ describe("Mnemonic", () => {
   });
 
   it("test suggest", () => {
-    const { Mnemonic } = WalletCore;
+    const { Mnemonic } = globalThis.core;
 
     assert.equal(Mnemonic.suggest("air"), "air airport");
     assert.equal(Mnemonic.suggest("rob"), "robot robust");

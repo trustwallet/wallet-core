@@ -52,7 +52,7 @@ void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) const 
     auto hash = Hash::sha512(unsignedTx);
     auto half = Data(hash.begin(), hash.begin() + 32);
 
-    transaction.signature = privateKey.signAsDER(half, TWCurveSECP256k1);
+    transaction.signature = privateKey.signAsDER(half);
 }
 
 TW::Data Signer::preImage() const {

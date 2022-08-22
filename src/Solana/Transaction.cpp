@@ -14,8 +14,9 @@
 #include <vector>
 
 using namespace TW;
-using namespace TW::Solana;
 using namespace std;
+
+namespace TW::Solana {
 
 uint8_t CompiledInstruction::findAccount(const Address& address) {
     auto it = std::find(addresses.begin(), addresses.end(), address);
@@ -145,3 +146,5 @@ uint8_t Transaction::getAccountIndex(Address publicKey) {
 bool Signature::operator==(const Signature& v) const {
     return bytes == v.bytes;
 }
+
+} // namespace TW::Solana

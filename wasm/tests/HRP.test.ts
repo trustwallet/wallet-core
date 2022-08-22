@@ -6,11 +6,10 @@
 
 import "mocha";
 import { assert } from "chai";
-import { WalletCore } from "../dist";
 
 describe("HRP", () => {
   it("test string value", () => {
-    const { HRP, describeHRP } = WalletCore;
+    const { HRP, describeHRP } = globalThis.core;
 
     assert.equal(describeHRP(HRP.bitcoin), "bc");
     assert.equal(describeHRP(HRP.binance), "bnb");

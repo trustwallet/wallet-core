@@ -5,7 +5,7 @@
 #include <list>
 
 using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology {
 
 Transaction Oep::decimals(uint32_t nonce) {
     std::vector<boost::any> emptyParam;
@@ -17,7 +17,7 @@ Transaction Oep::decimals(uint32_t nonce) {
 }
 
 Transaction Oep::balanceOf(const Address &address, uint32_t nonce) {
-    std::vector<boost::any> args{address.data};
+    std::vector<boost::any> args{address._data};
     std::string method = "balanceOf";
     std::vector<boost::any> params{args, method};
     auto invokeCode = ParamsBuilder::buildNeoVMInvokeCode(contractAddress(), params);
@@ -28,7 +28,7 @@ Transaction Oep::balanceOf(const Address &address, uint32_t nonce) {
 Transaction Oep::transfer(const Signer &from, const Address &to, uint64_t amount,
                           const Signer &payer, uint64_t gasPrice, uint64_t gasLimit,
                           uint32_t nonce) {
-    std::vector<boost::any> args{amount, to.data, from.getAddress().data,};
+    std::vector<boost::any> args{amount, to._data, from.getAddress()._data,};
     std::string method = "transfer";
     std::vector<boost::any> params{args, method};
     auto invokeCode = ParamsBuilder::buildNeoVMInvokeCode(contractAddress(), params);
@@ -40,10 +40,12 @@ Transaction Oep::transfer(const Signer &from, const Address &to, uint64_t amount
 
 Transaction Oep::unsignedTransfer(const Address &from, const Address &to, uint64_t amount,
                              uint64_t gasPrice, uint64_t gasLimit,uint32_t nonce) {
-    std::vector<boost::any> args{amount, to.data, from.data};
+    std::vector<boost::any> args{amount, to._data, from._data};
     std::string method = "transfer";
     std::vector<boost::any> params{args, method};
     auto invokeCode = ParamsBuilder::buildNeoVMInvokeCode(contractAddress(), params);
     auto tx = Transaction(version, txType, nonce, gasPrice, gasLimit, from.string(), invokeCode);
     return tx;
 }
+
+} // namespace TW::Ontology

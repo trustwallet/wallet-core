@@ -3,8 +3,11 @@
 # Fail if any commands fails
 set -e
 
+echo "#### Generating files... ####"
+tools/generate-files
+
 echo "#### Code coverage... ####"
-cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON
+cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DTW_UNITY_BUILD=ON -DTW_CODE_COVERAGE=ON
 make -Cbuild -j12 tests
 find . -name "*.gcda" -exec rm {} \;
 ./build/tests/tests tests --gtest_filter=*

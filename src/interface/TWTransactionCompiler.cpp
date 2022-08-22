@@ -34,7 +34,7 @@ TWData *_Nonnull TWTransactionCompilerBuildInput(enum TWCoinType coinType, TWStr
 std::vector<Data> createFromTWDataVector(const struct TWDataVector* _Nonnull dataVector) {
     std::vector<Data> ret;
     const auto n = TWDataVectorSize(dataVector);
-    for (auto i = 0; i < n; ++i) {
+    for (auto i = 0ul; i < n; ++i) {
         auto elem = TWDataVectorGet(dataVector, i);
         ret.push_back(*(static_cast<const Data*>(elem)));
         TWDataDelete(elem);

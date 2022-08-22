@@ -23,14 +23,14 @@ class Signer {
     const PrivateKey privateKey;
     const PublicKey publicKey;
     const Proto::SigningInput& input;
-    std::array<byte, 32> previous;
-    std::array<byte, 32> link;
-    const std::array<byte, 32> blockHash;
+    std::array<TW::byte, 32> previous;
+    std::array<TW::byte, 32> link;
+    const std::array<TW::byte, 32> blockHash;
 
     explicit Signer(const Proto::SigningInput& input);
 
     /// Signs the blockHash, returns signature bytes
-    std::array<byte, 64> sign() const noexcept;
+    std::array<TW::byte, 64> sign() const noexcept;
 
     /// Builds signed transaction, incl. signature, and json format
     Proto::SigningOutput build() const;

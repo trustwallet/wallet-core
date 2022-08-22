@@ -19,7 +19,7 @@ TW::Data Encode::encoded() const {
     if (openIndefCount > 0) {
         throw invalid_argument("CBOR Unclosed indefinite length building");
     }
-    return data;
+    return _data;
 }
 
 Encode Encode::uint(uint64_t value) {
@@ -46,7 +46,7 @@ Encode Encode::array(const vector<Encode>& elems) {
     Encode e;
     auto n = elems.size();
     e.appendValue(Decode::MT_array, n);
-    for (int i = 0; i < n; ++i) {
+    for (auto i = 0ul; i < n; ++i) {
         e.append(elems[i].encoded());
     }
     return e;
@@ -96,7 +96,7 @@ Encode Encode::closeIndefArray() {
         throw invalid_argument("CBOR Not inside indefinite-length array");
     }
     // add closing break command
-    TW::append(data, 0xFF);
+    TW::append(_data, 0xFF);
     // close counter
     --openIndefCount;
     return *this;
@@ -129,9 +129,9 @@ Encode Encode::appendValue(byte majorType, uint64_t value) {
         minorType = 27;
     }
     // add bytes
-    TW::append(data, (byte)((majorType << 5) | (minorType & 0x1F)));
+    TW::append(_data, (byte)((majorType << 5) | (minorType & 0x1F)));
     Data valBytes = Data(byteCount - 1);
-    for (int i = 0; i < valBytes.size(); ++i) {
+    for (auto i = 0ul; i < valBytes.size(); ++i) {
         valBytes[valBytes.size() - 1 - i] = (byte)(value & 0xFF);
         value = value >> 8;
     }
@@ -141,7 +141,7 @@ Encode Encode::appendValue(byte majorType, uint64_t value) {
 
 void Encode::appendIndefinite(byte majorType) {
     byte minorType = 31;
-    TW::append(data, (byte)((majorType << 5) | (minorType & 0x1F)));
+    TW::append(_data, (byte)((majorType << 5) | (minorType & 0x1F)));
 }
 
 
@@ -279,7 +279,7 @@ uint32_t Decode::getCompoundLength(uint32_t countMultiplier) const {
     uint32_t count = typeDesc.isIndefiniteValue ? 0 : (uint32_t)(typeDesc.value * countMultiplier);
     // process elements
     len += typeDesc.byteCount;
-    for (int i = 0; i < count || typeDesc.isIndefiniteValue; ++i) {
+    for (auto i = 0ul; i < count || typeDesc.isIndefiniteValue; ++i) {
         Decode nextElem = skipClone(len);
         if (typeDesc.isIndefiniteValue && nextElem.isBreak()) {
             // end of indefinite-length
@@ -304,7 +304,7 @@ vector<Decode> Decode::getCompoundElements(uint32_t countMultiplier, TW::byte ex
     uint32_t count = typeDesc.isIndefiniteValue ? 0 : (uint32_t)(typeDesc.value * countMultiplier);
     // process elements
     uint32_t idx = typeDesc.byteCount;
-    for (int i = 0; i < count || typeDesc.isIndefiniteValue; ++i) {
+    for (auto i = 0ul; i < count || typeDesc.isIndefiniteValue; ++i) {
         Decode nextElem = skipClone(idx);
         if (typeDesc.isIndefiniteValue && nextElem.isBreak()) {
             // end of indefinite-length
@@ -314,7 +314,7 @@ vector<Decode> Decode::getCompoundElements(uint32_t countMultiplier, TW::byte ex
         if (idx + elemLen > length()) {
             throw std::invalid_argument("CBOR array data too short");
         }
-        elems.push_back(Decode(data, subStart + idx, elemLen));
+        elems.emplace_back(Decode(data, subStart + idx, elemLen));
         idx += elemLen;
     }
     return elems;
@@ -323,7 +323,7 @@ vector<Decode> Decode::getCompoundElements(uint32_t countMultiplier, TW::byte ex
 vector<pair<Decode, Decode>> Decode::getMapElements() const {
     auto elems = getCompoundElements(2, MT_map);
     vector<pair<Decode, Decode>> map;
-    for (int i = 0; i < elems.size(); i += 2) {
+    for (auto i = 0ul; i < elems.size(); i += 2) {
         map.emplace_back(make_pair(elems[i], elems[i + 1]));
     }
     return map;
@@ -369,7 +369,7 @@ bool Decode::isValid() const {
                     if (len > subLen) { return false; }
                     auto count = typeDesc.isIndefiniteValue ? 0 : countMultiplier * typeDesc.value;
                     uint32_t idx = typeDesc.byteCount;
-                    for (int i = 0; i < count || typeDesc.isIndefiniteValue; ++i)
+                    for (auto i = 0ul; i < count || typeDesc.isIndefiniteValue; ++i)
                     {
                         Decode nextElem = skipClone(idx);
                         if (typeDesc.isIndefiniteValue && nextElem.isBreak()) { break; }
@@ -416,7 +416,7 @@ string Decode::dumpToStringInternal() const {
                     s << "[";
                 }
                 vector<Decode> elems = getArrayElements();
-                for (int i = 0; i < elems.size(); ++i) {
+                for (auto i = 0ul; i < elems.size(); ++i) {
                     if (i > 0) s << ", ";
                     s << elems[i].dumpToStringInternal();
                 }
@@ -432,7 +432,7 @@ string Decode::dumpToStringInternal() const {
                     s << "{";
                 }
                 auto elems = getMapElements();
-                for (int i = 0; i < elems.size(); ++i) {
+                for (auto i = 0ul; i < elems.size(); ++i) {
                     if (i > 0) s << ", ";
                     s << elems[i].first.dumpToStringInternal() << ": " << elems[i].second.dumpToStringInternal();
                 }

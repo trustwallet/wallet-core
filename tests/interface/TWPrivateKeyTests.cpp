@@ -167,7 +167,7 @@ TEST(TWPrivateKeyTests, SignAsDER) {
     const auto data = WRAPD(TWDataCreateWithBytes((uint8_t *)message, strlen(message)));
     const auto hash = WRAPD(TWHashKeccak256(data.get()));
 
-    auto actual = WRAPD(TWPrivateKeySignAsDER(privateKey.get(), hash.get(), TWCurveSECP256k1));
+    auto actual = WRAPD(TWPrivateKeySignAsDER(privateKey.get(), hash.get()));
 
     ASSERT_EQ(TW::hex(*((TW::Data*)actual.get())),
         "30450221008720a46b5b3963790d94bcc61ad57ca02fd153584315bfa161ed3455e336ba6202204d68df010ed934b8792c5b6a57ba86c3da31d039f9612b44d1bf054132254de9");

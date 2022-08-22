@@ -33,7 +33,7 @@ class TransactionOutputs: public std::vector<TransactionOutput> {};
 struct Transaction {
 public:
     /// Transaction data format version (note, this is signed)
-    int32_t version = 1;
+    int32_t _version = 1;
 
     /// The block number or timestamp at which this transaction is unlocked
     ///
@@ -62,7 +62,7 @@ public:
     Transaction() = default;
 
     Transaction(int32_t version, uint32_t lockTime = 0, TW::Hash::Hasher hasher = TW::Hash::HasherSha256d)
-        : version(version), lockTime(lockTime), inputs(), outputs(), hasher(hasher) {}
+        : _version(version), lockTime(lockTime), inputs(), outputs(), hasher(hasher) {}
 
     /// Whether the transaction is empty.
     bool empty() const { return inputs.empty() && outputs.empty(); }

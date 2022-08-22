@@ -2,7 +2,7 @@
 #include "OepTxBuilder.h"
 
 using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology {
 
 Data OepTxBuilder::decimals(const Ontology::Proto::SigningInput &input) {
     auto transaction = Oep(input.contract()).decimals(input.nonce());
@@ -47,3 +47,4 @@ Transaction OepTxBuilder::buildTransferTx(const Ontology::Proto::TransactionInpu
     return transferTx;
 }
 
+} // namespace TW::Ontology

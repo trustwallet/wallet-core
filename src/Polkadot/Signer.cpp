@@ -9,8 +9,7 @@
 #include "../Hash.h"
 #include "../PrivateKey.h"
 
-using namespace TW;
-using namespace TW::Polkadot;
+namespace TW::Polkadot {
 
 static constexpr size_t hashTreshold = 256;
 
@@ -56,3 +55,5 @@ Data Signer::hash(const Data &payload) {
 
     return payload;
 }
+
+} // namespace TW::Polkadot

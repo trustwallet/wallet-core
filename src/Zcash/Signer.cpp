@@ -11,8 +11,7 @@
 #include "Transaction.h"
 #include "TransactionBuilder.h"
 
-using namespace TW;
-using namespace TW::Zcash;
+namespace TW::Zcash {
 
 TransactionPlan Signer::plan(const SigningInput& input) noexcept {
     auto plan = Bitcoin::TransactionSigner<Transaction, TransactionBuilder>::plan(input);
@@ -58,3 +57,5 @@ PreSigningOutput Signer::preImageHashes(const SigningInput& input) noexcept {
     }
     return output;
 }
+
+} // namespace TW::Zcash

@@ -56,7 +56,7 @@ TEST(THORChainSwap, SwapBtcEth) {
     EXPECT_EQ(tx.to_address(), VaultBtc);
     EXPECT_EQ(tx.change_address(), Address1Btc);
     EXPECT_EQ(tx.output_op_return(), "=:ETH.ETH:0xb9f5771c27664bf2282d98e09d7f50cec7cb01a7:140000000000000000");
-    EXPECT_EQ(tx.coin_type(), 0);
+    EXPECT_EQ(tx.coin_type(), 0ul);
     EXPECT_EQ(tx.private_key_size(), 0);
     EXPECT_FALSE(tx.has_plan());
 
@@ -109,7 +109,7 @@ TEST(THORChainSwap, SwapBtcBnb) {
     EXPECT_EQ(tx.to_address(), VaultBtc);
     EXPECT_EQ(tx.change_address(), Address1Btc);
     EXPECT_EQ(tx.output_op_return(), "SWAP:BNB.BNB:bnb1us47wdhfx08ch97zdueh3x3u5murfrx30jecrx:140000000");
-    EXPECT_EQ(tx.coin_type(), 0);
+    EXPECT_EQ(tx.coin_type(), 0ul);
     EXPECT_EQ(tx.private_key_size(), 0);
     EXPECT_FALSE(tx.has_plan());
 

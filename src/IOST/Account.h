@@ -20,7 +20,7 @@ namespace TW::IOST {
         static std::string encodePubKey(const PublicKey& publicKey);
         static std::string address(const std::string& string);
         Account(std::string name): name(std::move(name)) {}
-        Account(const PublicKey& publicKey) {}
+        Account([[maybe_unused]] const PublicKey& publicKey) {}
         Account(const Proto::AccountInfo& account);
         std::string string() const { return name; }
         Data sign(const Data& digest, TWCurve curve) const;

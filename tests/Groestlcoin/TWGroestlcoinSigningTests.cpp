@@ -22,6 +22,8 @@
 
 #include <gtest/gtest.h>
 
+namespace TW::Groestlcoin {
+
 using namespace TW;
 using namespace TW::Bitcoin;
 
@@ -205,3 +207,5 @@ TEST(GroestlcoinSigning, PlanP2WPKH) {
     EXPECT_TRUE(verifyPlan(plan, {4774}, 2500, 145));
     EXPECT_EQ(plan.branch_id(), "");
 }
+
+} // namespace TW::Groestlcoin

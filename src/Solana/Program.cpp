@@ -12,6 +12,7 @@
 
 #include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 
+#include <limits>
 #include <cassert>
 
 using namespace TW;
@@ -61,23 +62,20 @@ Address TokenProgram::defaultTokenAddress(const Address& mainAddress, const Addr
  * Based on solana code, find_program_address()
  * https://github.com/solana-labs/solana/blob/master/sdk/program/src/pubkey.rs#L193
  */
-Address TokenProgram::findProgramAddress(const std::vector<TW::Data>& seeds, const Address& programId) {
+Address TokenProgram::findProgramAddress(const std::vector<TW::Data>& seeds, [[maybe_unused]] const Address& programId) {
     Address result(Data(32));
     // cycle through seeds for the rare case when result is not valid
-    for (uint8_t seed = 255; seed >= 0; --seed) {
-        std::vector<Data> seedsCopy;
-        for (auto& s: seeds) {
-            seedsCopy.push_back(s);
-        }
-        // add extra seed
-        seedsCopy.push_back({seed});
-        Address address = createProgramAddress(seedsCopy, Address(ASSOCIATED_TOKEN_PROGRAM_ID_ADDRESS));
+    auto bumpSeed = Data{std::numeric_limits<std::uint8_t>::max()};
+    for (std::uint8_t seed = 0; seed <= std::numeric_limits<std::uint8_t>::max(); ++seed) {
+        std::vector<Data> seedsCopy = seeds;
+        seedsCopy.emplace_back(bumpSeed);
+        Address address = createProgramAddress(seedsCopy, programId);
         PublicKey publicKey = PublicKey(TW::data(address.bytes.data(), address.bytes.size()), TWPublicKeyTypeED25519);
         if (!publicKey.isValidED25519()) {
             result = address;
             break;
         }
-        // try next seed
+        bumpSeed[0] -= 1;
     }
     return result;
 }

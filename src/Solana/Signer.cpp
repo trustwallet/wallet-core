@@ -16,7 +16,7 @@
 #include <optional>
 
 using namespace TW;
-using namespace TW::Solana;
+namespace TW::Solana {
 
 void Signer::sign(const std::vector<PrivateKey>& privateKeys, Transaction& transaction) {
     for (auto privateKey : privateKeys) {
@@ -34,7 +34,7 @@ convertReferences(const google::protobuf::RepeatedPtrField<std::string>& referen
     std::vector<Address> ret;
     for (auto i = 0; i < references.size(); ++i) {
         if (Address::isValid(references[i])) {
-            ret.push_back(Address(references[i]));
+            ret.emplace_back(references[i]);
         }
     }
     return ret;
@@ -44,7 +44,6 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto blockhash = Solana::Hash(input.recent_blockhash());
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     Message message;
-    std::string stakePubkey;
     std::vector<PrivateKey> signerKeys;
 
     switch (input.transaction_type_case()) {
@@ -508,7 +507,7 @@ Proto::SigningOutput Signer::compile(const std::vector<Data>& signatures,
         throw std::invalid_argument(
             "the number of public keys and the number of signatures not aligned");
     }
-    for (int i = 0; i < signatures.size(); i++) {
+    for (auto i = 0ul; i < signatures.size(); i++) {
         if (!publicKeys[i].verify(signatures[i], preImageHash)) {
             throw std::invalid_argument("invalid signature at " + std::to_string(i));
         }
@@ -520,3 +519,5 @@ Proto::SigningOutput Signer::compile(const std::vector<Data>& signatures,
     output.set_encoded(encoded);
     return output;
 };
+
+} // namespace TW::Solana

@@ -30,39 +30,40 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, TWCoinType c
 std::string Signer::signaturePreimage(const Proto::SigningInput& input, const Data& publicKey, TWCoinType coin) const {
     switch (input.signing_mode()) {
     case Proto::JSON:
-        return signaturePreimageJSON(input).dump();
+        return Json::signaturePreimageJSON(input).dump();
 
     case Proto::Protobuf:
     default:
         auto pbk = PublicKey(publicKey, TWPublicKeyTypeSECP256k1);
-        return signaturePreimageProto(input, pbk, coin);
+        return Protobuf::signaturePreimageProto(input, pbk, coin);
     }
 }
 
 // TODO: check if we need to use coin here.
 Proto::SigningOutput Signer::signJsonSerialized(const Proto::SigningInput& input) noexcept {
     auto key = PrivateKey(input.private_key());
-    auto preimage = signaturePreimageJSON(input).dump();
+    auto preimage = Json::signaturePreimageJSON(input).dump();
     auto hash = Hash::sha256(preimage);
     auto signedHash = key.sign(hash, TWCurveSECP256k1);
 
     auto output = Proto::SigningOutput();
     auto signature = Data(signedHash.begin(), signedHash.end() - 1);
-    auto txJson = transactionJSON(input, signature);
+    auto txJson = Json::transactionJSON(input, signature);
     output.set_json(txJson.dump());
     output.set_signature(signature.data(), signature.size());
     return output;
 }
 
 Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input, TWCoinType coin) noexcept {
+    using namespace Protobuf;
     try {
         const auto serializedTxBody = buildProtoTxBody(input);
         const auto serializedAuthInfo = buildAuthInfo(input, coin);
         const auto signature = buildSignature(input, serializedTxBody, serializedAuthInfo, coin);
-        auto serializedTxRaw = buildProtoTxRaw(input, serializedTxBody, serializedAuthInfo, signature);
+        auto serializedTxRaw = Protobuf::buildProtoTxRaw(serializedTxBody, serializedAuthInfo, signature);
 
         auto output = Proto::SigningOutput();
-        const string jsonSerialized = buildProtoTxJson(input, serializedTxRaw);
+        const std::string jsonSerialized = buildProtoTxJson(input, serializedTxRaw);
         output.set_serialized(jsonSerialized);
         output.set_signature(signature.data(), signature.size());
         return output;
@@ -85,10 +86,10 @@ std::string Signer::signJSON(const std::string& json, const Data& key, TWCoinTyp
 std::string Signer::encodeTransaction(const Proto::SigningInput& input, const Data& signature, const PublicKey& publicKey, TWCoinType coin) const {
     switch (input.signing_mode()) {
     case Proto::JSON:
-        return buildJsonTxRaw(input, publicKey, signature);
+        return Json::buildJsonTxRaw(input, publicKey, signature);
 
     case Proto::Protobuf:
     default:
-        return buildProtoTxRaw(input, publicKey, signature, coin);
+        return Protobuf::buildProtoTxRaw(input, publicKey, signature, coin);
     }
 }

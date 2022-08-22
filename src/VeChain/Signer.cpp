@@ -9,7 +9,8 @@
 #include "../Hash.h"
 
 using namespace TW;
-using namespace TW::VeChain;
+
+namespace TW::VeChain {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
@@ -74,3 +75,5 @@ Data Signer::buildSignedTx(const Proto::SigningInput& input, const Data& signatu
 
     return transaction.encode();
 }
+
+} // namespace TW::VeChain

@@ -7,7 +7,7 @@
 #include "OngTxBuilder.h"
 
 using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology {
 
 Data OngTxBuilder::decimals(const Ontology::Proto::SigningInput &input) {
     auto transaction = Ong().decimals(input.nonce());
@@ -63,3 +63,5 @@ Transaction OngTxBuilder::buildTransferTx(const Ontology::Proto::TransactionInpu
                                              input.gas_price(), input.gas_limit(), input.nonce());
     return transferTx;
 }
+
+} // namespace TW::Ontology

@@ -7,12 +7,13 @@
 #include "Address.h"
 
 #include <cstring>
+#include <climits>
 
 #include "../Base32.h"
 #include "../Data.h"
 
 using namespace TW;
-using namespace TW::Filecoin;
+namespace TW::Filecoin {
 
 static const char BASE32_ALPHABET_FILECOIN[] = "abcdefghijklmnopqrstuvwxyz234567";
 static constexpr size_t checksumSize = 4;
@@ -32,7 +33,7 @@ bool Address::isValid(const Data& data) {
         if (data.size() == 11 && data[10] > 0x01) {
             return false;
         }
-        int i;
+        std::size_t i;
         for (i = 1; i < data.size(); i++) {
             if ((data[i] & 0x80) == 0) {
                 break;
@@ -47,7 +48,7 @@ bool Address::isValid(const Data& data) {
 static bool isValidID(const std::string& string) {
     if (string.length() > 22)
         return false;
-    for (int i = 2; i < string.length(); i++) {
+    for (auto i = 2ul; i < string.length(); i++) {
         if (string[i] < '0' || string[i] > '9') {
             return false;
         }
@@ -150,12 +151,12 @@ std::string Address::string() const {
     if (type() == Type::ID) {
         uint64_t id = 0;
         unsigned shift = 0;
-        for (int i = 1; i < bytes.size(); i++) {
-            if (bytes[i] < 0x80) {
-                id |= bytes[i] << shift;
+        for (auto i = 1ul; i < bytes.size(); i++) {
+            if (bytes[i] <= SCHAR_MAX) {
+                id |= static_cast<uint64_t>(bytes[i]) << shift;
                 break;
             } else {
-                id |= ((uint64_t)(bytes[i] & 0x7F)) << shift;
+                id |= static_cast<uint64_t>(bytes[i] & SCHAR_MAX) << shift;
                 shift += 7;
             }
         }
@@ -178,3 +179,5 @@ std::string Address::string() const {
 
     return s;
 }
+
+} // namespace TW::Filecoin

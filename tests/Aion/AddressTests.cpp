@@ -13,7 +13,8 @@
 #include "../interface/TWTestUtilities.h"
 
 using namespace TW;
-using namespace TW::Aion;
+
+namespace TW::Aion::tests {
 
 TEST(AionAddress, FromPublicKey) {
     auto publicKey = PublicKey(parse_hex("01a775daa30b33fda3091768f0561c8042ee23cb48a6a3e5d7e8248b13d04a48a7"), TWPublicKeyTypeED25519);
@@ -42,3 +43,5 @@ TEST(AionAddress, isValid) {
     ASSERT_FALSE(Address::isValid(invalidAddress));
     EXPECT_EXCEPTION(Address(parse_hex(invalidAddress)), "Invalid address data");
 }
+
+} // namespace TW::Aion::tests

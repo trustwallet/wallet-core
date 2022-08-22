@@ -12,7 +12,6 @@
 #include <string>
 
 using namespace TW;
-using namespace TW::FIO;
 
 struct TWFIOAccount {
     std::string description;
@@ -20,11 +19,11 @@ struct TWFIOAccount {
 
 struct TWFIOAccount *_Nullable TWFIOAccountCreateWithString(TWString *_Nonnull string) {
     const auto& account = *reinterpret_cast<const std::string*>(string);
-    if (Address::isValid(account)) {
-        const auto addr = Address(account);
-        return new TWFIOAccount{Actor::actor(addr)};
+    if (FIO::Address::isValid(account)) {
+        const auto addr = FIO::Address(account);
+        return new TWFIOAccount{FIO::Actor::actor(addr)};
     }
-    if (Actor::validate(account)) {
+    if (FIO::Actor::validate(account)) {
         return new TWFIOAccount{account};
     }
     return nullptr;

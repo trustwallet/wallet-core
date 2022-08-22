@@ -14,7 +14,7 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Zilliqa;
+namespace TW::Zilliqa {
 
 TEST(ZilliqaSigner, PreImage) {
     auto privateKey = PrivateKey(parse_hex("0E891B9DFF485000C7D1DC22ECF3A583CC50328684321D61947A86E57CF6C638"));
@@ -45,7 +45,7 @@ TEST(ZilliqaSigner, PreImage) {
 
     ASSERT_EQ(hex(preImage.begin(), preImage.end()), "0881800410041a149ca91eb535fb92fda5094110fdaeb752edb9b03922230a21034ae47910d58b9bde819c3cffa8de4441955508db00aa2540db8e6bf6e99abc1b2a120a10000000000000000000000da475abf00032120a100000000000000000000000003b9aca003801");
 
-    ASSERT_TRUE(pubKey.verifySchnorr(Data(signature.begin(), signature.end()), preImage));
+    ASSERT_TRUE(pubKey.verifyZilliqa(Data(signature.begin(), signature.end()), preImage));
 }
 
 TEST(ZilliqaSigner, Signing) {
@@ -108,3 +108,5 @@ TEST(ZilliqaSigner, SigningData) {
     ASSERT_EQ(output.json(), R"({"amount":"10000000000000","code":"","data":"{\"_tag\":\"DelegateStake\",\"params\":[{\"type\":\"ByStr20\",\"value\":\"0x122219cCeAb410901e96c3A0e55E46231480341b\",\"vname\":\"ssnaddr\"}]}","gasLimit":"5000","gasPrice":"2000000000","nonce":56,"pubKey":"03fb30b196ce3e976593ecc2da220dca9cdea8c84d2373770042a930b892ac0f5c","signature":"437fb5c3ce2c6b01f9d490f670539fae4533c82a21fa7edfe6b23df70d732937e8c578c8d6ed24be9150f5126f7b7c977a467af8947ef92a720908a761a6eb0d","toAddr":"43D459eC504C7432959c086B0ac7F7855E984306","version":65537})");
     ASSERT_EQ(hex(output.signature().begin(), output.signature().end()), "437fb5c3ce2c6b01f9d490f670539fae4533c82a21fa7edfe6b23df70d732937e8c578c8d6ed24be9150f5126f7b7c977a467af8947ef92a720908a761a6eb0d");    
 }
+
+} // namespace TW::Zilliqa 

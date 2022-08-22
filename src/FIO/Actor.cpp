@@ -25,7 +25,7 @@ bool Actor::validate(const std::string& addr) {
     return regex_search(addr, match, pattern);
 }
 
-uint64_t Actor::shortenKey(const array<byte, Address::size>& addrKey)
+uint64_t Actor::shortenKey(const array<TW::byte, Address::size>& addrKey)
 {
     uint64_t res = 0;
     int i = 1; // Ignore key head

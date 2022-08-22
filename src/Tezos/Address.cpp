@@ -15,15 +15,14 @@
 
 #include <TrezorCrypto/ecdsa.h>
 
-using namespace TW;
-using namespace TW::Tezos;
+namespace TW::Tezos {
 
 /// Address prefixes.
-const std::array<byte, 3> tz1Prefix{6, 161, 159};
-const std::array<byte, 3> tz2Prefix{6, 161, 161};
-const std::array<byte, 3> tz3Prefix{6, 161, 164};
-const std::array<byte, 3> ktPrefix{2, 90, 121};
-const std::array<byte, 3> kt1Prefix{2, 90, 121};
+const std::array<TW::byte, 3> tz1Prefix{6, 161, 159};
+const std::array<TW::byte, 3> tz2Prefix{6, 161, 161};
+const std::array<TW::byte, 3> tz3Prefix{6, 161, 164};
+const std::array<TW::byte, 3> ktPrefix{2, 90, 121};
+const std::array<TW::byte, 3> kt1Prefix{2, 90, 121};
 
 bool Address::isValid(const std::string& string) {
     const auto decoded = Base58::bitcoin.decodeCheck(string);
@@ -112,3 +111,5 @@ Data Address::forge() const {
 
     throw std::invalid_argument("invalid address");
 }
+
+} // namespace TW::Tezos

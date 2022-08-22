@@ -79,8 +79,8 @@ class PrivateKeyTests: XCTestCase {
 
         let message = "hello schnorr".data(using: .utf8)!
 
-        let sig = privateKey.signSchnorr(message: message, curve: .secp256k1)!
-        let verified = publicKey.verifySchnorr(signature: sig, message: message)
+        let sig = privateKey.signZilliqaSchnorr(message: message)!
+        let verified = publicKey.verifyZilliqaSchnorr(signature: sig, message: message)
 
         XCTAssertEqual(sig.hexString, "d166b1ae7892c5ef541461dc12a50214d0681b63d8037cda29a3fe6af8bb973e4ea94624d85bc0010bdc1b38d05198328fae21254adc2bf5feaf2804d54dba55")
         XCTAssertTrue(verified)

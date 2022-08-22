@@ -17,7 +17,7 @@ using namespace TW::Bitcoin;
 using namespace TW;
 using namespace std;
 
-bool Entry::validateAddress(TWCoinType coin, const string& address, byte p2pkh, byte p2sh,
+bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte p2pkh, TW::byte p2sh,
                             const char* hrp) const {
     switch (coin) {
         case TWCoinTypeBitcoin:
@@ -71,7 +71,7 @@ string Entry::normalizeAddress(TWCoinType coin, const string& address) const {
 }
 
 string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey,
-                            byte p2pkh, const char* hrp) const {
+                            TW::byte p2pkh, const char* hrp) const {
     switch (coin) {
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:
@@ -136,20 +136,20 @@ Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
     }
 }
 
-void Entry::sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
+void Entry::sign([[maybe_unused]] TWCoinType coin, const Data& dataIn, Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
-void Entry::plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const {
+void Entry::plan([[maybe_unused]] TWCoinType coin, const Data& dataIn, Data& dataOut) const {
     planTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
-Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
+Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInputData) const {
     return txCompilerTemplate<Proto::SigningInput, Proto::PreSigningOutput>(
         txInputData, [](auto&& input, auto&& output) { output = Signer::preImageHashes(input); });
 }
 
-void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures,
+void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures,
                     const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
     auto txCompilerFunctor = [&signatures, &publicKeys](auto&& input, auto&& output) noexcept {
         if (signatures.empty() || publicKeys.empty()) {

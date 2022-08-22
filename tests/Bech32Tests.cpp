@@ -82,7 +82,7 @@ TEST(Bech32, decode) {
         auto res = Bech32::decode(td.encoded);
         if (!td.isValid && !td.isValidM) {
             EXPECT_EQ(std::get<0>(res), "");
-            EXPECT_EQ(std::get<1>(res).size(), 0);
+            EXPECT_EQ(std::get<1>(res).size(), 0ul);
         } else {
             if (td.isValid) {
                 EXPECT_EQ(std::get<2>(res), Bech32::ChecksumVariant::Bech32);

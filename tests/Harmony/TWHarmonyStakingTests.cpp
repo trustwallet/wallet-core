@@ -17,7 +17,7 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace Harmony;
+namespace TW::Harmony::tests {
 
 static auto TEST_ACCOUNT = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9";
 
@@ -91,7 +91,6 @@ TEST(TWHarmonyStakingSigner, CreateValidator) {
     value = store(uint256_t("0x64"));
     stakingMessage->set_gas_limit(value.data(), value.size());
 
-
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeHarmony);
 
@@ -103,7 +102,6 @@ TEST(TWHarmonyStakingSigner, CreateValidator) {
     ASSERT_EQ(hex(output.r()), shouldBeR);
     ASSERT_EQ(hex(output.s()), shouldBeS);
 }
-
 
 TEST(TWHarmonyStakingSigner, EditValidator) {
     auto input = Proto::SigningInput();
@@ -149,7 +147,7 @@ TEST(TWHarmonyStakingSigner, EditValidator) {
                       "5c864771cafef7b96be541cb3c521a98f01838dd94");
     editValidatorMsg->set_slot_key_to_add_sig(value.data(), value.size());
 
-    //test active
+    // test active
     value = store(uint256_t("1"));
     editValidatorMsg->set_active(value.data(), value.size());
 
@@ -219,7 +217,7 @@ TEST(TWHarmonyStakingSigner, EditValidator2) {
                       "5c864771cafef7b96be541cb3c521a98f01838dd94");
     editValidatorMsg->set_slot_key_to_add_sig(value.data(), value.size());
 
-    //test null
+    // test null
     value = store(uint256_t("0"));
     editValidatorMsg->set_active(value.data(), value.size());
 
@@ -289,7 +287,7 @@ TEST(TWHarmonyStakingSigner, EditValidator3) {
                       "5c864771cafef7b96be541cb3c521a98f01838dd94");
     editValidatorMsg->set_slot_key_to_add_sig(value.data(), value.size());
 
-    //test inactive
+    // test inactive
     value = store(uint256_t("2"));
     editValidatorMsg->set_active(value.data(), value.size());
 
@@ -313,7 +311,6 @@ TEST(TWHarmonyStakingSigner, EditValidator3) {
     ASSERT_EQ(hex(output.r()), shouldBeR);
     ASSERT_EQ(hex(output.s()), shouldBeS);
 }
-
 
 TEST(TWHarmonyStakingSigner, Delegate) {
     auto input = Proto::SigningInput();
@@ -350,8 +347,6 @@ TEST(TWHarmonyStakingSigner, Delegate) {
     ASSERT_EQ(hex(output.r()), shouldBeR);
     ASSERT_EQ(hex(output.s()), shouldBeS);
 }
-
-
 
 TEST(TWHarmonyStakingSigner, Undelegate) {
     auto input = Proto::SigningInput();
@@ -420,3 +415,5 @@ TEST(TWHarmonyStakingSigner, CollectRewards) {
     ASSERT_EQ(hex(output.r()), shouldBeR);
     ASSERT_EQ(hex(output.s()), shouldBeS);
 }
+
+} // namespace TW::Harmony::tests

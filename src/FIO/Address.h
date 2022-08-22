@@ -21,7 +21,7 @@ public:
 
     /// Address data consisting of checksum (4 bytes) followed by the public key
     /// hash.
-    std::array<byte, size> bytes;
+    std::array<TW::byte, size> bytes;
 
     /// Determines whether a string makes a valid FIO address.
     static bool isValid(const std::string& string);

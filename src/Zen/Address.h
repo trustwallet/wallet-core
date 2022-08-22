@@ -17,9 +17,9 @@ namespace TW::Zen {
 
 class Address : public TW::Base58Address<22> {
 public:
-    static const byte staticPrefix = 0x20;
-    static const byte p2pkh = 0x89; // p2pkhPrefix(TWCoinType::TWCoinTypeZcash);
-    static const byte p2sh = 0x96;  // p2shPrefix(TWCoinType::TWCoinTypeZcash);
+    static const TW::byte staticPrefix = 0x20;
+    static const TW::byte p2pkh = 0x89; // p2pkhPrefix(TWCoinType::TWCoinTypeZcash);
+    static const TW::byte p2sh = 0x96;  // p2shPrefix(TWCoinType::TWCoinTypeZcash);
 
     /// Determines whether a string makes a valid ZCash address.
     static bool isValid(const std::string& string) {

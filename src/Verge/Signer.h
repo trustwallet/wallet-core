@@ -36,4 +36,4 @@ public:
     static PreSigningOutput preImageHashes(const SigningInput& input) noexcept;
 };
 
-} // namespace TW::Zen
+} // namespace TW::Verge

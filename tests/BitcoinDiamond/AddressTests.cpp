@@ -54,5 +54,5 @@ TEST(BitcoinDiamondAddress, AddressData) {
     ASSERT_EQ(data, TW::addressToData(TWCoinTypeBitcoinDiamond, address));
 
     data = TW::addressToData(TWCoinTypeBitcoinDiamond, "1G15VvshDxwFTnahZZECJfFwEkq9fP79"); // invalid address
-    ASSERT_EQ(data.size(), 0);
+    ASSERT_EQ(data.size(), 0ul);
 }

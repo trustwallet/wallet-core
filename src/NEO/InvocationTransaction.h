@@ -17,7 +17,7 @@ public:
     uint64_t gas = 0;
 
     InvocationTransaction(TransactionType t = TransactionType::TT_InvocationTransaction,
-                          byte ver = 1)
+                          TW::byte ver = 1)
         : Transaction(t, ver) {}
 
     int deserializeExclusiveData(const Data& data, int initial_pos = 0) override {

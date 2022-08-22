@@ -12,7 +12,7 @@
 
 #include <string>
 
-const std::string SS58Prefix = "SS58PRE";
+inline const std::string SS58Prefix{"SS58PRE"};
 
 namespace TW {
 
@@ -22,11 +22,11 @@ class SS58Address {
     static const size_t checksumSize = 2;
 
     // networks 0 -- 63 are encoded in one byte (00aaaaaa)
-    static const byte networkSimpleLimit = 0x40;
+    static const TW::byte networkSimpleLimit = 0x40;
     // networks 64 -- 16383 are encoded in 2 bytes: network 00cccccc_aaaaaabb is encoded as 01aaaaaa, bbcccccc (first byte between 64 and 127)
     // see: https://github.com/paritytech/substrate/blob/master/primitives/core/src/crypto.rs
     // https://docs.substrate.io/v3/advanced/ss58/#address-type
-    static const byte networkFullLimit = 0x80;
+    static const TW::byte networkFullLimit = 0x80;
 
     /// Address data consisting of one or more network byte(s) followed by the public key.
     Data bytes;
@@ -52,7 +52,7 @@ class SS58Address {
     Data keyBytes() const;
 
     // Return true and the network size (1 or 2) and network if input is valid
-    static bool decodeNetwork(const Data& data, byte& networkSize, uint32_t& network);
+    static bool decodeNetwork(const Data& data, TW::byte& networkSize, uint32_t& network);
 
     static bool encodeNetwork(uint32_t network, Data& data);
 };

@@ -152,7 +152,7 @@ TEST(SolanaTransaction, CreateTokenAccountTransaction) {
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
     EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 5);
-    ASSERT_EQ(message.accountKeys.size(), 7);
+    ASSERT_EQ(message.accountKeys.size(), 7ul);
     EXPECT_EQ(message.accountKeys[0].string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
     EXPECT_EQ(message.accountKeys[1].string(), "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
     EXPECT_EQ(message.accountKeys[2].string(), "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
@@ -160,26 +160,17 @@ TEST(SolanaTransaction, CreateTokenAccountTransaction) {
     EXPECT_EQ(message.accountKeys[4].string(), "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
     EXPECT_EQ(message.accountKeys[5].string(), "SysvarRent111111111111111111111111111111111");
     EXPECT_EQ(message.accountKeys[6].string(), "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
-    EXPECT_EQ(Base58::bitcoin.encode(message.recentBlockhash.bytes),
-              "9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
-    ASSERT_EQ(message.instructions.size(), 1);
-    EXPECT_EQ(message.instructions[0].programId.string(),
-              "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
-    ASSERT_EQ(message.instructions[0].accounts.size(), 7);
-    EXPECT_EQ(message.instructions[0].accounts[0].account.string(),
-              "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
-    EXPECT_EQ(message.instructions[0].accounts[1].account.string(),
-              "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
-    EXPECT_EQ(message.instructions[0].accounts[2].account.string(),
-              "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
-    EXPECT_EQ(message.instructions[0].accounts[3].account.string(),
-              "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
-    EXPECT_EQ(message.instructions[0].accounts[4].account.string(),
-              "11111111111111111111111111111111");
-    EXPECT_EQ(message.instructions[0].accounts[5].account.string(),
-              "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
-    EXPECT_EQ(message.instructions[0].accounts[6].account.string(),
-              "SysvarRent111111111111111111111111111111111");
+    EXPECT_EQ(Base58::bitcoin.encode(message.recentBlockhash.bytes), "9ipJh5xfyoyDaiq8trtrdqQeAhQbQkWy2eANizKvx75K");
+    ASSERT_EQ(message.instructions.size(), 1ul);
+    EXPECT_EQ(message.instructions[0].programId.string(), "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
+    ASSERT_EQ(message.instructions[0].accounts.size(), 7ul);
+    EXPECT_EQ(message.instructions[0].accounts[0].account.string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+    EXPECT_EQ(message.instructions[0].accounts[1].account.string(), "EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+    EXPECT_EQ(message.instructions[0].accounts[2].account.string(), "B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V");
+    EXPECT_EQ(message.instructions[0].accounts[3].account.string(), "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
+    EXPECT_EQ(message.instructions[0].accounts[4].account.string(), "11111111111111111111111111111111");
+    EXPECT_EQ(message.instructions[0].accounts[5].account.string(), "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+    EXPECT_EQ(message.instructions[0].accounts[6].account.string(), "SysvarRent111111111111111111111111111111111");
     auto transaction = Transaction(message);
     transaction.signatures.clear();
     Signature signature(
@@ -211,11 +202,10 @@ TEST(SolanaTransaction, TransferTokenTransaction_3vZ67C) {
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
     EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 2);
-    ASSERT_EQ(message.accountKeys.size(), 5);
-    ASSERT_EQ(message.instructions.size(), 1);
-    EXPECT_EQ(message.instructions[0].programId.string(),
-              "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
-    ASSERT_EQ(message.instructions[0].accounts.size(), 4);
+    ASSERT_EQ(message.accountKeys.size(), 5ul);
+    ASSERT_EQ(message.instructions.size(), 1ul);
+    EXPECT_EQ(message.instructions[0].programId.string(), "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+    ASSERT_EQ(message.instructions[0].accounts.size(), 4ul);
     auto transaction = Transaction(message);
     transaction.signatures.clear();
     Signature signature(
@@ -242,12 +232,12 @@ TEST(SolanaTransaction, CreateNonceAccountTransaction) {
     EXPECT_EQ(message.header.numRequiredSignatures, 2);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
     EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 3);
-    ASSERT_EQ(message.accountKeys.size(), 5);
-    ASSERT_EQ(message.instructions.size(), 2);
+    ASSERT_EQ(message.accountKeys.size(), 5ul);
+    ASSERT_EQ(message.instructions.size(), 2ul);
     EXPECT_EQ(message.instructions[0].programId.string(), "11111111111111111111111111111111");
-    ASSERT_EQ(message.instructions[0].accounts.size(), 2);
+    ASSERT_EQ(message.instructions[0].accounts.size(), 2ul);
     EXPECT_EQ(message.instructions[1].programId.string(), "11111111111111111111111111111111");
-    ASSERT_EQ(message.instructions[1].accounts.size(), 3);
+    ASSERT_EQ(message.instructions[1].accounts.size(), 3ul);
     auto transaction = Transaction(message);
     transaction.signatures.clear();
     transaction.signatures.push_back(Signature("3dbiGHLsFqnwA1PXx7xmoikzv6v9g9BXvZts2126qyE163Bypur"
@@ -275,10 +265,10 @@ TEST(SolanaTransaction, CreateWithdrawNonceAccountToSelf) {
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
     EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 3);
-    ASSERT_EQ(message.accountKeys.size(), 5);
-    ASSERT_EQ(message.instructions.size(), 1);
+    ASSERT_EQ(message.accountKeys.size(), 5ul);
+    ASSERT_EQ(message.instructions.size(), 1ul);
     EXPECT_EQ(message.instructions[0].programId.string(), "11111111111111111111111111111111");
-    ASSERT_EQ(message.instructions[0].accounts.size(), 5);
+    ASSERT_EQ(message.instructions[0].accounts.size(), 5ul);
     auto transaction = Transaction(message);
     transaction.signatures.clear();
     transaction.signatures.push_back(Signature("3JtHs3Ra2LyYCf7a3HFri3ZDa3D4c2G6x3EiyiCDpWjb11QPYfH"
@@ -303,10 +293,10 @@ TEST(SolanaTransaction, CreateWithdrawNonceAccount) {
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
     EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 3);
-    ASSERT_EQ(message.accountKeys.size(), 6);
-    ASSERT_EQ(message.instructions.size(), 1);
+    ASSERT_EQ(message.accountKeys.size(), 6ul);
+    ASSERT_EQ(message.instructions.size(), 1ul);
     EXPECT_EQ(message.instructions[0].programId.string(), "11111111111111111111111111111111");
-    ASSERT_EQ(message.instructions[0].accounts.size(), 5);
+    ASSERT_EQ(message.instructions[0].accounts.size(), 5ul);
     auto transaction = Transaction(message);
     transaction.signatures.clear();
     transaction.signatures.push_back(Signature(
@@ -330,12 +320,12 @@ TEST(SolanaTransaction, TransferWithDurableNonce) {
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
     EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 2);
-    ASSERT_EQ(message.accountKeys.size(), 5);
-    ASSERT_EQ(message.instructions.size(), 2);
+    ASSERT_EQ(message.accountKeys.size(), 5ul);
+    ASSERT_EQ(message.instructions.size(), 2ul);
     EXPECT_EQ(message.instructions[0].programId.string(), "11111111111111111111111111111111");
-    ASSERT_EQ(message.instructions[0].accounts.size(), 3);
+    ASSERT_EQ(message.instructions[0].accounts.size(), 3ul);
     EXPECT_EQ(message.instructions[1].programId.string(), "11111111111111111111111111111111");
-    ASSERT_EQ(message.instructions[1].accounts.size(), 2);
+    ASSERT_EQ(message.instructions[1].accounts.size(), 2ul);
     auto transaction = Transaction(message);
     transaction.signatures.clear();
     transaction.signatures.push_back(Signature("4c4LhPFsDQdwZnVqKtgDC1GVR63GU5REFvonAW3RF7Quo4b1YbU"
@@ -361,14 +351,14 @@ TEST(SolanaTransaction, CreateNonceAccountWithDurableNonce) {
     EXPECT_EQ(message.header.numRequiredSignatures, 2);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
     EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 3);
-    ASSERT_EQ(message.accountKeys.size(), 6);
-    ASSERT_EQ(message.instructions.size(), 3);
+    ASSERT_EQ(message.accountKeys.size(), 6ul);
+    ASSERT_EQ(message.instructions.size(), 3ul);
     EXPECT_EQ(message.instructions[0].programId.string(), "11111111111111111111111111111111");
-    ASSERT_EQ(message.instructions[0].accounts.size(), 3);
+    ASSERT_EQ(message.instructions[0].accounts.size(), 3ul);
     EXPECT_EQ(message.instructions[1].programId.string(), "11111111111111111111111111111111");
-    ASSERT_EQ(message.instructions[1].accounts.size(), 2);
+    ASSERT_EQ(message.instructions[1].accounts.size(), 2ul);
     EXPECT_EQ(message.instructions[2].programId.string(), "11111111111111111111111111111111");
-    ASSERT_EQ(message.instructions[2].accounts.size(), 3);
+    ASSERT_EQ(message.instructions[2].accounts.size(), 3ul);
     auto transaction = Transaction(message);
     transaction.signatures.clear();
     transaction.signatures.push_back(Signature("5wTTTpoXKTzyhL3XbToCt1y12Cf5pcD8xH5NPmGW2y8Dcshgvs2"
@@ -399,12 +389,12 @@ TEST(SolanaTransaction, WithdrawNonceAccountToSelfWithDurableNonce) {
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
     EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 3);
-    ASSERT_EQ(message.accountKeys.size(), 6);
-    ASSERT_EQ(message.instructions.size(), 2);
+    ASSERT_EQ(message.accountKeys.size(), 6ul);
+    ASSERT_EQ(message.instructions.size(), 2ul);
     EXPECT_EQ(message.instructions[0].programId.string(), "11111111111111111111111111111111");
-    ASSERT_EQ(message.instructions[0].accounts.size(), 3);
+    ASSERT_EQ(message.instructions[0].accounts.size(), 3ul);
     EXPECT_EQ(message.instructions[1].programId.string(), "11111111111111111111111111111111");
-    ASSERT_EQ(message.instructions[1].accounts.size(), 5);
+    ASSERT_EQ(message.instructions[1].accounts.size(), 5ul);
     auto transaction = Transaction(message);
     transaction.signatures.clear();
     transaction.signatures.push_back(Signature("5LsWV8w5CZT4uUDY63rxwcBgGczoVeNtYTPrchP7KZwPpJD7qB2"
@@ -430,12 +420,12 @@ TEST(SolanaTransaction, WithdrawNonceAccountWithDurableNonce) {
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
     EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 3);
-    ASSERT_EQ(message.accountKeys.size(), 7);
-    ASSERT_EQ(message.instructions.size(), 2);
+    ASSERT_EQ(message.accountKeys.size(), 7ul);
+    ASSERT_EQ(message.instructions.size(), 2ul);
     EXPECT_EQ(message.instructions[0].programId.string(), "11111111111111111111111111111111");
-    ASSERT_EQ(message.instructions[0].accounts.size(), 3);
+    ASSERT_EQ(message.instructions[0].accounts.size(), 3ul);
     EXPECT_EQ(message.instructions[1].programId.string(), "11111111111111111111111111111111");
-    ASSERT_EQ(message.instructions[1].accounts.size(), 5);
+    ASSERT_EQ(message.instructions[1].accounts.size(), 5ul);
     auto transaction = Transaction(message);
     transaction.signatures.clear();
     transaction.signatures.push_back(Signature("2vzszn8rJbYAusA8F3aUo2x1pNeM8Us2uZm6ibeXiHA4XmZA557"
@@ -465,14 +455,14 @@ TEST(SolanaTransaction, CreateTokenAccountAndTransfer) {
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
     EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 6);
-    ASSERT_EQ(message.accountKeys.size(), 9);
-    ASSERT_EQ(message.instructions.size(), 2);
+    ASSERT_EQ(message.accountKeys.size(), 9ul);
+    ASSERT_EQ(message.instructions.size(), 2ul);
     EXPECT_EQ(message.instructions[0].programId.string(),
               "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
-    ASSERT_EQ(message.instructions[0].accounts.size(), 7);
+    ASSERT_EQ(message.instructions[0].accounts.size(), 7ul);
     EXPECT_EQ(message.instructions[1].programId.string(),
               "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
-    ASSERT_EQ(message.instructions[1].accounts.size(), 4);
+    ASSERT_EQ(message.instructions[1].accounts.size(), 4ul);
     auto transaction = Transaction(message);
     transaction.signatures.clear();
     transaction.signatures.push_back(Signature(
@@ -504,16 +494,16 @@ TEST(SolanaTransaction, CreateTokenAccountAndTransferWithDurableNonce) {
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
     EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 7);
-    ASSERT_EQ(message.accountKeys.size(), 11);
-    ASSERT_EQ(message.instructions.size(), 3);
+    ASSERT_EQ(message.accountKeys.size(), 11ul);
+    ASSERT_EQ(message.instructions.size(), 3ul);
     EXPECT_EQ(message.instructions[0].programId.string(), "11111111111111111111111111111111");
-    ASSERT_EQ(message.instructions[0].accounts.size(), 3);
+    ASSERT_EQ(message.instructions[0].accounts.size(), 3ul);
     EXPECT_EQ(message.instructions[1].programId.string(),
               "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
-    ASSERT_EQ(message.instructions[1].accounts.size(), 7);
+    ASSERT_EQ(message.instructions[1].accounts.size(), 7ul);
     EXPECT_EQ(message.instructions[2].programId.string(),
               "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
-    ASSERT_EQ(message.instructions[2].accounts.size(), 4);
+    ASSERT_EQ(message.instructions[2].accounts.size(), 4ul);
     auto transaction = Transaction(message);
     transaction.signatures.clear();
     transaction.signatures.push_back(Signature(
@@ -538,10 +528,10 @@ TEST(SolanaTransaction, AdvanceNonceAccount) {
     EXPECT_EQ(message.header.numRequiredSignatures, 1);
     EXPECT_EQ(message.header.numCreditOnlySignedAccounts, 0);
     EXPECT_EQ(message.header.numCreditOnlyUnsignedAccounts, 2);
-    ASSERT_EQ(message.accountKeys.size(), 4);
-    ASSERT_EQ(message.instructions.size(), 1);
+    ASSERT_EQ(message.accountKeys.size(), 4ul);
+    ASSERT_EQ(message.instructions.size(), 1ul);
     EXPECT_EQ(message.instructions[0].programId.string(), "11111111111111111111111111111111");
-    ASSERT_EQ(message.instructions[0].accounts.size(), 3);
+    ASSERT_EQ(message.instructions[0].accounts.size(), 3ul);
     auto transaction = Transaction(message);
     transaction.signatures.clear();
     transaction.signatures.push_back(Signature("2gwuvwJ3mdEsjA8Gid6FXYuSwa2AAyFY6Btw8ifwSc2SPsfKBnD"

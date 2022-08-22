@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -90,7 +90,6 @@ class AddressV3 {
     static bool checkLength(Kind kind, size_t length) noexcept;
     /// Check validity of binary address.
     static bool parseAndCheckV3(const TW::Data& raw, NetworkId& networkId, Kind& kind, TW::Data& bytes) noexcept;
-
     /// Check validity and parse elements of a string address.  Used internally by isValid and ctor.
     static bool parseAndCheckV3(const std::string& addr, NetworkId& networkId, Kind& kind, TW::Data& bytes) noexcept;
 

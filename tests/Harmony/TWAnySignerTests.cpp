@@ -6,15 +6,16 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "HexCoding.h"
-#include "../interface/TWTestUtilities.h"
 #include "proto/Harmony.pb.h"
 #include "uint256.h"
+#include "../interface/TWTestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace Harmony;
+
+namespace TW::Harmony::tests {
 
 static auto TEST_RECEIVER = "one129r9pj3sk0re76f7zs3qz92rggmdgjhtwge62k";
 
@@ -72,3 +73,5 @@ TEST(TWAnySignerHarmony, SignJSON) {
     ASSERT_TRUE(TWAnySignerSupportsJSON(TWCoinTypeHarmony));
     assertStringsEqual(result, "f86a0180825208018094514650ca30b3c79f693e14220115434236d44aeb8906bfc8da5ee82200008028a084cc200aab11f5e1b2f7ece0d56ec67385ac50cefb6e3dc2a2f3e036ed575a5ca0643f18005b790cac8d8e7dc90e6147df0b83874b52db198864694ea28a79e6fc");
 }
+
+} // namespace TW::Harmony::tests

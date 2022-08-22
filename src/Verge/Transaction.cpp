@@ -17,7 +17,7 @@
 #include <cassert>
 
 using namespace TW;
-using namespace TW::Verge;
+namespace TW::Verge {
 
 Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index,
                               enum TWBitcoinSigHashType hashType, uint64_t amount) const {
@@ -26,7 +26,7 @@ Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index,
     Data data;
 
     // Version
-    encode32LE(version, data);
+    encode32LE(_version, data);
 
     // Time
     encode32LE(time, data);
@@ -87,7 +87,7 @@ void Transaction::encode(Data& data, enum SegwitFormatMode segwitFormat) const {
         case Segwit: useWitnessFormat = true; break;
     }
 
-    encode32LE(version, data);
+    encode32LE(_version, data);
 
     encode32LE(time, data);
 
@@ -143,14 +143,14 @@ Data Transaction::getSignatureHashBase(const Bitcoin::Script& scriptCode, size_t
 
     Data data;
 
-    encode32LE(version, data);
+    encode32LE(_version, data);
 
     encode32LE(time, data);
 
     auto serializedInputCount =
         (hashType & TWBitcoinSigHashTypeAnyoneCanPay) != 0 ? 1 : inputs.size();
     encodeVarInt(serializedInputCount, data);
-    for (auto subindex = 0; subindex < serializedInputCount; subindex += 1) {
+    for (auto subindex = 0ul; subindex < serializedInputCount; subindex += 1) {
         serializeInput(subindex, scriptCode, index, hashType, data);
     }
 
@@ -158,7 +158,7 @@ Data Transaction::getSignatureHashBase(const Bitcoin::Script& scriptCode, size_t
     auto hashSingle = Bitcoin::hashTypeIsSingle(hashType);
     auto serializedOutputCount = hashNone ? 0 : (hashSingle ? index + 1 : outputs.size());
     encodeVarInt(serializedOutputCount, data);
-    for (auto subindex = 0; subindex < serializedOutputCount; subindex += 1) {
+    for (auto subindex = 0ul; subindex < serializedOutputCount; subindex += 1) {
         if (hashSingle && subindex != index) {
             auto output = Bitcoin::TransactionOutput(-1, {});
             output.encode(data);
@@ -176,3 +176,5 @@ Data Transaction::getSignatureHashBase(const Bitcoin::Script& scriptCode, size_t
     auto hash = Hash::hash(hasher, data);
     return hash;
 }
+
+} // namespace TW::Verge

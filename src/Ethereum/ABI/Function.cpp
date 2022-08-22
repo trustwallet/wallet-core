@@ -36,7 +36,7 @@ bool Function::decodeInput(const Data& encoded, size_t& offset_inout) {
     // read 4-byte hash
     auto p = ParamByteArrayFix(4);
     if (!p.decode(encoded, offset_inout)) { return false; }
-    std::vector<byte> hash = p.getVal();
+    std::vector<TW::byte> hash = p.getVal();
     // adjust offset; hash is NOT padded to 32 bytes
     offset_inout = offset_inout - 32 + 4;
     // verify hash

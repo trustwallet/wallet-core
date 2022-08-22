@@ -14,7 +14,7 @@
 #include <string>
 
 using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology {
 
 const std::string Transaction::ZERO_PAYER = "AFmseVrdL9f9oyCzZefL9tG6UbvhPbdYzM";
 
@@ -25,7 +25,7 @@ std::vector<uint8_t> Transaction::serializeUnsigned() {
     builder.pushBack(nonce);
     builder.pushBack(gasPrice);
     builder.pushBack(gasLimit);
-    builder.pushBack(Address(payer).data);
+    builder.pushBack(Address(payer)._data);
     if (!payload.empty()) {
         builder.pushVar(payload);
     }
@@ -58,3 +58,5 @@ std::vector<uint8_t> Transaction::serialize(const PublicKey& pk) {
     builder.pushBack((uint8_t)0xAC);
     return builder.getBytes();
 }
+
+} // namespace TW::Ontology

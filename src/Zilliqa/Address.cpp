@@ -8,6 +8,8 @@
 
 #include <TrustWalletCore/TWHRP.h>
 
-using namespace TW::Zilliqa;
+namespace TW::Zilliqa {
 
 const std::string Address::hrp = HRP_ZILLIQA;
+
+} // namespace TW::Zilliqa

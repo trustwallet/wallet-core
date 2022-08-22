@@ -12,15 +12,13 @@
 #include "Ethereum/Address.h"
 #include "Signer.h"
 
-using namespace TW::VeChain;
-using namespace TW;
-using namespace std;
-
-void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+namespace TW::VeChain {
+    
+void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
-Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
+Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInputData) const {
     return txCompilerTemplate<Proto::SigningInput, TxCompiler::Proto::PreSigningOutput>(
         txInputData, [](const auto& input, auto& output) {
             auto unsignedTxBytes = Signer::buildUnsignedTx(input);
@@ -30,7 +28,7 @@ Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
         });
 }
 
-void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
+void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, [[maybe_unused]] const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
     dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
         txInputData, [&](const auto& input, auto& output) {
             if (signatures.size() != 1) {
@@ -44,3 +42,5 @@ void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<
             output.set_signature(signatures[0].data(), signatures[0].size());
         });
 }
+
+} // namespace TW::VeChain

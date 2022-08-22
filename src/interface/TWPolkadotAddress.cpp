@@ -16,13 +16,13 @@ bool TWPolkadotAddressEqual(struct TWPolkadotAddress *_Nonnull lhs, struct TWPol
 
 bool TWPolkadotAddressIsValidString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
-    return Address::isValid(*s);
+    return TW::Polkadot::Address::isValid(*s);
 }
 
 struct TWPolkadotAddress *_Nullable TWPolkadotAddressCreateWithString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
     try {
-        const auto address = Address(*s);
+        const auto address = TW::Polkadot::Address(*s);
         return new TWPolkadotAddress{ std::move(address) };
     } catch (...) {
         return nullptr;
@@ -30,7 +30,7 @@ struct TWPolkadotAddress *_Nullable TWPolkadotAddressCreateWithString(TWString *
 }
 
 struct TWPolkadotAddress *_Nonnull TWPolkadotAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
-    return new TWPolkadotAddress{ Address(publicKey->impl) };
+    return new TWPolkadotAddress{ TW::Polkadot::Address(publicKey->impl) };
 }
 
 void TWPolkadotAddressDelete(struct TWPolkadotAddress *_Nonnull address) {

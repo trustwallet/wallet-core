@@ -16,13 +16,13 @@ bool TWKusamaAddressEqual(struct TWKusamaAddress *_Nonnull lhs, struct TWKusamaA
 
 bool TWKusamaAddressIsValidString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
-    return Address::isValid(*s);
+    return Kusama::Address::isValid(*s);
 }
 
 struct TWKusamaAddress *_Nullable TWKusamaAddressCreateWithString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
     try {
-        const auto address = Address(*s);
+        const auto address = Kusama::Address(*s);
         return new TWKusamaAddress{ std::move(address) };
     } catch (...) {
         return nullptr;
@@ -30,7 +30,7 @@ struct TWKusamaAddress *_Nullable TWKusamaAddressCreateWithString(TWString *_Non
 }
 
 struct TWKusamaAddress *_Nonnull TWKusamaAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
-    return new TWKusamaAddress{ Address(publicKey->impl) };
+    return new TWKusamaAddress{ Kusama::Address(publicKey->impl) };
 }
 
 void TWKusamaAddressDelete(struct TWKusamaAddress *_Nonnull address) {

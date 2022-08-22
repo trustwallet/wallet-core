@@ -208,7 +208,6 @@ TEST(TWZcashTransaction, BlossomSigning) {
 
 TEST(TWZcashTransaction, SigningWithError) {
     const int64_t amount = 17615;
-    const int64_t fee = 10000;
     const std::string toAddress = "t1biXYN8wJahR76SqZTe1LBzTLf3JAsmT93";
 
     auto input = Bitcoin::Proto::SigningInput();

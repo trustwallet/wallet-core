@@ -50,7 +50,7 @@ void ValueEncoder::encodeUInt256(const uint256_t& value, Data& inout) {
 }
 
 /// Encoding primitive: encode a number of bytes by taking hash
-inline void encodeBytesWithHash(const byte* data, size_t length, Data& inout) {
+inline void encodeBytesWithHash(const TW::byte* data, size_t length, Data& inout) {
     Data res = Hash::keccak256(data, length);
     assert(res.size() == ValueEncoder::encodedIntSize);
     append(inout, res);

@@ -48,7 +48,7 @@ Data forgePublicKeyHash(const std::string& publicKeyHash) {
 }
 
 // https://github.com/ecadlabs/taquito/blob/master/packages/taquito-local-forging/src/codec.ts#L19
-Data forgePrefix(std::array<byte, 3> prefix, const std::string& val) {
+Data forgePrefix(std::array<TW::byte, 3> prefix, const std::string& val) {
     const auto decoded = Base58::bitcoin.decodeCheck(val);
     if (!std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
         throw std::invalid_argument("prefix not match");
@@ -76,7 +76,7 @@ Data forgePublicKey(PublicKey publicKey) {
     append(data, bytes);
 
     auto pk = Base58::bitcoin.encodeCheck(data);
-    auto decoded = tag + base58ToHex(pk, 4, prefix.data());
+    auto decoded = tag + base58ToHex(pk, 4);
     return parse_hex(decoded);
 }
 
@@ -84,10 +84,10 @@ Data forgePublicKey(PublicKey publicKey) {
 Data forgeZarith(uint64_t input) {
     Data forged = Data();
     while (input >= 0x80) {
-        forged.push_back(static_cast<byte>((input & 0xff) | 0x80));
+        forged.push_back(static_cast<TW::byte>((input & 0xff) | 0x80));
         input >>= 7;
     }
-    forged.push_back(static_cast<byte>(input));
+    forged.push_back(static_cast<TW::byte>(input));
     return forged;
 }
 
@@ -112,7 +112,7 @@ Data forgeOperation(const Operation& operation) {
         }
         auto publicKey = PublicKey(data(operation.reveal_operation_data().public_key()), type);
         auto forgedPublicKey = forgePublicKey(publicKey);
-        
+
         forged.push_back(Operation_OperationKind_REVEAL);
         append(forged, forgedSource);
         append(forged, forgedFee);

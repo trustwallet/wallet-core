@@ -7,18 +7,20 @@
 #include "Ethereum/ABI.h"
 #include "Ethereum/Address.h"
 #include "Ethereum/Signer.h"
+#include "../interface/TWTestUtilities.h"
 #include <HexCoding.h>
 #include <PrivateKey.h>
-#include "../interface/TWTestUtilities.h"
 
 #include <fstream>
 #include <gtest/gtest.h>
 
-using namespace TW::Ethereum::ABI;
-using namespace TW::Ethereum;
 using namespace TW;
 
 extern std::string TESTS_ROOT;
+
+namespace TW::Ethereum::tests {
+
+using namespace ABI;
 
 std::string load_file(const std::string path) {
     std::ifstream stream(path);
@@ -27,7 +29,7 @@ std::string load_file(const std::string path) {
 }
 
 // https://github.com/MetaMask/eth-sig-util/blob/main/test/index.ts
-
+// clang-format off
 ParamStruct msgPersonCow2("Person", std::vector<std::shared_ptr<ParamNamed>>{
     std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Cow")),
     std::make_shared<ParamNamed>("wallets", std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
@@ -65,7 +67,7 @@ ParamStruct msgMailCow2Bob3("Mail", std::vector<std::shared_ptr<ParamNamed>>{
     std::make_shared<ParamNamed>("to", std::make_shared<ParamArray>(std::make_shared<ParamStruct>(msgPersonBob3))),
     std::make_shared<ParamNamed>("contents", std::make_shared<ParamString>("Hello, Bob!"))
 });
-ParamStruct msgEIP712Domain("EIP712Domain", std::vector<std::shared_ptr<ParamNamed>>{
+ParamStruct gMsgEIP712Domain("EIP712Domain", std::vector<std::shared_ptr<ParamNamed>>{
     std::make_shared<ParamNamed>("name", std::make_shared<ParamString>("Ether Mail")),
     std::make_shared<ParamNamed>("version", std::make_shared<ParamString>("1")),
     std::make_shared<ParamNamed>("chainId", std::make_shared<ParamUInt256>(1)),
@@ -86,7 +88,7 @@ TEST(EthereumAbiStruct, encodeTypes) {
 
     EXPECT_EQ(hex(msgMailCow1Bob1.hashStruct()), "c52c0ee5d84264471806290a3f2c4cecfc5490626bf912d01f240d7a274b371e");
 
-    EXPECT_EQ(hex(msgEIP712Domain.hashStruct()), "f2cee375fa42b42143804025fc449deafd50cc031ca257e0b194a650a912090f");
+    EXPECT_EQ(hex(gMsgEIP712Domain.hashStruct()), "f2cee375fa42b42143804025fc449deafd50cc031ca257e0b194a650a912090f");
 
     Address address = Address(privateKeyCow.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
     EXPECT_EQ(address.string(), "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826");
@@ -150,7 +152,7 @@ TEST(EthereumAbiStruct, encodeTypes_v3) {
 
     EXPECT_EQ(hex(msgMailCow1Bob1.hashStruct()), "c52c0ee5d84264471806290a3f2c4cecfc5490626bf912d01f240d7a274b371e");
 
-    EXPECT_EQ(hex(msgEIP712Domain.hashStruct()), "f2cee375fa42b42143804025fc449deafd50cc031ca257e0b194a650a912090f");
+    EXPECT_EQ(hex(gMsgEIP712Domain.hashStruct()), "f2cee375fa42b42143804025fc449deafd50cc031ca257e0b194a650a912090f");
 
     Address address = Address(privateKeyCow.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
     EXPECT_EQ(address.string(), "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826");
@@ -212,17 +214,17 @@ TEST(EthereumAbiStruct, encodeTypes_v4) {
 
     EXPECT_EQ(hex(msgPersonCow2.hashType()), "fabfe1ed996349fc6027709802be19d047da1aa5d6894ff5f6486d92db2e6860");
 
-    EXPECT_EQ(hex(msgPersonCow2.encodeHashes()), 
-        "fabfe1ed996349fc6027709802be19d047da1aa5d6894ff5f6486d92db2e6860"
-        "8c1d2bd5348394761719da11ec67eedae9502d137e8940fee8ecd6f641ee1648"
-        "8a8bfe642b9fc19c25ada5dadfd37487461dc81dd4b0778f262c163ed81b5e2a");
+    EXPECT_EQ(hex(msgPersonCow2.encodeHashes()),
+              "fabfe1ed996349fc6027709802be19d047da1aa5d6894ff5f6486d92db2e6860"
+              "8c1d2bd5348394761719da11ec67eedae9502d137e8940fee8ecd6f641ee1648"
+              "8a8bfe642b9fc19c25ada5dadfd37487461dc81dd4b0778f262c163ed81b5e2a");
 
     EXPECT_EQ(hex(msgPersonCow2.hashStruct()), "9b4846dd48b866f0ac54d61b9b21a9e746f921cefa4ee94c4c0a1c49c774f67f");
 
-    EXPECT_EQ(hex(msgPersonBob3.encodeHashes()), 
-        "fabfe1ed996349fc6027709802be19d047da1aa5d6894ff5f6486d92db2e6860"
-        "28cac318a86c8a0a6a9156c2dba2c8c2363677ba0514ef616592d81557e679b6"
-        "d2734f4c86cc3bd9cabf04c3097589d3165d95e4648fc72d943ed161f651ec6d");
+    EXPECT_EQ(hex(msgPersonBob3.encodeHashes()),
+              "fabfe1ed996349fc6027709802be19d047da1aa5d6894ff5f6486d92db2e6860"
+              "28cac318a86c8a0a6a9156c2dba2c8c2363677ba0514ef616592d81557e679b6"
+              "d2734f4c86cc3bd9cabf04c3097589d3165d95e4648fc72d943ed161f651ec6d");
 
     EXPECT_EQ(hex(msgPersonBob3.hashStruct()), "efa62530c7ae3a290f8a13a5fc20450bdb3a6af19d9d9d2542b5a94e631a9168");
 
@@ -230,15 +232,15 @@ TEST(EthereumAbiStruct, encodeTypes_v4) {
 
     EXPECT_EQ(hex(msgMailCow2Bob3.hashType()), "4bd8a9a2b93427bb184aca81e24beb30ffa3c747e2a33d4225ec08bf12e2e753");
 
-    EXPECT_EQ(hex(msgMailCow2Bob3.encodeHashes()), 
-        "4bd8a9a2b93427bb184aca81e24beb30ffa3c747e2a33d4225ec08bf12e2e753"
-        "9b4846dd48b866f0ac54d61b9b21a9e746f921cefa4ee94c4c0a1c49c774f67f"
-        "ca322beec85be24e374d18d582a6f2997f75c54e7993ab5bc07404ce176ca7cd"
-        "b5aadf3154a261abdd9086fc627b61efca26ae5702701d05cd2305f7c52a2fc8");
+    EXPECT_EQ(hex(msgMailCow2Bob3.encodeHashes()),
+              "4bd8a9a2b93427bb184aca81e24beb30ffa3c747e2a33d4225ec08bf12e2e753"
+              "9b4846dd48b866f0ac54d61b9b21a9e746f921cefa4ee94c4c0a1c49c774f67f"
+              "ca322beec85be24e374d18d582a6f2997f75c54e7993ab5bc07404ce176ca7cd"
+              "b5aadf3154a261abdd9086fc627b61efca26ae5702701d05cd2305f7c52a2fc8");
 
     EXPECT_EQ(hex(msgMailCow2Bob3.hashStruct()), "eb4221181ff3f1a83ea7313993ca9218496e424604ba9492bb4052c03d5c3df8");
 
-    EXPECT_EQ(hex(msgEIP712Domain.hashStruct()), "f2cee375fa42b42143804025fc449deafd50cc031ca257e0b194a650a912090f");
+    EXPECT_EQ(hex(gMsgEIP712Domain.hashStruct()), "f2cee375fa42b42143804025fc449deafd50cc031ca257e0b194a650a912090f");
 
     Address address = Address(privateKeyCow.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
     EXPECT_EQ(address.string(), "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826");
@@ -331,27 +333,27 @@ TEST(EthereumAbiStruct, encodeTypes_v4Rec) {
 
     EXPECT_EQ(hex(msgPersonRecursive.hashType()), "7c5c8e90cb92c8da53b893b24962513be98afcf1b57b00327ae4cc14e3a64116");
 
-    EXPECT_EQ(hex(msgPersonRecursiveMother.encodeHashes()), 
-        "7c5c8e90cb92c8da53b893b24962513be98afcf1b57b00327ae4cc14e3a64116"
-        "afe4142a2b3e7b0503b44951e6030e0e2c5000ef83c61857e2e6003e7aef8570"
-        "0000000000000000000000000000000000000000000000000000000000000000"
-        "88f14be0dd46a8ec608ccbff6d3923a8b4e95cdfc9648f0db6d92a99a264cb36");
+    EXPECT_EQ(hex(msgPersonRecursiveMother.encodeHashes()),
+              "7c5c8e90cb92c8da53b893b24962513be98afcf1b57b00327ae4cc14e3a64116"
+              "afe4142a2b3e7b0503b44951e6030e0e2c5000ef83c61857e2e6003e7aef8570"
+              "0000000000000000000000000000000000000000000000000000000000000000"
+              "88f14be0dd46a8ec608ccbff6d3923a8b4e95cdfc9648f0db6d92a99a264cb36");
 
     EXPECT_EQ(hex(msgPersonRecursiveMother.hashStruct()), "9ebcfbf94f349de50bcb1e3aa4f1eb38824457c99914fefda27dcf9f99f6178b");
 
-    EXPECT_EQ(hex(msgPersonRecursiveFather.encodeHashes()), 
-        "7c5c8e90cb92c8da53b893b24962513be98afcf1b57b00327ae4cc14e3a64116"
-        "b2a7c7faba769181e578a391a6a6811a3e84080c6a3770a0bf8a856dfa79d333"
-        "0000000000000000000000000000000000000000000000000000000000000000"
-        "02cc7460f2c9ff107904cff671ec6fee57ba3dd7decf999fe9fe056f3fd4d56e");
+    EXPECT_EQ(hex(msgPersonRecursiveFather.encodeHashes()),
+              "7c5c8e90cb92c8da53b893b24962513be98afcf1b57b00327ae4cc14e3a64116"
+              "b2a7c7faba769181e578a391a6a6811a3e84080c6a3770a0bf8a856dfa79d333"
+              "0000000000000000000000000000000000000000000000000000000000000000"
+              "02cc7460f2c9ff107904cff671ec6fee57ba3dd7decf999fe9fe056f3fd4d56e");
 
     EXPECT_EQ(hex(msgPersonRecursiveFather.hashStruct()), "b852e5abfeff916a30cb940c4e24c43cfb5aeb0fa8318bdb10dd2ed15c8c70d8");
 
-    EXPECT_EQ(hex(msgPersonRecursive.encodeHashes()), 
-        "7c5c8e90cb92c8da53b893b24962513be98afcf1b57b00327ae4cc14e3a64116"
-        "e8d55aa98b6b411f04dbcf9b23f29247bb0e335a6bc5368220032fdcb9e5927f"
-        "9ebcfbf94f349de50bcb1e3aa4f1eb38824457c99914fefda27dcf9f99f6178b"
-        "b852e5abfeff916a30cb940c4e24c43cfb5aeb0fa8318bdb10dd2ed15c8c70d8");
+    EXPECT_EQ(hex(msgPersonRecursive.encodeHashes()),
+              "7c5c8e90cb92c8da53b893b24962513be98afcf1b57b00327ae4cc14e3a64116"
+              "e8d55aa98b6b411f04dbcf9b23f29247bb0e335a6bc5368220032fdcb9e5927f"
+              "9ebcfbf94f349de50bcb1e3aa4f1eb38824457c99914fefda27dcf9f99f6178b"
+              "b852e5abfeff916a30cb940c4e24c43cfb5aeb0fa8318bdb10dd2ed15c8c70d8");
 
     EXPECT_EQ(hex(msgPersonRecursive.hashStruct()), "fdc7b6d35bbd81f7fa78708604f57569a10edff2ca329c8011373f0667821a45");
 
@@ -462,7 +464,7 @@ TEST(EthereumAbiStruct, hashStructJson) {
             })");
         ASSERT_EQ(hex(hash), "0b4bb85394b9ebb1c2425e283c9e734a9a7a832622e97c998f77e1c7a3f01a20");
     }
-    {   // edge cases
+    { // edge cases
         EXPECT_EXCEPTION(ParamStruct::hashStructJson("NOT_A_JSON"), "Could not parse Json");
         EXPECT_EXCEPTION(ParamStruct::hashStructJson("+/{\\"), "Could not parse Json");
         EXPECT_EXCEPTION(ParamStruct::hashStructJson(""), "Could not parse Json");
@@ -581,7 +583,7 @@ TEST(EthereumAbiStruct, ParamStructMakeStruct) {
             })");
         ASSERT_NE(s.get(), nullptr);
         EXPECT_EQ(s->getType(), "Person");
-        ASSERT_EQ(s->getCount(), 2);
+        ASSERT_EQ(s->getCount(), 2ul);
         EXPECT_EQ(s->encodeType(), "Person(string name,address wallet)");
         EXPECT_EQ(hex(s->hashStruct()), "fc71e5fa27ff56c350aa531bc129ebdf613b772b6604664f5d8dbe21b85eb0c8");
     }
@@ -595,7 +597,7 @@ TEST(EthereumAbiStruct, ParamStructMakeStruct) {
             })");
         ASSERT_NE(s.get(), nullptr);
         EXPECT_EQ(s->getType(), "Person");
-        ASSERT_EQ(s->getCount(), 2);
+        ASSERT_EQ(s->getCount(), 2ul);
         EXPECT_EQ(s->encodeType(), "Person(string name,address[] wallets)");
         EXPECT_EQ(hex(s->hashStruct()), "9b4846dd48b866f0ac54d61b9b21a9e746f921cefa4ee94c4c0a1c49c774f67f");
     }
@@ -605,12 +607,12 @@ TEST(EthereumAbiStruct, ParamStructMakeStruct) {
             R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}],"Mail": [{"name": "from", "type": "Person"},{"name": "to", "type": "Person"},{"name": "contents", "type": "string"}]})");
         ASSERT_NE(s.get(), nullptr);
         EXPECT_EQ(s->getType(), "Mail");
-        ASSERT_EQ(s->getCount(), 3);
+        ASSERT_EQ(s->getCount(), 3ul);
         EXPECT_EQ(s->encodeType(), "Mail(Person from,Person to,string contents)Person(string name,address wallet)");
         EXPECT_EQ(hex(s->hashStruct()), "c52c0ee5d84264471806290a3f2c4cecfc5490626bf912d01f240d7a274b371e");
     }
 
-    {   // extra param
+    { // extra param
         std::shared_ptr<ParamStruct> s = ParamStruct::makeStruct("Person",
             R"({"extra_param": "extra_value", "name": "Cow", "wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"})",
             R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})");
@@ -618,14 +620,14 @@ TEST(EthereumAbiStruct, ParamStructMakeStruct) {
         EXPECT_EQ(s->encodeType(), "Person(string name,address wallet)");
         EXPECT_EQ(hex(s->hashStruct()), "fc71e5fa27ff56c350aa531bc129ebdf613b772b6604664f5d8dbe21b85eb0c8");
     }
-    {   // empty array
+    { // empty array
         std::shared_ptr<ParamStruct> s = ParamStruct::makeStruct("Person",
             R"({"extra_param": "extra_value", "name": "Cow", "wallets": []})",
             R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallets", "type": "address[]"}]})");
         ASSERT_NE(s.get(), nullptr);
         EXPECT_EQ(s->encodeType(), "Person(string name,address[] wallets)");
     }
-    {   // missing param
+    { // missing param
         std::shared_ptr<ParamStruct> s = ParamStruct::makeStruct("Person",
             R"({"wallet": "CD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"})",
             R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})");
@@ -675,7 +677,7 @@ TEST(EthereumAbiStruct, ParamStructMakeStruct) {
 TEST(EthereumAbiStruct, ParamFactoryMakeTypes) {
     {
         std::vector<std::shared_ptr<ParamStruct>> tt = ParamStruct::makeTypes(R"({"Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})");
-        ASSERT_EQ(tt.size(), 1);
+        ASSERT_EQ(tt.size(), 1ul);
         EXPECT_EQ(tt[0]->encodeType(), "Person(string name,address wallet)");
     }
     {
@@ -684,22 +686,22 @@ TEST(EthereumAbiStruct, ParamFactoryMakeTypes) {
                 "Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}],
                 "Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}]
             })");
-        ASSERT_EQ(tt.size(), 2);
+        ASSERT_EQ(tt.size(), 2ul);
         EXPECT_EQ(tt[0]->encodeType(), "Mail(Person from,Person to,string contents)Person(string name,address wallet)");
         EXPECT_EQ(tt[1]->encodeType(), "Person(string name,address wallet)");
     }
-    {   // edge cases
+    { // edge cases
         EXPECT_EXCEPTION(ParamStruct::makeTypes("NOT_A_JSON"), "Could not parse types Json");
         EXPECT_EXCEPTION(ParamStruct::makeTypes("+/{\\"), "Could not parse types Json");
         EXPECT_EXCEPTION(ParamStruct::makeTypes(""), "Could not parse types Json");
         EXPECT_EXCEPTION(ParamStruct::makeTypes("0"), "Expecting object");
         EXPECT_EXCEPTION(ParamStruct::makeTypes("[]"), "Expecting object");
         EXPECT_EXCEPTION(ParamStruct::makeTypes("[{}]"), "Expecting object");
-        EXPECT_EQ(ParamStruct::makeTypes("{}").size(), 0);
+        EXPECT_EQ(ParamStruct::makeTypes("{}").size(), 0ul);
         EXPECT_EXCEPTION(ParamStruct::makeTypes("{\"a\": 0}"), "Expecting array");
         EXPECT_EXCEPTION(ParamStruct::makeTypes(R"({"name": 0})"), "Expecting array");
         // order does not matter
-        EXPECT_EQ(ParamStruct::makeTypes(R"({"Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}], "Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})").size(), 2);
+        EXPECT_EQ(ParamStruct::makeTypes(R"({"Mail": [{"name": "from", "type": "Person"}, {"name": "to", "type": "Person"}, {"name": "contents", "type": "string"}], "Person": [{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}]})").size(), 2ul);
     }
 }
 
@@ -708,10 +710,10 @@ TEST(EthereumAbiStruct, ParamFactoryMakeType) {
         std::shared_ptr<ParamStruct> t = ParamStruct::makeType("Person", R"([{"name": "name", "type": "string"}, {"name": "wallet", "type": "address"}])");
         EXPECT_NE(t.get(), nullptr);
         EXPECT_EQ(t->getType(), "Person");
-        ASSERT_EQ(t->getCount(), 2);
+        ASSERT_EQ(t->getCount(), 2ul);
         ASSERT_EQ(t->encodeType(), "Person(string name,address wallet)");
     }
-    {   // edge cases
+    { // edge cases
         EXPECT_EXCEPTION(ParamStruct::makeType("", ""), "Missing type name");
         EXPECT_EXCEPTION(ParamStruct::makeType("Person", "NOT_A_JSON"), "Could not parse type Json");
         EXPECT_EXCEPTION(ParamStruct::makeType("Person", "+/{\\"), "Could not parse type Json");
@@ -740,7 +742,7 @@ TEST(EthereumAbiStruct, ParamNamedMethods) {
     EXPECT_EQ(hex(encoded), "000000000000000000000000000000000000000000000000000000000000000548656c6c6f000000000000000000000000000000000000000000000000000000");
     size_t offset = 0;
     EXPECT_EQ(pn->decode(encoded, offset), true);
-    EXPECT_EQ(offset, 64);
+    EXPECT_EQ(offset, 64ul);
     pn->setValueJson("World");
     EXPECT_EQ(ps->getVal(), "World");
 }
@@ -749,7 +751,7 @@ TEST(EthereumAbiStruct, ParamSetNamed) {
     const auto pn1 = std::make_shared<ParamNamed>("param1", std::make_shared<ParamString>("Hello"));
     const auto pn2 = std::make_shared<ParamNamed>("param2", std::make_shared<ParamString>("World"));
     auto ps = std::make_shared<ParamSetNamed>(std::vector<std::shared_ptr<ParamNamed>>{pn1, pn2});
-    EXPECT_EQ(ps->getCount(), 2);
+    EXPECT_EQ(ps->getCount(), 2ul);
     EXPECT_EQ(ps->addParam(std::shared_ptr<ParamNamed>(nullptr)), -1);
     EXPECT_EQ(ps->findParamByName("NO_SUCH_PARAM"), nullptr);
     auto pf1 = ps->findParamByName("param2");
@@ -762,14 +764,14 @@ TEST(EthereumAbiStruct, ParamStructMethods) {
     const auto pn2 = std::make_shared<ParamNamed>("param2", std::make_shared<ParamString>("World"));
     auto ps = std::make_shared<ParamStruct>("struct", std::vector<std::shared_ptr<ParamNamed>>{pn1, pn2});
 
-    EXPECT_EQ(ps->getSize(), 2);
+    EXPECT_EQ(ps->getSize(), 2ul);
     EXPECT_EQ(ps->isDynamic(), true);
     Data encoded;
     ps->encode(encoded);
     EXPECT_EQ(hex(encoded), "");
     size_t offset = 0;
     EXPECT_EQ(ps->decode(encoded, offset), true);
-    EXPECT_EQ(offset, 0);
+    EXPECT_EQ(offset, 0ul);
     EXPECT_FALSE(ps->setValueJson("dummy"));
     EXPECT_EQ(ps->findParamByName("param2")->getName(), "param2");
 }
@@ -891,6 +893,24 @@ TEST(EthereumAbiStruct, ParamHashStruct) {
         EXPECT_EQ(hex(p->hashStruct()), "0000000000000000000000000000000000000000000000000000000123456789");
     }
     {
+        using collection = std::vector<std::shared_ptr<ParamBase>>;
+        auto p = std::make_shared<ParamArrayFix>(collection{std::make_shared<ParamBool>(), std::make_shared<ParamBool>(), std::make_shared<ParamBool>()});
+        EXPECT_TRUE(p->setValueJson("[1,0,1]"));
+        EXPECT_EQ(hex(p->hashStruct()), "000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001");
+    }
+    {
+        using collection = std::vector<std::shared_ptr<ParamBase>>;
+        auto p = std::make_shared<ParamArrayFix>(collection{std::make_shared<ParamUInt8>(), std::make_shared<ParamUInt8>(), std::make_shared<ParamUInt8>()});
+        EXPECT_TRUE(p->setValueJson("[13,14,15]"));
+        EXPECT_EQ(hex(p->hashStruct()), "000000000000000000000000000000000000000000000000000000000000000d000000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000000f");
+
+        // Coverage
+        EXPECT_FALSE(p->setValueJson("NotValidJson"));
+        EXPECT_FALSE(p->setValueJson("{}"));
+        EXPECT_FALSE(p->setValueJson("[1,2,3,4]"));
+        EXPECT_FALSE(p->setValueJson("[1,2]"));
+    }
+    {
         auto p = std::make_shared<ParamArray>(std::make_shared<ParamUInt8>());
         EXPECT_TRUE(p->setValueJson("[13,14,15]"));
         EXPECT_EQ(hex(p->hashStruct()), "71494e9b6acbff3356f1292cc149101310110b6b13f835ae4665e4b00892fa83");
@@ -906,3 +926,5 @@ TEST(EthereumAbiStruct, ParamHashStruct) {
         EXPECT_EQ(hex(p->hashStruct()), "5c6090c0461491a2941743bda5c3658bf1ea53bbd3edcde54e16205e18b45792");
     }
 }
+// clang-format on
+} // namespace TW::Ethereum::tests

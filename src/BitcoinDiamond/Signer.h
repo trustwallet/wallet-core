@@ -10,6 +10,8 @@
 #include "../PrivateKey.h"
 #include "../proto/Bitcoin.pb.h"
 
+#include <optional>
+
 namespace TW::BitcoinDiamond {
 
 using SigningInput = Bitcoin::Proto::SigningInput;

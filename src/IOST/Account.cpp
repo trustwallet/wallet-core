@@ -34,11 +34,11 @@ Account::Account(const Proto::AccountInfo& account) {
     name = account.name();
     if (account.active_key() != "") {
         auto activeKeyBytesPtr = account.active_key().begin();
-        activeKey = Data(activeKeyBytesPtr, activeKeyBytesPtr + PrivateKey::size);
+        activeKey = Data(activeKeyBytesPtr, activeKeyBytesPtr + PrivateKey::_size);
     }
     if (account.owner_key() != "") {
         auto ownerKeyBytesPtr = account.owner_key().begin();
-        ownerKey = Data(ownerKeyBytesPtr, ownerKeyBytesPtr + PrivateKey::size);
+        ownerKey = Data(ownerKeyBytesPtr, ownerKeyBytesPtr + PrivateKey::_size);
     }
 }
 

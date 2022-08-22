@@ -21,7 +21,7 @@ class Address {
 
     /// Address data consisting of a prefix byte followed by the public key
     /// hash.
-    std::array<byte, size> bytes;
+    std::array<TW::byte, size> bytes;
 
     /// Determines whether a collection of bytes makes a valid  address.
     template <typename T>
@@ -34,7 +34,7 @@ class Address {
 
     /// Determines whether a string makes a valid address, and the prefix is
     /// within the valid set.
-    static bool isValid(const std::string& string, const std::vector<byte>& validPrefixes);
+    static bool isValid(const std::string& string, const std::vector<TW::byte>& validPrefixes);
 
     /// Initializes a  address with a string representation.
     explicit Address(const std::string& string);

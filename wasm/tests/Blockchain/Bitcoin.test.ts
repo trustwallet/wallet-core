@@ -6,7 +6,7 @@
 
 import "mocha";
 import { assert } from "chai";
-import { TW, WalletCore } from "../../dist";
+import { TW } from "../../dist";
 
 describe("Bitcoin", () => {
   it("test Bitcoin SigningInput / SigningOutput", () => {

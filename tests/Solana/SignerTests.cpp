@@ -13,7 +13,7 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Solana;
+namespace TW::Solana::tests {
 
 TEST(SolanaSigner, CompiledInstruction) {
     const auto privateKey0 =
@@ -45,13 +45,13 @@ TEST(SolanaSigner, CompiledInstruction) {
     auto compiledInstruction = CompiledInstruction(instruction, addresses);
 
     EXPECT_EQ(compiledInstruction.programIdIndex, 2);
-    ASSERT_EQ(compiledInstruction.accounts.size(), 5);
+    ASSERT_EQ(compiledInstruction.accounts.size(), 5ul);
     EXPECT_EQ(compiledInstruction.accounts[0], 1);
     EXPECT_EQ(compiledInstruction.accounts[1], 0);
     EXPECT_EQ(compiledInstruction.accounts[2], 2);
     EXPECT_EQ(compiledInstruction.accounts[3], 1);
     EXPECT_EQ(compiledInstruction.accounts[4], 0);
-    ASSERT_EQ(compiledInstruction.data.size(), 4);
+    ASSERT_EQ(compiledInstruction.data.size(), 4ul);
 }
 
 TEST(SolanaSigner, CompiledInstructionFindAccount) {
@@ -59,10 +59,12 @@ TEST(SolanaSigner, CompiledInstructionFindAccount) {
     Address address2 = Address(parse_hex("0102030405060708090a0102030405060708090a0102030405060708090a0102"));
     Address address3 = Address(parse_hex("0102030405060708090a0102030405060708090a0102030405060708090a0103"));
     Address programId("11111111111111111111111111111111");
+    // clang-format off
     Instruction instruction(programId, std::vector<AccountMeta>{
         AccountMeta(address1, true, false),
         AccountMeta(address2, false, false),
     }, Data{1, 2, 3, 4});
+    // clang-format on
     std::vector<Address> addresses = {
         address1,
         address2,
@@ -393,7 +395,7 @@ TEST(SolanaSigner, SignTransferToken_3vZ67C) {
     Solana::Hash recentBlockhash("CNaHfvqePgGYMvtYi9RuUdVxDYttr1zs4TWrTXYabxZi");
 
     auto message = Message::createTokenTransfer(signer, token,
-        senderTokenAddress, recipientTokenAddress, amount, decimals, recentBlockhash);
+                                                senderTokenAddress, recipientTokenAddress, amount, decimals, recentBlockhash);
     auto transaction = Transaction(message);
 
     std::vector<PrivateKey> signerKeys;
@@ -567,3 +569,5 @@ TEST(SolanaSigner, SignAdvanceNonceAccount) {
         "FE9pCP2dKxCLH8Wfaez8bLtopjmWun9cbikxo7LZsarYzMXvxwZmerRd1";
     EXPECT_EQ(transaction.serialize(), expectedString);
 }
+
+} // namespace TW::Solana::tests

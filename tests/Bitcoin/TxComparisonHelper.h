@@ -26,7 +26,7 @@ UTXO buildTestUTXO(int64_t amount);
 /// Build a set of dummy UTXO with the given amounts
 UTXOs buildTestUTXOs(const std::vector<int64_t>& amounts);
 
-SigningInput buildSigningInput(Amount amount, int byteFee, const UTXOs& utxos, 
+Bitcoin::SigningInput buildSigningInput(Amount amount, int byteFee, const UTXOs& utxos, 
     bool useMaxAmount = false, enum TWCoinType coin = TWCoinTypeBitcoin, bool omitPrivateKey = false);
 
 /// Compare a set of selected UTXOs to the expected set of amounts.

@@ -13,7 +13,8 @@
 #include "../PrivateKey.h"
 
 using namespace TW;
-using namespace TW::NULS;
+
+namespace TW::NULS {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto output = Proto::SigningOutput();
@@ -191,3 +192,5 @@ uint64_t Signer::CalculatorTransactionFee(uint64_t size) const {
     }
     return fee;
 }
+
+} // namespace TW::NULS

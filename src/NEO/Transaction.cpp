@@ -56,7 +56,7 @@ Transaction* Transaction::deserializeFrom(const Data& data, int initial_pos) {
 
 Data Transaction::serialize() const {
     Data resp;
-    resp.push_back((byte)type);
+    resp.push_back((TW::byte)type);
     resp.push_back(version);
     append(resp, serializeExclusiveData());
 
@@ -64,7 +64,7 @@ Data Transaction::serialize() const {
     append(resp, Serializable::serialize(inInputs));
     append(resp, Serializable::serialize(outputs));
     if (witnesses.size()) {
-        resp.push_back((byte)witnesses.size());
+        resp.push_back((TW::byte)witnesses.size());
         for (const auto& witnesse : witnesses)
             append(resp, witnesse.serialize());
     }

@@ -17,9 +17,9 @@ namespace TW::Zcash {
 
 class TAddress : public TW::Base58Address<22> {
   public:
-    static const byte staticPrefix = 0x1c;
-    static const byte p2pkh = 0xB8; // p2pkhPrefix(TWCoinType::TWCoinTypeZcash);
-    static const byte p2sh = 0xBD; // p2shPrefix(TWCoinType::TWCoinTypeZcash);
+    static const TW::byte staticPrefix = 0x1c;
+    static const TW::byte p2pkh = 0xB8; // p2pkhPrefix(TWCoinType::TWCoinTypeZcash);
+    static const TW::byte p2sh = 0xBD; // p2shPrefix(TWCoinType::TWCoinTypeZcash);
 
     /// Determines whether a string makes a valid ZCash address.
     static bool isValid(const std::string& string) {

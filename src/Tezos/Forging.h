@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#pragma once
+
 #include "../PublicKey.h"
 #include "../proto/Tezos.pb.h"
 
@@ -15,6 +17,6 @@ using namespace TW::Tezos::Proto;
 Data forgeBool(bool input);
 Data forgeOperation(const Operation& operation);
 Data forgePublicKeyHash(const std::string& publicKeyHash);
-Data forgePrefix(std::array<byte, 3> prefix, const std::string& val);
+Data forgePrefix(std::array<TW::byte, 3> prefix, const std::string& val);
 Data forgePublicKey(PublicKey publicKey);
 Data forgeZarith(uint64_t input);

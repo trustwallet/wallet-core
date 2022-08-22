@@ -72,7 +72,7 @@ bool AddressV3::parseAndCheckV3(const std::string& addr, NetworkId& networkId, K
         }
 
         // check prefix
-        if (const auto expectedHrp = getHrp(kind); addr.rfind(expectedHrp, 0) != 0) {
+        if (const auto expectedHrp = getHrp(kind); !addr.starts_with(expectedHrp)) {
             return false;
         }
 
@@ -135,7 +135,7 @@ AddressV3 AddressV3::createBase(NetworkId networkId, const PublicKey& spendingKe
 
 AddressV3::AddressV3(const std::string& addr) {
     if (parseAndCheckV3(addr, networkId, kind, bytes)) {
-    // values stored
+        // values stored
         return;
     }
     // try legacy
@@ -145,11 +145,9 @@ AddressV3::AddressV3(const std::string& addr) {
 
 AddressV3::AddressV3(const PublicKey& publicKey) {
     // input is double extended pubkey
-    if (publicKey.type != TWPublicKeyTypeED25519Extended || publicKey.bytes.size() != PublicKey::ed25519DoubleExtendedSize) {
+    if (publicKey.type != TWPublicKeyTypeED25519Cardano || publicKey.bytes.size() != PublicKey::cardanoKeySize) {
         throw std::invalid_argument("Invalid public key type");
     }
-    kind = Kind_Base;
-
     *this = createBase(Network_Production, PublicKey(subData(publicKey.bytes, 0, 32), TWPublicKeyTypeED25519), PublicKey(subData(publicKey.bytes, 64, 32), TWPublicKeyTypeED25519));
 }
 
@@ -160,7 +158,7 @@ AddressV3::AddressV3(const Data& data) {
 AddressV3::AddressV3(const AddressV3& other) = default;
 
 uint8_t AddressV3::firstByte(NetworkId networkId, Kind kind) {
-    byte first = (byte)(((byte)kind << 4) + networkId);
+    auto first = (TW::byte)(((TW::byte)kind << 4) + networkId);
     return first;
 }
 
@@ -215,7 +213,7 @@ Data AddressV3::data() const {
         return legacyAddressV2->getCborData();
     }
 
-    const byte first = firstByte(networkId, kind);
+    const TW::byte first = firstByte(networkId, kind);
     Data raw;
     TW::append(raw, first);
     TW::append(raw, bytes);

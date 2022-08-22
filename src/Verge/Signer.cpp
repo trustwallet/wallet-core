@@ -12,7 +12,7 @@
 #include "TransactionBuilder.h"
 
 using namespace TW;
-using namespace TW::Verge;
+namespace TW::Verge {
 
 TransactionPlan Signer::plan(const SigningInput& input) noexcept {
     auto plan = Bitcoin::TransactionSigner<Transaction, TransactionBuilder>::plan(input);
@@ -58,3 +58,5 @@ PreSigningOutput Signer::preImageHashes(const SigningInput& input) noexcept {
     }
     return output;
 }
+
+} // namespace TW::Verge

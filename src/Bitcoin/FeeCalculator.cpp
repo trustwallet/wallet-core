@@ -33,7 +33,7 @@ private:
     bool disableDustFilter = false;
 
 public:
-    DecredFeeCalculator(bool disableFilter = false)
+    constexpr DecredFeeCalculator(bool disableFilter = false) noexcept
         : LinearFeeCalculator(gDecredBytesPerInput, gDecredBytesPerOutput, gDecredBytesBase)
         , disableDustFilter(disableFilter) {}
 
@@ -45,14 +45,14 @@ public:
     }
 };
 
-DefaultFeeCalculator defaultFeeCalculator;
-DefaultFeeCalculator defaultFeeCalculatorNoDustFilter(true);
-DecredFeeCalculator decredFeeCalculator;
-DecredFeeCalculator decredFeeCalculatorNoDustFilter(true);
-SegwitFeeCalculator segwitFeeCalculator;
-SegwitFeeCalculator segwitFeeCalculatorNoDustFilter(true);
+static constexpr DefaultFeeCalculator defaultFeeCalculator;
+static constexpr DefaultFeeCalculator defaultFeeCalculatorNoDustFilter(true);
+static constexpr DecredFeeCalculator decredFeeCalculator;
+static constexpr DecredFeeCalculator decredFeeCalculatorNoDustFilter(true);
+static constexpr SegwitFeeCalculator segwitFeeCalculator;
+static constexpr SegwitFeeCalculator segwitFeeCalculatorNoDustFilter(true);
 
-FeeCalculator& getFeeCalculator(TWCoinType coinType, bool disableFilter) {
+const FeeCalculator& getFeeCalculator(TWCoinType coinType, bool disableFilter) noexcept {
     switch (coinType) {
     case TWCoinTypeDecred:
         if (disableFilter) {

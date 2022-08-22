@@ -12,7 +12,8 @@
 namespace TW::Algorand {
 
 class BaseTransaction {
-  public:
+public:
+    virtual ~BaseTransaction() noexcept = default;
     virtual Data serialize() const = 0;
     virtual Data serialize(const Data& signature) const {
         /* Algorand transaction and signature are encoded with msgpack:

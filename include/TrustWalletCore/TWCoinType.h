@@ -15,6 +15,7 @@
 #include "TWPrivateKey.h"
 #include "TWPurpose.h"
 #include "TWString.h"
+#include "TWDerivation.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -74,7 +75,8 @@ enum TWCoinType {
     TWCoinTypeZelcash = 19167,
     TWCoinTypeRavencoin = 175,
     TWCoinTypeWaves = 5741564,
-    TWCoinTypeTerra = 330,
+    TWCoinTypeTerra = 330, // see also TerraV2
+    TWCoinTypeTerraV2 = 10000330, // see also Terra
     TWCoinTypeHarmony = 1023,
     TWCoinTypeAlgorand = 283,
     TWCoinTypeKusama = 434,
@@ -108,14 +110,17 @@ enum TWCoinType {
     TWCoinTypeBoba = 10000288,
     TWCoinTypeSyscoin = 57,
     TWCoinTypeVerge = 77,
+    TWCoinTypeZen = 121,
     TWCoinTypeMetis = 1001088,
     TWCoinTypeAurora = 1323161554,
-    TWCoinTypeZen = 121,
     TWCoinTypeEvmos = 10009001,
     TWCoinTypeNativeEvmos = 20009001,
     TWCoinTypeMoonriver = 10001285,
     TWCoinTypeMoonbeam = 10001284,
+    TWCoinTypeKavaEvm = 10002222,
     TWCoinTypeKlaytn = 10008217,
+    TWCoinTypeMeter = 18000,
+    TWCoinTypeOKXChain = 996,
 };
 
 /// Returns the blockchain for a coin type.
@@ -145,6 +150,10 @@ bool TWCoinTypeValidate(enum TWCoinType coin, TWString* _Nonnull address);
 /// Returns the default derivation path for a particular coin.
 TW_EXPORT_METHOD
 TWString* _Nonnull TWCoinTypeDerivationPath(enum TWCoinType coin);
+
+/// Returns the derivation path for a particular coin with the explicit given derivation.
+TW_EXPORT_METHOD
+TWString* _Nonnull TWCoinTypeDerivationPathWithDerivation(enum TWCoinType coin, enum TWDerivation derivation);
 
 /// Derives the address for a particular coin from the private key.
 TW_EXPORT_METHOD

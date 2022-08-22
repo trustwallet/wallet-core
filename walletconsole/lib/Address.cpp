@@ -53,7 +53,7 @@ bool Address::addrPri(const string& coinid, const string& prikey_in, string& res
     return true;
 }
 
-bool Address::addr(const string& coinid, const string& addrStr, string& res) {
+bool Address::addr(const string& coinid, const string& addrStr, [[maybe_unused]] string& res) {
     Coin coin;
     if (!_coins.findCoin(coinid, coin)) { return false; }
     auto ctype = (TWCoinType)coin.c;

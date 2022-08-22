@@ -21,14 +21,14 @@ using json = nlohmann::json;
 
 namespace TW::Nano {
 
-const std::array<byte, 32> kBlockHashPreamble{
+const std::array<TW::byte, 32> kBlockHashPreamble{
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06,
 };
 
-std::array<byte, 16> store(const uint128_t& value) {
+std::array<TW::byte, 16> store(const uint128_t& value) {
     using boost::multiprecision::cpp_int;
 
     Data buf;
@@ -40,13 +40,13 @@ std::array<byte, 16> store(const uint128_t& value) {
         buf.insert(buf.begin(), 0);
     }
 
-    std::array<byte, 16> arr = {0};
+    std::array<TW::byte, 16> arr = {0};
     std::copy_n(buf.begin(), arr.size(), arr.begin());
     return arr;
 }
 
-std::array<byte, 32> previousFromInput(const Proto::SigningInput& input) {
-    std::array<byte, 32> parentHash = {0};
+std::array<TW::byte, 32> previousFromInput(const Proto::SigningInput& input) {
+    std::array<TW::byte, 32> parentHash = {0};
     if (input.parent_block().size() != 0) {
         if (input.parent_block().size() != parentHash.size()) {
             throw std::invalid_argument("Invalid parent block hash");
@@ -56,8 +56,8 @@ std::array<byte, 32> previousFromInput(const Proto::SigningInput& input) {
     return parentHash;
 }
 
-std::array<byte, 32> linkFromInput(const Proto::SigningInput& input, bool emptyParentHash = false) {
-    std::array<byte, 32> link = {0};
+std::array<TW::byte, 32> linkFromInput(const Proto::SigningInput& input, bool emptyParentHash = false) {
+    std::array<TW::byte, 32> link = {0};
     switch (input.link_oneof_case()) {
         case Proto::SigningInput::kLinkBlock: {
             if (input.link_block().size() != link.size()) {
@@ -78,11 +78,11 @@ std::array<byte, 32> linkFromInput(const Proto::SigningInput& input, bool emptyP
     return link;
 }
 
-std::array<byte, 32> hashBlockData(const PublicKey& publicKey, const Proto::SigningInput& input) {
-    std::array<byte, 32> parentHash = previousFromInput(input);
+std::array<TW::byte, 32> hashBlockData(const PublicKey& publicKey, const Proto::SigningInput& input) {
+    std::array<TW::byte, 32> parentHash = previousFromInput(input);
     bool emptyParentHash = std::all_of(parentHash.begin(), parentHash.end(), [](auto b) { return b == 0; });
 
-    std::array<byte, 32> repPublicKey = {0};
+    std::array<TW::byte, 32> repPublicKey = {0};
     auto repAddress = Address(input.representative());
     std::copy_n(repAddress.bytes.begin(), repPublicKey.size(), repPublicKey.begin());
 
@@ -93,12 +93,12 @@ std::array<byte, 32> hashBlockData(const PublicKey& publicKey, const Proto::Sign
         throw std::invalid_argument("Invalid balance");
     }
     bool zeroBalance = balance_uint == uint128_t(0);
-    std::array<byte, 16> balance = store(balance_uint);
+    std::array<TW::byte, 16> balance = store(balance_uint);
     if (emptyParentHash && zeroBalance) {
         throw std::invalid_argument("Invalid balance");
     }
 
-    std::array<byte, 32> link = linkFromInput(input, emptyParentHash);
+    std::array<TW::byte, 32> link = linkFromInput(input, emptyParentHash);
     bool emptyLink = std::all_of(link.begin(), link.end(), [](auto b) { return b == 0; });
     if (emptyParentHash && emptyLink) {
         throw std::invalid_argument("Missing link block hash");
@@ -112,7 +112,7 @@ std::array<byte, 32> hashBlockData(const PublicKey& publicKey, const Proto::Sign
     msg.insert(msg.end(), balance.begin(), balance.end());
     msg.insert(msg.end(), link.begin(), link.end());
 
-    std::array<byte, 32> blockHash = {0};
+    std::array<TW::byte, 32> blockHash = {0};
     auto digest = Hash::blake2b(msg, blockHash.size());
     std::copy_n(digest.begin(), blockHash.size(), blockHash.begin());
 
@@ -146,11 +146,11 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     return output.json();
 }
 
-std::array<byte, 64> Signer::sign() const noexcept {
+std::array<TW::byte, 64> Signer::sign() const noexcept {
     auto digest = Data(blockHash.begin(), blockHash.end());
     auto sig = privateKey.sign(digest, TWCurveED25519Blake2bNano);
 
-    std::array<byte, 64> signature = {0};
+    std::array<TW::byte, 64> signature = {0};
     std::copy_n(sig.begin(), signature.size(), signature.begin());
     return signature;
 }

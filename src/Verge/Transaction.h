@@ -55,4 +55,4 @@ private:
                               enum TWBitcoinSigHashType hashType) const;
 };
 
-} // namespace TW::Bitcoin
+} // namespace TW::Verge

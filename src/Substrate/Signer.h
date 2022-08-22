@@ -17,4 +17,4 @@ class Signer {
     static Data encodeTransaction(const Proto::SigningInput &input, const Data &publicKey, const Data &signature);
 };
 
-}
+} // namespace TW::Substrate

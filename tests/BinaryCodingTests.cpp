@@ -47,10 +47,6 @@ TEST(BinaryCodingTests, varIntSize) {
     }
 }
 
-void testEncodeVarInt(uint64_t input, const std::string& expectedEncoded) {
-
-}
-
 TEST(BinaryCodingTests, encodeAndDecodeVarInt) {
     vector<tuple<uint64_t, string>> tests = {
         {0, "00"},

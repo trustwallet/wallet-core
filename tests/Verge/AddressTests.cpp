@@ -58,5 +58,5 @@ TEST(VergeAddress, FromString) {
 
     // invalid address
     data = TW::addressToData(TWCoinTypeVerge, "vg1qujpe553lzgyg95g7k0w6zwscuy0ae022h4q4");
-    EXPECT_EQ(data.size(), 0);
+    EXPECT_EQ(data.size(), 0ul);
 }

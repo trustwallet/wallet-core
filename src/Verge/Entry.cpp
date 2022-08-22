@@ -10,12 +10,13 @@
 #include "Bitcoin/SegwitAddress.h"
 #include "Signer.h"
 
-using namespace TW::Verge;
 using namespace std;
+
+namespace TW::Verge {
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
-bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW::byte,
+bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& address, TW::byte, TW::byte,
                             const char* hrp) const {
     return Bitcoin::Address::isValid(address) || TW::Bitcoin::SegwitAddress::isValid(address, hrp);
 }
@@ -25,7 +26,7 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byt
     return deriveAddress(coin, TWDerivationDefault, publicKey, p2pkh, hrp);
 }
 
-std::string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey,
+std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey,
                           TW::byte p2pkh, const char* hrp) const {
     switch (derivation) {
     case TWDerivationBitcoinLegacy:
@@ -36,7 +37,7 @@ std::string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const
     }
 }
 
-TW::Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
+TW::Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
     const auto decoded = Bitcoin::SegwitAddress::decode(address);
     if (!std::get<2>(decoded)) {
         // check if it is a legacy address
@@ -49,22 +50,22 @@ TW::Data Entry::addressToData(TWCoinType coin, const std::string& address) const
     return std::get<0>(decoded).witnessProgram;
 }
 
-void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Bitcoin::Proto::SigningInput>(dataIn, dataOut);
 }
 
-void Entry::plan(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+void Entry::plan([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     planTemplate<Signer, Bitcoin::Proto::SigningInput>(dataIn, dataOut);
 }
 
-TW::Data Entry::preImageHashes(TWCoinType coin, const Data& txInputData) const {
+TW::Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInputData) const {
     return txCompilerTemplate<Bitcoin::Proto::SigningInput, Bitcoin::Proto::PreSigningOutput>(
         txInputData, [](const auto& input, auto& output) { 
             output = Signer::preImageHashes(input); 
         });
 }
 
-void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
+void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
     dataOut = txCompilerTemplate<Bitcoin::Proto::SigningInput, Bitcoin::Proto::SigningOutput>(
         txInputData, [&](const auto& input, auto& output) {
             if (signatures.size() == 0 || publicKeys.size() == 0) {
@@ -81,10 +82,12 @@ void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<
 
             HashPubkeyList externalSignatures;
             auto n = signatures.size();
-            for (auto i = 0; i < n; ++i) {
+            for (auto i = 0ul; i < n; ++i) {
                 externalSignatures.push_back(std::make_pair(signatures[i], publicKeys[i].bytes));
             }
 
             output = Signer::sign(input, externalSignatures);
         });
 }
+
+} // namespace TW::Verge

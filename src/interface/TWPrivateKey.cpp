@@ -17,8 +17,8 @@
 using namespace TW;
 
 struct TWPrivateKey *TWPrivateKeyCreate() {
-    Data bytes(PrivateKey::size);
-    random_buffer(bytes.data(), PrivateKey::size);
+    Data bytes(PrivateKey::_size);
+    random_buffer(bytes.data(), PrivateKey::_size);
     if (!PrivateKey::isValid(bytes)) {
         // Under no circumstance return an invalid private key. We'd rather
         // crash. This also captures cases where the random generator fails
@@ -81,8 +81,8 @@ struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519Blake2b(struct TWPri
     return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeED25519Blake2b) };
 }
 
-struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519Extended(struct TWPrivateKey *_Nonnull pk) {
-    return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeED25519Extended) };
+struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519Cardano(struct TWPrivateKey *_Nonnull pk) {
+    return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeED25519Cardano) };
 }
 
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivateKey *_Nonnull pk) {
@@ -108,9 +108,9 @@ TWData *TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull dige
     }
 }
 
-TWData *TWPrivateKeySignAsDER(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest, enum TWCurve curve) {
+TWData* TWPrivateKeySignAsDER(struct TWPrivateKey* pk, TWData* digest) {
     auto& d = *reinterpret_cast<const Data*>(digest);
-    auto result = pk->impl.signAsDER(d, curve);
+    auto result = pk->impl.signAsDER(d);
     if (result.empty()) {
         return nullptr;
     } else {
@@ -118,9 +118,9 @@ TWData *TWPrivateKeySignAsDER(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull
     }
 }
 
-TWData *TWPrivateKeySignSchnorr(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull message, enum TWCurve curve) {
+TWData *TWPrivateKeySignZilliqaSchnorr(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull message) {
     const auto& msg = *reinterpret_cast<const Data*>(message);
-    auto result = pk->impl.signSchnorr(msg, curve);
+    auto result = pk->impl.signZilliqa(msg);
 
     if (result.empty()) {
         return nullptr;

@@ -20,7 +20,7 @@ namespace TW::Decred {
 class OutPoint {
   public:
     /// The hash of the referenced transaction.
-    std::array<byte, 32> hash;
+    std::array<TW::byte, 32> hash;
 
     /// The index of the specific output in the transaction.
     uint32_t index;
@@ -32,7 +32,7 @@ class OutPoint {
     OutPoint() = default;
 
     /// Initializes an out-point reference.
-    OutPoint(std::array<byte, 32>&& hash, uint32_t index, int8_t tree)
+    OutPoint(std::array<TW::byte, 32>&& hash, uint32_t index, int8_t tree)
         : hash(hash), index(index), tree(tree) {}
 
     /// Initializes an out-point reference.

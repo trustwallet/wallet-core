@@ -10,7 +10,8 @@
 
 #include <TrustWalletCore/TWHRP.h>
 
-using namespace TW::Harmony;
+namespace TW::Harmony {
 
 const std::string Address::hrp = HRP_HARMONY;
 
+}

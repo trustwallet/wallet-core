@@ -20,7 +20,7 @@ std::string encode(const Data& val);
 // Base64Url format uses '-' and '_' as the two special characters, Base64 uses '+'and '/'.
 Data decodeBase64Url(const std::string& val);
 
-// Encode bytes into Base64Url string (uses '-' and '_' as pecial characters)
+// Encode bytes into Base64Url string (uses '-' and '_' as special characters)
 std::string encodeBase64Url(const Data& val);
 
 } // namespace TW::Base64

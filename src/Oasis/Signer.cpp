@@ -6,13 +6,15 @@
 
 #include <Oasis/Signer.h>
 
+#include "Signer.h"
 #include "Address.h"
 #include "Signer.h"
 
 #define TRANSFER_METHOD "staking.Transfer"
 
 using namespace TW;
-using namespace TW::Oasis;
+
+namespace TW::Oasis {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto output = Proto::SigningOutput();
@@ -87,3 +89,5 @@ Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& pub
     output.set_encoded(encoded.data(), encoded.size());
     return output;
 }
+
+} // namespace TW::Oasis

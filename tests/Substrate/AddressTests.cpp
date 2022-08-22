@@ -7,7 +7,7 @@
 #include "../tests/interface/TWTestUtilities.h"
 
 using namespace TW;
-using namespace TW::Substrate;
+namespace TW::Substrate {
 
 TEST(SubstrateAddress, Validation) {
     ASSERT_TRUE(Address::isValid("cEYtw6AVMB27hFUs4gVukajLM7GqxwxUfJkbPY3rNToHMcCgb", 64));
@@ -44,3 +44,5 @@ TEST(SubstrateAddress, Keybytes) {
     auto addressParallel = Address(publicKey, 172);
     ASSERT_EQ(addressParallel.keyBytes(), pubKeyBytes);
 }
+
+} // namespace TW::Substrate

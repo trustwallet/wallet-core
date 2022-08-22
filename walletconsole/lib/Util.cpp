@@ -48,7 +48,7 @@ bool Util::base64Decode(const string& p, string& res) {
     }
 }
 
-bool Util::fileW(const string& fileName, const string& data, string& res) {
+bool Util::fileW(const string& fileName, const string& data, [[maybe_unused]] string& res) {
     if (fileExists(fileName)) {
         _out << "Warning: File '" << fileName << "' already exists, not overwriting to be safe." << endl;
         return false;

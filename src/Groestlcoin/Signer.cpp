@@ -13,7 +13,7 @@
 #include "Transaction.h"
 
 using namespace TW;
-using namespace TW::Groestlcoin;
+namespace TW::Groestlcoin {
 
 using TransactionBuilder = Bitcoin::TransactionBuilder;
 
@@ -65,3 +65,5 @@ PreSigningOutput Signer::preImageHashes(const SigningInput& input) noexcept {
     }
     return output;
 }
+
+} // namespace TW::Groestlcoin

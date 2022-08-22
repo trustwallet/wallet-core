@@ -28,9 +28,6 @@ TEST(TWSolanaAddress, HDWallet) {
 }
 
 TEST(TWSolanaProgram, defaultTokenAddress) {
-    auto invalidAddress = WRAPS(TWSolanaAddressDefaultTokenAddress(nullptr, nullptr));
-    EXPECT_EQ(invalidAddress, nullptr);
-
     const char* serumToken = "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt";
     auto solanaAddress = WRAP(TWSolanaAddress, TWSolanaAddressCreateWithString(WRAPS(TWStringCreateWithUTF8Bytes("B1iGmDJdvmxyUiYM8UEo2Uw2D58EmUrw4KyLYMmrhf8V")).get()));
     auto address1 = WRAPS(TWSolanaAddressDefaultTokenAddress(solanaAddress.get(), WRAPS(TWStringCreateWithUTF8Bytes(serumToken)).get()));

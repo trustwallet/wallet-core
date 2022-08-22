@@ -10,7 +10,7 @@
 
 #include <string>
 
-using namespace TW::Nano;
+namespace TW::Nano {
 
 const std::string kPrefixNano{"nano_"};
 const std::string kPrefixXrb{"xrb_"};
@@ -76,3 +76,5 @@ std::string Address::string() const {
     out[count] = 0;
     return std::string(out.data());
 }
+
+} // namespace TW::Nano

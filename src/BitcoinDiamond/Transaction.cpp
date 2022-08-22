@@ -13,7 +13,7 @@
 #include <cassert>
 
 using namespace TW;
-using namespace TW::BitcoinDiamond;
+namespace TW::BitcoinDiamond {
 
 Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index,
                               enum TWBitcoinSigHashType hashType, uint64_t amount) const {
@@ -22,10 +22,10 @@ Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index,
     Data data;
 
     // Version
-    encode32LE(version, data);
+    encode32LE(_version, data);
 
     // see: https://github.com/eveybcd/BitcoinDiamond/blob/master/src/script/interpreter.cpp#L1267
-    if (version == CURRENT_VERSION_FORK) {
+    if (_version == CURRENT_VERSION_FORK) {
         std::copy(std::begin(preBlockHash), std::end(preBlockHash), std::back_inserter(data));
     }
 
@@ -86,10 +86,10 @@ void Transaction::encode(Data& data, enum SegwitFormatMode segwitFormat) const {
         case Segwit: useWitnessFormat = true; break;
     }
 
-    encode32LE(version, data);
+    encode32LE(_version, data);
 
     // see: https://github.com/eveybcd/BitcoinDiamond/blob/master/src/primitives/transaction.h#L344
-    if (version == CURRENT_VERSION_FORK) {
+    if (_version == CURRENT_VERSION_FORK) {
         std::copy(std::begin(preBlockHash), std::end(preBlockHash), std::back_inserter(data));
     }
 
@@ -146,17 +146,17 @@ Data Transaction::getSignatureHashBase(const Bitcoin::Script& scriptCode, size_t
 
     Data data;
 
-    encode32LE(version, data);
+    encode32LE(_version, data);
 
     // see: https://github.com/eveybcd/BitcoinDiamond/blob/master/src/script/interpreter.cpp#L1170
-    if (version == CURRENT_VERSION_FORK) {
+    if (_version == CURRENT_VERSION_FORK) {
         std::copy(std::begin(preBlockHash), std::end(preBlockHash), std::back_inserter(data));
     }
 
     auto serializedInputCount =
         (hashType & TWBitcoinSigHashTypeAnyoneCanPay) != 0 ? 1 : inputs.size();
     encodeVarInt(serializedInputCount, data);
-    for (auto subindex = 0; subindex < serializedInputCount; subindex += 1) {
+    for (auto subindex = 0ul; subindex < serializedInputCount; subindex += 1) {
         serializeInput(subindex, scriptCode, index, hashType, data);
     }
 
@@ -164,7 +164,7 @@ Data Transaction::getSignatureHashBase(const Bitcoin::Script& scriptCode, size_t
     auto hashSingle = Bitcoin::hashTypeIsSingle(hashType);
     auto serializedOutputCount = hashNone ? 0 : (hashSingle ? index + 1 : outputs.size());
     encodeVarInt(serializedOutputCount, data);
-    for (auto subindex = 0; subindex < serializedOutputCount; subindex += 1) {
+    for (auto subindex = 0ul; subindex < serializedOutputCount; subindex += 1) {
         if (hashSingle && subindex != index) {
             auto output = Bitcoin::TransactionOutput(-1, {});
             output.encode(data);
@@ -185,7 +185,7 @@ Data Transaction::getSignatureHashBase(const Bitcoin::Script& scriptCode, size_t
 
 Bitcoin::Proto::Transaction Transaction::proto() const {
     auto protoTx = Bitcoin::Proto::Transaction();
-    protoTx.set_version(version);
+    protoTx.set_version(_version);
     protoTx.set_locktime(lockTime);
 
     for (const auto& input : inputs) {
@@ -205,3 +205,5 @@ Bitcoin::Proto::Transaction Transaction::proto() const {
 
     return protoTx;
 }
+
+} // namespace TW::BitcoinDiamond

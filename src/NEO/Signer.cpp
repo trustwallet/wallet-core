@@ -223,7 +223,7 @@ std::shared_ptr<Transaction> Signer::prepareUnsignedTransaction(const Proto::Sig
         for (int i = 0; i < plan.attributes_size(); i++) {
             TransactionAttribute attr;
             attr.usage = (TransactionAttributeUsage)plan.attributes(i).usage();
-            attr.data.assign(plan.attributes(i).data().begin(), plan.attributes(i).data().end());
+            attr._data.assign(plan.attributes(i).data().begin(), plan.attributes(i).data().end());
 
             transaction->attributes.push_back(attr);
         }

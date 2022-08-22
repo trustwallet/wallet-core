@@ -12,9 +12,9 @@
 
 using namespace TW::Binance;
 
-const std::string Address::hrp = HRP_BINANCE;
+const std::string Address::_hrp = HRP_BINANCE;
 const std::string Address::hrpValidator = "bva";
-const std::vector<std::string> validHrps = {Address::hrp, Address::hrpValidator, "bnbp", "bvap", "bca", "bcap"};
+const std::vector<std::string> validHrps = {Address::_hrp, Address::hrpValidator, "bnbp", "bvap", "bca", "bcap"};
 
 bool Address::isValid(const std::string& addr) {
     Address addrNotUsed;
@@ -30,18 +30,18 @@ bool Address::decode(const std::string& addr, Address& obj_out) {
     return false;
 }
 
-const std::string TAddress::hrp = HRP_TBINANCE;
+const std::string TAddress::_hrp = HRP_TBINANCE;
 const std::string TAddress::hrpValidator = "bva";
 
 bool TAddress::isValid(const std::string& addr) {
-    std::vector<std::string> hrps = {hrp, hrpValidator, "bnbp", "bvap", "bca", "bcap"};
+    std::vector<std::string> hrps = {_hrp, hrpValidator, "bnbp", "bvap", "bca", "bcap"};
     bool result = false;
     for (auto& hrp : hrps) {
         result = Bech32Address::isValid(addr, hrp);
         if (result) {
-            break;
+            return true;
         }
     }
-    return result;
+    return false;
 }
 

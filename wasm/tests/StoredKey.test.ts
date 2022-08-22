@@ -6,12 +6,11 @@
 
 import "mocha";
 import { assert } from "chai";
-import { WalletCore } from "../dist";
 import { Buffer } from "buffer";
 
 describe("StoredKey", () => {
   it("test importing mnemonic", () => {
-    const { StoredKey, CoinType } = WalletCore;
+    const { StoredKey, CoinType } = globalThis.core;
 
     const mnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
     const password = Buffer.from("password");

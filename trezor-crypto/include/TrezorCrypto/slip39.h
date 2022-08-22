@@ -1,5 +1,7 @@
 /**
- * Copyright (c) 2019 Anatolii Kurotych
+ * This file is part of the TREZOR project, https://trezor.io/
+ *
+ * Copyright (c) SatoshiLabs
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the "Software"),
@@ -20,31 +22,24 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __SCHNORR_H__
-#define __SCHNORR_H__
+#ifndef __SLIP39_H__
+#define __SLIP39_H__
 
-#include <TrezorCrypto/ecdsa.h>
-
-#if defined(__cplusplus)
-extern "C"
-{
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-// result of sign operation
-typedef struct {
-  uint8_t r[32];
-  uint8_t s[32];
-} schnorr_sign_pair;
+#include <stdbool.h>
+#include <stdint.h>
 
-// sign/verify returns 0 if operation succeeded
+const char* get_word(uint16_t index);
 
-// k is a random from [1, ..., order-1]
-int schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key,
-                 const bignum256 *k, const uint8_t *msg, const uint32_t msg_len,
-                 schnorr_sign_pair *result);
-int schnorr_verify(const ecdsa_curve *curve, const uint8_t *pub_key,
-                   const uint8_t *msg, const uint32_t msg_len,
-                   const schnorr_sign_pair *sign);
+bool word_index(uint16_t* index, const char* word, uint8_t word_length);
+
+uint16_t slip39_word_completion_mask(uint16_t prefix);
+
+const char* button_sequence_to_word(uint16_t prefix);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

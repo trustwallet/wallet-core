@@ -53,5 +53,5 @@ TEST(VergeTransactionBuilder, BuildWithTime) {
     plan.change = 980000000;
 
     auto tx = Verge::TransactionBuilder::build<Verge::Transaction>(plan, input);
-    ASSERT_NE(tx.time, 0);
+    ASSERT_NE(tx.time, 0ul);
 }

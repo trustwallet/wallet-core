@@ -137,7 +137,7 @@ inline Data encodeEra(const uint64_t block, const uint64_t period) {
         }
     }
     auto encoded = std::min(15, std::max(1, trailingZeros - 1)) + (((quantizedPhase / quantizeFactor) << 4));
-    return Data{byte(encoded & 0xff), byte(encoded >> 8)};
+    return Data{TW::byte(encoded & 0xff), TW::byte(encoded >> 8)};
 }
 
 } // namespace TW::Polkadot

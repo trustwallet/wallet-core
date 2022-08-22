@@ -10,11 +10,12 @@
 #include <google/protobuf/util/json_util.h>
 
 using namespace TW;
-using namespace TW::Harmony;
+
+namespace TW::Harmony {
 
 using INVALID_ENUM = std::integral_constant<uint8_t, 99>;
 
-std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chainID,
+std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t& chainID,
                                                            const Data& signature) noexcept {
     auto r = load(Data(signature.begin(), signature.begin() + 32));
     auto s = load(Data(signature.begin() + 32, signature.begin() + 64));
@@ -24,13 +25,13 @@ std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chai
 }
 
 std::tuple<uint256_t, uint256_t, uint256_t>
-Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data& hash) noexcept {
+Signer::sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) noexcept {
     auto signature = privateKey.sign(hash, TWCurveSECP256k1);
     return values(chainID, signature);
 }
 
 template <typename T>
-Proto::SigningOutput Signer::prepareOutput(const Data& encoded, const T &transaction) noexcept {
+Proto::SigningOutput Signer::prepareOutput(const Data& encoded, const T& transaction) noexcept {
     auto protoOutput = Proto::SigningOutput();
 
     auto v = store(transaction.v, 1);
@@ -87,7 +88,7 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     return hex(Signer::sign(input).encoded());
 }
 
-Proto::SigningOutput Signer::signTransaction(const Proto::SigningInput &input) {
+Proto::SigningOutput Signer::signTransaction(const Proto::SigningInput& input) {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
 
     auto transaction = Signer::buildUnsignedTransaction(input);
@@ -304,14 +305,14 @@ CollectRewards Signer::buildUnsignedCollectRewards(const Proto::SigningInput &in
 }
 
 template <typename T>
-void Signer::sign(const PrivateKey &privateKey, const Data& hash, T &transaction) const noexcept {
+void Signer::sign(const PrivateKey& privateKey, const Data& hash, T& transaction) const noexcept {
     auto tuple = sign(chainID, privateKey, hash);
     transaction.r = std::get<0>(tuple);
     transaction.s = std::get<1>(tuple);
     transaction.v = std::get<2>(tuple);
 }
 
-Data Signer::rlpNoHash(const Transaction &transaction, const bool include_vrs) const noexcept {
+Data Signer::rlpNoHash(const Transaction& transaction, const bool include_vrs) const noexcept {
     auto encoded = Data();
     using namespace TW::Ethereum;
     append(encoded, RLP::encode(transaction.nonce));
@@ -335,7 +336,7 @@ Data Signer::rlpNoHash(const Transaction &transaction, const bool include_vrs) c
 }
 
 template <typename Directive>
-Data Signer::rlpNoHash(const Staking<Directive> &transaction, const bool include_vrs) const
+Data Signer::rlpNoHash(const Staking<Directive>& transaction, const bool include_vrs) const
     noexcept {
     auto encoded = Data();
     using namespace TW::Ethereum;
@@ -357,7 +358,7 @@ Data Signer::rlpNoHash(const Staking<Directive> &transaction, const bool include
     return RLP::encodeList(encoded);
 }
 
-Data Signer::rlpNoHashDirective(const Staking<CreateValidator> &transaction) const noexcept {
+Data Signer::rlpNoHashDirective(const Staking<CreateValidator>& transaction) const noexcept {
     auto encoded = Data();
     using namespace TW::Ethereum;
 
@@ -408,7 +409,7 @@ Data Signer::rlpNoHashDirective(const Staking<CreateValidator> &transaction) con
     return RLP::encodeList(encoded);
 }
 
-Data Signer::rlpNoHashDirective(const Staking<EditValidator> &transaction) const noexcept {
+Data Signer::rlpNoHashDirective(const Staking<EditValidator>& transaction) const noexcept {
     auto encoded = Data();
     using namespace TW::Ethereum;
 
@@ -441,7 +442,7 @@ Data Signer::rlpNoHashDirective(const Staking<EditValidator> &transaction) const
     return RLP::encodeList(encoded);
 }
 
-Data Signer::rlpNoHashDirective(const Staking<Delegate> &transaction) const noexcept {
+Data Signer::rlpNoHashDirective(const Staking<Delegate>& transaction) const noexcept {
     auto encoded = Data();
     using namespace TW::Ethereum;
     append(encoded, RLP::encode(transaction.stakeMsg.delegatorAddress.getKeyHash()));
@@ -450,7 +451,7 @@ Data Signer::rlpNoHashDirective(const Staking<Delegate> &transaction) const noex
     return RLP::encodeList(encoded);
 }
 
-Data Signer::rlpNoHashDirective(const Staking<Undelegate> &transaction) const noexcept {
+Data Signer::rlpNoHashDirective(const Staking<Undelegate>& transaction) const noexcept {
     auto encoded = Data();
     using namespace TW::Ethereum;
     append(encoded, RLP::encode(transaction.stakeMsg.delegatorAddress.getKeyHash()));
@@ -459,28 +460,28 @@ Data Signer::rlpNoHashDirective(const Staking<Undelegate> &transaction) const no
     return RLP::encodeList(encoded);
 }
 
-Data Signer::rlpNoHashDirective(const Staking<CollectRewards> &transaction) const noexcept {
+Data Signer::rlpNoHashDirective(const Staking<CollectRewards>& transaction) const noexcept {
     auto encoded = Data();
     using namespace TW::Ethereum;
     append(encoded, RLP::encode(transaction.stakeMsg.delegatorAddress.getKeyHash()));
     return RLP::encodeList(encoded);
 }
 
-std::string Signer::txnAsRLPHex(Transaction &transaction) const noexcept {
+std::string Signer::txnAsRLPHex(Transaction& transaction) const noexcept {
     return TW::hex(rlpNoHash(transaction, false));
 }
 
 template <typename Directive>
-std::string Signer::txnAsRLPHex(Staking<Directive> &transaction) const noexcept {
+std::string Signer::txnAsRLPHex(Staking<Directive>& transaction) const noexcept {
     return TW::hex(rlpNoHash<Directive>(transaction, false));
 }
 
-Data Signer::hash(const Transaction &transaction) const noexcept {
+Data Signer::hash(const Transaction& transaction) const noexcept {
     return Hash::keccak256(rlpNoHash(transaction, false));
 }
 
 template <typename Directive>
-Data Signer::hash(const Staking<Directive> &transaction) const noexcept {
+Data Signer::hash(const Staking<Directive>& transaction) const noexcept {
     return Hash::keccak256(rlpNoHash<Directive>(transaction, false));
 }
 
@@ -528,3 +529,5 @@ Transaction Signer::buildUnsignedTransaction(const Proto::SigningInput &input) {
     transaction.payload = Data(transactionMessage.payload().begin(), transactionMessage.payload().end());
     return transaction;
 }
+
+} // namespace TW::Harmony

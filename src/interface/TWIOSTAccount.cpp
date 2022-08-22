@@ -18,14 +18,14 @@ bool TWIOSTAccountEqual(struct TWIOSTAccount* _Nonnull lhs, struct TWIOSTAccount
 
 bool TWIOSTAccountIsValidString(TWString* _Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
-    return Account::isValid(*s);
+    return TW::IOST::Account::isValid(*s);
 }
 
 struct TWIOSTAccount* _Nullable TWIOSTAccountCreateWithString(TWString* _Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
 
     try {
-        const auto account = Account(*s);
+        const auto account = TW::IOST::Account(*s);
         return new TWIOSTAccount{std::move(account)};
     } catch (...) {
         return nullptr;
@@ -33,15 +33,15 @@ struct TWIOSTAccount* _Nullable TWIOSTAccountCreateWithString(TWString* _Nonnull
 }
 
 bool TWIOSTAccountIsValidProto(TW_IOST_Proto_AccountInfo proto) {
-    auto p = reinterpret_cast<const Proto::AccountInfo*>(proto);
-    return Account::isValid(p->name());
+    auto p = reinterpret_cast<const TW::IOST::Proto::AccountInfo*>(proto);
+    return TW::IOST::Account::isValid(p->name());
 }
 
 struct TWIOSTAccount* _Nullable TWIOSTAccountCreateWithProto(TW_IOST_Proto_AccountInfo proto) {
-    auto p = reinterpret_cast<const Proto::AccountInfo*>(proto);
+    auto p = reinterpret_cast<const TW::IOST::Proto::AccountInfo*>(proto);
 
     try {
-        const auto account = Account(*p);
+        const auto account = TW::IOST::Account(*p);
         return new TWIOSTAccount{std::move(account)};
     } catch (...) {
         return nullptr;

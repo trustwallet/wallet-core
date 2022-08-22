@@ -20,13 +20,13 @@ bool TWNEOAddressEqual(struct TWNEOAddress *_Nonnull lhs, struct TWNEOAddress *_
 
 bool TWNEOAddressIsValidString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
-    return Address::isValid(*s);
+    return NEO::Address::isValid(*s);
 }
 
 struct TWNEOAddress *_Nullable TWNEOAddressCreateWithString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
     try {
-        const auto address = Address(*s);
+        const auto address = NEO::Address(*s);
         return new TWNEOAddress{ std::move(address) };
     } catch (...) {
         return nullptr;
@@ -34,7 +34,7 @@ struct TWNEOAddress *_Nullable TWNEOAddressCreateWithString(TWString *_Nonnull s
 }
 
 struct TWNEOAddress *_Nonnull TWNEOAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
-    return new TWNEOAddress{ Address(publicKey->impl) };
+    return new TWNEOAddress{ NEO::Address(publicKey->impl) };
 }
 
 void TWNEOAddressDelete(struct TWNEOAddress *_Nonnull address) {

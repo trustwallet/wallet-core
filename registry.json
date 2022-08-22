@@ -1020,19 +1020,46 @@
     "hrp": "terra",
     "addressHasher": "sha256ripemd",
     "explorer": {
-      "url": "https://finder.terra.money/tx",
+      "url": "https://finder.terra.money/classic",
       "txPath": "/tx/",
-      "accountPath": "/address/",
-      "sampleTx": "D28D8AFC7CE89F2A22FA2DBF78D2C0A36E549BB830C4D9FA7459E3F723CA7182",
-      "sampleAccount": "terra16t3gx5rqvz6ru37yzn3shuu20erv4ngmfr59zf"
+      "accountPath": "/address/"
     },
     "info": {
       "url": "https://terra.money",
       "source": "https://github.com/terra-project/core",
-      "rpc": "https://classic.fcd.terra.dev",
+      "rpc": "https://columbus-fcd.terra.dev",
       "documentation": "https://docs.terra.money"
+    }
+  },
+  {
+    "id": "terrav2",
+    "name": "TerraV2",
+    "displayName": "Terra",
+    "coinId": 10000330,
+    "symbol": "LUNA",
+    "decimals": 6,
+    "blockchain": "Cosmos",
+    "derivation": [
+      {
+        "path": "m/44'/330'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "terra",
+    "chainId": "phoenix-1",
+    "addressHasher": "sha256ripemd",
+    "explorer": {
+      "url": "https://finder.terra.money/mainnet",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
     },
-    "deprecated": true
+    "info": {
+      "url": "https://terra.money",
+      "source": "https://github.com/terra-project/core",
+      "rpc": "https://phoenix-lcd.terra.dev",
+      "documentation": "https://docs.terra.money"
+    }
   },
   {
     "id": "polkadot",
@@ -1739,8 +1766,8 @@
         "path": "m/1852'/1815'/0'/0/0"
       }
     ],
-    "curve": "ed25519Extended",
-    "publicKeyType": "ed25519Extended",
+    "curve": "ed25519ExtendedCardano",
+    "publicKeyType": "ed25519Cardano",
     "hrp": "addr",
     "explorer": {
       "url": "https://cardanoscan.io",
@@ -2078,7 +2105,7 @@
     "info": {
       "url": "https://polygon.technology",
       "source": "https://github.com/maticnetwork/contracts",
-      "rpc": "https://rpc-mainnet.matic.network",
+      "rpc": "https://polygon-rpc.com",
       "documentation": "https://eth.wiki/json-rpc/API"
     }
   },
@@ -2222,7 +2249,7 @@
     "chainId": "43114",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://cchain.explorer.avax.network",
+      "url": "https://snowtrace.io",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x9243890b844219accefd8798271052f5a056453ec18984a56e81c92921330d54",
@@ -2519,6 +2546,34 @@
     }
   },
   {
+    "id": "kavaevm",
+    "name": "KavaEvm",
+    "coinId": 10002222,
+    "symbol": "KAVA",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "2222",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.kava.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://www.kava.io/",
+      "client": "https://github.com/Kava-Labs/kava",
+      "documentation": "https://docs.kava.io/docs/ethereum/overview/",
+      "rpc": "https://evm.kava.io"
+    }
+  },
+  {
     "id": "smartbch",
     "name": "Smart Bitcoin Cash",
     "coinId": 10000145,
@@ -2810,6 +2865,65 @@
       "url": "https://klaytn.foundation",
       "rpc": "https://public-node-api.klaytnapi.com/v1/cypress",
       "documentation": "https://docs.klaytn.foundation"
+    }
+  },
+  {
+    "id": "meter",
+    "name": "Meter",
+    "coinId": 18000,
+    "chainId": "82",
+    "symbol": "MTR",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "explorer": {
+      "url": "https://scan.meter.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x8ea268d5dbb40217c763b800a75fc063cf28b56f40f2bc69dc043f5c4bbdc144",
+      "sampleAccount": "0xe5a273954d24eddf9ae9ea4cef2347d584cfa3dd"
+    },
+    "info": {
+      "url": "https://meter.io/",
+      "source": "https://github.com/meterio/meter-pov",
+      "rpc": "https://rpc.meter.io",
+      "documentation": "https://docs.meter.io/"
+    }
+  },
+  {
+    "id": "okc",
+    "name": "OKX Chain",
+    "coinId": 996,
+    "chainId": "66",
+    "symbol": "OKT",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://www.oklink.com/en/okc",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "0x46C3A947E8248570FBD28E4FE456CC8F80DFD90716533878FB67857B95FA3D37",
+      "sampleAccount": "0x074faafd0b20fad2efa115b8ed7e75993e580b85"
+    },
+    "info": {
+      "url": "https://www.okx.com/okc",
+      "source": "https://github.com/okex/exchain",
+      "rpc": "https://exchainrpc.okex.org",
+      "documentation": "https://okc-docs.readthedocs.io/en/latest"
     }
   }
 ]

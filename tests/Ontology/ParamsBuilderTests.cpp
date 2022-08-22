@@ -53,7 +53,7 @@ TEST(ParamsBuilder, pushInt) {
                                         "050000000010",
                                         "08ffffffffffffff00",
                                         "08ffffffffffffff0f"};
-    for (auto index = 0; index < numVector.size(); index++) {
+    for (auto index = 0ul; index < numVector.size(); index++) {
         auto builder = ParamsBuilder();
         builder.push(numVector[index]);
         EXPECT_EQ(codeVector[index], hex(builder.getBytes()));
@@ -61,7 +61,7 @@ TEST(ParamsBuilder, pushInt) {
 }
 
 TEST(ParamsBuilder, balanceInvokeCode) {
-    auto balanceParam = Address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD").data;
+    auto balanceParam = Address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD")._data;
     auto invokeCode = ParamsBuilder::buildNativeInvokeCode(Ont().contractAddress(), 0x00,
                                                            "balanceOf", balanceParam);
     auto hexInvokeCode =
@@ -71,8 +71,8 @@ TEST(ParamsBuilder, balanceInvokeCode) {
 }
 
 TEST(ParamsBuilder, transferInvokeCode) {
-    auto fromAddress = Address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD").data;
-    auto toAddress = Address("Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn").data;
+    auto fromAddress = Address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD")._data;
+    auto toAddress = Address("Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn")._data;
     uint64_t amount = 1;
     std::list<boost::any> transferParam{fromAddress, toAddress, amount};
     std::vector<boost::any> args{transferParam};
@@ -88,7 +88,7 @@ TEST(ParamsBuilder, transferInvokeCode) {
 TEST(ParamsBuilder, balanceOep4TokenInvokeCode) {
     auto contractAddr = parse_hex("2f34b28eb98a1dd901d303f5294c87546fb37fe7");
     std::reverse(std::begin(contractAddr), std::end(contractAddr));
-    auto balanceAddr = Address("ANXE3XovCwBH1ckQnPc6vKYiTwRXyrVToD").data;
+    auto balanceAddr = Address("ANXE3XovCwBH1ckQnPc6vKYiTwRXyrVToD")._data;
     std::string method = "balanceOf";
     std::vector<boost::any> args{balanceAddr};
     std::vector<boost::any> params{args, method};
@@ -101,8 +101,8 @@ TEST(ParamsBuilder, balanceOep4TokenInvokeCode) {
 TEST(ParamsBuilder, transferOep4TokenInvokeCode) {
     auto contractAddr = parse_hex("2f34b28eb98a1dd901d303f5294c87546fb37fe7");
     std::reverse(std::begin(contractAddr), std::end(contractAddr));
-    auto fromAddr = Address("AYxk7SzhSP34QbeYPeskHt9TCZq2JYjp8e").data;
-    auto toAddr = Address("ARR6PsaBwRttzCmyxCMhL7NmFk1LqExD7L").data;
+    auto fromAddr = Address("AYxk7SzhSP34QbeYPeskHt9TCZq2JYjp8e")._data;
+    auto toAddr = Address("ARR6PsaBwRttzCmyxCMhL7NmFk1LqExD7L")._data;
     uint64_t amount = 1000;
     std::string method = "transfer";
     std::vector<boost::any> args{amount, toAddr, fromAddr};

@@ -6,11 +6,10 @@
 
 import "mocha";
 import { assert } from "chai";
-import { WalletCore } from "../dist";
 
 describe("CoinType", () => {
   it("test raw value", () => {
-    const { CoinType } = WalletCore;
+    const { CoinType } = globalThis.core;
 
     assert.equal(CoinType.bitcoin.value, 0);
     assert.equal(CoinType.litecoin.value, 2);
@@ -19,6 +18,5 @@ describe("CoinType", () => {
     assert.equal(CoinType.binance.value, 714);
     assert.equal(CoinType.cosmos.value, 118);
     assert.equal(CoinType.solana.value, 501);
-
   });
 });

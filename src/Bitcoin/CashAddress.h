@@ -27,7 +27,7 @@ public:
 
     /// Address data consisting of a prefix byte followed by the public key
     /// hash.
-    std::array<byte, size> bytes{};
+    std::array<TW::byte, size> bytes{};
 
     /// Cash address human-readable part
     const std::string hrp;

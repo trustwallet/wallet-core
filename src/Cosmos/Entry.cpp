@@ -10,21 +10,21 @@
 #include "Signer.h"
 
 using namespace TW;
-using namespace TW::Cosmos;
-using namespace TW;
 using namespace std;
+
+namespace TW::Cosmos {
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
-bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW::byte, const char* hrp) const {
+bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW::byte, [[maybe_unused]] const char* hrp) const {
     return Address::isValid(coin, address);
 }
 
-string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char* hrp) const {
+string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, [[maybe_unused]] const char* hrp) const {
     return Address(coin, publicKey).string();
 }
 
-Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
+Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
     Address addr;
     if (!Address::decode(address, addr)) {
         return Data();
@@ -68,3 +68,4 @@ void Entry::compile(TWCoinType coin, const Data& txInputData, const std::vector<
         });
 }
 
+} // namespace TW::Cosmos

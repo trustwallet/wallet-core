@@ -9,7 +9,8 @@
 #include "../HexCoding.h"
 
 using namespace TW;
-using namespace TW::Nebulas;
+
+namespace TW::Nebulas {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto signer = Signer(load(input.chain_id()));
@@ -67,3 +68,5 @@ Data Signer::getPreImage(const Transaction& transaction) const noexcept {
     encode256BE(encoded, transaction.gasLimit, 128);
     return encoded;
 }
+
+} // namespace TW::Nebulas

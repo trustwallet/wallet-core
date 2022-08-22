@@ -18,7 +18,7 @@ class Address : public Base58Address<24> {
     std::string prefix;
 
     /// NULS address type
-    static const byte addressType = 0x01;
+    static const TW::byte addressType = 0x01;
 
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& addrStr);
@@ -44,7 +44,7 @@ class Address : public Base58Address<24> {
     std::string string() const;
 
     /// calculate checksum
-    uint8_t checksum(std::array<byte, size>& byteArray) const;
+    uint8_t checksum(std::array<TW::byte, size>& byteArray) const;
 };
 
 static inline bool operator==(const Address& lhs, const Address& rhs) {

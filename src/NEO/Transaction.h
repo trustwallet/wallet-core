@@ -20,13 +20,13 @@ namespace TW::NEO {
 class Transaction : public Serializable {
 public:
     TransactionType type;
-    byte version;
+    TW::byte version;
     std::vector<TransactionAttribute> attributes;
     std::vector<CoinReference> inInputs;
     std::vector<TransactionOutput> outputs;
     std::vector<Witness> witnesses;
 
-    Transaction(TransactionType t = TransactionType::TT_ContractTransaction, byte ver = 0) : type(t), version(ver) {}
+    Transaction(TransactionType t = TransactionType::TT_ContractTransaction, TW::byte ver = 0) : type(t), version(ver) {}
     ~Transaction() override = default;
 
     int64_t size() const override;
@@ -35,9 +35,7 @@ public:
 
     bool operator==(const Transaction& other) const;
 
-    virtual int deserializeExclusiveData(const Data& data, int initial_pos = 0) {
-        return initial_pos;
-    }
+    virtual int deserializeExclusiveData([[maybe_unused]] const Data& data, int initial_pos = 0) { return initial_pos; }
     virtual Data serializeExclusiveData() const { return Data(); }
 
     Data getHash() const;

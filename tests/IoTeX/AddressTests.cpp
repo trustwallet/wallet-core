@@ -45,8 +45,8 @@ TEST(IoTeXAddress, FromPrivateKey) {
     EXPECT_THROW({
         try
         {
-            const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
-            const auto address = Address(publicKey);
+            const auto _publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+            const auto _address = Address(_publicKey);
         }
         catch( const std::invalid_argument& e )
         {
@@ -64,8 +64,8 @@ TEST(IoTeXAddress, FromKeyHash) {
     EXPECT_THROW({
         try
         {
-            const auto keyHash = parse_hex("3f9c20bcec9de520d88d98cbe07ee7b5ded0da");
-            const auto address = Address(keyHash);
+            const auto _keyHash = parse_hex("3f9c20bcec9de520d88d98cbe07ee7b5ded0da");
+            const auto _address = Address(_keyHash);
         }
         catch( const std::invalid_argument& e )
         {

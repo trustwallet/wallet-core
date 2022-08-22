@@ -11,7 +11,7 @@
 #include <unordered_map>
 
 using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology {
 
 Transaction Ont::decimals(uint32_t nonce) {
     auto builder = ParamsBuilder();
@@ -25,7 +25,7 @@ Transaction Ont::decimals(uint32_t nonce) {
 Transaction Ont::balanceOf(const Address &address, uint32_t nonce) {
     auto builder = ParamsBuilder();
     auto invokeCode =
-        ParamsBuilder::buildNativeInvokeCode(contractAddress(), version, "balanceOf", address.data);
+        ParamsBuilder::buildNativeInvokeCode(contractAddress(), version, "balanceOf", address._data);
     auto tx = Transaction((uint8_t)0, txType, nonce, (uint64_t)0, (uint64_t)0,
                           (std::string) "", invokeCode);
     return tx;
@@ -34,7 +34,7 @@ Transaction Ont::balanceOf(const Address &address, uint32_t nonce) {
 Transaction Ont::transfer(const Signer &from, const Address &to, uint64_t amount,
                           const Signer &payer, uint64_t gasPrice, uint64_t gasLimit,
                           uint32_t nonce) {
-    std::list<boost::any> transferParam{from.getAddress().data, to.data, amount};
+    std::list<boost::any> transferParam{from.getAddress()._data, to._data, amount};
     std::vector<boost::any> args{transferParam};
     auto invokeCode =
         ParamsBuilder::buildNativeInvokeCode(contractAddress(), 0x00, "transfer", args);
@@ -47,7 +47,7 @@ Transaction Ont::transfer(const Signer &from, const Address &to, uint64_t amount
 
 Transaction Ont::unsignedTransfer(const Address &from, const Address &to, uint64_t amount,
                              uint64_t gasPrice, uint64_t gasLimit,uint32_t nonce) {
-    std::list<boost::any> transferParam{from.data, to.data, amount};
+    std::list<boost::any> transferParam{from._data, to._data, amount};
     std::vector<boost::any> args{transferParam};
     auto invokeCode =
             ParamsBuilder::buildNativeInvokeCode(contractAddress(), 0x00, "transfer", args);
@@ -55,3 +55,5 @@ Transaction Ont::unsignedTransfer(const Address &from, const Address &to, uint64
                           from.string(), invokeCode);
     return tx;
 }
+
+} // namespace TW::Ontology

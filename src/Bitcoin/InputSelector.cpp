@@ -9,6 +9,7 @@
 #include "UTXO.h"
 
 #include <algorithm>
+#include <optional>
 #include <cassert>
 
 using namespace TW;
@@ -38,7 +39,7 @@ InputSelector<TypeWithAmount>::filterThreshold(const std::vector<TypeWithAmount>
                                                uint64_t minimumAmount) noexcept {
     std::vector<TypeWithAmount> filtered;
     for (auto& i : inputs) {
-        if (i.amount > minimumAmount) {
+        if (static_cast<uint64_t>(i.amount) > minimumAmount) {
             filtered.push_back(i);
         }
     }
@@ -54,7 +55,7 @@ template <typename TypeWithAmount>
 static inline std::vector<std::vector<TypeWithAmount>>
 slice(const std::vector<TypeWithAmount>& inputs, size_t sliceSize) {
     std::vector<std::vector<TypeWithAmount>> slices;
-    for (auto i = 0; i <= inputs.size() - sliceSize; ++i) {
+    for (auto i = 0ul; i <= inputs.size() - sliceSize; ++i) {
         slices.emplace_back();
         slices[i].reserve(sliceSize);
         for (auto j = i; j < i + sliceSize; j++) {
@@ -66,23 +67,23 @@ slice(const std::vector<TypeWithAmount>& inputs, size_t sliceSize) {
 
 template <typename TypeWithAmount>
 std::vector<TypeWithAmount>
-InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int64_t numOutputs) {
+InputSelector<TypeWithAmount>::select(uint64_t targetValue, uint64_t byteFee, uint64_t numOutputs) {
     // if target value is zero, no UTXOs are needed
     if (targetValue == 0) {
         return {};
     }
 
     // total values of utxos should be greater than targetValue
-    if (inputs.empty() || sum(inputs) < targetValue) {
+    if (_inputs.empty() || sum(_inputs) < targetValue) {
         return {};
     }
-    assert(inputs.size() >= 1);
+    assert(_inputs.size() >= 1);
 
-    // definitions for the following caluculation
+    // definitions for the following calculation
     const auto doubleTargetValue = targetValue * 2;
 
     // Get all possible utxo selections up to a maximum size, sort by total amount, increasing
-    std::vector<TypeWithAmount> sorted = inputs;
+    std::vector<TypeWithAmount> sorted = _inputs;
     std::sort(sorted.begin(), sorted.end(),
               [](const TypeWithAmount& lhs, const TypeWithAmount& rhs) {
                   return lhs.amount < rhs.amount;
@@ -93,13 +94,13 @@ InputSelector<TypeWithAmount>::select(int64_t targetValue, int64_t byteFee, int6
     std::vector<uint64_t> maxWithXInputs = std::vector<uint64_t>();
     maxWithXInputs.push_back(0);
     int64_t maxSum = 0;
-    for (auto i = 0; i < n; ++i) {
+    for (auto i = 0ul; i < n; ++i) {
         maxSum += sorted[n - 1 - i].amount;
         maxWithXInputs.push_back(maxSum);
     }
 
     // difference from 2x targetValue
-    auto distFrom2x = [doubleTargetValue](int64_t val) -> int64_t {
+    auto distFrom2x = [doubleTargetValue](uint64_t val) -> uint64_t {
         if (val > doubleTargetValue) {
             return val - doubleTargetValue;
         }
@@ -167,23 +168,23 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(int64_t 
     if (targetValue == 0) {
         return {};
     }
-    if (inputs.empty()) {
+    if (_inputs.empty()) {
         return {};
     }
-    assert(inputs.size() >= 1);
+    assert(_inputs.size() >= 1);
 
     // target value is larger that original, but not by a factor of 2 (optimized for large UTXO
     // cases)
     const auto increasedTargetValue =
         (uint64_t)((double)targetValue * 1.1 +
-                   feeCalculator.calculate(inputs.size(), numOutputs, byteFee) + 1000);
+                   feeCalculator.calculate(_inputs.size(), numOutputs, byteFee) + 1000);
 
     const int64_t dustThreshold = feeCalculator.calculateSingleInput(byteFee);
 
     // Go through inputs in a single pass, in the order they appear, no optimization
     uint64_t sum = 0;
     std::vector<TypeWithAmount> selected;
-    for (auto& input : inputs) {
+    for (auto& input : _inputs) {
         if (input.amount <= dustThreshold) {
             continue; // skip dust
         }
@@ -202,7 +203,7 @@ std::vector<TypeWithAmount> InputSelector<TypeWithAmount>::selectSimple(int64_t 
 template <typename TypeWithAmount>
 std::vector<TypeWithAmount>
 InputSelector<TypeWithAmount>::selectMaxAmount(int64_t byteFee) noexcept {
-    return filterOutDust(inputs, byteFee);
+    return filterOutDust(_inputs, byteFee);
 }
 
 // Explicitly instantiate

@@ -5,17 +5,18 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "../interface/TWTestUtilities.h"
-#include <TrustWalletCore/TWAnySigner.h>
 #include "Data.h"
 #include "HexCoding.h"
-#include "uint256.h"
 #include "proto/Icon.pb.h"
+#include "uint256.h"
+#include "../interface/TWTestUtilities.h"
+#include <TrustWalletCore/TWAnySigner.h>
 
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Icon;
+
+namespace TW::Icon::tests {
 
 TEST(TWAnySignerIcon, Sign) {
     auto key = parse_hex("2d42994b2f7735bbc93a3e64381864d06747e574aa94655c516f9ad0a74eed79");
@@ -46,3 +47,5 @@ TEST(TWAnySignerIcon, Sign) {
     auto expected = std::string("{\"from\":\"hxbe258ceb872e08851f1f59694dac2558708ece11\",\"nid\":\"0x1\",\"nonce\":\"0x1\",\"signature\":\"xR6wKs+IA+7E91bT8966jFKlK5mayutXCvayuSMCrx9KB7670CsWa0B7LQzgsxU0GLXaovlAT2MLs1XuDiSaZQE=\",\"stepLimit\":\"0x12345\",\"timestamp\":\"0x563a6cf330136\",\"to\":\"hx5bfdb090f43a808005ffc27c25b213145e80b7cd\",\"value\":\"0xde0b6b3a7640000\",\"version\":\"0x3\"}");
     ASSERT_EQ(output.encoded(), expected);
 }
+
+} // namespace TW::Icon::tests

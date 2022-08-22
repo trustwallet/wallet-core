@@ -79,8 +79,15 @@ void openssl_check(unsigned int iterations, int nid, const ecdsa_curve *curve) {
     }
 
     // generate public key from private key
-    ecdsa_get_public_key33(curve, priv_key, pub_key33);
-    ecdsa_get_public_key65(curve, priv_key, pub_key65);
+    if (ecdsa_get_public_key33(curve, priv_key, pub_key33) != 0) {
+      printf("ecdsa_get_public_key33 failed\n");
+      return;
+    }
+
+    if (ecdsa_get_public_key65(curve, priv_key, pub_key65) != 0) {
+      printf("ecdsa_get_public_key65 failed\n");
+      return;
+    }
 
     // use our ECDSA verifier to verify the message signature
     if (ecdsa_verify(curve, HASHER_SHA2, pub_key65, sig, msg, msg_len) != 0) {

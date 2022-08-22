@@ -189,7 +189,7 @@ string CommandExecutor::parseLine(const string& line, vector<string>& params) {
     return cmd;
 }
 
-bool CommandExecutor::checkMinParams(const vector<string>& params, int n) const {
+bool CommandExecutor::checkMinParams(const vector<string>& params, std::size_t n) const {
     if (params.size() - 1 >= n) {
         return true;
     }

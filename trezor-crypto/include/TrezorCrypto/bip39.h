@@ -24,25 +24,30 @@
 #ifndef __BIP39_H__
 #define __BIP39_H__
 
-#include <stdbool.h>
-#include <stdint.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define BIP39_WORDS 2048
+#include <stdbool.h>
+#include <stdint.h>
+
+#include <TrezorCrypto/options.h>
+
+#define BIP39_WORD_COUNT 2048
 #define BIP39_PBKDF2_ROUNDS 2048
 
-#define BIP39_MAX_WORDS 24  // [wallet-core]
-#define BIP39_MAX_WORD_LENGTH 9  // [wallet-core]
+#if USE_BIP39_CACHE
+void bip39_cache_clear(void);
+#endif
+
+// [wallet-core]
+#define BIP39_MAX_WORDS 24
+#define BIP39_MAX_WORD_LENGTH 9
 
 // [wallet-core] Added output buffer
-const char *mnemonic_generate(int strength, char *buf, int buflen);  // strength in bits
-// [wallet-core] Added output buffer
+const char *mnemonic_generate(int strength, char *buf, int buflen); // strength in bits
 const char *mnemonic_from_data(const uint8_t *data, int datalen, char *buf, int buflen);
-// [wallet-core] No longer used
-//void mnemonic_clear(void);
+void mnemonic_clear(void);
 
 int mnemonic_check(const char *mnemonic);
 
@@ -54,13 +59,13 @@ void mnemonic_to_seed(const char *mnemonic, const char *passphrase,
                       void (*progress_callback)(uint32_t current,
                                                 uint32_t total));
 
-#ifdef __cplusplus
-} /* extern "C" */
-#endif
-
 int mnemonic_find_word(const char *word);
 const char *mnemonic_complete_word(const char *prefix, int len);
 const char *mnemonic_get_word(int index);
 uint32_t mnemonic_word_completion_mask(const char *prefix, int len);
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
 #endif

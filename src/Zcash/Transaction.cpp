@@ -25,9 +25,9 @@ const auto shieldedSpendHashPersonalization = Data({'Z','c','a','s','h','S','S',
 const auto shieldedOutputsHashPersonalization = Data({'Z','c','a','s','h','S','O','u','t','p','u','t','H','a','s','h'});
 
 /// See https://github.com/zcash/zips/blob/master/zip-0205.rst#sapling-deployment BRANCH_ID section
-const std::array<byte, 4> Zcash::SaplingBranchID = {0xbb, 0x09, 0xb8, 0x76};
+const std::array<TW::byte, 4> Zcash::SaplingBranchID = {0xbb, 0x09, 0xb8, 0x76};
 /// See https://github.com/zcash/zips/blob/master/zip-0206.rst#blossom-deployment BRANCH_ID section
-const std::array<byte, 4> Zcash::BlossomBranchID = {0x60, 0x0e, 0xb4, 0x2b};
+const std::array<TW::byte, 4> Zcash::BlossomBranchID = {0x60, 0x0e, 0xb4, 0x2b};
 
 Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType,
                               uint64_t amount) const {
@@ -36,7 +36,7 @@ Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index, e
     auto data = Data{};
 
     // header
-    encode32LE(version, data);
+    encode32LE(_version, data);
 
     // nVersionGroupId
     encode32LE(versionGroupId, data);
@@ -152,7 +152,7 @@ Data Transaction::getShieldedOutputsHash() const {
 }
 
 void Transaction::encode(Data& data) const {
-    encode32LE(version, data);
+    encode32LE(_version, data);
     encode32LE(versionGroupId, data);
 
     // vin
@@ -181,7 +181,7 @@ void Transaction::encode(Data& data) const {
 
 Data Transaction::getSignatureHash(const Bitcoin::Script& scriptCode, size_t index,
                                    enum TWBitcoinSigHashType hashType, uint64_t amount,
-                                   Bitcoin::SignatureVersion version) const {
+                                   [[maybe_unused]] Bitcoin::SignatureVersion version) const {
     Data personalization;
     personalization.reserve(16);
     std::copy(sigHashPersonalization.begin(), sigHashPersonalization.begin() + 12,
@@ -194,7 +194,7 @@ Data Transaction::getSignatureHash(const Bitcoin::Script& scriptCode, size_t ind
 
 Bitcoin::Proto::Transaction Transaction::proto() const {
     auto protoTx = Bitcoin::Proto::Transaction();
-    protoTx.set_version(version);
+    protoTx.set_version(_version);
     protoTx.set_locktime(lockTime);
 
     for (const auto& input : inputs) {

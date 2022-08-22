@@ -4,16 +4,17 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "PublicKey.h"
 #include "HexCoding.h"
 #include "NEO/Address.h"
 #include "NEO/Signer.h"
+#include "PublicKey.h"
 
 #include <gtest/gtest.h>
 
 using namespace std;
 using namespace TW;
-using namespace TW::NEO;
+
+namespace TW::NEO::tests {
 
 TEST(NEOAddress, FromPublicKey) {
     const auto publicKey = PublicKey(parse_hex("0222b2277d039d67f4197a638dd5a1d99c290b17aa8c4a16ccee5165fe612de66a"), TWPublicKeyTypeSECP256k1);
@@ -55,7 +56,6 @@ TEST(NEOAddress, fromString) {
     EXPECT_THROW(new Address(errB58Str), std::invalid_argument);
 }
 
-
 TEST(NEOAddress, Valid) {
     ASSERT_TRUE(Address::isValid("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD"));
 }
@@ -71,3 +71,4 @@ TEST(NEOAddress, FromPrivateKey) {
     ASSERT_EQ(address.string(), "AQCSMB3oSDA1dHPn6GXN6KB4NHmdo1fX41");
 }
 
+} // namespace TW::NEO::tests

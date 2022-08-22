@@ -9,19 +9,21 @@
 #include <TrustWalletCore/TWHRP.h>
 
 #define COIN_ADDRESS_CONTEXT "oasis-core/address: staking"
-#define COIN_ADDRESS_VERSION  0
+#define COIN_ADDRESS_VERSION 0
 
-using namespace TW::Oasis;
+namespace TW::Oasis {
 
 const std::string Address::hrp = HRP_OASIS;
 
-Address::Address(const Data& keyHash) : Bech32Address(hrp, keyHash) {
+Address::Address(const Data& keyHash)
+    : Bech32Address(hrp, keyHash) {
     if (getKeyHash().size() != Address::size) {
         throw std::invalid_argument("invalid address data");
     }
 }
 
-Address::Address(const TW::PublicKey& publicKey) : Bech32Address(hrp){
+Address::Address(const TW::PublicKey& publicKey)
+    : Bech32Address(hrp) {
     if (publicKey.type != TWPublicKeyTypeED25519) {
         throw std::invalid_argument("address may only be an extended ED25519 public key");
     }
@@ -39,8 +41,9 @@ Address::Address(const TW::PublicKey& publicKey) : Bech32Address(hrp){
     setKey(key);
 }
 
-Address::Address(const std::string& addr) : Bech32Address(addr) {
-    if(!isValid(addr)) {
+Address::Address(const std::string& addr)
+    : Bech32Address(addr) {
+    if (!isValid(addr)) {
         throw std::invalid_argument("invalid address string");
     }
 }
@@ -49,3 +52,4 @@ bool Address::isValid(const std::string& addr) {
     return Bech32Address::isValid(addr, hrp);
 }
 
+} // namespace TW::Oasis

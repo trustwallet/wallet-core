@@ -13,5 +13,5 @@ using namespace TW::Decred;
 void OutPoint::encode(Data& data) const {
     std::copy(std::begin(hash), std::end(hash), std::back_inserter(data));
     encode32LE(index, data);
-    data.push_back(static_cast<byte>(tree));
+    data.push_back(static_cast<TW::byte>(tree));
 }

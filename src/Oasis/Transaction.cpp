@@ -7,7 +7,10 @@
 #include "Transaction.h"
 
 using namespace TW;
-using namespace TW::Oasis;
+
+namespace TW::Oasis {
+
+// clang-format off
 
 // encodeVaruint encodes a 256-bit number into a big endian encoding, omitting leading zeros.
 static Data encodeVaruint(const uint256_t& value) {
@@ -63,3 +66,6 @@ Data Transaction::signaturePreimage() const {
     dataToHash.insert(dataToHash.end(), encodedMessage.begin(), encodedMessage.end());
     return dataToHash;
 }
+// clang-format on
+
+} // namespace TW::Oasis

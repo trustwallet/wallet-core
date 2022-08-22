@@ -4,26 +4,25 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Cardano/Signer.h"
 #include "Cardano/AddressV3.h"
+#include "Cardano/Signer.h"
 #include "proto/Cardano.pb.h"
 #include <TrustWalletCore/TWCardano.h>
 
-#include "PrivateKey.h"
-#include "HexCoding.h"
 #include "Cbor.h"
+#include "HexCoding.h"
+#include "PrivateKey.h"
 #include "uint256.h"
-#include <TrustWalletCore/TWAnySigner.h>
 #include "../interface/TWTestUtilities.h"
+#include <TrustWalletCore/TWAnySigner.h>
 
 #include <gtest/gtest.h>
 #include <vector>
 
-
-using namespace TW::Cardano;
 using namespace TW;
 using namespace std;
 
+namespace TW::Cardano::tests {
 
 const auto privateKeyTest1 = "089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448a3566990b7785bd48c330875b1e0d03caaed0e67cecc42075dce1c7a13b1c49240508848ac82f603391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf1290dbd508e5ec71afaea98da2df1533c22ef02a26bb87b31907d0b2738fb7785b38d53aa68fc01230784c9209b2b2a2faf28491b3b1f1d221e63e704bbd0403c4154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e";
 const auto ownAddress1 = "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23";
@@ -31,45 +30,43 @@ const auto sundaeTokenPolicy = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4
 
 TEST(CardanoSigning, SelectInputs) {
     const auto inputs = std::vector<TxInput>({
-        TxInput{{parse_hex("0001"), 0}, "ad01", 700},
-        TxInput{{parse_hex("0002"), 1}, "ad02", 900},
-        TxInput{{parse_hex("0003"), 2}, "ad03", 300},
-        TxInput{{parse_hex("0004"), 3}, "ad04", 600},
+        TxInput{{parse_hex("0001"), 0}, "ad01", 700, {}},
+        TxInput{{parse_hex("0002"), 1}, "ad02", 900, {}},
+        TxInput{{parse_hex("0003"), 2}, "ad03", 300, {}},
+        TxInput{{parse_hex("0004"), 3}, "ad04", 600, {}},
     });
 
-    {   // 2
+    { // 2
         const auto s1 = Signer::selectInputsWithTokens(inputs, 1500, {});
-        ASSERT_EQ(s1.size(), 2);
-        EXPECT_EQ(s1[0].amount, 900);
-        EXPECT_EQ(s1[1].amount, 700);
+        ASSERT_EQ(s1.size(), 2ul);
+        EXPECT_EQ(s1[0].amount, 900ul);
+        EXPECT_EQ(s1[1].amount, 700ul);
     }
-    {   // all
+    { // all
         const auto s1 = Signer::selectInputsWithTokens(inputs, 10000, {});
-        ASSERT_EQ(s1.size(), 4);
-        EXPECT_EQ(s1[0].amount, 900);
-        EXPECT_EQ(s1[1].amount, 700);
-        EXPECT_EQ(s1[2].amount, 600);
-        EXPECT_EQ(s1[3].amount, 300);
+        ASSERT_EQ(s1.size(), 4ul);
+        EXPECT_EQ(s1[0].amount, 900ul);
+        EXPECT_EQ(s1[1].amount, 700ul);
+        EXPECT_EQ(s1[2].amount, 600ul);
+        EXPECT_EQ(s1[3].amount, 300ul);
     }
-    {   // 3
+    { // 3
         const auto s1 = Signer::selectInputsWithTokens(inputs, 2000, {});
-        ASSERT_EQ(s1.size(), 3);
+        ASSERT_EQ(s1.size(), 3ul);
     }
-    {   // 1
+    { // 1
         const auto s1 = Signer::selectInputsWithTokens(inputs, 500, {});
-        ASSERT_EQ(s1.size(), 1);
+        ASSERT_EQ(s1.size(), 1ul);
     }
-    {   // at least 0 is returned
+    { // at least 0 is returned
         const auto s1 = Signer::selectInputsWithTokens(inputs, 0, {});
-        ASSERT_EQ(s1.size(), 1);
+        ASSERT_EQ(s1.size(), 1ul);
     }
 }
 
-Proto::SigningInput createSampleInput(uint64_t amount, int utxoCount = 10, 
-    const std::string& alternateToAddress = "", bool omitPrivateKey = false
-) {
-    const std::string toAddress = (alternateToAddress.length() > 0) ? alternateToAddress :
-        "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5";
+Proto::SigningInput createSampleInput(uint64_t amount, int utxoCount = 10,
+                                      const std::string& alternateToAddress = "", bool omitPrivateKey = false) {
+    const std::string toAddress = (alternateToAddress.length() > 0) ? alternateToAddress : "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5";
 
     Proto::SigningInput input;
     if (utxoCount >= 1) {
@@ -107,54 +104,54 @@ TEST(CardanoSigning, Plan) {
     {
         auto signer = Signer(input);
         const auto plan = signer.doPlan();
-        EXPECT_EQ(plan.utxos.size(), 2);
-        EXPECT_EQ(plan.availableAmount, 8000000);
-        EXPECT_EQ(plan.amount, 7000000);
-        EXPECT_EQ(plan.fee, 170196);
-        EXPECT_EQ(plan.change, 829804);
+        EXPECT_EQ(plan.utxos.size(), 2ul);
+        EXPECT_EQ(plan.availableAmount, 8000000ul);
+        EXPECT_EQ(plan.amount, 7000000ul);
+        EXPECT_EQ(plan.fee, 170196ul);
+        EXPECT_EQ(plan.change, 829804ul);
         EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
         EXPECT_EQ(plan.error, Common::Proto::OK);
     }
-    {   // very small target amount
+    { // very small target amount
         input.mutable_transfer_message()->set_amount(1);
         auto signer = Signer(input);
         const auto plan = signer.doPlan();
-        EXPECT_EQ(plan.utxos.size(), 1);
-        EXPECT_EQ(plan.availableAmount, 6500000);
-        EXPECT_EQ(plan.amount, 1);
-        EXPECT_EQ(plan.fee, 168435);
+        EXPECT_EQ(plan.utxos.size(), 1ul);
+        EXPECT_EQ(plan.availableAmount, 6500000ul);
+        EXPECT_EQ(plan.amount, 1ul);
+        EXPECT_EQ(plan.fee, 168435ul);
         EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
     }
-    {   // small target amount
+    { // small target amount
         input.mutable_transfer_message()->set_amount(2000000);
         auto signer = Signer(input);
         const auto plan = signer.doPlan();
-        EXPECT_EQ(plan.utxos.size(), 1);
-        EXPECT_EQ(plan.availableAmount, 6500000);
-        EXPECT_EQ(plan.amount, 2000000);
-        EXPECT_EQ(plan.fee, 168611);
+        EXPECT_EQ(plan.utxos.size(), 1ul);
+        EXPECT_EQ(plan.availableAmount, 6500000ul);
+        EXPECT_EQ(plan.amount, 2000000ul);
+        EXPECT_EQ(plan.fee, 168611ul);
         EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
     }
-    {   // small target amount requested, but max amount
+    { // small target amount requested, but max amount
         input.mutable_transfer_message()->set_amount(2000000);
         input.mutable_transfer_message()->set_use_max_amount(true);
         auto signer = Signer(input);
         const auto plan = signer.doPlan();
-        EXPECT_EQ(plan.utxos.size(), 2);
-        EXPECT_EQ(plan.availableAmount, 8000000);
-        EXPECT_EQ(plan.amount, 7832667);
-        EXPECT_EQ(plan.fee, 167333);
+        EXPECT_EQ(plan.utxos.size(), 2ul);
+        EXPECT_EQ(plan.availableAmount, 8000000ul);
+        EXPECT_EQ(plan.amount, 7832667ul);
+        EXPECT_EQ(plan.fee, 167333ul);
         EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
     }
 }
 
 TEST(CardanoSigning, PlanForceFee) {
-    auto requestedAmount = 6500000;
-    auto availableAmount = 8000000;
+    auto requestedAmount = 6500000ul;
+    auto availableAmount = 8000000ul;
     auto input = createSampleInput(requestedAmount);
 
     {
-        auto fee = 170147;
+        auto fee = 170147ul;
         input.mutable_transfer_message()->set_force_fee(fee);
         auto signer = Signer(input);
         const auto plan = signer.doPlan();
@@ -165,8 +162,8 @@ TEST(CardanoSigning, PlanForceFee) {
         EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
         EXPECT_EQ(plan.error, Common::Proto::OK);
     }
-    {   // tiny fee
-        auto fee = 100;
+    { // tiny fee
+        auto fee = 100ul;
         input.mutable_transfer_message()->set_force_fee(fee);
         auto signer = Signer(input);
         const auto plan = signer.doPlan();
@@ -176,8 +173,8 @@ TEST(CardanoSigning, PlanForceFee) {
         EXPECT_EQ(plan.change, availableAmount - requestedAmount - fee);
         EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
     }
-    {   // large fee
-        auto fee = 1200000;
+    { // large fee
+        auto fee = 1200000ul;
         input.mutable_transfer_message()->set_force_fee(fee);
         auto signer = Signer(input);
         const auto plan = signer.doPlan();
@@ -187,27 +184,27 @@ TEST(CardanoSigning, PlanForceFee) {
         EXPECT_EQ(plan.change, availableAmount - requestedAmount - fee);
         EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
     }
-    {   // very large fee, larger than possible, truncated
-        auto fee = 3000000;
+    { // very large fee, larger than possible, truncated
+        auto fee = 3000000ul;
         input.mutable_transfer_message()->set_force_fee(fee);
         auto signer = Signer(input);
         const auto plan = signer.doPlan();
         EXPECT_EQ(plan.availableAmount, availableAmount);
         EXPECT_EQ(plan.amount, requestedAmount);
-        EXPECT_EQ(plan.fee, 1500000);
-        EXPECT_EQ(plan.change, 0);
+        EXPECT_EQ(plan.fee, 1500000ul);
+        EXPECT_EQ(plan.change, 0ul);
         EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
     }
-    {   // force fee and max amount: fee is used, amount is max, change 0
-        auto fee = 160000;
+    { // force fee and max amount: fee is used, amount is max, change 0
+        auto fee = 160000ul;
         input.mutable_transfer_message()->set_force_fee(fee);
         input.mutable_transfer_message()->set_use_max_amount(true);
         auto signer = Signer(input);
         const auto plan = signer.doPlan();
         EXPECT_EQ(plan.availableAmount, availableAmount);
-        EXPECT_EQ(plan.amount, 7840000);
+        EXPECT_EQ(plan.amount, 7840000ul);
         EXPECT_EQ(plan.fee, fee);
-        EXPECT_EQ(plan.change, 0);
+        EXPECT_EQ(plan.change, 0ul);
         EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
     }
 }
@@ -218,11 +215,11 @@ TEST(CardanoSigning, PlanMissingPrivateKey) {
     auto signer = Signer(input);
     const auto plan = signer.doPlan();
 
-    EXPECT_EQ(plan.utxos.size(), 2);
-    EXPECT_EQ(plan.availableAmount, 8000000);
-    EXPECT_EQ(plan.amount, 7000000);
-    EXPECT_EQ(plan.fee, 170196);
-    EXPECT_EQ(plan.change, 829804);
+    EXPECT_EQ(plan.utxos.size(), 2ul);
+    EXPECT_EQ(plan.availableAmount, 8000000ul);
+    EXPECT_EQ(plan.amount, 7000000ul);
+    EXPECT_EQ(plan.fee, 170196ul);
+    EXPECT_EQ(plan.change, 829804ul);
     EXPECT_EQ(plan.amount + plan.change + plan.fee, plan.availableAmount);
     EXPECT_EQ(plan.error, Common::Proto::OK);
 }
@@ -244,7 +241,7 @@ TEST(CardanoSigning, SignTransfer1) {
         const auto decode = Cbor::Decode(encoded);
         ASSERT_TRUE(decode.isValid());
         EXPECT_EQ(decode.dumpToString(), "[{0: [[h\"554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0\", 0], [h\"f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767\", 1]], 1: [[h\"01558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd5\", 7000000], [h\"01df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\", 829804]], 2: 170196, 3: 53333333}, {0: [[h\"6d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df290\", h\"7cf591599852b5f5e007fdc241062405c47e519266c0d884b0767c1d4f5eacce00db035998e53ed10ca4ba5ce4aac8693798089717ce6cf4415f345cc764200e\"]]}, null]");
-        EXPECT_EQ(decode.getArrayElements().size(), 3);
+        EXPECT_EQ(decode.getArrayElements().size(), 3ul);
     }
 }
 
@@ -257,13 +254,13 @@ TEST(CardanoSigning, PlanAndSignTransfer1) {
         auto signer = Signer(input);
         const auto plan = signer.doPlan();
 
-        EXPECT_EQ(plan.availableAmount, 8000000);
+        EXPECT_EQ(plan.availableAmount, 8000000ul);
         EXPECT_EQ(plan.amount, amount);
-        EXPECT_EQ(plan.fee, 170196);
+        EXPECT_EQ(plan.fee, 170196ul);
         EXPECT_EQ(plan.change, 8000000 - amount - 170196);
-        ASSERT_EQ(plan.utxos.size(), 2);
-        EXPECT_EQ(plan.utxos[0].amount, 6500000);
-        EXPECT_EQ(plan.utxos[1].amount, 1500000);
+        ASSERT_EQ(plan.utxos.size(), 2ul);
+        EXPECT_EQ(plan.utxos[0].amount, 6500000ul);
+        EXPECT_EQ(plan.utxos[1].amount, 1500000ul);
 
         // perform sign with default plan
         const auto output = signer.sign();
@@ -295,7 +292,6 @@ TEST(CardanoSigning, PlanAndSignTransfer1) {
     EXPECT_EQ(hex(txid), "e319c0bfc99cdb79d64f00b7e8fb8bfbf29fa70554c84f101e92b7dfed172448");
 }
 
-
 TEST(CardanoSigning, PlanAndSignMaxAmount) {
     auto input = createSampleInput(7000000);
     input.mutable_transfer_message()->set_use_max_amount(true);
@@ -305,13 +301,13 @@ TEST(CardanoSigning, PlanAndSignMaxAmount) {
         auto signer = Signer(input);
         const auto plan = signer.doPlan();
 
-        EXPECT_EQ(plan.availableAmount, 8000000);
-        EXPECT_EQ(plan.amount, 8000000 - 167333);
-        EXPECT_EQ(plan.fee, 167333);
-        EXPECT_EQ(plan.change, 0);
-        ASSERT_EQ(plan.utxos.size(), 2);
-        EXPECT_EQ(plan.utxos[0].amount, 1500000);
-        EXPECT_EQ(plan.utxos[1].amount, 6500000);
+        EXPECT_EQ(plan.availableAmount, 8000000ul);
+        EXPECT_EQ(plan.amount, 8000000 - 167333ul);
+        EXPECT_EQ(plan.fee, 167333ul);
+        EXPECT_EQ(plan.change, 0ul);
+        ASSERT_EQ(plan.utxos.size(), 2ul);
+        EXPECT_EQ(plan.utxos[0].amount, 1500000ul);
+        EXPECT_EQ(plan.utxos[1].amount, 6500000ul);
     }
 
     auto signer = Signer(input);
@@ -326,7 +322,7 @@ TEST(CardanoSigning, PlanAndSignMaxAmount) {
 }
 
 TEST(CardanoSigning, SignNegative) {
-    {   // plan with error
+    { // plan with error
         auto input = createSampleInput(7000000);
         const auto error = Common::Proto::Error_invalid_memo;
         input.mutable_plan()->set_error(error);
@@ -334,25 +330,25 @@ TEST(CardanoSigning, SignNegative) {
         const auto output = signer.sign();
         EXPECT_EQ(output.error(), error);
     }
-    {   // zero requested amount
+    { // zero requested amount
         auto input = createSampleInput(0);
         auto signer = Signer(input);
         const auto output = signer.sign();
         EXPECT_EQ(output.error(), Common::Proto::Error_zero_amount_requested);
     }
-    {   // no utxo
+    { // no utxo
         auto input = createSampleInput(7000000, 0);
         auto signer = Signer(input);
         const auto output = signer.sign();
         EXPECT_EQ(output.error(), Common::Proto::Error_missing_input_utxos);
     }
-    {   // low balance
+    { // low balance
         auto input = createSampleInput(7000000000);
         auto signer = Signer(input);
         const auto output = signer.sign();
         EXPECT_EQ(output.error(), Common::Proto::Error_low_balance);
     }
-    {   // missing private key
+    { // missing private key
         auto input = createSampleInput(7000000, 10, "", true);
         auto signer = Signer(input);
         const auto output = signer.sign();
@@ -361,7 +357,7 @@ TEST(CardanoSigning, SignNegative) {
 }
 
 TEST(CardanoSigning, SignTransfer_0db1ea) {
-    const auto amount = 1100000;
+    const auto amount = 1100000ul;
 
     Proto::SigningInput input;
     auto* utxo1 = input.add_utxos();
@@ -382,7 +378,7 @@ TEST(CardanoSigning, SignTransfer_0db1ea) {
     input.mutable_transfer_message()->set_to_address("addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq");
     input.mutable_transfer_message()->set_change_address(ownAddress1);
     input.mutable_transfer_message()->set_amount(amount);
-    auto fee = 170147;
+    auto fee = 170147ul;
     input.mutable_transfer_message()->set_use_max_amount(false);
     input.mutable_transfer_message()->set_force_fee(fee); // use force fee feature here
     input.set_ttl(54675589);
@@ -392,11 +388,11 @@ TEST(CardanoSigning, SignTransfer_0db1ea) {
         auto signer = Signer(input);
         const auto plan = signer.doPlan();
 
-        EXPECT_EQ(plan.availableAmount, 2800000);
+        EXPECT_EQ(plan.availableAmount, 2800000ul);
         EXPECT_EQ(plan.amount, amount);
         EXPECT_EQ(plan.fee, fee);
-        EXPECT_EQ(plan.change, 2800000 - amount - fee);
-        EXPECT_EQ(plan.utxos.size(), 2);
+        EXPECT_EQ(plan.change, 2800000ul - amount - fee);
+        EXPECT_EQ(plan.utxos.size(), 2ul);
     }
 
     // set plan with specific fee, to match the real transaction
@@ -438,7 +434,7 @@ TEST(CardanoSigning, SignTransferFromLegacy) {
     const auto privateKeyData = parse_hex("c031e942f6bf2b2864700e7da20964ee6bb6d716345ce2e24d8c00e6500b574411111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111");
     {
         const auto privKey = PrivateKey(privateKeyData);
-        const auto pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519Extended);
+        const auto pubKey = privKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         const auto addr = AddressV2(pubKey);
         EXPECT_EQ(addr.string(), "Ae2tdPwUPEZMRgecV9jV2e9RdbrmnWu7YgRie4de16xLdkWhy6q7ypmRhgn");
     }
@@ -528,10 +524,10 @@ TEST(CardanoSigning, SignTransferToken) {
     input.mutable_transfer_message()->set_use_max_amount(false);
     input.set_ttl(53333333);
 
-    {   // check min ADA amount, set it
+    { // check min ADA amount, set it
         const auto bundleProtoData = data(input.transfer_message().token_amount().SerializeAsString());
         const auto minAdaAmount = TWCardanoMinAdaAmount(&bundleProtoData);
-        EXPECT_EQ(minAdaAmount, 1444443);
+        EXPECT_EQ(minAdaAmount, 1444443ul);
         input.mutable_transfer_message()->set_amount(minAdaAmount);
     }
 
@@ -540,18 +536,18 @@ TEST(CardanoSigning, SignTransferToken) {
         auto signer = Signer(input);
         const auto plan = signer.doPlan();
 
-        EXPECT_EQ(plan.availableAmount, 10051373);
-        EXPECT_EQ(plan.amount, 1444443);
-        EXPECT_EQ(plan.fee, 174601);
-        EXPECT_EQ(plan.change, 8432329);
-        EXPECT_EQ(plan.utxos.size(), 2);
-        EXPECT_EQ(plan.availableTokens.size(), 2);
+        EXPECT_EQ(plan.availableAmount, 10051373ul);
+        EXPECT_EQ(plan.amount, 1444443ul);
+        EXPECT_EQ(plan.fee, 174601ul);
+        EXPECT_EQ(plan.change, 8432329ul);
+        EXPECT_EQ(plan.utxos.size(), 2ul);
+        EXPECT_EQ(plan.availableTokens.size(), 2ul);
         EXPECT_EQ(plan.availableTokens.getAmount("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77_CUBY"), 5000000);
         EXPECT_EQ(plan.availableTokens.getAmount("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77_SUNDAE"), 80996569);
-        EXPECT_EQ(plan.outputTokens.size(), 1);
+        EXPECT_EQ(plan.outputTokens.size(), 1ul);
         EXPECT_EQ(plan.outputTokens.getAmount("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77_CUBY"), 0);
         EXPECT_EQ(plan.outputTokens.getAmount("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77_SUNDAE"), 20000000);
-        EXPECT_EQ(plan.changeTokens.size(), 2);
+        EXPECT_EQ(plan.changeTokens.size(), 2ul);
         EXPECT_EQ(plan.changeTokens.getAmount("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77_CUBY"), 5000000);
         EXPECT_EQ(plan.changeTokens.getAmount("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77_SUNDAE"), 60996569);
     }
@@ -569,8 +565,8 @@ TEST(CardanoSigning, SignTransferToken) {
         // also test proto toProto / fromProto
         const Proto::TransactionPlan planProto = Signer::plan(input);
         const auto plan2 = TransactionPlan::fromProto(planProto);
-        EXPECT_EQ(plan2.amount, 1444443);
-        EXPECT_EQ(plan2.change, 8432329);
+        EXPECT_EQ(plan2.amount, 1444443ul);
+        EXPECT_EQ(plan2.change, 8432329ul);
     }
 }
 
@@ -609,9 +605,9 @@ TEST(CardanoSigning, SignTransferToken_1dd248) {
     input.mutable_transfer_message()->set_use_max_amount(false);
     input.set_ttl(61232158);
 
-    {   // check min ADA amount
+    { // check min ADA amount
         const auto bundleProtoData = data(input.transfer_message().token_amount().SerializeAsString());
-        EXPECT_EQ(TWCardanoMinAdaAmount(&bundleProtoData), 1444443);
+        EXPECT_EQ(TWCardanoMinAdaAmount(&bundleProtoData), 1444443ul);
         EXPECT_GT(input.transfer_message().amount(), TWCardanoMinAdaAmount(&bundleProtoData));
     }
 
@@ -620,16 +616,16 @@ TEST(CardanoSigning, SignTransferToken_1dd248) {
         auto signer = Signer(input);
         const auto plan = signer.doPlan();
 
-        EXPECT_EQ(plan.availableAmount, 11758890);
-        EXPECT_EQ(plan.amount, 11758890 - 9984729 - 174161);
-        EXPECT_EQ(plan.fee, 174161);
-        EXPECT_EQ(plan.change, 9984729);
-        EXPECT_EQ(plan.utxos.size(), 2);
-        EXPECT_EQ(plan.availableTokens.size(), 1);
+        EXPECT_EQ(plan.availableAmount, 11758890ul);
+        EXPECT_EQ(plan.amount, 11758890 - 9984729 - 174161ul);
+        EXPECT_EQ(plan.fee, 174161ul);
+        EXPECT_EQ(plan.change, 9984729ul);
+        EXPECT_EQ(plan.utxos.size(), 2ul);
+        EXPECT_EQ(plan.availableTokens.size(), 1ul);
         EXPECT_EQ(plan.availableTokens.getAmount("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77_SUNDAE"), 20000000);
-        EXPECT_EQ(plan.outputTokens.size(), 1);
+        EXPECT_EQ(plan.outputTokens.size(), 1ul);
         EXPECT_EQ(plan.outputTokens.getAmount("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77_SUNDAE"), 11000000);
-        EXPECT_EQ(plan.changeTokens.size(), 1);
+        EXPECT_EQ(plan.changeTokens.size(), 1ul);
         EXPECT_EQ(plan.changeTokens.getAmount("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77_SUNDAE"), 9000000);
     }
 
@@ -683,7 +679,7 @@ TEST(CardanoSigning, SignTransferTokenMaxAmount_620b71) {
     auto* toToken = input.mutable_transfer_message()->mutable_token_amount()->add_token();
     toToken->set_policy_id(sundaeTokenPolicy);
     toToken->set_asset_name("SUNDAE");
-    const auto toTokenAmount = store(uint256_t(666));  // doesn't matter, max is used
+    const auto toTokenAmount = store(uint256_t(666)); // doesn't matter, max is used
     input.mutable_transfer_message()->set_use_max_amount(true);
     input.set_ttl(61085916);
 
@@ -692,16 +688,16 @@ TEST(CardanoSigning, SignTransferTokenMaxAmount_620b71) {
         auto signer = Signer(input);
         const auto plan = signer.doPlan();
 
-        EXPECT_EQ(plan.availableAmount, 2170871);
-        EXPECT_EQ(plan.amount, 2170871 - 167730);
-        EXPECT_EQ(plan.fee, 167730);
-        EXPECT_EQ(plan.change, 0);
-        EXPECT_EQ(plan.utxos.size(), 1);
-        EXPECT_EQ(plan.availableTokens.size(), 1);
+        EXPECT_EQ(plan.availableAmount, 2170871ul);
+        EXPECT_EQ(plan.amount, 2170871 - 167730ul);
+        EXPECT_EQ(plan.fee, 167730ul);
+        EXPECT_EQ(plan.change, 0ul);
+        EXPECT_EQ(plan.utxos.size(), 1ul);
+        EXPECT_EQ(plan.availableTokens.size(), 1ul);
         EXPECT_EQ(plan.availableTokens.getAmount("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77_SUNDAE"), 20000000);
-        EXPECT_EQ(plan.outputTokens.size(), 1);
+        EXPECT_EQ(plan.outputTokens.size(), 1ul);
         EXPECT_EQ(plan.outputTokens.getAmount("9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77_SUNDAE"), 20000000);
-        EXPECT_EQ(plan.changeTokens.size(), 0);
+        EXPECT_EQ(plan.changeTokens.size(), 0ul);
     }
 
     // set plan with specific fee, to match the real transaction
@@ -757,21 +753,19 @@ TEST(CardanoSigning, SignMessageWithKey) {
         "69272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000"
         "1111111111111111111111111111111111111111111111111111111111111111"
         "1111111111111111111111111111111111111111111111111111111111111111"
-        "1111111111111111111111111111111111111111111111111111111111111111"
-    ));
+        "1111111111111111111111111111111111111111111111111111111111111111"));
 
-    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Extended);
-    EXPECT_EQ(hex(publicKey.bytes), 
-        "e6f04522f875c1563682ca876ddb04c2e2e3ae718e3ff9f11c03dd9f9dccf698"
-        "69272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000"
-        "857eed804ff087b97f87848f6493e87257a8c5203cb9f422f6e7a7d8a4d299f3"
-        "1111111111111111111111111111111111111111111111111111111111111111"
-    );
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
+    EXPECT_EQ(hex(publicKey.bytes),
+              "e6f04522f875c1563682ca876ddb04c2e2e3ae718e3ff9f11c03dd9f9dccf698"
+              "69272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000"
+              "857eed804ff087b97f87848f6493e87257a8c5203cb9f422f6e7a7d8a4d299f3"
+              "1111111111111111111111111111111111111111111111111111111111111111");
 
     const auto sampleMessageStr = "Hello world";
     const auto sampleMessage = data(sampleMessageStr);
 
-    const auto signature = privateKey.sign(sampleMessage, TWCurveED25519Extended);
+    const auto signature = privateKey.sign(sampleMessage, TWCurveED25519ExtendedCardano);
 
     const auto sampleRightSignature = "1096ddcfb2ad21a4c0d861ef3fabe18841e8de88105b0d8e36430d7992c588634ead4100c32b2800b31b65e014d54a8238bdda63118d829bf0bcf1b631e86f0e";
     EXPECT_EQ(hex(signature), sampleRightSignature);
@@ -798,13 +792,13 @@ TEST(CardanoSigning, AnyPlan1) {
     ANY_PLAN(input, plan, TWCoinTypeCardano);
 
     EXPECT_EQ(plan.error(), Common::Proto::OK);
-    EXPECT_EQ(plan.amount(), 7000000);
-    EXPECT_EQ(plan.available_amount(), 8000000);
-    EXPECT_EQ(plan.fee(), 170196);
-    EXPECT_EQ(plan.change(), 829804);
+    EXPECT_EQ(plan.amount(), 7000000ul);
+    EXPECT_EQ(plan.available_amount(), 8000000ul);
+    EXPECT_EQ(plan.fee(), 170196ul);
+    EXPECT_EQ(plan.change(), 829804ul);
     ASSERT_EQ(plan.utxos_size(), 2);
-    EXPECT_EQ(plan.utxos(0).amount(), 6500000);
-    EXPECT_EQ(plan.utxos(1).amount(), 1500000);
+    EXPECT_EQ(plan.utxos(0).amount(), 6500000ul);
+    EXPECT_EQ(plan.utxos(1).amount(), 1500000ul);
 
     EXPECT_EQ(hex(plan.SerializeAsString()), "0880a4e80310c09fab0318d4b10a20ecd2324292010a220a20554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af01267616464723171383034336d356865656179646e76746d6d6b7975686536717635686176766873663064323671336a7967737370786c796670796b3679716b77307968747976747230666c656b6a3834753634617a38326375666d716e36357a6473796c7a6b323318a0dd8c034293010a240a20f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76710011267616464723171383034336d356865656179646e76746d6d6b7975686536717635686176766873663064323671336a7967737370786c796670796b3679716b77307968747976747230666c656b6a3834753634617a38326375666d716e36357a6473796c7a6b323318e0c65b");
 
@@ -815,3 +809,5 @@ TEST(CardanoSigning, AnyPlan1) {
         EXPECT_EQ(plan2.change, plan.change());
     }
 }
+
+} // namespace TW::Cardano::tests

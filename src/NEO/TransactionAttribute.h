@@ -16,7 +16,7 @@ namespace TW::NEO {
 class TransactionAttribute : public Serializable {
 public:
     TransactionAttributeUsage usage = TAU_ContractHash;
-    Data data;
+    Data _data;
 
     virtual ~TransactionAttribute() {}
 
@@ -30,12 +30,12 @@ public:
         } else if (usage == TransactionAttributeUsage::TAU_Script) {
             return 1 + 20;
         } else {
-            return 1 + varIntSize(data.size()) + data.size();
+            return 1 + varIntSize(_data.size()) + _data.size();
         }
     }
 
     void deserialize(const Data& data, int initial_pos = 0) override {
-        if (data.size() < initial_pos + 1) {
+        if (static_cast<int>(data.size()) < initial_pos + 1) {
             throw std::invalid_argument("Invalid data for deserialization");
         }
 
@@ -45,16 +45,16 @@ public:
             usage == TransactionAttributeUsage::TAU_Vote ||
             (usage >= TransactionAttributeUsage::TAU_Hash1 &&
              usage <= TransactionAttributeUsage::TAU_Hash15)) {
-            this->data = readBytes(data, 32, initial_pos + 1);
+            this->_data = readBytes(data, 32, initial_pos + 1);
         } else if (usage == TransactionAttributeUsage::TAU_ECDH02 ||
-                   usage == TransactionAttributeUsage::TAU_ECDH03) {
-            this->data = concat({(byte)usage}, readBytes(data, 32, initial_pos + 1));
+                    usage == TransactionAttributeUsage::TAU_ECDH03) {
+            this->_data = concat({(TW::byte)usage}, readBytes(data, 32, initial_pos + 1));
         } else if (usage == TransactionAttributeUsage::TAU_Script) {
-            this->data = readBytes(data, 20, initial_pos + 1);
+            this->_data = readBytes(data, 20, initial_pos + 1);
         } else if (usage == TransactionAttributeUsage::TAU_DescriptionUrl ||
                    usage == TransactionAttributeUsage::TAU_Description ||
                    usage >= TransactionAttributeUsage::TAU_Remark) {
-            this->data = readVarBytes(data, initial_pos + 1);
+            this->_data = readVarBytes(data, initial_pos + 1);
         } else {
             throw std::invalid_argument("TransactionAttribute Deserialize FormatException");
         }
@@ -62,29 +62,30 @@ public:
 
     Data serialize() const override {
         Data result;
-        result.push_back((byte)usage);
+        result.push_back((TW::byte)usage);
 
         // see: https://github.com/neo-project/neo/blob/v2.12.0/neo/Network/P2P/Payloads/TransactionAttribute.cs#L49
         if (usage == TransactionAttributeUsage::TAU_DescriptionUrl ||
             usage == TransactionAttributeUsage::TAU_Description ||
             usage >= TransactionAttributeUsage::TAU_Remark) {
             Data resp;
-            encodeVarInt((uint64_t)data.size(), resp);
+            encodeVarInt((uint64_t)_data.size(), resp);
             result.insert(result.end(), resp.begin(), resp.end());
         }
         if (usage == TransactionAttributeUsage::TAU_ECDH02 ||
             usage == TransactionAttributeUsage::TAU_ECDH03) {
-            result.insert(result.end(), data.begin() + 1, data.begin() + 33);
+            result.insert(result.end(), _data.begin() + 1, _data.begin() + 33);
         } else {
-            result.insert(result.end(), data.begin(), data.end());
+            result.insert(result.end(), _data.begin(), _data.end());
         }
 
         return result;
     }
 
-    bool operator==(const TransactionAttribute& other) const {
-        return this->usage == other.usage && this->data.size() == other.data.size() &&
-               this->data == other.data;
+    bool operator==(const TransactionAttribute &other) const {
+        return this->usage == other.usage
+            && _data.size() == other._data.size()
+            && _data == other._data;
     }
 };
 
