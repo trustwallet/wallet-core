@@ -72,7 +72,6 @@ class CosmosSignerTests: XCTestCase {
         let authMessage = CosmosMessage.AuthGrant.with {
             $0.granter = "cosmos13k0q0l7lg2kr32kvt7ly236ppldy8v9dzwh3gd"
             $0.grantee = "cosmos1fs7lu28hx5m9akm7rp0c2422cn8r2f7gurujhf"
-            $0.typeURL = "/cosmos.staking.v1beta1.StakeAuthorization"
             $0.grantStake = CosmosMessage.StakeAuthorization.with {
                 $0.allowList.address = ["cosmosvaloper1gjtvly9lel6zskvwtvlg5vhwpu9c9waw7sxzwx"]
                 $0.authorizationType = CosmosMessage.AuthorizationType.delegate

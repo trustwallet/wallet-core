@@ -34,7 +34,6 @@ class TestCosmosTransactions {
         val authStakingMsg = Cosmos.Message.AuthGrant.newBuilder().apply {
             grantee = "cosmos1fs7lu28hx5m9akm7rp0c2422cn8r2f7gurujhf"
             granter = "cosmos13k0q0l7lg2kr32kvt7ly236ppldy8v9dzwh3gd"
-            typeUrl = "/cosmos.staking.v1beta1.StakeAuthorization"
             grantStake = stakeAuth
             expiration = 1692309600
         }.build()
