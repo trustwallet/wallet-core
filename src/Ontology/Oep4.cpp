@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -20,8 +20,8 @@ Transaction Oep4::romethod0(std::string method_name, uint32_t nonce) {
     Address addr(oep4Contract);
     std::vector<boost::any> args{};
     auto invokeCode = ParamsBuilder::buildOep4InvokeCode(addr, method_name, args);
-    auto tx = Transaction(0, 0xD1, nonce, 0, 0, "", invokeCode);
-    return tx;
+
+    return Transaction(0, 0xD1, nonce, 0, 0, "", invokeCode);
 }
 
 Transaction Oep4::name(uint32_t nonce) {
@@ -46,8 +46,7 @@ Transaction Oep4::balanceOf(const Address& user, uint32_t nonce) {
     Data d(std::begin(user._data), std::end(user._data));
     std::vector<boost::any> args{d};
     auto invokeCode = ParamsBuilder::buildOep4InvokeCode(contract, "balanceOf", args);
-    auto tx = Transaction(0, 0xD1, nonce, 0, 0, "", invokeCode);
-    return tx;
+    return Transaction(0, 0xD1, nonce, 0, 0, "", invokeCode);
 }
 
 Transaction Oep4::transfer(const Signer& from, const Address& to, uint64_t amount,

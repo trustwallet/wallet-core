@@ -1,8 +1,9 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
+
 
 #pragma once
 
@@ -16,7 +17,7 @@ namespace TW::Ontology {
 
 class Oep4 {
 private:
-    static const uint8_t version = 0x00;
+    static constexpr uint8_t version = 0x00;
 
     Data oep4Contract;
     Transaction romethod0(std::string methodName, uint32_t nonce);
