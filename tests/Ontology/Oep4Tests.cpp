@@ -11,6 +11,7 @@
 #include <gtest/gtest.h>
 #include <string>
 
+namespace TW::Ontology::tests {
 using namespace TW;
 using namespace TW::Ontology;
 
@@ -107,5 +108,9 @@ TEST(OntologyOep4, transfer) {
 
     auto tx = wing.transfer(from, toAddress, amount, payer, gasPrice, gasLimit, nonce);
     auto rawTx = hex(tx.serialize());
+    // Transaction Hex tab
+    // https://explorer.ont.io/testnet/tx/710266b8d497e794ecd47e01e269e4aeb6f4ff2b01eaeafc4cd371e062b13757
     EXPECT_EQ("00d134120000c40900000000000050c3000000000000fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a4d02e9001496f688657b95be51c11a87b51adfda4ab69e9cbb1457e9d1a61f9aafa798b6c7fbeae35639681d7df653c1087472616e736665726733def739225d0f93dd2aed457d7b1fd074ec31ff00024140bd2923854d7b84b97a107bb3cddf18c8e3dddd2f36b41a1f5f5b23366484daa22871cfb819923fe01e9cb1e9ed16baa2b05c2feb76bcbe2ec125f72701c5e965232103d9fd62df332403d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac41406d638653597774ce45812ea2653250806b657b32b7c6ad3e027ddeba91e9a9da4bb5dacd23dafba868cb31bacb38b4a6ff2607682a426c1dc09b05a1e158d6cd2321031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486ac", rawTx);
 }
+
+} // namespace TW::Ontology::tests

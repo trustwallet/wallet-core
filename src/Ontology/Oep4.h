@@ -22,7 +22,7 @@ private:
     Transaction romethod0(std::string methodName, uint32_t nonce);
 
 public:
-    explicit Oep4(const Address addr);
+    explicit Oep4(const Address addr) noexcept;
     Oep4() = delete;
     Data contractAddress() { return oep4Contract; }
     Transaction name(uint32_t nonce);
