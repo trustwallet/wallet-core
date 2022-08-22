@@ -23,7 +23,5 @@ export CK_TIMEOUT_MULTIPLIER=4
 build/trezor-crypto/crypto/tests/TrezorCryptoTests
 
 echo "#### Running unit tests... ####"
-ROOT="`dirname \"$0\"`/.."
-TESTS_ROOT="`(cd \"$ROOT/tests\" && pwd)`"
 FILTER="*"
-build/tests/tests "$TESTS_ROOT" --gtest_filter="$FILTER"
+build/tests/tests --gtest_filter="$FILTER"
