@@ -23,6 +23,39 @@ Data forgeBool(bool input) {
     return Data{result};
 }
 
+Data forgeInt32(int value, int len = 4) {
+    Data out(len);
+    for (int i = len - 1; i >= 0; i--, value >>= 8) {
+        out[i] = (value & 0xFF);
+    }
+    return out;
+}
+
+Data forgeString(const std::string& value, std::size_t len = 4) {
+    auto bytes = data(value);
+    auto result = forgeInt32(static_cast<int>(bytes.size()), static_cast<int>(len));
+    append(result, bytes);
+    return result;
+}
+
+Data forgeEntrypoint(const std::string& value) {
+    if (value == "default")
+        return Data{0x00};
+    else if (value == "root")
+        return Data{0x01};
+    else if (value == "do")
+        return Data{0x02};
+    else if (value == "set_delegate")
+        return Data{0x03};
+    else if (value == "remove_delegate")
+        return Data{0x04};
+    else {
+        Data forged{0xff};
+        append(forged, forgeString(value, 1));
+        return forged;
+    }
+}
+
 // Forge the given public key hash into a hex encoded string.
 // Note: This function supports tz1, tz2 and tz3 addresses.
 Data forgePublicKeyHash(const std::string& publicKeyHash) {
@@ -127,7 +160,11 @@ Data forgeOperation(const Operation& operation) {
         append(forged, forgedAmount);
         append(forged, forgeBool(false));
         append(forged, forgedDestination);
-        append(forged, forgeBool(false));
+        if (operation.transaction_operation_data().has_parameters()) {
+            // TODO: forge operations
+        } else {
+            append(forged, forgeBool(false));
+        }
         return forged;
     }
 

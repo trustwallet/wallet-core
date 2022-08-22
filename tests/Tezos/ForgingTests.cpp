@@ -112,6 +112,21 @@ TEST(Forging, ForgePublicKey) {
     ASSERT_EQ(hex(output), expected);
 }
 
+TEST(Forging, ForgeInt32) {
+    auto expected = "01";
+    ASSERT_EQ(hex(forgeInt32(1, 1)), expected);
+}
+
+TEST(Forging, ForgeString) {
+    auto expected = "087472616e73666572";
+    ASSERT_EQ(hex(forgeString("transfer", 1)), expected);
+}
+
+TEST(Forging, ForgeEntrypoint) {
+    auto expected = "ff087472616e73666572";
+    ASSERT_EQ(hex(forgeEntrypoint("transfer")), expected);
+}
+
 
 TEST(TezosTransaction, forgeTransaction) {	
     auto transactionOperationData = new TW::Tezos::Proto::TransactionOperationData();

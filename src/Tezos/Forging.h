@@ -15,7 +15,11 @@ using namespace TW;
 using namespace TW::Tezos::Proto;
 
 Data forgeBool(bool input);
+
 Data forgeOperation(const Operation& operation);
 Data forgePublicKeyHash(const std::string& publicKeyHash);
 Data forgePublicKey(PublicKey publicKey);
 Data forgeZarith(uint64_t input);
+Data forgeInt32(int value, int len = 4);
+Data forgeString(const std::string& value, std::size_t len = 4);
+Data forgeEntrypoint(const std::string& value);
