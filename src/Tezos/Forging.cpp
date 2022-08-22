@@ -23,7 +23,7 @@ Data forgeBool(bool input) {
     return Data{result};
 }
 
-Data forgeInt32(int value, int len = 4) {
+Data forgeInt32(int value, int len) {
     Data out(len);
     for (int i = len - 1; i >= 0; i--, value >>= 8) {
         out[i] = (value & 0xFF);
@@ -31,7 +31,7 @@ Data forgeInt32(int value, int len = 4) {
     return out;
 }
 
-Data forgeString(const std::string& value, std::size_t len = 4) {
+Data forgeString(const std::string& value, std::size_t len) {
     auto bytes = data(value);
     auto result = forgeInt32(static_cast<int>(bytes.size()), static_cast<int>(len));
     append(result, bytes);
