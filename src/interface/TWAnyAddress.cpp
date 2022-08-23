@@ -12,8 +12,6 @@
 #include "../Coin.h"
 #include "../Address.h"
 
-using namespace TW;
-
 bool TWAnyAddressEqual(struct TWAnyAddress* _Nonnull lhs, struct TWAnyAddress* _Nonnull rhs) {
     return lhs->impl == rhs->impl;
 }
@@ -27,7 +25,7 @@ struct TWAnyAddress* _Nullable TWAnyAddressCreateWithString(TWString* _Nonnull s
                                                             enum TWCoinType coin) {
     const auto& address = *reinterpret_cast<const std::string*>(string);
     try {
-        return new TWAnyAddress{Address(address, coin)};
+        return new TWAnyAddress{TW::Address(address, coin)};
     } catch (...) {
         return nullptr;
     }
@@ -35,7 +33,7 @@ struct TWAnyAddress* _Nullable TWAnyAddressCreateWithString(TWString* _Nonnull s
 
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKey(
     struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin) {
-    return new TWAnyAddress{Address(publicKey, coin)};
+    return new TWAnyAddress{TW::Address(publicKey, coin)};
 }
 
 void TWAnyAddressDelete(struct TWAnyAddress* _Nonnull address) {
