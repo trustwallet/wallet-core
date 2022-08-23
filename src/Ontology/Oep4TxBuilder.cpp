@@ -7,39 +7,38 @@
 #include "Oep4TxBuilder.h"
 #include "../HexCoding.h"
 
-using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology {
 
-Data Oep4TxBuilder::decimals(const Ontology::Proto::SigningInput &input) {
-  auto oep4Addr = Address(parse_hex(input.contract()));
-  Oep4 oep4(oep4Addr);
+Data Oep4TxBuilder::decimals(const Ontology::Proto::SigningInput& input) {
+    auto oep4Addr = Address(parse_hex(input.contract()));
+    Oep4 oep4(oep4Addr);
     auto transaction = oep4.decimals(input.nonce());
     auto encoded = transaction.serialize();
     return encoded;
 }
 
-Data Oep4TxBuilder::balanceOf(const Ontology::Proto::SigningInput &input) {
-  auto oep4Addr = Address(parse_hex(input.contract()));
-  Oep4 oep4(oep4Addr);
+Data Oep4TxBuilder::balanceOf(const Ontology::Proto::SigningInput& input) {
+    auto oep4Addr = Address(parse_hex(input.contract()));
+    Oep4 oep4(oep4Addr);
     auto queryAddress = Address(input.query_address());
     auto transaction = oep4.balanceOf(queryAddress, input.nonce());
     auto encoded = transaction.serialize();
     return encoded;
 }
 
-Data Oep4TxBuilder::transfer(const Ontology::Proto::SigningInput &input) {
-  auto oep4Addr = Address(parse_hex(input.contract()));
-  Oep4 oep4(oep4Addr);
+Data Oep4TxBuilder::transfer(const Ontology::Proto::SigningInput& input) {
+    auto oep4Addr = Address(parse_hex(input.contract()));
+    Oep4 oep4(oep4Addr);
     auto payerSigner = Signer(PrivateKey(input.payer_private_key()));
     auto fromSigner = Signer(PrivateKey(input.owner_private_key()));
     auto toAddress = Address(input.to_address());
     auto tranferTx = oep4.transfer(fromSigner, toAddress, input.amount(), payerSigner,
-                                    input.gas_price(), input.gas_limit(), input.nonce());
+                                   input.gas_price(), input.gas_limit(), input.nonce());
     auto encoded = tranferTx.serialize();
     return encoded;
 }
 
-Data Oep4TxBuilder::build(const Ontology::Proto::SigningInput &input) {
+Data Oep4TxBuilder::build(const Ontology::Proto::SigningInput& input) {
     auto method = std::string(input.method().begin(), input.method().end());
     if (method == "transfer") {
         return Oep4TxBuilder::transfer(input);
@@ -52,3 +51,4 @@ Data Oep4TxBuilder::build(const Ontology::Proto::SigningInput &input) {
     return Data();
 }
 
+} // namespace TW::Ontology

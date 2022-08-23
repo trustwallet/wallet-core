@@ -8,8 +8,6 @@
 #include <HexCoding.h>
 #include <cstdio>
 
-using namespace TW;
-
 namespace TW::Ontology {
 Oep4::Oep4(const Address addr) noexcept
     : oep4Contract(addr._data.begin(), addr._data.end()) {
