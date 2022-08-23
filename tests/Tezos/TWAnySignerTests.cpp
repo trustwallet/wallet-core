@@ -16,6 +16,7 @@ using namespace TW;
 namespace TW::Tezos::tests {
 
 TEST(TWAnySignerTezos, SignFA12) {
+    // https://ghostnet.tzkt.io/ooTBu7DLbeC7DmVfXEsp896A6WTwimedbsM9QRqUVtqA8Vxt6D3/2993172
     auto key = parse_hex("363265a0b3f06661001cab8b4f3ca8fd97ae70608184979cf7300836f57ec2d6");
 
     Proto::SigningInput input;
