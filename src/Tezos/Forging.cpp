@@ -190,6 +190,7 @@ Data forgeOperation(const Operation& operation) {
             switch (parameters.parameters_case()) {
             case TransactionParametersOperationData::kFa12Parameters:
                 append(forged, forgeEntrypoint(parameters.fa12_parameters().entrypoint()));
+                append(forged, forgeArray(forgeMichelson(FA12ParameterToMichelson(parameters.fa12_parameters()))));
                 break;
             case TransactionParametersOperationData::kFa2Parameters:
                 append(forged, forgeEntrypoint(parameters.fa2_parameters().entrypoint()));

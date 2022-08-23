@@ -164,6 +164,7 @@ TEST(TezosTransaction, forgeTransactionFA12) {
     transactionOperationData->mutable_parameters()->mutable_fa12_parameters()->set_from("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
     transactionOperationData->mutable_parameters()->mutable_fa12_parameters()->set_to("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
     transactionOperationData->mutable_parameters()->mutable_fa12_parameters()->set_entrypoint("transfer");
+    transactionOperationData->mutable_parameters()->mutable_fa12_parameters()->set_value("123");
 
     auto transactionOperation = TW::Tezos::Proto::Operation();
     transactionOperation.set_source("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
@@ -174,7 +175,7 @@ TEST(TezosTransaction, forgeTransactionFA12) {
     transactionOperation.set_kind(TW::Tezos::Proto::Operation::TRANSACTION);
     transactionOperation.set_allocated_transaction_operation_data(transactionOperationData);
 
-    auto expected = "6c00fe2ce0cccc0214af521ad60c140c5589b4039247a08d0694d8b601a08d0600000145bd8a65cc48159d8ea60a55df735b7c5ad45f0e00ffff087472616e73666572";
+    auto expected = "6c00fe2ce0cccc0214af521ad60c140c5589b4039247a08d0694d8b601a08d0600000145bd8a65cc48159d8ea60a55df735b7c5ad45f0e00ffff087472616e736665720000005907070100000024747a31696f7a36326b447736476d35484170655174633150476d4e32775042744a4b555007070100000024747a31696f7a36326b447736476d35484170655174633150476d4e32775042744a4b555000bb01";
     auto serialized = forgeOperation(transactionOperation);
 
     ASSERT_EQ(hex(serialized), expected);
