@@ -211,7 +211,7 @@ Data forgePrim(const PrimValue& value) {
     Data forged;
     if (value.prim == "Pair") {
         constexpr uint8_t nbArgs = 2;
-        const uint8_t preamble = std::min(2 * nbArgs + static_cast<uint8_t>(value.anots.size()) + 0x03, 9);
+        const uint8_t preamble = static_cast<uint8_t>(std::min(2 * nbArgs + static_cast<uint8_t>(value.anots.size()) + 0x03, 9));
         forged.emplace_back(preamble);
         forged.emplace_back(PrimType::Pair);
         Data tmpForged;
