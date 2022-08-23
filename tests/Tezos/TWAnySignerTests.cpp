@@ -30,6 +30,7 @@ TEST(TWAnySignerTezos, SignFA12) {
     txData.mutable_parameters()->mutable_fa12_parameters()->set_entrypoint("transfer");
     txData.mutable_parameters()->mutable_fa12_parameters()->set_from("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
     txData.mutable_parameters()->mutable_fa12_parameters()->set_to("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
+    txData.mutable_parameters()->mutable_fa12_parameters()->set_value("123");
     transaction.set_source("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
     transaction.set_fee(100000);
     transaction.set_counter(2993172);
@@ -38,8 +39,7 @@ TEST(TWAnySignerTezos, SignFA12) {
     transaction.set_kind(Proto::Operation::TRANSACTION);
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeTezos);
-    // The encoded is incomplete but not incorrect, TODO: micheline forging for transfer / pair
-    ASSERT_EQ(hex(output.encoded()), "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016c00fe2ce0cccc0214af521ad60c140c5589b4039247a08d0694d8b601a08d0600000145bd8a65cc48159d8ea60a55df735b7c5ad45f0e00ffff087472616e73666572a96fd32d579dcc5a9a681cd89cb1691a8dfc57335b4a454b2e3a88e1270af5d32ee5cfe60ffc46f1fb624a3c1a21428b2bacecdd02da4a0ebcb456f5bd21a206");
+    ASSERT_EQ(hex(output.encoded()), "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016c00fe2ce0cccc0214af521ad60c140c5589b4039247a08d0694d8b601a08d0600000145bd8a65cc48159d8ea60a55df735b7c5ad45f0e00ffff087472616e736665720000005907070100000024747a31696f7a36326b447736476d35484170655174633150476d4e32775042744a4b555007070100000024747a31696f7a36326b447736476d35484170655174633150476d4e32775042744a4b555000bb012914d768155fba2df319a81136e8e3e573b9cadb1676834490c90212615d271da029b6b0531e290e9063bcdb40bea43627af048b18e036f02be2b6b22fc8b307");
 }
 
 TEST(TWAnySignerTezos, Sign) {
