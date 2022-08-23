@@ -10,16 +10,12 @@
 
 
 #include "../Coin.h"
+#include "../Address.h"
 
 using namespace TW;
 
-struct TWAnyAddress {
-    TWString* address;
-    enum TWCoinType coin;
-};
-
 bool TWAnyAddressEqual(struct TWAnyAddress* _Nonnull lhs, struct TWAnyAddress* _Nonnull rhs) {
-    return TWStringEqual(lhs->address, rhs->address) && lhs->coin == rhs->coin;
+    return lhs->impl == rhs->impl;
 }
 
 bool TWAnyAddressIsValid(TWString* _Nonnull string, enum TWCoinType coin) {
@@ -30,35 +26,30 @@ bool TWAnyAddressIsValid(TWString* _Nonnull string, enum TWCoinType coin) {
 struct TWAnyAddress* _Nullable TWAnyAddressCreateWithString(TWString* _Nonnull string,
                                                             enum TWCoinType coin) {
     const auto& address = *reinterpret_cast<const std::string*>(string);
-    auto normalized = TW::normalizeAddress(coin, address);
-    if (normalized.empty()) { return nullptr; }
-    return new TWAnyAddress{TWStringCreateWithUTF8Bytes(normalized.c_str()), coin};
+    try {
+        return new TWAnyAddress{Address(address, coin)};
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKey(
     struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin) {
-    auto address = TW::deriveAddress(coin, publicKey->impl);
-    return new TWAnyAddress{TWStringCreateWithUTF8Bytes(address.c_str()), coin};
+    return new TWAnyAddress{Address(publicKey, coin)};
 }
 
 void TWAnyAddressDelete(struct TWAnyAddress* _Nonnull address) {
-    TWStringDelete(address->address);
     delete address;
 }
 
 TWString* _Nonnull TWAnyAddressDescription(struct TWAnyAddress* _Nonnull address) {
-    return TWStringCreateWithUTF8Bytes(TWStringUTF8Bytes(address->address));
+    return TWStringCreateWithUTF8Bytes(address->impl.address.c_str());
 }
 
 enum TWCoinType TWAnyAddressCoin(struct TWAnyAddress* _Nonnull address) {
-    return address->coin;
+    return address->impl.coin;
 }
 
 TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
-    const auto& string = *reinterpret_cast<const std::string*>(address->address);
-    Data data;
-    try {
-        data = TW::addressToData(address->coin, string);
-    } catch (...) {}
-    return TWDataCreateWithBytes(data.data(), data.size());
+    return address->impl.getData();
 }
