@@ -77,6 +77,10 @@ Data forgePublicKeyHash(const std::string& publicKeyHash) {
     const auto decoded = Base58::bitcoin.decodeCheck(publicKeyHash);
     const auto prefixSize = 3;
     forged.insert(forged.end(), decoded.begin() + prefixSize, decoded.end());
+    if (publicKeyHash.starts_with("KT1")) {
+        forged[0] = 0x01;
+        forged.push_back(0x00);
+    }
     return forged;
 }
 
@@ -158,10 +162,23 @@ Data forgeOperation(const Operation& operation) {
         append(forged, forgedGasLimit);
         append(forged, forgedStorageLimit);
         append(forged, forgedAmount);
-        append(forged, forgeBool(false));
+        if (!operation.transaction_operation_data().has_parameters()) {
+            append(forged, forgeBool(false));
+        }
         append(forged, forgedDestination);
         if (operation.transaction_operation_data().has_parameters()) {
-            // TODO: forge operations
+            append(forged, forgeBool(true));
+            auto& parameters = operation.transaction_operation_data().parameters();
+            switch (parameters.parameters_case()) {
+            case TransactionParametersOperationData::kFa12Parameters:
+                append(forged, forgeEntrypoint(parameters.fa12_parameters().entrypoint()));
+                break;
+            case TransactionParametersOperationData::kFa2Parameters:
+                append(forged, forgeEntrypoint(parameters.fa2_parameters().entrypoint()));
+                break;
+            case TransactionParametersOperationData::PARAMETERS_NOT_SET:
+                break;
+            }
         } else {
             append(forged, forgeBool(false));
         }

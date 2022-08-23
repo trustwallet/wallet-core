@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "HexCoding.h"
+#include "Tezos/BinaryCoding.h"
 #include "proto/Tezos.pb.h"
 #include "../interface/TWTestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
@@ -13,6 +14,33 @@
 
 using namespace TW;
 namespace TW::Tezos::tests {
+
+TEST(TWAnySignerTezos, SignFA12) {
+    auto key = parse_hex("363265a0b3f06661001cab8b4f3ca8fd97ae70608184979cf7300836f57ec2d6");
+
+    Proto::SigningInput input;
+    input.set_private_key(key.data(), key.size());
+    auto& operations = *input.mutable_operation_list();
+    operations.set_branch("BL8euoCWqNCny9AR3AKjnpi38haYMxjei1ZqNHuXMn19JSQnoWp");
+
+    auto& transaction = *operations.add_operations();
+    auto& txData = *transaction.mutable_transaction_operation_data();
+    txData.set_amount(0);
+    txData.set_destination("KT1EwXFWoG9bYebmF4pYw72aGjwEnBWefgW5");
+    txData.mutable_parameters()->mutable_fa12_parameters()->set_entrypoint("transfer");
+    txData.mutable_parameters()->mutable_fa12_parameters()->set_from("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
+    txData.mutable_parameters()->mutable_fa12_parameters()->set_to("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
+    transaction.set_source("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
+    transaction.set_fee(100000);
+    transaction.set_counter(2993172);
+    transaction.set_gas_limit(100000);
+    transaction.set_storage_limit(0);
+    transaction.set_kind(Proto::Operation::TRANSACTION);
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeTezos);
+    // The encoded is incomplete but not incorrect, TODO: micheline forging for transfer / pair
+    ASSERT_EQ(hex(output.encoded()), "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016c00fe2ce0cccc0214af521ad60c140c5589b4039247a08d0694d8b601a08d0600000145bd8a65cc48159d8ea60a55df735b7c5ad45f0e00ffff087472616e73666572a96fd32d579dcc5a9a681cd89cb1691a8dfc57335b4a454b2e3a88e1270af5d32ee5cfe60ffc46f1fb624a3c1a21428b2bacecdd02da4a0ebcb456f5bd21a206");
+}
 
 TEST(TWAnySignerTezos, Sign) {
     auto key = parse_hex("2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f");
