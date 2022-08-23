@@ -54,6 +54,7 @@ struct MichelsonValue {
 
 
 MichelsonValue::MichelsonVariant FA12ParameterToMichelson(const FA12TransactionOperationData& data);
+MichelsonValue::MichelsonVariant FA2ParameterToMichelson(const FA2TransactionOperationData& data);
 
 Data forgeBool(bool input);
 Data forgeOperation(const Operation& operation);

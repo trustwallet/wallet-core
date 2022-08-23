@@ -59,8 +59,8 @@ message FA12TransactionOperationData {
 
 message Txs {
   string to = 1;
-  int64 token_id = 2;
-  int64 amount = 3;
+  string token_id = 2;
+  string amount = 3;
 }
 
 message TxObject {

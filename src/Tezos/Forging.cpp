@@ -194,6 +194,7 @@ Data forgeOperation(const Operation& operation) {
                 break;
             case TransactionParametersOperationData::kFa2Parameters:
                 append(forged, forgeEntrypoint(parameters.fa2_parameters().entrypoint()));
+                append(forged, forgeArray(forgeMichelson(FA2ParameterToMichelson(parameters.fa2_parameters()))));
                 break;
             case TransactionParametersOperationData::PARAMETERS_NOT_SET:
                 break;
@@ -241,14 +242,16 @@ Data forgeMichelson(const MichelsonValue::MichelsonVariant& value) {
         } else if (std::holds_alternative<MichelsonValue::MichelsonArray>(value)) {
             // array
             Data forged{2};
+            Data tmpForged;
             auto array = std::get<MichelsonValue::MichelsonArray>(value);
             for (auto&& cur : array) {
-                std::visit([&forged](auto&& arg) {
+                std::visit([&tmpForged](auto&& arg) {
                     MichelsonValue::MichelsonVariant v = arg;
-                    append(forged, forgeMichelson(v));
+                    append(tmpForged, forgeMichelson(v));
                 },
                            cur);
             }
+            append(forged, forgeArray(tmpForged));
             return forged;
         } else {
             throw std::invalid_argument("Invalid variant");
@@ -266,6 +269,20 @@ MichelsonValue::MichelsonVariant FA12ParameterToMichelson(const FA12TransactionO
     auto v = PrimValue{.prim = "Pair", .args{{address}, {i}}};
     MichelsonValue::MichelsonVariant variant = v;
     return v;
+}
+
+MichelsonValue::MichelsonVariant FA2ParameterToMichelson(const FA2TransactionOperationData& data) {
+    auto& txObj = *data.txs_object().begin();
+    MichelsonValue::MichelsonVariant from = StringValue{.string = txObj.from()};
+    auto& tx = txObj.txs(0);
+    MichelsonValue::MichelsonVariant tokenId = IntValue{._int = tx.token_id()};
+    MichelsonValue::MichelsonVariant amount = IntValue{._int = tx.amount()};
+    auto i = PrimValue{.prim = "Pair", .args{{tokenId}, {amount}}};
+    MichelsonValue::MichelsonVariant to = StringValue{.string = tx.to()};
+    MichelsonValue::MichelsonVariant txs = MichelsonValue::MichelsonArray{PrimValue{.prim = "Pair", .args{{to}, {i}}}};
+    auto v = PrimValue{.prim = "Pair", .args{{from}, {txs}}};
+    MichelsonValue::MichelsonVariant value = MichelsonValue::MichelsonArray{v};
+    return value;
 }
 
 Data forgeArray(const Data& data, int len) {
