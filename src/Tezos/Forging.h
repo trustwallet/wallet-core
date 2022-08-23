@@ -14,9 +14,13 @@
 using namespace TW;
 using namespace TW::Tezos::Proto;
 
-Data forgeBool(bool input);
+enum PrimType : std::uint8_t {
+    Pair = 7,
+};
 
+Data forgeBool(bool input);
 Data forgeOperation(const Operation& operation);
+Data forgeAddress(const std::string& address);
 Data forgePublicKeyHash(const std::string& publicKeyHash);
 Data forgePublicKey(PublicKey publicKey);
 Data forgeZarith(uint64_t input);

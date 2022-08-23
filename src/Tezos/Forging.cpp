@@ -77,11 +77,27 @@ Data forgePublicKeyHash(const std::string& publicKeyHash) {
     const auto decoded = Base58::bitcoin.decodeCheck(publicKeyHash);
     const auto prefixSize = 3;
     forged.insert(forged.end(), decoded.begin() + prefixSize, decoded.end());
-    if (publicKeyHash.starts_with("KT1")) {
-        forged[0] = 0x01;
-        forged.push_back(0x00);
-    }
     return forged;
+}
+
+Data forgeAddress(const std::string& address) {
+    if (address.size() < 3) {
+        throw std::invalid_argument("Invalid address size");
+    }
+    auto prefix = address.substr(0, 3);
+    if (prefix == "tz1" || prefix == "tz2" || prefix == "tz3") {
+        Data forged{0x00};
+        append(forged, forgePublicKeyHash(address));
+        return forged;
+    } else if (prefix == "KT1") {
+        Data forged{0x01};
+        const auto decoded = Base58::bitcoin.decodeCheck(address);
+        const auto prefixSize = 3;
+        forged.insert(forged.end(), decoded.begin() + prefixSize, decoded.end());
+        forged.push_back(0x00);
+        return forged;
+    }
+    throw std::invalid_argument("Invalid Prefix");
 }
 
 // Forge the given public key into a hex encoded string.
@@ -164,9 +180,10 @@ Data forgeOperation(const Operation& operation) {
         append(forged, forgedAmount);
         if (!operation.transaction_operation_data().has_parameters()) {
             append(forged, forgeBool(false));
+            append(forged, forgedDestination);
         }
-        append(forged, forgedDestination);
         if (operation.transaction_operation_data().has_parameters()) {
+            append(forged, forgeAddress(operation.transaction_operation_data().destination()));
             append(forged, forgeBool(true));
             auto& parameters = operation.transaction_operation_data().parameters();
             switch (parameters.parameters_case()) {
