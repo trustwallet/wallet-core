@@ -28,7 +28,7 @@ class TestCosmosTransactions {
             allowList = Cosmos.Message.StakeAuthorization.Validators.newBuilder().apply {
                 addAddress("cosmosvaloper1gjtvly9lel6zskvwtvlg5vhwpu9c9waw7sxzwx")
             }.build()
-            authorizationType = Cosmos.Message.AuthorizationType.AUTHORIZATION_TYPE_DELEGATE
+            authorizationType = Cosmos.Message.AuthorizationType.DELEGATE
         }.build()
 
         val authStakingMsg = Cosmos.Message.AuthGrant.newBuilder().apply {
