@@ -15,7 +15,7 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::IoTeX;
+namespace TW::IoTeX {
 
 TEST(TWIoTeXStaking, Create) {
     std::string IOTEX_STAKING_CANDIDATE = "io19d0p3ah4g8ww9d7kcxfq87yxe7fnr8rpth5shj";
@@ -332,3 +332,5 @@ TEST(TWIoTeXStaking, SignAll) {
                   "35f53a536e014b32b85df50483ef04849b80ad60635b3b1979c5ba1096b65237");
     }
 }
+
+} // namespace TW::IoTeX

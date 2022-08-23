@@ -18,20 +18,12 @@ using namespace TW::Elrond;
 using namespace TW::Elrond::Proto;
 
 SigningOutput Signer::sign(const SigningInput &input) noexcept {
-    TransactionFactory factory;
 
-    auto transaction = factory.create(input);
     auto privateKey = PrivateKey(input.private_key());
-    auto signableAsString = serializeTransaction(transaction);
-    auto signableAsData = TW::data(signableAsString);
+    auto signableAsData = buildUnsignedTxBytes(input);
     auto signature = privateKey.sign(signableAsData, TWCurveED25519);
-    auto encodedSignature = hex(signature);
-    auto encoded = serializeSignedTransaction(transaction, encodedSignature);
 
-    auto protoOutput = Proto::SigningOutput();
-    protoOutput.set_signature(encodedSignature);
-    protoOutput.set_encoded(encoded);
-    return protoOutput;
+    return buildSigningOutput(input, signature);
 }
 
 std::string Signer::signJSON(const std::string& json, const Data& key) {
@@ -40,4 +32,26 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     input.set_private_key(key.data(), key.size());
     auto output = sign(input);
     return output.encoded();
+}
+
+Data Signer::buildUnsignedTxBytes(const Proto::SigningInput &input) {
+    TransactionFactory factory;
+    auto transaction = factory.create(input);
+    auto signableAsString = serializeTransaction(transaction);
+
+    auto signableAsData = TW::data(signableAsString);
+    return signableAsData;
+}
+
+Proto::SigningOutput Signer::buildSigningOutput(const Proto::SigningInput &input, const Data &signature) {
+    TransactionFactory factory;
+
+    auto transaction = factory.create(input);
+    auto encodedSignature = hex(signature);
+    auto encoded = serializeSignedTransaction(transaction, encodedSignature);
+
+    auto protoOutput = Proto::SigningOutput();
+    protoOutput.set_signature(encodedSignature);
+    protoOutput.set_encoded(encoded);
+    return protoOutput;
 }

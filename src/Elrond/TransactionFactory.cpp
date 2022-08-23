@@ -67,6 +67,7 @@ Transaction TransactionFactory::fromEGLDTransfer(const Proto::SigningInput &inpu
     transaction.receiver = transfer.accounts().receiver();
     transaction.receiverUsername = transfer.accounts().receiver_username();
     transaction.value = transfer.amount();
+    transaction.data = transfer.data();
     transaction.gasLimit = coalesceGasLimit(input.gas_limit(), estimatedGasLimit);
     transaction.gasPrice = coalesceGasPrice(input.gas_price());
     transaction.chainID = coalesceChainId(input.chain_id());
@@ -80,7 +81,7 @@ Transaction TransactionFactory::fromESDTTransfer(const Proto::SigningInput &inpu
 
     std::string encodedTokenIdentifier = Codec::encodeString(transfer.token_identifier());
     std::string encodedAmount = Codec::encodeBigInt(transfer.amount());
-    std::string data = prepareFunctionCall("ESDTTransfer", { encodedTokenIdentifier, encodedAmount });
+    std::string data = prepareFunctionCall("ESDTTransfer", {encodedTokenIdentifier, encodedAmount, transfer.data()});
     uint64_t estimatedGasLimit = this->gasEstimator.forESDTTransfer(data.size());
 
     Transaction transaction;
@@ -143,8 +144,10 @@ std::string TransactionFactory::prepareFunctionCall(const std::string& function,
     result.append(function);
 
     for (auto argument : arguments) {
-        result.append(ARGUMENTS_SEPARATOR);
-        result.append(argument);
+        if (!argument.empty()) {
+            result.append(ARGUMENTS_SEPARATOR);
+            result.append(argument);
+        }
     }
 
     return result;
