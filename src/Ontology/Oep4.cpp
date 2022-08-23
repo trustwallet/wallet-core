@@ -13,7 +13,7 @@ Oep4::Oep4(const Address addr) noexcept
     : oep4Contract(addr._data.begin(), addr._data.end()) {
 }
 
-Transaction Oep4::romethod0(std::string method_name, uint32_t nonce) {
+Transaction Oep4::readOnlyMethod(std::string method_name, uint32_t nonce) {
     auto builder = ParamsBuilder();
     Address addr(oep4Contract);
     std::vector<boost::any> args{};
@@ -23,19 +23,19 @@ Transaction Oep4::romethod0(std::string method_name, uint32_t nonce) {
 }
 
 Transaction Oep4::name(uint32_t nonce) {
-    return Oep4::romethod0("name", nonce);
+    return Oep4::readOnlyMethod("name", nonce);
 }
 
 Transaction Oep4::symbol(uint32_t nonce) {
-    return Oep4::romethod0("symbol", nonce);
+    return Oep4::readOnlyMethod("symbol", nonce);
 }
 
 Transaction Oep4::decimals(uint32_t nonce) {
-    return Oep4::romethod0("decimals", nonce);
+    return Oep4::readOnlyMethod("decimals", nonce);
 }
 
 Transaction Oep4::totalSupply(uint32_t nonce) {
-    return Oep4::romethod0("totalSupply", nonce);
+    return Oep4::readOnlyMethod("totalSupply", nonce);
 }
 
 Transaction Oep4::balanceOf(const Address& user, uint32_t nonce) {

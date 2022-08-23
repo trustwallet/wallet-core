@@ -4,7 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-
 #pragma once
 
 #include "Address.h"
@@ -20,7 +19,9 @@ private:
     static constexpr uint8_t version = 0x00;
 
     Data oep4Contract;
-    Transaction romethod0(std::string methodName, uint32_t nonce);
+    // building neovm instruction for oep4 readonly method(name, symbol...)
+    // are all the same except the method name
+    Transaction readOnlyMethod(std::string methodName, uint32_t nonce);
 
 public:
     explicit Oep4(const Address addr) noexcept;
