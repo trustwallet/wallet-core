@@ -260,6 +260,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeZilliqa:
             EXPECT_EQ(address, "zil1j2cvtd7j9n7fnxfv2r3neucjw8tp4xz9sp07v4");
             break;
+        case TWCoinTypeStratis:
+            EXPECT_EQ(address, "strax1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z0rvt20n");
+            break;
 
             // no default branch here, intentionally, to better notice any missing coins
         }
