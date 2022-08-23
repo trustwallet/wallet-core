@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Forging.h"
 #include "Address.h"
 #include "BinaryCoding.h"
 #include "../Base58.h"
@@ -203,4 +204,84 @@ Data forgeOperation(const Operation& operation) {
     }
 
     throw std::invalid_argument("Invalid operation kind");
+}
+
+Data forgePrim(const PrimValue& value) {
+    Data forged;
+    if (value.prim == "Pair") {
+        constexpr uint8_t nbArgs = 2;
+        const uint8_t preamble = std::min(2 * nbArgs + static_cast<uint8_t>(value.anots.size()) + 0x03, 9);
+        forged.emplace_back(preamble);
+        forged.emplace_back(PrimType::Pair);
+        Data tmpForged;
+        for (auto&& cur : value.args) {
+            append(tmpForged, forgeMichelson(cur.value));
+        }
+        append(forged, tmpForged);
+    }
+    return forged;
+}
+
+Data forgeMichelson(const MichelsonValue::MichelsonVariant& value) {
+    auto visit_functor = [](const MichelsonValue::MichelsonVariant& value) -> Data {
+        if (std::holds_alternative<PrimValue>(value)) {
+            return forgePrim(std::get<PrimValue>(value));
+        } else if (std::holds_alternative<StringValue>(value)) {
+            Data forged{1};
+            append(forged, forgeString(std::get<StringValue>(value).string));
+            return forged;
+        } else if (std::holds_alternative<IntValue>(value)) {
+            Data forged{0};
+            auto res = int256_t(std::get<IntValue>(value)._int);
+            append(forged, forgeMicheInt(res));
+            return forged;
+        } else if (std::holds_alternative<BytesValue>(value)) {
+            return {};
+        } else if (std::holds_alternative<MichelsonValue::MichelsonArray>(value)) {
+            // array
+            Data forged{2};
+            auto array = std::get<MichelsonValue::MichelsonArray>(value);
+            for (auto&& cur : array) {
+                std::visit([&forged](auto&& arg) {
+                    MichelsonValue::MichelsonVariant v = arg;
+                    append(forged, forgeMichelson(v));
+                },
+                           cur);
+            }
+            return forged;
+        } else {
+            throw std::invalid_argument("Invalid variant");
+        }
+    };
+
+    return std::visit(visit_functor, value);
+}
+
+MichelsonValue::MichelsonVariant FA12ParameterToMichelson(const FA12TransactionOperationData& data) {
+    MichelsonValue::MichelsonVariant address = StringValue{.string = data.from()};
+    MichelsonValue::MichelsonVariant to = StringValue{.string = data.to()};
+    MichelsonValue::MichelsonVariant amount = IntValue{._int = data.value()};
+    auto i = PrimValue{.prim = "Pair", .args{{to}, {amount}}};
+    auto v = PrimValue{.prim = "Pair", .args{{address}, {i}}};
+    MichelsonValue::MichelsonVariant variant = v;
+    return v;
+}
+
+Data forgeArray(const Data& data, int len) {
+    auto forged = forgeInt32(static_cast<int>(data.size()), len);
+    append(forged, data);
+    return forged;
+}
+
+Data forgeMicheInt(const TW::int256_t& value) {
+    Data forged;
+    auto abs = boost::multiprecision::abs(value);
+    forged.push_back(static_cast<uint8_t>(value.sign() < 0 ? (abs & 0x3f - 0x40) : (abs & 0x3f)));
+    abs >>= 6;
+    while (abs > 0) {
+        forged[forged.size() - 1] |= 0x80;
+        forged.push_back(static_cast<uint8_t>(abs & 0x7F));
+        abs >>= 7;
+    }
+    return forged;
 }

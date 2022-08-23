@@ -54,7 +54,7 @@ message FA12TransactionOperationData {
   string entrypoint = 1;
   string from = 2;
   string to = 3;
-  int64 value = 4;
+  string value = 4;
 }
 
 message Txs {

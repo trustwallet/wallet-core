@@ -4,20 +4,20 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Tezos/BinaryCoding.h"
-#include "Tezos/Address.h"
 #include "HDWallet.h"
 #include "HexCoding.h"
-#include "PublicKey.h"
 #include "PrivateKey.h"
+#include "PublicKey.h"
+#include "Tezos/Address.h"
+#include "Tezos/BinaryCoding.h"
 #include "Tezos/Forging.h"
 #include "proto/Tezos.pb.h"
 
 #include <TrustWalletCore/TWCoinType.h>
 
+#include <array>
 #include <gtest/gtest.h>
 #include <string>
-#include <array>
 
 using namespace TW;
 using namespace TW::Tezos;
@@ -40,41 +40,41 @@ TEST(Forging, ForgeBoolFalse) {
 
 TEST(Forging, ForgeZarithZero) {
     auto expected = "00";
-  
+
     auto output = forgeZarith(0);
-  
+
     ASSERT_EQ(hex(output), hex(parse_hex(expected)));
 }
 
 TEST(Forging, ForgeZarithTen) {
     auto expected = "0a";
-  
+
     auto output = forgeZarith(10);
-  
+
     ASSERT_EQ(output, parse_hex(expected));
 }
 
 TEST(Forging, ForgeZarithTwenty) {
     auto expected = "14";
-  
+
     auto output = forgeZarith(20);
-  
+
     ASSERT_EQ(output, parse_hex(expected));
 }
 
 TEST(Forging, ForgeZarithOneHundredFifty) {
     auto expected = "9601";
-  
+
     auto output = forgeZarith(150);
-  
+
     ASSERT_EQ(output, parse_hex(expected));
 }
 
 TEST(Forging, ForgeZarithLarge) {
     auto expected = "bbd08001";
-  
+
     auto output = forgeZarith(2107451);
-  
+
     ASSERT_EQ(hex(output), expected);
 }
 
@@ -104,11 +104,11 @@ TEST(Forging, forge_tz3) {
 
 TEST(Forging, ForgePublicKey) {
     auto expected = "00311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff95";
-  
+
     auto privateKey = PrivateKey(parse_hex("c6377a4cc490dc913fc3f0d9cf67d293a32df4547c46cb7e9e33c3b7b97c64d8"));
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
     auto output = forgePublicKey(publicKey);
-  
+
     ASSERT_EQ(hex(output), expected);
 }
 
@@ -127,11 +127,20 @@ TEST(Forging, ForgeEntrypoint) {
     ASSERT_EQ(hex(forgeEntrypoint("transfer")), expected);
 }
 
+TEST(Forging, ForgeMichelsonFA12) {
+    FA12TransactionOperationData data;
+    data.set_entrypoint("transfer");
+    data.set_from("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
+    data.set_to("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
+    data.set_value("123");
+    auto v = FA12ParameterToMichelson(data);
+    ASSERT_EQ(hex(forgeMichelson(v)), "07070100000024747a31696f7a36326b447736476d35484170655174633150476d4e32775042744a4b555007070100000024747a31696f7a36326b447736476d35484170655174633150476d4e32775042744a4b555000bb01");
+}
 
-TEST(TezosTransaction, forgeTransaction) {	
+TEST(TezosTransaction, forgeTransaction) {
     auto transactionOperationData = new TW::Tezos::Proto::TransactionOperationData();
-    transactionOperationData -> set_amount(1);
-    transactionOperationData -> set_destination("tz1Yju7jmmsaUiG9qQLoYv35v5pHgnWoLWbt");
+    transactionOperationData->set_amount(1);
+    transactionOperationData->set_destination("tz1Yju7jmmsaUiG9qQLoYv35v5pHgnWoLWbt");
 
     auto transactionOperation = TW::Tezos::Proto::Operation();
     transactionOperation.set_source("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW");
@@ -173,9 +182,9 @@ TEST(TezosTransaction, forgeTransactionFA12) {
 
 TEST(TezosTransaction, forgeReveal) {
     PublicKey publicKey = parsePublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A");
-  
+
     auto revealOperationData = new TW::Tezos::Proto::RevealOperationData();
-    revealOperationData -> set_public_key(publicKey.bytes.data(), publicKey.bytes.size());
+    revealOperationData->set_public_key(publicKey.bytes.data(), publicKey.bytes.size());
 
     auto revealOperation = TW::Tezos::Proto::Operation();
     revealOperation.set_source("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW");
@@ -185,7 +194,7 @@ TEST(TezosTransaction, forgeReveal) {
     revealOperation.set_storage_limit(257);
     revealOperation.set_kind(TW::Tezos::Proto::Operation::REVEAL);
     revealOperation.set_allocated_reveal_operation_data(revealOperationData);
-   
+
     auto expected = "6b0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e";
     auto serialized = forgeOperation(revealOperation);
 
