@@ -51,7 +51,8 @@ enum TWBlockchain {
     TWBlockchainThorchain = 38, // Cosmos
     TWBlockchainRonin = 39, // Ethereum
     TWBlockchainKusama = 40, // Polkadot
-    TWBlockchainEverscale = 41,
+    TWBlockchainNervos = 41,
+    TWBlockchainEverscale = 42,
 };
 
 TW_EXTERN_C_END

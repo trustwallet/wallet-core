@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <string>
 
-namespace TW {
+namespace TW::HDWalletInternalTests {
 
 const auto mnemonic1 = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
 

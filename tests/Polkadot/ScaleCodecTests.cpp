@@ -12,8 +12,7 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Polkadot;
-
+namespace TW::Polkadot::tests {
 
 TEST(PolkadotCodec, EncodeCompact) {
     ASSERT_EQ(hex(encodeCompact(0)), "00");
@@ -76,3 +75,5 @@ TEST(PolkadotCodec, EncodeEra) {
     ASSERT_EQ(hex(era1), "7200");
     ASSERT_EQ(hex(era2), "1100");
 }
+
+} // namespace TW::Polkadot::tests

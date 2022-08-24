@@ -23,7 +23,7 @@ android {
 }
 
 project.ext {
-    walletcore_version = "2.9.5"
+    walletcore_version = "2.9.8"
 }
 
 dependencies {
