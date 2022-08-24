@@ -202,17 +202,20 @@ TEST(TWAnySingerOntology, Oep4Decimal) {
 }
 
 TEST(TWAnySingerOntology, Oep4BalanceOf) {
+    // read only method don't need signer
     auto input = Proto::SigningInput();
     input.set_contract("ff31ec74d01f7b7d45ed2add930f5d2239f7de33");
     input.set_method("balanceOf");
     input.set_query_address("AeaThtPwh5kAYnjHavzwmvxPd725nVTvbM");
     input.set_nonce(0x1234);
-    auto data = Oep4TxBuilder::build(input);
-    auto rawTx = hex(data);
-    EXPECT_EQ("00d1341200000000000000000000000000000000000000000000000000000000000000000000000000003614fa2254ffaee3c3e1172e8e98f800e4105c74988e51c10962616c616e63654f666733def739225d0f93dd2aed457d7b1fd074ec31ff0000", rawTx);
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeOntology);
+    EXPECT_EQ("00d1341200000000000000000000000000000000000000000000000000000000000000000000000000003614fa2254ffaee3c3e1172e8e98f800e4105c74988e51c10962616c616e63654f666733def739225d0f93dd2aed457d7b1fd074ec31ff0000", hex(output.encoded()));
 }
 
 TEST(TWAnySingerOntology, Oep4Transfer) {
+    // https://explorer.ont.io/testnet/tx/710266b8d497e794ecd47e01e269e4aeb6f4ff2b01eaeafc4cd371e062b13757
     auto ownerPrivateKey =
         parse_hex("4646464646464646464646464646464646464646464646464646464646464652");
     auto payerPrivateKey =
@@ -227,9 +230,11 @@ TEST(TWAnySingerOntology, Oep4Transfer) {
     input.set_gas_price(2500);
     input.set_gas_limit(50000);
     input.set_nonce(0x1234);
-    auto data = Oep4TxBuilder::build(input);
-    auto rawTx = hex(data);
-    EXPECT_EQ("00d134120000c40900000000000050c3000000000000fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a4d02e9001496f688657b95be51c11a87b51adfda4ab69e9cbb1457e9d1a61f9aafa798b6c7fbeae35639681d7df653c1087472616e736665726733def739225d0f93dd2aed457d7b1fd074ec31ff00024140bd2923854d7b84b97a107bb3cddf18c8e3dddd2f36b41a1f5f5b23366484daa22871cfb819923fe01e9cb1e9ed16baa2b05c2feb76bcbe2ec125f72701c5e965232103d9fd62df332403d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac41406d638653597774ce45812ea2653250806b657b32b7c6ad3e027ddeba91e9a9da4bb5dacd23dafba868cb31bacb38b4a6ff2607682a426c1dc09b05a1e158d6cd2321031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486ac", rawTx);
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeOntology);
+
+    EXPECT_EQ("00d134120000c40900000000000050c3000000000000fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a4d02e9001496f688657b95be51c11a87b51adfda4ab69e9cbb1457e9d1a61f9aafa798b6c7fbeae35639681d7df653c1087472616e736665726733def739225d0f93dd2aed457d7b1fd074ec31ff00024140bd2923854d7b84b97a107bb3cddf18c8e3dddd2f36b41a1f5f5b23366484daa22871cfb819923fe01e9cb1e9ed16baa2b05c2feb76bcbe2ec125f72701c5e965232103d9fd62df332403d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac41406d638653597774ce45812ea2653250806b657b32b7c6ad3e027ddeba91e9a9da4bb5dacd23dafba868cb31bacb38b4a6ff2607682a426c1dc09b05a1e158d6cd2321031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486ac", hex(output.encoded()));
 }
 
 } // namespace TW::Ontology::tests
