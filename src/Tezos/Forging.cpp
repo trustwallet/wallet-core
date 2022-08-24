@@ -95,7 +95,7 @@ Data forgeAddress(const std::string& address) {
         const auto decoded = Base58::bitcoin.decodeCheck(address);
         const auto prefixSize = 3;
         forged.insert(forged.end(), decoded.begin() + prefixSize, decoded.end());
-        forged.push_back(0x00);
+        forged.emplace_back(0x00);
         return forged;
     }
     throw std::invalid_argument("Invalid Prefix");
@@ -172,7 +172,7 @@ Data forgeOperation(const Operation& operation) {
         auto forgedAmount = forgeZarith(operation.transaction_operation_data().amount());
         auto forgedDestination = Address(operation.transaction_operation_data().destination()).forge();
 
-        forged.push_back(Operation_OperationKind_TRANSACTION);
+        forged.emplace_back(Operation_OperationKind_TRANSACTION);
         append(forged, forgedSource);
         append(forged, forgedFee);
         append(forged, forgedCounter);
@@ -211,15 +211,19 @@ Data forgeOperation(const Operation& operation) {
 Data forgePrim(const PrimValue& value) {
     Data forged;
     if (value.prim == "Pair") {
+        // https://tezos.gitlab.io/developer/encodings.html?highlight=pair#pairs
+        forged.reserve(2);
         constexpr uint8_t nbArgs = 2;
+        // https://github.com/ecadlabs/taquito/blob/fd84d627171d24ce7ba81dd7b18763a95f16a99c/packages/taquito-local-forging/src/michelson/codec.ts#L195
+        // https://github.com/baking-bad/netezos/blob/0bfd6db4e85ab1c99fb55503e476fe67cebd2dc5/Netezos/Forging/Local/LocalForge.Forgers.cs#L199
         const uint8_t preamble = static_cast<uint8_t>(std::min(2 * nbArgs + static_cast<uint8_t>(value.anots.size()) + 0x03, 9));
         forged.emplace_back(preamble);
         forged.emplace_back(PrimType::Pair);
-        Data tmpForged;
+        Data subForged;
         for (auto&& cur : value.args) {
-            append(tmpForged, forgeMichelson(cur.value));
+            append(subForged, forgeMichelson(cur.value));
         }
-        append(forged, tmpForged);
+        append(forged, subForged);
     }
     return forged;
 }
@@ -242,16 +246,12 @@ Data forgeMichelson(const MichelsonValue::MichelsonVariant& value) {
         } else if (std::holds_alternative<MichelsonValue::MichelsonArray>(value)) {
             // array
             Data forged{2};
-            Data tmpForged;
+            Data subForged;
             auto array = std::get<MichelsonValue::MichelsonArray>(value);
             for (auto&& cur : array) {
-                std::visit([&tmpForged](auto&& arg) {
-                    MichelsonValue::MichelsonVariant v = arg;
-                    append(tmpForged, forgeMichelson(v));
-                },
-                           cur);
+                std::visit([&subForged](auto&& arg) { append(subForged, forgeMichelson(arg)); }, cur);
             }
-            append(forged, forgeArray(tmpForged));
+            append(forged, forgeArray(subForged));
             return forged;
         } else {
             throw std::invalid_argument("Invalid variant");
@@ -265,24 +265,21 @@ MichelsonValue::MichelsonVariant FA12ParameterToMichelson(const FA12TransactionO
     MichelsonValue::MichelsonVariant address = StringValue{.string = data.from()};
     MichelsonValue::MichelsonVariant to = StringValue{.string = data.to()};
     MichelsonValue::MichelsonVariant amount = IntValue{._int = data.value()};
-    auto i = PrimValue{.prim = "Pair", .args{{to}, {amount}}};
-    auto v = PrimValue{.prim = "Pair", .args{{address}, {i}}};
-    MichelsonValue::MichelsonVariant variant = v;
-    return v;
+    auto primTransferInfos = PrimValue{.prim = "Pair", .args{{to}, {amount}}};
+    return PrimValue{.prim = "Pair", .args{{address}, {primTransferInfos}}};
 }
 
 MichelsonValue::MichelsonVariant FA2ParameterToMichelson(const FA2TransactionOperationData& data) {
     auto& txObj = *data.txs_object().begin();
     MichelsonValue::MichelsonVariant from = StringValue{.string = txObj.from()};
-    auto& tx = txObj.txs(0);
-    MichelsonValue::MichelsonVariant tokenId = IntValue{._int = tx.token_id()};
-    MichelsonValue::MichelsonVariant amount = IntValue{._int = tx.amount()};
-    auto i = PrimValue{.prim = "Pair", .args{{tokenId}, {amount}}};
-    MichelsonValue::MichelsonVariant to = StringValue{.string = tx.to()};
-    MichelsonValue::MichelsonVariant txs = MichelsonValue::MichelsonArray{PrimValue{.prim = "Pair", .args{{to}, {i}}}};
-    auto v = PrimValue{.prim = "Pair", .args{{from}, {txs}}};
-    MichelsonValue::MichelsonVariant value = MichelsonValue::MichelsonArray{v};
-    return value;
+    auto& txTransferInfos = txObj.txs(0);
+    MichelsonValue::MichelsonVariant tokenId = IntValue{._int = txTransferInfos.token_id()};
+    MichelsonValue::MichelsonVariant amount = IntValue{._int = txTransferInfos.amount()};
+    auto primTransferInfos = PrimValue{.prim = "Pair", .args{{tokenId}, {amount}}};
+    MichelsonValue::MichelsonVariant to = StringValue{.string = txTransferInfos.to()};
+    MichelsonValue::MichelsonVariant txs = MichelsonValue::MichelsonArray{PrimValue{.prim = "Pair", .args{{to}, {primTransferInfos}}}};
+    auto primTxs = PrimValue{.prim = "Pair", .args{{from}, {txs}}};
+    return MichelsonValue::MichelsonArray{primTxs};
 }
 
 Data forgeArray(const Data& data, int len) {
@@ -294,11 +291,11 @@ Data forgeArray(const Data& data, int len) {
 Data forgeMicheInt(const TW::int256_t& value) {
     Data forged;
     auto abs = boost::multiprecision::abs(value);
-    forged.push_back(static_cast<uint8_t>(value.sign() < 0 ? (abs & 0x3f - 0x40) : (abs & 0x3f)));
+    forged.emplace_back(static_cast<uint8_t>(value.sign() < 0 ? (abs & 0x3f - 0x40) : (abs & 0x3f)));
     abs >>= 6;
     while (abs > 0) {
         forged[forged.size() - 1] |= 0x80;
-        forged.push_back(static_cast<uint8_t>(abs & 0x7F));
+        forged.emplace_back(static_cast<uint8_t>(abs & 0x7F));
         abs >>= 7;
     }
     return forged;
