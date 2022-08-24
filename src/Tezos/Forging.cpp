@@ -18,6 +18,18 @@ using namespace TW;
 using namespace TW::Tezos;
 using namespace TW::Tezos::Proto;
 
+namespace {
+
+constexpr const char* gTezosContractAddressPrefix{"KT1"};
+
+void prefixEncoder(const std::string& address, Data& forged) {
+    const auto decoded = Base58::bitcoin.decodeCheck(address);
+    constexpr auto prefixSize{3};
+    forged.insert(forged.end(), decoded.begin() + prefixSize, decoded.end());
+}
+
+} // namespace
+
 // Forge the given boolean into a hex encoded string.
 Data forgeBool(bool input) {
     unsigned char result = input ? 0xff : 0x00;
@@ -75,9 +87,7 @@ Data forgePublicKeyHash(const std::string& publicKeyHash) {
     default:
         throw std::invalid_argument("Invalid Prefix");
     }
-    const auto decoded = Base58::bitcoin.decodeCheck(publicKeyHash);
-    constexpr auto prefixSize{3};
-    forged.insert(forged.end(), decoded.begin() + prefixSize, decoded.end());
+    prefixEncoder(publicKeyHash, forged);
     return forged;
 }
 
@@ -86,15 +96,16 @@ Data forgeAddress(const std::string& address) {
         throw std::invalid_argument("Invalid address size");
     }
     auto prefix = address.substr(0, 3);
+
     if (prefix == "tz1" || prefix == "tz2" || prefix == "tz3") {
         Data forged{0x00};
         append(forged, forgePublicKeyHash(address));
         return forged;
-    } else if (prefix == "KT1") {
+    }
+
+    if (prefix == gTezosContractAddressPrefix) {
         Data forged{0x01};
-        const auto decoded = Base58::bitcoin.decodeCheck(address);
-        const auto prefixSize = 3;
-        forged.insert(forged.end(), decoded.begin() + prefixSize, decoded.end());
+        prefixEncoder(address, forged);
         forged.emplace_back(0x00);
         return forged;
     }
@@ -182,8 +193,8 @@ Data forgeOperation(const Operation& operation) {
         if (!operation.transaction_operation_data().has_parameters()) {
             append(forged, forgeBool(false));
             append(forged, forgedDestination);
-        }
-        if (operation.transaction_operation_data().has_parameters()) {
+            append(forged, forgeBool(false));
+        } else if (operation.transaction_operation_data().has_parameters()) {
             append(forged, forgeAddress(operation.transaction_operation_data().destination()));
             append(forged, forgeBool(true));
             auto& parameters = operation.transaction_operation_data().parameters();
@@ -199,8 +210,6 @@ Data forgeOperation(const Operation& operation) {
             case TransactionParametersOperationData::PARAMETERS_NOT_SET:
                 break;
             }
-        } else {
-            append(forged, forgeBool(false));
         }
         return forged;
     }
