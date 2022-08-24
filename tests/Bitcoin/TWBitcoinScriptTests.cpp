@@ -11,7 +11,7 @@
 
 #include <gtest/gtest.h>
 
-namespace TW::Bitcoin::tests {
+namespace TW::Bitcoin::TWScriptTests {
 
 // clang-format off
 const auto PayToScriptHash = WRAP(TWBitcoinScript, TWBitcoinScriptCreateWithData(DATA("a914" "4733f37cf4db86fbc2efed2500b4f4e49f312023" "87").get()));
@@ -242,4 +242,4 @@ TEST(TWBitcoinSigHashType, IsNone) {
     EXPECT_FALSE(TWBitcoinSigHashTypeIsNone(TWBitcoinSigHashTypeFork));
 }
 
-} // namespace TW::Bitcoin::tests
+} // namespace TW::Bitcoin::TWScriptTests
