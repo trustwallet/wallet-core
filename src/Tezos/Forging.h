@@ -59,7 +59,7 @@ MichelsonValue::MichelsonVariant FA2ParameterToMichelson(const FA2TransactionOpe
 Data forgeBool(bool input);
 Data forgeOperation(const Operation& operation);
 Data forgeAddress(const std::string& address);
-Data forgeArray(const Data& data, int len = 4);
+Data forgeArray(const Data& data);
 Data forgePublicKeyHash(const std::string& publicKeyHash);
 Data forgePublicKey(PublicKey publicKey);
 Data forgeZarith(uint64_t input);

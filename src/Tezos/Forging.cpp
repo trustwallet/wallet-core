@@ -291,8 +291,8 @@ MichelsonValue::MichelsonVariant FA2ParameterToMichelson(const FA2TransactionOpe
     return MichelsonValue::MichelsonArray{primTxs};
 }
 
-Data forgeArray(const Data& data, int len) {
-    auto forged = forgeInt32(static_cast<int>(data.size()), len);
+Data forgeArray(const Data& data) {
+    auto forged = forgeInt32(static_cast<int>(data.size()));
     append(forged, data);
     return forged;
 }
