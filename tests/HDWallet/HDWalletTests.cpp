@@ -21,7 +21,7 @@
 
 extern std::string TESTS_ROOT;
 
-namespace TW {
+namespace TW::HDWalletTests {
 
 const auto mnemonic1 = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
 const auto gPassphrase = "passphrase";

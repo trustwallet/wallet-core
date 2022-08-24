@@ -13,9 +13,10 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW::Cardano;
 using namespace TW;
 using namespace std;
+
+namespace TW::Cardano::tests {
 
 const auto dummyKey = parse_hex("1111111111111111111111111111111111111111111111111111111111111111");
 
@@ -461,3 +462,5 @@ TEST(CardanoAddress, AssignmentOperatorLegacy) {
     EXPECT_TRUE(address.legacyAddressV2.has_value());
     EXPECT_TRUE(*address.legacyAddressV2 == *addr3leg.legacyAddressV2);
 }
+
+} // namespace TW::Cardano::tests

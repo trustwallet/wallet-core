@@ -12,8 +12,9 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW::Encrypt;
 using namespace TW;
+
+namespace TW::Encrypt::test {
 
 const Data gKey = parse_hex("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4");
 
@@ -200,3 +201,5 @@ TEST(Encrypt, AESCTRDecryptInvalidKeySize) {
     }
     ADD_FAILURE() << "Missed expected exeption";
 }
+
+} // namespace TW::Encrypt::tests

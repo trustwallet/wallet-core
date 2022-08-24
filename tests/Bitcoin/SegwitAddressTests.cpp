@@ -14,7 +14,7 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Bitcoin;
+namespace TW::Bitcoin::tests {
 
 static const std::string valid_checksum[] = {
     "A12UEL5L",
@@ -207,3 +207,5 @@ TEST(SegwitAddress, Equals) {
     ASSERT_TRUE(addr1 == addr1);
     ASSERT_FALSE(addr1 == addr2);
 }
+
+} // namespace TW::Bitcoin::tests
