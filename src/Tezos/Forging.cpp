@@ -76,7 +76,7 @@ Data forgePublicKeyHash(const std::string& publicKeyHash) {
         throw std::invalid_argument("Invalid Prefix");
     }
     const auto decoded = Base58::bitcoin.decodeCheck(publicKeyHash);
-    const auto prefixSize = 3;
+    constexpr auto prefixSize{3};
     forged.insert(forged.end(), decoded.begin() + prefixSize, decoded.end());
     return forged;
 }

@@ -193,7 +193,6 @@ TEST(TezosTransaction, forgeTransactionFA2) {
     tx.set_amount("10");
     tx.set_token_id("0");
     tx.set_to("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
-    // std::cout << "["<< hex(forgeMichelson(FA2ParameterToMichelson(fa2)))<<"]" << std::endl;
 
     auto transactionOperation = TW::Tezos::Proto::Operation();
     transactionOperation.set_source("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
