@@ -19,14 +19,14 @@ struct TWBase64;
 /// Decode a Base64 input with the default alphabet (RFC4648 with '+', '/')
 ///
 /// \param string Encoded input to be decoded
-/// \return The decoded data
+/// \return The decoded data, empty if decoding failed.
 TW_EXPORT_STATIC_METHOD
 TWData* _Nullable TWBase64Decode(TWString* _Nonnull string);
 
 /// Decode a Base64 input with the alphabet safe for URL-s and filenames (RFC4648 with '-', '_')
 ///
 /// \param string Encoded base64 input to be decoded
-/// \return The decoded data
+/// \return The decoded data, empty if decoding failed.
 TW_EXPORT_STATIC_METHOD
 TWData* _Nullable TWBase64DecodeUrl(TWString* _Nonnull string);
 

@@ -20,7 +20,7 @@ TW_EXTERN_C_BEGIN
 
 /// Coin type for Level 2 of BIP44.
 ///
-/// - SeeAlso: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+/// \see https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 TW_EXPORT_ENUM(uint32_t)
 enum TWCoinType {
     TWCoinTypeAeternity = 457,

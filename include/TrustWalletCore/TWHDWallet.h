@@ -22,8 +22,6 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_CLASS
 struct TWHDWallet;
 
-/// TWHDWalletIsValid has been deprecated; use TWMnemonicIsValid().
-
 /// Creates a new HDWallet with a new random mnemonic with the provided strength in bits.
 ///
 /// \param strength strength in bits

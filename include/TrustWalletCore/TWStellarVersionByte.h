@@ -10,6 +10,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Stellar address version byte.
 TW_EXPORT_ENUM(uint16_t)
 enum TWStellarVersionByte {
     TWStellarVersionByteAccountID = 0x30,   // G

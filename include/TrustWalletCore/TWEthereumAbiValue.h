@@ -15,9 +15,6 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_STRUCT
 struct TWEthereumAbiValue;
 
-/// Returned data must be deleted (hint: use WRAPD() macro).
-/// Encode a type according to Ethereum ABI, into 32 bytes. Values are padded by 0 on the left, unless specified otherwise.
-
 /// Encode a bool according to Ethereum ABI, into 32 bytes.  Values are padded by 0 on the left, unless specified otherwise
 ///
 /// \param value a boolean value

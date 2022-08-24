@@ -10,6 +10,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Padding mode used in AES encryption.
 TW_EXPORT_ENUM(uint32_t)
 enum TWAESPaddingMode {
     TWAESPaddingModeZero = 0,   // padding value is zero

@@ -14,9 +14,11 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_STRUCT
 struct TWCardano;
 
-/// Calculates the minimum ADA amount needed for a UTXO. See https://docs.cardano.org/native-tokens/minimum-ada-value-requirement
+/// Calculates the minimum ADA amount needed for a UTXO.
 ///
+/// \see reference https://docs.cardano.org/native-tokens/minimum-ada-value-requirement
 /// \param tokenBundle serialized data of TW.Cardano.Proto.TokenBundle.
+/// \return the minimum ADA amount.
 TW_EXPORT_STATIC_METHOD
 uint64_t TWCardanoMinAdaAmount(TWData *_Nonnull tokenBundle) TW_VISIBILITY_DEFAULT;
 

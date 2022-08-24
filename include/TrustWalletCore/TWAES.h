@@ -24,7 +24,7 @@ struct TWAES {
 /// \param data Data to encrypt.
 /// \param iv initialization vector.
 /// \param mode padding mode.
-/// \returns encrypted Data.
+/// \return encrypted Data.
 TW_EXPORT_STATIC_METHOD
 TWData *_Nullable TWAESEncryptCBC(TWData *_Nonnull key, TWData *_Nonnull data, TWData *_Nonnull iv, enum TWAESPaddingMode mode);
 
@@ -34,7 +34,7 @@ TWData *_Nullable TWAESEncryptCBC(TWData *_Nonnull key, TWData *_Nonnull data, T
 /// \param data Data to decrypt.
 /// \param iv initialization vector Data.
 /// \param mode padding mode.
-/// \returns decrypted Data.
+/// \return decrypted Data.
 TW_EXPORT_STATIC_METHOD
 TWData *_Nullable TWAESDecryptCBC(TWData *_Nonnull key, TWData *_Nonnull data, TWData *_Nonnull iv, enum TWAESPaddingMode mode);
 
@@ -43,7 +43,7 @@ TWData *_Nullable TWAESDecryptCBC(TWData *_Nonnull key, TWData *_Nonnull data, T
 /// \param key encryption key Data, must be 16, 24, or 32 bytes long.
 /// \param data Data to encrypt.
 /// \param iv initialization vector Data.
-/// \returns encrypted Data.
+/// \return encrypted Data.
 TW_EXPORT_STATIC_METHOD
 TWData *_Nullable TWAESEncryptCTR(TWData *_Nonnull key, TWData *_Nonnull data, TWData *_Nonnull iv);
 
@@ -52,7 +52,7 @@ TWData *_Nullable TWAESEncryptCTR(TWData *_Nonnull key, TWData *_Nonnull data, T
 /// \param key decryption key Data, must be 16, 24, or 32 bytes long.
 /// \param data Data to decrypt.
 /// \param iv initialization vector Data.
-/// \returns decrypted Data.
+/// \return decrypted Data.
 TW_EXPORT_STATIC_METHOD
 TWData *_Nullable TWAESDecryptCTR(TWData *_Nonnull key, TWData *_Nonnull data, TWData *_Nonnull iv);
 

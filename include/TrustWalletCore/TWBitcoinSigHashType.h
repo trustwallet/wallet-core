@@ -10,6 +10,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Bitcoin SIGHASH type.
 TW_EXPORT_ENUM(uint32_t)
 enum TWBitcoinSigHashType {
     TWBitcoinSigHashTypeAll = 0x01,

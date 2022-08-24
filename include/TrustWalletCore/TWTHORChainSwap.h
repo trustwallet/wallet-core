@@ -14,9 +14,10 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_STRUCT
 struct TWTHORChainSwap;
 
-/// Builds a THORChainSwap transaction input. Returns the serialized data of SwapOutput.
+/// Builds a THORChainSwap transaction input.
 ///
 /// \param input The serialized data of SwapInput.
+/// \return The serialized data of SwapOutput.
 TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWTHORChainSwapBuildSwap(TWData *_Nonnull input);
 

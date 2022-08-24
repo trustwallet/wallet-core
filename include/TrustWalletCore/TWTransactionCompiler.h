@@ -18,7 +18,7 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_STRUCT
 struct TWTransactionCompiler;
 
-/// Builds a coin-specific SigningInput (proto object) from a simple transaction. Returns serialized data.
+/// Builds a coin-specific SigningInput (proto object) from a simple transaction.
 ///
 /// \param coin coin type.
 /// \param from sender of the transaction.
@@ -27,18 +27,20 @@ struct TWTransactionCompiler;
 /// \param asset optional asset name, like "BNB"
 /// \param memo optional memo
 /// \param chainId optional chainId to override default
+/// \return serialized data of the SigningInput proto object.
 TW_EXPORT_STATIC_METHOD
 TWData* _Nonnull TWTransactionCompilerBuildInput(enum TWCoinType coinType, TWString* _Nonnull from,
                                                  TWString* _Nonnull to, TWString* _Nonnull amount,
                                                  TWString* _Nonnull asset, TWString* _Nonnull memo,
                                                  TWString* _Nonnull chainId);
 
-/// Obtains pre-signing hashes of a transaction. Returns serialized data of a proto object `PreSigningOutput` includes hash.
+/// Obtains pre-signing hashes of a transaction.
 ///
 /// We provide a default `PreSigningOutput` in TransactionCompiler.proto. 
 /// For some special coins, such as bitcoin, we will create a custom `PreSigningOutput` object in its proto file.
 /// \param coin coin type.
 /// \param txInputData The serialized data of a signing input
+/// \return serialized data of a proto object `PreSigningOutput` includes hash.
 TW_EXPORT_STATIC_METHOD
 TWData* _Nonnull TWTransactionCompilerPreImageHashes(enum TWCoinType coinType,
                                                      TWData* _Nonnull txInputData);
@@ -52,6 +54,7 @@ TWData* _Nonnull TWTransactionCompilerPreImageHashes(enum TWCoinType coinType,
 /// \param txInputData The serialized data of a signing input.
 /// \param signatures signatures to compile, using TWDataVector.
 /// \param publicKeys public keys for signers to match private keys, using TWDataVector.
+/// \return serialized data of a proto object `SigningOutput`.
 TW_EXPORT_STATIC_METHOD
 TWData* _Nonnull TWTransactionCompilerCompileWithSignatures(
     enum TWCoinType coinType, TWData* _Nonnull txInputData,

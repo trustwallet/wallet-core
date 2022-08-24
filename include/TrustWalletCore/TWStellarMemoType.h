@@ -10,6 +10,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Stellar memo type.
 TW_EXPORT_ENUM(uint32_t)
 enum TWStellarMemoType {
     TWStellarMemoTypeNone = 0,
