@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,10 +12,13 @@
 #include <string>
 
 using namespace TW;
-using namespace TW::Tezos::Proto;
+
+namespace TW::Tezos::Proto {
 
 Data forgeBool(bool input);
 Data forgeOperation(const Operation& operation);
 Data forgePublicKeyHash(const std::string& publicKeyHash);
 Data forgePublicKey(PublicKey publicKey);
 Data forgeZarith(uint64_t input);
+
+} // namespace TW::Tezos::Proto

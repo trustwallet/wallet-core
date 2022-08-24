@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,16 +6,10 @@
 
 #include "Address.h"
 #include "BinaryCoding.h"
-#include "../Base58.h"
-#include "../Data.h"
 #include "../HexCoding.h"
 #include "../proto/Tezos.pb.h"
 
-#include <sstream>
-
-using namespace TW;
-using namespace TW::Tezos;
-using namespace TW::Tezos::Proto;
+namespace TW::Tezos::Proto {
 
 // Forge the given boolean into a hex encoded string.
 Data forgeBool(bool input) {
@@ -133,3 +127,5 @@ Data forgeOperation(const Operation& operation) {
 
     throw std::invalid_argument("Invalid operation kind");
 }
+
+} // namespace TW::Tezos::Proto
