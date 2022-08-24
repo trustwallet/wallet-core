@@ -2,12 +2,20 @@
 
 # Sript for creating/updating CoinType unit tests, based on the registry.json file
 # It is intended as a one-time or occasional generation, not every time! (that way the tests would have zero added value)
-# Usage: codegen/bin/cointests
+# Usage: codegen/bin/cointests [--coin-id coinid] [--no-skip-existing]
 # Files are generated to: tests/<Coin>/TWCoinTypeTests.cpp
 
 require 'erb'
 require 'fileutils'
 require 'json'
+require 'optparse'
+
+options = { :no_skip_existing => false }
+OptionParser.new do |opt|
+  opt.banner = "Usage: codegen/bin/cointests [options]"
+  opt.on('--coin-id <coin-id>') { |o| options[:coin_id] = o.downcase }
+  opt.on('--no-skip-existing') { options[:no_skip_existing] = true }
+end.parse!
 
 CurrentDir = File.dirname(__FILE__)
 $LOAD_PATH.unshift(File.join(CurrentDir, '..', 'lib'))
@@ -68,6 +76,19 @@ erbs = [
 coin_test_gen = CoinTestGen.new()
 templateFile = 'TWCoinTypeTests.cpp.erb'
 
+foundCoinId = false
 coins.each do |coin|
-  coin_test_gen.generate_coin_test_file(coin, templateFile)
+  if options[:coin_id].nil? or coin['id'] == options[:coin_id]
+    coin_test_gen.generate_coin_test_file(coin, templateFile, options[:no_skip_existing])
+    foundCoinId = true
+  end
 end
+
+if not options[:coin_id].nil? and not foundCoinId
+  puts "Not found specified coin-id " + options[:coin_id]
+  supportedIds = []
+  coins.each do |coin|
+    supportedIds << coin['id']
+  end
+  puts "Supported coin-ids: " + supportedIds.join(", ")
+end  

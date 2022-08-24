@@ -15,7 +15,7 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::EOS;
+namespace TW::EOS::tests {
 
 static std::string k1Sigs[5] {
     "SIG_K1_KfCdjsrTnx5cBpbA5cUdHZAsRYsnC9uKzuS1shFeqfMCfdZwX4PBm9pfHwGRT6ffz3eavhtkyNci5GoFozQAx8P8PBnDmj",
@@ -112,3 +112,5 @@ TEST(EOSTransaction, formatDate) {
     EXPECT_EQ(Transaction::formatDate(0), "1970-01-01T00:00:00");
     EXPECT_EQ(Transaction::formatDate(std::numeric_limits<int32_t>::max()), "2038-01-19T03:14:07");
 }
+
+} // namespace TW::EOS::tests

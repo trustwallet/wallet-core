@@ -14,6 +14,8 @@
 
 using namespace TW;
 
+namespace TW::Polkadot::tests {
+
 TEST(SS58Address, IsValid) {
     EXPECT_TRUE(SS58Address::isValid("15KRsCq9LLNmCxNFhGk55s5bEyazKefunDxUH24GFZwsTxyu", 0));
     
@@ -140,3 +142,5 @@ TEST(SS58Address, EncodeNetwork) {
     EXPECT_FALSE(SS58Address::encodeNetwork(0x4000, data));
     EXPECT_FALSE(SS58Address::encodeNetwork(0x8000, data));
 }
+
+} // namespace TW::Polkadot::tests
