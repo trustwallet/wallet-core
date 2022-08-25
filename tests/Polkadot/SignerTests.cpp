@@ -4,11 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Polkadot/Signer.h"
-#include "Polkadot/Extrinsic.h"
-#include "Polkadot/Address.h"
-#include "Polkadot/SS58Address.h"
 #include "HexCoding.h"
+#include "Polkadot/Address.h"
+#include "Polkadot/Extrinsic.h"
+#include "Polkadot/SS58Address.h"
+#include "Polkadot/Signer.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
 #include "proto/Polkadot.pb.h"
@@ -17,16 +17,17 @@
 #include <TrustWalletCore/TWSS58AddressType.h>
 #include <gtest/gtest.h>
 
-
-namespace TW::Polkadot {
-    auto privateKey = PrivateKey(parse_hex("0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115"));
-    auto privateKeyIOS = PrivateKey(parse_hex("37932b086586a6675e66e562fe68bd3eeea4177d066619c602fe3efc290ada62"));
-    auto privateKeyThrow2 = PrivateKey(parse_hex("70a794d4f1019c3ce002f33062f45029c4f930a56b3d20ec477f7668c6bbc37f"));
-    auto privateKeyPolkadot = PrivateKey(parse_hex("298fcced2b497ed48367261d8340f647b3fca2d9415d57c2e3c5ef90482a2266"));
-    auto addressThrow2 = "14Ztd3KJDaB9xyJtRkREtSZDdhLSbm7UUKt8Z7AwSv7q85G2";
-    auto toPublicKey = PublicKey(parse_hex("0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"), TWPublicKeyTypeED25519);
-    auto genesisHash = parse_hex("91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3");
-    auto controller1 = "14xKzzU1ZYDnzFj7FgdtDAYSMJNARjDc2gNw4XAFDgr4uXgp";
+using namespace TW;
+using namespace TW::Polkadot;
+namespace TW::Polkadot::tests {
+auto privateKey = PrivateKey(parse_hex("0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115"));
+auto privateKeyIOS = PrivateKey(parse_hex("37932b086586a6675e66e562fe68bd3eeea4177d066619c602fe3efc290ada62"));
+auto privateKeyThrow2 = PrivateKey(parse_hex("70a794d4f1019c3ce002f33062f45029c4f930a56b3d20ec477f7668c6bbc37f"));
+auto privateKeyPolkadot = PrivateKey(parse_hex("298fcced2b497ed48367261d8340f647b3fca2d9415d57c2e3c5ef90482a2266"));
+auto addressThrow2 = "14Ztd3KJDaB9xyJtRkREtSZDdhLSbm7UUKt8Z7AwSv7q85G2";
+auto toPublicKey = PublicKey(parse_hex("0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"), TWPublicKeyTypeED25519);
+auto genesisHash = parse_hex("91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3");
+auto controller1 = "14xKzzU1ZYDnzFj7FgdtDAYSMJNARjDc2gNw4XAFDgr4uXgp";
 
 TEST(PolkadotSigner, SignTransfer_9fd062) {
     auto toAddress = Address("13ZLCqJNPsRZYEbwjtZZFpWt9GyFzg5WahXCVWKpWdUJqrQ5");
@@ -155,7 +156,7 @@ TEST(PolkadotSigner, SignBond_8da66d) {
     auto stakingCall = input.mutable_staking_call();
     auto bond = stakingCall->mutable_bond();
     auto value = store(uint256_t(11000000000)); // 1.1
-    bond->set_controller(addressThrow2); // myself
+    bond->set_controller(addressThrow2);        // myself
     bond->set_value(value.data(), value.size());
     bond->set_reward_destination(Proto::RewardDestination::STASH);
 
@@ -257,7 +258,7 @@ TEST(PolkadotSigner, SignChill) {
     input.set_transaction_version(3);
 
     auto stakingCall = input.mutable_staking_call();
-    auto __attribute__((unused)) &chill = *stakingCall->mutable_chill();
+    auto __attribute__((unused))& chill = *stakingCall->mutable_chill();
     auto output = Signer::sign(input);
 
     ASSERT_EQ(hex(output.encoded()), "9d018488dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee0088b5e1cd93ba74b82e329f95e1b22660385970182172b2ae280801fdd1ee5652cf7bf319e5e176ccc299dd8eb1e7fccb0ea7717efaf4aacd7640789dd09c1e070000000706");
@@ -336,4 +337,4 @@ TEST(PolkadotSigner, SignChillAndUnbond) {
     ASSERT_EQ(hex(output.encoded()), "d10184008361bd08ddca5fda28b5e2aa84dc2621de566e23e089e555a42194c3eaf2da7900c891ba102db672e378945d74cf7f399226a76b43cab502436971599255451597fc2599902e4b62c7ce85ecc3f653c693fef3232be620984b5bb5bcecbbd7b209d50318001a02080706070207004d446617");
 }
 
-} // namespace
+} // namespace TW::Polkadot::tests

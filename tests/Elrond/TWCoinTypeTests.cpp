@@ -12,6 +12,7 @@
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <gtest/gtest.h>
 
+namespace TW::Elrond::tests {
 
 TEST(TWElrondCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeElrond));
@@ -32,3 +33,5 @@ TEST(TWElrondCoinType, TWCoinType) {
     assertStringsEqual(id, "elrond");
     assertStringsEqual(name, "Elrond");
 }
+
+} // namespace TW::Elrond::tests

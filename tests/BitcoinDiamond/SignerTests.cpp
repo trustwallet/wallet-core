@@ -19,7 +19,7 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::BitcoinDiamond;
+namespace TW::BitcoinDiamond::tests {
 
 TEST(BitcoinDiamondSigner, Sign) {
     const int64_t amount = 17615;
@@ -223,3 +223,5 @@ TEST(BitcoinDiamondSigner, SignWithError) {
     auto result = BitcoinDiamond::Signer::sign(input);
     ASSERT_NE(result.error(), Common::Proto::OK);
 }
+
+} // namespace TW::BitcoinDiamond::tests

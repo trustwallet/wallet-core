@@ -4,15 +4,17 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "boost/format.hpp"
 #include <gtest/gtest.h>
 #include <vector>
-#include "boost/format.hpp"
 
 #include "Elrond/TransactionFactory.h"
 #include "TestAccounts.h"
 
 using namespace TW;
 using namespace TW::Elrond;
+
+namespace TW::Elrond::tests {
 
 TEST(ElrondTransactionFactory, fromEGLDTransfer) {
     auto input = Proto::SigningInput();
@@ -109,7 +111,7 @@ TEST(ElrondTransactionFactory, createTransfersWithProvidedNetworkConfig) {
     Transaction tx1 = factory.fromEGLDTransfer(signingInputWithEGLDTransfer);
     Transaction tx2 = factory.fromESDTTransfer(signingInputWithESDTTransfer);
     Transaction tx3 = factory.fromESDTNFTTransfer(signingInputWithESDTNFTTransfer);
-    
+
     ASSERT_EQ(60000ul, tx1.gasLimit);
     ASSERT_EQ(1500000000ul, tx1.gasPrice);
     ASSERT_EQ("T", tx1.chainID);
@@ -143,7 +145,7 @@ TEST(ElrondTransactionFactory, createTransfersWithOverriddenNetworkParameters) {
     Transaction tx1 = factory.fromEGLDTransfer(signingInputWithEGLDTransfer);
     Transaction tx2 = factory.fromESDTTransfer(signingInputWithESDTTransfer);
     Transaction tx3 = factory.fromESDTNFTTransfer(signingInputWithESDTNFTTransfer);
-    
+
     ASSERT_EQ(50500ul, tx1.gasLimit);
     ASSERT_EQ(1000000001ul, tx1.gasPrice);
     ASSERT_EQ("A", tx1.chainID);
@@ -184,9 +186,11 @@ TEST(ElrondTransactionFactory, create) {
     Transaction tx2 = factory.create(signingInputWithEGLDTransfer);
     Transaction tx3 = factory.create(signingInputWithESDTTransfer);
     Transaction tx4 = factory.create(signingInputWithESDTNFTTransfer);
-    
+
     ASSERT_EQ("hello", tx1.data);
     ASSERT_EQ("1", tx2.value);
     ASSERT_EQ("ESDTTransfer@4d59544f4b454e2d31323334@09184e72a000", tx3.data);
     ASSERT_EQ("ESDTNFTTransfer@4c4b4d45582d616162393130@04@028ec3dfa01ac000@8049d639e5a6980d1cd2392abcce41029cda74a1563523a202f09641cc2618f8", tx4.data);
 }
+
+} // namespace TW::Elrond::tests

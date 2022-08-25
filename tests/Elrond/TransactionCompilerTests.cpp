@@ -24,6 +24,8 @@
 
 using namespace TW;
 
+namespace TW::Elrond::tests {
+
 TEST(ElrondCompiler, CompileGenericActionWithSignatures) {
     // txHash 2d3d69707de60e93868a417353c8ecbc6b717e09e384f1a27100287067a5f970 on testnet
     /// Step 1: Prepare transaction input (protobuf)
@@ -59,11 +61,13 @@ TEST(ElrondCompiler, CompileGenericActionWithSignatures) {
     auto outputData =
         TransactionCompiler::compileWithSignatures(coin, localInputData, {signature}, {publicKey.bytes});
     const auto ExpectedTx = "7b226e6f6e6365223a323338332c2276616c7565223a2231222c227265636569766572223a22657264317370796176773039353676713638786a38793474656e6a7071327764356139703263366a3867737a377a7479726e7078727275717a7536366a78222c2273656e646572223a2265726431717975357774686c647a72387778356339756367386b6a616767306a6673353373386e72337a707a336879706566736464387373796372367468222c226761735072696365223a313030303030303030302c226761734c696d6974223a31313130303030302c2264617461223a225a6d3976222c22636861696e4944223a2254222c2276657273696f6e223a312c227369676e6174757265223a223466306562376463613931373766313834396263393862383536616234623332333861363636616262333336396234666330666162613432396235633931633436623036383933653834316138663431316161313939633738636334353635313461626533393934383130386261663833613762653062336661653964373061227d";
+
     {
         TW::Elrond::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(hex(output.encoded()), ExpectedTx);
     }
+
     { // Double check: check if simple signature process gives the same result. Note that private
       // keys were not used anywhere up to this point.
         TW::Elrond::Proto::SigningInput signingInput;
@@ -134,6 +138,7 @@ TEST(ElrondCompiler, CompileEGLDTransferWithSignatures) {
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(hex(output.encoded()), ExpectedTx);
     }
+
     { // Double check: check if simple signature process gives the same result. Note that private
       // keys were not used anywhere up to this point.
         TW::Elrond::Proto::SigningInput signingInput;
@@ -200,11 +205,13 @@ TEST(ElrondCompiler, CompileESDTTransferWithSignatures) {
     auto outputData =
         TransactionCompiler::compileWithSignatures(coin, localInputData, {signature}, {publicKey.bytes});
     const auto ExpectedTx = "7b226e6f6e6365223a323438372c2276616c7565223a2230222c227265636569766572223a22657264317370796176773039353676713638786a38793474656e6a7071327764356139703263366a3867737a377a7479726e7078727275717a7536366a78222c2273656e646572223a2265726431717975357774686c647a72387778356339756367386b6a616767306a6673353373386e72337a707a336879706566736464387373796372367468222c226761735072696365223a313030303030303030302c226761734c696d6974223a31313130303030302c2264617461223a2252564e45564652795957357a5a6d56795144526b4e4449305a6a526c4e4451314e4451314e544d314e444a6b4d7a51324d7a59314d7a417a4e544d7a5144417851475a7662773d3d222c22636861696e4944223a2254222c2276657273696f6e223a312c227369676e6174757265223a223734376338656434363566313233373935393263633134313839356566363937326638393334633233303565303432613530663833643032303235623863396564373366633139373339616635363836646434373333303233623562393637666136653766393339323935666139613536663462323431343338656565633066227d";
+
     {
         TW::Elrond::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
         EXPECT_EQ(hex(output.encoded()), ExpectedTx);
     }
+
     { // Double check: check if simple signature process gives the same result. Note that private
       // keys were not used anywhere up to this point.
         TW::Elrond::Proto::SigningInput signingInput;
@@ -235,3 +242,5 @@ TEST(ElrondCompiler, CompileESDTTransferWithSignatures) {
         EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
     }
 }
+
+} // namespace TW::Elrond::tests

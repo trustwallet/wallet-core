@@ -38,6 +38,7 @@ else
 fi
 
 lcov --remove coverage.info '/usr/*' --output-file coverage.info
+lcov --remove coverage.info '/opt/*' --output-file coverage.info
 lcov --remove coverage.info '/Applications/*' --output-file coverage.info
 lcov --remove coverage.info '*/build/*' --output-file coverage.info
 lcov --remove coverage.info '*.pb.cc' --output-file coverage.info

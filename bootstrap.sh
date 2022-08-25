@@ -8,6 +8,8 @@ set -e
 echo "#### Initializing workspace with dependencies ... ####"
 tools/install-dependencies
 
+find . -name "*.gcda" -exec rm {} \;
+
 echo "#### Building and running tests ... ####"
 tools/build-and-test
 
