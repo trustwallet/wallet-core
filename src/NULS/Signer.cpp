@@ -196,7 +196,7 @@ Data Signer::buildSignedTx(const std::vector<Data> publicKeys,
                            const Data unsignedTxBytes) const {
     Data transactionSignature = Data();
     // the size of publicKeys must be the same as the size of the signatures.
-    for (int i = 0; i < publicKeys.size(); i++) {
+    for (std::vector<Data>::size_type i = 0; i < publicKeys.size(); i++) {
         encodeVarInt(publicKeys[i].size(), transactionSignature);
         std::copy(publicKeys[i].begin(), publicKeys[i].end(),
                   std::back_inserter(transactionSignature));

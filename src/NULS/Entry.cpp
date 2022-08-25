@@ -58,13 +58,13 @@ void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, c
             // verify signatures
             auto unsignedTxBytes = signer.buildUnsignedTx();
             Data unsignedTxBytesHash = Hash::sha256(Hash::sha256((unsignedTxBytes)));
-            for (int i = 0; i < signatures.size(); i++) {
+            for (std::vector<Data>::size_type i = 0; i < signatures.size(); i++) {
                 if (!publicKeys[i].verify(signatures[i], unsignedTxBytesHash)) {
                     throw std::invalid_argument("invalid signature at " + std::to_string(i));
                 }
             }
             std::vector<Data> publicKeysData;
-            for (int i = 0; i < publicKeys.size(); i++) {
+            for (std::vector<PublicKey>::size_type i = 0; i < publicKeys.size(); i++) {
                 publicKeysData.push_back(publicKeys[i].bytes);
             }
 

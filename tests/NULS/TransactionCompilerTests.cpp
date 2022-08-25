@@ -277,23 +277,23 @@ TEST(NULSCompiler, CompileWithSignaturesFeePayer) {
         "37ba0e35520a97bccb71a9e35cadcb8d95dd7fde5c8aa9e428");
     const auto ExpectedTx = std::string(ExpectedEncoded.begin(), ExpectedEncoded.end());
     EXPECT_EQ(outputData.size(), 433);
-    TW::NULS::Proto::SigningOutput output;
-    ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
-    EXPECT_EQ(output.encoded(), ExpectedTx);
-    EXPECT_EQ(output.encoded().size(), 430);
+    TW::NULS::Proto::SigningOutput signingOutput;
+    ASSERT_TRUE(signingOutput.ParseFromArray(outputData.data(), (int)outputData.size()));
+    EXPECT_EQ(signingOutput.encoded(), ExpectedTx);
+    EXPECT_EQ(signingOutput.encoded().size(), 430);
 
     { // Double check: check if simple signature process gives the same result. Note that private
       // keys were not used anywhere up to this point.
-        TW::NULS::Proto::SigningInput input;
-        ASSERT_TRUE(input.ParseFromArray(inputData.data(), (int)inputData.size()));
+        TW::NULS::Proto::SigningInput signingInput;
+        ASSERT_TRUE(signingInput.ParseFromArray(inputData.data(), (int)inputData.size()));
         auto key = parse_hex("0x48c91cd24a27a1cdc791022ff39316444229db1c466b3b1841b40c919dee3002");
-        input.set_private_key(key.data(), key.size());
+        signingInput.set_private_key(key.data(), key.size());
         auto feePayerPrivateKey =
             parse_hex("0x9401fd554cb700777e57b05338f9ff47597add8b23ce9f1c8e041e9b4e2116b6");
-        input.set_fee_payer_private_key(feePayerPrivateKey.data(), feePayerPrivateKey.size());
+        signingInput.set_fee_payer_private_key(feePayerPrivateKey.data(), feePayerPrivateKey.size());
 
         TW::NULS::Proto::SigningOutput output;
-        ANY_SIGN(input, coin);
+        ANY_SIGN(signingInput, coin);
 
         ASSERT_EQ(output.encoded(), ExpectedTx);
     }
@@ -368,18 +368,6 @@ TEST(NULSCompiler, TokenCompileWithSignaturesFeePayer) {
     const auto feePayerSignature =
         parse_hex("ff6f45a1c3856f9ea954baca6b2988295bbb22c958f87f0d3baf998993054953426ecb1520513710"
                   "b99ab50e1f6c7e21b0175adef08aa05070bb9bfca8a001d801");
-    //////////////////////////////////////
-    auto privateKey =
-        parse_hex("0x48c91cd24a27a1cdc791022ff39316444229db1c466b3b1841b40c919dee3002");
-    auto feePayerPrivateKey =
-        parse_hex("0x9401fd554cb700777e57b05338f9ff47597add8b23ce9f1c8e041e9b4e2116b6");
-    auto pk = PrivateKey(privateKey);
-    auto trueSignature = pk.sign(TW::data(preImageHash), TWCurve::TWCurveSECP256k1);
-    EXPECT_EQ(hex(signature), hex(trueSignature));
-    auto fppk = PrivateKey(feePayerPrivateKey);
-    auto feePayerTrueSignature = fppk.sign(TW::data(preImageHash), TWCurve::TWCurveSECP256k1);
-    EXPECT_EQ(hex(feePayerSignature), hex(feePayerTrueSignature));
-    //////////////////////////////////////////////////
     // Verify signature (pubkey & hash & signature)
     EXPECT_TRUE(publicKey.verify(signature, TW::data(preImageHash)));
     EXPECT_TRUE(feePayerPublicKey.verify(feePayerSignature, TW::data(preImageHash)));
@@ -399,23 +387,23 @@ TEST(NULSCompiler, TokenCompileWithSignaturesFeePayer) {
         "3710b99ab50e1f6c7e21b0175adef08aa05070bb9bfca8a001d8");
     const auto ExpectedTx = std::string(ExpectedEncoded.begin(), ExpectedEncoded.end());
     EXPECT_EQ(outputData.size(), 434);
-    TW::NULS::Proto::SigningOutput output;
-    ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
-    EXPECT_EQ(output.encoded(), ExpectedTx);
-    EXPECT_EQ(output.encoded().size(), 431);
+    TW::NULS::Proto::SigningOutput signingOutput;
+    ASSERT_TRUE(signingOutput.ParseFromArray(outputData.data(), (int)outputData.size()));
+    EXPECT_EQ(signingOutput.encoded(), ExpectedTx);
+    EXPECT_EQ(signingOutput.encoded().size(), 431);
 
     { // Double check: check if simple signature process gives the same result. Note that private
       // keys were not used anywhere up to this point.
-        TW::NULS::Proto::SigningInput input;
-        ASSERT_TRUE(input.ParseFromArray(inputData.data(), (int)inputData.size()));
+        TW::NULS::Proto::SigningInput signingInput;
+        ASSERT_TRUE(signingInput.ParseFromArray(inputData.data(), (int)inputData.size()));
         auto key = parse_hex("0x48c91cd24a27a1cdc791022ff39316444229db1c466b3b1841b40c919dee3002");
-        input.set_private_key(key.data(), key.size());
+        signingInput.set_private_key(key.data(), key.size());
         auto feePayerPrivateKey =
             parse_hex("0x9401fd554cb700777e57b05338f9ff47597add8b23ce9f1c8e041e9b4e2116b6");
-        input.set_fee_payer_private_key(feePayerPrivateKey.data(), feePayerPrivateKey.size());
+        signingInput.set_fee_payer_private_key(feePayerPrivateKey.data(), feePayerPrivateKey.size());
 
         TW::NULS::Proto::SigningOutput output;
-        ANY_SIGN(input, coin);
+        ANY_SIGN(signingInput, coin);
 
         ASSERT_EQ(output.encoded(), ExpectedTx);
     }
