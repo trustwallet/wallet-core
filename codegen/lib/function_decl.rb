@@ -15,7 +15,7 @@ class FunctionDecl
     @static = static
     @discardable_result = discardable_result
     @comment = comment
-    @comment_with_indent = comment.gsub('///', '    ///')
+    @comment_with_indent = comment.to_s.gsub('///', '    ///')
   end
 end
 
