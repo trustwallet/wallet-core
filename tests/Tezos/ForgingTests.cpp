@@ -128,7 +128,7 @@ TEST(Forging, ForgeEntrypoint) {
 }
 
 TEST(Forging, ForgeMichelsonFA12) {
-    FA12TransactionOperationData data;
+    Tezos::Proto::FA12TransactionOperationData data;
     data.set_entrypoint("transfer");
     data.set_from("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
     data.set_to("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");

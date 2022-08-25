@@ -6,58 +6,21 @@
 
 #pragma once
 
+#include "Michelson.h"
+#include "uint256.h"
 #include "../PublicKey.h"
 #include "../proto/Tezos.pb.h"
-#include "uint256.h"
 
 #include <string>
-#include <vector>
 #include <variant>
+#include <vector>
 
 using namespace TW;
-using namespace TW::Tezos::Proto;
 
-enum PrimType : std::uint8_t {
-    Pair = 7,
-};
-
-struct MichelsonValue;
-
-struct PrimValue {
-    std::string prim;
-    std::vector<MichelsonValue> args;
-    std::vector<std::string> anots;
-};
-
-struct BytesValue {
-    std::string bytes;
-};
-
-struct StringValue {
-    std::string string;
-};
-
-struct IntValue {
-    std::string _int;
-};
-
-struct MichelsonValue {
-    using MichelsonArray = std::vector<std::variant<PrimValue, BytesValue, StringValue, IntValue>>;
-    using MichelsonVariant = std::variant<
-        PrimValue,
-        BytesValue,
-        StringValue,
-        IntValue,
-        MichelsonArray>;
-    MichelsonVariant value;
-};
-
-
-MichelsonValue::MichelsonVariant FA12ParameterToMichelson(const FA12TransactionOperationData& data);
-MichelsonValue::MichelsonVariant FA2ParameterToMichelson(const FA2TransactionOperationData& data);
+namespace TW::Tezos {
 
 Data forgeBool(bool input);
-Data forgeOperation(const Operation& operation);
+Data forgeOperation(const Proto::Operation& operation);
 Data forgeAddress(const std::string& address);
 Data forgeArray(const Data& data);
 Data forgePublicKeyHash(const std::string& publicKeyHash);
@@ -67,5 +30,7 @@ Data forgeInt32(int value, int len = 4);
 Data forgeString(const std::string& value, std::size_t len = 4);
 Data forgeEntrypoint(const std::string& value);
 Data forgeMichelson(const MichelsonValue::MichelsonVariant& value);
-Data forgeMicheInt(const TW::int256_t& value);
+Data forgeMichelInt(const TW::int256_t& value);
 Data forgePrim(const PrimValue& value);
+
+} // namespace TW::Tezos

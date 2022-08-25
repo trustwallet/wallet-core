@@ -15,20 +15,20 @@
 #include <sstream>
 
 using namespace TW;
-using namespace TW::Tezos;
-using namespace TW::Tezos::Proto;
 
 namespace {
 
 constexpr const char* gTezosContractAddressPrefix{"KT1"};
 
-void prefixEncoder(const std::string& address, Data& forged) {
+void encodePrefix(const std::string& address, Data& forged) {
     const auto decoded = Base58::bitcoin.decodeCheck(address);
     constexpr auto prefixSize{3};
     forged.insert(forged.end(), decoded.begin() + prefixSize, decoded.end());
 }
 
 } // namespace
+
+namespace TW::Tezos {
 
 // Forge the given boolean into a hex encoded string.
 Data forgeBool(bool input) {
@@ -87,7 +87,7 @@ Data forgePublicKeyHash(const std::string& publicKeyHash) {
     default:
         throw std::invalid_argument("Invalid Prefix");
     }
-    prefixEncoder(publicKeyHash, forged);
+    encodePrefix(publicKeyHash, forged);
     return forged;
 }
 
@@ -105,7 +105,7 @@ Data forgeAddress(const std::string& address) {
 
     if (prefix == gTezosContractAddressPrefix) {
         Data forged{0x01};
-        prefixEncoder(address, forged);
+        encodePrefix(address, forged);
         forged.emplace_back(0x00);
         return forged;
     }
@@ -136,7 +136,8 @@ Data forgeZarith(uint64_t input) {
 }
 
 // Forge the given operation.
-Data forgeOperation(const Operation& operation) {
+Data forgeOperation(const Proto::Operation& operation) {
+    using namespace Proto;
     auto forged = Data();
     auto source = Address(operation.source());
     auto forgedSource = source.forge();
@@ -248,7 +249,7 @@ Data forgeMichelson(const MichelsonValue::MichelsonVariant& value) {
         } else if (std::holds_alternative<IntValue>(value)) {
             Data forged{0};
             auto res = int256_t(std::get<IntValue>(value)._int);
-            append(forged, forgeMicheInt(res));
+            append(forged, forgeMichelInt(res));
             return forged;
         } else if (std::holds_alternative<BytesValue>(value)) {
             return {};
@@ -270,34 +271,13 @@ Data forgeMichelson(const MichelsonValue::MichelsonVariant& value) {
     return std::visit(visit_functor, value);
 }
 
-MichelsonValue::MichelsonVariant FA12ParameterToMichelson(const FA12TransactionOperationData& data) {
-    MichelsonValue::MichelsonVariant address = StringValue{.string = data.from()};
-    MichelsonValue::MichelsonVariant to = StringValue{.string = data.to()};
-    MichelsonValue::MichelsonVariant amount = IntValue{._int = data.value()};
-    auto primTransferInfos = PrimValue{.prim = "Pair", .args{{to}, {amount}}};
-    return PrimValue{.prim = "Pair", .args{{address}, {primTransferInfos}}};
-}
-
-MichelsonValue::MichelsonVariant FA2ParameterToMichelson(const FA2TransactionOperationData& data) {
-    auto& txObj = *data.txs_object().begin();
-    MichelsonValue::MichelsonVariant from = StringValue{.string = txObj.from()};
-    auto& txTransferInfos = txObj.txs(0);
-    MichelsonValue::MichelsonVariant tokenId = IntValue{._int = txTransferInfos.token_id()};
-    MichelsonValue::MichelsonVariant amount = IntValue{._int = txTransferInfos.amount()};
-    auto primTransferInfos = PrimValue{.prim = "Pair", .args{{tokenId}, {amount}}};
-    MichelsonValue::MichelsonVariant to = StringValue{.string = txTransferInfos.to()};
-    MichelsonValue::MichelsonVariant txs = MichelsonValue::MichelsonArray{PrimValue{.prim = "Pair", .args{{to}, {primTransferInfos}}}};
-    auto primTxs = PrimValue{.prim = "Pair", .args{{from}, {txs}}};
-    return MichelsonValue::MichelsonArray{primTxs};
-}
-
 Data forgeArray(const Data& data) {
     auto forged = forgeInt32(static_cast<int>(data.size()));
     append(forged, data);
     return forged;
 }
 
-Data forgeMicheInt(const TW::int256_t& value) {
+Data forgeMichelInt(const TW::int256_t& value) {
     Data forged;
     auto abs = boost::multiprecision::abs(value);
     forged.emplace_back(static_cast<uint8_t>(value.sign() < 0 ? (abs & 0x3f - 0x40) : (abs & 0x3f)));
@@ -309,3 +289,5 @@ Data forgeMicheInt(const TW::int256_t& value) {
     }
     return forged;
 }
+
+} // namespace TW::Tezos
