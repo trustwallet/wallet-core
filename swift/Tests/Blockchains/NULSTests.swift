@@ -50,7 +50,7 @@ class NULSTests: XCTestCase {
             $0.balance = Data(hexString: "0x05f5e100")!
             $0.timestamp = 1569228280
             $0.feePayer = "NULSd6Hgj7ZoVgsPN9ybB4C1N2TbvkgLc8Z9H"
-            $0.feePayerBalance = Data(hexString: "0xf4240")!
+            $0.feePayerBalance = Data(hexString: "0x0f4240")!
             $0.feePayerNonce = "0000000000000000".data(using: .utf8)!
 
         }
@@ -65,16 +65,16 @@ class NULSTests: XCTestCase {
             $0.privateKey = Data(hexString: "0x48c91cd24a27a1cdc791022ff39316444229db1c466b3b1841b40c919dee3002")!
             $0.from = "NULSd6HgYx7bdWWv7PxYhYeTRBhD6kZs1o5Ac"
             $0.to = "NULSd6HgaHjzhMEUjd4T5DFnLz9EvV4TntrdV"
-            $0.amount = Data(hexString: "0x186a0")!
+            $0.amount = Data(hexString: "0x0186a0")!
             $0.chainID = 1
             $0.idassetsID = 1
             $0.nonce = "0000000000000000".data(using: .utf8)!
             $0.remark = ""
-            $0.balance = Data(hexString: "0xf4240")!
+            $0.balance = Data(hexString: "0x0f4240")!
             $0.timestamp = 1660632991
             $0.feePayer = "NULSd6HgYj81NrQBFZYXvyQhHCJCkGYWDTNeA"
             $0.feePayerNonce = "0000000000000000".data(using: .utf8)!
-            $0.feePayerBalance = Data(hexString: "0xf4240")!
+            $0.feePayerBalance = Data(hexString: "0x0f4240")!
             $0.feePayerPrivateKey = Data(hexString: "0x9401fd554cb700777e57b05338f9ff47597add8b23ce9f1c8e041e9b4e2116b6")!
         }
 
@@ -88,16 +88,16 @@ class NULSTests: XCTestCase {
             $0.privateKey = Data(hexString: "0x48c91cd24a27a1cdc791022ff39316444229db1c466b3b1841b40c919dee3002")!
             $0.from = "NULSd6HgYx7bdWWv7PxYhYeTRBhD6kZs1o5Ac"
             $0.to = "NULSd6HgaHjzhMEUjd4T5DFnLz9EvV4TntrdV"
-            $0.amount = Data(hexString: "0x186a0")!
+            $0.amount = Data(hexString: "0x0186a0")!
             $0.chainID = 9
             $0.idassetsID = 1
             $0.nonce = "0000000000000000".data(using: .utf8)!
             $0.remark = ""
-            $0.balance = Data(hexString: "0xdbba0")!
+            $0.balance = Data(hexString: "0x0dbba0")!
             $0.timestamp = 1660636748
             $0.feePayer = "NULSd6HgYj81NrQBFZYXvyQhHCJCkGYWDTNeA"
             $0.feePayerNonce = "e05d03df6ede0e22".data(using: .utf8)!
-            $0.feePayerBalance = Data(hexString: "0xf4240")!
+            $0.feePayerBalance = Data(hexString: "0x0f4240")!
             $0.feePayerPrivateKey = Data(hexString: "0x9401fd554cb700777e57b05338f9ff47597add8b23ce9f1c8e041e9b4e2116b6")!
         }
 
