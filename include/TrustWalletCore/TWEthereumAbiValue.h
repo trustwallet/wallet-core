@@ -12,6 +12,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Represents Ethereum ABI value
 TW_EXPORT_STRUCT
 struct TWEthereumAbiValue;
 

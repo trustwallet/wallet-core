@@ -10,10 +10,9 @@
 #include "TWString.h"
 #include "TWData.h"
 
-// Wrapper class for Ethereum ABI encoding & decoding.
-
 TW_EXTERN_C_BEGIN
 
+/// Wrapper class for Ethereum ABI encoding & decoding.
 struct TWEthereumAbiFunction;
 
 TW_EXPORT_STRUCT

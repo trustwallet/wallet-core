@@ -11,6 +11,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Hash functions
 TW_EXPORT_STRUCT
 struct TWHash {
     uint8_t unused; // C doesn't allow zero-sized struct

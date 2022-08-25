@@ -14,6 +14,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Bitcoin script manipulating functions
 TW_EXPORT_CLASS
 struct TWBitcoinScript;
 

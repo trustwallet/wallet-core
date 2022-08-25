@@ -12,6 +12,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Represents Ethereum ABI function
 TW_EXPORT_CLASS
 struct TWEthereumAbiFunction;
 

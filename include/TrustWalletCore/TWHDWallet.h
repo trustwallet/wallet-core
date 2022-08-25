@@ -19,6 +19,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Hierarchical Deterministic (HD) Wallet
 TW_EXPORT_CLASS
 struct TWHDWallet;
 

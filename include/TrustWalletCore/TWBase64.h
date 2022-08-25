@@ -12,9 +12,9 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Base64 encode / decode functions
 TW_EXPORT_STRUCT
 struct TWBase64;
-
 
 /// Decode a Base64 input with the default alphabet (RFC4648 with '+', '/')
 ///

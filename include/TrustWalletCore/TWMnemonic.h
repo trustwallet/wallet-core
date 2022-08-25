@@ -11,6 +11,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Mnemonic validate / lookup functions
 TW_EXPORT_STRUCT
 struct TWMnemonic;
 

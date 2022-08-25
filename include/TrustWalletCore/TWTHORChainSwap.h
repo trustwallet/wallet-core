@@ -11,6 +11,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// THORChain swap functions
 TW_EXPORT_STRUCT
 struct TWTHORChainSwap;
 

@@ -11,6 +11,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Solana address helper functions
 TW_EXPORT_CLASS
 struct TWSolanaAddress;
 

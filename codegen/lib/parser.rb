@@ -34,6 +34,8 @@ class Parser
         next
       end
       
+      @entity_comment = @entity_comment.strip
+
       # Look for TW_EXPORT statements
       if !@buffer.scan(/TW_EXPORT_[A-Z_]+/).nil?
         # Handle statements

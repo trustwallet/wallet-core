@@ -12,6 +12,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// CoinTypeConfiguration functions
 TW_EXPORT_STRUCT
 struct TWCoinTypeConfiguration { 
     uint8_t unused; // C doesn't allow zero-sized struct

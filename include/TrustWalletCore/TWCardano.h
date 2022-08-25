@@ -11,6 +11,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Cardano helper functions
 TW_EXPORT_STRUCT
 struct TWCardano;
 

@@ -13,6 +13,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Represents a private key.
 TW_EXPORT_CLASS
 struct TWPrivateKey;
 

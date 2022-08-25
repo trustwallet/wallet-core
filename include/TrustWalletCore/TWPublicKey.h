@@ -16,6 +16,7 @@ TW_EXTERN_C_BEGIN
 static const size_t TWPublicKeyCompressedSize = 33;
 static const size_t TWPublicKeyUncompressedSize = 65;
 
+/// Represents a public key.
 TW_EXPORT_CLASS
 struct TWPublicKey;
 

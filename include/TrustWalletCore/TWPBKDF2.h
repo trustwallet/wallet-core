@@ -11,6 +11,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Password-Based Key Derivation Function 2
 TW_EXPORT_STRUCT
 struct TWPBKDF2;
 
