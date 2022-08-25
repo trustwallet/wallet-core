@@ -25,6 +25,7 @@ private:
 
 public:
     explicit Oep4(const Address addr) noexcept;
+    explicit Oep4(const Data bin) noexcept;
     Oep4() = delete;
     Data contractAddress() { return oep4Contract; }
     Transaction name(uint32_t nonce);

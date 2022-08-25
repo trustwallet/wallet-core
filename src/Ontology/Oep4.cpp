@@ -6,15 +6,17 @@
 
 #include "Oep4.h"
 #include <HexCoding.h>
-#include <cstdio>
 
 namespace TW::Ontology {
 Oep4::Oep4(const Address addr) noexcept
     : oep4Contract(addr._data.begin(), addr._data.end()) {
 }
 
+Oep4::Oep4(const Data bin) noexcept
+    : oep4Contract(bin) {
+}
+
 Transaction Oep4::readOnlyMethod(std::string method_name, uint32_t nonce) {
-    auto builder = ParamsBuilder();
     Address addr(oep4Contract);
     std::vector<boost::any> args{};
     auto invokeCode = ParamsBuilder::buildOep4InvokeCode(addr, method_name, args);
@@ -39,7 +41,6 @@ Transaction Oep4::totalSupply(uint32_t nonce) {
 }
 
 Transaction Oep4::balanceOf(const Address& user, uint32_t nonce) {
-    auto builder = ParamsBuilder();
     Address contract(oep4Contract);
     Data d(std::begin(user._data), std::end(user._data));
     std::vector<boost::any> args{d};
@@ -50,8 +51,6 @@ Transaction Oep4::balanceOf(const Address& user, uint32_t nonce) {
 Transaction Oep4::transfer(const Signer& from, const Address& to, uint64_t amount,
                            const Signer& payer, uint64_t gasPrice, uint64_t gasLimit,
                            uint32_t nonce) {
-
-    auto builder = ParamsBuilder();
     Address contract(oep4Contract);
 
     auto fromAddr = from.getAddress();

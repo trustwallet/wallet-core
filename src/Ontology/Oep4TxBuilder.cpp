@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,16 +10,14 @@
 namespace TW::Ontology {
 
 Data Oep4TxBuilder::decimals(const Ontology::Proto::SigningInput& input) {
-    auto oep4Addr = Address(parse_hex(input.contract()));
-    Oep4 oep4(oep4Addr);
+    Oep4 oep4(parse_hex(input.contract()));
     auto transaction = oep4.decimals(input.nonce());
     auto encoded = transaction.serialize();
     return encoded;
 }
 
 Data Oep4TxBuilder::balanceOf(const Ontology::Proto::SigningInput& input) {
-    auto oep4Addr = Address(parse_hex(input.contract()));
-    Oep4 oep4(oep4Addr);
+    Oep4 oep4(parse_hex(input.contract()));
     auto queryAddress = Address(input.query_address());
     auto transaction = oep4.balanceOf(queryAddress, input.nonce());
     auto encoded = transaction.serialize();
@@ -27,8 +25,7 @@ Data Oep4TxBuilder::balanceOf(const Ontology::Proto::SigningInput& input) {
 }
 
 Data Oep4TxBuilder::transfer(const Ontology::Proto::SigningInput& input) {
-    auto oep4Addr = Address(parse_hex(input.contract()));
-    Oep4 oep4(oep4Addr);
+    Oep4 oep4(parse_hex(input.contract()));
     auto payerSigner = Signer(PrivateKey(input.payer_private_key()));
     auto fromSigner = Signer(PrivateKey(input.owner_private_key()));
     auto toAddress = Address(input.to_address());

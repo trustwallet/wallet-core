@@ -38,14 +38,14 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 }
 
 Signer::Signer(TW::PrivateKey priKey)
-    : privateKey(std::move(priKey)) {
-    auto pubKey = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1);
+    : privKey(std::move(priKey)) {
+    auto pubKey = privKey.getPublicKey(TWPublicKeyTypeNIST256p1);
     publicKey = pubKey.bytes;
     address = Address(pubKey).string();
 }
 
 PrivateKey Signer::getPrivateKey() const {
-    return privateKey;
+    return privKey;
 }
 
 PublicKey Signer::getPublicKey() const {
@@ -74,4 +74,4 @@ void Signer::addSign(Transaction& tx) const {
     tx.sigVec.emplace_back(publicKey, signature, 1);
 }
 
-} // namespace TW::Ontology end
+} // namespace TW::Ontology
