@@ -107,7 +107,7 @@ class TestNULSSigner {
             .setTimestamp(0x62FB4E4C)
             .setFeePayer("NULSd6HgYj81NrQBFZYXvyQhHCJCkGYWDTNeA")
             .setFeePayerBalance(ByteString.copyFrom("0xF4240".toHexByteArray()))
-            .setFeePayerNonce(ByteString.copyFrom("0000000000000000".toByteArray()))
+            .setFeePayerNonce(ByteString.copyFrom("e05d03df6ede0e22".toByteArray()))
             .setFeePayerPrivateKey(ByteString.copyFrom(Numeric.hexStringToByteArray("9401fd554cb700777e57b05338f9ff47597add8b23ce9f1c8e041e9b4e2116b6")))
             .build()
 

@@ -96,7 +96,7 @@ class NULSTests: XCTestCase {
             $0.balance = Data(hexString: "0xDBBA0")!
             $0.timestamp = 1660636748
             $0.feePayer = "NULSd6HgYj81NrQBFZYXvyQhHCJCkGYWDTNeA"
-            $0.feePayerNonce = "0000000000000000".data(using: .utf8)!
+            $0.feePayerNonce = "e05d03df6ede0e22".data(using: .utf8)!
             $0.feePayerBalance = Data(hexString: "0xF4240")!
             $0.feePayerPrivateKey = Data(hexString: "0x9401fd554cb700777e57b05338f9ff47597add8b23ce9f1c8e041e9b4e2116b6")!
         }
