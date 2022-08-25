@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,6 +10,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Padding mode used in AES encryption.
 TW_EXPORT_ENUM(uint32_t)
 enum TWAESPaddingMode {
     TWAESPaddingModeZero = 0,   // padding value is zero

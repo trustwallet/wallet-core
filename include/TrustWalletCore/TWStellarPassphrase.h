@@ -10,6 +10,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Stellar network passphrase string.
 TW_EXPORT_ENUM()
 enum TWStellarPassphrase {
     TWStellarPassphraseStellar     /* "Public Global Stellar Network ; September 2015" */,

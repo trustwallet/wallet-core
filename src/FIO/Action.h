@@ -16,7 +16,7 @@
 namespace TW::FIO {
 
 /// Encodes a value as a variable-length integer.
-/// @returns the number of bytes written.
+/// \returns the number of bytes written.
 uint8_t encodeVarInt(uint64_t num, Data& data);
 
 /// Encodes an ASCII string prefixed by the length (varInt)

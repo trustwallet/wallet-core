@@ -10,6 +10,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Blockchain enum type
 TW_EXPORT_ENUM(uint32_t)
 enum TWBlockchain {
     TWBlockchainBitcoin = 0,

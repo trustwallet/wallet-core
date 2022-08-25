@@ -12,6 +12,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Base32 encode / decode functions
 TW_EXPORT_STRUCT
 struct TWBase32;
 

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,11 +10,12 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Stellar address version byte.
 TW_EXPORT_ENUM(uint16_t)
 enum TWStellarVersionByte {
-    TWStellarVersionByteAccountID = 0x30, // G
-    TWStellarVersionByteSeed = 0xc0, // S
-    TWStellarVersionBytePreAuthTX = 0xc8, // T
+    TWStellarVersionByteAccountID = 0x30,   // G
+    TWStellarVersionByteSeed = 0xc0,        // S
+    TWStellarVersionBytePreAuthTX = 0xc8,   // T
     TWStellarVersionByteSHA256Hash = 0x118, // X
 };
 

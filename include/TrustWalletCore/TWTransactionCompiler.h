@@ -18,25 +18,46 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_STRUCT
 struct TWTransactionCompiler;
 
-/// Build a coin-specific SigningInput protobuf transaction input, from simple transaction parameters
-/// - amount: decimal number as string
-/// - asset: optional asset name, like "BNB"
-/// - memo: optional memo
-/// - chainId: optional chainId to override default
+/// Builds a coin-specific SigningInput (proto object) from a simple transaction.
+///
+/// \param coin coin type.
+/// \param from sender of the transaction.
+/// \param to receiver of the transaction.
+/// \param amount transaction amount in string
+/// \param asset optional asset name, like "BNB"
+/// \param memo optional memo
+/// \param chainId optional chainId to override default
+/// \return serialized data of the SigningInput proto object.
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWTransactionCompilerBuildInput(enum TWCoinType coinType, TWString *_Nonnull from, TWString *_Nonnull to, TWString *_Nonnull amount, TWString *_Nonnull asset, TWString *_Nonnull memo, TWString *_Nonnull chainId);
+TWData* _Nonnull TWTransactionCompilerBuildInput(enum TWCoinType coinType, TWString* _Nonnull from,
+                                                 TWString* _Nonnull to, TWString* _Nonnull amount,
+                                                 TWString* _Nonnull asset, TWString* _Nonnull memo,
+                                                 TWString* _Nonnull chainId);
 
-/// Obtain pre-signing hashes of a transaction. 
-/// It will return a proto object named `PreSigningOutput` which will include hash.
-/// We provide a default `PreSigningOutput` in TransactionCompiler.proto.
+/// Obtains pre-signing hashes of a transaction.
+///
+/// We provide a default `PreSigningOutput` in TransactionCompiler.proto. 
 /// For some special coins, such as bitcoin, we will create a custom `PreSigningOutput` object in its proto file.
+/// \param coin coin type.
+/// \param txInputData The serialized data of a signing input
+/// \return serialized data of a proto object `PreSigningOutput` includes hash.
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWTransactionCompilerPreImageHashes(enum TWCoinType coinType, TWData *_Nonnull txInputData);
+TWData* _Nonnull TWTransactionCompilerPreImageHashes(enum TWCoinType coinType,
+                                                     TWData* _Nonnull txInputData);
 
-/// Compile a complete transation with one or more external signatures, put together from transaction input and provided public keys and signatures.
-/// The signatures must match the hashes returned by TWTransactionCompilerPreImageHashes, in the same order.
-/// The publicKeyHash attached to the hashes enable identifying the private key needed for signing the hash.
+/// Compiles a complete transation with one or more external signatures.
+/// 
+/// Puts together from transaction input and provided public keys and signatures. The signatures must match the hashes
+/// returned by TWTransactionCompilerPreImageHashes, in the same order. The publicKeyHash attached
+/// to the hashes enable identifying the private key needed for signing the hash.
+/// \param coin coin type.
+/// \param txInputData The serialized data of a signing input.
+/// \param signatures signatures to compile, using TWDataVector.
+/// \param publicKeys public keys for signers to match private keys, using TWDataVector.
+/// \return serialized data of a proto object `SigningOutput`.
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWTransactionCompilerCompileWithSignatures(enum TWCoinType coinType, TWData *_Nonnull txInputData, const struct TWDataVector *_Nonnull signatures, const struct TWDataVector *_Nonnull publicKeys);
+TWData* _Nonnull TWTransactionCompilerCompileWithSignatures(
+    enum TWCoinType coinType, TWData* _Nonnull txInputData,
+    const struct TWDataVector* _Nonnull signatures, const struct TWDataVector* _Nonnull publicKeys);
 
 TW_EXTERN_C_END
