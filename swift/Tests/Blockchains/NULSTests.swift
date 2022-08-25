@@ -50,7 +50,7 @@ class NULSTests: XCTestCase {
             $0.balance = Data(hexString: "0x5F5E100")!
             $0.timestamp = 1569228280
             $0.feePayer = "NULSd6Hgj7ZoVgsPN9ybB4C1N2TbvkgLc8Z9H"
-            $0.feePayerBalance = Data(hexString: "0xF4240")!
+            $0.feePayerBalance = Data(hexString: "0xF4240")
             $0.feePayerNonce = "0000000000000000".data(using: .utf8)!
 
         }
