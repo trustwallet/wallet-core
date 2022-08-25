@@ -50,7 +50,7 @@ message Operation {
   }
 }
 
-message FA12TransactionOperationData {
+message FA12Parameters {
   string entrypoint = 1;
   string from = 2;
   string to = 3;
@@ -68,15 +68,15 @@ message TxObject {
   repeated Txs txs = 2;
 }
 
-message FA2TransactionOperationData {
+message FA2Parameters {
   string entrypoint = 1;
   repeated TxObject txs_object = 2;
 }
 
-message TransactionParametersOperationData {
+message OperationParameters {
   oneof parameters {
-    FA12TransactionOperationData fa12_parameters = 1;
-    FA2TransactionOperationData fa2_parameters = 2;
+    FA12Parameters fa12_parameters = 1;
+    FA2Parameters fa2_parameters = 2;
   }
 }
 
@@ -85,7 +85,7 @@ message TransactionParametersOperationData {
 message TransactionOperationData {
   string destination = 1;
   int64 amount = 2;
-  TransactionParametersOperationData parameters = 3;
+  OperationParameters parameters = 3;
 }
 
 // Reveal operation specific data.

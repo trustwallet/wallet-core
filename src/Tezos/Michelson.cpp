@@ -8,7 +8,7 @@
 
 namespace TW::Tezos {
 
-MichelsonValue::MichelsonVariant FA12ParameterToMichelson(const Proto::FA12TransactionOperationData& data) {
+MichelsonValue::MichelsonVariant FA12ParameterToMichelson(const Proto::FA12Parameters& data) {
     MichelsonValue::MichelsonVariant address = StringValue{.string = data.from()};
     MichelsonValue::MichelsonVariant to = StringValue{.string = data.to()};
     MichelsonValue::MichelsonVariant amount = IntValue{._int = data.value()};
@@ -16,7 +16,7 @@ MichelsonValue::MichelsonVariant FA12ParameterToMichelson(const Proto::FA12Trans
     return PrimValue{.prim = "Pair", .args{{address}, {primTransferInfos}}};
 }
 
-MichelsonValue::MichelsonVariant FA2ParameterToMichelson(const Proto::FA2TransactionOperationData& data) {
+MichelsonValue::MichelsonVariant FA2ParameterToMichelson(const Proto::FA2Parameters& data) {
     auto& txObj = *data.txs_object().begin();
     MichelsonValue::MichelsonVariant from = StringValue{.string = txObj.from()};
     auto& txTransferInfos = txObj.txs(0);

@@ -50,7 +50,7 @@ struct MichelsonValue {
     MichelsonVariant value;
 };
 
-MichelsonValue::MichelsonVariant FA12ParameterToMichelson(const Proto::FA12TransactionOperationData& data);
-MichelsonValue::MichelsonVariant FA2ParameterToMichelson(const Proto::FA2TransactionOperationData& data);
+MichelsonValue::MichelsonVariant FA12ParameterToMichelson(const Proto::FA12Parameters& data);
+MichelsonValue::MichelsonVariant FA2ParameterToMichelson(const Proto::FA2Parameters& data);
 
 } // namespace TW::Tezos

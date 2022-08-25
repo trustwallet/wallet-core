@@ -34,22 +34,24 @@ class TezosTests: XCTestCase {
         var operationList = TezosOperationList()
         operationList.branch = branch
         
-        var transactionOperationData = TezosTransactionOperationData()
-        transactionOperationData.amount = 0
-        transactionOperationData.destination = "KT1EwXFWoG9bYebmF4pYw72aGjwEnBWefgW5"
-        transactionOperationData.parameters.fa12Parameters.entrypoint = "transfer";
-        transactionOperationData.parameters.fa12Parameters.from = "tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP";
-        transactionOperationData.parameters.fa12Parameters.to   = "tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP";
-        transactionOperationData.parameters.fa12Parameters.value = "123";
+        let transactionOperationData = TezosTransactionOperationData.with {
+            $0.amount = 0
+            $0.destination = "KT1EwXFWoG9bYebmF4pYw72aGjwEnBWefgW5"
+            $0.parameters.fa12Parameters.entrypoint = "transfer";
+            $0.parameters.fa12Parameters.from = "tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP";
+            $0.parameters.fa12Parameters.to   = "tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP";
+            $0.parameters.fa12Parameters.value = "123";
+        }
         
-        var transactionOperation = TezosOperation()
-        transactionOperation.source = "tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP"
-        transactionOperation.fee = 100000
-        transactionOperation.counter = 2993172
-        transactionOperation.gasLimit = 100000
-        transactionOperation.storageLimit = 0
-        transactionOperation.kind = .transaction
-        transactionOperation.transactionOperationData = transactionOperationData
+        let transactionOperation = TezosOperation.with {
+            $0.source = "tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP"
+            $0.fee = 100000
+            $0.counter = 2993172
+            $0.gasLimit = 100000
+            $0.storageLimit = 0
+            $0.kind = .transaction
+            $0.transactionOperationData = transactionOperationData
+        }
         
         operationList.operations = [ transactionOperation ]
 
@@ -71,28 +73,33 @@ class TezosTests: XCTestCase {
         var operationList = TezosOperationList()
         operationList.branch = branch
         
-        var transactionOperationData = TezosTransactionOperationData()
-        transactionOperationData.amount = 0
-        transactionOperationData.destination = "KT1DYk1XDzHredJq1EyNkDindiWDqZyekXGj"
-        transactionOperationData.parameters.fa2Parameters.entrypoint = "transfer";
         let transferInfos = TezosTxs.with{
             $0.to = "tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP"
             $0.tokenID = "0"
             $0.amount = "10"
         }
-        transactionOperationData.parameters.fa2Parameters.txsObject = [TezosTxObject.with{
-            $0.from = "tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP"
-            $0.txs = [transferInfos]
-        }]
         
-        var transactionOperation = TezosOperation()
-        transactionOperation.source = "tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP"
-        transactionOperation.fee = 100000
-        transactionOperation.counter = 2993173
-        transactionOperation.gasLimit = 100000
-        transactionOperation.storageLimit = 0
-        transactionOperation.kind = .transaction
-        transactionOperation.transactionOperationData = transactionOperationData
+        let transactionOperationData = TezosTransactionOperationData.with {
+            $0.amount = 0
+            $0.destination = "KT1DYk1XDzHredJq1EyNkDindiWDqZyekXGj"
+            $0.parameters.fa2Parameters.entrypoint = "transfer";
+            $0.parameters.fa2Parameters.txsObject = [TezosTxObject.with{
+                    $0.from = "tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP"
+                    $0.txs = [transferInfos]
+                }]
+        }
+        
+        
+        
+        let transactionOperation = TezosOperation.with {
+            $0.source = "tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP"
+            $0.fee = 100000
+            $0.counter = 2993173
+            $0.gasLimit = 100000
+            $0.storageLimit = 0
+            $0.kind = .transaction
+            $0.transactionOperationData = transactionOperationData
+        }
         
         operationList.operations = [ transactionOperation ]
 

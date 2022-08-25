@@ -200,15 +200,15 @@ Data forgeOperation(const Proto::Operation& operation) {
             append(forged, forgeBool(true));
             auto& parameters = operation.transaction_operation_data().parameters();
             switch (parameters.parameters_case()) {
-            case TransactionParametersOperationData::kFa12Parameters:
+            case OperationParameters::kFa12Parameters:
                 append(forged, forgeEntrypoint(parameters.fa12_parameters().entrypoint()));
                 append(forged, forgeArray(forgeMichelson(FA12ParameterToMichelson(parameters.fa12_parameters()))));
                 break;
-            case TransactionParametersOperationData::kFa2Parameters:
+            case OperationParameters::kFa2Parameters:
                 append(forged, forgeEntrypoint(parameters.fa2_parameters().entrypoint()));
                 append(forged, forgeArray(forgeMichelson(FA2ParameterToMichelson(parameters.fa2_parameters()))));
                 break;
-            case TransactionParametersOperationData::PARAMETERS_NOT_SET:
+            case OperationParameters::PARAMETERS_NOT_SET:
                 break;
             }
         }

@@ -31,12 +31,12 @@ class TestTezosTransactionSigner {
             .addTxs(transferInfos)
             .build()
 
-        val fa12 = FA2TransactionOperationData.newBuilder()
+        val fa12 = FA2Parameters.newBuilder()
             .setEntrypoint("transfer")
             .addTxsObject(txObj)
             .build()
 
-        val parameters = TransactionParametersOperationData.newBuilder()
+        val parameters = OperationParameters.newBuilder()
             .setFa2Parameters(fa12)
             .build()
 
@@ -79,14 +79,14 @@ class TestTezosTransactionSigner {
         val key =
             "363265a0b3f06661001cab8b4f3ca8fd97ae70608184979cf7300836f57ec2d6".toHexBytesInByteString()
 
-        val fa12 = FA12TransactionOperationData.newBuilder()
+        val fa12 = FA12Parameters.newBuilder()
             .setEntrypoint("transfer")
             .setFrom("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP")
             .setTo("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP")
             .setValue("123")
             .build()
 
-        val parameters = TransactionParametersOperationData.newBuilder()
+        val parameters = OperationParameters.newBuilder()
             .setFa12Parameters(fa12)
             .build()
 
