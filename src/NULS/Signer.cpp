@@ -58,8 +58,7 @@ Signer::Signer(const Proto::SigningInput& input) : input(input) {
                 throw std::invalid_argument("fee payer balance not sufficient");
             }
             Data feeData = store(fee);
-            std::string feeStr;
-            feeStr.insert(feeStr.begin(), feeData.begin(), feeData.end());
+            std::string feeStr(feeData.begin(), feeData.end());
             Proto::TransactionCoinFrom feeCoinFrom;
             feeCoinFrom.set_from_address(input.fee_payer());
             feeCoinFrom.set_assets_chainid(input.chain_id());
@@ -74,8 +73,7 @@ Signer::Signer(const Proto::SigningInput& input) : input(input) {
         }
         // update the amount
         Data amount = store(fromAmount);
-        std::string amountStr;
-        amountStr.insert(amountStr.begin(), amount.begin(), amount.end());
+        std::string amountStr(amount.begin(), amount.end());
         Proto::TransactionCoinFrom coinFrom;
         coinFrom.set_from_address(input.from());
         coinFrom.set_assets_chainid(input.chain_id());
@@ -112,8 +110,7 @@ Signer::Signer(const Proto::SigningInput& input) : input(input) {
             throw std::invalid_argument("fee payer balance not sufficient");
         }
         Data feeData = store(fee);
-        std::string feeStr;
-        feeStr.insert(feeStr.begin(), feeData.begin(), feeData.end());
+        std::string feeStr(feeData.begin(), feeData.end());
         // add new input for fee
         Proto::TransactionCoinFrom txFee;
         txFee.set_from_address(input.fee_payer());
