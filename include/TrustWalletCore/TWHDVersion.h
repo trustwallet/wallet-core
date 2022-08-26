@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,9 +10,9 @@
 
 TW_EXTERN_C_BEGIN
 
-///  Registered HD version bytes
+/// Registered HD version bytes
 ///
-/// - SeeAlso: https://github.com/satoshilabs/slips/blob/master/slip-0132.md
+/// \see https://github.com/satoshilabs/slips/blob/master/slip-0132.md
 TW_EXPORT_ENUM(uint32_t)
 enum TWHDVersion {
     TWHDVersionNone = 0,
@@ -40,9 +40,17 @@ enum TWHDVersion {
     TWHDVersionDGPV = 0x02fac398,
 };
 
+/// Determine if the HD Version is public
+///
+/// \param version HD version
+/// \return true if the version is public, false otherwise
 TW_EXPORT_PROPERTY
 bool TWHDVersionIsPublic(enum TWHDVersion version);
 
+/// Determine if the HD Version is private
+///
+/// \param version HD version
+/// \return true if the version is private, false otherwise
 TW_EXPORT_PROPERTY
 bool TWHDVersionIsPrivate(enum TWHDVersion version);
 

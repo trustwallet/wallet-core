@@ -12,6 +12,7 @@
 #include "Protobuf/cosmwasm_wasm_v1_tx.pb.h"
 #include "Protobuf/distribution_tx.pb.h"
 #include "Protobuf/staking_tx.pb.h"
+#include "Protobuf/authz_tx.pb.h"
 #include "Protobuf/tx.pb.h"
 #include "Protobuf/crypto_secp256k1_keys.pb.h"
 #include "Protobuf/ibc_applications_transfer_tx.pb.h"
@@ -207,7 +208,7 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
             }
 
         case Proto::Message::kWasmExecuteContractGeneric: {
-            assert(msg.has_wasm_execute_contract_generic());
+                assert(msg.has_wasm_execute_contract_generic());
                 const auto& wasmExecute = msg.wasm_execute_contract_generic();
                 auto msgExecute = cosmwasm::wasm::v1::MsgExecuteContract();
                 msgExecute.set_sender(wasmExecute.sender_address());
@@ -219,6 +220,39 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 }
                 any.PackFrom(msgExecute, ProtobufAnyNamespacePrefix);
                 return any;
+        }
+
+        case Proto::Message::kAuthGrant: {
+                assert(msg.has_auth_grant());
+                const auto& authGrant = msg.auth_grant();
+                auto msgAuthGrant = cosmos::authz::v1beta1::MsgGrant();
+                msgAuthGrant.set_grantee(authGrant.grantee());
+                msgAuthGrant.set_granter(authGrant.granter());
+                auto* mtAuth = msgAuthGrant.mutable_grant()->mutable_authorization();
+                // There is multiple grant possibilities, but we add support staking/compounding only for now.
+                switch (authGrant.grant_type_case()) {
+                case Proto::Message_AuthGrant::kGrantStake:
+                    mtAuth->PackFrom(authGrant.grant_stake(), ProtobufAnyNamespacePrefix);
+                    mtAuth->set_type_url("/cosmos.staking.v1beta1.StakeAuthorization");
+                    break;
+                case Proto::Message_AuthGrant::GRANT_TYPE_NOT_SET:
+                    break;
+                }
+                auto* mtExp = msgAuthGrant.mutable_grant()->mutable_expiration();
+                mtExp->set_seconds(authGrant.expiration());
+                any.PackFrom(msgAuthGrant, ProtobufAnyNamespacePrefix);
+                return any;
+        }
+
+        case Proto::Message::kAuthRevoke: {
+            assert(msg.has_auth_revoke());
+            const auto& authRevoke = msg.auth_revoke();
+            auto msgAuthRevoke = cosmos::authz::v1beta1::MsgRevoke();
+            msgAuthRevoke.set_granter(authRevoke.granter());
+            msgAuthRevoke.set_grantee(authRevoke.grantee());
+            msgAuthRevoke.set_msg_type_url(authRevoke.msg_type_url());
+            any.PackFrom(msgAuthRevoke, ProtobufAnyNamespacePrefix);
+            return any;
         }
 
         default:
@@ -331,7 +365,7 @@ static string broadcastMode(Proto::BroadcastMode mode) {
 }
 
 std::string buildProtoTxJson(const Proto::SigningInput& input, const std::string& serializedTx) {
-    const string serializedBase64 = Base64::encode(TW::data(serializedTx)); 
+    const string serializedBase64 = Base64::encode(TW::data(serializedTx));
     const json jsonSerialized = {
         {"tx_bytes", serializedBase64},
         {"mode", broadcastMode(input.mode())}

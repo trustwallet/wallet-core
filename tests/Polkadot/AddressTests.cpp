@@ -11,8 +11,7 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-using namespace TW;
-using namespace TW::Polkadot;
+namespace TW::Polkadot::tests {
 
 TEST(PolkadotAddress, Validation) {
     // Substrate ed25519
@@ -49,3 +48,5 @@ TEST(PolkadotAddress, FromString) {
     auto address = Address("15KRsCq9LLNmCxNFhGk55s5bEyazKefunDxUH24GFZwsTxyu");
     ASSERT_EQ(address.string(), "15KRsCq9LLNmCxNFhGk55s5bEyazKefunDxUH24GFZwsTxyu");
 }
+
+} // namespace TW::Polkadot::tests

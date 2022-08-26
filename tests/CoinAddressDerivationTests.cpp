@@ -242,7 +242,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeZilliqa:
             EXPECT_EQ(address, "zil1j2cvtd7j9n7fnxfv2r3neucjw8tp4xz9sp07v4");
             break;
-
+        case TWCoinTypeNervos:
+            EXPECT_EQ(address, "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqtsqfsf77ae0wn5a7795hs2ydv83g6hl4qleywxw");
+            break;
             // no default branch here, intentionally, to better notice any missing coins
         }
     }

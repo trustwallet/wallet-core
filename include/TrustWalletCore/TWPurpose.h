@@ -12,9 +12,9 @@ TW_EXTERN_C_BEGIN
 
 /// HD wallet purpose
 ///
-/// See https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
-/// See https://github.com/bitcoin/bips/blob/master/bip-0049.mediawiki
-/// See https://github.com/bitcoin/bips/blob/master/bip-0084.mediawiki
+/// \see https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
+/// \see https://github.com/bitcoin/bips/blob/master/bip-0049.mediawiki
+/// \see https://github.com/bitcoin/bips/blob/master/bip-0084.mediawiki
 TW_EXPORT_ENUM(uint32_t)
 enum TWPurpose {
     TWPurposeBIP44 = 44,

@@ -202,7 +202,62 @@ message Message {
         // The prepared serialized TxBody
         bytes body_bytes = 1;
         // The prepared serialized AuthInfo
-        bytes auth_info_bytes = 2; 
+        bytes auth_info_bytes = 2;
+    }
+
+    // StakeAuthorization defines authorization for delegate/undelegate/redelegate.
+    //
+    // Since: cosmos-sdk 0.43
+    message StakeAuthorization {
+        // max_tokens specifies the maximum amount of tokens can be delegate to a validator. If it is
+        // empty, there is no spend limit and any amount of coins can be delegated.
+        Amount max_tokens = 1;
+        // validators is the oneof that represents either allow_list or deny_list
+        oneof validators {
+            // allow_list specifies list of validator addresses to whom grantee can delegate tokens on behalf of granter's
+            // account.
+            Validators allow_list = 2;
+            // deny_list specifies list of validator addresses to whom grantee can not delegate tokens.
+            Validators deny_list = 3;
+        }
+        // Validators defines list of validator addresses.
+        message Validators {
+            repeated string address = 1;
+        }
+        // authorization_type defines one of AuthorizationType.
+        AuthorizationType authorization_type = 4;
+    }
+
+    // AuthorizationType defines the type of staking module authorization type
+    //
+    // Since: cosmos-sdk 0.43
+    enum AuthorizationType {
+        // AUTHORIZATION_TYPE_UNSPECIFIED specifies an unknown authorization type
+        UNSPECIFIED = 0;
+        // AUTHORIZATION_TYPE_DELEGATE defines an authorization type for Msg/Delegate
+        DELEGATE = 1;
+        // AUTHORIZATION_TYPE_UNDELEGATE defines an authorization type for Msg/Undelegate
+        UNDELEGATE = 2;
+        // AUTHORIZATION_TYPE_REDELEGATE defines an authorization type for Msg/BeginRedelegate
+        REDELEGATE = 3;
+    }
+
+
+    // cosmos-sdk/MsgGrant
+    message AuthGrant {
+        string granter = 1;
+        string grantee = 2;
+        oneof grant_type {
+            StakeAuthorization grant_stake = 3;
+        }
+        int64 expiration = 4;
+    }
+
+    // cosmos-sdk/MsgRevoke
+    message AuthRevoke {
+        string granter      = 1;
+        string grantee      = 2;
+        string msg_type_url = 3;
     }
 
     oneof message_oneof {
@@ -221,6 +276,8 @@ message Message {
         WasmExecuteContractSend wasm_execute_contract_send_message = 13;
         WasmExecuteContractGeneric wasm_execute_contract_generic = 14;
         SignDirect sign_direct_message = 15;
+        AuthGrant  auth_grant = 16;
+        AuthRevoke auth_revoke = 17;
     }
 }
 

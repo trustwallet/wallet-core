@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -15,19 +15,19 @@
 #include <string>
 #include <vector>
 
-
 namespace TW::Ontology {
 
 class Signer {
-  public:
+public:
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
-  private:
+
+private:
     Data publicKey;
-    TW::PrivateKey privateKey;
+    TW::PrivateKey privKey;
     std::string address;
 
-  public:
+public:
     explicit Signer(TW::PrivateKey priKey);
 
     PrivateKey getPrivateKey() const;

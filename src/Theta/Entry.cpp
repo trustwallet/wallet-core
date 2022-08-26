@@ -9,8 +9,6 @@
 #include "Ethereum/Address.h"
 #include "Signer.h"
 
-using namespace std;
-
 namespace TW::Theta {
 
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {

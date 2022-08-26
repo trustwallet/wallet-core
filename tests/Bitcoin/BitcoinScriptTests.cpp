@@ -12,7 +12,7 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Bitcoin;
+namespace TW::Bitcoin::tests {
 
 const Script PayToScriptHash(parse_hex("a914" "4733f37cf4db86fbc2efed2500b4f4e49f312023" "87"));
 const Script PayToWitnessScriptHash(parse_hex("0020" "ff25429251b5a84f452230a3c75fd886b7fc5a7865ce4a7bb7a9d7c5be6da3db"));
@@ -366,3 +366,4 @@ TEST(BitcoinTransactionSigner, PushAllEmpty) {
         EXPECT_EQ(hex(res), hex(expected));
     }
 }
+} // namespace TW::Bitcoin::tests

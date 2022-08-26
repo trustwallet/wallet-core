@@ -44,7 +44,7 @@ jobs:
       run: |
         ninja -Cbuild tests TrezorCryptoTests
         build/trezor-crypto/crypto/tests/TrezorCryptoTests
-        build/tests/tests tests --gtest_output=xml
+        build/tests/tests --gtest_output=xml
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++

@@ -13,28 +13,28 @@
 namespace TW::FIO {
 
 /// Payload message encryption/decryption.
-/// See also https://github.com/fioprotocol/fiojs/blob/master/src/encryption-check.ts
+/// \see https://github.com/fioprotocol/fiojs/blob/master/src/encryption-check.ts
 class Encryption {
 public:
     /**
      * Provides AES-256-CBC encryption and message authentication.
      * The CBC cipher is used for good platform native compatability.
-     * @see https://security.stackexchange.com/a/63134
-     * @see https://security.stackexchange.com/a/20493
-     * @arg secret - Shared secret (64-bytes).
-     * @arg message - Plaintext message (arbitrary length).
-     * @arg iv - An unpredictable strong random value (16 bytes) is required
+     * \see https://security.stackexchange.com/a/63134
+     * \see https://security.stackexchange.com/a/20493
+     * \param secret - Shared secret (64-bytes).
+     * \param message - Plaintext message (arbitrary length).
+     * \param iv - An unpredictable strong random value (16 bytes) is required
      *        and supplied by default. Unit tests may provide a static value to achieve predictable results.
-     * @throws {Error} invalid IV size
+     * \throws {Error} invalid IV size
      */
     static Data checkEncrypt(const Data& secret, const Data& message, Data& iv);
 
     /**
      * Provides AES-256-CBC message authentication then decryption.
-     * @arg secret - Shared secret (64-bytes).
-     * @arg message - Ciphertext (from checkEncrypt())
-     * @throws {Error} Message too short
-     * @throws {Error} Decrypt failed, HMAC mismatch
+     * \param secret - Shared secret (64-bytes).
+     * \param message - Ciphertext (from checkEncrypt())
+     * \throws {Error} Message too short
+     * \throws {Error} Decrypt failed, HMAC mismatch
      */
     static Data checkDecrypt(const Data& secret, const Data& message);
 
