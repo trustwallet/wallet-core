@@ -55,20 +55,26 @@ message SigningInput {
     bytes  amount = 4;
     uint32 chain_id = 5;
     uint32 idassets_id = 6;
-    //The last 8 bytes of latest transaction hash, NULS chain nonce
+    //The last 8 bytes of latest transaction hash, nonce of the asset on chain.
     bytes nonce = 7;
     string remark = 8;
-    // Account balance (NULS)
-    bytes  balance = 9;
+    // Account balance of the asset to be transferred.
+    bytes balance = 9;
     // time, accurate to the second
     uint32 timestamp = 10;
-    // asset chain nonce, optional, it is for token transfer
-    bytes asset_nonce = 11;
+    // external address paying fee, required for token transfer, optional for NULS transfer, depending on if an external fee payer is provided. If provided, it will be the fee paying address.
+    string fee_payer = 11;
+    // fee payer address nonce, required for token transfer, optional for NULS transfer, depending on if fee_payer is provided.
+    bytes fee_payer_nonce = 12;
+    // fee payer address private key, required for token transfer, optional for NULS transfer, depending on if fee_payer is provided.
+    bytes fee_payer_private_key = 13;
+    // fee payer NULS balance, it is required for token transfer. optional for NULS transfer, depending on if fee_payer is provided.
+    bytes fee_payer_balance = 14;
 }
 
 message SigningOutput {
     bytes encoded = 1;
-    
+
     // error code, 0 is ok, other codes will be treated as errors
     Common.Proto.SigningError error = 2;
 

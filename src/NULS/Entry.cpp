@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -48,15 +48,27 @@ void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, c
                     const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
     dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
         txInputData, [&](const auto& input, auto& output) {
-            if (signatures.size() != 1 || publicKeys.size() != 1) {
-                output.set_error(Common::Proto::Error_no_support_n2n);
-                output.set_error_message(Common::Proto::SigningError_Name(Common::Proto::Error_no_support_n2n));
+            if (signatures.size() != publicKeys.size()) {
+                output.set_error(Common::Proto::Error_signatures_count);
+                output.set_error_message(
+                    Common::Proto::SigningError_Name(Common::Proto::Error_signatures_count));
                 return;
             }
-            auto publicKey = publicKeys[0];
-            auto signature = signatures[0];
             const auto signer = Signer(input);
-            auto signedData = signer.buildSignedTx(publicKey.bytes, signature);
+            // verify signatures
+            auto unsignedTxBytes = signer.buildUnsignedTx();
+            Data unsignedTxBytesHash = Hash::sha256(Hash::sha256((unsignedTxBytes)));
+            for (std::vector<Data>::size_type i = 0; i < signatures.size(); i++) {
+                if (!publicKeys[i].verify(signatures[i], unsignedTxBytesHash)) {
+                    throw std::invalid_argument("invalid signature at " + std::to_string(i));
+                }
+            }
+            std::vector<Data> publicKeysData;
+            for (std::vector<PublicKey>::size_type i = 0; i < publicKeys.size(); i++) {
+                publicKeysData.push_back(publicKeys[i].bytes);
+            }
+
+            auto signedData = signer.buildSignedTx(publicKeysData, signatures, unsignedTxBytes);
             output.set_encoded(signedData.data(), signedData.size());
         });
 }
