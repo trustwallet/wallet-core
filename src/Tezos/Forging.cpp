@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Forging.h"
 #include "Address.h"
 #include "BinaryCoding.h"
 #include "../Base58.h"
@@ -14,13 +15,58 @@
 #include <sstream>
 
 using namespace TW;
-using namespace TW::Tezos;
-using namespace TW::Tezos::Proto;
+
+namespace {
+
+constexpr const char* gTezosContractAddressPrefix{"KT1"};
+
+void encodePrefix(const std::string& address, Data& forged) {
+    const auto decoded = Base58::bitcoin.decodeCheck(address);
+    constexpr auto prefixSize{3};
+    forged.insert(forged.end(), decoded.begin() + prefixSize, decoded.end());
+}
+
+} // namespace
+
+namespace TW::Tezos {
 
 // Forge the given boolean into a hex encoded string.
 Data forgeBool(bool input) {
     unsigned char result = input ? 0xff : 0x00;
     return Data{result};
+}
+
+Data forgeInt32(int value, int len) {
+    Data out(len);
+    for (int i = len - 1; i >= 0; i--, value >>= 8) {
+        out[i] = (value & 0xFF);
+    }
+    return out;
+}
+
+Data forgeString(const std::string& value, std::size_t len) {
+    auto bytes = data(value);
+    auto result = forgeInt32(static_cast<int>(bytes.size()), static_cast<int>(len));
+    append(result, bytes);
+    return result;
+}
+
+Data forgeEntrypoint(const std::string& value) {
+    if (value == "default")
+        return Data{0x00};
+    else if (value == "root")
+        return Data{0x01};
+    else if (value == "do")
+        return Data{0x02};
+    else if (value == "set_delegate")
+        return Data{0x03};
+    else if (value == "remove_delegate")
+        return Data{0x04};
+    else {
+        Data forged{0xff};
+        append(forged, forgeString(value, 1));
+        return forged;
+    }
 }
 
 // Forge the given public key hash into a hex encoded string.
@@ -41,10 +87,29 @@ Data forgePublicKeyHash(const std::string& publicKeyHash) {
     default:
         throw std::invalid_argument("Invalid Prefix");
     }
-    const auto decoded = Base58::bitcoin.decodeCheck(publicKeyHash);
-    const auto prefixSize = 3;
-    forged.insert(forged.end(), decoded.begin() + prefixSize, decoded.end());
+    encodePrefix(publicKeyHash, forged);
     return forged;
+}
+
+Data forgeAddress(const std::string& address) {
+    if (address.size() < 3) {
+        throw std::invalid_argument("Invalid address size");
+    }
+    auto prefix = address.substr(0, 3);
+
+    if (prefix == "tz1" || prefix == "tz2" || prefix == "tz3") {
+        Data forged{0x00};
+        append(forged, forgePublicKeyHash(address));
+        return forged;
+    }
+
+    if (prefix == gTezosContractAddressPrefix) {
+        Data forged{0x01};
+        encodePrefix(address, forged);
+        forged.emplace_back(0x00);
+        return forged;
+    }
+    throw std::invalid_argument("Invalid Prefix");
 }
 
 // Forge the given public key into a hex encoded string.
@@ -71,7 +136,8 @@ Data forgeZarith(uint64_t input) {
 }
 
 // Forge the given operation.
-Data forgeOperation(const Operation& operation) {
+Data forgeOperation(const Proto::Operation& operation) {
+    using namespace Proto;
     auto forged = Data();
     auto source = Address(operation.source());
     auto forgedSource = source.forge();
@@ -118,18 +184,110 @@ Data forgeOperation(const Operation& operation) {
         auto forgedAmount = forgeZarith(operation.transaction_operation_data().amount());
         auto forgedDestination = Address(operation.transaction_operation_data().destination()).forge();
 
-        forged.push_back(Operation_OperationKind_TRANSACTION);
+        forged.emplace_back(Operation_OperationKind_TRANSACTION);
         append(forged, forgedSource);
         append(forged, forgedFee);
         append(forged, forgedCounter);
         append(forged, forgedGasLimit);
         append(forged, forgedStorageLimit);
         append(forged, forgedAmount);
-        append(forged, forgeBool(false));
-        append(forged, forgedDestination);
-        append(forged, forgeBool(false));
+        if (!operation.transaction_operation_data().has_parameters()) {
+            append(forged, forgeBool(false));
+            append(forged, forgedDestination);
+            append(forged, forgeBool(false));
+        } else if (operation.transaction_operation_data().has_parameters()) {
+            append(forged, forgeAddress(operation.transaction_operation_data().destination()));
+            append(forged, forgeBool(true));
+            auto& parameters = operation.transaction_operation_data().parameters();
+            switch (parameters.parameters_case()) {
+            case OperationParameters::kFa12Parameters:
+                append(forged, forgeEntrypoint(parameters.fa12_parameters().entrypoint()));
+                append(forged, forgeArray(forgeMichelson(FA12ParameterToMichelson(parameters.fa12_parameters()))));
+                break;
+            case OperationParameters::kFa2Parameters:
+                append(forged, forgeEntrypoint(parameters.fa2_parameters().entrypoint()));
+                append(forged, forgeArray(forgeMichelson(FA2ParameterToMichelson(parameters.fa2_parameters()))));
+                break;
+            case OperationParameters::PARAMETERS_NOT_SET:
+                break;
+            }
+        }
         return forged;
     }
 
     throw std::invalid_argument("Invalid operation kind");
 }
+
+Data forgePrim(const PrimValue& value) {
+    Data forged;
+    if (value.prim == "Pair") {
+        // https://tezos.gitlab.io/developer/encodings.html?highlight=pair#pairs
+        forged.reserve(2);
+        constexpr uint8_t nbArgs = 2;
+        // https://github.com/ecadlabs/taquito/blob/fd84d627171d24ce7ba81dd7b18763a95f16a99c/packages/taquito-local-forging/src/michelson/codec.ts#L195
+        // https://github.com/baking-bad/netezos/blob/0bfd6db4e85ab1c99fb55503e476fe67cebd2dc5/Netezos/Forging/Local/LocalForge.Forgers.cs#L199
+        const uint8_t preamble = static_cast<uint8_t>(std::min(2 * nbArgs + static_cast<uint8_t>(value.anots.size()) + 0x03, 9));
+        forged.emplace_back(preamble);
+        forged.emplace_back(PrimType::Pair);
+        Data subForged;
+        for (auto&& cur : value.args) {
+            append(subForged, forgeMichelson(cur.value));
+        }
+        append(forged, subForged);
+    }
+    return forged;
+}
+
+Data forgeMichelson(const MichelsonValue::MichelsonVariant& value) {
+    auto visit_functor = [](const MichelsonValue::MichelsonVariant& value) -> Data {
+        if (std::holds_alternative<PrimValue>(value)) {
+            return forgePrim(std::get<PrimValue>(value));
+        } else if (std::holds_alternative<StringValue>(value)) {
+            Data forged{1};
+            append(forged, forgeString(std::get<StringValue>(value).string));
+            return forged;
+        } else if (std::holds_alternative<IntValue>(value)) {
+            Data forged{0};
+            auto res = int256_t(std::get<IntValue>(value)._int);
+            append(forged, forgeMichelInt(res));
+            return forged;
+        } else if (std::holds_alternative<BytesValue>(value)) {
+            return {};
+        } else if (std::holds_alternative<MichelsonValue::MichelsonArray>(value)) {
+            // array
+            Data forged{2};
+            Data subForged;
+            auto array = std::get<MichelsonValue::MichelsonArray>(value);
+            for (auto&& cur : array) {
+                std::visit([&subForged](auto&& arg) { append(subForged, forgeMichelson(arg)); }, cur);
+            }
+            append(forged, forgeArray(subForged));
+            return forged;
+        } else {
+            throw std::invalid_argument("Invalid variant");
+        }
+    };
+
+    return std::visit(visit_functor, value);
+}
+
+Data forgeArray(const Data& data) {
+    auto forged = forgeInt32(static_cast<int>(data.size()));
+    append(forged, data);
+    return forged;
+}
+
+Data forgeMichelInt(const TW::int256_t& value) {
+    Data forged;
+    auto abs = boost::multiprecision::abs(value);
+    forged.emplace_back(static_cast<uint8_t>(value.sign() < 0 ? (abs & 0x3f - 0x40) : (abs & 0x3f)));
+    abs >>= 6;
+    while (abs > 0) {
+        forged[forged.size() - 1] |= 0x80;
+        forged.emplace_back(static_cast<uint8_t>(abs & 0x7F));
+        abs >>= 7;
+    }
+    return forged;
+}
+
+} // namespace TW::Tezos

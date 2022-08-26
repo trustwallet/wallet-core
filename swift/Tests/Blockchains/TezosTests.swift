@@ -26,6 +26,93 @@ class TezosTests: XCTestCase {
 
         XCTAssertEqual(address.description, "tz1cG2jx3W4bZFeVGBjsTxUAG8tdpTXtE8PT")
     }
+    
+    public func testSigningFA12() {
+        let privateKeyData = Data(hexString: "363265a0b3f06661001cab8b4f3ca8fd97ae70608184979cf7300836f57ec2d6")!
+        
+        let branch = "BL8euoCWqNCny9AR3AKjnpi38haYMxjei1ZqNHuXMn19JSQnoWp"
+        var operationList = TezosOperationList()
+        operationList.branch = branch
+        
+        let transactionOperationData = TezosTransactionOperationData.with {
+            $0.amount = 0
+            $0.destination = "KT1EwXFWoG9bYebmF4pYw72aGjwEnBWefgW5"
+            $0.parameters.fa12Parameters.entrypoint = "transfer";
+            $0.parameters.fa12Parameters.from = "tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP";
+            $0.parameters.fa12Parameters.to   = "tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP";
+            $0.parameters.fa12Parameters.value = "123";
+        }
+        
+        let transactionOperation = TezosOperation.with {
+            $0.source = "tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP"
+            $0.fee = 100000
+            $0.counter = 2993172
+            $0.gasLimit = 100000
+            $0.storageLimit = 0
+            $0.kind = .transaction
+            $0.transactionOperationData = transactionOperationData
+        }
+        
+        operationList.operations = [ transactionOperation ]
+
+        let input = TezosSigningInput.with {
+            $0.operationList = operationList
+            $0.privateKey = privateKeyData
+        }
+
+        let output: TezosSigningOutput = AnySigner.sign(input: input, coin: .tezos)
+        let expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016c00fe2ce0cccc0214af521ad60c140c5589b4039247a08d0694d8b601a08d0600000145bd8a65cc48159d8ea60a55df735b7c5ad45f0e00ffff087472616e736665720000005907070100000024747a31696f7a36326b447736476d35484170655174633150476d4e32775042744a4b555007070100000024747a31696f7a36326b447736476d35484170655174633150476d4e32775042744a4b555000bb012914d768155fba2df319a81136e8e3e573b9cadb1676834490c90212615d271da029b6b0531e290e9063bcdb40bea43627af048b18e036f02be2b6b22fc8b307"
+
+        XCTAssertEqual(output.encoded.hexString, expected)
+    }
+    
+    public func testSigningFA2() {
+        let privateKeyData = Data(hexString: "363265a0b3f06661001cab8b4f3ca8fd97ae70608184979cf7300836f57ec2d6")!
+        
+        let branch = "BKvEAX9HXfJZWYfTQbR1C7B3ADoKY6a1aKVRF7qQqvc9hS8Rr3m"
+        var operationList = TezosOperationList()
+        operationList.branch = branch
+        
+        let transferInfos = TezosTxs.with{
+            $0.to = "tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP"
+            $0.tokenID = "0"
+            $0.amount = "10"
+        }
+        
+        let transactionOperationData = TezosTransactionOperationData.with {
+            $0.amount = 0
+            $0.destination = "KT1DYk1XDzHredJq1EyNkDindiWDqZyekXGj"
+            $0.parameters.fa2Parameters.entrypoint = "transfer";
+            $0.parameters.fa2Parameters.txsObject = [TezosTxObject.with{
+                    $0.from = "tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP"
+                    $0.txs = [transferInfos]
+                }]
+        }
+        
+        
+        
+        let transactionOperation = TezosOperation.with {
+            $0.source = "tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP"
+            $0.fee = 100000
+            $0.counter = 2993173
+            $0.gasLimit = 100000
+            $0.storageLimit = 0
+            $0.kind = .transaction
+            $0.transactionOperationData = transactionOperationData
+        }
+        
+        operationList.operations = [ transactionOperation ]
+
+        let input = TezosSigningInput.with {
+            $0.operationList = operationList
+            $0.privateKey = privateKeyData
+        }
+
+        let output: TezosSigningOutput = AnySigner.sign(input: input, coin: .tezos)
+        let expected = "1b1f9345dc9f77bd24b09034d1d2f9a28f02ac837f49db54b8d68341f53dc4b76c00fe2ce0cccc0214af521ad60c140c5589b4039247a08d0695d8b601a08d0600000136767f88850bae28bfb9f46b73c5e87ede4de12700ffff087472616e7366657200000066020000006107070100000024747a31696f7a36326b447736476d35484170655174633150476d4e32775042744a4b5550020000003107070100000024747a31696f7a36326b447736476d35484170655174633150476d4e32775042744a4b555007070000000a552d24710d6c59383286700c6c2917b25a6c1fa8b587e593c289dd47704278796792f1e522c1623845ec991e292b0935445e6994850bd03f035a006c5ed93806"
+
+        XCTAssertEqual(output.encoded.hexString, expected)
+    }
 
     public func testSigning() {
         let privateKeyData = Data(hexString: "c6377a4cc490dc913fc3f0d9cf67d293a32df4547c46cb7e9e33c3b7b97c64d8")!
