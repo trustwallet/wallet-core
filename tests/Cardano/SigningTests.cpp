@@ -867,6 +867,53 @@ TEST(CardanoSigning, RegisterStakingKey) {
     }
 }
 
+TEST(CardanoSigning, DeregisterStakingKey) {
+    const auto privateKeyData = parse_hex(privateKeyTest1);
+    const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
+    const auto ownAddress = AddressV3(publicKey).string();
+    EXPECT_EQ(ownAddress, ownAddress1);
+    const auto stakingKeyHash = subData(AddressV3(publicKey).bytes, 28, 28);
+    EXPECT_EQ(hex(stakingKeyHash), stakingKey1); // TODO obtain from API
+    const auto poolId = parse_hex(poolIdNufi);
+
+    Proto::SigningInput input;
+    auto* utxo1 = input.add_utxos();
+    const auto txHash1 = parse_hex("cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca");
+    utxo1->mutable_out_point()->set_tx_hash(txHash1.data(), txHash1.size());
+    utxo1->mutable_out_point()->set_output_index(1);
+    utxo1->set_address(ownAddress);
+    utxo1->set_amount(10000000ul);
+
+    input.add_private_key(privateKeyData.data(), privateKeyData.size());
+
+    input.mutable_transfer_message()->set_to_address(ownAddress);
+    input.mutable_transfer_message()->set_change_address(ownAddress);
+    input.mutable_transfer_message()->set_amount(5000000ul);
+    input.mutable_transfer_message()->set_use_max_amount(true);
+    input.set_ttl(69986091ul);
+
+    // Deregister staking key, get back 2 ADA deposit
+    input.mutable_deregister_staking_key()->set_staking_key(stakingKeyHash.data(), stakingKeyHash.size());
+    input.mutable_deregister_staking_key()->set_undeposit_amount(2000000ul);
+
+    auto signer = Signer(input);
+    const auto output = signer.sign();
+
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+
+    const auto encoded = data(output.encoded());
+    EXPECT_EQ(hex(encoded), "83a50081825820cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca01018182583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a00b47bfa021a00029f06031a042be72b048182018200581cdf22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09ba100828258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df290584056619a7d6192b6f68c31a43e927c893161fd994d5c1bcc16f3710cf5e5e652e01f118d55f0110e9de34edc050d509748bea637db5c34f4fe342ae262ccb5520d825820e554163344aafc2bbefe778a6953ddce0583c2f8e0a0686929c020ca33e069325840d23680fdd8aa63e10efccc550eb726743b653008952f9d731d076d1df8106b0401823ebb195127b211389f1bc2c3f6ededbcec04bc8f0de93607a2409421e006f6");
+    const auto txid = data(output.tx_id());
+    EXPECT_EQ(hex(txid), "1caae2456e5471cc77e73410da475fb0a23874c18c1ea55f9267c59767caef0a");
+
+    {
+        const auto decode = Cbor::Decode(encoded);
+        ASSERT_TRUE(decode.isValid());
+        EXPECT_EQ(decode.dumpToString(), "[{0: [[h\"cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca\", 1]], 1: [[h\"01df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\", 11828218]], 2: 171782, 3: 69986091, 4: [[1, [0, h\"df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\"]]]}, {0: [[h\"6d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df290\", h\"56619a7d6192b6f68c31a43e927c893161fd994d5c1bcc16f3710cf5e5e652e01f118d55f0110e9de34edc050d509748bea637db5c34f4fe342ae262ccb5520d\"], [h\"e554163344aafc2bbefe778a6953ddce0583c2f8e0a0686929c020ca33e06932\", h\"d23680fdd8aa63e10efccc550eb726743b653008952f9d731d076d1df8106b0401823ebb195127b211389f1bc2c3f6ededbcec04bc8f0de93607a2409421e006\"]]}, null]");
+        EXPECT_EQ(decode.getArrayElements().size(), 3ul);
+    }
+}
+
 TEST(CardanoSigning, Delegate) {
     const auto privateKeyData = parse_hex(privateKeyTest1);
     const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
@@ -903,14 +950,14 @@ TEST(CardanoSigning, Delegate) {
     EXPECT_EQ(output.error(), Common::Proto::OK);
 
     const auto encoded = data(output.encoded());
-    EXPECT_EQ(hex(encoded), "83a50081825820cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca01018182583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a00777f31021a000292cf031a042be72b048183028200581cdf22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b581c7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058404f366f512418a2cc47c5551c4ac6d2f5109c40c9542add7fa132ed1f89292542adcfe679336069c0979ac749c3c13e06e7f42a84e30e2975f93ed9ffb250ce08f6");
+    EXPECT_EQ(hex(encoded), "83a50081825820cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca01018182583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a00776dd1021a0002a42f031a042be72b048183028200581cdf22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b581c7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6a100828258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df2905840162161de7f4b079eaffb01277987cdcccb02a000afc4f46708183518a3c172328174ab6ffc9092a379e4744901188fb56b94769dbc724fd0e9bcda636e2d9107825820e554163344aafc2bbefe778a6953ddce0583c2f8e0a0686929c020ca33e0693258406a27ef8688a24c707854787d51805b8aeaa280ce30d0f654f441a9360f53db35c4947164210d03cea30d4059893b8155280faf42d5ba8db9a79d1c35b44e540cf6");
     const auto txid = data(output.tx_id());
-    EXPECT_EQ(hex(txid), "f8f97336c6c87edb169baaebb54eceadfdecc85e729bb15cca8111338866d787");
+    EXPECT_EQ(hex(txid), "51386e680202a7b0ae822bb3c1ee000d448d88e5b3685890fecabeccbbedfd94");
 
     {
         const auto decode = Cbor::Decode(encoded);
         ASSERT_TRUE(decode.isValid());
-        EXPECT_EQ(decode.dumpToString(), "[{0: [[h\"cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca\", 1]], 1: [[h\"01df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\", 7831345]], 2: 168655, 3: 69986091, 4: [[2, [0, h\"df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\"], h\"7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6\"]]}, {0: [[h\"6d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df290\", h\"4f366f512418a2cc47c5551c4ac6d2f5109c40c9542add7fa132ed1f89292542adcfe679336069c0979ac749c3c13e06e7f42a84e30e2975f93ed9ffb250ce08\"]]}, null]");
+        EXPECT_EQ(decode.dumpToString(), "[{0: [[h\"cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca\", 1]], 1: [[h\"01df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\", 7826897]], 2: 173103, 3: 69986091, 4: [[2, [0, h\"df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\"], h\"7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6\"]]}, {0: [[h\"6d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df290\", h\"162161de7f4b079eaffb01277987cdcccb02a000afc4f46708183518a3c172328174ab6ffc9092a379e4744901188fb56b94769dbc724fd0e9bcda636e2d9107\"], [h\"e554163344aafc2bbefe778a6953ddce0583c2f8e0a0686929c020ca33e06932\", h\"6a27ef8688a24c707854787d51805b8aeaa280ce30d0f654f441a9360f53db35c4947164210d03cea30d4059893b8155280faf42d5ba8db9a79d1c35b44e540c\"]]}, null]");
         EXPECT_EQ(decode.getArrayElements().size(), 3ul);
     }
 }

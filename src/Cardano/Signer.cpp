@@ -66,6 +66,10 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
         const auto key = data(input.register_staking_key().staking_key());
         tx.certificates.push_back(Certificate{Certificate::SkatingKeyRegistration, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data()});
     }
+    if (input.has_deregister_staking_key()) {
+        const auto key = data(input.deregister_staking_key().staking_key());
+        tx.certificates.push_back(Certificate{Certificate::StakingKeyDeregistration, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data()});
+    }
     if (input.has_delegate()) {
         const auto key = data(input.delegate().staking_key());
         const auto poolId = data(input.delegate().pool_id());
@@ -96,26 +100,37 @@ Common::Proto::SigningError Signer::assembleSignatures(vector<pair<Data, Data>>&
         privateKeys[hex(stakingKeyHash)] = stakingPrivKeyData; //privateKeyData;
     }
 
-    // collect every unique input UTXO address
+    // collect every unique input UTXO address, preserving order
     vector<string> addresses;
     for (auto& u: plan.utxos) {
         if (!AddressV3::isValid(u.address)) {
             return Common::Proto::Error_invalid_address;
         }
-        if (find(addresses.begin(), addresses.end(), u.address) == addresses.end()) {
-            addresses.push_back(u.address);
-        }
+        addresses.push_back(u.address);
     }
     // Staking key is also an address that needs signature
     if (input.has_register_staking_key()) {
         const auto stakingKey = hex(data(input.register_staking_key().staking_key()));
-        if (find(addresses.begin(), addresses.end(), stakingKey) == addresses.end()) {
-            addresses.push_back(stakingKey);
+        addresses.push_back(stakingKey);
+    }
+    if (input.has_deregister_staking_key()) {
+        const auto stakingKey = hex(data(input.deregister_staking_key().staking_key()));
+        addresses.push_back(stakingKey);
+    }
+    if (input.has_delegate()) {
+        const auto stakingKey = hex(data(input.delegate().staking_key()));
+        addresses.push_back(stakingKey);
+    }
+    // discard duplicates (std::set, std::copy_if, std::unique does not work well here)
+    vector<string> addressesUnique;
+    for (auto& a: addresses) {
+        if (find(addressesUnique.begin(), addressesUnique.end(), a) == addressesUnique.end()) {
+            addressesUnique.push_back(a);
         }
     }
 
     // create signature for each address
-    for (auto& a: addresses) {
+    for (auto& a: addressesUnique) {
         const auto privKeyFind = privateKeys.find(a);
         Data privateKeyData;
         if (privKeyFind != privateKeys.end()) {
@@ -315,6 +330,14 @@ uint64_t sumDeposits(const Proto::SigningInput& input) {
     return sum;
 }
 
+uint64_t sumUndeposits(const Proto::SigningInput& input) {
+    uint64_t sum = 0;
+    if (input.has_deregister_staking_key()) {
+        sum += input.deregister_staking_key().undeposit_amount();
+    }
+    return sum;
+}
+
 // Estimates size of transaction in bytes.
 uint64_t estimateTxSize(const Proto::SigningInput& input, Amount amount, const TokenBundle& requestedTokens, const vector<TxInput>& selectedInputs) {
     auto inputs = vector<TxInput>();
@@ -322,7 +345,7 @@ uint64_t estimateTxSize(const Proto::SigningInput& input, Amount amount, const T
         inputs.emplace_back(TxInput::fromProto(input.utxos(i)));
     }
     const auto deposits = sumDeposits(input);
-    const uint64_t undeposits = 0; // TODO sumUndeposits(input);
+    const uint64_t undeposits = sumUndeposits(input);
     const auto _simplePlan = simplePlan(amount, requestedTokens, selectedInputs, input.transfer_message().use_max_amount(), deposits, undeposits);
 
     Data encoded;
@@ -371,7 +394,7 @@ TransactionPlan Signer::doPlan() const {
     assert(inputSum > 0);
     // adjust inputSum with deposited/undeposited amount
     plan.deposit = sumDeposits(input);
-    plan.undeposit = 0; // TODO sumUndeposits(input);
+    plan.undeposit = sumUndeposits(input);
     const auto inputSumAfterDeposit = inputSum + plan.undeposit - plan.deposit;
 
     // Amounts requested

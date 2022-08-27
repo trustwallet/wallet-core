@@ -73,6 +73,13 @@ message RegisterStakingKey {
     uint64 deposit_amount = 2;
 }
 
+message DeregisterStakingKey {
+    bytes staking_key = 1;
+
+    // Amount undeposited in this TX. TODO explain
+    uint64 undeposit_amount = 2;
+}
+
 message Delegate {
     bytes staking_key = 1;
 
@@ -130,7 +137,10 @@ message SigningInput {
     RegisterStakingKey register_staking_key = 6;
 
     // Optional
-    Delegate delegate = 7;
+    DeregisterStakingKey deregister_staking_key = 7;
+
+    // Optional
+    Delegate delegate = 8;
 
     uint64 ttl = 4;
 
