@@ -34,8 +34,8 @@ TEST(CardanoStaking, RegisterStakingKey) {
     const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
-    const auto stakingKeyHash = subData(AddressV3(publicKey).bytes, 28, 28);
-    EXPECT_EQ(hex(stakingKeyHash), stakingKey1); // TODO obtain from API
+    const auto stakingKeyHash = subData(AddressV3(publicKey).bytes, 28, 28); // TODO obtain from API
+    EXPECT_EQ(hex(stakingKeyHash), stakingKey1);
     const auto poolId = parse_hex(poolIdNufi);
 
     Proto::SigningInput input;
@@ -81,8 +81,8 @@ TEST(CardanoStaking, DeregisterStakingKey) {
     const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
-    const auto stakingKeyHash = subData(AddressV3(publicKey).bytes, 28, 28);
-    EXPECT_EQ(hex(stakingKeyHash), stakingKey1); // TODO obtain from API
+    const auto stakingKeyHash = subData(AddressV3(publicKey).bytes, 28, 28); // TODO obtain from API
+    EXPECT_EQ(hex(stakingKeyHash), stakingKey1);
     const auto poolId = parse_hex(poolIdNufi);
 
     Proto::SigningInput input;
@@ -128,8 +128,8 @@ TEST(CardanoStaking, Delegate) {
     const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
-    const auto stakingKeyHash = subData(AddressV3(publicKey).bytes, 28, 28);
-    EXPECT_EQ(hex(stakingKeyHash), stakingKey1); // TODO obtain from API
+    const auto stakingKeyHash = subData(AddressV3(publicKey).bytes, 28, 28); // TODO obtain from API
+    EXPECT_EQ(hex(stakingKeyHash), stakingKey1);
     const auto poolId = parse_hex(poolIdNufi);
 
     Proto::SigningInput input;
@@ -176,8 +176,8 @@ TEST(CardanoStaking, RegisterAndDelegate_similar53339b) {
     const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
-    const auto stakingKeyHash = subData(AddressV3(publicKey).bytes, 28, 28);
-    EXPECT_EQ(hex(stakingKeyHash), stakingKey1); // TODO obtain from API
+    const auto stakingKeyHash = subData(AddressV3(publicKey).bytes, 28, 28); // TODO obtain from API
+    EXPECT_EQ(hex(stakingKeyHash), stakingKey1);
     const auto poolId = parse_hex(poolIdNufi);
 
     Proto::SigningInput input;
@@ -204,12 +204,12 @@ TEST(CardanoStaking, RegisterAndDelegate_similar53339b) {
 
     // Register staking key
     input.mutable_register_staking_key()->set_staking_key(stakingKeyHash.data(), stakingKeyHash.size());
-    input.mutable_register_staking_key()->set_deposit_amount(0ul);
+    input.mutable_register_staking_key()->set_deposit_amount(2000000ul);
 
     // Delegate, with 2 ADA deposit
     input.mutable_delegate()->set_staking_key(stakingKeyHash.data(), stakingKeyHash.size());
     input.mutable_delegate()->set_pool_id(poolId.data(), poolId.size());
-    input.mutable_delegate()->set_deposit_amount(2000000ul);
+    input.mutable_delegate()->set_deposit_amount(0ul);
 
     {
         // run plan and check result
@@ -233,7 +233,7 @@ TEST(CardanoStaking, RegisterAndDelegate_similar53339b) {
         EXPECT_EQ(hex(txid), "96a781fd6481b6a7fd3926da110265e8c44b53947b81daa84da5b148825d02aa");
     }
 
-    // set different plan, with one input only
+    // set different plan, with exact fee
     const auto amount = 28467322ul;
     input.mutable_plan()->set_amount(amount);
     input.mutable_plan()->set_available_amount(28651312ul);
