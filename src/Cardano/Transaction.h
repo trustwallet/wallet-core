@@ -120,25 +120,29 @@ public:
     Proto::TransactionPlan toProto() const;
 };
 
-class CertKey {
+/// A key with a type, used in a Certificate
+class CertificateKey {
 public:
-    int type;
+    enum KeyType: uint8_t {
+        AddressKeyHash = 0,
+        //ScriptHash = 1,
+    };
+    KeyType type;
     Data key;
 };
 
-/* TODO use this
-export enum CertificateType {
-  STAKING_KEY_REGISTRATION = 0,
-  STAKING_KEY_DEREGISTRATION = 1,
-  DELEGATION = 2,
-  STAKEPOOL_REGISTRATION = 3,
-}
-*/
-
+/// Certificate, mainly used for staking
 class Certificate {
 public:
-    uint8_t type;
-    CertKey certKey;
+    enum CertificateType: uint8_t {
+        SkatingKeyRegistration = 0,
+        StakingKeyDeregistration = 1,
+        Delegation = 2,
+        //StakePoolRegistration = 3,
+    };
+    CertificateType type;
+    CertificateKey certKey;
+    /// Optional PoolId, used in delegation
     Data poolId;
 };
 

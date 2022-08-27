@@ -16,7 +16,6 @@
 #include <cmath>
 #include <algorithm>
 #include <numeric>
-#include <iostream> // TODO
 
 using namespace TW::Cardano;
 using namespace TW;
@@ -65,12 +64,12 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
 
     if (input.has_register_staking_key()) {
         const auto key = data(input.register_staking_key().staking_key());
-        tx.certificates.push_back(Certificate{0, {CertKey{0, key}}, Data()}); // TODO types
+        tx.certificates.push_back(Certificate{Certificate::SkatingKeyRegistration, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data()});
     }
     if (input.has_delegate()) {
         const auto key = data(input.delegate().staking_key());
         const auto poolId = data(input.delegate().pool_id());
-        tx.certificates.push_back(Certificate{2, {CertKey{0, key}}, poolId}); // TODO types
+        tx.certificates.push_back(Certificate{Certificate::Delegation, {CertificateKey{CertificateKey::AddressKeyHash, key}}, poolId});
     }
 
     return Common::Proto::OK;

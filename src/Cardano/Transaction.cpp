@@ -256,17 +256,17 @@ Cbor::Encode cborizeOutputs(const std::vector<TxOutput>& outputs) {
     return Cbor::Encode::array(oo);
 }
 
-Cbor::Encode cborizeCertKey(const CertKey& certKey) {
+Cbor::Encode cborizeCertificateKey(const CertificateKey& certKey) {
     std::vector<Cbor::Encode> c;
-    c.push_back(Cbor::Encode::uint(certKey.type));
+    c.push_back(Cbor::Encode::uint(static_cast<uint8_t>(certKey.type)));
     c.push_back(Cbor::Encode::bytes(certKey.key));
     return Cbor::Encode::array(c);
 }
 
 Cbor::Encode cborizeCert(const Certificate& cert) {    
     std::vector<Cbor::Encode> c;
-    c.push_back(Cbor::Encode::uint(cert.type));
-    c.push_back(cborizeCertKey(cert.certKey));
+    c.push_back(Cbor::Encode::uint(static_cast<uint8_t>(cert.type)));
+    c.push_back(cborizeCertificateKey(cert.certKey));
     if (cert.poolId.size() > 0) {
         c.push_back(Cbor::Encode::bytes(cert.poolId));
     }
