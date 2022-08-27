@@ -26,6 +26,7 @@ namespace TW::Cardano::tests {
 
 const auto privateKeyTest1 = "089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448a3566990b7785bd48c330875b1e0d03caaed0e67cecc42075dce1c7a13b1c49240508848ac82f603391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf1290dbd508e5ec71afaea98da2df1533c22ef02a26bb87b31907d0b2738fb7785b38d53aa68fc01230784c9209b2b2a2faf28491b3b1f1d221e63e704bbd0403c4154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e";
 const auto ownAddress1 = "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23";
+const auto stakingKey1 = "df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b";
 const auto sundaeTokenPolicy = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77";
 const auto poolIdNufi = "7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6";
 
@@ -819,13 +820,108 @@ TEST(CardanoSigning, AnyPlan1) {
     }
 }
 
-TEST(CardanoSigning, Delegate_and_Stake_similar53339b) {
+TEST(CardanoSigning, RegisterStakingKey) {
     const auto privateKeyData = parse_hex(privateKeyTest1);
     const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
     const auto stakingKeyHash = subData(AddressV3(publicKey).bytes, 28, 28);
-    EXPECT_EQ(hex(stakingKeyHash), "df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b"); // TODO obtain from API
+    EXPECT_EQ(hex(stakingKeyHash), stakingKey1); // TODO obtain from API
+    const auto poolId = parse_hex(poolIdNufi);
+
+    Proto::SigningInput input;
+    auto* utxo1 = input.add_utxos();
+    const auto txHash1 = parse_hex("cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca");
+    utxo1->mutable_out_point()->set_tx_hash(txHash1.data(), txHash1.size());
+    utxo1->mutable_out_point()->set_output_index(1);
+    utxo1->set_address(ownAddress);
+    utxo1->set_amount(10000000ul);
+
+    input.add_private_key(privateKeyData.data(), privateKeyData.size());
+
+    input.mutable_transfer_message()->set_to_address(ownAddress);
+    input.mutable_transfer_message()->set_change_address(ownAddress);
+    input.mutable_transfer_message()->set_amount(5000000ul);
+    input.mutable_transfer_message()->set_use_max_amount(true);
+    input.set_ttl(69986091ul);
+
+    // Register staking key, no deposit here
+    input.mutable_register_staking_key()->set_staking_key(stakingKeyHash.data(), stakingKeyHash.size());
+    input.mutable_register_staking_key()->set_deposit_amount(0ul);
+
+    auto signer = Signer(input);
+    const auto output = signer.sign();
+
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+
+    const auto encoded = data(output.encoded());
+    EXPECT_EQ(hex(encoded), "83a50081825820cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca01018182583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a0095f77a021a00029f06031a042be72b048182008200581cdf22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09ba100828258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058400ffa4c4e432bcd11c38cde85d5735fba60c8905b6e7d9c0c0a3ea97bbcc1b9973c41279a78f1355544858c9cb88e80891d6f293992dc34bf4cf489dc379afc0d825820e554163344aafc2bbefe778a6953ddce0583c2f8e0a0686929c020ca33e069325840b250dce11d067c3a45a98be3fd820ae951906ed733b2983a6695cf0955b684a2d4fa5196b344836a806b701fb99708a252091dcc594af95433613b21d95d8e03f6");
+    const auto txid = data(output.tx_id());
+    EXPECT_EQ(hex(txid), "53037fa021bd9ba7b6acf9cd98ffc1a2428e492a90fb2133a8cd652c15b1e6c0");
+
+    {
+        const auto decode = Cbor::Decode(encoded);
+        ASSERT_TRUE(decode.isValid());
+        EXPECT_EQ(decode.dumpToString(), "[{0: [[h\"cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca\", 1]], 1: [[h\"01df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\", 9828218]], 2: 171782, 3: 69986091, 4: [[0, [0, h\"df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\"]]]}, {0: [[h\"6d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df290\", h\"0ffa4c4e432bcd11c38cde85d5735fba60c8905b6e7d9c0c0a3ea97bbcc1b9973c41279a78f1355544858c9cb88e80891d6f293992dc34bf4cf489dc379afc0d\"], [h\"e554163344aafc2bbefe778a6953ddce0583c2f8e0a0686929c020ca33e06932\", h\"b250dce11d067c3a45a98be3fd820ae951906ed733b2983a6695cf0955b684a2d4fa5196b344836a806b701fb99708a252091dcc594af95433613b21d95d8e03\"]]}, null]");
+        EXPECT_EQ(decode.getArrayElements().size(), 3ul);
+    }
+}
+
+TEST(CardanoSigning, Delegate) {
+    const auto privateKeyData = parse_hex(privateKeyTest1);
+    const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
+    const auto ownAddress = AddressV3(publicKey).string();
+    EXPECT_EQ(ownAddress, ownAddress1);
+    const auto stakingKeyHash = subData(AddressV3(publicKey).bytes, 28, 28);
+    EXPECT_EQ(hex(stakingKeyHash), stakingKey1); // TODO obtain from API
+    const auto poolId = parse_hex(poolIdNufi);
+
+    Proto::SigningInput input;
+    auto* utxo1 = input.add_utxos();
+    const auto txHash1 = parse_hex("cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca");
+    utxo1->mutable_out_point()->set_tx_hash(txHash1.data(), txHash1.size());
+    utxo1->mutable_out_point()->set_output_index(1);
+    utxo1->set_address(ownAddress);
+    utxo1->set_amount(10000000ul);
+
+    input.add_private_key(privateKeyData.data(), privateKeyData.size());
+
+    input.mutable_transfer_message()->set_to_address(ownAddress);
+    input.mutable_transfer_message()->set_change_address(ownAddress);
+    input.mutable_transfer_message()->set_amount(5000000ul);
+    input.mutable_transfer_message()->set_use_max_amount(true);
+    input.set_ttl(69986091ul);
+
+    // Delegate, with 2 ADA deposit
+    input.mutable_delegate()->set_staking_key(stakingKeyHash.data(), stakingKeyHash.size());
+    input.mutable_delegate()->set_pool_id(poolId.data(), poolId.size());
+    input.mutable_delegate()->set_deposit_amount(2000000ul);
+
+    auto signer = Signer(input);
+    const auto output = signer.sign();
+
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+
+    const auto encoded = data(output.encoded());
+    EXPECT_EQ(hex(encoded), "83a50081825820cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca01018182583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a00777f31021a000292cf031a042be72b048183028200581cdf22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b581c7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058404f366f512418a2cc47c5551c4ac6d2f5109c40c9542add7fa132ed1f89292542adcfe679336069c0979ac749c3c13e06e7f42a84e30e2975f93ed9ffb250ce08f6");
+    const auto txid = data(output.tx_id());
+    EXPECT_EQ(hex(txid), "f8f97336c6c87edb169baaebb54eceadfdecc85e729bb15cca8111338866d787");
+
+    {
+        const auto decode = Cbor::Decode(encoded);
+        ASSERT_TRUE(decode.isValid());
+        EXPECT_EQ(decode.dumpToString(), "[{0: [[h\"cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca\", 1]], 1: [[h\"01df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\", 7831345]], 2: 168655, 3: 69986091, 4: [[2, [0, h\"df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\"], h\"7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6\"]]}, {0: [[h\"6d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df290\", h\"4f366f512418a2cc47c5551c4ac6d2f5109c40c9542add7fa132ed1f89292542adcfe679336069c0979ac749c3c13e06e7f42a84e30e2975f93ed9ffb250ce08\"]]}, null]");
+        EXPECT_EQ(decode.getArrayElements().size(), 3ul);
+    }
+}
+
+TEST(CardanoSigning, RegisterAndDelegate_similar53339b) {
+    const auto privateKeyData = parse_hex(privateKeyTest1);
+    const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
+    const auto ownAddress = AddressV3(publicKey).string();
+    EXPECT_EQ(ownAddress, ownAddress1);
+    const auto stakingKeyHash = subData(AddressV3(publicKey).bytes, 28, 28);
+    EXPECT_EQ(hex(stakingKeyHash), stakingKey1); // TODO obtain from API
     const auto poolId = parse_hex(poolIdNufi);
 
     Proto::SigningInput input;
@@ -834,29 +930,30 @@ TEST(CardanoSigning, Delegate_and_Stake_similar53339b) {
     utxo1->mutable_out_point()->set_tx_hash(txHash1.data(), txHash1.size());
     utxo1->mutable_out_point()->set_output_index(0);
     utxo1->set_address(ownAddress);
-    utxo1->set_amount(4000000);
+    utxo1->set_amount(4000000ul);
     auto* utxo2 = input.add_utxos();
     const auto txHash2 = parse_hex("9b06de86b253549b99f6a050b61217d8824085ca5ed4eb107a5e7cce4f93802e");
     utxo2->mutable_out_point()->set_tx_hash(txHash2.data(), txHash2.size());
     utxo2->mutable_out_point()->set_output_index(1);
     utxo2->set_address(ownAddress);
-    utxo2->set_amount(26651312);
+    utxo2->set_amount(26651312ul);
 
     input.add_private_key(privateKeyData.data(), privateKeyData.size());
 
     input.mutable_transfer_message()->set_to_address(ownAddress);
     input.mutable_transfer_message()->set_change_address(ownAddress);
-    input.mutable_transfer_message()->set_amount(4000000);
+    input.mutable_transfer_message()->set_amount(4000000ul);
     input.mutable_transfer_message()->set_use_max_amount(true);
-    input.set_ttl(69885081);
+    input.set_ttl(69885081ul);
 
     // Register staking key
     input.mutable_register_staking_key()->set_staking_key(stakingKeyHash.data(), stakingKeyHash.size());
+    input.mutable_register_staking_key()->set_deposit_amount(0ul);
 
     // Delegate, with 2 ADA deposit
     input.mutable_delegate()->set_staking_key(stakingKeyHash.data(), stakingKeyHash.size());
     input.mutable_delegate()->set_pool_id(poolId.data(), poolId.size());
-    input.mutable_delegate()->set_deposit_amount(2000000);
+    input.mutable_delegate()->set_deposit_amount(2000000ul);
 
     {
         // run plan and check result
