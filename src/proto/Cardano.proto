@@ -69,14 +69,14 @@ message Transfer {
 message RegisterStakingKey {
     bytes staking_key = 1;
 
-    // Amount deposited in this TX. Should be 0, see also Delegate.deposit_amount. If not set correctly, TX will be rejected.
+    // Amount deposited in this TX. Should be 2 ADA (2000000). If not set correctly, TX will be rejected. See also Delegate.deposit_amount.
     uint64 deposit_amount = 2;
 }
 
 message DeregisterStakingKey {
     bytes staking_key = 1;
 
-    // Amount undeposited in this TX. TODO explain
+    // Amount undeposited in this TX. Should be 2 ADA (2000000). If not set correctly, TX will be rejected. See also RegisterStakingKey.deposit_amount.
     uint64 undeposit_amount = 2;
 }
 
@@ -85,7 +85,7 @@ message Delegate {
 
     bytes pool_id = 2;
 
-    // Amount deposited in this TX. Should be 2 in case of first delegation of a staking key. If not set correctly, TX will be rejected.
+    // Amount deposited in this TX. Should be 0. If not set correctly, TX will be rejected. See also RegisterStakingKey.deposit_amount.
     uint64 deposit_amount = 3;
 }
 

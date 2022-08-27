@@ -54,9 +54,9 @@ TEST(CardanoStaking, RegisterStakingKey) {
     input.mutable_transfer_message()->set_use_max_amount(true);
     input.set_ttl(69986091ul);
 
-    // Register staking key, no deposit here
+    // Register staking key, 2 ADA deposit
     input.mutable_register_staking_key()->set_staking_key(stakingKeyHash.data(), stakingKeyHash.size());
-    input.mutable_register_staking_key()->set_deposit_amount(0ul);
+    input.mutable_register_staking_key()->set_deposit_amount(2000000ul);
 
     auto signer = Signer(input);
     const auto output = signer.sign();
@@ -64,14 +64,14 @@ TEST(CardanoStaking, RegisterStakingKey) {
     EXPECT_EQ(output.error(), Common::Proto::OK);
 
     const auto encoded = data(output.encoded());
-    EXPECT_EQ(hex(encoded), "83a50081825820cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca01018182583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a0095f77a021a00029f06031a042be72b048182008200581cdf22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09ba100828258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058400ffa4c4e432bcd11c38cde85d5735fba60c8905b6e7d9c0c0a3ea97bbcc1b9973c41279a78f1355544858c9cb88e80891d6f293992dc34bf4cf489dc379afc0d825820e554163344aafc2bbefe778a6953ddce0583c2f8e0a0686929c020ca33e069325840b250dce11d067c3a45a98be3fd820ae951906ed733b2983a6695cf0955b684a2d4fa5196b344836a806b701fb99708a252091dcc594af95433613b21d95d8e03f6");
+    EXPECT_EQ(hex(encoded), "83a50081825820cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca01018182583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a007772fa021a00029f06031a042be72b048182008200581cdf22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09ba100828258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df2905840d08ed71da87d0928090edd9e226496ab109f2eee7926ac2ce51e7abe89a4f513c4afe2b85b71595e862e7f6fc992d14d2416a6e53a1961da7d26d3cf3f823400825820e554163344aafc2bbefe778a6953ddce0583c2f8e0a0686929c020ca33e06932584079ed55400cebc70c56ca87ba09009dfc298c64768f90a9139bf2e7f134250927c614ee846253fac33e652f1b50373d349fdfe13c207968c2a10991824fe2a10ef6");
     const auto txid = data(output.tx_id());
-    EXPECT_EQ(hex(txid), "53037fa021bd9ba7b6acf9cd98ffc1a2428e492a90fb2133a8cd652c15b1e6c0");
+    EXPECT_EQ(hex(txid), "6a206fe4df76e12499b4fd9722f33429f4d93f8a996f9f523fa6c02a8301386b");
 
     {
         const auto decode = Cbor::Decode(encoded);
         ASSERT_TRUE(decode.isValid());
-        EXPECT_EQ(decode.dumpToString(), "[{0: [[h\"cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca\", 1]], 1: [[h\"01df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\", 9828218]], 2: 171782, 3: 69986091, 4: [[0, [0, h\"df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\"]]]}, {0: [[h\"6d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df290\", h\"0ffa4c4e432bcd11c38cde85d5735fba60c8905b6e7d9c0c0a3ea97bbcc1b9973c41279a78f1355544858c9cb88e80891d6f293992dc34bf4cf489dc379afc0d\"], [h\"e554163344aafc2bbefe778a6953ddce0583c2f8e0a0686929c020ca33e06932\", h\"b250dce11d067c3a45a98be3fd820ae951906ed733b2983a6695cf0955b684a2d4fa5196b344836a806b701fb99708a252091dcc594af95433613b21d95d8e03\"]]}, null]");
+        EXPECT_EQ(decode.dumpToString(), "[{0: [[h\"cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca\", 1]], 1: [[h\"01df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\", 7828218]], 2: 171782, 3: 69986091, 4: [[0, [0, h\"df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\"]]]}, {0: [[h\"6d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df290\", h\"d08ed71da87d0928090edd9e226496ab109f2eee7926ac2ce51e7abe89a4f513c4afe2b85b71595e862e7f6fc992d14d2416a6e53a1961da7d26d3cf3f823400\"], [h\"e554163344aafc2bbefe778a6953ddce0583c2f8e0a0686929c020ca33e06932\", h\"79ed55400cebc70c56ca87ba09009dfc298c64768f90a9139bf2e7f134250927c614ee846253fac33e652f1b50373d349fdfe13c207968c2a10991824fe2a10e\"]]}, null]");
         EXPECT_EQ(decode.getArrayElements().size(), 3ul);
     }
 }
@@ -123,7 +123,7 @@ TEST(CardanoStaking, DeregisterStakingKey) {
     }
 }
 
-TEST(CardanoStaking, Delegate) {
+TEST(CardanoStaking, Redelegate) {
     const auto privateKeyData = parse_hex(privateKeyTest1);
     const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
@@ -148,10 +148,10 @@ TEST(CardanoStaking, Delegate) {
     input.mutable_transfer_message()->set_use_max_amount(true);
     input.set_ttl(69986091ul);
 
-    // Delegate, with 2 ADA deposit
+    // Delegate, no deposit
     input.mutable_delegate()->set_staking_key(stakingKeyHash.data(), stakingKeyHash.size());
     input.mutable_delegate()->set_pool_id(poolId.data(), poolId.size());
-    input.mutable_delegate()->set_deposit_amount(2000000ul);
+    input.mutable_delegate()->set_deposit_amount(0ul);
 
     auto signer = Signer(input);
     const auto output = signer.sign();
@@ -159,14 +159,14 @@ TEST(CardanoStaking, Delegate) {
     EXPECT_EQ(output.error(), Common::Proto::OK);
 
     const auto encoded = data(output.encoded());
-    EXPECT_EQ(hex(encoded), "83a50081825820cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca01018182583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a00776dd1021a0002a42f031a042be72b048183028200581cdf22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b581c7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6a100828258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df2905840162161de7f4b079eaffb01277987cdcccb02a000afc4f46708183518a3c172328174ab6ffc9092a379e4744901188fb56b94769dbc724fd0e9bcda636e2d9107825820e554163344aafc2bbefe778a6953ddce0583c2f8e0a0686929c020ca33e0693258406a27ef8688a24c707854787d51805b8aeaa280ce30d0f654f441a9360f53db35c4947164210d03cea30d4059893b8155280faf42d5ba8db9a79d1c35b44e540cf6");
+    EXPECT_EQ(hex(encoded), "83a50081825820cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca01018182583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a0095f251021a0002a42f031a042be72b048183028200581cdf22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b581c7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6a100828258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df2905840fb48f3ddbfc2d4ca231a0581c5b456019aa4215ed5a2447ba89a4860569f9e7296afd3a0a81506882d8bda33683e623e6d8033786275369f7e247d866e017c06825820e554163344aafc2bbefe778a6953ddce0583c2f8e0a0686929c020ca33e069325840e26f696a6cd1c34101623568c9efe3796ff5855ada0e2e0cf557c7fc2148f6b2af176aff40a1f9c13fb29d9636c49f774d4a967c71f052f865cfaf0d02d5bb05f6");
     const auto txid = data(output.tx_id());
-    EXPECT_EQ(hex(txid), "51386e680202a7b0ae822bb3c1ee000d448d88e5b3685890fecabeccbbedfd94");
+    EXPECT_EQ(hex(txid), "985f613fb8b86dad35f075599099776e50fc2a6aa74ee4b37c14fd9f2c0f0891");
 
     {
         const auto decode = Cbor::Decode(encoded);
         ASSERT_TRUE(decode.isValid());
-        EXPECT_EQ(decode.dumpToString(), "[{0: [[h\"cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca\", 1]], 1: [[h\"01df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\", 7826897]], 2: 173103, 3: 69986091, 4: [[2, [0, h\"df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\"], h\"7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6\"]]}, {0: [[h\"6d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df290\", h\"162161de7f4b079eaffb01277987cdcccb02a000afc4f46708183518a3c172328174ab6ffc9092a379e4744901188fb56b94769dbc724fd0e9bcda636e2d9107\"], [h\"e554163344aafc2bbefe778a6953ddce0583c2f8e0a0686929c020ca33e06932\", h\"6a27ef8688a24c707854787d51805b8aeaa280ce30d0f654f441a9360f53db35c4947164210d03cea30d4059893b8155280faf42d5ba8db9a79d1c35b44e540c\"]]}, null]");
+        EXPECT_EQ(decode.dumpToString(), "[{0: [[h\"cba84549f07f2128410c0a22731f2c57f2a617746e8edc61b295cd8792638dca\", 1]], 1: [[h\"01df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\", 9826897]], 2: 173103, 3: 69986091, 4: [[2, [0, h\"df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b\"], h\"7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6\"]]}, {0: [[h\"6d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df290\", h\"fb48f3ddbfc2d4ca231a0581c5b456019aa4215ed5a2447ba89a4860569f9e7296afd3a0a81506882d8bda33683e623e6d8033786275369f7e247d866e017c06\"], [h\"e554163344aafc2bbefe778a6953ddce0583c2f8e0a0686929c020ca33e06932\", h\"e26f696a6cd1c34101623568c9efe3796ff5855ada0e2e0cf557c7fc2148f6b2af176aff40a1f9c13fb29d9636c49f774d4a967c71f052f865cfaf0d02d5bb05\"]]}, null]");
         EXPECT_EQ(decode.getArrayElements().size(), 3ul);
     }
 }
@@ -202,11 +202,11 @@ TEST(CardanoStaking, RegisterAndDelegate_similar53339b) {
     input.mutable_transfer_message()->set_use_max_amount(true);
     input.set_ttl(69885081ul);
 
-    // Register staking key
+    // Register staking key, 2 ADA desposit
     input.mutable_register_staking_key()->set_staking_key(stakingKeyHash.data(), stakingKeyHash.size());
     input.mutable_register_staking_key()->set_deposit_amount(2000000ul);
 
-    // Delegate, with 2 ADA deposit
+    // Delegate
     input.mutable_delegate()->set_staking_key(stakingKeyHash.data(), stakingKeyHash.size());
     input.mutable_delegate()->set_pool_id(poolId.data(), poolId.size());
     input.mutable_delegate()->set_deposit_amount(0ul);

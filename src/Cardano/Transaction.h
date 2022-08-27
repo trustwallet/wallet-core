@@ -110,7 +110,7 @@ public:
     Amount fee = 0;  // coin amount deducted as fee
     Amount change = 0;  // coins in the change UTXO
     Amount deposit = 0;  // coins deposited (going to deposit) in this TX
-    Amount undeposit = 0;  // coins undeposited (coming from deposited) in this TX
+    Amount undeposit = 0;  // coins undeposited (returned from deposit) in this TX
     TokenBundle availableTokens;  // total tokens in the utxos (optional)
     TokenBundle outputTokens;  // tokens in the output (optional)
     TokenBundle changeTokens;  // tokens in the change (optional)
