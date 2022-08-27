@@ -118,12 +118,35 @@ public:
     Proto::TransactionPlan toProto() const;
 };
 
+class CertKey {
+public:
+    int type;
+    Data key;
+};
+
+/* TODO use this
+export enum CertificateType {
+  STAKING_KEY_REGISTRATION = 0,
+  STAKING_KEY_DEREGISTRATION = 1,
+  DELEGATION = 2,
+  STAKEPOOL_REGISTRATION = 3,
+}
+*/
+
+class Certificate {
+public:
+    uint8_t type;
+    CertKey certKey;
+    Data poolId;
+};
+
 class Transaction {
 public:
     std::vector<OutPoint> inputs;
     std::vector<TxOutput> outputs;
     Amount fee;
     uint64_t ttl;
+    std::vector<Certificate> certificates;
 
     // Encode into CBOR binary format
     Data encode() const;

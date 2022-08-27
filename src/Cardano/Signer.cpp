@@ -62,6 +62,16 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
     tx.fee = plan.fee;
     tx.ttl = input.ttl();
 
+    if (input.has_register_staking_key()) {
+        const auto key = data(input.register_staking_key().staking_key());
+        tx.certificates.push_back(Certificate{0, {CertKey{0, key}}, Data()}); // TODO types
+    }
+    if (input.has_delegate()) {
+        const auto key = data(input.delegate().staking_key());
+        const auto poolId = data(input.delegate().pool_id());
+        tx.certificates.push_back(Certificate{2, {CertKey{0, key}}, poolId}); // TODO types
+    }
+
     return Common::Proto::OK;
 }
 
@@ -78,6 +88,12 @@ Common::Proto::SigningError Signer::assembleSignatures(vector<pair<Data, Data>>&
         const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         const auto address = AddressV3(publicKey);
         privateKeys[address.string()] = privateKeyData;
+
+        // TODO improve
+        auto stakingPrivKeyData = TW::subData(privateKeyData, 96);
+        TW::append(stakingPrivKeyData, TW::Data(96));
+        const auto stakingKeyHash = subData(address.bytes, 28, 28);
+        privateKeys[hex(stakingKeyHash)] = stakingPrivKeyData; //privateKeyData;
     }
 
     // collect every unique input UTXO address
@@ -88,6 +104,13 @@ Common::Proto::SigningError Signer::assembleSignatures(vector<pair<Data, Data>>&
         }
         if (find(addresses.begin(), addresses.end(), u.address) == addresses.end()) {
             addresses.push_back(u.address);
+        }
+    }
+    // Staking key is also an address that needs signature
+    if (input.has_register_staking_key()) {
+        const auto stakingKey = hex(data(input.register_staking_key().staking_key()));
+        if (find(addresses.begin(), addresses.end(), stakingKey) == addresses.end()) {
+            addresses.push_back(stakingKey);
         }
     }
 

@@ -66,6 +66,16 @@ message Transfer {
     uint64 force_fee = 6;
 }
 
+message RegisterStakingKey {
+    bytes staking_key = 1;
+}
+
+message Delegate {
+    bytes staking_key = 1;
+
+    bytes pool_id = 2;
+}
+
 message TransactionPlan {
     // total coins in the utxos
     uint64 available_amount = 1;
@@ -103,6 +113,12 @@ message SigningInput {
 
     // Later this can be made oneof if more message types are supported
     Transfer transfer_message = 3;
+
+    // Optional
+    RegisterStakingKey register_staking_key = 6;
+
+    // Optional
+    Delegate delegate = 7;
 
     uint64 ttl = 4;
 

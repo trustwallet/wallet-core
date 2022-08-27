@@ -252,21 +252,52 @@ Cbor::Encode cborizeOutputs(const std::vector<TxOutput>& outputs) {
     return Cbor::Encode::array(oo);
 }
 
+Cbor::Encode cborizeCertKey(const CertKey& certKey) {
+    std::vector<Cbor::Encode> c;
+    c.push_back(Cbor::Encode::uint(certKey.type));
+    c.push_back(Cbor::Encode::bytes(certKey.key));
+    return Cbor::Encode::array(c);
+}
+
+Cbor::Encode cborizeCert(const Certificate& cert) {    
+    std::vector<Cbor::Encode> c;
+    c.push_back(Cbor::Encode::uint(cert.type));
+    c.push_back(cborizeCertKey(cert.certKey));
+    if (cert.poolId.size() > 0) {
+        c.push_back(Cbor::Encode::bytes(cert.poolId));
+    }
+    return Cbor::Encode::array(c);
+}
+
+Cbor::Encode cborizeCerts(const std::vector<Certificate>& certs) {    
+    std::vector<Cbor::Encode> c;
+    for (const auto& i: certs) {
+        c.push_back(cborizeCert(i));
+    }
+    return Cbor::Encode::array(c);
+}
+
 Data Transaction::encode() const {
     const auto ii = cborizeInputs(inputs);
     const auto oo = cborizeOutputs(outputs);
 
     // Encode elements in a map, with fixed numbers as keys
-    Cbor::Encode encode = Cbor::Encode::map({
+    std::map<Cbor::Encode, Cbor::Encode> mapElems = {
         make_pair(Cbor::Encode::uint(0), ii),
         make_pair(Cbor::Encode::uint(1), oo),
         make_pair(Cbor::Encode::uint(2), Cbor::Encode::uint(fee)),
         make_pair(Cbor::Encode::uint(3), Cbor::Encode::uint(ttl)),
-    });
-    // Note: following fields are not included:
-    // 4 certificates, 5 withdrawals, 7 AUXILIARY_DATA_HASH, 8 VALIDITY_INTERVAL_START
+    };
 
+    if (certificates.size() > 0) {
+        mapElems.emplace(make_pair(Cbor::Encode::uint(4), cborizeCerts(certificates)));
+    }
+
+    Cbor::Encode encode = Cbor::Encode::map(mapElems);
     return encode.encoded();
+
+    // Note: following fields are not included:
+    // 5 withdrawals, 7 AUXILIARY_DATA_HASH, 8 VALIDITY_INTERVAL_START
 }
 
 Data Transaction::getId() const {
