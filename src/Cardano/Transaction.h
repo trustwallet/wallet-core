@@ -105,10 +105,12 @@ public:
 class TransactionPlan {
 public:
     std::vector<TxInput> utxos;
-    Amount availableAmount = 0;  // total coins in the utxos
+    Amount availableAmount = 0;  // total coins in the input utxos
     Amount amount = 0;  // coins in the output UTXO
     Amount fee = 0;  // coin amount deducted as fee
     Amount change = 0;  // coins in the change UTXO
+    Amount deposit = 0;  // coins deposited (going to deposit) in this TX
+    Amount undeposit = 0;  // coins undeposited (coming from deposited) in this TX
     TokenBundle availableTokens;  // total tokens in the utxos (optional)
     TokenBundle outputTokens;  // tokens in the output (optional)
     TokenBundle changeTokens;  // tokens in the change (optional)

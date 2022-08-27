@@ -68,12 +68,18 @@ message Transfer {
 
 message RegisterStakingKey {
     bytes staking_key = 1;
+
+    // Amount deposited in this TX. Should be 0, see also Delegate.deposit_amount. If not set correctly, TX will be rejected.
+    uint64 deposit_amount = 2;
 }
 
 message Delegate {
     bytes staking_key = 1;
 
     bytes pool_id = 2;
+
+    // Amount deposited in this TX. Should be 2 in case of first delegation of a staking key. If not set correctly, TX will be rejected.
+    uint64 deposit_amount = 3;
 }
 
 message TransactionPlan {
@@ -88,6 +94,12 @@ message TransactionPlan {
 
     // coins in the change UTXO
     uint64 change = 4;
+
+    // coins deposited (going to deposit) in this TX
+    uint64 deposit = 10;
+
+    // coins undeposited (coming from deposit) in this TX
+    uint64 undeposit = 11;  
 
     // total tokens in the utxos (optional)
     repeated TokenAmount available_tokens = 5;

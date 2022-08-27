@@ -16,6 +16,7 @@
 #include <cmath>
 #include <algorithm>
 #include <numeric>
+#include <iostream> // TODO
 
 using namespace TW::Cardano;
 using namespace TW;
@@ -265,10 +266,12 @@ vector<TxInput> Signer::selectInputsWithTokens(const vector<TxInput>& inputs, Am
 }
 
 // Create a simple plan, used for estimation
-TransactionPlan simplePlan(Amount amount, const TokenBundle& requestedTokens, const vector<TxInput>& selectedInputs, bool maxAmount) {
+TransactionPlan simplePlan(Amount amount, const TokenBundle& requestedTokens, const vector<TxInput>& selectedInputs, bool maxAmount, uint64_t deposit, uint64_t undeposit) {
     TransactionPlan plan;
     plan.amount = amount;
     plan.utxos = selectedInputs;
+    plan.deposit = deposit;
+    plan.undeposit = undeposit;
     // Sum availableAmount
     plan.availableAmount = 0;
     for (auto& u: plan.utxos) {
@@ -278,19 +281,20 @@ TransactionPlan simplePlan(Amount amount, const TokenBundle& requestedTokens, co
         }
     }
     plan.fee = PlaceholderFee; // placeholder value
+    const auto availAfterDeposit = plan.availableAmount + plan.undeposit - plan.deposit;
     // adjust/compute output amount and output tokens
     if (!maxAmount) {
         // reduce amount if needed
-        plan.amount = max(Amount(0), min(plan.amount, plan.availableAmount - plan.fee));
+        plan.amount = max(Amount(0), min(plan.amount, availAfterDeposit - plan.fee));
         plan.outputTokens = requestedTokens;
     } else {
         // max available amount
-        plan.amount = max(Amount(0), plan.availableAmount - plan.fee);
+        plan.amount = max(Amount(0), availAfterDeposit - plan.fee);
         plan.outputTokens = plan.availableTokens; // use all
     }
 
     // compute change
-    plan.change = plan.availableAmount - (plan.amount + plan.fee);
+    plan.change = availAfterDeposit - (plan.amount + plan.fee);
     for (auto iter = plan.availableTokens.bundle.begin(); iter != plan.availableTokens.bundle.end(); ++iter) {
         const auto key = iter->second.key();
         const auto changeAmount = iter->second.amount - plan.outputTokens.getAmount(key);
@@ -301,13 +305,26 @@ TransactionPlan simplePlan(Amount amount, const TokenBundle& requestedTokens, co
     return plan;
 }
 
+uint64_t sumDeposits(const Proto::SigningInput& input) {
+    uint64_t sum = 0;
+    if (input.has_register_staking_key()) {
+        sum += input.register_staking_key().deposit_amount();
+    }
+    if (input.has_delegate()) {
+        sum += input.delegate().deposit_amount();
+    }
+    return sum;
+}
+
 // Estimates size of transaction in bytes.
 uint64_t estimateTxSize(const Proto::SigningInput& input, Amount amount, const TokenBundle& requestedTokens, const vector<TxInput>& selectedInputs) {
     auto inputs = vector<TxInput>();
     for (auto i = 0; i < input.utxos_size(); ++i) {
         inputs.emplace_back(TxInput::fromProto(input.utxos(i)));
     }
-    const auto _simplePlan = simplePlan(amount, requestedTokens, selectedInputs, input.transfer_message().use_max_amount());
+    const auto deposits = sumDeposits(input);
+    const uint64_t undeposits = 0; // TODO sumUndeposits(input);
+    const auto _simplePlan = simplePlan(amount, requestedTokens, selectedInputs, input.transfer_message().use_max_amount(), deposits, undeposits);
 
     Data encoded;
     Data txId;
@@ -353,6 +370,10 @@ TransactionPlan Signer::doPlan() const {
         return plan;
     }
     assert(inputSum > 0);
+    // adjust inputSum with deposited/undeposited amount
+    plan.deposit = sumDeposits(input);
+    plan.undeposit = 0; // TODO sumUndeposits(input);
+    const auto inputSumAfterDeposit = inputSum + plan.undeposit - plan.deposit;
 
     // Amounts requested
     plan.amount = input.transfer_message().amount();
@@ -370,14 +391,14 @@ TransactionPlan Signer::doPlan() const {
 
     // if amount requested is the same or more than available amount, it cannot be satisifed, but
     // treat this case as MaxAmount, and send maximum available (which will be less)
-    if (!maxAmount && input.transfer_message().amount() >= inputSum) {
+    if (!maxAmount && input.transfer_message().amount() >= inputSumAfterDeposit) {
         maxAmount = true;
     }
 
     // select UTXOs
     if (!maxAmount) {
         // aim for larger total input, enough for 4/3 of the target amount plus typical fee plus minimal ADA for change plus some extra
-        auto targetInputAmount = (plan.amount * 4) / 3 + PlaceholderFee + requestedTokens.minAdaAmount() + ExtraInputAmount;
+        auto targetInputAmount = (plan.amount * 4) / 3 + plan.deposit - plan.undeposit + PlaceholderFee + requestedTokens.minAdaAmount() + ExtraInputAmount;
         plan.utxos = selectInputsWithTokens(utxos, targetInputAmount, requestedTokens);
     } else {
         // maxAmount, select all
@@ -398,13 +419,15 @@ TransactionPlan Signer::doPlan() const {
         return plan;
     }
     assert(plan.availableAmount > 0);
+    // adjust availableAmount with deposited/undeposited amount
+    const auto availableAmountAfterDeposit = plan.availableAmount + plan.undeposit - plan.deposit;
 
     // check that there are enough coins in the inputs
-    if (plan.amount > plan.availableAmount) {
+    if (plan.amount > availableAmountAfterDeposit) {
         plan.error = Common::Proto::Error_low_balance;
         return plan;
     }
-    assert(plan.amount <= plan.availableAmount);
+    assert(plan.amount <= availableAmountAfterDeposit);
     // check that there are enough tokens in the inputs
     for (auto iter = requestedTokens.bundle.begin(); iter != requestedTokens.bundle.end(); ++iter) {
         if (iter->second.amount > plan.availableTokens.getAmount(iter->second.key())) {
@@ -418,25 +441,25 @@ TransactionPlan Signer::doPlan() const {
         plan.fee = estimateFee(input, plan.amount, requestedTokens, plan.utxos);
     } else {
         // fee provided, use it (capped)
-        plan.fee = max(Amount(0), min(plan.availableAmount - plan.amount, input.transfer_message().force_fee()));
+        plan.fee = max(Amount(0), min(availableAmountAfterDeposit - plan.amount, input.transfer_message().force_fee()));
     }
-    assert(plan.fee >= 0 && plan.fee < plan.availableAmount);
+    assert(plan.fee >= 0 && plan.fee < availableAmountAfterDeposit);
 
     // adjust/compute output amount
     if (!maxAmount) {
         // reduce amount if needed
-        plan.amount = max(Amount(0), min(plan.amount, plan.availableAmount - plan.fee));
+        plan.amount = max(Amount(0), min(plan.amount, availableAmountAfterDeposit - plan.fee));
     } else {
         // max available amount
-        plan.amount = max(Amount(0), plan.availableAmount - plan.fee);
+        plan.amount = max(Amount(0), availableAmountAfterDeposit - plan.fee);
     }
-    assert(plan.amount >= 0 && plan.amount <= plan.availableAmount);
+    assert(plan.amount >= 0 && plan.amount <= availableAmountAfterDeposit);
 
-    if (plan.amount + plan.fee > plan.availableAmount) {
+    if (plan.amount + plan.fee > availableAmountAfterDeposit) {
         plan.error = Common::Proto::Error_low_balance;
         return plan;
     }
-    assert(plan.amount + plan.fee <= plan.availableAmount);
+    assert(plan.amount + plan.fee <= availableAmountAfterDeposit);
 
     // compute output token amounts
     if (!maxAmount) {
@@ -446,7 +469,7 @@ TransactionPlan Signer::doPlan() const {
     }
 
     // compute change
-    plan.change = plan.availableAmount - (plan.amount + plan.fee);
+    plan.change = availableAmountAfterDeposit - (plan.amount + plan.fee);
     for (auto iter = plan.availableTokens.bundle.begin(); iter != plan.availableTokens.bundle.end(); ++iter) {
         const auto key = iter->second.key();
         const auto changeAmount = iter->second.amount - plan.outputTokens.getAmount(key);
@@ -456,9 +479,10 @@ TransactionPlan Signer::doPlan() const {
         }
     }
 
-    assert(plan.change >= 0 && plan.change <= plan.availableAmount);
+    assert(plan.change >= 0 && plan.change <= availableAmountAfterDeposit);
     assert(!maxAmount || plan.change == 0); // change is 0 in max amount case
-    assert(plan.amount + plan.change + plan.fee == plan.availableAmount);
+    assert(plan.amount + plan.change + plan.fee == availableAmountAfterDeposit);
+    assert(plan.amount + plan.change + plan.fee + plan.deposit == plan.availableAmount + plan.undeposit);
 
     return plan;
 }

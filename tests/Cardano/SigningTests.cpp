@@ -28,6 +28,14 @@ const auto privateKeyTest1 = "089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448
 const auto ownAddress1 = "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23";
 const auto sundaeTokenPolicy = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77";
 
+TEST(CardanoSigning, Decode) {
+    const auto rawtx = parse_hex("a50081825820acc1d7fd4c16464c0f9ee9f4d3b67583b4f0581e6446a35aad8c886104f1a4c8030181825839010ba84307a0fcfc7a47dc6b747a2bcaf0a96e4373b86f10c3f019623fb9bc72dd0341aed94b76e0f456c229ce77d0c96c91d97d6a4f5e23d31a01b7b28a021a0002ceb6031a042934c0048282008200581cb9bc72dd0341aed94b76e0f456c229ce77d0c96c91d97d6a4f5e23d383028200581cb9bc72dd0341aed94b76e0f456c229ce77d0c96c91d97d6a4f5e23d3581c7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6");
+    const auto decode = Cbor::Decode(rawtx);
+    ASSERT_TRUE(decode.isValid());
+    EXPECT_EQ(decode.getMapElements().size(), 5ul);
+    EXPECT_EQ(decode.dumpToString(), "{0: [[h\"acc1d7fd4c16464c0f9ee9f4d3b67583b4f0581e6446a35aad8c886104f1a4c8\", 3]], 1: [[h\"010ba84307a0fcfc7a47dc6b747a2bcaf0a96e4373b86f10c3f019623fb9bc72dd0341aed94b76e0f456c229ce77d0c96c91d97d6a4f5e23d3\", 28816010]], 2: 183990, 3: 69809344, 4: [[0, [0, h\"b9bc72dd0341aed94b76e0f456c229ce77d0c96c91d97d6a4f5e23d3\"]], [2, [0, h\"b9bc72dd0341aed94b76e0f456c229ce77d0c96c91d97d6a4f5e23d3\"], h\"7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6\"]]}");
+}
+
 TEST(CardanoSigning, SelectInputs) {
     const auto inputs = std::vector<TxInput>({
         TxInput{{parse_hex("0001"), 0}, "ad01", 700, {}},
@@ -825,7 +833,7 @@ TEST(CardanoSigning, Delegate_and_Stake) {
     utxo1->mutable_out_point()->set_tx_hash(txHash1.data(), txHash1.size());
     utxo1->mutable_out_point()->set_output_index(0);
     utxo1->set_address(ownAddress);
-    utxo1->set_amount(2000000); // TODO 2 less, for certificate (4000000);
+    utxo1->set_amount(4000000);
     auto* utxo2 = input.add_utxos();
     const auto txHash2 = parse_hex("9b06de86b253549b99f6a050b61217d8824085ca5ed4eb107a5e7cce4f93802e");
     utxo2->mutable_out_point()->set_tx_hash(txHash2.data(), txHash2.size());
@@ -841,10 +849,13 @@ TEST(CardanoSigning, Delegate_and_Stake) {
     input.mutable_transfer_message()->set_use_max_amount(true);
     input.set_ttl(69885081);
 
+    // Register staking key
     input.mutable_register_staking_key()->set_staking_key(stakingKeyHash.data(), stakingKeyHash.size());
 
+    // Delegate, with 2 ADA deposit
     input.mutable_delegate()->set_staking_key(stakingKeyHash.data(), stakingKeyHash.size());
     input.mutable_delegate()->set_pool_id(poolId.data(), poolId.size());
+    input.mutable_delegate()->set_deposit_amount(2000000);
 
     {
         // run plan and check result
@@ -852,10 +863,10 @@ TEST(CardanoSigning, Delegate_and_Stake) {
         const auto plan = signer.doPlan();
 
         const auto amount = 28475125ul;
-        EXPECT_EQ(plan.availableAmount, 28651312ul);
+        EXPECT_EQ(plan.availableAmount, 30651312ul);
         EXPECT_EQ(plan.amount, amount);
         EXPECT_EQ(plan.fee, 176187ul);
-        EXPECT_EQ(plan.change, 28651312ul - amount - 176187ul);
+        EXPECT_EQ(plan.change, 30651312ul - 2000000ul - amount - 176187ul);
 
         // perform sign with default plan
         const auto output = signer.sign();

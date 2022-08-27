@@ -159,6 +159,8 @@ TransactionPlan TransactionPlan::fromProto(const Proto::TransactionPlan& proto) 
     ret.amount = proto.amount();
     ret.fee = proto.fee();
     ret.change = proto.change();
+    ret.deposit = proto.deposit();
+    ret.undeposit = proto.undeposit();
     for (auto i = 0; i < proto.available_tokens_size(); ++i) {
         ret.availableTokens.add(TokenAmount::fromProto(proto.available_tokens(i)));
     }
@@ -181,6 +183,8 @@ Proto::TransactionPlan TransactionPlan::toProto() const {
     plan.set_amount(amount);
     plan.set_fee(fee);
     plan.set_change(change);
+    plan.set_deposit(deposit);
+    plan.set_undeposit(undeposit);
     for (const auto& token: availableTokens.bundle) {
         *plan.add_available_tokens() = token.second.toProto();
     }
