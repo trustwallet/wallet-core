@@ -27,6 +27,7 @@ namespace TW::Cardano::tests {
 const auto privateKeyTest1 = "089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448a3566990b7785bd48c330875b1e0d03caaed0e67cecc42075dce1c7a13b1c49240508848ac82f603391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf1290dbd508e5ec71afaea98da2df1533c22ef02a26bb87b31907d0b2738fb7785b38d53aa68fc01230784c9209b2b2a2faf28491b3b1f1d221e63e704bbd0403c4154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e";
 const auto ownAddress1 = "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23";
 const auto sundaeTokenPolicy = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77";
+const auto poolIdNufi = "7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6";
 
 TEST(CardanoSigning, Decode) {
     const auto rawtx = parse_hex("a50081825820acc1d7fd4c16464c0f9ee9f4d3b67583b4f0581e6446a35aad8c886104f1a4c8030181825839010ba84307a0fcfc7a47dc6b747a2bcaf0a96e4373b86f10c3f019623fb9bc72dd0341aed94b76e0f456c229ce77d0c96c91d97d6a4f5e23d31a01b7b28a021a0002ceb6031a042934c0048282008200581cb9bc72dd0341aed94b76e0f456c229ce77d0c96c91d97d6a4f5e23d383028200581cb9bc72dd0341aed94b76e0f456c229ce77d0c96c91d97d6a4f5e23d3581c7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6");
@@ -818,14 +819,14 @@ TEST(CardanoSigning, AnyPlan1) {
     }
 }
 
-TEST(CardanoSigning, Delegate_and_Stake) {
-    const auto privateKeyData = parse_hex("089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448a3566990b7785bd48c330875b1e0d03caaed0e67cecc42075dce1c7a13b1c49240508848ac82f603391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf1290dbd508e5ec71afaea98da2df1533c22ef02a26bb87b31907d0b2738fb7785b38d53aa68fc01230784c9209b2b2a2faf28491b3b1f1d221e63e704bbd0403c4154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e");
+TEST(CardanoSigning, Delegate_and_Stake_similar53339b) {
+    const auto privateKeyData = parse_hex(privateKeyTest1);
     const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
-    EXPECT_EQ(ownAddress, "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23");
+    EXPECT_EQ(ownAddress, ownAddress1);
     const auto stakingKeyHash = subData(AddressV3(publicKey).bytes, 28, 28);
     EXPECT_EQ(hex(stakingKeyHash), "df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b"); // TODO obtain from API
-    const auto poolId = parse_hex("7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6");
+    const auto poolId = parse_hex(poolIdNufi);
 
     Proto::SigningInput input;
     auto* utxo1 = input.add_utxos();
@@ -894,7 +895,7 @@ TEST(CardanoSigning, Delegate_and_Stake) {
 
     EXPECT_EQ(output.error(), Common::Proto::OK);
 
-    // Similar to: https://cardanoscan.io/transaction/53339b758009a0896a87e9569cadcdb5a095ffe0c100cc7483d72e817e81b60b
+    // Similar to (but with different key): https://cardanoscan.io/transaction/53339b758009a0896a87e9569cadcdb5a095ffe0c100cc7483d72e817e81b60b
     const auto encoded = data(output.encoded());
     EXPECT_EQ(hex(encoded), "83a500828258209b06de86b253549b99f6a050b61217d8824085ca5ed4eb107a5e7cce4f93802e008258209b06de86b253549b99f6a050b61217d8824085ca5ed4eb107a5e7cce4f93802e01018182583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a01b2607a021a0002ceb6031a042a5c99048282008200581cdf22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b83028200581cdf22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b581c7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6a100828258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058405d8b21c993aec7a7bdf0c832e5688920b64b665e1e36a2e6040d6dd8ad195e7774df3c1377047737d8b676fa4115e38fbf6ef854904db6d9c8ee3e26e8561408825820e554163344aafc2bbefe778a6953ddce0583c2f8e0a0686929c020ca33e06932584088a3f6387693f9077d11a6e245e024b791074bcaa26c034e687d67f3324b6f90a437d33d0343e11c7dee1a28270c223e02080e452fe97cdc93d26c720ab6b805f6");
     const auto txid = data(output.tx_id());
