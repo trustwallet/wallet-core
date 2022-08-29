@@ -43,12 +43,14 @@ TEST(RippleTransaction, serialize) {
     auto account = Address("r9TeThyi5xiuUUrFjtPKZiHcDxs7K9H6Rb");
     auto destination = "r4BPgS7DHebQiU31xWELvZawwSG2fSPJ7C";
     auto tx1 = Transaction(
-       /* amount */25000000,
        /* fee */10,
        /* flags */0,
        /* sequence */2,
        /* last_ledger_sequence */0,
-       /* account */account,
+       /* account */account
+    );
+    tx1.createXrpPayment(
+       /* amount */25000000,
        /* destination */destination,
        /* destination_tag*/0
     );
@@ -56,12 +58,14 @@ TEST(RippleTransaction, serialize) {
     ASSERT_EQ(hex(serialized1), "120000220000000024000000026140000000017d784068400000000000000a81145ccb151f6e9d603f394ae778acf10d3bece874f68314e851bbbe79e328e43d68f43445368133df5fba5a");
 
     auto tx2 = Transaction(
-       /* amount */200000,
        /* fee */15,
        /* flags */0,
        /* sequence */144,
        /* last_ledger_sequence */0,
-       /* account */Address("rGWTUVmm1fB5QUjMYn8KfnyrFNgDiD9H9e"),
+       /* account */Address("rGWTUVmm1fB5QUjMYn8KfnyrFNgDiD9H9e")
+    );
+    tx2.createXrpPayment(
+       /* amount */200000,
        /* destination */"rw71Qs1UYQrSQ9hSgRohqNNQcyjCCfffkQ",
        /* destination_tag*/0
     );
@@ -69,12 +73,14 @@ TEST(RippleTransaction, serialize) {
     ASSERT_EQ(hex(serialized2), "12000022000000002400000090614000000000030d4068400000000000000f8114aa1bd19d9e87be8069fdbf6843653c43837c03c6831467fe6ec28e0464dd24fb2d62a492aac697cfad02");
 
     auto tx3 = Transaction(
-       /* amount */25000000,
        /* fee */12,
        /* flags */0,
        /* sequence */1,
        /* last_ledger_sequence */0,
-       /* account */Address("r4BPgS7DHebQiU31xWELvZawwSG2fSPJ7C"),
+       /* account */Address("r4BPgS7DHebQiU31xWELvZawwSG2fSPJ7C")
+    );
+    tx3.createXrpPayment(
+       /* amount */25000000,
        /* destination */"rBqSFEFg2B6GBMobtxnU1eLA1zbNC9NDGM",
        /* destination_tag*/4146942154
     );
@@ -82,12 +88,14 @@ TEST(RippleTransaction, serialize) {
     ASSERT_EQ(hex(serialized3), "120000220000000024000000012ef72d50ca6140000000017d784068400000000000000c8114e851bbbe79e328e43d68f43445368133df5fba5a831476dac5e814cd4aa74142c3ab45e69a900e637aa2");
 
     auto tx4 = Transaction(
-       /* amount */25000000,
        /* fee */12,
        /* flags */0,
        /* sequence */1,
        /* last_ledger_sequence */0,
-       /* account */Address("r4BPgS7DHebQiU31xWELvZawwSG2fSPJ7C"),
+       /* account */Address("r4BPgS7DHebQiU31xWELvZawwSG2fSPJ7C")
+    );
+    tx4.createXrpPayment(
+       /* amount */25000000,
        /* destination */"XVhidoXkozM5DTZFdDnJ5nYC8FPrTuJiyGh1VxSGS6RNJJ5",
        /* ignore destination_tag*/12345
     );
@@ -99,12 +107,14 @@ TEST(RippleTransaction, preImage) {
     auto account = Address("r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ");
     auto destination = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
     auto tx1 = Transaction(
-        /* amount */1000,
         /* fee */10,
         /* flags */2147483648,
         /* sequence */1,
         /* last_ledger_sequence */0,
-        /* account */account,
+        /* account */account
+    );
+    tx1.createXrpPayment(
+        /* amount */1000,
         /* destination */destination,
         /* destination_tag*/0
     );

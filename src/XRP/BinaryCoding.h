@@ -17,10 +17,19 @@ enum class FieldType;
 /// Encodes a field type.
 inline void encodeType(FieldType type, int key, std::vector<uint8_t>& data) {
     const auto typeValue = static_cast<int>(type);
-    if (key <= 0xf) {
-        data.push_back(static_cast<uint8_t>((typeValue << 4) | key));
+    if (static_cast<int>(typeValue) <= 0xf) {
+        if (key <= 0xf) {
+            data.push_back(static_cast<uint8_t>((typeValue << 4) | key));
+        } else {
+            data.push_back(static_cast<uint8_t>(typeValue << 4));
+            data.push_back(static_cast<uint8_t>(key));
+        }
+    } else if(key <= 0xf) {
+        data.push_back(static_cast<uint8_t>(key));
+        data.push_back(static_cast<uint8_t>(typeValue));
     } else {
-        data.push_back(static_cast<uint8_t>(typeValue << 4));
+        data.push_back(0);
+        data.push_back(static_cast<uint8_t>(typeValue));
         data.push_back(static_cast<uint8_t>(key));
     }
 }
@@ -45,6 +54,12 @@ inline void encodeVariableLength(size_t length, std::vector<uint8_t>& data) {
 inline void encodeBytes(std::vector<uint8_t> bytes, std::vector<uint8_t>& data) {
     encodeVariableLength(bytes.size(), data);
     data.insert(data.end(), bytes.begin(), bytes.end());
+}
+
+inline void encode0(int len, std::vector<uint8_t>& data) {
+    for (int i = 0; i < len; i++) {
+        data.push_back(0);
+    }
 }
 
 } // namespace TW::Ripple
