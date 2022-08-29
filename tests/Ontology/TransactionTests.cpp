@@ -25,9 +25,9 @@ TEST(OntologyTransaction, validity) {
     auto fromAddress = Address("AeicEjZyiXKgUeSBbYQHxsU1X3V5Buori5");
     auto toAddress = Address("APniYDGozkhUh8Tk7pe35aah2HGJ4fJfVd");
     uint64_t amount = 1;
-    std::list<boost::any> transferParam{fromAddress._data, toAddress._data, amount};
-    std::vector<boost::any> args{transferParam};
-    auto invokeCode = ParamsBuilder::buildNativeInvokeCode(ontContract, 0x00, "transfer", args);
+    NeoVmParamValue::ParamList transferParam{fromAddress._data, toAddress._data, amount};
+    NeoVmParamValue::ParamArray args{transferParam};
+    auto invokeCode = ParamsBuilder::buildNativeInvokeCode(ontContract, 0x00, "transfer", {args});
     uint8_t version = 0;
     uint8_t txType = 0xd1;
     uint32_t nonce = 1552759011;

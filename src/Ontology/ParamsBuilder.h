@@ -9,16 +9,26 @@
 #include "../BinaryCoding.h"
 #include "../Data.h"
 
-#include <boost/any.hpp>
-
 #include <array>
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <variant>
+#include <list>
 
 #include "Address.h"
 
 namespace TW::Ontology {
+
+struct NeoVmParamValue;
+
+struct NeoVmParamValue {
+    using ParamFixedArray = std::array<uint8_t, 20>;
+    using ParamList = std::list<std::variant<std::string, ParamFixedArray, Data, uint64_t>>;
+    using ParamArray = std::vector<std::variant<std::string, ParamFixedArray, Data, uint64_t, ParamList>>;
+    using ParamVariant = std::variant<std::string, ParamFixedArray, Data, uint64_t, ParamArray, ParamList>;
+    ParamVariant params;
+};
 
 class ParamsBuilder {
 
@@ -38,7 +48,7 @@ public:
 
     static Data fromMultiPubkey(uint8_t m, const std::vector<Data>& pubKeys);
 
-    static void buildNeoVmParam(ParamsBuilder& builder, const boost::any& param);
+    static void buildNeoVmParam(ParamsBuilder& builder, const NeoVmParamValue& param);
 
     static void buildNeoVmParam(ParamsBuilder& builder, const std::string& param);
 
@@ -79,9 +89,9 @@ public:
 
     static std::vector<uint8_t> buildNativeInvokeCode(const std::vector<uint8_t>& contractAddress,
                                                       uint8_t version, const std::string& method,
-                                                      const boost::any& params);
+                                                      const NeoVmParamValue& params);
 
-    static std::vector<uint8_t> buildOep4InvokeCode(const Address& contractAddress, const std::string& method, const boost::any& params);
+    static std::vector<uint8_t> buildOep4InvokeCode(const Address& contractAddress, const std::string& method, const NeoVmParamValue& params);
 };
 
 } // namespace TW::Ontology
