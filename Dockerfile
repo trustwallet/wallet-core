@@ -2,6 +2,7 @@ FROM ubuntu:22.04 AS base
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+
 # Install some basics
 RUN apt-get update \
     && apt-get install -y \
@@ -20,7 +21,14 @@ RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc | apt-key 
     && apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
 
 
-RUN wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb && dpkg -i ./libssl1.1_1.1.0g-2ubuntu4_amd64.deb
+ARG ARCH=amd64
+RUN if [ ${ARCH} == amd64 ] ; \
+    then \
+    wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb && dpkg -i ./libssl1.1_1.1.0g-2ubuntu4_amd64.deb ; \
+    else \ 
+    wget http://ports.ubuntu.com/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_arm64.deb && dpkg -i ./libssl1.1_1.1.0g-2ubuntu4_arm64.deb ; \
+    fi
+
 # Install required packages for dev
 RUN apt-get update \
     && apt-get install -y \
