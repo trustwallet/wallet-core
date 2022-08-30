@@ -81,7 +81,7 @@ Transaction TransactionFactory::fromESDTTransfer(const Proto::SigningInput &inpu
 
     std::string encodedTokenIdentifier = Codec::encodeString(transfer.token_identifier());
     std::string encodedAmount = Codec::encodeBigInt(transfer.amount());
-    std::string data = prepareFunctionCall("ESDTTransfer", {encodedTokenIdentifier, encodedAmount, transfer.data()});
+    std::string data = prepareFunctionCall("ESDTTransfer", {encodedTokenIdentifier, encodedAmount});
     uint64_t estimatedGasLimit = this->gasEstimator.forESDTTransfer(data.size());
 
     Transaction transaction;
@@ -144,10 +144,8 @@ std::string TransactionFactory::prepareFunctionCall(const std::string& function,
     result.append(function);
 
     for (auto argument : arguments) {
-        if (!argument.empty()) {
-            result.append(ARGUMENTS_SEPARATOR);
-            result.append(argument);
-        }
+        result.append(ARGUMENTS_SEPARATOR);
+        result.append(argument);
     }
 
     return result;

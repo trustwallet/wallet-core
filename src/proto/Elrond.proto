@@ -36,7 +36,6 @@ message ESDTTransfer {
     Accounts    accounts = 1;
     string      token_identifier = 2;
     string      amount = 3;
-    string      data = 4;
 }
 
 // ESDTNFT transfer (transfer NFTs, SFTs and Meta ESDTs).
