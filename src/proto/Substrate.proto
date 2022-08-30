@@ -17,6 +17,7 @@ message Balance {
     int32 method_index = 2;
     string to_address = 3;
     bytes value = 4; // BigInteger
+    string memo = 5; // max 32 chars
   }
   message BatchTransfer {
     int32 module_index = 1;
@@ -25,7 +26,7 @@ message Balance {
   }
   oneof message_oneof {
     Transfer transfer = 1;
-    BatchTransfer batchTransfer = 2;
+    BatchTransfer batch_transfer = 2;
   }
 }
 

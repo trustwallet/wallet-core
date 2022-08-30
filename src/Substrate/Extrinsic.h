@@ -59,6 +59,7 @@ class Extrinsic {
 
   protected:
     static bool encodeRawAccount(bool enableMultiAddress);
+    static Data encodeTransfer(const Proto::Balance::Transfer& transfer, int32_t network, bool enableMultiAddress);
     static Data encodeBalanceCall(const Proto::Balance& balance, int32_t network, uint32_t specVersion, bool enableMultiAddress);
     static Data encodeBatchCall(const std::vector<Data>& calls, int32_t moduleIndex, int32_t methodIndex);
     Data encodeEraNonceTip() const;

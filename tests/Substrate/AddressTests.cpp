@@ -12,6 +12,10 @@ namespace TW::Substrate {
 TEST(SubstrateAddress, Validation) {
     ASSERT_TRUE(Address::isValid("cEYtw6AVMB27hFUs4gVukajLM7GqxwxUfJkbPY3rNToHMcCgb", 64));
     ASSERT_FALSE(Address::isValid("JCViCkwMdGWKpf7Wogb8EFtDmaYTEZGEg6ah4svUPGnnpc7A", 64));
+
+    // polymesh
+    ASSERT_TRUE(Address::isValid("2DxwekgWwK7sqVeuXGmaXLZUvwnewLTs2rvU2CFKLgvvYwCG", 12));
+    ASSERT_FALSE(Address::isValid("JCViCkwMdGWKpf7Wogb8EFtDmaYTEZGEg6ah4svUPGnnpc7A", 12));
 }
 
 TEST(SubstrateAddress, FromPublicKey) {
@@ -24,6 +28,11 @@ TEST(SubstrateAddress, FromPublicKey) {
 
     auto addressParallel = Address(publicKey, 172);
     ASSERT_EQ(addressParallel.string(), "p8EGHjWt7e1MYoD7V6WXvbPZWK9GSJiiK85kv2R7Ur7FisPUL");
+
+    // polymesh
+    publicKey = PublicKey(parse_hex("849e2f6b165d4b28b39ef3d98f86c0520d82bc349536324365c10af08f323f83"), TWPublicKeyTypeED25519);
+    auto addressPolymesh = Address(publicKey, 12);
+    ASSERT_EQ(addressPolymesh.string(), "2FSoQykVV3uWe5ChZuazMDHBoaZmCPPuoYx5KHL5VqXooDQW");
 }
 
 TEST(SubstrateAddress, FromString) {
@@ -32,6 +41,10 @@ TEST(SubstrateAddress, FromString) {
 
     auto addressParallel = Address("p8EGHjWt7e1MYoD7V6WXvbPZWK9GSJiiK85kv2R7Ur7FisPUL", 172);
     ASSERT_EQ(addressParallel.string(), "p8EGHjWt7e1MYoD7V6WXvbPZWK9GSJiiK85kv2R7Ur7FisPUL");
+
+    // polymesh
+    auto addressPolymesh = Address("2FSoQykVV3uWe5ChZuazMDHBoaZmCPPuoYx5KHL5VqXooDQW", 12);
+    ASSERT_EQ(addressPolymesh.string(), "2FSoQykVV3uWe5ChZuazMDHBoaZmCPPuoYx5KHL5VqXooDQW");
 }
 
 TEST(SubstrateAddress, Keybytes) {
@@ -43,6 +56,10 @@ TEST(SubstrateAddress, Keybytes) {
 
     auto addressParallel = Address(publicKey, 172);
     ASSERT_EQ(addressParallel.keyBytes(), pubKeyBytes);
+
+    // polymesh
+    auto addressPolymesh = Address(publicKey, 12);
+    ASSERT_EQ(addressPolymesh.keyBytes(), pubKeyBytes);
 }
 
 } // namespace TW::Substrate

@@ -82,36 +82,43 @@ bool Extrinsic::encodeRawAccount(bool enableMultiAddress) {
     return !enableMultiAddress;
 }
 
+Data Extrinsic::encodeTransfer(const Proto::Balance::Transfer& transfer, int32_t network, bool enableMultiAddress) {
+    Data data;
+    auto address = FullSS58Address(transfer.to_address(), network);
+    auto value = load(transfer.value());
+    // call index
+    append(data, encodeCallIndex(transfer.module_index(), transfer.method_index()));
+    // destination
+    append(data, encodeAccountId(address.keyBytes(), encodeRawAccount(enableMultiAddress)));
+    // value
+    append(data, encodeCompact(value));
+    // memo
+    if (transfer.memo().length() > 0) {
+        append(data, 0x01);
+        auto memo = transfer.memo();
+        if (memo.length() < 32) {
+            // padding memo with space
+            memo.append(32 - memo.length(), ' ');
+        }
+        append(data, TW::data(memo));
+    }
+    return data;
+}
+
 Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance, int32_t network, [[maybe_unused]] uint32_t specVersion, bool enableMultiAddress) {
     Data data;
     if (balance.has_transfer()) {
         auto transfer = balance.transfer();
-        auto address = FullSS58Address(transfer.to_address(), network);
-        auto value = load(transfer.value());
-        // call index
-        append(data, encodeCallIndex(balance.transfer().module_index(), balance.transfer().method_index()));
-        // destination
-        append(data, encodeAccountId(address.keyBytes(), encodeRawAccount(enableMultiAddress)));
-        // value
-        append(data, encodeCompact(value));
-    } else if (balance.has_batchtransfer()) {
+        append(data, encodeTransfer(transfer, network, enableMultiAddress));
+    } else if (balance.has_batch_transfer()) {
         //init call array
         auto calls = std::vector<Data>();
-        auto batchTransfer = balance.batchtransfer().transfers();
+        auto batchTransfer = balance.batch_transfer().transfers();
         for (auto transfer : batchTransfer) {
-            Data itemData;
-            auto address = FullSS58Address(transfer.to_address(), network);
-            auto value = load(transfer.value());
-            // index
-            append(itemData, encodeCallIndex(transfer.module_index(), transfer.method_index()));
-            // destination
-            append(itemData, encodeAccountId(address.keyBytes(), encodeRawAccount(enableMultiAddress)));
-            // value
-            append(itemData, encodeCompact(value));
             // put into calls array
-            calls.push_back(itemData);
+            calls.push_back(encodeTransfer(transfer, network, enableMultiAddress));
         }
-        data = encodeBatchCall(calls, balance.batchtransfer().module_index(), balance.batchtransfer().method_index());
+        data = encodeBatchCall(calls, balance.batch_transfer().module_index(), balance.batch_transfer().method_index());
     }
 
     return data;
