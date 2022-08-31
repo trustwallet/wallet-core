@@ -37,6 +37,7 @@ This list is generated from [./registry.json](../registry.json)
 | 330     | Terra Classic    | LUNC   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/terra/info/logo.png" width="32" />        | <https://terra.money>         |
 | 354     | Polkadot         | DOT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polkadot/info/logo.png" width="32" />     | <https://polkadot.network/>   |
 | 394     | Crypto.org       | CRO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/cryptoorg/info/logo.png" width="32" />    | <https://crypto.org/>         |
+| 396     | Everscale        | EVER   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/everscale/info/logo.png" width="32" />    | <https://everscale.network/>  |
 | 397     | NEAR             | NEAR   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/near/info/logo.png" width="32" />         | <https://nearprotocol.com>    |
 | 425     | Aion             | AION   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aion/info/logo.png" width="32" />         | <https://aion.network>        |
 | 434     | Kusama           | KSM    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/kusama/info/logo.png" width="32" />       | <https://kusama.network>      |

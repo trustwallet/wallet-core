@@ -997,6 +997,34 @@
     }
   },
   {
+    "id": "everscale",
+    "name": "Everscale",
+    "coinId": 396,
+    "symbol": "EVER",
+    "decimals": 9,
+    "blockchain": "Everscale",
+    "derivation": [
+      {
+        "path": "m/44'/396'/0'/0/0"
+      }
+    ],
+    "curve": "ed25519",
+    "publicKeyType": "ed25519",
+    "explorer": {
+      "url": "https://everscan.io",
+      "txPath": "/transactions/",
+      "accountPath": "/accounts/",
+      "sampleTx": "781238b2b0d15cd4cd2e2a0a142753750cd5e1b2c8b506fcede75a90e02f1268",
+      "sampleAccount": "0:d2bf59964a05dee84a0dd1ddc0ad83ba44d49719cf843d689dc8b726d0fb59d8"
+    },
+    "info": {
+      "url": "https://everscale.network/",
+      "source": "https://github.com/tonlabs/evernode-ds",
+      "rpc": "https://evercloud.dev",
+      "documentation": "https://docs.everos.dev/evernode-platform/products/evercloud/get-started"
+    }
+  },
+  {
     "id": "near",
     "name": "NEAR",
     "coinId": 397,
