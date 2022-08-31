@@ -21,7 +21,8 @@ class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
-
+    /// Build the compile output
+    static Proto::SigningOutput compile(const Proto::SigningInput& input, const Data& signature) noexcept;
   public:
     static constexpr auto SignatureSuffix = "K1";
     static constexpr auto SignaturePrefix = "SIG_K1_";
@@ -30,7 +31,7 @@ class Signer {
     static Data signData(const PrivateKey& privKey, const Data& data);
 
     /// Used internally, encode signature to base58 with prefix. Ex.: "SIG_K1_K54CA1jmhgWrSdvrNrkokPyvqh7dwsSoQHNU9xgD3Ezf6cJySzhKeUubVRqmpYdnjoP1DM6SorroVAgrCu3qqvJ9coAQ6u"
-    static std::string signatureToBsase58(const Data& sig);
+    static std::string signatureToBase58(const Data& sig);
 
     /// Verify a signature, used in testing
     static bool verify(const PublicKey& pubKey, const Data& data, const Data& signature);
