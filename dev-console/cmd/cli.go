@@ -12,5 +12,7 @@ func main() {
 	fmt.Printf("%d\n", s.Size())
 	fmt.Println(native.IsMnemonicValid("name dash bleak force moral disease shine response menu rescue more will"))
 	wallet, _ := native.NewWalletWithMnemonic("name dash bleak force moral disease shine response menu rescue more will")
+	fmt.Printf("seed: [%s]\n", wallet.Seed())
+	fmt.Printf("mnemonic: [%s]\n", wallet.Mnemonic())
 	defer wallet.Delete()
 }

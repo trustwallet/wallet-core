@@ -24,3 +24,13 @@ func NewWalletWithMnemonic(mn string) (*Wallet, error) {
 func (self *Wallet) Delete() {
 	C.TWHDWalletDelete(self.wallet)
 }
+
+func (self *Wallet) Seed() string {
+	return TWDataHexString(C.TWHDWalletSeed(self.wallet))
+}
+
+func (self *Wallet) Mnemonic() string {
+	str := TWString{s: C.TWHDWalletMnemonic(self.wallet)}
+	defer str.Delete()
+	return str.String()
+}
