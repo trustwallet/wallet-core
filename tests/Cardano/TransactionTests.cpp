@@ -72,8 +72,8 @@ TEST(CardanoTransaction, minAdaAmount) {
     { // 10 policyId, 10 6-char asset names
         auto tb = TokenBundle();
         for (auto i = 0; i < 10; ++i) {
-            string policyId1 = +"012345678901234567890123456" + std::to_string(i);
-            string name = "ASSET" + std::to_string(i);
+            std::string policyId1 = +"012345678901234567890123456" + std::to_string(i);
+            std::string name = "ASSET" + std::to_string(i);
             tb.add(TokenAmount(policyId1, name, 0));
         }
         EXPECT_EQ(tb.minAdaAmount(), 3370367ul);
