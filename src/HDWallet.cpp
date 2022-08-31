@@ -130,7 +130,7 @@ PrivateKey HDWallet::getKeyByCurve(TWCurve curve, const DerivationPath& derivati
     auto node = getNode(*this, curve, derivationPath);
     switch (privateKeyType) {
     case TWPrivateKeyTypeCardano: {
-        if (derivationPath.indices.size() < 4 || derivationPath.indices[3].value > 1) {
+        if (derivationPath.indices.size() < 4) { // || derivationPath.indices[3].value > 1) {
             // invalid derivation path
             return PrivateKey(Data(PrivateKey::cardanoKeySize));
         }

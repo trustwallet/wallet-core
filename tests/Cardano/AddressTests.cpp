@@ -35,6 +35,9 @@ TEST(CardanoAddress, V3NetworkIdKind) {
 }
 
 TEST(CardanoAddress, Validation) {
+    ASSERT_TRUE(AddressV3::isValid("addr1qxteqxsgxrs4he9d28lh70qu7qfz7saj6dmxwsqyle2yp3xvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35quehtx3"));
+    ASSERT_TRUE(AddressV3::isValid("addr1q8sfzcwce0fqll3symd7f0amayxqq68nxt2u8pgen9y00tkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35q40ytea"));
+
     // valid V3 address
     ASSERT_TRUE(AddressV3::isValidLegacy("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"));
 
@@ -72,6 +75,114 @@ TEST(CardanoAddress, Validation) {
 }
 
 TEST(CardanoAddress, FromStringV2) {
+    {
+        const auto coin = TWCoinTypeCardano;
+        auto wallet = HDWallet("nation gallery regular lumber cattle sunset pen repair crystal sausage define unaware employ scale local", "");
+        {
+            const auto prik = wallet.getKey(coin, DerivationPath("m/1852'/1815'/0'/0/0"));
+            EXPECT_EQ(hex(prik.bytes), "20f63a2961b3b829c75a2efe067467bbbaab91790f0e04b8421fca21355fb64352c0bb10f084126323d72753a32f6eca84057ca290eb2d947f0d98c30663f0e9c6bb5d7a27bed7b6323acdbc7343a59820e9260d089f533e603653d7c502cb0208aa67a101e6e0d100b22d247c05a7b92732d73f76deca4a90185af6335fb643c1336e7f19ef030c641bf0bbe6e4a560c7876f6c83e8e38e8deb6dbf2fcda5ed8462d2123181dd712e3fa359f116b04dfbd52c0ebff8ab93354f45f10b6eca45");
+            const auto pubk = prik.getPublicKey(TWPublicKeyTypeED25519Cardano);
+            EXPECT_EQ(hex(pubk.bytes), "65d6f4da4c7e6354664477078468751d5844603e0298d87b210a4a1b3084ff98c6bb5d7a27bed7b6323acdbc7343a59820e9260d089f533e603653d7c502cb0292ca29f2ec2f81df5c2256f6715b35f9db0f2c9cde616d440ffbad420bfc75b08462d2123181dd712e3fa359f116b04dfbd52c0ebff8ab93354f45f10b6eca45");
+            const auto pubk1 = TW::subData(pubk.bytes, 0, 32);
+            const auto pubk2 = TW::subData(pubk.bytes, 64, 32);
+            EXPECT_EQ(hex(pubk1), "65d6f4da4c7e6354664477078468751d5844603e0298d87b210a4a1b3084ff98");
+            EXPECT_EQ(hex(pubk2), "92ca29f2ec2f81df5c2256f6715b35f9db0f2c9cde616d440ffbad420bfc75b0");
+            const auto h1 = Hash::blake2b(pubk1.data(), pubk1.size(), AddressV3::HashSize);
+            const auto h2 = Hash::blake2b(pubk2.data(), pubk2.size(), AddressV3::HashSize);
+            EXPECT_EQ(hex(h1), "0ba84307a0fcfc7a47dc6b747a2bcaf0a96e4373b86f10c3f019623f");
+            EXPECT_EQ(hex(h2), "b9bc72dd0341aed94b76e0f456c229ce77d0c96c91d97d6a4f5e23d3");
+    
+            const auto addr = Cardano::AddressV3(pubk);
+            EXPECT_EQ(addr.string(), "addr1qy96ssc85r70c7j8m34hg73tetc2jmjrwwux7yxr7qvky0aeh3ed6q6p4mv5kahq73tvy2wwwlgvjmy3m97k5n67y0fs5ey8cj");
+        }
+        {
+            const auto prik = wallet.getKey(coin, DerivationPath("m/1852'/1815'/0'/1/0"));
+            const auto pubk = prik.getPublicKey(TWPublicKeyTypeED25519Cardano);
+            const auto addr = Cardano::AddressV3(pubk);
+            EXPECT_EQ(addr.string(), "addr1q8jrmxh2d2zmy9yg2pwzwd9l509sjlscv47sdmdqcvdswz9eh3ed6q6p4mv5kahq73tvy2wwwlgvjmy3m97k5n67y0fsy2sfzp");
+        }
+        /*
+        auto wallet = HDWallet("cost dash dress stove morning robust group affair stomach vacant route volume yellow salute laugh", "");
+        {
+            const auto prik = wallet.getKey(coin, DerivationPath("m/1852'/1815'/0'/0/0"));
+            EXPECT_EQ(hex(prik.bytes), "e8c8c5b2df13f3abed4e6b1609c808e08ff959d7e6fc3d849e3f2880550b574437aa559095324d78459b9bb2da069da32337e1cc5da78f48e1bd084670107f3110f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26fae0d152bb611cb9ff34e945e4ff627e6fba81da687a601a879759cd76530b5744424db69a75edd4780a5fbc05d1a3c84ac4166ff8e424808481dd8e77627ce5f5bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276");
+            //const auto prik = parse_hex("e8c8c5b2df13f3abed4e6b1609c808e08ff959d7e6fc3d849e3f2880550b574437aa559095324d78459b9bb2da069da32337e1cc5da78f48e1bd084670107f3110f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26fae0d152bb611cb9ff34e945e4ff627e6fba81da687a601a879759cd76530b5744424db69a75edd4780a5fbc05d1a3c84ac4166ff8e424808481dd8e77627ce5f5bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276");
+            //const auto prikk = PrivateKey(prik);
+            const auto pubk = prik.getPublicKey(TWPublicKeyTypeED25519Cardano);
+            EXPECT_EQ(hex(pubk.bytes), "fafa7eb4146220db67156a03a5f7a79c666df83eb31abbfbe77c85e06d40da31" "10f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26fa" "f4b8d5201961e68f2e177ba594101f513ee70fe70a41324e8ea8eb787ffda6f4" "bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276");
+            const auto pubk1 = TW::subData(pubk.bytes, 0, 32);
+            const auto pubk2 = TW::subData(pubk.bytes, 64, 32);
+            EXPECT_EQ(hex(pubk1), "fafa7eb4146220db67156a03a5f7a79c666df83eb31abbfbe77c85e06d40da31");// "10f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26fa");
+            EXPECT_EQ(hex(pubk2), "f4b8d5201961e68f2e177ba594101f513ee70fe70a41324e8ea8eb787ffda6f4");// "bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276");
+            const auto h1 = Hash::blake2b(pubk1.data(), pubk1.size(), AddressV3::HashSize);
+            const auto h2 = Hash::blake2b(pubk2.data(), pubk2.size(), AddressV3::HashSize);
+            EXPECT_EQ(hex(h1), "8d98bea0414243dc84070f96265577e7e6cf702d62e871016885034e");
+            EXPECT_EQ(hex(h2), "cc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468");
+    
+            const auto addr = Cardano::AddressV3(pubk);
+            EXPECT_EQ(addr.string(), "addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq");
+        }
+        {
+            const auto prik = wallet.getKey(coin, DerivationPath("m/1852'/1815'/0'/1/0"));
+            //EXPECT_EQ(hex(prik.bytes), "28aa0ff4cb5330c99e6ba209693c8bc14ac23402b873db732d3297514f0b57440606dc1ab2c17bc30227193fcd96eaea16f75602b82dd480b022a5a6c165a6697b8e5fd6ed5093502b54cfee96d196660c3e8a300873efed6ec984a3b14bc3a7e0d152bb611cb9ff34e945e4ff627e6fba81da687a601a879759cd76530b5744424db69a75edd4780a5fbc05d1a3c84ac4166ff8e424808481dd8e77627ce5f5bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276");
+            const auto pubk = prik.getPublicKey(TWPublicKeyTypeED25519Cardano);
+            //EXPECT_EQ(hex(pubk.bytes), "278ca2d49126774016e43d9f20442ea9d75aee403c32408c0fcc784440158c1e" "7b8e5fd6ed5093502b54cfee96d196660c3e8a300873efed6ec984a3b14bc3a7" "f4b8d5201961e68f2e177ba594101f513ee70fe70a41324e8ea8eb787ffda6f4" "bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276");
+            //const auto pubk1 = TW::subData(pubk.bytes, 0, 32);
+            //const auto pubk2 = TW::subData(pubk.bytes, 64, 32);
+            //EXPECT_EQ(hex(pubk1), "278ca2d49126774016e43d9f20442ea9d75aee403c32408c0fcc784440158c1e");
+            //EXPECT_EQ(hex(pubk2), "f4b8d5201961e68f2e177ba594101f513ee70fe70a41324e8ea8eb787ffda6f4");
+            //const auto h1 = Hash::blake2b(pubk1.data(), pubk1.size(), AddressV3::HashSize);
+            //const auto h2 = Hash::blake2b(pubk2.data(), pubk2.size(), AddressV3::HashSize);
+            //EXPECT_EQ(hex(h1), "e09161d8cbd20ffe3026dbe4bfbbe90c0068f332d5c385199948f7ae");
+            //EXPECT_EQ(hex(h2), "cc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468");
+            const auto addr = Cardano::AddressV3(pubk);
+            EXPECT_EQ(addr.string(), "addr1q8sfzcwce0fqll3symd7f0amayxqq68nxt2u8pgen9y00tkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35q40ytea");
+        }
+        */
+
+        // addr1q9dztmrl7m4p8rr5l7tzeypwgmkss5ut0hk8p0jdv3cywdgnh4tc8vp7pq6cwchuxtvzscsxzzs8wcrks4a8k73mrw7q8knuek
+        for (auto j = 0; j < 1; ++j) {
+            std::cout << "\nj " << j << "\n";
+            for (auto i = 0; i < 12; ++i) {
+                const auto pr = wallet.getKey(coin, DerivationPath("m/1852'/1815'/0'/" + std::to_string(j) + "/" + std::to_string(i)));
+                //if (j>=2) std::cout << hex(pr.bytes) << "\n";
+                const auto pu = pr.getPublicKey(TWPublicKeyTypeED25519Cardano);
+                //if (j>=2) std::cout << hex(pu.bytes) << "\n";
+                const auto pu1 = TW::subData(pu.bytes, 0, 32);
+                const auto pu2 = TW::subData(pu.bytes, 64, 32);
+                const auto h1 = Hash::blake2b(pu1.data(), pu1.size(), AddressV3::HashSize);
+                const auto h2 = Hash::blake2b(pu2.data(), pu2.size(), AddressV3::HashSize);
+
+                const auto ad = Cardano::AddressV3(pu);
+                if (ad.string().starts_with("addr1q9d")) {
+                    std::cout << j << " " << i << " " << hex(h1) << " " << hex(h2) << "  " << ad.string() << "\n"; // << " " << hex(ad.data()) << "\n";
+                } else {
+                    std::cout << i << " ";
+                }
+            }
+        }
+        std::cout << "\n";
+    }
+    {
+        auto address = AddressV3("addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq");
+        EXPECT_EQ(address.kind, AddressV3::Kind_Base);
+        EXPECT_EQ(hex(address.data()), "01" "8d98bea0414243dc84070f96265577e7e6cf702d62e871016885034e" "cc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468");
+    }
+    {
+        auto address = AddressV3("addr1qxteqxsgxrs4he9d28lh70qu7qfz7saj6dmxwsqyle2yp3xvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35quehtx3");
+        EXPECT_EQ(address.kind, AddressV3::Kind_Base);
+        EXPECT_EQ(hex(address.data()), "01" "97901a0830e15be4ad51ff7f3c1cf0122f43b2d376674004fe5440c4" "cc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468");
+    }
+    {
+        auto address = AddressV3("addr1q8sfzcwce0fqll3symd7f0amayxqq68nxt2u8pgen9y00tkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35q40ytea");
+        EXPECT_EQ(address.kind, AddressV3::Kind_Base);
+        EXPECT_EQ(hex(address.data()), "01" "e09161d8cbd20ffe3026dbe4bfbbe90c0068f332d5c385199948f7ae" "cc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468");
+    }
+
+    {
+        auto address = AddressV3("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvx");
+        ASSERT_EQ(address.string(), "Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvx");
+    }
     {
         auto address = AddressV3("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvx");
         ASSERT_EQ(address.string(), "Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvx");
