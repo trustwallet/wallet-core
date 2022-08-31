@@ -10,6 +10,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Blockchain enum type
 TW_EXPORT_ENUM(uint32_t)
 enum TWBlockchain {
     TWBlockchainBitcoin = 0,
@@ -52,6 +53,7 @@ enum TWBlockchain {
     TWBlockchainRonin = 39, // Ethereum
     TWBlockchainKusama = 40, // Polkadot
     TWBlockchainNervos = 41,
+    TWBlockchainEverscale = 42,
 };
 
 TW_EXTERN_C_END

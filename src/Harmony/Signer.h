@@ -62,13 +62,13 @@ class Signer {
 
     /// Signs a hash with the given private key for the given chain identifier.
     ///
-    /// @returns the r, s, and v values of the transaction signature
+    /// \returns the r, s, and v values of the transaction signature
     static std::tuple<uint256_t, uint256_t, uint256_t>
     sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data& hash) noexcept;
 
     /// R, S, and V values for the given chain identifier and signature.
     ///
-    /// @returns the r, s, and v values of the transaction signature
+    /// \returns the r, s, and v values of the transaction signature
     static std::tuple<uint256_t, uint256_t, uint256_t> values(const uint256_t &chainID,
                                                               const Data& signature) noexcept;
 

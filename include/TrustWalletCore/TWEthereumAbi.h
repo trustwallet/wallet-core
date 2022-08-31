@@ -10,24 +10,34 @@
 #include "TWString.h"
 #include "TWData.h"
 
-// Wrapper class for Ethereum ABI encoding & decoding.
-
 TW_EXTERN_C_BEGIN
 
+/// Wrapper class for Ethereum ABI encoding & decoding.
 struct TWEthereumAbiFunction;
 
 TW_EXPORT_STRUCT
 struct TWEthereumAbi;
 
 /// Encode function to Eth ABI binary
+///
+/// \param fn Non-null Eth abi function
+/// \return Non-null encoded block of data
 TW_EXPORT_STATIC_METHOD
 TWData* _Nonnull TWEthereumAbiEncode(struct TWEthereumAbiFunction* _Nonnull fn);
 
 /// Decode function output from Eth ABI binary, fill output parameters
+///
+/// \param[in] fn Non-null Eth abi function
+/// \param[out] encoded Non-null block of data
+/// \return true if encoded have been filled correctly, false otherwise
 TW_EXPORT_STATIC_METHOD
 bool TWEthereumAbiDecodeOutput(struct TWEthereumAbiFunction* _Nonnull fn, TWData* _Nonnull encoded);
 
 /// Decode function call data to human readable json format, according to input abi json
+///
+/// \param data Non-null block of data
+/// \param abi Non-null string
+/// \return Non-null json string function call data
 TW_EXPORT_STATIC_METHOD
 TWString* _Nullable TWEthereumAbiDecodeCall(TWData* _Nonnull data, TWString* _Nonnull abi);
 
@@ -66,6 +76,9 @@ TWString* _Nullable TWEthereumAbiDecodeCall(TWData* _Nonnull data, TWString* _No
 ///  })");
 /// On error, empty Data is returned.
 /// Returned data must be deleted (hint: use WRAPD() macro).
+///
+/// \param messageJson Non-null json abi input
+/// \return Non-null block of data, encoded abi input
 TW_EXPORT_STATIC_METHOD
 TWData* _Nonnull TWEthereumAbiEncodeTyped(TWString* _Nonnull messageJson);
 

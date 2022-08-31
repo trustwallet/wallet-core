@@ -4,15 +4,18 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Tezos/BinaryCoding.h"
+#include "HDWallet.h"
 #include "HexCoding.h"
-#include "PublicKey.h"
 #include "PrivateKey.h"
+#include "PublicKey.h"
+#include "Tezos/Address.h"
+#include "Tezos/BinaryCoding.h"
 #include "Tezos/Forging.h"
 #include "proto/Tezos.pb.h"
 #include <TrustWalletCore/TWCoinType.h>
-#include <gtest/gtest.h>
 #include <array>
+#include <gtest/gtest.h>
+#include <string>
 
 namespace TW::Tezos::tests {
 
@@ -106,6 +109,31 @@ TEST(Forging, ForgePublicKey) {
     ASSERT_EQ(hex(output), expected);
 }
 
+TEST(Forging, ForgeInt32) {
+    auto expected = "01";
+    ASSERT_EQ(hex(forgeInt32(1, 1)), expected);
+}
+
+TEST(Forging, ForgeString) {
+    auto expected = "087472616e73666572";
+    ASSERT_EQ(hex(forgeString("transfer", 1)), expected);
+}
+
+TEST(Forging, ForgeEntrypoint) {
+    auto expected = "ff087472616e73666572";
+    ASSERT_EQ(hex(forgeEntrypoint("transfer")), expected);
+}
+
+TEST(Forging, ForgeMichelsonFA12) {
+    Tezos::Proto::FA12Parameters data;
+    data.set_entrypoint("transfer");
+    data.set_from("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
+    data.set_to("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
+    data.set_value("123");
+    auto v = FA12ParameterToMichelson(data);
+    ASSERT_EQ(hex(forgeMichelson(v)), "07070100000024747a31696f7a36326b447736476d35484170655174633150476d4e32775042744a4b555007070100000024747a31696f7a36326b447736476d35484170655174633150476d4e32775042744a4b555000bb01");
+}
+
 TEST(TezosTransaction, forgeTransaction) {
     auto transactionOperationData = new TW::Tezos::Proto::TransactionOperationData();
     transactionOperationData->set_amount(1);
@@ -124,6 +152,56 @@ TEST(TezosTransaction, forgeTransaction) {
     auto serialized = forgeOperation(transactionOperation);
 
     ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);
+}
+
+TEST(TezosTransaction, forgeTransactionFA12) {
+    auto transactionOperationData = new TW::Tezos::Proto::TransactionOperationData();
+    transactionOperationData->set_amount(0);
+    transactionOperationData->set_destination("KT1EwXFWoG9bYebmF4pYw72aGjwEnBWefgW5");
+    transactionOperationData->mutable_parameters()->mutable_fa12_parameters()->set_from("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
+    transactionOperationData->mutable_parameters()->mutable_fa12_parameters()->set_to("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
+    transactionOperationData->mutable_parameters()->mutable_fa12_parameters()->set_entrypoint("transfer");
+    transactionOperationData->mutable_parameters()->mutable_fa12_parameters()->set_value("123");
+
+    auto transactionOperation = TW::Tezos::Proto::Operation();
+    transactionOperation.set_source("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
+    transactionOperation.set_fee(100000);
+    transactionOperation.set_counter(2993172);
+    transactionOperation.set_gas_limit(100000);
+    transactionOperation.set_storage_limit(0);
+    transactionOperation.set_kind(TW::Tezos::Proto::Operation::TRANSACTION);
+    transactionOperation.set_allocated_transaction_operation_data(transactionOperationData);
+
+    auto expected = "6c00fe2ce0cccc0214af521ad60c140c5589b4039247a08d0694d8b601a08d0600000145bd8a65cc48159d8ea60a55df735b7c5ad45f0e00ffff087472616e736665720000005907070100000024747a31696f7a36326b447736476d35484170655174633150476d4e32775042744a4b555007070100000024747a31696f7a36326b447736476d35484170655174633150476d4e32775042744a4b555000bb01";
+    auto serialized = forgeOperation(transactionOperation);
+
+    ASSERT_EQ(hex(serialized), expected);
+}
+
+TEST(TezosTransaction, forgeTransactionFA2) {
+    auto transactionOperationData = new TW::Tezos::Proto::TransactionOperationData();
+    transactionOperationData->set_amount(0);
+    transactionOperationData->set_destination("KT1DYk1XDzHredJq1EyNkDindiWDqZyekXGj");
+    auto& fa2 = *transactionOperationData->mutable_parameters()->mutable_fa2_parameters();
+    fa2.set_entrypoint("transfer");
+    auto& txObject = *fa2.add_txs_object();
+    txObject.set_from("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
+    auto& tx = *txObject.add_txs();
+    tx.set_amount("10");
+    tx.set_token_id("0");
+    tx.set_to("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
+
+    auto transactionOperation = TW::Tezos::Proto::Operation();
+    transactionOperation.set_source("tz1ioz62kDw6Gm5HApeQtc1PGmN2wPBtJKUP");
+    transactionOperation.set_fee(100000);
+    transactionOperation.set_counter(2993173);
+    transactionOperation.set_gas_limit(100000);
+    transactionOperation.set_storage_limit(0);
+    transactionOperation.set_kind(TW::Tezos::Proto::Operation::TRANSACTION);
+    transactionOperation.set_allocated_transaction_operation_data(transactionOperationData);
+    auto serialized = forgeOperation(transactionOperation);
+    auto expected = "6c00fe2ce0cccc0214af521ad60c140c5589b4039247a08d0695d8b601a08d0600000136767f88850bae28bfb9f46b73c5e87ede4de12700ffff087472616e7366657200000066020000006107070100000024747a31696f7a36326b447736476d35484170655174633150476d4e32775042744a4b5550020000003107070100000024747a31696f7a36326b447736476d35484170655174633150476d4e32775042744a4b555007070000000a";
+    ASSERT_EQ(hex(serialized), expected);
 }
 
 TEST(TezosTransaction, forgeReveal) {

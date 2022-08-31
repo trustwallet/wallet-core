@@ -1,0 +1,50 @@
+// Copyright © 2017-2022 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+syntax = "proto3";
+
+package TW.Everscale.Proto;
+option java_package = "wallet.core.jni.proto";
+
+enum MessageBehavior {
+    SimpleTransfer = 0; // Sends a message with the specified amount. The sender pays a fee from the account balance
+    SendAllBalance = 1; // Sends the entire account balance along with the message
+}
+
+message Transfer {
+    // If set to true, then the message will be returned if there is an error on the recipient's side.
+    bool bounce = 1;
+
+    // Affect the attached amount and fees
+    MessageBehavior behavior = 2;
+
+    // Amount to send in nano EVER
+    uint64 amount = 3;
+
+    // Expiration UNIX timestamp
+    uint32 expired_at = 4;
+
+    // Recipient address
+    string to = 5;
+
+    // Account state if there is any
+    oneof account_state_oneof {
+        // Just contract data
+        string encoded_contract_data = 6;
+    }
+}
+
+message SigningInput {
+    oneof action_oneof {
+        Transfer transfer = 1;
+    }
+
+    bytes private_key = 2;
+}
+
+message SigningOutput {
+    string encoded = 1;
+}

@@ -45,7 +45,7 @@ class PublicKey {
 
     /// Initializes a public key with a collection of bytes.
     ///
-    /// @throws std::invalid_argument if the data is not a valid public key.
+    /// \throws std::invalid_argument if the data is not a valid public key.
     explicit PublicKey(const Data& data, enum TWPublicKeyType type);
 
     /// Determines if this is a compressed public key.
