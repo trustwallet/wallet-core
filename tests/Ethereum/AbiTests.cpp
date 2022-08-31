@@ -10,7 +10,7 @@
 
 #include <gtest/gtest.h>
 
-namespace TW::Ethereum::ABI {
+namespace TW::Ethereum::ABI::tests {
 
 ///// Parameter types
 
@@ -1643,4 +1643,4 @@ TEST(EthereumAbi, ParametersMethods) {
     EXPECT_EQ(hex(p.hashStruct()), "755311b9e2cee471a91b161ccc5deed933d844b5af2b885543cc3c04eb640983");
 }
 
-} // namespace TW::Ethereum::ABI
+} // namespace TW::Ethereum::ABI::tests

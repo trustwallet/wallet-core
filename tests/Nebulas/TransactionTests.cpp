@@ -11,11 +11,11 @@
 
 #include <gtest/gtest.h>
 
+extern std::string htmlescape(const std::string& str);
+
 namespace TW::Nebulas::tests {
 
 using namespace std;
-
-extern std::string htmlescape(const std::string& str);
 
 TEST(NebulasTransaction, serialize) {
     auto from = Address("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");

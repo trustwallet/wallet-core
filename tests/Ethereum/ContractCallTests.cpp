@@ -10,9 +10,9 @@
 #include <fstream>
 #include <gtest/gtest.h>
 
-namespace TW::Ethereum::ABI {
-
 extern std::string TESTS_ROOT;
+
+namespace TW::Ethereum::ABI::tests {
 
 static nlohmann::json load_json(std::string path) {
     std::ifstream stream(path);
@@ -217,4 +217,4 @@ TEST(ContractCall, TupleNested) {
     EXPECT_EQ(decoded.value(), expected);
 }
 
-} // namespace TW::Ethereum::ABI
+} // namespace TW::Ethereum::ABI::tests
