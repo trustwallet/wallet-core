@@ -18,28 +18,35 @@
 using namespace TW;
 using namespace TW::Ontology;
 
-void ParamsBuilder::buildNeoVmParam(ParamsBuilder& builder, const boost::any& param) {
-    if (param.type() == typeid(std::string)) {
-        builder.push(boost::any_cast<std::string>(param));
-    } else if (param.type() == typeid(std::array<uint8_t, 20>)) {
-        builder.push(boost::any_cast<std::array<uint8_t, 20>>(param));
-    } else if (param.type() == typeid(Data)) {
-        builder.push(boost::any_cast<Data>(param));
-    } else if (param.type() == typeid(uint64_t)) {
-        builder.push(boost::any_cast<uint64_t>(param));
-    } else if (param.type() == typeid(std::vector<boost::any>)) {
-        auto paramVec = boost::any_cast<std::vector<boost::any>>(param);
-        for (const auto& item : paramVec) {
-            ParamsBuilder::buildNeoVmParam(builder, item);
+void ParamsBuilder::buildNeoVmParam(ParamsBuilder& builder, const NeoVmParamValue& param) {
+
+    if (auto* paramStr = std::get_if<std::string>(&param.params); paramStr) {
+        builder.push(*paramStr);
+    } else if (auto* paramFixedArray = std::get_if<NeoVmParamValue::ParamFixedArray>(&param.params); paramFixedArray) {
+        builder.push(*paramFixedArray);
+    } else if (auto* paramData = std::get_if<Data>(&param.params); paramData) {
+        builder.push(*paramData);
+    } else if (auto* paramInteger = std::get_if<uint64_t>(&param.params); paramInteger) {
+        builder.push(*paramInteger);
+    } else if (auto* paramArray = std::get_if<NeoVmParamValue::ParamArray>(&param.params); paramArray) {
+        for (auto&& item : *paramArray) {
+            std::visit([&builder](auto&& arg) {
+                NeoVmParamValue::ParamVariant value = arg;
+                ParamsBuilder::buildNeoVmParam(builder, {value});
+            },
+                       item);
         }
-        builder.push(static_cast<uint8_t>(paramVec.size()));
+        builder.push(static_cast<uint8_t>(paramArray->size()));
         builder.pushBack(PACK);
-    } else if (param.type() == typeid(std::list<boost::any>)) {
+    } else if (auto* paramList = std::get_if<NeoVmParamValue::ParamList>(&param.params); paramList) {
         builder.pushBack(PUSH0);
         builder.pushBack(NEW_STRUCT);
         builder.pushBack(TO_ALT_STACK);
-        for (auto const& p : boost::any_cast<std::list<boost::any>>(param)) {
-            ParamsBuilder::buildNeoVmParam(builder, p);
+        for (auto const& p : *paramList) {
+            std::visit([&builder](auto&& arg) {
+                NeoVmParamValue::ParamVariant value = arg;
+                ParamsBuilder::buildNeoVmParam(builder, {value});
+            }, p);
             builder.pushBack(DUP_FROM_ALT_STACK);
             builder.pushBack(SWAP);
             builder.pushBack(HAS_KEY);
@@ -221,7 +228,7 @@ Data ParamsBuilder::fromMultiPubkey(uint8_t m, const std::vector<Data>& pubKeys)
 }
 
 Data ParamsBuilder::buildNativeInvokeCode(const Data& contractAddress, uint8_t version,
-                                          const std::string& method, const boost::any& params) {
+                                          const std::string& method, const NeoVmParamValue& params) {
     ParamsBuilder builder;
     ParamsBuilder::buildNeoVmParam(builder, params);
     builder.push(Data(method.begin(), method.end()));
@@ -233,7 +240,7 @@ Data ParamsBuilder::buildNativeInvokeCode(const Data& contractAddress, uint8_t v
     return builder.getBytes();
 }
 
-Data ParamsBuilder::buildOep4InvokeCode(const Address& contractAddress, const std::string& method, const boost::any& params) {
+Data ParamsBuilder::buildOep4InvokeCode(const Address& contractAddress, const std::string& method, const NeoVmParamValue& params) {
     ParamsBuilder builder;
     ParamsBuilder::buildNeoVmParam(builder, params);
     builder.push(method);
