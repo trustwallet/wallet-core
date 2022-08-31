@@ -28,6 +28,14 @@ const auto privateKeyTest1 = "089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448
 const auto ownAddress1 = "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23";
 const auto sundaeTokenPolicy = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77";
 
+TEST(CardanoSigning, Decode) {
+    const auto rawtx = parse_hex("a50081825820acc1d7fd4c16464c0f9ee9f4d3b67583b4f0581e6446a35aad8c886104f1a4c8030181825839010ba84307a0fcfc7a47dc6b747a2bcaf0a96e4373b86f10c3f019623fb9bc72dd0341aed94b76e0f456c229ce77d0c96c91d97d6a4f5e23d31a01b7b28a021a0002ceb6031a042934c0048282008200581cb9bc72dd0341aed94b76e0f456c229ce77d0c96c91d97d6a4f5e23d383028200581cb9bc72dd0341aed94b76e0f456c229ce77d0c96c91d97d6a4f5e23d3581c7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6");
+    const auto decode = Cbor::Decode(rawtx);
+    ASSERT_TRUE(decode.isValid());
+    EXPECT_EQ(decode.getMapElements().size(), 5ul);
+    EXPECT_EQ(decode.dumpToString(), "{0: [[h\"acc1d7fd4c16464c0f9ee9f4d3b67583b4f0581e6446a35aad8c886104f1a4c8\", 3]], 1: [[h\"010ba84307a0fcfc7a47dc6b747a2bcaf0a96e4373b86f10c3f019623fb9bc72dd0341aed94b76e0f456c229ce77d0c96c91d97d6a4f5e23d3\", 28816010]], 2: 183990, 3: 69809344, 4: [[0, [0, h\"b9bc72dd0341aed94b76e0f456c229ce77d0c96c91d97d6a4f5e23d3\"]], [2, [0, h\"b9bc72dd0341aed94b76e0f456c229ce77d0c96c91d97d6a4f5e23d3\"], h\"7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6\"]]}");
+}
+
 TEST(CardanoSigning, SelectInputs) {
     const auto inputs = std::vector<TxInput>({
         TxInput{{parse_hex("0001"), 0}, "ad01", 700, {}},
