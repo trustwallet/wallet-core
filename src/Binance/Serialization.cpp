@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,9 +11,7 @@
 #include "Ethereum/Address.h"
 #include "../HexCoding.h"
 
-using namespace TW;
-using namespace TW::Binance;
-using namespace google::protobuf;
+namespace TW::Binance {
 
 using json = nlohmann::json;
 
@@ -27,7 +25,7 @@ static inline std::string validatorAddress(const std::string& bytes) {
     return Bech32Address(Address::hrpValidator, data).string();
 }
 
-json Binance::signatureJSON(const Proto::SigningInput& input) {
+json signatureJSON(const Proto::SigningInput& input) {
     json j;
     j["account_number"] = std::to_string(input.account_number());
     j["chain_id"] = input.chain_id();
@@ -39,7 +37,7 @@ json Binance::signatureJSON(const Proto::SigningInput& input) {
     return j;
 }
 
-json Binance::orderJSON(const Proto::SigningInput& input) {
+json orderJSON(const Proto::SigningInput& input) {
     json j;
     if (input.has_trade_order()) {
         j["id"] = input.trade_order().id();
@@ -98,7 +96,7 @@ json Binance::orderJSON(const Proto::SigningInput& input) {
         j["type"] = "cosmos-sdk/MsgSideChainDelegate";
         j["value"] = {
             {"delegator_addr", addressString(input.side_delegate_order().delegator_addr())},
-            {"validator_addr",validatorAddress(input.side_delegate_order().validator_addr())},
+            {"validator_addr", validatorAddress(input.side_delegate_order().validator_addr())},
             {"delegation", tokenJSON(input.side_delegate_order().delegation(), true)},
             {"side_chain_id", input.side_delegate_order().chain_id()},
         };
@@ -131,7 +129,7 @@ json Binance::orderJSON(const Proto::SigningInput& input) {
         j["description"] = input.time_relock_order().description();
         // if amount is empty or omitted, set null to avoid signature verification error
         j["amount"] = nullptr;
-        if (amount.size() > 0) {
+        if (!amount.empty()) {
             j["amount"] = tokensJSON(amount);
         }
         j["lock_time"] = input.time_relock_order().lock_time();
@@ -142,30 +140,26 @@ json Binance::orderJSON(const Proto::SigningInput& input) {
     return j;
 }
 
-json Binance::inputsJSON(const Proto::SendOrder& order) {
+json inputsJSON(const Proto::SendOrder& order) {
     json j = json::array();
     for (auto& input : order.inputs()) {
-        j.push_back({
-            {"address", addressString(input.address())},
-            {"coins", tokensJSON(input.coins())}
-        });
+        j.push_back({{"address", addressString(input.address())},
+                     {"coins", tokensJSON(input.coins())}});
     }
     return j;
 }
 
-json Binance::outputsJSON(const Proto::SendOrder& order) {
+json outputsJSON(const Proto::SendOrder& order) {
     json j = json::array();
     for (auto& output : order.outputs()) {
-        j.push_back({
-            {"address", addressString(output.address())},
-            {"coins", tokensJSON(output.coins())}
-        });
+        j.push_back({{"address", addressString(output.address())},
+                     {"coins", tokensJSON(output.coins())}});
     }
     return j;
 }
 
-json Binance::tokenJSON(const Proto::SendOrder_Token& token, bool stringAmount) {
-    json j = { {"denom", token.denom()} };
+json tokenJSON(const Proto::SendOrder_Token& token, bool stringAmount) {
+    json j = {{"denom", token.denom()}};
     if (stringAmount) {
         j["amount"] = std::to_string(token.amount());
     } else {
@@ -174,10 +168,12 @@ json Binance::tokenJSON(const Proto::SendOrder_Token& token, bool stringAmount) 
     return j;
 }
 
-json Binance::tokensJSON(const RepeatedPtrField<Proto::SendOrder_Token>& tokens) {
+json tokensJSON(const google::protobuf::RepeatedPtrField<Proto::SendOrder_Token>& tokens) {
     json j = json::array();
     for (auto& token : tokens) {
         j.push_back(tokenJSON(token));
     }
     return j;
 }
+
+} // namespace TW::Binance

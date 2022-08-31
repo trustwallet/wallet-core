@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,10 +8,12 @@
 
 #include "../BinaryCoding.h"
 
-using namespace TW::Decred;
+namespace TW::Decred {
 
 void OutPoint::encode(Data& data) const {
     std::copy(std::begin(hash), std::end(hash), std::back_inserter(data));
     encode32LE(index, data);
     data.push_back(static_cast<byte>(tree));
 }
+
+} // namespace TW::Decred

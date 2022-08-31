@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,8 +9,7 @@
 #include "ParamsBuilder.h"
 #include "SigData.h"
 
-using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology {
 
 Data SigData::serialize() {
     auto sigInfo = ParamsBuilder::fromSigs(sigs);
@@ -28,3 +27,5 @@ Data SigData::serialize() {
     builder.pushVar(verifyInfo);
     return builder.getBytes();
 }
+
+} // namespace TW::Ontology

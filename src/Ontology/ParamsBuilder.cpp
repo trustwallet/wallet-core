@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -15,8 +15,7 @@
 #include <list>
 #include <algorithm>
 
-using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology {
 
 void ParamsBuilder::buildNeoVmParam(ParamsBuilder& builder, const boost::any& param) {
     if (param.type() == typeid(std::string)) {
@@ -232,3 +231,5 @@ Data ParamsBuilder::buildNativeInvokeCode(const Data& contractAddress, uint8_t v
     builder.push(Data(nativeInvoke.begin(), nativeInvoke.end()));
     return builder.getBytes();
 }
+
+} // namespace TW::Ontology

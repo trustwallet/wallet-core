@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,17 +7,11 @@
 #include <TrustWalletCore/TWCoinType.h>
 
 #include "TxComparisonHelper.h"
-#include "Bitcoin/OutPoint.h"
-#include "Bitcoin/Script.h"
 #include "Bitcoin/InputSelector.h"
-#include "proto/Bitcoin.pb.h"
 
 #include <gtest/gtest.h>
-#include <sstream>
 
-using namespace TW;
-using namespace TW::Bitcoin;
-
+namespace TW::Bitcoin {
 
 TEST(BitcoinInputSelector, SelectUnspents1) {
     auto utxos = buildTestUTXOs({4000, 2000, 6000, 1000, 11000, 12000});
@@ -193,7 +187,7 @@ TEST(BitcoinInputSelector, SelectThreeNoDust) {
 
     // 100'000 would fit with dust; instead two UTXOs are selected not to leave dust
     EXPECT_TRUE(verifySelectedUTXOs(selected, {75'000, 100'000}));
-    
+
     EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 174);
 
     const auto dustLimit = 102;
@@ -471,7 +465,7 @@ TEST(BitcoinInputSelector, ManyUtxos_5000_simple) {
     // expected result: 1205 utxos, with the smaller amounts (except the very small dust ones)
     std::vector<int64_t> subset;
     uint64_t subsetSum = 0;
-    for (int i = 10; i < 1205+10; ++i) {
+    for (int i = 10; i < 1205 + 10; ++i) {
         const uint64_t val = (i + 1) * 100;
         subset.push_back(val);
         subsetSum += val;
@@ -497,7 +491,7 @@ TEST(BitcoinInputSelector, ManyUtxos_MaxAmount_5000) {
     // expected result: 4990 utxos (none of which is dust)
     std::vector<int64_t> subset;
     uint64_t subsetSum = 0;
-    for (int i = 10; i < 4990+10; ++i) {
+    for (int i = 10; i < 4990 + 10; ++i) {
         const uint64_t val = (i + 1) * 100;
         subset.push_back(val);
         subsetSum += val;
@@ -506,3 +500,5 @@ TEST(BitcoinInputSelector, ManyUtxos_MaxAmount_5000) {
     EXPECT_EQ(subsetSum, 1'250'244'500ul);
     EXPECT_TRUE(verifySelectedUTXOs(selected, subset));
 }
+
+} // namespace TW::Bitcoin

@@ -8,14 +8,14 @@
 
 #include "../HexCoding.h"
 
-using namespace TW;
-using namespace TW::EOS;
+namespace TW::EOS {
 
-PackedTransaction::PackedTransaction(const Transaction& transaction, CompressionType type) noexcept : compression(type) {
+PackedTransaction::PackedTransaction(const Transaction& transaction, CompressionType type) noexcept
+    : compression(type) {
     transaction.serialize(packedTrx);
     const Data& cfd = transaction.contextFreeData;
 
-    if (cfd.size()) {
+    if (!cfd.empty()) {
         packedCFD.push_back(1);
         encodeVarInt64(cfd.size(), packedCFD);
         append(packedCFD, cfd);
@@ -49,3 +49,5 @@ json PackedTransaction::serialize() const noexcept {
 
     return obj;
 }
+
+} // namespace TW::EOS

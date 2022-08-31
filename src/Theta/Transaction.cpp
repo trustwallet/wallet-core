@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,8 +8,8 @@
 
 #include "../Ethereum/RLP.h"
 
-using namespace TW;
-using namespace TW::Theta;
+namespace TW::Theta {
+
 using RLP = Ethereum::RLP;
 
 Data encode(const Coins& coins) noexcept {
@@ -52,13 +52,13 @@ Data encode(const std::vector<TxOutput>& outputs) noexcept {
 }
 
 Transaction::Transaction(Ethereum::Address from, Ethereum::Address to,
-                         uint256_t thetaAmount, uint256_t tfuelAmount,
-                         uint64_t sequence, uint256_t feeAmount /* = 1000000000000*/) {
+                         const uint256_t& thetaAmount, const uint256_t& tfuelAmount,
+                         uint64_t sequence, const uint256_t& feeAmount /* = 1000000000000*/) {
     auto fee = Coins(0, feeAmount);
     auto coinsInput = Coins(thetaAmount, tfuelAmount + feeAmount);
     auto coinsOutput = Coins(thetaAmount, tfuelAmount);
-    auto input = TxInput(std::move(from), coinsInput, sequence);
-    auto output = TxOutput(std::move(to), coinsOutput);
+    auto input = TxInput(from, coinsInput, sequence);
+    auto output = TxOutput(to, coinsOutput);
 
     this->_fee = fee;
     this->inputs.push_back(input);
@@ -70,9 +70,9 @@ Data Transaction::encode() const noexcept {
     uint16_t txType = 2; // TxSend
     append(encoded, RLP::encode(txType));
     auto encodedData = Data();
-    append(encodedData, ::encode(_fee));
-    append(encodedData, ::encode(inputs));
-    append(encodedData, ::encode(outputs));
+    append(encodedData, Theta::encode(_fee));
+    append(encodedData, Theta::encode(inputs));
+    append(encodedData, Theta::encode(outputs));
     append(encoded, RLP::encodeList(encodedData));
     return encoded;
 }
@@ -86,3 +86,5 @@ bool Transaction::setSignature(const Ethereum::Address& address, const Data& sig
     }
     return false;
 }
+
+} // namespace TW::Theta

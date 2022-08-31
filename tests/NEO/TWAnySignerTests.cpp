@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,8 +11,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::NEO;
+namespace TW::NEO::tests {
 
 Proto::SigningInput createInput() {
     const std::string NEO_ASSET_ID = "9b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc5";
@@ -21,11 +20,11 @@ Proto::SigningInput createInput() {
     Proto::SigningInput input;
     auto privateKey = parse_hex("F18B2F726000E86B4950EBEA7BFF151F69635951BC4A31C44F28EE6AF7AEC128");
     input.set_private_key(privateKey.data(), privateKey.size());
-    input.set_fee(12345); //too low
+    input.set_fee(12345); // too low
     input.set_gas_asset_id(GAS_ASSET_ID);
     input.set_gas_change_address("AdtSLMBqACP4jv8tRWwyweXGpyGG46eMXV");
 
-#define ADD_UTXO_INPUT(hash, index , value, assetId) \
+#define ADD_UTXO_INPUT(hash, index, value, assetId) \
         { \
             auto utxo = input.add_inputs(); \
             utxo->set_prev_hash(parse_hex(hash).data(), parse_hex(hash).size()); \
@@ -101,3 +100,5 @@ TEST(TWAnySignerNEO, Plan) {
     EXPECT_EQ(plan.fee(), 1408000);
     EXPECT_EQ(plan.error(), Common::Proto::OK);
 }
+
+} // namespace TW::NEO::tests

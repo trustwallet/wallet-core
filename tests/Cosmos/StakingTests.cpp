@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,14 +8,12 @@
 #include "HexCoding.h"
 #include "Base64.h"
 #include "proto/Cosmos.pb.h"
-#include "Cosmos/Address.h"
 #include "Cosmos/Signer.h"
 #include "../interface/TWTestUtilities.h"
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Cosmos;
+namespace TW::Cosmos::tests {
 
 TEST(CosmosStaking, Staking) {
     auto input = Proto::SigningInput();
@@ -175,3 +173,5 @@ TEST(CosmosStaking, Withdraw) {
         EXPECT_EQ(hex(signingOutput.serialized()), "");
     }
 }
+
+} // namespace TW::Cosmos::tests

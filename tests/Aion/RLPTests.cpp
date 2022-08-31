@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,11 +6,10 @@
 
 #include "Aion/RLP.h"
 #include "HexCoding.h"
-
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Aion;
+namespace TW::Aion::tests {
+
 using boost::multiprecision::uint128_t;
 
 TEST(AionRLP, EncodeLong) {
@@ -24,3 +23,5 @@ TEST(AionRLP, EncodeLong) {
     EXPECT_EQ(hex(RLP::encodeLong(uint128_t(4295000060L))), "880000000100007ffc");
     EXPECT_EQ(hex(RLP::encodeLong(uint128_t(72057594037927935L))), "8800ffffffffffffff");
 }
+
+} // namespace TW::Aion::tests

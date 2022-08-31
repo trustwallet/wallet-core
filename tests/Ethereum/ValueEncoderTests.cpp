@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,8 +9,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Ethereum;
+namespace TW::Ethereum::tests {
 
 Data data;
 
@@ -134,3 +133,5 @@ TEST(EthereumAbiValueEncoder, pad32) {
     EXPECT_EQ(0ul, ABI::ValueEncoder::padNeeded32(64));
     EXPECT_EQ(31ul, ABI::ValueEncoder::padNeeded32(65));
 }
+
+} // namespace TW::Ethereum::tests

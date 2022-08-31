@@ -10,7 +10,7 @@
 #include <boost/lexical_cast.hpp>
 #include <stdexcept>
 
-using namespace TW::EOS;
+namespace TW::EOS {
 
 static const int64_t Precision = 1000;
 static const uint8_t MaxDecimals = 18;
@@ -21,12 +21,12 @@ Asset::Asset(int64_t amount, uint8_t decimals, const std::string& symbol) {
     }
     this->symbol |= decimals;
 
-    if (symbol.size() < 1 || symbol.size() > 7) {
+    if (symbol.empty() || symbol.size() > 7) {
         throw std::invalid_argument("Symbol size invalid!");
     }
 
     for (std::size_t i = 0; i < symbol.size(); i++) {
-        uint64_t c = symbol[i];
+        uint64_t c = (unsigned char) symbol[i];
         if (c < 'A' || c > 'Z') {
             throw std::invalid_argument("Invalid symbol " + symbol + ".\n Symbol can only have upper case alphabets!");
         }
@@ -61,8 +61,8 @@ Asset Asset::fromString(std::string assetString) {
     if (dotPosition != string::npos) {
         decimals = static_cast<uint8_t>(amountString.size() - dotPosition - 1);
     }
-                           
-    int64_t precision = static_cast<uint64_t>(pow(10, static_cast<double>(decimals)));
+
+    auto precision = static_cast<int64_t>(pow(10, static_cast<double>(decimals)));
 
     // Parse amount
     int64_t intPart, fractPart = 0;
@@ -110,10 +110,10 @@ std::string Asset::string() const {
 
     auto decimals = getDecimals();
 
-    int charsWritten = snprintf(buffer, maxBufferSize, "%.*f %s", 
-                            decimals, 
-                            static_cast<double>(amount) / Precision,
-                            getSymbol().c_str());
+    int charsWritten = snprintf(buffer, maxBufferSize, "%.*f %s",
+                                decimals,
+                                static_cast<double>(amount) / Precision,
+                                getSymbol().c_str());
 
     if (charsWritten < 0 || charsWritten > maxBufferSize) {
         throw std::runtime_error("Failed to create string representation of asset!");
@@ -133,3 +133,5 @@ std::string Asset::getSymbol() const noexcept {
 
     return str;
 }
+
+} // namespace TW::EOS

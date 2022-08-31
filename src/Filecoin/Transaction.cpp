@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust.
+// Copyright © 2017-2022 Trust.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,9 +8,9 @@
 #include <nlohmann/json.hpp>
 #include "Base64.h"
 
+namespace TW::Filecoin {
+
 using json = nlohmann::json;
-using namespace TW;
-using namespace TW::Filecoin;
 
 // encodeBigInt encodes a Filecoin BigInt to CBOR.
 Data TW::Filecoin::encodeBigInt(const uint256_t& value) {
@@ -63,20 +63,20 @@ Data Transaction::cid() const {
 std::string Transaction::serialize(Data& signature) const {
     json tx = {
         {"Message", json{
-                {"To", to.string()},
-                {"From", from.string()},
-                {"Nonce", nonce},
-                {"Value", toString(value)},
-                {"GasPremium", toString(gasPremium)},
-                {"GasFeeCap", toString(gasFeeCap)},
-                {"GasLimit", gasLimit},
-            }
-        },
+                        {"To", to.string()},
+                        {"From", from.string()},
+                        {"Nonce", nonce},
+                        {"Value", toString(value)},
+                        {"GasPremium", toString(gasPremium)},
+                        {"GasFeeCap", toString(gasFeeCap)},
+                        {"GasLimit", gasLimit},
+                    }},
         {"Signature", json{
-                {"Type", 1},
-                {"Data", Base64::encode(signature)},
-            }
-        },
+                          {"Type", 1},
+                          {"Data", Base64::encode(signature)},
+                      }},
     };
     return tx.dump();
 }
+
+} // namespace TW::Filecoin

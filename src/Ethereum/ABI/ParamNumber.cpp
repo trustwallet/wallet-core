@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -15,9 +15,7 @@
 #include <string>
 #include <cassert>
 
-using namespace TW;
-using namespace TW::Ethereum::ABI;
-
+namespace TW::Ethereum::ABI {
 
 bool ParamUInt256::setUInt256FromValueJson(uint256_t& dest, const std::string& value) {
     // try hex string or number
@@ -38,21 +36,31 @@ bool ParamInt256::setInt256FromValueJson(int256_t& dest, const std::string& valu
 }
 
 bool ParamBool::setValueJson(const std::string& value) {
-    if (value == "true" || value == "1") { setVal(true); return true; }
-    if (value == "false" || value == "0") { setVal(false); return true; }
+    if (value == "true" || value == "1") {
+        setVal(true);
+        return true;
+    }
+    if (value == "false" || value == "0") {
+        setVal(false);
+        return true;
+    }
     return false;
 }
 
 bool ParamUInt8::setValueJson(const std::string& value) {
     uint16_t val;
-    if (!boost::conversion::detail::try_lexical_convert(value, val)) { return false; }
+    if (!boost::conversion::detail::try_lexical_convert(value, val)) {
+        return false;
+    }
     setVal(static_cast<uint8_t>(val));
     return true;
 }
 
 bool ParamInt8::setValueJson(const std::string& value) {
     int16_t val;
-    if (!boost::conversion::detail::try_lexical_convert(value, val)) { return false; }
+    if (!boost::conversion::detail::try_lexical_convert(value, val)) {
+        return false;
+    }
     setVal(static_cast<int8_t>(val));
     return true;
 }
@@ -103,7 +111,8 @@ bool ParamIntN::decode(const Data& encoded, size_t& offset_inout) {
     return res;
 }
 
-void ParamIntN::init()
-{
+void ParamIntN::init() {
     _mask = ParamUIntN::maskForBits(bits);
 }
+
+} // namespace TW::Ethereum::ABI

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -16,8 +16,7 @@
 #include <boost/any.hpp>
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology::tests {
 
 TEST(OntologyTransaction, validity) {
     std::vector<uint8_t> ontContract{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -63,3 +62,5 @@ TEST(OntologyTransaction, validity) {
     EXPECT_EQ(654ul, verifyPosition2);
     EXPECT_EQ(724ul, hex(result).length());
 }
+
+} // namespace TW::Ontology::tests

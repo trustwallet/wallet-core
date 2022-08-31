@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,8 +6,7 @@
 
 #include "SigningInput.h"
 
-using namespace TW;
-using namespace TW::Bitcoin;
+namespace TW::Bitcoin {
 
 SigningInput::SigningInput(const Proto::SigningInput& input) {
     hashType = static_cast<TWBitcoinSigHashType>(input.hash_type());
@@ -15,13 +14,13 @@ SigningInput::SigningInput(const Proto::SigningInput& input) {
     byteFee = input.byte_fee();
     toAddress = input.to_address();
     changeAddress = input.change_address();
-    for (auto&& key: input.private_key()) {
+    for (auto&& key : input.private_key()) {
         privateKeys.emplace_back(key);
     }
-    for (auto&& script: input.scripts()) {
+    for (auto&& script : input.scripts()) {
         scripts[script.first] = Script(script.second.begin(), script.second.end());
     }
-    for (auto&& u: input.utxo()) {
+    for (auto&& u : input.utxo()) {
         utxos.emplace_back(u);
     }
     useMaxAmount = input.use_max_amount();
@@ -32,3 +31,5 @@ SigningInput::SigningInput(const Proto::SigningInput& input) {
     outputOpReturn = data(input.output_op_return());
     lockTime = input.lock_time();
 }
+
+} // namespace TW::Bitcoin

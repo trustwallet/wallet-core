@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,8 +11,8 @@
 
 #include "proto/TransactionCompiler.pb.h"
 
-using namespace TW::Ethereum;
-using namespace TW;
+namespace TW::Ethereum {
+
 using namespace std;
 
 bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
@@ -71,7 +71,7 @@ Data Entry::buildTransactionInput([[maybe_unused]] TWCoinType coinType, [[maybe_
     auto chainIdData = store(uint256_t(1));
     if (chainId.length() > 0) {
         // parse amount
-        uint256_t chainIdUint256 { chainId };
+        uint256_t chainIdUint256{chainId};
         chainIdData = store(chainIdUint256);
     }
     input.set_chain_id(chainIdData.data(), chainIdData.size());
@@ -90,3 +90,5 @@ Data Entry::buildTransactionInput([[maybe_unused]] TWCoinType coinType, [[maybe_
     const auto txInputData = data(input.SerializeAsString());
     return txInputData;
 }
+
+} // namespace TW::Ethereum

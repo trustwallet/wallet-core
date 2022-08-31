@@ -1,19 +1,17 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Nebulas/Address.h"
-#include "../src/Base58.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
-
 #include <gtest/gtest.h>
 
+namespace TW::Nebulas::tests {
+
 using namespace std;
-using namespace TW;
-using namespace TW::Nebulas;
 
 TEST(NebulasAddress, Invalid) {
     ASSERT_FALSE(Address::isValid("abc"));
@@ -28,11 +26,10 @@ TEST(NebulasAddress, Invalid) {
 TEST(NebulasAddress, String) {
     ASSERT_THROW(Address("abc"), std::invalid_argument);
     ASSERT_EQ(Address("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").string(),
-        "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
+              "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
     ASSERT_EQ(Address(Base58::bitcoin.decode("n1TgpFZWCMmFd2sphb6RKsCvsEyMCNa2Yyv")).string(),
-        "n1TgpFZWCMmFd2sphb6RKsCvsEyMCNa2Yyv"
-    );
-    
+              "n1TgpFZWCMmFd2sphb6RKsCvsEyMCNa2Yyv");
+
     const auto address = Address("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
     ASSERT_EQ(address.string(), "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
 }
@@ -41,7 +38,7 @@ TEST(NebulasAddress, Data) {
     Data data;
     EXPECT_THROW(Address(data).string(), std::invalid_argument);
     ASSERT_EQ(Address(Base58::bitcoin.decode("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY")).string(),
-        "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
+              "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
 }
 
 TEST(NebulasAddress, FromPrivateKey) {
@@ -52,3 +49,5 @@ TEST(NebulasAddress, FromPrivateKey) {
 
     EXPECT_THROW(Address(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1)), std::invalid_argument);
 }
+
+} // namespace TW::Nebulas::tests

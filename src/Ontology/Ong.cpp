@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,8 +10,7 @@
 
 #include <list>
 
-using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology {
 
 Transaction Ong::decimals(uint32_t nonce) {
     auto builder = ParamsBuilder();
@@ -22,7 +21,7 @@ Transaction Ong::decimals(uint32_t nonce) {
     return tx;
 }
 
-Transaction Ong::balanceOf(const Address &address, uint32_t nonce) {
+Transaction Ong::balanceOf(const Address& address, uint32_t nonce) {
     auto builder = ParamsBuilder();
     auto invokeCode =
         ParamsBuilder::buildNativeInvokeCode(contractAddress(), version, "balanceOf", address._data);
@@ -31,8 +30,8 @@ Transaction Ong::balanceOf(const Address &address, uint32_t nonce) {
     return tx;
 }
 
-Transaction Ong::transfer(const Signer &from, const Address &to, uint64_t amount,
-                          const Signer &payer, uint64_t gasPrice, uint64_t gasLimit,
+Transaction Ong::transfer(const Signer& from, const Address& to, uint64_t amount,
+                          const Signer& payer, uint64_t gasPrice, uint64_t gasLimit,
                           uint32_t nonce) {
     std::list<boost::any> transferParam{from.getAddress()._data, to._data, amount};
     std::vector<boost::any> args{transferParam};
@@ -45,8 +44,8 @@ Transaction Ong::transfer(const Signer &from, const Address &to, uint64_t amount
     return tx;
 }
 
-Transaction Ong::withdraw(const Signer &claimer, const Address &receiver, uint64_t amount,
-                          const Signer &payer, uint64_t gasPrice, uint64_t gasLimit,
+Transaction Ong::withdraw(const Signer& claimer, const Address& receiver, uint64_t amount,
+                          const Signer& payer, uint64_t gasPrice, uint64_t gasLimit,
                           uint32_t nonce) {
     auto ontContract = Address("AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV");
     std::list<boost::any> args{claimer.getAddress()._data, ontContract._data, receiver._data, amount};
@@ -58,3 +57,5 @@ Transaction Ong::withdraw(const Signer &claimer, const Address &receiver, uint64
     payer.addSign(tx);
     return tx;
 }
+
+} // namespace TW::Ontology

@@ -7,20 +7,15 @@
 #include "Transaction.h"
 #include "Constants.h"
 #include "Serialization.h"
-#include "../BinaryCoding.h"
-#include "../HexCoding.h"
 
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWHRP.h>
 #include <cstddef>
 #include <nlohmann/json.hpp>
 
-#include <algorithm>
-#include <utility>
 #include <vector>
 
-using namespace TW;
-using namespace TW::Nervos;
+namespace TW::Nervos {
 
 Data Transaction::hash() const {
     Data data;
@@ -213,3 +208,5 @@ Common::Proto::SigningError Transaction::signWitnesses(const PrivateKey& private
 
     return Common::Proto::OK;
 }
+
+} // namespace TW::Nervos

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -16,10 +16,9 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::FIO;
-using namespace std;
+namespace TW::FIO::tests {
 
+using namespace std;
 
 TEST(TWFIO, Address) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035").get()));
@@ -151,6 +150,7 @@ TEST(TWFIO, NewFundsRequest) {
     // Therefore full equality cannot be checked, tail is cut off.  The first N chars are checked, works in this case.
     EXPECT_EQ(
         R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff000000000100403ed4aa0ba85b00acba384dbdb89a01102b2f46fca756b200000000a8ed32328802106d6172696f4066696f746573746)",
-        output.json().substr(0, 195)
-    );
+        output.json().substr(0, 195));
 }
+
+} // namespace TW::FIO::tests

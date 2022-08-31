@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,8 +13,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Zilliqa;
+namespace TW::Zilliqa::tests {
 
 TEST(ZilliqaAddress, FromPrivateKey) {
     const auto privateKey =
@@ -39,22 +38,19 @@ TEST(ZilliqaAddress, Validation) {
 TEST(ZilliqaAddress, Checksum) {
     ASSERT_EQ(
         checksum(parse_hex("4BAF5FADA8E5DB92C3D3242618C5B47133AE003C")),
-        "4BAF5faDA8e5Db92C3d3242618c5B47133AE003C"
-    );
+        "4BAF5faDA8e5Db92C3d3242618c5B47133AE003C");
     ASSERT_EQ(
         checksum(parse_hex("448261915A80CDE9BDE7C7A791685200D3A0BF4E")),
-        "448261915a80cdE9BDE7C7a791685200D3A0bf4E"
-    );
+        "448261915a80cdE9BDE7C7a791685200D3A0bf4E");
     ASSERT_EQ(
         checksum(parse_hex("0xDED02FD979FC2E55C0243BD2F52DF022C40ADA1E")),
-        "Ded02fD979fC2e55c0243bd2F52df022c40ADa1E"
-    );
+        "Ded02fD979fC2e55c0243bd2F52df022c40ADa1E");
     ASSERT_EQ(
         checksum(parse_hex("0x13F06E60297BEA6A3C402F6F64C416A6B31E586E")),
-        "13F06E60297bea6A3c402F6f64c416A6b31e586e"
-    );
+        "13F06E60297bea6A3c402F6f64c416A6b31e586e");
     ASSERT_EQ(
         checksum(parse_hex("0x1A90C25307C3CC71958A83FA213A2362D859CF33")),
-        "1a90C25307C3Cc71958A83fa213A2362D859CF33"
-    );
+        "1a90C25307C3Cc71958A83fa213A2362D859CF33");
 }
+
+} // namespace TW::Zilliqa::tests

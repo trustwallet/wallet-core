@@ -1,11 +1,10 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
-#include "../proto/Cosmos.pb.h"
 #include "JsonSerialization.h"
 #include "ProtobufSerialization.h"
 
@@ -13,17 +12,16 @@
 #include "Data.h"
 #include <google/protobuf/util/json_util.h>
 
-using namespace TW;
-using namespace TW::Cosmos;
+namespace TW::Cosmos {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, TWCoinType coin) noexcept {
     switch (input.signing_mode()) {
-        case Proto::JSON:
-            return signJsonSerialized(input);
-        
-        case Proto::Protobuf:
-        default:
-            return signProtobuf(input, coin);
+    case Proto::JSON:
+        return signJsonSerialized(input);
+
+    case Proto::Protobuf:
+    default:
+        return signProtobuf(input, coin);
     }
 }
 
@@ -72,3 +70,5 @@ std::string Signer::signJSON(const std::string& json, const Data& key, TWCoinTyp
     auto output = Signer::sign(input, coin);
     return output.json();
 }
+
+} // namespace TW::Cosmos

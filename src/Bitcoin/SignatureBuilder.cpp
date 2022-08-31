@@ -1,26 +1,21 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #include "SignatureBuilder.h"
-
 #include "SigHashType.h"
 #include "TransactionInput.h"
 #include "TransactionOutput.h"
-#include "InputSelector.h"
 
 #include "../BinaryCoding.h"
-#include "../Hash.h"
 #include "../HexCoding.h"
-
 #include "../Groestlcoin/Transaction.h"
 #include "../Zcash/Transaction.h"
 #include "../Zcash/TransactionBuilder.h"
 
-using namespace TW;
-using namespace TW::Bitcoin;
+namespace TW::Bitcoin {
 
 template <typename Transaction>
 Result<Transaction, Common::Proto::SigningError> SignatureBuilder<Transaction>::sign() {
@@ -62,7 +57,7 @@ Result<Transaction, Common::Proto::SigningError> SignatureBuilder<Transaction>::
 
 template <typename Transaction>
 Result<void, Common::Proto::SigningError> SignatureBuilder<Transaction>::sign(Script script, size_t index,
-                                                  const UTXO& utxo) {
+                                                                              const UTXO& utxo) {
     assert(index < _transaction.inputs.size());
 
     Script redeemScript;
@@ -71,7 +66,7 @@ Result<void, Common::Proto::SigningError> SignatureBuilder<Transaction>::sign(Sc
     uint32_t signatureVersion = [this]() {
         if ((input.hashType & TWBitcoinSigHashTypeFork) != 0) {
             return WITNESS_V0;
-        } 
+        }
         return BASE;
     }();
     auto result = signStep(script, index, utxo, signatureVersion);
@@ -238,15 +233,14 @@ Data SignatureBuilder<Transaction>::createSignature(
     const std::optional<KeyPair>& pair,
     size_t index,
     Amount amount,
-    uint32_t version
-) {
+    uint32_t version) {
     if (signingMode == SigningMode_SizeEstimationOnly) {
         // Don't sign, only estimate signature size. It is 71-72 bytes.  Return placeholder.
         return Data(72);
     }
 
     const Data sighash = transaction.getSignatureHash(script, index, input.hashType, amount,
-                                                static_cast<SignatureVersion>(version));
+                                                      static_cast<SignatureVersion>(version));
 
     if (signingMode == SigningMode_HashOnly) {
         // Don't sign, only store hash-to-be-signed + pubkeyhash.  Return placeholder.
@@ -345,6 +339,8 @@ Data SignatureBuilder<Transaction>::scriptForScriptHash(const Data& hash) const 
 }
 
 // Explicitly instantiate a Signers for compatible transactions.
-template class Bitcoin::SignatureBuilder<Bitcoin::Transaction>;
-template class Bitcoin::SignatureBuilder<Zcash::Transaction>;
-template class Bitcoin::SignatureBuilder<Groestlcoin::Transaction>;
+template class SignatureBuilder<Bitcoin::Transaction>;
+template class SignatureBuilder<Zcash::Transaction>;
+template class SignatureBuilder<Groestlcoin::Transaction>;
+
+} // namespace TW::Bitcoin

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,19 +7,13 @@
 #include "Program.h"
 #include "Address.h"
 #include "Transaction.h"
-#include "../Base58.h"
-#include "../Hash.h"
-
-#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
 
 #include <limits>
-#include <cassert>
 
-using namespace TW;
-using namespace TW::Solana;
+namespace TW::Solana {
 
 Address StakeProgram::addressFromValidatorSeed(const Address& fromAddress, const Address& validatorAddress,
-    const Address& programId) {
+                                               const Address& programId) {
     Data extended = fromAddress.vector();
     std::string seed = validatorAddress.string();
     Data vecSeed(seed.begin(), seed.end());
@@ -53,8 +47,7 @@ Address TokenProgram::defaultTokenAddress(const Address& mainAddress, const Addr
     std::vector<Data> seeds = {
         TW::data(mainAddress.bytes.data(), mainAddress.bytes.size()),
         TW::data(programId.bytes.data(), programId.bytes.size()),
-        TW::data(tokenMintAddress.bytes.data(), tokenMintAddress.bytes.size())
-    };
+        TW::data(tokenMintAddress.bytes.data(), tokenMintAddress.bytes.size())};
     return findProgramAddress(seeds, Address(ASSOCIATED_TOKEN_PROGRAM_ID_ADDRESS));
 }
 
@@ -87,7 +80,7 @@ Address TokenProgram::findProgramAddress(const std::vector<TW::Data>& seeds, [[m
 Address TokenProgram::createProgramAddress(const std::vector<TW::Data>& seeds, const Address& programId) {
     // concatenate seeds
     Data hashInput;
-    for (auto& seed: seeds) {
+    for (auto& seed : seeds) {
         append(hashInput, seed);
     }
     // append programId
@@ -97,3 +90,6 @@ Address TokenProgram::createProgramAddress(const std::vector<TW::Data>& seeds, c
     Data hash = TW::Hash::sha256(hashInput.data(), hashInput.size());
     return Address(hash);
 }
+
+} // namespace TW::Solana
+

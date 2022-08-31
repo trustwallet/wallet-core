@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,15 +13,14 @@
 
 #include "proto/Common.pb.h"
 
-using namespace TW;
-using namespace TW::Bitcoin;
+namespace TW::Bitcoin {
 
 Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) noexcept {
     auto plan = TransactionSigner<Transaction, TransactionBuilder>::plan(input);
     return plan.proto();
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput &input, std::optional<SignaturePubkeyList> optionalExternalSigs) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs) noexcept {
     Proto::SigningOutput output;
     auto result = TransactionSigner<Transaction, TransactionBuilder>::sign(input, false, optionalExternalSigs);
     if (!result) {
@@ -65,3 +64,5 @@ Proto::PreSigningOutput Signer::preImageHashes(const Proto::SigningInput& input)
     }
     return output;
 }
+
+} // namespace TW::Bitcoin

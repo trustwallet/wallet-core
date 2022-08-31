@@ -7,17 +7,12 @@
 #include "Script.h"
 #include "Constants.h"
 #include "Serialization.h"
-
 #include "../Bech32.h"
-#include "../BinaryCoding.h"
-#include "../Data.h"
 
 #include <algorithm>
 #include <iterator>
-#include <set>
 
-using namespace TW;
-using namespace TW::Nervos;
+namespace TW::Nervos {
 
 Data Script::hash() const {
     Data data;
@@ -50,3 +45,5 @@ nlohmann::json Script::json() const {
                               {"args", hexEncoded(args)}};
     }
 }
+
+} // namespace TW::Nervos

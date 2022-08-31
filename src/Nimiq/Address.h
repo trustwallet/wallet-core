@@ -22,7 +22,7 @@ class Address {
 
     /// Address data consisting of a prefix byte followed by the public key
     /// hash.
-    std::array<uint8_t, size> bytes;
+    std::array<uint8_t, size> bytes{};
 
     /// Determines whether a collection of bytes makes a valid  address.
     static bool isValid(const std::vector<uint8_t>& data) { return data.size() == size; }

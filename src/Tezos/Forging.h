@@ -13,10 +13,10 @@
 
 using namespace TW;
 
-namespace TW::Tezos::Proto {
+namespace TW::Tezos {
 
 Data forgeBool(bool input);
-Data forgeOperation(const Operation& operation);
+Data forgeOperation(const Proto::Operation& operation);
 Data forgePublicKeyHash(const std::string& publicKeyHash);
 Data forgePublicKey(PublicKey publicKey);
 Data forgeZarith(uint64_t input);

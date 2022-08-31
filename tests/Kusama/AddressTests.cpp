@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,8 +11,7 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-using namespace TW;
-using namespace TW::Kusama;
+namespace TW::Kusama::tests {
 
 TEST(KusamaAddress, Validation) {
     // Substrate ed25519
@@ -49,3 +48,5 @@ TEST(KusamaAddress, FromString) {
     auto address = Address("CeVXtoU4py9e7F6upfM2ZarVave299TjcdaTSxhDDZrYgnM");
     ASSERT_EQ(address.string(), "CeVXtoU4py9e7F6upfM2ZarVave299TjcdaTSxhDDZrYgnM");
 }
+
+} // namespace TW::Kusama::tests

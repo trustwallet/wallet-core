@@ -1,21 +1,16 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
-#include "HexCoding.h"
-#include "SigData.h"
 #include "../Ontology/OngTxBuilder.h"
 #include "../Ontology/OntTxBuilder.h"
 
-#include "../Hash.h"
-
 #include <stdexcept>
 
-using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto contract = std::string(input.contract().begin(), input.contract().end());
@@ -33,7 +28,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return output;
 }
 
-Signer::Signer(TW::PrivateKey priKey) : privateKey(std::move(priKey)) {
+Signer::Signer(TW::PrivateKey priKey)
+    : privateKey(std::move(priKey)) {
     auto pubKey = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1);
     publicKey = pubKey.bytes;
     address = Address(pubKey).string();
@@ -68,3 +64,5 @@ void Signer::addSign(Transaction& tx) const {
     signature.pop_back();
     tx.sigVec.emplace_back(publicKey, signature, 1);
 }
+
+} // namespace TW::Ontology

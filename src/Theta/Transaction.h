@@ -48,8 +48,8 @@ class Transaction {
         : _fee(std::move(fee)), inputs(std::move(inputs)), outputs(std::move(outputs)) {}
 
     Transaction(Ethereum::Address from, Ethereum::Address to,
-                uint256_t thetaAmount, uint256_t tfuelAmount, uint64_t sequence,
-                uint256_t feeAmount = 1000000000000);
+                const uint256_t& thetaAmount, const uint256_t& tfuelAmount, uint64_t sequence,
+                const uint256_t& feeAmount = 1000000000000);
 
     /// Encodes the transaction
     Data encode() const noexcept;

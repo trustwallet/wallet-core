@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,8 +10,7 @@
 
 #include <unordered_map>
 
-using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology {
 
 Transaction Ont::decimals(uint32_t nonce) {
     auto builder = ParamsBuilder();
@@ -22,7 +21,7 @@ Transaction Ont::decimals(uint32_t nonce) {
     return tx;
 }
 
-Transaction Ont::balanceOf(const Address &address, uint32_t nonce) {
+Transaction Ont::balanceOf(const Address& address, uint32_t nonce) {
     auto builder = ParamsBuilder();
     auto invokeCode =
         ParamsBuilder::buildNativeInvokeCode(contractAddress(), version, "balanceOf", address._data);
@@ -31,8 +30,8 @@ Transaction Ont::balanceOf(const Address &address, uint32_t nonce) {
     return tx;
 }
 
-Transaction Ont::transfer(const Signer &from, const Address &to, uint64_t amount,
-                          const Signer &payer, uint64_t gasPrice, uint64_t gasLimit,
+Transaction Ont::transfer(const Signer& from, const Address& to, uint64_t amount,
+                          const Signer& payer, uint64_t gasPrice, uint64_t gasLimit,
                           uint32_t nonce) {
     std::list<boost::any> transferParam{from.getAddress()._data, to._data, amount};
     std::vector<boost::any> args{transferParam};
@@ -44,3 +43,5 @@ Transaction Ont::transfer(const Signer &from, const Address &to, uint64_t amount
     payer.addSign(tx);
     return tx;
 }
+
+} // namespace TW::Ontology
