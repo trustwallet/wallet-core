@@ -34,3 +34,9 @@ func (self *Wallet) Mnemonic() string {
 	defer str.Delete()
 	return str.String()
 }
+
+func GenerateMnemonic() string {
+	wallet := &Wallet{wallet: C.TWHDWalletCreate(256, NewTWString("").s)}
+	defer wallet.Delete()
+	return wallet.Mnemonic()
+}
