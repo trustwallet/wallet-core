@@ -8,6 +8,10 @@ type Wallet struct {
 	wallet *C.struct_TWHDWallet
 }
 
+func NewWalletWithRandomMnemonic() *Wallet {
+	return &Wallet{wallet: C.TWHDWalletCreate(256, NewTWString("").s)}
+}
+
 func NewWalletWithMnemonic(mn string) (*Wallet, error) {
 	if !IsMnemonicValid(mn) {
 		return nil, errors.New("mnemonic is not valid")
@@ -33,10 +37,4 @@ func (self *Wallet) Mnemonic() string {
 	str := TWString{s: C.TWHDWalletMnemonic(self.wallet)}
 	defer str.Delete()
 	return str.String()
-}
-
-func GenerateMnemonic() string {
-	wallet := &Wallet{wallet: C.TWHDWalletCreate(256, NewTWString("").s)}
-	defer wallet.Delete()
-	return wallet.Mnemonic()
 }
