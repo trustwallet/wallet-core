@@ -26,11 +26,13 @@ enum LNNetwork {
 };
 
 struct LNInvoice {
-    Data signature;
     LNNetwork network;
     bool amountPresent;
     std::string unparsedAmount; // TODO change to numeric type, parse  // TODO check range
     uint64_t timestamp; // 35 bits
+    Data signature;
+    /// Set to true if there is a mismatch between the nodeId (public key) and signature
+    bool mismatchNodeidSignature;
     Data nodeId;
     Data paymentHash;
     Data secret;

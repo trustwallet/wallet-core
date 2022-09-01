@@ -68,6 +68,23 @@ void InvoiceDecoder::decodeInternal(const std::string& invstr, std::string& pref
     Bech32::convertBits<5, 8, true>(data8bit, data5bit);
 }
 
+bool verifySignatureInternal(const std::string& prefix, const Data& data8bit, const Data& publicKey, const Data& signature) {
+    //std::cout << "pubKey " << hex(publicKey) << "\n";
+    if (publicKey.size() == 0) {
+        throw std::invalid_argument("Missing public key");
+    }
+    if (publicKey.size() != 33) {
+        throw std::invalid_argument("Wrong public key size " + std::to_string(publicKey.size()));
+    }
+
+    auto dataToSign = TW::data(prefix);
+    TW::append(dataToSign, data8bit);
+    //std::cout << "dataToSign " << hex(dataToSign) << "\n";
+    const auto hashToSign = Hash::sha256(dataToSign);
+    //std::cout << "hashToSign " << hex(hashToSign) << "\n";
+    return PublicKey(publicKey, TWPublicKeyTypeSECP256k1).verify(signature, hashToSign);
+}
+
 struct LNInvoice InvoiceDecoder::decodeInvoice(const std::string& invstr) {
     std::string prefix;
     LNNetwork net;
@@ -185,6 +202,12 @@ struct LNInvoice InvoiceDecoder::decodeInvoice(const std::string& invstr) {
                 continue;
         }
         idx += tagLen;
+    }
+
+    // check signature (as extra info)
+    inv.mismatchNodeidSignature = false;
+    if (inv.nodeId.size() > 0) {
+        inv.mismatchNodeidSignature = !verifySignatureInternal(prefix, data8bit, inv.nodeId, inv.signature);
     }
 
     return inv;
@@ -349,21 +372,8 @@ bool InvoiceDecoder::verifySignature(const std::string& invstr, const Data& extP
             // use pub key provided
             pubKeyData = extPublicKey;
         }
-        if (pubKeyData.size() == 0) {
-            throw std::invalid_argument("Missing public key");
-        }
-        if (pubKeyData.size() != 33) {
-            throw std::invalid_argument("Wrong public key size " + std::to_string(pubKeyData.size()));
-        }
-        //std::cout << "pubKey " << hex(pubKeyData) << "\n";
 
-        auto dataToSign = TW::data(prefix);
-        TW::append(dataToSign, data8bit);
-        //std::cout << "dataToSign " << hex(dataToSign) << "\n";
-        const auto hashToSign = Hash::sha256(dataToSign);
-        //std::cout << "hashToSign " << hex(hashToSign) << "\n";
-        const auto publicKey = PublicKey(pubKeyData, TWPublicKeyTypeSECP256k1);
-        return publicKey.verify(signature, hashToSign);
+        return verifySignatureInternal(prefix, data8bit, pubKeyData, signature);
     } catch (std::exception& ex) {
         //std::cout << "ex " << ex.what() << "\n";
     } catch (...) {
