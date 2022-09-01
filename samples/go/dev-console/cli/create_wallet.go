@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"github.com/manifoldco/promptui"
 	"log"
+	"os"
+	"path/filepath"
 )
 
-func ConfigurePassPhrase() *native.Wallet {
+func ConfigureMnemonic() *native.Wallet {
 	prompt := promptui.Select{
 		Label: "Passphrase Configuration",
 		Items: []string{"Generate a Seed", "Restore a Seed"},
@@ -42,7 +44,6 @@ func restoreSeed() *native.Wallet {
 		return restoreSeed()
 	}
 
-	fmt.Printf("Your restored seed is [%s]\n", resultSeed)
 	wallet, err := native.NewWalletWithMnemonic(resultSeed)
 	if err != nil {
 		log.Fatalf("Couldn't create the wallet: %v", err)
@@ -52,7 +53,6 @@ func restoreSeed() *native.Wallet {
 
 func generateSeed() *native.Wallet {
 	wallet := native.NewWalletWithRandomMnemonic()
-	fmt.Printf("Your mnemonic is [%s]\n", wallet.Mnemonic())
 	return wallet
 }
 
@@ -75,13 +75,21 @@ func ConfigureWalletName() string {
 }
 
 func CreateWallet() {
-	_ = ConfigureWalletName()
-	wallet := ConfigurePassPhrase()
+	walletName := ConfigureWalletName()
+	wallet := ConfigureMnemonic()
 	defer wallet.Delete()
-	// to remove
-	fmt.Println(wallet.Mnemonic())
-	fmt.Println(wallet.Seed())
-	// TODO: Create a HDWallet with the mnemonic from ConfigurePassPhrase
+	// use fake password for now, prompt later
+	// TODO: Create a HDWallet with the mnemonic from ConfigureMnemonic
 	// TODO: Create a StoredKey with this new HDWallet
 	// TODO: prompt a passphrase for the wallet
+	storedKey := native.NewStoredKeyFromHDWallet(wallet.Mnemonic(), walletName, "123", native.CoinTypeBitcoin)
+	if storedKey != nil {
+		pwd, _ := os.Getwd()
+		res := storedKey.Store(filepath.Join(pwd, walletName+".json"))
+		if res {
+			fmt.Printf("Wallet %s successfully created\n", walletName)
+		}
+	} else {
+		fmt.Println("Couldn't create the wallet")
+	}
 }
