@@ -72,4 +72,7 @@ func ConfigureWalletName() string {
 func CreateWallet() {
 	_ = ConfigureWalletName()
 	_ = ConfigurePassPhrase()
+	// TODO: Create a HDWallet with the mnemonic from ConfigurePassPhrase
+	// TODO: Create a StoredKey with this new HDWallet
+	// TODO: prompt a passphrase for the wallet
 }
