@@ -72,7 +72,7 @@ std::string Address::string() const {
     // closing \0
     assert(count < out.size());
     out[count] = 0;
-    return std::string(out.data());
+    return {out.data()};
 }
 
 } // namespace TW::Nano

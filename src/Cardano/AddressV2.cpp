@@ -5,8 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "AddressV2.h"
-#include "../Cbor.h"
 #include "../Base58.h"
+#include "../Cbor.h"
 #include "../Crc.h"
 
 #include <array>
@@ -109,13 +109,14 @@ Data AddressV2::keyHash(const TW::Data& xpub) {
     }
     // hash of follwoing Cbor-array: [0, [0, xbub], {} ]
     // 3rd entry map is empty map for V2, contains derivation path for V1
+    // clang-format off
     Data cborData = Cbor::Encode::array({
-                                            Cbor::Encode::uint(0),
-                                            Cbor::Encode::array({Cbor::Encode::uint(0),
-                                                                 Cbor::Encode::bytes(xpub)}),
-                                            Cbor::Encode::map({}),
-                                        })
-                        .encoded();
+        Cbor::Encode::uint(0),
+        Cbor::Encode::array({Cbor::Encode::uint(0),
+                                Cbor::Encode::bytes(xpub)}),
+        Cbor::Encode::map({}),
+    }).encoded();
+    // clang-format on
     // SHA3 hash, then blake
     Data firstHash = Hash::sha3_256(cborData);
     Data blake = Hash::blake2b(firstHash, 28);

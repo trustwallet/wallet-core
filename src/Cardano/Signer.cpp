@@ -7,15 +7,15 @@
 #include "Signer.h"
 #include "AddressV3.h"
 
-#include "PrivateKey.h"
 #include "Cbor.h"
 #include "HexCoding.h"
+#include "PrivateKey.h"
 
-#include <vector>
+#include <algorithm>
 #include <cassert>
 #include <cmath>
-#include <algorithm>
 #include <numeric>
+#include <vector>
 
 namespace TW::Cardano {
 
@@ -114,16 +114,23 @@ Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Dat
 
 Cbor::Encode cborizeSignatures(const std::vector<std::pair<Data, Data>>& signatures) {
     // signatures as Cbor
+    // clang-format off
     std::vector<Cbor::Encode> sigsCbor;
     for (auto& s : signatures) {
-        sigsCbor.emplace_back(Cbor::Encode::array({Cbor::Encode::bytes(s.first),
-                                                   Cbor::Encode::bytes(s.second)}));
+        sigsCbor.emplace_back(Cbor::Encode::array({
+            Cbor::Encode::bytes(s.first),
+            Cbor::Encode::bytes(s.second)
+        }));
     }
 
     // Cbor-encode txAux & signatures
-    return Cbor::Encode::map({std::make_pair(
-        Cbor::Encode::uint(0),
-        Cbor::Encode::array(sigsCbor))});
+    return Cbor::Encode::map({
+        std::make_pair(
+            Cbor::Encode::uint(0),
+            Cbor::Encode::array(sigsCbor)
+        )
+    });
+    // clang-format on
 }
 
 Proto::SigningOutput Signer::signWithPlan() {

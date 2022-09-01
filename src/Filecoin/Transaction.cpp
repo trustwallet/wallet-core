@@ -61,21 +61,25 @@ Data Transaction::cid() const {
     return cid;
 }
 std::string Transaction::serialize(Data& signature) const {
+    // clang-format off
     json tx = {
         {"Message", json{
-                        {"To", to.string()},
-                        {"From", from.string()},
-                        {"Nonce", nonce},
-                        {"Value", toString(value)},
-                        {"GasPremium", toString(gasPremium)},
-                        {"GasFeeCap", toString(gasFeeCap)},
-                        {"GasLimit", gasLimit},
-                    }},
+                {"To", to.string()},
+                {"From", from.string()},
+                {"Nonce", nonce},
+                {"Value", toString(value)},
+                {"GasPremium", toString(gasPremium)},
+                {"GasFeeCap", toString(gasFeeCap)},
+                {"GasLimit", gasLimit},
+            }
+        },
         {"Signature", json{
-                          {"Type", 1},
-                          {"Data", Base64::encode(signature)},
-                      }},
+                {"Type", 1},
+                {"Data", Base64::encode(signature)},
+            }
+        },
     };
+    // clang-format on
     return tx.dump();
 }
 

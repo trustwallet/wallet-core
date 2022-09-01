@@ -7,7 +7,7 @@
 #include "XAddress.h"
 
 #include "../Base58.h"
-#include  "../BinaryCoding.h"
+#include "../BinaryCoding.h"
 #include <TrezorCrypto/ecdsa.h>
 
 namespace TW::Ripple {
@@ -61,4 +61,3 @@ std::string XAddress::string() const {
 }
 
 } // namespace TW::Ripple
-

@@ -32,4 +32,3 @@ std::string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string&
 }
 
 } // namespace TW::Filecoin
-

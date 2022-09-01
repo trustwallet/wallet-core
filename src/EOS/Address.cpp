@@ -4,9 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Address.h"
 #include "../Base58.h"
 #include "../BinaryCoding.h"
-#include "Address.h"
 
 #include <TrezorCrypto/ripemd160.h>
 
@@ -21,13 +21,15 @@ bool Address::isValid(const std::string& string) {
 /// Determines whether the given byte vector is a valid keyBuffer
 /// Verifies the buffer's size and it's checksum bytes
 bool Address::isValid(const Data& bytes, EOS::Type type) {
-    if (bytes.size() != KeyDataSize)
+    if (bytes.size() != KeyDataSize) {
         return false;
+    }
 
     // last Address::ChecksumSize bytes are a checksum
     uint32_t checksum = decode32LE(bytes.data() + PublicKeyDataSize);
-    if (createChecksum(bytes, type) != checksum)
+    if (createChecksum(bytes, type) != checksum) {
         return false;
+    }
     return true;
 }
 

@@ -21,7 +21,6 @@ namespace TW::Tezos {
 
 Data forgeBool(bool input);
 Data forgeOperation(const Proto::Operation& operation);
-
 Data forgeAddress(const std::string& address);
 Data forgeArray(const Data& data);
 Data forgePublicKeyHash(const std::string& publicKeyHash);

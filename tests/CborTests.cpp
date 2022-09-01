@@ -14,17 +14,20 @@ namespace TW::Cbor::tests {
 
 using namespace std;
 
+// clang-format off
+
 TEST(Cbor, EncSample1) {
     EXPECT_EQ(
         "8205a26178186461793831",
         hex(Encode::array({
-                              Encode::uint(5),
-                              Encode::map({
-                                  make_pair(Encode::string("x"), Encode::uint(100)),
-                                  make_pair(Encode::string("y"), Encode::negInt(50)),
-                              }),
-                          })
-                .encoded()));
+                Encode::uint(5),
+                Encode::map({
+                    make_pair(Encode::string("x"), Encode::uint(100)),
+                    make_pair(Encode::string("y"), Encode::negInt(50)),
+                }),
+            })
+        .encoded())
+    );
 }
 
 TEST(Cbor, EncUInt) {
@@ -265,11 +268,10 @@ TEST(Cbor, ArrayEmpty) {
 
 TEST(Cbor, Array3) {
     Data cbor = Encode::array({
-                                  Encode::uint(1),
-                                  Encode::uint(2),
-                                  Encode::uint(3),
-                              })
-                    .encoded();
+        Encode::uint(1),
+        Encode::uint(2),
+        Encode::uint(3),
+    }).encoded();
 
     EXPECT_EQ("83010203", hex(cbor));
     EXPECT_TRUE(Decode(cbor).isValid());
@@ -284,22 +286,20 @@ TEST(Cbor, Array3) {
 
 TEST(Cbor, ArrayNested) {
     Data cbor = Encode::array({
-                                  Encode::uint(1),
-                                  Encode::array({
-                                      Encode::uint(2),
-                                      Encode::uint(3),
-                                  }),
-                                  Encode::array({
-                                      Encode::uint(4),
-                                      Encode::uint(5),
-                                  }),
-                              })
-                    .encoded();
+        Encode::uint(1),
+        Encode::array({
+            Encode::uint(2),
+            Encode::uint(3),
+        }),
+        Encode::array({
+            Encode::uint(4),
+            Encode::uint(5),
+        }),
+    }).encoded();
 
     EXPECT_EQ("8301820203820405", hex(cbor));
     EXPECT_TRUE(Decode(cbor).isValid());
-    EXPECT_EQ("[1, [2, 3], [4, 5]]",
-              Decode(cbor).dumpToString());
+    EXPECT_EQ("[1, [2, 3], [4, 5]]", Decode(cbor).dumpToString());
 
     Decode decode(cbor);
     EXPECT_EQ(3ul, decode.getArrayElements().size());
@@ -344,10 +344,9 @@ TEST(Cbor, MapEmpty) {
 
 TEST(Cbor, Map2Num) {
     Data cbor = Encode::map({
-                                make_pair(Encode::uint(1), Encode::uint(2)),
-                                make_pair(Encode::uint(3), Encode::uint(4)),
-                            })
-                    .encoded();
+        make_pair(Encode::uint(1), Encode::uint(2)),
+        make_pair(Encode::uint(3), Encode::uint(4)),
+    }).encoded();
 
     EXPECT_EQ("a201020304", hex(cbor));
     EXPECT_TRUE(Decode(cbor).isValid());
@@ -361,13 +360,12 @@ TEST(Cbor, Map2Num) {
 
 TEST(Cbor, Map2WithArr) {
     Data cbor = Encode::map({
-                                make_pair(Encode::string("a"), Encode::uint(1)),
-                                make_pair(Encode::string("b"), Encode::array({
-                                                                   Encode::uint(2),
-                                                                   Encode::uint(3),
-                                                               })),
-                            })
-                    .encoded();
+        make_pair(Encode::string("a"), Encode::uint(1)),
+        make_pair(Encode::string("b"), Encode::array({
+            Encode::uint(2), 
+            Encode::uint(3),
+        })),
+    }).encoded();
 
     EXPECT_EQ("a26161016162820203", hex(cbor));
     EXPECT_TRUE(Decode(cbor).isValid());
@@ -386,11 +384,10 @@ TEST(Cbor, Map2WithArr) {
 
 TEST(Cbor, MapNested) {
     Data cbor = Encode::map({
-                                make_pair(Encode::string("a"), Encode::map({
-                                                                   make_pair(Encode::string("b"), Encode::string("c")),
-                                                               })),
-                            })
-                    .encoded();
+        make_pair(Encode::string("a"), Encode::map({
+            make_pair(Encode::string("b"), Encode::string("c")),
+        })),
+    }).encoded();
 
     EXPECT_EQ("a16161a161626163", hex(cbor));
     EXPECT_TRUE(Decode(cbor).isValid());
@@ -522,5 +519,5 @@ TEST(Cbor, GetTagElementNotTag) {
     }
     FAIL() << "Expected exception";
 }
-
+// clang-format on
 } // namespace TW::Cbor::tests

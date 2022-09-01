@@ -9,17 +9,16 @@
 #include <TrustWalletCore/TWBitcoinSigHashType.h>
 #include <gtest/gtest.h>
 
-#include "Bitcoin/SegwitAddress.h"
-#include "proto/Bitcoin.pb.h"
 #include "Bitcoin/OutPoint.h"
 #include "Bitcoin/Script.h"
+#include "Bitcoin/SigHashType.h"
 #include "Bitcoin/Transaction.h"
 #include "Bitcoin/TransactionBuilder.h"
 #include "Bitcoin/TransactionSigner.h"
-#include "Bitcoin/SigHashType.h"
 #include "HexCoding.h"
-#include "../interface/TWTestUtilities.h"
+#include "proto/Bitcoin.pb.h"
 #include "../Bitcoin/TxComparisonHelper.h"
+#include "../interface/TWTestUtilities.h"
 
 namespace TW::Bitcoin {
 
@@ -81,23 +80,21 @@ TEST(TWBitcoinGoldSigner, SignTransaction) {
     signedTx.encode(serialized);
     // BitcoinGold Mainnet: https://btg2.trezor.io/tx/db26faec66d070045df0da56140349beb5a12bd14bca12b162fded8f84d18afa
     EXPECT_EQ(serialized.size(), 222ul);
+    // clang-format off
     ASSERT_EQ(hex(serialized),
-              "01000000"
-              "0001"
-              "01"
-              "1d4653041a1915b3a52d47aeaa119c8f79ed7634a93692a6e811173067464f03"
-              "01000000"
-              "00"
-              "fdffffff"
-              "02"
-              "1027000000000000"
-              "160014db746a75d9aae8995d135b1e19a04d7765242a8f"
-              "135b010000000000"
-              "160014ebae10950c8a35a506e0e265b928305233e802ab"
-              "02"
-              "4730440220325c56363b17e1b1329efeb400c0933a3d9adfb304f29889b3ef01084aef19e302202a69d9be9ef668b5a5517fbfa42e1fc26b3f8b582c721bd1eabd721322bc2b6c41"
-              "2103e00b5dec8078d526fba090247bd92db6b67a4dd1953b788cea9b52de9471b8cf"
-              "71890900");
+        "01000000"
+        "0001"
+        "01"
+            "1d4653041a1915b3a52d47aeaa119c8f79ed7634a93692a6e811173067464f03" "01000000" "00" "fdffffff"
+        "02"
+            "1027000000000000" "160014db746a75d9aae8995d135b1e19a04d7765242a8f"
+            "135b010000000000" "160014ebae10950c8a35a506e0e265b928305233e802ab"
+        "02"
+            "4730440220325c56363b17e1b1329efeb400c0933a3d9adfb304f29889b3ef01084aef19e302202a69d9be9ef668b5a5517fbfa42e1fc26b3f8b582c721bd1eabd721322bc2b6c41"
+            "2103e00b5dec8078d526fba090247bd92db6b67a4dd1953b788cea9b52de9471b8cf"
+        "71890900"
+    );
+    // clang-format on
 }
 
 } // namespace TW::Bitcoin

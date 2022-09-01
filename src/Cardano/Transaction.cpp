@@ -199,11 +199,15 @@ Proto::TransactionPlan TransactionPlan::toProto() const {
 }
 
 Cbor::Encode cborizeInputs(const std::vector<OutPoint>& inputs) {
+    // clang-format off
     std::vector<Cbor::Encode> ii;
     for (const auto& i : inputs) {
-        ii.push_back(Cbor::Encode::array({Cbor::Encode::bytes(i.txHash),
-                                          Cbor::Encode::uint(i.outputIndex)}));
+        ii.push_back(Cbor::Encode::array({
+            Cbor::Encode::bytes(i.txHash),
+            Cbor::Encode::uint(i.outputIndex)
+        }));
     }
+    // clang-format on
     return Cbor::Encode::array(ii);
 }
 
@@ -229,13 +233,21 @@ Cbor::Encode cborizeOutputAmounts(const Amount& amount, const TokenBundle& token
             Cbor::Encode::bytes(parse_hex(policy)),
             Cbor::Encode::map(subTokensMap));
     }
-    return Cbor::Encode::array({Cbor::Encode::uint(amount),
-                                Cbor::Encode::map(tokensMap)});
+    // clang-format off
+    return Cbor::Encode::array({
+        Cbor::Encode::uint(amount),
+        Cbor::Encode::map(tokensMap)
+    });
+    // clang-format on
 }
 
 Cbor::Encode cborizeOutput(const TxOutput& output) {
-    return Cbor::Encode::array({Cbor::Encode::bytes(output.address),
-                                cborizeOutputAmounts(output.amount, output.tokenBundle)});
+    // clang-format off
+    return Cbor::Encode::array({
+        Cbor::Encode::bytes(output.address),
+        cborizeOutputAmounts(output.amount, output.tokenBundle)
+    });
+    // clang-format on
 }
 
 Cbor::Encode cborizeOutputs(const std::vector<TxOutput>& outputs) {

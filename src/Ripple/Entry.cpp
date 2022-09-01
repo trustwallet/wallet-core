@@ -27,4 +27,3 @@ void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::D
 }
 
 } // namespace TW::Ripple
-

@@ -66,7 +66,16 @@ bool Transaction::operator==(const Transaction& other) const {
     if (this == &other) {
         return true;
     }
-    return this->type == other.type && this->version == other.version && this->attributes.size() == other.attributes.size() && this->inInputs.size() == other.inInputs.size() && this->outputs.size() == other.outputs.size() && this->attributes == other.attributes && this->inInputs == other.inInputs && this->outputs == other.outputs;
+    // clang-format off
+    return this->type == other.type
+        && this->version == other.version
+        && this->attributes.size() == other.attributes.size()
+        && this->inInputs.size() == other.inInputs.size()
+        && this->outputs.size() == other.outputs.size()
+        && this->attributes == other.attributes
+        && this->inInputs == other.inInputs
+        && this->outputs == other.outputs;
+    // clang-format on
 }
 
 Data Transaction::getHash() const {

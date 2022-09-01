@@ -4,17 +4,19 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWTHORChainSwap.h>
+#include "Data.h"
 #include "Swap.h"
 #include "proto/THORChainSwap.pb.h"
-#include "Data.h"
+#include <TrustWalletCore/TWTHORChainSwap.h>
+
+using namespace TW;
 
 TWData* _Nonnull TWTHORChainSwapBuildSwap(TWData* _Nonnull input) {
-    TW::THORChainSwap::Proto::SwapInput inputProto;
-    TW::THORChainSwap::Proto::SwapOutput outputProto;
+    THORChainSwap::Proto::SwapInput inputProto;
+    THORChainSwap::Proto::SwapOutput outputProto;
     if (!inputProto.ParseFromArray(TWDataBytes(input), static_cast<int>(TWDataSize(input)))) {
         // error
-        outputProto.mutable_error()->set_code(TW::THORChainSwap::Proto::ErrorCode::Error_Input_proto_deserialization);
+        outputProto.mutable_error()->set_code(THORChainSwap::Proto::ErrorCode::Error_Input_proto_deserialization);
         outputProto.mutable_error()->set_message("Could not deserialize input proto");
         auto outputData = TW::data(outputProto.SerializeAsString());
         return TWDataCreateWithBytes(outputData.data(), outputData.size());
@@ -22,9 +24,9 @@ TWData* _Nonnull TWTHORChainSwapBuildSwap(TWData* _Nonnull input) {
 
     const auto fromChain = inputProto.from_chain();
     const auto toChain = inputProto.to_asset().chain();
-    auto res = TW::THORChainSwap::Swap::build(
-        static_cast<TW::THORChainSwap::Chain>(static_cast<int>(fromChain)),
-        static_cast<TW::THORChainSwap::Chain>(static_cast<int>(toChain)),
+    auto res = THORChainSwap::Swap::build(
+        static_cast<THORChainSwap::Chain>(static_cast<int>(fromChain)),
+        static_cast<THORChainSwap::Chain>(static_cast<int>(toChain)),
         inputProto.from_address(),
         inputProto.to_asset().symbol(),
         inputProto.to_asset().token_id(),
@@ -38,39 +40,39 @@ TWData* _Nonnull TWTHORChainSwapBuildSwap(TWData* _Nonnull input) {
     outputProto.set_to_chain(toChain);
     if (std::get<1>(res) != 0) {
         // error
-        outputProto.mutable_error()->set_code(static_cast<TW::THORChainSwap::Proto::ErrorCode>(std::get<1>(res)));
+        outputProto.mutable_error()->set_code(static_cast<THORChainSwap::Proto::ErrorCode>(std::get<1>(res)));
         outputProto.mutable_error()->set_message(std::get<2>(res));
     } else {
         // no error
-        outputProto.mutable_error()->set_code(TW::THORChainSwap::Proto::ErrorCode::OK);
+        outputProto.mutable_error()->set_code(THORChainSwap::Proto::ErrorCode::OK);
         outputProto.mutable_error()->set_message("");
 
-        const TW::Data& txInput = std::get<0>(res);
+        const Data& txInput = std::get<0>(res);
         switch (fromChain) {
-        case TW::THORChainSwap::Proto::BTC: {
-            TW::Bitcoin::Proto::SigningInput btcInput;
+        case THORChainSwap::Proto::BTC: {
+            Bitcoin::Proto::SigningInput btcInput;
             if (!btcInput.ParseFromArray(txInput.data(), static_cast<int>(txInput.size()))) {
-                outputProto.mutable_error()->set_code(TW::THORChainSwap::Proto::ErrorCode::Error_Input_proto_deserialization);
+                outputProto.mutable_error()->set_code(THORChainSwap::Proto::ErrorCode::Error_Input_proto_deserialization);
                 outputProto.mutable_error()->set_message("Could not deserialize BTC input");
             } else {
                 *outputProto.mutable_bitcoin() = btcInput;
             }
         } break;
 
-        case TW::THORChainSwap::Proto::ETH: {
-            TW::Ethereum::Proto::SigningInput ethInput;
+        case THORChainSwap::Proto::ETH: {
+            Ethereum::Proto::SigningInput ethInput;
             if (!ethInput.ParseFromArray(txInput.data(), static_cast<int>(txInput.size()))) {
-                outputProto.mutable_error()->set_code(TW::THORChainSwap::Proto::ErrorCode::Error_Input_proto_deserialization);
+                outputProto.mutable_error()->set_code(THORChainSwap::Proto::ErrorCode::Error_Input_proto_deserialization);
                 outputProto.mutable_error()->set_message("Could not deserialize ETH input");
             } else {
                 *outputProto.mutable_ethereum() = ethInput;
             }
         } break;
 
-        case TW::THORChainSwap::Proto::BNB: {
-            TW::Binance::Proto::SigningInput bnbInput;
+        case THORChainSwap::Proto::BNB: {
+            Binance::Proto::SigningInput bnbInput;
             if (!bnbInput.ParseFromArray(txInput.data(), static_cast<int>(txInput.size()))) {
-                outputProto.mutable_error()->set_code(TW::THORChainSwap::Proto::ErrorCode::Error_Input_proto_deserialization);
+                outputProto.mutable_error()->set_code(THORChainSwap::Proto::ErrorCode::Error_Input_proto_deserialization);
                 outputProto.mutable_error()->set_message("Could not deserialize BNB input");
             } else {
                 *outputProto.mutable_binance() = bnbInput;
@@ -78,7 +80,7 @@ TWData* _Nonnull TWTHORChainSwapBuildSwap(TWData* _Nonnull input) {
         } break;
 
         default:
-            outputProto.mutable_error()->set_code(TW::THORChainSwap::Proto::ErrorCode::Error_Unsupported_from_chain);
+            outputProto.mutable_error()->set_code(THORChainSwap::Proto::ErrorCode::Error_Unsupported_from_chain);
             outputProto.mutable_error()->set_message(std::string("Unsupported from chain ") + std::to_string(fromChain));
             break;
         }

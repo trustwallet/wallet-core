@@ -19,8 +19,10 @@ namespace TW::Bitcoin {
 /// From https://github.com/bitcoincashorg/bitcoincash.org/blob/master/spec/cashaddr.md
 namespace {
 
-enum class Version : uint8_t { p2kh = 0x00,
-                               p2sh = 0x08 };
+enum class Version : uint8_t {
+    p2kh = 0x00,
+    p2sh = 0x08
+};
 constexpr size_t maxHRPSize{20};
 constexpr size_t maxDataSize{104};
 

@@ -7,9 +7,9 @@
 #include "FIO/Actor.h"
 #include "FIO/Signer.h"
 
-#include "HexCoding.h"
-#include "Hash.h"
 #include "Base58.h"
+#include "Hash.h"
+#include "HexCoding.h"
 
 #include <gtest/gtest.h>
 
@@ -19,7 +19,7 @@ using namespace std;
 
 TEST(FIOSigner, SignEncode) {
     string sig1 = Signer::signatureToBsase58(parse_hex("1f4fccc30bcba876963aef6de584daf7258306c02f4528fe25b116b517de8b349968bdc080cd6bef36f5a46d31a7c01ed0806ad215bb66a94f61e27a895d610983"));
-    ;
+
     EXPECT_EQ("SIG_K1_K5hJTPeiV4bDkNR13mf66N2DY5AtVL4NU1iWE4G4dsczY2q68oCcUVxhzFdxjgV2eAeb2jNV1biqtCJ3SaNL8kkNgoZ43H", sig1);
 }
 
