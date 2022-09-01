@@ -17,7 +17,10 @@ using namespace TW;
 // Test vectors from the standard, https://github.com/lightning/bolts/blob/master/11-payment-encoding.md
 const std::string specTest1 = "lnbc1pvjluezsp5zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zygspp5qqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqypqdpl2pkx2ctnv5sxxmmwwd5kgetjypeh2ursdae8g6twvus8g6rfwvs8qun0dfjkxaq9qrsgq357wnc5r2ueh7ck6q93dj32dlqnls087fxdwk8qakdyafkq3yap9us6v52vjjsrvywa6rt52cm9r9zqt8r2t7mlcwspyetp5h2tztugp9lfyql";
 const std::string specTest2 = "lnbc2500u1pvjluezsp5zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zygspp5qqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqypqdq5xysxxatsyp3k7enxv4jsxqzpu9qrsgquk0rl77nj30yxdy8j9vdx85fkpmdla2087ne0xh8nhedh8w27kyke0lp53ut353s06fv3qfegext0eh0ymjpf39tuven09sam30g4vgpfna3rh";
+const std::string specTestPrivkey = "e126f68f7eafcc8b74f54d269fe206be715000f94dac067d1c04a8ca3b2db734";
 const std::string specTestPubkey = "03e7156ae33b0a208d0744199163177e909e80176e55d97a2f221ede0f934dd9ad";
+const std::string dummyPrivkey = "1111111111111111111111111111111111111111111111111111111111111111";
+const std::string dummyPubkey = "034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa";
 const std::string linv21 = "lntb1230n1p3072yfdqud3jxktt5w46x7unfv9kz6mn0v3jsnp4qvpytcf9s6tqxc20vx028lyfyy2ymcv3l6f53sd2l35lepag8p8f7pp5hpqe4wuc2smftu8k3qqcm9z489vdz6zh3f0nc8jqt27qukkkp5lqsp59553gh4vqdflsfznxjcywgu3kelxa4ryfpgn7f640h7q2y63vfls9qyysgqcqpcxqy7sjql6f55kzhxctfeey2a629jwqsh4nhgrj5ghzda9kumw5pqz8va4n4jq675hdfzgpl239cx8xkz7c006kja5xesnd9tk285v67aarntxspehpcv4";
 const std::string linvWithHint = "lnbc10010n1p39j00rpp58dlferm3cr3lwwwjjstnfh529sk94keghm9yyk9heuusn2338snsdqqcqzzgxqyz5vqrzjqw8c7yfutqqy3kz8662fxutjvef7q2ujsxtt45csu0k688lkzu3ld28pfhz4wtgyryqqqqryqqqqthqqpysp5uxw3y3mpf2xky62qrr4a543rlrwa6dvdds305mcswk0t3578uc9q9qypqsqyt6y6u0vx28uzfk93vq6aqrcu048ey0yr5c76ec0egrrph65lr54z3ghvwgtkp2zn0vyzktzfh8vaxlcyhe7wyeaydakf80vxmd6f3cpvywpen";
 
@@ -172,4 +175,52 @@ TEST(LNInvoice, VerifySignature) {
 
     EXPECT_TRUE(InvoiceDecoder::verifySignature(linv21));
     EXPECT_TRUE(InvoiceDecoder::verifySignature(linv21, parse_hex("030245e125869603614f619ea3fc8921144de191fe9348c1aafc69fc87a8384e9f")));
+}
+
+TEST(LNInvoice, BuildSignature) {
+    EXPECT_EQ(hex(InvoiceDecoder::buildSignature(specTest1, parse_hex(specTestPrivkey))),
+        "8d3ce9e28357337f62da0162d9454df827f83cfe499aeb1c1db349d4d81127425e434ca29929406c23bba1ae8ac6ca32880b38d4bf6ff874024cac34ba9625f101");
+    EXPECT_EQ(hex(InvoiceDecoder::buildSignature(specTest1, parse_hex(dummyPrivkey))),
+        "e9631e8e6dac31dea75a2fc2c6023aadba0c5083457f470f5eb55118e60eef7f799cc87a36f3bbd3c315e3ead931a628a414af50a48f2ee0fc5cbdb5c263d9c701");
+}
+
+TEST(LNInvoice, EncodeSign1) {
+    // Note that this invoice contains no nodeId
+    const auto inv1 = InvoiceDecoder::decodeInvoice(specTest1);
+    EXPECT_EQ(hex(inv1.signature), "8d3ce9e28357337f62da0162d9454df827f83cfe499aeb1c1db349d4d81127425e434ca29929406c23bba1ae8ac6ca32880b38d4bf6ff874024cac34ba9625f101");
+
+    { // Re-encode, no re-sign, signature may get invalid because of reordering
+        const auto enc1 = InvoiceDecoder::encodeInvoice(inv1);
+        EXPECT_EQ(enc1, "lnbc1pvjluezpp5qqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqypq9qzsgdpl2pkx2ctnv5sxxmmwwd5kgetjypeh2ursdae8g6twvus8g6rfwvs8qun0dfjkxaqsp5zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zygs357wnc5r2ueh7ck6q93dj32dlqnls087fxdwk8qakdyafkq3yap9us6v52vjjsrvywa6rt52cm9r9zqt8r2t7mlcwspyetp5h2tztugpu52vvs");
+        const auto inv2 = InvoiceDecoder::decodeInvoice(enc1);
+        EXPECT_EQ(hex(inv2.signature), "8d3ce9e28357337f62da0162d9454df827f83cfe499aeb1c1db349d4d81127425e434ca29929406c23bba1ae8ac6ca32880b38d4bf6ff874024cac34ba9625f101");
+    }
+
+    { // Re-encode with re-sign, signature must be valid
+        const auto enc3 = InvoiceDecoder::encodeInvoice(inv1, parse_hex(specTestPrivkey));
+        EXPECT_EQ(enc3, "lnbc1pvjluezpp5qqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqypq9qzsgdpl2pkx2ctnv5sxxmmwwd5kgetjypeh2ursdae8g6twvus8g6rfwvs8qun0dfjkxaqsp5zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zygsu95vptkrw797t2ayyqads8xmcnem65c2l7248khxyvl48akt2393fde7aavfns3qmthhevx8lt8v4nmfutxnsm9f5lcmxcup66fsyaspduzyr8");
+        EXPECT_TRUE(InvoiceDecoder::verifySignature(enc3, parse_hex(specTestPubkey)));
+        const auto inv3 = InvoiceDecoder::decodeInvoice(enc3);
+        EXPECT_EQ(hex(inv3.signature), "e168c0aec3778be5aba4203ad81cdbc4f3bd530aff9553dae6233f53f6cb544b14b73eef5899c220daef7cb0c7facecacf69e2cd386ca9a7f1b36381d693027601");
+    }
+
+    { // Re-encode with re-sign with another key, signature must be valid
+        const auto enc4 = InvoiceDecoder::encodeInvoice(inv1, parse_hex(dummyPrivkey));
+        EXPECT_EQ(enc4, "lnbc1pvjluezpp5qqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqypq9qzsgdpl2pkx2ctnv5sxxmmwwd5kgetjypeh2ursdae8g6twvus8g6rfwvs8qun0dfjkxaqsp5zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zygswtnx62a4atq6g6kzd77st4ftwve567typauazhtpq5nnjt7lykty6wv9r5k6puxjtx8ky50fuklrqagaakk5w6gtl3k8ptm30vdgnsqqsryzl8");
+        EXPECT_TRUE(InvoiceDecoder::verifySignature(enc4, parse_hex(dummyPubkey)));
+        const auto inv4 = InvoiceDecoder::decodeInvoice(enc4);
+        EXPECT_EQ(hex(inv4.signature), "72e66d2bb5eac1a46ac26fbd05d52b73334d79640f79d15d610527392fdf25964d39851d2da0f0d2598f6251e9e5be30751dedad47690bfc6c70af717b1a89c000");
+    }
+}
+
+const auto specTest1WithNode = "lnbc1pvjluezpp5qqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqypq9qzsgdpl2pkx2ctnv5sxxmmwwd5kgetjypeh2ursdae8g6twvus8g6rfwvs8qun0dfjkxaqsp5zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zygsnp4q0n326hr8v9zprg8gsvezcch06gfaqqhde2aj730yg0durunfhv66fld5lkvam09e7n8wllj3jrhn7qj6zm8gnm5fvscaz990htcul4y8299pfc00ua009dryzp47l2q4nkxwac8gmfexj4mnrqp840uk2zcpacwdru";
+
+TEST(LNInvoice, EncodeSignWrongKey) {
+    const auto inv1 = InvoiceDecoder::decodeInvoice(specTest1WithNode);
+    EXPECT_EQ(hex(inv1.nodeId), specTestPubkey);
+    const auto enc1 = InvoiceDecoder::encodeInvoice(inv1, parse_hex(specTestPrivkey));
+    EXPECT_EQ(enc1, specTest1WithNode);
+    EXPECT_EXCEPTION(
+        InvoiceDecoder::encodeInvoice(inv1, parse_hex(dummyPrivkey)),
+        "Wrong private key provided, public keys do not match 03e7156ae33b0a208d0744199163177e909e80176e55d97a2f221ede0f934dd9ad 034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa");
 }

@@ -9,11 +9,14 @@
 #include "BinaryCoding.h"
 #include "Hash.h"
 #include "PrivateKey.h"
-//#include "HexCoding.h" // TODO is this needed?
+#include "HexCoding.h"
 
 //#include <iostream> // TODO remove
 
 namespace TW::Lightning {
+
+constexpr auto SignatureLength8bit = 65;
+constexpr auto SignatureLength5bit = 104;
 
 bool findKnownPrefix(const std::string& prefix, LNNetwork& net, std::string& prefixPrefix) {
     static const std::pair<std::string, LNNetwork> prefixes[] = {
@@ -52,14 +55,13 @@ void InvoiceDecoder::decodeInternal(const std::string& invstr, std::string& pref
         throw std::invalid_argument("Invalid prefix " + prefix);
     }
 
-    const auto sigLen = 104;
-    if (dataRaw5bit.size() <= sigLen) {
+    if (dataRaw5bit.size() <= SignatureLength5bit) {
         throw std::invalid_argument("Too short or signature missing " + std::to_string(dataRaw5bit.size()));
     }
-    assert(dataRaw5bit.size() > sigLen);
-    const auto lenWoSig = dataRaw5bit.size() - sigLen;
+    assert(dataRaw5bit.size() > SignatureLength5bit);
+    const auto lenWoSig = dataRaw5bit.size() - SignatureLength5bit;
     assert(lenWoSig > 0);
-    const auto signature5 = TW::subData(dataRaw5bit, lenWoSig, sigLen);
+    const auto signature5 = TW::subData(dataRaw5bit, lenWoSig, SignatureLength5bit);
     Bech32::convertBits<5, 8, false>(signature, signature5);
 
     data5bit = TW::subData(dataRaw5bit, 0, lenWoSig);
@@ -231,7 +233,10 @@ Data InvoiceDecoder::buildUptosig(const LNInvoice& inv) {
     //std::cout << hex(timestamp5) << "\n";
     TW::append(data5, TW::subData(timestamp5, 0, 7));
 
-    if (inv.paymentHash.size() == 32) {
+    if (inv.paymentHash.size() > 0) {
+        if (inv.paymentHash.size() != 32) {
+            throw std::invalid_argument("Payment hash invalid size " + std::to_string(inv.paymentHash.size()));
+        }
         appendTag(data5, 1, inv.paymentHash);
     }
     if (inv.routing.size() > 0) {
@@ -253,10 +258,16 @@ Data InvoiceDecoder::buildUptosig(const LNInvoice& inv) {
     }
     // description: always
     appendTag(data5, 13, data(inv.description));
-    if (inv.secret.size() == 32) {
+    if (inv.secret.size() > 0) {
+        if (inv.secret.size() != 32) {
+            throw std::invalid_argument("Secret invalid size " + std::to_string(inv.secret.size()));
+        }
         appendTag(data5, 16, inv.secret);
     }
-    if (inv.nodeId.size() == 33) {
+    if (inv.nodeId.size() > 0) {
+        if (inv.nodeId.size() != 33) {
+            throw std::invalid_argument("NodeId invalid size " + std::to_string(inv.nodeId.size()));
+        }
         appendTag(data5, 19, inv.nodeId);
     }
     if (inv.minFinalCltvExpiry > 0) {
@@ -272,13 +283,46 @@ Data InvoiceDecoder::buildUptosig(const LNInvoice& inv) {
     return data5;
 }
 
-std::string InvoiceDecoder::encodeInvoice(const LNInvoice& inv) {
+std::string InvoiceDecoder::encodeInvoice(const LNInvoice& inv, const Data& optionalPrivateKey) {
     const std::string prefix = buildPrefix(inv);
 
     Data data5 = buildUptosig(inv);
 
+    Data signature;
+    if (optionalPrivateKey.size() > 0) {
+        // private key provided, use that to create signature
+        if (optionalPrivateKey.size() != 32) {
+            throw std::invalid_argument("optionalPrivateKey worng size " + std::to_string(optionalPrivateKey.size()));
+        }
+
+        // verify that private key and nodeId matches (if nodeId is present)
+        if (inv.nodeId.size() > 0) {
+            const auto publicKey = PrivateKey(optionalPrivateKey).getPublicKey(TWPublicKeyTypeSECP256k1);
+            if (inv.nodeId != publicKey.bytes) {
+                throw std::invalid_argument("Wrong private key provided, public keys do not match " + hex(inv.nodeId) + " " + hex(publicKey.bytes));
+            }
+        }
+
+        // set placeholder signature input
+        auto inv2 = inv;
+        inv2.signature = Data(SignatureLength8bit);
+        const auto encodedWithNosig = encodeInvoice(inv2, Data());
+        //std::cout << "encodedWithNosig " << hex(encodedWithNosig) << "\n";
+        // create signature
+        signature = buildSignature(encodedWithNosig, optionalPrivateKey);
+        //std::cout << "signature " << hex(signature) << "\n";
+        assert(signature.size() == SignatureLength8bit);
+    } else {
+        // no private key, use provided signature
+        signature = inv.signature;
+        if (signature.size() != SignatureLength8bit) {
+            throw std::invalid_argument("Provided signature wrong size " + std::to_string(signature.size()));
+        }
+        assert(signature.size() == SignatureLength8bit);
+    }
+
     Data signature5;
-    Bech32::convertBits<8, 5, true>(signature5, inv.signature);
+    Bech32::convertBits<8, 5, true>(signature5, signature);
     TW::append(data5, signature5);
 
     const auto enc = Bech32::encode(prefix, data5, Bech32::Bech32);
@@ -308,6 +352,9 @@ bool InvoiceDecoder::verifySignature(const std::string& invstr, const Data& extP
         if (pubKeyData.size() == 0) {
             throw std::invalid_argument("Missing public key");
         }
+        if (pubKeyData.size() != 33) {
+            throw std::invalid_argument("Wrong public key size " + std::to_string(pubKeyData.size()));
+        }
         //std::cout << "pubKey " << hex(pubKeyData) << "\n";
 
         auto dataToSign = TW::data(prefix);
@@ -322,6 +369,26 @@ bool InvoiceDecoder::verifySignature(const std::string& invstr, const Data& extP
     } catch (...) {
     }
     return false;
+}
+
+Data InvoiceDecoder::buildSignature(const std::string& invstr, const Data& privateKey) {
+    std::string prefix;
+    LNNetwork net;
+    std::string prefixPrefix;
+    Data dataRaw5bit;
+    Data data5bit;
+    Data data8bit;
+    Data signature;
+    decodeInternal(invstr, prefix, net, prefixPrefix, dataRaw5bit, data5bit, data8bit, signature);
+
+    auto dataToSign = TW::data(prefix);
+    TW::append(dataToSign, data8bit);
+    //std::cout << "dataToSign " << hex(dataToSign) << "\n";
+    const auto hashToSign = Hash::sha256(dataToSign);
+    //std::cout << "hashToSign " << hex(hashToSign) << "\n";
+
+    const auto pk = PrivateKey(privateKey);
+    return pk.sign(hashToSign, TWCurveSECP256k1);
 }
 
 } // namespace TW::Lightning

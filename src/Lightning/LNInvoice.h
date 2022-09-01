@@ -46,10 +46,14 @@ struct LNInvoice {
 class InvoiceDecoder {
 public:
     static struct LNInvoice decodeInvoice(const std::string& invstr);
-    static std::string encodeInvoice(const LNInvoice& inv);
+    /// Encode an invoice, from the parts provided.
+    /// If optional private key is provided, signature is recreated (and provided one is ignored). Otherwise the provided signature is used.
+    static std::string encodeInvoice(const LNInvoice& inv, const Data& optionalPrivateKey = Data());
     /// Verify signature inside the invoice. Normally no public key is provided, but the included nodeId public key is used for verification.
     /// If public key is provided, it is used for verification.
     static bool verifySignature(const std::string& invstr, const Data& extPublicKey = Data());
+    // Create signature of the invoice data, using private key
+    static Data buildSignature(const std::string& invstr, const Data& privateKey);
 
 private:
     static void decodeInternal(const std::string& invstr, std::string& prefix, LNNetwork& net, std::string& prefixPrefix, Data& dataRaw5bit, Data& data5bit, Data& data8bit, Data& signature);
