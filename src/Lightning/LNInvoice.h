@@ -33,6 +33,9 @@ struct LNInvoice {
     Data signature;
     /// Set to true if there is a mismatch between the nodeId (public key) and signature
     bool mismatchNodeidSignature;
+    /// Public key recovered from the signature
+    Data recoveredPubkey;
+    /// NodeId -- public key of the payee node
     Data nodeId;
     Data paymentHash;
     Data secret;

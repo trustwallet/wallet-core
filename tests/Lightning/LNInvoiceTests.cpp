@@ -34,6 +34,7 @@ TEST(LNInvoice, Decode21) {
     EXPECT_EQ(hex(inv.signature), "fe934a585736169ce48aee94593810bd67740e5445c4de96dcdba81008eced6759035ea5da91203f544b831cd617b0f7ead2ed0d984da55d947a335eef47359a01");
     EXPECT_EQ(inv.timestamp, 1660889225ull);
     EXPECT_EQ(hex(inv.nodeId), pubkey21);
+    EXPECT_EQ(hex(inv.recoveredPubkey), pubkey21);
     EXPECT_EQ(hex(inv.paymentHash), "b8419abb98543695f0f688018d94553958d168578a5f3c1e405abc0e5ad60d3e");
     EXPECT_EQ(hex(inv.secret), "2d29145eac0353f8245334b0472391b67e6ed46448513f27557dfc051351627f");
     EXPECT_EQ(inv.description, "ldk-tutorial-node");
@@ -44,7 +45,8 @@ TEST(LNInvoice, Decode21) {
     EXPECT_TRUE(InvoiceDecoder::verifySignature(linv21));
 }
 
-TEST(LNInvoice, Encode1) {
+TEST(LNInvoice, Encode21) {
+    // TORO: reencode results in invalid, use modified version with known privkey
     EXPECT_EQ(linv21.length(), 342ul);
     const auto inv1 = InvoiceDecoder::decodeInvoice(linv21);
     const auto enc1 = InvoiceDecoder::encodeInvoice(inv1);
@@ -57,8 +59,10 @@ TEST(LNInvoice, Encode1) {
     EXPECT_TRUE(inv.amountPresent);
     EXPECT_EQ(inv.unparsedAmount, "1230n");
     EXPECT_EQ(hex(inv.signature), "fe934a585736169ce48aee94593810bd67740e5445c4de96dcdba81008eced6759035ea5da91203f544b831cd617b0f7ead2ed0d984da55d947a335eef47359a01");
+    EXPECT_TRUE(inv.mismatchNodeidSignature);
     EXPECT_EQ(inv.timestamp, 1660889225ull);
     EXPECT_EQ(hex(inv.nodeId), pubkey21);
+    EXPECT_EQ(hex(inv.recoveredPubkey), "");
     EXPECT_EQ(hex(inv.paymentHash), "b8419abb98543695f0f688018d94553958d168578a5f3c1e405abc0e5ad60d3e");
     EXPECT_EQ(hex(inv.secret), "2d29145eac0353f8245334b0472391b67e6ed46448513f27557dfc051351627f");
     EXPECT_EQ(inv.description, "ldk-tutorial-node");
@@ -82,6 +86,7 @@ TEST(LNInvoice, DecodeWithHint) {
     EXPECT_EQ(hex(inv.signature), "22f44d71ec328fc126c58b01ae8078e3ea7c91e41d31ed670fca0630df54f8e95145176390bb05429bd84159624dcece9bf825f3e7133d237b649dec36dba4c701");
     EXPECT_EQ(inv.timestamp, 1650015715ull);
     EXPECT_EQ(hex(inv.nodeId), ""); // no nodeID, is it not known or kept secret?
+    EXPECT_EQ(hex(inv.recoveredPubkey), "");
     EXPECT_EQ(hex(inv.paymentHash), "3b7e9c8f71c0e3f739d2941734de8a2c2c5adb28beca4258b7cf3909aa313c27");
     EXPECT_EQ(hex(inv.secret), "e19d1247614a8d62694018ebda5623f8dddd358d6c22fa6f10759eb8d3c7e60a");
     ASSERT_EQ(inv.routing.size(), 1ul); // 1 routing hint
@@ -96,6 +101,7 @@ TEST(LNInvoice, DecodeWithHint) {
 }
 
 TEST(LNInvoice, EncodeWithHint) {
+    // TODO: use private key!!!
     EXPECT_EQ(linvWithHint.length(), 345ul);
     const auto inv1 = InvoiceDecoder::decodeInvoice(linvWithHint);
     const auto enc1 = InvoiceDecoder::encodeInvoice(inv1);
@@ -108,8 +114,10 @@ TEST(LNInvoice, EncodeWithHint) {
     EXPECT_TRUE(inv.amountPresent);
     EXPECT_EQ(inv.unparsedAmount, "10010n");
     EXPECT_EQ(hex(inv.signature), "22f44d71ec328fc126c58b01ae8078e3ea7c91e41d31ed670fca0630df54f8e95145176390bb05429bd84159624dcece9bf825f3e7133d237b649dec36dba4c701");
+    EXPECT_FALSE(inv.mismatchNodeidSignature);
     EXPECT_EQ(inv.timestamp, 1650015715ull);
     EXPECT_EQ(hex(inv.nodeId), ""); // no nodeID, is it not known or kept secret?
+    EXPECT_EQ(hex(inv.recoveredPubkey), "");
     EXPECT_EQ(hex(inv.paymentHash), "3b7e9c8f71c0e3f739d2941734de8a2c2c5adb28beca4258b7cf3909aa313c27");
     EXPECT_EQ(hex(inv.secret), "e19d1247614a8d62694018ebda5623f8dddd358d6c22fa6f10759eb8d3c7e60a");
     ASSERT_EQ(inv.routing.size(), 1ul); // 1 routing hint
@@ -130,11 +138,13 @@ TEST(LNInvoice, EncodeWithHint) {
 }
 
 TEST(LNInvoice, AddRouting) {
+    // TODO: use private key!!!
     const std::string lnNorouting = "lnbc10010n1p39j00rpp58dlferm3cr3lwwwjjstnfh529sk94keghm9yyk9heuusn2338sns9qypqsqxqyz5vqdqqsp5uxw3y3mpf2xky62qrr4a543rlrwa6dvdds305mcswk0t3578uc9qnp4qvpytcf9s6tqxc20vx028lyfyy2ymcv3l6f53sd2l35lepag8p8f7cqzzgyt6y6u0vx28uzfk93vq6aqrcu048ey0yr5c76ec0egrrph65lr54z3ghvwgtkp2zn0vyzktzfh8vaxlcyhe7wyeaydakf80vxmd6f3cpjc2v2g";
     EXPECT_EQ(lnNorouting.length(), 316ul);
 
     auto inv = InvoiceDecoder::decodeInvoice(lnNorouting);
     EXPECT_EQ(hex(inv.nodeId), pubkey21);
+    EXPECT_EQ(hex(inv.recoveredPubkey), "");
 
     // add routing, and remove nodeId
     inv.nodeId = Data();
@@ -156,8 +166,10 @@ TEST(LNInvoice, AddRouting) {
         EXPECT_EQ(inv2.network, inv.network);
         EXPECT_EQ(inv2.unparsedAmount, inv.unparsedAmount);
         EXPECT_EQ(hex(inv2.signature), hex(inv.signature));
+        EXPECT_FALSE(inv2.mismatchNodeidSignature);
         EXPECT_EQ(inv2.timestamp, inv.timestamp);
         EXPECT_EQ(hex(inv2.nodeId), "");
+        EXPECT_EQ(hex(inv2.recoveredPubkey), "");
         EXPECT_EQ(hex(inv2.paymentHash), hex(inv.paymentHash));
         EXPECT_EQ(hex(inv2.secret), hex(inv.secret));
         ASSERT_EQ(inv2.routing.size(), 1ul); // 1 routing hint
@@ -221,6 +233,7 @@ TEST(LNInvoice, EncodeSign1) {
 TEST(LNInvoice, EncodeSign21) {
     auto inv1 = InvoiceDecoder::decodeInvoice(linv21);
     EXPECT_EQ(hex(inv1.nodeId), pubkey21);
+    EXPECT_EQ(hex(inv1.recoveredPubkey), pubkey21);
     EXPECT_FALSE(inv1.mismatchNodeidSignature);
     EXPECT_EQ(hex(inv1.signature), "fe934a585736169ce48aee94593810bd67740e5445c4de96dcdba81008eced6759035ea5da91203f544b831cd617b0f7ead2ed0d984da55d947a335eef47359a01");
     EXPECT_TRUE(InvoiceDecoder::verifySignature(linv21, parse_hex(pubkey21)));
@@ -233,6 +246,7 @@ TEST(LNInvoice, EncodeSign21) {
     // decode
     const auto inv2 = InvoiceDecoder::decodeInvoice(invstr2);
     EXPECT_EQ(hex(inv2.nodeId), dummyPubkey);
+    EXPECT_EQ(hex(inv2.recoveredPubkey), "");
     EXPECT_TRUE(inv2.mismatchNodeidSignature);
     EXPECT_EQ(hex(inv2.signature), "fe934a585736169ce48aee94593810bd67740e5445c4de96dcdba81008eced6759035ea5da91203f544b831cd617b0f7ead2ed0d984da55d947a335eef47359a01");
     EXPECT_FALSE(InvoiceDecoder::verifySignature(invstr2, parse_hex(pubkey21)));
@@ -243,6 +257,7 @@ const auto specTest1WithNode = "lnbc1pvjluezpp5qqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfq
 TEST(LNInvoice, EncodeSignWrongKey) {
     const auto inv1 = InvoiceDecoder::decodeInvoice(specTest1WithNode);
     EXPECT_EQ(hex(inv1.nodeId), specTestPubkey);
+    EXPECT_EQ(hex(inv1.recoveredPubkey), specTestPubkey);
     EXPECT_FALSE(inv1.mismatchNodeidSignature);
     EXPECT_EQ(hex(inv1.signature), "4fdb4fd99ddbcb9f4ceeffe5190ef3f025a16ce89ee896431d114afbaf1cfd487514a14e1efe75ef2b464106befa8159d8ceee0e8da7269577318027abf9650b01");
 

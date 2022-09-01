@@ -9,6 +9,7 @@
 #include "BinaryCoding.h"
 #include "Hash.h"
 #include "PrivateKey.h"
+#include "PublicKey.h"
 #include "HexCoding.h"
 
 //#include <iostream> // TODO remove
@@ -68,7 +69,7 @@ void InvoiceDecoder::decodeInternal(const std::string& invstr, std::string& pref
     Bech32::convertBits<5, 8, true>(data8bit, data5bit);
 }
 
-bool verifySignatureInternal(const std::string& prefix, const Data& data8bit, const Data& publicKey, const Data& signature) {
+bool verifySignatureInternal(const std::string& prefix, const Data& data8bit, const Data& publicKey, const Data& signature, Data& recoveredPubkey) {
     //std::cout << "pubKey " << hex(publicKey) << "\n";
     if (publicKey.size() == 0) {
         throw std::invalid_argument("Missing public key");
@@ -82,7 +83,12 @@ bool verifySignatureInternal(const std::string& prefix, const Data& data8bit, co
     //std::cout << "dataToSign " << hex(dataToSign) << "\n";
     const auto hashToSign = Hash::sha256(dataToSign);
     //std::cout << "hashToSign " << hex(hashToSign) << "\n";
-    return PublicKey(publicKey, TWPublicKeyTypeSECP256k1).verify(signature, hashToSign);
+    const auto pubKey = PublicKey(publicKey, TWPublicKeyTypeSECP256k1);
+    if (!pubKey.verify(signature, hashToSign)) {
+        return false;
+    }
+    recoveredPubkey = pubKey.recover(signature, hashToSign).compressed().bytes;
+    return true;
 }
 
 struct LNInvoice InvoiceDecoder::decodeInvoice(const std::string& invstr) {
@@ -207,7 +213,7 @@ struct LNInvoice InvoiceDecoder::decodeInvoice(const std::string& invstr) {
     // check signature (as extra info)
     inv.mismatchNodeidSignature = false;
     if (inv.nodeId.size() > 0) {
-        inv.mismatchNodeidSignature = !verifySignatureInternal(prefix, data8bit, inv.nodeId, inv.signature);
+        inv.mismatchNodeidSignature = !verifySignatureInternal(prefix, data8bit, inv.nodeId, inv.signature, inv.recoveredPubkey);
     }
 
     return inv;
@@ -373,7 +379,8 @@ bool InvoiceDecoder::verifySignature(const std::string& invstr, const Data& extP
             pubKeyData = extPublicKey;
         }
 
-        return verifySignatureInternal(prefix, data8bit, pubKeyData, signature);
+        Data recoveredKey;
+        return verifySignatureInternal(prefix, data8bit, pubKeyData, signature, recoveredKey);
     } catch (std::exception& ex) {
         //std::cout << "ex " << ex.what() << "\n";
     } catch (...) {
