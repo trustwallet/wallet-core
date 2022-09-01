@@ -28,7 +28,8 @@ enum LNNetwork {
 struct LNInvoice {
     Data signature;
     LNNetwork network;
-    std::string unparsedAmnt; // TODO change to numeric type, parse  // TODO check range
+    bool amountPresent;
+    std::string unparsedAmount; // TODO change to numeric type, parse  // TODO check range
     uint64_t timestamp; // 35 bits
     Data nodeId;
     Data paymentHash;
@@ -38,15 +39,24 @@ struct LNInvoice {
     Data unparsedFeatures; // TODO
     Data unparsedExpiry; // TODO
     uint16_t minFinalCltvExpiry;
-    // internal, redundant fields
-    std::string intPrefix;
-    Data intDataRaw;
 };
 
+/// Lightning Invoice decoding and encoding.
+/// Specs: https://github.com/lightning/bolts/blob/master/11-payment-encoding.md
 class InvoiceDecoder {
 public:
     static struct LNInvoice decodeInvoice(const std::string& invstr);
     static std::string encodeInvoice(const LNInvoice& inv);
+    /// Verify signature inside the invoice. Normally no public key is provided, but the included nodeId public key is used for verification.
+    /// If public key is provided, it is used for verification.
+    static bool verifySignature(const std::string& invstr, const Data& extPublicKey = Data());
+
+private:
+    static void decodeInternal(const std::string& invstr, std::string& prefix, LNNetwork& net, std::string& prefixPrefix, Data& dataRaw5bit, Data& data5bit, Data& data8bit, Data& signature);
+    // build the prefix
+    static std::string buildPrefix(const LNInvoice& inv);
+    // build up the data up to the signature
+    static Data buildUptosig(const LNInvoice& inv);
 };
 
 } // namespace TW::Lightning

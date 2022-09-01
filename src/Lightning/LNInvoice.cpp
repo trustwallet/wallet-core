@@ -7,6 +7,8 @@
 #include "Lightning/LNInvoice.h"
 #include "Bech32.h"
 #include "BinaryCoding.h"
+#include "Hash.h"
+#include "PrivateKey.h"
 //#include "HexCoding.h" // TODO is this needed?
 
 //#include <iostream> // TODO remove
@@ -30,38 +32,69 @@ bool findKnownPrefix(const std::string& prefix, LNNetwork& net, std::string& pre
     return false;
 }
 
-struct LNInvoice InvoiceDecoder::decodeInvoice(const std::string& invstr) {
-    // https://github.com/lightning/bolts/blob/master/11-payment-encoding.md
+void InvoiceDecoder::decodeInternal(const std::string& invstr, std::string& prefix, LNNetwork& net, std::string& prefixPrefix, Data& dataRaw5bit, Data& data5bit, Data& data8bit, Data& signature) {
+    const auto bech32decoded = Bech32::decode(invstr, 3000);
 
-    LNInvoice inv;
+    prefix = std::get<0>(bech32decoded);
+    dataRaw5bit = std::get<1>(bech32decoded);
+    const auto checkSum = std::get<2>(bech32decoded);
 
-    const auto dec = Bech32::decode(invstr, 3000);
-
-    const auto prefix = std::get<0>(dec);
-    const auto& data5 = std::get<1>(dec);
-    const auto checkSum = std::get<2>(dec);
-    inv.intPrefix = prefix;
-    inv.intDataRaw = data5;
-
+    if (checkSum != Bech32::Bech32) {
+        throw std::invalid_argument("Invalid Bech32 variant " + std::to_string(checkSum));
+    }
     assert(checkSum == Bech32::Bech32);
+    //std::cout << "PREFIX " << prefix << "\n";
     if (prefix.length() < 4 || prefix.substr(0, 2) != "ln") {
         throw std::invalid_argument("Invalid prefix " + prefix);
     }
 
-    //std::cout << "PREFIX " << prefix << "\n";
-    std::string prefixPrefix;
-    if (!findKnownPrefix(prefix, inv.network, prefixPrefix)) {
+    if (!findKnownPrefix(prefix, net, prefixPrefix)) {
         throw std::invalid_argument("Invalid prefix " + prefix);
     }
+
+    const auto sigLen = 104;
+    if (dataRaw5bit.size() <= sigLen) {
+        throw std::invalid_argument("Too short or signature missing " + std::to_string(dataRaw5bit.size()));
+    }
+    assert(dataRaw5bit.size() > sigLen);
+    const auto lenWoSig = dataRaw5bit.size() - sigLen;
+    assert(lenWoSig > 0);
+    const auto signature5 = TW::subData(dataRaw5bit, lenWoSig, sigLen);
+    Bech32::convertBits<5, 8, false>(signature, signature5);
+
+    data5bit = TW::subData(dataRaw5bit, 0, lenWoSig);
+    Bech32::convertBits<5, 8, true>(data8bit, data5bit);
+}
+
+struct LNInvoice InvoiceDecoder::decodeInvoice(const std::string& invstr) {
+    std::string prefix;
+    LNNetwork net;
+    std::string prefixPrefix;
+    Data dataRaw5bit;
+    Data data5bit;
+    Data data8bit;
+    Data signature;
+    decodeInternal(invstr, prefix, net, prefixPrefix, dataRaw5bit, data5bit, data8bit, signature);
+
+    LNInvoice inv;
+
+    inv.network = net;
+    inv.signature = signature;
+
     const auto prefix2 = prefix.substr(prefixPrefix.length());
     //std::cout << "PREFIX2 " << prefix2 << "\n";
-    if (prefix2.length() < 1) {
-        throw std::invalid_argument("Invalid prefix " + prefix + " " + prefix2);
+    if (prefix2.length() == 0) {
+        // no amount
+        inv.amountPresent = false;
+        inv.unparsedAmount = "";
+    } else {
+        // amount present
+        inv.amountPresent = true;
+        inv.unparsedAmount = prefix2;
     }
-    inv.unparsedAmnt = prefix2;
 
     size_t idx = 0;
-    Data timestamp5 = TW::subData(data5, idx, 7);
+    Data timestamp5 = TW::subData(data5bit, idx, 7);
     idx += 7;
     {
         Data conv;
@@ -70,25 +103,19 @@ struct LNInvoice InvoiceDecoder::decodeInvoice(const std::string& invstr) {
         inv.timestamp = ((uint64_t)(conv[0] & 0x1F) << (32-5)) + ((uint64_t)(TW::decode32BE(conv.data() + 1)) >> 5);
     }
 
-    const auto sigLen = 104;
-    assert(data5.size() > sigLen);
-    const auto lenWoSig = data5.size() - sigLen;
-    const auto signature5 = TW::subData(data5, data5.size() - sigLen, sigLen);
-    Bech32::convertBits<5, 8, false>(inv.signature, signature5);
-
-    while (idx < lenWoSig) {
-        const auto tag = data5[idx++];
+    while (idx < data5bit.size()) {
+        const auto tag = data5bit[idx++];
         //std::cout << "TAG " << (int)tag << "  " << (int)idx << " " << lenWoSig << "\n";
-        if (idx + 2 >= lenWoSig) {
+        if (idx + 2 > data5bit.size()) {
             break;
         }
-        auto tagLen = (data5[idx] << 5) + data5[idx + 1];
+        auto tagLen = (data5bit[idx] << 5) + data5bit[idx + 1];
         idx += 2;
         //std::cout << "TAGLEN " << (int)tagLen <<  "\n";
-        if (idx + tagLen >= data5.size()) {
+        if (idx + tagLen > data5bit.size()) {
             break;
         }
-        const auto tagValue5 = TW::subData(data5, idx, tagLen);
+        const auto tagValue5 = TW::subData(data5bit, idx, tagLen);
 
         Data conv;
         Bech32::convertBits<5, 8, false>(conv, tagValue5);
@@ -171,6 +198,14 @@ std::string networkToPrefix(LNNetwork net) {
     }
 }
 
+std::string InvoiceDecoder::buildPrefix(const LNInvoice& inv) {
+    std::string prefix = "ln" + networkToPrefix(inv.network);
+    if (inv.amountPresent) {
+        prefix += inv.unparsedAmount;
+    }
+    return prefix;
+}
+
 void appendTag5(Data& data5, uint8_t tag, const Data& value5) {
     data5.push_back(tag);
     const auto tagLen = value5.size();
@@ -185,10 +220,9 @@ void appendTag(Data& data5, uint8_t tag, const Data& value) {
     appendTag5(data5, tag, value5);
 }
 
-std::string InvoiceDecoder::encodeInvoice(const LNInvoice& inv) {
-    const std::string prefix = "ln" + networkToPrefix(inv.network) + inv.unparsedAmnt;
-
+Data InvoiceDecoder::buildUptosig(const LNInvoice& inv) {
     Data data5;
+
     Data timestamp2;
     encode64BE(inv.timestamp << 5, timestamp2);
     //std::cout << hex(timestamp2) << "\n";
@@ -235,6 +269,13 @@ std::string InvoiceDecoder::encodeInvoice(const LNInvoice& inv) {
             });
         }
     }
+    return data5;
+}
+
+std::string InvoiceDecoder::encodeInvoice(const LNInvoice& inv) {
+    const std::string prefix = buildPrefix(inv);
+
+    Data data5 = buildUptosig(inv);
 
     Data signature5;
     Bech32::convertBits<8, 5, true>(signature5, inv.signature);
@@ -242,6 +283,45 @@ std::string InvoiceDecoder::encodeInvoice(const LNInvoice& inv) {
 
     const auto enc = Bech32::encode(prefix, data5, Bech32::Bech32);
     return enc;
+}
+
+bool InvoiceDecoder::verifySignature(const std::string& invstr, const Data& extPublicKey) {
+    try {    
+        std::string prefix;
+        LNNetwork net;
+        std::string prefixPrefix;
+        Data dataRaw5bit;
+        Data data5bit;
+        Data data8bit;
+        Data signature;
+        decodeInternal(invstr, prefix, net, prefixPrefix, dataRaw5bit, data5bit, data8bit, signature);
+
+        Data pubKeyData;
+        if (extPublicKey.size() == 0) {
+            // no public key provided, take it from the invoice
+            const auto decoded = decodeInvoice(invstr);
+            pubKeyData = decoded.nodeId;
+        } else {
+            // use pub key provided
+            pubKeyData = extPublicKey;
+        }
+        if (pubKeyData.size() == 0) {
+            throw std::invalid_argument("Missing public key");
+        }
+        //std::cout << "pubKey " << hex(pubKeyData) << "\n";
+
+        auto dataToSign = TW::data(prefix);
+        TW::append(dataToSign, data8bit);
+        //std::cout << "dataToSign " << hex(dataToSign) << "\n";
+        const auto hashToSign = Hash::sha256(dataToSign);
+        //std::cout << "hashToSign " << hex(hashToSign) << "\n";
+        const auto publicKey = PublicKey(pubKeyData, TWPublicKeyTypeSECP256k1);
+        return publicKey.verify(signature, hashToSign);
+    } catch (std::exception& ex) {
+        //std::cout << "ex " << ex.what() << "\n";
+    } catch (...) {
+    }
+    return false;
 }
 
 } // namespace TW::Lightning

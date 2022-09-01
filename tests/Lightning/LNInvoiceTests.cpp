@@ -14,14 +14,18 @@
 using namespace TW::Lightning;
 using namespace TW;
 
-const std::string linv1 = "lntb1230n1p3072yfdqud3jxktt5w46x7unfv9kz6mn0v3jsnp4qvpytcf9s6tqxc20vx028lyfyy2ymcv3l6f53sd2l35lepag8p8f7pp5hpqe4wuc2smftu8k3qqcm9z489vdz6zh3f0nc8jqt27qukkkp5lqsp59553gh4vqdflsfznxjcywgu3kelxa4ryfpgn7f640h7q2y63vfls9qyysgqcqpcxqy7sjql6f55kzhxctfeey2a629jwqsh4nhgrj5ghzda9kumw5pqz8va4n4jq675hdfzgpl239cx8xkz7c006kja5xesnd9tk285v67aarntxspehpcv4";
+// Test vectors from the standard, https://github.com/lightning/bolts/blob/master/11-payment-encoding.md
+const std::string specTest1 = "lnbc1pvjluezsp5zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zygspp5qqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqypqdpl2pkx2ctnv5sxxmmwwd5kgetjypeh2ursdae8g6twvus8g6rfwvs8qun0dfjkxaq9qrsgq357wnc5r2ueh7ck6q93dj32dlqnls087fxdwk8qakdyafkq3yap9us6v52vjjsrvywa6rt52cm9r9zqt8r2t7mlcwspyetp5h2tztugp9lfyql";
+const std::string specTest2 = "lnbc2500u1pvjluezsp5zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zygspp5qqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqypqdq5xysxxatsyp3k7enxv4jsxqzpu9qrsgquk0rl77nj30yxdy8j9vdx85fkpmdla2087ne0xh8nhedh8w27kyke0lp53ut353s06fv3qfegext0eh0ymjpf39tuven09sam30g4vgpfna3rh";
+const std::string specTestPubkey = "03e7156ae33b0a208d0744199163177e909e80176e55d97a2f221ede0f934dd9ad";
+const std::string linv21 = "lntb1230n1p3072yfdqud3jxktt5w46x7unfv9kz6mn0v3jsnp4qvpytcf9s6tqxc20vx028lyfyy2ymcv3l6f53sd2l35lepag8p8f7pp5hpqe4wuc2smftu8k3qqcm9z489vdz6zh3f0nc8jqt27qukkkp5lqsp59553gh4vqdflsfznxjcywgu3kelxa4ryfpgn7f640h7q2y63vfls9qyysgqcqpcxqy7sjql6f55kzhxctfeey2a629jwqsh4nhgrj5ghzda9kumw5pqz8va4n4jq675hdfzgpl239cx8xkz7c006kja5xesnd9tk285v67aarntxspehpcv4";
 const std::string linvWithHint = "lnbc10010n1p39j00rpp58dlferm3cr3lwwwjjstnfh529sk94keghm9yyk9heuusn2338snsdqqcqzzgxqyz5vqrzjqw8c7yfutqqy3kz8662fxutjvef7q2ujsxtt45csu0k688lkzu3ld28pfhz4wtgyryqqqqryqqqqthqqpysp5uxw3y3mpf2xky62qrr4a543rlrwa6dvdds305mcswk0t3578uc9q9qypqsqyt6y6u0vx28uzfk93vq6aqrcu048ey0yr5c76ec0egrrph65lr54z3ghvwgtkp2zn0vyzktzfh8vaxlcyhe7wyeaydakf80vxmd6f3cpvywpen";
 
 TEST(LNInvoice, Decode1) {
-    const auto inv = InvoiceDecoder::decodeInvoice(linv1);
+    const auto inv = InvoiceDecoder::decodeInvoice(linv21);
     EXPECT_EQ(inv.network, Testnet);
-    EXPECT_EQ(inv.unparsedAmnt, "1230n");
-    //EXPECT_EQ(hex(inv.intDataRaw), "01110f1e0a04090d001c0d111206160b0b140e151a061e1c13090c0516021a1b130f0c111210130115000c01040b180905101a0b0006180a0f0c060f0a071f040904040a041b180c111f1a091411100d0a1f11141f19011d08070107091e01011417010019150e1c180a101b090b1c0716110000181b05021507050c0d021a021711090f13180712000b0a1e001c16161601141f00100114051414110817150c000d091f10090213061218040e081c1116191f061d150304090108131e091a150f171e000a041a110c091f1005000404100800180001180600041e1012001f1a09141416021706180b091919040a1d1a0a05120e001017151317080312140817020d1d05161c1b0e14010002070c1d15131512001a1e14170d090208011f0a11051806070616021e180f0f1a16121d14061910130d050b160a07140c1a1e1d1d03130b061001");
+    EXPECT_TRUE(inv.amountPresent);
+    EXPECT_EQ(inv.unparsedAmount, "1230n");
     EXPECT_EQ(hex(inv.signature), "fe934a585736169ce48aee94593810bd67740e5445c4de96dcdba81008eced6759035ea5da91203f544b831cd617b0f7ead2ed0d984da55d947a335eef47359a01");
     EXPECT_EQ(inv.timestamp, 1660889225ull);
     EXPECT_EQ(hex(inv.nodeId), "030245e125869603614f619ea3fc8921144de191fe9348c1aafc69fc87a8384e9f");
@@ -31,19 +35,22 @@ TEST(LNInvoice, Decode1) {
     EXPECT_EQ(hex(inv.unparsedFeatures), "2410");
     EXPECT_EQ(hex(inv.unparsedExpiry), "f424");
     EXPECT_EQ(inv.minFinalCltvExpiry, 24);
+
+    EXPECT_TRUE(InvoiceDecoder::verifySignature(linv21));
 }
 
 TEST(LNInvoice, Encode1) {
-    EXPECT_EQ(linv1.length(), 342ul);
-    const auto inv1 = InvoiceDecoder::decodeInvoice(linv1);
+    EXPECT_EQ(linv21.length(), 342ul);
+    const auto inv1 = InvoiceDecoder::decodeInvoice(linv21);
     const auto enc1 = InvoiceDecoder::encodeInvoice(inv1);
     // lenght should be the same, ordering may differ
-    EXPECT_EQ(enc1.length(), linv1.length());
+    EXPECT_EQ(enc1.length(), linv21.length());
     EXPECT_EQ(enc1, "lntb1230n1p3072yfpp5hpqe4wuc2smftu8k3qqcm9z489vdz6zh3f0nc8jqt27qukkkp5lq9qyysgqxqy7sjqdqud3jxktt5w46x7unfv9kz6mn0v3jssp59553gh4vqdflsfznxjcywgu3kelxa4ryfpgn7f640h7q2y63vflsnp4qvpytcf9s6tqxc20vx028lyfyy2ymcv3l6f53sd2l35lepag8p8f7cqpcl6f55kzhxctfeey2a629jwqsh4nhgrj5ghzda9kumw5pqz8va4n4jq675hdfzgpl239cx8xkz7c006kja5xesnd9tk285v67aarntxspmeqjn9");
 
     const auto inv = InvoiceDecoder::decodeInvoice(enc1);
     EXPECT_EQ(inv.network, Testnet);
-    EXPECT_EQ(inv.unparsedAmnt, "1230n");
+    EXPECT_TRUE(inv.amountPresent);
+    EXPECT_EQ(inv.unparsedAmount, "1230n");
     EXPECT_EQ(hex(inv.signature), "fe934a585736169ce48aee94593810bd67740e5445c4de96dcdba81008eced6759035ea5da91203f544b831cd617b0f7ead2ed0d984da55d947a335eef47359a01");
     EXPECT_EQ(inv.timestamp, 1660889225ull);
     EXPECT_EQ(hex(inv.nodeId), "030245e125869603614f619ea3fc8921144de191fe9348c1aafc69fc87a8384e9f");
@@ -57,14 +64,15 @@ TEST(LNInvoice, Encode1) {
     // 2nd round, should give same result as first
     const auto inv2 = InvoiceDecoder::decodeInvoice(enc1);
     const auto enc2 = InvoiceDecoder::encodeInvoice(inv2);
-    EXPECT_EQ(enc2.length(), linv1.length());
+    EXPECT_EQ(enc2.length(), linv21.length());
     EXPECT_EQ(enc2, enc1);
 }
 
 TEST(LNInvoice, DecodeWithHint) {
     const auto inv = InvoiceDecoder::decodeInvoice(linvWithHint);
     EXPECT_EQ(inv.network, Mainnet);
-    EXPECT_EQ(inv.unparsedAmnt, "10010n");
+    EXPECT_TRUE(inv.amountPresent);
+    EXPECT_EQ(inv.unparsedAmount, "10010n");
     EXPECT_EQ(hex(inv.signature), "22f44d71ec328fc126c58b01ae8078e3ea7c91e41d31ed670fca0630df54f8e95145176390bb05429bd84159624dcece9bf825f3e7133d237b649dec36dba4c701");
     EXPECT_EQ(inv.timestamp, 1650015715ull);
     EXPECT_EQ(hex(inv.nodeId), ""); // no nodeID, is it not known or kept secret?
@@ -91,7 +99,8 @@ TEST(LNInvoice, EncodeWithHint) {
 
     const auto inv = InvoiceDecoder::decodeInvoice(enc1);
     EXPECT_EQ(inv.network, Mainnet);
-    EXPECT_EQ(inv.unparsedAmnt, "10010n");
+    EXPECT_TRUE(inv.amountPresent);
+    EXPECT_EQ(inv.unparsedAmount, "10010n");
     EXPECT_EQ(hex(inv.signature), "22f44d71ec328fc126c58b01ae8078e3ea7c91e41d31ed670fca0630df54f8e95145176390bb05429bd84159624dcece9bf825f3e7133d237b649dec36dba4c701");
     EXPECT_EQ(inv.timestamp, 1650015715ull);
     EXPECT_EQ(hex(inv.nodeId), ""); // no nodeID, is it not known or kept secret?
@@ -139,7 +148,7 @@ TEST(LNInvoice, AddRouting) {
     {
         const auto inv2 = InvoiceDecoder::decodeInvoice(lnRouting);
         EXPECT_EQ(inv2.network, inv.network);
-        EXPECT_EQ(inv2.unparsedAmnt, inv.unparsedAmnt);
+        EXPECT_EQ(inv2.unparsedAmount, inv.unparsedAmount);
         EXPECT_EQ(hex(inv2.signature), hex(inv.signature));
         EXPECT_EQ(inv2.timestamp, inv.timestamp);
         EXPECT_EQ(hex(inv2.nodeId), "");
@@ -155,4 +164,12 @@ TEST(LNInvoice, AddRouting) {
         EXPECT_EQ(hex(inv2.unparsedExpiry), hex(inv.unparsedExpiry));
         EXPECT_EQ(inv2.minFinalCltvExpiry, inv.minFinalCltvExpiry);
     }
+}
+
+TEST(LNInvoice, VerifySignature) {
+    EXPECT_TRUE(InvoiceDecoder::verifySignature(specTest1, parse_hex(specTestPubkey)));
+    EXPECT_TRUE(InvoiceDecoder::verifySignature(specTest2, parse_hex(specTestPubkey)));
+
+    EXPECT_TRUE(InvoiceDecoder::verifySignature(linv21));
+    EXPECT_TRUE(InvoiceDecoder::verifySignature(linv21, parse_hex("030245e125869603614f619ea3fc8921144de191fe9348c1aafc69fc87a8384e9f")));
 }
