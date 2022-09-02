@@ -29,3 +29,7 @@ func (self *StoredKey) Store(path string) bool {
 func (self *StoredKey) Wallet(password string) *Wallet {
 	return &Wallet{wallet: C.TWStoredKeyWallet(self.storedKey, TWDataCreateWithGoBytes([]byte(password)))}
 }
+
+func (self *StoredKey) AccountCount() int32 {
+	return int32(C.TWStoredKeyAccountCount(self.storedKey))
+}
