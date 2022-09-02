@@ -8,6 +8,7 @@ import (
 var gCommands = []prompt.Suggest{
 	{Text: "exit", Description: "Quit the CLI"},
 	{Text: "create_wallet", Description: "Create a new wallet"},
+	{Text: "load_wallet", Description: "Load an existing wallet"},
 }
 
 type Completer struct {

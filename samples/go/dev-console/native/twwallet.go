@@ -25,6 +25,10 @@ func NewWalletWithMnemonic(mn string) (*Wallet, error) {
 	return &Wallet{wallet: tw}, nil
 }
 
+func (self *Wallet) IsValid() bool {
+	return self.wallet != nil
+}
+
 func (self *Wallet) Delete() {
 	C.TWHDWalletDelete(self.wallet)
 }

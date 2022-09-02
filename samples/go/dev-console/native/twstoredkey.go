@@ -20,6 +20,15 @@ func NewStoredKeyFromHDWallet(mnemonic string, walletName string, password strin
 	return nil
 }
 
+func (self *StoredKey) IsLoaded() bool {
+	return self.storedKey != nil
+}
+
+func Load(path string) *StoredKey {
+	pathRaw := NewTWString(path)
+	return &StoredKey{storedKey: C.TWStoredKeyLoad(pathRaw.s)}
+}
+
 func (self *StoredKey) Store(path string) bool {
 	pathRaw := NewTWString(path)
 	defer pathRaw.Delete()
