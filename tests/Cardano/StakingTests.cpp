@@ -34,7 +34,7 @@ TEST(CardanoStaking, RegisterStakingKey) {
     const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
-    const auto stakingKeyHash = subData(AddressV3(publicKey).bytes, 28, 28); // TODO obtain from API
+    const auto stakingKeyHash = AddressV3(publicKey).getStakingKeyHash();
     EXPECT_EQ(hex(stakingKeyHash), stakingKey1);
     const auto poolId = parse_hex(poolIdNufi);
 
@@ -81,7 +81,7 @@ TEST(CardanoStaking, DeregisterStakingKey) {
     const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
-    const auto stakingKeyHash = subData(AddressV3(publicKey).bytes, 28, 28); // TODO obtain from API
+    const auto stakingKeyHash = AddressV3(publicKey).getStakingKeyHash();
     EXPECT_EQ(hex(stakingKeyHash), stakingKey1);
     const auto poolId = parse_hex(poolIdNufi);
 
@@ -128,7 +128,7 @@ TEST(CardanoStaking, Redelegate) {
     const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
-    const auto stakingKeyHash = subData(AddressV3(publicKey).bytes, 28, 28); // TODO obtain from API
+    const auto stakingKeyHash = AddressV3(publicKey).getStakingKeyHash();
     EXPECT_EQ(hex(stakingKeyHash), stakingKey1);
     const auto poolId = parse_hex(poolIdNufi);
 
@@ -176,7 +176,7 @@ TEST(CardanoStaking, RegisterAndDelegate_similar53339b) {
     const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
-    const auto stakingKeyHash = subData(AddressV3(publicKey).bytes, 28, 28); // TODO obtain from API
+    const auto stakingKeyHash = AddressV3(publicKey).getStakingKeyHash();
     EXPECT_EQ(hex(stakingKeyHash), stakingKey1);
     const auto poolId = parse_hex(poolIdNufi);
 

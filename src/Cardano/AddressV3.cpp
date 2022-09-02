@@ -208,7 +208,7 @@ string AddressV3::string(const std::string& hrp) const {
     return Bech32::encode(hrp, bech, Bech32::ChecksumVariant::Bech32);
 }
 
-Data AddressV3::data() const {
+Data AddressV3::data() const noexcept {
     if (legacyAddressV2.has_value()) {
         return legacyAddressV2->getCborData();
     }
@@ -218,4 +218,8 @@ Data AddressV3::data() const {
     TW::append(raw, first);
     TW::append(raw, bytes);
     return raw;
+}
+
+Data AddressV3::getStakingKeyHash() const noexcept {
+    return TW::subData(bytes, HashSize, HashSize);
 }

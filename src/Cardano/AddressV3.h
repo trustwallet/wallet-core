@@ -94,7 +94,9 @@ class AddressV3 {
     static bool parseAndCheckV3(const std::string& addr, NetworkId& networkId, Kind& kind, TW::Data& bytes) noexcept;
 
     /// Return the binary data representation (keys appended, internal format)
-    Data data() const;
+    Data data() const noexcept;
+    /// Return the staking key (second of the two appended key hashes)
+    Data getStakingKeyHash() const noexcept;
 
     // First encoded byte, from networkId and Kind
     static uint8_t firstByte(NetworkId networkId, Kind kind);

@@ -463,4 +463,10 @@ TEST(CardanoAddress, AssignmentOperatorLegacy) {
     EXPECT_TRUE(*address.legacyAddressV2 == *addr3leg.legacyAddressV2);
 }
 
+TEST(CardanoAddress, StakingKey) {
+    auto address = AddressV3("addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq");
+    EXPECT_EQ(hex(address.bytes), "8d98bea0414243dc84070f96265577e7e6cf702d62e871016885034ecc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468");
+    EXPECT_EQ(hex(address.getStakingKeyHash()), "cc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468");
+}
+
 } // namespace TW::Cardano::tests
