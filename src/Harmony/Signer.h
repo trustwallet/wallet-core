@@ -38,6 +38,12 @@ class Signer {
     template <typename T>
     static uint8_t getEnum() noexcept;
 
+    template <typename T>
+    static Staking<T> buildUnsignedStakingTransaction(const Proto::SigningInput &input, function<T(const Proto::SigningInput &input)> func);
+    
+    template <typename T>
+    Proto::SigningOutput buildStakingSigningOutput(const Proto::SigningInput &input, const Data &signature, function<T(const Proto::SigningInput &input)> func);
+
     static Transaction buildUnsignedTransaction(const Proto::SigningInput &input);
     static CreateValidator buildUnsignedCreateValidator(const Proto::SigningInput &input);
     static EditValidator buildUnsignedEditValidator(const Proto::SigningInput &input);

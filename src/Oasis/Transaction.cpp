@@ -30,6 +30,24 @@ static Data encodeVaruint(const uint256_t& value) {
     return small;
 }
 
+static Data serializeTransaction(const Data& signature, const PublicKey& publicKey, const Data& body) {
+    auto signedMessage = Cbor::Encode::map({
+            { Cbor::Encode::string("untrusted_raw_value"), Cbor::Encode::bytes(body) },
+            { Cbor::Encode::string("signature"), Cbor::Encode::map({
+                   { Cbor::Encode::string("public_key"), Cbor::Encode::bytes(publicKey.bytes) },
+                   { Cbor::Encode::string("signature"), Cbor::Encode::bytes(signature) }
+                })
+            }
+        });
+    return signedMessage.encoded();
+}
+
+static Data buildSignaturePreimage(std::string context, const Data& encodedMessage) {
+    Data dataToHash(context.begin(), context.end());
+    dataToHash.insert(dataToHash.end(), encodedMessage.begin(), encodedMessage.end());
+    return dataToHash;
+}
+
 Cbor::Encode Transaction::encodeMessage() const {
 
     return Cbor::Encode::map({
@@ -49,22 +67,63 @@ Cbor::Encode Transaction::encodeMessage() const {
 }
 
 Data Transaction::serialize(const Data& signature, const PublicKey& publicKey) const {
-    auto signedMessage = Cbor::Encode::map({
-            { Cbor::Encode::string("untrusted_raw_value"), Cbor::Encode::bytes(encodeMessage().encoded()) },
-            { Cbor::Encode::string("signature"), Cbor::Encode::map({
-                   { Cbor::Encode::string("public_key"), Cbor::Encode::bytes(publicKey.bytes) },
-                   { Cbor::Encode::string("signature"), Cbor::Encode::bytes(signature) }
-                })
-            }
-        });
-    return signedMessage.encoded();
+    return serializeTransaction(signature, publicKey, encodeMessage().encoded());
+}           
+            
+Data Transaction::signaturePreimage() const {
+    return buildSignaturePreimage(context, encodeMessage().encoded());
+}           
+            
+Cbor::Encode Escrow::encodeMessage() const {
+
+    return Cbor::Encode::map({
+        { Cbor::Encode::string("nonce"), Cbor::Encode::uint(nonce) },
+        { Cbor::Encode::string("method"), Cbor::Encode::string(method) },
+        { Cbor::Encode::string("fee"), Cbor::Encode::map({
+                 { Cbor::Encode::string("gas"), Cbor::Encode::uint(gasPrice) },
+                 { Cbor::Encode::string("amount"), Cbor::Encode::bytes(encodeVaruint(gasAmount)) }
+             })
+        },
+        { Cbor::Encode::string("body"), Cbor::Encode::map({
+                  { Cbor::Encode::string("account"), Cbor::Encode::bytes(account.getKeyHash()) },
+                  { Cbor::Encode::string("amount"), Cbor::Encode::bytes(encodeVaruint(amount)) }
+              })
+        }
+    });
 }
 
-Data Transaction::signaturePreimage() const {
-    auto encodedMessage = encodeMessage().encoded();
-    Data dataToHash(context.begin(), context.end());
-    dataToHash.insert(dataToHash.end(), encodedMessage.begin(), encodedMessage.end());
-    return dataToHash;
+Data Escrow::serialize(const Data& signature, const PublicKey& publicKey) const {
+    return serializeTransaction(signature, publicKey, encodeMessage().encoded());
+}
+
+Data Escrow::signaturePreimage() const {
+    return buildSignaturePreimage(context, encodeMessage().encoded());
+}
+
+Cbor::Encode ReclaimEscrow::encodeMessage() const {
+
+    return Cbor::Encode::map({
+        { Cbor::Encode::string("nonce"), Cbor::Encode::uint(nonce) },
+        { Cbor::Encode::string("method"), Cbor::Encode::string(method) },
+        { Cbor::Encode::string("fee"), Cbor::Encode::map({
+                 { Cbor::Encode::string("gas"), Cbor::Encode::uint(gasPrice) },
+                 { Cbor::Encode::string("amount"), Cbor::Encode::bytes(encodeVaruint(gasAmount)) }
+             })
+        },
+        { Cbor::Encode::string("body"), Cbor::Encode::map({
+                  { Cbor::Encode::string("account"), Cbor::Encode::bytes(account.getKeyHash()) },
+                  { Cbor::Encode::string("shares"), Cbor::Encode::bytes(encodeVaruint(shares)) }
+              })
+        }
+    });
+}
+
+Data ReclaimEscrow::serialize(const Data& signature, const PublicKey& publicKey) const {
+    return serializeTransaction(signature, publicKey, encodeMessage().encoded());
+}
+
+Data ReclaimEscrow::signaturePreimage() const {
+    return buildSignaturePreimage(context, encodeMessage().encoded());
 }
 // clang-format on
 

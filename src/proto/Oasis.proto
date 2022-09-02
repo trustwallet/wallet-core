@@ -24,11 +24,35 @@ message TransferMessage {
     string context = 6;
 }
 
+message EscrowMessage {
+    uint64 gas_price = 1;
+    string gas_amount = 2;
+    uint64 nonce = 3;
+
+    string account = 4;
+    string amount = 5;
+
+    string context = 6;
+}
+
+message ReclaimEscrowMessage {
+    uint64 gas_price = 1;
+    string gas_amount = 2;
+    uint64 nonce = 3;
+
+    string account = 4;
+    string shares = 5;
+
+    string context = 6;
+}
+
 message SigningInput {
     bytes private_key = 1;
 
     oneof message {
         TransferMessage transfer = 2;
+        EscrowMessage escrow = 3;
+        ReclaimEscrowMessage reclaimEscrow = 4;
     }
 }
 
