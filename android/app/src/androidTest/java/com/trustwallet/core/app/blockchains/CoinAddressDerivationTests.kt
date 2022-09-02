@@ -109,5 +109,6 @@ class CoinAddressDerivationTests {
         IOST -> assertEquals("4av8w81EyzUgHonsVWqfs15WM4Vrpgox4BYYQWhNQDVu", address)
         SYSCOIN -> assertEquals("sys1qkl640se3mwpt666e3lyywnwh09e9jquvx9x8qj", address)
         NATIVEEVMOS -> assertEquals("evmos13u6g7vqgw074mgmf2ze2cadzvkz9snlwstd20d", address)
+        STRATIS -> assertEquals("strax1q0caanaw4nkf6fzwnzq2p7yum680e57pdg05zkm", address)
     }
 }

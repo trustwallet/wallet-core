@@ -67,6 +67,7 @@ const FeeCalculator& getFeeCalculator(TWCoinType coinType, bool disableFilter) n
     case TWCoinTypeViacoin:
     case TWCoinTypeGroestlcoin:
     case TWCoinTypeSyscoin:
+    case TWCoinTypeStratis:
         if (disableFilter) {
             return segwitFeeCalculatorNoDustFilter;
         }

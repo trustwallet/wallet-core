@@ -2925,5 +2925,40 @@
       "rpc": "https://exchainrpc.okex.org",
       "documentation": "https://okc-docs.readthedocs.io/en/latest"
     }
+  },
+  {
+    "id": "stratis",
+    "name": "Stratis",
+    "coinId": 105105,
+    "symbol": "STRAX",
+    "decimals": 8,
+    "blockchain": "Bitcoin",
+    "derivation": [
+      {
+        "path": "m/44'/105105'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "strax",
+    "p2pkhPrefix": 75,
+    "p2shPrefix": 140,
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "explorer": {
+      "url": "https://explorer.rutanio.com/strax/explorer",
+      "txPath": "/transaction/",
+      "accountPath": "/address/",
+      "sampleTx": "3923df87e83859dec8b87a414cbb1529113788c512a4d0c283e1394c274f0bfb",
+      "sampleAccount": "XWqnSWzQA5kDAS727UTYtXkdcbKc8mEvyN"
+    },
+    "info": {
+      "url": "https://www.stratisplatform.com/",
+      "source": "https://github.com/stratisproject",
+      "rpc": "",
+      "documentation": "https://academy.stratisplatform.com/index.html"
+    }
   }
 ]
