@@ -4,6 +4,7 @@ import (
 	"dev-console/native"
 	"dev-console/wallet"
 	"fmt"
+	"github.com/kyokomi/emoji/v2"
 	"github.com/manifoldco/promptui"
 	"log"
 	"os"
@@ -104,7 +105,7 @@ func CreateWallet() {
 		pwd, _ := os.Getwd()
 		res := storedKey.Store(filepath.Join(pwd, walletName+".json"))
 		if res {
-			fmt.Println("Wallet successfully created")
+			_, _ = emoji.Println("Wallet successfully created :white_check_mark:")
 			// the global wallet can be loaded on creation or with load_wallet `wallet_name` - afterwards we can query accounts and address
 			// open to change the package name
 			// I guess keep the password the time the app is open is OK, no need to query it again

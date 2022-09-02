@@ -33,3 +33,7 @@ func (self *StoredKey) Wallet(password string) *Wallet {
 func (self *StoredKey) AccountCount() int32 {
 	return int32(C.TWStoredKeyAccountCount(self.storedKey))
 }
+
+func (self *StoredKey) Account(index int32) *Account {
+	return &Account{account: C.TWStoredKeyAccount(self.storedKey, C.size_t(index))}
+}
