@@ -1,5 +1,7 @@
 #include "<%= entity.name %>.h"
 
+#include <emscripten/bind.h>
+
 namespace TW::Wasm {
 <%# Constructors -%>
 <%  entity.static_methods.each do |method| -%>
@@ -8,28 +10,33 @@ namespace TW::Wasm {
 <%  end -%>
 <%# Properties -%>
 <%=  render('cpp/class_properties.erb') -%>
-
 <%# Methods -%>
 <% entity.methods.each do |method| -%>
 <%   next if method.name == "Delete" -%>
 <%=  render('cpp/method.erb', { method: method }) %>
 <% end -%>
-
+<% if entity.enum? -%>
+<%=  render('cpp/enum_value.erb') -%>
+<% end -%>
 <%# EMSCRIPTEN_BINDINGS -%>
 EMSCRIPTEN_BINDINGS(Wasm_TW<%= entity.name %>) {
-    class_<<%= WasmCppHelper.class_name(entity: entity) %>>("<%= entity.name %>")
+<% entity_name = entity.enum? ? "TW" + entity.name : entity.name; wasm_class_name = WasmCppHelper.class_name(entity: entity) %>
+    emscripten::class_<<%= wasm_class_name %>>("<%= entity_name %>")
+<% if entity.enum? -%>
+        .function("value", &<%= wasm_class_name %>::getValue)
+<% end -%>
 <%  entity.static_methods.each do |method| -%>
 <%  function_name = WasmCppHelper.function_name(entity: entity, function: method) -%>
-          .class_function("<%= function_name %>", &<%= WasmCppHelper.class_name(entity: entity) %>::<%= function_name %>, allow_raw_pointers())
+        .class_function("<%= function_name %>", &<%= wasm_class_name %>::<%= function_name %>, emscripten::allow_raw_pointers())
 <%  end -%>
 <%- entity.properties.each do |property| -%>
 <%  function_name = WasmCppHelper.format_name(property.name) -%>
-          .function("<%= function_name %>", &<%= WasmCppHelper.class_name(entity: entity) %>::<%= function_name %>, allow_raw_pointers())
+        .function("<%= function_name %>", &<%= wasm_class_name %>::<%= function_name %>, emscripten::allow_raw_pointers())
 <%- end -%>
 <% entity.methods.each do |method| -%>
 <%  next if method.name == "Delete" -%>
 <%  function_name = WasmCppHelper.format_name(method.name) -%>
-          .function("<%= function_name %>", &<%= WasmCppHelper.class_name(entity: entity) %>::<%= function_name %>, allow_raw_pointers())
+        .function("<%= function_name %>", &<%= wasm_class_name %>::<%= function_name %>, emscripten::allow_raw_pointers())
 <% end -%>
     ;
 }

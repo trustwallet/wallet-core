@@ -2,9 +2,9 @@
 <% require 'set' -%>
 <%  includes = Set.new([entity.name]) -%>
 <%  (entity.static_methods + entity.methods).each do |method| -%>
-<%    includes << method.return_type.name if method.return_type.is_struct || method.return_type.is_class -%>
+<%    includes << method.return_type.name if (method.return_type.is_struct || method.return_type.is_class || method.return_type.is_enum) -%>
 <%    method.parameters.each do |param| -%>
-<%      includes << param.type.name if param.type.is_struct || param.type.is_class -%>
+<%      includes << param.type.name if (param.type.is_struct || param.type.is_class || method.return_type.is_enum)-%>
 <%    end -%>
 <%  end -%>
 <%  includes.each do |include| -%>
@@ -15,7 +15,3 @@
 <%  next if include == entity.name -%>
 #include "./<%= include %>.h"
 <%  end -%>
-
-#include <emscripten/bind.h>
-
-using namespace emscripten;

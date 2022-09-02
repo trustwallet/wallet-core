@@ -1,7 +1,8 @@
 #pragma once
 
 <%= render('cpp/includes.erb') -%>
-
-<%  if not entity.is_a?(EnumDecl) -%>
-<%=   render('cpp/header.erb') -%>
+<%  if entity.enum? -%>
+<%=   render('cpp/enum_class_header.erb') -%>
+<%  else -%>
+<%=   render('cpp/class_header.erb') -%>
 <%  end -%>

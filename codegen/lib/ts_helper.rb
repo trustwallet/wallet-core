@@ -26,7 +26,7 @@ module TsHelper
           raise "Invalid type #{t.name}"
         end
     end
-    
+
     def self.type(t)
         case t.name
         when :void
@@ -65,7 +65,7 @@ module TsHelper
         FileUtils.remove_dir("#{wasm_src}/lib/generated", true)
 
         # generate WalletCore interface
-        
+
         interface = "export interface WalletCore {\n"
 
         combined = File.open("#{wasm_src}/wallet-core.d.ts", 'r')

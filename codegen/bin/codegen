@@ -87,4 +87,5 @@ if options.wasm_cpp
 end
 if options.ts_declaration
   generator.render_ts_declaration
+  generator.render_ts_enums
 end

@@ -1,7 +1,1 @@
-<%  if entity.is_a?(EnumDecl) -%>
-<%=   render('cpp/includes.erb') -%>
-
-<%=   render('cpp/enum.erb') -%>
-<%  else -%>
 <%=   render('cpp/class.erb') -%>
-<%  end -%>

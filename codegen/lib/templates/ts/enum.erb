@@ -1,0 +1,7 @@
+import { TW<%= entity.name %> } from '../wallet-core';
+
+export class <%= entity.name %> {
+<%  entity.cases.each do |c| -%>
+    static <%= WasmCppHelper.format_name(c.name) %>: TW<%= entity.name %> = TW<%= entity.name %><%= c.name %>;
+<%  end -%>
+}

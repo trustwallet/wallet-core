@@ -1,0 +1,33 @@
+<%  has_string = entity.cases.all? { |c| !c.string.nil? } -%>
+<% if has_string %>
+#include <string>
+<% end %>
+
+namespace TW::Wasm {
+
+class <%= WasmCppHelper.class_name(entity: entity) %> {
+public:
+    TW<%= entity.name %> instance;
+public:
+    <%= WasmCppHelper.class_name(entity: entity) %>(TW<%= entity.name %> instance) : instance(instance) {}
+<%  type = entity.raw_type ? WasmCppHelper.type(entity.raw_type) : 'uint32_t' -%>
+    <%= type %> getValue() const { return instance; }
+<% if has_string %>
+    std::string description() const;
+<% end %>
+<%# Properties -%>
+<%  entity.static_methods.each do |method| -%>
+<%    next unless method.name.start_with?('Create') -%>
+    static auto <%= WasmCppHelper.function_name(entity: entity, function: method) %>(<%= WasmCppHelper.parameters(method.parameters) %>) -> <%= WasmCppHelper.class_name(entity: entity) %>*;
+<%  end -%>
+<%- entity.properties.each do |property| -%>
+    auto <%= WasmCppHelper.format_name(property.name) %>();
+<%- end -%>
+<%# Methods -%>
+<% entity.methods.each do |method| -%>
+<%   next if method.name == "Delete" -%>
+    auto <%= WasmCppHelper.format_name(method.name) %>(<%= WasmCppHelper.parameters(method.parameters.drop(1)) %>);
+<% end -%>
+}; // class <%= entity.name %>
+
+} // namespace TW::Wasm

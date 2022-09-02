@@ -1,5 +1,6 @@
 dist/
 generated/
+enum/
 wallet-core.d.ts
 lib/wallet-core.js
 lib/wallet-core.wasm

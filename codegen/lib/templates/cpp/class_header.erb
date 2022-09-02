@@ -7,9 +7,9 @@ namespace TW::Wasm {
 
 class <%= WasmCppHelper.class_name(entity: entity) %> {
 <% if not entity.is_struct -%>
-  public:
+public:
     TW<%= entity.name %> *instance;
-  public:
+public:
     <%= WasmCppHelper.class_name(entity: entity) %>(TW<%= entity.name %> *instance) : instance(instance) {}
 <%  unless entity.methods.select{ |x| x.name == "Delete" }.empty? -%>
     ~<%= WasmCppHelper.class_name(entity: entity) %>() {
@@ -17,11 +17,12 @@ class <%= WasmCppHelper.class_name(entity: entity) %> {
     }
 <%  end -%>
 <% end -%>
-  public:
+public:
 <%# Constructors -%>
 <%  entity.static_methods.each do |method| -%>
 <%    next if method.name.start_with?('Create') || method.name.start_with?('Init') -%>
     static auto <%= WasmCppHelper.function_name(entity: entity, function: method) %>(<%= WasmCppHelper.parameters(method.parameters) %>);
+
 <%  end -%>
 <%# Properties -%>
 <%  entity.static_methods.each do |method| -%>

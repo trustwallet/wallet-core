@@ -103,6 +103,10 @@ class CodeGenerator
     TsHelper.combine_declaration_files()
   end
 
+  def render_ts_enums
+    render_template(header: nil, template: 'wasm_enum_ts.erb', output_subfolder: 'wasm/enum', extension: 'ts')
+  end
+
   def render(file, locals = {})
     @locals = locals
     path = File.expand_path(file, File.join(File.dirname(__FILE__), 'templates'))
