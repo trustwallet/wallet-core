@@ -6,6 +6,7 @@ require (
 	github.com/c-bata/go-prompt v0.2.6
 	github.com/kyokomi/emoji/v2 v2.2.10
 	github.com/manifoldco/promptui v0.9.0
+	github.com/olekukonko/tablewriter v0.0.5
 )
 
 require (

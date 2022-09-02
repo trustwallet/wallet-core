@@ -29,6 +29,12 @@ func Load(path string) *StoredKey {
 	return &StoredKey{storedKey: C.TWStoredKeyLoad(pathRaw.s)}
 }
 
+func (self *StoredKey) AccountForCoin(password string, coinType CoinType) *Account {
+	wallet := self.Wallet(password)
+	defer wallet.Delete()
+	return &Account{account: C.TWStoredKeyAccountForCoin(self.storedKey, uint32(coinType), wallet.wallet)}
+}
+
 func (self *StoredKey) Store(path string) bool {
 	pathRaw := NewTWString(path)
 	defer pathRaw.Delete()

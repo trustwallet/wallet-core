@@ -100,6 +100,8 @@ func CreateWallet() {
 	password := ConfigurePassword()
 	defer freshWallet.Delete()
 	storedKey := native.NewStoredKeyFromHDWallet(freshWallet.Mnemonic(), walletName, password, native.CoinTypeBitcoin)
+	storedKey.AccountForCoin(password, native.CoinTypeEthereum)
+	storedKey.AccountForCoin(password, native.CoinTypeBinance)
 	if storedKey != nil {
 		res := storedKey.Store(filepath.Join(wallet.GetWalletDataDirectory(), walletName+".json"))
 		if res {

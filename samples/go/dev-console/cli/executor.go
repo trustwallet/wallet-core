@@ -14,6 +14,8 @@ func Executor(fullCommand string) {
 		CreateWallet()
 	case "load_wallet":
 		LoadWallet()
+	case "address_all":
+		DumpAllAddress()
 	case "exit":
 		fmt.Println("Quitting the CLI")
 		os.Exit(0)

@@ -67,7 +67,6 @@ func LoadWallet() {
 		if hdWallet := storedKey.Wallet(walletPassword); hdWallet.IsValid() {
 			fmt.Printf("Wallet %s successfully loaded\n", walletName)
 			defer hdWallet.Delete()
-			wallet.GlobalWallet.Dump()
 		} else {
 			fmt.Println("Password from the wallet is incorrect")
 			wallet.GlobalWallet = nil
