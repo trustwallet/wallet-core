@@ -7,7 +7,6 @@ import (
 	"github.com/kyokomi/emoji/v2"
 	"github.com/manifoldco/promptui"
 	"log"
-	"os"
 	"path/filepath"
 )
 
@@ -102,8 +101,7 @@ func CreateWallet() {
 	defer freshWallet.Delete()
 	storedKey := native.NewStoredKeyFromHDWallet(freshWallet.Mnemonic(), walletName, password, native.CoinTypeBitcoin)
 	if storedKey != nil {
-		pwd, _ := os.Getwd()
-		res := storedKey.Store(filepath.Join(pwd, walletName+".json"))
+		res := storedKey.Store(filepath.Join(wallet.GetWalletDataDirectory(), walletName+".json"))
 		if res {
 			_, _ = emoji.Println("Wallet successfully created :white_check_mark:")
 			// the global wallet can be loaded on creation or with load_wallet `wallet_name` - afterwards we can query accounts and address
