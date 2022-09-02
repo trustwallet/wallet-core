@@ -2,6 +2,7 @@ package cli
 
 import (
 	"dev-console/native"
+	"dev-console/wallet"
 	"fmt"
 	"github.com/manifoldco/promptui"
 	"log"
@@ -74,20 +75,41 @@ func ConfigureWalletName() string {
 	return walletName
 }
 
+func ConfigurePassword() string {
+	promptPassword := promptui.Prompt{
+		Label: "Please, choose a wallet password",
+	}
+	walletPassword, err := promptPassword.Run()
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		walletPassword = ConfigureWalletName()
+	}
+
+	if len(walletPassword) == 0 {
+		fmt.Println("You're password cannot be empty, please try again")
+		walletPassword = ConfigureWalletName()
+	}
+
+	// Do We really need to check if the password is strong? It's a dev console.
+	return walletPassword
+}
+
 func CreateWallet() {
 	walletName := ConfigureWalletName()
-	wallet := ConfigureMnemonic()
-	defer wallet.Delete()
-	// use fake password for now, prompt later
-	// TODO: Create a HDWallet with the mnemonic from ConfigureMnemonic
-	// TODO: Create a StoredKey with this new HDWallet
-	// TODO: prompt a passphrase for the wallet
-	storedKey := native.NewStoredKeyFromHDWallet(wallet.Mnemonic(), walletName, "123", native.CoinTypeBitcoin)
+	freshWallet := ConfigureMnemonic()
+	password := ConfigurePassword()
+	defer freshWallet.Delete()
+	storedKey := native.NewStoredKeyFromHDWallet(freshWallet.Mnemonic(), walletName, password, native.CoinTypeBitcoin)
 	if storedKey != nil {
 		pwd, _ := os.Getwd()
 		res := storedKey.Store(filepath.Join(pwd, walletName+".json"))
 		if res {
-			fmt.Printf("Wallet %s successfully created\n", walletName)
+			fmt.Println("Wallet successfully created")
+			// the global wallet can be loaded on creation or with load_wallet `wallet_name` - afterwards we can query accounts and address
+			// open to change the package name
+			// I guess keep the password the time the app is open is OK, no need to query it again
+			wallet.GlobalWallet = &wallet.Wallet{Ks: storedKey, Password: password, WalletName: walletName}
+			wallet.GlobalWallet.Dump()
 		}
 	} else {
 		fmt.Println("Couldn't create the wallet")

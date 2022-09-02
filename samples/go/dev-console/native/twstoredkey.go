@@ -25,3 +25,7 @@ func (self *StoredKey) Store(path string) bool {
 	defer pathRaw.Delete()
 	return bool(C.TWStoredKeyStore(self.storedKey, pathRaw.s))
 }
+
+func (self *StoredKey) Wallet(password string) *Wallet {
+	return &Wallet{wallet: C.TWStoredKeyWallet(self.storedKey, TWDataCreateWithGoBytes([]byte(password)))}
+}
