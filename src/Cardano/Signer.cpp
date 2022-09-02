@@ -79,6 +79,12 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
     return Common::Proto::OK;
 }
 
+Data deriveStakingPrivateKey(const Data& privateKeyData) {
+    auto stakingPrivKeyData = TW::subData(privateKeyData, 96);
+    TW::append(stakingPrivKeyData, TW::Data(96));
+    return stakingPrivKeyData;
+}
+
 Common::Proto::SigningError Signer::assembleSignatures(vector<pair<Data, Data>>& signatures, const Proto::SigningInput& input, const TransactionPlan& plan, const Data& txId, bool sizeEstimationOnly) {
     signatures.clear();
     // Private keys and corresponding addresses
@@ -88,16 +94,17 @@ Common::Proto::SigningError Signer::assembleSignatures(vector<pair<Data, Data>>&
         if (!PrivateKey::isValid(privateKeyData)) {
             return Common::Proto::Error_invalid_private_key;
         }
+
+        // Add this private key and associated address
         const auto privateKey = PrivateKey(privateKeyData);
         const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         const auto address = AddressV3(publicKey);
         privateKeys[address.string()] = privateKeyData;
 
-        // TODO improve
-        auto stakingPrivKeyData = TW::subData(privateKeyData, 96);
-        TW::append(stakingPrivKeyData, TW::Data(96));
-        const auto stakingKeyHash = subData(address.bytes, 28, 28);
-        privateKeys[hex(stakingKeyHash)] = stakingPrivKeyData; //privateKeyData;
+        // Also add the derived staking private key (the 2nd half) and associated address; because staking keys also need signature
+        const auto stakingPrivKeyData = deriveStakingPrivateKey(privateKeyData);
+        const auto stakingKeyHash = hex(address.getStakingKeyHash());
+        privateKeys[stakingKeyHash] = stakingPrivKeyData;
     }
 
     // collect every unique input UTXO address, preserving order
