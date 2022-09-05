@@ -1,6 +1,8 @@
+// Copyright © 2017-2022 Trust Wallet.
 //
-// Created by Fitz on 2022/2/7.
-//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
 #include "Extrinsic.h"
@@ -10,7 +12,7 @@ namespace TW::Substrate {
 
 static constexpr size_t hashTreshold = 256;
 
-Data Signer::signaturePreImage(const Proto::SigningInput &input) {
+Data Signer::signaturePreImage(const Proto::SigningInput& input) {
     auto extrinsic = Extrinsic(input);
     auto payload = extrinsic.encodePayload();
     // check if need to hash
@@ -20,7 +22,7 @@ Data Signer::signaturePreImage(const Proto::SigningInput &input) {
     return payload;
 }
 
-Data Signer::encodeTransaction(const Proto::SigningInput &input, const Data &publicKey, const Data &signature) {
+Data Signer::encodeTransaction(const Proto::SigningInput& input, const Data& publicKey, const Data& signature) {
     auto pbk = PublicKey(publicKey, TWPublicKeyTypeED25519);
     auto extrinsic = Extrinsic(input);
     auto encoded = extrinsic.encodeSignature(pbk, signature);

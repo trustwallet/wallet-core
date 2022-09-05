@@ -30,6 +30,38 @@ message Balance {
   }
 }
 
+message Authorization {
+  message JoinIdentity {
+    message Data {
+      bytes data = 1;
+    }
+    message AuthData {
+      Data asset = 1;      // authorization data, empty means all permissions, null means no persimission
+      Data extrinsic = 2;  // authorization data, empty means all permissions, null means no persimission
+      Data portfolio = 3;  // authorization data, empty means all permissions, null means no persimission
+    }
+    int32 module_index = 1;
+    int32 method_index = 2;
+    string target = 3;   // address that will be added to the Identity
+    AuthData data = 4;   // authorization data, null means all permissions
+    uint64 expiry = 5;   // expire time, unix seconds
+  }
+  oneof message_oneof {
+    JoinIdentity join_identity = 1;
+  }
+}
+
+message Identity {
+  message JoinIdentityAsKey {
+    int32 module_index = 1;
+    int32 method_index = 2;
+    uint64 auth_id = 3;
+  }
+  oneof message_oneof {
+    JoinIdentityAsKey join_identity_as_key = 1;
+  }
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
   // Recent block hash, or genesis hash if era is not set
@@ -49,12 +81,13 @@ message SigningInput {
 
   bytes private_key = 8;
   int32 network = 9;
+  bool multi_address = 10;
 
   oneof message_oneof {
-    Balance balance_call = 10;
+    Balance balance_call = 11;
+    Authorization authorization_call = 12;
+    Identity identity_call = 13;
   }
-
-  bool multi_address = 11;
 }
 
 // Transaction signing output.

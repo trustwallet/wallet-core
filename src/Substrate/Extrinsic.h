@@ -1,25 +1,30 @@
+// Copyright © 2017-2022 Trust Wallet.
 //
-// Created by Fitz on 2022/1/26.
-//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
 
 #pragma once
 
 #include "Address.h"
+#include "ScaleCodec.h"
 #include "../Data.h"
 #include "../proto/Substrate.pb.h"
 #include "../uint256.h"
-#include "ScaleCodec.h"
 
 namespace TW::Substrate {
 
 // ExtrinsicV4
 class Extrinsic {
-  public:
+private:
+    Proto::SigningInput _input;
+
+public:
     Data blockHash;
     Data genesisHash;
     uint64_t nonce;
     // Runtime spec version
-    uint32_t specVersion;
+    uint32_t _specVersion;
     // transaction version
     uint32_t version;
     // balances::TakeFees
@@ -29,40 +34,43 @@ class Extrinsic {
     // encoded Call data
     Data call;
     // network
-    int32_t network;
+    int32_t _network;
     // enable multi-address
     bool multiAddress;
 
     Extrinsic(const Proto::SigningInput& input)
-    : blockHash(input.block_hash().begin(), input.block_hash().end())
-    , genesisHash(input.genesis_hash().begin(), input.genesis_hash().end())
-    , nonce(input.nonce())
-    , specVersion(input.spec_version())
-    , version(input.transaction_version())
-    , tip(load(input.tip()))
-    , multiAddress (input.multi_address()) {
+        : _input(input)
+        , blockHash(input.block_hash().begin(), input.block_hash().end())
+        , genesisHash(input.genesis_hash().begin(), input.genesis_hash().end())
+        , nonce(input.nonce())
+        , _specVersion(input.spec_version())
+        , version(input.transaction_version())
+        , tip(load(input.tip()))
+        , _network(input.network())
+        , multiAddress(input.multi_address()) {
         if (input.has_era()) {
             era = encodeEra(input.era().block_number(), input.era().period());
         } else {
             // immortal era
             era = encodeCompact(0);
         }
-        network = input.network();
-        call = encodeCall(input);
+        call = encodeCall();
     }
 
-    static Data encodeCall(const Proto::SigningInput& input);
+    Data encodeCall() const;
     // Payload to sign.
     Data encodePayload() const;
     // Encode final data with signer public key and signature.
     Data encodeSignature(const PublicKey& signer, const Data& signature) const;
 
-  protected:
-    static bool encodeRawAccount(bool enableMultiAddress);
-    static Data encodeTransfer(const Proto::Balance::Transfer& transfer, int32_t network, bool enableMultiAddress);
-    static Data encodeBalanceCall(const Proto::Balance& balance, int32_t network, uint32_t specVersion, bool enableMultiAddress);
-    static Data encodeBatchCall(const std::vector<Data>& calls, int32_t moduleIndex, int32_t methodIndex);
+protected:
+    bool encodeRawAccount(bool enableMultiAddress) const;
+    Data encodeTransfer(const Proto::Balance::Transfer& transfer, int32_t network, bool enableMultiAddress) const;
+    Data encodeBalanceCall(const Proto::Balance& balance) const;
+    Data encodeBatchCall(const std::vector<Data>& calls, int32_t moduleIndex, int32_t methodIndex) const;
     Data encodeEraNonceTip() const;
+    Data encodeAuthorizationCall(const Proto::Authorization& authorization) const;
+    Data encodeIdentityCall(const Proto::Identity& authorization) const;
 };
 
 } // namespace TW::Substrate

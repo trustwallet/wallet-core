@@ -1,6 +1,8 @@
+// Copyright © 2017-2022 Trust Wallet.
 //
-// Created by Fitz on 2022/1/27.
-//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
 
 #include "Extrinsic.h"
 #include <map>
@@ -26,13 +28,19 @@ static Data encodeCallIndex(int32_t moduleIndex, int32_t methodIndex) {
     return Data{TW::byte(moduleIndex), TW::byte(methodIndex)};
 }
 
-Data Extrinsic::encodeCall(const Proto::SigningInput& input) {
+Data Extrinsic::encodeCall() const {
     Data data;
-    if (input.network() > maxByte) {
+    if (_network > maxByte) {
         throw std::invalid_argument("method index too large");
     }
-    if (input.has_balance_call()) {
-        data = encodeBalanceCall(input.balance_call(), input.network(), input.spec_version(), input.multi_address());
+    if (_input.has_balance_call()) {
+        data = encodeBalanceCall(_input.balance_call());
+    } else if (_input.has_authorization_call()) {
+        data = encodeAuthorizationCall(_input.authorization_call());
+    } else if (_input.has_identity_call()) {
+        data = encodeIdentityCall(_input.identity_call());
+    } else {
+        throw std::invalid_argument("Invalid call message");
     }
 
     return data;
@@ -46,7 +54,7 @@ Data Extrinsic::encodePayload() const {
     // era / nonce / tip
     append(data, encodeEraNonceTip());
     // specVersion
-    encode32LE(specVersion, data);
+    encode32LE(_specVersion, data);
     // transactionVersion
     encode32LE(version, data);
     // genesis hash
@@ -56,7 +64,7 @@ Data Extrinsic::encodePayload() const {
     return data;
 }
 
-//length prefix (2 bytes) + version header (1 bytes) + signer public key (AccountId [1byte] + pub key [32 bytes]) + signature types (1 byte, ed25519 is 0) + signature...
+// length prefix (2 bytes) + version header (1 bytes) + signer public key (AccountId [1byte] + pub key [32 bytes]) + signature types (1 byte, ed25519 is 0) + signature...
 
 // Encode final data with signer public key and signature.
 Data Extrinsic::encodeSignature(const PublicKey& signer, const Data& signature) const {
@@ -78,11 +86,11 @@ Data Extrinsic::encodeSignature(const PublicKey& signer, const Data& signature) 
     return data;
 }
 
-bool Extrinsic::encodeRawAccount(bool enableMultiAddress) {
+bool Extrinsic::encodeRawAccount(bool enableMultiAddress) const {
     return !enableMultiAddress;
 }
 
-Data Extrinsic::encodeTransfer(const Proto::Balance::Transfer& transfer, int32_t network, bool enableMultiAddress) {
+Data Extrinsic::encodeTransfer(const Proto::Balance::Transfer& transfer, int32_t network, bool enableMultiAddress) const {
     Data data;
     auto address = FullSS58Address(transfer.to_address(), network);
     auto value = load(transfer.value());
@@ -105,18 +113,18 @@ Data Extrinsic::encodeTransfer(const Proto::Balance::Transfer& transfer, int32_t
     return data;
 }
 
-Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance, int32_t network, [[maybe_unused]] uint32_t specVersion, bool enableMultiAddress) {
+Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance) const {
     Data data;
     if (balance.has_transfer()) {
         auto transfer = balance.transfer();
-        append(data, encodeTransfer(transfer, network, enableMultiAddress));
+        append(data, encodeTransfer(transfer, _network, multiAddress));
     } else if (balance.has_batch_transfer()) {
-        //init call array
+        // init call array
         auto calls = std::vector<Data>();
         auto batchTransfer = balance.batch_transfer().transfers();
         for (auto transfer : batchTransfer) {
             // put into calls array
-            calls.push_back(encodeTransfer(transfer, network, enableMultiAddress));
+            calls.push_back(encodeTransfer(transfer, _network, multiAddress));
         }
         data = encodeBatchCall(calls, balance.batch_transfer().module_index(), balance.batch_transfer().method_index());
     }
@@ -124,7 +132,7 @@ Data Extrinsic::encodeBalanceCall(const Proto::Balance& balance, int32_t network
     return data;
 }
 
-Data Extrinsic::encodeBatchCall(const std::vector<Data>& calls, int32_t moduleIndex, int32_t methodIndex) {
+Data Extrinsic::encodeBatchCall(const std::vector<Data>& calls, int32_t moduleIndex, int32_t methodIndex) const {
     Data data;
     append(data, encodeCallIndex(moduleIndex, methodIndex));
     append(data, encodeVector(calls));
@@ -139,6 +147,80 @@ Data Extrinsic::encodeEraNonceTip() const {
     append(data, encodeCompact(nonce));
     // tip
     append(data, encodeCompact(tip));
+    return data;
+}
+
+Data Extrinsic::encodeAuthorizationCall(const Proto::Authorization& authorization) const {
+    Data data;
+    if (authorization.has_join_identity()) {
+        auto identity = authorization.join_identity();
+
+        // call index
+        append(data, encodeCallIndex(identity.module_index(), identity.method_index()));
+
+        // target
+        append(data, 0x01);
+
+        auto address = FullSS58Address(identity.target(), _network);
+        append(data, encodeAccountId(address.keyBytes(), true));
+
+        // join identity
+        append(data, 0x05);
+
+        if (identity.has_data()) {
+            auto authData = identity.data();
+
+            // asset
+            if (authData.has_asset()) {
+                append(data, 0x01);
+                append(data, TW::data(authData.asset().data()));
+            } else {
+                append(data, 0x00);
+            }
+
+            // extrinsic
+            if (authData.has_extrinsic()) {
+                append(data, 0x01);
+                append(data, TW::data(authData.extrinsic().data()));
+            } else {
+                append(data, 0x00);
+            }
+
+            // portfolio
+            if (authData.has_portfolio()) {
+                append(data, 0x01);
+                append(data, TW::data(authData.portfolio().data()));
+            } else {
+                append(data, 0x00);
+            }
+        } else {
+            // authorize all permissions
+            append(data, {0x01, 0x00}); // asset
+            append(data, {0x01, 0x00}); // extrinsic
+            append(data, {0x01, 0x00}); // portfolio
+        }
+        append(data, encodeCompact(identity.expiry()));
+    } else {
+        throw std::invalid_argument("Invalid authorization message");
+    }
+
+    return data;
+}
+
+Data Extrinsic::encodeIdentityCall(const Proto::Identity& identity) const {
+    Data data;
+    if (identity.has_join_identity_as_key()) {
+        auto key = identity.join_identity_as_key();
+
+        // call index
+        append(data, encodeCallIndex(key.module_index(), key.method_index()));
+
+        // data
+        encode64LE(key.auth_id(), data);
+    } else {
+        throw std::invalid_argument("Invalid identity message");
+    }
+
     return data;
 }
 

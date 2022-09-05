@@ -12,5 +12,7 @@
 
 typedef TWData *_Nonnull TW_Substrate_Proto_Era;
 typedef TWData *_Nonnull TW_Substrate_Proto_Balance;
+typedef TWData *_Nonnull TW_Substrate_Proto_Authorization;
+typedef TWData *_Nonnull TW_Substrate_Proto_Identity;
 typedef TWData *_Nonnull TW_Substrate_Proto_SigningInput;
 typedef TWData *_Nonnull TW_Substrate_Proto_SigningOutput;
