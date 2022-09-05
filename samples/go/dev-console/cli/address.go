@@ -9,6 +9,7 @@ import (
 func DumpAllAddress() {
 	if wallet.GlobalWallet == nil || !wallet.GlobalWallet.Ks.IsLoaded() {
 		emoji.Printf(":warning:No wallet loaded, use load_wallet or create_wallet first :warning:\n")
+		return
 	}
 	nbWallets := wallet.GlobalWallet.Ks.AccountCount()
 	var accounts []*native.Account

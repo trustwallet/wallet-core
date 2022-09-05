@@ -11,6 +11,7 @@ var gCommands = []prompt.Suggest{
 	{Text: "load_wallet", Description: "Load an existing wallet"},
 	{Text: "delete_wallet", Description: "Delete an existing wallet"},
 	{Text: "address_all", Description: "Show the addresses of all accounts from the current wallet"},
+	{Text: "help", Description: "Show the global help"},
 }
 
 type Completer struct {

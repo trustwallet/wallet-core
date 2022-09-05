@@ -18,6 +18,8 @@ func Executor(fullCommand string) {
 		DeleteWallet()
 	case "address_all":
 		DumpAllAddress()
+	case "help":
+		ShowGlobalHelp()
 	case "exit":
 		fmt.Println("Quitting the CLI")
 		os.Exit(0)
