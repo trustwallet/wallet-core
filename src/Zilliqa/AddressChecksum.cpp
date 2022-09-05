@@ -14,7 +14,7 @@
 namespace TW::Zilliqa {
 
 /// \see https://github.com/Zilliqa/Zilliqa/blob/1c53b792c7ae44f7b77366536a7e2f73a3eade6a/src/libServer/AddressChecksum.h
-std::string Zilliqa::checksum(const Data& bytes) {
+std::string checksum(const Data& bytes) {
     const auto addressString = hex(bytes);
     const auto hash = hex(Hash::sha256(bytes));
 

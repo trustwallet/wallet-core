@@ -13,7 +13,7 @@ namespace TW::Filecoin {
 using json = nlohmann::json;
 
 // encodeBigInt encodes a Filecoin BigInt to CBOR.
-Data TW::Filecoin::encodeBigInt(const uint256_t& value) {
+Data encodeBigInt(const uint256_t& value) {
     if (value.is_zero()) {
         return {};
     }

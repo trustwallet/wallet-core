@@ -106,7 +106,7 @@ Data create_checksum(const std::string& hrp, const Data& values, ChecksumVariant
 } // namespace
 
 /** Encode a Bech32 string. */
-std::string Bech32::encode(const std::string& hrp, const Data& values, ChecksumVariant variant) {
+std::string encode(const std::string& hrp, const Data& values, ChecksumVariant variant) {
     Data checksum = create_checksum(hrp, values, variant);
     Data combined = values;
     append(combined, checksum);
@@ -119,7 +119,7 @@ std::string Bech32::encode(const std::string& hrp, const Data& values, ChecksumV
 }
 
 /** Decode a Bech32 string. */
-std::tuple<std::string, Data, ChecksumVariant> Bech32::decode(const std::string& str) {
+std::tuple<std::string, Data, ChecksumVariant> decode(const std::string& str) {
     if (str.length() > 120 || str.length() < 2) {
         // too long or too short
         return std::make_tuple(std::string(), Data(), None);

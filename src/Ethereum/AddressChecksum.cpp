@@ -11,7 +11,7 @@
 
 namespace TW::Ethereum {
 
-std::string Ethereum::checksumed(const Address& address) {
+std::string checksumed(const Address& address) {
     const auto addressString = hex(address.bytes);
     const auto hash = hex(Hash::keccak256(addressString));
 

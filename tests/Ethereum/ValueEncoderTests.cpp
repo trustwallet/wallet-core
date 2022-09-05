@@ -9,7 +9,7 @@
 
 #include <gtest/gtest.h>
 
-namespace TW::Ethereum::tests {
+namespace TW::Ethereum::ValueEncoderTests {
 
 Data data;
 
