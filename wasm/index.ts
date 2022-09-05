@@ -12,3 +12,4 @@ declare function load(): Promise<WalletCore>;
 
 export const initWasm: typeof load = Loader;
 export { TW, WalletCore };
+export { KeyStore } from "./keystore";
