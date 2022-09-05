@@ -9,6 +9,7 @@ var gCommands = []prompt.Suggest{
 	{Text: "exit", Description: "Quit the CLI"},
 	{Text: "create_wallet", Description: "Create a new wallet"},
 	{Text: "load_wallet", Description: "Load an existing wallet"},
+	{Text: "delete_wallet", Description: "Delete an existing wallet"},
 	{Text: "address_all", Description: "Show the addresses of all accounts from the current wallet"},
 }
 

@@ -60,7 +60,6 @@ func LoadWallet() {
 	walletName := chooseWallet(wallets)
 	walletPath := filepath.Join(wallet.GetWalletDataDirectory(), walletName+".json")
 	walletPassword := queryWalletPassword()
-	fmt.Println(walletPath)
 	storedKey := native.Load(walletPath)
 	if storedKey.IsLoaded() {
 		wallet.GlobalWallet = &wallet.Wallet{Ks: storedKey, Password: walletPassword, WalletName: walletName}

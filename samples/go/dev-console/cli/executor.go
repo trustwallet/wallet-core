@@ -14,6 +14,8 @@ func Executor(fullCommand string) {
 		CreateWallet()
 	case "load_wallet":
 		LoadWallet()
+	case "delete_wallet":
+		DeleteWallet()
 	case "address_all":
 		DumpAllAddress()
 	case "exit":
