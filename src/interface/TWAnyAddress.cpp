@@ -8,12 +8,12 @@
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWPublicKey.h>
 
-
+#include "../Data.h"
 #include "../Coin.h"
-#include "../Address.h"
+#include "../AnyAddress.h"
 
 bool TWAnyAddressEqual(struct TWAnyAddress* _Nonnull lhs, struct TWAnyAddress* _Nonnull rhs) {
-    return lhs->impl == rhs->impl;
+    return *lhs->impl == *rhs->impl;
 }
 
 bool TWAnyAddressIsValid(TWString* _Nonnull string, enum TWCoinType coin) {
@@ -24,30 +24,31 @@ bool TWAnyAddressIsValid(TWString* _Nonnull string, enum TWCoinType coin) {
 struct TWAnyAddress* _Nullable TWAnyAddressCreateWithString(TWString* _Nonnull string,
                                                             enum TWCoinType coin) {
     const auto& address = *reinterpret_cast<const std::string*>(string);
-    try {
-        return new TWAnyAddress{TW::Address(address, coin)};
-    } catch (...) {
+    auto *impl = TW::createAddress(address, coin);
+    if (impl == nullptr)
         return nullptr;
-    }
+    return new TWAnyAddress{impl};
 }
 
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKey(
     struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin) {
-    return new TWAnyAddress{TW::Address(publicKey, coin)};
+    return new TWAnyAddress{TW::createAddress(publicKey->impl, coin)};
 }
 
 void TWAnyAddressDelete(struct TWAnyAddress* _Nonnull address) {
+    delete address->impl;
     delete address;
 }
 
 TWString* _Nonnull TWAnyAddressDescription(struct TWAnyAddress* _Nonnull address) {
-    return TWStringCreateWithUTF8Bytes(address->impl.address.c_str());
+    return TWStringCreateWithUTF8Bytes(address->impl->address.c_str());
 }
 
 enum TWCoinType TWAnyAddressCoin(struct TWAnyAddress* _Nonnull address) {
-    return address->impl.coin;
+    return address->impl->coin;
 }
 
 TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
-    return address->impl.getData();
+    auto data = address->impl->getData();
+    return TWDataCreateWithBytes(data.data(), data.size());
 }

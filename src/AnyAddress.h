@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include "Data.h"
+#include "PublicKey.h"
+
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWData.h>
@@ -13,30 +16,27 @@
 
 namespace TW {
 
-class Address {
+class AnyAddress {
 public:
     std::string address;
 
     enum TWCoinType coin;
 
-    Address(const std::string& address, enum TWCoinType coin);
+    AnyAddress(std::string address, enum TWCoinType coin);
 
-    Address(TWPublicKey* publicKey, enum TWCoinType coin);
-
-    TWData* getData() const;
+    Data getData() const;
 };
 
-inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs.address == rhs.address && lhs.coin == rhs.coin;
-}
+AnyAddress* createAddress(const std::string& address, enum TWCoinType coin);
+AnyAddress* createAddress(const PublicKey& publicKey, enum TWCoinType coin);
 
-inline bool operator!=(const Address& lhs, const Address& rhs) {
-    return lhs.address != rhs.address || lhs.coin != rhs.coin;
+inline bool operator==(const AnyAddress& lhs, const AnyAddress& rhs) {
+    return lhs.address == rhs.address && lhs.coin == rhs.coin;
 }
 
 } // namespace TW
 
 /// Wrapper for C interface.
 struct TWAnyAddress {
-    TW::Address impl;
+    TW::AnyAddress* impl;
 };
