@@ -9,13 +9,12 @@
 
 #include <gtest/gtest.h>
 
-namespace TW::Ethereum::ValueEncoderTests {
-
-Data data;
+namespace TW::Ethereum::tests {
 
 void checkLast32BytesEqual(const Data& data, const char* expected) {
     EXPECT_EQ(hex(subData(data, data.size() - 32, 32)), expected);
 }
+
 TEST(EthereumAbiValueEncoder, encodeBool) {
     Data data;
     ABI::ValueEncoder::encodeBool(false, data);
