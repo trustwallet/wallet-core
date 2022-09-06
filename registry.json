@@ -400,6 +400,7 @@
     "coinId": 118,
     "symbol": "ATOM",
     "decimals": 6,
+    "chainId": "cosmoshub-4",
     "blockchain": "Cosmos",
     "derivation": [
       {
@@ -918,6 +919,7 @@
     "symbol": "LUNC",
     "decimals": 6,
     "blockchain": "Cosmos",
+    "chainId": "columbus-5",
     "derivation": [
       {
         "path": "m/44'/330'/0'/0/0"
@@ -1138,6 +1140,7 @@
     "symbol": "KAVA",
     "decimals": 6,
     "blockchain": "Cosmos",
+    "chainId": "kava_2222-10",
     "derivation": [
       {
         "path": "m/44'/459'/0'/0/0"
@@ -1226,6 +1229,7 @@
     "coinId": 494,
     "decimals": 6,
     "blockchain": "Cosmos",
+    "chainId": "laozi-mainnet",
     "derivation": [
       {
         "path": "m/44'/494'/0'/0/0"
@@ -2577,6 +2581,7 @@
     "symbol": "EVMOS",
     "decimals": 18,
     "blockchain": "Cosmos",
+    "chainId": "evmos_9001-2",
     "derivation": [
       {
         "path": "m/44'/60'/0'/0/0"
