@@ -62,6 +62,13 @@ message Identity {
   }
 }
 
+message PolymeshCall {
+  oneof message_oneof {
+    Authorization authorization_call = 1;
+    Identity identity_call = 2;
+  }
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
   // Recent block hash, or genesis hash if era is not set
@@ -81,13 +88,11 @@ message SigningInput {
 
   bytes private_key = 8;
   int32 network = 9;
-  bool multi_address = 10;
-
   oneof message_oneof {
-    Balance balance_call = 11;
-    Authorization authorization_call = 12;
-    Identity identity_call = 13;
+    Balance balance_call = 10;
   }
+  bool multi_address = 11;
+  PolymeshCall polymesh_call = 12;
 }
 
 // Transaction signing output.

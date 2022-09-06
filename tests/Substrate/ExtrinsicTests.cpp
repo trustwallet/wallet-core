@@ -44,7 +44,7 @@ TEST(SubstrateExtrinsic, Polymesh_encodeAuthorizationJoinIdentity) {
     input.set_network(12);
     input.set_multi_address(true);
 
-    auto* identity = input.mutable_authorization_call()->mutable_join_identity();
+    auto* identity = input.mutable_polymesh_call()->mutable_authorization_call()->mutable_join_identity();
     identity->set_module_index(0x07);
     identity->set_method_index(0x0d);
     identity->set_target("2FM6FpjQ6r5HTt7FGYSzskDNkwUyFsonMtwBpsnr9vwmCjhc");
@@ -72,7 +72,7 @@ TEST(SubstrateExtrinsic, Polymesh_encodeIdentity) {
     input.set_network(12);
     input.set_multi_address(true);
 
-    auto* key = input.mutable_identity_call()->mutable_join_identity_as_key();
+    auto* key = input.mutable_polymesh_call()->mutable_identity_call()->mutable_join_identity_as_key();
     key->set_module_index(0x07);
     key->set_method_index(0x05);
     key->set_auth_id(4875);

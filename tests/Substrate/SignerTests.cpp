@@ -81,7 +81,7 @@ TEST(SubstrateSigner, encodeTransaction_Add_authorization) {
     era->set_block_number(4395451ul);
     era->set_period(64ul);
 
-    auto* ji = input.mutable_authorization_call()->mutable_join_identity();
+    auto* ji = input.mutable_polymesh_call()->mutable_authorization_call()->mutable_join_identity();
     ji->set_module_index(0x07);
     ji->set_method_index(0x0d);
     ji->set_target("2HEVN4PHYKj7B1krQ9bctAQXZxHQQkANVNCcfbdYk2gZ4cBR");
@@ -111,7 +111,7 @@ TEST(SubstrateSigner, encodeTransaction_JoinIdentityAsKey) {
     era->set_block_number(4395527ul);
     era->set_period(64ul);
 
-    auto* key = input.mutable_identity_call()->mutable_join_identity_as_key();
+    auto* key = input.mutable_polymesh_call()->mutable_identity_call()->mutable_join_identity_as_key();
     key->set_module_index(0x07);
     key->set_method_index(0x05);
     key->set_auth_id(21435);

@@ -35,10 +35,14 @@ Data Extrinsic::encodeCall() const {
     }
     if (_input.has_balance_call()) {
         data = encodeBalanceCall(_input.balance_call());
-    } else if (_input.has_authorization_call()) {
-        data = encodeAuthorizationCall(_input.authorization_call());
-    } else if (_input.has_identity_call()) {
-        data = encodeIdentityCall(_input.identity_call());
+    } else if (_input.has_polymesh_call()) {
+        if (_input.polymesh_call().has_authorization_call()) {
+            data = encodeAuthorizationCall(_input.polymesh_call().authorization_call());
+        } else if (_input.polymesh_call().has_identity_call()) {
+            data = encodeIdentityCall(_input.polymesh_call().identity_call());
+        } else {
+            throw std::invalid_argument("Invalid polymesh call message");
+        }
     } else {
         throw std::invalid_argument("Invalid call message");
     }
