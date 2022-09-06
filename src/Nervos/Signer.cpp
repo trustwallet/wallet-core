@@ -8,8 +8,7 @@
 #include "Transaction.h"
 #include "TransactionPlan.h"
 
-using namespace TW;
-using namespace TW::Nervos;
+namespace TW::Nervos {
 
 Proto::TransactionPlan Signer::plan(const Proto::SigningInput& signingInput) noexcept {
     TransactionPlan txPlan;
@@ -52,3 +51,5 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& signingInput) noexc
 
     return output;
 }
+
+} // namespace TW::Nervos

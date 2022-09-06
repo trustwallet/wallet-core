@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -14,13 +14,15 @@
 #include <cassert>
 #include <utility>
 
-using namespace TW::Bitcoin;
-using namespace TW;
+namespace TW::Bitcoin {
 
 /// From https://github.com/bitcoincashorg/bitcoincash.org/blob/master/spec/cashaddr.md
 namespace {
 
-enum class Version : uint8_t { p2kh = 0x00, p2sh = 0x08 };
+enum class Version : uint8_t {
+    p2kh = 0x00,
+    p2sh = 0x08
+};
 constexpr size_t maxHRPSize{20};
 constexpr size_t maxDataSize{104};
 
@@ -61,7 +63,8 @@ bool CashAddress::isValid(const std::string& hrp, const std::string& string) noe
            std::string(decodedHRP.data()).compare(0, std::min(hrp.size(), maxHRPSize), hrp) == 0;
 }
 
-CashAddress::CashAddress(const std::string& hrp, const std::string& string) : hrp(hrp) {
+CashAddress::CashAddress(const std::string& hrp, const std::string& string)
+    : hrp(hrp) {
     const auto withPrefix = details::buildPrefix(hrp, string);
     std::array<char, maxHRPSize + 1> decodedHRP{};
     std::array<uint8_t, maxDataSize> data{};
@@ -75,7 +78,8 @@ CashAddress::CashAddress(const std::string& hrp, const std::string& string) : hr
     std::copy(data.begin(), data.begin() + dataLen, bytes.begin());
 }
 
-CashAddress::CashAddress(std::string hrp, const PublicKey& publicKey) : hrp(std::move(hrp)) {
+CashAddress::CashAddress(std::string hrp, const PublicKey& publicKey)
+    : hrp(std::move(hrp)) {
     if (publicKey.type != TWPublicKeyTypeSECP256k1) {
         throw std::invalid_argument("CashAddress needs a compressed SECP256k1 public key.");
     }
@@ -111,3 +115,5 @@ Data CashAddress::getData() const {
     cash_data_to_addr(data.data(), &outlen, bytes.data(), CashAddress::size);
     return data;
 }
+
+} // namespace TW::Bitcoin

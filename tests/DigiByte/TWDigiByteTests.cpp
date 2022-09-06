@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -16,8 +16,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Bitcoin;
+namespace TW::Bitcoin {
 
 TEST(DigiByteTransaction, SignTransaction) {
     /*
@@ -71,18 +70,19 @@ TEST(DigiByteTransaction, SignTransaction) {
         hex(serialized),
         "01000000"
         "01"
-            "ea63bdc39035ebe02df7ad999581156f996303a70f9a3358811454a7ca806b96"
-            "00000000"
-            "6a"
-            "473044022003e9756b12ecbe5788fdb6eb4b6d7b58f9f9410df32f3047edb0dd0ebffb0d630220499d00d17e50c48b4bac6c0ce148f13bb3109a8845fa3400a2d6a57dabf2c4010121024e525e582452cece7b869532d9e354cfec58b71cbed76f7238c91274a64b2116"
-            "ffffffff"
-        "02"
-            "4023050600000000""19"
-            "76a9142d5b215a11029ee51a1dd9404d271c7e4a74f5f288ac"
-            "18053d0000000000""19"
-            "76a91447825943ca6a936b177fdc7c9dc05251640169c288ac"
+        "ea63bdc39035ebe02df7ad999581156f996303a70f9a3358811454a7ca806b96"
         "00000000"
-    ); 
+        "6a"
+        "473044022003e9756b12ecbe5788fdb6eb4b6d7b58f9f9410df32f3047edb0dd0ebffb0d630220499d00d17e50c48b4bac6c0ce148f13bb3109a8845fa3400a2d6a57dabf2c4010121024e525e582452cece7b869532d9e354cfec58b71cbed76f7238c91274a64b2116"
+        "ffffffff"
+        "02"
+        "4023050600000000"
+        "19"
+        "76a9142d5b215a11029ee51a1dd9404d271c7e4a74f5f288ac"
+        "18053d0000000000"
+        "19"
+        "76a91447825943ca6a936b177fdc7c9dc05251640169c288ac"
+        "00000000");
 }
 
 TEST(DigiByteTransaction, SignP2WPKH) {
@@ -127,7 +127,7 @@ TEST(DigiByteTransaction, SignP2WPKH) {
 
 TEST(DigiByteTransaction, LockScripts) {
     // https://dgb2.trezor.io/tx/966b80caa754148158339a0fa70363996f15819599adf72de0eb3590c3bd63ea
-    
+
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptLockScriptForAddress(STRING("DBfCffUdSbhqKZhjuvrJ6AgvJofT4E2kp4").get(), TWCoinTypeDigiByte));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "76a91447825943ca6a936b177fdc7c9dc05251640169c288ac");
@@ -137,8 +137,10 @@ TEST(DigiByteTransaction, LockScripts) {
     assertHexEqual(scriptData2, "0014885534ab5dc680b68d95c0af49ec2acc2e9915c4");
 
     // https://dgb2.trezor.io/tx/965eb4afcd0aa6e3f4f8fc3513ca042f09e6e2235367fa006cbd1f546c293a2a
-    
+
     auto script3 = WRAP(TWBitcoinScript, TWBitcoinScriptLockScriptForAddress(STRING("SUngTA1vaC2E62mbnc81Mdos3TcvZHwsVo").get(), TWCoinTypeDigiByte));
     auto scriptData3 = WRAPD(TWBitcoinScriptData(script3.get()));
     assertHexEqual(scriptData3, "a91452356ed3d2d31eb8b263ace5d164e3cf3b37096687");
 }
+
+} // namespace TW::Bitcoin

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,8 +13,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Zilliqa;
+namespace TW::Zilliqa::tests {
 
 TEST(ZilliqaSigner, PreImage) {
     auto privateKey = PrivateKey(parse_hex("0E891B9DFF485000C7D1DC22ECF3A583CC50328684321D61947A86E57CF6C638"));
@@ -106,5 +105,7 @@ TEST(ZilliqaSigner, SigningData) {
 
     auto output = Signer::sign(input);
     ASSERT_EQ(output.json(), R"({"amount":"10000000000000","code":"","data":"{\"_tag\":\"DelegateStake\",\"params\":[{\"type\":\"ByStr20\",\"value\":\"0x122219cCeAb410901e96c3A0e55E46231480341b\",\"vname\":\"ssnaddr\"}]}","gasLimit":"5000","gasPrice":"2000000000","nonce":56,"pubKey":"03fb30b196ce3e976593ecc2da220dca9cdea8c84d2373770042a930b892ac0f5c","signature":"437fb5c3ce2c6b01f9d490f670539fae4533c82a21fa7edfe6b23df70d732937e8c578c8d6ed24be9150f5126f7b7c977a467af8947ef92a720908a761a6eb0d","toAddr":"43D459eC504C7432959c086B0ac7F7855E984306","version":65537})");
-    ASSERT_EQ(hex(output.signature().begin(), output.signature().end()), "437fb5c3ce2c6b01f9d490f670539fae4533c82a21fa7edfe6b23df70d732937e8c578c8d6ed24be9150f5126f7b7c977a467af8947ef92a720908a761a6eb0d");    
+    ASSERT_EQ(hex(output.signature().begin(), output.signature().end()), "437fb5c3ce2c6b01f9d490f670539fae4533c82a21fa7edfe6b23df70d732937e8c578c8d6ed24be9150f5126f7b7c977a467af8947ef92a720908a761a6eb0d");
 }
+
+} // namespace TW::Zilliqa::tests

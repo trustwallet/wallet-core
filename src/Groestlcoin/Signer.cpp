@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,8 +12,7 @@
 #include "HexCoding.h"
 #include "Transaction.h"
 
-using namespace TW;
-using namespace TW::Groestlcoin;
+namespace TW::Groestlcoin {
 
 using TransactionBuilder = Bitcoin::TransactionBuilder;
 
@@ -46,3 +45,5 @@ SigningOutput Signer::sign(const SigningInput& input) noexcept {
     output.set_transaction_id(hex(txHash));
     return output;
 }
+
+} // namespace TW::Groestlcoin

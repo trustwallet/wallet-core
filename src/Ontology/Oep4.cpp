@@ -18,8 +18,8 @@ Oep4::Oep4(const Data bin) noexcept
 
 Transaction Oep4::readOnlyMethod(std::string method_name, uint32_t nonce) {
     Address addr(oep4Contract);
-    std::vector<boost::any> args{};
-    auto invokeCode = ParamsBuilder::buildOep4InvokeCode(addr, method_name, args);
+    NeoVmParamValue::ParamArray args{};
+    auto invokeCode = ParamsBuilder::buildOep4InvokeCode(addr, method_name, {args});
 
     return Transaction(0, 0xD1, nonce, 0, 0, "", invokeCode);
 }
@@ -43,8 +43,8 @@ Transaction Oep4::totalSupply(uint32_t nonce) {
 Transaction Oep4::balanceOf(const Address& user, uint32_t nonce) {
     Address contract(oep4Contract);
     Data d(std::begin(user._data), std::end(user._data));
-    std::vector<boost::any> args{d};
-    auto invokeCode = ParamsBuilder::buildOep4InvokeCode(contract, "balanceOf", args);
+    NeoVmParamValue::ParamArray args{d};
+    auto invokeCode = ParamsBuilder::buildOep4InvokeCode(contract, "balanceOf", {args});
     return Transaction(0, 0xD1, nonce, 0, 0, "", invokeCode);
 }
 
@@ -54,10 +54,10 @@ Transaction Oep4::transfer(const Signer& from, const Address& to, uint64_t amoun
     Address contract(oep4Contract);
 
     auto fromAddr = from.getAddress();
-    std::vector<boost::any> args{fromAddr._data, to._data, amount};
+    NeoVmParamValue::ParamArray args{fromAddr._data, to._data, amount};
     // yes, invoke neovm is not like ont transfer
     std::reverse(args.begin(), args.end());
-    auto invokeCode = ParamsBuilder::buildOep4InvokeCode(contract, "transfer", args);
+    auto invokeCode = ParamsBuilder::buildOep4InvokeCode(contract, "transfer", {args});
 
     auto tx = Transaction(0, 0xD1, nonce, gasPrice, gasLimit, payer.getAddress().string(), invokeCode);
     from.sign(tx);

@@ -7,21 +7,16 @@
 #include "Signer.h"
 #include "Asset.h"
 #include "PackedTransaction.h"
-#include "../proto/Common.pb.h"
-#include "../HexCoding.h"
 
 #include <TrezorCrypto/ecdsa.h>
-#include <TrezorCrypto/nist256p1.h>
-#include <TrezorCrypto/secp256k1.h>
 
-using namespace TW;
-using namespace TW::EOS;
+namespace TW::EOS {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     Proto::SigningOutput output;
     try {
         // create an asset object
-        auto assetData = input.asset();
+        const auto& assetData = input.asset();
         auto asset = Asset(assetData.amount(), static_cast<uint8_t>(assetData.decimals()),
                            assetData.symbol());
 
@@ -31,7 +26,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
         // create a Transaction and add the transfer action
         auto tx = Transaction(Data(input.reference_block_id().begin(), input.reference_block_id().end()),
-                        input.reference_block_time());
+                              input.reference_block_time());
         tx.actions.push_back(action);
 
         // get key type
@@ -93,7 +88,7 @@ TW::Data Signer::hash(const Transaction& transaction) const noexcept {
     transaction.serialize(hashInput);
 
     Data cfdHash(Hash::sha256Size); // default value for empty cfd
-    if (transaction.contextFreeData.size()) {
+    if (!transaction.contextFreeData.empty()) {
         cfdHash = Hash::sha256(transaction.contextFreeData);
     }
 
@@ -103,8 +98,12 @@ TW::Data Signer::hash(const Transaction& transaction) const noexcept {
 
 // canonical check for EOS
 int Signer::isCanonical([[maybe_unused]] uint8_t by, uint8_t sig[64]) {
+    // clang-format off
     return !(sig[0] & 0x80) 
         && !(sig[0] == 0 && !(sig[1] & 0x80))
         && !(sig[32] & 0x80)
         && !(sig[32] == 0 && !(sig[33] & 0x80));
+    // clang-format on
 }
+
+} // namespace TW::EOS

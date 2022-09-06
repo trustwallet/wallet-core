@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,8 +8,6 @@
 #include "../Ethereum/RLP.h"
 #include "../HexCoding.h"
 #include <google/protobuf/util/json_util.h>
-
-using namespace TW;
 
 namespace TW::Harmony {
 
@@ -338,7 +336,7 @@ void Signer::sign(const PrivateKey& privateKey, const Data& hash, T& transaction
 
 Data Signer::rlpNoHash(const Transaction& transaction, const bool include_vrs) const noexcept {
     auto encoded = Data();
-    using namespace TW::Ethereum;
+    using RLP = TW::Ethereum::RLP;
     append(encoded, RLP::encode(transaction.nonce));
     append(encoded, RLP::encode(transaction.gasPrice));
     append(encoded, RLP::encode(transaction.gasLimit));
@@ -363,7 +361,8 @@ template <typename Directive>
 Data Signer::rlpNoHash(const Staking<Directive>& transaction, const bool include_vrs) const
     noexcept {
     auto encoded = Data();
-    using namespace TW::Ethereum;
+    using RLP = TW::Ethereum::RLP;
+
     append(encoded, RLP::encode(transaction.directive));
     append(encoded, rlpNoHashDirective(transaction));
 
@@ -384,7 +383,7 @@ Data Signer::rlpNoHash(const Staking<Directive>& transaction, const bool include
 
 Data Signer::rlpNoHashDirective(const Staking<CreateValidator>& transaction) const noexcept {
     auto encoded = Data();
-    using namespace TW::Ethereum;
+    using RLP = TW::Ethereum::RLP;
 
     append(encoded, RLP::encode(transaction.stakeMsg.validatorAddress.getKeyHash()));
 
@@ -435,7 +434,7 @@ Data Signer::rlpNoHashDirective(const Staking<CreateValidator>& transaction) con
 
 Data Signer::rlpNoHashDirective(const Staking<EditValidator>& transaction) const noexcept {
     auto encoded = Data();
-    using namespace TW::Ethereum;
+    using RLP = TW::Ethereum::RLP;
 
     append(encoded, RLP::encode(transaction.stakeMsg.validatorAddress.getKeyHash()));
 
@@ -468,7 +467,7 @@ Data Signer::rlpNoHashDirective(const Staking<EditValidator>& transaction) const
 
 Data Signer::rlpNoHashDirective(const Staking<Delegate>& transaction) const noexcept {
     auto encoded = Data();
-    using namespace TW::Ethereum;
+    using RLP = TW::Ethereum::RLP;
     append(encoded, RLP::encode(transaction.stakeMsg.delegatorAddress.getKeyHash()));
     append(encoded, RLP::encode(transaction.stakeMsg.validatorAddress.getKeyHash()));
     append(encoded, RLP::encode(transaction.stakeMsg.amount));
@@ -477,7 +476,7 @@ Data Signer::rlpNoHashDirective(const Staking<Delegate>& transaction) const noex
 
 Data Signer::rlpNoHashDirective(const Staking<Undelegate>& transaction) const noexcept {
     auto encoded = Data();
-    using namespace TW::Ethereum;
+    using RLP = TW::Ethereum::RLP;
     append(encoded, RLP::encode(transaction.stakeMsg.delegatorAddress.getKeyHash()));
     append(encoded, RLP::encode(transaction.stakeMsg.validatorAddress.getKeyHash()));
     append(encoded, RLP::encode(transaction.stakeMsg.amount));
@@ -486,7 +485,7 @@ Data Signer::rlpNoHashDirective(const Staking<Undelegate>& transaction) const no
 
 Data Signer::rlpNoHashDirective(const Staking<CollectRewards>& transaction) const noexcept {
     auto encoded = Data();
-    using namespace TW::Ethereum;
+    using RLP = TW::Ethereum::RLP;
     append(encoded, RLP::encode(transaction.stakeMsg.delegatorAddress.getKeyHash()));
     return RLP::encodeList(encoded);
 }

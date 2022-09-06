@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,8 +7,7 @@
 #include "OptInAssetTransaction.h"
 #include "BinaryCoding.h"
 
-using namespace TW;
-using namespace TW::Algorand;
+namespace TW::Algorand {
 
 Data OptInAssetTransaction::serialize() const {
     Data data;
@@ -56,3 +55,5 @@ Data OptInAssetTransaction::serialize() const {
 
     return data;
 }
+
+} // namespace TW::Algorand

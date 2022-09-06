@@ -5,13 +5,13 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
+
 #include "HexCoding.h"
 #include "SigData.h"
 #include "../Ontology/Oep4TxBuilder.h"
+
 #include "../Ontology/OngTxBuilder.h"
 #include "../Ontology/OntTxBuilder.h"
-
-#include "../Hash.h"
 
 #include <stdexcept>
 

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,8 +10,7 @@
 #include <TrustWalletCore/TWAnySigner.h>
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::VeChain;
+namespace TW::VeChain::tests {
 
 TEST(TWAnySignerVeChain, Sign) {
     auto input = Proto::SigningInput();
@@ -36,3 +35,5 @@ TEST(TWAnySignerVeChain, Sign) {
 
     ASSERT_EQ(hex(output.encoded()), "f86a010101dcdb943535353535353535353535353535353535353535843130303080808252088001c0b841bf8edf9600e645b5abd677cb52f585e7f655d1361075d511b37f707a9f31da6702d28739933b264527a1d05b046f5b74044b88c30c3f5a09d616bd7a4af4901601");
 }
+
+} // namespace TW::VeChain::tests

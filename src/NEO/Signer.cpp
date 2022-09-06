@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,19 +6,15 @@
 
 #include "Signer.h"
 #include "Script.h"
-#include "../Hash.h"
 #include "../HexCoding.h"
-#include "../PrivateKey.h"
-#include "../PublicKey.h"
-#include "../proto/NEO.pb.h"
-#include "../proto/Common.pb.h"
 
-using namespace TW;
-using namespace TW::NEO;
 using namespace std;
+using namespace TW;
 
+namespace TW::NEO {
 
-Signer::Signer(const PrivateKey& priKey) : privateKey(std::move(priKey)) {
+Signer::Signer(const PrivateKey& priKey)
+    : privateKey(std::move(priKey)) {
     auto pub = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1);
     publicKey = pub.bytes;
     address = Address(pub);
@@ -224,3 +220,5 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
     return output;
 }
+
+} // namespace TW::NEO

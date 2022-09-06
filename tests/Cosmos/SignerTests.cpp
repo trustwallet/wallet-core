@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,14 +12,11 @@
 #include "Cosmos/Signer.h"
 #include "../interface/TWTestUtilities.h"
 #include "Cosmos/Protobuf/bank_tx.pb.h"
-#include "Cosmos/Protobuf/coin.pb.h"
 
 #include <gtest/gtest.h>
 #include <google/protobuf/util/json_util.h>
 
-using namespace TW;
-using namespace TW::Cosmos;
-
+namespace TW::Cosmos::tests {
 
 TEST(CosmosSigner, SignTxProtobuf) {
     auto input = Proto::SigningInput();
@@ -212,7 +209,7 @@ TEST(CosmosSigner, SignIbcTransferProtobuf_817101) {
     auto output = Signer::sign(input, TWCoinTypeCosmos);
 
     // real-world tx: https://www.mintscan.io/cosmos/txs/817101F3D96314AD028733248B28BAFAD535024D7D2C8875D3FE31DC159F096B
-    // curl -H 'Content-Type: application/json' --data-binary '{"tx_bytes": "Cr4BCr...1yKOU=", "mode": "BROADCAST_MODE_BLOCK"}' https://api.cosmos.network/cosmos/tx/v1beta1/txs 
+    // curl -H 'Content-Type: application/json' --data-binary '{"tx_bytes": "Cr4BCr...1yKOU=", "mode": "BROADCAST_MODE_BLOCK"}' https://api.cosmos.network/cosmos/tx/v1beta1/txs
     // also similar TX: BCDAC36B605576C8182C2829C808B30A69CAD4959D5ED1E6FF9984ABF280D603
     assertJSONEqual(output.serialized(), "{\"tx_bytes\": \"Cr4BCrsBCikvaWJjLmFwcGxpY2F0aW9ucy50cmFuc2Zlci52MS5Nc2dUcmFuc2ZlchKNAQoIdHJhbnNmZXISC2NoYW5uZWwtMTQxGg8KBXVhdG9tEgYxMDAwMDAiLWNvc21vczFta3k2OWNuOGVrdHd5MDg0NXZlYzl1cHNkcGhrdHh0MDNna3dseCorb3NtbzE4czBoZG5zbGxnY2Nsd2V1OWF5bXc0bmdrdHIyazBya3ZuN2ptbjIHCAEQgI6ZBBJoClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiEC7O9c5DejAsZ/lUaN5LMfNukR9GfX5qUrQcHhPh1WNkkSBAoCCAEYAhIUCg4KBXVhdG9tEgUxMjUwMBCgwh4aQK0HIWdFMk+C6Gi1KG/vELe1ffcc1aEWUIqz2t/ZhwqNNHxUUSp27wteiugHEMVTEIOBhs84t2gIcT/nD/1yKOU=\", \"mode\": \"BROADCAST_MODE_BLOCK\"}");
     EXPECT_EQ(hex(output.signature()), "ad07216745324f82e868b5286fef10b7b57df71cd5a116508ab3dadfd9870a8d347c54512a76ef0b5e8ae80710c55310838186cf38b76808713fe70ffd7228e5");
@@ -252,7 +249,7 @@ TEST(CosmosSigner, SignDirect1) {
 
 TEST(CosmosSigner, SignDirect_0a90010a) {
     const auto bodyBytes = parse_hex("0a90010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e6412700a2d636f736d6f7331706b707472653766646b6c366766727a6c65736a6a766878686c63337234676d6d6b38727336122d636f736d6f7331717970717870713971637273737a673270767871367273307a716733797963356c7a763778751a100a0575636f736d120731323334353637");
-    {   // verify contents of body
+    { // verify contents of body
         auto msgSend = cosmos::bank::v1beta1::MsgSend();
         msgSend.set_from_address("cosmos1pkptre7fdkl6gfrzlesjjvhxhlc3r4gmmk8rs6");
         msgSend.set_to_address("cosmos1qypqxpq9qcrsszg2pvxq6rs0zqg3yyc5lzv7xu");
@@ -294,3 +291,5 @@ TEST(CosmosSigner, SignDirect_0a90010a) {
     EXPECT_EQ(output.json(), "");
     EXPECT_EQ(output.error(), "");
 }
+
+} // namespace TW::Cosmos::tests

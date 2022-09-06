@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,9 +8,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Bitcoin;
-
+namespace TW::Bitcoin {
 
 TEST(BitcoinFeeCalculator, ConstantFeeCalculator) {
     const auto feeCalculator = ConstantFeeCalculator(33);
@@ -75,3 +73,5 @@ TEST(BitcoinFeeCalculator, DecredCalculate) {
     EXPECT_EQ(feeCalculator.calculate(1, 2, 10), 2540);
     EXPECT_EQ(feeCalculator.calculateSingleInput(1), 166);
 }
+
+} // namespace TW::Bitcoin

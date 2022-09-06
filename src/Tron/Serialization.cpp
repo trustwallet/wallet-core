@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,17 +10,15 @@
 #include <vector>
 #include <algorithm>
 
-using namespace TW;
-using namespace TW::Tron;
-using namespace std;
+namespace TW::Tron {
 
 using json = nlohmann::json;
 
-string typeName(const protocol::Transaction::Contract::ContractType type) {
+std::string typeName(const protocol::Transaction::Contract::ContractType type) {
     return protocol::Transaction::Contract::ContractType_Name(type);
 }
 
-string typeUrl(const protocol::Transaction::Contract::ContractType type) {
+std::string typeUrl(const protocol::Transaction::Contract::ContractType type) {
     std::ostringstream stringStream;
     stringStream << "type.googleapis.com/protocol." << typeName(type);
     return stringStream.str();
@@ -47,9 +45,9 @@ json valueJSON(const protocol::TransferAssetContract& contract) {
 
 json valueJSON(const protocol::VoteAssetContract& contract) {
     json valueJSON;
-    
-    vector<string> vote_address;
-    for (const string& addr : contract.vote_address()) {
+
+    std::vector<std::string> vote_address;
+    for (const std::string& addr : contract.vote_address()) {
         vote_address.push_back(hex(addr));
     }
 
@@ -57,7 +55,7 @@ json valueJSON(const protocol::VoteAssetContract& contract) {
     valueJSON["vote_address"] = vote_address;
     valueJSON["support"] = contract.support();
     valueJSON["count"] = contract.count();
-    
+
     return valueJSON;
 }
 
@@ -72,7 +70,7 @@ json voteJSON(const protocol::VoteWitnessContract::Vote& vote) {
 json valueJSON(const protocol::VoteWitnessContract& contract) {
     json valueJSON;
 
-    vector<json> votes;
+    std::vector<json> votes;
     for (const protocol::VoteWitnessContract::Vote& vote : contract.votes()) {
         votes.push_back(voteJSON(vote));
     }
@@ -136,81 +134,81 @@ json valueJSON(const protocol::TriggerSmartContract& contract) {
     return valueJSON;
 }
 
-json parameterJSON(const google::protobuf::Any &parameter, const protocol::Transaction::Contract::ContractType type) {
+json parameterJSON(const google::protobuf::Any& parameter, const protocol::Transaction::Contract::ContractType type) {
     json paramJSON;
     paramJSON["type_url"] = typeUrl(type);
 
     switch (type) {
-        case protocol::Transaction::Contract::TransferContract: {
-            protocol::TransferContract contract;
-            parameter.UnpackTo(&contract);
-            paramJSON["value"] = valueJSON(contract);
-            break;
-        }
-        case protocol::Transaction::Contract::TransferAssetContract: {
-            protocol::TransferAssetContract contract;
-            parameter.UnpackTo(&contract);
-            paramJSON["value"] = valueJSON(contract);
-            break;
-        }
-        case protocol::Transaction::Contract::VoteAssetContract: {
-            protocol::VoteAssetContract contract;
-            parameter.UnpackTo(&contract);
-            paramJSON["value"] = valueJSON(contract);
-            break;
-        }
-        case protocol::Transaction::Contract::VoteWitnessContract: {
-            protocol::VoteWitnessContract contract;
-            parameter.UnpackTo(&contract);
-            paramJSON["value"] = valueJSON(contract);
-            break;
-        }
-        case protocol::Transaction::Contract::FreezeBalanceContract: {
-            protocol::FreezeBalanceContract contract;
-            parameter.UnpackTo(&contract);
-            paramJSON["value"] = valueJSON(contract);
-            break;
-        }
-        case protocol::Transaction::Contract::UnfreezeBalanceContract: {
-            protocol::UnfreezeBalanceContract contract;
-            parameter.UnpackTo(&contract);
-            paramJSON["value"] = valueJSON(contract);
-            break;
-        }
-        case protocol::Transaction::Contract::WithdrawBalanceContract: {
-            protocol::WithdrawBalanceContract contract;
-            parameter.UnpackTo(&contract);
-            paramJSON["value"] = valueJSON(contract);
-            break;
-        }
-        case protocol::Transaction::Contract::UnfreezeAssetContract: {
-            protocol::UnfreezeAssetContract contract;
-            parameter.UnpackTo(&contract);
-            paramJSON["value"] = valueJSON(contract);
-            break;
-        }
-        case protocol::Transaction::Contract::TriggerSmartContract: {
-            protocol::TriggerSmartContract contract;
-            parameter.UnpackTo(&contract);
-            paramJSON["value"] = valueJSON(contract);
-            break;
-        }
-        case protocol::Transaction::Contract::AccountCreateContract:
-        default:
-            break;
+    case protocol::Transaction::Contract::TransferContract: {
+        protocol::TransferContract contract;
+        parameter.UnpackTo(&contract);
+        paramJSON["value"] = valueJSON(contract);
+        break;
+    }
+    case protocol::Transaction::Contract::TransferAssetContract: {
+        protocol::TransferAssetContract contract;
+        parameter.UnpackTo(&contract);
+        paramJSON["value"] = valueJSON(contract);
+        break;
+    }
+    case protocol::Transaction::Contract::VoteAssetContract: {
+        protocol::VoteAssetContract contract;
+        parameter.UnpackTo(&contract);
+        paramJSON["value"] = valueJSON(contract);
+        break;
+    }
+    case protocol::Transaction::Contract::VoteWitnessContract: {
+        protocol::VoteWitnessContract contract;
+        parameter.UnpackTo(&contract);
+        paramJSON["value"] = valueJSON(contract);
+        break;
+    }
+    case protocol::Transaction::Contract::FreezeBalanceContract: {
+        protocol::FreezeBalanceContract contract;
+        parameter.UnpackTo(&contract);
+        paramJSON["value"] = valueJSON(contract);
+        break;
+    }
+    case protocol::Transaction::Contract::UnfreezeBalanceContract: {
+        protocol::UnfreezeBalanceContract contract;
+        parameter.UnpackTo(&contract);
+        paramJSON["value"] = valueJSON(contract);
+        break;
+    }
+    case protocol::Transaction::Contract::WithdrawBalanceContract: {
+        protocol::WithdrawBalanceContract contract;
+        parameter.UnpackTo(&contract);
+        paramJSON["value"] = valueJSON(contract);
+        break;
+    }
+    case protocol::Transaction::Contract::UnfreezeAssetContract: {
+        protocol::UnfreezeAssetContract contract;
+        parameter.UnpackTo(&contract);
+        paramJSON["value"] = valueJSON(contract);
+        break;
+    }
+    case protocol::Transaction::Contract::TriggerSmartContract: {
+        protocol::TriggerSmartContract contract;
+        parameter.UnpackTo(&contract);
+        paramJSON["value"] = valueJSON(contract);
+        break;
+    }
+    case protocol::Transaction::Contract::AccountCreateContract:
+    default:
+        break;
     }
 
     return paramJSON;
 }
 
-json contractJSON(const protocol::Transaction::Contract &contract) {
+json contractJSON(const protocol::Transaction::Contract& contract) {
     json contractJSON;
     contractJSON["type"] = typeName(contract.type());
     contractJSON["parameter"] = parameterJSON(contract.parameter(), contract.type());
     return contractJSON;
 }
 
-json raw_dataJSON(const protocol::Transaction::raw &raw) {
+json raw_dataJSON(const protocol::Transaction::raw& raw) {
     json raw_dataJSON;
 
     raw_dataJSON["ref_block_bytes"] = hex(raw.ref_block_bytes());
@@ -223,16 +221,18 @@ json raw_dataJSON(const protocol::Transaction::raw &raw) {
     }
     raw_dataJSON["timestamp"] = raw.timestamp();
     raw_dataJSON["expiration"] = raw.expiration();
-    raw_dataJSON["contract"] = json::array({ contractJSON(raw.contract(0)) });
+    raw_dataJSON["contract"] = json::array({contractJSON(raw.contract(0))});
 
     return raw_dataJSON;
 }
 
-json TW::Tron::transactionJSON(const protocol::Transaction& transaction, const TW::Data& txID, const TW::Data& signature) {
+json transactionJSON(const protocol::Transaction& transaction, const TW::Data& txID, const TW::Data& signature) {
     json transactionJSON;
     transactionJSON["raw_data"] = raw_dataJSON(transaction.raw_data());
     transactionJSON["txID"] = hex(txID);
-    transactionJSON["signature"] = json::array({ hex(signature) });
+    transactionJSON["signature"] = json::array({hex(signature)});
 
     return transactionJSON;
 }
+
+} // namespace TW::Tron

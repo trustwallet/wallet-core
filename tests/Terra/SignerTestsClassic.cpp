@@ -4,7 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Coin.h"
 #include "HexCoding.h"
 #include "Base64.h"
 #include "proto/Cosmos.pb.h"
@@ -17,9 +16,7 @@
 #include <gtest/gtest.h>
 #include <google/protobuf/util/json_util.h>
 
-using namespace TW;
-using namespace TW::Cosmos;
-
+namespace TW::Cosmos::tests {
 
 TEST(TerraClassicSigner, SignSendTx) {
     auto input = Proto::SigningInput();
@@ -305,7 +302,6 @@ TEST(TerraClassicSigner, SignWasmGeneric_EC4F85) {
     EXPECT_EQ(output.error(), "");
 }
 
-
 TEST(TerraClassicSigner, SignWasmGenericWithCoins_6651FC) {
     auto input = Proto::SigningInput();
     input.set_signing_mode(Proto::Protobuf);
@@ -454,3 +450,5 @@ TEST(TerraClassicSigner, SignWasmTerraTransferPayload) {
         }
     )");
 }
+
+} // namespace TW::Cosmos::tests

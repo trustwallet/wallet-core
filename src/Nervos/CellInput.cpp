@@ -7,10 +7,7 @@
 #include "CellInput.h"
 #include "Serialization.h"
 
-#include "../BinaryCoding.h"
-#include "../HexCoding.h"
-
-using namespace TW::Nervos;
+namespace TW::Nervos {
 
 void CellInput::encode(Data& data) const {
     encode64LE(since, data);
@@ -21,3 +18,5 @@ nlohmann::json CellInput::json() const {
     return nlohmann::json{{"previous_output", previousOutput.json()},
                           {"since", Serialization::numberToHex(since)}};
 }
+
+} // namespace TW::Nervos

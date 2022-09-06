@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,11 +11,10 @@
 #include "../uint256.h"
 #include <cctype>
 
-using namespace TW;
-using namespace TW::Zilliqa;
+namespace TW::Zilliqa {
 
-/// see https://github.com/Zilliqa/Zilliqa/blob/1c53b792c7ae44f7b77366536a7e2f73a3eade6a/src/libServer/AddressChecksum.h
-std::string Zilliqa::checksum(const Data& bytes) {
+/// \see https://github.com/Zilliqa/Zilliqa/blob/1c53b792c7ae44f7b77366536a7e2f73a3eade6a/src/libServer/AddressChecksum.h
+std::string checksum(const Data& bytes) {
     const auto addressString = hex(bytes);
     const auto hash = hex(Hash::sha256(bytes));
 
@@ -38,3 +37,5 @@ std::string Zilliqa::checksum(const Data& bytes) {
 
     return string;
 }
+
+} // namespace TW::Zilliqa

@@ -14,10 +14,7 @@
 #include <gtest/gtest.h>
 
 
-using namespace TW::Cardano;
-using namespace TW;
-using namespace std;
-
+namespace TW::Cardano {
 
 Transaction createTx() {
     Transaction tx;
@@ -25,12 +22,10 @@ Transaction createTx() {
     tx.inputs.emplace_back(parse_hex("554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0"), 0);
     tx.outputs.emplace_back(
         AddressV3("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23").data(),
-        2000000
-    );
+        2000000);
     tx.outputs.emplace_back(
         AddressV3("addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5").data(),
-        16749189
-    );
+        16749189);
     tx.fee = 165555;
     tx.ttl = 53333345;
     return tx;
@@ -60,40 +55,40 @@ TEST(CardanoTransaction, GetId) {
 TEST(CardanoTransaction, minAdaAmount) {
     const auto policyId = "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77";
 
-    {   // ADA only
+    { // ADA only
         const auto tb = TokenBundle();
         EXPECT_EQ(tb.minAdaAmount(), 1000000ul);
     }
-    {   // 1 policyId, 1 6-char asset name
+    { // 1 policyId, 1 6-char asset name
         const auto tb = TokenBundle({TokenAmount(policyId, "TOKEN1", 0)});
         EXPECT_EQ(tb.minAdaAmount(), 1444443ul);
     }
-    {   // 2 policyId, 2 4-char asset names
+    { // 2 policyId, 2 4-char asset names
         auto tb = TokenBundle();
         tb.add(TokenAmount("012345678901234567890POLICY1", "TOK1", 20));
         tb.add(TokenAmount("012345678901234567890POLICY2", "TOK2", 20));
         EXPECT_EQ(tb.minAdaAmount(), 1629628ul);
     }
-    {   // 10 policyId, 10 6-char asset names
+    { // 10 policyId, 10 6-char asset names
         auto tb = TokenBundle();
         for (auto i = 0; i < 10; ++i) {
-            string policyId1 =  + "012345678901234567890123456" + std::to_string(i);
-            string name = "ASSET" + std::to_string(i);
+            std::string policyId1 = +"012345678901234567890123456" + std::to_string(i);
+            std::string name = "ASSET" + std::to_string(i);
             tb.add(TokenAmount(policyId1, name, 0));
         }
         EXPECT_EQ(tb.minAdaAmount(), 3370367ul);
     }
 
-    EXPECT_EQ(TokenBundle::minAdaAmountHelper(0, 0, 0), 1000000ul); // ADA only
-    EXPECT_EQ(TokenBundle::minAdaAmountHelper(1, 0, 0), 1370369ul); // 1 policyId, no asset name
-    EXPECT_EQ(TokenBundle::minAdaAmountHelper(1, 1, 1), 1444443ul); // 1 policyId, 1 1-char asset name
-    EXPECT_EQ(TokenBundle::minAdaAmountHelper(1, 1, 6), 1444443ul); // 1 policyId, 1 6-char asset name
-    EXPECT_EQ(TokenBundle::minAdaAmountHelper(1, 1, 32), 1555554ul); // 1 policyId, 1 32-char asset name
-    EXPECT_EQ(TokenBundle::minAdaAmountHelper(1, 110, 110*32), 23777754ul); // 1 policyId, 110 32-char asset name
-    EXPECT_EQ(TokenBundle::minAdaAmountHelper(2, 2, 8), 1629628ul); // 2 policyId, 2 4-char asset names
-    EXPECT_EQ(TokenBundle::minAdaAmountHelper(3, 5, 20), 1999998ul); // 3 policyId, 5 4-char asset names
-    EXPECT_EQ(TokenBundle::minAdaAmountHelper(10, 10, 10*6), 3370367ul); // 10 policyId, 10 6-char asset names
-    EXPECT_EQ(TokenBundle::minAdaAmountHelper(60, 60, 60*32), 21222201ul); // 60 policyId, 60 32-char asset names
+    EXPECT_EQ(TokenBundle::minAdaAmountHelper(0, 0, 0), 1000000ul);           // ADA only
+    EXPECT_EQ(TokenBundle::minAdaAmountHelper(1, 0, 0), 1370369ul);           // 1 policyId, no asset name
+    EXPECT_EQ(TokenBundle::minAdaAmountHelper(1, 1, 1), 1444443ul);           // 1 policyId, 1 1-char asset name
+    EXPECT_EQ(TokenBundle::minAdaAmountHelper(1, 1, 6), 1444443ul);           // 1 policyId, 1 6-char asset name
+    EXPECT_EQ(TokenBundle::minAdaAmountHelper(1, 1, 32), 1555554ul);          // 1 policyId, 1 32-char asset name
+    EXPECT_EQ(TokenBundle::minAdaAmountHelper(1, 110, 110 * 32), 23777754ul); // 1 policyId, 110 32-char asset name
+    EXPECT_EQ(TokenBundle::minAdaAmountHelper(2, 2, 8), 1629628ul);           // 2 policyId, 2 4-char asset names
+    EXPECT_EQ(TokenBundle::minAdaAmountHelper(3, 5, 20), 1999998ul);          // 3 policyId, 5 4-char asset names
+    EXPECT_EQ(TokenBundle::minAdaAmountHelper(10, 10, 10 * 6), 3370367ul);    // 10 policyId, 10 6-char asset names
+    EXPECT_EQ(TokenBundle::minAdaAmountHelper(60, 60, 60 * 32), 21222201ul);  // 60 policyId, 60 32-char asset names
 }
 
 TEST(CardanoTransaction, getPolicyIDs) {
@@ -113,12 +108,12 @@ TEST(CardanoTransaction, getPolicyIDs) {
 }
 
 TEST(TWCardanoTransaction, minAdaAmount) {
-    {   // ADA-only
+    { // ADA-only
         const auto bundleProto = TokenBundle().toProto();
         const auto bundleProtoData = data(bundleProto.SerializeAsString());
         EXPECT_EQ(TWCardanoMinAdaAmount(&bundleProtoData), 1000000ul);
     }
-    {   // 2 policyId, 2 4-char asset names
+    { // 2 policyId, 2 4-char asset names
         auto bundle = TokenBundle();
         bundle.add(TokenAmount("012345678901234567890POLICY1", "TOK1", 20));
         bundle.add(TokenAmount("012345678901234567890POLICY2", "TOK2", 20));
@@ -127,3 +122,5 @@ TEST(TWCardanoTransaction, minAdaAmount) {
         EXPECT_EQ(TWCardanoMinAdaAmount(&bundleProtoData), 1629628ul);
     }
 }
+
+} // namespace TW::Cardano

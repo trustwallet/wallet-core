@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,15 +8,13 @@
 #include "Cosmos/Signer.h"
 #include "Cosmos/Address.h"
 #include "HexCoding.h"
-#include "PrivateKey.h"
 #include "PublicKey.h"
 #include "../interface/TWTestUtilities.h"
 
 #include <gtest/gtest.h>
 #include <google/protobuf/util/json_util.h>
 
-using namespace TW;
-using namespace TW::Cosmos;
+namespace TW::Cosmos::tests {
 
 TEST(CryptoorgSigner, SignTx_DDCCE4) {
     auto input = Cosmos::Proto::SigningInput();
@@ -171,3 +169,5 @@ TEST(CryptoorgSigner, SignJson) {
         }
     )");
 }
+
+} // namespace TW::Cosmos::tests

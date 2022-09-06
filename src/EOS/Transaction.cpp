@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "../Base58.h"
-#include "../Hash.h"
 #include "../HexCoding.h"
 #include "Transaction.h"
 
@@ -15,10 +14,10 @@
 #include <stdexcept>
 #include <cassert>
 
-using namespace TW;
-using namespace TW::EOS;
+namespace TW::EOS {
 
-Signature::Signature(const Data& sig, Type type) : data(sig), type(type) {
+Signature::Signature(const Data& sig, Type type)
+    : data(sig), type(type) {
     if (sig.size() != DataSize) {
         throw std::invalid_argument("Invalid signature size!");
     }
@@ -54,7 +53,7 @@ std::string Signature::string() const noexcept {
     // drop the subPrefix and append the checksum to the bufer
     buffer.resize(DataSize);
 
-    for(size_t i = 0; i < ChecksumSize; i++) {
+    for (size_t i = 0; i < ChecksumSize; i++) {
         buffer.push_back(hash[i]);
     }
 
@@ -85,7 +84,7 @@ void Transaction::setReferenceBlock(const Data& refBlockId) {
     refBlockPrefix = decode32LE(refBlockId.data() + 8);
 }
 
-void Transaction::serialize(Data& os) const noexcept{
+void Transaction::serialize(Data& os) const noexcept {
 
     encode32LE(expiration, os);
     encode16LE(refBlockNumber, os);
@@ -104,10 +103,10 @@ std::string Transaction::formatDate(int32_t date) {
     constexpr size_t DateSize = 19;
     constexpr size_t BufferSize = DateSize + 1;
     char formattedDate[BufferSize];
-    time_t time = static_cast<time_t>(date);
+    auto time = static_cast<time_t>(date);
     const size_t len = strftime(formattedDate, BufferSize, "%FT%T", std::gmtime(&time));
     assert(len == DateSize);
-    return std::string(formattedDate, len);
+    return {formattedDate, len};
 }
 
 json Transaction::serialize() const {
@@ -135,3 +134,5 @@ json Transaction::serialize() const {
 
     return obj;
 }
+
+} // namespace TW::EOS

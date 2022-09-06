@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,11 +6,9 @@
 
 #include "NEAR/Account.h"
 #include "HexCoding.h"
-
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::NEAR;
+namespace TW::NEAR::tests {
 
 TEST(NEARAccount, Validation) {
     ASSERT_FALSE(Account::isValid("a"));
@@ -22,3 +20,5 @@ TEST(NEARAccount, Validation) {
     ASSERT_TRUE(Account::isValid("test-trust.vlad.near"));
     ASSERT_TRUE(Account::isValid("deadbeef"));
 }
+
+} // namespace TW::NEAR::tests

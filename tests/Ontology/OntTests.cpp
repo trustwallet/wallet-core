@@ -13,8 +13,7 @@
 #include <boost/any.hpp>
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology::tests {
 
 TEST(OntologyOnt, decimals) {
     uint32_t nonce = 0;
@@ -58,3 +57,5 @@ TEST(OntologyOnt, transfer) {
               "d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac",
               rawTx);
 }
+
+} // namespace TW::Ontology::tests

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,8 +11,7 @@
 #include <cassert>
 #include <string>
 
-using namespace TW::Ethereum::ABI;
-using namespace TW;
+namespace TW::Ethereum::ABI {
 
 ParamSet::~ParamSet() {
     _params.clear();
@@ -69,7 +68,7 @@ std::string ParamSet::getType() const {
 }
 
 bool ParamSet::isDynamic() const {
-    for (const auto& p: _params) {
+    for (const auto& p : _params) {
         if (p->isDynamic()) {
             return true;
         }
@@ -80,7 +79,7 @@ bool ParamSet::isDynamic() const {
 size_t ParamSet::getSize() const {
     // 2-pass encoding
     size_t s = 0;
-    for (auto p: _params) {
+    for (auto p : _params) {
         if (p->isDynamic() || p->getSize() > ValueEncoder::encodedIntSize) {
             // offset used
             s += 32;
@@ -156,7 +155,7 @@ bool ParamSet::decode(const Data& encoded, size_t& offset_inout) {
 
 Data ParamSet::encodeHashes() const {
     Data hashes;
-    for (auto p: _params) {
+    for (auto p : _params) {
         append(hashes, p->hashStruct());
     }
     return hashes;
@@ -170,3 +169,5 @@ Data Parameters::hashStruct() const {
     }
     return hash;
 }
+
+} // namespace TW::Ethereum::ABI

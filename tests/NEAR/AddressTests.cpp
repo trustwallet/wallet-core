@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,8 +11,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::NEAR;
+namespace TW::NEAR::tests {
 
 TEST(NEARAddress, Validation) {
     ASSERT_FALSE(Address::isValid("abc"));
@@ -26,12 +25,10 @@ TEST(NEARAddress, Validation) {
 TEST(NEARAddress, FromString) {
     ASSERT_EQ(
         Address("NEAR2758Nk7CMUcxTwXdjVdSxNEidiZQWMZN3USJzj76q5ia3v2v2v").string(),
-        "917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d"
-    );
+        "917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d");
     ASSERT_EQ(
         Address("9685af3fe2dc231e5069ccff8ec6950eb961d42ebb9116a8ab9c0d38f9e45249").string(),
-        "9685af3fe2dc231e5069ccff8ec6950eb961d42ebb9116a8ab9c0d38f9e45249"
-    );
+        "9685af3fe2dc231e5069ccff8ec6950eb961d42ebb9116a8ab9c0d38f9e45249");
 }
 
 TEST(NEARAddress, FromPrivateKey) {
@@ -42,3 +39,5 @@ TEST(NEARAddress, FromPrivateKey) {
 
     ASSERT_EQ(address.string(), "917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d");
 }
+
+} // namespace TW::NEAR::tests

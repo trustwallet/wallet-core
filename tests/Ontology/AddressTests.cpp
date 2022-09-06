@@ -12,8 +12,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology::tests {
 
 TEST(OntologyAddress, validation) {
     ASSERT_FALSE(Address::isValid("abc"));
@@ -45,3 +44,5 @@ TEST(OntologyAddress, fromMultiPubKeys) {
     auto multiAddress = Address(m, pubKeys);
     EXPECT_EQ("AYGWgijVZnrUa2tRoCcydsHUXR1111DgdW", multiAddress.string());
 }
+
+} // namespace TW::Ontology::tests

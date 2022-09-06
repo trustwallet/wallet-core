@@ -16,8 +16,7 @@
 #include <boost/any.hpp>
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology::tests {
 
 TEST(OntologyTransaction, validity) {
     std::vector<uint8_t> ontContract{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -25,9 +24,9 @@ TEST(OntologyTransaction, validity) {
     auto fromAddress = Address("AeicEjZyiXKgUeSBbYQHxsU1X3V5Buori5");
     auto toAddress = Address("APniYDGozkhUh8Tk7pe35aah2HGJ4fJfVd");
     uint64_t amount = 1;
-    std::list<boost::any> transferParam{fromAddress._data, toAddress._data, amount};
-    std::vector<boost::any> args{transferParam};
-    auto invokeCode = ParamsBuilder::buildNativeInvokeCode(ontContract, 0x00, "transfer", args);
+    NeoVmParamValue::ParamList transferParam{fromAddress._data, toAddress._data, amount};
+    NeoVmParamValue::ParamArray args{transferParam};
+    auto invokeCode = ParamsBuilder::buildNativeInvokeCode(ontContract, 0x00, "transfer", {args});
     uint8_t version = 0;
     uint8_t txType = 0xd1;
     uint32_t nonce = 1552759011;
@@ -63,3 +62,5 @@ TEST(OntologyTransaction, validity) {
     EXPECT_EQ(654ul, verifyPosition2);
     EXPECT_EQ(724ul, hex(result).length());
 }
+
+} // namespace TW::Ontology::tests

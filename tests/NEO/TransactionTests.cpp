@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,13 +10,11 @@
 #include "NEO/TransactionType.h"
 #include "NEO/TransactionAttributeUsage.h"
 #include "NEO/TransactionAttribute.h"
-
-#include <iostream>
 #include <gtest/gtest.h>
 
+namespace TW::NEO::tests {
+
 using namespace std;
-using namespace TW;
-using namespace TW::NEO;
 
 TEST(NEOTransaction, SerializeDeserializeEmpty) {
     auto transaction = Transaction();
@@ -26,7 +24,7 @@ TEST(NEOTransaction, SerializeDeserializeEmpty) {
     EXPECT_EQ(0ul, transaction.inInputs.size());
     EXPECT_EQ(0ul, transaction.outputs.size());
     auto serialized = transaction.serialize();
-    
+
     auto deserializedTransaction = Transaction();
     deserializedTransaction.deserialize(serialized);
     EXPECT_EQ(transaction, deserializedTransaction);
@@ -221,8 +219,7 @@ TEST(NEOTransaction, SerializeDeserializeMiner) {
     string notMiner = "1000d11f7a2800000000";
     EXPECT_THROW(
         std::unique_ptr<Transaction> _deserializedTransaction(Transaction::deserializeFrom(parse_hex(notMiner))),
-        std::invalid_argument
-    );
+        std::invalid_argument);
 }
 
 TEST(NEOTransaction, GetHash) {
@@ -248,3 +245,5 @@ TEST(NEOTransaction, SerializeSize) {
 
     EXPECT_EQ(serialized.size(), static_cast<uint64_t>(transaction.size()));
 }
+
+} // namespace TW::NEO::tests

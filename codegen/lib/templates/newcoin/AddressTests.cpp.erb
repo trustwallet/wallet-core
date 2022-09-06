@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,8 +11,7 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-using namespace TW;
-using namespace TW::<%= format_name(coin) %>;
+namespace TW::<%= format_name(coin) %>::tests {
 
 TEST(<%= format_name(coin) %>Address, Valid) {
     ASSERT_TRUE(Address::isValid("__ADD_VALID_ADDRESS_HERE__"));
@@ -46,3 +45,5 @@ TEST(<%= format_name(coin) %>Address, FromString) {
     auto address = Address("__ADD_VALID_ADDRESS_HERE__");
     ASSERT_EQ(address.string(), "__ADD_SAME_VALID_ADDRESS_HERE__");
 }
+
+} // namespace TW::<%= format_name(coin) %>::tests

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,8 +10,7 @@
 #include "../Hash.h"
 #include "../PrivateKey.h"
 
-using namespace TW;
-using namespace TW::NEAR;
+namespace TW::NEAR {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto transaction = transactionData(input);
@@ -24,3 +23,5 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     output.set_hash(hash.data(), hash.size());
     return output;
 }
+
+} // namespace TW::NEAR

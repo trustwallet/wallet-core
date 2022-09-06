@@ -6,14 +6,9 @@
 
 #include "Address.h"
 
-#include "../Hash.h"
 #include "../HexCoding.h"
-#include "../PrivateKey.h"
 
 #include <TrezorCrypto/sha3.h>
-
-using namespace TW;
-using namespace TW::Icon;
 
 namespace TW::Icon {
 

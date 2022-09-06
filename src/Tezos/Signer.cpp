@@ -6,7 +6,6 @@
 
 #include "Signer.h"
 #include "OperationList.h"
-#include "../Hash.h"
 #include "../HexCoding.h"
 
 #include <TrustWalletCore/TWCurve.h>

@@ -16,9 +16,7 @@
 #include <string>
 #include <vector>
 
-using namespace TW;
-using namespace TW::Bitcoin;
-
+namespace TW::Bitcoin {
 
 /// Build a dummy UTXO with the given amount
 UTXO buildTestUTXO(int64_t amount);
@@ -26,8 +24,8 @@ UTXO buildTestUTXO(int64_t amount);
 /// Build a set of dummy UTXO with the given amounts
 UTXOs buildTestUTXOs(const std::vector<int64_t>& amounts);
 
-SigningInput buildSigningInput(Amount amount, int byteFee, const UTXOs& utxos, 
-    bool useMaxAmount = false, enum TWCoinType coin = TWCoinTypeBitcoin, bool omitPrivateKey = false);
+SigningInput buildSigningInput(Amount amount, int byteFee, const UTXOs& utxos,
+                               bool useMaxAmount = false, enum TWCoinType coin = TWCoinTypeBitcoin, bool omitPrivateKey = false);
 
 /// Compare a set of selected UTXOs to the expected set of amounts.
 /// Returns false on mismatch, and error is printed (stderr).
@@ -56,3 +54,5 @@ bool validateEstimatedSize(const Transaction& tx, int smallerTolerance = -1, int
 
 /// Print out a transaction in a nice format, as structured hex strings.
 void prettyPrintTransaction(const Transaction& tx, bool useWitnessFormat = true);
+
+} // namespace TW::Bitcoin

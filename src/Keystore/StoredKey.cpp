@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -14,18 +14,17 @@
 #define BOOST_UUID_RANDOM_PROVIDER_FORCE_POSIX 1
 
 #include <boost/lexical_cast.hpp>
-#include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <nlohmann/json.hpp>
 
 #include <cassert>
 #include <fstream>
-#include <sstream>
 #include <stdexcept>
 
 using namespace TW;
-using namespace TW::Keystore;
+
+namespace TW::Keystore {
 
 StoredKey StoredKey::createWithMnemonic(const std::string& name, const Data& password, const std::string& mnemonic, TWStoredKeyEncryptionLevel encryptionLevel) {
     if (!Mnemonic::isValid(mnemonic)) {
@@ -302,6 +301,7 @@ StoredKey StoredKey::createWithJson(const nlohmann::json& json) {
 }
 
 namespace CodingKeys::SK {
+
 static const auto address = "address";
 static const auto type = "type";
 static const auto name = "name";
@@ -310,7 +310,8 @@ static const auto crypto = "crypto";
 static const auto activeAccounts = "activeAccounts";
 static const auto version = "version";
 static const auto coin = "coin";
-} // namespace CodingKeys
+
+} // namespace CodingKeys::SK
 
 namespace UppercaseCodingKeys {
 static const auto crypto = "Crypto";
@@ -410,3 +411,5 @@ StoredKey StoredKey::load(const std::string& path) {
 
     return createWithJson(j);
 }
+
+} // namespace TW::Keystore

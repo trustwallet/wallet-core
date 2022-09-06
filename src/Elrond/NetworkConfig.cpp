@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,12 +8,10 @@
 
 #include <chrono>
 
-using namespace TW;
-using namespace TW::Elrond;
-using namespace std::chrono;
+namespace TW::Elrond {
 
-NetworkConfig::NetworkConfig() :
-    chainId("1") /* Mainnet */ {
+NetworkConfig::NetworkConfig()
+    : chainId("1") /* Mainnet */ {
 }
 
 const std::string& NetworkConfig::getChainId() const {
@@ -65,7 +63,7 @@ void NetworkConfig::setGasCostESDTNFTTransfer(uint32_t value) {
 }
 
 NetworkConfig NetworkConfig::GetDefault() {
-    const uint64_t timestamp = duration_cast<seconds>(system_clock::now().time_since_epoch()).count();
+    const uint64_t timestamp = duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     return GetByTimestamp(timestamp);
 }
 
@@ -83,3 +81,5 @@ NetworkConfig NetworkConfig::GetByTimestamp(uint64_t timestamp) {
 
     return networkConfig;
 }
+
+} // namespace TW::Elrond

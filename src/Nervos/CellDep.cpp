@@ -5,11 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "CellDep.h"
-#include "Constants.h"
 
 #include "../BinaryCoding.h"
 
-using namespace TW::Nervos;
+namespace TW::Nervos {
 
 CellDep::CellDep(const Proto::CellDep& cellDep)
     : outPoint(cellDep.out_point()) {
@@ -36,3 +35,5 @@ void CellDep::encode(Data& data) const {
 nlohmann::json CellDep::json() const {
     return nlohmann::json{{"out_point", outPoint.json()}, {"dep_type", DepTypeString[depType]}};
 }
+
+} // namespace TW::Nervos

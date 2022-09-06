@@ -10,34 +10,33 @@
 
 #include <list>
 
-using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology {
 
 Transaction Ong::decimals(uint32_t nonce) {
     auto builder = ParamsBuilder();
     auto invokeCode =
-        ParamsBuilder::buildNativeInvokeCode(contractAddress(), version, "decimals", Data());
+        ParamsBuilder::buildNativeInvokeCode(contractAddress(), version, "decimals", {Data()});
     auto tx =
         Transaction(version, txType, nonce, (uint64_t)0, (uint64_t)0, (std::string) "", invokeCode);
     return tx;
 }
 
-Transaction Ong::balanceOf(const Address &address, uint32_t nonce) {
+Transaction Ong::balanceOf(const Address& address, uint32_t nonce) {
     auto builder = ParamsBuilder();
     auto invokeCode =
-        ParamsBuilder::buildNativeInvokeCode(contractAddress(), version, "balanceOf", address._data);
+        ParamsBuilder::buildNativeInvokeCode(contractAddress(), version, "balanceOf", {address._data});
     auto tx =
         Transaction(version, txType, nonce, (uint64_t)0, (uint64_t)0, (std::string) "", invokeCode);
     return tx;
 }
 
-Transaction Ong::transfer(const Signer &from, const Address &to, uint64_t amount,
-                          const Signer &payer, uint64_t gasPrice, uint64_t gasLimit,
+Transaction Ong::transfer(const Signer& from, const Address& to, uint64_t amount,
+                          const Signer& payer, uint64_t gasPrice, uint64_t gasLimit,
                           uint32_t nonce) {
-    std::list<boost::any> transferParam{from.getAddress()._data, to._data, amount};
-    std::vector<boost::any> args{transferParam};
+    NeoVmParamValue::ParamList transferParam{from.getAddress()._data, to._data, amount};
+    NeoVmParamValue::ParamArray args{transferParam};
     auto invokeCode =
-        ParamsBuilder::buildNativeInvokeCode(contractAddress(), 0x00, "transfer", args);
+        ParamsBuilder::buildNativeInvokeCode(contractAddress(), 0x00, "transfer", {args});
     auto tx = Transaction(version, txType, nonce, gasPrice, gasLimit, payer.getAddress().string(),
                           invokeCode);
     from.sign(tx);
@@ -45,16 +44,18 @@ Transaction Ong::transfer(const Signer &from, const Address &to, uint64_t amount
     return tx;
 }
 
-Transaction Ong::withdraw(const Signer &claimer, const Address &receiver, uint64_t amount,
-                          const Signer &payer, uint64_t gasPrice, uint64_t gasLimit,
+Transaction Ong::withdraw(const Signer& claimer, const Address& receiver, uint64_t amount,
+                          const Signer& payer, uint64_t gasPrice, uint64_t gasLimit,
                           uint32_t nonce) {
     auto ontContract = Address("AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV");
-    std::list<boost::any> args{claimer.getAddress()._data, ontContract._data, receiver._data, amount};
+    NeoVmParamValue::ParamList args{claimer.getAddress()._data, ontContract._data, receiver._data, amount};
     auto invokeCode =
-        ParamsBuilder::buildNativeInvokeCode(contractAddress(), 0x00, "transferFrom", args);
+        ParamsBuilder::buildNativeInvokeCode(contractAddress(), 0x00, "transferFrom", {args});
     auto tx = Transaction(version, txType, nonce, gasPrice, gasLimit, payer.getAddress().string(),
                           invokeCode);
     claimer.sign(tx);
     payer.addSign(tx);
     return tx;
 }
+
+} // namespace TW::Ontology

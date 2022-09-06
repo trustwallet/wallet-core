@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,8 +12,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Decred;
+namespace TW::Decred::tests {
 
 TEST(DecredAddress, FromPublicKey) {
     const auto publicKey = PublicKey(parse_hex("0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"), TWPublicKeyTypeSECP256k1);
@@ -45,3 +44,5 @@ TEST(DecredAddress, Derive) {
     const auto address = TW::deriveAddress(TWCoinTypeDecred, wallet.getKey(TWCoinTypeDecred, path));
     ASSERT_EQ(address, "DsVMHD5D86dpRnt2GPZvv4bYUJZg6B9Pzqa");
 }
+
+} // namespace TW::Decred::tests

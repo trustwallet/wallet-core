@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,15 +12,12 @@
 #include "Tezos/BinaryCoding.h"
 #include "Tezos/Forging.h"
 #include "proto/Tezos.pb.h"
-
 #include <TrustWalletCore/TWCoinType.h>
-
 #include <array>
 #include <gtest/gtest.h>
 #include <string>
 
-using namespace TW;
-using namespace TW::Tezos;
+namespace TW::Tezos::tests {
 
 TEST(Forging, ForgeBoolTrue) {
     auto expected = "ff";
@@ -265,3 +262,5 @@ TEST(TezosTransaction, forgeUndelegate) {
 
     ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);
 }
+
+} // namespace TW::Tezos::tests

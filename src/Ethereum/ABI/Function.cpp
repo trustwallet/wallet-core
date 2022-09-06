@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,12 +6,9 @@
 
 #include "Function.h"
 
-#include "../../Data.h"
-
 #include <string>
 
-using namespace TW;
-using namespace TW::Ethereum::ABI;
+namespace TW::Ethereum::ABI {
 
 Data Function::getSignature() const {
     auto typ = getType();
@@ -28,14 +25,18 @@ void Function::encode(Data& data) const {
 
 bool Function::decodeOutput(const Data& encoded, size_t& offset_inout) {
     // read parameter values
-    if (!_outParams.decode(encoded, offset_inout)) { return false; }
+    if (!_outParams.decode(encoded, offset_inout)) {
+        return false;
+    }
     return true;
 }
 
 bool Function::decodeInput(const Data& encoded, size_t& offset_inout) {
     // read 4-byte hash
     auto p = ParamByteArrayFix(4);
-    if (!p.decode(encoded, offset_inout)) { return false; }
+    if (!p.decode(encoded, offset_inout)) {
+        return false;
+    }
     std::vector<byte> hash = p.getVal();
     // adjust offset; hash is NOT padded to 32 bytes
     offset_inout = offset_inout - 32 + 4;
@@ -46,6 +47,10 @@ bool Function::decodeInput(const Data& encoded, size_t& offset_inout) {
         return false;
     }
     // read parameters
-    if (!_inParams.decode(encoded, offset_inout)) { return false; }
+    if (!_inParams.decode(encoded, offset_inout)) {
+        return false;
+    }
     return true;
 }
+
+} // namespace TW::Ethereum::ABI

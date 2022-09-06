@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,29 +6,29 @@
 
 #include "../walletconsole/lib/CommandExecutor.h"
 #include "../walletconsole/lib/WalletConsole.h"
-#include "../walletconsole/lib/Util.h"
 
 #include <sstream>
 #include <cstdio>
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::WalletConsole;
-using namespace std;
+namespace TW::WalletConsole::tests {
 
-// Test some command execution
+using namespace std;
 
 static stringstream outputss;
 static CommandExecutor cmd(outputss);
-static int staticInit() { cmd.init(); return 0; }
+static int staticInit() {
+    cmd.init();
+    return 0;
+}
 static int dummyStatic = staticInit();
 static const string mnemonic1 = "edge defense waste choose enrich upon flee junk siren film clown finish luggage leader kid quick brick print evidence swap drill paddle truly occur";
 
 int countLines(const string& text) {
     int lines = 0;
-    for(auto i = 0ul; i < text.length(); ++i)
-    {
-        if (text[i] == '\n') ++lines;
+    for (auto i = 0ul; i < text.length(); ++i) {
+        if (text[i] == '\n')
+            ++lines;
     }
     return lines;
 }
@@ -41,7 +41,9 @@ TEST(WalletConsole, loopExit) {
 
     stringstream inss;
     stringstream outss;
-    inss << "coin eth" << endl << "newKey" << endl << "exit" << endl;
+    inss << "coin eth" << endl
+         << "newKey" << endl
+         << "exit" << endl;
     TW::WalletConsole::WalletConsole console(inss, outss);
     console.loop();
     string res = outss.str();
@@ -285,7 +287,6 @@ TEST(WalletConsole, dumpdp) {
     }
 }
 
-
 TEST(WalletConsole, dumpXpub) {
     cmd.executeLine("coin btc");
     auto pos1 = outputss.str().length();
@@ -444,7 +445,6 @@ TEST(WalletConsole, fileWriteRead) {
     string res1 = outputss.str().substr(pos1);
     EXPECT_TRUE(res1.find("Written to ") != string::npos);
 
-
     auto pos2 = outputss.str().length();
     cmd.executeLine("fileR " + fileName);
     string res2 = outputss.str().substr(pos2);
@@ -458,14 +458,11 @@ TEST(WalletConsole, fileWriteRead) {
     EXPECT_TRUE(res3.find("already exists, not overwriting") != string::npos);
 
     // clean up created file
-    try
-    {
+    try {
         std::remove(fileName.c_str());
+    } catch (...) {
     }
-    catch(...)
-    {
-    }
-    
+
     auto pos4 = outputss.str().length();
     cmd.executeLine("fileR __NO_SUCH_FILE__");
     string res4 = outputss.str().substr(pos4);
@@ -485,3 +482,5 @@ TEST(WalletConsole, harmonyAddressDerivation) {
     EXPECT_TRUE(res1.find("Result") != string::npos);
     EXPECT_TRUE(res1.find("rror") == string::npos);
 }
+
+} // namespace TW::WalletConsole::tests

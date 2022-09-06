@@ -5,15 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "OperationList.h"
-#include "BinaryCoding.h"
 #include "Forging.h"
-#include "HexCoding.h"
 #include "../Base58.h"
-#include "../proto/Tezos.pb.h"
 
-using namespace TW;
-using namespace TW::Tezos;
-using namespace TW::Tezos::Proto;
+namespace TW::Tezos {
 
 Tezos::OperationList::OperationList(const std::string& str) {
     branch = str;
@@ -53,3 +48,5 @@ Data Tezos::OperationList::forge(const PrivateKey& privateKey) const {
 
     return forged;
 }
+
+} // namespace TW::Tezos

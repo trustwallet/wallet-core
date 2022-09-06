@@ -11,8 +11,7 @@
 #include <gtest/gtest.h>
 #include <string>
 
-using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology::tests {
 
 TEST(OntologyOng, decimals) {
     uint32_t nonce = 0;
@@ -79,3 +78,5 @@ TEST(OntologyOng, withdraw) {
         "2403d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac",
         rawTx);
 }
+
+} // namespace TW::Ontology::tests

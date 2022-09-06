@@ -4,7 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Bitcoin/OutPoint.h"
 #include "Bitcoin/Script.h"
 #include "Hash.h"
 #include "HexCoding.h"
@@ -12,8 +11,6 @@
 #include "proto/Bitcoin.pb.h"
 #include "../interface/TWTestUtilities.h"
 #include "../Bitcoin/TxComparisonHelper.h"
-
-#include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWBitcoinSigHashType.h>
 #include <TrustWalletCore/TWAnySigner.h>
 #include <TrustWalletCore/TWHash.h>
@@ -21,8 +18,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Bitcoin;
+namespace TW::Bitcoin {
 
 TEST(GroestlcoinSigning, SignP2WPKH) {
     Proto::SigningInput input;
@@ -187,3 +183,5 @@ TEST(GroestlcoinSigning, PlanP2WPKH) {
     EXPECT_TRUE(verifyPlan(plan, {4774}, 2500, 145));
     EXPECT_EQ(plan.branch_id(), "");
 }
+
+} // namespace TW::Bitcoin

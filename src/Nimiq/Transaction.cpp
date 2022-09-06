@@ -8,11 +8,8 @@
 
 #include "Signer.h"
 #include "../BinaryCoding.h"
-#include "../HexCoding.h"
-#include "../PublicKey.h"
 
-using namespace TW;
-using namespace TW::Nimiq;
+namespace TW::Nimiq {
 
 const uint8_t NETWORK_ID = 42;
 const uint8_t EMPTY_FLAGS = 0;
@@ -50,3 +47,5 @@ std::vector<uint8_t> Transaction::getPreImage() const {
 
     return data;
 }
+
+} // namespace TW::Nimiq
