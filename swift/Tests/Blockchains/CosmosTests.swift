@@ -8,6 +8,11 @@ import XCTest
 import WalletCore
 
 class CosmosAddressTests: XCTestCase {
+
+    func testChainID() {
+        XCTAssertEqual(CoinType.cosmos.chainId, "cosmoshub-4") // CoinType.cosmos.chainId returns ""
+    }
+
     func testAddressValidation() {
         let cosmos = CoinType.cosmos
         for address in [
