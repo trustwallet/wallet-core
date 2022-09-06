@@ -7,10 +7,7 @@
 #include "OutPoint.h"
 #include "Serialization.h"
 
-#include "../BinaryCoding.h"
-#include "../HexCoding.h"
-
-using namespace TW::Nervos;
+namespace TW::Nervos {
 
 void OutPoint::encode(Data& data) const {
     data.insert(data.end(), txHash.begin(), txHash.end());
@@ -21,3 +18,5 @@ nlohmann::json OutPoint::json() const {
     return nlohmann::json{{"tx_hash", hexEncoded(txHash)},
                           {"index", Serialization::numberToHex(uint64_t(index))}};
 }
+
+} // namespace TW::Nervos

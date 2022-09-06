@@ -7,7 +7,6 @@
 #include "ParamStruct.h"
 #include "ValueEncoder.h"
 #include "ParamFactory.h"
-#include "ParamAddress.h"
 #include <Hash.h>
 #include <HexCoding.h>
 
@@ -17,13 +16,12 @@
 #include <cassert>
 #include <string>
 
-using namespace TW::Ethereum::ABI;
-using namespace TW;
+namespace TW::Ethereum::ABI {
+
 using json = nlohmann::json;
 
 static const Data EipStructPrefix = parse_hex("1901");
 static const auto Eip712Domain = "EIP712Domain";
-
 
 std::string ParamNamed::getType() const {
     return _param->getType() + " " + _name;
@@ -64,7 +62,7 @@ std::string ParamSetNamed::getType() const {
 
 Data ParamSetNamed::encodeHashes() const {
     Data hashes;
-    for (auto p: _params) {
+    for (auto p : _params) {
         append(hashes, p->hashStruct());
     }
     return hashes;
@@ -87,8 +85,8 @@ std::string ParamSetNamed::getExtraTypes(std::vector<std::string>& ignoreList) c
         return lhs.compare(rhs) < 0;
     });
 
-    for (auto& p: params) {
-        auto pType = p->_param->getType();        
+    for (auto& p : params) {
+        auto pType = p->_param->getType();
         if (std::find(ignoreList.begin(), ignoreList.end(), pType) == ignoreList.end()) {
             types += p->getExtraTypes(ignoreList);
             ignoreList.push_back(pType);
@@ -98,7 +96,7 @@ std::string ParamSetNamed::getExtraTypes(std::vector<std::string>& ignoreList) c
 }
 
 std::shared_ptr<ParamNamed> ParamSetNamed::findParamByName(const std::string& name) const {
-    for (auto& p: _params) {
+    for (auto& p : _params) {
         if (p->_name == name) {
             return p;
         }
@@ -181,11 +179,11 @@ Data ParamStruct::hashStructJson(const std::string& messageJson) {
             return Hash::keccak256(hashes);
         }
     }
-    return {};  // fallback
+    return {}; // fallback
 }
 
 std::shared_ptr<ParamStruct> findType(const std::string& typeName, const std::vector<std::shared_ptr<ParamStruct>>& types) {
-    for (auto& t: types) {
+    for (auto& t : types) {
         if (t->getType() == typeName) {
             return t;
         }
@@ -249,7 +247,7 @@ std::shared_ptr<ParamStruct> ParamStruct::makeStruct(const std::string& structTy
                     tmp->setProto(subStruct);
                     params.push_back(std::make_shared<ParamNamed>(name, tmp));
                 } else {
-                    for (const auto& e: value) {
+                    for (const auto& e : value) {
                         auto subStruct = makeStruct(arrayType, e.dump(), typesJson);
                         if (!subStruct) {
                             throw std::invalid_argument("Could not process array sub-struct " + arrayType + " " + e.dump());
@@ -300,7 +298,7 @@ std::shared_ptr<ParamStruct> ParamStruct::makeType(const std::string& structName
             throw std::invalid_argument("Expecting array");
         }
         std::vector<std::shared_ptr<ParamNamed>> params;
-        for(auto& p2: jsonValue) {
+        for (auto& p2 : jsonValue) {
             auto name = p2["name"].get<std::string>();
             auto type = p2["type"].get<std::string>();
             if (name.empty() || type.empty()) {
@@ -383,3 +381,5 @@ std::vector<std::shared_ptr<ParamStruct>> ParamStruct::makeTypes(const std::stri
         throw std::invalid_argument("Could not process Json");
     }
 }
+
+} // namespace TW::Ethereum::ABI

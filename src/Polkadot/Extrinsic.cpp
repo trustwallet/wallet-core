@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,8 +8,7 @@
 #include <TrustWalletCore/TWSS58AddressType.h>
 #include <map>
 
-using namespace TW;
-using namespace TW::Polkadot;
+namespace TW::Polkadot {
 
 static constexpr uint8_t signedBit = 0x80;
 static constexpr uint8_t sigTypeEd25519 = 0x00;
@@ -260,3 +259,5 @@ Data Extrinsic::encodeSignature(const PublicKey& signer, const Data& signature) 
     encodeLengthPrefix(data);
     return data;
 }
+
+} // namespace TW::Polkadot

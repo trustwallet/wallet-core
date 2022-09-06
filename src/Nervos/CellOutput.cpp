@@ -7,10 +7,7 @@
 #include "CellOutput.h"
 #include "Serialization.h"
 
-#include "Serialization.h"
-#include "../BinaryCoding.h"
-
-using namespace TW::Nervos;
+namespace TW::Nervos {
 
 void CellOutput::encode(Data& data) const {
     Data capacityData;
@@ -27,3 +24,5 @@ nlohmann::json CellOutput::json() const {
                           {"lock", lock.json()},
                           {"type", type.json()}};
 }
+
+} // namespace TW::Nervos

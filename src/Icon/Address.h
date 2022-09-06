@@ -23,7 +23,7 @@ class Address {
 
     /// Address data consisting of a prefix byte followed by the public key
     /// hash.
-    std::array<uint8_t, size> bytes;
+    std::array<uint8_t, size> bytes{};
 
     /// Address type.
     enum AddressType type;

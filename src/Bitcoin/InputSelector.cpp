@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,8 +12,7 @@
 #include <optional>
 #include <cassert>
 
-using namespace TW;
-using namespace TW::Bitcoin;
+namespace TW::Bitcoin {
 
 template <typename TypeWithAmount>
 uint64_t InputSelector<TypeWithAmount>::sum(const std::vector<TypeWithAmount>& amounts) noexcept {
@@ -208,3 +207,5 @@ InputSelector<TypeWithAmount>::selectMaxAmount(int64_t byteFee) noexcept {
 
 // Explicitly instantiate
 template class Bitcoin::InputSelector<UTXO>;
+
+} // namespace TW::Bitcoin

@@ -13,8 +13,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology::tests {
 
 TEST(ParamsBuilder, pushInt) {
     std::vector<uint64_t> numVector{0,
@@ -124,3 +123,5 @@ TEST(OntologyOep4, invokeOep4CodeTransfer) {
     auto expectCode = "02fd001496f688657b95be51c11a87b51adfda4ab69e9cbb1457e9d1a61f9aafa798b6c7fbeae35639681d7df653c1087472616e736665726733def739225d0f93dd2aed457d7b1fd074ec31ff";
     EXPECT_EQ(expectCode, hex(invokeCode));
 }
+
+} // namespace TW::Ontology::tests

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,14 +7,11 @@
 #include "Forging.h"
 #include "Address.h"
 #include "BinaryCoding.h"
-#include "../Base58.h"
-#include "../Data.h"
 #include "../HexCoding.h"
 #include "../proto/Tezos.pb.h"
-
 #include <sstream>
 
-using namespace TW;
+namespace TW::Tezos {
 
 namespace {
 
@@ -27,8 +24,6 @@ void encodePrefix(const std::string& address, Data& forged) {
 }
 
 } // namespace
-
-namespace TW::Tezos {
 
 // Forge the given boolean into a hex encoded string.
 Data forgeBool(bool input) {

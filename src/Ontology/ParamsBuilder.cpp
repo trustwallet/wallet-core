@@ -15,8 +15,7 @@
 #include <algorithm>
 #include <list>
 
-using namespace TW;
-using namespace TW::Ontology;
+namespace TW::Ontology {
 
 void ParamsBuilder::buildNeoVmParam(ParamsBuilder& builder, const NeoVmParamValue& param) {
 
@@ -251,3 +250,5 @@ Data ParamsBuilder::buildOep4InvokeCode(const Address& contractAddress, const st
 
     return builder.getBytes();
 }
+
+} // namespace TW::Ontology

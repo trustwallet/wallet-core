@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,8 +10,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Theta;
+namespace TW::Theta::tests {
 
 TEST(ThetaTransaction, Encode) {
     const auto from = Ethereum::Address("0x2E833968E5bB786Ae419c4d13189fB081Cc43bab");
@@ -35,3 +34,5 @@ TEST(ThetaTransaction, EncodeWithSignature) {
               "ccdef053ec7cabd18070325c9c436efe1abbacd14eb7561d3fc10501d9d8949f1233798e905e17356007"
               "1255140b4a8abd3ec6c20a14");
 }
+
+} // namespace TW::Theta::tests

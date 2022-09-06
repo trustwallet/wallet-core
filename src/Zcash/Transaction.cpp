@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,26 +8,23 @@
 
 #include "../Bitcoin/SigHashType.h"
 #include "../BinaryCoding.h"
-#include "../Hash.h"
-#include  "../HexCoding.h"
 
 #include <cassert>
 
-using namespace TW;
-using namespace TW::Zcash;
+namespace TW::Zcash {
 
-const auto sigHashPersonalization = Data({'Z','c','a','s','h','S','i','g','H','a','s','h'});
-const auto prevoutsHashPersonalization = Data({'Z','c','a','s','h','P','r','e','v','o','u','t','H','a','s','h'});
-const auto sequenceHashPersonalization = Data({'Z','c','a','s','h','S','e','q','u','e','n','c','H','a','s','h'});
-const auto outputsHashPersonalization = Data({'Z','c','a','s','h','O','u','t','p','u','t','s','H','a','s','h'});
-const auto joinsplitsHashPersonalization = Data({'Z','c','a','s','h','J','S','p','l','i','t','s','H','a','s','h'});
-const auto shieldedSpendHashPersonalization = Data({'Z','c','a','s','h','S','S','p','e','n','d','s','H','a','s','h'});
-const auto shieldedOutputsHashPersonalization = Data({'Z','c','a','s','h','S','O','u','t','p','u','t','H','a','s','h'});
+const auto sigHashPersonalization = Data({'Z', 'c', 'a', 's', 'h', 'S', 'i', 'g', 'H', 'a', 's', 'h'});
+const auto prevoutsHashPersonalization = Data({'Z', 'c', 'a', 's', 'h', 'P', 'r', 'e', 'v', 'o', 'u', 't', 'H', 'a', 's', 'h'});
+const auto sequenceHashPersonalization = Data({'Z', 'c', 'a', 's', 'h', 'S', 'e', 'q', 'u', 'e', 'n', 'c', 'H', 'a', 's', 'h'});
+const auto outputsHashPersonalization = Data({'Z', 'c', 'a', 's', 'h', 'O', 'u', 't', 'p', 'u', 't', 's', 'H', 'a', 's', 'h'});
+const auto joinsplitsHashPersonalization = Data({'Z', 'c', 'a', 's', 'h', 'J', 'S', 'p', 'l', 'i', 't', 's', 'H', 'a', 's', 'h'});
+const auto shieldedSpendHashPersonalization = Data({'Z', 'c', 'a', 's', 'h', 'S', 'S', 'p', 'e', 'n', 'd', 's', 'H', 'a', 's', 'h'});
+const auto shieldedOutputsHashPersonalization = Data({'Z', 'c', 'a', 's', 'h', 'S', 'O', 'u', 't', 'p', 'u', 't', 'H', 'a', 's', 'h'});
 
 /// See https://github.com/zcash/zips/blob/master/zip-0205.rst#sapling-deployment BRANCH_ID section
-const std::array<TW::byte, 4> Zcash::SaplingBranchID = {0xbb, 0x09, 0xb8, 0x76};
+const std::array<TW::byte, 4> SaplingBranchID = {0xbb, 0x09, 0xb8, 0x76};
 /// See https://github.com/zcash/zips/blob/master/zip-0206.rst#blossom-deployment BRANCH_ID section
-const std::array<TW::byte, 4> Zcash::BlossomBranchID = {0x60, 0x0e, 0xb4, 0x2b};
+const std::array<TW::byte, 4> BlossomBranchID = {0x60, 0x0e, 0xb4, 0x2b};
 
 Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType,
                               uint64_t amount) const {
@@ -214,3 +211,5 @@ Bitcoin::Proto::Transaction Transaction::proto() const {
 
     return protoTx;
 }
+
+} // namespace TW::Zcash

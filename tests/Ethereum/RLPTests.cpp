@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,23 +9,25 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Ethereum;
+namespace TW::Ethereum::tests {
+
 using boost::multiprecision::uint256_t;
 
 std::string stringifyItems(const RLP::DecodedItem& di);
 
 std::string stringifyData(const Data& data) {
-    if (data.size() == 0) return "0";
+    if (data.size() == 0)
+        return "0";
     // try if only letters
     bool isLettersOnly = true;
-    for(auto i: data) {
+    for (auto i : data) {
         if (!((i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z') || i == ' ' || i == ',')) {
             isLettersOnly = false;
             break;
         }
     }
-    if (isLettersOnly) return std::string("'") + std::string(data.begin(), data.end()) + "'";
+    if (isLettersOnly)
+        return std::string("'") + std::string(data.begin(), data.end()) + "'";
     // try if it can be parsed (recursive)
     if (data.size() >= 2) {
         try {
@@ -33,7 +35,8 @@ std::string stringifyData(const Data& data) {
             if (di.decoded.size() > 0 && di.remainder.size() == 0) {
                 return stringifyItems(di);
             }
-        } catch (...) {}
+        } catch (...) {
+        }
     }
     // any other: as hex string
     return hex(data);
@@ -49,8 +52,9 @@ std::string stringifyItems(const RLP::DecodedItem& di) {
     }
     std::string res = "(" + std::to_string(n) + ": ";
     int count = 0;
-    for(auto i: di.decoded) {
-        if (count++) res += " ";
+    for (auto i : di.decoded) {
+        if (count++)
+            res += " ";
         res += stringifyData(i);
     }
     res += ")";
@@ -95,16 +99,13 @@ TEST(RLP, EncodeUInt256) {
     EXPECT_EQ(hex(RLP::encode(uint256_t(0xffffffffffffffULL))), "87ffffffffffffff");
     EXPECT_EQ(
         hex(RLP::encode(uint256_t("0x102030405060708090a0b0c0d0e0f2"))),
-        "8f102030405060708090a0b0c0d0e0f2"
-    );
+        "8f102030405060708090a0b0c0d0e0f2");
     EXPECT_EQ(
         hex(RLP::encode(uint256_t("0x0100020003000400050006000700080009000a000b000c000d000e01"))),
-        "9c0100020003000400050006000700080009000a000b000c000d000e01"
-    );
+        "9c0100020003000400050006000700080009000a000b000c000d000e01");
     EXPECT_EQ(
         hex(RLP::encode(uint256_t("0x0100000000000000000000000000000000000000000000000000000000000000"))),
-        "a00100000000000000000000000000000000000000000000000000000000000000"
-    );
+        "a00100000000000000000000000000000000000000000000000000000000000000");
 }
 
 TEST(RLP, EncodeList) {
@@ -161,7 +162,7 @@ TEST(RLP, DecodeString) {
     EXPECT_EQ(decodeHelper("a00100000000000000000000000000000000000000000000000000000000000000"), "0100000000000000000000000000000000000000000000000000000000000000");
     // long string
     EXPECT_EQ(decodeHelper("b87674686973206973206120612076657279206c6f6e6720737472696e672c2074686973206973206120612076657279206c6f6e6720737472696e672c2074686973206973206120612076657279206c6f6e6720737472696e672c2074686973206973206120612076657279206c6f6e6720737472696e67"),
-        "'this is a a very long string, this is a a very long string, this is a a very long string, this is a a very long string'");
+              "'this is a a very long string, this is a a very long string, this is a a very long string, this is a a very long string'");
 }
 
 TEST(RLP, DecodeList) {
@@ -174,40 +175,39 @@ TEST(RLP, DecodeList) {
 
     // long list, raw ether transfer tx
     EXPECT_EQ(decodeHelper("f86b81a985051f4d5ce982520894515778891c99e3d2e7ae489980cb7c77b37b5e76861b48eb57e0008025a0ad01c32a7c974df9d0bd48c8d7e0ecab62e90811917aa7dc0c966751a0c3f475a00dc77d9ec68484481bdf87faac14378f4f18d477f84c0810d29480372c1bbc65"),
-        "(9: "
-        "a9 "                                                               // nonce
-        "051f4d5ce9 "                                                       // gas price
-        "5208 "                                                             // gas limit
-        "515778891c99e3d2e7ae489980cb7c77b37b5e76 "                         // to
-        "1b48eb57e000 "                                                     // amount
-        "0 "                                                                // data
-        "25 "                                                               // v
-        "ad01c32a7c974df9d0bd48c8d7e0ecab62e90811917aa7dc0c966751a0c3f475 " // r
-        "0dc77d9ec68484481bdf87faac14378f4f18d477f84c0810d29480372c1bbc65"  // s
-        ")"
-    );
+              "(9: "
+              "a9 "                                                               // nonce
+              "051f4d5ce9 "                                                       // gas price
+              "5208 "                                                             // gas limit
+              "515778891c99e3d2e7ae489980cb7c77b37b5e76 "                         // to
+              "1b48eb57e000 "                                                     // amount
+              "0 "                                                                // data
+              "25 "                                                               // v
+              "ad01c32a7c974df9d0bd48c8d7e0ecab62e90811917aa7dc0c966751a0c3f475 " // r
+              "0dc77d9ec68484481bdf87faac14378f4f18d477f84c0810d29480372c1bbc65"  // s
+              ")");
 
     // long list, raw token transfer tx
     EXPECT_EQ(decodeHelper("f8aa81d485077359400082db9194dac17f958d2ee523a2206206994597c13d831ec780b844a9059cbb000000000000000000000000c6b6b55c8c4971145a842cc4e5db92d879d0b3e00000000000000000000000000000000000000000000000000000000002faf0801ca02843d8ed66b9623392dc336dd36d5dd5a630b2019962869b6e50fdb4ecb5b6aca05d9ea377bc65e2921f7fc257de8135530cc74e3188b6ba57a4b9cb284393050a"),
-        "(9: "
-        "d4 "
-        "0773594000 "
-        "db91 "
-        "dac17f958d2ee523a2206206994597c13d831ec7 "
-        "0 "
-        "a9059cbb000000000000000000000000c6b6b55c8c4971145a842cc4e5db92d879d0b3e00000000000000000000000000000000000000000000000000000000002faf080 "
-        "1c "
-        "2843d8ed66b9623392dc336dd36d5dd5a630b2019962869b6e50fdb4ecb5b6ac "
-        "5d9ea377bc65e2921f7fc257de8135530cc74e3188b6ba57a4b9cb284393050a"
-        ")"
-    );
+              "(9: "
+              "d4 "
+              "0773594000 "
+              "db91 "
+              "dac17f958d2ee523a2206206994597c13d831ec7 "
+              "0 "
+              "a9059cbb000000000000000000000000c6b6b55c8c4971145a842cc4e5db92d879d0b3e00000000000000000000000000000000000000000000000000000000002faf080 "
+              "1c "
+              "2843d8ed66b9623392dc336dd36d5dd5a630b2019962869b6e50fdb4ecb5b6ac "
+              "5d9ea377bc65e2921f7fc257de8135530cc74e3188b6ba57a4b9cb284393050a"
+              ")");
 
     {
         // long list, with 2-byte size
         const std::string elem = "0123";
         const std::size_t n = 500;
         std::vector<std::string> longarr;
-        for (auto i = 0ul; i < n; ++i) longarr.push_back(elem);
+        for (auto i = 0ul; i < n; ++i)
+            longarr.push_back(elem);
 
         const Data encoded = RLP::encodeList(longarr);
         ASSERT_EQ(hex(subData(encoded, 0, 20)), "f909c48430313233843031323384303132338430");
@@ -223,7 +223,8 @@ TEST(RLP, DecodeList) {
         const std::string elem = "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789";
         const std::size_t n = 650;
         std::vector<std::string> longarr;
-        for (auto i = 0ul; i < n; ++i) longarr.push_back(elem);
+        for (auto i = 0ul; i < n; ++i)
+            longarr.push_back(elem);
 
         const Data encoded = RLP::encodeList(longarr);
         ASSERT_EQ(encoded.size(), 66304ul);
@@ -235,7 +236,7 @@ TEST(RLP, DecodeList) {
 
     // nested list
     EXPECT_EQ(decodeHelper("f8479cdb84c301020395d4856170706c658662616e616e6186636865727279a9e890cf83abcdef8a0001020304050607080996d587626974636f696e88626565656e62656583657468"),
-        "(2: (2: (3: 01 02 03) (3: 'apple' 'banana' 'cherry')) (2: (2: abcdef 00010203040506070809) (3: 'bitcoin' 'beeenbee' 'eth')))");
+              "(2: (2: (3: 01 02 03) (3: 'apple' 'banana' 'cherry')) (2: (2: abcdef 00010203040506070809) (3: 'bitcoin' 'beeenbee' 'eth')))");
 }
 
 TEST(RLP, DecodeInvalid) {
@@ -295,9 +296,11 @@ TEST(RLP, parseVarInt) {
     EXPECT_EQ(hex(store(RLP::parseVarInt(7, parse_hex("01020304050607"), 0))), "01020304050607");
     EXPECT_EQ(hex(store(RLP::parseVarInt(8, parse_hex("0102030405060708"), 0))), "0102030405060708");
     EXPECT_EQ(hex(store(RLP::parseVarInt(8, parse_hex("abcd0102030405060708"), 2))), "0102030405060708");
-    EXPECT_THROW(RLP::parseVarInt(0, parse_hex("01"), 0), std::invalid_argument); // wrong size
+    EXPECT_THROW(RLP::parseVarInt(0, parse_hex("01"), 0), std::invalid_argument);                 // wrong size
     EXPECT_THROW(RLP::parseVarInt(9, parse_hex("010203040506070809"), 0), std::invalid_argument); // wrong size
-    EXPECT_THROW(RLP::parseVarInt(4, parse_hex("0102"), 0), std::invalid_argument); // too short
-    EXPECT_THROW(RLP::parseVarInt(4, parse_hex("01020304"), 2), std::invalid_argument); // too short
-    EXPECT_THROW(RLP::parseVarInt(2, parse_hex("0002"), 0), std::invalid_argument); // starts with 0
+    EXPECT_THROW(RLP::parseVarInt(4, parse_hex("0102"), 0), std::invalid_argument);               // too short
+    EXPECT_THROW(RLP::parseVarInt(4, parse_hex("01020304"), 2), std::invalid_argument);           // too short
+    EXPECT_THROW(RLP::parseVarInt(2, parse_hex("0002"), 0), std::invalid_argument);               // starts with 0
 }
+
+} // namespace TW::Ethereum::tests

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,21 +8,19 @@
 
 #include "Codec.h"
 
-using namespace TW;
-using namespace TW::Elrond;
+namespace TW::Elrond {
 
 const int TX_VERSION = 1;
 
-TransactionFactory::TransactionFactory() : 
-    TransactionFactory(NetworkConfig::GetDefault()) {
+TransactionFactory::TransactionFactory()
+    : TransactionFactory(NetworkConfig::GetDefault()) {
 }
 
-TransactionFactory::TransactionFactory(const NetworkConfig& networkConfig) : 
-    networkConfig(networkConfig),
-    gasEstimator(networkConfig) {
+TransactionFactory::TransactionFactory(const NetworkConfig& networkConfig)
+    : networkConfig(networkConfig), gasEstimator(networkConfig) {
 }
 
-Transaction TransactionFactory::create(const Proto::SigningInput &input) {
+Transaction TransactionFactory::create(const Proto::SigningInput& input) {
     if (input.has_egld_transfer()) {
         return fromEGLDTransfer(input);
     } else if (input.has_esdt_transfer()) {
@@ -35,7 +33,7 @@ Transaction TransactionFactory::create(const Proto::SigningInput &input) {
 }
 
 /// Copies the input fields into a transaction object, without any other logic.
-Transaction TransactionFactory::fromGenericAction(const Proto::SigningInput &input) {
+Transaction TransactionFactory::fromGenericAction(const Proto::SigningInput& input) {
     auto action = input.generic_action();
 
     Transaction transaction;
@@ -55,7 +53,7 @@ Transaction TransactionFactory::fromGenericAction(const Proto::SigningInput &inp
     return transaction;
 }
 
-Transaction TransactionFactory::fromEGLDTransfer(const Proto::SigningInput &input) {
+Transaction TransactionFactory::fromEGLDTransfer(const Proto::SigningInput& input) {
     auto transfer = input.egld_transfer();
 
     uint64_t estimatedGasLimit = this->gasEstimator.forEGLDTransfer(0);
@@ -75,12 +73,12 @@ Transaction TransactionFactory::fromEGLDTransfer(const Proto::SigningInput &inpu
     return transaction;
 }
 
-Transaction TransactionFactory::fromESDTTransfer(const Proto::SigningInput &input) {
+Transaction TransactionFactory::fromESDTTransfer(const Proto::SigningInput& input) {
     auto transfer = input.esdt_transfer();
 
     std::string encodedTokenIdentifier = Codec::encodeString(transfer.token_identifier());
     std::string encodedAmount = Codec::encodeBigInt(transfer.amount());
-    std::string data = prepareFunctionCall("ESDTTransfer", { encodedTokenIdentifier, encodedAmount });
+    std::string data = prepareFunctionCall("ESDTTransfer", {encodedTokenIdentifier, encodedAmount});
     uint64_t estimatedGasLimit = this->gasEstimator.forESDTTransfer(data.size());
 
     Transaction transaction;
@@ -99,16 +97,16 @@ Transaction TransactionFactory::fromESDTTransfer(const Proto::SigningInput &inpu
     return transaction;
 }
 
-Transaction TransactionFactory::fromESDTNFTTransfer(const Proto::SigningInput &input) {
+Transaction TransactionFactory::fromESDTNFTTransfer(const Proto::SigningInput& input) {
     auto transfer = input.esdtnft_transfer();
 
     std::string encodedCollection = Codec::encodeString(transfer.token_collection());
     std::string encodedNonce = Codec::encodeUint64(transfer.token_nonce());
     std::string encodedQuantity = Codec::encodeBigInt(transfer.amount());
     std::string encodedReceiver = Codec::encodeAddress(transfer.accounts().receiver());
-    std::string data = prepareFunctionCall("ESDTNFTTransfer", { encodedCollection, encodedNonce, encodedQuantity, encodedReceiver });
+    std::string data = prepareFunctionCall("ESDTNFTTransfer", {encodedCollection, encodedNonce, encodedQuantity, encodedReceiver});
     uint64_t estimatedGasLimit = this->gasEstimator.forESDTNFTTransfer(data.size());
-    
+
     Transaction transaction;
     transaction.nonce = transfer.accounts().sender_nonce();
     // For NFT, SFT and MetaESDT, transaction.sender == transaction.receiver.
@@ -149,3 +147,5 @@ std::string TransactionFactory::prepareFunctionCall(const std::string& function,
 
     return result;
 }
+
+} // namespace TW::Elrond

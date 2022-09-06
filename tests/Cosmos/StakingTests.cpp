@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,11 +11,9 @@
 #include "HexCoding.h"
 #include "proto/Cosmos.pb.h"
 #include "../interface/TWTestUtilities.h"
-
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Cosmos;
+namespace TW::Cosmos::tests {
 
 TEST(CosmosStaking, CompoundingAuthz) {
     // Successfully broadcasted https://www.mintscan.io/cosmos/txs/C4629BC7C88690518D8F448E7A8D239C9D63975B11F8E1CE2F95CC2ADA3CCF67
@@ -244,3 +242,5 @@ TEST(CosmosStaking, Withdraw) {
         EXPECT_EQ(hex(signingOutput.serialized()), "");
     }
 }
+
+} // namespace TW::Cosmos::tests

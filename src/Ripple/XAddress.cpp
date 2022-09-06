@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,12 +7,10 @@
 #include "XAddress.h"
 
 #include "../Base58.h"
-#include  "../BinaryCoding.h"
-#include  "../Data.h"
+#include "../BinaryCoding.h"
 #include <TrezorCrypto/ecdsa.h>
 
-using namespace TW;
-using namespace TW::Ripple;
+namespace TW::Ripple {
 
 const Data prefixMainnet = {0x05, 0x44};
 
@@ -21,7 +19,7 @@ bool XAddress::isValid(const std::string& string) {
     if (decoded.size() != XAddress::size) {
         return false;
     }
-    if(!std::equal(decoded.begin(), decoded.begin() + 2, prefixMainnet.begin())) {
+    if (!std::equal(decoded.begin(), decoded.begin() + 2, prefixMainnet.begin())) {
         return false;
     }
     if (!(decoded[22] == byte(TagFlag::none) || decoded[22] == byte(TagFlag::classic))) {
@@ -45,12 +43,13 @@ XAddress::XAddress(const std::string& string) {
     }
 }
 
-XAddress::XAddress(const PublicKey& publicKey, const uint32_t destination): tag(destination) {
+XAddress::XAddress(const PublicKey& publicKey, const uint32_t destination)
+    : tag(destination) {
     ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.data());
 }
 
 std::string XAddress::string() const {
-    /// see https://github.com/ripple/ripple-address-codec/blob/master/src/index.ts
+    /// \see https://github.com/ripple/ripple-address-codec/blob/master/src/index.ts
     /// base58check(2 bytes prefix + 20 bytes keyhash + 1 byte flag + 4 bytes + 32bit tag + 4 bytes reserved)
     Data result;
     append(result, prefixMainnet);
@@ -60,3 +59,5 @@ std::string XAddress::string() const {
     append(result, Data{0x00, 0x00, 0x00, 0x00});
     return Base58::ripple.encodeCheck(result);
 }
+
+} // namespace TW::Ripple

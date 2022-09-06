@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,14 +11,13 @@
 
 #include <google/protobuf/util/json_util.h>
 
-using namespace TW;
-using namespace TW::Algorand;
+namespace TW::Algorand {
 
 const Data TRANSACTION_TAG = {84, 88};
 const std::string TRANSACTION_PAY = "pay";
 const std::string ASSET_TRANSACTION = "axfer";
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto protoOutput = Proto::SigningOutput();
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto pubkey = key.getPublicKey(TWPublicKeyTypeED25519);
@@ -35,7 +34,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
         auto to = Address(message.to_address());
 
         auto transaction = Transfer(from, to, fee, message.amount(), firstRound,
-                                       lastRound, note, TRANSACTION_PAY, genesisId, genesisHash);
+                                    lastRound, note, TRANSACTION_PAY, genesisId, genesisHash);
         auto signature = sign(key, transaction);
         auto serialized = transaction.BaseTransaction::serialize(signature);
         protoOutput.set_encoded(serialized.data(), serialized.size());
@@ -45,8 +44,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
 
         auto transaction =
             AssetTransfer(from, to, fee, message.amount(),
-                                            message.asset_id(), firstRound, lastRound, note,
-                                    ASSET_TRANSACTION,genesisId, genesisHash);
+                          message.asset_id(), firstRound, lastRound, note,
+                          ASSET_TRANSACTION, genesisId, genesisHash);
         auto signature = sign(key, transaction);
         auto serialized = transaction.BaseTransaction::serialize(signature);
         protoOutput.set_encoded(serialized.data(), serialized.size());
@@ -55,12 +54,12 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
 
         auto transaction = OptInAssetTransaction(from, fee, message.asset_id(),
                                                  firstRound, lastRound, note,
-                                                 ASSET_TRANSACTION,genesisId, genesisHash);
+                                                 ASSET_TRANSACTION, genesisId, genesisHash);
         auto signature = sign(key, transaction);
         auto serialized = transaction.BaseTransaction::serialize(signature);
         protoOutput.set_encoded(serialized.data(), serialized.size());
     }
-    
+
     return protoOutput;
 }
 
@@ -78,3 +77,5 @@ Data Signer::sign(const PrivateKey& privateKey, const BaseTransaction& transacti
     auto signature = privateKey.sign(data, TWCurveED25519);
     return Data(signature.begin(), signature.end());
 }
+
+} // namespace TW::Algorand

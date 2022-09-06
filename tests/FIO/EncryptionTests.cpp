@@ -15,8 +15,8 @@
 
 #include <stdlib.h>
 
-using namespace TW;
-using namespace TW::FIO;
+namespace TW::FIO::tests {
+
 using namespace std;
 
 TEST(FIOEncryption, checkEncrypt) {
@@ -24,7 +24,7 @@ TEST(FIOEncryption, checkEncrypt) {
     const Data secret = parse_hex("02332627b9325cb70510a70f0f6be4bcb008fbbc7893ca51dedf5bf46aa740c0fc9d3fbd737d09a3c4046d221f4f1a323f515332c3fef46e7f075db561b1a2c9");
     const Data plaintext = TW::data("secret message");
     Data iv = parse_hex("f300888ca4f512cebdc0020ff0f7224c");
-        
+
     Data result = Encryption::checkEncrypt(secret, plaintext, iv);
     EXPECT_EQ(hex(result), "f300888ca4f512cebdc0020ff0f7224c7f896315e90e172bed65d005138f224da7301d5563614e3955750e4480aabf7753f44b4975308aeb8e23c31e114962ab");
 }
@@ -34,7 +34,7 @@ TEST(FIOEncryption, checkDecrypt) {
     const Data secret = parse_hex("02332627b9325cb70510a70f0f6be4bcb008fbbc7893ca51dedf5bf46aa740c0fc9d3fbd737d09a3c4046d221f4f1a323f515332c3fef46e7f075db561b1a2c9");
     const Data encrypted = parse_hex("f300888ca4f512cebdc0020ff0f7224c7f896315e90e172bed65d005138f224da7301d5563614e3955750e4480aabf7753f44b4975308aeb8e23c31e114962ab");
     const Data expectedPlaintext = TW::data("secret message");
-        
+
     Data result = Encryption::checkDecrypt(secret, encrypted);
     EXPECT_EQ(hex(result), hex(expectedPlaintext));
 }
@@ -53,7 +53,7 @@ TEST(FIOEncryption, checkEncryptInvalidIvLength) {
 TEST(FIOEncryption, checkDecryptInvalidMessageHMAC) {
     const Data secret = parse_hex("02332627b9325cb70510a70f0f6be4bcb008fbbc7893ca51dedf5bf46aa740c0fc9d3fbd737d09a3c4046d221f4f1a323f515332c3fef46e7f075db561b1a2c9");
     const Data encrypted = parse_hex("f300888ca4f512cebdc0020ff0f7224c7f896315e90e172bed65d005138f224da7301d5563614e3955750e4480aabf7753f44b4975308aeb8e23c31e114962ab00");
-    try {       
+    try {
         Encryption::checkDecrypt(secret, encrypted);
     } catch (std::invalid_argument&) {
         // expected exception, OK
@@ -64,7 +64,7 @@ TEST(FIOEncryption, checkDecryptInvalidMessageHMAC) {
 
 TEST(FIOEncryption, checkDecryptMessageTooShort) {
     const Data secret = parse_hex("02332627b9325cb70510a70f0f6be4bcb008fbbc7893ca51dedf5bf46aa740c0fc9d3fbd737d09a3c4046d221f4f1a323f515332c3fef46e7f075db561b1a2c9");
-    try {       
+    try {
         Encryption::checkDecrypt(secret, Data(60));
     } catch (std::invalid_argument&) {
         // expected exception, OK
@@ -170,7 +170,7 @@ TEST(FIOEncryption, encryptEncodeDecodeDecrypt) {
     EXPECT_EQ(addressBob.string(), "FIO5VE6Dgy9FUmd1mFotXwF88HkQN1KysCWLPqpVnDMjRvGRi1YrM");
     const Data message = parse_hex("0b70757273652e616c69636501310a66696f2e7265716f6274000000");
     const Data iv = parse_hex("f300888ca4f512cebdc0020ff0f7224c");
-        
+
     const Data encrypted = Encryption::encrypt(privateKeyAlice, publicKeyBob, message, iv);
     EXPECT_EQ(hex(encrypted), "f300888ca4f512cebdc0020ff0f7224c0db2984c4ad9afb12629f01a8c6a76328bbde17405655dc4e3cb30dad272996fb1dea8e662e640be193e25d41147a904c571b664a7381ab41ef062448ac1e205");
     const string encoded = Encryption::encode(encrypted);
@@ -182,3 +182,5 @@ TEST(FIOEncryption, encryptEncodeDecodeDecrypt) {
     // verify that decrypted is the same as the original
     EXPECT_EQ(hex(decrypted), hex(message));
 }
+
+} // namespace TW::FIO::tests

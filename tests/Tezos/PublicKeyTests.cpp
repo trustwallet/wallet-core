@@ -12,8 +12,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Tezos;
+namespace TW::Tezos::tests {
 
 TEST(TezosPublicKey, forge) {
     auto input = parsePublicKey("edpkuAfEJCEatRgFpRGg3gn3FdWniLXBoubARreRwuVZPWufkgDBvR");
@@ -29,3 +28,5 @@ TEST(TezosPublicKey, parse) {
     auto expected = PublicKey(bytes, TWPublicKeyTypeED25519);
     ASSERT_EQ(output, expected);
 }
+
+} // namespace TW::Tezos::tests

@@ -1,35 +1,26 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Script.h"
-
 #include "Address.h"
 #include "CashAddress.h"
+#include "OpCodes.h"
+#include "Script.h"
 #include "SegwitAddress.h"
 
-#include "../Base58.h"
-#include "../Coin.h"
-
 #include "../BinaryCoding.h"
-#include "../Data.h"
+#include "../Coin.h"
 #include "../Decred/Address.h"
 #include "../Groestlcoin/Address.h"
-#include "../Hash.h"
-#include "../PublicKey.h"
 #include "../Zcash/TAddress.h"
-
-#include "OpCodes.h"
 
 #include <algorithm>
 #include <iterator>
 #include <cassert>
-#include <set>
 
-using namespace TW;
-using namespace TW::Bitcoin;
+namespace TW::Bitcoin {
 
 Data Script::hash() const {
     return Hash::ripemd(Hash::sha256(bytes));
@@ -350,3 +341,5 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
     }
     return {};
 }
+
+} // namespace TW::Bitcoin

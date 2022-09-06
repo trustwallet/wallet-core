@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,18 +9,15 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Base32;
+namespace TW::Base32::tests {
 
-void TestBase32Encode(const char* decoded_hex, const char* expected_encoded_in, const char* alphabet_in = nullptr)
-{
+void TestBase32Encode(const char* decoded_hex, const char* expected_encoded_in, const char* alphabet_in = nullptr) {
     auto decoded = parse_hex(std::string(decoded_hex));
     auto encoded = encode(decoded, alphabet_in);
     ASSERT_EQ(std::string(expected_encoded_in), encoded);
 }
 
-void TestBase32Decode(const char* encoded_in, const char* expected_decoded_hex, const char* alphabet_in = nullptr)
-{
+void TestBase32Decode(const char* encoded_in, const char* expected_decoded_hex, const char* alphabet_in = nullptr) {
     Data decoded;
     bool res = decode(std::string(encoded_in), decoded, alphabet_in);
     ASSERT_TRUE(res);
@@ -33,7 +30,7 @@ TEST(Base32, Encode) {
     TestBase32Encode("010203", "AEBAG");
     TestBase32Encode("", "");
     TestBase32Encode(
-        "48450c2745890def7da06fc2551f912a14f9fc581c12db6e4d6f73f2fd0b2ad50df3d396", 
+        "48450c2745890def7da06fc2551f912a14f9fc581c12db6e4d6f73f2fd0b2ad50df3d396",
         "JBCQYJ2FREG667NAN7BFKH4RFIKPT7CYDQJNW3SNN5Z7F7ILFLKQ346TSY");
     TestBase32Encode(
         "3dd160d60673bd9b13adc25dad5d988d0d9f4ccdbe95a2122f9ef28b3ce4e89693074620",
@@ -49,7 +46,7 @@ TEST(Base32, Decode) {
     TestBase32Decode("", "");
     TestBase32Decode(
         "JBCQYJ2FREG667NAN7BFKH4RFIKPT7CYDQJNW3SNN5Z7F7ILFLKQ346TSY",
-        "48450c2745890def7da06fc2551f912a14f9fc581c12db6e4d6f73f2fd0b2ad50df3d396"); 
+        "48450c2745890def7da06fc2551f912a14f9fc581c12db6e4d6f73f2fd0b2ad50df3d396");
     TestBase32Decode(
         "HXIWBVQGOO6ZWE5NYJO22XMYRUGZ6TGNX2K2EERPT3ZIWPHE5CLJGB2GEA",
         "3dd160d60673bd9b13adc25dad5d988d0d9f4ccdbe95a2122f9ef28b3ce4e89693074620");
@@ -66,7 +63,9 @@ TEST(Base32, EncodeNimiq) {
 
 TEST(Base32, DecodeInvalid) {
     Data decoded;
-    ASSERT_FALSE(decode("+-", decoded)); // invalid characters
-    ASSERT_FALSE(decode("A", decoded)); // invalid odd length
+    ASSERT_FALSE(decode("+-", decoded));  // invalid characters
+    ASSERT_FALSE(decode("A", decoded));   // invalid odd length
     ASSERT_FALSE(decode("ABC", decoded)); // invalid odd length
 }
+
+} // namespace TW::Base32::tests

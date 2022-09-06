@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,7 +8,7 @@
 
 #include "../BinaryCoding.h"
 
-using namespace TW::Bitcoin;
+namespace TW::Bitcoin {
 
 void TransactionInput::encode(Data& data) const {
     auto& outpoint = reinterpret_cast<const TW::Bitcoin::OutPoint&>(previousOutput);
@@ -24,3 +24,5 @@ void TransactionInput::encodeWitness(Data& data) const {
         std::copy(std::begin(item), std::end(item), std::back_inserter(data));
     }
 }
+
+} // namespace TW::Bitcoin

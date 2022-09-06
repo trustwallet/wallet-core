@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -15,9 +15,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Ethereum;
-using namespace TW::Ethereum::ABI;
+namespace TW::Ethereum {
 
 TEST(TWEthereumSigner, EmptyValue) {
     auto str = std::string("");
@@ -80,7 +78,7 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsERC20) {
     auto chainId = store(uint256_t(1));
     auto nonce = store(uint256_t(0));
     auto gasPrice = store(uint256_t(42000000000)); // 0x09c7652400
-    auto gasLimit = store(uint256_t(78009)); // 130B9
+    auto gasLimit = store(uint256_t(78009));       // 130B9
     auto toAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84";
     auto token = "0x6b175474e89094c44da98b954eedeac495271d0f"; // DAI
     auto amount = uint256_t(2000000000000000000);
@@ -111,10 +109,9 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsERC20) {
     // expected payload
     Data payload;
     {
-        auto func = Function("transfer", std::vector<std::shared_ptr<ParamBase>>{
-            std::make_shared<ParamAddress>(parse_hex(toAddress)),
-            std::make_shared<ParamUInt256>(amount)
-        });
+        auto func = ABI::Function("transfer", std::vector<std::shared_ptr<ABI::ParamBase>>{
+                                             std::make_shared<ABI::ParamAddress>(parse_hex(toAddress)),
+                                             std::make_shared<ABI::ParamUInt256>(amount)});
         func.encode(payload);
     }
     ASSERT_EQ(hex(output.data()), hex(payload));
@@ -124,8 +121,8 @@ TEST(TWAnySignerEthereum, SignERC20TransferAsERC20) {
 TEST(TWAnySignerEthereum, SignERC20TransferAsGenericContract) {
     auto chainId = store(uint256_t(1));
     auto nonce = store(uint256_t(0));
-    auto gasPrice = store(uint256_t(42000000000)); // 0x09c7652400
-    auto gasLimit = store(uint256_t(78009)); // 130B9
+    auto gasPrice = store(uint256_t(42000000000));                 // 0x09c7652400
+    auto gasLimit = store(uint256_t(78009));                       // 130B9
     auto toAddress = "0x6b175474e89094c44da98b954eedeac495271d0f"; // DAI
     // payload: transfer(0x5322b34c88ed0691971bf52a7047448f0f4efc84, 2000000000000000000)
     auto data = parse_hex("0xa9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000");
@@ -157,7 +154,7 @@ TEST(TWAnySignerEthereum, SignERC20TransferInvalidAddress) {
     auto chainId = store(uint256_t(1));
     auto nonce = store(uint256_t(0));
     auto gasPrice = store(uint256_t(42000000000)); // 0x09c7652400
-    auto gasLimit = store(uint256_t(78009)); // 130B9
+    auto gasLimit = store(uint256_t(78009));       // 130B9
     auto invalidAddress = "0xdeadbeef";
     auto amount = store(uint256_t(2000000000000000000));
     auto key = parse_hex("0x608dcb1742bb3fb7aec002074e3420e4fab7d00cced79ccdac53ed5b27138151");
@@ -185,7 +182,7 @@ TEST(TWAnySignerEthereum, SignERC20Approve) {
     auto chainId = store(uint256_t(1));
     auto nonce = store(uint256_t(0));
     auto gasPrice = store(uint256_t(42000000000)); // 0x09c7652400
-    auto gasLimit = store(uint256_t(78009)); // 130B9
+    auto gasLimit = store(uint256_t(78009));       // 130B9
     auto spenderAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84";
     auto token = "0x6b175474e89094c44da98b954eedeac495271d0f"; // DAI
     auto amount = store(uint256_t(2000000000000000000));
@@ -286,13 +283,12 @@ TEST(TWAnySignerEthereum, SignERC1155Transfer) {
     // expected payload
     Data payload;
     {
-        auto func = Function("safeTransferFrom", std::vector<std::shared_ptr<ParamBase>>{
-            std::make_shared<ParamAddress>(parse_hex(fromAddress)),
-            std::make_shared<ParamAddress>(parse_hex(toAddress)),
-            std::make_shared<ParamUInt256>(uint256_t(0x23c47ee5)),
-            std::make_shared<ParamUInt256>(value),
-            std::make_shared<ParamByteArray>(data)
-        });
+        auto func = ABI::Function("safeTransferFrom", std::vector<std::shared_ptr<ABI::ParamBase>>{
+                                                     std::make_shared<ABI::ParamAddress>(parse_hex(fromAddress)),
+                                                     std::make_shared<ABI::ParamAddress>(parse_hex(toAddress)),
+                                                     std::make_shared<ABI::ParamUInt256>(uint256_t(0x23c47ee5)),
+                                                     std::make_shared<ABI::ParamUInt256>(value),
+                                                     std::make_shared<ABI::ParamByteArray>(data)});
         func.encode(payload);
     }
     ASSERT_EQ(hex(output.data()), hex(payload));
@@ -312,7 +308,7 @@ TEST(TWAnySignerEthereum, PlanNotSupported) {
     // Ethereum does not use plan(), call it nonetheless
     Proto::SigningInput input;
     auto inputData = input.SerializeAsString();
-    auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));
+    auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t*)inputData.data(), inputData.size()));
     auto outputTWData = WRAPD(TWAnySignerPlan(inputTWData.get(), TWCoinTypeEthereum));
     EXPECT_EQ(TWDataSize(outputTWData.get()), 0ul);
 }
@@ -358,9 +354,9 @@ TEST(TWAnySignerEthereum, SignERC1559Transfer_1442) {
 TEST(TWAnySignerEthereum, SignERC20Transfer_1559) {
     auto chainId = store(uint256_t(1));
     auto nonce = store(uint256_t(0));
-    auto gasLimit = store(uint256_t(78009)); // 130B9
+    auto gasLimit = store(uint256_t(78009));                   // 130B9
     auto maxInclusionFeePerGas = store(uint256_t(2000000000)); // 77359400
-    auto maxFeePerGas = store(uint256_t(3000000000)); // B2D05E00
+    auto maxFeePerGas = store(uint256_t(3000000000));          // B2D05E00
     auto toAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84";
     auto token = "0x6b175474e89094c44da98b954eedeac495271d0f"; // DAI
     auto amount = uint256_t(2000000000000000000);
@@ -488,3 +484,5 @@ TEST(TWAnySignerEthereum, SignERC1155Transfer_1559) {
 
     ASSERT_EQ(hex(output.encoded()), "02f901500180847735940084b2d05e00830130b9944e45e92ed38f885d39a733c14f1817217a89d42580b8e4f242432a000000000000000000000000718046867b5b1782379a14ea4fc0c9b724da94fc0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000000000000023c47ee50000000000000000000000000000000000000000000000001bc16d674ec8000000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000040102030400000000000000000000000000000000000000000000000000000000c080a0533df41dda5540c57257b7fe89c29cefff0155c333e063220df2bf9680fcc15aa036a844fd20de5a51de96ceaaf078558e87d86426a4a5d4b215ee1fd0fa397f8a");
 }
+
+} // namespace TW::Ethereum

@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,20 +6,18 @@
 
 #include "../interface/TWTestUtilities.h"
 
-#include "Stellar/Address.h"
 #include "Stellar/Signer.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include <TrustWalletCore/TWHDWallet.h>
-#include <TrustWalletCore/TWStellarMemoType.h>
 #include <TrustWalletCore/TWStellarPassphrase.h>
 #include "BinaryCoding.h"
 
 #include <gtest/gtest.h>
 
+namespace TW::Stellar::tests {
+
 using namespace std;
-using namespace TW;
-using namespace TW::Stellar;
 
 TEST(StellarTransaction, sign) {
     auto words = STRING("indicate rival expand cave giant same grocery burden ugly rose tuna blood");
@@ -143,3 +141,5 @@ TEST(StellarTransaction, signAcreateAccount) {
     const auto signature = signer.sign();
     ASSERT_EQ(signature, "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAIAAAAASZYC0gAAAAEAAAAAAAAAAAAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAmJaAAAAAAAAAAAEZ31yiAAAAQNgqNDqbe0X60gyH+1xf2Tv2RndFiJmyfbrvVjsTfjZAVRrS2zE9hHlqPQKpZkGKEFka7+1ElOS+/m/1JDnauQg=");
 }
+
+} // namespace TW::Stellar::tests

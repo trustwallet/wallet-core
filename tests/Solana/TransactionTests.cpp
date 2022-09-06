@@ -8,14 +8,12 @@
 #include "Solana/Transaction.h"
 #include "Solana/Program.h"
 #include "HexCoding.h"
-#include "PublicKey.h"
 
 #include "BinaryCoding.h"
 
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::Solana;
+namespace TW::Solana {
 
 TEST(SolanaTransaction, TransferMessageData) {
     auto from = Address("6eoo7i1khGhVm8tLBMAdq4ax2FxkKP4G7mCcfHyr3STN");
@@ -181,3 +179,5 @@ TEST(SolanaTransaction, TransferTokenTransaction_3vZ67C) {
         "PGfKqEaH2zZXDMZLcU6LUKdBSzU1GJWJ1CJXtRYCxaCH7k8uok38WSadZfrZw3TGejiau7nSpan2GvbK26hQim24jRe2AupmcYJFrgsdaCt1Aqs5kpGjPqzgj9krgxTZwwob3xgC1NdHK5BcNwhxwRtrCphGEH7zUFpGFrFrHzgpf2KY8FvPiPELQyxzTBuyNtjLjMMreehSKShEjD9Xzp1QeC1pEF8JL6vUKzxMXuveoEYem8q8JiWszYzmTMfDk13JPgv7pXFGMqDV3yNGCLsWccBeSFKN4UKECre6x2QbUEiKGkHkMc4zQwwyD8tGmEMBAGm339qdANssEMNpDeJp2LxLDStSoWShHnotcrH7pUa94xCVvCPPaomF";
     EXPECT_EQ(transaction.serialize(), expectedString);
 }
+
+} // namespace TW::Solana

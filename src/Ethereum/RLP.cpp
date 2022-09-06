@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,14 +6,11 @@
 
 #include "RLP.h"
 
-#include "../Data.h"
-#include "../uint256.h"
 #include "../BinaryCoding.h"
 
 #include <tuple>
 
-using namespace TW;
-using namespace TW::Ethereum;
+namespace TW::Ethereum {
 
 Data RLP::encode(const uint256_t& value) noexcept {
     using boost::multiprecision::cpp_int;
@@ -63,7 +60,7 @@ Data RLP::encodeHeader(uint64_t size, uint8_t smallTag, uint8_t largeTag) noexce
 Data RLP::putVarInt(uint64_t i) noexcept {
     Data bytes; // accumulate bytes here, in reverse order
     do {
-        // take LSB byte, append 
+        // take LSB byte, append
         bytes.push_back(i & 0xff);
         i = i >> 8;
     } while (i);
@@ -93,7 +90,7 @@ uint64_t RLP::parseVarInt(size_t size, const Data& data, size_t index) {
 RLP::DecodedItem RLP::decodeList(const Data& input) {
     RLP::DecodedItem item;
     auto remainder = input;
-    while(true) {
+    while (true) {
         auto listItem = RLP::decode(remainder);
         item.decoded.push_back(listItem.decoded[0]);
         if (listItem.remainder.size() == 0) {
@@ -142,7 +139,7 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         item.remainder = subData(input, 1 + strLen);
 
         return item;
-    } 
+    }
     if (prefix <= 0xbf) {
         // b8--bf: long string
         auto lenOfStrLen = size_t(prefix - 0xb7);
@@ -154,7 +151,7 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         item.decoded.push_back(data);
         item.remainder = subData(input, 1 + lenOfStrLen + strLen);
         return item;
-    } 
+    }
     if (prefix <= 0xf7) {
         // c0--f7: a list between  0-55 bytes long
         auto listLen = size_t(prefix - 0xc0);
@@ -174,8 +171,8 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         }
         item.remainder = subData(input, 1 + listLen);
         return item;
-    } 
-    // f8--ff 
+    }
+    // f8--ff
     auto lenOfListLen = size_t(prefix - 0xf7);
     auto listLen = static_cast<size_t>(parseVarInt(lenOfListLen, input, 1));
     if (listLen < 56) {
@@ -193,3 +190,5 @@ RLP::DecodedItem RLP::decode(const Data& input) {
     item.remainder = subData(input, 1 + lenOfListLen + listLen);
     return item;
 }
+
+} // namespace TW::Ethereum

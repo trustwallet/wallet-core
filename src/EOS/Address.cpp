@@ -4,16 +4,15 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Address.h"
 #include "../Base58.h"
 #include "../BinaryCoding.h"
-#include "Address.h"
 
 #include <TrezorCrypto/ripemd160.h>
 
 #include <stdexcept>
 
-using namespace TW;
-using namespace TW::EOS;
+namespace TW::EOS {
 
 bool Address::isValid(const std::string& string) {
     return extractKeyData(string);
@@ -22,11 +21,15 @@ bool Address::isValid(const std::string& string) {
 /// Determines whether the given byte vector is a valid keyBuffer
 /// Verifies the buffer's size and it's checksum bytes
 bool Address::isValid(const Data& bytes, EOS::Type type) {
-    if (bytes.size() != KeyDataSize) return false;
+    if (bytes.size() != KeyDataSize) {
+        return false;
+    }
 
     // last Address::ChecksumSize bytes are a checksum
     uint32_t checksum = decode32LE(bytes.data() + PublicKeyDataSize);
-    if (createChecksum(bytes, type) != checksum) return false;
+    if (createChecksum(bytes, type) != checksum) {
+        return false;
+    }
     return true;
 }
 
@@ -48,15 +51,15 @@ uint32_t Address::createChecksum(const Data& bytes, Type type) {
         break;
 
     case Type::ModernK1:
-        ripemd160_Update(&ctx, 
-                        (const uint8_t *) Modern::K1::prefix.c_str(), 
-                        static_cast<uint32_t>(Modern::K1::prefix.size()));
+        ripemd160_Update(&ctx,
+                         (const uint8_t*)Modern::K1::prefix.c_str(),
+                         static_cast<uint32_t>(Modern::K1::prefix.size()));
         break;
 
     case Type::ModernR1:
-        ripemd160_Update(&ctx, 
-                        (const uint8_t *) Modern::R1::prefix.c_str(), 
-                        static_cast<uint32_t>(Modern::R1::prefix.size()));
+        ripemd160_Update(&ctx,
+                         (const uint8_t*)Modern::R1::prefix.c_str(),
+                         static_cast<uint32_t>(Modern::R1::prefix.size()));
         break;
     }
 
@@ -67,9 +70,9 @@ uint32_t Address::createChecksum(const Data& bytes, Type type) {
 }
 
 /// Extracts and verifies the key data from a base58 string.
-/// If the second arg is provided, the keyData and isTestNet 
+/// If the second arg is provided, the keyData and isTestNet
 /// properties of that object are set from the extracted data.
-bool Address::extractKeyData(const std::string& string, Address *address) {
+bool Address::extractKeyData(const std::string& string, Address* address) {
     // verify if the string has one of the valid prefixes
     Type type;
     size_t prefixSize;
@@ -111,14 +114,16 @@ Address::Address(const std::string& string) {
 }
 
 /// Initializes a EOS address from raw bytes
-Address::Address(const Data& data, Type type) : keyData(data), type(type) {
+Address::Address(const Data& data, Type type)
+    : keyData(data), type(type) {
     if (!isValid(data, type)) {
         throw std::invalid_argument("Invalid byte size!");
     }
 }
 
 /// Initializes a EOS address from a public key.
-Address::Address(const PublicKey& publicKey, Type type) : type(type) {
+Address::Address(const PublicKey& publicKey, Type type)
+    : type(type) {
     assert(PublicKeyDataSize == TW::PublicKey::secp256k1Size);
 
     // copy the raw, compressed key data
@@ -136,3 +141,5 @@ Address::Address(const PublicKey& publicKey, Type type) : type(type) {
 std::string Address::string() const {
     return prefix() + Base58::bitcoin.encode(keyData);
 }
+
+} // namespace TW::EOS

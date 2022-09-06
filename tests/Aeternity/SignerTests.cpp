@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,8 +12,7 @@
 #include <gtest/gtest.h>
 #include "uint256.h"
 
-using namespace TW;
-using namespace TW::Aeternity;
+namespace TW::Aeternity::tests {
 
 TEST(AeternitySigner, Sign) {
     std::string sender_id = "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw";
@@ -82,3 +81,5 @@ TEST(AeternitySigner, SignTxWithZeroNonce) {
     EXPECT_EQ(result.signature(), "sg_MaJc4ptSUhq5kH6mArszDAvu4f7PejyuhmgM6U8GEr8bRUTaSFbdFPx4C6FEYA5v5Lgwu9EToaWnHgR2xkqZ9JjHnaBpA");
     EXPECT_EQ(result.encoded(), "tx_+LULAfhCuECdQsgcE8bp+9CANdasxkt5gxfjBSI1ztyPl1aNJbm+MwUvE7Lu/qvAkHijfe+Eui2zrqhZRYc5mblRa+oLOIIEuG34awwBoQHuk6T2b40WuBm7m+uf/M383BQS6H/uajJMKpmh4OZxSKEBHxOjsIvwAUAGYqaLadh194A87EwIZH9u1dhMeJe9UKOILsSS9IArwACGEjCc5UAAgwG7qwCPWmVybyBub25jZSB0ZXN0piWfFA==");
 }
+
+} // namespace TW::Aeternity::tests

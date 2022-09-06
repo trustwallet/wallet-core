@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,7 +6,7 @@
 
 #include "Address.h"
 
-using namespace TW::<%= format_name(coin) %>;
+namespace TW::<%= format_name(coin) %> {
 
 bool Address::isValid(const std::string& string) {
     // TODO: Finalize implementation
@@ -29,3 +29,5 @@ std::string Address::string() const {
     // TODO: Finalize implementation
     return "TODO";
 }
+
+} // namespace TW::<%= format_name(coin) %>

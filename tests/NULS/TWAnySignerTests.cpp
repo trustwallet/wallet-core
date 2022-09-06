@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,8 +12,7 @@
 #include "../interface/TWTestUtilities.h"
 #include <gtest/gtest.h>
 
-using namespace TW;
-using namespace TW::NULS;
+namespace TW::NULS::tests {
 
 TEST(TWAnySignerNULS, Sign) {
     auto privateKey = parse_hex("0x9ce21dad67e0f0af2599b41b515a7f7018059418bab892a7b68f283d489abc4b");
@@ -37,3 +36,5 @@ TEST(TWAnySignerNULS, Sign) {
 
     EXPECT_EQ(hex(output.encoded()), "0200f885885d00008c0117010001f7ec6473df12e751d64cf20a8baa7edd50810f8101000100201d9a0000000000000000000000000000000000000000000000000000000000080000000000000000000117010001f05e7878971f3374515eabb6f16d75219d8873120100010080969800000000000000000000000000000000000000000000000000000000000000000000000000692103958b790c331954ed367d37bac901de5c2f06ac8368b37d7bd6cd5ae143c1d7e3463044022028019c0099e2233c7adb84bb03a9a5666ece4a5b65a026a090fa460f3679654702204df0fcb8762b5944b3aba033fa1a287ccb098150035dd8b66f52dc58d3d0843a");
 }
+
+} // namespace TW::NULS::tests

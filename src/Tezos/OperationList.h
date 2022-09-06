@@ -11,10 +11,9 @@
 #include "../PrivateKey.h"
 #include <string>
 
-using namespace TW::Tezos;
-using namespace TW::Tezos::Proto;
-
 namespace TW::Tezos {
+
+using TW::Tezos::Proto::Operation;
 
 class OperationList {
   public:

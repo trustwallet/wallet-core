@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,13 +9,11 @@
 #include "NEO/ReadData.h"
 #include "NEO/TransactionAttribute.h"
 #include "NEO/TransactionAttributeUsage.h"
-
-#include <iostream>
 #include <gtest/gtest.h>
 
+namespace TW::NEO::tests {
+
 using namespace std;
-using namespace TW;
-using namespace TW::NEO;
 
 TEST(NEOTransactionAttribute, Serialize) {
     auto transactionAttribute = TransactionAttribute();
@@ -86,6 +84,8 @@ TEST(NEOTransactionAttribute, Deserialize) {
 TEST(NEOTransactionAttribute, DeserializeInitialPositionAfterData) {
     auto transactionAttribute = TransactionAttribute();
     EXPECT_THROW(transactionAttribute.deserialize(Data(), 1), std::invalid_argument);
-    
+
     EXPECT_THROW(transactionAttribute.deserialize(Data({1}), 2), std::invalid_argument);
 }
+
+} // namespace TW::NEO::tests

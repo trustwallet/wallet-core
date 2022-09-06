@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust.
+// Copyright © 2017-2022 Trust.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,8 +8,7 @@
 #include "HexCoding.h"
 #include <google/protobuf/util/json_util.h>
 
-using namespace TW;
-using namespace TW::Filecoin;
+namespace TW::Filecoin {
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     // Load private key and transaction from Protobuf input.
@@ -24,8 +23,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         /* value */ load(input.value()),
         /* gasLimit */ input.gas_limit(),
         /* gasFeeCap */ load(input.gas_fee_cap()),
-        /* gasPremium */ load(input.gas_premium())
-    );
+        /* gasPremium */ load(input.gas_premium()));
 
     // Sign transaction.
     auto signature = sign(key, transaction);
@@ -50,3 +48,5 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     auto output = Signer::sign(input);
     return output.json();
 }
+
+} // namespace TW::Filecoin

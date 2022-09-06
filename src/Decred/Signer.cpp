@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,23 +10,18 @@
 #include "TransactionOutput.h"
 #include "../Bitcoin/SigHashType.h"
 #include "../Bitcoin/SignatureBuilder.h"
-
 #include "../BinaryCoding.h"
-#include "../Hash.h"
 #include "../HexCoding.h"
 
-#include "Bitcoin/OpCodes.h"
-
-using namespace TW;
-using namespace TW::Decred;
+namespace TW::Decred {
 
 Bitcoin::Proto::TransactionPlan Signer::plan(const Bitcoin::Proto::SigningInput& input) noexcept {
-    auto signer = Signer(std::move(input));
+    auto signer = Signer(input);
     return signer.txPlan.proto();
 }
 
 Proto::SigningOutput Signer::sign(const Bitcoin::Proto::SigningInput& input) noexcept {
-    auto signer = Signer(std::move(input));
+    auto signer = Signer(input);
     auto result = signer.sign();
     auto output = Proto::SigningOutput();
     if (!result) {
@@ -47,7 +42,7 @@ Proto::SigningOutput Signer::sign(const Bitcoin::Proto::SigningInput& input) noe
 }
 
 Result<Transaction, Common::Proto::SigningError> Signer::sign() {
-    if (txPlan.utxos.size() == 0 || _transaction.inputs.size() == 0) {
+    if (txPlan.utxos.empty() || _transaction.inputs.empty()) {
         return Result<Transaction, Common::Proto::SigningError>::failure(Common::Proto::Error_missing_input_utxos);
     }
 
@@ -206,3 +201,5 @@ Data Signer::scriptForScriptHash(const Data& hash) const {
     }
     return Data(it->second.begin(), it->second.end());
 }
+
+} // namespace TW::Decred

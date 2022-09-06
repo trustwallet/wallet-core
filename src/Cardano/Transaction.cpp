@@ -10,10 +10,7 @@
 #include "Hash.h"
 #include "HexCoding.h"
 
-using namespace TW::Cardano;
-using namespace TW;
-using namespace std;
-
+namespace TW::Cardano {
 
 TokenAmount TokenAmount::fromProto(const Proto::TokenAmount& proto) {
     auto ret = TokenAmount();
@@ -42,7 +39,7 @@ TokenBundle TokenBundle::fromProto(const Proto::TokenBundle& proto) {
 
 Proto::TokenBundle TokenBundle::toProto() const {
     Proto::TokenBundle proto;
-    for (const auto& t: bundle) {
+    for (const auto& t : bundle) {
         *(proto.add_token()) = t.second.toProto();
     }
     return proto;
@@ -67,17 +64,17 @@ uint256_t TokenBundle::getAmount(const std::string& key) const {
     return findkey->second.amount;
 }
 
-unordered_set<string> TokenBundle::getPolicyIds() const {
-    unordered_set<string> policyIds;
+std::unordered_set<std::string> TokenBundle::getPolicyIds() const {
+    std::unordered_set<std::string> policyIds;
     std::transform(bundle.cbegin(), bundle.cend(),
                    std::inserter(policyIds, policyIds.begin()),
-                   [](auto&& cur){ return cur.second.policyId; });
+                   [](auto&& cur) { return cur.second.policyId; });
     return policyIds;
 }
 
-vector<TokenAmount> TokenBundle::getByPolicyId(const string& policyId) const {
-    vector<TokenAmount> filtered;
-    for (const auto& t: bundle) {
+std::vector<TokenAmount> TokenBundle::getByPolicyId(const std::string& policyId) const {
+    std::vector<TokenAmount> filtered;
+    for (const auto& t : bundle) {
         if (t.second.policyId == policyId) {
             filtered.push_back(t.second);
         }
@@ -85,7 +82,9 @@ vector<TokenAmount> TokenBundle::getByPolicyId(const string& policyId) const {
     return filtered;
 }
 
-uint64_t roundupBytesToWords(uint64_t b) { return ((b + 7) / 8); }
+uint64_t roundupBytesToWords(uint64_t b) {
+    return ((b + 7) / 8);
+}
 
 const uint64_t TokenBundle::MinUtxoValue = 1000000;
 
@@ -100,7 +99,7 @@ uint64_t TokenBundle::minAdaAmountHelper(uint64_t numPids, uint64_t numAssets, u
     static const uint64_t pidSize = 28;
 
     uint64_t sizeB = 6 + roundupBytesToWords((numAssets * 12) + sumAssetNameLengths + (numPids * pidSize));
-    return max(MinUtxoValue, (MinUtxoValue / adaOnlyUTxOSize) * (utxoEntrySizeWithoutVal + sizeB));
+    return std::max(MinUtxoValue, (MinUtxoValue / adaOnlyUTxOSize) * (utxoEntrySizeWithoutVal + sizeB));
 }
 
 uint64_t TokenBundle::minAdaAmount() const {
@@ -109,12 +108,12 @@ uint64_t TokenBundle::minAdaAmount() const {
         return MinUtxoValue;
     }
 
-    unordered_set<string> policyIdRegistry;
-    unordered_set<string> assetNameRegistry;
+    std::unordered_set<std::string> policyIdRegistry;
+    std::unordered_set<std::string> assetNameRegistry;
     uint64_t numPids = 0;
     uint64_t numAssets = 0;
     uint64_t sumAssetNameLengths = 0;
-    for (const auto& t: bundle) {
+    for (const auto& t : bundle) {
         policyIdRegistry.emplace(t.second.policyId);
         if (t.second.assetName.length() > 0) {
             assetNameRegistry.emplace(t.second.assetName);
@@ -122,7 +121,7 @@ uint64_t TokenBundle::minAdaAmount() const {
     }
     numPids = uint64_t(policyIdRegistry.size());
     numAssets = uint64_t(assetNameRegistry.size());
-    for_each(assetNameRegistry.begin(), assetNameRegistry.end(), [&sumAssetNameLengths](string a){ sumAssetNameLengths += a.length(); });
+    for_each(assetNameRegistry.begin(), assetNameRegistry.end(), [&sumAssetNameLengths](std::string a) { sumAssetNameLengths += a.length(); });
     return minAdaAmountHelper(numPids, numAssets, sumAssetNameLengths);
 }
 
@@ -145,13 +144,15 @@ Proto::TxInput TxInput::toProto() const {
     txInput.mutable_out_point()->set_output_index(outputIndex);
     txInput.set_address(address.data(), address.size());
     txInput.set_amount(amount);
-    for (const auto& token: tokenBundle.bundle) {
+    for (const auto& token : tokenBundle.bundle) {
         *txInput.add_token_amount() = token.second.toProto();
     }
     return txInput;
 }
 
-bool TW::Cardano::operator==(const TxInput& i1, const TxInput& i2) { return i1.outputIndex == i2.outputIndex && i1.txHash == i2.txHash; }
+bool operator==(const TxInput& i1, const TxInput& i2) {
+    return i1.outputIndex == i2.outputIndex && i1.txHash == i2.txHash;
+}
 
 TransactionPlan TransactionPlan::fromProto(const Proto::TransactionPlan& proto) {
     auto ret = TransactionPlan();
@@ -181,16 +182,16 @@ Proto::TransactionPlan TransactionPlan::toProto() const {
     plan.set_amount(amount);
     plan.set_fee(fee);
     plan.set_change(change);
-    for (const auto& token: availableTokens.bundle) {
+    for (const auto& token : availableTokens.bundle) {
         *plan.add_available_tokens() = token.second.toProto();
     }
-    for (const auto& token: outputTokens.bundle) {
+    for (const auto& token : outputTokens.bundle) {
         *plan.add_output_tokens() = token.second.toProto();
     }
-    for (const auto& token: changeTokens.bundle) {
+    for (const auto& token : changeTokens.bundle) {
         *plan.add_change_tokens() = token.second.toProto();
     }
-    for (const auto& u: utxos) {
+    for (const auto& u : utxos) {
         *plan.add_utxos() = u.toProto();
     }
     plan.set_error(error);
@@ -198,13 +199,15 @@ Proto::TransactionPlan TransactionPlan::toProto() const {
 }
 
 Cbor::Encode cborizeInputs(const std::vector<OutPoint>& inputs) {
+    // clang-format off
     std::vector<Cbor::Encode> ii;
-    for (const auto& i: inputs) {
+    for (const auto& i : inputs) {
         ii.push_back(Cbor::Encode::array({
             Cbor::Encode::bytes(i.txHash),
             Cbor::Encode::uint(i.outputIndex)
         }));
     }
+    // clang-format on
     return Cbor::Encode::array(ii);
 }
 
@@ -216,11 +219,11 @@ Cbor::Encode cborizeOutputAmounts(const Amount& amount, const TokenBundle& token
     // native and token amounts
     // tokens: organized in two levels: by policyId and by assetName
     const auto policyIds = tokenBundle.getPolicyIds();
-    map<Cbor::Encode, Cbor::Encode> tokensMap;
-    for (const auto& policy: policyIds) {
+    std::map<Cbor::Encode, Cbor::Encode> tokensMap;
+    for (const auto& policy : policyIds) {
         const auto& subTokens = tokenBundle.getByPolicyId(policy);
-        map<Cbor::Encode, Cbor::Encode> subTokensMap;
-        for (const auto& token: subTokens) {
+        std::map<Cbor::Encode, Cbor::Encode> subTokensMap;
+        for (const auto& token : subTokens) {
             subTokensMap.emplace(
                 Cbor::Encode::bytes(data(token.assetName)),
                 Cbor::Encode::uint(uint64_t(token.amount)) // 64 bits
@@ -228,25 +231,28 @@ Cbor::Encode cborizeOutputAmounts(const Amount& amount, const TokenBundle& token
         }
         tokensMap.emplace(
             Cbor::Encode::bytes(parse_hex(policy)),
-            Cbor::Encode::map(subTokensMap)
-        );
+            Cbor::Encode::map(subTokensMap));
     }
+    // clang-format off
     return Cbor::Encode::array({
         Cbor::Encode::uint(amount),
         Cbor::Encode::map(tokensMap)
     });
+    // clang-format on
 }
 
 Cbor::Encode cborizeOutput(const TxOutput& output) {
+    // clang-format off
     return Cbor::Encode::array({
         Cbor::Encode::bytes(output.address),
         cborizeOutputAmounts(output.amount, output.tokenBundle)
     });
+    // clang-format on
 }
 
 Cbor::Encode cborizeOutputs(const std::vector<TxOutput>& outputs) {
     std::vector<Cbor::Encode> oo;
-    for (const auto& o: outputs) {
+    for (const auto& o : outputs) {
         oo.push_back(cborizeOutput(o));
     }
     return Cbor::Encode::array(oo);
@@ -258,10 +264,10 @@ Data Transaction::encode() const {
 
     // Encode elements in a map, with fixed numbers as keys
     Cbor::Encode encode = Cbor::Encode::map({
-        make_pair(Cbor::Encode::uint(0), ii),
-        make_pair(Cbor::Encode::uint(1), oo),
-        make_pair(Cbor::Encode::uint(2), Cbor::Encode::uint(fee)),
-        make_pair(Cbor::Encode::uint(3), Cbor::Encode::uint(ttl)),
+        std::make_pair(Cbor::Encode::uint(0), ii),
+        std::make_pair(Cbor::Encode::uint(1), oo),
+        std::make_pair(Cbor::Encode::uint(2), Cbor::Encode::uint(fee)),
+        std::make_pair(Cbor::Encode::uint(3), Cbor::Encode::uint(ttl)),
     });
     // Note: following fields are not included:
     // 4 certificates, 5 withdrawals, 7 AUXILIARY_DATA_HASH, 8 VALIDITY_INTERVAL_START
@@ -274,3 +280,5 @@ Data Transaction::getId() const {
     const auto hash = Hash::blake2b(encoded, 32);
     return hash;
 }
+
+} // namespace TW::Cardano

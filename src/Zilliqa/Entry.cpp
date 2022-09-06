@@ -9,35 +9,32 @@
 #include "Address.h"
 #include "Signer.h"
 
-using namespace TW;
-using namespace std;
-
 namespace TW::Zilliqa {
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
-bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
+bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string& address, byte, byte, const char*) const {
     return Address::isValid(address);
 }
 
-string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
+std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, byte, const char*) const {
     return Address(publicKey).string();
 }
 
 Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
     Address addr;
     if (!Address::decode(address, addr)) {
-        return Data();
+        return {};
     }
     // data in Zilliqa is a checksummed string without 0x
-    return TW::data(checksum(addr.getKeyHash()));
+    return data(checksum(addr.getKeyHash()));
 }
 
-void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+void Entry::sign([[maybe_unused]] TWCoinType coin, const Data& dataIn, Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
-string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json, const Data& key) const {
+std::string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json, const Data& key) const {
     return Signer::signJSON(json, key);
 }
 

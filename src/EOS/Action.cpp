@@ -6,10 +6,8 @@
 
 #include "Action.h"
 #include "../HexCoding.h"
-#include "../EOS/Serialization.h"
 
-using namespace TW;
-using namespace TW::EOS;
+namespace TW::EOS {
 
 void PermissionLevel::serialize(Data& o) const {
     actor.serialize(o);
@@ -40,11 +38,11 @@ json Action::serialize() const noexcept {
     return obj;
 }
 
-TransferAction::TransferAction( const std::string& currency,
-                                const std::string& from, 
-                                const std::string& to, 
-                                const Asset& asset, 
-                                const std::string& memo) {
+TransferAction::TransferAction(const std::string& currency,
+                               const std::string& from,
+                               const std::string& to,
+                               const Asset& asset,
+                               const std::string& memo) {
     account = Name(currency);
     name = Name("transfer");
     authorization.emplace_back(PermissionLevel(Name(from), Name("active")));
@@ -62,3 +60,5 @@ void TransferAction::setData(const std::string& from, const std::string& to, con
     asset.serialize(data);
     encodeString(memo, data);
 }
+
+} // namespace TW::EOS

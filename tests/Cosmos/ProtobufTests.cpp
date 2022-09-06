@@ -1,4 +1,4 @@
-// Copyright © 2017-2021 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -20,8 +20,8 @@
 
 #include <gtest/gtest.h>
 
-using namespace TW::Cosmos;
-using namespace TW;
+namespace TW::Cosmos::tests {
+
 using json = nlohmann::json;
 
 TEST(CosmosProtobuf, SendMsg) {
@@ -63,3 +63,5 @@ TEST(CosmosProtobuf, DeterministicSerialization_Article) {
     const auto serialized = data(article.SerializeAsString());
     EXPECT_EQ(hex(serialized), "0a1b54686520776f726c64206e65656473206368616e676520f09f8cb318e8bebec8bc2e280138024a084e696365206f6e654a095468616e6b20796f75");
 }
+
+} // namespace TW::Cosmos::tests

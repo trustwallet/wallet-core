@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,21 +6,11 @@
 
 #include "Transaction.h"
 
-using namespace TW;
-using namespace TW::Elrond;
+namespace TW::Elrond {
 
-Transaction::Transaction() :
-    nonce(0),
-    sender(""),
-    senderUsername(""),
-    receiver(""),
-    receiverUsername(""),
-    value("0"),
-    data(""),
-    gasPrice(0),
-    gasLimit(0),
-    chainID(""),
-    version(0),
-    options(0) {
+Transaction::Transaction()
+    : nonce(0), sender(""), senderUsername(""), receiver(""), receiverUsername(""), value("0"), data(""), gasPrice(0), gasLimit(0), chainID(""), version(0), options(0) {
 }
+
+} // namespace TW::Elrond
 

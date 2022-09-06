@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,15 +13,10 @@
 #include "HexCoding.h"
 
 #include <gtest/gtest.h>
-
-#include <iostream>
 #include <nlohmann/json.hpp>
 
-using namespace TW;
-using namespace TW::FIO;
-using namespace std;
-
 namespace TW::FIO::tests {
+using namespace std;
 
 const Data chainId = parse_hex("4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77");
 // 5KEDWtAUJcFX6Vz38WXsAQAv2geNqT7UaZC8gYu9kTuryr3qkri FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf

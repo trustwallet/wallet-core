@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,17 +10,14 @@
 #include "../Hash.h"
 #include "../HexCoding.h"
 #include "../PrivateKey.h"
-#include "../uint256.h"
 
 #include <boost/multiprecision/cpp_int.hpp>
 #include <nlohmann/json.hpp>
 
 #include <algorithm>
-#include <iostream>
 #include <sstream>
 
-using namespace TW;
-using namespace TW::Icon;
+namespace TW::Icon {
 
 std::string to_hex(int64_t i) {
     std::stringstream ss;
@@ -92,3 +89,5 @@ Proto::SigningOutput Signer::sign() const noexcept {
 
     return output;
 }
+
+} // namespace TW::Icon

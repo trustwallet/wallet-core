@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -11,13 +11,9 @@
 #include "SegwitAddress.h"
 #include "Signer.h"
 
-#include <TrezorCrypto/cash_addr.h>
+namespace TW::Bitcoin {
 
-using namespace TW::Bitcoin;
-using namespace TW;
-using namespace std;
-
-bool Entry::validateAddress(TWCoinType coin, const string& address, byte p2pkh, byte p2sh,
+bool Entry::validateAddress(TWCoinType coin, const std::string& address, byte p2pkh, byte p2sh,
                             const char* hrp) const {
     switch (coin) {
     case TWCoinTypeBitcoin:
@@ -44,7 +40,7 @@ bool Entry::validateAddress(TWCoinType coin, const string& address, byte p2pkh, 
     }
 }
 
-string Entry::normalizeAddress(TWCoinType coin, const string& address) const {
+std::string Entry::normalizeAddress(TWCoinType coin, const std::string& address) const {
     switch (coin) {
     case TWCoinTypeBitcoinCash:
         // normalized with bitcoincash: prefix
@@ -66,7 +62,7 @@ string Entry::normalizeAddress(TWCoinType coin, const string& address) const {
     }
 }
 
-string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey,
+std::string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const PublicKey& publicKey,
                             byte p2pkh, const char* hrp) const {
     switch (coin) {
     case TWCoinTypeBitcoin:
@@ -104,46 +100,44 @@ string Entry::deriveAddress(TWCoinType coin, TWDerivation derivation, const Publ
     }
 }
 
-template<typename CashAddress>
+template <typename CashAddress>
 inline Data cashAddressToData(const CashAddress&& addr) {
     return subData(addr.getData(), 1);
 }
 
 Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
     switch (coin) {
-        case TWCoinTypeBitcoin:
-        case TWCoinTypeBitcoinGold:
-        case TWCoinTypeDigiByte:
-        case TWCoinTypeGroestlcoin:
-        case TWCoinTypeLitecoin:
-        case TWCoinTypeViacoin:
-            {
-                const auto decoded = SegwitAddress::decode(address);
-                if (!std::get<2>(decoded)) {
-                    return Data();
-                }
-                return std::get<0>(decoded).witnessProgram;
-            }
-
-        case TWCoinTypeBitcoinCash:
-            return cashAddressToData(BitcoinCashAddress(address));
-
-        case TWCoinTypeECash:
-            return cashAddressToData(ECashAddress(address));
-
-        case TWCoinTypeDash:
-        case TWCoinTypeDogecoin:
-        case TWCoinTypeMonacoin:
-        case TWCoinTypeQtum:
-        case TWCoinTypeRavencoin:
-        case TWCoinTypeFiro:
-            {
-                const auto addr = Address(address);
-                return {addr.bytes.begin() + 1, addr.bytes.end()};
-            }
-
-        default:
+    case TWCoinTypeBitcoin:
+    case TWCoinTypeBitcoinGold:
+    case TWCoinTypeDigiByte:
+    case TWCoinTypeGroestlcoin:
+    case TWCoinTypeLitecoin:
+    case TWCoinTypeViacoin: {
+        const auto decoded = SegwitAddress::decode(address);
+        if (!std::get<2>(decoded)) {
             return Data();
+        }
+        return std::get<0>(decoded).witnessProgram;
+    }
+
+    case TWCoinTypeBitcoinCash:
+        return cashAddressToData(BitcoinCashAddress(address));
+
+    case TWCoinTypeECash:
+        return cashAddressToData(ECashAddress(address));
+
+    case TWCoinTypeDash:
+    case TWCoinTypeDogecoin:
+    case TWCoinTypeMonacoin:
+    case TWCoinTypeQtum:
+    case TWCoinTypeRavencoin:
+    case TWCoinTypeFiro: {
+        const auto addr = Address(address);
+        return {addr.bytes.begin() + 1, addr.bytes.end()};
+    }
+
+    default:
+        return Data();
     }
 }
 
@@ -187,3 +181,5 @@ void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, c
     dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(txInputData,
                                                                             txCompilerFunctor);
 }
+
+} // namespace TW::Bitcoin

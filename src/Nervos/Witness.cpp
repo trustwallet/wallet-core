@@ -6,20 +6,18 @@
 
 #include "Witness.h"
 #include "Serialization.h"
-#include "../BinaryCoding.h"
 
-using namespace TW;
-using namespace TW::Nervos;
+namespace TW::Nervos {
 
 void Witness::encode(Data& data) const {
-    if ((lock.size() == 0) && (inputType.size() == 0) && (outputType.size() == 0)) {
+    if ((lock.empty()) && (inputType.empty()) && (outputType.empty())) {
         return;
     }
     std::vector<Data> dataArray;
     dataArray.reserve(3);
     for (auto&& data1 : std::vector<Data>({lock, inputType, outputType})) {
         Data data2;
-        if (data1.size() > 0) {
+        if (!data1.empty()) {
             encode32LE(uint32_t(data1.size()), data2);
             data2.insert(data2.end(), data1.begin(), data1.end());
         }
@@ -27,3 +25,5 @@ void Witness::encode(Data& data) const {
     }
     Serialization::encodeDataArray(dataArray, data);
 }
+
+} // namespace TW::Nervos
