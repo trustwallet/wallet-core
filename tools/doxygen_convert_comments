@@ -1,0 +1,14 @@
+#!/bin/bash
+
+SWIFT_PARAMETER_PATTERN='s/\\param\s+([^\s]+)/\- Parameter $1:/g'
+SWIFT_RETURN_PATTERN='s/\\return/\- Returns:/g'
+SWIFT_FOLDER_PATH="swift/Sources/Generated/*.swift"
+
+function process_swift_comments() {
+    perl -pi.bak -e "$SWIFT_PARAMETER_PATTERN" $1
+    perl -pi.bak -e "$SWIFT_RETURN_PATTERN" $1
+}
+
+for d in $SWIFT_FOLDER_PATH ; do
+    process_swift_comments $d
+done
