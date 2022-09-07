@@ -63,7 +63,8 @@ const { initWasm, TW } = require("@trustwallet/wallet-core");
     };
 
     function help(): void {
-        console.log('This is an interactive node typescript shell, you can use:');
+        console.log('This is an interactive typescript shell, to work with wallet-core (wasm)');
+        console.log('You can use:');
         console.log();
         console.log("- Any typescript commands                        EXAMPLES");
         console.log("                                                 'wallet-core'.length");
@@ -157,6 +158,7 @@ const { initWasm, TW } = require("@trustwallet/wallet-core");
     console.log();
     console.log(`Type 'help()' for help`);
     console.log(`Press Ctrl-C twice to exit`);
+    console.log(chalk.red(`This is a test tool, DO NOT USE WITH REAL FUNDS!`));
     console.log();
 
     const local = repl.start('> ');
