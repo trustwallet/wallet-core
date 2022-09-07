@@ -8,7 +8,7 @@
 
 #include "Address.h"
 #include "BaseTransaction.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../proto/Algorand.pb.h"
 
 namespace TW::Algorand {

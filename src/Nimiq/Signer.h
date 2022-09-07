@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Transaction.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
 #include "../proto/Nimiq.pb.h"

@@ -9,7 +9,7 @@
 #include "Address.h"
 #include "CellDep.h"
 #include "OutPoint.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../HexCoding.h"
 
 #include <string>

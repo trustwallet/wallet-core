@@ -7,7 +7,7 @@
 #pragma once
 
 #include "./Protobuf/TronInternal.pb.h"
-#include "../Data.h"
+#include "Data.h"
 #include <nlohmann/json.hpp>
 
 namespace TW::Tron {

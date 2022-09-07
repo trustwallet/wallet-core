@@ -12,7 +12,7 @@
 
 #include <boost/multiprecision/cpp_int.hpp>
 
-#include "../Data.h"
+#include "Data.h"
 #include "../Hash.h"
 
 namespace TW::Everscale {

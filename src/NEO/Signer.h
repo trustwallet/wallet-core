@@ -8,7 +8,7 @@
 
 #include "Address.h"
 #include "Transaction.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../PrivateKey.h"
 #include "../proto/NEO.pb.h"
 

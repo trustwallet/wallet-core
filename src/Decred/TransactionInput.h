@@ -8,7 +8,7 @@
 
 #include "OutPoint.h"
 #include "../Bitcoin/Script.h"
-#include "../Data.h"
+#include "Data.h"
 
 #include <limits>
 #include <vector>

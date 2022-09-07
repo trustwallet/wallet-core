@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "../Data.h"
+#include "Data.h"
 #include "../HexCoding.h"
 
 #include <nlohmann/json.hpp>

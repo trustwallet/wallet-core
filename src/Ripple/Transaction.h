@@ -8,7 +8,7 @@
 
 #include "Address.h"
 #include "XAddress.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../proto/Ripple.pb.h"
 
 namespace TW::Ripple {

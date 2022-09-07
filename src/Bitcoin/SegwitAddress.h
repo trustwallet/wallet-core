@@ -7,7 +7,7 @@
 #pragma once
 
 #include "../PublicKey.h"
-#include "../Data.h"
+#include "Data.h"
 
 #include <cstdint>
 #include <string>

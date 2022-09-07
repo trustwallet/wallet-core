@@ -9,7 +9,7 @@
 #include "AESParameters.h"
 #include "PBKDF2Parameters.h"
 #include "ScryptParameters.h"
-#include "../Data.h"
+#include "Data.h"
 #include <TrustWalletCore/TWStoredKeyEncryptionLevel.h>
 
 #include <boost/variant.hpp>

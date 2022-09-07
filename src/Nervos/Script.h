@@ -8,7 +8,7 @@
 
 #include "Address.h"
 #include "Constants.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../proto/Nervos.pb.h"
 #include <nlohmann/json.hpp>
 

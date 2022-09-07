@@ -7,7 +7,7 @@
 #pragma once
 
 #include "../BinaryCoding.h"
-#include "../Data.h"
+#include "Data.h"
 
 #include <array>
 #include <stdexcept>
