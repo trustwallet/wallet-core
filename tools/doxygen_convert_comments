@@ -20,7 +20,6 @@ function swift_convert() {
 
   for d in $SWIFT_FOLDER_PATH ; do
       process_swift_comments $d
-      rm -rf
   done
 
   rm -rf $SWIFT_FOLDER_PATH_BAK
