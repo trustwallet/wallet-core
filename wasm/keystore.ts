@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-import { StoredKey } from "./wallet-core";
+import { CoinType, PrivateKey } from "./wallet-core";
 
 export namespace KeyStore {
   export enum WalletType {
@@ -40,38 +40,52 @@ export namespace KeyStore {
   }
 
   export interface IKeyStore {
-    save(wallet: Wallet): boolean;
-    restore(id: string): Wallet | null;
-  }
+    // Load a wallet by wallet id
+    load(id: string): Promise<Wallet>;
 
-  // LocalStorage KeyStore
-  export class LocalStorage implements IKeyStore {
-    private readonly keyPrefix: string;
-    private readonly storage: Storage;
+    // Load all wallets
+    loadAll(): Promise<Wallet[]>;
 
-    constructor(keyPrefix: string, storage: Storage) {
-      this.keyPrefix = keyPrefix;
-      this.storage = storage;
-    }
+    // Import a wallet by mnemonic, name, password and initial active accounts (from coinTypes)
+    import(
+      mnemonic: string,
+      name: string,
+      password: string,
+      coins: CoinType[]
+    ): Promise<Wallet>;
 
-    restore(id: string): Wallet | null {
-      const json = this.storage.getItem(this.keyPrefix + id);
-      if (json) {
-        return JSON.parse(json);
-      }
-      return null;
-    }
+    // Import a wallet by private key, name and password
+    import(
+      key: Uint8Array,
+      name: string,
+      password: string,
+      coin: CoinType
+    ): Promise<Wallet>;
 
-    save(wallet: Wallet): boolean {
-      try {
-        this.storage.setItem(
-          this.keyPrefix + wallet.id,
-          JSON.stringify(wallet)
-        );
-        return true;
-      } catch (e) {
-        return false;
-      }
-    }
+    // Import a Wallet object directly
+    import(wallet: Wallet): Promise<boolean>;
+
+    // Add active accounts to a wallet by wallet id, password, coin
+    addAccounts(
+      id: string,
+      password: string,
+      coins: CoinType[]
+    ): Promise<Wallet>;
+
+    // Get private key of an account by wallet id, password, coin and derivation path
+    getKey(
+      id: string,
+      password: string,
+      account: ActiveAccount
+    ): Promise<PrivateKey>;
+
+    // Delete a wallet by wallet id and password.
+    delete(id: string, password: string): Promise<boolean>;
+
+    // Export a wallet by wallet id and password, returns mnemonic or private key
+    export(id: string, password: string): Promise<string | Uint8Array>;
+
+    // Delete a wallet by wallet id and password
+    delete(id: string, password: string): Promise<boolean>;
   }
 }
