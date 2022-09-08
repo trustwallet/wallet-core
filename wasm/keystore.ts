@@ -59,11 +59,11 @@ export namespace KeyStore {
       key: Uint8Array,
       name: string,
       password: string,
-      coin: CoinType[]
+      coin: CoinType
     ): Promise<Wallet>;
 
     // Import a Wallet object directly
-    importWallet(wallet: Wallet): Promise<boolean>;
+    importWallet(wallet: Wallet): Promise<void>;
 
     // Add active accounts to a wallet by wallet id, password, coin
     addAccounts(
@@ -80,7 +80,7 @@ export namespace KeyStore {
     ): Promise<PrivateKey>;
 
     // Delete a wallet by wallet id and password.
-    delete(id: string, password: string): Promise<boolean>;
+    delete(id: string, password: string): Promise<void>;
 
     // Export a wallet by wallet id and password, returns mnemonic or private key
     export(id: string, password: string): Promise<string | Uint8Array>;
