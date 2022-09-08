@@ -9,7 +9,7 @@
 #include "TransactionAttributeUsage.h"
 #include "ISerializable.h"
 #include "Serializable.h"
-#include "../Data.h"
+#include "Data.h"
 
 namespace TW::NEO {
 

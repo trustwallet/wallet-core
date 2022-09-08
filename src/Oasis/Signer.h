@@ -9,7 +9,7 @@
 #include <utility>
 
 
-#include "../Data.h"
+#include "Data.h"
 #include "../PrivateKey.h"
 #include "../proto/Oasis.pb.h"
 #include "Transaction.h"

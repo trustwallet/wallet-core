@@ -10,7 +10,7 @@
 #include "Signer.h"
 #include "Transaction.h"
 #include "../BinaryCoding.h"
-#include "../Data.h"
+#include "Data.h"
 
 #include <array>
 #include <string>

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "../Data.h"
+#include "Data.h"
 #include "proto/Tezos.pb.h"
 #include "../PrivateKey.h"
 #include <string>

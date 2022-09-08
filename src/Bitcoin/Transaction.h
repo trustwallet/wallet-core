@@ -14,7 +14,7 @@
 #include "UTXO.h"
 #include "../PrivateKey.h"
 #include "../Hash.h"
-#include "../Data.h"
+#include "Data.h"
 #include "SignatureVersion.h"
 #include "../proto/Bitcoin.pb.h"
 

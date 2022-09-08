@@ -16,7 +16,7 @@
 
 #include "../Coin.h"
 #include "../CoinEntry.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../Hash.h"
 #include "../KeyPair.h"
 #include "../PrivateKey.h"

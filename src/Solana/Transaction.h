@@ -9,7 +9,7 @@
 #include "Address.h"
 #include "../Base58.h"
 #include "../BinaryCoding.h"
-#include "../Data.h"
+#include "Data.h"
 
 #include <vector>
 #include <string>

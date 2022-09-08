@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Action.h"
-#include "../Data.h"
+#include "Data.h"
 
 namespace TW::FIO {
 

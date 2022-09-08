@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Transaction.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../PrivateKey.h"
 #include "../proto/Nebulas.pb.h"
 #include "../uint256.h"

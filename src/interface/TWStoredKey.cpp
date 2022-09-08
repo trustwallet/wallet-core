@@ -7,7 +7,7 @@
 #include <TrustWalletCore/TWStoredKey.h>
 
 #include "../Coin.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../HDWallet.h"
 #include "../Keystore/StoredKey.h"
 

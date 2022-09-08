@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Address.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../proto/Waves.pb.h"
 #include <nlohmann/json.hpp>
 

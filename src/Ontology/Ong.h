@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Asset.h"
-#include "../Data.h"
+#include "Data.h"
 
 namespace TW::Ontology {
 

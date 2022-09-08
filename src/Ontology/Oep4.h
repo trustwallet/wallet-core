@@ -10,7 +10,7 @@
 #include "Asset.h"
 #include "ParamsBuilder.h"
 #include "Transaction.h"
-#include "../Data.h"
+#include "Data.h"
 
 namespace TW::Ontology {
 

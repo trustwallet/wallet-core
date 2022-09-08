@@ -11,7 +11,7 @@
 #include "TransactionOutput.h"
 #include "Bitcoin/Transaction.h"
 #include "Bitcoin/Script.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../proto/Decred.pb.h"
 
 #include "Bitcoin/SignatureVersion.h"
