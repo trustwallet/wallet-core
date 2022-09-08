@@ -11,10 +11,6 @@
 
 namespace TW {
 
-AnyAddress::AnyAddress(std::string address, enum TWCoinType coin) : address(std::move(address)), coin(coin) {
-
-}
-
 Data AnyAddress::getData() const {
     Data data;
     try {
@@ -23,7 +19,7 @@ Data AnyAddress::getData() const {
     return data;
 }
 
-AnyAddress* createAddress(const std::string& address, enum TWCoinType coin) {
+AnyAddress* AnyAddress::createAddress(const std::string& address, enum TWCoinType coin) {
     auto normalized = TW::normalizeAddress(coin, address);
     if (normalized.empty()) {
         return nullptr;
@@ -32,7 +28,7 @@ AnyAddress* createAddress(const std::string& address, enum TWCoinType coin) {
     return new AnyAddress(normalized, coin);
 }
 
-AnyAddress* createAddress(const PublicKey& publicKey, enum TWCoinType coin) {
+AnyAddress* AnyAddress::createAddress(const PublicKey& publicKey, enum TWCoinType coin) {
     auto derivedAddress = TW::deriveAddress(coin, publicKey);
     return new AnyAddress(derivedAddress, coin);
 }

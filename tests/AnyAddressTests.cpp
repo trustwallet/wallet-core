@@ -15,19 +15,19 @@ constexpr auto ANY_ADDRESS_TEST_ADDRESS = "bc1qcj2vfjec3c3luf9fx9vddnglhh9gawmnc
 constexpr auto ANY_ADDRESS_TEST_PUBKEY = "02753f5c275e1847ba4d2fd3df36ad00af2e165650b35fe3991e9c9c46f68b12bc";
 
 TEST(AnyAddress, createFromString) {
-    std::unique_ptr<AnyAddress> addr(createAddress(ANY_ADDRESS_TEST_ADDRESS, TWCoinTypeBitcoin));
+    std::unique_ptr<AnyAddress> addr(AnyAddress::createAddress(ANY_ADDRESS_TEST_ADDRESS, TWCoinTypeBitcoin));
     EXPECT_EQ(ANY_ADDRESS_TEST_ADDRESS, addr->address);
 }
 
 TEST(AnyAddress, createFromPubKey) {
     const Data key = parse_hex(ANY_ADDRESS_TEST_PUBKEY);
     PublicKey publicKey(key, TWPublicKeyTypeSECP256k1);
-    std::unique_ptr<AnyAddress> addr(createAddress(publicKey, TWCoinTypeBitcoin));
+    std::unique_ptr<AnyAddress> addr(AnyAddress::createAddress(publicKey, TWCoinTypeBitcoin));
     EXPECT_EQ(ANY_ADDRESS_TEST_ADDRESS, addr->address);
 }
 
 TEST(AnyAddress, createFromWrongString) {
-    std::unique_ptr<AnyAddress> addr(createAddress("1aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaax", TWCoinTypeBitcoin));
+    std::unique_ptr<AnyAddress> addr(AnyAddress::createAddress("1aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaax", TWCoinTypeBitcoin));
     EXPECT_EQ(nullptr, addr);
 }
 

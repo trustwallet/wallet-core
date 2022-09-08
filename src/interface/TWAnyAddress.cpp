@@ -8,9 +8,9 @@
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWPublicKey.h>
 
-#include "../Data.h"
-#include "../Coin.h"
-#include "../AnyAddress.h"
+#include "Data.h"
+#include "Coin.h"
+#include "AnyAddress.h"
 
 bool TWAnyAddressEqual(struct TWAnyAddress* _Nonnull lhs, struct TWAnyAddress* _Nonnull rhs) {
     return *lhs->impl == *rhs->impl;
@@ -24,15 +24,16 @@ bool TWAnyAddressIsValid(TWString* _Nonnull string, enum TWCoinType coin) {
 struct TWAnyAddress* _Nullable TWAnyAddressCreateWithString(TWString* _Nonnull string,
                                                             enum TWCoinType coin) {
     const auto& address = *reinterpret_cast<const std::string*>(string);
-    auto *impl = TW::createAddress(address, coin);
-    if (impl == nullptr)
+    auto *impl = TW::AnyAddress::createAddress(address, coin);
+    if (impl == nullptr) {
         return nullptr;
+    }
     return new TWAnyAddress{impl};
 }
 
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKey(
     struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin) {
-    return new TWAnyAddress{TW::createAddress(publicKey->impl, coin)};
+    return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin)};
 }
 
 void TWAnyAddressDelete(struct TWAnyAddress* _Nonnull address) {
