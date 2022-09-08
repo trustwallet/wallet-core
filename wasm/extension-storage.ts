@@ -21,6 +21,18 @@ export class ExtensionStorage implements KeyStore.IKeyStore {
     this.storage = storage;
   }
 
+  importKey(
+    key: Uint8Array,
+    name: string,
+    password: string,
+    coin: CoinType[]
+  ): Promise<KeyStore.Wallet> {
+    throw new Error("Method not implemented.");
+  }
+  importWallet(wallet: KeyStore.Wallet): Promise<boolean> {
+    throw new Error("Method not implemented.");
+  }
+
   load(id: string): Promise<KeyStore.Wallet> {
     return this.storage.get(this.prefix + id).then((value) => {
       let wallet = value as KeyStore.Wallet;
@@ -42,20 +54,7 @@ export class ExtensionStorage implements KeyStore.IKeyStore {
     name: string,
     password: string,
     coins: CoinType[]
-  ): Promise<KeyStore.Wallet>;
-  import(
-    key: Uint8Array,
-    name: string,
-    password: string,
-    coin: CoinType
-  ): Promise<KeyStore.Wallet>;
-  import(wallet: KeyStore.Wallet): Promise<boolean>;
-  import(
-    key: unknown,
-    name?: unknown,
-    password?: unknown,
-    coin?: unknown
-  ): Promise<KeyStore.Wallet> | Promise<boolean> {
+  ): Promise<KeyStore.Wallet> {
     throw new Error("Method not implemented.");
   }
   addAccounts(

@@ -55,15 +55,15 @@ export namespace KeyStore {
     ): Promise<Wallet>;
 
     // Import a wallet by private key, name and password
-    import(
+    importKey(
       key: Uint8Array,
       name: string,
       password: string,
-      coin: CoinType
+      coin: CoinType[]
     ): Promise<Wallet>;
 
     // Import a Wallet object directly
-    import(wallet: Wallet): Promise<boolean>;
+    importWallet(wallet: Wallet): Promise<boolean>;
 
     // Add active accounts to a wallet by wallet id, password, coin
     addAccounts(
@@ -84,8 +84,5 @@ export namespace KeyStore {
 
     // Export a wallet by wallet id and password, returns mnemonic or private key
     export(id: string, password: string): Promise<string | Uint8Array>;
-
-    // Delete a wallet by wallet id and password
-    delete(id: string, password: string): Promise<boolean>;
   }
 }
