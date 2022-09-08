@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# https://developer.apple.com/documentation/xcode/distributing-documentation-to-external-developers
+
+cd swift
+xcodebuild -workspace TrustWalletCore.xcworkspace -derivedDataPath docsData -scheme WalletCore -destination 'platform=iOS Simulator,name=iPhone 13 Pro Max' -parallelizeTargets docbuild
+
+mkdir -p doc_archives
+
+cp -R `find docsData -type d -name "*.doccarchive"` doc_archives
+cd -
