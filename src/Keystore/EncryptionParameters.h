@@ -12,7 +12,7 @@
 #include "Data.h"
 #include <TrustWalletCore/TWStoredKeyEncryptionLevel.h>
 
-#include <boost/variant.hpp>
+#include <variant>
 #include <nlohmann/json.hpp>
 #include <string>
 
@@ -40,12 +40,12 @@ struct EncryptionParameters {
     AESParameters cipherParams = AESParameters();
 
     /// Key derivation function parameters.
-    boost::variant<ScryptParameters, PBKDF2Parameters> kdfParams = ScryptParameters();
+    std::variant<ScryptParameters, PBKDF2Parameters> kdfParams = ScryptParameters();
 
     EncryptionParameters() = default;
 
     /// Initializes with standard values.
-    EncryptionParameters(AESParameters cipherParams, boost::variant<ScryptParameters, PBKDF2Parameters> kdfParams)
+    EncryptionParameters(AESParameters cipherParams, std::variant<ScryptParameters, PBKDF2Parameters> kdfParams)
         : cipherParams(std::move(cipherParams))
         , kdfParams(std::move(kdfParams)) {}
 
