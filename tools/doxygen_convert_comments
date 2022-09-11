@@ -1,0 +1,28 @@
+#!/bin/bash
+
+SWIFT_PARAMETER_PATTERN='s/\\param\s+([^\s]+)/\- Parameter $1:/g'
+SWIFT_RETURN_PATTERN='s/\\return/\- Returns:/g'
+SWIFT_NOTE_PATTERN='s/\\note/\- Note:/g'
+SWIFT_SEE_PATTERN='s/\\see/\- SeeAlso:/g'
+SWIFT_FOLDER_PATH="swift/Sources/Generated/*.swift"
+SWIFT_FOLDER_PATH_BAK="swift/Sources/Generated/*.bak"
+
+function process_swift_comments() {
+    perl -pi.bak -e "$SWIFT_PARAMETER_PATTERN" "$1"
+    perl -pi.bak -e "$SWIFT_RETURN_PATTERN" "$1"
+    perl -pi.bak -e "$SWIFT_NOTE_PATTERN" "$1"
+    perl -pi.bak -e "$SWIFT_SEE_PATTERN" "$1"
+}
+
+
+function swift_convert() {
+  echo "Processing swift convertion"
+
+  for d in $SWIFT_FOLDER_PATH ; do
+      process_swift_comments $d
+  done
+
+  rm -rf $SWIFT_FOLDER_PATH_BAK
+}
+
+swift_convert

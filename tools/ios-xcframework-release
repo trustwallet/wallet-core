@@ -82,4 +82,7 @@ echo "protobuf dsyms url is: ${protobuf_dsyms_url}"
 core_dsyms_url=$(wc_upload_asset ${release_url} ${core_dsyms_filename})
 echo "core dsyms url is: ${core_dsyms_url}"
 
+docc_url=$(wc_upload_asset ${release_url} WalletCore.doccarchive.zip)
+echo "docc url is: ${docc_url}"
+
 popd
