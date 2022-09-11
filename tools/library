@@ -9,6 +9,7 @@ wc_read_version() {
 }
 
 wc_release_url() {
+    set -o pipefail
     tag="$1"
 
     id=$(curl "https://api.github.com/repos/trustwallet/wallet-core/releases/tags/${tag}" | jq ".id")
@@ -21,6 +22,7 @@ wc_release_url() {
 }
 
 wc_upload_asset() {
+    set -o pipefail
     release_url="$1"
     filename="$2"
 

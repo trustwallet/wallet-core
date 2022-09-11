@@ -2,10 +2,18 @@
 
 # https://developer.apple.com/documentation/xcode/distributing-documentation-to-external-developers
 
-cd swift
-xcodebuild -workspace TrustWalletCore.xcworkspace -derivedDataPath docsData -scheme WalletCore -destination 'platform=iOS Simulator,name=iPhone 13 Pro Max' -parallelizeTargets docbuild
+pushd swift
+mkdir -p build
 
-mkdir -p doc_archives
+export DOCC_JSON_PRETTYPRINT="YES"
+xcodebuild -workspace TrustWalletCore.xcworkspace -derivedDataPath build/docsData -scheme WalletCore -destination 'platform=iOS Simulator,name=iPhone 13 Pro Max' -parallelizeTargets docbuild | xcbeautify
 
-cp -R `find docsData -type d -name "*.doccarchive"` doc_archives
-cd -
+pushd build
+
+mv `find docsData/Build/Products -type d -name "*.doccarchive"` .
+
+echo "Zipping docc archive..."
+zip -rq WalletCore.doccarchive.zip WalletCore.doccarchive
+
+popd # build
+popd # swift
