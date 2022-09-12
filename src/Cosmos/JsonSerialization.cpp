@@ -184,10 +184,10 @@ static json messagesJSON(const Proto::SigningInput& input) {
     return j;
 }
 
-json signatureJSON(const Data& signature, const Data& pubkey, const std::string& chain_id) {
+json signatureJSON(const Data& signature, const Data& pubkey, TWCoinType coin) {
     return {
         {"pub_key", {
-            {"type", chain_id == chainId(TWCoinType::TWCoinTypeNativeEvmos) ? TYPE_EVMOS_PREFIX_PUBLIC_KEY : TYPE_PREFIX_PUBLIC_KEY},
+            {"type", coin == TWCoinType::TWCoinTypeNativeEvmos ? TYPE_EVMOS_PREFIX_PUBLIC_KEY : TYPE_PREFIX_PUBLIC_KEY},
             {"value", Base64::encode(pubkey)}
         }},
         {"signature", Base64::encode(signature)}
@@ -205,7 +205,7 @@ json signaturePreimageJSON(const Proto::SigningInput& input) {
     };
 }
 
-json transactionJSON(const Proto::SigningInput& input, const Data& signature) {
+json transactionJSON(const Proto::SigningInput& input, const Data& signature, TWCoinType coin) {
     auto privateKey = PrivateKey(input.private_key());
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     json tx = {
@@ -213,7 +213,7 @@ json transactionJSON(const Proto::SigningInput& input, const Data& signature) {
         {"memo", input.memo()},
         {"msg", messagesJSON(input)},
         {"signatures", json::array({
-            signatureJSON(signature, Data(publicKey.bytes), input.chain_id())
+            signatureJSON(signature, Data(publicKey.bytes), coin)
         })}
     };
     return broadcastJSON(tx, input.mode());
