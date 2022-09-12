@@ -44,6 +44,7 @@ Proto::SigningOutput Signer::signJsonSerialized(const Proto::SigningInput& input
 
 Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input, TWCoinType coin) noexcept {
     using namespace Protobuf;
+    using namespace Json;
     try {
         const auto serializedTxBody = buildProtoTxBody(input);
         const auto serializedAuthInfo = buildAuthInfo(input, coin);
@@ -52,10 +53,13 @@ Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input, TWCo
 
         auto output = Proto::SigningOutput();
         const std::string jsonSerialized = buildProtoTxJson(input, serializedTxRaw);
+        auto publicKey = PrivateKey(input.private_key()).getPublicKey(TWPublicKeyTypeSECP256k1);
+        auto signatures = nlohmann::json::array({signatureJSON(signature, Data(publicKey.bytes), input.chain_id())});
         output.set_serialized(jsonSerialized);
         output.set_signature(signature.data(), signature.size());
         output.set_json("");
         output.set_error("");
+        output.set_signature_json(signatures.dump());
         return output;
     } catch (const std::exception& ex) {
         auto output = Proto::SigningOutput();

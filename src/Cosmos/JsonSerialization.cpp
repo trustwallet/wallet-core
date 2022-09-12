@@ -184,7 +184,7 @@ static json messagesJSON(const Proto::SigningInput& input) {
     return j;
 }
 
-static json signatureJSON(const Data& signature, const Data& pubkey, const std::string& chain_id) {
+json signatureJSON(const Data& signature, const Data& pubkey, const std::string& chain_id) {
     return {
         {"pub_key", {
             {"type", chain_id == chainId(TWCoinType::TWCoinTypeNativeEvmos) ? TYPE_EVMOS_PREFIX_PUBLIC_KEY : TYPE_PREFIX_PUBLIC_KEY},

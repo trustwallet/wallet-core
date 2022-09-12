@@ -25,5 +25,6 @@ using json = nlohmann::json;
 
 json signaturePreimageJSON(const Proto::SigningInput& input);
 json transactionJSON(const Proto::SigningInput& input, const Data& signature);
+json signatureJSON(const Data& signature, const Data& pubkey, const std::string& chain_id);
 
 } // namespace TW::Cosmos::json
