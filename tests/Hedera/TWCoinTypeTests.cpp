@@ -30,7 +30,7 @@ TEST(TWHederaCoinType, TWCoinType) {
     assertStringsEqual(symbol, "HBAR");
     assertStringsEqual(txUrl, "https://mainnet-public.mirrornode.hedera.com/api/v1/tx/0x9edaf0f7d9c6629c31bbf0471fc07d696c73b566b93783f7e25d8d5d2b62fa4f");
     assertStringsEqual(accUrl, "https://mainnet-public.mirrornode.hedera.com/api/v1/accounts/0x0000000000000000000000000000000000130ed3");
-    assertStringsEqual(id, "ethereum");
+    assertStringsEqual(id, "hedera");
     assertStringsEqual(name, "Hedera");
     assertStringsEqual(chainId, "1");
 }
