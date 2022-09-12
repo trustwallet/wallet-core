@@ -297,10 +297,10 @@ TEST(StoredKey, LoadPBKDF2Key) {
     EXPECT_EQ(key.id, "3198bc9c-6672-5ab3-d995-4942343ae5b6");
 
     const auto& payload = key.payload;
-    ASSERT_TRUE(payload.params.kdfParams.which() == 1);
-    EXPECT_EQ(boost::get<PBKDF2Parameters>(payload.params.kdfParams).desiredKeyLength, 32ul);
-    EXPECT_EQ(boost::get<PBKDF2Parameters>(payload.params.kdfParams).iterations, 262144ul);
-    EXPECT_EQ(hex(boost::get<PBKDF2Parameters>(payload.params.kdfParams).salt), "ae3cd4e7013836a3df6bd7241b12db061dbe2c6785853cce422d148a624ce0bd");
+    ASSERT_TRUE(std::holds_alternative<PBKDF2Parameters>(payload.params.kdfParams));
+    EXPECT_EQ(std::get<PBKDF2Parameters>(payload.params.kdfParams).desiredKeyLength, 32ul);
+    EXPECT_EQ(std::get<PBKDF2Parameters>(payload.params.kdfParams).iterations, 262144ul);
+    EXPECT_EQ(hex(std::get<PBKDF2Parameters>(payload.params.kdfParams).salt), "ae3cd4e7013836a3df6bd7241b12db061dbe2c6785853cce422d148a624ce0bd");
 
     EXPECT_EQ(hex(payload.decrypt(TW::data("testpassword"))), "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d");
 }
@@ -346,12 +346,12 @@ TEST(StoredKey, ReadWallet) {
     EXPECT_EQ(hex(header._mac), "2103ac29920d71da29f15d75b4a16dbe95cfd7ff8faea1056c33131d846e3097");
     EXPECT_EQ(hex(header.params.cipherParams.iv), "83dbcc02d8ccb40e466191a123791e0e");
 
-    ASSERT_TRUE(header.params.kdfParams.which() == 0);
-    EXPECT_EQ(boost::get<ScryptParameters>(header.params.kdfParams).desiredKeyLength, 32ul);
-    EXPECT_EQ(boost::get<ScryptParameters>(header.params.kdfParams).n, 262144ul);
-    EXPECT_EQ(boost::get<ScryptParameters>(header.params.kdfParams).p, 8ul);
-    EXPECT_EQ(boost::get<ScryptParameters>(header.params.kdfParams).r, 1ul);
-    EXPECT_EQ(hex(boost::get<ScryptParameters>(header.params.kdfParams).salt), "ab0c7876052600dd703518d6fc3fe8984592145b591fc8fb5c6d43190334ba19");
+    ASSERT_TRUE(std::holds_alternative<ScryptParameters>(header.params.kdfParams));
+    EXPECT_EQ(std::get<ScryptParameters>(header.params.kdfParams).desiredKeyLength, 32ul);
+    EXPECT_EQ(std::get<ScryptParameters>(header.params.kdfParams).n, 262144ul);
+    EXPECT_EQ(std::get<ScryptParameters>(header.params.kdfParams).p, 8ul);
+    EXPECT_EQ(std::get<ScryptParameters>(header.params.kdfParams).r, 1ul);
+    EXPECT_EQ(hex(std::get<ScryptParameters>(header.params.kdfParams).salt), "ab0c7876052600dd703518d6fc3fe8984592145b591fc8fb5c6d43190334ba19");
 }
 
 TEST(StoredKey, ReadMyEtherWallet) {
