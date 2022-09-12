@@ -2746,5 +2746,35 @@
       "rpc": "https://exchainrpc.okex.org",
       "documentation": "https://okc-docs.readthedocs.io/en/latest"
     }
+  },
+  {
+    "id": "hedera",
+    "name": "Hedera",
+    "coinId": 10000295,
+    "symbol": "HBAR",
+    "decimals": 10,
+    "blockchain": "Hedera",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "295",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://mainnet-public.mirrornode.hedera.com/api/v1",
+      "txPath": "/transactions/",
+      "accountPath": "/accounts/",
+      "sampleTx": "0x9edaf0f7d9c6629c31bbf0471fc07d696c73b566b93783f7e25d8d5d2b62fa4f",
+      "sampleAccount": "0x0000000000000000000000000000000000130ed3"
+    },
+    "info": {
+      "url": "https://hedera.com/",
+      "source": "https://github.com/hashgraph",
+      "rpc": "https://mainnet.hashio.io/api",
+      "documentation": "https://github.com/hashgraph/hedera-json-rpc-relay/blob/main/docs/rpc-api.md"
+    }
   }
 ]
