@@ -38,6 +38,7 @@ Proto::SigningOutput Signer::signJsonSerialized(const Proto::SigningInput& input
     output.set_signature(signature.data(), signature.size());
     output.set_serialized("");
     output.set_error("");
+    output.set_signature_json(txJson.at("tx").at("signatures").dump());
     return output;
 }
 

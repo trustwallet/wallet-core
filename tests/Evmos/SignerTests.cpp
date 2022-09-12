@@ -70,6 +70,21 @@ TEST(EvmosSigner, SignTxJsonEthermintKeyType) {
 
     /// This tx is not broadcasted, we just want to test the signature format (ethermint/PubKeyEthSecp256k1)
     EXPECT_EQ(anotherExpectedJson, nlohmann::json::parse(output.json()));
+
+    auto signatures = nlohmann::json::parse(output.signature_json());
+
+    auto expectedSignatures = R"(
+        [
+            {
+                "pub_key":
+                    {
+                        "type":"ethermint/PubKeyEthSecp256k1",
+                        "value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"
+                    },
+                "signature":"RWt8aaBxdMAeEjym8toWskJ6WaJpEF9Ciucz2lAHkvNnTicGpzxwTUzJbJXRirSnGkejhISaYtDw2RBiq0vg5w=="
+            }
+        ])"_json;
+    EXPECT_EQ(signatures, expectedSignatures);
 }
 
 }
