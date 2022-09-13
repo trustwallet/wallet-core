@@ -138,12 +138,19 @@ public:
         SkatingKeyRegistration = 0,
         StakingKeyDeregistration = 1,
         Delegation = 2,
-        //StakePoolRegistration = 3,
+        //StakePoolRegistration = 3, // not supported
     };
     CertificateType type;
     CertificateKey certKey;
     /// Optional PoolId, used in delegation
     Data poolId;
+};
+
+/// Staking withdrawal
+class Withdrawal {
+public:
+    Data stakingKey;
+    Amount amount;
 };
 
 class Transaction {
@@ -153,6 +160,7 @@ public:
     Amount fee;
     uint64_t ttl;
     std::vector<Certificate> certificates;
+    std::vector<Withdrawal> withdrawals;
 
     // Encode into CBOR binary format
     Data encode() const;

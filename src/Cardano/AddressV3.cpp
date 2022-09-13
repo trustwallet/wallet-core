@@ -127,6 +127,17 @@ AddressV3 AddressV3::createBase(NetworkId networkId, const PublicKey& spendingKe
     return createBase(networkId, hash1, hash2);
 }
 
+AddressV3 AddressV3::createReward(NetworkId networkId, const TW::Data& stakingKeyHash) {
+    if (stakingKeyHash.size() != HashSize) {
+        throw std::invalid_argument("Wrong spending key hash size");
+    }
+    auto addr = AddressV3();
+    addr.networkId = networkId;
+    addr.kind = Kind_Reward;
+    addr.bytes = stakingKeyHash;
+    return addr;
+}
+
 AddressV3::AddressV3(const std::string& addr) {
     if (parseAndCheckV3(addr, networkId, kind, bytes)) {
         // values stored
@@ -214,7 +225,18 @@ Data AddressV3::data() const noexcept {
 }
 
 Data AddressV3::getStakingKeyHash() const noexcept {
+    if (kind != Kind_Base || bytes.size() != 2 * HashSize) {
+        return Data();
+    }
     return TW::subData(bytes, HashSize, HashSize);
+}
+
+std::string AddressV3::getStakingAddress() const noexcept {
+    const auto& stakingKeyHash = getStakingKeyHash();
+    if (kind != Kind_Base || stakingKeyHash.size() != HashSize) {
+        return "";
+    }
+    return createReward(this->networkId, stakingKeyHash).string();
 }
 
 } // namespace TW::Cardano

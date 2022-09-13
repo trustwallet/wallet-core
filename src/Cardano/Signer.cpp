@@ -63,14 +63,20 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
         const auto key = data(input.register_staking_key().staking_key());
         tx.certificates.push_back(Certificate{Certificate::SkatingKeyRegistration, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data()});
     }
-    if (input.has_deregister_staking_key()) {
-        const auto key = data(input.deregister_staking_key().staking_key());
-        tx.certificates.push_back(Certificate{Certificate::StakingKeyDeregistration, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data()});
-    }
     if (input.has_delegate()) {
         const auto key = data(input.delegate().staking_key());
         const auto poolId = data(input.delegate().pool_id());
         tx.certificates.push_back(Certificate{Certificate::Delegation, {CertificateKey{CertificateKey::AddressKeyHash, key}}, poolId});
+    }
+    if (input.has_withdraw()) {
+        const auto stakingAddress = AddressV3(input.withdraw().staking_address());
+        const auto key = stakingAddress.data();
+        const auto amount = input.withdraw().amount();
+        tx.withdrawals.push_back(Withdrawal{key, amount});
+    }
+    if (input.has_deregister_staking_key()) {
+        const auto key = data(input.deregister_staking_key().staking_key());
+        tx.certificates.push_back(Certificate{Certificate::StakingKeyDeregistration, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data()});
     }
 
     return Common::Proto::OK;

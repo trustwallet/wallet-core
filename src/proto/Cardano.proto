@@ -89,6 +89,14 @@ message Delegate {
     uint64 deposit_amount = 3;
 }
 
+message Withdraw {
+    // Staking address (as string)
+    string staking_address = 1;
+
+    // Withdrawal amount
+    uint64 amount = 2;
+}
+
 message TransactionPlan {
     // total coins in the utxos
     uint64 available_amount = 1;
@@ -133,14 +141,17 @@ message SigningInput {
     // Later this can be made oneof if more message types are supported
     Transfer transfer_message = 3;
 
-    // Optional
+    // Optional, used in case of Staking Key registration (prerequisite for Staking)
     RegisterStakingKey register_staking_key = 6;
 
-    // Optional
-    DeregisterStakingKey deregister_staking_key = 7;
+    // Optional, used in case of (re)delegation
+    Delegate delegate = 7;
+
+    // Optional, used in case of withdraw
+    Withdraw withdraw = 8;    
 
     // Optional
-    Delegate delegate = 8;
+    DeregisterStakingKey deregister_staking_key = 9;
 
     uint64 ttl = 4;
 

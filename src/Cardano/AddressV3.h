@@ -65,6 +65,9 @@ class AddressV3 {
     /// Create a base address, given public keys
     static AddressV3 createBase(NetworkId networkId, const PublicKey& spendingKey, const PublicKey& stakingKey);
 
+    /// Create a staking (reward) address, given a staking key
+    static AddressV3 createReward(NetworkId networkId, const TW::Data& stakingKeyHash);
+
     /// Initializes a Cardano address with a string representation.  Throws if invalid.
     explicit AddressV3(const std::string& addr);
 
@@ -95,6 +98,8 @@ class AddressV3 {
 
     /// Return the binary data representation (keys appended, internal format)
     Data data() const noexcept;
+    /// Return the staking address contained in this address
+    std::string getStakingAddress() const noexcept;
     /// Return the staking key (second of the two appended key hashes)
     Data getStakingKeyHash() const noexcept;
 

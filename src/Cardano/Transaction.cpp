@@ -269,7 +269,7 @@ Cbor::Encode cborizeCertificateKey(const CertificateKey& certKey) {
     return Cbor::Encode::array(c);
 }
 
-Cbor::Encode cborizeCert(const Certificate& cert) {    
+Cbor::Encode cborizeCert(const Certificate& cert) {
     std::vector<Cbor::Encode> c;
     c.push_back(Cbor::Encode::uint(static_cast<uint8_t>(cert.type)));
     c.push_back(cborizeCertificateKey(cert.certKey));
@@ -279,12 +279,20 @@ Cbor::Encode cborizeCert(const Certificate& cert) {
     return Cbor::Encode::array(c);
 }
 
-Cbor::Encode cborizeCerts(const std::vector<Certificate>& certs) {    
+Cbor::Encode cborizeCerts(const std::vector<Certificate>& certs) {
     std::vector<Cbor::Encode> c;
     for (const auto& i: certs) {
         c.push_back(cborizeCert(i));
     }
     return Cbor::Encode::array(c);
+}
+
+Cbor::Encode cborizeWithdrawals(const std::vector<Withdrawal>& withdrawals) {
+    std::map<Cbor::Encode, Cbor::Encode> mapElems;
+    for (const auto& w: withdrawals) {
+        mapElems.emplace(std::make_pair(Cbor::Encode::bytes(w.stakingKey), Cbor::Encode::uint(w.amount)));
+    }
+    return Cbor::Encode::map(mapElems);
 }
 
 Data Transaction::encode() const {
@@ -302,12 +310,15 @@ Data Transaction::encode() const {
     if (certificates.size() > 0) {
         mapElems.emplace(std::make_pair(Cbor::Encode::uint(4), cborizeCerts(certificates)));
     }
+    if (withdrawals.size() > 0) {
+        mapElems.emplace(std::make_pair(Cbor::Encode::uint(5), cborizeWithdrawals(withdrawals)));
+    }
 
     Cbor::Encode encode = Cbor::Encode::map(mapElems);
     return encode.encoded();
 
     // Note: following fields are not included:
-    // 5 withdrawals, 7 AUXILIARY_DATA_HASH, 8 VALIDITY_INTERVAL_START
+    // 7 AUXILIARY_DATA_HASH, 8 VALIDITY_INTERVAL_START
 }
 
 Data Transaction::getId() const {
