@@ -116,10 +116,32 @@ public:
         const Data& iv);
 
     /// Used internally.  Creates signatures and json with transaction.
-    static std::string signAdnBuildTx(const Data& chainId, const Data& packedTx, const PrivateKey& privateKey);
+    static std::string signAndBuildTx(const Data& chainId, const Data& packedTx, const PrivateKey& privateKey);
 
     /// Used internally.  If expiry is 0, fill it based on current time.  Return true if value has been changed.
     static bool expirySetDefaultIfNeeded(uint32_t& expiryTime);
+
+    /// Build an unsigned transaction, from the specific SigningInput messages.
+    static Data buildUnsignedTxBytes(const Proto::SigningInput &in);
+
+    /// Build signing output
+    static Proto::SigningOutput buildSigningOutput(const Proto::SigningInput &input, const Data &signature);
+
+    /// Build presign TxData
+    static Data buildPreSignTxData(const Data& chainId, const Data& packedTx);
+private:
+    static Transaction buildUnsignedRegisterFioAddress(const Address& address, const std::string& fioName,
+        const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime);
+
+    static Transaction buildUnsignedAddPubAddress(const Address& address, const std::string& fioName,
+        const std::vector<std::pair<std::string, std::string>>& pubAddresses,
+        const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime);
+
+    static Transaction buildUnsignedTransfer(const Address& address, const std::string& payeePublicKey, uint64_t amount,
+        const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime);
+
+    static Transaction buildUnsignedRenewFioAddress(const Address& address, const std::string& fioName,
+        const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime);
 };
 
 } // namespace TW::FIO
