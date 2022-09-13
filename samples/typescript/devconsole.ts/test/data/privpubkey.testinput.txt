@@ -1,0 +1,26 @@
+// Create a private key, sign a message, derive public key from private key, verify signature
+privKeyData = '0xafeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5'
+pubKeyData = '0x0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1'
+messageDigest = '0001020304050607080910111213141519171819202122232425262728293031'
+signature = '0x673b54a91d87cfb9389e54cc55b1a9343a6eb9f2ea1f449cb19a248a86bb904c1efb109f8cf655c4f510211053c1696e52c75843c5c803fa1b78fe0c263f468201'
+
+testAssert = function(expression, text) {
+    if (!expression) { console.log('ERROR: ', text); exit(1); }
+    return 'ok: ' + text;
+}
+
+privkey = PrivateKey.createWithData(HexCoding.decode(privKeyData))
+HexCoding.encode(privkey.data())
+testAssert(HexCoding.encode(privkey.data()) == privKeyData, 'private key match')
+
+HexCoding.encode(sig1 = privkey.sign(HexCoding.decode(messageDigest), Curve.secp256k1))
+testAssert(HexCoding.encode(sig1) == signature, 'signature match')
+
+pubkey = privkey.getPublicKeySecp256k1(true)
+HexCoding.encode(pubkey.data())
+testAssert(HexCoding.encode(pubkey.data()) == pubKeyData, 'pubkey match')
+
+verifyRes = pubkey.verify(sig1, HexCoding.decode(messageDigest))
+testAssert(verifyRes, 'signature verification')
+
+exit(0)

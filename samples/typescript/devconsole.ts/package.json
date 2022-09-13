@@ -9,7 +9,7 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "build": "tsc -p .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cat test/data/privpubkey.testinput.txt | npm run start"
   },
   "author": "Trust Wallet",
   "license": "ISC",

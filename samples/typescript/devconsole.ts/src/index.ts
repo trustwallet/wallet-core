@@ -100,6 +100,10 @@ const { initWasm, TW } = require("@trustwallet/wallet-core");
         console.log();
     }
 
+    function exit(code: number): void {
+        process.exit(code);
+    }
+
     function walletCreate(strength: number = 256, name: string = ''): any {
         wallet = TestWallet.createRandom(name, strength);
         console.log(`Wallet ${wallet.name} created, mnemonic: ${wallet.wallet.mnemonic()}`);
@@ -180,6 +184,7 @@ const { initWasm, TW } = require("@trustwallet/wallet-core");
     local.context.PublicKeyType = PublicKeyType;
 
     local.context.help = help;
+    local.context.exit = exit;
     local.context.walletCreate = walletCreate;
     local.context.walletImport = walletImport;
     local.context.walletDump = walletDump;
