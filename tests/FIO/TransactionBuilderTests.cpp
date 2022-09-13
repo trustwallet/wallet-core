@@ -15,18 +15,14 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
-namespace TW::FIO::tests {
+namespace TW::FIO::TransactionBuilderTests {
 using namespace std;
-
-namespace {
 
 const Data chainId = parse_hex("4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77");
 // 5KEDWtAUJcFX6Vz38WXsAQAv2geNqT7UaZC8gYu9kTuryr3qkri FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf
 const PrivateKey privKeyBA = PrivateKey(parse_hex("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035"));
 const PublicKey pubKey6M = privKeyBA.getPublicKey(TWPublicKeyTypeSECP256k1);
 const Address addr6M(pubKey6M);
-
-}
 
 TEST(FIOTransactionBuilder, RegisterFioAddressGeneric) {
     Proto::SigningInput input;
@@ -350,4 +346,4 @@ TEST(FIOTransactionBuilder, encodeString) {
     }
 }
 
-} // namespace TW::FIO::tests
+} // namespace TW::FIO::TransactionBuilderTests

@@ -15,7 +15,7 @@
 
 #include <stdlib.h>
 
-namespace TW::FIO::tests {
+namespace TW::FIO::EncryptionTests {
 
 using namespace std;
 
@@ -183,4 +183,4 @@ TEST(FIOEncryption, encryptEncodeDecodeDecrypt) {
     EXPECT_EQ(hex(decrypted), hex(message));
 }
 
-} // namespace TW::FIO::tests
+} // namespace TW::FIO::EncryptionTests
