@@ -9,7 +9,7 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "build": "tsc -p .",
-    "test": "cat test/data/privpubkey.testinput.txt | npm run start"
+    "test": "cat test/data/privpubkey.testinput.txt | ts-node src/index.ts"
   },
   "author": "Trust Wallet",
   "license": "ISC",
