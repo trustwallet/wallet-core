@@ -21,12 +21,18 @@ TEST(StellarAddress, FromPublicKey) {
     const auto address = Address(publicKey);
     auto str = hex(address.bytes);
     ASSERT_EQ(string("GAB6EDWGWSRZUYUYCWXAFQFBHE5ZEJPDXCIMVZC3LH2C7IU35FTI2NOQ"), address.string());
+
+    const auto privateKey = PrivateKey(parse_hex("94d1a980d5e528067d44bf8a60d646f556e40ca71e17cd4ead2d56f89e4bd20f"));
+    const auto publicKey2 = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
+    EXPECT_ANY_THROW(new Address(publicKey2));
 }
 
 TEST(StellarAddress, FromString) {
     string stellarAddress = "GAB6EDWGWSRZUYUYCWXAFQFBHE5ZEJPDXCIMVZC3LH2C7IU35FTI2NOQ";
     const auto address = Address(stellarAddress);
     ASSERT_EQ(address.string(), stellarAddress);
+
+    EXPECT_ANY_THROW(new Address(""));
 }
 
 TEST(StellarAddress, isValid) {

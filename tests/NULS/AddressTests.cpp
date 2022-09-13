@@ -12,13 +12,14 @@
 using namespace TW;
 using namespace TW::NULS;
 
-
 TEST(NULSAddress, StaticInvalid) {
     ASSERT_FALSE(Address::isValid("abc"));
+    ASSERT_FALSE(Address::isValid("tNULSe"));
     ASSERT_FALSE(Address::isValid("aaeb60f3e94c9b9a09f33669435e7ef1beaed"));
     ASSERT_FALSE(Address::isValid("NULSd6HgbwcM8wz48f6UkFYHLVriT1L81X9z"));
     ASSERT_TRUE(Address::isValid("NULSd6HgUxmcJWc88iELEJ7RH9XHsazBQqnJc"));
-    ASSERT_TRUE(Address::isValid("NULSd6HgbwcM8wz48f6UkFYHLVriT1L81X9z2"));    
+    ASSERT_TRUE(Address::isValid("NULSd6HgbwcM8wz48f6UkFYHLVriT1L81X9z2"));
+    ASSERT_TRUE(Address::isValid("tNULSeBaMtdtUNbnNBZ5RoFoh3fHrrrm6dVZLH"));
 }
 
 TEST(NULSAddress, ChainID) {
@@ -34,6 +35,11 @@ TEST(NULSAddress, Type) {
 TEST(NULSAddress, FromString) {
     const auto address = Address("NULSd6HgbwcM8wz48f6UkFYHLVriT1L81X9z2");
     ASSERT_EQ(address.string(), "NULSd6HgbwcM8wz48f6UkFYHLVriT1L81X9z2");
+    const auto address2 = Address("tNULSeBaMtdtUNbnNBZ5RoFoh3fHrrrm6dVZLH");
+    ASSERT_EQ(address2.string(), "tNULSeBaMtdtUNbnNBZ5RoFoh3fHrrrm6dVZLH");
+
+    EXPECT_ANY_THROW(new Address("WrongPrefix"));
+    EXPECT_ANY_THROW(new Address("NULSdPrefixButInvalid"));
 }
 
 TEST(NULSAddress, FromPrivateKey) {
@@ -41,8 +47,9 @@ TEST(NULSAddress, FromPrivateKey) {
         PrivateKey(parse_hex("a1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a"));
     const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
     const auto address = Address(publicKey, true);
-
     ASSERT_EQ(address.string(), "NULSd6HghWa4CN5qdxqMwYVikQxRZyj57Jn4L");
+    const auto address2 = Address(publicKey, false);
+    ASSERT_EQ(address2.string(), "tNULSeBaMtdtUNbnNBZ5RoFoh3fHrrrm6dVZLH");
 }
 
 TEST(NULSAddress, FromCompressedPublicKey) {

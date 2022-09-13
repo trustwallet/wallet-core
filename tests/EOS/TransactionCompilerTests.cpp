@@ -10,6 +10,8 @@
 #include "PublicKey.h"
 #include "TransactionCompiler.h"
 
+#include "EOS/Signer.h"
+
 #include "proto/EOS.pb.h"
 #include "proto/TransactionCompiler.pb.h"
 
@@ -69,9 +71,6 @@ TEST(EOSCompiler, CompileWithSignatures) {
     // Simulate signature, normally obtained from signature server
     const PublicKey publicKey = PrivateKey(key).getPublicKey(TWPublicKeyTypeNIST256p1);
     const auto signature = parse_hex("1f6c4efceb5a6dadab271fd7e2153d97d22690938475b23f017cf9ec29e20d25725e90e541e130daa83c38fc4c933725f05837422c3f4a51f8c1d07208c8fd5e0b"); // data("SIG_K1_K9RdLC7DEDWjTfR64GU8BtDHcAjzR1ntcT651JMcfHNTpdsvDrUwfyzF1FkvL9fxEi2UCtGJZ9zYoNbJoMF1fbU64cRiJ7");
-
-    // Verify signature (pubkey & hash & signature)
-    // { EXPECT_TRUE(publicKey.verify(signature, preImageHash)); }
 
     /// Step 3: Compile transaction info
     auto outputData =

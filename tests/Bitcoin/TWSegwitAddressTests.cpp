@@ -8,14 +8,29 @@
 
 #include "Data.h"
 #include "HexCoding.h"
-#include <TrustWalletCore/TWSegwitAddress.h>
 #include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWSegwitAddress.h>
 
 #include <gtest/gtest.h>
 
 const char* address1 = "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4";
 const char* address2 = "bc1qr583w2swedy2acd7rung055k8t3n7udp7vyzyg";
 const char* address3Taproot = "bc1ptmsk7c2yut2xah4pgflpygh2s7fh0cpfkrza9cjj29awapv53mrslgd5cf";
+
+TEST(TWSegwitAddress, CreateAndDelete) {
+    {
+        TWSegwitAddress* addr = TWSegwitAddressCreateWithString(STRING(address1).get());
+        EXPECT_TRUE(addr != nullptr);
+        TWSegwitAddressDelete(addr);
+    }
+    {
+        auto pkData = DATA("0279BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798");
+        auto publicKey = WRAP(TWPublicKey, TWPublicKeyCreateWithData(pkData.get(), TWPublicKeyTypeSECP256k1));
+        TWSegwitAddress* addr = TWSegwitAddressCreateWithPublicKey(TWHRPBitcoin, publicKey.get());
+        EXPECT_TRUE(addr != nullptr);
+        TWSegwitAddressDelete(addr);
+    }
+}
 
 TEST(TWSegwitAddress, PublicKeyToAddress) {
     auto pkData = DATA("0279BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798");

@@ -26,6 +26,8 @@ TEST(AionAddress, FromString) {
     std::string aionAddress = "0xa0d2312facea71b740679c926d040c9056a65a4bfa2ddd18ec160064f82909e7";
     const auto address = Address(aionAddress);
     ASSERT_EQ(address.string(), aionAddress);
+
+    EXPECT_ANY_THROW(new Address("123"));
 }
 
 TEST(AionAddress, AddressToData) {

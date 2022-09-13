@@ -6,15 +6,15 @@
 
 #include "Keystore/StoredKey.h"
 
-#include "Coin.h"
-#include "HexCoding.h"
-#include "Data.h"
-#include "PrivateKey.h"
-#include "Mnemonic.h"
 #include "Bitcoin/Address.h"
+#include "Coin.h"
+#include "Data.h"
+#include "HexCoding.h"
+#include "Mnemonic.h"
+#include "PrivateKey.h"
 
-#include <stdexcept>
 #include <gtest/gtest.h>
+#include <stdexcept>
 
 extern std::string TESTS_ROOT;
 
@@ -122,25 +122,25 @@ TEST(StoredKey, AccountGetCreate) {
     // not exists, wallet nonnull, create
     std::optional<Account> acc3 = key.account(coinTypeBc, &wallet);
     EXPECT_TRUE(acc3.has_value());
-    EXPECT_EQ(acc3->coin, coinTypeBc); 
+    EXPECT_EQ(acc3->coin, coinTypeBc);
     EXPECT_EQ(key.accounts.size(), 1ul);
 
     // exists
     std::optional<Account> acc4 = key.account(coinTypeBc);
     EXPECT_TRUE(acc4.has_value());
-    EXPECT_EQ(acc4->coin, coinTypeBc); 
+    EXPECT_EQ(acc4->coin, coinTypeBc);
     EXPECT_EQ(key.accounts.size(), 1ul);
 
     // exists, wallet nonnull, not create
     std::optional<Account> acc5 = key.account(coinTypeBc, &wallet);
     EXPECT_TRUE(acc5.has_value());
-    EXPECT_EQ(acc5->coin, coinTypeBc); 
+    EXPECT_EQ(acc5->coin, coinTypeBc);
     EXPECT_EQ(key.accounts.size(), 1ul);
 
     // exists, wallet null, not create
     std::optional<Account> acc6 = key.account(coinTypeBc, nullptr);
     EXPECT_TRUE(acc6.has_value());
-    EXPECT_EQ(acc6->coin, coinTypeBc); 
+    EXPECT_EQ(acc6->coin, coinTypeBc);
     EXPECT_EQ(key.accounts.size(), 1ul);
 }
 
@@ -152,7 +152,7 @@ TEST(StoredKey, AccountGetDoesntChange) {
     vector<TWCoinType> coins = {coinTypeBc, coinTypeEth, coinTypeBnb};
     // retrieve multiple accounts, which will be created
     vector<Account> accounts;
-    for (auto coin: coins) {
+    for (auto coin : coins) {
         std::optional<Account> account = key.account(coin, &wallet);
         accounts.push_back(*account);
 
@@ -303,6 +303,15 @@ TEST(StoredKey, LoadPBKDF2Key) {
     EXPECT_EQ(hex(boost::get<PBKDF2Parameters>(payload.params.kdfParams).salt), "ae3cd4e7013836a3df6bd7241b12db061dbe2c6785853cce422d148a624ce0bd");
 
     EXPECT_EQ(hex(payload.decrypt(TW::data("testpassword"))), "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d");
+
+    auto j = boost::get<PBKDF2Parameters>(payload.params.kdfParams).json();
+    auto expected = R"|({"c":262144,"dklen":32,"salt":"ae3cd4e7013836a3df6bd7241b12db061dbe2c6785853cce422d148a624ce0bd"})|";
+    EXPECT_EQ(j.dump(), expected);
+}
+
+TEST(StoredKey, RandomPBKDF2Param) {
+    auto p = PBKDF2Parameters();
+    ASSERT_TRUE(p.salt.size() == 32ul);
 }
 
 TEST(StoredKey, LoadLegacyMnemonic) {
@@ -389,7 +398,7 @@ TEST(StoredKey, CreateAccounts) {
     string mnemonicPhrase = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
     auto key = StoredKey::createWithMnemonic("name", gPassword, mnemonicPhrase, TWStoredKeyEncryptionLevelDefault);
     const auto wallet = key.wallet(gPassword);
-    
+
     EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->address, "0x494f60cb6Ac2c8F5E1393aD9FdBdF4Ad589507F7");
     EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->publicKey, "04cc32a479080d83fdcf69966713f0aad1bc1dc3ecf873b034894e84259841bc1c9b122717803e68905220ff54952d3f5ea2ab2698ca31f843addf94ae73fae9fd");
     EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->extendedPublicKey, "");
@@ -410,7 +419,7 @@ TEST(StoredKey, DecodingBitcoinAddress) {
 
     EXPECT_EQ(key.accounts[0].address, "3PWazDi9n1Hfyq9gXFxDxzADNL8RNYyK2y");
 }
-    
+
 TEST(StoredKey, RemoveAccount) {
     auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/legacy-mnemonic.json");
     EXPECT_EQ(key.accounts.size(), 2ul);
@@ -539,7 +548,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         const auto coin = TWCoinTypeBitcoin;
 
         const auto btc1 = key.account(coin, &wallet);
-        
+
         EXPECT_TRUE(btc1.has_value());
         EXPECT_EQ(btc1->address, expectedBtc1);
         EXPECT_EQ(btc1->derivationPath.string(), "m/84'/0'/0'/0/0");
@@ -568,7 +577,7 @@ TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts for the same coin
         const auto coin = TWCoinTypeBitcoin;
 
         const auto btc2 = key.account(coin, TWDerivationBitcoinLegacy, wallet);
-        
+
         EXPECT_EQ(btc2.address, expectedBtc2);
         EXPECT_EQ(btc2.derivationPath.string(), "m/44'/0'/0'/0/0");
         EXPECT_EQ(btc2.extendedPublicKey, "xpub6CR52eaUuVb4kXAVyHC2i5ZuqJ37oWNPZFtjXaazFPXZD45DwWBYEBLdrF7fmCR9pgBuCA9Q57zZfyJjDUBDNtWkhWuGHNYKLgDHpqrHsxV");

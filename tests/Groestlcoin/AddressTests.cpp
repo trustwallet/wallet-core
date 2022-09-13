@@ -20,13 +20,17 @@ TEST(GroestlcoinAddress, FromPublicKey) {
     const auto publicKey = PublicKey(parse_hex("03b85cc59b67c35851eb5060cfc3a759a482254553c5857075c9e247d74d412c91"), TWPublicKeyTypeSECP256k1);
     const auto address = Address(publicKey, 36);
     ASSERT_EQ(address.string(), "Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM");
+
+    const auto privateKey = PrivateKey(parse_hex("a1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a"));
+    const auto publicKey2 = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeED25519));
+    EXPECT_ANY_THROW(new Address(publicKey2, 36));
 }
 
 TEST(GroestlcoinAddress, Valid) {
     ASSERT_TRUE(Address::isValid(std::string("Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM")));
     TW::Data addressData;
     addressData.push_back(TW::p2pkhPrefix(TWCoinTypeGroestlcoin));
-    
+
     auto addressHash = parse_hex("98af0aaca388a7e1024f505c033626d908e3b54a");
     std::copy(addressHash.begin(), addressHash.end(), std::back_inserter(addressData));
 
@@ -34,9 +38,9 @@ TEST(GroestlcoinAddress, Valid) {
 }
 
 TEST(GroestlcoinAddress, Invalid) {
-    EXPECT_EXCEPTION(Address("Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLo"), "Invalid address string"); // Invalid address
+    EXPECT_EXCEPTION(Address("Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLo"), "Invalid address string");                    // Invalid address
     EXPECT_EXCEPTION(Address(parse_hex("98af0aaca388a7e1024f505c033626d908e3b5")), "Invalid address key data"); // Invalid address data
-    ASSERT_FALSE(Address::isValid(std::string("1JAd7XCBzGudGpJQSDSfpmJhiygtLQWaGL"))); // Valid bitcoin address
+    ASSERT_FALSE(Address::isValid(std::string("1JAd7XCBzGudGpJQSDSfpmJhiygtLQWaGL")));                          // Valid bitcoin address
 }
 
 TEST(GroestlcoinAddress, FromString) {

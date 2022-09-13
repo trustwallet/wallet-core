@@ -64,6 +64,7 @@ static const std::string invalidAddresses[] = {
     "f15ihq5ibzwki2b4ep2f46avlkrqzhpqgtga7rdrr",
     "f24vg6ut43yw2h2jqydgbg2xq7x6f4kub3bg6as66",
     "f3vvmn62lofvhjd2ugzca6sof2j2ubwok6cj4xxbfzz4yuxfkgobpihhd2thlanmsh3w2ptld2gqkn2jvlss44",
+    "f0vvmn62lofvhjd2ugzca6sof2j2ubwok6cj4xxbfzz4yuxfkgobpihhd2thlanmsh3w2ptld2gqkn2jvlss44",
 };
 
 TEST(FilecoinAddress, IsValid) {
@@ -89,6 +90,8 @@ TEST(FilecoinAddress, String) {
         Address a(parse_hex(test.hex));
         ASSERT_EQ(a.string(), test.encoded) << "Address(" << test.hex << ")";
     }
+
+    EXPECT_ANY_THROW(new Address(Data{}));
 }
 
 TEST(FilecoinAddress, FromString) {
@@ -96,6 +99,9 @@ TEST(FilecoinAddress, FromString) {
         Address a(test.encoded);
         ASSERT_EQ(hex(a.bytes), test.hex) << "Address(" << test.encoded << ")";
     }
+
+    for (const auto& test : invalidAddresses)
+        EXPECT_ANY_THROW(new Address(test));
 }
 
 }

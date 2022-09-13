@@ -228,9 +228,9 @@ TEST(NULSCompiler, CompileWithSignaturesFeePayer) {
     input.set_fee_payer_nonce("0000000000000000");
     input.set_fee_payer_balance(feePayerBalanceStr);
     auto inputString = input.SerializeAsString();
-    auto inputData = TW::Data(inputString.begin(), inputString.end());
+    auto inputStrData = TW::Data(inputString.begin(), inputString.end());
     /// Step 2: Obtain preimage hash
-    const auto preImageHashesData = TransactionCompiler::preImageHashes(coin, inputData);
+    const auto preImageHashesData = TransactionCompiler::preImageHashes(coin, inputStrData);
     auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
     preSigningOutput.ParseFromArray(preImageHashesData.data(), (int)preImageHashesData.size());
     auto preImage = preSigningOutput.data();
@@ -262,8 +262,8 @@ TEST(NULSCompiler, CompileWithSignaturesFeePayer) {
     EXPECT_TRUE(publicKey.verify(signature, TW::data(preImageHash)));
     EXPECT_TRUE(feePayerPublicKey.verify(feePayerSignature, TW::data(preImageHash)));
     /// Step 3: Compile transaction info
-    const Data outputData = TransactionCompiler::compileWithSignatures(
-        coin, inputData, {signature, feePayerSignature}, {publicKeyData, feePayerPublicKeyData});
+    Data outputData = TransactionCompiler::compileWithSignatures(
+        coin, inputStrData, {signature, feePayerSignature}, {publicKeyData, feePayerPublicKeyData});
     const auto ExpectedEncoded = parse_hex(
         "02009f3ffb620000d202170100014f019a4227bff89d51590fbf53fbd98d994485f801000100a0860100000000"
         "00000000000000000000000000000000000000000000000000080000000000000000001701000152a6388c8bf5"
@@ -276,16 +276,16 @@ TEST(NULSCompiler, CompileWithSignaturesFeePayer) {
         "30440220140e46b260942a8475f38df39bf54a2eea56c77199fc7ba775aa4b7f147d0d2102206c82705cba509f"
         "37ba0e35520a97bccb71a9e35cadcb8d95dd7fde5c8aa9e428");
     const auto ExpectedTx = std::string(ExpectedEncoded.begin(), ExpectedEncoded.end());
-    EXPECT_EQ(outputData.size(), 433);
+    EXPECT_EQ(outputData.size(), 433ul);
     TW::NULS::Proto::SigningOutput signingOutput;
     ASSERT_TRUE(signingOutput.ParseFromArray(outputData.data(), (int)outputData.size()));
     EXPECT_EQ(signingOutput.encoded(), ExpectedTx);
-    EXPECT_EQ(signingOutput.encoded().size(), 430);
+    EXPECT_EQ(signingOutput.encoded().size(), 430ul);
 
     { // Double check: check if simple signature process gives the same result. Note that private
       // keys were not used anywhere up to this point.
         TW::NULS::Proto::SigningInput signingInput;
-        ASSERT_TRUE(signingInput.ParseFromArray(inputData.data(), (int)inputData.size()));
+        ASSERT_TRUE(signingInput.ParseFromArray(inputStrData.data(), (int)inputStrData.size()));
         auto key = parse_hex("0x48c91cd24a27a1cdc791022ff39316444229db1c466b3b1841b40c919dee3002");
         signingInput.set_private_key(key.data(), key.size());
         auto feePayerPrivateKey =
@@ -299,11 +299,11 @@ TEST(NULSCompiler, CompileWithSignaturesFeePayer) {
     }
 
     { // Negative: inconsistent signatures & publicKeys
-        const Data outputData = TransactionCompiler::compileWithSignatures(
-            coin, inputData, {signature, signature}, {publicKeyData});
+        outputData = TransactionCompiler::compileWithSignatures(
+            coin, inputStrData, {signature, signature}, {publicKeyData});
         NULS::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
-        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.encoded().size(), 0ul);
         EXPECT_EQ(output.error(), Common::Proto::Error_signatures_count);
     }
 }
@@ -338,9 +338,9 @@ TEST(NULSCompiler, TokenCompileWithSignaturesFeePayer) {
     input.set_fee_payer_nonce("e05d03df6ede0e22");
     input.set_fee_payer_balance(feePayerBalanceStr);
     auto inputString = input.SerializeAsString();
-    auto inputData = TW::Data(inputString.begin(), inputString.end());
+    auto inputStrData = TW::Data(inputString.begin(), inputString.end());
     /// Step 2: Obtain preimage hash
-    const auto preImageHashesData = TransactionCompiler::preImageHashes(coin, inputData);
+    const auto preImageHashesData = TransactionCompiler::preImageHashes(coin, inputStrData);
     auto preSigningOutput = TW::TxCompiler::Proto::PreSigningOutput();
     preSigningOutput.ParseFromArray(preImageHashesData.data(), (int)preImageHashesData.size());
     auto preImage = preSigningOutput.data();
@@ -372,8 +372,8 @@ TEST(NULSCompiler, TokenCompileWithSignaturesFeePayer) {
     EXPECT_TRUE(publicKey.verify(signature, TW::data(preImageHash)));
     EXPECT_TRUE(feePayerPublicKey.verify(feePayerSignature, TW::data(preImageHash)));
     /// Step 3: Compile transaction info
-    const Data outputData = TransactionCompiler::compileWithSignatures(
-        coin, inputData, {signature, feePayerSignature}, {publicKeyData, feePayerPublicKeyData});
+    Data outputData = TransactionCompiler::compileWithSignatures(
+        coin, inputStrData, {signature, feePayerSignature}, {publicKeyData, feePayerPublicKeyData});
     const auto ExpectedEncoded = parse_hex(
         "02004c4efb620000d2021701000152a6388c8bf54e8fcd73cc824813bfef0912299b09000100a0860100000000"
         "0000000000000000000000000000000000000000000000000008000000000000000000170100014f019a4227bf"
@@ -386,16 +386,16 @@ TEST(NULSCompiler, TokenCompileWithSignaturesFeePayer) {
         "3045022100ff6f45a1c3856f9ea954baca6b2988295bbb22c958f87f0d3baf9989930549530220426ecb152051"
         "3710b99ab50e1f6c7e21b0175adef08aa05070bb9bfca8a001d8");
     const auto ExpectedTx = std::string(ExpectedEncoded.begin(), ExpectedEncoded.end());
-    EXPECT_EQ(outputData.size(), 434);
+    EXPECT_EQ(outputData.size(), 434ul);
     TW::NULS::Proto::SigningOutput signingOutput;
     ASSERT_TRUE(signingOutput.ParseFromArray(outputData.data(), (int)outputData.size()));
     EXPECT_EQ(signingOutput.encoded(), ExpectedTx);
-    EXPECT_EQ(signingOutput.encoded().size(), 431);
+    EXPECT_EQ(signingOutput.encoded().size(), 431ul);
 
     { // Double check: check if simple signature process gives the same result. Note that private
       // keys were not used anywhere up to this point.
         TW::NULS::Proto::SigningInput signingInput;
-        ASSERT_TRUE(signingInput.ParseFromArray(inputData.data(), (int)inputData.size()));
+        ASSERT_TRUE(signingInput.ParseFromArray(inputStrData.data(), (int)inputStrData.size()));
         auto key = parse_hex("0x48c91cd24a27a1cdc791022ff39316444229db1c466b3b1841b40c919dee3002");
         signingInput.set_private_key(key.data(), key.size());
         auto feePayerPrivateKey =
@@ -409,11 +409,11 @@ TEST(NULSCompiler, TokenCompileWithSignaturesFeePayer) {
     }
 
     { // Negative: inconsistent signatures & publicKeys
-        const Data outputData = TransactionCompiler::compileWithSignatures(
-            coin, inputData, {signature, signature}, {publicKeyData});
+        outputData = TransactionCompiler::compileWithSignatures(
+            coin, inputStrData, {signature, signature}, {publicKeyData});
         NULS::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
-        EXPECT_EQ(output.encoded().size(), 0);
+        EXPECT_EQ(output.encoded().size(), 0ul);
         EXPECT_EQ(output.error(), Common::Proto::Error_signatures_count);
     }
 }

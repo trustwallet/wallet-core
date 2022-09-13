@@ -59,3 +59,10 @@ TEST(IOSTAddress, FromPrivateKey) {
     auto address = wallet.deriveAddress(TWCoinTypeIOST);
     ASSERT_EQ(address, "4av8w81EyzUgHonsVWqfs15WM4Vrpgox4BYYQWhNQDVu");
 }
+
+TEST(IOSTAddress, EqualOperator) {
+    auto acnt1 = Account("account1");
+    auto acnt2 = Account("account2");
+    ASSERT_TRUE(acnt1 == acnt1);
+    ASSERT_FALSE(acnt1 == acnt2);
+}

@@ -15,6 +15,11 @@ using namespace TW;
 
 namespace TW::Nimiq::tests {
 
+TEST(NimiqAddress, Create) {
+    EXPECT_ANY_THROW(new Address(""));
+    EXPECT_ANY_THROW(new Address(Data{}));
+}
+
 TEST(NimiqAddress, IsValid) {
     // No address
     ASSERT_FALSE(Address::isValid(""));
@@ -26,6 +31,10 @@ TEST(NimiqAddress, IsValid) {
     ASSERT_FALSE(Address::isValid("NQ86 2H8F YGU5 RM77 QSN9 LYLH C56A CYYR 0ML"));
     // Too long
     ASSERT_FALSE(Address::isValid("NQ86 2H8F YGU5 RM77 QSN9 LYLH C56A CYYR 0MLA 0MLA"));
+    // Is not Base32
+    ASSERT_FALSE(Address::isValid("NQ86 2H8F YGU5 RM77 QSN9 LYLH C56A CYYR ####"));
+    // Invalid checksum
+    ASSERT_FALSE(Address::isValid("NQXX 2H8F YGU5 RM77 QSN9 LYLH C56A CYYR 0MLA"));
     // Valid, without spaces
     ASSERT_TRUE(Address::isValid("NQ862H8FYGU5RM77QSN9LYLHC56ACYYR0MLA"));
     // Valid, normal format

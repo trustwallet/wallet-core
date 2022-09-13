@@ -36,6 +36,9 @@ TEST(WavesAddress, FromPrivateKey) {
     const auto address = Address(publicKeyCurve25519);
 
     ASSERT_EQ(address.string(), "3P2uzAzX9XTu1t32GkWw68YFFLwtapWvDds");
+
+    const auto publicKeySECP256k1 = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    EXPECT_ANY_THROW(new Address(publicKeySECP256k1));
 }
 
 TEST(WavesAddress, FromPublicKey) {
@@ -45,6 +48,13 @@ TEST(WavesAddress, FromPublicKey) {
     const auto address = Address(publicKey);
 
     ASSERT_EQ(address.string(), "3P2uzAzX9XTu1t32GkWw68YFFLwtapWvDds");
+
+    const auto address2 = Address(Data(address.bytes.begin(), address.bytes.end()));
+    ASSERT_EQ(address2.string(), "3P2uzAzX9XTu1t32GkWw68YFFLwtapWvDds");
+}
+
+TEST(WavesAddress, FromData) {
+    EXPECT_ANY_THROW(new Address(Data{}));
 }
 
 TEST(WavesAddress, Invalid) {
