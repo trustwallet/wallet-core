@@ -1,4 +1,4 @@
-`name: Linux SampleApps CI
+name: Linux SampleApps CI
 
 on:
   push:
