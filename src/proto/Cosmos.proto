@@ -320,6 +320,6 @@ message SigningOutput {
     string error = 4;
 
 
-    // signatures array
+    // signatures array json string
     string signature_json = 5;
 }

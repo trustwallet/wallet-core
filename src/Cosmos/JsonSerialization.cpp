@@ -28,6 +28,13 @@ const string TYPE_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 const string TYPE_EVMOS_PREFIX_PUBLIC_KEY = "ethermint/PubKeyEthSecp256k1";
 const string TYPE_PREFIX_WASM_MSG_EXECUTE = "wasm/MsgExecuteContract";
 
+static inline std::string coinTypeToPrefixPublicKey(TWCoinType coin) noexcept {
+    if (coin == TWCoinTypeNativeEvmos) {
+        return TYPE_EVMOS_PREFIX_PUBLIC_KEY;
+    }
+    return TYPE_PREFIX_PUBLIC_KEY;
+}
+
 static string broadcastMode(Proto::BroadcastMode mode) {
     switch (mode) {
     case Proto::BroadcastMode::BLOCK:
@@ -187,7 +194,7 @@ static json messagesJSON(const Proto::SigningInput& input) {
 json signatureJSON(const Data& signature, const Data& pubkey, TWCoinType coin) {
     return {
         {"pub_key", {
-            {"type", coin == TWCoinType::TWCoinTypeNativeEvmos ? TYPE_EVMOS_PREFIX_PUBLIC_KEY : TYPE_PREFIX_PUBLIC_KEY},
+            {"type", coinTypeToPrefixPublicKey(coin)},
             {"value", Base64::encode(pubkey)}
         }},
         {"signature", Base64::encode(signature)}
