@@ -73,10 +73,14 @@ const { initWasm, TW } = require("@trustwallet/wallet-core");
         console.log('- Any method from Wallet-Core, through following namespaces:');
         console.log("    CoinType                                     CoinType.bitcoin.value");
         console.log("    HDWallet                                     wallet = HDWallet.create(256, ''); wallet.mnemonic()");
+        console.log("    PrivateKey                                   pk = PrivateKey.createWithData(HexCoding.decode('afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5'))");
+        console.log("    PublicKey                                    pubkey = PublicKey.createWithData(HexCoding.decode('0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1'), PublicKeyType.secp256k1)");
+        console.log("                                                 pubkey.verify(HexCoding.decode('0x673b54a91d87cfb9389e54cc55b1a9343a6eb9f2ea1f449cb19a248a86bb904c1efb109f8cf655c4f510211053c1696e52c75843c5c803fa1b78fe0c263f468201'), HexCoding.decode('0001020304050607080910111213141519171819202122232425262728293031'))");
         console.log("    AnyAddress                                   AnyAddress.createWithString('EQCTVra3xPXenA1wNFMba2taTsc9XMdfCWC7FJpGXjk7', CoinType.solana).description()");
         console.log("    CoinTypeConfiguration                        CoinTypeConfiguration.getSymbol(CoinType.bitcoin)");
         console.log("    Mnemonmic                                    Mnemonic.isValidWord('acid')");
         console.log("    HexCoding                                    HexCoding.encode(HexCoding.decode('01ab02'))");
+        console.log("    and some others... (Curve, PublicKeyType)");
         console.log();
         console.log("- Convenience methods:");
         console.log("    walletCreate([strength], [name])             walletCreate(128)");
@@ -153,7 +157,18 @@ const { initWasm, TW } = require("@trustwallet/wallet-core");
     console.log();
 
     process.stdout.write("Initializing WalletCore library ...");
-    const { CoinType, HDWallet, AnyAddress, CoinTypeConfiguration, Mnemonic, HexCoding } = await initWasm();
+    const {
+        CoinType,
+        HDWallet,
+        PrivateKey,
+        PublicKey,
+        AnyAddress,
+        CoinTypeConfiguration,
+        Mnemonic,
+        HexCoding,
+        Curve,
+        PublicKeyType,
+    } = await initWasm();
     console.log(` done.`);
     console.log();
     console.log(`Type 'help()' for help`);
@@ -165,10 +180,15 @@ const { initWasm, TW } = require("@trustwallet/wallet-core");
 
     local.context.CoinType = CoinType;
     local.context.HDWallet = HDWallet;
+    local.context.PrivateKey = PrivateKey;
+    local.context.PublicKey = PublicKey;
     local.context.AnyAddress = AnyAddress;
     local.context.CoinTypeConfiguration = CoinTypeConfiguration;
     local.context.Mnemonic = Mnemonic;
     local.context.HexCoding = HexCoding;
+    local.context.HexCoding = HexCoding;
+    local.context.Curve = Curve;
+    local.context.PublicKeyType = PublicKeyType;
 
     local.context.help = help;
     local.context.walletCreate = walletCreate;

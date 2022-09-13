@@ -73,3 +73,9 @@ jobs:
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
+    - name: Build and run devconsole.ts
+      run: |
+        cd samples/typescript/devconsole.ts
+        npm install
+        npm run build
+        echo "help \n HexCoding.encode(PrivateKey.createWithData(HexCoding.decode('afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5')).getPublicKeySecp256k1(true).data()) \n.exit" | npm run start
