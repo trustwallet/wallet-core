@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,6 +12,7 @@
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <gtest/gtest.h>
 
+namespace TW::Binance::tests {
 
 TEST(TWBinanceSmartChainCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeSmartChain));
@@ -34,11 +35,5 @@ TEST(TWBinanceSmartChainCoinType, TWCoinType) {
     assertStringsEqual(name, "BNB Smart Chain");
 }
 
-TEST(TWBinanceSmartChainLegacyCoinType, TWCoinType) {
-    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSmartChainLegacy));
-    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSmartChainLegacy));
+} // namespace TW::Binance::tests
 
-    ASSERT_EQ(10000714, TWCoinTypeSmartChainLegacy);
-    assertStringsEqual(id, "bsc");
-    assertStringsEqual(name, "Smart Chain Legacy");
-}
