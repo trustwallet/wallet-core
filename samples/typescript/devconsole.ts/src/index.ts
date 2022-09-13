@@ -101,17 +101,6 @@ const { initWasm, TW } = require("@trustwallet/wallet-core");
     }
 
     function walletCreate(strength: number = 256, name: string = ''): any {
-        /*
-        if (name === '') {
-            let input = await inquirer.prompt([{
-                type: 'input',
-                name: 'name',
-                message: "Wallet name:",
-            }]);
-            name = input.name;
-        }
-        */
-
         wallet = TestWallet.createRandom(name, strength);
         console.log(`Wallet ${wallet.name} created, mnemonic: ${wallet.wallet.mnemonic()}`);
         walletStatus();
