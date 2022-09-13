@@ -61,7 +61,7 @@ class CoinTestGen
     template = ERB.new(File.read(path), nil, '-')
     result = template.result(binding)
 
-    folder = 'tests/' + format_name(coin['name'])
+    folder = 'tests/' + format_name(coin['id'])
     file = 'TWCoinTypeTests.cpp'
     FileUtils.mkdir_p folder
     path = File.join(folder, file)
