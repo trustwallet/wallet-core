@@ -60,15 +60,7 @@ jobs:
         cd samples/typescript/devconsole.ts
         npm install
         npm run build
-        # note: -e for echo is needed for \n's to work on bash
-        echo -e \
-          "privkey = PrivateKey.createWithData(HexCoding.decode('afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5')) \n " \
-          "HexCoding.encode(privkey.data()) \n " \
-          "pubkey = privkey.getPublicKeySecp256k1(true) \n " \
-          "HexCoding.encode(pubkey.data()) \n " \
-          "pubkey.verify(HexCoding.decode('673b54a91d87cfb9389e54cc55b1a9343a6eb9f2ea1f449cb19a248a86bb904c1efb109f8cf655c4f510211053c1696e52c75843c5c803fa1b78fe0c263f468201'), HexCoding.decode('0001020304050607080910111213141519171819202122232425262728293031')) \n " \
-          ".exit " \
-          | npm run start
+        npm run test
     - name: Install Go
       env:
         GO_VERSION: 1.16.12
