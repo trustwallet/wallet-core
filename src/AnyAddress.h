@@ -22,10 +22,6 @@ public:
 
     enum TWCoinType coin;
 
-    AnyAddress(std::string address, enum TWCoinType coin) : address(std::move(address)), coin(coin) {
-
-    }
-
     static AnyAddress* createAddress(const std::string& address, enum TWCoinType coin);
     static AnyAddress* createAddress(const PublicKey& publicKey, enum TWCoinType coin);
 
@@ -40,5 +36,6 @@ inline bool operator==(const AnyAddress& lhs, const AnyAddress& rhs) {
 
 /// Wrapper for C interface.
 struct TWAnyAddress {
+    // Pointer to the underlying implementation
     TW::AnyAddress* impl;
 };

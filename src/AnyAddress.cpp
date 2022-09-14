@@ -12,11 +12,7 @@
 namespace TW {
 
 Data AnyAddress::getData() const {
-    Data data;
-    try {
-        data = TW::addressToData(coin, address);
-    } catch (...) {}
-    return data;
+    return TW::addressToData(coin, address);
 }
 
 AnyAddress* AnyAddress::createAddress(const std::string& address, enum TWCoinType coin) {
@@ -25,12 +21,12 @@ AnyAddress* AnyAddress::createAddress(const std::string& address, enum TWCoinTyp
         return nullptr;
     }
 
-    return new AnyAddress(normalized, coin);
+    return new AnyAddress{.address = std::move(normalized), .coin = coin};
 }
 
 AnyAddress* AnyAddress::createAddress(const PublicKey& publicKey, enum TWCoinType coin) {
     auto derivedAddress = TW::deriveAddress(coin, publicKey);
-    return new AnyAddress(derivedAddress, coin);
+    return new AnyAddress{.address = std::move(derivedAddress), .coin = coin};
 }
 
 } // namespace TW
