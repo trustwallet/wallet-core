@@ -4,9 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Ripple/Address.h"
-#include "Ripple/Transaction.h"
-#include "Ripple/BinaryCoding.h"
+#include "XRP/Address.h"
+#include "XRP/Transaction.h"
+#include "XRP/BinaryCoding.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
