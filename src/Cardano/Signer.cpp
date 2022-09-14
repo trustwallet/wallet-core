@@ -60,11 +60,15 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
     tx.ttl = input.ttl();
 
     if (input.has_register_staking_key()) {
-        const auto key = data(input.register_staking_key().staking_key());
+        const auto stakingAddress = AddressV3(input.register_staking_key().staking_address());
+        // here we need the bare staking key
+        const auto key = stakingAddress.bytes;
         tx.certificates.push_back(Certificate{Certificate::SkatingKeyRegistration, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data()});
     }
     if (input.has_delegate()) {
-        const auto key = data(input.delegate().staking_key());
+        const auto stakingAddress = AddressV3(input.delegate().staking_address());
+        // here we need the bare staking key
+        const auto key = stakingAddress.bytes;
         const auto poolId = data(input.delegate().pool_id());
         tx.certificates.push_back(Certificate{Certificate::Delegation, {CertificateKey{CertificateKey::AddressKeyHash, key}}, poolId});
     }
@@ -75,7 +79,9 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
         tx.withdrawals.push_back(Withdrawal{key, amount});
     }
     if (input.has_deregister_staking_key()) {
-        const auto key = data(input.deregister_staking_key().staking_key());
+        const auto stakingAddress = AddressV3(input.deregister_staking_key().staking_address());
+        // here we need the bare staking key
+        const auto key = stakingAddress.bytes;
         tx.certificates.push_back(Certificate{Certificate::StakingKeyDeregistration, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data()});
     }
 
@@ -106,10 +112,7 @@ Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Dat
 
         // Also add the derived staking private key (the 2nd half) and associated address; because staking keys also need signature
         const auto stakingPrivKeyData = deriveStakingPrivateKey(privateKeyData);
-        const auto stakingAddresss = address.getStakingAddress();
-        const auto stakingKeyHash = hex(address.getStakingKeyHash());
-        privateKeys[stakingAddresss] = stakingPrivKeyData;
-        privateKeys[stakingKeyHash] = stakingPrivKeyData;
+        privateKeys[address.getStakingAddress()] = stakingPrivKeyData;
     }
 
     // collect every unique input UTXO address, preserving order
@@ -122,16 +125,13 @@ Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Dat
     }
     // Staking key is also an address that needs signature
     if (input.has_register_staking_key()) {
-        const auto stakingKey = hex(data(input.register_staking_key().staking_key()));
-        addresses.push_back(stakingKey);
+        addresses.push_back(input.register_staking_key().staking_address());
     }
     if (input.has_deregister_staking_key()) {
-        const auto stakingKey = hex(data(input.deregister_staking_key().staking_key()));
-        addresses.push_back(stakingKey);
+        addresses.push_back(input.deregister_staking_key().staking_address());
     }
     if (input.has_delegate()) {
-        const auto stakingKey = hex(data(input.delegate().staking_key()));
-        addresses.push_back(stakingKey);
+        addresses.push_back(input.delegate().staking_address());
     }
     if (input.has_withdraw()) {
         addresses.push_back(input.withdraw().staking_address());

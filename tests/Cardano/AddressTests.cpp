@@ -480,18 +480,30 @@ TEST(CardanoAddress, AssignmentOperatorLegacy) {
 
 TEST(CardanoAddress, StakingKey) {
     {
+        auto address = AddressV3("addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23");
+        EXPECT_EQ(hex(address.data()), "01df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b");
+        EXPECT_EQ(address.getStakingAddress(), "stake1u80jysjtdzqt88jt4jx93h5lumfr67d273r4vwyasfa2pxcwxllmx");
+        EXPECT_EQ(hex(AddressV3(address.getStakingAddress()).data()), "e1df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b");
+        EXPECT_EQ(hex(AddressV3(address.getStakingAddress()).bytes), "df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b");
+    }
+    {
         auto address = AddressV3("addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq");
-        EXPECT_EQ(hex(address.bytes), "8d98bea0414243dc84070f96265577e7e6cf702d62e871016885034ecc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468");
+        EXPECT_EQ(hex(address.data()), "018d98bea0414243dc84070f96265577e7e6cf702d62e871016885034ecc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468");
         EXPECT_EQ(address.getStakingAddress(), "stake1u8xxf0e93w8rxr8sehvlmvp7zz6wftqg7hdplhkxyg4rg6qwgxzhc");
         EXPECT_EQ(hex(AddressV3(address.getStakingAddress()).data()), "e1cc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468");
-        EXPECT_EQ(hex(address.getStakingKeyHash()), "cc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468");
+        EXPECT_EQ(hex(AddressV3(address.getStakingAddress()).bytes), "cc64bf258b8e330cf0cdd9fdb03e10b4e4ac08f5da1fdec6222a3468");
     }
     {
         auto address = AddressV3("addr1q8lcljuzfg8yvpuv94x02sytmwd8jsalzf6u0j8muhq69wng9ejcvpyczmw0zx7wguq2dml4xdl2wj3k7uexsfnxep2q9ja352");
-        EXPECT_EQ(hex(address.bytes), "ff8fcb824a0e46078c2d4cf5408bdb9a7943bf1275c7c8fbe5c1a2ba682e6586049816dcf11bce4700a6eff5337ea74a36f732682666c854");
+        EXPECT_EQ(hex(address.data()), "01ff8fcb824a0e46078c2d4cf5408bdb9a7943bf1275c7c8fbe5c1a2ba682e6586049816dcf11bce4700a6eff5337ea74a36f732682666c854");
         EXPECT_EQ(address.getStakingAddress(), "stake1u95zuevxqjvpdh83r08ywq9xal6nxl48fgm0wvngyenvs4qh0hqf9");
         EXPECT_EQ(hex(AddressV3(address.getStakingAddress()).data()), "e1682e6586049816dcf11bce4700a6eff5337ea74a36f732682666c854");
-        EXPECT_EQ(hex(address.getStakingKeyHash()), "682e6586049816dcf11bce4700a6eff5337ea74a36f732682666c854");
+        EXPECT_EQ(hex(AddressV3(address.getStakingAddress()).bytes), "682e6586049816dcf11bce4700a6eff5337ea74a36f732682666c854");
+    }
+    {   // negative case: cannot get staking address from non-base address
+        auto address = AddressV3("stake1u95zuevxqjvpdh83r08ywq9xal6nxl48fgm0wvngyenvs4qh0hqf9");
+        EXPECT_EQ(hex(address.data()), "e1682e6586049816dcf11bce4700a6eff5337ea74a36f732682666c854");
+        EXPECT_EQ(address.getStakingAddress(), "");
     }
 }
 

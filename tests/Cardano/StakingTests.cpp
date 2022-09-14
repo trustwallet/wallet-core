@@ -27,7 +27,6 @@ namespace TW::Cardano::tests {
 const auto privateKeyTest1 = "089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448a3566990b7785bd48c330875b1e0d03caaed0e67cecc42075dce1c7a13b1c49240508848ac82f603391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf1290dbd508e5ec71afaea98da2df1533c22ef02a26bb87b31907d0b2738fb7785b38d53aa68fc01230784c9209b2b2a2faf28491b3b1f1d221e63e704bbd0403c4154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e";
 const auto ownAddress1 = "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23";
 const auto stakingAddress1 = "stake1u80jysjtdzqt88jt4jx93h5lumfr67d273r4vwyasfa2pxcwxllmx";
-const auto stakingKey1 = "df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b";
 const auto poolIdNufi = "7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6";
 
 TEST(CardanoStaking, RegisterStakingKey) {
@@ -35,8 +34,8 @@ TEST(CardanoStaking, RegisterStakingKey) {
     const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
-    const auto stakingKeyHash = AddressV3(publicKey).getStakingKeyHash();
-    EXPECT_EQ(hex(stakingKeyHash), stakingKey1);
+    const auto stakingAddress = AddressV3(publicKey).getStakingAddress();
+    EXPECT_EQ(stakingAddress, stakingAddress1);
     const auto poolId = parse_hex(poolIdNufi);
 
     Proto::SigningInput input;
@@ -56,7 +55,7 @@ TEST(CardanoStaking, RegisterStakingKey) {
     input.set_ttl(69986091ul);
 
     // Register staking key, 2 ADA deposit
-    input.mutable_register_staking_key()->set_staking_key(stakingKeyHash.data(), stakingKeyHash.size());
+    input.mutable_register_staking_key()->set_staking_address(stakingAddress);
     input.mutable_register_staking_key()->set_deposit_amount(2000000ul);
 
     auto signer = Signer(input);
@@ -82,8 +81,8 @@ TEST(CardanoStaking, DeregisterStakingKey) {
     const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
-    const auto stakingKeyHash = AddressV3(publicKey).getStakingKeyHash();
-    EXPECT_EQ(hex(stakingKeyHash), stakingKey1);
+    const auto stakingAddress = AddressV3(publicKey).getStakingAddress();
+    EXPECT_EQ(stakingAddress, stakingAddress1);
     const auto poolId = parse_hex(poolIdNufi);
 
     Proto::SigningInput input;
@@ -103,7 +102,7 @@ TEST(CardanoStaking, DeregisterStakingKey) {
     input.set_ttl(69986091ul);
 
     // Deregister staking key, get back 2 ADA deposit
-    input.mutable_deregister_staking_key()->set_staking_key(stakingKeyHash.data(), stakingKeyHash.size());
+    input.mutable_deregister_staking_key()->set_staking_address(stakingAddress);
     input.mutable_deregister_staking_key()->set_undeposit_amount(2000000ul);
 
     auto signer = Signer(input);
@@ -129,8 +128,8 @@ TEST(CardanoStaking, Redelegate) {
     const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
-    const auto stakingKeyHash = AddressV3(publicKey).getStakingKeyHash();
-    EXPECT_EQ(hex(stakingKeyHash), stakingKey1);
+    const auto stakingAddress = AddressV3(publicKey).getStakingAddress();
+    EXPECT_EQ(stakingAddress, stakingAddress1);
     const auto poolId = parse_hex(poolIdNufi);
 
     Proto::SigningInput input;
@@ -150,7 +149,7 @@ TEST(CardanoStaking, Redelegate) {
     input.set_ttl(69986091ul);
 
     // Delegate, no deposit
-    input.mutable_delegate()->set_staking_key(stakingKeyHash.data(), stakingKeyHash.size());
+    input.mutable_delegate()->set_staking_address(stakingAddress);
     input.mutable_delegate()->set_pool_id(poolId.data(), poolId.size());
     input.mutable_delegate()->set_deposit_amount(0ul);
 
@@ -177,8 +176,8 @@ TEST(CardanoStaking, RegisterAndDelegate_similar53339b) {
     const auto publicKey = PrivateKey(privateKeyData).getPublicKey(TWPublicKeyTypeED25519Cardano);
     const auto ownAddress = AddressV3(publicKey).string();
     EXPECT_EQ(ownAddress, ownAddress1);
-    const auto stakingKeyHash = AddressV3(publicKey).getStakingKeyHash();
-    EXPECT_EQ(hex(stakingKeyHash), stakingKey1);
+    const auto stakingAddress = AddressV3(publicKey).getStakingAddress();
+    EXPECT_EQ(stakingAddress, stakingAddress1);
     const auto poolId = parse_hex(poolIdNufi);
 
     Proto::SigningInput input;
@@ -204,11 +203,11 @@ TEST(CardanoStaking, RegisterAndDelegate_similar53339b) {
     input.set_ttl(69885081ul);
 
     // Register staking key, 2 ADA desposit
-    input.mutable_register_staking_key()->set_staking_key(stakingKeyHash.data(), stakingKeyHash.size());
+    input.mutable_register_staking_key()->set_staking_address(stakingAddress);
     input.mutable_register_staking_key()->set_deposit_amount(2000000ul);
 
     // Delegate
-    input.mutable_delegate()->set_staking_key(stakingKeyHash.data(), stakingKeyHash.size());
+    input.mutable_delegate()->set_staking_address(stakingAddress);
     input.mutable_delegate()->set_pool_id(poolId.data(), poolId.size());
     input.mutable_delegate()->set_deposit_amount(0ul);
 
@@ -271,7 +270,6 @@ TEST(CardanoStaking, Withdraw_similarf48098) {
     EXPECT_EQ(ownAddress, ownAddress1);
     const auto stakingAddress = AddressV3(publicKey).getStakingAddress();
     EXPECT_EQ(stakingAddress, stakingAddress1);
-    EXPECT_EQ(hex(AddressV3(stakingAddress).data()), std::string("e1") + stakingKey1);
 
     Proto::SigningInput input;
     auto* utxo1 = input.add_utxos();

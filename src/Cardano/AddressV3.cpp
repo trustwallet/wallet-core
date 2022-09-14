@@ -224,18 +224,11 @@ Data AddressV3::data() const noexcept {
     return raw;
 }
 
-Data AddressV3::getStakingKeyHash() const noexcept {
-    if (kind != Kind_Base || bytes.size() != 2 * HashSize) {
-        return Data();
-    }
-    return TW::subData(bytes, HashSize, HashSize);
-}
-
 std::string AddressV3::getStakingAddress() const noexcept {
-    const auto& stakingKeyHash = getStakingKeyHash();
-    if (kind != Kind_Base || stakingKeyHash.size() != HashSize) {
+    if (kind != Kind_Base || bytes.size() != 2 * HashSize) {
         return "";
     }
+    const auto& stakingKeyHash = TW::subData(bytes, HashSize, HashSize);
     return createReward(this->networkId, stakingKeyHash).string();
 }
 

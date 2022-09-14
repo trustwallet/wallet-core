@@ -98,10 +98,8 @@ class AddressV3 {
 
     /// Return the binary data representation (keys appended, internal format)
     Data data() const noexcept;
-    /// Return the staking address contained in this address
+    /// Return the staking address associated to (contained in) this address
     std::string getStakingAddress() const noexcept;
-    /// Return the staking key (second of the two appended key hashes)
-    Data getStakingKeyHash() const noexcept;
 
     // First encoded byte, from networkId and Kind
     static uint8_t firstByte(NetworkId networkId, Kind kind);
