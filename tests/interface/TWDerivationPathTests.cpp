@@ -52,9 +52,9 @@ TEST(TWDerivationPath, CreateWithCoin) {
 
     EXPECT_EQ(5u, TWDerivationPathIndicesCount(path.get()));
     EXPECT_EQ(TWPurposeBIP44, TWDerivationPathPurpose(path.get()));
-    EXPECT_EQ(0u, TWDerivationPathCoin(path.get()));
+    EXPECT_EQ(60u, TWDerivationPathCoin(path.get()));
     EXPECT_EQ(0u, TWDerivationPathAccount(path.get()));
     EXPECT_EQ(0u, TWDerivationPathChange(path.get()));
     EXPECT_EQ(0u, TWDerivationPathAddress(path.get()));
-    assertStringsEqual(WRAPS(TWDerivationPathDescription(path.get())), "m/60'/0'/0'/0/0");
+    assertStringsEqual(WRAPS(TWDerivationPathDescription(path.get())), "m/44'/60'/0'/0/0");
 }
