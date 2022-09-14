@@ -94,7 +94,7 @@ message Withdraw {
     string staking_address = 1;
 
     // Withdrawal amount
-    uint64 amount = 2;
+    uint64 withdraw_amount = 2;
 }
 
 message TransactionPlan {

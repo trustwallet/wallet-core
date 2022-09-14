@@ -71,7 +71,7 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
     if (input.has_withdraw()) {
         const auto stakingAddress = AddressV3(input.withdraw().staking_address());
         const auto key = stakingAddress.data();
-        const auto amount = input.withdraw().amount();
+        const auto amount = input.withdraw().withdraw_amount();
         tx.withdrawals.push_back(Withdrawal{key, amount});
     }
     if (input.has_deregister_staking_key()) {
@@ -353,7 +353,7 @@ uint64_t sumUndeposits(const Proto::SigningInput& input) {
         sum += input.deregister_staking_key().undeposit_amount();
     }
     if (input.has_withdraw()) {
-        sum += input.withdraw().amount();
+        sum += input.withdraw().withdraw_amount();
     }
     return sum;
 }

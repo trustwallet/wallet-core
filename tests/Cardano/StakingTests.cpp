@@ -290,7 +290,7 @@ TEST(CardanoStaking, Withdraw_similarf48098) {
     input.set_ttl(71678326ul);
 
     input.mutable_withdraw()->set_staking_address(stakingAddress);
-    input.mutable_withdraw()->set_amount(3468ul);
+    input.mutable_withdraw()->set_withdraw_amount(3468ul);
 
     {
         // run plan and check result
