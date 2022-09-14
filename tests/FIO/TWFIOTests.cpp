@@ -20,16 +20,6 @@ namespace TW::FIO::TWFIOTests {
 
 using namespace std;
 
-namespace {
-
-const Data chainId = parse_hex("4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77");
-// 5KEDWtAUJcFX6Vz38WXsAQAv2geNqT7UaZC8gYu9kTuryr3qkri FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf
-const PrivateKey privKeyBA = PrivateKey(parse_hex("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035"));
-const PublicKey pubKey6M = privKeyBA.getPublicKey(TWPublicKeyTypeSECP256k1);
-const Address addr6M(pubKey6M);
-
-}
-
 TEST(TWFIO, Address) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035").get()));
     ASSERT_NE(nullptr, privateKey.get());
@@ -48,10 +38,16 @@ TEST(TWFIO, Address) {
     ASSERT_TRUE(TWAnyAddressEqual(address.get(), address2.get()));
 }
 
+const Data gChainId = parse_hex("4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77");
+// 5KEDWtAUJcFX6Vz38WXsAQAv2geNqT7UaZC8gYu9kTuryr3qkri FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf
+const PrivateKey privKeyBA = PrivateKey(parse_hex("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035"));
+const PublicKey pubKey6M = privKeyBA.getPublicKey(TWPublicKeyTypeSECP256k1);
+const Address addr6M(pubKey6M);
+
 TEST(TWFIO, RegisterFioAddress) {
     Proto::SigningInput input;
     input.set_expiry(1579784511);
-    input.mutable_chain_params()->set_chain_id(string(chainId.begin(), chainId.end()));
+    input.mutable_chain_params()->set_chain_id(string(gChainId.begin(), gChainId.end()));
     input.mutable_chain_params()->set_head_block_number(39881);
     input.mutable_chain_params()->set_ref_block_prefix(4279583376);
     input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
@@ -69,7 +65,7 @@ TEST(TWFIO, RegisterFioAddress) {
 TEST(TWFIO, AddPubAddress) {
     Proto::SigningInput input;
     input.set_expiry(1579729429);
-    input.mutable_chain_params()->set_chain_id(string(chainId.begin(), chainId.end()));
+    input.mutable_chain_params()->set_chain_id(string(gChainId.begin(), gChainId.end()));
     input.mutable_chain_params()->set_head_block_number(11565);
     input.mutable_chain_params()->set_ref_block_prefix(4281229859);
     input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
@@ -96,7 +92,7 @@ TEST(TWFIO, AddPubAddress) {
 TEST(TWFIO, Transfer) {
     Proto::SigningInput input;
     input.set_expiry(1579790000);
-    input.mutable_chain_params()->set_chain_id(string(chainId.begin(), chainId.end()));
+    input.mutable_chain_params()->set_chain_id(string(gChainId.begin(), gChainId.end()));
     input.mutable_chain_params()->set_head_block_number(50000);
     input.mutable_chain_params()->set_ref_block_prefix(4000123456);
     input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
@@ -114,7 +110,7 @@ TEST(TWFIO, Transfer) {
 TEST(TWFIO, RenewFioAddress) {
     Proto::SigningInput input;
     input.set_expiry(1579785000);
-    input.mutable_chain_params()->set_chain_id(string(chainId.begin(), chainId.end()));
+    input.mutable_chain_params()->set_chain_id(string(gChainId.begin(), gChainId.end()));
     input.mutable_chain_params()->set_head_block_number(39881);
     input.mutable_chain_params()->set_ref_block_prefix(4279583376);
     input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
@@ -132,7 +128,7 @@ TEST(TWFIO, RenewFioAddress) {
 TEST(TWFIO, NewFundsRequest) {
     Proto::SigningInput input;
     input.set_expiry(1579785000);
-    input.mutable_chain_params()->set_chain_id(string(chainId.begin(), chainId.end()));
+    input.mutable_chain_params()->set_chain_id(string(gChainId.begin(), gChainId.end()));
     input.mutable_chain_params()->set_head_block_number(39881);
     input.mutable_chain_params()->set_ref_block_prefix(4279583376);
     input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));

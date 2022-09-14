@@ -25,7 +25,15 @@ const string TYPE_PREFIX_MSG_UNDELEGATE = "cosmos-sdk/MsgUndelegate";
 const string TYPE_PREFIX_MSG_REDELEGATE = "cosmos-sdk/MsgBeginRedelegate";
 const string TYPE_PREFIX_MSG_WITHDRAW_REWARD = "cosmos-sdk/MsgWithdrawDelegationReward";
 const string TYPE_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
+const string TYPE_EVMOS_PREFIX_PUBLIC_KEY = "ethermint/PubKeyEthSecp256k1";
 const string TYPE_PREFIX_WASM_MSG_EXECUTE = "wasm/MsgExecuteContract";
+
+static inline std::string coinTypeToPrefixPublicKey(TWCoinType coin) noexcept {
+    if (coin == TWCoinTypeNativeEvmos) {
+        return TYPE_EVMOS_PREFIX_PUBLIC_KEY;
+    }
+    return TYPE_PREFIX_PUBLIC_KEY;
+}
 
 static string broadcastMode(Proto::BroadcastMode mode) {
     switch (mode) {
@@ -183,10 +191,10 @@ static json messagesJSON(const Proto::SigningInput& input) {
     return j;
 }
 
-static json signatureJSON(const Data& signature, const Data& pubkey) {
+json signatureJSON(const Data& signature, const Data& pubkey, TWCoinType coin) {
     return {
         {"pub_key", {
-            {"type", TYPE_PREFIX_PUBLIC_KEY},
+            {"type", coinTypeToPrefixPublicKey(coin)},
             {"value", Base64::encode(pubkey)}
         }},
         {"signature", Base64::encode(signature)}
@@ -204,7 +212,7 @@ json signaturePreimageJSON(const Proto::SigningInput& input) {
     };
 }
 
-json transactionJSON(const Proto::SigningInput& input, const Data& signature) {
+json transactionJSON(const Proto::SigningInput& input, const Data& signature, TWCoinType coin) {
     auto privateKey = PrivateKey(input.private_key());
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     json tx = {
@@ -212,7 +220,7 @@ json transactionJSON(const Proto::SigningInput& input, const Data& signature) {
         {"memo", input.memo()},
         {"msg", messagesJSON(input)},
         {"signatures", json::array({
-            signatureJSON(signature, Data(publicKey.bytes))
+            signatureJSON(signature, Data(publicKey.bytes), coin)
         })}
     };
     return broadcastJSON(tx, input.mode());
