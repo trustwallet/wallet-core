@@ -16,7 +16,7 @@
 
 #include <gtest/gtest.h>
 
-namespace TW::Binance::tests {
+namespace TW::Binance {
 
 TEST(BinanceSmartChain, SignNativeTransfer) {
     // https://explorer.binance.org/smart-testnet/tx/0x6da28164f7b3bc255d749c3ae562e2a742be54c12bf1858b014cc2fe5700684e
@@ -76,4 +76,4 @@ TEST(BinanceSmartChain, SignTokenTransfer) {
     EXPECT_EQ(hex(output.encoded()), expected);
 }
 
-} // namespace TW::Binance::tests
+} // namespace TW::Binance

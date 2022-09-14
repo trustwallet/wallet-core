@@ -9,6 +9,7 @@
 #include <TrustWalletCore/TWBitcoinSigHashType.h>
 #include <gtest/gtest.h>
 
+#include "Bitcoin/OutPoint.h"
 #include "Bitcoin/Script.h"
 #include "Bitcoin/SigHashType.h"
 #include "Bitcoin/Transaction.h"
@@ -16,7 +17,7 @@
 #include "Bitcoin/TransactionSigner.h"
 #include "HexCoding.h"
 #include "proto/Bitcoin.pb.h"
-#include "../bitcoin/TxComparisonHelper.h"
+#include "../Bitcoin/TxComparisonHelper.h"
 #include "../interface/TWTestUtilities.h"
 
 namespace TW::Bitcoin {
