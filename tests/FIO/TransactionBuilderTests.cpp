@@ -15,7 +15,7 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
-namespace TW::FIO::tests {
+namespace TW::FIO::TransactionBuilderTests {
 using namespace std;
 
 const Data chainId = parse_hex("4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77");
@@ -346,4 +346,4 @@ TEST(FIOTransactionBuilder, encodeString) {
     }
 }
 
-} // namespace TW::FIO::tests
+} // namespace TW::FIO::TransactionBuilderTests

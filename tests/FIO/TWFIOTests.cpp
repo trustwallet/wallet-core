@@ -16,7 +16,7 @@
 
 #include <gtest/gtest.h>
 
-namespace TW::FIO::tests {
+namespace TW::FIO::TWFIOTests {
 
 using namespace std;
 
@@ -153,4 +153,4 @@ TEST(TWFIO, NewFundsRequest) {
         output.json().substr(0, 195));
 }
 
-} // namespace TW::FIO::tests
+} // namespace TW::FIO::TWFIOTests
