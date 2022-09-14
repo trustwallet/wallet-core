@@ -11,9 +11,10 @@ import { KeyStore, FileSystemStorage } from "../dist";
 
 describe("KeyStore", async () => {
   it("test importing mnemonic", async () => {
-    const { CoinType } = globalThis.core;
+    const { CoinType, HexCoding } = globalThis.core;
 
     const testDir = "/tmp/wasm-test";
+    const password = "password";
     fs.mkdirSync(testDir, { recursive: true });
 
     const idPrefix = "all-wallet-ids";
@@ -26,22 +27,24 @@ describe("KeyStore", async () => {
 
     const mnemonic =
       "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
-
-    var wallet = await keystore.import(mnemonic, "Coolw", "password", [
+    var wallet = await keystore.import(mnemonic, "Coolw", password, [
       CoinType.bitcoin,
     ]);
-
     const stats = fs.statSync(storage.getFilename(wallet.id));
 
     assert.isTrue(stats.isFile());
     assert.isTrue(stats.size > 0);
-
     assert.equal(wallet.name, "Coolw");
     assert.equal(wallet.type, "mnemonic");
     assert.equal(wallet.version, 3);
 
     const account = wallet.activeAccounts[0];
+    const key = await keystore.getKey(wallet.id, password, account);
 
+    assert.equal(
+      HexCoding.encode(key.data()),
+      "0xd2568511baea8dc347f14c4e0479eb8ebe29eb5f664ed796e755896250ffd11f"
+    );
     assert.equal(account.address, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
     assert.equal(
       account.extendedPublicKey,
@@ -60,6 +63,9 @@ describe("KeyStore", async () => {
     assert.equal(wallet.activeAccounts.length, 3);
     assert.isTrue(await keystore.hasWallet(wallet.id));
     assert.isFalse(await keystore.hasWallet("invalid-id"));
+
+    const exported = await keystore.export(wallet.id, password);
+    assert.equal(exported, mnemonic);
 
     const wallets = await keystore.loadAll();
 

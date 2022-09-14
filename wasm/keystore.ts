@@ -252,7 +252,7 @@ export namespace KeyStore {
       return this.load(id).then((wallet) => {
         let storedKey = this.mapStoredKey(wallet);
         let hdWallet = storedKey.wallet(Buffer.from(password));
-        let coin = this.core.CoinType[`${account.coin}`];
+        let coin = (this.core.CoinType as any).values["" + account.coin];
         let privateKey = hdWallet.getKey(coin, account.derivationPath);
         storedKey.delete();
         hdWallet.delete();
@@ -267,10 +267,12 @@ export namespace KeyStore {
         switch (wallet.type) {
           case KeyStore.WalletType.Mnemonic:
             value = storedKey.decryptMnemonic(Buffer.from(password));
+            break;
           case KeyStore.WalletType.PrivateKey:
             value = storedKey.decryptPrivateKey(Buffer.from(password));
+            break;
           default:
-            value = "";
+            throw KeyStore.Error.InvalidJSON;
         }
         storedKey.delete();
         return value;
