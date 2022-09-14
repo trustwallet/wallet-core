@@ -217,10 +217,12 @@ TEST(CardanoStaking, RegisterAndDelegate_similar53339b) {
         const auto plan = signer.doPlan();
 
         const auto amount = 28475125ul;
-        EXPECT_EQ(plan.availableAmount, 30651312ul);
+        const auto availAmount = 30651312ul;
+        EXPECT_EQ(plan.availableAmount, availAmount);
         EXPECT_EQ(plan.amount, amount);
-        EXPECT_EQ(plan.fee, 176187ul);
-        EXPECT_EQ(plan.change, 30651312ul - 2000000ul - amount - 176187ul);
+        const auto fee = 176187ul;
+        EXPECT_EQ(plan.fee, fee);
+        EXPECT_EQ(plan.change, availAmount - 2000000ul - amount - fee);
         EXPECT_EQ(plan.change, 0ul);
 
         // perform sign with default plan
@@ -287,8 +289,10 @@ TEST(CardanoStaking, Withdraw_similarf48098) {
     input.mutable_transfer_message()->set_use_max_amount(true);
     input.set_ttl(71678326ul);
 
+    // Withdraw available amount
+    const auto withdrawAmount = 3468ul;
     input.mutable_withdraw()->set_staking_address(stakingAddress);
-    input.mutable_withdraw()->set_withdraw_amount(3468ul);
+    input.mutable_withdraw()->set_withdraw_amount(withdrawAmount);
 
     {
         // run plan and check result
@@ -296,10 +300,12 @@ TEST(CardanoStaking, Withdraw_similarf48098) {
         const auto plan = signer.doPlan();
 
         const auto amount = 6137599ul;
-        EXPECT_EQ(plan.availableAmount, 6305913ul);
+        const auto availAmount = 6305913ul;
+        EXPECT_EQ(plan.availableAmount, availAmount);
         EXPECT_EQ(plan.amount, amount);
-        EXPECT_EQ(plan.fee, 171782ul);
-        EXPECT_EQ(plan.change, 6305913ul + 3468ul - amount - 171782ul);
+        const auto fee = 171782ul;
+        EXPECT_EQ(plan.fee, fee);
+        EXPECT_EQ(plan.change, availAmount + withdrawAmount - amount - fee);
         EXPECT_EQ(plan.change, 0ul);
 
         // perform sign with default plan
