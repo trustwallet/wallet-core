@@ -123,5 +123,4 @@ TEST(EvmosSigner, CompoundingAuthz) {
                 })";
     assertJSONEqual(output.serialized(), expected);
 }
-
 }
