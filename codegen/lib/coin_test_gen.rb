@@ -14,8 +14,24 @@ class CoinTestGen
   # Transforms a coin name to a C++ name
   def format_name(n)
     formatted = n
-    #formatted = formatted.sub(/^([a-z]+)/, &:upcase)
-    formatted = formatted.sub(/\s/, '')
+
+    # Remove whitespaces
+    formatted.gsub!(/\s+/, '')
+
+    exceptions = {
+      "AvalancheC-Chain" => "Avalanche",
+      "CronosChain" => "Cronos",
+      "ECOChain" => "ECO",
+      "KuCoinCommunity" => "KuCoin",
+      "SmartBitcoinCash" => "Bitcoin",
+      "SmartChain" => "Binance",
+      "SmartChainLegacy" => "Binance",
+    }
+
+    if exceptions.key?(formatted)
+      formatted = exceptions[formatted]
+    end
+
     formatted
   end
 
