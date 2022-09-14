@@ -106,7 +106,9 @@ Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Dat
 
         // Also add the derived staking private key (the 2nd half) and associated address; because staking keys also need signature
         const auto stakingPrivKeyData = deriveStakingPrivateKey(privateKeyData);
+        const auto stakingAddresss = address.getStakingAddress();
         const auto stakingKeyHash = hex(address.getStakingKeyHash());
+        privateKeys[stakingAddresss] = stakingPrivKeyData;
         privateKeys[stakingKeyHash] = stakingPrivKeyData;
     }
 
@@ -130,6 +132,9 @@ Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Dat
     if (input.has_delegate()) {
         const auto stakingKey = hex(data(input.delegate().staking_key()));
         addresses.push_back(stakingKey);
+    }
+    if (input.has_withdraw()) {
+        addresses.push_back(input.withdraw().staking_address());
     }
     // discard duplicates (std::set, std::copy_if, std::unique does not work well here)
     std::vector<std::string> addressesUnique;
@@ -346,6 +351,9 @@ uint64_t sumUndeposits(const Proto::SigningInput& input) {
     uint64_t sum = 0;
     if (input.has_deregister_staking_key()) {
         sum += input.deregister_staking_key().undeposit_amount();
+    }
+    if (input.has_withdraw()) {
+        sum += input.withdraw().amount();
     }
     return sum;
 }
