@@ -318,4 +318,6 @@ message SigningOutput {
 
     // Set in case of error
     string error = 4;
+    // signatures array json string
+    string signature_json = 5;
 }
