@@ -8,6 +8,7 @@
 
 #include "TWBase.h"
 #include "TWData.h"
+#include "TWString.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -22,5 +23,12 @@ struct TWCardano;
 /// \return the minimum ADA amount.
 TW_EXPORT_STATIC_METHOD
 uint64_t TWCardanoMinAdaAmount(TWData *_Nonnull tokenBundle) TW_VISIBILITY_DEFAULT;
+
+/// Return the staking address associated to (contained in) this address. Must be a Base address.
+/// Empty string is returned on error. Result must be freed.
+/// \param baseAddress A valid base address, as string.
+/// \return the associated staking (reward) address, as string, or empty string on error.
+TW_EXPORT_STATIC_METHOD
+TWString *_Nonnull TWCardanoGetStakingAddress(TWString *_Nonnull baseAddress) TW_VISIBILITY_DEFAULT;
 
 TW_EXTERN_C_END

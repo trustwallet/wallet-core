@@ -133,9 +133,14 @@ class CardanoTests: XCTestCase {
         XCTAssertEqual(txid.hexString, "201c537693b005b64a0f0528e366ec67a84be0119ed4363b547f141f2a7770c2")
     }
 
+    func testGetStakingAddress() throws {
+        let stakingAddress = Cardano.getStakingAddress(baseAddress: "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23")
+        XCTAssertEqual(stakingAddress, "stake1u80jysjtdzqt88jt4jx93h5lumfr67d273r4vwyasfa2pxcwxllmx")
+    }
+
     func testSignStakingRegisterAndDelegate() throws {
         let ownAddress = "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"
-        let stakingKey1 = "df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b"
+        let stakingAddress1 = "stake1u80jysjtdzqt88jt4jx93h5lumfr67d273r4vwyasfa2pxcwxllmx"
         let poolIdNufi = "7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6"
 
         var input = CardanoSigningInput.with {
@@ -145,10 +150,10 @@ class CardanoTests: XCTestCase {
             $0.transferMessage.useMaxAmount = true
             $0.ttl = 69885081
             // Register staking key, 2 ADA desposit
-            $0.registerStakingKey.stakingKey = Data(hexString: stakingKey1)!
+            $0.registerStakingKey.stakingAddress = stakingAddress1
             $0.registerStakingKey.depositAmount = 2000000
             // Delegate
-            $0.delegate.stakingKey = Data(hexString: stakingKey1)!
+            $0.delegate.stakingAddress = stakingAddress1
             $0.delegate.poolID = Data(hexString: poolIdNufi)!
             $0.delegate.depositAmount = 0
         }

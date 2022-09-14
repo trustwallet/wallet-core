@@ -98,7 +98,7 @@ class AddressV3 {
 
     /// Return the binary data representation (keys appended, internal format)
     Data data() const noexcept;
-    /// Return the staking address associated to (contained in) this address
+    /// Return the staking address associated to (contained in) this address. Must be a Base address. Empty string is returned on error.
     std::string getStakingAddress() const noexcept;
 
     // First encoded byte, from networkId and Kind
