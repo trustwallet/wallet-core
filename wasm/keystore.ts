@@ -97,22 +97,24 @@ export namespace KeyStore {
     delete(id: string, password: string): Promise<void>;
   }
 
-  export class KeyStoreImpl implements IKeyStore {
+  export class DefaultImpl implements IKeyStore {
     private readonly core: WalletCore;
     private readonly storage: IKeyStoreStorage;
-    private readonly prefix: string;
     private readonly walletIdsKey: string;
 
-    constructor(core: WalletCore, prefix: string, storage: IKeyStoreStorage) {
+    constructor(
+      core: WalletCore,
+      walletIdsKey: string,
+      storage: IKeyStoreStorage
+    ) {
       this.core = core;
-      this.prefix = prefix;
       this.storage = storage;
-      this.walletIdsKey = prefix + "-walletIds";
+      this.walletIdsKey = walletIdsKey;
     }
 
     hasWallet(id: string): Promise<boolean> {
       return this.storage
-        .get(this.prefix + id)
+        .get(id)
         .then((wallet) => {
           return wallet !== undefined;
         })

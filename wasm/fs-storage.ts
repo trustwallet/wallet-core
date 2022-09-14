@@ -14,28 +14,34 @@ export class FileSystemStorage implements KeyStore.IKeyStoreStorage {
     this.directory = directory.endsWith("/") ? directory : directory + "/";
   }
 
+  getFilename(id): string {
+    return this.directory + id + ".json";
+  }
+
   get(id: string): Promise<KeyStore.Wallet> {
-    return fs.readFile(this.directory + id).then((data) => {
+    return fs.readFile(this.getFilename(id)).then((data) => {
       let wallet = JSON.parse(data.toString()) as KeyStore.Wallet;
       return wallet;
     });
   }
 
   set(id: string, wallet: KeyStore.Wallet): Promise<void> {
-    return fs.writeFile(this.directory + id, JSON.stringify(wallet));
+    return fs.writeFile(this.getFilename(id), JSON.stringify(wallet));
   }
 
   loadAll(): Promise<KeyStore.Wallet[]> {
     return fs.readdir(this.directory).then((files) => {
       return Promise.all(
-        files.map((file) => {
-          return this.get(file);
-        })
+        files
+          .filter((file) => file.endsWith(".json"))
+          .map((file) => {
+            return this.get(file.replace(".json", ""));
+          })
       );
     });
   }
 
   delete(id: string, password: string): Promise<void> {
-    return fs.unlink(this.directory + id);
+    return fs.unlink(this.getFilename(id));
   }
 }
