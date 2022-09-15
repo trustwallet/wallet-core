@@ -225,7 +225,7 @@ Data AddressV3::data() const noexcept {
 }
 
 std::string AddressV3::getStakingAddress() const noexcept {
-    if (kind != Kind_Base || bytes.size() != 2 * HashSize) {
+    if (kind != Kind_Base || bytes.size() != (2 * HashSize)) {
         return "";
     }
     const auto& stakingKeyHash = TW::subData(bytes, HashSize, HashSize);

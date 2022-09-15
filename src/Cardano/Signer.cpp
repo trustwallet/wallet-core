@@ -63,26 +63,26 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
         const auto stakingAddress = AddressV3(input.register_staking_key().staking_address());
         // here we need the bare staking key
         const auto key = stakingAddress.bytes;
-        tx.certificates.push_back(Certificate{Certificate::SkatingKeyRegistration, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data()});
+        tx.certificates.emplace_back(Certificate{Certificate::SkatingKeyRegistration, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data()});
     }
     if (input.has_delegate()) {
         const auto stakingAddress = AddressV3(input.delegate().staking_address());
         // here we need the bare staking key
         const auto key = stakingAddress.bytes;
         const auto poolId = data(input.delegate().pool_id());
-        tx.certificates.push_back(Certificate{Certificate::Delegation, {CertificateKey{CertificateKey::AddressKeyHash, key}}, poolId});
+        tx.certificates.emplace_back(Certificate{Certificate::Delegation, {CertificateKey{CertificateKey::AddressKeyHash, key}}, poolId});
     }
     if (input.has_withdraw()) {
         const auto stakingAddress = AddressV3(input.withdraw().staking_address());
         const auto key = stakingAddress.data();
         const auto amount = input.withdraw().withdraw_amount();
-        tx.withdrawals.push_back(Withdrawal{key, amount});
+        tx.withdrawals.emplace_back(Withdrawal{key, amount});
     }
     if (input.has_deregister_staking_key()) {
         const auto stakingAddress = AddressV3(input.deregister_staking_key().staking_address());
         // here we need the bare staking key
         const auto key = stakingAddress.bytes;
-        tx.certificates.push_back(Certificate{Certificate::StakingKeyDeregistration, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data()});
+        tx.certificates.emplace_back(Certificate{Certificate::StakingKeyDeregistration, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data()});
     }
 
     return Common::Proto::OK;
@@ -121,26 +121,26 @@ Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Dat
         if (!AddressV3::isValid(u.address)) {
             return Common::Proto::Error_invalid_address;
         }
-        addresses.push_back(u.address);
+        addresses.emplace_back(u.address);
     }
     // Staking key is also an address that needs signature
     if (input.has_register_staking_key()) {
-        addresses.push_back(input.register_staking_key().staking_address());
+        addresses.emplace_back(input.register_staking_key().staking_address());
     }
     if (input.has_deregister_staking_key()) {
-        addresses.push_back(input.deregister_staking_key().staking_address());
+        addresses.emplace_back(input.deregister_staking_key().staking_address());
     }
     if (input.has_delegate()) {
-        addresses.push_back(input.delegate().staking_address());
+        addresses.emplace_back(input.delegate().staking_address());
     }
     if (input.has_withdraw()) {
-        addresses.push_back(input.withdraw().staking_address());
+        addresses.emplace_back(input.withdraw().staking_address());
     }
     // discard duplicates (std::set, std::copy_if, std::unique does not work well here)
     std::vector<std::string> addressesUnique;
     for (auto& a: addresses) {
         if (find(addressesUnique.begin(), addressesUnique.end(), a) == addressesUnique.end()) {
-            addressesUnique.push_back(a);
+            addressesUnique.emplace_back(a);
         }
     }
 
@@ -254,7 +254,7 @@ std::vector<TxInput> selectInputsSimpleNative(const std::vector<TxInput>& inputs
     Amount selectedAmount = 0;
 
     for (const auto& i : ii) {
-        selected.push_back(i);
+        selected.emplace_back(i);
         selectedAmount += i.amount;
         if (selectedAmount >= amount) {
             break;
@@ -277,7 +277,7 @@ void selectInputsSimpleToken(const std::vector<TxInput>& inputs, std::string key
             // already selected
             continue;
         }
-        selectedInputs.push_back(i);
+        selectedInputs.emplace_back(i);
         selectedAmount += i.amount;
         if (selectedAmount >= amount) {
             return;
@@ -298,11 +298,7 @@ std::vector<TxInput> Signer::selectInputsWithTokens(const std::vector<TxInput>& 
 
 // Create a simple plan, used for estimation
 TransactionPlan simplePlan(Amount amount, const TokenBundle& requestedTokens, const std::vector<TxInput>& selectedInputs, bool maxAmount, uint64_t deposit, uint64_t undeposit) {
-    TransactionPlan plan;
-    plan.amount = amount;
-    plan.utxos = selectedInputs;
-    plan.deposit = deposit;
-    plan.undeposit = undeposit;
+    TransactionPlan plan{.amount = amount, .utxos = selectedInputs, .deposit = deposit, .undeposit = undeposit};
     // Sum availableAmount
     plan.availableAmount = 0;
     for (auto& u : plan.utxos) {

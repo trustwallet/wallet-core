@@ -76,7 +76,7 @@ std::vector<TokenAmount> TokenBundle::getByPolicyId(const std::string& policyId)
     std::vector<TokenAmount> filtered;
     for (const auto& t : bundle) {
         if (t.second.policyId == policyId) {
-            filtered.push_back(t.second);
+            filtered.emplace_back(t.second);
         }
     }
     return filtered;
@@ -172,7 +172,7 @@ TransactionPlan TransactionPlan::fromProto(const Proto::TransactionPlan& proto) 
         ret.changeTokens.add(TokenAmount::fromProto(proto.change_tokens(i)));
     }
     for (auto i = 0; i < proto.utxos_size(); ++i) {
-        ret.utxos.push_back(TxInput::fromProto(proto.utxos(i)));
+        ret.utxos.emplace_back(TxInput::fromProto(proto.utxos(i)));
     }
     ret.error = proto.error();
     return ret;
@@ -206,7 +206,7 @@ Cbor::Encode cborizeInputs(const std::vector<OutPoint>& inputs) {
     // clang-format off
     std::vector<Cbor::Encode> ii;
     for (const auto& i : inputs) {
-        ii.push_back(Cbor::Encode::array({
+        ii.emplace_back(Cbor::Encode::array({
             Cbor::Encode::bytes(i.txHash),
             Cbor::Encode::uint(i.outputIndex)
         }));
@@ -257,24 +257,24 @@ Cbor::Encode cborizeOutput(const TxOutput& output) {
 Cbor::Encode cborizeOutputs(const std::vector<TxOutput>& outputs) {
     std::vector<Cbor::Encode> oo;
     for (const auto& o : outputs) {
-        oo.push_back(cborizeOutput(o));
+        oo.emplace_back(cborizeOutput(o));
     }
     return Cbor::Encode::array(oo);
 }
 
 Cbor::Encode cborizeCertificateKey(const CertificateKey& certKey) {
     std::vector<Cbor::Encode> c;
-    c.push_back(Cbor::Encode::uint(static_cast<uint8_t>(certKey.type)));
-    c.push_back(Cbor::Encode::bytes(certKey.key));
+    c.emplace_back(Cbor::Encode::uint(static_cast<uint8_t>(certKey.type)));
+    c.emplace_back(Cbor::Encode::bytes(certKey.key));
     return Cbor::Encode::array(c);
 }
 
 Cbor::Encode cborizeCert(const Certificate& cert) {
     std::vector<Cbor::Encode> c;
-    c.push_back(Cbor::Encode::uint(static_cast<uint8_t>(cert.type)));
-    c.push_back(cborizeCertificateKey(cert.certKey));
-    if (cert.poolId.size() > 0) {
-        c.push_back(Cbor::Encode::bytes(cert.poolId));
+    c.emplace_back(Cbor::Encode::uint(static_cast<uint8_t>(cert.type)));
+    c.emplace_back(cborizeCertificateKey(cert.certKey));
+    if (!cert.poolId.empty()) {
+        c.emplace_back(Cbor::Encode::bytes(cert.poolId));
     }
     return Cbor::Encode::array(c);
 }
@@ -282,7 +282,7 @@ Cbor::Encode cborizeCert(const Certificate& cert) {
 Cbor::Encode cborizeCerts(const std::vector<Certificate>& certs) {
     std::vector<Cbor::Encode> c;
     for (const auto& i: certs) {
-        c.push_back(cborizeCert(i));
+        c.emplace_back(cborizeCert(i));
     }
     return Cbor::Encode::array(c);
 }
@@ -290,7 +290,7 @@ Cbor::Encode cborizeCerts(const std::vector<Certificate>& certs) {
 Cbor::Encode cborizeWithdrawals(const std::vector<Withdrawal>& withdrawals) {
     std::map<Cbor::Encode, Cbor::Encode> mapElems;
     for (const auto& w: withdrawals) {
-        mapElems.emplace(std::make_pair(Cbor::Encode::bytes(w.stakingKey), Cbor::Encode::uint(w.amount)));
+        mapElems.emplace(Cbor::Encode::bytes(w.stakingKey), Cbor::Encode::uint(w.amount));
     }
     return Cbor::Encode::map(mapElems);
 }
@@ -307,11 +307,11 @@ Data Transaction::encode() const {
         std::make_pair(Cbor::Encode::uint(3), Cbor::Encode::uint(ttl)),
     };
 
-    if (certificates.size() > 0) {
-        mapElems.emplace(std::make_pair(Cbor::Encode::uint(4), cborizeCerts(certificates)));
+    if (!certificates.empty()) {
+        mapElems.emplace(Cbor::Encode::uint(4), cborizeCerts(certificates));
     }
-    if (withdrawals.size() > 0) {
-        mapElems.emplace(std::make_pair(Cbor::Encode::uint(5), cborizeWithdrawals(withdrawals)));
+    if (!withdrawals.empty()) {
+        mapElems.emplace(Cbor::Encode::uint(5), cborizeWithdrawals(withdrawals));
     }
 
     Cbor::Encode encode = Cbor::Encode::map(mapElems);
