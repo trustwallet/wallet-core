@@ -17,6 +17,7 @@ import wallet.core.java.AnySigner
 import wallet.core.jni.*
 import wallet.core.jni.Cardano.getStakingAddress
 import wallet.core.jni.CoinType.CARDANO
+import wallet.core.jni.proto.Cardano
 import wallet.core.jni.proto.Cardano.SigningInput
 import wallet.core.jni.proto.Cardano.SigningOutput
 import wallet.core.jni.proto.Common.SigningError
