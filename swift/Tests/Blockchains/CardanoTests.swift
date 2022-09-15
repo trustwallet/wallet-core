@@ -140,7 +140,7 @@ class CardanoTests: XCTestCase {
 
     func testSignStakingRegisterAndDelegate() throws {
         let ownAddress = "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"
-        let stakingAddress = Cardano.getStakingAddress(baseAddress: "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23")
+        let stakingAddress = Cardano.getStakingAddress(baseAddress: ownAddress)
         let poolIdNufi = "7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6"
 
         var input = CardanoSigningInput.with {
