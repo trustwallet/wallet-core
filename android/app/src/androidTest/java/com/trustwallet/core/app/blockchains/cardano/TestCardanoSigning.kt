@@ -15,8 +15,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
 import wallet.core.jni.*
+import wallet.core.jni.Cardano.getStakingAddress
 import wallet.core.jni.CoinType.CARDANO
-import wallet.core.jni.proto.Cardano
 import wallet.core.jni.proto.Cardano.SigningInput
 import wallet.core.jni.proto.Cardano.SigningOutput
 import wallet.core.jni.proto.Common.SigningError
@@ -156,7 +156,7 @@ class TestCardanoSigning {
     @Test
     fun testSignStakingRegisterAndDelegate() {
         val ownAddress = "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"
-        val stakingAddress = Cardano.getStakingAddress(ownAddress)
+        val stakingAddress = getStakingAddress(ownAddress)
         val poolIdNufi = Numeric.hexStringToByteArray("7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6")
 
         val message = Cardano.Transfer.newBuilder()
@@ -219,7 +219,7 @@ class TestCardanoSigning {
     @Test
     fun testSignStakingWithdraw() {
         val ownAddress = "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"
-        val stakingAddress = Cardano.getStakingAddress(ownAddress)
+        val stakingAddress = getStakingAddress(ownAddress)
 
         val message = Cardano.Transfer.newBuilder()
             .setToAddress(ownAddress)
@@ -233,8 +233,7 @@ class TestCardanoSigning {
             .setWithdrawAmount(3468)
         val input = Cardano.SigningInput.newBuilder()
             .setTransferMessage(message)
-            .setRegisterStakingKey(register)
-            .setDelegate(delegate)
+            .setWithdraw(withdraw)
             .setTtl(71678326)
 
         val privKey = Numeric.hexStringToByteArray("089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448a3566990b7785bd48c330875b1e0d03caaed0e67cecc42075dce1c7a13b1c49240508848ac82f603391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf1290dbd508e5ec71afaea98da2df1533c22ef02a26bb87b31907d0b2738fb7785b38d53aa68fc01230784c9209b2b2a2faf28491b3b1f1d221e63e704bbd0403c4154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e")
