@@ -9,32 +9,39 @@ import { KeyStore } from "./keystore";
 
 // Extension KeyStore
 export class ExtensionStorage implements KeyStore.IKeyStoreStorage {
-  readonly storage: Storage.LocalStorageArea;
+  readonly storage: Storage.StorageArea;
+  readonly walletIdsKey: string;
 
-  constructor(storage: Storage.LocalStorageArea) {
+  constructor(walletIdsKey: string, storage: Storage.StorageArea) {
+    this.walletIdsKey = walletIdsKey;
     this.storage = storage;
   }
 
-  get(id: string): Promise<KeyStore.Wallet | null> {
+  get(id: string): Promise<KeyStore.Wallet> {
     return this.storage.get(id).then((object) => {
       let wallet = object[id];
       if (wallet === undefined) {
-        return null;
+        throw KeyStore.Error.WalletNotFound;
       }
       return wallet as KeyStore.Wallet;
     });
   }
 
   set(id: string, wallet: KeyStore.Wallet): Promise<void> {
-    let object = {
-      [id]: wallet,
-    };
-    return this.storage.set(object);
+    return this.getWalletIds().then((ids) => {
+      if (ids.indexOf(id) === -1) {
+        ids.push(id);
+      }
+      return this.storage.set({
+        [id]: wallet,
+        [this.walletIdsKey]: ids,
+      });
+    });
   }
 
-  loadAll(walletIdsKey: string): Promise<KeyStore.Wallet[]> {
-    return this.storage.get(walletIdsKey).then((walletIds) => {
-      let ids = walletIds[walletIdsKey] as string[];
+  loadAll(): Promise<KeyStore.Wallet[]> {
+    return this.storage.get(this.walletIdsKey).then((object) => {
+      let ids = object[this.walletIdsKey] as string[];
       return this.storage.get(ids).then((wallets) => {
         return Object.keys(wallets).map((key) => wallets[key]);
       });
@@ -42,6 +49,22 @@ export class ExtensionStorage implements KeyStore.IKeyStoreStorage {
   }
 
   delete(id: string, password: string): Promise<void> {
-    return this.storage.remove(id);
+    return this.getWalletIds().then((ids) => {
+      let index = ids.indexOf(id);
+      if (index === -1) {
+        return;
+      }
+      ids.splice(index, 1);
+      return this.storage.remove(id).then(() => {
+        return this.storage.set({ [this.walletIdsKey]: ids });
+      });
+    });
+  }
+
+  private getWalletIds(): Promise<string[]> {
+    return this.storage.get(this.walletIdsKey).then((object) => {
+      let ids = object[this.walletIdsKey] as string[];
+      return ids === undefined ? [] : ids;
+    });
   }
 }

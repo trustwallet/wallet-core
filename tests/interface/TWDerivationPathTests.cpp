@@ -57,4 +57,8 @@ TEST(TWDerivationPath, CreateWithCoin) {
     EXPECT_EQ(0u, TWDerivationPathChange(path.get()));
     EXPECT_EQ(0u, TWDerivationPathAddress(path.get()));
     assertStringsEqual(WRAPS(TWDerivationPathDescription(path.get())), "m/44'/60'/0'/0/0");
+
+    const auto index = WRAP(TWDerivationPathIndex, TWDerivationPathIndexCreate(44, true));
+    const auto description = WRAPS(TWDerivationPathIndexDescription(index.get()));
+    assertStringsEqual(description, "44'");
 }

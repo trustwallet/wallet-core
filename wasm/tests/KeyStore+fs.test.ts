@@ -10,11 +10,12 @@ import * as fs from "fs";
 import { KeyStore, FileSystemStorage } from "../dist";
 
 describe("KeyStore", async () => {
-  it("test importing mnemonic", async () => {
+  it("test FileSystemStorage", async () => {
     const { CoinType, HexCoding } = globalThis.core;
-
+    const mnemonic = globalThis.mnemonic as string;
+    const password = globalThis.password as string;
     const testDir = "/tmp/wasm-test";
-    const password = "password";
+
     fs.mkdirSync(testDir, { recursive: true });
 
     const idPrefix = "all-wallet-ids";
@@ -25,8 +26,6 @@ describe("KeyStore", async () => {
       storage
     );
 
-    const mnemonic =
-      "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
     var wallet = await keystore.import(mnemonic, "Coolw", password, [
       CoinType.bitcoin,
     ]);
@@ -55,7 +54,7 @@ describe("KeyStore", async () => {
       "02df6fc590ab3101bbe0bb5765cbaeab9b5dcfe09ac9315d707047cbd13bc7e006"
     );
 
-    wallet = await keystore.addAccounts(wallet.id, "password", [
+    wallet = await keystore.addAccounts(wallet.id, password, [
       CoinType.ethereum,
       CoinType.binance,
     ]);
@@ -70,7 +69,7 @@ describe("KeyStore", async () => {
     const wallets = await keystore.loadAll();
 
     await wallets.forEach((w) => {
-      keystore.delete(w.id, "password");
+      keystore.delete(w.id, password);
     });
-  }).timeout(5000);
+  }).timeout(10000);
 });
