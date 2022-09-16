@@ -9,7 +9,7 @@ echo "PREFIX: $PREFIX"
 CMAKE=cmake
 MAKE=make
 
-# Load dependencies version
+# Load dependencies versions
 BASE_DIR=$(cd `dirname $0`; pwd)
 source ${BASE_DIR}/dependencies-version
 
