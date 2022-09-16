@@ -7,7 +7,7 @@
 import "mocha";
 import { assert } from "chai";
 import * as fs from "fs";
-import { KeyStore, FileSystemStorage } from "../dist";
+import { KeyStore } from "../dist";
 
 describe("KeyStore", async () => {
   it("test FileSystemStorage", async () => {
@@ -18,13 +18,8 @@ describe("KeyStore", async () => {
 
     fs.mkdirSync(testDir, { recursive: true });
 
-    const idPrefix = "all-wallet-ids";
-    const storage = new FileSystemStorage(testDir);
-    const keystore = new KeyStore.DefaultImpl(
-      globalThis.core,
-      idPrefix,
-      storage
-    );
+    const storage = new KeyStore.FileSystemStorage(testDir);
+    const keystore = new KeyStore.Default(globalThis.core, storage);
 
     var wallet = await keystore.import(mnemonic, "Coolw", password, [
       CoinType.bitcoin,

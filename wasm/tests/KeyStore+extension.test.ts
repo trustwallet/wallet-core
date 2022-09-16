@@ -6,7 +6,7 @@
 
 import "mocha";
 import { assert } from "chai";
-import { KeyStore, ExtensionStorage } from "../dist";
+import { KeyStore } from "../dist";
 import { ChromeStorageMock } from "./mock";
 
 describe("KeyStore", async () => {
@@ -16,12 +16,11 @@ describe("KeyStore", async () => {
     const password = globalThis.password as string;
 
     const walletIdsKey = "all-wallet-ids";
-    const storage = new ExtensionStorage(walletIdsKey, new ChromeStorageMock());
-    const keystore = new KeyStore.DefaultImpl(
-      globalThis.core,
+    const storage = new KeyStore.ExtensionStorage(
       walletIdsKey,
-      storage
+      new ChromeStorageMock()
     );
+    const keystore = new KeyStore.Default(globalThis.core, storage);
 
     var wallet = await keystore.import(mnemonic, "Coolw", password, [
       CoinType.bitcoin,

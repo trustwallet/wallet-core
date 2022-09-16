@@ -5,10 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 
 import { Storage } from "webextension-polyfill";
-import { KeyStore } from "./keystore";
+import * as Types from "./types";
 
 // Extension KeyStore
-export class ExtensionStorage implements KeyStore.IKeyStoreStorage {
+export class ExtensionStorage implements Types.IStorage {
   readonly storage: Storage.StorageArea;
   readonly walletIdsKey: string;
 
@@ -17,17 +17,17 @@ export class ExtensionStorage implements KeyStore.IKeyStoreStorage {
     this.storage = storage;
   }
 
-  get(id: string): Promise<KeyStore.Wallet> {
+  get(id: string): Promise<Types.Wallet> {
     return this.storage.get(id).then((object) => {
       let wallet = object[id];
       if (wallet === undefined) {
-        throw KeyStore.Error.WalletNotFound;
+        throw Types.Error.WalletNotFound;
       }
-      return wallet as KeyStore.Wallet;
+      return wallet as Types.Wallet;
     });
   }
 
-  set(id: string, wallet: KeyStore.Wallet): Promise<void> {
+  set(id: string, wallet: Types.Wallet): Promise<void> {
     return this.getWalletIds().then((ids) => {
       if (ids.indexOf(id) === -1) {
         ids.push(id);
@@ -39,12 +39,12 @@ export class ExtensionStorage implements KeyStore.IKeyStoreStorage {
     });
   }
 
-  loadAll(): Promise<KeyStore.Wallet[]> {
+  loadAll(): Promise<Types.Wallet[]> {
     return this.storage.get(this.walletIdsKey).then((object) => {
       let ids = object[this.walletIdsKey] as string[];
-      return this.storage.get(ids).then((wallets) => {
-        return Object.keys(wallets).map((key) => wallets[key]);
-      });
+      return this.storage
+        .get(ids)
+        .then((wallets) => Object.keys(wallets).map((key) => wallets[key]));
     });
   }
 
@@ -55,9 +55,9 @@ export class ExtensionStorage implements KeyStore.IKeyStoreStorage {
         return;
       }
       ids.splice(index, 1);
-      return this.storage.remove(id).then(() => {
-        return this.storage.set({ [this.walletIdsKey]: ids });
-      });
+      return this.storage
+        .remove(id)
+        .then(() => this.storage.set({ [this.walletIdsKey]: ids }));
     });
   }
 

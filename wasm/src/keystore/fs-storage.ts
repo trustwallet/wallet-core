@@ -4,10 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-import { KeyStore } from "./keystore";
+import * as Types from "./types";
 import * as fs from "fs/promises";
 
-export class FileSystemStorage implements KeyStore.IKeyStoreStorage {
+// FileSystem Storage
+export class FileSystemStorage implements Types.IStorage {
   private readonly directory: string;
 
   constructor(directory: string) {
@@ -18,18 +19,17 @@ export class FileSystemStorage implements KeyStore.IKeyStoreStorage {
     return this.directory + id + ".json";
   }
 
-  get(id: string): Promise<KeyStore.Wallet> {
-    return fs.readFile(this.getFilename(id)).then((data) => {
-      let wallet = JSON.parse(data.toString()) as KeyStore.Wallet;
-      return wallet;
-    });
+  get(id: string): Promise<Types.Wallet> {
+    return fs
+      .readFile(this.getFilename(id))
+      .then((data) => JSON.parse(data.toString()) as Types.Wallet);
   }
 
-  set(id: string, wallet: KeyStore.Wallet): Promise<void> {
+  set(id: string, wallet: Types.Wallet): Promise<void> {
     return fs.writeFile(this.getFilename(id), JSON.stringify(wallet));
   }
 
-  loadAll(): Promise<KeyStore.Wallet[]> {
+  loadAll(): Promise<Types.Wallet[]> {
     return fs.readdir(this.directory).then((files) => {
       return Promise.all(
         files
