@@ -8,16 +8,22 @@ const repl = require('node:repl');
 const { initWasm, TW } = require("@trustwallet/wallet-core");
 
 function enumerateNamespaces(topLevelNamespace: any) {
+    const exceptions: string[] = ['AsciiToString', 'ExitStatus', 'ENV', 'ERRNO_CODES', 'ERRNO_MESSAGES', 'DNS', 'Protocols', 'Sockets', 'UNWIND_CACHE', 'PATH', 'PATH_FS', 'SYSCALLS', 'JSEvents', 'JSEvents_requestFullscreen', 'JSEvents_resizeCanvasForFullscreen', 'ExceptionInfo', 'Browser', 'FS', 'MEMFS', 'TTY', 'PIPEFS', 'SOCKFS', 'RegisteredClass', 'Emval'];
     var ns : string[] = [];
     for (var member in topLevelNamespace) {
-        if (typeof topLevelNamespace[member] == 'function') {
-            var firstLetter = member[0];
-            if (firstLetter >= 'A' && firstLetter <= 'Z') {
-                ns.push(member);
-            }
+        if (typeof topLevelNamespace[member] == 'function' || typeof topLevelNamespace[member] == 'object') {
+            ns.push(member);
         }
     }
-    return ns;
+    return ns
+        .filter(n => { var firstLetter = n[0]; return (firstLetter >= 'A' && firstLetter <= 'Z'); })
+        .filter(n => !n.includes('Error'))
+        .filter(n => !n.startsWith('HEAP'))
+        .filter(n => !n.startsWith('UTF'))
+        .filter(n => !n.startsWith('FS_'))
+        .filter(n => !n.startsWith('ClassHandle'))
+        .filter(n => !n.startsWith('RegisteredPointer'))
+        .filter(n => !exceptions.includes(n));
 }
 
 (async function () {
@@ -88,7 +94,6 @@ function enumerateNamespaces(topLevelNamespace: any) {
         console.log("    HDWallet                                     wallet = HDWallet.create(256, ''); wallet.mnemonic()");
         console.log("    PrivateKey                                   pk = PrivateKey.createWithData(HexCoding.decode('afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5'))");
         console.log("    PublicKey                                    pubkey = PublicKey.createWithData(HexCoding.decode('0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1'), PublicKeyType.secp256k1)");
-        console.log("                                                 pubkey.verify(HexCoding.decode('0x673b54a91d87cfb9389e54cc55b1a9343a6eb9f2ea1f449cb19a248a86bb904c1efb109f8cf655c4f510211053c1696e52c75843c5c803fa1b78fe0c263f468201'), HexCoding.decode('0001020304050607080910111213141519171819202122232425262728293031'))");
         console.log("    AnyAddress                                   AnyAddress.createWithString('EQCTVra3xPXenA1wNFMba2taTsc9XMdfCWC7FJpGXjk7', CoinType.solana).description()");
         console.log("    CoinTypeConfiguration                        CoinTypeConfiguration.getSymbol(CoinType.bitcoin)");
         console.log("    Mnemonmic                                    Mnemonic.isValidWord('acid')");
@@ -98,6 +103,8 @@ function enumerateNamespaces(topLevelNamespace: any) {
         console.log("    walletCreate([strength], [name])             walletCreate(128)");
         console.log("    walletImport(mnemonic, [name])               walletImport('ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal', 'Test1')");
         console.log("    walletDump()                                 walletDump()");
+        console.log();
+        console.log("See examples in samplescripts folder, e.g.:  cat samplescripts/protoeth.sampleinput.txt | npm run start");
         console.log();
         console.log("A longer example:");
         console.log("    coin = CoinType.solana");
@@ -111,8 +118,8 @@ function enumerateNamespaces(topLevelNamespace: any) {
         console.log("    a1.description()");
         console.log();
         console.log("Full list of exposed Wallet-core namespaces:");
-        enumerateNamespaces(WC).sort().forEach(ns => process.stdout.write(ns + ', '));
-        console.log();
+        console.log(enumerateNamespaces(WC).sort().join(', '));
+        console.log(enumerateNamespaces(TW).sort().map(n => 'TW.' + n).join(', '));
         console.log();
     }
 
@@ -176,10 +183,13 @@ function enumerateNamespaces(topLevelNamespace: any) {
 
     const local = repl.start('> ');
 
-    // Expose WC namespaces
+    // Expose WC namespaces, as top-level
     var nss = enumerateNamespaces(WC);
     nss.forEach(ns => local.context[ns] = WC[ns]);
+    // also all under WC
     local.context.WC = WC;
+    // Expose TW namespaces (under TW)
+    local.context.TW = TW;
 
     // Expose more stuff; utilities
     local.context.help = help;
