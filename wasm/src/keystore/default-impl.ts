@@ -19,21 +19,12 @@ export class Default implements Types.IKeyStore {
   hasWallet(id: string): Promise<boolean> {
     return this.storage
       .get(id)
-      .then((wallet) => {
-        return wallet !== undefined;
-      })
-      .catch((error) => {
-        return false;
-      });
+      .then((wallet) => true)
+      .catch((error) => false);
   }
 
   load(id: string): Promise<Types.Wallet> {
-    return this.storage.get(id).then((wallet) => {
-      if (wallet === null) {
-        throw Types.Error.WalletNotFound;
-      }
-      return wallet;
-    });
+    return this.storage.get(id);
   }
 
   loadAll(): Promise<Types.Wallet[]> {
@@ -82,12 +73,8 @@ export class Default implements Types.IKeyStore {
       hdWallet.delete();
 
       this.importWallet(wallet)
-        .then(() => {
-          resolve(wallet);
-        })
-        .catch((error) => {
-          reject(error);
-        });
+        .then(() => resolve(wallet))
+        .catch((error) => reject(error));
     });
   }
 
@@ -112,12 +99,8 @@ export class Default implements Types.IKeyStore {
       let wallet = this.mapWallet(storedKey);
       storedKey.delete();
       this.importWallet(wallet)
-        .then(() => {
-          resolve(wallet);
-        })
-        .catch((error) => {
-          reject(error);
-        });
+        .then(() => resolve(wallet))
+        .catch((error) => reject(error));
     });
   }
 
@@ -135,9 +118,7 @@ export class Default implements Types.IKeyStore {
       let newWallet = this.mapWallet(storedKey);
       storedKey.delete();
       hdWallet.delete();
-      return this.importWallet(newWallet).then(() => {
-        return newWallet;
-      });
+      return this.importWallet(newWallet).then(() => newWallet);
     });
   }
 

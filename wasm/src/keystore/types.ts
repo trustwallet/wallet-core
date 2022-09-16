@@ -86,7 +86,7 @@ export interface IKeyStore {
 }
 
 export interface IStorage {
-  get(id: string): Promise<Wallet | null>;
+  get(id: string): Promise<Wallet>;
   set(id: string, wallet: Wallet): Promise<void>;
   loadAll(): Promise<Wallet[]>;
   delete(id: string, password: string): Promise<void>;

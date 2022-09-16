@@ -40,8 +40,10 @@ export class ExtensionStorage implements Types.IStorage {
   }
 
   loadAll(): Promise<Types.Wallet[]> {
-    return this.storage.get(this.walletIdsKey).then((object) => {
-      let ids = object[this.walletIdsKey] as string[];
+    return this.getWalletIds().then((ids) => {
+      if (ids.length === 0) {
+        return [];
+      }
       return this.storage
         .get(ids)
         .then((wallets) => Object.keys(wallets).map((key) => wallets[key]));

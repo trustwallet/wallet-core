@@ -34,9 +34,7 @@ export class FileSystemStorage implements Types.IStorage {
       return Promise.all(
         files
           .filter((file) => file.endsWith(".json"))
-          .map((file) => {
-            return this.get(file.replace(".json", ""));
-          })
+          .map((file) => this.get(file.replace(".json", "")))
       );
     });
   }
