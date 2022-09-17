@@ -21,7 +21,8 @@ struct DerivationPathIndex {
     bool hardened = true;
 
     DerivationPathIndex() = default;
-    DerivationPathIndex(uint32_t value, bool hardened = true) : value(value), hardened(hardened) {}
+    DerivationPathIndex(uint32_t value, bool hardened = true)
+        : value(value), hardened(hardened) {}
 
     /// The derivation index.
     uint32_t derivationIndex() const {
@@ -46,63 +47,85 @@ struct DerivationPath {
     std::vector<DerivationPathIndex> indices;
 
     TWPurpose purpose() const {
-        if (indices.size() == 0) { return TWPurposeBIP44; }
+        if (indices.size() == 0) {
+            return TWPurposeBIP44;
+        }
         return static_cast<TWPurpose>(indices[0].value);
     }
 
     void setPurpose(TWPurpose v) {
-        if (indices.size() == 0) { return; }
+        if (indices.size() == 0) {
+            return;
+        }
         indices[0] = DerivationPathIndex(v, /* hardened: */ true);
     }
 
     uint32_t coin() const {
-        if (indices.size() <= 1) { return TWCoinTypeBitcoin; }
+        if (indices.size() <= 1) {
+            return TWCoinTypeBitcoin;
+        }
         return indices[1].value;
     }
 
     void setCoin(uint32_t v) {
-        if (indices.size() <= 1) { return; }
+        if (indices.size() <= 1) {
+            return;
+        }
         indices[1] = DerivationPathIndex(v, /* hardened: */ true);
     }
 
     uint32_t account() const {
-        if (indices.size() <= 2) { return 0; }
+        if (indices.size() <= 2) {
+            return 0;
+        }
         return indices[2].value;
     }
 
     void setAccount(uint32_t v) {
-        if (indices.size() <= 2) { return; }
+        if (indices.size() <= 2) {
+            return;
+        }
         indices[2] = DerivationPathIndex(v, /* hardened: */ true);
     }
 
     uint32_t change() const {
-        if (indices.size() <= 3) { return 0; }
+        if (indices.size() <= 3) {
+            return 0;
+        }
         return indices[3].value;
     }
 
     void setChange(uint32_t v) {
-        if (indices.size() <= 3) { return; }
+        if (indices.size() <= 3) {
+            return;
+        }
         indices[3] = DerivationPathIndex(v, /* hardened: */ false);
     }
 
     uint32_t address() const {
-        if (indices.size() <= 4) { return 0; }
+        if (indices.size() <= 4) {
+            return 0;
+        }
         return indices[4].value;
     }
 
     void setAddress(uint32_t v) {
-        if (indices.size() <= 4) { return; }
+        if (indices.size() <= 4) {
+            return;
+        }
         indices[4] = DerivationPathIndex(v, /* hardened: */ false);
     }
 
     DerivationPath() = default;
-    explicit DerivationPath(std::initializer_list<DerivationPathIndex> l) : indices(l) {}
-    explicit DerivationPath(std::vector<DerivationPathIndex> indices) : indices(std::move(indices)) {}
+    explicit DerivationPath(std::initializer_list<DerivationPathIndex> l)
+        : indices(l) {}
+    explicit DerivationPath(std::vector<DerivationPathIndex> indices)
+        : indices(std::move(indices)) {}
 
     /// Creates a `DerivationPath` by BIP44 components.
     DerivationPath(TWPurpose purpose, uint32_t coin, uint32_t account, uint32_t change,
-                   uint32_t address) 
-    : indices(std::vector<DerivationPathIndex>(5)) {
+                   uint32_t address)
+        : indices(std::vector<DerivationPathIndex>(5)) {
         setPurpose(purpose);
         setCoin(coin);
         setAccount(account);
@@ -130,3 +153,12 @@ inline bool operator==(const DerivationPath& lhs, const DerivationPath& rhs) {
 }
 
 } // namespace TW
+
+/// Wrapper for C interface.
+struct TWDerivationPath {
+    TW::DerivationPath impl;
+};
+
+struct TWDerivationPathIndex {
+    TW::DerivationPathIndex impl;
+};

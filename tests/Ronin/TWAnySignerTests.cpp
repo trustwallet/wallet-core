@@ -38,9 +38,11 @@ TEST(TWAnySignerRonin, Sign) {
 
     // sign test
     Ethereum::Proto::SigningOutput output;
+
     ANY_SIGN(input, TWCoinTypeRonin);
 
     ASSERT_EQ(hex(output.encoded()), expected);
+    EXPECT_TRUE(TWAnySignerSupportsJSON(TWCoinTypeRonin));
 }
 
 } // namespace TW::Ronin::tests
