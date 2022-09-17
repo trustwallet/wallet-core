@@ -15,14 +15,14 @@ namespace TW::Nervos {
 /// Entry point for implementation of Nervos coin.
 /// Note: do not put the implementation here (no matter how simple), to avoid having coin-specific
 /// includes in this file
-class Entry : public CoinEntry {
+class Entry final : public CoinEntry {
 public:
     bool validateAddress(TWCoinType coin, const std::string& address, byte p2pkh, byte p2sh,
-                         const char* hrp) const final;
+                         const char* hrp) const;
     std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, byte p2pkh,
-                              const char* hrp) const final;
-    void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const final;
-    void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const final;
+                              const char* hrp) const;
+    void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
+    void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
 };
 
 } // namespace TW::Nervos

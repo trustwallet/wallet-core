@@ -12,12 +12,12 @@ namespace TW::Everscale {
 
 /// Entry point for implementation of Everscale coin.
 /// Note: do not put the implementation here (no matter how simple), to avoid having coin-specific includes in this file
-class Entry : public CoinEntry {
+class Entry final : public CoinEntry {
 public:
-    virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;
-    virtual std::string normalizeAddress(TWCoinType coin, const std::string& address) const;
-    virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* d) const;
-    virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
+     bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;
+     std::string normalizeAddress(TWCoinType coin, const std::string& address) const;
+     std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* d) const;
+     void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
 };
 
 } // namespace TW::Everscale

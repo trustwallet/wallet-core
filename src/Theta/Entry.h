@@ -13,9 +13,9 @@ namespace TW::Theta {
 
 /// Entry point for Theta.
 /// Note: do not put the implementation here (no matter how simple), to avoid having coin-specific includes in this file
-class Entry: public Ethereum::Entry {
+class Entry final : public Ethereum::Entry {
 public:
-    virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
+    void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
 };
 
 } // namespace TW::Theta
