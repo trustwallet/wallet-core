@@ -10,7 +10,6 @@
 #include "SignatureBuilder.h"
 
 #include "../Coin.h"
-#include "../proto/Bitcoin.pb.h"
 
 #include <algorithm>
 #include <cassert>
@@ -102,7 +101,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
         // select UTXOs
         plan.amount = input.amount;
 
-        // if amount requested is the same or more than available amount, it cannot be satisifed, but
+        // if amount requested is the same or more than available amount, it cannot be satisfied, but
         // treat this case as MaxAmount, and send maximum available (which will be less)
         if (!maxAmount && static_cast<uint64_t>(input.amount) >= inputSum) {
             maxAmount = true;
@@ -151,7 +150,7 @@ TransactionPlan TransactionBuilder::plan(const SigningInput& input) {
                 plan.change = 0;
             }
             plan.fee = estimateSegwitFee(feeCalculator, plan, output_size, input);
-            // If fee is larger then availableAmount (can happen in special maxAmount case), we reduce it (and hope it will go through)
+            // If fee is larger than availableAmount (can happen in special maxAmount case), we reduce it (and hope it will go through)
             plan.fee = std::min(plan.availableAmount, plan.fee);
             assert(plan.fee >= 0 && plan.fee <= plan.availableAmount);
 

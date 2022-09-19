@@ -151,7 +151,7 @@ Result<std::vector<Data>, Common::Proto::SigningError> SignatureBuilder<Transact
         return Result<std::vector<Data>, Common::Proto::SigningError>::success({data});
     }
     if (script.isWitnessProgram()) {
-        // Error: Invalid sutput script
+        // Error: Invalid output script
         return Result<std::vector<Data>, Common::Proto::SigningError>::failure(Common::Proto::Error_script_output);
     }
     if (script.matchMultisig(keys, required)) {
@@ -256,7 +256,7 @@ Data SignatureBuilder<Transaction>::createSignature(
 
         if (!externalSignatures.has_value() || externalSignatures.value().size() <= _index) {
             // Error: no or not enough signatures provided
-            return Data();
+            return {};
         }
 
         Data externalSignature = std::get<0>(externalSignatures.value()[_index]);
@@ -265,12 +265,12 @@ Data SignatureBuilder<Transaction>::createSignature(
         // Verify provided signature
         if (!PublicKey::isValid(publicKey, TWPublicKeyTypeSECP256k1)) {
             // Error: invalid public key
-            return Data();
+            return {};
         }
         const auto publicKeyObj = PublicKey(publicKey, TWPublicKeyTypeSECP256k1);
         if (!publicKeyObj.verifyAsDER(externalSignature, sighash)) {
             // Error: Signature does not match publickey+hash
-            return Data();
+            return {};
         }
         externalSignature.push_back(static_cast<byte>(input.hashType));
 
