@@ -135,11 +135,7 @@ uint8_t Signer::getEnum<CollectRewards>() noexcept {
 template <typename T>
 Proto::SigningOutput Signer::signStaking(const Proto::SigningInput &input, function<T(const Proto::SigningInput &input)> func) {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    auto tx = func(input);
-    auto stakingTx = Staking<T>(
-        getEnum<T>(), tx, load(input.staking_message().nonce()),
-        load(input.staking_message().gas_price()), load(input.staking_message().gas_limit()),
-        load(input.chain_id()), 0, 0);
+    auto stakingTx = buildUnsignedStakingTransaction(input, func);
 
     auto signer = Signer(uint256_t(load(input.chain_id())));
     auto hash = signer.hash<T>(stakingTx);
@@ -486,24 +482,75 @@ Data Signer::hash(const Staking<Directive>& transaction) const noexcept {
 }
 
 Data Signer::buildUnsignedTxBytes(const Proto::SigningInput &input) {
+    if (input.has_transaction_message()) {
+        Transaction transaction = Signer::buildUnsignedTransaction(input);
+        return rlpNoHash(transaction, false);
+    }
 
-    Transaction transaction = Signer::buildUnsignedTransaction(input);
+    if (input.has_staking_message()) {
+        auto stakingMessage = input.staking_message();
 
-    return rlpNoHash(transaction, false);
+        if (stakingMessage.has_create_validator_message()) {
+            auto tx = Signer::buildUnsignedStakingTransaction<CreateValidator>(input, &Signer::buildUnsignedCreateValidator);
+            return rlpNoHash<CreateValidator>(tx, false);
+        }
+        if (stakingMessage.has_edit_validator_message()) {
+            auto tx = Signer::buildUnsignedStakingTransaction<EditValidator>(input, &Signer::buildUnsignedEditValidator);
+            return rlpNoHash<EditValidator>(tx, false);
+        }
+        if (stakingMessage.has_delegate_message()) {
+            auto tx = Signer::buildUnsignedStakingTransaction<Delegate>(input, &Signer::buildUnsignedDelegate);
+            return rlpNoHash<Delegate>(tx, false);
+        }
+        if (stakingMessage.has_undelegate_message()) {
+            auto tx = Signer::buildUnsignedStakingTransaction<Undelegate>(input, &Signer::buildUnsignedUndelegate);
+            return rlpNoHash<Undelegate>(tx, false);
+        }
+        if (stakingMessage.has_collect_rewards()) {
+            auto tx = Signer::buildUnsignedStakingTransaction<CollectRewards>(input, &Signer::buildUnsignedCollectRewards);
+            return rlpNoHash<CollectRewards>(tx, false);
+        }
+    }
+
+    throw std::invalid_argument("Invalid message");
 }
 
 Proto::SigningOutput Signer::buildSigningOutput(const Proto::SigningInput &input, const Data &signature) {
+    if (input.has_transaction_message()) {
+        Transaction transaction = Signer::buildUnsignedTransaction(input);
 
-    Transaction transaction = Signer::buildUnsignedTransaction(input);
+        auto tuple = values(chainID, signature);
+        transaction.r = std::get<0>(tuple);
+        transaction.s = std::get<1>(tuple);
+        transaction.v = std::get<2>(tuple);
 
-    auto tuple = values(chainID, signature);
-    transaction.r = std::get<0>(tuple);
-    transaction.s = std::get<1>(tuple);
-    transaction.v = std::get<2>(tuple);
+        auto encoded = rlpNoHash(transaction, true);
+        return prepareOutput<Transaction>(encoded, transaction);
+    }
 
-    auto protoOutput = Proto::SigningOutput();
-    auto encoded = rlpNoHash(transaction, true);
-    return prepareOutput<Transaction>(encoded, transaction);
+    if (input.has_staking_message()) {
+        auto stakingMessage = input.staking_message();
+
+        if (stakingMessage.has_create_validator_message()) {
+            return buildStakingSigningOutput<CreateValidator>(input, signature, &Signer::buildUnsignedCreateValidator);
+        }
+        if (stakingMessage.has_edit_validator_message()) {
+            return buildStakingSigningOutput<EditValidator>(input, signature, &Signer::buildUnsignedEditValidator);
+
+        }
+        if (stakingMessage.has_delegate_message()) {
+            return buildStakingSigningOutput<Delegate>(input, signature, &Signer::buildUnsignedDelegate);
+
+        }
+        if (stakingMessage.has_undelegate_message()) {
+            return buildStakingSigningOutput<Undelegate>(input, signature, &Signer::buildUnsignedUndelegate);
+        }
+        if (stakingMessage.has_collect_rewards()) {
+            return buildStakingSigningOutput<CollectRewards>(input, signature, &Signer::buildUnsignedCollectRewards);
+        }
+    }
+
+    throw std::invalid_argument("Invalid message");
 }
 
 Transaction Signer::buildUnsignedTransaction(const Proto::SigningInput &input) {
@@ -528,6 +575,27 @@ Transaction Signer::buildUnsignedTransaction(const Proto::SigningInput &input) {
     transaction.toShardID = load(transactionMessage.to_shard_id());
     transaction.payload = Data(transactionMessage.payload().begin(), transactionMessage.payload().end());
     return transaction;
+}
+
+template <typename T>
+Staking<T> Signer::buildUnsignedStakingTransaction(const Proto::SigningInput &input, function<T(const Proto::SigningInput &input)> func) {
+    auto tx = func(input);
+    return Staking<T>(
+        getEnum<T>(), tx, load(input.staking_message().nonce()),
+        load(input.staking_message().gas_price()), load(input.staking_message().gas_limit()),
+        load(input.chain_id()), 0, 0);
+}
+
+template <typename T>
+Proto::SigningOutput Signer::buildStakingSigningOutput(const Proto::SigningInput &input, const Data &signature, function<T(const Proto::SigningInput &input)> func) {
+    auto tx = Signer::buildUnsignedStakingTransaction<T>(input, func);
+    auto tuple = values(chainID, signature);
+
+    tx.r = std::get<0>(tuple);
+    tx.s = std::get<1>(tuple);
+    tx.v = std::get<2>(tuple);
+    auto encoded =  rlpNoHash<T>(tx, true);
+    return prepareOutput<Staking<T>>(encoded, tx);
 }
 
 } // namespace TW::Harmony

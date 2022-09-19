@@ -251,4 +251,39 @@ TEST(HarmonySigner, BuildUnsignedTxBytes) {
 
     ASSERT_EQ(hex(unsignedTxBytes), expectEncoded);
 }
+
+TEST(HarmonySigner, BuildUnsignedStakingTxBytes) {
+    auto input = Proto::SigningInput();
+    auto stakingMsg = input.mutable_staking_message();
+    const auto privateKey =
+        PrivateKey(parse_hex("b578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    auto value = store(MAIN_NET);
+    input.set_chain_id(value.data(), value.size());
+
+    value = store(uint256_t("0xa"));
+    stakingMsg->set_nonce(value.data(), value.size());
+
+    value = store(uint256_t(""));
+    stakingMsg->set_gas_price(value.data(), value.size());
+
+    value = store(uint256_t("0x5208"));
+    stakingMsg->set_gas_limit(value.data(), value.size());
+
+    // delegate message
+    auto delegateMsg = stakingMsg->mutable_delegate_message();
+        delegateMsg->set_delegator_address(TEST_RECEIVER.string());
+    delegateMsg->set_validator_address(TEST_RECEIVER.string());
+
+    value = store(uint256_t("0x4c53ecdc18a60000"));
+    delegateMsg->set_amount(value.data(), value.size());
+
+    Signer signer(uint256_t(load(input.chain_id())));
+    auto unsignedTxBytes = signer.buildUnsignedTxBytes(input);
+
+    auto expectEncoded = "f83d02f3946a87346f3ba9958d08d09484a2b7fdbbe42b0df6946a87346f3ba9958d08d09484a2b7fdbbe42b0df6884c53ecdc18a600000a80825208018080";
+
+    ASSERT_EQ(hex(unsignedTxBytes), expectEncoded);
+}
 } // namespace TW::Harmony
