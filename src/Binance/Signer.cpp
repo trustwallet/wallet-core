@@ -66,7 +66,7 @@ Data Signer::sign() const {
     auto hash = preImageHash();
     auto key = PrivateKey(input.private_key());
     auto signature = key.sign(hash, TWCurveSECP256k1);
-    return Data(signature.begin(), signature.end() - 1);
+    return {signature.begin(), signature.end() - 1};
 }
 
 Data Signer::preImageHash() const {
@@ -213,7 +213,7 @@ Data Signer::aminoWrap(const std::string& raw, const Data& typePrefix, bool pref
         cos.WriteRaw(raw.data(), static_cast<int>(raw.size()));
     }
 
-    return Data(msg.begin(), msg.end());
+    return {msg.begin(), msg.end()};
 }
 
 } // namespace TW::Binance

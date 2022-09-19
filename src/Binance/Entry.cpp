@@ -8,7 +8,6 @@
 
 #include "../proto/TransactionCompiler.pb.h"
 #include "Address.h"
-#include "Coin.h"
 #include "Signer.h"
 
 namespace TW::Binance {
@@ -24,7 +23,7 @@ std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicK
 Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
     Address addr;
     if (!Address::decode(address, addr)) {
-        return Data();
+        return {};
     }
     return addr.getKeyHash();
 }
