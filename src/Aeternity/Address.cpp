@@ -7,8 +7,6 @@
 #include "Address.h"
 #include "Identifiers.h"
 #include <Base58.h>
-#include <Coin.h>
-#include <HexCoding.h>
 
 namespace TW::Aeternity {
 

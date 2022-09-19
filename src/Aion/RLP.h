@@ -17,7 +17,7 @@
 
 namespace TW::Aion {
 
-/// Aion's RLP encoging for long numbers
+/// Aion's RLP encoding for long numbers
 /// https://github.com/aionnetwork/aion/issues/680
 struct RLP {
     static Data encodeLong(boost::multiprecision::uint128_t l) noexcept {
