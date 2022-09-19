@@ -146,7 +146,7 @@ class CardanoTests: XCTestCase {
         var input = CardanoSigningInput.with {
             $0.transferMessage.toAddress = ownAddress
             $0.transferMessage.changeAddress = ownAddress
-            $0.transferMessage.amount = 4000000
+            $0.transferMessage.amount = 4000000 // not relevant as we use MaxAmount
             $0.transferMessage.useMaxAmount = true
             $0.ttl = 69885081
             // Register staking key, 2 ADA desposit
@@ -193,7 +193,7 @@ class CardanoTests: XCTestCase {
         var input = CardanoSigningInput.with {
             $0.transferMessage.toAddress = ownAddress
             $0.transferMessage.changeAddress = ownAddress
-            $0.transferMessage.amount = 6000000
+            $0.transferMessage.amount = 6000000 // not relevant as we use MaxAmount
             $0.transferMessage.useMaxAmount = true
             $0.ttl = 71678326
             // Withdraw available amount

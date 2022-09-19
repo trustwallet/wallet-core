@@ -89,8 +89,13 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
 }
 
 Data deriveStakingPrivateKey(const Data& privateKeyData) {
-    auto stakingPrivKeyData = TW::subData(privateKeyData, 96);
-    TW::append(stakingPrivKeyData, TW::Data(96));
+    if (privateKeyData.size() != PrivateKey::cardanoKeySize) {
+        return Data();
+    }
+    assert(privateKeyData.size() == PrivateKey::cardanoKeySize);
+    const auto halfSize = PrivateKey::cardanoKeySize / 2;
+    auto stakingPrivKeyData = TW::subData(privateKeyData, halfSize);
+    TW::append(stakingPrivKeyData, TW::Data(halfSize));
     return stakingPrivKeyData;
 }
 
@@ -112,7 +117,9 @@ Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Dat
 
         // Also add the derived staking private key (the 2nd half) and associated address; because staking keys also need signature
         const auto stakingPrivKeyData = deriveStakingPrivateKey(privateKeyData);
-        privateKeys[address.getStakingAddress()] = stakingPrivKeyData;
+        if (!stakingPrivKeyData.empty()) {
+            privateKeys[address.getStakingAddress()] = stakingPrivKeyData;
+        }
     }
 
     // collect every unique input UTXO address, preserving order

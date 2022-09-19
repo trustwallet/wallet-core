@@ -66,6 +66,8 @@ message Transfer {
     uint64 force_fee = 6;
 }
 
+// Register a staking key for the account, preprequisite for Staking.
+// Note: staking messages are typically used with a 1-output-to-self transaction.
 message RegisterStakingKey {
     // Staking address (as string)
     string staking_address = 1;
@@ -74,6 +76,7 @@ message RegisterStakingKey {
     uint64 deposit_amount = 2;
 }
 
+// Deregister staking key. can be done when staking is stopped completely. The Staking deposit is returned at this time.
 message DeregisterStakingKey {
     // Staking address (as string)
     string staking_address = 1;
@@ -82,21 +85,24 @@ message DeregisterStakingKey {
     uint64 undeposit_amount = 2;
 }
 
+// Delegate funds in this account to a specified staking pool.
 message Delegate {
     // Staking address (as string)
     string staking_address = 1;
 
+    // PoolID of staking pool
     bytes pool_id = 2;
 
     // Amount deposited in this TX. Should be 0. If not set correctly, TX will be rejected. See also RegisterStakingKey.deposit_amount.
     uint64 deposit_amount = 3;
 }
 
+// Withdraw earned staking reward.
 message Withdraw {
     // Staking address (as string)
     string staking_address = 1;
 
-    // Withdrawal amount
+    // Withdrawal amount. Should match the real value of the earned reward.
     uint64 withdraw_amount = 2;
 }
 

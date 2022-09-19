@@ -50,7 +50,7 @@ TEST(CardanoStaking, RegisterStakingKey) {
 
     input.mutable_transfer_message()->set_to_address(ownAddress);
     input.mutable_transfer_message()->set_change_address(ownAddress);
-    input.mutable_transfer_message()->set_amount(5000000ul);
+    input.mutable_transfer_message()->set_amount(5000000ul); // not relevant if we use MaxAmount
     input.mutable_transfer_message()->set_use_max_amount(true);
     input.set_ttl(69986091ul);
 
@@ -97,7 +97,7 @@ TEST(CardanoStaking, DeregisterStakingKey) {
 
     input.mutable_transfer_message()->set_to_address(ownAddress);
     input.mutable_transfer_message()->set_change_address(ownAddress);
-    input.mutable_transfer_message()->set_amount(5000000ul);
+    input.mutable_transfer_message()->set_amount(5000000ul); // not relevant if we use MaxAmount
     input.mutable_transfer_message()->set_use_max_amount(true);
     input.set_ttl(69986091ul);
 
@@ -144,7 +144,7 @@ TEST(CardanoStaking, Redelegate) {
 
     input.mutable_transfer_message()->set_to_address(ownAddress);
     input.mutable_transfer_message()->set_change_address(ownAddress);
-    input.mutable_transfer_message()->set_amount(5000000ul);
+    input.mutable_transfer_message()->set_amount(5000000ul); // not relevant if we use MaxAmount
     input.mutable_transfer_message()->set_use_max_amount(true);
     input.set_ttl(69986091ul);
 
@@ -198,7 +198,7 @@ TEST(CardanoStaking, RegisterAndDelegate_similar53339b) {
 
     input.mutable_transfer_message()->set_to_address(ownAddress);
     input.mutable_transfer_message()->set_change_address(ownAddress);
-    input.mutable_transfer_message()->set_amount(4000000ul);
+    input.mutable_transfer_message()->set_amount(4000000ul); // not relevant if we use MaxAmount
     input.mutable_transfer_message()->set_use_max_amount(true);
     input.set_ttl(69885081ul);
 
@@ -285,7 +285,7 @@ TEST(CardanoStaking, Withdraw_similarf48098) {
 
     input.mutable_transfer_message()->set_to_address(ownAddress);
     input.mutable_transfer_message()->set_change_address(ownAddress);
-    input.mutable_transfer_message()->set_amount(6000000ul);
+    input.mutable_transfer_message()->set_amount(6000000ul); // not relevant if we use MaxAmount
     input.mutable_transfer_message()->set_use_max_amount(true);
     input.set_ttl(71678326ul);
 

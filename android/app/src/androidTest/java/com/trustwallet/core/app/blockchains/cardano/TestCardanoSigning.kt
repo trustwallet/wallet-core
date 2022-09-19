@@ -163,7 +163,7 @@ class TestCardanoSigning {
         val message = Cardano.Transfer.newBuilder()
             .setToAddress(ownAddress)
             .setChangeAddress(ownAddress)
-            .setAmount(4_000_000)
+            .setAmount(4_000_000) // not relevant if we use MaxAmount
             .setUseMaxAmount(true)
             .build()
         // Register staking key, 2 ADA desposit
@@ -225,7 +225,7 @@ class TestCardanoSigning {
         val message = Cardano.Transfer.newBuilder()
             .setToAddress(ownAddress)
             .setChangeAddress(ownAddress)
-            .setAmount(6_000_000)
+            .setAmount(6_000_000) // not relevant if we use MaxAmount
             .setUseMaxAmount(true)
             .build()
         // Withdraw available amount
