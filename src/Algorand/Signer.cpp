@@ -75,7 +75,7 @@ Data Signer::sign(const PrivateKey& privateKey, const BaseTransaction& transacti
     append(data, TRANSACTION_TAG);
     append(data, transaction.serialize());
     auto signature = privateKey.sign(data, TWCurveED25519);
-    return Data(signature.begin(), signature.end());
+    return {signature.begin(), signature.end()};
 }
 
 } // namespace TW::Algorand
