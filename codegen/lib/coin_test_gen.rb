@@ -65,7 +65,7 @@ class CoinTestGen
 
     folder = 'tests/'
     if coin.key?('testFolderName')
-      folder += format_name(coin['folderName'])
+      folder += format_name(coin['testFolderName'])
     else
       folder += format_name(coin['name'])
     end
