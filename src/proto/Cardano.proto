@@ -66,6 +66,46 @@ message Transfer {
     uint64 force_fee = 6;
 }
 
+// Register a staking key for the account, preprequisite for Staking.
+// Note: staking messages are typically used with a 1-output-to-self transaction.
+message RegisterStakingKey {
+    // Staking address (as string)
+    string staking_address = 1;
+
+    // Amount deposited in this TX. Should be 2 ADA (2000000). If not set correctly, TX will be rejected. See also Delegate.deposit_amount.
+    uint64 deposit_amount = 2;
+}
+
+// Deregister staking key. can be done when staking is stopped completely. The Staking deposit is returned at this time.
+message DeregisterStakingKey {
+    // Staking address (as string)
+    string staking_address = 1;
+
+    // Amount undeposited in this TX. Should be 2 ADA (2000000). If not set correctly, TX will be rejected. See also RegisterStakingKey.deposit_amount.
+    uint64 undeposit_amount = 2;
+}
+
+// Delegate funds in this account to a specified staking pool.
+message Delegate {
+    // Staking address (as string)
+    string staking_address = 1;
+
+    // PoolID of staking pool
+    bytes pool_id = 2;
+
+    // Amount deposited in this TX. Should be 0. If not set correctly, TX will be rejected. See also RegisterStakingKey.deposit_amount.
+    uint64 deposit_amount = 3;
+}
+
+// Withdraw earned staking reward.
+message Withdraw {
+    // Staking address (as string)
+    string staking_address = 1;
+
+    // Withdrawal amount. Should match the real value of the earned reward.
+    uint64 withdraw_amount = 2;
+}
+
 message TransactionPlan {
     // total coins in the utxos
     uint64 available_amount = 1;
@@ -78,6 +118,12 @@ message TransactionPlan {
 
     // coins in the change UTXO
     uint64 change = 4;
+
+    // coins deposited (going to deposit) in this TX
+    uint64 deposit = 10;
+
+    // coins undeposited (coming from deposit) in this TX
+    uint64 undeposit = 11;  
 
     // total tokens in the utxos (optional)
     repeated TokenAmount available_tokens = 5;
@@ -103,6 +149,18 @@ message SigningInput {
 
     // Later this can be made oneof if more message types are supported
     Transfer transfer_message = 3;
+
+    // Optional, used in case of Staking Key registration (prerequisite for Staking)
+    RegisterStakingKey register_staking_key = 6;
+
+    // Optional, used in case of (re)delegation
+    Delegate delegate = 7;
+
+    // Optional, used in case of withdraw
+    Withdraw withdraw = 8;    
+
+    // Optional
+    DeregisterStakingKey deregister_staking_key = 9;
 
     uint64 ttl = 4;
 

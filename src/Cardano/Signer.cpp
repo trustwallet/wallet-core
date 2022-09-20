@@ -59,7 +59,44 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
     tx.fee = plan.fee;
     tx.ttl = input.ttl();
 
+    if (input.has_register_staking_key()) {
+        const auto stakingAddress = AddressV3(input.register_staking_key().staking_address());
+        // here we need the bare staking key
+        const auto key = stakingAddress.bytes;
+        tx.certificates.emplace_back(Certificate{Certificate::SkatingKeyRegistration, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data()});
+    }
+    if (input.has_delegate()) {
+        const auto stakingAddress = AddressV3(input.delegate().staking_address());
+        // here we need the bare staking key
+        const auto key = stakingAddress.bytes;
+        const auto poolId = data(input.delegate().pool_id());
+        tx.certificates.emplace_back(Certificate{Certificate::Delegation, {CertificateKey{CertificateKey::AddressKeyHash, key}}, poolId});
+    }
+    if (input.has_withdraw()) {
+        const auto stakingAddress = AddressV3(input.withdraw().staking_address());
+        const auto key = stakingAddress.data();
+        const auto amount = input.withdraw().withdraw_amount();
+        tx.withdrawals.emplace_back(Withdrawal{key, amount});
+    }
+    if (input.has_deregister_staking_key()) {
+        const auto stakingAddress = AddressV3(input.deregister_staking_key().staking_address());
+        // here we need the bare staking key
+        const auto key = stakingAddress.bytes;
+        tx.certificates.emplace_back(Certificate{Certificate::StakingKeyDeregistration, {CertificateKey{CertificateKey::AddressKeyHash, key}}, Data()});
+    }
+
     return Common::Proto::OK;
+}
+
+Data deriveStakingPrivateKey(const Data& privateKeyData) {
+    if (privateKeyData.size() != PrivateKey::cardanoKeySize) {
+        return Data();
+    }
+    assert(privateKeyData.size() == PrivateKey::cardanoKeySize);
+    const auto halfSize = PrivateKey::cardanoKeySize / 2;
+    auto stakingPrivKeyData = TW::subData(privateKeyData, halfSize);
+    TW::append(stakingPrivKeyData, TW::Data(halfSize));
+    return stakingPrivKeyData;
 }
 
 Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Data, Data>>& signatures, const Proto::SigningInput& input, const TransactionPlan& plan, const Data& txId, bool sizeEstimationOnly) {
@@ -71,25 +108,51 @@ Common::Proto::SigningError Signer::assembleSignatures(std::vector<std::pair<Dat
         if (!PrivateKey::isValid(privateKeyData)) {
             return Common::Proto::Error_invalid_private_key;
         }
+
+        // Add this private key and associated address
         const auto privateKey = PrivateKey(privateKeyData);
         const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Cardano);
         const auto address = AddressV3(publicKey);
         privateKeys[address.string()] = privateKeyData;
+
+        // Also add the derived staking private key (the 2nd half) and associated address; because staking keys also need signature
+        const auto stakingPrivKeyData = deriveStakingPrivateKey(privateKeyData);
+        if (!stakingPrivKeyData.empty()) {
+            privateKeys[address.getStakingAddress()] = stakingPrivKeyData;
+        }
     }
 
-    // collect every unique input UTXO address
+    // collect every unique input UTXO address, preserving order
     std::vector<std::string> addresses;
     for (auto& u : plan.utxos) {
         if (!AddressV3::isValid(u.address)) {
             return Common::Proto::Error_invalid_address;
         }
-        if (find(addresses.begin(), addresses.end(), u.address) == addresses.end()) {
-            addresses.push_back(u.address);
+        addresses.emplace_back(u.address);
+    }
+    // Staking key is also an address that needs signature
+    if (input.has_register_staking_key()) {
+        addresses.emplace_back(input.register_staking_key().staking_address());
+    }
+    if (input.has_deregister_staking_key()) {
+        addresses.emplace_back(input.deregister_staking_key().staking_address());
+    }
+    if (input.has_delegate()) {
+        addresses.emplace_back(input.delegate().staking_address());
+    }
+    if (input.has_withdraw()) {
+        addresses.emplace_back(input.withdraw().staking_address());
+    }
+    // discard duplicates (std::set, std::copy_if, std::unique does not work well here)
+    std::vector<std::string> addressesUnique;
+    for (auto& a: addresses) {
+        if (find(addressesUnique.begin(), addressesUnique.end(), a) == addressesUnique.end()) {
+            addressesUnique.emplace_back(a);
         }
     }
 
     // create signature for each address
-    for (auto& a : addresses) {
+    for (auto& a : addressesUnique) {
         const auto privKeyFind = privateKeys.find(a);
         Data privateKeyData;
         if (privKeyFind != privateKeys.end()) {
@@ -198,7 +261,7 @@ std::vector<TxInput> selectInputsSimpleNative(const std::vector<TxInput>& inputs
     Amount selectedAmount = 0;
 
     for (const auto& i : ii) {
-        selected.push_back(i);
+        selected.emplace_back(i);
         selectedAmount += i.amount;
         if (selectedAmount >= amount) {
             break;
@@ -221,7 +284,7 @@ void selectInputsSimpleToken(const std::vector<TxInput>& inputs, std::string key
             // already selected
             continue;
         }
-        selectedInputs.push_back(i);
+        selectedInputs.emplace_back(i);
         selectedAmount += i.amount;
         if (selectedAmount >= amount) {
             return;
@@ -241,10 +304,8 @@ std::vector<TxInput> Signer::selectInputsWithTokens(const std::vector<TxInput>& 
 }
 
 // Create a simple plan, used for estimation
-TransactionPlan simplePlan(Amount amount, const TokenBundle& requestedTokens, const std::vector<TxInput>& selectedInputs, bool maxAmount) {
-    TransactionPlan plan;
-    plan.amount = amount;
-    plan.utxos = selectedInputs;
+TransactionPlan simplePlan(Amount amount, const TokenBundle& requestedTokens, const std::vector<TxInput>& selectedInputs, bool maxAmount, uint64_t deposit, uint64_t undeposit) {
+    TransactionPlan plan{.amount = amount, .utxos = selectedInputs, .deposit = deposit, .undeposit = undeposit};
     // Sum availableAmount
     plan.availableAmount = 0;
     for (auto& u : plan.utxos) {
@@ -254,19 +315,20 @@ TransactionPlan simplePlan(Amount amount, const TokenBundle& requestedTokens, co
         }
     }
     plan.fee = PlaceholderFee; // placeholder value
+    const auto availAfterDeposit = plan.availableAmount + plan.undeposit - plan.deposit;
     // adjust/compute output amount and output tokens
     if (!maxAmount) {
         // reduce amount if needed
-        plan.amount = std::max(Amount(0), std::min(plan.amount, plan.availableAmount - plan.fee));
+        plan.amount = std::max(Amount(0), std::min(plan.amount, availAfterDeposit - plan.fee));
         plan.outputTokens = requestedTokens;
     } else {
         // max available amount
-        plan.amount = std::max(Amount(0), plan.availableAmount - plan.fee);
+        plan.amount = std::max(Amount(0), availAfterDeposit - plan.fee);
         plan.outputTokens = plan.availableTokens; // use all
     }
 
     // compute change
-    plan.change = plan.availableAmount - (plan.amount + plan.fee);
+    plan.change = availAfterDeposit - (plan.amount + plan.fee);
     for (auto iter = plan.availableTokens.bundle.begin(); iter != plan.availableTokens.bundle.end(); ++iter) {
         const auto key = iter->second.key();
         const auto changeAmount = iter->second.amount - plan.outputTokens.getAmount(key);
@@ -277,13 +339,37 @@ TransactionPlan simplePlan(Amount amount, const TokenBundle& requestedTokens, co
     return plan;
 }
 
+uint64_t sumDeposits(const Proto::SigningInput& input) {
+    uint64_t sum = 0;
+    if (input.has_register_staking_key()) {
+        sum += input.register_staking_key().deposit_amount();
+    }
+    if (input.has_delegate()) {
+        sum += input.delegate().deposit_amount();
+    }
+    return sum;
+}
+
+uint64_t sumUndeposits(const Proto::SigningInput& input) {
+    uint64_t sum = 0;
+    if (input.has_deregister_staking_key()) {
+        sum += input.deregister_staking_key().undeposit_amount();
+    }
+    if (input.has_withdraw()) {
+        sum += input.withdraw().withdraw_amount();
+    }
+    return sum;
+}
+
 // Estimates size of transaction in bytes.
 uint64_t estimateTxSize(const Proto::SigningInput& input, Amount amount, const TokenBundle& requestedTokens, const std::vector<TxInput>& selectedInputs) {
     auto inputs = std::vector<TxInput>();
     for (auto i = 0; i < input.utxos_size(); ++i) {
         inputs.emplace_back(TxInput::fromProto(input.utxos(i)));
     }
-    const auto _simplePlan = simplePlan(amount, requestedTokens, selectedInputs, input.transfer_message().use_max_amount());
+    const auto deposits = sumDeposits(input);
+    const uint64_t undeposits = sumUndeposits(input);
+    const auto _simplePlan = simplePlan(amount, requestedTokens, selectedInputs, input.transfer_message().use_max_amount(), deposits, undeposits);
 
     Data encoded;
     Data txId;
@@ -329,6 +415,10 @@ TransactionPlan Signer::doPlan() const {
         return plan;
     }
     assert(inputSum > 0);
+    // adjust inputSum with deposited/undeposited amount
+    plan.deposit = sumDeposits(input);
+    plan.undeposit = sumUndeposits(input);
+    const auto inputSumAfterDeposit = inputSum + plan.undeposit - plan.deposit;
 
     // Amounts requested
     plan.amount = input.transfer_message().amount();
@@ -346,14 +436,14 @@ TransactionPlan Signer::doPlan() const {
 
     // if amount requested is the same or more than available amount, it cannot be satisifed, but
     // treat this case as MaxAmount, and send maximum available (which will be less)
-    if (!maxAmount && input.transfer_message().amount() >= inputSum) {
+    if (!maxAmount && input.transfer_message().amount() >= inputSumAfterDeposit) {
         maxAmount = true;
     }
 
     // select UTXOs
     if (!maxAmount) {
         // aim for larger total input, enough for 4/3 of the target amount plus typical fee plus minimal ADA for change plus some extra
-        auto targetInputAmount = (plan.amount * 4) / 3 + PlaceholderFee + requestedTokens.minAdaAmount() + ExtraInputAmount;
+        auto targetInputAmount = (plan.amount * 4) / 3 + plan.deposit - plan.undeposit + PlaceholderFee + requestedTokens.minAdaAmount() + ExtraInputAmount;
         plan.utxos = selectInputsWithTokens(utxos, targetInputAmount, requestedTokens);
     } else {
         // maxAmount, select all
@@ -374,13 +464,15 @@ TransactionPlan Signer::doPlan() const {
         return plan;
     }
     assert(plan.availableAmount > 0);
+    // adjust availableAmount with deposited/undeposited amount
+    const auto availableAmountAfterDeposit = plan.availableAmount + plan.undeposit - plan.deposit;
 
     // check that there are enough coins in the inputs
-    if (plan.amount > plan.availableAmount) {
+    if (plan.amount > availableAmountAfterDeposit) {
         plan.error = Common::Proto::Error_low_balance;
         return plan;
     }
-    assert(plan.amount <= plan.availableAmount);
+    assert(plan.amount <= availableAmountAfterDeposit);
     // check that there are enough tokens in the inputs
     for (auto iter = requestedTokens.bundle.begin(); iter != requestedTokens.bundle.end(); ++iter) {
         if (iter->second.amount > plan.availableTokens.getAmount(iter->second.key())) {
@@ -394,25 +486,25 @@ TransactionPlan Signer::doPlan() const {
         plan.fee = estimateFee(input, plan.amount, requestedTokens, plan.utxos);
     } else {
         // fee provided, use it (capped)
-        plan.fee = std::max(Amount(0), std::min(plan.availableAmount - plan.amount, input.transfer_message().force_fee()));
+        plan.fee = std::max(Amount(0), std::min(availableAmountAfterDeposit - plan.amount, input.transfer_message().force_fee()));
     }
-    assert(plan.fee >= 0 && plan.fee < plan.availableAmount);
+    assert(plan.fee >= 0 && plan.fee < availableAmountAfterDeposit);
 
     // adjust/compute output amount
     if (!maxAmount) {
         // reduce amount if needed
-        plan.amount = std::max(Amount(0), std::min(plan.amount, plan.availableAmount - plan.fee));
+        plan.amount = std::max(Amount(0), std::min(plan.amount, availableAmountAfterDeposit - plan.fee));
     } else {
         // max available amount
-        plan.amount = std::max(Amount(0), plan.availableAmount - plan.fee);
+        plan.amount = std::max(Amount(0), availableAmountAfterDeposit - plan.fee);
     }
-    assert(plan.amount >= 0 && plan.amount <= plan.availableAmount);
+    assert(plan.amount >= 0 && plan.amount <= availableAmountAfterDeposit);
 
-    if (plan.amount + plan.fee > plan.availableAmount) {
+    if (plan.amount + plan.fee > availableAmountAfterDeposit) {
         plan.error = Common::Proto::Error_low_balance;
         return plan;
     }
-    assert(plan.amount + plan.fee <= plan.availableAmount);
+    assert(plan.amount + plan.fee <= availableAmountAfterDeposit);
 
     // compute output token amounts
     if (!maxAmount) {
@@ -422,7 +514,7 @@ TransactionPlan Signer::doPlan() const {
     }
 
     // compute change
-    plan.change = plan.availableAmount - (plan.amount + plan.fee);
+    plan.change = availableAmountAfterDeposit - (plan.amount + plan.fee);
     for (auto iter = plan.availableTokens.bundle.begin(); iter != plan.availableTokens.bundle.end(); ++iter) {
         const auto key = iter->second.key();
         const auto changeAmount = iter->second.amount - plan.outputTokens.getAmount(key);
@@ -432,9 +524,10 @@ TransactionPlan Signer::doPlan() const {
         }
     }
 
-    assert(plan.change >= 0 && plan.change <= plan.availableAmount);
+    assert(plan.change >= 0 && plan.change <= availableAmountAfterDeposit);
     assert(!maxAmount || plan.change == 0); // change is 0 in max amount case
-    assert(plan.amount + plan.change + plan.fee == plan.availableAmount);
+    assert(plan.amount + plan.change + plan.fee == availableAmountAfterDeposit);
+    assert(plan.amount + plan.change + plan.fee + plan.deposit == plan.availableAmount + plan.undeposit);
 
     return plan;
 }

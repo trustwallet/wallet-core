@@ -76,7 +76,7 @@ std::vector<TokenAmount> TokenBundle::getByPolicyId(const std::string& policyId)
     std::vector<TokenAmount> filtered;
     for (const auto& t : bundle) {
         if (t.second.policyId == policyId) {
-            filtered.push_back(t.second);
+            filtered.emplace_back(t.second);
         }
     }
     return filtered;
@@ -160,6 +160,8 @@ TransactionPlan TransactionPlan::fromProto(const Proto::TransactionPlan& proto) 
     ret.amount = proto.amount();
     ret.fee = proto.fee();
     ret.change = proto.change();
+    ret.deposit = proto.deposit();
+    ret.undeposit = proto.undeposit();
     for (auto i = 0; i < proto.available_tokens_size(); ++i) {
         ret.availableTokens.add(TokenAmount::fromProto(proto.available_tokens(i)));
     }
@@ -170,7 +172,7 @@ TransactionPlan TransactionPlan::fromProto(const Proto::TransactionPlan& proto) 
         ret.changeTokens.add(TokenAmount::fromProto(proto.change_tokens(i)));
     }
     for (auto i = 0; i < proto.utxos_size(); ++i) {
-        ret.utxos.push_back(TxInput::fromProto(proto.utxos(i)));
+        ret.utxos.emplace_back(TxInput::fromProto(proto.utxos(i)));
     }
     ret.error = proto.error();
     return ret;
@@ -182,6 +184,8 @@ Proto::TransactionPlan TransactionPlan::toProto() const {
     plan.set_amount(amount);
     plan.set_fee(fee);
     plan.set_change(change);
+    plan.set_deposit(deposit);
+    plan.set_undeposit(undeposit);
     for (const auto& token : availableTokens.bundle) {
         *plan.add_available_tokens() = token.second.toProto();
     }
@@ -202,7 +206,7 @@ Cbor::Encode cborizeInputs(const std::vector<OutPoint>& inputs) {
     // clang-format off
     std::vector<Cbor::Encode> ii;
     for (const auto& i : inputs) {
-        ii.push_back(Cbor::Encode::array({
+        ii.emplace_back(Cbor::Encode::array({
             Cbor::Encode::bytes(i.txHash),
             Cbor::Encode::uint(i.outputIndex)
         }));
@@ -253,9 +257,42 @@ Cbor::Encode cborizeOutput(const TxOutput& output) {
 Cbor::Encode cborizeOutputs(const std::vector<TxOutput>& outputs) {
     std::vector<Cbor::Encode> oo;
     for (const auto& o : outputs) {
-        oo.push_back(cborizeOutput(o));
+        oo.emplace_back(cborizeOutput(o));
     }
     return Cbor::Encode::array(oo);
+}
+
+Cbor::Encode cborizeCertificateKey(const CertificateKey& certKey) {
+    std::vector<Cbor::Encode> c;
+    c.emplace_back(Cbor::Encode::uint(static_cast<uint8_t>(certKey.type)));
+    c.emplace_back(Cbor::Encode::bytes(certKey.key));
+    return Cbor::Encode::array(c);
+}
+
+Cbor::Encode cborizeCert(const Certificate& cert) {
+    std::vector<Cbor::Encode> c;
+    c.emplace_back(Cbor::Encode::uint(static_cast<uint8_t>(cert.type)));
+    c.emplace_back(cborizeCertificateKey(cert.certKey));
+    if (!cert.poolId.empty()) {
+        c.emplace_back(Cbor::Encode::bytes(cert.poolId));
+    }
+    return Cbor::Encode::array(c);
+}
+
+Cbor::Encode cborizeCerts(const std::vector<Certificate>& certs) {
+    std::vector<Cbor::Encode> c;
+    for (const auto& i: certs) {
+        c.emplace_back(cborizeCert(i));
+    }
+    return Cbor::Encode::array(c);
+}
+
+Cbor::Encode cborizeWithdrawals(const std::vector<Withdrawal>& withdrawals) {
+    std::map<Cbor::Encode, Cbor::Encode> mapElems;
+    for (const auto& w: withdrawals) {
+        mapElems.emplace(Cbor::Encode::bytes(w.stakingKey), Cbor::Encode::uint(w.amount));
+    }
+    return Cbor::Encode::map(mapElems);
 }
 
 Data Transaction::encode() const {
@@ -263,16 +300,25 @@ Data Transaction::encode() const {
     const auto oo = cborizeOutputs(outputs);
 
     // Encode elements in a map, with fixed numbers as keys
-    Cbor::Encode encode = Cbor::Encode::map({
+    std::map<Cbor::Encode, Cbor::Encode> mapElems = {
         std::make_pair(Cbor::Encode::uint(0), ii),
         std::make_pair(Cbor::Encode::uint(1), oo),
         std::make_pair(Cbor::Encode::uint(2), Cbor::Encode::uint(fee)),
         std::make_pair(Cbor::Encode::uint(3), Cbor::Encode::uint(ttl)),
-    });
-    // Note: following fields are not included:
-    // 4 certificates, 5 withdrawals, 7 AUXILIARY_DATA_HASH, 8 VALIDITY_INTERVAL_START
+    };
 
+    if (!certificates.empty()) {
+        mapElems.emplace(Cbor::Encode::uint(4), cborizeCerts(certificates));
+    }
+    if (!withdrawals.empty()) {
+        mapElems.emplace(Cbor::Encode::uint(5), cborizeWithdrawals(withdrawals));
+    }
+
+    Cbor::Encode encode = Cbor::Encode::map(mapElems);
     return encode.encoded();
+
+    // Note: following fields are not included:
+    // 7 AUXILIARY_DATA_HASH, 8 VALIDITY_INTERVAL_START
 }
 
 Data Transaction::getId() const {

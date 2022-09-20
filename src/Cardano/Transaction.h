@@ -105,10 +105,12 @@ public:
 class TransactionPlan {
 public:
     std::vector<TxInput> utxos;
-    Amount availableAmount = 0;  // total coins in the utxos
+    Amount availableAmount = 0;  // total coins in the input utxos
     Amount amount = 0;  // coins in the output UTXO
     Amount fee = 0;  // coin amount deducted as fee
     Amount change = 0;  // coins in the change UTXO
+    Amount deposit = 0;  // coins deposited (going to deposit) in this TX
+    Amount undeposit = 0;  // coins undeposited (returned from deposit) in this TX
     TokenBundle availableTokens;  // total tokens in the utxos (optional)
     TokenBundle outputTokens;  // tokens in the output (optional)
     TokenBundle changeTokens;  // tokens in the change (optional)
@@ -118,12 +120,47 @@ public:
     Proto::TransactionPlan toProto() const;
 };
 
+/// A key with a type, used in a Certificate
+class CertificateKey {
+public:
+    enum KeyType: uint8_t {
+        AddressKeyHash = 0,
+        //ScriptHash = 1,
+    };
+    KeyType type;
+    Data key;
+};
+
+/// Certificate, mainly used for staking
+class Certificate {
+public:
+    enum CertificateType: uint8_t {
+        SkatingKeyRegistration = 0,
+        StakingKeyDeregistration = 1,
+        Delegation = 2,
+        //StakePoolRegistration = 3, // not supported
+    };
+    CertificateType type;
+    CertificateKey certKey;
+    /// Optional PoolId, used in delegation
+    Data poolId;
+};
+
+/// Staking withdrawal
+class Withdrawal {
+public:
+    Data stakingKey;
+    Amount amount;
+};
+
 class Transaction {
 public:
     std::vector<OutPoint> inputs;
     std::vector<TxOutput> outputs;
     Amount fee;
     uint64_t ttl;
+    std::vector<Certificate> certificates;
+    std::vector<Withdrawal> withdrawals;
 
     // Encode into CBOR binary format
     Data encode() const;
