@@ -10,7 +10,22 @@ await walletDump()
 await walletAddCoin(WC.CoinType.solana)
 await walletDump()
 
-// retrieve private key and verify it
+// Create a second wallet by mnemonic import
+await walletImport('ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal', 'Imported')
+await walletsList()
+await walletDump()
+
+// Load first ...
+await walletsList()
+await walletLoad(0)
+await walletDump()
+
+// ... then second
+await walletsList()
+await walletLoad(1)
+await walletDump()
+
+// retrieve private key and verify that it derives the same address
 coin = WC.CoinType.bitcoin
 privkey = wallets.wallet.wallet.privateKey(coin, 'devconsole.ts')
 pubkey = privkey.getPublicKeySecp256k1(true); HexCoding.encode(pubkey.data())
@@ -19,22 +34,11 @@ addrStored = wallets.wallet.wallet.account(0).address()
 addrDerived === addrStored
 
 // create another wallet
-await walletCreate(256, 'Second')
+await walletCreate(256, 'Another')
 await walletsList()
 await walletDump()
 
-await walletImport('ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal', 'Imported')
-await walletsList()
-await walletDump()
-
-await walletsList()
-await walletLoad(0)
-await walletDump()
-
-await walletsList()
-await walletLoad(1)
-await walletDump()
-
+// Delete it
 await walletDelete('delete')
 await walletsList()
 await walletDump()
@@ -44,4 +48,4 @@ await walletDump()
 
 // Delete all wallets (commented out not to accidentally remove data)
 //await walletDeleteAll('deleteall')
-await walletsList()
+//await walletsList()
