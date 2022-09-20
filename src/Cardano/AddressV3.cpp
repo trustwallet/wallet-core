@@ -175,13 +175,6 @@ AddressV3::Kind AddressV3::kindFromFirstByte(uint8_t first) {
     return (Kind)((first & 0xF0) >> 4);
 }
 
-void AddressV3::operator=(const AddressV3& other) {
-    networkId = other.networkId;
-    kind = other.kind;
-    bytes = other.bytes;
-    legacyAddressV2 = other.legacyAddressV2;
-}
-
 std::string AddressV3::getHrp(Kind kind) noexcept {
     switch (kind) {
     case Kind_Base:

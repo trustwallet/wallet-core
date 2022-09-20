@@ -20,7 +20,7 @@ namespace TW::Cardano {
  * Derivation is BIP39, default derivation path is "m/44'/1815'/0'/0/0", with last element being the account number.
  * Curve is ED25519 with special variations, custom logic in HDWallet and TrezorCrypto lib.
  * Private key is ED25519: 32-byte PK is extended with 32-byte extra extension, and 32-byte chain code.
- * Private key is derived from mnemonic raw entropy (not seed, as in other cases); 96-byte secret is generated (pk, extrension, and chain code).
+ * Private key is derived from mnemonic raw entropy (not seed, as in other cases); 96-byte secret is generated (pk, extension, and chain code).
  * Public key is 64-byte: the 32-byte ED25519 public key plus the 32-byte chain code of the PK.
  * Address derivation: Only V2, type 0 (=public key) addresses are generated.
  * - CBOR binary scheme is used inside addresses.
@@ -46,7 +46,7 @@ class AddressV2 {
     Data attrs;
 
     /// Type; 0: public key.
-    TW::byte type;
+    TW::byte type{};
 
     static const TW::byte PayloadTag = 24;
     

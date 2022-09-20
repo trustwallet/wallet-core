@@ -13,6 +13,7 @@
 #include "../proto/Cardano.pb.h"
 #include "../proto/Common.pb.h"
 
+#include <utility>
 #include <vector>
 #include <string>
 #include <set>
@@ -28,7 +29,7 @@ public:
     uint256_t amount;
 
     TokenAmount() = default;
-    TokenAmount(const std::string& policyId, const std::string& assetName, uint256_t amount) : policyId(policyId), assetName(assetName), amount(amount) {}
+    TokenAmount(std::string  policyId, std::string  assetName, uint256_t amount) : policyId(std::move(policyId)), assetName(std::move(assetName)), amount(std::move(amount)) {}
 
     static TokenAmount fromProto(const Proto::TokenAmount& proto);
     Proto::TokenAmount toProto() const;
@@ -41,7 +42,7 @@ public:
     std::map<std::string, TokenAmount> bundle;
 
     TokenBundle() = default;
-    TokenBundle(const std::vector<TokenAmount>& tokens) { for (const auto& t: tokens) { add(t); } }
+    explicit TokenBundle(const std::vector<TokenAmount>& tokens) { for (const auto& t: tokens) { add(t); } }
 
     static TokenBundle fromProto(const Proto::TokenBundle& proto);
     Proto::TokenBundle toProto() const;
@@ -64,11 +65,10 @@ public:
 class OutPoint {
 public:
     Data txHash;
-    uint64_t outputIndex;
+    uint64_t outputIndex{};
 
     OutPoint() = default;
-    OutPoint(const Data& txHash, uint64_t outputIndex) : txHash(txHash), outputIndex(outputIndex) {}
-    static OutPoint fromProto(const Proto::OutPoint& proto);
+    OutPoint(Data  txHash, uint64_t outputIndex) : txHash(std::move(txHash)), outputIndex(outputIndex) {}
 };
 
 class TxInput: public OutPoint {
@@ -92,14 +92,14 @@ public:
     Data address;
 
     /// ADA amount
-    Amount amount;
+    Amount amount{};
 
     /// Token amounts (optional)
     TokenBundle tokenBundle;
 
     TxOutput() = default;
-    TxOutput(const Data& address, Amount amount) : address(address), amount(amount) {}
-    TxOutput(const Data& address, Amount amount, const TokenBundle& tokenBundle) : address(address), amount(amount), tokenBundle(tokenBundle) {}
+    TxOutput(Data  address, Amount amount) : address(std::move(address)), amount(amount) {}
+    TxOutput(Data  address, Amount amount, TokenBundle  tokenBundle) : address(std::move(address)), amount(amount), tokenBundle(std::move(tokenBundle)) {}
 };
 
 class TransactionPlan {
