@@ -1,10 +1,9 @@
-#!/usr/bin/env node
+#!/usr/bin/env ts-node
 
 const chalk = require('chalk');
 const clear = require('clear');
 const figlet = require('figlet');
 const repl = require('node:repl');
-//const inquirer = require('inquirer');
 const { initWasm, TW } = require("@trustwallet/wallet-core");
 
 function enumerateNamespaces(topLevelNamespace: any) {
@@ -26,7 +25,7 @@ function enumerateNamespaces(topLevelNamespace: any) {
         .filter(n => !exceptions.includes(n));
 }
 
-(async function () {
+async function main() {
     class AddressCoin {
         coin: any;
         address: string;
@@ -35,7 +34,7 @@ function enumerateNamespaces(topLevelNamespace: any) {
             this.address = address;
         }
     };
-
+    
     class TestWallet {
         name: string;
         wallet: any;
@@ -204,4 +203,6 @@ function enumerateNamespaces(topLevelNamespace: any) {
         console.log('Bye!');
         process.exit();
     });
-})();
+}
+
+main();
