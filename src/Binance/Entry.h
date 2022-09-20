@@ -12,18 +12,18 @@ namespace TW::Binance {
 
 /// Binance entry dispatcher.
 /// Note: do not put the implementation here (no matter how simple), to avoid having coin-specific includes in this file
-class Entry: public CoinEntry {
+class Entry final : public CoinEntry {
 public:
-    virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;
-    virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
-    virtual Data addressToData(TWCoinType coin, const std::string& address) const;
-    virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
-    virtual bool supportsJSONSigning() const { return true; }
-    virtual std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const;
+    bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;
+    std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
+    Data addressToData(TWCoinType coin, const std::string& address) const;
+    void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
+    bool supportsJSONSigning() const { return true; }
+    std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const;
 
-    virtual Data preImageHashes(TWCoinType coin, const Data& txInputData) const;
-    virtual void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const;
-    virtual Data buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const;
+    Data preImageHashes(TWCoinType coin, const Data& txInputData) const;
+    void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const;
+    Data buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const;
 };
 
 } // namespace TW::Binance

@@ -1,4 +1,4 @@
-name: Linux SampleApp CI
+name: Linux SampleApps CI
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
         CXX: /usr/bin/clang++
     - name: CMake
       run: |
-        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug
+        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DTW_UNITY_BUILD=ON
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
@@ -55,6 +55,13 @@ jobs:
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
+    - name: Build, run, and test devconsole.ts
+      run: |
+        cd samples/typescript/devconsole.ts
+        npm install
+        npm run build
+        echo -e "help() \n .exit" | npm run start
+        npm run test
     - name: Install Go
       env:
         GO_VERSION: 1.16.12
