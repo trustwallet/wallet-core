@@ -2,7 +2,7 @@
 //await walletsDeleteAll('deleteall')
 
 // create a wallet
-await walletCreate()
+await walletCreate(256, 'First')
 await walletsList()
 await walletDump()
 
@@ -10,12 +10,20 @@ await walletDump()
 await walletAddCoin(WC.CoinType.solana)
 await walletDump()
 
+// retrieve private key and verify it
+coin = WC.CoinType.bitcoin
+privkey = wallets.wallet.wallet.privateKey(coin, 'devconsole.ts')
+pubkey = privkey.getPublicKeySecp256k1(true); HexCoding.encode(pubkey.data())
+addrDerived = AnyAddress.createWithPublicKey(pubkey, coin).description()
+addrStored = wallets.wallet.wallet.account(0).address()
+addrDerived === addrStored
+
 // create another wallet
-await walletCreate()
+await walletCreate(256, 'Second')
 await walletsList()
 await walletDump()
 
-await walletImport('ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal')
+await walletImport('ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal', 'Imported')
 await walletsList()
 await walletDump()
 
