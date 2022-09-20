@@ -12,19 +12,19 @@ namespace TW::Ethereum {
 
 /// Entry point for Ethereum and Ethereum-fork coins.
 /// Note: do not put the implementation here (no matter how simple), to avoid having coin-specific includes in this file
-class Entry: public CoinEntry {
+class Entry : public CoinEntry {
 public:
-    virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;
-    virtual std::string normalizeAddress(TWCoinType coin, const std::string& address) const;
-    virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
-    virtual Data addressToData(TWCoinType coin, const std::string& address) const;
-    virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
-    virtual bool supportsJSONSigning() const { return true; }
-    virtual std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const;
+     bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const final;
+     std::string normalizeAddress(TWCoinType coin, const std::string& address) const final;
+     std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const final;
+     Data addressToData(TWCoinType coin, const std::string& address) const final;
+     void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const override;
+     bool supportsJSONSigning() const final { return true; }
+     std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const final;
 
-    virtual Data preImageHashes(TWCoinType coin, const Data& txInputData) const;
-    virtual void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const;
-    virtual Data buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const;
+     Data preImageHashes(TWCoinType coin, const Data& txInputData) const final;
+     void compile(TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures, const std::vector<PublicKey>& publicKeys, Data& dataOut) const final;
+     Data buildTransactionInput(TWCoinType coinType, const std::string& from, const std::string& to, const uint256_t& amount, const std::string& asset, const std::string& memo, const std::string& chainId) const final;
 };
 
 } // namespace TW::Ethereum
