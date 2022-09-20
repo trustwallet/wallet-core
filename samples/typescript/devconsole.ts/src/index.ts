@@ -29,28 +29,26 @@ async function main() {
     class AddressCoin {
         coin: any;
         address: string;
-        constructor(coin: string, address: string) {
-            this.coin = coin;
-            this.address = address;
-        }
+        constructor(coin: string, address: string) { this.coin = coin; this.address = address; }
     };
-    
+
+    // A simple wallet for one or more coins, each with one address
     class TestWallet {
         name: string;
         wallet: any;
         addresses: AddressCoin[];
 
-        constructor(name: string = '', wallet: any) {
+        constructor(name: string, wallet: any) {
             this.name = name;
             this.wallet = wallet;
             this.addresses = [];
             this.addDefaultCoins();
         }
-        public static createRandom(name: string = '', strength: number = 256): TestWallet {
+        public static createRandom(name: string, strength: number = 256): TestWallet {
             let wallet = WC.HDWallet.create(strength, '');
             return new TestWallet(name, wallet);
         }
-        public static createWithMnemonic(name: string = '', mnemonic: string): TestWallet {
+        public static createWithMnemonic(name: string, mnemonic: string): TestWallet {
             let wallet = WC.HDWallet.createWithMnemonic(mnemonic, '');
             return new TestWallet(name, wallet);
         }
@@ -79,6 +77,53 @@ async function main() {
             }
         }
     };
+
+    // Handles several wallets
+    class TestWalletManager {
+        // single TestWallet instance
+        wallet: TestWallet | null = null;
+    
+        create(strength: number, name: string): any {
+            this.wallet = TestWallet.createRandom(name, strength);
+            console.log(`Wallet ${this.wallet.name} created, mnemonic: ${this.wallet.wallet.mnemonic()}`);
+            walletStatus();
+            return this.wallet;
+        }
+        import(mnemonic: string, name: string): any {
+            if (!WC.Mnemonic.isValid(mnemonic)) {
+                console.error(`Mnemonic is not valid ${mnemonic}`);
+                return null;
+            }
+            this.wallet = TestWallet.createWithMnemonic(name, mnemonic);
+            console.log(`Wallet ${this.wallet.name} imported, mnemonic: ${this.wallet.wallet.mnemonic()}`);
+            walletStatus();
+            return this.wallet;
+        }
+        status(): void {
+            if (this.wallet === null) {
+                console.error('No wallet, see createWallet()');
+            } else {
+                console.error(`Wallet loaded: ${this.wallet.status()}`);
+            }
+        }
+        dump(): void {
+            walletStatus();
+            if (this.wallet) {
+                this.wallet.dump();
+            }
+        }
+    };
+
+    // single global TestWalletManager instance
+    let wallets: TestWalletManager = new TestWalletManager();
+
+    function walletCreate(strength: number = 256, name: string = 'Noname'): any { return wallets.create(strength, name); }
+
+    function walletImport(mnemonic: string, name: string = 'Noname'): any { return wallets.import(mnemonic, name); }
+
+    function walletStatus(): void { wallets.status(); }
+
+    function walletDump(): void { wallets.dump(); }
 
     function help(): void {
         console.log('This is an interactive typescript shell, to work with wallet-core (wasm)');
@@ -126,42 +171,6 @@ async function main() {
         process.exit(code);
     }
 
-    function walletCreate(strength: number = 256, name: string = ''): any {
-        wallet = TestWallet.createRandom(name, strength);
-        console.log(`Wallet ${wallet.name} created, mnemonic: ${wallet.wallet.mnemonic()}`);
-        walletStatus();
-        return wallet;
-    }
-
-    function walletImport(mnemonic: string, name: string = ''): any {
-        if (!WC.Mnemonic.isValid(mnemonic)) {
-            console.error(`Mnemonic is not valid ${mnemonic}`);
-            return null;
-        }
-        wallet = TestWallet.createWithMnemonic(name, mnemonic);
-        console.log(`Wallet ${wallet.name} imported, mnemonic: ${wallet.wallet.mnemonic()}`);
-        walletStatus();
-        return wallet;
-    }
-
-    function walletStatus(): void {
-        if (wallet === null) {
-            console.error('No wallet, see createWallet()');
-        } else {
-            console.error(`Wallet loaded: ${wallet.status()}`);
-        }
-    }
-
-    function walletDump(): void {
-        walletStatus();
-        if (wallet) {
-            wallet.dump();
-        }
-    }
-
-    // single global TestWallet instance
-    let wallet: TestWallet | null = null;
-
     clear();
     console.log(
         chalk.blue(
@@ -196,7 +205,7 @@ async function main() {
     local.context.walletCreate = walletCreate;
     local.context.walletImport = walletImport;
     local.context.walletDump = walletDump;
-    local.context.wallet = wallet;
+    local.context.wallet = wallets.wallet;
     local.context.coin = WC.CoinType.bitcoin;
 
     local.on('exit', () => {
