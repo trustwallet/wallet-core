@@ -4,7 +4,7 @@ const chalk = require('chalk');
 const clear = require('clear');
 const figlet = require('figlet');
 const repl = require('node:repl');
-const { initWasm, TW } = require("@trustwallet/wallet-core");
+const { initWasm, TW, KeyStore } = require("@trustwallet/wallet-core");
 
 function enumerateNamespaces(topLevelNamespace: any) {
     const exceptions: string[] = ['AsciiToString', 'ExitStatus', 'ENV', 'ERRNO_CODES', 'ERRNO_MESSAGES', 'DNS', 'Protocols', 'Sockets', 'UNWIND_CACHE', 'PATH', 'PATH_FS', 'SYSCALLS', 'JSEvents', 'JSEvents_requestFullscreen', 'JSEvents_resizeCanvasForFullscreen', 'ExceptionInfo', 'Browser', 'FS', 'MEMFS', 'TTY', 'PIPEFS', 'SOCKFS', 'RegisteredClass', 'Emval'];
@@ -78,23 +78,33 @@ async function main() {
         }
     };
 
-    // Handles several wallets
+    // Handles several wallets, with keystore
     class TestWalletManager {
         // single TestWallet instance
         wallet: TestWallet | null = null;
-    
+        StoreFolderPath = "/tmp/devconsole.ts";
+        StoreFixedPassword = "devconsole.ts";
+        DefaultCoins = ["bitcoin", "ethereum", "binance"];
+        keystore: any;
+        
+        constructor () {
+            const storage = new KeyStore.FileSystemStorage(this.StoreFolderPath);
+            this.keystore = new KeyStore.Default(WC, storage);
+        }
+
         create(strength: number, name: string): any {
             this.wallet = TestWallet.createRandom(name, strength);
             console.log(`Wallet ${this.wallet.name} created, mnemonic: ${this.wallet.wallet.mnemonic()}`);
             walletStatus();
             return this.wallet;
         }
-        import(mnemonic: string, name: string): any {
+        async import(mnemonic: string, name: string): Promise<any> {
             if (!WC.Mnemonic.isValid(mnemonic)) {
                 console.error(`Mnemonic is not valid ${mnemonic}`);
                 return null;
             }
             this.wallet = TestWallet.createWithMnemonic(name, mnemonic);
+            await this.keystore.import(mnemonic, name, this.StoreFixedPassword, this.DefaultCoins);
             console.log(`Wallet ${this.wallet.name} imported, mnemonic: ${this.wallet.wallet.mnemonic()}`);
             walletStatus();
             return this.wallet;
@@ -119,7 +129,7 @@ async function main() {
 
     function walletCreate(strength: number = 256, name: string = 'Noname'): any { return wallets.create(strength, name); }
 
-    function walletImport(mnemonic: string, name: string = 'Noname'): any { return wallets.import(mnemonic, name); }
+    async function walletImport(mnemonic: string, name: string = 'Noname'): Promise<any> { return wallets.import(mnemonic, name); }
 
     function walletStatus(): void { wallets.status(); }
 
@@ -198,6 +208,8 @@ async function main() {
     local.context.WC = WC;
     // Expose TW namespaces (under TW)
     local.context.TW = TW;
+    // Expose KeyStore namespace (under KeyStore)
+    local.context.KeyStore = KeyStore;
 
     // Expose more stuff; utilities
     local.context.help = help;
