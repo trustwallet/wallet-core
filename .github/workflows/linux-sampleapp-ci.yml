@@ -64,7 +64,7 @@ jobs:
         npm run test
     - name: Install Go
       env:
-        GO_VERSION: 1.16.12
+        GO_VERSION: 1.19
         GO_ARCH: amd64
       run: |
         curl -O -L "https://golang.org/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"
@@ -77,6 +77,14 @@ jobs:
         go version
         go build -o main
         ./main
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+    - name: Build Golang dev console
+      run: |
+        cd samples/go/dev-console
+        ./prepare.sh
+        cd cmd && go build -o ../tw_dev_console && cd -
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
