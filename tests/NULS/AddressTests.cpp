@@ -10,7 +10,8 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::NULS;
+
+namespace TW::NULS {
 
 TEST(NULSAddress, StaticInvalid) {
     ASSERT_FALSE(Address::isValid("abc"));
@@ -67,3 +68,5 @@ TEST(NULSAddress, FromPrivateKey33) {
 
     ASSERT_EQ(address.string(), "NULSd6HgXx8YkwEjePLWUmdRSZzPQzK6BXnsB");
 }
+
+} // namespace TW::NULS

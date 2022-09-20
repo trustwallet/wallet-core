@@ -222,6 +222,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .zcash:
                     let expectedResult = "t1YYnByMzdGhQv3W3rnjHMrJs6HH4Y231gy"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .komodo:
+                    let expectedResult = "RCWJLXE5CSXydxdSnwcghzPgkFswERegyb"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .zen:
                     let expectedResult = "znUmzvod1f4P9LYsBhNxjqCDQvNSStAmYEX"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)

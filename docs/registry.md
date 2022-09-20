@@ -22,6 +22,7 @@ This list is generated from [./registry.json](../registry.json)
 | 121     | Zen              | ZEN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zen/info/logo.png" width="32" />          | <https://www.horizen.io>      |
 | 133     | Zcash            | ZEC    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zcash/info/logo.png" width="32" />        | <https://z.cash>              |
 | 136     | Firo             | FIRO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/firo/info/logo.png" width="32" />         | <https://firo.org/>           |
+| 141     | Komodo           | KMD    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/komodo/info/logo.png" width="32" />       | <https://komodoplatform.com>  |
 | 144     | XRP              | XRP    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ripple/info/logo.png" width="32" />       | <https://ripple.com/xrp>      |
 | 145     | Bitcoin Cash     | BCH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoincash/info/logo.png" width="32" />  | <https://bitcoincash.org>     |
 | 148     | Stellar          | XLM    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/stellar/info/logo.png" width="32" />      | <https://stellar.org>         |

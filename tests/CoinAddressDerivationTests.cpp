@@ -92,6 +92,10 @@ TEST(Coin, DeriveAddress) {
             EXPECT_EQ(address, "t1b9xfAk3kZp5Qk3rinDPq7zzLkJGHTChDS");
             break;
 
+        case TWCoinTypeKomodo:
+            EXPECT_EQ(address, "RSZYjMDCP4q3t7NAFXPPnqEGrMZn971pdB");
+            break;
+
         case TWCoinTypeAeternity:
             EXPECT_EQ(address, "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw");
             break;

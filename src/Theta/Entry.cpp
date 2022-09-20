@@ -1,18 +1,19 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Entry.h"
-#include "../proto/TransactionCompiler.pb.h"
-#include "../proto/Theta.pb.h"
 #include "Ethereum/Address.h"
 #include "Signer.h"
+#include "../proto/Theta.pb.h"
+#include "../proto/TransactionCompiler.pb.h"
 
-using namespace TW::Theta;
 using namespace TW;
 using namespace std;
+
+namespace TW::Theta {
 
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
@@ -41,3 +42,5 @@ void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, c
             output = signer.compile(signatures[0], publicKeys[0]);
         });
 }
+
+} // namespace TW::Theta

@@ -601,6 +601,40 @@
     }
   },
   {
+    "id": "komodo",
+    "name": "Komodo",
+    "coinId": 141,
+    "symbol": "KMD",
+    "decimals": 8,
+    "blockchain": "Zcash",
+    "derivation": [
+      {
+        "path": "m/44'/141'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "p2pkhPrefix": 60,
+    "p2shPrefix": 85,
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "explorer": {
+      "url": "https://kmdexplorer.io/",
+      "txPath": "/tx/",
+      "accountPath": "/address/",
+      "sampleTx": "f53bd1a5c0f5dc4b60ba9a1882742ea96faa996e1b870795812a29604dd7829e",
+      "sampleAccount": "RWvfkt8UjbPWXgeZEcgYmKw2vA1bbAx5t2"
+    },
+    "info": {
+      "url": "https://komodoplatform.com",
+      "source": "https://github.com/KomodoPlatform/komodo",
+      "rpc": "",
+      "documentation": "https://developers.komodoplatform.com"
+    }
+  },
+  {
     "id": "ripple",
     "name": "XRP",
     "coinId": 144,

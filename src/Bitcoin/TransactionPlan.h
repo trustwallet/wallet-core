@@ -37,7 +37,7 @@ struct TransactionPlan {
     Data preBlockHash;
 
     /// zen preblockheight
-    int64_t preBlockHeight;
+    int64_t preBlockHeight = 0;
 
     Data outputOpReturn;
 

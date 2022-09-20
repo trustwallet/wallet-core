@@ -6,20 +6,32 @@
 
 #include "Entry.h"
 
+#include "Bitcoin/Address.h"
 #include "Signer.h"
 #include "TAddress.h"
 
 namespace TW::Zcash {
 
-bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, [[maybe_unused]] const std::string& address, [[maybe_unused]] TW::byte p2pkh, [[maybe_unused]] TW::byte p2sh, [[maybe_unused]] const char* hrp) const {
+bool Entry::validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, [[maybe_unused]] const char* hrp) const {
+    if (coin == TWCoinTypeKomodo) {
+        return Bitcoin::Address::isValid(address, {{p2pkh}, {p2sh}});
+    }
     return TAddress::isValid(address);
 }
 
-std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, [[maybe_unused]] const char* hrp) const {
+std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, [[maybe_unused]] const char* hrp) const {
+    if (coin == TWCoinTypeKomodo) {
+        return Bitcoin::Address(publicKey, p2pkh).string();
+    }
     return TAddress(publicKey, p2pkh).string();
 }
 
-Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
+Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
+    if (coin == TWCoinTypeKomodo) {
+        const auto addr = Bitcoin::Address(address);
+        return {addr.bytes.begin() + 1, addr.bytes.end()};
+    }
+
     const auto addr = TAddress(address);
     return {addr.bytes.begin() + 2, addr.bytes.end()};
 }
