@@ -1,0 +1,12 @@
+// Create a private key, sign a message, derive public key from private key, verify signature
+
+privKeyData = '0xafeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5'
+messageDigest = '0001020304050607080910111213141519171819202122232425262728293031'
+
+privkey = PrivateKey.createWithData(HexCoding.decode(privKeyData)); HexCoding.encode(privkey.data())
+
+sig1 = privkey.sign(HexCoding.decode(messageDigest), Curve.secp256k1); HexCoding.encode(sig1)
+
+pubkey = privkey.getPublicKeySecp256k1(true); HexCoding.encode(pubkey.data())
+
+verifyRes = pubkey.verify(sig1, HexCoding.decode(messageDigest))
