@@ -1,0 +1,39 @@
+// Delete all wallets to start with empty state (commented out not to accidentally remove data)
+//await walletsDeleteAll('deleteall')
+
+// create a wallet
+await walletCreate()
+await walletsList()
+await walletDump()
+
+// add an extra coin to it
+await walletAddCoin(WC.CoinType.solana)
+await walletDump()
+
+// create another wallet
+await walletCreate()
+await walletsList()
+await walletDump()
+
+await walletImport('ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal')
+await walletsList()
+await walletDump()
+
+await walletsList()
+await walletLoad(0)
+await walletDump()
+
+await walletsList()
+await walletLoad(1)
+await walletDump()
+
+await walletDelete('delete')
+await walletsList()
+await walletDump()
+
+await walletLoad(0)
+await walletDump()
+
+// Delete all wallets (commented out not to accidentally remove data)
+//await walletDeleteAll('deleteall')
+await walletsList()
