@@ -9,24 +9,22 @@ wc_read_version() {
 }
 
 wc_release_url() {
-    set -o pipefail
     tag="$1"
 
-    id=$(curl "https://api.github.com/repos/trustwallet/wallet-core/releases/tags/${tag}" | jq ".id")
+    id=$(curl -u ${GITHUB_USER}:${GITHUB_TOKEN} "https://api.github.com/repos/trustwallet/wallet-core/releases/tags/${tag}" | jq ".id")
     if [[ $id == "null" ]]; then
         echo "Failed to get release id for tag ${tag}"
-        exit -1
+        exit 22
     fi
     release_url="https://uploads.github.com/repos/trustwallet/wallet-core/releases/${id}"
     echo ${release_url}
 }
 
 wc_upload_asset() {
-    set -o pipefail
     release_url="$1"
     filename="$2"
 
     upload_url="${release_url}/assets?name=${filename}"
-    download_url=$(curl -u ${GITHUB_USER}:${GITHUB_TOKEN} -X POST -H "Content-Type: application/octet-stream" --data-binary @${filename} ${upload_url} | jq ".browser_download_url")
+    download_url=$(curl --progress-bar --retry 3 -u ${GITHUB_USER}:${GITHUB_TOKEN} -X POST -H "Content-Type: application/octet-stream" --data-binary @${filename} ${upload_url} | jq ".browser_download_url")
     echo ${download_url}
 }
