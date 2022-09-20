@@ -12,10 +12,11 @@ wc_release_url() {
     set -o pipefail
     tag="$1"
 
-    id=$(curl "https://api.github.com/repos/trustwallet/wallet-core/releases/tags/${tag}" | jq ".id")
+    json=$(curl "https://api.github.com/repos/trustwallet/wallet-core/releases/tags/${tag}")
+    id=$(jq -r '.id' <<< $json)
     if [[ $id == "null" ]]; then
         echo "Failed to get release id for tag ${tag}"
-        exit -1
+        exit 22
     fi
     release_url="https://uploads.github.com/repos/trustwallet/wallet-core/releases/${id}"
     echo ${release_url}
