@@ -31,7 +31,7 @@ class Script {
     Script(It begin, It end) : bytes(begin, end) {}
 
     /// Initializes a script with a collection of raw bytes by moving.
-    explicit Script(Data  bytes) : bytes(std::move(bytes)) {}
+    explicit Script(Data bytes) : bytes(std::move(bytes)) {}
 
     /// Whether the script is empty.
     bool empty() const { return bytes.empty(); }
