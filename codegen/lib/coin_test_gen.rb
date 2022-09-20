@@ -18,20 +18,6 @@ class CoinTestGen
     # Remove whitespaces
     formatted.gsub!(/\s+/, '')
 
-    exceptions = {
-      "AvalancheC-Chain" => "Avalanche",
-      "CronosChain" => "Cronos",
-      "ECOChain" => "ECO",
-      "KuCoinCommunity" => "KuCoin",
-      "SmartBitcoinCash" => "Bitcoin",
-      "SmartChain" => "Binance",
-      "SmartChainLegacy" => "Binance",
-    }
-
-    if exceptions.key?(formatted)
-      formatted = exceptions[formatted]
-    end
-
     formatted
   end
 
@@ -77,7 +63,13 @@ class CoinTestGen
     template = ERB.new(File.read(path), nil, '-')
     result = template.result(binding)
 
-    folder = 'tests/' + format_name(coin['name'])
+    folder = 'tests/'
+    if coin.key?('testFolderName')
+      folder += format_name(coin['folderName'])
+    else
+      folder += format_name(coin['name'])
+    end
+
     file = 'TWCoinTypeTests.cpp'
     FileUtils.mkdir_p folder
     path = File.join(folder, file)
