@@ -26,7 +26,7 @@ class Signer {
     Proto::SigningInput input;
 
     /// Initializes a transaction signer.
-    explicit Signer(Proto::SigningInput  input) : input(std::move(input)) {}
+    explicit Signer(Proto::SigningInput input) : input(std::move(input)) {}
 
     /// Builds a signed transaction.
     ///

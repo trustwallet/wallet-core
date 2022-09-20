@@ -60,8 +60,8 @@ public:
     /// Initializes a transaction signer with signing input.
     /// estimationMode: is set, no real signing is performed, only as much as needed to get the almost-exact signed size 
     SignatureBuilder(
-        SigningInput  input,
-        TransactionPlan  plan,
+        SigningInput input,
+        TransactionPlan plan,
         Transaction& transaction,
         SigningMode signingMode = SigningMode_Normal,
         std::optional<SignaturePubkeyList> externalSignatures = {}
