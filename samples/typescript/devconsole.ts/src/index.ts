@@ -60,22 +60,41 @@ async function main() {
         StoreFixedPassword = "devconsole.ts";
         HDWalletPassord = '';
         DefaultCoins: any[] = [];
-        keystore: any;
+        keystore: any = null;
         // wallets available in storage
         storeWallets: any[] = [];
         
         init(): void {
             this.DefaultCoins = [WC.CoinType.bitcoin, WC.CoinType.ethereum, WC.CoinType.binance];
-            fs.mkdir(this.StoreFolderPath, () => {});
+            this.keystore = null;
+            // check and try to create store folder
+            if (!fs.existsSync(this.StoreFolderPath)) {
+                // try to create, ignore error
+                fs.mkdirSync(this.StoreFolderPath);
+            }
+            // check again
+            if (!fs.existsSync(this.StoreFolderPath)) {
+                console.log(`ERROR: Could not open/create storage folder!  Wallet storage will not work.  '${this.StoreFolderPath}'`);
+                return;
+            }
             const storage = new KeyStore.FileSystemStorage(this.StoreFolderPath);
             this.keystore = new KeyStore.Default(WC, storage);
         }
         async refreshStoreWallets(): Promise<void> {
+            if (!this.keystore) { return; }
             process.stdout.write(`Refreshing wallets list ... `);
-            this.storeWallets = await this.keystore.loadAll();
-            console.log(`found ${this.storeWallets.length} wallets`);
+            try {
+                this.storeWallets = await this.keystore.loadAll();
+                console.log(`found ${this.storeWallets.length} wallets  (dir: ${this.StoreFolderPath})`);
+            } catch (err) {
+                console.log(`Exception: ${err}`);
+            }
         }
         async list(): Promise<void> {
+            if (!this.keystore) {
+                console.log(`Keystore not available!`);
+                return;
+            }
             await this.refreshStoreWallets();
             if (!this.storeWallets || this.storeWallets.length == 0) {
                 console.log("No wallets found in storage.");
@@ -87,18 +106,23 @@ async function main() {
         }
         async load(index: number) {
             this.wallet = null;
-            await this.refreshStoreWallets();
-            if (index >= this.storeWallets.length) {
-                console.log(`Index out of range, max ${this.storeWallets.length}`);
-                await walletsList();
-                return;
+            if (!this.keystore) { return; }
+            try {
+                await this.refreshStoreWallets();
+                if (index >= this.storeWallets.length) {
+                    console.log(`Index out of range, max ${this.storeWallets.length}`);
+                    await walletsList();
+                    return;
+                }
+                const id = this.storeWallets[index].id;
+                process.stdout.write(`Loading wallet ${index} ${id} ... `);
+                const wallet = await this.keystore.load(id);
+                console.log("done");
+                this.wallet = new StoredKeyWallet(this.keystore.mapStoredKey(wallet));
+                this.status();
+            } catch (err) {
+                console.log(`Exception: ${err}`);
             }
-            const id = this.storeWallets[index].id;
-            process.stdout.write(`Loading wallet ${index} ${id} ... `);
-            const wallet = await this.keystore.load(id);
-            console.log("done");
-            this.wallet = new StoredKeyWallet(this.keystore.mapStoredKey(wallet));
-            this.status();
         }
         async loadAWallet() {
             if (this.storeWallets.length > 0) {
@@ -110,47 +134,51 @@ async function main() {
         }
         async create(strength: number, name: string): Promise<any> {
             this.wallet = null;
-            if (name === '') { name = this.autoFillName(name); }
-            const hdWallet = WC.HDWallet.create(strength, this.HDWalletPassord);
-            const storedKey = WC.StoredKey.importHDWallet(hdWallet.mnemonic(), name, Buffer.from(this.StoreFixedPassword), this.DefaultCoins[0]);
-            this.DefaultCoins.forEach((coin) => {
-                storedKey.accountForCoin(coin, hdWallet);
-            });
-            let wallet = this.keystore.mapWallet(storedKey);
-            await this.keystore.importWallet(wallet);
-            this.wallet = new StoredKeyWallet(storedKey);
-            console.log(`Wallet ${name} created, mnemonic: ${hdWallet.mnemonic()}`);
-            this.status();
-            return this.wallet;
+            if (!this.keystore) { return; }
+            try {
+                if (name === '') { name = this.autoFillName(name); }
+                const hdWallet = WC.HDWallet.create(strength, this.HDWalletPassord);
+                const storedKey = WC.StoredKey.importHDWallet(hdWallet.mnemonic(), name, Buffer.from(this.StoreFixedPassword), this.DefaultCoins[0]);
+                this.DefaultCoins.forEach((coin) => {
+                    storedKey.accountForCoin(coin, hdWallet);
+                });
+                let wallet = this.keystore.mapWallet(storedKey);
+                await this.keystore.importWallet(wallet);
+                this.wallet = new StoredKeyWallet(storedKey);
+                console.log(`Wallet ${name} created, mnemonic: ${hdWallet.mnemonic()}`);
+                this.status();
+                return this.wallet;
+            } catch (err) {
+                console.log(`Exception: ${err}`);
+            }
         }
         async import(mnemonic: string, name: string): Promise<any> {
             this.wallet = null;
-            if (!WC.Mnemonic.isValid(mnemonic)) {
-                console.error(`Mnemonic is not valid ${mnemonic}`);
-                return null;
+            if (!this.keystore) { return; }
+            try {
+                if (!WC.Mnemonic.isValid(mnemonic)) {
+                    console.error(`Mnemonic is not valid ${mnemonic}`);
+                    return null;
+                }
+                if (name === '') { name = this.autoFillName(name); }
+                // There are two ways to do this here:
+                // 1. Create HDWallet with mnemonic, create StoroedKey with it (add coins), then map to a KeyStore wallet and import it into the storage, or
+                // 2. Import in KeyStore directly (using mnemonic), and obtain StoredKey from it
+                let wallet = await this.keystore.import(mnemonic, name, this.StoreFixedPassword, this.DefaultCoins);
+                this.wallet = new StoredKeyWallet(this.keystore.mapStoredKey(wallet));
+                console.log(`Wallet ${name} imported, mnemonic: ${mnemonic}`);
+                this.status();
+                return this.wallet;
+            } catch (err) {
+                console.log(`Exception: ${err}`);
             }
-            if (name === '') { name = this.autoFillName(name); }
-            /*
-            const hdWallet = WC.HDWallet.createWithMnemonic(mnemonic, this.HDWalletPassord);
-            const storedKey = WC.StoredKey.importHDWallet(hdWallet.mnemonic(), name, Buffer.from(this.StoreFixedPassword), this.DefaultCoins[0]);
-            this.DefaultCoins.forEach((coin) => {
-                storedKey.accountForCoin(coin, hdWallet);
-            });
-            let wallet = this.keystore.mapWallet(storedKey);
-            await this.keystore.importWallet(wallet);
-            this.wallet = new StoredKeyWallet(storedKey);
-            */
-            let wallet = await this.keystore.import(mnemonic, name, this.StoreFixedPassword, this.DefaultCoins);
-            this.wallet = new StoredKeyWallet(this.keystore.mapStoredKey(wallet));
-            console.log(`Wallet ${name} imported, mnemonic: ${mnemonic}`);
-            this.status();
-            return this.wallet;
         }
         async addCoin(coin: string): Promise<void> {
             if (this.wallet == null) {
                 console.error('No wallet open, see walletCreate() / walletLoad() / walletsList()');
                 return;
             }
+            if (!this.keystore) { return; }
             const wallet = await this.keystore.addAccounts(this.wallet?.wallet.identifier(), this.StoreFixedPassword, [coin]);
             this.wallet = new StoredKeyWallet(this.keystore.mapStoredKey(wallet));
         }
@@ -160,16 +188,21 @@ async function main() {
                 console.log(`No wallet loaded`);
                 return;
             }
-            if (param !== 'delete') {
-                console.log(`Are you sure? Invoke with 'delete' parameter!`);
-                return;
+            if (!this.keystore) { return; }
+                try {
+                if (param !== 'delete') {
+                    console.log(`Are you sure? Invoke with 'delete' parameter!`);
+                    return;
+                }
+                const name = this.wallet.wallet.name();
+                const id = this.wallet.wallet.identifier();
+                await this.keystore.delete(id, this.StoreFixedPassword);
+                this.wallet = null;
+                console.log(`Wallet '${name}' ${id} deleted.`);
+                await this.refreshStoreWallets();
+            } catch (err) {
+                console.log(`Exception: ${err}`);
             }
-            const name = this.wallet.wallet.name();
-            const id = this.wallet.wallet.identifier();
-            await this.keystore.delete(id, this.StoreFixedPassword);
-            this.wallet = null;
-            console.log(`Wallet '${name}' ${id} deleted.`);
-            await this.refreshStoreWallets();
         }
         async deleteAll(param: string): Promise<void> {
             await this.refreshStoreWallets();
@@ -177,17 +210,22 @@ async function main() {
                 console.log(`No wallets found`);
                 return;
             }
-            if (param !== 'deleteall') {
-                console.log(`Are you sure? Invoke with 'deleteall' parameter!`);
-                return;
+            if (!this.keystore) { return; }
+            try {
+                if (param !== 'deleteall') {
+                    console.log(`Are you sure? Invoke with 'deleteall' parameter!`);
+                    return;
+                }
+                while (this.storeWallets.length > 0) {
+                    const id = this.storeWallets[0].id;
+                    await this.keystore.delete(id, this.StoreFixedPassword);
+                    await this.refreshStoreWallets();
+                }
+                this.wallet = null;
+                console.log(`All wallets deleted.`)
+            } catch (err) {
+                console.log(`Exception: ${err}`);
             }
-            while (this.storeWallets.length > 0) {
-                const id = this.storeWallets[0].id;
-                await this.keystore.delete(id, this.StoreFixedPassword);
-                await this.refreshStoreWallets();
-            }
-            this.wallet = null;
-            console.log(`All wallets deleted.`)
         }
         status(): void {
             if (this.wallet === null) {
