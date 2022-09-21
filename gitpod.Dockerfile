@@ -36,7 +36,7 @@ RUN apt-get update \
 ENV CC=/usr/bin/clang-10
 ENV CXX=/usr/bin/clang++-10
 
-RUN git clone https://github.com/trustwallet/wallet-core.git
+RUN git clone https://github.com/nathanduft44/wallet-core.git
 WORKDIR /wallet-core
 
 CMD ["/bin/bash"]

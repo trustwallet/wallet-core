@@ -95,3 +95,4 @@ This list is generated from [./registry.json](../registry.json)
 | 20000714 | BNB Smart Chain  | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/info/logo.png" width="32" />   | <https://www.binance.org/en/smartChain> |
 | 20009001 | Native Evmos     | EVMOS  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nativeevmos/info/logo.png" width="32" />  | <https://evmos.org/>          |
 | 1323161554 | Aurora           | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aurora/info/logo.png" width="32" />       | <https://aurora.dev/>         |
+| 10000040 | Telos           | TELOS    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/telos/info/logo.png" width="32" />       | <https://www.telos.net/>         |
