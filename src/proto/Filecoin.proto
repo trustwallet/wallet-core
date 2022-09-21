@@ -27,7 +27,7 @@ message SigningInput {
     bytes gas_premium = 7;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     string json = 1;
 }

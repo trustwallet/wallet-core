@@ -86,7 +86,7 @@ message ContractCall {
     bytes data = 3;
 }
 
-// transaction signing input
+// Input data necessary to create a signed transaction.
 message SigningInput {
     uint32 version = 1;
     uint64 nonce = 2;
@@ -109,7 +109,7 @@ message SigningInput {
   }
 }
 
-// transaction signing output
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Signed and encoded Action bytes
     bytes encoded = 1;

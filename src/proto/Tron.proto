@@ -139,6 +139,7 @@ message Transaction {
     }
 }
 
+// Input data necessary to create a signed transaction.
 message SigningInput {
     // Transaction.
     Transaction transaction = 1;
@@ -147,7 +148,7 @@ message SigningInput {
     bytes private_key = 2;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Transaction identifier.
     bytes id = 1;

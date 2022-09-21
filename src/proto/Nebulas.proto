@@ -36,7 +36,7 @@ message SigningInput {
     bytes private_key = 10;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     uint32 algorithm = 1;
     bytes signature = 2;

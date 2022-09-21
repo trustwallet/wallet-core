@@ -28,7 +28,7 @@ message SigningInput {
     string work = 7;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Signature
     bytes signature = 1;

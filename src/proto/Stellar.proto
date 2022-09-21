@@ -108,7 +108,7 @@ message SigningInput {
     }
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Signature.
     string signature = 1;

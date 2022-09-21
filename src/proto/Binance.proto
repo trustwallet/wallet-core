@@ -186,7 +186,7 @@ message TimeUnlockOrder {
     int64 id = 2; // order ID
 }
 
-// Input data necessary to create a signed order.
+// Input data necessary to create a signed transaction.
 message SigningInput {
     string chain_id = 1;
     int64 account_number = 2;
@@ -218,7 +218,7 @@ message SigningInput {
     }
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;

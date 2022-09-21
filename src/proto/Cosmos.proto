@@ -286,7 +286,7 @@ enum SigningMode {
     Protobuf = 1;    // Protobuf-serialized (binary), Stargate
 }
 
-// Input data necessary to create a signed order.
+// Input data necessary to create a signed transaction.
 message SigningInput {
     // Specify if Stargate or earlier serialization is used
     SigningMode signing_mode = 1;
@@ -304,7 +304,7 @@ message SigningInput {
     BroadcastMode mode = 9;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Signature
     bytes signature = 1;

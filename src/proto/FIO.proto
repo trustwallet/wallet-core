@@ -134,7 +134,7 @@ message ChainParams {
     uint64 ref_block_prefix = 3;
 }
 
-// Transaction signing input
+// Input data necessary to create a signed transaction.
 message SigningInput {
     // Expiry for this message, in unix time. Can be 0, then it is taken from current time with default expiry
     uint32 expiry = 1;
@@ -152,7 +152,7 @@ message SigningInput {
     Action action = 5;
 }
 
-// Transaction signing output
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Signed transaction in JSON
     string json = 1;

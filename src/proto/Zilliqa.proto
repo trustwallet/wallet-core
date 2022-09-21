@@ -49,7 +49,7 @@ message SigningInput {
     Transaction transaction = 7;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Signed signature bytes.
     bytes signature = 1;

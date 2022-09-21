@@ -10,7 +10,7 @@ message SigningInput {
   bytes private_key = 2;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 // Next field: 2
 message SigningOutput {
   bytes encoded = 1;

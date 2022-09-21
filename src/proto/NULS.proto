@@ -62,6 +62,7 @@ message SigningInput {
     uint32 timestamp = 10;
 }
 
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     bytes encoded = 1;
 }

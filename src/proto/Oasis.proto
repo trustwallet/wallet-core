@@ -22,6 +22,7 @@ message TransferMessage {
     string context = 6;
 }
 
+// Input data necessary to create a signed transaction.
 message SigningInput {
     bytes private_key = 1;
 
@@ -30,7 +31,7 @@ message SigningInput {
     }
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;

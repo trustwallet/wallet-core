@@ -139,7 +139,7 @@ message TransactionPlan {
     Common.Proto.SigningError error = 9;
 }
 
-// Input data necessary to create a signed transaction
+// Input data necessary to create a signed transaction.
 message SigningInput {
     repeated TxInput utxos = 1;
 
@@ -168,7 +168,7 @@ message SigningInput {
     TransactionPlan plan = 5;
 }
 
-// Transaction signing output
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     bytes encoded = 1;
 

@@ -37,6 +37,7 @@ message Transfer {
     }
 }
 
+// Input data necessary to create a signed transaction.
 message SigningInput {
     oneof action_oneof {
         Transfer transfer = 1;
@@ -45,6 +46,7 @@ message SigningInput {
     bytes private_key = 2;
 }
 
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     string encoded = 1;
 }

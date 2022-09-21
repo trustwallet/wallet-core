@@ -33,7 +33,7 @@ message SigningInput {
     TransactionPlan plan = 7;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;

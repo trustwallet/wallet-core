@@ -30,7 +30,7 @@ message SigningInput {
     bytes private_key = 8;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // JSON-encoded transaction parameters.
     string encoded = 1;

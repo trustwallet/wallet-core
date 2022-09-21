@@ -85,7 +85,7 @@ message SigningInput {
     bytes private_key = 6;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Signed transaction blob
     bytes signed_transaction = 1;

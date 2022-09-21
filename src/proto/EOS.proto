@@ -51,7 +51,7 @@ message SigningInput {
     KeyType private_key_type = 10;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // JSON of the packed transaction.
     string json_encoded = 1;

@@ -42,7 +42,7 @@ message SigningInput {
     }
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     bytes signature = 1;
     string json = 2;

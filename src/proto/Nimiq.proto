@@ -16,7 +16,7 @@ message SigningInput {
     uint32 validity_start_height = 5;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     bytes encoded = 1;
 }

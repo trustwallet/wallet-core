@@ -139,7 +139,7 @@ message TransactionPlan {
     bytes output_op_return = 8;
 };
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Resulting transaction. Note that the amount may be different than the requested amount to account for fees and available funds.
     Transaction transaction = 1;
