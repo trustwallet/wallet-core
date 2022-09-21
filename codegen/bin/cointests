@@ -21,14 +21,6 @@ CurrentDir = File.dirname(__FILE__)
 $LOAD_PATH.unshift(File.join(CurrentDir, '..', 'lib'))
 require 'coin_test_gen'
 
-# Transforms a coin name to a C++ name
-def self.format_name(n)
-  formatted = n
-  #formatted = formatted.sub(/^([a-z]+)/, &:upcase)
-  formatted = formatted.sub(/\s/, '')
-  formatted
-end
-
 # Transforms number to hex
 def self.to_hex(i)
   hex = i.to_i().to_s(16)

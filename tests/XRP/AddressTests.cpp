@@ -4,8 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Ripple/Address.h"
-#include "Ripple/XAddress.h"
+#include "XRP/Address.h"
+#include "XRP/XAddress.h"
 #include "HexCoding.h"
 
 #include <gtest/gtest.h>

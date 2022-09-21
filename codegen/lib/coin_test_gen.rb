@@ -14,8 +14,10 @@ class CoinTestGen
   # Transforms a coin name to a C++ name
   def format_name(n)
     formatted = n
-    #formatted = formatted.sub(/^([a-z]+)/, &:upcase)
-    formatted = formatted.sub(/\s/, '')
+
+    # Remove whitespaces
+    formatted.gsub!(/\s+/, '')
+
     formatted
   end
 
@@ -61,7 +63,13 @@ class CoinTestGen
     template = ERB.new(File.read(path), nil, '-')
     result = template.result(binding)
 
-    folder = 'tests/' + format_name(coin['name'])
+    folder = 'tests/'
+    if coin.key?('testFolderName')
+      folder += format_name(coin['testFolderName'])
+    else
+      folder += format_name(coin['name'])
+    end
+
     file = 'TWCoinTypeTests.cpp'
     FileUtils.mkdir_p folder
     path = File.join(folder, file)
