@@ -724,6 +724,32 @@
     }
   },
   {
+    "id": "telos",
+    "name": "Telos",
+    "coinId": 10000040,
+    "symbol": "TELOS",
+    "decimals": 18,
+    "blockchain": "Telos",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "explorer": {
+      "url": "https://www.teloscan.io/",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://www.telos.net/",
+      "source": "https://github.com/telosnetwork",
+      "rpc": "https://mainnet.telos.net/evm",
+      "documentation": "https://docs.telos.net/"
+    }
+  }, 
+  {
     "id": "tron",
     "name": "Tron",
     "coinId": 195,

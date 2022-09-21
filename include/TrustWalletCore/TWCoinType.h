@@ -116,6 +116,7 @@ enum TWCoinType {
     TWCoinTypeOKXChain = 996,
     TWCoinTypeNervos = 309,
     TWCoinTypeEverscale = 396,
+    TWCoinTypeTelos = 10000040,
 };
 
 /// Returns the blockchain for a coin type.
