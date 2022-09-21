@@ -740,7 +740,9 @@
     "explorer": {
       "url": "https://www.teloscan.io/",
       "txPath": "/tx/",
-      "accountPath": "/address/"
+      "accountPath": "/address/",
+      "sampleTx": "0x9cd372081c6fcc8571a3f01084f22d246d7b1076c803e5dd3b2d53fc4d0ec585",
+      "sampleAccount": "0x1dc07e303c994da351b4f7cb29fd38fe5727749f"
     },
     "info": {
       "url": "https://www.telos.net/",
