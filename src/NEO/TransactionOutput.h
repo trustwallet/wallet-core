@@ -38,7 +38,7 @@ class TransactionOutput : public Serializable {
     }
 
     Data serialize() const override {
-        auto resp = store(assetId);
+        auto resp = store(assetId, assetIdSize);
         encode64LE(value, resp);
         return concat(resp, store(scriptHash));
     }

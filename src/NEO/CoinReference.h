@@ -35,7 +35,7 @@ class CoinReference : public Serializable {
     }
 
     Data serialize() const override {
-        auto resp = store(prevHash);
+        auto resp = store(prevHash, 32);
         encode16LE(prevIndex, resp);
         return resp;
     }
