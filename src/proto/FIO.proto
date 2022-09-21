@@ -142,7 +142,7 @@ message SigningInput {
     // Current parameters of the FIO blockchain
     ChainParams chain_params = 2;
     
-    // The private key matching the address, needed for signing
+    // The secret private key matching the address, used for signing (32 bytes).
     bytes private_key = 3;
 
     // The FIO name of the originating wallet (project-wide constant)

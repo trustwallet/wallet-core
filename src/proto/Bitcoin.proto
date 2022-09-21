@@ -84,6 +84,7 @@ message SigningInput {
     string change_address = 5;
 
     // Available private keys.
+    // The secret private key or keys required for signing (32 bytes each).
     repeated bytes private_key = 6;
 
     // Available redeem scripts indexed by script hash.

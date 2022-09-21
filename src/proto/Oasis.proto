@@ -18,12 +18,14 @@ message TransferMessage {
     // Amount values strings prefixed by zero
     string amount = 4;
 
+    // Nonce (should be larger than in the last transaction of the account)
     uint64 nonce = 5;
     string context = 6;
 }
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 1;
 
     oneof message {

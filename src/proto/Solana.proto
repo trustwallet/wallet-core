@@ -81,6 +81,7 @@ message CreateAndTransferToken {
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 1;
     string recent_blockhash = 2;
     oneof transaction_type {

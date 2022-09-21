@@ -297,6 +297,7 @@ message SigningInput {
     string memo = 5;
     uint64 sequence = 6;
 
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 7;
 
     repeated Message messages = 8;

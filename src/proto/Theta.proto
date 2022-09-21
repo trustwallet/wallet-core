@@ -23,7 +23,7 @@ message SigningInput {
     /// Fee amount in TFuel wei for the transaction (256-bit number)
     bytes fee = 6;
 
-    /// Private key
+    /// The secret private key used for signing (32 bytes).
     bytes private_key = 7;
 }
 

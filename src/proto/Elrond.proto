@@ -54,6 +54,7 @@ message Accounts {
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
+    // The secret private key used for signing (32 bytes).
     bytes       private_key = 1;
     string      chain_id = 2;
     uint64      gas_price = 3;

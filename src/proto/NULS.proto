@@ -9,7 +9,7 @@ message TransactionCoinFrom {
     uint32 assets_id = 3;
     //tranaction out amount (256-bit number)
     bytes id_amount = 4;
-    //8 bytes
+    // Nonce, 8 bytes
     bytes nonce = 5;
     //lock status: 1 locked; 0 unlocked
     uint32 locked = 6;
@@ -47,13 +47,14 @@ message Transaction {
 
 // Input data necessary to create a signed order.
 message SigningInput {
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 1;
     string from = 2;
     string to = 3;
     bytes  amount = 4;
     uint32 chain_id = 5;
     uint32 idassets_id = 6;
-    //The last 8 bytes of latest transaction hash 
+    // The last 8 bytes of latest transaction hash 
     bytes nonce = 7;
     string remark = 8;
     // Account balance 

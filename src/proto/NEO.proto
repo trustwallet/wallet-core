@@ -26,6 +26,7 @@ message TransactionOutput {
 message SigningInput {
     repeated TransactionInput inputs = 1;
     repeated TransactionOutput outputs = 2;
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 3;
     int64 fee = 4;
     string gas_asset_id = 5;

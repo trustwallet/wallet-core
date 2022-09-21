@@ -43,7 +43,7 @@ message SigningInput {
     /// Number set by user.
     uint64 nonce = 8;
 
-    // Private key.
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 9;
 }
 

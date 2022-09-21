@@ -43,6 +43,7 @@ message SigningInput {
         Transfer transfer = 1;
     }
 
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 2;
 }
 

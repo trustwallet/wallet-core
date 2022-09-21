@@ -43,7 +43,7 @@ message SigningInput {
     // GasLimit
     uint64 gas_limit       = 5;
 
-    // Private Key
+    // The secret private key used for signing (32 bytes).
     bytes private_key      = 6;
 
     Transaction transaction = 7;

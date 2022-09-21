@@ -26,6 +26,7 @@ message SigningInput {
     // base58 encode address string (160-bit number)
     string query_address = 9;
 
+    // Nonce (should be larger than in the last transaction of the account)
     uint32 nonce = 10;
 
 }

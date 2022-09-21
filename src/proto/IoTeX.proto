@@ -89,6 +89,7 @@ message ContractCall {
 // Input data necessary to create a signed transaction.
 message SigningInput {
     uint32 version = 1;
+    // Nonce (should be larger than in the last transaction of the account)
     uint64 nonce = 2;
     uint64 gasLimit = 3;
     string gasPrice = 4;
@@ -120,6 +121,7 @@ message SigningOutput {
 
 message ActionCore {
   uint32 version = 1;
+  // Nonce (should be larger than in the last transaction of the account)
   uint64 nonce = 2;
   uint64 gasLimit = 3;
   string gasPrice = 4;

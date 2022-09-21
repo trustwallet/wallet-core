@@ -44,7 +44,7 @@ message SigningInput {
     // Asset details and amount
     Asset asset = 8;
 
-    // Sender's private key's raw bytes
+    // Sender's secret private key used for signing (32 bytes).
     bytes private_key = 9;
 
     // Type of the private key

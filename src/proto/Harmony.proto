@@ -8,7 +8,7 @@ message SigningInput {
     // Chain identifier (256-bit number)
     bytes chain_id = 1;
 
-    // Private key.
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 2;
 
     oneof message_oneof {

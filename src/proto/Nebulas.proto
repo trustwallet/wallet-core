@@ -32,7 +32,7 @@ message SigningInput {
     // Optional payload
     string payload = 9;
 
-    // Private key.
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 10;
 }
 
@@ -55,6 +55,7 @@ message RawTransaction {
     bytes from = 2;
     bytes to = 3;
     bytes value = 4;
+    // Nonce (should be larger than in the last transaction of the account)
     uint64 nonce = 5;
     int64 timestamp = 6;
     Data data = 7;

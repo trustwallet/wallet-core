@@ -97,6 +97,7 @@ message SigningInput {
     // Optional time validity limit, recommended, for replay-protection.  Empty means Immortal.
     Era era = 7;
 
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 8;
     Network network = 9;
 

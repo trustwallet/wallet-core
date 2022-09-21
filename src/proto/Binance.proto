@@ -193,6 +193,7 @@ message SigningInput {
     int64 sequence = 3;
     int64 source = 4;
     string memo = 5;
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 6;
 
     oneof order_oneof {

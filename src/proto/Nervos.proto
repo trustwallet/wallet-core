@@ -140,7 +140,7 @@ message SigningInput {
     // Transaction fee per byte.
     uint64 byte_fee = 1;
 
-    // Available private keys.
+    // The available secret private keys used for signing (32 bytes each).
     repeated bytes private_key = 2;
 
     // Available unspent cell outputs.

@@ -144,7 +144,7 @@ message SigningInput {
     // Transaction.
     Transaction transaction = 1;
 
-    // Private key.
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 2;
 }
 

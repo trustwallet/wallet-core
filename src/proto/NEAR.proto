@@ -18,6 +18,7 @@ message FullAccessPermission {
 }
 
 message AccessKey {
+    // Nonce
     uint64 nonce = 1;
     oneof permission {
         FunctionCallPermission function_call = 2;
@@ -77,11 +78,13 @@ message Action {
 // Input data necessary to create a signed order.
 message SigningInput {
     string signer_id = 1;
+    // Nonce (should be larger than in the last transaction of the account)
     uint64 nonce = 2;
     string receiver_id = 3;
     bytes block_hash = 4;
     repeated Action actions = 5;
 
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 6;
 }
 

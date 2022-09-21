@@ -112,7 +112,7 @@ message SigningInput {
     // Recipient's address.
     string to_address = 8;
 
-    // Private key.
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 9;
 
     Transaction transaction = 10;
