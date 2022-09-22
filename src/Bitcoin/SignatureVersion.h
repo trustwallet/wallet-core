@@ -11,4 +11,4 @@ enum SignatureVersion {
     BASE,
     WITNESS_V0
 };
-} // TW::Bitcoin namespace
+} // namespace TW::Bitcoin

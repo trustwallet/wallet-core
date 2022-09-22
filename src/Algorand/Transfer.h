@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <utility>
+
 #include "Address.h"
 #include "BaseTransaction.h"
 #include "Data.h"
@@ -32,7 +34,7 @@ class Transfer : public BaseTransaction {
         : from(from) , to(to)
         , fee(fee), amount(amount)
         , firstRound(firstRound), lastRound(lastRound)
-        , note(note), type(type)
+        , note(note), type(std::move(type))
         , genesisId(genesisIdg), genesisHash(genesisHash) {}
 
   public:

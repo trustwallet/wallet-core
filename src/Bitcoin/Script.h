@@ -12,6 +12,7 @@
 #include <TrustWalletCore/TWCoinType.h>
 
 #include <string>
+#include <utility>
 #include <vector>
 #include <cassert>
 
@@ -29,8 +30,8 @@ class Script {
     template <typename It>
     Script(It begin, It end) : bytes(begin, end) {}
 
-    /// Initializaes a script with a collection of raw bytes by moving.
-    explicit Script(const Data& bytes) : bytes(bytes) {}
+    /// Initializes a script with a collection of raw bytes by moving.
+    explicit Script(Data bytes) : bytes(std::move(bytes)) {}
 
     /// Whether the script is empty.
     bool empty() const { return bytes.empty(); }
@@ -47,7 +48,7 @@ class Script {
     /// Determines whether this is a pay-to-witness-public-key-hash (P2WPKH) script.
     bool isPayToWitnessPublicKeyHash() const;
 
-    /// Determines whether this is a witness programm script.
+    /// Determines whether this is a witness program script.
     bool isWitnessProgram() const;
 
     /// Matches the script to a pay-to-public-key (P2PK) script.
@@ -69,7 +70,7 @@ class Script {
     bool matchMultisig(std::vector<Data>& publicKeys, int& required) const;
 
     /// Builds a pay-to-public-key (P2PK) script from a public key.
-    static Script buildPayToPublicKey(const Data& publickKey);
+    static Script buildPayToPublicKey(const Data& publicKey);
 
     /// Builds a pay-to-public-key-hash (P2PKH) script from a public key hash.
     static Script buildPayToPublicKeyHash(const Data& hash);

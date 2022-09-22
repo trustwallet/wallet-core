@@ -11,6 +11,7 @@
 #include "../proto/Binance.pb.h"
 
 #include <cstdint>
+#include <utility>
 
 namespace TW::Binance {
 
@@ -25,7 +26,7 @@ class Signer {
     Proto::SigningInput input;
 
     /// Initializes a transaction signer.
-    explicit Signer(const Proto::SigningInput& input) : input(input) {}
+    explicit Signer(Proto::SigningInput input) : input(std::move(input)) {}
 
     /// Builds a signed transaction.
     ///
