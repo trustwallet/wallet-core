@@ -74,6 +74,37 @@ TEST(TWAnySignerEthereum, Sign) {
     }
 }
 
+TEST(TWAnySignerRaxTxEthereum,  RawTxERC20TransferAsERC20) {
+    auto chainId = store(uint256_t(1));
+    auto nonce = store(uint256_t(0));
+    auto gasPrice = store(uint256_t(42000000000)); // 0x09c7652400
+    auto gasLimit = store(uint256_t(78009));       // 130B9
+    auto toAddress = "0x5322b34c88ed0691971bf52a7047448f0f4efc84";
+    auto token = "0x6b175474e89094c44da98b954eedeac495271d0f"; // DAI
+    auto amount = uint256_t(2000000000000000000);
+    auto amountData = store(amount);
+
+    Proto::SigningInput input;
+    input.set_chain_id(chainId.data(), chainId.size());
+    input.set_nonce(nonce.data(), nonce.size());
+    // tx_mode not set, Legacy is the default
+    input.set_gas_price(gasPrice.data(), gasPrice.size());
+    input.set_gas_limit(gasLimit.data(), gasLimit.size());
+    input.set_to_address(token);
+    auto& erc20 = *input.mutable_transaction()->mutable_erc20_transfer();
+    erc20.set_to(toAddress);
+    erc20.set_amount(amountData.data(), amountData.size());
+
+    // https://etherscan.io/tx/0x199a7829fc5149e49b452c2cab76d8fa5a9682fee6e4891b8acb697ac142513e
+    std::string expected = "f86a808509c7652400830130b9946b175474e89094c44da98b954eedeac495271d0f80b844a9059cbb0000000000000000000000005322b34c88ed0691971bf52a7047448f0f4efc840000000000000000000000000000000000000000000000001bc16d674ec80000018080";
+
+    // sign test
+    Proto::SigningOutput output;
+    ANY_RAWTX(input, TWCoinTypeEthereum);
+
+    ASSERT_EQ(hex(output.encoded()), expected);
+}
+
 TEST(TWAnySignerEthereum, SignERC20TransferAsERC20) {
     auto chainId = store(uint256_t(1));
     auto nonce = store(uint256_t(0));

@@ -26,6 +26,8 @@ class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    /// Generate a raw transaction from a Proto::SigningInput transaction - private key is not mandatory.
+    static Proto::RawTxOutput rawTx(const Proto::SigningInput& input) noexcept;
     /// Signs a json Proto::SigningInput with private key
     static std::string signJSON(const std::string& json, const Data& key);
 

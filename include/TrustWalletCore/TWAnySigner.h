@@ -22,6 +22,13 @@ struct TWAnySigner;
 /// \return The serialized data of a `SigningOutput` proto object. (e.g. TW.Bitcoin.Proto.SigningOutput).
 extern TWData *_Nonnull TWAnySignerSign(TWData *_Nonnull input, enum TWCoinType coin);
 
+/// Provide a raw tx (non-signed) transaction specified by the signing input and coin type.
+///
+/// \param input The serialized data of a signing input (e.g. TW.Bitcoin.Proto.SigningInput).
+/// \param coin The given coin type to sign the transaction for.
+/// \return The serialized data of a `RawTxOutput` proto object. (e.g. TW.Ethereum.Proto.RawTxOutput).
+extern TWData *_Nonnull TWAnySignerRawTx(TWData *_Nonnull input, enum TWCoinType coin);
+
 /// Signs a transaction specified by the JSON representation of signing input, coin type and a private key, returning the JSON representation of the signing output.
 ///
 /// \param json JSON representation of a signing input

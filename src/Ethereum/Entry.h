@@ -19,6 +19,7 @@ public:
      std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const final;
      Data addressToData(TWCoinType coin, const std::string& address) const final;
      void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const override;
+     void rawTx(TWCoinType coin, const Data& dataIn, Data& dataOut) const override;
      bool supportsJSONSigning() const final { return true; }
      std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const final;
 

@@ -37,6 +37,10 @@ void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::D
     signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
+void Entry::rawTx([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
+    rawTxTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+}
+
 string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json, const Data& key) const {
     return Signer::signJSON(json, key);
 }

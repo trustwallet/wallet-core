@@ -40,6 +40,10 @@ public:
     // Return the binary representation of a string address, used by AnyAddress
     // It is optional, if not defined, 'AnyAddress' interface will not support this coin.
     virtual Data addressToData([[maybe_unused]] TWCoinType coin, [[maybe_unused]] const std::string& address) const { return {}; }
+
+
+    virtual void rawTx([[maybe_unused]] TWCoinType coin, [[maybe_unused]] const Data& dataIn, [[maybe_unused]] Data& dataOut) const {}
+
     // Signing
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const = 0;
     virtual bool supportsJSONSigning() const { return false; }
@@ -69,6 +73,14 @@ void signTemplate(const Data& dataIn, Data& dataOut) {
     auto input = Input();
     input.ParseFromArray(dataIn.data(), (int)dataIn.size());
     auto serializedOut = Signer::sign(input).SerializeAsString();
+    dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+}
+
+template <typename Signer, typename Input>
+void rawTxTemplate(const Data& dataIn, Data& dataOut) {
+    auto input = Input();
+    input.ParseFromArray(dataIn.data(), (int)dataIn.size());
+    auto serializedOut = Signer::rawTx(input).SerializeAsString();
     dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
 }
 

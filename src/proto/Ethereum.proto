@@ -136,3 +136,15 @@ message SigningOutput {
     /// error code description
     string error_message = 7;
 }
+
+// Transaction raw output.
+message RawTxOutput {
+    // raw encoded transaction bytes/
+    bytes encoded = 1;
+
+    /// error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 6;
+
+    /// error code description
+    string error_message = 7;
+}

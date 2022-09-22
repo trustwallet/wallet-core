@@ -40,6 +40,22 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     }
 }
 
+Proto::RawTxOutput Signer::rawTx(const Proto::SigningInput& input) noexcept {
+    auto output = Proto::RawTxOutput();
+    try {
+        uint256_t chainID = load(input.chain_id());
+        auto transaction = Signer::build(input);
+        auto encoded = transaction->serialize(chainID);
+        output.set_encoded(encoded.data(), encoded.size());
+        return output;
+    } catch (const std::exception& error) {
+        //< TODO: should we really set the error like that?
+        //< TODO: SigningError maybe not appropriate, check later
+        output.set_error_message(error.what());
+        return output;
+    }
+}
+
 std::string Signer::signJSON(const std::string& json, const Data& key) {
     auto input = Proto::SigningInput();
     google::protobuf::util::JsonStringToMessage(json, &input);
