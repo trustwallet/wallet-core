@@ -75,6 +75,7 @@ TEST(TWAnySignerEthereum, Sign) {
 }
 
 TEST(TWAnySignerRaxTxEthereum,  RawTxERC20TransferAsERC20) {
+    // Successfully decoded on https://flightwallet.github.io/decode-eth-tx/
     auto chainId = store(uint256_t(1));
     auto nonce = store(uint256_t(0));
     auto gasPrice = store(uint256_t(42000000000)); // 0x09c7652400
