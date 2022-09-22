@@ -29,7 +29,7 @@ A clear and concise description of any alternative solutions or features you've 
 
 **Resources**
 
-<!--- Link ressources this way: [My Resource Title](link) -->
+<!--- Link resources this way: [My Resource Title](link) -->
 
 Resources link
 
