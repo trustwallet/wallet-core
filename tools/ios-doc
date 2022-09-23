@@ -2,8 +2,11 @@
 
 # https://developer.apple.com/documentation/xcode/distributing-documentation-to-external-developers
 
+set -e
+set -o pipefail
+
 pushd swift
-mkdir -p build
+mkdir -p build && rm -rf build/*.doccarchive
 
 export DOCC_JSON_PRETTYPRINT="YES"
 xcodebuild -workspace TrustWalletCore.xcworkspace -derivedDataPath build/docsData -scheme WalletCore -destination 'platform=iOS Simulator,name=iPhone 13 Pro Max' -parallelizeTargets docbuild | xcbeautify
