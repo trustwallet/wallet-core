@@ -16,7 +16,7 @@ namespace TW::Cardano {
 bool AddressV2::parseAndCheck(const std::string& addr, Data& root_out, Data& attrs_out, byte& type_out) {
     // Decode Bas58, decode payload + crc, decode root, attr
     Data base58decoded = Base58::bitcoin.decode(addr);
-    if (base58decoded.size() == 0) {
+    if (base58decoded.empty()) {
         throw std::invalid_argument("Invalid address: could not Base58 decode");
     }
     auto elems = Cbor::Decode(base58decoded).getArrayElements();
@@ -79,7 +79,7 @@ AddressV2::AddressV2(const PublicKey& publicKey) {
 }
 
 Data AddressV2::getCborData() const {
-    // put together string represenatation, CBOR representation
+    // put together string representation, CBOR representation
     // inner data: pubkey, attrs, type
     auto cbor1 = Cbor::Encode::array({
         Cbor::Encode::bytes(root),
@@ -105,9 +105,9 @@ std::string AddressV2::string() const {
 
 Data AddressV2::keyHash(const TW::Data& xpub) {
     if (xpub.size() != 64) {
-        throw std::invalid_argument("invalid xbub length");
+        throw std::invalid_argument("invalid xpub length");
     }
-    // hash of follwoing Cbor-array: [0, [0, xbub], {} ]
+    // hash of following Cbor-array: [0, [0, xpub], {} ]
     // 3rd entry map is empty map for V2, contains derivation path for V1
     // clang-format off
     Data cborData = Cbor::Encode::array({

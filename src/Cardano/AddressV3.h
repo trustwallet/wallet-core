@@ -43,9 +43,9 @@ class AddressV3 {
     static const uint8_t EncodedSize1 = 1 + HashSize;
     static const uint8_t EncodedSize2 = 1 + 2 * HashSize;
 
-    NetworkId networkId = Network_Production;
+    NetworkId networkId{Network_Production};
 
-    Kind kind = Kind_Base;
+    Kind kind{Kind_Base};
 
     /// raw key/hash bytes
     Data bytes;
@@ -80,7 +80,7 @@ class AddressV3 {
     /// Copy constructor
     AddressV3(const AddressV3& other);
 
-    void operator=(const AddressV3& other);
+    AddressV3& operator=(const AddressV3& other) noexcept = default;
 
     /// Returns the Bech string representation of the address, with default HRP.
     std::string string() const;
@@ -88,7 +88,7 @@ class AddressV3 {
     std::string string(const std::string& hrp) const;
 
     /// Hrp of kind
-    static std::string getHrp(const Kind kind) noexcept; 
+    static std::string getHrp(Kind kind) noexcept;
     /// Check whether data length is correct
     static bool checkLength(Kind kind, size_t length) noexcept;
     /// Check validity of binary address.
@@ -107,7 +107,7 @@ class AddressV3 {
     static Kind kindFromFirstByte(uint8_t first);
 
 private:
-    AddressV3() : networkId(Network_Production), kind(Kind_Base) {}
+    AddressV3() = default;
 };
 
 inline bool operator==(const AddressV3& lhs, const AddressV3& rhs) {

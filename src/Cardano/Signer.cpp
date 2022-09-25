@@ -90,7 +90,7 @@ Common::Proto::SigningError Signer::buildTransactionAux(Transaction& tx, const P
 
 Data deriveStakingPrivateKey(const Data& privateKeyData) {
     if (privateKeyData.size() != PrivateKey::cardanoKeySize) {
-        return Data();
+        return {};
     }
     assert(privateKeyData.size() == PrivateKey::cardanoKeySize);
     const auto halfSize = PrivateKey::cardanoKeySize / 2;
@@ -196,7 +196,7 @@ Cbor::Encode cborizeSignatures(const std::vector<std::pair<Data, Data>>& signatu
     // clang-format on
 }
 
-Proto::SigningOutput Signer::signWithPlan() {
+Proto::SigningOutput Signer::signWithPlan() const {
     auto ret = Proto::SigningOutput();
     if (_plan.error != Common::Proto::OK) {
         // plan has error
@@ -251,10 +251,10 @@ Common::Proto::SigningError Signer::encodeTransaction(Data& encoded, Data& txId,
     return Common::Proto::OK;
 }
 
-// Select a subset of inputs, to cover desired coin amount. Simple algorithm: pick largest ones.
+// Select a subset of inputs, to cover desired coin amount. Simple algorithm: pick the largest ones.
 std::vector<TxInput> selectInputsSimpleNative(const std::vector<TxInput>& inputs, Amount amount) {
     auto ii = std::vector<TxInput>(inputs);
-    sort(ii.begin(), ii.end(), [](TxInput t1, TxInput t2) {
+    sort(ii.begin(), ii.end(), [](auto&& t1, auto&& t2) {
         return t1.amount > t2.amount;
     });
     auto selected = std::vector<TxInput>();
@@ -270,15 +270,16 @@ std::vector<TxInput> selectInputsSimpleNative(const std::vector<TxInput>& inputs
     return selected;
 }
 
-// Select a subset of inputs, to cover desired token amount. Simple algorithm: pick largest ones.
-void selectInputsSimpleToken(const std::vector<TxInput>& inputs, std::string key, uint256_t amount, std::vector<TxInput>& selectedInputs) {
-    uint256_t selectedAmount = std::accumulate(selectedInputs.begin(), selectedInputs.end(), uint256_t(0), [key]([[maybe_unused]] uint256_t sum, const TxInput& si) { return si.tokenBundle.getAmount(key); });
+// Select a subset of inputs, to cover desired token amount. Simple algorithm: pick the largest ones.
+void selectInputsSimpleToken(const std::vector<TxInput>& inputs, std::string key, const uint256_t& amount, std::vector<TxInput>& selectedInputs) {
+    auto accumulateFunctor = [key]([[maybe_unused]] auto&& sum, auto&& si) { return si.tokenBundle.getAmount(key); };
+    uint256_t selectedAmount = std::accumulate(selectedInputs.begin(), selectedInputs.end(), uint256_t(0), accumulateFunctor);
     if (selectedAmount >= amount) {
         return; // already covered
     }
     // sort inputs descending
     auto ii = std::vector<TxInput>(inputs);
-    std::sort(ii.begin(), ii.end(), [key](TxInput t1, TxInput t2) { return t1.tokenBundle.getAmount(key) > t2.tokenBundle.getAmount(key); });
+    std::sort(ii.begin(), ii.end(), [key](auto&& t1, auto&& t2) { return t1.tokenBundle.getAmount(key) > t2.tokenBundle.getAmount(key); });
     for (const auto& i : ii) {
         if (static_cast<std::size_t>(distance(selectedInputs.begin(), find(selectedInputs.begin(), selectedInputs.end(), i))) < selectedInputs.size()) {
             // already selected
@@ -293,25 +294,24 @@ void selectInputsSimpleToken(const std::vector<TxInput>& inputs, std::string key
     // not enough
 }
 
-// Select a subset of inputs, to cover desired amount. Simple algorithm: pick largest ones
+// Select a subset of inputs, to cover desired amount. Simple algorithm: pick the largest ones
 std::vector<TxInput> Signer::selectInputsWithTokens(const std::vector<TxInput>& inputs, Amount amount, const TokenBundle& requestedTokens) {
     auto selected = selectInputsSimpleNative(inputs, amount);
-    for (auto iter = requestedTokens.bundle.begin(); iter != requestedTokens.bundle.end(); ++iter) {
-        const auto& ta = iter->second;
-        selectInputsSimpleToken(inputs, ta.key(), ta.amount, selected);
+    for (auto&& [_, curAmount] : requestedTokens.bundle) {
+        selectInputsSimpleToken(inputs, curAmount.key(), curAmount.amount, selected);
     }
     return selected;
 }
 
 // Create a simple plan, used for estimation
 TransactionPlan simplePlan(Amount amount, const TokenBundle& requestedTokens, const std::vector<TxInput>& selectedInputs, bool maxAmount, uint64_t deposit, uint64_t undeposit) {
-    TransactionPlan plan{.amount = amount, .utxos = selectedInputs, .deposit = deposit, .undeposit = undeposit};
+    TransactionPlan plan{.utxos = selectedInputs, .amount = amount, .deposit = deposit, .undeposit = undeposit};
     // Sum availableAmount
     plan.availableAmount = 0;
     for (auto& u : plan.utxos) {
         plan.availableAmount += u.amount;
-        for (auto iter = u.tokenBundle.bundle.begin(); iter != u.tokenBundle.bundle.end(); ++iter) {
-            plan.availableTokens.add(iter->second);
+        for (auto && [_, curAmount] : u.tokenBundle.bundle) {
+            plan.availableTokens.add(curAmount);
         }
     }
     plan.fee = PlaceholderFee; // placeholder value
@@ -386,11 +386,11 @@ Amount txFeeFunction(uint64_t txSizeInBytes) {
     const double fixedTerm = 155381 + 500;
     const double linearTerm = 43.946 + 0.1;
 
-    const Amount fee = (Amount)(ceil(fixedTerm + (double)txSizeInBytes * linearTerm));
+    const auto fee = (Amount)(ceil(fixedTerm + (double)txSizeInBytes * linearTerm));
     return fee;
 }
 
-Amount Signer::estimateFee(const Proto::SigningInput& input, Amount amount, const TokenBundle& requestedTokens, const std::vector<TxInput> selectedInputs) {
+Amount Signer::estimateFee(const Proto::SigningInput& input, Amount amount, const TokenBundle& requestedTokens, const std::vector<TxInput>& selectedInputs) {
     return txFeeFunction(estimateTxSize(input, amount, requestedTokens, selectedInputs));
 }
 
@@ -429,12 +429,12 @@ TransactionPlan Signer::doPlan() const {
     }
     assert(plan.amount > 0 || maxAmount);
     if (requestedTokens.size() > 1) {
-        // We support transfer of only one coin (for simplicity; inputs may contain more coints which are preserved)
+        // We support transfer of only one coin (for simplicity; inputs may contain more coins which are preserved)
         plan.error = Common::Proto::Error_invalid_requested_token_amount;
         return plan;
     }
 
-    // if amount requested is the same or more than available amount, it cannot be satisifed, but
+    // if amount requested is the same or more than available amount, it cannot be satisfied, but
     // treat this case as MaxAmount, and send maximum available (which will be less)
     if (!maxAmount && input.transfer_message().amount() >= inputSumAfterDeposit) {
         maxAmount = true;
@@ -449,14 +449,14 @@ TransactionPlan Signer::doPlan() const {
         // maxAmount, select all
         plan.utxos = utxos;
     }
-    assert(plan.utxos.size() > 0);
+    assert(!plan.utxos.empty());
 
     // Sum availableAmount
     plan.availableAmount = 0;
     for (auto& u : plan.utxos) {
         plan.availableAmount += u.amount;
-        for (auto iter = u.tokenBundle.bundle.begin(); iter != u.tokenBundle.bundle.end(); ++iter) {
-            plan.availableTokens.add(iter->second);
+        for (auto && [_, curAmount] : u.tokenBundle.bundle) {
+            plan.availableTokens.add(curAmount);
         }
     }
     if (plan.availableAmount == 0) {
@@ -474,8 +474,8 @@ TransactionPlan Signer::doPlan() const {
     }
     assert(plan.amount <= availableAmountAfterDeposit);
     // check that there are enough tokens in the inputs
-    for (auto iter = requestedTokens.bundle.begin(); iter != requestedTokens.bundle.end(); ++iter) {
-        if (iter->second.amount > plan.availableTokens.getAmount(iter->second.key())) {
+    for (auto && [_, curAmount] : requestedTokens.bundle) {
+        if (curAmount.amount > plan.availableTokens.getAmount(curAmount.key())) {
             plan.error = Common::Proto::Error_low_balance;
             return plan;
         }

@@ -13,11 +13,7 @@
 namespace TW::Cardano {
 
 TokenAmount TokenAmount::fromProto(const Proto::TokenAmount& proto) {
-    auto ret = TokenAmount();
-    ret.policyId = proto.policy_id();
-    ret.assetName = proto.asset_name();
-    ret.amount = load(proto.amount());
-    return ret;
+    return {proto.policy_id(), proto.asset_name(), load(proto.amount())};
 }
 
 Proto::TokenAmount TokenAmount::toProto() const {
@@ -30,10 +26,9 @@ Proto::TokenAmount TokenAmount::toProto() const {
 }
 
 TokenBundle TokenBundle::fromProto(const Proto::TokenBundle& proto) {
-    auto ret = TokenBundle();
-    for (auto i = 0; i < proto.token_size(); ++i) {
-        ret.add(TokenAmount::fromProto(proto.token(i)));
-    }
+    TokenBundle ret;
+    const auto addFunctor =  [&ret](auto&& cur) { ret.add(TokenAmount::fromProto(cur)); };
+    std::for_each(std::cbegin(proto.token()), std::cend(proto.token()), addFunctor);
     return ret;
 }
 
@@ -47,21 +42,14 @@ Proto::TokenBundle TokenBundle::toProto() const {
 
 void TokenBundle::add(const TokenAmount& ta) {
     const auto key = ta.key();
-    if (bundle.find(key) == bundle.end()) {
-        bundle[key] = ta;
-    } else {
-        auto entry = bundle[key];
-        entry.amount += ta.amount;
-        bundle[key] = entry;
+    if (auto&& [it, inserted] = bundle.try_emplace(key, ta); !inserted) {
+        it->second.amount += ta.amount;
     }
 }
 
 uint256_t TokenBundle::getAmount(const std::string& key) const {
     const auto& findkey = bundle.find(key);
-    if (findkey == bundle.end()) {
-        return 0;
-    }
-    return findkey->second.amount;
+    return findkey == bundle.end() ? 0 : findkey->second.amount;
 }
 
 std::unordered_set<std::string> TokenBundle::getPolicyIds() const {
@@ -74,7 +62,7 @@ std::unordered_set<std::string> TokenBundle::getPolicyIds() const {
 
 std::vector<TokenAmount> TokenBundle::getByPolicyId(const std::string& policyId) const {
     std::vector<TokenAmount> filtered;
-    for (const auto& t : bundle) {
+    for (auto&& t : bundle) {
         if (t.second.policyId == policyId) {
             filtered.emplace_back(t.second);
         }
@@ -110,8 +98,6 @@ uint64_t TokenBundle::minAdaAmount() const {
 
     std::unordered_set<std::string> policyIdRegistry;
     std::unordered_set<std::string> assetNameRegistry;
-    uint64_t numPids = 0;
-    uint64_t numAssets = 0;
     uint64_t sumAssetNameLengths = 0;
     for (const auto& t : bundle) {
         policyIdRegistry.emplace(t.second.policyId);
@@ -119,9 +105,9 @@ uint64_t TokenBundle::minAdaAmount() const {
             assetNameRegistry.emplace(t.second.assetName);
         }
     }
-    numPids = uint64_t(policyIdRegistry.size());
-    numAssets = uint64_t(assetNameRegistry.size());
-    for_each(assetNameRegistry.begin(), assetNameRegistry.end(), [&sumAssetNameLengths](std::string a) { sumAssetNameLengths += a.length(); });
+    auto numPids = uint64_t(policyIdRegistry.size());
+    auto numAssets = uint64_t(assetNameRegistry.size());
+    for_each(assetNameRegistry.begin(), assetNameRegistry.end(), [&sumAssetNameLengths](auto&& a) { sumAssetNameLengths += a.length(); });
     return minAdaAmountHelper(numPids, numAssets, sumAssetNameLengths);
 }
 
@@ -281,7 +267,7 @@ Cbor::Encode cborizeCert(const Certificate& cert) {
 
 Cbor::Encode cborizeCerts(const std::vector<Certificate>& certs) {
     std::vector<Cbor::Encode> c;
-    for (const auto& i: certs) {
+    for (const auto& i : certs) {
         c.emplace_back(cborizeCert(i));
     }
     return Cbor::Encode::array(c);
@@ -289,7 +275,7 @@ Cbor::Encode cborizeCerts(const std::vector<Certificate>& certs) {
 
 Cbor::Encode cborizeWithdrawals(const std::vector<Withdrawal>& withdrawals) {
     std::map<Cbor::Encode, Cbor::Encode> mapElems;
-    for (const auto& w: withdrawals) {
+    for (const auto& w : withdrawals) {
         mapElems.emplace(Cbor::Encode::bytes(w.stakingKey), Cbor::Encode::uint(w.amount));
     }
     return Cbor::Encode::map(mapElems);
@@ -323,7 +309,7 @@ Data Transaction::encode() const {
 
 Data Transaction::getId() const {
     const auto encoded = encode();
-    const auto hash = Hash::blake2b(encoded, 32);
+    auto hash = Hash::blake2b(encoded, 32);
     return hash;
 }
 
