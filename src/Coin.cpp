@@ -16,6 +16,7 @@
 #include "Aeternity/Entry.h"
 #include "Aion/Entry.h"
 #include "Algorand/Entry.h"
+#include "Aptos/Entry.h"
 #include "Binance/Entry.h"
 #include "Bitcoin/Entry.h"
 #include "Cardano/Entry.h"
@@ -54,7 +55,6 @@
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
 #include "Everscale/Entry.h"
-#include "Aptos/Entry.h" // TODO remove if the blockchain already exists, or just remove this comment if not
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
