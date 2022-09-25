@@ -18,20 +18,18 @@ TEST(TWAptosCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
-    const auto chainId = WRAPS(TWCoinTypeChainId(coin));
-    const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("t123"));
+    const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("5646"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
-    const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("a12"));
+    const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0xf3f2d2bc98bf666bc4869f5ff56723e5c9d252a63209bb2377ea64cd1a41aec0"));
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
 
     assertStringsEqual(id, "aptos");
-    assertStringsEqual(name, "Aptos Labs");
+    assertStringsEqual(name, "Aptos");
     assertStringsEqual(symbol, "APT");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 8);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainAptos);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0x0);
-    assertStringsEqual(chainId, "0x1::aptos_coin::AptosCoin");
-    assertStringsEqual(txUrl, "https://explorer.aptoslabs.com//txn/t123");
-    assertStringsEqual(accUrl, "https://explorer.aptoslabs.com//account/a12");
+    assertStringsEqual(txUrl, "https://explorer.aptoslabs.com//txn/5646");
+    assertStringsEqual(accUrl, "https://explorer.aptoslabs.com//account/0xf3f2d2bc98bf666bc4869f5ff56723e5c9d252a63209bb2377ea64cd1a41aec0");
 }

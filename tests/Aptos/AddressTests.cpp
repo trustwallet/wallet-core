@@ -1,4 +1,5 @@
 // Copyright © 2017-2022 Trust Wallet.
+// Author: Clement Doumergue
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -14,36 +15,31 @@
 namespace TW::Aptos::tests {
 
 TEST(AptosAddress, Valid) {
-    ASSERT_TRUE(Address::isValid("__ADD_VALID_ADDRESS_HERE__"));
-
-    // TODO: Add more tests
+    ASSERT_TRUE(Address::isValid("eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b"));
+    ASSERT_TRUE(Address::isValid("19aadeca9388e009d136245b9a67423f3eee242b03142849eb4f81a4a409e59c"));
 }
 
 TEST(AptosAddress, Invalid) {
-    ASSERT_FALSE(Address::isValid("__ADD_INVALID_ADDRESS_HERE__"));
-
-    // TODO: Add more tests
+    ASSERT_FALSE(Address::isValid("Seff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b"));  // Invalid hex character
+    ASSERT_FALSE(Address::isValid("eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175bb")); // Invalid length: too long
+    ASSERT_FALSE(Address::isValid("eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175"));   // Invalid length: too short
 }
 
 TEST(AptosAddress, FromPrivateKey) {
-    // TODO: Check public key type, finalize implementation
-
-    auto privateKey = PrivateKey(parse_hex("__PRIVATE_KEY_DATA__"));
+    auto privateKey = PrivateKey(parse_hex("088baa019f081d6eab8dff5c447f9ce2f83c1babf3d03686299eaf6a1e89156e"));
     auto address = Address(privateKey.getPublicKey(TWPublicKeyTypeED25519));
-    ASSERT_EQ(address.string(), "__ADD_RESULTING_ADDRESS_HERE__");
+    ASSERT_EQ(address.string(), "e9c4d0b6fe32a5cc8ebd1e9ad5b54a0276a57f2d081dcb5e30342319963626c3");
 }
 
 TEST(AptosAddress, FromPublicKey) {
-    // TODO: Check public key type, finalize implementation
-    
-    auto publicKey = PublicKey(parse_hex("__PUBLIC_KEY_DATA__"), TWPublicKeyTypeED25519);
+    auto publicKey = PublicKey(parse_hex("ad0e293a56c9fc648d1872a00521d97e6b65724519a2676c2c47cb95d131cf5a"), TWPublicKeyTypeED25519);
     auto address = Address(publicKey);
-    ASSERT_EQ(address.string(), "__ADD_RESULTING_ADDRESS_HERE__");
+    ASSERT_EQ(address.string(), "e9c4d0b6fe32a5cc8ebd1e9ad5b54a0276a57f2d081dcb5e30342319963626c3");
 }
 
 TEST(AptosAddress, FromString) {
-    auto address = Address("__ADD_VALID_ADDRESS_HERE__");
-    ASSERT_EQ(address.string(), "__ADD_SAME_VALID_ADDRESS_HERE__");
+    auto address = Address("eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b");
+    ASSERT_EQ(address.string(), "eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b");
 }
 
 } // namespace TW::Aptos::tests

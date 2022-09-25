@@ -396,7 +396,7 @@
   {
     "id": "aptos",
     "name": "Aptos",
-    "displayName": "Aptos Labs",
+    "displayName": "Aptos",
     "coinId": 637,
     "symbol": "APT",
     "decimals": 8,
@@ -407,12 +407,14 @@
         "path": "m/44'/637'/0'/0'/0'"
       }
     ],
-    "curve": "secp256k1",
-    "publicKeyType": "secp256k1",
+    "curve": "ed25519",
+    "publicKeyType": "ed25519",
     "explorer": {
       "url": "https://explorer.aptoslabs.com/",
       "txPath": "/txn/",
-      "accountPath": "/account/"
+      "accountPath": "/account/",
+      "sampleTx": "5646",
+      "sampleAccount": "0xf3f2d2bc98bf666bc4869f5ff56723e5c9d252a63209bb2377ea64cd1a41aec0"
     },
     "info": {
       "url": "https://aptoslabs.com/",
