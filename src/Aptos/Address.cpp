@@ -11,7 +11,11 @@
 namespace TW::Aptos {
 
 bool Address::isValid(const std::string& string) {
-    if (string.size() != 2 * Address::size) {
+    auto address = string;
+    if (address.starts_with("0x")) {
+        address = address.substr(2);
+    }
+    if (address.size() != 2 * Address::size) {
         return false;
     }
     const auto data = parse_hex(string);
@@ -44,7 +48,7 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    return hex(bytes);
+    return "0x" + hex(bytes);
 }
 
 } // namespace TW::Aptos

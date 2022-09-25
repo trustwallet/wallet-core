@@ -9,9 +9,9 @@ import XCTest
 
 class AptosTests: XCTestCase {
     func testAddress() {
-        let anyAddress = AnyAddress(string: "6af7d07b8a541913dfa87a9f99628faa255c70241ef9ebd9b82a7e715ee13108", coin: .aptos)
+        let anyAddress = AnyAddress(string: "0x6af7d07b8a541913dfa87a9f99628faa255c70241ef9ebd9b82a7e715ee13108", coin: .aptos)
 
-        XCTAssertEqual(anyAddress?.description, "6af7d07b8a541913dfa87a9f99628faa255c70241ef9ebd9b82a7e715ee13108")
+        XCTAssertEqual(anyAddress?.description, "0x6af7d07b8a541913dfa87a9f99628faa255c70241ef9ebd9b82a7e715ee13108")
         XCTAssertEqual(anyAddress?.coin, .aptos)
 
         let invalid = "MQqpqMQgCBuiPkoXfgZZsJvuzCeI1zc00z6vHJj4"
