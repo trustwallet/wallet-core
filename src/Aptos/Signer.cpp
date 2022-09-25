@@ -10,7 +10,7 @@
 
 namespace TW::Aptos {
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
+Proto::SigningOutput Signer::sign([[maybe_unused]] const Proto::SigningInput &input) noexcept {
     // TODO: Check and finalize implementation
 
     auto protoOutput = Proto::SigningOutput();

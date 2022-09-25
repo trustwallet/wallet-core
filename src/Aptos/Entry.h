@@ -17,8 +17,6 @@ public:
     virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;
     virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
-    // normalizeAddress(): implement this if needed, e.g. Ethereum address is EIP55 checksummed
-    // plan(): implement this if the blockchain is UTXO based
 };
 
 } // namespace TW::Aptos
