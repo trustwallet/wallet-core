@@ -10,6 +10,7 @@
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWData.h>
 #include <TrustWalletCore/TWHDWallet.h>
+#include <TrustWalletCore/TWCardano.h>
 #include "../interface/TWTestUtilities.h"
 #include "PrivateKey.h"
 
