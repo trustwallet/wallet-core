@@ -74,6 +74,12 @@ std::string Address::string(bool withPrefix) const {
     return output + hex(bytes);
 }
 
+std::string Address::shortString() const {
+    std::string s = hex(bytes);
+    s.erase(0, s.find_first_not_of('0'));
+    return s;
+}
+
 BCS::Serializer& operator<<(BCS::Serializer& stream, Address addr) noexcept {
     stream.add_bytes(addr.bytes.begin(), addr.bytes.end());
     return stream;

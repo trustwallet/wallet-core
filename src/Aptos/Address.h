@@ -38,6 +38,9 @@ public:
 
     /// Returns a string representation of the address.
     [[nodiscard]] std::string string(bool withPrefix = true) const;
+
+    /// Returns a short string representation of the address. E.G 0x1;
+    [[nodiscard]] std::string shortString() const;
 };
 
 constexpr inline bool operator==(const Address& lhs, const Address& rhs) noexcept {

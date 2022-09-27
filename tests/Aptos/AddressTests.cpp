@@ -46,4 +46,9 @@ TEST(AptosAddress, FromString) {
     ASSERT_EQ(address.string(), "0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b");
 }
 
+TEST(AptosAddress, shortString) {
+    ASSERT_EQ(gAddressOne.string(), "0x0000000000000000000000000000000000000000000000000000000000000001");
+    ASSERT_EQ(gAddressOne.shortString(), "1");
+}
+
 } // namespace TW::Aptos::tests

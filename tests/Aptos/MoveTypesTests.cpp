@@ -20,6 +20,14 @@ TEST(AptosMoveTypes, ModuleId) {
     //     assert_eq!(hex::encode(a.access_vector()).as_str(), "00000000000000000000000000000000000000000000000000000000000000000104636f696e");
     // }
     ASSERT_EQ(hex(module.serialize()), "00000000000000000000000000000000000000000000000000000000000000000104636f696e");
+    ASSERT_EQ(module.string(), "0x0000000000000000000000000000000000000000000000000000000000000001::coin");
+    ASSERT_EQ(module.shortString(), "0x1::coin");
+}
+
+TEST(AptosMoveTypes, StructTag) {
+    StructTag st(gAddressOne, "abc", "abc", std::vector{{TypeTag{.tags = U8{}}}});
+    ASSERT_EQ(st.moduleID().name(), "abc");
+    ASSERT_EQ(st.moduleID().address(), gAddressOne);
 }
 
 } // namespace TW::Aptos::tests
