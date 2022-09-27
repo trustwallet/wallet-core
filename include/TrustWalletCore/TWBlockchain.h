@@ -54,7 +54,7 @@ enum TWBlockchain {
     TWBlockchainKusama = 40, // Polkadot
     TWBlockchainNervos = 41,
     TWBlockchainEverscale = 42,
-    TWBlockchainAptos = 44,  // TODO remove if the blockchain already exists, or just remove this comment if not
+    TWBlockchainAptos = 43, // Aptos
 };
 
 TW_EXTERN_C_END
