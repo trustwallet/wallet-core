@@ -9,6 +9,7 @@
 
 #include "../Data.h"
 #include "../PublicKey.h"
+#include "BCS.h"
 
 #include <string>
 
@@ -39,7 +40,13 @@ public:
     [[nodiscard]] std::string string(bool withPrefix = true) const;
 };
 
+constexpr inline bool operator==(const Address& lhs, const Address& rhs) noexcept {
+    return lhs.bytes == rhs.bytes;
+}
+
 inline const Address gAddressZero = Address("0x0");
 inline const Address gAddressOne = Address("0x1");
+
+BCS::Serializer& operator<<(BCS::Serializer& stream, Address) noexcept;
 
 } // namespace TW::Aptos

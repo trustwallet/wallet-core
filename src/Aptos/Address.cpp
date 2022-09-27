@@ -74,4 +74,9 @@ std::string Address::string(bool withPrefix) const {
     return output + hex(bytes);
 }
 
+BCS::Serializer& operator<<(BCS::Serializer& stream, Address addr) noexcept {
+    stream.add_bytes(addr.bytes.begin(), addr.bytes.end());
+    return stream;
+}
+
 } // namespace TW::Aptos
