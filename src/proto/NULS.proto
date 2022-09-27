@@ -49,16 +49,31 @@ message Transaction {
 message SigningInput {
     // The secret private key used for signing (32 bytes).
     bytes private_key = 1;
+
+    // Source address
     string from = 2;
+
+    // Destination address
     string to = 3;
+
+    // Transfer amount
     bytes  amount = 4;
+
+    // Chain ID
     uint32 chain_id = 5;
+
+    // Asset ID
     uint32 idassets_id = 6;
+
     // The last 8 bytes of latest transaction hash 
     bytes nonce = 7;
+
+    // Optional memo remark
     string remark = 8;
+
     // Account balance 
     bytes  balance = 9;
+
     // time, accurate to the second
     uint32 timestamp = 10;
 }

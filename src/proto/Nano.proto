@@ -11,6 +11,7 @@ message SigningInput {
     // Optional parent block hash
     bytes parent_block = 2;
 
+    // Receive/Send reference
     oneof link_oneof {
         // Hash of a block to receive from
         bytes link_block = 3;

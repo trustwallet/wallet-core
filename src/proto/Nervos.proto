@@ -149,6 +149,7 @@ message SigningInput {
     // Optional transaction plan
     TransactionPlan plan = 4;
 
+    // The payload transfer
     oneof operation_oneof {
         NativeTransfer native_transfer = 5;
         SudtTransfer sudt_transfer = 6;

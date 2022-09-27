@@ -10,74 +10,74 @@ message Transfer {
 }
 
 message Staking {
-  // create stake
-  message Create {
-    string candidateName = 1;
-    string stakedAmount = 2;
-    uint32 stakedDuration = 3;
-    bool autoStake = 4;
-    bytes payload = 5;
-  }
+    // create stake
+    message Create {
+        string candidateName = 1;
+        string stakedAmount = 2;
+        uint32 stakedDuration = 3;
+        bool autoStake = 4;
+        bytes payload = 5;
+    }
 
-  // unstake or withdraw
-  message Reclaim {
-    uint64 bucketIndex = 1;
-    bytes payload = 2;
-  }
+    // unstake or withdraw
+    message Reclaim {
+        uint64 bucketIndex = 1;
+        bytes payload = 2;
+    }
 
-  // add the amount of bucket
-  message AddDeposit {
-    uint64 bucketIndex = 1;
-    string amount = 2;
-    bytes payload = 3;
-  }
+    // add the amount of bucket
+    message AddDeposit {
+        uint64 bucketIndex = 1;
+        string amount = 2;
+        bytes payload = 3;
+    }
 
-  // restake the duration and autoStake flag of bucket
-  message Restake {
-    uint64 bucketIndex = 1;
-    uint32 stakedDuration = 2;
-    bool autoStake = 3;
-    bytes payload = 4;
-  }
+    // restake the duration and autoStake flag of bucket
+    message Restake {
+        uint64 bucketIndex = 1;
+        uint32 stakedDuration = 2;
+        bool autoStake = 3;
+        bytes payload = 4;
+    }
 
-  // move the bucket to vote for another candidate or transfer the ownership of bucket to another voters
-  message ChangeCandidate {
-    uint64 bucketIndex = 1;
-    string candidateName = 2;
-    bytes payload = 3;
-  }
+    // move the bucket to vote for another candidate or transfer the ownership of bucket to another voters
+    message ChangeCandidate {
+        uint64 bucketIndex = 1;
+        string candidateName = 2;
+        bytes payload = 3;
+    }
 
-  message TransferOwnership {
-    uint64 bucketIndex = 1;
-    string voterAddress = 2;
-    bytes payload = 3;
-  }
+    message TransferOwnership {
+        uint64 bucketIndex = 1;
+        string voterAddress = 2;
+        bytes payload = 3;
+    }
 
-  message CandidateBasicInfo {
-    string name = 1;
-    string operatorAddress = 2;
-    string rewardAddress = 3;
-  }
+    message CandidateBasicInfo {
+        string name = 1;
+        string operatorAddress = 2;
+        string rewardAddress = 3;
+    }
 
-  message CandidateRegister {
-    CandidateBasicInfo candidate = 1;
-    string stakedAmount = 2;
-    uint32 stakedDuration = 3;
-    bool autoStake = 4;
-    string ownerAddress = 5; // if ownerAddress is absent, owner of candidate is the sender
-    bytes payload = 6;
-  }
-  oneof message {
-    Create stakeCreate = 1;
-    Reclaim stakeUnstake = 2;
-    Reclaim stakeWithdraw = 3;
-    AddDeposit stakeAddDeposit = 4;
-    Restake stakeRestake = 5;
-    ChangeCandidate stakeChangeCandidate = 6;
-    TransferOwnership stakeTransferOwnership = 7;
-    CandidateRegister candidateRegister = 8;
-    CandidateBasicInfo candidateUpdate = 9;
-  }
+    message CandidateRegister {
+        CandidateBasicInfo candidate = 1;
+        string stakedAmount = 2;
+        uint32 stakedDuration = 3;
+        bool autoStake = 4;
+        string ownerAddress = 5; // if ownerAddress is absent, owner of candidate is the sender
+        bytes payload = 6;
+    }
+    oneof message {
+        Create stakeCreate = 1;
+        Reclaim stakeUnstake = 2;
+        Reclaim stakeWithdraw = 3;
+        AddDeposit stakeAddDeposit = 4;
+        Restake stakeRestake = 5;
+        ChangeCandidate stakeChangeCandidate = 6;
+        TransferOwnership stakeTransferOwnership = 7;
+        CandidateRegister candidateRegister = 8;
+        CandidateBasicInfo candidateUpdate = 9;
+    }
 }
 
 message ContractCall {
@@ -88,12 +88,22 @@ message ContractCall {
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
+    // Transaction version
     uint32 version = 1;
+
     // Nonce (should be larger than in the last transaction of the account)
     uint64 nonce = 2;
+
+    // Limit for the gas used
     uint64 gasLimit = 3;
+
+    // Gas price
     string gasPrice = 4;
+
+    // The secret private key used for signing (32 bytes).
     bytes privateKey = 5;
+
+    // Payload transfer
     oneof action {
         Transfer transfer = 10;
         ContractCall call = 12;
@@ -107,7 +117,7 @@ message SigningInput {
         Staking.TransferOwnership stakeTransferOwnership = 46;
         Staking.CandidateRegister candidateRegister = 47;
         Staking.CandidateBasicInfo candidateUpdate = 48;
-  }
+    }
 }
 
 // Result containing the signed and encoded transaction.
@@ -120,29 +130,29 @@ message SigningOutput {
 }
 
 message ActionCore {
-  uint32 version = 1;
-  // Nonce (should be larger than in the last transaction of the account)
-  uint64 nonce = 2;
-  uint64 gasLimit = 3;
-  string gasPrice = 4;
-  oneof action {
-    Transfer transfer = 10;
-    ContractCall execution = 12;
-    // Native staking
-    Staking.Create stakeCreate = 40;
-    Staking.Reclaim stakeUnstake = 41;
-    Staking.Reclaim stakeWithdraw = 42;
-    Staking.AddDeposit stakeAddDeposit = 43;
-    Staking.Restake stakeRestake = 44;
-    Staking.ChangeCandidate stakeChangeCandidate = 45;
-    Staking.TransferOwnership stakeTransferOwnership = 46;
-    Staking.CandidateRegister candidateRegister = 47;
-    Staking.CandidateBasicInfo candidateUpdate = 48;
-  }
+    uint32 version = 1;
+    // Nonce (should be larger than in the last transaction of the account)
+    uint64 nonce = 2;
+    uint64 gasLimit = 3;
+    string gasPrice = 4;
+    oneof action {
+        Transfer transfer = 10;
+        ContractCall execution = 12;
+        // Native staking
+        Staking.Create stakeCreate = 40;
+        Staking.Reclaim stakeUnstake = 41;
+        Staking.Reclaim stakeWithdraw = 42;
+        Staking.AddDeposit stakeAddDeposit = 43;
+        Staking.Restake stakeRestake = 44;
+        Staking.ChangeCandidate stakeChangeCandidate = 45;
+        Staking.TransferOwnership stakeTransferOwnership = 46;
+        Staking.CandidateRegister candidateRegister = 47;
+        Staking.CandidateBasicInfo candidateUpdate = 48;
+    }
 }
 
 message Action {
-  ActionCore core = 1;
-  bytes senderPubKey = 2;
-  bytes signature = 3;
+    ActionCore core = 1;
+    bytes senderPubKey = 2;
+    bytes signature = 3;
 }

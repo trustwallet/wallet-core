@@ -7,16 +7,22 @@ import "Common.proto";
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
+    // Transfer amount
     int64 amount = 1;
 
+    // Transfer fee
     int64 fee = 2;
 
+    // Account sequence number
     int32 sequence = 3;
 
+    // Ledger sequence number
     int32 last_ledger_sequence = 4;
 
+    // Source account
     string account = 5;
 
+    // Target account
     string destination = 6;
 
     int64 destination_tag = 7;

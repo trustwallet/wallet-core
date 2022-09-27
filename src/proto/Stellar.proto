@@ -80,17 +80,22 @@ message MemoHash {
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
+    // Transaction fee
     int32 fee = 1;
 
+    // Account sequence
     int64 sequence = 2;
 
+    // Source account
     string account = 3;
 
     // The secret private key used for signing (32 bytes).
     bytes private_key = 4;
 
+    // Wellknown passphrase, specific to the chain
     string passphrase = 5;
 
+    // Payload message
     oneof operation_oneof {
         OperationCreateAccount op_create_account = 6;
         OperationPayment op_payment = 7;
@@ -99,6 +104,7 @@ message SigningInput {
         OperationClaimClaimableBalance op_claim_claimable_balance = 15;
     }
 
+    // Memo
     oneof memo_type_oneof {
         MemoVoid memo_void = 9;
         MemoText memo_text = 10;

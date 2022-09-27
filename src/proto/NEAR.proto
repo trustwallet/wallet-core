@@ -77,11 +77,19 @@ message Action {
 
 // Input data necessary to create a signed order.
 message SigningInput {
+    // ID of the sender
     string signer_id = 1;
+
     // Nonce (should be larger than in the last transaction of the account)
     uint64 nonce = 2;
+
+    // ID of the receiver
     string receiver_id = 3;
+
+    // Recent block hash
     bytes block_hash = 4;
+
+    // Payload action(s)
     repeated Action actions = 5;
 
     // The secret private key used for signing (32 bytes).

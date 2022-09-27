@@ -83,7 +83,11 @@ message CreateAndTransferToken {
 message SigningInput {
     // The secret private key used for signing (32 bytes).
     bytes private_key = 1;
+
+    // Relatively recent block hash
     string recent_blockhash = 2;
+
+    // Payload message
     oneof transaction_type {
         Transfer transfer_transaction = 3;
         DelegateStake delegate_stake_transaction = 4;

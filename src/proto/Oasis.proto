@@ -28,6 +28,7 @@ message SigningInput {
     // The secret private key used for signing (32 bytes).
     bytes private_key = 1;
 
+    // Transfer payload
     oneof message {
         TransferMessage transfer = 2;
     }

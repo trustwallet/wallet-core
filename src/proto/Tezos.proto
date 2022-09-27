@@ -6,7 +6,9 @@ option java_package = "wallet.core.jni.proto";
 // Input data necessary to create a signed Tezos transaction.
 // Next field: 3
 message SigningInput {
+  // One or more operations
   OperationList operation_list = 1;
+
   // The secret private key used for signing (32 bytes).
   bytes private_key = 2;
 }

@@ -85,22 +85,31 @@ message SigningInput {
     // Recent block hash, or genesis hash if era is not set
     bytes block_hash = 1;
 
+    // Genesis block hash (identifies the chain)
     bytes genesis_hash = 2;
 
     // Current account nonce
     uint64 nonce = 3;
 
+    // Specification version, e.g. 26.
     uint32 spec_version = 4;
+
+    // Transaction version, e.g. 5.
     uint32 transaction_version = 5;
-    bytes tip = 6;  // big integer
+
+    // Optional tip to pay, big integer
+    bytes tip = 6;
 
     // Optional time validity limit, recommended, for replay-protection.  Empty means Immortal.
     Era era = 7;
 
     // The secret private key used for signing (32 bytes).
     bytes private_key = 8;
+
+    // Network type
     Network network = 9;
 
+    // Payload message
     oneof message_oneof {
         Balance balance_call = 10;
         Staking staking_call = 11;

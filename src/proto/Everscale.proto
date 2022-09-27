@@ -39,6 +39,7 @@ message Transfer {
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
+    // The payload transfer
     oneof action_oneof {
         Transfer transfer = 1;
     }

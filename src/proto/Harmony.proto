@@ -11,6 +11,7 @@ message SigningInput {
     // The secret private key used for signing (32 bytes).
     bytes private_key = 2;
 
+    // The payload message
     oneof message_oneof {
         TransactionMessage transaction_message = 3;
         StakingMessage staking_message = 4;

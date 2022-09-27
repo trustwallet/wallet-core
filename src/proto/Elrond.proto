@@ -56,10 +56,17 @@ message Accounts {
 message SigningInput {
     // The secret private key used for signing (32 bytes).
     bytes       private_key = 1;
+
+    // Chain identifier, string
     string      chain_id = 2;
+
+    // Gas price
     uint64      gas_price = 3;
+
+    // Limit for the gas used
     uint64      gas_limit = 4;
 
+    // transfer payload
     oneof message_oneof {
         GenericAction generic_action = 5;
         EGLDTransfer egld_transfer = 6;

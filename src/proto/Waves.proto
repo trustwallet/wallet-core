@@ -34,8 +34,11 @@ message CancelLeaseMessage {
 message SigningInput {
     // in millis
     int64 timestamp = 1;
+
     // The secret private key used for signing (32 bytes).
     bytes private_key = 2;
+
+    // Payload message
     oneof message_oneof {
         TransferMessage transfer_message = 3;
         LeaseMessage lease_message = 4;
