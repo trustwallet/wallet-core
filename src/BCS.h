@@ -21,7 +21,7 @@ namespace TW::BCS {
 
 /// Implementation of BCS encoding (as specified by the Diem project, see github.com/diem/bcs#detailed-specifications)
 
-struct output_stream {
+struct Serializer {
     Data bytes;
 
     void add_byte(std::byte b) noexcept {
