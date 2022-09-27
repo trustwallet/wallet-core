@@ -29,22 +29,26 @@ private:
 
 static BCS::Serializer& operator<<(BCS::Serializer& stream, const EntryFunction& entryFunction) noexcept {
     auto serializedModule = entryFunction.module().serialize();
-    stream.add_bytes(begin(serializedModule), end(serializedModule));
-    stream << entryFunction.function() << entryFunction.tyArgs() << entryFunction.args();
+    stream << entryFunction.module() << entryFunction.function() << entryFunction.tyArgs() << entryFunction.args();
     return stream;
 }
 
-using TransactionPayload = std::variant<EntryFunction>;
+class Script {
 
-[[maybe_unused]] static BCS::Serializer& operator<<(BCS::Serializer& stream, const TransactionPayload& entryFunction) noexcept {
-    auto visit_functor = [&stream](const TransactionPayload& value) {
-        if (auto* entryFunction = std::get_if<EntryFunction>(&value); entryFunction != nullptr) {
-            stream << *entryFunction;
-        }
-    };
+};
 
-    std::visit(visit_functor, entryFunction);
+[[maybe_unused]] static BCS::Serializer& operator<<(BCS::Serializer& stream, [[maybe_unused]] const Script& script) noexcept {
     return stream;
 }
+
+class ModuleBundle {
+
+};
+
+[[maybe_unused]] static BCS::Serializer& operator<<(BCS::Serializer& stream, [[maybe_unused]] const ModuleBundle& moduleBundle) noexcept {
+    return stream;
+}
+
+using TransactionPayload = std::variant<Script, ModuleBundle, EntryFunction>;
 
 } // namespace TW::Aptos

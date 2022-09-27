@@ -32,6 +32,11 @@ private:
     Identifier mName;
 };
 
+static BCS::Serializer& operator<<(BCS::Serializer& stream, const ModuleId& module) noexcept {
+    stream << module.address() << module.name();
+    return stream;
+}
+
 struct TypeTag;
 
 struct Bool {
