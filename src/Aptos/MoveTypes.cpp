@@ -34,9 +34,6 @@ std::string ModuleId::shortString() const noexcept {
 Data StructTag::serialize() const noexcept {
     BCS::Serializer serializer;
     serializer << static_cast<std::byte>(gResourceTag) << mAccountAddress << mModule << mName << mTypeParams;
-    /*for (auto&& cur: mTypeParams) {
-        std::visit([&serializer](auto&& arg) { serializer << arg; }, cur.tags);
-    }*/
     return serializer.bytes;
 }
 
