@@ -6,19 +6,43 @@
 
 #include "Signer.h"
 #include "Address.h"
+#include "MoveTypes.h"
+#include "TransactionPayload.h"
 #include "../PublicKey.h"
 
 namespace TW::Aptos {
 
 Proto::SigningOutput Signer::sign([[maybe_unused]] const Proto::SigningInput &input) noexcept {
-    // TODO: Check and finalize implementation
-
     auto protoOutput = Proto::SigningOutput();
     Data encoded;
-    // auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    // auto signature = privateKey.sign(payload, TWCurveED25519);
-    // encoded = encodeSignature(signature);
-
+    BCS::Serializer serializer;
+    if (input.has_sender()) {
+        serializer << Address(input.sender());
+    }
+    if (input.has_sequence_number()) {
+        serializer << input.sequence_number();
+    }
+    switch (input.transaction_payload_case()) {
+    case Proto::SigningInput::kTransfer: {
+        auto& tf = input.transfer();
+        ModuleId module(gAddressOne, "coin");
+        BCS::Serializer aSerializer;
+        aSerializer << Address(tf.to());
+        std::vector<Data> args;
+        args.emplace_back(serializer.bytes);
+        aSerializer.clear();
+        aSerializer << tf.amount();
+        args.emplace_back(serializer.bytes);
+        TransactionPayload payload = EntryFunction(module, "transfer", {gTransferTag}, args);
+        serializer << payload;
+        break;
+    }
+    case Proto::SigningInput::TRANSACTION_PAYLOAD_NOT_SET:
+        break;
+    }
+    serializer << input.max_gas_amount() << input.gas_unit_price() << input.expiration_timestamp_secs() << std::uint8_t(input.chain_id());
+    // TODO: do the signing part?
+    encoded = serializer.bytes;
     protoOutput.set_encoded(encoded.data(), encoded.size());
     return protoOutput;
 }
