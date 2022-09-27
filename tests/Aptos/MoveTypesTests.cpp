@@ -44,4 +44,24 @@ TEST(AptosMoveTypes, StructTag) {
     functorTest(TStructTag{stInner}, "01000000000000000000000000000000000000000000000000000000000000000103616263036162630107000000000000000000000000000000000000000000000000000000000000000103666f6f036261720101");
 }
 
+TEST(AptosMoveTypes, TypeTagDisplay) {
+    auto functorTest = [](const TypeTag &value, const std::string& expected) {
+        ASSERT_EQ(TypeTagToString(value), expected);
+    };
+    functorTest(TypeTag{.tags = Bool{}}, "bool");
+    functorTest(TypeTag{.tags = U8{}}, "u8");
+    functorTest(TypeTag{.tags = U64{}}, "u64");
+    functorTest(TypeTag{.tags = U128{}}, "u128");
+    functorTest(TypeTag{.tags = TAddress{}}, "address");
+    functorTest(TypeTag{.tags = TSigner{}}, "signer");
+    TypeTag t{.tags = TypeTag::TypeTagVariant(Vector{.tags = {{U8{}}}})};
+    functorTest(t, "vector<u8>");
+    StructTag st(gAddressOne, "foo", "bar", std::vector<TypeTag>{{U8{}}});
+    TypeTag anotherT{.tags = TypeTag::TypeTagVariant(st)};
+    functorTest(anotherT, "0x1::foo::bar<u8>");
+    StructTag transferTag(gAddressOne, "aptos_coin", "AptosCoin", {});
+    anotherT = TypeTag{.tags = TypeTag::TypeTagVariant(transferTag)};
+    functorTest(anotherT, "0x1::aptos_coin::AptosCoin");
+}
+
 } // namespace TW::Aptos::tests

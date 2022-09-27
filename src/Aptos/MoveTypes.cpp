@@ -44,6 +44,19 @@ Data StructTag::serialize(bool withResourceTag) const noexcept {
 StructTag::StructTag(Address accountAddress, Identifier module, Identifier name, std::vector<TypeTag> typeParams) noexcept
     : mAccountAddress(accountAddress), mModule(std::move(module)), mName(std::move(name)), mTypeParams(std::move(typeParams)) {
 }
+std::string StructTag::string() const noexcept {
+    std::stringstream ss;
+    ss << "0x" << mAccountAddress.shortString() << "::" << mModule << "::" << mName;
+    if (!mTypeParams.empty()) {
+        ss << "<";
+        ss << TypeTagToString(*mTypeParams.begin());
+        std::for_each(begin(mTypeParams) + 1, end(mTypeParams), [&ss](auto&& cur) {
+            ss << TypeTagToString(cur);
+        });
+        ss << ">";
+    }
+    return ss.str();
+}
 
 BCS::Serializer& operator<<(BCS::Serializer& stream, Bool) noexcept {
     stream << Bool::value;

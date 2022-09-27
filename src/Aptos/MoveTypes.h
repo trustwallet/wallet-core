@@ -62,6 +62,7 @@ public:
     explicit StructTag(Address accountAddress, Identifier module, Identifier name, std::vector<TypeTag> typeParams) noexcept;
     [[nodiscard]] Data serialize(bool withResourceTag = true) const noexcept;
     [[nodiscard]] ModuleId moduleID() const noexcept { return {mAccountAddress, mName}; };
+    [[nodiscard]] std::string string() const noexcept;
 
 private:
     Address mAccountAddress;
@@ -81,7 +82,38 @@ struct TypeTag {
     TypeTagVariant tags;
 };
 
-BCS::Serializer& operator<<(BCS::Serializer& stream, const StructTag& st) noexcept;
+static std::string TypeTagToString(const TypeTag& typeTag) noexcept {
+    auto visit_functor = [](const TypeTag::TypeTagVariant& value) -> std::string {
+        if (std::holds_alternative<Bool>(value)) {
+            return "bool";
+        } else if (std::holds_alternative<U8>(value)) {
+            return "u8";
+        } else if (std::holds_alternative<U64>(value)) {
+            return "u64";
+        } else if (std::holds_alternative<U128>(value)) {
+            return "u128";
+        } else if (std::holds_alternative<TAddress>(value)) {
+            return "address";
+        } else if (std::holds_alternative<TSigner>(value)) {
+            return "signer";
+        } else if (auto* vectorData = std::get_if<Vector>(&value); vectorData != nullptr && !vectorData->tags.empty()) {
+            std::stringstream ss;
+            ss << "vector<" << TypeTagToString(*vectorData->tags.begin()) << ">";
+            return ss.str();
+        } else if (auto* structData = std::get_if<StructTag>(&value); structData) {
+            return structData->string();
+        } else if (auto* tStructData = std::get_if<TStructTag>(&value); tStructData) {
+            return tStructData->st.string();
+        }else {
+            return "";
+        }
+    };
+
+    return std::visit(visit_functor, typeTag.tags);
+}
+
+BCS::Serializer&
+operator<<(BCS::Serializer& stream, const StructTag& st) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, Bool) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, U8) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, U64) noexcept;
