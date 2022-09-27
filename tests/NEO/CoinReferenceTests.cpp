@@ -21,6 +21,14 @@ TEST(NEOCoinReference, Serialize) {
     EXPECT_EQ(prevHash + "0100", hex(coinReference.serialize()));
 }
 
+TEST(NEOCoinReference, SerializeWithZeroLeading) {
+    auto coinReference = CoinReference();
+    string prevHash = "0037ebf259ca5c6c43a5e7117c910858ea1146290e07d39e48554bc00d890b94";
+    coinReference.prevHash = load(parse_hex(prevHash));
+    coinReference.prevIndex = 1;
+    EXPECT_EQ(prevHash + "0100", hex(coinReference.serialize()));
+}
+
 TEST(NEOCoinReference, Deserialize) {
     auto coinReference = CoinReference();
     coinReference.deserialize(parse_hex("bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a0100"));

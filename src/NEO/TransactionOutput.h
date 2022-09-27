@@ -7,7 +7,7 @@
 #pragma once
 
 #include "../uint256.h"
-#include "Data.h"
+#include "../Data.h"
 #include "../BinaryCoding.h"
 #include "ReadData.h"
 #include "ISerializable.h"
@@ -38,7 +38,7 @@ class TransactionOutput : public Serializable {
     }
 
     Data serialize() const override {
-        auto resp = store(assetId);
+        auto resp = store(assetId, assetIdSize);
         encode64LE(value, resp);
         return concat(resp, store(scriptHash));
     }
