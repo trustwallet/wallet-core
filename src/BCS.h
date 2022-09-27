@@ -95,14 +95,14 @@ struct is_serializable<std::variant<Ts...>> {
 };
 
 template <std::integral T, std::size_t... Is>
-output_stream& serialize_integral_impl(output_stream& stream, T t, std::index_sequence<Is...>) noexcept {
+Serializer& serialize_integral_impl(Serializer& stream, T t, std::index_sequence<Is...>) noexcept {
     const char* bytes = reinterpret_cast<const char*>(&t);
     // Add each byte in little-endian order
     return (stream << ... << static_cast<std::byte>(bytes[Is]));
 }
 
 template <typename T, std::size_t... Is>
-output_stream& serialize_tuple_impl(output_stream& stream, const T& t, std::index_sequence<Is...>) noexcept {
+Serializer& serialize_tuple_impl(Serializer& stream, const T& t, std::index_sequence<Is...>) noexcept {
     return (stream << ... << std::get<Is>(t));
 }
 
@@ -134,7 +134,7 @@ constexpr auto to_tuple(T&& t) {
 }
 
 template <aggregate_struct T>
-output_stream& serialize_struct_impl(output_stream& stream, const T& t) noexcept {
+Serializer& serialize_struct_impl(Serializer& stream, const T& t) noexcept {
     return stream << to_tuple(t);
 }
 } // namespace details
@@ -144,23 +144,23 @@ concept PrimitiveSerializable = details::is_serializable<T>::value;
 
 template <typename T>
 concept CustomSerializable = requires(T t) {
-                                 { std::declval<output_stream&>() << t } -> std::same_as<output_stream&>;
+                                 { std::declval<Serializer&>() << t } -> std::same_as<Serializer&>;
                              };
 
 template <typename T>
 concept Serializable = PrimitiveSerializable<T> || CustomSerializable<T>;
 
-output_stream& operator<<(output_stream& stream, std::byte b) noexcept {
+Serializer& operator<<(Serializer& stream, std::byte b) noexcept {
     stream.add_byte(b);
     return stream;
 }
 
 template <std::integral T>
-output_stream& operator<<(output_stream& stream, T t) noexcept {
+Serializer& operator<<(Serializer& stream, T t) noexcept {
     return details::serialize_integral_impl(stream, t, std::make_index_sequence<sizeof(T)>{});
 }
 
-output_stream& operator<<(output_stream& stream, uleb128 t) noexcept {
+Serializer& operator<<(Serializer& stream, uleb128 t) noexcept {
     std::integral auto value = t.value;
 
     while (value >= 0x80) {
@@ -174,14 +174,14 @@ output_stream& operator<<(output_stream& stream, uleb128 t) noexcept {
     return stream;
 }
 
-output_stream& operator<<(output_stream& stream, std::string_view sv) noexcept {
+Serializer& operator<<(Serializer& stream, std::string_view sv) noexcept {
     stream << uleb128{static_cast<uint32_t>(sv.size())};
     stream.add_bytes(sv.begin(), sv.end());
     return stream;
 }
 
 template <typename T>
-output_stream& operator<<(output_stream& stream, const std::optional<T> o) noexcept {
+Serializer& operator<<(Serializer& stream, const std::optional<T> o) noexcept {
     if (o.has_value()) {
         stream << true;
         stream << o.value();
@@ -191,35 +191,35 @@ output_stream& operator<<(output_stream& stream, const std::optional<T> o) noexc
     return stream;
 }
 
-output_stream& operator<<(output_stream& stream, std::nullopt_t) noexcept {
+Serializer& operator<<(Serializer& stream, std::nullopt_t) noexcept {
     stream << false;
     return stream;
 }
 
 template <typename... Ts>
-output_stream& operator<<(output_stream& stream, const std::tuple<Ts...>& t) noexcept {
+Serializer& operator<<(Serializer& stream, const std::tuple<Ts...>& t) noexcept {
     return details::serialize_tuple_impl(stream, t, std::make_index_sequence<sizeof...(Ts)>{});
 }
 
 template <typename T, typename U>
-output_stream& operator<<(output_stream& stream, const std::pair<T, U>& t) noexcept {
+Serializer& operator<<(Serializer& stream, const std::pair<T, U>& t) noexcept {
     return details::serialize_tuple_impl(stream, t, std::make_index_sequence<2>{});
 }
 
 template <details::aggregate_struct T>
-output_stream& operator<<(output_stream& stream, const T& t) noexcept {
+Serializer& operator<<(Serializer& stream, const T& t) noexcept {
     return details::serialize_struct_impl(stream, t);
 }
 
 template <typename... Ts>
-output_stream& operator<<(output_stream& stream, const std::variant<Ts...>& t) noexcept {
+Serializer& operator<<(Serializer& stream, const std::variant<Ts...>& t) noexcept {
     stream << uleb128{static_cast<uint32_t>(t.index())};
     std::visit([&stream](auto&& value) { stream << value; }, t);
     return stream;
 }
 
 template <details::map_container T>
-output_stream& operator<<(output_stream& stream, const T& t) noexcept {
+Serializer& operator<<(Serializer& stream, const T& t) noexcept {
     stream << uleb128{static_cast<uint32_t>(t.size())};
     for (auto&& [k, v] : t) {
         stream << std::make_tuple(k, v);

@@ -12,7 +12,7 @@
 namespace TW::BCS::tests {
 
 TEST(BCS, Integral) {
-    output_stream os;
+    Serializer os;
     os << uint32_t(0xAABBCCDD);
     ASSERT_EQ(os.bytes, (Data{0xDD, 0xCC, 0xBB, 0xAA}));
 
@@ -22,7 +22,7 @@ TEST(BCS, Integral) {
 }
 
 TEST(BCS, ULEB128) {
-    output_stream os;
+    Serializer os;
     os << uleb128{0x00000001};
     ASSERT_EQ(os.bytes, (Data{0x01}));
 
@@ -48,7 +48,7 @@ TEST(BCS, ULEB128) {
 }
 
 TEST(BCS, String) {
-    output_stream os;
+    Serializer os;
     os << std::string_view("abcd");
     ASSERT_EQ(os.bytes, (Data{0x04, 'a', 'b', 'c', 'd'}));
 
@@ -58,7 +58,7 @@ TEST(BCS, String) {
 }
 
 TEST(BCS, Optional) {
-    output_stream os;
+    Serializer os;
     os << std::optional{0xBBCCDD};
     ASSERT_EQ(os.bytes, (Data{0x01, 0xDD, 0xCC, 0xBB, 0x00}));
 
@@ -72,7 +72,7 @@ TEST(BCS, Optional) {
 }
 
 TEST(BCS, Tuple) {
-    output_stream os;
+    Serializer os;
     os << std::tuple{uint16_t(1), 'a'};
     ASSERT_EQ(os.bytes, (Data{0x01, 0x00, 'a'}));
 
@@ -86,7 +86,7 @@ TEST(BCS, Tuple) {
 }
 
 TEST(BCS, Pair) {
-    output_stream os;
+    Serializer os;
     os << std::pair{uint16_t(1), 'a'};
     ASSERT_EQ(os.bytes, (Data{0x01, 0x00, 'a'}));
 
@@ -102,7 +102,7 @@ struct my_struct {
 };
 
 TEST(BCS, Struct) {
-    output_stream os;
+    Serializer os;
     os << my_struct{{123}, "abcd", 0x0E};
     ASSERT_EQ(os.bytes, (Data{0x01, 123, 0x00, 0x00, 0x00, 0x04, 'a', 'b', 'c', 'd', 0x0E}));
 }
@@ -110,7 +110,7 @@ TEST(BCS, Struct) {
 TEST(BCS, Variant) {
     using V = std::variant<uint32_t, char, bool>;
 
-    output_stream os;
+    Serializer os;
     os << V{uint32_t(1)};
     ASSERT_EQ(os.bytes, (Data{0x00, 0x01, 0x00, 0x00, 0x00}));
 
@@ -124,7 +124,7 @@ TEST(BCS, Variant) {
 }
 
 TEST(BCS, Map) {
-    output_stream os;
+    Serializer os;
     os << std::map<char, char>{{'a', 0}, {'b', 1}, {'c', 2}};
     ASSERT_EQ(os.bytes, (Data{0x03, 'a', 0x00, 'b', 0x01, 'c', 0x02}));
 }
@@ -143,14 +143,14 @@ public:
     }
 };
 
-output_stream& operator<<(output_stream& stream, my_number n) noexcept {
+Serializer& operator<<(Serializer& stream, my_number n) noexcept {
     return stream << n.get_value();
 }
 
 static_assert(CustomSerializable<my_number>, "my_number does not model the CustomSerializable concept");
 
 TEST(BCS, Custom) {
-    output_stream os;
+    Serializer os;
     os << my_number{0xBBCCDD};
     ASSERT_EQ(os.bytes, (Data{0xDD, 0xCC, 0xBB, 0x00}));
 }
