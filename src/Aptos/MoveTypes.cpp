@@ -31,9 +31,13 @@ std::string ModuleId::shortString() const noexcept {
     return ss.str();
 }
 
-Data StructTag::serialize() const noexcept {
+Data StructTag::serialize(bool withResourceTag) const noexcept {
     BCS::Serializer serializer;
-    serializer << static_cast<std::byte>(gResourceTag) << mAccountAddress << mModule << mName << mTypeParams;
+    if (withResourceTag)
+    {
+        serializer << gResourceTag;
+    }
+    serializer << mAccountAddress << mModule << mName << mTypeParams;
     return serializer.bytes;
 }
 
@@ -65,13 +69,21 @@ BCS::Serializer& operator<<(BCS::Serializer& stream, TSigner) noexcept {
     stream << TSigner::value;
     return stream;
 }
-BCS::Serializer& operator<<(BCS::Serializer& stream, StructTag st) noexcept {
+
+BCS::Serializer& operator<<(BCS::Serializer& stream, const StructTag& st) noexcept {
     auto res = st.serialize();
     stream.add_bytes(begin(res), end(res));
     return stream;
 }
 
-BCS::Serializer& operator<<(BCS::Serializer& stream, Vector t) noexcept {
+BCS::Serializer& operator<<(BCS::Serializer& stream, const TStructTag& st) noexcept {
+    stream << TStructTag::value;
+    auto res = st.st.serialize(false);
+    stream.add_bytes(begin(res), end(res));
+    return stream;
+}
+
+BCS::Serializer& operator<<(BCS::Serializer& stream, const Vector& t) noexcept {
     stream << Vector::value;
     for (auto&& cur: t.tags) {
         stream << cur;

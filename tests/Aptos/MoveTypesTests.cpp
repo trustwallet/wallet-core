@@ -26,7 +26,7 @@ TEST(AptosMoveTypes, ModuleId) {
 }
 
 TEST(AptosMoveTypes, StructTag) {
-    auto functorTest = []<typename T>(T value, const std::string expectedHex){
+    auto functorTest = []<typename T>(T value, const std::string expectedHex) {
         TypeTag t{.tags = value};
         StructTag st(gAddressOne, "abc", "abc", std::vector<TypeTag>{{t}});
         ASSERT_EQ(st.moduleID().name(), "abc");
@@ -40,6 +40,8 @@ TEST(AptosMoveTypes, StructTag) {
     functorTest(TAddress{}, "01000000000000000000000000000000000000000000000000000000000000000103616263036162630104");
     functorTest(TSigner{}, "01000000000000000000000000000000000000000000000000000000000000000103616263036162630105");
     functorTest(Vector{.tags = std::vector<TypeTag>{{TypeTag{.tags = U8{}}}}}, "0100000000000000000000000000000000000000000000000000000000000000010361626303616263010601");
+    StructTag stInner(gAddressOne, "foo", "bar", std::vector<TypeTag>{{U8{}}});
+    functorTest(TStructTag{stInner}, "01000000000000000000000000000000000000000000000000000000000000000103616263036162630107000000000000000000000000000000000000000000000000000000000000000103666f6f036261720101");
 }
 
 } // namespace TW::Aptos::tests

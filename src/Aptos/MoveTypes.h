@@ -60,7 +60,7 @@ struct Vector {
 class StructTag {
 public:
     explicit StructTag(Address accountAddress, Identifier module, Identifier name, std::vector<TypeTag> typeParams) noexcept;
-    [[nodiscard]] Data serialize() const noexcept;
+    [[nodiscard]] Data serialize(bool withResourceTag = true) const noexcept;
     [[nodiscard]] ModuleId moduleID() const noexcept { return {mAccountAddress, mName}; };
 
 private:
@@ -70,19 +70,26 @@ private:
     std::vector<TypeTag> mTypeParams;
 };
 
+// C++ limitation, the first StructTag will serialize with ResourceTag, the inner one will use the value 7 instead. Tweaking by wrapping the struct
+struct TStructTag {
+    static constexpr std::uint8_t value = 7;
+    StructTag st;
+};
+
 struct TypeTag {
-    using TypeTagVariant = std::variant<Bool, U8, U64, U128, TAddress, TSigner, Vector, StructTag>;
+    using TypeTagVariant = std::variant<Bool, U8, U64, U128, TAddress, TSigner, Vector, StructTag, TStructTag>;
     TypeTagVariant tags;
 };
 
-BCS::Serializer& operator<<(BCS::Serializer& stream, StructTag st) noexcept;
+BCS::Serializer& operator<<(BCS::Serializer& stream, const StructTag& st) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, Bool) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, U8) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, U64) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, U128) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, TAddress) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, TSigner) noexcept;
-BCS::Serializer& operator<<(BCS::Serializer& stream, Vector t) noexcept;
+BCS::Serializer& operator<<(BCS::Serializer& stream, const Vector& t) noexcept;
+BCS::Serializer& operator<<(BCS::Serializer& stream, const TStructTag& t) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, const TypeTag& t) noexcept;
 
 // TODO: find a way to not hit the aggregate one
