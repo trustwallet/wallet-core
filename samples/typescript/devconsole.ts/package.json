@@ -2,9 +2,9 @@
   "name": "cli-wasm",
   "version": "0.0.1",
   "description": "CLI utility for Wallet Core, through WASM",
-  "main": "index.js",
+  "main": "index.ts",
   "bin": {
-    "cli": "index.js"
+    "cli": "index.ts"
   },
   "scripts": {
     "start": "ts-node src/index.ts",
@@ -12,9 +12,9 @@
     "test": "cat test/data/privpubkey.testinput.txt | ts-node src/index.ts"
   },
   "author": "Trust Wallet",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "@trustwallet/wallet-core": "3.0.1",
+    "@trustwallet/wallet-core": "3.0.4",
     "chalk": "^4.1.2",
     "clear": "^0.1.0",
     "figlet": "^1.5.2",

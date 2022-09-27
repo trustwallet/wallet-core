@@ -1,0 +1,51 @@
+// Delete all wallets to start with empty state (commented out not to accidentally remove data)
+//await walletsDeleteAll('deleteall')
+
+// create a wallet
+await walletCreate(256, 'First')
+await walletsList()
+await walletDump()
+
+// add an extra coin to it
+await walletAddCoin(WC.CoinType.solana)
+await walletDump()
+
+// Create a second wallet by mnemonic import
+await walletImport('ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal', 'Imported')
+await walletsList()
+await walletDump()
+
+// Load first ...
+await walletsList()
+await walletLoad(0)
+await walletDump()
+
+// ... then second
+await walletsList()
+await walletLoad(1)
+await walletDump()
+
+// retrieve private key and verify that it derives the same address
+coin = WC.CoinType.bitcoin
+privkey = wallets.wallet.wallet.privateKey(coin, 'devconsole.ts')
+pubkey = privkey.getPublicKeySecp256k1(true); HexCoding.encode(pubkey.data())
+addrDerived = AnyAddress.createWithPublicKey(pubkey, coin).description()
+addrStored = wallets.wallet.wallet.account(0).address()
+addrDerived === addrStored
+
+// create another wallet
+await walletCreate(256, 'Another')
+await walletsList()
+await walletDump()
+
+// Delete it
+await walletDelete('delete')
+await walletsList()
+await walletDump()
+
+await walletLoad(0)
+await walletDump()
+
+// Delete all wallets (commented out not to accidentally remove data)
+//await walletDeleteAll('deleteall')
+//await walletsList()
