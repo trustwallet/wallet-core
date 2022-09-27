@@ -5,7 +5,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-
 #pragma once
 
 #include "../Data.h"
@@ -37,11 +36,10 @@ public:
     explicit Address(const PublicKey& publicKey);
 
     /// Returns a string representation of the address.
-    [[nodiscard]] std::string string() const;
+    [[nodiscard]] std::string string(bool withPrefix = true) const;
 };
 
-constexpr inline bool operator==(const Address& lhs, const Address& rhs) noexcept {
-    return lhs.bytes == rhs.bytes;
-}
+inline const Address gAddressZero = Address("0x0");
+inline const Address gAddressOne = Address("0x1");
 
 } // namespace TW::Aptos

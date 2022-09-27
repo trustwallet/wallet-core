@@ -8,17 +8,30 @@
 #include "Address.h"
 #include "HexCoding.h"
 
+namespace {
+
+std::string normalize(const std::string& string, std::size_t hexLen) {
+    std::string hexStr((TW::Aptos::Address::size * 2) - hexLen, '0');
+    hexStr.append(string);
+    return hexStr;
+}
+
+} // namespace
+
 namespace TW::Aptos {
 
 bool Address::isValid(const std::string& string) {
     auto address = string;
     if (address.starts_with("0x")) {
         address = address.substr(2);
+        if (std::size_t hexLen = address.size(); hexLen < Address::size * 2) {
+            address = normalize(address, hexLen);
+        }
     }
     if (address.size() != 2 * Address::size) {
         return false;
     }
-    const auto data = parse_hex(string);
+    const auto data = parse_hex(address);
     return isValid(data);
 }
 
@@ -26,7 +39,16 @@ Address::Address(const std::string& string) {
     if (!isValid(string)) {
         throw std::invalid_argument("Invalid address string");
     }
-    const auto data = parse_hex(string);
+    auto hexFunctor = [&string]() {
+        if (std::size_t hexLen = string.size() - 2; string.starts_with("0x") && hexLen < Address::size * 2) {
+            //! We have specific address like 0x1, padding it.
+            return parse_hex(normalize(string.substr(2), hexLen));
+        } else {
+            return parse_hex(string);
+        }
+    };
+
+    const auto data = hexFunctor();
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
@@ -47,8 +69,9 @@ Address::Address(const PublicKey& publicKey) {
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
-std::string Address::string() const {
-    return "0x" + hex(bytes);
+std::string Address::string(bool withPrefix) const {
+    std::string output = withPrefix ? "0x" : "";
+    return output + hex(bytes);
 }
 
 } // namespace TW::Aptos
