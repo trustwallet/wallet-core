@@ -106,6 +106,11 @@ Serializer& serialize_tuple_impl(Serializer& stream, const T& t, std::index_sequ
     return (stream << ... << std::get<Is>(t));
 }
 
+template <typename T>
+struct dependent_false {
+    static constexpr auto value = false;
+};
+
 template <aggregate_struct T>
 constexpr auto to_tuple(T&& t) {
     if constexpr (std::is_empty_v<T>) {
@@ -129,7 +134,7 @@ constexpr auto to_tuple(T&& t) {
         auto&& [a0, a1, a2, a3, a4, a5] = std::forward<T>(t);
         return std::make_tuple(a0, a1, a2, a3, a4, a5);
     } else {
-        static_assert("the structure has more than 6 members");
+        static_assert(dependent_false<T>::value, "the structure has more than 6 members");
     }
 }
 

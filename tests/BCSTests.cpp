@@ -6,6 +6,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "BCS.h"
+#include "HexCoding.h"
 
 #include <gtest/gtest.h>
 
@@ -14,71 +15,71 @@ namespace TW::BCS::tests {
 TEST(BCS, Integral) {
     Serializer os;
     os << uint32_t(0xAABBCCDD);
-    ASSERT_EQ(os.bytes, (Data{0xDD, 0xCC, 0xBB, 0xAA}));
+    ASSERT_EQ(os.bytes, parse_hex("0xDDCCBBAA"));
 
     os.clear();
     os << int32_t(-305419896);
-    ASSERT_EQ(os.bytes, (Data{0x88, 0xA9, 0xCB, 0xED}));
+    ASSERT_EQ(os.bytes, parse_hex("0x88A9CBED"));
 }
 
 TEST(BCS, ULEB128) {
     Serializer os;
     os << uleb128{0x00000001};
-    ASSERT_EQ(os.bytes, (Data{0x01}));
+    ASSERT_EQ(os.bytes, parse_hex("0x01"));
 
     os.clear();
     os << uleb128{0x00000080};
-    ASSERT_EQ(os.bytes, (Data{0x80, 0x01}));
+    ASSERT_EQ(os.bytes, parse_hex("0x8001"));
 
     os.clear();
     os << uleb128{0x00004000};
-    ASSERT_EQ(os.bytes, (Data{0x80, 0x80, 0x01}));
+    ASSERT_EQ(os.bytes, parse_hex("0x808001"));
 
     os.clear();
     os << uleb128{0x00200000};
-    ASSERT_EQ(os.bytes, (Data{0x80, 0x80, 0x80, 0x01}));
+    ASSERT_EQ(os.bytes, parse_hex("0x80808001"));
 
     os.clear();
     os << uleb128{0x10000000};
-    ASSERT_EQ(os.bytes, (Data{0x80, 0x80, 0x80, 0x80, 0x01}));
+    ASSERT_EQ(os.bytes, parse_hex("0x8080808001"));
 
     os.clear();
     os << uleb128{0x0000250F};
-    ASSERT_EQ(os.bytes, (Data{0x8F, 0x4A}));
+    ASSERT_EQ(os.bytes, parse_hex("0x8F4A"));
 }
 
 TEST(BCS, String) {
     Serializer os;
     os << std::string_view("abcd");
-    ASSERT_EQ(os.bytes, (Data{0x04, 'a', 'b', 'c', 'd'}));
+    ASSERT_EQ(os.bytes, parse_hex("0x0461626364"));
 
     os.clear();
     os << std::string_view("");
-    ASSERT_EQ(os.bytes, (Data{0x00}));
+    ASSERT_EQ(os.bytes, parse_hex("0x00"));
 }
 
 TEST(BCS, Optional) {
     Serializer os;
     os << std::optional{0xBBCCDD};
-    ASSERT_EQ(os.bytes, (Data{0x01, 0xDD, 0xCC, 0xBB, 0x00}));
+    ASSERT_EQ(os.bytes, parse_hex("0x01DDCCBB00"));
 
     os.clear();
     os << std::optional<int>{};
-    ASSERT_EQ(os.bytes, (Data{0x00}));
+    ASSERT_EQ(os.bytes, parse_hex("0x00"));
 
     os.clear();
     os << std::nullopt;
-    ASSERT_EQ(os.bytes, (Data{0x00}));
+    ASSERT_EQ(os.bytes, parse_hex("0x00"));
 }
 
 TEST(BCS, Tuple) {
     Serializer os;
     os << std::tuple{uint16_t(1), 'a'};
-    ASSERT_EQ(os.bytes, (Data{0x01, 0x00, 'a'}));
+    ASSERT_EQ(os.bytes, parse_hex("0x010061"));
 
     os.clear();
     os << std::tuple{std::optional<uint32_t>{123}, std::string_view("abcd"), uint8_t(0x0E)};
-    ASSERT_EQ(os.bytes, (Data{0x01, 123, 0x00, 0x00, 0x00, 0x04, 'a', 'b', 'c', 'd', 0x0E}));
+    ASSERT_EQ(os.bytes, parse_hex("0x017b00000004616263640e"));
 
     os.clear();
     os << std::tuple{};
@@ -88,11 +89,11 @@ TEST(BCS, Tuple) {
 TEST(BCS, Pair) {
     Serializer os;
     os << std::pair{uint16_t(1), 'a'};
-    ASSERT_EQ(os.bytes, (Data{0x01, 0x00, 'a'}));
+    ASSERT_EQ(os.bytes, parse_hex("0x010061"));
 
     os.clear();
     os << std::pair{std::optional<uint32_t>{123}, std::string_view("abcd")};
-    ASSERT_EQ(os.bytes, (Data{0x01, 123, 0x00, 0x00, 0x00, 0x04, 'a', 'b', 'c', 'd'}));
+    ASSERT_EQ(os.bytes, parse_hex("0x017b0000000461626364"));
 }
 
 struct my_struct {
@@ -104,7 +105,7 @@ struct my_struct {
 TEST(BCS, Struct) {
     Serializer os;
     os << my_struct{{123}, "abcd", 0x0E};
-    ASSERT_EQ(os.bytes, (Data{0x01, 123, 0x00, 0x00, 0x00, 0x04, 'a', 'b', 'c', 'd', 0x0E}));
+    ASSERT_EQ(os.bytes, parse_hex("0x017b00000004616263640e"));
 }
 
 TEST(BCS, Variant) {
@@ -112,21 +113,21 @@ TEST(BCS, Variant) {
 
     Serializer os;
     os << V{uint32_t(1)};
-    ASSERT_EQ(os.bytes, (Data{0x00, 0x01, 0x00, 0x00, 0x00}));
+    ASSERT_EQ(os.bytes, parse_hex("0x0001000000"));
 
     os.clear();
     os << V{char('a')};
-    ASSERT_EQ(os.bytes, (Data{0x01, 'a'}));
+    ASSERT_EQ(os.bytes, parse_hex("0x0161"));
 
     os.clear();
     os << V{true};
-    ASSERT_EQ(os.bytes, (Data{0x02, 0x01}));
+    ASSERT_EQ(os.bytes, parse_hex("0x0201"));
 }
 
 TEST(BCS, Map) {
     Serializer os;
     os << std::map<char, char>{{'a', 0}, {'b', 1}, {'c', 2}};
-    ASSERT_EQ(os.bytes, (Data{0x03, 'a', 0x00, 'b', 0x01, 'c', 0x02}));
+    ASSERT_EQ(os.bytes, parse_hex("0x03610062016302"));
 }
 
 class my_number {
@@ -152,7 +153,7 @@ static_assert(CustomSerializable<my_number>, "my_number does not model the Custo
 TEST(BCS, Custom) {
     Serializer os;
     os << my_number{0xBBCCDD};
-    ASSERT_EQ(os.bytes, (Data{0xDD, 0xCC, 0xBB, 0x00}));
+    ASSERT_EQ(os.bytes, parse_hex("0xDDCCBB00"));
 }
 
 }
