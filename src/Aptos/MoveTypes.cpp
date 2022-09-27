@@ -71,6 +71,14 @@ BCS::Serializer& operator<<(BCS::Serializer& stream, StructTag st) noexcept {
     return stream;
 }
 
+BCS::Serializer& operator<<(BCS::Serializer& stream, Vector t) noexcept {
+    stream << Vector::value;
+    for (auto&& cur: t.tags) {
+        stream << cur;
+    }
+    return stream;
+}
+
 BCS::Serializer& operator<<(BCS::Serializer& stream, const TypeTag& t) noexcept {
     std::visit([&stream](auto&& arg) { stream << arg; }, t.tags);
     return stream;

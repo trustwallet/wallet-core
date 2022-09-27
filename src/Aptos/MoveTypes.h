@@ -32,6 +32,8 @@ private:
     Identifier mName;
 };
 
+struct TypeTag;
+
 struct Bool {
     static constexpr std::uint8_t value = 0;
 };
@@ -50,7 +52,10 @@ struct TAddress {
 struct TSigner {
     static constexpr std::uint8_t value = 5;
 };
-struct TypeTag;
+struct Vector {
+    static constexpr std::uint8_t value = 6;
+    std::vector<TypeTag> tags;
+};
 
 class StructTag {
 public:
@@ -66,7 +71,7 @@ private:
 };
 
 struct TypeTag {
-    using TypeTagVariant = std::variant<Bool, U8, U64, U128, TAddress, TSigner, std::vector<TypeTag>, StructTag>;
+    using TypeTagVariant = std::variant<Bool, U8, U64, U128, TAddress, TSigner, Vector, StructTag>;
     TypeTagVariant tags;
 };
 
@@ -77,6 +82,7 @@ BCS::Serializer& operator<<(BCS::Serializer& stream, U64) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, U128) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, TAddress) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, TSigner) noexcept;
+BCS::Serializer& operator<<(BCS::Serializer& stream, Vector t) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, const TypeTag& t) noexcept;
 
 // TODO: find a way to not hit the aggregate one
