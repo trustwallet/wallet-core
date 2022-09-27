@@ -8,6 +8,7 @@
 
 #include "Aptos/Address.h"
 #include "BCS.h"
+#include <sstream>
 
 namespace TW::Aptos {
 
