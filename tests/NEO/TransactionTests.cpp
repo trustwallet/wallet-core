@@ -62,7 +62,7 @@ TEST(NEOTransaction, SerializeDeserializeAttribute) {
 
     transaction.attributes.push_back(TransactionAttribute());
     transaction.attributes[1].usage = TransactionAttributeUsage::TAU_ECDH02;
-    transaction.attributes[1]._data = parse_hex("b7ecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a");
+    transaction.attributes[1]._data = parse_hex("02b7ecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a");
     serialized = transaction.serialize();
     const string twoVarLong = "02";
     string expectedSerialized = "8007" + twoVarLong;
