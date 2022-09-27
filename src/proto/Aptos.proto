@@ -26,8 +26,8 @@ pub struct TransactionBuilder {
 }
  */
 message SigningInput {
-  optional string sender = 1;
-  optional int64 sequence_number = 2;
+  string sender = 1; // optional
+  int64 sequence_number = 2; // optional
   oneof transaction_payload {
     TransferMessage transfer = 3;
   }

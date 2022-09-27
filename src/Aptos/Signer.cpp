@@ -16,10 +16,10 @@ Proto::SigningOutput Signer::sign([[maybe_unused]] const Proto::SigningInput &in
     auto protoOutput = Proto::SigningOutput();
     Data encoded;
     BCS::Serializer serializer;
-    if (input.has_sender()) {
+    if (!input.sender().empty()) {
         serializer << Address(input.sender());
     }
-    if (input.has_sequence_number()) {
+    if (input.sequence_number() > 0) {
         serializer << input.sequence_number();
     }
     switch (input.transaction_payload_case()) {
