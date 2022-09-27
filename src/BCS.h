@@ -16,6 +16,7 @@
 #include <variant>
 
 #include "Data.h"
+#include "concepts/tw_concepts.h"
 
 namespace TW::BCS {
 
@@ -28,8 +29,7 @@ struct Serializer {
         bytes.emplace_back(static_cast<Data::value_type>(b));
     }
 
-    template <std::input_iterator Iterator>
-        requires std::convertible_to<std::iter_value_t<Iterator>, Data::value_type>
+    template <typename Iterator>
     void add_bytes(Iterator first, Iterator last) noexcept {
         std::transform(first, last, std::back_inserter(bytes), [](auto&& c) {
             return static_cast<Data::value_type>(c);
@@ -58,8 +58,8 @@ concept map_container = requires(T t) {
                         };
 
 template <typename T>
-    requires std::integral<T> ||
-             std::floating_point<T> ||
+    requires integral<T> ||
+             floating_point<T> ||
              std::same_as<T, std::string_view> ||
              std::same_as<T, std::string> ||
              std::same_as<T, uleb128> ||
@@ -94,7 +94,7 @@ struct is_serializable<std::variant<Ts...>> {
     static constexpr auto value = (is_serializable<Ts>::value && ...);
 };
 
-template <std::integral T, std::size_t... Is>
+template <integral T, std::size_t... Is>
 Serializer& serialize_integral_impl(Serializer& stream, T t, std::index_sequence<Is...>) noexcept {
     const char* bytes = reinterpret_cast<const char*>(&t);
     // Add each byte in little-endian order
@@ -157,7 +157,7 @@ concept Serializable = PrimitiveSerializable<T> || CustomSerializable<T>;
 
 Serializer& operator<<(Serializer& stream, std::byte b) noexcept;
 
-template <std::integral T>
+template <integral T>
 Serializer& operator<<(Serializer& stream, T t) noexcept {
     return details::serialize_integral_impl(stream, t, std::make_index_sequence<sizeof(T)>{});
 }
