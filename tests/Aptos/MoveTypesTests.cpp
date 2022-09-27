@@ -59,9 +59,7 @@ TEST(AptosMoveTypes, TypeTagDisplay) {
     StructTag st(gAddressOne, "foo", "bar", std::vector<TypeTag>{{U8{}}});
     TypeTag anotherT{.tags = TypeTag::TypeTagVariant(st)};
     functorTest(anotherT, "0x1::foo::bar<u8>");
-    StructTag transferTag(gAddressOne, "aptos_coin", "AptosCoin", {});
-    anotherT = TypeTag{.tags = TypeTag::TypeTagVariant(transferTag)};
-    functorTest(anotherT, "0x1::aptos_coin::AptosCoin");
+    functorTest(gTransferTag, "0x1::aptos_coin::AptosCoin");
 }
 
 } // namespace TW::Aptos::tests

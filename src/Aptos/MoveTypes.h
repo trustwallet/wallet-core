@@ -124,6 +124,8 @@ BCS::Serializer& operator<<(BCS::Serializer& stream, const Vector& t) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, const TStructTag& t) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, const TypeTag& t) noexcept;
 
+static const TypeTag gTransferTag = {TypeTag::TypeTagVariant(StructTag(gAddressOne, "aptos_coin", "AptosCoin", {}))};
+
 // TODO: find a way to not hit the aggregate one
 /*template <typename T>
     requires std::same_as<T, Bool> ||

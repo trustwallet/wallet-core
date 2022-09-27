@@ -11,8 +11,18 @@ namespace TW::Aptos::tests {
 
 TEST(AptosTransactionPayload, PayLoadBasis) {
     ModuleId module(gAddressOne, "coin");
-    TransactionPayload payload = EntryFunction(module, "transfer", {}, {});
+    Address from("0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b");
+    Address to("0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b");
+    BCS::Serializer serializer;
+    serializer << from;
+    std::vector<Data> args;
+    args.emplace_back(serializer.bytes);
+    serializer.clear();
+    serializer << to;
+    args.emplace_back(serializer.bytes);
+    TransactionPayload payload = EntryFunction(module, "transfer", {gTransferTag}, args);
     ASSERT_EQ(std::get<EntryFunction>(payload).module().name(), "coin");
+    ASSERT_EQ(std::get<EntryFunction>(payload).module().shortString(), "0x1::coin");
 }
 
 } // namespace TW::Aptos::tests
