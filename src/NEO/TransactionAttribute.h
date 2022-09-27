@@ -21,15 +21,19 @@ public:
     virtual ~TransactionAttribute() {}
 
     int64_t size() const override {
-        if (usage == TransactionAttributeUsage::TAU_ContractHash ||
-            usage == TransactionAttributeUsage::TAU_ECDH02 ||
-            usage == TransactionAttributeUsage::TAU_ECDH03 ||
-            usage == TransactionAttributeUsage::TAU_Vote ||
-            (usage >= TransactionAttributeUsage::TAU_Hash1 && usage <= TransactionAttributeUsage::TAU_Hash15)) {
+        switch (usage) {
+        case TransactionAttributeUsage::TAU_ContractHash:
+        case TransactionAttributeUsage::TAU_ECDH02:
+        case TransactionAttributeUsage::TAU_ECDH03:
+        case TransactionAttributeUsage::TAU_Vote:
             return 1 + 32;
-        } else if (usage == TransactionAttributeUsage::TAU_Script) {
+        case TransactionAttributeUsage::TAU_Script:
             return 1 + 20;
-        } else {
+        default:
+            if (usage >= TransactionAttributeUsage::TAU_Hash1 &&
+                usage <= TransactionAttributeUsage::TAU_Hash15) {
+                return 1 + 32;
+            }
             return 1 + varIntSize(_data.size()) + _data.size();
         }
     }
@@ -61,10 +65,10 @@ public:
         }
 
         default:
-        if (usage == TransactionAttributeUsage::TAU_ContractHash ||
-            usage == TransactionAttributeUsage::TAU_Vote ||
+            if (usage == TransactionAttributeUsage::TAU_ContractHash ||
+                usage == TransactionAttributeUsage::TAU_Vote ||
                 (usage >= TransactionAttributeUsage::TAU_Hash1 && usage <= TransactionAttributeUsage::TAU_Hash15)) {
-            this->_data = readBytes(data, 32, initial_pos + 1);
+                this->_data = readBytes(data, 32, initial_pos + 1);
                 break;
             }
             throw std::invalid_argument("TransactionAttribute Deserialize FormatException");
