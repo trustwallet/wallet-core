@@ -156,4 +156,10 @@ TEST(BCS, Custom) {
     ASSERT_EQ(os.bytes, parse_hex("0xDDCCBB00"));
 }
 
+TEST(BCS, Vector) {
+    Serializer os;
+    os << std::vector<uint8_t>{1};
+    ASSERT_EQ(os.bytes, parse_hex("0101"));
+}
+
 }

@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include <Aptos/MoveTypes.h>
+#include <HexCoding.h>
 #include <gtest/gtest.h>
 
 namespace TW::Aptos::tests {
@@ -28,6 +29,8 @@ TEST(AptosMoveTypes, StructTag) {
     StructTag st(gAddressOne, "abc", "abc", std::vector{{TypeTag{.tags = U8{}}}});
     ASSERT_EQ(st.moduleID().name(), "abc");
     ASSERT_EQ(st.moduleID().address(), gAddressOne);
+    // 0100000000000000000000000000000000000000000000000000000000000000010361626303616263
+    ASSERT_EQ(hex(st.serialize()), "01000000000000000000000000000000000000000000000000000000000000000103616263036162630101");
 }
 
 } // namespace TW::Aptos::tests

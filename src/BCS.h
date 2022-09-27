@@ -194,6 +194,15 @@ Serializer& operator<<(Serializer& stream, const T& t) noexcept {
     return details::serialize_struct_impl(stream, t);
 }
 
+template <typename T>
+Serializer& operator<<(Serializer& stream, const std::vector<T>& t) noexcept {
+    stream << uleb128{static_cast<uint32_t>(t.size())};
+    for (auto&& cur: t) {
+        stream << cur;
+    }
+    return stream;
+}
+
 template <typename... Ts>
 Serializer& operator<<(Serializer& stream, const std::variant<Ts...>& t) noexcept {
     stream << uleb128{static_cast<uint32_t>(t.index())};
