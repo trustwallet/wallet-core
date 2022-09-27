@@ -7,7 +7,7 @@
 #pragma once
 
 #include "../uint256.h"
-#include "../Data.h"
+#include "Data.h"
 #include "../Hash.h"
 #include "../BinaryCoding.h"
 #include "ISerializable.h"

@@ -86,7 +86,6 @@ TEST(NEOTransactionAttribute, Deserialize) {
 TEST(NEOTransactionAttribute, DeserializeInitialPositionAfterData) {
     auto transactionAttribute = TransactionAttribute();
     EXPECT_THROW(transactionAttribute.deserialize(Data(), 1), std::invalid_argument);
-    
     EXPECT_THROW(transactionAttribute.deserialize(Data({1}), 2), std::invalid_argument);
 }
 
