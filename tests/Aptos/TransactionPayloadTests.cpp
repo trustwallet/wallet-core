@@ -11,6 +11,30 @@
 namespace TW::Aptos::tests {
 
 TEST(AptosTransactionPayload, PayLoadBasis) {
+    // strict equivalent of the following rust test
+    // #[test]
+    // fn test_payload() {
+    //    let from = AccountAddress::from_str("0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b").unwrap();
+    //    let to = AccountAddress::from_str("0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b").unwrap();
+    //    let st = StructTag {
+    //        address: AccountAddress::ONE,
+    //        module: Identifier::from_utf8(("aptos_coin".as_bytes()).to_vec()).unwrap(),
+    //        name: Identifier::from_utf8(("AptosCoin".as_bytes()).to_vec()).unwrap(),
+    //        type_params: vec![],
+    //    };
+    //    let tag = TypeTag::Struct(st);
+    //    let val = TransactionPayload::EntryFunction(EntryFunction::new(
+    //        ModuleId::new(AccountAddress::ONE, Identifier::new("coin").unwrap()),
+    //        Identifier::new("transfer").unwrap(),
+    //        vec![tag],
+    //        vec![
+    //            bcs::to_bytes(&from).unwrap(),
+    //            bcs::to_bytes(&to).unwrap(),
+    //        ],
+    //    ));
+    //    let val = hex::encode(bcs::to_bytes(&val).unwrap());
+    //    assert_eq!(val, "02000000000000000000000000000000000000000000000000000000000000000104636f696e087472616e73666572010700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e000220eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b20eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b");
+    //}
     ModuleId module(gAddressOne, "coin");
     Address from("0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b");
     Address to("0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b");
