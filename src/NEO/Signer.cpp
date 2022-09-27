@@ -78,7 +78,7 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) {
         for (int i = 0; i < input.outputs_size(); i++) {
             auto* outputPlan = plan.add_outputs();
 
-            if (available.find(input.inputs(i).asset_id()) == available.end() ||
+            if (available.find(input.outputs(i).asset_id()) == available.end() ||
                 available[input.outputs(i).asset_id()] < input.outputs(i).amount()) {
                 throw Common::Proto::SigningError(Common::Proto::Error_low_balance);
             }
