@@ -29,7 +29,10 @@ private:
 
 static BCS::Serializer& operator<<(BCS::Serializer& stream, const EntryFunction& entryFunction) noexcept {
     auto serializedModule = entryFunction.module().serialize();
-    stream << entryFunction.module() << entryFunction.function() << entryFunction.tyArgs() << entryFunction.args();
+    stream << entryFunction.module();
+    stream << entryFunction.function();
+    stream << entryFunction.tyArgs();
+    stream << entryFunction.args();
     return stream;
 }
 
