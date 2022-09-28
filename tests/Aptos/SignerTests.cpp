@@ -73,7 +73,12 @@ TEST(AptosSigner, Sign) {
             "sequence_number": 1,
             "max_gas_amount": 1,
             "gas_unit_price": 1,
-            "expiration_timestamp_secs": 1
+            "expiration_timestamp_secs": 1,
+            "signature": {
+                "type": "ed25519_signature",
+                "public_key": "0x633e5c7e355bdd484706436ce1f06fdf280bd7c2229a7f9b6489684412c6967c",
+                "signature": "0x9d3bd902bd358364c43fa65ece335dd4411527e72e1c6deb9148744eaa24e39b6bd74ff6b0195114243bdd2ee3a98511ff05883d9e79161b2b8f5029d883c309"
+            }
         }
         )"_json;
     nlohmann::json parsedJson = nlohmann::json::parse(result.tx_json());
