@@ -21,7 +21,7 @@ public:
     Signer() = delete;
 
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input);
 };
 
 } // namespace TW::Aptos

@@ -6,52 +6,47 @@
 
 #include "Signer.h"
 #include "Address.h"
-#include "MoveTypes.h"
-#include "TransactionPayload.h"
 #include "Hash.h"
-#include "../PublicKey.h"
+#include "MoveTypes.h"
+#include "TransactionBuilder.h"
+#include "TransactionPayload.h"
 
 namespace TW::Aptos {
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    auto protoOutput = Proto::SigningOutput();
-    BCS::Serializer serializer;
-    if (!input.sender().empty()) {
-        serializer << Address(input.sender());
-    }
-    if (input.sequence_number() > 0) {
-        serializer << input.sequence_number();
-    }
-    switch (input.transaction_payload_case()) {
-    case Proto::SigningInput::kTransfer: {
-        auto& tf = input.transfer();
-        ModuleId module(gAddressOne, "coin");
-        BCS::Serializer aSerializer;
-        aSerializer << Address(tf.to());
-        std::vector<Data> args;
-        args.emplace_back(aSerializer.bytes);
-        aSerializer.clear();
-        aSerializer << tf.amount();
-        args.emplace_back(aSerializer.bytes);
-        TransactionPayload payload = EntryFunction(module, "transfer", {gTransferTag}, args);
-        serializer << payload;
-        break;
-    }
-    case Proto::SigningInput::TRANSACTION_PAYLOAD_NOT_SET:
-        break;
-    }
-    serializer << input.max_gas_amount() << input.gas_unit_price() << input.expiration_timestamp_secs() << std::uint8_t(input.chain_id());
-    auto msgToSign = TW::Hash::sha3_256(gAptosSalt.data(), gAptosSalt.size());
-    append(msgToSign, serializer.bytes);
-    auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    auto signature = privateKey.sign(msgToSign, TWCurveED25519);
-    protoOutput.set_raw_txn(serializer.bytes.data(), serializer.bytes.size());
-    auto pubKeyData = privateKey.getPublicKey(TWPublicKeyTypeED25519).bytes;
-    protoOutput.mutable_authenticator()->set_public_key(pubKeyData.data(), pubKeyData.size());
-    protoOutput.mutable_authenticator()->set_signature(signature.data(), signature.size());
+TransactionPayload transferPayload(const Proto::SigningInput& input) {
+    auto& tf = input.transfer();
+    ModuleId module(gAddressOne, "coin");
+    BCS::Serializer aSerializer;
+    aSerializer << Address(tf.to());
+    std::vector<Data> args;
+    args.emplace_back(aSerializer.bytes);
+    aSerializer.clear();
+    aSerializer << tf.amount();
+    args.emplace_back(aSerializer.bytes);
+    TransactionPayload payload = EntryFunction(module, "transfer", {gTransferTag}, args);
+    return payload;
+}
 
-    serializer << BCS::uleb128{.value = 0} << pubKeyData << signature;
-    protoOutput.set_signed_tx(serializer.bytes.data(), serializer.bytes.size());
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
+    auto protoOutput = Proto::SigningOutput();
+    auto payloadFunctor = [&input]() {
+        switch (input.transaction_payload_case()) {
+        case Proto::SigningInput::kTransfer: {
+            return transferPayload(input);
+        }
+        case Proto::SigningInput::TRANSACTION_PAYLOAD_NOT_SET:
+            throw std::runtime_error("Transaction payload should be set");
+        }
+    };
+    TransactionBuilder::builder()
+        .sender(Address(input.sender()))
+        .sequenceNumber(input.sequence_number())
+        .payload(payloadFunctor())
+        .maxGasAmount(input.max_gas_amount())
+        .gasUnitPrice(input.gas_unit_price())
+        .expirationTimestampSecs(input.expiration_timestamp_secs())
+        .chainId(input.chain_id())
+        .sign(input, protoOutput);
     return protoOutput;
 }
 

@@ -110,7 +110,7 @@ static std::string TypeTagToString(const TypeTag& typeTag) noexcept {
             return structData->string();
         } else if (auto* tStructData = std::get_if<TStructTag>(&value); tStructData) {
             return tStructData->st.string();
-        }else {
+        } else {
             return "";
         }
     };
@@ -131,22 +131,4 @@ BCS::Serializer& operator<<(BCS::Serializer& stream, const TStructTag& t) noexce
 BCS::Serializer& operator<<(BCS::Serializer& stream, const TypeTag& t) noexcept;
 
 static const TypeTag gTransferTag = {TypeTag::TypeTagVariant(TStructTag{.st = StructTag(gAddressOne, "aptos_coin", "AptosCoin", {})})};
-
-// TODO: find a way to not hit the aggregate one
-/*template <typename T>
-    requires std::same_as<T, Bool> ||
-             std::same_as<T, U8> ||
-             std::same_as<T, U64> ||
-             std::same_as<T, U128> ||
-             std::same_as<T, TAddress> ||
-             std::same_as<T, TSigner>
-struct is_type_tag {
-    static constexpr auto value = true;
-};
-
-template <typename T>
-concept IsTypeTag = is_type_tag<T>::value;
-
-//template <IsTypeTag T>
-*/
 } // namespace TW::Aptos

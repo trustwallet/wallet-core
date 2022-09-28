@@ -7,9 +7,9 @@
 
 #pragma once
 
+#include "BCS.h"
 #include "../Data.h"
 #include "../PublicKey.h"
-#include "BCS.h"
 
 #include <string>
 
@@ -35,6 +35,9 @@ public:
 
     /// Initializes an Aptos address with a public key.
     explicit Address(const PublicKey& publicKey);
+
+    /// Constructor that allow factory programming;
+    Address() noexcept = default;
 
     /// Returns a string representation of the address.
     [[nodiscard]] std::string string(bool withPrefix = true) const;

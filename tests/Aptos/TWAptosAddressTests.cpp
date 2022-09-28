@@ -23,10 +23,13 @@ TEST(TWAptosAddress, HDWallet) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(STRING(mnemonic).get(), STRING(passphrase).get()));
 
     auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeAptos, WRAPS(TWCoinTypeDerivationPath(TWCoinTypeAptos)).get()));
+
     auto publicKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKeyEd25519(privateKey.get()));
     auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey.get(), TWCoinTypeAptos));
     auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
 
+    // 0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30
+    // 0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30
     assertStringsEqual(addressStr, "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30");
 }
 
