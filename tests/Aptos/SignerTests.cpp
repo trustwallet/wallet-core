@@ -4,11 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Aptos/Signer.h"
 #include "Aptos/Address.h"
+#include "Aptos/Signer.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
+#include <nlohmann/json.hpp>
 
 #include <gtest/gtest.h>
 
@@ -66,6 +67,17 @@ TEST(AptosSigner, Sign) {
     ASSERT_EQ(hex(result.raw_txn()), "eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b010000000000000002000000000000000000000000000000000000000000000000000000000000000104636f696e087472616e73666572010700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e000220eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b08e80300000000000001000000000000000100000000000000010000000000000001");
     ASSERT_EQ(hex(result.authenticator().signature()), "9d3bd902bd358364c43fa65ece335dd4411527e72e1c6deb9148744eaa24e39b6bd74ff6b0195114243bdd2ee3a98511ff05883d9e79161b2b8f5029d883c309");
     ASSERT_EQ(hex(result.signed_tx()), "eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b010000000000000002000000000000000000000000000000000000000000000000000000000000000104636f696e087472616e73666572010700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e000220eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b08e803000000000000010000000000000001000000000000000100000000000000010020633e5c7e355bdd484706436ce1f06fdf280bd7c2229a7f9b6489684412c6967c409d3bd902bd358364c43fa65ece335dd4411527e72e1c6deb9148744eaa24e39b6bd74ff6b0195114243bdd2ee3a98511ff05883d9e79161b2b8f5029d883c309");
+    nlohmann::json expectedJson = R"(
+        {
+            "sender": "0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b",
+            "sequence_number": 1,
+            "max_gas_amount": 1,
+            "gas_unit_price": 1,
+            "expiration_timestamp_secs": 1
+        }
+        )"_json;
+    nlohmann::json parsedJson = nlohmann::json::parse(result.tx_json());
+    ASSERT_EQ(expectedJson, parsedJson);
 }
 
 } // namespace TW::Aptos::tests

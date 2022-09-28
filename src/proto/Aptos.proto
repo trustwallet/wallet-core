@@ -53,4 +53,7 @@ message SigningOutput {
 
   /// tx to broadcast
   bytes signed_tx = 3;
+
+  // tx json format for api broadcasting
+  string tx_json = 4;
 }

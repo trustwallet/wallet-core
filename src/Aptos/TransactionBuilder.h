@@ -7,6 +7,7 @@
 #pragma once
 
 #include "TransactionPayload.h"
+#include <nlohmann/json.hpp>
 
 namespace TW::Aptos {
 
@@ -64,6 +65,18 @@ public:
         output.mutable_authenticator()->set_signature(signature.data(), signature.size());
         serializer << BCS::uleb128{.value = 0} << pubKeyData << signature;
         output.set_signed_tx(serializer.bytes.data(), serializer.bytes.size());
+
+        // https://fullnode.devnet.aptoslabs.com/v1/spec#/operations/submit_transaction
+        // clang-format off
+        nlohmann::json json = {
+            {"sender", mSender.string()},
+            {"sequence_number", mSequenceNumber},
+            {"max_gas_amount", mMaxGasAmount},
+            {"gas_unit_price", mGasUnitPrice},
+            {"expiration_timestamp_secs", mExpirationTimestampSecs},
+        };
+        // clang-format on
+        output.set_tx_json(json.dump());
         return *this;
     }
 
