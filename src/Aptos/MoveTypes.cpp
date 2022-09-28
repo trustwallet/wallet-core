@@ -108,4 +108,39 @@ BCS::Serializer& operator<<(BCS::Serializer& stream, const TypeTag& t) noexcept 
     std::visit([&stream](auto&& arg) { stream << arg; }, t.tags);
     return stream;
 }
+
+BCS::Serializer& operator<<(BCS::Serializer& stream, const ModuleId& module) noexcept {
+    stream << module.address() << module.name();
+    return stream;
+}
+std::string TypeTagToString(const TypeTag& typeTag) noexcept {
+    auto visit_functor = [](const TypeTag::TypeTagVariant& value) -> std::string {
+      if (std::holds_alternative<Bool>(value)) {
+          return "bool";
+      } else if (std::holds_alternative<U8>(value)) {
+          return "u8";
+      } else if (std::holds_alternative<U64>(value)) {
+          return "u64";
+      } else if (std::holds_alternative<U128>(value)) {
+          return "u128";
+      } else if (std::holds_alternative<TAddress>(value)) {
+          return "address";
+      } else if (std::holds_alternative<TSigner>(value)) {
+          return "signer";
+      } else if (auto* vectorData = std::get_if<Vector>(&value); vectorData != nullptr && !vectorData->tags.empty()) {
+          std::stringstream ss;
+          ss << "vector<" << TypeTagToString(*vectorData->tags.begin()) << ">";
+          return ss.str();
+      } else if (auto* structData = std::get_if<StructTag>(&value); structData) {
+          return structData->string();
+      } else if (auto* tStructData = std::get_if<TStructTag>(&value); tStructData) {
+          return tStructData->st.string();
+      } else {
+          return "";
+      }
+    };
+
+    return std::visit(visit_functor, typeTag.tags);
+}
+
 } // namespace TW::Aptos

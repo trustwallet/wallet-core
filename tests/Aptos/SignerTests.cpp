@@ -75,7 +75,8 @@ TEST(AptosSigner, Sign) {
             "payload": {
                 "type":"entry_function_payload",
                 "function": "0x1::coin::transfer",
-                "type_arguments":["0x1::aptos_coin::AptosCoin"]
+                "type_arguments":["0x1::aptos_coin::AptosCoin"],
+                "arguments": ["0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b", "1000"]
             },
             "signature": {
                 "type": "ed25519_signature",

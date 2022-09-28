@@ -23,7 +23,8 @@ TransactionPayload transferPayload(const Proto::SigningInput& input) {
     aSerializer.clear();
     aSerializer << tf.amount();
     args.emplace_back(aSerializer.bytes);
-    TransactionPayload payload = EntryFunction(module, "transfer", {gTransferTag}, args);
+    nlohmann::json argsJson = nlohmann::json::array({tf.to(), std::to_string(tf.amount())});
+    TransactionPayload payload = EntryFunction(module, "transfer", {gTransferTag}, args, argsJson);
     return payload;
 }
 
