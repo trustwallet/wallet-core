@@ -50,4 +50,7 @@ message SigningOutput {
 
   /// Public key and signature to authenticate
   TransactionAuthenticator authenticator = 2;
+
+  /// tx to broadcast
+  bytes signed_tx = 3;
 }

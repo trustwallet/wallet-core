@@ -49,6 +49,9 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto pubKeyData = privateKey.getPublicKey(TWPublicKeyTypeED25519).bytes;
     protoOutput.mutable_authenticator()->set_public_key(pubKeyData.data(), pubKeyData.size());
     protoOutput.mutable_authenticator()->set_signature(signature.data(), signature.size());
+
+    serializer << BCS::uleb128{.value = 0} << pubKeyData << signature;
+    protoOutput.set_signed_tx(serializer.bytes.data(), serializer.bytes.size());
     return protoOutput;
 }
 
