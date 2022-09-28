@@ -45,7 +45,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
         .maxGasAmount(input.max_gas_amount())
         .gasUnitPrice(input.gas_unit_price())
         .expirationTimestampSecs(input.expiration_timestamp_secs())
-        .chainId(input.chain_id())
+        .chainId(static_cast<uint8_t>(input.chain_id()))
         .sign(input, protoOutput);
     return protoOutput;
 }
