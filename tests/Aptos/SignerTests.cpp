@@ -90,7 +90,7 @@ TEST(AptosSigner, DummyTxSign) {
 }
 
 TEST(AptosSigner, TxSign) {
-    // Successfully broadcasted https://explorer.aptoslabs.com/txn/0xbb3b3c33781c27e486afa2db854fb0a5c846d0967672feb2c6c3297a2b14e1ce
+    // Successfully broadcasted https://explorer.aptoslabs.com/txn/0xbb3b3c33781c27e486afa2db854fb0a5c846d0967672feb2c6c3297a2b14e1ce?network=Devnet
     Proto::SigningInput input;
     input.set_sender("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30");
     input.set_sequence_number(15);
