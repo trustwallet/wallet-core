@@ -71,10 +71,10 @@ public:
         // clang-format off
         nlohmann::json json = {
             {"sender", mSender.string()},
-            {"sequence_number", mSequenceNumber},
-            {"max_gas_amount", mMaxGasAmount},
-            {"gas_unit_price", mGasUnitPrice},
-            {"expiration_timestamp_secs", mExpirationTimestampSecs},
+            {"sequence_number", std::to_string(mSequenceNumber)},
+            {"max_gas_amount", std::to_string(mMaxGasAmount)},
+            {"gas_unit_price", std::to_string(mGasUnitPrice)},
+            {"expiration_timestamp_secs", std::to_string(mExpirationTimestampSecs)},
             {"payload", payloadToJson(mPayload)},
             {"signature", {
                 {"type", "ed25519_signature"},
