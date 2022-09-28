@@ -74,7 +74,7 @@ message Accounts {
     // Sender address
     string      sender = 2;
 
-    // Sender usernamn
+    // Sender username
     string      sender_username = 3;
 
     // Receiver address

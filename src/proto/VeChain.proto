@@ -3,6 +3,7 @@ syntax = "proto3";
 package TW.VeChain.Proto;
 option java_package = "wallet.core.jni.proto";
 
+// A clause, between a sender and destination
 message Clause {
     /// Recipient address.
     string to = 1;

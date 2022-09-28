@@ -3,12 +3,15 @@ syntax = "proto3";
 package TW.Zilliqa.Proto;
 option java_package = "wallet.core.jni.proto";
 
+// Generic transaction
 message Transaction {
+    // Transfer transaction
     message Transfer {
         // Amount to send (256-bit number)
         bytes amount           = 1;
     }
 
+    // Generic contract call
     message Raw {
         // Amount to send (256-bit number)
         bytes amount           = 1;

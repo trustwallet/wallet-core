@@ -35,6 +35,7 @@ message SigningInput {
 
 // Result containing the signed and encoded transaction.
 message SigningOutput {
+    // Encoded transaction
     bytes encoded = 1;
 
     // Optional error
