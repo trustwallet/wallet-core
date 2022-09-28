@@ -75,6 +75,7 @@ public:
             {"max_gas_amount", mMaxGasAmount},
             {"gas_unit_price", mGasUnitPrice},
             {"expiration_timestamp_secs", mExpirationTimestampSecs},
+            {"payload", payloadToJson(mPayload)},
             {"signature", {
                 {"type", "ed25519_signature"},
                 {"public_key", hexEncoded(pubKeyData)},
