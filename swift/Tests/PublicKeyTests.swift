@@ -16,7 +16,7 @@ class PublicKeyTests: XCTestCase {
         XCTAssertEqual(publicKey.compressed.data.hexString, "0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1")
     }
 
-    func testVerify() {
+    func testSignAndVerify() {
 
         let message = Hash.sha256(data: "hello".data(using: .utf8)!)
         let sig1 = privateKey.sign(digest: message, curve: .ed25519)!
@@ -27,6 +27,7 @@ class PublicKeyTests: XCTestCase {
         let result2 = privateKey.getPublicKeyEd25519Blake2b()
             .verify(signature: sig2, message: message)
 
+        // Bitcoin sign and verify (Secp256k1) 
         let sig3 = privateKey.sign(digest: message, curve: .secp256k1)!
         let result3 = privateKey.getPublicKeySecp256k1(compressed: true)
                             .verify(signature: sig3, message: message)
@@ -34,5 +35,17 @@ class PublicKeyTests: XCTestCase {
         XCTAssertTrue(result1)
         XCTAssertTrue(result2)
         XCTAssertTrue(result3)
+    }
+
+    func testRecover() {
+        // Bitcoin sign and recover (Secp256k1) 
+        let message = Hash.sha256(data: "hello".data(using: .utf8)!)
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
+        let signature = privateKey.sign(digest: message, curve: .secp256k1)!
+
+        XCTAssertTrue(publicKey.verify(signature: signature, message: message))
+
+        let recoveredPublicKey = PublicKey.recover(signature: signature, message: message)!
+        XCTAssertEqual(recoveredPublicKey.compressed.data.hexString, "0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1")
     }
 }
