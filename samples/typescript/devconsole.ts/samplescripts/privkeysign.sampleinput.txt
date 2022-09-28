@@ -1,12 +1,22 @@
 // Create a private key, sign a message, derive public key from private key, verify signature
+// Using Secp256k1 (used by e.g. Bitcoin)
 
-privKeyData = '0xafeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5'
-messageDigest = '0001020304050607080910111213141519171819202122232425262728293031'
+privKeyData = 'afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5'
+messageDigest = HexCoding.decode('0001020304050607080910111213141519171819202122232425262728293031')
 
 privkey = PrivateKey.createWithData(HexCoding.decode(privKeyData)); HexCoding.encode(privkey.data())
 
-sig1 = privkey.sign(HexCoding.decode(messageDigest), Curve.secp256k1); HexCoding.encode(sig1)
+// Sign the message
+sig1 = privkey.sign(messageDigest, Curve.secp256k1); HexCoding.encode(sig1)
 
 pubkey = privkey.getPublicKeySecp256k1(true); HexCoding.encode(pubkey.data())
 
-verifyRes = pubkey.verify(sig1, HexCoding.decode(messageDigest))
+// Verify the obtained signature
+verifyRes = pubkey.verify(sig1, messageDigest)
+
+// Additionally, recover the pubkey from the signature
+pubKeyRecovered = PublicKey.recover(sig1, messageDigest).compressed()
+HexCoding.encode(pubkey.data())
+
+HexCoding.encode(pubKeyRecovered.data()) === '0x0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1'
+HexCoding.encode(pubKeyRecovered.data()) === HexCoding.encode(pubkey.data())
