@@ -12,9 +12,8 @@
 
 namespace TW::Aptos {
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto protoOutput = Proto::SigningOutput();
-    Data encoded;
     BCS::Serializer serializer;
     if (!input.sender().empty()) {
         serializer << Address(input.sender());
@@ -41,9 +40,12 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
         break;
     }
     serializer << input.max_gas_amount() << input.gas_unit_price() << input.expiration_timestamp_secs() << std::uint8_t(input.chain_id());
-    // TODO: do the signing part?
-    encoded = serializer.bytes;
-    protoOutput.set_encoded(encoded.data(), encoded.size());
+    auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto signature = privateKey.sign(serializer.bytes, TWCurveED25519);
+    protoOutput.set_raw_txn(serializer.bytes.data(), serializer.bytes.size());
+    auto pubKeyData = privateKey.getPublicKey(TWPublicKeyTypeED25519).bytes;
+    protoOutput.mutable_authenticator()->set_public_key(pubKeyData.data(), pubKeyData.size());
+    protoOutput.mutable_authenticator()->set_signature(signature.data(), signature.size());
     return protoOutput;
 }
 

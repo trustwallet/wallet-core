@@ -423,4 +423,14 @@ TEST(HDWallet, getKey) {
     }
 }
 
+TEST(HDWallet, AptosKey) {
+    const auto derivPath = "m/44'/637'/0'/0'/0'";
+    HDWallet wallet = HDWallet(mnemonic1, "");
+    {
+        const auto privateKey = wallet.getKey(TWCoinTypeAptos, DerivationPath(derivPath));
+        EXPECT_EQ(hex(privateKey.bytes), "7f2634c0e2414a621e96e39c41d09021700cee12ee43328ed094c5580cd0bd6f");
+    }
+}
+
+
 } // namespace

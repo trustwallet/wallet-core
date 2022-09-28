@@ -35,10 +35,19 @@ message SigningInput {
   uint64 gas_unit_price = 5;
   uint64 expiration_timestamp_secs = 6;
   uint32 chain_id = 7;
+  bytes private_key = 8;
+}
+
+message TransactionAuthenticator {
+  bytes signature = 1;
+  bytes public_key = 2;
 }
 
 // Transaction signing output.
 message SigningOutput {
-  // Signed and encoded transaction bytes.
-  bytes encoded = 1;
+  /// The raw transaction
+  bytes raw_txn = 1;
+
+  /// Public key and signature to authenticate
+  TransactionAuthenticator authenticator = 2;
 }
