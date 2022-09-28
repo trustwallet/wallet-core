@@ -12,6 +12,8 @@
 
 namespace TW::Aptos {
 
+inline const Data gAptosSalt = data("APTOS::RawTransaction");
+
 /// Helper class that performs Aptos transaction signing.
 class Signer {
 public:

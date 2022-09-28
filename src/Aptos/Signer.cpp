@@ -8,6 +8,7 @@
 #include "Address.h"
 #include "MoveTypes.h"
 #include "TransactionPayload.h"
+#include "Hash.h"
 #include "../PublicKey.h"
 
 namespace TW::Aptos {
@@ -40,8 +41,10 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         break;
     }
     serializer << input.max_gas_amount() << input.gas_unit_price() << input.expiration_timestamp_secs() << std::uint8_t(input.chain_id());
+    auto msgToSign = TW::Hash::sha3_256(gAptosSalt.data(), gAptosSalt.size());
+    append(msgToSign, serializer.bytes);
     auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    auto signature = privateKey.sign(serializer.bytes, TWCurveED25519);
+    auto signature = privateKey.sign(msgToSign, TWCurveED25519);
     protoOutput.set_raw_txn(serializer.bytes.data(), serializer.bytes.size());
     auto pubKeyData = privateKey.getPublicKey(TWPublicKeyTypeED25519).bytes;
     protoOutput.mutable_authenticator()->set_public_key(pubKeyData.data(), pubKeyData.size());

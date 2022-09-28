@@ -39,6 +39,10 @@ TEST(AptosSigner, Sign) {
     //    let tx = RawTransaction::new(AccountAddress::from_str("0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b").unwrap(), 1, val,1,1,1, ChainId::new(1));
     //    let val = hex::encode(bcs::to_bytes(&tx).unwrap());
     //    assert_eq!(val, "eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b010000000000000002000000000000000000000000000000000000000000000000000000000000000104636f696e087472616e73666572010700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e000220eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b08e80300000000000001000000000000000100000000000000010000000000000001");
+    //    let key = Ed25519PrivateKey::try_from(&*hex::decode("7f2634c0e2414a621e96e39c41d09021700cee12ee43328ed094c5580cd0bd6f").unwrap()).unwrap();
+    //    let signed = tx.sign(&key, pubKey.clone()).unwrap();
+    //    let signature = hex::encode(signed.into_inner().authenticator().sender().signature_bytes());
+    //    assert_eq!(signature, "9d3bd902bd358364c43fa65ece335dd4411527e72e1c6deb9148744eaa24e39b6bd74ff6b0195114243bdd2ee3a98511ff05883d9e79161b2b8f5029d883c309");
     //}
     Proto::SigningInput input;
     input.set_sender("0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b");
@@ -54,8 +58,7 @@ TEST(AptosSigner, Sign) {
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     auto result = Signer::sign(input);
     ASSERT_EQ(hex(result.raw_txn()), "eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b010000000000000002000000000000000000000000000000000000000000000000000000000000000104636f696e087472616e73666572010700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e000220eeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b08e80300000000000001000000000000000100000000000000010000000000000001");
-    // signature should be 9d3bd902bd358364c43fa65ece335dd4411527e72e1c6deb9148744eaa24e39b6bd74ff6b0195114243bdd2ee3a98511ff05883d9e79161b2b8f5029d883c309
-    ASSERT_EQ(hex(result.authenticator().signature()), "b92844af7e100e36dccd739c299650747e0d86963d385bd3f543d271e56ffe228afeb2365640c1b9cdff54173ee133fa7bb79f7fe48f8164f89f5add4d2b3b00");
+    ASSERT_EQ(hex(result.authenticator().signature()), "9d3bd902bd358364c43fa65ece335dd4411527e72e1c6deb9148744eaa24e39b6bd74ff6b0195114243bdd2ee3a98511ff05883d9e79161b2b8f5029d883c309");
 }
 
 } // namespace TW::Aptos::tests
