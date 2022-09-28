@@ -3,62 +3,106 @@ syntax = "proto3";
 package TW.IoTeX.Proto;
 option java_package = "wallet.core.jni.proto";
 
+// A transfer
 message Transfer {
+    // Amount (as string)
     string amount  = 1;
+
+    // Destination address
     string recipient = 2;
+
+    // Payload data
     bytes payload  = 3;
 }
 
+// A Staking message
 message Staking {
     // create stake
     message Create {
+        // validator name
         string candidateName = 1;
+
+        // amount to be staked
         string stakedAmount = 2;
+
+        // duration
         uint32 stakedDuration = 3;
+
+        // auto-restake
         bool autoStake = 4;
+
+        // payload data
         bytes payload = 5;
     }
 
     // unstake or withdraw
     message Reclaim {
+        // index to claim
         uint64 bucketIndex = 1;
+
+        // payload data
         bytes payload = 2;
     }
 
     // add the amount of bucket
     message AddDeposit {
+        // index
         uint64 bucketIndex = 1;
+
+        // amount to add
         string amount = 2;
+
+        // payload data
         bytes payload = 3;
     }
 
     // restake the duration and autoStake flag of bucket
     message Restake {
+        // index
         uint64 bucketIndex = 1;
+
+        // stake duration
         uint32 stakedDuration = 2;
+
+        // auto re-stake
         bool autoStake = 3;
+
+        // payload data
         bytes payload = 4;
     }
 
     // move the bucket to vote for another candidate or transfer the ownership of bucket to another voters
     message ChangeCandidate {
+        // index
         uint64 bucketIndex = 1;
+
+        // validator name
         string candidateName = 2;
+
+        // payload data
         bytes payload = 3;
     }
 
+    // transfer ownserhip of stake
     message TransferOwnership {
+        // index
         uint64 bucketIndex = 1;
+
+        // address of voter
         string voterAddress = 2;
+
+        // payload data
         bytes payload = 3;
     }
 
+    // Candidate (validator) info
     message CandidateBasicInfo {
         string name = 1;
         string operatorAddress = 2;
         string rewardAddress = 3;
     }
 
+    // Register a Candidate
     message CandidateRegister {
         CandidateBasicInfo candidate = 1;
         string stakedAmount = 2;
@@ -67,6 +111,8 @@ message Staking {
         string ownerAddress = 5; // if ownerAddress is absent, owner of candidate is the sender
         bytes payload = 6;
     }
+
+    // the payload message
     oneof message {
         Create stakeCreate = 1;
         Reclaim stakeUnstake = 2;
@@ -80,9 +126,15 @@ message Staking {
     }
 }
 
+// Arbitrary contract call
 message ContractCall {
+    // amount
     string amount  = 1;
+
+    // contract address
     string contract = 2;
+
+    // payload data
     bytes data = 3;
 }
 
@@ -129,12 +181,22 @@ message SigningOutput {
     bytes hash = 2;
 }
 
+// An Action structure
+// Used internally
 message ActionCore {
+    // version number
     uint32 version = 1;
+
     // Nonce (should be larger than in the last transaction of the account)
     uint64 nonce = 2;
+
+    // Gas limit
     uint64 gasLimit = 3;
+
+    // Gas price
     string gasPrice = 4;
+
+    // action payload
     oneof action {
         Transfer transfer = 10;
         ContractCall execution = 12;
@@ -151,8 +213,15 @@ message ActionCore {
     }
 }
 
+// Signed Action
+// Used internally
 message Action {
+    // Action details
     ActionCore core = 1;
+
+    // public key
     bytes senderPubKey = 2;
+
+    // the signature
     bytes signature = 3;
 }

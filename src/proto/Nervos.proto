@@ -22,7 +22,7 @@ message TransactionPlan {
     // A list of 1 or more selected cells for this transaction
     repeated Cell selected_cells = 3;
 
-    // A list of 1 or more outputs by this transaciton
+    // A list of 1 or more outputs by this transaction
     repeated CellOutput outputs = 4;
 
     // A list of outputs data.
@@ -74,6 +74,7 @@ message Script {
     bytes args = 3;
 }
 
+// Transfer of native asset
 message NativeTransfer {
     // Recipient's address.
     string to_address = 1;
@@ -88,6 +89,7 @@ message NativeTransfer {
     bool use_max_amount = 4;
 }
 
+// Token transfer (SUDT)
 message SudtTransfer {
     // Recipient's address.
     string to_address = 1;
@@ -105,6 +107,7 @@ message SudtTransfer {
     bool use_max_amount = 5;
 }
 
+// Deposit
 message DaoDeposit {
     // Recipient's address.
     string to_address = 1;

@@ -13,8 +13,13 @@ enum KeyType {
 
 // Values for an Asset object.
 message Asset {
+    // Total amount
     int64 amount = 1;
+
+    // Number of decimals defined
     uint32 decimals = 2;
+
+    // Asset symbol
     string symbol = 3;
 }
 

@@ -29,5 +29,6 @@ message SigningInput {
 
 // Result containing the signed and encoded transaction.
 message SigningOutput {
+    // Resulting transaction, in JSON.
     string json = 1;
 }

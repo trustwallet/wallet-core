@@ -33,8 +33,10 @@ message SigningInput {
 message SigningOutput {
     // Signature
     bytes signature = 1;
+
     // Block hash
     bytes block_hash = 2;
+
     // Json representation of the block
     string json = 3;
 }

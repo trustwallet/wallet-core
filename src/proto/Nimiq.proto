@@ -23,5 +23,6 @@ message SigningInput {
 
 // Result containing the signed and encoded transaction.
 message SigningOutput {
+    // The encoded transaction
     bytes encoded = 1;
 }
