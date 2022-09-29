@@ -35,7 +35,7 @@ message TransactionCoinTo {
     // ID of the asset
     uint32 assets_id = 3;
 
-    // transaction amount (256-bit number)
+    // transaction amount (uint256, serialized little endian)
     bytes id_amount = 4;
 
     // lock time
@@ -95,7 +95,7 @@ message SigningInput {
     // Destination address
     string to = 3;
 
-    // Transfer amount
+    // Transfer amount (uint256, serialized little endian)
     bytes  amount = 4;
 
     // Chain ID

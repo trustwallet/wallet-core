@@ -14,16 +14,16 @@ message SigningInput {
     // Transaction nonce.
     uint64 nonce = 3;
 
-    // Transfer value.
+    // Transfer value (uint256, serialized little endian)
     bytes value = 4;
 
     // Gas limit.
     int64 gas_limit = 5;
 
-    // Gas fee cap.
+    // Gas fee cap (uint256, serialized little endian)
     bytes gas_fee_cap = 6;
 
-    // Gas premium.
+    // Gas premium (uint256, serialized little endian)
     bytes gas_premium = 7;
 }
 

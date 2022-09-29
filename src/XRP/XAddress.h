@@ -20,7 +20,7 @@ class XAddress {
     /// Number of bytes in a X-address.
     static const size_t size = 31;
 
-    /// Publick key hash length.
+    /// Public key hash length.
     static const size_t keyHashSize = 20;
 
     /// Address data consisting of public key hash

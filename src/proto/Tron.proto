@@ -41,7 +41,7 @@ message TransferTRC20Contract {
     // Recipient address.
     string to_address = 3;
 
-    // Amount to send, uint256, big-endian.
+    // Amount to send, (uint256, serialized big endian)
     bytes amount = 4;
 }
 

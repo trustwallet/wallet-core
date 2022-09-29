@@ -8,7 +8,7 @@ message Clause {
     /// Recipient address.
     string to = 1;
 
-    /// Transaction amount.
+    /// Transaction amount (uint256, serialized little endian)
     bytes value = 2;
 
     /// Payload data.

@@ -5,7 +5,7 @@ option java_package = "wallet.core.jni.proto";
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
-    // Chain identifier (256-bit number)
+    // Chain identifier (uint256, serialized little endian)
     bytes chain_id = 1;
 
     // The secret private key used for signing (32 bytes).
@@ -31,28 +31,28 @@ message SigningOutput {
 
 // A Transfer message
 message TransactionMessage {
-    // Nonce (256-bit number)
+    // Nonce (uint256, serialized little endian)
     bytes nonce = 1;
 
-    // Gas price (256-bit number)
+    // Gas price (uint256, serialized little endian)
     bytes gas_price = 2;
 
-    // Gas limit (256-bit number)
+    // Gas limit (uint256, serialized little endian)
     bytes gas_limit = 3;
 
     // Recipient's address.
     string to_address = 4;
 
-    // Amount to send in wei (256-bit number)
+    // Amount to send in wei (uint256, serialized little endian)
     bytes amount = 5;
 
     // Optional payload
     bytes payload = 6;
 
-    // From shard ID (256-bit number)
+    // From shard ID (uint256, serialized little endian)
     bytes from_shard_id = 7;
 
-    // To Shard ID (256-bit number)
+    // To Shard ID (uint256, serialized little endian)
     bytes to_shard_id = 8;
 }
 
@@ -67,13 +67,13 @@ message StakingMessage {
         DirectiveCollectRewards collect_rewards = 5;
     }
 
-    // Nonce (256-bit number)
+    // Nonce (uint256, serialized little endian)
     bytes nonce = 6;
 
-    // Gas price (256-bit number)
+    // Gas price (uint256, serialized little endian)
     bytes gas_price = 7;
 
-    // Gas limit (256-bit number)
+    // Gas limit (uint256, serialized little endian)
     bytes gas_limit = 8;   
 }
 
@@ -148,7 +148,7 @@ message DirectiveDelegate {
     // Validator address
     string validator_address = 2;
     
-    // Delegate amount
+    // Delegate amount (uint256, serialized little endian)
     bytes amount = 3;
 }
 
@@ -160,7 +160,7 @@ message DirectiveUndelegate {
     // Validator address
     string validator_address = 2;
 
-    // Undelegate amount
+    // Undelegate amount (uint256, serialized little endian)
     bytes amount = 3;
 }
 

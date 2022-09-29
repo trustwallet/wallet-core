@@ -5,19 +5,19 @@ option java_package = "wallet.core.jni.proto";
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
-    // Nonce (256-bit number)
+    // Nonce (uint256, serialized little endian)
     bytes nonce = 1;
 
-    // Gas price (256-bit number)
+    // Gas price (uint256, serialized little endian)
     bytes gas_price = 2;
 
-    // Gas limit (256-bit number)
+    // Gas limit (uint256, serialized little endian)
     bytes gas_limit = 3;
 
     // Recipient's address.
     string to_address = 4;
 
-    // Amount to send in wei (256-bit number)
+    // Amount to send in wei (uint256, serialized little endian)
     bytes amount = 5;
 
     // Optional payload

@@ -32,7 +32,7 @@ message Balance {
         // destination address
         string to_address = 1;
 
-        // amount, big integer
+        // amount (uint256, serialized little endian)
         bytes value = 2;
     }
     oneof message_oneof {
@@ -47,7 +47,7 @@ message Staking {
         // controller ID
         string controller = 1;
 
-        // amount
+        // amount (uint256, serialized little endian)
         bytes value = 2;
 
         // destination for rewards
@@ -59,7 +59,7 @@ message Staking {
         // controller ID
         string controller = 1;
 
-        // amount
+        // amount (uint256, serialized little endian)
         bytes value = 2;
 
         // destination for rewards
@@ -71,13 +71,13 @@ message Staking {
 
     // Bond extra amount
     message BondExtra {
-        // amount
+        // amount (uint256, serialized little endian)
         bytes value = 1;
     }
 
     // Unbond
     message Unbond {
-        // amount
+        // amount (uint256, serialized little endian)
         bytes value = 1;
     }
 
@@ -94,7 +94,7 @@ message Staking {
 
     // Chill and unbound
     message ChillAndUnbond {
-        // amount
+        // amount (uint256, serialized little endian)
         bytes value = 1;
     }
 

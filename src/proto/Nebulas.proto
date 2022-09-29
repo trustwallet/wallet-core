@@ -8,25 +8,25 @@ message SigningInput {
     // sender's address.
     string from_address = 1;
 
-    // Chain identifier (256-bit number)
+    // Chain identifier (uint256, serialized little endian)
     bytes chain_id = 2;
 
-    // Nonce (256-bit number)
+    // Nonce (uint256, serialized little endian)
     bytes nonce = 3;
 
-    // Gas price (256-bit number)
+    // Gas price (uint256, serialized little endian)
     bytes gas_price = 4;
 
-    // Gas limit (256-bit number)
+    // Gas limit (uint256, serialized little endian)
     bytes gas_limit = 5;
 
     // Recipient's address.
     string to_address = 6;
 
-    // Amount to send in wei, 1 NAS = 10^18 Wei (256-bit number)
+    // Amount to send in wei, 1 NAS = 10^18 Wei (uint256, serialized little endian)
     bytes amount = 7;
 
-    // Timestamp to create transaction (256-bit number)
+    // Timestamp to create transaction (uint256, serialized little endian)
     bytes timestamp = 8;
 
     // Optional payload
@@ -65,7 +65,7 @@ message RawTransaction {
     // destination address
     bytes to = 3;
 
-    // amount
+    // amount (uint256, serialized little endian)
     bytes value = 4;
 
     // Nonce (should be larger than in the last transaction of the account)
