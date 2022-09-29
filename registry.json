@@ -2047,7 +2047,7 @@
     ],
     "curve": "secp256k1",
     "publicKeyType": "secp256k1Extended",
-    "chainId": "10",
+    "chainId": "280",
     "addressHasher": "keccak256",
     "explorer": {
       "url": "https://zksync2-testnet.zkscan.io",
