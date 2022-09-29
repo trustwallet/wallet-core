@@ -9,40 +9,54 @@ syntax = "proto3";
 package TW.Aptos.Proto;
 option java_package = "wallet.core.jni.proto";
 
+// Necessary fields to process a TransferMessage
 message TransferMessage {
+  // Destination Account address (string)
   string to = 1;
+  // Amount to be transferred (uint64)
   uint64 amount = 2;
 }
 
+// Input data necessary to create a signed transaction.
 message SigningInput {
+  // Sender Account address (string)
   string sender = 1;
+  // Sequence number, incremented atomically for each tx present on the account, start at 0 (int64)
   int64 sequence_number = 2;
   oneof transaction_payload {
     TransferMessage transfer = 3;
   }
+  // Max gas amount that the user is willing to pay (uint64)
   uint64 max_gas_amount = 4;
+  // Gas unit price - queried through API (uint64)
   uint64 gas_unit_price = 5;
+  // Expiration timestamp for the transaction, can't be in the past (uint64)
   uint64 expiration_timestamp_secs = 6;
+  //  Chain id 1 (mainnet) 32(devnet) (uint32 - casted in uint8_t later)
   uint32 chain_id = 7;
+  //  Private key to sign the transaction (bytes)
   bytes private_key = 8;
 }
 
+// Information related to the signed transaction
 message TransactionAuthenticator {
+  // Signature part of the signed transaction (bytes)
   bytes signature = 1;
+  // Public key of the signer (bytes)
   bytes public_key = 2;
 }
 
 // Transaction signing output.
 message SigningOutput {
-  /// The raw transaction
+  /// The raw transaction (bytes)
   bytes raw_txn = 1;
 
   /// Public key and signature to authenticate
   TransactionAuthenticator authenticator = 2;
 
-  /// tx to broadcast
+  /// Signed and encoded transaction bytes.
   bytes encoded = 3;
 
-  // tx json format for api broadcasting
+  // Transaction json format for api broadcasting (string)
   string json = 4;
 }
