@@ -34,7 +34,7 @@ message TransactionInput {
 
 // Bitcoin transaction out-point reference.
 message OutPoint {
-    // The hash of the referenced transaction (reverse byte order).
+    // The hash of the referenced transaction (network byte order, usually needs to be reversed).
     bytes hash = 1;
 
     // The index of the specific output in the transaction.

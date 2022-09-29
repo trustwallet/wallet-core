@@ -67,7 +67,7 @@ message SigningOutput {
     // signature data
     bytes signature = 1;
 
-    // transaction in Json format
+    // transaction in JSON format
     string json = 2;
 }
 

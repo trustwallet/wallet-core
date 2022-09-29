@@ -37,6 +37,6 @@ message SigningOutput {
     // Block hash
     bytes block_hash = 2;
 
-    // Json representation of the block
+    // JSON representation of the block
     string json = 3;
 }

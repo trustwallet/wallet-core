@@ -30,7 +30,7 @@ message Height {
     uint64 revision_height = 2;
 }
 
-// Sync/asyn mode for transaction broadcast
+// Transaction broadcast mode
 enum BroadcastMode {
     BLOCK = 0; // Wait for the tx to pass/fail CheckTx, DeliverTx, and be committed in a block
     SYNC = 1;  // Wait for the tx to pass/fail CheckTx
@@ -292,7 +292,7 @@ message Message {
     }
 }
 
-// Options for transaction encoding: Json (older) or Protobuf.
+// Options for transaction encoding: JSON (Amino, older) or Protobuf.
 enum SigningMode {
     JSON = 0;        // JSON format, Pre-Stargate
     Protobuf = 1;    // Protobuf-serialized (binary), Stargate
@@ -300,7 +300,7 @@ enum SigningMode {
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
-    // Specify if protobuf (a.k.a. Stargate) or earlier Json serialization is used
+    // Specify if protobuf (a.k.a. Stargate) or earlier JSON serialization is used
     SigningMode signing_mode = 1;
 
     // Source account number
