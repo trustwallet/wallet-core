@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:jammy-20220815
 
 # Install some basics
 RUN apt-get update \
