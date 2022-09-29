@@ -13,7 +13,7 @@ Aptos::ModuleId::ModuleId(Address accountAddress, Identifier name) noexcept
     : mAccountAddress(accountAddress), mName(std::move(name)) {
 }
 
-Data ModuleId::serialize() const noexcept {
+Data ModuleId::accessVector() const noexcept {
     BCS::Serializer serializer;
     serializer << static_cast<std::byte>(gCodeTag) << mAccountAddress << mName;
     return serializer.bytes;
@@ -51,7 +51,7 @@ std::string StructTag::string() const noexcept {
         ss << "<";
         ss << TypeTagToString(*mTypeParams.begin());
         std::for_each(begin(mTypeParams) + 1, end(mTypeParams), [&ss](auto&& cur) {
-            ss << TypeTagToString(cur);
+            ss << ", " << TypeTagToString(cur);
         });
         ss << ">";
     }

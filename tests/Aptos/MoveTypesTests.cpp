@@ -20,7 +20,7 @@ TEST(AptosMoveTypes, ModuleId) {
     //     let a = ModuleId::new("0x1".parse().unwrap(), "coin".parse().unwrap());
     //     assert_eq!(hex::encode(a.access_vector()).as_str(), "00000000000000000000000000000000000000000000000000000000000000000104636f696e");
     // }
-    ASSERT_EQ(hex(module.serialize()), "00000000000000000000000000000000000000000000000000000000000000000104636f696e");
+    ASSERT_EQ(hex(module.accessVector()), "00000000000000000000000000000000000000000000000000000000000000000104636f696e");
     ASSERT_EQ(module.string(), "0x0000000000000000000000000000000000000000000000000000000000000001::coin");
     ASSERT_EQ(module.shortString(), "0x1::coin");
 }

@@ -14,7 +14,6 @@ EntryFunction::EntryFunction(ModuleId module, Identifier function, std::vector<T
 }
 
 BCS::Serializer& operator<<(BCS::Serializer& stream, const EntryFunction& entryFunction) noexcept {
-    auto serializedModule = entryFunction.module().serialize();
     stream << entryFunction.module() << entryFunction.function() << entryFunction.tyArgs() << entryFunction.args();
     return stream;
 }

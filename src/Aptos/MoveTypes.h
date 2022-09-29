@@ -24,7 +24,7 @@ public:
     ///< Getters
     [[nodiscard]] const std::string& name() const noexcept { return mName; }
     [[nodiscard]] const Address& address() const noexcept { return mAccountAddress; }
-    [[nodiscard]] Data serialize() const noexcept;
+    [[nodiscard]] Data accessVector() const noexcept;
     [[nodiscard]] std::string string() const noexcept;
     [[nodiscard]] std::string shortString() const noexcept;
 
