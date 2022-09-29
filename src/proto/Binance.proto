@@ -79,20 +79,37 @@ message CancelTradeOrder {
 
 // Message for Send order
 message SendOrder {
-    // A symbol-amount pair.  Could be moved out of SendOrder; kept here for backward compatibility.
+    // A token amount, symbol-amount pair.  Could be moved out of SendOrder; kept here for backward compatibility.
     message Token {
+        // Token ID
         string denom = 1;
+
+        // Amount
         int64 amount = 2;
     }
+
+    // Transaction input
     message Input {
+        // source address
         bytes address = 1;
+
+        // input coin amounts
         repeated Token coins = 2;
     }
+
+    // Transaction output
     message Output {
+        // destination address
         bytes address = 1;
+
+        // output coin amounts
         repeated Token coins = 2;
     }
+
+    // Send inputs
     repeated Input inputs = 1;
+
+    // Send outputs
     repeated Output outputs = 2;
 }
 
@@ -169,22 +186,29 @@ message HTLTOrder {
 
     // recipient address
     bytes to = 2;
+
+    // source on other chain, optional
     string recipient_other_chain = 3;
 
+    // recipient on other chain, optional
     string sender_other_chain = 4;
 
     // hash of a random number and timestamp, based on SHA256
     bytes random_number_hash = 5;
 
+    // timestamp
     int64 timestamp = 6;
 
+    // amounts
     repeated SendOrder.Token amount = 7;
 
     // expected gained token on the other chain
     string expected_income = 8;
 
+    // period expressed in block heights
     int64 height_span = 9;
 
+    // set for cross-chain send
     bool cross_chain = 10;
 }
 
@@ -193,8 +217,10 @@ message DepositHTLTOrder {
     // signer address
     bytes from = 1;
 
+    // amounts
     repeated SendOrder.Token amount = 2;
 
+    // swap ID
     bytes swap_id = 3;
 }
 
@@ -203,8 +229,10 @@ message ClaimHTLOrder {
     // signer address
     bytes from = 1;
 
+    // swap ID
     bytes swap_id = 2;
 
+    // random number input
     bytes random_number = 3;
 }
 
@@ -213,13 +241,22 @@ message RefundHTLTOrder {
     // signer address
     bytes from = 1;
 
+    // swap ID
     bytes swap_id = 2;
 }
 
+// Transfer
 message TransferOut {
+    // source address
     bytes from = 1;
+
+    // recipient address
     bytes to = 2;
+
+    // transfer amount
 	SendOrder.Token amount = 3;
+
+    // expiration time
 	int64 expire_time = 4;
 }
 
@@ -250,11 +287,13 @@ message TimeLockOrder {
     // owner address
     bytes from_address = 1;
 
+    // Description (optional)
     string description = 2;
 
     // Array of symbol/amount pairs. see SDK https://github.com/binance-chain/javascript-sdk/blob/master/docs/api-docs/classes/tokenmanagement.md#timelock
     repeated SendOrder.Token amount = 3;
 
+    // lock time
     int64 lock_time = 4;
 }
 
@@ -266,11 +305,13 @@ message TimeRelockOrder {
     // order ID
     int64 id = 2;
 
+    // Description (optional)
     string description = 3;
 
     // Array of symbol/amount pairs.
     repeated SendOrder.Token amount = 4;
 
+    // lock time
     int64 lock_time = 5;
 }
 
@@ -294,6 +335,11 @@ message SigningInput {
     // Sequence number (account specific)
     int64 sequence = 3;
 
+    // Transaction source, see https://github.com/bnb-chain/BEPs/blob/master/BEP10.md
+    // Some important values:
+    //  0: Default source value (e.g. for Binance Chain Command Line, or SDKs)
+    //  1: Binance DEX Web Wallet
+    //  2: Trust Wallet
     int64 source = 4;
 
     // Optional memo
