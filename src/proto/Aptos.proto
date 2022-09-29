@@ -17,6 +17,26 @@ message TransferMessage {
   uint64 amount = 2;
 }
 
+// Necessary tag for type function argument
+message StructTag {
+  // Address of the account
+  string account_address = 1;
+  // Module name
+  string module = 2;
+  // Identifier
+  string name = 3;
+}
+
+// Necessary fields to process a TokenTransferMessage
+message TokenTransferMessage {
+  // Destination Account address (string)
+  string to = 1;
+  // Amount to be transferred (uint64)
+  uint64 amount = 2;
+  // token function to call, e.g BTC: 0x43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9::coins::BTC
+  StructTag function = 3;
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
   // Sender Account address (string)
@@ -25,17 +45,18 @@ message SigningInput {
   int64 sequence_number = 2;
   oneof transaction_payload {
     TransferMessage transfer = 3;
+    TokenTransferMessage token_transfer = 4;
   }
   // Max gas amount that the user is willing to pay (uint64)
-  uint64 max_gas_amount = 4;
+  uint64 max_gas_amount = 5;
   // Gas unit price - queried through API (uint64)
-  uint64 gas_unit_price = 5;
+  uint64 gas_unit_price = 6;
   // Expiration timestamp for the transaction, can't be in the past (uint64)
-  uint64 expiration_timestamp_secs = 6;
+  uint64 expiration_timestamp_secs = 7;
   //  Chain id 1 (mainnet) 32(devnet) (uint32 - casted in uint8_t later)
-  uint32 chain_id = 7;
+  uint32 chain_id = 8;
   //  Private key to sign the transaction (bytes)
-  bytes private_key = 8;
+  bytes private_key = 9;
 }
 
 // Information related to the signed transaction
