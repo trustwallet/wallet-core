@@ -13,6 +13,7 @@
 #include "Bitcoin/Transaction.h"
 #include "Bitcoin/TransactionBuilder.h"
 #include "Bitcoin/TransactionSigner.h"
+#include "Coin.h"
 #include "Hash.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
@@ -1757,4 +1758,35 @@ TEST(BitcoinSigning, Sign_OpReturn_THORChainSwap) {
     );
 }
 // clang-format on
+
+TEST(BitcoinSigning, SignAndVerify) {
+    const auto messagePrefix = "Bitcoin Signed Message:\n";
+    const auto coin = TWCoinTypeBitcoin;
+
+    // prepare input data
+    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1).compressed();
+    EXPECT_EQ(hex(publicKey.bytes), "0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1");
+    const auto address = "bc1qten42eesehw0ktddcp0fws7d3ycsqez3f7d5yt"; 
+    //const auto address = "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X"; // legacy address format
+    const auto addressDerived = Bitcoin::SegwitAddress(publicKey, stringForHRP(TW::hrp(coin)));
+    //const auto addressDerived = Bitcoin::Address(publicKey, TWCoinTypeP2pkhPrefix(coin)); // legacy address format
+    //const auto addressDerived = TW::deriveAddress(coin, publicKey, TWDerivationDefault); // alternative address derivation
+    //const auto addressDerived = TW::deriveAddress(coin, publicKey, TWDerivationBitcoinLegacy); // alternative address derivation, legacy address format
+    EXPECT_EQ(addressDerived.string(), address);
+    const auto message = "Hello, world!";
+    const std::string fullMessage = std::string(messagePrefix) + message;
+    const auto messageHash = Hash::sha256d(reinterpret_cast<const byte*>(fullMessage.data()), fullMessage.size());
+
+    // Sign message
+    const auto signature = privateKey.sign(messageHash, TWCurveSECP256k1);
+    EXPECT_EQ(hex(signature), "b2a6444952eafe03226a4cd8e252de7ae594eba44996754c02ac086c5b9b48263a83488857e655940ccfb140d82df954fbc2748735720616efdad09f758b985900");
+
+    // Verify siganture
+    const auto publicKeyRecovered = PublicKey::recover(signature, messageHash).compressed();
+    const auto addressRecovered = Bitcoin::SegwitAddress(publicKeyRecovered, stringForHRP(TW::hrp(coin)));
+    //const auto addressRecovered = Bitcoin::Address(publicKeyRecovered, TWCoinTypeP2pkhPrefix(coin)); // legacy address format
+    EXPECT_EQ(addressRecovered.string(), address);
+}
+
 } // namespace TW::Bitcoin
