@@ -26,7 +26,7 @@ TEST(TWZkSyncV2CoinType, TWCoinType) {
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
 
     assertStringsEqual(id, "zksyncv2");
-    assertStringsEqual(name, "zkSync v2");
+    assertStringsEqual(name, "ZkSync v2");
     assertStringsEqual(symbol, "ETH");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
