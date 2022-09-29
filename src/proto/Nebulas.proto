@@ -70,12 +70,23 @@ message RawTransaction {
 
     // Nonce (should be larger than in the last transaction of the account)
     uint64 nonce = 5;
+
+    // transaction timestamp
     int64 timestamp = 6;
+
+    // generic data
     Data data = 7;
+
+    // chain ID (4 bytes)
     uint32 chain_id = 8;
+
+    // gas price (uint256, serialized little endian)
     bytes gas_price = 9;
+
+    // gas limit (uint256, serialized little endian)
     bytes gas_limit = 10;
 
+    // algorithm
     uint32 alg = 11;
 
     // signature
