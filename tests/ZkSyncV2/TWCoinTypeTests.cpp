@@ -32,7 +32,7 @@ TEST(TWZkSyncV2CoinType, TWCoinType) {
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0x0);
-    assertStringsEqual(chainId, "10");
+    assertStringsEqual(chainId, "280");
     assertStringsEqual(txUrl, "https://zksync2-testnet.zkscan.io/tx/0xb526861291c0335435e3c976e672a464b70762e54d7167409fb4f66e374ed708");
     assertStringsEqual(accUrl, "https://zksync2-testnet.zkscan.io/address/0x970978989a51790ee591b2a54f92c7cd9cdc2f88");
 }
