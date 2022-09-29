@@ -47,4 +47,4 @@ class CoinReference : public Serializable {
     }
 };
 
-}
+} // namespace TW::NEO
