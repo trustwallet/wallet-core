@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "Constants.h"
 #include "ISerializable.h"
 #include "Serializable.h"
 #include "TransactionAttributeUsage.h"
@@ -26,13 +27,13 @@ public:
         case TransactionAttributeUsage::TAU_ECDH02:
         case TransactionAttributeUsage::TAU_ECDH03:
         case TransactionAttributeUsage::TAU_Vote:
-            return 1 + 32;
+            return 1 + contractHashSize;
         case TransactionAttributeUsage::TAU_Script:
-            return 1 + 20;
+            return 1 + scriptHashSize;
         default:
             if (usage >= TransactionAttributeUsage::TAU_Hash1 &&
                 usage <= TransactionAttributeUsage::TAU_Hash15) {
-                return 1 + 32;
+                return 1 + contractHashSize;
             }
             return 1 + varIntSize(_data.size()) + _data.size();
         }
@@ -48,12 +49,12 @@ public:
         switch (usage) {
         case TransactionAttributeUsage::TAU_ECDH02:
         case TransactionAttributeUsage::TAU_ECDH03: {
-            this->_data = concat({(TW::byte)usage}, readBytes(data, 32, initial_pos + 1));
+            this->_data = concat({(TW::byte)usage}, readBytes(data, contractHashSize, initial_pos + 1));
             break;
         }
 
         case TransactionAttributeUsage::TAU_Script: {
-            this->_data = readBytes(data, 20, initial_pos + 1);
+            this->_data = readBytes(data, scriptHashSize, initial_pos + 1);
             break;
         }
 
@@ -68,7 +69,7 @@ public:
             if (usage == TransactionAttributeUsage::TAU_ContractHash ||
                 usage == TransactionAttributeUsage::TAU_Vote ||
                 (usage >= TransactionAttributeUsage::TAU_Hash1 && usage <= TransactionAttributeUsage::TAU_Hash15)) {
-                this->_data = readBytes(data, 32, initial_pos + 1);
+                this->_data = readBytes(data, contractHashSize, initial_pos + 1);
                 break;
             }
             throw std::invalid_argument("TransactionAttribute Deserialize FormatException");
@@ -89,7 +90,7 @@ public:
         }
         if (usage == TransactionAttributeUsage::TAU_ECDH02 ||
             usage == TransactionAttributeUsage::TAU_ECDH03) {
-            result.insert(result.end(), _data.begin() + 1, _data.begin() + 33);
+            result.insert(result.end(), _data.begin() + 1, _data.begin() + 1 + contractHashSize);
         } else {
             result.insert(result.end(), _data.begin(), _data.end());
         }
