@@ -28,7 +28,9 @@ TEST(NEOTransactionAttribute, Serialize) {
     EXPECT_EQ("30" + data, hex(transactionAttribute.serialize()));
 
     transactionAttribute.usage = TransactionAttributeUsage::TAU_ECDH02;
-    transactionAttribute._data = parse_hex(data);
+    transactionAttribute._data = {(TW::byte)transactionAttribute.usage};
+    auto d = parse_hex(data);
+    transactionAttribute._data.insert(transactionAttribute._data.end(), d.begin(), d.end());
     EXPECT_EQ("02" + data, hex(transactionAttribute.serialize()));
 
     data = "bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af";
@@ -39,12 +41,12 @@ TEST(NEOTransactionAttribute, Serialize) {
     data = "bd";
     transactionAttribute.usage = TransactionAttributeUsage::TAU_DescriptionUrl;
     transactionAttribute._data = parse_hex(data);
-    EXPECT_EQ("81" + data, hex(transactionAttribute.serialize()));
+    EXPECT_EQ("8101" + data, hex(transactionAttribute.serialize()));
 
     data = "bdecbb623eee6f9ade28d5a8ff5fb3ea";
     transactionAttribute.usage = TransactionAttributeUsage::TAU_Remark;
     transactionAttribute._data = parse_hex(data);
-    EXPECT_EQ("f0" + data, hex(transactionAttribute.serialize()));
+    EXPECT_EQ("f010" + data, hex(transactionAttribute.serialize()));
 }
 
 TEST(NEOTransactionAttribute, Deserialize) {
@@ -61,7 +63,7 @@ TEST(NEOTransactionAttribute, Deserialize) {
 
     transactionAttribute.deserialize(parse_hex("02" + data));
     EXPECT_EQ(TransactionAttributeUsage::TAU_ECDH02, transactionAttribute.usage);
-    EXPECT_EQ(data, hex(transactionAttribute._data));
+    EXPECT_EQ("02" + data, hex(transactionAttribute._data));
 
     data = "bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af";
     transactionAttribute.deserialize(parse_hex("20" + data));
@@ -69,12 +71,12 @@ TEST(NEOTransactionAttribute, Deserialize) {
     EXPECT_EQ(data, hex(transactionAttribute._data));
 
     data = "bd";
-    transactionAttribute.deserialize(parse_hex("81" + data));
+    transactionAttribute.deserialize(parse_hex("8101" + data));
     EXPECT_EQ(TransactionAttributeUsage::TAU_DescriptionUrl, transactionAttribute.usage);
     EXPECT_EQ(data, hex(transactionAttribute._data));
 
     data = "bdecbb623eee6f9ade28d5a8ff5fb3ea";
-    transactionAttribute.deserialize(parse_hex("f0" + data));
+    transactionAttribute.deserialize(parse_hex("f010" + data));
     EXPECT_EQ(TransactionAttributeUsage::TAU_Remark, transactionAttribute.usage);
     EXPECT_EQ(data, hex(transactionAttribute._data));
 
@@ -84,8 +86,8 @@ TEST(NEOTransactionAttribute, Deserialize) {
 TEST(NEOTransactionAttribute, DeserializeInitialPositionAfterData) {
     auto transactionAttribute = TransactionAttribute();
     EXPECT_THROW(transactionAttribute.deserialize(Data(), 1), std::invalid_argument);
-
     EXPECT_THROW(transactionAttribute.deserialize(Data({1}), 2), std::invalid_argument);
 }
+
 
 } // namespace TW::NEO::tests

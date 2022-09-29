@@ -19,6 +19,7 @@ class CoinReference : public Serializable {
   public:
     /// Number of bytes for prevIndex.
     static const size_t prevIndexSize = 2;
+    static const size_t prevHashSize = 32;
 
     uint256_t prevHash;
     uint16_t prevIndex = 0;
@@ -35,7 +36,7 @@ class CoinReference : public Serializable {
     }
 
     Data serialize() const override {
-        auto resp = store(prevHash);
+        auto resp = store(prevHash, prevHashSize);
         encode16LE(prevIndex, resp);
         return resp;
     }
@@ -46,4 +47,4 @@ class CoinReference : public Serializable {
     }
 };
 
-}
+} // namespace TW::NEO
