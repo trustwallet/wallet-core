@@ -82,7 +82,7 @@ message Transfer {
     uint64 force_fee = 6;
 }
 
-// Register a staking key for the account, preprequisite for Staking.
+// Register a staking key for the account, prerequisite for Staking.
 // Note: staking messages are typically used with a 1-output-to-self transaction.
 message RegisterStakingKey {
     // Staking address (as string)
@@ -160,10 +160,10 @@ message TransactionPlan {
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
-    // Available nput UTXOs
+    // Available input UTXOs
     repeated TxInput utxos = 1;
 
-    // Available private keys (double extended keys); every input UTXO adress should be covered
+    // Available private keys (double extended keys); every input UTXO address should be covered
     // In case of Plan only, keys should be present, in correct number
     repeated bytes private_key = 2;
 

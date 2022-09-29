@@ -3,7 +3,7 @@ syntax = "proto3";
 package TW.NULS.Proto;
 option java_package = "wallet.core.jni.proto";
 
-// Tranaction from address
+// Transaction from address
 message TransactionCoinFrom {
     // Source address
     string from_address = 1;
@@ -14,7 +14,7 @@ message TransactionCoinFrom {
     // ID of the asset
     uint32 assets_id = 3;
 
-    // tranaction out amount (256-bit number)
+    // transaction out amount (256-bit number)
     bytes id_amount = 4;
 
     // Nonce, 8 bytes
@@ -35,7 +35,7 @@ message TransactionCoinTo {
     // ID of the asset
     uint32 assets_id = 3;
 
-    // tranaction amount (256-bit number)
+    // transaction amount (256-bit number)
     bytes id_amount = 4;
 
     // lock time

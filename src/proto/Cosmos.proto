@@ -37,7 +37,7 @@ enum BroadcastMode {
     ASYNC = 2; // Don't wait for pass/fail CheckTx; send and return tx immediately
 }
 
-// A trnsaction payload message
+// A transaction payload message
 message Message {
     // cosmos-sdk/MsgSend
     message Send {

@@ -22,7 +22,7 @@ message Transfer {
 // Recommendation behavior is to not specify a stake account, and a new unique account will be created each time.
 // Optionally a stake account pubkey can be specified, but it should not exist on chain.
 message DelegateStake {
-    // Validator's publick key
+    // Validator's public key
     string validator_pubkey = 1;
 
     // delegation amount
@@ -53,7 +53,7 @@ message WithdrawStake {
     uint64 value = 2;
 }
 
-// Techinical structure to group a staking account and an amount
+// Technical structure to group a staking account and an amount
 message StakeAccountValue {
     // staking account
     string stake_account = 1;
@@ -72,7 +72,7 @@ message CreateTokenAccount {
     // main account -- can be same as signer, or other main account (if done on some other account's behalf)
     string main_address = 1;
 
-    // Token minting adddress
+    // Token minting address
     string token_mint_address = 2;
 
     // Token address

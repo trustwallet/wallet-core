@@ -17,7 +17,7 @@ message SigningInput {
     // Fee amount
     uint64 fee = 4;
 
-    // Validiy start, in block height
+    // Validity start, in block height
     uint32 validity_start_height = 5;
 }
 

@@ -64,7 +64,7 @@ message Action {
         uint64 fee = 3;        
     }
 
-    // Action for transfering FIO coins; transfer_tokens_pub_key
+    // Action for transferring FIO coins; transfer_tokens_pub_key
     // Note: actor is not needed, computed from private key
     message Transfer {
         // FIO address of the payee. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"

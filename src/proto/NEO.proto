@@ -10,7 +10,7 @@ message TransactionInput {
     // Previous tx hash
     bytes prev_hash = 1;
 
-    // Ouput index
+    // Output index
     fixed32 prev_index = 2;
 
     // unspent value of UTXO

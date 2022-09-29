@@ -17,7 +17,7 @@ message GenericAction {
     // amount
     string      value = 2;
 
-    // addtional data
+    // additional data
     string      data = 3;
 
     // transaction version
@@ -62,7 +62,7 @@ message ESDTNFTTransfer {
     // nonce of the token
     uint64      token_nonce = 3;
 
-    // transfera mount
+    // transfer amount
     string      amount = 4;
 }
 

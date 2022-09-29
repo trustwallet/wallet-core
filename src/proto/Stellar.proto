@@ -24,7 +24,7 @@ message OperationCreateAccount {
 
 // Perform payment
 message OperationPayment {
-    // Destination adddress
+    // Destination address
     string destination = 1;
 
     // Optional, can be left empty for native asset

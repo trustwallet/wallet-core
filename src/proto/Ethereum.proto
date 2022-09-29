@@ -112,11 +112,11 @@ message SigningInput {
     // Gas limit (256-bit number)
     bytes gas_limit = 5;
 
-    // Maxinmum optional inclusion fee (aka tip) (256-bit number)
+    // Maximum optional inclusion fee (aka tip) (256-bit number)
     // Relevant for enveloped/EIP1559 transactions only, tx_mode=Enveloped, (disregarded for legacy)
     bytes max_inclusion_fee_per_gas = 6;
 
-    // Maxinmum fee (256-bit number)
+    // Maximum fee (256-bit number)
     // Relevant for enveloped/EIP1559 transactions only, tx_mode=Enveloped, (disregarded for legacy)
     bytes max_fee_per_gas = 7;
 
