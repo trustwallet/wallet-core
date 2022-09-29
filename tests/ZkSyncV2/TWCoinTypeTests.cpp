@@ -15,7 +15,7 @@
 namespace TW::TWZkSyncV2::tests {
 
 TEST(TWZkSyncV2CoinType, TWCoinType) {
-    const auto coin = TWCoinTypezkSyncV2;
+    const auto coin = TWCoinTypeZkSyncV2;
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
