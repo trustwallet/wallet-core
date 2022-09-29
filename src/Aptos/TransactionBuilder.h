@@ -65,7 +65,7 @@ public:
         output.mutable_authenticator()->set_public_key(pubKeyData.data(), pubKeyData.size());
         output.mutable_authenticator()->set_signature(signature.data(), signature.size());
         serializer << BCS::uleb128{.value = 0} << pubKeyData << signature;
-        output.set_signed_tx(serializer.bytes.data(), serializer.bytes.size());
+        output.set_encoded(serializer.bytes.data(), serializer.bytes.size());
 
         // https://fullnode.devnet.aptoslabs.com/v1/spec#/operations/submit_transaction
         // clang-format off
@@ -83,7 +83,7 @@ public:
             }
         };
         // clang-format on
-        output.set_tx_json(json.dump());
+        output.set_json(json.dump());
         return *this;
     }
 

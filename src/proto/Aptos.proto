@@ -14,20 +14,9 @@ message TransferMessage {
   uint64 amount = 2;
 }
 
-/**
-pub struct TransactionBuilder {
-    sender: Option<AccountAddress>,
-    sequence_number: Option<u64>,
-    payload: TransactionPayload,
-    max_gas_amount: u64,
-    gas_unit_price: u64,
-    expiration_timestamp_secs: u64,
-    chain_id: ChainId,
-}
- */
 message SigningInput {
-  string sender = 1; // optional
-  int64 sequence_number = 2; // optional
+  string sender = 1;
+  int64 sequence_number = 2;
   oneof transaction_payload {
     TransferMessage transfer = 3;
   }
@@ -52,8 +41,8 @@ message SigningOutput {
   TransactionAuthenticator authenticator = 2;
 
   /// tx to broadcast
-  bytes signed_tx = 3;
+  bytes encoded = 3;
 
   // tx json format for api broadcasting
-  string tx_json = 4;
+  string json = 4;
 }
