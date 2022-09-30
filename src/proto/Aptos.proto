@@ -37,6 +37,12 @@ message TokenTransferMessage {
   StructTag function = 3;
 }
 
+// Necessary fields to process a CreateAccountMessage
+message CreateAccountMessage {
+  // auth account address to create
+  string auth_key = 1;
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
   // Sender Account address (string)
@@ -46,17 +52,18 @@ message SigningInput {
   oneof transaction_payload {
     TransferMessage transfer = 3;
     TokenTransferMessage token_transfer = 4;
+    CreateAccountMessage create_account = 5;
   }
   // Max gas amount that the user is willing to pay (uint64)
-  uint64 max_gas_amount = 5;
+  uint64 max_gas_amount = 6;
   // Gas unit price - queried through API (uint64)
-  uint64 gas_unit_price = 6;
+  uint64 gas_unit_price = 7;
   // Expiration timestamp for the transaction, can't be in the past (uint64)
-  uint64 expiration_timestamp_secs = 7;
+  uint64 expiration_timestamp_secs = 8;
   //  Chain id 1 (mainnet) 32(devnet) (uint32 - casted in uint8_t later)
-  uint32 chain_id = 8;
+  uint32 chain_id = 9;
   //  Private key to sign the transaction (bytes)
-  bytes private_key = 9;
+  bytes private_key = 10;
 }
 
 // Information related to the signed transaction

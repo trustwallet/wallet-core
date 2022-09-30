@@ -33,6 +33,17 @@ TransactionPayload transferPayload(const Proto::SigningInput& input) {
     return payload;
 }
 
+TransactionPayload createAccountPayload(const Proto::SigningInput& input) {
+    ModuleId module(gAddressOne, "aptos_account");
+    BCS::Serializer aSerializer;
+    aSerializer << Address(input.create_account().auth_key());
+    std::vector<Data> args;
+    args.emplace_back(aSerializer.bytes);
+    nlohmann::json argsJson = nlohmann::json::array({input.create_account().auth_key()});
+    TransactionPayload payload = EntryFunction(module, "create_account", {}, args, argsJson);
+    return payload;
+}
+
 TransactionPayload tokenTransferPayload(const Proto::SigningInput& input) {
 
     auto&& [args, argsJson] = commonTransferPayload(input.token_transfer());
@@ -54,6 +65,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
         case Proto::SigningInput::kTokenTransfer: {
             return tokenTransferPayload(input);
         }
+        case Proto::SigningInput::kCreateAccount:
+            return createAccountPayload(input);
         case Proto::SigningInput::TRANSACTION_PAYLOAD_NOT_SET:
             throw std::runtime_error("Transaction payload should be set");
         }
