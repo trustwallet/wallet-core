@@ -18,7 +18,7 @@ namespace TW::FIO::tests {
 using namespace std;
 
 TEST(FIOSigner, SignEncode) {
-    string sig1 = Signer::signatureToBsase58(parse_hex("1f4fccc30bcba876963aef6de584daf7258306c02f4528fe25b116b517de8b349968bdc080cd6bef36f5a46d31a7c01ed0806ad215bb66a94f61e27a895d610983"));
+    string sig1 = Signer::signatureToBase58(parse_hex("1f4fccc30bcba876963aef6de584daf7258306c02f4528fe25b116b517de8b349968bdc080cd6bef36f5a46d31a7c01ed0806ad215bb66a94f61e27a895d610983"));
 
     EXPECT_EQ("SIG_K1_K5hJTPeiV4bDkNR13mf66N2DY5AtVL4NU1iWE4G4dsczY2q68oCcUVxhzFdxjgV2eAeb2jNV1biqtCJ3SaNL8kkNgoZ43H", sig1);
 }
@@ -37,7 +37,7 @@ TEST(FIOSigner, SignInternals) {
     Data sign2 = Signer::signData(pk, rawData);
     EXPECT_EQ("1f4ae8d1b993f94d0de4b249d5185481770de0711863ad640b3aac21de598fcc02761c6e5395106bafb7b09aab1c7aa5ac0573dbd821c2d255725391a5105d30d1", hex(sign2));
 
-    string sigStr = Signer::signatureToBsase58(sign2);
+    string sigStr = Signer::signatureToBase58(sign2);
     EXPECT_EQ("SIG_K1_K54CA1jmhgWrSdvrNrkokPyvqh7dwsSoQHNU9xgD3Ezf6cJySzhKeUubVRqmpYdnjoP1DM6SorroVAgrCu3qqvJ9coAQ6u", sigStr);
     EXPECT_TRUE(Signer::verify(pk.getPublicKey(TWPublicKeyTypeSECP256k1), hash, sign2));
 }
