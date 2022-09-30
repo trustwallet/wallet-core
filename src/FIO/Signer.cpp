@@ -40,7 +40,7 @@ Data Signer::signData(const PrivateKey& privKey, const Data& data) {
     return signature;
 }
 
-std::string Signer::signatureToBsase58(const Data& sig) {
+std::string Signer::signatureToBase58(const Data& sig) {
     Data sigWithSuffix(sig);
     append(sigWithSuffix, TW::data(SignatureSuffix));
     // take hash, ripemd, first 4 bytes 
