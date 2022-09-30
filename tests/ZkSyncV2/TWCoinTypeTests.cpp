@@ -3,19 +3,15 @@
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
-//
-// This is a GENERATED FILE, changes made here MAY BE LOST.
-// Generated one-time (codegen/bin/cointests)
-//
 
 #include "../interface/TWTestUtilities.h"
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <gtest/gtest.h>
 
-namespace TW::TWZkSyncV2::tests {
+namespace TW::TWZksync::tests {
 
-TEST(TWZkSyncV2CoinType, TWCoinType) {
-    const auto coin = TWCoinTypeZkSyncV2;
+TEST(TWZksyncCoinType, TWCoinType) {
+    const auto coin = TWCoinTypeZksync;
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
@@ -25,8 +21,8 @@ TEST(TWZkSyncV2CoinType, TWCoinType) {
     const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0x970978989a51790ee591b2a54f92c7cd9cdc2f88"));
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
 
-    assertStringsEqual(id, "zksyncv2");
-    assertStringsEqual(name, "ZkSync v2");
+    assertStringsEqual(id, "zksync");
+    assertStringsEqual(name, "zkSync v2");
     assertStringsEqual(symbol, "ETH");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
@@ -37,4 +33,4 @@ TEST(TWZkSyncV2CoinType, TWCoinType) {
     assertStringsEqual(accUrl, "https://zksync2-testnet.zkscan.io/address/0x970978989a51790ee591b2a54f92c7cd9cdc2f88");
 }
 
-} // namespace TW::TWZkSyncV2::tests
+} // namespace TW::TWZksync::tests

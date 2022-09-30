@@ -2032,9 +2032,9 @@
     }
   },
   {
-    "id": "zksyncv2",
-    "name": "ZkSyncV2",
-    "displayName": "ZkSync v2",
+    "id": "zksync",
+    "name": "Zksync",
+    "displayName": "zkSync v2",
     "coinId": 10000280,
     "slip44": 60,
     "symbol": "ETH",
