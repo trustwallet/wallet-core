@@ -240,7 +240,7 @@ string TransactionBuilder::signAdnBuildTx(const Data& chainId, const Data& packe
     Data sigBuf(chainId);
     append(sigBuf, packedTx);
     append(sigBuf, TW::Data(32)); // context_free
-    string signature = Signer::signatureToBsase58(Signer::signData(privateKey, sigBuf));
+    string signature = Signer::signatureToBase58(Signer::signData(privateKey, sigBuf));
 
     // Build json
     json tx = {
