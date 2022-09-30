@@ -99,7 +99,7 @@ TEST(TransactionCompiler, BinanceCompileWithSignatures) {
 }
 
 TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
-    // Test external signining with a Bircoin transaction with 3 input UTXOs, all used, but only using 2 public keys.
+    // Test external signining with a Bitcoin transaction with 3 input UTXOs, all used, but only using 2 public keys.
     // Three signatures are neeeded.  This illustrates that order of UTXOs/hashes is not always the same.
 
     const auto revUtxoHash0 = parse_hex("07c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa8");
@@ -110,7 +110,7 @@ TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
     const auto inPubKeyHash0 = parse_hex("bd92088bb7e82d611a9b94fbb74a0908152b784f");
     const auto inPubKeyHash1 = parse_hex("6641abedacf9483b793afe1718689cc9420bbb1c");
 
-    // Input UTXO infos
+    // Test data: Input UTXO infos
     struct UtxoInfo {
         Data revUtxoHash;
         Data publicKey;
@@ -210,7 +210,7 @@ TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
     Bitcoin::Proto::TransactionPlan plan;
     ANY_PLAN(signingInput, plan, coin);
 
-    // Plan is checked, assume it is accepted
+    // At this point plan can be checked, assume it is accepted unmodified
     EXPECT_EQ(plan.amount(), 1'200'000);
     EXPECT_EQ(plan.fee(), 277);
     EXPECT_EQ(plan.change(), 299'723);
@@ -240,7 +240,7 @@ TEST(TransactionCompiler, BitcoinCompileWithSignatures) {
     EXPECT_EQ(hex(preSigningOutput.hash_public_keys()[1].public_key_hash()), hex(inPubKeyHash0));
     EXPECT_EQ(hex(preSigningOutput.hash_public_keys()[2].public_key_hash()), hex(inPubKeyHash0));
 
-    // Simulate signatures, normally obtained from signature server.
+    // Simulate signatures, normally they are obtained from external source, e.g. a signature server.
     std::vector<Data> signatureVec;
     std::vector<Data> pubkeyVec;
     for (const auto& h: preSigningOutput.hash_public_keys()) {
