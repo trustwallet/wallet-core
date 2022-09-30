@@ -55,8 +55,27 @@ TransactionPayload tokenTransferPayload(const Proto::SigningInput& input) {
     return payload;
 }
 
+Proto::SigningOutput blindSign(const Proto::SigningInput& input) {
+    auto output = Proto::SigningOutput();
+    BCS::Serializer serializer;
+    auto encodedCall = parse_hex(input.any_encoded());
+    serializer.add_bytes(begin(encodedCall), end(encodedCall));
+    auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto signature = privateKey.sign(encodedCall, TWCurveED25519);
+    auto pubKeyData = privateKey.getPublicKey(TWPublicKeyTypeED25519).bytes;
+    output.set_raw_txn(encodedCall.data(), encodedCall.size());
+    output.mutable_authenticator()->set_public_key(pubKeyData.data(), pubKeyData.size());
+    output.mutable_authenticator()->set_signature(signature.data(), signature.size());
+    serializer << BCS::uleb128{.value = 0} << pubKeyData << signature;
+    output.set_encoded(serializer.bytes.data(), serializer.bytes.size());
+    return output;
+}
+
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto protoOutput = Proto::SigningOutput();
+    if (!input.any_encoded().empty()) {
+        return blindSign(input);
+    }
     auto payloadFunctor = [&input]() {
         switch (input.transaction_payload_case()) {
         case Proto::SigningInput::kTransfer: {

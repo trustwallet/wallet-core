@@ -139,6 +139,41 @@ TEST(AptosSigner, CreateAccount) {
     ASSERT_EQ(expectedJson, parsedJson);
 }
 
+TEST(AptosSigner, BlindSign) {
+    // successfully broadcasted https://explorer.aptoslabs.com/txn/0xd95857a9e644528708778a3a0a6e13986751944fca30eaac98853c1655de0422?network=Devnet
+    // encoded submission with:
+    // curl --location --request POST 'https://fullnode.devnet.aptoslabs.com/v1/transactions/encode_submission' \
+    //--header 'Content-Type: application/json' \
+    //--header 'Cookie: AWSALB=0zI2zWypvEr0I3sGM6vnyHSxYO1D0aaMXfyA/2VwhA291aJJ80Yz67Fur50sXPFBI8dKKID4p8DShj1KkEXPY/NGAylpOj1EG2M2Qjuu1B38Q5C+dZW2CHT+IAZ5; AWSALBCORS=0zI2zWypvEr0I3sGM6vnyHSxYO1D0aaMXfyA/2VwhA291aJJ80Yz67Fur50sXPFBI8dKKID4p8DShj1KkEXPY/NGAylpOj1EG2M2Qjuu1B38Q5C+dZW2CHT+IAZ5' \
+    //--data-raw '{
+    //    "expiration_timestamp_secs": "3664390082",
+    //    "gas_unit_price": "100",
+    //    "max_gas_amount": "3296766",
+    //    "payload": {
+    //        "function": "0x4633134869a61c41ad42eaca028d71c5b8b4109ffd69e1aa99c35a621b298837::pool::swap_y_to_x",
+    //        "type_arguments": [
+    //            "0xdeae46f81671e76f444e2ce5a299d9e1ea06a8fa26e81dfd49aa7fa5a5a60e01::devnet_coins::DevnetUSDT",
+    //            "0x1::aptos_coin::AptosCoin"
+    //        ],
+    //        "arguments": [
+    //            "100000000",
+    //            "0"
+    //        ],
+    //        "type": "entry_function_payload"
+    //    },
+    //    "sender": "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+    //    "sequence_number": "2"
+    //}'
+    Proto::SigningInput input;
+    input.set_any_encoded("0xb5e97db07fa0bd0e5598aa3643a9bc6f6693bddc1a9fec9e674a461eaa00b19307968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f300200000000000000024633134869a61c41ad42eaca028d71c5b8b4109ffd69e1aa99c35a621b29883704706f6f6c0b737761705f795f746f5f780207deae46f81671e76f444e2ce5a299d9e1ea06a8fa26e81dfd49aa7fa5a5a60e010c6465766e65745f636f696e730a4465766e657455534454000700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e00020800e1f50500000000080000000000000000fe4d3200000000006400000000000000c2276ada0000000021");
+    auto privateKey = PrivateKey(parse_hex("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    auto result = Signer::sign(input);
+    ASSERT_EQ(hex(result.raw_txn()), "b5e97db07fa0bd0e5598aa3643a9bc6f6693bddc1a9fec9e674a461eaa00b19307968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f300200000000000000024633134869a61c41ad42eaca028d71c5b8b4109ffd69e1aa99c35a621b29883704706f6f6c0b737761705f795f746f5f780207deae46f81671e76f444e2ce5a299d9e1ea06a8fa26e81dfd49aa7fa5a5a60e010c6465766e65745f636f696e730a4465766e657455534454000700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e00020800e1f50500000000080000000000000000fe4d3200000000006400000000000000c2276ada0000000021");
+    ASSERT_EQ(hex(result.authenticator().signature()), "9e81026fdd43986f4d5588afdab875cd18b64dc15b3489fcc00ed46fc361915b27e23e0cefe6d23698ee76a562915fe85e99185dbc1dd29ba720f7fad144af0b");
+    ASSERT_EQ(hex(result.encoded()), "b5e97db07fa0bd0e5598aa3643a9bc6f6693bddc1a9fec9e674a461eaa00b19307968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f300200000000000000024633134869a61c41ad42eaca028d71c5b8b4109ffd69e1aa99c35a621b29883704706f6f6c0b737761705f795f746f5f780207deae46f81671e76f444e2ce5a299d9e1ea06a8fa26e81dfd49aa7fa5a5a60e010c6465766e65745f636f696e730a4465766e657455534454000700000000000000000000000000000000000000000000000000000000000000010a6170746f735f636f696e094170746f73436f696e00020800e1f50500000000080000000000000000fe4d3200000000006400000000000000c2276ada00000000210020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c409e81026fdd43986f4d5588afdab875cd18b64dc15b3489fcc00ed46fc361915b27e23e0cefe6d23698ee76a562915fe85e99185dbc1dd29ba720f7fad144af0b");
+}
+
 TEST(AptosSigner, TokenTxSign) {
     // Successfully broadcasted https://explorer.aptoslabs.com/txn/0xb5b383a5c7f99b2edb3bed9533f8169a89051b149d65876a82f4c0b9bf78a15b?network=Devnet
     Proto::SigningInput input;

@@ -64,6 +64,8 @@ message SigningInput {
   uint32 chain_id = 9;
   //  Private key to sign the transaction (bytes)
   bytes private_key = 10;
+  // hex encoded function to sign, use it for smart contract approval (string)
+  string any_encoded = 11;
 }
 
 // Information related to the signed transaction
