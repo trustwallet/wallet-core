@@ -68,6 +68,16 @@ Proto::SigningOutput blindSign(const Proto::SigningInput& input) {
     output.mutable_authenticator()->set_signature(signature.data(), signature.size());
     serializer << BCS::uleb128{.value = 0} << pubKeyData << signature;
     output.set_encoded(serializer.bytes.data(), serializer.bytes.size());
+
+    // clang-format off
+    nlohmann::json json = {
+        {"type", "ed25519_signature"},
+        {"public_key", hexEncoded(pubKeyData)},
+        {"signature", hexEncoded(signature)}
+    };
+    // clang-format on
+
+    output.set_json(json.dump());
     return output;
 }
 
