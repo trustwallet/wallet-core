@@ -11,7 +11,7 @@ message SigningInput {
     // Recipient address.
     string to_address = 2;
 
-    // Transfer amount.
+    // Transfer amount (uint256, serialized little endian)
     bytes value = 3;
 
     // The amount of step to send with the transaction.
@@ -26,11 +26,11 @@ message SigningInput {
     // Network identifier
     bytes network_id = 7;
 
-    // Private key.
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 8;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // JSON-encoded transaction parameters.
     string encoded = 1;

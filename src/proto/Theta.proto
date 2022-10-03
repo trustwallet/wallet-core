@@ -11,23 +11,23 @@ message SigningInput {
     /// Recipient address
     string to_address = 2;
 
-    /// Theta token amount to send in wei (256-bit number)
+    /// Theta token amount to send in wei (uint256, serialized little endian)
     bytes theta_amount = 3;
 
-    /// TFuel token amount to send in wei (256-bit number)
+    /// TFuel token amount to send in wei (uint256, serialized little endian)
     bytes tfuel_amount = 4;
 
     /// Sequence number of the transaction for the sender address
     uint64 sequence = 5;
 
-    /// Fee amount in TFuel wei for the transaction (256-bit number)
+    /// Fee amount in TFuel wei for the transaction (uint256, serialized little endian)
     bytes fee = 6;
 
-    /// Private key
+    /// The secret private key used for signing (32 bytes).
     bytes private_key = 7;
 }
 
-/// Transaction signing output
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     /// Signed and encoded transaction bytes
     bytes encoded = 1;

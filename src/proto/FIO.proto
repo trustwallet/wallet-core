@@ -52,6 +52,7 @@ message Action {
     }
 
     // Acion for adding public chain addresses to a FIO name; add_pub_address
+    // Note: actor is not needed, computed from private key
     message AddPubAddress {
         // The FIO name already registered to the owner. Ex.: "alice@trust"
         string fio_address = 1;
@@ -60,12 +61,11 @@ message Action {
         repeated PublicAddress public_addresses = 2;
         
         // Max fee to spend, can be obtained using get_fee API.
-        uint64 fee = 3;
-        
-        // Note: actor is not needed, computed from private key
+        uint64 fee = 3;        
     }
 
-    // Action for transfering FIO coins; transfer_tokens_pub_key
+    // Action for transferring FIO coins; transfer_tokens_pub_key
+    // Note: actor is not needed, computed from private key
     message Transfer {
         // FIO address of the payee. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
         string payee_public_key = 1;
@@ -75,11 +75,10 @@ message Action {
 
         // Max fee to spend, can be obtained using get_fee API.
         uint64 fee = 3;
-        
-        // Note: actor is not needed, computed from private key
     }
 
     // Action for renewing a FIO name; renew_fio_address
+    // Note: actor is not needed, computed from private key
     message RenewFioAddress {
         // The FIO name to be renewed. Ex.: "alice@trust"
         string fio_address = 1;
@@ -89,11 +88,10 @@ message Action {
         
         // Max fee to spend, can be obtained using get_fee API.
         uint64 fee = 3;
-
-        // Note: actor is not needed, computed from owner_fio_public_key
     }
 
     // Action for creating a new payment request; new_funds_request
+    // Note: actor is not needed, computed from private key
     message NewFundsRequest {
         // The FIO name of the requested payer. Ex.: "alice@trust"
         string payer_fio_name = 1;
@@ -109,10 +107,9 @@ message Action {
 
         // Max fee to spend, can be obtained using get_fee API.
         uint64 fee = 5;
-
-        // Note: actor is not needed, computed from private key
     }
 
+    // Payload message
     oneof message_oneof {
         RegisterFioAddress register_fio_address_message = 1;
         AddPubAddress add_pub_address_message = 2;
@@ -134,7 +131,7 @@ message ChainParams {
     uint64 ref_block_prefix = 3;
 }
 
-// Transaction signing input
+// Input data necessary to create a signed transaction.
 message SigningInput {
     // Expiry for this message, in unix time. Can be 0, then it is taken from current time with default expiry
     uint32 expiry = 1;
@@ -142,7 +139,7 @@ message SigningInput {
     // Current parameters of the FIO blockchain
     ChainParams chain_params = 2;
     
-    // The private key matching the address, needed for signing
+    // The secret private key matching the address, used for signing (32 bytes).
     bytes private_key = 3;
 
     // The FIO name of the originating wallet (project-wide constant)
@@ -152,7 +149,7 @@ message SigningInput {
     Action action = 5;
 }
 
-// Transaction signing output
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Signed transaction in JSON
     string json = 1;

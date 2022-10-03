@@ -7,27 +7,37 @@ import "Common.proto";
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
+    // Transfer amount
     int64 amount = 1;
 
+    // Transfer fee
     int64 fee = 2;
 
+    // Account sequence number
     int32 sequence = 3;
 
+    // Ledger sequence number
     int32 last_ledger_sequence = 4;
 
+    // Source account
     string account = 5;
 
+    // Target account
     string destination = 6;
 
+    // A Destination Tag
     int64 destination_tag = 7;
 
+    // Transaction flags, optional
     int64 flags = 8;
 
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 9;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
+    // Encoded transaction
     bytes encoded = 1;
 
     // Optional error

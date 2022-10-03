@@ -3,18 +3,30 @@ syntax = "proto3";
 package TW.Algorand.Proto;
 option java_package = "wallet.core.jni.proto";
 
+// Simple transfer message, transfer an amount to an address
 message Transfer {
+    // Destination address (string)
     string to_address = 1;
+
+    // Amount
     uint64 amount = 2;
 }
 
+// Asset Transfer message, with assetID
 message AssetTransfer {
+    // Destination address (string)
     string to_address = 1;
+
+    // Amount
     uint64 amount = 2;
+
+    // ID of the asset being transferred
     uint64 asset_id = 3;
 }
 
+// Opt-in message for an asset
 message AssetOptIn {
+    // ID of the asset
     uint64 asset_id = 1;
 }
 
@@ -22,19 +34,26 @@ message AssetOptIn {
 message SigningInput {
     // network / chain id
     string genesis_id = 1;
+
     // network / chain hash
     bytes genesis_hash = 2;
+
     // binary note data
     bytes note = 3;
-    // private key
+
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 4;
+
     // network / first round
     uint64 first_round = 5;
+
     // network / last round
     uint64 last_round = 6;
-    // fee
+
+    // fee amount
     uint64 fee = 7;
 
+    // message payload
     oneof message_oneof {
         Transfer transfer = 10;
         AssetTransfer asset_transfer = 11;
@@ -42,7 +61,7 @@ message SigningInput {
     }
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;

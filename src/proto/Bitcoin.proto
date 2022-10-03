@@ -5,6 +5,7 @@ option java_package = "wallet.core.jni.proto";
 
 import "Common.proto";
 
+// A transaction, with its inputs and outputs
 message Transaction {
     // Transaction data format version.
     sint32 version = 1;
@@ -15,7 +16,7 @@ message Transaction {
     // A list of 1 or more transaction inputs or sources for coins.
     repeated TransactionInput inputs = 3;
 
-    // A list of 1 or more transaction outputs or destinations for coins
+    // A list of 1 or more transaction outputs or destinations for coins.
     repeated TransactionOutput outputs = 4;
 }
 
@@ -33,7 +34,7 @@ message TransactionInput {
 
 // Bitcoin transaction out-point reference.
 message OutPoint {
-    // The hash of the referenced transaction.
+    // The hash of the referenced transaction (network byte order, usually needs to be reversed).
     bytes hash = 1;
 
     // The index of the specific output in the transaction.
@@ -74,31 +75,31 @@ message SigningInput {
     // If amount is equal or more than the available amount, also max amount will be used.
     int64 amount = 2;
 
-    // Transaction fee per byte.
+    // Transaction fee rate, satoshis per byte, used to compute required fee (when planning)
     int64 byte_fee = 3;
 
-    // Recipient's address.
+    // Recipient's address, as string.
     string to_address = 4;
 
-    // Change address.
+    // Change address, as string.
     string change_address = 5;
 
-    // Available private keys.
+    // The available secret private key or keys required for signing (32 bytes each).
     repeated bytes private_key = 6;
 
     // Available redeem scripts indexed by script hash.
     map<string, bytes> scripts = 7;
 
-    // Available unspent transaction outputs.
+    // Available input unspent transaction outputs.
     repeated UnspentTransaction utxo = 8;
 
-    // If sending max amount.
+    // Set if sending max amount is requested.
     bool use_max_amount = 9;
 
-    // Coin type (forks).
+    // Coin type (used by forks).
     uint32 coin_type = 10;
 
-    // Optional transaction plan
+    // Optional transaction plan. If missing, plan will be computed.
     TransactionPlan plan = 11;
 
     // Optional lockTime, default value 0 means no time locking.
@@ -117,16 +118,16 @@ message TransactionPlan {
     // Amount to be received at the other end.
     int64 amount = 1;
 
-    // Maximum available amount.
+    // Maximum available amount in all the input UTXOs.
     int64 available_amount = 2;
 
     // Estimated transaction fee.
     int64 fee = 3;
 
-    // Change.
+    // Remaining change
     int64 change = 4;
 
-    // Selected unspent transaction outputs.
+    // Selected unspent transaction outputs (subset of all input UTXOs)
     repeated UnspentTransaction utxos = 5;
 
     // Zcash branch id
@@ -139,23 +140,26 @@ message TransactionPlan {
     bytes output_op_return = 8;
 };
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
+// Note that the amount may be different than the requested amount to account for fees and available funds.
 message SigningOutput {
-    // Resulting transaction. Note that the amount may be different than the requested amount to account for fees and available funds.
+    // Resulting transaction.
     Transaction transaction = 1;
 
     // Signed and encoded transaction bytes.
     bytes encoded = 2;
 
-    // Transaction id
+    // Transaction ID (hash)
     string transaction_id = 3;
 
     // Optional error
     Common.Proto.SigningError error = 4;
+
     // error description
     string error_message = 5;
 }
 
+/// Pre-image hash to be used for signing
 message HashPublicKey {
     /// Pre-image data hash that will be used for signing
     bytes data_hash = 1;

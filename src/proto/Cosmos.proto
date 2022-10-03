@@ -3,13 +3,21 @@ syntax = "proto3";
 package TW.Cosmos.Proto;
 option java_package = "wallet.core.jni.proto";
 
+// A denomination and an amount
 message Amount {
+    // name of the denomination
     string denom = 1;
+
+    // amount, number as string
     string amount = 2;
 }
 
+// Fee incl. gas
 message Fee {
+    // Fee amount(s)
     repeated Amount amounts = 1;
+
+    // Gas price
     uint64 gas = 2;
 }
 
@@ -22,12 +30,14 @@ message Height {
     uint64 revision_height = 2;
 }
 
+// Transaction broadcast mode
 enum BroadcastMode {
     BLOCK = 0; // Wait for the tx to pass/fail CheckTx, DeliverTx, and be committed in a block
     SYNC = 1;  // Wait for the tx to pass/fail CheckTx
     ASYNC = 2; // Don't wait for pass/fail CheckTx; send and return tx immediately
 }
 
+// A transaction payload message
 message Message {
     // cosmos-sdk/MsgSend
     message Send {
@@ -260,6 +270,7 @@ message Message {
         string msg_type_url = 3;
     }
 
+    // The payload message
     oneof message_oneof {
         Send send_coins_message = 1;
         Transfer transfer_tokens_message = 2;
@@ -281,30 +292,43 @@ message Message {
     }
 }
 
+// Options for transaction encoding: JSON (Amino, older) or Protobuf.
 enum SigningMode {
     JSON = 0;        // JSON format, Pre-Stargate
     Protobuf = 1;    // Protobuf-serialized (binary), Stargate
 }
 
-// Input data necessary to create a signed order.
+// Input data necessary to create a signed transaction.
 message SigningInput {
-    // Specify if Stargate or earlier serialization is used
+    // Specify if protobuf (a.k.a. Stargate) or earlier JSON serialization is used
     SigningMode signing_mode = 1;
 
+    // Source account number
     uint64 account_number = 2;
+
+    // Chain ID (string)
     string chain_id = 3;
+
+    // Transaction fee
     Fee fee = 4;
+
+    // Optional memo
     string memo = 5;
+
+    // Sequence number (account specific)
     uint64 sequence = 6;
 
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 7;
 
+    // Payload message(s)
     repeated Message messages = 8;
 
+    // Broadcast mode (included in output, relevant when broadcasting)
     BroadcastMode mode = 9;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Signature
     bytes signature = 1;

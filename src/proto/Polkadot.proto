@@ -3,17 +3,20 @@ syntax = "proto3";
 package TW.Polkadot.Proto;
 option java_package = "wallet.core.jni.proto";
 
+// Known networks
 enum Network {
     POLKADOT = 0;
     KUSAMA = 2;
 }
 
+// Destination options for reward
 enum RewardDestination {
     STAKED = 0;
     STASH = 1;
     CONTROLLER = 2;
 }
 
+// An era, a period defined by a starting block and length
 message Era {
     // recent block number (called phase in polkadot code), should match block hash
     uint64 block_number = 1;
@@ -22,52 +25,84 @@ message Era {
     uint64 period = 2;
 }
 
+// Balance transfer transaction
 message Balance {
+    // transfer
     message Transfer {
+        // destination address
         string to_address = 1;
-        bytes value = 2; // big integer
+
+        // amount (uint256, serialized little endian)
+        bytes value = 2;
     }
     oneof message_oneof {
         Transfer transfer = 1;
     }
 }
 
+// Staking transaction
 message Staking {
+    // Bond to a controller
     message Bond {
+        // controller ID
         string controller = 1;
+
+        // amount (uint256, serialized little endian)
         bytes value = 2;
+
+        // destination for rewards
         RewardDestination reward_destination = 3;
     }
 
+    // Bond to a controller, with nominators
     message BondAndNominate {
+        // controller ID
         string controller = 1;
+
+        // amount (uint256, serialized little endian)
         bytes value = 2;
+
+        // destination for rewards
         RewardDestination reward_destination = 3;
+
+        // list of nominators
         repeated string nominators = 4;
     }
 
+    // Bond extra amount
     message BondExtra {
+        // amount (uint256, serialized little endian)
         bytes value = 1;
     }
 
+    // Unbond
     message Unbond {
+        // amount (uint256, serialized little endian)
         bytes value = 1;
     }
 
+    // Withdraw unbonded amounts
     message WithdrawUnbonded {
         int32 slashing_spans = 1;
     }
 
+    // Nominate
     message Nominate {
+        // list of nominators
         repeated string nominators = 1;
     }
 
+    // Chill and unbound
     message ChillAndUnbond {
+        // amount (uint256, serialized little endian)
         bytes value = 1;
     }
 
-    message Chill {}
+    // Chill
+    message Chill {
+    }
 
+    // Payload messsage
     oneof message_oneof {
         Bond bond = 1;
         BondAndNominate bond_and_nominate = 2;
@@ -85,28 +120,38 @@ message SigningInput {
     // Recent block hash, or genesis hash if era is not set
     bytes block_hash = 1;
 
+    // Genesis block hash (identifies the chain)
     bytes genesis_hash = 2;
 
     // Current account nonce
     uint64 nonce = 3;
 
+    // Specification version, e.g. 26.
     uint32 spec_version = 4;
+
+    // Transaction version, e.g. 5.
     uint32 transaction_version = 5;
-    bytes tip = 6;  // big integer
+
+    // Optional tip to pay, big integer
+    bytes tip = 6;
 
     // Optional time validity limit, recommended, for replay-protection.  Empty means Immortal.
     Era era = 7;
 
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 8;
+
+    // Network type
     Network network = 9;
 
+    // Payload message
     oneof message_oneof {
         Balance balance_call = 10;
         Staking staking_call = 11;
     }
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;

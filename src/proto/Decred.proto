@@ -6,11 +6,12 @@ option java_package = "wallet.core.jni.proto";
 import "Bitcoin.proto";
 import "Common.proto";
 
+// A transfer transaction
 message Transaction {
-    /// Serialization format
+    // Serialization format
     uint32 serializeType = 1;
 
-    /// Transaction data format version
+    // Transaction data format version
     uint32 version = 2;
 
     // A list of 1 or more transaction inputs or sources for coins.
@@ -19,10 +20,10 @@ message Transaction {
     // A list of 1 or more transaction outputs or destinations for coins
     repeated TransactionOutput outputs = 4;
 
-    /// The time when a transaction can be spent (usually zero, in which case it has no effect).
+    // The time when a transaction can be spent (usually zero, in which case it has no effect).
     uint32 lockTime = 5;
 
-    /// The block height at which the transaction expires and is no longer valid.
+    // The block height at which the transaction expires and is no longer valid.
     uint32 expiry = 6;
 }
 
@@ -34,8 +35,13 @@ message TransactionInput {
     // Transaction version as defined by the sender.
     uint32 sequence = 2;
 
+    // The amount of the input
 	int64 valueIn = 3;
+
+    // Creation block height
 	uint32 blockHeight = 4;
+
+    // Index within the block
 	uint32 blockIndex = 5;
 
     // Computational script for confirming transaction authorization.
@@ -47,14 +53,14 @@ message TransactionOutput {
     // Transaction amount.
     int64 value = 1;
 
-    /// Transaction output version.
+    // Transaction output version.
     uint32 version = 2;
 
     // Usually contains the public key as a Decred script setting up conditions to claim this output.
     bytes script = 3;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Resulting transaction. Note that the amount may be different than the requested amount to account for fees and available funds.
     Transaction transaction = 1;

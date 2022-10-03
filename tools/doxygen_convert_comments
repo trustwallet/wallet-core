@@ -16,7 +16,7 @@ function process_swift_comments() {
 
 
 function swift_convert() {
-  echo "Processing swift convertion"
+  echo "Processing swift conversion"
 
   for d in $SWIFT_FOLDER_PATH ; do
       process_swift_comments $d

@@ -5,32 +5,39 @@ option java_package = "wallet.core.jni.proto";
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
-
+    // Contract ID, e.g. "ONT"
     string contract = 1;
 
+    // Method, e.g. "transfer"
     string method = 2;
 
+    // The secret private key used for signing (32 bytes).
     bytes owner_private_key = 3;
 
     // base58 encode address string (160-bit number)
     string to_address = 4;
 
+    // Transfer amount
     uint64 amount = 5;
 
+    // Private key of the payer
     bytes payer_private_key = 6;
 
+    // Gas price
     uint64 gas_price = 7;
 
+    // Limit for gas used
     uint64 gas_limit = 8;
 
     // base58 encode address string (160-bit number)
     string query_address = 9;
 
+    // Nonce (should be larger than in the last transaction of the account)
     uint32 nonce = 10;
 
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;

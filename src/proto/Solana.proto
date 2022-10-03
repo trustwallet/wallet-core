@@ -3,41 +3,62 @@ syntax = "proto3";
 package TW.Solana.Proto;
 option java_package = "wallet.core.jni.proto";
 
+// Transfer transaction
 message Transfer {
+    // destination address
     string recipient = 1;
+
+    // amount
     uint64 value = 2;
-    string memo = 3;  // optional
-    repeated string references = 4; // optional referenced public keys
+
+    // optional memo
+    string memo = 3;
+
+    // optional referenced public keys
+    repeated string references = 4;
 }
 
 // Create and initialize a stake account, and delegate amount to it.
 // Recommendation behavior is to not specify a stake account, and a new unique account will be created each time.
 // Optionally a stake account pubkey can be specified, but it should not exist on chain.
 message DelegateStake {
+    // Validator's public key
     string validator_pubkey = 1;
+
+    // delegation amount
     uint64 value = 2;
+
+    // staking account
     string stake_account = 3;
 }
 
 // Deactivate staking on stake account
 message DeactivateStake {
+    // staking account
     string stake_account = 1;
 }
 
 // Deactivate staking on multiple stake account
 message DeactivateAllStake {
+    // staking accounts
     repeated string stake_accounts = 1;
 }
 
 // Withdraw amount from stake account
 message WithdrawStake {
+    // staking account
     string stake_account = 1;
+
+    // withdrawal amount
     uint64 value = 2;
 }
 
-// Techinical structure to group a staking account and an amount
+// Technical structure to group a staking account and an amount
 message StakeAccountValue {
+    // staking account
     string stake_account = 1;
+
+    // amount
     uint64 value = 2;
 }
 
@@ -50,39 +71,74 @@ message WithdrawAllStake {
 message CreateTokenAccount {
     // main account -- can be same as signer, or other main account (if done on some other account's behalf)
     string main_address = 1;
+
+    // Token minting address
     string token_mint_address = 2;
+
+    // Token address
     string token_address = 3;
 }
 
 // Transfer tokens
 message TokenTransfer {
+    // Mint address of the token
     string token_mint_address = 1;
+
+    // Source address
     string sender_token_address = 2;
+
+    // Destination address
     string recipient_token_address = 3;
+
+    // Amount
     uint64 amount = 4;
-    uint32 decimals = 5; // Note: 8-bit value
-    string memo = 6;  // optional
-    repeated string references = 7; // optional referenced public keys
+
+    // Note: 8-bit value
+    uint32 decimals = 5;
+
+    // optional memo§
+    string memo = 6;  
+
+    // optional referenced public keys
+    repeated string references = 7;
 }
 
 // CreateTokenAccount and TokenTransfer combined
 message CreateAndTransferToken {
     // main account -- can be same as signer, or other main account (if done on some other account's behalf)
     string recipient_main_address = 1;
+
+    // Mint address of the token
     string token_mint_address = 2;
+
     // Token address for the recipient, will be created first
     string recipient_token_address = 3;
+
+    // Sender's token address
     string sender_token_address = 4;
+
+    // amount
     uint64 amount = 5;
-    uint32 decimals = 6; // Note: 8-bit value
-    string memo = 7;  // optional
-    repeated string references = 8; // optional referenced public keys
+
+    // Note: 8-bit value
+    uint32 decimals = 6;
+
+    // optional
+    string memo = 7;
+
+    // optional referenced public keys
+    repeated string references = 8;
 }
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 1;
+
+    // Relatively recent block hash
     string recent_blockhash = 2;
+
+    // Payload message
     oneof transaction_type {
         Transfer transfer_transaction = 3;
         DelegateStake delegate_stake_transaction = 4;
@@ -96,7 +152,8 @@ message SigningInput {
     }
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
+    // The encoded transaction
     string encoded = 1;
 }

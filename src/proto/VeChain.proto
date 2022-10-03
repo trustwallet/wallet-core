@@ -3,11 +3,12 @@ syntax = "proto3";
 package TW.VeChain.Proto;
 option java_package = "wallet.core.jni.proto";
 
+// A clause, between a sender and destination
 message Clause {
     /// Recipient address.
     string to = 1;
 
-    /// Transaction amount.
+    /// Transaction amount (uint256, serialized little endian)
     bytes value = 2;
 
     /// Payload data.
@@ -43,11 +44,11 @@ message SigningInput {
     /// Number set by user.
     uint64 nonce = 8;
 
-    // Private key.
+    /// The secret private key used for signing (32 bytes).
     bytes private_key = 9;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;

@@ -5,12 +5,13 @@ option java_package = "wallet.core.jni.proto";
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
-    // Private key
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 1;
 
     // Optional parent block hash
     bytes parent_block = 2;
 
+    // Receive/Send reference
     oneof link_oneof {
         // Hash of a block to receive from
         bytes link_block = 3;
@@ -28,12 +29,14 @@ message SigningInput {
     string work = 7;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Signature
     bytes signature = 1;
+
     // Block hash
     bytes block_hash = 2;
-    // Json representation of the block
+
+    // JSON representation of the block
     string json = 3;
 }

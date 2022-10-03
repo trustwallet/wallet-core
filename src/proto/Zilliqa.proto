@@ -3,14 +3,17 @@ syntax = "proto3";
 package TW.Zilliqa.Proto;
 option java_package = "wallet.core.jni.proto";
 
+// Generic transaction
 message Transaction {
+    // Transfer transaction
     message Transfer {
-        // Amount to send (256-bit number)
+        // Amount to send (uint256, serialized little endian)
         bytes amount           = 1;
     }
 
+    // Generic contract call
     message Raw {
-        // Amount to send (256-bit number)
+        // Amount to send (uint256, serialized little endian)
         bytes amount           = 1;
 
         // Smart contract code
@@ -43,13 +46,14 @@ message SigningInput {
     // GasLimit
     uint64 gas_limit       = 5;
 
-    // Private Key
+    // The secret private key used for signing (32 bytes).
     bytes private_key      = 6;
 
+    // The payload transaction
     Transaction transaction = 7;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Signed signature bytes.
     bytes signature = 1;

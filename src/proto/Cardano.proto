@@ -5,30 +5,45 @@ option java_package = "wallet.core.jni.proto";
 
 import "Common.proto";
 
+// A transaction output that can be used as input
 message OutPoint {
+    // The transaction ID
     bytes tx_hash = 1;
+
+    // The index of this output within the transaction
     uint64 output_index = 2;
 }
 
+// Represents a token and an amount. Token is identified by PolicyID and name.
 message TokenAmount {
-    string policy_id = 1; // as hex string (28x2 digits)
+    // Policy ID of the token, as hex string (28x2 digits)
+    string policy_id = 1;
+
+    // The name of the asset (within the policy)
     string asset_name = 2;
-    bytes amount = 3; // 256-bit number
+
+    // The amount (uint256, serialized little endian)
+    bytes amount = 3;
 }
 
+// One input for a transaction
 message TxInput {
+    // The UTXO
     OutPoint out_point = 1;
 
+    // The owner address (string)
     string address = 2;
 
-    // ADA amount
+    // ADA amount in the UTXO
     uint64 amount = 3;
 
-    // optional token amounts
+    // optional token amounts in the UTXO
     repeated TokenAmount token_amount = 4;
 }
 
+// One output for a transaction
 message TxOutput {
+    // Destination address (string)
     string address = 1;
     
     // ADA amount
@@ -43,6 +58,7 @@ message TokenBundle {
     repeated TokenAmount token = 1;
 }
 
+// Message for simple Transfer tx
 message Transfer {
     // Destination address as string
     string to_address = 1;
@@ -66,7 +82,7 @@ message Transfer {
     uint64 force_fee = 6;
 }
 
-// Register a staking key for the account, preprequisite for Staking.
+// Register a staking key for the account, prerequisite for Staking.
 // Note: staking messages are typically used with a 1-output-to-self transaction.
 message RegisterStakingKey {
     // Staking address (as string)
@@ -106,6 +122,7 @@ message Withdraw {
     uint64 withdraw_amount = 2;
 }
 
+// Describes a preliminary transaction plan.
 message TransactionPlan {
     // total coins in the utxos
     uint64 available_amount = 1;
@@ -134,16 +151,19 @@ message TransactionPlan {
     // tokens in the change (optional)
     repeated TokenAmount change_tokens = 7;
 
+    // The selected UTXOs, subset ot the input UTXOs
     repeated TxInput utxos = 8;
     
+    // Optional error
     Common.Proto.SigningError error = 9;
 }
 
-// Input data necessary to create a signed transaction
+// Input data necessary to create a signed transaction.
 message SigningInput {
+    // Available input UTXOs
     repeated TxInput utxos = 1;
 
-    // Available private keys (double extended keys); every input UTXO adress should be covered
+    // Available private keys (double extended keys); every input UTXO address should be covered
     // In case of Plan only, keys should be present, in correct number
     repeated bytes private_key = 2;
 
@@ -162,14 +182,16 @@ message SigningInput {
     // Optional
     DeregisterStakingKey deregister_staking_key = 9;
 
+    // Time-to-live time of the TX
     uint64 ttl = 4;
 
-    // Optional plan
+    // Optional plan, if missing it will be computed
     TransactionPlan plan = 5;
 }
 
-// Transaction signing output
+// Result containing the signed and encoded transaction.
 message SigningOutput {
+    // Encoded transaction bytes
     bytes encoded = 1;
 
     // TxID, derived from transaction data, also needed for submission

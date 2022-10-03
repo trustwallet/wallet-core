@@ -22,7 +22,7 @@ message TransactionPlan {
     // A list of 1 or more selected cells for this transaction
     repeated Cell selected_cells = 3;
 
-    // A list of 1 or more outputs by this transaciton
+    // A list of 1 or more outputs by this transaction
     repeated CellOutput outputs = 4;
 
     // A list of outputs data.
@@ -74,6 +74,7 @@ message Script {
     bytes args = 3;
 }
 
+// Transfer of native asset
 message NativeTransfer {
     // Recipient's address.
     string to_address = 1;
@@ -88,6 +89,7 @@ message NativeTransfer {
     bool use_max_amount = 4;
 }
 
+// Token transfer (SUDT)
 message SudtTransfer {
     // Recipient's address.
     string to_address = 1;
@@ -105,6 +107,7 @@ message SudtTransfer {
     bool use_max_amount = 5;
 }
 
+// Deposit
 message DaoDeposit {
     // Recipient's address.
     string to_address = 1;
@@ -140,7 +143,7 @@ message SigningInput {
     // Transaction fee per byte.
     uint64 byte_fee = 1;
 
-    // Available private keys.
+    // The available secret private keys used for signing (32 bytes each).
     repeated bytes private_key = 2;
 
     // Available unspent cell outputs.
@@ -149,6 +152,7 @@ message SigningInput {
     // Optional transaction plan
     TransactionPlan plan = 4;
 
+    // The payload transfer
     oneof operation_oneof {
         NativeTransfer native_transfer = 5;
         SudtTransfer sudt_transfer = 6;
@@ -191,7 +195,7 @@ message Cell {
     bytes output_type = 10;
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Resulting transaction. Note that the amount may be different than the requested amount to account for fees and available funds.
     string transaction_json = 1;

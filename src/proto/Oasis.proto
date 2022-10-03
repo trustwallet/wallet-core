@@ -9,28 +9,39 @@ syntax = "proto3";
 package TW.Oasis.Proto;
 option java_package = "wallet.core.jni.proto";
 
+// Transfer
 message TransferMessage {
+    // destination address
     string to = 1;
+
+    // Gas price
     uint64 gas_price = 2;
 
     // Amount values strings prefixed by zero. e.g. "\u000010000000"
     string gas_amount = 3;
+
     // Amount values strings prefixed by zero
     string amount = 4;
 
+    // Nonce (should be larger than in the last transaction of the account)
     uint64 nonce = 5;
+
+    // Context, see https://docs.oasis.dev/oasis-core/common-functionality/crypto#domain-separation
     string context = 6;
 }
 
+// Input data necessary to create a signed transaction.
 message SigningInput {
+    // The secret private key used for signing (32 bytes).
     bytes private_key = 1;
 
+    // Transfer payload
     oneof message {
         TransferMessage transfer = 2;
     }
 }
 
-// Transaction signing output.
+// Result containing the signed and encoded transaction.
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
