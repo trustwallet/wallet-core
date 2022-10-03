@@ -2062,6 +2062,36 @@
     }
   },
   {
+    "id": "zksync",
+    "name": "Zksync",
+    "displayName": "zkSync v2",
+    "coinId": 10000280,
+    "slip44": 60,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "280",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://zksync2-testnet.zkscan.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://portal.zksync.io/",
+      "source": "https://github.com/matter-labs/zksync",
+      "rpc": "https://zksync2-testnet.zksync.dev",
+      "documentation": "https://v2-docs.zksync.io"
+    }
+  },
+  {
     "id": "arbitrum",
     "name": "Arbitrum",
     "coinId": 10042221,
