@@ -54,6 +54,7 @@ enum TWBlockchain {
     TWBlockchainKusama = 40, // Polkadot
     TWBlockchainNervos = 41,
     TWBlockchainEverscale = 42,
+    TWBlockchainAptos = 43, // Aptos
 };
 
 TW_EXTERN_C_END

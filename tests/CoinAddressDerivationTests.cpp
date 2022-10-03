@@ -248,6 +248,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeNervos:
             EXPECT_EQ(address, "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqtsqfsf77ae0wn5a7795hs2ydv83g6hl4qleywxw");
             break;
+        case TWCoinTypeAptos:
+            EXPECT_EQ(address, "0xce2fd04ac9efa74f17595e5785e847a2399d7e637f5e8179244f76191f653276");
+            break;
             // no default branch here, intentionally, to better notice any missing coins
         }
     }

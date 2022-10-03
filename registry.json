@@ -394,6 +394,36 @@
     }
   },
   {
+    "id": "aptos",
+    "name": "Aptos",
+    "displayName": "Aptos",
+    "coinId": 637,
+    "symbol": "APT",
+    "decimals": 8,
+    "chainId": "1",
+    "blockchain": "Aptos",
+    "derivation": [
+      {
+        "path": "m/44'/637'/0'/0'/0'"
+      }
+    ],
+    "curve": "ed25519",
+    "publicKeyType": "ed25519",
+    "explorer": {
+      "url": "https://explorer.aptoslabs.com",
+      "txPath": "/txn/",
+      "accountPath": "/account/",
+      "sampleTx": "91424546",
+      "sampleAccount": "0x6af7d07b8a541913dfa87a9f99628faa255c70241ef9ebd9b82a7e715ee13108"
+    },
+    "info": {
+      "url": "https://aptoslabs.com/",
+      "source": "https://github.com/aptos-labs/aptos-core",
+      "rpc": "https://fullnode.devnet.aptoslabs.com",
+      "documentation": "https://fullnode.devnet.aptoslabs.com/v1/spec#/"
+    }
+  },
+  {
     "id": "cosmos",
     "name": "Cosmos",
     "displayName": "Cosmos Hub",

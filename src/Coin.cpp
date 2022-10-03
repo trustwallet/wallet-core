@@ -16,6 +16,7 @@
 #include "Aeternity/Entry.h"
 #include "Aion/Entry.h"
 #include "Algorand/Entry.h"
+#include "Aptos/Entry.h"
 #include "Binance/Entry.h"
 #include "Bitcoin/Entry.h"
 #include "Cardano/Entry.h"
@@ -63,6 +64,7 @@ using namespace std;
 Aeternity::Entry aeternityDP;
 Aion::Entry aionDP;
 Algorand::Entry algorandDP;
+Aptos::Entry AptosDP;
 Binance::Entry binanceDP;
 Bitcoin::Entry bitcoinDP;
 Cardano::Entry cardanoDP;
@@ -150,6 +152,7 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWBlockchainKusama: entry = &kusamaDP; break;
         case TWBlockchainNervos: entry = &NervosDP; break;
         case TWBlockchainEverscale: entry = &EverscaleDP; break;
+        case TWBlockchainAptos: entry = &AptosDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;
