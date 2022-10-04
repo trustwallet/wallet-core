@@ -43,6 +43,16 @@ message CreateAccountMessage {
   string auth_key = 1;
 }
 
+
+message OfferNftMessage {
+  string receiver = 1; // Receiver address
+  string creator = 2; // Creator address
+  string collectionName = 3;
+  string name = 4;
+  string property_version = 5;
+  string amount = 6;
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
   // Sender Account address (string)
@@ -53,19 +63,20 @@ message SigningInput {
     TransferMessage transfer = 3;
     TokenTransferMessage token_transfer = 4;
     CreateAccountMessage create_account = 5;
+    OfferNftMessage offer_nft = 6;
   }
   // Max gas amount that the user is willing to pay (uint64)
-  uint64 max_gas_amount = 6;
+  uint64 max_gas_amount = 7;
   // Gas unit price - queried through API (uint64)
-  uint64 gas_unit_price = 7;
+  uint64 gas_unit_price = 8;
   // Expiration timestamp for the transaction, can't be in the past (uint64)
-  uint64 expiration_timestamp_secs = 8;
+  uint64 expiration_timestamp_secs = 9;
   //  Chain id 1 (mainnet) 32(devnet) (uint32 - casted in uint8_t later)
-  uint32 chain_id = 9;
+  uint32 chain_id = 10;
   //  Private key to sign the transaction (bytes)
-  bytes private_key = 10;
+  bytes private_key = 11;
   // hex encoded function to sign, use it for smart contract approval (string)
-  string any_encoded = 11;
+  string any_encoded = 12;
 }
 
 // Information related to the signed transaction
