@@ -47,6 +47,9 @@ class SegwitAddress {
     /// Taproot (v>=1) is not supported by this method.
     SegwitAddress(const PublicKey& publicKey, std::string hrp);
 
+    /// Create a testnet address
+    static SegwitAddress createTestnetFromPublicKey(const PublicKey& publicKey) { return SegwitAddress(publicKey, "tb"); }
+
     /// Decodes a SegWit address.
     ///
     /// \returns a tuple with the address, hrp, and a success flag.
