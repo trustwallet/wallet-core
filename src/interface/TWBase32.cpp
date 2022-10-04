@@ -12,11 +12,11 @@
 
 using namespace TW;
 
-TWData* TWBase32DecodeWithAlphabet(TWString* _Nonnull string, TWString* _Nonnull alphabet) {
+TWData* TWBase32DecodeWithAlphabet(TWString* _Nonnull string, TWString* _Nullable alphabet) {
     Data decodedOut;
     auto cppString = *reinterpret_cast<const std::string*>(string);
     const char* alphabetRaw = nullptr;
-    if (TWStringSize(alphabet) > 0) {
+    if (alphabet != nullptr) {
         alphabetRaw = TWStringUTF8Bytes(alphabet);
     }
     auto result = Base32::decode(cppString, decodedOut, alphabetRaw);
@@ -24,14 +24,13 @@ TWData* TWBase32DecodeWithAlphabet(TWString* _Nonnull string, TWString* _Nonnull
 }
 
 TWData* _Nullable TWBase32Decode(TWString* _Nonnull string) {
-    std::string empty;
-    return TWBase32DecodeWithAlphabet(string, &empty);
+    return TWBase32DecodeWithAlphabet(string, nullptr);
 }
 
-TWString* _Nonnull TWBase32EncodeWithAlphabet(TWData* _Nonnull data, TWString* _Nonnull alphabet) {
+TWString* _Nonnull TWBase32EncodeWithAlphabet(TWData* _Nonnull data, TWString* _Nullable alphabet) {
     auto cppData = *reinterpret_cast<const Data*>(data);
     const char* alphabetRaw = nullptr;
-    if (TWStringSize(alphabet) > 0) {
+    if (alphabet != nullptr) {
         alphabetRaw = TWStringUTF8Bytes(alphabet);
     }
     auto result = Base32::encode(cppData, alphabetRaw);
@@ -39,6 +38,5 @@ TWString* _Nonnull TWBase32EncodeWithAlphabet(TWData* _Nonnull data, TWString* _
 }
 
 TWString* _Nonnull TWBase32Encode(TWData* _Nonnull data) {
-    std::string empty;
-    return TWBase32EncodeWithAlphabet(data, &empty);
+    return TWBase32EncodeWithAlphabet(data, nullptr);
 }
