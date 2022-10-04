@@ -97,5 +97,6 @@ BCS::Serializer& operator<<(BCS::Serializer& stream, const Vector& t) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, const TStructTag& t) noexcept;
 BCS::Serializer& operator<<(BCS::Serializer& stream, const TypeTag& t) noexcept;
 static const TypeTag gTransferTag = {TypeTag::TypeTagVariant(TStructTag{.st = StructTag(gAddressOne, "aptos_coin", "AptosCoin", {})})};
+static const TypeTag gOfferNftTag = {TypeTag::TypeTagVariant(TStructTag{.st = StructTag(gAddressThree, "token_transfers", "offer_script", {})})};
 
 } // namespace TW::Aptos

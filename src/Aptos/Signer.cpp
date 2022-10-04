@@ -44,6 +44,98 @@ TransactionPayload createAccountPayload(const Proto::SigningInput& input) {
     return payload;
 }
 
+TransactionPayload claimNftPayload(const Proto::SigningInput& input) {
+    std::vector<Data> args;
+    ModuleId module(gAddressThree, "token_transfers");
+    auto& nftOffer = input.claim_nft();
+    {
+        BCS::Serializer serializer;
+        serializer << Address(nftOffer.sender());
+        args.emplace_back(serializer.bytes);
+    }
+    {
+        BCS::Serializer serializer;
+        serializer << Address(nftOffer.creator());
+        args.emplace_back(serializer.bytes);
+    }
+    {
+        BCS::Serializer serializer;
+        serializer << nftOffer.collectionname();
+        args.emplace_back(serializer.bytes);
+    }
+    {
+        BCS::Serializer serializer;
+        serializer << nftOffer.name();
+        args.emplace_back(serializer.bytes);
+    }
+    {
+        BCS::Serializer serializer;
+        serializer << nftOffer.property_version();
+        args.emplace_back(serializer.bytes);
+    }
+    // clang-format off
+    nlohmann::json argsJson = nlohmann::json::array(
+                        {
+                            nftOffer.sender(),
+                            nftOffer.creator(),
+                            nftOffer.collectionname(),
+                            nftOffer.name(),
+                            std::to_string(nftOffer.property_version()),
+                        });
+    // clang-format on
+    TransactionPayload payload = EntryFunction(module, "claim_script", {}, args, argsJson);
+    return payload;
+}
+
+TransactionPayload nftOfferPayload(const Proto::SigningInput& input) {
+    std::vector<Data> args;
+    ModuleId module(gAddressThree, "token_transfers");
+    auto& nftOffer = input.offer_nft();
+    {
+        BCS::Serializer serializer;
+        serializer << Address(nftOffer.receiver());
+        args.emplace_back(serializer.bytes);
+    }
+    {
+        BCS::Serializer serializer;
+        serializer << Address(nftOffer.creator());
+        args.emplace_back(serializer.bytes);
+    }
+    {
+        BCS::Serializer serializer;
+        serializer << nftOffer.collectionname();
+        args.emplace_back(serializer.bytes);
+    }
+    {
+        BCS::Serializer serializer;
+        serializer << nftOffer.name();
+        args.emplace_back(serializer.bytes);
+    }
+    {
+        BCS::Serializer serializer;
+        serializer << nftOffer.property_version();
+        args.emplace_back(serializer.bytes);
+    }
+    {
+        BCS::Serializer serializer;
+        serializer << nftOffer.amount();
+        args.emplace_back(serializer.bytes);
+    }
+    // clang-format off
+    nlohmann::json argsJson = nlohmann::json::array(
+                        {
+                            nftOffer.receiver(),
+                            nftOffer.creator(),
+                            nftOffer.collectionname(),
+                            nftOffer.name(),
+                            std::to_string(nftOffer.property_version()),
+                            std::to_string(nftOffer.amount())
+                        });
+    // clang-format on
+    TransactionPayload payload = EntryFunction(module, "offer_script", {}, args, argsJson);
+    return payload;
+}
+
 TransactionPayload tokenTransferPayload(const Proto::SigningInput& input) {
 
     auto&& [args, argsJson] = commonTransferPayload(input.token_transfer());
@@ -94,10 +186,18 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
         case Proto::SigningInput::kTokenTransfer: {
             return tokenTransferPayload(input);
         }
+        case Proto::SigningInput::kOfferNft: {
+            return nftOfferPayload(input);
+        }
+        case Proto::SigningInput::kClaimNft:{
+            return claimNftPayload(input);
+        }
         case Proto::SigningInput::kCreateAccount:
             return createAccountPayload(input);
+
         case Proto::SigningInput::TRANSACTION_PAYLOAD_NOT_SET:
             throw std::runtime_error("Transaction payload should be set");
+
         }
     };
     TransactionBuilder::builder()
