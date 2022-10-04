@@ -74,8 +74,18 @@ class PublicKey {
     /// bytes and then prepending the prefix.
     Data hash(const Data& prefix, Hash::Hasher hasher = Hash::HasherSha256ripemd, bool skipTypeByte = false) const;
 
+    /// Recover public key (SECP256k1Extended) from signature R, S, V values
+    /// signatureRS: 2x32 bytes with the R and S values
+    /// recId: the recovery ID, a.k.a. V value, 0 <= v < 4
+    /// messageDigest: message digest (hash) to be signed
+    /// Throws on invalid data
+    static PublicKey recoverRaw(const Data& signatureRS, byte recId, const Data& messageDigest);
+
     /// Recover public key from signature (SECP256k1Extended)
-    static PublicKey recover(const Data& signature, const Data& message);
+    /// signature: 65-byte signature (R, S, and V). V can have higher value bits, which can be discarded.
+    /// messageDigest: message digest (hash) to be signed
+    /// Throws on invalid data
+    static PublicKey recover(const Data& signature, const Data& messageDigest);
 
     /// Check if this key makes a valid ED25519 key (it is on the curve)
     bool isValidED25519() const;

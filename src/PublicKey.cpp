@@ -206,7 +206,25 @@ Data PublicKey::hash(const Data& prefix, Hash::Hasher hasher, bool skipTypeByte)
     return result;
 }
 
-PublicKey PublicKey::recover(const Data& signature, const Data& message) {
+PublicKey PublicKey::recoverRaw(const Data& signatureRS, byte recId, const Data& messageDigest) {
+    if (signatureRS.size() < 64) {
+        throw std::invalid_argument("signature too short");
+    }
+    if (recId >= 4) {
+        throw std::invalid_argument("Invalid recId (>=4)");
+    }
+    if (messageDigest.size() < 32) {
+        throw std::invalid_argument("digest too short");
+    }
+    TW::Data result(65);
+    int ret = ecdsa_recover_pub_from_sig(&secp256k1, result.data(), signatureRS.data(), messageDigest.data(), recId);
+    if (ret != 0) {
+        throw std::invalid_argument("recover failed " + std::to_string(ret));
+    }
+    return PublicKey(result, TWPublicKeyTypeSECP256k1Extended);
+}
+
+PublicKey PublicKey::recover(const Data& signature, const Data& messageDigest) {
     if (signature.size() < 65) {
         throw std::invalid_argument("signature too short");
     }
@@ -215,11 +233,7 @@ PublicKey PublicKey::recover(const Data& signature, const Data& message) {
     if (v >= 27) {
         v = !(v & 0x01);
     }
-    TW::Data result(65);
-    if (ecdsa_recover_pub_from_sig(&secp256k1, result.data(), signature.data(), message.data(), v) != 0) {
-        throw std::invalid_argument("recover failed");
-    }
-    return PublicKey(result, TWPublicKeyTypeSECP256k1Extended);
+    return recoverRaw(signature, v, messageDigest);
 }
 
 bool PublicKey::isValidED25519() const {
