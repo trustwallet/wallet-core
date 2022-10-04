@@ -173,7 +173,7 @@ async function main() {
                 console.log(`Exception: ${err}`);
             }
         }
-        async addCoin(coin: string): Promise<void> {
+        async addCoin(coin: string): Promise<any> {
             if (this.wallet == null) {
                 console.error('No wallet open, see walletCreate() / walletLoad() / walletsList()');
                 return;
@@ -181,6 +181,7 @@ async function main() {
             if (!this.keystore) { return; }
             const wallet = await this.keystore.addAccounts(this.wallet?.wallet.identifier(), this.StoreFixedPassword, [coin]);
             this.wallet = new StoredKeyWallet(this.keystore.mapStoredKey(wallet));
+            return this.wallet;
         }
         // Delete loaded wallet
         async delete(param: string): Promise<void> {
@@ -250,7 +251,7 @@ async function main() {
     async function walletsDeleteAll(param: string) { await wallets.deleteAll(param); }
     async function walletCreate(strength: number = 256, name: string = ''): Promise<any> { return await wallets.create(strength, name); }
     async function walletImport(mnemonic: string, name: string = ''): Promise<any> { return wallets.import(mnemonic, name); }
-    async function walletAddCoin(coin: string): Promise<void> { return wallets.addCoin(coin); }
+    async function walletAddCoin(coin: string): Promise<void> { return await wallets.addCoin(coin); }
     function walletDump(): void { wallets.dump(); }
     async function walletDelete(param: string) { await wallets.delete(param); }
 
@@ -276,6 +277,11 @@ async function main() {
         console.log("    walletCreate([strength], [name])             walletCreate(128)");
         console.log("    walletImport(mnemonic, [name])               walletImport('ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal', 'Test1')");
         console.log("    walletDump()                                 walletDump()");
+        console.log("    walletAddCoin(symbol)                        walletAddCoin(CoinType.solana)");
+        console.log("    walletsList()                                walletsList()");
+        console.log("    walletLoad()                                 walletLoad(0)");
+        console.log("    walletDelete()                               walletDelete('delete')");
+        console.log("    walletsDeleteAll()                           walletsDeleteAll('deleteall')");
         console.log();
         console.log("See examples in samplescripts folder, e.g.:  cat samplescripts/protoeth.sampleinput.txt | npm run start");
         console.log();
