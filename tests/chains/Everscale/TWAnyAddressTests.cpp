@@ -7,7 +7,7 @@
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWHDWallet.h>
 
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <gtest/gtest.h>
 
 namespace TW::Everscale {

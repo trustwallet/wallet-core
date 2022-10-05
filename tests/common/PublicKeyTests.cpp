@@ -9,7 +9,7 @@
 #include "Hash.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
-#include "interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 

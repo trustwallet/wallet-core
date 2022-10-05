@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "HexCoding.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 
 #include "Ontology/Oep4TxBuilder.h"
 #include "Ontology/OngTxBuilder.h"

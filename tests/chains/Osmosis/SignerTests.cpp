@@ -9,7 +9,7 @@
 #include "HexCoding.h"
 #include "PublicKey.h"
 #include "proto/Cosmos.pb.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 

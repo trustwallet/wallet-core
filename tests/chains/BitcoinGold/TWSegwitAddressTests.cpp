@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 //
 
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include "Bitcoin/SegwitAddress.h"
 #include "Coin.h"
 #include "PrivateKey.h"

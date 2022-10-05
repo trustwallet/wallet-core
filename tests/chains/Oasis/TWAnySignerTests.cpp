@@ -8,7 +8,7 @@
 #include "HexCoding.h"
 #include "proto/Oasis.pb.h"
 
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <gtest/gtest.h>
 
 using namespace TW;

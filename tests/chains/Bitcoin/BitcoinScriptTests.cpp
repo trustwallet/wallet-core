@@ -6,7 +6,7 @@
 
 #include "Bitcoin/Script.h"
 #include "Bitcoin/SignatureBuilder.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include "HexCoding.h"
 
 #include <gtest/gtest.h>

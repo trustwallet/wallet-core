@@ -9,7 +9,7 @@
 #include "Harmony/Staking.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include "proto/Harmony.pb.h"
 #include "uint256.h"
 #include <TrustWalletCore/TWAnySigner.h>

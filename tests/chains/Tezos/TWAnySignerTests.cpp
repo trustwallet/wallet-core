@@ -7,7 +7,7 @@
 #include "HexCoding.h"
 #include "Tezos/BinaryCoding.h"
 #include "proto/Tezos.pb.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 
 #include <gtest/gtest.h>

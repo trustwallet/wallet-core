@@ -10,7 +10,7 @@
 #include "Cosmos/Signer.h"
 #include "HexCoding.h"
 #include "proto/Cosmos.pb.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <gtest/gtest.h>
 
 namespace TW::Cosmos::tests {

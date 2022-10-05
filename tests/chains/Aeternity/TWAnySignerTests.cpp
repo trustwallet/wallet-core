@@ -9,7 +9,7 @@
 #include "proto/Aeternity.pb.h"
 #include <TrustWalletCore/TWAnySigner.h>
 
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <gtest/gtest.h>
 
 namespace TW::Aeternity::tests {

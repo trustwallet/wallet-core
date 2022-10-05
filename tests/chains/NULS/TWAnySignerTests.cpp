@@ -9,7 +9,7 @@
 #include <TrustWalletCore/TWAnySigner.h>
 #include "uint256.h"
 
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <gtest/gtest.h>
 
 namespace TW::NULS::tests {

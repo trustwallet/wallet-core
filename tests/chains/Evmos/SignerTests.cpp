@@ -9,7 +9,7 @@
 #include "proto/Cosmos.pb.h"
 #include "Cosmos/Address.h"
 #include "Cosmos/Signer.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 
 #include <nlohmann/json.hpp>
 

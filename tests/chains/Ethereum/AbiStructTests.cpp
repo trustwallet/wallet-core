@@ -7,7 +7,7 @@
 #include "Ethereum/ABI.h"
 #include "Ethereum/Address.h"
 #include "Ethereum/Signer.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <HexCoding.h>
 #include <PrivateKey.h>
 

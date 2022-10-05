@@ -10,7 +10,7 @@
 #include "Solana/Address.h"
 #include "Solana/Program.h"
 #include "PrivateKey.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 
 #include <gtest/gtest.h>

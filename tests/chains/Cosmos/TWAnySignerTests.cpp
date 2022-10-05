@@ -7,7 +7,7 @@
 #include "Cosmos/Address.h"
 #include "HexCoding.h"
 #include "proto/Cosmos.pb.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 #include <gtest/gtest.h>
 

@@ -8,7 +8,7 @@
 #include "THORChain/Signer.h"
 #include "HexCoding.h"
 #include "Bech32Address.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 #include <google/protobuf/util/json_util.h>

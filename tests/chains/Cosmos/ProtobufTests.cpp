@@ -13,7 +13,7 @@
 #include "HexCoding.h"
 
 #include "Protobuf/Article.pb.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 
 #include <google/protobuf/util/json_util.h>
 #include <nlohmann/json.hpp>

@@ -23,7 +23,7 @@
 #include "uint256.h"
 #include <TrustWalletCore/TWAnySigner.h>
 
-#include "interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <gtest/gtest.h>
 
 using namespace TW;

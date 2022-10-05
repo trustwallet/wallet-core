@@ -6,7 +6,7 @@
 
 #include "Ethereum/ABI.h"
 #include "HexCoding.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 

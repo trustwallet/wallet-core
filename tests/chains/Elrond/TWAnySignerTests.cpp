@@ -10,7 +10,7 @@
 #include "Elrond/Signer.h"
 #include "HexCoding.h"
 #include "TestAccounts.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 
 using namespace TW;

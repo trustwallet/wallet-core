@@ -7,7 +7,7 @@
 #include "HexCoding.h"
 #include "proto/Ethereum.pb.h"
 #include "uint256.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 
 #include <gtest/gtest.h>

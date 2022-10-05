@@ -16,7 +16,7 @@
 
 #include "HexCoding.h"
 #include "uint256.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 

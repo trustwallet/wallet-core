@@ -8,7 +8,7 @@
 #include "Bitcoin/SigHashType.h"
 #include "HexCoding.h"
 #include "proto/Bitcoin.pb.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 
 #include <TrustWalletCore/TWBitcoinSigHashType.h>
 

@@ -18,7 +18,7 @@
 #include "HexCoding.h"
 #include "proto/Bitcoin.pb.h"
 #include "../Bitcoin/TxComparisonHelper.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 
 namespace TW::Bitcoin {
 

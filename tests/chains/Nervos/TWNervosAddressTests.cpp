@@ -8,7 +8,7 @@
 #include "PrivateKey.h"
 #include <TrustWalletCore/TWNervosAddress.h>
 
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <gtest/gtest.h>
 
 namespace TW::Nervos::tests {

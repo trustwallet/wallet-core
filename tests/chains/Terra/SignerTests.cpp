@@ -11,7 +11,7 @@
 #include "Cosmos/Signer.h"
 #include "Cosmos/ProtobufSerialization.h"
 #include "uint256.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 #include <google/protobuf/util/json_util.h>

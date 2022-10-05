@@ -6,7 +6,7 @@
 //
 //
 
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <TrustWalletCore/TWNEARAccount.h>
 #include <gtest/gtest.h>
 

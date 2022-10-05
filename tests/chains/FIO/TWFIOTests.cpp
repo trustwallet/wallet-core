@@ -10,7 +10,7 @@
 #include "proto/FIO.pb.h"
 #include "FIO/Address.h"
 #include "Data.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 

@@ -12,7 +12,7 @@
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWPublicKey.h>
 
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <gtest/gtest.h>
 
 using namespace TW;

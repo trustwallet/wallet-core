@@ -8,7 +8,7 @@
 #include "HexCoding.h"
 #include "IoTeX/Staking.h"
 #include "proto/IoTeX.pb.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 #include <gtest/gtest.h>
 

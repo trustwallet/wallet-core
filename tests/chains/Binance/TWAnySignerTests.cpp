@@ -10,7 +10,7 @@
 #include <TrustWalletCore/TWAnySigner.h>
 #include "Coin.h"
 
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <gtest/gtest.h>
 #include <thread>
 

@@ -7,7 +7,7 @@
 #include "Polkadot/SS58Address.h"
 #include "HexCoding.h"
 #include "PublicKey.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 #include <map>

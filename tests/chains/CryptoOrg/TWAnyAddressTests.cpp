@@ -7,7 +7,7 @@
 #include <TrustWalletCore/TWAnyAddress.h>
 #include "HexCoding.h"
 
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <gtest/gtest.h>
 
 using namespace TW;

@@ -9,7 +9,7 @@
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "proto/Bitcoin.pb.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include "../Bitcoin/TxComparisonHelper.h"
 #include <TrustWalletCore/TWBitcoinSigHashType.h>
 #include <TrustWalletCore/TWAnySigner.h>

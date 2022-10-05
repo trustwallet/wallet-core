@@ -12,7 +12,7 @@
 #include <TrustWalletCore/TWData.h>
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWCardano.h>
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include "PrivateKey.h"
 
 #include <gtest/gtest.h>

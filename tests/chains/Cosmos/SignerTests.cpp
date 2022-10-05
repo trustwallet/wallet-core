@@ -10,7 +10,7 @@
 #include "proto/Cosmos.pb.h"
 #include "Cosmos/Address.h"
 #include "Cosmos/Signer.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include "Cosmos/Protobuf/bank_tx.pb.h"
 
 #include <gtest/gtest.h>

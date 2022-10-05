@@ -6,7 +6,7 @@
 
 #include <TrustWalletCore/TWDataVector.h>
 #include "HexCoding.h"
-#include "TWTestUtilities.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 

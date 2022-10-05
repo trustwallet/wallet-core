@@ -7,7 +7,7 @@
 #include "Base58.h"
 #include "HexCoding.h"
 #include "proto/Waves.pb.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 #include <gtest/gtest.h>
 

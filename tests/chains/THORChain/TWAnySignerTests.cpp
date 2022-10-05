@@ -10,7 +10,7 @@
 #include "proto/Cosmos.pb.h"
 #include "HexCoding.h"
 
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <gtest/gtest.h>
 
 using namespace TW;

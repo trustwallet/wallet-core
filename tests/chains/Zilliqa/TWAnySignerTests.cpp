@@ -7,7 +7,7 @@
 #include "HexCoding.h"
 #include "uint256.h"
 #include "proto/Zilliqa.pb.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 #include <gtest/gtest.h>
 

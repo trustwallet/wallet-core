@@ -6,7 +6,7 @@
 
 #include "HexCoding.h"
 #include "PrivateKey.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <Aeternity/Signer.h>
 #include <gtest/gtest.h>
 

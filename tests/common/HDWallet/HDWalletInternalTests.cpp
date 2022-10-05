@@ -11,7 +11,7 @@
 #include "PublicKey.h"
 #include <TrezorCrypto/bip32.h>
 #include <TrezorCrypto/curves.h>
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 
 #include <gtest/gtest.h>
 #include <stdlib.h>

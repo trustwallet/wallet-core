@@ -20,7 +20,7 @@
 #include "Bitcoin/TransactionSigner.h"
 #include "HexCoding.h"
 #include "proto/Bitcoin.pb.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 
 using namespace TW;
 
