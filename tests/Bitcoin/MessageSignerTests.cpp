@@ -20,7 +20,9 @@
 #include <gtest/gtest.h>
 #include <iostream> // TODO remove
 
-namespace TW::Bitcoin {
+namespace TW::Bitcoin::MessageSignerTests {
+
+const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
 
 TEST(BitcoinMessageSigner, VerifyMessage) {
     EXPECT_TRUE(MessageSigner::verifyMessage(
@@ -56,7 +58,6 @@ TEST(BitcoinMessageSigner, VerifyMessage) {
 }
 
 TEST(BitcoinMessageSigner, SignAndVerify) {
-    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
     const auto pubKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     EXPECT_EQ(hex(pubKey.bytes), "0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1");
     const auto address = Address(pubKey, TW::p2pkhPrefix(TWCoinTypeBitcoin)).string();
@@ -89,6 +90,52 @@ TEST(BitcoinMessageSigner, SignAndVerify) {
 
         EXPECT_TRUE(MessageSigner::verifyMessage(addressUncomp, msg, signature));
     }
+}
+
+TEST(BitcoinMessageSigner, SignNegative) {
+    const auto address = Address(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1), TW::p2pkhPrefix(TWCoinTypeBitcoin)).string();
+    EXPECT_EQ(address, "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X");
+    const auto msg = "test signature";
+    // Use invalid address
+    EXPECT_EXCEPTION(MessageSigner::signMessage(privateKey, "__THIS_IS_NOT_A_VALID_ADDRESS__", msg), "Address is not valid (legacy) address");
+    // Use invalid address, not legacy
+    EXPECT_EXCEPTION(MessageSigner::signMessage(privateKey, "bc1qpjult34k9spjfym8hss2jrwjgf0xjf40ze0pp8", msg), "Address is not valid (legacy) address");
+    // Use valid, but not matching key
+    EXPECT_EXCEPTION(MessageSigner::signMessage(privateKey, "1B8Qea79tsxmn4dTiKKRVvsJpHwL2fMQnr", msg), "Address does not match key");
+}
+
+TEST(BitcoinMessageSigner, VerifyNegative) {
+    const auto sig = parse_hex("1fedcbe486d255c7a3a784b65702d70b12c43100160ef29b13c950caad2871dbf23356a812e764ccdfd2fea2c8def9cd38563a575dc15d6485acfaf73a319ae439");
+    // Baseline positive
+    EXPECT_TRUE(MessageSigner::verifyMessage(
+        "1B8Qea79tsxmn4dTiKKRVvsJpHwL2fMQnr",
+        "test signature",
+        sig
+    ));
+
+    // Provide non-matching address
+    EXPECT_FALSE(MessageSigner::verifyMessage(
+        "1HZwkjkeaoZfTSaJxDw6aKkxp45agDiEzN",
+        "test signature",
+        sig
+    ));
+    // Signature too short
+    EXPECT_EXCEPTION(MessageSigner::verifyMessage(
+        "1HZwkjkeaoZfTSaJxDw6aKkxp45agDiEzN",
+        "test signature",
+        parse_hex("1fedcbe486d255c7a3a784b65702d70b12c43100160ef29b13c950caad2871dbf23356a812e764ccdfd2fea2c8def9cd38563a575dc15d6485acfaf73a319ae4")
+    ), "signature too short");
+    // Invalid address  
+    EXPECT_EXCEPTION(MessageSigner::verifyMessage(
+        "__THIS_IS_NOT_A_VALID_ADDRESS__",
+        "test signature",
+        parse_hex("1fedcbe486d255c7a3a784b65702d70b12c43100160ef29b13c950caad2871dbf23356a812e764ccdfd2fea2c8def9cd38563a575dc15d6485acfaf73a319ae4")
+    ), "Input address invalid");
+    EXPECT_EXCEPTION(MessageSigner::verifyMessage(
+        "bc1qpjult34k9spjfym8hss2jrwjgf0xjf40ze0pp8",
+        "test signature",
+        parse_hex("1fedcbe486d255c7a3a784b65702d70b12c43100160ef29b13c950caad2871dbf23356a812e764ccdfd2fea2c8def9cd38563a575dc15d6485acfaf73a319ae4")
+    ), "Input address invalid");
 }
 
 } // namespace TW::Bitcoin

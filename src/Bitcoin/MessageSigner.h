@@ -36,7 +36,7 @@ class MessageSigner {
     /// message: the message signed (without prefix)
     /// signature: in Base64-encoded form.
     /// Returns false on any invalid input (does not throw).
-    static bool verifyMessage(const std::string& address, const std::string& message, const std::string& signature) nothrow;
+    static bool verifyMessage(const std::string& address, const std::string& message, const std::string& signature) noexcept;
 
     /// Verify signature for a message.
     /// Address: address to use, only legacy is supported
