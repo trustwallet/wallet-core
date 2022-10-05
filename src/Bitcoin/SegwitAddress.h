@@ -31,6 +31,9 @@ class SegwitAddress {
     /// Witness program.
     Data witnessProgram;
 
+    // Prefix for Bitcoin Testnet Segwit addresses
+    static constexpr auto TestnetPrefix = "tb";
+
     /// Determines whether a string makes a valid Bech32 address.
     static bool isValid(const std::string& string);
 
@@ -48,7 +51,7 @@ class SegwitAddress {
     SegwitAddress(const PublicKey& publicKey, std::string hrp);
 
     /// Create a testnet address
-    static SegwitAddress createTestnetFromPublicKey(const PublicKey& publicKey) { return SegwitAddress(publicKey, "tb"); }
+    static SegwitAddress createTestnetFromPublicKey(const PublicKey& publicKey) { return SegwitAddress(publicKey, TestnetPrefix); }
 
     /// Decodes a SegWit address.
     ///
