@@ -487,7 +487,7 @@ TEST(EthereumAbiStruct, hashStructJson) {
 }
 
 TEST(EthereumAbiStruct, hashStruct_emptyString) {
-    auto path = TESTS_ROOT + "/Ethereum/Data/eip712_emptyString.json";
+    auto path = TESTS_ROOT + "/chains/Ethereum/Data/eip712_emptyString.json";
     auto typeData = load_file(path);
     auto hash = ParamStruct::hashStructJson(typeData);
     EXPECT_EQ(hex(hash), "bc9d33285c5e42b00571f5deaf9636d2e498a6fa50e0d1be81095bded070117a");
@@ -500,7 +500,7 @@ TEST(EthereumAbiStruct, hashStruct_emptyString) {
 }
 
 TEST(EthereumAbiStruct, hashStruct_emptyArray) {
-    auto path = TESTS_ROOT + "/Ethereum/Data/eip712_emptyArray.json";
+    auto path = TESTS_ROOT + "/chains/Ethereum/Data/eip712_emptyArray.json";
     auto typeData = load_file(path);
     auto hash = ParamStruct::hashStructJson(typeData);
     EXPECT_EQ(hex(hash), "9f1a1bc718e966d683c544aef6fd0b73c85a1d6244af9b64bb8f4a6fa6716086");
@@ -514,7 +514,7 @@ TEST(EthereumAbiStruct, hashStruct_emptyArray) {
 
 TEST(EthereumAbiStruct, hashStruct_walletConnect) {
     // https://github.com/WalletConnect/walletconnect-example-dapp/blob/master/src/helpers/eip712.ts
-    auto path = TESTS_ROOT + "/Ethereum/Data/eip712_walletconnect.json";
+    auto path = TESTS_ROOT + "/chains/Ethereum/Data/eip712_walletconnect.json";
     auto typeData = load_file(path);
     auto hash = ParamStruct::hashStructJson(typeData);
     EXPECT_EQ(hex(hash), "abc79f527273b9e7bca1b3f1ac6ad1a8431fa6dc34ece900deabcd6969856b5e");
@@ -527,7 +527,7 @@ TEST(EthereumAbiStruct, hashStruct_walletConnect) {
 }
 
 TEST(EthereumAbiStruct, hashStruct_cryptofights) {
-    auto path = TESTS_ROOT + "/Ethereum/Data/eip712_cryptofights.json";
+    auto path = TESTS_ROOT + "/chains/Ethereum/Data/eip712_cryptofights.json";
     auto typeData = load_file(path);
     auto hash = ParamStruct::hashStructJson(typeData);
     EXPECT_EQ(hex(hash), "db12328a6d193965801548e1174936c3aa7adbe1b54b3535a3c905bd4966467c");
@@ -540,7 +540,7 @@ TEST(EthereumAbiStruct, hashStruct_cryptofights) {
 }
 
 TEST(EthereumAbiStruct, hashStruct_rarible) {
-    auto path = TESTS_ROOT + "/Ethereum/Data/eip712_rarible.json";
+    auto path = TESTS_ROOT + "/chains/Ethereum/Data/eip712_rarible.json";
     auto typeData = load_file(path);
     auto hash = ParamStruct::hashStructJson(typeData);
     EXPECT_EQ(hex(hash), "df0200de55c05eb55af2597012767ea3af653d68000be49580f8e05acd91d366");
@@ -553,7 +553,7 @@ TEST(EthereumAbiStruct, hashStruct_rarible) {
 }
 
 TEST(EthereumAbiStruct, hashStruct_snapshot) {
-    auto path = TESTS_ROOT + "/Ethereum/Data/eip712_snapshot_v4.json";
+    auto path = TESTS_ROOT + "/chains/Ethereum/Data/eip712_snapshot_v4.json";
     auto typeData = load_file(path);
     auto hash = ParamStruct::hashStructJson(typeData);
     EXPECT_EQ(hex(hash), "f558d08ad4a7651dbc9ec028cfcb4a8e6878a249073ef4fa694f85ee95f61c0f");

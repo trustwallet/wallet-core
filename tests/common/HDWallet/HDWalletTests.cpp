@@ -253,7 +253,7 @@ TEST(HDWallet, DeriveWithLeadingZerosEth) {
 }
 
 static nlohmann::json getVectors() {
-    const std::string vectorsJsonPath = std::string(TESTS_ROOT) + "/HDWallet/bip39_vectors.json";
+    const std::string vectorsJsonPath = std::string(TESTS_ROOT) + "/common/HDWallet/bip39_vectors.json";
     auto vectorsJson = loadJson(vectorsJsonPath)["english"];
     return vectorsJson;
 }

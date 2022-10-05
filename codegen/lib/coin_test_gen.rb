@@ -63,7 +63,7 @@ class CoinTestGen
     template = ERB.new(File.read(path), nil, '-')
     result = template.result(binding)
 
-    folder = 'tests/'
+    folder = 'tests/chains/'
     if coin.key?('testFolderName')
       folder += format_name(coin['testFolderName'])
     else

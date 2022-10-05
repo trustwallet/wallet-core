@@ -22,7 +22,7 @@ static nlohmann::json load_json(std::string path) {
 }
 
 TEST(ContractCall, Approval) {
-    auto path = TESTS_ROOT + "/Ethereum/Data/erc20.json";
+    auto path = TESTS_ROOT + "/chains/Ethereum/Data/erc20.json";
     auto abi = load_json(path);
     auto call = parse_hex("095ea7b30000000000000000000000005aaeb6053f3e94c9b9a09f33669435e7ef1beaed"
                           "0000000000000000000000000000000000000000000000000000000000000001");
@@ -35,7 +35,7 @@ TEST(ContractCall, Approval) {
 }
 
 TEST(ContractCall, UniswapSwapTokens) {
-    auto path = TESTS_ROOT + "/Ethereum/Data/uniswap_router_v2.json";
+    auto path = TESTS_ROOT + "/chains/Ethereum/Data/uniswap_router_v2.json";
     auto abi = load_json(path);
     // https://etherscan.io/tx/0x57a2414f3cd9ca373b7e663ae67ecf933e40cb77a6e4ed28e4e28b5aa0d8ec63
     auto call = parse_hex(
@@ -55,7 +55,7 @@ TEST(ContractCall, UniswapSwapTokens) {
 }
 
 TEST(ContractCall, KyberTrade) {
-    auto path = TESTS_ROOT + "/Ethereum/Data/kyber_proxy.json";
+    auto path = TESTS_ROOT + "/chains/Ethereum/Data/kyber_proxy.json";
     auto abi = load_json(path);
 
     // https://etherscan.io/tx/0x51ffab782b9a27d754389505d5a50db525c04c68142ce20512d579f10f9e13e4
@@ -77,7 +77,7 @@ TEST(ContractCall, KyberTrade) {
 }
 
 TEST(ContractCall, ApprovalForAll) {
-    auto path = TESTS_ROOT + "/Ethereum/Data/erc721.json";
+    auto path = TESTS_ROOT + "/chains/Ethereum/Data/erc721.json";
     auto abi = load_json(path);
 
     // https://etherscan.io/tx/0xc2744000a107aee4761cf8a638657f91c3003a54e2f1818c37d781be7e48187a
@@ -92,7 +92,7 @@ TEST(ContractCall, ApprovalForAll) {
 }
 
 TEST(ContractCall, CustomCall) {
-    auto path = TESTS_ROOT + "/Ethereum/Data/custom.json";
+    auto path = TESTS_ROOT + "/chains/Ethereum/Data/custom.json";
     auto abi = load_json(path);
 
     auto call = parse_hex("ec37a4a000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000067472757374790000000000000000000000000000000000000000000000000000");
@@ -106,7 +106,7 @@ TEST(ContractCall, CustomCall) {
 TEST(ContractCall, SetResolver) {
     auto call = parse_hex("0x1896f70ae71cd96d4ba1c4b512b0c5bee30d2b6becf61e574c32a17a67156fa9ed3c4c"
                           "6f0000000000000000000000004976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41");
-    auto path = TESTS_ROOT + "/Ethereum/Data/ens.json";
+    auto path = TESTS_ROOT + "/chains/Ethereum/Data/ens.json";
     auto abi = load_json(path);
     auto decoded = decodeCall(call, abi);
     auto expected =
@@ -120,7 +120,7 @@ TEST(ContractCall, RenewENS) {
         "0xacf1a84100000000000000000000000000000000000000000000000000000000000000400000000000000000"
         "000000000000000000000000000000000000000001e18558000000000000000000000000000000000000000000"
         "000000000000000000000a68657769676f76656e7300000000000000000000000000000000000000000000");
-    auto path = TESTS_ROOT + "/Ethereum/Data/ens.json";
+    auto path = TESTS_ROOT + "/chains/Ethereum/Data/ens.json";
     auto abi = load_json(path);
     auto decoded = decodeCall(call, abi);
     auto expected =
@@ -153,7 +153,7 @@ TEST(ContractCall, Multicall) {
         "000000000000000000000000000000000014d30f834b53d8f7e851e87b90ffa65757a35b850500000000000000"
         "000000000000000000000000000000000000000000000000000000000000000000");
     ASSERT_EQ(4 + 928ul, call.size());
-    auto path = TESTS_ROOT + "/Ethereum/Data/ens.json";
+    auto path = TESTS_ROOT + "/chains/Ethereum/Data/ens.json";
     auto abi = load_json(path);
     auto decoded = decodeCall(call, abi);
     auto expected =
@@ -174,7 +174,7 @@ TEST(ContractCall, GetAmountsOut) {
         "0000000000000000000000000000000000000000000000000000000000000040"
         "0000000000000000000000000000000000000000000000000000000000000001"
         "000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc077");
-    auto path = TESTS_ROOT + "/Ethereum/Data/getAmountsOut.json";
+    auto path = TESTS_ROOT + "/chains/Ethereum/Data/getAmountsOut.json";
     auto abi = load_json(path);
 
     auto decoded = decodeCall(call, abi);
@@ -185,7 +185,7 @@ TEST(ContractCall, GetAmountsOut) {
 }
 
 TEST(ContractCall, 1inch) {
-    auto path = TESTS_ROOT + "/Ethereum/Data/1inch.json";
+    auto path = TESTS_ROOT + "/chains/Ethereum/Data/1inch.json";
     auto abi = load_json(path);
 
     // https://etherscan.io/tx/0xc2d113151124579c21332d4cc6ab2b7f61e81d62392ed8596174513cb47e35ba
@@ -199,7 +199,7 @@ TEST(ContractCall, 1inch) {
 }
 
 TEST(ContractCall, TupleNested) {
-    auto path = TESTS_ROOT + "/Ethereum/Data/tuple_nested.json";
+    auto path = TESTS_ROOT + "/chains/Ethereum/Data/tuple_nested.json";
     auto abi = load_json(path);
 
     auto call = parse_hex(

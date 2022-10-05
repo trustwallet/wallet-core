@@ -41,7 +41,7 @@ struct std::shared_ptr<TWStoredKey> createDefaultStoredKey() {
 }
 
 TEST(TWStoredKey, loadPBKDF2Key) {
-    const auto filename = WRAPS(TWStringCreateWithUTF8Bytes((TESTS_ROOT + "/Keystore/Data/pbkdf2.json").c_str()));
+    const auto filename = WRAPS(TWStringCreateWithUTF8Bytes((TESTS_ROOT + "/common/Keystore/Data/pbkdf2.json").c_str()));
     const auto key = WRAP(TWStoredKey, TWStoredKeyLoad(filename.get()));
     const auto keyId = WRAPS(TWStoredKeyIdentifier(key.get()));
     EXPECT_EQ(string(TWStringUTF8Bytes(keyId.get())), "3198bc9c-6672-5ab3-d995-4942343ae5b6");
