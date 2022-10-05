@@ -68,7 +68,6 @@ std::string recoverAddressFromMessage(const std::string& message, const Data& si
     }
     const auto messageHash = msgToHash(message);
     auto recId = signature[0];
-    //auto sig = scrambleSig(signature);
     auto compressed = false;
     if (recId >= 31) {
         recId -= 4;
