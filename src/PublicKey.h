@@ -78,13 +78,14 @@ class PublicKey {
     /// signatureRS: 2x32 bytes with the R and S values
     /// recId: the recovery ID, a.k.a. V value, 0 <= v < 4
     /// messageDigest: message digest (hash) to be signed
-    /// Throws on invalid data
+    /// Throws on invalid data.
     static PublicKey recoverRaw(const Data& signatureRS, byte recId, const Data& messageDigest);
 
     /// Recover public key from signature (SECP256k1Extended)
-    /// signature: 65-byte signature (R, S, and V). V can have higher value bits, which can be discarded.
+    /// signature: 65-byte signature (R, S, and V). V can have higher value bits, as used by Ethereum (for values over 27 the negated last bit is taken).
     /// messageDigest: message digest (hash) to be signed
-    /// Throws on invalid data
+    /// Throws on invalid data.
+    /// Naming is kept for backwards compatibility.
     static PublicKey recover(const Data& signature, const Data& messageDigest);
 
     /// Check if this key makes a valid ED25519 key (it is on the curve)
