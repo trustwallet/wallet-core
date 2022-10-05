@@ -64,14 +64,14 @@ TEST(BitcoinMessageSigner, SignAndVerify) {
 
     {
         const auto msg = "test signature";
-        const auto signature = Base64::encode(MessageSigner::signMessage(privateKey, address, msg));
+        const auto signature = MessageSigner::signMessage(privateKey, address, msg);
         EXPECT_EQ(signature, "ILH5K7JQLaRGaKGXXH5mYM6FIIy9IWyY4JUPI+PHYY4WaupxUbg+zy0bhBCrDuehy9x4WidwjkRR1GSLnWvOXBo=");
 
         EXPECT_TRUE(MessageSigner::verifyMessage(address, msg, signature));
     }
     {
         const auto msg = "another text";
-        const auto signature = Base64::encode(MessageSigner::signMessage(privateKey, address, msg));
+        const auto signature = MessageSigner::signMessage(privateKey, address, msg);
         EXPECT_EQ(signature, "H7vrF2C+TlFiHyegAw3QLv6SK0myuEEXUOgfx0+Qio1YVDuSa6p/OHpoQVlUt3F8QJdbdZN9M1h/fYEAnEz16V0=");
 
         EXPECT_TRUE(MessageSigner::verifyMessage(address, msg, signature));
@@ -84,7 +84,7 @@ TEST(BitcoinMessageSigner, SignAndVerify) {
     EXPECT_EQ(addressUncomp, "1E4T9JZ3mq6cdgiRJEWzHqDXb9t322fE6d");
     {
         const auto msg = "test signature";
-        const auto signature = Base64::encode(MessageSigner::signMessage(privateKey, addressUncomp, msg, false));
+        const auto signature = MessageSigner::signMessage(privateKey, addressUncomp, msg, false);
         EXPECT_EQ(signature, "HLH5K7JQLaRGaKGXXH5mYM6FIIy9IWyY4JUPI+PHYY4WaupxUbg+zy0bhBCrDuehy9x4WidwjkRR1GSLnWvOXBo=");
 
         EXPECT_TRUE(MessageSigner::verifyMessage(addressUncomp, msg, signature));

@@ -27,9 +27,9 @@ class MessageSigner {
     /// compressed: True by default, as addresses are generated from the hash of the compressed public key.
     ///    However, in some instances key hash is generated from the hash of the extended public key,
     ///    that's also supported here as well for compatibility.
-    /// Returns the signature, as binary (needs Base64 encoding for the standard format).
+    /// Returns the signature, Base64-encoded.
     /// Throws on invalid input.
-    static Data signMessage(const PrivateKey& privateKey, const std::string& address, const std::string& message, bool compressed = true);
+    static std::string signMessage(const PrivateKey& privateKey, const std::string& address, const std::string& message, bool compressed = true);
   
     /// Verify signature for a message.
     /// Address: address to use, only legacy is supported

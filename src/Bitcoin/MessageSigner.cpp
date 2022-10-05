@@ -35,7 +35,7 @@ Data msgToHash(const std::string& msg) {
     return Hash::sha256d(d.data(), d.size());
 }
 
-Data MessageSigner::signMessage(const PrivateKey& privateKey, const std::string& address, const std::string& message, bool compressed) {
+std::string MessageSigner::signMessage(const PrivateKey& privateKey, const std::string& address, const std::string& message, bool compressed) {
     if (!Address::isValid(address)) {
         throw std::invalid_argument("Address is not valid (legacy) address");
     }
@@ -53,10 +53,12 @@ Data MessageSigner::signMessage(const PrivateKey& privateKey, const std::string&
     }
     const auto messageHash = msgToHash(message);
     const auto signature = privateKey.sign(messageHash, TWCurveSECP256k1);
+
+    // The V value: add 31 (or 27 for compressed), and move to the first byte
     const byte v = signature[64] + 27ul + (compressed ? 4ul : 0ul);
-    auto sig2 = Data{v};
-    TW::append(sig2, TW::subData(signature, 0, 64));
-    return sig2;
+    auto sigAdjusted = Data{v};
+    TW::append(sigAdjusted, TW::subData(signature, 0, 64));
+    return Base64::encode(sigAdjusted);
 }
 
 /// May throw
