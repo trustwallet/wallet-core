@@ -88,7 +88,7 @@ std::string recoverAddressFromMessage(const std::string& message, const Data& si
     return Bitcoin::Address(publicKeyRecoveredCompressed, TW::p2pkhPrefix(TWCoinTypeBitcoin)).string();
 }
 
-bool MessageSigner::verifyMessage(const std::string& address, const std::string& message, const std::string& signature) {
+bool MessageSigner::verifyMessage(const std::string& address, const std::string& message, const std::string& signature) nothrow {
     try {
         const auto signatureData = Base64::decode(signature);
         return verifyMessage(address, message, signatureData);
