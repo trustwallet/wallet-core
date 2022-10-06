@@ -87,6 +87,14 @@ message ClaimNftMessage {
   uint64 property_version = 5;
 }
 
+message NftMessage {
+  oneof nft_transaction_payload {
+    OfferNftMessage offer_nft = 1;
+    CancelOfferNftMessage cancel_offer_nft = 2;
+    ClaimNftMessage claim_nft = 3;
+  }
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
   // Sender Account address (string)
@@ -97,22 +105,20 @@ message SigningInput {
     TransferMessage transfer = 3;
     TokenTransferMessage token_transfer = 4;
     CreateAccountMessage create_account = 5;
-    OfferNftMessage offer_nft = 6;
-    CancelOfferNftMessage cancel_offer_nft = 7;
-    ClaimNftMessage claim_nft = 8;
+    NftMessage nft_message = 6;
   }
   // Max gas amount that the user is willing to pay (uint64)
-  uint64 max_gas_amount = 9;
+  uint64 max_gas_amount = 7;
   // Gas unit price - queried through API (uint64)
-  uint64 gas_unit_price = 10;
+  uint64 gas_unit_price = 8;
   // Expiration timestamp for the transaction, can't be in the past (uint64)
-  uint64 expiration_timestamp_secs = 11;
+  uint64 expiration_timestamp_secs = 9;
   //  Chain id 1 (mainnet) 32(devnet) (uint32 - casted in uint8_t later)
-  uint32 chain_id = 12;
+  uint32 chain_id = 10;
   //  Private key to sign the transaction (bytes)
-  bytes private_key = 13;
+  bytes private_key = 11;
   // hex encoded function to sign, use it for smart contract approval (string)
-  string any_encoded = 14;
+  string any_encoded = 12;
 }
 
 // Information related to the signed transaction

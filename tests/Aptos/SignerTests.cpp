@@ -9,6 +9,7 @@
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
+#include "../interface/TWTestUtilities.h"
 #include <nlohmann/json.hpp>
 
 #include <gtest/gtest.h>
@@ -53,7 +54,7 @@ TEST(AptosSigner, DummyTxSign) {
         }
         )"_json;
     nlohmann::json parsedJson = nlohmann::json::parse(result.json());
-    ASSERT_EQ(expectedJson, parsedJson);
+    assertJSONEqual(expectedJson, parsedJson);
 }
 
 TEST(AptosSigner, ClaimNftTxSign) {
@@ -61,7 +62,7 @@ TEST(AptosSigner, ClaimNftTxSign) {
     Proto::SigningInput input;
     input.set_sender("0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30");
     input.set_sequence_number(19);
-    auto& tf = *input.mutable_claim_nft();
+    auto& tf = *input.mutable_nft_message()->mutable_claim_nft();
     tf.set_sender("0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee");
     tf.set_creator("0x9125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac");
     tf.set_collectionname("Topaz Troopers");
@@ -101,7 +102,7 @@ TEST(AptosSigner, ClaimNftTxSign) {
                 }
         )"_json;
     nlohmann::json parsedJson = nlohmann::json::parse(result.json());
-    ASSERT_EQ(expectedJson, parsedJson);
+    assertJSONEqual(expectedJson, parsedJson);
 }
 
 TEST(AptosSigner, NftOfferTxSign) {
@@ -109,7 +110,7 @@ TEST(AptosSigner, NftOfferTxSign) {
     Proto::SigningInput input;
     input.set_sender("0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee");
     input.set_sequence_number(1);
-    auto& tf = *input.mutable_offer_nft();
+    auto& tf = *input.mutable_nft_message()->mutable_offer_nft();
     tf.set_receiver("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30");
     tf.set_creator("0x9125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac");
     tf.set_collectionname("Topaz Troopers");
@@ -150,7 +151,7 @@ TEST(AptosSigner, NftOfferTxSign) {
                 }
         )"_json;
     nlohmann::json parsedJson = nlohmann::json::parse(result.json());
-    ASSERT_EQ(expectedJson, parsedJson);
+    assertJSONEqual(expectedJson, parsedJson);
 }
 
 TEST(AptosSigner, CancelNftOfferTxSign) {
@@ -158,7 +159,7 @@ TEST(AptosSigner, CancelNftOfferTxSign) {
     Proto::SigningInput input;
     input.set_sender("0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30");
     input.set_sequence_number(21);
-    auto& tf = *input.mutable_cancel_offer_nft();
+    auto& tf = *input.mutable_nft_message()->mutable_cancel_offer_nft();
     tf.set_receiver("0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee");
     tf.set_creator("0x9125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac");
     tf.set_collectionname("Topaz Troopers");
@@ -198,7 +199,7 @@ TEST(AptosSigner, CancelNftOfferTxSign) {
                 }
         )"_json;
     nlohmann::json parsedJson = nlohmann::json::parse(result.json());
-    ASSERT_EQ(expectedJson, parsedJson);
+    assertJSONEqual(expectedJson, parsedJson);
 }
 
 TEST(AptosSigner, TxSign) {
@@ -240,7 +241,7 @@ TEST(AptosSigner, TxSign) {
                 }
         )"_json;
     nlohmann::json parsedJson = nlohmann::json::parse(result.json());
-    ASSERT_EQ(expectedJson, parsedJson);
+    assertJSONEqual(expectedJson, parsedJson);
 }
 
 TEST(AptosSigner, CreateAccount) {
@@ -281,7 +282,7 @@ TEST(AptosSigner, CreateAccount) {
                 }
         )"_json;
     nlohmann::json parsedJson = nlohmann::json::parse(result.json());
-    ASSERT_EQ(expectedJson, parsedJson);
+    assertJSONEqual(expectedJson, parsedJson);
 }
 
 TEST(AptosSigner, BlindSign) {
@@ -325,7 +326,7 @@ TEST(AptosSigner, BlindSign) {
                 }
         )"_json;
     nlohmann::json parsedJson = nlohmann::json::parse(result.json());
-    ASSERT_EQ(expectedJson, parsedJson);
+    assertJSONEqual(expectedJson, parsedJson);
 }
 
 TEST(AptosSigner, TokenTxSign) {
@@ -370,7 +371,7 @@ TEST(AptosSigner, TokenTxSign) {
                 }
         )"_json;
     nlohmann::json parsedJson = nlohmann::json::parse(result.json());
-    ASSERT_EQ(expectedJson, parsedJson);
+    assertJSONEqual(expectedJson, parsedJson);
 }
 
 } // namespace TW::Aptos::tests

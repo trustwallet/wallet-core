@@ -47,71 +47,68 @@ TransactionPayload createAccountPayload(const Proto::SigningInput& input) {
     return payload;
 }
 
-TransactionPayload claimNftPayload(const Proto::SigningInput& input) {
+TransactionPayload claimNftPayload(const Proto::ClaimNftMessage& msg) {
     std::vector<Data> args;
     ModuleId module(gAddressThree, "token_transfers");
-    auto& nftOffer = input.claim_nft();
-    serializeToArgs(args, Address(nftOffer.sender()));
-    serializeToArgs(args, Address(nftOffer.creator()));
-    serializeToArgs(args, nftOffer.collectionname());
-    serializeToArgs(args, nftOffer.name());
-    serializeToArgs(args, nftOffer.property_version());
+    serializeToArgs(args, Address(msg.sender()));
+    serializeToArgs(args, Address(msg.creator()));
+    serializeToArgs(args, msg.collectionname());
+    serializeToArgs(args, msg.name());
+    serializeToArgs(args, msg.property_version());
     // clang-format off
     nlohmann::json argsJson = nlohmann::json::array(
                         {
-                            nftOffer.sender(),
-                            nftOffer.creator(),
-                            nftOffer.collectionname(),
-                            nftOffer.name(),
-                            std::to_string(nftOffer.property_version()),
+                            msg.sender(),
+                            msg.creator(),
+                            msg.collectionname(),
+                            msg.name(),
+                            std::to_string(msg.property_version()),
                         });
     // clang-format on
     TransactionPayload payload = EntryFunction(module, "claim_script", {}, args, argsJson);
     return payload;
 }
 
-TransactionPayload nftOfferPayload(const Proto::SigningInput& input) {
+TransactionPayload nftOfferPayload(const Proto::OfferNftMessage& msg) {
     std::vector<Data> args;
     ModuleId module(gAddressThree, "token_transfers");
-    auto& nftOffer = input.offer_nft();
-    serializeToArgs(args, Address(nftOffer.receiver()));
-    serializeToArgs(args, Address(nftOffer.creator()));
-    serializeToArgs(args, nftOffer.collectionname());
-    serializeToArgs(args, nftOffer.name());
-    serializeToArgs(args, nftOffer.property_version());
-    serializeToArgs(args, nftOffer.amount());
+    serializeToArgs(args, Address(msg.receiver()));
+    serializeToArgs(args, Address(msg.creator()));
+    serializeToArgs(args, msg.collectionname());
+    serializeToArgs(args, msg.name());
+    serializeToArgs(args, msg.property_version());
+    serializeToArgs(args, msg.amount());
     // clang-format off
     nlohmann::json argsJson = nlohmann::json::array(
                         {
-                            nftOffer.receiver(),
-                            nftOffer.creator(),
-                            nftOffer.collectionname(),
-                            nftOffer.name(),
-                            std::to_string(nftOffer.property_version()),
-                            std::to_string(nftOffer.amount())
+                            msg.receiver(),
+                            msg.creator(),
+                            msg.collectionname(),
+                            msg.name(),
+                            std::to_string(msg.property_version()),
+                            std::to_string(msg.amount())
                         });
     // clang-format on
     TransactionPayload payload = EntryFunction(module, "offer_script", {}, args, argsJson);
     return payload;
 }
 
-TransactionPayload cancelNftOfferPayload(const Proto::SigningInput& input) {
+TransactionPayload cancelNftOfferPayload(const Proto::CancelOfferNftMessage& msg) {
     std::vector<Data> args;
     ModuleId module(gAddressThree, "token_transfers");
-    auto& nftOffer = input.cancel_offer_nft();
-    serializeToArgs(args, Address(nftOffer.receiver()));
-    serializeToArgs(args, Address(nftOffer.creator()));
-    serializeToArgs(args, nftOffer.collectionname());
-    serializeToArgs(args, nftOffer.name());
-    serializeToArgs(args, nftOffer.property_version());
+    serializeToArgs(args, Address(msg.receiver()));
+    serializeToArgs(args, Address(msg.creator()));
+    serializeToArgs(args, msg.collectionname());
+    serializeToArgs(args, msg.name());
+    serializeToArgs(args, msg.property_version());
     // clang-format off
     nlohmann::json argsJson = nlohmann::json::array(
                         {
-                            nftOffer.receiver(),
-                            nftOffer.creator(),
-                            nftOffer.collectionname(),
-                            nftOffer.name(),
-                            std::to_string(nftOffer.property_version()),
+                            msg.receiver(),
+                            msg.creator(),
+                            msg.collectionname(),
+                            msg.name(),
+                            std::to_string(msg.property_version()),
                         });
     // clang-format on
     TransactionPayload payload = EntryFunction(module, "cancel_offer_script", {}, args, argsJson);
@@ -160,7 +157,19 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     if (!input.any_encoded().empty()) {
         return blindSign(input);
     }
-    auto payloadFunctor = [&input]() {
+    auto nftPayloadFunctor = [](const Proto::NftMessage& nftMessage) {
+        switch (nftMessage.nft_transaction_payload_case()) {
+        case Proto::NftMessage::kOfferNft:
+            return nftOfferPayload(nftMessage.offer_nft());
+        case Proto::NftMessage::kCancelOfferNft:
+            return cancelNftOfferPayload(nftMessage.cancel_offer_nft());
+        case Proto::NftMessage::kClaimNft:
+            return claimNftPayload(nftMessage.claim_nft());
+        case Proto::NftMessage::NFT_TRANSACTION_PAYLOAD_NOT_SET:
+                throw std::runtime_error("Nft message should be set");
+        }
+    };
+    auto payloadFunctor = [&input, &nftPayloadFunctor]() {
         switch (input.transaction_payload_case()) {
         case Proto::SigningInput::kTransfer: {
             return transferPayload(input);
@@ -168,14 +177,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
         case Proto::SigningInput::kTokenTransfer: {
             return tokenTransferPayload(input);
         }
-        case Proto::SigningInput::kOfferNft: {
-            return nftOfferPayload(input);
-        }
-        case Proto::SigningInput::kCancelOfferNft: {
-            return cancelNftOfferPayload(input);
-        }
-        case Proto::SigningInput::kClaimNft: {
-            return claimNftPayload(input);
+        case Proto::SigningInput::kNftMessage: {
+            return nftPayloadFunctor(input.nft_message());
         }
         case Proto::SigningInput::kCreateAccount:
             return createAccountPayload(input);
