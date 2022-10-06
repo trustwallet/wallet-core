@@ -11,17 +11,22 @@
 #include "TransactionBuilder.h"
 #include "TransactionPayload.h"
 
+namespace {
+    template<typename T>
+    void serializeToArgs(std::vector<TW::Data>& args, T&& toSerialize) {
+        TW::BCS::Serializer serializer;
+        serializer << std::forward<T>(toSerialize);
+        args.emplace_back(serializer.bytes);
+    }
+}
+
 namespace TW::Aptos {
 
 template <typename TPayload>
 std::pair<std::vector<Data>, nlohmann::json> commonTransferPayload(const TPayload& input) {
-    BCS::Serializer aSerializer;
-    aSerializer << Address(input.to());
     std::vector<Data> args;
-    args.emplace_back(aSerializer.bytes);
-    aSerializer.clear();
-    aSerializer << input.amount();
-    args.emplace_back(aSerializer.bytes);
+    serializeToArgs(args, Address(input.to()));
+    serializeToArgs(args, input.amount());
     nlohmann::json argsJson = nlohmann::json::array({input.to(), std::to_string(input.amount())});
     return std::make_pair(args, argsJson);
 }
@@ -35,10 +40,8 @@ TransactionPayload transferPayload(const Proto::SigningInput& input) {
 
 TransactionPayload createAccountPayload(const Proto::SigningInput& input) {
     ModuleId module(gAddressOne, "aptos_account");
-    BCS::Serializer aSerializer;
-    aSerializer << Address(input.create_account().auth_key());
     std::vector<Data> args;
-    args.emplace_back(aSerializer.bytes);
+    serializeToArgs(args, Address(input.create_account().auth_key()));
     nlohmann::json argsJson = nlohmann::json::array({input.create_account().auth_key()});
     TransactionPayload payload = EntryFunction(module, "create_account", {}, args, argsJson);
     return payload;
@@ -48,31 +51,11 @@ TransactionPayload claimNftPayload(const Proto::SigningInput& input) {
     std::vector<Data> args;
     ModuleId module(gAddressThree, "token_transfers");
     auto& nftOffer = input.claim_nft();
-    {
-        BCS::Serializer serializer;
-        serializer << Address(nftOffer.sender());
-        args.emplace_back(serializer.bytes);
-    }
-    {
-        BCS::Serializer serializer;
-        serializer << Address(nftOffer.creator());
-        args.emplace_back(serializer.bytes);
-    }
-    {
-        BCS::Serializer serializer;
-        serializer << nftOffer.collectionname();
-        args.emplace_back(serializer.bytes);
-    }
-    {
-        BCS::Serializer serializer;
-        serializer << nftOffer.name();
-        args.emplace_back(serializer.bytes);
-    }
-    {
-        BCS::Serializer serializer;
-        serializer << nftOffer.property_version();
-        args.emplace_back(serializer.bytes);
-    }
+    serializeToArgs(args, Address(nftOffer.sender()));
+    serializeToArgs(args, Address(nftOffer.creator()));
+    serializeToArgs(args, nftOffer.collectionname());
+    serializeToArgs(args, nftOffer.name());
+    serializeToArgs(args, nftOffer.property_version());
     // clang-format off
     nlohmann::json argsJson = nlohmann::json::array(
                         {
@@ -91,36 +74,12 @@ TransactionPayload nftOfferPayload(const Proto::SigningInput& input) {
     std::vector<Data> args;
     ModuleId module(gAddressThree, "token_transfers");
     auto& nftOffer = input.offer_nft();
-    {
-        BCS::Serializer serializer;
-        serializer << Address(nftOffer.receiver());
-        args.emplace_back(serializer.bytes);
-    }
-    {
-        BCS::Serializer serializer;
-        serializer << Address(nftOffer.creator());
-        args.emplace_back(serializer.bytes);
-    }
-    {
-        BCS::Serializer serializer;
-        serializer << nftOffer.collectionname();
-        args.emplace_back(serializer.bytes);
-    }
-    {
-        BCS::Serializer serializer;
-        serializer << nftOffer.name();
-        args.emplace_back(serializer.bytes);
-    }
-    {
-        BCS::Serializer serializer;
-        serializer << nftOffer.property_version();
-        args.emplace_back(serializer.bytes);
-    }
-    {
-        BCS::Serializer serializer;
-        serializer << nftOffer.amount();
-        args.emplace_back(serializer.bytes);
-    }
+    serializeToArgs(args, Address(nftOffer.receiver()));
+    serializeToArgs(args, Address(nftOffer.creator()));
+    serializeToArgs(args, nftOffer.collectionname());
+    serializeToArgs(args, nftOffer.name());
+    serializeToArgs(args, nftOffer.property_version());
+    serializeToArgs(args, nftOffer.amount());
     // clang-format off
     nlohmann::json argsJson = nlohmann::json::array(
                         {
