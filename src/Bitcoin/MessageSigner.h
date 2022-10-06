@@ -45,10 +45,17 @@ class MessageSigner {
     /// May throw
     static bool verifyMessage(const std::string& address, const std::string& message, const Data& signature);
 
+    /// Recover address from signature and message. May throw.
+    static std::string recoverAddressFromMessage(const std::string& message, const Data& signature);
+
     /// Append prefix and compute hash for a message
     static Data messageToHash(const std::string& message);
 
-    static constexpr const char* MessagePrefix = "Bitcoin Signed Message:\n";
+    static constexpr auto MessagePrefix = "Bitcoin Signed Message:\n";
+    static const byte DigestLength = 32;
+    static const byte SignatureRSLength = 64;
+    static constexpr byte SignatureRSVLength = SignatureRSLength + 1;
+    static const byte VOffset = 27;
 };
 
 } // namespace TW::Bitcoin

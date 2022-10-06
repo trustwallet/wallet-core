@@ -207,30 +207,29 @@ Data PublicKey::hash(const Data& prefix, Hash::Hasher hasher, bool skipTypeByte)
 }
 
 PublicKey PublicKey::recoverRaw(const Data& signatureRS, byte recId, const Data& messageDigest) {
-    if (signatureRS.size() < 64) {
+    if (signatureRS.size() < 2 * PrivateKey::_size) {
         throw std::invalid_argument("signature too short");
     }
     if (recId >= 4) {
         throw std::invalid_argument("Invalid recId (>=4)");
     }
-    if (messageDigest.size() < 32) {
+    if (messageDigest.size() < PrivateKey::_size) {
         throw std::invalid_argument("digest too short");
     }
-    TW::Data result(65);
-    int ret = ecdsa_recover_pub_from_sig(&secp256k1, result.data(), signatureRS.data(), messageDigest.data(), recId);
-    if (ret != 0) {
+    TW::Data result(secp256k1SignatureSize);
+    if (auto ret = ecdsa_recover_pub_from_sig(&secp256k1, result.data(), signatureRS.data(), messageDigest.data(), recId); ret != 0) {
         throw std::invalid_argument("recover failed " + std::to_string(ret));
     }
     return PublicKey(result, TWPublicKeyTypeSECP256k1Extended);
 }
 
 PublicKey PublicKey::recover(const Data& signature, const Data& messageDigest) {
-    if (signature.size() < 65) {
+    if (signature.size() < secp256k1SignatureSize) {
         throw std::invalid_argument("signature too short");
     }
-    auto v = signature[64];
+    auto v = signature[secp256k1SignatureSize - 1];
     // handle EIP155 Eth encoding of V, of the form 27+v, or 35+chainID*2+v
-    if (v >= 27) {
+    if (v >= PublicKey::SignatureVOffset) {
         v = !(v & 0x01);
     }
     return recoverRaw(signature, v, messageDigest);

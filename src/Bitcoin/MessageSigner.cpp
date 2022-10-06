@@ -41,7 +41,7 @@ std::string MessageSigner::signMessage(const PrivateKey& privateKey, const std::
     if (!Address::isValid(address)) {
         throw std::invalid_argument("Address is not valid (legacy) address");
     }
-    std::string addrFromKey = "";
+    std::string addrFromKey;
     if (compressed) {
         const auto pubKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
         addrFromKey = Address(pubKey, TW::p2pkhPrefix(TWCoinTypeBitcoin)).string();
@@ -57,26 +57,25 @@ std::string MessageSigner::signMessage(const PrivateKey& privateKey, const std::
     const auto signature = privateKey.sign(messageHash, TWCurveSECP256k1);
 
     // The V value: add 31 (or 27 for compressed), and move to the first byte
-    const byte v = signature[64] + 27ul + (compressed ? 4ul : 0ul);
+    const byte v = signature[SignatureRSLength] + PublicKey::SignatureVOffset + (compressed ? 4ul : 0ul);
     auto sigAdjusted = Data{v};
-    TW::append(sigAdjusted, TW::subData(signature, 0, 64));
+    TW::append(sigAdjusted, TW::subData(signature, 0, SignatureRSLength));
     return Base64::encode(sigAdjusted);
 }
 
-/// May throw
-std::string recoverAddressFromMessage(const std::string& message, const Data& signature) {
-    if (signature.size() < 65) {
+std::string MessageSigner::recoverAddressFromMessage(const std::string& message, const Data& signature) {
+    if (signature.size() < SignatureRSVLength) {
         throw std::invalid_argument("signature too short");
     }
     const auto messageHash = MessageSigner::messageToHash(message);
     auto recId = signature[0];
     auto compressed = false;
-    if (recId >= 31) {
+    if (recId >= PublicKey::SignatureVOffset + 4) {
         recId -= 4;
         compressed = true;
     }
-    if (recId >= 27) {
-        recId -= 27;
+    if (recId >= PublicKey::SignatureVOffset) {
+        recId -= PublicKey::SignatureVOffset;
     }
 
     const auto publicKeyRecovered = PublicKey::recoverRaw(TW::subData(signature, 1), recId, messageHash);
