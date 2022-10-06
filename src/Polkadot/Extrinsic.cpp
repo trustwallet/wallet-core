@@ -17,7 +17,7 @@ static constexpr uint32_t multiAddrSpecVersion = 28;
 static constexpr uint32_t multiAddrSpecVersionKsm = 2028;
 
 static const std::string balanceTransfer = "Balances.transfer";
-static const std::string utilityBatch = "Utility.batch";
+static const std::string utilityBatch = "Utility.batch_all";
 static const std::string stakingBond = "Staking.bond";
 static const std::string stakingBondExtra = "Staking.bond_extra";
 static const std::string stakingUnbond = "Staking.unbond";
