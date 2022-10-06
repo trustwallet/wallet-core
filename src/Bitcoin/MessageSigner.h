@@ -45,6 +45,9 @@ class MessageSigner {
     /// May throw
     static bool verifyMessage(const std::string& address, const std::string& message, const Data& signature);
 
+    /// Append prefix and compute hash for a message
+    static Data messageToHash(const std::string& message);
+
     static constexpr const char* MessagePrefix = "Bitcoin Signed Message:\n";
 };
 

@@ -17,21 +17,23 @@ using namespace TW;
 
 namespace TW::Bitcoin {
 
-Data msgToData(const std::string& msg) {
+// lenght-encode a message string
+Data messageToData(const std::string& message) {
     Data d;
-    TW::encodeVarInt(msg.size(), d);
-    TW::append(d, TW::data(msg));
+    TW::encodeVarInt(message.size(), d);
+    TW::append(d, TW::data(message));
     return d;
 }
 
-Data msgToFullData(const std::string& msg) {
-    Data d = msgToData(MessageSigner::MessagePrefix);
-    TW::append(d, msgToData(msg));
+// append prefix and length-encode message string
+Data messageToFullData(const std::string& message) {
+    Data d = messageToData(MessageSigner::MessagePrefix);
+    TW::append(d, messageToData(message));
     return d;
 }
 
-Data msgToHash(const std::string& msg) {
-    Data d = msgToFullData(msg);
+Data MessageSigner::messageToHash(const std::string& message) {
+    Data d = messageToFullData(message);
     return Hash::sha256d(d.data(), d.size());
 }
 
@@ -51,7 +53,7 @@ std::string MessageSigner::signMessage(const PrivateKey& privateKey, const std::
     if (addrFromKey != address) {
         throw std::invalid_argument("Address does not match key");
     }
-    const auto messageHash = msgToHash(message);
+    const auto messageHash = messageToHash(message);
     const auto signature = privateKey.sign(messageHash, TWCurveSECP256k1);
 
     // The V value: add 31 (or 27 for compressed), and move to the first byte
@@ -66,7 +68,7 @@ std::string recoverAddressFromMessage(const std::string& message, const Data& si
     if (signature.size() < 65) {
         throw std::invalid_argument("signature too short");
     }
-    const auto messageHash = msgToHash(message);
+    const auto messageHash = MessageSigner::messageToHash(message);
     auto recId = signature[0];
     auto compressed = false;
     if (recId >= 31) {

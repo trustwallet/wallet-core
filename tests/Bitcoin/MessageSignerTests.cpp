@@ -138,4 +138,9 @@ TEST(BitcoinMessageSigner, VerifyNegative) {
     ), "Input address invalid");
 }
 
+TEST(BitcoinMessageSigner, MessageToHash) {
+    EXPECT_EQ(hex(MessageSigner::messageToHash("Hello, world!")), "02d6c0643e40b0db549cbbd7eb47dcab71a59d7017199ebde6b272f28fbbf95f");
+    EXPECT_EQ(hex(MessageSigner::messageToHash("test signature")), "8e81cc5bca9862d8b7f22be1f7cb762b49121cf4e1611c27906a041f9a9eb21f");
+}
+
 } // namespace TW::Bitcoin
