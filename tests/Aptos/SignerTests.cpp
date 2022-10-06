@@ -153,6 +153,54 @@ TEST(AptosSigner, NftOfferTxSign) {
     ASSERT_EQ(expectedJson, parsedJson);
 }
 
+TEST(AptosSigner, CancelNftOfferTxSign) {
+    // Successfully broadcasted https://explorer.aptoslabs.com/txn/0x0b8c64e6847c368e4c6bd2cce0e9eab378971b0ef2e3bc40cbd292910a80201d?network=testnet
+    Proto::SigningInput input;
+    input.set_sender("0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30");
+    input.set_sequence_number(21);
+    auto& tf = *input.mutable_cancel_offer_nft();
+    tf.set_receiver("0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee");
+    tf.set_creator("0x9125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac");
+    tf.set_collectionname("Topaz Troopers");
+    tf.set_name("Topaz Trooper #20068");
+    tf.set_property_version(0);
+    input.set_max_gas_amount(3296766);
+    input.set_gas_unit_price(100);
+    input.set_expiration_timestamp_secs(3664390082);
+    input.set_chain_id(2);
+    auto privateKey = PrivateKey(parse_hex("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    auto result = Signer::sign(input);
+    ASSERT_EQ(hex(result.raw_txn()), "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3015000000000000000200000000000000000000000000000000000000000000000000000000000000030f746f6b656e5f7472616e73666572731363616e63656c5f6f666665725f736372697074000520783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee209125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac0f0e546f70617a2054726f6f706572731514546f70617a2054726f6f70657220233230303638080000000000000000fe4d3200000000006400000000000000c2276ada0000000002");
+    ASSERT_EQ(hex(result.authenticator().signature()), "826722d374e276f618123e77da3ac024c89a3f97db9e09e19aa8ed06c3cdfc57d4a21c7890137f9a7c0447cc303447ba10ca5b1908e889071e0a68f48c0f260a");
+    ASSERT_EQ(hex(result.encoded()), "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3015000000000000000200000000000000000000000000000000000000000000000000000000000000030f746f6b656e5f7472616e73666572731363616e63656c5f6f666665725f736372697074000520783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee209125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac0f0e546f70617a2054726f6f706572731514546f70617a2054726f6f70657220233230303638080000000000000000fe4d3200000000006400000000000000c2276ada00000000020020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c40826722d374e276f618123e77da3ac024c89a3f97db9e09e19aa8ed06c3cdfc57d4a21c7890137f9a7c0447cc303447ba10ca5b1908e889071e0a68f48c0f260a");
+    nlohmann::json expectedJson = R"(
+                {
+                    "expiration_timestamp_secs": "3664390082",
+                    "gas_unit_price": "100",
+                    "max_gas_amount": "3296766",
+                    "payload": {
+                        "arguments": [
+                                      "0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee",
+                                      "0x9125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac",
+                                      "Topaz Troopers", "Topaz Trooper #20068", "0"],
+                        "function": "0x3::token_transfers::cancel_offer_script",
+                        "type": "entry_function_payload",
+                        "type_arguments": []
+                    },
+                    "sender": "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+                    "sequence_number": "21",
+                    "signature": {
+                        "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
+                        "signature": "0x826722d374e276f618123e77da3ac024c89a3f97db9e09e19aa8ed06c3cdfc57d4a21c7890137f9a7c0447cc303447ba10ca5b1908e889071e0a68f48c0f260a",
+                        "type": "ed25519_signature"
+                    }
+                }
+        )"_json;
+    nlohmann::json parsedJson = nlohmann::json::parse(result.json());
+    ASSERT_EQ(expectedJson, parsedJson);
+}
+
 TEST(AptosSigner, TxSign) {
     // Successfully broadcasted https://explorer.aptoslabs.com/txn/0xbb3b3c33781c27e486afa2db854fb0a5c846d0967672feb2c6c3297a2b14e1ce?network=Devnet
     Proto::SigningInput input;
