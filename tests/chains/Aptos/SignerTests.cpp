@@ -9,7 +9,7 @@
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
-#include "../interface/TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <nlohmann/json.hpp>
 
 #include <gtest/gtest.h>
