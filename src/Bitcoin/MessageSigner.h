@@ -32,7 +32,7 @@ class MessageSigner {
     static std::string signMessage(const PrivateKey& privateKey, const std::string& address, const std::string& message, bool compressed = true);
   
     /// Verify signature for a message.
-    /// Address: address to use, only legacy is supported
+    /// address: address to use, only legacy is supported
     /// message: the message signed (without prefix)
     /// signature: in Base64-encoded form.
     /// Returns false on any invalid input (does not throw).
