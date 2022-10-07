@@ -132,9 +132,9 @@ async function main() {
         autoFillName(name: string): string {
             return (name === '') ? `Wallet${(this.storeWallets.length + 1).toString()}` : name;
         }
-        async create(strength: number, name: string): Promise<any> {
+        async create(strength: number, name: string): Promise<StoredKeyWallet | null> {
             this.wallet = null;
-            if (!this.keystore) { return; }
+            if (!this.keystore) { return null; }
             try {
                 if (name === '') { name = this.autoFillName(name); }
                 const hdWallet = WC.HDWallet.create(strength, this.HDWalletPassord);
@@ -150,11 +150,12 @@ async function main() {
                 return this.wallet;
             } catch (err) {
                 console.log(`Exception: ${err}`);
+                return null;
             }
         }
-        async import(mnemonic: string, name: string): Promise<any> {
+        async import(mnemonic: string, name: string): Promise<StoredKeyWallet | null> {
             this.wallet = null;
-            if (!this.keystore) { return; }
+            if (!this.keystore) { return null; }
             try {
                 if (!WC.Mnemonic.isValid(mnemonic)) {
                     console.error(`Mnemonic is not valid ${mnemonic}`);
@@ -171,16 +172,18 @@ async function main() {
                 return this.wallet;
             } catch (err) {
                 console.log(`Exception: ${err}`);
+                return null;
             }
         }
-        async addCoin(coin: string): Promise<void> {
+        async addCoin(coin: string): Promise<StoredKeyWallet | null> {
             if (this.wallet == null) {
                 console.error('No wallet open, see walletCreate() / walletLoad() / walletsList()');
-                return;
+                return null;
             }
-            if (!this.keystore) { return; }
+            if (!this.keystore) { return null; }
             const wallet = await this.keystore.addAccounts(this.wallet?.wallet.identifier(), this.StoreFixedPassword, [coin]);
             this.wallet = new StoredKeyWallet(this.keystore.mapStoredKey(wallet));
+            return this.wallet;
         }
         // Delete loaded wallet
         async delete(param: string): Promise<void> {
@@ -248,9 +251,9 @@ async function main() {
     async function walletsList() { await wallets.list(); }
     async function walletLoad(index: number) { await wallets.load(index); }
     async function walletsDeleteAll(param: string) { await wallets.deleteAll(param); }
-    async function walletCreate(strength: number = 256, name: string = ''): Promise<any> { return await wallets.create(strength, name); }
-    async function walletImport(mnemonic: string, name: string = ''): Promise<any> { return wallets.import(mnemonic, name); }
-    async function walletAddCoin(coin: string): Promise<void> { return wallets.addCoin(coin); }
+    async function walletCreate(strength: number = 256, name: string = ''): Promise<StoredKeyWallet | null> { return await wallets.create(strength, name); }
+    async function walletImport(mnemonic: string, name: string = ''): Promise<StoredKeyWallet | null> { return await wallets.import(mnemonic, name); }
+    async function walletAddCoin(coin: string): Promise<StoredKeyWallet | null> { return await wallets.addCoin(coin); }
     function walletDump(): void { wallets.dump(); }
     async function walletDelete(param: string) { await wallets.delete(param); }
 
@@ -276,6 +279,11 @@ async function main() {
         console.log("    walletCreate([strength], [name])             walletCreate(128)");
         console.log("    walletImport(mnemonic, [name])               walletImport('ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal', 'Test1')");
         console.log("    walletDump()                                 walletDump()");
+        console.log("    walletAddCoin(symbol)                        walletAddCoin(CoinType.solana)");
+        console.log("    walletsList()                                walletsList()");
+        console.log("    walletLoad()                                 walletLoad(0)");
+        console.log("    walletDelete()                               walletDelete('delete')");
+        console.log("    walletsDeleteAll()                           walletsDeleteAll('deleteall')");
         console.log();
         console.log("See examples in samplescripts folder, e.g.:  cat samplescripts/protoeth.sampleinput.txt | npm run start");
         console.log();
