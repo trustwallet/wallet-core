@@ -6,8 +6,7 @@
 
 #include "Crc.h"
 
-#include <boost/crc.hpp>  // for boost::crc_32_type
-
+#include <limits>
 #include <string>
 
 using namespace TW;
@@ -32,17 +31,12 @@ uint16_t Crc::crc16(uint8_t* bytes, uint32_t length) {
     return crc & 0xffff;
 }
 
-uint32_t Crc::crc32(const Data& data)
-{
-    boost::crc_32_type result;
-    result.process_bytes((const void*)data.data(), data.size());
-    return (uint32_t)result.checksum();
-}
-
-uint32_t Crc::crc32C(const Data& data)
-{
-    using crc_32c_type = boost::crc_optimal<32, 0x1EDC6F41, 0xFFFFFFFF, 0xFFFFFFFF, true, true>;
-    crc_32c_type result;
-    result.process_bytes((const void*)data.data(), data.size());
-    return (uint32_t)result.checksum();
+// Algorithm inspired by this old-style C implementation:
+// https://web.mit.edu/freebsd/head/sys/libkern/crc32.c (Public Domain code)
+uint32_t Crc::crc32(const Data& data) {
+    uint32_t c = std::numeric_limits<uint32_t>::max();
+    for (const auto byte : data) {
+        c = crc32_table[(c ^ byte) & 0xFF] ^ (c >> 8);
+    }
+    return ~c;
 }
