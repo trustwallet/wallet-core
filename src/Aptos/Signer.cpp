@@ -166,7 +166,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
         case Proto::NftMessage::kClaimNft:
             return claimNftPayload(nftMessage.claim_nft());
         case Proto::NftMessage::NFT_TRANSACTION_PAYLOAD_NOT_SET:
-                throw std::runtime_error("Nft message should be set");
+                throw std::runtime_error("Nft message payload not set");
         }
     };
     auto payloadFunctor = [&input, &nftPayloadFunctor]() {
