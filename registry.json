@@ -18,6 +18,12 @@
         "path": "m/44'/0'/0'/0/0",
         "xpub": "xpub",
         "xprv": "xprv"
+      },
+      {
+        "name": "testnet",
+        "path": "m/84'/1'/0'/0/0",
+        "xpub": "zpub",
+        "xprv": "zprv"
       }
     ],
     "curve": "secp256k1",

@@ -6,6 +6,7 @@
 
 #include "Bech32.h"
 #include "Bitcoin/SegwitAddress.h"
+#include "HDWallet.h"
 #include "HexCoding.h"
 
 #include <string>
@@ -206,6 +207,47 @@ TEST(SegwitAddress, Equals) {
 
     ASSERT_TRUE(addr1 == addr1);
     ASSERT_FALSE(addr1 == addr2);
+}
+
+TEST(SegwitAddress, TestnetAddress) {
+    const auto mnemonic1 = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
+    const auto passphrase = "";
+    const auto coin = TWCoinTypeBitcoin;
+    HDWallet wallet = HDWallet(mnemonic1, passphrase);
+
+    // default
+    {
+        const auto privKey = wallet.getKey(coin, TWDerivationDefault);
+        const auto pubKey = privKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+        EXPECT_EQ(hex(pubKey.bytes), "02df9ef2a7a5552765178b181e1e1afdefc7849985c7dfe9647706dd4fa40df6ac");
+        EXPECT_EQ(SegwitAddress(pubKey, "bc").string(), "bc1qpsp72plnsqe6e2dvtsetxtww2cz36ztmfxghpd");
+    }
+
+    // testnet: different derivation path and hrp
+    {
+        const auto privKey = wallet.getKey(coin, TW::DerivationPath("m/84'/1'/0'/0/0"));
+        const auto pubKey = privKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+        EXPECT_EQ(hex(pubKey.bytes), "03eb1a535b59f03894b99319f850c784cf4164f4de07620695c5cf0dc5c1ab2a54");
+        EXPECT_EQ(SegwitAddress::createTestnetFromPublicKey(pubKey).string(), "tb1qq8p994ak933c39d2jaj8n4sg598tnkhnyk5sg5");
+        // alternative with custom hrp
+        EXPECT_EQ(SegwitAddress(pubKey, "tb").string(), "tb1qq8p994ak933c39d2jaj8n4sg598tnkhnyk5sg5");
+    }
+
+    EXPECT_TRUE(SegwitAddress::isValid("tb1qq8p994ak933c39d2jaj8n4sg598tnkhnyk5sg5"));
+}
+
+TEST(SegwitAddress, SegwitDerivationHDWallet) {
+    const auto mnemonic1 = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
+    const auto passphrase = "";
+    const auto coin = TWCoinTypeBitcoin;
+    HDWallet wallet = HDWallet(mnemonic1, passphrase);
+
+    // addresses with different derivations
+    EXPECT_EQ(wallet.deriveAddress(coin), "bc1qpsp72plnsqe6e2dvtsetxtww2cz36ztmfxghpd");
+    EXPECT_EQ(wallet.deriveAddress(coin, TWDerivationDefault), "bc1qpsp72plnsqe6e2dvtsetxtww2cz36ztmfxghpd");
+    EXPECT_EQ(wallet.deriveAddress(coin, TWDerivationBitcoinSegwit), "bc1qpsp72plnsqe6e2dvtsetxtww2cz36ztmfxghpd");
+    EXPECT_EQ(wallet.deriveAddress(coin, TWDerivationBitcoinLegacy), "1GVb4mfQrvymPLz7zeZ3LnQ8sFv3NedZXe");
+    EXPECT_EQ(wallet.deriveAddress(coin, TWDerivationBitcoinTestnet), "tb1qq8p994ak933c39d2jaj8n4sg598tnkhnyk5sg5");
 }
 
 } // namespace TW::Bitcoin::tests
