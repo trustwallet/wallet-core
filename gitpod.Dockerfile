@@ -1,4 +1,4 @@
-FROM ubuntu:jammy-20220815
+FROM ubuntu:latest
 
 # Install some basics
 RUN apt-get update \
