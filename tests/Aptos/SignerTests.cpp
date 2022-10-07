@@ -9,6 +9,7 @@
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
+#include "../interface/TWTestUtilities.h"
 #include <nlohmann/json.hpp>
 
 #include <gtest/gtest.h>
@@ -53,7 +54,152 @@ TEST(AptosSigner, DummyTxSign) {
         }
         )"_json;
     nlohmann::json parsedJson = nlohmann::json::parse(result.json());
-    ASSERT_EQ(expectedJson, parsedJson);
+    assertJSONEqual(expectedJson, parsedJson);
+}
+
+TEST(AptosSigner, ClaimNftTxSign) {
+    // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x60b51e15140ec0b7650334e948fb447ce3cb13ae63492260461ebfa9d02e85c4?network=testnet
+    Proto::SigningInput input;
+    input.set_sender("0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30");
+    input.set_sequence_number(19);
+    auto& tf = *input.mutable_nft_message()->mutable_claim_nft();
+    tf.set_sender("0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee");
+    tf.set_creator("0x9125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac");
+    tf.set_collectionname("Topaz Troopers");
+    tf.set_name("Topaz Trooper #20068");
+    tf.set_property_version(0);
+    input.set_max_gas_amount(3296766);
+    input.set_gas_unit_price(100);
+    input.set_expiration_timestamp_secs(3664390082);
+    input.set_chain_id(2);
+    auto privateKey = PrivateKey(parse_hex("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    auto result = Signer::sign(input);
+    ASSERT_EQ(hex(result.raw_txn()), "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3013000000000000000200000000000000000000000000000000000000000000000000000000000000030f746f6b656e5f7472616e73666572730c636c61696d5f736372697074000520783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee209125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac0f0e546f70617a2054726f6f706572731514546f70617a2054726f6f70657220233230303638080000000000000000fe4d3200000000006400000000000000c2276ada0000000002");
+    ASSERT_EQ(hex(result.authenticator().signature()), "ede1ffb5f8f663741c2ca9597af44af81c98f7a910261bb4125f758fd0c0ebbf5bacb34f1196ad45153177729eb6d478676b364ab747da17602713f65ca2dd0a");
+    ASSERT_EQ(hex(result.encoded()), "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3013000000000000000200000000000000000000000000000000000000000000000000000000000000030f746f6b656e5f7472616e73666572730c636c61696d5f736372697074000520783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee209125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac0f0e546f70617a2054726f6f706572731514546f70617a2054726f6f70657220233230303638080000000000000000fe4d3200000000006400000000000000c2276ada00000000020020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c40ede1ffb5f8f663741c2ca9597af44af81c98f7a910261bb4125f758fd0c0ebbf5bacb34f1196ad45153177729eb6d478676b364ab747da17602713f65ca2dd0a");
+    nlohmann::json expectedJson = R"(
+                {
+                    "expiration_timestamp_secs": "3664390082",
+                    "gas_unit_price": "100",
+                    "max_gas_amount": "3296766",
+                    "payload": {
+                        "arguments": [
+                                      "0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee",
+                                      "0x9125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac",
+                                      "Topaz Troopers", "Topaz Trooper #20068", "0"],
+                        "function": "0x3::token_transfers::claim_script",
+                        "type": "entry_function_payload",
+                        "type_arguments": []
+                    },
+                    "sender": "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+                    "sequence_number": "19",
+                    "signature": {
+                        "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
+                        "signature": "0xede1ffb5f8f663741c2ca9597af44af81c98f7a910261bb4125f758fd0c0ebbf5bacb34f1196ad45153177729eb6d478676b364ab747da17602713f65ca2dd0a",
+                        "type": "ed25519_signature"
+                    }
+                }
+        )"_json;
+    nlohmann::json parsedJson = nlohmann::json::parse(result.json());
+    assertJSONEqual(expectedJson, parsedJson);
+}
+
+TEST(AptosSigner, NftOfferTxSign) {
+    // Successfully broadcasted https://explorer.aptoslabs.com/txn/0x514e473618bd3cb89a2b110b7c473db9a2e10532f98eb42d02d86fb31c00525d?network=testnet
+    Proto::SigningInput input;
+    input.set_sender("0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee");
+    input.set_sequence_number(1);
+    auto& tf = *input.mutable_nft_message()->mutable_offer_nft();
+    tf.set_receiver("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30");
+    tf.set_creator("0x9125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac");
+    tf.set_collectionname("Topaz Troopers");
+    tf.set_name("Topaz Trooper #20068");
+    tf.set_property_version(0);
+    tf.set_amount(1);
+    input.set_max_gas_amount(3296766);
+    input.set_gas_unit_price(100);
+    input.set_expiration_timestamp_secs(3664390082);
+    input.set_chain_id(2);
+    auto privateKey = PrivateKey(parse_hex("7bebb6d543d17f6fe4e685cfab239fa37896edd594ff859f1df32f244fb707e2"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    auto result = Signer::sign(input);
+    ASSERT_EQ(hex(result.raw_txn()), "783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee01000000000000000200000000000000000000000000000000000000000000000000000000000000030f746f6b656e5f7472616e73666572730c6f666665725f73637269707400062007968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30209125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac0f0e546f70617a2054726f6f706572731514546f70617a2054726f6f70657220233230303638080000000000000000080100000000000000fe4d3200000000006400000000000000c2276ada0000000002");
+    ASSERT_EQ(hex(result.authenticator().signature()), "af5c7357a83c69e3f425beb23eaf232f8bb36dea3b7cad4a7ab8d735cee999c8ec5285005adf69dc85a6c34b042dd0308fe92b76dad5d6ac88c7b9259902c10f");
+    ASSERT_EQ(hex(result.encoded()), "783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee01000000000000000200000000000000000000000000000000000000000000000000000000000000030f746f6b656e5f7472616e73666572730c6f666665725f73637269707400062007968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30209125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac0f0e546f70617a2054726f6f706572731514546f70617a2054726f6f70657220233230303638080000000000000000080100000000000000fe4d3200000000006400000000000000c2276ada00000000020020d1d99b67e37b483161a0fa369c46f34a3be4863c20e20fc7cdc669c0826a411340af5c7357a83c69e3f425beb23eaf232f8bb36dea3b7cad4a7ab8d735cee999c8ec5285005adf69dc85a6c34b042dd0308fe92b76dad5d6ac88c7b9259902c10f");
+    nlohmann::json expectedJson = R"(
+                {
+                    "expiration_timestamp_secs": "3664390082",
+                    "gas_unit_price": "100",
+                    "max_gas_amount": "3296766",
+                    "payload": {
+                        "arguments": [
+                                      "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+                                      "0x9125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac",
+                                      "Topaz Troopers", "Topaz Trooper #20068", "0", "1"],
+                        "function": "0x3::token_transfers::offer_script",
+                        "type": "entry_function_payload",
+                        "type_arguments": []
+                    },
+                    "sender": "0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee",
+                    "sequence_number": "1",
+                    "signature": {
+                        "public_key": "0xd1d99b67e37b483161a0fa369c46f34a3be4863c20e20fc7cdc669c0826a4113",
+                        "signature": "0xaf5c7357a83c69e3f425beb23eaf232f8bb36dea3b7cad4a7ab8d735cee999c8ec5285005adf69dc85a6c34b042dd0308fe92b76dad5d6ac88c7b9259902c10f",
+                        "type": "ed25519_signature"
+                    }
+                }
+        )"_json;
+    nlohmann::json parsedJson = nlohmann::json::parse(result.json());
+    assertJSONEqual(expectedJson, parsedJson);
+}
+
+TEST(AptosSigner, CancelNftOfferTxSign) {
+    // Successfully broadcasted https://explorer.aptoslabs.com/txn/0x0b8c64e6847c368e4c6bd2cce0e9eab378971b0ef2e3bc40cbd292910a80201d?network=testnet
+    Proto::SigningInput input;
+    input.set_sender("0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30");
+    input.set_sequence_number(21);
+    auto& tf = *input.mutable_nft_message()->mutable_cancel_offer_nft();
+    tf.set_receiver("0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee");
+    tf.set_creator("0x9125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac");
+    tf.set_collectionname("Topaz Troopers");
+    tf.set_name("Topaz Trooper #20068");
+    tf.set_property_version(0);
+    input.set_max_gas_amount(3296766);
+    input.set_gas_unit_price(100);
+    input.set_expiration_timestamp_secs(3664390082);
+    input.set_chain_id(2);
+    auto privateKey = PrivateKey(parse_hex("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    auto result = Signer::sign(input);
+    ASSERT_EQ(hex(result.raw_txn()), "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3015000000000000000200000000000000000000000000000000000000000000000000000000000000030f746f6b656e5f7472616e73666572731363616e63656c5f6f666665725f736372697074000520783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee209125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac0f0e546f70617a2054726f6f706572731514546f70617a2054726f6f70657220233230303638080000000000000000fe4d3200000000006400000000000000c2276ada0000000002");
+    ASSERT_EQ(hex(result.authenticator().signature()), "826722d374e276f618123e77da3ac024c89a3f97db9e09e19aa8ed06c3cdfc57d4a21c7890137f9a7c0447cc303447ba10ca5b1908e889071e0a68f48c0f260a");
+    ASSERT_EQ(hex(result.encoded()), "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3015000000000000000200000000000000000000000000000000000000000000000000000000000000030f746f6b656e5f7472616e73666572731363616e63656c5f6f666665725f736372697074000520783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee209125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac0f0e546f70617a2054726f6f706572731514546f70617a2054726f6f70657220233230303638080000000000000000fe4d3200000000006400000000000000c2276ada00000000020020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c40826722d374e276f618123e77da3ac024c89a3f97db9e09e19aa8ed06c3cdfc57d4a21c7890137f9a7c0447cc303447ba10ca5b1908e889071e0a68f48c0f260a");
+    nlohmann::json expectedJson = R"(
+                {
+                    "expiration_timestamp_secs": "3664390082",
+                    "gas_unit_price": "100",
+                    "max_gas_amount": "3296766",
+                    "payload": {
+                        "arguments": [
+                                      "0x783135e8b00430253a22ba041d860c373d7a1501ccf7ac2d1ad37a8ed2775aee",
+                                      "0x9125e4054d884fdc7296b66e12c0d63a7baa0d88c77e8e784987c0a967c670ac",
+                                      "Topaz Troopers", "Topaz Trooper #20068", "0"],
+                        "function": "0x3::token_transfers::cancel_offer_script",
+                        "type": "entry_function_payload",
+                        "type_arguments": []
+                    },
+                    "sender": "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+                    "sequence_number": "21",
+                    "signature": {
+                        "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
+                        "signature": "0x826722d374e276f618123e77da3ac024c89a3f97db9e09e19aa8ed06c3cdfc57d4a21c7890137f9a7c0447cc303447ba10ca5b1908e889071e0a68f48c0f260a",
+                        "type": "ed25519_signature"
+                    }
+                }
+        )"_json;
+    nlohmann::json parsedJson = nlohmann::json::parse(result.json());
+    assertJSONEqual(expectedJson, parsedJson);
 }
 
 TEST(AptosSigner, TxSign) {
@@ -95,7 +241,7 @@ TEST(AptosSigner, TxSign) {
                 }
         )"_json;
     nlohmann::json parsedJson = nlohmann::json::parse(result.json());
-    ASSERT_EQ(expectedJson, parsedJson);
+    assertJSONEqual(expectedJson, parsedJson);
 }
 
 TEST(AptosSigner, CreateAccount) {
@@ -136,7 +282,7 @@ TEST(AptosSigner, CreateAccount) {
                 }
         )"_json;
     nlohmann::json parsedJson = nlohmann::json::parse(result.json());
-    ASSERT_EQ(expectedJson, parsedJson);
+    assertJSONEqual(expectedJson, parsedJson);
 }
 
 TEST(AptosSigner, BlindSign) {
@@ -180,7 +326,7 @@ TEST(AptosSigner, BlindSign) {
                 }
         )"_json;
     nlohmann::json parsedJson = nlohmann::json::parse(result.json());
-    ASSERT_EQ(expectedJson, parsedJson);
+    assertJSONEqual(expectedJson, parsedJson);
 }
 
 TEST(AptosSigner, TokenTxSign) {
@@ -225,7 +371,7 @@ TEST(AptosSigner, TokenTxSign) {
                 }
         )"_json;
     nlohmann::json parsedJson = nlohmann::json::parse(result.json());
-    ASSERT_EQ(expectedJson, parsedJson);
+    assertJSONEqual(expectedJson, parsedJson);
 }
 
 } // namespace TW::Aptos::tests

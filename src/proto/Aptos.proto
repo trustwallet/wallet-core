@@ -43,6 +43,58 @@ message CreateAccountMessage {
   string auth_key = 1;
 }
 
+// Necessary fields to process an OfferNftMessage
+message OfferNftMessage {
+  // Receiver address
+  string receiver = 1;
+  // Creator address
+  string creator = 2;
+  // Name of the collection
+  string collectionName = 3;
+  // Name of the NFT
+  string name = 4;
+  // Property version (should be often 0)
+  uint64 property_version = 5;
+  // Amount of NFT's to transfer (should be often 1)
+  uint64 amount = 6;
+}
+
+// Necessary fields to process an CancelOfferNftMessage
+message CancelOfferNftMessage {
+  // Receiver address
+  string receiver = 1;
+  // Creator address
+  string creator = 2;
+  // Name of the collection
+  string collectionName = 3;
+  // Name of the NFT
+  string name = 4;
+  // Property version (should be often 0)
+  uint64 property_version = 5;
+}
+
+// Necessary fields to process an ClaimNftMessage
+message ClaimNftMessage {
+  // Sender address
+  string sender = 1;
+  // Creator address
+  string creator = 2;
+  // Name of the collection
+  string collectionName = 3;
+  // Name of the NFT
+  string name = 4;
+  // Property version (should be often 0)
+  uint64 property_version = 5;
+}
+
+message NftMessage {
+  oneof nft_transaction_payload {
+    OfferNftMessage offer_nft = 1;
+    CancelOfferNftMessage cancel_offer_nft = 2;
+    ClaimNftMessage claim_nft = 3;
+  }
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
   // Sender Account address (string)
@@ -53,19 +105,20 @@ message SigningInput {
     TransferMessage transfer = 3;
     TokenTransferMessage token_transfer = 4;
     CreateAccountMessage create_account = 5;
+    NftMessage nft_message = 6;
   }
   // Max gas amount that the user is willing to pay (uint64)
-  uint64 max_gas_amount = 6;
+  uint64 max_gas_amount = 7;
   // Gas unit price - queried through API (uint64)
-  uint64 gas_unit_price = 7;
+  uint64 gas_unit_price = 8;
   // Expiration timestamp for the transaction, can't be in the past (uint64)
-  uint64 expiration_timestamp_secs = 8;
+  uint64 expiration_timestamp_secs = 9;
   //  Chain id 1 (mainnet) 32(devnet) (uint32 - casted in uint8_t later)
-  uint32 chain_id = 9;
+  uint32 chain_id = 10;
   //  Private key to sign the transaction (bytes)
-  bytes private_key = 10;
+  bytes private_key = 11;
   // hex encoded function to sign, use it for smart contract approval (string)
-  string any_encoded = 11;
+  string any_encoded = 12;
 }
 
 // Information related to the signed transaction

@@ -52,6 +52,7 @@ constexpr inline bool operator==(const Address& lhs, const Address& rhs) noexcep
 
 inline const Address gAddressZero = Address("0x0");
 inline const Address gAddressOne = Address("0x1");
+inline const Address gAddressThree = Address("0x3");
 
 BCS::Serializer& operator<<(BCS::Serializer& stream, Address) noexcept;
 
