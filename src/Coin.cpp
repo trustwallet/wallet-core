@@ -10,6 +10,9 @@
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <TrustWalletCore/TWHRP.h>
 
+#include <nlohmann/json.hpp>
+#include <string.h>
+
 #include <map>
 
 // #coin-list# Includes for entry points for coin implementations
@@ -56,6 +59,57 @@
 #include "Zilliqa/Entry.h"
 #include "Everscale/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
+
+namespace {
+    TWBlockchain stringToTWBlockchain(const std::string& blockchain) {
+        // TODO: codegen this?
+        // clang-format off
+        if (blockchain == "Bitcoin") return TWBlockchainBitcoin;
+        if (blockchain == "Ethereum") return TWBlockchainEthereum;
+        if (blockchain == "Vechain") return TWBlockchainVechain;
+        if (blockchain == "Tron") return TWBlockchainTron;
+        if (blockchain == "Icon") return TWBlockchainIcon;
+        if (blockchain == "Binance") return TWBlockchainBinance;
+        if (blockchain == "Ripple") return TWBlockchainRipple;
+        if (blockchain == "Tezos") return TWBlockchainTezos;
+        if (blockchain == "Nimiq") return TWBlockchainNimiq;
+        if (blockchain == "Stellar") return TWBlockchainStellar;
+        if (blockchain == "Aion") return TWBlockchainAion;
+        if (blockchain == "Cosmos") return TWBlockchainCosmos;
+        if (blockchain == "Theta") return TWBlockchainTheta;
+        if (blockchain == "Ontology") return TWBlockchainOntology;
+        if (blockchain == "Zilliqa") return TWBlockchainZilliqa;
+        if (blockchain == "IoTeX") return TWBlockchainIoTeX;
+        if (blockchain == "EOS") return TWBlockchainEOS;
+        if (blockchain == "Nano") return TWBlockchainNano;
+        if (blockchain == "NULS") return TWBlockchainNULS;
+        if (blockchain == "Waves") return TWBlockchainWaves;
+        if (blockchain == "Aeternity") return TWBlockchainAeternity;
+        if (blockchain == "Nebulas") return TWBlockchainNebulas;
+        if (blockchain == "FIO") return TWBlockchainFIO;
+        if (blockchain == "Solana") return TWBlockchainSolana;
+        if (blockchain == "Harmony") return TWBlockchainHarmony;
+        if (blockchain == "NEAR") return TWBlockchainNEAR;
+        if (blockchain == "Algorand") return TWBlockchainAlgorand;
+        if (blockchain == "Polkadot") return TWBlockchainPolkadot;
+        if (blockchain == "Cardano") return TWBlockchainCardano;
+        if (blockchain == "NEO") return TWBlockchainNEO;
+        if (blockchain == "Filecoin") return TWBlockchainFilecoin;
+        if (blockchain == "ElrondNetwork") return TWBlockchainElrondNetwork;
+        if (blockchain == "OasisNetwork") return TWBlockchainOasisNetwork;
+        if (blockchain == "Decred") return TWBlockchainDecred;
+        if (blockchain == "Zcash") return TWBlockchainZcash;
+        if (blockchain == "Groestlcoin") return TWBlockchainGroestlcoin;
+        if (blockchain == "Thorchain") return TWBlockchainThorchain;
+        if (blockchain == "Ronin") return TWBlockchainRonin;
+        if (blockchain == "Kusama") return TWBlockchainKusama;
+        if (blockchain == "Nervos") return TWBlockchainNervos;
+        if (blockchain == "Everscale") return TWBlockchainEverscale;
+        if (blockchain == "Aptos") return TWBlockchainAptos;
+        // clang-format on
+        throw std::runtime_error("invalid blockchain name");
+    }
+}
 
 using namespace TW;
 using namespace std;
@@ -377,4 +431,27 @@ TWString* _Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType coin) {
 
 TWString* _Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType coin) {
     return TWStringCreateWithUTF8Bytes(getCoinInfo(coin).name);
+}
+
+void TW::jsonToCoinRegistry(const nlohmann::json& jsonRuntimeRegistry) {
+    if (!jsonRuntimeRegistry.is_array()) {
+        throw std::runtime_error("JSON input is not an array!");
+    }
+
+    for (auto&& curJson: jsonRuntimeRegistry) {
+        CoinInfo info;
+        if (!curJson.contains("id")) {
+            continue;
+        }
+        info.id = strdup(curJson.at("id").get<std::string>().c_str());
+        info.name = strdup(curJson.at("name").get<std::string>().c_str());
+        info.blockchain = stringToTWBlockchain(curJson.at("blockchain").get<std::string>());
+        info.symbol = strdup(curJson.at("symbol").get<std::string>().c_str());
+        info.decimals = curJson.at("decimals").get<decltype(info.decimals)>();
+        info.chainId = strdup(curJson.at("chainId").get<std::string>().c_str());
+        if (curJson.contains("coinId")) {
+            info.slip44 = curJson.at("coinId").get<decltype(info.slip44)>();
+        }
+        gRuntimeCoinInfoRegistry[info.id] = info;
+    }
 }

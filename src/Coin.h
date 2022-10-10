@@ -21,6 +21,8 @@
 #include <TrustWalletCore/TWPurpose.h>
 #include <TrustWalletCore/TWDerivation.h>
 
+#include <nlohmann/json_fwd.hpp>
+
 #include <string>
 #include <vector>
 
@@ -162,5 +164,9 @@ struct CoinInfo {
     }
     const Derivation derivationByName(TWDerivation name) const;
 };
+
+inline std::unordered_map<std::string, CoinInfo> gRuntimeCoinInfoRegistry;
+
+void jsonToCoinRegistry(const nlohmann::json& jsonRuntimeRegistry);
 
 } // namespace TW
