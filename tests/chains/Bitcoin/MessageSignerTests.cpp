@@ -19,7 +19,6 @@
 
 #include <cassert>
 #include <gtest/gtest.h>
-#include <iostream> // TODO remove
 
 namespace TW::Bitcoin::MessageSignerTests {
 
