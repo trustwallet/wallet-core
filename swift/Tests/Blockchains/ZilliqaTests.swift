@@ -109,7 +109,7 @@ class ZilliqaTests: XCTestCase {
 
         let output: ZilliqaSigningOutput = AnySigner.sign(input: input, coin: .zilliqa)
 
-        let url = Bundle(for: ZilliqaTests.self).url(forResource: "zilliqa_data_tx", withExtension: "json")!
+        let url = Bundle(for: ZilliqaTests.self).url(forResource: "Data/zilliqa_data_tx", withExtension: "json")!
         let expected = try String(contentsOf: url)
 
         XCTAssertJSONEqual(expected, output.json)
