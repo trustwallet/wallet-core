@@ -30,6 +30,12 @@ class PublicKey {
     /// The number of bytes in a secp256k1 and nist256p1 extended public key.
     static const size_t secp256k1ExtendedSize = 65;
 
+    /// The number of bytes in a secp256k1 signature.
+    static const size_t secp256k1SignatureSize = 65;
+
+    /// Magic number used in V compnent encoding
+    static const byte SignatureVOffset = 27;
+
     /// The public key bytes.
     Data bytes;
 
@@ -74,8 +80,19 @@ class PublicKey {
     /// bytes and then prepending the prefix.
     Data hash(const Data& prefix, Hash::Hasher hasher = Hash::HasherSha256ripemd, bool skipTypeByte = false) const;
 
+    /// Recover public key (SECP256k1Extended) from signature R, S, V values
+    /// signatureRS: 2x32 bytes with the R and S values
+    /// recId: the recovery ID, a.k.a. V value, 0 <= v < 4
+    /// messageDigest: message digest (hash) to be signed
+    /// Throws on invalid data.
+    static PublicKey recoverRaw(const Data& signatureRS, byte recId, const Data& messageDigest);
+
     /// Recover public key from signature (SECP256k1Extended)
-    static PublicKey recover(const Data& signature, const Data& message);
+    /// signature: 65-byte signature (R, S, and V). V can have higher value bits, as used by Ethereum (for values over 27 the negated last bit is taken).
+    /// messageDigest: message digest (hash) to be signed
+    /// Throws on invalid data.
+    /// Naming is kept for backwards compatibility.
+    static PublicKey recover(const Data& signature, const Data& messageDigest);
 
     /// Check if this key makes a valid ED25519 key (it is on the curve)
     bool isValidED25519() const;
