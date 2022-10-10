@@ -561,3 +561,13 @@ void TW::jsonToCoinRegistry(const nlohmann::json& jsonRuntimeRegistry) {
         gRuntimeCoinInfoRegistry[info.id] = info;
     }
 }
+
+void TW::cleanRuntimeRegistry() {
+    for (auto&& [_, curCfg]: gRuntimeCoinInfoRegistry) {
+        std::free((void *)(curCfg.id));
+        std::free((void *)(curCfg.name));
+        std::free((void *)(curCfg.symbol));
+        std::free((void *)(curCfg.chainId));
+        std::free((void *)(curCfg.hrpStr));
+    }
+}

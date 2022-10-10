@@ -58,6 +58,7 @@ TEST(Coin, RuntimeRegistryFromJson) {
     ASSERT_EQ(junoCfg.decimals, 6);
     ASSERT_EQ(std::string(junoCfg.hrpStr), "juno");
     ASSERT_EQ(junoCfg.hrp, TWHRPUnknown);
+    cleanRuntimeRegistry();
 }
 
 } // namespace TW::Coin::tests

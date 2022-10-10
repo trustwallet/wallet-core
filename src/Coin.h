@@ -172,5 +172,7 @@ struct CoinInfo {
 inline std::unordered_map<std::string, CoinInfo> gRuntimeCoinInfoRegistry;
 
 void jsonToCoinRegistry(const nlohmann::json& jsonRuntimeRegistry);
+void cleanRuntimeRegistry();
+
 
 } // namespace TW
