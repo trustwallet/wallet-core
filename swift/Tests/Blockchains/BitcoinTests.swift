@@ -174,4 +174,13 @@ class BitcoinTransactionSignerTests: XCTestCase {
         XCTAssertEqual(output.error, .ok)
         XCTAssertEqual(output.encoded.hexString, "01000000026c90312e53a3411347a197bfd637c2583d617dd2317262a70e1b5245d2f1e36a000000008a47304402201a631068ea5ddea19467ef7c932a0f3b04f366ca2beaf70e18958e47456124980220614816c449e39cf6acc6625e1cf3100db1db7c0b755bdbb6804d4fa3c4b735d10141041b3937fac1f14074447cde9d3a324ed292d2865ed0d7a7da26cb43558ce4db4ef33c47e820e53031ae16bb0c39205def059a5ca8e1d617650eabc72c5206a81dffffffff13bf27945c669cf3c1d70cf3048f4ab14f1ab6acf06d10d425e8288217a81efd000000008a473044022051d381d8f48a9a4866ca4109f12647922514604a4733e8da8aac046e19275f700220797c3ebf20df7d2a9fed283f9d0ad14cbd656cafb5ec70a2b1c85646ea7485190141041b3937fac1f14074447cde9d3a324ed292d2865ed0d7a7da26cb43558ce4db4ef33c47e820e53031ae16bb0c39205def059a5ca8e1d617650eabc72c5206a81dffffffff0194590000000000001976a914a0c0a50f986924e65ae9bd18eafae448f83117ed88ac00000000")
     }
+
+    func testBitcoinMessageSigner() {
+        let verifyResult = BitcoinMessageSigner.verifyMessage(
+            address: "1B8Qea79tsxmn4dTiKKRVvsJpHwL2fMQnr",
+            message: "test signature",
+            signature: "H+3L5IbSVcejp4S2VwLXCxLEMQAWDvKbE8lQyq0ocdvyM1aoEudkzN/S/qLI3vnNOFY6V13BXWSFrPr3OjGa5Dk="
+        )
+        XCTAssertTrue(verifyResult)
+    }
 }
