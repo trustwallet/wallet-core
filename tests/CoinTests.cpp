@@ -50,9 +50,14 @@ TEST(Coin, RuntimeRegistryFromJson) {
     CoinInfo junoCfg = gRuntimeCoinInfoRegistry.at("juno");
     ASSERT_EQ(std::string(junoCfg.id), "juno");
     ASSERT_EQ(std::string(junoCfg.chainId), "juno-1");
+    ASSERT_EQ(std::string(junoCfg.symbol), "JUNO");
+    ASSERT_EQ(std::string(junoCfg.name), "Juno");
     ASSERT_EQ(junoCfg.slip44, 20000118u);
     ASSERT_EQ(junoCfg.blockchain, TWBlockchainCosmos);
+    ASSERT_EQ(junoCfg.curve, TWCurveSECP256k1);
     ASSERT_EQ(junoCfg.decimals, 6);
+    ASSERT_EQ(std::string(junoCfg.hrpStr), "juno");
+    ASSERT_EQ(junoCfg.hrp, TWHRPUnknown);
 }
 
 } // namespace TW::Coin::tests
