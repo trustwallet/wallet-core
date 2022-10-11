@@ -259,6 +259,7 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
             assert(msg.has_msg_vote());
             const auto& vote = msg.msg_vote();
             auto msgVote = cosmos::gov::v1beta1::MsgVote();
+            // LCOV_EXCL_START
             switch (vote.option()) {
             case Proto::Message_VoteOption_VOTE_OPTION_UNSPECIFIED:
                 msgVote.set_option(cosmos::gov::v1beta1::VOTE_OPTION_UNSPECIFIED);
@@ -282,6 +283,7 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
                 msgVote.set_option(cosmos::gov::v1beta1::VoteOption_INT_MAX_SENTINEL_DO_NOT_USE_);
                 break;
             }
+            // LCOV_EXCL_STOP
             msgVote.set_proposal_id(vote.proposal_id());
             msgVote.set_voter(vote.voter());
             any.PackFrom(msgVote, ProtobufAnyNamespacePrefix);
