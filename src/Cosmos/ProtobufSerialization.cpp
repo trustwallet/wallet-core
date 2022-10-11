@@ -261,19 +261,19 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
             auto msgVote = cosmos::gov::v1beta1::MsgVote();
             // LCOV_EXCL_START
             switch (vote.option()) {
-            case Proto::Message_VoteOption_VOTE_OPTION_UNSPECIFIED:
+            case Proto::Message_VoteOption__UNSPECIFIED:
                 msgVote.set_option(cosmos::gov::v1beta1::VOTE_OPTION_UNSPECIFIED);
                 break;
-            case Proto::Message_VoteOption_VOTE_OPTION_YES:
+            case Proto::Message_VoteOption_YES:
                 msgVote.set_option(cosmos::gov::v1beta1::VOTE_OPTION_YES);
                 break;
-            case Proto::Message_VoteOption_VOTE_OPTION_ABSTAIN:
+            case Proto::Message_VoteOption_ABSTAIN:
                 msgVote.set_option(cosmos::gov::v1beta1::VOTE_OPTION_ABSTAIN);
                 break;
-            case Proto::Message_VoteOption_VOTE_OPTION_NO:
+            case Proto::Message_VoteOption_NO:
                 msgVote.set_option(cosmos::gov::v1beta1::VOTE_OPTION_NO);
                 break;
-            case Proto::Message_VoteOption_VOTE_OPTION_NO_WITH_VETO:
+            case Proto::Message_VoteOption_NO_WITH_VETO:
                 msgVote.set_option(cosmos::gov::v1beta1::VOTE_OPTION_NO_WITH_VETO);
                 break;
             case Proto::Message_VoteOption_Message_VoteOption_INT_MIN_SENTINEL_DO_NOT_USE_:

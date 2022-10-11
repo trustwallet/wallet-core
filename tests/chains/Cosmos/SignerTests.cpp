@@ -305,7 +305,7 @@ TEST(CosmosSigner, MsgVote) {
     auto& message = *msg->mutable_msg_vote();
     message.set_voter("cosmos1mry47pkga5tdswtluy0m8teslpalkdq07pswu4");
     message.set_proposal_id(77);
-    message.set_option(TW::Cosmos::Proto::Message_VoteOption_VOTE_OPTION_YES);
+    message.set_option(TW::Cosmos::Proto::Message_VoteOption_YES);
 
     auto& fee = *input.mutable_fee();
     fee.set_gas(97681);
