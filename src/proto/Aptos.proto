@@ -113,12 +113,14 @@ message SigningInput {
   uint64 gas_unit_price = 8;
   // Expiration timestamp for the transaction, can't be in the past (uint64)
   uint64 expiration_timestamp_secs = 9;
-  //  Chain id 1 (mainnet) 32(devnet) (uint32 - casted in uint8_t later)
+  // Chain id 1 (mainnet) 32(devnet) (uint32 - casted in uint8_t later)
   uint32 chain_id = 10;
-  //  Private key to sign the transaction (bytes)
+  // Private key to sign the transaction (bytes)
   bytes private_key = 11;
-  // hex encoded function to sign, use it for smart contract approval (string)
+  // Hex encoded function to sign, use it for smart contract approval (string)
   string any_encoded = 12;
+  // Simple message to sign (https://docs.martianwallet.xyz/docs/methods/sign-message)
+  string msg = 13;
 }
 
 // Information related to the signed transaction
@@ -142,4 +144,7 @@ message SigningOutput {
 
   // Transaction json format for api broadcasting (string)
   string json = 4;
+
+  // Hex message signed (https://docs.martianwallet.xyz/docs/methods/sign-message)
+  string message = 5;
 }

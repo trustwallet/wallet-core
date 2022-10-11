@@ -126,6 +126,15 @@ TransactionPayload tokenTransferPayload(const Proto::SigningInput& input) {
     return payload;
 }
 
+Proto::SigningOutput signMessage(const Proto::SigningInput& input) {
+    auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto data = TW::data(input.msg());
+    auto signature = privateKey.sign(data, TWCurveED25519);
+    auto output = Proto::SigningOutput();
+    output.set_message(hexEncoded(signature));
+    return output;
+}
+
 Proto::SigningOutput blindSign(const Proto::SigningInput& input) {
     auto output = Proto::SigningOutput();
     BCS::Serializer serializer;
@@ -156,6 +165,9 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto protoOutput = Proto::SigningOutput();
     if (!input.any_encoded().empty()) {
         return blindSign(input);
+    }
+    if (!input.msg().empty()) {
+        return signMessage(input);
     }
     auto nftPayloadFunctor = [](const Proto::NftMessage& nftMessage) {
         switch (nftMessage.nft_transaction_payload_case()) {

@@ -244,6 +244,16 @@ TEST(AptosSigner, TxSign) {
     assertJSONEqual(expectedJson, parsedJson);
 }
 
+TEST(AptosSigner, SignMessage) {
+    // https://docs.martianwallet.xyz/docs/methods/sign-message
+    Proto::SigningInput input;
+    input.set_msg("APTOS\naddress: 0x34c1e7efa0808b7b0113d71b722f483585e4c4b47ba2b0e703b090937f0c63a1\napplication: main.d3c4qcdwu8dzdc.amplifyapp.com\nchainId: 25\nmessage: This is a sample message\nnonce: 12345");
+    auto privateKey = PrivateKey(parse_hex("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    auto result = Signer::sign(input);
+    ASSERT_EQ(result.message(), "0xda6f77ecee79fa2d0bbf83543eed8626fa2de6251d8c48fb7ec0164fe1dc9b671ed497b9f855a17300e812356f14fa69d0cdfcdb7b6e8a2467c1451ed15fec0b");
+}
+
 TEST(AptosSigner, CreateAccount) {
     // Successfully broadcasted: https://explorer.aptoslabs.com/txn/0x477141736de6b0936a6c3734e4d6fd018c7d21f1f28f99028ef0bc6881168602?network=Devnet
     Proto::SigningInput input;
