@@ -18,7 +18,7 @@
 
 extern std::string TESTS_ROOT;
 
-namespace TW::Keystore {
+namespace TW::Keystore::tests {
 
 using namespace std;
 
@@ -30,6 +30,10 @@ const TWCoinType coinTypeBnb = TWCoinTypeBinance;
 const TWCoinType coinTypeBsc = TWCoinTypeSmartChain;
 const TWCoinType coinTypeEth = TWCoinTypeEthereum;
 const TWCoinType coinTypeBscLegacy = TWCoinTypeSmartChainLegacy;
+
+const std::string testDataPath(const char* subpath) {
+    return TESTS_ROOT + "/common/Keystore/Data/" + subpath;
+}
 
 TEST(StoredKey, CreateWithMnemonic) {
     auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelDefault);
@@ -272,11 +276,11 @@ TEST(StoredKey, WalletInvalid) {
 }
 
 TEST(StoredKey, LoadNonexistent) {
-    ASSERT_THROW(StoredKey::load(TESTS_ROOT + "/common/Keystore/Data/nonexistent.json"), invalid_argument);
+    ASSERT_THROW(StoredKey::load(testDataPath("nonexistent.json")), invalid_argument);
 }
 
 TEST(StoredKey, LoadLegacyPrivateKey) {
-    const auto key = StoredKey::load(TESTS_ROOT + "/common/Keystore/Data/legacy-private-key.json");
+    const auto key = StoredKey::load(testDataPath("legacy-private-key.json"));
     EXPECT_EQ(key.type, StoredKeyType::privateKey);
     EXPECT_EQ(key.id, "3051ca7d-3d36-4a4a-acc2-09e9083732b0");
     EXPECT_EQ(key.accounts[0].coin, TWCoinTypeEthereum);
@@ -284,7 +288,7 @@ TEST(StoredKey, LoadLegacyPrivateKey) {
 }
 
 TEST(StoredKey, LoadLivepeerKey) {
-    const auto key = StoredKey::load(TESTS_ROOT + "/common/Keystore/Data/livepeer.json");
+    const auto key = StoredKey::load(testDataPath("livepeer.json"));
     EXPECT_EQ(key.type, StoredKeyType::privateKey);
     EXPECT_EQ(key.id, "70ea3601-ee21-4e94-a7e4-66255a987d22");
     EXPECT_EQ(key.accounts[0].coin, TWCoinTypeEthereum);
@@ -292,7 +296,7 @@ TEST(StoredKey, LoadLivepeerKey) {
 }
 
 TEST(StoredKey, LoadPBKDF2Key) {
-    const auto key = StoredKey::load(TESTS_ROOT + "/common/Keystore/Data/pbkdf2.json");
+    const auto key = StoredKey::load(testDataPath("pbkdf2.json"));
     EXPECT_EQ(key.type, StoredKeyType::privateKey);
     EXPECT_EQ(key.id, "3198bc9c-6672-5ab3-d995-4942343ae5b6");
 
@@ -306,7 +310,7 @@ TEST(StoredKey, LoadPBKDF2Key) {
 }
 
 TEST(StoredKey, LoadLegacyMnemonic) {
-    const auto key = StoredKey::load(TESTS_ROOT + "/common/Keystore/Data/legacy-mnemonic.json");
+    const auto key = StoredKey::load(testDataPath("legacy-mnemonic.json"));
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
     EXPECT_EQ(key.id, "629aad29-0b22-488e-a0e7-b4219d4f311c");
 
@@ -324,7 +328,7 @@ TEST(StoredKey, LoadLegacyMnemonic) {
 }
 
 TEST(StoredKey, LoadFromWeb3j) {
-    const auto key = StoredKey::load(TESTS_ROOT + "/common/Keystore/Data/web3j.json");
+    const auto key = StoredKey::load(testDataPath("web3j.json"));
     EXPECT_EQ(key.type, StoredKeyType::privateKey);
     EXPECT_EQ(key.id, "86066d8c-8dba-4d81-afd4-934e2a2b72a2");
     const auto password = parse_hex("2d6eefbfbd4622efbfbdefbfbd516718efbfbdefbfbdefbfbdefbfbd59efbfbd30efbfbdefbfbd3a4348efbfbd2aefbfbdefbfbd49efbfbd27efbfbd0638efbfbdefbfbdefbfbd4cefbfbd6befbfbdefbfbd6defbfbdefbfbd63efbfbd5aefbfbd61262b70efbfbdefbfbdefbfbdefbfbdefbfbdc7aa373163417cefbfbdefbfbdefbfbd44efbfbdefbfbd1d10efbfbdefbfbdefbfbd61dc9e5b124befbfbd11efbfbdefbfbd2fefbfbdefbfbd3d7c574868efbfbdefbfbdefbfbd37043b7b5c1a436471592f02efbfbd18efbfbdefbfbd2befbfbdefbfbd7218efbfbd6a68efbfbdcb8e5f3328773ec48174efbfbd67efbfbdefbfbdefbfbdefbfbdefbfbd2a31efbfbd7f60efbfbdd884efbfbd57efbfbd25efbfbd590459efbfbd37efbfbd2bdca20fefbfbdefbfbdefbfbdefbfbd39450113efbfbdefbfbdefbfbd454671efbfbdefbfbdd49fefbfbd47efbfbdefbfbdefbfbdefbfbd00efbfbdefbfbdefbfbdefbfbd05203f4c17712defbfbd7bd1bbdc967902efbfbdc98a77efbfbd707a36efbfbd12efbfbdefbfbd57c78cefbfbdefbfbdefbfbd10efbfbdefbfbdefbfbde1a1bb08efbfbdefbfbd26efbfbdefbfbd58efbfbdefbfbdc4b1efbfbd295fefbfbd0eefbfbdefbfbdefbfbd0e6eefbfbd");
@@ -333,7 +337,7 @@ TEST(StoredKey, LoadFromWeb3j) {
 }
 
 TEST(StoredKey, ReadWallet) {
-    const auto key = StoredKey::load(TESTS_ROOT + "/common/Keystore/Data/key.json");
+    const auto key = StoredKey::load(testDataPath("key.json"));
 
     EXPECT_EQ(key.type, StoredKeyType::privateKey);
     EXPECT_EQ(key.id, "e13b209c-3b2f-4327-bab0-3bef2e51630d");
@@ -355,23 +359,23 @@ TEST(StoredKey, ReadWallet) {
 }
 
 TEST(StoredKey, ReadMyEtherWallet) {
-    ASSERT_NO_THROW(StoredKey::load(TESTS_ROOT + "/common/Keystore/Data/myetherwallet.uu"));
+    ASSERT_NO_THROW(StoredKey::load(testDataPath("myetherwallet.uu")));
 }
 
 TEST(StoredKey, InvalidPassword) {
-    const auto key = StoredKey::load(TESTS_ROOT + "/common/Keystore/Data/key.json");
+    const auto key = StoredKey::load(testDataPath("key.json"));
 
     ASSERT_THROW(key.payload.decrypt(gPassword), DecryptionError);
 }
 
 TEST(StoredKey, EmptyAccounts) {
-    const auto key = StoredKey::load(TESTS_ROOT + "/common/Keystore/Data/empty-accounts.json");
+    const auto key = StoredKey::load(testDataPath("empty-accounts.json"));
 
     ASSERT_NO_THROW(key.payload.decrypt(TW::data("testpassword")));
 }
 
 TEST(StoredKey, Decrypt) {
-    const auto key = StoredKey::load(TESTS_ROOT + "/common/Keystore/Data/key.json");
+    const auto key = StoredKey::load(testDataPath("key.json"));
     const auto privateKey = key.payload.decrypt(TW::data("testpassword"));
 
     EXPECT_EQ(hex(privateKey), "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d");
@@ -400,19 +404,19 @@ TEST(StoredKey, CreateAccounts) {
 }
 
 TEST(StoredKey, DecodingEthereumAddress) {
-    const auto key = StoredKey::load(TESTS_ROOT + "/common/Keystore/Data/key.json");
+    const auto key = StoredKey::load(testDataPath("key.json"));
 
     EXPECT_EQ(key.accounts[0].address, "0x008AeEda4D805471dF9b2A5B0f38A0C3bCBA786b");
 }
 
 TEST(StoredKey, DecodingBitcoinAddress) {
-    const auto key = StoredKey::load(TESTS_ROOT + "/common/Keystore/Data/key_bitcoin.json");
+    const auto key = StoredKey::load(testDataPath("key_bitcoin.json"));
 
     EXPECT_EQ(key.accounts[0].address, "3PWazDi9n1Hfyq9gXFxDxzADNL8RNYyK2y");
 }
     
 TEST(StoredKey, RemoveAccount) {
-    auto key = StoredKey::load(TESTS_ROOT + "/common/Keystore/Data/legacy-mnemonic.json");
+    auto key = StoredKey::load(testDataPath("legacy-mnemonic.json"));
     EXPECT_EQ(key.accounts.size(), 2ul);
     key.removeAccount(TWCoinTypeEthereum);
     EXPECT_EQ(key.accounts.size(), 1ul);
@@ -420,7 +424,7 @@ TEST(StoredKey, RemoveAccount) {
 }
 
 TEST(StoredKey, MissingAddressFix) {
-    auto key = StoredKey::load(TESTS_ROOT + "/common/Keystore/Data/missing-address.json");
+    auto key = StoredKey::load(testDataPath("missing-address.json"));
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
 
     const auto wallet = key.wallet(gPassword);
@@ -439,7 +443,7 @@ TEST(StoredKey, MissingAddressFix) {
 }
 
 TEST(StoredKey, MissingAddressReadd) {
-    auto key = StoredKey::load(TESTS_ROOT + "/common/Keystore/Data/missing-address.json");
+    auto key = StoredKey::load(testDataPath("missing-address.json"));
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
 
     const auto wallet = key.wallet(gPassword);
@@ -460,7 +464,7 @@ TEST(StoredKey, MissingAddressReadd) {
 }
 
 TEST(StoredKey, EtherWalletAddressNo0x) {
-    auto key = StoredKey::load(TESTS_ROOT + "/common/Keystore/Data/ethereum-wallet-address-no-0x.json");
+    auto key = StoredKey::load(testDataPath("ethereum-wallet-address-no-0x.json"));
     key.fixAddresses(TW::data("15748c4e3dca6ae2110535576ab0c398cb79d985707c68ee6c9f9df9d421dd53"));
     const auto account = key.account(TWCoinTypeEthereum, nullptr);
     EXPECT_EQ(account->address, "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309");
