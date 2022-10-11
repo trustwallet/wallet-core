@@ -9,7 +9,7 @@
 
 #include <TrustWalletCore/TWHash.h>
 
-#include "TWTestUtilities.h"
+#include "TestUtilities.h"
 #include <gtest/gtest.h>
 
 using namespace std;
