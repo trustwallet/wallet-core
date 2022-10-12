@@ -185,6 +185,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string, const std::
 }
 
 bool TW::validateAddress(TWCoinType coin, const std::string& string) {
+    const auto* hrp = stringForHRP(TW::hrp(coin));
+    return TW::validateAddress(coin, string, hrp);
+}
     auto p2pkh = TW::p2pkhPrefix(coin);
     auto p2sh = TW::p2shPrefix(coin);
     const auto* hrp = stringForHRP(TW::hrp(coin));
