@@ -21,6 +21,8 @@
 #include <TrustWalletCore/TWPurpose.h>
 #include <TrustWalletCore/TWDerivation.h>
 
+#include <nlohmann/json_fwd.hpp>
+
 #include <string>
 #include <vector>
 
@@ -104,6 +106,9 @@ byte p2shPrefix(TWCoinType coin);
 /// Returns human readable part for a coin type.
 enum TWHRP hrp(TWCoinType coin);
 
+/// Returns human readable part for a coin type as a const char*.
+const char* hrpStr(TWCoinType coin);
+
 /// Returns chain ID.
 const char* chainId(TWCoinType coin);
 
@@ -155,6 +160,7 @@ struct CoinInfo {
     const char* explorerTransactionUrl;
     const char* explorerAccountUrl;
     uint32_t slip44;
+    const char* hrpStr;
 
     // returns default derivation
     const Derivation defaultDerivation() const {
@@ -162,5 +168,11 @@ struct CoinInfo {
     }
     const Derivation derivationByName(TWDerivation name) const;
 };
+
+inline std::unordered_map<std::string, CoinInfo> gRuntimeCoinInfoRegistry;
+
+void jsonToCoinRegistry(const nlohmann::json& jsonRuntimeRegistry);
+void cleanRuntimeRegistry();
+
 
 } // namespace TW

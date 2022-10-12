@@ -10,6 +10,9 @@
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <TrustWalletCore/TWHRP.h>
 
+#include <nlohmann/json.hpp>
+#include <string.h>
+
 #include <map>
 
 // #coin-list# Includes for entry points for coin implementations
@@ -25,6 +28,7 @@
 #include "EOS/Entry.h"
 #include "Elrond/Entry.h"
 #include "Ethereum/Entry.h"
+#include "Everscale/Entry.h"
 #include "FIO/Entry.h"
 #include "Filecoin/Entry.h"
 #include "Groestlcoin/Entry.h"
@@ -42,7 +46,6 @@
 #include "Oasis/Entry.h"
 #include "Ontology/Entry.h"
 #include "Polkadot/Entry.h"
-#include "XRP/Entry.h"
 #include "Ronin/Entry.h"
 #include "Solana/Entry.h"
 #include "Stellar/Entry.h"
@@ -52,10 +55,74 @@
 #include "Tron/Entry.h"
 #include "VeChain/Entry.h"
 #include "Waves/Entry.h"
+#include "XRP/Entry.h"
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
-#include "Everscale/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
+
+namespace {
+    TWCurve stringToTWCurve(const std::string& curve) {
+        // TODO: codegen this?
+        // clang-format off
+        if (curve == "secp256k1") return TWCurveSECP256k1;
+        if (curve == "ed25519") return TWCurveED25519;
+        if (curve == "ed25519-blake2b-nano") return TWCurveED25519Blake2bNano;
+        if (curve == "curve25519") return TWCurveCurve25519;
+        if (curve == "nist256p1") return TWCurveNIST256p1;
+        if (curve == "ed25519-cardano-seed") return TWCurveED25519ExtendedCardano;
+        // clang-format on
+        throw std::runtime_error("invalid curve name");
+    }
+
+    TWBlockchain stringToTWBlockchain(const std::string& blockchain) {
+        // TODO: codegen this?
+        // clang-format off
+        if (blockchain == "Bitcoin") return TWBlockchainBitcoin;
+        if (blockchain == "Ethereum") return TWBlockchainEthereum;
+        if (blockchain == "Vechain") return TWBlockchainVechain;
+        if (blockchain == "Tron") return TWBlockchainTron;
+        if (blockchain == "Icon") return TWBlockchainIcon;
+        if (blockchain == "Binance") return TWBlockchainBinance;
+        if (blockchain == "Ripple") return TWBlockchainRipple;
+        if (blockchain == "Tezos") return TWBlockchainTezos;
+        if (blockchain == "Nimiq") return TWBlockchainNimiq;
+        if (blockchain == "Stellar") return TWBlockchainStellar;
+        if (blockchain == "Aion") return TWBlockchainAion;
+        if (blockchain == "Cosmos") return TWBlockchainCosmos;
+        if (blockchain == "Theta") return TWBlockchainTheta;
+        if (blockchain == "Ontology") return TWBlockchainOntology;
+        if (blockchain == "Zilliqa") return TWBlockchainZilliqa;
+        if (blockchain == "IoTeX") return TWBlockchainIoTeX;
+        if (blockchain == "EOS") return TWBlockchainEOS;
+        if (blockchain == "Nano") return TWBlockchainNano;
+        if (blockchain == "NULS") return TWBlockchainNULS;
+        if (blockchain == "Waves") return TWBlockchainWaves;
+        if (blockchain == "Aeternity") return TWBlockchainAeternity;
+        if (blockchain == "Nebulas") return TWBlockchainNebulas;
+        if (blockchain == "FIO") return TWBlockchainFIO;
+        if (blockchain == "Solana") return TWBlockchainSolana;
+        if (blockchain == "Harmony") return TWBlockchainHarmony;
+        if (blockchain == "NEAR") return TWBlockchainNEAR;
+        if (blockchain == "Algorand") return TWBlockchainAlgorand;
+        if (blockchain == "Polkadot") return TWBlockchainPolkadot;
+        if (blockchain == "Cardano") return TWBlockchainCardano;
+        if (blockchain == "NEO") return TWBlockchainNEO;
+        if (blockchain == "Filecoin") return TWBlockchainFilecoin;
+        if (blockchain == "ElrondNetwork") return TWBlockchainElrondNetwork;
+        if (blockchain == "OasisNetwork") return TWBlockchainOasisNetwork;
+        if (blockchain == "Decred") return TWBlockchainDecred;
+        if (blockchain == "Zcash") return TWBlockchainZcash;
+        if (blockchain == "Groestlcoin") return TWBlockchainGroestlcoin;
+        if (blockchain == "Thorchain") return TWBlockchainThorchain;
+        if (blockchain == "Ronin") return TWBlockchainRonin;
+        if (blockchain == "Kusama") return TWBlockchainKusama;
+        if (blockchain == "Nervos") return TWBlockchainNervos;
+        if (blockchain == "Everscale") return TWBlockchainEverscale;
+        if (blockchain == "Aptos") return TWBlockchainAptos;
+    // clang-format on
+    throw std::runtime_error("invalid blockchain name");
+}
+} // namespace
 
 using namespace TW;
 using namespace std;
@@ -110,52 +177,138 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
     CoinEntry* entry = nullptr;
     const auto blockchain = TW::blockchain(coinType);
     switch (blockchain) {
-        // #coin-list#
-        case TWBlockchainBitcoin: entry = &bitcoinDP; break;
-        case TWBlockchainEthereum: entry = &ethereumDP; break;
-        case TWBlockchainVechain: entry = &vechainDP; break;
-        case TWBlockchainTron: entry = &tronDP; break;
-        case TWBlockchainIcon: entry = &iconDP; break;
-        case TWBlockchainBinance: entry = &binanceDP; break;
-        case TWBlockchainRipple: entry = &rippleDP; break;
-        case TWBlockchainTezos: entry = &tezosDP; break;
-        case TWBlockchainNimiq: entry = &nimiqDP; break;
-        case TWBlockchainStellar: entry = &stellarDP; break;
-        case TWBlockchainAion: entry = &aionDP; break;
-        case TWBlockchainCosmos: entry = &cosmosDP; break;
-        case TWBlockchainTheta: entry = &thetaDP; break;
-        case TWBlockchainOntology: entry = &ontologyDP; break;
-        case TWBlockchainZilliqa: entry = &zilliqaDP; break;
-        case TWBlockchainIoTeX: entry = &iotexDP; break;
-        case TWBlockchainEOS: entry = &eosDP; break;
-        case TWBlockchainNano: entry = &nanoDP; break;
-        case TWBlockchainNULS: entry = &nulsDP; break;
-        case TWBlockchainWaves: entry = &wavesDP; break;
-        case TWBlockchainAeternity: entry = &aeternityDP; break;
-        case TWBlockchainNebulas: entry = &nebulasDP; break;
-        case TWBlockchainFIO: entry = &fioDP; break;
-        case TWBlockchainSolana: entry = &solanaDP; break;
-        case TWBlockchainHarmony: entry = &harmonyDP; break;
-        case TWBlockchainNEAR: entry = &nearDP; break;
-        case TWBlockchainAlgorand: entry = &algorandDP; break;
-        case TWBlockchainPolkadot: entry = &polkadotDP; break;
-        case TWBlockchainCardano: entry = &cardanoDP; break;
-        case TWBlockchainNEO: entry = &neoDP; break;
-        case TWBlockchainFilecoin: entry = &filecoinDP; break;
-        case TWBlockchainElrondNetwork: entry = &elrondDP; break;
-        case TWBlockchainOasisNetwork: entry = &oasisDP; break;
-        case TWBlockchainDecred: entry = &decredDP; break;
-        case TWBlockchainGroestlcoin: entry = &groestlcoinDP; break;
-        case TWBlockchainZcash: entry = &zcashDP; break;
-        case TWBlockchainThorchain: entry = &thorchainDP; break;
-        case TWBlockchainRonin: entry = &roninDP; break;
-        case TWBlockchainKusama: entry = &kusamaDP; break;
-        case TWBlockchainNervos: entry = &NervosDP; break;
-        case TWBlockchainEverscale: entry = &EverscaleDP; break;
-        case TWBlockchainAptos: entry = &AptosDP; break;
+    // #coin-list#
+    case TWBlockchainBitcoin:
+        entry = &bitcoinDP;
+        break;
+    case TWBlockchainEthereum:
+        entry = &ethereumDP;
+        break;
+    case TWBlockchainVechain:
+        entry = &vechainDP;
+        break;
+    case TWBlockchainTron:
+        entry = &tronDP;
+        break;
+    case TWBlockchainIcon:
+        entry = &iconDP;
+        break;
+    case TWBlockchainBinance:
+        entry = &binanceDP;
+        break;
+    case TWBlockchainRipple:
+        entry = &rippleDP;
+        break;
+    case TWBlockchainTezos:
+        entry = &tezosDP;
+        break;
+    case TWBlockchainNimiq:
+        entry = &nimiqDP;
+        break;
+    case TWBlockchainStellar:
+        entry = &stellarDP;
+        break;
+    case TWBlockchainAion:
+        entry = &aionDP;
+        break;
+    case TWBlockchainCosmos:
+        entry = &cosmosDP;
+        break;
+    case TWBlockchainTheta:
+        entry = &thetaDP;
+        break;
+    case TWBlockchainOntology:
+        entry = &ontologyDP;
+        break;
+    case TWBlockchainZilliqa:
+        entry = &zilliqaDP;
+        break;
+    case TWBlockchainIoTeX:
+        entry = &iotexDP;
+        break;
+    case TWBlockchainEOS:
+        entry = &eosDP;
+        break;
+    case TWBlockchainNano:
+        entry = &nanoDP;
+        break;
+    case TWBlockchainNULS:
+        entry = &nulsDP;
+        break;
+    case TWBlockchainWaves:
+        entry = &wavesDP;
+        break;
+    case TWBlockchainAeternity:
+        entry = &aeternityDP;
+        break;
+    case TWBlockchainNebulas:
+        entry = &nebulasDP;
+        break;
+    case TWBlockchainFIO:
+        entry = &fioDP;
+        break;
+    case TWBlockchainSolana:
+        entry = &solanaDP;
+        break;
+    case TWBlockchainHarmony:
+        entry = &harmonyDP;
+        break;
+    case TWBlockchainNEAR:
+        entry = &nearDP;
+        break;
+    case TWBlockchainAlgorand:
+        entry = &algorandDP;
+        break;
+    case TWBlockchainPolkadot:
+        entry = &polkadotDP;
+        break;
+    case TWBlockchainCardano:
+        entry = &cardanoDP;
+        break;
+    case TWBlockchainNEO:
+        entry = &neoDP;
+        break;
+    case TWBlockchainFilecoin:
+        entry = &filecoinDP;
+        break;
+    case TWBlockchainElrondNetwork:
+        entry = &elrondDP;
+        break;
+    case TWBlockchainOasisNetwork:
+        entry = &oasisDP;
+        break;
+    case TWBlockchainDecred:
+        entry = &decredDP;
+        break;
+    case TWBlockchainGroestlcoin:
+        entry = &groestlcoinDP;
+        break;
+    case TWBlockchainZcash:
+        entry = &zcashDP;
+        break;
+    case TWBlockchainThorchain:
+        entry = &thorchainDP;
+        break;
+    case TWBlockchainRonin:
+        entry = &roninDP;
+        break;
+    case TWBlockchainKusama:
+        entry = &kusamaDP;
+        break;
+    case TWBlockchainNervos:
+        entry = &NervosDP;
+        break;
+    case TWBlockchainEverscale:
+        entry = &EverscaleDP;
+        break;
+    case TWBlockchainAptos:
+        entry = &AptosDP;
+        break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
-        default: entry = nullptr; break;
+    default:
+        entry = nullptr;
+        break;
     }
     assert(entry != nullptr);
     return entry;
@@ -165,7 +318,7 @@ const Derivation CoinInfo::derivationByName(TWDerivation nameIn) const {
     if (nameIn == TWDerivationDefault && derivation.size() > 0) {
         return derivation[0];
     }
-    for (auto deriv: derivation) {
+    for (auto deriv : derivation) {
         if (deriv.name == nameIn) {
             return deriv;
         }
@@ -335,6 +488,10 @@ const char* TW::chainId(TWCoinType coin) {
     return getCoinInfo(coin).chainId;
 }
 
+const char* TW::hrpStr(TWCoinType coin) {
+    return getCoinInfo(coin).hrpStr;
+}
+
 Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
     return getCoinInfo(coin).publicKeyHasher;
 }
@@ -377,4 +534,40 @@ TWString* _Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType coin) {
 
 TWString* _Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType coin) {
     return TWStringCreateWithUTF8Bytes(getCoinInfo(coin).name);
+}
+
+void TW::jsonToCoinRegistry(const nlohmann::json& jsonRuntimeRegistry) {
+    if (!jsonRuntimeRegistry.is_array()) {
+        throw std::runtime_error("JSON input is not an array!");
+    }
+
+    for (auto&& curJson : jsonRuntimeRegistry) {
+        CoinInfo info;
+        if (!curJson.contains("id")) {
+            continue;
+        }
+        info.id = strdup(curJson.at("id").get<std::string>().c_str());
+        info.name = strdup(curJson.at("name").get<std::string>().c_str());
+        info.blockchain = stringToTWBlockchain(curJson.at("blockchain").get<std::string>());
+        info.curve = stringToTWCurve(curJson.at("curve").get<std::string>());
+        info.symbol = strdup(curJson.at("symbol").get<std::string>().c_str());
+        info.decimals = curJson.at("decimals").get<decltype(info.decimals)>();
+        info.chainId = strdup(curJson.at("chainId").get<std::string>().c_str());
+        info.hrp = TWHRPUnknown;
+        info.hrpStr =  strdup(curJson.at("hrp").get<std::string>().c_str());
+        if (curJson.contains("coinId")) {
+            info.slip44 = curJson.at("coinId").get<decltype(info.slip44)>();
+        }
+        gRuntimeCoinInfoRegistry[info.id] = info;
+    }
+}
+
+void TW::cleanRuntimeRegistry() {
+    for (auto&& [_, curCfg]: gRuntimeCoinInfoRegistry) {
+        std::free((void *)(curCfg.id));
+        std::free((void *)(curCfg.name));
+        std::free((void *)(curCfg.symbol));
+        std::free((void *)(curCfg.chainId));
+        std::free((void *)(curCfg.hrpStr));
+    }
 }
