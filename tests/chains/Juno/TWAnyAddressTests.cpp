@@ -13,6 +13,6 @@
 using namespace TW;
 
 TEST(TWJunoAnyAddress, IsValid) {
-    EXPECT_TRUE(TWAnyAddressIsValidWithHrp(STRING("juno1gckvjxau7k56f8wg8c8xj80khyp83y8x8eqc94").get(), TWCoinTypeCosmos, "juno"));
+    EXPECT_TRUE(TWAnyAddressIsValidWithHrp(STRING("juno1gckvjxau7k56f8wg8c8xj80khyp83y8x8eqc94").get(), TWCoinTypeCosmos, STRING("juno").get()));
     EXPECT_FALSE(TWAnyAddressIsValid(STRING("juno1gckvjxau7k56f8wg8c8xj80khyp83y8x8eqc94").get(), TWCoinTypeCosmos));
 }
