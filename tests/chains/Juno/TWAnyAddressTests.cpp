@@ -25,7 +25,8 @@ TEST(TWJunoAnyAddress, createFromPubKeyJuno) {
     const auto pubkey = TWPublicKeyCreateWithData(data.get(), TWPublicKeyTypeSECP256k1);
     const auto twAddress = TWAnyAddressCreateWithPublicKeyAndHrp(pubkey, TWCoinTypeCosmos, STRING("juno").get());
     TWPublicKeyDelete(pubkey);
-    auto address = *reinterpret_cast<const std::string*>(TWAnyAddressDescription(twAddress));
-    EXPECT_EQ("juno1cj2vfjec3c3luf9fx9vddnglhh9gawmncn4k5n", address);
+    auto address = TWAnyAddressDescription(twAddress);
+    EXPECT_EQ("juno1cj2vfjec3c3luf9fx9vddnglhh9gawmncn4k5n", *reinterpret_cast<const std::string*>(address));
+    TWStringDelete(address);
     TWAnyAddressDelete(twAddress);
 }
