@@ -24,7 +24,10 @@ bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW
 }
 
 string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char* hrp) const {
-    return !std::string(hrp).empty() ? Address(hrp, publicKey, coin).string() : Address(coin, publicKey).string();
+    if (!std::string(hrp).empty()) {
+        return Address(hrp, publicKey, coin).string();
+    }
+    return Address(coin, publicKey).string();
 }
 
 Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
