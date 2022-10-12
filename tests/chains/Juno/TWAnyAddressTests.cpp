@@ -30,3 +30,13 @@ TEST(TWJunoAnyAddress, createFromPubKeyJuno) {
     TWStringDelete(address);
     TWAnyAddressDelete(twAddress);
 }
+
+TEST(TWJunoAnyAddress, createFromStringJuno) {
+    const auto junoAddress = STRING("juno1cj2vfjec3c3luf9fx9vddnglhh9gawmncn4k5n");
+    const auto hrp = STRING("juno");
+    const auto anyAddr = TWAnyAddressCreateWithStringAndHrp(junoAddress.get(), TWCoinTypeCosmos, hrp.get());
+    const auto addrDescription = TWAnyAddressDescription(anyAddr);
+    ASSERT_TRUE(TWAnyAddressIsValidWithHrp(addrDescription, TWCoinTypeCosmos, hrp.get()));
+    TWStringDelete(addrDescription);
+    TWAnyAddressDelete(anyAddr);
+}

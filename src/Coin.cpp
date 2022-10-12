@@ -188,8 +188,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     return TW::validateAddress(coin, string, hrp);
 }
 
-std::string TW::normalizeAddress(TWCoinType coin, const std::string& address) {
-    if (!TW::validateAddress(coin, address)) {
+std::string TW::normalizeAddress(TWCoinType coin, const std::string& address, const std::string& hrp) {
+    const char* rawHrp = hrp.empty() ? stringForHRP(TW::hrp(coin)) : hrp.c_str();
+    if (!TW::validateAddress(coin, address, rawHrp)) {
         // invalid address, not normalizing
         return "";
     }

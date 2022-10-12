@@ -37,6 +37,17 @@ struct TWAnyAddress* _Nullable TWAnyAddressCreateWithString(TWString* _Nonnull s
     return new TWAnyAddress{impl};
 }
 
+struct TWAnyAddress* _Nullable TWAnyAddressCreateWithStringAndHrp(TWString* _Nonnull string,
+                                                            enum TWCoinType coin, TWString* _Nonnull hrp) {
+    const auto& address = *reinterpret_cast<const std::string*>(string);
+    const auto& hrpStr = *reinterpret_cast<const std::string*>(hrp);
+    auto *impl = TW::AnyAddress::createAddress(address, coin, hrpStr);
+    if (impl == nullptr) {
+        return nullptr;
+    }
+    return new TWAnyAddress{impl};
+}
+
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKey(
     struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin) {
     return new TWAnyAddress{TW::AnyAddress::createAddress(publicKey->impl, coin)};

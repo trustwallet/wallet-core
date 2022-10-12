@@ -52,6 +52,16 @@ bool TWAnyAddressIsValidWithHrp(TWString* _Nonnull string, enum TWCoinType coin,
 TW_EXPORT_STATIC_METHOD
 struct TWAnyAddress* _Nullable TWAnyAddressCreateWithString(TWString* _Nonnull string, enum TWCoinType coin);
 
+/// Creates an address from a string representation, a coin type and the given hrp. Must be deleted with TWAnyAddressDelete after use.
+///
+/// \param string address to create.
+/// \param coin coin type of the address.
+/// \param hrp hrp of the address.
+/// \return TWAnyAddress pointer or nullptr if address and coin are invalid.
+TW_EXPORT_STATIC_METHOD
+struct TWAnyAddress* _Nullable TWAnyAddressCreateWithStringAndHrp(TWString* _Nonnull string, enum TWCoinType coin, TWString* _Nonnull hrp);
+
+
 /// Creates an address from a public key.
 ///
 /// \param publicKey derivates the address from the public key.
