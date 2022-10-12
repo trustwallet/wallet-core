@@ -33,8 +33,8 @@ std::pair<std::vector<Data>, nlohmann::json> commonTransferPayload(const TPayloa
 
 TransactionPayload transferPayload(const Proto::SigningInput& input) {
     auto&& [args, argsJson] = commonTransferPayload(input.transfer());
-    ModuleId module(gAddressOne, "coin");
-    TransactionPayload payload = EntryFunction(module, "transfer", {gTransferTag}, args, argsJson);
+    ModuleId module(gAddressOne, "aptos_account");
+    TransactionPayload payload = EntryFunction(module, "transfer", {}, args, argsJson);
     return payload;
 }
 
