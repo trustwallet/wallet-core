@@ -173,6 +173,17 @@ const Derivation CoinInfo::derivationByName(TWDerivation nameIn) const {
     return Derivation();
 }
 
+bool TW::validateAddress(TWCoinType coin, const std::string& string, const std::string& hrp) {
+    auto p2pkh = TW::p2pkhPrefix(coin);
+    auto p2sh = TW::p2shPrefix(coin);
+    const auto* hrpRaw = hrp.c_str();
+
+    // dispatch
+    auto* dispatcher = coinDispatcher(coin);
+    assert(dispatcher != nullptr);
+    return dispatcher->validateAddress(coin, string, p2pkh, p2sh, hrpRaw);
+}
+
 bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     auto p2pkh = TW::p2pkhPrefix(coin);
     auto p2sh = TW::p2shPrefix(coin);

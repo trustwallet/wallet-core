@@ -32,6 +32,9 @@ std::vector<TWCoinType> getCoinTypes();
 /// Validates an address for a particular coin.
 bool validateAddress(TWCoinType coin, const std::string& address);
 
+/// Validates an address for a particular coin.
+bool validateAddress(TWCoinType coin, const std::string& address, const std::string& hrp);
+
 /// Validates and normalizes an address for a particular coin.
 std::string normalizeAddress(TWCoinType coin, const std::string& address);
 

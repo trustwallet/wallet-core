@@ -35,6 +35,14 @@ bool TWAnyAddressEqual(struct TWAnyAddress* _Nonnull lhs, struct TWAnyAddress* _
 TW_EXPORT_STATIC_METHOD
 bool TWAnyAddressIsValid(TWString* _Nonnull string, enum TWCoinType coin);
 
+/// Determines if the string is a valid Any address.
+///
+/// \param string address to validate.
+/// \param coin coin type of the address.
+/// \return bool indicating if the address is valid.
+TW_EXPORT_STATIC_METHOD
+bool TWAnyAddressIsValidWithHrp(TWString* _Nonnull string, enum TWCoinType coin, TWString* _Nonnull hrp);
+
 /// Creates an address from a string representation and a coin type. Must be deleted with TWAnyAddressDelete after use.
 ///
 /// \param string address to create.

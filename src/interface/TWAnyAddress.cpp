@@ -21,6 +21,12 @@ bool TWAnyAddressIsValid(TWString* _Nonnull string, enum TWCoinType coin) {
     return TW::validateAddress(coin, address);
 }
 
+bool TWAnyAddressIsValidWithHrp(TWString* _Nonnull string, enum TWCoinType coin, TWString* _Nonnull hrp) {
+    const auto& address = *reinterpret_cast<const std::string*>(string);
+    const auto& hrpStr = *reinterpret_cast<const std::string*>(hrp);
+    return TW::validateAddress(coin, address, hrpStr);
+}
+
 struct TWAnyAddress* _Nullable TWAnyAddressCreateWithString(TWString* _Nonnull string,
                                                             enum TWCoinType coin) {
     const auto& address = *reinterpret_cast<const std::string*>(string);

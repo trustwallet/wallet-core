@@ -16,8 +16,11 @@ namespace TW::Cosmos {
 
 // Note: avoid business logic from here, rather just call into classes like Address, Signer, etc.
 
-bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW::byte, [[maybe_unused]] const char* hrp) const {
-    return Address::isValid(coin, address);
+bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW::byte, const char* hrp) const {
+    if (hrpForString(hrp) != TWHRPUnknown) {
+        return Address::isValid(coin, address);
+    }
+    return Address::isValid(address, hrp);
 }
 
 string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, [[maybe_unused]] const char* hrp) const {
