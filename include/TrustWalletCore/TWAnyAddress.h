@@ -60,6 +60,15 @@ struct TWAnyAddress* _Nullable TWAnyAddressCreateWithString(TWString* _Nonnull s
 TW_EXPORT_STATIC_METHOD
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKey(struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin);
 
+/// Creates an address from a public key and a given hrp.
+///
+/// \param publicKey derivates the address from the public key.
+/// \param coin coin type of the address.
+/// \param hrp hrp of the address.
+/// \return TWAnyAddress pointer or nullptr if public key is invalid.
+TW_EXPORT_STATIC_METHOD
+struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKeyAndHrp(struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin, TWString* _Nonnull hrp);
+
 /// Deletes an address.
 ///
 /// \param address address to delete.

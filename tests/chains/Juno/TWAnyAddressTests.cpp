@@ -19,3 +19,13 @@ TEST(TWJunoAnyAddress, IsValid) {
     EXPECT_FALSE(TWAnyAddressIsValid(STRING("juno1gckvjxau7k56f8wg8c8xj80khyp83y8x8eqc94").get(), TWCoinTypeBitcoin));
 
 }
+
+TEST(TWJunoAnyAddress, createFromPubKeyJuno) {
+    const auto data = DATA("02753f5c275e1847ba4d2fd3df36ad00af2e165650b35fe3991e9c9c46f68b12bc");
+    const auto pubkey = TWPublicKeyCreateWithData(data.get(), TWPublicKeyTypeSECP256k1);
+    const auto twAddress = TWAnyAddressCreateWithPublicKeyAndHrp(pubkey, TWCoinTypeCosmos, STRING("juno").get());
+    TWPublicKeyDelete(pubkey);
+    auto address = *reinterpret_cast<const std::string*>(TWAnyAddressDescription(twAddress));
+    EXPECT_EQ("juno1cj2vfjec3c3luf9fx9vddnglhh9gawmncn4k5n", address);
+    TWAnyAddressDelete(twAddress);
+}
