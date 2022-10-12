@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2022 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -23,8 +23,8 @@ bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW
     return Address::isValid(address, hrp);
 }
 
-string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, [[maybe_unused]] const char* hrp) const {
-    return Address(coin, publicKey).string();
+string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char* hrp) const {
+    return !std::string(hrp).empty() ? Address(hrp, publicKey, coin).string() : Address(coin, publicKey).string();
 }
 
 Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {

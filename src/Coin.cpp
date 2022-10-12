@@ -25,6 +25,7 @@
 #include "EOS/Entry.h"
 #include "Elrond/Entry.h"
 #include "Ethereum/Entry.h"
+#include "Everscale/Entry.h"
 #include "FIO/Entry.h"
 #include "Filecoin/Entry.h"
 #include "Groestlcoin/Entry.h"
@@ -42,7 +43,6 @@
 #include "Oasis/Entry.h"
 #include "Ontology/Entry.h"
 #include "Polkadot/Entry.h"
-#include "XRP/Entry.h"
 #include "Ronin/Entry.h"
 #include "Solana/Entry.h"
 #include "Stellar/Entry.h"
@@ -52,9 +52,9 @@
 #include "Tron/Entry.h"
 #include "VeChain/Entry.h"
 #include "Waves/Entry.h"
+#include "XRP/Entry.h"
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
-#include "Everscale/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
@@ -165,7 +165,7 @@ const Derivation CoinInfo::derivationByName(TWDerivation nameIn) const {
     if (nameIn == TWDerivationDefault && derivation.size() > 0) {
         return derivation[0];
     }
-    for (auto deriv: derivation) {
+    for (auto deriv : derivation) {
         if (deriv.name == nameIn) {
             return deriv;
         }
@@ -209,18 +209,15 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey, TWD
     return TW::deriveAddress(coin, privateKey.getPublicKey(keyType), derivation);
 }
 
-std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
-    return deriveAddress(coin, publicKey, TWDerivationDefault);
-}
-
-std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation) {
+std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const std::string& hrp) {
     auto p2pkh = TW::p2pkhPrefix(coin);
-    const auto* hrp = stringForHRP(TW::hrp(coin));
-
+    const char* hrpRaw = [&hrp, coin]() {
+        return hrp.empty() ? stringForHRP(TW::hrp(coin)) : hrp.c_str();
+    }();
     // dispatch
     auto* dispatcher = coinDispatcher(coin);
     assert(dispatcher != nullptr);
-    return dispatcher->deriveAddress(coin, derivation, publicKey, p2pkh, hrp);
+    return dispatcher->deriveAddress(coin, derivation, publicKey, p2pkh, hrpRaw);
 }
 
 Data TW::addressToData(TWCoinType coin, const std::string& address) {

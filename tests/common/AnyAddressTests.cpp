@@ -26,6 +26,13 @@ TEST(AnyAddress, createFromPubKey) {
     EXPECT_EQ(ANY_ADDRESS_TEST_ADDRESS, addr->address);
 }
 
+TEST(AnyAddress, createFromPubKeyJuno) {
+    const Data key = parse_hex(ANY_ADDRESS_TEST_PUBKEY);
+    PublicKey publicKey(key, TWPublicKeyTypeSECP256k1);
+    std::unique_ptr<AnyAddress> addr(AnyAddress::createAddress(publicKey, TWCoinTypeCosmos, "juno"));
+    EXPECT_EQ("juno1cj2vfjec3c3luf9fx9vddnglhh9gawmncn4k5n", addr->address);
+}
+
 TEST(AnyAddress, createFromWrongString) {
     std::unique_ptr<AnyAddress> addr(AnyAddress::createAddress("1aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaax", TWCoinTypeBitcoin));
     EXPECT_EQ(nullptr, addr);
