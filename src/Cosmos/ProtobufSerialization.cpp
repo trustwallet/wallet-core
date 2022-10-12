@@ -14,6 +14,7 @@
 #include "Protobuf/staking_tx.pb.h"
 #include "Protobuf/authz_tx.pb.h"
 #include "Protobuf/tx.pb.h"
+#include "Protobuf/gov_tx.pb.h"
 #include "Protobuf/crypto_secp256k1_keys.pb.h"
 #include "Protobuf/ibc_applications_transfer_tx.pb.h"
 #include "Protobuf/terra_wasm_v1beta1_tx.pb.h"
@@ -252,6 +253,40 @@ google::protobuf::Any convertMessage(const Proto::Message& msg) {
             msgAuthRevoke.set_grantee(authRevoke.grantee());
             msgAuthRevoke.set_msg_type_url(authRevoke.msg_type_url());
             any.PackFrom(msgAuthRevoke, ProtobufAnyNamespacePrefix);
+            return any;
+        }
+        case Proto::Message::kMsgVote: {
+            assert(msg.has_msg_vote());
+            const auto& vote = msg.msg_vote();
+            auto msgVote = cosmos::gov::v1beta1::MsgVote();
+            // LCOV_EXCL_START
+            switch (vote.option()) {
+            case Proto::Message_VoteOption__UNSPECIFIED:
+                msgVote.set_option(cosmos::gov::v1beta1::VOTE_OPTION_UNSPECIFIED);
+                break;
+            case Proto::Message_VoteOption_YES:
+                msgVote.set_option(cosmos::gov::v1beta1::VOTE_OPTION_YES);
+                break;
+            case Proto::Message_VoteOption_ABSTAIN:
+                msgVote.set_option(cosmos::gov::v1beta1::VOTE_OPTION_ABSTAIN);
+                break;
+            case Proto::Message_VoteOption_NO:
+                msgVote.set_option(cosmos::gov::v1beta1::VOTE_OPTION_NO);
+                break;
+            case Proto::Message_VoteOption_NO_WITH_VETO:
+                msgVote.set_option(cosmos::gov::v1beta1::VOTE_OPTION_NO_WITH_VETO);
+                break;
+            case Proto::Message_VoteOption_Message_VoteOption_INT_MIN_SENTINEL_DO_NOT_USE_:
+                msgVote.set_option(cosmos::gov::v1beta1::VoteOption_INT_MIN_SENTINEL_DO_NOT_USE_);
+                break;
+            case Proto::Message_VoteOption_Message_VoteOption_INT_MAX_SENTINEL_DO_NOT_USE_:
+                msgVote.set_option(cosmos::gov::v1beta1::VoteOption_INT_MAX_SENTINEL_DO_NOT_USE_);
+                break;
+            }
+            // LCOV_EXCL_STOP
+            msgVote.set_proposal_id(vote.proposal_id());
+            msgVote.set_voter(vote.voter());
+            any.PackFrom(msgVote, ProtobufAnyNamespacePrefix);
             return any;
         }
 

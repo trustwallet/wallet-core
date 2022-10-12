@@ -270,6 +270,27 @@ message Message {
         string msg_type_url = 3;
     }
 
+    // VoteOption enumerates the valid vote options for a given governance proposal.
+    enum VoteOption {
+        //_UNSPECIFIED defines a no-op vote option.
+        _UNSPECIFIED = 0;
+        // YES defines a yes vote option.
+        YES = 1;
+        // ABSTAIN defines an abstain vote option.
+        ABSTAIN = 2;
+        // NO defines a no vote option.
+        NO = 3;
+        // NO_WITH_VETO defines a no with veto vote option.
+        NO_WITH_VETO = 4;
+    }
+
+    // cosmos-sdk/MsgVote defines a message to cast a vote.
+    message MsgVote {
+        uint64     proposal_id = 1;
+        string     voter       = 2;
+        VoteOption option      = 3;
+    }
+
     // The payload message
     oneof message_oneof {
         Send send_coins_message = 1;
@@ -289,6 +310,7 @@ message Message {
         SignDirect sign_direct_message = 15;
         AuthGrant  auth_grant = 16;
         AuthRevoke auth_revoke = 17;
+        MsgVote msg_vote = 18;
     }
 }
 

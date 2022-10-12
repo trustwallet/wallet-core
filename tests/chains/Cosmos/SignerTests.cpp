@@ -292,4 +292,34 @@ TEST(CosmosSigner, SignDirect_0a90010a) {
     EXPECT_EQ(output.error(), "");
 }
 
+TEST(CosmosSigner, MsgVote) {
+    // Successfully broadcasted https://www.mintscan.io/cosmos/txs/2EFA054B842B1641B131137B13360F95164C6C1D51BB4A4AC6DE8F75F504AA4C
+    auto input = Proto::SigningInput();
+    input.set_signing_mode(Proto::Protobuf);
+    input.set_account_number(1366160);
+    input.set_chain_id("cosmoshub-4");
+    input.set_memo("");
+    input.set_sequence(0);
+
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_msg_vote();
+    message.set_voter("cosmos1mry47pkga5tdswtluy0m8teslpalkdq07pswu4");
+    message.set_proposal_id(77);
+    message.set_option(TW::Cosmos::Proto::Message_VoteOption_YES);
+
+    auto& fee = *input.mutable_fee();
+    fee.set_gas(97681);
+    auto amountOfFee = fee.add_amounts();
+    amountOfFee->set_denom("uatom");
+    amountOfFee->set_amount("2418");
+
+    auto privateKey = parse_hex("a498a9ee41af9bab5ef2a8be63d5c970135c3c109e70efc8c56c534e6636b433");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto output = Signer::sign(input, TWCoinTypeCosmos);
+    auto expected = R"(
+                {"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"ClQKUgobL2Nvc21vcy5nb3YudjFiZXRhMS5Nc2dWb3RlEjMITRItY29zbW9zMW1yeTQ3cGtnYTV0ZHN3dGx1eTBtOHRlc2xwYWxrZHEwN3Bzd3U0GAESZQpOCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAsv9teRyiTMiKU5gzwiD1D30MeEInSnstEep5tVQRarlEgQKAggBEhMKDQoFdWF0b20SBDI0MTgQkfsFGkA+Nb3NULc38quGC1x+8ZXry4w9mMX3IA7wUjFboTv7kVOwPlleIc8UqIsjVvKTUFnUuW8dlGQzNR1KkvbvZ1NA"})";
+    assertJSONEqual(output.serialized(), expected);
+}
+
 } // namespace TW::Cosmos::tests
