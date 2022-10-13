@@ -33,23 +33,20 @@ std::pair<std::vector<Data>, nlohmann::json> commonTransferPayload(const TPayloa
 
 TransactionPayload transferPayload(const Proto::SigningInput& input) {
     auto&& [args, argsJson] = commonTransferPayload(input.transfer());
-    ModuleId module(gAddressOne, "coin");
-    TransactionPayload payload = EntryFunction(module, "transfer", {gTransferTag}, args, argsJson);
+    TransactionPayload payload = EntryFunction(gAptosAccountModule, "transfer", {}, args, argsJson);
     return payload;
 }
 
 TransactionPayload createAccountPayload(const Proto::SigningInput& input) {
-    ModuleId module(gAddressOne, "aptos_account");
     std::vector<Data> args;
     serializeToArgs(args, Address(input.create_account().auth_key()));
     nlohmann::json argsJson = nlohmann::json::array({input.create_account().auth_key()});
-    TransactionPayload payload = EntryFunction(module, "create_account", {}, args, argsJson);
+    TransactionPayload payload = EntryFunction(gAptosAccountModule, "create_account", {}, args, argsJson);
     return payload;
 }
 
 TransactionPayload claimNftPayload(const Proto::ClaimNftMessage& msg) {
     std::vector<Data> args;
-    ModuleId module(gAddressThree, "token_transfers");
     serializeToArgs(args, Address(msg.sender()));
     serializeToArgs(args, Address(msg.creator()));
     serializeToArgs(args, msg.collectionname());
@@ -65,13 +62,12 @@ TransactionPayload claimNftPayload(const Proto::ClaimNftMessage& msg) {
                             std::to_string(msg.property_version()),
                         });
     // clang-format on
-    TransactionPayload payload = EntryFunction(module, "claim_script", {}, args, argsJson);
+    TransactionPayload payload = EntryFunction(gAptosTokenTransfersModule, "claim_script", {}, args, argsJson);
     return payload;
 }
 
 TransactionPayload nftOfferPayload(const Proto::OfferNftMessage& msg) {
     std::vector<Data> args;
-    ModuleId module(gAddressThree, "token_transfers");
     serializeToArgs(args, Address(msg.receiver()));
     serializeToArgs(args, Address(msg.creator()));
     serializeToArgs(args, msg.collectionname());
@@ -89,13 +85,12 @@ TransactionPayload nftOfferPayload(const Proto::OfferNftMessage& msg) {
                             std::to_string(msg.amount())
                         });
     // clang-format on
-    TransactionPayload payload = EntryFunction(module, "offer_script", {}, args, argsJson);
+    TransactionPayload payload = EntryFunction(gAptosTokenTransfersModule, "offer_script", {}, args, argsJson);
     return payload;
 }
 
 TransactionPayload cancelNftOfferPayload(const Proto::CancelOfferNftMessage& msg) {
     std::vector<Data> args;
-    ModuleId module(gAddressThree, "token_transfers");
     serializeToArgs(args, Address(msg.receiver()));
     serializeToArgs(args, Address(msg.creator()));
     serializeToArgs(args, msg.collectionname());
@@ -111,7 +106,7 @@ TransactionPayload cancelNftOfferPayload(const Proto::CancelOfferNftMessage& msg
                             std::to_string(msg.property_version()),
                         });
     // clang-format on
-    TransactionPayload payload = EntryFunction(module, "cancel_offer_script", {}, args, argsJson);
+    TransactionPayload payload = EntryFunction(gAptosTokenTransfersModule, "cancel_offer_script", {}, args, argsJson);
     return payload;
 }
 
@@ -121,8 +116,7 @@ TransactionPayload tokenTransferPayload(const Proto::SigningInput& input) {
     auto& function = input.token_transfer().function();
     TypeTag tokenTransferTag = {TypeTag::TypeTagVariant(TStructTag{.st = StructTag(Address(function.account_address()),
                                                                                    function.module(), function.name(), {})})};
-    ModuleId module(gAddressOne, "coin");
-    TransactionPayload payload = EntryFunction(module, "transfer", {tokenTransferTag}, args, argsJson);
+    TransactionPayload payload = EntryFunction(gAptosCoinModule, "transfer", {tokenTransferTag}, args, argsJson);
     return payload;
 }
 
@@ -166,7 +160,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
         case Proto::NftMessage::kClaimNft:
             return claimNftPayload(nftMessage.claim_nft());
         case Proto::NftMessage::NFT_TRANSACTION_PAYLOAD_NOT_SET:
-                throw std::runtime_error("Nft message payload not set");
+            throw std::runtime_error("Nft message payload not set");
         }
     };
     auto payloadFunctor = [&input, &nftPayloadFunctor]() {

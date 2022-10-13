@@ -33,6 +33,10 @@ private:
     Identifier mName;
 };
 
+inline ModuleId gAptosAccountModule{gAddressOne, "aptos_account"};
+inline ModuleId gAptosCoinModule{gAddressOne, "coin"};
+inline ModuleId gAptosTokenTransfersModule{gAddressThree, "token_transfers"};
+
 BCS::Serializer& operator<<(BCS::Serializer& stream, const ModuleId& module) noexcept;
 
 struct TypeTag;
