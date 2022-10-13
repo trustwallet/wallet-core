@@ -120,6 +120,15 @@ TransactionPayload tokenTransferPayload(const Proto::SigningInput& input) {
     return payload;
 }
 
+TransactionPayload registerTokenPayload(const Proto::SigningInput& input) {
+
+    auto& function = input.register_token().function();
+    TypeTag tokenRegisterTag = {TypeTag::TypeTagVariant(TStructTag{.st = StructTag(Address(function.account_address()),
+                                                                                   function.module(), function.name(), {})})};
+    TransactionPayload payload = EntryFunction(gAptosManagedCoinsModule, "register", {tokenRegisterTag}, {});
+    return payload;
+}
+
 Proto::SigningOutput blindSign(const Proto::SigningInput& input) {
     auto output = Proto::SigningOutput();
     BCS::Serializer serializer;
@@ -174,9 +183,12 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
         case Proto::SigningInput::kNftMessage: {
             return nftPayloadFunctor(input.nft_message());
         }
-        case Proto::SigningInput::kCreateAccount:
+        case Proto::SigningInput::kCreateAccount: {
             return createAccountPayload(input);
-
+        }
+        case Proto::SigningInput::kRegisterToken: {
+            return registerTokenPayload(input);
+        }
         case Proto::SigningInput::TRANSACTION_PAYLOAD_NOT_SET:
             throw std::runtime_error("Transaction payload should be set");
         }
