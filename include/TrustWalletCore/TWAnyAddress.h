@@ -42,7 +42,7 @@ bool TWAnyAddressIsValid(TWString* _Nonnull string, enum TWCoinType coin);
 /// \param hrp explicit given hrp of the given address.
 /// \return bool indicating if the address is valid.
 TW_EXPORT_STATIC_METHOD
-bool TWAnyAddressIsValidWithHrp(TWString* _Nonnull string, enum TWCoinType coin, TWString* _Nonnull hrp);
+bool TWAnyAddressIsValidBech32(TWString* _Nonnull string, enum TWCoinType coin, TWString* _Nonnull hrp);
 
 /// Creates an address from a string representation and a coin type. Must be deleted with TWAnyAddressDelete after use.
 ///

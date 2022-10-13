@@ -10,8 +10,8 @@ import XCTest
 class JunoAddressTests: XCTestCase {
     func testAnyAddressValidation() {
         let addr = AnyAddress(string: "juno1gckvjxau7k56f8wg8c8xj80khyp83y8x8eqc94", coin: .cosmos, hrp: "juno")!;
-        XCTAssertTrue(AnyAddress.isValidWithHrp(string: addr.description, coin: .cosmos, hrp: "juno"));
-        XCTAssertFalse(AnyAddress.isValidWithHrp(string: addr.description, coin: .bitcoin, hrp: "juno"));
+        XCTAssertTrue(AnyAddress.isValidBech32(string: addr.description, coin: .cosmos, hrp: "juno"));
+        XCTAssertFalse(AnyAddress.isValidBech32(string: addr.description, coin: .bitcoin, hrp: "juno"));
         XCTAssertFalse(AnyAddress.isValid(string: addr.description, coin: .bitcoin));
         XCTAssertFalse(AnyAddress.isValid(string: addr.description, coin: .cosmos));
     }

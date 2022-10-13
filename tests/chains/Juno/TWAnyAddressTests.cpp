@@ -13,8 +13,8 @@
 using namespace TW;
 
 TEST(TWJunoAnyAddress, IsValid) {
-    EXPECT_TRUE(TWAnyAddressIsValidWithHrp(STRING("juno1gckvjxau7k56f8wg8c8xj80khyp83y8x8eqc94").get(), TWCoinTypeCosmos, STRING("juno").get()));
-    EXPECT_FALSE(TWAnyAddressIsValidWithHrp(STRING("juno1gckvjxau7k56f8wg8c8xj80khyp83y8x8eqc94").get(), TWCoinTypeBitcoin, STRING("juno").get()));
+    EXPECT_TRUE(TWAnyAddressIsValidBech32(STRING("juno1gckvjxau7k56f8wg8c8xj80khyp83y8x8eqc94").get(), TWCoinTypeCosmos, STRING("juno").get()));
+    EXPECT_FALSE(TWAnyAddressIsValidBech32(STRING("juno1gckvjxau7k56f8wg8c8xj80khyp83y8x8eqc94").get(), TWCoinTypeBitcoin, STRING("juno").get()));
     EXPECT_FALSE(TWAnyAddressIsValid(STRING("juno1gckvjxau7k56f8wg8c8xj80khyp83y8x8eqc94").get(), TWCoinTypeCosmos));
     EXPECT_FALSE(TWAnyAddressIsValid(STRING("juno1gckvjxau7k56f8wg8c8xj80khyp83y8x8eqc94").get(), TWCoinTypeBitcoin));
 
@@ -23,7 +23,7 @@ TEST(TWJunoAnyAddress, IsValid) {
 TEST(TWJunoAnyAddress, createFromPubKeyJuno) {
     const auto data = DATA("02753f5c275e1847ba4d2fd3df36ad00af2e165650b35fe3991e9c9c46f68b12bc");
     const auto pubkey = TWPublicKeyCreateWithData(data.get(), TWPublicKeyTypeSECP256k1);
-    const auto twAddress = TWAnyAddressCreateWithPublicKeyAndHrp(pubkey, TWCoinTypeCosmos, STRING("juno").get());
+    const auto twAddress = TWAnyAddressCreateBech32WithPublicKey(pubkey, TWCoinTypeCosmos, STRING("juno").get());
     TWPublicKeyDelete(pubkey);
     auto address = TWAnyAddressDescription(twAddress);
     EXPECT_EQ("juno1cj2vfjec3c3luf9fx9vddnglhh9gawmncn4k5n", *reinterpret_cast<const std::string*>(address));
@@ -34,9 +34,9 @@ TEST(TWJunoAnyAddress, createFromPubKeyJuno) {
 TEST(TWJunoAnyAddress, createFromStringJuno) {
     const auto junoAddress = STRING("juno1cj2vfjec3c3luf9fx9vddnglhh9gawmncn4k5n");
     const auto hrp = STRING("juno");
-    const auto anyAddr = TWAnyAddressCreateWithStringAndHrp(junoAddress.get(), TWCoinTypeCosmos, hrp.get());
+    const auto anyAddr = TWAnyAddressCreateBech32(junoAddress.get(), TWCoinTypeCosmos, hrp.get());
     const auto addrDescription = TWAnyAddressDescription(anyAddr);
-    ASSERT_TRUE(TWAnyAddressIsValidWithHrp(addrDescription, TWCoinTypeCosmos, hrp.get()));
+    ASSERT_TRUE(TWAnyAddressIsValidBech32(addrDescription, TWCoinTypeCosmos, hrp.get()));
     TWStringDelete(addrDescription);
     TWAnyAddressDelete(anyAddr);
 }
