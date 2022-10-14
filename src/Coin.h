@@ -32,8 +32,11 @@ std::vector<TWCoinType> getCoinTypes();
 /// Validates an address for a particular coin.
 bool validateAddress(TWCoinType coin, const std::string& address);
 
+/// Validates an address for a particular coin.
+bool validateAddress(TWCoinType coin, const std::string& address, const char* hrp);
+
 /// Validates and normalizes an address for a particular coin.
-std::string normalizeAddress(TWCoinType coin, const std::string& address);
+std::string normalizeAddress(TWCoinType coin, const std::string& address, const std::string& hrp = "");
 
 /// Returns the blockchain for a coin type.
 TWBlockchain blockchain(TWCoinType coin);
@@ -74,11 +77,8 @@ std::string deriveAddress(TWCoinType coin, const PrivateKey& privateKey);
 /// Derives the address for a particular coin from the private key, with given derivation.
 std::string deriveAddress(TWCoinType coin, const PrivateKey& privateKey, TWDerivation derivation);
 
-/// Derives the address for a particular coin from the public key.
-std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey);
-
 /// Derives the address for a particular coin from the public key, with given derivation.
-std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation);
+std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation = TWDerivationDefault, const std::string& hrp = "");
 
 /// Returns the binary representation of a string address
 Data addressToData(TWCoinType coin, const std::string& address);

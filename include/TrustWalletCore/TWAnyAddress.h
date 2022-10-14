@@ -35,6 +35,15 @@ bool TWAnyAddressEqual(struct TWAnyAddress* _Nonnull lhs, struct TWAnyAddress* _
 TW_EXPORT_STATIC_METHOD
 bool TWAnyAddressIsValid(TWString* _Nonnull string, enum TWCoinType coin);
 
+/// Determines if the string is a valid Any address with the given hrp.
+///
+/// \param string address to validate.
+/// \param coin coin type of the address.
+/// \param hrp explicit given hrp of the given address.
+/// \return bool indicating if the address is valid.
+TW_EXPORT_STATIC_METHOD
+bool TWAnyAddressIsValidBech32(TWString* _Nonnull string, enum TWCoinType coin, TWString* _Nonnull hrp);
+
 /// Creates an address from a string representation and a coin type. Must be deleted with TWAnyAddressDelete after use.
 ///
 /// \param string address to create.
@@ -43,6 +52,16 @@ bool TWAnyAddressIsValid(TWString* _Nonnull string, enum TWCoinType coin);
 TW_EXPORT_STATIC_METHOD
 struct TWAnyAddress* _Nullable TWAnyAddressCreateWithString(TWString* _Nonnull string, enum TWCoinType coin);
 
+/// Creates an bech32 address from a string representation, a coin type and the given hrp. Must be deleted with TWAnyAddressDelete after use.
+///
+/// \param string address to create.
+/// \param coin coin type of the address.
+/// \param hrp hrp of the address.
+/// \return TWAnyAddress pointer or nullptr if address and coin are invalid.
+TW_EXPORT_STATIC_METHOD
+struct TWAnyAddress* _Nullable TWAnyAddressCreateBech32(TWString* _Nonnull string, enum TWCoinType coin, TWString* _Nonnull hrp);
+
+
 /// Creates an address from a public key.
 ///
 /// \param publicKey derivates the address from the public key.
@@ -50,6 +69,15 @@ struct TWAnyAddress* _Nullable TWAnyAddressCreateWithString(TWString* _Nonnull s
 /// \return TWAnyAddress pointer or nullptr if public key is invalid.
 TW_EXPORT_STATIC_METHOD
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKey(struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin);
+
+/// Creates an bech32 address from a public key and a given hrp.
+///
+/// \param publicKey derivates the address from the public key.
+/// \param coin coin type of the address.
+/// \param hrp hrp of the address.
+/// \return TWAnyAddress pointer or nullptr if public key is invalid.
+TW_EXPORT_STATIC_METHOD
+struct TWAnyAddress* _Nonnull TWAnyAddressCreateBech32WithPublicKey(struct TWPublicKey* _Nonnull publicKey, enum TWCoinType coin, TWString* _Nonnull hrp);
 
 /// Deletes an address.
 ///

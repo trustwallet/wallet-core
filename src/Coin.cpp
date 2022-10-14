@@ -25,6 +25,7 @@
 #include "EOS/Entry.h"
 #include "Elrond/Entry.h"
 #include "Ethereum/Entry.h"
+#include "Everscale/Entry.h"
 #include "FIO/Entry.h"
 #include "Filecoin/Entry.h"
 #include "Groestlcoin/Entry.h"
@@ -42,7 +43,6 @@
 #include "Oasis/Entry.h"
 #include "Ontology/Entry.h"
 #include "Polkadot/Entry.h"
-#include "XRP/Entry.h"
 #include "Ronin/Entry.h"
 #include "Solana/Entry.h"
 #include "Stellar/Entry.h"
@@ -52,9 +52,9 @@
 #include "Tron/Entry.h"
 #include "VeChain/Entry.h"
 #include "Waves/Entry.h"
+#include "XRP/Entry.h"
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
-#include "Everscale/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
@@ -165,7 +165,7 @@ const Derivation CoinInfo::derivationByName(TWDerivation nameIn) const {
     if (nameIn == TWDerivationDefault && derivation.size() > 0) {
         return derivation[0];
     }
-    for (auto deriv: derivation) {
+    for (auto deriv : derivation) {
         if (deriv.name == nameIn) {
             return deriv;
         }
@@ -173,10 +173,9 @@ const Derivation CoinInfo::derivationByName(TWDerivation nameIn) const {
     return Derivation();
 }
 
-bool TW::validateAddress(TWCoinType coin, const std::string& string) {
+bool TW::validateAddress(TWCoinType coin, const std::string& string, const char* hrp) {
     auto p2pkh = TW::p2pkhPrefix(coin);
     auto p2sh = TW::p2shPrefix(coin);
-    const auto* hrp = stringForHRP(TW::hrp(coin));
 
     // dispatch
     auto* dispatcher = coinDispatcher(coin);
@@ -184,8 +183,14 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     return dispatcher->validateAddress(coin, string, p2pkh, p2sh, hrp);
 }
 
-std::string TW::normalizeAddress(TWCoinType coin, const std::string& address) {
-    if (!TW::validateAddress(coin, address)) {
+bool TW::validateAddress(TWCoinType coin, const std::string& string) {
+    const auto* hrp = stringForHRP(TW::hrp(coin));
+    return TW::validateAddress(coin, string, hrp);
+}
+
+std::string TW::normalizeAddress(TWCoinType coin, const std::string& address, const std::string& hrp) {
+    const char* rawHrp = hrp.empty() ? stringForHRP(TW::hrp(coin)) : hrp.c_str();
+    if (!TW::validateAddress(coin, address, rawHrp)) {
         // invalid address, not normalizing
         return "";
     }
@@ -205,18 +210,15 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey, TWD
     return TW::deriveAddress(coin, privateKey.getPublicKey(keyType), derivation);
 }
 
-std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
-    return deriveAddress(coin, publicKey, TWDerivationDefault);
-}
-
-std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation) {
+std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TWDerivation derivation, const std::string& hrp) {
     auto p2pkh = TW::p2pkhPrefix(coin);
-    const auto* hrp = stringForHRP(TW::hrp(coin));
-
+    const char* hrpRaw = [&hrp, coin]() {
+        return hrp.empty() ? stringForHRP(TW::hrp(coin)) : hrp.c_str();
+    }();
     // dispatch
     auto* dispatcher = coinDispatcher(coin);
     assert(dispatcher != nullptr);
-    return dispatcher->deriveAddress(coin, derivation, publicKey, p2pkh, hrp);
+    return dispatcher->deriveAddress(coin, derivation, publicKey, p2pkh, hrpRaw);
 }
 
 Data TW::addressToData(TWCoinType coin, const std::string& address) {

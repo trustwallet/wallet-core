@@ -15,8 +15,8 @@ Data AnyAddress::getData() const {
     return TW::addressToData(coin, address);
 }
 
-AnyAddress* AnyAddress::createAddress(const std::string& address, enum TWCoinType coin) {
-    auto normalized = TW::normalizeAddress(coin, address);
+AnyAddress* AnyAddress::createAddress(const std::string& address, enum TWCoinType coin, const std::string& hrp) {
+    auto normalized = TW::normalizeAddress(coin, address, hrp);
     if (normalized.empty()) {
         return nullptr;
     }
@@ -24,8 +24,8 @@ AnyAddress* AnyAddress::createAddress(const std::string& address, enum TWCoinTyp
     return new AnyAddress{.address = std::move(normalized), .coin = coin};
 }
 
-AnyAddress* AnyAddress::createAddress(const PublicKey& publicKey, enum TWCoinType coin) {
-    auto derivedAddress = TW::deriveAddress(coin, publicKey);
+AnyAddress* AnyAddress::createAddress(const PublicKey& publicKey, enum TWCoinType coin, const std::string& hrp) {
+    auto derivedAddress = TW::deriveAddress(coin, publicKey, TWDerivationDefault, hrp);
     return new AnyAddress{.address = std::move(derivedAddress), .coin = coin};
 }
 

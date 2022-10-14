@@ -22,8 +22,8 @@ public:
 
     enum TWCoinType coin;
 
-    static AnyAddress* createAddress(const std::string& address, enum TWCoinType coin);
-    static AnyAddress* createAddress(const PublicKey& publicKey, enum TWCoinType coin);
+    static AnyAddress* createAddress(const std::string& address, enum TWCoinType coin, const std::string& hrp = "");
+    static AnyAddress* createAddress(const PublicKey& publicKey, enum TWCoinType coin, const std::string& hrp = "");
 
     Data getData() const;
 };

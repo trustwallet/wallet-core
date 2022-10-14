@@ -40,6 +40,11 @@ public:
         return Bech32Address::isValid(addr, hrp);
     }
 
+    /// Determines whether a string makes a valid Bech32 address with the given hrp.
+    static bool isValid(const std::string& addr, const std::string& hrp) {
+        return Bech32Address::isValid(addr, hrp);
+    }
+
     /// Creates an address object from the given string, if valid.  Returns success.
     static bool decode(const std::string& addr, Address& obj_out) {
         return Bech32Address::decode(addr, obj_out, "");
