@@ -288,6 +288,49 @@ TEST(AptosSigner, BlindSign) {
     assertJSONEqual(expectedJson, parsedJson);
 }
 
+TEST(AptosSigner, TokenRegisterTxSign) {
+    // Successfully broadcasted https://explorer.aptoslabs.com/txn/0xe591252daed785641bfbbcf72a5d17864568cf32e04c0cc9129f3a13834d0e8e?network=testnet
+    Proto::SigningInput input;
+    input.set_sender("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30");
+    input.set_sequence_number(23);
+    auto& tf = *input.mutable_register_token();
+    tf.mutable_function()->set_account_address("0xe4497a32bf4a9fd5601b27661aa0b933a923191bf403bd08669ab2468d43b379");
+    tf.mutable_function()->set_module("move_coin");
+    tf.mutable_function()->set_name("MoveCoin");
+    input.set_max_gas_amount(2000000);
+    input.set_gas_unit_price(100);
+    input.set_expiration_timestamp_secs(3664390082);
+    input.set_chain_id(2);
+    auto privateKey = PrivateKey(parse_hex("5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    auto result = Signer::sign(input);
+    ASSERT_EQ(hex(result.raw_txn()), "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3017000000000000000200000000000000000000000000000000000000000000000000000000000000010c6d616e616765645f636f696e0872656769737465720107e4497a32bf4a9fd5601b27661aa0b933a923191bf403bd08669ab2468d43b379096d6f76655f636f696e084d6f7665436f696e000080841e00000000006400000000000000c2276ada0000000002");
+    ASSERT_EQ(hex(result.authenticator().signature()), "e230b49f552fb85356dbec9df13f0dc56228eb7a9c29a8af3a99f4ae95b86c72bdcaa4ff1e9beb0bd81c298b967b9d97449856ec8bc672a08e2efef345c37100");
+    ASSERT_EQ(hex(result.encoded()), "07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f3017000000000000000200000000000000000000000000000000000000000000000000000000000000010c6d616e616765645f636f696e0872656769737465720107e4497a32bf4a9fd5601b27661aa0b933a923191bf403bd08669ab2468d43b379096d6f76655f636f696e084d6f7665436f696e000080841e00000000006400000000000000c2276ada00000000020020ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c40e230b49f552fb85356dbec9df13f0dc56228eb7a9c29a8af3a99f4ae95b86c72bdcaa4ff1e9beb0bd81c298b967b9d97449856ec8bc672a08e2efef345c37100");
+    nlohmann::json expectedJson = R"(
+                {
+                    "expiration_timestamp_secs": "3664390082",
+                    "gas_unit_price": "100",
+                    "max_gas_amount": "2000000",
+                    "payload": {
+                        "arguments": [],
+                        "function": "0x1::managed_coin::register",
+                        "type": "entry_function_payload",
+                        "type_arguments": ["0xe4497a32bf4a9fd5601b27661aa0b933a923191bf403bd08669ab2468d43b379::move_coin::MoveCoin"]
+                    },
+                    "sender": "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+                    "sequence_number": "23",
+                    "signature": {
+                        "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
+                        "signature": "0xe230b49f552fb85356dbec9df13f0dc56228eb7a9c29a8af3a99f4ae95b86c72bdcaa4ff1e9beb0bd81c298b967b9d97449856ec8bc672a08e2efef345c37100",
+                        "type": "ed25519_signature"
+                    }
+                }
+        )"_json;
+    nlohmann::json parsedJson = nlohmann::json::parse(result.json());
+    assertJSONEqual(expectedJson, parsedJson);
+}
+
 TEST(AptosSigner, TokenTxSign) {
     // Successfully broadcasted https://explorer.aptoslabs.com/txn/0xb5b383a5c7f99b2edb3bed9533f8169a89051b149d65876a82f4c0b9bf78a15b?network=Devnet
     Proto::SigningInput input;
