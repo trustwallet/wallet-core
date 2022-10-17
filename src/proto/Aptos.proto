@@ -152,4 +152,7 @@ message SigningOutput {
 
   // Transaction json format for api broadcasting (string)
   string json = 4;
+
+  // Set in case of error
+  string error = 5;
 }

@@ -161,6 +161,23 @@ TEST(AptosSigner, CancelNftOfferTxSign) {
     assertJSONEqual(expectedJson, parsedJson);
 }
 
+TEST(AptosSigner, SimulateTxSignException) {
+    Proto::SigningInput input;
+    input.set_sender("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30");
+    input.set_sequence_number(99);
+    auto& tf = *input.mutable_transfer();
+    tf.set_to("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30");
+    tf.set_amount(1000);
+    input.set_max_gas_amount(3296766);
+    input.set_gas_unit_price(100);
+    input.set_expiration_timestamp_secs(3664390082);
+    input.set_chain_id(33);
+    auto pubKey = parse_hex("0x0");
+    input.set_public_key(&pubKey, pubKey.size());
+    auto result = Signer::sign(input);
+    ASSERT_TRUE(!result.error().empty());
+}
+
 TEST(AptosSigner, SimulateTxSign) {
     Proto::SigningInput input;
     input.set_sender("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30");
