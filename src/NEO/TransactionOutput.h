@@ -7,7 +7,6 @@
 #pragma once
 
 #include "../uint256.h"
-#include "Constants.h"
 #include "Data.h"
 #include "../BinaryCoding.h"
 #include "ReadData.h"
@@ -18,6 +17,10 @@ namespace TW::NEO {
 
 class TransactionOutput : public Serializable {
   public:
+    static const size_t assetIdSize = 32;
+    static const size_t valueSize = 8;
+    static const size_t scriptHashSize = 20;
+
     uint256_t assetId;
     int64_t value = 0;
     uint256_t scriptHash;
@@ -25,7 +28,7 @@ class TransactionOutput : public Serializable {
     virtual ~TransactionOutput() {}
 
     int64_t size() const override {
-        return store(assetId, assetIdSize).size() + valueSize + store(scriptHash, scriptHashSize).size();
+        return store(assetId).size() + valueSize + store(scriptHash).size();
     }
 
     void deserialize(const Data& data, int initial_pos = 0) override {
@@ -35,9 +38,9 @@ class TransactionOutput : public Serializable {
     }
 
     Data serialize() const override {
-        auto resp = store(assetId, assetIdSize);
+        auto resp = store(assetId);
         encode64LE(value, resp);
-        return concat(resp, store(scriptHash, scriptHashSize));
+        return concat(resp, store(scriptHash));
     }
 
     bool operator==(const TransactionOutput &other) const {
@@ -47,4 +50,4 @@ class TransactionOutput : public Serializable {
     }
 };
 
-} // namespace TW::NEO
+}
