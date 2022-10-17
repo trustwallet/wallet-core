@@ -54,7 +54,6 @@ public:
     }
 
     TransactionBuilder& simulateSign(const Proto::SigningInput& input, Proto::SigningOutput& output) noexcept {
-        // https://fullnode.devnet.aptoslabs.com/v1/spec#/operations/submit_transaction
         // clang-format off
         auto publicKey = PublicKey(Data(input.public_key().begin(), input.public_key().end()), TWPublicKeyTypeED25519);
         nlohmann::json json = {
