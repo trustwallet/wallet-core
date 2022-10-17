@@ -53,7 +53,32 @@ public:
         return *this;
     }
 
+    TransactionBuilder& simulateSign(const Proto::SigningInput& input, Proto::SigningOutput& output) noexcept {
+        // https://fullnode.devnet.aptoslabs.com/v1/spec#/operations/submit_transaction
+        // clang-format off
+        auto publicKey = PublicKey(Data(input.public_key().begin(), input.public_key().end()), TWPublicKeyTypeED25519);
+        nlohmann::json json = {
+            {"sender", mSender.string()},
+            {"sequence_number", std::to_string(mSequenceNumber)},
+            {"max_gas_amount", std::to_string(mMaxGasAmount)},
+            {"gas_unit_price", std::to_string(mGasUnitPrice)},
+            {"expiration_timestamp_secs", std::to_string(mExpirationTimestampSecs)},
+            {"payload", payloadToJson(mPayload)},
+            {"signature", {
+                {"type", "ed25519_signature"},
+                {"public_key", hexEncoded(publicKey.bytes)},
+                {"signature", "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"}}
+            }
+        };
+        // clang-format on
+        output.set_json(json.dump());
+        return *this;
+    }
+
     TransactionBuilder& sign(const Proto::SigningInput& input, Proto::SigningOutput& output) noexcept {
+        if (input.private_key().empty() && !input.public_key().empty()) {
+            return simulateSign(input, output);
+        }
         BCS::Serializer serializer;
         serializer << mSender << mSequenceNumber << mPayload << mMaxGasAmount << mGasUnitPrice << mExpirationTimestampSecs << mChainId;
         auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));

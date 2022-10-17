@@ -119,13 +119,15 @@ message SigningInput {
   bytes private_key = 7;
   // hex encoded function to sign, use it for smart contract approval (string)
   string any_encoded = 8;
+  // Public key to simulate the transaction
+  bytes public_key = 9;
 
   oneof transaction_payload {
-    TransferMessage transfer = 9;
-    TokenTransferMessage token_transfer = 10;
-    CreateAccountMessage create_account = 11;
-    NftMessage nft_message = 12;
-    ManagedTokensRegisterMessage register_token = 13;
+    TransferMessage transfer = 10;
+    TokenTransferMessage token_transfer = 11;
+    CreateAccountMessage create_account = 12;
+    NftMessage nft_message = 13;
+    ManagedTokensRegisterMessage register_token = 14;
   }
 }
 

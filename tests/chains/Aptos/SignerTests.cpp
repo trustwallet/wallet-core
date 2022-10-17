@@ -161,6 +161,44 @@ TEST(AptosSigner, CancelNftOfferTxSign) {
     assertJSONEqual(expectedJson, parsedJson);
 }
 
+TEST(AptosSigner, SimulateTxSign) {
+    Proto::SigningInput input;
+    input.set_sender("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30");
+    input.set_sequence_number(99);
+    auto& tf = *input.mutable_transfer();
+    tf.set_to("0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30");
+    tf.set_amount(1000);
+    input.set_max_gas_amount(3296766);
+    input.set_gas_unit_price(100);
+    input.set_expiration_timestamp_secs(3664390082);
+    input.set_chain_id(33);
+    auto pubKey = PublicKey(parse_hex("ea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c"), TWPublicKeyTypeED25519);
+    input.set_public_key(pubKey.bytes.data(), pubKey.bytes.size());
+    auto result = Signer::sign(input);
+    nlohmann::json expectedJson = R"(
+                {
+                    "expiration_timestamp_secs": "3664390082",
+                    "gas_unit_price": "100",
+                    "max_gas_amount": "3296766",
+                    "payload": {
+                        "arguments": ["0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30","1000"],
+                        "function": "0x1::aptos_account::transfer",
+                        "type": "entry_function_payload",
+                        "type_arguments": []
+                    },
+                    "sender": "0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30",
+                    "sequence_number": "99",
+                    "signature": {
+                        "public_key": "0xea526ba1710343d953461ff68641f1b7df5f23b9042ffa2d2a798d3adb3f3d6c",
+                        "signature": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                        "type": "ed25519_signature"
+                    }
+                }
+        )"_json;
+    nlohmann::json parsedJson = nlohmann::json::parse(result.json());
+    assertJSONEqual(expectedJson, parsedJson);
+}
+
 TEST(AptosSigner, TxSign) {
     // Successfully broadcasted https://explorer.aptoslabs.com/txn/0xb4d62afd3862116e060dd6ad9848ccb50c2bc177799819f1d29c059ae2042467?network=devnet
     Proto::SigningInput input;
