@@ -42,12 +42,6 @@ TEST(TWAnySignerJuno, Sign) {
     ANY_SIGN(input, TWCoinTypeCosmos);
 
     // https://www.mintscan.io/juno/txs/3DCE6AAF19657BCF11D44FD6BE124D57B44E04CA34851DE0ECCE619F70ECC46F
-    // curl --location --request POST 'https://api.juno.chaintools.tech/cosmos/tx/v1beta1/txs' \
-    //--header 'Content-Type: application/json' \
-    //--data-raw '{
-    //    "mode": "BROADCAST_MODE_BLOCK",
-    //    "tx_bytes": "Co0BCooBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmoKK2p1bm8xbXJ5NDdwa2dhNXRkc3d0bHV5MG04dGVzbHBhbGtkcTBnbm40bWYSK2p1bm8xbXJ5NDdwa2dhNXRkc3d0bHV5MG04dGVzbHBhbGtkcTBnbm40bWYaDgoFdWp1bm8SBTEwMDAwEmUKTgpGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQLL/bXkcokzIilOYM8Ig9Q99DHhCJ0p7LRHqebVUEWq5RIECgIIARITCg0KBXVqdW5vEgQxMDAwEIDxBBpABrA2SUNtur1XqAIzNjM4UYtFylKARkfMd2YJUi11qqMkX0rZfmHrELL+QqjERn0o3vsR231fmPGJe4P0Isjwjw=="
-    //}'
     auto expectedJson = R"(
                 {
                     "mode": "BROADCAST_MODE_BLOCK",
