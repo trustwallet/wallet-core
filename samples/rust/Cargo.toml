@@ -1,10 +1,8 @@
 [package]
 name = "rustsample"
 version = "0.1.0"
-links = "foo"
-build = "src/build.rs"
-authors = ["Walelt Core"]
 edition = "2021"
+build = "src/build.rs"
 
 [dependencies]
 libc = "0.2"
